@@ -1,0 +1,32 @@
+--- src/main.c.orig	2016-09-15 11:09:21.879854323 -0300
++++ src/main.c	2016-09-15 11:09:30.206759345 -0300
+@@ -32,6 +32,10 @@
+ #include <string.h>
+ #include <sys/ioctl.h>
+ 
++#include <unistd.h>
++#include <sys/types.h>
++#include <pwd.h>
++
+ #include "main.h"
+ #include "xorg.h"
+ #include "console.h"
+@@ -47,10 +51,17 @@ unsigned long stat_write_count;
+  */
+ Config *load_config(int argc, const char *argv[])
+ {
++	const char *homedir;
++
++	if ((homedir = getenv("HOME")) == NULL) {
++		homedir = getpwuid(getuid())->pw_dir;
++	}
++
+ 	Config *result = calloc(1, sizeof(Config));
+ 	int config;
+ 	char config_file[4096] = {0};
+-	char default_config_file[] = "~/.disk-indicator";
++	char default_config_file[255];
++	sprintf(default_config_file, "%s/.disk-indicator", homedir);
+ 
+ 	// set default values
+ 	result->xorg_initialized = false;

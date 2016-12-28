@@ -112,6 +112,7 @@ testing/
 # TODO, dead or private
 
 /_deplists/
+/_rpmtimes/
 /_sbtimes/
 /_snapshots/
 /_snapshots

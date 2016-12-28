@@ -1,2 +1,2 @@
 # chinforpms
-Personal Fedora RPM specs 
+Personal Fedora RPM specs.

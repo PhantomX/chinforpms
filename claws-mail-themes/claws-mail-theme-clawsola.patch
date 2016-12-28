@@ -1,0 +1,28 @@
+--- claws-mail-themes-20140629/clawsola/Makefile.am.orig	2016-12-27 19:05:16.029006004 -0200
++++ claws-mail-themes-20140629/clawsola/Makefile.am	2016-12-27 19:06:07.006252687 -0200
+@@ -7,6 +7,7 @@ dist_theme_DATA = address_book.png \
+  cancel.png \
+  category.png \
+  check_spelling.png \
++ claws_mail_icon.png \
+  clip_gpg_signed.png \
+  clipkey.png \
+  clip.png \
+@@ -18,11 +19,16 @@ dist_theme_DATA = address_book.png \
+  dir_close_hrm.png \
+  dir_close_mark.png \
+  dir_close.png \
+- dir_noselect.png \
++ dir_noselect_close_mark.png \
++ dir_noselect_close.png \
++ dir_noselect_open.png \
+  dir_open_hrm_mark.png \
+  dir_open_hrm.png \
+  dir_open_mark.png \
+  dir_open.png \
++ dir_subs_close_mark.png \
++ dir_subs_close.png \
++ dir_subs_open.png \
+  down_arrow.png \
+  drafts_close_mark.png \
+  drafts_close.png \

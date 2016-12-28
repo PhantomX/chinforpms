@@ -1,0 +1,90 @@
+--- claws-mail-themes-20140629/Coons-Blue-0.3/Makefile.am.orig	2014-06-29 06:49:47.000000000 -0300
++++ claws-mail-themes-20140629/Coons-Blue-0.3/Makefile.am	2016-12-27 19:13:03.430410732 -0200
+@@ -7,6 +7,7 @@ dist_theme_DATA = address_book.png \
+  addr_two.png \
+  anonymous.png \
+  book.png \
++ cancel.png \
+  category.png \
+  checkbox_off.png \
+  checkbox_on.png \
+@@ -18,16 +19,28 @@ dist_theme_DATA = address_book.png \
+  complete.png \
+  continue.png \
+  copied.png \
++ delete_btn.png \
+  deleted.png \
+  dir_close_hrm_mark.png \
+  dir_close_hrm.png \
+  dir_close_mark.png \
+  dir_close.png \
++ dir_noselect_close_mark.png \
++ dir_noselect_close.png \
++ dir_noselect_open.png \
+  dir_noselect.png \
+  dir_open_hrm_mark.png \
+  dir_open_hrm.png \
+  dir_open_mark.png \
+  dir_open.png \
++ dir_subs_close_mark.png \
++ dir_subs_close.png \
++ dir_subs_open_hrm_mark.png \
++ dir_subs_open_hrm.png \
++ dir_subs_open.png \
++ doc_index_close.png \
++ doc_index.png \
++ doc_info.png \
+  down_arrow.png \
+  drafts_close_hrm_mark.png \
+  drafts_close_hrm.png \
+@@ -41,6 +54,7 @@ dist_theme_DATA = address_book.png \
+  empty.png \
+  error.png \
+  exec.png \
++ first_arrow.png \
+  forwarded.png \
+  go_folders.png \
+  gpg_signed.png \
+@@ -58,8 +72,11 @@ dist_theme_DATA = address_book.png \
+  insert_file.png \
+  interface.png \
+  jpilot.png \
++ key_gpg_signed.png \
+  key.png \
++ last_arrow.png \
+  ldap.png \
++ left_arrow.png \
+  linewrapcurrent.png \
+  linewrap.png \
+  locked.png \
+@@ -87,6 +104,7 @@ dist_theme_DATA = address_book.png \
+  mime_ps.png \
+  mime_text_enriched.png \
+  mime_text_html.png \
++ mime_text_patch.png \
+  mime_text_plain.png \
+  mime_unknown.png \
+  moved.png \
+@@ -134,6 +152,9 @@ dist_theme_DATA = address_book.png \
+  quicksearch.png \
+  read.png \
+  replied.png \
++ right_arrow.png \
++ rotate_left.png \
++ rotate_right.png \
+  search.png \
+  selection.png \
+  spam_btn.png \
+@@ -165,7 +186,11 @@ dist_theme_DATA = address_book.png \
+  unread.png \
+  up_arrow.png \
+  vcard.png \
+- watchthread.png
++ watchthread.png \
++ zoom_fit.png \
++ zoom-in.png \
++ zoom-out.png \
++ zoom-width.png
+ 
+ EXTRA_DIST = COPYING \
+  INSTALL \
