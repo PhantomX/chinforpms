@@ -16,6 +16,7 @@
 *.ebuild
 PKGBUILD
 geany_run_script.sh
+rpmrunopts
 
 *.log
 *.st

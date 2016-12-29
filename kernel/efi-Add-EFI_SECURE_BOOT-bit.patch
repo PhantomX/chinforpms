@@ -1,0 +1,43 @@
+From 04e65e01058ed6357b932e64b19e4bf762f04970 Mon Sep 17 00:00:00 2001
+From: Josh Boyer <jwboyer@fedoraproject.org>
+Date: Tue, 27 Aug 2013 13:33:03 -0400
+Subject: [PATCH 2/9] efi: Add EFI_SECURE_BOOT bit
+
+UEFI machines can be booted in Secure Boot mode.  Add a EFI_SECURE_BOOT bit
+for use with efi_enabled.
+
+Signed-off-by: Josh Boyer <jwboyer@fedoraproject.org>
+---
+ arch/x86/kernel/setup.c | 2 ++
+ include/linux/efi.h     | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index bdb9881c7afd..a666b6c29c77 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -1154,7 +1154,9 @@ void __init setup_arch(char **cmdline_p)
+ 
+ #ifdef CONFIG_EFI_SECURE_BOOT_SIG_ENFORCE
+ 	if (boot_params.secure_boot) {
++		set_bit(EFI_SECURE_BOOT, &efi.flags);
+ 		enforce_signed_modules();
++		pr_info("Secure boot enabled\n");
+ 	}
+ #endif
+ 
+diff --git a/include/linux/efi.h b/include/linux/efi.h
+index c2db3ca22217..8cb38cfcba74 100644
+--- a/include/linux/efi.h
++++ b/include/linux/efi.h
+@@ -1062,6 +1062,7 @@ extern int __init efi_setup_pcdp_console(char *);
+ #define EFI_ARCH_1		7	/* First arch-specific bit */
+ #define EFI_DBG			8	/* Print additional debug info at runtime */
+ #define EFI_NX_PE_DATA		9	/* Can runtime data regions be mapped non-executable? */
++#define EFI_SECURE_BOOT		10	/* Are we in Secure Boot mode? */
+ 
+ #ifdef CONFIG_EFI
+ /*
+-- 
+2.5.5
+

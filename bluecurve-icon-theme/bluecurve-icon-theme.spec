@@ -2,7 +2,6 @@ Summary: Bluecurve icon theme
 Name: bluecurve-icon-theme
 Version: 8.0.2
 Release: 15%{?dist}
-Epoch:   1
 BuildArch: noarch
 License: GPL+
 Group: User Interface/Desktops
