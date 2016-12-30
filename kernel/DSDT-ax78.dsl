@@ -16,7 +16,7 @@
  *     Compiler ID      "MSFT"
  *     Compiler Version 0x03000000 (50331648)
  */
-DefinitionBlock ("dsdt.aml", "DSDT", 1, "AMD770", "AWRDACPI", 0x00001000)
+DefinitionBlock ("dsdt.aml", "DSDT", 1, "AMD770", "AWRDACPI", 0x00001001)
 {
     External (LNKB)
     External (LNKA)
