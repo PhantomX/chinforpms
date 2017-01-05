@@ -51,7 +51,10 @@ Source106:      wine-winhelp.desktop
 Source107:      wine-wineboot.desktop
 Source108:      wine-wordpad.desktop
 Source109:      wine-oleview.desktop
-Source110:      wine-joycpl.desktop
+Source110:      wine-iexplore.desktop
+Source111:      wine-inetcpl.desktop
+Source112:      wine-joycpl.desktop
+Source113:      wine-taskmgr.desktop
 
 # build fixes
 
@@ -174,6 +177,7 @@ BuildRequires:  mesa-libd3d-devel
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
 BuildRequires:  icoutils
+BuildRequires:  librsvg2-tools
 %endif
 
 Requires:       wine-common = %{version}-%{release}
@@ -880,9 +884,27 @@ install -p -m 644 programs/wordpad/wordpad.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wordpad.svg
 sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wordpad.svg
 
+install -p -m 644 programs/iexplore/iexplore.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/iexplore.svg
+sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/iexplore.svg
+
 install -p -m 644 dlls/joy.cpl/joy.svg \
-  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wine_joy.svg
-sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wine_joy.svg
+  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/joycpl.svg
+sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/joycpl.svg
+
+install -p -m 644 programs/taskmgr/taskmgr.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/taskmgr.svg
+sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/taskmgr.svg
+
+for file in %{buildroot}%{_datadir}/icons/hicolor/scalable/*.svg ;do
+  basefile=$(basename ${file} .svg)
+  for res in 16 22 24 32 36 48 64 72 96 128 192 256 512 ;do
+    dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
+    mkdir -p ${dir}
+    rsvg-convert -w ${res} -h ${res} ${file} \
+      -o ${dir}/${basefile}.png
+  done
+done
 
 %endif
 
@@ -930,6 +952,18 @@ desktop-file-install \
 desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE110}
+
+desktop-file-install \
+  --dir=%{buildroot}%{_datadir}/applications \
+  %{SOURCE111}
+
+desktop-file-install \
+  --dir=%{buildroot}%{_datadir}/applications \
+  %{SOURCE112}
+
+desktop-file-install \
+  --dir=%{buildroot}%{_datadir}/applications \
+  %{SOURCE113}
 
 desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
@@ -2097,7 +2131,10 @@ fi
 %{_datadir}/fonts/wine-wingdings-fonts
 
 %files desktop
+%{_datadir}/applications/wine-iexplore.desktop
+%{_datadir}/applications/wine-inetcpl.desktop
 %{_datadir}/applications/wine-joycpl.desktop
+%{_datadir}/applications/wine-taskmgr.desktop
 %{_datadir}/applications/wine-notepad.desktop
 %{_datadir}/applications/wine-winefile.desktop
 %{_datadir}/applications/wine-winemine.desktop

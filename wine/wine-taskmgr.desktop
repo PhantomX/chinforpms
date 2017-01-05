@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Wine Task Manager
+Name[pt_BR]=Gerenciador de Tarefas do Wine
+Comment=Wine registry editor
+Exec=wine taskmgr
+Icon=taskmgr
+Terminal=false
+Type=Application
+Categories=X-Wine;

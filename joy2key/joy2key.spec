@@ -10,7 +10,7 @@ Source0:        http://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.ta
 # Debian
 Patch0:         button_list_segfault.patch
 
-#BuildRequires:  
+BuildRequires:  pkgconfig(x11)
 #Requires:       
 
 %description

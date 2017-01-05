@@ -5,3 +5,4 @@ Name[ar]=مثبت حزم واين
 Exec=wine %f
 MimeType=application/x-ole-storage;text/mspg-legacyinfo;
 Hidden=true
+Icon=wine

@@ -1,0 +1,14 @@
+--- steam/steam.orig	2017-01-04 19:04:49.190656782 -0200
++++ steam/steam	2017-01-04 19:06:19.976843841 -0200
+@@ -185,6 +185,11 @@ fi
+ 
+ # go to the install directory and run the client
+ cp "$LAUNCHSTEAMBOOTSTRAPFILE" "$LAUNCHSTEAMDIR/bootstrap.tar.xz"
++
++# Workaround for bug 3273: https://github.com/ValveSoftware/steam-for-linux/issues/3273
++rm -f $LAUNCHSTEAMPLATFORM/steam-runtime/i386/usr/lib/i386-linux-gnu/libstdc++.so.6*
++rm -f $LAUNCHSTEAMPLATFORM/steam-runtime/amd64/usr/lib/x86_64-linux-gnu/libstdc++.so.6*
++
+ cd "$LAUNCHSTEAMDIR"
+ if [ "`command -v tee`" != "" ]; then
+ 	mkdir -p --mode=777 /tmp/dumps

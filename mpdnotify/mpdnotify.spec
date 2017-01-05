@@ -8,7 +8,7 @@
 
 Name:           mpdnotify
 Version:        0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        'Now Playing' information via notify-send and mpc 
 
 License:        Public Domain
@@ -35,6 +35,8 @@ notifications about what song is currently playing in mpd.
 %autosetup -n %{name}-%{version}
 %endif
 
+# Search links too
+sed -e '/^cover=/s|-type f|\0 -o -type l|g' -i %{name}
 
 %build
 
@@ -51,5 +53,8 @@ install -pm0755 %{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Dec 30 2016 Phantom X <megaphantomx at bol dot com dot br> - 0-2
+- Search for links.
+
 * Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 0.gite041077
 - Initial spec.
