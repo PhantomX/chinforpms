@@ -1,0 +1,13 @@
+[Unit]
+Description=VirtualBox guest services
+#RHEL7 says that Virtualization is kvm !?
+ConditionVirtualization=|kvm
+ConditionVirtualization=|oracle
+
+
+[Service]
+ExecStart=/usr/sbin/VBoxService -f
+
+[Install]
+WantedBy=multi-user.target
+

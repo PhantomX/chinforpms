@@ -1,0 +1,31 @@
+--- src/xdgmenumaker.orig	2017-01-07 12:40:54.490182720 -0200
++++ src/xdgmenumaker	2017-01-07 12:51:47.580684377 -0200
+@@ -138,6 +138,10 @@ de = dentry.DesktopEntry(filename=deskto
+                          'xdgmenumaker-system.directory')
+ system = de.getName().encode('utf-8')
+ system_icon = de.getIcon()
++de = dentry.DesktopEntry(filename=desktop_dir +
++                         'Wine.directory')
++wine = de.getName().encode('utf-8')
++wine_icon = de.getIcon()
+ de = dentry.DesktopEntry(filename=desktop_dir + 'xdgmenumaker-other.directory')
+ other = de.getName().encode('utf-8')
+ other_icon = de.getIcon()
+@@ -371,6 +375,8 @@ def clean_up_categories(categories):
+         category = settings
+     elif 'Utility' in categories:
+         category = accessories
++    elif 'X-Wine' in categories:
++        category = wine
+     else:
+         category = other
+     return category
+@@ -507,6 +513,8 @@ def category_icon(category):
+         icon = settings_icon
+     elif category == system:
+         icon = system_icon
++    elif category == wine:
++        icon = wine_icon
+     elif category == other:
+         icon = other_icon
+     else:

@@ -1,0 +1,99 @@
+Replace some strings with ones that (sometimes) make more sense.
+--- ./src/VBox/Frontends/VirtualBox/src/main.cpp.orig	2016-07-15 22:49:01.368518594 +0200
++++ ./src/VBox/Frontends/VirtualBox/src/main.cpp	2016-07-15 22:52:19.852192522 +0200
+@@ -101,11 +101,12 @@
+     );
+ 
+ QString g_QStrHintLinuxNoDriver = QApplication::tr(
+-    "The VirtualBox Linux kernel driver (vboxdrv) is either not loaded or "
+-    "there is a permission problem with /dev/vboxdrv. Please reinstall the kernel "
+-    "module by executing<br/><br/>"
+-    "  <font color=blue>'/sbin/vboxconfig'</font><br/><br/>"
+-    "as root."
++    "The VirtualBox Linux kernel driver (vboxdrv) is probably not loaded."
++    "You may not have kernel driver installed for kernel that is runnig, if so you may do as root:"
++    "  <font color=blue>dnf install akmod-VirtualBox kernel-devel-$(uname -r)</font>"
++    "If you installed VirtualBox packages and don't want reboot the system, you may need load the "
++    "kernel driver, doing as root:"
++    "  <font color=blue>akmods; systemctl restart systemd-modules-load.service</font><br/><br/>"
+     );
+ 
+ QString g_QStrHintOtherWrongDriverVersion = QApplication::tr(
+@@ -119,18 +120,18 @@
+     "The VirtualBox kernel modules do not match this version of "
+     "VirtualBox. The installation of VirtualBox was apparently not "
+     "successful. Executing<br/><br/>"
+-    "  <font color=blue>'/sbin/vboxconfig'</font><br/><br/>"
++    "  <font color=blue>rmmod vboxnetadp vboxnetflt vboxpci vboxdrv; systemctl restart systemd-modules-load.service</font> as root<br/><br/>"
+     "may correct this. Make sure that you do not mix the "
+-    "OSE version and the PUEL version of VirtualBox."
++    "RPMFusion version and the Oracle version of VirtualBox."
+     );
+ 
+ QString g_QStrHintOtherNoDriver = QApplication::tr(
+     "Make sure the kernel module has been loaded successfully."
+     );
+ 
+-/* I hope this isn't (C), (TM) or (R) Microsoft support ;-) */
++/* We're going to try to give a helping hand */
+ QString g_QStrHintReinstall = QApplication::tr(
+-    "Please try reinstalling VirtualBox."
++    "Please report the problem to the RPM Fusion Bugzilla."
+     );
+ 
+ 
+--- ./src/VBox/VMM/VMMR3/VM.cpp.orig	2016-09-12 17:19:22.000000000 +0100
++++ ./src/VBox/VMM/VMMR3/VM.cpp	2016-09-16 04:02:17.704237277 +0100
+@@ -376,8 +376,8 @@ VMMR3DECL(int)   VMR3Create(uint32_t cCp
+ #ifdef RT_OS_LINUX
+                     pszError = N_("VirtualBox kernel driver not loaded. The vboxdrv kernel module "
+                                   "was either not loaded or /dev/vboxdrv is not set up properly. "
+-                                  "Re-setup the kernel module by executing "
+-                                  "'/sbin/vboxconfig' as root");
++                                  "Load the kernel module by executing "
++                                  "'systemctl restart systemd-modules-load.service' as root");
+ #else
+                     pszError = N_("VirtualBox kernel driver not loaded");
+ #endif
+@@ -418,8 +418,8 @@ VMMR3DECL(int)   VMR3Create(uint32_t cCp
+ #ifdef RT_OS_LINUX
+                     pszError = N_("VirtualBox kernel driver not installed. The vboxdrv kernel module "
+                                   "was either not loaded or /dev/vboxdrv was not created for some "
+-                                  "reason. Re-setup the kernel module by executing "
+-                                  "'/sbin/vboxconfig' as root");
++                                  "reason. Install the kernel module by executing 'dnf install akmod-VirtualBox kernel-devel-$(uname -r)'"
++                                  "and 'akmods --kernels $(uname -r) && systemctl restart systemd-modules-load.service' as root");
+ #else
+                     pszError = N_("VirtualBox kernel driver not installed");
+ #endif
+--- ./src/VBox/Installer/linux/VBox.sh.orig	2016-09-16 03:39:44.163517672 +0100
++++ ./src/VBox/Installer/linux/VBox.sh	2016-09-16 04:02:17.704237277 +0100
+@@ -60,19 +60,24 @@ elif ! lsmod|grep -q vboxdrv; then
+     cat << EOF
+ WARNING: The vboxdrv kernel module is not loaded. Either there is no module
+          available for the current kernel (`uname -r`) or it failed to
+-         load. Please recompile the kernel module and install it by
++         load. Please try load the kernel module by executing as root
+ 
+-           sudo /sbin/vboxconfig
++           dnf install akmod-VirtualBox kernel-devel-$(uname -r)
++           akmods --kernels $(uname -r) && systemctl restart systemd-modules-load.service
+ 
+          You will not be able to start VMs until this problem is fixed.
+ EOF
+ elif [ ! -c /dev/vboxdrv ]; then
+     cat << EOF
+ WARNING: The character device /dev/vboxdrv does not exist. Try
++install the kernel module by executing as root
+ 
+-           sudo /sbin/vboxconfig
++           dnf install akmod-VirtualBox kernel-devel-$(uname -r)
++           akmods --kernels $(uname -r) && systemctl restart systemd-modules-load.service
+ 
+-         and if that is not successful, try to re-install the package.
++         and if that is not successful, try see if
++         http://rpmfusion.org/Howto/VirtualBox have any solution or contact
++         RPMFusion by Mailing Lists, IRC or Bugzilla.
+ 
+          You will not be able to start VMs until this problem is fixed.
+ EOF

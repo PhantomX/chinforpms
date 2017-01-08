@@ -1,0 +1,22 @@
+From 631f2a6aa525f51fa38a3b59550d80e452181e5f Mon Sep 17 00:00:00 2001
+From: Lubomir Rintel <lkundrak@v3.sk>
+Date: Wed, 28 Apr 2010 11:53:40 +0200
+Subject: [PATCH 1/4] Disable automatic check for updates
+
+Our OS provides superior way of dealing with updates (PackageKit).
+Let's not bug the user with updates that are not yet packaged.
+---
+ .../Frontends/VirtualBox/src/VBoxUpdateDlg.cpp     |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+--- a/src/VBox/Frontends/VirtualBox/src/net/UIUpdateDefs.cpp	2011-10-03 23:27:27.022252299 +0100
++++ b/src/VBox/Frontends/VirtualBox/src/net/UIUpdateDefs.cpp	2011-10-03 23:27:37.597338185 +0100
+@@ -163,7 +163,7 @@
+             if (m_dayList.isEmpty())
+                 populate();
+             PeriodType index = (PeriodType)m_dayList.indexOf(VBoxUpdateDay(QString(), parser[0]));
+-            m_periodIndex = index == PeriodUndefined ? Period1Day : index;
++            m_periodIndex = index == PeriodUndefined ? PeriodNever : index;
+         }
+ 
+         /* Parse 'date' value: */

@@ -1,0 +1,208 @@
+diff -Nurp VirtualBox-5.1.0.p9/include/VBox/ostypes.h VirtualBox-5.1.0.p13/include/VBox/ostypes.h
+--- VirtualBox-5.1.0.p9/include/VBox/ostypes.h	2016-07-12 17:47:24.000000000 +0300
++++ VirtualBox-5.1.0.p13/include/VBox/ostypes.h	2016-07-13 01:03:14.386225692 +0300
+@@ -106,6 +106,8 @@ typedef enum VBOXOSTYPE
+     VBOXOSTYPE_Xandros_x64      = 0x5D100,
+     VBOXOSTYPE_Oracle           = 0x5E000,
+     VBOXOSTYPE_Oracle_x64       = 0x5E100,
++    VBOXOSTYPE_Mageia           = 0x5F000,
++    VBOXOSTYPE_Mageia_x64       = 0x5F100,
+     VBOXOSTYPE_FreeBSD          = 0x60000,
+     VBOXOSTYPE_FreeBSD_x64      = 0x60100,
+     VBOXOSTYPE_OpenBSD          = 0x61000,
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Additions/linux/installer/vboxadd-x11.sh VirtualBox-5.1.0.p13/src/VBox/Additions/linux/installer/vboxadd-x11.sh
+--- VirtualBox-5.1.0.p9/src/VBox/Additions/linux/installer/vboxadd-x11.sh	2016-07-12 17:47:43.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Additions/linux/installer/vboxadd-x11.sh	2016-07-13 01:03:14.387225695 +0300
+@@ -134,8 +134,14 @@ install_x11_startup_app() {
+     x11_autostart="/etc/xdg/autostart"
+     kde_autostart="/usr/share/autostart"
+     redhat_dir=/etc/X11/Xsession.d
++    mageia_dir=/etc/X11/xinit.d
+     mandriva_dir=/etc/X11/xinit.d
+     debian_dir=/etc/X11/xinit/xinitrc.d
++    if [ -d "$mageia_dir" -a -w "$mageia_dir" -a -x "$mageia_dir" ]
++    then
++        install -m 0644 $app_src "$mageia_dir/$app_dest"
++        found=1
++    fi
+     if [ -d "$mandriva_dir" -a -w "$mandriva_dir" -a -x "$mandriva_dir" ]
+     then
+         install -m 0644 $app_src "$mandriva_dir/$app_dest"
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Frontends/VirtualBox/src/globals/UIIconPool.cpp VirtualBox-5.1.0.p13/src/VBox/Frontends/VirtualBox/src/globals/UIIconPool.cpp
+--- VirtualBox-5.1.0.p9/src/VBox/Frontends/VirtualBox/src/globals/UIIconPool.cpp	2016-07-12 17:54:02.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Frontends/VirtualBox/src/globals/UIIconPool.cpp	2016-07-13 01:03:14.387225695 +0300
+@@ -314,6 +314,8 @@ UIIconPoolGeneral::UIIconPoolGeneral()
+     m_guestOSTypeIconNames.insert("Fedora_64",       ":/os_fedora_64.png");
+     m_guestOSTypeIconNames.insert("Gentoo",          ":/os_gentoo.png");
+     m_guestOSTypeIconNames.insert("Gentoo_64",       ":/os_gentoo_64.png");
++    m_guestOSTypeIconNames.insert("Mageia",          ":/os_mageia.png");
++    m_guestOSTypeIconNames.insert("Mageia_64",       ":/os_mageia_64.png");
+     m_guestOSTypeIconNames.insert("Mandriva",        ":/os_mandriva.png");
+     m_guestOSTypeIconNames.insert("Mandriva_64",     ":/os_mandriva_64.png");
+     m_guestOSTypeIconNames.insert("RedHat",          ":/os_redhat.png");
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Frontends/VirtualBox/src/wizards/newvm/UIWizardNewVMPageBasic1.cpp VirtualBox-5.1.0.p13/src/VBox/Frontends/VirtualBox/src/wizards/newvm/UIWizardNewVMPageBasic1.cpp
+--- VirtualBox-5.1.0.p9/src/VBox/Frontends/VirtualBox/src/wizards/newvm/UIWizardNewVMPageBasic1.cpp	2016-07-12 17:54:13.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Frontends/VirtualBox/src/wizards/newvm/UIWizardNewVMPageBasic1.cpp	2016-07-13 01:03:14.387225695 +0300
+@@ -136,8 +136,10 @@ static const osTypePattern gs_OSTypePatt
+     { QRegExp("Fe.*32",                            Qt::CaseInsensitive), "Fedora" },
+     { QRegExp("((Gen)|(Sab)).*64",                 Qt::CaseInsensitive), "Gentoo_64" },
+     { QRegExp("((Gen)|(Sab)).*32",                 Qt::CaseInsensitive), "Gentoo" },
+-    { QRegExp("((Man)|(Mag)).*64",                 Qt::CaseInsensitive), "Mandriva_64" },
+-    { QRegExp("((Man)|(Mag)).*32",                 Qt::CaseInsensitive), "Mandriva" },
++    { QRegExp("Mag.*64",                           Qt::CaseInsensitive), "Mageia_64" },
++    { QRegExp("Mag",                               Qt::CaseInsensitive), "Mageia" },
++    { QRegExp("Man.*64",                           Qt::CaseInsensitive), "Mandriva_64" },
++    { QRegExp("Man",                               Qt::CaseInsensitive), "Mandriva" },
+     { QRegExp("((Red)|(rhel)|(cen)).*64",          Qt::CaseInsensitive), "RedHat_64" },
+     { QRegExp("((Red)|(rhel)|(cen)).*32",          Qt::CaseInsensitive), "RedHat" },
+     { QRegExp("Tur.*64",                           Qt::CaseInsensitive), "Turbolinux_64" },
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Frontends/VirtualBox/VirtualBox1.qrc VirtualBox-5.1.0.p13/src/VBox/Frontends/VirtualBox/VirtualBox1.qrc
+--- VirtualBox-5.1.0.p9/src/VBox/Frontends/VirtualBox/VirtualBox1.qrc	2016-07-12 17:53:54.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Frontends/VirtualBox/VirtualBox1.qrc	2016-07-13 01:03:14.387225695 +0300
+@@ -250,6 +250,8 @@
+         <file alias="os_linux_other.png">images/os_linux_other.png</file>
+         <file alias="os_macosx.png">images/os_macosx.png</file>
+         <file alias="os_macosx_64.png">images/os_macosx_64.png</file>
++        <file alias="os_mageia.png">images/os_mageia.png</file>
++        <file alias="os_mageia_64.png">images/os_mageia_64.png</file>
+         <file alias="os_mandriva.png">images/os_mandriva.png</file>
+         <file alias="os_mandriva_64.png">images/os_mandriva_64.png</file>
+         <file alias="os_netbsd.png">images/os_netbsd.png</file>
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Installer/linux/distributions_rpm VirtualBox-5.1.0.p13/src/VBox/Installer/linux/distributions_rpm
+--- VirtualBox-5.1.0.p9/src/VBox/Installer/linux/distributions_rpm	2016-07-12 17:54:27.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Installer/linux/distributions_rpm	2016-07-13 01:48:15.300500433 +0300
+@@ -5,6 +5,16 @@ openSUSE114     = OPENSUSE_11_4
+ openSUSE113     = OPENSUSE_11_3
+ sles11.0        = SLES_11_0
+ sles10.1        = SLES_10_1
++mga10           = MAGEIA_10
++mga9            = MAGEIA_9
++mga8            = MAGEIA_8
++mga7            = MAGEIA_7
++mga6            = MAGEIA_6
++mga5            = MAGEIA_5
++mga4            = MAGEIA_4
++mga3            = MAGEIA_3
++mga2            = MAGEIA_2
++mga1            = MAGEIA_1
+ mdv2011.0       = MANDRIVA_2011_0
+ fedora25        = FEDORA_25
+ fedora24        = FEDORA_24
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Installer/linux/VBoxSysInfo.sh VirtualBox-5.1.0.p13/src/VBox/Installer/linux/VBoxSysInfo.sh
+--- VirtualBox-5.1.0.p9/src/VBox/Installer/linux/VBoxSysInfo.sh	2016-07-12 17:54:27.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Installer/linux/VBoxSysInfo.sh	2016-07-13 01:03:14.387225695 +0300
+@@ -43,6 +43,11 @@ get_linux_info () {
+         # Debian-based system
+         release=`cat /etc/debian_version`
+         print_linux_info "Debian" $release
++    elif [ -r /etc/mageia-release ]
++    then
++        # Mageia-based system
++        release=`cat /etc/mageia-release | sed -e 's/[A-Za-z ]* release //'`
++        print_linux_info "Mageia" $release
+     elif [ -r /etc/mandriva-release ]
+     then
+         # Mandriva-based system
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Main/cbinding/VBoxCAPI_v2_2.h VirtualBox-5.1.0.p13/src/VBox/Main/cbinding/VBoxCAPI_v2_2.h
+--- VirtualBox-5.1.0.p9/src/VBox/Main/cbinding/VBoxCAPI_v2_2.h	2016-07-12 17:54:29.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Main/cbinding/VBoxCAPI_v2_2.h	2016-07-13 01:03:14.388225698 +0300
+@@ -921,7 +921,9 @@ enum CIMOSType
+     CIMOSType_CIMOS_Linux_2_6_x = 99,
+     CIMOSType_CIMOS_Linux_2_6_x_64 = 100,
+     CIMOSType_CIMOS_Linux_64 = 101,
+-    CIMOSType_CIMOS_Other_64 = 102
++    CIMOSType_CIMOS_Other_64 = 102,
++    CIMOSType_CIMOS_Mageia = 111,
++    CIMOSType_CIMOS_Mageia_64 = 112
+ };
+ /* End of enum CIMOSType Declaration */
+ 
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Main/cbinding/VBoxCAPI_v3_0.h VirtualBox-5.1.0.p13/src/VBox/Main/cbinding/VBoxCAPI_v3_0.h
+--- VirtualBox-5.1.0.p9/src/VBox/Main/cbinding/VBoxCAPI_v3_0.h	2016-07-12 17:54:29.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Main/cbinding/VBoxCAPI_v3_0.h	2016-07-13 01:03:14.388225698 +0300
+@@ -1371,7 +1371,9 @@ enum CIMOSType
+     CIMOSType_CIMOS_Linux_2_6_x = 99,
+     CIMOSType_CIMOS_Linux_2_6_x_64 = 100,
+     CIMOSType_CIMOS_Linux_64 = 101,
+-    CIMOSType_CIMOS_Other_64 = 102
++    CIMOSType_CIMOS_Other_64 = 102,
++    CIMOSType_CIMOS_Mageia = 111,
++    CIMOSType_CIMOS_Mageia_64 = 112
+ };
+ /* End of enum CIMOSType Declaration */
+ 
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Main/include/ovfreader.h VirtualBox-5.1.0.p13/src/VBox/Main/include/ovfreader.h
+--- VirtualBox-5.1.0.p9/src/VBox/Main/include/ovfreader.h	2016-07-12 17:54:32.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Main/include/ovfreader.h	2016-07-13 01:03:14.388225698 +0300
+@@ -174,8 +174,10 @@ enum CIMOSType_T
+     CIMOSType_CIMOS_CentOS_64 = 107,
+     CIMOSType_CIMOS_OracleEnterpriseLinux = 108,
+     CIMOSType_CIMOS_OracleEnterpriseLinux_64 = 109,
+-    CIMOSType_CIMOS_eComStation = 110
++    CIMOSType_CIMOS_eComStation = 110,
+     // no new types added with CIM 2.26.0
++    CIMOSType_CIMOS_Mageia = 111,
++    CIMOSType_CIMOS_Mageia_64 = 112
+ };
+ 
+ enum OVFVersion_T
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Main/src-all/Global.cpp VirtualBox-5.1.0.p13/src/VBox/Main/src-all/Global.cpp
+--- VirtualBox-5.1.0.p9/src/VBox/Main/src-all/Global.cpp	2016-07-12 17:54:32.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Main/src-all/Global.cpp	2016-07-13 01:15:39.558448702 +0300
+@@ -245,6 +245,17 @@ const Global::OSType Global::sOSTypes[]
+       1024,  16,  8 * _1G64, NetworkAdapterType_I82540EM, 0, StorageControllerType_PIIX4, StorageBus_IDE,
+         StorageControllerType_IntelAhci, StorageBus_SATA, ChipsetType_PIIX3, AudioControllerType_AC97, AudioCodecType_AD1980  },
+ 
++    { "Linux",   "Linux",             "Mageia",           "Mageia (32-bit)",
++      VBOXOSTYPE_Mageia,        VBOXOSHINT_RTCUTC | VBOXOSHINT_USBTABLET | VBOXOSHINT_X2APIC,
++      1024,  16,  20 * _1G64, NetworkAdapterType_I82540EM, 0, StorageControllerType_PIIX4, StorageBus_IDE,
++        StorageControllerType_IntelAhci, StorageBus_SATA, ChipsetType_PIIX3, AudioControllerType_HDA, AudioCodecType_AD1980  },
++
++    { "Linux",   "Linux",             "Mageia_64",        "Mageia (64-bit)",
++      VBOXOSTYPE_Mageia_x64,    VBOXOSHINT_64BIT | VBOXOSHINT_HWVIRTEX | VBOXOSHINT_IOAPIC | VBOXOSHINT_RTCUTC
++                                | VBOXOSHINT_USBTABLET | VBOXOSHINT_X2APIC,
++      1024,  16,  20 * _1G64, NetworkAdapterType_I82540EM, 0, StorageControllerType_PIIX4, StorageBus_IDE,
++        StorageControllerType_IntelAhci, StorageBus_SATA, ChipsetType_PIIX3, AudioControllerType_HDA, AudioCodecType_AD1980  },
++
+     { "Linux",   "Linux",             "Mandriva",           "Mandriva (32-bit)",
+       VBOXOSTYPE_Mandriva,        VBOXOSHINT_RTCUTC | VBOXOSHINT_USBTABLET | VBOXOSHINT_X2APIC,
+       1024,  16,  8 * _1G64, NetworkAdapterType_I82540EM, 0, StorageControllerType_PIIX4, StorageBus_IDE,
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Main/src-server/ApplianceImpl.cpp VirtualBox-5.1.0.p13/src/VBox/Main/src-server/ApplianceImpl.cpp
+--- VirtualBox-5.1.0.p9/src/VBox/Main/src-server/ApplianceImpl.cpp	2016-07-12 17:54:34.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Main/src-server/ApplianceImpl.cpp	2016-07-13 01:03:14.389225700 +0300
+@@ -163,6 +163,8 @@ g_osTypes[] =
+     { ovf::CIMOSType_CIMOS_SunJavaDesktopSystem,                 VBOXOSTYPE_Linux },
+     { ovf::CIMOSType_CIMOS_TurboLinux,                           VBOXOSTYPE_Turbolinux },
+     { ovf::CIMOSType_CIMOS_TurboLinux_64,                        VBOXOSTYPE_Turbolinux_x64 },
++    { ovf::CIMOSType_CIMOS_Mageia,                               VBOXOSTYPE_Mageia },
++    { ovf::CIMOSType_CIMOS_Mageia_64,                            VBOXOSTYPE_Mageia_x64 },
+     { ovf::CIMOSType_CIMOS_Mandriva,                             VBOXOSTYPE_Mandriva },
+     { ovf::CIMOSType_CIMOS_Mandriva_64,                          VBOXOSTYPE_Mandriva_x64 },
+     { ovf::CIMOSType_CIMOS_Ubuntu,                               VBOXOSTYPE_Ubuntu },
+@@ -226,6 +228,7 @@ static const osTypePattern g_osTypesPatt
+     {"SUSE",          VBOXOSTYPE_OpenSUSE},
+     {"Novell",        VBOXOSTYPE_OpenSUSE},
+     {"Red Hat",       VBOXOSTYPE_RedHat},
++    {"Mageia",        VBOXOSTYPE_Mageia},
+     {"Mandriva",      VBOXOSTYPE_Mandriva},
+     {"Ubuntu",        VBOXOSTYPE_Ubuntu},
+     {"Debian",        VBOXOSTYPE_Debian},
+@@ -255,6 +258,7 @@ static const osTypePattern g_osTypesPatt
+     {"SUSE",          VBOXOSTYPE_OpenSUSE_x64},
+     {"Novell",        VBOXOSTYPE_OpenSUSE_x64},
+     {"Red Hat",       VBOXOSTYPE_RedHat_x64},
++    {"Mageia",        VBOXOSTYPE_Mageia_x64},
+     {"Mandriva",      VBOXOSTYPE_Mandriva_x64},
+     {"Ubuntu",        VBOXOSTYPE_Ubuntu_x64},
+     {"Debian",        VBOXOSTYPE_Debian_x64},
+diff -Nurp VirtualBox-5.1.0.p9/src/VBox/Main/xml/Settings.cpp VirtualBox-5.1.0.p13/src/VBox/Main/xml/Settings.cpp
+--- VirtualBox-5.1.0.p9/src/VBox/Main/xml/Settings.cpp	2016-07-12 17:54:37.000000000 +0300
++++ VirtualBox-5.1.0.p13/src/VBox/Main/xml/Settings.cpp	2016-07-13 01:03:14.390225702 +0300
+@@ -4960,6 +4960,7 @@ const struct {
+     { "opensuse", "OpenSUSE" },
+     { "fedoracore", "Fedora" },
+     { "gentoo", "Gentoo" },
++    { "mageia", "Mageia" },
+     { "mandriva", "Mandriva" },
+     { "redhat", "RedHat" },
+     { "ubuntu", "Ubuntu" },

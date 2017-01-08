@@ -2,13 +2,12 @@
 
 Name:           receitanet
 Version:        1.09
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Receitanet
 
 License:        Custom
 URL:            http://www.receita.fazenda.gov.br
 Source0:        http://www.receita.fazenda.gov.br/Publico/programas/%{name}/%{pkgname}-%{version}.jar
-Source1:        rfb.menu
 
 BuildArch:      noarch
 
@@ -48,43 +47,18 @@ chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/applications
 
-cat > %{buildroot}%{_datadir}/applications/rfb-%{name}_program.desktop <<EOF
+cat > %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop <<EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=${PNAME}
+Name=%{pkgname}
 Comment=Executa %{pkgname}
 Exec=%{name}
 Icon=%{name}
-Categories=Office;X-rfb;X-%{name};
+Categories=Office;
 EOF
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}_program.desktop
-
-cat > %{buildroot}%{_datadir}/applications/rfb-%{name}_ajuda.desktop <<EOF
-[Desktop Entry]
-Version=1.0
-Type=Application
-Name=Ajuda do %{pkgname}
-Exec=%{name} -ajuda
-Icon=%{name}_ajuda
-Categories=Office;X-rfb;X-%{name};
-EOF
-
-desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}_ajuda.desktop
-
-mkdir -p %{buildroot}%{_sysconfdir}/xdg/menus/applications-merged
-install -pm0644 %{SOURCE1} \
-  %{buildroot}%{_sysconfdir}/xdg/menus/applications-merged/rfb.menu
-
-mkdir -p %{buildroot}%{_datadir}/desktop-directories
-cat > %{buildroot}%{_datadir}/desktop-directories/rfb-programas.directory <<EOF
-[Desktop Entry]
-Version=1.0
-Type=Directory
-Name=Programas RFB
-Icon=%{name}
-EOF
+desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
 convert imagens/Receitanet.xpm \
@@ -118,13 +92,14 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %files
 #license add-license-file-here
 #doc add-docs-here
-%{_sysconfdir}/xdg/menus/applications-merged/rfb.menu
 %{_bindir}/%{name}
 %{_datadir}/applications/*.desktop
-%{_datadir}/desktop-directories/rfb-programas.directory
 %{_datadir}/icons/hicolor/*/*/*.png
 %{_datadir}/ProgramasRFB/%{name}
 
 %changelog
-* Thu Jan  5 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.09-1
+* Fri Jan 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.09-2
+- Drop menus, only install main desktop file.
+
+* Thu Jan 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.09-1
 - Initial spec.

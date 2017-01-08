@@ -1,0 +1,116 @@
+Copyright (c) 2016 Sérgio Basto
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+The MIT License is to allow be in included in VirtualBox source code.
+
+Using also VBOX_USE_SYSTEM_XORG_HEADERS to build guest additions parts,
+just compile with X11 system source and we may remove all bundle X11 source code.
+
+when we use VBOX_USE_SYSTEM_XORG_HEADERS, we don't need compile the very old
+VBoxGuestR3LibXFree86 for use with old servers where the C library is not
+available and becasue fail to build when we unbundle all X11 sources, files like
+xf86_ansic.h doesn't exist anymore.
+
+--- ./Config.kmk.orig	2016-10-12 02:27:19.650378571 +0100
++++ ./Config.kmk	2016-10-12 02:29:40.308912309 +0100
+@@ -2362,6 +2362,7 @@ ifdef VBOX_WITH_CROGL
+  endif
+ 
+  if1of ($(KBUILD_TARGET), freebsd linux solaris)
++ ifndef VBOX_USE_SYSTEM_XORG_HEADERS
+  # VBOX_PATH_MESA_SOURCE = $(PATH_ROOT)/src/libs/mesa-7.2
+   VBOX_PATH_MESA_SOURCE = $(VBOX_PATH_X11_ROOT)/mesa-7.2
+   VBOX_MESA_INCS = \
+@@ -2372,6 +2373,7 @@ ifdef VBOX_WITH_CROGL
+         $(VBOX_PATH_MESA_SOURCE)/src/mesa/main \
+         $(VBOX_PATH_MESA_SOURCE)/src/mesa/drivers/dri/common
+  endif
++ endif
+ 
+  VBOX_DARWIN_OPENGL_INST     = obj/VBoxOGL/GL/
+  VBOX_DARWIN_OPENGL_HEADERS  = gl.h glu.h
+--- ./src/VBox/Additions/common/crOpenGL/Makefile.kmk.orig	2016-10-15 16:06:41.137161024 +0100
++++ ./src/VBox/Additions/common/crOpenGL/Makefile.kmk	2016-10-15 16:09:48.477540551 +0100
+@@ -67,6 +67,7 @@ endif
+ VBoxOGL_TEMPLATE       = VBOXCROGLR3GUESTDLL
+ VBoxOGL_INCS           = .
+ if1of ($(KBUILD_TARGET), linux solaris freebsd)
++ ifndef VBOX_USE_SYSTEM_XORG_HEADERS
+  VBoxOGL_INCS     += \
+ 	$(VBOX_PATH_X11_ROOT)/libXdamage-1.1 \
+ 	$(VBOX_PATH_X11_ROOT)/libXcomposite-0.4.0 \
+@@ -81,6 +82,7 @@ if1of ($(KBUILD_TARGET), linux solaris f
+ 	$(VBOX_MESA_INCS) \
+ 	$(PATH_ROOT)/src/VBox/Additions/x11/x11include/libdrm-2.4.13
+  VBoxOGL_DEFS     += VBOX_NO_NATIVEGL
++ endif
+ endif
+ 
+ ifdef VBoxOGL_DRI
+@@ -213,11 +215,15 @@ VBoxOGL_LIBS.win += \
+ 	$(PATH_STAGE_LIB)/additions/VBoxCrHgsmi$(VBOX_SUFF_LIB)
+ 
+ if1of ($(KBUILD_TARGET), linux solaris freebsd)
+- VBoxOGL_LIBS += \
++ ifdef VBOX_USE_SYSTEM_XORG_HEADERS
++   VBoxOGL_LIBS += Xcomposite Xdamage Xfixes Xext
++ else
++   VBoxOGL_LIBS += \
+  	$(PATH_STAGE_LIB)/libXcomposite.so \
+  	$(PATH_STAGE_LIB)/libXdamage.so \
+  	$(PATH_STAGE_LIB)/libXfixes.so \
+  	$(PATH_STAGE_LIB)/libXext.so
++endif
+  ifdef VBoxOGL_FAKEDRI
+   ifeq ($(KBUILD_TARGET), freebsd)
+     VBoxOGL_LIBS += \
+@@ -709,7 +715,9 @@ $(VBOX_PATH_CROGL_GENFILES)/feedbackspu_
+ 
+ VBoxEGL_TEMPLATE       = VBOXCROGLR3GUESTDLL
+ VBoxEGL_SOURCES        = egl.c
++ifndef VBOX_USE_SYSTEM_XORG_HEADERS
+ VBoxEGL_INCS           = $(VBOX_PATH_X11_ROOT)/mesa-11.0.7
++endif
+ VBoxEGL_LIBS           = $(VBOX_LIB_OGL) $(VBOX_LIB_IPRT_GUEST_R3_SHARED)
+ VBoxEGL_SONAME.linux   = libEGL.so.1
+ 
+--- ./src/VBox/Additions/common/VBoxGuestLib/Makefile.kmk.orig	2014-10-11 13:03:35.000000000 +0100
++++ ./src/VBox/Additions/common/VBoxGuestLib/Makefile.kmk	2014-10-12 00:11:00.925507543 +0100
+@@ -40,9 +40,11 @@ LIBRARIES += \
+ 	VBoxGuestR3LibShared
+ ifndef VBOX_ONLY_VALIDATIONKIT
+  if1of ($(KBUILD_TARGET), freebsd linux netbsd openbsd)
++ ifndef VBOX_USE_SYSTEM_XORG_HEADERS
+   LIBRARIES += \
+   	VBoxGuestR3LibXFree86
+  endif
++ endif
+  if1of ($(KBUILD_TARGET), freebsd linux netbsd openbsd solaris)
+   LIBRARIES += \
+   	VBoxGuestR3LibXOrg
+--- ./src/VBox/Additions/x11/vboxvideo/Makefile.kmk.orig	2016-10-11 02:49:23.184986182 +0100
++++ ./src/VBox/Additions/x11/vboxvideo/Makefile.kmk	2016-10-11 02:49:39.879176964 +0100
+@@ -384,7 +384,6 @@ ifdef VBOX_USE_SYSTEM_XORG_HEADERS
+  vboxvideo_drv_system_DEFS := $(filter-out _XORG_SERVER_H_ _DIX_CONFIG_H_, $(vboxvideo_15_DEFS))
+  vboxvideo_drv_system_INCS += \
+         $(PATH_ROOT)/src/VBox/Runtime/include \
+-        /usr/include/x11 \
+         /usr/include/xorg \
+         /usr/include/pixman-1
+  vboxvideo_drv_system_SOURCES := $(vboxvideo_drv_17_SOURCES)

@@ -1,0 +1,11 @@
+To set a custom image on bios logo:
+
+* Create the image
+* Convert the image to a 640x480 Windows 3 bmp with ImageMagick,
+  or gimp (bitmap 24 bit with no colospace information):
+
+convert imagefile -colorspace RGB -filter Lanczos -resize 640x480 -depth 24 BMP3:vboxlogo.bmp
+
+Try vboxlogo-bmp.sh imagefile
+
+Place vboxlogo.bmp on directory where this README resides.
