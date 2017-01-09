@@ -117,6 +117,7 @@ testing/
 /_sbtimes/
 /_snapshots/
 /_snapshots
+/_upstream/
 /RPMS/
 /SRPMS/
 /SOURCES/

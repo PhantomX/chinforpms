@@ -3,7 +3,7 @@
 %global use_git 0
 
 Name:           fluxbox-chinfo-menu
-Version:        4.1.1
+Version:        5.0.0
 Release:        1%{?dist}
 Summary:        Menu generator for Fluxbox based on XDG
 
@@ -51,12 +51,15 @@ rm -rf %{buildroot}
 
 %files -f %{name}.lang
 %license COPYING
-%doc README
+%doc ChangeLog README
 %{_bindir}/%{name}
 %{_bindir}/fluxbox-dm-helper
 %{_datadir}/%{name}
 
 
 %changelog
+* Sun Jan 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-1
+- New release.
+
 * Sat Jan  7 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.1.1-1
 - Initial spec.

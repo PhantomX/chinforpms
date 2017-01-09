@@ -11,10 +11,9 @@ Summary: The Linux kernel
 # Sign modules on x86.  Make sure the config files match this setting if more
 # architectures are added.
 %ifarch %{ix86} x86_64
-%global signkernel 0
-%global signmodules 0
+%global signkernel 1
+%global signmodules 1
 %global zipmodules 1
-%global dsdt 1
 %else
 %global signkernel 0
 %global signmodules 1
@@ -25,7 +24,7 @@ Summary: The Linux kernel
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 %endif
 
-%define buildid .ax78
+%define buildid .bfqk10
 
 # baserelease defines which build revision of this kernel version we're
 # building.  We used to call this fedora_build, but the magical name
@@ -55,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -90,7 +89,7 @@ Summary: The Linux kernel
 # kernel PAE (only valid for i686 (PAE) and ARM (lpae))
 %define with_pae       %{?_without_pae:       0} %{?!_without_pae:       1}
 # kernel-debug
-%define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
+%define with_debug     0
 # kernel-headers
 %define with_headers   %{?_without_headers:   0} %{?!_without_headers:   1}
 %define with_cross_headers   %{?_without_cross_headers:   0} %{?!_without_cross_headers:   1}
@@ -112,7 +111,7 @@ Summary: The Linux kernel
 # Only build the pae kernel (--with paeonly):
 %define with_paeonly   %{?_with_paeonly:      1} %{?!_with_paeonly:      0}
 # Only build the debug kernel (--with dbgonly):
-%define with_dbgonly   %{?_with_dbgonly:      1} %{?!_with_dbgonly:      0}
+%define with_dbgonly   0
 #
 # should we do C=1 builds with sparse
 %define with_sparse    %{?_with_sparse:       1} %{?!_with_sparse:       0}
@@ -651,12 +650,9 @@ Patch857: kvm-nVMX-allow-L1-to-intercept-software-exceptions.patch
 
 ### Extra
 
-Source4000: DSDT-ax78.hex
-Source4001: DSDT-ax78.dsl
-
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20160728)
-Source4010: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v3.15+.patch
+Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v3.15+.patch
 
 ### openSUSE patches.suse
 # Patches to export btrfs anonymous devices (VFS portion)
@@ -677,7 +673,6 @@ Patch1033: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.8.0-v8r4/0
 Source3000: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.8.0-v8r4/COPYING.BFQ
 Source3001: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.8.0-v8r4/README.BFQ
 Patch1034: Replace-max-wrongly-user-for-modulo-numbers.patch
-Patch1035: make-bfq-the-default-io-scheduler.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1280,7 +1275,7 @@ git am %{SOURCE5005}
 
 git am %{patches}
 
-patch -p1 -F1 -i %{SOURCE4010}
+patch -p1 -F1 -i %{SOURCE4000}
 
 # END OF PATCH APPLICATIONS
 
@@ -1402,10 +1397,6 @@ BuildKernel() {
 
     %if %{signkernel}%{signmodules}
     cp %{SOURCE11} certs/.
-    %endif
-
-    %if %{dsdt}
-    cat %{SOURCE4000} > include/DSDT.hex
     %endif
 
     Arch=`head -1 .config | cut -b 3-`
@@ -2221,8 +2212,12 @@ fi
 #
 #
 %changelog
-* Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 4.8.15-301.ax78
-- BFQ patches.
+* Sun Jan 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.8.16-301
+- BFQ patches
+- Assorted fixes from openSUSE
+
+* Fri Jan 06 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.16-300
+- Linux v4.8.16
 
 * Thu Dec 15 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.15-300
 - Linux v4.8.15

@@ -10,9 +10,11 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
+%global compholiover 2.0-rc4
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
+%global ninever 2.0-rc2
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -25,14 +27,14 @@
 
 Name:           wine
 Version:        2.0
-Release:        0.4.rc3.nine%{?dist}
+Release:        0.5.rc4.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
 License:        LGPLv2+
 URL:            http://www.winehq.org/
-Source0:        http://downloads.sourceforge.net/wine/wine-%{version}-rc3.tar.bz2
-Source10:       http://downloads.sourceforge.net/wine/wine-%{version}-rc3.tar.bz2.sign
+Source0:        http://downloads.sourceforge.net/wine/wine-%{version}-rc4.tar.bz2
+Source10:       http://downloads.sourceforge.net/wine/wine-%{version}-rc4.tar.bz2.sign
 
 Source1:        wine.init
 Source2:        wine.systemd
@@ -89,10 +91,10 @@ Patch602:       keybindings.patch
 
 # wine compholio patches for wine-staging
 # pulseaudio-patch is covered by that patch-set, too.
-Source900: https://github.com/compholio/wine-compholio/archive/v%{version}-rc3.tar.gz#/wine-staging-%{version}-rc3.tar.gz
+Source900: https://github.com/compholio/wine-compholio/archive/v%{compholiover}.tar.gz#/wine-staging-%{compholiover}.tar.gz
 
 # wine-d3d9
-Source910: https://github.com/sarnex/wine-d3d9-patches/archive/wine-d3d9-%{version}-rc2.tar.gz
+Source910: https://github.com/sarnex/wine-d3d9-patches/archive/wine-d3d9-%{ninever}.tar.gz
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
@@ -696,7 +698,7 @@ This package adds the opencl driver for wine.
 %endif
 
 %prep
-%setup -q -n wine-%{version}-rc3
+%setup -q -n wine-%{version}-rc4
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -2226,6 +2228,9 @@ fi
 %endif
 
 %changelog
+* Mon Jan 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.5.rc4.chinfo
+- 2.0-rc4
+
 * Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.4.rc3.nine
 - rebuilt
 
