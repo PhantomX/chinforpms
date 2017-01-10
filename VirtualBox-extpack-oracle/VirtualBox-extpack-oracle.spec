@@ -1,5 +1,8 @@
+%global _enable_debug_package 0
+%global debug_package %{nil}
+%global __os_install_post /usr/lib/rpm/brp-compress %{nil}
+
 %global pkgname Oracle_VM_VirtualBox_Extension_Pack
-%define debug_package %{nil}
 
 Name:           VirtualBox-extpack-oracle
 Version:        5.1.12

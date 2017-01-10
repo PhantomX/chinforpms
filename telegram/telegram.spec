@@ -1,4 +1,6 @@
-%define debug_package %{nil}
+%global _enable_debug_package 0
+%global debug_package %{nil}
+%global __os_install_post /usr/lib/rpm/brp-compress %{nil}
 
 %global binname Telegram
 %global gitlink https://github.com/telegramdesktop/tdesktop/raw/master

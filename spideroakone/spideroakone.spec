@@ -1,10 +1,12 @@
+%global _enable_debug_package 0
+%global debug_package %{nil}
+%global __os_install_post /usr/lib/rpm/brp-compress %{nil}
+
 %global pkgname SpiderOak
 %global pkgname1 SpiderOakONE
 %global pkgrel 1
 
 %global progdir %{_libdir}/%{pkgname1}
-
-%define debug_package %{nil}
 
 %ifarch x86_64
 %global parch x86_64

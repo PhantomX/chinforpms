@@ -1,0 +1,7 @@
+--- a/data/dropbox.desktop	2010-04-09 00:21:32.000000000 +0100
++++ b/data/dropbox.desktop	2015-05-31 13:35:10.060606793 +0100
+@@ -8,3 +8,4 @@ Type=Application
+ Icon=dropbox
+ Categories=Network;FileTransfer;
+ StartupNotify=false
++X-GNOME-Autostart-Delay=10

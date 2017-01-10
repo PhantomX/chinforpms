@@ -898,7 +898,7 @@ install -p -m 644 programs/taskmgr/taskmgr.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/taskmgr.svg
 sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/taskmgr.svg
 
-for file in %{buildroot}%{_datadir}/icons/hicolor/scalable/*.svg ;do
+for file in %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/*.svg ;do
   basefile=$(basename ${file} .svg)
   for res in 16 22 24 32 36 48 64 72 96 128 192 256 512 ;do
     dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
@@ -2152,6 +2152,7 @@ fi
 %{_datadir}/desktop-directories/Wine.directory
 %config %{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 %if 0%{?fedora} >= 10
+%{_datadir}/icons/hicolor/*/apps/*png
 %{_datadir}/icons/hicolor/scalable/apps/*svg
 %endif
 
