@@ -6,7 +6,8 @@
 
 Name:           steam
 Version:        1.0.0.54
-Release:        3%{?dist}
+Epoch:          1
+Release:        4.chinfo%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement
@@ -188,6 +189,12 @@ fi
 %{_udevrulesdir}/*
 
 %changelog
+* Wed Jan 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-4
+- Sync with rpmfusion.
+- Sun Jan 08 2017 Simone Caronni <negativo17@gmail.com> - 1.0.0.54-3
+- Microsoft keyboards have been fixed in kernel 4.9 and backported to other
+  kernels.
+
 * Wed Jan 04 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.0.54-3
 - Patches updates.
 - Disable desktop files installation on desktop.

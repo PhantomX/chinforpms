@@ -10,7 +10,7 @@
 %endif
 
 Name:           telegram
-Version:        0.10.20
+Version:        1.0.0
 Release:        1%{?dist}
 Summary:        A messenger application
 
@@ -96,5 +96,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/*/apps/*.png
 
 %changelog
+* Thu Jan 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.0-1
+- new version
+
+* Thu Jan 12 2017 Phantom X <megaphantomx at bol dot com dot br>
+- new version
+
 * Mon Jan  9 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.10.20-1
 - Initial spec.

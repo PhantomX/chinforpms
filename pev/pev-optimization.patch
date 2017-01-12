@@ -1,0 +1,11 @@
+--- pev/src/Makefile.orig	2017-01-07 20:34:07.000000000 -0200
++++ pev/src/Makefile	2017-01-10 20:23:54.341403920 -0200
+@@ -80,6 +80,8 @@ pev_SRCS_FILTER = $(wildcard ${dir}/*.c)
+ pev_SRCS = $(foreach dir, ${SRC_DIRS}, ${pev_SRCS_FILTER})
+ pev_OBJS = $(addprefix ${pev_BUILDDIR}/, $(addsuffix .o, $(basename ${pev_SRCS})))
+ 
++$(pev_BUILDDIR)/./output.o: CFLAGS += -O0
++
+ pev_COMMON_DEPS = \
+ 	$(pev_BUILDDIR)/compat/strlcat.o \
+ 	$(pev_BUILDDIR)/config.o \
