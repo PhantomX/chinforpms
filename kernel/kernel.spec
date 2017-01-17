@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -512,7 +512,6 @@ Patch426: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
 # Fix OMAP4 (pandaboard)
 Patch427: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
-Patch428: ARM-OMAP4-Fix-crashes.patch
 
 # Not particularly happy we don't yet have a proper upstream resolution this is the right direction
 # https://www.spinics.net/lists/arm-kernel/msg535191.html
@@ -631,6 +630,9 @@ Patch850: 0001-efi-prune-invalid-memory-map-entries.patch
 
 # Request from dwalsh
 Patch851: selinux-namespace-fix.patch
+
+#rhbz 1390308
+Patch852: nouveau-add-maxwell-to-backlight-init.patch
 
 ### Extra
 
@@ -2197,6 +2199,12 @@ fi
 #
 #
 %changelog
+* Sun Jan 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.4-201.chinfo
+- Linux v4.9.4
+
+* Thu Jan 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.3-201.chinfo
+- Linux v4.9.3
+
 * Thu Jan 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.2-201.chinfo
 - BFQ patches
 - Assorted fixes from openSUSE
