@@ -7,10 +7,8 @@ Subject: [PATCH] Disable the aio bug detection
  src/VBox/Main/src-client/ConsoleImpl2.cpp |    3 +++
  1 files changed, 3 insertions(+), 0 deletions(-)
 
-diff --git a/src/VBox/Main/src-client/ConsoleImpl2.cpp b/src/VBox/Main/src-client/ConsoleImpl2.cpp
-index cfa0bd4..ef4aca4 100644
---- a/src/VBox/Main/src-client/ConsoleImpl2.cpp
-+++ b/src/VBox/Main/src-client/ConsoleImpl2.cpp
+--- ./src/VBox/Main/src-client/ConsoleImpl2.cpp.orig	2016-12-20 15:36:24.000000000 +0000
++++ ./src/VBox/Main/src-client/ConsoleImpl2.cpp	2016-12-21 03:04:13.283475098 +0000
 @@ -4095,6 +4095,8 @@ int Console::i_configMediumAttachment(co
                      mfSnapshotFolderSizeWarningShown = true;
                  }
@@ -28,6 +26,3 @@ index cfa0bd4..ef4aca4 100644
              }
          }
  
--- 
-1.7.3.4
-

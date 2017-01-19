@@ -23,7 +23,7 @@
 %bcond_with vnc
 
 Name:       VirtualBox
-Version:    5.1.12
+Version:    5.1.14
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    1.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -163,6 +163,8 @@ Summary:    core part (host server) for %{name}
 Group:      Development/Tools
 Requires:   %{name}-kmod = %{version}
 Provides:   %{name}-kmod-common = %{version}-%{release}
+Conflicts:  %{name}-guest <= %{version}-%{release}
+Conflicts:  %{name}-guest-additions <= %{version}-%{release}
 
 %description server
 %{name} without Qt GUI part.
@@ -211,6 +213,7 @@ Requires:   %(xserver-sdk-abi-requires ansic)
 Requires:   %(xserver-sdk-abi-requires videodrv)
 Requires:   %(xserver-sdk-abi-requires xinput)
 %endif
+Conflicts:  %{name} <= %{version}-%{release}
 
 
 %description guest-additions
@@ -640,13 +643,6 @@ fi
 /usr/bin/update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
 
 %pre guest-additions
-if [ $(systemd-detect-virt | grep -iP "oracle|kvm" -c) -eq 0 ]; then
-echo "This package it is only to install in one Oracle VM VirtualBox."
-echo "You are trying install VirtualBox guest-additions but it hasn't been \
-detected that your system is running in a VirtualBox virtualization, so we \
-forced the installation to fail."
-exit 1
-fi
 # This is the LSB version of useradd and should work on recent
 # distributions
 getent passwd vboxadd >/dev/null || useradd -d /var/run/vboxadd -g 1 -r -s /bin/false vboxadd 2>&1
@@ -804,8 +800,12 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Wed Jan 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.14-1
+- 5.1.14
+- Sync with RPMfusion
+
 * Sat Jan 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.12-1
-- 5.1.12.
+- 5.1.12
 
 * Mon Nov 28 2016 Sérgio Basto <sergio@serjux.com> - 5.1.10-2
 - Use systemd-detect-virt to detect if we can install

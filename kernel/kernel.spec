@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -633,6 +633,12 @@ Patch851: selinux-namespace-fix.patch
 
 #rhbz 1390308
 Patch852: nouveau-add-maxwell-to-backlight-init.patch
+
+# Possible ATI fixes?
+Patch853: drm-amdgpu-drop-verde-dpm-quirks.patch
+Patch854: drm-amdgpu-update-si-kicker-smc-firmware.patch
+Patch855: drm-radeon-drop-verde-dpm-quirks.patch
+Patch856: drm-radeon-update-smc-firmware-selection-for-si.patch
 
 ### Extra
 
@@ -1741,6 +1747,9 @@ popd
 pushd tools/iio/
 %{make}
 popd
+pushd tools/gpio/
+%{make}
+popd
 %endif
 
 # In the modsign case, we do 3 things.  1) We check the "flavour" and hard
@@ -1910,6 +1919,9 @@ make INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/iio
 make INSTALL_ROOT=%{buildroot} install
+popd
+pushd tools/gpio
+make DESTDIR=%{buildroot} install
 popd
 %endif
 
@@ -2105,6 +2117,9 @@ fi
 %{_bindir}/iio_event_monitor
 %{_bindir}/iio_generic_buffer
 %{_bindir}/lsiio
+%{_bindir}/lsgpio
+%{_bindir}/gpio-hammer
+%{_bindir}/gpio-event-mon
 %endif
 
 %if %{with_debuginfo}
@@ -2199,6 +2214,13 @@ fi
 #
 #
 %changelog
+* Tue Jan 17 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.4-202.chinfo
+- Sync with Fedora default:
+- Minor updates for Raspberry Pi 3 support
+- Re-enable /sys/class/gpio/
+- Build gpio tools
+- Add possible ATI fixes
+
 * Sun Jan 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.4-201.chinfo
 - Linux v4.9.4
 
