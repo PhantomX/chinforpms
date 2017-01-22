@@ -1,4 +1,4 @@
-%global gitcommitid ece0715947de3e11c5a726131dcd91900e986f98
+%global gitcommitid e5e8c89a313637778ac730533c2d6b9c9254da75
 %global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
 %global use_git 1
 
@@ -8,15 +8,15 @@
 
 Name:           bitlbee-facebook
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Facebook MQPP protocol module for bitlbee
 
 License:        GPLv2
-URL:            https://github.com/jgeboski/bitlbee-facebook
+URL:            https://github.com/bitlbee/bitlbee-facebook
 %if 0%{?use_git}
 Source0:        https://github.com/bitlbee/%{name}/archive/%{gitcommitid}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/jgeboski/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/bitlbee/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  bitlbee-devel
@@ -57,6 +57,9 @@ find %{buildroot} -type f -name '*.la' -print -delete
 %{_libdir}/bitlbee/facebook.so
 
 %changelog
+* Sat Jan 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.0-3.gite5e8c89
+- New snapshot
+
 * Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.0.0-2
 - rebuilt
 

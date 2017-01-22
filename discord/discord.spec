@@ -1,6 +1,5 @@
-%global _enable_debug_package 0
 %global debug_package %{nil}
-%global __os_install_post /usr/lib/rpm/brp-compress %{nil}
+%global __strip /bin/true
 
 %global use_canary 1
 

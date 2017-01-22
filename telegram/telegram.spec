@@ -1,6 +1,5 @@
-%global _enable_debug_package 0
 %global debug_package %{nil}
-%global __os_install_post /usr/lib/rpm/brp-compress %{nil}
+%global __strip /bin/true
 
 %global binname Telegram
 %global gitlink https://github.com/telegramdesktop/tdesktop/raw/master
@@ -10,7 +9,7 @@
 %endif
 
 Name:           telegram
-Version:        1.0.0
+Version:        1.0.2
 Release:        1%{?dist}
 Summary:        A messenger application
 
@@ -96,6 +95,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/*/apps/*.png
 
 %changelog
+* Thu Jan 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.2-1
+- new version
+
 * Thu Jan 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.0-1
 - new version
 
