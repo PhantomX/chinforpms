@@ -1,7 +1,7 @@
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
 
-%define rcrev 5
+%define rcrev 6
 %global no64bit   0
 %global winegecko 2.47
 %global winemono  4.6.4
@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.0-rc5
+%global compholiover 2.0-rc6
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
@@ -33,7 +33,7 @@
 
 Name:           wine
 Version:        2.0
-Release:        0.6%{?rctag}.chinfo%{?dist}
+Release:        0.7%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -98,10 +98,6 @@ Patch602:       keybindings.patch
 # wine compholio patches for wine-staging
 # pulseaudio-patch is covered by that patch-set, too.
 Source900: https://github.com/compholio/wine-compholio/archive/v%{compholiover}.tar.gz#/wine-staging-%{compholiover}.tar.gz
-
-Patch900:       https://github.com/wine-compholio/wine-staging/commit/bb54734bd33f656904b5a62a829e0e0f3d7521e3.patch
-Patch901:       https://github.com/wine-compholio/wine-staging/commit/e7457980704450fddc85604e8c2cf5041f6a37b8.patch
-
 
 # wine-d3d9
 Source910: https://github.com/sarnex/wine-d3d9-patches/archive/wine-d3d9-%{ninever}.tar.gz
@@ -722,9 +718,6 @@ gzip -dc %{SOURCE910} | tar -xf - --strip-components=1 -C nine
 # setup and apply wine-staging patches
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %if 0%{?compholio}
-
-%patch900 -p1
-%patch901 -p1
 
 make -C patches DESTDIR="`pwd`" install
 
@@ -2242,6 +2235,9 @@ fi
 %endif
 
 %changelog
+* Mon Jan 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.7.rc7.chinfo
+- 2.0-rc6
+
 * Mon Jan 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.6.rc5.chinfo
 - 2.0-rc5
 
