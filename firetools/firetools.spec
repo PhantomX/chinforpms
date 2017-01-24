@@ -32,7 +32,11 @@ sed \
 %install
 rm -rf %{buildroot}
 %make_install \
+<<<<<<< HEAD
   STRIP=/bin/true
+=======
+  STRIP=/bin/true DOCDIR=/dev/null
+>>>>>>> 9b6ea099155fd2da0b07a2a287d1c1f5e923a530
 
 rm -rf %{buildroot}/usr/share/doc
 
