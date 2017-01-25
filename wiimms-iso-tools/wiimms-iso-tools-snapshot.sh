@@ -19,6 +19,10 @@ pwd=$(pwd)
 snap=${snap:-$(date +%Y%m%d)}
 
 [ "${snap}" = "$(date +%Y%m%d)" ] || SNAP_COOPTS="-r {$snap}"
+if [ -n "${rev}" ] ; then
+  SNAP_COOPTS="-r ${rev}"
+  snap="${rev}"
+fi
 
 pushd "${tmp}"
   svn export ${SNAP_COOPTS} ${snaproot} ${module}-${snap}

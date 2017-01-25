@@ -1,6 +1,6 @@
 Name:           m64py
 Version:        0.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A frontend for Mupen64Plus 2.0
 
 License:        GPLv3
@@ -26,6 +26,11 @@ plugin-based Nintendo 64 emulator.
 %prep
 %autosetup -p0
 
+sed -e 's,^#!/usr/bin/env python,#!%{__python3},' -i %{name}
+
+find -name '*.py' -print0 | xargs -0 \
+  sed -i -e 's,^#!/usr/bin/env python,#!%{__python3},'
+
 %build
 %{__python3} setup.py build
 
@@ -37,6 +42,8 @@ install -pm0755 %{name} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
 cp -a src/m64py/* %{buildroot}%{_datadir}/%{name}/
+
+find %{buildroot}%{_datadir}/%{name}/ -name '*.py' -print0 | xargs -0 chmod 0755
 
 find %{buildroot} -name '*.orig' -delete
 
@@ -76,9 +83,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %doc AUTHORS README.md
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/%{name}
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/*
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 
 %changelog
+* Tue Jan 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.2.3-2
+- Fixed shebangs
+
 * Thu Jan  5 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.2.3-1
 - Initial spec.

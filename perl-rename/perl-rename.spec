@@ -58,5 +58,5 @@ ln -s p%{pkgname}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 
 
 %changelog
-* Fri Dec 30 2016 Phantom X <megaphantomx at bol dot com dot br>
+* Fri Dec 30 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.9-1
 - Initial spec

@@ -67,7 +67,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files
 %license COPYING
-%doc AUTHORS ChangeLog README NEWS TODO
+%doc AUTHORS ChangeLog README
 %{_bindir}/%{name}
 %{_bindir}/%{name}ui
 %{_datadir}/applications/%{name}.desktop

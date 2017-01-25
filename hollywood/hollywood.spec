@@ -3,7 +3,7 @@ Version:        1.11
 Release:        1%{?dist}
 Summary:        Fill your console with Hollywood melodrama technobabble
 
-License:        Apache-2
+License:        ASL 2.0
 URL:            http://launchpad.net/%{name}
 Source0:        https://launchpad.net/%{name}/trunk/%{version}/+download/%{name}_%{version}.orig.tar.gz
 Source1:        copyright
@@ -79,5 +79,5 @@ rm -rf %{buildroot}
 %{_mandir}/man1/%{name}.1*
 
 %changelog
-* Sat Dec  3 2016 Phantom X <megaphantomx at bol com br>
+* Sat Dec  3 2016 Phantom X <megaphantomx at bol com br> - 1.11-1
 - First spec.

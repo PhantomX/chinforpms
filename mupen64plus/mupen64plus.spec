@@ -2,10 +2,10 @@
 
 Name:           mupen64plus
 Version:        2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Nintendo 64 Emulator
 
-License:        GPLv2, LGPLv2
+License:        GPLv2 and LGPLv2
 URL:            http://www.mupen64plus.org/
 Source0:        https://github.com/%{name}/%{name}-core/releases/download/%{version}/%{name}-bundle-src-%{version}.tar.gz
 
@@ -89,6 +89,8 @@ export SHAREDIR=%{_datadir}/%{name}
 export MANDIR=%{_mandir}
 ./m64p_install.sh INSTALL="install -p" INSTALL_STRIP_FLAG= DESTDIR="%{buildroot}"
 
+chmod +x %{buildroot}%{_libdir}/%{name}/%{name}-*.so
+
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 %post
@@ -123,5 +125,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Tue Jan 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.5-2
+- rebuilt
+
 * Thu Jan  5 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.5-1
 - Initial spec.

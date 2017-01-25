@@ -9,7 +9,7 @@
 Name:           disk-indicator
 Version:        0.2.1
 Release:        1%{?gver}%{?dist}
-Summary:        Turns keyboard LEDs into hard disk indicator.
+Summary:        Turns keyboard LEDs into hard disk indicator
 
 License:        GPLv3
 URL:            https://github.com/MeanEYE/Disk-Indicator/
@@ -67,5 +67,5 @@ chmod 0755 %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d/%{name}.sh
 %{_sysconfdir}/X11/xinit/xinitrc.d/%{name}.sh
 
 %changelog
-* Tue Dec 27 2016 Phantom X <megaphantomx at bol dot com dot br> - 0.2.1.git7620d56
+* Tue Dec 27 2016 Phantom X <megaphantomx at bol dot com dot br> - 0.2.1-1.git7620d56
 - Initial spec.

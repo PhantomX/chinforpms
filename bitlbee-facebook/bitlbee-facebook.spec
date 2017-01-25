@@ -53,7 +53,7 @@ find %{buildroot} -type f -name '*.la' -print -delete
 
 %files
 %license COPYING
-%doc AUTHORS NEWS README
+%doc AUTHORS README
 %{_libdir}/bitlbee/facebook.so
 
 %changelog
