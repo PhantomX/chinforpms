@@ -1,38 +1,39 @@
-%global gitcommitid ad04f97acbdab0aa06156cc0fa53b0bf92425222
-%global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
-%global use_git 1
+%global commit ad04f97acbdab0aa06156cc0fa53b0bf92425222
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20161227
+%global use_snapshot 1
 
 # Enable system ffmpeg
 %global sysffmpeg 0
 
-%if 0%{?use_git}
-%global gitcommitid1 5f474b1fb9c0798958086e3d5a370288fc0ee751
-%global shortcommit1 %(c=%{gitcommitid1}; echo ${c:0:7})
+%if 0%{?use_snapshot}
+%global commit1 5f474b1fb9c0798958086e3d5a370288fc0ee751
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
-%global gitcommitid2 2f6023d14a09e6fc1babbb8b31231249719e9240
-%global shortcommit2 %(c=%{gitcommitid2}; echo ${c:0:7})
+%global commit2 2f6023d14a09e6fc1babbb8b31231249719e9240
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
-%global gitcommitid3 36bacb4cba27003c572e5bf7a9c4dfe3c9a8d40d
-%global shortcommit3 %(c=%{gitcommitid3}; echo ${c:0:7})
+%global commit3 36bacb4cba27003c572e5bf7a9c4dfe3c9a8d40d
+%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global gitcommitid4 309a15145a1f04306dcdd2214ef9b333b3fde755
-%global shortcommit4 %(c=%{gitcommitid4}; echo ${c:0:7})
+%global commit4 309a15145a1f04306dcdd2214ef9b333b3fde755
+%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
-%global gitcommitid5 b7f5a22753c81d834ab5133d655f1fd525280765
-%global shortcommit5 %(c=%{gitcommitid5}; echo ${c:0:7})
+%global commit5 b7f5a22753c81d834ab5133d655f1fd525280765
+%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 tinyformat
 
-%global gitcommitid6 224b1f733b9c5fad21500c16b025da024759fe40
-%global shortcommit6 %(c=%{gitcommitid6}; echo ${c:0:7})
+%global commit6 224b1f733b9c5fad21500c16b025da024759fe40
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 %endif
 
-%if 0%{?use_git}
-%global gver .git%{shortcommit}
+%if 0%{?use_snapshot}
+%global gver .%{date}git%{shortcommit}
 %endif
 
 %global pngver %(pkg-config --variable=includedir libpng |sed 's|/usr/include/lib||g')
@@ -46,19 +47,19 @@ Summary:        A PSP emulator
 
 License:        PSPSDK
 URL:            http://www.ppsspp.org/
-%if 0%{?use_git}
-Source0:        https://github.com/hrydgard/%{name}/archive/%{gitcommitid}.tar.gz#/%{name}-%{shortcommit}.tar.gz
-Source1:        https://github.com/hrydgard/%{srcname1}/archive/%{gitcommitid1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
+%if 0%{?use_snapshot}
+Source0:        https://github.com/hrydgard/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source1:        https://github.com/hrydgard/%{srcname1}/archive/%{commit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
 %if !0%{?sysffmpeg}
-Source2:        https://github.com/hrydgard/%{srcname2}/archive/%{gitcommitid2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{gitcommitid3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
+Source2:        https://github.com/hrydgard/%{srcname2}/archive/%{commit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
 %endif #{?sysffmpeg}
-Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{gitcommitid4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
-Source5:        https://github.com/Kingcom/%{srcname5}/archive/%{gitcommitid5}.tar.gz#/%{srcname5}-%{shortcommit5}.tar.gz
-Source6:        https://github.com/hrydgard/glslang/archive/%{gitcommitid6}.tar.gz#/%{srcname6}-%{shortcommit6}.tar.gz
+Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
+Source5:        https://github.com/Kingcom/%{srcname5}/archive/%{commit5}.tar.gz#/%{srcname5}-%{shortcommit5}.tar.gz
+Source6:        https://github.com/hrydgard/glslang/archive/%{commit6}.tar.gz#/%{srcname6}-%{shortcommit6}.tar.gz
 %else
 Source0:        https://github.com/hrydgard/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-%endif #{?use_git}
+%endif #{?use_snapshot}
 
 Patch0:         %{name}-noupdate.patch
 
@@ -85,8 +86,8 @@ Requires(post): desktop-file-utils
 %{summary}.
 
 %prep
-%if 0%{?use_git}
-%autosetup -n %{name}-%{gitcommitid} -p0
+%if 0%{?use_snapshot}
+%autosetup -n %{name}-%{commit} -p0
 tar -xf %{SOURCE1} -C assets/lang --strip-components 1
 %if !0%{?sysffmpeg}
 tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
@@ -99,7 +100,7 @@ tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 %autosetup -n %{name}-%{version} -p0
 %endif
 
-%if 0%{?use_git}
+%if 0%{?use_snapshot}
 sed -i \
   -e "/GIT_VERSION/s|unknown|%{shortcommit}|g" \
   -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --always|echo \"%{shortcommit}\"|g" \
@@ -187,7 +188,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/%{name}
 
 %changelog
-* Thu Dec 29 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.3-2.gitad04f97
+* Thu Dec 29 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.3-2.20161227gitad04f97
 - Option to build with ugly bundled binary ffmpeg.
 - https://github.com/hrydgard/ppsspp/issues/9026
 - System png.

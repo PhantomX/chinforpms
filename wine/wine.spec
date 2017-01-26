@@ -1,7 +1,7 @@
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
 
-%define rcrev 6
+%global rcrev 0
 %global no64bit   0
 %global winegecko 2.47
 %global winemono  4.6.4
@@ -11,11 +11,11 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.0-rc6
+%global compholiover 2.0
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.0-rc5
+%global ninever 2.0
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -33,7 +33,7 @@
 
 Name:           wine
 Version:        2.0
-Release:        0.7%{?rctag}.chinfo%{?dist}
+Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -2235,6 +2235,9 @@ fi
 %endif
 
 %changelog
+* Wed Jan 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0-100.chinfo
+- 2.0 final
+
 * Mon Jan 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.7.rc7.chinfo
 - 2.0-rc6
 

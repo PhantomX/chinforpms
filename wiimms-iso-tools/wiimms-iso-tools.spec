@@ -1,8 +1,9 @@
 %global revision 7340
+%global date 20170105
 
 Name:           wiimms-iso-tools
 Version:        2.40a
-Release:        1.svn%{revision}%{?dist}
+Release:        1.%{date}svn%{revision}%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
 License:        GPLv2
@@ -70,7 +71,7 @@ install -pm0755 load-titles.sh %{buildroot}%{_datadir}/wit/
 
 
 %changelog
-* Tue Jan 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.40a-1.svn7340
+* Tue Jan 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.40a-1.20170105svn7340
 - Update to last snapshot
 - New version notation
 - Remove execstacks
