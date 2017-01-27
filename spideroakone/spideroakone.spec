@@ -23,7 +23,7 @@
 
 Name:           spideroakone
 Version:        6.1.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -35,32 +35,38 @@ ExclusiveArch:  i386 x86_64
 
 BuildRequires:  binutils patchelf perl python2-rpm-macros ImageMagick
 %if 0%{?curl}
-BuildRequires:  curl python-pycurl
-Requires:       curl python-pycurl
+BuildRequires:  libcurl%{?_isa}
+BuildRequires:  python-pycurl%{?_isa}
+Requires:       libcurl%{?_isa}
+Requires:       python-pycurl%{?_isa}
 %endif
 %if 0%{?dbusmenuqt}
-BuildRequires:  dbusmenu-qt
+BuildRequires:  dbusmenu-qt%{?_isa}
 %endif
 %if 0%{?python}
-BuildRequires:  python2
-Requires:       python2
+BuildRequires:  python2%{?_isa}
+Requires:       python2%{?_isa}
 %endif
 %if 0%{?pillow}
-BuildRequires:  python2-pillow
-Requires:       python2-pillow
+BuildRequires:  python2-pillow%{?_isa}
+Requires:       python2-pillow%{?_isa}
 %endif
 %if 0%{?pyopenssl}
 BuildRequires:  pyOpenSSL
 Requires:       pyOpenSSL
 %endif
 %if 0%{?pyqt}
-BuildRequires:  qt PyQt4 sip
-Requires:       qt PyQt4 sip
+BuildRequires:  qt%{?_isa}
+BuildRequires:  PyQt4%{?_isa}
+BuildRequires:  sip%{?_isa}
+Requires:       qt%{?_isa}
+Requires:       PyQt4%{?_isa}
+Requires:       sip%{?_isa}
 %endif
 
-Requires:       sqlite
+Requires:       sqlite-libs%{?_isa}
 
-Conflicts:       SpiderOak
+Conflicts:       SpiderOak < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       SpiderOak
 
 %description
@@ -241,5 +247,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/pixmaps/*.png
 
 %changelog
-* Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br>
-- Initial spec.
+* Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.1.5-2
+- Added %%{_isa} do requires
+
+* Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 3:6.1.5-1
+- Initial spec

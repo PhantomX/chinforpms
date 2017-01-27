@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -513,6 +513,8 @@ Patch426: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # Fix OMAP4 (pandaboard)
 Patch427: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
+Patch428: arm64-dma-mapping-Fix-dma_mapping_error-when-bypassing-SWIOTLB.patch
+
 # Not particularly happy we don't yet have a proper upstream resolution this is the right direction
 # https://www.spinics.net/lists/arm-kernel/msg535191.html
 Patch429: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
@@ -522,10 +524,10 @@ Patch430: ARM-tegra-usb-no-reset.patch
 
 Patch431: bcm2837-initial-support.patch
 
-Patch433: bcm283x-fixes.patch
+Patch432: bcm283x-fixes.patch
 
 # http://www.spinics.net/lists/linux-mmc/msg41151.html
-Patch434: bcm283x-mmc-imp-speed.patch
+Patch433: bcm283x-mmc-imp-speed.patch
 
 Patch440: AllWinner-net-emac.patch
 
@@ -628,6 +630,12 @@ Patch851: selinux-namespace-fix.patch
 
 #rhbz 1390308
 Patch852: nouveau-add-maxwell-to-backlight-init.patch
+
+#CVE-2017-5576 CVE-2017-5577 rhbz 1416436 1416437 1416439
+Patch853: drm_vc4_Fix_an_integer_overflow_in_temporary_allocation_layout.patch
+
+#The saddest EFI firmware bug
+Patch854: 0001-x86-efi-always-map-first-physical-page-into-EFI-page.patch
 
 ### Extra
 
@@ -2203,6 +2211,10 @@ fi
 #
 #
 %changelog
+* Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.6-500.chinfo
+- Linux v4.9.6
+- f25 sync
+
 * Fri Jan 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.5-500.chinfo
 - Linux v4.9.5
 - Insanely high build number to escape from Fedora packages. ;)

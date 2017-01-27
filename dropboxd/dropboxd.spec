@@ -17,7 +17,7 @@
 %global python 0
 
 Name:           dropboxd
-Version:        17.4.33
+Version:        18.4.32
 Release:        1%{?dist}
 Summary:        Dropbox proprietary client
 
@@ -30,38 +30,38 @@ ExclusiveArch:  i386 x86_64
 AutoReqProv:    no
 
 %if 0%{?bzip2}
-BuildRequires:  bzip2
-Requires:       bzip2
+BuildRequires:  bzip2-libs%{?_isa}
+Requires:       bzip2-libs%{?_isa}
 %endif
 BuildRequires:  gawk
 %if 0%{?popt}
-BuildRequires:  popt
-Requires:       popt
+BuildRequires:  popt%{?_isa}
+Requires:       popt%{?_isa}
 %endif
 BuildRequires:  perl
 %if 0%{?python}
-BuildRequires:  python2
-Requires:       python2
+BuildRequires:  python2%{?_isa}
+Requires:       python2%{?_isa}
 %endif
-Requires:       dbus-libs
-Requires:       freetype
-Requires:       fontconfig
-Requires:       glib2
-Requires:       libffi
-Requires:       libstdc++
-Requires:       libxcb
-Requires:       libxml2
-Requires:       libxslt
-Requires:       libICE
-Requires:       libSM
-Requires:       libX11
-Requires:       libXcomposite
-Requires:       libXext
-Requires:       libXrender
-Requires:       mesa-libGL
-Requires:       ncurses-compat-libs
-Requires:       wmctrl
-Requires:       zlib
+Requires:       dbus-libs%{?_isa}
+Requires:       freetype%{?_isa}
+Requires:       fontconfig%{?_isa}
+Requires:       glib2%{?_isa}
+Requires:       libffi%{?_isa}
+Requires:       libstdc++%{?_isa}
+Requires:       libxcb%{?_isa}
+Requires:       libxml2%{?_isa}
+Requires:       libxslt%{?_isa}
+Requires:       libICE%{?_isa}
+Requires:       libSM%{?_isa}
+Requires:       libX11%{?_isa}
+Requires:       libXcomposite%{?_isa}
+Requires:       libXext%{?_isa}
+Requires:       libXrender%{?_isa}
+Requires:       mesa-libGL%{?_isa}
+Requires:       ncurses-compat-libs%{?_isa}
+Requires:       wmctrl%{?_isa}
+Requires:       zlib%{?_isa}
 
 %description
 Dropbox backup, storage, access, sharing tool proprietary client.
@@ -176,5 +176,9 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 
 
 %changelog
+* Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 18.4.32-1
+- 18.4.32
+- Added %%{_isa} do requires
+
 * Mon Jan  9 2017 Phantom X <megaphantomx at bol dot com dot br> - 17.4.33-1
 - Initial spec.

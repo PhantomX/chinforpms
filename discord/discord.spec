@@ -10,7 +10,7 @@
 %endif
 
 Name:           discord
-Version:        0.0.13
+Version:        0.0.15
 Release:        1%{?dist}
 Summary:        Voice and text chat messenger
 
@@ -25,7 +25,8 @@ Source0:        https://discordapp.com/api/download?platform=linux&format=tar.gz
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
-Requires:       libXScrnSaver
+Requires:       libcxx%{?_isa}
+Requires:       libXScrnSaver%{?_isa}
 
 %if 0%{?use_canary}
 Provides:       %{name}-canary = %{version}-%{release}
@@ -106,5 +107,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.0.15-1
+- 0.0.15
+
 * Sun Jan  8 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.1.13-1
-- Initial spec.
+- Initial spec
