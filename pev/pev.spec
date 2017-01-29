@@ -58,6 +58,10 @@ chmod 0755 %{buildroot}%{_libdir}/libpe.so*
 mkdir -p %{buildroot}%{_includedir}/pev
 install -pm 0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 
+%post -n libpe -p /sbin/ldconfig
+
+%postun -n libpe -p /sbin/ldconfig
+
 %files
 %license LICENSE*
 %doc README.md

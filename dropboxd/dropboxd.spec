@@ -178,7 +178,7 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 %changelog
 * Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 18.4.32-1
 - 18.4.32
-- Added %%{_isa} do requires
+- Added %%{_isa} to requires
 
 * Mon Jan  9 2017 Phantom X <megaphantomx at bol dot com dot br> - 17.4.33-1
 - Initial spec.

@@ -248,7 +248,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
 * Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.1.5-2
-- Added %%{_isa} do requires
+- Added %%{_isa} to requires
 
 * Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 3:6.1.5-1
 - Initial spec

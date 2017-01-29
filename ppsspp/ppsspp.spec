@@ -1,13 +1,13 @@
-%global commit ad04f97acbdab0aa06156cc0fa53b0bf92425222
+%global commit 14d2bf5989331f776a826603cb8fdb78c5da55da
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20161227
+%global date 20170128
 %global use_snapshot 1
 
 # Enable system ffmpeg
 %global sysffmpeg 0
 
 %if 0%{?use_snapshot}
-%global commit1 5f474b1fb9c0798958086e3d5a370288fc0ee751
+%global commit1 c440eda0f3c4dfc9940b1643ce4e292ebc0c618f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -27,7 +27,7 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 tinyformat
 
-%global commit6 224b1f733b9c5fad21500c16b025da024759fe40
+%global commit6 807a0d9e2f4e176f75d62ac3c179c81800ec2608
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 %endif
@@ -42,7 +42,7 @@
 
 Name:           ppsspp
 Version:        1.3
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -62,6 +62,8 @@ Source0:        https://github.com/hrydgard/%{name}/archive/v%{version}.tar.gz#/
 %endif #{?use_snapshot}
 
 Patch0:         %{name}-noupdate.patch
+# Fix assets/gamecontrollerdb.txt loading
+Patch1:         %{name}-datadir.patch
 
 BuildRequires:  desktop-file-utils
 %if 0%{?sysffmpeg}
@@ -102,8 +104,8 @@ tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 
 %if 0%{?use_snapshot}
 sed -i \
-  -e "/GIT_VERSION/s|unknown|%{shortcommit}|g" \
-  -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --always|echo \"%{shortcommit}\"|g" \
+  -e "/GIT_VERSION/s|unknown|%{version}.%{shortcommit}|g" \
+  -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --always|echo \"%{version}.%{shortcommit}\"|g" \
   git-version.cmake
 %endif
 
@@ -119,6 +121,13 @@ sed -e 's|png17|%{pngver}|g' \
      ext/native/tools/CMakeLists.txt
 sed -e "/PNG_PNG_INCLUDE_DIR/s|libpng/|lib%{pngver}/|" \
   -i CMakeLists.txt
+
+cat > %{name}.wrapper <<'EOF'
+#!/usr/bin/sh
+MESA_GL_VERSION_OVERRIDE=3.3COMPAT
+export MESA_GL_VERSION_OVERRIDE
+exec ppsspp.bin "$@"
+EOF
 
 %build
 
@@ -140,7 +149,8 @@ popd
 rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 build/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
+install -pm0755 build/PPSSPPSDL %{buildroot}%{_bindir}/%{name}.bin
+install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
 cp -r build/assets %{buildroot}%{_datadir}/%{name}/
@@ -183,11 +193,31 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %license LICENSE.TXT
 %doc README.md
 %{_bindir}/%{name}
+%{_bindir}/%{name}.bin
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
-%{_datadir}/%{name}
+%dir %{_datadir}/%{name}
+%dir %{_datadir}/%{name}/assets
+%{_datadir}/%{name}/assets/*.ini
+%{_datadir}/%{name}/assets/*.png
+%{_datadir}/%{name}/assets/*.txt
+%{_datadir}/%{name}/assets/*.zim
+%dir %{_datadir}/%{name}/assets/flash0
+%dir %{_datadir}/%{name}/assets/flash0/font
+%{_datadir}/%{name}/assets/flash0/font/*
+%dir %{_datadir}/%{name}/assets/lang
+%{_datadir}/%{name}/assets/lang/*
+%dir %{_datadir}/%{name}/assets/shaders
+%{_datadir}/%{name}/assets/shaders/*
+
 
 %changelog
+* Sat Jan 28 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-3.20170128git14d2bf5
+- New snapshot
+- Fix assets/gamecontrollerdb.txt loading
+- Better GIT_VERSION display
+- Wrapper to export MEsa GL to 3.3COMPAT
+
 * Thu Dec 29 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.3-2.20161227gitad04f97
 - Option to build with ugly bundled binary ffmpeg.
 - https://github.com/hrydgard/ppsspp/issues/9026

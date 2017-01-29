@@ -10,7 +10,7 @@
 
 Name:           telegram
 Version:        1.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A messenger application
 
 License:        GPLv3
@@ -53,7 +53,7 @@ cat > %{buildroot}%{_datadir}/applications/telegramdesktop.desktop <<EOF
 [Desktop Entry]
 Name=%{binname} Desktop
 Comment=Official desktop version of %{binname} messaging app
-Exec=%{binname} -- %u
+Exec=%{binname}
 Icon=%{name}
 Terminal=false
 StartupWMClass=%{binname}
@@ -95,6 +95,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/*/apps/*.png
 
 %changelog
+* Fri Jan 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.2-2
+- Fix desktop file
+
 * Thu Jan 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.2-1
 - new version
 
