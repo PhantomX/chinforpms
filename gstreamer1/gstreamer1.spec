@@ -226,7 +226,7 @@ install -m0644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/gstreamer
 
 
 %changelog
-* Thu Feb  02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10.3-100
+* Thu Feb  02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10.3-100.chinfo
 - 1.10.3
 
 * Mon Jan 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10.2-2

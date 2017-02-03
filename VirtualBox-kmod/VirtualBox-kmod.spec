@@ -106,7 +106,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
-* Wed Jan 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.14-1
+* Wed Jan 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.14-1.chinfo
 - 5.1.14
 
 * Sat Jan 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.12-1.chinfo

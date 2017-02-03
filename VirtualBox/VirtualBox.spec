@@ -800,7 +800,7 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
-* Wed Jan 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.14-1
+* Wed Jan 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.14-1.chinfo
 - 5.1.14
 - Sync with RPMfusion
 
