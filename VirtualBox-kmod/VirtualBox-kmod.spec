@@ -41,7 +41,7 @@ Source1:        VirtualBox-kmod-excludekernel-filter.txt
 BuildRequires:  %{AkmodsBuildRequires}
 
 # needed for plague to make sure it builds for i586 and i686
-ExclusiveArch:  i686 x86_64
+ExclusiveArch:  %{ix86} x86_64
 
 # get the proper build-sysbuild package from the repo, which
 # tracks in all the kernel-devel packages

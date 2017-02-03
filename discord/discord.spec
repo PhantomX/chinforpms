@@ -22,6 +22,8 @@ Source0:        https://discordapp.com/api/download/canary?platform=linux&format
 Source0:        https://discordapp.com/api/download?platform=linux&format=tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
+ExclusiveArch:  x86_64
+
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick

@@ -9,8 +9,8 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.10.2
-Release:        2.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
+Version:        1.10.3
+Release:        100.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPLv2+
@@ -226,6 +226,9 @@ install -m0644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/gstreamer
 
 
 %changelog
+* Thu Feb  02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10.3-100
+- 1.10.3
+
 * Mon Jan 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10.2-2
 - Set libexecdir to %{_libdir} on ix86 archs
 

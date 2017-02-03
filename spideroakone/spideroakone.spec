@@ -31,7 +31,7 @@ License:        Proprietary
 URL:            https://spideroak.com/
 Source0:        https://spideroak.com/getbuild?platform=fedora&arch=%{parch}&version=%{version}#/%{pkgname}-%{version}-%{pkgrel}.%{parch}.rpm
 
-ExclusiveArch:  i386 x86_64
+ExclusiveArch:  %{ix86} x86_64
 
 BuildRequires:  binutils patchelf perl python2-rpm-macros ImageMagick
 %if 0%{?curl}

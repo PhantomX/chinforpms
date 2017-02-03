@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -529,6 +529,8 @@ Patch432: bcm283x-fixes.patch
 # http://www.spinics.net/lists/linux-mmc/msg41151.html
 Patch433: bcm283x-mmc-imp-speed.patch
 
+Patch434: mm-alloc_contig-re-allow-CMA-to-compact-FS-pages.patch
+
 Patch440: AllWinner-net-emac.patch
 
 Patch442: ARM-Drop-fixed-200-Hz-timer-requirement-from-Samsung-platforms.patch
@@ -631,11 +633,11 @@ Patch851: selinux-namespace-fix.patch
 #rhbz 1390308
 Patch852: nouveau-add-maxwell-to-backlight-init.patch
 
-#CVE-2017-5576 CVE-2017-5577 rhbz 1416436 1416437 1416439
-Patch853: drm_vc4_Fix_an_integer_overflow_in_temporary_allocation_layout.patch
-
 #The saddest EFI firmware bug
 Patch854: 0001-x86-efi-always-map-first-physical-page-into-EFI-page.patch
+
+# CVE-2017-2596 rhbz 1417812 1417813
+Patch855: kvm-fix-page-struct-leak-in-handle_vmon.patch
 
 ### Extra
 
@@ -2211,6 +2213,10 @@ fi
 #
 #
 %changelog
+* Thu Feb 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.7-500.chinfo
+- Linux v4.9.7
+- f25 sync
+
 * Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.6-500.chinfo
 - Linux v4.9.6
 - f25 sync

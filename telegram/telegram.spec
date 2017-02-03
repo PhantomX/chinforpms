@@ -9,8 +9,8 @@
 %endif
 
 Name:           telegram
-Version:        1.0.2
-Release:        2%{?dist}
+Version:        1.0.5
+Release:        1%{?dist}
 Summary:        A messenger application
 
 License:        GPLv3
@@ -27,6 +27,9 @@ BuildRequires:  chrpath
 BuildRequires:  ImageMagick
 Requires:       dbus
 
+Provides:       %{binname}
+Provides:       %{binname}Desktop
+
 %description
 Telegram is a messaging app with a focus on speed and security, it’s super-fast,
 simple and free. You can use Telegram on all your devices at the same time — your
@@ -39,6 +42,24 @@ cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} .
 
 chrpath --delete %{binname}
 
+cat> %{binname}.wrapper <<'EOF'
+#!/usr/bin/bash
+
+TGDESKFILE="${HOME}/.local/share/applications/%{name}desktop.desktop"
+TGDIR="${HOME}/.local/share/%{binname}Desktop"
+
+# Remove unneeded user files
+[[ -e "${TGDESKFILE}" ]] && rm -fv "${TGDESKFILE}"
+[[ -d "${TGDIR}"/tupdates ]] && rm -rfv "${TGDIR}"/tupdates
+[[ -e "${TGDIR}"/%{binname} ]] && rm -fv "${TGDIR}"/%{binname}
+[[ -e "${TGDIR}"/Updater ]] && rm -fv "${TGDIR}"/Updater
+
+unset TGDESKFILE
+unset TGDIR
+
+exec %{binname}.bin "${@}"
+EOF
+
 %build
 
 
@@ -46,7 +67,8 @@ chrpath --delete %{binname}
 rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{binname} %{buildroot}%{_bindir}/
+install -pm0755 %{binname} %{buildroot}%{_bindir}/%{binname}.bin
+install -pm0755 %{binname}.wrapper %{buildroot}%{_bindir}/%{binname}
 
 mkdir -p %{buildroot}%{_datadir}/applications
 cat > %{buildroot}%{_datadir}/applications/telegramdesktop.desktop <<EOF
@@ -90,11 +112,17 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files
 %license LICENSE
-%{_bindir}/Telegram
+%{_bindir}/%{binname}
+%{_bindir}/%{binname}.bin
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 
 %changelog
+* Tue Jan 31 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.5-1
+- 1.0.5
+- P: %{binname} and %{binname}Desktop
+- Added wrapper with dirty HOME dir cleanup
+
 * Fri Jan 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.2-2
 - Fix desktop file
 

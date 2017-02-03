@@ -1,0 +1,61 @@
+--- _upstream/gstreamer1/gstreamer1-fdist/gstreamer1.spec	2017-02-02 19:27:06.258683517 -0200
++++ gstreamer1/gstreamer1.spec	2017-02-02 19:28:22.113762723 -0200
+@@ -10,7 +10,7 @@
+ 
+ Name:           gstreamer1
+ Version:        1.10.3
+-Release:        1%{?gitcommit:.git%{shortcommit}}%{?dist}
++Release:        100.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
+ Summary:        GStreamer streaming media framework runtime
+ 
+ License:        LGPLv2+
+@@ -96,6 +96,9 @@ GStreamer streaming media framework.
+ 
+ %build
+ %configure \
++%ifarch %{ix86}
++  --libexecdir=%{_libdir} \
++%endif
+   --with-package-name='Fedora GStreamer package' \
+   --with-package-origin='http://download.fedoraproject.org' \
+   --enable-gtk-doc \
+@@ -113,8 +116,13 @@ chrpath --delete $RPM_BUILD_ROOT%{_libdi
+ chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstcontroller-1.0.so.* 
+ chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstnet-1.0.so.*
+ chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/libgstcoreelements.so
++%ifarch %{ix86}
++chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/gst-plugin-scanner
++chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/gst-ptp-helper
++%else
+ chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner
+ chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-ptp-helper
++%endif
+ chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-inspect-1.0
+ chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-launch-1.0
+ chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-stats-1.0
+@@ -145,7 +153,11 @@ install -m0644 -D %{SOURCE2} $RPM_BUILD_
+ %{_libdir}/libgstcontroller-%{majorminor}.so.*
+ %{_libdir}/libgstnet-%{majorminor}.so.*
+ 
++%ifarch %{ix86}
++%{_libdir}/gstreamer-%{majorminor}/
++%else
+ %{_libexecdir}/gstreamer-%{majorminor}/
++%endif
+ 
+ %dir %{_libdir}/gstreamer-%{majorminor}
+ %{_libdir}/gstreamer-%{majorminor}/libgstcoreelements.so
+@@ -214,8 +226,11 @@ install -m0644 -D %{SOURCE2} $RPM_BUILD_
+ 
+ 
+ %changelog
+-* Mon Jan 30 2017 Wim Taymans <wtaymans@redhat.com> - 1.10.3-1
+-- Update to 1.10.3
++* Thu Feb  02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10.3-100
++- 1.10.3
++
++* Mon Jan 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10.2-2
++- Set libexecdir to %{_libdir} on ix86 archs
+ 
+ * Mon Dec 05 2016 Wim Taymans <wtaymans@redhat.com> - 1.10.2-1
+ - Update to 1.10.2
