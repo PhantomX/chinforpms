@@ -1,17 +1,20 @@
-%global commit 14d2bf5989331f776a826603cb8fdb78c5da55da
+%global commit 48934df6787cd9d693779ec1b0915a5c1ce02c72
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20170128
+%global date 20170203
 %global use_snapshot 1
 
 # Enable system ffmpeg
 %global sysffmpeg 0
+%if !0%{?sysffmpeg}
+%global bundleffmpegver 3.0.2
+%endif
 
 %if 0%{?use_snapshot}
 %global commit1 c440eda0f3c4dfc9940b1643ce4e292ebc0c618f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
-%global commit2 2f6023d14a09e6fc1babbb8b31231249719e9240
+%global commit2 0757f14d86f1574c02d7f7b9b1c7cd10aad79f75
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -27,7 +30,7 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 tinyformat
 
-%global commit6 807a0d9e2f4e176f75d62ac3c179c81800ec2608
+%global commit6 bec5fc898a1ffcc7c6bae26a32481fca38961aed
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 %endif
@@ -42,7 +45,7 @@
 
 Name:           ppsspp
 Version:        1.3
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -65,6 +68,10 @@ Patch0:         %{name}-noupdate.patch
 # Fix assets/gamecontrollerdb.txt loading
 Patch1:         %{name}-datadir.patch
 
+%if !0%{?sysffmpeg}
+ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
+%endif
+
 BuildRequires:  desktop-file-utils
 %if 0%{?sysffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
@@ -73,7 +80,7 @@ BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
 %else
-Provides:       bundled(ffmpeg) = 3.0.2
+Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif #{?sysffmpeg}
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libzip)
@@ -122,6 +129,21 @@ sed -e 's|png17|%{pngver}|g' \
 sed -e "/PNG_PNG_INCLUDE_DIR/s|libpng/|lib%{pngver}/|" \
   -i CMakeLists.txt
 
+%if !0%{?sysffmpeg}
+pushd ffmpeg
+sed \
+  -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
+  -e '/extra-cflags/s|-O3|%{optflags}|g' \
+  -e 's|disable-everything|\0 --disable-debug --disable-stripping|g' \
+  -e '/make install/d' \
+  -i linux_*.sh
+
+rm -rf linux/*/include
+rm -rf linux/*/lib
+
+popd
+%endif
+
 cat > %{name}.wrapper <<'EOF'
 #!/usr/bin/sh
 MESA_GL_VERSION_OVERRIDE=3.3COMPAT
@@ -130,6 +152,25 @@ exec ppsspp.bin "$@"
 EOF
 
 %build
+
+%if !0%{?sysffmpeg}
+pushd ffmpeg
+%ifarch x86_64
+./linux_x86-64.sh
+%endif
+%ifarch %{ix86}
+./linux_x86.sh
+%endif
+%ifarch %{arm}
+./linux_arm.sh
+%endif
+%ifarch %{mips32}
+./linux_mips32.sh
+%endif
+%make_build V=1
+make install
+popd
+%endif
 
 mkdir -p build
 pushd build
@@ -212,6 +253,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Fri Feb 03 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-4.20170203git48934df
+- New snapshot
+- Build proper ffmpeg static libraries instead using distributed binary ones
+- Set ExclusiveArch if building with bundled ffmpeg
+
 * Sat Jan 28 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-3.20170128git14d2bf5
 - New snapshot
 - Fix assets/gamecontrollerdb.txt loading

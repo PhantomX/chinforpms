@@ -1,11 +1,11 @@
---- SDL/SDLJoystick.cpp.datadir	2017-01-28 18:55:27.909973355 -0200
-+++ SDL/SDLJoystick.cpp	2017-01-28 18:55:51.450068422 -0200
-@@ -21,7 +21,7 @@ SDLJoystick::SDLJoystick(bool init_SDL )
- 		SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
+--- SDL/SDLJoystick.cpp.datadir	2017-02-03 16:28:31.000000000 -0200
++++ SDL/SDLJoystick.cpp	2017-02-03 19:48:46.118812332 -0200
+@@ -35,7 +35,7 @@ SDLJoystick::SDLJoystick(bool init_SDL )
+ 		}
  	}
- 	
+ 		
 -	auto dbPath = File::GetExeDirectory() + "assets/gamecontrollerdb.txt";
 +	auto dbPath = File::GetExeDirectory() + "../share/ppsspp/assets/gamecontrollerdb.txt";
  	cout << "loading control pad mappings from " << dbPath << ": ";
-  	
+ 
  	if (SDL_GameControllerAddMappingsFromFile(dbPath.c_str()) == -1) {
