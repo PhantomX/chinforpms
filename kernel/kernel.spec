@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -639,6 +639,9 @@ Patch854: 0001-x86-efi-always-map-first-physical-page-into-EFI-page.patch
 # CVE-2017-2596 rhbz 1417812 1417813
 Patch855: kvm-fix-page-struct-leak-in-handle_vmon.patch
 
+# rhbz 1418858
+Patch856: PCI-ASPM-Handle-PCI-to-PCIe-bridges-as-roots-of-PCIe-hierarchies.patch
+
 ### Extra
 
 # Add additional cpu gcc optimization support
@@ -652,9 +655,10 @@ Patch1011: btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: revert-btrfs-fix-lockdep-warning-on-deadlock-against-an-inode-s-log-mutex.patch
 Patch1013: revert-btrfs-improve-performance-on-fsync-against-new-inode-after-rename-unlink.patch
 Patch1014: btrfs-fix-extent-tree-corruption-due-to-relocation.patch
+Patch1015: reiserfs-fix-race-in-prealloc-discard.patch
 
 ### openSUSE patches.arch
-Patch1015: perf_timechart_fix_zero_timestamps.patch
+Patch1016: perf_timechart_fix_zero_timestamps.patch
 
 # BFQ disk scheduler - http://algo.ing.unimo.it/people/paolo/disk_sched/
 Patch1030: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.9.0-v8r7/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.5.0.patch
@@ -2213,6 +2217,11 @@ fi
 #
 #
 %changelog
+* Sun Feb 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.8-500.chinfo
+- Linux v4.9.8
+- f25 sync
+- rhbz 1418858
+
 * Thu Feb 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.7-500.chinfo
 - Linux v4.9.7
 - f25 sync

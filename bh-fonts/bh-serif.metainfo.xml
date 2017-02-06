@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2014 Richard Hughes <richard@hughsie.com> -->
+<component type="font">
+  <id>bh-serif</id>
+  <metadata_license>BH-Luxi</metadata_license>
+  <extends>bh</extends>
+</componentbh
