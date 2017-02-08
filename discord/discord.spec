@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 %global __strip /bin/true
 
-%global use_canary 1
+%global use_canary 0
 
 %if 0%{?use_canary}
 %global execname DiscordCanary
@@ -10,8 +10,9 @@
 %endif
 
 Name:           discord
-Version:        0.0.15
+Version:        0.0.1
 Release:        1%{?dist}
+Epoch:          1
 Summary:        Voice and text chat messenger
 
 License:        Proprietary
@@ -109,6 +110,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Tue Feb 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.1-1
+- 0.0.1, not canary
+
 * Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.0.15-1
 - 0.0.15
 

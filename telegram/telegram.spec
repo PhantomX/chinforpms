@@ -35,6 +35,8 @@ Telegram is a messaging app with a focus on speed and security, it’s super-fas
 simple and free. You can use Telegram on all your devices at the same time — your
 messages sync seamlessly across any number of your phones, tablets or computers.
 
+This is a repack from official binary tarball.
+
 %prep
 %autosetup -n %{binname}
 
