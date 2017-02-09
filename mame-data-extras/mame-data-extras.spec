@@ -2,15 +2,15 @@
 %global __strip /bin/true
 
 %global cheatver 0174
-%global historyver 181
-%global infover 0181
+%global historyver 182a
+%global infover 0182
 
 # Build non redistributable package with free roms
 %global with_roms  %{?_with_roms:     1} %{?!_with_roms:     0}
 %global romlink http://www.mamedev.org/roms
 
 Name:           mame-data-extras
-Version:        0.181
+Version:        0.182
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -126,7 +126,7 @@ install -pm0644 %{romfiles} \
 %endif
 
 # Install DAT files
-install -pm 644 history.dat mameinfo.dat \
+install -pm 644 history/history.dat mameinfo.dat \
   %{buildroot}%{_datadir}/mame/
 
 # Install cheat files
@@ -182,5 +182,8 @@ done
 
 
 %changelog
+* Wed Feb 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.182-1
+- 0.182
+
 * Thu Jan 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.181-1
 - Initial spec

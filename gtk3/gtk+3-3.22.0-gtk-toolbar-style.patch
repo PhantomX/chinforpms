@@ -1,0 +1,172 @@
+diff -up gtk+-3.22.7/gdk/wayland/gdkscreen-wayland.c.toolbarstyle gtk+-3.22.7/gdk/wayland/gdkscreen-wayland.c
+--- gtk+-3.22.7/gdk/wayland/gdkscreen-wayland.c.toolbarstyle	2017-02-08 16:51:06.613384991 -0200
++++ gtk+-3.22.7/gdk/wayland/gdkscreen-wayland.c	2017-02-08 16:51:57.755017566 -0200
+@@ -403,6 +403,7 @@ static TranslationEntry translations[] =
+   { FALSE, "org.gnome.desktop.interface", "cursor-blink-timeout", "gtk-cursor-blink-timeout", G_TYPE_INT, { .i = 3600 } },
+   { FALSE, "org.gnome.desktop.interface", "gtk-im-module", "gtk-im-module", G_TYPE_STRING, { .s = "simple" } },
+   { FALSE, "org.gnome.desktop.interface", "enable-animations", "gtk-enable-animations", G_TYPE_BOOLEAN, { .b = TRUE } },
++  { FALSE, "org.gnome.desktop.interface", "toolbar-style", "gtk-toolbar-style", G_TYPE_STRING, { .s = "both-horiz"} },
+   { FALSE, "org.gnome.desktop.interface", "toolbar-icons-size", "gtk-toolbar-icon-size", G_TYPE_STRING, { .s = "large"} },
+   { FALSE, "org.gnome.desktop.interface", "gtk-enable-primary-paste", "gtk-enable-primary-paste", G_TYPE_BOOLEAN, { .b = TRUE } },
+   { FALSE, "org.gnome.settings-daemon.peripherals.mouse", "double-click", "gtk-double-click-time", G_TYPE_INT, { .i = 400 } },
+diff -up gtk+-3.22.7/gdk/win32/gdkproperty-win32.c.toolbarstyle gtk+-3.22.7/gdk/win32/gdkproperty-win32.c
+--- gtk+-3.22.7/gdk/win32/gdkproperty-win32.c.toolbarstyle	2017-02-08 16:51:06.613384991 -0200
++++ gtk+-3.22.7/gdk/win32/gdkproperty-win32.c	2017-02-08 16:52:22.793837677 -0200
+@@ -322,6 +322,7 @@ _gdk_win32_window_delete_property (GdkWi
+   "Gtk/ColorPalette\0"        "gtk-color-palette\0"
+   "Gtk/FontName\0"            "gtk-font-name\0"
+   "Gtk/KeyThemeName\0"        "gtk-key-theme-name\0"
++  "Gtk/ToolbarStyle\0"        "gtk-toolbar-style\0"
+   "Gtk/ToolbarIconSize\0"     "gtk-toolbar-icon-size\0"
+   "Gtk/Modules\0"             "gtk-modules\0"
+   "Gtk/CursorBlinkTimeout\0"  "gtk-cursor-blink-timeout\0"
+diff -up gtk+-3.22.7/gdk/x11/gdksettings.c.toolbarstyle gtk+-3.22.7/gdk/x11/gdksettings.c
+--- gtk+-3.22.7/gdk/x11/gdksettings.c.toolbarstyle	2017-02-08 16:51:06.613384991 -0200
++++ gtk+-3.22.7/gdk/x11/gdksettings.c	2017-02-08 16:52:43.089691862 -0200
+@@ -35,6 +35,7 @@ static const struct {
+   {"Gtk/ColorPalette",        "gtk-color-palette"},
+   {"Gtk/FontName",            "gtk-font-name"},
+   {"Gtk/KeyThemeName",        "gtk-key-theme-name"},
++  {"Gtk/ToolbarStyle",        "gtk-toolbar-style"},
+   {"Gtk/ToolbarIconSize",     "gtk-toolbar-icon-size"},
+   {"Gtk/Modules",             "gtk-modules"},
+   {"Gtk/ButtonImages",        "gtk-button-images"},
+diff -up gtk+-3.22.7/gtk/gtksettings.c.toolbarstyle gtk+-3.22.7/gtk/gtksettings.c
+--- gtk+-3.22.7/gtk/gtksettings.c.toolbarstyle	2017-02-08 16:51:06.611385005 -0200
++++ gtk+-3.22.7/gtk/gtksettings.c	2017-02-08 16:51:06.613384991 -0200
+@@ -1219,16 +1219,14 @@ gtk_settings_class_init (GtkSettingsClas
+    * GtkSettings:gtk-toolbar-style:
+    *
+    * The size of icons in default toolbars.
+-   *
+-   * Deprecated: 3.10: This setting is ignored.
+    */
+   result = settings_install_property_parser (class,
+                                              g_param_spec_enum ("gtk-toolbar-style",
+                                                                    P_("Toolbar style"),
+                                                                    P_("Whether default toolbars have text only, text and icons, icons only, etc."),
+                                                                    GTK_TYPE_TOOLBAR_STYLE,
+-                                                                   GTK_TOOLBAR_BOTH_HORIZ,
+-                                                                   GTK_PARAM_READWRITE | G_PARAM_DEPRECATED),
++                                                                   GTK_TOOLBAR_BOTH,
++                                                                   GTK_PARAM_READWRITE),
+                                              gtk_rc_property_parse_enum);
+   g_assert (result == PROP_TOOLBAR_STYLE);
+ 
+diff -up gtk+-3.22.7/gtk/gtktoolbar.c.toolbarstyle gtk+-3.22.7/gtk/gtktoolbar.c
+--- gtk+-3.22.7/gtk/gtktoolbar.c.toolbarstyle	2017-02-08 16:51:06.611385005 -0200
++++ gtk+-3.22.7/gtk/gtktoolbar.c	2017-02-08 16:51:06.614384983 -0200
+@@ -98,7 +98,7 @@ typedef struct _ToolbarContent ToolbarCo
+ #define SPACE_LINE_END      8.0
+ 
+ #define DEFAULT_ICON_SIZE GTK_ICON_SIZE_LARGE_TOOLBAR
+-#define DEFAULT_TOOLBAR_STYLE GTK_TOOLBAR_BOTH_HORIZ
++#define DEFAULT_TOOLBAR_STYLE GTK_TOOLBAR_BOTH
+ #define DEFAULT_ANIMATION_STATE TRUE
+ 
+ #define MAX_HOMOGENEOUS_N_CHARS 13 /* Items that are wider than this do not participate
+@@ -2064,6 +2064,19 @@ toolbar_get_settings (GtkToolbar *toolba
+ }
+ 
+ static void
++style_change_notify (GtkToolbar *toolbar)
++{
++  GtkToolbarPrivate *priv = toolbar->priv;
++
++  if (!priv->style_set)
++    {
++      /* pretend it was set, then unset, thus reverting to new default */
++      priv->style_set = TRUE;
++      gtk_toolbar_unset_style (toolbar);
++    }
++}
++
++static void
+ icon_size_change_notify (GtkToolbar *toolbar)
+ {
+   GtkToolbarPrivate *priv = toolbar->priv;
+@@ -2098,7 +2111,9 @@ settings_change_notify (GtkSettings
+                         const GParamSpec *pspec,
+                         GtkToolbar       *toolbar)
+ {
+-  if (! strcmp (pspec->name, "gtk-toolbar-icon-size"))
++  if (! strcmp (pspec->name, "gtk-toolbar-style"))
++    style_change_notify (toolbar);
++  else if (! strcmp (pspec->name, "gtk-toolbar-icon-size"))
+     icon_size_change_notify (toolbar);
+   else if (! strcmp (pspec->name, "gtk-enable-animations"))
+     animation_change_notify (toolbar);
+@@ -2140,6 +2155,7 @@ gtk_toolbar_screen_changed (GtkWidget *w
+   else
+     priv->settings = NULL;
+ 
++  style_change_notify (toolbar);
+   icon_size_change_notify (toolbar);
+   animation_change_notify (toolbar);
+ }
+@@ -2887,7 +2903,14 @@ gtk_toolbar_unset_style (GtkToolbar *too
+ 
+   if (priv->style_set)
+     {
+-      style = DEFAULT_TOOLBAR_STYLE;
++      GtkSettings *settings = toolbar_get_settings (toolbar);
++      
++      if (settings)
++	g_object_get (settings,
++		      "gtk-toolbar-style", &style,
++		      NULL);
++      else
++	style = DEFAULT_TOOLBAR_STYLE;
+ 
+       if (style != priv->style)
+ 	g_signal_emit (toolbar, toolbar_signals[STYLE_CHANGED], 0, style);
+diff -up gtk+-3.22.7/gtk/gtktoolpalette.c.toolbarstyle gtk+-3.22.7/gtk/gtktoolpalette.c
+--- gtk+-3.22.7/gtk/gtktoolpalette.c.toolbarstyle	2017-02-08 16:51:06.611385005 -0200
++++ gtk+-3.22.7/gtk/gtktoolpalette.c	2017-02-08 16:51:06.614384983 -0200
+@@ -913,6 +913,19 @@ gtk_tool_palette_get_child_property (Gtk
+ }
+ 
+ static void
++style_change_notify (GtkToolPalette *palette)
++{
++  GtkToolPalettePrivate* priv = palette->priv;
++
++  if (!priv->style_set)
++    {
++      /* pretend it was set, then unset, thus reverting to new default */
++      priv->style_set = TRUE;
++      gtk_tool_palette_unset_style (palette);
++    }
++}
++
++static void
+ icon_size_change_notify (GtkToolPalette *palette)
+ {
+   GtkToolPalettePrivate* priv = palette->priv;
+@@ -930,7 +943,9 @@ gtk_tool_palette_settings_change_notify
+                                          const GParamSpec *pspec,
+                                          GtkToolPalette   *palette)
+ {
+-  if (strcmp (pspec->name, "gtk-toolbar-icon-size") == 0)
++  if (strcmp (pspec->name, "gtk-toolbar-style") == 0)
++    style_change_notify (palette);
++  else if (strcmp (pspec->name, "gtk-toolbar-icon-size") == 0)
+     icon_size_change_notify (palette);
+ }
+ 
+@@ -1257,7 +1272,14 @@ gtk_tool_palette_unset_style (GtkToolPal
+ 
+   if (priv->style_set)
+     {
+-      style = DEFAULT_TOOLBAR_STYLE;
++      GtkSettings *settings = toolpalette_get_settings (palette);
++
++      if (settings)
++        g_object_get (settings,
++                      "gtk-toolbar-style", &style,
++                      NULL);
++      else
++        style = DEFAULT_TOOLBAR_STYLE;
+ 
+       if (style != priv->style)
+         gtk_tool_palette_change_style (palette, style);
