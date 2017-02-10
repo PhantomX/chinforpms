@@ -11,11 +11,11 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.0
+%global compholiover 2.1
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.0
+%global ninever 2.1
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -32,15 +32,15 @@
 %endif
 
 Name:           wine
-Version:        2.0
+Version:        2.1
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
 License:        LGPLv2+
 URL:            http://www.winehq.org/
-Source0:        http://downloads.sourceforge.net/wine/wine-%{version}%{?rctagtarball}.tar.bz2
-Source10:       http://downloads.sourceforge.net/wine/wine-%{version}%{?rctagtarball}.tar.bz2.sign
+Source0:        http://downloads.sourceforge.net/wine/wine-%{version}%{?rctagtarball}.tar.xz
+Source10:       http://downloads.sourceforge.net/wine/wine-%{version}%{?rctagtarball}.tar.xz.sign
 
 Source1:        wine.init
 Source2:        wine.systemd
@@ -1628,6 +1628,7 @@ fi
 %{_libdir}/wine/mciseq.dll.so
 %{_libdir}/wine/mciwave.dll.so
 %{_libdir}/wine/mf.dll.so
+%{_libdir}/wine/mf3216.dll.so
 %{_libdir}/wine/mfplat.dll.so
 %{_libdir}/wine/mfreadwrite.dll.so
 %{_libdir}/wine/mgmtapi.dll.so
@@ -1770,6 +1771,7 @@ fi
 %{_libdir}/wine/scarddlg.dll.so
 %{_libdir}/wine/sccbase.dll.so
 %{_libdir}/wine/schannel.dll.so
+%{_libdir}/wine/scrobj.dll.so
 %{_libdir}/wine/scrrun.dll.so
 %{_libdir}/wine/scsiport.sys.so
 %{_libdir}/wine/secur32.dll.so
@@ -1871,6 +1873,7 @@ fi
 %{_libdir}/wine/winnls32.dll.so
 %{_libdir}/wine/winspool.drv.so
 %{_libdir}/wine/winsta.dll.so
+%{_libdir}/wine/winusb.dll.so
 %{_libdir}/wine/wmasf.dll.so
 %{_libdir}/wine/wmi.dll.so
 %{_libdir}/wine/wmic.exe.so
@@ -2235,6 +2238,9 @@ fi
 %endif
 
 %changelog
+* Thu Feb 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-100.chinfo
+- 2.1
+
 * Wed Jan 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0-100.chinfo
 - 2.0 final
 
