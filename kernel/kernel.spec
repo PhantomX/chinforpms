@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -524,7 +524,7 @@ Patch430: ARM-tegra-usb-no-reset.patch
 
 Patch431: bcm2837-initial-support.patch
 
-Patch432: bcm283x-fixes.patch
+Patch432: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
 
 # http://www.spinics.net/lists/linux-mmc/msg41151.html
 Patch433: bcm283x-mmc-imp-speed.patch
@@ -633,14 +633,21 @@ Patch851: selinux-namespace-fix.patch
 #rhbz 1390308
 Patch852: nouveau-add-maxwell-to-backlight-init.patch
 
-#The saddest EFI firmware bug
-Patch854: 0001-x86-efi-always-map-first-physical-page-into-EFI-page.patch
-
 # CVE-2017-2596 rhbz 1417812 1417813
 Patch855: kvm-fix-page-struct-leak-in-handle_vmon.patch
 
-# rhbz 1418858
-Patch856: PCI-ASPM-Handle-PCI-to-PCIe-bridges-as-roots-of-PCIe-hierarchies.patch
+#CVE-2017-5897 rhbz 1419848 1419851
+Patch857: ip6_gre-fix-ip6gre_err-invalid-reads.patch
+
+#rhbz 1417829
+Patch858: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
+Patch859: 2-2-media-dvb-usb-firmware-don-t-do-DMA-on-stack.patch
+
+#rhbz 1420276
+Patch860: 0001-sctp-avoid-BUG_ON-on-sctp_wait_for_sndbuf.patch
+
+#rhbz 1415397
+Patch861: w1-ds2490-USB-transfer-buffers-need-to-be-DMAable.patch
 
 ### Extra
 
@@ -2217,6 +2224,10 @@ fi
 #
 #
 %changelog
+* Fri Feb 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.9-500.chinfo
+- Linux v4.9.9
+- f25 sync
+
 * Sun Feb 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.8-500.chinfo
 - Linux v4.9.8
 - f25 sync
