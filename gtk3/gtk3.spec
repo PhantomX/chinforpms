@@ -18,7 +18,7 @@
 
 Name: gtk3
 Version: 3.22.7
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
@@ -37,6 +37,10 @@ Patch3: gtk+3-3.22.0-disable-overlay.patch
 Patch4: 016_no_offscreen_widgets_grabbing.patch
 Patch5: 017_no_offscreen_device_grabbing.patch
 Patch6: 060_ignore-random-icons.patch
+
+# Ubuntu
+Patch7: restore_filechooser_typeaheadfind.patch
+Patch8: ubuntu_fileselector_behaviour.patch
 
 BuildRequires: pkgconfig(atk) >= %{atk_version}
 BuildRequires: pkgconfig(atk-bridge-2.0)
@@ -182,6 +186,8 @@ the functionality of the installed %{name} package.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
+%patch8 -p1
 
 %build
 export CFLAGS='-fno-strict-aliasing %optflags'
@@ -355,6 +361,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache
 %{_datadir}/installed-tests
 
 %changelog
+* Wed Feb 08 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 3.22.7-101.chinfo
+- Some Ubuntu patches to revert more features
+
 * Wed Feb 08 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 3.22.7-100.chinfo
 - Revert some features dropped by upstream
 - Disable overlay scrolling

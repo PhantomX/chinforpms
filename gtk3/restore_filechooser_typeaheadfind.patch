@@ -1,0 +1,37 @@
+Description: Turn type ahead find back on for the file chooser. This was disabled upstream before a replacement is ready.
+Author: Iain Lane <iain.lane@canonical.com>
+Bug-Ubuntu: http://pad.lv/1464654
+Forwarded: not-needed
+
+Index: b/gtk/ui/gtkfilechooserwidget.ui
+===================================================================
+--- a/gtk/ui/gtkfilechooserwidget.ui
++++ b/gtk/ui/gtkfilechooserwidget.ui
+@@ -161,7 +161,7 @@
+                                   <object class="GtkTreeView" id="browse_files_tree_view">
+                                     <property name="visible">1</property>
+                                     <property name="has-tooltip">1</property>
+-                                    <property name="enable-search">0</property>
++                                    <property name="enable-search">1</property>
+                                     <child internal-child="accessible">
+                                       <object class="AtkObject" id="browse_files_tree_view-atkobject">
+                                         <property name="AtkObject::accessible-name" translatable="yes">Files</property>
+Index: b/gtk/gtkfilechooserwidget.c
+===================================================================
+--- a/gtk/gtkfilechooserwidget.c
++++ b/gtk/gtkfilechooserwidget.c
+@@ -2453,12 +2453,12 @@
+ {
+   GtkFileChooserWidgetPrivate *priv = impl->priv;
+ 
+-  gtk_tree_view_set_search_column (GTK_TREE_VIEW (priv->browse_files_tree_view), -1);
+-
+   gtk_tree_view_column_set_sort_column_id (priv->list_name_column, MODEL_COL_NAME);
+   gtk_tree_view_column_set_sort_column_id (priv->list_time_column, MODEL_COL_TIME);
+   gtk_tree_view_column_set_sort_column_id (priv->list_size_column, MODEL_COL_SIZE);
+   gtk_tree_view_column_set_sort_column_id (priv->list_location_column, MODEL_COL_LOCATION_TEXT);
++
++  gtk_tree_view_set_search_column (GTK_TREE_VIEW (priv->browse_files_tree_view), MODEL_COL_NAME);
+ }
+ 
+ static gboolean
