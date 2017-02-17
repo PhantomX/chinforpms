@@ -8,6 +8,7 @@
 %global atk_version 2.15.1
 %global cairo_version 1.14.0
 %global gdk_pixbuf_version 2.30.0
+%global xrand_version 1.5.0
 %global wayland_version 1.9.91
 %global wayland_protocols_version 1.7
 %global epoxy_version 1.0
@@ -17,8 +18,8 @@
 %global _changelog_trimtime %(date +%s -d "1 year ago")
 
 Name: gtk3
-Version: 3.22.7
-Release: 101.chinfo%{?dist}
+Version: 3.22.8
+Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
@@ -51,7 +52,7 @@ BuildRequires: pkgconfig(cairo-gobject) >= %{cairo_version}
 BuildRequires: pkgconfig(pango) >= %{pango_version}
 BuildRequires: pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
 BuildRequires: pkgconfig(xi)
-BuildRequires: pkgconfig(xrandr)
+BuildRequires: pkgconfig(xrandr) >= %{xrand_version}
 BuildRequires: pkgconfig(xrender)
 BuildRequires: pkgconfig(xrender)
 BuildRequires: pkgconfig(xcursor)
@@ -88,6 +89,7 @@ Requires: cairo%{?_isa} >= %{cairo_version}
 Requires: cairo-gobject%{?_isa} >= %{cairo_version}
 Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libepoxy%{?_isa} >= %{epoxy_version}
+Requires: libXrandr%{?_isa} >= %{xrand_version}
 Requires: pango%{?_isa} >= %{pango_version}
 %if 0%{?with_wayland}
 Requires: libwayland-client%{?_isa} >= %{wayland_version}
@@ -361,6 +363,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache
 %{_datadir}/installed-tests
 
 %changelog
+* Wed Feb 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.8-100.chinfo
+- 3.22.8
+- f25 sync
+
 * Wed Feb 08 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 3.22.7-101.chinfo
 - Some Ubuntu patches to revert more features
 

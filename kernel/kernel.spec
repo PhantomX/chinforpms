@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -648,6 +648,9 @@ Patch860: 0001-sctp-avoid-BUG_ON-on-sctp_wait_for_sndbuf.patch
 
 #rhbz 1415397
 Patch861: w1-ds2490-USB-transfer-buffers-need-to-be-DMAable.patch
+
+#CVE-2017-5970 rhbz 1421638
+Patch862: ipv4-keep-skb-dst-around-in-presence-of-IP-options.patch
 
 ### Extra
 
@@ -2224,6 +2227,10 @@ fi
 #
 #
 %changelog
+* Thu Feb 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.10-500.chinfo
+- Linux v4.9.10
+- f25 sync
+
 * Fri Feb 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.9-500.chinfo
 - Linux v4.9.9
 - f25 sync

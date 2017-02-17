@@ -167,6 +167,9 @@ CONFIG_MMC_MTK=m
 # CONFIG_MMC_USDHI6ROL0 is not set
 # CONFIG_MMC_SDHCI_OF_ESDHC is not set
 
+CONFIG_PWRSEQ_EMMC=m
+CONFIG_PWRSEQ_SIMPLE=m
+
 CONFIG_CB710_CORE=m
 # CONFIG_CB710_DEBUG is not set
 
@@ -5539,7 +5542,7 @@ CONFIG_NO_HZ=y
 
 # CONFIG_SCHED_STACK_END_CHECK is not set
 # CONFIG_DEBUG_TIMEKEEPING is not set
-CONFIG_TIMER_STATS=y
+# CONFIG_TIMER_STATS is not set
 CONFIG_HIGH_RES_TIMERS=y
 CONFIG_PERF_EVENTS=y
 
@@ -6058,9 +6061,6 @@ CONFIG_SYSTEM_BLACKLIST_KEYRING=y
 # CONFIG_AHCI_QORIQ is not set
 # CONFIG_COMMON_CLK_SI514 is not set
 # CONFIG_CLK_QORIQ is not set
-
-# CONFIG_PWRSEQ_EMMC is not set
-# CONFIG_PWRSEQ_SIMPLE is not set
 
 # The kernel code has a nice comment
 # WARNING: Do not even assume this interface is staying stable!
