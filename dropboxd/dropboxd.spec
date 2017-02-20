@@ -17,7 +17,7 @@
 %global python 0
 
 Name:           dropboxd
-Version:        18.4.32
+Version:        19.4.13
 Release:        1%{?dist}
 Summary:        Dropbox proprietary client
 
@@ -90,7 +90,6 @@ touch -r README.orig README
 %build
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{progdir}
 
@@ -176,6 +175,9 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 
 
 %changelog
+* Sat Feb 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 19.4.13-1
+- 19.4.13
+
 * Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 18.4.32-1
 - 18.4.32
 - Added %%{_isa} to requires

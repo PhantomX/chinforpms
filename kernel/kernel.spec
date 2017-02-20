@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -405,7 +405,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define cross_opts CROSS_COMPILE=%{_build_arch}-linux-gnu-
 %endif
 
-Source0: ftp://ftp.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
+Source0: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
 
 Source10: perf-man-%{kversion}.tar.gz
 Source11: x509.genkey
@@ -468,7 +468,7 @@ Source2001: cpupower.config
 %if 0%{?stable_update}
 %if 0%{?stable_base}
 %define    stable_patch_00  patch-4.%{base_sublevel}.%{stable_base}.xz
-Source5000: ftp://ftp.kernel.org/pub/linux/kernel/v4.x/%{stable_patch_00}
+Source5000: https://cdn.kernel.org/pub/linux/kernel/v4.x/%{stable_patch_00}
 %endif
 
 # non-released_kernel case
@@ -636,21 +636,12 @@ Patch852: nouveau-add-maxwell-to-backlight-init.patch
 # CVE-2017-2596 rhbz 1417812 1417813
 Patch855: kvm-fix-page-struct-leak-in-handle_vmon.patch
 
-#CVE-2017-5897 rhbz 1419848 1419851
-Patch857: ip6_gre-fix-ip6gre_err-invalid-reads.patch
-
 #rhbz 1417829
 Patch858: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
 Patch859: 2-2-media-dvb-usb-firmware-don-t-do-DMA-on-stack.patch
 
-#rhbz 1420276
-Patch860: 0001-sctp-avoid-BUG_ON-on-sctp_wait_for_sndbuf.patch
-
 #rhbz 1415397
-Patch861: w1-ds2490-USB-transfer-buffers-need-to-be-DMAable.patch
-
-#CVE-2017-5970 rhbz 1421638
-Patch862: ipv4-keep-skb-dst-around-in-presence-of-IP-options.patch
+Patch860: w1-ds2490-USB-transfer-buffers-need-to-be-DMAable.patch
 
 ### Extra
 
@@ -658,17 +649,16 @@ Patch862: ipv4-keep-skb-dst-around-in-presence-of-IP-options.patch
 # https://github.com/graysky2/kernel_gcc_patch (20160728)
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v3.15+.patch
 
-### openSUSE patches.suse
+### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 # Patches to export btrfs anonymous devices (VFS portion)
 Patch1010: vfs-add-super_operations-get_inode_dev.patch
-Patch1011: btrfs-provide-super_operations-get_inode_dev.patch
-Patch1012: revert-btrfs-fix-lockdep-warning-on-deadlock-against-an-inode-s-log-mutex.patch
-Patch1013: revert-btrfs-improve-performance-on-fsync-against-new-inode-after-rename-unlink.patch
-Patch1014: btrfs-fix-extent-tree-corruption-due-to-relocation.patch
-Patch1015: reiserfs-fix-race-in-prealloc-discard.patch
-
-### openSUSE patches.arch
-Patch1016: perf_timechart_fix_zero_timestamps.patch
+Patch1011: ipc-msg-make-msgrcv-work-with-LONG_MIN.patch
+Patch1012: perf_timechart_fix_zero_timestamps.patch
+Patch1013: btrfs-provide-super_operations-get_inode_dev.patch
+Patch1014: revert-btrfs-fix-lockdep-warning-on-deadlock-against-an-inode-s-log-mutex.patch
+Patch1015: revert-btrfs-improve-performance-on-fsync-against-new-inode-after-rename-unlink.patch
+Patch1016: btrfs-fix-extent-tree-corruption-due-to-relocation.patch
+Patch1017: reiserfs-fix-race-in-prealloc-discard.patch
 
 # BFQ disk scheduler - http://algo.ing.unimo.it/people/paolo/disk_sched/
 Patch1030: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.9.0-v8r7/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.5.0.patch
@@ -2227,6 +2217,10 @@ fi
 #
 #
 %changelog
+* Sat Feb 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.11-500.chinfo
+- Linux v4.9.11
+- https source links
+
 * Thu Feb 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.10-500.chinfo
 - Linux v4.9.10
 - f25 sync

@@ -1,7 +1,8 @@
 # chinforpms
 
 Personal Fedora RPM specs. Have specs to build RPMs not existant in Fedora or
-RPMFusion and existant packages updated with extra changes.
+RPMFusion and existant packages updated with extra changes (these have .chinfo
+release tags).
 
 >_Before use, remember that **YOU ARE AT YOUR OWN RISK**! Don't blame me if your
 >system explodes or suffer any other bad things._
