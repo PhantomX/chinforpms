@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.1
+%global compholiover 2.2
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
@@ -32,7 +32,7 @@
 %endif
 
 Name:           wine
-Version:        2.1
+Version:        2.2
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -708,7 +708,6 @@ This package adds the opencl driver for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
-%patch601 -p1
 %patch602 -p1 -R
 
 # extract nine patches
@@ -737,6 +736,8 @@ patch -p1 -i nine/d3d9-helper.patch
 %endif # 0%{?nine}
 
 %endif # 0%{?compholio}
+
+%patch601 -p1
 
 %if 0%{?nine}
 patch -p1 -i nine/wine-d3d9.patch
@@ -2238,6 +2239,9 @@ fi
 %endif
 
 %changelog
+* Tue Feb 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-100.chinfo
+- 2.2
+
 * Thu Feb 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-100.chinfo
 - 2.1
 

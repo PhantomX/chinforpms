@@ -9,7 +9,7 @@
 %endif
 
 Name:           telegram
-Version:        1.0.5
+Version:        1.0.14
 Release:        1%{?dist}
 Summary:        A messenger application
 
@@ -22,20 +22,21 @@ Source3:        %{gitlink}/%{binname}/Resources/art/icon48.png
 Source4:        %{gitlink}/%{binname}/Resources/art/icon64.png
 Source5:        %{gitlink}/%{binname}/Resources/art/icon256.png
 Source6:        %{gitlink}/%{binname}/Resources/art/icon512.png
+Source7:        tg.protocol
 
 BuildRequires:  chrpath
 BuildRequires:  ImageMagick
+BuildRequires:  kf5-filesystem
 Requires:       dbus
+Requires:       hicolor-icon-theme
 
-Provides:       %{binname}
-Provides:       %{binname}Desktop
+Provides:       %{binname} = %{version}
+Provides:       %{binname}Desktop = %{version}
 
 %description
 Telegram is a messaging app with a focus on speed and security, it’s super-fast,
 simple and free. You can use Telegram on all your devices at the same time — your
 messages sync seamlessly across any number of your phones, tablets or computers.
-
-This is a repack from official binary tarball.
 
 %prep
 %autosetup -n %{binname}
@@ -46,17 +47,39 @@ chrpath --delete %{binname}
 
 cat> %{binname}.wrapper <<'EOF'
 #!/usr/bin/bash
+set -e
 
-TGDESKFILE="${HOME}/.local/share/applications/%{name}desktop.desktop"
+TGDESKFILE1="${HOME}/.local/share/applications/%{name}desktop.desktop"
+TGICON1="${HOME}/.local/share/icons/%{name}.png"
 TGDIR="${HOME}/.local/share/%{binname}Desktop"
+TGDESKFILE2="${TGDIR}/tdata/%{name}desktop.desktop"
+
+mkdir -p "${TGDIR}"
+
+if [[ -d "${HOME}/.TelegramDesktop" ]] ;then
+  echo "Moving ${HOME}/.TelegramDesktop to ${TGDIR}..."
+  mv "${HOME}/.TelegramDesktop"/* "${TGDIR}"/
+  rmdir "${HOME}/.TelegramDesktop"
+fi
 
 # Remove unneeded user files
-[[ -e "${TGDESKFILE}" ]] && rm -fv "${TGDESKFILE}"
-[[ -d "${TGDIR}"/tupdates ]] && rm -rfv "${TGDIR}"/tupdates
-[[ -e "${TGDIR}"/%{binname} ]] && rm -fv "${TGDIR}"/%{binname}
+[[ -e "${TGDESKFILE1}" ]] && rm -fv "${TGDESKFILE1}"
+[[ -w "${TGDESKFILE2}" ]] && rm -fv "${TGDESKFILE2}"
+[[ -w "${TGICON1}" ]] && rm -fv "${TGICON1}"
+[[ -w "${TGDIR}"/tupdates ]] && rm -rfv "${TGDIR}"/tupdates
+[[ -e "${TGDIR}"/Telegram ]] && rm -fv "${TGDIR}"/Telegram
 [[ -e "${TGDIR}"/Updater ]] && rm -fv "${TGDIR}"/Updater
 
-unset TGDESKFILE
+# Fake desktop file
+[[ ! -e "${TGDESKFILE2}" ]] && touch "${TGDESKFILE2}"
+chmod 0444 "${TGDESKFILE2}"
+
+[[ ! -e "${TGDIR}"/tupdates ]] && mkdir -p "${TGDIR}"/tupdates
+chmod 0555 "${TGDIR}"/tupdates
+
+unset TGDESKFILE1
+unset TGDESKFILE2
+unset TGICON1
 unset TGDIR
 
 exec %{binname}.bin "${@}"
@@ -66,7 +89,6 @@ EOF
 
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{binname} %{buildroot}%{_bindir}/%{binname}.bin
@@ -83,8 +105,10 @@ Terminal=false
 StartupWMClass=%{binname}
 Type=Application
 Categories=Qt;Network;
-MimeType=x-scheme-handler/tg;
+MimeType=application/x-xdg-protocol-tg;x-scheme-handler/tg;
 EOF
+
+desktop-file-validate %{buildroot}%{_datadir}/applications/telegramdesktop.desktop
 
 for res in 32 48 64 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
@@ -98,6 +122,9 @@ for res in 16 22 24 48 42 96 128 192 ;do
   convert icon512.png -filter Lanczos -resize ${res}x${res}  \
     ${dir}/%{name}.png
 done
+
+mkdir -p %{buildroot}%{_datadir}/kservices5
+install -pm0644 %{SOURCE7} %{buildroot}%{_datadir}/kservices5/tg.protocol
 
 %post
 update-desktop-database &> /dev/null || :
@@ -118,12 +145,20 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_bindir}/%{binname}.bin
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
+%{_datadir}/kservices5/*.protocol
 
 %changelog
+* Tue Feb 21 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 1.0.14-1
+- 1.0.14
+- Update wrapper to move old configuration directory
+- Update wrapper to stop desktop file installation in HOME dir
+- Update wrapper to stop downloading of application updates
+- Add KF5 service protocol
+
 * Tue Jan 31 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.5-1
 - 1.0.5
-- P: %{binname} and %{binname}Desktop
-- Added wrapper with dirty HOME dir cleanup
+- P: %%{binname} and %%{binname}Desktop
+- Add wrapper with dirty HOME dir cleanup
 
 * Fri Jan 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.2-2
 - Fix desktop file

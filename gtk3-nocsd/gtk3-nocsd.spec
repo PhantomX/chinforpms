@@ -1,6 +1,6 @@
 Name:           gtk3-nocsd
 Version:        3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Disables the client side decoration of Gtk+ 3
 
 License:        LGPLv2.1
@@ -22,6 +22,12 @@ Gtk+ 3.
 
 %prep
 %autosetup -p1
+
+cp -p %{SOURCE1} %{name}.sh
+
+sed \
+  -e "/x\"$GTK_CSD\"x/s,\],\0 \&\& echo \$LD_PRELOAD | grep -v -q -F \'/usr/\${LIB}/libgtk3-nocsd.so.0\'," \
+  -i %{name}.sh
 
 sed -e 's|$(LDFLAGS_LIB)|\0 $(LDFLAGS)|g' -i Makefile
 
@@ -51,12 +57,12 @@ export mandir=%{_mandir}
 chmod +x %{buildroot}%{_libdir}/lib%{name}.so.0
 
 mkdir -p %{buildroot}%{_sysconfdir}/profile.d
-install -pm0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh
+install -pm0644 %{name}.sh %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh
 
 %files
 %license COPYING
 %doc ChangeLog README.md
-%config(noreplace) %{_sysconfdir}/profile.d/%{name}.sh
+%{_sysconfdir}/profile.d/%{name}.sh
 %{_bindir}/%{name}
 %{_libdir}/lib%{name}.so.0
 %{_datadir}/bash-completion/completions/%{name}
@@ -64,6 +70,10 @@ install -pm0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh
 
 
 %changelog
+* Mon Feb 20 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 3-3
+- Tweak profile script
+- Drop %%config from profile script
+
 * Sun Feb 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 3-2
 - Fix multilib
 

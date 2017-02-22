@@ -1,0 +1,15 @@
+diff -up gtk3-nocsd-3/gtk3-nocsd.in.multilib gtk3-nocsd-3/gtk3-nocsd.in
+--- gtk3-nocsd-3/gtk3-nocsd.in.multilib	2017-02-19 10:23:41.771000847 -0300
++++ gtk3-nocsd-3/gtk3-nocsd.in	2017-02-19 10:24:37.730157463 -0300
+@@ -41,10 +41,9 @@ if [ $IN_SYSTEM_PATH -eq 0 ] ; then
+     # Figure out where the library is installed. First try the path
+     # that was used when building gtk3-nocsd, then try the directory
+     # the binary is installed.
+-    INSTALLED_PATH="@@libdir@@"
+     BINARY_PATH="${GTK3_NOCSD_BINARY%/*}"
+     GTK3_NOCSD=""
+-    for _path in "$INSTALLED_PATH" "$BINARY_PATH" "${BINARY_PATH%/bin}/lib" ; do
++    for _path in "/usr/lib64" "/usr/lib" "$BINARY_PATH" "${BINARY_PATH%/bin}/lib" ; do
+         if [ -e "${_path}/${GTK3_NOCSD_NAME}" ] ; then
+             GTK3_NOCSD="${_path}/${GTK3_NOCSD_NAME}"
+             break
