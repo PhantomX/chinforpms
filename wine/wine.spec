@@ -1841,6 +1841,7 @@ fi
 %{_libdir}/wine/vcruntime140.dll.so
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/version.dll.so
+%{_libdir}/wine/virtdisk.dll.so
 %{_libdir}/wine/vssapi.dll.so
 %if 0%{?compholio}
 %{_libdir}/wine/vulkan-1.dll.so
@@ -1874,7 +1875,6 @@ fi
 %{_libdir}/wine/winnls32.dll.so
 %{_libdir}/wine/winspool.drv.so
 %{_libdir}/wine/winsta.dll.so
-%{_libdir}/wine/winusb.dll.so
 %{_libdir}/wine/wmasf.dll.so
 %{_libdir}/wine/wmi.dll.so
 %{_libdir}/wine/wmic.exe.so
@@ -1885,6 +1885,7 @@ fi
 %{_libdir}/wine/winscard.dll.so
 %{_libdir}/wine/wintab32.dll.so
 %{_libdir}/wine/wintrust.dll.so
+%{_libdir}/wine/winusb.dll.so
 %{_libdir}/wine/wlanapi.dll.so
 %{_libdir}/wine/wnaspi32.dll.so
 %{_libdir}/wine/wpc.dll.so
@@ -2239,7 +2240,7 @@ fi
 %endif
 
 %changelog
-* Tue Feb 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-100.chinfo
+* Wed Feb 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2-100.chinfo
 - 2.2
 
 * Thu Feb 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-100.chinfo
