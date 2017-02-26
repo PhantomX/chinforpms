@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -642,6 +642,12 @@ Patch859: 2-2-media-dvb-usb-firmware-don-t-do-DMA-on-stack.patch
 
 #rhbz 1415397
 Patch860: w1-ds2490-USB-transfer-buffers-need-to-be-DMAable.patch
+
+#rhbz 1422969
+Patch862: rt2800-warning.patch
+
+#CVE-2017-6074
+Patch863: dccp-fix-freeing-skb-too-early-for-IPV6_RECVPKTINFO.patch
 
 ### Extra
 
@@ -2217,6 +2223,10 @@ fi
 #
 #
 %changelog
+* Fri Feb 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.12-500.chinfo
+- Linux v4.9.12
+- f25 sync
+
 * Sat Feb 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.11-500.chinfo
 - Linux v4.9.11
 - https source links

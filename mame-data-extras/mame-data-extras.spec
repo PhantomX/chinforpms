@@ -3,14 +3,14 @@
 
 %global cheatver 0174
 %global historyver 182a
-%global infover 0182
+%global infover 0183
 
 # Build non redistributable package with free roms
 %global with_roms  %{?_with_roms:     1} %{?!_with_roms:     0}
 %global romlink http://www.mamedev.org/roms
 
 Name:           mame-data-extras
-Version:        0.182
+Version:        0.183
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -63,9 +63,9 @@ Source120:      %{romlink}/victory/victory.zip
 
 BuildArch: noarch
 
+BuildRequires:  findutils
 BuildRequires:  ImageMagick
 BuildRequires:  p7zip
-BuildRequires:  parallel
 BuildRequires:  unzip
 Requires:       mame-data
 
@@ -105,6 +105,13 @@ unzip -qa %{SOURCE2} -d .
 7z x Mameinfo%{infover}.7z
 mv docs mameinfo
 
+mkdir effects
+unzip %{SOURCE20} -d effects/
+unzip %{SOURCE21} -d effects/
+
+mkdir -p icons/png
+unzip %{SOURCE30} -d icons
+
 # fix permissions and line endings
 chmod -R u+w,go+r-w,a-s .
 
@@ -112,11 +119,18 @@ chmod 0644 README.* mameinfo/*.txt
 chmod 0755 mameinfo
 sed 's/\r//' cheat.txt -i mameinfo/*
 
+sed 's/\r//' icons/*READ.txt > README.icons
+
 %build
 
+pushd icons
+  rm -f '('*.ico
+  rm -f '!'*.ico
+  find -maxdepth 1 -name '*.ico' -print0 | xargs -0 -t -r -I FILE -P %(echo %{?_smp_mflags} | sed -e 's|-j||') convert FILE[1] png/FILE.png
+  rename '.ico' '' png/*.png
+popd
 
 %install
-rm -rf %{buildroot}
 
 %if %{with_roms}
 # Install ROMs
@@ -140,21 +154,11 @@ tar --extract --directory %{buildroot}%{_datadir}/mame/samples/ \
 
 # Install Artwork
 mkdir -p %{buildroot}%{_datadir}/mame/effects
-unzip %{SOURCE20} -d %{buildroot}%{_datadir}/mame/effects/
-unzip %{SOURCE21} -d %{buildroot}%{_datadir}/mame/effects/
-chmod 0644 %{buildroot}%{_datadir}/mame/effects/*.png
+install -pm0644 effects/*.png %{buildroot}%{_datadir}/mame/effects/
 
 # Install Icons
 mkdir -p %{buildroot}%{_datadir}/mame/icons
-unzip %{SOURCE30} -d icons
-chmod -R u+w,go+r-w,a-s icons
-sed 's/\r//' icons/*READ.txt > README.icons
-pushd icons
-  rm -f '('*.ico
-  rm -f '!'*.ico
-  ls *.ico | parallel %{?_smp_mflags} 'echo "Converting {} to {.}.png..." ; convert "{}"[1] "%{buildroot}%{_datadir}/mame/icons/{.}.png"'
-popd
-chmod 0644 %{buildroot}%{_datadir}/mame/icons/*.png
+install -pm0644 icons/png/*.png %{buildroot}%{_datadir}/mame/icons/
 
 # Empty dirs
 for file in cab snap ;do
@@ -166,12 +170,16 @@ done
 %files
 %doc cheat.txt mameinfo
 %{_datadir}/mame/*.dat
-%{_datadir}/mame/cab
+%dir %{_datadir}/mame/cab
+%{_datadir}/mame/cab/*
+%dir %{_datadir}/mame/cheat
 %{_datadir}/mame/cheat/*.7z
 %{_datadir}/mame/effects/*
+%dir %{_datadir}/mame/icons
 %{_datadir}/mame/icons/*.png
 %{_datadir}/mame/samples/*.zip
-%{_datadir}/mame/snap
+%dir %{_datadir}/mame/snap
+%{_datadir}/mame/snap/*
 
 
 %if %{with_roms}
@@ -182,6 +190,12 @@ done
 
 
 %changelog
+* Thu Feb 23 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 0.183-1
+- 0.183
+- Use proper spec file sessions
+- Icon conversion speedup with find and xargs, removing unneeded parallel dependency
+- Own some directories
+
 * Wed Feb 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.182-1
 - 0.182
 
