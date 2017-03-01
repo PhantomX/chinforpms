@@ -1,5 +1,5 @@
 Name:           hakuneko
-Version:        1.4.1
+Version:        1.4.2
 Release:        1%{?dist}
 Summary:        manga Downloader
 
@@ -30,7 +30,7 @@ find . -name '*.a' -print -delete
 
 
 %install
-rm -rf %{buildroot}
+
 %make_install
 
 rm -rf %{buildroot}%{_datadir}/doc
@@ -55,5 +55,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 
 %changelog
+* Sun Feb 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4.2-1
+- 1.4.2
+
 * Sat Oct 15 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.4.1
 - First spec.

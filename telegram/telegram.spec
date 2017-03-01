@@ -56,7 +56,7 @@ TGDESKFILE2="${TGDIR}/tdata/%{name}desktop.desktop"
 
 mkdir -p "${TGDIR}"
 
-if [[ -d "${HOME}/.TelegramDesktop" ]] ;then
+if [[ -d "${HOME}/.TelegramDesktop" ]] && [[ ! -e "${TGDIR}/tdata/settings1" ]];then
   echo "Moving ${HOME}/.TelegramDesktop to ${TGDIR}..."
   mv "${HOME}/.TelegramDesktop"/* "${TGDIR}"/
   rmdir "${HOME}/.TelegramDesktop"
