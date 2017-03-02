@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -531,6 +531,8 @@ Patch433: bcm283x-mmc-imp-speed.patch
 
 Patch434: mm-alloc_contig-re-allow-CMA-to-compact-FS-pages.patch
 
+Patch436: vc4-fix-vblank-cursor-update-issue.patch
+
 Patch440: AllWinner-net-emac.patch
 
 Patch442: ARM-Drop-fixed-200-Hz-timer-requirement-from-Samsung-platforms.patch
@@ -646,6 +648,9 @@ Patch860: w1-ds2490-USB-transfer-buffers-need-to-be-DMAable.patch
 #rhbz 1422969
 Patch862: rt2800-warning.patch
 
+#CVE-2017-5669 rhbz 1427239
+Patch863: ipc-shm-Fix-shmat-mmap-nil-page-protection.patch
+
 ### Extra
 
 # Add additional cpu gcc optimization support
@@ -664,12 +669,13 @@ Patch1016: btrfs-fix-extent-tree-corruption-due-to-relocation.patch
 Patch1017: reiserfs-fix-race-in-prealloc-discard.patch
 
 # BFQ disk scheduler - http://algo.ing.unimo.it/people/paolo/disk_sched/
-Patch1030: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.9.0-v8r7/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.5.0.patch
-Patch1031: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.9.0-v8r7/0002-block-introduce-the-BFQ-v7r11-I-O-sched-for-4.5.0.patch
-Patch1032: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.9.0-v8r7/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v7r11-for.patch
-Patch1033: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.9.0-v8r7/0004-Turn-into-BFQ-v8r7-for-4.9.0.patch
-Source3000: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.9.0-v8r7/COPYING.BFQ
-Source3001: http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.9.0-v8r7/README.BFQ
+%global bfqurl http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.9.0-v8r7
+Patch1030: %{bfqurl}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.5.0.patch
+Patch1031: %{bfqurl}/0002-block-introduce-the-BFQ-v7r11-I-O-sched-for-4.5.0.patch
+Patch1032: %{bfqurl}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v7r11-for.patch
+Patch1033: %{bfqurl}/0004-Turn-into-BFQ-v8r7-for-4.9.0.patch
+Source3000: %{bfqurl}/COPYING.BFQ
+Source3001: %{bfqurl}/README.BFQ
 
 # END OF PATCH DEFINITIONS
 
@@ -771,7 +777,7 @@ This package provides debug information for the perf package.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global debuginfo_args %{?debuginfo_args} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+%{expand:%%global debuginfo_args %{?debuginfo_args} -p '.*%%{_bindir}/perf(\.debug)?|.*%%{_libexecdir}/perf-core/.*|.*%%{_libdir}/traceevent/plugins/.*|XXX' -o perf-debuginfo.list}
 
 %package -n python-perf
 Summary: Python bindings for apps which will manipulate perf events
@@ -847,7 +853,7 @@ This package provides debug information for package kernel-tools.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global debuginfo_args %{?debuginfo_args} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+%{expand:%%global debuginfo_args %{?debuginfo_args} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
 %endif # with_tools
 
@@ -2219,6 +2225,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 01 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.13-501.chinfo
+- f25 sync
+
 * Sun Feb 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.13-500.chinfo
 - Linux v4.9.13
 
