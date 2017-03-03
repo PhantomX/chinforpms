@@ -1,13 +1,16 @@
-%global pkgname IRPF2016
+%global __jar_repack %{nil}
 
-Name:           irpf2016
+%global pkgyear 2016
+%global pkgname IRPF%{pkgyear}
+
+Name:           irpf%{pkgyear}
 Version:        1.3
-Release:        2%{?dist}
-Summary:        Programa Gerador do IRPF 2016, versão Java
+Release:        3%{?dist}
+Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
 License:        Custom
-URL:            http://idg.receita.fazenda.gov.br/interface/cidadao/irpf/2016
-Source0:        http://downloadirpf.receita.fazenda.gov.br/irpf/2016/%{pkgname}-%{version}.zip
+URL:            http://idg.receita.fazenda.gov.br/interface/cidadao/irpf/%{pkgyear}
+Source0:        http://downloadirpf.receita.fazenda.gov.br/irpf/%{pkgyear}/%{pkgname}-%{version}.zip
 
 BuildArch:      noarch
 
@@ -104,6 +107,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/ProgramasRFB/%{name}
 
 %changelog
+* Thu Mar 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-3
+- Disable jar repack
+
 * Fri Jan 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-2
 - Drop menus, only install main desktop file.
 

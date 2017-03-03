@@ -1,9 +1,11 @@
+%global __jar_repack %{nil}
+
 %global pkgyear 2017
 %global pkgname IRPF%{pkgyear}
 
 Name:           irpf%{pkgyear}
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
 License:        Custom
@@ -102,5 +104,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/ProgramasRFB/%{name}
 
 %changelog
+* Thu Mar 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0-2
+- Disable jar repack
+
 * Wed Mar 01 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 1.0-1
 - Initial spec

@@ -1,8 +1,10 @@
+%global __jar_repack %{nil}
+
 %global pkgname Receitanet
 
 Name:           receitanet
 Version:        1.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Receitanet
 
 License:        Custom
@@ -96,6 +98,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/ProgramasRFB/%{name}
 
 %changelog
+* Thu Mar 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10-2
+- Disable jar repack
+
 * Wed Mar 01 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 1.10-1
 - 1.10
 
