@@ -1,6 +1,6 @@
-%global commit 48934df6787cd9d693779ec1b0915a5c1ce02c72
+%global commit 042d09a049d0d6859fc1b22e97aa7cbcd0930111
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20170203
+%global date 20170305
 %global use_snapshot 1
 
 # Enable system ffmpeg
@@ -30,9 +30,13 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 tinyformat
 
-%global commit6 bec5fc898a1ffcc7c6bae26a32481fca38961aed
+%global commit6 7225a1cb1ecdd8dc736156f45cf3bba38cc3136c
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
+
+%global commit7 603673629ebfe8915b50600a7c98b4ee1d3a1cfe
+%global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
+%global srcname7 SPIRV-Cross
 %endif
 
 %if 0%{?use_snapshot}
@@ -45,7 +49,7 @@
 
 Name:           ppsspp
 Version:        1.3
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -60,6 +64,7 @@ Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}.ta
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/Kingcom/%{srcname5}/archive/%{commit5}.tar.gz#/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/hrydgard/glslang/archive/%{commit6}.tar.gz#/%{srcname6}-%{shortcommit6}.tar.gz
+Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}.tar.gz#/%{srcname7}-%{shortcommit7}.tar.gz
 %else
 Source0:        https://github.com/hrydgard/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif #{?use_snapshot}
@@ -105,14 +110,15 @@ tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE5} -C ext/armips/ext/tinyformat --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
+tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 %else
 %autosetup -n %{name}-%{version} -p0
 %endif
 
 %if 0%{?use_snapshot}
 sed -i \
-  -e "/GIT_VERSION/s|unknown|%{version}.%{shortcommit}|g" \
-  -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --always|echo \"%{version}.%{shortcommit}\"|g" \
+  -e "/GIT_VERSION/s|unknown|%{version}-%{release}|g" \
+  -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --always|echo \"%{version}-%{release}\"|g" \
   git-version.cmake
 %endif
 
@@ -187,7 +193,6 @@ popd
 
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 build/PPSSPPSDL %{buildroot}%{_bindir}/%{name}.bin
@@ -253,6 +258,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Mar 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-5.20170305git042d09a
+- New snapshot
+- Update GIT_VERSION again
+
 * Fri Feb 03 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-4.20170203git48934df
 - New snapshot
 - Build proper ffmpeg static libraries instead using distributed binary ones
