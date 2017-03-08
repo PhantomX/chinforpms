@@ -11,11 +11,11 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.2
+%global compholiover 2.3
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.1
+%global ninever 2.2
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -32,7 +32,7 @@
 %endif
 
 Name:           wine
-Version:        2.2
+Version:        2.3
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2240,6 +2240,9 @@ fi
 %endif
 
 %changelog
+* Mon Mar 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.3-100.chinfo
+- 2.3
+
 * Wed Feb 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2-100.chinfo
 - 2.2
 

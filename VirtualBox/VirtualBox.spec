@@ -328,7 +328,7 @@ kmk %{_smp_mflags}    \
     VBOX_PATH_SHARED_LIBS=%{_libdir}/virtualbox         \
     VBOX_WITH_RUNPATH=%{_libdir}/virtualbox         \
     VBOX_PATH_APP_PRIVATE=%{_datadir}/virtualbox         \
-    VBOX_PATH_APP_DOCS=%{_docdir}/VirtualBox        \
+    VBOX_PATH_APP_DOCS=%{_docdir}/%{name}-server \
     VBOX_WITH_TESTCASES= \
     VBOX_WITH_VALIDATIONKIT= \
     VBOX_WITH_VBOX_IMG=1 \

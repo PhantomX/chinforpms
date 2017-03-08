@@ -1,6 +1,6 @@
-%global commit 042d09a049d0d6859fc1b22e97aa7cbcd0930111
+%global commit 9f17c7f01e2feca3a11d7b6034d2716f85248a3d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20170305
+%global date 20170306
 %global use_snapshot 1
 
 # Enable system ffmpeg
@@ -49,7 +49,7 @@
 
 Name:           ppsspp
 Version:        1.3
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -126,7 +126,6 @@ cp Qt/PPSSPP.desktop %{name}.desktop
 
 sed -i -e '/_FLAGS_/s| -O3 | |g' CMakeLists.txt
 
-%global pngver %(pkg-config --variable=includedir libpng |sed 's|/usr/include/lib||g')
 rm -rf ext/native/ext/libpng
 sed -e 's|png17|%{pngver}|g' \
   -i CMakeLists.txt Core/Screenshot.cpp \
@@ -258,6 +257,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Mon Mar 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-6.20170306git9f17c7f
+- New snapshot
+- Fix forgotten GIT_VERSION
+
 * Sun Mar 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-5.20170305git042d09a
 - New snapshot
 - Update GIT_VERSION again
