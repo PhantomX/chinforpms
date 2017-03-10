@@ -7,7 +7,9 @@ License:        MIT
 URL:            http://sourceforge.net/projects/hakuneko/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}_%{version}_src.tar.gz
 
-BuildRequires:  wxGTK3-devel curl-devel openssl-devel
+BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(openssl)
+BuildRequires:  wxGTK3-devel
 Requires:       hicolor-icon-theme
 
 %description

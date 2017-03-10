@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20170130
+// 20170309
 
 pref("browser.search.suggest.enabled", false);
 pref("browser.urlbar.clickSelectsAll", false);
@@ -8,6 +8,7 @@ pref("browser.urlbar.trimURLs", false);
 pref("general.autoScroll", false);
 pref("general.smoothScroll", false);
 pref("layout.spellcheckDefault", 0);
+pref("media.autoplay.enabled", false);
 pref("middlemouse.contentLoadURL", false);
 
 // No Pocket here

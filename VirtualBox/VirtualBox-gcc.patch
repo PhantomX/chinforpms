@@ -1,11 +1,11 @@
---- ./configure.orig	2016-03-05 02:37:09.491895482 +0000
-+++ ./configure	2016-03-05 02:53:57.136090980 +0000
-@@ -441,7 +441,7 @@ check_gcc()
-              -o \( $cc_maj -eq 4 -a $cc_min -lt 2 -a "$OS"  = "darwin" \) \
+--- ./configure.orig	2017-03-08 23:58:22.033228287 +0000
++++ ./configure	2017-03-08 23:58:27.288283387 +0000
+@@ -447,7 +447,7 @@ check_gcc()
               -o \( $cc_maj -eq 4 -a $cc_min -gt 9 \) \
               -o \( $cc_maj -eq 5 -a $cc_min -gt 9 \) \
--             -o \( $cc_maj -eq 6 -a $cc_min -gt 1 \) \
-+             -o \( $cc_maj -eq 6 -a $cc_min -gt 2 \) \
-              -o $cc_maj -gt 6 ]; then
+              -o \( $cc_maj -eq 6 -a $cc_min -gt 9 \) \
+-             -o $cc_maj -gt 6 ]; then
++             -o $cc_maj -gt 7 ]; then
          log_failure "gcc version $cc_maj.$cc_min found, expected gcc 4.x, gcc 5.x or gcc 6.x"
          fail really
+       else

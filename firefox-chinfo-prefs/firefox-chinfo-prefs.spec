@@ -1,5 +1,5 @@
 Name:           firefox-chinfo-prefs
-Version:        20170130
+Version:        20170309
 Release:        1%{?dist}
 Summary:        Chinforinfula default preferences for Firefox
 
@@ -19,7 +19,6 @@ Requires:       firefox
 %build
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_sysconfdir}/firefox/pref
 install -pm0644 %{SOURCE0} %{buildroot}%{_sysconfdir}/firefox/pref/chinfo.js
@@ -29,5 +28,8 @@ install -pm0644 %{SOURCE0} %{buildroot}%{_sysconfdir}/firefox/pref/chinfo.js
 %config(noreplace) %{_sysconfdir}/firefox/pref/chinfo.js
 
 %changelog
+* Thu Mar 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 20170309-1
+- media.autoplay.enabled -> false
+
 * Tue Feb  7 2017 Phantom X <megaphantomx at bol dot com dot br> - 20170130-1
 - Initial spec

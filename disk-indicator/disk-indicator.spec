@@ -22,7 +22,7 @@ Source0:        https://github.com/MeanEYE/Disk-Indicator/archive/v%{version}.ta
 
 Patch0:         disk-indicator-homedir.patch
 
-BuildRequires:  libX11-devel
+BuildRequires:  pkgconfig(x11)
 
 %description
 Small program for Linux that will turn your Scroll, Caps or Num Lock LED or LED

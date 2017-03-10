@@ -12,8 +12,8 @@ Source0:        http://heim.ifi.uio.no/~oyvinha/%{pkgname}/%{pkgname}-%{version}
 
 Requires:       gkrellm >= 2.2.0
 BuildRequires:  autoconf libtool
-BuildRequires:  gkrellm-devel >= 2.2.0
-BuildRequires:  libXtst-devel
+BuildRequires:  pkgconfig(gkrellm) >= 2.2.0
+BuildRequires:  pkgconfig(xtst)
 
 %description
 gkleds is a GKrellM plugin which monitors the CapsLock, NumLock and ScrollLock

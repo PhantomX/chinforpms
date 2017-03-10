@@ -26,9 +26,9 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.1.14
+Version:        5.1.16
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1.chinfo%{?dist}
+Release:        100.chinfo%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -106,6 +106,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Mar 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.16-1.chinfo
+- 5.1.16
+
 * Wed Jan 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.14-1.chinfo
 - 5.1.14
 

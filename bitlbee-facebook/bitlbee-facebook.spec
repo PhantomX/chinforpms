@@ -20,12 +20,12 @@ Source0:        https://github.com/bitlbee/%{name}/archive/%{commit}.tar.gz#/%{n
 Source0:        https://github.com/bitlbee/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
-BuildRequires:  bitlbee-devel
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
-BuildRequires:  json-glib-devel
-BuildRequires:  zlib-devel
+BuildRequires:  pkgconfig(bitlbee)
+BuildRequires:  pkgconfig(json-glib-1.0)
+BuildRequires:  pkgconfig(zlib)
 Requires:       bitlbee
 
 %description

@@ -12,7 +12,7 @@ Source0:        https://github.com/sainsaar/gkrellm2-cpupower/tarball/%{version}
 
 Patch0:         %{pkgname}-0.1.6-cpupower.patch
 Requires:       gkrellm >= 2.2.0
-BuildRequires:  gkrellm-devel >= 2.2.0
+BuildRequires:  pkgconfig(gkrellm) >= 2.2.0
 
 %description
 A Gkrellm2 plugin for displaying and manipulating CPU frequency.
