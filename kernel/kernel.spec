@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -513,8 +513,6 @@ Patch426: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # Fix OMAP4 (pandaboard)
 Patch427: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
-Patch428: arm64-dma-mapping-Fix-dma_mapping_error-when-bypassing-SWIOTLB.patch
-
 # Not particularly happy we don't yet have a proper upstream resolution this is the right direction
 # https://www.spinics.net/lists/arm-kernel/msg535191.html
 Patch429: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
@@ -642,14 +640,14 @@ Patch855: kvm-fix-page-struct-leak-in-handle_vmon.patch
 Patch858: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
 Patch859: 2-2-media-dvb-usb-firmware-don-t-do-DMA-on-stack.patch
 
-#rhbz 1415397
-Patch860: w1-ds2490-USB-transfer-buffers-need-to-be-DMAable.patch
-
 #rhbz 1422969
 Patch862: rt2800-warning.patch
 
-#CVE-2017-5669 rhbz 1427239
-Patch863: ipc-shm-Fix-shmat-mmap-nil-page-protection.patch
+#CVE-2017-6353 rhbz 1428907 1428910
+Patch864: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
+
+# CVE-2017-2636 rhbz 1430049
+Patch668: 0001-tty-n_hdlc-get-rid-of-racy-n_hdlc.tbuf.patch
 
 ### Extra
 
@@ -2225,6 +2223,10 @@ fi
 #
 #
 %changelog
+* Sun Mar 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.14-500.chinfo
+- Linux v4.9.14
+- f25 sync
+
 * Wed Mar 01 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.13-501.chinfo
 - f25 sync
 

@@ -4,8 +4,8 @@
 %global pkgname IRPF%{pkgyear}
 
 Name:           irpf%{pkgyear}
-Version:        1.0
-Release:        2%{?dist}
+Version:        1.1
+Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
 License:        Custom
@@ -20,6 +20,9 @@ BuildRequires:  java-headless
 Requires:       java
 Requires:       hicolor-icon-theme
 Requires:       xdg-utils
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 Permite a transmissão de arquivos para a Base de Dados da Receita Federal do
@@ -104,6 +107,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/ProgramasRFB/%{name}
 
 %changelog
+* Fri Mar 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.1-1
+- 1.1
+
 * Thu Mar 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0-2
 - Disable jar repack
 
