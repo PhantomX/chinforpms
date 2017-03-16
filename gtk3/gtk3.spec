@@ -18,7 +18,7 @@
 %global _changelog_trimtime %(date +%s -d "1 year ago")
 
 Name: gtk3
-Version: 3.22.9
+Version: 3.22.10
 Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -363,6 +363,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache
 %{_datadir}/installed-tests
 
 %changelog
+* Wed Mar 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.10-100.chinfo
+- 3.22.10
+
 * Mon Feb 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.9-100.chinfo
 - 3.22.9
 

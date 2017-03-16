@@ -24,7 +24,7 @@ Summary: The Linux kernel
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 %endif
 
-%define buildid .chinfo
+%global buildid .chinfo
 
 # baserelease defines which build revision of this kernel version we're
 # building.  We used to call this fedora_build, but the magical name
@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 9
+%define base_sublevel 10
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -67,7 +67,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 0
+%global rcrev 0
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -313,8 +313,10 @@ Summary: The Linux kernel
 # printed out?
 %if %{nopatches}
 %define listnewconfig_fail 0
+%define configmismatch_fail 0
 %else
 %define listnewconfig_fail 1
+%define configmismatch_fail 1
 %endif
 
 # To temporarily exclude an architecture from being built, add it to
@@ -425,38 +427,35 @@ Source98: filter-ppc64p7.sh
 Source99: filter-modules.sh
 %define modsign_cmd %{SOURCE18}
 
-Source19: Makefile.release
-Source20: Makefile.config
-Source21: config-debug
-Source22: config-nodebug
-Source23: config-generic
-Source24: config-no-extra
+Source20: kernel-aarch64.config
+Source21: kernel-aarch64-debug.config
+Source22: kernel-armv7hl.config
+Source23: kernel-armv7hl-debug.config
+Source24: kernel-armv7hl-lpae.config
+Source25: kernel-armv7hl-lpae-debug.config
+Source26: kernel-i686.config
+Source27: kernel-i686-debug.config
+Source28: kernel-i686-PAE.config
+Source29: kernel-i686-PAEdebug.config
+Source30: kernel-ppc64.config
+Source31: kernel-ppc64-debug.config
+Source32: kernel-ppc64le.config
+Source33: kernel-ppc64le-debug.config
+Source34: kernel-ppc64p7.config
+Source35: kernel-ppc64p7-debug.config
+Source36: kernel-s390x.config
+Source37: kernel-s390x-debug.config
+Source38: kernel-x86_64.config
+Source39: kernel-x86_64-debug.config
 
-Source30: config-x86-generic
-Source31: config-i686-PAE
-Source32: config-x86-32-generic
+Source40: generate_all_configs.sh
+Source41: generate_debug_configs.sh
 
-Source40: config-x86_64-generic
-
-Source50: config-powerpc64-generic
-Source53: config-powerpc64
-Source54: config-powerpc64p7
-Source55: config-powerpc64le
-
-Source70: config-s390x
-
-Source100: config-arm-generic
-
-# Unified ARM kernels
-Source101: config-armv7-generic
-Source102: config-armv7
-Source103: config-armv7-lpae
-
-Source110: config-arm64
+Source42: check_configs.awk
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
-Source1000: config-local
+Source1000: kernel-local
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -498,44 +497,48 @@ Source5005: kbuild-AFTER_LINK.patch
 # Standalone patches
 
 # a tempory patch for QCOM hardware enablement. Will be gone by end of 2016/F-26 GA
-Patch421: qcom-QDF2432-tmp-errata.patch
+Patch420: qcom-QDF2432-tmp-errata.patch
 
 # http://www.spinics.net/lists/arm-kernel/msg490981.html
-Patch422: geekbox-v4-device-tree-support.patch
-
-# http://www.spinics.net/lists/linux-pci/msg53991.html
-# https://patchwork.kernel.org/patch/9337113/
-Patch425: arm64-pcie-quirks.patch
+Patch421: geekbox-v4-device-tree-support.patch
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch426: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+Patch422: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
 # Fix OMAP4 (pandaboard)
-Patch427: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
+Patch423: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
 # Not particularly happy we don't yet have a proper upstream resolution this is the right direction
 # https://www.spinics.net/lists/arm-kernel/msg535191.html
-Patch429: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
+Patch424: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
 
 # http://patchwork.ozlabs.org/patch/587554/
-Patch430: ARM-tegra-usb-no-reset.patch
+Patch425: ARM-tegra-usb-no-reset.patch
 
-Patch431: bcm2837-initial-support.patch
+Patch426: AllWinner-net-emac.patch
 
-Patch432: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+# http://www.spinics.net/lists/devicetree/msg163238.html
+Patch430: bcm2837-initial-support.patch
 
 # http://www.spinics.net/lists/linux-mmc/msg41151.html
-Patch433: bcm283x-mmc-imp-speed.patch
+Patch431: bcm283x-mmc-imp-speed.patch
 
-Patch434: mm-alloc_contig-re-allow-CMA-to-compact-FS-pages.patch
+Patch432: bcm283x-VEC.patch
+
+# http://www.spinics.net/lists/dri-devel/msg132235.html
+Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+
+# Fix RPi3 from crashing. Nowhere near a final fix but provides breathing room while that is sorted
+# https://github.com/anholt/linux/issues/89
+Patch434: 0001-i2c-bcm2835-Debug-test-for-curr_msg.patch
+
+# Upstream fixes for i2c/serial/ethernet MAC addresses
+Patch435: bcm283x-fixes.patch
 
 Patch436: vc4-fix-vblank-cursor-update-issue.patch
 
-Patch440: AllWinner-net-emac.patch
-
-Patch442: ARM-Drop-fixed-200-Hz-timer-requirement-from-Samsung-platforms.patch
-
-Patch443: imx6sx-Add-UDOO-Neo-support.patch
+# http://www.spinics.net/lists/arm-kernel/msg552554.html
+Patch438: arm-imx6-hummingboard2.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -551,33 +554,7 @@ Patch471: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
 
 Patch472: crash-driver.patch
 
-Patch473: Add-secure_modules-call.patch
-
-Patch474: PCI-Lock-down-BAR-access-when-module-security-is-ena.patch
-
-Patch475: x86-Lock-down-IO-port-access-when-module-security-is.patch
-
-Patch476: ACPI-Limit-access-to-custom_method.patch
-
-Patch477: asus-wmi-Restrict-debugfs-interface-when-module-load.patch
-
-Patch478: Restrict-dev-mem-and-dev-kmem-when-module-loading-is.patch
-
-Patch479: acpi-Ignore-acpi_rsdp-kernel-parameter-when-module-l.patch
-
-Patch480: kexec-Disable-at-runtime-if-the-kernel-enforces-modu.patch
-
-Patch481: x86-Restrict-MSR-access-when-module-loading-is-restr.patch
-
-Patch482: Add-option-to-automatically-enforce-module-signature.patch
-
-Patch483: efi-Add-SHIM-and-image-security-database-GUID-defini.patch
-
-Patch484: efi-Disable-secure-boot-if-shim-is-in-insecure-mode.patch
-
-Patch485: efi-Add-EFI_SECURE_BOOT-bit.patch
-
-Patch486: hibernate-Disable-in-a-signed-modules-environment.patch
+Patch473: efi-lockdown.patch
 
 Patch487: Add-EFI-signature-data-types.patch
 
@@ -592,16 +569,11 @@ Patch490: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
 
 Patch491: MODSIGN-Support-not-importing-certs-from-db.patch
 
-Patch492: Add-sysrq-option-to-disable-secure-boot-mode.patch
-
 Patch493: drm-i915-hush-check-crtc-state.patch
 
 Patch494: disable-i8042-check-on-apple-mac.patch
 
 Patch495: lis3-improve-handling-of-null-rate.patch
-
-# In theory this has been fixed so should no longer be needed, it also causes problems with aarch64 DMI, so disable to see for sure if it's fixed
-# Patch496: watchdog-Disable-watchdog-on-virtual-machines.patch
 
 Patch497: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
@@ -617,8 +589,6 @@ Patch502: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
 
 # Patch503: drm-i915-turn-off-wc-mmaps.patch
 
-Patch508: kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
-
 Patch509: MODSIGN-Don-t-try-secure-boot-if-EFI-runtime-is-disa.patch
 
 #CVE-2016-3134 rhbz 1317383 1317384
@@ -627,28 +597,24 @@ Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 #ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch849: 0001-iio-Use-event-header-from-kernel-tree.patch
 
-# Request from dwalsh
-Patch851: selinux-namespace-fix.patch
+# Fix build issue with armada_trace
+Patch851: Armada-trace-build-fix.patch
 
-#rhbz 1390308
-Patch852: nouveau-add-maxwell-to-backlight-init.patch
+# selinux: allow context mounts on tmpfs, ramfs, devpts within user namespaces
+Patch852: selinux-allow-context-mounts-on-tmpfs-etc.patch
 
-# CVE-2017-2596 rhbz 1417812 1417813
-Patch855: kvm-fix-page-struct-leak-in-handle_vmon.patch
+# See http://lists.infradead.org/pipermail/linux-arm-kernel/2016-October/461597.html
+Patch853: 0001-Work-around-for-gcc7-and-arm64.patch
 
-#rhbz 1417829
-Patch858: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
-Patch859: 2-2-media-dvb-usb-firmware-don-t-do-DMA-on-stack.patch
-
-#rhbz 1422969
-Patch862: rt2800-warning.patch
+#CVE-2017-2596 rhbz 1417812 1417813
+Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
 
 #CVE-2017-6353 rhbz 1428907 1428910
-Patch864: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
+Patch855: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
 
-# CVE-2017-2636 rhbz 1430049
-Patch668: 0001-tty-n_hdlc-get-rid-of-racy-n_hdlc.tbuf.patch
-
+#CVE-2017-6874 rhbz 1432429 1432430
+Patch856: ucount-Remove-the-atomicity-from-ucount-count.patch
+ 
 ### Extra
 
 # Add additional cpu gcc optimization support
@@ -658,20 +624,19 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_addit
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 # Patches to export btrfs anonymous devices (VFS portion)
 Patch1010: vfs-add-super_operations-get_inode_dev.patch
-Patch1011: ipc-msg-make-msgrcv-work-with-LONG_MIN.patch
-Patch1012: perf_timechart_fix_zero_timestamps.patch
-Patch1013: btrfs-provide-super_operations-get_inode_dev.patch
-Patch1014: revert-btrfs-fix-lockdep-warning-on-deadlock-against-an-inode-s-log-mutex.patch
-Patch1015: revert-btrfs-improve-performance-on-fsync-against-new-inode-after-rename-unlink.patch
-Patch1016: btrfs-fix-extent-tree-corruption-due-to-relocation.patch
-Patch1017: reiserfs-fix-race-in-prealloc-discard.patch
+Patch1011: perf_timechart_fix_zero_timestamps.patch
+Patch1012: btrfs-provide-super_operations-get_inode_dev.patch
+Patch1013: btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
+Patch1014: btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
+Patch1015: reiserfs-fix-race-in-prealloc-discard.patch
 
 # BFQ disk scheduler - http://algo.ing.unimo.it/people/paolo/disk_sched/
-%global bfqurl http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.9.0-v8r7
-Patch1030: %{bfqurl}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.5.0.patch
-Patch1031: %{bfqurl}/0002-block-introduce-the-BFQ-v7r11-I-O-sched-for-4.5.0.patch
+%global bfqurl http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.10.0-v8r8
+Patch1030: %{bfqurl}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.10..patch
+Patch1031: %{bfqurl}/0002-block-introduce-the-BFQ-v7r11-I-O-sched-for-4.10.0.patch
 Patch1032: %{bfqurl}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v7r11-for.patch
-Patch1033: %{bfqurl}/0004-Turn-into-BFQ-v8r7-for-4.9.0.patch
+Patch1033: %{bfqurl}/0004-Turn-BFQ-v7r11-for-4.10.0-into-BFQ-v8r8-for-4.10.0.patch
+Patch1034: 0001-BUGFIX-do-not-put-a-bfq_queue-when-forgetting-it.patch
 Source3000: %{bfqurl}/COPYING.BFQ
 Source3001: %{bfqurl}/README.BFQ
 
@@ -1245,19 +1210,24 @@ git commit -a -m "Stable update"
 %endif
 
 # Drop some necessary files from the source dir into the buildroot
-cp $RPM_SOURCE_DIR/config-* .
+cp $RPM_SOURCE_DIR/kernel-*.config .
+cp %{SOURCE1000} .
 cp %{SOURCE15} .
+cp %{SOURCE40} .
+cp %{SOURCE41} .
 
 %if !%{debugbuildsenabled}
-%if %{with_release}
 # The normal build is a really debug build and the user has explicitly requested
 # a release kernel. Change the config files into non-debug versions.
-make -f %{SOURCE19} config-release
-%endif
+%if !%{with_release}
+VERSION=%{version} ./generate_debug_configs.sh
+%else
+VERSION=%{version} ./generate_all_configs.sh
 %endif
 
-# Dynamically generate kernel .config files from config-* files
-make -f %{SOURCE20} VERSION=%{version} configs
+%else
+VERSION=%{version} ./generate_all_configs.sh
+%endif
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
@@ -1301,9 +1271,21 @@ rm -f kernel-%{version}-*debug.config
 
 %define make make %{?cross_opts}
 
+CheckConfigs() {
+     ./check_configs.awk $1 $2 > .mismatches
+     if [ -s .mismatches ]
+     then
+	echo "Error: Mismatches found in configuration files"
+	cat .mismatches
+	exit 1
+     fi
+}
+
+cp %{SOURCE42} .
 # now run oldconfig over all the config files
 for i in *.config
 do
+  cat $i > temp-$i
   mv $i .config
   Arch=`head -1 .config | cut -b 3-`
   make ARCH=$Arch listnewconfig | grep -E '^CONFIG_' >.newoptions || true
@@ -1317,6 +1299,10 @@ do
   make ARCH=$Arch oldnoconfig
   echo "# $Arch" > configs/$i
   cat .config >> configs/$i
+%if %{configmismatch_fail}
+  CheckConfigs configs/$i temp-$i
+%endif
+  rm temp-$i
 done
 # end of kernel config
 %endif
@@ -1652,7 +1638,7 @@ BuildKernel() {
 
     # Go back and find all of the various directories in the tree.  We use this
     # for the dir lists in kernel-core
-    find lib/modules/$KernelVer/kernel -type d | sort -n > module-dirs.list
+    find lib/modules/$KernelVer/kernel -mindepth 1 -type d | sort -n > module-dirs.list
 
     # Cleanup
     rm System.map
@@ -1719,9 +1705,11 @@ BuildKernel %make_target %kernel_image
 %endif
 
 %global perf_make \
-  make -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix}
+  make -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
 %if %{with_perf}
 # perf
+# make sure check-headers.sh is executable
+chmod +x tools/perf/check-headers.sh
 %{perf_make} DESTDIR=$RPM_BUILD_ROOT all
 %endif
 
@@ -2223,6 +2211,10 @@ fi
 #
 #
 %changelog
+* Wed Mar 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.3-500.chinfo
+- Linux v4.10.3
+- f25 sync
+
 * Sun Mar 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.9.14-500.chinfo
 - Linux v4.9.14
 - f25 sync

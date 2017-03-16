@@ -1,207 +1,66 @@
-From cdb86691df26e0962f081981f4bfa97ee43bd391 Mon Sep 17 00:00:00 2001
-From: Peter Robinson <pbrobinson@gmail.com>
-Date: Mon, 29 Aug 2016 09:14:15 +0100
-Subject: [PATCH] ARM: bcm283x: Add devicetree for the Raspberry Pi 3.
+From patchwork Wed Feb  8 22:40:24 2017
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: ARM: dts: Add devicetree for the Raspberry Pi 3, for arm32 (v3)
+From: Eric Anholt <eric@anholt.net>
+X-Patchwork-Id: 9563699
+Message-Id: <20170208224024.30415-1-eric@anholt.net>
+To: Florian Fainelli <f.fainelli@gmail.com>, Rob Herring <robh+dt@kernel.org>, 
+ Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org
+Cc: Stephen Warren <swarren@wwwdotorg.org>, Lee Jones <lee@kernel.org>,
+ linux-kernel@vger.kernel.org, Eric Anholt <eric@anholt.net>,
+ bcm-kernel-feedback-list@broadcom.com,
+ linux-rpi-kernel@lists.infradead.org, 
+ linux-arm-kernel@lists.infradead.org, Gerd Hoffmann <kraxel@redhat.com>
+Date: Wed,  8 Feb 2017 14:40:24 -0800
 
-For now this doesn't support the new hardware present on the Pi 3 (BT,
-wifi, GPIO expander).
+Raspbian and Fedora have decided to support the Pi3 in 32-bit mode for
+now, so it's useful to be able to test that mode on an upstream
+kernel.  It's also been useful for me to use the same board for 32-bit
+and 64-bit development.
 
-Rebased to the patch that went upstream for ARM64
-
-Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+Signed-off-by: Eric Anholt <eric@anholt.net>
 ---
- arch/arm/boot/dts/Makefile            |  3 +-
- arch/arm/boot/dts/bcm2837-rpi-3-b.dts | 30 ++++++++++++++
- arch/arm/boot/dts/bcm2837.dtsi        | 76 +++++++++++++++++++++++++++++++++++
- 3 files changed, 108 insertions(+), 1 deletion(-)
- create mode 100644 arch/arm/boot/dts/bcm2837-rpi-3-b.dts
- create mode 100644 arch/arm/boot/dts/bcm2837.dtsi
+
+v1: Gerd's patch that put the ../../../arm64/... link in the Makefile
+v2: Michael's patch that #included from ../../../arm64/... in a new
+    bcm2837-rpi-3-b.dts.
+v3: Mine, using symlinks to make sure that we don't break the split DT
+    tree.
+
+ arch/arm/boot/dts/Makefile            | 1 +
+ arch/arm/boot/dts/bcm2837-rpi-3-b.dts | 1 +
+ arch/arm/boot/dts/bcm2837.dtsi        | 1 +
+ 3 files changed, 3 insertions(+)
+ create mode 120000 arch/arm/boot/dts/bcm2837-rpi-3-b.dts
+ create mode 120000 arch/arm/boot/dts/bcm2837.dtsi
 
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index befcd26..c96fb38 100644
+index 6576e3f000c9..416fdcedf5a1 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -70,7 +70,8 @@ dtb-$(CONFIG_ARCH_BCM2835) += \
+@@ -70,6 +70,7 @@ dtb-$(CONFIG_ARCH_BCM2835) += \
  	bcm2835-rpi-b-plus.dtb \
  	bcm2835-rpi-a-plus.dtb \
  	bcm2836-rpi-2-b.dtb \
--	bcm2835-rpi-zero.dtb
-+	bcm2835-rpi-zero.dtb \
-+	bcm2837-rpi-3-b.dtb
++	bcm2837-rpi-3-b.dtb \
+ 	bcm2835-rpi-zero.dtb
  dtb-$(CONFIG_ARCH_BCM_5301X) += \
  	bcm4708-asus-rt-ac56u.dtb \
- 	bcm4708-asus-rt-ac68u.dtb \
 diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
-new file mode 100644
-index 0000000..7841b72
+new file mode 120000
+index 000000000000..ceebc0e163fb
 --- /dev/null
 +++ b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
-@@ -0,0 +1,30 @@
-+/dts-v1/;
-+#include "bcm2837.dtsi"
-+#include "bcm2835-rpi.dtsi"
-+#include "bcm283x-rpi-smsc9514.dtsi"
-+
-+/ {
-+	compatible = "raspberrypi,3-model-b", "brcm,bcm2837";
-+	model = "Raspberry Pi 3 Model B";
-+
-+	memory {
-+		reg = <0 0x40000000>;
-+	};
-+
-+	leds {
-+		act {
-+			gpios = <&gpio 47 0>;
-+		};
-+
-+		pwr {
-+			label = "PWR";
-+			gpios = <&gpio 35 0>;
-+			default-state = "keep";
-+			linux,default-trigger = "default-on";
-+		};
-+	};
-+};
-+
-+&uart1 {
-+	status = "okay";
-+};
+@@ -0,0 +1 @@
++../../../arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dts
+\ No newline at end of file
 diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
-new file mode 100644
-index 0000000..8216bbb
+new file mode 120000
+index 000000000000..53f1cd2bba47
 --- /dev/null
 +++ b/arch/arm/boot/dts/bcm2837.dtsi
-@@ -0,0 +1,76 @@
-+#include "bcm283x.dtsi"
-+
-+/ {
-+	compatible = "brcm,bcm2836";
-+
-+	soc {
-+		ranges = <0x7e000000 0x3f000000 0x1000000>,
-+			 <0x40000000 0x40000000 0x00001000>;
-+		dma-ranges = <0xc0000000 0x00000000 0x3f000000>;
-+
-+		local_intc: local_intc {
-+			compatible = "brcm,bcm2836-l1-intc";
-+			reg = <0x40000000 0x100>;
-+			interrupt-controller;
-+			#interrupt-cells = <1>;
-+			interrupt-parent = <&local_intc>;
-+		};
-+	};
-+
-+	timer {
-+		compatible = "arm,armv7-timer";
-+		interrupt-parent = <&local_intc>;
-+		interrupts = <0>, // PHYS_SECURE_PPI
-+			     <1>, // PHYS_NONSECURE_PPI
-+			     <3>, // VIRT_PPI
-+			     <2>; // HYP_PPI
-+		always-on;
-+	};
-+
-+	cpus: cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0x0 0x000000d8>;
-+		};
-+
-+		cpu1: cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <1>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0x0 0x000000e0>;
-+		};
-+
-+		cpu2: cpu@2 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <2>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0x0 0x000000e8>;
-+		};
-+
-+		cpu3: cpu@3 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <3>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0x0 0x000000f0>;
-+		};
-+	};
-+};
-+
-+/* Make the BCM2835-style global interrupt controller be a child of the
-+ * CPU-local interrupt controller.
-+ */
-+&intc {
-+	compatible = "brcm,bcm2836-armctrl-ic";
-+	reg = <0x7e00b200 0x200>;
-+	interrupt-parent = <&local_intc>;
-+	interrupts = <8>;
-+};
--- 
-2.7.4
-
-From 345863374ebec9aa11ea97b99f5adbf97f99bbdf Mon Sep 17 00:00:00 2001
-From: Peter Robinson <pbrobinson@gmail.com>
-Date: Mon, 16 Jan 2017 06:38:08 +0000
-Subject: [PATCH] add upstream RPi3 fixes from arm64 DT
-
-Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
----
- arch/arm/boot/dts/bcm2837-rpi-3-b.dts | 8 +-------
- arch/arm/boot/dts/bcm2837.dtsi        | 8 +++++++-
- 2 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
-index 7841b72..c309633 100644
---- a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
-+++ b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
-@@ -2,6 +2,7 @@
- #include "bcm2837.dtsi"
- #include "bcm2835-rpi.dtsi"
- #include "bcm283x-rpi-smsc9514.dtsi"
-+#include "bcm283x-rpi-usb-host.dtsi"
- 
- / {
- 	compatible = "raspberrypi,3-model-b", "brcm,bcm2837";
-@@ -15,13 +16,6 @@
- 		act {
- 			gpios = <&gpio 47 0>;
- 		};
--
--		pwr {
--			label = "PWR";
--			gpios = <&gpio 35 0>;
--			default-state = "keep";
--			linux,default-trigger = "default-on";
--		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
-index 8216bbb..19f2fe6 100644
---- a/arch/arm/boot/dts/bcm2837.dtsi
-+++ b/arch/arm/boot/dts/bcm2837.dtsi
-@@ -1,7 +1,7 @@
- #include "bcm283x.dtsi"
- 
- / {
--	compatible = "brcm,bcm2836";
-+	compatible = "brcm,bcm2837";
- 
- 	soc {
- 		ranges = <0x7e000000 0x3f000000 0x1000000>,
--- 
-2.9.3
-
+@@ -0,0 +1 @@
++../../../arm64/boot/dts/broadcom/bcm2837.dtsi
+\ No newline at end of file
