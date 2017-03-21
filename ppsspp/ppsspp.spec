@@ -1,6 +1,6 @@
-%global commit 9f17c7f01e2feca3a11d7b6034d2716f85248a3d
+%global commit 24cfb73bffcf29318428a2a2807b5eb0b880327a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20170306
+%global date 20170318
 %global use_snapshot 1
 
 # Enable system ffmpeg
@@ -10,7 +10,7 @@
 %endif
 
 %if 0%{?use_snapshot}
-%global commit1 c440eda0f3c4dfc9940b1643ce4e292ebc0c618f
+%global commit1 b4ba495e3ecc2c6aa2ea994357c00110c0403752
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -22,7 +22,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global commit4 309a15145a1f04306dcdd2214ef9b333b3fde755
+%global commit4 770365d44df35d6e675c58bb2a774ca412278ef5
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
@@ -30,11 +30,11 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 tinyformat
 
-%global commit6 7225a1cb1ecdd8dc736156f45cf3bba38cc3136c
+%global commit6 b16f7e6819267e57c3c244808d1981f0ce34acbc
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 603673629ebfe8915b50600a7c98b4ee1d3a1cfe
+%global commit7 6381b2ff9c0d975af8fd2974c97aa12a69ab6cc6
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 %endif
@@ -49,7 +49,7 @@
 
 Name:           ppsspp
 Version:        1.3
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -72,6 +72,7 @@ Source0:        https://github.com/hrydgard/%{name}/archive/v%{version}.tar.gz#/
 Patch0:         %{name}-noupdate.patch
 # Fix assets/gamecontrollerdb.txt loading
 Patch1:         %{name}-datadir.patch
+Patch2:         %{name}-snappy.patch
 
 %if !0%{?sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -257,6 +258,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sat Mar 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-7.20170318git24cfb73
+- New snapshot
+
 * Mon Mar 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-6.20170306git9f17c7f
 - New snapshot
 - Fix forgotten GIT_VERSION

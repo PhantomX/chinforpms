@@ -1,0 +1,43 @@
+From patchwork Tue Feb 28 17:08:55 2017
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: drivers: net: xgene: Fix crash on DT systems
+From: Alban Bedel <alban.bedel@avionic-design.de>
+X-Patchwork-Id: 733734
+X-Patchwork-Delegate: davem@davemloft.net
+Message-Id: <20170228170855.8123-1-alban.bedel@avionic-design.de>
+To: netdev@vger.kernel.org
+Cc: Iyappan Subramanian <isubramanian@apm.com>,
+ Keyur Chudgar <kchudgar@apm.com>, linux-kernel@vger.kernel.org,
+ Alban Bedel <alban.bedel@avionic-design.de>
+Date: Tue, 28 Feb 2017 18:08:55 +0100
+
+On DT systems the driver require a clock, but the probe just print a
+warning and continue, leading to a crash when resetting the device.
+To fix this crash and properly handle probe deferals only ignore the
+missing clock if DT isn't used or if the clock doesn't exist.
+
+Signed-off-by: Alban Bedel <alban.bedel@avionic-design.de>
+Acked-by: Iyappan Subramanian <isubramanian@apm.com>
+---
+ drivers/net/ethernet/apm/xgene/xgene_enet_main.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
+index d0d0d12b531f..68b48edc5921 100644
+--- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
++++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
+@@ -1756,6 +1756,12 @@ static int xgene_enet_get_resources(struct xgene_enet_pdata *pdata)
+ 
+ 	pdata->clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(pdata->clk)) {
++		/* Abort if the clock is defined but couldn't be retrived.
++		 * Always abort if the clock is missing on DT system as
++		 * the driver can't cope with this case.
++		 */
++		if (PTR_ERR(pdata->clk) != -ENOENT || dev->of_node)
++			return PTR_ERR(pdata->clk);
+ 		/* Firmware may have set up the clock already. */
+ 		dev_info(dev, "clocks have been setup already\n");
+ 	}

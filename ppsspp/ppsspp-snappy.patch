@@ -1,0 +1,22 @@
+diff -up CMakeLists.txt.snappy CMakeLists.txt
+--- CMakeLists.txt.snappy	2017-03-18 14:44:55.927780924 -0300
++++ CMakeLists.txt	2017-03-18 14:44:59.251079606 -0300
+@@ -388,6 +388,8 @@ setup_target_project(Common Common)
+ 
+ target_link_libraries(Common Snappy::Snappy)
+ 
++add_subdirectory(ext/snappy)
++
+ if(WIN32)
+ 	include_directories(dx9sdk/Include)
+ 	target_link_libraries(Common winmm d3d9 dxguid dsound)
+diff -up ext/CMakeLists.txt.snappy ext/CMakeLists.txt
+--- ext/CMakeLists.txt.snappy	2017-03-18 14:44:11.417174034 -0300
++++ ext/CMakeLists.txt	2017-03-18 14:44:27.833709639 -0300
+@@ -8,6 +8,5 @@ endif()
+ set(ENABLE_GLSLANG_BINARIES OFF CACHE BOOL "let's not build binaries we don't need" FORCE)
+ 
+ add_subdirectory(glslang)
+-add_subdirectory(snappy)
+ add_subdirectory(udis86)
+ add_subdirectory(SPIRV-Cross-build)

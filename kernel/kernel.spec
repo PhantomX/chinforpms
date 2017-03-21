@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -517,6 +517,9 @@ Patch425: ARM-tegra-usb-no-reset.patch
 
 Patch426: AllWinner-net-emac.patch
 
+Patch427: xgene_enet-remove-bogus-forward-declarations.patch
+Patch428: xgene-Fix-crash-on-DT-systems.patch
+
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch430: bcm2837-initial-support.patch
 
@@ -527,10 +530,6 @@ Patch432: bcm283x-VEC.patch
 
 # http://www.spinics.net/lists/dri-devel/msg132235.html
 Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
-
-# Fix RPi3 from crashing. Nowhere near a final fix but provides breathing room while that is sorted
-# https://github.com/anholt/linux/issues/89
-Patch434: 0001-i2c-bcm2835-Debug-test-for-curr_msg.patch
 
 # Upstream fixes for i2c/serial/ethernet MAC addresses
 Patch435: bcm283x-fixes.patch
@@ -612,9 +611,6 @@ Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
 #CVE-2017-6353 rhbz 1428907 1428910
 Patch855: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
 
-#CVE-2017-6874 rhbz 1432429 1432430
-Patch856: ucount-Remove-the-atomicity-from-ucount-count.patch
- 
 ### Extra
 
 # Add additional cpu gcc optimization support
@@ -636,7 +632,7 @@ Patch1030: %{bfqurl}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.10..p
 Patch1031: %{bfqurl}/0002-block-introduce-the-BFQ-v7r11-I-O-sched-for-4.10.0.patch
 Patch1032: %{bfqurl}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v7r11-for.patch
 Patch1033: %{bfqurl}/0004-Turn-BFQ-v7r11-for-4.10.0-into-BFQ-v8r8-for-4.10.0.patch
-Patch1034: 0001-BUGFIX-do-not-put-a-bfq_queue-when-forgetting-it.patch
+Patch1034: 0001-BUGIFX-remove-use-of-bfq-queues-after-free.patch
 Source3000: %{bfqurl}/COPYING.BFQ
 Source3001: %{bfqurl}/README.BFQ
 
@@ -2211,6 +2207,10 @@ fi
 #
 #
 %changelog
+* Mon Mar 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.4-500.chinfo
+- Linux v4.10.4
+- f25 sync
+
 * Wed Mar 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.3-500.chinfo
 - Linux v4.10.3
 - f25 sync
