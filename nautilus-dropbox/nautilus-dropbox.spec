@@ -74,11 +74,11 @@ autoreconf -ivf
   --disable-static \
   --disable-silent-rules
 
-%{make_build}
+%make_build
 
 %install
 rm -rf %{buildroot}
-%{make_install}
+%make_install
 
 %if %{with_nautilus}
 find %{buildroot}%{_libdir} -type f -name '*.la' -delete -print

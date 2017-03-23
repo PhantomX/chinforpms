@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -608,8 +608,8 @@ Patch853: 0001-Work-around-for-gcc7-and-arm64.patch
 #CVE-2017-2596 rhbz 1417812 1417813
 Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
 
-#CVE-2017-6353 rhbz 1428907 1428910
-Patch855: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
+#Fix crda rhbz 1422247
+Patch856: genetlink-fix-counting-regression-on-ctrl_dumpfamily.patch
 
 ### Extra
 
@@ -2207,6 +2207,10 @@ fi
 #
 #
 %changelog
+* Wed Mar 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.5-500.chinfo
+- Linux v4.10.5
+- f25 sync
+
 * Mon Mar 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.4-500.chinfo
 - Linux v4.10.4
 - f25 sync

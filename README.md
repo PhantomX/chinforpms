@@ -9,7 +9,7 @@ release tags).
 
 * Study the licenses carefully.
 
-* _kernel_ config-local must be edited to change gcc optimizations.
+* _kernel_ kernel-local must be edited to change gcc optimizations.
 
 ## Requirements
 
