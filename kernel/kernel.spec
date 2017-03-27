@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -601,9 +601,6 @@ Patch851: Armada-trace-build-fix.patch
 
 # selinux: allow context mounts on tmpfs, ramfs, devpts within user namespaces
 Patch852: selinux-allow-context-mounts-on-tmpfs-etc.patch
-
-# See http://lists.infradead.org/pipermail/linux-arm-kernel/2016-October/461597.html
-Patch853: 0001-Work-around-for-gcc7-and-arm64.patch
 
 #CVE-2017-2596 rhbz 1417812 1417813
 Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
@@ -2207,6 +2204,9 @@ fi
 #
 #
 %changelog
+* Sun Mar 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.6-500.chinfo
+- Linux v4.10.6
+
 * Wed Mar 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.5-500.chinfo
 - Linux v4.10.5
 - f25 sync
