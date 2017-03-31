@@ -102,9 +102,9 @@ Comment=Official desktop version of %{binname} messaging app
 Exec=%{binname}
 Icon=%{name}
 Terminal=false
-StartupWMClass=%{binname}
+StartupWMClass=%{binname}Desktop
 Type=Application
-Categories=Qt;Network;
+Categories=Qt;Network;InstantMessaging;
 MimeType=application/x-xdg-protocol-tg;x-scheme-handler/tg;
 EOF
 

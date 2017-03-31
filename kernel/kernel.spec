@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -605,8 +605,14 @@ Patch852: selinux-allow-context-mounts-on-tmpfs-etc.patch
 #CVE-2017-2596 rhbz 1417812 1417813
 Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
 
-#Fix crda rhbz 1422247
-Patch856: genetlink-fix-counting-regression-on-ctrl_dumpfamily.patch
+#CVE-2017-7261 rhbz 1435719 1435740
+Patch857: vmwgfx-check-that-number-of-mip-levels-is-above-zero.patch
+
+#CVE-2017-7277 rhbz 1436629 1436661
+Patch858: tcp-mark-skbs-with-SCM_TIMESTAMPING_OPT_STATS.patch
+
+#CVE-2017-7184 rhbz 1435153 1437469
+Patch859: CVE-2017-7184.patch
 
 ### Extra
 
@@ -2204,6 +2210,10 @@ fi
 #
 #
 %changelog
+* Thu Mar 30 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.7-500.chinfo
+- Linux v4.10.7
+- f25 sync
+
 * Sun Mar 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.6-500.chinfo
 - Linux v4.10.6
 

@@ -4,7 +4,7 @@
 %global rcrev 0
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.6.4
+%global winemono  4.7.0
 #global _default_patch_fuzz 2
 
 # build with compholio-patches, see:  http://www.compholio.com/wine-compholio/
@@ -15,7 +15,7 @@
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.3
+%global ninever 2.4
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -33,7 +33,7 @@
 
 Name:           wine
 Version:        2.4
-Release:        100%{?rctag}.chinfo%{?dist}
+Release:        101%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -2240,6 +2240,9 @@ fi
 %endif
 
 %changelog
+* Sun Mar 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.4-101.chinfo
+- Fix wine-mono version
+
 * Tue Mar 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.4-100.chinfo
 - 2.4
 
