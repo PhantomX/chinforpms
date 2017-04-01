@@ -9,7 +9,7 @@
 %endif
 
 Name:           telegram
-Version:        1.0.14
+Version:        1.0.27
 Release:        1%{?dist}
 Summary:        A messenger application
 
@@ -22,13 +22,18 @@ Source3:        %{gitlink}/%{binname}/Resources/art/icon48.png
 Source4:        %{gitlink}/%{binname}/Resources/art/icon64.png
 Source5:        %{gitlink}/%{binname}/Resources/art/icon256.png
 Source6:        %{gitlink}/%{binname}/Resources/art/icon512.png
-Source7:        tg.protocol
+Source7:        %{gitlink}/%{binname}/Resources/art/icon_green.png
+Source8:        tg.protocol
+Source9:        %{name}.xml
 
 BuildRequires:  chrpath
 BuildRequires:  ImageMagick
 BuildRequires:  kf5-filesystem
 Requires:       dbus
 Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils shared-mime-info
+Requires(postun): desktop-file-utils gtk-update-icon-cache shared-mime-info
+Requires(posttrans): gtk-update-icon-cache shared-mime-info
 
 Provides:       %{binname} = %{version}
 Provides:       %{binname}Desktop = %{version}
@@ -41,7 +46,7 @@ messages sync seamlessly across any number of your phones, tablets or computers.
 %prep
 %autosetup -n %{binname}
 
-cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} .
+cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} %{SOURCE7} .
 
 chrpath --delete %{binname}
 
@@ -105,7 +110,7 @@ Terminal=false
 StartupWMClass=%{binname}Desktop
 Type=Application
 Categories=Qt;Network;InstantMessaging;
-MimeType=application/x-xdg-protocol-tg;x-scheme-handler/tg;
+MimeType=application/x-xdg-protocol-tg;x-scheme-handler/tg;application/x-tdesktop-theme;
 EOF
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/telegramdesktop.desktop
@@ -116,38 +121,60 @@ for res in 32 48 64 256 512 ;do
   install -pm0644 icon${res}.png ${dir}/%{name}.png
 done
 
-for res in 16 22 24 48 42 96 128 192 ;do
+for res in 16 22 24 48 72 96 128 192 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert icon512.png -filter Lanczos -resize ${res}x${res}  \
+  convert icon512.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{name}.png
 done
 
+for res in 16 20 22 24 32 36 48 64 72 96 128 192 256 512 ;do
+  dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/mimetypes
+  mkdir -p ${dir}
+  convert icon_green.png -filter Lanczos -resize ${res}x${res} \
+    ${dir}/%{name}-tdesktop-theme.png
+done
+
 mkdir -p %{buildroot}%{_datadir}/kservices5
-install -pm0644 %{SOURCE7} %{buildroot}%{_datadir}/kservices5/tg.protocol
+install -pm0644 %{SOURCE8} %{buildroot}%{_datadir}/kservices5/tg.protocol
+
+mkdir -p %{buildroot}%{_datadir}/mime/packages
+install -pm0644 %{SOURCE9} %{buildroot}%{_datadir}/mime/packages/
+
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
+touch --no-create %{_datadir}/mime/packages &>/dev/null || :
+update-desktop-database &>/dev/null ||:
+ 
 %postun
 if [ $1 -eq 0 ] ; then
   touch --no-create %{_datadir}/icons/hicolor &>/dev/null
   gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+  touch --no-create %{_datadir}/mime/packages &>/dev/null || :
+  update-mime-database %{_datadir}/mime &>/dev/null || :
 fi
+update-desktop-database &>/dev/null ||:
 
 %posttrans
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 
 %files
 %license LICENSE
 %{_bindir}/%{binname}
 %{_bindir}/%{binname}.bin
 %{_datadir}/applications/*.desktop
-%{_datadir}/icons/hicolor/*/apps/*.png
+%{_datadir}/icons/hicolor/*/*/*.png
 %{_datadir}/kservices5/*.protocol
+%{_datadir}/mime/packages/%{name}.xml
 
 %changelog
+* Fri Mar 31 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 1.0.27-1
+- 1.0.27
+- StartupWMClass fix
+- Theme mimetype and icon
+
 * Tue Feb 21 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 1.0.14-1
 - 1.0.14
 - Update wrapper to move old configuration directory

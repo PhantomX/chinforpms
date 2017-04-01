@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -610,9 +610,6 @@ Patch857: vmwgfx-check-that-number-of-mip-levels-is-above-zero.patch
 
 #CVE-2017-7277 rhbz 1436629 1436661
 Patch858: tcp-mark-skbs-with-SCM_TIMESTAMPING_OPT_STATS.patch
-
-#CVE-2017-7184 rhbz 1435153 1437469
-Patch859: CVE-2017-7184.patch
 
 ### Extra
 
@@ -2210,6 +2207,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 31 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.8-500.chinfo
+- Linux v4.10.8
+
 * Thu Mar 30 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.7-500.chinfo
 - Linux v4.10.7
 - f25 sync

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-tdesktop-theme">
+    <comment>Telegram Desktop theme</comment>
+    <comment xml:lang="pt_BR">Tema para Telegram Desktop</comment>
+    <sub-class-of type="application/zip"/>
+    <generic-icon name="telegram-tdesktop-theme"/>
+    <icon name="telegram-tdesktop-theme"/>
+    <glob pattern="*.tdesktop-theme"/>
+  </mime-type>
+</mime-info>

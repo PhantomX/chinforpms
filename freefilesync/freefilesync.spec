@@ -96,7 +96,7 @@ mkdir -p %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
 install -pm0644 %{pname}.png RealTimeSync.png \
   %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/
 
-for res in 16 22 24 32 48 64 42 96 ;do
+for res in 16 22 24 32 48 64 72 96 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   for icon in %{pname} RealTimeSync ;do

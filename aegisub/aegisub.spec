@@ -2,6 +2,7 @@ Name:           aegisub
 Version:        3.2.2
 Release:        1%{?dist}
 Summary:        A general-purpose subtitle editor with ASS/SSA support
+Epoch:          1
 
 License:        BSD
 URL:            http://www.aegisub.org/
