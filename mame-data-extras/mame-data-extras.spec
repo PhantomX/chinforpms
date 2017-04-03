@@ -2,15 +2,15 @@
 %global __strip /bin/true
 
 %global cheatver 0174
-%global historyver 182a
-%global infover 0183
+%global historyver 184
+%global infover 0184
 
 # Build non redistributable package with free roms
 %global with_roms  %{?_with_roms:     1} %{?!_with_roms:     0}
 %global romlink http://www.mamedev.org/roms
 
 Name:           mame-data-extras
-Version:        0.183
+Version:        0.184
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -190,6 +190,9 @@ done
 
 
 %changelog
+* Sat Apr 01 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 0.184-1
+- 0.184
+
 * Thu Feb 23 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 0.183-1
 - 0.183
 - Use proper spec file sessions

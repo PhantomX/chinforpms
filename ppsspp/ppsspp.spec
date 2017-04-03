@@ -1,6 +1,6 @@
-%global commit 24cfb73bffcf29318428a2a2807b5eb0b880327a
+%global commit 4ea01befcf0467de7ea40e31d58e98428598f88b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20170318
+%global date 20170402
 %global use_snapshot 1
 
 # Enable system ffmpeg
@@ -14,7 +14,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
-%global commit2 0757f14d86f1574c02d7f7b9b1c7cd10aad79f75
+%global commit2 a2e98d7ba4c7c5cac08608732c3058cb46e3e0ef
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -48,8 +48,8 @@
 %undefine _hardened_build
 
 Name:           ppsspp
-Version:        1.3
-Release:        7%{?gver}%{?dist}
+Version:        1.4
+Release:        1%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -70,9 +70,6 @@ Source0:        https://github.com/hrydgard/%{name}/archive/v%{version}.tar.gz#/
 %endif #{?use_snapshot}
 
 Patch0:         %{name}-noupdate.patch
-# Fix assets/gamecontrollerdb.txt loading
-Patch1:         %{name}-datadir.patch
-Patch2:         %{name}-snappy.patch
 
 %if !0%{?sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -95,6 +92,8 @@ BuildRequires:  snappy-devel
 BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
 Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 
 %description
@@ -258,6 +257,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Apr 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1.20170318git4ea01be
+- New snapshot
+
 * Sat Mar 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-7.20170318git24cfb73
 - New snapshot
 
@@ -278,7 +280,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - New snapshot
 - Fix assets/gamecontrollerdb.txt loading
 - Better GIT_VERSION display
-- Wrapper to export MEsa GL to 3.3COMPAT
+- Wrapper to export Mesa GL to 3.3COMPAT
 
 * Thu Dec 29 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.3-2.20161227gitad04f97
 - Option to build with ugly bundled binary ffmpeg.
