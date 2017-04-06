@@ -9,7 +9,7 @@
 %endif
 
 Name:           telegram
-Version:        1.0.27
+Version:        1.0.29
 Release:        1%{?dist}
 Summary:        A messenger application
 
@@ -170,6 +170,9 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 %{_datadir}/mime/packages/%{name}.xml
 
 %changelog
+* Wed Apr 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.29-1
+- 1.0.28
+
 * Fri Mar 31 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 1.0.27-1
 - 1.0.27
 - StartupWMClass fix

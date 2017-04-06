@@ -22,8 +22,8 @@
 %global pyqt 0
 
 Name:           spideroakone
-Version:        6.1.5
-Release:        2%{?dist}
+Version:        6.1.9
+Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -66,6 +66,11 @@ Requires:       sip%{?_isa}
 
 Requires:       sqlite-libs%{?_isa}
 
+Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils
+Requires(postun): desktop-file-utils gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
+
 Conflicts:       SpiderOak < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       SpiderOak
 
@@ -85,7 +90,6 @@ sed -i -e "s|/opt/%{pkgname1}/lib|%{progdir}|g" usr/bin/%{pkgname1}
 %build
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{progdir}
 
@@ -247,6 +251,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Wed Apr 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.1.9-1
+- 6.1.9
+
 * Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.1.5-2
 - Added %%{_isa} to requires
 
