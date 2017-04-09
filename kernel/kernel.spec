@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -596,9 +596,6 @@ Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 #ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch849: 0001-iio-Use-event-header-from-kernel-tree.patch
 
-# Fix build issue with armada_trace
-Patch851: Armada-trace-build-fix.patch
-
 # selinux: allow context mounts on tmpfs, ramfs, devpts within user namespaces
 Patch852: selinux-allow-context-mounts-on-tmpfs-etc.patch
 
@@ -610,6 +607,14 @@ Patch857: vmwgfx-check-that-number-of-mip-levels-is-above-zero.patch
 
 #CVE-2017-7277 rhbz 1436629 1436661
 Patch858: tcp-mark-skbs-with-SCM_TIMESTAMPING_OPT_STATS.patch
+
+# rhbz 1438316
+Patch859: 0001-x86-mce-Don-t-print-MCEs-when-mcelog-is-active.patch
+
+# CVE-2017-2671 rhbz 1436649 1436663
+Patch860: 0001-ping-implement-proper-locking.patch
+
+Patch861: 0001-efi-libstub-Treat-missing-SecureBoot-variable-as-Sec.patch
 
 ### Extra
 
@@ -2207,6 +2212,10 @@ fi
 #
 #
 %changelog
+* Sat Apr 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.9-500.chinfo
+- Linux v4.10.9
+- f25 sync
+
 * Fri Mar 31 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.8-500.chinfo
 - Linux v4.10.8
 

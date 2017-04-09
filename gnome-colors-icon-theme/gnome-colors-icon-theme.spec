@@ -41,10 +41,10 @@ rename 'gnome' '%{real_name}' themes/*
 sed -i -e 's/GNOME/GNOME-Colors/' themes/*
 
 %build
-%{make_build}
+%make_build
 
 %install
-%{make_install}
+%make_install
 
 find %{buildroot}%{_datadir}/icons -name '*.xpm' -delete
 
