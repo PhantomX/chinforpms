@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -599,22 +599,25 @@ Patch849: 0001-iio-Use-event-header-from-kernel-tree.patch
 # selinux: allow context mounts on tmpfs, ramfs, devpts within user namespaces
 Patch852: selinux-allow-context-mounts-on-tmpfs-etc.patch
 
-#CVE-2017-2596 rhbz 1417812 1417813
-Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
-
-#CVE-2017-7261 rhbz 1435719 1435740
-Patch857: vmwgfx-check-that-number-of-mip-levels-is-above-zero.patch
-
 #CVE-2017-7277 rhbz 1436629 1436661
 Patch858: tcp-mark-skbs-with-SCM_TIMESTAMPING_OPT_STATS.patch
-
-# rhbz 1438316
-Patch859: 0001-x86-mce-Don-t-print-MCEs-when-mcelog-is-active.patch
 
 # CVE-2017-2671 rhbz 1436649 1436663
 Patch860: 0001-ping-implement-proper-locking.patch
 
 Patch861: 0001-efi-libstub-Treat-missing-SecureBoot-variable-as-Sec.patch
+
+#rhbz 1439613
+Patch862: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
+
+#rhbz 1441310
+Patch863: rhbz_1441310.patch
+
+# CVE-2017-7618.patch rhbz 1441095 1441093
+Patch865: CVE-2017-7618.patch
+
+# CVE-2017-7308 rhbz 1437404 1437406
+Patch866: CVE-2017-7308.patch
 
 ### Extra
 
@@ -2212,6 +2215,10 @@ fi
 #
 #
 %changelog
+* Thu Apr 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.10-500.chinfo
+- Linux v4.10.10
+- f25 sync
+
 * Sat Apr 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.9-500.chinfo
 - Linux v4.10.9
 - f25 sync

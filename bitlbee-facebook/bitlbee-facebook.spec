@@ -1,15 +1,15 @@
 %global commit e5e8c89a313637778ac730533c2d6b9c9254da75
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20170108
-%global use_snapshot 1
+%global use_snapshot 0
 
 %if 0%{?use_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           bitlbee-facebook
-Version:        1.0.0
-Release:        3%{?gver}%{?dist}
+Version:        1.1.1
+Release:        1%{?dist}
 Summary:        Facebook MQPP protocol module for bitlbee
 
 License:        GPLv2
@@ -34,19 +34,18 @@ Requires:       bitlbee
 %prep
 %if 0%{?use_snapshot}
 %autosetup -n %{name}-%{commit}
+sed -i -e '/\/configure/d' autogen.sh
+./autogen.sh
 %else
 %autosetup -n %{name}-%{version}
 %endif
 
-sed -i -e '/\/configure/d' autogen.sh
-./autogen.sh
 
 %build
 %configure --disable-silent-rules
 %make_build
 
 %install
-rm -rf %{buildroot}
 
 %make_install
 
@@ -58,6 +57,9 @@ find %{buildroot} -type f -name '*.la' -print -delete
 %{_libdir}/bitlbee/facebook.so
 
 %changelog
+* Tue Apr 11 2017 Phantom X - 1.1.1-1
+- 1.1.1
+
 * Sat Jan 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.0-3.20170108gite5e8c89
 - New snapshot
 

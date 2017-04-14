@@ -10,14 +10,14 @@
 %global parch x86
 %endif
 
-# Do no blame Dropbox devs if setting YES in these
+# Do no blame Dropbox devs if setting 1 in these
 # Set to 1 to use system libs
 %global bzip2 1
 %global popt 1
 %global python 0
 
 Name:           dropboxd
-Version:        19.4.13
+Version:        23.4.18
 Release:        1%{?dist}
 Summary:        Dropbox proprietary client
 
@@ -175,6 +175,9 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 
 
 %changelog
+* Tue Apr 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 23.4.18-1
+- 23.4.18
+
 * Sat Feb 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 19.4.13-1
 - 19.4.13
 

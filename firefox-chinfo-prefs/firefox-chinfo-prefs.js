@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20170309
+// 20170414
 
 pref("browser.search.suggest.enabled", false);
 pref("browser.urlbar.clickSelectsAll", false);
@@ -46,3 +46,8 @@ pref("browser.aboutHomeSnippets.updateUrl", "data:text/html");
 pref("plugins.hide_infobar_for_missing_plugin", true);
 pref("plugins.hide_infobar_for_outdated_plugin", true);
 pref("plugins.notifyMissingFlash", false);
+
+// Disable datareporting and telemetry
+pref("datareporting.healthreport.dataSubmissionEnabled", false);
+pref("datareporting.healthreport.uploadEnabled", false);
+pref("toolkit.telemetry.enabled", false);
