@@ -7,26 +7,27 @@
 Name:           steam
 Version:        1.0.0.54
 Epoch:          1
-Release:        4.chinfo%{?dist}
+Release:        100.chinfo%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement
 URL:            http://www.steampowered.com/
 ExclusiveArch:  i686
 
-Source0:        http://repo.steampowered.com/steam/pool/%{name}/s/%{name}/%{name}_%{version}.tar.gz
+Source0:        http://repo.steampowered.com/%{name}/pool/%{name}/s/%{name}/%{name}_%{version}.tar.gz
+Source1:        %{name}.sh
+Source2:        %{name}.csh
 Source3:        %{name}.xml
 Source4:        %{name}.appdata.xml
 
-# Workaround for input devices seen as joysticks (linux kernel bug) and
-# viceversa for the Steam controller:
+# Ghost touches in Big Picture mode:
 # https://github.com/ValveSoftware/steam-for-linux/issues/3384
 # https://bugzilla.kernel.org/show_bug.cgi?id=28912
 # https://github.com/denilsonsa/udev-joystick-blacklist
 #
-# Microsoft patch accepted upstream, remove Microsoft entries when kernel
-# is at 4.9: https://bugzilla.redhat.com/show_bug.cgi?id=1325354#c14
-Source8:        https://raw.githubusercontent.com/denilsonsa/udev-joystick-blacklist/master/51-these-are-not-joysticks-rm.rules
+# Input devices seen as joysticks:
+Source8:        https://raw.githubusercontent.com/denilsonsa/udev-joystick-blacklist/master/after_kernel_4_9/51-these-are-not-joysticks-rm.rules
+# First generation Nvidia Shield controller seen as mouse:
 Source9:        https://raw.githubusercontent.com/cyndis/shield-controller-config/master/99-shield-controller.rules
 
 Source10:       README.Fedora
@@ -35,23 +36,15 @@ Source10:       README.Fedora
 # https://github.com/ValveSoftware/steam-for-linux/issues/3570
 Patch0:         %{name}-3570.patch
 
-# Remove libstdc++ from runtime on systems where mesa is compiled normally
-# (RHEL 7). Fixes crash:
-# https://github.com/ValveSoftware/steam-for-linux/issues/3273
-Patch1:         %{name}-3273.patch
-
 # Make Steam Controller usable as a GamePad:
 # https://steamcommunity.com/app/353370/discussions/0/490123197956024380/
-Patch2:         %{name}-controller-gamepad-emulation.patch
-
-# Make "X" window button close the program instead of minimizing like "_"
-Patch3:         %{name}-3210.patch
+Patch1:         %{name}-controller-gamepad-emulation.patch
 
 # Disable desktop files installation on desktop and create logs on user directory
-Patch4:         %{name}-launcher.patch
+Patch2:         %{name}-launcher.patch
 
 # From Arch: Set alsa SDL audiodriver if pulseaudio is not installed
-Patch5:         alsa_sdl_audiodriver.patch
+Patch3:         https://git.archlinux.org/svntogit/community.git/plain/trunk/alsa_sdl_audiodriver.patch?h=packages/%{name}#/alsa_sdl_audiodriver.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  systemd
@@ -102,11 +95,20 @@ Requires:       libva-intel-driver%{?_isa}
 # Required for hardware decoding during In-Home Streaming (radeon/nouveau)
 Requires:       libvdpau%{?_isa}
 
+%if 0%{?fedora}
+# Required for having a functioning menu on the tray icon on Fedora
+# https://github.com/ValveSoftware/steam-for-linux/issues/4795
+Requires:       libdbusmenu-gtk3%{?_isa}
+%endif
+
+Provides:       steam-noruntime = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      steam-noruntime < %{?epoch:%{epoch}:}%{version}-%{release}
+
 %description
 Installer for the Steam software distribution service.
 Steam is a software distribution service with an online store, automated
-installation, automatic updates, achievements, SteamCloud synchronized
-savegame and screenshot functionality, and many social features.
+installation, automatic updates, achievements, SteamCloud synchronized savegame
+and screenshot functionality, and many social features.
 
 %prep
 %setup -q -n %{name}
@@ -114,8 +116,6 @@ savegame and screenshot functionality, and many social features.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%patch5 -p1
 
 sed -i 's/\r$//' %{name}.desktop
 sed -i 's/\r$//' steam_install_agreement.txt
@@ -146,6 +146,10 @@ ln -sf ../icons/hicolor/48x48/apps/steam.png \
 install -D -m 644 -p %{SOURCE3} \
     %{buildroot}%{_prefix}/lib/firewalld/services/steam.xml
 
+# Environment files
+mkdir -p %{buildroot}%{_sysconfdir}/profile.d
+install -pm 644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d
+
 %if 0%{?fedora} >= 25
 # Install AppData
 mkdir -p %{buildroot}%{_datadir}/appdata
@@ -154,13 +158,13 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_datadir}/appdata/
 
 %post
 /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-%if 0%{?fedora} == 24 || 0%{?fedora} == 23 || 0%{?rhel} == 7
+%if 0%{?fedora} == 24 || 0%{?rhel} == 7
 /usr/bin/update-desktop-database &> /dev/null || :
 %endif
 %firewalld_reload
 
 %postun
-%if 0%{?fedora} == 24 || 0%{?fedora} == 23 || 0%{?rhel} == 7
+%if 0%{?fedora} == 24 || 0%{?rhel} == 7
 /usr/bin/update-desktop-database &> /dev/null || :
 %endif
 if [ $1 -eq 0 ] ; then
@@ -186,9 +190,16 @@ fi
 %{_libdir}/%{name}/
 %{_mandir}/man6/%{name}.*
 %{_prefix}/lib/firewalld/services/%{name}.xml
+%config(noreplace) %{_sysconfdir}/profile.d/%{name}.*sh
 %{_udevrulesdir}/*
 
 %changelog
+* Fri Apr 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-100
+- Sync with rpmfusion.
+- Remove libstdc++ patch.
+- Update udev rules.
+- Update docs for hardware encoding/decoding information.
+
 * Wed Jan 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-4
 - Sync with rpmfusion.
 - Sun Jan 08 2017 Simone Caronni <negativo17@gmail.com> - 1.0.0.54-3

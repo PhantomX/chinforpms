@@ -1,7 +1,7 @@
 %global pkgname VBoxGuestAdditions
 
 Name:           VirtualBox-guest-additions-iso
-Version:        5.1.18
+Version:        5.1.20
 Release:        1%{?dist}
 Summary:        Guest additions for VirtualBox
 
@@ -26,7 +26,7 @@ cp %{SOURCE1} .
 
 
 %install
-rm -rf %{buildroot}
+
 mkdir -p %{buildroot}%{_datadir}/virtualbox
 install -pm0644 %{SOURCE0} \
   %{buildroot}%{_datadir}/virtualbox/%{pkgname}.iso
@@ -38,6 +38,9 @@ install -pm0644 %{SOURCE0} \
 
 
 %changelog
+* Tue Apr 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.20-1
+- 5.1.20
+
 * Wed Mar 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.18-1
 - 5.1.18
 

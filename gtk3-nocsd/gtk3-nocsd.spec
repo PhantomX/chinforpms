@@ -7,7 +7,7 @@ License:        LGPLv2.1
 URL:            https://github.com/PCMan/%{name}
 Source0:        https://github.com/PCMan/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 # AUR - Marco Kundt
-Source1:        https://aur.archlinux.org/cgit/aur.git/plain/30-gtk3-nocsd.sh?h=gtk3-nocsd-git#/30-gtk3-nocsd.sh
+Source1:        https://aur.archlinux.org/cgit/aur.git/plain/30-%{name}.sh?h=%{name}-git#/30-%{name}.sh
 
 Patch0:         %{name}-multilib.patch
 Patch1:         https://github.com/PCMan/gtk3-nocsd/commit/c64505268575e60322de682ea751660eba8d0e71.patch

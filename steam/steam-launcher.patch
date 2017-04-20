@@ -1,6 +1,6 @@
---- steam/steam.orig	2017-01-04 19:07:28.162639622 -0200
-+++ steam/steam	2017-01-04 19:08:13.097133369 -0200
-@@ -112,10 +112,10 @@ function install_bootstrap()
+--- steam/steam.orig	2017-04-14 18:58:34.734891966 -0300
++++ steam/steam	2017-04-14 18:59:23.516603894 -0300
+@@ -109,10 +109,10 @@ function install_bootstrap()
  	test -f "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs" && source "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs"
  	DESKTOP_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
  
@@ -15,9 +15,9 @@
  
  	# Restore the umask
  	umask "$omask"
-@@ -194,15 +194,8 @@ rm -f $LAUNCHSTEAMPLATFORM/steam-runtime
- rm -f $LAUNCHSTEAMPLATFORM/steam-runtime/amd64/usr/lib/x86_64-linux-gnu/libstdc++.so.6*
- 
+@@ -186,15 +186,8 @@ fi
+ # go to the install directory and run the client
+ cp "$LAUNCHSTEAMBOOTSTRAPFILE" "$LAUNCHSTEAMDIR/bootstrap.tar.xz"
  cd "$LAUNCHSTEAMDIR"
 -if [ "`command -v tee`" != "" ]; then
 -	mkdir -p --mode=777 /tmp/dumps

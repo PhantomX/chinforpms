@@ -13,6 +13,7 @@
 # userspace.
 #global prerel 106108
 %global prereltag %{?prerel:-%(awk 'BEGIN {print toupper("%{prerel}")}')}
+%global bugfix a
 
 %bcond_without webservice
 %if 0%{?rhel} || 0%{?fedora} > 25
@@ -23,14 +24,14 @@
 %bcond_with vnc
 
 Name:       VirtualBox
-Version:    5.1.18
+Version:    5.1.20
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:    100.chinfo%{?dist}
+Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
 
 License:    GPLv2 or (GPLv2 and CDDL)
 URL:        http://www.virtualbox.org/wiki/VirtualBox
-Source0:    http://download.virtualbox.org/virtualbox/%{version}%{?prereltag}/VirtualBox-%{version}%{?prereltag}.tar.bz2
+Source0:    http://download.virtualbox.org/virtualbox/%{version}%{?prereltag}/VirtualBox-%{version}%{?bugfix}%{?prereltag}.tar.bz2
 Source3:    VirtualBox-60-vboxdrv.rules
 Source5:    VirtualBox-60-vboxguest.rules
 Source6:    VirtualBox.modules
@@ -796,6 +797,9 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Wed Apr 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.20-1.a.chinfo
+- 5.1.20a
+
 * Wed Mar 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.18-1.chinfo
 - 5.1.18
 

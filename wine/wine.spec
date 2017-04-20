@@ -11,11 +11,11 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.5
+%global compholiover 2.6
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.4
+%global ninever 2.5
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -32,7 +32,7 @@
 %endif
 
 Name:           wine
-Version:        2.5
+Version:        2.6
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1715,6 +1715,7 @@ fi
 %{_libdir}/wine/msxml3.dll.so
 %{_libdir}/wine/msxml4.dll.so
 %{_libdir}/wine/msxml6.dll.so
+%{_libdir}/wine/mtxdm.dll.so
 %{_libdir}/wine/nddeapi.dll.so
 %{_libdir}/wine/ncrypt.dll.so
 %{_libdir}/wine/ndis.sys.so
@@ -1898,6 +1899,7 @@ fi
 %{_libdir}/wine/wpc.dll.so
 %{_libdir}/wine/wpcap.dll.so
 %{_libdir}/wine/ws2_32.dll.so
+%{_libdir}/wine/wsdapi.dll.so
 %{_libdir}/wine/wshom.ocx.so
 %{_libdir}/wine/wsnmp32.dll.so
 %{_libdir}/wine/wsock32.dll.so
@@ -2247,6 +2249,9 @@ fi
 %endif
 
 %changelog
+* Wed Apr 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.6-100.chinfo
+- 2.6
+
 * Sun Apr 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.5-100.chinfo
 - 2.5
 

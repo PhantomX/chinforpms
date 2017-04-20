@@ -16,16 +16,24 @@ And launch the client again, it will adjust all the symlinks for folders, saves,
 etc. by itself. Even the desktop / system shortcuts for the games work because
 they launch Steam (which is in the path) with the appropriate Steam game ID.
 
-In-Home Streaming (hardware decoding)
-=====================================
+In-Home Streaming (hardware decoding/encoding)
+==============================================
 
-In-Home Streaming hardware decoding is exposed through different backends,
-depending on the hardware you are running. These are detected at runtime, and
-are all 32 bit libraries also on 64 bit systems, as the client is 32 bit only.
+In-Home Streaming hardware decoding and encoding are exposed through different
+backends, depending on the hardware you are running. These are detected at
+runtime, and are all 32 bit libraries also on 64 bit systems, as the client is
+32 bit only.
 
-- Intel (intel): VA-API
-- AMD Radeon (radeon): VDPAU
-- Nvidia (nouveau/nvidia): VDPAU
++------------------+------------------+-----------------------+
+|   Video Driver   |   Hardware API   |        Library        |
++------------------+------------------+-----------------------+
+| Intel (intel)    | Decoding: VA-API | libva.so.1            |
+| Nvidia (nvidia)  | Decoding: VDPAU  | libvdpau.so.1         |
+| AMD (radeon)     | Decoding: VDPAU  | libvdpau.so.1         |
+| Nvidia (nouveau) | Decoding: VDPAU  | libvdpau.so.1         |
+| Nvidia (nvidia)  | Encoding: NVENC  | libnvidia-encode.so.1 |
+| Intel (intel)    | Encoding: VA-API | libva.so.1            |
++------------------+------------------+-----------------------+
 
 In-Home streaming configuration
 ===============================
@@ -73,28 +81,6 @@ The package contains the UDEV rules for the following devices:
 
   Workaround to have it properly detected as a game pad and not a mouse.
 
-- Microsoft Microsoft Wireless Optical Desktop® 2.10
-- Microsoft Wireless Desktop - Comfort Edition
-- Microsoft Microsoft® Digital Media Pro Keyboard
-- Microsoft Corp. Digital Media Pro Keyboard
-- Microsoft Microsoft® Digital Media Keyboard
-- Microsoft Corp. Digital Media Keyboard 1.0A
-- Microsoft Microsoft® Digital Media Keyboard 3000
-- Microsoft Microsoft® 2.4GHz Transceiver v6.0
-- Microsoft Microsoft® 2.4GHz Transceiver v8.0
-- Microsoft Corp. Nano Transceiver v1.0 for Bluetooth
-- Microsoft Wireless Mobile Mouse 1000
-- Microsoft Wireless Desktop 3000
-- Microsoft® SideWinder(TM) 2.4GHz Transceiver
-- Microsoft Corp. Wired Keyboard 600
-- Microsoft Corp. Sidewinder X4 keyboard
-- Microsoft Corp. Arc Touch Mouse Transceiver
-- Microsoft® 2.4GHz Transceiver v9.0
-- Microsoft® Nano Transceiver v2.1
-- Microsoft Sculpt Ergonomic Keyboard (5KV-00001)
-- Microsoft® Nano Transceiver v1.0
-- Microsoft Wireless Keyboard 800
-- Microsoft® Nano Transceiver v2.0
 - Wacom ET-0405 Graphire
 - Wacom ET-0405A Graphire2 (4x5)
 - Wacom ET-0507A Graphire2 (5x7)
@@ -109,6 +95,7 @@ The package contains the UDEV rules for the following devices:
 - Wacom CTE-631 Bamboo One
 - Wacom Bamboo Pen and Touch CTH-460
 - A4 Tech Co., G7 750 mouse
+- A4 Tech Co., Ltd Bloody R8A Gaming Mouse
 - A4 Tech Co., Ltd Bloody TL80 Terminator Laser Gaming Mouse
 - A4 Tech Co., Ltd Bloody RT7 Terminator Wireless
 - A4 Tech Co., Ltd Bloody V8 mouse
@@ -120,8 +107,13 @@ The package contains the UDEV rules for the following devices:
 - A4 Tech Co., Sharkoon Fireglider Optical
 - A4 Tech Co., Ltd XL-730K / XL-750BK / XL-755BK Laser Mouse
 - A4 Tech Co., Ltd X7 G800V keyboard
+- A4 Tech Co., Ltd Bloody V7 mouse
 - A4 Tech Co., Ltd Bloody B540 keyboard
 - A4 Tech Co., Ltd Bloody V2 mouse
+- A4 Tech Co., Ltd Bloody B120 Keyboard
+- [T3] 2.4GHz and IR Air Mouse Remote Control
+- Roccat Tyon Mouse
+- Winkeyless.kr Keyboards
 - Cooler Master Storm Mizar Mouse
 - Cooler Master Storm Alcor Mouse
 

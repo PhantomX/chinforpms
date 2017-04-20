@@ -4,7 +4,7 @@
 %global pkgname Oracle_VM_VirtualBox_Extension_Pack
 
 Name:           VirtualBox-extpack-oracle
-Version:        5.1.18
+Version:        5.1.20
 Release:        1%{?dist}
 Summary:        PUEL extensions for VirtualBox)
 
@@ -27,7 +27,7 @@ tar -xzvf %{SOURCE0}
 %build
 
 %install
-rm -rf %{buildroot}
+
 mkdir -p %{buildroot}%{_libdir}/virtualbox/ExtensionPacks/%{pkgname}
 cp -rp * \
   %{buildroot}%{_libdir}/virtualbox/ExtensionPacks/%{pkgname}
@@ -38,6 +38,9 @@ cp -rp * \
 
 
 %changelog
+* Tue Apr 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.20-1
+- 5.1.20
+
 * Wed Mar 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.18-1
 - 5.1.18
 

@@ -26,7 +26,7 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.1.18
+Version:        5.1.20
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:        100.chinfo%{?dist}
 
@@ -106,6 +106,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Apr 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.20-1.chinfo
+- 5.1.20
+
 * Wed Mar 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.18-1.chinfo
 - 5.1.18
 
