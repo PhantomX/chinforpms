@@ -2,27 +2,34 @@
 %global __strip /bin/true
 
 %global binname Telegram
-%global gitlink https://github.com/telegramdesktop/tdesktop/raw/master
+%global gitlink https://github.com/telegramdesktop/tdesktop
+%global gitrawlink %{gitlink}/raw/master
+%global use_prerel 0
 
 %ifarch %{ix86}
 %global parch 32
 %endif
 
+%if 0%{?use_prerel}
+%global prerel .alpha
+%endif
+
 Name:           telegram
-Version:        1.0.29
-Release:        1%{?dist}
+Version:        1.0.33
+Release:        1%{?prerel}%{?dist}
 Summary:        A messenger application
 
 License:        GPLv3
 URL:            https://telegram.org/
-Source0:        https://updates.tdesktop.com/tlinux%{?parch}/tsetup%{?parch}.%{version}.tar.xz
-Source1:        %{gitlink}/LICENSE
-Source2:        %{gitlink}/%{binname}/Resources/art/icon32.png
-Source3:        %{gitlink}/%{binname}/Resources/art/icon48.png
-Source4:        %{gitlink}/%{binname}/Resources/art/icon64.png
-Source5:        %{gitlink}/%{binname}/Resources/art/icon256.png
-Source6:        %{gitlink}/%{binname}/Resources/art/icon512.png
-Source7:        %{gitlink}/%{binname}/Resources/art/icon_green.png
+#Source0:        https://updates.tdesktop.com/tlinux%{?parch}/tsetup%{?parch}.%{version}.tar.xz
+Source0:        %{gitlink}/releases/download/v%{version}/tsetup%{?parch}.%{version}%{?prerel}.tar.xz
+Source1:        %{gitrawlink}/LICENSE
+Source2:        %{gitrawlink}/%{binname}/Resources/art/icon32.png
+Source3:        %{gitrawlink}/%{binname}/Resources/art/icon48.png
+Source4:        %{gitrawlink}/%{binname}/Resources/art/icon64.png
+Source5:        %{gitrawlink}/%{binname}/Resources/art/icon256.png
+Source6:        %{gitrawlink}/%{binname}/Resources/art/icon512.png
+Source7:        %{gitrawlink}/%{binname}/Resources/art/icon_green.png
 Source8:        tg.protocol
 Source9:        %{name}.xml
 

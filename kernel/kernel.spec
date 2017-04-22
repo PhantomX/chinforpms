@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -607,14 +607,11 @@ Patch860: 0001-ping-implement-proper-locking.patch
 
 Patch861: 0001-efi-libstub-Treat-missing-SecureBoot-variable-as-Sec.patch
 
-#rhbz 1439613
-Patch862: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
-
 #rhbz 1441310
 Patch863: rhbz_1441310.patch
 
-# CVE-2017-7618.patch rhbz 1441095 1441093
-Patch865: CVE-2017-7618.patch
+# CVE-2017-7645 rhbz 1443615 1443617
+Patch866: CVE-2017-7645.patch
 
 ### Extra
 
@@ -632,12 +629,11 @@ Patch1014: btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1015: reiserfs-fix-race-in-prealloc-discard.patch
 
 # BFQ disk scheduler - http://algo.ing.unimo.it/people/paolo/disk_sched/
-%global bfqurl http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.10.0-v8r8
+%global bfqurl http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.10.0-v8r10
 Patch1030: %{bfqurl}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.10..patch
 Patch1031: %{bfqurl}/0002-block-introduce-the-BFQ-v7r11-I-O-sched-for-4.10.0.patch
 Patch1032: %{bfqurl}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v7r11-for.patch
-Patch1033: %{bfqurl}/0004-Turn-BFQ-v7r11-for-4.10.0-into-BFQ-v8r8-for-4.10.0.patch
-Patch1034: 0001-BUGIFX-remove-use-of-bfq-queues-after-free.patch
+Patch1033: %{bfqurl}/0004-Turn-BFQ-v7r11-for-4.10.0-into-BFQ-v8r10-for-4.10.0.patch
 Source3000: %{bfqurl}/COPYING.BFQ
 Source3001: %{bfqurl}/README.BFQ
 
@@ -2212,6 +2208,13 @@ fi
 #
 #
 %changelog
+* Fri Apr 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.12-500.chinfo
+- 4.10.12
+
+* Thu Apr 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.11-501.chinfo
+- BFQ v8r10
+- f25 sync
+
 * Tue Apr 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.11-500.chinfo
 - 4.10.11
 

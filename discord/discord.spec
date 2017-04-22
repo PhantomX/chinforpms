@@ -54,7 +54,6 @@ mv %{name}-canary.desktop %{name}.desktop ||:
 
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'

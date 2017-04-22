@@ -15,7 +15,7 @@
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.5
+%global ninever 2.6
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL

@@ -18,7 +18,7 @@
 %global _changelog_trimtime %(date +%s -d "1 year ago")
 
 Name: gtk3
-Version: 3.22.11
+Version: 3.22.12
 Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -230,8 +230,7 @@ make %{?_smp_mflags}
 echo ".so man1/gtk-query-immodules-3.0.1" > $RPM_BUILD_ROOT%{_mandir}/man1/gtk-query-immodules-3.0-%{__isa_bits}.1
 
 # Remove unpackaged files
-rm $RPM_BUILD_ROOT%{_libdir}/*.la
-rm $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/%{bin_version}/*/*.la
+find $RPM_BUILD_ROOT -name '*.la' -delete
 
 %if !0%{?with_broadway}
 rm $RPM_BUILD_ROOT%{_mandir}/man1/broadwayd.1*
@@ -264,10 +263,10 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %transfiletriggerin -- %{_libdir}/gtk-3.0/3.0.0/immodules
-gtk-query-immodules-3.0-%{__isa_bits} --update-cache
+gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 %transfiletriggerpostun -- %{_libdir}/gtk-3.0/3.0.0/immodules
-gtk-query-immodules-3.0-%{__isa_bits} --update-cache
+gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 %files -f gtk30.lang
 %license COPYING
@@ -363,6 +362,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache
 %{_datadir}/installed-tests
 
 %changelog
+* Sat Apr 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.11-100.chinfo
+- 3.22.12
+- f25 sync
+
 * Thu Apr 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.11-100.chinfo
 - 3.22.11
 

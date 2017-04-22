@@ -1,5 +1,5 @@
 Name:           keepassxc
-Version:        2.1.3
+Version:        2.1.4
 Release:        1%{?dist}
 Summary:        Cross-platform password manager
 Group:          User Interface/Desktops
@@ -92,5 +92,8 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 
  
 %changelog
+* Fri Apr 21 2017 Phantom X - 2.1.4-1
+- 2.1.4
+
 * Thu Mar 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1.3-1
 - Initial spec
