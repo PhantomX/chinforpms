@@ -1,6 +1,6 @@
-%global commit 4ea01befcf0467de7ea40e31d58e98428598f88b
+%global commit 2c6161c2cf03daa3cc60841e5a7d8a7832aa9a3c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20170402
+%global date 20170422
 %global use_snapshot 1
 
 # Enable system ffmpeg
@@ -10,7 +10,7 @@
 %endif
 
 %if 0%{?use_snapshot}
-%global commit1 b4ba495e3ecc2c6aa2ea994357c00110c0403752
+%global commit1 0dd8a57a4f458d7f40fd7f303392aaa2b9f56c50
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -49,7 +49,7 @@
 
 Name:           ppsspp
 Version:        1.4
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -257,7 +257,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
-* Sun Apr 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1.20170318git4ea01be
+* Sat Apr 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-2.20170422git2c6161c
+- New snapshot
+
+* Sun Apr 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1.20170402git4ea01be
 - New snapshot
 
 * Sat Mar 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.3-7.20170318git24cfb73

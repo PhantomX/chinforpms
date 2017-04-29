@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -612,6 +612,9 @@ Patch863: rhbz_1441310.patch
 
 # CVE-2017-7645 rhbz 1443615 1443617
 Patch866: CVE-2017-7645.patch
+
+# CVE-2017-7477 rhbz 1445207 1445208
+Patch867: CVE-2017-7477.patch
 
 ### Extra
 
@@ -2208,6 +2211,10 @@ fi
 #
 #
 %changelog
+* Fri Apr 28 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.13-500.chinfo
+- 4.10.13
+- f25 sync
+
 * Fri Apr 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.12-500.chinfo
 - 4.10.12
 
