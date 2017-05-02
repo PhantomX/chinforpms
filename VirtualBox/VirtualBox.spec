@@ -13,10 +13,10 @@
 # userspace.
 #global prerel 106108
 %global prereltag %{?prerel:-%(awk 'BEGIN {print toupper("%{prerel}")}')}
-%global bugfix a
+#global bugfix a
 
 %bcond_without webservice
-%if 0%{?rhel} || 0%{?fedora} > 25
+%if 0%{?rhel}
     %bcond_with docs
 %else
     %bcond_without docs
@@ -24,7 +24,7 @@
 %bcond_with vnc
 
 Name:       VirtualBox
-Version:    5.1.20
+Version:    5.1.22
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -162,6 +162,7 @@ OS/2, and OpenBSD.
 Summary:    core part (host server) for %{name}
 Group:      Development/Tools
 Requires:   %{name}-kmod = %{version}
+Requires:   hicolor-icon-theme
 Provides:   %{name}-kmod-common = %{version}-%{release}
 Conflicts:  %{name}-guest <= %{version}-%{release}
 Conflicts:  %{name}-guest-additions <= %{version}-%{release}
@@ -729,7 +730,9 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %attr(4511,root,root) %{_libdir}/virtualbox/VBoxNetDHCP
 %attr(4511,root,root) %{_libdir}/virtualbox/VBoxNetAdpCtl
 %attr(4511,root,root) %{_libdir}/virtualbox/VirtualBox
-%{_datadir}/icons/*
+%{_datadir}/icons/hicolor/*/apps/*.png
+%{_datadir}/icons/hicolor/*/mimetypes/*.png
+%{_datadir}/icons/hicolor/scalable/mimetypes/virtualbox.svg
 %{_datadir}/mime/*
 %dir %{_sysconfdir}/vbox
 %config %{_sysconfdir}/vbox/vbox.cfg
@@ -749,7 +752,7 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_libdir}/virtualbox/VirtualBox.so
 %{_libdir}/virtualbox/VBoxDbg.so
 %{_datadir}/virtualbox/nls
-%{_datadir}/pixmaps/*
+%{_datadir}/pixmaps/*.png
 %{_datadir}/applications/*.desktop
 
 %if %{with webservice}
@@ -797,6 +800,10 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Sat Apr 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.22-1.chinfo
+- 5.1.22
+- Sync with RPMfusion
+
 * Wed Apr 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.20-1.a.chinfo
 - 5.1.20a
 
