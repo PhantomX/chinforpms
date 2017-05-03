@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 10
+%define base_sublevel 11
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -487,8 +487,15 @@ Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
 %endif
 %endif
 
+## Patches needed for building this package
+
 # build tweak for build ID magic, even for -vanilla
-Source5005: kbuild-AFTER_LINK.patch
+Patch001: kbuild-AFTER_LINK.patch
+
+## compile fixes
+
+# ongoing complaint, full discussion delayed until ksummit/plumbers
+Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
 
 %if !%{nopatches}
 
@@ -515,29 +522,41 @@ Patch424: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch425: ARM-tegra-usb-no-reset.patch
 
-Patch426: AllWinner-net-emac.patch
+Patch426: AllWinner-h3.patch
+Patch427: AllWinner-net-emac.patch
 
-Patch427: xgene_enet-remove-bogus-forward-declarations.patch
-Patch428: xgene-Fix-crash-on-DT-systems.patch
+# http://www.spinics.net/lists/linux-bluetooth/msg70169.html
+# https://www.spinics.net/lists/devicetree/msg170619.html
+Patch428: ti-bluetooth.patch
+
+Patch429: arm64-hikey-fixes.patch
 
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch430: bcm2837-initial-support.patch
 
-# http://www.spinics.net/lists/linux-mmc/msg41151.html
-Patch431: bcm283x-mmc-imp-speed.patch
-
-Patch432: bcm283x-VEC.patch
+Patch431: arm-rk3288-tinker.patch
 
 # http://www.spinics.net/lists/dri-devel/msg132235.html
 Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
 
+# bcm283x mmc for wifi http://www.spinics.net/lists/arm-kernel/msg567077.html
+Patch434: bcm283x-mmc-bcm2835.patch
+
 # Upstream fixes for i2c/serial/ethernet MAC addresses
 Patch435: bcm283x-fixes.patch
 
+# https://lists.freedesktop.org/archives/dri-devel/2017-February/133823.html
 Patch436: vc4-fix-vblank-cursor-update-issue.patch
 
-# http://www.spinics.net/lists/arm-kernel/msg552554.html
+Patch437: bcm283x-hdmi-audio.patch
+
+# https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch438: arm-imx6-hummingboard2.patch
+
+# https://lkml.org/lkml/2017/4/4/316
+Patch339: media-cec-Fix-runtime-BUG-when-CONFIG_RC_CORE-CEC_CAP_RC.patch
+
+Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -593,28 +612,14 @@ Patch509: MODSIGN-Don-t-try-secure-boot-if-EFI-runtime-is-disa.patch
 #CVE-2016-3134 rhbz 1317383 1317384
 Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 
-#ongoing complaint, full discussion delayed until ksummit/plumbers
-Patch849: 0001-iio-Use-event-header-from-kernel-tree.patch
-
-# selinux: allow context mounts on tmpfs, ramfs, devpts within user namespaces
-Patch852: selinux-allow-context-mounts-on-tmpfs-etc.patch
-
-#CVE-2017-7277 rhbz 1436629 1436661
-Patch858: tcp-mark-skbs-with-SCM_TIMESTAMPING_OPT_STATS.patch
-
-# CVE-2017-2671 rhbz 1436649 1436663
-Patch860: 0001-ping-implement-proper-locking.patch
-
-Patch861: 0001-efi-libstub-Treat-missing-SecureBoot-variable-as-Sec.patch
-
-#rhbz 1441310
-Patch863: rhbz_1441310.patch
+#rhbz 1435154
+Patch666: powerpc-prom-Increase-RMA-size-to-512MB.patch
 
 # CVE-2017-7645 rhbz 1443615 1443617
-Patch866: CVE-2017-7645.patch
+Patch667: CVE-2017-7645.patch
 
 # CVE-2017-7477 rhbz 1445207 1445208
-Patch867: CVE-2017-7477.patch
+Patch668: CVE-2017-7477.patch
 
 ### Extra
 
@@ -632,11 +637,11 @@ Patch1014: btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1015: reiserfs-fix-race-in-prealloc-discard.patch
 
 # BFQ disk scheduler - http://algo.ing.unimo.it/people/paolo/disk_sched/
-%global bfqurl http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.10.0-v8r10
-Patch1030: %{bfqurl}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.10..patch
-Patch1031: %{bfqurl}/0002-block-introduce-the-BFQ-v7r11-I-O-sched-for-4.10.0.patch
+%global bfqurl http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.11.0-v8r11
+Patch1030: %{bfqurl}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.11..patch
+Patch1031: %{bfqurl}/0002-block-introduce-the-BFQ-v7r11-I-O-sched-for-4.11.0.patch
 Patch1032: %{bfqurl}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v7r11-for.patch
-Patch1033: %{bfqurl}/0004-Turn-BFQ-v7r11-for-4.10.0-into-BFQ-v8r10-for-4.10.0.patch
+Patch1033: %{bfqurl}/0004-blk-bfq-turn-BFQ-v7r11-for-4.11.0-into-BFQ-v8r11-for.patch
 Source3000: %{bfqurl}/COPYING.BFQ
 Source3001: %{bfqurl}/README.BFQ
 
@@ -1239,19 +1244,14 @@ do
 done
 %endif
 
-# The kbuild-AFTER_LINK patch is needed regardless so we list it as a Source
-# file and apply it separately from the rest.
-git am %{SOURCE5005}
-
-%if !%{nopatches}
+# Note: Even in the "nopatches" path some patches (build tweaks and compile
+# fixes) will always get applied; see patch defition above for details
 
 git am %{patches}
 
 patch -p1 -F1 -i %{SOURCE4000}
 
 # END OF PATCH APPLICATIONS
-
-%endif
 
 # Any further pre-build tree manipulations happen here.
 
@@ -2211,6 +2211,13 @@ fi
 #
 #
 %changelog
+* Tue May 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.0-500.chinfo
+- 4.11.0
+- f26 sync
+
+* Tue May 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.13-501.chinfo
+- BFQ fixes
+
 * Fri Apr 28 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.10.13-500.chinfo
 - 4.10.13
 - f25 sync
