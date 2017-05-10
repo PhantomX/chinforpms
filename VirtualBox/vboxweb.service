@@ -4,9 +4,9 @@ After=network.target
 
 [Service]
 Type=forking
-ExecStart=/usr/bin/vboxwebsrv --pidfile /run/vboxweb.pid  --background
-ExecStopPost=/usr/bin/rm /run/vboxweb.pid
-PIDFile=/run/vboxweb.pid
+ExecStart=/usr/bin/vboxwebsrv --pidfile /run/virtualbox/vboxweb.pid  --background
+ExecStopPost=/usr/bin/rm -f /run/virtualbox/vboxweb.pid
+PIDFile=/run/virtualbox/vboxweb.pid
 
 [Install]
 WantedBy=multi-user.target

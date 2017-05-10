@@ -76,7 +76,7 @@ mkdir -p %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
 ln -s ../../../../ProgramasRFB/%{name}/RFB.png \
   %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/%{name}.png
 
-for res in 16 20 22 24 32 36 48 64 72 96 128 192 256 ;do
+for res in 16 22 24 32 36 48 64 72 96 128 192 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   convert RFB.png -filter Lanczos -resize ${res}x${res} \

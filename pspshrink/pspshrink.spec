@@ -45,7 +45,7 @@ mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 ln -s ../../../../pixmaps/%{name}.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
-for res in 16 20 22 24 32 36 48 64 72 96 128 192 256 512 ;do
+for res in 16 22 24 32 36 48 64 72 96 128 192 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   rsvg-convert data/%{name}.svg -h ${res} -w ${res} \

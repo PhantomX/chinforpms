@@ -1,0 +1,12 @@
+[Unit]
+Description=VirtualBox autostart service
+After=network.target systemd-modules-load.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/vboxautostart start
+ExecStop=/usr/bin/vboxautostart stop
+
+[Install]
+WantedBy=multi-user.target

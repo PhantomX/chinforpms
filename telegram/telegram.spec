@@ -135,7 +135,7 @@ for res in 16 22 24 48 72 96 128 192 ;do
     ${dir}/%{name}.png
 done
 
-for res in 16 20 22 24 32 36 48 64 72 96 128 192 256 512 ;do
+for res in 16 22 24 32 36 48 64 72 96 128 192 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/mimetypes
   mkdir -p ${dir}
   convert icon_green.png -filter Lanczos -resize ${res}x${res} \

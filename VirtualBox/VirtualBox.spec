@@ -44,6 +44,8 @@ Source21:   os_mageia_64.png
 Source100:   vboxlogo-bmp.sh
 Source101:   README.vboxlogo
 Source102:   vboxlogo.bmp
+Source103:   vboxautostart
+Source104:   vboxautostart.service
 Patch1:     VirtualBox-OSE-4.1.4-noupdate.patch
 Patch2:     VirtualBox-5.1.0-strings.patch
 Patch18:    VirtualBox-OSE-4.0.2-aiobug.patch
@@ -554,6 +556,7 @@ tar --use-compress-program xz -cf %{buildroot}%{_datadir}/%{name}-kmod-%{version
 %if %{with webservice}
 install -m 0644 -D %{SOURCE10} \
     %{buildroot}%{_unitdir}/vboxweb.service
+
 %endif
 
 # Installation root configuration
@@ -568,6 +571,21 @@ install -p -m 0644 -D %{SOURCE5} %{buildroot}%{_udevrulesdir}/60-vboxguest.rules
 # Install modules load script
 install -p -m 0644 -D %{SOURCE6} %{buildroot}%{_prefix}/lib/modules-load.d/%{name}.conf
 install -p -m 0644 -D %{SOURCE7} %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
+
+# Autostart files
+install -pm0755 %{SOURCE103} %{buildroot}%{_bindir}/vboxautostart
+
+install -m 0644 -D %{SOURCE104} \
+  %{buildroot}%{_unitdir}/vboxautostart.service
+
+mkdir -p %{buildroot}%{_localstatedir}/lib/virtualbox
+
+mkdir -p %{buildroot}/run/virtualbox
+
+mkdir -p %{buildroot}%{_tmpfilesdir}
+cat > %{buildroot}%{_tmpfilesdir}/virtualbox.conf <<'EOF'
+d /run/virtualbox 0775 root vboxusers -
+EOF
 
 # Menu entry
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications \
@@ -606,6 +624,11 @@ fi
 # should be in kmod package, not here
 /bin/systemctl restart systemd-modules-load.service >/dev/null 2>&1 || :
 
+%systemd_post vboxautostart.service
+
+%preun
+%systemd_preun vboxautostart.service
+
 %if %{with webservice}
 %post webservice
     %systemd_post vboxweb-httpd.service
@@ -625,6 +648,7 @@ if [ $1 -eq 0 ] ; then
     # mimeinfo F23 only
     /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 fi
+%systemd_postun_with_restart vboxautostart.service
 
 %if %{with webservice}
 %postun webservice
@@ -744,6 +768,11 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_libdir}/virtualbox/keymaps
 %{_libdir}/virtualbox/rdesktop-vrdp-keymaps
 %{_datadir}/virtualbox
+%{_bindir}/vboxautostart
+%{_unitdir}/vboxautostart.service
+%{_tmpfilesdir}/virtualbox.conf
+%dir %attr(775,root,vboxusers) /run/virtualbox
+%dir %attr(770,root,vboxusers) %{_localstatedir}/lib/virtualbox
 
 %files
 %{_bindir}/VirtualBox

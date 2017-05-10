@@ -22,7 +22,7 @@
 %global pyqt 0
 
 Name:           spideroakone
-Version:        6.1.9
+Version:        6.2.0
 Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
@@ -219,7 +219,7 @@ install -pm0644 usr/share/pixmaps/%{name}.png \
 install -pm0644 usr/share/pixmaps/SpiderOakONEGlobalSync.png \
   %{buildroot}%{_datadir}/pixmaps/
 
-for res in 16 22 24 32 48 64 72 96 128 192 256 512 ;do
+for res in 16 24 32 48 64 72 96 128 192 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   convert usr/share/pixmaps/%{name}.png -filter Lanczos -resize ${res}x${res}  \
@@ -251,6 +251,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Tue May 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.2.0-1
+- 6.2.0
+
 * Wed Apr 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.1.9-1
 - 6.1.9
 
