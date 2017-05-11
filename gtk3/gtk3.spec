@@ -18,7 +18,7 @@
 %global _changelog_trimtime %(date +%s -d "1 year ago")
 
 Name: gtk3
-Version: 3.22.12
+Version: 3.22.14
 Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -68,6 +68,7 @@ BuildRequires: pkgconfig(rest-0.7)
 BuildRequires: pkgconfig(json-glib-1.0)
 BuildRequires: pkgconfig(colord)
 BuildRequires: pkgconfig(avahi-gobject)
+BuildRequires: sassc
 BuildRequires: desktop-file-utils
 %if 0%{?with_wayland}
 BuildRequires: pkgconfig(wayland-client) >= %{wayland_version}
@@ -190,6 +191,8 @@ the functionality of the installed %{name} package.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+
+rm -fv testsuite/gtk/gtkresources.c
 
 %build
 export CFLAGS='-fno-strict-aliasing %optflags'
@@ -362,7 +365,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
-* Sat Apr 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.11-100.chinfo
+* Wed May 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.14-100.chinfo
+- 3.22.14
+
+* Sat Apr 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.12-100.chinfo
 - 3.22.12
 - f25 sync
 
