@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -376,6 +376,7 @@ BuildRequires: kmod, patch, bash, sh-utils, tar, git
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc, elfutils-devel
+BuildRequires: patchutils
 %if %{with_sparse}
 BuildRequires: sparse
 %endif
@@ -641,7 +642,7 @@ Patch1015: reiserfs-fix-race-in-prealloc-discard.patch
 Patch1030: %{bfqurl}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.11..patch
 Patch1031: %{bfqurl}/0002-block-introduce-the-BFQ-v7r11-I-O-sched-for-4.11.0.patch
 Patch1032: %{bfqurl}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v7r11-for.patch
-Patch1033: %{bfqurl}/0004-blk-bfq-turn-BFQ-v7r11-for-4.11.0-into-BFQ-v8r11-for.patch
+Source1033: %{bfqurl}/0004-blk-bfq-turn-BFQ-v7r11-for-4.11.0-into-BFQ-v8r11-for.patch
 Source3000: %{bfqurl}/COPYING.BFQ
 Source3001: %{bfqurl}/README.BFQ
 
@@ -1248,6 +1249,9 @@ done
 # fixes) will always get applied; see patch defition above for details
 
 git am %{patches}
+
+filterdiff -p1 -x Makefile %{SOURCE1033} > 0004-bfq.patch
+patch -p1 -F1 -i 0004-bfq.patch
 
 patch -p1 -F1 -i %{SOURCE4000}
 
@@ -2211,6 +2215,9 @@ fi
 #
 #
 %changelog
+* Sun May 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.1-500.chinfo
+- 4.11.1
+
 * Tue May 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.0-500.chinfo
 - 4.11.0
 - f26 sync
