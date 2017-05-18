@@ -70,12 +70,12 @@ install -pm0644 %{name}.sh %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh
 
 
 %changelog
-* Mon Feb 20 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 3-3
+* Mon Feb 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 3-3
 - Tweak profile script
 - Drop %%config from profile script
 
 * Sun Feb 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 3-2
 - Fix multilib
 
-* Fri Feb 10 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 3-1
+* Fri Feb 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 3-1
 - Initial spec

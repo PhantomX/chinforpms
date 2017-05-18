@@ -130,5 +130,5 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
-* Thu Mar 30 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 8.10-1
+* Thu Mar 30 2017 Phantom X <megaphantomx at bol dot com dot br> - 8.10-1
 - Initial spec.

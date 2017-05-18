@@ -194,10 +194,10 @@ done
 - 0.185
 - Pugsy's Cheats to 0.184
 
-* Sat Apr 01 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 0.184-1
+* Sat Apr 01 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.184-1
 - 0.184
 
-* Thu Feb 23 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 0.183-1
+* Thu Feb 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.183-1
 - 0.183
 - Use proper spec file sessions
 - Icon conversion speedup with find and xargs, removing unneeded parallel dependency

@@ -15,8 +15,8 @@
 %endif
 
 Name:           telegram
-Version:        1.0.33
-Release:        1%{?prerel}%{?dist}
+Version:        1.1.0
+Release:        1%{?dist}
 Summary:        A messenger application
 
 License:        GPLv3
@@ -177,15 +177,18 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 %{_datadir}/mime/packages/%{name}.xml
 
 %changelog
+* Wed May 17 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.1.0-1
+- new version
+
 * Wed Apr 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.29-1
 - 1.0.28
 
-* Fri Mar 31 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 1.0.27-1
+* Fri Mar 31 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.27-1
 - 1.0.27
 - StartupWMClass fix
 - Theme mimetype and icon
 
-* Tue Feb 21 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 1.0.14-1
+* Tue Feb 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.14-1
 - 1.0.14
 - Update wrapper to move old configuration directory
 - Update wrapper to stop desktop file installation in HOME dir

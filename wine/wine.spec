@@ -11,11 +11,11 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.7
+%global compholiover 2.8
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.6
+%global ninever 2.7
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -32,7 +32,7 @@
 %endif
 
 Name:           wine
-Version:        2.7
+Version:        2.8
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1543,6 +1543,7 @@ fi
 %{_libdir}/wine/esent.dll.so
 %{_libdir}/wine/evr.dll.so
 %{_libdir}/wine/explorerframe.dll.so
+%{_libdir}/wine/ext-ms-win-authz-context-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-domainjoin-netjoin-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-dc-l1-2-0.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-dc-create-l1-1-1.dll.so
@@ -2249,6 +2250,9 @@ fi
 %endif
 
 %changelog
+* Tue May 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.8-100.chinfo
+- 2.8
+
 * Tue May 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.7-100.chinfo
 - 2.7
 

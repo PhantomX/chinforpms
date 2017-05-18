@@ -388,10 +388,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 - 3.22.8
 - f25 sync
 
-* Wed Feb 08 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 3.22.7-101.chinfo
+* Wed Feb 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.7-101.chinfo
 - Some Ubuntu patches to revert more features
 
-* Wed Feb 08 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 3.22.7-100.chinfo
+* Wed Feb 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.7-100.chinfo
 - Revert some features dropped by upstream
 - Disable overlay scrolling
 - Assorted patches from Debian

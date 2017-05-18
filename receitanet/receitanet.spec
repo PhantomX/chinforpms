@@ -101,7 +101,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Thu Mar 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10-2
 - Disable jar repack
 
-* Wed Mar 01 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 1.10-1
+* Wed Mar 01 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10-1
 - 1.10
 
 * Fri Jan 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.09-2

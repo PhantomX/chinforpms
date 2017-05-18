@@ -81,7 +81,7 @@ done
 %{_datadir}/icons/gnome-colors-wise/
 
 %changelog
-* Thu Feb 16 2017 vinicius-mo <vinicius-mo at segplan.go.gov.br> - 5.5.1-100.chinfo
+* Thu Feb 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.5.1-100.chinfo
 - Update url and source link
 - Remove xpm files
 - Use %%{make_build}
