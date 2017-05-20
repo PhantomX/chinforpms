@@ -17,7 +17,7 @@
 %global python 0
 
 Name:           dropboxd
-Version:        25.4.28
+Version:        26.4.24
 Release:        1%{?dist}
 Summary:        Dropbox proprietary client
 
@@ -25,7 +25,7 @@ License:        Proprietary
 URL:            http://www.getdropbox.com/
 Source0:        http://www.dropbox.com/download?plat=lnx.%{parch}#/%{pkgname}-lnx.%{parch}-%{version}.tar.gz
 
-ExclusiveArch:  i386 x86_64
+ExclusiveArch:  %{ix86} x86_64
 
 AutoReqProv:    no
 
@@ -175,6 +175,9 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 
 
 %changelog
+* Thu May 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 26.4.24-1
+- 26.4.24
+
 * Tue May 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 25.4.28-1
 - 25.4.28
 
