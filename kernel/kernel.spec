@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -618,6 +618,10 @@ Patch667: CVE-2017-7645.patch
 
 # CVE-2017-7477 rhbz 1445207 1445208
 Patch668: CVE-2017-7477.patch
+
+#CVE-2017-9059 rhbz 1451386 1451996
+Patch669: 0001-SUNRPC-Refactor-svc_set_num_threads.patch
+Patch670: 0002-NFSv4-Fix-callback-server-shutdown.patch
 
 ### Extra
 
@@ -1248,9 +1252,9 @@ done
 git am %{patches}
 
 filterdiff -p1 -x Makefile %{SOURCE1033} > 0004-bfq.patch
-patch -p1 -F1 -i 0004-bfq.patch
+$patch_command -i 0004-bfq.patch
 
-patch -p1 -F1 -i %{SOURCE4000}
+$patch_command -i %{SOURCE4000}
 
 # END OF PATCH APPLICATIONS
 
@@ -2212,6 +2216,10 @@ fi
 #
 #
 %changelog
+* Sat May 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.2-500.chinfo
+- 4.11.2
+- f26 sync
+
 * Sun May 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.1-500.chinfo
 - 4.11.1
 

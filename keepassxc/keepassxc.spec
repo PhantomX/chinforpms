@@ -1,10 +1,10 @@
 Name:           keepassxc
 Version:        2.1.4
-Release:        1%{?dist}
+Release:        100.chinfo%{?dist}
 Summary:        Cross-platform password manager
 Group:          User Interface/Desktops
 
-License:        GPLv2 or GPLv3
+License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain
 URL:            https://keepassxc.org/
 Source0:        https://github.com/keepassxreboot/%{name}/releases/download/%{version}/%{name}-%{version}-src.tar.xz
 
@@ -29,7 +29,7 @@ Requires(postun): desktop-file-utils gtk-update-icon-cache shared-mime-info
 Requires(posttrans): gtk-update-icon-cache shared-mime-info
 
 %description
-eePassXC is a community fork of KeePassX, a native cross-platform
+KeePassXC is a community fork of KeePassX, a native cross-platform
 port of KeePass Password Safe, with the goal to extend and improve it
 with new features and bugfixes to provide a feature-rich, fully
 cross-platform and modern open-source password manager.
@@ -44,7 +44,8 @@ pushd build
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DWITH_TESTS:BOOL=OFF \
   -DWITH_XC_HTTP:BOOL=ON \
-  -DWITH_XC_AUTOTYPE:BOOL=ON
+  -DWITH_XC_AUTOTYPE:BOOL=ON \
+  -DWITH_XC_YUBIKEY=OFF
  
 %make_build
 
@@ -56,6 +57,7 @@ popd
  
 desktop-file-edit \
   --add-mime-type="application/x-keepass" \
+  --add-mime-type="application/x-keepassxc" \
   %{buildroot}%{_datadir}/applications/%{name}.desktop
  
 %find_lang keepassx --with-qt
@@ -88,11 +90,14 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 %{_datadir}/%{name}/icons
 %{_datadir}/applications/*.desktop
 %{_datadir}/mime/packages/*.xml
-%{_datadir}/icons/hicolor/*/*/*
+%{_datadir}/icons/hicolor/*/*/*%{name}*
 
  
 %changelog
-* Fri Apr 21 2017 Phantom X - 2.1.4-1
+* Sun May 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1.4-100.chinfo
+- Insanely high build number
+
+* Fri Apr 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1.4-1
 - 2.1.4
 
 * Thu Mar 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1.3-1
