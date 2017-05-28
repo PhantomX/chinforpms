@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -513,9 +513,8 @@ Patch422: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # Fix OMAP4 (pandaboard)
 Patch423: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
-# Not particularly happy we don't yet have a proper upstream resolution this is the right direction
-# https://www.spinics.net/lists/arm-kernel/msg535191.html
-Patch424: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
+# BBWireless Bluetooth
+Patch424: arm-dts-boneblack-wireless-add-WL1835-Bluetooth-device-node.patch
 
 # http://patchwork.ozlabs.org/patch/587554/
 Patch425: ARM-tegra-usb-no-reset.patch
@@ -550,9 +549,6 @@ Patch437: bcm283x-hdmi-audio.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch438: arm-imx6-hummingboard2.patch
-
-# https://lkml.org/lkml/2017/4/4/316
-Patch339: media-cec-Fix-runtime-BUG-when-CONFIG_RC_CORE-CEC_CAP_RC.patch
 
 Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -2216,6 +2212,10 @@ fi
 #
 #
 %changelog
+* Thu May 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.3-500.chinfo
+- 4.11.3
+- f26 sync
+
 * Sat May 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.2-500.chinfo
 - 4.11.2
 - f26 sync
