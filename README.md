@@ -15,6 +15,7 @@ release tags).
 
 ## Differences from Fedora and RPM Fusion
 
+ * **aegisub** - No openal and portaudio support
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **gnome-colors-icon-theme** - Post script and cleanup
  * **gstreamer1** - Change libexecdir on ix86 to libdir (/usr/lib), so gst-plugin-scanner 
