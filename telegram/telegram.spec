@@ -15,7 +15,7 @@
 %endif
 
 Name:           telegram
-Version:        1.1.2
+Version:        1.1.7
 Release:        1%{?dist}
 Summary:        A messenger application
 
@@ -177,6 +177,9 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 %{_datadir}/mime/packages/%{name}.xml
 
 %changelog
+* Thu Jun 01 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.1.7-1
+- 1.1.7
+
 * Tue May 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.1.2-1
 - 1.1.2
 
