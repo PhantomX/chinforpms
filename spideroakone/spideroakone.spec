@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 %global __strip /bin/true
 
-%global pkgname SpiderOak
+%global pkgname spideroak
 %global pkgname1 SpiderOakONE
 %global pkgrel 1
 
@@ -9,8 +9,10 @@
 
 %ifarch x86_64
 %global parch x86_64
+%global larch x64
 %else
 %global parch i386
+%global larch x86
 %endif
 
 # Do no blame SpiderOak devs if setting YES in these
@@ -22,14 +24,14 @@
 %global pyqt 0
 
 Name:           spideroakone
-Version:        6.2.0
+Version:        6.3.0
 Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
 License:        Proprietary
 URL:            https://spideroak.com/
-Source0:        https://spideroak.com/getbuild?platform=fedora&arch=%{parch}&version=%{version}#/%{pkgname}-%{version}-%{pkgrel}.%{parch}.rpm
+Source0:        https://spideroak.com/release/spideroak/rpm_%{larch}#/%{pkgname}.%{version}.%{pkgrel}.%{parch}.rpm
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -79,6 +81,15 @@ SpiderOak provides an easy, secure and consolidated online backup, storage,
 access, sharing & tool.
 
 %prep
+
+RVER="$(rpm -qp --qf %{version} %{SOURCE0} 2> /dev/null)"
+if [ "${RVER}" != "%{version}" ] ;then
+  echo "Version mismatch"
+  echo "You have ${RVER} in %{SOURCE0} instead %{version} "
+  echo "Edit VERSION variable and try again"
+  exit 1
+fi
+
 %setup -c -T
 rpm2cpio %{SOURCE0} | cpio -imdv --no-absolute-filenames
 
@@ -251,6 +262,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Tue Jun 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.3.0-1
+- 6.3.0
+
 * Tue May 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.2.0-1
 - 6.2.0
 
