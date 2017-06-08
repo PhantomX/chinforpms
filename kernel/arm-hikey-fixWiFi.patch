@@ -1,0 +1,501 @@
+From c477ebe21fabe0010a2ed324ce3a1762c757d867 Mon Sep 17 00:00:00 2001
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Sat, 6 May 2017 11:41:30 +0200
+Subject: [PATCH 179/554] mmc: dt: pwrseq-simple: Invent power-off-delay-us
+
+During power off, after the GPIO pin has been asserted, some devices like
+the Wifi chip from TI, Wl18xx, needs a delay before the host continues with
+clock gating and turning off regulators as to follow a graceful shutdown
+sequence.
+
+Therefore invent an optional power-off-delay-us DT binding for
+mmc-pwrseq-simple, to allow us to support this constraint.
+
+Cc: devicetree@vger.kernel.org
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: linux-mmc@vger.kernel.org
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+ Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.txt b/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.txt
+index e25436861867..9029b45b8a22 100644
+--- a/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.txt
++++ b/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.txt
+@@ -18,6 +18,8 @@ Optional properties:
+   "ext_clock" (External clock provided to the card).
+ - post-power-on-delay-ms : Delay in ms after powering the card and
+ 	de-asserting the reset-gpios (if any)
++- power-off-delay-us : Delay in us after asserting the reset-gpios (if any)
++	during power off of the card.
+ 
+ Example:
+ 
+-- 
+2.13.0
+
+From e9256e142f597edf90c68cec22db4c4aebaa27de Mon Sep 17 00:00:00 2001
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Sat, 6 May 2017 11:43:05 +0200
+Subject: [PATCH 180/554] mmc: pwrseq_simple: Parse DTS for the
+ power-off-delay-us property
+
+If the optional power-off-delay-us property is found, insert the
+corresponding delay after asserting the GPIO during power off. This enables
+a graceful shutdown sequence for some devices.
+
+Cc: linux-mmc@vger.kernel.org
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/mmc/core/pwrseq_simple.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/mmc/core/pwrseq_simple.c b/drivers/mmc/core/pwrseq_simple.c
+index 1304160de168..13ef162cf066 100644
+--- a/drivers/mmc/core/pwrseq_simple.c
++++ b/drivers/mmc/core/pwrseq_simple.c
+@@ -27,6 +27,7 @@ struct mmc_pwrseq_simple {
+ 	struct mmc_pwrseq pwrseq;
+ 	bool clk_enabled;
+ 	u32 post_power_on_delay_ms;
++	u32 power_off_delay_us;
+ 	struct clk *ext_clk;
+ 	struct gpio_descs *reset_gpios;
+ };
+@@ -78,6 +79,10 @@ static void mmc_pwrseq_simple_power_off(struct mmc_host *host)
+ 
+ 	mmc_pwrseq_simple_set_gpios_value(pwrseq, 1);
+ 
++	if (pwrseq->power_off_delay_us)
++		usleep_range(pwrseq->power_off_delay_us,
++			2 * pwrseq->power_off_delay_us);
++
+ 	if (!IS_ERR(pwrseq->ext_clk) && pwrseq->clk_enabled) {
+ 		clk_disable_unprepare(pwrseq->ext_clk);
+ 		pwrseq->clk_enabled = false;
+@@ -119,6 +124,8 @@ static int mmc_pwrseq_simple_probe(struct platform_device *pdev)
+ 
+ 	device_property_read_u32(dev, "post-power-on-delay-ms",
+ 				 &pwrseq->post_power_on_delay_ms);
++	device_property_read_u32(dev, "power-off-delay-us",
++				 &pwrseq->power_off_delay_us);
+ 
+ 	pwrseq->pwrseq.dev = dev;
+ 	pwrseq->pwrseq.ops = &mmc_pwrseq_simple_ops;
+-- 
+2.13.0
+
+From f74ac688c981138c914f9afba50b646146e35585 Mon Sep 17 00:00:00 2001
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Date: Mon, 24 Apr 2017 22:40:22 +0200
+Subject: [PATCH 181/554] mfd: dts: hi655x: Add clock binding for the pmic
+
+The hi655x PMIC provides the regulators but also a clock. The latter is
+missing in the definition, so extend the documentation to include this as
+well.
+
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+[Ulf: Split patch and updated changelog]
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+ Documentation/devicetree/bindings/mfd/hisilicon,hi655x.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/mfd/hisilicon,hi655x.txt b/Documentation/devicetree/bindings/mfd/hisilicon,hi655x.txt
+index 05485699d70e..9630ac0e4b56 100644
+--- a/Documentation/devicetree/bindings/mfd/hisilicon,hi655x.txt
++++ b/Documentation/devicetree/bindings/mfd/hisilicon,hi655x.txt
+@@ -16,6 +16,11 @@ Required properties:
+ - reg:                  Base address of PMIC on Hi6220 SoC.
+ - interrupt-controller: Hi655x has internal IRQs (has own IRQ domain).
+ - pmic-gpios:           The GPIO used by PMIC IRQ.
++- #clock-cells:		From common clock binding; shall be set to 0
++
++Optional properties:
++- clock-output-names: From common clock binding to override the
++  default output clock name
+ 
+ Example:
+ 	pmic: pmic@f8000000 {
+@@ -24,4 +29,5 @@ Example:
+ 		interrupt-controller;
+ 		#interrupt-cells = <2>;
+ 		pmic-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
++		#clock-cells = <0>;
+ 	}
+-- 
+2.13.0
+
+From 307ded8968868e55343e063fbe96cff1efd77eb6 Mon Sep 17 00:00:00 2001
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Date: Mon, 24 Apr 2017 22:40:22 +0200
+Subject: [PATCH 182/554] arm64: dts: hikey: Add clock for the pmic mfd
+
+The hi655x PMIC provides the regulators but also a clock. The latter is
+missing so let's add it. This clock is used by WiFi/Bluetooth chip, but
+that connection is done in a separate change on top of this one.
+
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+[Ulf: Split patch and updated changelog]
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts b/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
+index 75bce2d0b1a8..d22eb3a646c4 100644
+--- a/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
++++ b/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
+@@ -330,6 +330,7 @@
+ 	pmic: pmic@f8000000 {
+ 		compatible = "hisilicon,hi655x-pmic";
+ 		reg = <0x0 0xf8000000 0x0 0x1000>;
++		#clock-cells = <0>;
+ 		interrupt-controller;
+ 		#interrupt-cells = <2>;
+ 		pmic-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+-- 
+2.13.0
+
+From 1b32a5ff98fbb271d2235ddcfe3b58f514f8260a Mon Sep 17 00:00:00 2001
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Wed, 3 May 2017 12:46:55 +0200
+Subject: [PATCH 183/554] arm64: dts: hi6220: Move the fixed_5v_hub regulator
+ to the hikey dts
+
+The regulator is a part of the hikey board, therefore let's move it from
+the hi6220 SoC dtsi file into the hikey dts file . Let's also rename the
+regulator according to the datasheet (5V_HUB) to better reflect the HW.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts | 10 ++++++++++
+ arch/arm64/boot/dts/hisilicon/hi6220.dtsi      | 12 +-----------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts b/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
+index d22eb3a646c4..0f6cba77fc76 100644
+--- a/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
++++ b/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
+@@ -81,6 +81,16 @@
+ 		};
+ 	};
+ 
++	reg_5v_hub: regulator@0 {
++		compatible = "regulator-fixed";
++		regulator-name = "5V_HUB";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-boot-on;
++		gpio = <&gpio0 7 0>;
++		regulator-always-on;
++	};
++
+ 	soc {
+ 		spi0: spi@f7106000 {
+ 			status = "ok";
+diff --git a/arch/arm64/boot/dts/hisilicon/hi6220.dtsi b/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
+index 1e5129b19280..951152d44c02 100644
+--- a/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
++++ b/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
+@@ -725,20 +725,10 @@
+ 			status = "disabled";
+ 		};
+ 
+-		fixed_5v_hub: regulator@0 {
+-			compatible = "regulator-fixed";
+-			regulator-name = "fixed_5v_hub";
+-			regulator-min-microvolt = <5000000>;
+-			regulator-max-microvolt = <5000000>;
+-			regulator-boot-on;
+-			gpio = <&gpio0 7 0>;
+-			regulator-always-on;
+-		};
+-
+ 		usb_phy: usbphy {
+ 			compatible = "hisilicon,hi6220-usb-phy";
+ 			#phy-cells = <0>;
+-			phy-supply = <&fixed_5v_hub>;
++			phy-supply = <&reg_5v_hub>;
+ 			hisilicon,peripheral-syscon = <&sys_ctrl>;
+ 		};
+ 
+-- 
+2.13.0
+
+From 84f7c60b31f10e3a438153bc7408ad536f585641 Mon Sep 17 00:00:00 2001
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Wed, 3 May 2017 13:51:27 +0200
+Subject: [PATCH 184/554] arm64: dts: hikey: Add the SYS_5V and the VDD_3V3
+ regulators
+
+Add these regulators to better describe the HW, but also because those is
+needed in following changes.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts b/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
+index 0f6cba77fc76..802f4a4bed30 100644
+--- a/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
++++ b/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
+@@ -81,7 +81,26 @@
+ 		};
+ 	};
+ 
+-	reg_5v_hub: regulator@0 {
++	reg_sys_5v: regulator@0 {
++		compatible = "regulator-fixed";
++		regulator-name = "SYS_5V";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	reg_vdd_3v3: regulator@1 {
++		compatible = "regulator-fixed";
++		regulator-name = "VDD_3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-boot-on;
++		regulator-always-on;
++		vin-supply = <&reg_sys_5v>;
++	};
++
++	reg_5v_hub: regulator@2 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "5V_HUB";
+ 		regulator-min-microvolt = <5000000>;
+@@ -89,6 +108,7 @@
+ 		regulator-boot-on;
+ 		gpio = <&gpio0 7 0>;
+ 		regulator-always-on;
++		vin-supply = <&reg_sys_5v>;
+ 	};
+ 
+ 	soc {
+-- 
+2.13.0
+
+From 76f1dfb687150e852aa74573962cfc158a9570cc Mon Sep 17 00:00:00 2001
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Wed, 3 May 2017 14:18:26 +0200
+Subject: [PATCH 185/554] arm64: dts: hi6220: Move board data from the dwmmc
+ nodes to hikey dts
+
+Move the board specific descriptions for the dwmmc nodes in the hi6220 SoC
+dtsi, into the hikey dts as it's there these belongs.
+
+While changing this, let's take the opportunity to drop the use of the
+"ti,non-removable" binding for one of the dwmmc device nodes, as it's not a
+valid binding and not used. Drop also the unnecessary use of "num-slots =
+<0x1>" for all of the dwmmc nodes, as there is no need to set this since
+when default number of slots is one.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts | 23 ++++++++++++++++++++++-
+ arch/arm64/boot/dts/hisilicon/hi6220.dtsi      | 19 -------------------
+ 2 files changed, 22 insertions(+), 20 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts b/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
+index 802f4a4bed30..5132d8ed4664 100644
+--- a/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
++++ b/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
+@@ -286,8 +286,29 @@
+ 
+ 		/* GPIO blocks 16 thru 19 do not appear to be routed to pins */
+ 
++		dwmmc_0: dwmmc0@f723d000 {
++			cap-mmc-highspeed;
++			non-removable;
++			bus-width = <0x8>;
++			vmmc-supply = <&ldo19>;
++		};
++
++		dwmmc_1: dwmmc1@f723e000 {
++			card-detect-delay = <200>;
++			cap-sd-highspeed;
++			sd-uhs-sdr12;
++			sd-uhs-sdr25;
++			sd-uhs-sdr50;
++			vqmmc-supply = <&ldo7>;
++			vmmc-supply = <&ldo10>;
++			bus-width = <0x4>;
++			disable-wp;
++			cd-gpios = <&gpio1 0 1>;
++		};
++
+ 		dwmmc_2: dwmmc2@f723f000 {
+-			ti,non-removable;
++			broken-cd;
++			bus-width = <0x4>;
+ 			non-removable;
+ 			/* WL_EN */
+ 			vmmc-supply = <&wlan_en_reg>;
+diff --git a/arch/arm64/boot/dts/hisilicon/hi6220.dtsi b/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
+index 951152d44c02..5013e4b2ea71 100644
+--- a/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
++++ b/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
+@@ -756,17 +756,12 @@
+ 
+ 		dwmmc_0: dwmmc0@f723d000 {
+ 			compatible = "hisilicon,hi6220-dw-mshc";
+-			num-slots = <0x1>;
+-			cap-mmc-highspeed;
+-			non-removable;
+ 			reg = <0x0 0xf723d000 0x0 0x1000>;
+ 			interrupts = <0x0 0x48 0x4>;
+ 			clocks = <&sys_ctrl 2>, <&sys_ctrl 1>;
+ 			clock-names = "ciu", "biu";
+ 			resets = <&sys_ctrl PERIPH_RSTDIS0_MMC0>;
+ 			reset-names = "reset";
+-			bus-width = <0x8>;
+-			vmmc-supply = <&ldo19>;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&emmc_pmx_func &emmc_clk_cfg_func
+ 				     &emmc_cfg_func &emmc_rst_cfg_func>;
+@@ -774,13 +769,7 @@
+ 
+ 		dwmmc_1: dwmmc1@f723e000 {
+ 			compatible = "hisilicon,hi6220-dw-mshc";
+-			num-slots = <0x1>;
+-			card-detect-delay = <200>;
+ 			hisilicon,peripheral-syscon = <&ao_ctrl>;
+-			cap-sd-highspeed;
+-			sd-uhs-sdr12;
+-			sd-uhs-sdr25;
+-			sd-uhs-sdr50;
+ 			reg = <0x0 0xf723e000 0x0 0x1000>;
+ 			interrupts = <0x0 0x49 0x4>;
+ 			#address-cells = <0x1>;
+@@ -789,11 +778,6 @@
+ 			clock-names = "ciu", "biu";
+ 			resets = <&sys_ctrl PERIPH_RSTDIS0_MMC1>;
+ 			reset-names = "reset";
+-			vqmmc-supply = <&ldo7>;
+-			vmmc-supply = <&ldo10>;
+-			bus-width = <0x4>;
+-			disable-wp;
+-			cd-gpios = <&gpio1 0 1>;
+ 			pinctrl-names = "default", "idle";
+ 			pinctrl-0 = <&sd_pmx_func &sd_clk_cfg_func &sd_cfg_func>;
+ 			pinctrl-1 = <&sd_pmx_idle &sd_clk_cfg_idle &sd_cfg_idle>;
+@@ -801,15 +785,12 @@
+ 
+ 		dwmmc_2: dwmmc2@f723f000 {
+ 			compatible = "hisilicon,hi6220-dw-mshc";
+-			num-slots = <0x1>;
+ 			reg = <0x0 0xf723f000 0x0 0x1000>;
+ 			interrupts = <0x0 0x4a 0x4>;
+ 			clocks = <&sys_ctrl HI6220_MMC2_CIUCLK>, <&sys_ctrl HI6220_MMC2_CLK>;
+ 			clock-names = "ciu", "biu";
+ 			resets = <&sys_ctrl PERIPH_RSTDIS0_MMC2>;
+ 			reset-names = "reset";
+-			bus-width = <0x4>;
+-			broken-cd;
+ 			pinctrl-names = "default", "idle";
+ 			pinctrl-0 = <&sdio_pmx_func &sdio_clk_cfg_func &sdio_cfg_func>;
+ 			pinctrl-1 = <&sdio_pmx_idle &sdio_clk_cfg_idle &sdio_cfg_idle>;
+-- 
+2.13.0
+
+From ea452678734eb782126f999bf5c4fb3e71d3b196 Mon Sep 17 00:00:00 2001
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Wed, 3 May 2017 16:11:33 +0200
+Subject: [PATCH 186/554] arm64: dts: hikey: Fix WiFi support
+
+The description of the connection between the dwmmc (SDIO) controller and
+the Wifi chip, which is attached to the SDIO bus is wrong. Currently the
+SDIO card can't be detected and thus the Wifi doesn't work.
+
+Let's fix this by assigning the correct vmmc supply, which is the always on
+regulator VDD_3V3 and remove the WLAN enable regulator altogether. Then to
+properly deal with the power on/off sequence, add a mmc-pwrseq node to
+describe the resources needed to detect the SDIO card.
+
+Except for the WLAN enable GPIO and its corresponding assert/de-assert
+delays, the mmc-pwrseq node also contains a handle to a clock provided by
+the hi655x pmic. This clock is also needed to be able to turn on the WiFi
+chip.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts | 26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts b/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
+index 5132d8ed4664..49f6a6242cf9 100644
+--- a/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
++++ b/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts
+@@ -111,6 +111,15 @@
+ 		vin-supply = <&reg_sys_5v>;
+ 	};
+ 
++	wl1835_pwrseq: wl1835-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		/* WLAN_EN GPIO */
++		reset-gpios = <&gpio0 5 GPIO_ACTIVE_LOW>;
++		clocks = <&pmic>;
++		clock-names = "ext_clock";
++		power-off-delay-us = <10>;
++	};
++
+ 	soc {
+ 		spi0: spi@f7106000 {
+ 			status = "ok";
+@@ -307,11 +316,10 @@
+ 		};
+ 
+ 		dwmmc_2: dwmmc2@f723f000 {
+-			broken-cd;
+ 			bus-width = <0x4>;
+ 			non-removable;
+-			/* WL_EN */
+-			vmmc-supply = <&wlan_en_reg>;
++			vmmc-supply = <&reg_vdd_3v3>;
++			mmc-pwrseq = <&wl1835_pwrseq>;
+ 
+ 			#address-cells = <0x1>;
+ 			#size-cells = <0x0>;
+@@ -323,18 +331,6 @@
+ 				interrupts = <3 IRQ_TYPE_EDGE_RISING>;
+ 			};
+ 		};
+-
+-		wlan_en_reg: regulator@1 {
+-			compatible = "regulator-fixed";
+-			regulator-name = "wlan-en-regulator";
+-			regulator-min-microvolt = <1800000>;
+-			regulator-max-microvolt = <1800000>;
+-			/* WLAN_EN GPIO */
+-			gpio = <&gpio0 5 0>;
+-			/* WLAN card specific delay */
+-			startup-delay-us = <70000>;
+-			enable-active-high;
+-		};
+ 	};
+ 
+ 	leds {
+-- 
+2.13.0
+
