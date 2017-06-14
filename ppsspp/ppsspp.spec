@@ -1,6 +1,6 @@
-%global commit 66dc0ea62fc721eebe6b380aec3b659a8b2f0a8f
+%global commit dd23588cd7e4efba35f8309182128a6a84194e60
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20170519
+%global date 20170613
 %global use_snapshot 1
 
 # Enable system ffmpeg
@@ -10,7 +10,7 @@
 %endif
 
 %if 0%{?use_snapshot}
-%global commit1 f32328a88cbf368af90eb79bc7ad5420795d6585
+%global commit1 b8ab09ef21b43b3867c01492043805e8b7b11a3d
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -30,11 +30,11 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 tinyformat
 
-%global commit6 b16f7e6819267e57c3c244808d1981f0ce34acbc
+%global commit6 136b1e2d5d90284fd7bdd77ed605c70a8d31c8c4
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 6381b2ff9c0d975af8fd2974c97aa12a69ab6cc6
+%global commit7 90966d50f57608587bafd95b4e345b02b814754a
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 %endif
@@ -49,7 +49,7 @@
 
 Name:           ppsspp
 Version:        1.4
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -91,6 +91,7 @@ BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  snappy-devel
 BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
+Requires:       google-roboto-condensed-fonts
 Requires(post): desktop-file-utils
 Requires(postun): gtk-update-icon-cache
 Requires(posttrans): gtk-update-icon-cache
@@ -199,6 +200,9 @@ install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
 cp -r build/assets %{buildroot}%{_datadir}/%{name}/
+rm -f %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
+ln -sf ../../fonts/google-roboto/RobotoCondensed-Regular.ttf \
+  %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install --mode 0644 \
@@ -245,6 +249,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %dir %{_datadir}/%{name}/assets
 %{_datadir}/%{name}/assets/*.ini
 %{_datadir}/%{name}/assets/*.png
+%{_datadir}/%{name}/assets/*.ttf
 %{_datadir}/%{name}/assets/*.txt
 %{_datadir}/%{name}/assets/*.zim
 %dir %{_datadir}/%{name}/assets/flash0
@@ -257,7 +262,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
-* Fri May 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-3.20170422git66dc0ea62fc
+* Tue Jun 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-4.20170613gitdd23588
+- New snapshot
+- R: google-roboto-condensed-fonts
+
+* Fri May 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-3.20170519git66dc0ea
 - New snapshot
 
 * Sat Apr 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-2.20170422git2c6161c

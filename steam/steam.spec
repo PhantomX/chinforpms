@@ -7,7 +7,7 @@
 Name:           steam
 Version:        1.0.0.54
 Epoch:          1
-Release:        100.chinfo%{?dist}
+Release:        101.chinfo%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement
@@ -95,11 +95,15 @@ Requires:       libva-intel-driver%{?_isa}
 # Required for hardware decoding during In-Home Streaming (radeon/nouveau)
 Requires:       libvdpau%{?_isa}
 
-%if 0%{?fedora}
-# Required for having a functioning menu on the tray icon on Fedora
-# https://github.com/ValveSoftware/steam-for-linux/issues/4795
-Requires:       libdbusmenu-gtk3%{?_isa}
-%endif
+# Required for having a functioning menu on the tray icon
+Requires:       libdbusmenu-gtk2%{?_isa} >= 16.04.0
+Requires:       libdbusmenu-gtk3%{?_isa} >= 16.04.0
+
+# Required by Feral interactive games
+Requires:       libatomic%{?_isa}
+
+# Required by Shank
+Requires:       alsa-plugins-pulseaudio%{?_isa}
 
 Provides:       steam-noruntime = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      steam-noruntime < %{?epoch:%{epoch}:}%{version}-%{release}
@@ -194,6 +198,9 @@ fi
 %{_udevrulesdir}/*
 
 %changelog
+* Sun Jun 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-101
+- Sync with rpmfusion.
+
 * Fri Apr 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-100
 - Sync with rpmfusion.
 - Remove libstdc++ patch.

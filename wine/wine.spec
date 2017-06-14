@@ -11,12 +11,18 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.9
+%global compholiover 2.10
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
 %global ninever 2.9
 %endif # 0%{?fedora}
+
+# laino patches, see: https://github.com/laino/wine-patches
+%global laino 1
+%global commit1 3ffdac0356ca3d64924e75851acc545efd259a05
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 laino-wine-patches
 
 # binfmt macros for RHEL
 %if 0%{?rhel} == 7
@@ -32,7 +38,7 @@
 %endif
 
 Name:           wine
-Version:        2.9
+Version:        2.10
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -97,10 +103,19 @@ Patch602:       keybindings.patch
 
 # wine compholio patches for wine-staging
 # pulseaudio-patch is covered by that patch-set, too.
+%if 0%{?compholio}
 Source900: https://github.com/compholio/wine-compholio/archive/v%{compholiover}.tar.gz#/wine-staging-%{compholiover}.tar.gz
+%endif
 
 # wine-d3d9
+%if 0%{?nine}
 Source910: https://github.com/sarnex/wine-d3d9-patches/archive/wine-d3d9-%{ninever}.tar.gz
+%endif
+
+# laino patches
+%if 0%{?laino}
+Source920: https://github.com/laino/wine-patches/archive/%{commit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
+%endif
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
@@ -711,12 +726,20 @@ This package adds the opencl driver for wine.
 %patch602 -p1 -R
 
 # extract nine patches
+%if 0%{?nine}
 mkdir nine
 gzip -dc %{SOURCE910} | tar -xf - --strip-components=1 -C nine
+%endif # 0%{?nine}
+
+# extract laino patches
+%if 0%{?laino}
+mkdir laino
+gzip -dc %{SOURCE920} | tar -xf - --strip-components=1 -C laino
+%endif # 0%{?laino}
 
 # setup and apply wine-staging patches
-gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %if 0%{?compholio}
+gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 make -C patches DESTDIR="`pwd`" install
 
@@ -726,6 +749,10 @@ sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
 %if 0%{?nine}
 patch -p1 -i nine/staging-helper.patch
 %endif # 0%{?nine}
+
+%if 0%{?laino}
+patch -p1 -R -i patches/ntdll-Heap_FreeLists/0001-ntdll-Improve-heap-allocation-performance-by-using-m.patch
+%endif # 0%{?laino}
 
 %else # 0%{?compholio}
 
@@ -741,6 +768,14 @@ patch -p1 -i nine/d3d9-helper.patch
 
 %if 0%{?nine}
 patch -p1 -i nine/wine-d3d9.patch
+
+%if 0%{?laino}
+patch -p1 -i laino/0001-ntdll-improve-heap-allocation-performance.patch
+patch -p1 -i laino/0002-ntdll-heap.c-align-everything-to-64-byte-to-reduce-f.patch
+patch -p1 -i laino/0003-wine-list.h-linked-list-cache-line-prefetching.patch
+patch -p1 -i laino/0004-ntdll-heap.c-freelist_balance-prefetch-next-entry-ca.patch
+patch -p1 -i laino/0006-Ensure-16-byte-alignment-of-data.patch
+%endif # 0%{?laino}
 
 autoreconf -ivf
 
@@ -1269,6 +1304,7 @@ fi
 %{_libdir}/wine/aclui.dll.so
 %{_libdir}/wine/activeds.dll.so
 %{_libdir}/wine/actxprxy.dll.so
+%{_libdir}/wine/adsldpc.dll.so
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.dll.so
 %{_libdir}/wine/amstream.dll.so
@@ -1411,6 +1447,7 @@ fi
 %{_libdir}/wine/api-ms-win-power-base-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-power-setting-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-rtcore-ntuser-private-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-security-activedirectoryclient-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-audit-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-security-base-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-base-l1-2-0.dll.so
@@ -1539,6 +1576,8 @@ fi
 %{_libdir}/wine/dwrite.dll.so
 %{_libdir}/wine/dxdiagn.dll.so
 %{_libdir}/wine/dxgi.dll.so
+%{_libdir}/wine/dxgkrnl.sys.so
+%{_libdir}/wine/dxgmms1.sys.so
 %{_libdir}/wine/dxva2.dll.so
 %{_libdir}/wine/esent.dll.so
 %{_libdir}/wine/evr.dll.so
@@ -1821,6 +1860,7 @@ fi
 %{_libdir}/wine/taskschd.dll.so
 %if 0%{?compholio}
 %{_libdir}/wine/tdi.sys.so
+%{_libdir}/wine/tdh.dll.so
 %endif
 %{_libdir}/wine/traffic.dll.so
 %{_libdir}/wine/ucrtbase.dll.so
@@ -1863,6 +1903,7 @@ fi
 %{_libdir}/wine/wevtapi.dll.so
 %{_libdir}/wine/wiaservc.dll.so
 %{_libdir}/wine/wimgapi.dll.so
+%{_libdir}/wine/win32k.sys.so
 %{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/windowscodecsext.dll.so
 %{_libdir}/wine/winebus.sys.so
@@ -2250,6 +2291,10 @@ fi
 %endif
 
 %changelog
+* Tue Jun 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.10-100.chinfo
+- 2.10
+- laino patches
+
 * Mon May 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.9-100.chinfo
 - 2.9
 
