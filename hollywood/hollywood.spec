@@ -1,5 +1,5 @@
 Name:           hollywood
-Version:        1.11
+Version:        1.12
 Release:        1%{?dist}
 Summary:        Fill your console with Hollywood melodrama technobabble
 
@@ -51,8 +51,6 @@ background of any excellent schlock technothriller.
 %build
 
 %install
-rm -rf %{buildroot}
-
 %{__mkdir_p} %{buildroot}%{_bindir}
 %{__install} -pm0755 bin/* %{buildroot}%{_bindir}/
 
@@ -79,5 +77,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.12-1
+- 1.12
+
 * Sat Dec  3 2016 Phantom X <megaphantomx at bol com br> - 1.11-1
 - First spec.

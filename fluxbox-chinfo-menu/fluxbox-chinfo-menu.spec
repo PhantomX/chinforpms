@@ -4,7 +4,7 @@
 
 Name:           fluxbox-chinfo-menu
 Version:        5.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Menu generator for Fluxbox based on XDG
 
 License:        GPLv3
@@ -18,6 +18,7 @@ Source0:        https://github.com/PhantomX/%{name}/archive/%{version}.tar.gz#/%
 BuildArch:      noarch
 
 BuildRequires:  cmake
+BuildRequires:  gettext
 Requires:       fluxbox
 Requires:       gettext
 Requires:       xdgmenumaker >= 1.4
@@ -44,7 +45,6 @@ pushd _build
 popd
 
 %install
-rm -rf %{buildroot}
 %make_install -C _build
 
 %find_lang %{name}
@@ -58,6 +58,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-2
+- BR: gettext
+
 * Sun Jan 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-1
 - New release.
 

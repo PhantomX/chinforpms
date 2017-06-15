@@ -1,16 +1,16 @@
 %global debug_package %{nil}
 %global __strip /bin/true
 
-%global cheatver 0184
-%global historyver 185
-%global infover 0185
+%global cheatver 0186
+%global historyver 186
+%global infover 0186
 
 # Build non redistributable package with free roms
 %global with_roms  %{?_with_roms:     1} %{?!_with_roms:     0}
 %global romlink http://www.mamedev.org/roms
 
 Name:           mame-data-extras
-Version:        0.185
+Version:        0.186
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -140,7 +140,7 @@ install -pm0644 %{romfiles} \
 %endif
 
 # Install DAT files
-install -pm 644 history/history.dat mameinfo.dat \
+install -pm 644 history.dat mameinfo.dat \
   %{buildroot}%{_datadir}/mame/
 
 # Install cheat files
@@ -190,6 +190,9 @@ done
 
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.186-1
+- 0.186
+
 * Sat Apr 29 2017 Phantom X - 0.185-1
 - 0.185
 - Pugsy's Cheats to 0.184

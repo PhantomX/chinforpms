@@ -1,16 +1,20 @@
 Name:           hakuneko
 Version:        1.4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        manga Downloader
 
 License:        MIT
-URL:            http://sourceforge.net/projects/hakuneko/
-Source0:        http://downloads.sourceforge.net/%{name}/%{name}_%{version}_src.tar.gz
+URL:            http://sourceforge.net/projects/legacy.hakuneko.p/
+Source0:        http://downloads.sourceforge.net/legacy.%{name}.p/%{name}_%{version}_src.tar.gz
 
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(openssl)
+BuildRequires:  desktop-file-utils
 BuildRequires:  wxGTK3-devel
 Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 HakuNeko allows you to download manga images from some selected online
@@ -46,8 +50,15 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
+%postun
+if [ $1 -eq 0 ] ; then
+  touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+  gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+fi
+
 %posttrans
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+
 
 %files
 %license LICENSE
@@ -57,6 +68,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4.2-2
+- Update links
+
 * Sun Feb 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4.2-1
 - 1.4.2
 

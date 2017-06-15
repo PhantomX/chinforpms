@@ -16,20 +16,22 @@ BuildRequires:  gettext intltool librsvg2-tools
 Requires:       python3-gobject
 Requires:       ffmpeg mencoder mediainfo
 Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 Easy to use, Free and Open-Source Multimedia converter for Linux.
 Curlew written in python and GTK3 and it depends on (ffmpeg/avconv, mencoder).
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup
 
 %build
-%{__python3} setup.py build
+%py3_build
 
 %install
-rm -rf %{buildroot}
-%{__python3} setup.py install -O1 --skip-build --root %{buildroot}
+%py3_install
 
 %{__rm} -rf %{buildroot}/%{_datadir}/doc
 
@@ -47,8 +49,15 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
+%postun
+if [ $1 -eq 0 ] ; then
+  touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+  gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+fi
+
 %posttrans
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+
 
 %files -f %{name}.lang
 %license LICENSE-ar.txt LICENSE-en.txt

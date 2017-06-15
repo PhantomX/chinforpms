@@ -1,0 +1,38 @@
+From 425e4df1006cf15e91813797932cef462805e50c Mon Sep 17 00:00:00 2001
+From: Debarshi Ray <debarshir@gnome.org>
+Date: Wed, 24 May 2017 16:08:07 +0200
+Subject: [PATCH] wayland: Don't abort when preparing the source if connection
+ is lost
+
+Aborting the application makes it look like an application bug, when
+it is the expected thing to do when the Wayland display server goes
+way. eg., when the user logs out. The log level is also demoted to
+avoid a storm of warnings in the log from all applications whenever
+this happens.
+
+This is also what the X11 backend does (see gdk_x_io_error).
+
+https://bugzilla.gnome.org/show_bug.cgi?id=783047
+---
+ gdk/wayland/gdkeventsource.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/gdk/wayland/gdkeventsource.c b/gdk/wayland/gdkeventsource.c
+index 142091733b92..bdb4c80e1eee 100644
+--- a/gdk/wayland/gdkeventsource.c
++++ b/gdk/wayland/gdkeventsource.c
+@@ -63,7 +63,10 @@ gdk_event_source_prepare (GSource *base,
+   source->reading = TRUE;
+ 
+   if (wl_display_flush (display->wl_display) < 0)
+-    g_error ("Error flushing display: %s", g_strerror (errno));
++    {
++      g_message ("Error flushing display: %s", g_strerror (errno));
++      _exit (1);
++    }
+ 
+   return FALSE;
+ }
+-- 
+2.9.4
+

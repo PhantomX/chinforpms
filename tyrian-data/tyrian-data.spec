@@ -22,8 +22,6 @@ Requires:       opentyrian
 %build
 
 %install
-rm -rf %{buildroot}
-
 mkdir -p %{buildroot}%{_datadir}/tyrian
 rm -f *.exe
 rm -f setup.*

@@ -3,7 +3,7 @@
 
 Name:           claws-mail-themes
 Version:        20140629
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Claws Mail's themes
 
 License:        GPLv3+
@@ -18,6 +18,7 @@ Patch1:         claws-mail-theme-clawsola.patch
 Patch2:         claws-mail-theme-Coons_Blue.patch
 
 BuildRequires:  autoconf
+BuildRequires:  automake
 Requires:       claws-mail >= 3.14.1
 
 %description
@@ -47,12 +48,14 @@ autoreconf -ivf
 
 
 %install
-rm -rf %{buildroot}
 %make_install
 
 %files
 %{_datadir}/claws-mail/themes/*
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 20140629-2
+- BR: automake
+
 * Tue Dec 27 2016 Phantom X <megaphantomx at bol dot com dot br> - 20140629-1
 - First spec.

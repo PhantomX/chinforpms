@@ -1,7 +1,7 @@
 Summary: Bluecurve icon theme
 Name: bluecurve-icon-theme
 Version: 8.0.2
-Release: 15%{?dist}
+Release: 100.chinfo%{?dist}
 BuildArch: noarch
 License: GPL+
 Group: User Interface/Desktops
@@ -21,6 +21,9 @@ Requires(post): coreutils
 BuildRequires: perl(XML::Parser)
 BuildRequires: perl(Getopt::Long)
 BuildRequires: ImageMagick
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 This package contains Bluecurve style icons.
@@ -225,6 +228,8 @@ if [ -x %{_bindir}/gtk-update-icon-cache ]; then
     %{_bindir}/gtk-update-icon-cache -f --quiet %{_datadir}/icons/Bluecurve || :
 fi
 
+%posttrans
+%{_bindir}/gtk-update-icon-cache -f --quiet %{_datadir}/icons/Bluecurve || :
 
 %files
 %doc AUTHORS COPYING
@@ -251,7 +256,10 @@ fi
 %{_datadir}/icons/Bluecurve-classic-inverse
 
 %changelog
-* Tue Dec 27 2016 Phantom X <megaphantomx at bol dot com dot br> - 1:8.0.2-15
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 8.0.2-100.chinfo
+- Bump release
+
+* Tue Dec 27 2016 Phantom X <megaphantomx at bol dot com dot br> - 8.0.2-15
 - Added classic icons.
 - Fixed cursors links.
 

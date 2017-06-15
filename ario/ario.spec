@@ -1,33 +1,32 @@
 Name:     ario
 Version:  1.5.1
-Release:  1%{?dist}
+Release:  2%{?dist}
 Summary:  Ario MPD Client
 Group:    Applications/Multimedia
 License:  GPLv2+
 URL:      http://ario-player.sourceforge.net/index.php
 Source0:  http://downloads.sourceforge.net/ario-player/%{name}-%{version}.tar.gz
 
-BuildRequires: unique-devel
-BuildRequires: libmpdclient-devel
-BuildRequires: libcurl-devel
-BuildRequires: avahi-glib-devel
-BuildRequires: taglib-devel
+BuildRequires: pkgconfig(avahi-glib)
+BuildRequires: pkgconfig(gnutls)
+BuildRequires: pkgconfig(libcurl)
+BuildRequires: pkgconfig(libmpdclient)
+BuildRequires: pkgconfig(libnotify)
+BuildRequires: pkgconfig(libsoup-2.4)
+BuildRequires: pkgconfig(libxml-2.0)
+BuildRequires: pkgconfig(pygtk-2.0)
+BuildRequires: pkgconfig(taglib)
+BuildRequires: pkgconfig(unique-1.0)
 BuildRequires: libgcrypt-devel
 BuildRequires: intltool
-BuildRequires: libxml2-devel
-BuildRequires: gnutls-devel
-BuildRequires: libnotify-devel
-BuildRequires: libsoup-devel
-BuildRequires: pygtk2-devel
 BuildRequires: desktop-file-utils
-#BuildRequires: dbus-glib-devel
-#BuildRequires: libgnomeui-devel
 #BuildRequires: gettext
 #BuildRequires: perl(XML::Parser)
 #BuildRequires: autoconf automake libtool
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
-# http://lists.fedoraproject.org/pipermail/devel/2010-November/144914.html
-Patch0: ario-1.5-notify-notification-new.patch 
 
 %description
 Ario is a GTK2 client for MPD (Music player daemon). The interface used to 
@@ -35,7 +34,7 @@ browse the library is inspired by Rhythmbox but Ario aims to be much lighter
 and faster.  It runs on Linux and Microsoft Windows
 
 %prep
-%setup -q
+%autosetup
 
 sed -i -e 's|<glib/gi18n\.h>|<glib.h>|g' src/ario-profiles.c
 sed -i -e 's|<glib/gslist\.h>|<glib.h>|g' src/ario-profiles.h
@@ -45,7 +44,8 @@ sed -i -e 's|<glib/gslist\.h>|<glib.h>|g' src/ario-profiles.h
   --enable-static=no \
   --disable-silent-rules \
   --enable-libmpdclient2 \
-  --enable-python
+  --enable-python \
+  --disable-dbus
 
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -53,11 +53,12 @@ sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 %make_build
 
 %install
-rm -rf %{buildroot}
 %make_install INSTALL="install -p"
 
-%find_lang ario 
+%find_lang ario
 find %{buildroot} -name "*.la" -exec rm {} \;
+
+%check
 desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop
 
 %post
@@ -84,8 +85,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/*/apps/ario.*
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-2
+- Update BR format and Requires
+
 * Tue Dec 27 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-1
-- Updated to 1.5.1.
+- Updated to 1.5.1
 
 * Fri Mar 25 2011 John Ford <john@johnford.info> - 1.5-1
 - Updated source to ario-1.5

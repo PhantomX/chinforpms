@@ -1,6 +1,6 @@
 Name:           m64py
 Version:        0.2.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A frontend for Mupen64Plus 2.0
 
 License:        GPLv3
@@ -11,12 +11,19 @@ Patch0:         %{name}-0.2.3-path.patch
 Patch1:         %{name}-0.2.3-libdir.patch
 
 BuildArch:      noarch
+BuildRequires:  desktop-file-utils
 BuildRequires:  python3-devel
-BuildRequires:  python-qt5-devel
+#BuildRequires:  python3-sdl2
+BuildRequires:  python3-qt5-devel
 BuildRequires:  ImageMagick
 Requires:       mupen64plus
-Requires:       python-qt5
+Requires:       python3-qt5
+#Requires:       python3-sdl2
 Requires:       SDL2
+Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 M64Py is a Qt5 front-end (GUI) for Mupen64Plus 2.0, a cross-platform
@@ -24,7 +31,7 @@ plugin-based Nintendo 64 emulator.
 
 
 %prep
-%autosetup -p0
+%autosetup -p1
 
 sed -e 's,^#!/usr/bin/env python,#!%{__python3},' -i %{name}
 
@@ -32,11 +39,9 @@ find -name '*.py' -print0 | xargs -0 \
   sed -i -e 's,^#!/usr/bin/env python,#!%{__python3},'
 
 %build
-%{__python3} setup.py build
+%py3_build
 
 %install
-rm -rf %{buildroot}
-
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name} %{buildroot}%{_bindir}/
 
@@ -88,6 +93,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.2.3-3
+- Fix python3-qt5 BR
+
 * Tue Jan 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.2.3-2
 - Fixed shebangs
 

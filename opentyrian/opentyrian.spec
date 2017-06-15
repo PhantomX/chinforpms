@@ -1,6 +1,6 @@
-%global commit f61ceced26a3f4db6742002d2612735cf7de1629
+%global commit db67cf6eb3ae4913a85c3a2489f4cc511d09f412
 %global shortcommit %(c=%{commit}; echo ${c:0:12})
-%global date 20170115
+%global date 20170414
 %global use_snapshot 1
 
 %if 0%{?use_snapshot}
@@ -26,6 +26,10 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(SDL2_net)
 Requires:       tyrian-data >= 2.1
+Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 Tyrian is an arcade-style vertical scrolling shooter. The story is set
@@ -59,8 +63,6 @@ sed \
   LDFLAGS="%{__global_ldflags}"
 
 %install
-rm -rf %{buildroot}
-
 mkdir -p %{buildroot}%{_datadir}/tyrian
 
 mkdir -p %{buildroot}%{_bindir}
@@ -106,5 +108,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-1.20170414gitdb67cf6eb3ae
+- New snapshot
+
 * Sun Jan 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-1.20170115gitf61ceced26a3
 - Initial spec

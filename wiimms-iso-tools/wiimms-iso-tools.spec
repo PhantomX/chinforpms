@@ -17,7 +17,7 @@ BuildRequires:  pkgconfig(fuse)
 BuildRequires:  pkgconfig(zlib)
 Requires:       fuse
 
-Provides:       wit
+Provides:       wit = %{version}-%{release}
 Provides:       bundled(bzip2) = 1.0.6
 
 Conflicts:      wiimms-iso-tools <= 20170107
@@ -48,8 +48,6 @@ sed -i \
 %make_build doc
 
 %install
-rm -rf %{buildroot}
-
 execstack -c wit wwt wdf wfuse
 
 mkdir -p %{buildroot}%{_bindir}

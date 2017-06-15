@@ -1,6 +1,6 @@
 Name:           qmp3gain
 Version:        0.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        MP3Gain GUI front end
 
 License:        GPLv2
@@ -10,8 +10,12 @@ Source0:        http://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.ta
 BuildRequires:  pkgconfig(QtGui)
 BuildRequires:  pkgconfig(QtWebKit)
 BuildRequires:  pkgconfig(phonon)
+BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
 Requires:       mp3gain
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 Graphical user interface front end supporting MP3Gain engine which analyzes and
@@ -27,7 +31,6 @@ losslessly adjusts mp3 files to a specified target volume.
 
 
 %install
-rm -rf %{buildroot}
 make install INSTALL_ROOT=%{buildroot}
 
 desktop-file-edit \
@@ -57,5 +60,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.9.0-2
+- BR: desktop-file-utils
+
 * Thu Jan  5 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.9.0-1
 - Initial spec.

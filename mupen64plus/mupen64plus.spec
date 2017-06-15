@@ -2,7 +2,7 @@
 
 Name:           mupen64plus
 Version:        2.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 License:        GPLv2 and LGPLv2
@@ -10,6 +10,7 @@ URL:            http://www.mupen64plus.org/
 Source0:        https://github.com/%{name}/%{name}-core/releases/download/%{version}/%{name}-bundle-src-%{version}.tar.gz
 
 BuildRequires:  boost-devel
+BuildRequires:  desktop-file-utils
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glu)
@@ -22,7 +23,9 @@ BuildRequires:  pkgconfig(zlib)
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       dejavu-sans-fonts
 Requires:       hicolor-icon-theme
-
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 Mupen64Plus is a plugin-based N64 emulator for Linux which is capable of
@@ -89,6 +92,7 @@ export SHAREDIR=%{_datadir}/%{name}
 export MANDIR=%{_mandir}
 ./m64p_install.sh INSTALL="install -p" INSTALL_STRIP_FLAG= DESTDIR="%{buildroot}"
 
+chmod +x %{buildroot}%{_libdir}/lib%{name}.so.*
 chmod +x %{buildroot}%{_libdir}/%{name}/%{name}-*.so
 
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
@@ -125,6 +129,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.5-3
+- Make library executable
+
 * Tue Jan 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.5-2
 - rebuilt
 

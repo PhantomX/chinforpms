@@ -14,6 +14,7 @@ Source0:        http://downloadirpf.receita.fazenda.gov.br/irpf/%{pkgyear}/%{pkg
 
 BuildArch:      noarch
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  unzip
 BuildRequires:  ImageMagick
 BuildRequires:  java-headless
@@ -21,6 +22,9 @@ Requires:       java
 Requires:       receitanet
 Requires:       hicolor-icon-theme
 Requires:       xdg-utils
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 Permite a transmissão de arquivos para a Base de Dados da Receita Federal do
@@ -39,8 +43,6 @@ rm -rf exec.{bat,sh} Execute.txt icones
 # Nothing to build
 
 %install
-rm -rf %{buildroot}
-
 mkdir -p %{buildroot}%{_datadir}/ProgramasRFB/%{name}
 cp -a * %{buildroot}%{_datadir}/ProgramasRFB/%{name}/
 

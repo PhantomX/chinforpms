@@ -3,7 +3,7 @@
 
 Name:           gkrellm-cpupower
 Version:        0.1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Gkrellm plugin for manipulating CPU frequency
 
 License:        GPLv2
@@ -13,12 +13,13 @@ Source0:        https://github.com/sainsaar/gkrellm2-cpupower/tarball/%{version}
 Patch0:         %{pkgname}-0.1.6-cpupower.patch
 Requires:       gkrellm >= 2.2.0
 BuildRequires:  pkgconfig(gkrellm) >= 2.2.0
+BuildRequires:  kernel-tools-libs-devel >= 4.9
 
 %description
 A Gkrellm2 plugin for displaying and manipulating CPU frequency.
 
 %prep
-%setup -a 0 -c
+%setup -q -a 0 -c
 %{__mv} */* .
 
 %patch0
@@ -32,8 +33,6 @@ sed -i \
 %make_build
 
 %install
-rm -rf %{buildroot}
-
 %{__mkdir_p} %{buildroot}%{gkplugindir}
 %{__install} -pm0755 cpupower.so \
   %{buildroot}%{gkplugindir}/
@@ -49,5 +48,9 @@ install -pm0755 cpufreqnextgovernor %{buildroot}%{_sbindir}/
 %{gkplugindir}/cpupower.so
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.1.6-2
+- rpmlint fix
+- BR: kernel-tools-libs-devel
+
 * Fri Dec  2 2016 Phantom X - 0.1.6-1
 - First spec.

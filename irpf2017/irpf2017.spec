@@ -14,6 +14,7 @@ Source0:        http://downloadirpf.receita.fazenda.gov.br/irpf/%{pkgyear}/irpf/
 
 BuildArch:      noarch
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  unzip
 BuildRequires:  ImageMagick
 BuildRequires:  java-headless

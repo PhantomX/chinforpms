@@ -1,6 +1,6 @@
 Name:           chinfo-extramimetypes
 Version:        11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Extra mimetypes for DEs
 
 License:        GPLv2
@@ -10,6 +10,7 @@ Source0:        http://dl.bintray.com/phantomx/tarballs/%{name}-%{version}.tar.x
 BuildArch:      noarch
 
 BuildRequires:  cmake
+BuildRequires:  shared-mime-info
 Requires(postun): shared-mime-info
 Requires(posttrans): shared-mime-info
 
@@ -56,5 +57,8 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 11.1-2
+- BR: shared-mime-info
+
 * Fri Mar 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 11.1-1
 - Initial spec

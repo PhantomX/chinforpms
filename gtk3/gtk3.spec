@@ -19,29 +19,32 @@
 
 Name: gtk3
 Version: 3.22.15
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
 URL: http://www.gtk.org
 Source0: http://download.gnome.org/sources/gtk+/3.22/gtk+-%{version}.tar.xz
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1258818
+Patch0: gtk3-wayland-Don-t-abort-when-preparing-the-source-if-con.patch
+
 # Revert some good features dropped by upstream (3.10)
-Patch0: gtk+3-3.22.0-gtk-recent-files-limit.patch
-Patch1: gtk+3-3.22.0-gtk-toolbar-icon-size.patch
-Patch2: gtk+3-3.22.0-gtk-toolbar-style.patch
+Patch100: gtk+3-3.22.0-gtk-recent-files-limit.patch
+Patch101: gtk+3-3.22.0-gtk-toolbar-icon-size.patch
+Patch102: gtk+3-3.22.0-gtk-toolbar-style.patch
 
 # Disable this @#$& by default
-Patch3: gtk+3-3.22.0-disable-overlay.patch
+Patch103: gtk+3-3.22.0-disable-overlay.patch
 
 # Debian
-Patch4: 016_no_offscreen_widgets_grabbing.patch
-Patch5: 017_no_offscreen_device_grabbing.patch
-Patch6: 060_ignore-random-icons.patch
+Patch104: 016_no_offscreen_widgets_grabbing.patch
+Patch105: 017_no_offscreen_device_grabbing.patch
+Patch106: 060_ignore-random-icons.patch
 
 # Ubuntu
-Patch7: restore_filechooser_typeaheadfind.patch
-Patch8: ubuntu_fileselector_behaviour.patch
+Patch107: restore_filechooser_typeaheadfind.patch
+Patch108: ubuntu_fileselector_behaviour.patch
 
 BuildRequires: pkgconfig(atk) >= %{atk_version}
 BuildRequires: pkgconfig(atk-bridge-2.0)
@@ -183,14 +186,15 @@ the functionality of the installed %{name} package.
 %setup -q -n gtk+-%{version}
 
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%patch104 -p1
+%patch105 -p1
+%patch106 -p1
+%patch107 -p1
+%patch108 -p1
 
 rm -fv testsuite/gtk/gtkresources.c
 
@@ -365,6 +369,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.15-101.chinfo
+- f25 sync. Patch for RH#1258818
+- Bump local patches number
+
 * Thu May 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.15-100.chinfo
 - 3.22.15
 

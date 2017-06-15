@@ -1,0 +1,114 @@
+From 87c19e8de4f56d803d133c3e38bbd7b069e06df3 Mon Sep 17 00:00:00 2001
+From: Dave Young <dyoung@redhat.com>
+Date: Fri, 9 Jun 2017 08:45:58 +0000
+Subject: [PATCH] efi: Fix boot panic because of invalid BGRT image address
+
+Maniaxx reported a kernel boot crash in the EFI code, which I emulated
+by using same invalid phys addr in code:
+
+  BUG: unable to handle kernel paging request at ffffffffff280001
+  IP: efi_bgrt_init+0xfb/0x153
+  ...
+  Call Trace:
+   ? bgrt_init+0xbc/0xbc
+   acpi_parse_bgrt+0xe/0x12
+   acpi_table_parse+0x89/0xb8
+   acpi_boot_init+0x445/0x4e2
+   ? acpi_parse_x2apic+0x79/0x79
+   ? dmi_ignore_irq0_timer_override+0x33/0x33
+   setup_arch+0xb63/0xc82
+   ? early_idt_handler_array+0x120/0x120
+   start_kernel+0xb7/0x443
+   ? early_idt_handler_array+0x120/0x120
+   x86_64_start_reservations+0x29/0x2b
+   x86_64_start_kernel+0x154/0x177
+   secondary_startup_64+0x9f/0x9f
+
+There is also a similar bug filed in bugzilla.kernel.org:
+
+  https://bugzilla.kernel.org/show_bug.cgi?id=195633
+
+The crash is caused by this commit:
+
+  7b0a911478c7 efi/x86: Move the EFI BGRT init code to early init code
+
+The root cause is the firmware on those machines provides invalid BGRT
+image addresses.
+
+In a kernel before above commit BGRT initializes late and uses ioremap()
+to map the image address. Ioremap validates the address, if it is not a
+valid physical address ioremap() just fails and returns. However in current
+kernel EFI BGRT initializes early and uses early_memremap() which does not
+validate the image address, and kernel panic happens.
+
+According to ACPI spec the BGRT image address should fall into
+EFI_BOOT_SERVICES_DATA, see the section 5.2.22.4 of below document:
+
+  http://www.uefi.org/sites/default/files/resources/ACPI_6_1.pdf
+
+Fix this issue by validating the image address in efi_bgrt_init(). If the
+image address does not fall into any EFI_BOOT_SERVICES_DATA areas we just
+bail out with a warning message.
+
+Reported-by: Maniaxx <tripleshiftone@gmail.com>
+Signed-off-by: Dave Young <dyoung@redhat.com>
+Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Matt Fleming <matt@codeblueprint.co.uk>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-efi@vger.kernel.org
+Fixes: 7b0a911478c7 ("efi/x86: Move the EFI BGRT init code to early init code")
+Link: http://lkml.kernel.org/r/20170609084558.26766-2-ard.biesheuvel@linaro.org
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+[labbott@redhat.com: Backport to 4.11]
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+---
+ arch/x86/platform/efi/efi-bgrt.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/arch/x86/platform/efi/efi-bgrt.c b/arch/x86/platform/efi/efi-bgrt.c
+index 04ca876..08ee795 100644
+--- a/arch/x86/platform/efi/efi-bgrt.c
++++ b/arch/x86/platform/efi/efi-bgrt.c
+@@ -27,6 +27,26 @@ struct bmp_header {
+ 	u32 size;
+ } __packed;
+ 
++static bool efi_bgrt_addr_valid(u64 addr)
++{
++	efi_memory_desc_t *md;
++
++	for_each_efi_memory_desc(md) {
++		u64 size;
++		u64 end;
++
++		if (md->type != EFI_BOOT_SERVICES_DATA)
++			continue;
++
++		size = md->num_pages << EFI_PAGE_SHIFT;
++		end = md->phys_addr + size;
++		if (addr >= md->phys_addr && addr < end)
++			return true;
++	}
++
++	return false;
++}
++
+ void __init efi_bgrt_init(struct acpi_table_header *table)
+ {
+ 	void *image;
+@@ -62,6 +82,10 @@ void __init efi_bgrt_init(struct acpi_table_header *table)
+ 		goto out;
+ 	}
+ 
++	if (!efi_bgrt_addr_valid(bgrt->image_address)) {
++		pr_notice("Ignoring BGRT: invalid image address\n");
++		goto out;
++	}
+ 	image = early_memremap(bgrt->image_address, sizeof(bmp_header));
+ 	if (!image) {
+ 		pr_notice("Ignoring BGRT: failed to map image header memory\n");
+-- 
+2.7.5
+

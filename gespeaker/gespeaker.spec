@@ -1,11 +1,6 @@
-# sitelib for noarch packages, sitearch for others (remove the unneeded one)
-%{!?__python2: %global __python2 %__python}
-%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-
 Name:           gespeaker
 Version:        0.8.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A GTK+ front-end for espeak
 
 License:        GPLv2+
@@ -13,8 +8,11 @@ URL:            http://www.muflone.com/gespeaker
 Source0:        https://github.com/muflone/%{name}/releases/download/%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
+BuildRequires:  gettext
+BuildRequires:  ImageMagick
 BuildRequires:  python2-devel
 BuildRequires:  pkgconfig(pygtk-2.0)
+BuildRequires:  desktop-file-utils
 BuildRequires:  librsvg2-tools
 Requires:       espeak
 Requires:       hicolor-icon-theme
@@ -41,10 +39,10 @@ sed \
 sed -e 's|/usr/bin/env python|%{__python2}|' -i src/%{name}.py
 
 %build
-%{__python2} setup.py build
+%py2_build
 
 %install
-%{__python2} setup.py install -O1 --skip-build --root %{buildroot}
+%py2_install
 
 desktop-file-edit \
   --set-icon="%{name}" \
@@ -89,5 +87,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.8.6-2
+- BR: gettext
+- BR: ImageMagick
+
 * Tue May 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.8.6-1
 - First spec

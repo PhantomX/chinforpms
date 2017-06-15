@@ -2177,3 +2177,324 @@ index 6872135..347c262 100644
  &mmc0 {
  	pinctrl-names = "default";
  	pinctrl-0 = <&mmc0_pins>;
+From patchwork Fri Jun  9 15:34:36 2017
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: ARM: sun8i: h3: Enable EMAC with external PHY on Orange Pi Plus 2E
+From: Chen-Yu Tsai <wens@csie.org>
+X-Patchwork-Id: 9778837
+Message-Id: <20170609153436.18370-1-wens@csie.org>
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Chen-Yu Tsai <wens@csie.org>, Corentin Labbe <clabbe.montjoie@gmail.com>, 
+ linux-sunxi@googlegroups.co, linux-arm-kernel@lists.infradead.org
+Date: Fri,  9 Jun 2017 23:34:36 +0800
+
+The Orange Pi Plus 2E, unlike the Orange Pi PC and PC Plus which its
+schematics are based on, uses an external Realtek RTL8211E PHY in
+RGMII mode, with a GPIO enabling the regulator for I/O signalling
+power supplies. The PHY's main power supply is enabled by the main
+5V power supply.
+
+Add the regulator and PHY nodes, and override the PHY phandle under
+the EMAC node, so that the EMAC works properly on this board.
+
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+---
+ arch/arm/boot/dts/sun8i-h3-orangepi-plus2e.dts | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/arch/arm/boot/dts/sun8i-h3-orangepi-plus2e.dts b/arch/arm/boot/dts/sun8i-h3-orangepi-plus2e.dts
+index 5851a47a3089..80026f3caafc 100644
+--- a/arch/arm/boot/dts/sun8i-h3-orangepi-plus2e.dts
++++ b/arch/arm/boot/dts/sun8i-h3-orangepi-plus2e.dts
+@@ -50,4 +50,30 @@
+ / {
+ 	model = "Xunlong Orange Pi Plus 2E";
+ 	compatible = "xunlong,orangepi-plus2e", "allwinner,sun8i-h3";
++
++	reg_gmac_3v3: gmac-3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "gmac-3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <100000>;
++		enable-active-high;
++		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* PD6 */
++	};
++};
++
++&emac {
++	pinctrl-names = "default";
++	pinctrl-0 = <&emac_rgmii_pins>;
++	phy-supply = <&reg_gmac_3v3>;
++	phy-handle = <&ext_rgmii_phy>;
++	phy-mode = "rgmii";
++	status = "okay";
++};
++
++&mdio {
++	ext_rgmii_phy: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <1>;
++	};
+ };
+From patchwork Mon Jun  5 19:21:26 2017
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [1/5] ARM: sun8i: orangepi-plus: Enable dwmac-sun8i
+From: Corentin LABBE <clabbe.montjoie@gmail.com>
+X-Patchwork-Id: 9767313
+Message-Id: <20170605192130.25320-2-clabbe.montjoie@gmail.com>
+To: robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk,
+ maxime.ripard@free-electrons.com, wens@csie.org,
+ catalin.marinas@arm.com, will.deacon@arm.com
+Cc: devicetree@vger.kernel.org, linux-sunxi@googlegroups.com,
+ Corentin Labbe <clabbe.montjoie@gmail.com>,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Date: Mon,  5 Jun 2017 21:21:26 +0200
+
+The dwmac-sun8i hardware is present on the Orange PI plus.
+It uses an external PHY rtl8211e via RGMII.
+
+This patch create the needed regulator, emac and phy nodes.
+
+Signed-off-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+---
+ arch/arm/boot/dts/sun8i-h3-orangepi-plus.dts | 32 ++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/arch/arm/boot/dts/sun8i-h3-orangepi-plus.dts b/arch/arm/boot/dts/sun8i-h3-orangepi-plus.dts
+index 8c40ab7bfa72..331ed683ac62 100644
+--- a/arch/arm/boot/dts/sun8i-h3-orangepi-plus.dts
++++ b/arch/arm/boot/dts/sun8i-h3-orangepi-plus.dts
+@@ -47,6 +47,20 @@
+ 	model = "Xunlong Orange Pi Plus / Plus 2";
+ 	compatible = "xunlong,orangepi-plus", "allwinner,sun8i-h3";
+ 
++	aliases {
++		ethernet0 = &emac;
++	};
++
++	reg_gmac_3v3: gmac-3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "gmac-3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <100000>;
++		enable-active-high;
++		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>;
++	};
++
+ 	reg_usb3_vbus: usb3-vbus {
+ 		compatible = "regulator-fixed";
+ 		pinctrl-names = "default";
+@@ -64,6 +78,24 @@
+ 	status = "okay";
+ };
+ 
++&emac {
++	pinctrl-names = "default";
++	pinctrl-0 = <&emac_rgmii_pins>;
++	phy-supply = <&reg_gmac_3v3>;
++	phy-handle = <&ext_rgmii_phy>;
++	phy-mode = "rgmii";
++
++	allwinner,leds-active-low;
++	status = "okay";
++};
++
++&mdio {
++	ext_rgmii_phy: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0>;
++	};
++};
++
+ &mmc2 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc2_8bit_pins>;
+From patchwork Mon Jun  5 19:21:27 2017
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [2/5] ARM: sun8i: bananapi-m2-plus: Enable dwmac-sun8i
+From: Corentin LABBE <clabbe.montjoie@gmail.com>
+X-Patchwork-Id: 9767321
+Message-Id: <20170605192130.25320-3-clabbe.montjoie@gmail.com>
+To: robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk,
+ maxime.ripard@free-electrons.com, wens@csie.org,
+ catalin.marinas@arm.com, will.deacon@arm.com
+Cc: devicetree@vger.kernel.org, linux-sunxi@googlegroups.com,
+ Corentin Labbe <clabbe.montjoie@gmail.com>,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Date: Mon,  5 Jun 2017 21:21:27 +0200
+
+The dwmac-sun8i hardware is present on the Banana Pi M2+
+It uses an external PHY rtl8211e via RGMII.
+
+This patch create the needed regulator, emac and phy nodes.
+
+Signed-off-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+---
+ arch/arm/boot/dts/sun8i-h3-bananapi-m2-plus.dts | 29 +++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/arch/arm/boot/dts/sun8i-h3-bananapi-m2-plus.dts b/arch/arm/boot/dts/sun8i-h3-bananapi-m2-plus.dts
+index 883072b611fa..d756ff825116 100644
+--- a/arch/arm/boot/dts/sun8i-h3-bananapi-m2-plus.dts
++++ b/arch/arm/boot/dts/sun8i-h3-bananapi-m2-plus.dts
+@@ -52,6 +52,7 @@
+ 	compatible = "sinovoip,bpi-m2-plus", "allwinner,sun8i-h3";
+ 
+ 	aliases {
++		ethernet0 = &emac;
+ 		serial0 = &uart0;
+ 		serial1 = &uart1;
+ 	};
+@@ -84,6 +85,16 @@
+ 		};
+ 	};
+ 
++	reg_gmac_3v3: gmac-3v3 {
++		      compatible = "regulator-fixed";
++		      regulator-name = "gmac-3v3";
++		      regulator-min-microvolt = <3300000>;
++		      regulator-max-microvolt = <3300000>;
++		      startup-delay-us = <100000>;
++		      enable-active-high;
++		      gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>;
++	};
++
+ 	wifi_pwrseq: wifi_pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		pinctrl-names = "default";
+@@ -104,12 +115,30 @@
+ 	status = "okay";
+ };
+ 
++&emac {
++	pinctrl-names = "default";
++	pinctrl-0 = <&emac_rgmii_pins>;
++	phy-supply = <&reg_gmac_3v3>;
++	phy-handle = <&ext_rgmii_phy>;
++	phy-mode = "rgmii";
++
++	allwinner,leds-active-low;
++	status = "okay";
++};
++
+ &ir {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&ir_pins_a>;
+ 	status = "okay";
+ };
+ 
++&mdio {
++	ext_rgmii_phy: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0>;
++	};
++};
++
+ &mmc0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc0_pins_a>, <&mmc0_cd_pin>;
+From patchwork Wed May 31 07:18:40 2017
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [v6,09/21] arm: sun8i: orangepi-zero: Enable dwmac-sun8i
+From: Corentin LABBE <clabbe.montjoie@gmail.com>
+X-Patchwork-Id: 9756075
+Message-Id: <20170531071852.12422-10-clabbe.montjoie@gmail.com>
+To: robh+dt@kernel.org, mark.rutland@arm.com,
+ maxime.ripard@free-electrons.com, 
+ wens@csie.org, linux@armlinux.org.uk, catalin.marinas@arm.com,
+ will.deacon@arm.com, peppe.cavallaro@st.com, alexandre.torgue@st.com
+Cc: devicetree@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com,
+ Corentin Labbe <clabbe.montjoie@gmail.com>,
+ linux-arm-kernel@lists.infradead.org
+Date: Wed, 31 May 2017 09:18:40 +0200
+
+The dwmac-sun8i hardware is present on the Orange PI Zero.
+It uses the internal PHY.
+
+This patch create the needed emac node.
+
+Signed-off-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+---
+ arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
+index 9e8b082c134f..dd3525a0f06a 100644
+--- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
++++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
+@@ -57,6 +57,7 @@
+ 	aliases {
+ 		serial0 = &uart0;
+ 		/* ethernet0 is the H3 emac, defined in sun8i-h3.dtsi */
++		ethernet0 = &emac;
+ 		ethernet1 = &xr819;
+ 	};
+ 
+@@ -103,6 +104,13 @@
+ 	status = "okay";
+ };
+ 
++&emac {
++	phy-handle = <&int_mii_phy>;
++	phy-mode = "mii";
++	allwinner,leds-active-low;
++	status = "okay";
++};
++
+ &mmc0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc0_pins_a>;
+From patchwork Wed May 31 07:18:44 2017
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [v6,13/21] arm: sun8i: nanopi-neo: Enable dwmac-sun8i
+From: Corentin LABBE <clabbe.montjoie@gmail.com>
+X-Patchwork-Id: 9756089
+Message-Id: <20170531071852.12422-14-clabbe.montjoie@gmail.com>
+To: robh+dt@kernel.org, mark.rutland@arm.com,
+ maxime.ripard@free-electrons.com, 
+ wens@csie.org, linux@armlinux.org.uk, catalin.marinas@arm.com,
+ will.deacon@arm.com, peppe.cavallaro@st.com, alexandre.torgue@st.com
+Cc: devicetree@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com,
+ Corentin Labbe <clabbe.montjoie@gmail.com>,
+ linux-arm-kernel@lists.infradead.org
+Date: Wed, 31 May 2017 09:18:44 +0200
+
+The dwmac-sun8i hardware is present on the NanoPi Neo.
+It uses the internal PHY.
+This patch create the needed emac node.
+
+Signed-off-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+---
+ arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts b/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts
+index 8d2cc6e9a03f..78f6c24952dd 100644
+--- a/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts
++++ b/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts
+@@ -46,3 +46,10 @@
+ 	model = "FriendlyARM NanoPi NEO";
+ 	compatible = "friendlyarm,nanopi-neo", "allwinner,sun8i-h3";
+ };
++
++&emac {
++	phy-handle = <&int_mii_phy>;
++	phy-mode = "mii";
++	allwinner,leds-active-low;
++	status = "okay";
++};

@@ -1,6 +1,6 @@
 Name:           firetools
 Version:        0.9.46
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        GUI tools for firejail
 
 License:        GPLv2
@@ -8,6 +8,7 @@ URL:            https://firejail.wordpress.com/
 Source0:        http://downloads.sourceforge.net/firejail/%{name}-%{version}.tar.xz
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(Qt5Svg)
 Requires:       firejail
 Requires:       hicolor-icon-theme
@@ -34,7 +35,6 @@ sed \
 
 
 %install
-rm -rf %{buildroot}
 %make_install \
   STRIP=/bin/true
 
@@ -81,6 +81,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.9.46-2
+- BR: ImageMagick
+
 * Tue May 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.9.46-1
 - new version
 

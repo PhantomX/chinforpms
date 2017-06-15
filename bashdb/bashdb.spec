@@ -17,7 +17,8 @@ Requires(post): /sbin/install-info
 Requires(preun): /sbin/install-info
 Requires:       bash >= 4.3
 
-Obsoletes:      emacs-bashdb, emacs-bashdb-el
+Obsoletes:      emacs-bashdb < %{version}
+Obsoletes:      emacs-bashdb-el < %{version}
 
 %description
 The Bash Debugger Project is a source-code debugger for bash,
@@ -39,7 +40,6 @@ Bashdb can be used with ddd: ddd --debugger %{_bindir}/%{name} <script-name>.
 %make_build
 
 %install
-rm -rf %{buildroot}
 %make_install INSTALL="install -p"
 
 rm -f "%{buildroot}%{_infodir}/dir"

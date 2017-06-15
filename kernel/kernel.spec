@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -569,6 +569,9 @@ Patch437: bcm283x-hdmi-audio.patch
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch438: arm-imx6-hummingboard2.patch
 
+# Cavium fixes
+Patch439: arm64-cavium-fixes.patch
+
 Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 Patch441: bcm2835-clk-audio-jitter-issues.patch
@@ -624,6 +627,9 @@ Patch502: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
 
 Patch509: MODSIGN-Don-t-try-secure-boot-if-EFI-runtime-is-disa.patch
 
+# rhbz 1436686
+Patch600: dell-laptop-Adds-support-for-keyboard-backlight-timeout-AC-settings.patch
+
 #CVE-2016-3134 rhbz 1317383 1317384
 Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 
@@ -653,6 +659,9 @@ Patch679: actual_udpencap_fix.patch
 # rhbz 1459272
 Patch680: 0001-platform-x86-thinkpad_acpi-guard-generic-hotkey-case.patch
 Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
+
+# rhbz 1461337
+Patch682: 0001-efi-Fix-boot-panic-because-of-invalid-BGRT-image-add.patch
 
 ### Extra
 
@@ -2248,6 +2257,10 @@ fi
 #
 #
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.5-500.chinfo
+- 4.11.5
+- f26 sync
+
 * Wed Jun 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.4-500.chinfo
 - 4.11.4
 - Enable CONFIG_ACPI_REV_OVERRIDE_POSSIBLE for x86

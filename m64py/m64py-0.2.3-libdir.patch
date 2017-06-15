@@ -1,5 +1,5 @@
---- src/m64py/platform.py.orig	2017-01-05 14:06:23.596854855 -0200
-+++ src/m64py/platform.py	2017-01-05 14:07:09.680817001 -0200
+--- m64py-0.2.3/src/m64py/platform.py.orig	2017-01-05 14:06:23.596854855 -0200
++++ m64py-0.2.3/src/m64py/platform.py	2017-01-05 14:07:09.680817001 -0200
 @@ -23,6 +23,7 @@ if sys.platform.startswith("linux"):
      DLL_FILTER = ".so.2"
      DEFAULT_DYNLIB = "libmupen64plus.so.2"

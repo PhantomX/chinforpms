@@ -13,11 +13,15 @@ Source0:        http://www.receita.fazenda.gov.br/Publico/programas/%{name}/%{pk
 
 BuildArch:      noarch
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  fakeroot
 BuildRequires:  ImageMagick
 BuildRequires:  java-headless
 Requires:       java
 Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 Permite a transmissão de arquivos para a Base de Dados da Receita Federal do
@@ -32,8 +36,6 @@ echo ${pwd} | fakeroot java -jar %{SOURCE0} -console ||:
 # Nothing to build
 
 %install
-rm -rf %{buildroot}
-
 mkdir -p %{buildroot}%{_datadir}/ProgramasRFB/%{name}
 cp -a imagens lib %{name}.{dat,jar} %{buildroot}%{_datadir}/ProgramasRFB/%{name}/
 

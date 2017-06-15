@@ -1,16 +1,20 @@
 Name:           pspshrink
 Version:        1.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Iso compressor for PSP games
 
 License:        GPLv2
 URL:            https://code.google.com/p/%{name}/
 Source0:        https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/%{name}/%{name}-%{version}.tar.gz
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  librsvg2-tools
 BuildRequires:  pkgconfig(gtkmm-2.4)
 Requires:       gtkmm24
 Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 PSP shrink is a tool that allows you compress your psp iso files to the cso
@@ -30,7 +34,6 @@ touch -r ChangeLog.orig ChangeLog
 
 
 %install
-rm -rf %{buildroot}
 %make_install
 
 desktop-file-install \
@@ -76,5 +79,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.1.2-2
+- BR: desktop-file-utils
+
 * Sat Jan  7 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.1.2-1
 - Initial spec.

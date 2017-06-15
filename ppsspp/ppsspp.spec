@@ -75,6 +75,7 @@ Patch0:         %{name}-noupdate.patch
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
 %endif
 
+BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 %if 0%{?sysffmpeg}
 BuildRequires:  pkgconfig(libavcodec)

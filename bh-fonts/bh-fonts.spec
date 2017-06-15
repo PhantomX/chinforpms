@@ -9,7 +9,7 @@ X.Org Bigelow & Holmes TrueType fonts.
 
 Name:           bh-fonts
 Version:        1.0.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        X.Org BH TTF fonts
 
 License:        BH-Luxi
@@ -25,6 +25,7 @@ Source7:        %{fontname}-serif.metainfo.xml
 
 BuildArch:      noarch
 BuildRequires:  fontpackages-devel
+BuildRequires:  xorg-x11-font-utils
 
 %description
 %common_desc
@@ -33,8 +34,8 @@ BuildRequires:  fontpackages-devel
 Summary:  Common files for the BH font set
 Requires: fontpackages-filesystem
 
-Obsoletes: %{name}
-Obsoletes: %{fontname}-ttf
+Obsoletes: %{name} < %{version}
+Obsoletes: %{fontname}-ttf < %{version}
 
 %description common
 %common_desc
@@ -136,6 +137,9 @@ done
 %{_datadir}/appdata/%{fontname}.metainfo.xml
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-3
+- BR: xorg-x11-font-utils
+
 * Sun Feb 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-2
 - Try to follow Fedora font packaging guidelines
 

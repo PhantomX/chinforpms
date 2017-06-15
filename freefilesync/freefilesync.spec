@@ -1,7 +1,7 @@
 %global pname FreeFileSync
 
 Name:           freefilesync
-Version:        8.10
+Version:        9.1
 Release:        1%{?dist}
 Summary:        A file synchronization utility
 
@@ -45,6 +45,8 @@ sed \
   -i %{pname}/Source/Makefile %{pname}/Source/RealTimeSync/Makefile
 
 sed 's/m_listBoxHistory->GetTopItem()/0/g' -i %{pname}/Source/ui/main_dlg.cpp
+
+sed -i 's!static_assert!//static_assert!' zen/scope_guard.h
 
 sed 's#inline##g' -i  %{pname}/Source/ui/version_check_impl.h
 
@@ -130,5 +132,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 9.1-1
+- 9.1
+
 * Thu Mar 30 2017 Phantom X <megaphantomx at bol dot com dot br> - 8.10-1
 - Initial spec.
