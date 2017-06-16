@@ -1576,8 +1576,10 @@ fi
 %{_libdir}/wine/dwrite.dll.so
 %{_libdir}/wine/dxdiagn.dll.so
 %{_libdir}/wine/dxgi.dll.so
+%if 0%{?compholio}
 %{_libdir}/wine/dxgkrnl.sys.so
 %{_libdir}/wine/dxgmms1.sys.so
+%endif
 %{_libdir}/wine/dxva2.dll.so
 %{_libdir}/wine/esent.dll.so
 %{_libdir}/wine/evr.dll.so
@@ -1858,9 +1860,9 @@ fi
 %{_libdir}/wine/tapi32.dll.so
 %{_libdir}/wine/taskkill.exe.so
 %{_libdir}/wine/taskschd.dll.so
+%{_libdir}/wine/tdh.dll.so
 %if 0%{?compholio}
 %{_libdir}/wine/tdi.sys.so
-%{_libdir}/wine/tdh.dll.so
 %endif
 %{_libdir}/wine/traffic.dll.so
 %{_libdir}/wine/ucrtbase.dll.so
@@ -1903,7 +1905,9 @@ fi
 %{_libdir}/wine/wevtapi.dll.so
 %{_libdir}/wine/wiaservc.dll.so
 %{_libdir}/wine/wimgapi.dll.so
+%if 0%{?compholio}
 %{_libdir}/wine/win32k.sys.so
+%endif
 %{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/windowscodecsext.dll.so
 %{_libdir}/wine/winebus.sys.so
