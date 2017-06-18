@@ -39,7 +39,7 @@ Group:      System/Emulators/PC
 Requires:   %{name}-server%{?isa} = %{version}
 Obsoletes:  %{name}-qt
 
-Source0:    http://download.virtualbox.org/virtualbox/%{version}%{?prereltag}/VirtualBox-%{version}%{?bugfix}%{?prereltag}.tar.bz2
+Source0:    https://download.virtualbox.org/virtualbox/%{version}%{?prereltag}/VirtualBox-%{version}%{?bugfix}%{?prereltag}.tar.bz2
 Source3:    VirtualBox-60-vboxdrv.rules
 Source5:    VirtualBox-60-vboxguest.rules
 Source6:    VirtualBox.modules

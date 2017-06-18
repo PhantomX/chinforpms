@@ -55,9 +55,9 @@ index eb3da1a04e6c..3f596acc05be 100644
  	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
 +	/* a non-root bridge where translation occurs, stop alias search here */
 +	PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT = (__force pci_dev_flags_t) (1 << 9),
- };
- 
- enum pci_irq_reroute_variant {
+ 	/*
+ 	 * Resume before calling the driver's system suspend hooks, disabling
+ 	 * the direct_complete optimization.
 -- 
 2.11.0
 

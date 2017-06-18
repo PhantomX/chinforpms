@@ -8,6 +8,7 @@ License:        BSD
 URL:            http://www.aegisub.org/
 Source0:        http://ftp.aegisub.org/pub/archives/releases/source/%{name}-%{version}.tar.xz
 
+ExclusiveArch:  %{ix86} x86_64 armv7hl
 
 BuildRequires:  boost-devel
 BuildRequires:  desktop-file-utils
@@ -25,6 +26,9 @@ BuildRequires:  pkgconfig(hunspell)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  wxGTK3-devel
 Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 Provides:       bundle(luajit) = 2.0.3
 

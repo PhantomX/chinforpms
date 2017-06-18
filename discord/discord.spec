@@ -30,6 +30,10 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
 Requires:       libcxx%{?_isa}
 Requires:       libXScrnSaver%{?_isa}
+Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %if 0%{?use_canary}
 Provides:       %{name}-canary = %{version}-%{release}

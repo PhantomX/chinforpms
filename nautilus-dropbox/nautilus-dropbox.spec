@@ -34,6 +34,10 @@ BuildRequires:  libtool
 BuildRequires:  pygobject2-devel
 BuildRequires:  pygtk2-devel
 Requires:       dropbox >= %{?epoch}:%{version}-%{release}
+Requires:       hicolor-icon-theme
+Requires(post): desktop-file-utils
+Requires(postun): gtk-update-icon-cache
+Requires(posttrans): gtk-update-icon-cache
 
 %description
 Dropbox extension for nautilus file manager
@@ -77,7 +81,6 @@ autoreconf -ivf
 %make_build
 
 %install
-rm -rf %{buildroot}
 %make_install
 
 %if %{with_nautilus}

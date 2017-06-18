@@ -36,6 +36,7 @@ Source0:        https://spideroak.com/release/spideroak/rpm_%{larch}#/%{pkgname}
 ExclusiveArch:  %{ix86} x86_64
 
 BuildRequires:  binutils patchelf perl python2-rpm-macros ImageMagick
+BuildRequires:  desktop-file-utils
 %if 0%{?curl}
 BuildRequires:  libcurl%{?_isa}
 BuildRequires:  python-pycurl%{?_isa}
