@@ -18,16 +18,13 @@
 %global _changelog_trimtime %(date +%s -d "1 year ago")
 
 Name: gtk3
-Version: 3.22.15
-Release: 101.chinfo%{?dist}
+Version: 3.22.16
+Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
 URL: http://www.gtk.org
 Source0: http://download.gnome.org/sources/gtk+/3.22/gtk+-%{version}.tar.xz
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1258818
-Patch0: gtk3-wayland-Don-t-abort-when-preparing-the-source-if-con.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100: gtk+3-3.22.0-gtk-recent-files-limit.patch
@@ -185,7 +182,6 @@ the functionality of the installed %{name} package.
 %prep
 %setup -q -n gtk+-%{version}
 
-%patch0 -p1
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
@@ -369,6 +365,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.16-100.chinfo
+- 3.22.16
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.15-101.chinfo
 - f25 sync. Patch for RH#1258818
 - Bump local patches number

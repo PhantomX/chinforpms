@@ -1,4 +1,4 @@
-From 8dfeddab12777e90f8739f9dab33c62657465854 Mon Sep 17 00:00:00 2001
+From b00e7fff5190e424a03d3827312f63028b684faf Mon Sep 17 00:00:00 2001
 From: Wim Taymans <wtaymans@redhat.com>
 Date: Mon, 4 Jan 2016 11:39:33 +0100
 Subject: [PATCH] inspect: Add RPM output format
@@ -8,10 +8,10 @@ Subject: [PATCH] inspect: Add RPM output format
  1 file changed, 261 insertions(+), 15 deletions(-)
 
 diff --git a/tools/gst-inspect.c b/tools/gst-inspect.c
-index 845f52e..9084949 100644
+index e420e4c..1096e8c 100644
 --- a/tools/gst-inspect.c
 +++ b/tools/gst-inspect.c
-@@ -1302,9 +1302,225 @@ print_element_info (GstElementFactory * factory, gboolean print_names)
+@@ -1335,9 +1335,225 @@ print_element_info (GstElementFactory * factory, gboolean print_names)
    return 0;
  }
  
@@ -238,7 +238,7 @@ index 845f52e..9084949 100644
  {
    GstPadDirection direction;
    const gchar *type_name;
-@@ -1330,6 +1546,13 @@ print_plugin_automatic_install_info_codecs (GstElementFactory * factory)
+@@ -1363,6 +1579,13 @@ print_plugin_automatic_install_info_codecs (GstElementFactory * factory)
      return;
    }
  
@@ -252,7 +252,7 @@ index 845f52e..9084949 100644
    /* decoder/demuxer sink pads should always be static and there should only
     * be one, the same applies to encoders/muxers and source pads */
    static_templates = gst_element_factory_get_static_pad_templates (factory);
-@@ -1366,15 +1589,20 @@ print_plugin_automatic_install_info_codecs (GstElementFactory * factory)
+@@ -1399,15 +1622,20 @@ print_plugin_automatic_install_info_codecs (GstElementFactory * factory)
      gst_structure_remove_field (s, "rate");
      gst_structure_remove_field (s, "depth");
      gst_structure_remove_field (s, "clock-rate");
@@ -277,7 +277,7 @@ index 845f52e..9084949 100644
  {
    const gchar *const *protocols;
  
-@@ -1383,13 +1611,19 @@ print_plugin_automatic_install_info_protocols (GstElementFactory * factory)
+@@ -1416,13 +1644,19 @@ print_plugin_automatic_install_info_protocols (GstElementFactory * factory)
      switch (gst_element_factory_get_uri_type (factory)) {
        case GST_URI_SINK:
          while (*protocols != NULL) {
@@ -299,7 +299,7 @@ index 845f52e..9084949 100644
            ++protocols;
          }
          break;
-@@ -1400,7 +1634,7 @@ print_plugin_automatic_install_info_protocols (GstElementFactory * factory)
+@@ -1433,7 +1667,7 @@ print_plugin_automatic_install_info_protocols (GstElementFactory * factory)
  }
  
  static void
@@ -308,7 +308,7 @@ index 845f52e..9084949 100644
  {
    GList *features, *l;
  
-@@ -1419,11 +1653,15 @@ print_plugin_automatic_install_info (GstPlugin * plugin)
+@@ -1452,11 +1686,15 @@ print_plugin_automatic_install_info (GstPlugin * plugin)
      if (feature_plugin == plugin) {
        GstElementFactory *factory;
  
@@ -327,7 +327,7 @@ index 845f52e..9084949 100644
      }
      if (feature_plugin)
        gst_object_unref (feature_plugin);
-@@ -1445,7 +1683,7 @@ print_all_plugin_automatic_install_info (void)
+@@ -1478,7 +1716,7 @@ print_all_plugin_automatic_install_info (void)
      plugin = (GstPlugin *) (plugins->data);
      plugins = g_list_next (plugins);
  
@@ -336,7 +336,7 @@ index 845f52e..9084949 100644
    }
    gst_plugin_list_free (orig_plugins);
  }
-@@ -1457,6 +1695,7 @@ main (int argc, char *argv[])
+@@ -1490,6 +1728,7 @@ main (int argc, char *argv[])
    gboolean do_print_blacklist = FALSE;
    gboolean plugin_name = FALSE;
    gboolean print_aii = FALSE;
@@ -344,7 +344,7 @@ index 845f52e..9084949 100644
    gboolean uri_handlers = FALSE;
    gboolean check_exists = FALSE;
    gchar *min_version = NULL;
-@@ -1474,6 +1713,9 @@ main (int argc, char *argv[])
+@@ -1508,6 +1747,9 @@ main (int argc, char *argv[])
                "or all plugins provide.\n                                       "
                "Useful in connection with external automatic plugin "
                "installation mechanisms"), NULL},
@@ -353,8 +353,8 @@ index 845f52e..9084949 100644
 +              "Provides compatible-format"), NULL},
      {"plugin", '\0', 0, G_OPTION_ARG_NONE, &plugin_name,
          N_("List the plugin contents"), NULL},
-     {"exists", '\0', 0, G_OPTION_ARG_NONE, &check_exists,
-@@ -1610,7 +1852,7 @@ main (int argc, char *argv[])
+     {"types", 't', 0, G_OPTION_ARG_STRING, &types,
+@@ -1650,7 +1892,7 @@ main (int argc, char *argv[])
        /* if there is such a plugin, print out info */
        if (plugin) {
          if (print_aii) {
@@ -363,7 +363,7 @@ index 845f52e..9084949 100644
          } else {
            print_plugin_info (plugin);
            print_plugin_features (plugin);
-@@ -1623,13 +1865,17 @@ main (int argc, char *argv[])
+@@ -1663,13 +1905,17 @@ main (int argc, char *argv[])
  
            if (plugin) {
              if (print_aii) {
@@ -384,5 +384,5 @@ index 845f52e..9084949 100644
              return -1;
            }
 -- 
-2.5.0
+2.9.3
 

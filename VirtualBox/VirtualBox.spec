@@ -27,7 +27,7 @@
 Name:       VirtualBox
 Version:    5.1.22
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
+Release:    101%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
 
 License:    GPLv2 or (GPLv2 and CDDL)
@@ -280,6 +280,8 @@ rm -rf src/libs/zlib-*/
 %patch51 -p1 -b .revert-VBox.sh
 %patch100 -p1 -b .noup
 %patch101 -p1 -b .defsys
+
+sed -e '/^check_gcc$/d' -i configure
 
 # CRLF->LF
 sed -i 's/\r//' COPYING
@@ -824,7 +826,10 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
-* Sat Apr 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.22-1.chinfo
+* Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.22-101.chinfo
+- Stop gcc check
+
+* Sat Apr 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.22-100.chinfo
 - 5.1.22
 - Sync with RPMfusion
 

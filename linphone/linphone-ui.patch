@@ -1,0 +1,70 @@
+--- linphone-3.11.1/gtk/main.ui.orig	2017-02-09 07:29:56.000000000 -0500
++++ linphone-3.11.1/gtk/main.ui	2017-04-08 23:11:22.000000000 -0400
+@@ -220,6 +220,7 @@
+                         <property name="can_focus">False</property>
+                         <property name="label" translatable="yes">Show keypad</property>
+                         <property name="use_underline">True</property>
++                        <accelerator key="a" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                         <signal name="toggled" handler="linphone_gtk_show_keypad_checked" swapped="no"/>
+                       </object>
+                     </child>
+@@ -259,7 +260,6 @@
+                         <property name="can_focus">False</property>
+                         <property name="use_underline">True</property>
+                         <property name="use_stock">True</property>
+-                        <accelerator key="q" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                         <signal name="activate" handler="gtk_main_quit" swapped="no"/>
+                       </object>
+                     </child>
+@@ -438,6 +438,7 @@
+                     <property name="receives_default">True</property>
+                     <property name="image">start_call_image</property>
+                     <signal name="clicked" handler="linphone_gtk_start_call" swapped="no"/>
++                    <accelerator key="s" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
+                   </object>
+                   <packing>
+                     <property name="expand">False</property>
+@@ -460,6 +461,20 @@
+                     <property name="position">3</property>
+                   </packing>
+                 </child>
++                <child>
++                  <object class="GtkButton" id="quit2">
++                    <property name="width_request">1</property>
++                    <property name="height_request">1</property>
++                    <property name="can_focus">False</property>
++                    <property name="visible">True</property>
++                    <accelerator key="q" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
++                    <signal name="clicked" handler="gtk_main_quit" swapped="no"/>
++                  </object>
++                  <packing>
++                    <property name="expand">False</property>
++                    <property name="fill">False</property>
++                  </packing>
++                </child>
+               </object>
+               <packing>
+                 <property name="expand">False</property>
+@@ -813,13 +828,11 @@
+                               </packing>
+                             </child>
+                             <child>
+-                              <object class="GtkHButtonBox" id="dialog-action_area1">
++                              <object class="GtkHBox" id="dialog-action_area1">
+                                 <property name="visible">True</property>
+                                 <property name="can_focus">False</property>
+-                                <property name="layout_style">end</property>
+                                 <child>
+                                   <object class="GtkButton" id="erase_call_logs_button">
+-                                    <property name="label" translatable="yes">Clear call history</property>
+                                     <property name="visible">True</property>
+                                     <property name="can_focus">True</property>
+                                     <property name="receives_default">True</property>
+@@ -830,6 +843,7 @@
+                                     <property name="expand">False</property>
+                                     <property name="fill">False</property>
+                                     <property name="position">0</property>
++                                    <property name="pack_type">end</property>
+                                   </packing>
+                                 </child>
+                               </object>

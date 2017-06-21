@@ -9,7 +9,7 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.10.5
+Version:        1.12.1
 Release:        100.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
@@ -116,10 +116,14 @@ chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstcheck-1.0.so.*
 chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstcontroller-1.0.so.* 
 chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstnet-1.0.so.*
 chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/libgstcoreelements.so
+
 %ifarch %{ix86}
+chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/gst-completion-helper
 chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/gst-plugin-scanner
 chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/gst-ptp-helper
 %else
+chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-completion-helper
+chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner
 chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner
 chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-ptp-helper
 %endif
@@ -127,7 +131,6 @@ chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-inspect-1.0
 chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-launch-1.0
 chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-stats-1.0
 chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-typefind-1.0
-chrpath --delete $RPM_BUILD_ROOT%{_datadir}/bash-completion/helpers/gst-completion-helper-%{majorminor}
 
 %find_lang gstreamer-%{majorminor}
 # Clean out files that should not be part of the rpm.
@@ -179,12 +182,12 @@ install -m0644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/gstreamer
 
 %doc %{_mandir}/man1/gst-inspect-%{majorminor}.*
 %doc %{_mandir}/man1/gst-launch-%{majorminor}.*
+%doc %{_mandir}/man1/gst-stats-%{majorminor}.*
 %doc %{_mandir}/man1/gst-typefind-%{majorminor}.*
 
 %{_datadir}/bash-completion/completions/gst-inspect-1.0
 %{_datadir}/bash-completion/completions/gst-launch-1.0
 %{_datadir}/bash-completion/helpers/gst
-%{_datadir}/bash-completion/helpers/gst-completion-helper-1.0
 
 %files devel
 %dir %{_includedir}/gstreamer-%{majorminor}
@@ -226,6 +229,9 @@ install -m0644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/gstreamer
 
 
 %changelog
+* Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.12.1-100.chinfo
+- 1.12.1
+
 * Sun Jun 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10.5-100.chinfo
 - 1.10.5
 
