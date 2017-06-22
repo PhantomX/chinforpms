@@ -3,8 +3,8 @@
 %global use_git 0
 
 Name:           fluxbox-chinfo-menu
-Version:        5.0.0
-Release:        2%{?dist}
+Version:        5.0.1
+Release:        1%{?dist}
 Summary:        Menu generator for Fluxbox based on XDG
 
 License:        GPLv3
@@ -58,6 +58,9 @@ popd
 
 
 %changelog
+* Wed Jun 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.0.1-1
+- 5.0.1
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-2
 - BR: gettext
 

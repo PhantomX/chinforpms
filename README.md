@@ -4,7 +4,7 @@ Personal Fedora RPM specs. Have specs to build RPMs not existant in Fedora or
 RPMFusion and existant packages updated with extra changes (these have .chinfo
 release tags).
 
-> Most packages can be found in this [COPR](https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms) repository, except for those not allowed.
+> Most packages can be found in this [COPR repository](https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms), except for those not allowed.
 
 >_Before use, remember that **YOU ARE AT YOUR OWN RISK**! Don't blame me if your
 >system explodes or suffer any other bad things._
@@ -18,6 +18,7 @@ release tags).
 ## Differences from Fedora and RPM Fusion
 
  * **aegisub** - No openal and portaudio support
+ * **belle-sip, linphone, ortp** - Updated version
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **gnome-colors-icon-theme** - Post script and cleanup
  * **gstreamer1** - Change libexecdir on ix86 to libdir (/usr/lib), so gst-plugin-scanner 
