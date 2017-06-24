@@ -1,0 +1,428 @@
+From ac4e55169649132123c4f2f39e0b02b5c849bae8 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Mon, 19 Jun 2017 13:20:48 +0100
+Subject: [PATCH] drm/vc4: Add T-format scanout support
+
+The T tiling format is what V3D uses for textures, with no raster
+support at all until later revisions of the hardware (and always at a
+large 3D performance penalty).  If we can't scan out V3D's format,
+then we often need to do a relayout at some stage of the pipeline,
+either right before texturing from the scanout buffer (common in X11
+without a compositor) or between a tiled screen buffer right before
+scanout (an option I've considered in trying to resolve this
+inconsistency, but which means needing to use the dirty fb ioctl and
+having some update policy).
+
+T-format scanout lets us avoid either of those shadow copies, for a
+massive, obvious performance improvement to X11 window dragging
+without a compositor.  Unfortunately, enabling a compositor to work
+around the discrepancy has turned out to be too costly in memory
+consumption for the Raspbian distribution.
+
+Because the HVS operates a scanline at a time, compositing from T does
+increase the memory bandwidth cost of scanout.  On my 1920x1080@32bpp
+display on a RPi3, we go from about 15% of system memory bandwidth
+with linear to about 20% with tiled.  However, for X11 this still ends
+up being a huge performance win in active usage.
+
+This patch doesn't yet handle src_x/src_y offsetting within the tiled
+buffer.  However, we fail to do so for untiled buffers already.
+
+drm/vc4: Add get/set tiling ioctls.
+
+This allows mesa to set the tiling format for a BO and have that
+tiling format be respected by mesa on the other side of an
+import/export (and by vc4 scanout in the kernel), without defining a
+protocol to pass the tiling through userspace.
+
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ drivers/gpu/drm/vc4/vc4_bo.c    | 83 +++++++++++++++++++++++++++++++++++++++++
+ drivers/gpu/drm/vc4/vc4_drv.c   |  2 +
+ drivers/gpu/drm/vc4/vc4_drv.h   |  6 +++
+ drivers/gpu/drm/vc4/vc4_kms.c   | 41 +++++++++++++++++++-
+ drivers/gpu/drm/vc4/vc4_plane.c | 31 +++++++++++++--
+ drivers/gpu/drm/vc4/vc4_regs.h  | 19 ++++++++++
+ include/uapi/drm/drm_fourcc.h   | 22 +++++++++++
+ include/uapi/drm/vc4_drm.h      | 16 ++++++++
+ 8 files changed, 215 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_bo.c b/drivers/gpu/drm/vc4/vc4_bo.c
+index 3f6704cf6608..0918346c248e 100644
+--- a/drivers/gpu/drm/vc4/vc4_bo.c
++++ b/drivers/gpu/drm/vc4/vc4_bo.c
+@@ -325,6 +325,7 @@ void vc4_free_object(struct drm_gem_object *gem_bo)
+ 		bo->validated_shader = NULL;
+ 	}
+ 
++	bo->t_format = false;
+ 	bo->free_time = jiffies;
+ 	list_add(&bo->size_head, cache_list);
+ 	list_add(&bo->unref_head, &vc4->bo_cache.time_list);
+@@ -525,6 +526,88 @@ vc4_create_shader_bo_ioctl(struct drm_device *dev, void *data,
+ 	return ret;
+ }
+ 
++/**
++ * vc4_set_tiling_ioctl() - Sets the tiling modifier for a BO.
++ * @dev: DRM device
++ * @data: ioctl argument
++ * @file_priv: DRM file for this fd
++ *
++ * The tiling state of the BO decides the default modifier of an fb if
++ * no specific modifier was set by userspace, and the return value of
++ * vc4_get_tiling_ioctl() (so that userspace can treat a BO it
++ * received from dmabuf as the same tiling format as the producer
++ * used).
++ */
++int vc4_set_tiling_ioctl(struct drm_device *dev, void *data,
++			 struct drm_file *file_priv)
++{
++	struct drm_vc4_set_tiling *args = data;
++	struct drm_gem_object *gem_obj;
++	struct vc4_bo *bo;
++	bool t_format;
++
++	if (args->flags != 0)
++		return -EINVAL;
++
++	switch (args->modifier) {
++	case DRM_FORMAT_MOD_NONE:
++		t_format = false;
++		break;
++	case DRM_FORMAT_MOD_BROADCOM_VC4_T_TILED:
++		t_format = true;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	gem_obj = drm_gem_object_lookup(file_priv, args->handle);
++	if (!gem_obj) {
++		DRM_ERROR("Failed to look up GEM BO %d\n", args->handle);
++		return -ENOENT;
++	}
++	bo = to_vc4_bo(gem_obj);
++	bo->t_format = t_format;
++
++	drm_gem_object_unreference_unlocked(gem_obj);
++
++	return 0;
++}
++
++/**
++ * vc4_get_tiling_ioctl() - Gets the tiling modifier for a BO.
++ * @dev: DRM device
++ * @data: ioctl argument
++ * @file_priv: DRM file for this fd
++ *
++ * Returns the tiling modifier for a BO as set by vc4_set_tiling_ioctl().
++ */
++int vc4_get_tiling_ioctl(struct drm_device *dev, void *data,
++			 struct drm_file *file_priv)
++{
++	struct drm_vc4_get_tiling *args = data;
++	struct drm_gem_object *gem_obj;
++	struct vc4_bo *bo;
++
++	if (args->flags != 0 || args->modifier != 0)
++		return -EINVAL;
++
++	gem_obj = drm_gem_object_lookup(file_priv, args->handle);
++	if (!gem_obj) {
++		DRM_ERROR("Failed to look up GEM BO %d\n", args->handle);
++		return -ENOENT;
++	}
++	bo = to_vc4_bo(gem_obj);
++
++	if (bo->t_format)
++		args->modifier = DRM_FORMAT_MOD_BROADCOM_VC4_T_TILED;
++	else
++		args->modifier = DRM_FORMAT_MOD_NONE;
++
++	drm_gem_object_unreference_unlocked(gem_obj);
++
++	return 0;
++}
++
+ void vc4_bo_cache_init(struct drm_device *dev)
+ {
+ 	struct vc4_dev *vc4 = to_vc4_dev(dev);
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
+index a459745e96f7..2edf2d4c5156 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.c
++++ b/drivers/gpu/drm/vc4/vc4_drv.c
+@@ -122,6 +122,8 @@ static const struct drm_ioctl_desc vc4_drm_ioctls[] = {
+ 	DRM_IOCTL_DEF_DRV(VC4_GET_HANG_STATE, vc4_get_hang_state_ioctl,
+ 			  DRM_ROOT_ONLY),
+ 	DRM_IOCTL_DEF_DRV(VC4_GET_PARAM, vc4_get_param_ioctl, DRM_RENDER_ALLOW),
++	DRM_IOCTL_DEF_DRV(VC4_SET_TILING, vc4_set_tiling_ioctl, DRM_RENDER_ALLOW),
++	DRM_IOCTL_DEF_DRV(VC4_GET_TILING, vc4_get_tiling_ioctl, DRM_RENDER_ALLOW),
+ };
+ 
+ static struct drm_driver vc4_drm_driver = {
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.h b/drivers/gpu/drm/vc4/vc4_drv.h
+index 0e59f3ee1b83..64f0cb1f889e 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.h
++++ b/drivers/gpu/drm/vc4/vc4_drv.h
+@@ -135,6 +135,8 @@ struct vc4_bo {
+ 	 */
+ 	uint64_t write_seqno;
+ 
++	bool t_format;
++
+ 	/* List entry for the BO's position in either
+ 	 * vc4_exec_info->unref_list or vc4_dev->bo_cache.time_list
+ 	 */
+@@ -433,6 +435,10 @@ int vc4_create_shader_bo_ioctl(struct drm_device *dev, void *data,
+ 			       struct drm_file *file_priv);
+ int vc4_mmap_bo_ioctl(struct drm_device *dev, void *data,
+ 		      struct drm_file *file_priv);
++int vc4_set_tiling_ioctl(struct drm_device *dev, void *data,
++			 struct drm_file *file_priv);
++int vc4_get_tiling_ioctl(struct drm_device *dev, void *data,
++			 struct drm_file *file_priv);
+ int vc4_get_hang_state_ioctl(struct drm_device *dev, void *data,
+ 			     struct drm_file *file_priv);
+ int vc4_mmap(struct file *filp, struct vm_area_struct *vma);
+diff --git a/drivers/gpu/drm/vc4/vc4_kms.c b/drivers/gpu/drm/vc4/vc4_kms.c
+index ad7925a9e0ea..25be60016527 100644
+--- a/drivers/gpu/drm/vc4/vc4_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_kms.c
+@@ -202,11 +202,50 @@ static int vc4_atomic_commit(struct drm_device *dev,
+ 	return 0;
+ }
+ 
++static struct drm_framebuffer *vc4_fb_create(struct drm_device *dev,
++					     struct drm_file *file_priv,
++					     const struct drm_mode_fb_cmd2 *mode_cmd)
++{
++	struct drm_mode_fb_cmd2 mode_cmd_local;
++
++	/* If the user didn't specify a modifier, use the
++	 * vc4_set_tiling_ioctl() state for the BO.
++	 */
++	if (!(mode_cmd->flags & DRM_MODE_FB_MODIFIERS)) {
++		struct drm_gem_object *gem_obj;
++		struct vc4_bo *bo;
++
++		gem_obj = drm_gem_object_lookup(file_priv,
++						mode_cmd->handles[0]);
++		if (!gem_obj) {
++			DRM_ERROR("Failed to look up GEM BO %d\n",
++				  mode_cmd->handles[0]);
++			return ERR_PTR(-ENOENT);
++		}
++		bo = to_vc4_bo(gem_obj);
++
++		mode_cmd_local = *mode_cmd;
++
++		if (bo->t_format) {
++			mode_cmd_local.modifier[0] =
++				DRM_FORMAT_MOD_BROADCOM_VC4_T_TILED;
++		} else {
++			mode_cmd_local.modifier[0] = DRM_FORMAT_MOD_NONE;
++		}
++
++		drm_gem_object_unreference_unlocked(gem_obj);
++
++		mode_cmd = &mode_cmd_local;
++	}
++
++	return drm_fb_cma_create(dev, file_priv, mode_cmd);
++}
++
+ static const struct drm_mode_config_funcs vc4_mode_funcs = {
+ 	.output_poll_changed = vc4_output_poll_changed,
+ 	.atomic_check = drm_atomic_helper_check,
+ 	.atomic_commit = vc4_atomic_commit,
+-	.fb_create = drm_fb_cma_create,
++	.fb_create = vc4_fb_create,
+ };
+ 
+ int vc4_kms_load(struct drm_device *dev)
+diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
+index f7a229df572d..99f4d4b48015 100644
+--- a/drivers/gpu/drm/vc4/vc4_plane.c
++++ b/drivers/gpu/drm/vc4/vc4_plane.c
+@@ -498,8 +498,8 @@ static int vc4_plane_mode_set(struct drm_plane *plane,
+ 	u32 ctl0_offset = vc4_state->dlist_count;
+ 	const struct hvs_format *format = vc4_get_hvs_format(fb->format->format);
+ 	int num_planes = drm_format_num_planes(format->drm);
+-	u32 scl0, scl1;
+-	u32 lbm_size;
++	u32 scl0, scl1, pitch0;
++	u32 lbm_size, tiling;
+ 	unsigned long irqflags;
+ 	int ret, i;
+ 
+@@ -540,11 +540,31 @@ static int vc4_plane_mode_set(struct drm_plane *plane,
+ 		scl1 = vc4_get_scl_field(state, 0);
+ 	}
+ 
++	switch (fb->modifier) {
++	case DRM_FORMAT_MOD_LINEAR:
++		tiling = SCALER_CTL0_TILING_LINEAR;
++		pitch0 = VC4_SET_FIELD(fb->pitches[0], SCALER_SRC_PITCH);
++		break;
++	case DRM_FORMAT_MOD_BROADCOM_VC4_T_TILED:
++		tiling = SCALER_CTL0_TILING_256B_OR_T;
++
++		pitch0 = (VC4_SET_FIELD(0, SCALER_PITCH0_TILE_Y_OFFSET),
++			  VC4_SET_FIELD(0, SCALER_PITCH0_TILE_WIDTH_L),
++			  VC4_SET_FIELD((vc4_state->src_w[0] + 31) >> 5,
++					SCALER_PITCH0_TILE_WIDTH_R));
++		break;
++	default:
++		DRM_DEBUG_KMS("Unsupported FB tiling flag 0x%16llx",
++			      (long long)fb->modifier);
++		return -EINVAL;
++	}
++
+ 	/* Control word */
+ 	vc4_dlist_write(vc4_state,
+ 			SCALER_CTL0_VALID |
+ 			(format->pixel_order << SCALER_CTL0_ORDER_SHIFT) |
+ 			(format->hvs << SCALER_CTL0_PIXEL_FORMAT_SHIFT) |
++			VC4_SET_FIELD(tiling, SCALER_CTL0_TILING) |
+ 			(vc4_state->is_unity ? SCALER_CTL0_UNITY : 0) |
+ 			VC4_SET_FIELD(scl0, SCALER_CTL0_SCL0) |
+ 			VC4_SET_FIELD(scl1, SCALER_CTL0_SCL1));
+@@ -598,8 +618,11 @@ static int vc4_plane_mode_set(struct drm_plane *plane,
+ 	for (i = 0; i < num_planes; i++)
+ 		vc4_dlist_write(vc4_state, 0xc0c0c0c0);
+ 
+-	/* Pitch word 0/1/2 */
+-	for (i = 0; i < num_planes; i++) {
++	/* Pitch word 0 */
++	vc4_dlist_write(vc4_state, pitch0);
++
++	/* Pitch word 1/2 */
++	for (i = 1; i < num_planes; i++) {
+ 		vc4_dlist_write(vc4_state,
+ 				VC4_SET_FIELD(fb->pitches[i], SCALER_SRC_PITCH));
+ 	}
+diff --git a/drivers/gpu/drm/vc4/vc4_regs.h b/drivers/gpu/drm/vc4/vc4_regs.h
+index 385405a2df05..362d8b7f8a5f 100644
+--- a/drivers/gpu/drm/vc4/vc4_regs.h
++++ b/drivers/gpu/drm/vc4/vc4_regs.h
+@@ -604,6 +604,13 @@ enum hvs_pixel_format {
+ #define SCALER_CTL0_SIZE_MASK			VC4_MASK(29, 24)
+ #define SCALER_CTL0_SIZE_SHIFT			24
+ 
++#define SCALER_CTL0_TILING_MASK			VC4_MASK(21, 20)
++#define SCALER_CTL0_TILING_SHIFT		20
++#define SCALER_CTL0_TILING_LINEAR		0
++#define SCALER_CTL0_TILING_64B			1
++#define SCALER_CTL0_TILING_128B			2
++#define SCALER_CTL0_TILING_256B_OR_T		3
++
+ #define SCALER_CTL0_HFLIP                       BIT(16)
+ #define SCALER_CTL0_VFLIP                       BIT(15)
+ 
+@@ -733,7 +740,19 @@ enum hvs_pixel_format {
+ #define SCALER_PPF_KERNEL_OFFSET_SHIFT		0
+ #define SCALER_PPF_KERNEL_UNCACHED		BIT(31)
+ 
++/* PITCH0/1/2 fields for raster. */
+ #define SCALER_SRC_PITCH_MASK			VC4_MASK(15, 0)
+ #define SCALER_SRC_PITCH_SHIFT			0
+ 
++/* PITCH0 fields for T-tiled. */
++#define SCALER_PITCH0_TILE_WIDTH_L_MASK		VC4_MASK(22, 16)
++#define SCALER_PITCH0_TILE_WIDTH_L_SHIFT	16
++#define SCALER_PITCH0_TILE_LINE_DIR		BIT(15)
++#define SCALER_PITCH0_TILE_INITIAL_LINE_DIR	BIT(14)
++/* Y offset within a tile. */
++#define SCALER_PITCH0_TILE_Y_OFFSET_MASK	VC4_MASK(13, 7)
++#define SCALER_PITCH0_TILE_Y_OFFSET_SHIFT	7
++#define SCALER_PITCH0_TILE_WIDTH_R_MASK		VC4_MASK(6, 0)
++#define SCALER_PITCH0_TILE_WIDTH_R_SHIFT	0
++
+ #endif /* VC4_REGS_H */
+diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
+index ef20abb8119b..9aaf633788a7 100644
+--- a/include/uapi/drm/drm_fourcc.h
++++ b/include/uapi/drm/drm_fourcc.h
+@@ -168,6 +168,7 @@ extern "C" {
+ #define DRM_FORMAT_MOD_VENDOR_SAMSUNG 0x04
+ #define DRM_FORMAT_MOD_VENDOR_QCOM    0x05
+ #define DRM_FORMAT_MOD_VENDOR_VIVANTE 0x06
++#define DRM_FORMAT_MOD_VENDOR_BROADCOM 0x07
+ /* add more to the end as needed */
+ 
+ #define fourcc_mod_code(vendor, val) \
+@@ -292,6 +293,27 @@ extern "C" {
+  */
+ #define DRM_FORMAT_MOD_VIVANTE_SPLIT_SUPER_TILED fourcc_mod_code(VIVANTE, 4)
+ 
++/*
++ * Broadcom VC4 "T" format
++ *
++ * This is the primary layout that the V3D GPU can texture from (it
++ * can't do linear).  The T format has:
++ *
++ * - 64b utiles of pixels in a raster-order grid according to cpp.  It's 4x4
++ *   pixels at 32 bit depth.
++ *
++ * - 1k subtiles made of a 4x4 raster-order grid of 64b utiles (so usually
++ *   16x16 pixels).
++ *
++ * - 4k tiles made of a 2x2 grid of 1k subtiles (so usually 32x32 pixels).  On
++ *   even 4k tile rows, they're arranged as (BL, TL, TR, BR), and on odd rows
++ *   they're (TR, BR, BL, TL), where bottom left is start of memory.
++ *
++ * - an image made of 4k tiles in rows either left-to-right (even rows of 4k
++ *   tiles) or right-to-left (odd rows of 4k tiles).
++ */
++#define DRM_FORMAT_MOD_BROADCOM_VC4_T_TILED fourcc_mod_code(BROADCOM, 1)
++
+ #if defined(__cplusplus)
+ }
+ #endif
+diff --git a/include/uapi/drm/vc4_drm.h b/include/uapi/drm/vc4_drm.h
+index f07a09016726..6ac4c5c014cb 100644
+--- a/include/uapi/drm/vc4_drm.h
++++ b/include/uapi/drm/vc4_drm.h
+@@ -38,6 +38,8 @@ extern "C" {
+ #define DRM_VC4_CREATE_SHADER_BO                  0x05
+ #define DRM_VC4_GET_HANG_STATE                    0x06
+ #define DRM_VC4_GET_PARAM                         0x07
++#define DRM_VC4_SET_TILING                        0x08
++#define DRM_VC4_GET_TILING                        0x09
+ 
+ #define DRM_IOCTL_VC4_SUBMIT_CL           DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_SUBMIT_CL, struct drm_vc4_submit_cl)
+ #define DRM_IOCTL_VC4_WAIT_SEQNO          DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_WAIT_SEQNO, struct drm_vc4_wait_seqno)
+@@ -47,6 +49,8 @@ extern "C" {
+ #define DRM_IOCTL_VC4_CREATE_SHADER_BO    DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_CREATE_SHADER_BO, struct drm_vc4_create_shader_bo)
+ #define DRM_IOCTL_VC4_GET_HANG_STATE      DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_GET_HANG_STATE, struct drm_vc4_get_hang_state)
+ #define DRM_IOCTL_VC4_GET_PARAM           DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_GET_PARAM, struct drm_vc4_get_param)
++#define DRM_IOCTL_VC4_SET_TILING          DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_SET_TILING, struct drm_vc4_set_tiling)
++#define DRM_IOCTL_VC4_GET_TILING          DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_GET_TILING, struct drm_vc4_get_tiling)
+ 
+ struct drm_vc4_submit_rcl_surface {
+ 	__u32 hindex; /* Handle index, or ~0 if not present. */
+@@ -295,6 +299,18 @@ struct drm_vc4_get_param {
+ 	__u64 value;
+ };
+ 
++struct drm_vc4_get_tiling {
++	__u32 handle;
++	__u32 flags;
++	__u64 modifier;
++};
++
++struct drm_vc4_set_tiling {
++	__u32 handle;
++	__u32 flags;
++	__u64 modifier;
++};
++
+ #if defined(__cplusplus)
+ }
+ #endif
+-- 
+2.13.0
+

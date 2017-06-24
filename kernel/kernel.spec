@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -552,9 +552,6 @@ Patch430: bcm2837-initial-support.patch
 
 Patch431: arm-rk3288-tinker.patch
 
-# http://www.spinics.net/lists/dri-devel/msg132235.html
-Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
-
 # bcm283x mmc for wifi http://www.spinics.net/lists/arm-kernel/msg567077.html
 Patch434: bcm283x-mmc-bcm2835.patch
 
@@ -575,6 +572,12 @@ Patch439: arm64-cavium-fixes.patch
 Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 Patch441: bcm2835-clk-audio-jitter-issues.patch
+
+# http://www.spinics.net/lists/dri-devel/msg132235.html
+Patch443: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+# https://lists.freedesktop.org/archives/dri-devel/2017-June/143688.html
+Patch444: vc4-tformat-fixes.patch
+
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -659,6 +662,14 @@ Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
 
 # rhbz 1459326
 Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
+
+# CVE-2017-1000364 rhbz 1462819 1461333
+Patch684: mm-larger-stack-guard-gap-between-vmas.patch
+Patch685: mm-fix-new-crash-in-unmapped_area_topdown.patch
+
+# rhbz 1459676
+Patch686: 0001-netfilter-xtables-zero-padding-in-data_to_user.patch
+Patch687: 0002-netfilter-xtables-fix-build-failure-from-COMPAT_XT_A.patch
 
 ### Extra
 
@@ -2254,6 +2265,9 @@ fi
 #
 #
 %changelog
+* Fri Jun 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.6-501.chinfo
+- f26 sync
+
 * Sat Jun 17 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.6-500.chinfo
 - 4.11.6
 - f26 sync

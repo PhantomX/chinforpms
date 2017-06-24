@@ -1,6 +1,6 @@
 Name:           aegisub
 Version:        3.2.2
-Release:        1%{?dist}
+Release:        2.chinfo%{?dist}
 Summary:        A general-purpose subtitle editor with ASS/SSA support
 Epoch:          1
 
@@ -12,6 +12,7 @@ ExclusiveArch:  %{ix86} x86_64 armv7hl
 
 BuildRequires:  boost-devel
 BuildRequires:  desktop-file-utils
+BuildRequires:  intltool
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(ffms2)
 BuildRequires:  pkgconfig(fftw3)
@@ -112,5 +113,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sat Jun 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:3.2.2-2.chinfo
+- BR: intltool
+
 * Fri Jan 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.2.2-1
 - Initial spec

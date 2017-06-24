@@ -10,7 +10,7 @@
 
 Name:           gstreamer1
 Version:        1.12.1
-Release:        100.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
+Release:        101.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPLv2+
@@ -39,6 +39,10 @@ BuildRequires:  gettext
 BuildRequires:  pkgconfig
 
 BuildRequires:  chrpath
+
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  gettext-devel
 
 ### documentation requirements
 BuildRequires:  python2
@@ -93,12 +97,16 @@ GStreamer streaming media framework.
 %setup -q -n gstreamer-%{version}
 %patch0 -p1 -b .rpm-provides
 
+# Dirty multilib fix
+sed -e 's|$GST_API_VERSION/gst-plugin-scanner|\0-%{__isa_bits}|g' \
+  -i configure.ac
+sed -e 's|$(GST_API_VERSION)/gst-plugin-scanner|\0-%{__isa_bits}|g' \
+  -i gst/Makefile.am
+
+autoreconf -ivf
 
 %build
 %configure \
-%ifarch %{ix86}
-  --libexecdir=%{_libdir} \
-%endif
   --with-package-name='Fedora GStreamer package' \
   --with-package-origin='http://download.fedoraproject.org' \
   --enable-gtk-doc \
@@ -116,21 +124,16 @@ chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstcheck-1.0.so.*
 chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstcontroller-1.0.so.* 
 chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstnet-1.0.so.*
 chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/libgstcoreelements.so
-
-%ifarch %{ix86}
-chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/gst-completion-helper
-chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/gst-plugin-scanner
-chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/gst-ptp-helper
-%else
 chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-completion-helper
 chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner
-chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner
 chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-ptp-helper
-%endif
 chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-inspect-1.0
 chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-launch-1.0
 chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-stats-1.0
 chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-typefind-1.0
+
+# Dirty multilib fix
+mv $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner{,-%{__isa_bits}}
 
 %find_lang gstreamer-%{majorminor}
 # Clean out files that should not be part of the rpm.
@@ -156,11 +159,7 @@ install -m0644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/gstreamer
 %{_libdir}/libgstcontroller-%{majorminor}.so.*
 %{_libdir}/libgstnet-%{majorminor}.so.*
 
-%ifarch %{ix86}
-%{_libdir}/gstreamer-%{majorminor}/
-%else
 %{_libexecdir}/gstreamer-%{majorminor}/
-%endif
 
 %dir %{_libdir}/gstreamer-%{majorminor}
 %{_libdir}/gstreamer-%{majorminor}/libgstcoreelements.so
@@ -229,6 +228,9 @@ install -m0644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/gstreamer
 
 
 %changelog
+* Fri Jun 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.12.1-101.chinfo
+- Multilib fix, dirty, but better
+
 * Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.12.1-100.chinfo
 - 1.12.1
 

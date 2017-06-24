@@ -4,7 +4,7 @@
 
 Name:           aacgain
 Version:        1.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Normalizes the volume of digital music AAC files
 
 License:        GPLv2
@@ -14,9 +14,10 @@ Source1:        http://downloads.sourceforge.net/mp3gain/mp3gain-%{mp3gainver}-s
 Source2:        https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/mp4v2/mp4v2-%{mp4v2ver}.tar.bz2
 Source3:        http://downloads.sourceforge.net/faac/faad2-%{faadver}.tar.gz
 
-Patch0:        mp4v2-1.9.1-format-security.patch
+Patch0:         mp4v2-1.9.1-format-security.patch
 
 BuildRequires:  autoconf
+BuildRequires:  automake
 BuildRequires:  libtool
 BuildRequires:  unzip
 
@@ -83,6 +84,8 @@ pushd faad2
 popd
 
 pushd mp4v2
+
+CXXFLAGS="%{optflags} -fpermissive" \
 %configure \
   %{conf2} \
   --disable-gch
@@ -113,5 +116,8 @@ install -pm0755 %{name}/%{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Jun 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.9-2
+- -fpermissive
+
 * Wed Jan 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.9-1
 - Initial spec

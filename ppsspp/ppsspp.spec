@@ -1,4 +1,4 @@
-%global commit dd23588cd7e4efba35f8309182128a6a84194e60
+%global commit 3249d8165415a78a617be7edd60a69df60e84e6c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20170613
 %global use_snapshot 1
@@ -49,7 +49,7 @@
 
 Name:           ppsspp
 Version:        1.4
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -263,6 +263,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Fri Jun 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-5.20170613git3249d81
+- New snapshot
+
 * Tue Jun 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-4.20170613gitdd23588
 - New snapshot
 - R: google-roboto-condensed-fonts

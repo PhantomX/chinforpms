@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20170414
+// 20170623
 
 pref("browser.search.suggest.enabled", false);
 pref("browser.urlbar.clickSelectsAll", false);
@@ -10,6 +10,15 @@ pref("general.smoothScroll", false);
 pref("layout.spellcheckDefault", 0);
 pref("media.autoplay.enabled", false);
 pref("middlemouse.contentLoadURL", false);
+
+// Don't show 'know your rights' on first run
+pref("browser.rights.3.shown", true);
+
+// Don't show WhatsNew on first run after every update
+pref("browser.startup.homepage_override.mstone","ignore");
+
+// Disable the internal PDF viewer
+pref("pdfjs.disabled", true);
 
 // No Pocket here
 pref("browser.pocket.enabled", false);
