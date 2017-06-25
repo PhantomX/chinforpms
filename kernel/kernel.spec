@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -662,10 +662,6 @@ Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
 
 # rhbz 1459326
 Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
-
-# CVE-2017-1000364 rhbz 1462819 1461333
-Patch684: mm-larger-stack-guard-gap-between-vmas.patch
-Patch685: mm-fix-new-crash-in-unmapped_area_topdown.patch
 
 # rhbz 1459676
 Patch686: 0001-netfilter-xtables-zero-padding-in-data_to_user.patch
@@ -2265,6 +2261,9 @@ fi
 #
 #
 %changelog
+* Sat Jun 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.7-500.chinfo
+- 4.11.7
+
 * Fri Jun 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.6-501.chinfo
 - f26 sync
 
