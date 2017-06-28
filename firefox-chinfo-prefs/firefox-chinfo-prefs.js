@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20170623
+// 20170627
 
 pref("browser.search.suggest.enabled", false);
 pref("browser.urlbar.clickSelectsAll", false);
@@ -56,7 +56,33 @@ pref("plugins.hide_infobar_for_missing_plugin", true);
 pref("plugins.hide_infobar_for_outdated_plugin", true);
 pref("plugins.notifyMissingFlash", false);
 
+// Enable tracking protection
+pref("privacy.trackingprotection.enabled", true);
+
 // Disable datareporting and telemetry
 pref("datareporting.healthreport.dataSubmissionEnabled", false);
 pref("datareporting.healthreport.uploadEnabled", false);
 pref("toolkit.telemetry.enabled", false);
+
+// Disable Safe Browsing service
+//pref("browser.safebrowsing.malware.enabled", false);
+//pref("browser.safebrowsing.phishing.enabled", false);
+//pref("browser.safebrowsing.downloads.enabled", false);
+//pref("services.sync.prefs.sync.browser.safebrowsing.enabled", false);
+//pref("services.sync.prefs.sync.browser.safebrowsing.malware.enabled", false);
+
+// Disable battery api
+pref("dom.battery.enabled", false);
+
+// Disable geolocation
+//pref("geo.enabled", false);
+
+// Disable WebGL
+//pref("webgl.disabled", false);
+
+// Disable WebRTC
+//pref("media.peerconnection.enabled", false);
+
+// Prevent websites from getting local IP from WebRTC
+pref("media.peerconnection.ice.default_address_only", true);
+

@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.10
+%global compholiover 2.11
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
@@ -38,7 +38,7 @@
 %endif
 
 Name:           wine
-Version:        2.10
+Version:        2.11
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1317,6 +1317,8 @@ fi
 %{_libdir}/wine/api-ms-win-core-com-private-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-console-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-console-l2-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-crt-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-crt-l2-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-datetime-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-datetime-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-debug-l1-1-0.dll.so
@@ -1452,6 +1454,7 @@ fi
 %{_libdir}/wine/api-ms-win-security-base-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-base-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-security-base-private-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-security-credentials-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-grouppolicy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-lsalookup-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-lsalookup-l1-1-1.dll.so
@@ -2295,6 +2298,9 @@ fi
 %endif
 
 %changelog
+* Tue Jun 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.0-100.chinfo
+- 2.11
+
 * Tue Jun 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.10-100.chinfo
 - 2.10
 - laino patches

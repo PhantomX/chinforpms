@@ -1,8 +1,11 @@
+%global with_yubikey  %{?_with_yubikey: 1} %{?!_with_yubikey: 0}
+
 Name:           keepassxc
-Version:        2.1.4
+Version:        2.2.0
 Release:        100.chinfo%{?dist}
 Summary:        Cross-platform password manager
 Group:          User Interface/Desktops
+Epoch:          1
 
 License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain
 URL:            https://keepassxc.org/
@@ -23,6 +26,10 @@ BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xtst)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  qt5-linguist
+%if %{with_yubikey}
+BuildRequires:  libyubikey-devel
+BuildRequires:  ykpers-devel
+%endif
 Requires:       hicolor-icon-theme
 Requires(post): desktop-file-utils shared-mime-info
 Requires(postun): desktop-file-utils gtk-update-icon-cache shared-mime-info
@@ -45,8 +52,12 @@ pushd build
   -DWITH_TESTS:BOOL=OFF \
   -DWITH_XC_HTTP:BOOL=ON \
   -DWITH_XC_AUTOTYPE:BOOL=ON \
-  -DWITH_XC_YUBIKEY=OFF
- 
+%if %{with_yubikey}
+  -DWITH_XC_YUBIKEY:BOOL=ON
+%else
+  -DWITH_XC_YUBIKEY:BOOL=OFF
+%endif
+
 %make_build
 
 popd
@@ -84,16 +95,22 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 %license COPYING LICENSE*
 %doc CHANGELOG README.md
 %{_bindir}/%{name}
+%{_bindir}/%{name}-cli
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/*.so
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/icons
+%{_datadir}/%{name}/wordlists
 %{_datadir}/applications/*.desktop
 %{_datadir}/mime/packages/*.xml
 %{_datadir}/icons/hicolor/*/*/*%{name}*
 
  
 %changelog
+* Tue Jun 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.0-100.chinfo
+- 2.2.0
+- Conditional yubikey support
+
 * Sun May 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1.4-100.chinfo
 - Insanely high build number
 
