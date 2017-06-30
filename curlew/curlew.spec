@@ -1,6 +1,6 @@
 Name:           curlew
-Version:        0.2.2
-Release:        2%{?dist}
+Version:        0.2.4
+Release:        1%{?dist}
 Summary:        Multimedia converter for Linux
 
 License:        Waqf
@@ -12,9 +12,12 @@ BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  desktop-file-utils
-BuildRequires:  gettext intltool librsvg2-tools
+BuildRequires:  gettext intltool
+BuildRequires:  librsvg2-tools
 Requires:       python3-gobject
-Requires:       ffmpeg mencoder mediainfo
+Requires:       ffmpeg
+Requires:       mencoder
+Requires:       mediainfo
 Requires:       hicolor-icon-theme
 Requires(post): desktop-file-utils
 Requires(postun): gtk-update-icon-cache
@@ -67,11 +70,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/%{name}/*.cfg
 %{_datadir}/%{name}/modules/*
 %exclude %{python3_sitelib}
+%{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/pixmaps/%{name}.*
 
 %changelog
+* Thu Jun 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.2.4-1
+- 0.2.4
+
 * Tue Jan 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.2.2-2
 - rebuilt
 
