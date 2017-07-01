@@ -2,15 +2,15 @@
 %global __strip /bin/true
 
 %global cheatver 0186
-%global historyver 186
-%global infover 0186
+%global historyver 187
+%global infover 0187
 
 # Build non redistributable package with free roms
 %global with_roms  %{?_with_roms:     1} %{?!_with_roms:     0}
 %global romlink http://www.mamedev.org/roms
 
 Name:           mame-data-extras
-Version:        0.186
+Version:        0.187
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -190,6 +190,9 @@ done
 
 
 %changelog
+* Sat Jul 01 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.187-1
+- 0.187
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.186-1
 - 0.186
 
