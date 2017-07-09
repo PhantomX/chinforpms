@@ -63,11 +63,8 @@ Patch26:    VirtualBox-4.3.0-no-bundles.patch
 Patch27:    VirtualBox-gcc.patch
 # from Debian
 Patch28:    02-gsoap-build-fix.patch
-# glibc fix is just for glibc-2.24 (Fedora 25+) but Oracle opt by another fix
-# https://www.virtualbox.org/ticket/15205
 Patch34:    VirtualBox-5.0.16-glibc.patch
 Patch35:    VirtualBox-5.0.22-guest_soname.patch
-Patch37:    smap.diff
 # from Mageia
 Patch50:    VirtualBox-5.1.0-add-Mageia-support.patch
 Patch51:    VirtualBox-5.1.0-revert-VBox.sh.patch
@@ -271,11 +268,7 @@ rm -rf src/libs/zlib-*/
 %if 0%{?fedora} > 20
 %patch28 -p1 -b .gsoap2
 %endif
-%if 0%{?fedora} > 24
-#patch34 -p1 -b .glibc
-%endif
 %patch35 -p1 -b .soname
-%patch37 -p1 -b .kernel4.7-smap
 %patch50 -p1 -b .mageia-support
 %patch51 -p1 -b .revert-VBox.sh
 %patch100 -p1 -b .noup

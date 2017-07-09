@@ -3,9 +3,11 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
+%if 0%{?fedora}
 %global buildforkernels akmod
 
 %global debug_package %{nil}
+%endif
 #akmods still generate debuginfo but have the wrong name:
 #/var/cache/akmods/VirtualBox/VirtualBox-kmod-debuginfo-5.0.4-1.fc21.x86_64.rpm
 #/var/cache/akmods/VirtualBox/kmod-VirtualBox-4.1.8-100.fc21.x86_64-5.0.4-1.fc21.x86_64.rpm
