@@ -1,0 +1,70 @@
+From 92fe05e58babf15d7ddadfccd8bc383ea7e46e55 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Wed, 5 Jul 2017 22:02:59 +0200
+Subject: [PATCH] ACPI / LPSS: Only call pwm_add_table for the first PWM
+ controller
+
+At least on the UP board SBC both PWMs are enabled leading to us
+trying to add the same pwm_lookup twice, which leads to the following:
+
+[    0.902224] list_add double add: new=ffffffffb8efd400,
+               prev=ffffffffb8efd400, next=ffffffffb8eeede0.
+[    0.912466] ------------[ cut here ]------------
+[    0.917624] kernel BUG at lib/list_debug.c:31!
+[    0.922588] invalid opcode: 0000 [#1] SMP
+...
+[    1.027450] Call Trace:
+[    1.030185]  pwm_add_table+0x4c/0x90
+[    1.034181]  bsw_pwm_setup+0x1a/0x20
+[    1.038175]  acpi_lpss_create_device+0xfe/0x420
+...
+
+This commit fixes this by only calling pwm_add_table for the first
+PWM controller (which is the one used for the backlight).
+
+Cc: stable@vger.kernel.org
+BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1458599
+Fixes: bf7696a12071 ("acpi: lpss: call pwm_add_table() for BSW...")
+Fixes: 04434ab5120a ("ACPI / LPSS: Call pwm_add_table() for Bay Trail...")
+[labbott@redhat.com: Rebase to 4.11]
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/acpi/acpi_lpss.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
+index 5edfd9c..d973e56 100644
+--- a/drivers/acpi/acpi_lpss.c
++++ b/drivers/acpi/acpi_lpss.c
+@@ -85,6 +85,7 @@ static const struct lpss_device_desc lpss_dma_desc = {
+ };
+ 
+ struct lpss_private_data {
++	struct acpi_device *adev;
+ 	void __iomem *mmio_base;
+ 	resource_size_t mmio_size;
+ 	unsigned int fixed_clk_rate;
+@@ -164,6 +165,12 @@ static struct pwm_lookup bsw_pwm_lookup[] = {
+ 
+ static void bsw_pwm_setup(struct lpss_private_data *pdata)
+ {
++	struct acpi_device *adev = pdata->adev;
++
++	/* Only call pwm_add_table for the first PWM controller */
++	if (!adev->pnp.unique_id || strcmp(adev->pnp.unique_id, "1"))
++		return;
++
+ 	pwm_add_table(bsw_pwm_lookup, ARRAY_SIZE(bsw_pwm_lookup));
+ }
+ 
+@@ -439,6 +446,7 @@ static int acpi_lpss_create_device(struct acpi_device *adev,
+ 		goto err_out;
+ 	}
+ 
++	pdata->adev = adev;
+ 	pdata->dev_desc = dev_desc;
+ 
+ 	if (dev_desc->setup)
+-- 
+2.7.5
+

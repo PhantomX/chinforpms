@@ -11,11 +11,11 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.11
+%global compholiover 2.12
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.10
+%global ninever 2.12
 %endif # 0%{?fedora}
 
 # laino patches, see: https://github.com/laino/wine-patches
@@ -38,7 +38,7 @@
 %endif
 
 Name:           wine
-Version:        2.11
+Version:        2.12
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1594,15 +1594,20 @@ fi
 %{_libdir}/wine/ext-ms-win-gdi-devcaps-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-draw-l1-1-1.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-render-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-kernel32-package-l1-1-1.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-message-l1-1-1.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-private-l1-1-1.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-rectangle-ext-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-uicontext-ext-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-window-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-windowclass-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-ras-rasapi32-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-gdi-object-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-gdi-rgn-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-ntuser-dc-access-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-ntuser-dpi-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-security-credui-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-security-cryptui-l1-1-0.dll.so
 %if 0%{?compholio}
 %{_libdir}/wine/ext-ms-win-appmodel-usercontext-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-kernel32-package-current-l1-1-0.dll.so
@@ -2298,6 +2303,9 @@ fi
 %endif
 
 %changelog
+* Wed Jul 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.0-100.chinfo
+- 2.12
+
 * Tue Jun 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.0-100.chinfo
 - 2.11
 

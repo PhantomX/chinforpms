@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -666,6 +666,9 @@ Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
 
 # rhbz 1459326
 Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
+
+# rhbz 1458599
+Patch685: 0001-ACPI-LPSS-Only-call-pwm_add_table-for-the-first-PWM-.patch
 
 ### Extra
 
@@ -2261,6 +2264,10 @@ fi
 #
 #
 %changelog
+* Wed Jul 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.10-500.chinfo
+- 4.11.10
+- f26 sync
+
 * Wed Jul 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.9-500.chinfo
 - 4.11.9
 
