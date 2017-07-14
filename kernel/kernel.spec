@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 11
+%define base_sublevel 12
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -519,156 +519,129 @@ Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
 # Git trees.
 
 # Standalone patches
+# 100 - Generic long running patches
 
-# a tempory patch for QCOM hardware enablement. Will be gone by end of 2016/F-26 GA
-Patch420: qcom-QDF2432-tmp-errata.patch
+Patch110: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
-# Upstream (in 4.12) patches to fix HiKey WiFi
-Patch421: arm-hikey-fixWiFi.patch
+Patch111: input-kill-stupid-messages.patch
+
+Patch112: die-floppy-die.patch
+
+Patch113: no-pcspkr-modalias.patch
+
+Patch114: silence-fbcon-logo.patch
+
+Patch115: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
+
+Patch116: crash-driver.patch
+
+Patch117: lis3-improve-handling-of-null-rate.patch
+
+Patch118: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+
+Patch119: criu-no-expert.patch
+
+Patch120: ath9k-rx-dma-stop-check.patch
+
+Patch121: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
+
+Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
+
+Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
+
+# 200 - x86 / secureboot
+
+Patch201: efi-lockdown.patch
+
+Patch202: KEYS-Allow-unrestricted-boot-time-addition-of-keys-t.patch
+
+Patch203: Add-EFI-signature-data-types.patch
+
+Patch204: Add-an-EFI-signature-blob-parser-and-key-loader.patch
+
+Patch205: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
+
+Patch206: MODSIGN-Support-not-importing-certs-from-db.patch
+
+Patch210: disable-i8042-check-on-apple-mac.patch
+
+Patch211: drm-i915-hush-check-crtc-state.patch
+
+# 300 - ARM patches
+
+# a tempory patch for QCOM hardware enablement. Will be gone by F-26 GA
+Patch301: qcom-QDF2432-tmp-errata.patch
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch422: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+Patch302: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
 # Fix OMAP4 (pandaboard)
-Patch423: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
+Patch303: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
-# BBWireless Bluetooth
-Patch424: arm-dts-boneblack-wireless-add-WL1835-Bluetooth-device-node.patch
+# http://www.spinics.net/lists/arm-kernel/msg582772.html
+Patch304: arm-dts-boneblack-wireless-add-WL1835-Bluetooth-device-node.patch
 
 # http://patchwork.ozlabs.org/patch/587554/
-Patch425: ARM-tegra-usb-no-reset.patch
+Patch305: ARM-tegra-usb-no-reset.patch
 
-Patch426: AllWinner-h3.patch
-Patch427: AllWinner-net-emac.patch
-
-# http://www.spinics.net/lists/linux-bluetooth/msg70169.html
-# https://www.spinics.net/lists/devicetree/msg170619.html
-Patch428: ti-bluetooth.patch
-
-Patch429: arm64-hikey-fixes.patch
-
-Patch430: arm-rk3288-tinker.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch431: arm-imx6-hummingboard2.patch
-
-# Cavium fixes
-Patch432: arm64-cavium-fixes.patch
-
-Patch433: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-
-# https://patchwork.kernel.org/patch/9815555/
-# https://patchwork.kernel.org/patch/9815651/
-# Patch434: qcom-rmsg-spmi-fixes.patch
+Patch306: AllWinner-net-emac.patch
 
 # http://www.spinics.net/lists/devicetree/msg163238.html
-Patch440: bcm2837-initial-support.patch
-
-# bcm283x mmc for wifi http://www.spinics.net/lists/arm-kernel/msg567077.html
-Patch441: bcm283x-mmc-bcm2835.patch
-
-# Upstream fixes for i2c/serial/ethernet MAC addresses
-Patch442: bcm283x-fixes.patch
-
-# https://lists.freedesktop.org/archives/dri-devel/2017-February/133823.html
-Patch443: vc4-fix-vblank-cursor-update-issue.patch
-
-Patch444: bcm283x-hdmi-audio.patch
-
-Patch445: bcm2835-clk-audio-jitter-issues.patch
+Patch308: bcm2837-initial-support.patch
 
 # http://www.spinics.net/lists/dri-devel/msg132235.html
-Patch446: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+Patch309: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
 
-# https://lists.freedesktop.org/archives/dri-devel/2017-June/143688.html
-Patch447: vc4-tformat-fixes.patch
+# https://www.spinics.net/lists/arm-kernel/msg554183.html
+Patch311: arm-imx6-hummingboard2.patch
+
+Patch312: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+
+Patch313: bcm2835-clk-audio-jitter-issues.patch
+Patch314: bcm2835-fix-potential-null-pointer-dereferences.patch
 
 # https://patchwork.freedesktop.org/patch/163300/
 # https://patchwork.freedesktop.org/patch/161978/
-Patch448: bcm283x-vc4-fix-vblank.patch
+Patch315: bcm283x-vc4-fix-vblank.patch
 
-Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
+# https://patchwork.kernel.org/patch/9815555/
+# https://patchwork.kernel.org/patch/9815651/
+# https://patchwork.kernel.org/patch/9819885/
+# https://patchwork.kernel.org/patch/9820417/
+# https://patchwork.kernel.org/patch/9821151/
+# https://patchwork.kernel.org/patch/9821157/
+Patch316: qcom-msm89xx-fixes.patch
 
-Patch466: input-kill-stupid-messages.patch
+# 400 - IBM (ppc/s390x) patches
 
-Patch467: die-floppy-die.patch
-
-Patch468: no-pcspkr-modalias.patch
-
-Patch470: silence-fbcon-logo.patch
-
-Patch471: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
-
-Patch472: crash-driver.patch
-
-Patch473: efi-lockdown.patch
-
-Patch487: Add-EFI-signature-data-types.patch
-
-Patch488: Add-an-EFI-signature-blob-parser-and-key-loader.patch
-
-# This doesn't apply. It seems like it could be replaced by
-# https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=5ac7eace2d00eab5ae0e9fdee63e38aee6001f7c
-# which has an explicit line about blacklisting
-Patch489: KEYS-Add-a-system-blacklist-keyring.patch
-
-Patch490: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
-
-Patch491: MODSIGN-Support-not-importing-certs-from-db.patch
-
-Patch493: drm-i915-hush-check-crtc-state.patch
-
-Patch494: disable-i8042-check-on-apple-mac.patch
-
-Patch495: lis3-improve-handling-of-null-rate.patch
-
-Patch497: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-
-Patch498: criu-no-expert.patch
-
-Patch499: ath9k-rx-dma-stop-check.patch
-
-Patch500: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
-
-Patch501: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
-
-Patch502: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
-
-# Patch503: drm-i915-turn-off-wc-mmaps.patch
-
-Patch509: MODSIGN-Don-t-try-secure-boot-if-EFI-runtime-is-disa.patch
-
-# rhbz 1436686
-Patch600: dell-laptop-Adds-support-for-keyboard-backlight-timeout-AC-settings.patch
-
-#CVE-2016-3134 rhbz 1317383 1317384
-Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
-
-#rhbz 1435154
-Patch666: powerpc-prom-Increase-RMA-size-to-512MB.patch
-
-# CVE-2017-7645 rhbz 1443615 1443617
-Patch667: CVE-2017-7645.patch
+# 500 - Temp fixes/CVEs etc
 
 # CVE-2017-7477 rhbz 1445207 1445208
-Patch668: CVE-2017-7477.patch
-
-#CVE-2017-9059 rhbz 1451386 1451996
-Patch669: 0001-SUNRPC-Refactor-svc_set_num_threads.patch
-Patch670: 0002-NFSv4-Fix-callback-server-shutdown.patch
-
-# rhbz 1455780
-Patch676: 2-2-nvme-Quirk-APST-on-Intel-600P-P3100-devices.patch
-
-# rhbz 1459272
-Patch680: 0001-platform-x86-thinkpad_acpi-guard-generic-hotkey-case.patch
-Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
+Patch502: CVE-2017-7477.patch
 
 # rhbz 1459326
-Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
+Patch504: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
 
-# rhbz 1458599
-Patch685: 0001-ACPI-LPSS-Only-call-pwm_add_table-for-the-first-PWM-.patch
+# 600 - Patches for improved Bay and Cherry Trail device support
+# Below patches are pending in -next:
+Patch601: 0001-platform-x86-Add-driver-for-ACPI-INT0002-Virtual-GPI.patch
+Patch602: 0002-mfd-Add-Cherry-Trail-Whiskey-Cove-PMIC-driver.patch
+Patch603: 0003-power-supply-core-Add-support-for-supplied-from-devi.patch
+Patch604: 0004-platform-x86-intel_cht_int33fe-Set-supplied-from-pro.patch
+Patch605: 0005-ACPI-PMIC-xpower-Add-support-for-the-GPI1-regulator-.patch
+Patch606: 0006-Input-axp20x-pek-Add-wakeup-support.patch
+Patch607: 0007-platform-x86-silead_dmi-Add-touchscreen-info-for-GP-.patch
+Patch608: 0008-platform-x86-silead_dmi-Add-touchscreen-info-for-PoV.patch
+Patch609: 0009-platform-x86-silead_dmi-Add-touchscreen-info-for-Pip.patch
+# Below patches are submitted upstream, awaiting review / merging
+Patch610: 0010-Input-silead-Add-support-for-capactive-home-button-f.patch
+Patch611: 0011-Input-goodix-Add-support-for-capacitive-home-button.patch
+Patch612: 0012-Input-gpio_keys-Do-not-report-wake-button-presses-as.patch
+Patch613: 0013-iio-accel-bmc150-Add-support-for-BOSC0200-ACPI-devic.patch
+Patch614: 0014-mmc-sdhci-acpi-Workaround-conflict-with-PCI-wifi-on-.patch
+Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
+# Small workaround patches for issues with a more comprehensive fix in -next
+Patch616: 0016-Input-silead-Do-not-try-to-directly-access-the-GPIO-.patch
 
 ### Extra
 
@@ -680,19 +653,13 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_addit
 # Patches to export btrfs anonymous devices (VFS portion)
 Patch1010: vfs-add-super_operations-get_inode_dev.patch
 Patch1011: perf_timechart_fix_zero_timestamps.patch
-Patch1012: btrfs-provide-super_operations-get_inode_dev.patch
-Patch1013: btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
-Patch1014: btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
-Patch1015: reiserfs-fix-race-in-prealloc-discard.patch
-
-# BFQ disk scheduler - http://algo.ing.unimo.it/people/paolo/disk_sched/
-%global bfqurl http://algo.ing.unimo.it/people/paolo/disk_sched/patches/4.11.0-v8r11
-Patch1030: %{bfqurl}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r11-4.11..patch
-Patch1031: %{bfqurl}/0002-block-introduce-the-BFQ-v7r11-I-O-sched-for-4.11.0.patch
-Patch1032: %{bfqurl}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v7r11-for.patch
-Source1033: %{bfqurl}/0004-blk-bfq-turn-BFQ-v7r11-for-4.11.0-into-BFQ-v8r11-for.patch
-Source3000: %{bfqurl}/COPYING.BFQ
-Source3001: %{bfqurl}/README.BFQ
+Patch1012: btrfs-add-cond_resched-to-btrfs_qgroup_trace_leaf_items.patch
+Patch1013: btrfs-provide-super_operations-get_inode_dev.patch
+Patch1014: btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
+Patch1015: btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
+Patch1016: btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+Patch1017: reiserfs-fix-race-in-prealloc-discard.patch
+Patch1018: reiserfs-don-t-preallocate-blocks-for-extended-attributes.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1298,9 +1265,6 @@ done
 
 git am %{patches}
 
-filterdiff -p1 -x Makefile %{SOURCE1033} > 0004-bfq.patch
-$patch_command -i 0004-bfq.patch
-
 $patch_command -i %{SOURCE4000}
 
 # END OF PATCH APPLICATIONS
@@ -1899,7 +1863,7 @@ find $RPM_BUILD_ROOT/usr/tmp-headers/include \
 # Copy all the architectures we care about to their respective asm directories
 for arch in arm arm64 powerpc s390 x86 ; do
 mkdir -p $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include
-mv $RPM_BUILD_ROOT/usr/tmp-headers/include/asm-${arch} $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include/asm
+mv $RPM_BUILD_ROOT/usr/tmp-headers/include/arch-${arch}/asm $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include/
 cp -a $RPM_BUILD_ROOT/usr/tmp-headers/include/asm-generic $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include/.
 done
 
@@ -1931,6 +1895,9 @@ mkdir -p %{buildroot}/%{_mandir}/man1
 pushd %{buildroot}/%{_mandir}/man1
 tar -xf %{SOURCE10}
 popd
+%if !%{with_tools}
+    rm -f kvm_stat.1
+%endif
 %endif
 
 %if %{with_tools}
@@ -1973,6 +1940,9 @@ make INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/gpio
 make DESTDIR=%{buildroot} install
+popd
+pushd tools/kvm/kvm_stat
+make INSTALL_ROOT=%{buildroot} install-tools
 popd
 %endif
 
@@ -2171,6 +2141,8 @@ fi
 %{_bindir}/lsgpio
 %{_bindir}/gpio-hammer
 %{_bindir}/gpio-event-mon
+%{_mandir}/man1/kvm_stat*
+%{_bindir}/kvm_stat
 %endif
 
 %if %{with_debuginfo}
@@ -2264,6 +2236,11 @@ fi
 #
 #
 %changelog
+* Thu Jul 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.1-500.chinfo
+- 4.12.1
+- f26 sync
+- Enable blk-mq by default, because BFQ
+
 * Wed Jul 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.10-500.chinfo
 - 4.11.10
 - f26 sync

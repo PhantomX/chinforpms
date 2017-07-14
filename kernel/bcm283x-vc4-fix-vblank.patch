@@ -1,6 +1,6 @@
-From 5db729b12376b0b6507503eee1dcbe5f3b089686 Mon Sep 17 00:00:00 2001
+From d40a5938a10a3ba73bce6395729fefd8b8bb1c07 Mon Sep 17 00:00:00 2001
 From: Peter Robinson <pbrobinson@gmail.com>
-Date: Wed, 28 Jun 2017 10:49:18 +0100
+Date: Thu, 29 Jun 2017 10:05:05 +0100
 Subject: [PATCH] drm/vc4: Fix VBLANK handling in crtc->enable() path
 
 When we are enabling a CRTC, drm_crtc_vblank_get() is called before
@@ -14,10 +14,10 @@ Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
  1 file changed, 43 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
-index 9fcf05ca492b..138c406f4f77 100644
+index d86c8cce3182..316bd6210d69 100644
 --- a/drivers/gpu/drm/vc4/vc4_crtc.c
 +++ b/drivers/gpu/drm/vc4/vc4_crtc.c
-@@ -528,6 +528,34 @@ static void vc4_crtc_disable(struct drm_crtc *crtc)
+@@ -530,6 +530,34 @@ static void vc4_crtc_disable(struct drm_crtc *crtc)
  		     SCALER_DISPSTATX_EMPTY);
  }
  
@@ -52,7 +52,7 @@ index 9fcf05ca492b..138c406f4f77 100644
  static void vc4_crtc_enable(struct drm_crtc *crtc)
  {
  	struct drm_device *dev = crtc->dev;
-@@ -538,6 +566,12 @@ static void vc4_crtc_enable(struct drm_crtc *crtc)
+@@ -540,6 +568,12 @@ static void vc4_crtc_enable(struct drm_crtc *crtc)
  
  	require_hvs_enabled(dev);
  
@@ -65,7 +65,7 @@ index 9fcf05ca492b..138c406f4f77 100644
  	/* Turn on the scaler, which will wait for vstart to start
  	 * compositing.
  	 */
-@@ -549,9 +583,6 @@ static void vc4_crtc_enable(struct drm_crtc *crtc)
+@@ -551,9 +585,6 @@ static void vc4_crtc_enable(struct drm_crtc *crtc)
  	/* Turn on the pixel valve, which will emit the vstart signal. */
  	CRTC_WRITE(PV_V_CONTROL,
  		   CRTC_READ(PV_V_CONTROL) | PV_VCONTROL_VIDEN);
@@ -75,7 +75,7 @@ index 9fcf05ca492b..138c406f4f77 100644
  }
  
  static bool vc4_crtc_mode_fixup(struct drm_crtc *crtc,
-@@ -606,7 +637,6 @@ static void vc4_crtc_atomic_flush(struct drm_crtc *crtc,
+@@ -608,7 +639,6 @@ static void vc4_crtc_atomic_flush(struct drm_crtc *crtc,
  {
  	struct drm_device *dev = crtc->dev;
  	struct vc4_dev *vc4 = to_vc4_dev(dev);
@@ -83,7 +83,7 @@ index 9fcf05ca492b..138c406f4f77 100644
  	struct vc4_crtc_state *vc4_state = to_vc4_crtc_state(crtc->state);
  	struct drm_plane *plane;
  	bool debug_dump_regs = false;
-@@ -628,25 +658,15 @@ static void vc4_crtc_atomic_flush(struct drm_crtc *crtc,
+@@ -630,25 +660,15 @@ static void vc4_crtc_atomic_flush(struct drm_crtc *crtc,
  
  	WARN_ON_ONCE(dlist_next - dlist_start != vc4_state->mm.size);
  
