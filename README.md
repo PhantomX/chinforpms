@@ -27,7 +27,7 @@ release tags).
  * **gtk3** - Revert some features ditched in 3.10 release, some _Debian_ and
               _Ubuntu_ patches
  * **keepassxc** - Post script and cosmetic fixes
- * **kernel** - [BFQ](http://algo.ing.unimo.it/people/paolo/disk_sched), [CPU optimizations](https://github.com/graysky2/kernel_gcc_patch) and some
+ * **kernel** - _blk-mq_ enabled by default, [CPU optimizations](https://github.com/graysky2/kernel_gcc_patch) and some
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) patches
                 (kernel-local must be edited to modify gcc optimizations)
  * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**

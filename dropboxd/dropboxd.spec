@@ -12,12 +12,12 @@
 
 # Do no blame Dropbox devs if setting 1 in these
 # Set to 1 to use system libs
-%global bzip2 1
-%global popt 1
-%global python 0
+%global bzip2   1
+%global popt    1
+%global python  0
 
 Name:           dropboxd
-Version:        28.4.14
+Version:        30.4.22
 Release:        1%{?dist}
 Summary:        Dropbox proprietary client
 
@@ -175,6 +175,9 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 
 
 %changelog
+* Sat Jul 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 30.4.22-1
+- 30.4.22
+
 * Fri Jun 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 28.4.14-1
 - 28.4.14
 
