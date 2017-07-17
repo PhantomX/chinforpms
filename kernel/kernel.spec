@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -660,6 +660,10 @@ Patch1015: btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1016: btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1017: reiserfs-fix-race-in-prealloc-discard.patch
 Patch1018: reiserfs-don-t-preallocate-blocks-for-extended-attributes.patch
+Patch1019: connector-read-mostly.patch
+Patch1020: 0001-fs-fcntl-f_setown-allow-returning-error.patch
+Patch1021: 0002-fs-fcntl-f_setown-avoid-undefined-behaviour.patch
+Patch1022: e1000e-Don-t-return-uninitialized-stats.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2236,6 +2240,10 @@ fi
 #
 #
 %changelog
+* Sun Jul 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.2-500.chinfo
+- 4.12.2
+- f26 sync
+
 * Thu Jul 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.1-500.chinfo
 - 4.12.1
 - f26 sync
