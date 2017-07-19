@@ -25,9 +25,9 @@
 %bcond_with vnc
 
 Name:       VirtualBox
-Version:    5.1.22
+Version:    5.1.24
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:    101%{?bugfix:.%{bugfix}}.chinfo%{?dist}
+Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
 
 License:    GPLv2 or (GPLv2 and CDDL)
@@ -63,7 +63,6 @@ Patch26:    VirtualBox-4.3.0-no-bundles.patch
 Patch27:    VirtualBox-gcc.patch
 # from Debian
 Patch28:    02-gsoap-build-fix.patch
-Patch34:    VirtualBox-5.0.16-glibc.patch
 Patch35:    VirtualBox-5.0.22-guest_soname.patch
 # from Mageia
 Patch50:    VirtualBox-5.1.0-add-Mageia-support.patch
@@ -819,6 +818,10 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Tue Jul 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.24-100.chinfo
+- 5.1.24
+- Sync with RPMfusion
+
 * Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.22-101.chinfo
 - Stop gcc check
 

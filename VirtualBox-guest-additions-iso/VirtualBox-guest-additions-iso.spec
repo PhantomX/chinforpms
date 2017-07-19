@@ -1,7 +1,7 @@
 %global pkgname VBoxGuestAdditions
 
 Name:           VirtualBox-guest-additions-iso
-Version:        5.1.22
+Version:        5.1.24
 Release:        1%{?dist}
 Summary:        Guest additions for VirtualBox
 
@@ -38,6 +38,9 @@ install -pm0644 %{SOURCE0} \
 
 
 %changelog
+* Tue Jul 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.24-1
+- 5.1.24
+
 * Sat Apr 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.22-1
 - 5.1.22
 
