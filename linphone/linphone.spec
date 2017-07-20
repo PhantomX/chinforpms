@@ -35,9 +35,6 @@ BuildRequires:  pkgconfig(sqlite3)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -114,7 +111,6 @@ rm -rf %{buildroot}%{_datadir}/gnome
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

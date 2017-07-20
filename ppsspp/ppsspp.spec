@@ -93,9 +93,6 @@ BuildRequires:  snappy-devel
 BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
 Requires:       google-roboto-condensed-fonts
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 
 %description
@@ -227,7 +224,6 @@ install -pm0644 icons/icon-512.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

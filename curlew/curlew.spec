@@ -19,9 +19,6 @@ Requires:       ffmpeg
 Requires:       mencoder
 Requires:       mediainfo
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 Easy to use, Free and Open-Source Multimedia converter for Linux.
@@ -49,7 +46,6 @@ desktop-file-edit  \
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

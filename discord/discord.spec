@@ -31,9 +31,6 @@ BuildRequires:  ImageMagick
 Requires:       libcxx%{?_isa}
 Requires:       libXScrnSaver%{?_isa}
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %if 0%{?use_canary}
 Provides:       %{name}-canary = %{version}-%{release}
@@ -92,7 +89,6 @@ for res in 16 22 24 32 48 64 72 96 128 192 ;do
 done
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

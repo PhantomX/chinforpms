@@ -70,9 +70,6 @@ Requires:       sip%{?_isa}
 Requires:       sqlite-libs%{?_isa}
 
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): desktop-file-utils gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 Conflicts:       SpiderOak < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       SpiderOak
@@ -239,7 +236,6 @@ for res in 16 24 32 48 64 72 96 128 192 256 512 ;do
 done
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

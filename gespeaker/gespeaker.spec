@@ -16,9 +16,6 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  librsvg2-tools
 Requires:       espeak
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 Gespeaker is a GTK+ front-end for espeak. It allows to play a text in
@@ -63,7 +60,6 @@ done
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

@@ -31,9 +31,6 @@ BuildRequires:  libyubikey-devel
 BuildRequires:  ykpers-devel
 %endif
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils shared-mime-info
-Requires(postun): desktop-file-utils gtk-update-icon-cache shared-mime-info
-Requires(posttrans): gtk-update-icon-cache shared-mime-info
 
 %description
 KeePassXC is a community fork of KeePassX, a native cross-platform
@@ -75,21 +72,16 @@ desktop-file-edit \
 
 %post
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-touch --no-create %{_datadir}/mime/packages &>/dev/null || :
-update-desktop-database &>/dev/null ||:
- 
+
 %postun
 if [ $1 -eq 0 ] ; then
   touch --no-create %{_datadir}/icons/hicolor &>/dev/null
   gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
   touch --no-create %{_datadir}/mime/packages &>/dev/null || :
-  update-mime-database %{_datadir}/mime &>/dev/null || :
 fi
-update-desktop-database &>/dev/null ||:
 
 %posttrans
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 
 %files -f keepassx.lang
 %license COPYING LICENSE*

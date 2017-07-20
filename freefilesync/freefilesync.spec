@@ -17,9 +17,6 @@ BuildRequires:  pkgconfig(libselinux)
 BuildRequires:  boost-devel
 BuildRequires:  compat-wxGTK3-gtk2-devel
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 FreeFileSync is a free Open Source software that helps you synchronize
@@ -109,7 +106,6 @@ done
 
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

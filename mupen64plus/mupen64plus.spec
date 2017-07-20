@@ -23,9 +23,6 @@ BuildRequires:  pkgconfig(zlib)
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       dejavu-sans-fonts
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 Mupen64Plus is a plugin-based N64 emulator for Linux which is capable of
@@ -98,7 +95,6 @@ chmod +x %{buildroot}%{_libdir}/%{name}/%{name}-*.so
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

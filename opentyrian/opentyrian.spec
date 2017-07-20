@@ -27,9 +27,6 @@ BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(SDL2_net)
 Requires:       tyrian-data >= 2.1
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 Tyrian is an arcade-style vertical scrolling shooter. The story is set
@@ -85,7 +82,6 @@ for res in 22 24 32 48 128 ;do
 done
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

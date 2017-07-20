@@ -22,9 +22,6 @@ Requires:       java
 Requires:       receitanet
 Requires:       hicolor-icon-theme
 Requires:       xdg-utils
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 Permite a transmissão de arquivos para a Base de Dados da Receita Federal do
@@ -88,7 +85,6 @@ done
 rm -f %{buildroot}%{_datadir}/ProgramasRFB/%{name}/IRPF-Licenses.txt
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

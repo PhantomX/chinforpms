@@ -12,9 +12,6 @@ BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(Qt5Svg)
 Requires:       firejail
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 Firetools is the graphical user interface of Firejail security sandbox.
@@ -56,7 +53,6 @@ for res in 16 22 24 32 36 48 64 72 ;do
 done
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

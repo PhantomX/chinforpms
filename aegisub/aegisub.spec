@@ -27,9 +27,6 @@ BuildRequires:  pkgconfig(hunspell)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  wxGTK3-devel
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 Provides:       bundle(luajit) = 2.0.3
 
@@ -83,7 +80,6 @@ desktop-file-edit \
 %find_lang %{name}-32
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

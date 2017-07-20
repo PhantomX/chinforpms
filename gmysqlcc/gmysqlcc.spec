@@ -19,9 +19,6 @@ BuildRequires:  pkgconfig(gtk+-2.0)
 BuildRequires:  pkgconfig(gtksourceview-2.0)
 BuildRequires:  mariadb-devel
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 gMySQLcc is designed to be a simple, quick, and powerful way to
@@ -72,7 +69,6 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 %find_lang %{name}
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

@@ -21,9 +21,6 @@ Requires:       python3-qt5
 #Requires:       python3-sdl2
 Requires:       SDL2
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 M64Py is a Qt5 front-end (GUI) for Mupen64Plus 2.0, a cross-platform
@@ -71,7 +68,6 @@ for res in 16 22 24 32 36 48 64 72 ;do
 done
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

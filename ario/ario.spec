@@ -23,10 +23,6 @@ BuildRequires: desktop-file-utils
 #BuildRequires: gettext
 #BuildRequires: perl(XML::Parser)
 #BuildRequires: autoconf automake libtool
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
-
 
 %description
 Ario is a GTK2 client for MPD (Music player daemon). The interface used to 
@@ -62,7 +58,6 @@ find %{buildroot} -name "*.la" -exec rm {} \;
 desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

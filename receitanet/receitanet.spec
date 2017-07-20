@@ -19,9 +19,6 @@ BuildRequires:  ImageMagick
 BuildRequires:  java-headless
 Requires:       java
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 Permite a transmissão de arquivos para a Base de Dados da Receita Federal do
@@ -81,7 +78,6 @@ for res in 16 20 22 24 ;do
 done
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

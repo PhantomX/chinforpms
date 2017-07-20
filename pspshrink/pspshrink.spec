@@ -12,9 +12,6 @@ BuildRequires:  librsvg2-tools
 BuildRequires:  pkgconfig(gtkmm-2.4)
 Requires:       gtkmm24
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 PSP shrink is a tool that allows you compress your psp iso files to the cso
@@ -56,7 +53,6 @@ for res in 16 22 24 32 36 48 64 72 96 128 192 256 512 ;do
 done
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

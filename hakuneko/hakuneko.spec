@@ -12,9 +12,6 @@ BuildRequires:  pkgconfig(openssl)
 BuildRequires:  desktop-file-utils
 BuildRequires:  wxGTK3-devel
 Requires:       hicolor-icon-theme
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
 
 %description
 HakuNeko allows you to download manga images from some selected online
@@ -47,7 +44,6 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %post
-update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun

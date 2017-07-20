@@ -598,10 +598,6 @@ getent group vboxusers >/dev/null || groupadd -r vboxusers
 %post
 # Icon Cache
 /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-# mimeinfo F23 only
-/bin/touch --no-create %{_datadir}/mime/packages &>/dev/null || :
-# Desktop databases F23 and F24 only
-/usr/bin/update-desktop-database &> /dev/null || :
 
 # Assign USB devices
 if /sbin/udevadm control --reload-rules >/dev/null 2>&1
@@ -634,8 +630,6 @@ if [ $1 -eq 0 ] ; then
     # Icon Cache
     /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
     /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-    # mimeinfo F23 only
-    /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 fi
 %systemd_postun_with_restart vboxautostart.service
 
@@ -644,14 +638,9 @@ fi
     %systemd_postun_with_restart vboxweb.service
 %endif
 
-# Desktop databases F23 and F24 only
-/usr/bin/update-desktop-database &> /dev/null || :
-
 %posttrans
 # Icon Cache
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-# mimeinfo F23 only
-/usr/bin/update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
 
 %pre guest-additions
 # This is the LSB version of useradd and should work on recent
