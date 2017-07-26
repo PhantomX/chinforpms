@@ -1,5 +1,5 @@
 Name:           ortp
-Version:        1.0.1
+Version:        1.0.2
 Release:        100.chinfo%{?dist}
 Summary:        A C library implementing the RTP protocol (RFC3550)
 Epoch:          1
@@ -31,7 +31,7 @@ Requires:       pkgconfig(bctoolbox)
 Libraries and headers required to develop software with ortp.
 
 %prep
-%autosetup
+%autosetup -n %{name}-%{version}-0
 
 autoreconf -ivf
 
@@ -59,7 +59,7 @@ rm -rf %{buildroot}%{_datadir}/doc
 %postun -p /sbin/ldconfig
 
 %files
-%doc AUTHORS ChangeLog NEWS README.md
+%doc AUTHORS NEWS README.md
 %license COPYING
 %{_libdir}/libortp.so.*
 
@@ -70,6 +70,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 %{_libdir}/pkgconfig/ortp.pc
 
 %changelog
+* Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.2-1.chinfo
+- 1.0.2
+
 * Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.1-1.chinfo
 - 1.0.1
 

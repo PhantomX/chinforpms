@@ -1,5 +1,5 @@
 Name:           bzrtp
-Version:        1.0.5
+Version:        1.0.6
 Release:        1%{?dist}
 Summary:        Opensource implementation of ZRTP keys exchange protocol
 
@@ -13,6 +13,7 @@ BuildRequires:  automake
 BuildRequires:  libtool
 BuildRequires:  pkgconfig(bctoolbox)
 BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(sqlite3)
 
 
 %description
@@ -65,5 +66,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.6-1
+- 1.0.6
+- BR: sqlite3
+
 * Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.5-1
 - Initial spec

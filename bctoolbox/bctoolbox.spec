@@ -1,5 +1,5 @@
 Name:           bctoolbox
-Version:        0.5.1
+Version:        0.6.0
 Release:        1%{?dist}
 Summary:        Utilities library used by Belledonne Communications softwares
 
@@ -39,6 +39,7 @@ pushd builddir
   -DENABLE_STATIC:BOOL=OFF \
   -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON \
   -DENABLE_TESTS_COMPONENT:BOOL=OFF \
+  -DENABLE_MBEDTLS:BOOL=ON \
   -DENABLE_POLARSSL:BOOL=OFF
 
 %make_build
@@ -63,8 +64,12 @@ popd
 %{_includedir}/%{name}/*.h
 %{_includedir}/%{name}/*.hh
 %{_datadir}/%{name}/cmake/*.cmake
+%{_datadir}/%{name}/cmake/*.in
 
 
 %changelog
+* Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.6.0-1
+- 0.6.0
+
 * Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.5.1-1
 - Initial spec

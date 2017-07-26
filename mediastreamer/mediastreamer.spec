@@ -1,7 +1,7 @@
 %global ffmpeg 0
 
 Name:           mediastreamer
-Version:        2.15.1
+Version:        2.16.1
 Release:        1%{?dist}
 Summary:        Mediastreaming library for telephony application
 
@@ -66,6 +66,8 @@ Development files.
 
 %prep
 %autosetup
+
+sed -e 's|(git: " MS2_GIT_VERSION ")||g' -i src/base/msfactory.c
 
 intltoolize -f
 autoreconf -ivf
@@ -136,5 +138,8 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.16.1-1
+- 2.16.1
+
 * Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.15.1-1
 - Initial spec

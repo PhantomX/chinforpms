@@ -1,0 +1,11 @@
+--- linphone-3.12.0/coreapi/linphonecore.c.orig	2017-07-25 23:01:57.975154139 -0300
++++ linphone-3.12.0/coreapi/linphonecore.c	2017-07-25 23:02:05.008667549 -0300
+@@ -54,7 +54,7 @@ Foundation, Inc., 51 Franklin Street, Fi
+ 
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#include "gitversion.h"
++#include "liblinphone_gitversion.h"
+ #endif
+ 
+ #ifdef __APPLE__

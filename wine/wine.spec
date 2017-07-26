@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.12
+%global compholiover 2.13
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
@@ -19,7 +19,7 @@
 %endif # 0%{?fedora}
 
 # laino patches, see: https://github.com/laino/wine-patches
-%global laino 1
+%global laino 0
 %global commit1 3ffdac0356ca3d64924e75851acc545efd259a05
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 laino-wine-patches
@@ -38,7 +38,7 @@
 %endif
 
 Name:           wine
-Version:        2.12
+Version:        2.13
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1373,6 +1373,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-2.dll.so
 %{_libdir}/wine/api-ms-win-core-profile-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-psapi-ansi-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-psapi-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-psapi-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-realtime-l1-1-0.dll.so
@@ -1445,6 +1446,7 @@ fi
 %{_libdir}/wine/api-ms-win-eventlog-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-mm-misc-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-mm-mme-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-mm-time-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-ntuser-dc-access-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-power-base-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-power-setting-l1-1-0.dll.so
@@ -1460,6 +1462,7 @@ fi
 %{_libdir}/wine/api-ms-win-security-lsalookup-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-security-lsalookup-l2-1-1.dll.so
 %{_libdir}/wine/api-ms-win-security-lsapolicy-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-security-provider-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-sddl-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-systemfunctions-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-service-core-l1-1-0.dll.so
@@ -1801,6 +1804,7 @@ fi
 %{_libdir}/wine/pdh.dll.so
 %{_libdir}/wine/photometadatahandler.dll.so
 %{_libdir}/wine/pidgen.dll.so
+%{_libdir}/wine/powershell.exe.so
 %{_libdir}/wine/powrprof.dll.so
 %{_libdir}/wine/presentationfontcache.exe.so
 %{_libdir}/wine/printui.dll.so
@@ -2303,10 +2307,14 @@ fi
 %endif
 
 %changelog
-* Wed Jul 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.0-100.chinfo
+* Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.13-100.chinfo
+- 2.13
+- Disable laino patches
+
+* Wed Jul 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.12-100.chinfo
 - 2.12
 
-* Tue Jun 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.0-100.chinfo
+* Tue Jun 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.11-100.chinfo
 - 2.11
 
 * Tue Jun 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.10-100.chinfo

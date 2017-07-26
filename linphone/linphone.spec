@@ -1,7 +1,7 @@
 %global ffmpeg 0
 
 Name:           linphone
-Version:        3.11.1
+Version:        3.12.0
 Release:        1.chinfo%{?dist}
 Summary:        Phone anywhere in the whole world by using the Internet
 
@@ -10,7 +10,7 @@ URL:            http://www.linphone.org/
 Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{version}.tar.gz
 
 Patch0:         linphone-ui.patch
-Patch1:         linphone-pref.patch
+Patch1:         linphone-gitversion.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -149,16 +149,17 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/lib%{name}.so.*
 
 %files devel
-%doc coreapi/help/doc/html
 %{_bindir}/lpc2xml_test
 %{_bindir}/xml2lpc_test
-%{_bindir}/lp-gen-wrappers
 %{_bindir}/lp-sendmsg
 %{_includedir}/%{name}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/%{name}.pc
-%{_datadir}/tutorials/%{name}
+
 
 %changelog
+* Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.12.0-1.chinfo
+- 3.12.0
+
 * Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.11.1-1.chinfo
 - Initial spec

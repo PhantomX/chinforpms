@@ -1,5 +1,5 @@
 Name:           belle-sip
-Version:        1.6.1
+Version:        1.6.3
 Release:        1.chinfo%{?dist}
 Summary:        Linphone SIP stack
 
@@ -33,21 +33,12 @@ Requires:      %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Libraries and headers required to develop software with belle-sip.
 
 %prep
-%autosetup
+%autosetup -n %{name}-%{version}-0
 
 # seds from Arch
 sed -i \
   -e "s|-Werror||g" \
   configure.ac
-
-sed \
-  -e 's|bctbx_list_delete_link|bctbx_list_erase_link|g' \
-  -e 's|bctbx_list_remove_link|bctbx_list_unlink|g' \
-  -i include/belle-sip/list.h
-
-sed \
-  's|, super->base.peer_cname ? super->base.peer_cname : super->base.peer_name ||' \
-  -i src/transports/tls_channel.c
 
 autoreconf -ivf
 
@@ -89,6 +80,9 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-1.chinfo
+- 1.6.3
+
 * Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.6.1-1.chinfo
 - 1.6.1
 
