@@ -2,7 +2,7 @@
 
 Name:           claws-mail
 Version:        3.15.0
-Release:        100.chinfo%{?dist}
+Release:        101.chinfo%{?dist}
 Summary:        Email client and news reader based on GTK+
 Group:          Applications/Internet
 License:        GPLv3+
@@ -67,6 +67,7 @@ BuildRequires:  libcanberra-gtk2
 BuildRequires:  libgdata-devel >= 0.6.4
 BuildRequires:  libgnome-devel
 BuildRequires:  libical-devel
+BuildRequires:  librsvg2-devel
 
 
 # provide plugin api version (see /usr/include/claws-mail/common/version.h)
@@ -639,6 +640,9 @@ fi
 
 
 %changelog
+* Thu Jul 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.0-101.chinfo
+- SVG support with librsvg2
+
 * Thu Jul 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.0-100.chinfo
 - Download URL
 - Reenable fancy for the time
