@@ -2515,3 +2515,40 @@ index 8d2cc6e9a03f..78f6c24952dd 100644
 +	allwinner,leds-active-low;
 +	status = "okay";
 +};
+From 051516f1c20c7d7c274c91b4c2fa73bc8d7fc372 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Sat, 22 Jul 2017 15:08:12 +0100
+Subject: [PATCH] fix mac assignment so we get static not dynamic MACs
+
+---
+ arch/arm64/boot/dts/allwinner/sun50i-a64-bananapi-m64.dts | 1 +
+ arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts       | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-bananapi-m64.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-bananapi-m64.dts
+index 0d1f026d831a..ba2fde2909f9 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-bananapi-m64.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-bananapi-m64.dts
+@@ -51,6 +51,7 @@
+ 	compatible = "sinovoip,bananapi-m64", "allwinner,sun50i-a64";
+ 
+ 	aliases {
++		ethernet0 = &emac;
+ 		serial0 = &uart0;
+ 		serial1 = &uart1;
+ 	};
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
+index 3b491c0e3b0d..8442eb6c9244 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
+@@ -51,6 +51,7 @@
+ 	compatible = "pine64,pine64", "allwinner,sun50i-a64";
+ 
+ 	aliases {
++		ethernet0 = &emac;
+ 		serial0 = &uart0;
+ 	};
+ 
+-- 
+2.13.3
+

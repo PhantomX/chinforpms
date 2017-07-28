@@ -1,0 +1,65 @@
+From 7bfbe6da004f2b6bf8bcee4461f9829fe23eaaa7 Mon Sep 17 00:00:00 2001
+From: Andreas Bierfert <andreas.bierfert@lowlatency.de>
+Date: Wed, 29 Mar 2017 10:03:11 +0200
+Subject: [PATCH 2/2] Fix format-security warnings in alertpanel_ use
+
+This patch fixes format-security warnings in alertpanel_ use by passing
+"%s" as string and the buffer as va argument if no other va arguments
+are present.
+---
+ src/compose.c                      | 2 +-
+ src/mimeview.c                     | 4 ++--
+ src/plugins/archive/archiver_gtk.c | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/compose.c b/src/compose.c
+index 4a29775..b7a7f76 100644
+--- a/src/compose.c
++++ b/src/compose.c
+@@ -8792,7 +8792,7 @@ static void compose_template_apply_fields_error(const gchar *header)
+ 	tr = g_strdup(C_("'%s' stands for a header name",
+ 				  "Template '%s' format error."));
+ 	text = g_strdup_printf(tr, prefs_common_translated_header_name(header));
+-	alertpanel_error(text);
++	alertpanel_error("%s", text);
+ 
+ 	g_free(text);
+ 	g_free(tr);
+diff --git a/src/mimeview.c b/src/mimeview.c
+index 305b5e5..3ffdd18 100644
+--- a/src/mimeview.c
++++ b/src/mimeview.c
+@@ -1879,7 +1879,7 @@ static void mimeview_save_all_info(gint errors, gint total)
+ 					"%d files saved successfully.",
+ 					total),
+ 				total);
+-		alertpanel_notice(msg);
++		alertpanel_notice("%s", msg);
+ 		g_free(msg);
+ 	} else {
+ 		gchar *msg1 = g_strdup_printf(
+@@ -1892,7 +1892,7 @@ static void mimeview_save_all_info(gint errors, gint total)
+ 					"%s, %d files failed.",
+ 					errors),
+ 				msg1, errors);
+-		alertpanel_warning(msg2);
++		alertpanel_warning("%s", msg2);
+ 		g_free(msg2);
+ 		g_free(msg1);
+ 	}
+diff --git a/src/plugins/archive/archiver_gtk.c b/src/plugins/archive/archiver_gtk.c
+index 19a842d..ca74c3b 100644
+--- a/src/plugins/archive/archiver_gtk.c
++++ b/src/plugins/archive/archiver_gtk.c
+@@ -576,7 +576,7 @@ static gboolean archiver_save_files(struct ArchivePage* page) {
+ 			if (aval != G_ALERTALTERNATE)
+ 				return FALSE;
+ 		} else {
+-			alertpanel_error(msg);
++			alertpanel_error("%s", msg);
+ 			g_free(msg);
+ 			return FALSE;
+ 		}
+-- 
+2.9.3
+

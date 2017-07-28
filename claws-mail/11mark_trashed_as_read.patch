@@ -1,0 +1,18 @@
+# Description: feature patch to mark as read mails moved to trash
+# Author: Ricardo Mones <mones@debian.org>
+# Last-Update: 2017-04-15
+diff --git a/src/summaryview.c b/src/summaryview.c
+index 47e1214..6d731ea 100644
+--- a/src/summaryview.c
++++ b/src/summaryview.c
+@@ -4655,6 +4655,10 @@ static void summary_copy_row_to(SummaryView *summaryview, GtkCMCTreeNode *row,
+ 		summary_msginfo_unset_flags(msginfo, MSG_DELETED, MSG_MOVE);
+ 	}
+ 	if (!prefs_common.immediate_exec) {
++		if (to_folder->stype == F_TRASH
++			&& MSG_IS_UNREAD(msginfo->flags)) {
++			summary_mark_row_as_read(summaryview, row);
++		}
+ 		summary_set_row_marks(summaryview, row);
+ 	}
+ 

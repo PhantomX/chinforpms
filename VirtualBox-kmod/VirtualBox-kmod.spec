@@ -28,7 +28,7 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.1.24
+Version:        5.1.26
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:        100.chinfo%{?dist}
 
@@ -108,6 +108,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Jul 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.26-100.chinfo
+- 5.1.26
+
 * Tue Jul 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.24-100.chinfo
 - 5.1.24
 - Sync with RPMfusion

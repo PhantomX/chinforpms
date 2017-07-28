@@ -1,0 +1,16 @@
+# Description: set command instead project as name in manpage
+# Author: Ricardo Mones <mones@debian.org>
+# Last-Updated: 2017-04-15
+diff --git a/doc/man/claws-mail.1 b/doc/man/claws-mail.1
+index ae2f530..a9135ee 100644
+--- a/doc/man/claws-mail.1
++++ b/doc/man/claws-mail.1
+@@ -2,7 +2,7 @@
+ 
+ .SH "NAME"
+ .LP
+-Claws Mail \- a GTK+ based fast email and news client
++claws\-mail \- a GTK+ based fast email and news client
+ 
+ .SH "SYNOPSIS"
+ .B claws\-mail

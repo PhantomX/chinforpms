@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -549,6 +549,9 @@ Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
 Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
 
+# Because the python 3 transition is fail
+Patch124: force-python3-in-kvm_stat.patch
+
 # 200 - x86 / secureboot
 
 Patch201: efi-lockdown.patch
@@ -586,23 +589,13 @@ Patch305: ARM-tegra-usb-no-reset.patch
 
 Patch306: AllWinner-net-emac.patch
 
-# http://www.spinics.net/lists/devicetree/msg163238.html
-Patch308: bcm2837-initial-support.patch
-
-# http://www.spinics.net/lists/dri-devel/msg132235.html
-Patch309: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
-
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch311: arm-imx6-hummingboard2.patch
+Patch307: arm-imx6-hummingboard2.patch
 
-Patch312: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch308: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
-Patch313: bcm2835-clk-audio-jitter-issues.patch
-Patch314: bcm2835-fix-potential-null-pointer-dereferences.patch
-
-# https://patchwork.freedesktop.org/patch/163300/
-# https://patchwork.freedesktop.org/patch/161978/
-Patch315: bcm283x-vc4-fix-vblank.patch
+# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
+Patch309: qcom-display-iommu.patch
 
 # https://patchwork.kernel.org/patch/9815555/
 # https://patchwork.kernel.org/patch/9815651/
@@ -610,7 +603,37 @@ Patch315: bcm283x-vc4-fix-vblank.patch
 # https://patchwork.kernel.org/patch/9820417/
 # https://patchwork.kernel.org/patch/9821151/
 # https://patchwork.kernel.org/patch/9821157/
-Patch316: qcom-msm89xx-fixes.patch
+Patch310: qcom-msm89xx-fixes.patch
+
+Patch311: arm-thermal-fixes.patch
+
+# https://patchwork.kernel.org/patch/9831825/
+# https://patchwork.kernel.org/patch/9833721/
+Patch312: arm-tegra-fix-gpu-iommu.patch
+
+# https://patchwork.freedesktop.org/patch/163300/
+# https://patchwork.freedesktop.org/patch/161978/
+Patch320: bcm283x-vc4-fix-vblank.patch
+
+# https://patchwork.kernel.org/patch/9802555/
+Patch321: bcm2835-pinctrl-Avoid-warning-from-__irq_do_set_handler.patch
+
+Patch322: bcm2835-clk-audio-jitter-issues.patch
+Patch323: bcm2835-fix-potential-null-pointer-dereferences.patch
+
+# http://www.spinics.net/lists/dri-devel/msg132235.html
+Patch324: bcm283x-drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+
+Patch325: bcm2837-sdhost-fixes.patch
+Patch326: bcm283x-Define-UART-pinmuxing-on-board-level.patch
+Patch327: bt-bcm.patch
+
+# http://www.spinics.net/lists/devicetree/msg163238.html
+Patch329: bcm2837-arm32-support.patch
+
+# This breaks RPi booting with a LPAE kernel, we don't support the DSI ports currently
+# Revert it while I engage upstream to work out what's going on
+Patch330: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -642,6 +665,16 @@ Patch614: 0014-mmc-sdhci-acpi-Workaround-conflict-with-PCI-wifi-on-.patch
 Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
 # Small workaround patches for issues with a more comprehensive fix in -next
 Patch616: 0016-Input-silead-Do-not-try-to-directly-access-the-GPIO-.patch
+
+# CVE-2017-7542 rhbz 1473649 1473650
+Patch701: 0001-ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
+
+# rhbz 1431375
+Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
+Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+
+# rhbz 1471302
+Patch705: bz1471302.patch
 
 ### Extra
 
@@ -1898,10 +1931,10 @@ rm -rf %{buildroot}%{_docdir}/perf-tip
 mkdir -p %{buildroot}/%{_mandir}/man1
 pushd %{buildroot}/%{_mandir}/man1
 tar -xf %{SOURCE10}
-popd
 %if !%{with_tools}
     rm -f kvm_stat.1
 %endif
+popd
 %endif
 
 %if %{with_tools}
@@ -2240,6 +2273,10 @@ fi
 #
 #
 %changelog
+* Thu Jul 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.4-500.chinfo
+- 4.12.4
+- f26 sync
+
 * Fri Jul 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.3-500.chinfo
 - 4.12.3
 

@@ -1,0 +1,12 @@
+diff -Nur claws-mail-3.14.1-orig/src/common/ssl.c claws-mail-3.14.1/src/common/ssl.c
+--- claws-mail-3.14.1-orig/src/common/ssl.c	2016-11-06 13:01:28.000000000 +0100
++++ claws-mail-3.14.1/src/common/ssl.c	2016-11-25 12:37:32.908929636 +0100
+@@ -408,7 +408,7 @@
+ 			    sockinfo->gnutls_priority, r);
+ 	}
+ 	else {
+-		gnutls_priority_set_direct(session, DEFAULT_GNUTLS_PRIORITY, NULL);
++		gnutls_set_default_priority(session);
+ 	}
+ 
+ 	gnutls_record_disable_padding(session);

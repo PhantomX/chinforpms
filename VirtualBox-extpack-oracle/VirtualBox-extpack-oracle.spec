@@ -4,7 +4,7 @@
 %global pkgname Oracle_VM_VirtualBox_Extension_Pack
 
 Name:           VirtualBox-extpack-oracle
-Version:        5.1.24
+Version:        5.1.26
 Release:        1%{?dist}
 Summary:        PUEL extensions for VirtualBox)
 
@@ -38,6 +38,9 @@ cp -rp * \
 
 
 %changelog
+* Thu Jul 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.26-1
+- 5.1.26
+
 * Tue Jul 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.24-1
 - 5.1.24
 
