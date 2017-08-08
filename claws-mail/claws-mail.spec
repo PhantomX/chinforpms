@@ -1,8 +1,11 @@
 %global pluginapi 3.15.0.0
 
+# Patch20
+%global _default_patch_fuzz 2
+
 Name:           claws-mail
 Version:        3.15.0
-Release:        101.chinfo%{?dist}
+Release:        103.chinfo%{?dist}
 Summary:        Email client and news reader based on GTK+
 Group:          Applications/Internet
 License:        GPLv3+
@@ -16,12 +19,16 @@ Patch2:         %{name}-%{version}-fix-alertpanel.patch
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
 
+# dillo
+Patch20:        https://git.archlinux.org/svntogit/packages.git/plain/trunk/dillo-plugin.diff?h=packages/%{name}#/dillo-plugin.diff
+
 # Useful patches from Debian
 Patch50:        11mark_trashed_as_read.patch
 Patch51:        12fix_manpage_header.patch
 
 # added 20151220 / plugin has been deleted in 3.13.0
 Obsoletes:      %{name}-plugins-geolocation < %{version}
+
 
 BuildRequires:  flex, bison
 BuildRequires:  glib2-devel >= 2.6.2
@@ -69,6 +76,9 @@ BuildRequires:  libgnome-devel
 BuildRequires:  libical-devel
 BuildRequires:  librsvg2-devel
 
+# Patch20
+BuildRequires:  autoconf
+BuildRequires:  automake
 
 # provide plugin api version (see /usr/include/claws-mail/common/version.h)
 Provides:       claws-mail(plugin-api)%{?_isa} = %pluginapi
@@ -100,6 +110,7 @@ Requires: %{name}-plugins-bogofilter
 Requires: %{name}-plugins-bsfilter
 %endif
 Requires: %{name}-plugins-clamd
+Requires: %{name}-plugins-dillo
 Requires: %{name}-plugins-fancy
 Requires: %{name}-plugins-fetchinfo
 Requires: %{name}-plugins-gdata
@@ -204,6 +215,16 @@ received from an IMAP, LOCAL or POP account.
 When a message attachment is found to contain a virus it can be
 deleted or saved in a specially designated folder.
 Options can be found in /Configuration/Preferences/Plugins/Clam AntiVirus.
+
+%package plugins-dillo
+Summary:        Display HTML emails in Claws Mail
+Group:          Applications/Internet
+Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       dillo
+
+%description plugins-dillo
+This plugin renders HTML email via the Dillo Web Browser.
+
 
 %package plugins-fancy
 Summary:        Display HTML emails in Claws Mail
@@ -398,6 +419,8 @@ exporting of your meetings or all your calendars.
 %patch11 -p1 -b.syscrypto
 %endif
 
+%patch20 -p1 -b.dilloplugin
+
 %patch50 -p1 -b.trash
 %patch51 -p1 -b.manheader
 
@@ -429,6 +452,8 @@ Firefox and Claws Mail
 EOF
 %endif
 
+# Patch20
+autoreconf -ivf
 
 %build
 %configure --disable-dependency-tracking \
@@ -554,6 +579,10 @@ fi
 %{_libdir}/claws-mail/plugins/clamd*
 #{_datadir}/appdata/claws-mail-clamd.metainfo.xml
 
+%files plugins-dillo
+%{_libdir}/claws-mail/plugins/dillo*
+#{_datadir}/appdata/claws-mail-dillo.metainfo.xml
+
 %files plugins-fancy
 %{_libdir}/claws-mail/plugins/fancy*
 #{_datadir}/appdata/claws-mail-fancy.metainfo.xml
@@ -640,6 +669,14 @@ fi
 
 
 %changelog
+* Sat Jul 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.0-103.chinfo
+- Reenable fancy, dillo plugin not good yet
+
+* Sat Jul 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.0-102.chinfo
+- Disable fancy again
+- Upstream patch to add dillo plugin
+- BR: autoconf, automake and fuzz 2, for dillo patch
+
 * Thu Jul 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.0-101.chinfo
 - SVG support with librsvg2
 

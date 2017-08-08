@@ -1,0 +1,41 @@
+From 4bcc0c3835cbcc9f9c175f158e2ee502506b6e02 Mon Sep 17 00:00:00 2001
+From: Fedora Kernel Team <kernel-team@fedoraproject.org>
+Date: Thu, 3 Aug 2017 13:53:11 -0500
+Subject: [PATCH] Back out qxl atomic delay
+
+---
+ drivers/gpu/drm/qxl/qxl_display.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/qxl/qxl_display.c b/drivers/gpu/drm/qxl/qxl_display.c
+index 4a340ef..058340a 100644
+--- a/drivers/gpu/drm/qxl/qxl_display.c
++++ b/drivers/gpu/drm/qxl/qxl_display.c
+@@ -575,6 +575,8 @@ static void qxl_cursor_atomic_update(struct drm_plane *plane,
+ 	if (ret)
+ 		return;
+
++	cmd = (struct qxl_cursor_cmd *) qxl_release_map(qdev, release);
++
+ 	if (fb != old_state->fb) {
+ 		obj = to_qxl_framebuffer(fb)->obj;
+ 		user_bo = gem_to_qxl_bo(obj);
+@@ -612,7 +614,6 @@ static void qxl_cursor_atomic_update(struct drm_plane *plane,
+ 		qxl_bo_kunmap(cursor_bo);
+ 		qxl_bo_kunmap(user_bo);
+
+-		cmd = (struct qxl_cursor_cmd *) qxl_release_map(qdev, release);
+ 		cmd->u.set.visible = 1;
+ 		cmd->u.set.shape = qxl_bo_physical_address(qdev,
+ 							   cursor_bo, 0);
+@@ -623,7 +624,6 @@ static void qxl_cursor_atomic_update(struct drm_plane *plane,
+ 		if (ret)
+ 			goto out_free_release;
+
+-		cmd = (struct qxl_cursor_cmd *) qxl_release_map(qdev, release);
+ 		cmd->type = QXL_CURSOR_MOVE;
+ 	}
+
+-- 
+2.13.3
+

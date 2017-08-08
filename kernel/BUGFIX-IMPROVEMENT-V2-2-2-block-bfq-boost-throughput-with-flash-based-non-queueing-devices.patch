@@ -1,0 +1,94 @@
+From patchwork Fri Aug  4 05:35:11 2017
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [BUGFIX/IMPROVEMENT, V2, 2/2] block,
+ bfq: boost throughput with flash-based non-queueing devices
+From: Paolo Valente <paolo.valente@linaro.org>
+X-Patchwork-Id: 9880513
+Message-Id: <20170804053511.2389-3-paolo.valente@linaro.org>
+To: Jens Axboe <axboe@kernel.dk>
+Cc: linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+ ulf.hansson@linaro.org, broonie@kernel.org, lucmiccio@gmail.com,
+ Paolo Valente <paolo.valente@linaro.org>
+Date: Fri,  4 Aug 2017 07:35:11 +0200
+
+When a queue associated with a process remains empty, there are cases
+where throughput gets boosted if the device is idled to await the
+arrival of a new I/O request for that queue. Currently, BFQ assumes
+that one of these cases is when the device has no internal queueing
+(regardless of the properties of the I/O being served). Unfortunately,
+this condition has proved to be too general. So, this commit refines it
+as "the device has no internal queueing and is rotational".
+
+This refinement provides a significant throughput boost with random
+I/O, on flash-based storage without internal queueing. For example, on
+a HiKey board, throughput increases by up to 125%, growing, e.g., from
+6.9MB/s to 15.6MB/s with two or three random readers in parallel.
+
+Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
+Signed-off-by: Luca Miccio <lucmiccio@gmail.com>
+---
+ block/bfq-iosched.c | 29 +++++++++++++++++++----------
+ 1 file changed, 19 insertions(+), 10 deletions(-)
+
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index ccdc9e6..509f399 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -3114,7 +3114,10 @@ static bool bfq_may_expire_for_budg_timeout(struct bfq_queue *bfqq)
+ static bool bfq_bfqq_may_idle(struct bfq_queue *bfqq)
+ {
+ 	struct bfq_data *bfqd = bfqq->bfqd;
+-	bool idling_boosts_thr, idling_boosts_thr_without_issues,
++	bool rot_without_queueing =
++		!blk_queue_nonrot(bfqd->queue) && !bfqd->hw_tag,
++		bfqq_sequential_and_IO_bound,
++		idling_boosts_thr, idling_boosts_thr_without_issues,
+ 		idling_needed_for_service_guarantees,
+ 		asymmetric_scenario;
+ 
+@@ -3133,28 +3136,34 @@ static bool bfq_bfqq_may_idle(struct bfq_queue *bfqq)
+ 	    bfq_class_idle(bfqq))
+ 		return false;
+ 
++	bfqq_sequential_and_IO_bound = !BFQQ_SEEKY(bfqq) &&
++		bfq_bfqq_IO_bound(bfqq) && bfq_bfqq_has_short_ttime(bfqq);
++
+ 	/*
+ 	 * The next variable takes into account the cases where idling
+ 	 * boosts the throughput.
+ 	 *
+ 	 * The value of the variable is computed considering, first, that
+ 	 * idling is virtually always beneficial for the throughput if:
+-	 * (a) the device is not NCQ-capable, or
+-	 * (b) regardless of the presence of NCQ, the device is rotational
+-	 *     and the request pattern for bfqq is I/O-bound and sequential.
++	 * (a) the device is not NCQ-capable and rotational, or
++	 * (b) regardless of the presence of NCQ, the device is rotational and
++	 *     the request pattern for bfqq is I/O-bound and sequential, or
++	 * (c) regardless of whether it is rotational, the device is
++	 *     not NCQ-capable and the request pattern for bfqq is
++	 *     I/O-bound and sequential.
+ 	 *
+ 	 * Secondly, and in contrast to the above item (b), idling an
+ 	 * NCQ-capable flash-based device would not boost the
+ 	 * throughput even with sequential I/O; rather it would lower
+ 	 * the throughput in proportion to how fast the device
+ 	 * is. Accordingly, the next variable is true if any of the
+-	 * above conditions (a) and (b) is true, and, in particular,
+-	 * happens to be false if bfqd is an NCQ-capable flash-based
+-	 * device.
++	 * above conditions (a), (b) or (c) is true, and, in
++	 * particular, happens to be false if bfqd is an NCQ-capable
++	 * flash-based device.
+ 	 */
+-	idling_boosts_thr = !bfqd->hw_tag ||
+-		(!blk_queue_nonrot(bfqd->queue) && bfq_bfqq_IO_bound(bfqq) &&
+-		 bfq_bfqq_has_short_ttime(bfqq));
++	idling_boosts_thr = rot_without_queueing ||
++		((!blk_queue_nonrot(bfqd->queue) || !bfqd->hw_tag) &&
++		 bfqq_sequential_and_IO_bound);
+ 
+ 	/*
+ 	 * The value of the next variable,

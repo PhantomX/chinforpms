@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -676,11 +676,13 @@ Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rhbz 1471302
 Patch705: bz1471302.patch
 
-### Extra
+# rhbz 1476467
+Patch706: Fix-for-module-sig-verification.patch
 
-# Add additional cpu gcc optimization support
-# https://github.com/graysky2/kernel_gcc_patch (20160728)
-Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v3.15+.patch
+# rhbz 1462381
+Patch707: Back-out-qxl-atomic-delay.patch
+
+### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 # Patches to export btrfs anonymous devices (VFS portion)
@@ -697,6 +699,34 @@ Patch1019: connector-read-mostly.patch
 Patch1020: 0001-fs-fcntl-f_setown-allow-returning-error.patch
 Patch1021: 0002-fs-fcntl-f_setown-avoid-undefined-behaviour.patch
 Patch1022: e1000e-Don-t-return-uninitialized-stats.patch
+
+
+# https://patchwork.kernel.org/patch/9795803/
+Patch3000: BUGFIX-V2-block-bfq-update-wr_busy_queues-if-needed-on-a-queue-split.patch
+# https://patchwork.kernel.org/patch/9822149
+Patch3001: BUGFIX-block-bfq-don-t-change-ioprio-class-for-a-bfq_queue-on-a-service-tree.patch
+# https://patchwork.kernel.org/patch/9792209
+Patch3002: 07-10-bfq-iosched-fix-NULL-ioc-check-in-bfq_get_rq_private.patch
+# https://patchwork.kernel.org/patch/9809091/
+# https://patchwork.kernel.org/patch/9809081/
+# https://patchwork.kernel.org/patch/9834761/
+Patch3003: block-bfq-dispatch-request-to-prevent-queue-stalling-after-the-request-completion.patch
+# https://patchwork.kernel.org/patch/9869875
+Patch3004: BUGFIX-block-bfq-consider-also-in_service_entity-to-state-whether-an-entity-is-active.patch
+# https://patchwork.kernel.org/patch/9869323
+Patch3005: BUGFIX-block-bfq-reset-in_service_entity-if-it-becomes-idle.patch
+# https://patchwork.kernel.org/patch/9809087/
+Patch3006: 1-3-blk-mq-include-all-present-CPUs-in-the-default-queue-mapping.patch
+Patch3007: 2-3-blk-mq-create-hctx-for-each-present-CPU.patch
+Patch3008: 3-3-nvme-allocate-queues-for-all-possible-CPUs.patch
+# https://patchwork.kernel.org/patch/9880515
+Patch3009: BUGFIX-IMPROVEMENT-V2-1-2-block-bfq-refactor-device-idling-logic.patch
+# https://patchwork.kernel.org/patch/9880513
+Patch3010: BUGFIX-IMPROVEMENT-V2-2-2-block-bfq-boost-throughput-with-flash-based-non-queueing-devices.patch
+
+# Add additional cpu gcc optimization support
+# https://github.com/graysky2/kernel_gcc_patch (20160728)
+Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v3.15+.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2273,6 +2303,16 @@ fi
 #
 #
 %changelog
+* Mon Aug 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.5-500.chinfo
+- 4.12.5
+- f26 sync
+
+* Mon Jul 31 2017 Phantom X <megaphantomx at bol dot com dot br>
+- Some Patchwork works
+
+* Sat Jul 29 2017 Phantom X <megaphantomx at bol dot com dot br>
+- BFQ fixes
+
 * Thu Jul 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.4-500.chinfo
 - 4.12.4
 - f26 sync

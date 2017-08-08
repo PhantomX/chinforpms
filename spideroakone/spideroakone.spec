@@ -19,12 +19,13 @@
 # Set to 1 to use system libs
 %global curl 1
 %global dbusmenuqt 1
+%global ffi 1
 %global python 0
 %global pillow 1
 %global pyqt 0
 
 Name:           spideroakone
-Version:        6.3.0
+Version:        6.3.1
 Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
@@ -35,7 +36,11 @@ Source0:        https://spideroak.com/release/spideroak/rpm_%{larch}#/%{pkgname}
 
 ExclusiveArch:  %{ix86} x86_64
 
-BuildRequires:  binutils patchelf perl python2-rpm-macros ImageMagick
+BuildRequires:  binutils
+BuildRequires:  patchelf
+BuildRequires:  perl
+BuildRequires:  python2-rpm-macros
+BuildRequires:  ImageMagick
 BuildRequires:  desktop-file-utils
 %if 0%{?curl}
 BuildRequires:  libcurl%{?_isa}
@@ -45,6 +50,9 @@ Requires:       python-pycurl%{?_isa}
 %endif
 %if 0%{?dbusmenuqt}
 BuildRequires:  dbusmenu-qt%{?_isa}
+%endif
+%if 0%{?ffi}
+BuildRequires:  libffi%{?_isa}
 %endif
 %if 0%{?python}
 BuildRequires:  python2%{?_isa}
@@ -142,6 +150,16 @@ missing(){
 %if 0%{?dbusmenuqt}
   ( cd %{buildroot}%{progdir}
     for file in libdbusmenu-qt*.so* ;do
+      SONAME=$(xtcsoname ${file})
+      missing %{_libdir}/${SONAME}
+      rm -fv ${file}
+    done
+  ) || exit $?
+%endif
+
+%if 0%{?ffi}
+  ( cd %{buildroot}%{progdir}
+    for file in libffi*.so* ;do
       SONAME=$(xtcsoname ${file})
       missing %{_libdir}/${SONAME}
       rm -fv ${file}
@@ -259,6 +277,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Sat Aug 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.3.1-1
+- 6.3.1
+- R: libffi
+
 * Tue Jun 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.3.0-1
 - 6.3.0
 
