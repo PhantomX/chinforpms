@@ -4,14 +4,14 @@
 %global rcrev 0
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.7.0
+%global winemono  4.7.1
 #global _default_patch_fuzz 2
 
 # build with compholio-patches, see:  http://www.compholio.com/wine-compholio/
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.13
+%global compholiover 2.14
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
@@ -38,7 +38,7 @@
 %endif
 
 Name:           wine
-Version:        2.13
+Version:        2.14
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1277,6 +1277,9 @@ fi
 %{_libdir}/wine/regsvcs.exe.so
 %{_libdir}/wine/regsvr32.exe.so
 %{_libdir}/wine/rpcss.exe.so
+%if 0%{?compholio}
+%{_libdir}/wine/runas.exe.so
+%endif
 %{_libdir}/wine/rundll32.exe.so
 %{_libdir}/wine/schtasks.exe.so
 %{_libdir}/wine/sdbinst.exe.so
@@ -1576,6 +1579,7 @@ fi
 %{_libdir}/wine/dpwsockx.dll.so
 %{_libdir}/wine/drmclien.dll.so
 %{_libdir}/wine/dsound.dll.so
+%{_libdir}/wine/dsquery.dll.so
 %{_libdir}/wine/dssenh.dll.so
 %{_libdir}/wine/dswave.dll.so
 %{_libdir}/wine/dwmapi.dll.so
@@ -1881,6 +1885,7 @@ fi
 %if 0%{?compholio}
 %{_libdir}/wine/uiautomationcore.dll.so
 %endif
+%{_libdir}/wine/uiribbon.dll.so
 %{_libdir}/wine/unicows.dll.so
 %{_libdir}/wine/unlodctr.exe.so
 %{_libdir}/wine/updspapi.dll.so
@@ -2307,6 +2312,9 @@ fi
 %endif
 
 %changelog
+* Tue Aug 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.14-100.chinfo
+- 2.14
+
 * Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.13-100.chinfo
 - 2.13
 - Disable laino patches
