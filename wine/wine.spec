@@ -15,7 +15,7 @@
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.13
+%global ninever 2.14
 %endif # 0%{?fedora}
 
 # laino patches, see: https://github.com/laino/wine-patches
@@ -39,7 +39,7 @@
 
 Name:           wine
 Version:        2.14
-Release:        100%{?rctag}.chinfo%{?dist}
+Release:        101%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -2312,6 +2312,9 @@ fi
 %endif
 
 %changelog
+* Thu Aug 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.14-101.chinfo
+- nine 2.14
+
 * Tue Aug 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.14-100.chinfo
 - 2.14
 

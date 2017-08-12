@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -666,9 +666,6 @@ Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
 # Small workaround patches for issues with a more comprehensive fix in -next
 Patch616: 0016-Input-silead-Do-not-try-to-directly-access-the-GPIO-.patch
 
-# CVE-2017-7542 rhbz 1473649 1473650
-Patch701: 0001-ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
-
 # rhbz 1431375
 Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
 Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
@@ -681,6 +678,12 @@ Patch706: Fix-for-module-sig-verification.patch
 
 # rhbz 1462381
 Patch707: Back-out-qxl-atomic-delay.patch
+
+# CVE-2017-1000111 rhbz 1479304 1480464
+Patch708: net-packet-fix-tp_reserve-race-in-packet_set_ring.patch
+
+# CVE-2017-1000112 rhbz 1479307 1480465
+Patch709: udp-consistently-apply-ufo-or-fragmentation.patch
 
 ### Extra
 
@@ -715,14 +718,10 @@ Patch3003: block-bfq-dispatch-request-to-prevent-queue-stalling-after-the-reques
 Patch3004: BUGFIX-block-bfq-consider-also-in_service_entity-to-state-whether-an-entity-is-active.patch
 # https://patchwork.kernel.org/patch/9869323
 Patch3005: BUGFIX-block-bfq-reset-in_service_entity-if-it-becomes-idle.patch
-# https://patchwork.kernel.org/patch/9809087/
-Patch3006: 1-3-blk-mq-include-all-present-CPUs-in-the-default-queue-mapping.patch
-Patch3007: 2-3-blk-mq-create-hctx-for-each-present-CPU.patch
-Patch3008: 3-3-nvme-allocate-queues-for-all-possible-CPUs.patch
 # https://patchwork.kernel.org/patch/9880515
-Patch3009: BUGFIX-IMPROVEMENT-V2-1-2-block-bfq-refactor-device-idling-logic.patch
+Patch3006: BUGFIX-IMPROVEMENT-V2-1-2-block-bfq-refactor-device-idling-logic.patch
 # https://patchwork.kernel.org/patch/9880513
-Patch3010: BUGFIX-IMPROVEMENT-V2-2-2-block-bfq-boost-throughput-with-flash-based-non-queueing-devices.patch
+Patch3007: BUGFIX-IMPROVEMENT-V2-2-2-block-bfq-boost-throughput-with-flash-based-non-queueing-devices.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20160728)
@@ -2303,6 +2302,10 @@ fi
 #
 #
 %changelog
+* Sat Aug 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.6-500.chinfo
+- 4.12.6
+- f26 sync
+
 * Mon Aug 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.5-500.chinfo
 - 4.12.5
 - f26 sync
