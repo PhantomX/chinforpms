@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -670,20 +670,11 @@ Patch616: 0016-Input-silead-Do-not-try-to-directly-access-the-GPIO-.patch
 Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
 Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# rhbz 1471302
-Patch705: bz1471302.patch
-
 # rhbz 1476467
 Patch706: Fix-for-module-sig-verification.patch
 
 # rhbz 1462381
 Patch707: Back-out-qxl-atomic-delay.patch
-
-# CVE-2017-1000111 rhbz 1479304 1480464
-Patch708: net-packet-fix-tp_reserve-race-in-packet_set_ring.patch
-
-# CVE-2017-1000112 rhbz 1479307 1480465
-Patch709: udp-consistently-apply-ufo-or-fragmentation.patch
 
 ### Extra
 
@@ -2302,6 +2293,9 @@ fi
 #
 #
 %changelog
+* Sun Aug 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.7-500.chinfo
+- 4.12.7
+
 * Sat Aug 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.6-500.chinfo
 - 4.12.6
 - f26 sync
