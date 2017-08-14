@@ -1,6 +1,7 @@
 // Chinforinfula Firefox settings
-// 20170627
+// 20170813
 
+pref("browser.bookmarks.showRecentlyBookmarked", false);
 pref("browser.search.suggest.enabled", false);
 pref("browser.urlbar.clickSelectsAll", false);
 pref("browser.urlbar.doubleClickSelectsAll", true);
