@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -675,6 +675,12 @@ Patch706: Fix-for-module-sig-verification.patch
 
 # rhbz 1462381
 Patch707: Back-out-qxl-atomic-delay.patch
+
+# CVE-2017-12134 rhbz 1477656 1481786
+Patch708: xsa229.patch
+
+# request for bug fix
+Patch709: iio-race-fix.patch
 
 ### Extra
 
@@ -2293,6 +2299,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.8-500.chinfo
+- 4.12.8
+
 * Sun Aug 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.7-500.chinfo
 - 4.12.7
 
