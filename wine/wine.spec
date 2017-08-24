@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.14
+%global compholiover 2.15
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
@@ -38,8 +38,8 @@
 %endif
 
 Name:           wine
-Version:        2.14
-Release:        101%{?rctag}.chinfo%{?dist}
+Version:        2.15
+Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1653,6 +1653,7 @@ fi
 %{_libdir}/wine/icinfo.exe.so
 %{_libdir}/wine/icmp.dll.so
 %{_libdir}/wine/ieframe.dll.so
+%{_libdir}/wine/ieproxy.dll.so
 %if 0%{?compholio}
 %{_libdir}/wine/iertutil.dll.so
 %endif
@@ -2312,6 +2313,9 @@ fi
 %endif
 
 %changelog
+* Wed Aug 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.15-100.chinfo
+- 2.15
+
 * Thu Aug 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.14-101.chinfo
 - nine 2.14
 

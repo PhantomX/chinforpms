@@ -18,6 +18,7 @@ release tags).
 ## Differences from Fedora and RPM Fusion
 
  * **aegisub** - No openal and portaudio support
+ * **axel** - Updated version, with SSL support
  * **belle-sip, linphone, ortp** - Updated version
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **gnome-colors-icon-theme** - Post script and cleanup

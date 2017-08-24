@@ -719,6 +719,8 @@ Patch3005: BUGFIX-block-bfq-reset-in_service_entity-if-it-becomes-idle.patch
 Patch3006: BUGFIX-IMPROVEMENT-V2-1-2-block-bfq-refactor-device-idling-logic.patch
 # https://patchwork.kernel.org/patch/9880513
 Patch3007: BUGFIX-IMPROVEMENT-V2-2-2-block-bfq-boost-throughput-with-flash-based-non-queueing-devices.patch
+# https://patchwork.kernel.org/patch/9909601
+Patch3008: block-bfq-fix-error-handle-in-bfq_init.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20160728)

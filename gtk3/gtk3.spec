@@ -21,7 +21,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 Name: gtk3
-Version: 3.22.18
+Version: 3.22.19
 Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -299,6 +299,7 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_mandir}/man1/gtk-launch.1*
 %{_datadir}/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml
+%{_datadir}/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gtk.Settings.Debug.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gtk.exampleapp.gschema.xml
 %if 0%{?with_broadway}
@@ -369,6 +370,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Wed Aug 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.19-100.chinfo
+- 3.22.19
+
 * Tue Aug 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.18-100.chinfo
 - 3.22.18
 
