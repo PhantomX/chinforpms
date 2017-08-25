@@ -63,6 +63,7 @@ Patch26:    VirtualBox-4.3.0-no-bundles.patch
 Patch27:    VirtualBox-gcc.patch
 # from Debian
 Patch28:    02-gsoap-build-fix.patch
+# from RPMFusion
 Patch35:    VirtualBox-5.0.22-guest_soname.patch
 # from Mageia
 Patch50:    VirtualBox-5.1.0-add-Mageia-support.patch
@@ -112,8 +113,11 @@ BuildRequires:  makeself
 
 # for 32bit on 64
 %ifarch x86_64
-BuildRequires:  libstdc++-static(x86-32) glibc(x86-32) glibc-devel(x86-32) libgcc(x86-32)
+BuildRequires:  libstdc++-static(x86-32) libgcc(x86-32)
 BuildRequires:  libstdc++-static(x86-64)
+BuildRequires:  glibc-devel(x86-32)
+# Quick fix for https://pagure.io/releng/issue/6958 and https://bugzilla.redhat.com/show_bug.cgi?id=1484849
+BuildRequires:  nss-softokn-freebl(x86-32)
 %else
 BuildRequires:  libstdc++-static
 %endif
@@ -320,9 +324,9 @@ kmk %{_smp_mflags}    \
     VBOX_PATH_APP_DOCS=%{_docdir}/%{name}-server \
     VBOX_WITH_TESTCASES= \
     VBOX_WITH_VALIDATIONKIT= \
+    VBOX_WITH_EXTPACK_VBOXDTRACE= \
     VBOX_WITH_VBOX_IMG=1 \
     VBOX_WITH_SYSFS_BY_DEFAULT=1 \
-    VBOX_WITH_VMSVGA3D=1 \
     VBOX_XCURSOR_LIBS="Xcursor Xext X11 GL"             \
     VBOX_USE_SYSTEM_XORG_HEADERS=1 \
 %if %{with docs}
@@ -807,6 +811,9 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br>
+- Sync with RPMfusion
+
 * Thu Jul 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.26-100.chinfo
 - 5.1.26
 

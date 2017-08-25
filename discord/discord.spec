@@ -10,7 +10,7 @@
 %endif
 
 Name:           discord
-Version:        0.0.1
+Version:        0.0.2
 Release:        1%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
@@ -109,6 +109,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.2-1
+- 0.0.2
+
 * Tue Feb 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.1-1
 - 0.0.1, not canary
 

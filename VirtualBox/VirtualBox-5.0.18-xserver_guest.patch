@@ -56,13 +56,13 @@ xf86_ansic.h doesn't exist anymore.
  	$(VBOX_PATH_X11_ROOT)/libXdamage-1.1 \
  	$(VBOX_PATH_X11_ROOT)/libXcomposite-0.4.0 \
 @@ -81,6 +82,7 @@ if1of ($(KBUILD_TARGET), linux solaris f
+ 	$(VBOX_PATH_X11_ROOT)/xproto-7.0.18 \
  	$(VBOX_MESA_INCS) \
  	$(PATH_ROOT)/src/VBox/Additions/x11/x11include/libdrm-2.4.13
-  VBoxOGL_DEFS     += VBOX_NO_NATIVEGL
 + endif
+  VBoxOGL_DEFS     += VBOX_NO_NATIVEGL
  endif
  
- ifdef VBoxOGL_DRI
 @@ -213,11 +215,15 @@ VBoxOGL_LIBS.win += \
  	$(PATH_STAGE_LIB)/additions/VBoxCrHgsmi$(VBOX_SUFF_LIB)
  
