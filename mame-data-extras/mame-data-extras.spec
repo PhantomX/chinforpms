@@ -248,7 +248,7 @@ done
 
 
 %changelog
-* Wed Sep 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.189-1
+* Thu Sep 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.189-1
 - 0.189
 - Fix installation without roms
 - Fix sample files

@@ -11,15 +11,15 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.15
+%global compholiover 2.16
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.14
+%global ninever 2.15
 %endif # 0%{?fedora}
 
 # laino patches, see: https://github.com/laino/wine-patches
-%global laino 0
+%global laino 1
 %global commit1 3ffdac0356ca3d64924e75851acc545efd259a05
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 laino-wine-patches
@@ -38,7 +38,7 @@
 %endif
 
 Name:           wine
-Version:        2.15
+Version:        2.16
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -175,7 +175,6 @@ BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  gsm-devel
 BuildRequires:  libv4l-devel
 BuildRequires:  fontpackages-devel
-BuildRequires:  ImageMagick-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  gettext-devel
 BuildRequires:  chrpath
@@ -750,10 +749,6 @@ sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
 patch -p1 -i nine/staging-helper.patch
 %endif # 0%{?nine}
 
-%if 0%{?laino}
-patch -p1 -R -i patches/ntdll-Heap_FreeLists/0001-ntdll-Improve-heap-allocation-performance-by-using-m.patch
-%endif # 0%{?laino}
-
 %else # 0%{?compholio}
 
 rm -rf patches/
@@ -770,11 +765,7 @@ patch -p1 -i nine/d3d9-helper.patch
 patch -p1 -i nine/wine-d3d9.patch
 
 %if 0%{?laino}
-patch -p1 -i laino/0001-ntdll-improve-heap-allocation-performance.patch
-patch -p1 -i laino/0002-ntdll-heap.c-align-everything-to-64-byte-to-reduce-f.patch
 patch -p1 -i laino/0003-wine-list.h-linked-list-cache-line-prefetching.patch
-patch -p1 -i laino/0004-ntdll-heap.c-freelist_balance-prefetch-next-entry-ca.patch
-patch -p1 -i laino/0006-Ensure-16-byte-alignment-of-data.patch
 %endif # 0%{?laino}
 
 autoreconf -ivf
@@ -1194,6 +1185,7 @@ fi
 %doc documentation/README.*
 %if 0%{?compholio}
 %{_bindir}/msidb
+%{_libdir}/wine/runas.exe.so
 %endif
 %{_bindir}/winedump
 %{_libdir}/wine/explorer.exe.so
@@ -1271,15 +1263,13 @@ fi
 %{_libdir}/wine/ntoskrnl.exe.so
 %{_libdir}/wine/oleview.exe.so
 %{_libdir}/wine/ping.exe.so
+%{_libdir}/wine/powershell.exe.so
 %{_libdir}/wine/reg.exe.so
 %{_libdir}/wine/regasm.exe.so
 %{_libdir}/wine/regedit.exe.so
 %{_libdir}/wine/regsvcs.exe.so
 %{_libdir}/wine/regsvr32.exe.so
 %{_libdir}/wine/rpcss.exe.so
-%if 0%{?compholio}
-%{_libdir}/wine/runas.exe.so
-%endif
 %{_libdir}/wine/rundll32.exe.so
 %{_libdir}/wine/schtasks.exe.so
 %{_libdir}/wine/sdbinst.exe.so
@@ -1376,8 +1366,8 @@ fi
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-2.dll.so
 %{_libdir}/wine/api-ms-win-core-profile-l1-1-0.dll.so
-%{_libdir}/wine/api-ms-win-core-psapi-ansi-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-psapi-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-psapi-ansi-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-psapi-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-realtime-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-registry-l1-1-0.dll.so
@@ -1445,6 +1435,7 @@ fi
 %{_libdir}/wine/api-ms-win-dx-d3dkmt-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-eventing-consumer-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-eventing-controller-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-eventing-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-eventing-provider-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-eventlog-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-mm-misc-l1-1-1.dll.so
@@ -1653,10 +1644,10 @@ fi
 %{_libdir}/wine/icinfo.exe.so
 %{_libdir}/wine/icmp.dll.so
 %{_libdir}/wine/ieframe.dll.so
-%{_libdir}/wine/ieproxy.dll.so
 %if 0%{?compholio}
 %{_libdir}/wine/iertutil.dll.so
 %endif
+%{_libdir}/wine/ieproxy.dll.so
 %{_libdir}/wine/imaadp32.acm.so
 %{_libdir}/wine/imagehlp.dll.so
 %{_libdir}/wine/imm32.dll.so
@@ -1809,7 +1800,6 @@ fi
 %{_libdir}/wine/pdh.dll.so
 %{_libdir}/wine/photometadatahandler.dll.so
 %{_libdir}/wine/pidgen.dll.so
-%{_libdir}/wine/powershell.exe.so
 %{_libdir}/wine/powrprof.dll.so
 %{_libdir}/wine/presentationfontcache.exe.so
 %{_libdir}/wine/printui.dll.so
@@ -1959,6 +1949,7 @@ fi
 %{_libdir}/wine/wintrust.dll.so
 %{_libdir}/wine/winusb.dll.so
 %{_libdir}/wine/wlanapi.dll.so
+%{_libdir}/wine/wmphoto.dll.so
 %{_libdir}/wine/wnaspi32.dll.so
 %{_libdir}/wine/wpc.dll.so
 %{_libdir}/wine/wpcap.dll.so
@@ -2313,6 +2304,9 @@ fi
 %endif
 
 %changelog
+* Thu Sep 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.16-100.chinfo
+- 2.16
+
 * Wed Aug 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.15-100.chinfo
 - 2.15
 
