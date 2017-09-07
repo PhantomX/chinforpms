@@ -2,15 +2,16 @@
 %global __strip /bin/true
 
 %global cheatver 0187
-%global historyver 188
-%global infover 0188
+%global historyver 189
+%global infover 0189
 
 # Build non redistributable package with free roms
 %global with_roms  %{?_with_roms:     1} %{?!_with_roms:     0}
 %global romlink http://www.mamedev.org/roms
+%global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.188
+Version:        0.189
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -24,16 +25,13 @@ Source1:       http://www.arcade-history.com/dats/history%{historyver}.7z
 # http://mameinfo.mameworld.info/
 Source2:       http://www.mameworld.info/mameinfo/download/Mameinfo%{infover}.zip
 
-# Samples from http://www.mame.net/downsamples.html
-Source10:       sdlmame-samples.tar
-
 # http://www.mameworld.net/mrdo/mame_art
-Source20:       scanlines_apertures.zip
+Source10:       scanlines_apertures.zip
 #http://www.mameworld.net/mrdo/mame_artwork_supp.html
-Source21:       effect_files.zip
+Source11:       effect_files.zip
 
 # Icons: Mamu icons from http://icons.mameworld.info/
-Source30:       http://icons.mameworld.info/icons.zip/icons.zip
+Source20:       http://icons.mameworld.info/icons.zip/icons.zip
 
 %if %{with_roms}
 # Distributable ROM images (non-commercial use)
@@ -61,6 +59,74 @@ Source120:      %{romlink}/victory/victory.zip
 %global romfiles %{SOURCE101} %{SOURCE102} %{SOURCE103} %{SOURCE104} %{SOURCE105} %{SOURCE106} %{SOURCE107} %{SOURCE108} %{SOURCE109} %{SOURCE110} %{SOURCE111} %{SOURCE112} %{SOURCE113} %{SOURCE114} %{SOURCE115} %{SOURCE116} %{SOURCE117} %{SOURCE118} %{SOURCE119} %{SOURCE120}
 %endif
 
+
+# Samples from http://samples.mameworld.info/
+Source200:      %{samplelink}/alphamc07.zip
+Source201:      %{samplelink}/aristmk4.zip
+Source202:      %{samplelink}/armora.zip
+Source203:      %{samplelink}/astrob.zip
+Source204:      %{samplelink}/astrof.zip
+Source205:      %{samplelink}/barrier.zip
+Source206:      %{samplelink}/battles.zip
+Source207:      %{samplelink}/blockade.zip
+Source208:      %{samplelink}/buckrog.zip
+Source209:      %{samplelink}/carnival.zip
+Source210:      %{samplelink}/circus.zip
+Source211:      %{samplelink}/congo.zip
+Source212:      %{samplelink}/cosmica.zip
+Source213:      %{samplelink}/cosmicg.zip
+Source214:      %{samplelink}/dai3wksi.zip
+Source215:      %{samplelink}/depthch.zip
+Source216:      %{samplelink}/elim2.zip
+Source217:      %{samplelink}/fantasy.zip
+Source218:      %{samplelink}/frogs.zip
+Source219:      %{samplelink}/gaplus.zip
+Source220:      %{samplelink}/gorf.zip
+Source221:      %{samplelink}/gorf_older2.zip
+Source222:      %{samplelink}/gridlee.zip
+Source223:      %{samplelink}/invaders.zip
+Source224:      %{samplelink}/invinco.zip
+Source225:      %{samplelink}/journey.zip
+Source226:      %{samplelink}/lrescue.zip
+Source227:      %{samplelink}/monsterb.zip
+Source228:      %{samplelink}/natodef.zip
+Source229:      %{samplelink}/panic.zip
+Source230:      %{samplelink}/pulsar.zip
+Source231:      %{samplelink}/qbert.zip
+Source232:      %{samplelink}/rallyx.zip
+Source233:      %{samplelink}/reactor.zip
+Source234:      %{samplelink}/ripoff.zip
+Source235:      %{samplelink}/safarir.zip
+Source236:      %{samplelink}/sasuke.zip
+Source237:      %{samplelink}/seawolf.zip
+#Source238:      %{samplelink}/sharkatt_(full_size).zip
+Source239:      %{samplelink}/sharkatt.zip
+Source240:      %{samplelink}/solarq.zip
+Source241:      %{samplelink}/spacefb.zip
+Source242:      %{samplelink}/spaceod.zip
+Source243:      %{samplelink}/spacfury.zip
+Source244:      %{samplelink}/spacewar.zip
+Source245:      %{samplelink}/speedfrk.zip
+Source246:      %{samplelink}/starcas.zip
+Source247:      %{samplelink}/starcrus.zip
+Source248:      %{samplelink}/starhawk.zip
+Source249:      %{samplelink}/subroc3d.zip
+Source250:      %{samplelink}/sundance.zip
+Source251:      %{samplelink}/tailg.zip
+Source252:      %{samplelink}/tankbatt.zip
+Source253:      %{samplelink}/targ.zip
+Source254:      %{samplelink}/thehand.zip
+Source255:      %{samplelink}/thief.zip
+Source256:      %{samplelink}/triplhnt.zip
+Source257:      %{samplelink}/turbo.zip
+Source258:      %{samplelink}/vanguard.zip
+Source259:      %{samplelink}/warrior.zip
+Source260:      %{samplelink}/wotw.zip
+Source261:      %{samplelink}/wow.zip
+Source262:      %{samplelink}/zaxxon.zip
+Source263:      %{samplelink}/zektor.zip
+%global samplefiles %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249} %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263}
+
 BuildArch: noarch
 
 BuildRequires:  findutils
@@ -86,16 +152,6 @@ Requires:       %{name}
 
 %if %{with_roms}
   cp %{SOURCE100} .
-for file in %{romfiles} ; do
-  basefile="$(basename ${file} .zip)"
-  if [ "${basefile}" == "alienar" ] ; then
-    unzip -qa ${file} Aareadme.txt -d .
-    mv Aareadme.txt README.${basefile}
-  elif [ "${basefile}" = "gridlee" ] || [ "${basefile}" = "robby" ]  ; then
-    unzip -qa ${file} readme.txt -d .
-    mv readme.txt README.${basefile}
-  fi
-done
 %endif
 
 # extract DAT files
@@ -106,11 +162,11 @@ unzip -qa %{SOURCE2} -d .
 mv docs mameinfo
 
 mkdir effects
-unzip %{SOURCE20} -d effects/
-unzip %{SOURCE21} -d effects/
+unzip %{SOURCE10} -d effects/
+unzip %{SOURCE11} -d effects/
 
 mkdir -p icons/png
-unzip %{SOURCE30} -d icons
+unzip %{SOURCE20} -d icons
 
 # fix permissions and line endings
 chmod -R u+w,go+r-w,a-s .
@@ -132,6 +188,8 @@ popd
 
 %install
 
+mkdir -p %{buildroot}%{_datadir}/mame
+
 %if %{with_roms}
 # Install ROMs
 mkdir -p %{buildroot}%{_datadir}/mame/roms
@@ -149,8 +207,8 @@ install -pm0644 cheat.7z %{buildroot}%{_datadir}/mame/cheat/
 
 # Install Samples
 mkdir -p %{buildroot}%{_datadir}/mame/samples
-tar --extract --directory %{buildroot}%{_datadir}/mame/samples/ \
-  --file %{SOURCE10}
+install -pm0644 %{samplefiles} \
+  %{buildroot}%{_datadir}/mame/samples/
 
 # Install Artwork
 mkdir -p %{buildroot}%{_datadir}/mame/effects
@@ -168,7 +226,7 @@ done
 
 
 %files
-%doc cheat.txt mameinfo
+%doc cheat.txt mameinfo README.icons
 %{_datadir}/mame/*.dat
 %dir %{_datadir}/mame/cab
 %{_datadir}/mame/cab/*
@@ -183,13 +241,18 @@ done
 
 
 %if %{with_roms}
+%doc README.roms
 %files roms
-%doc README.alienar README.gridlee README.robby README.icons
 %{_datadir}/mame/roms/*.zip
 %endif
 
 
 %changelog
+* Wed Sep 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.189-1
+- 0.189
+- Fix installation without roms
+- Fix sample files
+
 * Sun Aug 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.188-1
 - 0.188
 

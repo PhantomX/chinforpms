@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -549,9 +549,6 @@ Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
 Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
 
-# Because the python 3 transition is fail
-Patch124: force-python3-in-kvm_stat.patch
-
 # 200 - x86 / secureboot
 
 Patch201: efi-lockdown.patch
@@ -673,11 +670,26 @@ Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rhbz 1476467
 Patch706: Fix-for-module-sig-verification.patch
 
-# rhbz 1462381
-Patch707: Back-out-qxl-atomic-delay.patch
+# rhbz 1485086
+Patch710: pci-mark-amd-stoney-gpu-ats-as-broken.patch
 
-# request for bug fix
-Patch709: iio-race-fix.patch
+# rhbz 1480829
+Patch711: rt2800-fix-TX_PIN_CFG-setting-for-non-MT7620-chips.patch
+
+# CVE-2017-7558 rhbz 1480266 1484810
+Patch712: net-sctp-Avoid-out-of-bounds-reads-from-address-storage.patch
+
+# CVE-2017-13693 rhbz 1485346 1485356
+Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
+
+# CVE-2017-13694 rhbz 1485348
+Patch714: V4-acpi-acpica-fix-acpi-parse-and-parseext-cache-leaks.patch 
+
+# CVE-2017-13695 rhbz 1485349
+Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
+
+# rhbz 1484587
+Patch716: md-raid-reset-bio-allocated-from-mempool.patch
 
 ### Extra
 
@@ -718,6 +730,12 @@ Patch3006: BUGFIX-IMPROVEMENT-V2-1-2-block-bfq-refactor-device-idling-logic.patc
 Patch3007: BUGFIX-IMPROVEMENT-V2-2-2-block-bfq-boost-throughput-with-flash-based-non-queueing-devices.patch
 # https://patchwork.kernel.org/patch/9909601
 Patch3008: block-bfq-fix-error-handle-in-bfq_init.patch
+# https://patchwork.kernel.org/patch/9930629/
+Patch3009: 1-5-bfq-Annotate-fall-through-in-a-switch-statement.patch
+# https://patchwork.kernel.org/patch/9930631/
+Patch3010: 2-5-bfq-Declare-local-functions-static.patch
+# https://patchwork.kernel.org/patch/9930635/
+Patch3011: 5-5-bfq-Use-icq_to_bic-consistently.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20160728)
@@ -2298,6 +2316,10 @@ fi
 #
 #
 %changelog
+* Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.10-500.chinfo
+- 4.12.10
+- f26 sync
+
 * Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.9-500.chinfo
 - 4.12.9
 
