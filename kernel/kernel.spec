@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 12
+%define base_sublevel 13
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -161,6 +161,8 @@ Summary: The Linux kernel
 %define KVERREL %{version}-%{release}.%{_target_cpu}
 %define hdrarch %_target_cpu
 %define asmarch %_target_cpu
+
+%global perfman_hash 9bcc2cd8e56ec583ed2d8e0b0c88e7a94035a1915e40b3177bb02d6c0f10ddd4df9b097b1f5af59efc624226b613e240ddba8ddc2156f3682f992d5455fc5c03
 
 %if 0%{!?nopatches:1}
 %define nopatches 0
@@ -426,7 +428,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 
 Source0: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
 
-Source10: perf-man-%{kversion}.tar.gz
+Source10: http://pkgs.fedoraproject.org/repo/pkgs/kernel/perf-man-%{kversion}.tar.gz/sha512/%{perfman_hash}/perf-man-%{kversion}.tar.gz
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
 Source15: merge.pl
@@ -506,9 +508,6 @@ Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
 
 ## Patches needed for building this package
 
-# build tweak for build ID magic, even for -vanilla
-Patch001: kbuild-AFTER_LINK.patch
-
 ## compile fixes
 
 # ongoing complaint, full discussion delayed until ksummit/plumbers
@@ -547,7 +546,8 @@ Patch121: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
 
 Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
-Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
+# This no longer applies, let's see if it needs to be updated
+# Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
 
 # 200 - x86 / secureboot
 
@@ -578,21 +578,15 @@ Patch302: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # Fix OMAP4 (pandaboard)
 Patch303: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
-# http://www.spinics.net/lists/arm-kernel/msg582772.html
-Patch304: arm-dts-boneblack-wireless-add-WL1835-Bluetooth-device-node.patch
-
 # http://patchwork.ozlabs.org/patch/587554/
-Patch305: ARM-tegra-usb-no-reset.patch
+Patch304: ARM-tegra-usb-no-reset.patch
 
-Patch306: AllWinner-net-emac.patch
+Patch305: allwinner-net-emac.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch307: arm-imx6-hummingboard2.patch
 
 Patch308: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-
-# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
-Patch309: qcom-display-iommu.patch
 
 # https://patchwork.kernel.org/patch/9815555/
 # https://patchwork.kernel.org/patch/9815651/
@@ -602,35 +596,28 @@ Patch309: qcom-display-iommu.patch
 # https://patchwork.kernel.org/patch/9821157/
 Patch310: qcom-msm89xx-fixes.patch
 
-Patch311: arm-thermal-fixes.patch
-
 # https://patchwork.kernel.org/patch/9831825/
 # https://patchwork.kernel.org/patch/9833721/
-Patch312: arm-tegra-fix-gpu-iommu.patch
+Patch311: arm-tegra-fix-gpu-iommu.patch
 
-# https://patchwork.freedesktop.org/patch/163300/
-# https://patchwork.freedesktop.org/patch/161978/
-Patch320: bcm283x-vc4-fix-vblank.patch
+# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
+Patch312: qcom-display-iommu.patch
 
-# https://patchwork.kernel.org/patch/9802555/
-Patch321: bcm2835-pinctrl-Avoid-warning-from-__irq_do_set_handler.patch
+# https://patchwork.kernel.org/patch/9839803/
+Patch313: qcom-Force-host-mode-for-USB-on-apq8016-sbc.patch
 
-Patch322: bcm2835-clk-audio-jitter-issues.patch
-Patch323: bcm2835-fix-potential-null-pointer-dereferences.patch
+# https://patchwork.kernel.org/patch/9850189/
+Patch314: qcom-msm-ci_hdrc_msm_probe-missing-of_node_get.patch
 
 # http://www.spinics.net/lists/dri-devel/msg132235.html
-Patch324: bcm283x-drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+Patch320: bcm283x-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
 
-Patch325: bcm2837-sdhost-fixes.patch
-Patch326: bcm283x-Define-UART-pinmuxing-on-board-level.patch
-Patch327: bt-bcm.patch
-
-# http://www.spinics.net/lists/devicetree/msg163238.html
-Patch329: bcm2837-arm32-support.patch
+# Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
+Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
 # This breaks RPi booting with a LPAE kernel, we don't support the DSI ports currently
 # Revert it while I engage upstream to work out what's going on
-Patch330: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
+Patch322: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -639,57 +626,23 @@ Patch330: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
 # CVE-2017-7477 rhbz 1445207 1445208
 Patch502: CVE-2017-7477.patch
 
-# rhbz 1459326
-Patch504: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
-
 # 600 - Patches for improved Bay and Cherry Trail device support
-# Below patches are pending in -next:
-Patch601: 0001-platform-x86-Add-driver-for-ACPI-INT0002-Virtual-GPI.patch
-Patch602: 0002-mfd-Add-Cherry-Trail-Whiskey-Cove-PMIC-driver.patch
-Patch603: 0003-power-supply-core-Add-support-for-supplied-from-devi.patch
-Patch604: 0004-platform-x86-intel_cht_int33fe-Set-supplied-from-pro.patch
-Patch605: 0005-ACPI-PMIC-xpower-Add-support-for-the-GPI1-regulator-.patch
-Patch606: 0006-Input-axp20x-pek-Add-wakeup-support.patch
-Patch607: 0007-platform-x86-silead_dmi-Add-touchscreen-info-for-GP-.patch
-Patch608: 0008-platform-x86-silead_dmi-Add-touchscreen-info-for-PoV.patch
-Patch609: 0009-platform-x86-silead_dmi-Add-touchscreen-info-for-Pip.patch
 # Below patches are submitted upstream, awaiting review / merging
+Patch601: 0001-Input-gpio_keys-Allow-suppression-of-input-events-fo.patch
+Patch602: 0002-Input-soc_button_array-Suppress-power-button-presses.patch
 Patch610: 0010-Input-silead-Add-support-for-capactive-home-button-f.patch
 Patch611: 0011-Input-goodix-Add-support-for-capacitive-home-button.patch
-Patch612: 0012-Input-gpio_keys-Do-not-report-wake-button-presses-as.patch
+# These patches are queued for 4.14 and can be dropped on rebase to 4.14-rc1
+Patch603: 0001-power-supply-max17042_battery-Add-support-for-ACPI-e.patch
+Patch604: 0002-power-supply-max17042_battery-Fix-ACPI-interrupt-iss.patch
 Patch613: 0013-iio-accel-bmc150-Add-support-for-BOSC0200-ACPI-devic.patch
-Patch614: 0014-mmc-sdhci-acpi-Workaround-conflict-with-PCI-wifi-on-.patch
 Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
-# Small workaround patches for issues with a more comprehensive fix in -next
-Patch616: 0016-Input-silead-Do-not-try-to-directly-access-the-GPIO-.patch
-
-# rhbz 1431375
-Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
-Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # rhbz 1476467
-Patch706: Fix-for-module-sig-verification.patch
+Patch617: Fix-for-module-sig-verification.patch
 
 # rhbz 1485086
-Patch710: pci-mark-amd-stoney-gpu-ats-as-broken.patch
-
-# rhbz 1480829
-Patch711: rt2800-fix-TX_PIN_CFG-setting-for-non-MT7620-chips.patch
-
-# CVE-2017-7558 rhbz 1480266 1484810
-Patch712: net-sctp-Avoid-out-of-bounds-reads-from-address-storage.patch
-
-# CVE-2017-13693 rhbz 1485346 1485356
-Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
-
-# CVE-2017-13694 rhbz 1485348
-Patch714: V4-acpi-acpica-fix-acpi-parse-and-parseext-cache-leaks.patch 
-
-# CVE-2017-13695 rhbz 1485349
-Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
-
-# rhbz 1484587
-Patch716: md-raid-reset-bio-allocated-from-mempool.patch
+Patch619: pci-mark-amd-stoney-gpu-ats-as-broken.patch
 
 ### Extra
 
@@ -697,49 +650,44 @@ Patch716: md-raid-reset-bio-allocated-from-mempool.patch
 # Patches to export btrfs anonymous devices (VFS portion)
 Patch1010: vfs-add-super_operations-get_inode_dev.patch
 Patch1011: perf_timechart_fix_zero_timestamps.patch
-Patch1012: btrfs-add-cond_resched-to-btrfs_qgroup_trace_leaf_items.patch
+Patch1012: 0001-Revert-SUNRPC-xs_sock_mark_closed-does-not-need-to-t.patch
 Patch1013: btrfs-provide-super_operations-get_inode_dev.patch
 Patch1014: btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
 Patch1015: btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1016: btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1017: reiserfs-fix-race-in-prealloc-discard.patch
-Patch1018: reiserfs-don-t-preallocate-blocks-for-extended-attributes.patch
-Patch1019: connector-read-mostly.patch
-Patch1020: 0001-fs-fcntl-f_setown-allow-returning-error.patch
-Patch1021: 0002-fs-fcntl-f_setown-avoid-undefined-behaviour.patch
-Patch1022: e1000e-Don-t-return-uninitialized-stats.patch
+Patch1017: connector-read-mostly.patch
 
 
-# https://patchwork.kernel.org/patch/9795803/
-Patch3000: BUGFIX-V2-block-bfq-update-wr_busy_queues-if-needed-on-a-queue-split.patch
-# https://patchwork.kernel.org/patch/9822149
-Patch3001: BUGFIX-block-bfq-don-t-change-ioprio-class-for-a-bfq_queue-on-a-service-tree.patch
-# https://patchwork.kernel.org/patch/9792209
-Patch3002: 07-10-bfq-iosched-fix-NULL-ioc-check-in-bfq_get_rq_private.patch
-# https://patchwork.kernel.org/patch/9809091/
-# https://patchwork.kernel.org/patch/9809081/
-# https://patchwork.kernel.org/patch/9834761/
-Patch3003: block-bfq-dispatch-request-to-prevent-queue-stalling-after-the-request-completion.patch
-# https://patchwork.kernel.org/patch/9869875
-Patch3004: BUGFIX-block-bfq-consider-also-in_service_entity-to-state-whether-an-entity-is-active.patch
-# https://patchwork.kernel.org/patch/9869323
-Patch3005: BUGFIX-block-bfq-reset-in_service_entity-if-it-becomes-idle.patch
 # https://patchwork.kernel.org/patch/9880515
-Patch3006: BUGFIX-IMPROVEMENT-V2-1-2-block-bfq-refactor-device-idling-logic.patch
+Patch3000: BUGFIX-IMPROVEMENT-V2-1-2-block-bfq-refactor-device-idling-logic.patch
 # https://patchwork.kernel.org/patch/9880513
-Patch3007: BUGFIX-IMPROVEMENT-V2-2-2-block-bfq-boost-throughput-with-flash-based-non-queueing-devices.patch
+Patch3001: BUGFIX-IMPROVEMENT-V2-2-2-block-bfq-boost-throughput-with-flash-based-non-queueing-devices.patch
 # https://patchwork.kernel.org/patch/9909601
-Patch3008: block-bfq-fix-error-handle-in-bfq_init.patch
+Patch3002: block-bfq-fix-error-handle-in-bfq_init.patch
+# https://patchwork.kernel.org/patch/9920623/
+Patch3003: block-scheduler-convert-xxx_var_store-to-void.patch
 # https://patchwork.kernel.org/patch/9930629/
-Patch3009: 1-5-bfq-Annotate-fall-through-in-a-switch-statement.patch
+Patch3004: 1-5-bfq-Annotate-fall-through-in-a-switch-statement.patch
 # https://patchwork.kernel.org/patch/9930631/
-Patch3010: 2-5-bfq-Declare-local-functions-static.patch
+Patch3005: 2-5-bfq-Declare-local-functions-static.patch
+# https://patchwork.kernel.org/patch/9930633/
+Patch3006: 3-5-bfq-Check-kstrtoul-return-value.patch
+# https://patchwork.kernel.org/patch/9930637/
+Patch3007: 4-5-bfq-Suppress-compiler-warnings-about-comparisons.patch
 # https://patchwork.kernel.org/patch/9930635/
-Patch3011: 5-5-bfq-Use-icq_to_bic-consistently.patch
+Patch3008: 5-5-bfq-Use-icq_to_bic-consistently.patch
+# https://patchwork.kernel.org/patch/9931283/
+Patch3009: BUGFIX-IMPROVEMENT-V2-1-3-block-bfq-make-lookup_next_entity-push-up-vtime-on-expirations.patch
+# https://patchwork.kernel.org/patch/9931289/
+Patch3010: BUGFIX-IMPROVEMENT-V2-2-3-block-bfq-remove-direct-switch-to-an-entity-in-higher-class.patch
+# https://patchwork.kernel.org/patch/9931281/
+Patch3011: BUGFIX-IMPROVEMENT-V2-3-3-block-bfq-guarantee-update_next_in_service-always-returns-an-eligible-entity.patch
+# https://patchwork.kernel.org/patch/9943513/
+Patch3012: block-bfq-Disable-writeback-throttling.patch
 
 # Add additional cpu gcc optimization support
-# https://github.com/graysky2/kernel_gcc_patch (20160728)
-Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v3.15+.patch
+# https://github.com/graysky2/kernel_gcc_patch (20170904)
+Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v4.13+.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2316,6 +2264,12 @@ fi
 #
 #
 %changelog
+* Sat Sep 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.0-500.chinfo
+- 4.13.0
+- f27 sync
+- More bfq fixes from patchwork
+- Update kernel_gcc_patch to 4.13+
+
 * Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.10-500.chinfo
 - 4.12.10
 - f26 sync

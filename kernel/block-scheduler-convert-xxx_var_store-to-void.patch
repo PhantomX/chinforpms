@@ -1,0 +1,285 @@
+From patchwork Thu Aug 24 17:11:33 2017
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: block, scheduler: convert xxx_var_store to void
+From: weiping <zhangweiping@didichuxing.com>
+X-Patchwork-Id: 9920623
+Message-Id: <20170824171127.GA25877@localhost.didichuxing.com>
+To: <axboe@kernel.dk>
+Cc: <linux-block@vger.kernel.org>
+Date: Fri, 25 Aug 2017 01:11:33 +0800
+
+The last parameter "count" never be used in xxx_var_store,
+convert these functions to void.
+
+Signed-off-by: weiping zhang <zhangweiping@didichuxing.com>
+---
+ block/bfq-iosched.c      | 33 +++++++++++++++++----------------
+ block/cfq-iosched.c      | 13 ++++++-------
+ block/deadline-iosched.c |  9 ++++-----
+ block/mq-deadline.c      |  9 ++++-----
+ 4 files changed, 31 insertions(+), 33 deletions(-)
+
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index 436b6ca..7a4085d 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -4787,16 +4787,13 @@ static ssize_t bfq_var_show(unsigned int var, char *page)
+ 	return sprintf(page, "%u\n", var);
+ }
+ 
+-static ssize_t bfq_var_store(unsigned long *var, const char *page,
+-			     size_t count)
++static void bfq_var_store(unsigned long *var, const char *page)
+ {
+ 	unsigned long new_val;
+ 	int ret = kstrtoul(page, 10, &new_val);
+ 
+ 	if (ret == 0)
+ 		*var = new_val;
+-
+-	return count;
+ }
+ 
+ #define SHOW_FUNCTION(__FUNC, __VAR, __CONV)				\
+@@ -4838,7 +4835,7 @@ __FUNC(struct elevator_queue *e, const char *page, size_t count)	\
+ {									\
+ 	struct bfq_data *bfqd = e->elevator_data;			\
+ 	unsigned long uninitialized_var(__data);			\
+-	int ret = bfq_var_store(&__data, (page), count);		\
++	bfq_var_store(&__data, (page));					\
+ 	if (__data < (MIN))						\
+ 		__data = (MIN);						\
+ 	else if (__data > (MAX))					\
+@@ -4849,7 +4846,7 @@ __FUNC(struct elevator_queue *e, const char *page, size_t count)	\
+ 		*(__PTR) = (u64)__data * NSEC_PER_MSEC;			\
+ 	else								\
+ 		*(__PTR) = __data;					\
+-	return ret;							\
++	return count;							\
+ }
+ STORE_FUNCTION(bfq_fifo_expire_sync_store, &bfqd->bfq_fifo_expire[1], 1,
+ 		INT_MAX, 2);
+@@ -4866,13 +4863,13 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)\
+ {									\
+ 	struct bfq_data *bfqd = e->elevator_data;			\
+ 	unsigned long uninitialized_var(__data);			\
+-	int ret = bfq_var_store(&__data, (page), count);		\
++	bfq_var_store(&__data, (page));					\
+ 	if (__data < (MIN))						\
+ 		__data = (MIN);						\
+ 	else if (__data > (MAX))					\
+ 		__data = (MAX);						\
+ 	*(__PTR) = (u64)__data * NSEC_PER_USEC;				\
+-	return ret;							\
++	return count;							\
+ }
+ USEC_STORE_FUNCTION(bfq_slice_idle_us_store, &bfqd->bfq_slice_idle, 0,
+ 		    UINT_MAX);
+@@ -4883,7 +4880,8 @@ static ssize_t bfq_max_budget_store(struct elevator_queue *e,
+ {
+ 	struct bfq_data *bfqd = e->elevator_data;
+ 	unsigned long uninitialized_var(__data);
+-	int ret = bfq_var_store(&__data, (page), count);
++
++	bfq_var_store(&__data, (page));
+ 
+ 	if (__data == 0)
+ 		bfqd->bfq_max_budget = bfq_calc_max_budget(bfqd);
+@@ -4895,7 +4893,7 @@ static ssize_t bfq_max_budget_store(struct elevator_queue *e,
+ 
+ 	bfqd->bfq_user_max_budget = __data;
+ 
+-	return ret;
++	return count;
+ }
+ 
+ /*
+@@ -4907,7 +4905,8 @@ static ssize_t bfq_timeout_sync_store(struct elevator_queue *e,
+ {
+ 	struct bfq_data *bfqd = e->elevator_data;
+ 	unsigned long uninitialized_var(__data);
+-	int ret = bfq_var_store(&__data, (page), count);
++
++	bfq_var_store(&__data, (page));
+ 
+ 	if (__data < 1)
+ 		__data = 1;
+@@ -4918,7 +4917,7 @@ static ssize_t bfq_timeout_sync_store(struct elevator_queue *e,
+ 	if (bfqd->bfq_user_max_budget == 0)
+ 		bfqd->bfq_max_budget = bfq_calc_max_budget(bfqd);
+ 
+-	return ret;
++	return count;
+ }
+ 
+ static ssize_t bfq_strict_guarantees_store(struct elevator_queue *e,
+@@ -4926,7 +4925,8 @@ static ssize_t bfq_strict_guarantees_store(struct elevator_queue *e,
+ {
+ 	struct bfq_data *bfqd = e->elevator_data;
+ 	unsigned long uninitialized_var(__data);
+-	int ret = bfq_var_store(&__data, (page), count);
++
++	bfq_var_store(&__data, (page));
+ 
+ 	if (__data > 1)
+ 		__data = 1;
+@@ -4936,7 +4936,7 @@ static ssize_t bfq_strict_guarantees_store(struct elevator_queue *e,
+ 
+ 	bfqd->strict_guarantees = __data;
+ 
+-	return ret;
++	return count;
+ }
+ 
+ static ssize_t bfq_low_latency_store(struct elevator_queue *e,
+@@ -4944,7 +4944,8 @@ static ssize_t bfq_low_latency_store(struct elevator_queue *e,
+ {
+ 	struct bfq_data *bfqd = e->elevator_data;
+ 	unsigned long uninitialized_var(__data);
+-	int ret = bfq_var_store(&__data, (page), count);
++
++	bfq_var_store(&__data, (page));
+ 
+ 	if (__data > 1)
+ 		__data = 1;
+@@ -4952,7 +4953,7 @@ static ssize_t bfq_low_latency_store(struct elevator_queue *e,
+ 		bfq_end_wr(bfqd);
+ 	bfqd->low_latency = __data;
+ 
+-	return ret;
++	return count;
+ }
+ 
+ #define BFQ_ATTR(name) \
+diff --git a/block/cfq-iosched.c b/block/cfq-iosched.c
+index 3d5c289..4ae22fb 100644
+--- a/block/cfq-iosched.c
++++ b/block/cfq-iosched.c
+@@ -4714,13 +4714,12 @@ cfq_var_show(unsigned int var, char *page)
+ 	return sprintf(page, "%u\n", var);
+ }
+ 
+-static ssize_t
+-cfq_var_store(unsigned int *var, const char *page, size_t count)
++static void
++cfq_var_store(unsigned int *var, const char *page)
+ {
+ 	char *p = (char *) page;
+ 
+ 	*var = simple_strtoul(p, &p, 10);
+-	return count;
+ }
+ 
+ #define SHOW_FUNCTION(__FUNC, __VAR, __CONV)				\
+@@ -4766,7 +4765,7 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)
+ {									\
+ 	struct cfq_data *cfqd = e->elevator_data;			\
+ 	unsigned int __data;						\
+-	int ret = cfq_var_store(&__data, (page), count);		\
++	cfq_var_store(&__data, (page));					\
+ 	if (__data < (MIN))						\
+ 		__data = (MIN);						\
+ 	else if (__data > (MAX))					\
+@@ -4775,7 +4774,7 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)
+ 		*(__PTR) = (u64)__data * NSEC_PER_MSEC;			\
+ 	else								\
+ 		*(__PTR) = __data;					\
+-	return ret;							\
++	return count;							\
+ }
+ STORE_FUNCTION(cfq_quantum_store, &cfqd->cfq_quantum, 1, UINT_MAX, 0);
+ STORE_FUNCTION(cfq_fifo_expire_sync_store, &cfqd->cfq_fifo_expire[1], 1,
+@@ -4800,13 +4799,13 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)
+ {									\
+ 	struct cfq_data *cfqd = e->elevator_data;			\
+ 	unsigned int __data;						\
+-	int ret = cfq_var_store(&__data, (page), count);		\
++	cfq_var_store(&__data, (page));					\
+ 	if (__data < (MIN))						\
+ 		__data = (MIN);						\
+ 	else if (__data > (MAX))					\
+ 		__data = (MAX);						\
+ 	*(__PTR) = (u64)__data * NSEC_PER_USEC;				\
+-	return ret;							\
++	return count;							\
+ }
+ USEC_STORE_FUNCTION(cfq_slice_idle_us_store, &cfqd->cfq_slice_idle, 0, UINT_MAX);
+ USEC_STORE_FUNCTION(cfq_group_idle_us_store, &cfqd->cfq_group_idle, 0, UINT_MAX);
+diff --git a/block/deadline-iosched.c b/block/deadline-iosched.c
+index c68f6bb..b83f774 100644
+--- a/block/deadline-iosched.c
++++ b/block/deadline-iosched.c
+@@ -373,13 +373,12 @@ deadline_var_show(int var, char *page)
+ 	return sprintf(page, "%d\n", var);
+ }
+ 
+-static ssize_t
+-deadline_var_store(int *var, const char *page, size_t count)
++static void
++deadline_var_store(int *var, const char *page)
+ {
+ 	char *p = (char *) page;
+ 
+ 	*var = simple_strtol(p, &p, 10);
+-	return count;
+ }
+ 
+ #define SHOW_FUNCTION(__FUNC, __VAR, __CONV)				\
+@@ -403,7 +402,7 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)
+ {									\
+ 	struct deadline_data *dd = e->elevator_data;			\
+ 	int __data;							\
+-	int ret = deadline_var_store(&__data, (page), count);		\
++	deadline_var_store(&__data, (page));				\
+ 	if (__data < (MIN))						\
+ 		__data = (MIN);						\
+ 	else if (__data > (MAX))					\
+@@ -412,7 +411,7 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)
+ 		*(__PTR) = msecs_to_jiffies(__data);			\
+ 	else								\
+ 		*(__PTR) = __data;					\
+-	return ret;							\
++	return count;							\
+ }
+ STORE_FUNCTION(deadline_read_expire_store, &dd->fifo_expire[READ], 0, INT_MAX, 1);
+ STORE_FUNCTION(deadline_write_expire_store, &dd->fifo_expire[WRITE], 0, INT_MAX, 1);
+diff --git a/block/mq-deadline.c b/block/mq-deadline.c
+index 1b964a3..c8dfddc 100644
+--- a/block/mq-deadline.c
++++ b/block/mq-deadline.c
+@@ -457,13 +457,12 @@ deadline_var_show(int var, char *page)
+ 	return sprintf(page, "%d\n", var);
+ }
+ 
+-static ssize_t
+-deadline_var_store(int *var, const char *page, size_t count)
++static void
++deadline_var_store(int *var, const char *page)
+ {
+ 	char *p = (char *) page;
+ 
+ 	*var = simple_strtol(p, &p, 10);
+-	return count;
+ }
+ 
+ #define SHOW_FUNCTION(__FUNC, __VAR, __CONV)				\
+@@ -487,7 +486,7 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)
+ {									\
+ 	struct deadline_data *dd = e->elevator_data;			\
+ 	int __data;							\
+-	int ret = deadline_var_store(&__data, (page), count);		\
++	deadline_var_store(&__data, (page));				\
+ 	if (__data < (MIN))						\
+ 		__data = (MIN);						\
+ 	else if (__data > (MAX))					\
+@@ -496,7 +495,7 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)
+ 		*(__PTR) = msecs_to_jiffies(__data);			\
+ 	else								\
+ 		*(__PTR) = __data;					\
+-	return ret;							\
++	return count;							\
+ }
+ STORE_FUNCTION(deadline_read_expire_store, &dd->fifo_expire[READ], 0, INT_MAX, 1);
+ STORE_FUNCTION(deadline_write_expire_store, &dd->fifo_expire[WRITE], 0, INT_MAX, 1);
