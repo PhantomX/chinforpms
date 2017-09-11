@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -569,24 +569,21 @@ Patch211: drm-i915-hush-check-crtc-state.patch
 
 # 300 - ARM patches
 
-# a tempory patch for QCOM hardware enablement. Will be gone by F-26 GA
-Patch301: qcom-QDF2432-tmp-errata.patch
-
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch302: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
 # Fix OMAP4 (pandaboard)
-Patch303: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
+Patch302: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
 # http://patchwork.ozlabs.org/patch/587554/
-Patch304: ARM-tegra-usb-no-reset.patch
+Patch303: ARM-tegra-usb-no-reset.patch
 
-Patch305: allwinner-net-emac.patch
+Patch304: allwinner-net-emac.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch307: arm-imx6-hummingboard2.patch
+Patch305: arm-imx6-hummingboard2.patch
 
-Patch308: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch306: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 # https://patchwork.kernel.org/patch/9815555/
 # https://patchwork.kernel.org/patch/9815651/
@@ -1592,12 +1589,8 @@ BuildKernel() {
     cp $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/.config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/config/auto.conf
 
 %if %{with_debuginfo}
-    if test -s vmlinux.id; then
-      cp vmlinux.id $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/vmlinux.id
-    else
-      echo >&2 "*** ERROR *** no vmlinux build ID! ***"
-      exit 1
-    fi
+    eu-readelf -n vmlinux | grep "Build ID" | awk '{print $NF}' > vmlinux.id
+    cp vmlinux.id $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/vmlinux.id
 
     #
     # save the vmlinux file for kernel debugging into the kernel-debuginfo rpm
@@ -2264,6 +2257,10 @@ fi
 #
 #
 %changelog
+* Mon Sep 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.1-500.chinfo
+- 4.13.1
+- f27 sync
+
 * Sat Sep 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.0-500.chinfo
 - 4.13.0
 - f27 sync
