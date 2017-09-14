@@ -11,7 +11,7 @@
 
 Name:           discord
 Version:        0.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
 
@@ -37,6 +37,12 @@ Provides:       %{name}-canary = %{version}-%{release}
 Conflicts:      %{name}-canary < %{version}
 Conflicts:      %{name} < %{version}
 %endif
+
+%global __provides_exclude_from ^%{_libdir}/%{name}/.*
+
+
+%global __requires_exclude ^libffmpeg.so
+%global __requires_exclude %__requires_exclude|^libnode.so
 
 %description
 All-in-one voice and text chat for gamers that’s free, secure, and works on
@@ -109,6 +115,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.2-2
+- Exclude provides
+
 * Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.2-1
 - 0.0.2
 

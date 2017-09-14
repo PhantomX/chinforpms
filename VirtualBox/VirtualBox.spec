@@ -25,7 +25,7 @@
 %bcond_with vnc
 
 Name:       VirtualBox
-Version:    5.1.26
+Version:    5.1.28
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -71,6 +71,7 @@ Patch51:    VirtualBox-5.1.0-revert-VBox.sh.patch
 # Chinforinfula
 Patch100:   virtualbox-5.1.0-noupdate.patch
 Patch101:   virtualbox-5.1.0-default-to-linux26.patch
+
 
 BuildRequires:  kBuild >= 0.1.9998
 BuildRequires:  SDL-devel xalan-c-devel
@@ -155,6 +156,7 @@ Windows (NT 4.0, 2000, XP, Server 2003, Vista, Windows 7, Windows 8, Windows
 10), DOS/Windows 3.x, Linux (2.4, 2.6, 3.x and 4.x), Solaris and OpenSolaris,
 OS/2, and OpenBSD.
 
+
 %package server
 Summary:    core part (host server) for %{name}
 Group:      Development/Tools
@@ -166,6 +168,7 @@ Conflicts:  %{name}-guest-additions <= %{version}-%{release}
 
 %description server
 %{name} without Qt GUI part.
+
 
 %if %{with webservice}
 %package webservice
@@ -182,6 +185,7 @@ Summary:    %{name} SDK
 Group:      Development/Libraries
 Requires:   %{name}-server%{?isa} = %{version}-%{release}
 Requires:   python-%{name}%{?isa} = %{version}-%{release}
+
 
 %description devel
 %{name} Software Development Kit.
@@ -811,6 +815,9 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.28-100.chinfo
+- 5.1.28
+
 * Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br>
 - Sync with RPMfusion
 

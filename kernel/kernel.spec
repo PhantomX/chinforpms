@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -612,9 +612,15 @@ Patch320: bcm283x-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
-# This breaks RPi booting with a LPAE kernel, we don't support the DSI ports currently
-# Revert it while I engage upstream to work out what's going on
-Patch322: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
+# Updat3 move of bcm2837, landed in 4.14
+Patch322: bcm2837-move-dt.patch
+
+# bcm2837 bluetooth support
+#
+Patch323: bcm2837-bluetooth-support.patch
+
+# https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20170912&id=723288836628bc1c0855f3bb7b64b1803e4b9e4a
+Patch324: arm-of-restrict-dma-configuration.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -640,6 +646,12 @@ Patch617: Fix-for-module-sig-verification.patch
 
 # rhbz 1485086
 Patch619: pci-mark-amd-stoney-gpu-ats-as-broken.patch
+
+# CVE-2017-12154 rhbz 1491224 1491231
+Patch620: kvm-nVMX-Don-t-allow-L2-to-access-the-hardware-CR8.patch
+
+# CVE-2017-12153 rhbz 1491046 1491057
+Patch621: nl80211-check-for-the-required-netlink-attributes-presence.patch
 
 ### Extra
 
@@ -2257,6 +2269,10 @@ fi
 #
 #
 %changelog
+* Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.2-500.chinfo
+- 4.13.2
+- f27 sync
+
 * Mon Sep 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.1-500.chinfo
 - 4.13.1
 - f27 sync

@@ -26,7 +26,7 @@
 
 Name:           spideroakone
 Version:        6.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -79,8 +79,27 @@ Requires:       sqlite-libs%{?_isa}
 
 Requires:       hicolor-icon-theme
 
+Provides:       bundled(libssl) = 1.0.0
+
 Conflicts:       SpiderOak < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       SpiderOak
+Provides:       SpiderOak = %{version}-%{release}
+
+%global __provides_exclude_from ^%{progdir}/.*
+
+%global __requires_exclude ^libssl.so.1.0.0
+%global __requires_exclude %__requires_exclude|^libcrypto.so.1.0.0
+%global __requires_exclude %__requires_exclude|^libgmp.so.3
+%global __requires_exclude %__requires_exclude|^libQtCore.so.4
+%global __requires_exclude %__requires_exclude|^libQtCore.so.4
+%global __requires_exclude %__requires_exclude|^libQtDBus.so.4
+%global __requires_exclude %__requires_exclude|^libQtDeclarative.so.4
+%global __requires_exclude %__requires_exclude|^libQtGui.so.4
+%global __requires_exclude %__requires_exclude|^libQtNetwork.so.4
+%global __requires_exclude %__requires_exclude|^libQtScript.so.4
+%global __requires_exclude %__requires_exclude|^libQtSql.so.4
+%global __requires_exclude %__requires_exclude|^libQtSvg.so.4
+%global __requires_exclude %__requires_exclude|^libQtXmlPatterns.so.4
+%global __requires_exclude %__requires_exclude|^libQtXml.so.4
 
 %description
 SpiderOak provides an easy, secure and consolidated online backup, storage,
@@ -104,6 +123,8 @@ mv usr/share/applications/%{pkgname1}.desktop usr/share/applications/%{name}.des
 
 sed -i -e "s|/opt/%{pkgname1}/lib|%{progdir}|g" usr/bin/%{pkgname1}
 
+find opt/%{pkgname1}/lib/ -name '*.so*' | xargs chmod 0755
+
 %build
 
 %install
@@ -115,6 +136,7 @@ mv opt/%{pkgname1}/lib/* %{buildroot}%{progdir}
 rm -fv %{buildroot}%{progdir}/lib{gcc_s,stdc++,z}.so.*
 rm -fv %{buildroot}%{progdir}/libgssapi_krb5.so.*
 rm -fv %{buildroot}%{progdir}/libsepol.so.*
+rm -fv %{buildroot}%{progdir}/libsqlite3.so.*
 rm -fv %{buildroot}%{progdir}/*/*/*.exe
 
 #( cd %{buildroot}%{progdir}
@@ -149,7 +171,7 @@ missing(){
 
 %if 0%{?dbusmenuqt}
   ( cd %{buildroot}%{progdir}
-    for file in libdbusmenu-qt*.so* ;do
+    for file in libdbusmenu-qt.so* ;do
       SONAME=$(xtcsoname ${file})
       missing %{_libdir}/${SONAME}
       rm -fv ${file}
@@ -188,7 +210,6 @@ missing(){
     ln -sf ${reldir}/${file}.so %{buildroot}%{progdir}/${file}.so
     rm -fv %{buildroot}%{progdir}/py
     rm -fv %{buildroot}%{progdir}/libexpat.so.*
-    rm -fv %{buildroot}%{progdir}/libsqlite3.so.*
   done
 %endif
 
@@ -277,6 +298,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.3.1-2
+- Exclude provides
+- Remove sqlite bundled library
+
 * Sat Aug 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.3.1-1
 - 6.3.1
 - R: libffi

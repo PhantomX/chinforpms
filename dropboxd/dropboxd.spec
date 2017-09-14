@@ -17,7 +17,7 @@
 %global python  0
 
 Name:           dropboxd
-Version:        33.4.23
+Version:        34.4.20
 Release:        1%{?dist}
 Summary:        Dropbox proprietary client
 
@@ -62,6 +62,8 @@ Requires:       mesa-libGL%{?_isa}
 Requires:       ncurses-compat-libs%{?_isa}
 Requires:       wmctrl%{?_isa}
 Requires:       zlib%{?_isa}
+
+%global __provides_exclude_from ^%{progdir}/.*
 
 %description
 Dropbox backup, storage, access, sharing tool proprietary client.
@@ -175,6 +177,9 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 
 
 %changelog
+* Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 34.4.20-1
+- Exclude provides
+
 * Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 33.4.23-1
 - 33.4.23
 
