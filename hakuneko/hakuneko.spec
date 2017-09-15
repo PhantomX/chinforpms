@@ -1,11 +1,13 @@
 Name:           hakuneko
 Version:        1.4.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        manga Downloader
 
 License:        MIT
 URL:            http://sourceforge.net/projects/legacy.hakuneko.p/
 Source0:        http://downloads.sourceforge.net/legacy.%{name}.p/%{name}_%{version}_src.tar.gz
+
+Patch0:         %{name}-noupdate.patch
 
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(openssl)
@@ -18,7 +20,7 @@ HakuNeko allows you to download manga images from some selected online
 manga reader websites.
 
 %prep
-%autosetup -n %{name}_%{version}_src
+%autosetup -n %{name}_%{version}_src -p1
 
 find . -name '*.a' -print -delete
 
@@ -64,6 +66,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 
 %changelog
+* Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4.2-3
+- Disable update checking
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4.2-2
 - Update links
 

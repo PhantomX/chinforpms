@@ -1,0 +1,13 @@
+--- hakuneko_1.4.2_src/src/MangaDownloaderMain.cpp.orig	2016-12-10 20:29:24.000000000 -0200
++++ hakuneko_1.4.2_src/src/MangaDownloaderMain.cpp	2017-09-14 21:32:15.514702959 -0300
+@@ -235,8 +235,8 @@ MangaDownloaderFrame::MangaDownloaderFra
+     // LoadConfiguration() may show the window immediately, so call it last...
+     // it also may change initial minwidth of comboboxes
+     LoadConfiguration();
+-    Progress.Update(8, wxT("Checking for Updates ..."));
+-    UpdateCheck();
++    //Progress.Update(8, wxT("Checking for Updates ..."));
++    //UpdateCheck();
+ 
+     MenuMain = new wxMenu(_("Main Menu"));
+     MenuMain->Append(ID_MenuAuth, _("Batoto Login..."));
