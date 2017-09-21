@@ -1,20 +1,36 @@
-%global pluginapi 3.15.0.0
+%global pluginapi 3.15.1.0
+
+%if 0%{?fedora} > 26
+%global with_fancy 0
+%else
+%global with_fancy 1
+%endif
+
+# (!!!)
+# 20170917 : Rawhide, set to 0
+# temporarily turn of manual build because of Tex Live broken deps affecting docbook-utils BR
+# temporarily turn off manual build because of Tex Live broken deps affecting docbook-utils BR
+%if 0%{?fedora} > 27
+%global build_manual 0
+%else
+%global build_manual 1
+%endif
 
 # Patch20
 %global _default_patch_fuzz 2
 
 Name:           claws-mail
-Version:        3.15.0
-Release:        103.chinfo%{?dist}
+Version:        3.15.1
+Release:        100.chinfo%{?dist}
 Summary:        Email client and news reader based on GTK+
 Group:          Applications/Internet
 License:        GPLv3+
 URL:            http://claws-mail.org
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 #http://www.thewildbeast.co.uk/claws-mail/bugzilla/show_bug.cgi?id=3795
-Patch1:         %{name}-%{version}-fix-utils-typo.patch
+Patch1:         %{name}-3.15.0-fix-utils-typo.patch
 #http://git.claws-mail.org/?p=claws.git;a=commit;h=e6db5f2b301576156a8d56fb48b81ac9bffd0398
-Patch2:         %{name}-%{version}-fix-alertpanel.patch
+Patch2:         %{name}-3.15.0-fix-alertpanel.patch
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
@@ -55,7 +71,9 @@ BuildRequires:  perl-devel perl-generators perl(ExtUtils::Embed)
 BuildRequires:  libSM-devel
 BuildRequires:  NetworkManager-glib-devel dbus-glib-devel
 BuildRequires:  libtool autoconf automake
+%if 0%{build_manual}
 BuildRequires:  docbook-utils docbook-utils-pdf
+%endif
 
 BuildRequires:  curl-devel
 BuildRequires:  libxml2-devel expat-devel
@@ -64,7 +82,10 @@ BuildRequires:  libarchive-devel
 BuildRequires:  libytnef-devel
 BuildRequires:  ghostscript
 BuildRequires:  poppler-glib-devel
+# webkit removed since Fedora 27 due to unfixed security issues
+%if 0%{with_fancy}
 BuildRequires:  webkitgtk-devel
+%endif
 # fix #496149
 BuildRequires:  libnotify-devel
 BuildRequires:  python python-devel pygtk2-devel
@@ -226,6 +247,7 @@ Requires:       dillo
 This plugin renders HTML email via the Dillo Web Browser.
 
 
+%if 0%{with_fancy}
 %package plugins-fancy
 Summary:        Display HTML emails in Claws Mail
 Group:          Applications/Internet
@@ -233,6 +255,7 @@ Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-fancy
 This plugin renders HTML email via the GTK+ port of the WebKit library.
+%endif
 
 
 %package plugins-fetchinfo
@@ -461,8 +484,10 @@ autoreconf -ivf
 %if 0%{?rhel}
            --disable-bsfilter-plugin \
 %endif
-           --enable-appdata \
-           --enable-fancy-plugin
+%if !0%{with_fancy}
+           --disable-fancy-plugin \
+%endif
+           --enable-appdata 
 
 make %{?_smp_mflags} LIBTOOL=%{_bindir}/libtool
 
@@ -490,10 +515,12 @@ find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 find %{buildroot}%{_libdir}/claws-mail/plugins/ -type f -name \
 "*.a" -exec rm -f {} ';'
 
+%if 0%{build_manual}
 # we include the manual in the doc section
 rm -rf _tmp_manual && mkdir _tmp_manual
 mv %{buildroot}%{_datadir}/doc/claws-mail/manual _tmp_manual
 rm -f %{buildroot}%{_datadir}/doc/claws-mail/RELEASE_NOTES
+%endif
 
 # cleanup non utf8 files
 for file in AUTHORS;
@@ -529,7 +556,9 @@ fi
 %if 0%{?fedora}
 %doc README.Fedora
 %endif
+%if 0%{build_manual}
 %doc _tmp_manual/manual
+%endif
 %{_bindir}/*
 %dir %{_libdir}/claws-mail
 %dir %{_libdir}/claws-mail/plugins
@@ -583,9 +612,11 @@ fi
 %{_libdir}/claws-mail/plugins/dillo*
 #{_datadir}/appdata/claws-mail-dillo.metainfo.xml
 
+%if 0%{with_fancy}
 %files plugins-fancy
 %{_libdir}/claws-mail/plugins/fancy*
 #{_datadir}/appdata/claws-mail-fancy.metainfo.xml
+%endif
 
 %files plugins-fetchinfo
 %{_libdir}/claws-mail/plugins/fetchinfo*
@@ -669,8 +700,12 @@ fi
 
 
 %changelog
+* Wed Sep 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.1-100.chinfo
+- 3.15.1
+- f26 sync
+
 * Sat Jul 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.0-103.chinfo
-- Reenable fancy, dillo plugin not good yet
+- Reenable fancy, dillo plugin is not good yet
 
 * Sat Jul 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.0-102.chinfo
 - Disable fancy again

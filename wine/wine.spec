@@ -11,11 +11,11 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.16
+%global compholiover 2.17
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.15
+%global ninever 2.16
 %endif # 0%{?fedora}
 
 # laino patches, see: https://github.com/laino/wine-patches
@@ -38,7 +38,7 @@
 %endif
 
 Name:           wine
-Version:        2.16
+Version:        2.17
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1330,6 +1330,8 @@ fi
 %{_libdir}/wine/api-ms-win-core-handle-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-heap-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-heap-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-heap-l2-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-heap-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-heap-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-interlocked-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-interlocked-l1-2-0.dll.so
@@ -1348,6 +1350,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-localization-l2-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-localization-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-localization-obsolete-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-localization-obsolete-l1-3-0.dll.so
 %{_libdir}/wine/api-ms-win-core-localization-private-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-localregistry-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-memory-l1-1-0.dll.so
@@ -1377,6 +1380,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-rtlsupport-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-shlwapi-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-shlwapi-obsolete-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-shlwapi-obsolete-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-sidebyside-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-string-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-string-l2-1-0.dll.so
@@ -1384,6 +1388,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-stringansi-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-synch-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-synch-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-synch-l1-2-1.dll.so
 %{_libdir}/wine/api-ms-win-core-sysinfo-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-sysinfo-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-sysinfo-l1-2-1.dll.so
@@ -1473,11 +1478,9 @@ fi
 %{_libdir}/wine/api-ms-win-core-apiquery-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-com-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-delayload-l1-1-1.dll.so
-%{_libdir}/wine/api-ms-win-core-heap-l2-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-kernel32-legacy-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-quirks-l1-1-0.dll.so
-%{_libdir}/wine/api-ms-win-core-shlwapi-obsolete-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-threadpool-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-registration-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-wow64-l1-1-0.dll.so
@@ -2304,6 +2307,9 @@ fi
 %endif
 
 %changelog
+* Wed Sep 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.17-100.chinfo
+- 2.16
+
 * Thu Sep 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.16-100.chinfo
 - 2.16
 

@@ -7,5 +7,4 @@ require root privileges, so it needs the setuid bit of binary to be set.
 To allow users to run firejail, add them to firejail group.
 
 Example:
- # dpkg-statoverride --update --add root users 4754 /usr/bin/firejail
  usermod -a -G firejail <user>
