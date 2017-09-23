@@ -510,6 +510,9 @@ Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
 
 ## compile fixes
 
+# build tweak for build ID magic, even for -vanilla
+Patch001: kbuild-AFTER_LINK.patch
+
 # ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
 
@@ -640,27 +643,47 @@ Patch604: 0002-power-supply-max17042_battery-Fix-ACPI-interrupt-iss.patch
 Patch613: 0013-iio-accel-bmc150-Add-support-for-BOSC0200-ACPI-devic.patch
 Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
 
+# rhbz 1431375
+Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
+Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+
 # rhbz 1476467
-Patch617: Fix-for-module-sig-verification.patch
+Patch706: Fix-for-module-sig-verification.patch
 
 # rhbz 1485086
-Patch619: pci-mark-amd-stoney-gpu-ats-as-broken.patch
+Patch710: pci-mark-amd-stoney-gpu-ats-as-broken.patch
+
+# CVE-2017-13693 rhbz 1485346 1485356
+Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
+
+# CVE-2017-13694 rhbz 1485348
+Patch714: V4-acpi-acpica-fix-acpi-parse-and-parseext-cache-leaks.patch 
+
+# CVE-2017-13695 rhbz 1485349
+Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
+
+# CVE-2017-14051 rhbz 1487126 1487127
+Patch717: v2-scsi-qla2xxx-Fix-an-integer-overflow-in-sysfs-code.patch
+
+# Should fix our QXL issues (Doesn't)
+Patch718: qxl-fixes.patch
 
 # CVE-2017-12154 rhbz 1491224 1491231
-Patch620: kvm-nVMX-Don-t-allow-L2-to-access-the-hardware-CR8.patch
+Patch720: kvm-nVMX-Don-t-allow-L2-to-access-the-hardware-CR8.patch
 
 # CVE-2017-12153 rhbz 1491046 1491057
-Patch621: nl80211-check-for-the-required-netlink-attributes-presence.patch
-
-# Should fix our QXL issues
-Patch622: qxl-fixes.patch
-
-# rhbz 1431375
-Patch623: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
-Patch624: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+Patch721: nl80211-check-for-the-required-netlink-attributes-presence.patch
 
 # rhbz 1493435 1493436
-Patch625: KEYS-prevent-KEYCTL_READ-on-negative-key.patch
+Patch722: KEYS-prevent-KEYCTL_READ-on-negative-key.patch
+
+# rhbz 1493498
+Patch723: 0001-fs-locks-Remove-fl_nspid-and-use-fs-specific-l_pid-f.patch
+
+# rhbz 1432684
+Patch724: 1-3-net-set-tb--fast_sk_family.patch
+Patch725: 2-3-net-use-inet6_rcv_saddr-to-compare-sockets.patch
+Patch726: 3-3-inet-fix-improper-empty-comparison.patch
 
 ### Extra
 

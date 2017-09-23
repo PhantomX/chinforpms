@@ -2,7 +2,7 @@
 
 Name:           mediastreamer
 Version:        2.16.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Mediastreaming library for telephony application
 
 Group:          System Environment/Libraries
@@ -10,23 +10,27 @@ License:        GPLv2
 URL:            http://www.linphone.org/technical-corner/mediastreamer2.html
 Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{version}.tar.gz
 
-BuildRequires:  autoconf
-BuildRequires:  automake
+BuildRequires:  cmake
 BuildRequires:  doxygen
 BuildRequires:  gettext-devel
+BuildRequires:  git
 BuildRequires:  graphviz
 BuildRequires:  intltool
-BuildRequires:  libtool
+BuildRequires:  python
 BuildRequires:  vim-common
-BuildRequires:  bzrtp-devel
+BuildRequires:  bcmatroska2-devel
 BuildRequires:  gsm-devel
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(bctoolbox)
+BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
+BuildRequires:  pkgconfig(libbcg729)
+BuildRequires:  pkgconfig(libbzrtp)
+BuildRequires:  pkgconfig(libturbojpeg)
 BuildRequires:  pkgconfig(libpulse)
-BuildRequires:  pkgconfig(libsrtp)
 BuildRequires:  pkgconfig(libupnp)
 BuildRequires:  pkgconfig(libv4l2)
+BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(ortp)
 BuildRequires:  pkgconfig(spandsp)
@@ -34,7 +38,6 @@ BuildRequires:  pkgconfig(speexdsp)
 BuildRequires:  pkgconfig(speex)
 BuildRequires:  pkgconfig(vpx)
 BuildRequires:  pkgconfig(x11)
-BuildRequires:  pkgconfig(xv)
 BuildRequires:  pkgconfig(xv)
 
 %if 0%{?ffmpeg}
@@ -67,63 +70,71 @@ Development files.
 %prep
 %autosetup
 
+sed \
+  -e 's|@prefix@|%{_prefix}|g' \
+  -e 's|@exec_prefix@|%{_exec_prefix}|g' \
+  -e 's|@includedir@|%{_includedir}|g' \
+  -e 's|@libdir@|%{_libdir}|g' \
+  -e "s,@MEDIASTREAMER_VERSION@,$(awk '/mediastreamer2 VERSION/{print $3}' CMakeLists.txt),g" \
+%ifarch %{arm} aarch64
+  -e 's|@MS_PUBLIC_CFLAGS@|-DMS_FIXED_POINT|g' \
+%else
+  -e 's| @MS_PUBLIC_CFLAGS@||g' \
+%endif
+  %{name}.pc.in > %{name}.pc
+
 sed -e 's|(git: " MS2_GIT_VERSION ")||g' -i src/base/msfactory.c
 
-intltoolize -f
-autoreconf -ivf
-
 %build
-%configure \
-  --disable-tests \
-  --disable-silent-rules \
-  --disable-static \
-  --disable-rpath \
-  --disable-strict \
+mkdir builddir
+pushd builddir
+%cmake .. \
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+  -DENABLE_STATIC:BOOL=OFF \
+  -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON \
+  -DENABLE_TESTS:BOOL=OFF \
+  -DENABLE_STRICT:BOOL=OFF \
 %if !0%{?ffmpeg}
-  --disable-ffmpeg \
+  -DENABLE_FFMPEG:BOOL=OFF \
 %endif
-  --enable-ortp \
-  --enable-external-ortp \
-  --enable-gsm \
-  --disable-portaudio \
-  --enable-pulseaudio \
-  --enable-spandsp \
-  --enable-speex \
-  --disable-theora \
-  --enable-upnp \
-  --enable-vp8 \
-  --enable-x11 \
-  --enable-xv \
-  --enable-glx \
-  --enable-zrtp \
-  --with-srtp=/usr
-
-sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
-sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+  -DENABLE_ALSA:BOOL=ON \
+  -DENABLE_G726:BOOL=ON \
+  -DENABLE_G729:BOOL=ON \
+  -DENABLE_G729:BOOL=ON \
+  -DENABLE_JPEG:BOOL=ON \
+  -DENABLE_SPEEX_CODEC:BOOL=ON \
+  -DENABLE_SPEEX_DSP:BOOL=ON \
+  -DENABLE_PORTAUDIO:BOOL=OFF \
+  -DENABLE_PULSEAUDIO:BOOL=ON \
+  -DENABLE_THEORA:BOOL=ON \
+  -DENABLE_V4L:BOOL=ON \
+  -DENABLE_VIDEO:BOOL=ON \
+  -DENABLE_X11:BOOL=ON \
+  -DENABLE_XV:BOOL=ON \
+  -DENABLE_VPX:BOOL=ON \
+  -DENABLE_ZRTP:BOOL=ON
 
 %make_build
 
-
 %install
-%make_install
+%make_install -C builddir
 
-find %{buildroot} -name '*.la' -delete
+mkdir -p %{buildroot}%{_libdir}/pkgconfig
+install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
 mkdir -p %{buildroot}%{_libdir}/%{name}/plugins
 
-rm -f help/doc/html/html.tar
+rm -f builddir/help/doc/html/html.tar
 rm -rf %{buildroot}%{_datadir}/doc
-
-%find_lang %{name}
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
 
-%files -f %{name}.lang
+%files
 %license COPYING
 %doc README.md
 %{_bindir}/mediastream
-%{_bindir}/msaudiocmp
+%{_bindir}/mkvstream
 %{_datadir}/images/nowebcamCIF.jpg
 
 %files libs
@@ -131,13 +142,16 @@ rm -rf %{buildroot}%{_datadir}/doc
 %dir %{_libdir}/%{name}/plugins
 
 %files devel
-%doc help/doc/html
+%doc builddir/help/doc/html
 %{_includedir}/%{name}2
 %{_libdir}/lib%{name}*.so
 %{_libdir}/pkgconfig/%{name}.pc
-
+%{_datadir}/Mediastreamer2/cmake/*.cmake
 
 %changelog
+* Fri Sep 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.16.1-2
+- cmake and fixes for it
+
 * Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.16.1-1
 - 2.16.1
 

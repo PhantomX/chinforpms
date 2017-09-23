@@ -1,8 +1,6 @@
-%global ffmpeg 0
-
 Name:           linphone
 Version:        3.12.0
-Release:        1.chinfo%{?dist}
+Release:        2.chinfo%{?dist}
 Summary:        Phone anywhere in the whole world by using the Internet
 
 License:        GPLv2+
@@ -12,19 +10,19 @@ Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{vers
 Patch0:         linphone-ui.patch
 Patch1:         linphone-gitversion.patch
 
-BuildRequires:  autoconf
-BuildRequires:  automake
+BuildRequires:  cmake
 BuildRequires:  doxygen
 BuildRequires:  gettext
 BuildRequires:  graphviz
-BuildRequires:  intltool
-BuildRequires:  libtool
 BuildRequires:  desktop-file-utils
-BuildRequires:  readline-devel
+BuildRequires:  bcmatroska2-devel
+BuildRequires:  pkgconfig(bctoolbox)
+BuildRequires:  pkgconfig(belcard)
+BuildRequires:  pkgconfig(belr)
 BuildRequires:  pkgconfig(belle-sip)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gtk+-2.0)
-BuildRequires:  pkgconfig(libupnp)
+BuildRequires:  pkgconfig(libbzrtp)
 BuildRequires:  pkgconfig(libnotify)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
@@ -32,11 +30,15 @@ BuildRequires:  pkgconfig(mediastreamer)
 BuildRequires:  pkgconfig(ortp)
 BuildRequires:  pkgconfig(speex)
 BuildRequires:  pkgconfig(sqlite3)
-BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(zlib)
+BuildRequires:  python2
+BuildRequires:  python2-six
+BuildRequires:  pystache
 Requires:       hicolor-icon-theme
 
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+Obsoletes:      linphone-mediastreamer < %{version}
 
 %description
 Linphone is mostly sip compliant. It works successfully with these
@@ -54,6 +56,8 @@ implementations:
 
 %package libs
 Summary:        %{summary}
+Provides:       liblinphone = %{?epoch:%{epoch}}%{version}-%{release}
+Obsoletes:      liblinphone < %{version}-%{release}
 
 %description libs
 %{summary}.
@@ -63,7 +67,9 @@ Summary:        Development libraries for linphone
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       pkgconfig(glib-2.0)
 Requires:       pkgconfig(mediastreamer)
-Obsoletes:      linphone-mediastreamer < %{version}
+Provides:       liblinphone-devel = %{?epoch:%{epoch}}%{version}-%{release}
+Obsoletes:      liblinphone-devel < %{version}-%{release}
+
 
 %description    devel
 Libraries and headers required to develop software with linphone.
@@ -71,37 +77,58 @@ Libraries and headers required to develop software with linphone.
 %prep
 %autosetup -p1
 
-intltoolize -f
-autoreconf -ivf
+sed \
+  -e 's|@prefix@|%{_prefix}|g' \
+  -e 's|@exec_prefix@|%{_exec_prefix}|g' \
+  -e 's|@includedir@|%{_includedir}|g' \
+  -e 's|@libdir@|%{_libdir}|g' \
+  -e "s,@VERSION@,$(awk '/%{name} VERSION/{print $3}' CMakeLists.txt),g" \
+  -e "s|@LINPHONE_LIBS@|-L%{_libdir} -l%{name}|g" \
+  -e "s|@LINPHONE_CFLAGS@|-I%{_includedir} -I%{_includedir}/%{name}|g" \
+  share/%{name}.pc.in > %{name}.pc
+
+echo '#define LIBLINPHONE_GIT_VERSION "%{version}-%{release}"' > coreapi/liblinphone_gitversion.h
 
 %build
-%configure \
-  --disable-silent-rules \
-  --disable-static \
-  --disable-strict \
-  --disable-rpath \
-  --enable-external-mediastreamer \
-%if !0%{?ffmpeg}
-  --disable-ffmpeg \
-  --disable-video \
-%endif
-  --enable-external-ortp \
-  --enable-console_ui=yes \
-  --enable-gtk_ui=yes \
-  --enable-sqlite-storage=yes
-
-sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
-sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+mkdir builddir
+pushd builddir
+%cmake .. \
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+  -DENABLE_STATIC:BOOL=OFF \
+  -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON \
+  -DENABLE_TESTS:BOOL=OFF \
+  -DENABLE_STRICT:BOOL=OFF \
+  -DENABLE_CONSOLE_UI:BOOL=ON \
+  -DENABLE_DAEMON:BOOL=ON \
+  -DENABLE_GTK_UI:BOOL=ON \
+  -DENABLE_LIME:BOOL=ON \
+  -DENABLE_NOTIFY:BOOL=ON \
+  -DENABLE_ROOTCA_DOWNLOAD:BOOL=OFF \
+  -DENABLE_SQLITE_STORAGE:BOOL=ON \
+  -DENABLE_TURORIALS:BOOL=OFF \
+  -DENABLE_UPDATE_CHECK:BOOL=OFF \
+  -DENABLE_VIDEO:BOOL=ON
 
 %make_build
 
-
 %install
-%make_install
+%make_install -C builddir
 
-find %{buildroot} -name '*.la' -delete
+mkdir -p %{buildroot}%{_libdir}/pkgconfig
+install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
-rm -f coreapi/help/doc/html/html.tar
+mkdir -p %{buildroot}%{_datadir}/appdata
+install -pm0644 share/%{name}.appdata.xml %{buildroot}%{_datadir}/appdata/%{name}.appdata.xml
+
+rm -f %{buildroot}%{_bindir}/buddy_status
+rm -f %{buildroot}%{_bindir}/chatroom
+rm -f %{buildroot}%{_bindir}/filetransfer
+rm -f %{buildroot}%{_bindir}/helloworld
+rm -f %{buildroot}%{_bindir}/notify
+rm -f %{buildroot}%{_bindir}/realtimetext_*
+rm -f %{buildroot}%{_bindir}/registration
+
+rm -f builddir/coreapi/help/doc/html/html.tar
 rm -rf %{buildroot}%{_datadir}/doc
 rm -rf %{buildroot}%{_datadir}/gnome
 
@@ -133,10 +160,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_bindir}/%{name}csh
 %{_bindir}/%{name}-daemon
 %{_bindir}/%{name}-daemon-pipetest
-%{_bindir}/lp-autoanswer
+%{_bindir}/lp-auto-answer
+%{_bindir}/lp-sendmsg
 %{_bindir}/lp-test-ecc
-%{_mandir}/man1/*
-%{_mandir}/cs/man1/*
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/audio-assistant.desktop
 %{_datadir}/pixmaps/%{name}
@@ -146,18 +172,23 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/appdata/%{name}.appdata.xml
 
 %files libs
-%{_libdir}/lib%{name}.so.*
+%{_libdir}/lib%{name}*.so.*
 
 %files devel
+%doc builddir/coreapi/help/doc/doxygen/html
 %{_bindir}/lpc2xml_test
 %{_bindir}/xml2lpc_test
 %{_bindir}/lp-sendmsg
-%{_includedir}/%{name}
+%{_includedir}/%{name}/*.h
+%{_includedir}/%{name}++/*.hh
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/%{name}.pc
-
+%{_datadir}/Linphone*/cmake/*.cmake
 
 %changelog
+* Sat Sep 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.12.0-2.chinfo
+- cmake and fixes for it
+
 * Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.12.0-1.chinfo
 - 3.12.0
 

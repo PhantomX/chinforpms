@@ -1,6 +1,6 @@
 Name:           ortp
 Version:        1.0.2
-Release:        100.chinfo%{?dist}
+Release:        101.chinfo%{?dist}
 Summary:        A C library implementing the RTP protocol (RFC3550)
 Epoch:          1
 
@@ -9,11 +9,10 @@ License:        LGPLv2+ and VSL
 URL:            http://www.linphone.org/eng/documentation/dev/ortp.html
 Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{version}.tar.gz
 
-BuildRequires:  autoconf
-BuildRequires:  automake
+BuildRequires:  cmake
 BuildRequires:  doxygen
 BuildRequires:  graphviz
-BuildRequires:  libtool perl-Carp
+BuildRequires:  perl-Carp
 BuildRequires:  pkgconfig(bctoolbox)
 
 
@@ -33,26 +32,28 @@ Libraries and headers required to develop software with ortp.
 %prep
 %autosetup -n %{name}-%{version}-0
 
-autoreconf -ivf
+sed \
+  -e 's|${prefix}/lib)|%{_libdir})|g' \
+  -e 's|"-Werror" ||g' \
+  -i CMakeLists.txt
 
 %{__perl} -pi.dot  -e 's/^(HAVE_DOT\s+=)\s+NO$/\1 YES/;s/^(CALL_GRAPH\s+=)\s+NO$/\1 YES/;s/^(CALLER_GRAPH\s+=)\s+NO$/\1 YES/' ortp.doxygen.in
 
 %build
-%configure \
-  --disable-static \
-  --disable-silent-rules \
-  --disable-strict
-
-sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
-sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+mkdir builddir
+pushd builddir
+%cmake .. \
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+  -DENABLE_STATIC:BOOL=OFF \
+  -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON \
+  -DENABLE_TESTS:BOOL=OFF
 
 %make_build
 
 %install
-%make_install INSTALL="install -p"
+%make_install -C builddir
 
-find %{buildroot} -name '*.la' -delete
-rm -f doc/html/html.tar
+rm -f builddir/doc/html/html.tar
 rm -rf %{buildroot}%{_datadir}/doc
 
 %post -p /sbin/ldconfig
@@ -64,13 +65,17 @@ rm -rf %{buildroot}%{_datadir}/doc
 %{_libdir}/libortp.so.*
 
 %files devel
-%doc doc/html
+%doc builddir/doc/html
 %{_includedir}/%{name}
 %{_libdir}/libortp.so
 %{_libdir}/pkgconfig/ortp.pc
+%{_datadir}/oRTP/cmake/*.cmake
 
 %changelog
-* Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.2-1.chinfo
+* Fri Sep 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.2-102.chinfo
+- cmake and fixes for it
+
+* Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.2-100.chinfo
 - 1.0.2
 
 * Tue Jun 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.1-1.chinfo

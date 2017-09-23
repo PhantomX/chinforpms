@@ -1,6 +1,6 @@
 Name:           belle-sip
 Version:        1.6.3
-Release:        1.chinfo%{?dist}
+Release:        2.chinfo%{?dist}
 Summary:        Linphone SIP stack
 
 License:        GPLv2+ and BSD and BSD with advertising and MIT
@@ -10,11 +10,9 @@ Source1:        http://www.antlr3.org/download/antlr-3.4-complete.jar
 
 BuildRequires:  antlr3-tool
 BuildRequires:  antlr3-C-devel
-BuildRequires:  autoconf
-BuildRequires:  automake
+BuildRequires:  cmake
 BuildRequires:  java-headless
 BuildRequires:  mbedtls-devel
-BuildRequires:  libtool
 BuildRequires:  pkgconfig(bctoolbox)
 BuildRequires:  pkgconfig(zlib)
 
@@ -35,34 +33,28 @@ Libraries and headers required to develop software with belle-sip.
 %prep
 %autosetup -n %{name}-%{version}-0
 
-# seds from Arch
-sed -i \
-  -e "s|-Werror||g" \
-  configure.ac
+sed \
+  -e 's|${prefix}/lib)|%{_libdir})|g' \
+  -e 's|"-Werror" ||g' \
+  -i CMakeLists.txt
 
-autoreconf -ivf
-
-pushd src/grammars/
-java -Xmx256m -jar %{SOURCE1} -make -Xmultithreaded -Xconversiontimeout 10000 -fo . belle_sip_message.g
-java -Xmx256m -jar %{SOURCE1} -make -Xmultithreaded -Xconversiontimeout 10000 -fo . belle_sdp.g
-popd
+sed \
+  -e 's|${ANTLR3_COMMAND}|java -Xmx384m -jar %{SOURCE1}|g' \
+  -i src/CMakeLists.txt
 
 %build
-%configure \
-  --disable-tests \
-  --disable-silent-rules \
-  --disable-static
-
-sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
-sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+mkdir builddir
+pushd builddir
+%cmake .. \
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+  -DENABLE_STATIC:BOOL=OFF \
+  -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON \
+  -DENABLE_TESTS:BOOL=OFF
 
 %make_build
 
-
 %install
-%make_install
-
-find %{buildroot} -name '*.la' -delete
+%make_install -C builddir
 
 %post -p /sbin/ldconfig
 
@@ -78,8 +70,12 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}/*.h
 %{_libdir}/libbellesip.so
 %{_libdir}/pkgconfig/%{name}.pc
+%{_datadir}/BelleSIP/cmake/*.cmake
 
 %changelog
+* Fri Sep 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-2.chinfo
+- cmake and fixes for it
+
 * Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-1.chinfo
 - 1.6.3
 
