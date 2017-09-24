@@ -1,4 +1,4 @@
-%global commit 4938ab786e9676cb76906d51fe6cf8f8a707cdb2
+%global commit d36fdd6e5165382718754777cd04b1466464f448
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20170825
 %global use_snapshot 1
@@ -49,7 +49,7 @@
 
 Name:           ppsspp
 Version:        1.4
-Release:        8%{?gver}%{?dist}
+Release:        9%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -259,6 +259,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sat Sep 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-9.20170825gitd36fdd6
+- New snapshot
+
 * Sun Aug 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-8.20170825git4938ab7
 - New snapshot
 

@@ -1,0 +1,296 @@
+From 9d5b86ac13c573795525ecac6ed2db39ab23e2a8 Mon Sep 17 00:00:00 2001
+From: Benjamin Coddington <bcodding@redhat.com>
+Date: Sun, 16 Jul 2017 10:28:22 -0400
+Subject: [PATCH] fs/locks: Remove fl_nspid and use fs-specific l_pid for
+ remote locks
+
+Since commit c69899a17ca4 "NFSv4: Update of VFS byte range lock must be
+atomic with the stateid update", NFSv4 has been inserting locks in rpciod
+worker context.  The result is that the file_lock's fl_nspid is the
+kworker's pid instead of the original userspace pid.
+
+The fl_nspid is only used to represent the namespaced virtual pid number
+when displaying locks or returning from F_GETLK.  There's no reason to set
+it for every inserted lock, since we can usually just look it up from
+fl_pid.  So, instead of looking up and holding struct pid for every lock,
+let's just look up the virtual pid number from fl_pid when it is needed.
+That means we can remove fl_nspid entirely.
+
+The translaton and presentation of fl_pid should handle the following four
+cases:
+
+1 - F_GETLK on a remote file with a remote lock:
+    In this case, the filesystem should determine the l_pid to return here.
+    Filesystems should indicate that the fl_pid represents a non-local pid
+    value that should not be translated by returning an fl_pid <= 0.
+
+2 - F_GETLK on a local file with a remote lock:
+    This should be the l_pid of the lock manager process, and translated.
+
+3 - F_GETLK on a remote file with a local lock, and
+4 - F_GETLK on a local file with a local lock:
+    These should be the translated l_pid of the local locking process.
+
+Fuse was already doing the correct thing by translating the pid into the
+caller's namespace.  With this change we must update fuse to translate
+to init's pid namespace, so that the locks API can then translate from
+init's pid namespace into the pid namespace of the caller.
+
+With this change, the locks API will expect that if a filesystem returns
+a remote pid as opposed to a local pid for F_GETLK, that remote pid will
+be <= 0.  This signifies that the pid is remote, and the locks API will
+forego translating that pid into the pid namespace of the local calling
+process.
+
+Finally, we convert remote filesystems to present remote pids using
+negative numbers. Have lustre, 9p, ceph, cifs, and dlm negate the remote
+pid returned for F_GETLK lock requests.
+
+Since local pids will never be larger than PID_MAX_LIMIT (which is
+currently defined as <= 4 million), but pid_t is an unsigned int, we
+should have plenty of room to represent remote pids with negative
+numbers if we assume that remote pid numbers are similarly limited.
+
+If this is not the case, then we run the risk of having a remote pid
+returned for which there is also a corresponding local pid.  This is a
+problem we have now, but this patch should reduce the chances of that
+occurring, while also returning those remote pid numbers, for whatever
+that may be worth.
+
+Signed-off-by: Benjamin Coddington <bcodding@redhat.com>
+Signed-off-by: Jeff Layton <jlayton@redhat.com>
+---
+ drivers/staging/lustre/lustre/ldlm/ldlm_flock.c |  2 +-
+ fs/9p/vfs_file.c                                |  2 +-
+ fs/ceph/locks.c                                 |  2 +-
+ fs/cifs/cifssmb.c                               |  2 +-
+ fs/dlm/plock.c                                  |  2 +-
+ fs/fuse/file.c                                  |  6 +--
+ fs/locks.c                                      | 62 +++++++++++++++----------
+ include/linux/fs.h                              |  1 -
+ 8 files changed, 45 insertions(+), 34 deletions(-)
+
+diff --git a/drivers/staging/lustre/lustre/ldlm/ldlm_flock.c b/drivers/staging/lustre/lustre/ldlm/ldlm_flock.c
+index b7f28b39c7b3..abcbf075acc0 100644
+--- a/drivers/staging/lustre/lustre/ldlm/ldlm_flock.c
++++ b/drivers/staging/lustre/lustre/ldlm/ldlm_flock.c
+@@ -596,7 +596,7 @@ ldlm_flock_completion_ast(struct ldlm_lock *lock, __u64 flags, void *data)
+ 		default:
+ 			getlk->fl_type = F_UNLCK;
+ 		}
+-		getlk->fl_pid = (pid_t)lock->l_policy_data.l_flock.pid;
++		getlk->fl_pid = -(pid_t)lock->l_policy_data.l_flock.pid;
+ 		getlk->fl_start = (loff_t)lock->l_policy_data.l_flock.start;
+ 		getlk->fl_end = (loff_t)lock->l_policy_data.l_flock.end;
+ 	} else {
+diff --git a/fs/9p/vfs_file.c b/fs/9p/vfs_file.c
+index 3de3b4a89d89..43c242e17132 100644
+--- a/fs/9p/vfs_file.c
++++ b/fs/9p/vfs_file.c
+@@ -288,7 +288,7 @@ static int v9fs_file_getlock(struct file *filp, struct file_lock *fl)
+ 			fl->fl_end = OFFSET_MAX;
+ 		else
+ 			fl->fl_end = glock.start + glock.length - 1;
+-		fl->fl_pid = glock.proc_id;
++		fl->fl_pid = -glock.proc_id;
+ 	}
+ 	kfree(glock.client_id);
+ 	return res;
+diff --git a/fs/ceph/locks.c b/fs/ceph/locks.c
+index 64ae74472046..8cd63e8123d8 100644
+--- a/fs/ceph/locks.c
++++ b/fs/ceph/locks.c
+@@ -79,7 +79,7 @@ static int ceph_lock_message(u8 lock_type, u16 operation, struct file *file,
+ 	err = ceph_mdsc_do_request(mdsc, inode, req);
+ 
+ 	if (operation == CEPH_MDS_OP_GETFILELOCK) {
+-		fl->fl_pid = le64_to_cpu(req->r_reply_info.filelock_reply->pid);
++		fl->fl_pid = -le64_to_cpu(req->r_reply_info.filelock_reply->pid);
+ 		if (CEPH_LOCK_SHARED == req->r_reply_info.filelock_reply->type)
+ 			fl->fl_type = F_RDLCK;
+ 		else if (CEPH_LOCK_EXCL == req->r_reply_info.filelock_reply->type)
+diff --git a/fs/cifs/cifssmb.c b/fs/cifs/cifssmb.c
+index 72a53bd19865..118a63e7e221 100644
+--- a/fs/cifs/cifssmb.c
++++ b/fs/cifs/cifssmb.c
+@@ -2522,7 +2522,7 @@ CIFSSMBPosixLock(const unsigned int xid, struct cifs_tcon *tcon,
+ 			pLockData->fl_start = le64_to_cpu(parm_data->start);
+ 			pLockData->fl_end = pLockData->fl_start +
+ 					le64_to_cpu(parm_data->length) - 1;
+-			pLockData->fl_pid = le32_to_cpu(parm_data->pid);
++			pLockData->fl_pid = -le32_to_cpu(parm_data->pid);
+ 		}
+ 	}
+ 
+diff --git a/fs/dlm/plock.c b/fs/dlm/plock.c
+index d401425f602a..e631b1689228 100644
+--- a/fs/dlm/plock.c
++++ b/fs/dlm/plock.c
+@@ -367,7 +367,7 @@ int dlm_posix_get(dlm_lockspace_t *lockspace, u64 number, struct file *file,
+ 		locks_init_lock(fl);
+ 		fl->fl_type = (op->info.ex) ? F_WRLCK : F_RDLCK;
+ 		fl->fl_flags = FL_POSIX;
+-		fl->fl_pid = op->info.pid;
++		fl->fl_pid = -op->info.pid;
+ 		fl->fl_start = op->info.start;
+ 		fl->fl_end = op->info.end;
+ 		rv = 0;
+diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+index 3ee4fdc3da9e..7cd692f51d1d 100644
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -2101,11 +2101,11 @@ static int convert_fuse_file_lock(struct fuse_conn *fc,
+ 		fl->fl_end = ffl->end;
+ 
+ 		/*
+-		 * Convert pid into the caller's pid namespace. If the pid
+-		 * does not map into the namespace fl_pid will get set to 0.
++		 * Convert pid into init's pid namespace.  The locks API will
++		 * translate it into the caller's pid namespace.
+ 		 */
+ 		rcu_read_lock();
+-		fl->fl_pid = pid_vnr(find_pid_ns(ffl->pid, fc->pid_ns));
++		fl->fl_pid = pid_nr_ns(find_pid_ns(ffl->pid, fc->pid_ns), &init_pid_ns);
+ 		rcu_read_unlock();
+ 		break;
+ 
+diff --git a/fs/locks.c b/fs/locks.c
+index d7daa6c8932f..6d0949880ebd 100644
+--- a/fs/locks.c
++++ b/fs/locks.c
+@@ -137,6 +137,7 @@
+ #define IS_FLOCK(fl)	(fl->fl_flags & FL_FLOCK)
+ #define IS_LEASE(fl)	(fl->fl_flags & (FL_LEASE|FL_DELEG|FL_LAYOUT))
+ #define IS_OFDLCK(fl)	(fl->fl_flags & FL_OFDLCK)
++#define IS_REMOTELCK(fl)	(fl->fl_pid <= 0)
+ 
+ static inline bool is_remote_lock(struct file *filp)
+ {
+@@ -733,7 +734,6 @@ static void locks_wake_up_blocks(struct file_lock *blocker)
+ static void
+ locks_insert_lock_ctx(struct file_lock *fl, struct list_head *before)
+ {
+-	fl->fl_nspid = get_pid(task_tgid(current));
+ 	list_add_tail(&fl->fl_list, before);
+ 	locks_insert_global_locks(fl);
+ }
+@@ -743,10 +743,6 @@ locks_unlink_lock_ctx(struct file_lock *fl)
+ {
+ 	locks_delete_global_locks(fl);
+ 	list_del_init(&fl->fl_list);
+-	if (fl->fl_nspid) {
+-		put_pid(fl->fl_nspid);
+-		fl->fl_nspid = NULL;
+-	}
+ 	locks_wake_up_blocks(fl);
+ }
+ 
+@@ -823,8 +819,6 @@ posix_test_lock(struct file *filp, struct file_lock *fl)
+ 	list_for_each_entry(cfl, &ctx->flc_posix, fl_list) {
+ 		if (posix_locks_conflict(fl, cfl)) {
+ 			locks_copy_conflock(fl, cfl);
+-			if (cfl->fl_nspid)
+-				fl->fl_pid = pid_vnr(cfl->fl_nspid);
+ 			goto out;
+ 		}
+ 	}
+@@ -2048,9 +2042,33 @@ int vfs_test_lock(struct file *filp, struct file_lock *fl)
+ }
+ EXPORT_SYMBOL_GPL(vfs_test_lock);
+ 
++/**
++ * locks_translate_pid - translate a file_lock's fl_pid number into a namespace
++ * @fl: The file_lock who's fl_pid should be translated
++ * @ns: The namespace into which the pid should be translated
++ *
++ * Used to tranlate a fl_pid into a namespace virtual pid number
++ */
++static pid_t locks_translate_pid(struct file_lock *fl, struct pid_namespace *ns)
++{
++	pid_t vnr;
++	struct pid *pid;
++
++	if (IS_OFDLCK(fl))
++		return -1;
++	if (IS_REMOTELCK(fl))
++		return fl->fl_pid;
++
++	rcu_read_lock();
++	pid = find_pid_ns(fl->fl_pid, &init_pid_ns);
++	vnr = pid_nr_ns(pid, ns);
++	rcu_read_unlock();
++	return vnr;
++}
++
+ static int posix_lock_to_flock(struct flock *flock, struct file_lock *fl)
+ {
+-	flock->l_pid = IS_OFDLCK(fl) ? -1 : fl->fl_pid;
++	flock->l_pid = locks_translate_pid(fl, task_active_pid_ns(current));
+ #if BITS_PER_LONG == 32
+ 	/*
+ 	 * Make sure we can represent the posix lock via
+@@ -2072,7 +2090,7 @@ static int posix_lock_to_flock(struct flock *flock, struct file_lock *fl)
+ #if BITS_PER_LONG == 32
+ static void posix_lock_to_flock64(struct flock64 *flock, struct file_lock *fl)
+ {
+-	flock->l_pid = IS_OFDLCK(fl) ? -1 : fl->fl_pid;
++	flock->l_pid = locks_translate_pid(fl, task_active_pid_ns(current));
+ 	flock->l_start = fl->fl_start;
+ 	flock->l_len = fl->fl_end == OFFSET_MAX ? 0 :
+ 		fl->fl_end - fl->fl_start + 1;
+@@ -2584,22 +2602,16 @@ static void lock_get_status(struct seq_file *f, struct file_lock *fl,
+ {
+ 	struct inode *inode = NULL;
+ 	unsigned int fl_pid;
++	struct pid_namespace *proc_pidns = file_inode(f->file)->i_sb->s_fs_info;
+ 
+-	if (fl->fl_nspid) {
+-		struct pid_namespace *proc_pidns = file_inode(f->file)->i_sb->s_fs_info;
+-
+-		/* Don't let fl_pid change based on who is reading the file */
+-		fl_pid = pid_nr_ns(fl->fl_nspid, proc_pidns);
+-
+-		/*
+-		 * If there isn't a fl_pid don't display who is waiting on
+-		 * the lock if we are called from locks_show, or if we are
+-		 * called from __show_fd_info - skip lock entirely
+-		 */
+-		if (fl_pid == 0)
+-			return;
+-	} else
+-		fl_pid = fl->fl_pid;
++	fl_pid = locks_translate_pid(fl, proc_pidns);
++	/*
++	 * If there isn't a fl_pid don't display who is waiting on
++	 * the lock if we are called from locks_show, or if we are
++	 * called from __show_fd_info - skip lock entirely
++	 */
++	if (fl_pid == 0)
++		return;
+ 
+ 	if (fl->fl_file != NULL)
+ 		inode = locks_inode(fl->fl_file);
+@@ -2674,7 +2686,7 @@ static int locks_show(struct seq_file *f, void *v)
+ 
+ 	fl = hlist_entry(v, struct file_lock, fl_link);
+ 
+-	if (fl->fl_nspid && !pid_nr_ns(fl->fl_nspid, proc_pidns))
++	if (locks_translate_pid(fl, proc_pidns) == 0)
+ 		return 0;
+ 
+ 	lock_get_status(f, fl, iter->li_pos, "");
+diff --git a/include/linux/fs.h b/include/linux/fs.h
+index 7b5d6816542b..f0b108af9b02 100644
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -999,7 +999,6 @@ struct file_lock {
+ 	unsigned char fl_type;
+ 	unsigned int fl_pid;
+ 	int fl_link_cpu;		/* what cpu's list is this on? */
+-	struct pid *fl_nspid;
+ 	wait_queue_head_t fl_wait;
+ 	struct file *fl_file;
+ 	loff_t fl_start;
+-- 
+2.14.1
+

@@ -15,7 +15,7 @@
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.16
+%global ninever 2.17
 %endif # 0%{?fedora}
 
 # laino patches, see: https://github.com/laino/wine-patches
