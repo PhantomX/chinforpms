@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -573,20 +573,23 @@ Patch211: drm-i915-hush-check-crtc-state.patch
 # 300 - ARM patches
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+Patch302: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
 # Fix OMAP4 (pandaboard)
-Patch302: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
+Patch303: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
 # http://patchwork.ozlabs.org/patch/587554/
-Patch303: ARM-tegra-usb-no-reset.patch
+Patch304: ARM-tegra-usb-no-reset.patch
 
-Patch304: allwinner-net-emac.patch
+Patch305: allwinner-net-emac.patch
+
+# https://patchwork.kernel.org/patch/9967397/
+Patch306: tegra-Use-different-MSI-target-address-for-Tegra20.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch305: arm-imx6-hummingboard2.patch
+Patch307: arm-imx6-hummingboard2.patch
 
-Patch306: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch308: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 # https://patchwork.kernel.org/patch/9815555/
 # https://patchwork.kernel.org/patch/9815651/
@@ -662,9 +665,6 @@ Patch714: V4-acpi-acpica-fix-acpi-parse-and-parseext-cache-leaks.patch
 # CVE-2017-13695 rhbz 1485349
 Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
 
-# CVE-2017-14051 rhbz 1487126 1487127
-Patch717: v2-scsi-qla2xxx-Fix-an-integer-overflow-in-sysfs-code.patch
-
 # Should fix our QXL issues (Doesn't)
 Patch718: qxl-fixes.patch
 
@@ -726,7 +726,6 @@ Patch3011: BUGFIX-IMPROVEMENT-V2-3-3-block-bfq-guarantee-update_next_in_service-
 # https://patchwork.kernel.org/patch/9943513/
 Patch3012: block-bfq-Disable-writeback-throttling.patch
 # https://github.com/pfactum/pf-kernel/commits/pf-4.13
-Patch3013: https://github.com/pfactum/pf-kernel/commit/2dd0a85dd88ae4c7f3ca55210b589b23c44644a6.patch
 Patch3014: https://github.com/pfactum/pf-kernel/commit/97b5ffd5fd25cf3d842892c5f95aa9e43788b723.patch
 Patch3015: https://github.com/pfactum/pf-kernel/commit/8a18ea7eedc43c16dde209f925446878a2bdc282.patch
 Patch3016: https://github.com/pfactum/pf-kernel/commit/6faa479fc1f518401dffbc8607bea828f677e124.patch
@@ -2307,6 +2306,9 @@ fi
 #
 #
 %changelog
+* Wed Sep 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.4-500.chinfo
+- 4.13.4
+
 * Sat Sep 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.3-501.chinfo
 - f26 sync
 
