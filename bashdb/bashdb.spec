@@ -1,21 +1,22 @@
 %bcond_with tests
-%global rversion %(c=%{version}; echo ${c//_/-})
 
 Name:           bashdb
 Summary:        BASH debugger, the BASH symbolic debugger
-Version:        4.4_0.92
+Version:        4.4_0.94
 Release:        1%{?dist}
 License:        GPLv2+
 Group:          Development/Debuggers
 Url:            http://bashdb.sourceforge.net/
+
+%global rversion %(c=%{version}; echo ${c//_/-})
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{rversion}.tar.bz2
 
 BuildArch:      noarch
 
-BuildRequires:  bash >= 4.3
+BuildRequires:  bash >= 4.4
 Requires(post): /sbin/install-info
 Requires(preun): /sbin/install-info
-Requires:       bash >= 4.3
+Requires:       bash >= 4.4
 
 Obsoletes:      emacs-bashdb < %{version}
 Obsoletes:      emacs-bashdb-el < %{version}
@@ -66,6 +67,9 @@ fi
 %{_infodir}/%{name}.info*
 
 %changelog
+* Mon Oct 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.4_0.94-1
+- 4.4-0.94
+
 * Thu Mar 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.4_0.92-1
 - 4.4-0.92
 

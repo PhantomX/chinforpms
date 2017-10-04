@@ -21,7 +21,7 @@
 
 Name:           claws-mail
 Version:        3.15.1
-Release:        100.chinfo%{?dist}
+Release:        101.chinfo%{?dist}
 Summary:        Email client and news reader based on GTK+
 Group:          Applications/Internet
 License:        GPLv3+
@@ -45,6 +45,11 @@ Patch51:        12fix_manpage_header.patch
 # added 20151220 / plugin has been deleted in 3.13.0
 Obsoletes:      %{name}-plugins-geolocation < %{version}
 
+# added 20170310 / webkitgtk removal from fedora rhbz#1375803
+%if !%{with_fancy}
+Obsoletes:      %{name}-plugins-fancy < %{version}-%{release}
+Provides:       %{name}-plugins-fancy = %{version}-%{release}
+%endif
 
 BuildRequires:  flex, bison
 BuildRequires:  glib2-devel >= 2.6.2
@@ -700,6 +705,9 @@ fi
 
 
 %changelog
+* Tue Oct 03 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.1-101.chinfo
+- Missing fancy plugin f27 obsoletes
+
 * Wed Sep 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.1-100.chinfo
 - 3.15.1
 - f26 sync
