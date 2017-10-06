@@ -1,6 +1,6 @@
 Name:           firetools
-Version:        0.9.46
-Release:        2%{?dist}
+Version:        0.9.50
+Release:        1%{?dist}
 Summary:        GUI tools for firejail
 
 License:        GPLv2
@@ -77,6 +77,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.9.50-1
+- 0.9.50
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.9.46-2
 - BR: ImageMagick
 

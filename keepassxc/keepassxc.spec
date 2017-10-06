@@ -1,7 +1,7 @@
 %global with_yubikey  %{?_with_yubikey: 1} %{?!_with_yubikey: 0}
 
 Name:           keepassxc
-Version:        2.2.0
+Version:        2.2.1
 Release:        100.chinfo%{?dist}
 Summary:        Cross-platform password manager
 Group:          User Interface/Desktops
@@ -99,6 +99,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
  
 %changelog
+* Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.1-100.chinfo
+- 2.2.1
+
 * Tue Jun 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.0-100.chinfo
 - 2.2.0
 - Conditional yubikey support
