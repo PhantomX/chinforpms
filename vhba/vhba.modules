@@ -1,0 +1,2 @@
+# Load vhba.ko at boot
+vhba

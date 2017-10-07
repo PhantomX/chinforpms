@@ -39,7 +39,7 @@
 
 Name:           wine
 Version:        2.18
-Release:        100%{?rctag}.chinfo%{?dist}
+Release:        101%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -193,6 +193,7 @@ BuildRequires:  libva-devel
 
 %if 0%{?nine}
 BuildRequires:  mesa-libd3d-devel
+BuildRequires:  mesa-libEGL-devel
 %endif # 0%{?nine}
 
 
@@ -2316,6 +2317,9 @@ fi
 %endif
 
 %changelog
+* Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.18-101.chinfo
+- BR: mesa-libEGL-devel with nine, fixes Fedora 27 build
+
 * Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.18-100.chinfo
 - 2.18
 

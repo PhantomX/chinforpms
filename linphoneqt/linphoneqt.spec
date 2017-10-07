@@ -90,8 +90,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_bindir}/%{name}
 %{_bindir}/%{name}-tester
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/%{name}/*-factory
-%{_datadir}/%{name}/assistant/*.rc
+%{_datadir}/linphone/*-factory
+%{_datadir}/linphone/assistant/*.rc
 %{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
 

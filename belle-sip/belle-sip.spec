@@ -1,6 +1,6 @@
 Name:           belle-sip
 Version:        1.6.3
-Release:        2.chinfo%{?dist}
+Release:        3.chinfo%{?dist}
 Summary:        Linphone SIP stack
 
 License:        GPLv2+ and BSD and BSD with advertising and MIT
@@ -36,6 +36,7 @@ Libraries and headers required to develop software with belle-sip.
 sed \
   -e 's|${prefix}/lib)|%{_libdir})|g' \
   -e 's|"-Werror" ||g' \
+  -e '/REQUIRES_PRIVATE/s| z")| zlib")|g' \
   -i CMakeLists.txt
 
 sed \
@@ -73,6 +74,9 @@ pushd builddir
 %{_datadir}/BelleSIP/cmake/*.cmake
 
 %changelog
+* Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-3.chinfo
+- Fix zlib requires in pkgconfig file
+
 * Fri Sep 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-2.chinfo
 - cmake and fixes for it
 

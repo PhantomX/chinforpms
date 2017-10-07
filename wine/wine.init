@@ -1,0 +1,89 @@
+#!/bin/sh
+#
+# wine	Allow users to run Windows(tm) applications by just clicking on them
+#	(or typing ./file.exe)
+#
+# chkconfig: 35 98 10
+# description: Allow users to run Windows(tm) applications by just clicking \
+#	       on them (or typing ./file.exe)
+### BEGIN INIT INFO
+# Provides: wine-binfmt
+# Required-Start:
+# Required-Stop:
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Add and remove wine binary handler
+# Description: Allow users to run Windows(tm) applications by just clicking
+#              on them (or typing ./file.exe)
+### END INIT INFO
+
+
+. /etc/rc.d/init.d/functions
+RETVAL=0
+
+start() {
+# fix bug on changing runlevels #213230
+	if [ -e /proc/sys/fs/binfmt_misc/windows ]; then
+	    echo -n $"Binary handler for Windows applications already registered"
+	else	
+	    echo -n $"Registering binary handler for Windows applications: "
+	    /sbin/modprobe binfmt_misc &>/dev/null
+	    echo ':windows:M::MZ::/usr/bin/wine:' >/proc/sys/fs/binfmt_misc/register || :
+	    echo ':windowsPE:M::PE::/usr/bin/wine:' >/proc/sys/fs/binfmt_misc/register || :
+	    RETVAL=$?
+	    [ $RETVAL -eq 0 ] && success || failure
+	fi
+	echo
+}
+
+stop() {
+	echo -n $"Unregistering binary handler for Windows applications: "
+	echo "-1" >/proc/sys/fs/binfmt_misc/windows || :
+	echo "-1" >/proc/sys/fs/binfmt_misc/windowsPE || :
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && success || failure
+	echo
+}
+
+wine_status() {
+	if [ -e /proc/sys/fs/binfmt_misc/windows ]; then
+		echo $"Wine binary format handlers are registered."
+		return 0
+	else
+		echo $"Wine binary format handlers are not registered."
+		return 3
+	fi
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	status)
+		wine_status
+		RETVAL=$?
+		;;
+	restart)
+		stop
+		start
+		;;
+	reload)
+		stop
+		start
+		;;
+	condrestart|try-restart)
+	
+		if [ -e /proc/sys/fs/binfmt_misc/windows ]; then
+			stop
+			start
+		fi
+		;;
+	*)
+		echo $"Usage: $prog {start|stop|status|restart|reload|try-restart}"
+		exit 1
+esac
+exit $RETVAL
+
