@@ -17,7 +17,7 @@
 %global python  0
 
 Name:           dropboxd
-Version:        34.4.22
+Version:        36.4.22
 Release:        1%{?dist}
 Summary:        Dropbox proprietary client
 
@@ -177,6 +177,9 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 
 
 %changelog
+* Mon Oct 09 2017 Phantom X <PhantomX@users.noreply.github.com> - 36.4.22-1
+- 36.4.22
+
 * Sat Sep 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 34.4.22-1
 - 34.4.22
 

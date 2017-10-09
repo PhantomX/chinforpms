@@ -721,6 +721,7 @@ Patch3014: https://github.com/pfactum/pf-kernel/commit/97b5ffd5fd25cf3d842892c5f
 Patch3015: https://github.com/pfactum/pf-kernel/commit/8a18ea7eedc43c16dde209f925446878a2bdc282.patch
 Patch3016: https://github.com/pfactum/pf-kernel/commit/6faa479fc1f518401dffbc8607bea828f677e124.patch
 Patch3017: https://github.com/pfactum/pf-kernel/commit/0ebd6bee3fa04e23d23a3a2ce9193a424ecbea80.patch
+Patch3018: https://github.com/pfactum/pf-kernel/commit/0dab2b12f9acc11b0634a6fbd10c6c41c88726a7.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
