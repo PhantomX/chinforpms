@@ -1,17 +1,22 @@
 %global real_name gnome-colors
 
-Name: gnome-colors-icon-theme
-Summary: GNOME-Colors icon theme
-Version: 5.5.1
-Release: 100.chinfo%{?dist}
-Url: https://github.com/gnome-colors/gnome-colors
-Source0: https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/%{real_name}/%{real_name}-src-%{version}.tar.gz
-License: GPLv2
-BuildArch: noarch
-Requires: gnome-icon-theme
-BuildRequires: icon-naming-utils >= 0.8.7
-BuildRequires: inkscape
-BuildRequires: ImageMagick
+Name:           gnome-colors-icon-theme
+Summary:        GNOME-Colors icon theme
+Version:        5.5.1
+Release:        101.chinfo%{?dist}
+
+License:        GPLv2
+Url:            https://github.com/gnome-colors/gnome-colors
+Source0:        https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/%{real_name}/%{real_name}-src-%{version}.tar.gz
+
+Patch1:         %{name}-nostdin.patch
+
+BuildArch:      noarch
+
+Requires:       gnome-icon-theme
+BuildRequires:  icon-naming-utils >= 0.8.7
+BuildRequires:  inkscape
+BuildRequires:  ImageMagick
 
 %description
 The GNOME-Colors is a project that aims to make the GNOME desktop as 
@@ -30,6 +35,8 @@ can be found in the AUTHORS file.
 
 %prep
 %setup -q -c %{real_name}--icon-theme-%{version}
+%patch1
+
 # link the start-here icon to the Fedora icon
 for dir in gnome-colors-common/*/places; do
   cd $dir
@@ -81,6 +88,9 @@ done
 %{_datadir}/icons/gnome-colors-wise/
 
 %changelog
+* Tue Oct 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.5.1-101.chinfo
+- Fix new inkscape crash with stdin
+
 * Thu Feb 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.5.1-100.chinfo
 - Update url and source link
 - Remove xpm files

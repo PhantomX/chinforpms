@@ -1,0 +1,21 @@
+--- Makefile.orig	2017-10-10 08:48:26.044254148 -0300
++++ Makefile	2017-10-10 09:05:59.351530794 -0300
+@@ -99,7 +99,9 @@ $(foreach theme,$(THEMES),$(eval $(call
+ define png_template
+ $(1)/$(2).png: src/$(2).svg themes/$(1)
+ 	@if test ! -d $$(dir $$@); then mkdir -p $$(dir $$@); echo "mkdir -p $$(dir $$@)"; fi
+-	sed "$$($(1)_$(3)_sed)" $$< | inkscape --without-gui -f /dev/stdin -e "$$(CURDIR)/$$@"
++	@if test ! -d tmp/$$(dir $$<); then mkdir -p tmp/$$(dir $$<); echo "mkdir -p tmp/$$(dir $$<)"; fi
++	sed "$$($(1)_$(3)_sed)" $$< > tmp/$$<
++	inkscape --no-convert-text-baseline-spacing --without-gui -f tmp/$$< -e "$$(CURDIR)/$$@"
+ endef
+ 
+ define svg_template
+@@ -163,6 +165,7 @@ clean:
+ ifneq ($(THEME_FILES),)
+ 	rm -rf $(THEMES)
+ endif
++	rm -rf tmp
+ 
+ help::
+ 	@echo "    clean                    Deletes all files created by this makefile."
