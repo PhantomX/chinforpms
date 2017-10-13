@@ -25,8 +25,8 @@
 %global pyqt 0
 
 Name:           spideroakone
-Version:        6.3.1
-Release:        2%{?dist}
+Version:        6.4.0
+Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -298,6 +298,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Fri Oct 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.4.0-1
+- 6.4.0
+
 * Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.3.1-2
 - Exclude provides
 - Remove sqlite bundled library
