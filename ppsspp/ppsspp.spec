@@ -1,6 +1,6 @@
-%global commit d36fdd6e5165382718754777cd04b1466464f448
+%global commit ed602a3319b02efa283f160b2571ceb7f07fefe1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20170825
+%global date 20171013
 %global use_snapshot 1
 
 # Enable system ffmpeg
@@ -49,7 +49,7 @@
 
 Name:           ppsspp
 Version:        1.4
-Release:        9%{?gver}%{?dist}
+Release:        10%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -99,8 +99,8 @@ Requires:       google-roboto-condensed-fonts
 %{summary}.
 
 %prep
+%autosetup -n %{name}-%{?use_snapshot:%{commit}}%{!?use_snapshot:%{version}} -p0
 %if 0%{?use_snapshot}
-%autosetup -n %{name}-%{commit} -p0
 tar -xf %{SOURCE1} -C assets/lang --strip-components 1
 %if !0%{?sysffmpeg}
 tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
@@ -110,8 +110,6 @@ tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE5} -C ext/armips/ext/tinyformat --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
-%else
-%autosetup -n %{name}-%{version} -p0
 %endif
 
 %if 0%{?use_snapshot}
@@ -259,6 +257,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Fri Oct 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-10.20170825gited602a3
+- New snapshot
+
 * Sat Sep 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-9.20170825gitd36fdd6
 - New snapshot
 

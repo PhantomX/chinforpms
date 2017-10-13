@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -259,6 +259,7 @@ Summary: The Linux kernel
 
 %ifarch x86_64
 %define asmarch x86
+%define pae PAE
 %define all_arch_configs kernel-%{version}-x86_64*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
@@ -578,24 +579,29 @@ Patch211: drm-i915-hush-check-crtc-state.patch
 
 # 300 - ARM patches
 
+# Reduces a number of primarily info logs to dmesg
+# https://patchwork.freedesktop.org/patch/180737/
+# https://patchwork.freedesktop.org/patch/180554/
+Patch300: drm-cma-reduce-dmesg-logs.patch
+
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch302: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
 # Fix OMAP4 (pandaboard)
-Patch303: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
+Patch302: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
 # http://patchwork.ozlabs.org/patch/587554/
-Patch304: ARM-tegra-usb-no-reset.patch
+Patch303: ARM-tegra-usb-no-reset.patch
 
-Patch305: allwinner-net-emac.patch
-
-# https://patchwork.kernel.org/patch/9967397/
-Patch306: tegra-Use-different-MSI-target-address-for-Tegra20.patch
+Patch304: allwinner-net-emac.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch307: arm-imx6-hummingboard2.patch
+Patch305: arm-imx6-hummingboard2.patch
 
-Patch308: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch306: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+
+# https://patchwork.kernel.org/patch/9967397/
+Patch307: tegra-Use-different-MSI-target-address-for-Tegra20.patch
 
 # https://patchwork.kernel.org/patch/9815555/
 # https://patchwork.kernel.org/patch/9815651/
@@ -618,6 +624,9 @@ Patch313: qcom-Force-host-mode-for-USB-on-apq8016-sbc.patch
 # https://patchwork.kernel.org/patch/9850189/
 Patch314: qcom-msm-ci_hdrc_msm_probe-missing-of_node_get.patch
 
+# Hack until interconnect API lands upstream
+Patch315: qcom-clk-gpu-msm.patch
+
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
@@ -633,12 +642,31 @@ Patch324: bcm283x-vc4-fixes.patch
 # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20170912&id=723288836628bc1c0855f3bb7b64b1803e4b9e4a
 Patch330: arm-of-restrict-dma-configuration.patch
 
+# Upstream ACPI fix
+Patch331: arm64-xgene-acpi-fix.patch
+
+# Generic fixes and enablement for Socionext SoC and 96board
+Patch332: ahci-don-t-ignore-result-code-of-ahci_reset_controller.patch
+
+# https://patchwork.kernel.org/patch/9980861/
+Patch333: PCI-aspm-deal-with-missing-root-ports-in-link-state-handling.patch
+
+# https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
+Patch334: arm64-socionext-96b-enablement.patch
+
+# ThunderX fixes
+Patch335: arm64-cavium-fixes.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
 
 # CVE-2017-7477 rhbz 1445207 1445208
 Patch502: CVE-2017-7477.patch
+
+# rhbz 1498016 1498017
+Patch503: KEYS-don-t-let-add_key-update-an-uninstantiated-key.patch
+Patch504: KEYS-fix-race-between-updating-and-finding-negative-.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -652,15 +680,34 @@ Patch604: 0002-power-supply-max17042_battery-Fix-ACPI-interrupt-iss.patch
 Patch613: 0013-iio-accel-bmc150-Add-support-for-BOSC0200-ACPI-devic.patch
 Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
 
-# rhbz 1431375
-Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
-Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
 # rhbz 1476467
-Patch706: Fix-for-module-sig-verification.patch
+Patch617: Fix-for-module-sig-verification.patch
 
 # rhbz 1485086
-Patch710: pci-mark-amd-stoney-gpu-ats-as-broken.patch
+Patch619: pci-mark-amd-stoney-gpu-ats-as-broken.patch
+
+# Should fix our QXL issues
+Patch622: qxl-fixes.patch
+
+# rhbz 1431375
+Patch624: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+
+# rhbz 1432684
+Patch626: 1-3-net-set-tb--fast_sk_family.patch
+Patch627: 2-3-net-use-inet6_rcv_saddr-to-compare-sockets.patch
+Patch628: 3-3-inet-fix-improper-empty-comparison.patch
+
+# rhbz 1497861
+Patch629: 0001-platform-x86-peaq-wmi-Add-DMI-check-before-binding-t.patch
+
+# rhbz 1482648
+Patch630: Input-synaptics---Disable-kernel-tracking-on-SMBus-devices.patch
+
+# Headed upstream
+Patch631: drm-i915-boost-GPU-clocks-if-we-miss-the-pageflip.patch
+
+# fix gnome 3.26+ not working under VirtualBox, submitted upstream, Cc: Stable
+Patch632: 0001-staging-vboxvideo-Fix-reporting-invalid-suggested-of.patch
 
 # CVE-2017-13693 rhbz 1485346 1485356
 Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
@@ -671,19 +718,8 @@ Patch714: V4-acpi-acpica-fix-acpi-parse-and-parseext-cache-leaks.patch
 # CVE-2017-13695 rhbz 1485349
 Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
 
-# Should fix our QXL issues (Doesn't)
-Patch718: qxl-fixes.patch
-
 # rhbz 1493498
 Patch723: 0001-fs-locks-Remove-fl_nspid-and-use-fs-specific-l_pid-f.patch
-
-# rhbz 1432684
-Patch724: 1-3-net-set-tb--fast_sk_family.patch
-Patch725: 2-3-net-use-inet6_rcv_saddr-to-compare-sockets.patch
-Patch726: 3-3-inet-fix-improper-empty-comparison.patch
-
-# rhbz 1497861
-Patch629: 0001-platform-x86-peaq-wmi-Add-DMI-check-before-binding-t.patch
 
 ### Extra
 
@@ -723,14 +759,16 @@ Patch3009: BUGFIX-IMPROVEMENT-V2-1-3-block-bfq-make-lookup_next_entity-push-up-v
 Patch3010: BUGFIX-IMPROVEMENT-V2-2-3-block-bfq-remove-direct-switch-to-an-entity-in-higher-class.patch
 # https://patchwork.kernel.org/patch/9931281/
 Patch3011: BUGFIX-IMPROVEMENT-V2-3-3-block-bfq-guarantee-update_next_in_service-always-returns-an-eligible-entity.patch
-# https://patchwork.kernel.org/patch/9943513/
-Patch3012: block-bfq-Disable-writeback-throttling.patch
+# https://patchwork.kernel.org/patch/9993579/
+Patch3012: V2-1-1-block-bfq-Disable-writeback-throttling.patch
 # https://github.com/pfactum/pf-kernel/commits/pf-4.13
 Patch3014: https://github.com/pfactum/pf-kernel/commit/97b5ffd5fd25cf3d842892c5f95aa9e43788b723.patch
 Patch3015: https://github.com/pfactum/pf-kernel/commit/8a18ea7eedc43c16dde209f925446878a2bdc282.patch
 Patch3016: https://github.com/pfactum/pf-kernel/commit/6faa479fc1f518401dffbc8607bea828f677e124.patch
 Patch3017: https://github.com/pfactum/pf-kernel/commit/0ebd6bee3fa04e23d23a3a2ce9193a424ecbea80.patch
 Patch3018: https://github.com/pfactum/pf-kernel/commit/0dab2b12f9acc11b0634a6fbd10c6c41c88726a7.patch
+#https://patchwork.kernel.org/patch/9991351/
+Patch3019: bfq-Fix-bool-initialization-comparison.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -2292,6 +2330,10 @@ fi
 #
 #
 %changelog
+* Thu Oct 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.5-500.chinfo
+- 4.13.6
+- f27 sync
+
 * Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.5-500.chinfo
 - 4.13.5
 - f26 sync
