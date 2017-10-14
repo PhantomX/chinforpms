@@ -1,4 +1,5 @@
 %global debug_package %{nil}
+%global _build_id_links none
 %global __strip /bin/true
 
 %global pkgname Oracle_VM_VirtualBox_Extension_Pack
