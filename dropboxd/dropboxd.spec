@@ -178,7 +178,7 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 
 
 %changelog
-* Mon Oct 09 2017 Phantom X <PhantomX@users.noreply.github.com> - 36.4.22-1
+* Mon Oct 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 36.4.22-1
 - 36.4.22
 
 * Sat Sep 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 34.4.22-1

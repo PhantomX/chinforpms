@@ -1,5 +1,7 @@
 # Binary package, no debuginfo should be generated
 %global debug_package %{nil}
+%global _build_id_links none
+%global __strip /bin/true
 
 # If firewalld macro is not defined, define it here:
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
@@ -7,7 +9,7 @@
 Name:           steam
 Version:        1.0.0.54
 Epoch:          1
-Release:        101.chinfo%{?dist}
+Release:        102.chinfo%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement
@@ -53,9 +55,6 @@ BuildRequires:  systemd
 Requires:       tar
 Requires:       zenity
 
-# Required for S3 compressed textures on free drivers (intel/radeon/nouveau)
-Requires:       libtxc_dxtn%{?_isa}
-
 # Required for running the package on 32 bit systems with free drivers
 Requires:       mesa-dri-drivers%{?_isa}
 
@@ -67,7 +66,7 @@ Requires:       libXext%{?_isa}
 Requires:       libXinerama%{?_isa}
 Requires:       libXtst%{?_isa}
 Requires:       libXScrnSaver%{?_isa}
-Requires:       mesa-libGL%{?_isa}
+Requires:       mesa-libGL%{?_isa} >= 17.2.2-2
 Requires:       nss%{?_isa}
 Requires:       pulseaudio-libs%{?_isa}
 Requires:       SDL2%{?_isa}
@@ -198,6 +197,9 @@ fi
 %{_udevrulesdir}/*
 
 %changelog
+* Sun Oct 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-102
+- Remove libtxc_dxtn requires
+
 * Sun Jun 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-101
 - Sync with rpmfusion.
 

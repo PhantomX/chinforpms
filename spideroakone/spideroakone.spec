@@ -27,7 +27,7 @@
 
 Name:           spideroakone
 Version:        6.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -90,6 +90,7 @@ Provides:       SpiderOak = %{version}-%{release}
 %global __requires_exclude ^libssl.so.1.0.0
 %global __requires_exclude %__requires_exclude|^libcrypto.so.1.0.0
 %global __requires_exclude %__requires_exclude|^libgmp.so.3
+%global __requires_exclude %__requires_exclude|^libpng12.so.0
 %global __requires_exclude %__requires_exclude|^libQtCore.so.4
 %global __requires_exclude %__requires_exclude|^libQtCore.so.4
 %global __requires_exclude %__requires_exclude|^libQtDBus.so.4
@@ -299,6 +300,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Sun Oct 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.4.0-2
+- Exclude libpng12 provides
+
 * Fri Oct 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.4.0-1
 - 6.4.0
 
