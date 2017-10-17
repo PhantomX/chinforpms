@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -657,6 +657,10 @@ Patch334: arm64-socionext-96b-enablement.patch
 # ThunderX fixes
 Patch335: arm64-cavium-fixes.patch
 
+Patch336: arm-exynos-fix-usb3.patch
+
+Patch337: arm64-aw64-devices.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -708,6 +712,9 @@ Patch631: drm-i915-boost-GPU-clocks-if-we-miss-the-pageflip.patch
 
 # fix gnome 3.26+ not working under VirtualBox, submitted upstream, Cc: Stable
 Patch632: 0001-staging-vboxvideo-Fix-reporting-invalid-suggested-of.patch
+
+# CVE-2017-15265 rhbz 1501878 1501880
+Patch633: 0001-ALSA-seq-Fix-use-after-free-at-creating-a-port.patch
 
 # CVE-2017-13693 rhbz 1485346 1485356
 Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
@@ -2330,11 +2337,15 @@ fi
 #
 #
 %changelog
+* Mon Oct 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.7-500.chinfo
+- 4.13.7
+- f27 sync
+
 * Thu Oct 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.5-500.chinfo
 - 4.13.6
 - f27 sync
 
-* Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.5-500.chinfo
+* Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.6-500.chinfo
 - 4.13.5
 - f26 sync
 
