@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -121,6 +121,9 @@ Summary: The Linux kernel
 #
 # build a release kernel on rawhide
 %define with_release   %{?_with_release:      1} %{?!_with_release:      0}
+
+# Use kernel-local-native (CONFIG_MNATIVE=y)
+%global with_native  %{?_with_native:     1} %{?!_with_native:     0}
 
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
@@ -485,6 +488,7 @@ Source42: check_configs.awk
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
 Source1000: kernel-local
+Source1001: kernel-local-native
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -600,9 +604,6 @@ Patch305: arm-imx6-hummingboard2.patch
 
 Patch306: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
-# https://patchwork.kernel.org/patch/9967397/
-Patch307: tegra-Use-different-MSI-target-address-for-Tegra20.patch
-
 # https://patchwork.kernel.org/patch/9815555/
 # https://patchwork.kernel.org/patch/9815651/
 # https://patchwork.kernel.org/patch/9819885/
@@ -712,9 +713,6 @@ Patch631: drm-i915-boost-GPU-clocks-if-we-miss-the-pageflip.patch
 
 # fix gnome 3.26+ not working under VirtualBox, submitted upstream, Cc: Stable
 Patch632: 0001-staging-vboxvideo-Fix-reporting-invalid-suggested-of.patch
-
-# CVE-2017-15265 rhbz 1501878 1501880
-Patch633: 0001-ALSA-seq-Fix-use-after-free-at-creating-a-port.patch
 
 # CVE-2017-13693 rhbz 1485346 1485356
 Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
@@ -1354,6 +1352,7 @@ git commit -a -m "Stable update"
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/kernel-*.config .
 cp %{SOURCE1000} .
+cp %{SOURCE1001} .
 cp %{SOURCE15} .
 cp %{SOURCE40} .
 cp %{SOURCE41} .
@@ -1376,7 +1375,11 @@ VERSION=%{version} ./generate_all_configs.sh
 for i in %{all_arch_configs}
 do
   mv $i $i.tmp
-  ./merge.pl %{SOURCE1000} $i.tmp > $i
+  %if !%{with_native}
+    ./merge.pl %{SOURCE1000} $i.tmp > $i
+  %else
+    ./merge.pl %{SOURCE1001} $i.tmp > $i
+  %endif
   rm $i.tmp
 done
 %endif
@@ -2337,6 +2340,9 @@ fi
 #
 #
 %changelog
+* Wed Oct 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.8-500.chinfo
+- 4.13.8
+
 * Mon Oct 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.7-500.chinfo
 - 4.13.7
 - f27 sync

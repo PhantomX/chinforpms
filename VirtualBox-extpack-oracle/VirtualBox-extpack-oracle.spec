@@ -4,8 +4,14 @@
 
 %global pkgname Oracle_VM_VirtualBox_Extension_Pack
 
+%ifarch x86_64
+%global parch amd64
+%else
+%global parch x86
+%endif
+
 Name:           VirtualBox-extpack-oracle
-Version:        5.1.28
+Version:        5.1.30
 Release:        1%{?dist}
 Summary:        PUEL extensions for VirtualBox)
 
@@ -13,8 +19,10 @@ License:        PUEL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source0:        http://download.virtualbox.org/virtualbox/%{version}/%{pkgname}-%{version}.vbox-extpack
 
+ExclusiveArch:  %{ix86} x86_64
+
 BuildRequires:  tar
-Requires:       VirtualBox-server >= %{version}
+Requires:       VirtualBox-server%{?isa} >= %{version}
 
 %description
 Support for USB 2.0 devices, VirtualBox RDP and PXE boot for Intel cards for
@@ -30,8 +38,8 @@ tar -xzvf %{SOURCE0}
 %install
 
 mkdir -p %{buildroot}%{_libdir}/virtualbox/ExtensionPacks/%{pkgname}
-cp -rp * \
-  %{buildroot}%{_libdir}/virtualbox/ExtensionPacks/%{pkgname}
+cp -rp ExtPack*.* *.rom linux.%{parch} \
+  %{buildroot}%{_libdir}/virtualbox/ExtensionPacks/%{pkgname}/
 
 %files
 %license ExtPack-license.txt
@@ -39,6 +47,10 @@ cp -rp * \
 
 
 %changelog
+* Tue Oct 17 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.30-1
+- 5.1.30
+- Do not install uneeded architecture files
+
 * Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.28-1
 - 5.1.28
 
