@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.18
+%global compholiover 2.19
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
@@ -38,8 +38,8 @@
 %endif
 
 Name:           wine
-Version:        2.18
-Release:        101%{?rctag}.chinfo%{?dist}
+Version:        2.19
+Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1483,6 +1483,7 @@ fi
 %{_libdir}/wine/api-ms-win-shell-shellfolders-l1-1-0.dll.so
 %if 0%{?compholio}
 %{_libdir}/wine/api-ms-win-appmodel-runtime-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-appmodel-runtime-l1-1-2.dll.so
 %{_libdir}/wine/api-ms-win-core-apiquery-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-com-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-delayload-l1-1-1.dll.so
@@ -1940,7 +1941,7 @@ fi
 %{_libdir}/wine/winejoystick.drv.so
 %{_libdir}/wine/winemapi.dll.so
 %if 0%{?fedora} > 24
-%{_libdir}/wine/winemp3.acm.so
+%{_libdir}/wine/l3codeca.acm.so
 %endif
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing32.dll.so
@@ -2317,6 +2318,9 @@ fi
 %endif
 
 %changelog
+* Sat Oct 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.19-100.chinfo
+- 2.19
+
 * Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.18-101.chinfo
 - BR: mesa-libEGL-devel with nine, fixes Fedora 27 build
 
