@@ -15,7 +15,7 @@
 
 # build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
 %global nine 1
-%global ninever 2.18
+%global ninever 2.19
 %endif # 0%{?fedora}
 
 # laino patches, see: https://github.com/laino/wine-patches
@@ -39,7 +39,7 @@
 
 Name:           wine
 Version:        2.19
-Release:        100%{?rctag}.chinfo%{?dist}
+Release:        101%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -2318,6 +2318,9 @@ fi
 %endif
 
 %changelog
+* Mon Oct 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.19-101.chinfo
+- wine-d3d9 2.19
+
 * Sat Oct 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.19-100.chinfo
 - 2.19
 

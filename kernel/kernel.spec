@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2340,6 +2340,10 @@ fi
 #
 #
 %changelog
+* Mon Oct 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.9-500.chinfo
+- 4.13.9
+- f27 sync
+
 * Wed Oct 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.8-500.chinfo
 - 4.13.8
 
