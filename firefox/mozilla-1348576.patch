@@ -1,0 +1,47 @@
+diff -up firefox-53.0/browser/extensions/e10srollout/bootstrap.js.1348576 firefox-53.0/browser/extensions/e10srollout/bootstrap.js
+--- firefox-53.0/browser/extensions/e10srollout/bootstrap.js.1348576	2017-04-18 13:06:29.660860929 +0200
++++ firefox-53.0/browser/extensions/e10srollout/bootstrap.js	2017-04-18 13:07:34.804627469 +0200
+@@ -9,6 +9,7 @@ const {classes: Cc, interfaces: Ci, util
+ Cu.import("resource://gre/modules/Preferences.jsm");
+ Cu.import("resource://gre/modules/Services.jsm");
+ Cu.import("resource://gre/modules/UpdateUtils.jsm");
++Cu.import("resource://gre/modules/AppConstants.jsm");
+ 
+  // The amount of people to be part of e10s
+ const TEST_THRESHOLD = {
+@@ -23,6 +24,23 @@ const ADDON_ROLLOUT_POLICY = {
+   "esr"     : "esrA", // WebExtensions and Addons with mpc=true
+ };
+ 
++if (AppConstants.RELEASE_OR_BETA) {
++  // Bug 1348576 - e10s is never enabled for non-official release builds
++  // This is hacky, but the problem it solves is the following:
++  // the e10s rollout is controlled by the channel name, which
++  // is the only way to distinguish between Beta and Release.
++  // However, non-official release builds (like the ones done by distros
++  // to ship Firefox on their package managers) do not set a value
++  // for the release channel, which gets them to the default value
++  // of.. (drumroll) "default".
++  // But we can't just always configure the same settings for the
++  // "default" channel because that's also the name that a locally
++  // built Firefox gets, and e10s is managed in a different way
++  // there (directly by prefs, on Nightly and Aurora).
++  TEST_THRESHOLD.default = TEST_THRESHOLD.release;
++  ADDON_ROLLOUT_POLICY.default = ADDON_ROLLOUT_POLICY.release;
++}
++
+ const PREF_COHORT_SAMPLE       = "e10s.rollout.cohortSample";
+ const PREF_COHORT_NAME         = "e10s.rollout.cohort";
+ const PREF_E10S_OPTED_IN       = "browser.tabs.remote.autostart";
+diff -up firefox-53.0/browser/extensions/e10srollout/install.rdf.in.1348576 firefox-53.0/browser/extensions/e10srollout/install.rdf.in
+--- firefox-53.0/browser/extensions/e10srollout/install.rdf.in.1348576	2017-04-11 06:15:16.000000000 +0200
++++ firefox-53.0/browser/extensions/e10srollout/install.rdf.in	2017-04-18 13:06:29.660860929 +0200
+@@ -10,7 +10,7 @@
+ 
+   <Description about="urn:mozilla:install-manifest">
+     <em:id>e10srollout@mozilla.org</em:id>
+-    <em:version>1.14</em:version>
++    <em:version>1.15</em:version>
+     <em:type>2</em:type>
+     <em:bootstrap>true</em:bootstrap>
+     <em:multiprocessCompatible>true</em:multiprocessCompatible>

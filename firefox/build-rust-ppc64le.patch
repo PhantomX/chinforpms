@@ -1,0 +1,25 @@
+diff -up firefox-55.0/build/moz.configure/rust.configure.rust-ppc64le firefox-55.0/build/moz.configure/rust.configure
+--- firefox-55.0/build/moz.configure/rust.configure.rust-ppc64le	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/build/moz.configure/rust.configure	2017-08-02 10:19:03.254220003 +0200
+@@ -151,6 +151,9 @@ def rust_triple_alias(host_or_target):
+             ('sparc64', 'Linux'): 'sparc64-unknown-linux-gnu',
+             ('x86', 'Linux'): 'i686-unknown-linux-gnu',
+             ('x86_64', 'Linux'): 'x86_64-unknown-linux-gnu',
++            ('ppc64le', 'Linux'): 'powerpc64le-unknown-linux-gnu',
++            ('ppc64', 'Linux'): 'powerpc64-unknown-linux-gnu',
++            ('s390x', 'Linux'): 's390x-unknown-linux-gnu',
+             # OS X
+             ('x86', 'OSX'): 'i686-apple-darwin',
+             ('x86_64', 'OSX'): 'x86_64-apple-darwin',
+@@ -174,8 +177,10 @@ def rust_triple_alias(host_or_target):
+             ('sparc64', 'SunOS'): 'sparcv9-sun-solaris',
+         }.get((host_or_target.cpu, os_or_kernel), None)
+ 
++        if (rustc_target == 'powerpc64-unknown-linux-gnu' and host_or_target.endianness == 'little'):
++           rustc_target = 'powerpc64le-unknown-linux-gnu'
+         if rustc_target is None:
+-            die("Don't know how to translate {} for rustc".format(host_or_target.alias))
++            die("Don't know how to translate {} for rustc, cpu: {}, os: {}".format(target.alias, target.cpu, os_or_kernel))
+ 
+         # Check to see whether our rustc has a reasonably functional stdlib
+         # for our chosen target.

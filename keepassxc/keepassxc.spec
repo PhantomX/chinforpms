@@ -1,7 +1,7 @@
 %global with_yubikey  %{?_with_yubikey: 1} %{?!_with_yubikey: 0}
 
 Name:           keepassxc
-Version:        2.2.1
+Version:        2.2.2
 Release:        100.chinfo%{?dist}
 Summary:        Cross-platform password manager
 Group:          User Interface/Desktops
@@ -66,7 +66,7 @@ popd
 desktop-file-edit \
   --add-mime-type="application/x-keepass" \
   --add-mime-type="application/x-keepassxc" \
-  %{buildroot}%{_datadir}/applications/%{name}.desktop
+  %{buildroot}%{_datadir}/applications/org.%{name}.desktop
  
 %find_lang keepassx --with-qt
 
@@ -96,9 +96,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/applications/*.desktop
 %{_datadir}/mime/packages/*.xml
 %{_datadir}/icons/hicolor/*/*/*%{name}*
+%{_datadir}/metainfo/*.appdata.xml
 
- 
+
 %changelog
+* Thu Oct 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.2-100.chinfo
+- 2.2.2
+
 * Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.1-100.chinfo
 - 2.2.1
 

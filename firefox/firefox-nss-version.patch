@@ -1,0 +1,13 @@
+diff -up firefox-53.0/media/webrtc/trunk/Makefile.old firefox-53.0/media/webrtc/trunk/Makefile
+diff -up firefox-53.0/old-configure.in.old firefox-53.0/old-configure.in
+--- firefox-53.0/old-configure.in.old	2017-04-18 11:33:53.724460667 +0200
++++ firefox-53.0/old-configure.in	2017-04-18 11:34:08.728405522 +0200
+@@ -2040,7 +2040,7 @@ MOZ_ARG_WITH_BOOL(system-nss,
+     _USE_SYSTEM_NSS=1 )
+ 
+ if test -n "$_USE_SYSTEM_NSS"; then
+-    AM_PATH_NSS(3.29.5, [MOZ_SYSTEM_NSS=1], [AC_MSG_ERROR([you don't have NSS installed or your version is too old])])
++    AM_PATH_NSS(3.29.3, [MOZ_SYSTEM_NSS=1], [AC_MSG_ERROR([you don't have NSS installed or your version is too old])])
+ fi
+ 
+ if test -n "$MOZ_SYSTEM_NSS"; then

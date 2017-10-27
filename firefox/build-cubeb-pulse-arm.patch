@@ -1,0 +1,4946 @@
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/Cargo.toml.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/Cargo.toml
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/Cargo.toml.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/Cargo.toml	2017-08-04 13:37:46.383821740 +0200
+@@ -7,7 +7,11 @@ description = "Cubeb backed for PulseAud
+ [features]
+ pulse-dlopen = ["pulse-ffi/dlopen"]
+ 
++[lib]
++crate-type = ["staticlib", "rlib"]
++
+ [dependencies]
+ cubeb-ffi = { path = "cubeb-ffi" }
+ pulse-ffi = { path = "pulse-ffi" }
++pulse = { path = "pulse-rs" }
+ semver = "^0.6"
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/cubeb-ffi/src/ffi.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/cubeb-ffi/src/ffi.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/cubeb-ffi/src/ffi.rs.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/cubeb-ffi/src/ffi.rs	2017-08-04 13:37:46.384821737 +0200
+@@ -11,45 +11,45 @@ pub enum Context {}
+ pub enum Stream {}
+ 
+ // These need to match cubeb_sample_format
+-pub const SAMPLE_S16LE: c_int = 0;
+-pub const SAMPLE_S16BE: c_int = 1;
+-pub const SAMPLE_FLOAT32LE: c_int = 2;
+-pub const SAMPLE_FLOAT32BE: c_int = 3;
+ pub type SampleFormat = c_int;
++pub const SAMPLE_S16LE: SampleFormat = 0;
++pub const SAMPLE_S16BE: SampleFormat = 1;
++pub const SAMPLE_FLOAT32LE: SampleFormat = 2;
++pub const SAMPLE_FLOAT32BE: SampleFormat = 3;
+ 
+ #[cfg(target_endian = "little")]
+-pub const SAMPLE_S16NE: c_int = SAMPLE_S16LE;
++pub const SAMPLE_S16NE: SampleFormat = SAMPLE_S16LE;
+ #[cfg(target_endian = "little")]
+-pub const SAMPLE_FLOAT32NE: c_int = SAMPLE_FLOAT32LE;
++pub const SAMPLE_FLOAT32NE: SampleFormat = SAMPLE_FLOAT32LE;
+ #[cfg(target_endian = "big")]
+-pub const SAMPLE_S16NE: c_int = SAMPLE_S16BE;
++pub const SAMPLE_S16NE: SampleFormat = SAMPLE_S16BE;
+ #[cfg(target_endian = "big")]
+-pub const SAMPLE_FLOAT32NE: c_int = SAMPLE_FLOAT32BE;
++pub const SAMPLE_FLOAT32NE: SampleFormat = SAMPLE_FLOAT32BE;
+ 
+ pub type DeviceId = *const c_void;
+ 
+ // These need to match cubeb_channel_layout
+-pub const LAYOUT_UNDEFINED: c_int = 0;
+-pub const LAYOUT_DUAL_MONO: c_int = 1;
+-pub const LAYOUT_DUAL_MONO_LFE: c_int = 2;
+-pub const LAYOUT_MONO: c_int = 3;
+-pub const LAYOUT_MONO_LFE: c_int = 4;
+-pub const LAYOUT_STEREO: c_int = 5;
+-pub const LAYOUT_STEREO_LFE: c_int = 6;
+-pub const LAYOUT_3F: c_int = 7;
+-pub const LAYOUT_3F_LFE: c_int = 8;
+-pub const LAYOUT_2F1: c_int = 9;
+-pub const LAYOUT_2F1_LFE: c_int = 10;
+-pub const LAYOUT_3F1: c_int = 11;
+-pub const LAYOUT_3F1_LFE: c_int = 12;
+-pub const LAYOUT_2F2: c_int = 13;
+-pub const LAYOUT_2F2_LFE: c_int = 14;
+-pub const LAYOUT_3F2: c_int = 15;
+-pub const LAYOUT_3F2_LFE: c_int = 16;
+-pub const LAYOUT_3F3R_LFE: c_int = 17;
+-pub const LAYOUT_3F4_LFE: c_int = 18;
+-pub const LAYOUT_MAX: c_int = 19;
+ pub type ChannelLayout = c_int;
++pub const LAYOUT_UNDEFINED: ChannelLayout = 0;
++pub const LAYOUT_DUAL_MONO: ChannelLayout = 1;
++pub const LAYOUT_DUAL_MONO_LFE: ChannelLayout = 2;
++pub const LAYOUT_MONO: ChannelLayout = 3;
++pub const LAYOUT_MONO_LFE: ChannelLayout = 4;
++pub const LAYOUT_STEREO: ChannelLayout = 5;
++pub const LAYOUT_STEREO_LFE: ChannelLayout = 6;
++pub const LAYOUT_3F: ChannelLayout = 7;
++pub const LAYOUT_3F_LFE: ChannelLayout = 8;
++pub const LAYOUT_2F1: ChannelLayout = 9;
++pub const LAYOUT_2F1_LFE: ChannelLayout = 10;
++pub const LAYOUT_3F1: ChannelLayout = 11;
++pub const LAYOUT_3F1_LFE: ChannelLayout = 12;
++pub const LAYOUT_2F2: ChannelLayout = 13;
++pub const LAYOUT_2F2_LFE: ChannelLayout = 14;
++pub const LAYOUT_3F2: ChannelLayout = 15;
++pub const LAYOUT_3F2_LFE: ChannelLayout = 16;
++pub const LAYOUT_3F3R_LFE: ChannelLayout = 17;
++pub const LAYOUT_3F4_LFE: ChannelLayout = 18;
++pub const LAYOUT_MAX: ChannelLayout = 256;
+ 
+ #[repr(C)]
+ #[derive(Clone, Copy, Debug)]
+@@ -77,11 +77,11 @@ impl Default for Device {
+ }
+ 
+ // These need to match cubeb_state
+-pub const STATE_STARTED: c_int = 0;
+-pub const STATE_STOPPED: c_int = 1;
+-pub const STATE_DRAINED: c_int = 2;
+-pub const STATE_ERROR: c_int = 3;
+ pub type State = c_int;
++pub const STATE_STARTED: State = 0;
++pub const STATE_STOPPED: State = 1;
++pub const STATE_DRAINED: State = 2;
++pub const STATE_ERROR: State = 3;
+ 
+ pub const OK: i32 = 0;
+ pub const ERROR: i32 = -1;
+@@ -249,32 +249,42 @@ pub struct LayoutMap {
+ }
+ 
+ // cubeb_mixer.h
++pub type Channel = c_int;
+ 
+ // These need to match cubeb_channel
+-pub const CHANNEL_INVALID: c_int = -1;
+-pub const CHANNEL_MONO: c_int = 0;
+-pub const CHANNEL_LEFT: c_int = 1;
+-pub const CHANNEL_RIGHT: c_int = 2;
+-pub const CHANNEL_CENTER: c_int = 3;
+-pub const CHANNEL_LS: c_int = 4;
+-pub const CHANNEL_RS: c_int = 5;
+-pub const CHANNEL_RLS: c_int = 6;
+-pub const CHANNEL_RCENTER: c_int = 7;
+-pub const CHANNEL_RRS: c_int = 8;
+-pub const CHANNEL_LFE: c_int = 9;
+-pub const CHANNEL_MAX: c_int = 256;
+-pub type Channel = c_int;
++pub const CHANNEL_INVALID: Channel = -1;
++pub const CHANNEL_MONO: Channel = 0;
++pub const CHANNEL_LEFT: Channel = 1;
++pub const CHANNEL_RIGHT: Channel = 2;
++pub const CHANNEL_CENTER: Channel = 3;
++pub const CHANNEL_LS: Channel = 4;
++pub const CHANNEL_RS: Channel = 5;
++pub const CHANNEL_RLS: Channel = 6;
++pub const CHANNEL_RCENTER: Channel = 7;
++pub const CHANNEL_RRS: Channel = 8;
++pub const CHANNEL_LFE: Channel = 9;
++pub const CHANNEL_MAX: Channel = 10;
+ 
+ #[repr(C)]
++#[derive(Clone, Copy, Debug)]
+ pub struct ChannelMap {
+     pub channels: c_uint,
+-    pub map: [Channel; 256],
++    pub map: [Channel; CHANNEL_MAX as usize],
+ }
+ impl ::std::default::Default for ChannelMap {
+     fn default() -> Self {
+         ChannelMap {
+             channels: 0,
+-            map: unsafe { ::std::mem::zeroed() },
++            map: [CHANNEL_INVALID,
++                  CHANNEL_INVALID,
++                  CHANNEL_INVALID,
++                  CHANNEL_INVALID,
++                  CHANNEL_INVALID,
++                  CHANNEL_INVALID,
++                  CHANNEL_INVALID,
++                  CHANNEL_INVALID,
++                  CHANNEL_INVALID,
++                  CHANNEL_INVALID],
+         }
+     }
+ }
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-ffi/src/ffi_funcs.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-ffi/src/ffi_funcs.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-ffi/src/ffi_funcs.rs.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-ffi/src/ffi_funcs.rs	2017-08-04 13:37:46.384821737 +0200
+@@ -8,8 +8,8 @@ macro_rules! cstr {
+ 
+ #[cfg(not(feature = "dlopen"))]
+ mod static_fns {
+-    use std::os::raw::{c_char, c_double, c_int, c_float, c_uint, c_void};
+     use super::*;
++    use std::os::raw::{c_char, c_double, c_float, c_int, c_uint, c_void};
+ 
+     #[link(name = "pulse")]
+     extern "C" {
+@@ -62,6 +62,7 @@ mod static_fns {
+                                                 userdata: *mut c_void)
+                                                 -> *mut pa_operation;
+         pub fn pa_context_set_state_callback(c: *mut pa_context, cb: pa_context_notify_cb_t, userdata: *mut c_void);
++        pub fn pa_context_errno(c: *mut pa_context) -> c_int;
+         pub fn pa_context_set_subscribe_callback(c: *mut pa_context,
+                                                  cb: pa_context_subscribe_cb_t,
+                                                  userdata: *mut c_void);
+@@ -70,6 +71,7 @@ mod static_fns {
+                                     cb: pa_context_success_cb_t,
+                                     userdata: *mut c_void)
+                                     -> *mut pa_operation;
++        pub fn pa_context_ref(c: *mut pa_context) -> *mut pa_context;
+         pub fn pa_context_unref(c: *mut pa_context);
+         pub fn pa_cvolume_set(a: *mut pa_cvolume, channels: c_uint, v: pa_volume_t) -> *mut pa_cvolume;
+         pub fn pa_cvolume_set_balance(v: *mut pa_cvolume,
+@@ -80,12 +82,20 @@ mod static_fns {
+         pub fn pa_mainloop_api_once(m: *mut pa_mainloop_api,
+                                     callback: pa_mainloop_api_once_cb_t,
+                                     userdata: *mut c_void);
+-        pub fn pa_operation_get_state(o: *const pa_operation) -> pa_operation_state_t;
++        pub fn pa_strerror(error: pa_error_code_t) -> *const c_char;
++        pub fn pa_operation_ref(o: *mut pa_operation) -> *mut pa_operation;
+         pub fn pa_operation_unref(o: *mut pa_operation);
++        pub fn pa_operation_cancel(o: *mut pa_operation);
++        pub fn pa_operation_get_state(o: *const pa_operation) -> pa_operation_state_t;
++        pub fn pa_operation_set_state_callback(o: *mut pa_operation,
++                                               cb: pa_operation_notify_cb_t,
++                                               userdata: *mut c_void);
+         pub fn pa_proplist_gets(p: *mut pa_proplist, key: *const c_char) -> *const c_char;
+         pub fn pa_rtclock_now() -> pa_usec_t;
+         pub fn pa_stream_begin_write(p: *mut pa_stream, data: *mut *mut c_void, nbytes: *mut usize) -> c_int;
+         pub fn pa_stream_cancel_write(p: *mut pa_stream) -> c_int;
++        pub fn pa_stream_is_suspended(s: *const pa_stream) -> c_int;
++        pub fn pa_stream_is_corked(s: *const pa_stream) -> c_int;
+         pub fn pa_stream_connect_playback(s: *mut pa_stream,
+                                           dev: *const c_char,
+                                           attr: *const pa_buffer_attr,
+@@ -112,6 +122,7 @@ mod static_fns {
+         pub fn pa_stream_get_latency(s: *const pa_stream, r_usec: *mut pa_usec_t, negative: *mut c_int) -> c_int;
+         pub fn pa_stream_get_sample_spec(s: *const pa_stream) -> *const pa_sample_spec;
+         pub fn pa_stream_get_state(p: *const pa_stream) -> pa_stream_state_t;
++        pub fn pa_stream_get_context(s: *const pa_stream) -> *mut pa_context;
+         pub fn pa_stream_get_time(s: *const pa_stream, r_usec: *mut pa_usec_t) -> c_int;
+         pub fn pa_stream_new(c: *mut pa_context,
+                              name: *const c_char,
+@@ -123,6 +134,7 @@ mod static_fns {
+         pub fn pa_stream_set_state_callback(s: *mut pa_stream, cb: pa_stream_notify_cb_t, userdata: *mut c_void);
+         pub fn pa_stream_set_write_callback(p: *mut pa_stream, cb: pa_stream_request_cb_t, userdata: *mut c_void);
+         pub fn pa_stream_set_read_callback(p: *mut pa_stream, cb: pa_stream_request_cb_t, userdata: *mut c_void);
++        pub fn pa_stream_ref(s: *mut pa_stream) -> *mut pa_stream;
+         pub fn pa_stream_unref(s: *mut pa_stream);
+         pub fn pa_stream_update_timing_info(p: *mut pa_stream,
+                                             cb: pa_stream_success_cb_t,
+@@ -148,8 +160,6 @@ mod static_fns {
+         pub fn pa_threaded_mainloop_unlock(m: *mut pa_threaded_mainloop);
+         pub fn pa_threaded_mainloop_wait(m: *mut pa_threaded_mainloop);
+         pub fn pa_usec_to_bytes(t: pa_usec_t, spec: *const pa_sample_spec) -> usize;
+-        pub fn pa_xfree(ptr: *mut c_void);
+-        pub fn pa_xstrdup(str: *const c_char) -> *mut c_char;
+         pub fn pa_xrealloc(ptr: *mut c_void, size: usize) -> *mut c_void;
+     }
+ }
+@@ -159,9 +169,9 @@ pub use self::static_fns::*;
+ 
+ #[cfg(feature = "dlopen")]
+ mod dynamic_fns {
+-    use std::os::raw::{c_char, c_double, c_int, c_float, c_uint, c_void};
+-    use libc::{dlclose, dlopen, dlsym, RTLD_LAZY};
+     use super::*;
++    use libc::{RTLD_LAZY, dlclose, dlopen, dlsym};
++    use std::os::raw::{c_char, c_double, c_float, c_int, c_uint, c_void};
+ 
+     #[derive(Debug)]
+     pub struct LibLoader {
+@@ -287,6 +297,13 @@ mod dynamic_fns {
+                 }
+                 fp
+             };
++            PA_CONTEXT_ERRNO = {
++                let fp = dlsym(h, cstr!("pa_context_errno"));
++                if fp.is_null() {
++                    return None;
++                }
++                fp
++            };
+             PA_CONTEXT_SET_SUBSCRIBE_CALLBACK = {
+                 let fp = dlsym(h, cstr!("pa_context_set_subscribe_callback"));
+                 if fp.is_null() {
+@@ -301,6 +318,13 @@ mod dynamic_fns {
+                 }
+                 fp
+             };
++            PA_CONTEXT_REF = {
++                let fp = dlsym(h, cstr!("pa_context_ref"));
++                if fp.is_null() {
++                    return None;
++                }
++                fp
++            };
+             PA_CONTEXT_UNREF = {
+                 let fp = dlsym(h, cstr!("pa_context_unref"));
+                 if fp.is_null() {
+@@ -336,8 +360,15 @@ mod dynamic_fns {
+                 }
+                 fp
+             };
+-            PA_OPERATION_GET_STATE = {
+-                let fp = dlsym(h, cstr!("pa_operation_get_state"));
++            PA_STRERROR = {
++                let fp = dlsym(h, cstr!("pa_strerror"));
++                if fp.is_null() {
++                    return None;
++                }
++                fp
++            };
++            PA_OPERATION_REF = {
++                let fp = dlsym(h, cstr!("pa_operation_ref"));
+                 if fp.is_null() {
+                     return None;
+                 }
+@@ -350,6 +381,27 @@ mod dynamic_fns {
+                 }
+                 fp
+             };
++            PA_OPERATION_CANCEL = {
++                let fp = dlsym(h, cstr!("pa_operation_cancel"));
++                if fp.is_null() {
++                    return None;
++                }
++                fp
++            };
++            PA_OPERATION_GET_STATE = {
++                let fp = dlsym(h, cstr!("pa_operation_get_state"));
++                if fp.is_null() {
++                    return None;
++                }
++                fp
++            };
++            PA_OPERATION_SET_STATE_CALLBACK = {
++                let fp = dlsym(h, cstr!("pa_operation_set_state_callback"));
++                if fp.is_null() {
++                    return None;
++                }
++                fp
++            };
+             PA_PROPLIST_GETS = {
+                 let fp = dlsym(h, cstr!("pa_proplist_gets"));
+                 if fp.is_null() {
+@@ -378,6 +430,20 @@ mod dynamic_fns {
+                 }
+                 fp
+             };
++            PA_STREAM_IS_SUSPENDED = {
++                let fp = dlsym(h, cstr!("pa_stream_is_suspended"));
++                if fp.is_null() {
++                    return None;
++                }
++                fp
++            };
++            PA_STREAM_IS_CORKED = {
++                let fp = dlsym(h, cstr!("pa_stream_is_corked"));
++                if fp.is_null() {
++                    return None;
++                }
++                fp
++            };
+             PA_STREAM_CONNECT_PLAYBACK = {
+                 let fp = dlsym(h, cstr!("pa_stream_connect_playback"));
+                 if fp.is_null() {
+@@ -462,6 +528,13 @@ mod dynamic_fns {
+                 }
+                 fp
+             };
++            PA_STREAM_GET_CONTEXT = {
++                let fp = dlsym(h, cstr!("pa_stream_get_context"));
++                if fp.is_null() {
++                    return None;
++                }
++                fp
++            };
+             PA_STREAM_GET_TIME = {
+                 let fp = dlsym(h, cstr!("pa_stream_get_time"));
+                 if fp.is_null() {
+@@ -511,6 +584,13 @@ mod dynamic_fns {
+                 }
+                 fp
+             };
++            PA_STREAM_REF = {
++                let fp = dlsym(h, cstr!("pa_stream_ref"));
++                if fp.is_null() {
++                    return None;
++                }
++                fp
++            };
+             PA_STREAM_UNREF = {
+                 let fp = dlsym(h, cstr!("pa_stream_unref"));
+                 if fp.is_null() {
+@@ -623,20 +703,6 @@ mod dynamic_fns {
+                 }
+                 fp
+             };
+-            PA_XFREE = {
+-                let fp = dlsym(h, cstr!("pa_xfree"));
+-                if fp.is_null() {
+-                    return None;
+-                }
+-                fp
+-            };
+-            PA_XSTRDUP = {
+-                let fp = dlsym(h, cstr!("pa_xstrdup"));
+-                if fp.is_null() {
+-                    return None;
+-                }
+-                fp
+-            };
+             PA_XREALLOC = {
+                 let fp = dlsym(h, cstr!("pa_xrealloc"));
+                 if fp.is_null() {
+@@ -837,6 +903,12 @@ mod dynamic_fns {
+                                                *mut c_void)>(PA_CONTEXT_SET_STATE_CALLBACK))(c, cb, userdata)
+     }
+ 
++    static mut PA_CONTEXT_ERRNO: *mut ::libc::c_void = 0 as *mut _;
++    #[inline]
++    pub unsafe fn pa_context_errno(c: *mut pa_context) -> c_int {
++        (::std::mem::transmute::<_, extern "C" fn(*mut pa_context) -> c_int>(PA_CONTEXT_ERRNO))(c)
++    }
++
+     static mut PA_CONTEXT_SET_SUBSCRIBE_CALLBACK: *mut ::libc::c_void = 0 as *mut _;
+     #[inline]
+     pub unsafe fn pa_context_set_subscribe_callback(c: *mut pa_context,
+@@ -863,6 +935,12 @@ mod dynamic_fns {
+                                                -> *mut pa_operation>(PA_CONTEXT_SUBSCRIBE))(c, m, cb, userdata)
+     }
+ 
++    static mut PA_CONTEXT_REF: *mut ::libc::c_void = 0 as *mut _;
++    #[inline]
++    pub unsafe fn pa_context_ref(c: *mut pa_context) -> *mut pa_context {
++        (::std::mem::transmute::<_, extern "C" fn(*mut pa_context) -> *mut pa_context>(PA_CONTEXT_REF))(c)
++    }
++
+     static mut PA_CONTEXT_UNREF: *mut ::libc::c_void = 0 as *mut _;
+     #[inline]
+     pub unsafe fn pa_context_unref(c: *mut pa_context) {
+@@ -907,6 +985,30 @@ mod dynamic_fns {
+                                                *mut c_void)>(PA_MAINLOOP_API_ONCE))(m, callback, userdata)
+     }
+ 
++    static mut PA_STRERROR: *mut ::libc::c_void = 0 as *mut _;
++    #[inline]
++    pub unsafe fn pa_strerror(error: pa_error_code_t) -> *const c_char {
++        (::std::mem::transmute::<_, extern "C" fn(pa_error_code_t) -> *const c_char>(PA_STRERROR))(error)
++    }
++
++    static mut PA_OPERATION_REF: *mut ::libc::c_void = 0 as *mut _;
++    #[inline]
++    pub unsafe fn pa_operation_ref(o: *mut pa_operation) -> *mut pa_operation {
++        (::std::mem::transmute::<_, extern "C" fn(*mut pa_operation) -> *mut pa_operation>(PA_OPERATION_REF))(o)
++    }
++
++    static mut PA_OPERATION_UNREF: *mut ::libc::c_void = 0 as *mut _;
++    #[inline]
++    pub unsafe fn pa_operation_unref(o: *mut pa_operation) {
++        (::std::mem::transmute::<_, extern "C" fn(*mut pa_operation)>(PA_OPERATION_UNREF))(o)
++    }
++
++    static mut PA_OPERATION_CANCEL: *mut ::libc::c_void = 0 as *mut _;
++    #[inline]
++    pub unsafe fn pa_operation_cancel(o: *mut pa_operation) {
++        (::std::mem::transmute::<_, extern "C" fn(*mut pa_operation)>(PA_OPERATION_CANCEL))(o)
++    }
++
+     static mut PA_OPERATION_GET_STATE: *mut ::libc::c_void = 0 as *mut _;
+     #[inline]
+     pub unsafe fn pa_operation_get_state(o: *const pa_operation) -> pa_operation_state_t {
+@@ -915,10 +1017,15 @@ mod dynamic_fns {
+                                                -> pa_operation_state_t>(PA_OPERATION_GET_STATE))(o)
+     }
+ 
+-    static mut PA_OPERATION_UNREF: *mut ::libc::c_void = 0 as *mut _;
++    static mut PA_OPERATION_SET_STATE_CALLBACK: *mut ::libc::c_void = 0 as *mut _;
+     #[inline]
+-    pub unsafe fn pa_operation_unref(o: *mut pa_operation) {
+-        (::std::mem::transmute::<_, extern "C" fn(*mut pa_operation)>(PA_OPERATION_UNREF))(o)
++    pub unsafe fn pa_operation_set_state_callback(o: *mut pa_operation,
++                                                  cb: pa_operation_notify_cb_t,
++                                                  userdata: *mut c_void) {
++        (::std::mem::transmute::<_,
++                                 extern "C" fn(*mut pa_operation,
++                                               pa_operation_notify_cb_t,
++                                               *mut c_void)>(PA_OPERATION_SET_STATE_CALLBACK))(o, cb, userdata)
+     }
+ 
+     static mut PA_PROPLIST_GETS: *mut ::libc::c_void = 0 as *mut _;
+@@ -951,6 +1058,18 @@ mod dynamic_fns {
+         (::std::mem::transmute::<_, extern "C" fn(*mut pa_stream) -> c_int>(PA_STREAM_CANCEL_WRITE))(p)
+     }
+ 
++    static mut PA_STREAM_IS_SUSPENDED: *mut ::libc::c_void = 0 as *mut _;
++    #[inline]
++    pub unsafe fn pa_stream_is_suspended(s: *const pa_stream) -> c_int {
++        (::std::mem::transmute::<_, extern "C" fn(*const pa_stream) -> c_int>(PA_STREAM_IS_SUSPENDED))(s)
++    }
++
++    static mut PA_STREAM_IS_CORKED: *mut ::libc::c_void = 0 as *mut _;
++    #[inline]
++    pub unsafe fn pa_stream_is_corked(s: *const pa_stream) -> c_int {
++        (::std::mem::transmute::<_, extern "C" fn(*const pa_stream) -> c_int>(PA_STREAM_IS_CORKED))(s)
++    }
++
+     static mut PA_STREAM_CONNECT_PLAYBACK: *mut ::libc::c_void = 0 as *mut _;
+     #[inline]
+     pub unsafe fn pa_stream_connect_playback(s: *mut pa_stream,
+@@ -1066,6 +1185,12 @@ mod dynamic_fns {
+         (::std::mem::transmute::<_, extern "C" fn(*const pa_stream) -> pa_stream_state_t>(PA_STREAM_GET_STATE))(p)
+     }
+ 
++    static mut PA_STREAM_GET_CONTEXT: *mut ::libc::c_void = 0 as *mut _;
++    #[inline]
++    pub unsafe fn pa_stream_get_context(s: *const pa_stream) -> *mut pa_context {
++        (::std::mem::transmute::<_, extern "C" fn(*const pa_stream) -> *mut pa_context>(PA_STREAM_GET_CONTEXT))(s)
++    }
++
+     static mut PA_STREAM_GET_TIME: *mut ::libc::c_void = 0 as *mut _;
+     #[inline]
+     pub unsafe fn pa_stream_get_time(s: *const pa_stream, r_usec: *mut pa_usec_t) -> c_int {
+@@ -1132,6 +1257,12 @@ mod dynamic_fns {
+                                                *mut c_void)>(PA_STREAM_SET_READ_CALLBACK))(p, cb, userdata)
+     }
+ 
++    static mut PA_STREAM_REF: *mut ::libc::c_void = 0 as *mut _;
++    #[inline]
++    pub unsafe fn pa_stream_ref(s: *mut pa_stream) -> *mut pa_stream {
++        (::std::mem::transmute::<_, extern "C" fn(*mut pa_stream) -> *mut pa_stream>(PA_STREAM_REF))(s)
++    }
++
+     static mut PA_STREAM_UNREF: *mut ::libc::c_void = 0 as *mut _;
+     #[inline]
+     pub unsafe fn pa_stream_unref(s: *mut pa_stream) {
+@@ -1253,18 +1384,6 @@ mod dynamic_fns {
+                                                                                                                  spec)
+     }
+ 
+-    static mut PA_XFREE: *mut ::libc::c_void = 0 as *mut _;
+-    #[inline]
+-    pub unsafe fn pa_xfree(ptr: *mut c_void) {
+-        (::std::mem::transmute::<_, extern "C" fn(*mut c_void)>(PA_XFREE))(ptr)
+-    }
+-
+-    static mut PA_XSTRDUP: *mut ::libc::c_void = 0 as *mut _;
+-    #[inline]
+-    pub unsafe fn pa_xstrdup(str: *const c_char) -> *mut c_char {
+-        (::std::mem::transmute::<_, extern "C" fn(*const c_char) -> *mut c_char>(PA_XSTRDUP))(str)
+-    }
+-
+     static mut PA_XREALLOC: *mut ::libc::c_void = 0 as *mut _;
+     #[inline]
+     pub unsafe fn pa_xrealloc(ptr: *mut c_void, size: usize) -> *mut c_void {
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-ffi/src/ffi_types.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-ffi/src/ffi_types.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-ffi/src/ffi_types.rs.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-ffi/src/ffi_types.rs	2017-08-04 13:37:46.384821737 +0200
+@@ -1,6 +1,6 @@
+ #![allow(non_camel_case_types)]
+ 
+-use std::os::raw::{c_char, c_int, c_long, c_ulong, c_void};
++use std::os::raw::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
+ 
+ /* automatically generated by rust-bindgen */
+ pub const PA_RATE_MAX: u32 = 48000 * 8;
+@@ -74,10 +74,10 @@ pub const PA_OPERATION_DONE: c_int = 1;
+ pub const PA_OPERATION_CANCELLED: c_int = 2;
+ pub type pa_operation_state_t = c_int;
+ 
+-pub const PA_CONTEXT_NOFLAGS: c_int = 0;
+-pub const PA_CONTEXT_NOAUTOSPAWN: c_int = 1;
+-pub const PA_CONTEXT_NOFAIL: c_int = 2;
+-pub type pa_context_flags_t = c_int;
++pub const PA_CONTEXT_NOFLAGS: c_uint = 0;
++pub const PA_CONTEXT_NOAUTOSPAWN: c_uint = 1;
++pub const PA_CONTEXT_NOFAIL: c_uint = 2;
++pub type pa_context_flags_t = c_uint;
+ 
+ pub const PA_DIRECTION_OUTPUT: c_int = 1;
+ pub const PA_DIRECTION_INPUT: c_int = 2;
+@@ -93,28 +93,28 @@ pub const PA_STREAM_RECORD: c_int = 2;
+ pub const PA_STREAM_UPLOAD: c_int = 3;
+ pub type pa_stream_direction_t = c_int;
+ 
+-pub const PA_STREAM_NOFLAGS: c_int = 0x0_0000;
+-pub const PA_STREAM_START_CORKED: c_int = 0x0_0001;
+-pub const PA_STREAM_INTERPOLATE_TIMING: c_int = 0x0_0002;
+-pub const PA_STREAM_NOT_MONOTONIC: c_int = 0x0_0004;
+-pub const PA_STREAM_AUTO_TIMING_UPDATE: c_int = 0x0_0008;
+-pub const PA_STREAM_NO_REMAP_CHANNELS: c_int = 0x0_0010;
+-pub const PA_STREAM_NO_REMIX_CHANNELS: c_int = 0x0_0020;
+-pub const PA_STREAM_FIX_FORMAT: c_int = 0x0_0040;
+-pub const PA_STREAM_FIX_RATE: c_int = 0x0_0080;
+-pub const PA_STREAM_FIX_CHANNELS: c_int = 0x0_0100;
+-pub const PA_STREAM_DONT_MOVE: c_int = 0x0_0200;
+-pub const PA_STREAM_VARIABLE_RATE: c_int = 0x0_0400;
+-pub const PA_STREAM_PEAK_DETECT: c_int = 0x0_0800;
+-pub const PA_STREAM_START_MUTED: c_int = 0x0_1000;
+-pub const PA_STREAM_ADJUST_LATENCY: c_int = 0x0_2000;
+-pub const PA_STREAM_EARLY_REQUESTS: c_int = 0x0_4000;
+-pub const PA_STREAM_DONT_INHIBIT_AUTO_SUSPEND: c_int = 0x0_8000;
+-pub const PA_STREAM_START_UNMUTED: c_int = 0x1_0000;
+-pub const PA_STREAM_FAIL_ON_SUSPEND: c_int = 0x2_0000;
+-pub const PA_STREAM_RELATIVE_VOLUME: c_int = 0x4_0000;
+-pub const PA_STREAM_PASSTHROUGH: c_int = 0x8_0000;
+-pub type pa_stream_flags_t = c_int;
++pub const PA_STREAM_NOFLAGS: c_uint = 0x0_0000;
++pub const PA_STREAM_START_CORKED: c_uint = 0x0_0001;
++pub const PA_STREAM_INTERPOLATE_TIMING: c_uint = 0x0_0002;
++pub const PA_STREAM_NOT_MONOTONIC: c_uint = 0x0_0004;
++pub const PA_STREAM_AUTO_TIMING_UPDATE: c_uint = 0x0_0008;
++pub const PA_STREAM_NO_REMAP_CHANNELS: c_uint = 0x0_0010;
++pub const PA_STREAM_NO_REMIX_CHANNELS: c_uint = 0x0_0020;
++pub const PA_STREAM_FIX_FORMAT: c_uint = 0x0_0040;
++pub const PA_STREAM_FIX_RATE: c_uint = 0x0_0080;
++pub const PA_STREAM_FIX_CHANNELS: c_uint = 0x0_0100;
++pub const PA_STREAM_DONT_MOVE: c_uint = 0x0_0200;
++pub const PA_STREAM_VARIABLE_RATE: c_uint = 0x0_0400;
++pub const PA_STREAM_PEAK_DETECT: c_uint = 0x0_0800;
++pub const PA_STREAM_START_MUTED: c_uint = 0x0_1000;
++pub const PA_STREAM_ADJUST_LATENCY: c_uint = 0x0_2000;
++pub const PA_STREAM_EARLY_REQUESTS: c_uint = 0x0_4000;
++pub const PA_STREAM_DONT_INHIBIT_AUTO_SUSPEND: c_uint = 0x0_8000;
++pub const PA_STREAM_START_UNMUTED: c_uint = 0x1_0000;
++pub const PA_STREAM_FAIL_ON_SUSPEND: c_uint = 0x2_0000;
++pub const PA_STREAM_RELATIVE_VOLUME: c_uint = 0x4_0000;
++pub const PA_STREAM_PASSTHROUGH: c_uint = 0x8_0000;
++pub type pa_stream_flags_t = c_uint;
+ 
+ #[repr(C)]
+ #[derive(Clone, Copy, Debug)]
+@@ -162,19 +162,19 @@ pub const PA_ERR_BUSY: c_int = 26;
+ pub const PA_ERR_MAX: c_int = 27;
+ pub type pa_error_code_t = c_int;
+ 
+-pub const PA_SUBSCRIPTION_MASK_NULL: c_int = 0;
+-pub const PA_SUBSCRIPTION_MASK_SINK: c_int = 1;
+-pub const PA_SUBSCRIPTION_MASK_SOURCE: c_int = 2;
+-pub const PA_SUBSCRIPTION_MASK_SINK_INPUT: c_int = 4;
+-pub const PA_SUBSCRIPTION_MASK_SOURCE_OUTPUT: c_int = 8;
+-pub const PA_SUBSCRIPTION_MASK_MODULE: c_int = 16;
+-pub const PA_SUBSCRIPTION_MASK_CLIENT: c_int = 32;
+-pub const PA_SUBSCRIPTION_MASK_SAMPLE_CACHE: c_int = 64;
+-pub const PA_SUBSCRIPTION_MASK_SERVER: c_int = 128;
+-pub const PA_SUBSCRIPTION_MASK_AUTOLOAD: c_int = 256;
+-pub const PA_SUBSCRIPTION_MASK_CARD: c_int = 512;
+-pub const PA_SUBSCRIPTION_MASK_ALL: c_int = 767;
+-pub type pa_subscription_mask_t = c_int;
++pub const PA_SUBSCRIPTION_MASK_NULL: c_uint = 0x0;
++pub const PA_SUBSCRIPTION_MASK_SINK: c_uint = 0x1;
++pub const PA_SUBSCRIPTION_MASK_SOURCE: c_uint = 0x2;
++pub const PA_SUBSCRIPTION_MASK_SINK_INPUT: c_uint = 0x4;
++pub const PA_SUBSCRIPTION_MASK_SOURCE_OUTPUT: c_uint = 0x8;
++pub const PA_SUBSCRIPTION_MASK_MODULE: c_uint = 0x10;
++pub const PA_SUBSCRIPTION_MASK_CLIENT: c_uint = 0x20;
++pub const PA_SUBSCRIPTION_MASK_SAMPLE_CACHE: c_uint = 0x40;
++pub const PA_SUBSCRIPTION_MASK_SERVER: c_uint = 0x80;
++pub const PA_SUBSCRIPTION_MASK_AUTOLOAD: c_uint = 0x100;
++pub const PA_SUBSCRIPTION_MASK_CARD: c_uint = 0x200;
++pub const PA_SUBSCRIPTION_MASK_ALL: c_uint = 0x3FF;
++pub type pa_subscription_mask_t = c_uint;
+ 
+ pub const PA_SUBSCRIPTION_EVENT_SINK: c_int = 0;
+ pub const PA_SUBSCRIPTION_EVENT_SOURCE: c_int = 1;
+@@ -244,17 +244,17 @@ pub const PA_SEEK_RELATIVE_ON_READ: c_in
+ pub const PA_SEEK_RELATIVE_END: c_int = 3;
+ pub type pa_seek_mode_t = c_int;
+ 
+-pub const PA_SINK_NOFLAGS: c_int = 0;
+-pub const PA_SINK_HW_VOLUME_CTRL: c_int = 1;
+-pub const PA_SINK_LATENCY: c_int = 2;
+-pub const PA_SINK_HARDWARE: c_int = 4;
+-pub const PA_SINK_NETWORK: c_int = 8;
+-pub const PA_SINK_HW_MUTE_CTRL: c_int = 16;
+-pub const PA_SINK_DECIBEL_VOLUME: c_int = 32;
+-pub const PA_SINK_FLAT_VOLUME: c_int = 64;
+-pub const PA_SINK_DYNAMIC_LATENCY: c_int = 128;
+-pub const PA_SINK_SET_FORMATS: c_int = 256;
+-pub type pa_sink_flags_t = c_int;
++pub const PA_SINK_NOFLAGS: c_uint = 0x000;
++pub const PA_SINK_HW_VOLUME_CTRL: c_uint = 0x001;
++pub const PA_SINK_LATENCY: c_uint = 0x002;
++pub const PA_SINK_HARDWARE: c_uint = 0x004;
++pub const PA_SINK_NETWORK: c_uint = 0x008;
++pub const PA_SINK_HW_MUTE_CTRL: c_uint = 0x010;
++pub const PA_SINK_DECIBEL_VOLUME: c_uint = 0x020;
++pub const PA_SINK_FLAT_VOLUME: c_uint = 0x040;
++pub const PA_SINK_DYNAMIC_LATENCY: c_uint = 0x080;
++pub const PA_SINK_SET_FORMATS: c_uint = 0x100;
++pub type pa_sink_flags_t = c_uint;
+ 
+ pub const PA_SINK_INVALID_STATE: c_int = -1;
+ pub const PA_SINK_RUNNING: c_int = 0;
+@@ -264,16 +264,16 @@ pub const PA_SINK_INIT: c_int = -2;
+ pub const PA_SINK_UNLINKED: c_int = -3;
+ pub type pa_sink_state_t = c_int;
+ 
+-pub const PA_SOURCE_NOFLAGS: c_int = 0x00;
+-pub const PA_SOURCE_HW_VOLUME_CTRL: c_int = 0x01;
+-pub const PA_SOURCE_LATENCY: c_int = 0x02;
+-pub const PA_SOURCE_HARDWARE: c_int = 0x04;
+-pub const PA_SOURCE_NETWORK: c_int = 0x08;
+-pub const PA_SOURCE_HW_MUTE_CTRL: c_int = 0x10;
+-pub const PA_SOURCE_DECIBEL_VOLUME: c_int = 0x20;
+-pub const PA_SOURCE_DYNAMIC_LATENCY: c_int = 0x40;
+-pub const PA_SOURCE_FLAT_VOLUME: c_int = 0x80;
+-pub type pa_source_flags_t = c_int;
++pub const PA_SOURCE_NOFLAGS: c_uint = 0x00;
++pub const PA_SOURCE_HW_VOLUME_CTRL: c_uint = 0x01;
++pub const PA_SOURCE_LATENCY: c_uint = 0x02;
++pub const PA_SOURCE_HARDWARE: c_uint = 0x04;
++pub const PA_SOURCE_NETWORK: c_uint = 0x08;
++pub const PA_SOURCE_HW_MUTE_CTRL: c_uint = 0x10;
++pub const PA_SOURCE_DECIBEL_VOLUME: c_uint = 0x20;
++pub const PA_SOURCE_DYNAMIC_LATENCY: c_uint = 0x40;
++pub const PA_SOURCE_FLAT_VOLUME: c_uint = 0x80;
++pub type pa_source_flags_t = c_uint;
+ 
+ pub const PA_SOURCE_INVALID_STATE: c_int = -1;
+ pub const PA_SOURCE_RUNNING: c_int = 0;
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/Cargo.toml.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/Cargo.toml
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/Cargo.toml.cubeb-pulse-arm	2017-08-04 13:37:46.384821737 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/Cargo.toml	2017-08-04 13:37:46.384821737 +0200
+@@ -0,0 +1,8 @@
++[package]
++name = "pulse"
++version = "0.1.0"
++authors = ["Dan Glastonbury <dglastonbury@mozilla.com>"]
++
++[dependencies]
++bitflags = "^0.7.0"
++pulse-ffi = { path = "../pulse-ffi" }
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/context.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/context.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/context.rs.cubeb-pulse-arm	2017-08-04 13:37:46.385821734 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/context.rs	2017-08-04 13:37:46.385821734 +0200
+@@ -0,0 +1,394 @@
++// Copyright © 2017 Mozilla Foundation
++//
++// This program is made available under an ISC-style license.  See the
++// accompanying file LICENSE for details.
++
++use ::*;
++use ffi;
++use std::ffi::CStr;
++use std::os::raw::{c_int, c_void};
++use std::ptr;
++use util::UnwrapCStr;
++
++// A note about `wrapped` functions
++//
++// C FFI demands `unsafe extern fn(*mut pa_context, ...) -> i32`, etc,
++// but we want to allow such callbacks to be safe. This means no
++// `unsafe` or `extern`, and callbacks should be called with a safe
++// wrapper of `*mut pa_context`. Since the callback doesn't take
++// ownership, this is `&Context`. `fn wrapped<T>(...)` defines a
++// function that converts from our safe signature to the unsafe
++// signature.
++//
++// Currently, we use a property of Rust, namely that each function
++// gets its own unique type.  These unique types can't be written
++// directly, so we use generic and a type parameter, and let the Rust
++// compiler fill in the name for us:
++//
++// fn get_sink_input_info<CB>(&self, ..., _: CB, ...) -> ...
++//     where CB: Fn(&Context, *const SinkInputInfo, i32, *mut c_void)
++//
++// Because we aren't storing or passing any state, we assert, at run-time :-(,
++// that our functions are zero-sized:
++//
++//	assert!(mem::size_of::<F>() == 0);
++//
++// We need to obtain a value of type F in order to call it. Since we
++// can't name the function, we have to unsafely construct that value
++// somehow - we do this using mem::uninitialized. Then, we call that
++// function with a reference to the Context, and save the result:
++//
++//              |       generate value        ||  call it  |
++// let result = ::std::mem::uninitialized::<F>()(&mut object);
++//
++// Lastly, since our Object is an owned type, we need to avoid
++// dropping it, then return the result we just generated.
++//
++//		mem::forget(object);
++//		result
++
++// Aid in returning Operation from callbacks
++macro_rules! op_or_err {
++    ($self_:ident, $e:expr) => {{
++        let o = unsafe { $e };
++        if o.is_null() {
++            Err(ErrorCode::from_error_code($self_.errno()))
++        } else {
++            Ok(unsafe { operation::from_raw_ptr(o) })
++        }
++    }}
++}
++
++#[repr(C)]
++#[derive(Debug)]
++pub struct Context(*mut ffi::pa_context);
++
++impl Context {
++    pub fn new<'a, OPT>(api: &MainloopApi, name: OPT) -> Option<Self>
++        where OPT: Into<Option<&'a CStr>>
++    {
++        let ptr = unsafe { ffi::pa_context_new(api.raw_mut(), name.unwrap_cstr()) };
++        if ptr.is_null() {
++            None
++        } else {
++            Some(Context(ptr))
++        }
++    }
++
++    #[doc(hidden)]
++    pub fn raw_mut(&self) -> &mut ffi::pa_context {
++        unsafe { &mut *self.0 }
++    }
++
++    pub fn unref(self) {
++        unsafe {
++            ffi::pa_context_unref(self.raw_mut());
++        }
++    }
++
++    pub fn clear_state_callback(&self) {
++        unsafe {
++            ffi::pa_context_set_state_callback(self.raw_mut(), None, ptr::null_mut());
++        }
++    }
++
++    pub fn set_state_callback<CB>(&self, _: CB, userdata: *mut c_void)
++        where CB: Fn(&Context, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(c: *mut ffi::pa_context, userdata: *mut c_void)
++            where F: Fn(&Context, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let ctx = context::from_raw_ptr(c);
++            let result = uninitialized::<F>()(&ctx, userdata);
++            forget(ctx);
++
++            result
++        }
++
++        unsafe {
++            ffi::pa_context_set_state_callback(self.raw_mut(), Some(wrapped::<CB>), userdata);
++        }
++    }
++
++    pub fn errno(&self) -> ffi::pa_error_code_t {
++        unsafe { ffi::pa_context_errno(self.raw_mut()) }
++    }
++
++    pub fn get_state(&self) -> ContextState {
++        ContextState::try_from(unsafe {
++            ffi::pa_context_get_state(self.raw_mut())
++        }).expect("pa_context_get_state returned invalid ContextState")
++    }
++
++    pub fn connect<'a, OPT>(&self, server: OPT, flags: ContextFlags, api: *const ffi::pa_spawn_api) -> Result<()>
++        where OPT: Into<Option<&'a CStr>>
++    {
++        let r = unsafe {
++            ffi::pa_context_connect(self.raw_mut(),
++                                    server.into().unwrap_cstr(),
++                                    flags.into(),
++                                    api)
++        };
++        error_result!((), r)
++    }
++
++    pub fn disconnect(&self) {
++        unsafe {
++            ffi::pa_context_disconnect(self.raw_mut());
++        }
++    }
++
++
++    pub fn drain<CB>(&self, _: CB, userdata: *mut c_void) -> Result<Operation>
++        where CB: Fn(&Context, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(c: *mut ffi::pa_context, userdata: *mut c_void)
++            where F: Fn(&Context, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let ctx = context::from_raw_ptr(c);
++            let result = uninitialized::<F>()(&ctx, userdata);
++            forget(ctx);
++
++            result
++        }
++
++        op_or_err!(self,
++                   ffi::pa_context_drain(self.raw_mut(), Some(wrapped::<CB>), userdata))
++    }
++
++    pub fn rttime_new<CB>(&self, usec: USec, _: CB, userdata: *mut c_void) -> *mut ffi::pa_time_event
++        where CB: Fn(&MainloopApi, *mut ffi::pa_time_event, &TimeVal, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(a: *mut ffi::pa_mainloop_api,
++                                        e: *mut ffi::pa_time_event,
++                                        tv: *const TimeVal,
++                                        userdata: *mut c_void)
++            where F: Fn(&MainloopApi, *mut ffi::pa_time_event, &TimeVal, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let api = mainloop_api::from_raw_ptr(a);
++            let timeval = &*tv;
++            let result = uninitialized::<F>()(&api, e, timeval, userdata);
++            forget(api);
++
++            result
++        }
++
++        unsafe { ffi::pa_context_rttime_new(self.raw_mut(), usec, Some(wrapped::<CB>), userdata) }
++    }
++
++    pub fn get_server_info<CB>(&self, _: CB, userdata: *mut c_void) -> Result<Operation>
++        where CB: Fn(&Context, &ServerInfo, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(c: *mut ffi::pa_context, i: *const ffi::pa_server_info, userdata: *mut c_void)
++            where F: Fn(&Context, &ServerInfo, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            debug_assert_ne!(i, ptr::null_mut());
++            let info = &*i;
++            let ctx = context::from_raw_ptr(c);
++            let result = uninitialized::<F>()(&ctx, info, userdata);
++            forget(ctx);
++
++            result
++        }
++
++        op_or_err!(self,
++                   ffi::pa_context_get_server_info(self.raw_mut(), Some(wrapped::<CB>), userdata))
++    }
++
++    pub fn get_sink_info_by_name<CB>(&self, name: &CStr, _: CB, userdata: *mut c_void) -> Result<Operation>
++        where CB: Fn(&Context, *const SinkInfo, i32, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(c: *mut ffi::pa_context,
++                                        info: *const ffi::pa_sink_info,
++                                        eol: c_int,
++                                        userdata: *mut c_void)
++            where F: Fn(&Context, *const SinkInfo, i32, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let ctx = context::from_raw_ptr(c);
++            let result = uninitialized::<F>()(&ctx, info, eol, userdata);
++            forget(ctx);
++
++            result
++        }
++
++        op_or_err!(self,
++                   ffi::pa_context_get_sink_info_by_name(self.raw_mut(), name.as_ptr(), Some(wrapped::<CB>), userdata))
++    }
++
++    pub fn get_sink_info_list<CB>(&self, _: CB, userdata: *mut c_void) -> Result<Operation>
++        where CB: Fn(&Context, *const SinkInfo, i32, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(c: *mut ffi::pa_context,
++                                        info: *const ffi::pa_sink_info,
++                                        eol: c_int,
++                                        userdata: *mut c_void)
++            where F: Fn(&Context, *const SinkInfo, i32, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let ctx = context::from_raw_ptr(c);
++            let result = uninitialized::<F>()(&ctx, info, eol, userdata);
++            forget(ctx);
++
++            result
++        }
++
++        op_or_err!(self,
++                   ffi::pa_context_get_sink_info_list(self.raw_mut(), Some(wrapped::<CB>), userdata))
++    }
++
++    pub fn get_sink_input_info<CB>(&self, idx: u32, _: CB, userdata: *mut c_void) -> Result<Operation>
++        where CB: Fn(&Context, *const SinkInputInfo, i32, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(c: *mut ffi::pa_context,
++                                        info: *const ffi::pa_sink_input_info,
++                                        eol: c_int,
++                                        userdata: *mut c_void)
++            where F: Fn(&Context, *const SinkInputInfo, i32, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let ctx = context::from_raw_ptr(c);
++            let result = uninitialized::<F>()(&ctx, info, eol, userdata);
++            forget(ctx);
++
++            result
++        }
++
++        op_or_err!(self,
++                   ffi::pa_context_get_sink_input_info(self.raw_mut(), idx, Some(wrapped::<CB>), userdata))
++    }
++
++    pub fn get_source_info_list<CB>(&self, _: CB, userdata: *mut c_void) -> Result<Operation>
++        where CB: Fn(&Context, *const SourceInfo, i32, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(c: *mut ffi::pa_context,
++                                        info: *const ffi::pa_source_info,
++                                        eol: c_int,
++                                        userdata: *mut c_void)
++            where F: Fn(&Context, *const SourceInfo, i32, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let ctx = context::from_raw_ptr(c);
++            let result = uninitialized::<F>()(&ctx, info, eol, userdata);
++            forget(ctx);
++
++            result
++        }
++
++        op_or_err!(self,
++                   ffi::pa_context_get_source_info_list(self.raw_mut(), Some(wrapped::<CB>), userdata))
++    }
++
++    pub fn set_sink_input_volume<CB>(&self,
++                                     idx: u32,
++                                     volume: &CVolume,
++                                     _: CB,
++                                     userdata: *mut c_void)
++                                     -> Result<Operation>
++        where CB: Fn(&Context, i32, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(c: *mut ffi::pa_context, success: c_int, userdata: *mut c_void)
++            where F: Fn(&Context, i32, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let ctx = context::from_raw_ptr(c);
++            let result = uninitialized::<F>()(&ctx, success, userdata);
++            forget(ctx);
++
++            result
++        }
++
++        op_or_err!(self,
++                   ffi::pa_context_set_sink_input_volume(self.raw_mut(), idx, volume, Some(wrapped::<CB>), userdata))
++    }
++
++    pub fn subscribe<CB>(&self, m: SubscriptionMask, _: CB, userdata: *mut c_void) -> Result<Operation>
++        where CB: Fn(&Context, i32, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(c: *mut ffi::pa_context, success: c_int, userdata: *mut c_void)
++            where F: Fn(&Context, i32, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let ctx = context::from_raw_ptr(c);
++            let result = uninitialized::<F>()(&ctx, success, userdata);
++            forget(ctx);
++
++            result
++        }
++
++        op_or_err!(self,
++                   ffi::pa_context_subscribe(self.raw_mut(), m.into(), Some(wrapped::<CB>), userdata))
++    }
++
++    pub fn clear_subscribe_callback(&self) {
++        unsafe {
++            ffi::pa_context_set_subscribe_callback(self.raw_mut(), None, ptr::null_mut());
++        }
++    }
++
++    pub fn set_subscribe_callback<CB>(&self, _: CB, userdata: *mut c_void)
++        where CB: Fn(&Context, SubscriptionEvent, u32, *mut c_void)
++    {
++        debug_assert_eq!(::std::mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(c: *mut ffi::pa_context,
++                                        t: ffi::pa_subscription_event_type_t,
++                                        idx: u32,
++                                        userdata: *mut c_void)
++            where F: Fn(&Context, SubscriptionEvent, u32, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let ctx = context::from_raw_ptr(c);
++            let event = SubscriptionEvent::try_from(t)
++            .expect("pa_context_subscribe_cb_t passed invalid pa_subscription_event_type_t");
++            let result = uninitialized::<F>()(&ctx, event, idx, userdata);
++            forget(ctx);
++
++            result
++        }
++
++        unsafe {
++            ffi::pa_context_set_subscribe_callback(self.raw_mut(), Some(wrapped::<CB>), userdata);
++        }
++    }
++}
++
++#[doc(hidden)]
++pub unsafe fn from_raw_ptr(ptr: *mut ffi::pa_context) -> Context {
++    Context(ptr)
++}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/error.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/error.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/error.rs.cubeb-pulse-arm	2017-08-04 13:37:46.385821734 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/error.rs	2017-08-04 13:37:46.385821734 +0200
+@@ -0,0 +1,56 @@
++// Copyright © 2017 Mozilla Foundation
++//
++// This program is made available under an ISC-style license.  See the
++// accompanying file LICENSE for details.
++
++use ffi;
++use std::ffi::CStr;
++
++#[macro_export]
++macro_rules! error_result {
++    ($t:expr, $err:expr) => {
++        if $err >= 0 {
++            Ok($t)
++        } else {
++            Err(ErrorCode::from_error_result($err))
++        }
++    }
++}
++
++#[derive(Debug, PartialEq)]
++pub struct ErrorCode {
++    err: ffi::pa_error_code_t,
++}
++
++impl ErrorCode {
++    pub fn from_error_result(err: i32) -> Self {
++        debug_assert!(err < 0);
++        ErrorCode {
++            err: (-err) as ffi::pa_error_code_t,
++        }
++    }
++
++    pub fn from_error_code(err: ffi::pa_error_code_t) -> Self {
++        debug_assert!(err > 0);
++        ErrorCode {
++            err: err,
++        }
++    }
++
++    fn desc(&self) -> &'static str {
++        let cstr = unsafe { CStr::from_ptr(ffi::pa_strerror(self.err)) };
++        cstr.to_str().unwrap()
++    }
++}
++
++impl ::std::error::Error for ErrorCode {
++    fn description(&self) -> &str {
++        self.desc()
++    }
++}
++
++impl ::std::fmt::Display for ErrorCode {
++    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
++        write!(f, "{:?}: {}", self, self.desc())
++    }
++}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/lib.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/lib.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/lib.rs.cubeb-pulse-arm	2017-08-04 13:37:46.385821734 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/lib.rs	2017-08-04 13:37:46.385821734 +0200
+@@ -0,0 +1,653 @@
++// Copyright © 2017 Mozilla Foundation
++//
++// This program is made available under an ISC-style license.  See the
++// accompanying file LICENSE for details.
++
++#[macro_use]
++extern crate bitflags;
++extern crate pulse_ffi as ffi;
++
++#[macro_use]
++mod error;
++mod context;
++mod mainloop_api;
++mod operation;
++mod proplist;
++mod stream;
++mod threaded_mainloop;
++mod util;
++
++pub use context::Context;
++pub use error::ErrorCode;
++pub use ffi::pa_buffer_attr as BufferAttr;
++pub use ffi::pa_channel_map as ChannelMap;
++pub use ffi::pa_cvolume as CVolume;
++pub use ffi::pa_sample_spec as SampleSpec;
++pub use ffi::pa_server_info as ServerInfo;
++pub use ffi::pa_sink_info as SinkInfo;
++pub use ffi::pa_sink_input_info as SinkInputInfo;
++pub use ffi::pa_source_info as SourceInfo;
++pub use ffi::pa_usec_t as USec;
++pub use ffi::pa_volume_t as Volume;
++pub use ffi::timeval as TimeVal;
++pub use mainloop_api::MainloopApi;
++pub use operation::Operation;
++pub use proplist::Proplist;
++use std::os::raw::{c_char, c_uint};
++pub use stream::Stream;
++pub use threaded_mainloop::ThreadedMainloop;
++
++#[allow(non_camel_case_types)]
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum SampleFormat {
++    Invalid = ffi::PA_SAMPLE_INVALID,
++    U8 = ffi::PA_SAMPLE_U8,
++    Alaw = ffi::PA_SAMPLE_ALAW,
++    Ulaw = ffi::PA_SAMPLE_ULAW,
++    Signed16LE = ffi::PA_SAMPLE_S16LE,
++    Signed16BE = ffi::PA_SAMPLE_S16BE,
++    Float32LE = ffi::PA_SAMPLE_FLOAT32LE,
++    Float32BE = ffi::PA_SAMPLE_FLOAT32BE,
++    Signed32LE = ffi::PA_SAMPLE_S32LE,
++    Signed32BE = ffi::PA_SAMPLE_S32BE,
++    Signed24LE = ffi::PA_SAMPLE_S24LE,
++    Signed24BE = ffi::PA_SAMPLE_S24BE,
++    Signed24_32LE = ffi::PA_SAMPLE_S24_32LE,
++    Signed23_32BE = ffi::PA_SAMPLE_S24_32BE,
++}
++
++impl Default for SampleFormat {
++    fn default() -> Self {
++        SampleFormat::Invalid
++    }
++}
++
++impl Into<ffi::pa_sample_format_t> for SampleFormat {
++    fn into(self) -> ffi::pa_sample_format_t {
++        self as ffi::pa_sample_format_t
++    }
++}
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum ContextState {
++    Unconnected = ffi::PA_CONTEXT_UNCONNECTED,
++    Connecting = ffi::PA_CONTEXT_CONNECTING,
++    Authorizing = ffi::PA_CONTEXT_AUTHORIZING,
++    SettingName = ffi::PA_CONTEXT_SETTING_NAME,
++    Ready = ffi::PA_CONTEXT_READY,
++    Failed = ffi::PA_CONTEXT_FAILED,
++    Terminated = ffi::PA_CONTEXT_TERMINATED,
++}
++
++impl ContextState {
++    // This function implements the PA_CONTENT_IS_GOOD macro from pulse/def.h
++    // It must match the version from PA headers.
++    pub fn is_good(self) -> bool {
++        match self {
++            ContextState::Connecting |
++            ContextState::Authorizing |
++            ContextState::SettingName |
++            ContextState::Ready => true,
++            _ => false,
++        }
++    }
++
++    pub fn try_from(x: ffi::pa_context_state_t) -> Option<Self> {
++        if x >= ffi::PA_CONTEXT_UNCONNECTED && x <= ffi::PA_CONTEXT_TERMINATED {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++impl Default for ContextState {
++    fn default() -> Self {
++        ContextState::Unconnected
++    }
++}
++
++impl Into<ffi::pa_context_state_t> for ContextState {
++    fn into(self) -> ffi::pa_context_state_t {
++        self as ffi::pa_context_state_t
++    }
++}
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum StreamState {
++    Unconnected = ffi::PA_STREAM_UNCONNECTED,
++    Creating = ffi::PA_STREAM_CREATING,
++    Ready = ffi::PA_STREAM_READY,
++    Failed = ffi::PA_STREAM_FAILED,
++    Terminated = ffi::PA_STREAM_TERMINATED,
++}
++
++impl StreamState {
++    // This function implements the PA_STREAM_IS_GOOD macro from pulse/def.h
++    // It must match the version from PA headers.
++    pub fn is_good(self) -> bool {
++        match self {
++            StreamState::Creating | StreamState::Ready => true,
++            _ => false,
++        }
++    }
++
++    pub fn try_from(x: ffi::pa_stream_state_t) -> Option<Self> {
++        if x >= ffi::PA_STREAM_UNCONNECTED && x <= ffi::PA_STREAM_TERMINATED {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++impl Default for StreamState {
++    fn default() -> Self {
++        StreamState::Unconnected
++    }
++}
++
++impl Into<ffi::pa_stream_state_t> for StreamState {
++    fn into(self) -> ffi::pa_stream_state_t {
++        self as ffi::pa_stream_state_t
++    }
++}
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum OperationState {
++    Running = ffi::PA_OPERATION_RUNNING,
++    Done = ffi::PA_OPERATION_DONE,
++    Cancelled = ffi::PA_OPERATION_CANCELLED,
++}
++
++impl OperationState {
++    pub fn try_from(x: ffi::pa_operation_state_t) -> Option<Self> {
++        if x >= ffi::PA_OPERATION_RUNNING && x <= ffi::PA_OPERATION_CANCELLED {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++impl Into<ffi::pa_operation_state_t> for OperationState {
++    fn into(self) -> ffi::pa_operation_state_t {
++        self as ffi::pa_operation_state_t
++    }
++}
++
++bitflags! {
++    pub flags ContextFlags: u32 {
++        const CONTEXT_FLAGS_NOAUTOSPAWN = ffi::PA_CONTEXT_NOAUTOSPAWN,
++        const CONTEXT_FLAGS_NOFAIL = ffi::PA_CONTEXT_NOFAIL,
++    }
++}
++
++impl Into<ffi::pa_context_flags_t> for ContextFlags {
++    fn into(self) -> ffi::pa_context_flags_t {
++        self.bits() as ffi::pa_context_flags_t
++    }
++}
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum DeviceType {
++    Sink = ffi::PA_DEVICE_TYPE_SINK,
++    Source = ffi::PA_DEVICE_TYPE_SOURCE,
++}
++
++impl DeviceType {
++    pub fn try_from(x: ffi::pa_device_type_t) -> Option<Self> {
++        if x >= ffi::PA_DEVICE_TYPE_SINK && x <= ffi::PA_DEVICE_TYPE_SOURCE {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++impl Into<ffi::pa_device_type_t> for DeviceType {
++    fn into(self) -> ffi::pa_device_type_t {
++        self as ffi::pa_device_type_t
++    }
++}
++
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum StreamDirection {
++    NoDirection = ffi::PA_STREAM_NODIRECTION,
++    Playback = ffi::PA_STREAM_PLAYBACK,
++    Record = ffi::PA_STREAM_RECORD,
++    StreamUpload = ffi::PA_STREAM_UPLOAD,
++}
++
++impl StreamDirection {
++    pub fn try_from(x: ffi::pa_stream_direction_t) -> Option<Self> {
++        if x >= ffi::PA_STREAM_NODIRECTION && x <= ffi::PA_STREAM_UPLOAD {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++impl Into<ffi::pa_stream_direction_t> for StreamDirection {
++    fn into(self) -> ffi::pa_stream_direction_t {
++        self as ffi::pa_stream_direction_t
++    }
++}
++
++bitflags! {
++    pub flags StreamFlags : u32 {
++        const STREAM_START_CORKED = ffi::PA_STREAM_START_CORKED,
++        const STREAM_INTERPOLATE_TIMING = ffi::PA_STREAM_INTERPOLATE_TIMING,
++        const STREAM_NOT_MONOTONIC = ffi::PA_STREAM_NOT_MONOTONIC,
++        const STREAM_AUTO_TIMING_UPDATE = ffi::PA_STREAM_AUTO_TIMING_UPDATE,
++        const STREAM_NO_REMAP_CHANNELS = ffi::PA_STREAM_NO_REMAP_CHANNELS,
++        const STREAM_NO_REMIX_CHANNELS = ffi::PA_STREAM_NO_REMIX_CHANNELS,
++        const STREAM_FIX_FORMAT = ffi::PA_STREAM_FIX_FORMAT,
++        const STREAM_FIX_RATE = ffi::PA_STREAM_FIX_RATE,
++        const STREAM_FIX_CHANNELS = ffi::PA_STREAM_FIX_CHANNELS,
++        const STREAM_DONT_MOVE = ffi::PA_STREAM_DONT_MOVE,
++        const STREAM_VARIABLE_RATE = ffi::PA_STREAM_VARIABLE_RATE,
++        const STREAM_PEAK_DETECT = ffi::PA_STREAM_PEAK_DETECT,
++        const STREAM_START_MUTED = ffi::PA_STREAM_START_MUTED,
++        const STREAM_ADJUST_LATENCY = ffi::PA_STREAM_ADJUST_LATENCY,
++        const STREAM_EARLY_REQUESTS = ffi::PA_STREAM_EARLY_REQUESTS,
++        const STREAM_DONT_INHIBIT_AUTO_SUSPEND = ffi::PA_STREAM_DONT_INHIBIT_AUTO_SUSPEND,
++        const STREAM_START_UNMUTED = ffi::PA_STREAM_START_UNMUTED,
++        const STREAM_FAIL_ON_SUSPEND = ffi::PA_STREAM_FAIL_ON_SUSPEND,
++        const STREAM_RELATIVE_VOLUME = ffi::PA_STREAM_RELATIVE_VOLUME,
++        const STREAM_PASSTHROUGH = ffi::PA_STREAM_PASSTHROUGH,
++    }
++}
++
++impl StreamFlags {
++    pub fn try_from(x: ffi::pa_stream_flags_t) -> Option<Self> {
++        if (x &
++            !(ffi::PA_STREAM_NOFLAGS | ffi::PA_STREAM_START_CORKED | ffi::PA_STREAM_INTERPOLATE_TIMING |
++              ffi::PA_STREAM_NOT_MONOTONIC | ffi::PA_STREAM_AUTO_TIMING_UPDATE |
++              ffi::PA_STREAM_NO_REMAP_CHANNELS |
++              ffi::PA_STREAM_NO_REMIX_CHANNELS | ffi::PA_STREAM_FIX_FORMAT | ffi::PA_STREAM_FIX_RATE |
++              ffi::PA_STREAM_FIX_CHANNELS |
++              ffi::PA_STREAM_DONT_MOVE | ffi::PA_STREAM_VARIABLE_RATE | ffi::PA_STREAM_PEAK_DETECT |
++              ffi::PA_STREAM_START_MUTED | ffi::PA_STREAM_ADJUST_LATENCY |
++              ffi::PA_STREAM_EARLY_REQUESTS |
++              ffi::PA_STREAM_DONT_INHIBIT_AUTO_SUSPEND |
++              ffi::PA_STREAM_START_UNMUTED | ffi::PA_STREAM_FAIL_ON_SUSPEND |
++              ffi::PA_STREAM_RELATIVE_VOLUME | ffi::PA_STREAM_PASSTHROUGH)) == 0 {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++impl Into<ffi::pa_stream_flags_t> for StreamFlags {
++    fn into(self) -> ffi::pa_stream_flags_t {
++        self.bits() as ffi::pa_stream_flags_t
++    }
++}
++
++bitflags!{
++    pub flags SubscriptionMask : u32 {
++        const SUBSCRIPTION_MASK_SINK = ffi::PA_SUBSCRIPTION_MASK_SINK,
++        const SUBSCRIPTION_MASK_SOURCE = ffi::PA_SUBSCRIPTION_MASK_SOURCE,
++        const SUBSCRIPTION_MASK_SINK_INPUT = ffi::PA_SUBSCRIPTION_MASK_SINK_INPUT,
++        const SUBSCRIPTION_MASK_SOURCE_OUTPUT = ffi::PA_SUBSCRIPTION_MASK_SOURCE_OUTPUT,
++        const SUBSCRIPTION_MASK_MODULE = ffi::PA_SUBSCRIPTION_MASK_MODULE,
++        const SUBSCRIPTION_MASK_CLIENT = ffi::PA_SUBSCRIPTION_MASK_CLIENT,
++        const SUBSCRIPTION_MASK_SAMPLE_CACHE = ffi::PA_SUBSCRIPTION_MASK_SAMPLE_CACHE,
++        const SUBSCRIPTION_MASK_SERVER = ffi::PA_SUBSCRIPTION_MASK_SERVER,
++        const SUBSCRIPTION_MASK_AUTOLOAD = ffi::PA_SUBSCRIPTION_MASK_AUTOLOAD,
++        const SUBSCRIPTION_MASK_CARD = ffi::PA_SUBSCRIPTION_MASK_CARD,
++    }
++}
++
++impl SubscriptionMask {
++    pub fn try_from(x: ffi::pa_subscription_mask_t) -> Option<Self> {
++        if (x & !ffi::PA_SUBSCRIPTION_MASK_ALL) == 0 {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++impl Into<ffi::pa_subscription_mask_t> for SubscriptionMask {
++    fn into(self) -> ffi::pa_subscription_mask_t {
++        self.bits() as ffi::pa_subscription_mask_t
++    }
++}
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum SubscriptionEventFacility {
++    Sink = ffi::PA_SUBSCRIPTION_EVENT_SINK,
++    Source = ffi::PA_SUBSCRIPTION_EVENT_SOURCE,
++    SinkInput = ffi::PA_SUBSCRIPTION_EVENT_SINK_INPUT,
++    SourceOutput = ffi::PA_SUBSCRIPTION_EVENT_SOURCE_OUTPUT,
++    Module = ffi::PA_SUBSCRIPTION_EVENT_MODULE,
++    Client = ffi::PA_SUBSCRIPTION_EVENT_CLIENT,
++    SampleCache = ffi::PA_SUBSCRIPTION_EVENT_SAMPLE_CACHE,
++    Server = ffi::PA_SUBSCRIPTION_EVENT_SERVER,
++    Autoload = ffi::PA_SUBSCRIPTION_EVENT_AUTOLOAD,
++    Card = ffi::PA_SUBSCRIPTION_EVENT_CARD,
++}
++
++#[repr(C)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum SubscriptionEventType {
++    New,
++    Change,
++    Remove,
++}
++
++#[repr(C)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub struct SubscriptionEvent(ffi::pa_subscription_event_type_t);
++impl SubscriptionEvent {
++    pub fn try_from(x: ffi::pa_subscription_event_type_t) -> Option<Self> {
++        if (x & !(ffi::PA_SUBSCRIPTION_EVENT_TYPE_MASK | ffi::PA_SUBSCRIPTION_EVENT_FACILITY_MASK)) == 0 {
++            Some(SubscriptionEvent(x))
++        } else {
++            None
++        }
++    }
++
++    pub fn event_facility(self) -> SubscriptionEventFacility {
++        unsafe { ::std::mem::transmute(self.0 & ffi::PA_SUBSCRIPTION_EVENT_FACILITY_MASK) }
++    }
++
++    pub fn event_type(self) -> SubscriptionEventType {
++        unsafe { ::std::mem::transmute(((self.0 & ffi::PA_SUBSCRIPTION_EVENT_TYPE_MASK) >> 4)) }
++    }
++}
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum SeekMode {
++    Relative = ffi::PA_SEEK_RELATIVE,
++    Absolute = ffi::PA_SEEK_ABSOLUTE,
++    RelativeOnRead = ffi::PA_SEEK_RELATIVE_ON_READ,
++    RelativeEnd = ffi::PA_SEEK_RELATIVE_END,
++}
++
++impl SeekMode {
++    pub fn try_from(x: ffi::pa_seek_mode_t) -> Option<Self> {
++        if x >= ffi::PA_SEEK_RELATIVE && x <= ffi::PA_SEEK_RELATIVE_END {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++impl Into<ffi::pa_seek_mode_t> for SeekMode {
++    fn into(self) -> ffi::pa_seek_mode_t {
++        self as ffi::pa_seek_mode_t
++    }
++}
++
++bitflags! {
++    pub flags SinkFlags: u32 {
++        const SINK_HW_VOLUME_CTRL = ffi::PA_SINK_HW_VOLUME_CTRL,
++        const SINK_LATENCY = ffi::PA_SINK_LATENCY,
++        const SINK_HARDWARE = ffi::PA_SINK_HARDWARE,
++        const SINK_NETWORK = ffi::PA_SINK_NETWORK,
++        const SINK_HW_MUTE_CTRL = ffi::PA_SINK_HW_MUTE_CTRL,
++        const SINK_DECIBEL_VOLUME = ffi::PA_SINK_DECIBEL_VOLUME,
++        const SINK_FLAT_VOLUME = ffi::PA_SINK_FLAT_VOLUME,
++        const SINK_DYNAMIC_LATENCY = ffi::PA_SINK_DYNAMIC_LATENCY,
++        const SINK_SET_FORMATS = ffi::PA_SINK_SET_FORMATS,
++    }
++}
++
++impl SinkFlags {
++    pub fn try_from(x: ffi::pa_sink_flags_t) -> Option<SinkFlags> {
++        if (x &
++            !(ffi::PA_SOURCE_NOFLAGS | ffi::PA_SOURCE_HW_VOLUME_CTRL | ffi::PA_SOURCE_LATENCY |
++              ffi::PA_SOURCE_HARDWARE | ffi::PA_SOURCE_NETWORK | ffi::PA_SOURCE_HW_MUTE_CTRL |
++              ffi::PA_SOURCE_DECIBEL_VOLUME |
++              ffi::PA_SOURCE_DYNAMIC_LATENCY | ffi::PA_SOURCE_FLAT_VOLUME)) == 0 {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum SinkState {
++    InvalidState = ffi::PA_SINK_INVALID_STATE,
++    Running = ffi::PA_SINK_RUNNING,
++    Idle = ffi::PA_SINK_IDLE,
++    Suspended = ffi::PA_SINK_SUSPENDED,
++    Init = ffi::PA_SINK_INIT,
++    Unlinked = ffi::PA_SINK_UNLINKED,
++}
++
++bitflags!{
++    pub flags SourceFlags: u32 {
++        const SOURCE_FLAGS_HW_VOLUME_CTRL = ffi::PA_SOURCE_HW_VOLUME_CTRL,
++        const SOURCE_FLAGS_LATENCY = ffi::PA_SOURCE_LATENCY,
++        const SOURCE_FLAGS_HARDWARE = ffi::PA_SOURCE_HARDWARE,
++        const SOURCE_FLAGS_NETWORK = ffi::PA_SOURCE_NETWORK,
++        const SOURCE_FLAGS_HW_MUTE_CTRL = ffi::PA_SOURCE_HW_MUTE_CTRL,
++        const SOURCE_FLAGS_DECIBEL_VOLUME = ffi::PA_SOURCE_DECIBEL_VOLUME,
++        const SOURCE_FLAGS_DYNAMIC_LATENCY = ffi::PA_SOURCE_DYNAMIC_LATENCY,
++        const SOURCE_FLAGS_FLAT_VOLUME = ffi::PA_SOURCE_FLAT_VOLUME,
++    }
++}
++
++impl Into<ffi::pa_source_flags_t> for SourceFlags {
++    fn into(self) -> ffi::pa_source_flags_t {
++        self.bits() as ffi::pa_source_flags_t
++    }
++}
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum SourceState {
++    InvalidState = ffi::PA_SOURCE_INVALID_STATE,
++    Running = ffi::PA_SOURCE_RUNNING,
++    Idle = ffi::PA_SOURCE_IDLE,
++    Suspended = ffi::PA_SOURCE_SUSPENDED,
++    Init = ffi::PA_SOURCE_INIT,
++    Unlinked = ffi::PA_SOURCE_UNLINKED,
++}
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum PortAvailable {
++    Unknown = ffi::PA_PORT_AVAILABLE_UNKNOWN,
++    No = ffi::PA_PORT_AVAILABLE_NO,
++    Yes = ffi::PA_PORT_AVAILABLE_YES,
++}
++
++impl PortAvailable {
++    pub fn try_from(x: ffi::pa_port_available_t) -> Option<Self> {
++        if x >= ffi::PA_PORT_AVAILABLE_UNKNOWN && x <= ffi::PA_PORT_AVAILABLE_YES {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++impl Into<ffi::pa_port_available_t> for PortAvailable {
++    fn into(self) -> ffi::pa_port_available_t {
++        self as ffi::pa_port_available_t
++    }
++}
++
++#[repr(i32)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum ChannelPosition {
++    Invalid = ffi::PA_CHANNEL_POSITION_INVALID,
++    Mono = ffi::PA_CHANNEL_POSITION_MONO,
++    FrontLeft = ffi::PA_CHANNEL_POSITION_FRONT_LEFT,
++    FrontRight = ffi::PA_CHANNEL_POSITION_FRONT_RIGHT,
++    FrontCenter = ffi::PA_CHANNEL_POSITION_FRONT_CENTER,
++    RearCenter = ffi::PA_CHANNEL_POSITION_REAR_CENTER,
++    RearLeft = ffi::PA_CHANNEL_POSITION_REAR_LEFT,
++    RearRight = ffi::PA_CHANNEL_POSITION_REAR_RIGHT,
++    LowFreqEffects = ffi::PA_CHANNEL_POSITION_LFE,
++    FrontLeftOfCenter = ffi::PA_CHANNEL_POSITION_FRONT_LEFT_OF_CENTER,
++    FrontRightOfCenter = ffi::PA_CHANNEL_POSITION_FRONT_RIGHT_OF_CENTER,
++    SideLeft = ffi::PA_CHANNEL_POSITION_SIDE_LEFT,
++    SideRight = ffi::PA_CHANNEL_POSITION_SIDE_RIGHT,
++    Aux0 = ffi::PA_CHANNEL_POSITION_AUX0,
++    Aux1 = ffi::PA_CHANNEL_POSITION_AUX1,
++    Aux2 = ffi::PA_CHANNEL_POSITION_AUX2,
++    Aux3 = ffi::PA_CHANNEL_POSITION_AUX3,
++    Aux4 = ffi::PA_CHANNEL_POSITION_AUX4,
++    Aux5 = ffi::PA_CHANNEL_POSITION_AUX5,
++    Aux6 = ffi::PA_CHANNEL_POSITION_AUX6,
++    Aux7 = ffi::PA_CHANNEL_POSITION_AUX7,
++    Aux8 = ffi::PA_CHANNEL_POSITION_AUX8,
++    Aux9 = ffi::PA_CHANNEL_POSITION_AUX9,
++    Aux10 = ffi::PA_CHANNEL_POSITION_AUX10,
++    Aux11 = ffi::PA_CHANNEL_POSITION_AUX11,
++    Aux12 = ffi::PA_CHANNEL_POSITION_AUX12,
++    Aux13 = ffi::PA_CHANNEL_POSITION_AUX13,
++    Aux14 = ffi::PA_CHANNEL_POSITION_AUX14,
++    Aux15 = ffi::PA_CHANNEL_POSITION_AUX15,
++    Aux16 = ffi::PA_CHANNEL_POSITION_AUX16,
++    Aux17 = ffi::PA_CHANNEL_POSITION_AUX17,
++    Aux18 = ffi::PA_CHANNEL_POSITION_AUX18,
++    Aux19 = ffi::PA_CHANNEL_POSITION_AUX19,
++    Aux20 = ffi::PA_CHANNEL_POSITION_AUX20,
++    Aux21 = ffi::PA_CHANNEL_POSITION_AUX21,
++    Aux22 = ffi::PA_CHANNEL_POSITION_AUX22,
++    Aux23 = ffi::PA_CHANNEL_POSITION_AUX23,
++    Aux24 = ffi::PA_CHANNEL_POSITION_AUX24,
++    Aux25 = ffi::PA_CHANNEL_POSITION_AUX25,
++    Aux26 = ffi::PA_CHANNEL_POSITION_AUX26,
++    Aux27 = ffi::PA_CHANNEL_POSITION_AUX27,
++    Aux28 = ffi::PA_CHANNEL_POSITION_AUX28,
++    Aux29 = ffi::PA_CHANNEL_POSITION_AUX29,
++    Aux30 = ffi::PA_CHANNEL_POSITION_AUX30,
++    Aux31 = ffi::PA_CHANNEL_POSITION_AUX31,
++    TopCenter = ffi::PA_CHANNEL_POSITION_TOP_CENTER,
++    TopFrontLeft = ffi::PA_CHANNEL_POSITION_TOP_FRONT_LEFT,
++    TopFrontRight = ffi::PA_CHANNEL_POSITION_TOP_FRONT_RIGHT,
++    TopFrontCenter = ffi::PA_CHANNEL_POSITION_TOP_FRONT_CENTER,
++    TopRearLeft = ffi::PA_CHANNEL_POSITION_TOP_REAR_LEFT,
++    TopRearRight = ffi::PA_CHANNEL_POSITION_TOP_REAR_RIGHT,
++    TopRearCenter = ffi::PA_CHANNEL_POSITION_TOP_REAR_CENTER,
++}
++
++impl ChannelPosition {
++    pub fn try_from(x: ffi::pa_channel_position_t) -> Option<Self> {
++        if x >= ffi::PA_CHANNEL_POSITION_INVALID && x < ffi::PA_CHANNEL_POSITION_MAX {
++            Some(unsafe { ::std::mem::transmute(x) })
++        } else {
++            None
++        }
++    }
++}
++
++impl Default for ChannelPosition {
++    fn default() -> Self {
++        ChannelPosition::Invalid
++    }
++}
++
++impl Into<ffi::pa_channel_position_t> for ChannelPosition {
++    fn into(self) -> ffi::pa_channel_position_t {
++        self as ffi::pa_channel_position_t
++    }
++}
++pub type Result<T> = ::std::result::Result<T, error::ErrorCode>;
++
++pub trait CVolumeExt {
++    fn set(&mut self, channels: c_uint, v: Volume);
++    fn set_balance(&mut self, map: &ChannelMap, new_balance: f32);
++}
++
++impl CVolumeExt for CVolume {
++    fn set(&mut self, channels: c_uint, v: Volume) {
++        unsafe {
++            ffi::pa_cvolume_set(self, channels, v);
++        }
++    }
++
++    fn set_balance(&mut self, map: &ChannelMap, new_balance: f32) {
++        unsafe {
++            ffi::pa_cvolume_set_balance(self, map, new_balance);
++        }
++    }
++}
++
++pub trait ChannelMapExt {
++    fn init() -> ChannelMap;
++    fn can_balance(&self) -> bool;
++}
++
++impl ChannelMapExt for ChannelMap {
++    fn init() -> ChannelMap {
++        let mut cm = ChannelMap::default();
++        unsafe {
++            ffi::pa_channel_map_init(&mut cm);
++        }
++        cm
++    }
++    fn can_balance(&self) -> bool {
++        unsafe { ffi::pa_channel_map_can_balance(self) > 0 }
++    }
++}
++
++pub trait ProplistExt {
++    fn proplist(&self) -> Proplist;
++}
++
++impl ProplistExt for SinkInfo {
++    fn proplist(&self) -> Proplist {
++        unsafe { proplist::from_raw_ptr(self.proplist) }
++    }
++}
++
++impl ProplistExt for SourceInfo {
++    fn proplist(&self) -> Proplist {
++        unsafe { proplist::from_raw_ptr(self.proplist) }
++    }
++}
++
++pub trait SampleSpecExt {
++    fn frame_size(&self) -> usize;
++}
++
++impl SampleSpecExt for SampleSpec {
++    fn frame_size(&self) -> usize {
++        unsafe { ffi::pa_frame_size(self) }
++    }
++}
++
++pub trait USecExt {
++    fn to_bytes(self, spec: &SampleSpec) -> usize;
++}
++
++impl USecExt for USec {
++    fn to_bytes(self, spec: &SampleSpec) -> usize {
++        unsafe { ffi::pa_usec_to_bytes(self, spec) }
++    }
++}
++
++pub fn library_version() -> *const c_char {
++    unsafe { ffi::pa_get_library_version() }
++}
++
++pub fn sw_volume_from_linear(vol: f64) -> Volume {
++    unsafe { ffi::pa_sw_volume_from_linear(vol) }
++}
++
++pub fn rtclock_now() -> USec {
++    unsafe { ffi::pa_rtclock_now() }
++}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/mainloop_api.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/mainloop_api.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/mainloop_api.rs.cubeb-pulse-arm	2017-08-04 13:37:46.385821734 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/mainloop_api.rs	2017-08-04 13:37:46.385821734 +0200
+@@ -0,0 +1,58 @@
++// Copyright © 2017 Mozilla Foundation
++//
++// This program is made available under an ISC-style license.  See the
++// accompanying file LICENSE for details.
++
++use ffi;
++use std::mem;
++use std::os::raw::c_void;
++
++
++#[allow(non_camel_case_types)]
++type pa_once_cb_t = Option<unsafe extern "C" fn(m: *mut ffi::pa_mainloop_api,
++                                                userdata: *mut c_void)>;
++fn wrap_once_cb<F>(_: F) -> pa_once_cb_t
++    where F: Fn(&MainloopApi, *mut c_void)
++{
++    assert!(mem::size_of::<F>() == 0);
++
++    unsafe extern "C" fn wrapped<F>(m: *mut ffi::pa_mainloop_api, userdata: *mut c_void)
++        where F: Fn(&MainloopApi, *mut c_void)
++    {
++        let api = from_raw_ptr(m);
++        let result = mem::transmute::<_, &F>(&())(&api, userdata);
++        mem::forget(api);
++        result
++    }
++
++    Some(wrapped::<F>)
++}
++
++pub struct MainloopApi(*mut ffi::pa_mainloop_api);
++
++impl MainloopApi {
++    pub fn raw_mut(&self) -> &mut ffi::pa_mainloop_api {
++        unsafe { &mut *self.0 }
++    }
++
++    pub fn once<CB>(&self, cb: CB, userdata: *mut c_void)
++        where CB: Fn(&MainloopApi, *mut c_void)
++    {
++        let wrapped = wrap_once_cb(cb);
++        unsafe {
++            ffi::pa_mainloop_api_once(self.raw_mut(), wrapped, userdata);
++        }
++    }
++
++    pub fn time_free(&self, e: *mut ffi::pa_time_event) {
++        unsafe {
++            if let Some(f) = self.raw_mut().time_free {
++                f(e);
++            }
++        }
++    }
++}
++
++pub unsafe fn from_raw_ptr(raw: *mut ffi::pa_mainloop_api) -> MainloopApi {
++    MainloopApi(raw)
++}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/operation.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/operation.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/operation.rs.cubeb-pulse-arm	2017-08-04 13:37:46.385821734 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/operation.rs	2017-08-04 13:37:46.385821734 +0200
+@@ -0,0 +1,43 @@
++// Copyright © 2017 Mozilla Foundation
++//
++// This program is made available under an ISC-style license.  See the
++// accompanying file LICENSE for details.
++
++use ffi;
++
++#[derive(Debug)]
++pub struct Operation(*mut ffi::pa_operation);
++
++impl Operation {
++    pub unsafe fn from_raw_ptr(raw: *mut ffi::pa_operation) -> Operation {
++        Operation(raw)
++    }
++
++    pub fn cancel(&mut self) {
++        unsafe {
++            ffi::pa_operation_cancel(self.0);
++        }
++    }
++
++    pub fn get_state(&self) -> ffi::pa_operation_state_t {
++        unsafe { ffi::pa_operation_get_state(self.0) }
++    }
++}
++
++impl Clone for Operation {
++    fn clone(&self) -> Self {
++        Operation(unsafe { ffi::pa_operation_ref(self.0) })
++    }
++}
++
++impl Drop for Operation {
++    fn drop(&mut self) {
++        unsafe {
++            ffi::pa_operation_unref(self.0);
++        }
++    }
++}
++
++pub unsafe fn from_raw_ptr(raw: *mut ffi::pa_operation) -> Operation {
++    Operation::from_raw_ptr(raw)
++}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/proplist.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/proplist.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/proplist.rs.cubeb-pulse-arm	2017-08-04 13:37:46.385821734 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/proplist.rs	2017-08-04 13:37:46.385821734 +0200
+@@ -0,0 +1,31 @@
++// Copyright © 2017 Mozilla Foundation
++//
++// This program is made available under an ISC-style license.  See the
++// accompanying file LICENSE for details.
++
++use ffi;
++use std::ffi::{CStr, CString};
++
++#[derive(Debug)]
++pub struct Proplist(*mut ffi::pa_proplist);
++
++impl Proplist {
++    pub fn gets<T>(&self, key: T) -> Option<&CStr>
++        where T: Into<Vec<u8>>
++    {
++        let key = match CString::new(key) {
++            Ok(k) => k,
++            _ => return None,
++        };
++        let r = unsafe { ffi::pa_proplist_gets(self.0, key.as_ptr()) };
++        if r.is_null() {
++            None
++        } else {
++            Some(unsafe { CStr::from_ptr(r) })
++        }
++    }
++}
++
++pub unsafe fn from_raw_ptr(raw: *mut ffi::pa_proplist) -> Proplist {
++    return Proplist(raw);
++}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/stream.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/stream.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/stream.rs.cubeb-pulse-arm	2017-08-04 13:37:46.386821731 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/stream.rs	2017-08-04 13:37:46.386821731 +0200
+@@ -0,0 +1,367 @@
++// Copyright © 2017 Mozilla Foundation
++//
++// This program is made available under an ISC-style license.  See the
++// accompanying file LICENSE for details.
++
++use ::*;
++use context;
++use ffi;
++use operation;
++use std::ffi::CStr;
++use std::mem;
++use std::os::raw::{c_int, c_void};
++use std::ptr;
++use util::*;
++
++#[derive(Debug)]
++pub struct Stream(*mut ffi::pa_stream);
++
++impl Stream {
++    pub fn new<'a, CM>(c: &Context, name: &::std::ffi::CStr, ss: &SampleSpec, map: CM) -> Option<Self>
++        where CM: Into<Option<&'a ChannelMap>>
++    {
++        let ptr = unsafe {
++            ffi::pa_stream_new(c.raw_mut(),
++                               name.as_ptr(),
++                               ss as *const _,
++                               to_ptr(map.into()))
++        };
++        if ptr.is_null() {
++            None
++        } else {
++            Some(Stream(ptr))
++        }
++    }
++
++    #[doc(hidden)]
++    pub fn raw_mut(&self) -> &mut ffi::pa_stream {
++        unsafe { &mut *self.0 }
++    }
++
++    pub fn unref(self) {
++        unsafe {
++            ffi::pa_stream_unref(self.raw_mut());
++        }
++    }
++
++    pub fn get_state(&self) -> StreamState {
++        StreamState::try_from(unsafe {
++            ffi::pa_stream_get_state(self.raw_mut())
++        }).expect("pa_stream_get_state returned invalid StreamState")
++    }
++
++    pub fn get_context(&self) -> Option<Context> {
++        let ptr = unsafe { ffi::pa_stream_get_context(self.raw_mut()) };
++        if ptr.is_null() {
++            return None;
++        }
++
++        let ctx = unsafe { context::from_raw_ptr(ptr) };
++        Some(ctx)
++    }
++
++    pub fn get_index(&self) -> u32 {
++        unsafe { ffi::pa_stream_get_index(self.raw_mut()) }
++    }
++
++    pub fn get_device_name<'a>(&'a self) -> Result<&'a CStr> {
++        let r = unsafe { ffi::pa_stream_get_device_name(self.raw_mut()) };
++        if r.is_null() {
++            let err = if let Some(c) = self.get_context() {
++                c.errno()
++            } else {
++                ffi::PA_ERR_UNKNOWN
++            };
++            return Err(ErrorCode::from_error_code(err));
++        }
++        Ok(unsafe { CStr::from_ptr(r) })
++    }
++
++    pub fn is_suspended(&self) -> Result<bool> {
++        let r = unsafe { ffi::pa_stream_is_suspended(self.raw_mut()) };
++        error_result!(r != 0, r)
++    }
++
++    pub fn is_corked(&self) -> Result<bool> {
++        let r = unsafe { ffi::pa_stream_is_corked(self.raw_mut()) };
++        error_result!(r != 0, r)
++    }
++
++    pub fn connect_playback<'a, D, A, V, S>(&self,
++                                            dev: D,
++                                            attr: A,
++                                            flags: StreamFlags,
++                                            volume: V,
++                                            sync_stream: S)
++                                            -> Result<()>
++        where D: Into<Option<&'a CStr>>,
++              A: Into<Option<&'a BufferAttr>>,
++              V: Into<Option<&'a CVolume>>,
++              S: Into<Option<&'a mut Stream>>
++    {
++        let r = unsafe {
++            ffi::pa_stream_connect_playback(self.raw_mut(),
++                                            str_to_ptr(dev.into()),
++                                            to_ptr(attr.into()),
++                                            flags.into(),
++                                            to_ptr(volume.into()),
++                                            map_to_mut_ptr(sync_stream.into(), |p| p.0))
++        };
++        error_result!((), r)
++    }
++
++    pub fn connect_record<'a, D, A>(&self, dev: D, attr: A, flags: StreamFlags) -> Result<()>
++        where D: Into<Option<&'a CStr>>,
++              A: Into<Option<&'a BufferAttr>>
++    {
++        let r = unsafe {
++            ffi::pa_stream_connect_record(self.raw_mut(),
++                                          str_to_ptr(dev.into()),
++                                          to_ptr(attr.into()),
++                                          flags.into())
++        };
++        error_result!((), r)
++    }
++
++    pub fn disconnect(&self) -> Result<()> {
++        let r = unsafe { ffi::pa_stream_disconnect(self.raw_mut()) };
++        error_result!((), r)
++    }
++
++    pub fn begin_write(&self, req_bytes: usize) -> Result<(*mut c_void, usize)> {
++        let mut data: *mut c_void = ptr::null_mut();
++        let mut nbytes = req_bytes;
++        let r = unsafe { ffi::pa_stream_begin_write(self.raw_mut(), &mut data, &mut nbytes) };
++        error_result!((data, nbytes), r)
++    }
++
++    pub fn cancel_write(&self) -> Result<()> {
++        let r = unsafe { ffi::pa_stream_cancel_write(self.raw_mut()) };
++        error_result!((), r)
++    }
++
++    pub fn write(&self, data: *const c_void, nbytes: usize, offset: i64, seek: SeekMode) -> Result<()> {
++        let r = unsafe { ffi::pa_stream_write(self.raw_mut(), data, nbytes, None, offset, seek.into()) };
++        error_result!((), r)
++    }
++
++    pub unsafe fn peek(&self, data: *mut *const c_void, length: *mut usize) -> Result<()> {
++        let r = ffi::pa_stream_peek(self.raw_mut(), data, length);
++        error_result!((), r)
++    }
++
++    pub fn drop(&self) -> Result<()> {
++        let r = unsafe { ffi::pa_stream_drop(self.raw_mut()) };
++        error_result!((), r)
++    }
++
++    pub fn writable_size(&self) -> Result<usize> {
++        let r = unsafe { ffi::pa_stream_writable_size(self.raw_mut()) };
++        if r == ::std::usize::MAX {
++            let err = if let Some(c) = self.get_context() {
++                c.errno()
++            } else {
++                ffi::PA_ERR_UNKNOWN
++            };
++            return Err(ErrorCode::from_error_code(err));
++        }
++        Ok(r)
++    }
++
++    pub fn readable_size(&self) -> Result<usize> {
++        let r = unsafe { ffi::pa_stream_readable_size(self.raw_mut()) };
++        if r == ::std::usize::MAX {
++            let err = if let Some(c) = self.get_context() {
++                c.errno()
++            } else {
++                ffi::PA_ERR_UNKNOWN
++            };
++            return Err(ErrorCode::from_error_code(err));
++        }
++        Ok(r)
++    }
++
++    pub fn update_timing_info<CB>(&self, _: CB, userdata: *mut c_void) -> Result<Operation>
++        where CB: Fn(&Stream, i32, *mut c_void)
++    {
++        debug_assert_eq!(mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(s: *mut ffi::pa_stream, success: c_int, userdata: *mut c_void)
++            where F: Fn(&Stream, i32, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let mut stm = stream::from_raw_ptr(s);
++            let result = uninitialized::<F>()(&mut stm, success, userdata);
++            forget(stm);
++
++            result
++        }
++
++        let r = unsafe { ffi::pa_stream_update_timing_info(self.raw_mut(), Some(wrapped::<CB>), userdata) };
++        if r.is_null() {
++            let err = if let Some(c) = self.get_context() {
++                c.errno()
++            } else {
++                ffi::PA_ERR_UNKNOWN
++            };
++            return Err(ErrorCode::from_error_code(err));
++        }
++        Ok(unsafe { operation::from_raw_ptr(r) })
++    }
++
++    pub fn clear_state_callback(&self) {
++        unsafe {
++            ffi::pa_stream_set_state_callback(self.raw_mut(), None, ptr::null_mut());
++        }
++    }
++
++    pub fn set_state_callback<CB>(&self, _: CB, userdata: *mut c_void)
++        where CB: Fn(&Stream, *mut c_void)
++    {
++        debug_assert_eq!(mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(s: *mut ffi::pa_stream, userdata: *mut c_void)
++            where F: Fn(&Stream, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let mut stm = stream::from_raw_ptr(s);
++            let result = uninitialized::<F>()(&mut stm, userdata);
++            forget(stm);
++
++            result
++        }
++
++        unsafe {
++            ffi::pa_stream_set_state_callback(self.raw_mut(), Some(wrapped::<CB>), userdata);
++        }
++    }
++
++    pub fn clear_write_callback(&self) {
++        unsafe {
++            ffi::pa_stream_set_write_callback(self.raw_mut(), None, ptr::null_mut());
++        }
++    }
++
++    pub fn set_write_callback<CB>(&self, _: CB, userdata: *mut c_void)
++        where CB: Fn(&Stream, usize, *mut c_void)
++    {
++        debug_assert_eq!(mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(s: *mut ffi::pa_stream, nbytes: usize, userdata: *mut c_void)
++            where F: Fn(&Stream, usize, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let mut stm = stream::from_raw_ptr(s);
++            let result = uninitialized::<F>()(&mut stm, nbytes, userdata);
++            forget(stm);
++
++            result
++        }
++
++        unsafe {
++            ffi::pa_stream_set_write_callback(self.raw_mut(), Some(wrapped::<CB>), userdata);
++        }
++    }
++
++    pub fn clear_read_callback(&self) {
++        unsafe {
++            ffi::pa_stream_set_read_callback(self.raw_mut(), None, ptr::null_mut());
++        }
++    }
++
++    pub fn set_read_callback<CB>(&self, _: CB, userdata: *mut c_void)
++        where CB: Fn(&Stream, usize, *mut c_void)
++    {
++        debug_assert_eq!(mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(s: *mut ffi::pa_stream, nbytes: usize, userdata: *mut c_void)
++            where F: Fn(&Stream, usize, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let mut stm = stream::from_raw_ptr(s);
++            let result = uninitialized::<F>()(&mut stm, nbytes, userdata);
++            forget(stm);
++
++            result
++        }
++
++        unsafe {
++            ffi::pa_stream_set_read_callback(self.raw_mut(), Some(wrapped::<CB>), userdata);
++        }
++    }
++
++    pub fn cork<CB>(&self, b: i32, _: CB, userdata: *mut c_void) -> Result<Operation>
++        where CB: Fn(&Stream, i32, *mut c_void)
++    {
++        debug_assert_eq!(mem::size_of::<CB>(), 0);
++
++        // See: A note about `wrapped` functions
++        unsafe extern "C" fn wrapped<F>(s: *mut ffi::pa_stream, success: c_int, userdata: *mut c_void)
++            where F: Fn(&Stream, i32, *mut c_void)
++        {
++            use std::mem::{forget, uninitialized};
++            let mut stm = stream::from_raw_ptr(s);
++            let result = uninitialized::<F>()(&mut stm, success, userdata);
++            forget(stm);
++
++            result
++        }
++
++        let r = unsafe { ffi::pa_stream_cork(self.raw_mut(), b, Some(wrapped::<CB>), userdata) };
++        if r.is_null() {
++            let err = if let Some(c) = self.get_context() {
++                c.errno()
++            } else {
++                ffi::PA_ERR_UNKNOWN
++            };
++            return Err(ErrorCode::from_error_code(err));
++        }
++        Ok(unsafe { operation::from_raw_ptr(r) })
++    }
++
++    pub fn get_time(&self) -> Result<(u64)> {
++        let mut usec: u64 = 0;
++        let r = unsafe { ffi::pa_stream_get_time(self.raw_mut(), &mut usec) };
++        error_result!(usec, r)
++    }
++
++    pub fn get_latency(&self) -> Result<(u64, bool)> {
++        let mut usec: u64 = 0;
++        let mut negative: i32 = 0;
++        let r = unsafe { ffi::pa_stream_get_latency(self.raw_mut(), &mut usec, &mut negative) };
++        error_result!((usec, negative != 0), r)
++    }
++
++    pub fn get_sample_spec(&self) -> &SampleSpec {
++        unsafe {
++            let ptr = ffi::pa_stream_get_sample_spec(self.raw_mut());
++            debug_assert!(!ptr.is_null());
++            &*ptr
++        }
++    }
++
++    pub fn get_channel_map(&self) -> &ChannelMap {
++        unsafe {
++            let ptr = ffi::pa_stream_get_channel_map(self.raw_mut());
++            debug_assert!(!ptr.is_null());
++            &*ptr
++        }
++    }
++
++    pub fn get_buffer_attr(&self) -> &BufferAttr {
++        unsafe {
++            let ptr = ffi::pa_stream_get_buffer_attr(self.raw_mut());
++            debug_assert!(!ptr.is_null());
++            &*ptr
++        }
++    }
++}
++
++#[doc(hidden)]
++pub unsafe fn from_raw_ptr(ptr: *mut ffi::pa_stream) -> Stream {
++    Stream(ptr)
++}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/threaded_mainloop.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/threaded_mainloop.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/threaded_mainloop.rs.cubeb-pulse-arm	2017-08-04 13:37:46.386821731 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/threaded_mainloop.rs	2017-08-04 13:37:46.386821731 +0200
+@@ -0,0 +1,92 @@
++// Copyright © 2017 Mozilla Foundation
++//
++// This program is made available under an ISC-style license.  See the
++// accompanying file LICENSE for details.
++
++use ErrorCode;
++use Result;
++use ffi;
++use mainloop_api;
++use mainloop_api::MainloopApi;
++
++#[derive(Debug)]
++pub struct ThreadedMainloop(*mut ffi::pa_threaded_mainloop);
++
++impl ThreadedMainloop {
++    pub unsafe fn from_raw_ptr(raw: *mut ffi::pa_threaded_mainloop) -> Self {
++        ThreadedMainloop(raw)
++    }
++
++    pub fn new() -> Self {
++        unsafe { ThreadedMainloop::from_raw_ptr(ffi::pa_threaded_mainloop_new()) }
++    }
++
++    pub fn raw_mut(&self) -> &mut ffi::pa_threaded_mainloop {
++        unsafe { &mut *self.0 }
++    }
++
++    pub fn is_null(&self) -> bool {
++        self.0.is_null()
++    }
++
++    pub fn start(&self) -> Result<()> {
++        match unsafe { ffi::pa_threaded_mainloop_start(self.raw_mut()) } {
++            0 => Ok(()),
++            _ => Err(ErrorCode::from_error_code(ffi::PA_ERR_UNKNOWN)),
++        }
++    }
++
++    pub fn stop(&self) {
++        unsafe {
++            ffi::pa_threaded_mainloop_stop(self.raw_mut());
++        }
++    }
++
++    pub fn lock(&self) {
++        unsafe {
++            ffi::pa_threaded_mainloop_lock(self.raw_mut());
++        }
++    }
++
++    pub fn unlock(&self) {
++        unsafe {
++            ffi::pa_threaded_mainloop_unlock(self.raw_mut());
++        }
++    }
++
++    pub fn wait(&self) {
++        unsafe {
++            ffi::pa_threaded_mainloop_wait(self.raw_mut());
++        }
++    }
++
++    pub fn signal(&self) {
++        unsafe {
++            ffi::pa_threaded_mainloop_signal(self.raw_mut(), 0);
++        }
++    }
++
++    pub fn get_api(&self) -> MainloopApi {
++        unsafe { mainloop_api::from_raw_ptr(ffi::pa_threaded_mainloop_get_api(self.raw_mut())) }
++    }
++
++    pub fn in_thread(&self) -> bool {
++        unsafe { ffi::pa_threaded_mainloop_in_thread(self.raw_mut()) != 0 }
++    }
++}
++
++impl ::std::default::Default for ThreadedMainloop {
++    fn default() -> Self {
++        ThreadedMainloop(::std::ptr::null_mut())
++    }
++}
++
++impl ::std::ops::Drop for ThreadedMainloop {
++    fn drop(&mut self) {
++        if !self.is_null() {
++            unsafe {
++                ffi::pa_threaded_mainloop_free(self.raw_mut());
++            }
++        }
++    }
++}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/util.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/util.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/util.rs.cubeb-pulse-arm	2017-08-04 13:37:46.386821731 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/pulse-rs/src/util.rs	2017-08-04 13:37:46.386821731 +0200
+@@ -0,0 +1,41 @@
++// Copyright © 2017 Mozilla Foundation
++//
++// This program is made available under an ISC-style license.  See the
++// accompanying file LICENSE for details.
++
++use std::ffi::CStr;
++use std::os::raw::c_char;
++use std::ptr;
++
++pub trait UnwrapCStr {
++    fn unwrap_cstr(self) -> *const c_char;
++}
++
++impl<'a, U> UnwrapCStr for U
++    where U: Into<Option<&'a CStr>>
++{
++    fn unwrap_cstr(self) -> *const c_char {
++        self.into().map(|o| o.as_ptr()).unwrap_or(0 as *const _)
++    }
++}
++
++pub fn map_to_mut_ptr<T, U, F: FnOnce(&T) -> *mut U>(t: Option<&mut T>, f: F) -> *mut U {
++    match t {
++        Some(x) => f(x),
++        None => ptr::null_mut(),
++    }
++}
++
++pub fn str_to_ptr(s: Option<&CStr>) -> *const c_char {
++    match s {
++        Some(x) => x.as_ptr(),
++        None => ptr::null(),
++    }
++}
++
++pub fn to_ptr<T>(t: Option<&T>) -> *const T {
++    match t {
++        Some(x) => x as *const T,
++        None => ptr::null(),
++    }
++}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/README.md.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/README.md
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/README.md.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/README.md	2017-08-04 13:37:46.383821740 +0200
+@@ -3,3 +3,4 @@
+ Implementation of PulseAudio backend for Cubeb written in Rust.
+ 
+ [![Travis Build Status](https://travis-ci.org/djg/cubeb-pulse-rs.svg?branch=master)](https://travis-ci.org/djg/cubeb-pulse-rs)
++[![Travis Build Status](https://travis-ci.org/djg/cubeb-pulse-rs.svg?branch=dev)](https://travis-ci.org/djg/cubeb-pulse-rs)
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/README_MOZILLA.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/README_MOZILLA
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/README_MOZILLA.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/README_MOZILLA	2017-08-04 13:37:46.383821740 +0200
+@@ -5,4 +5,4 @@ Makefile.in build files for the Mozilla
+ 
+ The cubeb-pulse-rs git repository is: https://github.com/djg/cubeb-pulse-rs.git
+ 
+-The git commit ID used was dbcd7f96aea8d249a4b78f9a7597768c9dff22eb (2017-04-25 11:42:10 +1000)
++The git commit ID used was 64515819cdf54a16626df5dce5f5c7cb1220d53b (2017-06-19 17:41:30 +1000)
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/context.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/context.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/context.rs.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/context.rs	2017-08-04 13:50:38.145480458 +0200
+@@ -4,67 +4,60 @@
+ // accompanying file LICENSE for details.
+ 
+ use backend::*;
+-use backend::cork_state::CorkState;
+ use capi::PULSE_OPS;
+ use cubeb;
++use pulse::{self, ProplistExt};
+ use pulse_ffi::*;
+ use semver;
+ use std::default::Default;
+-use std::ffi::CStr;
++use std::ffi::{CStr, CString};
+ use std::mem;
+-use std::os::raw::{c_char, c_int, c_void};
++use std::os::raw::{c_char, c_void};
+ use std::ptr;
+ 
+-macro_rules! dup_str {
+-    ($Dst: expr, $Src: expr) => {
+-        if !$Dst.is_null() {
+-            pa_xfree($Dst as *mut _);
+-        }
+-
+-        $Dst = pa_xstrdup($Src);
+-    }
+-}
+-
+-fn pa_channel_to_cubeb_channel(channel: pa_channel_position_t) -> cubeb::Channel {
+-    assert_ne!(channel, PA_CHANNEL_POSITION_INVALID);
++fn pa_channel_to_cubeb_channel(channel: pulse::ChannelPosition) -> cubeb::Channel {
++    use pulse::ChannelPosition;
++    assert_ne!(channel, ChannelPosition::Invalid);
+     match channel {
+-        PA_CHANNEL_POSITION_MONO => cubeb::CHANNEL_MONO,
+-        PA_CHANNEL_POSITION_FRONT_LEFT => cubeb::CHANNEL_LEFT,
+-        PA_CHANNEL_POSITION_FRONT_RIGHT => cubeb::CHANNEL_RIGHT,
+-        PA_CHANNEL_POSITION_FRONT_CENTER => cubeb::CHANNEL_CENTER,
+-        PA_CHANNEL_POSITION_SIDE_LEFT => cubeb::CHANNEL_LS,
+-        PA_CHANNEL_POSITION_SIDE_RIGHT => cubeb::CHANNEL_RS,
+-        PA_CHANNEL_POSITION_REAR_LEFT => cubeb::CHANNEL_RLS,
+-        PA_CHANNEL_POSITION_REAR_CENTER => cubeb::CHANNEL_RCENTER,
+-        PA_CHANNEL_POSITION_REAR_RIGHT => cubeb::CHANNEL_RRS,
+-        PA_CHANNEL_POSITION_LFE => cubeb::CHANNEL_LFE,
++        ChannelPosition::Mono => cubeb::CHANNEL_MONO,
++        ChannelPosition::FrontLeft => cubeb::CHANNEL_LEFT,
++        ChannelPosition::FrontRight => cubeb::CHANNEL_RIGHT,
++        ChannelPosition::FrontCenter => cubeb::CHANNEL_CENTER,
++        ChannelPosition::SideLeft => cubeb::CHANNEL_LS,
++        ChannelPosition::SideRight => cubeb::CHANNEL_RS,
++        ChannelPosition::RearLeft => cubeb::CHANNEL_RLS,
++        ChannelPosition::RearCenter => cubeb::CHANNEL_RCENTER,
++        ChannelPosition::RearRight => cubeb::CHANNEL_RRS,
++        ChannelPosition::LowFreqEffects => cubeb::CHANNEL_LFE,
+         _ => cubeb::CHANNEL_INVALID,
+     }
+ }
+ 
+-fn channel_map_to_layout(cm: &pa_channel_map) -> cubeb::ChannelLayout {
++fn channel_map_to_layout(cm: &pulse::ChannelMap) -> cubeb::ChannelLayout {
++    use pulse::ChannelPosition;
+     let mut cubeb_map: cubeb::ChannelMap = Default::default();
+     cubeb_map.channels = cm.channels as u32;
+     for i in 0usize..cm.channels as usize {
+-        cubeb_map.map[i] = pa_channel_to_cubeb_channel(cm.map[i]);
++        cubeb_map.map[i] = pa_channel_to_cubeb_channel(ChannelPosition::try_from(cm.map[i])
++                                                           .unwrap_or(ChannelPosition::Invalid));
+     }
+     unsafe { cubeb::cubeb_channel_map_to_layout(&cubeb_map) }
+ }
+ 
+ #[derive(Debug)]
+ pub struct DefaultInfo {
+-    pub sample_spec: pa_sample_spec,
+-    pub channel_map: pa_channel_map,
+-    pub flags: pa_sink_flags_t,
++    pub sample_spec: pulse::SampleSpec,
++    pub channel_map: pulse::ChannelMap,
++    pub flags: pulse::SinkFlags,
+ }
+ 
+ #[derive(Debug)]
+ pub struct Context {
+     pub ops: *const cubeb::Ops,
+-    pub mainloop: *mut pa_threaded_mainloop,
+-    pub context: *mut pa_context,
++    pub mainloop: pulse::ThreadedMainloop,
++    pub context: Option<pulse::Context>,
+     pub default_sink_info: Option<DefaultInfo>,
+-    pub context_name: *const c_char,
++    pub context_name: Option<CString>,
+     pub collection_changed_callback: cubeb::DeviceCollectionChangedCallback,
+     pub collection_changed_user_ptr: *mut c_void,
+     pub error: bool,
+@@ -82,7 +75,7 @@ impl Drop for Context {
+ 
+ impl Context {
+     #[cfg(feature = "pulse-dlopen")]
+-    fn _new(name: *const i8) -> Result<Box<Self>> {
++    fn _new(name: Option<CString>) -> Result<Box<Self>> {
+         let libpulse = unsafe { open() };
+         if libpulse.is_none() {
+             return Err(cubeb::ERROR);
+@@ -91,12 +84,12 @@ impl Context {
+         let ctx = Box::new(Context {
+                                ops: &PULSE_OPS,
+                                libpulse: libpulse.unwrap(),
+-                               mainloop: unsafe { pa_threaded_mainloop_new() },
+-                               context: 0 as *mut _,
++                               mainloop: pulse::ThreadedMainloop::new(),
++                               context: None,
+                                default_sink_info: None,
+                                context_name: name,
+                                collection_changed_callback: None,
+-                               collection_changed_user_ptr: 0 as *mut _,
++                               collection_changed_user_ptr: ptr::null_mut(),
+                                error: true,
+                                version_0_9_8: false,
+                                version_2_0_0: false,
+@@ -106,15 +99,15 @@ impl Context {
+     }
+ 
+     #[cfg(not(feature = "pulse-dlopen"))]
+-    fn _new(name: *const i8) -> Result<Box<Self>> {
++    fn _new(name: Option<CString>) -> Result<Box<Self>> {
+         Ok(Box::new(Context {
+                         ops: &PULSE_OPS,
+-                        mainloop: unsafe { pa_threaded_mainloop_new() },
+-                        context: 0 as *mut _,
++                        mainloop: pulse::ThreadedMainloop::new(),
++                        context: None,
+                         default_sink_info: None,
+                         context_name: name,
+                         collection_changed_callback: None,
+-                        collection_changed_user_ptr: 0 as *mut _,
++                        collection_changed_user_ptr: ptr::null_mut(),
+                         error: true,
+                         version_0_9_8: false,
+                         version_2_0_0: false,
+@@ -122,53 +115,66 @@ impl Context {
+     }
+ 
+     pub fn new(name: *const c_char) -> Result<Box<Self>> {
++        fn server_info_cb(context: &pulse::Context, info: &pulse::ServerInfo, u: *mut c_void) {
++            fn sink_info_cb(_: &pulse::Context, i: *const pulse::SinkInfo, eol: i32, u: *mut c_void) {
++                let mut ctx = unsafe { &mut *(u as *mut Context) };
++                if eol == 0 {
++                    let info = unsafe { &*i };
++                    let flags = pulse::SinkFlags::try_from(info.flags).expect("SinkInfo contains invalid flags");
++                    ctx.default_sink_info = Some(DefaultInfo {
++                                                     sample_spec: info.sample_spec,
++                                                     channel_map: info.channel_map,
++                                                     flags: flags,
++                                                 });
++                }
++                ctx.mainloop.signal();
++            }
++
++            let _ = context.get_sink_info_by_name(unsafe { CStr::from_ptr(info.default_sink_name) },
++                                                  sink_info_cb,
++                                                  u);
++        }
++
++        let name = super::try_cstr_from(name).map(|s| s.to_owned());
+         let mut ctx = try!(Context::_new(name));
+ 
+-        unsafe { pa_threaded_mainloop_start(ctx.mainloop) };
++        if ctx.mainloop.start().is_err() {
++            ctx.destroy();
++            return Err(cubeb::ERROR);
++        }
+ 
+-        if ctx.pulse_context_init() != cubeb::OK {
++        if ctx.context_init() != cubeb::OK {
+             ctx.destroy();
+             return Err(cubeb::ERROR);
+         }
+ 
+-        unsafe {
+-            /* server_info_callback performs a second async query,
+-             * which is responsible for initializing default_sink_info
+-             * and signalling the mainloop to end the wait. */
+-            pa_threaded_mainloop_lock(ctx.mainloop);
+-            let o = pa_context_get_server_info(ctx.context,
+-                                               Some(server_info_callback),
+-                                               ctx.as_mut() as *mut Context as *mut _);
+-            if !o.is_null() {
+-                ctx.operation_wait(ptr::null_mut(), o);
+-                pa_operation_unref(o);
++        ctx.mainloop.lock();
++        /* server_info_callback performs a second async query,
++         * which is responsible for initializing default_sink_info
++         * and signalling the mainloop to end the wait. */
++        let user_data: *mut c_void = ctx.as_mut() as *mut _ as *mut _;
++        if let Some(ref context) = ctx.context {
++            if let Ok(o) = context.get_server_info(server_info_cb, user_data) {
++                ctx.operation_wait(None, &o);
+             }
+-            pa_threaded_mainloop_unlock(ctx.mainloop);
+-            assert!(ctx.default_sink_info.is_some());
+         }
++        assert!(ctx.default_sink_info.is_some());
++        ctx.mainloop.unlock();
+ 
+         // Return the result.
+         Ok(ctx)
+     }
+ 
+     pub fn destroy(&mut self) {
+-        if !self.context.is_null() {
+-            unsafe { self.pulse_context_destroy() };
+-        }
+-        assert!(self.context.is_null());
++        self.context_destroy();
+ 
+         if !self.mainloop.is_null() {
+-            unsafe {
+-                pa_threaded_mainloop_stop(self.mainloop);
+-                pa_threaded_mainloop_free(self.mainloop);
+-                self.mainloop = ptr::null_mut();
+-            }
++            self.mainloop.stop();
+         }
+-        assert!(self.mainloop.is_null());
+     }
+ 
+     pub fn new_stream(&mut self,
+-                      stream_name: *const c_char,
++                      stream_name: &CStr,
+                       input_device: cubeb::DeviceId,
+                       input_stream_params: Option<cubeb::StreamParams>,
+                       output_device: cubeb::DeviceId,
+@@ -178,7 +184,7 @@ impl Context {
+                       state_callback: cubeb::StateCallback,
+                       user_ptr: *mut c_void)
+                       -> Result<Box<Stream>> {
+-        if self.error && self.pulse_context_init() != 0 {
++        if self.error && self.context_init() != 0 {
+             return Err(cubeb::ERROR);
+         }
+ 
+@@ -221,41 +227,151 @@ impl Context {
+     }
+ 
+     pub fn enumerate_devices(&self, devtype: cubeb::DeviceType) -> Result<cubeb::DeviceCollection> {
+-        let mut user_data: PulseDevListData = Default::default();
+-        user_data.context = self as *const _ as *mut _;
++        fn add_output_device(_: &pulse::Context, i: *const pulse::SinkInfo, eol: i32, user_data: *mut c_void) {
++            if eol != 0 {
++                return;
++            }
+ 
+-        unsafe {
+-            pa_threaded_mainloop_lock(self.mainloop);
++            debug_assert!(!i.is_null());
++            debug_assert!(!user_data.is_null());
++
++            let mut list_data = unsafe { &mut *(user_data as *mut PulseDevListData) };
++            let info = unsafe { &*i };
++
++            let group_id = match info.proplist().gets("sysfs.path") {
++                Some(p) => p.to_owned().into_raw(),
++                _ => ptr::null_mut(),
++            };
++
++            let vendor_name = match info.proplist().gets("device.vendor.name") {
++                Some(p) => p.to_owned().into_raw(),
++                _ => ptr::null_mut(),
++            };
++
++            let info_name = unsafe { CStr::from_ptr(info.name) }.to_owned();
++            let info_description = unsafe { CStr::from_ptr(info.description) }.to_owned();
++
++            let preferred = if info_name == list_data.default_sink_name {
++                cubeb::DEVICE_PREF_ALL
++            } else {
++                cubeb::DevicePref::empty()
++            };
++
++            let ctx = &(*list_data.context);
++
++            let device_id = info_name.into_raw();
++            let friendly_name = info_description.into_raw();
++            let devinfo = cubeb::DeviceInfo {
++                device_id: device_id,
++                devid: device_id as cubeb::DeviceId,
++                friendly_name: friendly_name,
++                group_id: group_id,
++                vendor_name: vendor_name,
++                devtype: cubeb::DEVICE_TYPE_OUTPUT,
++                state: ctx.state_from_port(info.active_port),
++                preferred: preferred,
++                format: cubeb::DeviceFmt::all(),
++                default_format: pulse_format_to_cubeb_format(info.sample_spec.format),
++                max_channels: info.channel_map.channels as u32,
++                min_rate: 1,
++                max_rate: PA_RATE_MAX,
++                default_rate: info.sample_spec.rate,
++                latency_lo: 0,
++                latency_hi: 0,
++            };
++            list_data.devinfo.push(devinfo);
++
++            ctx.mainloop.signal();
++        }
++
++        fn add_input_device(_: &pulse::Context, i: *const pulse::SourceInfo, eol: i32, user_data: *mut c_void) {
++            if eol != 0 {
++                return;
++            }
++
++            debug_assert!(!user_data.is_null());
++            debug_assert!(!i.is_null());
++
++            let mut list_data = unsafe { &mut *(user_data as *mut PulseDevListData) };
++            let info = unsafe { &*i };
++
++            let group_id = match info.proplist().gets("sysfs.path") {
++                Some(p) => p.to_owned().into_raw(),
++                _ => ptr::null_mut(),
++            };
++
++            let vendor_name = match info.proplist().gets("device.vendor.name") {
++                Some(p) => p.to_owned().into_raw(),
++                _ => ptr::null_mut(),
++            };
+ 
+-            let o = pa_context_get_server_info(self.context,
+-                                               Some(pulse_server_info_cb),
+-                                               &mut user_data as *mut _ as *mut _);
+-            if !o.is_null() {
+-                self.operation_wait(ptr::null_mut(), o);
+-                pa_operation_unref(o);
++            let info_name = unsafe { CStr::from_ptr(info.name) }.to_owned();
++            let info_description = unsafe { CStr::from_ptr(info.description) }.to_owned();
++
++            let preferred = if info_name == list_data.default_source_name {
++                cubeb::DEVICE_PREF_ALL
++            } else {
++                cubeb::DevicePref::empty()
++            };
++
++            let ctx = &(*list_data.context);
++            let device_id = info_name.into_raw();
++            let friendly_name = info_description.into_raw();
++            let devinfo = cubeb::DeviceInfo {
++                device_id: device_id,
++                devid: device_id as cubeb::DeviceId,
++                friendly_name: friendly_name,
++                group_id: group_id,
++                vendor_name: vendor_name,
++                devtype: cubeb::DEVICE_TYPE_INPUT,
++                state: ctx.state_from_port(info.active_port),
++                preferred: preferred,
++                format: cubeb::DeviceFmt::all(),
++                default_format: pulse_format_to_cubeb_format(info.sample_spec.format),
++                max_channels: info.channel_map.channels as u32,
++                min_rate: 1,
++                max_rate: PA_RATE_MAX,
++                default_rate: info.sample_spec.rate,
++                latency_lo: 0,
++                latency_hi: 0,
++            };
++
++            list_data.devinfo.push(devinfo);
++
++            ctx.mainloop.signal();
++        }
++
++        fn default_device_names(_: &pulse::Context, info: &pulse::ServerInfo, user_data: *mut c_void) {
++            let list_data = unsafe { &mut *(user_data as *mut PulseDevListData) };
++
++            list_data.default_sink_name = unsafe { CStr::from_ptr(info.default_sink_name) }.to_owned();
++            list_data.default_source_name = unsafe { CStr::from_ptr(info.default_source_name) }.to_owned();
++
++            (*list_data.context).mainloop.signal();
++        }
++
++        let mut user_data = PulseDevListData::new(self);
++
++        if let Some(ref context) = self.context {
++            self.mainloop.lock();
++
++            if let Ok(o) = context.get_server_info(default_device_names, &mut user_data as *mut _ as *mut _) {
++                self.operation_wait(None, &o);
+             }
+ 
+             if devtype == cubeb::DEVICE_TYPE_OUTPUT {
+-                let o = pa_context_get_sink_info_list(self.context,
+-                                                      Some(pulse_sink_info_cb),
+-                                                      &mut user_data as *mut _ as *mut _);
+-                if !o.is_null() {
+-                    self.operation_wait(ptr::null_mut(), o);
+-                    pa_operation_unref(o);
++                if let Ok(o) = context.get_sink_info_list(add_output_device, &mut user_data as *mut _ as *mut _) {
++                    self.operation_wait(None, &o);
+                 }
+             }
+ 
+             if devtype == cubeb::DEVICE_TYPE_INPUT {
+-                let o = pa_context_get_source_info_list(self.context,
+-                                                        Some(pulse_source_info_cb),
+-                                                        &mut user_data as *mut _ as *mut _);
+-                if !o.is_null() {
+-                    self.operation_wait(ptr::null_mut(), o);
+-                    pa_operation_unref(o);
++                if let Ok(o) = context.get_source_info_list(add_input_device, &mut user_data as *mut _ as *mut _) {
++                    self.operation_wait(None, &o);
+                 }
+             }
+ 
+-            pa_threaded_mainloop_unlock(self.mainloop);
++            self.mainloop.unlock();
+         }
+ 
+         // Extract the array of cubeb_device_info from
+@@ -282,16 +398,16 @@ impl Context {
+                                                   coll.count);
+             for dev in devices.iter_mut() {
+                 if !dev.device_id.is_null() {
+-                    pa_xfree(dev.device_id as *mut _);
++                    let _ = CString::from_raw(dev.device_id as *mut _);
+                 }
+                 if !dev.group_id.is_null() {
+-                    pa_xfree(dev.group_id as *mut _);
++                    let _ = CString::from_raw(dev.group_id as *mut _);
+                 }
+                 if !dev.vendor_name.is_null() {
+-                    pa_xfree(dev.vendor_name as *mut _);
++                    let _ = CString::from_raw(dev.vendor_name as *mut _);
+                 }
+                 if !dev.friendly_name.is_null() {
+-                    pa_xfree(dev.friendly_name as *mut _);
++                    let _ = CString::from_raw(dev.friendly_name as *mut _);
+                 }
+             }
+         }
+@@ -302,115 +418,125 @@ impl Context {
+                                               cb: cubeb::DeviceCollectionChangedCallback,
+                                               user_ptr: *mut c_void)
+                                               -> i32 {
+-        unsafe extern "C" fn subscribe_success(_: *mut pa_context, success: i32, user_data: *mut c_void) {
+-            let ctx = &*(user_data as *mut Context);
++        fn update_collection(_: &pulse::Context, event: pulse::SubscriptionEvent, index: u32, user_data: *mut c_void) {
++            let mut ctx = unsafe { &mut *(user_data as *mut Context) };
++
++            let (f, t) = (event.event_facility(), event.event_type());
++            match f {
++                pulse::SubscriptionEventFacility::Source |
++                pulse::SubscriptionEventFacility::Sink => {
++                    match t {
++                        pulse::SubscriptionEventType::Remove |
++                        pulse::SubscriptionEventType::New => {
++                            if cubeb::log_enabled() {
++                                let op = if t == pulse::SubscriptionEventType::New {
++                                    "Adding"
++                                } else {
++                                    "Removing"
++                                };
++                                let dev = if f == pulse::SubscriptionEventFacility::Sink {
++                                    "sink"
++                                } else {
++                                    "source "
++                                };
++                                log!("{} {} index {}", op, dev, index);
++
++                                unsafe {
++                                    ctx.collection_changed_callback.unwrap()(ctx as *mut _ as *mut _,
++                                                                             ctx.collection_changed_user_ptr);
++                                }
++                            }
++                        },
++                        _ => {},
++                    }
++                },
++                _ => {},
++            }
++        }
++
++        fn success(_: &pulse::Context, success: i32, user_data: *mut c_void) {
++            let ctx = unsafe { &*(user_data as *mut Context) };
+             debug_assert_ne!(success, 0);
+-            pa_threaded_mainloop_signal(ctx.mainloop, 0);
++            ctx.mainloop.signal();
+         }
+ 
+         self.collection_changed_callback = cb;
+         self.collection_changed_user_ptr = user_ptr;
+ 
+-        unsafe {
+-            pa_threaded_mainloop_lock(self.mainloop);
++        let user_data: *mut c_void = self as *mut _ as *mut _;
++        if let Some(ref context) = self.context {
++            self.mainloop.lock();
+ 
+-            let mut mask: pa_subscription_mask_t = PA_SUBSCRIPTION_MASK_NULL;
++            let mut mask = pulse::SubscriptionMask::empty();
+             if self.collection_changed_callback.is_none() {
+                 // Unregister subscription
+-                pa_context_set_subscribe_callback(self.context, None, ptr::null_mut());
++                context.clear_subscribe_callback();
+             } else {
+-                pa_context_set_subscribe_callback(self.context,
+-                                                  Some(pulse_subscribe_callback),
+-                                                  self as *mut _ as *mut _);
+-                if devtype == cubeb::DEVICE_TYPE_INPUT {
+-                    mask |= PA_SUBSCRIPTION_MASK_SOURCE
++                context.set_subscribe_callback(update_collection, user_data);
++                if devtype.contains(cubeb::DEVICE_TYPE_INPUT) {
++                    mask |= pulse::SUBSCRIPTION_MASK_SOURCE
+                 };
+-                if devtype == cubeb::DEVICE_TYPE_OUTPUT {
+-                    mask |= PA_SUBSCRIPTION_MASK_SOURCE
++                if devtype.contains(cubeb::DEVICE_TYPE_OUTPUT) {
++                    mask = pulse::SUBSCRIPTION_MASK_SINK
+                 };
+             }
+ 
+-            let o = pa_context_subscribe(self.context,
+-                                         mask,
+-                                         Some(subscribe_success),
+-                                         self as *const _ as *mut _);
+-            if o.is_null() {
++            if let Ok(o) = context.subscribe(mask, success, self as *const _ as *mut _) {
++                self.operation_wait(None, &o);
++            } else {
+                 log!("Context subscribe failed");
+                 return cubeb::ERROR;
+             }
+-            self.operation_wait(ptr::null_mut(), o);
+-            pa_operation_unref(o);
+ 
+-            pa_threaded_mainloop_unlock(self.mainloop);
++            self.mainloop.unlock();
+         }
+ 
+         cubeb::OK
+     }
+ 
+-    //
+-
+-    pub fn pulse_stream_cork(&self, stream: *mut pa_stream, state: CorkState) {
+-        unsafe extern "C" fn cork_success(_: *mut pa_stream, _: i32, u: *mut c_void) {
+-            let mainloop = u as *mut pa_threaded_mainloop;
+-            pa_threaded_mainloop_signal(mainloop, 0);
++    pub fn context_init(&mut self) -> i32 {
++        fn error_state(c: &pulse::Context, u: *mut c_void) {
++            let mut ctx = unsafe { &mut *(u as *mut Context) };
++            if !c.get_state().is_good() {
++                ctx.error = true;
++            }
++            ctx.mainloop.signal();
+         }
+ 
+-        if stream.is_null() {
+-            return;
++        if self.context.is_some() {
++            debug_assert!(self.error);
++            self.context_destroy();
+         }
+ 
+-        let o = unsafe {
+-            pa_stream_cork(stream,
+-                           state.is_cork() as i32,
+-                           Some(cork_success),
+-                           self.mainloop as *mut _)
++        self.context = {
++            let name = match self.context_name.as_ref() {
++                Some(s) => Some(s.as_ref()),
++                None => None,
++            };
++            pulse::Context::new(&self.mainloop.get_api(), name)
+         };
+ 
+-        if !o.is_null() {
+-            self.operation_wait(stream, o);
+-            unsafe { pa_operation_unref(o) };
++        let context_ptr: *mut c_void = self as *mut _ as *mut _;
++        if self.context.is_none() {
++            return cubeb::ERROR;
+         }
+-    }
+ 
+-    pub fn pulse_context_init(&mut self) -> i32 {
+-        unsafe extern "C" fn error_state(c: *mut pa_context, u: *mut c_void) {
+-            let mut ctx = &mut *(u as *mut Context);
+-            if !PA_CONTEXT_IS_GOOD(pa_context_get_state(c)) {
+-                ctx.error = true;
+-            }
+-            pa_threaded_mainloop_signal(ctx.mainloop, 0);
++        self.mainloop.lock();
++        if let Some(ref context) = self.context {
++            context.set_state_callback(error_state, context_ptr);
++            let _ = context.connect(None, pulse::ContextFlags::empty(), ptr::null());
+         }
+ 
+-        if !self.context.is_null() {
+-            debug_assert!(self.error);
+-            unsafe { self.pulse_context_destroy() };
++        if !self.wait_until_context_ready() {
++            self.mainloop.unlock();
++            self.context_destroy();
++            return cubeb::ERROR;
+         }
+ 
+-        unsafe {
+-            self.context = pa_context_new(pa_threaded_mainloop_get_api(self.mainloop),
+-                                          self.context_name);
+-
+-            if self.context.is_null() {
+-                return cubeb::ERROR;
+-            }
+-
+-            pa_context_set_state_callback(self.context, Some(error_state), self as *mut _ as *mut _);
+-
+-            pa_threaded_mainloop_lock(self.mainloop);
+-            pa_context_connect(self.context, ptr::null(), 0, ptr::null());
+-
+-            if !self.wait_until_context_ready() {
+-                pa_threaded_mainloop_unlock(self.mainloop);
+-                self.pulse_context_destroy();
+-                assert!(self.context.is_null());
+-                return cubeb::ERROR;
+-            }
++        self.mainloop.unlock();
+ 
+-            pa_threaded_mainloop_unlock(self.mainloop);
+-        }
+-
+-        let version_str = unsafe { CStr::from_ptr(pa_get_library_version()) };
+-        if let Ok(version) = semver::Version::parse(version_str.to_string_lossy().as_ref()) {
++        let version_str = unsafe { CStr::from_ptr(pulse::library_version()) };
++        if let Ok(version) = semver::Version::parse(&version_str.to_string_lossy()) {
+             self.version_0_9_8 = version >= semver::Version::parse("0.9.8").expect("Failed to parse version");
+             self.version_2_0_0 = version >= semver::Version::parse("2.0.0").expect("Failed to parse version");
+         }
+@@ -420,34 +546,42 @@ impl Context {
+         cubeb::OK
+     }
+ 
+-    unsafe fn pulse_context_destroy(&mut self) {
+-        unsafe extern "C" fn drain_complete(_c: *mut pa_context, u: *mut c_void) {
+-            let mainloop = u as *mut pa_threaded_mainloop;
+-            pa_threaded_mainloop_signal(mainloop, 0);
+-        }
+-
+-        pa_threaded_mainloop_lock(self.mainloop);
+-        let o = pa_context_drain(self.context, Some(drain_complete), self.mainloop as *mut _);
+-        if !o.is_null() {
+-            self.operation_wait(ptr::null_mut(), o);
+-            pa_operation_unref(o);
+-        }
+-        pa_context_set_state_callback(self.context, None, ptr::null_mut());
+-        pa_context_disconnect(self.context);
+-        pa_context_unref(self.context);
+-        self.context = ptr::null_mut();
+-        pa_threaded_mainloop_unlock(self.mainloop);
++    fn context_destroy(&mut self) {
++        fn drain_complete(_: &pulse::Context, u: *mut c_void) {
++            let ctx = unsafe { &*(u as *mut Context) };
++            ctx.mainloop.signal();
++        }
++
++        let context_ptr: *mut c_void = self as *mut _ as *mut _;
++        match self.context.take() {
++            Some(ctx) => {
++                self.mainloop.lock();
++                if let Ok(o) = ctx.drain(drain_complete, context_ptr) {
++                    self.operation_wait(None, &o);
++                }
++                ctx.clear_state_callback();
++                ctx.disconnect();
++                ctx.unref();
++                self.mainloop.unlock();
++            },
++            _ => {},
++        }
+     }
+ 
+-    pub fn operation_wait(&self, stream: *mut pa_stream, o: *mut pa_operation) -> bool {
+-        unsafe {
+-            while pa_operation_get_state(o) == PA_OPERATION_RUNNING {
+-                pa_threaded_mainloop_wait(self.mainloop);
+-                if !PA_CONTEXT_IS_GOOD(pa_context_get_state(self.context)) {
++    pub fn operation_wait<'a, S>(&self, s: S, o: &pulse::Operation) -> bool
++        where S: Into<Option<&'a pulse::Stream>>
++    {
++        let stream = s.into();
++        while o.get_state() == PA_OPERATION_RUNNING {
++            self.mainloop.wait();
++            if let Some(ref context) = self.context {
++                if !context.get_state().is_good() {
+                     return false;
+                 }
++            }
+ 
+-                if !stream.is_null() && !PA_STREAM_IS_GOOD(pa_stream_get_state(stream)) {
++            if let Some(stm) = stream {
++                if !stm.get_state().is_good() {
+                     return false;
+                 }
+             }
+@@ -457,36 +591,23 @@ impl Context {
+     }
+ 
+     pub fn wait_until_context_ready(&self) -> bool {
+-        loop {
+-            let state = unsafe { pa_context_get_state(self.context) };
+-            if !PA_CONTEXT_IS_GOOD(state) {
+-                return false;
+-            }
+-            if state == PA_CONTEXT_READY {
+-                break;
+-            }
+-            unsafe {
+-                pa_threaded_mainloop_wait(self.mainloop);
++        if let Some(ref context) = self.context {
++            loop {
++                let state = context.get_state();
++                if !state.is_good() {
++                    return false;
++                }
++                if state == pulse::ContextState::Ready {
++                    break;
++                }
++                self.mainloop.wait();
+             }
+         }
+ 
+         true
+     }
+ 
+-    fn state_from_sink_port(&self, i: *const pa_port_info) -> cubeb::DeviceState {
+-        if !i.is_null() {
+-            let info = unsafe { *i };
+-            if self.version_2_0_0 && info.available == PA_PORT_AVAILABLE_NO {
+-                cubeb::DeviceState::Unplugged
+-            } else {
+-                cubeb::DeviceState::Enabled
+-            }
+-        } else {
+-            cubeb::DeviceState::Enabled
+-        }
+-    }
+-
+-    fn state_from_source_port(&self, i: *mut pa_port_info) -> cubeb::DeviceState {
++    fn state_from_port(&self, i: *const pa_port_info) -> cubeb::DeviceState {
+         if !i.is_null() {
+             let info = unsafe { *i };
+             if self.version_2_0_0 && info.available == PA_PORT_AVAILABLE_NO {
+@@ -500,62 +621,30 @@ impl Context {
+     }
+ }
+ 
+-// Callbacks
+-unsafe extern "C" fn server_info_callback(context: *mut pa_context, info: *const pa_server_info, u: *mut c_void) {
+-    unsafe extern "C" fn sink_info_callback(_context: *mut pa_context,
+-                                            info: *const pa_sink_info,
+-                                            eol: i32,
+-                                            u: *mut c_void) {
+-        let mut ctx = &mut *(u as *mut Context);
+-        if eol == 0 {
+-            let info = *info;
+-            ctx.default_sink_info = Some(DefaultInfo {
+-                                             sample_spec: info.sample_spec,
+-                                             channel_map: info.channel_map,
+-                                             flags: info.flags,
+-                                         });
+-        }
+-        pa_threaded_mainloop_signal(ctx.mainloop, 0);
+-    }
+-
+-    let o = pa_context_get_sink_info_by_name(context,
+-                                             (*info).default_sink_name,
+-                                             Some(sink_info_callback),
+-                                             u);
+-    if !o.is_null() {
+-        pa_operation_unref(o);
+-    }
+-}
+-
+-struct PulseDevListData {
+-    default_sink_name: *mut c_char,
+-    default_source_name: *mut c_char,
++struct PulseDevListData<'a> {
++    default_sink_name: CString,
++    default_source_name: CString,
+     devinfo: Vec<cubeb::DeviceInfo>,
+-    context: *mut Context,
++    context: &'a Context,
+ }
+ 
+-impl Drop for PulseDevListData {
+-    fn drop(&mut self) {
+-        if !self.default_sink_name.is_null() {
+-            unsafe {
+-                pa_xfree(self.default_sink_name as *mut _);
+-            }
+-        }
+-        if !self.default_source_name.is_null() {
+-            unsafe {
+-                pa_xfree(self.default_source_name as *mut _);
+-            }
++impl<'a> PulseDevListData<'a> {
++    pub fn new<'b>(context: &'b Context) -> Self
++        where 'b: 'a
++    {
++        PulseDevListData {
++            default_sink_name: CString::default(),
++            default_source_name: CString::default(),
++            devinfo: Vec::new(),
++            context: context,
+         }
+     }
+ }
+ 
+-impl Default for PulseDevListData {
+-    fn default() -> Self {
+-        PulseDevListData {
+-            default_sink_name: ptr::null_mut(),
+-            default_source_name: ptr::null_mut(),
+-            devinfo: Vec::new(),
+-            context: ptr::null_mut(),
++impl<'a> Drop for PulseDevListData<'a> {
++    fn drop(&mut self) {
++        for elem in &mut self.devinfo {
++            let _ = unsafe { Box::from_raw(elem) };
+         }
+     }
+ }
+@@ -566,192 +655,7 @@ fn pulse_format_to_cubeb_format(format:
+         PA_SAMPLE_S16BE => cubeb::DEVICE_FMT_S16BE,
+         PA_SAMPLE_FLOAT32LE => cubeb::DEVICE_FMT_F32LE,
+         PA_SAMPLE_FLOAT32BE => cubeb::DEVICE_FMT_F32BE,
+-        _ => {
+-            panic!("Invalid format");
+-        },
++        // Unsupported format, return F32NE
++        _ => cubeb::CUBEB_FMT_F32NE,
+     }
+ }
+-
+-unsafe extern "C" fn pulse_sink_info_cb(_context: *mut pa_context,
+-                                        i: *const pa_sink_info,
+-                                        eol: i32,
+-                                        user_data: *mut c_void) {
+-    if eol != 0 || i.is_null() {
+-        return;
+-    }
+-
+-    debug_assert!(!user_data.is_null());
+-
+-    let info = *i;
+-    let mut list_data = &mut *(user_data as *mut PulseDevListData);
+-
+-    let device_id = pa_xstrdup(info.name);
+-
+-    let group_id = {
+-        let prop = pa_proplist_gets(info.proplist, b"sysfs.path\0".as_ptr() as *const c_char);
+-        if !prop.is_null() {
+-            pa_xstrdup(prop)
+-        } else {
+-            ptr::null_mut()
+-        }
+-    };
+-
+-    let vendor_name = {
+-        let prop = pa_proplist_gets(info.proplist,
+-                                    b"device.vendor.name\0".as_ptr() as *const c_char);
+-        if !prop.is_null() {
+-            pa_xstrdup(prop)
+-        } else {
+-            ptr::null_mut()
+-        }
+-    };
+-
+-    let preferred = if strcmp(info.name, list_data.default_sink_name) == 0 {
+-        cubeb::DEVICE_PREF_ALL
+-    } else {
+-        cubeb::DevicePref::empty()
+-    };
+-
+-    let ctx = &(*list_data.context);
+-
+-    let devinfo = cubeb::DeviceInfo {
+-        device_id: device_id,
+-        devid: device_id as cubeb::DeviceId,
+-        friendly_name: pa_xstrdup(info.description),
+-        group_id: group_id,
+-        vendor_name: vendor_name,
+-        devtype: cubeb::DEVICE_TYPE_OUTPUT,
+-        state: ctx.state_from_sink_port(info.active_port),
+-        preferred: preferred,
+-        format: cubeb::DeviceFmt::all(),
+-        default_format: pulse_format_to_cubeb_format(info.sample_spec.format),
+-        max_channels: info.channel_map.channels as u32,
+-        min_rate: 1,
+-        max_rate: PA_RATE_MAX,
+-        default_rate: info.sample_spec.rate,
+-        latency_lo: 0,
+-        latency_hi: 0,
+-    };
+-    list_data.devinfo.push(devinfo);
+-
+-    pa_threaded_mainloop_signal(ctx.mainloop, 0);
+-}
+-
+-unsafe extern "C" fn pulse_source_info_cb(_context: *mut pa_context,
+-                                          i: *const pa_source_info,
+-                                          eol: i32,
+-                                          user_data: *mut c_void) {
+-    if eol != 0 || i.is_null() {
+-        return;
+-    }
+-
+-    debug_assert!(!user_data.is_null());
+-
+-    let info = *i;
+-    let mut list_data = &mut *(user_data as *mut PulseDevListData);
+-
+-    let device_id = pa_xstrdup(info.name);
+-
+-    let group_id = {
+-        let prop = pa_proplist_gets(info.proplist, b"sysfs.path\0".as_ptr() as *mut c_char);
+-        if !prop.is_null() {
+-            pa_xstrdup(prop)
+-        } else {
+-            ptr::null_mut()
+-        }
+-    };
+-
+-    let vendor_name = {
+-        let prop = pa_proplist_gets(info.proplist,
+-                                    b"device.vendor.name\0".as_ptr() as *mut c_char);
+-        if !prop.is_null() {
+-            pa_xstrdup(prop)
+-        } else {
+-            ptr::null_mut()
+-        }
+-    };
+-
+-    let preferred = if strcmp(info.name, list_data.default_source_name) == 0 {
+-        cubeb::DEVICE_PREF_ALL
+-    } else {
+-        cubeb::DevicePref::empty()
+-    };
+-
+-    let ctx = &(*list_data.context);
+-
+-    let devinfo = cubeb::DeviceInfo {
+-        device_id: device_id,
+-        devid: device_id as cubeb::DeviceId,
+-        friendly_name: pa_xstrdup(info.description),
+-        group_id: group_id,
+-        vendor_name: vendor_name,
+-        devtype: cubeb::DEVICE_TYPE_INPUT,
+-        state: ctx.state_from_source_port(info.active_port),
+-        preferred: preferred,
+-        format: cubeb::DeviceFmt::all(),
+-        default_format: pulse_format_to_cubeb_format(info.sample_spec.format),
+-        max_channels: info.channel_map.channels as u32,
+-        min_rate: 1,
+-        max_rate: PA_RATE_MAX,
+-        default_rate: info.sample_spec.rate,
+-        latency_lo: 0,
+-        latency_hi: 0,
+-    };
+-
+-    list_data.devinfo.push(devinfo);
+-
+-    pa_threaded_mainloop_signal(ctx.mainloop, 0);
+-}
+-
+-unsafe extern "C" fn pulse_server_info_cb(_context: *mut pa_context,
+-                                          i: *const pa_server_info,
+-                                          user_data: *mut c_void) {
+-    assert!(!i.is_null());
+-    let info = *i;
+-    let list_data = &mut *(user_data as *mut PulseDevListData);
+-
+-    dup_str!(list_data.default_sink_name, info.default_sink_name);
+-    dup_str!(list_data.default_source_name, info.default_source_name);
+-
+-    pa_threaded_mainloop_signal((*list_data.context).mainloop, 0);
+-}
+-
+-unsafe extern "C" fn pulse_subscribe_callback(_ctx: *mut pa_context,
+-                                              t: pa_subscription_event_type_t,
+-                                              index: u32,
+-                                              user_data: *mut c_void) {
+-    let mut ctx = &mut *(user_data as *mut Context);
+-
+-    match t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK {
+-        PA_SUBSCRIPTION_EVENT_SOURCE |
+-        PA_SUBSCRIPTION_EVENT_SINK => {
+-
+-            if cubeb::log_enabled() {
+-                if (t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) == PA_SUBSCRIPTION_EVENT_SOURCE &&
+-                   (t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_REMOVE {
+-                    log!("Removing sink index %d", index);
+-                } else if (t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) == PA_SUBSCRIPTION_EVENT_SOURCE &&
+-                          (t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_NEW {
+-                    log!("Adding sink index %d", index);
+-                }
+-                if (t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) == PA_SUBSCRIPTION_EVENT_SINK &&
+-                   (t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_REMOVE {
+-                    log!("Removing source index %d", index);
+-                } else if (t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) == PA_SUBSCRIPTION_EVENT_SINK &&
+-                          (t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_NEW {
+-                    log!("Adding source index %d", index);
+-                }
+-            }
+-
+-            if (t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_REMOVE ||
+-               (t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_NEW {
+-                ctx.collection_changed_callback.unwrap()(ctx as *mut _ as *mut _, ctx.collection_changed_user_ptr);
+-            }
+-        },
+-        _ => {},
+-    }
+-}
+-
+-extern "C" {
+-    pub fn strcmp(cs: *const c_char, ct: *const c_char) -> c_int;
+-}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/mod.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/mod.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/mod.rs.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/mod.rs	2017-08-04 13:37:46.386821731 +0200
+@@ -7,8 +7,16 @@ mod context;
+ mod cork_state;
+ mod stream;
+ 
++use std::os::raw::c_char;
++use std::ffi::CStr;
++
+ pub type Result<T> = ::std::result::Result<T, i32>;
+ 
+ pub use self::context::Context;
+ pub use self::stream::Device;
+ pub use self::stream::Stream;
++
++// helper to convert *const c_char to Option<CStr>
++fn try_cstr_from<'str>(s: *const c_char) -> Option<&'str CStr> {
++    if s.is_null() { None } else { Some(unsafe { CStr::from_ptr(s) }) }
++}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/stream.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/stream.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/stream.rs.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/backend/stream.rs	2017-08-04 13:37:46.387821728 +0200
+@@ -6,8 +6,10 @@
+ use backend::*;
+ use backend::cork_state::CorkState;
+ use cubeb;
++use pulse::{self, CVolumeExt, ChannelMapExt, SampleSpecExt, USecExt};
+ use pulse_ffi::*;
+-use std::os::raw::{c_char, c_long, c_void};
++use std::ffi::{CStr, CString};
++use std::os::raw::{c_long, c_void};
+ use std::ptr;
+ 
+ const PULSE_NO_GAIN: f32 = -1.0;
+@@ -36,15 +38,12 @@ fn cubeb_channel_to_pa_channel(channel:
+     MAP[idx as usize]
+ }
+ 
+-fn layout_to_channel_map(layout: cubeb::ChannelLayout) -> pa_channel_map {
++fn layout_to_channel_map(layout: cubeb::ChannelLayout) -> pulse::ChannelMap {
+     assert_ne!(layout, cubeb::LAYOUT_UNDEFINED);
+ 
+     let order = cubeb::mixer::channel_index_to_order(layout);
+ 
+-    let mut cm: pa_channel_map = Default::default();
+-    unsafe {
+-        pa_channel_map_init(&mut cm);
+-    }
++    let mut cm = pulse::ChannelMap::init();
+     cm.channels = order.len() as u8;
+     for (s, d) in order.iter().zip(cm.map.iter_mut()) {
+         *d = cubeb_channel_to_pa_channel(*s);
+@@ -57,24 +56,27 @@ pub struct Device(cubeb::Device);
+ impl Drop for Device {
+     fn drop(&mut self) {
+         unsafe {
+-            pa_xfree(self.0.input_name as *mut _);
+-            pa_xfree(self.0.output_name as *mut _);
++            if !self.0.input_name.is_null() {
++                let _ = CString::from_raw(self.0.input_name);
++            }
++            if !self.0.output_name.is_null() {
++                let _ = CString::from_raw(self.0.output_name);
++            }
+         }
+     }
+ }
+ 
+-
+ #[derive(Debug)]
+ pub struct Stream<'ctx> {
+     context: &'ctx Context,
+-    output_stream: *mut pa_stream,
+-    input_stream: *mut pa_stream,
++    output_stream: Option<pulse::Stream>,
++    input_stream: Option<pulse::Stream>,
+     data_callback: cubeb::DataCallback,
+     state_callback: cubeb::StateCallback,
+     user_ptr: *mut c_void,
+     drain_timer: *mut pa_time_event,
+-    output_sample_spec: pa_sample_spec,
+-    input_sample_spec: pa_sample_spec,
++    output_sample_spec: pulse::SampleSpec,
++    input_sample_spec: pulse::SampleSpec,
+     shutdown: bool,
+     volume: f32,
+     state: cubeb::State,
+@@ -88,7 +90,7 @@ impl<'ctx> Drop for Stream<'ctx> {
+ 
+ impl<'ctx> Stream<'ctx> {
+     pub fn new(context: &'ctx Context,
+-               stream_name: *const c_char,
++               stream_name: &CStr,
+                input_device: cubeb::DeviceId,
+                input_stream_params: Option<cubeb::StreamParams>,
+                output_device: cubeb::DeviceId,
+@@ -99,83 +101,167 @@ impl<'ctx> Stream<'ctx> {
+                user_ptr: *mut c_void)
+                -> Result<Box<Stream<'ctx>>> {
+ 
++        fn check_error(s: &pulse::Stream, u: *mut c_void) {
++            let stm = unsafe { &mut *(u as *mut Stream) };
++            if !s.get_state().is_good() {
++                stm.state_change_callback(cubeb::STATE_ERROR);
++            }
++            stm.context.mainloop.signal();
++        }
++
++        fn read_data(s: &pulse::Stream, nbytes: usize, u: *mut c_void) {
++            fn read_from_input(s: &pulse::Stream, buffer: *mut *const c_void, size: *mut usize) -> i32 {
++                let readable_size: i32 = s.readable_size()
++                    .and_then(|s| Ok(s as i32))
++                    .unwrap_or(-1);
++                if readable_size > 0 {
++                    if unsafe { s.peek(buffer, size).is_err() } {
++                        return -1;
++                    }
++                }
++                readable_size
++            }
++
++            logv!("Input callback buffer size {}", nbytes);
++            let mut stm = unsafe { &mut *(u as *mut Stream) };
++            if stm.shutdown {
++                return;
++            }
++
++            let mut read_data: *const c_void = ptr::null();
++            let mut read_size: usize = 0;
++            while read_from_input(s, &mut read_data, &mut read_size) > 0 {
++                /* read_data can be NULL in case of a hole. */
++                if !read_data.is_null() {
++                    let in_frame_size = stm.input_sample_spec.frame_size();
++                    let read_frames = read_size / in_frame_size;
++
++                    if stm.output_stream.is_some() {
++                        // input/capture + output/playback operation
++                        let out_frame_size = stm.output_sample_spec.frame_size();
++                        let write_size = read_frames * out_frame_size;
++                        // Offer full duplex data for writing
++                        stm.trigger_user_callback(read_data, write_size);
++                    } else {
++                        // input/capture only operation. Call callback directly
++                        let got = unsafe {
++                            stm.data_callback.unwrap()(stm as *mut _ as *mut _,
++                                                       stm.user_ptr,
++                                                       read_data,
++                                                       ptr::null_mut(),
++                                                       read_frames as c_long)
++                        };
++
++                        if got < 0 || got as usize != read_frames {
++                            let _ = s.cancel_write();
++                            stm.shutdown = true;
++                            break;
++                        }
++                    }
++                }
++
++                if read_size > 0 {
++                    let _ = s.drop();
++                }
++
++                if stm.shutdown {
++                    return;
++                }
++            }
++        }
++
++        fn write_data(_: &pulse::Stream, nbytes: usize, u: *mut c_void) {
++            logv!("Output callback to be written buffer size {}", nbytes);
++            let mut stm = unsafe { &mut *(u as *mut Stream) };
++            if stm.shutdown || stm.state != cubeb::STATE_STARTED {
++                return;
++            }
++
++            if stm.input_stream.is_none() {
++                // Output/playback only operation.
++                // Write directly to output
++                debug_assert!(stm.output_stream.is_some());
++                stm.trigger_user_callback(ptr::null(), nbytes);
++            }
++        }
++
+         let mut stm = Box::new(Stream {
+                                    context: context,
+-                                   output_stream: ptr::null_mut(),
+-                                   input_stream: ptr::null_mut(),
++                                   output_stream: None,
++                                   input_stream: None,
+                                    data_callback: data_callback,
+                                    state_callback: state_callback,
+                                    user_ptr: user_ptr,
+                                    drain_timer: ptr::null_mut(),
+-                                   output_sample_spec: pa_sample_spec::default(),
+-                                   input_sample_spec: pa_sample_spec::default(),
++                                   output_sample_spec: pulse::SampleSpec::default(),
++                                   input_sample_spec: pulse::SampleSpec::default(),
+                                    shutdown: false,
+                                    volume: PULSE_NO_GAIN,
+                                    state: cubeb::STATE_ERROR,
+                                });
+ 
+-        unsafe {
+-            pa_threaded_mainloop_lock(stm.context.mainloop);
++        if let Some(ref context) = stm.context.context {
++            stm.context.mainloop.lock();
++
++            // Setup output stream
+             if let Some(ref stream_params) = output_stream_params {
+-                match stm.pulse_stream_init(stream_params, stream_name) {
+-                    Ok(s) => stm.output_stream = s,
++                match Stream::stream_init(context, stream_params, stream_name) {
++                    Ok(s) => {
++                        stm.output_sample_spec = *s.get_sample_spec();
++
++                        s.set_state_callback(check_error, stm.as_mut() as *mut _ as *mut _);
++                        s.set_write_callback(write_data, stm.as_mut() as *mut _ as *mut _);
++
++                        let battr = set_buffering_attribute(latency_frames, &stm.output_sample_spec);
++                        let device_name = super::try_cstr_from(output_device as *const _);
++                        let _ = s.connect_playback(device_name,
++                                                   &battr,
++                                                   pulse::STREAM_AUTO_TIMING_UPDATE | pulse::STREAM_INTERPOLATE_TIMING |
++                                                   pulse::STREAM_START_CORKED |
++                                                   pulse::STREAM_ADJUST_LATENCY,
++                                                   None,
++                                                   None);
++
++                        stm.output_stream = Some(s);
++                    },
+                     Err(e) => {
+-                        pa_threaded_mainloop_unlock(stm.context.mainloop);
++                        stm.context.mainloop.unlock();
+                         stm.destroy();
+                         return Err(e);
+                     },
+                 }
+ 
+-                stm.output_sample_spec = *pa_stream_get_sample_spec(stm.output_stream);
+-
+-                pa_stream_set_state_callback(stm.output_stream,
+-                                             Some(stream_state_callback),
+-                                             stm.as_mut() as *mut _ as *mut _);
+-                pa_stream_set_write_callback(stm.output_stream,
+-                                             Some(stream_write_callback),
+-                                             stm.as_mut() as *mut _ as *mut _);
+-
+-                let battr = set_buffering_attribute(latency_frames, &stm.output_sample_spec);
+-                pa_stream_connect_playback(stm.output_stream,
+-                                           output_device as *mut c_char,
+-                                           &battr,
+-                                           PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_INTERPOLATE_TIMING |
+-                                           PA_STREAM_START_CORKED |
+-                                           PA_STREAM_ADJUST_LATENCY,
+-                                           ptr::null(),
+-                                           ptr::null_mut());
+             }
+ 
+             // Set up input stream
+             if let Some(ref stream_params) = input_stream_params {
+-                match stm.pulse_stream_init(stream_params, stream_name) {
+-                    Ok(s) => stm.input_stream = s,
++                match Stream::stream_init(context, stream_params, stream_name) {
++                    Ok(s) => {
++                        stm.input_sample_spec = *s.get_sample_spec();
++
++                        s.set_state_callback(check_error, stm.as_mut() as *mut _ as *mut _);
++                        s.set_read_callback(read_data, stm.as_mut() as *mut _ as *mut _);
++
++                        let battr = set_buffering_attribute(latency_frames, &stm.input_sample_spec);
++                        let device_name = super::try_cstr_from(input_device as *const _);
++                        let _ = s.connect_record(device_name,
++                                                 &battr,
++                                                 pulse::STREAM_AUTO_TIMING_UPDATE | pulse::STREAM_INTERPOLATE_TIMING |
++                                                 pulse::STREAM_START_CORKED |
++                                                 pulse::STREAM_ADJUST_LATENCY);
++
++                        stm.input_stream = Some(s);
++                    },
+                     Err(e) => {
+-                        pa_threaded_mainloop_unlock(stm.context.mainloop);
++                        stm.context.mainloop.unlock();
+                         stm.destroy();
+                         return Err(e);
+                     },
+                 }
+ 
+-                stm.input_sample_spec = *(pa_stream_get_sample_spec(stm.input_stream));
+-
+-                pa_stream_set_state_callback(stm.input_stream,
+-                                             Some(stream_state_callback),
+-                                             stm.as_mut() as *mut _ as *mut _);
+-                pa_stream_set_read_callback(stm.input_stream,
+-                                            Some(stream_read_callback),
+-                                            stm.as_mut() as *mut _ as *mut _);
+-
+-                let battr = set_buffering_attribute(latency_frames, &stm.input_sample_spec);
+-                pa_stream_connect_record(stm.input_stream,
+-                                         input_device as *mut c_char,
+-                                         &battr,
+-                                         PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_INTERPOLATE_TIMING |
+-                                         PA_STREAM_START_CORKED |
+-                                         PA_STREAM_ADJUST_LATENCY);
+             }
+ 
+-            let r = if stm.wait_until_stream_ready() {
++            let r = if stm.wait_until_ready() {
+                 /* force a timing update now, otherwise timing info does not become valid
+                 until some point after initialization has completed. */
+                 stm.update_timing_info()
+@@ -183,7 +269,7 @@ impl<'ctx> Stream<'ctx> {
+                 false
+             };
+ 
+-            pa_threaded_mainloop_unlock(stm.context.mainloop);
++            stm.context.mainloop.unlock();
+ 
+             if !r {
+                 stm.destroy();
+@@ -191,10 +277,10 @@ impl<'ctx> Stream<'ctx> {
+             }
+ 
+             if cubeb::log_enabled() {
+-                if output_stream_params.is_some() {
+-                    let output_att = *pa_stream_get_buffer_attr(stm.output_stream);
+-                    log!("Output buffer attributes maxlength %u, tlength %u, \
+-                         prebuf %u, minreq %u, fragsize %u",
++                if let Some(ref output_stream) = stm.output_stream {
++                    let output_att = output_stream.get_buffer_attr();
++                    log!("Output buffer attributes maxlength {}, tlength {}, \
++                         prebuf {}, minreq {}, fragsize {}",
+                          output_att.maxlength,
+                          output_att.tlength,
+                          output_att.prebuf,
+@@ -202,10 +288,10 @@ impl<'ctx> Stream<'ctx> {
+                          output_att.fragsize);
+                 }
+ 
+-                if input_stream_params.is_some() {
+-                    let input_att = *pa_stream_get_buffer_attr(stm.input_stream);
+-                    log!("Input buffer attributes maxlength %u, tlength %u, \
+-                          prebuf %u, minreq %u, fragsize %u",
++                if let Some(ref input_stream) = stm.input_stream {
++                    let input_att = input_stream.get_buffer_attr();
++                    log!("Input buffer attributes maxlength {}, tlength {}, \
++                          prebuf {}, minreq {}, fragsize {}",
+                          input_att.maxlength,
+                          input_att.tlength,
+                          input_att.prebuf,
+@@ -219,224 +305,250 @@ impl<'ctx> Stream<'ctx> {
+     }
+ 
+     fn destroy(&mut self) {
+-        self.stream_cork(CorkState::cork());
++        self.cork(CorkState::cork());
+ 
+-        unsafe {
+-            pa_threaded_mainloop_lock(self.context.mainloop);
+-            if !self.output_stream.is_null() {
+-                if !self.drain_timer.is_null() {
+-                    /* there's no pa_rttime_free, so use this instead. */
+-                    let ma = pa_threaded_mainloop_get_api(self.context.mainloop);
+-                    if !ma.is_null() {
+-                        (*ma).time_free.unwrap()(self.drain_timer);
++        self.context.mainloop.lock();
++        {
++            match self.output_stream.take() {
++                Some(stm) => {
++                    if !self.drain_timer.is_null() {
++                        /* there's no pa_rttime_free, so use this instead. */
++                        self.context
++                            .mainloop
++                            .get_api()
++                            .time_free(self.drain_timer);
+                     }
+-                }
+-
+-                pa_stream_set_state_callback(self.output_stream, None, ptr::null_mut());
+-                pa_stream_set_write_callback(self.output_stream, None, ptr::null_mut());
+-                pa_stream_disconnect(self.output_stream);
+-                pa_stream_unref(self.output_stream);
++                    stm.clear_state_callback();
++                    stm.clear_write_callback();
++                    let _ = stm.disconnect();
++                    stm.unref();
++                },
++                _ => {},
++            }
++
++            match self.input_stream.take() {
++                Some(stm) => {
++                    stm.clear_state_callback();
++                    stm.clear_read_callback();
++                    let _ = stm.disconnect();
++                    stm.unref();
++                },
++                _ => {},
+             }
+-
+-            if !self.input_stream.is_null() {
+-                pa_stream_set_state_callback(self.input_stream, None, ptr::null_mut());
+-                pa_stream_set_read_callback(self.input_stream, None, ptr::null_mut());
+-                pa_stream_disconnect(self.input_stream);
+-                pa_stream_unref(self.input_stream);
+-            }
+-            pa_threaded_mainloop_unlock(self.context.mainloop);
+         }
++        self.context.mainloop.unlock();
+     }
+ 
+     pub fn start(&mut self) -> i32 {
++        fn output_preroll(_: &pulse::MainloopApi, u: *mut c_void) {
++            let mut stm = unsafe { &mut *(u as *mut Stream) };
++            if !stm.shutdown {
++                let size = stm.output_stream
++                    .as_ref()
++                    .map_or(0, |s| s.writable_size().unwrap_or(0));
++                stm.trigger_user_callback(ptr::null_mut(), size);
++            }
++        }
++
+         self.shutdown = false;
+-        self.stream_cork(CorkState::uncork() | CorkState::notify());
++        self.cork(CorkState::uncork() | CorkState::notify());
+ 
+-        if !self.output_stream.is_null() && self.input_stream.is_null() {
+-            unsafe {
+-                /* On output only case need to manually call user cb once in order to make
+-                 * things roll. This is done via a defer event in order to execute it
+-                 * from PA server thread. */
+-                pa_threaded_mainloop_lock(self.context.mainloop);
+-                pa_mainloop_api_once(pa_threaded_mainloop_get_api(self.context.mainloop),
+-                                     Some(pulse_defer_event_cb),
+-                                     self as *mut _ as *mut _);
+-                pa_threaded_mainloop_unlock(self.context.mainloop);
+-            }
++        if self.output_stream.is_some() && self.input_stream.is_none() {
++            /* On output only case need to manually call user cb once in order to make
++             * things roll. This is done via a defer event in order to execute it
++             * from PA server thread. */
++            self.context.mainloop.lock();
++            self.context
++                .mainloop
++                .get_api()
++                .once(output_preroll, self as *mut _ as *mut _);
++            self.context.mainloop.unlock();
+         }
+ 
+         cubeb::OK
+     }
+ 
+     pub fn stop(&mut self) -> i32 {
+-        unsafe {
+-            pa_threaded_mainloop_lock(self.context.mainloop);
++        {
++            self.context.mainloop.lock();
+             self.shutdown = true;
+             // If draining is taking place wait to finish
+             while !self.drain_timer.is_null() {
+-                pa_threaded_mainloop_wait(self.context.mainloop);
++                self.context.mainloop.wait();
+             }
+-            pa_threaded_mainloop_unlock(self.context.mainloop);
++            self.context.mainloop.unlock();
+         }
+-        self.stream_cork(CorkState::cork() | CorkState::notify());
++        self.cork(CorkState::cork() | CorkState::notify());
+ 
+         cubeb::OK
+     }
+ 
+     pub fn position(&self) -> Result<u64> {
+-        if self.output_stream.is_null() {
+-            return Err(cubeb::ERROR);
+-        }
++        let in_thread = self.context.mainloop.in_thread();
+ 
+-        let position = unsafe {
+-            let in_thread = pa_threaded_mainloop_in_thread(self.context.mainloop);
+-
+-            if in_thread == 0 {
+-                pa_threaded_mainloop_lock(self.context.mainloop);
+-            }
+-
+-            let mut r_usec: pa_usec_t = Default::default();
+-            let r = pa_stream_get_time(self.output_stream, &mut r_usec);
+-            if in_thread == 0 {
+-                pa_threaded_mainloop_unlock(self.context.mainloop);
+-            }
+-
+-            if r != 0 {
+-                return Err(cubeb::ERROR);
+-            }
++        if !in_thread {
++            self.context.mainloop.lock();
++        }
+ 
+-            let bytes = pa_usec_to_bytes(r_usec, &self.output_sample_spec);
+-            (bytes / pa_frame_size(&self.output_sample_spec)) as u64
++        let r = match self.output_stream {
++            None => Err(cubeb::ERROR),
++            Some(ref stm) => {
++                match stm.get_time() {
++                    Ok(r_usec) => {
++                        let bytes = r_usec.to_bytes(&self.output_sample_spec);
++                        Ok((bytes / self.output_sample_spec.frame_size()) as u64)
++                    },
++                    Err(_) => Err(cubeb::ERROR),
++                }
++            },
+         };
+-        Ok(position)
+-    }
+ 
+-    pub fn latency(&self) -> Result<u32> {
+-        if self.output_stream.is_null() {
+-            return Err(cubeb::ERROR);
++        if !in_thread {
++            self.context.mainloop.unlock();
+         }
+ 
+-        let mut r_usec: pa_usec_t = 0;
+-        let mut negative: i32 = 0;
+-        let r = unsafe { pa_stream_get_latency(self.output_stream, &mut r_usec, &mut negative) };
++        r
++    }
+ 
+-        if r != 0 {
+-            return Err(cubeb::ERROR);
++    pub fn latency(&self) -> Result<u32> {
++        match self.output_stream {
++            None => Err(cubeb::ERROR),
++            Some(ref stm) => {
++                match stm.get_latency() {
++                    Ok((r_usec, negative)) => {
++                        debug_assert!(negative);
++                        let latency = (r_usec * self.output_sample_spec.rate as pa_usec_t / PA_USEC_PER_SEC) as u32;
++                        Ok(latency)
++                    },
++                    Err(_) => Err(cubeb::ERROR),
++                }
++            },
+         }
+-
+-        debug_assert_eq!(negative, 0);
+-        let latency = (r_usec * self.output_sample_spec.rate as pa_usec_t / PA_USEC_PER_SEC) as u32;
+-
+-        Ok(latency)
+     }
+ 
+     pub fn set_volume(&mut self, volume: f32) -> i32 {
+-        if self.output_stream.is_null() {
+-            return cubeb::ERROR;
+-        }
+-
+-        unsafe {
+-            pa_threaded_mainloop_lock(self.context.mainloop);
+-
+-            while self.context.default_sink_info.is_none() {
+-                pa_threaded_mainloop_wait(self.context.mainloop);
+-            }
+-
+-            let mut cvol: pa_cvolume = Default::default();
+-
+-            /* if the pulse daemon is configured to use flat volumes,
+-             * apply our own gain instead of changing the input volume on the sink. */
+-            let flags = {
+-                match self.context.default_sink_info {
+-                    Some(ref info) => info.flags,
+-                    _ => 0,
+-                }
+-            };
+-
+-            if (flags & PA_SINK_FLAT_VOLUME) != 0 {
+-                self.volume = volume;
+-            } else {
+-                let ss = pa_stream_get_sample_spec(self.output_stream);
+-                let vol = pa_sw_volume_from_linear(volume as f64);
+-                pa_cvolume_set(&mut cvol, (*ss).channels as u32, vol);
+-
+-                let index = pa_stream_get_index(self.output_stream);
++        match self.output_stream {
++            None => cubeb::ERROR,
++            Some(ref stm) => {
++                if let Some(ref context) = self.context.context {
++                    self.context.mainloop.lock();
++
++                    let mut cvol: pa_cvolume = Default::default();
++
++                    /* if the pulse daemon is configured to use flat
++                     * volumes, apply our own gain instead of changing
++                     * the input volume on the sink. */
++                    let flags = {
++                        match self.context.default_sink_info {
++                            Some(ref info) => info.flags,
++                            _ => pulse::SinkFlags::empty(),
++                        }
++                    };
++
++                    if flags.contains(pulse::SINK_FLAT_VOLUME) {
++                        self.volume = volume;
++                    } else {
++                        let channels = stm.get_sample_spec().channels;
++                        let vol = pulse::sw_volume_from_linear(volume as f64);
++                        cvol.set(channels as u32, vol);
++
++                        let index = stm.get_index();
++
++                        let context_ptr = self.context as *const _ as *mut _;
++                        if let Ok(o) = context.set_sink_input_volume(index, &cvol, context_success, context_ptr) {
++                            self.context.operation_wait(stm, &o);
++                        }
++                    }
+ 
+-                let op = pa_context_set_sink_input_volume(self.context.context,
+-                                                          index,
+-                                                          &cvol,
+-                                                          Some(volume_success),
+-                                                          self as *mut _ as *mut _);
+-                if !op.is_null() {
+-                    self.context.operation_wait(self.output_stream, op);
+-                    pa_operation_unref(op);
++                    self.context.mainloop.unlock();
++                    cubeb::OK
++                } else {
++                    cubeb::ERROR
+                 }
+-            }
+-
+-            pa_threaded_mainloop_unlock(self.context.mainloop);
++            },
+         }
+-        cubeb::OK
+     }
+ 
+     pub fn set_panning(&mut self, panning: f32) -> i32 {
+-        if self.output_stream.is_null() {
+-            return cubeb::ERROR;
+-        }
++        #[repr(C)]
++        struct SinkInputInfoResult<'a> {
++            pub cvol: pulse::CVolume,
++            pub mainloop: &'a pulse::ThreadedMainloop,
++        }
++
++        fn get_input_volume(_: &pulse::Context, info: *const pulse::SinkInputInfo, eol: i32, u: *mut c_void) {
++            let mut r = unsafe { &mut *(u as *mut SinkInputInfoResult) };
++            if eol == 0 {
++                let info = unsafe { *info };
++                r.cvol = info.volume;
++            }
++            r.mainloop.signal();
++        }
++
++        match self.output_stream {
++            None => cubeb::ERROR,
++            Some(ref stm) => {
++                if let Some(ref context) = self.context.context {
++                    self.context.mainloop.lock();
++
++                    let map = stm.get_channel_map();
++                    if !map.can_balance() {
++                        self.context.mainloop.unlock();
++                        return cubeb::ERROR;
++                    }
+ 
+-        unsafe {
+-            pa_threaded_mainloop_lock(self.context.mainloop);
++                    let index = stm.get_index();
+ 
+-            let map = pa_stream_get_channel_map(self.output_stream);
+-            if pa_channel_map_can_balance(map) == 0 {
+-                pa_threaded_mainloop_unlock(self.context.mainloop);
+-                return cubeb::ERROR;
+-            }
++                    let mut r = SinkInputInfoResult {
++                        cvol: pulse::CVolume::default(),
++                        mainloop: &self.context.mainloop,
++                    };
+ 
+-            let index = pa_stream_get_index(self.output_stream);
++                    if let Ok(o) = context.get_sink_input_info(index, get_input_volume, &mut r as *mut _ as *mut _) {
++                        self.context.operation_wait(stm, &o);
++                    }
+ 
+-            let mut cvol: pa_cvolume = Default::default();
+-            let mut r = SinkInputInfoResult {
+-                cvol: &mut cvol,
+-                mainloop: self.context.mainloop,
+-            };
++                    r.cvol.set_balance(map, panning);
+ 
+-            let op = pa_context_get_sink_input_info(self.context.context,
+-                                                    index,
+-                                                    Some(sink_input_info_cb),
+-                                                    &mut r as *mut _ as *mut _);
+-            if !op.is_null() {
+-                self.context.operation_wait(self.output_stream, op);
+-                pa_operation_unref(op);
+-            }
+-
+-            pa_cvolume_set_balance(&mut cvol, map, panning);
+-
+-            let op = pa_context_set_sink_input_volume(self.context.context,
+-                                                      index,
+-                                                      &cvol,
+-                                                      Some(volume_success),
+-                                                      self as *mut _ as *mut _);
+-            if !op.is_null() {
+-                self.context.operation_wait(self.output_stream, op);
+-                pa_operation_unref(op);
+-            }
++                    let context_ptr = self.context as *const _ as *mut _;
++                    if let Ok(o) = context.set_sink_input_volume(index, &r.cvol, context_success, context_ptr) {
++                        self.context.operation_wait(stm, &o);
++                    }
+ 
+-            pa_threaded_mainloop_unlock(self.context.mainloop);
+-        }
++                    self.context.mainloop.unlock();
+ 
+-        cubeb::OK
++                    cubeb::OK
++                } else {
++                    cubeb::ERROR
++                }
++            },
++        }
+     }
+ 
+     pub fn current_device(&self) -> Result<Box<cubeb::Device>> {
+         if self.context.version_0_9_8 {
+             let mut dev = Box::new(cubeb::Device::default());
+ 
+-            if !self.input_stream.is_null() {
+-                dev.input_name = unsafe { pa_xstrdup(pa_stream_get_device_name(self.input_stream)) };
++            if self.input_stream.is_some() {
++                if let Some(ref stm) = self.input_stream {
++                    dev.input_name = match stm.get_device_name() {
++                        Ok(name) => name.to_owned().into_raw(),
++                        Err(_) => {
++                            return Err(cubeb::ERROR);
++                        },
++                    }
++                }
+             }
+ 
+-            if !self.output_stream.is_null() {
+-                dev.output_name = unsafe { pa_xstrdup(pa_stream_get_device_name(self.output_stream)) };
++            if !self.output_stream.is_some() {
++                if let Some(ref stm) = self.output_stream {
++                    dev.output_name = match stm.get_device_name() {
++                        Ok(name) => name.to_owned().into_raw(),
++                        Err(_) => {
++                            return Err(cubeb::ERROR);
++                        },
++                    }
++                }
+             }
+ 
+             Ok(dev)
+@@ -445,51 +557,62 @@ impl<'ctx> Stream<'ctx> {
+         }
+     }
+ 
+-    fn pulse_stream_init(&mut self,
+-                         stream_params: &cubeb::StreamParams,
+-                         stream_name: *const c_char)
+-                         -> Result<*mut pa_stream> {
++    fn stream_init(context: &pulse::Context,
++                   stream_params: &cubeb::StreamParams,
++                   stream_name: &CStr)
++                   -> Result<pulse::Stream> {
+ 
+-        fn to_pulse_format(format: cubeb::SampleFormat) -> pa_sample_format_t {
++        fn to_pulse_format(format: cubeb::SampleFormat) -> pulse::SampleFormat {
+             match format {
+-                cubeb::SAMPLE_S16LE => PA_SAMPLE_S16LE,
+-                cubeb::SAMPLE_S16BE => PA_SAMPLE_S16BE,
+-                cubeb::SAMPLE_FLOAT32LE => PA_SAMPLE_FLOAT32LE,
+-                cubeb::SAMPLE_FLOAT32BE => PA_SAMPLE_FLOAT32BE,
+-                _ => panic!("Invalid format: {:?}", format),
++                cubeb::SAMPLE_S16LE => pulse::SampleFormat::Signed16LE,
++                cubeb::SAMPLE_S16BE => pulse::SampleFormat::Signed16BE,
++                cubeb::SAMPLE_FLOAT32LE => pulse::SampleFormat::Float32LE,
++                cubeb::SAMPLE_FLOAT32BE => pulse::SampleFormat::Float32BE,
++                _ => pulse::SampleFormat::Invalid,
+             }
+         }
+ 
+         let fmt = to_pulse_format(stream_params.format);
+-        if fmt == PA_SAMPLE_INVALID {
++        if fmt == pulse::SampleFormat::Invalid {
+             return Err(cubeb::ERROR_INVALID_FORMAT);
+         }
+ 
+-        let ss = pa_sample_spec {
++        let ss = pulse::SampleSpec {
+             channels: stream_params.channels as u8,
+-            format: fmt,
++            format: fmt.into(),
+             rate: stream_params.rate,
+         };
+ 
+-        let stream = if stream_params.layout == cubeb::LAYOUT_UNDEFINED {
+-            unsafe { pa_stream_new(self.context.context, stream_name, &ss, ptr::null_mut()) }
+-        } else {
+-            let cm = layout_to_channel_map(stream_params.layout);
+-            unsafe { pa_stream_new(self.context.context, stream_name, &ss, &cm) }
++        let cm: Option<pa_channel_map> = match stream_params.layout {
++            cubeb::LAYOUT_UNDEFINED => None,
++            _ => Some(layout_to_channel_map(stream_params.layout)),
+         };
+ 
+-        if !stream.is_null() {
+-            Ok(stream)
+-        } else {
+-            Err(cubeb::ERROR)
++        let stream = pulse::Stream::new(context, stream_name, &ss, cm.as_ref());
++
++        match stream {
++            None => Err(cubeb::ERROR),
++            Some(stm) => Ok(stm),
++        }
++    }
++
++    pub fn cork_stream(&self, stream: Option<&pulse::Stream>, state: CorkState) {
++        if let Some(stm) = stream {
++            if let Ok(o) = stm.cork(state.is_cork() as i32,
++                                    stream_success,
++                                    self as *const _ as *mut _) {
++                self.context.operation_wait(stream, &o);
++            }
+         }
+     }
+ 
+-    fn stream_cork(&mut self, state: CorkState) {
+-        unsafe { pa_threaded_mainloop_lock(self.context.mainloop) };
+-        self.context.pulse_stream_cork(self.output_stream, state);
+-        self.context.pulse_stream_cork(self.input_stream, state);
+-        unsafe { pa_threaded_mainloop_unlock(self.context.mainloop) };
++    fn cork(&mut self, state: CorkState) {
++        {
++            self.context.mainloop.lock();
++            self.cork_stream(self.output_stream.as_ref(), state);
++            self.cork_stream(self.input_stream.as_ref(), state);
++            self.context.mainloop.unlock()
++        }
+ 
+         if state.is_notify() {
+             self.state_change_callback(if state.is_cork() {
+@@ -503,18 +626,9 @@ impl<'ctx> Stream<'ctx> {
+     fn update_timing_info(&self) -> bool {
+         let mut r = false;
+ 
+-        if !self.output_stream.is_null() {
+-            let o = unsafe {
+-                pa_stream_update_timing_info(self.output_stream,
+-                                             Some(stream_success_callback),
+-                                             self as *const _ as *mut _)
+-            };
+-
+-            if !o.is_null() {
+-                r = self.context.operation_wait(self.output_stream, o);
+-                unsafe {
+-                    pa_operation_unref(o);
+-                }
++        if let Some(ref stm) = self.output_stream {
++            if let Ok(o) = stm.update_timing_info(stream_success, self as *const _ as *mut _) {
++                r = self.context.operation_wait(stm, &o);
+             }
+ 
+             if !r {
+@@ -522,18 +636,9 @@ impl<'ctx> Stream<'ctx> {
+             }
+         }
+ 
+-        if !self.input_stream.is_null() {
+-            let o = unsafe {
+-                pa_stream_update_timing_info(self.input_stream,
+-                                             Some(stream_success_callback),
+-                                             self as *const _ as *mut _)
+-            };
+-
+-            if !o.is_null() {
+-                r = self.context.operation_wait(self.input_stream, o);
+-                unsafe {
+-                    pa_operation_unref(o);
+-                }
++        if let Some(ref stm) = self.input_stream {
++            if let Ok(o) = stm.update_timing_info(stream_success, self as *const _ as *mut _) {
++                r = self.context.operation_wait(stm, &o);
+             }
+         }
+ 
+@@ -547,232 +652,162 @@ impl<'ctx> Stream<'ctx> {
+         }
+     }
+ 
+-    fn wait_until_stream_ready(&self) -> bool {
+-        if !self.output_stream.is_null() && !wait_until_io_stream_ready(self.output_stream, self.context.mainloop) {
+-            return false;
+-        }
+-
+-        if !self.input_stream.is_null() && !wait_until_io_stream_ready(self.input_stream, self.context.mainloop) {
+-            return false;
+-        }
+-
+-        true
+-    }
+-
+-    fn trigger_user_callback(&mut self, s: *mut pa_stream, input_data: *const c_void, nbytes: usize) {
+-        let frame_size = unsafe { pa_frame_size(&self.output_sample_spec) };
+-        debug_assert_eq!(nbytes % frame_size, 0);
+-
+-        let mut buffer: *mut c_void = ptr::null_mut();
+-        let mut r: i32;
+-
+-        let mut towrite = nbytes;
+-        let mut read_offset = 0usize;
+-        while towrite > 0 {
+-            let mut size = towrite;
+-            r = unsafe { pa_stream_begin_write(s, &mut buffer, &mut size) };
+-            // Note: this has failed running under rr on occassion - needs investigation.
+-            debug_assert_eq!(r, 0);
+-            debug_assert!(size > 0);
+-            debug_assert_eq!(size % frame_size, 0);
+-
+-            logv!("Trigger user callback with output buffer size={}, read_offset={}",
+-                  size,
+-                  read_offset);
+-            let read_ptr = unsafe { (input_data as *const u8).offset(read_offset as isize) };
+-            let got = unsafe {
+-                self.data_callback.unwrap()(self as *const _ as *mut _,
+-                                            self.user_ptr,
+-                                            read_ptr as *const _ as *mut _,
+-                                            buffer,
+-                                            (size / frame_size) as c_long)
+-            };
+-            if got < 0 {
+-                unsafe {
+-                    pa_stream_cancel_write(s);
+-                }
+-                self.shutdown = true;
+-                return;
+-            }
+-            // If more iterations move offset of read buffer
+-            if !input_data.is_null() {
+-                let in_frame_size = unsafe { pa_frame_size(&self.input_sample_spec) };
+-                read_offset += (size / frame_size) * in_frame_size;
++    fn wait_until_ready(&self) -> bool {
++        fn wait_until_io_stream_ready(stm: &pulse::Stream, mainloop: &pulse::ThreadedMainloop) -> bool {
++            if mainloop.is_null() {
++                return false;
+             }
+ 
+-            if self.volume != PULSE_NO_GAIN {
+-                let samples = (self.output_sample_spec.channels as usize * size / frame_size) as isize;
+-
+-                if self.output_sample_spec.format == PA_SAMPLE_S16BE ||
+-                   self.output_sample_spec.format == PA_SAMPLE_S16LE {
+-                    let b = buffer as *mut i16;
+-                    for i in 0..samples {
+-                        unsafe { *b.offset(i) *= self.volume as i16 };
+-                    }
+-                } else {
+-                    let b = buffer as *mut f32;
+-                    for i in 0..samples {
+-                        unsafe { *b.offset(i) *= self.volume };
+-                    }
++            loop {
++                let state = stm.get_state();
++                if !state.is_good() {
++                    return false;
++                }
++                if state == pulse::StreamState::Ready {
++                    break;
+                 }
++                mainloop.wait();
+             }
+ 
+-            r = unsafe {
+-                pa_stream_write(s,
+-                                buffer,
+-                                got as usize * frame_size,
+-                                None,
+-                                0,
+-                                PA_SEEK_RELATIVE)
+-            };
+-            debug_assert_eq!(r, 0);
++            true
++        }
+ 
+-            if (got as usize) < size / frame_size {
+-                let mut latency: pa_usec_t = 0;
+-                let rr: i32 = unsafe { pa_stream_get_latency(s, &mut latency, ptr::null_mut()) };
+-                if rr == -(PA_ERR_NODATA as i32) {
+-                    /* this needs a better guess. */
+-                    latency = 100 * PA_USEC_PER_MSEC;
+-                }
+-                debug_assert!(r == 0 || r == -(PA_ERR_NODATA as i32));
+-                /* pa_stream_drain is useless, see PA bug# 866. this is a workaround. */
+-                /* arbitrary safety margin: double the current latency. */
+-                debug_assert!(self.drain_timer.is_null());
+-                self.drain_timer = unsafe {
+-                    pa_context_rttime_new(self.context.context,
+-                                          pa_rtclock_now() + 2 * latency,
+-                                          Some(stream_drain_callback),
+-                                          self as *const _ as *mut _)
+-                };
+-                self.shutdown = true;
+-                return;
++        if let Some(ref stm) = self.output_stream {
++            if !wait_until_io_stream_ready(stm, &self.context.mainloop) {
++                return false;
+             }
+-
+-            towrite -= size;
+         }
+ 
+-        debug_assert_eq!(towrite, 0);
+-    }
+-}
+-
+-unsafe extern "C" fn stream_success_callback(_s: *mut pa_stream, _success: i32, u: *mut c_void) {
+-    let stm = &*(u as *mut Stream);
+-    pa_threaded_mainloop_signal(stm.context.mainloop, 0);
+-}
+-
+-unsafe extern "C" fn stream_drain_callback(a: *mut pa_mainloop_api,
+-                                           e: *mut pa_time_event,
+-                                           _tv: *const timeval,
+-                                           u: *mut c_void) {
+-    let mut stm = &mut *(u as *mut Stream);
+-    debug_assert_eq!(stm.drain_timer, e);
+-    stm.state_change_callback(cubeb::STATE_DRAINED);
+-    /* there's no pa_rttime_free, so use this instead. */
+-    (*a).time_free.unwrap()(stm.drain_timer);
+-    stm.drain_timer = ptr::null_mut();
+-    pa_threaded_mainloop_signal(stm.context.mainloop, 0);
+-}
+-
+-unsafe extern "C" fn stream_state_callback(s: *mut pa_stream, u: *mut c_void) {
+-    let stm = &mut *(u as *mut Stream);
+-    if !PA_STREAM_IS_GOOD(pa_stream_get_state(s)) {
+-        stm.state_change_callback(cubeb::STATE_ERROR);
+-    }
+-    pa_threaded_mainloop_signal(stm.context.mainloop, 0);
+-}
+-
+-fn read_from_input(s: *mut pa_stream, buffer: *mut *const c_void, size: *mut usize) -> i32 {
+-    let readable_size = unsafe { pa_stream_readable_size(s) };
+-    if readable_size > 0 && unsafe { pa_stream_peek(s, buffer, size) } < 0 {
+-        return -1;
+-    }
+-
+-    readable_size as i32
+-}
++        if let Some(ref stm) = self.input_stream {
++            if !wait_until_io_stream_ready(stm, &self.context.mainloop) {
++                return false;
++            }
++        }
+ 
+-unsafe extern "C" fn stream_write_callback(s: *mut pa_stream, nbytes: usize, u: *mut c_void) {
+-    logv!("Output callback to be written buffer size {}", nbytes);
+-    let mut stm = &mut *(u as *mut Stream);
+-    if stm.shutdown || stm.state != cubeb::STATE_STARTED {
+-        return;
++        true
+     }
+ 
+-    if stm.input_stream.is_null() {
+-        // Output/playback only operation.
+-        // Write directly to output
+-        debug_assert!(!stm.output_stream.is_null());
+-        stm.trigger_user_callback(s, ptr::null(), nbytes);
+-    }
+-}
++    fn trigger_user_callback(&mut self, input_data: *const c_void, nbytes: usize) {
++        fn drained_cb(a: &pulse::MainloopApi, e: *mut pa_time_event, _tv: &pulse::TimeVal, u: *mut c_void) {
++            let mut stm = unsafe { &mut *(u as *mut Stream) };
++            debug_assert_eq!(stm.drain_timer, e);
++            stm.state_change_callback(cubeb::STATE_DRAINED);
++            /* there's no pa_rttime_free, so use this instead. */
++            a.time_free(stm.drain_timer);
++            stm.drain_timer = ptr::null_mut();
++            stm.context.mainloop.signal();
++        }
++
++        if let Some(ref stm) = self.output_stream {
++
++            let frame_size = self.output_sample_spec.frame_size();
++            debug_assert_eq!(nbytes % frame_size, 0);
++
++            let mut towrite = nbytes;
++            let mut read_offset = 0usize;
++            while towrite > 0 {
++                match stm.begin_write(towrite) {
++                    Err(e) => {
++                        panic!("Failed to write data: {}", e);
++                    },
++                    Ok((buffer, size)) => {
++                        debug_assert!(size > 0);
++                        debug_assert_eq!(size % frame_size, 0);
++
++                        logv!("Trigger user callback with output buffer size={}, read_offset={}",
++                              size,
++                              read_offset);
++                        let read_ptr = unsafe { (input_data as *const u8).offset(read_offset as isize) };
++                        let got = unsafe {
++                            self.data_callback.unwrap()(self as *const _ as *mut _,
++                                                        self.user_ptr,
++                                                        read_ptr as *const _ as *mut _,
++                                                        buffer,
++                                                        (size / frame_size) as c_long)
++                        };
++                        if got < 0 {
++                            let _ = stm.cancel_write();
++                            self.shutdown = true;
++                            return;
++                        }
++
++                        // If more iterations move offset of read buffer
++                        if !input_data.is_null() {
++                            let in_frame_size = self.input_sample_spec.frame_size();
++                            read_offset += (size / frame_size) * in_frame_size;
++                        }
++
++                        if self.volume != PULSE_NO_GAIN {
++                            let samples = (self.output_sample_spec.channels as usize * size / frame_size) as isize;
++
++                            if self.output_sample_spec.format == PA_SAMPLE_S16BE ||
++                               self.output_sample_spec.format == PA_SAMPLE_S16LE {
++                                let b = buffer as *mut i16;
++                                for i in 0..samples {
++                                    unsafe { *b.offset(i) *= self.volume as i16 };
++                                }
++                            } else {
++                                let b = buffer as *mut f32;
++                                for i in 0..samples {
++                                    unsafe { *b.offset(i) *= self.volume };
++                                }
++                            }
++                        }
++
++                        let r = stm.write(buffer,
++                                          got as usize * frame_size,
++                                          0,
++                                          pulse::SeekMode::Relative);
++                        debug_assert!(r.is_ok());
++
++                        if (got as usize) < size / frame_size {
++                            let latency = match stm.get_latency() {
++                                Ok((l, negative)) => {
++                                    assert_ne!(negative, true);
++                                    l
++                                },
++                                Err(e) => {
++                                    debug_assert_eq!(e, pulse::ErrorCode::from_error_code(PA_ERR_NODATA));
++                                    /* this needs a better guess. */
++                                    100 * PA_USEC_PER_MSEC
++                                },
++                            };
++
++                            /* pa_stream_drain is useless, see PA bug# 866. this is a workaround. */
++                            /* arbitrary safety margin: double the current latency. */
++                            debug_assert!(self.drain_timer.is_null());
++                            let stream_ptr = self as *const _ as *mut _;
++                            if let Some(ref context) = self.context.context {
++                                self.drain_timer =
++                                    context.rttime_new(pulse::rtclock_now() + 2 * latency, drained_cb, stream_ptr);
++                            }
++                            self.shutdown = true;
++                            return;
++                        }
+ 
+-unsafe extern "C" fn stream_read_callback(s: *mut pa_stream, nbytes: usize, u: *mut c_void) {
+-    logv!("Input callback buffer size {}", nbytes);
+-    let mut stm = &mut *(u as *mut Stream);
+-    if stm.shutdown {
+-        return;
+-    }
+-
+-    let mut read_data: *const c_void = ptr::null();
+-    let mut read_size: usize = 0;
+-    while read_from_input(s, &mut read_data, &mut read_size) > 0 {
+-        /* read_data can be NULL in case of a hole. */
+-        if !read_data.is_null() {
+-            let in_frame_size = pa_frame_size(&stm.input_sample_spec);
+-            let read_frames = read_size / in_frame_size;
+-
+-            if !stm.output_stream.is_null() {
+-                // input/capture + output/playback operation
+-                let out_frame_size = pa_frame_size(&stm.output_sample_spec);
+-                let write_size = read_frames * out_frame_size;
+-                // Offer full duplex data for writing
+-                let stream = stm.output_stream;
+-                stm.trigger_user_callback(stream, read_data, write_size);
+-            } else {
+-                // input/capture only operation. Call callback directly
+-                let got = stm.data_callback.unwrap()(stm as *mut _ as *mut _,
+-                                                     stm.user_ptr,
+-                                                     read_data,
+-                                                     ptr::null_mut(),
+-                                                     read_frames as c_long);
+-                if got < 0 || got as usize != read_frames {
+-                    pa_stream_cancel_write(s);
+-                    stm.shutdown = true;
+-                    break;
++                        towrite -= size;
++                    },
+                 }
+             }
+-        }
+-
+-        if read_size > 0 {
+-            pa_stream_drop(s);
+-        }
+-
+-        if stm.shutdown {
+-            return;
++            debug_assert_eq!(towrite, 0);
+         }
+     }
+ }
+ 
+-fn wait_until_io_stream_ready(stream: *mut pa_stream, mainloop: *mut pa_threaded_mainloop) -> bool {
+-    if stream.is_null() || mainloop.is_null() {
+-        return false;
+-    }
+-
+-    loop {
+-        let state = unsafe { pa_stream_get_state(stream) };
+-        if !PA_STREAM_IS_GOOD(state) {
+-            return false;
+-        }
+-        if state == PA_STREAM_READY {
+-            break;
+-        }
+-        unsafe { pa_threaded_mainloop_wait(mainloop) };
+-    }
++fn stream_success(_: &pulse::Stream, success: i32, u: *mut c_void) {
++    let stm = unsafe { &*(u as *mut Stream) };
++    debug_assert_ne!(success, 0);
++    stm.context.mainloop.signal();
++}
+ 
+-    true
++fn context_success(_: &pulse::Context, success: i32, u: *mut c_void) {
++    let ctx = unsafe { &*(u as *mut Context) };
++    debug_assert_ne!(success, 0);
++    ctx.mainloop.signal();
+ }
+ 
+ fn set_buffering_attribute(latency_frames: u32, sample_spec: &pa_sample_spec) -> pa_buffer_attr {
+-    let tlength = latency_frames * unsafe { pa_frame_size(sample_spec) } as u32;
++    let tlength = latency_frames * sample_spec.frame_size() as u32;
+     let minreq = tlength / 4;
+     let battr = pa_buffer_attr {
+         maxlength: u32::max_value(),
+@@ -791,34 +826,3 @@ fn set_buffering_attribute(latency_frame
+ 
+     battr
+ }
+-
+-unsafe extern "C" fn pulse_defer_event_cb(_a: *mut pa_mainloop_api, u: *mut c_void) {
+-    let mut stm = &mut *(u as *mut Stream);
+-    if stm.shutdown {
+-        return;
+-    }
+-    let writable_size = pa_stream_writable_size(stm.output_stream);
+-    let stream = stm.output_stream;
+-    stm.trigger_user_callback(stream, ptr::null_mut(), writable_size);
+-}
+-
+-#[repr(C)]
+-struct SinkInputInfoResult {
+-    pub cvol: *mut pa_cvolume,
+-    pub mainloop: *mut pa_threaded_mainloop,
+-}
+-
+-unsafe extern "C" fn sink_input_info_cb(_c: *mut pa_context, i: *const pa_sink_input_info, eol: i32, u: *mut c_void) {
+-    let info = &*i;
+-    let mut r = &mut *(u as *mut SinkInputInfoResult);
+-    if eol == 0 {
+-        *r.cvol = info.volume;
+-    }
+-    pa_threaded_mainloop_signal(r.mainloop, 0);
+-}
+-
+-unsafe extern "C" fn volume_success(_c: *mut pa_context, success: i32, u: *mut c_void) {
+-    let stm = &*(u as *mut Stream);
+-    debug_assert_ne!(success, 0);
+-    pa_threaded_mainloop_signal(stm.context.mainloop, 0);
+-}
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/capi.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/capi.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/capi.rs.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/capi.rs	2017-08-04 13:37:46.387821728 +0200
+@@ -5,6 +5,7 @@
+ 
+ use backend;
+ use cubeb;
++use std::ffi::CStr;
+ use std::os::raw::{c_char, c_void};
+ 
+ unsafe extern "C" fn capi_init(c: *mut *mut cubeb::Context, context_name: *const c_char) -> i32 {
+@@ -114,21 +115,18 @@ unsafe extern "C" fn capi_stream_init(c:
+                                       state_callback: cubeb::StateCallback,
+                                       user_ptr: *mut c_void)
+                                       -> i32 {
++    fn try_stream_params_from(sp: *mut cubeb::StreamParams) -> Option<cubeb::StreamParams> {
++        if sp.is_null() { None } else { Some(unsafe { *sp }) }
++    }
++
+     let mut ctx = &mut *(c as *mut backend::Context);
++    let stream_name = CStr::from_ptr(stream_name);
+ 
+     match ctx.new_stream(stream_name,
+                          input_device,
+-                         if input_stream_params.is_null() {
+-                             None
+-                         } else {
+-                             Some(*input_stream_params)
+-                         },
++                         try_stream_params_from(input_stream_params),
+                          output_device,
+-                         if output_stream_params.is_null() {
+-                             None
+-                         } else {
+-                             Some(*output_stream_params)
+-                         },
++                         try_stream_params_from(output_stream_params),
+                          latency_frames,
+                          data_callback,
+                          state_callback,
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/lib.rs.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/lib.rs
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/lib.rs.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/src/lib.rs	2017-08-04 13:37:46.387821728 +0200
+@@ -8,6 +8,7 @@
+ #[macro_use]
+ extern crate cubeb_ffi as cubeb;
+ extern crate pulse_ffi;
++extern crate pulse;
+ extern crate semver;
+ 
+ mod capi;
+diff -up firefox-55.0/media/libcubeb/cubeb-pulse-rs/update.sh.cubeb-pulse-arm firefox-55.0/media/libcubeb/cubeb-pulse-rs/update.sh
+--- firefox-55.0/media/libcubeb/cubeb-pulse-rs/update.sh.cubeb-pulse-arm	2017-07-31 18:20:49.000000000 +0200
++++ firefox-55.0/media/libcubeb/cubeb-pulse-rs/update.sh	2017-08-04 13:37:46.383821740 +0200
+@@ -13,6 +13,9 @@ cp -pr $1/cubeb-ffi/src/* cubeb-ffi/src/
+ test -d pulse-ffi/src || mkdir -p pulse-ffi/src
+ cp -pr $1/pulse-ffi/Cargo.toml pulse-ffi/
+ cp -pr $1/pulse-ffi/src/* pulse-ffi/src/
++test -d pulse-rs/src || mkdir -p pulse-rs/src
++cp -pr $1/pulse-rs/Cargo.toml pulse-rs/
++cp -pr $1/pulse-rs/src/* pulse-rs/src/
+ 
+ if [ -d $1/.git ]; then
+   rev=$(cd $1 && git rev-parse --verify HEAD)
+diff -up firefox-55.0/toolkit/library/gtest/rust/Cargo.lock.cubeb-pulse-arm firefox-55.0/toolkit/library/gtest/rust/Cargo.lock
+--- firefox-55.0/toolkit/library/gtest/rust/Cargo.lock.cubeb-pulse-arm	2017-08-04 13:37:46.388821725 +0200
++++ firefox-55.0/toolkit/library/gtest/rust/Cargo.lock	2017-08-04 13:59:15.592940994 +0200
+@@ -252,6 +252,7 @@ name = "cubeb-pulse"
+ version = "0.0.1"
+ dependencies = [
+  "cubeb-ffi 0.0.1",
++ "pulse 0.1.0",
+  "pulse-ffi 0.1.0",
+  "semver 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ ]
+@@ -660,6 +661,14 @@ version = "0.1.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ 
+ [[package]]
++name = "pulse"
++version = "0.1.0"
++dependencies = [
++ "bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
++ "pulse-ffi 0.1.0",
++]
++
++[[package]]
+ name = "pulse-ffi"
+ version = "0.1.0"
+ dependencies = [
+diff -up firefox-55.0/toolkit/library/rust/Cargo.lock.cubeb-pulse-arm firefox-55.0/toolkit/library/rust/Cargo.lock
+--- firefox-55.0/toolkit/library/rust/Cargo.lock.cubeb-pulse-arm	2017-08-04 13:37:46.388821725 +0200
++++ firefox-55.0/toolkit/library/rust/Cargo.lock	2017-08-04 13:52:24.551163669 +0200
+@@ -250,6 +250,7 @@ name = "cubeb-pulse"
+ version = "0.0.1"
+ dependencies = [
+  "cubeb-ffi 0.0.1",
++ "pulse 0.1.0",
+  "pulse-ffi 0.1.0",
+  "semver 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ ]
+@@ -647,6 +648,14 @@ version = "0.1.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ 
+ [[package]]
++name = "pulse"
++version = "0.1.0"
++dependencies = [
++ "bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
++ "pulse-ffi 0.1.0",
++]
++
++[[package]]
+ name = "pulse-ffi"
+ version = "0.1.0"
+ dependencies = [

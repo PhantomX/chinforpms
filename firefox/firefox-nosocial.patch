@@ -1,0 +1,11 @@
+--- firefox-56.0.2/toolkit/moz.configure.orig	2017-10-26 10:11:15.780803040 -0200
++++ firefox-56.0.2/toolkit/moz.configure	2017-10-26 10:11:52.817707444 -0200
+@@ -484,7 +484,7 @@ project_flag('MOZ_PLACES',
+ 
+ project_flag('MOZ_SOCIAL',
+              help='Build SocialAPI if required',
+-             default=True)
++             default=False)
+ 
+ project_flag('MOZ_SERVICES_HEALTHREPORT',
+              help='Build Firefox Health Reporter Service',
