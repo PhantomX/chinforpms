@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -668,10 +668,6 @@ Patch337: arm64-aw64-devices.patch
 
 # CVE-2017-7477 rhbz 1445207 1445208
 Patch502: CVE-2017-7477.patch
-
-# rhbz 1498016 1498017
-Patch503: KEYS-don-t-let-add_key-update-an-uninstantiated-key.patch
-Patch504: KEYS-fix-race-between-updating-and-finding-negative-.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -2340,6 +2336,9 @@ fi
 #
 #
 %changelog
+* Fri Oct 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.10-500.chinfo
+- 4.13.10
+
 * Mon Oct 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.9-500.chinfo
 - 4.13.9
 - f27 sync
