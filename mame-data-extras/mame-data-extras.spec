@@ -2,8 +2,8 @@
 %global __strip /bin/true
 
 %global cheatver 0187
-%global historyver 190
-%global infover 0190
+%global historyver 191
+%global infover 0191
 
 # Build non redistributable package with free roms
 %global with_roms  %{?_with_roms:     1} %{?!_with_roms:     0}
@@ -11,7 +11,7 @@
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.190
+Version:        0.191
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -99,7 +99,7 @@ Source234:      %{samplelink}/ripoff.zip
 Source235:      %{samplelink}/safarir.zip
 Source236:      %{samplelink}/sasuke.zip
 Source237:      %{samplelink}/seawolf.zip
-#Source238:      %{samplelink}/sharkatt_(full_size).zip
+#Source238:      #{samplelink}/sharkatt_(full_size).zip
 Source239:      %{samplelink}/sharkatt.zip
 Source240:      %{samplelink}/solarq.zip
 Source241:      %{samplelink}/spacefb.zip
@@ -248,6 +248,9 @@ done
 
 
 %changelog
+* Sun Oct 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.191-1
+- new version
+
 * Fri Sep 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.190-1
 - 0.190
 
