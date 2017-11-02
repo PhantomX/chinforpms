@@ -1,4 +1,4 @@
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} > 7
 %global with_wayland 1
 %global with_broadway 1
 %endif
@@ -21,13 +21,16 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 Name: gtk3
-Version: 3.22.24
+Version: 3.22.25
 Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
 URL: http://www.gtk.org
 Source0: http://download.gnome.org/sources/gtk+/3.22/gtk+-%{version}.tar.xz
+Source1: https://git.gnome.org/browse/gtk+/plain/gdk/wayland/protocol/server-decoration.xml?h=gtk-3-22#/server-decoration.xml
+
+Patch10: https://git.gnome.org/browse/gtk+/patch/?id=72a45366e23596a5b8d68d3b2eb072d56b9423bd#/gtk3-wayland-Distribute-protocol-server-decoration.xml-in-tarballs.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100: gtk+3-3.22.0-gtk-recent-files-limit.patch
@@ -64,6 +67,7 @@ BuildRequires: pkgconfig(xinerama)
 BuildRequires: pkgconfig(xcomposite)
 BuildRequires: pkgconfig(xdamage)
 BuildRequires: pkgconfig(epoxy)
+BuildRequires: gettext-devel
 BuildRequires: gettext
 BuildRequires: gtk-doc
 BuildRequires: cups-devel
@@ -105,7 +109,7 @@ Requires: libwayland-cursor%{?_isa} >= %{wayland_version}
 Requires: gdk-pixbuf2-modules%{?_isa}
 
 # make sure we have a reasonable gsettings backend
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} > 7
 Recommends: dconf%{?_isa}
 %else
 Requires: dconf%{?_isa}
@@ -186,6 +190,9 @@ the functionality of the installed %{name} package.
 %prep
 %setup -q -n gtk+-%{version}
 
+%patch10 -p1
+cp %{SOURCE1} gdk/wayland/protocol/server-decoration.xml
+
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
@@ -197,6 +204,7 @@ the functionality of the installed %{name} package.
 %patch108 -p1
 
 rm -fv testsuite/gtk/gtkresources.c
+rm -fv configure
 
 %build
 export CFLAGS='-fno-strict-aliasing %optflags'
@@ -370,10 +378,13 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
-* Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.22-100.chinfo
+* Wed Nov 01 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.25-100.chinfo
+- 3.22.25
+
+* Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.24-100.chinfo
 - 3.22.24
 
-* Tue Oct 03 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.22-100.chinfo
+* Tue Oct 03 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.23-100.chinfo
 - 3.22.22
 
 * Mon Sep 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.21-100.chinfo
