@@ -20,6 +20,7 @@ release tags).
  * **aegisub** - No openal and portaudio support
  * **belle-sip, linphone, ortp** - Updated version
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
+ * **firefox** - Mantain version 56, until > 57 is worth it
  * **gnome-colors-icon-theme** - Post script and cleanup
  * **gstreamer1** - Added suffix -32/-64 to gst-plugin-scanner, so it can build
                     correct multilib plugins registry, as
@@ -31,6 +32,7 @@ release tags).
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) patches
                 (kernel-local must be edited to modify gcc optimizations)
  * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**
+ * **skrooge** - Updated version
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
                     and **VirtualBox-guest-additions-iso** support

@@ -1,6 +1,6 @@
 Name:    skrooge
 Summary: Personal finances manager
-Version: 2.9.0
+Version: 2.10.3
 Release: 1.chinfo%{?dist}
 
 License: GPLv2+
@@ -162,6 +162,9 @@ update-mime-database %{?fedora:-n} %{_kf5_datadir}/mime &> /dev/null || :
 
 
 %changelog
+* Sat Nov 04 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.10.3-1.chinfo
+- 2.10.3
+
 * Thu Oct 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.9.0-1.chinfo
 - 2.9.0
 

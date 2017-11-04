@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -710,6 +710,9 @@ Patch631: drm-i915-boost-GPU-clocks-if-we-miss-the-pageflip.patch
 # fix gnome 3.26+ not working under VirtualBox, submitted upstream, Cc: Stable
 Patch632: 0001-staging-vboxvideo-Fix-reporting-invalid-suggested-of.patch
 
+# http://patchwork.ozlabs.org/patch/831938/
+Patch633: net-mlxsw-reg-Add-high-and-low-temperature-thresholds.patch
+
 # CVE-2017-13693 rhbz 1485346 1485356
 Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
 
@@ -735,6 +738,7 @@ Patch1015: btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1016: btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1017: connector-read-mostly.patch
 
+Patch2000: https://github.com/pfactum/pf-kernel/commit/c459dfe289dd7412dcb30b2253ca1ffa4c37d143.patch#/tcp-fix-tcp_mtu_probe-vs-highest_sack.patch
 
 # https://patchwork.kernel.org/patch/9880515
 Patch3000: BUGFIX-IMPROVEMENT-V2-1-2-block-bfq-refactor-device-idling-logic.patch
@@ -768,7 +772,7 @@ Patch3015: https://github.com/pfactum/pf-kernel/commit/8a18ea7eedc43c16dde209f92
 Patch3016: https://github.com/pfactum/pf-kernel/commit/6faa479fc1f518401dffbc8607bea828f677e124.patch
 Patch3017: https://github.com/pfactum/pf-kernel/commit/0ebd6bee3fa04e23d23a3a2ce9193a424ecbea80.patch
 Patch3018: https://github.com/pfactum/pf-kernel/commit/0dab2b12f9acc11b0634a6fbd10c6c41c88726a7.patch
-#https://patchwork.kernel.org/patch/9991351/
+# https://patchwork.kernel.org/patch/9991351/
 Patch3019: bfq-Fix-bool-initialization-comparison.patch
 
 # Add additional cpu gcc optimization support
@@ -2336,6 +2340,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.11-500.chinfo
+- 4.13.11
+
 * Fri Oct 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.10-500.chinfo
 - 4.13.10
 
