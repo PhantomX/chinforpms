@@ -9,20 +9,20 @@ Subject: [PATCH] Disable the aio bug detection
 
 --- ./src/VBox/Main/src-client/ConsoleImpl2.cpp.orig	2016-12-20 15:36:24.000000000 +0000
 +++ ./src/VBox/Main/src-client/ConsoleImpl2.cpp	2016-12-21 03:04:13.283475098 +0000
-@@ -4095,6 +4095,8 @@ int Console::i_configMediumAttachment(co
-                     mfSnapshotFolderSizeWarningShown = true;
-                 }
+@@ -4036,6 +4036,8 @@ int Console::i_checkMediumLocation(IMedi
+             mfSnapshotFolderSizeWarningShown = true;
+         }
  
 +// In el6 we have a backported patch to address this
 +#if 0
  #ifdef RT_OS_LINUX
-                 /*
-                  * Ext4 bug: Check if the host I/O cache is disabled and the disk image is located
-@@ -4172,6 +4174,7 @@ int Console::i_configMediumAttachment(co
-                     fUseHostIOCache = true;
-                 }
+         /*
+          * Ext4 bug: Check if the host I/O cache is disabled and the disk image is located
+@@ -4113,6 +4115,7 @@ int Console::i_checkMediumLocation(IMedi
+             *pfUseHostIOCache = true;
+         }
  #endif
 +#endif
-             }
-         }
+     }
+ #undef H
  

@@ -257,7 +257,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
-* Fri Oct 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-10.20170825gited602a3
+* Fri Oct 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-10.20171013gited602a3
 - New snapshot
 
 * Sat Sep 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-9.20170825gitd36fdd6

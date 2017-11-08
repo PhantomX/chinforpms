@@ -25,7 +25,7 @@
 %bcond_with vnc
 
 Name:       VirtualBox
-Version:    5.1.30
+Version:    5.2.0
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -333,6 +333,8 @@ kmk %{_smp_mflags}    \
     VBOX_WITH_SYSFS_BY_DEFAULT=1 \
     VBOX_XCURSOR_LIBS="Xcursor Xext X11 GL"             \
     VBOX_USE_SYSTEM_XORG_HEADERS=1 \
+    VBOX_USE_SYSTEM_GL_HEADERS=1 \
+    VBOX_NO_LEGACY_XORG_X11=1 \
 %if %{with docs}
     VBOX_WITH_DOCS=1 \
 # doc/manual/fr_FR/ missing man_VBoxManage-debugvm.xml and man_VBoxManage-extpack.xml
@@ -785,7 +787,6 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %files -n python-%{name}
 %{_bindir}/vboxshell
 %{_libdir}/virtualbox/*.py*
-%{_libdir}/virtualbox/*.py*
 %{python2_sitelib}/virtualbox
 %{python2_sitelib}/vboxapi*
 %{_libdir}/virtualbox/VBoxPython2_7.so
@@ -815,6 +816,9 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Tue Nov 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.2.0-100.chinfo
+- 5.2.0
+
 * Tue Oct 17 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.30-100.chinfo
 - 5.1.30
 

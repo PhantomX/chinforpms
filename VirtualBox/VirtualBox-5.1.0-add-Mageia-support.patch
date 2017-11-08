@@ -60,7 +60,7 @@ diff -rup -x '*orig' '-x*rej' VirtualBox-5.1.24/src/VBox/Frontends/VirtualBox/Vi
 --- VirtualBox-5.1.24/src/VBox/Frontends/VirtualBox/VirtualBox1.qrc	2017-07-17 17:09:41.000000000 +0100
 +++ VirtualBox-5.1.24.new/src/VBox/Frontends/VirtualBox/VirtualBox1.qrc	2017-07-18 14:00:46.797883765 +0100
 @@ -250,6 +250,8 @@
-         <file alias="os_linux_other.png">images/os_linux_other.png</file>
+         <file alias="os_linux26_64.png">images/os_linux26_64.png</file>
          <file alias="os_macosx.png">images/os_macosx.png</file>
          <file alias="os_macosx_64.png">images/os_macosx_64.png</file>
 +        <file alias="os_mageia.png">images/os_mageia.png</file>
