@@ -1,6 +1,6 @@
 Name:    skrooge
 Summary: Personal finances manager
-Version: 2.10.3
+Version: 2.10.5
 Release: 1.chinfo%{?dist}
 
 License: GPLv2+
@@ -44,7 +44,8 @@ BuildRequires: pkgconfig(Qt5Qml)
 BuildRequires: pkgconfig(Qt5Script)
 BuildRequires: pkgconfig(Qt5Svg)
 BuildRequires: pkgconfig(Qt5WebKitWidgets)
-
+# I think due to custom sqlcipher plugin -- rex
+BuildRequires: qt5-qtbase-private-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 
 BuildRequires: pkgconfig(sqlite3)
@@ -162,6 +163,9 @@ update-mime-database %{?fedora:-n} %{_kf5_datadir}/mime &> /dev/null || :
 
 
 %changelog
+* Thu Nov 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.10.5-1.chinfo
+- 2.10.5
+
 * Sat Nov 04 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.10.3-1.chinfo
 - 2.10.3
 
