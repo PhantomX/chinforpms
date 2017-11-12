@@ -32,7 +32,6 @@ release tags).
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) patches
                 (kernel-local must be edited to modify gcc optimizations)
  * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**
- * **skrooge** - Updated version
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
                     and **VirtualBox-guest-additions-iso** support

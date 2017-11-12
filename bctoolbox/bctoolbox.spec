@@ -3,7 +3,6 @@ Version:        0.6.0
 Release:        1%{?dist}
 Summary:        Utilities library used by Belledonne Communications softwares
 
-Group:          System Environment/Libraries
 License:        GPLv2
 URL:            https://www.linphone.org
 Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{version}.tar.gz

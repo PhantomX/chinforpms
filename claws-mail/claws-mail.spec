@@ -23,7 +23,6 @@ Name:           claws-mail
 Version:        3.15.1
 Release:        101.chinfo%{?dist}
 Summary:        Email client and news reader based on GTK+
-Group:          Applications/Internet
 License:        GPLv3+
 URL:            http://claws-mail.org
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
@@ -116,7 +115,6 @@ intuitive operation, abundant features, and extensibility.
 
 %package        devel
 Summary:        Development package for %{name}
-Group:          Development/Libraries
 
 %description    devel
 The %{name}-devel package contains the header files
@@ -125,7 +123,6 @@ and pkgconfig file needed for development with %{name}.
 
 %package plugins
 Summary: Additional plugins for Claws Mail
-Group: Applications/Internet
 Requires: %{name}-plugins-acpi-notifier
 Requires: %{name}-plugins-address-keeper
 Requires: %{name}-plugins-archive
@@ -162,7 +159,6 @@ Additional plugins for Claws Mail.
 
 %package plugins-acpi-notifier
 Summary:        ACPI notification plugin for Claws Mail 
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-acpi-notifier
@@ -172,7 +168,6 @@ the 'Plugins/Acpi Notifier' page of the preferences.
 
 %package plugins-address-keeper
 Summary:        Never forget a typed address in Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-address-keeper
@@ -183,7 +178,6 @@ address book to avoid unwanted duplicates.
 
 %package plugins-archive
 Summary:        Archiving features for Claws Mail 
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-archive
@@ -192,7 +186,6 @@ Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %package plugins-attachwarner
 Summary:        Attachment warner plugin for Claws Mail 
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-attachwarner
@@ -202,7 +195,6 @@ body but without attaching any files to the message.
 
 %package plugins-att-remover
 Summary:        Attachments remover plugin for Claws Mail 
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-att-remover
@@ -211,7 +203,6 @@ choose 'Remove attachments' from the sub-menu.
 
 %package plugins-bogofilter
 Summary:        Bogofilter plugin for Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 Requires:       bogofilter
 
@@ -221,7 +212,6 @@ Requires:       bogofilter
 %if !0%{?rhel}
 %package plugins-bsfilter
 Summary:        Bayesian spam filtering for Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 Requires:       bsfilter
 
@@ -232,7 +222,6 @@ Bayesian spam filtering for Claws Mail using Bsfilter.
 
 %package plugins-clamd
 Summary:        Use Clam AntiVirus to scan messages in Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-clamd
@@ -244,7 +233,6 @@ Options can be found in /Configuration/Preferences/Plugins/Clam AntiVirus.
 
 %package plugins-dillo
 Summary:        Display HTML emails in Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 Requires:       dillo
 
@@ -255,7 +243,6 @@ This plugin renders HTML email via the Dillo Web Browser.
 %if 0%{with_fancy}
 %package plugins-fancy
 Summary:        Display HTML emails in Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-fancy
@@ -265,7 +252,6 @@ This plugin renders HTML email via the GTK+ port of the WebKit library.
 
 %package plugins-fetchinfo
 Summary:        Modify headers of downloaded messages in Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-fetchinfo
@@ -275,7 +261,6 @@ UIDL, Sylpheeds account name, POP server, user ID and retrieval time.
 
 %package plugins-gdata
 Summary:        Access to GData (Google services) for Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-gdata
@@ -287,7 +272,6 @@ Google contacts into the address completion.
 
 %package plugins-mailmbox
 Summary:        Add support for mailboxes in mbox format to Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-mailmbox
@@ -295,7 +279,6 @@ This plugin provides direct support for mailboxes in mbox format.
 
 %package plugins-managesieve
 Summary:        Add Manage sieve support to Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-managesieve
@@ -303,7 +286,6 @@ Manage sieve filters on a server using the ManageSieve protocol.
 
 %package plugins-newmail
 Summary:        Make Claws Mail write a message header summary to a file
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-newmail
@@ -313,7 +295,6 @@ arrival of new mail *after* sorting.
 
 %package plugins-notification
 Summary:        Various ways to notify about new messages in Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-notification
@@ -323,7 +304,6 @@ unread) mail. Currently, a pop-up and a mail banner are implemented.
 
 %package plugins-pdf-viewer
 Summary:        Enables the viewing of PDF and PostScript attachments
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-pdf-viewer
@@ -332,7 +312,6 @@ This plugin handles PDF and Postscript attachments.
 
 %package plugins-perl
 Summary:        Perl based extended filtering engine for Claws Mail
-Group:          Applications/Internet
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
@@ -342,7 +321,6 @@ Claws Mail. It allows for the use of full perl power in email filters.
 
 %package plugins-pgp
 Summary:        PGP plugin for signing and encrypting with Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 %if 0%{?rhel}
 Requires:       pinentry-gui
@@ -359,7 +337,6 @@ Requires:       pinentry-gtk
 
 %package plugins-python
 Summary:        Python scripting access to Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-python
@@ -370,7 +347,6 @@ menu of the main window.
 
 %package plugins-libravatar
 Summary:        Libravatar plugin for Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-libravatar
@@ -380,7 +356,6 @@ more about what is this at http://wiki.libravatar.org/description/.
 
 %package plugins-rssyl
 Summary:        RSS plugin for Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-rssyl
@@ -390,7 +365,6 @@ Allows you to read your favorite RSS news feeds in Claws Mail. RSS 1.0,
 
 %package plugins-smime
 Summary:        S/MIME support for Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 Requires:       claws-mail-plugins-pgp%{?_isa} = %{version}-%{release}
 
@@ -401,7 +375,6 @@ mails, verify signatures or sign and encrypt your own mails.
 
 %package plugins-spamassassin
 Summary:        Spamassassin plugin for Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 Requires:       spamassassin
 
@@ -411,7 +384,6 @@ Requires:       spamassassin
 
 %package plugins-spam-report
 Summary:        Report spam mail to various places with Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-spam-report
@@ -420,7 +392,6 @@ This plugin for Claws Mail can report spam mail to various places.
 
 %package plugins-tnef
 Summary:        TNEF message parsing for Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-tnef
@@ -429,7 +400,6 @@ This plugin allows reading of application/ms-tnef attachments.
 
 %package plugins-vcalendar
 Summary:        Handling of vCalendar messages in Claws Mail
-Group:          Applications/Internet
 Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %description plugins-vcalendar

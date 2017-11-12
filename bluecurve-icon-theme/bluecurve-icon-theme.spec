@@ -6,7 +6,6 @@ Version: 8.0.2
 Release: 101.chinfo%{?dist}
 BuildArch: noarch
 License: GPL+
-Group: User Interface/Desktops
 # There is no official upstream yet
 Source0: http://pkgs.fedoraproject.org/repo/pkgs/%{name}/%{name}-%{version}.tar.bz2/%{bit_hash}/%{name}-%{version}.tar.bz2
 Source1: http://cloud.github.com/downloads/PhantomX/slackbuilds/Bluecurve-classic.tar.bz2
@@ -32,7 +31,6 @@ This package contains Bluecurve style icons.
 
 %package -n bluecurve-cursor-theme
 Summary: Bluecurve cursor theme
-Group: User Interface/Desktops
 
 %description -n bluecurve-cursor-theme
 This package contains Bluecurve style cursors.

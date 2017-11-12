@@ -32,7 +32,6 @@ Version:        5.2.0
 Release:        100.chinfo%{?dist}
 
 Summary:        Kernel module for VirtualBox
-Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN

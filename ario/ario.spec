@@ -2,7 +2,6 @@ Name:     ario
 Version:  1.5.1
 Release:  2%{?dist}
 Summary:  Ario MPD Client
-Group:    Applications/Multimedia
 License:  GPLv2+
 URL:      http://ario-player.sourceforge.net/index.php
 Source0:  http://downloads.sourceforge.net/ario-player/%{name}-%{version}.tar.gz

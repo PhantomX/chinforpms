@@ -4,7 +4,6 @@ Name:           keepassxc
 Version:        2.2.2
 Release:        100.chinfo%{?dist}
 Summary:        Cross-platform password manager
-Group:          User Interface/Desktops
 Epoch:          1
 
 License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain

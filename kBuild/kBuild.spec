@@ -6,7 +6,6 @@ Version:        0.1.9998
 Release:        14%{?svn_revision:.r%{svn_revision}}%{?dist}
 Summary:        A cross-platform build environment
 
-Group:          Development/Tools
 License:        BSD and GPLv2+
 # most tools are from NetBSD, some are from FreeBSD,
 # and make and sed are from GNU

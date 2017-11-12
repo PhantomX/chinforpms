@@ -3,7 +3,6 @@ Version:        1.0.6
 Release:        2%{?dist}
 Summary:        Opensource implementation of ZRTP keys exchange protocol
 
-Group:          System Environment/Libraries
 License:        GPLv2
 URL:            https://www.linphone.org
 Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{version}.tar.gz

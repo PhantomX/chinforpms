@@ -11,7 +11,6 @@ Version:        2015.10.28
 Release:        1%{?dist}
 Summary:        Dropbox extension for Nautilus
 License:        GPLv3+
-Group:          User Interface/Desktops
 URL:            https://www.dropbox.com
 Source:         https://linux.dropbox.com/packages/%{name}-%{version}.tar.bz2
 
@@ -41,7 +40,6 @@ Dropbox extension for nautilus file manager
 
 %package -n dropbox
 Summary:        Client for Linux
-Group:          User Interface/Desktops
 BuildArch:      noarch
 Requires:       dropboxd
 Requires:       pygtk2

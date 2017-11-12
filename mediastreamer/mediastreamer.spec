@@ -5,7 +5,6 @@ Version:        2.16.1
 Release:        2%{?dist}
 Summary:        Mediastreaming library for telephony application
 
-Group:          System Environment/Libraries
 License:        GPLv2
 URL:            http://www.linphone.org/technical-corner/mediastreamer2.html
 Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{version}.tar.gz

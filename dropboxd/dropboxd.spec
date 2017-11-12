@@ -39,7 +39,7 @@ BuildRequires:  gawk
 BuildRequires:  popt%{?_isa}
 Requires:       popt%{?_isa}
 %endif
-BuildRequires:  perl
+BuildRequires:  perl-interpreter
 %if 0%{?python}
 BuildRequires:  python2%{?_isa}
 Requires:       python2%{?_isa}

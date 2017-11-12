@@ -35,7 +35,6 @@ URL:        http://www.virtualbox.org/wiki/VirtualBox
 
 ExclusiveArch:  i686 x86_64
 
-Group:      System/Emulators/PC
 Requires:   %{name}-server%{?isa} = %{version}
 Obsoletes:  %{name}-qt
 
@@ -159,7 +158,6 @@ OS/2, and OpenBSD.
 
 %package server
 Summary:    core part (host server) for %{name}
-Group:      Development/Tools
 Requires:   %{name}-kmod = %{version}
 Requires:   hicolor-icon-theme
 Provides:   %{name}-kmod-common = %{version}-%{release}
@@ -173,7 +171,6 @@ Conflicts:  %{name}-guest-additions <= %{version}-%{release}
 %if %{with webservice}
 %package webservice
 Summary:        WebService GUI part for %{name}
-Group:          System/Emulators/PC
 Requires:       %{name}-server%{?isa} = %{version}
 
 %description webservice
@@ -182,7 +179,6 @@ webservice GUI part for %{name}.
 
 %package devel
 Summary:    %{name} SDK
-Group:      Development/Libraries
 Requires:   %{name}-server%{?isa} = %{version}-%{release}
 Requires:   python-%{name}%{?isa} = %{version}-%{release}
 
@@ -193,7 +189,6 @@ Requires:   python-%{name}%{?isa} = %{version}-%{release}
 
 %package -n python-%{name}
 Summary:    Python bindings for %{name}
-Group:      Development/Libraries
 Requires:   %{name}-server%{?_isa} = %{version}-%{release}
 %{?python_provide:%python_provide python2-%{srcname}}
 
@@ -203,7 +198,6 @@ Python XPCOM bindings to %{name}.
 
 %package guest-additions
 Summary:    %{name} Guest Additions
-Group:      System Environment/Base
 Requires:   %{name}-kmod = %{version}
 Provides:   %{name}-kmod-common = %{version}-%{release}
 Requires:   xorg-x11-server-Xorg
@@ -231,7 +225,6 @@ USB and webcam proxy and Seamless mode.
 
 %package kmodsrc
 Summary:    %{name} kernel module source code
-Group:      System Environment/Kernel
 
 %description kmodsrc
 Source tree used for building kernel module packages (%{name}-kmod)

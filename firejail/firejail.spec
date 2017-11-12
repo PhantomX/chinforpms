@@ -2,7 +2,6 @@ Name:           firejail
 Version:        0.9.50
 Release:        1%{?dist}
 Summary:        GUI tools for firejail
-Group:          Development/Tools
 
 License:        GPLv2
 URL:            https://firejail.wordpress.com/

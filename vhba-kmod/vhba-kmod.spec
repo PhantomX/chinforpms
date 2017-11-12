@@ -16,7 +16,6 @@ Release:        2%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPLv2
-Group:          System Environment/Kernel
 URL:            http://sourceforge.net/projects/cdemu
 Source0:        http://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.bz2
 

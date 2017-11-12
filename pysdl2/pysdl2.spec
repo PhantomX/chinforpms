@@ -5,7 +5,6 @@ Name:           pysdl2
 Version:        0.9.5
 Release:        1%{?dist}
 Summary:        Python wrapper around the SDL2 library
-Group:          Development/Libraries
 
 License:        CC0
 URL:            https://pysdl2.readthedocs.io
@@ -24,7 +23,6 @@ restrictions, nor does it rely on C code, but uses ctypes instead.
 
 %package     -n python2-sdl2
 Summary:        Python 3 wrapper around the SDL2 library
-Group:          Development/Libraries
 
 Requires:       SDL2
 Requires:       SDL2_gfx
@@ -44,7 +42,6 @@ Python 2 version.
 %if %{with python3}
 %package     -n python3-sdl2
 Summary:        Python 3 wrapper around the SDL2 library
-Group:          Development/Libraries
 
 Requires:       SDL2
 Requires:       SDL2_gfx

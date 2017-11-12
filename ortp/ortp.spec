@@ -4,7 +4,6 @@ Release:        101.chinfo%{?dist}
 Summary:        A C library implementing the RTP protocol (RFC3550)
 Epoch:          1
 
-Group:          System Environment/Libraries
 License:        LGPLv2+ and VSL
 URL:            http://www.linphone.org/eng/documentation/dev/ortp.html
 Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{version}.tar.gz
@@ -21,7 +20,6 @@ oRTP is a C library that implements RTP (RFC3550).
 
 %package        devel
 Summary:        Development libraries for ortp
-Group:          Development/Libraries
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       pkgconfig
 Requires:       pkgconfig(bctoolbox)

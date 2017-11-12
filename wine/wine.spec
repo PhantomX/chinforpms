@@ -42,7 +42,6 @@ Version:        2.20
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
-Group:          Applications/Emulators
 License:        LGPLv2+
 URL:            http://www.winehq.org/
 Source0:        http://downloads.sourceforge.net/wine/wine-%{version}%{?rctagtarball}.tar.xz
@@ -296,7 +295,6 @@ wine-* sub packages.
 
 %package core
 Summary:        Wine core package
-Group:          Applications/Emulators
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Requires(posttrans):   %{_sbindir}/alternatives
@@ -387,7 +385,6 @@ Wine core package includes the basic wine stuff needed by all other packages.
 %if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
 %package systemd
 Summary:        Systemd config for the wine binfmt handler
-Group:          Applications/Emulators
 Requires:       systemd >= 23
 BuildArch:      noarch
 Requires(post):  systemd
@@ -402,7 +399,6 @@ handling. See man binfmt.d for further information.
 %if 0%{?rhel} == 6
 %package sysvinit
 Summary:        SysV initscript for the wine binfmt handler
-Group:          Applications/Emulators
 BuildArch:      noarch
 
 %description sysvinit
@@ -411,7 +407,6 @@ Register the wine binary handler for windows executables via SysV init files.
 
 %package filesystem
 Summary:        Filesystem directories for wine
-Group:          Applications/Emulators
 BuildArch:      noarch
 
 %description filesystem
@@ -419,7 +414,6 @@ Filesystem directories and basic configuration for wine.
 
 %package common
 Summary:        Common files
-Group:          Applications/Emulators
 Requires:       wine-core = %{version}-%{release}
 BuildArch:      noarch
 
@@ -428,7 +422,6 @@ Common wine files and scripts.
 
 %package desktop
 Summary:        Desktop integration features for wine
-Group:          Applications/Emulators
 Requires(post): /sbin/chkconfig, /sbin/service,
 Requires(post): desktop-file-utils >= 0.8
 Requires(preun): /sbin/chkconfig, /sbin/service
@@ -450,7 +443,6 @@ handler service.
 
 %package fonts
 Summary:       Wine font files
-Group:         Applications/Emulators
 BuildArch:     noarch
 # arial-fonts are available with compholio-patchset, only.
 %if 0%{?compholio}
@@ -482,7 +474,6 @@ Requires:      liberation-narrow-fonts
 %if 0%{?compholio}
 %package arial-fonts
 Summary:       Wine Arial font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 
@@ -492,7 +483,6 @@ Requires:      fontpackages-filesystem
 
 %package courier-fonts
 Summary:       Wine Courier font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 
@@ -501,7 +491,6 @@ Requires:      fontpackages-filesystem
 
 %package fixedsys-fonts
 Summary:       Wine Fixedsys font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 
@@ -510,7 +499,6 @@ Requires:      fontpackages-filesystem
 
 %package small-fonts
 Summary:       Wine Small font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 
@@ -519,7 +507,6 @@ Requires:      fontpackages-filesystem
 
 %package system-fonts
 Summary:       Wine System font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 
@@ -529,7 +516,6 @@ Requires:      fontpackages-filesystem
 
 %package marlett-fonts
 Summary:       Wine Marlett font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 
@@ -539,7 +525,6 @@ Requires:      fontpackages-filesystem
 
 %package ms-sans-serif-fonts
 Summary:       Wine MS Sans Serif font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 
@@ -550,7 +535,6 @@ Requires:      fontpackages-filesystem
 # http://lists.fedoraproject.org/pipermail/devel/2012-June/168153.html
 %package tahoma-fonts
 Summary:       Wine Tahoma font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      wine-filesystem = %{version}-%{release}
 
@@ -561,7 +545,6 @@ wine-tahoma-fonts-system package.
 
 %package tahoma-fonts-system
 Summary:       Wine Tahoma font family system integration
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 Requires:      wine-tahoma-fonts = %{version}-%{release}
@@ -572,7 +555,6 @@ Requires:      wine-tahoma-fonts = %{version}-%{release}
 %if 0%{?compholio}
 %package times-new-roman-fonts
 Summary:       Wine Times New Roman font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      wine-filesystem = %{version}-%{release}
 
@@ -583,7 +565,6 @@ wine-times-new-roman-fonts-system package.
 
 %package times-new-roman-fonts-system
 Summary:       Wine Times New Roman font family system integration
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 Requires:      wine-times-new-roman-fonts = %{version}-%{release}
@@ -594,7 +575,6 @@ Requires:      wine-times-new-roman-fonts = %{version}-%{release}
 
 %package symbol-fonts
 Summary:       Wine Symbol font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 
@@ -603,7 +583,6 @@ Requires:      fontpackages-filesystem
 
 %package wingdings-fonts
 Summary:       Wine Wingdings font family
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 
@@ -614,7 +593,6 @@ wine-wingdings-fonts-system package.
 
 %package wingdings-fonts-system
 Summary:       Wine Wingdings font family system integration
-Group:         User Interface/X
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
 Requires:      wine-wingdings-fonts = %{version}-%{release}
@@ -625,7 +603,6 @@ Requires:      wine-wingdings-fonts = %{version}-%{release}
 
 %package ldap
 Summary: LDAP support for wine
-Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 
 %description ldap
@@ -633,7 +610,6 @@ LDAP support for wine
 
 %package cms
 Summary: Color Management for wine
-Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 
 %description cms
@@ -641,7 +617,6 @@ Color Management for wine
 
 %package twain
 Summary: Twain support for wine
-Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 %ifarch %{ix86}
 Requires: sane-backends-libs(x86-32)
@@ -658,7 +633,6 @@ Twain support for wine
 
 %package capi
 Summary: ISDN support for wine
-Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 %ifarch x86_64
 Requires:       isdn4k-utils(x86-64)
@@ -675,7 +649,6 @@ ISDN support for wine
 
 %package devel
 Summary: Wine development environment
-Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 
 %description devel
@@ -684,7 +657,6 @@ with the Wine Windows(TM) emulation libraries.
 
 %package pulseaudio
 Summary: Pulseaudio support for wine
-Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 # midi output
 Requires: wine-alsa%{?_isa} = %{version}-%{release}
@@ -694,7 +666,6 @@ This package adds a pulseaudio driver for wine.
 
 %package alsa
 Summary: Alsa support for wine
-Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 
 %description alsa
@@ -703,7 +674,6 @@ This package adds an alsa driver for wine.
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %package openal
 Summary: Openal support for wine
-Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 
 %description openal

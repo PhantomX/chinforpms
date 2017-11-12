@@ -5,7 +5,6 @@ Summary:        BASH debugger, the BASH symbolic debugger
 Version:        4.4_0.94
 Release:        1%{?dist}
 License:        GPLv2+
-Group:          Development/Debuggers
 Url:            http://bashdb.sourceforge.net/
 
 %global rversion %(c=%{version}; echo ${c//_/-})
