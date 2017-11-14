@@ -6,4 +6,6 @@ clog
 kernel-[234].*/
 perf-man-*.tar.gz
 enable_additional_cpu_optimizations_for_gcc_v*+_kernel_v*+.patch
-/tcp-fix-tcp_mtu_probe-vs-highest_sack.patch
+/patchwork-*.patch
+/pf-*.patch
+/openSUSE-*.patch

@@ -33,9 +33,9 @@ config heirarchy.
 Instead of having to maintain a config file for every arch variant we build on,
 the kernel spec uses a nested system of configs. Each option CONFIG_FOO is
 represented by a single file named CONFIG_FOO which contains the state (=y, =m,
-=n). These options are collected in the folder baseconfig. Architecture specifi
-options are set in nested folders. An option set in a nested folder will
-override the same option set in one of the higher levels.
+=n). These options are collected in the folder base-generic. Architecture
+specific options are set in nested folders. An option set in a nested folder
+will override the same option set in one of the higher levels.
 
 The individual CONFIG_FOO files only exist in the pkg-git repository. The RPM
 contains kernel-foo.config files which are the result of combining all the
@@ -45,10 +45,10 @@ script _must_ be run each time one of the options is changed.
 Example flow:
 
 # Enable the option CONFIG_ABC123 as a module for all arches
-echo "CONFIG_ABC123=m" > baseconfig/CONFIG_ABC1234
+echo "CONFIG_ABC123=m" > configs/base-generic/CONFIG_ABC1234
 # enable the option CONFIG_XYZ321 for only x86
-echo "# CONFIG_XYZ321 is not set" > baseconfig/CONFIG_XYZ321
-echo "CONFIG_XYZ321=m" > baseconfig/x86/CONFIG_XYZ321
+echo "# CONFIG_XYZ321 is not set" > configs/base-generic/CONFIG_XYZ321
+echo "CONFIG_XYZ321=m" > configs/base-generic/x86/CONFIG_XYZ321
 # regenerate the combined config files
 ./build_configs.sh
 
@@ -72,7 +72,7 @@ the status quo to:
 This is done to increase coverage testing, as not many people actually
 run kernel-debug.
 
-The debug options are managed in a separate heierarchy under debugconfig. This
-works in a similar manner to baseconfig. More deeply nested folders, again,
+The debug options are managed in a separate heierarchy under base-debug. This
+works in a similar manner to base-generic. More deeply nested folders, again,
 override options. The file config_generation gives a listing of what folders
 go into each config file generated.

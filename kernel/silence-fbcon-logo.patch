@@ -6,13 +6,13 @@ Subject: [PATCH] silence fbcon logo
 Bugzilla: N/A
 Upstream-status: Fedora mustard
 ---
- drivers/video/console/fbcon.c | 26 +++++++++++++++++++-------
+ drivers/video/fbdev/core/fbcon.c | 26 +++++++++++++++++++-------
  1 file changed, 19 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
 index afd3301ac40c..2e08ba0ade3e 100644
---- a/drivers/video/console/fbcon.c
-+++ b/drivers/video/console/fbcon.c
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
 @@ -634,13 +634,15 @@ static void fbcon_prepare_logo(struct vc_data *vc, struct fb_info *info,
  		kfree(save);
  	}
@@ -36,10 +36,11 @@ index afd3301ac40c..2e08ba0ade3e 100644
  	}
  }
  #endif /* MODULE */
-@@ -3654,6 +3656,16 @@ static void __exit fb_console_exit(void)
- 
- module_exit(fb_console_exit);
- 
+@@ -3671,4 +3671,15 @@ void __exit fb_console_exit(void)
+ 	do_unregister_con_driver(&fb_con);
+ 	console_unlock();
+ }	
++
 +#else
 +
 +static int __init quiet_logo(char *str)
@@ -51,8 +52,6 @@ index afd3301ac40c..2e08ba0ade3e 100644
 +early_param("quiet", quiet_logo);
 +
  #endif
- 
- MODULE_LICENSE("GPL");
 -- 
 2.7.4
 

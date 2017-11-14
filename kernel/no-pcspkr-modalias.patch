@@ -9,7 +9,7 @@ Upstream-status: Fedora mustard
  1 file changed, 1 deletion(-)
 
 diff --git a/drivers/input/misc/pcspkr.c b/drivers/input/misc/pcspkr.c
-index 72b1fc3ab910..86907eaa4883 100644
+index 56ddba21de84..23534f420e68 100644
 --- a/drivers/input/misc/pcspkr.c
 +++ b/drivers/input/misc/pcspkr.c
 @@ -23,7 +23,6 @@
@@ -17,6 +17,6 @@ index 72b1fc3ab910..86907eaa4883 100644
  MODULE_DESCRIPTION("PC Speaker beeper driver");
  MODULE_LICENSE("GPL");
 -MODULE_ALIAS("platform:pcspkr");
- 
- static int pcspkr_event(struct input_dev *dev, unsigned int type, unsigned int code, int value)
- {
+
+ static int pcspkr_event(struct input_dev *dev, unsigned int type,
+ 			unsigned int code, int value)

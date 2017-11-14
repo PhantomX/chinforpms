@@ -1,3 +1,6 @@
+Linux 4.14 rebase notes:
+- Turn on i686 PAE
+
 Linux 4.10 rebase notes:
 - F25 and earlier, revert S390x minumum hw level
 

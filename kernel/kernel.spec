@@ -17,7 +17,7 @@ Summary: The Linux kernel
 %else
 %global signkernel 0
 %global signmodules 1
-%global zipmodules 0
+%global zipmodules 1
 %endif
 
 %if %{zipmodules}
@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 13
+%define base_sublevel 14
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -165,7 +165,7 @@ Summary: The Linux kernel
 %define hdrarch %_target_cpu
 %define asmarch %_target_cpu
 
-%global perfman_hash 9bcc2cd8e56ec583ed2d8e0b0c88e7a94035a1915e40b3177bb02d6c0f10ddd4df9b097b1f5af59efc624226b613e240ddba8ddc2156f3682f992d5455fc5c03
+%global perfman_hash 76a9d8adc284cdffd4b3fbb060e7f9a14109267707ce1d03f4c3239cd70d8d164f697da3a0f90a363fbcac42a61d3c378afbcc2a86f112c501b9cb5ce74ef9f8
 
 %if 0%{!?nopatches:1}
 %define nopatches 0
@@ -192,8 +192,8 @@ Summary: The Linux kernel
 # and debuginfo generation. Currently we rely on the old alldebug setting.
 %global _build_id_links alldebug
 
-# kernel PAE is only built on i686 and ARMv7.
-%ifnarch i686 armv7hl
+# kernel PAE is only built on ARMv7.
+%ifnarch armv7hl
 %define with_pae 0
 %endif
 
@@ -393,7 +393,7 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 #
 # List the packages used during the kernel build
 #
-BuildRequires: kmod, patch, bash, sh-utils, tar, git
+BuildRequires: kmod, patch, bash, tar, git
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc, elfutils-devel
@@ -482,7 +482,7 @@ Source39: kernel-x86_64-debug.config
 Source40: generate_all_configs.sh
 Source41: generate_debug_configs.sh
 
-Source42: check_configs.awk
+Source42: process_configs.sh
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -603,192 +603,109 @@ Patch305: arm-imx6-hummingboard2.patch
 
 Patch306: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
-# https://patchwork.kernel.org/patch/9815555/
-# https://patchwork.kernel.org/patch/9815651/
-# https://patchwork.kernel.org/patch/9819885/
 # https://patchwork.kernel.org/patch/9820417/
-# https://patchwork.kernel.org/patch/9821151/
-# https://patchwork.kernel.org/patch/9821157/
 Patch310: qcom-msm89xx-fixes.patch
 
-# https://patchwork.kernel.org/patch/9831825/
-# https://patchwork.kernel.org/patch/9833721/
-Patch311: arm-tegra-fix-gpu-iommu.patch
-
-# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
-Patch312: qcom-display-iommu.patch
-
-# https://patchwork.kernel.org/patch/9839803/
-Patch313: qcom-Force-host-mode-for-USB-on-apq8016-sbc.patch
-
-# https://patchwork.kernel.org/patch/9850189/
-Patch314: qcom-msm-ci_hdrc_msm_probe-missing-of_node_get.patch
-
-# Hack until interconnect API lands upstream
-Patch315: qcom-clk-gpu-msm.patch
+# https://patchwork.kernel.org/patch/10054387/
+Patch311: USB-ulpi-fix-bus-node-lookup.patch
 
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
-# Updat3 move of bcm2837, landed in 4.14
-Patch322: bcm2837-move-dt.patch
-
 # bcm2837 bluetooth support
-#
 Patch323: bcm2837-bluetooth-support.patch
 
-Patch324: bcm283x-vc4-fixes.patch
-
-# https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20170912&id=723288836628bc1c0855f3bb7b64b1803e4b9e4a
-Patch330: arm-of-restrict-dma-configuration.patch
-
-# Upstream ACPI fix
-Patch331: arm64-xgene-acpi-fix.patch
-
 # Generic fixes and enablement for Socionext SoC and 96board
-Patch332: ahci-don-t-ignore-result-code-of-ahci_reset_controller.patch
-
 # https://patchwork.kernel.org/patch/9980861/
-Patch333: PCI-aspm-deal-with-missing-root-ports-in-link-state-handling.patch
+Patch331: PCI-aspm-deal-with-missing-root-ports-in-link-state-handling.patch
 
 # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
-Patch334: arm64-socionext-96b-enablement.patch
+Patch332: arm64-socionext-96b-enablement.patch
 
-# ThunderX fixes
-Patch335: arm64-cavium-fixes.patch
-
-Patch336: arm-exynos-fix-usb3.patch
-
-Patch337: arm64-aw64-devices.patch
+Patch335: arm-exynos-fix-usb3.patch
 
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
 
-# CVE-2017-7477 rhbz 1445207 1445208
-Patch502: CVE-2017-7477.patch
+# rhbz 1498016 1498017
+#Patch503: KEYS-don-t-let-add_key-update-an-uninstantiated-key.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
 Patch601: 0001-Input-gpio_keys-Allow-suppression-of-input-events-fo.patch
 Patch602: 0002-Input-soc_button_array-Suppress-power-button-presses.patch
 Patch610: 0010-Input-silead-Add-support-for-capactive-home-button-f.patch
-Patch611: 0011-Input-goodix-Add-support-for-capacitive-home-button.patch
-# These patches are queued for 4.14 and can be dropped on rebase to 4.14-rc1
-Patch603: 0001-power-supply-max17042_battery-Add-support-for-ACPI-e.patch
-Patch604: 0002-power-supply-max17042_battery-Fix-ACPI-interrupt-iss.patch
-Patch613: 0013-iio-accel-bmc150-Add-support-for-BOSC0200-ACPI-devic.patch
-Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
 
 # rhbz 1476467
 Patch617: Fix-for-module-sig-verification.patch
 
-# rhbz 1485086
-Patch619: pci-mark-amd-stoney-gpu-ats-as-broken.patch
-
-# Should fix our QXL issues
-Patch622: qxl-fixes.patch
-
 # rhbz 1431375
-Patch624: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# rhbz 1432684
-Patch626: 1-3-net-set-tb--fast_sk_family.patch
-Patch627: 2-3-net-use-inet6_rcv_saddr-to-compare-sockets.patch
-Patch628: 3-3-inet-fix-improper-empty-comparison.patch
-
-# rhbz 1497861
-Patch629: 0001-platform-x86-peaq-wmi-Add-DMI-check-before-binding-t.patch
-
-# rhbz 1482648
-Patch630: Input-synaptics---Disable-kernel-tracking-on-SMBus-devices.patch
-
-# Headed upstream
-Patch631: drm-i915-boost-GPU-clocks-if-we-miss-the-pageflip.patch
+Patch619: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # fix gnome 3.26+ not working under VirtualBox, submitted upstream, Cc: Stable
-Patch632: 0001-staging-vboxvideo-Fix-reporting-invalid-suggested-of.patch
+Patch620: 0001-staging-vboxvideo-Fix-reporting-invalid-suggested-of.patch
 
-# http://patchwork.ozlabs.org/patch/831938/
-Patch633: net-mlxsw-reg-Add-high-and-low-temperature-thresholds.patch
+# Headed upstream
+Patch621: drm-i915-Boost-GPU-clocks-if-we-miss-the-pageflip-s-vblank.patch
 
-# Included in 4.14, backport requested on kernel@
-Patch634: selinux-Generalize-support-for-NNP-nosuid-SELinux-do.patch
+# rhbz 1497861, submitted upstream, Cc: Stable
+Patch622: 0001-platform-x86-peaq-wmi-Add-DMI-check-before-binding-t.patch
+
+Patch623: 0001-PATCH-staging-rtl8822be-fix-wrong-dma-unmap-len.patch
 
 # rhbz 1509461
-Patch635: v3-1-2-Input-synaptics-rmi4---RMI4-can-also-use-SMBUS-version-3.patch
-Patch636: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
+Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
 # rhbz 1490803
-Patch637: 1-2-kvm-vmx-Reinstate-support-for-CPUs-without-virtual-NMI.patch
-
-# CVE-2017-16532 rhbz 1510835 1510854
-Patch638: 0001-usb-usbtest-fix-NULL-pointer-dereference.patch
-
-# CVE-2017-16538 rhbz 1510826 1510854
-Patch639: CVE-2017-16538.patch
-
-# CVE-2017-13693 rhbz 1485346 1485356
-Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
-
-# CVE-2017-13694 rhbz 1485348
-Patch714: V4-acpi-acpica-fix-acpi-parse-and-parseext-cache-leaks.patch 
-
-# CVE-2017-13695 rhbz 1485349
-Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
-
-# rhbz 1493498
-Patch723: 0001-fs-locks-Remove-fl_nspid-and-use-fs-specific-l_pid-f.patch
+Patch626: 1-2-kvm-vmx-Reinstate-support-for-CPUs-without-virtual-NMI.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
-# Patches to export btrfs anonymous devices (VFS portion)
-Patch1010: vfs-add-super_operations-get_inode_dev.patch
-Patch1011: perf_timechart_fix_zero_timestamps.patch
-Patch1012: 0001-Revert-SUNRPC-xs_sock_mark_closed-does-not-need-to-t.patch
-Patch1013: btrfs-provide-super_operations-get_inode_dev.patch
-Patch1014: btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
-Patch1015: btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
-Patch1016: btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1017: connector-read-mostly.patch
 
-Patch2000: https://github.com/pfactum/pf-kernel/commit/c459dfe289dd7412dcb30b2253ca1ffa4c37d143.patch#/tcp-fix-tcp_mtu_probe-vs-highest_sack.patch
+%global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
+%global opensuse_id c6cd519c29db497d9ad50a0f5a46d99b03e1d0ea
 
-# https://patchwork.kernel.org/patch/9880515
-Patch3000: BUGFIX-IMPROVEMENT-V2-1-2-block-bfq-refactor-device-idling-logic.patch
-# https://patchwork.kernel.org/patch/9880513
-Patch3001: BUGFIX-IMPROVEMENT-V2-2-2-block-bfq-boost-throughput-with-flash-based-non-queueing-devices.patch
-# https://patchwork.kernel.org/patch/9909601
-Patch3002: block-bfq-fix-error-handle-in-bfq_init.patch
-# https://patchwork.kernel.org/patch/9920623/
-Patch3003: block-scheduler-convert-xxx_var_store-to-void.patch
-# https://patchwork.kernel.org/patch/9930629/
-Patch3004: 1-5-bfq-Annotate-fall-through-in-a-switch-statement.patch
-# https://patchwork.kernel.org/patch/9930631/
-Patch3005: 2-5-bfq-Declare-local-functions-static.patch
-# https://patchwork.kernel.org/patch/9930633/
-Patch3006: 3-5-bfq-Check-kstrtoul-return-value.patch
-# https://patchwork.kernel.org/patch/9930637/
-Patch3007: 4-5-bfq-Suppress-compiler-warnings-about-comparisons.patch
-# https://patchwork.kernel.org/patch/9930635/
-Patch3008: 5-5-bfq-Use-icq_to_bic-consistently.patch
-# https://patchwork.kernel.org/patch/9931283/
-Patch3009: BUGFIX-IMPROVEMENT-V2-1-3-block-bfq-make-lookup_next_entity-push-up-vtime-on-expirations.patch
-# https://patchwork.kernel.org/patch/9931289/
-Patch3010: BUGFIX-IMPROVEMENT-V2-2-3-block-bfq-remove-direct-switch-to-an-entity-in-higher-class.patch
-# https://patchwork.kernel.org/patch/9931281/
-Patch3011: BUGFIX-IMPROVEMENT-V2-3-3-block-bfq-guarantee-update_next_in_service-always-returns-an-eligible-entity.patch
-# https://patchwork.kernel.org/patch/9993579/
-Patch3012: V2-1-1-block-bfq-Disable-writeback-throttling.patch
-# https://github.com/pfactum/pf-kernel/commits/pf-4.13
-Patch3014: https://github.com/pfactum/pf-kernel/commit/97b5ffd5fd25cf3d842892c5f95aa9e43788b723.patch
-Patch3015: https://github.com/pfactum/pf-kernel/commit/8a18ea7eedc43c16dde209f925446878a2bdc282.patch
-Patch3016: https://github.com/pfactum/pf-kernel/commit/6faa479fc1f518401dffbc8607bea828f677e124.patch
-Patch3017: https://github.com/pfactum/pf-kernel/commit/0ebd6bee3fa04e23d23a3a2ce9193a424ecbea80.patch
-Patch3018: https://github.com/pfactum/pf-kernel/commit/0dab2b12f9acc11b0634a6fbd10c6c41c88726a7.patch
-# https://patchwork.kernel.org/patch/9991351/
-Patch3019: bfq-Fix-bool-initialization-comparison.patch
+Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
+Patch1011: %{opensuse_url}/VFS-expedite-umount.patch?id=%{opensuse_id}#/openSUSE-VFS-expedite-umount.patch
+Patch1012: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch?id=%{opensuse_id}#/openSUSE-perf_timechart_fix_zero_timestamps.patch
+Patch1013: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
+Patch1014: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch?id=%{opensuse_id}#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
+Patch1015: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
+Patch1016: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+Patch1017: %{opensuse_url}/0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch?id=%{opensuse_id}#/openSUSE-0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch
+Patch1018: %{opensuse_url}/0002-x86-head-Remove-confusing-comment.patch?id=%{opensuse_id}#/openSUSE-0002-x86-head-Remove-confusing-comment.patch
+Patch1019: %{opensuse_url}/0003-x86-head-Remove-unused-bad_address-code.patch?id=%{opensuse_id}#/openSUSE-0003-x86-head-Remove-unused-bad_address-code.patch
+Patch1020: %{opensuse_url}/0004-x86-head-Fix-head-ELF-function-annotations.patch?id=%{opensuse_id}#/openSUSE-0004-x86-head-Fix-head-ELF-function-annotations.patch
+Patch1021: %{opensuse_url}/0005-x86-boot-Annotate-verify_cpu-as-a-callable-function.patch?id=%{opensuse_id}#/openSUSE-0005-x86-boot-Annotate-verify_cpu-as-a-callable-function.patch
+Patch1022: %{opensuse_url}/0006-x86-xen-Fix-xen-head-ELF-annotations.patch?id=%{opensuse_id}#/openSUSE-0006-x86-xen-Fix-xen-head-ELF-annotations.patch
+Patch1023: %{opensuse_url}/0007-x86-xen-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-0007-x86-xen-Add-unwind-hint-annotations.patch
+Patch1024: %{opensuse_url}/0008-x86-head-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-0008-x86-head-Add-unwind-hint-annotations.patch
+Patch1025: %{opensuse_url}/0001-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0001-orc-mark-it-as-reliable.patch
+
+# https://github.com/pfactum/pf-kernel/commits/pf-4.14
+# block fixes and updates, mostly
+
+%global pf_url https://github.com/pfactum/pf-kernel/commit
+
+Patch3000: %{pf_url}/b3a1b436721598faa8d2089f31599387d7bf7828.patch#/pf-b3a1b436721598faa8d2089f31599387d7bf7828.patch
+Patch3001: %{pf_url}/6641ec1e496a6f47385a0be79537bae4531856fc.patch#/pf-6641ec1e496a6f47385a0be79537bae4531856fc.patch
+Patch3002: %{pf_url}/5341ce1c42fd63ccdb60cd11a1f53706102e5c5c.patch#/pf-5341ce1c42fd63ccdb60cd11a1f53706102e5c5c.patch
+Patch3003: %{pf_url}/5ef9a910522e8b15c40b8db0fa80fd4453ec6f73.patch#/pf-5ef9a910522e8b15c40b8db0fa80fd4453ec6f73.patch
+Patch3004: %{pf_url}/4834c53e02abbdcd009ce70800f3c6b0ea3c6941.patch#/pf-4834c53e02abbdcd009ce70800f3c6b0ea3c6941.patch
+Patch3005: %{pf_url}/e22497e3f0212a44b6abd0f4167d61746e143bfe.patch#/pf-e22497e3f0212a44b6abd0f4167d61746e143bfe.patch
+Patch3006: %{pf_url}/00dfcbfddd7011bee8ae1044816f274f284298e9.patch#/pf-00dfcbfddd7011bee8ae1044816f274f284298e9.patch
+Patch3007: %{pf_url}/dc83f5ef33d4a904f70ba85f370f89cf868ae4a9.patch#/pf-dc83f5ef33d4a904f70ba85f370f89cf868ae4a9.patch
+Patch3008: %{pf_url}/f963d5d10c63bfa14e12cf677c5f5b91466b49b3.patch#/pf-f963d5d10c63bfa14e12cf677c5f5b91466b49b3.patch
+Patch3009: %{pf_url}/c379cb182bbcccb526531d927bd3bf3b99c0d182.patch#/pf-c379cb182bbcccb526531d927bd3bf3b99c0d182.patch
+Patch3010: %{pf_url}/87e45f9b95bcd8667a494ca4200f3b8cb54b3c90.patch#/pf-87e45f9b95bcd8667a494ca4200f3b8cb54b3c90.patch
+Patch3011: %{pf_url}/85bb85623f2c15c7a9b14414c2488637a64e6aa5.patch#/pf-85bb85623f2c15c7a9b14414c2488637a64e6aa5.patch
+Patch3012: %{pf_url}/1c378bf5bb21716e9ea88fc9e84122b904591eae.patch#/pf-1c378bf5bb21716e9ea88fc9e84122b904591eae.patch
+Patch3013: %{pf_url}/5b5f98ee0a316150529b71dc40bca9ee7e41a0cc.patch#/pf-5b5f98ee0a316150529b71dc40bca9ee7e41a0cc.patch
+Patch3014: %{pf_url}/a925c4dca802fe154fb3b99ae275241eee92ff3b.patch#/pf-a925c4dca802fe154fb3b99ae275241eee92ff3b.patch
+Patch3015: %{pf_url}/1c499bd3aba2e8689c2737919c43dcd49d929c46.patch#/pf-1c499bd3aba2e8689c2737919c43dcd49d929c46.patch
+Patch3016: %{pf_url}/dd3baf06556264db5b3c180a6629712586cf3432.patch#/pf-dd3baf06556264db5b3c180a6629712586cf3432.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -1347,6 +1264,26 @@ xzcat %{SOURCE5000} | patch -p1 -F1 -s
 git commit -a -m "Stable update"
 %endif
 
+# Note: Even in the "nopatches" path some patches (build tweaks and compile
+# fixes) will always get applied; see patch defition above for details
+
+git am %{patches}
+
+$patch_command -i %{SOURCE4000}
+
+# END OF PATCH APPLICATIONS
+
+# Any further pre-build tree manipulations happen here.
+
+chmod +x scripts/checkpatch.pl
+
+# This Prevents scripts/setlocalversion from mucking with our version numbers.
+touch .scmversion
+
+# Deal with configs stuff
+mkdir configs
+cd configs
+
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/kernel-*.config .
 cp %{SOURCE1000} .
@@ -1382,26 +1319,8 @@ do
 done
 %endif
 
-# Note: Even in the "nopatches" path some patches (build tweaks and compile
-# fixes) will always get applied; see patch defition above for details
-
-git am %{patches}
-
-$patch_command -i %{SOURCE4000}
-
-# END OF PATCH APPLICATIONS
-
-# Any further pre-build tree manipulations happen here.
-
-chmod +x scripts/checkpatch.pl
-
-# This Prevents scripts/setlocalversion from mucking with our version numbers.
-touch .scmversion
-
 # only deal with configs if we are going to build for the arch
 %ifnarch %nobuildarches
-
-mkdir configs
 
 %if !%{debugbuildsenabled}
 rm -f kernel-%{version}-*debug.config
@@ -1420,30 +1339,19 @@ CheckConfigs() {
 }
 
 cp %{SOURCE42} .
-# now run oldconfig over all the config files
-for i in *.config
-do
-  cat $i > temp-$i
-  mv $i .config
-  Arch=`head -1 .config | cut -b 3-`
-  make ARCH=$Arch listnewconfig | grep -E '^CONFIG_' >.newoptions || true
+OPTS=""
 %if %{listnewconfig_fail}
-  if [ -s .newoptions ]; then
-    cat .newoptions
-    exit 1
-  fi
+	OPTS="$OPTS -n"
 %endif
-  rm -f .newoptions
-  make ARCH=$Arch oldnoconfig
-  echo "# $Arch" > configs/$i
-  cat .config >> configs/$i
 %if %{configmismatch_fail}
-  CheckConfigs configs/$i temp-$i
+	OPTS="$OPTS -c"
 %endif
-  rm temp-$i
-done
+./process_configs.sh $OPTS kernel %{rpmversion}
 # end of kernel config
 %endif
+
+cd ..
+# End of Configs stuff
 
 # get rid of unwanted files resulting from patch fuzz
 find . \( -name "*.orig" -o -name "*~" \) -exec rm -f {} \; >/dev/null
@@ -2038,7 +1946,7 @@ pushd tools/thermal/tmon
 make INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/iio
-make INSTALL_ROOT=%{buildroot} install
+make DESTDIR=%{buildroot} install
 popd
 pushd tools/gpio
 make DESTDIR=%{buildroot} install
@@ -2338,6 +2246,11 @@ fi
 #
 #
 %changelog
+* Mon Nov 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.0-500.chinfo
+- 4.14.0
+- rawhide sync
+- Better handling of external patches
+
 * Wed Nov 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.12-500.chinfo
 - 4.13.12
 - f27 sync

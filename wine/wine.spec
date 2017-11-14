@@ -1193,7 +1193,7 @@ fi
 %{_bindir}/wineserver64
 %config %{_sysconfdir}/ld.so.conf.d/wine-64.conf
 %endif
-%ifarch x86_64
+%ifarch x86_64 aarch64
 %{_bindir}/wine64-preloader
 %endif
 
