@@ -29,13 +29,14 @@
 Name:           VirtualBox-kmod
 Version:        5.2.0
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        100.chinfo%{?dist}
+Release:        101.chinfo%{?dist}
 
 Summary:        Kernel module for VirtualBox
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
+Patch1:         fixes_for_4.14.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -58,6 +59,10 @@ Kernel module for VirtualBox
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
+
+pushd %{name}-%{version}
+%patch1 -p2 -b .kernel_4.14
+popd
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
@@ -106,6 +111,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Nov 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.2.0-101.chinfo
+- Readd and update linux 4.14 patch
+
 * Tue Nov 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.2.0-100.chinfo
 - 5.2.0
 

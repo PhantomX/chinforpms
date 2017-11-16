@@ -1,7 +1,7 @@
 %global pname FreeFileSync
 
 Name:           freefilesync
-Version:        9.4
+Version:        9.5
 Release:        1%{?dist}
 Summary:        A file synchronization utility
 
@@ -26,8 +26,6 @@ having nice visual feedback along the way.
 
 %prep
 %autosetup -p0 -c -n %{pname}-%{version}
-
-find -type d 
 
 cp %{SOURCE1} %{SOURCE2} .
 
@@ -128,6 +126,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Tue Nov 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 9.5-1
+- 9.5
+
 * Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 9.4-1
 - 9.4
 
