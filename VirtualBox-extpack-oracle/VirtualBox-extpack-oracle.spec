@@ -13,7 +13,7 @@
 Name:           VirtualBox-extpack-oracle
 Version:        5.2.0
 Release:        1%{?dist}
-Summary:        PUEL extensions for VirtualBox)
+Summary:        PUEL extensions for VirtualBox
 
 License:        PUEL
 URL:            http://www.virtualbox.org/wiki/VirtualBox

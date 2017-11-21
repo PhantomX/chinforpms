@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -615,6 +615,8 @@ Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe
 # bcm2837 bluetooth support
 Patch323: bcm2837-bluetooth-support.patch
 
+Patch324: rpi-graphics-fix.patch
+
 # Generic fixes and enablement for Socionext SoC and 96board
 # https://patchwork.kernel.org/patch/9980861/
 Patch331: PCI-aspm-deal-with-missing-root-ports-in-link-state-handling.patch
@@ -643,14 +645,8 @@ Patch617: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch619: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# fix gnome 3.26+ not working under VirtualBox, submitted upstream, Cc: Stable
-Patch620: 0001-staging-vboxvideo-Fix-reporting-invalid-suggested-of.patch
-
 # Headed upstream
 Patch621: drm-i915-Boost-GPU-clocks-if-we-miss-the-pageflip-s-vblank.patch
-
-# rhbz 1497861, submitted upstream, Cc: Stable
-Patch622: 0001-platform-x86-peaq-wmi-Add-DMI-check-before-binding-t.patch
 
 Patch623: 0001-PATCH-staging-rtl8822be-fix-wrong-dma-unmap-len.patch
 
@@ -665,26 +661,28 @@ Patch626: 1-2-kvm-vmx-Reinstate-support-for-CPUs-without-virtual-NMI.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id ab9e909366a779cb698d37c4b1afdcd867494342
+%global opensuse_id 9e71942933fdcd4acb2fc62a631b3988cc7f4b83
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
-Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
-Patch1011: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-%{suse_sid}-vfs-add-super_operations-get_inode_dev.patch
-Patch1012: %{opensuse_url}/VFS-expedite-umount.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-VFS-expedite-umount.patch
-Patch1013: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-perf_timechart_fix_zero_timestamps.patch
-Patch1014: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-%{suse_sid}-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1015: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
-Patch1016: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
-Patch1017: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1018: %{opensuse_url}/0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch
-Patch1019: %{opensuse_url}/0002-x86-head-Remove-confusing-comment.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-0002-x86-head-Remove-confusing-comment.patch
-Patch1020: %{opensuse_url}/0003-x86-head-Remove-unused-bad_address-code.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-0003-x86-head-Remove-unused-bad_address-code.patch
-Patch1021: %{opensuse_url}/0004-x86-head-Fix-head-ELF-function-annotations.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-0004-x86-head-Fix-head-ELF-function-annotations.patch
-Patch1022: %{opensuse_url}/0005-x86-boot-Annotate-verify_cpu-as-a-callable-function.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-0005-x86-boot-Annotate-verify_cpu-as-a-callable-function.patch
-Patch1023: %{opensuse_url}/0006-x86-xen-Fix-xen-head-ELF-annotations.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-0006-x86-xen-Fix-xen-head-ELF-annotations.patch
-Patch1024: %{opensuse_url}/0007-x86-xen-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-0007-x86-xen-Add-unwind-hint-annotations.patch
-Patch1025: %{opensuse_url}/0008-x86-head-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-0008-x86-head-Add-unwind-hint-annotations.patch
-Patch1026: %{opensuse_url}/0001-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-%{suse_sid}-0001-orc-mark-it-as-reliable.patch
+Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
+Patch1011: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
+Patch1012: %{opensuse_url}/VFS-expedite-umount.patch?id=%{opensuse_id}#/openSUSE-VFS-expedite-umount.patch
+Patch1013: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch?id=%{opensuse_id}#/openSUSE-perf_timechart_fix_zero_timestamps.patch
+Patch1014: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
+Patch1015: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch?id=%{opensuse_id}#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
+Patch1016: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
+Patch1017: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+Patch1018: %{opensuse_url}/drm-bridge-analogix-dp-Fix-runtime-PM-state-in-get_m.patch?id=%{opensuse_id}#/openSUSE-drm-bridge-analogix-dp-Fix-runtime-PM-state-in-get_m.patch
+Patch1019: %{opensuse_url}/revert-mmc-Delete-bounce-buffer-handling.patch?id=%{opensuse_id}#/openSUSE-revert-mmc-Delete-bounce-buffer-handling.patch
+Patch1020: %{opensuse_url}/0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch?id=%{opensuse_id}#/openSUSE-0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch
+Patch1021: %{opensuse_url}/0002-x86-head-Remove-confusing-comment.patch?id=%{opensuse_id}#/openSUSE-0002-x86-head-Remove-confusing-comment.patch
+Patch1022: %{opensuse_url}/0003-x86-head-Remove-unused-bad_address-code.patch?id=%{opensuse_id}#/openSUSE-0003-x86-head-Remove-unused-bad_address-code.patch
+Patch1023: %{opensuse_url}/0004-x86-head-Fix-head-ELF-function-annotations.patch?id=%{opensuse_id}#/openSUSE-0004-x86-head-Fix-head-ELF-function-annotations.patch
+Patch1024: %{opensuse_url}/0005-x86-boot-Annotate-verify_cpu-as-a-callable-function.patch?id=%{opensuse_id}#/openSUSE-0005-x86-boot-Annotate-verify_cpu-as-a-callable-function.patch
+Patch1025: %{opensuse_url}/0006-x86-xen-Fix-xen-head-ELF-annotations.patch?id=%{opensuse_id}#/openSUSE-0006-x86-xen-Fix-xen-head-ELF-annotations.patch
+Patch1026: %{opensuse_url}/0007-x86-xen-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-0007-x86-xen-Add-unwind-hint-annotations.patch
+Patch1027: %{opensuse_url}/0008-x86-head-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-0008-x86-head-Add-unwind-hint-annotations.patch
+Patch1028: %{opensuse_url}/0001-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0001-orc-mark-it-as-reliable.patch
 
 # https://github.com/pfactum/pf-kernel/commits/pf-4.14
 # block fixes and updates, mostly
@@ -708,6 +706,8 @@ Patch3013: %{pf_url}/5b5f98ee0a316150529b71dc40bca9ee7e41a0cc.patch#/pf-5b5f98ee
 Patch3014: %{pf_url}/a925c4dca802fe154fb3b99ae275241eee92ff3b.patch#/pf-a925c4dca802fe154fb3b99ae275241eee92ff3b.patch
 Patch3015: %{pf_url}/1c499bd3aba2e8689c2737919c43dcd49d929c46.patch#/pf-1c499bd3aba2e8689c2737919c43dcd49d929c46.patch
 Patch3016: %{pf_url}/dd3baf06556264db5b3c180a6629712586cf3432.patch#/pf-dd3baf06556264db5b3c180a6629712586cf3432.patch
+Patch3017: %{pf_url}/06e1c5bf64748a00310842e56dcfc50cc4ee1cb3.patch#/pf-06e1c5bf64748a00310842e56dcfc50cc4ee1cb3.patch
+
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -2248,6 +2248,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.1-500.chinfo
+- 4.14.1
+
 * Mon Nov 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.0-500.chinfo
 - 4.14.0
 - rawhide sync

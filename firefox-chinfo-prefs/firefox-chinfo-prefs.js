@@ -1,10 +1,14 @@
 // Chinforinfula Firefox settings
-// 20170813
+// 20171121
 
 pref("browser.bookmarks.showRecentlyBookmarked", false);
+pref("browser.link.open_newwindow.restriction", 0);
+pref("browser.search.openintab", true);
 pref("browser.search.suggest.enabled", false);
+pref("browser.tabs.closeWindowWithLastTab", false);
 pref("browser.urlbar.clickSelectsAll", false);
 pref("browser.urlbar.doubleClickSelectsAll", true);
+pref("browser.urlbar.oneOffSearches", false);
 pref("browser.urlbar.trimURLs", false);
 pref("general.autoScroll", false);
 pref("general.smoothScroll", false);
@@ -43,6 +47,12 @@ pref("media.gmp-manager.url.override", "data:text/plain,");
 pref("media.gmp-provider.enabled",false);
 
 // No ads downloads
+pref("browser.newtabpage.activity-stream.feeds.section.highlights", false);
+pref("browser.newtabpage.activity-stream.feeds.snippets", false);
+pref("browser.newtabpage.activity-stream.migrationExpired", true);
+pref("browser.newtabpage.activity-stream.prerender", false);
+pref("browser.newtabpage.activity-stream.showSearch", false);
+pref("browser.newtabpage.activity-stream.showTopSites", false);
 pref("browser.newtabpage.directory.source","");
 pref("browser.newtabpage.enabled", false);
 pref("browser.newtabpage.enhanced", false);
@@ -61,9 +71,23 @@ pref("plugins.notifyMissingFlash", false);
 pref("privacy.trackingprotection.enabled", true);
 
 // Disable datareporting and telemetry
+pref("browser.ping-centre.telemetry", false);
 pref("datareporting.healthreport.dataSubmissionEnabled", false);
 pref("datareporting.healthreport.uploadEnabled", false);
+pref("toolkit.telemetry.archive.enabled", false);
+pref("toolkit.telemetry.bhrPing.enabled", false);
 pref("toolkit.telemetry.enabled", false);
+pref("toolkit.telemetry.firstShutdownPing.enabled", false);
+pref("toolkit.telemetry.newProfilePing.enabled", false);
+pref("toolkit.telemetry.reportingpolicy.firstRun", false);
+pref("toolkit.telemetry.shutdownPingSender.enabled", false);
+pref("toolkit.telemetry.unified", false);
+pref("toolkit.telemetry.updatePing.enabled", false);
+pref("experiments.enabled", false);
+pref("experiments.activeExperiment", false);
+pref("experiments.supported", false);
+pref("nsITelemetry.canRecordBase", false);
+pref("nsITelemetry.canRecordExtended", false);
 
 // Disable Safe Browsing service
 //pref("browser.safebrowsing.malware.enabled", false);
@@ -72,8 +96,14 @@ pref("toolkit.telemetry.enabled", false);
 //pref("services.sync.prefs.sync.browser.safebrowsing.enabled", false);
 //pref("services.sync.prefs.sync.browser.safebrowsing.malware.enabled", false);
 
+// Disable Screenshots
+//pref("extensions.screenshots.disabled", true);
+
 // Disable battery api
 pref("dom.battery.enabled", false);
+
+// Enable anti fingerprinting
+// pref("privacy.resistFingerprinting", true);
 
 // Disable geolocation
 //pref("geo.enabled", false);
