@@ -11,18 +11,8 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global compholio 1
-%global compholiover 2.20
-
-# build with wine-d3d9-patches (nine), see:  https://github.com/sarnex/wine-d3d9-patches
-%global nine 1
-%global ninever 2.20
+%global compholiover 2.21
 %endif # 0%{?fedora}
-
-# laino patches, see: https://github.com/laino/wine-patches
-%global laino 1
-%global commit1 3ffdac0356ca3d64924e75851acc545efd259a05
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global srcname1 laino-wine-patches
 
 # binfmt macros for RHEL
 %if 0%{?rhel} == 7
@@ -38,7 +28,7 @@
 %endif
 
 Name:           wine
-Version:        2.20
+Version:        2.21
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -94,26 +84,24 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # Steam patch, Crossover Hack version
 # https://bugs.winehq.org/show_bug.cgi?id=39403
 Patch600:       steam.patch
+Patch601:       harmony-fix.diff
+Patch602:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.h-linked-list-cache-line-prefetching.patch#/laino-0003-wine-list.h-linked-list-cache-line-prefetching.patch
 # Wbemprox videocontroller query fix v2
 # https://bugs.winehq.org/show_bug.cgi?id=38879
-Patch601:       wbemprox_query_v2.patch
+Patch603:       wbemprox_query_v2.patch
 # Keybind patch reversion
-Patch602:       keybindings.patch
+Patch604:       keybindings.patch
+
+# https://dev.wine-staging.com/patches/215/
+Patch700:      https://dev.wine-staging.com/patches/file/528/download#/staging-0001-api-ms-win-shcore-scaling-l1-1-1-forward-two-functio.patch
+# https://dev.wine-staging.com/patches/216/
+Patch701:      https://dev.wine-staging.com/patches/file/531/download#/staging-0001-msvcrt-Initial-implementation-of-_get_purecall_handl.patch
+
 
 # wine compholio patches for wine-staging
 # pulseaudio-patch is covered by that patch-set, too.
 %if 0%{?compholio}
 Source900: https://github.com/compholio/wine-compholio/archive/v%{compholiover}.tar.gz#/wine-staging-%{compholiover}.tar.gz
-%endif
-
-# wine-d3d9
-%if 0%{?nine}
-Source910: https://github.com/sarnex/wine-d3d9-patches/archive/wine-d3d9-%{ninever}.tar.gz
-%endif
-
-# laino patches
-%if 0%{?laino}
-Source920: https://github.com/laino/wine-patches/archive/%{commit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
 %endif
 
 %if !%{?no64bit}
@@ -190,12 +178,6 @@ BuildRequires:  gtk3-devel
 BuildRequires:  libattr-devel
 BuildRequires:  libva-devel
 %endif # 0%{?compholio}
-
-%if 0%{?nine}
-BuildRequires:  mesa-libd3d-devel
-BuildRequires:  mesa-libEGL-devel
-%endif # 0%{?nine}
-
 
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
@@ -323,9 +305,6 @@ Requires:       unixODBC(x86-32)
 %if 0%{?compholio}
 Requires:       libva(x86-32)
 %endif
-%if 0%{?nine}
-Requires:       mesa-libd3d(x86-32)
-%endif
 %endif
 
 %ifarch x86_64
@@ -348,9 +327,6 @@ Requires:       unixODBC(x86-64)
 %if 0%{?compholio}
 Requires:       libva(x86-64)
 %endif
-%if 0%{?nine}
-Requires:       mesa-libd3d(x86-64)
-%endif
 %endif
 
 %ifarch %{arm} aarch64
@@ -369,9 +345,6 @@ Requires:       libv4l
 Requires:       unixODBC
 %if 0%{?compholio}
 Requires:       libva
-%endif
-%if 0%{?nine}
-Requires:       mesa-libd3d
 %endif
 %endif
 
@@ -694,19 +667,9 @@ This package adds the opencl driver for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
-%patch602 -p1 -R
-
-# extract nine patches
-%if 0%{?nine}
-mkdir nine
-gzip -dc %{SOURCE910} | tar -xf - --strip-components=1 -C nine
-%endif # 0%{?nine}
-
-# extract laino patches
-%if 0%{?laino}
-mkdir laino
-gzip -dc %{SOURCE920} | tar -xf - --strip-components=1 -C laino
-%endif # 0%{?laino}
+%patch601 -p1
+%patch602 -p1
+%patch604 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?compholio}
@@ -717,32 +680,13 @@ make -C patches DESTDIR="`pwd`" install
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
 
-%if 0%{?nine}
-patch -p1 -i nine/staging-helper.patch
-%endif # 0%{?nine}
-
 %else # 0%{?compholio}
 
 rm -rf patches/
 
-%if 0%{?nine}
-patch -p1 -i nine/d3d9-helper.patch
-%endif # 0%{?nine}
-
 %endif # 0%{?compholio}
 
-%patch601 -p1
-
-%if 0%{?nine}
-patch -p1 -i nine/wine-d3d9.patch
-
-%if 0%{?laino}
-patch -p1 -i laino/0003-wine-list.h-linked-list-cache-line-prefetching.patch
-%endif # 0%{?laino}
-
-autoreconf -ivf
-
-%endif # 0%{?nine}
+%patch603 -p1
 
 sed -i \
   -e 's|-lncurses |-lncursesw |g' \
@@ -772,7 +716,6 @@ export CFLAGS="`echo $TEMP_CFLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-e
  --enable-win64 \
 %endif
 %{?compholio: --with-xattr} \
-%{?nine: --with-d3d9-nine} \
  --disable-tests
 
 make %{?_smp_mflags} TARGETFLAGS=""
@@ -1311,7 +1254,6 @@ fi
 %{_libdir}/wine/api-ms-win-core-heap-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-heap-l2-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-heap-obsolete-l1-1-0.dll.so
-%{_libdir}/wine/api-ms-win-core-heap-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-interlocked-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-interlocked-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-io-l1-1-0.dll.so
@@ -1471,6 +1413,7 @@ fi
 %{_libdir}/wine/api-ms-win-rtcore-ntuser-draw-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-rtcore-ntuser-window-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-shcore-obsolete-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-shcore-scaling-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-shcore-stream-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-shcore-thread-l1-1-0.dll.so
 %endif
@@ -1653,6 +1596,7 @@ fi
 %{_libdir}/wine/joy.cpl.so
 %{_libdir}/wine/jscript.dll.so
 %{_libdir}/wine/jsproxy.dll.so
+%{_libdir}/wine/kerberos.dll.so
 %{_libdir}/wine/kernel32.dll.so
 %if 0%{?compholio}
 %{_libdir}/wine/kernelbase.dll.so
@@ -1999,10 +1943,6 @@ fi
 %endif
 %endif
 
-%if 0%{?nine}
-%{_libdir}/wine/d3d9-nine.dll.so
-%endif
-
 # 16 bit and other non 64bit stuff
 %ifnarch x86_64 %{arm} aarch64
 %{_libdir}/wine/winevdm.exe.so
@@ -2286,6 +2226,12 @@ fi
 %endif
 
 %changelog
+* Tue Nov 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.21-100.chinfo
+- 2.21
+- Drop nine, it have proper separated wine-nine package now
+- Drop laino package, only one patch is needed
+- Update patch list from AUR
+
 * Mon Nov 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.20-100.chinfo
 - 2.20
 - Rearrange files that are already in default wine from %%{?compholio} sections
