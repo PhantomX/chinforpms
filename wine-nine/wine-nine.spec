@@ -3,7 +3,7 @@
 
 Name:           wine-nine
 Version:        2.0_3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 License:        LGPL-2.0
@@ -161,5 +161,8 @@ desktop-file-install \
 %{_datadir}/applications/wine-ninecfg.desktop
 
 %changelog
+* Wed Nov 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0_3-2
+- Fix desktop file
+
 * Tue Nov 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0_3-1
 - Initial spec
