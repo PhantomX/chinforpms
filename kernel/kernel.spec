@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -598,10 +598,12 @@ Patch303: ARM-tegra-usb-no-reset.patch
 
 Patch304: allwinner-net-emac.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch305: arm-imx6-hummingboard2.patch
+Patch305: arm64-Revert-allwinner-a64-pine64-Use-dcdc1-regulato.patch
 
-Patch306: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+# https://www.spinics.net/lists/arm-kernel/msg554183.html
+Patch306: arm-imx6-hummingboard2.patch
+
+Patch307: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 # https://patchwork.kernel.org/patch/9820417/
 Patch310: qcom-msm89xx-fixes.patch
@@ -661,7 +663,7 @@ Patch626: 1-2-kvm-vmx-Reinstate-support-for-CPUs-without-virtual-NMI.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 9e71942933fdcd4acb2fc62a631b3988cc7f4b83
+%global opensuse_id b0610fc12a3de5d90a17bfb04d0f1c82df57c4ea
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -682,7 +684,13 @@ Patch1024: %{opensuse_url}/0005-x86-boot-Annotate-verify_cpu-as-a-callable-funct
 Patch1025: %{opensuse_url}/0006-x86-xen-Fix-xen-head-ELF-annotations.patch?id=%{opensuse_id}#/openSUSE-0006-x86-xen-Fix-xen-head-ELF-annotations.patch
 Patch1026: %{opensuse_url}/0007-x86-xen-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-0007-x86-xen-Add-unwind-hint-annotations.patch
 Patch1027: %{opensuse_url}/0008-x86-head-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-0008-x86-head-Add-unwind-hint-annotations.patch
-Patch1028: %{opensuse_url}/0001-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0001-orc-mark-it-as-reliable.patch
+Patch1028: %{opensuse_url}/x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch?id=%{opensuse_id}#/openSUSE-x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch
+Patch1029: %{opensuse_url}/x86-unwinder-Make-CONFIG_UNWINDER_ORC-y-the-default-.patch?id=%{opensuse_id}#/openSUSE-x86-unwinder-Make-CONFIG_UNWINDER_ORC-y-the-default-.patch
+Patch1030: %{opensuse_url}/x86-unwind-Rename-unwinder-config-options-to-CONFIG_.patch?id=%{opensuse_id}#/openSUSE-x86-unwind-Rename-unwinder-config-options-to-CONFIG_.patch
+Patch1031: %{opensuse_url}/x86-unwind-Make-CONFIG_UNWINDER_ORC-y-the-default-in.patch?id=%{opensuse_id}#/openSUSE-x86-unwind-Make-CONFIG_UNWINDER_ORC-y-the-default-in.patch
+Patch1032: %{opensuse_url}/objtool-Print-top-level-commands-on-incorrect-usage.patch?id=%{opensuse_id}#/openSUSE-x86-objtool-Print-top-level-commands-on-incorrect-usage.patch
+Patch1033: %{opensuse_url}/0001-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0001-orc-mark-it-as-reliable.patch
+Patch1034: %{opensuse_url}/ipmi_si-fix-memory-leak-on-new_smi.patch?id=%{opensuse_id}#/openSUSE-ipmi_si-fix-memory-leak-on-new_smi.patch
 
 # https://github.com/pfactum/pf-kernel/commits/pf-4.14
 # block fixes and updates, mostly
@@ -706,7 +714,7 @@ Patch3013: %{pf_url}/5b5f98ee0a316150529b71dc40bca9ee7e41a0cc.patch#/pf-5b5f98ee
 Patch3014: %{pf_url}/a925c4dca802fe154fb3b99ae275241eee92ff3b.patch#/pf-a925c4dca802fe154fb3b99ae275241eee92ff3b.patch
 Patch3015: %{pf_url}/1c499bd3aba2e8689c2737919c43dcd49d929c46.patch#/pf-1c499bd3aba2e8689c2737919c43dcd49d929c46.patch
 Patch3016: %{pf_url}/dd3baf06556264db5b3c180a6629712586cf3432.patch#/pf-dd3baf06556264db5b3c180a6629712586cf3432.patch
-Patch3017: %{pf_url}/06e1c5bf64748a00310842e56dcfc50cc4ee1cb3.patch#/pf-06e1c5bf64748a00310842e56dcfc50cc4ee1cb3.patch
+Patch3017: %{pf_url}/402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch#/pf-402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch
 
 
 # Add additional cpu gcc optimization support
@@ -2248,6 +2256,11 @@ fi
 #
 #
 %changelog
+* Fri Nov 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.2-500.chinfo
+- 4.14.2
+- stabilization sync
+- More openSUSE and pf borrowed patches
+
 * Tue Nov 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.1-500.chinfo
 - 4.14.1
 

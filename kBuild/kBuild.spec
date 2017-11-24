@@ -1,9 +1,11 @@
-%global svn_revision 3050
-%global source_hash b020875391484d0dc3ffc163ba5aaff421256b26edd1d188504a24edcbdcaa1056b975e4ee2997f49e6f085c33d546d3c043a0a20d94ff0f9e25896942bf7134
+%global svn_revision 3127
+%global source_hash 50b8039c0d4585785f99a386e39b7dcb7a5bfe13759ef41538ca0167426194dc
+
+%global use_fedorasource 0
 
 Name:           kBuild
 Version:        0.1.9998
-Release:        14%{?svn_revision:.r%{svn_revision}}%{?dist}
+Release:        100%{?svn_revision:.r%{svn_revision}}.chinfo%{?dist}
 Summary:        A cross-platform build environment
 
 License:        BSD and GPLv2+
@@ -11,13 +13,14 @@ License:        BSD and GPLv2+
 # and make and sed are from GNU
 URL:            http://svn.netlabs.org/kbuild
 #Generated with kBuild-snapshot.sh
-Source0:        http://pkgs.fedoraproject.org/repo/pkgs/%{name}/kBuild-r%{svn_revision}.tar.gz/sha512/%{source_hash}/kBuild-r%{svn_revision}.tar.gz
+%if 0%{?use_fedorasource}
+Source0:        http://pkgs.fedoraproject.org/repo/pkgs/%{name}/kBuild-r%{svn_revision}.tar.gz/sha512/%{source_hash}/%{name}-r%{svn_revision}.tar.gz
+%else
+Source0:        http://dl.bintray.com/phantomx/tarballs/%{name}-r%{svn_revision}.tar.gz
+%endif
 Patch0:         kBuild-0.1.3-escape.patch
 Patch1:         kBuild-0.1.5-pthread.patch
 Patch2:         kbuild-wrong-memset.patch
-Patch3:         kBuild-0.1.98-arm.patch
-Patch4:         kBuild-0.1.9998-ppc64le.patch
-Patch5:         kBuild-0.1.9998-aarch64.patch
 
 BuildRequires:  byacc libacl-devel flex
 BuildRequires:  bison
@@ -39,9 +42,6 @@ repository.
 %patch0 -p1 -b .escape
 %patch1 -p1 -b .pthreads
 %patch2 -p1 -b .memset
-%patch3 -p1 -b .arm
-%patch4 -p1 -b .ppc64le
-%patch5 -p1 -b .aarch64
 
 
 %build
@@ -84,6 +84,16 @@ rm -r %{buildroot}%{_docdir}
 
 
 %changelog
+* Fri Nov 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.1.9998-100.r3127.chinfo
+- Update kBuild to revison 3127
+- Upstream already fixed these 3:
+  deleted:   kBuild-0.1.98-arm.patch
+  deleted:   kBuild-0.1.9998-aarch64.patch
+  deleted:   kBuild-0.1.9998-ppc64le.patch
+- Rebased:
+  kBuild-0.1.5-pthread.patch
+  kbuild-wrong-memset.patch
+
 * Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.1.9998-14.r3050
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 

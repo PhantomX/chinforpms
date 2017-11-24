@@ -11,7 +11,7 @@
 %global real_name hakuneko
 
 Name:           %{real_name}-desktop
-Version:        0.0.32
+Version:        0.1.0
 Release:        1%{?dist}
 Summary:        Manga Downloader
 
@@ -87,5 +87,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
-* Sat Oct 14 2017 Phantom X <megaphantomx at bol dot com dot br>
+* Fri Nov 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.1.0-1
+- 0.1.0
+
+* Sat Oct 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.0.32-1
 - Fist spec
