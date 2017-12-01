@@ -35,8 +35,7 @@ release tags).
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
                     and **VirtualBox-guest-additions-iso** support
- * **wine** - [Gallium Nine](https://github.com/sarnex/wine-d3d9-patches) support,
-              extra patches and personal fixes
+ * **wine** - Extra patches and personal fixes, packages in this [COPR repository](https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms-wine)
 
 ## Credits (Patches, install procedures and other files)
 * [Arch](https://www.archlinux.org)

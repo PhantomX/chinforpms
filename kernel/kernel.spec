@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -655,15 +655,15 @@ Patch623: 0001-PATCH-staging-rtl8822be-fix-wrong-dma-unmap-len.patch
 # rhbz 1509461
 Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
-# rhbz 1490803
-Patch626: 1-2-kvm-vmx-Reinstate-support-for-CPUs-without-virtual-NMI.patch
+# Fixes for QXL issues
+Patch626: qxl-fixes.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id b0610fc12a3de5d90a17bfb04d0f1c82df57c4ea
+%global opensuse_id a731a45e974e6a7b494bbd7eafc6f850dd4daeb6
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -675,7 +675,6 @@ Patch1015: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_bl
 Patch1016: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1017: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1018: %{opensuse_url}/drm-bridge-analogix-dp-Fix-runtime-PM-state-in-get_m.patch?id=%{opensuse_id}#/openSUSE-drm-bridge-analogix-dp-Fix-runtime-PM-state-in-get_m.patch
-Patch1019: %{opensuse_url}/revert-mmc-Delete-bounce-buffer-handling.patch?id=%{opensuse_id}#/openSUSE-revert-mmc-Delete-bounce-buffer-handling.patch
 Patch1020: %{opensuse_url}/0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch?id=%{opensuse_id}#/openSUSE-0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch
 Patch1021: %{opensuse_url}/0002-x86-head-Remove-confusing-comment.patch?id=%{opensuse_id}#/openSUSE-0002-x86-head-Remove-confusing-comment.patch
 Patch1022: %{opensuse_url}/0003-x86-head-Remove-unused-bad_address-code.patch?id=%{opensuse_id}#/openSUSE-0003-x86-head-Remove-unused-bad_address-code.patch
@@ -715,7 +714,7 @@ Patch3014: %{pf_url}/a925c4dca802fe154fb3b99ae275241eee92ff3b.patch#/pf-a925c4dc
 Patch3015: %{pf_url}/1c499bd3aba2e8689c2737919c43dcd49d929c46.patch#/pf-1c499bd3aba2e8689c2737919c43dcd49d929c46.patch
 Patch3016: %{pf_url}/dd3baf06556264db5b3c180a6629712586cf3432.patch#/pf-dd3baf06556264db5b3c180a6629712586cf3432.patch
 Patch3017: %{pf_url}/402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch#/pf-402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch
-
+Patch3018: %{pf_url}/fae783f205717c20d01405a3d1021867642d32a8.patch#/pf-fae783f205717c20d01405a3d1021867642d32a8.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -2256,6 +2255,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 30 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.3-500.chinfo
+- 4.14.3
+
 * Fri Nov 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.2-500.chinfo
 - 4.14.2
 - stabilization sync
