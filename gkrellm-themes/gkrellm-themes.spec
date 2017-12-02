@@ -23,7 +23,6 @@ This package contains various themes to use with GKrellM.
 %build
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{gkthemedir}
 

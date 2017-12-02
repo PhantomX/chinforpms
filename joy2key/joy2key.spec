@@ -30,7 +30,7 @@ native joystick support.
 
 
 %install
-rm -rf %{buildroot}
+
 %make_install
 
 

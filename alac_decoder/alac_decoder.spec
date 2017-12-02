@@ -30,7 +30,6 @@ export LDFLAGS="%{__global_ldflags}"
 
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 alac %{buildroot}%{_bindir}/

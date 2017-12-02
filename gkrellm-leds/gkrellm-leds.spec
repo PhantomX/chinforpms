@@ -33,7 +33,6 @@ autoreconf -ivf
 %make_build
 
 %install
-rm -rf %{buildroot}
 
 %make_install
 

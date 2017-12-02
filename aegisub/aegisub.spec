@@ -65,7 +65,6 @@ sed -i -e '/^repack-thes-dict_LIBS :=/s|$| -lpthread|g' tools/Makefile
 
 
 %install
-rm -rf %{buildroot}
 %make_install
 
 desktop-file-edit \

@@ -33,10 +33,9 @@ export LDFLAGS="%{__global_ldflags}"
 %make_build
 
 %install
-rm -rf %{buildroot}
 
-%{__mkdir_p} %{buildroot}%{gkplugindir}
-%{__install} -pm0755 %{name}.so \
+mkdir -p %{buildroot}%{gkplugindir}
+install -pm0755 %{name}.so \
   %{buildroot}%{gkplugindir}/
 
 %files

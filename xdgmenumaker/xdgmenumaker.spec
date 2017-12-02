@@ -36,7 +36,7 @@ export PREFIX=/usr
 %make_build man
 
 %install
-rm -rf %{buildroot}
+
 export PREFIX=/usr
 %make_install
 

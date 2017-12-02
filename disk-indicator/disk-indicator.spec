@@ -48,7 +48,6 @@ export LDFLAGS="%{__global_ldflags}"
 %make_build 
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 disk_indicator %{buildroot}%{_bindir}/

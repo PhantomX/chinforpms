@@ -55,7 +55,6 @@ done
 
 
 %install
-rm -rf %{buildroot}
 
 export OPTFLAGS="%{optflags}"
 export LDFLAGS="%{__global_ldflags}"

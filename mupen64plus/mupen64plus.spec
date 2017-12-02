@@ -78,7 +78,7 @@ export MANDIR=%{_mandir}
 ./m64p_build.sh %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
+
 export OPTFLAGS="%{optflags}"
 export LDFLAGS="%{__global_ldflags}"
 export LDCONFIG=/bin/true

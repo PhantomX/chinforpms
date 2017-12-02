@@ -15,6 +15,7 @@ BuildRequires:  pkgconfig(pygtk-2.0)
 BuildRequires:  desktop-file-utils
 BuildRequires:  librsvg2-tools
 Requires:       espeak
+Requires:       python2
 Requires:       hicolor-icon-theme
 
 %description

@@ -104,7 +104,6 @@ popd
 %make_build
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name}/%{name} %{buildroot}%{_bindir}/

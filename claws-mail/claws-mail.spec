@@ -467,7 +467,7 @@ autoreconf -ivf
 make %{?_smp_mflags} LIBTOOL=%{_bindir}/libtool
 
 %install
-rm -rf %{buildroot}
+
 export LIBTOOL=%{_bindir}/false
 make DESTDIR=%{buildroot} install
 

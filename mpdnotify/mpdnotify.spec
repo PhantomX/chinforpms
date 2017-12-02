@@ -42,7 +42,6 @@ sed -e '/^cover=/s|-type f|\0 -o -type l|g' -i %{name}
 
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name} %{buildroot}%{_bindir}/
