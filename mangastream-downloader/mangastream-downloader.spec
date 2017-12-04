@@ -1,5 +1,5 @@
 Name:           mangastream-downloader
-Version:        1.1.2
+Version:        1.2.1
 Release:        1%{?dist}
 Summary:        Downloads manga from MangaStream
 
@@ -7,10 +7,12 @@ License:        WTFPL
 URL:            https://github.com/RikudouSage/%{name}
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Source1:        %{name}-pt_BR.ts
-Source2:        http://www.wtfpl.net/txt/copying#/LICENSE
+
+Patch1:         %{name}-noupdate.patch
 
 BuildRequires:  icoutils
 BuildRequires:  qt5-linguist
+BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
 Requires:       hicolor-icon-theme
@@ -23,7 +25,6 @@ manga from MangaStream.
 %autosetup
 
 cp -p %{SOURCE1} translations/pt_BR.ts
-cp -p %{SOURCE2} .
 
 icotool -x -b 32 appicon.ico
 
@@ -85,5 +86,8 @@ fi
 
 
 %changelog
+* Mon Dec 04 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.2.1-1
+- 1.2.1
+
 * Thu Sep  7 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.1.2-1
 - Initial spec

@@ -1,0 +1,12 @@
+diff -up mangastream-downloader-1.2.1/main.qml.orig mangastream-downloader-1.2.1/main.qml
+--- mangastream-downloader-1.2.1/main.qml.orig	2017-10-19 18:03:53.000000000 -0200
++++ mangastream-downloader-1.2.1/main.qml	2017-12-03 23:38:20.465249291 -0200
+@@ -338,7 +338,7 @@ ApplicationWindow {
+                 appPath = res.rows.item(0).path;
+             }
+             assignMangaList(false);
+-            newVersionTimer.start();
++            //newVersionTimer.start();
+         });
+     }
+ 
