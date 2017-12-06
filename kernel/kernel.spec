@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -663,7 +663,7 @@ Patch626: qxl-fixes.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id a731a45e974e6a7b494bbd7eafc6f850dd4daeb6
+%global opensuse_id b29439c80a4129f6d12868a2053541fff783cf75
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -688,8 +688,12 @@ Patch1029: %{opensuse_url}/x86-unwinder-Make-CONFIG_UNWINDER_ORC-y-the-default-.
 Patch1030: %{opensuse_url}/x86-unwind-Rename-unwinder-config-options-to-CONFIG_.patch?id=%{opensuse_id}#/openSUSE-x86-unwind-Rename-unwinder-config-options-to-CONFIG_.patch
 Patch1031: %{opensuse_url}/x86-unwind-Make-CONFIG_UNWINDER_ORC-y-the-default-in.patch?id=%{opensuse_id}#/openSUSE-x86-unwind-Make-CONFIG_UNWINDER_ORC-y-the-default-in.patch
 Patch1032: %{opensuse_url}/objtool-Print-top-level-commands-on-incorrect-usage.patch?id=%{opensuse_id}#/openSUSE-x86-objtool-Print-top-level-commands-on-incorrect-usage.patch
-Patch1033: %{opensuse_url}/0001-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0001-orc-mark-it-as-reliable.patch
-Patch1034: %{opensuse_url}/ipmi_si-fix-memory-leak-on-new_smi.patch?id=%{opensuse_id}#/openSUSE-ipmi_si-fix-memory-leak-on-new_smi.patch
+Patch1033: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch?id=%{opensuse_id}#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
+Patch1034: %{opensuse_url}/0002-x86-stacktrace-remove-unwind_state-error.patch?id=%{opensuse_id}#/openSUSE-0002-x86-stacktrace-remove-unwind_state-error.patch
+Patch1035: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
+Patch1036: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
+Patch1037: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
+Patch1038: %{opensuse_url}/ipmi_si-fix-memory-leak-on-new_smi.patch?id=%{opensuse_id}#/openSUSE-ipmi_si-fix-memory-leak-on-new_smi.patch
 
 # https://github.com/pfactum/pf-kernel/commits/pf-4.14
 # block fixes and updates, mostly
@@ -715,6 +719,7 @@ Patch3015: %{pf_url}/1c499bd3aba2e8689c2737919c43dcd49d929c46.patch#/pf-1c499bd3
 Patch3016: %{pf_url}/dd3baf06556264db5b3c180a6629712586cf3432.patch#/pf-dd3baf06556264db5b3c180a6629712586cf3432.patch
 Patch3017: %{pf_url}/402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch#/pf-402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch
 Patch3018: %{pf_url}/fae783f205717c20d01405a3d1021867642d32a8.patch#/pf-fae783f205717c20d01405a3d1021867642d32a8.patch
+Patch3019: %{pf_url}/0a956ac4ed13da65f85a41c5171b07f63810aee0.patch#/pf-0a956ac4ed13da65f85a41c5171b07f63810aee0.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -2255,6 +2260,9 @@ fi
 #
 #
 %changelog
+* Tue Dec 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.4-500.chinfo
+- 4.14.4
+
 * Thu Nov 30 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.3-500.chinfo
 - 4.14.3
 
