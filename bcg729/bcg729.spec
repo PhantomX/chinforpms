@@ -1,6 +1,6 @@
 Name:           bcg729
 Version:        1.0.4
-Release:        1%{?dist}
+Release:        100.chinfo%{?dist}
 Summary:        Encoder and decoder of the ITU G729 Annex A/B speech codec library
 
 License:        GPLv2
