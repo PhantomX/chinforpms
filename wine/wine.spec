@@ -137,6 +137,7 @@ BuildRequires:  openldap-devel
 BuildRequires:  perl-generators
 BuildRequires:  unixODBC-devel
 BuildRequires:  sane-backends-devel
+BuildRequires:  samba-devel
 BuildRequires:  systemd-devel
 BuildRequires:  zlib-devel
 BuildRequires:  fontforge freetype-devel
@@ -208,7 +209,6 @@ Requires:       wine-opencl(x86-32) = %{version}-%{release}
 Requires:       mingw32-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
 %endif
-#  wait for rhbz#968860 to require arch-specific samba-winbind-clients
 Requires:       /usr/bin/ntlm_auth
 Requires:       mesa-dri-drivers(x86-32)
 %endif
@@ -291,6 +291,7 @@ Requires:       cups-libs(x86-32)
 Requires:       freetype(x86-32)
 Requires:       nss-mdns(x86-32)
 Requires:       gnutls(x86-32)
+Requires:       libxslt(x86-32)
 Requires:       libXcomposite(x86-32)
 Requires:       libXcursor(x86-32)
 Requires:       libXinerama(x86-32)
@@ -301,6 +302,7 @@ Requires:       libpng(x86-32)
 Requires:       libpcap(x86-32)
 Requires:       mesa-libOSMesa(x86-32)
 Requires:       libv4l(x86-32)
+Requires:       samba-libs-devel(x86-32)
 Requires:       unixODBC(x86-32)
 %if 0%{?compholio}
 Requires:       libva(x86-32)
@@ -313,6 +315,7 @@ Requires:       cups-libs(x86-64)
 Requires:       freetype(x86-64)
 Requires:       nss-mdns(x86-64)
 Requires:       gnutls(x86-64)
+Requires:       libxslt(x86-64)
 Requires:       libXcomposite(x86-64)
 Requires:       libXcursor(x86-64)
 Requires:       libXinerama(x86-64)
@@ -323,6 +326,7 @@ Requires:       libpng(x86-64)
 Requires:       libpcap(x86-64)
 Requires:       mesa-libOSMesa(x86-64)
 Requires:       libv4l(x86-64)
+Requires:       samba-libs-devel(x86-64)
 Requires:       unixODBC(x86-64)
 %if 0%{?compholio}
 Requires:       libva(x86-64)

@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -608,9 +608,6 @@ Patch307: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 # https://patchwork.kernel.org/patch/9820417/
 Patch310: qcom-msm89xx-fixes.patch
 
-# https://patchwork.kernel.org/patch/10054387/
-Patch311: USB-ulpi-fix-bus-node-lookup.patch
-
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
@@ -622,9 +619,6 @@ Patch324: rpi-graphics-fix.patch
 # Generic fixes and enablement for Socionext SoC and 96board
 # https://patchwork.kernel.org/patch/9980861/
 Patch331: PCI-aspm-deal-with-missing-root-ports-in-link-state-handling.patch
-
-# https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
-Patch332: arm64-socionext-96b-enablement.patch
 
 Patch335: arm-exynos-fix-usb3.patch
 
@@ -649,8 +643,6 @@ Patch619: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # Headed upstream
 Patch621: drm-i915-Boost-GPU-clocks-if-we-miss-the-pageflip-s-vblank.patch
-
-Patch623: 0001-PATCH-staging-rtl8822be-fix-wrong-dma-unmap-len.patch
 
 # rhbz 1509461
 Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
@@ -695,6 +687,9 @@ Patch1036: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-
 Patch1037: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
 Patch1038: %{opensuse_url}/ipmi_si-fix-memory-leak-on-new_smi.patch?id=%{opensuse_id}#/openSUSE-ipmi_si-fix-memory-leak-on-new_smi.patch
 
+%global patchwork_url https://patchwork.kernel.org/patch
+Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
+
 # https://github.com/pfactum/pf-kernel/commits/pf-4.14
 # block fixes and updates, mostly
 
@@ -720,6 +715,7 @@ Patch3016: %{pf_url}/dd3baf06556264db5b3c180a6629712586cf3432.patch#/pf-dd3baf06
 Patch3017: %{pf_url}/402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch#/pf-402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch
 Patch3018: %{pf_url}/fae783f205717c20d01405a3d1021867642d32a8.patch#/pf-fae783f205717c20d01405a3d1021867642d32a8.patch
 Patch3019: %{pf_url}/0a956ac4ed13da65f85a41c5171b07f63810aee0.patch#/pf-0a956ac4ed13da65f85a41c5171b07f63810aee0.patch
+Patch3020: %{pf_url}/b446f8cd4ae8b643c158b0a96865709d59519c13.patch#/pf-b446f8cd4ae8b643c158b0a96865709d59519c13.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -2260,6 +2256,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.5-500.chinfo
+- 4.14.5
+
 * Tue Dec 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.4-500.chinfo
 - 4.14.4
 
