@@ -1,6 +1,6 @@
 Name:           firefox-chinfo-prefs
 Version:        20171121
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chinforinfula default preferences for Firefox
 
 License:        Public Domain
@@ -8,8 +8,6 @@ URL:            https://github.com/PhantomX
 Source0:        %{name}.js
 
 BuildArch:      noarch
-
-Requires:       firefox
 
 %description
 %{summary}.
@@ -23,13 +21,17 @@ Requires:       firefox
 mkdir -p %{buildroot}%{_sysconfdir}/firefox/pref
 install -pm0644 %{SOURCE0} %{buildroot}%{_sysconfdir}/firefox/pref/chinfo.js
 
+mkdir -p %{buildroot}%{_sysconfdir}/waterfox/pref
+install -pm0644 %{SOURCE0} %{buildroot}%{_sysconfdir}/waterfox/pref/chinfo.js
 
 %files
 %config(noreplace) %{_sysconfdir}/firefox/pref/chinfo.js
+%config(noreplace) %{_sysconfdir}/waterfox/pref/chinfo.js
 
 %changelog
-* Tue Nov 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 20171121-1
-- 20171121
+* Thu Dec 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 20171121-2
+- Added waterfox
+- Removed R: firefox
 
 * Fri Nov 17 2017 Phantom X <megaphantomx at bol dot com dot br> - 20171117-1
 - 20171117

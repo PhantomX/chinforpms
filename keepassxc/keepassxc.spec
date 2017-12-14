@@ -1,7 +1,7 @@
 %global with_yubikey  %{?_with_yubikey: 1} %{?!_with_yubikey: 0}
 
 Name:           keepassxc
-Version:        2.2.2
+Version:        2.2.3
 Release:        100.chinfo%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -9,9 +9,11 @@ Epoch:          1
 License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain
 URL:            https://keepassxc.org/
 Source0:        https://github.com/keepassxreboot/%{name}/releases/download/%{version}/%{name}-%{version}-src.tar.xz
+Patch1:         https://github.com/keepassxreboot/keepassxc/commit/4cfa687a3f56ba49f113161fb3a522b7493bfb17.patch#/Fixed-typo-in-XML-tag.patch
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libgpg-error-devel
 BuildRequires:  pkgconfig(Qt5Core) >= 5.2
@@ -38,12 +40,17 @@ with new features and bugfixes to provide a feature-rich, fully
 cross-platform and modern open-source password manager.
  
 %prep
-%autosetup
+%autosetup -p1
+
+# get rid of icon tag in appdata file
+# icon tag is not allowed in desktop appdata file
+sed -i '/\<icon/d' share/linux/org.%{name}.appdata.xml
 
 %build
 mkdir build
 pushd build
 %cmake .. \
+  -DCMAKE_BUILD_TYPE=release \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DWITH_TESTS:BOOL=OFF \
   -DWITH_XC_HTTP:BOOL=ON \
@@ -66,7 +73,10 @@ desktop-file-edit \
   --add-mime-type="application/x-keepass" \
   --add-mime-type="application/x-keepassxc" \
   %{buildroot}%{_datadir}/applications/org.%{name}.desktop
- 
+
+#install appdata files
+appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.%{name}.appdata.xml
+
 %find_lang keepassx --with-qt
 
 %post
@@ -99,6 +109,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Wed Dec 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.3-100.chinfo
+- 2.2.3
+- f27 sync
+
 * Thu Oct 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2.2-100.chinfo
 - 2.2.2
 
