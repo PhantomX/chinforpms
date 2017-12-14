@@ -757,7 +757,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{mozappdir}/chrome.manifest
 %{mozappdir}/run-mozilla.sh
 %{mozappdir}/application.ini
-%{mozappdir}/pingsender
 %exclude %{mozappdir}/removed-files
 %{_datadir}/icons/hicolor/16x16/apps/waterfox.png
 %{_datadir}/icons/hicolor/22x22/apps/waterfox.png

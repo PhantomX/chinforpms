@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -655,37 +655,40 @@ Patch626: qxl-fixes.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id b29439c80a4129f6d12868a2053541fff783cf75
+%global opensuse_id b0756c571f05a434730a9342b3d0bf8977667bb1
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
 Patch1011: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/VFS-expedite-umount.patch?id=%{opensuse_id}#/openSUSE-VFS-expedite-umount.patch
 Patch1013: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch?id=%{opensuse_id}#/openSUSE-perf_timechart_fix_zero_timestamps.patch
-Patch1014: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1015: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch?id=%{opensuse_id}#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
-Patch1016: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
-Patch1017: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1018: %{opensuse_url}/drm-bridge-analogix-dp-Fix-runtime-PM-state-in-get_m.patch?id=%{opensuse_id}#/openSUSE-drm-bridge-analogix-dp-Fix-runtime-PM-state-in-get_m.patch
-Patch1020: %{opensuse_url}/0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch?id=%{opensuse_id}#/openSUSE-0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch
-Patch1021: %{opensuse_url}/0002-x86-head-Remove-confusing-comment.patch?id=%{opensuse_id}#/openSUSE-0002-x86-head-Remove-confusing-comment.patch
-Patch1022: %{opensuse_url}/0003-x86-head-Remove-unused-bad_address-code.patch?id=%{opensuse_id}#/openSUSE-0003-x86-head-Remove-unused-bad_address-code.patch
-Patch1023: %{opensuse_url}/0004-x86-head-Fix-head-ELF-function-annotations.patch?id=%{opensuse_id}#/openSUSE-0004-x86-head-Fix-head-ELF-function-annotations.patch
-Patch1024: %{opensuse_url}/0005-x86-boot-Annotate-verify_cpu-as-a-callable-function.patch?id=%{opensuse_id}#/openSUSE-0005-x86-boot-Annotate-verify_cpu-as-a-callable-function.patch
-Patch1025: %{opensuse_url}/0006-x86-xen-Fix-xen-head-ELF-annotations.patch?id=%{opensuse_id}#/openSUSE-0006-x86-xen-Fix-xen-head-ELF-annotations.patch
-Patch1026: %{opensuse_url}/0007-x86-xen-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-0007-x86-xen-Add-unwind-hint-annotations.patch
-Patch1027: %{opensuse_url}/0008-x86-head-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-0008-x86-head-Add-unwind-hint-annotations.patch
-Patch1028: %{opensuse_url}/x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch?id=%{opensuse_id}#/openSUSE-x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch
-Patch1029: %{opensuse_url}/x86-unwinder-Make-CONFIG_UNWINDER_ORC-y-the-default-.patch?id=%{opensuse_id}#/openSUSE-x86-unwinder-Make-CONFIG_UNWINDER_ORC-y-the-default-.patch
-Patch1030: %{opensuse_url}/x86-unwind-Rename-unwinder-config-options-to-CONFIG_.patch?id=%{opensuse_id}#/openSUSE-x86-unwind-Rename-unwinder-config-options-to-CONFIG_.patch
-Patch1031: %{opensuse_url}/x86-unwind-Make-CONFIG_UNWINDER_ORC-y-the-default-in.patch?id=%{opensuse_id}#/openSUSE-x86-unwind-Make-CONFIG_UNWINDER_ORC-y-the-default-in.patch
-Patch1032: %{opensuse_url}/objtool-Print-top-level-commands-on-incorrect-usage.patch?id=%{opensuse_id}#/openSUSE-x86-objtool-Print-top-level-commands-on-incorrect-usage.patch
-Patch1033: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch?id=%{opensuse_id}#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
-Patch1034: %{opensuse_url}/0002-x86-stacktrace-remove-unwind_state-error.patch?id=%{opensuse_id}#/openSUSE-0002-x86-stacktrace-remove-unwind_state-error.patch
-Patch1035: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
-Patch1036: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
-Patch1037: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
-Patch1038: %{opensuse_url}/ipmi_si-fix-memory-leak-on-new_smi.patch?id=%{opensuse_id}#/openSUSE-ipmi_si-fix-memory-leak-on-new_smi.patch
+Patch1014: %{opensuse_url}/dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch?id=%{opensuse_id}#/openSUSE-dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
+Patch1015: %{opensuse_url}/netlink-Add-netns-check-on-taps.patch?id=%{opensuse_id}#/openSUSE-netlink-Add-netns-check-on-taps.patch
+Patch1016: %{opensuse_url}/netfilter-nfnetlink_cthelper-Add-missing-permission-.patch?id=%{opensuse_id}#/openSUSE-netfilter-nfnetlink_cthelper-Add-missing-permission-.patch
+Patch1017: %{opensuse_url}/netfilter-xt_osf-Add-missing-permission-checks.patch?id=%{opensuse_id}#/openSUSE-netfilter-xt_osf-Add-missing-permission-checks.patch
+Patch1018: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
+Patch1019: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch?id=%{opensuse_id}#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
+Patch1020: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
+Patch1021: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+Patch1022: %{opensuse_url}/0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch?id=%{opensuse_id}#/openSUSE-0001-objtool-Don-t-report-end-of-section-error-after-an-e.patch
+Patch1023: %{opensuse_url}/0002-x86-head-Remove-confusing-comment.patch?id=%{opensuse_id}#/openSUSE-0002-x86-head-Remove-confusing-comment.patch
+Patch1024: %{opensuse_url}/0003-x86-head-Remove-unused-bad_address-code.patch?id=%{opensuse_id}#/openSUSE-0003-x86-head-Remove-unused-bad_address-code.patch
+Patch1025: %{opensuse_url}/0004-x86-head-Fix-head-ELF-function-annotations.patch?id=%{opensuse_id}#/openSUSE-0004-x86-head-Fix-head-ELF-function-annotations.patch
+Patch1026: %{opensuse_url}/0005-x86-boot-Annotate-verify_cpu-as-a-callable-function.patch?id=%{opensuse_id}#/openSUSE-0005-x86-boot-Annotate-verify_cpu-as-a-callable-function.patch
+Patch1027: %{opensuse_url}/0006-x86-xen-Fix-xen-head-ELF-annotations.patch?id=%{opensuse_id}#/openSUSE-0006-x86-xen-Fix-xen-head-ELF-annotations.patch
+Patch1028: %{opensuse_url}/0007-x86-xen-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-0007-x86-xen-Add-unwind-hint-annotations.patch
+Patch1029: %{opensuse_url}/0008-x86-head-Add-unwind-hint-annotations.patch?id=%{opensuse_id}#/openSUSE-0008-x86-head-Add-unwind-hint-annotations.patch
+Patch1030: %{opensuse_url}/x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch?id=%{opensuse_id}#/openSUSE-x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch
+Patch1031: %{opensuse_url}/x86-unwinder-Make-CONFIG_UNWINDER_ORC-y-the-default-.patch?id=%{opensuse_id}#/openSUSE-x86-unwinder-Make-CONFIG_UNWINDER_ORC-y-the-default-.patch
+Patch1032: %{opensuse_url}/x86-unwind-Rename-unwinder-config-options-to-CONFIG_.patch?id=%{opensuse_id}#/openSUSE-x86-unwind-Rename-unwinder-config-options-to-CONFIG_.patch
+Patch1033: %{opensuse_url}/x86-unwind-Make-CONFIG_UNWINDER_ORC-y-the-default-in.patch?id=%{opensuse_id}#/openSUSE-x86-unwind-Make-CONFIG_UNWINDER_ORC-y-the-default-in.patch
+Patch1034: %{opensuse_url}/objtool-Print-top-level-commands-on-incorrect-usage.patch?id=%{opensuse_id}#/openSUSE-x86-objtool-Print-top-level-commands-on-incorrect-usage.patch
+Patch1035: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch?id=%{opensuse_id}#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
+Patch1036: %{opensuse_url}/0002-x86-stacktrace-remove-unwind_state-error.patch?id=%{opensuse_id}#/openSUSE-0002-x86-stacktrace-remove-unwind_state-error.patch
+Patch1037: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
+Patch1038: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
+Patch1039: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
+Patch1040: %{opensuse_url}/ipmi_si-fix-memory-leak-on-new_smi.patch?id=%{opensuse_id}#/openSUSE-ipmi_si-fix-memory-leak-on-new_smi.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -715,7 +718,7 @@ Patch3016: %{pf_url}/dd3baf06556264db5b3c180a6629712586cf3432.patch#/pf-dd3baf06
 Patch3017: %{pf_url}/402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch#/pf-402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch
 Patch3018: %{pf_url}/fae783f205717c20d01405a3d1021867642d32a8.patch#/pf-fae783f205717c20d01405a3d1021867642d32a8.patch
 Patch3019: %{pf_url}/0a956ac4ed13da65f85a41c5171b07f63810aee0.patch#/pf-0a956ac4ed13da65f85a41c5171b07f63810aee0.patch
-Patch3020: %{pf_url}/b446f8cd4ae8b643c158b0a96865709d59519c13.patch#/pf-b446f8cd4ae8b643c158b0a96865709d59519c13.patch
+Patch3020: %{pf_url}/fac86abf976a697f7a713c5747646d7877e19167.patch#/pf-fac86abf976a697f7a713c5747646d7877e19167.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -2256,6 +2259,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.6-500.chinfo
+- 4.14.6
+
 * Mon Dec 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.5-500.chinfo
 - 4.14.5
 
