@@ -719,6 +719,7 @@ Patch3017: %{pf_url}/402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch#/pf-402eef70
 Patch3018: %{pf_url}/fae783f205717c20d01405a3d1021867642d32a8.patch#/pf-fae783f205717c20d01405a3d1021867642d32a8.patch
 Patch3019: %{pf_url}/0a956ac4ed13da65f85a41c5171b07f63810aee0.patch#/pf-0a956ac4ed13da65f85a41c5171b07f63810aee0.patch
 Patch3020: %{pf_url}/fac86abf976a697f7a713c5747646d7877e19167.patch#/pf-fac86abf976a697f7a713c5747646d7877e19167.patch
+Patch3021: %{pf_url}/ceb1762ffc9e3ee11f354a198aee3e54374e9e53.patch#/pf-ceb1762ffc9e3ee11f354a198aee3e54374e9e53.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)

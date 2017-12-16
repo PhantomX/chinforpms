@@ -1,6 +1,6 @@
-%global commit ca3be1877ecae3e08a9016c83d57529df8f66c75
+%global commit c55847a79eb7382153302e7963760f0365cdf088
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20171108
+%global date 20171214
 %global use_snapshot 1
 
 # Enable system ffmpeg
@@ -10,7 +10,7 @@
 %endif
 
 %if 0%{?use_snapshot}
-%global commit1 4fddbc9d3032113bdfed5186de73545e19340b4f
+%global commit1 6537fc1bf38d0787a1d86375e5b3cb267349d2d5
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -22,15 +22,11 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global commit4 770365d44df35d6e675c58bb2a774ca412278ef5
+%global commit4 8b4cadaf62d7de42d374056fc6aafc555f2bc7dc
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
-%global commit5 b7f5a22753c81d834ab5133d655f1fd525280765
-%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
-%global srcname5 tinyformat
-
-%global commit6 136b1e2d5d90284fd7bdd77ed605c70a8d31c8c4
+%global commit6 2edde6665d9a56ead5ea0e55b4e64d9a803e6164
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
@@ -49,7 +45,7 @@
 
 Name:           ppsspp
 Version:        1.4
-Release:        11%{?gver}%{?dist}
+Release:        12%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -62,7 +58,6 @@ Source2:        https://github.com/hrydgard/%{srcname2}/archive/%{commit2}.tar.g
 Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
 %endif #{?sysffmpeg}
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
-Source5:        https://github.com/Kingcom/%{srcname5}/archive/%{commit5}.tar.gz#/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/hrydgard/glslang/archive/%{commit6}.tar.gz#/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}.tar.gz#/%{srcname7}-%{shortcommit7}.tar.gz
 %else
@@ -107,7 +102,6 @@ tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
 tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 %endif #{?sysffmpeg}
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
-tar -xf %{SOURCE5} -C ext/armips/ext/tinyformat --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 %endif
@@ -257,6 +251,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Dec 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-12.20171214gitc55847a
+- New snapshot
+
 * Wed Nov 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-11.20171107gitca3be18
 - New snapshot
 
