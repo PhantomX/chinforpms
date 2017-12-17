@@ -626,8 +626,12 @@ Patch335: arm-exynos-fix-usb3.patch
 
 # 500 - Temp fixes/CVEs etc
 
-# rhbz 1498016 1498017
-#Patch503: KEYS-don-t-let-add_key-update-an-uninstantiated-key.patch
+# rhbz 1525474 1525476
+Patch501: USB-core-prevent-malicious-bNumInterfaces-overflow.patch
+
+# https://patchwork.kernel.org/patch/10108209/
+# https://marc.info/?l=linux-kernel&m=151307686618795
+Patch502: Revert-exec-avoid-RLIMIT_STACK-races-with-prlimit.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
