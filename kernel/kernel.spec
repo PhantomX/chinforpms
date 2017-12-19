@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -659,7 +659,7 @@ Patch626: qxl-fixes.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id b0756c571f05a434730a9342b3d0bf8977667bb1
+%global opensuse_id 0598608cd72c5e0d2c1a1a5432c3df9a4ae5d1a0
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -688,7 +688,7 @@ Patch1032: %{opensuse_url}/x86-unwind-Rename-unwinder-config-options-to-CONFIG_.
 Patch1033: %{opensuse_url}/x86-unwind-Make-CONFIG_UNWINDER_ORC-y-the-default-in.patch?id=%{opensuse_id}#/openSUSE-x86-unwind-Make-CONFIG_UNWINDER_ORC-y-the-default-in.patch
 Patch1034: %{opensuse_url}/objtool-Print-top-level-commands-on-incorrect-usage.patch?id=%{opensuse_id}#/openSUSE-x86-objtool-Print-top-level-commands-on-incorrect-usage.patch
 Patch1035: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch?id=%{opensuse_id}#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
-Patch1036: %{opensuse_url}/0002-x86-stacktrace-remove-unwind_state-error.patch?id=%{opensuse_id}#/openSUSE-0002-x86-stacktrace-remove-unwind_state-error.patch
+Patch1036: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patch?id=%{opensuse_id}#/openSUSE-0002-x86-stacktrace-make-clear-the-success-paths.patch
 Patch1037: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
 Patch1038: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
 Patch1039: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
@@ -2264,6 +2264,10 @@ fi
 #
 #
 %changelog
+* Mon Dec 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.7-500.chinfo
+- 4.14.7
+- f27 sync
+
 * Thu Dec 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.6-500.chinfo
 - 4.14.6
 

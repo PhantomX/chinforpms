@@ -1,6 +1,6 @@
 Name:           firefox-chinfo-prefs
-Version:        20171121
-Release:        2%{?dist}
+Version:        20171218
+Release:        1%{?dist}
 Summary:        Chinforinfula default preferences for Firefox
 
 License:        Public Domain
@@ -29,6 +29,9 @@ install -pm0644 %{SOURCE0} %{buildroot}%{_sysconfdir}/waterfox/pref/chinfo.js
 %config(noreplace) %{_sysconfdir}/waterfox/pref/chinfo.js
 
 %changelog
+* Mon Dec 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 20171218-1
+- 20171218
+
 * Thu Dec 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 20171121-2
 - Added waterfox
 - Removed R: firefox
