@@ -92,7 +92,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.0.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 Source0:        https://github.com/MrAlex94/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
@@ -103,7 +103,6 @@ Source20:       waterfox.desktop
 Source21:       waterfox.sh.in
 Source23:       waterfox.1
 Source26:       distribution.ini
-Source27:       google-api-key
 
 # Build patches
 Patch0:         firefox-install-dir.patch
@@ -153,6 +152,20 @@ Patch481:        sqlcompat-ff57-1-backport-730495
 
 # Debian patches
 Patch500:        mozilla-440908.patch
+
+# FreeBSD patches
+%global freebsd_url https://svnweb.freebsd.org/ports/head/www/firefox/files
+%global freebsd_rev 454192
+%global freebsd_uri ?revision=%{freebsd_rev}&view=co&pathrev=%{freebsd_rev}
+Patch600:        %{freebsd_url}/patch-bug1386887%{freebsd_uri}#/FreeBSD-bug1386887.patch
+Patch601:        %{freebsd_url}/patch-servo17934%{freebsd_uri}#/FreeBSD-servo17934.patch
+Patch602:        %{freebsd_url}/patch-servo17969%{freebsd_uri}#/FreeBSD-servo17969.patch
+Patch603:        %{freebsd_url}/patch-servo18046%{freebsd_uri}#/FreeBSD-servo18046.patch
+Patch604:        %{freebsd_url}/patch-servo18126%{freebsd_uri}#/FreeBSD-servo18126.patch
+Patch605:        %{freebsd_url}/patch-bug1401573%{freebsd_uri}#/FreeBSD-bug1401573.patch
+Patch606:        %{freebsd_url}/patch-bug1186967%{freebsd_uri}#/FreeBSD-bug1186967.patch
+Patch607:        %{freebsd_url}/patch-bug1384701%{freebsd_uri}#/FreeBSD-bug1384701.patch
+Patch608:        %{freebsd_url}/patch-bug1414440%{freebsd_uri}#/FreeBSD-bug1414440.patch
 
 # Chinforinfula patches
 Patch700:        firefox-nosocial.patch
@@ -315,6 +328,17 @@ This package contains results of tests executed during build.
 # Debian extension patch
 %patch500 -p1 -b .440908
 
+# rust and servo fixes, plus backports
+%patch600 -p0 -b .bsd1386887
+%patch601 -p0 -b .servo17934
+%patch602 -p0 -b .servo17969
+%patch603 -p0 -b .servo18046
+%patch604 -p0 -b .servo18126
+%patch605 -p0 -b .bsd1401573
+%patch606 -p0 -b .bsd1186967
+%patch607 -p0 -b .bsd1384701
+%patch608 -p0 -b .bsd1414440
+
 %patch700 -p1 -b .nosocial
 # Install langpacks other way
 %patch701 -p1 -b .nolangpacks
@@ -327,7 +351,6 @@ This package contains results of tests executed during build.
 
 rm -f .mozconfig
 cp %{SOURCE10} .mozconfig
-cp %{SOURCE27} google-api-key
 
 %if %{?system_nss}
 echo "ac_add_options --with-system-nspr" >> .mozconfig
@@ -787,5 +810,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 #---------------------------------------------------------------------
 
 %changelog
+* Tue Dec 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 56.0.1-2.20171213git7b7aa8b
+- Fixes borrowed from FreeBSD
+- Enable stylo
+- Do not use api keys from Fedora Firefox package
+- Build with gold
+
 * Wed Dec 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 56.0.1-1.20171213git7b7aa8b
 - First spec, borrowed from Fedora Firefox
