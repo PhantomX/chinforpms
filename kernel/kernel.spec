@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -626,13 +626,6 @@ Patch335: arm-exynos-fix-usb3.patch
 
 # 500 - Temp fixes/CVEs etc
 
-# rhbz 1525474 1525476
-Patch501: USB-core-prevent-malicious-bNumInterfaces-overflow.patch
-
-# https://patchwork.kernel.org/patch/10108209/
-# https://marc.info/?l=linux-kernel&m=151307686618795
-Patch502: Revert-exec-avoid-RLIMIT_STACK-races-with-prlimit.patch
-
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
 Patch601: 0001-Input-gpio_keys-Allow-suppression-of-input-events-fo.patch
@@ -654,12 +647,21 @@ Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # Fixes for QXL issues
 Patch626: qxl-fixes.patch
 
+# rhbz 1462175
+Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
+
+# CVE-2017-17712 rhbz 1526427 1526933 
+Patch629: net-ipv4-fix-for-a-race-condition-in-raw_sendmsg.patch
+
+# CVE-2017-17741 rhbz 1527112 1527113
+Patch630: v4-KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 0598608cd72c5e0d2c1a1a5432c3df9a4ae5d1a0
+%global opensuse_id 674981bbd1c094487306428b2f30e762dcbdcfde
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -692,7 +694,6 @@ Patch1036: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patc
 Patch1037: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
 Patch1038: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
 Patch1039: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
-Patch1040: %{opensuse_url}/ipmi_si-fix-memory-leak-on-new_smi.patch?id=%{opensuse_id}#/openSUSE-ipmi_si-fix-memory-leak-on-new_smi.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -724,6 +725,10 @@ Patch3018: %{pf_url}/fae783f205717c20d01405a3d1021867642d32a8.patch#/pf-fae783f2
 Patch3019: %{pf_url}/0a956ac4ed13da65f85a41c5171b07f63810aee0.patch#/pf-0a956ac4ed13da65f85a41c5171b07f63810aee0.patch
 Patch3020: %{pf_url}/fac86abf976a697f7a713c5747646d7877e19167.patch#/pf-fac86abf976a697f7a713c5747646d7877e19167.patch
 Patch3021: %{pf_url}/ceb1762ffc9e3ee11f354a198aee3e54374e9e53.patch#/pf-ceb1762ffc9e3ee11f354a198aee3e54374e9e53.patch
+Patch3022: %{pf_url}/23052f01400f27f4e0b293c772d78292b69146e3.patch#/pf-23052f01400f27f4e0b293c772d78292b69146e3.patch
+Patch3023: %{pf_url}/44625c0e88aea2eeebff6b861f77c04d90f5ca8c.patch#/pf-44625c0e88aea2eeebff6b861f77c04d90f5ca8c.patch
+Patch3024: %{pf_url}/03ac4850e1772dfa6f546748cfa047f3b601f21e.patch#/pf-03ac4850e1772dfa6f546748cfa047f3b601f21e.patch
+Patch3025: %{pf_url}/65658987ef5794e9cd48f53f95dd2b81b8ae6448.patch#/pf-65658987ef5794e9cd48f53f95dd2b81b8ae6448.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -2264,6 +2269,10 @@ fi
 #
 #
 %changelog
+* Thu Dec 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.8-500.chinfo
+- 4.14.8
+- f27 sync
+
 * Mon Dec 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.7-500.chinfo
 - 4.14.7
 - f27 sync
