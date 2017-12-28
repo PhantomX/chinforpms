@@ -62,7 +62,7 @@ if [ ! -r $MOZ_LIB_DIR/waterfox/$MOZ_FIREFOX_FILE ]; then
 fi
 MOZ_DIST_BIN="$MOZ_LIB_DIR/waterfox"
 MOZ_LANGPACKS_DIR="$MOZ_DIST_BIN/langpacks"
-MOZ_EXTENSIONS_PROFILE_DIR="$HOME/.mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
+MOZ_EXTENSIONS_PROFILE_DIR="$HOME/.waterfox/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
 MOZ_PROGRAM="$MOZ_DIST_BIN/$MOZ_FIREFOX_FILE"
 MOZ_LAUNCHER="$MOZ_DIST_BIN/run-mozilla.sh"
  

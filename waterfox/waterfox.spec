@@ -1,6 +1,6 @@
-%global commit 7b7aa8b4b5d17ce21072054285618fd6434e5482
+%global commit 388770ff37846abbe9f2eebbd6d71014523bb047
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20171213
+%global date 20171226
 %global use_snapshot 1
 
 %if 0%{?use_snapshot}
@@ -15,6 +15,9 @@
 
 # Use system hunspell?
 %global system_hunspell   1
+
+# Use system libevent?
+%global system_libevent   0
 
 # Use system sqlite?
 %if 0%{?fedora} > 27
@@ -92,7 +95,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.0.1
-Release:        2%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 Source0:        https://github.com/MrAlex94/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
@@ -170,6 +173,7 @@ Patch608:        %{freebsd_url}/patch-bug1414440%{freebsd_uri}#/FreeBSD-bug14144
 # Chinforinfula patches
 Patch700:        firefox-nosocial.patch
 Patch701:        %{name}-nolangpacks.patch
+Patch702:        %{name}-waterfoxdir.patch
 
 %if %{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -197,6 +201,9 @@ BuildRequires:  pkgconfig(xrender)
 %if %{?system_hunspell}
 BuildRequires:  pkgconfig(hunspell)
 %endif
+%if %{?system_libevent}
+BuildRequires:  pkgconfig(libevent)
+%endif
 BuildRequires:  pkgconfig(libstartup-notification-1.0)
 %if %{?alsa_backend}
 BuildRequires:  pkgconfig(alsa)
@@ -219,6 +226,7 @@ BuildRequires:  clang
 BuildRequires:  clang-libs
 
 Requires:       mozilla-filesystem
+Requires:       waterfox-filesystem
 Requires:       p11-kit-trust
 %if %{?system_nss}
 Requires:       nspr >= %{nspr_build_version}
@@ -342,6 +350,7 @@ This package contains results of tests executed during build.
 %patch700 -p1 -b .nosocial
 # Install langpacks other way
 %patch701 -p1 -b .nolangpacks
+%patch702 -p1 -b .waterfoxdir
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -388,6 +397,12 @@ echo "ac_add_options --enable-alsa" >> .mozconfig
 echo "ac_add_options --enable-system-hunspell" >> .mozconfig
 %else
 echo "ac_add_options --disable-system-hunspell" >> .mozconfig
+%endif
+
+%if %{?system_libevent}
+echo "ac_add_options --enable-system-libevent" >> .mozconfig
+%else
+echo "ac_add_options --disable-system-libevent" >> .mozconfig
 %endif
 
 %if %{?debug_build}
@@ -677,8 +692,8 @@ mkdir -p %{buildroot}/%{mozappdir}/browser/defaults/preferences
 mkdir -p %{buildroot}/%{_sysconfdir}/%{name}/pref
 
 # System extensions
-mkdir -p %{buildroot}%{_datadir}/mozilla/extensions/%{waterfox_app_id}
-mkdir -p %{buildroot}%{_libdir}/mozilla/extensions/%{waterfox_app_id}
+mkdir -p %{buildroot}%{_datadir}/waterfox/extensions/%{waterfox_app_id}
+mkdir -p %{buildroot}%{_libdir}/waterfox/extensions/%{waterfox_app_id}
 
 # Copy over the LICENSE
 install -p -c -m 644 LICENSE %{buildroot}/%{mozappdir}
@@ -730,8 +745,6 @@ end
 # is it a final removal?
 if [ $1 -eq 0 ]; then
   rm -rf %{mozappdir}/components
-  rm -rf %{mozappdir}/extensions
-  rm -rf %{mozappdir}/plugins
   rm -rf %{langpackdir}
 fi
 
@@ -756,8 +769,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %doc %{_mandir}/man1/*
 %dir %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}/*
-%dir %{_datadir}/mozilla/extensions/*
-%dir %{_libdir}/mozilla/extensions/*
+%dir %{_datadir}/waterfox/extensions/*
+%dir %{_libdir}/waterfox/extensions/*
 %{_datadir}/appdata/*.appdata.xml
 %{_datadir}/applications/*.desktop
 %dir %{mozappdir}
@@ -810,6 +823,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Dec 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 56.0.1-4.20171213git388770f
+- New patch to ~/.waterfox/{extensions,plugins} and /usr/share/waterfox
+- R: waterfox-filesystem
+
+* Tue Dec 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 56.0.1-3.20171213git388770f
+- New snapshot
+- BR: libevent, disabled, needs new releases
+- Patch to use ~/.waterfox/extensions
+
 * Tue Dec 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 56.0.1-2.20171213git7b7aa8b
 - Fixes borrowed from FreeBSD
 - Enable stylo
