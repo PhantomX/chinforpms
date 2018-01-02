@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -661,7 +661,7 @@ Patch630: v4-KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 9423ca2d83e140041bbc69d74e99172f891f4d08
+%global opensuse_id 69201cfd6f6d73ea9e44e6b0788a47cee749956e
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -717,6 +717,8 @@ Patch3023: %{pf_url}/44625c0e88aea2eeebff6b861f77c04d90f5ca8c.patch#/pf-44625c0e
 Patch3024: %{pf_url}/03ac4850e1772dfa6f546748cfa047f3b601f21e.patch#/pf-03ac4850e1772dfa6f546748cfa047f3b601f21e.patch
 Patch3025: %{pf_url}/65658987ef5794e9cd48f53f95dd2b81b8ae6448.patch#/pf-65658987ef5794e9cd48f53f95dd2b81b8ae6448.patch
 Patch3026: %{pf_url}/3395a13599f78be6b7003be8c1a482052069c851.patch#/pf-3395a13599f78be6b7003be8c1a482052069c851.patch
+Patch3027: %{pf_url}/ed6c4ccd4e09bab0d33ae6070d236878766868a5.patch#/pf-ed6c4ccd4e09bab0d33ae6070d236878766868a5.patch
+Patch3028: %{pf_url}/3994785ce4d51beb7b9a26779cba161c87127c39.patch#/pf-3994785ce4d51beb7b9a26779cba161c87127c39.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -1287,6 +1289,7 @@ $patch_command -i %{SOURCE4000}
 # Any further pre-build tree manipulations happen here.
 
 chmod +x scripts/checkpatch.pl
+chmod +x tools/objtool/sync-check.sh
 
 # This Prevents scripts/setlocalversion from mucking with our version numbers.
 touch .scmversion
@@ -2257,6 +2260,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.10-500.chinfo
+- 4.14.10
+
 * Tue Dec 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.9-500.chinfo
 - 4.14.9
 

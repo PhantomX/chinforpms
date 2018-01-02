@@ -1,0 +1,11 @@
+--- phantomjs-2.1.1/build.py.orig	2017-12-29 14:37:04.322205427 -0200
++++ phantomjs-2.1.1/build.py	2017-12-29 14:37:07.859191679 -0200
+@@ -78,7 +78,7 @@ def which(program):
+ 
+ # returns the path to the QMake executable which gets built in our internal QtBase fork
+ def qmakePath():
+-    exe = "qmake"
++    exe = "qmake-qt5"
+     if platform.system() == "Windows":
+         exe += ".exe"
+     return os.path.abspath("/usr/bin/" + exe)
