@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -650,9 +650,6 @@ Patch626: qxl-fixes.patch
 # rhbz 1462175
 Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
 
-# CVE-2017-17712 rhbz 1526427 1526933 
-Patch629: net-ipv4-fix-for-a-race-condition-in-raw_sendmsg.patch
-
 # CVE-2017-17741 rhbz 1527112 1527113
 Patch630: v4-KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
 
@@ -669,7 +666,6 @@ Patch1011: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_
 Patch1012: %{opensuse_url}/VFS-expedite-umount.patch?id=%{opensuse_id}#/openSUSE-VFS-expedite-umount.patch
 Patch1013: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch?id=%{opensuse_id}#/openSUSE-perf_timechart_fix_zero_timestamps.patch
 Patch1014: %{opensuse_url}/dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch?id=%{opensuse_id}#/openSUSE-dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
-Patch1015: %{opensuse_url}/netlink-Add-netns-check-on-taps.patch?id=%{opensuse_id}#/openSUSE-netlink-Add-netns-check-on-taps.patch
 Patch1016: %{opensuse_url}/netfilter-nfnetlink_cthelper-Add-missing-permission-.patch?id=%{opensuse_id}#/openSUSE-netfilter-nfnetlink_cthelper-Add-missing-permission-.patch
 Patch1017: %{opensuse_url}/netfilter-xt_osf-Add-missing-permission-checks.patch?id=%{opensuse_id}#/openSUSE-netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch1018: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
@@ -2260,6 +2256,9 @@ fi
 #
 #
 %changelog
+* Tue Jan 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.11-500.chinfo
+- 4.14.11
+
 * Mon Jan 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.10-500.chinfo
 - 4.14.10
 
