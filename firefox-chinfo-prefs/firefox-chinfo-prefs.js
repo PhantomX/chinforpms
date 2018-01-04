@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20171218
+// 20180103
 
 pref("browser.bookmarks.showRecentlyBookmarked", false);
 pref("browser.ctrlTab.previews", false);
@@ -21,6 +21,7 @@ pref("keyword.enabled", false);
 pref("layout.spellcheckDefault", 0);
 pref("media.autoplay.enabled", false);
 pref("middlemouse.contentLoadURL", false);
+pref("toolkit.cosmeticAnimations.enabled", false);
 
 // Enable Containers 
 // pref("privacy.userContext.enabled", true);
@@ -166,3 +167,85 @@ pref("media.peerconnection.ice.no_host", true);
 pref("browser.send_pings", false);
 // Ping the same host as the origin page (if above is true)
 pref("browser.send_pings.require_same_host", true);
+
+// Classic Theme Restorer
+pref("extensions.classicthemerestorer.aboutprefs", "category-search");
+pref("extensions.classicthemerestorer.altautocompl", true);
+pref("extensions.classicthemerestorer.altoptions", "options_win_alt");
+pref("extensions.classicthemerestorer.am_compact", true);
+pref("extensions.classicthemerestorer.backforward", true);
+pref("extensions.classicthemerestorer.bfurlbarfix", true);
+pref("extensions.classicthemerestorer.closeabarbut", true);
+pref("extensions.classicthemerestorer.ctroldsearch", true);
+pref("extensions.classicthemerestorer.ctroldsearchc", true);
+pref("extensions.classicthemerestorer.ctrreset", false);
+pref("extensions.classicthemerestorer.feedinurl", true);
+pref("extensions.classicthemerestorer.firstrun", false);
+pref("extensions.classicthemerestorer.fsaduration", false);
+pref("extensions.classicthemerestorer.padlock", "padlock_classic");
+pref("extensions.classicthemerestorer.pref_actindx", 8);
+pref("extensions.classicthemerestorer.pw_actidx_c", 5);
+pref("extensions.classicthemerestorer.pw_actidx_g", 4);
+pref("extensions.classicthemerestorer.pw_actidx_lb", 2);
+pref("extensions.classicthemerestorer.pw_actidx_t", 2);
+pref("extensions.classicthemerestorer.pw_actidx_tb", 3);
+pref("extensions.classicthemerestorer.showtabclose", true);
+pref("extensions.classicthemerestorer.starinurl", true);
+pref("extensions.classicthemerestorer.tabsontop", "false");
+pref("extensions.classicthemerestorer.wincontrols", true);
+
+// Download Status Bar
+pref("extensions.downloadbar.autocleancompletedonquit", true);
+pref("extensions.downloadbar.autoclosebarwhendownloadscomplete", true);
+pref("extensions.downloadbar.autoclosesecond", 3);
+pref("extensions.downloadbar.firstrun", true)
+
+// Firetray
+pref("extensions.firetray.firstrun", false);
+pref("extensions.firetray.hides_on_close", false);
+pref("extensions.firetray.hides_on_minimize", false);
+pref("extensions.firetray.hides_single_window", false);
+
+// NoScript
+pref("noscript.clearClick.prompt", false);
+pref("noscript.confirmSiteInfo", false);
+pref("noscript.ctxMenu", false);
+pref("noscript.firstRunRedirection", false);
+pref("noscript.firstRunRedirection.pending", "5.1.7");
+pref("noscript.forbidBookmarklets", true);
+pref("noscript.forbidMedia", false);
+pref("noscript.hoverUI", false);
+pref("noscript.notify", false);
+pref("noscript.notify.bottom", false);
+pref("noscript.showAbout", false);
+pref("noscript.showDomain", true);
+pref("noscript.sound.oncePerSite", false);
+pref("noscript.visibleUIChecked", true);
+
+// Status-4-ever
+pref("extensions.caligon.s4e.addonbar.windowGripper", false);
+pref("extensions.caligon.s4e.download.label.force", true);
+pref("extensions.caligon.s4e.firstRun", false);
+pref("extensions.caligon.s4e.firstRun.australis", false);
+pref("extensions.caligon.s4e.progress.urlbar", 0);
+
+// TabMixPlus
+pref("extensions.tabmix.appearance.selectedTabIndex", 1);
+pref("extensions.tabmix.autoReloadMenu", true);
+pref("extensions.tabmix.closeRightMenu", false);
+pref("extensions.tabmix.events.selectedTabIndex", 4);
+pref("extensions.tabmix.focusTab", 4);
+pref("extensions.tabmix.hideTabBarButton", false);
+pref("extensions.tabmix.openTabNext", true);
+pref("extensions.tabmix.opentabfor.bookmarks", true);
+pref("extensions.tabmix.opentabfor.history", true);
+pref("extensions.tabmix.opentabfor.urlbar", true);
+pref("extensions.tabmix.opentabforLinks", 2);
+pref("extensions.tabmix.progressMeter", false);
+pref("extensions.tabmix.sessions.crashed", true);
+pref("extensions.tabmix.sessions.restore.overwritewindows", false);
+pref("extensions.tabmix.singleWindow", true);
+pref("extensions.tabmix.syncPrefs", true);
+pref("extensions.tabmix.tabBarMaxRow", 2);
+pref("extensions.tabmix.tabBarMode", 2);
+pref("extensions.tabmix.tabs.closeButtons", 2);
