@@ -1,7 +1,7 @@
-%global commit 388770ff37846abbe9f2eebbd6d71014523bb047
+%global commit d0769caa90211e71c90bc4f89d95d7ff36af7f8c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20171226
-%global use_snapshot 1
+%global date 20180105
+%global use_snapshot 0
 
 %if 0%{?use_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -72,11 +72,11 @@
 %endif
 
 %if %{?system_nss}
-%global nspr_version 4.10.10
+%global nspr_version 4.17.0
 # NSS/NSPR quite often ends in build override, so as requirement the version
 # we're building against could bring us some broken dependencies from time to time.
 %global nspr_build_version %{nspr_version}
-%global nss_version 3.32.1
+%global nss_version 3.34
 %global nss_build_version %{nss_version}
 %endif
 
@@ -94,11 +94,15 @@
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.0.1
-Release:        4%{?gver}%{?dist}
+Version:        56.0.2
+Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
+%if 0%{?use_snapshot}
 Source0:        https://github.com/MrAlex94/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+%else
+Source0:        https://github.com/MrAlex94/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+%endif
 
 Source10:       waterfox-mozconfig
 Source12:       waterfox-chinfo-default-prefs.js
@@ -121,7 +125,6 @@ Patch29:        build-big-endian.patch
 Patch30:        fedora-build.patch
 Patch31:        build-ppc64-s390x-curl.patch
 Patch32:        build-rust-ppc64le.patch
-Patch34:        build-cubeb-pulse-arm.patch
 Patch35:        build-ppc-jit.patch
 Patch36:        build-missing-xlocale-h.patch
 # Always feel lucky for unsupported platforms:
@@ -138,15 +141,11 @@ Patch224:        mozilla-1170092.patch
 Patch225:        mozilla-1005640-accept-lang.patch
 #ARM run-time patch
 Patch226:        rhbz-1354671.patch
-Patch229:        firefox-nss-version.patch
 Patch230:        rhbz-1497932.patch
 
 # Upstream patches
 Patch402:        mozilla-1196777.patch
 Patch406:        mozilla-256180.patch
-Patch407:        mozilla-1348576.patch
-Patch410:        mozilla-1321521.patch
-Patch411:        mozilla-1321521-2.patch
 Patch413:        mozilla-1353817.patch
 Patch415:        mozilla-1405267.patch
 
@@ -174,6 +173,7 @@ Patch608:        %{freebsd_url}/patch-bug1414440%{freebsd_uri}#/FreeBSD-bug14144
 Patch700:        firefox-nosocial.patch
 Patch701:        %{name}-nolangpacks.patch
 Patch702:        %{name}-waterfoxdir.patch
+Patch703:        %{name}-cubeb-build.patch
 
 %if %{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -302,7 +302,6 @@ This package contains results of tests executed during build.
 %patch30 -p1 -b .fedora-build
 %patch31 -p1 -b .ppc64-s390x-curl
 %patch32 -p1 -b .rust-ppc64le
-# don't need that %patch34 -p1 -b .cubeb-pulse-arm
 %ifarch ppc ppc64 ppc64le
 %patch35 -p1 -b .ppc-jit
 %endif
@@ -351,6 +350,7 @@ This package contains results of tests executed during build.
 # Install langpacks other way
 %patch701 -p1 -b .nolangpacks
 %patch702 -p1 -b .waterfoxdir
+%patch703 -p1 -b .cubebbuild
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -823,6 +823,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Jan 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.0.2-1
+- 56.0.2
+- Fix release tarball support
+- Unused patches cleanup
+- Fix man
+
 * Wed Dec 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 56.0.1-4.20171213git388770f
 - New patch to ~/.waterfox/{extensions,plugins} and /usr/share/waterfox
 - R: waterfox-filesystem

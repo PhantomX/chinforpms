@@ -1,0 +1,8 @@
+--- Waterfox-56.0.2/media/libcubeb/src/moz.build.cubebbuild	2018-01-05 16:39:00.921101411 -0200
++++ Waterfox-56.0.2/media/libcubeb/src/moz.build	2018-01-05 16:40:44.948718748 -0200
+@@ -89,4 +89,4 @@ CFLAGS += CONFIG['MOZ_ALSA_CFLAGS']
+ CFLAGS += CONFIG['MOZ_PULSEAUDIO_CFLAGS']
+ 
+ # We allow warnings for third-party code that can be updated from upstream.
+-AllowCompilerWarnings()
++ALLOW_COMPILER_WARNINGS = True

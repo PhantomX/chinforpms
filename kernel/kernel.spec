@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -655,12 +655,15 @@ Patch630: v4-KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
 
 Patch631: cgroup-for-4.15-fixes-cgroup-fix-css_task_iter-crash-on-CSS_TASK_ITER_PROC.patch
 
+# rhbz1514969
+Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 58fec0f5680b7456aeed6bbf98fde270211b3637
+%global opensuse_id 3cf399e1ccf632c4c2431456c47adcbe71acbb43
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -717,7 +720,6 @@ Patch3025: %{pf_url}/65658987ef5794e9cd48f53f95dd2b81b8ae6448.patch#/pf-65658987
 Patch3026: %{pf_url}/3395a13599f78be6b7003be8c1a482052069c851.patch#/pf-3395a13599f78be6b7003be8c1a482052069c851.patch
 Patch3027: %{pf_url}/ed6c4ccd4e09bab0d33ae6070d236878766868a5.patch#/pf-ed6c4ccd4e09bab0d33ae6070d236878766868a5.patch
 Patch3028: %{pf_url}/3994785ce4d51beb7b9a26779cba161c87127c39.patch#/pf-3994785ce4d51beb7b9a26779cba161c87127c39.patch
-Patch3029: %{pf_url}/64471363e0d07edee9f80443f829dadb09c0a225.patch#/pf-64471363e0d07edee9f80443f829dadb09c0a225.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -1548,6 +1550,8 @@ BuildKernel() {
       cp -a --parents arch/%{asmarch}/include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     fi
 %ifarch aarch64
+    # Needed for systemtap
+    cp -a --parents arch/arm64/kernel/module.lds $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     # arch/arm64/include/asm/xen references arch/arm
     cp -a --parents arch/arm/include/asm/xen $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     # arch/arm64/include/asm/opcodes.h references arch/arm
@@ -2259,6 +2263,10 @@ fi
 #
 #
 %changelog
+* Fri Jan 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.12-500.chinfo
+- 4.14.12
+- f27 sync
+
 * Wed Jan 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.11-501.chinfo
 - f27 sync
 - PTI fixes

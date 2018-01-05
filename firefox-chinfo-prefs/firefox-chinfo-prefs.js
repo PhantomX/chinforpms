@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20180103
+// 20180104
 
 pref("browser.bookmarks.showRecentlyBookmarked", false);
 pref("browser.ctrlTab.previews", false);
@@ -169,7 +169,6 @@ pref("browser.send_pings", false);
 pref("browser.send_pings.require_same_host", true);
 
 // Classic Theme Restorer
-pref("extensions.classicthemerestorer.aboutprefs", "category-search");
 pref("extensions.classicthemerestorer.altautocompl", true);
 pref("extensions.classicthemerestorer.altoptions", "options_win_alt");
 pref("extensions.classicthemerestorer.am_compact", true);
@@ -183,12 +182,6 @@ pref("extensions.classicthemerestorer.feedinurl", true);
 pref("extensions.classicthemerestorer.firstrun", false);
 pref("extensions.classicthemerestorer.fsaduration", false);
 pref("extensions.classicthemerestorer.padlock", "padlock_classic");
-pref("extensions.classicthemerestorer.pref_actindx", 8);
-pref("extensions.classicthemerestorer.pw_actidx_c", 5);
-pref("extensions.classicthemerestorer.pw_actidx_g", 4);
-pref("extensions.classicthemerestorer.pw_actidx_lb", 2);
-pref("extensions.classicthemerestorer.pw_actidx_t", 2);
-pref("extensions.classicthemerestorer.pw_actidx_tb", 3);
 pref("extensions.classicthemerestorer.showtabclose", true);
 pref("extensions.classicthemerestorer.starinurl", true);
 pref("extensions.classicthemerestorer.tabsontop", "false");
