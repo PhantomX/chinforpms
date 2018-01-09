@@ -1,6 +1,6 @@
 Name:    easytag
 Version: 2.4.3
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 Summary: Tag editor for MP3, Ogg, FLAC and other music files
 
 Group:   Applications/Multimedia
@@ -8,10 +8,9 @@ License: GPLv2+
 URL:     https://wiki.gnome.org/Apps/EasyTAG
 Source:  https://download.gnome.org/sources/%{name}/2.4/%{name}-%{version}.tar.xz
 
-# Revert ogg patches until 2.4.2 (one of them is the one)
+# Revert ogg patch
 # https://bugzilla.gnome.org/show_bug.cgi?id=776110
 Patch0:  0001-Do-not-maintain-an-open-handle-on-Ogg-files.patch
-Patch1:  0001-Improve-const-use-in-FLAC-and-Ogg-tagging.patch
 
 BuildRequires: appdata-tools
 BuildRequires: desktop-file-utils
@@ -49,7 +48,6 @@ easier access to EasyTAG when opening directories and audio files.
 %prep
 %setup -q
 %patch0 -p1 -R
-%patch1 -p1 -R
 
 %build
 %configure
@@ -100,8 +98,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Mon Jan 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.4.3-101.chinfo
+- Apply only the right patch
+
 * Sun Jan 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.4.3-100.chinfo
-- Try to fix https://bugzilla.gnome.org/show_bug.cgi?id=776110.
+- Try to fix https://bugzilla.gnome.org/show_bug.cgi?id=776110
 
 * Wed Aug 02 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.4.3-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
