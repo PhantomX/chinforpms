@@ -20,14 +20,20 @@
 # Filter provides for private modules
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
+# https://github.com/TomaszGasior/gtk3-mushrooms
+%global mushroom_ver 3.22.26-3
+%global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
+
 Name: gtk3
 Version: 3.22.26
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
 URL: http://www.gtk.org
 Source0: http://download.gnome.org/sources/gtk+/3.22/gtk+-%{version}.tar.xz
+Source1: https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}.tar.gz#/gtk3-mushrooms-%{mushroom_ver}.tar.gz
+Source2: chinforpms-adwaita.css
 
 # Revert some good features dropped by upstream (3.10)
 Patch100: gtk+3-3.22.0-gtk-recent-files-limit.patch
@@ -37,14 +43,17 @@ Patch102: gtk+3-3.22.0-gtk-toolbar-style.patch
 # Disable this @#$& by default
 Patch103: gtk+3-3.22.0-disable-overlay.patch
 
+Patch104: gtk+3-startup-mode-cwd.patch
+Patch105: gtk+3-dateformat-with_time.patch
+Patch106: gtk+3-location_mode-filename.patch
+
 # Debian
-Patch104: 016_no_offscreen_widgets_grabbing.patch
-Patch105: 017_no_offscreen_device_grabbing.patch
-Patch106: 060_ignore-random-icons.patch
+Patch200: 016_no_offscreen_widgets_grabbing.patch
+Patch201: 017_no_offscreen_device_grabbing.patch
+Patch202: 060_ignore-random-icons.patch
 
 # Ubuntu
-Patch107: restore_filechooser_typeaheadfind.patch
-Patch108: ubuntu_fileselector_behaviour.patch
+Patch300: restore_filechooser_typeaheadfind.patch
 
 BuildRequires: pkgconfig(atk) >= %{atk_version}
 BuildRequires: pkgconfig(atk-bridge-2.0)
@@ -185,17 +194,45 @@ The %{name}-tests package contains tests that can be used to verify
 the functionality of the installed %{name} package.
 
 %prep
-%setup -q -n gtk+-%{version}
+%setup -q -n gtk+-%{version} -a 1
 
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
-%patch104 -p1
-%patch105 -p1
-%patch106 -p1
-%patch107 -p1
-%patch108 -p1
+%patch104 -p1 -b.startup_mode
+%patch105 -p1 -b.dateformat
+%patch106 -p1 -b.location_mode
+%patch200 -p1
+%patch201 -p1
+%patch202 -p1
+%patch300 -p1
+
+patch_command(){
+  patch -p2 -F1 -s -i %{mushroom_dir}/$1
+}
+patch_command appearance__buttons-menus-icons.patch
+patch_command appearance__disable-backdrop.patch
+patch_command appearance__file-chooser.patch
+patch_command appearance__message-dialogs.patch
+patch_command appearance__print-dialog.patch
+patch_command appearance__smaller-statusbar.patch
+patch_command csd__clean-headerbar.patch
+patch_command csd__disabled-by-default.patch
+patch_command csd__headerbar-title.patch
+patch_command csd__server-side-shadow.patch
+patch_command file-chooser__single-click.patch
+patch_command other__atk-bridge-errors.patch
+patch_command other__mnemonics-delay.patch
+patch_command other__window-background.patch
+patch_command popovers__color-chooser.patch
+patch_command popovers__file-chooser-list.patch
+patch_command popovers__menu-button.patch
+patch_command popovers__places-sidebar.patch
+
+cp %{mushroom_dir}/README.md README-mushrooms.md
+
+cat %{S:2} | tee -a gtk/theme/Adwaita/gtk-contained{,-dark}.css > /dev/null
 
 rm -fv testsuite/gtk/gtkresources.c
 
@@ -278,7 +315,7 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 %files -f gtk30.lang
 %license COPYING
-%doc AUTHORS NEWS README
+%doc AUTHORS NEWS README README-mushrooms.md
 %{_bindir}/gtk-query-immodules-3.0*
 %{_bindir}/gtk-launch
 %{_libdir}/libgtk-3.so.*
@@ -371,6 +408,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Tue Jan 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.26-101.chinfo
+- TomaszGasior gtk3-mushrooms assorted patches
+
 * Wed Nov 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.22.26-100.chinfo
 - 3.22.26
 
