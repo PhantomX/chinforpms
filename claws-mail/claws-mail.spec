@@ -1,41 +1,22 @@
-%global pluginapi 3.15.1.0
+%global pluginapi 3.16.0.0
 
-%if 0%{?fedora} > 26
 %global with_fancy 0
-%else
-%global with_fancy 1
-%endif
 
-# (!!!)
-# 20170917 : Rawhide, set to 0
-# temporarily turn of manual build because of Tex Live broken deps affecting docbook-utils BR
-# temporarily turn off manual build because of Tex Live broken deps affecting docbook-utils BR
-%if 0%{?fedora} > 27
-%global build_manual 0
-%else
+# 20171116 Rawhide
+# texlive currently uninstallable - several rebuilds failed!
 %global build_manual 1
-%endif
-
-# Patch20
-%global _default_patch_fuzz 2
 
 Name:           claws-mail
-Version:        3.15.1
-Release:        101.chinfo%{?dist}
+Version:        3.16.0
+Release:        100.chinfo%{?dist}
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
 URL:            http://claws-mail.org
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
-#http://www.thewildbeast.co.uk/claws-mail/bugzilla/show_bug.cgi?id=3795
-Patch1:         %{name}-3.15.0-fix-utils-typo.patch
-#http://git.claws-mail.org/?p=claws.git;a=commit;h=e6db5f2b301576156a8d56fb48b81ac9bffd0398
-Patch2:         %{name}-3.15.0-fix-alertpanel.patch
+Patch1:         http://git.claws-mail.org/?p=claws.git;a=patch;h=174c03f1931636ba6a47415619c18ce5af572d69#/%{name}-3.16.0-fix-bug-3936.patch
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
-
-# dillo
-Patch20:        https://git.archlinux.org/svntogit/packages.git/plain/trunk/dillo-plugin.diff?h=packages/%{name}#/dillo-plugin.diff
 
 # Useful patches from Debian
 Patch50:        11mark_trashed_as_read.patch
@@ -133,7 +114,6 @@ Requires: %{name}-plugins-bogofilter
 Requires: %{name}-plugins-bsfilter
 %endif
 Requires: %{name}-plugins-clamd
-Requires: %{name}-plugins-dillo
 Requires: %{name}-plugins-fancy
 Requires: %{name}-plugins-fetchinfo
 Requires: %{name}-plugins-gdata
@@ -230,14 +210,6 @@ received from an IMAP, LOCAL or POP account.
 When a message attachment is found to contain a virus it can be
 deleted or saved in a specially designated folder.
 Options can be found in /Configuration/Preferences/Plugins/Clam AntiVirus.
-
-%package plugins-dillo
-Summary:        Display HTML emails in Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
-Requires:       dillo
-
-%description plugins-dillo
-This plugin renders HTML email via the Dillo Web Browser.
 
 
 %if 0%{with_fancy}
@@ -410,14 +382,11 @@ exporting of your meetings or all your calendars.
 
 %prep
 %setup -q
-%patch1 -p1 -b.utils-type
-%patch2 -p1 -b.alertpanel
+%patch1 -p1 -b.bug3936
 
 %if 0%{?fedora} > 20
 %patch11 -p1 -b.syscrypto
 %endif
-
-%patch20 -p1 -b.dilloplugin
 
 %patch50 -p1 -b.trash
 %patch51 -p1 -b.manheader
@@ -583,10 +552,6 @@ fi
 %{_libdir}/claws-mail/plugins/clamd*
 #{_datadir}/appdata/claws-mail-clamd.metainfo.xml
 
-%files plugins-dillo
-%{_libdir}/claws-mail/plugins/dillo*
-#{_datadir}/appdata/claws-mail-dillo.metainfo.xml
-
 %if 0%{with_fancy}
 %files plugins-fancy
 %{_libdir}/claws-mail/plugins/fancy*
@@ -675,6 +640,10 @@ fi
 
 
 %changelog
+* Wed Jan 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.16.0-100.chinfo
+- 3.16.0
+- Remove dillo again
+
 * Tue Oct 03 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.15.1-101.chinfo
 - Missing fancy plugin f27 obsoletes
 
