@@ -106,18 +106,19 @@ chmod 0755 %{buildroot}%{_bindir}/pwsh
 
 
 %post
-# Add pwsh to the list of allowed shells in /etc/shells
 if [ "$1" = 1 ]; then
-  if ! [ -f "%{_sysconfdir}/shells" ] || ! grep -q '^%{_bindir}/pwsh$' "%{_sysconfdir}/shells"; then
-    echo '%{_bindir}/pwsh' >>"%{_sysconfdir}/shells"
-  fi
+  if [ ! -f %{_sysconfdir}/shells ] ; then
+    echo "%{_bindir}/pwsh" > %{_sysconfdir}/shells
+    echo "/bin/pwsh" >> %{_sysconfdir}/shells
+  else
+    grep -q "^%{_bindir}/pwsh$" %{_sysconfdir}/shells || echo "%{_bindir}/pwsh" >> %{_sysconfdir}/shells
+    grep -q "^/bin/pwsh$" %{_sysconfdir}/shells || echo "/bin/pwsh" >> %{_sysconfdir}/shells
 fi
 
-
 %postun
-# Remove pwsh from the list of allowed shells in /etc/shells
-if [ "$1" = 0 ]; then
-  sed -i -e '\#^%{_bindir}/pwsh$#d' "%{_sysconfdir}/shells"
+if [ "$1" = 0 ] && [ -f %{_sysconfdir}/shells ] ; then
+  sed -i '\!^%{_bindir}/pwsh$!d' %{_sysconfdir}/shells
+  sed -i '\!^/bin/pwsh$!d' %{_sysconfdir}/shells
 fi
 
 %files

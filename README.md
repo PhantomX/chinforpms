@@ -36,6 +36,7 @@ release tags).
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
                     and **VirtualBox-guest-additions-iso** support
+ * **xboxdrv** - Tests
  * **wine** - Extra patches and personal fixes
 
 ## Credits (Patches, install procedures and other files)

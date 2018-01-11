@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -576,6 +576,11 @@ Patch205: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
 
 Patch206: MODSIGN-Support-not-importing-certs-from-db.patch
 
+# Make kernel MOKLIST code not error on missing variables
+Patch207: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
+Patch208: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
+Patch209: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
+
 Patch210: disable-i8042-check-on-apple-mac.patch
 
 Patch211: drm-i915-hush-check-crtc-state.patch
@@ -663,7 +668,7 @@ Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 3cf399e1ccf632c4c2431456c47adcbe71acbb43
+%global opensuse_id c72c6e5a936043cb81d23b88fa7d6746edb3c288
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -720,6 +725,8 @@ Patch3025: %{pf_url}/65658987ef5794e9cd48f53f95dd2b81b8ae6448.patch#/pf-65658987
 Patch3026: %{pf_url}/3395a13599f78be6b7003be8c1a482052069c851.patch#/pf-3395a13599f78be6b7003be8c1a482052069c851.patch
 Patch3027: %{pf_url}/ed6c4ccd4e09bab0d33ae6070d236878766868a5.patch#/pf-ed6c4ccd4e09bab0d33ae6070d236878766868a5.patch
 Patch3028: %{pf_url}/3994785ce4d51beb7b9a26779cba161c87127c39.patch#/pf-3994785ce4d51beb7b9a26779cba161c87127c39.patch
+Patch3029: %{pf_url}/4334e38197bdeca632e901e24732e93c00ffcff1.patch#/pf-4334e38197bdeca632e901e24732e93c00ffcff1.patch
+Patch3030: %{pf_url}/0aece97f7891a2353d0a6c829b3313691b4eddb5.patch#/pf-0aece97f7891a2353d0a6c829b3313691b4eddb5.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -2263,6 +2270,10 @@ fi
 #
 #
 %changelog
+* Wed Jan 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.13-500.chinfo
+- 4.14.13
+- f27 sync
+
 * Fri Jan 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.12-500.chinfo
 - 4.14.12
 - f27 sync
