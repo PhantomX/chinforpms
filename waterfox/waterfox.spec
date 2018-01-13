@@ -1,6 +1,6 @@
-%global commit d0769caa90211e71c90bc4f89d95d7ff36af7f8c
+%global commit e5cadca84043a21749fa48c077d81a8bf1f573e8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180105
+%global date 20180112
 %global use_snapshot 0
 
 %if 0%{?use_snapshot}
@@ -94,7 +94,7 @@
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.0.2
+Version:        56.0.3
 Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -168,12 +168,12 @@ Patch605:        %{freebsd_url}/patch-bug1401573%{freebsd_uri}#/FreeBSD-bug14015
 Patch606:        %{freebsd_url}/patch-bug1186967%{freebsd_uri}#/FreeBSD-bug1186967.patch
 Patch607:        %{freebsd_url}/patch-bug1384701%{freebsd_uri}#/FreeBSD-bug1384701.patch
 Patch608:        %{freebsd_url}/patch-bug1414440%{freebsd_uri}#/FreeBSD-bug1414440.patch
+Patch609:        %{freebsd_url}/patch-bug1409680%{freebsd_uri}#/FreeBSD-bug1409680.patch
 
 # Chinforinfula patches
 Patch700:        firefox-nosocial.patch
 Patch701:        %{name}-nolangpacks.patch
 Patch702:        %{name}-waterfoxdir.patch
-Patch703:        %{name}-cubeb-build.patch
 
 %if %{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -345,12 +345,12 @@ This package contains results of tests executed during build.
 %patch606 -p0 -b .bsd1186967
 %patch607 -p0 -b .bsd1384701
 %patch608 -p0 -b .bsd1414440
+%patch609 -p0 -b .bsd1409680
 
 %patch700 -p1 -b .nosocial
 # Install langpacks other way
 %patch701 -p1 -b .nolangpacks
 %patch702 -p1 -b .waterfoxdir
-%patch703 -p1 -b .cubebbuild
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -668,7 +668,6 @@ echo "%%lang($language_short) %{langpackdir}/langpack-$language_short@waterfox.x
 }
 
 # Table of fallbacks for each language
-# please file a bug at bugzilla.redhat.com if the assignment is incorrect
 create_default_langpack "bn-IN" "bn"
 create_default_langpack "es-AR" "es"
 create_default_langpack "fy-NL" "fy"
@@ -823,6 +822,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Jan 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.0.3-1
+- 56.0.3
+
 * Fri Jan 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.0.2-1
 - 56.0.2
 - Fix release tarball support
