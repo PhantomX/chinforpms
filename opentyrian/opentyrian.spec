@@ -1,9 +1,9 @@
 %global commit db67cf6eb3ae4913a85c3a2489f4cc511d09f412
 %global shortcommit %(c=%{commit}; echo ${c:0:12})
 %global date 20170414
-%global use_snapshot 1
+%global with_snapshot 1
 
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
@@ -14,7 +14,7 @@ Summary:        An arcade-style vertical scrolling shooter
 
 License:        GPLv2
 URL:            https://bitbucket.org/opentyrian/opentyrian
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 Source0:        https://bitbucket.org/%{name}/%{name}/get/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        http://www.camanis.net/opentyrian/releases/%{name}-%{version}-src.tar.gz
@@ -34,7 +34,7 @@ in 20,031 where you play as Trent Hawkins, a skilled fighter-pilot
 employed to fight Microsol and save the galaxy.
 
 %prep
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %autosetup -n %{name}-%{name}-%{shortcommit} -p0
 %else
 %autosetup -p0
@@ -42,7 +42,7 @@ employed to fight Microsol and save the galaxy.
 
 chmod -x CREDITS
 
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 sed \
   -e "/^HG_REV/s|:=.*|:= %{version}.%{shortcommit}|g" \
   -e '/touch src\/hg_revision.h/d' \

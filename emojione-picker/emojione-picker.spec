@@ -2,9 +2,9 @@
 %global commit cb5f504235f861586903cf64aec8ed75a9c925b6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20161009
-%global use_snapshot 1
+%global with_snapshot 1
 
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
@@ -15,7 +15,7 @@ Summary:        Emoji Picker for the indicator area using Emoji One
 
 License:        GPLv3
 URL:            https://github.com/gentakojima/%{fullname}
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 Source0:        https://github.com/gentakojima/%{fullname}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/gentakojima/%{fullname}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
@@ -40,7 +40,7 @@ Emoji Picker featuring several menus and a search panel.
 You must paste the emojis wherever you want to use them.
 
 %prep
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %autosetup -n %{fullname}-%{commit}
 %else
 %autosetup -n %{fullname}-%{version}

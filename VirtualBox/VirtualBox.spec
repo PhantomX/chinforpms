@@ -25,7 +25,7 @@
 %bcond_with vnc
 
 Name:       VirtualBox
-Version:    5.2.4
+Version:    5.2.6
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -809,6 +809,9 @@ getent group vboxsf >/dev/null || groupadd -r vboxsf 2>&1
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Tue Jan 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.6-100.chinfo
+- 5.2.6
+
 * Tue Dec 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.2.4-100.chinfo
 - 5.2.4
 

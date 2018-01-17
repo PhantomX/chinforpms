@@ -1,15 +1,15 @@
 %global commit 62242601ef28afee1eb489e6ca8725dc03cdc142
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180108
-%global use_snapshot 1
+%global with_snapshot 1
 
 # Enable system ffmpeg
-%global sysffmpeg 0
-%if !0%{?sysffmpeg}
+%global with_sysffmpeg 0
+%if !0%{?with_sysffmpeg}
 %global bundleffmpegver 3.0.2
 %endif
 
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %global commit1 6537fc1bf38d0787a1d86375e5b3cb267349d2d5
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
@@ -35,7 +35,7 @@
 %global srcname7 SPIRV-Cross
 %endif
 
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
@@ -50,29 +50,29 @@ Summary:        A PSP emulator
 
 License:        PSPSDK
 URL:            http://www.ppsspp.org/
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 Source0:        https://github.com/hrydgard/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 Source1:        https://github.com/hrydgard/%{srcname1}/archive/%{commit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
-%if !0%{?sysffmpeg}
+%if !0%{?with_sysffmpeg}
 Source2:        https://github.com/hrydgard/%{srcname2}/archive/%{commit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
-%endif #{?sysffmpeg}
+%endif #{?with_sysffmpeg}
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
 Source6:        https://github.com/hrydgard/glslang/archive/%{commit6}.tar.gz#/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}.tar.gz#/%{srcname7}-%{shortcommit7}.tar.gz
 %else
 Source0:        https://github.com/hrydgard/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-%endif #{?use_snapshot}
+%endif #{?with_snapshot}
 
 Patch0:         %{name}-noupdate.patch
 
-%if !0%{?sysffmpeg}
+%if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
 %endif
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
-%if 0%{?sysffmpeg}
+%if 0%{?with_sysffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
@@ -80,7 +80,7 @@ BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
 %else
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
-%endif #{?sysffmpeg}
+%endif #{?with_sysffmpeg}
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(sdl2)
@@ -94,19 +94,19 @@ Requires:       google-roboto-condensed-fonts
 %{summary}.
 
 %prep
-%autosetup -n %{name}-%{?use_snapshot:%{commit}}%{!?use_snapshot:%{version}} -p0
-%if 0%{?use_snapshot}
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p0
+%if 0%{?with_snapshot}
 tar -xf %{SOURCE1} -C assets/lang --strip-components 1
-%if !0%{?sysffmpeg}
+%if !0%{?with_sysffmpeg}
 tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
 tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
-%endif #{?sysffmpeg}
+%endif #{?with_sysffmpeg}
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 %endif
 
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 sed -i \
   -e "/GIT_VERSION/s|unknown|%{version}-%{release}|g" \
   -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --always|echo \"%{version}-%{release}\"|g" \
@@ -125,7 +125,7 @@ sed -e 's|png17|%{pngver}|g' \
 sed -e "/PNG_PNG_INCLUDE_DIR/s|libpng/|lib%{pngver}/|" \
   -i CMakeLists.txt
 
-%if !0%{?sysffmpeg}
+%if !0%{?with_sysffmpeg}
 pushd ffmpeg
 sed \
   -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
@@ -149,7 +149,7 @@ EOF
 
 %build
 
-%if !0%{?sysffmpeg}
+%if !0%{?with_sysffmpeg}
 pushd ffmpeg
 %ifarch x86_64
 ./linux_x86-64.sh
@@ -172,9 +172,9 @@ mkdir -p build
 pushd build
 
 %cmake .. \
-%if 0%{?sysffmpeg}
+%if 0%{?with_sysffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
-%endif #{?sysffmpeg}
+%endif #{?with_sysffmpeg}
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 
 %make_build

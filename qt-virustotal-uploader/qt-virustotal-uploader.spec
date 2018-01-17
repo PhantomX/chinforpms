@@ -1,9 +1,9 @@
 %global commit 5ef9e1880c107bbe41b919d26410abc3a8e6ecb9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20160501
-%global use_snapshot 1
+%global with_snapshot 1
 
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
@@ -14,7 +14,7 @@ Summary:        VirusTotal uploader
 
 License:        ASL 2.0 
 URL:            https://www.virustotal.com/
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 Source0:        https://github.com/VirusTotal/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/VirusTotal/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
@@ -34,7 +34,7 @@ Requires:       hicolor-icon-theme
 %{summary}.
 
 %prep
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %autosetup -n %{name}-%{commit}
 %else
 %autosetup -n %{name}-%{version}

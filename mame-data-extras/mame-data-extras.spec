@@ -6,7 +6,7 @@
 %global infover 0193
 
 # Build non redistributable package with free roms
-%global with_roms  %{?_with_roms:     1} %{?!_with_roms:     0}
+%bconf_with roms
 %global romlink http://www.mamedev.org/roms
 %global samplelink http://samples.mameworld.info/wav
 
@@ -33,7 +33,7 @@ Source11:       effect_files.zip
 # Icons: Mamu icons from http://icons.mameworld.info/
 Source20:       http://icons.mameworld.info/icons.zip/icons.zip
 
-%if %{with_roms}
+%if %{with roms}
 # Distributable ROM images (non-commercial use)
 Source100:      README.roms
 Source101:      %{romlink}/alienar/alienar.zip
@@ -150,7 +150,7 @@ Requires:       %{name}
 %prep
 %autosetup -cT
 
-%if %{with_roms}
+%if %{with roms}
   cp %{SOURCE100} .
 %endif
 
@@ -190,7 +190,7 @@ popd
 
 mkdir -p %{buildroot}%{_datadir}/mame
 
-%if %{with_roms}
+%if %{with roms}
 # Install ROMs
 mkdir -p %{buildroot}%{_datadir}/mame/roms
 install -pm0644 %{romfiles} \
@@ -240,7 +240,7 @@ done
 %{_datadir}/mame/snap/*
 
 
-%if %{with_roms}
+%if %{with roms}
 %doc README.roms
 %files roms
 %{_datadir}/mame/roms/*.zip

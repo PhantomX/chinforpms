@@ -1,9 +1,9 @@
 %global commit d771b6612534ab8bf518a556d0303df43d1e0a12
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20161228
-%global use_snapshot 1
+%global with_snapshot 1
 
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
@@ -14,7 +14,7 @@ Summary:        VirusTotal C API library
 
 License:        ASL 2.0 
 URL:            https://www.virustotal.com/
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 Source0:        https://github.com/VirusTotal/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/VirusTotal/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
@@ -39,7 +39,7 @@ development with VirusTotal API integration.
 %{summary}.
 
 %prep
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 # README.md is a broken symlink
 %setup -T -c
 tar xvf %{SOURCE0} --exclude=README.md --strip-components=1

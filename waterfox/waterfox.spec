@@ -1,9 +1,9 @@
 %global commit e5cadca84043a21749fa48c077d81a8bf1f573e8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180112
-%global use_snapshot 0
+%global with_snapshot 0
 
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
@@ -98,7 +98,7 @@ Version:        56.0.3
 Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 Source0:        https://github.com/MrAlex94/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/MrAlex94/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
@@ -274,7 +274,7 @@ This package contains results of tests executed during build.
 #---------------------------------------------------------------------
 
 %prep
-%if 0%{?use_snapshot}
+%if 0%{?with_snapshot}
 %setup -q -n Waterfox-%{commit}
 %else
 %setup -q -n Waterfox-%{version}

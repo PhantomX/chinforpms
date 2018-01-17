@@ -1,4 +1,4 @@
-%global with_yubikey  %{?_with_yubikey: 1} %{?!_with_yubikey: 0}
+%bcond_with yubikey
 
 Name:           keepassxc
 Version:        2.2.4
@@ -26,7 +26,7 @@ BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xtst)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  qt5-linguist
-%if %{with_yubikey}
+%if %{with yubikey}
 BuildRequires:  libyubikey-devel
 BuildRequires:  ykpers-devel
 %endif
@@ -54,11 +54,7 @@ pushd build
   -DWITH_TESTS:BOOL=OFF \
   -DWITH_XC_HTTP:BOOL=ON \
   -DWITH_XC_AUTOTYPE:BOOL=ON \
-%if %{with_yubikey}
-  -DWITH_XC_YUBIKEY:BOOL=ON
-%else
-  -DWITH_XC_YUBIKEY:BOOL=OFF
-%endif
+  -DWITH_XC_YUBIKEY:BOOL=%{?_with_yubikey:ON}%{!?_with_yubikey:OFF}
 
 %make_build
 

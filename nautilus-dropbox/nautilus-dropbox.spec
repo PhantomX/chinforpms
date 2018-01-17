@@ -1,7 +1,7 @@
 
-%global with_nautilus  %{?_with_nautilus:     1} %{?!_with_nautilus:     0}
+%bcond_with nautilus
 
-%if !%{with_nautilus}
+%if %{without nautilus}
 %define debug_package %{nil}
 %endif
 
@@ -23,7 +23,7 @@ Patch2:         %{name}-1.4.0-nognome.patch
 ExclusiveArch:  i686 x86_64
 
 BuildRequires:  desktop-file-utils
-%if %{with_nautilus}
+%if %{with nautilus}
 BuildRequires: nautilus-devel
 %endif
 BuildRequires:  python-docutils
@@ -54,7 +54,7 @@ your computers automatically.
 %setup -q
 %patch0 -p1
 %patch1 -p0
-%if !%{with_nautilus}
+%if %{without nautilus}
 %patch2 -p1
 %endif
 
@@ -64,7 +64,7 @@ touch -r ChangeLog.orig ChangeLog
 
 sed -e 's|_LIBDIR_|%{_libdir}|g' -i dropbox.in
 
-%if !%{with_nautilus}
+%if %{without nautilus}
 autoreconf -ivf
 %endif
 
@@ -78,7 +78,7 @@ autoreconf -ivf
 %install
 %make_install
 
-%if %{with_nautilus}
+%if %{with nautilus}
 find %{buildroot}%{_libdir} -type f -name '*.la' -delete -print
 %endif
 
@@ -109,7 +109,7 @@ fi
 %{_mandir}/man1/dropbox.1.gz
 %{_datadir}/applications/dropbox.desktop
 
-%if %{with_nautilus}
+%if %{with nautilus}
 %files
 %{_libdir}/nautilus/extensions-3.0/libnautilus-dropbox.so
 %endif
