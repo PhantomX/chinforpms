@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -631,6 +631,9 @@ Patch335: arm-exynos-fix-usb3.patch
 
 # 500 - Temp fixes/CVEs etc
 
+# CVE-2018-5344 rhbz 1533909 1533911
+Patch507: loop-fix-concurrent-lo_open-lo_release.patch
+
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
 Patch601: 0001-Input-gpio_keys-Allow-suppression-of-input-events-fo.patch
@@ -655,11 +658,6 @@ Patch626: qxl-fixes.patch
 # rhbz 1462175
 Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
 
-# CVE-2017-17741 rhbz 1527112 1527113
-Patch630: v4-KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
-
-Patch631: cgroup-for-4.15-fixes-cgroup-fix-css_task_iter-crash-on-CSS_TASK_ITER_PROC.patch
-
 # rhbz1514969
 Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
 
@@ -668,7 +666,7 @@ Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id c72c6e5a936043cb81d23b88fa7d6746edb3c288
+%global opensuse_id eef6178e931bfaf3a7984a2c6af465cde4702702
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -682,12 +680,13 @@ Patch1018: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{ope
 Patch1019: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch?id=%{opensuse_id}#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
 Patch1020: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1021: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1022: %{opensuse_url}/x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch?id=%{opensuse_id}#/openSUSE-x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch
-Patch1023: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch?id=%{opensuse_id}#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
-Patch1024: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patch?id=%{opensuse_id}#/openSUSE-0002-x86-stacktrace-make-clear-the-success-paths.patch
-Patch1025: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
-Patch1026: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
-Patch1027: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
+Patch1022: %{opensuse_url}/ALSA-seq-Make-ioctls-race-free?id=%{opensuse_id}#/openSUSE-ALSA-seq-Make-ioctls-race-free.patch
+Patch1023: %{opensuse_url}/x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch?id=%{opensuse_id}#/openSUSE-x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch
+Patch1024: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch?id=%{opensuse_id}#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
+Patch1025: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patch?id=%{opensuse_id}#/openSUSE-0002-x86-stacktrace-make-clear-the-success-paths.patch
+Patch1026: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
+Patch1027: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
+Patch1028: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -715,8 +714,6 @@ Patch3015: %{pf_url}/1c499bd3aba2e8689c2737919c43dcd49d929c46.patch#/pf-1c499bd3
 Patch3016: %{pf_url}/dd3baf06556264db5b3c180a6629712586cf3432.patch#/pf-dd3baf06556264db5b3c180a6629712586cf3432.patch
 Patch3017: %{pf_url}/402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch#/pf-402eef70b6a2d13f8d35ac92aaf328e3d7136c48.patch
 Patch3018: %{pf_url}/fae783f205717c20d01405a3d1021867642d32a8.patch#/pf-fae783f205717c20d01405a3d1021867642d32a8.patch
-Patch3019: %{pf_url}/0a956ac4ed13da65f85a41c5171b07f63810aee0.patch#/pf-0a956ac4ed13da65f85a41c5171b07f63810aee0.patch
-Patch3020: %{pf_url}/fac86abf976a697f7a713c5747646d7877e19167.patch#/pf-fac86abf976a697f7a713c5747646d7877e19167.patch
 Patch3021: %{pf_url}/ceb1762ffc9e3ee11f354a198aee3e54374e9e53.patch#/pf-ceb1762ffc9e3ee11f354a198aee3e54374e9e53.patch
 Patch3022: %{pf_url}/23052f01400f27f4e0b293c772d78292b69146e3.patch#/pf-23052f01400f27f4e0b293c772d78292b69146e3.patch
 Patch3023: %{pf_url}/44625c0e88aea2eeebff6b861f77c04d90f5ca8c.patch#/pf-44625c0e88aea2eeebff6b861f77c04d90f5ca8c.patch
@@ -727,6 +724,7 @@ Patch3027: %{pf_url}/ed6c4ccd4e09bab0d33ae6070d236878766868a5.patch#/pf-ed6c4ccd
 Patch3028: %{pf_url}/3994785ce4d51beb7b9a26779cba161c87127c39.patch#/pf-3994785ce4d51beb7b9a26779cba161c87127c39.patch
 Patch3029: %{pf_url}/4334e38197bdeca632e901e24732e93c00ffcff1.patch#/pf-4334e38197bdeca632e901e24732e93c00ffcff1.patch
 Patch3030: %{pf_url}/0aece97f7891a2353d0a6c829b3313691b4eddb5.patch#/pf-0aece97f7891a2353d0a6c829b3313691b4eddb5.patch
+Patch3031: %{pf_url}/bf3bc32af79270484672683d764c6bdf6535bef6.patch#/pf-bf3bc32af79270484672683d764c6bdf6535bef6.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -2270,6 +2268,10 @@ fi
 #
 #
 %changelog
+* Wed Jan 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.14-500.chinfo
+- 4.14.14
+- f27 sync
+
 * Wed Jan 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.13-500.chinfo
 - 4.14.13
 - f27 sync
