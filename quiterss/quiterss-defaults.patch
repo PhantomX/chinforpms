@@ -1,0 +1,27 @@
+diff -up quiterss-0.18.9/src/application/mainwindow.cpp.defaults quiterss-0.18.9/src/application/mainwindow.cpp
+--- quiterss-0.18.9/src/application/mainwindow.cpp.defaults	2017-12-01 11:42:39.000000000 -0200
++++ quiterss-0.18.9/src/application/mainwindow.cpp	2018-01-18 20:47:10.235902047 -0200
+@@ -2211,11 +2211,7 @@ void MainWindow::loadSettings()
+   feedsView_->autocollapseFolder_ =
+       settings.value("autocollapseFolder", false).toBool();
+ 
+-#ifndef Q_OS_MAC
+-  showMenuBarAct_->setChecked(settings.value("showMenuBar", false).toBool());
+-#else
+   showMenuBarAct_->setChecked(true);
+-#endif
+ 
+   settings.endGroup();
+ 
+@@ -3330,9 +3326,9 @@ void MainWindow::showOptionDlg(int index
+   bool showCloseButtonTab = settings.value("Settings/showCloseButtonTab", true).toBool();
+   optionsDialog_->showCloseButtonTab_->setChecked(showCloseButtonTab);
+ 
+-  bool updateCheckEnabled = settings.value("Settings/updateCheckEnabled", true).toBool();
++  bool updateCheckEnabled = settings.value("Settings/updateCheckEnabled", false).toBool();
+   optionsDialog_->updateCheckEnabled_->setChecked(updateCheckEnabled);
+-  bool statisticsEnabled = settings.value("Settings/statisticsEnabled2", true).toBool();
++  bool statisticsEnabled = settings.value("Settings/statisticsEnabled2", false).toBool();
+   optionsDialog_->statisticsEnabled_->setChecked(statisticsEnabled);
+ 
+   bool storeDBMemory_ = settings.value("Settings/storeDBMemory", true).toBool();

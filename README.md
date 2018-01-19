@@ -33,6 +33,7 @@ release tags).
                 (kernel-local must be edited to modify gcc optimizations)
  * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**
  * **psi** - Updated
+ * **quiterss** - Updated, Qt5
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
                     and **VirtualBox-guest-additions-iso** support
