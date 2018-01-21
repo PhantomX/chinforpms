@@ -23,14 +23,13 @@
     %undefine prerev
   %endif
   %global prestring %{pretype}%{?presplit}%{?prerev}
-  %global pretag .%{prestring}
   %global pretagtarball _%{prestring}
   %global pretagurl -%{prestring}
 %endif
 
 Name:           powershell
 Version:        %{version}
-Release:        0.1%{?pretag}%{?dist}
+Release:        0.1%{?pretag:.%{prestring}}%{?dist}
 Summary:        Automation and configuration management platform
 
 License:        MIT

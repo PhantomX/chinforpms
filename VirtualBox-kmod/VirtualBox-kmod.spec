@@ -27,7 +27,7 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.2.4
+Version:        5.2.6
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:        100.chinfo%{?dist}
 
@@ -36,6 +36,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
+Patch1:         fixes_for_4.15.v2.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -58,6 +59,9 @@ Kernel module for VirtualBox
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
+pushd %{name}-%{version}
+%patch1 -p2 -b .kernel_4.15
+popd
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
@@ -106,6 +110,12 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br>
+- Sync with RPMFusion
+
+* Tue Jan 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.6-100.chinfo
+- 5.2.6
+
 * Tue Dec 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.2.4-100.chinfo
 - 5.2.4
 

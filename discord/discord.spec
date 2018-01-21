@@ -11,8 +11,8 @@
 %endif
 
 Name:           discord
-Version:        0.0.2
-Release:        2%{?dist}
+Version:        0.0.4
+Release:        1%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
 
@@ -116,6 +116,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.4-1
+- 0.0.4
+
 * Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.2-2
 - Exclude provides
 

@@ -13,12 +13,12 @@
 
 # Do no blame Dropbox devs if setting 1 in these
 # Set to 1 to use system libs
-%global bzip2   1
-%global popt    1
-%global python  0
+%global with_bzip2   1
+%global with_popt    1
+%global with_python  0
 
 Name:           dropboxd
-Version:        40.4.46
+Version:        41.4.80
 Release:        1%{?dist}
 Summary:        Dropbox proprietary client
 
@@ -30,17 +30,17 @@ ExclusiveArch:  %{ix86} x86_64
 
 AutoReqProv:    no
 
-%if 0%{?bzip2}
+%if 0%{?with_bzip2}
 BuildRequires:  bzip2-libs%{?_isa}
 Requires:       bzip2-libs%{?_isa}
 %endif
 BuildRequires:  gawk
-%if 0%{?popt}
+%if 0%{?with_popt}
 BuildRequires:  popt%{?_isa}
 Requires:       popt%{?_isa}
 %endif
 BuildRequires:  perl-interpreter
-%if 0%{?python}
+%if 0%{?with_python}
 BuildRequires:  python2%{?_isa}
 Requires:       python2%{?_isa}
 %endif
@@ -115,7 +115,7 @@ missing(){
 }
 
 # bzip2
-%if 0%{?bzip2}
+%if 0%{?with_bzip2}
   pushd %{buildroot}%{progdir}
     for file in libbz2*.so* ;do
       SONAME=$(xtcsoname ${file})
@@ -126,7 +126,7 @@ missing(){
 %endif
 
 # popt
-%if 0%{?popt}
+%if 0%{?with_popt}
   pushd %{buildroot}%{progdir}
     for file in libpopt*.so* ;do
       SONAME=$(xtcsoname ${file})
@@ -137,7 +137,7 @@ missing(){
 %endif
 
 # python
-%if 0%{?python}
+%if 0%{?with_python}
   reldir=$(abs2rel %{_libdir}/python%{python2_version}/lib-dynload %{progdir})
   for file in \
     _bisect _collections _functools _locale _multibytecodec _random _socket \
@@ -178,6 +178,9 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 
 
 %changelog
+* Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 41.4.80-1
+- 41.4.80
+
 * Sat Jan 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 40.4.46-1
 - 40.4.46
 

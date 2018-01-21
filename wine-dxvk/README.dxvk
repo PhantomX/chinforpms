@@ -1,0 +1,2 @@
+The needed dll files are in LIBDIR/wine/dxvk, LIBDIR must match to
+the architecture from executable, /usr/lib or /usr/lib64.

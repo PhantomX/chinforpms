@@ -1,18 +1,25 @@
 %global pkgname VBoxGuestAdditions
 
+# Set to 0 for final release
+%global prerel 120326
+
 Name:           VirtualBox-guest-additions-iso
-Version:        5.2.6
-Release:        1%{?dist}
+Version:        5.2.7
+Release:        1%{?prerel:.%{prerel}}%{?dist}
 Summary:        Guest additions for VirtualBox
 
 License:        GPLv2
 URL:            http://www.virtualbox.org/
+%if 0%{?prerel}
+Source0:        http://www.virtualbox.org/download/testcase/%{pkgname}_%{version}-%{prerel}.iso
+%else
 Source0:        http://download.virtualbox.org/virtualbox/%{version}/%{pkgname}_%{version}.iso
+%endif
 Source1:        https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt#/gpl-2.0
 
 BuildArch:      noarch
 
-Requires:       VirtualBox-server >= %{version}
+Requires:       VirtualBox-server >= %(echo %{version} | cut -d. -f -2)
 
 %description
 CD image containing guest additions for VirtualBox.
@@ -38,6 +45,9 @@ install -pm0644 %{SOURCE0} \
 
 
 %changelog
+* Sat Jan 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.1-1.120326
+- 5.2.7-120326
+
 * Tue Jan 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.6-1
 - 5.2.6
 

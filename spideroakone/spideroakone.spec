@@ -18,16 +18,16 @@
 
 # Do no blame SpiderOak devs if setting YES in these
 # Set to 1 to use system libs
-%global curl 1
-%global dbusmenuqt 1
-%global ffi 1
-%global python 0
-%global pillow 1
-%global pyqt 0
+%global with_curl 1
+%global with_dbusmenuqt 1
+%global with_ffi 1
+%global with_python 0
+%global with_pillow 1
+%global with_pyqt 0
 
 Name:           spideroakone
-Version:        6.4.0
-Release:        2%{?dist}
+Version:        7.0.0
+Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -43,31 +43,31 @@ BuildRequires:  perl
 BuildRequires:  python2-rpm-macros
 BuildRequires:  ImageMagick
 BuildRequires:  desktop-file-utils
-%if 0%{?curl}
+%if 0%{?with_curl}
 BuildRequires:  libcurl%{?_isa}
 BuildRequires:  python-pycurl%{?_isa}
 Requires:       libcurl%{?_isa}
 Requires:       python-pycurl%{?_isa}
 %endif
-%if 0%{?dbusmenuqt}
+%if 0%{?with_dbusmenuqt}
 BuildRequires:  dbusmenu-qt%{?_isa}
 %endif
-%if 0%{?ffi}
+%if 0%{?with_ffi}
 BuildRequires:  libffi%{?_isa}
 %endif
-%if 0%{?python}
+%if 0%{?with_python}
 BuildRequires:  python2%{?_isa}
 Requires:       python2%{?_isa}
 %endif
-%if 0%{?pillow}
+%if 0%{?with_pillow}
 BuildRequires:  python2-pillow%{?_isa}
 Requires:       python2-pillow%{?_isa}
 %endif
-%if 0%{?pyopenssl}
+%if 0%{?with_pyopenssl}
 BuildRequires:  pyOpenSSL
 Requires:       pyOpenSSL
 %endif
-%if 0%{?pyqt}
+%if 0%{?with_pyqt}
 BuildRequires:  qt%{?_isa}
 BuildRequires:  PyQt4%{?_isa}
 BuildRequires:  sip%{?_isa}
@@ -162,7 +162,7 @@ missing(){
 }
 
 # curl
-%if 0%{?curl}
+%if 0%{?with_curl}
   reldir=$(abs2rel %{python2_sitearch} %{progdir})
   missing %{python2_sitearch}/pycurl.so
   rm -f %{buildroot}%{progdir}/pycurl.so
@@ -171,7 +171,7 @@ missing(){
   rm -fv %{buildroot}%{progdir}/libssh2.so.*
 %endif
 
-%if 0%{?dbusmenuqt}
+%if 0%{?with_dbusmenuqt}
   ( cd %{buildroot}%{progdir}
     for file in libdbusmenu-qt.so* ;do
       SONAME=$(xtcsoname ${file})
@@ -181,7 +181,7 @@ missing(){
   ) || exit $?
 %endif
 
-%if 0%{?ffi}
+%if 0%{?with_ffi}
   ( cd %{buildroot}%{progdir}
     for file in libffi*.so* ;do
       SONAME=$(xtcsoname ${file})
@@ -192,7 +192,7 @@ missing(){
 %endif
 
 # python
-%if 0%{?python}
+%if 0%{?with_python}
   reldir=$(abs2rel %{_libdir}/python%{python2_version}/lib-dynload %{progdir})
   for file in \
     _bisect _collections _functools _locale _multibytecodec _random _socket \
@@ -215,14 +215,14 @@ missing(){
   done
 %endif
 
-%if 0%{?pillow}
+%if 0%{?with_pillow}
   reldir=$(abs2rel %{python2_sitearch}/PIL %{progdir})
   missing %{python2_sitearch}/PIL/_imaging.so
   rm -fv %{buildroot}%{progdir}/PIL._imaging.so
   ln -sf ${reldir}/_imaging.so %{buildroot}%{progdir}/PIL._imaging.so
 %endif
 
-%if 0%{?pyqt}
+%if 0%{?with_pyqt}
   reldir=$(abs2rel %{python2_sitearch} %{progdir})
 
   missing %{python2_sitearch}/sip.so
@@ -300,6 +300,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.0.0-1
+- 7.0.0
+
 * Sun Oct 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.4.0-2
 - Exclude libpng12 provides
 

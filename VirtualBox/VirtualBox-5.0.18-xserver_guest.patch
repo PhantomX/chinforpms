@@ -41,8 +41,8 @@ xf86_ansic.h doesn't exist anymore.
   if1of ($(KBUILD_TARGET), freebsd linux netbsd openbsd solaris)
    LIBRARIES += \
    	VBoxGuestR3LibXOrg
---- ./src/VBox/Additions/x11/vboxvideo/Makefile.kmk.orig	2016-10-11 02:49:23.184986182 +0100
-+++ ./src/VBox/Additions/x11/vboxvideo/Makefile.kmk	2016-10-11 02:49:39.879176964 +0100
+--- ./src/VBox/Additions/x11/vboxvideo/Makefile.kmk.orig	2018-01-16 04:16:19.503619778 +0000
++++ ./src/VBox/Additions/x11/vboxvideo/Makefile.kmk	2018-01-16 04:16:44.913900197 +0000
 @@ -406,7 +406,6 @@ ifdef VBOX_USE_SYSTEM_XORG_HEADERS
   vboxvideo_drv_system_INCS += \
          $(PATH_ROOT)/src/VBox/Runtime/include \
