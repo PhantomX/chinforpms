@@ -125,7 +125,7 @@ diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
 index 4f2bb59..6d7da84 100644
 --- a/drivers/input/rmi4/rmi_driver.c
 +++ b/drivers/input/rmi4/rmi_driver.c
-@@ -209,32 +209,46 @@ void rmi_set_attn_data(struct rmi_device *rmi_dev, unsigned long irq_status,
+@@ -209,34 +209,46 @@ void rmi_set_attn_data(struct rmi_device
  	attn_data.data = fifo_data;
  
  	kfifo_put(&drvdata->attn_fifo, attn_data);
@@ -145,7 +145,7 @@ index 4f2bb59..6d7da84 100644
  	struct rmi4_attn_data attn_data = {0};
  	int ret, count;
  
- 	count = kfifo_get(&drvdata->attn_fifo, &attn_data);
+-	count = kfifo_get(&drvdata->attn_fifo, &attn_data);
 -	if (count) {
 -		*(drvdata->irq_status) = attn_data.irq_status;
 -		drvdata->attn_data = attn_data;
@@ -163,9 +163,12 @@ index 4f2bb59..6d7da84 100644
 +		rmi_dbg(RMI_DEBUG_CORE, &drvdata->rmi_dev->dev,
  			"Failed to process interrupt request: %d\n", ret);
  
--	if (count)
+-	if (count) {
 -		kfree(attn_data.data);
+-		attn_data.data = NULL;
+-	}
 +	kfree(attn_data.data);
++	attn_data.data = NULL;
  
  	if (!kfifo_is_empty(&drvdata->attn_fifo))
 -		return rmi_irq_fn(irq, dev_id);

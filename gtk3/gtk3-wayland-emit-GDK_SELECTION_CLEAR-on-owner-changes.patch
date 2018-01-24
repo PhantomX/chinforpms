@@ -1,0 +1,76 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Christophe Fergeau <cfergeau@redhat.com>
+Date: Tue, 28 Nov 2017 17:44:06 +0100
+Subject: [PATCH] wayland: emit GDK_SELECTION_CLEAR on owner changes
+
+The wayland backend currently never emits GDK_SELECTION_CLEAR events.
+GtkClipboard uses this signal in order to clear the clipboard owner when
+the selection is set to something outside the application.
+This commit ensures the wayland backend emits GDK_SELECTION_CLEAR before
+setting the clipboard owner to NULL, as this means we lost the
+selection.
+
+Signed-off-by: Christophe Fergeau <cfergeau@redhat.com>
+
+https://bugzilla.gnome.org/show_bug.cgi?id=790031
+---
+ gdk/wayland/gdkselection-wayland.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/gdk/wayland/gdkselection-wayland.c b/gdk/wayland/gdkselection-wayland.c
+index 0012febd9e..008778292a 100644
+--- a/gdk/wayland/gdkselection-wayland.c
++++ b/gdk/wayland/gdkselection-wayland.c
+@@ -113,6 +113,7 @@ struct _GdkWaylandSelection
+ 
+ static void selection_buffer_read (SelectionBuffer *buffer);
+ static void async_write_data_write (AsyncWriteData *write_data);
++static void emit_selection_clear (GdkDisplay *display, GdkAtom selection);
+ 
+ static void
+ selection_buffer_notify (SelectionBuffer *buffer)
+@@ -921,6 +922,7 @@ data_source_cancelled (void                  *data,
+   if (context)
+     gdk_drag_context_cancel (context, GDK_DRAG_CANCEL_ERROR);
+ 
++  emit_selection_clear (display, atom);
+   gdk_selection_owner_set (NULL, atom, GDK_CURRENT_TIME, TRUE);
+   gdk_wayland_selection_unset_data_source (display, atom);
+ }
+@@ -1031,6 +1033,7 @@ primary_source_cancelled (void                                *data,
+   display = gdk_display_get_default ();
+ 
+   atom = atoms[ATOM_PRIMARY];
++  emit_selection_clear (display, atom);
+   gdk_selection_owner_set (NULL, atom, GDK_CURRENT_TIME, TRUE);
+   gdk_wayland_selection_unset_data_source (display, atom);
+ }
+@@ -1272,6 +1275,28 @@ emit_empty_selection_notify (GdkWindow *requestor,
+   gdk_event_free (event);
+ }
+ 
++static void
++emit_selection_clear (GdkDisplay *display,
++                      GdkAtom     selection)
++{
++  GdkEvent *event;
++  GdkWindow *window;
++
++  event = gdk_event_new (GDK_SELECTION_CLEAR);
++  event->selection.selection = selection;
++  event->selection.time = GDK_CURRENT_TIME;
++
++  window = _gdk_wayland_display_get_selection_owner (display, selection);
++  if (window != NULL)
++    {
++      event->selection.window = g_object_ref (window);
++      event->selection.requestor = g_object_ref (window);
++    }
++
++  gdk_event_put (event);
++  gdk_event_free (event);
++}
++
+ void
+ _gdk_wayland_display_convert_selection (GdkDisplay *display,
+                                         GdkWindow  *requestor,

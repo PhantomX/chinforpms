@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -666,7 +666,7 @@ Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id eef6178e931bfaf3a7984a2c6af465cde4702702
+%global opensuse_id 5790c9a8ade634fc9469aad06597fe050c918f0e
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -680,7 +680,6 @@ Patch1018: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{ope
 Patch1019: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch?id=%{opensuse_id}#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
 Patch1020: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1021: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1022: %{opensuse_url}/ALSA-seq-Make-ioctls-race-free?id=%{opensuse_id}#/openSUSE-ALSA-seq-Make-ioctls-race-free.patch
 Patch1023: %{opensuse_url}/x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch?id=%{opensuse_id}#/openSUSE-x86-stacktrace-Avoid-recording-save_stack_trace-wrap.patch
 Patch1024: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch?id=%{opensuse_id}#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
 Patch1025: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patch?id=%{opensuse_id}#/openSUSE-0002-x86-stacktrace-make-clear-the-success-paths.patch
@@ -2268,6 +2267,9 @@ fi
 #
 #
 %changelog
+* Tue Jan 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.15-500.chinfo
+- 4.14.15
+
 * Wed Jan 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.14-500.chinfo
 - 4.14.14
 - f27 sync
