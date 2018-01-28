@@ -18,6 +18,7 @@ BuildRequires:  pkgconfig(belle-sip)
 BuildRequires:  pkgconfig(belr)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(linphone)
+BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core) >= 5.9
 BuildRequires:  pkgconfig(Qt5Concurrent)
 BuildRequires:  pkgconfig(Qt5DBus)

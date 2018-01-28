@@ -1,0 +1,18 @@
+--- ./src/smtube.pro.orig	2016-04-01 18:54:03.886383500 +0100
++++ ./src/smtube.pro	2016-04-01 18:56:29.971081551 +0100
+@@ -1,6 +1,7 @@
+ 
+ TEMPLATE = app
+ QT += network
++INCLUDEPATH += qtsingleapplication
+ 
+ CONFIG += release
+ #CONFIG += debug
+@@ -9,6 +10,7 @@ DEFINES += USE_PLAYERS
+ DEFINES += YT_USE_SCRIPT
+ DEFINES += D_BUTTON
+ DEFINES += STYLE_SWITCHING
++DEFINES += USE_SINGLE_APPLICATION
+ 
+ DEFINES += D_PLAYERS
+ 

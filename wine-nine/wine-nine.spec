@@ -1,9 +1,9 @@
 %undefine _hardened_build
-%global winecommonver 2.0
+%global winecommonver 3.0
 
 Name:           wine-nine
-Version:        2.0_3
-Release:        2%{?dist}
+Version:        3.0_1
+Release:        1%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 License:        LGPL-2.0
@@ -138,7 +138,7 @@ install -pm0755 dlls/d3d9-nine/d3d9-nine.dll.so \
 install -pm0755 dlls/d3d9-nine/d3d9-nine.dll.fake \
   %{buildroot}/%{_libdir}/wine/fakedlls/d3d9-nine.dll
 
-mkdir -p %{buildroot}/%{_bindir}/wineninecfg
+mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:1} %{buildroot}/%{_bindir}/ninewinecfg
 
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -161,6 +161,9 @@ desktop-file-install \
 %{_datadir}/applications/wine-ninecfg.desktop
 
 %changelog
+* Fri Jan 26 2018 Phantom X <megaphantomx at bol dot com dot br>
+- 3.0_1
+
 * Wed Nov 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0_3-2
 - Fix desktop file
 

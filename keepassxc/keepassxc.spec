@@ -15,6 +15,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libgpg-error-devel
+BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core) >= 5.2
 BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2
 BuildRequires:  pkgconfig(Qt5Network) >= 5.2

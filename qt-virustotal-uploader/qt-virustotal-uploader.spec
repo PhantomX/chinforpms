@@ -24,6 +24,7 @@ BuildRequires:  c-vtapi-devel
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(jansson)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(Qt5) >= 5.3
 BuildRequires:  pkgconfig(Qt5Core) >= 5.3
 BuildRequires:  pkgconfig(Qt5Gui) >= 5.3
 BuildRequires:  pkgconfig(Qt5Network) >= 5.3

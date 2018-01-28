@@ -9,6 +9,7 @@ Source0:        http://downloads.sourceforge.net/firejail/%{name}-%{version}.tar
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
+BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Svg)
 Requires:       firejail
 Requires:       hicolor-icon-theme

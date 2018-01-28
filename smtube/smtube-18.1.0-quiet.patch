@@ -1,0 +1,20 @@
+diff -up smtube-18.1.0/src/players.cpp.quiet smtube-18.1.0/src/players.cpp
+--- smtube-18.1.0/src/players.cpp.quiet	2018-01-28 11:00:12.743131552 -0200
++++ smtube-18.1.0/src/players.cpp	2018-01-28 11:01:06.627019938 -0200
+@@ -113,13 +113,13 @@ Players::Players() {
+ 	list.push_back( Player("SMPlayer", "smplayer", "%u", true, true, Player::Video) );
+ 	list.push_back( Player("SMPlayer (audio)", "smplayer", "%u -media-title %t", true, false, Player::Audio) );
+ 	list.push_back( Player("SMPlayer (add to playlist)", "smplayer", "-add-to-playlist %u", true, true, Player::VideoAudio) );
+-	list.push_back( Player("MPlayer", "mplayer", "%u -title %t", false, false, Player::Video) );
++	list.push_back( Player("MPlayer", "mplayer", "%u -title %t -really-quiet", false, false, Player::Video) );
+ 	list.push_back( Player("VLC", "vlc", "%u --meta-title=%t", false, true, Player::VideoAudio) );
+ 	list.push_back( Player("Dragon Player", "dragon", "%u", false, false, Player::VideoAudio) );
+ 	list.push_back( Player("Totem", "totem", "%u", false, false, Player::VideoAudio) );
+ 	list.push_back( Player("GNOME-MPlayer", "gnome-mplayer", "%u", false, false, Player::VideoAudio) );
+-	list.push_back( Player("mpv", "mpv", "%u --title=%t", false, true, Player::Video) );
+-	list.push_back( Player("mpv + youtube-dl", "mpv", "--ytdl --ytdl-format=best %u", true, true, Player::Video) );
++	list.push_back( Player("mpv", "mpv", "%u --title=%t --really-quiet", false, true, Player::Video) );
++	list.push_back( Player("mpv + youtube-dl", "mpv", "--ytdl --ytdl-format=best %u --really-quiet", true, true, Player::Video) );
+ 	#ifdef D_PLAYERS
+ 	list.push_back( Player("uget", "uget-gtk", "--quiet --folder=/tmp --filename=%f %u", false, false, Player::VideoAudio) );
+ 	//list.push_back( Player("yoDownet", "yoDownet", "%u -o %f", false, false, Player::VideoAudio) );

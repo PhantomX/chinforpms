@@ -1,6 +1,6 @@
 Name:           quiterss
 Version:        0.18.9
-Release:        1.chinfo%{?dist}
+Release:        100.chinfo%{?dist}
 Summary:        RSS/Atom aggregator
 License:        GPLv3
 URL:            http://quiterss.org/
@@ -9,6 +9,7 @@ Source0:        https://github.com/QuiteRSS/quiterss/archive/%{version}.tar.gz#/
 
 Patch0:         %{name}-defaults.patch
 
+BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Multimedia)
 BuildRequires:  pkgconfig(Qt5PrintSupport)
@@ -19,6 +20,7 @@ BuildRequires:  pkgconfig(Qt5WebKitWidgets)
 BuildRequires:  qt5-linguist
 BuildRequires:  qtsingleapplication-qt5-devel
 BuildRequires:  pkgconfig(sqlite3)
+BuildRequires:  pkgconfig(zlib)
 BuildRequires:  desktop-file-utils
 
 Requires:       hicolor-icon-theme

@@ -15,6 +15,7 @@ Source11:   http://pkgs.fedoraproject.org/repo/pkgs/psi/emoticons-0.10.tar.gz/md
 Source12:   http://pkgs.fedoraproject.org/repo/pkgs/psi/rostericons-0.10.tar.gz/md5/51386c12abbee7100f092455bfb88bf1/rostericons-0.10.tar.gz
 
 BuildRequires:  cmake
+BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Concurrent)
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5DBus)

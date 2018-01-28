@@ -14,6 +14,7 @@ Source1:        http://http.debian.net/debian/pool/main/p/%{name}/%{name}_%{debi
 Patch0:         %{name}-qmake-qt5.patch
 
 BuildRequires:  python2-devel
+BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5PrintSupport)

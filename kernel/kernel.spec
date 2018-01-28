@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -661,12 +661,15 @@ Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
 # rhbz1514969
 Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
 
+# Fix crash on Xwayland using nouveau
+Patch634: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 5790c9a8ade634fc9469aad06597fe050c918f0e
+%global opensuse_id fe1d712f2b5ce144d972874454b0a7a144aaec15
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch?id=%{opensuse_id}#/openSUSE-0002-futex-futex_wake_op-fix-sign_extend32-sign-bits.patch
@@ -2267,6 +2270,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.15-501.chinfo
+- f27 sync
+
 * Tue Jan 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.15-500.chinfo
 - 4.14.15
 
