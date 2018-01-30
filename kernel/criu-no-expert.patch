@@ -1,3 +1,4 @@
+From 235b02d70a6a9837896c2ff4ca9d03f172cc4281 Mon Sep 17 00:00:00 2001
 From: "kernel-team@fedoraproject.org" <kernel-team@fedoraproject.org>
 Date: Wed, 30 Jan 2013 10:55:31 -0500
 Subject: [PATCH] criu: no expert
@@ -9,20 +10,11 @@ Upstream-status: Fedora mustard
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/init/Kconfig b/init/Kconfig
-index 648bb79d6b73..860ca236975f 100644
+index 2934249fba46..19d9ee8c120b 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1137,7 +1137,7 @@ config CGROUP_WRITEBACK
+@@ -871,7 +871,7 @@ config SOCK_CGROUP_DATA
  endif # CGROUPS
- 
- config CHECKPOINT_RESTORE
--	bool "Checkpoint/restore support" if EXPERT
-+	bool "Checkpoint/restore support"
- 	select PROC_CHILDREN
- 	default n
- 	help
-@@ -1149,7 +1149,7 @@ config CHECKPOINT_RESTORE
- 	  If unsure, say N here.
  
  menuconfig NAMESPACES
 -	bool "Namespaces support" if EXPERT
@@ -30,3 +22,15 @@ index 648bb79d6b73..860ca236975f 100644
  	depends on MULTIUSER
  	default !EXPERT
  	help
+@@ -1321,7 +1321,7 @@ config MEMBARRIER
+ 	  If unsure, say Y.
+ 
+ config CHECKPOINT_RESTORE
+-	bool "Checkpoint/restore support" if EXPERT
++	bool "Checkpoint/restore support"
+ 	select PROC_CHILDREN
+ 	default n
+ 	help
+-- 
+2.14.3
+

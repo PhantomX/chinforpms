@@ -1,0 +1,42 @@
+From 2c54dcb09fd790cb75535f01c466725f813b8d6b Mon Sep 17 00:00:00 2001
+From: Laura Abbott <labbott@redhat.com>
+Date: Tue, 19 Dec 2017 11:43:53 -0800
+Subject: [PATCH 1/2] tools/power: Don't make man pages executable
+
+rpm-lint flagged these as being executable:
+
+kernel-tools.x86_64: W: spurious-executable-perm /usr/share/man/man8/turbostat.8.gz
+kernel-tools.x86_64: W: spurious-executable-perm /usr/share/man/man8/x86_energy_perf_policy.8.gz
+
+Fix this
+
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+---
+ tools/power/x86/turbostat/Makefile              | 2 +-
+ tools/power/x86/x86_energy_perf_policy/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/power/x86/turbostat/Makefile b/tools/power/x86/turbostat/Makefile
+index a9bc914a8fe8..2ab25aa38263 100644
+--- a/tools/power/x86/turbostat/Makefile
++++ b/tools/power/x86/turbostat/Makefile
+@@ -25,4 +25,4 @@ install : turbostat
+ 	install -d  $(DESTDIR)$(PREFIX)/bin
+ 	install $(BUILD_OUTPUT)/turbostat $(DESTDIR)$(PREFIX)/bin/turbostat
+ 	install -d  $(DESTDIR)$(PREFIX)/share/man/man8
+-	install turbostat.8 $(DESTDIR)$(PREFIX)/share/man/man8
++	install -m 644 turbostat.8 $(DESTDIR)$(PREFIX)/share/man/man8
+diff --git a/tools/power/x86/x86_energy_perf_policy/Makefile b/tools/power/x86/x86_energy_perf_policy/Makefile
+index 2447b1bbaacf..f4534fb8b951 100644
+--- a/tools/power/x86/x86_energy_perf_policy/Makefile
++++ b/tools/power/x86/x86_energy_perf_policy/Makefile
+@@ -24,5 +24,5 @@ install : x86_energy_perf_policy
+ 	install -d  $(DESTDIR)$(PREFIX)/bin
+ 	install $(BUILD_OUTPUT)/x86_energy_perf_policy $(DESTDIR)$(PREFIX)/bin/x86_energy_perf_policy
+ 	install -d  $(DESTDIR)$(PREFIX)/share/man/man8
+-	install x86_energy_perf_policy.8 $(DESTDIR)$(PREFIX)/share/man/man8
++	install -m 644 x86_energy_perf_policy.8 $(DESTDIR)$(PREFIX)/share/man/man8
+ 
+-- 
+2.14.3
+

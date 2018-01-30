@@ -6,7 +6,7 @@
 
 PACKAGE_NAME="${1:-kernel}" # defines the package name used
 KVERREL="${2:-}"
-SUBARCH="${3:-}" # defines a specific arch for use with rh-configs-arch-prep target
+SUBARCH="${3:-}" # defines a specific arch
 SCRIPT="$(readlink -f $0)"
 OUTPUT_DIR="$PWD"
 SCRIPT_DIR="$(dirname $SCRIPT)"
@@ -49,29 +49,31 @@ function merge_configs()
 	archvar=$1
 	arch=$(echo "$archvar" | cut -f1 -d"-")
 	configs=$2
+	order=$3
 	name=$OUTPUT_DIR/$PACKAGE_NAME-$archvar.config
 	echo -n "Building $name ... "
 	touch config-merging config-merged
 
-	# apply base first
-	for config in $(echo $configs | sed -e 's/:/ /g')
+	# apply based on order
+	skip_if_missing=""
+	for o in $order
 	do
-		perl merge.pl config-base-$config config-merging > config-merged
-		if [ ! $? -eq 0 ]; then
-			die "Failed to merge base"
-		fi
-		mv config-merged config-merging
-	done
-	for config in $(echo $configs | sed -e 's/:/ /g')
-	do
-		# not all override files exist
-		test -e config-$config || continue
+		for config in $(echo $configs | sed -e 's/:/ /g')
+		do
+			cfile="config-$o-$config"
 
-		perl merge.pl config-$config config-merging > config-merged
-		if [ ! $? -eq 0 ]; then
-			die "Failed to merge configs"
-		fi
-		mv config-merged config-merging
+			test -n "$skip_if_missing" && test ! -e $cfile && continue
+
+			perl merge.pl $cfile config-merging > config-merged
+			if [ ! $? -eq 0 ]; then
+				die "Failed to merge $cfile"
+			fi
+			mv config-merged config-merging
+		done
+
+		# first configs in $order is baseline, all files should be
+		# there.  second pass is overrides and can be missing.
+		skip_if_missing="1"
 	done
 	if [ "x$arch" == "xaarch64" ]; then
 		echo "# arm64" > $name
@@ -93,22 +95,22 @@ function merge_configs()
 	echo "done"
 }
 
-glist=$(find base-generic -type d)
-dlist=$(find base-debug -type d)
-gllist=$(test -d generic && find generic -type d)
-dllist=$(test -d debug && find debug -type d)
-
-for d in $glist $dlist $gllist $dllist
-do
-	combine_config_layer $d
-done
-
 while read line
 do
 	if [ $(echo "$line" | grep -c "^#") -ne 0 ]; then
 		continue
 	elif [ $(echo "$line" | grep -c "^$") -ne 0 ]; then
 		continue
+	elif [ $(echo "$line" | grep -c "^ORDER") -ne 0 ]; then
+		order=$(echo "$line" | cut -f2 -d"=")
+		for o in $order
+		do
+			glist=$(find $o -type d)
+			for d in $glist
+			do
+				combine_config_layer $d
+			done
+		done
 	else
 		arch=$(echo "$line" | cut -f1 -d"=")
 		configs=$(echo "$line" | cut -f2 -d"=")
@@ -117,7 +119,7 @@ do
 			continue
 		fi
 
-		merge_configs $arch $configs
+		merge_configs $arch $configs "$order"
 	fi
 done < $control_file
 

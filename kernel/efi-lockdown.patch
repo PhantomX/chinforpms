@@ -205,17 +205,17 @@ index a65cf544686a..863f77582c09 100644
 
  #include <linux/pfn.h>
 diff --git a/drivers/input/misc/uinput.c b/drivers/input/misc/uinput.c
-index 443151de90c6..45a1f5460805 100644
+index 39ddd9a73feb..0afeef1672bc 100644
 --- a/drivers/input/misc/uinput.c
 +++ b/drivers/input/misc/uinput.c
-@@ -408,6 +408,7 @@ static int uinput_allocate_device(struct uinput_device *udev)
- 	if (!udev->dev)
- 		return -ENOMEM;
-
-+	udev->dev->flags |= INPUTDEV_FLAGS_SYNTHETIC;
- 	udev->dev->event = uinput_dev_event;
+@@ -362,6 +362,7 @@ static int uinput_create_device(struct uinput_device *udev)
+ 		dev->flush = uinput_dev_flush;
+ 	}
+ 
++	dev->flags |= INPUTDEV_FLAGS_SYNTHETIC;
+ 	dev->event = uinput_dev_event;
+ 
  	input_set_drvdata(udev->dev, udev);
-
 diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
 index 3ffc1ce29023..8b766dbad6dd 100644
 --- a/drivers/tty/sysrq.c
@@ -1403,32 +1403,33 @@ cc: Matthew Garrett <matthew.garrett@nebula.com>
 cc: Thomas Gleixner <tglx@linutronix.de>
 ---
  fs/debugfs/file.c | 6 ++++++
- 1 file changed, 6 insertions(+)
 
+ 1 file changed, 6 insertions(+)
 diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
-index 6dabc4a10396..32b5168a7e91 100644
+index cd12e6576b48..097be2a59c51 100644
 --- a/fs/debugfs/file.c
 +++ b/fs/debugfs/file.c
-@@ -103,6 +103,9 @@ static int open_proxy_open(struct inode *inode, struct file *filp)
+@@ -142,6 +142,10 @@ static int open_proxy_open(struct inode *inode, struct file *filp)
  	const struct file_operations *real_fops = NULL;
- 	int srcu_idx, r;
-
+ 	int r;
+ 
 +	if (kernel_is_locked_down("debugfs"))
 +		return -EPERM;
 +
- 	r = debugfs_use_file_start(dentry, &srcu_idx);
- 	if (r) {
- 		r = -ENOENT;
-@@ -232,6 +235,9 @@ static int full_proxy_open(struct inode *inode, struct file *filp)
++
+ 	r = debugfs_file_get(dentry);
+ 	if (r)
+ 		return r == -EIO ? -ENOENT : r;
+@@ -267,6 +271,9 @@ static int full_proxy_open(struct inode *inode, struct file *filp)
  	struct file_operations *proxy_fops = NULL;
- 	int srcu_idx, r;
-
+ 	int r;
+ 
 +	if (kernel_is_locked_down("debugfs"))
 +		return -EPERM;
 +
- 	r = debugfs_use_file_start(dentry, &srcu_idx);
- 	if (r) {
- 		r = -ENOENT;
+ 	r = debugfs_file_get(dentry);
+ 	if (r)
+ 		return r == -EIO ? -ENOENT : r;
 -- 
 2.13.6
 

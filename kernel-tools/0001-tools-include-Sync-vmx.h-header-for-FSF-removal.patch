@@ -1,0 +1,28 @@
+From 0fa9b337b3038f31e5a882d5e1e397ea3a2dce83 Mon Sep 17 00:00:00 2001
+From: Laura Abbott <labbott@redhat.com>
+Date: Thu, 14 Dec 2017 17:03:17 -0800
+Subject: [PATCH] tools/include: Sync vmx.h header for FSF removal
+
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+---
+ tools/arch/x86/include/uapi/asm/vmx.h | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/tools/arch/x86/include/uapi/asm/vmx.h b/tools/arch/x86/include/uapi/asm/vmx.h
+index f0b0c90dd398..e0980a468e9c 100644
+--- a/tools/arch/x86/include/uapi/asm/vmx.h
++++ b/tools/arch/x86/include/uapi/asm/vmx.h
+@@ -12,10 +12,6 @@
+  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+  * more details.
+  *
+- * You should have received a copy of the GNU General Public License along with
+- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+- * Place - Suite 330, Boston, MA 02111-1307 USA.
+- *
+  * A few random additions are:
+  * Copyright (C) 2006 Qumranet
+  *    Avi Kivity <avi@qumranet.com>
+-- 
+2.14.3
+

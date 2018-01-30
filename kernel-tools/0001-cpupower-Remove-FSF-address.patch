@@ -1,0 +1,40 @@
+From 3766ef6d79da0f2219f8f052085da4102de2890e Mon Sep 17 00:00:00 2001
+From: Laura Abbott <labbott@redhat.com>
+Date: Thu, 14 Dec 2017 17:14:04 -0800
+Subject: [PATCH] cpupower: Remove FSF address
+To: Thomas Renninger <trenn@suse.com>
+To: Shuah Khan <shuah@kernel.org>
+Cc: linux-pm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+
+Checkpatch in the kernel now complains about having the FSF address
+in comments. Other tools such as rpmlint are now starting to do the
+same thing. Remove the FSF address to reduce warnings on multiple tools.
+
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+---
+For context, I'm updating the packaging for the cpupower tools in Fedora which
+requires a code/output review. This got flagged during that review.
+---
+ tools/power/cpupower/lib/cpufreq.h | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/tools/power/cpupower/lib/cpufreq.h b/tools/power/cpupower/lib/cpufreq.h
+index 3b005c39f068..60beaf5ed2ea 100644
+--- a/tools/power/cpupower/lib/cpufreq.h
++++ b/tools/power/cpupower/lib/cpufreq.h
+@@ -11,10 +11,6 @@
+  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program; if not, write to the Free Software
+- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  */
+ 
+ #ifndef __CPUPOWER_CPUFREQ_H__
+-- 
+2.14.3
+

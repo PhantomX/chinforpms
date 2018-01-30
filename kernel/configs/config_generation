@@ -3,6 +3,11 @@
 # the first arg is arch and variant, the second is a hierarchy of
 # config options, lowest priority to highest
 
+# tells the build_configs.sh which order to build the configs.
+# this is useful when providing a separate overrides directory.
+# do not use quotes and space separate the directories.
+ORDER=fedora
+
 # x86_64
 x86_64=generic:generic-x86:generic-x86-x86_64
 x86_64-debug=generic:generic-x86:generic-x86-x86_64:debug:debug-x86:debug-x86-x86_64

@@ -1,3 +1,9 @@
+Linux 4.15 rebase notes:
+- Disable power-management features enabled for F28+
+ -Set CONFIG_SND_HDA_POWER_SAVE_DEFAULT=0
+ -Set CONFIG_SATA_MOBILE_LPM_POLICY=0
+ -Unset CONFIG_BT_HCIBTUSB_AUTOSUSPEND
+
 Linux 4.14 rebase notes:
 - Turn on i686 PAE
 
