@@ -29,7 +29,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.6
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        100.chinfo%{?dist}
+Release:        101.chinfo%{?dist}
 
 Summary:        Kernel module for VirtualBox
 License:        GPLv2 or CDDL
@@ -110,6 +110,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Jan 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.6-101.chinfo
+- Build
+
 * Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br>
 - Sync with RPMFusion
 

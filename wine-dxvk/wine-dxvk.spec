@@ -67,10 +67,10 @@ popd
 mkdir -p %{buildroot}/%{_libdir}/wine/fakedlls
 
 install -pm0755 build.%{__isa_bits}/src/dxgi/dxgi.dll \
-  %{buildroot}/%{_libdir}/wine/fakedlls/dxgi-dxvk.dll
+  %{buildroot}/%{_libdir}/wine/fakedlls/dxgi_vk.dll
 
 install -pm0755 build.%{__isa_bits}/src/d3d11/d3d11.dll \
-  %{buildroot}/%{_libdir}/wine/fakedlls/d3d11-dxvk.dll
+  %{buildroot}/%{_libdir}/wine/fakedlls/d3d11_vk.dll
 
 for file in \
   tests/d3d11/d3d11-{compute,triangle}.exe \
@@ -86,11 +86,14 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 %files
 %license LICENSE
 %doc README.md README.dxvk
-%{_bindir}/dxvkcfg
+%{_bindir}/winedxvkcfg
 %{_libdir}/wine/fakedlls/*.dll
 %{_libdir}/wine/fakedlls/*.exe
 
 %changelog
+* Tue Jan 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.21-1
+- Fix dll names.
+
 * Fri Jan 26 2018 Phantom X <megaphantomx at bol dot com dot br>
 - Install as fakedll, to use with wine-staging dll redirection
 - Configuration script

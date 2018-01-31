@@ -26,10 +26,10 @@
 
 set -e
 
-ver=20180126
+ver=20180130
 
 name="DXVK"
-dllsuffix=dxvk
+dllsuffix="_vk"
 dlls="dxgi d3d11"
 nodlls="wined3d d3d9"
 disables="CSMT and Gallium Nine"
@@ -55,7 +55,7 @@ EOF
 checkcfg(){
   for winebits in 64 32 ;do
     for dll in ${dlls} ;do
-      if wine${winebits} reg query "${redirectkey}" /v "${dll}" 2>/dev/null | grep -q -F "${dll}-${dllsuffix}.dll" ;then
+      if wine${winebits} reg query "${redirectkey}" /v "${dll}" 2>/dev/null | grep -q -F "${dll}${dllsuffix}.dll" ;then
         enabled=1
       else
         disabled=1
@@ -92,7 +92,7 @@ setcfg(){
         fi
       done
       for dll in ${dlls} ;do
-        wine${winebits} reg add "${redirectkey}" /v "${dll}" -t REG_SZ /d "${dll}-${dllsuffix}.dll" /f &>/dev/null
+        wine${winebits} reg add "${redirectkey}" /v "${dll}" -t REG_SZ /d "${dll}${dllsuffix}.dll" /f &>/dev/null
         retval=$?
         if [ "${retval}" -eq 0 ] ;then
           enabled=1

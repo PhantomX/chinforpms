@@ -4,7 +4,6 @@ clog
 *.rpm
 *.orig
 kernel-[234].*/
-perf-man-*.tar.gz
 enable_additional_cpu_optimizations_for_gcc_v*+_kernel_v*+.patch
 /algodev-*.patch
 /patchwork-*.patch

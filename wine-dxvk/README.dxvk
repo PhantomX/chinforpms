@@ -1,2 +1,10 @@
-The needed dll files are in LIBDIR/wine/dxvk, LIBDIR must match to
+Wine Staging:
+- Run wineboot -u after first install and enable with winedxvkcfg.
+
+
+Stock Wine:
+The needed dll files are in LIBDIR/wine/fakedlls, LIBDIR must match to
 the architecture from executable, /usr/lib or /usr/lib64.
+ln -s LIBDIR/wine/fakedlls/dxgi_vk.dll executable_directory/dxgi.dll
+ln -s LIBDIR/wine/fakedlls/d3d11_vk.dll executable_directory/d3d11.dll
+WINEDLLOVERRIDES="dxgi=n,d3d11=n' executable
