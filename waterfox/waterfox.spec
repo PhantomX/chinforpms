@@ -1,6 +1,6 @@
-%global commit e5cadca84043a21749fa48c077d81a8bf1f573e8
+%global commit 91065bd7e2d03197254f887da75193ac47bf3c0e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180112
+%global date 20180202
 %global with_snapshot 0
 
 %if 0%{?with_snapshot}
@@ -94,8 +94,8 @@
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.0.3
-Release:        1%{?gver}%{?dist}
+Version:        56.0.4
+Release:        1%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -174,6 +174,8 @@ Patch609:        %{freebsd_url}/patch-bug1409680%{freebsd_uri}#/FreeBSD-bug14096
 Patch700:        firefox-nosocial.patch
 Patch701:        %{name}-nolangpacks.patch
 Patch702:        %{name}-waterfoxdir.patch
+
+Patch800:        %{name}-rust-1.23.patch
 
 %if %{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -351,6 +353,8 @@ This package contains results of tests executed during build.
 # Install langpacks other way
 %patch701 -p1 -b .nolangpacks
 %patch702 -p1 -b .waterfoxdir
+
+%patch800 -p1 -b .rust123
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -822,6 +826,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Feb 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.0.4-1
+- 56.0.4
+
 * Fri Jan 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.0.3-1
 - 56.0.3
 

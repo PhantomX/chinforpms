@@ -6,17 +6,15 @@
 # needed for this package
 %global extension_id \{73a6fe31-595d-460b-a920-fcc0f8843232\}
 
-%global fileid 777542
-
 Name:           waterfox-noscript
-Version:        5.1.7
+Version:        5.1.8.4
 Release:        1%{?dist}
 Summary:        JavaScript white list extension for Waterfox
 
 License:        GPLv2+
 URL:            http://noscript.net/
 # Source is a .xpi file, there is no public VCS or a tarball
-Source0:        https://addons.mozilla.org/firefox/downloads/file/%{fileid}/noscript_security_suite-%{version}-fx+sm.xpi
+Source0:        https://secure.informaction.com/download/releases/noscript-%{version}.xpi
 # https://bugzilla.redhat.com/show_bug.cgi?id=1364409
 Source1:        %{name}.metainfo.xml
 
@@ -56,5 +54,8 @@ DESTDIR=%{buildroot} appstream-util install %{SOURCE1}
 
 
 %changelog
+* Thu Feb 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.1.8.4-1
+- 5.1.8.4
+
 * Wed Dec 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.1.7-1
 - Initial spec, borrowed from Fedora mozilla-noscript

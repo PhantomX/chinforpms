@@ -1,0 +1,537 @@
+diff -up Waterfox-56.0.4/servo/components/gfx/font.rs.rust123 Waterfox-56.0.4/servo/components/gfx/font.rs
+--- Waterfox-56.0.4/servo/components/gfx/font.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/gfx/font.rs	2018-02-02 17:45:11.365791277 -0200
+@@ -10,7 +10,7 @@ use platform::font::{FontHandle, FontTab
+ use platform::font_context::FontContextHandle;
+ use platform::font_template::FontTemplateData;
+ use smallvec::SmallVec;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::ToOwned;
+ use std::cell::RefCell;
+ use std::collections::HashMap;
+diff -up Waterfox-56.0.4/servo/components/net/fetch/cors_cache.rs.rust123 Waterfox-56.0.4/servo/components/net/fetch/cors_cache.rs
+--- Waterfox-56.0.4/servo/components/net/fetch/cors_cache.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/net/fetch/cors_cache.rs	2018-02-02 17:45:11.365791277 -0200
+@@ -12,7 +12,7 @@
+ use hyper::method::Method;
+ use net_traits::request::{CredentialsMode, Origin, Request};
+ use servo_url::ServoUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use time::{self, Timespec};
+ 
+ /// Union type for CORS cache entries
+diff -up Waterfox-56.0.4/servo/components/net/fetch/methods.rs.rust123 Waterfox-56.0.4/servo/components/net/fetch/methods.rs
+diff -up Waterfox-56.0.4/servo/components/net/http_loader.rs.rust123 Waterfox-56.0.4/servo/components/net/http_loader.rs
+diff -up Waterfox-56.0.4/servo/components/net_traits/response.rs.rust123 Waterfox-56.0.4/servo/components/net_traits/response.rs
+--- Waterfox-56.0.4/servo/components/net_traits/response.rs.rust123	2018-02-02 17:45:11.367791270 -0200
++++ Waterfox-56.0.4/servo/components/net_traits/response.rs	2018-02-02 17:46:45.609453662 -0200
+@@ -9,7 +9,7 @@ use hyper::header::{AccessControlExposeH
+ use hyper::status::StatusCode;
+ use hyper_serde::Serde;
+ use servo_url::ServoUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::sync::{Arc, Mutex};
+ 
+ /// [Response type](https://fetch.spec.whatwg.org/#concept-response-type)
+diff -up Waterfox-56.0.4/servo/components/net/websocket_loader.rs.rust123 Waterfox-56.0.4/servo/components/net/websocket_loader.rs
+--- Waterfox-56.0.4/servo/components/net/websocket_loader.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/net/websocket_loader.rs	2018-02-02 17:45:11.367791270 -0200
+@@ -19,7 +19,7 @@ use net_traits::{CookieSource, MessageDa
+ use net_traits::{WebSocketDomAction, WebSocketNetworkEvent};
+ use net_traits::request::{Destination, Type};
+ use servo_url::ServoUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::io::{self, Write};
+ use std::net::TcpStream;
+ use std::sync::{Arc, Mutex};
+diff -up Waterfox-56.0.4/servo/components/script/dom/bindings/str.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/bindings/str.rs
+--- Waterfox-56.0.4/servo/components/script/dom/bindings/str.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/bindings/str.rs	2018-02-02 17:45:11.368791266 -0200
+@@ -7,7 +7,7 @@
+ use cssparser::CowRcStr;
+ use html5ever::{LocalName, Namespace};
+ use servo_atoms::Atom;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::{Borrow, Cow, ToOwned};
+ use std::fmt;
+ use std::hash::{Hash, Hasher};
+diff -up Waterfox-56.0.4/servo/components/script/dom/blob.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/blob.rs
+diff -up Waterfox-56.0.4/servo/components/script/dom/cssstyledeclaration.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/cssstyledeclaration.rs
+--- Waterfox-56.0.4/servo/components/script/dom/cssstyledeclaration.rs.rust123	2018-02-02 17:43:09.028229535 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/cssstyledeclaration.rs	2018-02-02 17:45:11.368791266 -0200
+@@ -16,7 +16,7 @@ use dom::window::Window;
+ use dom_struct::dom_struct;
+ use servo_arc::Arc;
+ use servo_url::ServoUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use style::attr::AttrValue;
+ use style::properties::{Importance, PropertyDeclarationBlock, PropertyId, LonghandId, ShorthandId};
+ use style::properties::{parse_one_declaration_into, parse_style_attribute, SourcePropertyDeclaration};
+diff -up Waterfox-56.0.4/servo/components/script/dom/document.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/document.rs
+--- Waterfox-56.0.4/servo/components/script/dom/document.rs.rust123	2018-02-02 17:43:09.030229528 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/document.rs	2018-02-02 17:45:11.368791266 -0200
+@@ -122,7 +122,7 @@ use servo_arc::Arc;
+ use servo_atoms::Atom;
+ use servo_config::prefs::PREFS;
+ use servo_url::{ImmutableOrigin, MutableOrigin, ServoUrl};
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::ToOwned;
+ use std::cell::{Cell, Ref, RefMut};
+ use std::collections::{HashMap, HashSet, VecDeque};
+diff -up Waterfox-56.0.4/servo/components/script/dom/element.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/element.rs
+--- Waterfox-56.0.4/servo/components/script/dom/element.rs.rust123	2018-02-02 17:45:11.369791263 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/element.rs	2018-02-02 17:47:00.138401614 -0200
+@@ -95,7 +95,7 @@ use selectors::matching::{RelevantLinkSt
+ use selectors::sink::Push;
+ use servo_arc::Arc;
+ use servo_atoms::Atom;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::Cow;
+ use std::cell::{Cell, Ref};
+ use std::convert::TryFrom;
+diff -up Waterfox-56.0.4/servo/components/script/dom/htmlelement.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/htmlelement.rs
+--- Waterfox-56.0.4/servo/components/script/dom/htmlelement.rs.rust123	2018-02-02 17:45:11.369791263 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/htmlelement.rs	2018-02-02 17:47:08.129372986 -0200
+@@ -31,7 +31,7 @@ use dom::nodelist::NodeList;
+ use dom::virtualmethods::VirtualMethods;
+ use dom_struct::dom_struct;
+ use html5ever::{LocalName, Prefix};
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::ToOwned;
+ use std::default::Default;
+ use std::rc::Rc;
+diff -up Waterfox-56.0.4/servo/components/script/dom/htmllinkelement.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/htmllinkelement.rs
+--- Waterfox-56.0.4/servo/components/script/dom/htmllinkelement.rs.rust123	2018-02-02 17:45:11.369791263 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/htmllinkelement.rs	2018-02-02 17:47:11.866359600 -0200
+@@ -27,7 +27,7 @@ use net_traits::ReferrerPolicy;
+ use script_layout_interface::message::Msg;
+ use script_traits::{MozBrowserEvent, ScriptMsg as ConstellationMsg};
+ use servo_arc::Arc;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::ToOwned;
+ use std::cell::Cell;
+ use std::default::Default;
+diff -up Waterfox-56.0.4/servo/components/script/dom/htmlmetaelement.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/htmlmetaelement.rs
+--- Waterfox-56.0.4/servo/components/script/dom/htmlmetaelement.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/htmlmetaelement.rs	2018-02-02 17:45:11.369791263 -0200
+@@ -22,7 +22,7 @@ use html5ever::{LocalName, Prefix};
+ use parking_lot::RwLock;
+ use servo_arc::Arc;
+ use servo_config::prefs::PREFS;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::sync::atomic::AtomicBool;
+ use style::attr::AttrValue;
+ use style::media_queries::MediaList;
+diff -up Waterfox-56.0.4/servo/components/script/dom/htmlscriptelement.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/htmlscriptelement.rs
+--- Waterfox-56.0.4/servo/components/script/dom/htmlscriptelement.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/htmlscriptelement.rs	2018-02-02 17:45:11.369791263 -0200
+@@ -36,7 +36,7 @@ use network_listener::{NetworkListener,
+ use servo_atoms::Atom;
+ use servo_config::opts;
+ use servo_url::ServoUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::cell::Cell;
+ use std::fs::File;
+ use std::io::{Read, Write};
+diff -up Waterfox-56.0.4/servo/components/script/dom/macros.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/macros.rs
+--- Waterfox-56.0.4/servo/components/script/dom/macros.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/macros.rs	2018-02-02 17:45:11.369791263 -0200
+@@ -149,7 +149,7 @@ macro_rules! make_enumerated_getter(
+         fn $attr(&self) -> DOMString {
+             use dom::bindings::inheritance::Castable;
+             use dom::element::Element;
+-            use std::ascii::AsciiExt;
++            #[allow(unused_imports)] use std::ascii::AsciiExt;
+             let element = self.upcast::<Element>();
+             let mut val = element.get_string_attribute(&local_name!($htmlname));
+             val.make_ascii_lowercase();
+diff -up Waterfox-56.0.4/servo/components/script/dom/namednodemap.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/namednodemap.rs
+--- Waterfox-56.0.4/servo/components/script/dom/namednodemap.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/namednodemap.rs	2018-02-02 17:45:11.369791263 -0200
+@@ -15,7 +15,7 @@ use dom::element::Element;
+ use dom::window::Window;
+ use dom_struct::dom_struct;
+ use html5ever::LocalName;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ 
+ #[dom_struct]
+ pub struct NamedNodeMap {
+diff -up Waterfox-56.0.4/servo/components/script/dom/request.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/request.rs
+--- Waterfox-56.0.4/servo/components/script/dom/request.rs.rust123	2018-02-02 17:50:24.707668772 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/request.rs	2018-02-02 17:50:32.977639146 -0200
+@@ -38,7 +38,7 @@ use net_traits::request::Request as NetT
+ use net_traits::request::RequestMode as NetTraitsRequestMode;
+ use net_traits::request::Type as NetTraitsRequestType;
+ use servo_url::ServoUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::cell::{Cell, Ref};
+ use std::rc::Rc;
+ 
+diff -up Waterfox-56.0.4/servo/components/script/dom/serviceworkercontainer.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/serviceworkercontainer.rs
+--- Waterfox-56.0.4/servo/components/script/dom/serviceworkercontainer.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/serviceworkercontainer.rs	2018-02-02 17:45:11.370791259 -0200
+@@ -16,7 +16,7 @@ use dom::serviceworker::ServiceWorker;
+ use dom_struct::dom_struct;
+ use script_thread::ScriptThread;
+ use serviceworkerjob::{Job, JobType};
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::default::Default;
+ use std::rc::Rc;
+ 
+diff -up Waterfox-56.0.4/servo/components/script/dom/servoparser/async_html.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/servoparser/async_html.rs
+--- Waterfox-56.0.4/servo/components/script/dom/servoparser/async_html.rs.rust123	2018-02-02 17:43:09.031229524 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/servoparser/async_html.rs	2018-02-02 17:45:11.370791259 -0200
+@@ -27,7 +27,7 @@ use html5ever::tokenizer::{Tokenizer as
+ use html5ever::tree_builder::{ElementFlags, NodeOrText as HtmlNodeOrText, NextParserState, QuirksMode, TreeSink};
+ use html5ever::tree_builder::{TreeBuilder, TreeBuilderOpts};
+ use servo_url::ServoUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::Cow;
+ use std::cell::Cell;
+ use std::collections::HashMap;
+diff -up Waterfox-56.0.4/servo/components/script/dom/servoparser/mod.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/servoparser/mod.rs
+--- Waterfox-56.0.4/servo/components/script/dom/servoparser/mod.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/servoparser/mod.rs	2018-02-02 17:45:11.370791259 -0200
+@@ -46,7 +46,7 @@ use script_traits::DocumentActivity;
+ use servo_config::prefs::PREFS;
+ use servo_config::resource_files::read_resource_file;
+ use servo_url::ServoUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::Cow;
+ use std::cell::Cell;
+ use std::mem;
+diff -up Waterfox-56.0.4/servo/components/script/dom/websocket.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/websocket.rs
+--- Waterfox-56.0.4/servo/components/script/dom/websocket.rs.rust123	2018-02-02 17:45:11.370791259 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/websocket.rs	2018-02-02 17:47:33.609281709 -0200
+@@ -34,7 +34,7 @@ use script_runtime::CommonScriptMsg;
+ use script_runtime::ScriptThreadEventCategory::WebSocketEvent;
+ use script_thread::{Runnable, RunnableWrapper};
+ use servo_url::ServoUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::ToOwned;
+ use std::cell::Cell;
+ use std::ptr;
+diff -up Waterfox-56.0.4/servo/components/script/dom/window.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/window.rs
+--- Waterfox-56.0.4/servo/components/script/dom/window.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/window.rs	2018-02-02 17:45:11.370791259 -0200
+@@ -88,7 +88,7 @@ use servo_config::opts;
+ use servo_config::prefs::PREFS;
+ use servo_geometry::{f32_rect_to_au_rect, max_rect};
+ use servo_url::{Host, MutableOrigin, ImmutableOrigin, ServoUrl};
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::ToOwned;
+ use std::cell::Cell;
+ use std::collections::{HashMap, HashSet};
+diff -up Waterfox-56.0.4/servo/components/script/dom/xmlhttprequest.rs.rust123 Waterfox-56.0.4/servo/components/script/dom/xmlhttprequest.rs
+--- Waterfox-56.0.4/servo/components/script/dom/xmlhttprequest.rs.rust123	2018-02-02 17:43:09.033229517 -0200
++++ Waterfox-56.0.4/servo/components/script/dom/xmlhttprequest.rs	2018-02-02 17:45:11.370791259 -0200
+@@ -63,7 +63,7 @@ use script_traits::DocumentActivity;
+ use servo_atoms::Atom;
+ use servo_config::prefs::PREFS;
+ use servo_url::ServoUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::ToOwned;
+ use std::cell::Cell;
+ use std::default::Default;
+diff -up Waterfox-56.0.4/servo/components/selectors/attr.rs.rust123 Waterfox-56.0.4/servo/components/selectors/attr.rs
+--- Waterfox-56.0.4/servo/components/selectors/attr.rs.rust123	2018-02-02 17:45:11.370791259 -0200
++++ Waterfox-56.0.4/servo/components/selectors/attr.rs	2018-02-02 17:47:34.569278271 -0200
+@@ -4,7 +4,7 @@
+ 
+ use cssparser::ToCss;
+ use parser::SelectorImpl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::fmt;
+ 
+ #[derive(Eq, PartialEq, Clone)]
+diff -up Waterfox-56.0.4/servo/components/selectors/parser.rs.rust123 Waterfox-56.0.4/servo/components/selectors/parser.rs
+--- Waterfox-56.0.4/servo/components/selectors/parser.rs.rust123	2018-02-02 17:45:11.371791256 -0200
++++ Waterfox-56.0.4/servo/components/selectors/parser.rs	2018-02-02 17:47:35.274275745 -0200
+@@ -13,7 +13,7 @@ use precomputed_hash::PrecomputedHash;
+ use servo_arc::ThinArc;
+ use sink::Push;
+ use smallvec::SmallVec;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::{Borrow, Cow};
+ use std::fmt::{self, Display, Debug, Write};
+ use std::iter::Rev;
+diff -up Waterfox-56.0.4/servo/components/style/attr.rs.rust123 Waterfox-56.0.4/servo/components/style/attr.rs
+--- Waterfox-56.0.4/servo/components/style/attr.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/style/attr.rs	2018-02-02 17:45:11.371791256 -0200
+@@ -16,7 +16,7 @@ use selectors::attr::AttrSelectorOperati
+ use servo_arc::Arc;
+ use servo_url::ServoUrl;
+ use shared_lock::Locked;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] #[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::str::FromStr;
+ use str::{HTML_SPACE_CHARACTERS, read_exponent, read_fraction};
+ use str::{read_numbers, split_commas, split_html_space_chars};
+diff -up Waterfox-56.0.4/servo/components/style/counter_style/mod.rs.rust123 Waterfox-56.0.4/servo/components/style/counter_style/mod.rs
+--- Waterfox-56.0.4/servo/components/style/counter_style/mod.rs.rust123	2018-02-02 17:45:11.371791256 -0200
++++ Waterfox-56.0.4/servo/components/style/counter_style/mod.rs	2018-02-02 17:48:23.729102161 -0200
+@@ -15,7 +15,7 @@ use error_reporting::ContextualParseErro
+ use parser::{ParserContext, log_css_error, Parse};
+ use selectors::parser::SelectorParseError;
+ use shared_lock::{SharedRwLockReadGuard, ToCssWithGuard};
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::Cow;
+ use std::fmt;
+ use std::ops::Range;
+diff -up Waterfox-56.0.4/servo/components/style/custom_properties.rs.rust123 Waterfox-56.0.4/servo/components/style/custom_properties.rs
+--- Waterfox-56.0.4/servo/components/style/custom_properties.rs.rust123	2018-02-02 17:45:11.371791256 -0200
++++ Waterfox-56.0.4/servo/components/style/custom_properties.rs	2018-02-02 17:48:06.986162141 -0200
+@@ -12,7 +12,7 @@ use parser::ParserContext;
+ use properties::{CSSWideKeyword, DeclaredValue};
+ use selectors::parser::SelectorParseError;
+ use servo_arc::Arc;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::Cow;
+ use std::collections::{HashMap, hash_map, HashSet};
+ use std::fmt;
+diff -up Waterfox-56.0.4/servo/components/style/gecko/generated/pseudo_element_definition.rs.rust123 Waterfox-56.0.4/servo/components/style/gecko/generated/pseudo_element_definition.rs
+--- Waterfox-56.0.4/servo/components/style/gecko/generated/pseudo_element_definition.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/style/gecko/generated/pseudo_element_definition.rs	2018-02-02 17:45:11.372791252 -0200
+@@ -1182,7 +1182,7 @@ impl PseudoElement {
+     /// Returns `None` if the pseudo-element is not recognised.
+     #[inline]
+     pub fn from_slice(s: &str, in_ua_stylesheet: bool) -> Option<Self> {
+-        use std::ascii::AsciiExt;
++        #[allow(unused_imports)] #[allow(unused_imports)] use std::ascii::AsciiExt;
+ 
+         // We don't need to support tree pseudos because functional
+         // pseudo-elements needs arguments, and thus should be created
+@@ -1552,7 +1552,7 @@ impl PseudoElement {
+     /// Returns `None` if the pseudo-element is not recognized.
+     #[inline]
+     pub fn tree_pseudo_element(name: &str, args: Box<[String]>) -> Option<Self> {
+-        use std::ascii::AsciiExt;
++        #[allow(unused_imports)] use std::ascii::AsciiExt;
+         debug_assert!(name.starts_with("-moz-tree-"));
+         let tree_part = &name[10..];
+             if tree_part.eq_ignore_ascii_case("column") {
+diff -up Waterfox-56.0.4/servo/components/style/gecko/pseudo_element_definition.mako.rs.rust123 Waterfox-56.0.4/servo/components/style/gecko/pseudo_element_definition.mako.rs
+--- Waterfox-56.0.4/servo/components/style/gecko/pseudo_element_definition.mako.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/style/gecko/pseudo_element_definition.mako.rs	2018-02-02 17:45:11.372791252 -0200
+@@ -171,7 +171,7 @@ impl PseudoElement {
+     /// Returns `None` if the pseudo-element is not recognised.
+     #[inline]
+     pub fn from_slice(s: &str, in_ua_stylesheet: bool) -> Option<Self> {
+-        use std::ascii::AsciiExt;
++        #[allow(unused_imports)] #[allow(unused_imports)] use std::ascii::AsciiExt;
+ 
+         // We don't need to support tree pseudos because functional
+         // pseudo-elements needs arguments, and thus should be created
+@@ -193,7 +193,7 @@ impl PseudoElement {
+     /// Returns `None` if the pseudo-element is not recognized.
+     #[inline]
+     pub fn tree_pseudo_element(name: &str, args: Box<[String]>) -> Option<Self> {
+-        use std::ascii::AsciiExt;
++        #[allow(unused_imports)] use std::ascii::AsciiExt;
+         debug_assert!(name.starts_with("-moz-tree-"));
+         let tree_part = &name[10..];
+         % for pseudo in TREE_PSEUDOS:
+diff -up Waterfox-56.0.4/servo/components/style/gecko_string_cache/mod.rs.rust123 Waterfox-56.0.4/servo/components/style/gecko_string_cache/mod.rs
+--- Waterfox-56.0.4/servo/components/style/gecko_string_cache/mod.rs.rust123	2018-02-02 17:45:11.372791252 -0200
++++ Waterfox-56.0.4/servo/components/style/gecko_string_cache/mod.rs	2018-02-02 17:48:21.753109240 -0200
+@@ -13,7 +13,7 @@ use gecko_bindings::bindings::Gecko_Rele
+ use gecko_bindings::structs::nsIAtom;
+ use nsstring::{nsAString, nsString};
+ use precomputed_hash::PrecomputedHash;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::{Cow, Borrow};
+ use std::char::{self, DecodeUtf16};
+ use std::fmt::{self, Write};
+diff -up Waterfox-56.0.4/servo/components/style/media_queries.rs.rust123 Waterfox-56.0.4/servo/components/style/media_queries.rs
+--- Waterfox-56.0.4/servo/components/style/media_queries.rs.rust123	2018-02-02 17:49:45.555809029 -0200
++++ Waterfox-56.0.4/servo/components/style/media_queries.rs	2018-02-02 17:49:59.289759829 -0200
+@@ -12,7 +12,7 @@ use cssparser::{Delimiter, Parser, Token
+ use parser::ParserContext;
+ use selectors::parser::SelectorParseError;
+ use serialize_comma_separated_list;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::fmt;
+ use style_traits::{ToCss, ParseError, StyleParseError};
+ 
+diff -up Waterfox-56.0.4/servo/components/style/properties/longhand/font.mako.rs.rust123 Waterfox-56.0.4/servo/components/style/properties/longhand/font.mako.rs
+--- Waterfox-56.0.4/servo/components/style/properties/longhand/font.mako.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/style/properties/longhand/font.mako.rs	2018-02-02 17:45:11.372791252 -0200
+@@ -2096,7 +2096,7 @@ https://drafts.csswg.org/css-fonts-4/#lo
+ 
+         #[inline]
+         fn to_computed_value(&self, _context: &Context) -> computed_value::T {
+-            use std::ascii::AsciiExt;
++            #[allow(unused_imports)] #[allow(unused_imports)] use std::ascii::AsciiExt;
+             match *self {
+                 SpecifiedValue::Normal => computed_value::T(0),
+                 SpecifiedValue::Override(ref lang) => {
+diff -up Waterfox-56.0.4/servo/components/style/properties/longhand/pointing.mako.rs.rust123 Waterfox-56.0.4/servo/components/style/properties/longhand/pointing.mako.rs
+--- Waterfox-56.0.4/servo/components/style/properties/longhand/pointing.mako.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/style/properties/longhand/pointing.mako.rs	2018-02-02 17:45:11.372791252 -0200
+@@ -93,7 +93,7 @@
+     impl Parse for computed_value::Keyword {
+         fn parse<'i, 't>(_context: &ParserContext, input: &mut Parser<'i, 't>)
+                          -> Result<computed_value::Keyword, ParseError<'i>> {
+-            use std::ascii::AsciiExt;
++            #[allow(unused_imports)] use std::ascii::AsciiExt;
+             use style_traits::cursor::Cursor;
+             let ident = input.expect_ident()?;
+             if ident.eq_ignore_ascii_case("auto") {
+diff -up Waterfox-56.0.4/servo/components/style/servo/selector_parser.rs.rust123 Waterfox-56.0.4/servo/components/style/servo/selector_parser.rs
+--- Waterfox-56.0.4/servo/components/style/servo/selector_parser.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/style/servo/selector_parser.rs	2018-02-02 17:45:11.372791252 -0200
+@@ -21,7 +21,7 @@ use selectors::Element;
+ use selectors::attr::{AttrSelectorOperation, NamespaceConstraint, CaseSensitivity};
+ use selectors::parser::{SelectorMethods, SelectorParseError};
+ use selectors::visitor::SelectorVisitor;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::fmt;
+ use std::fmt::Debug;
+ use std::mem;
+diff -up Waterfox-56.0.4/servo/components/style/str.rs.rust123 Waterfox-56.0.4/servo/components/style/str.rs
+--- Waterfox-56.0.4/servo/components/style/str.rs.rust123	2018-02-02 17:45:11.372791252 -0200
++++ Waterfox-56.0.4/servo/components/style/str.rs	2018-02-02 17:48:02.577177935 -0200
+@@ -7,7 +7,7 @@
+ #![deny(missing_docs)]
+ 
+ use num_traits::ToPrimitive;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::convert::AsRef;
+ use std::iter::{Filter, Peekable};
+ use std::str::Split;
+diff -up Waterfox-56.0.4/servo/components/style/stylesheets/viewport_rule.rs.rust123 Waterfox-56.0.4/servo/components/style/stylesheets/viewport_rule.rs
+--- Waterfox-56.0.4/servo/components/style/stylesheets/viewport_rule.rs.rust123	2018-02-02 17:45:11.373791248 -0200
++++ Waterfox-56.0.4/servo/components/style/stylesheets/viewport_rule.rs	2018-02-02 17:48:19.818116173 -0200
+@@ -19,7 +19,7 @@ use parser::{Parse, ParserContext, log_c
+ use properties::StyleBuilder;
+ use selectors::parser::SelectorParseError;
+ use shared_lock::{SharedRwLockReadGuard, ToCssWithGuard};
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::borrow::Cow;
+ use std::fmt;
+ use std::iter::Enumerate;
+diff -up Waterfox-56.0.4/servo/components/style_traits/viewport.rs.rust123 Waterfox-56.0.4/servo/components/style_traits/viewport.rs
+--- Waterfox-56.0.4/servo/components/style_traits/viewport.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/style_traits/viewport.rs	2018-02-02 17:45:30.314723394 -0200
+@@ -7,7 +7,7 @@
+ use {CSSPixel, PinchZoomFactor, ParseError};
+ use cssparser::{Parser, ToCss, ParseError as CssParseError, BasicParseError};
+ use euclid::TypedSize2D;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::fmt;
+ 
+ define_css_keyword_enum!(UserZoom:
+diff -up Waterfox-56.0.4/servo/components/style/values/mod.rs.rust123 Waterfox-56.0.4/servo/components/style/values/mod.rs
+--- Waterfox-56.0.4/servo/components/style/values/mod.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/style/values/mod.rs	2018-02-02 17:45:11.373791248 -0200
+@@ -12,7 +12,7 @@ use Atom;
+ pub use cssparser::{RGBA, Token, Parser, serialize_identifier, BasicParseError, CowRcStr};
+ use parser::{Parse, ParserContext};
+ use selectors::parser::SelectorParseError;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::fmt::{self, Debug};
+ use std::hash;
+ use style_traits::{ToCss, ParseError, StyleParseError};
+diff -up Waterfox-56.0.4/servo/components/style/values/specified/align.rs.rust123 Waterfox-56.0.4/servo/components/style/values/specified/align.rs
+--- Waterfox-56.0.4/servo/components/style/values/specified/align.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/style/values/specified/align.rs	2018-02-02 17:45:11.373791248 -0200
+@@ -10,7 +10,7 @@ use cssparser::Parser;
+ use gecko_bindings::structs;
+ use parser::{Parse, ParserContext};
+ use selectors::parser::SelectorParseError;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::fmt;
+ use style_traits::{ToCss, ParseError, StyleParseError};
+ 
+diff -up Waterfox-56.0.4/servo/components/style/values/specified/calc.rs.rust123 Waterfox-56.0.4/servo/components/style/values/specified/calc.rs
+--- Waterfox-56.0.4/servo/components/style/values/specified/calc.rs.rust123	2018-02-02 17:45:28.562729672 -0200
++++ Waterfox-56.0.4/servo/components/style/values/specified/calc.rs	2018-02-02 17:48:16.385128471 -0200
+@@ -9,7 +9,7 @@
+ use app_units::Au;
+ use cssparser::{Parser, Token, BasicParseError};
+ use parser::ParserContext;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::fmt;
+ use style_traits::{HasViewportPercentage, ToCss, ParseError, StyleParseError};
+ use style_traits::values::specified::AllowedLengthType;
+diff -up Waterfox-56.0.4/servo/components/style/values/specified/grid.rs.rust123 Waterfox-56.0.4/servo/components/style/values/specified/grid.rs
+--- Waterfox-56.0.4/servo/components/style/values/specified/grid.rs.rust123	2018-02-02 17:45:28.563729668 -0200
++++ Waterfox-56.0.4/servo/components/style/values/specified/grid.rs	2018-02-02 17:48:13.945137212 -0200
+@@ -7,7 +7,7 @@
+ 
+ use cssparser::{Parser, Token, BasicParseError};
+ use parser::{Parse, ParserContext};
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::mem;
+ use style_traits::{HasViewportPercentage, ParseError, StyleParseError};
+ use values::{CSSFloat, CustomIdent};
+diff -up Waterfox-56.0.4/servo/components/style/values/specified/length.rs.rust123 Waterfox-56.0.4/servo/components/style/values/specified/length.rs
+--- Waterfox-56.0.4/servo/components/style/values/specified/length.rs.rust123	2018-02-02 17:45:28.564729665 -0200
++++ Waterfox-56.0.4/servo/components/style/values/specified/length.rs	2018-02-02 17:48:11.938144401 -0200
+@@ -12,7 +12,7 @@ use euclid::Size2D;
+ use font_metrics::FontMetricsQueryResult;
+ use parser::{Parse, ParserContext};
+ use std::{cmp, fmt, mem};
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::ops::Mul;
+ use style_traits::{HasViewportPercentage, ToCss, ParseError, StyleParseError};
+ use style_traits::values::specified::{AllowedLengthType, AllowedNumericType};
+diff -up Waterfox-56.0.4/servo/components/style/values/specified/mod.rs.rust123 Waterfox-56.0.4/servo/components/style/values/specified/mod.rs
+--- Waterfox-56.0.4/servo/components/style/values/specified/mod.rs.rust123	2018-02-02 17:45:28.565729661 -0200
++++ Waterfox-56.0.4/servo/components/style/values/specified/mod.rs	2018-02-02 17:48:09.738152282 -0200
+@@ -11,7 +11,7 @@ use context::QuirksMode;
+ use cssparser::{Parser, Token, serialize_identifier, BasicParseError};
+ use parser::{ParserContext, Parse};
+ use self::url::SpecifiedUrl;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use std::f32;
+ use std::fmt;
+ use style_traits::{ToCss, ParseError, StyleParseError};
+diff -up Waterfox-56.0.4/servo/components/style/values/specified/text.rs.rust123 Waterfox-56.0.4/servo/components/style/values/specified/text.rs
+--- Waterfox-56.0.4/servo/components/style/values/specified/text.rs.rust123	2018-02-02 17:03:10.000000000 -0200
++++ Waterfox-56.0.4/servo/components/style/values/specified/text.rs	2018-02-02 17:45:29.730725489 -0200
+@@ -7,7 +7,7 @@
+ use cssparser::Parser;
+ use parser::{Parse, ParserContext};
+ use selectors::parser::SelectorParseError;
+-use std::ascii::AsciiExt;
++#[allow(unused_imports)] use std::ascii::AsciiExt;
+ use style_traits::ParseError;
+ use values::computed::{Context, ToComputedValue};
+ use values::computed::text::LineHeight as ComputedLineHeight;
