@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -652,7 +652,7 @@ Patch651: ACPI-sbshc-remove-raw-pointer-from-printk-message.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id ac017470b9f9e7c85b28bb48f40b3116c8fe68c7
+%global opensuse_id 5b8446bde525083ad6773d6a523380f7780e1a72
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -693,6 +693,7 @@ Patch3011: %{pf_url}/3c5529454a27dad416d8332b369a1aa1f0cc6de0.patch#/pf-3c552945
 Patch3012: %{pf_url}/5b9eb4716af16872a636b1ad290c79d609d0009f.patch#/pf-5b9eb4716af16872a636b1ad290c79d609d0009f.patch
 Patch3013: %{pf_url}/83c97a310f83d505879b2b778c5c698e780070b9.patch#/pf-83c97a310f83d505879b2b778c5c698e780070b9.patch
 Patch3014: %{pf_url}/2ad909a300c452488b3de088e1ff38860dac3112.patch#/pf-2ad909a300c452488b3de088e1ff38860dac3112.patch
+Patch3015: %{pf_url}/af2d5f0a066409296215630249a6be4e7465a1d9.patch#/pf-af2d5f0a066409296215630249a6be4e7465a1d9.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -1955,6 +1956,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.2-500.chinfo
+- 4.15.2
+
 * Sat Feb 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.1-500.chinfo
 - 4.15.1
 
