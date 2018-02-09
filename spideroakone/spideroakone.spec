@@ -26,7 +26,7 @@
 %global with_pyqt 0
 
 Name:           spideroakone
-Version:        7.0.0
+Version:        7.0.1
 Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
@@ -300,6 +300,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Thu Feb 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.0.1-1
+- 7.0.1
+
 * Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.0.0-1
 - 7.0.0
 

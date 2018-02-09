@@ -1,7 +1,7 @@
 %global pname FreeFileSync
 
 Name:           freefilesync
-Version:        9.5
+Version:        9.8
 Release:        1%{?dist}
 Summary:        A file synchronization utility
 
@@ -126,6 +126,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Fri Feb 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 9.8-1
+- 9.8
+
 * Tue Nov 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 9.5-1
 - 9.5
 
