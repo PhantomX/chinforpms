@@ -1,6 +1,6 @@
-%global commit 62242601ef28afee1eb489e6ca8725dc03cdc142
+%global commit 4e5fb6e286be01a51e8d3d37fa7b289455166bff
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180108
+%global date 20180211
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -45,7 +45,7 @@
 
 Name:           ppsspp
 Version:        1.4
-Release:        13%{?gver}%{?dist}
+Release:        14%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -125,6 +125,8 @@ sed -e 's|png17|%{pngver}|g' \
 sed -e "/PNG_PNG_INCLUDE_DIR/s|libpng/|lib%{pngver}/|" \
   -i CMakeLists.txt
 
+rm -rf ext/native/ext/libzip
+
 %if !0%{?with_sysffmpeg}
 pushd ffmpeg
 sed \
@@ -175,6 +177,7 @@ pushd build
 %if 0%{?with_sysffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
 %endif #{?with_sysffmpeg}
+  -DUSE_SYSTEM_LIBZIP:BOOL=ON \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 
 %make_build
@@ -251,13 +254,17 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Feb 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.4-14.20180211git4e5fb6e
+- New snapshot
+- USE_SYSTEM_LIBZIP
+
 * Mon Jan 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.4-13.20180108git6224260
 - New snapshot
 
 * Thu Dec 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-12.20171214gitc55847a
 - New snapshot
 
-* Wed Nov 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-11.20171107gitca3be18
+* Tue Nov 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-11.20171107gitca3be18
 - New snapshot
 
 * Fri Oct 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-10.20171013gited602a3
@@ -314,7 +321,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Wrapper to export Mesa GL to 3.3COMPAT
 
 * Thu Dec 29 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.3-2.20161227gitad04f97
-- Option to build with ugly bundled binary ffmpeg.
+- Option to build with ugly bundled ffmpeg binary.
 - https://github.com/hrydgard/ppsspp/issues/9026
 - System png.
 
