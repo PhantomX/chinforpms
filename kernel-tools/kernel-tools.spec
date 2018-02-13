@@ -21,7 +21,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 2
+%global stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -390,10 +390,13 @@ popd
 %{_includedir}/cpuidle.h
 
 %changelog
-* Wed Feb 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.2-500.chinfo
+* Mon Feb 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.3-100.chinfo
+- 4.15.3
+
+* Wed Feb 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.2-100.chinfo
 - 4.15.2
 
-* Sat Feb 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.1-500.chinfo
+* Sat Feb 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.1-100.chinfo
 - 4.15.1
 - Apply missing patch
 

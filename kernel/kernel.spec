@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -652,7 +652,7 @@ Patch651: ACPI-sbshc-remove-raw-pointer-from-printk-message.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 5b8446bde525083ad6773d6a523380f7780e1a72
+%global opensuse_id b34965ab958833296ac68575af31dd314a58cd7b
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -1956,6 +1956,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.3-500.chinfo
+- 4.15.3
+
 * Wed Feb 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.2-500.chinfo
 - 4.15.2
 
