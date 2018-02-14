@@ -1,0 +1,175 @@
+From patchwork Thu Feb  8 13:43:35 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [1/4] clk: bcm2835: Fix ana->maskX definitions
+From: Boris Brezillon <boris.brezillon@bootlin.com>
+X-Patchwork-Id: 10207161
+Message-Id: <20180208134338.24590-1-boris.brezillon@bootlin.com>
+To: Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>,
+ bcm-kernel-feedback-list@broadcom.com,
+ Stephen Warren <swarren@wwwdotorg.org>,
+ Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>,
+ linux-rpi-kernel@lists.infradead.org,
+ Mike Turquette <mturquette@baylibre.com>,
+ Stephen Boyd <sboyd@codeaurora.org>, linux-clk@vger.kernel.org
+Cc: Boris Brezillon <boris.brezillon@bootlin.com>, stable@vger.kernel.org
+Date: Thu,  8 Feb 2018 14:43:35 +0100
+
+ana->maskX values are already '~'-ed in bcm2835_pll_set_rate(). Remove
+the '~' in the definition to fix ANA setup.
+
+Note that this commit fixes a long standing bug preventing one from
+using an HDMI display if it's plugged after the FW has booted Linux.
+This is because PLLH is used by the HDMI encoder to generate the pixel
+clock.
+
+Fixes: 41691b8862e2 ("clk: bcm2835: Add support for programming the audio domain clocks")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Boris Brezillon <boris.brezillon@bootlin.com>
+Reviewed-by: Eric Anholt <eric@anholt.net>
+---
+ drivers/clk/bcm/clk-bcm2835.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index 44301a3d9963..2108a274185a 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -449,17 +449,17 @@ struct bcm2835_pll_ana_bits {
+ static const struct bcm2835_pll_ana_bits bcm2835_ana_default = {
+ 	.mask0 = 0,
+ 	.set0 = 0,
+-	.mask1 = (u32)~(A2W_PLL_KI_MASK | A2W_PLL_KP_MASK),
++	.mask1 = A2W_PLL_KI_MASK | A2W_PLL_KP_MASK,
+ 	.set1 = (2 << A2W_PLL_KI_SHIFT) | (8 << A2W_PLL_KP_SHIFT),
+-	.mask3 = (u32)~A2W_PLL_KA_MASK,
++	.mask3 = A2W_PLL_KA_MASK,
+ 	.set3 = (2 << A2W_PLL_KA_SHIFT),
+ 	.fb_prediv_mask = BIT(14),
+ };
+ 
+ static const struct bcm2835_pll_ana_bits bcm2835_ana_pllh = {
+-	.mask0 = (u32)~(A2W_PLLH_KA_MASK | A2W_PLLH_KI_LOW_MASK),
++	.mask0 = A2W_PLLH_KA_MASK | A2W_PLLH_KI_LOW_MASK,
+ 	.set0 = (2 << A2W_PLLH_KA_SHIFT) | (2 << A2W_PLLH_KI_LOW_SHIFT),
+-	.mask1 = (u32)~(A2W_PLLH_KI_HIGH_MASK | A2W_PLLH_KP_MASK),
++	.mask1 = A2W_PLLH_KI_HIGH_MASK | A2W_PLLH_KP_MASK,
+ 	.set1 = (6 << A2W_PLLH_KP_SHIFT),
+ 	.mask3 = 0,
+ 	.set3 = 0,
+From patchwork Thu Feb  8 13:43:36 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [2/4] clk: bcm2835: Protect sections updating shared registers
+From: Boris Brezillon <boris.brezillon@bootlin.com>
+X-Patchwork-Id: 10207155
+Message-Id: <20180208134338.24590-2-boris.brezillon@bootlin.com>
+To: Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>,
+ bcm-kernel-feedback-list@broadcom.com,
+ Stephen Warren <swarren@wwwdotorg.org>,
+ Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>,
+ linux-rpi-kernel@lists.infradead.org,
+ Mike Turquette <mturquette@baylibre.com>,
+ Stephen Boyd <sboyd@codeaurora.org>, linux-clk@vger.kernel.org
+Cc: Boris Brezillon <boris.brezillon@bootlin.com>, stable@vger.kernel.org
+Date: Thu,  8 Feb 2018 14:43:36 +0100
+
+CM_PLLx and A2W_XOSC_CTRL registers are accessed by different clock
+handlers and must be accessed with ->regs_lock held.
+Update the sections where this protection is missing.
+
+Fixes: 41691b8862e2 ("clk: bcm2835: Add support for programming the audio domain clocks")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Boris Brezillon <boris.brezillon@bootlin.com>
+Reviewed-by: Eric Anholt <eric@anholt.net>
+---
+ drivers/clk/bcm/clk-bcm2835.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index 2108a274185a..a07f6451694a 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -623,8 +623,10 @@ static int bcm2835_pll_on(struct clk_hw *hw)
+ 		     ~A2W_PLL_CTRL_PWRDN);
+ 
+ 	/* Take the PLL out of reset. */
++	spin_lock(&cprman->regs_lock);
+ 	cprman_write(cprman, data->cm_ctrl_reg,
+ 		     cprman_read(cprman, data->cm_ctrl_reg) & ~CM_PLL_ANARST);
++	spin_unlock(&cprman->regs_lock);
+ 
+ 	/* Wait for the PLL to lock. */
+ 	timeout = ktime_add_ns(ktime_get(), LOCK_TIMEOUT_NS);
+@@ -701,9 +703,11 @@ static int bcm2835_pll_set_rate(struct clk_hw *hw,
+ 	}
+ 
+ 	/* Unmask the reference clock from the oscillator. */
++	spin_lock(&cprman->regs_lock);
+ 	cprman_write(cprman, A2W_XOSC_CTRL,
+ 		     cprman_read(cprman, A2W_XOSC_CTRL) |
+ 		     data->reference_enable_mask);
++	spin_unlock(&cprman->regs_lock);
+ 
+ 	if (do_ana_setup_first)
+ 		bcm2835_pll_write_ana(cprman, data->ana_reg_base, ana);
+From patchwork Thu Feb  8 13:43:37 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [3/4] clk: bcm2835: De-assert/assert PLL reset signal when appropriate
+From: Boris Brezillon <boris.brezillon@bootlin.com>
+X-Patchwork-Id: 10207157
+Message-Id: <20180208134338.24590-3-boris.brezillon@bootlin.com>
+To: Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>,
+ bcm-kernel-feedback-list@broadcom.com,
+ Stephen Warren <swarren@wwwdotorg.org>,
+ Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>,
+ linux-rpi-kernel@lists.infradead.org,
+ Mike Turquette <mturquette@baylibre.com>,
+ Stephen Boyd <sboyd@codeaurora.org>, linux-clk@vger.kernel.org
+Cc: Boris Brezillon <boris.brezillon@bootlin.com>, stable@vger.kernel.org
+Date: Thu,  8 Feb 2018 14:43:37 +0100
+
+In order to enable a PLL, not only the PLL has to be powered up and
+locked, but you also have to de-assert the reset signal. The last part
+was missing. Add it so PLLs that were not enabled by the FW/bootloader
+can be enabled from Linux.
+
+Fixes: 41691b8862e2 ("clk: bcm2835: Add support for programming the audio domain clocks")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Boris Brezillon <boris.brezillon@bootlin.com>
+---
+ drivers/clk/bcm/clk-bcm2835.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index a07f6451694a..6c5d4a8e426c 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -602,6 +602,9 @@ static void bcm2835_pll_off(struct clk_hw *hw)
+ 	const struct bcm2835_pll_data *data = pll->data;
+ 
+ 	spin_lock(&cprman->regs_lock);
++	cprman_write(cprman, data->a2w_ctrl_reg,
++		     cprman_read(cprman, data->a2w_ctrl_reg) &
++		     ~A2W_PLL_CTRL_PRST_DISABLE);
+ 	cprman_write(cprman, data->cm_ctrl_reg,
+ 		     cprman_read(cprman, data->cm_ctrl_reg) |
+ 		     CM_PLL_ANARST);
+@@ -640,6 +643,10 @@ static int bcm2835_pll_on(struct clk_hw *hw)
+ 		cpu_relax();
+ 	}
+ 
++	cprman_write(cprman, data->a2w_ctrl_reg,
++		     cprman_read(cprman, data->a2w_ctrl_reg) |
++		     A2W_PLL_CTRL_PRST_DISABLE);
++
+ 	return 0;
+ }
+ 
