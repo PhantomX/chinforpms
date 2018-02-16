@@ -25,7 +25,7 @@
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name: gtk3
-Version: 3.22.27
+Version: 3.22.28
 Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -34,7 +34,6 @@ URL: http://www.gtk.org
 Source0: http://download.gnome.org/sources/gtk+/3.22/gtk+-%{version}.tar.xz
 Source1: https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}.tar.gz#/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2: chinforpms-adwaita.css
-Source3: https://gitlab.gnome.org/GNOME/gtk/raw/gtk-3-22/gtk/gtkfontchooserwidgetprivate.h
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=790031
 Patch0: gtk3-wayland-emit-GDK_SELECTION_CLEAR-on-owner-changes.patch
@@ -242,8 +241,6 @@ cat %{S:2} | tee -a gtk/theme/Adwaita/gtk-contained{,-dark}.css > /dev/null
 
 rm -fv testsuite/gtk/gtkresources.c
 
-cp %{S:3} gtk/
-
 %build
 export CFLAGS='-fno-strict-aliasing %optflags'
 (if ! test -x configure; then NOCONFIGURE=1 ./autogen.sh; CONFIGFLAGS=--enable-gtk-doc; fi;
@@ -417,6 +414,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Thu Feb 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.28-100.chinfo
+- 3.22.28
+
 * Wed Feb 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.27-100.chinfo
 - 3.22.27
 - BR: cloudproviders
