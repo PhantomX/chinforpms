@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -644,15 +644,10 @@ Patch632: 0003-HID-multitouch-Combine-all-left-button-events-in-a-f.patch
 # Make SATA link powermanagement policy configurable for:
 # https://fedoraproject.org/wiki/Changes/ImprovedLaptopBatteryLife
 # Queued upstream for merging into 4.16
-Patch636: 0001-ahci-Annotate-PCI-ids-for-mobile-Intel-chipsets-as-s.patch
-Patch637: 0002-ahci-Add-PCI-ids-for-Intel-Bay-Trail-Cherry-Trail-an.patch
 Patch638: 0003-ahci-Allow-setting-a-default-LPM-policy-for-mobile-c.patch
 
 # rhbz1514969, submitted upstream
 Patch640: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
-
-# rhbz1514836, submitted upstream
-Patch641: 0001-Bluetooth-btusb-Disable-autosuspend-on-QCA-Rome-devi.patch
 
 # Speculative Execution patches
 Patch642: prevent-bounds-check-bypass-via-speculative-execution.patch
@@ -660,21 +655,15 @@ Patch642: prevent-bounds-check-bypass-via-speculative-execution.patch
 # Fix crash on Xwayland using nouveau
 Patch650: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
 
-# rhbz 1544821
-Patch651: ssb-Do-not-disable-PCI-host-on-non-Mips.patch
-
 # https://bugzilla.kernel.org/show_bug.cgi?id=198351
 Patch652: iwlwifi-mvn.patch
-
-# CVE-2018-5750 rhbz 1539706 1539708
-Patch653: ACPI-sbshc-remove-raw-pointer-from-printk-message.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id b34965ab958833296ac68575af31dd314a58cd7b
+%global opensuse_id 7169cf1cc5ff8be456cefe76955ebc84c109efd3
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -716,6 +705,8 @@ Patch3012: %{pf_url}/5b9eb4716af16872a636b1ad290c79d609d0009f.patch#/pf-5b9eb471
 Patch3013: %{pf_url}/83c97a310f83d505879b2b778c5c698e780070b9.patch#/pf-83c97a310f83d505879b2b778c5c698e780070b9.patch
 Patch3014: %{pf_url}/2ad909a300c452488b3de088e1ff38860dac3112.patch#/pf-2ad909a300c452488b3de088e1ff38860dac3112.patch
 Patch3015: %{pf_url}/af2d5f0a066409296215630249a6be4e7465a1d9.patch#/pf-af2d5f0a066409296215630249a6be4e7465a1d9.patch
+Patch3016: %{pf_url}/70521300dc14bb3ef93c72d636d574a019da4132.patch#/pf-70521300dc14bb3ef93c72d636d574a019da4132.patch
+Patch3017: %{pf_url}/dde098591b4c010293866159eb42bf947e73b552.patch#/pf-dde098591b4c010293866159eb42bf947e73b552.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20170904)
@@ -1978,6 +1969,9 @@ fi
 #
 #
 %changelog
+* Sat Feb 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.4-500.chinfo
+- 4.15.4
+
 * Mon Feb 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.3-500.chinfo
 - 4.15.3
 

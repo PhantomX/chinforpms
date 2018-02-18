@@ -21,12 +21,12 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 # https://github.com/TomaszGasior/gtk3-mushrooms
-%global mushroom_ver 3.22.26-4
+%global mushroom_ver 3.22.28-1
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name: gtk3
 Version: 3.22.28
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
@@ -414,6 +414,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Sat Feb 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.28-101.chinfo
+- mushroons sync
+
 * Thu Feb 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.28-100.chinfo
 - 3.22.28
 

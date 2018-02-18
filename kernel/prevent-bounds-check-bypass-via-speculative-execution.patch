@@ -185,9 +185,9 @@ index 77651c49ef44..b4819f6a0e5c 100644
 +	__load_no_speculate(&__np_ptr, lo, hi, 0, __np_ptr);		\
 +})
 +
- #define __smp_mb()	dmb(ish)
- #define __smp_rmb()	dmb(ishld)
- #define __smp_wmb()	dmb(ishst)
+ /*
+  * Generate a mask for array_index__nospec() that is ~0UL when 0 <= idx < sz
+  * and 0 otherwise.
 -- 
 2.14.3
 
