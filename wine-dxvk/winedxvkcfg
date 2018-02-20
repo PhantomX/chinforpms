@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20180130
+ver=20180219
 
 name="DXVK"
 dllsuffix="_vk"
@@ -36,7 +36,10 @@ disables="CSMT and Gallium Nine"
 
 unset winebits
 enabled=0
+enabledlnk=0
 disabled=0
+disabledlnk=0
+dllmissing=0
 retval=0
 redirectkey="HKCU\\Software\\Wine\\DllRedirects"
 
@@ -54,6 +57,12 @@ EOF
 
 checkcfg(){
   for winebits in 64 32 ;do
+    if [ "${winebits}" -eq 64 ] ;then
+      lib=64
+    else
+      lib=''
+    fi
+    native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
     for dll in ${dlls} ;do
       if wine${winebits} reg query "${redirectkey}" /v "${dll}" 2>/dev/null | grep -q -F "${dll}${dllsuffix}.dll" ;then
         enabled=1
@@ -61,11 +70,16 @@ checkcfg(){
         disabled=1
       fi
     done
+    if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "/usr/lib${lib}/wine/fakedlls/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+      enabledlnk=1
+    else
+      disabledlnk=1
+    fi
   done
 
-  if [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 0 ] ;then
+  if [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 0 ] && [ "${enabledlnk}" -eq 1 ] && [ "${disabledlnk}" -eq 0 ] ;then
     echo "${name} is enabled!"
-  elif [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 1 ] ;then
+  elif [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 1 ] || [ "${enabledlnk}" -eq 1 ] && [ "${disabledlnk}" -eq 1 ] ;then
     echo "${name} settings are corrupted!"
     echo "Rerun with --set or --unset to fix!"
   else
@@ -76,10 +90,30 @@ checkcfg(){
 
 setcfg(){
   csmtdisabled=0
+  csmtdisabledlnk=0
   ninedisabled=0
+  ninedisabledlnk=0
   enabled=1
+  enabledlnk=1
   for winebits in 64 32 ;do
     if wine${winebits} reg query /? &>/dev/null ;then
+      if [ "${winebits}" -eq 64 ] ;then
+        lib=64
+      else
+        lib=''
+      fi
+      native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+      for dll in ${dlls} ;do
+        if [ -f "/usr/lib${lib}/wine/fakedlls/${dll}${dllsuffix}.dll" ];then
+          dllmissing=0
+        else
+          echo "Missing ${dll}${dllsuffix}.dll in /usr/lib${lib}/wine/fakedlls/."
+          dllmissing=1
+        fi
+      done
+      if [ "${dllmissing}" -eq 1 ] ;then
+        continue
+      fi
       for nodll in ${nodlls} ;do
         if wine${winebits} reg query "${redirectkey}" /v "${nodll}" &>/dev/null ;then
           wine${winebits} reg delete "${redirectkey}" /v "${nodll}" /f &>/dev/null
@@ -99,16 +133,27 @@ setcfg(){
         else
           enabled=0
         fi
+        ln -sf "/usr/lib${lib}/wine/fakedlls/${dll}${dllsuffix}.dll" "${native_path}/${dll}.dll"
+        retval=$?
+        if [ "${retval}" -eq 0 ] ;then
+          enabledlnk=1
+        else
+          enabledlnk=0
+        fi
       done
     fi
   done
+  if [ "${dllmissing}" -eq 1 ] ;then
+    echo "If ${name} is installed correctly, run 'wineboot -u' before."
+    exit 1
+  fi
   if [ "${csmtdisabled}" -eq 1 ] ;then
     echo "CSMT was disabled..."
   fi
   if [ "${ninedisabled}" -eq 1 ] ;then
     echo "Gallium Nine was disabled..."
   fi
-  if [ "${enabled}" -eq 1 ] ;then
+  if [ "${enabled}" -eq 1 ] && [ "${enabledlnk}" -eq 1 ] ;then
     echo "${name} is enabled!"
   else
     echo "${name} configuration fail!"
@@ -120,8 +165,15 @@ setcfg(){
 
 unsetcfg(){
   disabled=1
+  disabledlnk=1
   for winebits in 64 32 ;do
+    if [ "${winebits}" -eq 64 ] ;then
+      lib=64
+    else
+      lib=''
+    fi
     if wine${winebits} reg query /? &>/dev/null ;then
+      native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       for dll in ${dlls} ;do
         if wine${winebits} reg query "${redirectkey}" /v ${dll} &>/dev/null ;then
           wine${winebits} reg delete "${redirectkey}" /v ${dll} /f &>/dev/null
@@ -132,10 +184,19 @@ unsetcfg(){
             disabled=0
           fi
         fi
+        if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "/usr/lib${lib}/wine/fakedlls/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+          rm -f "${native_path}/${dll}.dll"
+          retval=$?
+          if [ "${retval}" -eq 0 ] ;then
+            disabledlnk=1
+          else
+            disabledlnk=0
+          fi
+        fi
       done
     fi
   done
-  if [ "${disabled}" -eq 1 ] ;then
+  if [ "${disabled}" -eq 1 ] && [ "${disabledlnk}" -eq 1 ] ;then
     echo "${name} is disabled!"
   else
     echo "${name} configuration fail!"
