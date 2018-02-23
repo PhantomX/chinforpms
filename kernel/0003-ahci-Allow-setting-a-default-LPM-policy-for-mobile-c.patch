@@ -1,8 +1,7 @@
-From 262135cf058c28d248b997bd11b2c124e27d8d47 Mon Sep 17 00:00:00 2001
+From 65cca10ce92fb738b183152f1c1096b82e47923d Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Mon, 27 Nov 2017 15:32:01 +0100
-Subject: [PATCH 3/3] ahci: Allow setting a default LPM policy for mobile
- chipsets
+Subject: [PATCH] ahci: Allow setting a default LPM policy for mobile chipsets
 
 On many laptops setting a different LPM policy then unknown /
 max_performance can lead to power-savings of 1.0 - 1.5 Watts (when idle).
@@ -27,9 +26,6 @@ value for it, is to allow easy overriding of the default to allow
 trouble-shooting without needing to rebuild the kernel.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
-Changes in v2:
--Remove .config changes from the patch
 ---
  drivers/ata/Kconfig | 19 +++++++++++
  drivers/ata/ahci.c  | 97 +++++++++++++++++++++++++++++++----------------------
@@ -67,7 +63,7 @@ index cb5339166563..b3fad5663aeb 100644
  	tristate "Platform AHCI SATA support"
  	help
 diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-index 844f697bedbf..8e910fae8892 100644
+index 44a9d630b7ac..355a95a83a34 100644
 --- a/drivers/ata/ahci.c
 +++ b/drivers/ata/ahci.c
 @@ -65,6 +65,7 @@ enum board_ids {
@@ -219,7 +215,7 @@ index 844f697bedbf..8e910fae8892 100644
  	{ PCI_VDEVICE(INTEL, 0xa10f), board_ahci }, /* Sunrise Point-H RAID */
  	{ PCI_VDEVICE(INTEL, 0x2822), board_ahci }, /* Lewisburg RAID*/
  	{ PCI_VDEVICE(INTEL, 0x2823), board_ahci }, /* Lewisburg AHCI*/
-@@ -387,10 +387,10 @@ static const struct pci_device_id ahci_p
+@@ -387,10 +395,10 @@ static const struct pci_device_id ahci_pci_tbl[] = {
  	{ PCI_VDEVICE(INTEL, 0xa252), board_ahci }, /* Lewisburg RAID*/
  	{ PCI_VDEVICE(INTEL, 0xa256), board_ahci }, /* Lewisburg RAID*/
  	{ PCI_VDEVICE(INTEL, 0xa356), board_ahci }, /* Cannon Lake PCH-H RAID */
@@ -229,12 +225,12 @@ index 844f697bedbf..8e910fae8892 100644
 -	{ PCI_VDEVICE(INTEL, 0x5ae3), board_ahci }, /* Apollo Lake AHCI */
 +	{ PCI_VDEVICE(INTEL, 0x0f22), board_ahci_mobile }, /* Bay Trail AHCI */
 +	{ PCI_VDEVICE(INTEL, 0x0f23), board_ahci_mobile }, /* Bay Trail AHCI */
-+	{ PCI_VDEVICE(INTEL, 0x22a3), board_ahci_mobile }, /* Cherry Trail AHCI */
-+	{ PCI_VDEVICE(INTEL, 0x5ae3), board_ahci_mobile }, /* Apollo Lake AHCI */
++	{ PCI_VDEVICE(INTEL, 0x22a3), board_ahci_mobile }, /* Cherry Tr. AHCI */
++	{ PCI_VDEVICE(INTEL, 0x5ae3), board_ahci_mobile }, /* ApolloLake AHCI */
  
  	/* JMicron 360/1/3/5/6, match class to avoid IDE function */
  	{ PCI_VENDOR_ID_JMICRON, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
-@@ -597,6 +605,9 @@ static int marvell_enable = 1;
+@@ -598,6 +606,9 @@ static int marvell_enable = 1;
  module_param(marvell_enable, int, 0644);
  MODULE_PARM_DESC(marvell_enable, "Marvell SATA via AHCI (1 = enabled)");
  
@@ -244,7 +240,7 @@ index 844f697bedbf..8e910fae8892 100644
  
  static void ahci_pci_save_initial_config(struct pci_dev *pdev,
  					 struct ahci_host_priv *hpriv)
-@@ -1732,6 +1743,10 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+@@ -1733,6 +1744,10 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
  		if (ap->flags & ATA_FLAG_EM)
  			ap->em_message_type = hpriv->em_msg_type;
  

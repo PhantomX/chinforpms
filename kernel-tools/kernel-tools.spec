@@ -21,7 +21,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 4
+%global stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -390,6 +390,9 @@ popd
 %{_includedir}/cpuidle.h
 
 %changelog
+* Thu Feb 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.5-100.chinfo
+- 4.15.5
+
 * Sat Feb 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.4-100.chinfo
 - 4.15.4
 
