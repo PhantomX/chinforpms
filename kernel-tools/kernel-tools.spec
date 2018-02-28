@@ -21,7 +21,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 5
+%global stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -85,7 +85,7 @@ BuildRequires: rpm-build, elfutils
 BuildRequires: systemd
 
 Source0: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
-Source10: http://pkgs.fedoraproject.org/repo/pkgs/%{name}/perf-man-%{kversion}.tar.gz/sha512/%{perfman_hash}/perf-man-%{kversion}.tar.gz
+Source10: http://src.fedoraproject.org/repo/pkgs/%{name}/perf-man-%{kversion}.tar.gz/sha512/%{perfman_hash}/perf-man-%{kversion}.tar.gz
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -122,7 +122,7 @@ Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id ac017470b9f9e7c85b28bb48f40b3116c8fe68c7
+%global opensuse_id 06f0b064616eab8f7a171fe9aab2040aa40e16b7
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch?id=%{opensuse_id}#/openSUSE-perf_timechart_fix_zero_timestamps.patch
@@ -390,6 +390,9 @@ popd
 %{_includedir}/cpuidle.h
 
 %changelog
+* Tue Feb 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.6-100.chinfo
+- 4.15.6
+
 * Thu Feb 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.5-100.chinfo
 - 4.15.5
 

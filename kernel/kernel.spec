@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -603,9 +603,6 @@ Patch311: arm-clk-bcm2835-hdmi-fixes.patch
 # https://www.spinics.net/lists/arm-kernel/msg632925.html
 Patch313: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
 
-# In 4.16
-Patch314: arm64-qcom-fix-rmtfs.patch
-
 # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
 Patch330: arm64-socionext-96b-enablement.patch
 
@@ -659,7 +656,7 @@ Patch653: CVE-2018-1000026.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id a927c5d59597a1a9c2a916ddde03cc86a9b90eb0
+%global opensuse_id 06f0b064616eab8f7a171fe9aab2040aa40e16b7
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -677,11 +674,13 @@ Patch1021: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patc
 Patch1022: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
 Patch1023: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
 Patch1024: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
+Patch1025: %{opensuse_url}/bpf-cpumap-use-GFP_KERNEL-instead-of-GFP_ATOMIC-in-_.patch?id=%{opensuse_id}#/openSUSE-bpf-cpumap-use-GFP_KERNEL-instead-of-GFP_ATOMIC-in-_.patch
+Patch1026: %{opensuse_url}/ext4-llseek-do-not-crop-offset-on-32bit.patch?id=%{opensuse_id}#/openSUSE-ext4-llseek-do-not-crop-offset-on-32bit.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
-# https://github.com/pfactum/pf-kernel/commits/pf-4.14
+# https://github.com/pfactum/pf-kernel/commits/pf-4.15
 # block fixes and updates, mostly
 
 %global pf_url https://github.com/pfactum/pf-kernel/commit
@@ -1964,6 +1963,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.6-500.chinfo
+- 4.15.6
+
 * Thu Feb 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.5-500.chinfo
 - 4.15.5
 
