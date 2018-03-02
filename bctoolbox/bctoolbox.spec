@@ -1,6 +1,6 @@
 Name:           bctoolbox
 Version:        0.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Utilities library used by Belledonne Communications softwares
 
 License:        GPLv2
@@ -67,6 +67,9 @@ popd
 
 
 %changelog
+* Thu Mar 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.6.0-2
+- Bump for new mbedtls
+
 * Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.6.0-1
 - 0.6.0
 

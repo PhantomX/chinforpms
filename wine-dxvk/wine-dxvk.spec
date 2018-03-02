@@ -9,7 +9,7 @@
 %global srcname dxvk
 
 Name:           wine-%{srcname}
-Version:        0.21
+Version:        0.30
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine 
 
@@ -91,6 +91,9 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 %{_libdir}/wine/fakedlls/*.exe
 
 %changelog
+* Fri Mar 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.30-1
+- 0.30
+
 * Tue Jan 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.21-1
 - Fix dll names.
 
