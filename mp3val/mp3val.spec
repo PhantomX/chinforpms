@@ -31,13 +31,11 @@ MP3val is also able to fix most of the problems.
 
 %build
 
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 %make_build -f Makefile.linux
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
-%{__mkdir_p} %{buildroot}%{_bindir}
+mkdir -p %{buildroot}%{_bindir}
 install -pm 0755 %{name} %{buildroot}%{_bindir}/
 
 %files

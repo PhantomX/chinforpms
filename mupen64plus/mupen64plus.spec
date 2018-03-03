@@ -66,7 +66,7 @@ sed -i -e '/projects\/unix install/g' ./m64p_build.sh
 
 %build
 export OPTFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 export V=1
 export LDCONFIG=/bin/true
 export PREFIX=/usr
@@ -80,7 +80,7 @@ export MANDIR=%{_mandir}
 %install
 
 export OPTFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 export LDCONFIG=/bin/true
 export PREFIX=/usr
 export LIBDIR=%{_libdir}

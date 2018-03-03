@@ -49,7 +49,7 @@ ${patch_command} -p1 -i debian/patches/unlock-qt.patch
 
 export CFLAGS="%{optflags}"
 export CXXFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 
 %{__python2} build.py --skip-git --skip-qtbase --skip-qtwebkit --confirm --release
 

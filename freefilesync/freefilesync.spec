@@ -36,7 +36,7 @@ sed \
   -e '/DOCSHAREDIR/d' \
   -e 's|wx-config |wx-config-3.0-gtk2 |g' \
   -e '/CXXFLAGS/s|-O3|-D"warn_static(arg)= " -DZEN_LINUX %{optflags}|g' \
-  -e '/LINKFLAGS/s|-s|%{__global_ldflags}|g' \
+  -e '/LINKFLAGS/s|-s|%{build_ldflags}|g' \
   -i %{pname}/Source/Makefile %{pname}/Source/RealTimeSync/Makefile
 
 sed 's/m_listBoxHistory->GetTopItem()/0/g' -i %{pname}/Source/ui/main_dlg.cpp

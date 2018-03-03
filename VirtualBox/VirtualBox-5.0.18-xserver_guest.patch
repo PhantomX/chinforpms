@@ -1,4 +1,4 @@
-Copyright (c) 2016 Sérgio Basto
+Copyright (c) 2018 Sérgio Basto
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -19,13 +19,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 The MIT License is to allow be in included in VirtualBox source code.
 
-Using also VBOX_USE_SYSTEM_XORG_HEADERS to build guest additions parts,
-just compile with X11 system source and we may remove all bundle X11 source code.
+We don't need compile the very old VBoxGuestR3LibXFree86, latest XFree86/X windows
+server was release is dated of 2007 and because fail to build when
+we unbundle all X11 sources, files like xf86_ansic.h no longer doesn't exist.
+The question is if we use VBOX_USE_SYSTEM_XORG_HEADERS or
+VBOX_USE_SYSTEM_GL_HEADERS or VBOX_NO_LEGACY_XORG_X11
 
-when we use VBOX_USE_SYSTEM_XORG_HEADERS, we don't need compile the very old
-VBoxGuestR3LibXFree86 for use with old servers where the C library is not
-available and becasue fail to build when we unbundle all X11 sources, files like
-xf86_ansic.h doesn't exist anymore.
+/usr/include/x11 never existed we only have /usr/include/X11 (with capital X),
+IIRC was I that introduce this typo (when we added VBOX_USE_SYSTEM_XORG_HEADERS)
 
 --- ./src/VBox/Additions/common/VBoxGuest/lib/Makefile.kmk.orig	2014-10-11 13:03:35.000000000 +0100
 +++ ./src/VBox/Additions/common/VBoxGuest/lib/Makefile.kmk	2014-10-12 00:11:00.925507543 +0100

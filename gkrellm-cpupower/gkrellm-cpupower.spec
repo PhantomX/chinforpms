@@ -26,7 +26,7 @@ A Gkrellm2 plugin for displaying and manipulating CPU frequency.
 
 sed -i \
   -e "s|-O2 -Wall|%{optflags}|g" \
-  -e '/^LFLAGS =/s|-shared|\0 %{__global_ldflags} -Wl,--as-needed|g' \
+  -e '/^LFLAGS =/s|-shared|\0 %{build_ldflags} -Wl,--as-needed|g' \
   Makefile
 
 %build

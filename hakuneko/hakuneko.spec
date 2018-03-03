@@ -26,7 +26,7 @@ find . -name '*.a' -print -delete
 
 %{__sed} -i \
   -e "s|-O2|%{optflags}|g" \
-  -e '/LDFLAGS=/s|\"-s\"|"%{__global_ldflags}"|g' \
+  -e '/LDFLAGS=/s|\"-s\"|"%{build_ldflags}"|g' \
   configure config_default.sh
 
 %build

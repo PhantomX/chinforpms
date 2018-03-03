@@ -45,7 +45,7 @@ sed -e '/DEFAULT_PLUGINS_PATH/s|/usr/local/lib|%{_libdir}|g' -i src/config.c
 %build
 
 export CFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 
 %make_build \
   prefix=%{_prefix} \
@@ -61,9 +61,7 @@ chmod 0755 %{buildroot}%{_libdir}/libpe.so*
 mkdir -p %{buildroot}%{_includedir}/pev
 install -pm 0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 
-%post -n libpe -p /sbin/ldconfig
-
-%postun -n libpe -p /sbin/ldconfig
+%ldconfig_scriptlets -n libpe
 
 %files
 %license LICENSE*

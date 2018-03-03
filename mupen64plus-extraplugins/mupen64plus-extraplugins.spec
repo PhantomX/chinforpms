@@ -38,7 +38,7 @@ sed \
 
 %build
 export OPTFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 export V=1
 export LDCONFIG=/bin/true
 export PREFIX=/usr
@@ -57,7 +57,7 @@ done
 %install
 
 export OPTFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 export LDCONFIG=/bin/true
 export PREFIX=/usr
 export LIBDIR=%{_libdir}

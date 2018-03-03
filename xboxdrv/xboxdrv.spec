@@ -1,5 +1,5 @@
 %if 0%{?epel} < 7
-%{!?__global_ldflags: %global __global_ldflags -Wl,-z,relro}
+%{!?__global_ldflags: %global build_ldflags -Wl,-z,relro}
 %{!?__python2: %global __python2 /usr/bin/python2}
 %endif
 
@@ -94,7 +94,7 @@ scons \
 %else
  CPPFLAGS=" -ansi -pedantic" \
 %endif
- LINKFLAGS="%{__global_ldflags} -fPIC -pie -Wl,-z,now"
+ LINKFLAGS="%{build_ldflags} -fPIC -pie -Wl,-z,now"
 
 %install
 make install PREFIX=%{_prefix} DESTDIR=%{buildroot}

@@ -24,7 +24,7 @@ sed \
 %build
 
 export CFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 
 %make_build
 

@@ -51,9 +51,7 @@ developing applications that use libytnef.
 %make_install includedir=%{_includedir}/libytnef
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
-%post -n libytnef -p /sbin/ldconfig
-
-%postun -n libytnef -p /sbin/ldconfig
+%ldconfig_scriptlets -n libytnef
 
 %files
 %license COPYING

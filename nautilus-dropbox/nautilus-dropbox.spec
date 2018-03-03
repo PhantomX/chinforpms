@@ -84,9 +84,7 @@ find %{buildroot}%{_libdir} -type f -name '*.la' -delete -print
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/dropbox.desktop
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %post -n dropbox
 /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :

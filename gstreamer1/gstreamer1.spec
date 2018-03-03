@@ -116,8 +116,7 @@ make %{?_smp_mflags} V=1
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT
+make install DESTDIR=%{buildroot}
 # Remove rpath.
 chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstbase-1.0.so.*
 chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstcheck-1.0.so.*
@@ -144,11 +143,7 @@ install -m0755 -D %{SOURCE1} $RPM_BUILD_ROOT%{_rpmconfigdir}/gstreamer1.prov
 # Add the gstreamer plugin file attribute entry (rpm >= 4.9.0)
 install -m0644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/gstreamer1.attr
 
-%post -p /sbin/ldconfig
-
-
-%postun -p /sbin/ldconfig
-
+%ldconfig_scriptlets
 
 %files -f gstreamer-%{majorminor}.lang
 %license COPYING

@@ -34,7 +34,7 @@ sed -e 's|$(LDFLAGS_LIB)|\0 $(LDFLAGS)|g' -i Makefile
 %build
 
 export CFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 export prefix=%{_prefix}
 export libdir=%{_libdir}
 export bindir=%{_bindir}

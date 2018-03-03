@@ -90,7 +90,6 @@ This package consists of the BH sans-serif monospace font faces.
 %make_build
 
 %install
-rm -fr %{buildroot}
 %make_install
 
 install -m 0755 -d %{buildroot}%{_fontdir}

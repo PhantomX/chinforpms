@@ -58,8 +58,8 @@ find \( -name \*.c\* -or -name \*.h\* -or -name \*.inc \) -exec chmod -x {} \;
 
 
 %build
-CFLAGS="$RPM_OPT_FLAGS -Wl,-z,relro -Wl,-z,now"
-CXXFLAGS="$RPM_OPT_FLAGS -Wl,-z,relro -Wl,-z,now"
+CFLAGS="%{build_cflags} -Wl,-z,relro -Wl,-z,now"
+CXXFLAGS="%{build_cxxflags} -Wl,-z,relro -Wl,-z,now"
 
 export CFLAGS
 export CXXFLAGS

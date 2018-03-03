@@ -29,6 +29,7 @@
     %bcond_without docs
 %endif
 %bcond_with vnc
+%bcond_with legacy_vboxvideo_drv
 
 Name:       VirtualBox
 Version:    5.2.8
@@ -64,8 +65,6 @@ Patch1:     VirtualBox-OSE-4.1.4-noupdate.patch
 Patch2:     VirtualBox-5.1.0-strings.patch
 Patch18:    VirtualBox-OSE-4.0.2-aiobug.patch
 Patch23:    VirtualBox-5.0.18-xserver_guest.patch
-Patch24:    VirtualBox-5.0.18-xserver_guest_xorg19.patch
-Patch26:    VirtualBox-4.3.0-no-bundles.patch
 Patch27:    VirtualBox-gcc.patch
 # from Debian
 Patch28:    02-gsoap-build-fix.patch
@@ -77,7 +76,7 @@ Patch100:   virtualbox-5.1.0-noupdate.patch
 Patch101:   virtualbox-5.1.0-default-to-linux26.patch
 
 
-BuildRequires:  kBuild >= 0.1.9998
+BuildRequires:  kBuild >= 0.1.9998.r3093
 BuildRequires:  SDL-devel xalan-c-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libcurl-devel
@@ -213,6 +212,8 @@ Requires:   %(xserver-sdk-abi-requires ansic)
 Requires:   %(xserver-sdk-abi-requires videodrv)
 Requires:   %(xserver-sdk-abi-requires xinput)
 %endif
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
 Conflicts:  %{name} <= %{version}-%{release}
 
 
@@ -267,10 +268,6 @@ rm -rf src/libs/zlib-*/
 %patch2 -p1 -b .strings
 %patch18 -p1 -b .aiobug
 %patch23 -p1 -b .xserver_guest
-%if 0%{?fedora}
-%patch24 -p1 -b .xserver_guest_xorg19
-%endif
-#patch26 -p1 -b .nobundles
 #patch27 -p1 -b .gcc
 %if 0%{?fedora} > 20
 %patch28 -p1 -b .gsoap2
@@ -332,7 +329,7 @@ kmk %{_smp_mflags}    \
     VBOX_WITH_SYSFS_BY_DEFAULT=1 \
     VBOX_XCURSOR_LIBS="Xcursor Xext X11 GL"             \
     VBOX_USE_SYSTEM_XORG_HEADERS=1 \
-    VBOX_USE_SYSTEM_GL_HEADERS=1 \
+%{!?legacy_vboxvideo_drv:   VBOX_NO_LEGACY_XORG_X11=1 } \
     VBOX_NO_LEGACY_XORG_X11=1 \
     SDK_VBOX_LIBPNG_INCS=/usr/include/libpng16 \
     SDK_VBOX_LIBXML2_INCS=/usr/include/libxml2 \
@@ -513,7 +510,7 @@ mkdir -p %{buildroot}%{_libdir}/VBoxGuestAdditions
 #
 # [1] https://www.virtualbox.org/changeset/43588/vbox
 
-%if 0%{?rhel}
+%if %{with legacy_vboxvideo_drv}
 install -m 0755 -D obj/bin/additions/vboxvideo_drv_system.so \
     %{buildroot}%{_libdir}/xorg/modules/drivers/vboxvideo_drv.so
 %endif
@@ -664,7 +661,7 @@ getent passwd vboxadd >/dev/null || \
 
 # Guest additions install
 %post guest-additions
-/sbin/ldconfig
+%{?ldconfig}
 # should be in kmod package, not here, but we need modules loaded to start
 # vboxservice
 /bin/systemctl restart systemd-modules-load.service >/dev/null 2>&1 || :
@@ -688,7 +685,7 @@ getent passwd vboxadd >/dev/null || \
 %systemd_preun vboxservice.service
 
 %postun guest-additions
-/sbin/ldconfig
+%{?ldconfig}
 %systemd_postun_with_restart vboxservice.service
 
 %files server
@@ -801,8 +798,7 @@ getent passwd vboxadd >/dev/null || \
 %{_sbindir}/VBoxService
 %{_sbindir}/mount.vboxsf
 %{_libdir}/security/pam_vbox.so
-%if 0%{?rhel}
-# do not use xorg module drive in newer versions
+%if %{with legacy_vboxvideo_drv}
 %{_libdir}/xorg/modules/drivers/*
 %endif
 %{_libdir}/VBoxGuestAdditions

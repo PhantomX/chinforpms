@@ -43,7 +43,7 @@ sed \
 %build
 
 export CFLAGS="%{optflags} -Wno-error=unused-result"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 
 %make_build 
 

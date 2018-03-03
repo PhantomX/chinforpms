@@ -702,8 +702,8 @@ mkdir -p %{buildroot}%{_libdir}/waterfox/extensions/%{waterfox_app_id}
 install -p -c -m 644 LICENSE %{buildroot}/%{mozappdir}
 
 # Use the system hunspell dictionaries
-rm -rf ${RPM_BUILD_ROOT}%{mozappdir}/dictionaries
-ln -s %{_datadir}/myspell ${RPM_BUILD_ROOT}%{mozappdir}/dictionaries
+rm -rf %{buildroot}%{mozappdir}/dictionaries
+ln -s %{_datadir}/myspell %{buildroot}%{mozappdir}/dictionaries
 
 %if %{run_tests}
 # Add debuginfo for crash-stats.mozilla.com
@@ -712,16 +712,16 @@ cp test_results/* %{buildroot}/test_results
 %endif
 
 # Default
-cp %{SOURCE12} ${RPM_BUILD_ROOT}%{mozappdir}/browser/defaults/preferences
+cp %{SOURCE12} %{buildroot}%{mozappdir}/browser/defaults/preferences
 
 # Add distribution.ini
-mkdir -p ${RPM_BUILD_ROOT}%{mozappdir}/distribution
-cp %{SOURCE26} ${RPM_BUILD_ROOT}%{mozappdir}/distribution
+mkdir -p %{buildroot}%{mozappdir}/distribution
+cp %{SOURCE26} %{buildroot}%{mozappdir}/distribution
 
 # Remove copied libraries to speed up build
-rm -f ${RPM_BUILD_ROOT}%{mozappdirdev}/sdk/lib/libmozjs.so
-rm -f ${RPM_BUILD_ROOT}%{mozappdirdev}/sdk/lib/libmozalloc.so
-rm -f ${RPM_BUILD_ROOT}%{mozappdirdev}/sdk/lib/libxul.so
+rm -f %{buildroot}%{mozappdirdev}/sdk/lib/libmozjs.so
+rm -f %{buildroot}%{mozappdirdev}/sdk/lib/libmozalloc.so
+rm -f %{buildroot}%{mozappdirdev}/sdk/lib/libxul.so
 #---------------------------------------------------------------------
 
 # Moves defaults/preferences to browser/defaults/preferences

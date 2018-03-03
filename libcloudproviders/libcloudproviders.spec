@@ -35,11 +35,7 @@ developing applications that use %{name}.
 %install
 %meson_install
 
-%post
-/sbin/ldconfig
-
-%postun
-/sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %doc CHANGELOG README.md

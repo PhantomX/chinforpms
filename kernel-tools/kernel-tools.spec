@@ -217,7 +217,7 @@ sed -i '1s=^#!/usr/bin/python=#!%{__python3}=' tools/kvm/kvm_stat/kvm_stat
 cd linux-%{kversion}
 
 %global perf_make \
-  make -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
+  make -s EXTRA_CFLAGS="${optflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
@@ -325,14 +325,12 @@ popd
 ### scripts
 ###
 
-%post -n kernel-tools-libs -p /sbin/ldconfig
+%ldconfig_scriptlets libs
 
-%postun -n kernel-tools-libs -p /sbin/ldconfig
-
-%post -n kernel-tools
+%post
 %systemd_post cpupower.service
 
-%preun -n kernel-tools
+%preun
 %systemd_preun cpupower.service
 
 %postun
@@ -353,7 +351,7 @@ popd
 %license linux-%{kversion}/COPYING
 %{python2_sitearch}
 
-%files -n kernel-tools -f cpupower.lang
+%files -f cpupower.lang
 %{_bindir}/cpupower
 %ifarch %{ix86} x86_64
 %{_bindir}/centrino-decode
@@ -379,12 +377,12 @@ popd
 %{_bindir}/kvm_stat
 %license linux-%{kversion}/COPYING
 
-%files -n kernel-tools-libs
+%files libs
 %{_libdir}/libcpupower.so.0
 %{_libdir}/libcpupower.so.0.0.1
 %license linux-%{kversion}/COPYING
 
-%files -n kernel-tools-libs-devel
+%files libs-devel
 %{_libdir}/libcpupower.so
 %{_includedir}/cpufreq.h
 %{_includedir}/cpuidle.h

@@ -147,9 +147,7 @@ desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{S:100}
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %license COPYING.LIB

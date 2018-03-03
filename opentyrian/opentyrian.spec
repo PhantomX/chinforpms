@@ -57,7 +57,7 @@ sed \
 %build
 %make_build \
   STRIP=/bin/true \
-  LDFLAGS="%{__global_ldflags}"
+  LDFLAGS="%{build_ldflags}"
 
 %install
 mkdir -p %{buildroot}%{_datadir}/tyrian

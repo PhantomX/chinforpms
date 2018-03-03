@@ -28,7 +28,7 @@ GKrellMPC is a GKrellM plugin to control MPD.
 
 %build
 export CFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{build_ldflags}"
 
 %make_build
 

@@ -19,7 +19,8 @@ BuildRequires:  gtk-doc
 BuildRequires:  intltool
 
 BuildRequires:  shared-mime-info
-Requires(postun): shared-mime-info
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig shared-mime-info
 Requires(posttrans): shared-mime-info
 
 %description
@@ -60,11 +61,11 @@ popd
 %find_lang %{name}
 
 %post
-/sbin/ldconfig
+%{?ldconfig}
 touch --no-create %{_datadir}/mime/packages &>/dev/null || :
 
 %postun
-/sbin/ldconfig
+%{?ldconfig}
 if [ $1 -eq 0 ] ; then
   touch --no-create %{_datadir}/mime/packages &>/dev/null || :
   update-mime-database %{_datadir}/mime &>/dev/null || :

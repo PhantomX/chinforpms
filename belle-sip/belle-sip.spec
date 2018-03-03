@@ -57,10 +57,7 @@ pushd builddir
 %install
 %make_install -C builddir
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
-
+%ldconfig_scriptlets
 
 %files
 %license COPYING
