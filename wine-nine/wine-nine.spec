@@ -2,7 +2,7 @@
 %global winecommonver 3.0
 
 Name:           wine-nine
-Version:        3.0_1
+Version:        3.0_2
 Release:        1%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
@@ -51,7 +51,7 @@ Provides:       ninewinecfg.exe.so%{?_isa} = %{version}
 Provides:       d3d9-nine.dll.so%{?_isa} = %{version}
 
 %description
-${summary} and tool to setting it.
+%{summary} and tool to setting it.
 
 %prep
 %autosetup -n wine-%{name}-%{rversion}
@@ -71,7 +71,7 @@ sed -i \
 export CFLAGS="`echo %{optflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 %else
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-export TEMP_CFLAGS="`echo %{optflags} | sed -e 's/-O2/-O1/'`"
+export TEMP_CFLAGS="`echo %{build_cflags} | sed -e 's/-O2/-O1/'`"
 export CFLAGS="`echo $TEMP_CFLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 %endif
 
@@ -109,6 +109,7 @@ export CFLAGS="$CFLAGS -DWINE_STAGING=1"
   --without-png \
   --without-pulse \
   --without-sane \
+  --without-sdl \
   --without-tiff \
   --without-udev \
   --without-v4l \
@@ -159,6 +160,9 @@ desktop-file-install \
 %{_datadir}/applications/wine-ninecfg.desktop
 
 %changelog
+* Sun Mar 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.0_2-1
+- 3.0_2
+
 * Fri Jan 26 2018 Phantom X <megaphantomx at bol dot com dot br>
 - 3.0_1
 

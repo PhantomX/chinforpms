@@ -7,11 +7,11 @@
 %global winemono  4.7.1
 #global _default_patch_fuzz 2
 
-# build with compholio-patches, see:  http://www.compholio.com/wine-compholio/
+# build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 2.21
+%global stagingver 3.3
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -28,14 +28,14 @@
 %endif
 
 Name:           wine
-Version:        2.21
+Version:        3.3
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
 URL:            http://www.winehq.org/
-Source0:        http://downloads.sourceforge.net/wine/wine-%{version}%{?rctagtarball}.tar.xz
-Source10:       http://downloads.sourceforge.net/wine/wine-%{version}%{?rctagtarball}.tar.xz.sign
+Source0:        https://dl.winehq.org/wine/source/3.x/wine-%{version}%{?rctagtarball}.tar.xz
+Source10:       https://dl.winehq.org/wine/source/3.x/wine-%{version}%{?rctagtarball}.tar.xz.sign
 
 Source1:        wine.init
 Source2:        wine.systemd
@@ -84,7 +84,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # Steam patch, Crossover Hack version
 # https://bugs.winehq.org/show_bug.cgi?id=39403
 Patch600:       steam.patch
-Patch601:       harmony-fix.diff
+Patch601:       harmony-fix.patch
 Patch602:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.h-linked-list-cache-line-prefetching.patch#/laino-0003-wine-list.h-linked-list-cache-line-prefetching.patch
 # Wbemprox videocontroller query fix v2
 # https://bugs.winehq.org/show_bug.cgi?id=38879
@@ -92,14 +92,7 @@ Patch603:       wbemprox_query_v2.patch
 # Keybind patch reversion
 Patch604:       keybindings.patch
 
-# https://dev.wine-staging.com/patches/215/
-Patch700:      https://dev.wine-staging.com/patches/file/528/download#/staging-0001-api-ms-win-shcore-scaling-l1-1-1-forward-two-functio.patch
-# https://dev.wine-staging.com/patches/216/
-Patch701:      https://dev.wine-staging.com/patches/file/531/download#/staging-0001-msvcrt-Initial-implementation-of-_get_purecall_handl.patch
-
-
 # wine staging patches for wine-staging
-# pulseaudio-patch is covered by that patch-set, too.
 %if 0%{?staging}
 Source900: https://github.com/wine-staging/wine-staging/archive/v%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
 %endif
@@ -172,6 +165,8 @@ BuildRequires:  gstreamer1-plugins-base-devel
 %if 0%{?fedora} > 24
 BuildRequires:  mpg123-devel
 %endif
+BuildRequires:  SDL2-devel
+BuildRequires:  vulkan-devel
 
 # Silverlight DRM-stuff needs XATTR enabled.
 %if 0%{?staging}
@@ -302,8 +297,10 @@ Requires:       libpng(x86-32)
 Requires:       libpcap(x86-32)
 Requires:       mesa-libOSMesa(x86-32)
 Requires:       libv4l(x86-32)
-Requires:       samba-libs-devel(x86-32)
+Requires:       samba-libs(x86-32)
 Requires:       unixODBC(x86-32)
+Requires:       SDL2(x86-32)
+Requires:       vulkan(x86-32)
 %if 0%{?staging}
 Requires:       libva(x86-32)
 %endif
@@ -326,8 +323,10 @@ Requires:       libpng(x86-64)
 Requires:       libpcap(x86-64)
 Requires:       mesa-libOSMesa(x86-64)
 Requires:       libv4l(x86-64)
-Requires:       samba-libs-devel(x86-64)
+Requires:       samba-libs(x86-64)
 Requires:       unixODBC(x86-64)
+Requires:       SDL2(x86-64)
+Requires:       vulkan(x86-64)
 %if 0%{?staging}
 Requires:       libva(x86-64)
 %endif
@@ -347,6 +346,8 @@ Requires:       libpcap
 Requires:       mesa-libOSMesa
 Requires:       libv4l
 Requires:       unixODBC
+Requires:       SDL2
+Requires:       vulkan
 %if 0%{?staging}
 Requires:       libva
 %endif
@@ -1171,9 +1172,7 @@ fi
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/extrac32.exe.so
 %{_libdir}/wine/findstr.exe.so
-%if 0%{?staging}
 %{_libdir}/wine/fsutil.exe.so
-%endif
 %{_libdir}/wine/hostname.exe.so
 %{_libdir}/wine/ipconfig.exe.so
 %{_libdir}/wine/winhlp32.exe.so
@@ -1222,6 +1221,7 @@ fi
 %{_libdir}/wine/aclui.dll.so
 %{_libdir}/wine/activeds.dll.so
 %{_libdir}/wine/actxprxy.dll.so
+%{_libdir}/wine/adsldp.dll.so
 %{_libdir}/wine/adsldpc.dll.so
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.dll.so
@@ -1229,6 +1229,7 @@ fi
 %{_libdir}/wine/api-ms-win-appmodel-identity-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-appmodel-runtime-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-appmodel-runtime-l1-1-2.dll.so
+%{_libdir}/wine/api-ms-win-core-apiquery-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-appcompat-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-appinit-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-atoms-l1-1-0.dll.so
@@ -1317,6 +1318,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-shlwapi-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-shlwapi-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-shlwapi-obsolete-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-shutdown-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-sidebyside-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-string-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-string-l2-1-0.dll.so
@@ -1392,6 +1394,7 @@ fi
 %{_libdir}/wine/api-ms-win-mm-time-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-ntuser-dc-access-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-ntuser-rectangle-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-perf-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-power-base-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-power-setting-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-rtcore-ntuser-private-l1-1-0.dll.so
@@ -1406,6 +1409,7 @@ fi
 %{_libdir}/wine/api-ms-win-security-lsalookup-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-security-lsalookup-l2-1-1.dll.so
 %{_libdir}/wine/api-ms-win-security-lsapolicy-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-security-lsalookup-l2-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-provider-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-sddl-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-systemfunctions-l1-1-0.dll.so
@@ -1419,7 +1423,6 @@ fi
 %{_libdir}/wine/api-ms-win-shell-shellcom-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-shell-shellfolders-l1-1-0.dll.so
 %if 0%{?staging}
-%{_libdir}/wine/api-ms-win-core-apiquery-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-rtcore-ntuser-draw-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-rtcore-ntuser-window-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-shcore-obsolete-l1-1-0.dll.so
@@ -1444,6 +1447,7 @@ fi
 %{_libdir}/wine/bthprops.cpl.so
 %{_libdir}/wine/cabinet.dll.so
 %{_libdir}/wine/cards.dll.so
+%{_libdir}/wine/cdosys.dll.so
 %{_libdir}/wine/cfgmgr32.dll.so
 %{_libdir}/wine/clock.exe.so
 %{_libdir}/wine/clusapi.dll.so
@@ -1470,6 +1474,7 @@ fi
 %{_libdir}/wine/d3d10_1.dll.so
 %{_libdir}/wine/d3d10core.dll.so
 %{_libdir}/wine/d3d11.dll.so
+%{_libdir}/wine/d3d12.dll.so
 %{_libdir}/wine/d3dcompiler_*.dll.so
 %{_libdir}/wine/d3dim.dll.so
 %{_libdir}/wine/d3drm.dll.so
@@ -1486,6 +1491,7 @@ fi
 %{_libdir}/wine/ddrawex.dll.so
 %{_libdir}/wine/devenum.dll.so
 %{_libdir}/wine/dhcpcsvc.dll.so
+%{_libdir}/wine/dhtmled.ocx.so
 %{_libdir}/wine/difxapi.dll.so
 %{_libdir}/wine/dinput.dll.so
 %{_libdir}/wine/dinput8.dll.so
@@ -1545,13 +1551,13 @@ fi
 %{_libdir}/wine/ext-ms-win-rtcore-gdi-rgn-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-ntuser-dc-access-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-ntuser-dpi-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-rtcore-ntuser-sysparams-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-security-credui-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-security-cryptui-l1-1-0.dll.so
 %if 0%{?staging}
 %{_libdir}/wine/ext-ms-win-appmodel-usercontext-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-mouse-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-ntuser-syscolors-l1-1-0.dll.so
-%{_libdir}/wine/ext-ms-win-rtcore-ntuser-sysparams-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-uxtheme-themes-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-xaml-pal-l1-1-0.dll.so
 %endif
@@ -1608,9 +1614,7 @@ fi
 %{_libdir}/wine/jsproxy.dll.so
 %{_libdir}/wine/kerberos.dll.so
 %{_libdir}/wine/kernel32.dll.so
-%if 0%{?staging}
 %{_libdir}/wine/kernelbase.dll.so
-%endif
 %{_libdir}/wine/ksuser.dll.so
 %{_libdir}/wine/ktmw32.dll.so
 %if 0%{?fedora} > 24
@@ -1782,9 +1786,7 @@ fi
 %{_libdir}/wine/serialui.dll.so
 %{_libdir}/wine/setupapi.dll.so
 %{_libdir}/wine/sfc_os.dll.so
-%if 0%{?staging}
 %{_libdir}/wine/shcore.dll.so
-%endif
 %{_libdir}/wine/shdoclc.dll.so
 %{_libdir}/wine/shdocvw.dll.so
 %{_libdir}/wine/schedsvc.dll.so
@@ -1841,12 +1843,13 @@ fi
 %{_libdir}/wine/version.dll.so
 %{_libdir}/wine/virtdisk.dll.so
 %{_libdir}/wine/vssapi.dll.so
-%if 0%{?staging}
-%{_libdir}/wine/vulkan-1.dll.so
-%{_libdir}/wine/vulkan.dll.so
-%endif
+#if 0%%{?staging}
+#{_libdir}/wine/vulkan-1.dll.so
+#{_libdir}/wine/vulkan.dll.so
+#endif
 %{_libdir}/wine/wbemdisp.dll.so
 %{_libdir}/wine/wbemprox.dll.so
+%{_libdir}/wine/wdscore.dll.so
 %{_libdir}/wine/webservices.dll.so
 %{_libdir}/wine/wer.dll.so
 %{_libdir}/wine/wevtapi.dll.so
@@ -1865,6 +1868,7 @@ fi
 %{_libdir}/wine/winehid.sys.so
 %{_libdir}/wine/winejoystick.drv.so
 %{_libdir}/wine/winemapi.dll.so
+%{_libdir}/wine/winevulkan.dll.so
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing32.dll.so
 %{_libdir}/wine/winhttp.dll.so
@@ -2236,6 +2240,16 @@ fi
 %endif
 
 %changelog
+* Sun Mar 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.3-100.chinfo
+- 3.3
+- Updated URLs
+- New wine-staging URL
+- s/compholio/staging/
+- BR: samba-devel
+- BR: SDL2-devel
+- BR: vulkan-devel
+- R: samba-libs
+
 * Tue Nov 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.21-100.chinfo
 - 2.21
 - Drop nine, it have proper separated wine-nine package now
