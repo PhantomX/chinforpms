@@ -298,15 +298,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 %ldconfig_scriptlets
 
-%post devel
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun devel
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
 %posttrans devel
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 

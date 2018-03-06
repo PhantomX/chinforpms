@@ -218,18 +218,6 @@ cp -r icons/hicolor/* %{buildroot}%{_datadir}/icons/hicolor/
 install -pm0644 icons/icon-512.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
 %files
 %license LICENSE.TXT
 %doc README.md

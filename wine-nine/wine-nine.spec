@@ -43,6 +43,9 @@ Requires:       libXext%{?_isa}
 Provides:       wine-nine%{?_isa} = %{version}-%{release}
 Obsoletes:      wine-nine%{?_isa} < %{version}-%{release}
 
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
 %ifarch x86_64
 Requires:       wine-nine(x86-32) = %{version}-%{release}
 %endif
@@ -148,7 +151,8 @@ desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{S:100}
 
-%ldconfig_scriptlets
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %license COPYING.LIB

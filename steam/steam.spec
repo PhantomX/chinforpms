@@ -160,23 +160,7 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_datadir}/appdata/
 %endif
 
 %post
-/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-%if 0%{?fedora} == 24 || 0%{?rhel} == 7
-/usr/bin/update-desktop-database &> /dev/null || :
-%endif
 %firewalld_reload
-
-%postun
-%if 0%{?fedora} == 24 || 0%{?rhel} == 7
-/usr/bin/update-desktop-database &> /dev/null || :
-%endif
-if [ $1 -eq 0 ] ; then
-    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    %{_bindir}/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-%{_bindir}/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files
 %{!?_licensedir:%global license %%doc}

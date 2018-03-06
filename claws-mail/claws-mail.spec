@@ -479,21 +479,6 @@ rm -f %{buildroot}%{_datadir}/icons/hicolor/icon-theme.cache
 touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
-%post
-/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-
-%postun
-if [ $1 -eq 0 ] ; then
-    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-
-%posttrans
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
-
 %files -f claws-mail.lang
 %license COPYING
 %doc ABOUT-NLS AUTHORS ChangeLog NEWS README RELEASE_NOTES TODO

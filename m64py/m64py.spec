@@ -67,18 +67,6 @@ for res in 16 22 24 32 36 48 64 72 ;do
     ${dir}/%{name}.png
 done
 
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
 %files
 %license COPYING LICENSES
 %doc AUTHORS README.md

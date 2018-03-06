@@ -3,7 +3,7 @@
 Name:           gnome-colors-icon-theme
 Summary:        GNOME-Colors icon theme
 Version:        5.5.1
-Release:        101.chinfo%{?dist}
+Release:        102.chinfo%{?dist}
 
 License:        GPLv2
 Url:            https://github.com/gnome-colors/gnome-colors
@@ -55,24 +55,6 @@ sed -i -e 's/GNOME/GNOME-Colors/' themes/*
 
 find %{buildroot}%{_datadir}/icons -name '*.xpm' -delete
 
-%post
-for dir in %{_datadir}/icons/%{real_name}-*; do
-  /bin/touch --no-create $dir &>/dev/null || :
-done
-
-%postun
-if [ $1 -eq 0 ] ; then
-  for dir in %{_datadir}/icons/%{real_name}-*; do
-    /bin/touch --no-create $dir &>/dev/null
-    /usr/bin/gtk-update-icon-cache $dir &>/dev/null || :
-  done
-fi
-
-%posttrans
-for dir in %{_datadir}/icons/%{real_name}-*; do
-  /usr/bin/gtk-update-icon-cache $dir &>/dev/null || :
-done
-
 %files
 %license COPYING
 %doc AUTHORS README ChangeLog
@@ -88,6 +70,9 @@ done
 %{_datadir}/icons/gnome-colors-wise/
 
 %changelog
+* Mon Mar 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.5.1-102.chinfo
+- Remove obsolete scriptlets
+
 * Tue Oct 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.5.1-101.chinfo
 - Fix new inkscape crash with stdin
 

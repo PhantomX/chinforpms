@@ -86,18 +86,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/dropbox.desktop
 
 %ldconfig_scriptlets
 
-%post -n dropbox
-/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun -n dropbox
-if [ $1 -eq 0 ] ; then
-  /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-  /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans -n dropbox
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
 %files -n dropbox
 %license COPYING
 %doc ChangeLog README

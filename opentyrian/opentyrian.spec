@@ -1,6 +1,6 @@
-%global commit db67cf6eb3ae4913a85c3a2489f4cc511d09f412
+%global commit 24df4a4651f74731a61414b5bd9a3c120633fb39
 %global shortcommit %(c=%{commit}; echo ${c:0:12})
-%global date 20170414
+%global date 20180303
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           opentyrian
 Version:        2.1
-Release:        1%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        An arcade-style vertical scrolling shooter
 
 License:        GPLv2
@@ -81,18 +81,6 @@ for res in 22 24 32 48 128 ;do
     ${dir}/%{name}.png
 done
 
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
 %files
 %license COPYING
 %doc CREDITS README NEWS
@@ -104,7 +92,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
-* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-1.20170414gitdb67cf6eb3ae
+* Mon Mar 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.1-3.20180303git24df4a4651f7
+- New snapshot
+- Remove obsolete scriptets
+
+* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-2.20170414gitdb67cf6eb3ae
 - New snapshot
 
 * Sun Jan 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-1.20170115gitf61ceced26a3

@@ -1,30 +1,29 @@
 %global bit_hash 3a3ecac0922f964bb1c4be617e8dec37
 
-Summary: Bluecurve icon theme
-Name: bluecurve-icon-theme
-Version: 8.0.2
-Release: 101.chinfo%{?dist}
-BuildArch: noarch
-License: GPL+
+Name:           bluecurve-icon-theme
+Summary:        Bluecurve icon theme
+Version:        8.0.2
+Release:        102.chinfo%{?dist}
+
+License:        GPL+
 # There is no official upstream yet
-Source0: http://pkgs.fedoraproject.org/repo/pkgs/%{name}/%{name}-%{version}.tar.bz2/%{bit_hash}/%{name}-%{version}.tar.bz2
-Source1: http://cloud.github.com/downloads/PhantomX/slackbuilds/Bluecurve-classic.tar.bz2
-Source3: link.png
-URL: http://www.redhat.com
+Source0:        http://src.fedoraproject.org/repo/pkgs/%{name}/%{name}-%{version}.tar.bz2/%{bit_hash}/%{name}-%{version}.tar.bz2
+Source1:        http://dl.bintray.com/phantomx/tarballs/Bluecurve-classic.tar.bz2
+Source3:        link.png
+URL:            http://www.redhat.com
 
-Patch0: bluecurve-icon-theme-8.0.2-kde4.patch
+BuildArch:      noarch
 
-Requires: system-logos
-Requires: bluecurve-cursor-theme
+Patch0:         bluecurve-icon-theme-8.0.2-kde4.patch
+
+Requires:       system-logos
+Requires:       bluecurve-cursor-theme
 Requires(post): coreutils
 
 # we require XML::Parser for our in-tree intltool
-BuildRequires: perl(XML::Parser)
-BuildRequires: perl(Getopt::Long)
-BuildRequires: ImageMagick
-Requires(post): desktop-file-utils
-Requires(postun): gtk-update-icon-cache
-Requires(posttrans): gtk-update-icon-cache
+BuildRequires:  perl(XML::Parser)
+BuildRequires:  perl(Getopt::Long)
+BuildRequires:  ImageMagick
 
 %description
 This package contains Bluecurve style icons.
@@ -215,22 +214,6 @@ missresize() {
 # The upstream packages may gain po files at some point in the near future
 # %find_lang %{name} || touch %{name}.lang
 
-
-%post
-touch --no-create %{_datadir}/icons/Bluecurve
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-    %{_bindir}/gtk-update-icon-cache -f --quiet %{_datadir}/icons/Bluecurve || :
-fi
-
-%postun
-touch --no-create %{_datadir}/icons/Bluecurve
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-    %{_bindir}/gtk-update-icon-cache -f --quiet %{_datadir}/icons/Bluecurve || :
-fi
-
-%posttrans
-%{_bindir}/gtk-update-icon-cache -f --quiet %{_datadir}/icons/Bluecurve || :
-
 %files
 %doc AUTHORS COPYING
 %{_datadir}/icons/Bluecurve/index.theme
@@ -256,6 +239,9 @@ fi
 %{_datadir}/icons/Bluecurve-classic-inverse
 
 %changelog
+* Mon Mar 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 8.0.2-102.chinfo
+- Remove obsolete scriptlets
+
 * Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 8.0.2-101.chinfo
 - Source0 url
 

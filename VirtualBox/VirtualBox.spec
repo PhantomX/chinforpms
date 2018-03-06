@@ -634,22 +634,12 @@ fi
 %endif
 
 %postun
-if [ $1 -eq 0 ] ; then
-    # Package upgrade, not uninstall
-    # Icon Cache
-    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
 %systemd_postun_with_restart vboxautostart.service
 
 %if %{with webservice}
 %postun webservice
     %systemd_postun_with_restart vboxweb.service
 %endif
-
-%posttrans
-# Icon Cache
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %pre guest-additions
 # Add a group "vboxsf" for Shared Folders access

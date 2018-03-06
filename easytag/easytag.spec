@@ -64,19 +64,13 @@ find %{buildroot} -type f -name "*.la" -delete
 make check
 
 
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
 %postun
 if [ $1 -eq 0 ] ; then
   glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
-  touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-  gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
 
 %posttrans
 glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files -f %{name}.lang

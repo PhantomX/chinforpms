@@ -67,18 +67,6 @@ desktop-file-install \
 mkdir -p %{buildroot}%{_datadir}
 cp -rp usr/share/icons %{buildroot}%{_datadir}/
 
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-  touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-  gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
 %files
 %{_bindir}/%{name}
 %{_libdir}/%{name}

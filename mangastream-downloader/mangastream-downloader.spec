@@ -67,16 +67,6 @@ for res in 16 24 32 48 64 72 96 128 256 ;do
   install -pm0644 appicon_*_${res}x${res}x32.png ${dir}/%{name}.png
 done
 
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-  touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-  gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-
 %files
 %license LICENSE
 %doc README.md

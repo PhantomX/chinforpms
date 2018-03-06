@@ -1025,20 +1025,6 @@ if [ $1 -eq 0 ]; then
 fi
 %endif
 
-%post desktop
-update-desktop-database &>/dev/null || :
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun desktop
-update-desktop-database &>/dev/null || :
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans desktop
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
 %post core -p /sbin/ldconfig
 
 %posttrans core

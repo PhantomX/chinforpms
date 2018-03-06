@@ -81,18 +81,6 @@ for res in 16 22 24 32 36 48 64 72 96 ;do
     ${dir}/VirusTotalUploader.png
 done
 
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-  touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-  gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
 %files
 %license COPYING
 %doc AUTHORS ReadMe.md
