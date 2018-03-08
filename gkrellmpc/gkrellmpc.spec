@@ -17,6 +17,8 @@ Patch2:         fix-memleaks.patch
 Patch3:         %{name}-0.1_beta10-more-tooltips.patch
 
 Requires:       gkrellm >= 2.2.0
+
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(gkrellm) >= 2.2.0
 BuildRequires:  pkgconfig(libcurl)
 
@@ -27,8 +29,7 @@ GKrellMPC is a GKrellM plugin to control MPD.
 %autosetup
 
 %build
-export CFLAGS="%{optflags}"
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 
 %make_build
 

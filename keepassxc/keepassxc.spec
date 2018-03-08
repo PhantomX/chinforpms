@@ -1,7 +1,7 @@
 %bcond_with yubikey
 
 Name:           keepassxc
-Version:        2.3.0
+Version:        2.3.1
 Release:        100.chinfo%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -11,6 +11,7 @@ URL:            https://keepassxc.org/
 Source0:        https://github.com/keepassxreboot/%{name}/releases/download/%{version}/%{name}-%{version}-src.tar.xz
 
 BuildRequires:  cmake
+BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  libgcrypt-devel >= 1.7.0
@@ -96,6 +97,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.%{nam
 
 
 %changelog
+* Wed Mar 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.3.1-100.chinfo
+- 2.3.1
+- BR: gcc-c++
+- Remove obsolete scriptlets
+
 * Wed Feb 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.3.0-100.chinfo
 - 2.3.0
 - BR: libargon2

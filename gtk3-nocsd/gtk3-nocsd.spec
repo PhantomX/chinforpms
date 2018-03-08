@@ -13,6 +13,7 @@ Patch0:         %{name}-multilib.patch
 Patch1:         https://github.com/PCMan/gtk3-nocsd/commit/c64505268575e60322de682ea751660eba8d0e71.patch
 Patch2:         https://github.com/PCMan/gtk3-nocsd/commit/82ff5a0da54aa6da27232b55eb93e5f4b5de22f2.patch
 
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(gtk+-3.0)
 
@@ -33,8 +34,7 @@ sed -e 's|$(LDFLAGS_LIB)|\0 $(LDFLAGS)|g' -i Makefile
 
 %build
 
-export CFLAGS="%{optflags}"
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 export prefix=%{_prefix}
 export libdir=%{_libdir}
 export bindir=%{_bindir}

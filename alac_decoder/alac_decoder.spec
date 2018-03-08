@@ -7,6 +7,8 @@ License:        GPLv2
 URL:            http://craz.net/programs/itunes/alac.html
 Source0:        ftp://ftp.ussg.iu.edu/pub/linux/gentoo/distfiles/%{name}-%{version}.tgz
 
+BuildRequires:  gcc
+
 %description
 alac_decoder is a basic decoder for Apple Lossless Audio Codec files
 (ALAC). ALAC is a proprietary lossless audio compression scheme. Apple
@@ -23,7 +25,7 @@ sed \
 
 %build
 
-export CFLAGS="%{optflags}"
+export CFLAGS="%{build_cflags}"
 export LDFLAGS="%{build_ldflags}"
 
 %make_build

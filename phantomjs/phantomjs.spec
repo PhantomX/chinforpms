@@ -13,6 +13,7 @@ Source0:        https://github.com/ariya/%{name}/archive/%{version}.tar.gz#/%{na
 Source1:        http://http.debian.net/debian/pool/main/p/%{name}/%{name}_%{debian_patch}.debian.tar.xz
 Patch0:         %{name}-qmake-qt5.patch
 
+BuildRequires:  gcc-c++
 BuildRequires:  python2-devel
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core)
@@ -46,10 +47,7 @@ ${patch_command} -p1 -i debian/patches/unlock-qt.patch
 %patch0 -p1
 
 %build
-
-export CFLAGS="%{optflags}"
-export CXXFLAGS="%{optflags}"
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 
 %{__python2} build.py --skip-git --skip-qtbase --skip-qtwebkit --confirm --release
 

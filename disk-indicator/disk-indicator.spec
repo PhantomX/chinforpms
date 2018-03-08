@@ -22,6 +22,7 @@ Source0:        https://github.com/MeanEYE/Disk-Indicator/archive/v%{version}.ta
 
 Patch0:         disk-indicator-homedir.patch
 
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(x11)
 
 %description
@@ -42,7 +43,7 @@ sed \
 
 %build
 
-export CFLAGS="%{optflags} -Wno-error=unused-result"
+export CFLAGS="%{build_cflags} -Wno-error=unused-result"
 export LDFLAGS="%{build_ldflags}"
 
 %make_build 

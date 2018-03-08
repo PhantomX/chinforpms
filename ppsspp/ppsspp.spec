@@ -1,6 +1,6 @@
-%global commit 4e5fb6e286be01a51e8d3d37fa7b289455166bff
+%global commit 90dbd9a725540bbf6221e8437adea518371a38cc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180211
+%global date 20180305
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -44,8 +44,8 @@
 %undefine _hardened_build
 
 Name:           ppsspp
-Version:        1.4
-Release:        14%{?gver}%{?dist}
+Version:        1.5.4
+Release:        1%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -71,6 +71,7 @@ ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
 %endif
 
 BuildRequires:  cmake
+BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 %if 0%{?with_sysffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
@@ -242,6 +243,11 @@ install -pm0644 icons/icon-512.svg \
 
 
 %changelog
+* Wed Mar 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-1.20180305git90dbd9a7
+- New snapshot
+- BR: gcc-c++
+- Remove obsolete scriptlets
+
 * Sun Feb 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.4-14.20180211git4e5fb6e
 - New snapshot
 - USE_SYSTEM_LIBZIP

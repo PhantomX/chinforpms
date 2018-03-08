@@ -400,10 +400,10 @@ Common wine files and scripts.
 
 %package desktop
 Summary:        Desktop integration features for wine
+%if 0%{?rhel} == 6
 Requires(post): /sbin/chkconfig, /sbin/service,
-Requires(post): desktop-file-utils >= 0.8
 Requires(preun): /sbin/chkconfig, /sbin/service
-Requires(postun): desktop-file-utils >= 0.8
+%endif
 Requires:       wine-core = %{version}-%{release}
 Requires:       wine-common = %{version}-%{release}
 %if 0%{?fedora} >= 15 || 0%{?rhel} >= 7

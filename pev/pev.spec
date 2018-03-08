@@ -12,6 +12,7 @@ Patch0:         %{name}-optimization.patch
 Patch1:         https://github.com/merces/pev/commit/98f5f22f91f02821be1604bbce61efb45f7e3696.patch
 Patch2:         https://github.com/merces/pev/commit/3fc1d6ac863cfb596e8e9263e03871aec8c00d22.patch
 
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(libpcre)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
@@ -44,8 +45,7 @@ sed -e '/DEFAULT_PLUGINS_PATH/s|/usr/local/lib|%{_libdir}|g' -i src/config.c
 
 %build
 
-export CFLAGS="%{optflags}"
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 
 %make_build \
   prefix=%{_prefix} \
