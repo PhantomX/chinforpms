@@ -7,11 +7,12 @@
 %undefine _hardened_build
 
 %global srcname dxvk
+%global dxvk_dir %{_datadir}/wine/%{srcname}/%{__isa_bits}
 
-Name:           wine-%{srcname}
-Version:        0.30
+Name:           mingw-wine-%{srcname}
+Version:        0.31
 Release:        1%{?dist}
-Summary:        Vulkan-based D3D11 implementation for Linux / Wine 
+Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
 URL:            https://github.com/doitsujin/dxvk
@@ -22,24 +23,35 @@ Source2:        winedxvkcfg
 
 ExclusiveArch:  %{ix86} x86_64
 
-BuildRequires:  glslang-devel
-BuildRequires:  meson
 BuildRequires:  mingw%{__isa_bits}-filesystem
 BuildRequires:  mingw%{__isa_bits}-gcc
 BuildRequires:  mingw%{__isa_bits}-gcc-c++
 BuildRequires:  mingw%{__isa_bits}-winpthreads-static
+
+# glslangValidator
+BuildRequires:  glslang
+BuildRequires:  meson
 BuildRequires:  wine-core
-BuildRequires:  wine-devel
-
-Enhances:       wine
-
-Requires:       wine-common
-Requires:       wine-core
-%ifarch x86_64
-Requires:       %{name}(x86-32) = %{version}-%{release}
-%endif
+BuildRequires:  wine-devel >= 3.0
 
 %description
+Provides a Vulkan-based implementation of DXGI and D3D11 in order to
+run 3D applications on Linux using Wine.
+
+%package        -n mingw%{__isa_bits}-wine-%{srcname}
+Summary:        Vulkan-based D3D11 implementation for Linux / %{__isa_bits} bit Wine
+BuildArch:      noarch
+Enhances:       wine
+Requires:       wine-common
+%if %{__isa_bits} == 32
+Requires:       wine-core(x86-32)
+%endif
+%if %{__isa_bits} == 64
+Requires:       wine-core(x86-64)
+Requires:       mingw32-wine-%{srcname} = %{version}-%{release}
+%endif
+
+%description   -n mingw%{__isa_bits}-wine-%{srcname}
 Provides a Vulkan-based implementation of DXGI and D3D11 in order to
 run 3D applications on Linux using Wine.
 
@@ -52,45 +64,50 @@ cp %{S:1} .
 
 meson \
   --cross-file build-win%{__isa_bits}.txt \
+  --buildtype "release" \
+  --strip \
   build.%{__isa_bits}
 
 pushd build.%{__isa_bits}
-meson \
-  -Dprefix=/usr \
-  -Dlibdir=/usr/lib64 \
-  -Dbuildtype=release
 ninja -v %{?_smp_mflags}
 popd
 
-
 %install
-mkdir -p %{buildroot}/%{_libdir}/wine/fakedlls
+mkdir -p %{buildroot}%{dxvk_dir}
 
 install -pm0755 build.%{__isa_bits}/src/dxgi/dxgi.dll \
-  %{buildroot}/%{_libdir}/wine/fakedlls/dxgi_vk.dll
+  %{buildroot}%{dxvk_dir}/dxgi_vk.dll
 
 install -pm0755 build.%{__isa_bits}/src/d3d11/d3d11.dll \
-  %{buildroot}/%{_libdir}/wine/fakedlls/d3d11_vk.dll
+  %{buildroot}%{dxvk_dir}/d3d11_vk.dll
 
 for file in \
   tests/d3d11/d3d11-{compute,triangle}.exe \
   tests/dxbc/dxbc-{compiler,disasm}.exe tests/dxbc/hlsl-compiler.exe \
   tests/dxgi/dxgi-factory.exe
 do
-  install -pm0755 build.%{__isa_bits}/${file} %{buildroot}/%{_libdir}/wine/fakedlls/
+  install -pm0755 build.%{__isa_bits}/${file} %{buildroot}%{dxvk_dir}/
 done
+
+%{mingw_strip} --strip-unneeded %{buildroot}%{dxvk_dir}/*.{dll,exe}
 
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
-%files
+%files -n mingw%{__isa_bits}-wine-%{srcname}
 %license LICENSE
 %doc README.md README.dxvk
 %{_bindir}/winedxvkcfg
-%{_libdir}/wine/fakedlls/*.dll
-%{_libdir}/wine/fakedlls/*.exe
+%{dxvk_dir}/*.dll
+%{dxvk_dir}/*.exe
 
 %changelog
+* Thu Mar 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.31-1
+- 0.31
+- Rename spec file to mingw-wine-dxvk
+- Change installation paths
+- Strip
+
 * Fri Mar 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.30-1
 - 0.30
 

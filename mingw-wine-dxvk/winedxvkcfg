@@ -26,13 +26,14 @@
 
 set -e
 
-ver=20180219
+ver=20180309
 
 name="DXVK"
 dllsuffix="_vk"
 dlls="dxgi d3d11"
 nodlls="wined3d d3d9"
 disables="CSMT and Gallium Nine"
+dlldir=/usr/share/wine/dxvk
 
 unset winebits
 enabled=0
@@ -70,7 +71,7 @@ checkcfg(){
         disabled=1
       fi
     done
-    if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "/usr/lib${lib}/wine/fakedlls/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+    if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
       enabledlnk=1
     else
       disabledlnk=1
@@ -104,10 +105,10 @@ setcfg(){
       fi
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       for dll in ${dlls} ;do
-        if [ -f "/usr/lib${lib}/wine/fakedlls/${dll}${dllsuffix}.dll" ];then
+        if [ -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll" ];then
           dllmissing=0
         else
-          echo "Missing ${dll}${dllsuffix}.dll in /usr/lib${lib}/wine/fakedlls/."
+          echo "Missing ${dll}${dllsuffix}.dll in ${dlldir}/${lib}/."
           dllmissing=1
         fi
       done
@@ -133,7 +134,7 @@ setcfg(){
         else
           enabled=0
         fi
-        ln -sf "/usr/lib${lib}/wine/fakedlls/${dll}${dllsuffix}.dll" "${native_path}/${dll}.dll"
+        ln -sf "${dlldir}/${lib}/${dll}${dllsuffix}.dll" "${native_path}/${dll}.dll"
         retval=$?
         if [ "${retval}" -eq 0 ] ;then
           enabledlnk=1
@@ -184,7 +185,7 @@ unsetcfg(){
             disabled=0
           fi
         fi
-        if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "/usr/lib${lib}/wine/fakedlls/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+        if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
           rm -f "${native_path}/${dll}.dll"
           retval=$?
           if [ "${retval}" -eq 0 ] ;then
