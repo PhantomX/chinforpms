@@ -21,7 +21,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 7
+%global stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -115,7 +115,7 @@ Patch3: 0001-tools-include-Sync-vmx.h-header-for-FSF-removal.patch
 Patch4: 0001-tools-lib-Remove-FSF-address.patch
 Patch5: 0001-tools-power-Don-t-make-man-pages-executable.patch
 Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
-
+Patch8: 0001-Switch-to-python3.patch
 
 # Extra
 
@@ -201,13 +201,13 @@ cd linux-%{kversion}
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch8 -p1
 
 %patch1000 -p1
 
 # END OF PATCH APPLICATIONS
 
-# Explicitly use Python 3 for kvm_stat
-sed -i '1s=^#!/usr/bin/python=#!%{__python3}=' tools/kvm/kvm_stat/kvm_stat
+sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.config
 
 ###
 ### build
@@ -217,7 +217,7 @@ sed -i '1s=^#!/usr/bin/python=#!%{__python3}=' tools/kvm/kvm_stat/kvm_stat
 cd linux-%{kversion}
 
 %global perf_make \
-  make -s EXTRA_CFLAGS="${optflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
+  make -s EXTRA_CFLAGS="%{optflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
@@ -388,6 +388,9 @@ popd
 %{_includedir}/cpuidle.h
 
 %changelog
+* Fri Mar 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.8-100.chinfo
+- 4.15.8
+
 * Wed Feb 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.7-100.chinfo
 - 4.15.7
 

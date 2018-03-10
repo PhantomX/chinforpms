@@ -12,6 +12,7 @@ URL:            https://github.com/iXit/wine
 %global rversion %(c=%{version}; echo ${c//_/-})
 Source0:        https://github.com/iXit/wine/archive/%{name}-%{rversion}.tar.gz
 Source1:        ninewinecfg
+Source2:        wineninecfg
 
 Source100:      wine-ninecfg.desktop
 
@@ -144,6 +145,7 @@ install -pm0755 dlls/d3d9-nine/d3d9-nine.dll.fake \
 
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:1} %{buildroot}/%{_bindir}/ninewinecfg
+install -pm0755 %{S:2} %{buildroot}/%{_bindir}/wineninecfg
 
 mkdir -p %{buildroot}%{_datadir}/applications
 # install desktop file
@@ -157,6 +159,7 @@ desktop-file-install \
 %files
 %license COPYING.LIB
 %{_bindir}/ninewinecfg
+%{_bindir}/wineninecfg
 %{_libdir}/wine/d3d9-nine.dll.so
 %{_libdir}/wine/ninewinecfg.exe.so
 %{_libdir}/wine/fakedlls/d3d9-nine.dll

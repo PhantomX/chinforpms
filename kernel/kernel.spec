@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -651,12 +651,21 @@ Patch652: iwlwifi-mvn.patch
 # CVE-2018-1000026 rhbz 1541846 1546744
 Patch653: CVE-2018-1000026.patch
 
+# CVE-2018-1065 rhbz 1547824 1547831
+Patch655: 0001-netfilter-add-back-stackpointer-size-checks.patch
+
+# rhbz 1549316
+Patch657: ipmi-fixes.patch
+ 
+# CVE-2018-7757 rhbz 1553361 1553363
+Patch658: 0001-scsi-libsas-fix-memory-leak-in-sas_smp_get_phy_event.patch
+ 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 06f0b064616eab8f7a171fe9aab2040aa40e16b7
+%global opensuse_id 4e5b14d540f4bd9b46e011e7eb55769e99227298
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -679,6 +688,7 @@ Patch1026: %{opensuse_url}/ext4-llseek-do-not-crop-offset-on-32bit.patch?id=%{op
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
+Patch2001: %{patchwork_url}/10258895/mbox/#/patchwork-block-bfq-keep-peak_rate-estimation-within-range-1..2-32-1.patch
 
 # https://github.com/pfactum/pf-kernel/commits/pf-4.15
 # block fixes and updates, mostly
@@ -1423,6 +1433,16 @@ BuildKernel() {
     cp -a scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     if [ -f tools/objtool/objtool ]; then
       cp -a tools/objtool/objtool $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
+      # these are a few files associated with objtool
+      cp -a --parents tools/build/Build.include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+      cp -a --parents tools/build/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+      cp -a --parents tools/build/fixdep.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+      cp -a --parents tools/scripts/utilities.mak $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+      # also more than necessary but it's not that many more files
+      cp -a --parents tools/objtool/* $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+      cp -a --parents tools/lib/str_error_r.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+      cp -a --parents tools/lib/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+      cp -a --parents tools/lib/subcmd/* $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     fi
     if [ -d arch/$Arch/scripts ]; then
       cp -a arch/$Arch/scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/arch/%{_arch} || :
@@ -1468,7 +1488,9 @@ BuildKernel() {
     cp -a --parents arch/x86/tools/relocs.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs_common.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents tools/include/tools/le_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+    # Yes this is more includes than we probably need. Feel free to sort out
+    # dependencies if you so choose.
+    cp -a --parents tools/include/* $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/purgatory.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/sha256.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/sha256.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
@@ -1963,6 +1985,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.8-500.chinfo
+- 4.15.8
+
 * Wed Feb 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.7-500.chinfo
 - 4.15.7
 

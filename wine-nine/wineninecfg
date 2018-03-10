@@ -1,9 +1,9 @@
 #!/bin/bash
 # -- winedxvkcfg --
-# Sets wine DXVK dll redirection.
+# Sets wine Gallium Nine dll redirection.
 #
 # Script by Phantom X <megaphantomx at bol.com.b>
-# Suggested usage: $ winedxvkcfg --help
+# Suggested usage: $ wineninecfg --help
 #
 # Copyright 2018 Phantom X, Goiania, Brazil.
 #
@@ -28,11 +28,10 @@ set -e
 
 ver=20180309
 
-name="DXVK"
-dllsuffix="_vk"
-dlls="dxgi d3d11"
+name="Gallium Nine"
+dllsuffix="-nine"
+dlls="d3d9"
 nodlls="wined3d"
-dlldir="/usr/share/wine/dxvk"
 
 unset winebits
 enabled=0
@@ -60,7 +59,7 @@ checkcfg(){
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
     else
-      lib=32
+      lib=''
     fi
     native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
     for dll in ${dlls} ;do
@@ -70,7 +69,7 @@ checkcfg(){
         disabled=1
       fi
     done
-    if [ -f "${native_path}/${dll}${dllsuffix}.dll" ] && [ "$(readlink -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}${dllsuffix}.dll")" ] ;then
+    if [ -f "${native_path}/${dll}${dllsuffix}.dll" ] && cmp "/usr/lib${lib}/wine/fakedlls/${dll}${dllsuffix}.dll" "${native_path}/${dll}${dllsuffix}.dll" &>/dev/null ;then
       enabledlnk=1
     else
       disabledlnk=1
@@ -81,7 +80,7 @@ checkcfg(){
     echo "${name} is enabled!"
   elif [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 1 ] || [ "${enabledlnk}" -eq 1 ] && [ "${disabledlnk}" -eq 1 ] ;then
     echo "${name} settings are corrupted!"
-    echo "Rerun with --set or --unset to fix!"
+    echo "Run wineboot -u and/or rerun with --set or --unset to fix!"
   else
     echo "${name} is not enabled!"
   fi
@@ -91,20 +90,14 @@ checkcfg(){
 setcfg(){
   csmtdisabled=0
   enabled=1
-  enabledlnk=1
   for winebits in 64 32 ;do
     if wine${winebits} reg query /? &>/dev/null ;then
-      if [ "${winebits}" -eq 64 ] ;then
-        lib=64
-      else
-        lib=32
-      fi
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       for dll in ${dlls} ;do
-        if [ -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll" ];then
+        if [ -f "${native_path}/${dll}${dllsuffix}.dll" ];then
           dllmissing=0
         else
-          echo "Missing ${dll}${dllsuffix}.dll in ${dlldir}/${lib}/."
+          echo "Missing ${dll}${dllsuffix}.dll in ${native_path}/."
           dllmissing=1
         fi
       done
@@ -128,9 +121,7 @@ setcfg(){
         else
           enabled=0
         fi
-        ln -sf "${dlldir}/${lib}/${dll}${dllsuffix}.dll" "${native_path}/${dll}${dllsuffix}.dll"
-        retval=$?
-        if [ "${retval}" -eq 0 ] ;then
+        if [ -r "${native_path}/${dll}${dllsuffix}.dll" ] ;then
           enabledlnk=1
         else
           enabledlnk=0
@@ -139,7 +130,7 @@ setcfg(){
     fi
   done
   if [ "${dllmissing}" -eq 1 ] ;then
-    echo "Reinstall wine-dxvk."
+    echo "Reinstall wine-nine and/or run wineboot -u."
     exit 1
   fi
   if [ "${csmtdisabled}" -eq 1 ] ;then
@@ -157,15 +148,8 @@ setcfg(){
 
 unsetcfg(){
   disabled=1
-  disabledlnk=1
   for winebits in 64 32 ;do
-    if [ "${winebits}" -eq 64 ] ;then
-      lib=64
-    else
-      lib=32
-    fi
     if wine${winebits} reg query /? &>/dev/null ;then
-      native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       for dll in ${dlls} ;do
         if wine${winebits} reg query "${redirectkey}" /v ${dll} &>/dev/null ;then
           wine${winebits} reg delete "${redirectkey}" /v ${dll} /f &>/dev/null
@@ -176,19 +160,10 @@ unsetcfg(){
             disabled=0
           fi
         fi
-        if [ -f "${native_path}/${dll}${dllsuffix}.dll" ] && [ "$(readlink -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}${dllsuffix}.dll")" ] ;then
-          rm -f "${native_path}/${dll}${dllsuffix}.dll"
-          retval=$?
-          if [ "${retval}" -eq 0 ] ;then
-            disabledlnk=1
-          else
-            disabledlnk=0
-          fi
-        fi
       done
     fi
   done
-  if [ "${disabled}" -eq 1 ] && [ "${disabledlnk}" -eq 1 ] ;then
+  if [ "${disabled}" -eq 1 ] ;then
     echo "${name} is disabled!"
   else
     echo "${name} configuration fail!"

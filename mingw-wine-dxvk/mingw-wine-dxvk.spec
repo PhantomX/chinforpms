@@ -11,7 +11,7 @@
 
 Name:           mingw-wine-%{srcname}
 Version:        0.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -75,10 +75,10 @@ popd
 %install
 mkdir -p %{buildroot}%{dxvk_dir}
 
-install -pm0755 build.%{__isa_bits}/src/dxgi/dxgi.dll \
+install -pm0644 build.%{__isa_bits}/src/dxgi/dxgi.dll \
   %{buildroot}%{dxvk_dir}/dxgi_vk.dll
 
-install -pm0755 build.%{__isa_bits}/src/d3d11/d3d11.dll \
+install -pm0644 build.%{__isa_bits}/src/d3d11/d3d11.dll \
   %{buildroot}%{dxvk_dir}/d3d11_vk.dll
 
 for file in \
@@ -102,6 +102,9 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 %{dxvk_dir}/*.exe
 
 %changelog
+* Fri Mar 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.31-2
+- Update script
+
 * Thu Mar 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.31-1
 - 0.31
 - Rename spec file to mingw-wine-dxvk
