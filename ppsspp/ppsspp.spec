@@ -1,6 +1,6 @@
-%global commit 90dbd9a725540bbf6221e8437adea518371a38cc
+%global commit 0ed3deabe6b4723e918a9d2d36ad6407ccd017f2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180305
+%global date 20180308
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -45,7 +45,7 @@
 
 Name:           ppsspp
 Version:        1.5.4
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -96,6 +96,7 @@ Requires:       google-roboto-condensed-fonts
 
 %prep
 %autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p0
+echo %{?dist}
 %if 0%{?with_snapshot}
 tar -xf %{SOURCE1} -C assets/lang --strip-components 1
 %if !0%{?with_sysffmpeg}
@@ -243,6 +244,9 @@ install -pm0644 icons/icon-512.svg \
 
 
 %changelog
+* Sat Mar 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-2.20180308git0ed3deab
+- New snapshot
+
 * Wed Mar 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-1.20180305git90dbd9a7
 - New snapshot
 - BR: gcc-c++

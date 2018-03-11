@@ -31,6 +31,7 @@ release tags).
  * **kernel** - _blk-mq_ enabled by default, [CPU optimizations](https://github.com/graysky2/kernel_gcc_patch) and some
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) patches
                 (kernel-local must be edited to modify gcc optimizations)
+ * **mesa** - Tests
  * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**
  * **psi** - Updated
  * **quiterss** - Updated, Qt5
@@ -38,6 +39,7 @@ release tags).
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
                     and **VirtualBox-guest-additions-iso** support
  * **xboxdrv** - Tests
+ * **xorg-x11-server** - Tests
  * **wine** - Extra patches and personal fixes
 
 ## Credits (Patches, install procedures and other files)

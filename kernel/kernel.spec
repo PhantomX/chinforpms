@@ -1393,14 +1393,15 @@ BuildKernel() {
     # we'll get it from the linux-firmware package and we don't want conflicts
     %{make} %{?make_opts} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
 
+    # add an a noop %%defattr statement 'cause rpm doesn't like empty file list files
+    echo '%%defattr(-,-,-)' > ../kernel${Flavour:+-${Flavour}}-ldsoconf.list
     if [ $DoVDSO -ne 0 ]; then
         %{make} %{?make_opts} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT vdso_install KERNELRELEASE=$KernelVer
-        if [ ! -s ldconfig-kernel.conf ]; then
-          echo > ldconfig-kernel.conf "\
-    # Placeholder file, no vDSO hwcap entries used in this kernel."
+        if [ -s ldconfig-kernel.conf ]; then
+            install -D -m 444 ldconfig-kernel.conf \
+                $RPM_BUILD_ROOT/etc/ld.so.conf.d/kernel-$KernelVer.conf
+            echo /etc/ld.so.conf.d/kernel-$KernelVer.conf >> ../kernel${Flavour:+-${Flavour}}-ldsoconf.list
         fi
-        %{__install} -D -m 444 ldconfig-kernel.conf \
-            $RPM_BUILD_ROOT/etc/ld.so.conf.d/kernel-$KernelVer.conf
         rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/vdso/.build-id
     fi
 
@@ -1707,7 +1708,6 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %ifnarch noarch
 %global __debug_package 1
 %files -f debugfiles.list debuginfo-common-%{_target_cpu}
-%defattr(-,root,root)
 %endif
 
 %endif
@@ -1893,26 +1893,22 @@ fi
 
 %if %{with_headers}
 %files headers
-%defattr(-,root,root)
 /usr/include/*
 %endif
 
 %if %{with_cross_headers}
 %files cross-headers
-%defattr(-,root,root)
 /usr/*-linux-gnu/include/*
 %endif
 
 %if %{with_bootwrapper}
 %files bootwrapper
-%defattr(-,root,root)
 /usr/sbin/*
 %{_libdir}/kernel-wrapper
 %endif
 
 # empty meta-package
 %files
-%defattr(-,root,root)
 
 # This is %%{image_install_path} on an arch where that includes ELF files,
 # or empty otherwise.
@@ -1925,8 +1921,7 @@ fi
 #
 %define kernel_variant_files(k:) \
 %if %{2}\
-%{expand:%%files -f kernel-%{?3:%{3}-}core.list %{?3:%{3}-}core}\
-%defattr(-,root,root)\
+%{expand:%%files -f kernel-%{?3:%{3}-}core.list %{?1:-f kernel-%{?3:%{3}-}ldsoconf.list} %{?3:%{3}-}core}\
 %{!?_licensedir:%global license %%doc}\
 %license linux-%{KVERREL}/COPYING\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}\
@@ -1950,33 +1945,27 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
-/etc/ld.so.conf.d/kernel-%{KVERREL}%{?3:+%{3}}.conf\
 %endif\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.*\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules.list %{?3:%{3}-}modules}\
-%defattr(-,root,root)\
 %{expand:%%files %{?3:%{3}-}devel}\
-%defattr(-,root,root)\
 %defverify(not mtime)\
 /usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
 %{expand:%%files %{?3:%{3}-}modules-extra}\
-%defattr(-,root,root)\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/extra\
 %if %{with_debuginfo}\
 %ifnarch noarch\
 %{expand:%%files -f debuginfo%{?3}.list %{?3:%{3}-}debuginfo}\
-%defattr(-,root,root)\
 %endif\
 %endif\
 %if %{?3:1} %{!?3:0}\
 %{expand:%%files %{3}}\
-%defattr(-,root,root)\
 %endif\
 %endif\
 %{nil}
 
-%kernel_variant_files  %{_use_vdso} %{with_up}
-%kernel_variant_files  %{_use_vdso} %{with_debug} debug
+%kernel_variant_files %{_use_vdso} %{with_up}
+%kernel_variant_files %{_use_vdso} %{with_debug} debug
 %kernel_variant_files %{use_vdso} %{with_pae} %{pae}
 %kernel_variant_files %{use_vdso} %{with_pae_debug} %{pae}debug
 
