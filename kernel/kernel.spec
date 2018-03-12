@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -665,7 +665,7 @@ Patch658: 0001-scsi-libsas-fix-memory-leak-in-sas_smp_get_phy_event.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 4e5b14d540f4bd9b46e011e7eb55769e99227298
+%global opensuse_id 67f0889645bebd7d1275c3815c3680fdde20f520
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -713,7 +713,7 @@ Patch3015: %{pf_url}/af2d5f0a066409296215630249a6be4e7465a1d9.patch#/pf-af2d5f0a
 Patch3016: %{pf_url}/70521300dc14bb3ef93c72d636d574a019da4132.patch#/pf-70521300dc14bb3ef93c72d636d574a019da4132.patch
 
 # Add additional cpu gcc optimization support
-# https://github.com/graysky2/kernel_gcc_patch (20170904)
+# https://github.com/graysky2/kernel_gcc_patch (20180310)
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v4.13+.patch
 
 # END OF PATCH DEFINITIONS
@@ -1974,6 +1974,9 @@ fi
 #
 #
 %changelog
+* Sun Mar 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.9-500.chinfo
+- 4.15.9
+
 * Fri Mar 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.8-500.chinfo
 - 4.15.8
 
