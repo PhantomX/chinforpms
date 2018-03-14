@@ -10,10 +10,11 @@ License:        GPLv2
 URL:            http://heim.ifi.uio.no/~oyvinha/gkleds/
 Source0:        http://heim.ifi.uio.no/~oyvinha/%{pkgname}/%{pkgname}-%{version}.tar.gz
 
-Requires:       gkrellm >= 2.2.0
 BuildRequires:  autoconf libtool
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(gkrellm) >= 2.2.0
 BuildRequires:  pkgconfig(xtst)
+Requires:       gkrellm >= 2.2.0
 
 %description
 gkleds is a GKrellM plugin which monitors the CapsLock, NumLock and ScrollLock

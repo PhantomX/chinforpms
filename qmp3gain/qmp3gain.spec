@@ -7,6 +7,7 @@ License:        GPLv2
 URL:            http://sourceforge.net/projects/qmp3gain/
 Source0:        http://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 
+BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(QtGui)
 BuildRequires:  pkgconfig(QtWebKit)
 BuildRequires:  pkgconfig(phonon)

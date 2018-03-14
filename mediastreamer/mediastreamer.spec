@@ -11,6 +11,7 @@ Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{vers
 
 BuildRequires:  cmake
 BuildRequires:  doxygen
+BuildRequires:  gcc
 BuildRequires:  gettext-devel
 BuildRequires:  git
 BuildRequires:  graphviz

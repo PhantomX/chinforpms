@@ -12,6 +12,7 @@ ExclusiveArch:  %{ix86} x86_64 armv7hl
 
 BuildRequires:  boost-devel
 BuildRequires:  desktop-file-utils
+BuildRequires:  gcc-c++
 BuildRequires:  intltool
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(ffms2)

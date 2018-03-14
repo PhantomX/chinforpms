@@ -76,6 +76,7 @@ BuildRequires: pkgconfig(xinerama)
 BuildRequires: pkgconfig(xcomposite)
 BuildRequires: pkgconfig(xdamage)
 BuildRequires: pkgconfig(epoxy)
+BuildRequires: gcc
 BuildRequires: gettext-devel
 BuildRequires: gettext
 BuildRequires: gtk-doc
@@ -140,7 +141,8 @@ interfaces. Offering a complete set of widgets, GTK+ is suitable for
 projects ranging from small one-off tools to complete application
 suites.
 
-This package contains version 3 of GTK+.
+This package contains version 3 of GTK+, with gtk3-mushrooms and other
+usability and cosmetic modifications.
 
 %package -n gtk-update-icon-cache
 Summary: Icon theme caching utility

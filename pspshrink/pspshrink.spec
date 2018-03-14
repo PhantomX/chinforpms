@@ -8,6 +8,7 @@ URL:            https://code.google.com/p/%{name}/
 Source0:        https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/%{name}/%{name}-%{version}.tar.gz
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  gcc-c++
 BuildRequires:  librsvg2-tools
 BuildRequires:  pkgconfig(gtkmm-2.4)
 Requires:       gtkmm24

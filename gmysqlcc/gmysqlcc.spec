@@ -14,6 +14,7 @@ Patch0:         http://http.debian.net/debian/pool/main/g/%{name}/%{name}_0.3.0-
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  desktop-file-utils
+BuildRequires:  gcc
 BuildRequires:  gettext
 BuildRequires:  pkgconfig(gtk+-2.0)
 BuildRequires:  pkgconfig(gtksourceview-2.0)

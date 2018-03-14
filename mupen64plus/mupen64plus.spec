@@ -10,6 +10,7 @@ URL:            http://www.mupen64plus.org/
 Source0:        https://github.com/%{name}/%{name}-core/releases/download/%{version}/%{name}-bundle-src-%{version}.tar.gz
 
 BuildRequires:  boost-devel
+BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)

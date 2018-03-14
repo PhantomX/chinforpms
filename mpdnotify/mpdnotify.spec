@@ -2,7 +2,7 @@
 %global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
 %global use_git 1
 
-%if 0%{?use_git}
+%if 0%{?with_snapshot}
 %global gver .git%{shortcommit}
 %endif
 
@@ -13,7 +13,7 @@ Summary:        'Now Playing' information via notify-send and mpc
 
 License:        Public Domain
 URL:            https://github.com/vehk/mpdnotify
-%if 0%{?use_git}
+%if 0%{?with_snapshot}
 Source0:        https://github.com/vehk/mpdnotify/archive/%{gitcommitid}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/vehk/mpdnotify/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
@@ -29,7 +29,7 @@ mpdnotify is a simple bash script that uses notify-send and mpc to create
 notifications about what song is currently playing in mpd.
 
 %prep
-%if 0%{?use_git}
+%if 0%{?with_snapshot}
 %autosetup -n %{name}-%{gitcommitid}
 %else
 %autosetup -n %{name}-%{version}

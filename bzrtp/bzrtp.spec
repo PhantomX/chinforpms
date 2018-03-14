@@ -8,6 +8,7 @@ URL:            https://www.linphone.org
 Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{version}.tar.gz
 
 BuildRequires:  cmake
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(bctoolbox)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(sqlite3)

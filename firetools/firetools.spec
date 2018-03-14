@@ -8,6 +8,7 @@ URL:            https://firejail.wordpress.com/
 Source0:        http://downloads.sourceforge.net/firejail/%{name}-%{version}.tar.xz
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Svg)

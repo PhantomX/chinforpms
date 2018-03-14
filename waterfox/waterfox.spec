@@ -226,6 +226,7 @@ BuildRequires:  llvm
 BuildRequires:  llvm-devel
 BuildRequires:  clang
 BuildRequires:  clang-libs
+BuildRequires:  gcc-c++
 
 Requires:       mozilla-filesystem
 Requires:       waterfox-filesystem

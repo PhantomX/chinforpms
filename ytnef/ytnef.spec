@@ -12,6 +12,7 @@ Patch11:        https://github.com/Yeraze/%{name}/commit/a428d93d4bdba94aa8df879
 Patch12:        https://github.com/Yeraze/%{name}/commit/e462cbed599399167e21ec0e4f65d72164f269fd.patch
 
 BuildRequires:  autoconf automake libtool
+BuildRequires:  gcc
 BuildRequires:  perl-generators
 Requires:       libytnef%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 

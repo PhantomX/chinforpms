@@ -11,6 +11,7 @@ Source0:        http://www.freefilesync.org/download/%{pname}_%{version}_Source.
 Source1:        https://aur.archlinux.org/cgit/aur.git/plain/ffsicon.png?h=%{name}#/%{pname}.png
 Source2:        https://aur.archlinux.org/cgit/aur.git/plain/rtsicon.png?h=%{name}#/RealTimeSync.png
 
+BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(gtk+-2.0)
 BuildRequires:  pkgconfig(libselinux)

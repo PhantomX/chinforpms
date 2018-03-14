@@ -17,6 +17,7 @@ BuildRequires: pkgconfig(pygtk-2.0)
 BuildRequires: pkgconfig(taglib)
 BuildRequires: pkgconfig(unique-1.0)
 BuildRequires: libgcrypt-devel
+BuildRequires: gcc
 BuildRequires: intltool
 BuildRequires: desktop-file-utils
 #BuildRequires: gettext

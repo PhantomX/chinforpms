@@ -10,6 +10,7 @@ Source0:        https://github.com/cebix/%{name}/archive/v%{version}.tar.gz#/%{n
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  boost-devel
+BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(libcdio)
 BuildRequires:  pkgconfig(libvcdinfo)
 

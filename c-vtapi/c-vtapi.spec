@@ -22,6 +22,7 @@ Source0:        https://github.com/VirusTotal/%{name}/releases/download/v%{versi
 
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  gcc
 BuildRequires:  libtool
 BuildRequires:  pkgconfig(jansson)
 BuildRequires:  pkgconfig(libcurl)

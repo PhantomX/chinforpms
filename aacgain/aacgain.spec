@@ -18,6 +18,8 @@ Patch0:         mp4v2-1.9.1-format-security.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  libtool
 BuildRequires:  unzip
 

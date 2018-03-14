@@ -32,6 +32,7 @@ BuildRequires:  libxml2-devel >= %{_libxml2}
 BuildRequires:  gobject-introspection-devel >= %{_gobject_introspection}
 BuildRequires:  bison
 BuildRequires:  flex
+BuildRequires:  gcc
 BuildRequires:  m4
 BuildRequires:  check-devel
 BuildRequires:  gtk-doc >= 1.3

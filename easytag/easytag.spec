@@ -16,6 +16,7 @@ BuildRequires: appdata-tools
 BuildRequires: desktop-file-utils
 BuildRequires: docbook-dtds
 BuildRequires: docbook-style-xsl
+BuildRequires: gcc
 BuildRequires: id3lib-devel >= 3.7.12
 BuildRequires: intltool
 BuildRequires: itstool

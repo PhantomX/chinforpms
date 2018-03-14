@@ -8,6 +8,7 @@ URL:            http://sourceforge.net/projects/cdemu
 Source0:        http://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.bz2
 
 BuildRequires:  cmake
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gobject-introspection-1.0)

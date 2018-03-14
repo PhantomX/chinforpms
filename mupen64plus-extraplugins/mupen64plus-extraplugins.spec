@@ -11,6 +11,7 @@ License:        GPLv2
 URL:            http://www.mupen64plus.org/
 Source0:        http://www.mupen64plus.org/old-releases/%{name}-src-2.0.0.tar.gz
 
+BuildRequires:  gcc-c++
 BuildRequires:  mupen64plus-devel
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(sdl)

@@ -12,6 +12,7 @@ Patch1:         linphone-gitversion.patch
 
 BuildRequires:  cmake
 BuildRequires:  doxygen
+BuildRequires:  gcc
 BuildRequires:  gettext
 BuildRequires:  graphviz
 BuildRequires:  desktop-file-utils

@@ -9,6 +9,8 @@ Summary:        A multi-system emulator utilizing OpenGL and SDL
 License:        GPLv2+ and BSD and ISC and LGPLv2+ and MIT and zlib 
 URL:            http://mednafen.fobby.net
 Source0:        http://mednafen.fobby.net/releases/files/%{name}-%{version}.tar.xz
+
+BuildRequires:  gcc-c++
 BuildRequires:  gettext
 BuildRequires:  SDL-devel >= 1.2.0
 BuildRequires:  pkgconfig(jack) => 1.0.2

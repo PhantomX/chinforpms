@@ -8,6 +8,7 @@ URL:            http://www.muflone.com/gespeaker
 Source0:        https://github.com/muflone/%{name}/releases/download/%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
+
 BuildRequires:  gettext
 BuildRequires:  ImageMagick
 BuildRequires:  python2-devel

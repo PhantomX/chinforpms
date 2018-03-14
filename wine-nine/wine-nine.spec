@@ -21,6 +21,7 @@ ExclusiveArch:  %{ix86} x86_64
 BuildRequires:  bison
 BuildRequires:  flex
 BuildRequires:  autoconf
+BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  llvm-devel
 BuildRequires:  pkgconfig(d3d)

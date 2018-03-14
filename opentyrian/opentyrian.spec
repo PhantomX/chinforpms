@@ -23,6 +23,7 @@ Source0:        http://www.camanis.net/opentyrian/releases/%{name}-%{version}-sr
 Patch0:         %{name}-wild.patch
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(SDL2_net)
 Requires:       tyrian-data >= 2.1

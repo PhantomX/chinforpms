@@ -10,8 +10,8 @@ Source0:        http://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.ta
 # Debian
 Patch0:         button_list_segfault.patch
 
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(x11)
-#Requires:       
 
 %description
 joy2key allows one to choose keyboard events for joystick axes and buttons, so

@@ -9,6 +9,7 @@ License:        GPLv2
 URL:            http://bs2b.sourceforge.net
 Source0:        https://downloads.sourceforge.net/bs2b/%{srcname0}-%{version}.tar.gz
 
+BuildRequires:  gcc
 BuildRequires:  ladspa-devel
 BuildRequires:  pkgconfig(libbs2b)
 Requires:       ladspa

@@ -11,9 +11,11 @@ URL:            https://github.com/sainsaar/gkrellm2-cpupower
 Source0:        https://github.com/sainsaar/gkrellm2-cpupower/tarball/%{version}#/%{pkgname}-%{version}.tar.gz
 
 Patch0:         %{pkgname}-0.1.6-cpupower.patch
-Requires:       gkrellm >= 2.2.0
+
+BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(gkrellm) >= 2.2.0
 BuildRequires:  kernel-tools-libs-devel >= 4.9
+Requires:       gkrellm >= 2.2.0
 
 %description
 A Gkrellm2 plugin for displaying and manipulating CPU frequency.

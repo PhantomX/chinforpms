@@ -76,6 +76,7 @@ Patch100:   virtualbox-5.1.0-noupdate.patch
 Patch101:   virtualbox-5.1.0-default-to-linux26.patch
 
 
+BuildRequires:  gcc-c++
 BuildRequires:  kBuild >= 0.1.9998.r3093
 BuildRequires:  SDL-devel xalan-c-devel
 BuildRequires:  openssl-devel

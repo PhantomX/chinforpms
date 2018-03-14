@@ -9,6 +9,7 @@ Source:         http://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.bz
 
 
 BuildRequires:  cmake
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(ao)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(libmirage)

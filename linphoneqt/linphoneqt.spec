@@ -10,6 +10,7 @@ Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{vers
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 BuildRequires:  doxygen
+BuildRequires:  gcc-c++
 BuildRequires:  graphviz
 BuildRequires:  bcmatroska2-devel
 BuildRequires:  pkgconfig(bctoolbox)

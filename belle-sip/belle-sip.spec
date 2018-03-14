@@ -11,6 +11,8 @@ Source1:        http://www.antlr3.org/download/antlr-3.4-complete.jar
 BuildRequires:  antlr3-tool
 BuildRequires:  antlr3-C-devel
 BuildRequires:  cmake
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  java-headless
 BuildRequires:  mbedtls-devel
 BuildRequires:  pkgconfig(bctoolbox)

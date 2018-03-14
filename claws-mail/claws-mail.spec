@@ -31,6 +31,7 @@ Obsoletes:      %{name}-plugins-fancy < %{version}-%{release}
 Provides:       %{name}-plugins-fancy = %{version}-%{release}
 %endif
 
+BuildRequires:  gcc
 BuildRequires:  flex, bison
 BuildRequires:  glib2-devel >= 2.6.2
 BuildRequires:  gtk2-devel >= 2.10.0

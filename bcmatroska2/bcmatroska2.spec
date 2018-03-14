@@ -9,7 +9,7 @@ Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{vers
 Source1:        https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt#/gpl-2.0
 
 BuildRequires:  cmake
-
+BuildRequires:  gcc
 
 %description
 %{summary}.

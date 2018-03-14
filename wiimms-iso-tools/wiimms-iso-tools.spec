@@ -12,6 +12,7 @@ URL:            http://wit.wiimm.de/
 Source0:        %{name}-%{revision}.tar.xz
 Source1:        wiimms-iso-tools-snapshot.sh
 
+BuildRequires:  gcc
 BuildRequires:  execstack
 BuildRequires:  pkgconfig(fuse)
 BuildRequires:  pkgconfig(zlib)

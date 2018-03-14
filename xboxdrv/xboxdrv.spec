@@ -1,8 +1,3 @@
-%if 0%{?epel} < 7
-%{!?__global_ldflags: %global build_ldflags -Wl,-z,relro}
-%{!?__python2: %global __python2 /usr/bin/python2}
-%endif
-
 Name:           xboxdrv
 Version:        0.8.8
 Release:        100.chinfo%{?dist}
@@ -15,7 +10,6 @@ Source1:        %{name}.service
 Source2:        %{name}-config.txt
 Source3:        %{name}-daemon
 
-Patch0:         %{name}-fix_defines_old_kernel.patch
 # Fix 60 seconds delay
 Patch1:         https://github.com/xboxdrv/xboxdrv/pull/214.patch#/xboxdrv-github-214.patch
 # Fix "pure virtual function called" crash and related hang
@@ -32,6 +26,7 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  gcc-c++
 BuildRequires:  scons
 %if 0%{?fedora}
 BuildRequires:  libusbx-devel
@@ -68,17 +63,7 @@ Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless gamepads,
 both first and third party.
 
 %prep
-%setup -q -n %{name}-%{version}
-
-%if 0%{?rhel} && 0%{?rhel} < 7
-%patch0 -p0
-%endif
-
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
+%autosetup -p1
 
 sed -i '1s|/usr/bin/env python|%{__python2}|' examples/responsecurve-generator.py
 
@@ -89,11 +74,7 @@ scons \
  BUILD=custom \
  CCFLAGS="%{optflags} -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
  CXXFLAGS="%{optflags} -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
-%if 0%{?rhel}
- CPPFLAGS=" -ansi -pedantic -I%{_includedir}/boost148 -I%{_includedir}/X11" \
-%else
  CPPFLAGS=" -ansi -pedantic" \
-%endif
  LINKFLAGS="%{build_ldflags} -fPIC -pie -Wl,-z,now"
 
 %install
@@ -104,23 +85,12 @@ rm -f %{buildroot}%{_bindir}/xboxdrvctl
 chmod 644 %{buildroot}%{_mandir}/man1/xboxdrv*
 install -pm 644 doc/xboxdrv-daemon.1 %{buildroot}%{_mandir}/man1
 
-# Install default configuration file
-%if 0%{?rhel} && 0%{?rhel} < 7
-mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
-mkdir -p %{buildroot}%{_sysconfdir}/init.d
-install -pm 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/default.%{name}
-install -pm 755 %{SOURCE3} %{buildroot}%{_sysconfdir}/init.d/%{name}d
-%endif
-
 # Install dbus rule
-%if 0%{?fedora} || 0%{?rhel} > 6
 mkdir -p %{buildroot}%{_sysconfdir}/dbus-1/system.d
 install -pm 644 data/org.seul.Xboxdrv.conf %{buildroot}%{_sysconfdir}/dbus-1/system.d
 install -pm 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}.conf
 install -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
-%endif
 
-%if 0%{?fedora} || 0%{?rhel} > 6
 %preun
 %systemd_preun %{name}.service
 
@@ -129,40 +99,17 @@ install -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 
 %postun
 %systemd_postun %{name}.service
-%endif
 
-%if 0%{?rhel} && 0%{?rhel} < 7
-%preun
-if [ $1 -eq 0 ] ; then
-    /sbin/service %{name}d stop >/dev/null 2>&1
-    /sbin/chkconfig --del %{name}d
-fi
-
-%post
-# This adds the proper /etc/rc*.d links for the script
-/sbin/chkconfig --add %{name}d
-
-%postun
-if [ "$1" -ge "1" ] ; then
-    /sbin/service %{name}d condrestart >/dev/null 2>&1 || :
-fi
-%endif
 
 %files
-%{!?_licensedir:%global license %doc}
 %doc PROTOCOL NEWS AUTHORS README.md examples
 %license COPYING
 %{_bindir}/xboxdrv
 %{_mandir}/man1/xboxdrv*
-%if 0%{?fedora} || 0%{?rhel} > 6
 %{_unitdir}/%{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %{_sysconfdir}/dbus-1/system.d/org.seul.Xboxdrv.conf
-%endif
-%if 0%{?rhel} && 0%{?rhel} < 7
-%config(noreplace) %{_sysconfdir}/sysconfig/default.%{name}
-%{_sysconfdir}/init.d/%{name}d
-%endif
+
 
 %changelog
 * Wed Jan 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.8-100.chinfo

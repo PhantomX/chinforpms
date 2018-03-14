@@ -106,6 +106,7 @@ ExclusiveArch:  %{ix86} %{arm}
 BuildRequires:  bison
 BuildRequires:  flex
 BuildRequires:  autoconf
+BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  alsa-lib-devel
 BuildRequires:  audiofile-devel

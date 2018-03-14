@@ -10,6 +10,7 @@ Source1:        %{name}-pt_BR.ts
 
 Patch1:         %{name}-noupdate.patch
 
+BuildRequires:  gcc-c++
 BuildRequires:  icoutils
 BuildRequires:  qt5-linguist
 BuildRequires:  pkgconfig(Qt5Network)

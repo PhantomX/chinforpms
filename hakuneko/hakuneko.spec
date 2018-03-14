@@ -9,6 +9,7 @@ Source0:        http://downloads.sourceforge.net/legacy.%{name}.p/%{name}_%{vers
 
 Patch0:         %{name}-noupdate.patch
 
+BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  desktop-file-utils

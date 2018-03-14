@@ -1,6 +1,6 @@
 %global gitcommitid a76094bc69dc0cfab7f02ae0270c09175196f902
 %global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
-%global use_git 0
+%global with_snapshot 0
 
 Name:           fluxbox-chinfo-menu
 Version:        5.0.1
@@ -9,7 +9,7 @@ Summary:        Menu generator for Fluxbox based on XDG
 
 License:        GPLv3
 URL:            http://github.com/PhantomX/fluxbox-chinfo-menu
-%if 0%{?use_git}
+%if 0%{?with_snapshot}
 Source0:        https://github.com/PhantomX/%{name}/archive/%{gitcommitid}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/PhantomX/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
@@ -28,7 +28,7 @@ Requires:       xorg-x11-apps
 %{summary}.
 
 %prep
-%if 0%{?use_git}
+%if 0%{?with_snapshot}
 %autosetup -n %{name}-%{gitcommitid}
 %else
 %autosetup -n %{name}-%{version} -p0

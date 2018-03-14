@@ -21,6 +21,7 @@ Source0:        https://github.com/VirusTotal/%{name}/releases/download/v%{versi
 %endif
 
 BuildRequires:  c-vtapi-devel
+BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(jansson)
 BuildRequires:  pkgconfig(libcurl)
