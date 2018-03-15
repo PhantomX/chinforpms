@@ -21,12 +21,12 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 # https://github.com/TomaszGasior/gtk3-mushrooms
-%global mushroom_ver 3.22.28-1
+%global mushroom_ver 695ca98cf8e85b778f3ab1e0f39c16cb8d67f7e5
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name: gtk3
-Version: 3.22.28
-Release: 102.chinfo%{?dist}
+Version: 3.22.29
+Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
@@ -227,7 +227,6 @@ patch_command csd__clean-headerbar.patch
 patch_command csd__disabled-by-default.patch
 patch_command csd__headerbar-title.patch
 patch_command csd__server-side-shadow.patch
-patch_command file-chooser__single-click.patch
 patch_command fixes__atk-bridge-errors.patch
 patch_command fixes__too-large-menu-covers-bar.patch
 patch_command fixes__window-background.patch
@@ -267,7 +266,7 @@ export CFLAGS='-fno-strict-aliasing %optflags'
 # fight unused direct deps
 sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 %make_install RUN_QUERY_IMMODULES_TEST=false
@@ -360,6 +359,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %if 0%{?with_broadway}
 %{_libdir}/gtk-3.0/%{bin_version}/immodules/im-broadway.so
 %endif
+%if 0%{?with_wayland}
+%{_libdir}/gtk-3.0/%{bin_version}/immodules/im-wayland.so
+%endif
 %config(noreplace) %{_sysconfdir}/gtk-3.0/im-multipress.conf
 
 %files immodule-xim
@@ -404,6 +406,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Wed Mar 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.29-100.chinfo
+- 3.22.29
+- Wayland immodule
+
 * Mon Feb 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.28-102.chinfo
 - Disable cloudproviders for the time
 
