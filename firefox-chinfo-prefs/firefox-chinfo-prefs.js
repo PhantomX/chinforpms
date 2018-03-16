@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20180104
+// 20180315
 
 pref("browser.bookmarks.showRecentlyBookmarked", false);
 pref("browser.ctrlTab.previews", false);
@@ -31,6 +31,12 @@ pref("browser.rights.3.shown", true);
 
 // Don't show WhatsNew on first run after every update
 pref("browser.startup.homepage_override.mstone","ignore");
+
+// Enforce default permissions to blocked
+pref("permissions.default.camera", 2);
+pref("permissions.default.desktop-notification", 2);
+pref("permissions.default.geo", 2);
+pref("permissions.default.microphone", 2);
 
 // Disable the internal PDF viewer
 pref("pdfjs.disabled", true);
@@ -125,7 +131,6 @@ pref("nsITelemetry.canRecordExtended", false);
 // Disable Screenshots
 //pref("extensions.screenshots.disabled", true);
 
-
 // Disable SHIELD
 pref("extensions.shield-recipe-client.enabled", false);
 pref("app.shield.optoutstudies.enabled", false);
@@ -154,7 +159,10 @@ pref("geo.wifi.logging.enabled", false);
 // pref("webgl.disable-extensions", true);
 
 // Disable web notifications
+pref("dom.push.connection.enabled", false);
+pref("dom.push.enabled", false);
 pref("dom.webnotifications.enabled", false);
+pref("dom.webnotifications.serviceworker.enabled", false);
 
 // Disable WebRTC
 //pref("media.peerconnection.enabled", false);

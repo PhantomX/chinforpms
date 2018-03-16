@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -651,21 +651,22 @@ Patch652: iwlwifi-mvn.patch
 # CVE-2018-1000026 rhbz 1541846 1546744
 Patch653: CVE-2018-1000026.patch
 
-# CVE-2018-1065 rhbz 1547824 1547831
-Patch655: 0001-netfilter-add-back-stackpointer-size-checks.patch
-
 # rhbz 1549316
 Patch657: ipmi-fixes.patch
  
 # CVE-2018-7757 rhbz 1553361 1553363
 Patch658: 0001-scsi-libsas-fix-memory-leak-in-sas_smp_get_phy_event.patch
- 
+
+# CVE-2018-8043 rhbz 1554199 1554200
+Patch660: 0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 67f0889645bebd7d1275c3815c3680fdde20f520
+%global opensuse_id cddf6d58543fc7d82b7854dc8c115007c0772ecb
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -683,7 +684,6 @@ Patch1021: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patc
 Patch1022: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
 Patch1023: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
 Patch1024: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
-Patch1025: %{opensuse_url}/bpf-cpumap-use-GFP_KERNEL-instead-of-GFP_ATOMIC-in-_.patch?id=%{opensuse_id}#/openSUSE-bpf-cpumap-use-GFP_KERNEL-instead-of-GFP_ATOMIC-in-_.patch
 Patch1026: %{opensuse_url}/ext4-llseek-do-not-crop-offset-on-32bit.patch?id=%{opensuse_id}#/openSUSE-ext4-llseek-do-not-crop-offset-on-32bit.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -1974,6 +1974,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.10-500.chinfo
+- 4.15.10
+
 * Sun Mar 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.9-500.chinfo
 - 4.15.9
 

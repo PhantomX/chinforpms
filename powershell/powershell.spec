@@ -2,11 +2,11 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%global version 6.0.0
+%global version 6.0.1
 %global pkgrel 1
 
 # rcrev predates betarev
-%global rcrev 2
+%global rcrev 0
 %global betarev 0
 
 %if 0%{?rcrev} || 0%{?betarev}
@@ -29,7 +29,7 @@
 
 Name:           powershell
 Version:        %{version}
-Release:        0.1%{?pretag:.%{prestring}}%{?dist}
+Release:        1%{?pretag:.%{prestring}}%{?dist}
 Summary:        Automation and configuration management platform
 
 License:        MIT
@@ -112,6 +112,7 @@ if [ "$1" = 1 ]; then
   else
     grep -q "^%{_bindir}/pwsh$" %{_sysconfdir}/shells || echo "%{_bindir}/pwsh" >> %{_sysconfdir}/shells
     grep -q "^/bin/pwsh$" %{_sysconfdir}/shells || echo "/bin/pwsh" >> %{_sysconfdir}/shells
+  fi
 fi
 
 %postun
@@ -128,5 +129,9 @@ fi
 
 
 %changelog
-* Wed Jan  3 2018 Phantom X <megaphantomx at bol dot com dot br> - 6.0.0-0.1.rc.2
+* Thu Mar 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 6.0.1-1
+- 6.0.1
+- Fix post scriptlet
+
+* Wed Jan 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 6.0.0-0.1.rc.2
 - Initial spec
