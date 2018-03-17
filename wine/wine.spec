@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.3
+%global stagingver 3.4
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -28,7 +28,7 @@
 %endif
 
 Name:           wine
-Version:        3.3
+Version:        3.4
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1262,6 +1262,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-kernel32-legacy-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-kernel32-private-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-largeinteger-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-2-1.dll.so
@@ -1375,6 +1376,7 @@ fi
 %{_libdir}/wine/api-ms-win-eventing-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-eventing-provider-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-eventlog-legacy-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-gdi-dpiinfo-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-mm-joystick-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-mm-misc-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-mm-mme-l1-1-0.dll.so
@@ -1384,7 +1386,13 @@ fi
 %{_libdir}/wine/api-ms-win-perf-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-power-base-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-power-setting-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-rtcore-ntuser-draw-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-rtcore-ntuser-private-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-rtcore-ntuser-private-l1-1-4.dll.so
+%{_libdir}/wine/api-ms-win-rtcore-ntuser-window-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-rtcore-ntuser-winevent-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-rtcore-ntuser-wmpointer-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-rtcore-ntuser-wmpointer-l1-1-3.dll.so
 %{_libdir}/wine/api-ms-win-security-activedirectoryclient-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-audit-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-security-base-l1-1-0.dll.so
@@ -1407,15 +1415,13 @@ fi
 %{_libdir}/wine/api-ms-win-service-private-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-service-winsvc-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-service-winsvc-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-shcore-obsolete-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-shcore-stream-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-shcore-thread-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-shell-shellcom-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-shell-shellfolders-l1-1-0.dll.so
 %if 0%{?staging}
-%{_libdir}/wine/api-ms-win-rtcore-ntuser-draw-l1-1-0.dll.so
-%{_libdir}/wine/api-ms-win-rtcore-ntuser-window-l1-1-0.dll.so
-%{_libdir}/wine/api-ms-win-shcore-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-shcore-scaling-l1-1-1.dll.so
-%{_libdir}/wine/api-ms-win-shcore-stream-l1-1-0.dll.so
-%{_libdir}/wine/api-ms-win-shcore-thread-l1-1-0.dll.so
 %endif
 %{_libdir}/wine/apphelp.dll.so
 %{_libdir}/wine/appwiz.cpl.so
@@ -1520,6 +1526,7 @@ fi
 %{_libdir}/wine/explorerframe.dll.so
 %{_libdir}/wine/ext-ms-win-authz-context-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-domainjoin-netjoin-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-dwmapi-ext-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-dc-l1-2-0.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-dc-create-l1-1-1.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-devcaps-l1-1-0.dll.so
@@ -1527,24 +1534,35 @@ fi
 %{_libdir}/wine/ext-ms-win-gdi-render-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-kernel32-package-current-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-kernel32-package-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-draw-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-gui-l1-3-0.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-keyboard-l1-3-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-message-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-misc-l1-5-1.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-mouse-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-private-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-private-l1-3-1.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-rectangle-ext-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-uicontext-ext-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-window-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-window-l1-1-4.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-windowclass-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-oleacc-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ras-rasapi32-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-rtcore-gdi-devcaps-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-gdi-object-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-gdi-rgn-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-rtcore-ntuser-cursor-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-ntuser-dc-access-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-ntuser-dpi-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-rtcore-ntuser-dpi-l1-2-0.dll.so
+%{_libdir}/wine/ext-ms-win-rtcore-ntuser-rawinput-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-rtcore-ntuser-syscolors-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-rtcore-ntuser-sysparams-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-security-credui-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-security-cryptui-l1-1-0.dll.so
 %if 0%{?staging}
 %{_libdir}/wine/ext-ms-win-appmodel-usercontext-l1-1-0.dll.so
-%{_libdir}/wine/ext-ms-win-ntuser-mouse-l1-1-0.dll.so
-%{_libdir}/wine/ext-ms-win-rtcore-ntuser-syscolors-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-uxtheme-themes-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-xaml-pal-l1-1-0.dll.so
 %endif
@@ -1708,6 +1726,7 @@ fi
 %{_libdir}/wine/netprofm.dll.so
 %{_libdir}/wine/netsh.exe.so
 %{_libdir}/wine/newdev.dll.so
+%{_libdir}/wine/ninput.dll.so
 %{_libdir}/wine/normaliz.dll.so
 %{_libdir}/wine/npmshtml.dll.so
 %{_libdir}/wine/npptools.dll.so
@@ -2227,6 +2246,9 @@ fi
 %endif
 
 %changelog
+* Fri Mar 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.4-100.chinfo
+- 3.4
+
 * Sun Mar 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.3-100.chinfo
 - 3.3
 - Updated URLs
