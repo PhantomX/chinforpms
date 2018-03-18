@@ -1,21 +1,23 @@
 %undefine _hardened_build
 
 Name:           mednafen
-Version:        0.9.48
+Version:        1.21.1
 Release:        1.chinfo%{?dist}
 Epoch:          1
 Summary:        A multi-system emulator utilizing OpenGL and SDL
 #mednafen is a monstrosity build out of many emulators hence the colourful licensing
 License:        GPLv2+ and BSD and ISC and LGPLv2+ and MIT and zlib 
-URL:            http://mednafen.fobby.net
-Source0:        http://mednafen.fobby.net/releases/files/%{name}-%{version}.tar.xz
+URL:            https://mednafen.github.io
+Source0:        https://mednafen.github.io/releases/files/%{name}-%{version}.tar.xz
 
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
-BuildRequires:  SDL-devel >= 1.2.0
+#BuildRequires:  lzo-devel >= 2.0.9
+BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(sdl2) >= 2.0.5
 BuildRequires:  pkgconfig(jack) => 1.0.2
 BuildRequires:  pkgconfig(sndfile) => 1.0.2
-BuildRequires:  zlib-devel
+BuildRequires:  pkgconfig(zlib)
 
 %description
 A portable, utilizing OpenGL and SDL, argument(command-line)-driven multi-system
@@ -53,7 +55,7 @@ to most people.
 
 
 %prep
-%setup -q -n %{name}
+%autosetup -n %{name}
 
 # Permission cleanup
 find \( -name \*.c\* -or -name \*.h\* -or -name \*.inc \) -exec chmod -x {} \;
@@ -68,7 +70,10 @@ export CXXFLAGS
 
 export ax_cv_cflags_gcc_option__mtune_haswell=no
 
-%configure --disable-rpath
+%configure \
+  --disable-rpath \
+  --disable-silent-rules
+#  --with-external-lzo
 %make_build
 
 
@@ -89,6 +94,12 @@ rm -rf Documentation/*.def Documentation/*.php Documentation/generate.sh \
 
 
 %changelog
+* Sat Mar 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.21.1-1.chinfo
+- 1.21.1
+- URL update
+- BR: alsa
+- BR: sdl -> sdl2
+
 * Wed Sep 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.9.48-1.chinfo
 - 0.9.48
 
