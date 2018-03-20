@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -634,7 +634,6 @@ Patch628: 0001-Bluetooth-btusb-Add-a-Kconfig-option-to-enable-USB-a.patch
 # Adding these suggested by Benjamin Tissoires
 # Queued in hid.git/for-4.16/hid-quirks-cleanup/multitouch for merging into 4.16
 Patch630: 0001-HID-multitouch-Properly-deal-with-Win8-PTP-reports-w.patch
-Patch631: 0002-HID-multitouch-Only-look-at-non-touch-fields-in-firs.patch
 Patch632: 0003-HID-multitouch-Combine-all-left-button-events-in-a-f.patch
 
 # Make SATA link powermanagement policy configurable for:
@@ -660,13 +659,18 @@ Patch658: 0001-scsi-libsas-fix-memory-leak-in-sas_smp_get_phy_event.patch
 # CVE-2018-8043 rhbz 1554199 1554200
 Patch660: 0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
+# rhbz 1549042
+Patch661: drm-i915-dp-Write-to-SET_POWER-dpcd-to-enable-MST-hub..patch
+
+# rhbz 1546709
+Patch662: mm-khugepaged-Convert-VM_BUG_ON-to-collapse-fail.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id cddf6d58543fc7d82b7854dc8c115007c0772ecb
+%global opensuse_id 5e4329cbc123a2b751335c2ae71174a47af3ff6d
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -1974,6 +1978,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.11-500.chinfo
+- 4.15.11
+
 * Thu Mar 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.10-500.chinfo
 - 4.15.10
 

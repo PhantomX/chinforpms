@@ -50,19 +50,20 @@ index 9ef24b518f12..d8b1cad74faf 100644
  			return 1;
  		case HID_DG_CONTACTCOUNT:
  			/* Ignore if indexes are out of bounds. */
-@@ -855,9 +864,10 @@ static void mt_process_mt_event(struct hid_device *hid, struct hid_field *field,
+@@ -866,10 +875,11 @@ static void mt_process_mt_event(struct h
  static void mt_touch_report(struct hid_device *hid, struct hid_report *report)
  {
  	struct mt_device *td = hid_get_drvdata(hid);
 +	__s32 cls = td->mtclass.name;
  	struct hid_field *field;
+ 	bool first_packet;
  	unsigned count;
 -	int r, n;
 +	int r, n, scantime = 0;
  
  	/* sticky fingers release in progress, abort */
  	if (test_and_set_bit(MT_IO_FLAGS_RUNNING, &td->mt_io_flags))
-@@ -867,12 +877,29 @@ static void mt_touch_report(struct hid_device *hid, struct hid_report *report)
+@@ -879,12 +889,29 @@ static void mt_touch_report(struct hid_d
  	 * Includes multi-packet support where subsequent
  	 * packets are sent with zero contactcount.
  	 */
@@ -91,9 +92,9 @@ index 9ef24b518f12..d8b1cad74faf 100644
  	}
 +	td->prev_scantime = scantime;
  
+ 	first_packet = td->num_received == 0;
  	for (r = 0; r < report->maxfield; r++) {
- 		field = report->field[r];
-@@ -1329,6 +1356,7 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -1342,6 +1369,7 @@ static int mt_probe(struct hid_device *h
  	td->maxcontact_report_id = -1;
  	td->inputmode_value = MT_INPUTMODE_TOUCHSCREEN;
  	td->cc_index = -1;

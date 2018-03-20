@@ -212,7 +212,6 @@ pref("noscript.clearClick.prompt", false);
 pref("noscript.confirmSiteInfo", false);
 pref("noscript.ctxMenu", false);
 pref("noscript.firstRunRedirection", false);
-pref("noscript.firstRunRedirection.pending", "5.1.7");
 pref("noscript.forbidBookmarklets", true);
 pref("noscript.forbidMedia", false);
 pref("noscript.hoverUI", false);

@@ -1,0 +1,65 @@
+From ddc1b88d9947a548cc9a41b421df2941483b1e04 Mon Sep 17 00:00:00 2001
+From: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Date: Tue, 13 Mar 2018 22:48:25 -0700
+Subject: [PATCH] drm/i915/dp: Write to SET_POWER dpcd to enable MST hub.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+If bios sets up an MST output and hardware state readout code sees this is
+an SST configuration, when disabling the encoder we end up calling
+->post_disable_dp() hook instead of the MST version. Consequently, we write
+to the DP_SET_POWER dpcd to set it D3 state. Further along when we try
+enable the encoder in MST mode, POWER_UP_PHY transaction fails to power up
+the MST hub. This results in continuous link training failures which keep
+the system busy delaying boot. We could identify bios MST boot discrepancy
+and handle it accordingly but a simple way to solve this is to write to the
+DP_SET_POWER dpcd for MST too.
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=105470
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+---
+ drivers/gpu/drm/i915/intel_ddi.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/intel_ddi.c b/drivers/gpu/drm/i915/intel_ddi.c
+index 58a3755544b2..38e53d6b8127 100644
+--- a/drivers/gpu/drm/i915/intel_ddi.c
++++ b/drivers/gpu/drm/i915/intel_ddi.c
+@@ -2208,8 +2208,7 @@ static void intel_ddi_pre_enable_dp(struct intel_encoder *encoder,
+ 		intel_prepare_dp_ddi_buffers(encoder);
+ 
+ 	intel_ddi_init_dp_buf_reg(encoder);
+-	if (!is_mst)
+-		intel_dp_sink_dpms(intel_dp, DRM_MODE_DPMS_ON);
++	intel_dp_sink_dpms(intel_dp, DRM_MODE_DPMS_ON);
+ 	intel_dp_start_link_train(intel_dp);
+ 	if (port != PORT_A || INTEL_GEN(dev_priv) >= 9)
+ 		intel_dp_stop_link_train(intel_dp);
+@@ -2294,19 +2293,12 @@ static void intel_ddi_post_disable_dp(struct intel_encoder *encoder,
+ 	struct drm_i915_private *dev_priv = to_i915(encoder->base.dev);
+ 	struct intel_digital_port *dig_port = enc_to_dig_port(&encoder->base);
+ 	struct intel_dp *intel_dp = &dig_port->dp;
+-	/*
+-	 * old_crtc_state and old_conn_state are NULL when called from
+-	 * DP_MST. The main connector associated with this port is never
+-	 * bound to a crtc for MST.
+-	 */
+-	bool is_mst = !old_crtc_state;
+ 
+ 	/*
+ 	 * Power down sink before disabling the port, otherwise we end
+ 	 * up getting interrupts from the sink on detecting link loss.
+ 	 */
+-	if (!is_mst)
+-		intel_dp_sink_dpms(intel_dp, DRM_MODE_DPMS_OFF);
++	intel_dp_sink_dpms(intel_dp, DRM_MODE_DPMS_OFF);
+ 
+ 	intel_disable_ddi_buf(encoder);
+ 
+-- 
+2.14.3
+

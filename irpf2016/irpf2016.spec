@@ -17,7 +17,6 @@ BuildArch:      noarch
 BuildRequires:  desktop-file-utils
 BuildRequires:  unzip
 BuildRequires:  ImageMagick
-BuildRequires:  java-headless
 Requires:       java
 Requires:       receitanet
 Requires:       hicolor-icon-theme
