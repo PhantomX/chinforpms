@@ -1,0 +1,23 @@
+diff -up Waterfox-56.1.0/servo/components/style/gecko_bindings/sugar/ownership.rs.rust124 Waterfox-56.1.0/servo/components/style/gecko_bindings/sugar/ownership.rs
+--- Waterfox-56.1.0/servo/components/style/gecko_bindings/sugar/ownership.rs.rust124	2018-04-06 22:31:57.434394411 -0300
++++ Waterfox-56.1.0/servo/components/style/gecko_bindings/sugar/ownership.rs	2018-04-06 22:33:03.825442501 -0300
+@@ -109,7 +109,6 @@ pub unsafe trait HasArcFFI : HasFFI {
+     ///
+     /// &GeckoType -> &Arc<ServoType>
+     fn as_arc<'a>(ptr: &'a &Self::FFIType) -> &'a RawOffsetArc<Self> {
+-        debug_assert!(!(ptr as *const _).is_null());
+         unsafe {
+             transmute::<&&Self::FFIType, &RawOffsetArc<Self>>(ptr)
+         }
+diff -up Waterfox-56.1.0/servo/components/style/gecko/wrapper.rs.rust124 Waterfox-56.1.0/servo/components/style/gecko/wrapper.rs
+--- Waterfox-56.1.0/servo/components/style/gecko/wrapper.rs.rust124	2018-04-06 22:31:22.514732689 -0300
++++ Waterfox-56.1.0/servo/components/style/gecko/wrapper.rs	2018-04-06 22:31:32.461642371 -0300
+@@ -1403,7 +1403,7 @@ impl<'le> Eq for GeckoElement<'le> {}
+ 
+ impl<'le> Hash for GeckoElement<'le> {
+     fn hash<H: Hasher>(&self, state: &mut H) {
+-        (self.0 as *const _).hash(state);
++        (self.0 as *const RawGeckoElement).hash(state);
+     }
+ }
+ 

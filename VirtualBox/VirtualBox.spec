@@ -10,7 +10,7 @@
 #global optflags %%(echo %%{optflags} | sed 's/-specs=.*cc1 //')
 
 # In prerelease builds (such as betas), this package has the same
-# major version number, while the kernel module abi is not guarranteed
+# major version number, while the kernel module abi is not guaranteed
 # to be stable. This is so that we force the module update in sync with
 # userspace.
 #global prerel 106108
@@ -28,7 +28,7 @@
 %else
     %bcond_without docs
 %endif
-%bcond_with vnc
+%bcond_without vnc
 %bcond_with legacy_vboxvideo_drv
 
 Name:       VirtualBox
@@ -71,6 +71,10 @@ Patch28:    02-gsoap-build-fix.patch
 # from Mageia
 Patch50:    VirtualBox-5.1.0-add-Mageia-support.patch
 Patch51:    VirtualBox-5.1.0-revert-VBox.sh.patch
+
+Patch60:    VirtualBox-5.2.6-xclient.patch
+Patch61:    0001-VBoxServiceAutoMount-Change-Linux-mount-code-to-use-.patch
+
 # Chinforinfula
 Patch100:   virtualbox-5.1.0-noupdate.patch
 Patch101:   virtualbox-5.1.0-default-to-linux26.patch
@@ -78,10 +82,14 @@ Patch101:   virtualbox-5.1.0-default-to-linux26.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  kBuild >= 0.1.9998.r3093
-BuildRequires:  SDL-devel xalan-c-devel
+BuildRequires:  SDL-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libcurl-devel
-BuildRequires:  iasl libxslt-devel xerces-c-devel libIDL-devel
+BuildRequires:  iasl
+BuildRequires:  libxslt-devel
+BuildRequires:  xalan-c-devel
+BuildRequires:  xerces-c-devel
+BuildRequires:  libIDL-devel
 BuildRequires:  yasm
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  python2-devel
@@ -118,24 +126,25 @@ BuildRequires:  makeself
 
 # for 32bit on 64
 %ifarch x86_64
-BuildRequires:  libstdc++-static(x86-32) libgcc(x86-32)
-BuildRequires:  libstdc++-static(x86-64)
 BuildRequires:  glibc-devel(x86-32)
+BuildRequires:  libgcc(x86-32)
+BuildRequires:  libstdc++-static(x86-32)
+BuildRequires:  libstdc++-static(x86-64)
 %else
 BuildRequires:  libstdc++-static
 %endif
 
 # For the X11 module
 BuildRequires:  libdrm-devel
+%if %{with legacy_vboxvideo_drv}
 BuildRequires:  libpciaccess-devel
-BuildRequires:  mesa-libOSMesa-devel
 BuildRequires:  pixman-devel
+%endif
 BuildRequires:  xorg-x11-proto-devel
-BuildRequires:  xorg-x11-server-devel
-BuildRequires:  libXcursor-devel
 BuildRequires:  libXcomposite-devel
-BuildRequires:  libXmu-devel
+BuildRequires:  libXcursor-devel
 BuildRequires:  libXinerama-devel
+BuildRequires:  libXmu-devel
 BuildRequires:  mesa-libEGL-devel
 BuildRequires:  mesa-libGL-devel
 BuildRequires:  mesa-libGLU-devel
@@ -165,8 +174,6 @@ Summary:    core part (host server) for %{name}
 Requires:   %{name}-kmod = %{version}
 Requires:   hicolor-icon-theme
 Provides:   %{name}-kmod-common = %{version}-%{release}
-Conflicts:  %{name}-guest <= %{version}-%{release}
-Conflicts:  %{name}-guest-additions <= %{version}-%{release}
 
 %description server
 %{name} without Qt GUI part.
@@ -184,19 +191,23 @@ webservice GUI part for %{name}.
 %package devel
 Summary:    %{name} SDK
 Requires:   %{name}-server%{?isa} = %{version}-%{release}
-Requires:   python-%{name}%{?isa} = %{version}-%{release}
+Requires:   python2-%{name}%{?isa} = %{version}-%{release}
 
 
 %description devel
 %{name} Software Development Kit.
 
 
-%package -n python-%{name}
+%package -n python2-%{name}
 Summary:    Python bindings for %{name}
 Requires:   %{name}-server%{?_isa} = %{version}-%{release}
-%{?python_provide:%python_provide python2-%{srcname}}
+%{?python_provide:%python_provide python2-%{name}}
+# Remove before F30
+Provides:       python-VirtualBox = %{version}-%{release}
+Provides:       python-VirtualBox%{?_isa} = %{version}-%{release}
+Obsoletes:      python-VirtualBox < %{version}-%{release}
 
-%description -n python-%{name}
+%description -n python2-%{name}
 Python XPCOM bindings to %{name}.
 
 
@@ -215,19 +226,13 @@ Requires:   %(xserver-sdk-abi-requires xinput)
 %endif
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
-Conflicts:  %{name} <= %{version}-%{release}
-
 
 %description guest-additions
-Important note: VirtualBox-guest-additions can't be installed on Host (master)
-system because contains X11 and OpenGL drives that will mess up with your X11
-configurations.
-
-This subpackage replace Oracle Linux Guest Addition but just for Fedora,
-therefore should be installed only when we have one Fedora as a guest system.
-Tools that use kernel modules for supporting integration with the Host,
-including file sharing, clipboard sharing, X.org X11 video and mouse driver,
-USB and webcam proxy and Seamless mode.
+This subpackage is like the VirtualBox Guest Additions but just for Fedora,
+therefore it should be installed only in a Fedora guest system.
+This subpackage provides tools that use kernel modules for supporting
+integration with the Host, including file sharing, clipboard sharing,
+X.org X11 video and mouse driver, USB and webcam proxy and Seamless mode.
 
 To use OpenGL pass-through mode run apps using "VBoxOGLRun foo -opt1 -opt2".
 
@@ -275,6 +280,8 @@ rm -rf src/libs/zlib-*/
 %endif
 %patch50 -p1 -b .mageia-support
 %patch51 -p1 -b .revert-VBox.sh
+%patch60 -p1 -b .xclient
+%patch61 -p1 -b .automount
 %patch100 -p1 -b .noup
 %patch101 -p1 -b .defsys
 
@@ -310,7 +317,7 @@ umask 0022
      sed -e 's/[^[:alnum:]]//g; s/FedoraProject//' | cut -c -9)}%{?!vendor:custom}
 
 # VirtualBox build system installs and builds in the same step,
-# not allways looking for the installed files to places they have
+# not always looking for the installed files in places they have
 # really been installed to. Therefore we do not override any of
 # the installation paths, but install the tree with the default
 # layout under 'obj' and shuffle files around in %%install.
@@ -334,7 +341,7 @@ kmk %{_smp_mflags}    \
     VBOX_NO_LEGACY_XORG_X11=1 \
     SDK_VBOX_LIBPNG_INCS=/usr/include/libpng16 \
     SDK_VBOX_LIBXML2_INCS=/usr/include/libxml2 \
-    SDK_VBOX_OPENSSL_INCS= \
+    SDK_VBOX_OPENSSL_INCS="" \
     SDK_VBOX_OPENSSL_LIBS="ssl crypto" \
     SDK_VBOX_ZLIB_INCS= \
 %if %{with docs}
@@ -464,7 +471,7 @@ exec %{_libdir}/virtualbox/rdesktop-vrdp "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/rdesktop-vrdp
 
-# Components , preserve symlinks
+# Components, preserve symlinks
 cp -a obj/bin/components/* %{buildroot}%{_libdir}/virtualbox/components/
 
 # Language files
@@ -474,7 +481,7 @@ install -p -m 0755 -t %{buildroot}%{_datadir}/virtualbox/nls \
 # SDK
 pushd obj/bin/sdk/installer
 VBOX_INSTALL_PATH=%{_libdir}/virtualbox \
-    python vboxapisetup.py install --prefix %{_prefix} --root %{buildroot}
+    %{__python2} vboxapisetup.py install --prefix %{_prefix} --root %{buildroot}
 popd
 cp -rp obj/bin/sdk/. %{buildroot}%{_libdir}/virtualbox/sdk
 rm -rf %{buildroot}%{_libdir}/virtualbox/sdk/installer
@@ -546,10 +553,19 @@ install -p -m 0644 -D %{SOURCE8} %{buildroot}%{_presetdir}/96-vbox.preset
 install -p -m 0644 -D %{SOURCE5} %{buildroot}%{_udevrulesdir}/60-vboxguest.rules
 install -p -m 0755 -D %{SOURCE9} %{buildroot}%{_bindir}/VBoxOGLRun
 install -p -m 0644 -D %{SOURCE6} %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
+%if 0%{?fedora}
+#sed -i s/vboxvideo/d %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
+sed -i 's/vboxvideo/#vboxvideo/' %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
+%endif
+%if 0%{?fedora} > 27
+#sed -i s/vboxguest/d %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
+sed -i 's/vboxguest/#vboxguest/' %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
+%endif
 
 # Module Source Code
 mkdir -p %{name}-kmod-%{version}
 cp -al obj/bin/src/vbox* obj/bin/additions/src/vbox* %{name}-kmod-%{version}
+#rm -r %{name}-kmod-%{version}/vboxvideo/
 install -d %{buildroot}%{_datadir}/%{name}-kmod-%{version}
 tar --use-compress-program xz -cf %{buildroot}%{_datadir}/%{name}-kmod-%{version}/%{name}-kmod-%{version}.tar.xz \
     %{name}-kmod-%{version}
@@ -772,7 +788,7 @@ getent passwd vboxadd >/dev/null || \
 %{_libdir}/virtualbox/sdk
 %exclude %{_libdir}/virtualbox/sdk/bindings/xpcom/python
 
-%files -n python-%{name}
+%files -n python2-%{name}
 %{_bindir}/vboxshell
 %{_libdir}/virtualbox/*.py*
 %{python2_sitelib}/virtualbox
@@ -918,8 +934,8 @@ getent passwd vboxadd >/dev/null || \
 - Review Scriptlets for starting vboxservice.service in guest-additions
   https://fedoraproject.org/wiki/Starting_services_by_default
 - Adjust vboxdrv.rules and move to 60-vboxdrv.rules as has upstream.
-- Remove Encoding key on .desktop files, Encoding key is deprectated.
-- Add a new luncher, VBoxBugReport and reorder lunchers as upstream spec
+- Remove Encoding key on .desktop files, Encoding key is deprecated.
+- Add a new launcher, VBoxBugReport and reorder launchers as upstream spec
 - Move more files to sub-packages.
 
 * Tue Sep 13 2016 Sérgio Basto <sergio@serjux.com> - 5.1.6-1
@@ -977,7 +993,7 @@ getent passwd vboxadd >/dev/null || \
 - Update python packaging.
 
 * Mon Apr 04 2016 Sérgio Basto <sergio@serjux.com> - 5.0.17-6.106108
-- More guest improvments and fixes
+- More guest improvements and fixes
 
 * Fri Apr 01 2016 Sérgio Basto <sergio@serjux.com> - 5.0.17-5.106108
 - Do not install vboxvideo_drv.so, instead vboxvideo.ko.
@@ -1027,10 +1043,10 @@ https://www.virtualbox.org/ticket/15205#comment:8
 - Refactor no-bundles.patch and strings.patch
 
 * Mon Oct 05 2015 Sérgio Basto <sergio@serjux.com> - 5.0.6-1
-- Update to VirtualBox-5.0.6 , without strings patch (need be rebased)
+- Update to VirtualBox-5.0.6, without strings patch (need be rebased)
 
 * Wed Sep 30 2015 Sérgio Basto <sergio@serjux.com> - 5.0.4-2.4
-- enabled doc , vnc and webservices
+- enabled doc, vnc and webservices
 - Drop beramono patch
 
 * Tue Sep 29 2015 Sérgio Basto <sergio@serjux.com> - 5.0.4-2
@@ -1045,7 +1061,7 @@ https://www.virtualbox.org/ticket/15205#comment:8
 
 * Mon May 04 2015 Sérgio Basto <sergio@serjux.com> - 4.3.26-3
 - Added diff_smap_4.patch from https://www.virtualbox.org/ticket/13961 ,
-  may fix problems for kernel >= 3.19 , I still need disable 3D to run plasma 5
+  may fix problems for kernel >= 3.19, I still need disable 3D to run plasma 5
   ( https://forums.virtualbox.org/viewtopic.php?f=6&t=64452&start=15#p320557 )
 
 * Mon May 04 2015 Sérgio Basto <sergio@serjux.com> - 4.3.26-2
@@ -1056,7 +1072,7 @@ https://www.virtualbox.org/ticket/15205#comment:8
 - New upstream release .
 
 * Fri Dec 26 2014 Sérgio Basto <sergio@serjux.com> - 4.3.20-3
-- Improved strings.patch asking to install kmods VirtualBox and also intructions for devel versions.
+- Improved strings.patch asking to install kmods VirtualBox and also instructions for devel versions.
 - Improved description of VirtualBox-guest, alerting to not install on Host, one conclusion on rfbz #3425 .
 
 * Sun Dec 21 2014 Sérgio Basto <sergio@serjux.com> - 4.3.20-2
@@ -1083,7 +1099,7 @@ https://www.virtualbox.org/ticket/15205#comment:8
 
 * Tue Jul 15 2014 Sérgio Basto <sergio@serjux.com> - 4.3.14-1
 - New upstream release .
-- Unbunble kBuild, since KBuild from fedora is working again.
+- Unbundle kBuild, since KBuild from fedora is working again.
 
 * Fri May 16 2014 Sérgio Basto <sergio@serjux.com> - 4.3.12-1
 - New upstream release .
@@ -1171,7 +1187,7 @@ VirtualBox-4.3.0-no-bundles.patch, VirtualBox-4.3.0-testmangle.patch and Virtual
 - New upstream release.
 - Drop 00-vboxvideo.conf on guest X configuration, because this is fixed a long time ago, but we keep commented just in case.
 - Drop upstreamed patch VirtualBox-4.2.8-Linux_3.9.0_rc0_compile_fix.patch .
-- Modified noupdate.patch as reflection on bug rfbz #2722 , to check updates one time a week and ask for updates of extensions pack and VBoxGuestAdditions. We should also review strings for better dialogs.
+- Modified noupdate.patch as reflection on bug rfbz #2722, to check updates one time a week and ask for updates of extensions pack and VBoxGuestAdditions. We should also review strings for better dialogs.
 
 * Thu Mar 07 2013 Sérgio Basto <sergio@serjux.com> - 4.2.8-2
 - Added upstreamed patch for kernels 3.9, "That fix will be part of the next maintenance
@@ -1200,7 +1216,7 @@ VirtualBox-4.3.0-no-bundles.patch, VirtualBox-4.3.0-testmangle.patch and Virtual
 - VBoxGuestLib is not need for new X11-xorg, so no compile instead patch source to
   build with system sources.
 - Delete source bundles before patching sources and adjustments on the corresponding patches.
-- VirtualBox-4.2.0-libcxx.patch minor imporvements.
+- VirtualBox-4.2.0-libcxx.patch minor improvements.
 
 * Mon Dec 24 2012 Sérgio Basto <sergio@serjux.com> - 4.2.6-1
 - New upstream release.
@@ -1219,9 +1235,9 @@ VirtualBox-4.3.0-no-bundles.patch, VirtualBox-4.3.0-testmangle.patch and Virtual
 * Sat Oct 27 2012 Sérgio Basto <sergio@serjux.com> - 4.2.4-1
 - New upstream release.
 - Drop patch VirtualBox-4.2.0-xorg17.patch and add VBOX_USE_SYSTEM_XORG_HEADERS=1. Changeset r43588,
-https://www.virtualbox.org/changeset/43588/vbox , allow compile vboxvideo with system headers, and
+https://www.virtualbox.org/changeset/43588/vbox, allow compile vboxvideo with system headers, and
 "As vboxmouse_drv is not needed at all for X.Org Server 1.7 and later do not build it".
-- enable-webservice on F17 and lower (stables) and disable-docs on F18 and rawhide, can't buid it
+- enable-webservice on F17 and lower (stables) and disable-docs on F18 and rawhide, can't build it
  on F18 and rawhide, new libxslt and new pdflatex problems.
 
 * Sun Sep 30 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-4
@@ -1242,7 +1258,7 @@ VirtualBox-4.2.0-xorg17.patch and split VBoxGuestLib part into VirtualBox-4.2.0-
 - Revert attempt to remove 32-bits patch.
 
 * Thu Sep 13 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-0.7.RC4
-- Another try to compile with 32-bits suport on x86_64.
+- Another try to compile with 32-bits support on x86_64.
 
 * Sun Sep 09 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-0.6.RC4
 - Update to RC4.
@@ -1259,7 +1275,7 @@ VirtualBox-4.2.0-xorg17.patch and split VBoxGuestLib part into VirtualBox-4.2.0-
 - Fix ABI/API breakages in X11 1.13.
 
 * Mon Sep 03 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-0.3.RC3
-- fix requires kmod, with version with prerealeses.
+- fix requires kmod, with version with prereleases.
 
 * Mon Sep 03 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-0.2.RC3
 - vim :retab, reformat all tabs.
@@ -1344,11 +1360,11 @@ cvs diff: VirtualBox-OSE-4.1.4-xorg17.patch was removed, no comparison available
 - mesa patch only for F17 or higher
 
 * Fri Apr 13 2012 Sérgio Basto <sergio@serjux.com> - 4.1.12-3
-- F17 mesa patch, fix compile fakedri and unbundle part of mesa sources, unbunble mesa source must be tested.
+- F17 mesa patch, fix compile fakedri and unbundle part of mesa sources, unbundle mesa source must be tested.
 
 * Fri Apr 13 2012 Sérgio Basto <sergio@serjux.com> - 4.1.12-2
 - F15 patch gsoap 2.7 which pkg-config gsoapssl++ --libs don't have -lssl -lcrypto
-- F17 kBuild workarround, but still not build in F17,
+- F17 kBuild workaround, but still not build in F17,
   https://bugs.freedesktop.org/show_bug.cgi?id=47971 .
 
 * Tue Apr 3 2012 Sérgio Basto <sergio@serjux.com> - 4.1.12-1
@@ -1358,8 +1374,8 @@ cvs diff: VirtualBox-OSE-4.1.4-xorg17.patch was removed, no comparison available
 
 * Fri Mar 23 2012 Sérgio Basto <sergio@serjux.com> - 4.1.10-1
 - New release.
-- Upsteam says that java stuff is fiexd , https://www.virtualbox.org/ticket/9848#comment:5
-- Upsteam says that have compile fixes for kernel 3.3-rc1 (in changelog).
+- Upstream says that java stuff is fixed, https://www.virtualbox.org/ticket/9848#comment:5
+- Upstream says that have compile fixes for kernel 3.3-rc1 (in changelog).
 - backport fix for web-service with newer versions of GSOAP, Changeset 40476 and 40477 in vbox, kindly
   fixed from Frank Mehnert "The real fix can be found in r40476 and r40477. You should be able to
   apply these fixes to VBox 4.1.10 as well." and add -lssl and -lcrypto by my self.
@@ -1633,7 +1649,7 @@ cvs diff: VirtualBox-OSE-4.1.4-xorg17.patch was removed, no comparison available
 
 * Thu Sep 04 2008 Lubomir Rintel <lkundrak@v3.sk> - 1.6.4-3
 - Do the previous change correctly
-- Replace occurencies of 'vboxdrv setup'
+- Replace occurrences of 'vboxdrv setup'
 
 * Wed Sep 03 2008 Lubomir Rintel <lkundrak@v3.sk> - 1.6.4-2
 - Move the VboxDD* libs to a less wrong place
@@ -1661,7 +1677,7 @@ cvs diff: VirtualBox-OSE-4.1.4-xorg17.patch was removed, no comparison available
 * Sun Feb 24 2008 Till Maas <opensource till name> - 1.5.6-1
 - update to new version
 - add BR: pulseaudio-libs-devel
-- remove uneeded recompiler patch
+- remove unneeded recompiler patch
 - remove dkms subpackage (it is now a standalone package)
 
 * Sat Feb 16 2008 Lubomir Kundrak <lkundrak@redhat.com> - 1.5.2-3

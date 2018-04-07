@@ -1,3 +1,13 @@
+%if 0%{?fedora}
+%bcond_with    vboxvideo
+%else
+%bcond_without vboxvideo
+%endif
+
+# Allow only root to access vboxdrv regardless of the file mode
+# use only for debugging!
+%bcond_without hardening
+
 # buildforkernels macro hint: when you build a new version or a new release
 # that contains bugfixes or other improvements then you must disable the
 # "buildforkernels newest" macro for just that build; immediately after
@@ -13,7 +23,7 @@
 #and when just build akmod, debuginfo will be empty.
 
 # In prerelease builds (such as betas), this package has the same
-# major version number, while the kernel module abi is not guarranteed
+# major version number, while the kernel module abi is not guaranteed
 # to be stable. This is so that we force the module update in sync with
 # userspace.
 #global prerel 106108
@@ -21,15 +31,12 @@
 
 %global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
-# Allow only root to access vboxdrv regardless of the file mode
-# use only for debugging!
-%bcond_without hardening
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
 Version:        5.2.8
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        100.chinfo%{?dist}
+Release:        101.chinfo%{?dist}
 
 Summary:        Kernel module for VirtualBox
 License:        GPLv2 or CDDL
@@ -66,7 +73,7 @@ tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{versi
 kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null
 
 # This is hardcoded in Makefiles
-# Kto zisti, preco tu nefunguje %%without hardening ma u mna nanuk
+# who will find out why %%without hardening does not work?
 %{!?with_hardening:find %{name}-%{version} -name Makefile |xargs sed 's/-DVBOX_WITH_HARDENING//' -i}
 
 for kernel_version in %{?kernel_versions} ; do
@@ -77,14 +84,16 @@ done
 %build
 for kernel_version in %{?kernel_versions}; do
     for module in vbox{drv,guest}; do
-        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
+        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
+%if %{with vboxvideo}
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxvideo}
-    for module in vbox{netadp,netflt,sf,video,pci}; do
-        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
+%endif
+    for module in vbox{netadp,netflt,sf,%{?with_vboxvideo:video,}pci}; do
+        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
 
@@ -101,11 +110,17 @@ done
 %check
 # If we built modules, check if it was everything the kmodsrc package provided
 MODS=$(find $(ls -d %{buildroot}%{_prefix}/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
+%if ! %{with vboxvideo}
+rm -rf %{name}-%{version}/vboxvideo
+%endif
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
 %changelog
+* Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.8-101.chinfo
+- Sync with rpmfusion.
+
 * Tue Feb 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.8-100.chinfo
 - 5.2.8
 

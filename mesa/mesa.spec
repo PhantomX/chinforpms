@@ -1,5 +1,8 @@
 %bcond_without wayland
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1546714
+%undefine _annotated_build
+
 # S390 doesn't have video cards, but we need swrast for xserver's GLX
 # llvm (and thus llvmpipe) doesn't actually work on ppc32
 %ifnarch s390 ppc
@@ -18,6 +21,8 @@
 %define with_vdpau 1
 %define with_vaapi 1
 %define with_nine 1
+%define with_omx 1
+%define with_opencl 1
 %define base_drivers swrast,nouveau,radeon,r200
 %endif
 
@@ -25,23 +30,12 @@
 %define platform_drivers ,i915,i965
 %define with_vmware 1
 %define with_xa     1
-%define with_omx    1
-%endif
-
-%ifarch %{ix86} x86_64
 %define with_vulkan 1
-%else
-%define with_vulkan 0
-%endif
-
-%ifarch aarch64 %{ix86} x86_64
-%define with_opencl 1
 %endif
 
 %ifarch %{arm} aarch64
 %define with_etnaviv   1
 %define with_freedreno 1
-%define with_omx       1
 %define with_vc4       1
 %define with_xa        1
 %endif
@@ -58,7 +52,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        17.3.6
+Version:        18.0.0
 Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
@@ -85,10 +79,6 @@ Patch4:         0004-bigendian-assert.patch
 # non-upstreamed ones
 Patch10:        glvnd-fix-gl-dot-pc.patch
 Patch11:        0001-Fix-linkage-against-shared-glapi.patch
-
-# backport from upstream
-Patch1001:      0001-loader_dri3-glx-egl-Reinstate-the-loader_dri3_vtable.patch
-Patch1002:      0001-loader-dri3-Try-to-make-sure-we-only-process-our-own-NotifyMSC-events.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -146,7 +136,6 @@ BuildRequires: libclc-devel opencl-filesystem
 BuildRequires: vulkan-devel
 %endif
 BuildRequires: python-mako
-BuildRequires: libstdc++-static
 %ifarch %{valgrind_arches}
 BuildRequires: pkgconfig(valgrind)
 %endif
@@ -380,20 +369,9 @@ Headers for development with the Vulkan API.
 
 cp %{SOURCE4} docs/
 
-# this is a hack for S3TC support. r200_screen.c is symlinked to
-# radeon_screen.c in git, but is its own file in the tarball.
-cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c
-
 %build
 autoreconf -vfi
 
-# C++ note: we never say "catch" in the source.  we do say "typeid" once,
-# in an assert, which is patched out above.  LLVM doesn't use RTTI or throw.
-#
-# We do say 'catch' in the clover and d3d1x state trackers, but we're not
-# building those yet.
-export CXXFLAGS="%{?with_opencl:-frtti -fexceptions} %{!?with_opencl:-fno-rtti -fno-exceptions}"
-export LDFLAGS="-static-libstdc++"
 %ifarch %{ix86}
 # i do not have words for how much the assembly dispatch code infuriates me
 %global asm_flags --disable-asm
@@ -418,7 +396,7 @@ export LDFLAGS="-static-libstdc++"
     %{?with_opencl:--enable-opencl --enable-opencl-icd} %{!?with_opencl:--disable-opencl} \
     --enable-glx-tls \
     --enable-texture-float=yes \
-%if %{with_vulkan}
+%if 0%{?with_vulkan}
     %{?vulkan_drivers} \
 %endif
     %{?with_llvm:--enable-llvm} \
@@ -433,13 +411,6 @@ export LDFLAGS="-static-libstdc++"
 %endif
     %{?dri_drivers}
 
-# libtool refuses to pass through things you ask for in LDFLAGS that it doesn't
-# know about, like -static-libstdc++, so...
-sed -i 's/-fuse-linker-plugin|/-static-lib*|&/' libtool
-sed -i 's/-nostdlib//g' libtool
-sed -i 's/^predep_objects=.*$/#&/' libtool
-sed -i 's/^postdep_objects=.*$/#&/' libtool
-sed -i 's/^postdeps=.*$/#&/' libtool
 %make_build MKDEP=/bin/true V=1
 
 %install
@@ -476,8 +447,6 @@ pushd %{buildroot}%{_libdir}
 for i in libOSMesa*.so libGL.so ; do
     eu-findtextrel $i && exit 1
 done
-# check that we really didn't link libstdc++ dynamically
-eu-readelf -d mesa_dri_drivers.so | grep -q libstdc && exit 1
 popd
 
 %files filesystem
@@ -646,13 +615,11 @@ popd
 %endif
 %endif
 %endif
-%if 0%{?with_llvm}
-%ifarch %{ix86} x86_64 aarch64
+%if 0%{?with_hardware}
 %dir %{_libdir}/gallium-pipe
 %{_libdir}/gallium-pipe/*.so
 %endif
 %{_libdir}/dri/kms_swrast_dri.so
-%endif
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
 
@@ -691,6 +658,10 @@ popd
 %endif
 
 %changelog
+* Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.0.0-100.chinfo
+- 18.0.0
+- f28 sync
+
 * Sun Mar 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 17.3.6-100.chinfo
 - Backport fix
 

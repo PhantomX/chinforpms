@@ -9,7 +9,7 @@
 Name:           steam
 Version:        1.0.0.54
 Epoch:          1
-Release:        102.chinfo%{?dist}
+Release:        103.chinfo%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement
@@ -38,15 +38,19 @@ Source10:       README.Fedora
 # https://github.com/ValveSoftware/steam-for-linux/issues/3570
 Patch0:         %{name}-3570.patch
 
+# Remove libstdc++ from runtime:
+# https://github.com/ValveSoftware/steam-for-linux/issues/3273
+Patch1: %{name}-3273.patch
+
 # Make Steam Controller usable as a GamePad:
 # https://steamcommunity.com/app/353370/discussions/0/490123197956024380/
-Patch1:         %{name}-controller-gamepad-emulation.patch
+Patch2:         %{name}-controller-gamepad-emulation.patch
 
 # Disable desktop files installation on desktop and create logs on user directory
-Patch2:         %{name}-launcher.patch
+Patch3:         %{name}-launcher.patch
 
 # From Arch: Set alsa SDL audiodriver if pulseaudio is not installed
-Patch3:         https://git.archlinux.org/svntogit/community.git/plain/trunk/alsa_sdl_audiodriver.patch?h=packages/%{name}#/alsa_sdl_audiodriver.patch
+Patch4:         https://git.archlinux.org/svntogit/community.git/plain/trunk/alsa_sdl_audiodriver.patch?h=packages/%{name}#/alsa_sdl_audiodriver.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  systemd
@@ -89,7 +93,11 @@ Requires(post): firewalld-filesystem
 %endif
 
 # Required for hardware decoding during In-Home Streaming (intel)
+%if (0%{?fedora} && 0%{?fedora} < 28)
 Requires:       libva-intel-driver%{?_isa}
+%else
+Requires:       libva%{?_isa}
+%endif
 
 # Required for hardware decoding during In-Home Streaming (radeon/nouveau)
 Requires:       libvdpau%{?_isa}
@@ -119,6 +127,7 @@ and screenshot functionality, and many social features.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 sed -i 's/\r$//' %{name}.desktop
 sed -i 's/\r$//' steam_install_agreement.txt
@@ -181,6 +190,9 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_datadir}/appdata/
 %{_udevrulesdir}/*
 
 %changelog
+* Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-103
+- Sync with rpmfusion.
+
 * Sun Oct 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-102
 - Remove libtxc_dxtn requires
 

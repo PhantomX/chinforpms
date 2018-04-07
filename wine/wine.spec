@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.4
+%global stagingver 3.5
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -28,7 +28,7 @@
 %endif
 
 Name:           wine
-Version:        3.4
+Version:        3.5
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1780,6 +1780,7 @@ fi
 %{_libdir}/wine/rtutils.dll.so
 %{_libdir}/wine/samlib.dll.so
 %{_libdir}/wine/sapi.dll.so
+%{_libdir}/wine/sas.dll.so
 %{_libdir}/wine/sc.exe.so
 %{_libdir}/wine/scarddlg.dll.so
 %{_libdir}/wine/sccbase.dll.so
@@ -1809,6 +1810,7 @@ fi
 %{_libdir}/wine/stdole2.tlb.so
 %{_libdir}/wine/stdole32.tlb.so
 %{_libdir}/wine/sti.dll.so
+%{_libdir}/wine/strmdll.dll.so
 %{_libdir}/wine/subst.exe.so
 %{_libdir}/wine/svchost.exe.so
 %{_libdir}/wine/svrapi.dll.so
@@ -1849,10 +1851,7 @@ fi
 %{_libdir}/wine/version.dll.so
 %{_libdir}/wine/virtdisk.dll.so
 %{_libdir}/wine/vssapi.dll.so
-#if 0%%{?staging}
-#{_libdir}/wine/vulkan-1.dll.so
-#{_libdir}/wine/vulkan.dll.so
-#endif
+%{_libdir}/wine/vulkan-1.dll.so
 %{_libdir}/wine/wbemdisp.dll.so
 %{_libdir}/wine/wbemprox.dll.so
 %{_libdir}/wine/wdscore.dll.so
@@ -1867,9 +1866,6 @@ fi
 %{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/windowscodecsext.dll.so
 %{_libdir}/wine/winebus.sys.so
-%if 0%{?staging}
-%{_libdir}/wine/wined3d-csmt.dll.so
-%endif
 %{_libdir}/wine/winegstreamer.dll.so
 %{_libdir}/wine/winehid.sys.so
 %{_libdir}/wine/winejoystick.drv.so
@@ -2246,6 +2242,9 @@ fi
 %endif
 
 %changelog
+* Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.5-100.chinfo
+- 3.5
+
 * Fri Mar 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.4-100.chinfo
 - 3.4
 

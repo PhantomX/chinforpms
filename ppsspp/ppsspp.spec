@@ -1,6 +1,6 @@
-%global commit 0ed3deabe6b4723e918a9d2d36ad6407ccd017f2
+%global commit ca0fb770800fc87748bdf2a287003c9e27097b5c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180308
+%global date 20180406
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -45,7 +45,7 @@
 
 Name:           ppsspp
 Version:        1.5.4
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        PSPSDK
@@ -244,10 +244,13 @@ install -pm0644 icons/icon-512.svg \
 
 
 %changelog
-* Sat Mar 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-2.20180308git0ed3deab
+* Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-3.20180308gitca0fb77
 - New snapshot
 
-* Wed Mar 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-1.20180305git90dbd9a7
+* Sat Mar 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-2.20180308git0ed3dea
+- New snapshot
+
+* Wed Mar 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-1.20180305git90dbd9a
 - New snapshot
 - BR: gcc-c++
 - Remove obsolete scriptlets

@@ -1,0 +1,37 @@
+From patchwork Mon Feb 12 20:02:44 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: mmc: sdhci-iproc: Disable preset values for BCM2835
+From: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10214367
+Message-Id: <1518465764-30051-1-git-send-email-stefan.wahren@i2se.com>
+To: Adrian Hunter <adrian.hunter@intel.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Eric Anholt <eric@anholt.net>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>,
+ linux-arm-kernel@lists.infradead.org,
+ bcm-kernel-feedback-list@broadcom.com, linux-mmc@vger.kernel.org,
+ Stefan Wahren <stefan.wahren@i2se.com>
+Date: Mon, 12 Feb 2018 21:02:44 +0100
+
+According to the BCM2835 datasheet there are no preset value registers.
+This wasn't an issue before, because we didn't propagate 1.8V support.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/mmc/host/sdhci-iproc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/mmc/host/sdhci-iproc.c b/drivers/mmc/host/sdhci-iproc.c
+index 61666d2..0ef741b 100644
+--- a/drivers/mmc/host/sdhci-iproc.c
++++ b/drivers/mmc/host/sdhci-iproc.c
+@@ -214,6 +214,7 @@ static const struct sdhci_pltfm_data sdhci_bcm2835_pltfm_data = {
+ 		  SDHCI_QUIRK_DATA_TIMEOUT_USES_SDCLK |
+ 		  SDHCI_QUIRK_MISSING_CAPS |
+ 		  SDHCI_QUIRK_NO_HISPD_BIT,
++	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+ 	.ops = &sdhci_iproc_32only_ops,
+ };
+ 

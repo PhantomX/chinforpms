@@ -1,0 +1,95 @@
+From patchwork Tue Feb 27 14:05:35 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [v3] wcn36xx: reduce verbosity of drivers messages
+From: Ramon Fried <rfried@codeaurora.org>
+X-Patchwork-Id: 10245303
+Message-Id: <20180227140535.4794-1-rfried@codeaurora.org>
+To: k.eugene.e@gmail.com, kvalo@codeaurora.org,
+ wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org
+Cc: Ramon Fried <rfried@codeaurora.org>
+Date: Tue, 27 Feb 2018 16:05:35 +0200
+
+Whenever the WLAN interface is started the FW
+version and caps are printed.
+The caps now will be displayed only in debug mode.
+Firmware version will be displayed only once on first
+startup of the interface.
+
+Change-Id: I4db6ea7f384fe15eebe4c3ddb1d1ccab00094332
+Signed-off-by: Ramon Fried <rfried@codeaurora.org>
+---
+v2: print the firwmare version as info but only
+	onetime.
+v3: change the static variable to a struct variable.
+
+ drivers/net/wireless/ath/wcn36xx/main.c    |  3 ++-
+ drivers/net/wireless/ath/wcn36xx/smd.c     | 18 ++++++++++--------
+ drivers/net/wireless/ath/wcn36xx/wcn36xx.h |  2 ++
+ 3 files changed, 14 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
+index ab5be6d2c691..bfe9062bfa52 100644
+--- a/drivers/net/wireless/ath/wcn36xx/main.c
++++ b/drivers/net/wireless/ath/wcn36xx/main.c
+@@ -261,7 +261,7 @@ static void wcn36xx_feat_caps_info(struct wcn36xx *wcn)
+ 
+ 	for (i = 0; i < MAX_FEATURE_SUPPORTED; i++) {
+ 		if (get_feat_caps(wcn->fw_feat_caps, i))
+-			wcn36xx_info("FW Cap %s\n", wcn36xx_get_cap_name(i));
++			wcn36xx_dbg(WCN36XX_DBG_MAC, "FW Cap %s\n", wcn36xx_get_cap_name(i));
+ 	}
+ }
+ 
+@@ -1283,6 +1283,7 @@ static int wcn36xx_probe(struct platform_device *pdev)
+ 	wcn = hw->priv;
+ 	wcn->hw = hw;
+ 	wcn->dev = &pdev->dev;
++	wcn->first_boot = true;
+ 	mutex_init(&wcn->conf_mutex);
+ 	mutex_init(&wcn->hal_mutex);
+ 	mutex_init(&wcn->scan_lock);
+diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
+index 2a4871ca9c72..1a5b4d57c0ac 100644
+--- a/drivers/net/wireless/ath/wcn36xx/smd.c
++++ b/drivers/net/wireless/ath/wcn36xx/smd.c
+@@ -409,15 +409,17 @@ static int wcn36xx_smd_start_rsp(struct wcn36xx *wcn, void *buf, size_t len)
+ 	wcn->fw_minor = rsp->start_rsp_params.version.minor;
+ 	wcn->fw_major = rsp->start_rsp_params.version.major;
+ 
+-	wcn36xx_info("firmware WLAN version '%s' and CRM version '%s'\n",
+-		     wcn->wlan_version, wcn->crm_version);
+-
+-	wcn36xx_info("firmware API %u.%u.%u.%u, %u stations, %u bssids\n",
+-		     wcn->fw_major, wcn->fw_minor,
+-		     wcn->fw_version, wcn->fw_revision,
+-		     rsp->start_rsp_params.stations,
+-		     rsp->start_rsp_params.bssids);
++	if (wcn->first_boot) {
++		wcn->first_boot = false;
++		wcn36xx_info("firmware WLAN version '%s' and CRM version '%s'\n",
++			     wcn->wlan_version, wcn->crm_version);
+ 
++		wcn36xx_info("firmware API %u.%u.%u.%u, %u stations, %u bssids\n",
++			     wcn->fw_major, wcn->fw_minor,
++			     wcn->fw_version, wcn->fw_revision,
++			     rsp->start_rsp_params.stations,
++			     rsp->start_rsp_params.bssids);
++	}
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
+index 81017e6703b4..5854adf43f3a 100644
+--- a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
++++ b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
+@@ -192,6 +192,8 @@ struct wcn36xx {
+ 	u8			crm_version[WCN36XX_HAL_VERSION_LENGTH + 1];
+ 	u8			wlan_version[WCN36XX_HAL_VERSION_LENGTH + 1];
+ 
++	bool		first_boot;
++
+ 	/* IRQs */
+ 	int			tx_irq;
+ 	int			rx_irq;

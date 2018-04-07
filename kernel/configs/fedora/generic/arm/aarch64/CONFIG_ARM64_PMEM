@@ -1,1 +1,1 @@
-# CONFIG_ARM64_PMEM is not set
+CONFIG_ARM64_PMEM=y

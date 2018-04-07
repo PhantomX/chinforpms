@@ -6,12 +6,14 @@
 
 %undefine _hardened_build
 
+%bcond_with tests
+
 %global srcname dxvk
 %global dxvk_dir %{_datadir}/wine/%{srcname}/%{__isa_bits}
 
 Name:           mingw-wine-%{srcname}
-Version:        0.31
-Release:        2%{?dist}
+Version:        0.41
+Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -66,6 +68,7 @@ meson \
   --cross-file build-win%{__isa_bits}.txt \
   --buildtype "release" \
   --strip \
+  %{?with_tests:-Denable_tests=false} \
   build.%{__isa_bits}
 
 pushd build.%{__isa_bits}
@@ -81,6 +84,7 @@ install -pm0644 build.%{__isa_bits}/src/dxgi/dxgi.dll \
 install -pm0644 build.%{__isa_bits}/src/d3d11/d3d11.dll \
   %{buildroot}%{dxvk_dir}/d3d11_vk.dll
 
+%if %{with tests}
 for file in \
   tests/d3d11/d3d11-{compute,triangle}.exe \
   tests/dxbc/dxbc-{compiler,disasm}.exe tests/dxbc/hlsl-compiler.exe \
@@ -88,8 +92,10 @@ for file in \
 do
   install -pm0755 build.%{__isa_bits}/${file} %{buildroot}%{dxvk_dir}/
 done
+%{mingw_strip} --strip-unneeded %{buildroot}%{dxvk_dir}/*.exe
+%endif
 
-%{mingw_strip} --strip-unneeded %{buildroot}%{dxvk_dir}/*.{dll,exe}
+%{mingw_strip} --strip-unneeded %{buildroot}%{dxvk_dir}/*.dll
 
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
@@ -99,9 +105,14 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 %doc README.md README.dxvk
 %{_bindir}/winedxvkcfg
 %{dxvk_dir}/*.dll
+%if %{with tests}
 %{dxvk_dir}/*.exe
+%endif
 
 %changelog
+* Sat Apr 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.41-1
+- 0.41
+
 * Fri Mar 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.31-2
 - Update script
 

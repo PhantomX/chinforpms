@@ -1,6 +1,6 @@
-%global commit 91065bd7e2d03197254f887da75193ac47bf3c0e
+%global commit 7cae1b00bfcd2454f09c56dfaab4facd48bb6c6b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180202
+%global date 20180329
 %global with_snapshot 0
 
 %if 0%{?with_snapshot}
@@ -94,7 +94,7 @@
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.0.4
+Version:        56.1.0
 Release:        1%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -143,7 +143,7 @@ Patch225:        mozilla-1005640-accept-lang.patch
 Patch226:        rhbz-1354671.patch
 Patch230:        rhbz-1497932.patch
 
-# Upstream patches
+# Firefox upstream patches
 Patch402:        mozilla-1196777.patch
 Patch406:        mozilla-256180.patch
 Patch413:        mozilla-1353817.patch
@@ -151,6 +151,12 @@ Patch415:        mozilla-1405267.patch
 
 # Better compatibility with NSS sql database format, rhbz#1496563
 Patch481:        sqlcompat-ff57-1-backport-730495
+
+# Upstream updates
+
+%global wf_url https://github.com/MrAlex94/Waterfox/commit
+Patch490: %{wf_url}/3d4e8098935e42055b714f0c74c89c4d0bc109af.patch#/wf-3d4e8098935e42055b714f0c74c89c4d0bc109af.patch
+Patch491: %{wf_url}/7cae1b00bfcd2454f09c56dfaab4facd48bb6c6b.patch#/wf-7cae1b00bfcd2454f09c56dfaab4facd48bb6c6b.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -167,7 +173,6 @@ Patch604:        %{freebsd_url}/patch-servo18126%{freebsd_uri}#/FreeBSD-servo181
 Patch605:        %{freebsd_url}/patch-bug1401573%{freebsd_uri}#/FreeBSD-bug1401573.patch
 Patch606:        %{freebsd_url}/patch-bug1186967%{freebsd_uri}#/FreeBSD-bug1186967.patch
 Patch607:        %{freebsd_url}/patch-bug1384701%{freebsd_uri}#/FreeBSD-bug1384701.patch
-Patch608:        %{freebsd_url}/patch-bug1414440%{freebsd_uri}#/FreeBSD-bug1414440.patch
 Patch609:        %{freebsd_url}/patch-bug1409680%{freebsd_uri}#/FreeBSD-bug1409680.patch
 
 # Chinforinfula patches
@@ -176,6 +181,8 @@ Patch701:        %{name}-nolangpacks.patch
 Patch702:        %{name}-waterfoxdir.patch
 
 Patch800:        %{name}-rust-1.23.patch
+Patch801:        %{name}-rust-1.24.patch
+Patch802:        %{name}-FreeBSD-bug1433747.patch
 
 %if %{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -335,6 +342,9 @@ This package contains results of tests executed during build.
 %patch481 -p1 -b .sqlcompat-1
 %endif
 
+%patch490 -p1
+%patch491 -p1
+
 # Debian extension patch
 %patch500 -p1 -b .440908
 
@@ -347,7 +357,6 @@ This package contains results of tests executed during build.
 %patch605 -p0 -b .bsd1401573
 %patch606 -p0 -b .bsd1186967
 %patch607 -p0 -b .bsd1384701
-%patch608 -p0 -b .bsd1414440
 %patch609 -p0 -b .bsd1409680
 
 %patch700 -p1 -b .nosocial
@@ -356,6 +365,8 @@ This package contains results of tests executed during build.
 %patch702 -p1 -b .waterfoxdir
 
 %patch800 -p1 -b .rust123
+%patch801 -p1 -b .rust124
+%patch802 -p0 -b .bsd1433747
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -813,6 +824,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-1
+- 56.1.0
+
 * Fri Feb 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.0.4-1
 - 56.0.4
 

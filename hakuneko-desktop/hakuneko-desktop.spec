@@ -11,7 +11,7 @@
 %global real_name hakuneko
 
 Name:           %{real_name}-desktop
-Version:        0.3.0
+Version:        0.3.1
 Release:        1%{?dist}
 Summary:        Manga Downloader
 
@@ -75,6 +75,9 @@ cp -rp usr/share/icons %{buildroot}%{_datadir}/
 
 
 %changelog
+* Wed Mar 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.3.1-1
+- 0.3.1
+
 * Sat Mar 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.3.0-1
 - 0.3.0
 

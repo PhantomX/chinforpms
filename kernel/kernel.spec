@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 15
+%define base_sublevel 16
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -390,7 +390,7 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 #
 BuildRequires: kmod, patch, bash, tar, git
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
-BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
+BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: patchutils
 %if %{with_sparse}
@@ -467,6 +467,7 @@ Source40: generate_all_configs.sh
 Source41: generate_debug_configs.sh
 
 Source42: process_configs.sh
+Source43: generate_bls_conf.sh
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -505,6 +506,9 @@ Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
 
 # ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
+
+# gcc -Werror=aliasing workaround
+Patch003: 0001-Temporarily-work-around-gcc-aliasing-warning-error.patch
 
 %if !%{nopatches}
 
@@ -577,100 +581,65 @@ Patch302: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch303: ARM-tegra-usb-no-reset.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch304: arm-imx6-hummingboard2.patch
-
-Patch305: arm64-Revert-allwinner-a64-pine64-Use-dcdc1-regulato.patch
+Patch304: arm64-Revert-allwinner-a64-pine64-Use-dcdc1-regulato.patch
 
 # https://patchwork.kernel.org/patch/9820417/
-Patch306: qcom-msm89xx-fixes.patch
+Patch305: qcom-msm89xx-fixes.patch
 
 # https://patchwork.kernel.org/patch/10173115/
-Patch307: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
+Patch306: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 
-# Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
-Patch308: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
+# http://patches.linaro.org/patch/131764/
+Patch308: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
 
-# In 4.16
-Patch309: arm-exynos-fix-dwc3-neg.patch
-
-# In 4.16
-Patch310: arm-imx6-cpufreq-fix-loading.patch
-
-# https://www.spinics.net/lists/stable/msg214527.html
-Patch311: arm-clk-bcm2835-hdmi-fixes.patch
+# https://patchwork.kernel.org/patch/10245303/
+Patch309: wcn36xx-reduce-verbosity-of-drivers-messages.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg632925.html
 Patch313: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
 
-# https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
-Patch330: arm64-socionext-96b-enablement.patch
+# Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
+Patch320: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
-# https://patchwork.kernel.org/patch/10149775/ MMC support for Synquacer
-Patch331: arm64-mmc-sdhci_f_sdh30-add-ACPI-support.patch
+# https://www.spinics.net/lists/arm-kernel/msg621982.html
+Patch321: bcm283x-Fix-probing-of-bcm2835-i2s.patch
+
+# https://www.spinics.net/lists/arm-kernel/msg633942.html
+Patch322: mmc-sdhci-iproc-Disable-preset-values-for-BCM2835.patch
+
+# https://www.spinics.net/lists/arm-kernel/msg633945.html
+Patch323: bcm2835-hwrng-Handle-deferred-clock-properly.patch
+
+Patch324: bcm283x-clk-audio-fixes.patch
+
+# Enabling Patches for the RPi3+
+Patch330: bcm2837-rpi-initial-support-for-the-3.patch
+Patch331: bcm2837-gpio-expander.patch
+Patch332: bcm2837-enable-pmu.patch
+Patch333: bcm2837-lan78xx-fixes.patch
 
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
 
-# 600 - Patches for improved Bay and Cherry Trail device support
-# Below patches are submitted upstream, awaiting review / merging
-Patch610: 0010-Input-silead-Add-support-for-capactive-home-button-f.patch
-
 # rhbz 1476467
-Patch617: Fix-for-module-sig-verification.patch
+Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
-Patch619: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # rhbz 1509461
-Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
+Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
-# For https://fedoraproject.org/wiki/Changes/ImprovedLaptopBatteryLife
-# Queued in bluetooth-next for merging into 4.16
-Patch628: 0001-Bluetooth-btusb-Add-a-Kconfig-option-to-enable-USB-a.patch
-
-# Fix left-button not working with some hid-multitouch touchpads
-# Adding these suggested by Benjamin Tissoires
-# Queued in hid.git/for-4.16/hid-quirks-cleanup/multitouch for merging into 4.16
-Patch630: 0001-HID-multitouch-Properly-deal-with-Win8-PTP-reports-w.patch
-Patch632: 0003-HID-multitouch-Combine-all-left-button-events-in-a-f.patch
-
-# Make SATA link powermanagement policy configurable for:
-# https://fedoraproject.org/wiki/Changes/ImprovedLaptopBatteryLife
-# Queued upstream for merging into 4.16
-Patch638: 0003-ahci-Allow-setting-a-default-LPM-policy-for-mobile-c.patch
-
-# rhbz1514969, submitted upstream
-Patch640: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
-
-# https://bugzilla.kernel.org/show_bug.cgi?id=198351
-Patch652: iwlwifi-mvn.patch
-
-# CVE-2018-1000026 rhbz 1541846 1546744
-Patch653: CVE-2018-1000026.patch
-
-# rhbz 1549316
-Patch657: ipmi-fixes.patch
- 
-# CVE-2018-7757 rhbz 1553361 1553363
-Patch658: 0001-scsi-libsas-fix-memory-leak-in-sas_smp_get_phy_event.patch
-
-# CVE-2018-8043 rhbz 1554199 1554200
-Patch660: 0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
-
-# rhbz 1549042
-Patch661: drm-i915-dp-Write-to-SET_POWER-dpcd-to-enable-MST-hub..patch
-
-# rhbz 1546709
-Patch662: mm-khugepaged-Convert-VM_BUG_ON-to-collapse-fail.patch
+# rhbz 1558977
+Patch504: sunrpc-remove-incorrect-HMAC-request-initialization.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 5e4329cbc123a2b751335c2ae71174a47af3ff6d
+%global opensuse_id 2592f12c2468d6a7f402f44b62c2a6f58531809f
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -678,9 +647,9 @@ Patch1011: %{opensuse_url}/VFS-expedite-umount.patch?id=%{opensuse_id}#/openSUSE
 Patch1012: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1013: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch?id=%{opensuse_id}#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
 Patch1014: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
-Patch1015: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+#Patch1015: %%{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update?id=%{opensuse_id}#/openSUSE-dm-mpath-leastpending-path-update.patch
-Patch1017: %{opensuse_url}/dm-mpath-accept-failed-paths?id=%{opensuse_id}#/openSUSE-dm-mpath-accept-failed-paths.patch
+#Patch1017: %%{opensuse_url}/dm-mpath-accept-failed-paths?id=%%{opensuse_id}#/openSUSE-dm-mpath-accept-failed-paths.patch
 Patch1018: %{opensuse_url}/dm-table-switch-to-readonly?id=%{opensuse_id}#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1019: %{opensuse_url}/dm-mpath-no-partitions-feature?id=%{opensuse_id}#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1020: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch?id=%{opensuse_id}#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
@@ -692,32 +661,18 @@ Patch1026: %{opensuse_url}/ext4-llseek-do-not-crop-offset-on-32bit.patch?id=%{op
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{patchwork_url}/10258895/mbox/#/patchwork-block-bfq-keep-peak_rate-estimation-within-range-1..2-32-1.patch
 
-# https://github.com/pfactum/pf-kernel/commits/pf-4.15
+# https://github.com/pfactum/pf-kernel/commits/pf-4.16
 # block fixes and updates, mostly
 
 %global pf_url https://github.com/pfactum/pf-kernel/commit
 
-Patch3001: %{pf_url}/ce4a4815aaac44387a11f9eff7a0552f083d6ecc.patch#/pf-ce4a4815aaac44387a11f9eff7a0552f083d6ecc.patch
-Patch3002: %{pf_url}/e5f295dd18f2e9bfef12b9b806d8e35d45096eff.patch#/pf-e5f295dd18f2e9bfef12b9b806d8e35d45096eff.patch
-Patch3003: %{pf_url}/6ed2f47ee870954eca65d57ba97fb2a5da9ae9ad.patch#/pf-6ed2f47ee870954eca65d57ba97fb2a5da9ae9ad.patch
-Patch3004: %{pf_url}/558200440cb94f365d60a2a137c90b70e3880c14.patch#/pf-558200440cb94f365d60a2a137c90b70e3880c14.patch
-Patch3005: %{pf_url}/8349c1bddd95c3d612659ab9eb57cff9359e0c14.patch#/pf-8349c1bddd95c3d612659ab9eb57cff9359e0c14.patch
-Patch3006: %{pf_url}/242954975f5e7ae4caf98538a31d15562567ea72.patch#/pf-242954975f5e7ae4caf98538a31d15562567ea72.patch
-Patch3007: %{pf_url}/8045d8575183684018412af59063f4bc693d875d.patch#/pf-8045d8575183684018412af59063f4bc693d875d.patch
-Patch3008: %{pf_url}/f6cbc16aac8884b4c067efb836413a87bffa30b2.patch#/pf-f6cbc16aac8884b4c067efb836413a87bffa30b2.patch
-Patch3009: %{pf_url}/e579b91d96ce9de1cc6a4d3cf1597a55f7abbd20.patch#/pf-e579b91d96ce9de1cc6a4d3cf1597a55f7abbd20.patch
-Patch3010: %{pf_url}/e6c72be3486bb2598a3d7da7f89e404a434fd24c.patch#/pf-e6c72be3486bb2598a3d7da7f89e404a434fd24c.patch
-Patch3011: %{pf_url}/3c5529454a27dad416d8332b369a1aa1f0cc6de0.patch#/pf-3c5529454a27dad416d8332b369a1aa1f0cc6de0.patch
-Patch3012: %{pf_url}/5b9eb4716af16872a636b1ad290c79d609d0009f.patch#/pf-5b9eb4716af16872a636b1ad290c79d609d0009f.patch
-Patch3013: %{pf_url}/83c97a310f83d505879b2b778c5c698e780070b9.patch#/pf-83c97a310f83d505879b2b778c5c698e780070b9.patch
-Patch3014: %{pf_url}/2ad909a300c452488b3de088e1ff38860dac3112.patch#/pf-2ad909a300c452488b3de088e1ff38860dac3112.patch
-Patch3015: %{pf_url}/af2d5f0a066409296215630249a6be4e7465a1d9.patch#/pf-af2d5f0a066409296215630249a6be4e7465a1d9.patch
-Patch3016: %{pf_url}/70521300dc14bb3ef93c72d636d574a019da4132.patch#/pf-70521300dc14bb3ef93c72d636d574a019da4132.patch
+Patch3001: %{pf_url}/2597a2a58616cc8a1046ede0be762103221ea41b.patch#/pf-2597a2a58616cc8a1046ede0be762103221ea41b.patch
+Patch3002: %{pf_url}/a998885a48d9b7473040f59c63a8b0ea9f210afa.patch#/pf-a998885a48d9b7473040f59c63a8b0ea9f210afa.patch
+Patch3003: %{pf_url}/87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch#/pf-87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch
 
 # Add additional cpu gcc optimization support
-# https://github.com/graysky2/kernel_gcc_patch (20180310)
+# https://github.com/graysky2/kernel_gcc_patch (20180406)
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v4.13+.patch
 
 # END OF PATCH DEFINITIONS
@@ -879,7 +834,6 @@ This package provides commonly used kernel modules for the %{?2:%{2}-}core kerne
 %define kernel_meta_package() \
 %package %{1}\
 summary: kernel meta-package for the %{1} kernel\
-group: system environment/kernel\
 Requires: kernel-%{1}-core-uname-r = %{KVERREL}%{?variant}+%{1}\
 Requires: kernel-%{1}-modules-uname-r = %{KVERREL}%{?variant}+%{1}\
 Provides: installonlypkg(kernel)\
@@ -1639,6 +1593,9 @@ BuildKernel() {
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
+
+    # build a BLS config for this kernel
+    %{SOURCE43} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
 }
 
 ###
@@ -1779,13 +1736,6 @@ rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 %if %{with_bootwrapper}
 make DESTDIR=$RPM_BUILD_ROOT bootwrapper_install WRAPPER_OBJDIR=%{_libdir}/kernel-wrapper WRAPPER_DTSDIR=%{_libdir}/kernel-wrapper/dts
 %endif
-
-###
-### clean
-###
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 ###
 ### scripts
@@ -1947,6 +1897,7 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/build\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
 %endif\
@@ -1978,6 +1929,10 @@ fi
 #
 #
 %changelog
+* Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.0-500.chinfo
+- 4.16.0
+- f28 sync
+
 * Mon Mar 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.11-500.chinfo
 - 4.15.11
 

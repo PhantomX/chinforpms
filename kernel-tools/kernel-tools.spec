@@ -13,7 +13,7 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 15
+%global base_sublevel 16
 
 %global perfman_hash 257ade73a2906093045bc54e2fe4363c13dbc707424ec437c1937df0c917a38f52ff083af529eacbcbdff4563b67f727c2991c5018912517d3509dabcf287beb
 
@@ -21,7 +21,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 11
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -75,6 +75,7 @@ BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: zlib-devel binutils-devel newt-devel python2-devel perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel glibc-devel glibc-static
+BuildRequires: asciidoc xmlto
 %ifnarch s390x %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -85,7 +86,6 @@ BuildRequires: rpm-build, elfutils
 BuildRequires: systemd
 
 Source0: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
-Source10: http://src.fedoraproject.org/repo/pkgs/%{name}/perf-man-%{kversion}.tar.gz/sha512/%{perfman_hash}/perf-man-%{kversion}.tar.gz
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -110,7 +110,6 @@ Patch0: 0001-iio-Use-event-header-from-kernel-tree.patch
 
 # rpmlint cleanup
 Patch1: 0001-perf-Remove-FSF-address.patch
-Patch2: 0001-cpupower-Remove-FSF-address.patch
 Patch3: 0001-tools-include-Sync-vmx.h-header-for-FSF-removal.patch
 Patch4: 0001-tools-lib-Remove-FSF-address.patch
 Patch5: 0001-tools-power-Don-t-make-man-pages-executable.patch
@@ -122,7 +121,7 @@ Patch8: 0001-Switch-to-python3.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 5e4329cbc123a2b751335c2ae71174a47af3ff6d
+%global opensuse_id 2592f12c2468d6a7f402f44b62c2a6f58531809f
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch?id=%{opensuse_id}#/openSUSE-perf_timechart_fix_zero_timestamps.patch
@@ -196,7 +195,6 @@ cd linux-%{kversion}
 
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
@@ -255,6 +253,14 @@ pushd tools/gpio/
 make
 popd
 
+# Build the docs
+pushd tools/kvm/kvm_stat/
+make %{?_smp_mflags} man
+popd
+pushd tools/perf/Documentation/
+make %{?_smp_mflags} man
+popd
+
 ###
 ### install
 ###
@@ -274,10 +280,9 @@ rm -rf %{buildroot}%{_docdir}/perf-tip
 %{perf_make} DESTDIR=%{buildroot} install-python_ext
 
 # perf man pages (note: implicit rpm magic compresses them later)
-mkdir -p %{buildroot}/%{_mandir}/man1
-pushd %{buildroot}/%{_mandir}/man1
-tar -xf %{SOURCE10}
-popd
+install -d %{buildroot}/%{_mandir}/man1
+install -pm0644 tools/kvm/kvm_stat/kvm_stat.1 %{buildroot}/%{_mandir}/man1/
+install -pm0644 tools/perf/Documentation/*.1 %{buildroot}/%{_mandir}/man1/
 
 make -C tools/power/cpupower DESTDIR=%{buildroot} libdir=%{_libdir} mandir=%{_mandir} CPUFREQ_BENCH=false install
 rm -f %{buildroot}%{_libdir}/*.{a,la}
@@ -388,6 +393,10 @@ popd
 %{_includedir}/cpuidle.h
 
 %changelog
+* Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.0-100.chinfo
+- 4.16.0
+- Rawhide sync
+
 * Mon Mar 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.11-100.chinfo
 - 4.15.11
 
