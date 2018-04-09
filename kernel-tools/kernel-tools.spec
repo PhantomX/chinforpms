@@ -21,7 +21,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 0
+%global stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -393,6 +393,9 @@ popd
 %{_includedir}/cpuidle.h
 
 %changelog
+* Sun Apr 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.1-100.chinfo
+- 4.16.1
+
 * Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.0-100.chinfo
 - 4.16.0
 - Rawhide sync
