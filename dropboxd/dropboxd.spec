@@ -18,7 +18,7 @@
 %global with_python  0
 
 Name:           dropboxd
-Version:        41.4.80
+Version:        47.4.74
 Release:        1%{?dist}
 Summary:        Dropbox proprietary client
 
@@ -178,6 +178,9 @@ chmod 0755 %{buildroot}%{progdir}/dropboxd
 
 
 %changelog
+* Thu Apr 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 47.4.74-1
+- 47.4.74
+
 * Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 41.4.80-1
 - 41.4.80
 

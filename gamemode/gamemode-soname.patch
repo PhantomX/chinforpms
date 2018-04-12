@@ -1,0 +1,31 @@
+diff -up gamemode-1.0/lib/gamemode_client.h.soname gamemode-1.0/lib/gamemode_client.h
+--- gamemode-1.0/lib/gamemode_client.h.soname	2018-04-04 06:06:23.000000000 -0300
++++ gamemode-1.0/lib/gamemode_client.h	2018-04-12 00:03:10.498085253 -0300
+@@ -115,7 +115,7 @@ __attribute__((always_inline)) inline in
+ 	void *libgamemode = NULL;
+ 
+ 	/* Try and load libgamemode */
+-	libgamemode = dlopen("libgamemode.so", RTLD_NOW);
++	libgamemode = dlopen("libgamemode.so.0", RTLD_NOW);
+ 	if (!libgamemode) {
+ 		snprintf(_client_error_string,
+ 		         sizeof(_client_error_string),
+diff -up gamemode-1.0/lib/meson.build.soname gamemode-1.0/lib/meson.build
+--- gamemode-1.0/lib/meson.build.soname	2018-04-04 06:06:23.000000000 -0300
++++ gamemode-1.0/lib/meson.build	2018-04-12 00:02:26.795258157 -0300
+@@ -1,6 +1,7 @@
+ # Main client library to message the daemon
+ shared_library(
+     'gamemode',
++    version: '0.0.0',
+     sources: [
+         'client_impl.c',
+     ],
+@@ -17,6 +18,7 @@ libgamemode_includes = [
+ # Small library to automatically use gamemode
+ shared_library(
+     'gamemodeauto',
++    version: '0.0.0',
+     sources: [
+         'client_loader.c',
+     ],
