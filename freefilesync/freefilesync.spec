@@ -1,7 +1,8 @@
 %global pname FreeFileSync
+%global xbrzver 1.6
 
 Name:           freefilesync
-Version:        9.8
+Version:        9.9
 Release:        1%{?dist}
 Summary:        A file synchronization utility
 
@@ -10,6 +11,7 @@ URL:            http://www.freefilesync.org/
 Source0:        http://www.freefilesync.org/download/%{pname}_%{version}_Source.zip
 Source1:        https://aur.archlinux.org/cgit/aur.git/plain/ffsicon.png?h=%{name}#/%{pname}.png
 Source2:        https://aur.archlinux.org/cgit/aur.git/plain/rtsicon.png?h=%{name}#/RealTimeSync.png
+Source3:        http://downloads.sourceforge.net/project/xbrz/xBRZ/xBRZ_%{xbrzver}.zip
 
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
@@ -28,10 +30,15 @@ having nice visual feedback along the way.
 %prep
 %autosetup -p0 -c -n %{pname}-%{version}
 
+mkdir -p xBRZ/src
+unzip %{SOURCE3} -d xBRZ/src
+
 cp %{SOURCE1} %{SOURCE2} .
 
 chmod -x *.txt
 sed 's/\r//' -i *.txt
+
+cp -p Changelog.txt %{pname}/Build
 
 sed \
   -e '/DOCSHAREDIR/d' \
@@ -40,11 +47,26 @@ sed \
   -e '/LINKFLAGS/s|-s|%{build_ldflags}|g' \
   -i %{pname}/Source/Makefile %{pname}/Source/RealTimeSync/Makefile
 
+# Fixes from https://aur.archlinux.org/packages/freefilesync
+# wxgtk < 3.1.0
 sed 's/m_listBoxHistory->GetTopItem()/0/g' -i %{pname}/Source/ui/main_dlg.cpp
 
+# gcc 6.3.1
 sed -i 's!static_assert!//static_assert!' zen/scope_guard.h
 
-sed 's#inline##g' -i  %{pname}/Source/ui/version_check_impl.h
+# linker error
+sed 's#inline##g' -i %{pname}/Source/ui/version_check_impl.h
+
+# add xbrz.cpp entries in Makefile
+sed "/zlib_wrap.cpp/ a CPP_LIST+=../../xBRZ/src/xbrz.cpp" \
+  -i %{pname}/Source/Makefile
+sed "/popup_dlg_generated.cpp/ a CPP_LIST+=../../../xBRZ/src/xbrz.cpp" \
+ -i %{pname}/Source/RealTimeSync/Makefile
+
+# edit lines to remove functions that require wxgtk 3.1.x  
+sed -e 's:m_textCtrlOfflineActivationKey->ForceUpper:// &:g' \
+  -i '%{pname}/Source/ui/small_dlgs.cpp'
+sed -e 's:const double scrollSpeed =:& 6; //:g' -i 'wx+/grid.cpp'
 
 %build
 %make_build -C %{pname}/Source
@@ -115,6 +137,10 @@ done
 
 
 %changelog
+* Thu Apr 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 9.9-1
+- 9.9
+- More fixes from https://aur.archlinux.org/packages/freefilesync
+
 * Fri Feb 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 9.8-1
 - 9.8
 

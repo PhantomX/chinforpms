@@ -7,7 +7,7 @@
 %global extension_id \{73a6fe31-595d-460b-a920-fcc0f8843232\}
 
 Name:           waterfox-noscript
-Version:        5.1.8.4
+Version:        5.1.8.5
 Release:        1%{?dist}
 Summary:        JavaScript white list extension for Waterfox
 
@@ -54,6 +54,9 @@ DESTDIR=%{buildroot} appstream-util install %{SOURCE1}
 
 
 %changelog
+* Fri Apr 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.1.8.5-1
+- 5.1.8.5
+
 * Thu Feb 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.1.8.4-1
 - 5.1.8.4
 

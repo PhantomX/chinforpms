@@ -15,13 +15,11 @@
 # which yields a base_sublevel of 0.
 %global base_sublevel 16
 
-%global perfman_hash 257ade73a2906093045bc54e2fe4363c13dbc707424ec437c1937df0c917a38f52ff083af529eacbcbdff4563b67f727c2991c5018912517d3509dabcf287beb
-
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 1
+%global stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -121,7 +119,7 @@ Patch8: 0001-Switch-to-python3.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 2592f12c2468d6a7f402f44b62c2a6f58531809f
+%global opensuse_id 7b2d22b118d1ce275f762e1458e957a45ff84018
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch?id=%{opensuse_id}#/openSUSE-perf_timechart_fix_zero_timestamps.patch
@@ -393,6 +391,9 @@ popd
 %{_includedir}/cpuidle.h
 
 %changelog
+* Thu Apr 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.2-100.chinfo
+- 4.16.2
+
 * Sun Apr 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.1-100.chinfo
 - 4.16.1
 

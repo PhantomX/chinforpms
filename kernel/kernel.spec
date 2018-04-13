@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -575,28 +575,39 @@ Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
-# Fix OMAP4 (pandaboard)
-Patch302: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
-
-# http://patchwork.ozlabs.org/patch/587554/
-Patch303: ARM-tegra-usb-no-reset.patch
-
-Patch304: arm64-Revert-allwinner-a64-pine64-Use-dcdc1-regulato.patch
+Patch302: ARM-tegra-usb-no-reset.patch
 
 # https://patchwork.kernel.org/patch/9820417/
-Patch305: qcom-msm89xx-fixes.patch
+Patch303: qcom-msm89xx-fixes.patch
 
 # https://patchwork.kernel.org/patch/10173115/
-Patch306: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
+Patch304: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 
 # http://patches.linaro.org/patch/131764/
-Patch308: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
+Patch305: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
 
 # https://patchwork.kernel.org/patch/10245303/
-Patch309: wcn36xx-reduce-verbosity-of-drivers-messages.patch
+Patch306: wcn36xx-reduce-verbosity-of-drivers-messages.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg632925.html
-Patch313: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
+Patch307: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
+
+# https://marc.info/?l=linux-kernel&m=152328880417846&w=2
+Patch308: arm64-thunderx-crypto-zip-fixes.patch
+
+# https://www.spinics.net/lists/linux-crypto/msg32725.html
+Patch309: crypto-testmgr-Allow-different-compression-results.patch
+
+Patch310: arm-tegra-fix-nouveau-crash.patch
+
+# https://www.spinics.net/lists/arm-kernel/msg630629.html
+Patch311: arm-sunxi-nvmem-fixH3.patch
+
+# https://patchwork.kernel.org/patch/10311335/
+Patch312: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
+
+# Upstream 4.17 back port
+Patch319: of-i2c-fix-module-aliases.patch
 
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch320: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
@@ -634,12 +645,16 @@ Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # rhbz 1558977
 Patch504: sunrpc-remove-incorrect-HMAC-request-initialization.patch
 
+# In v4.17
+# rhbz 1549316
+Patch505: ipmi-fixes.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 2592f12c2468d6a7f402f44b62c2a6f58531809f
+%global opensuse_id 7b2d22b118d1ce275f762e1458e957a45ff84018
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -1929,6 +1944,10 @@ fi
 #
 #
 %changelog
+* Thu Apr 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.2-500.chinfo
+- 4.16.2
+- f28 sync
+
 * Sun Apr 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.1-500.chinfo
 - 4.16.1
 
