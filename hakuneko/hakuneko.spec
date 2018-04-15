@@ -5,7 +5,7 @@ Summary:        manga Downloader
 
 License:        MIT
 URL:            http://sourceforge.net/projects/legacy.hakuneko.p/
-Source0:        http://downloads.sourceforge.net/legacy.%{name}.p/%{name}_%{version}_src.tar.gz
+Source0:        https://downloads.sourceforge.net/legacy.%{name}.p/%{name}_%{version}_src.tar.gz
 
 Patch0:         %{name}-noupdate.patch
 

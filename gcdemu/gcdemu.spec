@@ -7,7 +7,7 @@ Summary:        Gtk3-based CDEmu client
 
 License:        GPLv2
 URL:            http://sourceforge.net/projects/cdemu
-Source0:        http://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.bz2
+Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.bz2
 
 BuildArch:      noarch
 

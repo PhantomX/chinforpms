@@ -1,7 +1,7 @@
-%global commit 7cae1b00bfcd2454f09c56dfaab4facd48bb6c6b
+%global commit a52b5eab5aa079a614683ad9442be74a852321b1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180329
-%global with_snapshot 0
+%global date 20180412
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -95,7 +95,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.1.0
-Release:        1%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -148,6 +148,7 @@ Patch402:        mozilla-1196777.patch
 Patch406:        mozilla-256180.patch
 Patch413:        mozilla-1353817.patch
 Patch415:        mozilla-1405267.patch
+Patch416:        mozilla-1435695.patch
 
 # Better compatibility with NSS sql database format, rhbz#1496563
 Patch481:        sqlcompat-ff57-1-backport-730495
@@ -155,8 +156,7 @@ Patch481:        sqlcompat-ff57-1-backport-730495
 # Upstream updates
 
 %global wf_url https://github.com/MrAlex94/Waterfox/commit
-Patch490: %{wf_url}/3d4e8098935e42055b714f0c74c89c4d0bc109af.patch#/wf-3d4e8098935e42055b714f0c74c89c4d0bc109af.patch
-Patch491: %{wf_url}/7cae1b00bfcd2454f09c56dfaab4facd48bb6c6b.patch#/wf-7cae1b00bfcd2454f09c56dfaab4facd48bb6c6b.patch
+#Patch490: %%{wf_url}/commit.patch#/wf-commit.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -165,24 +165,15 @@ Patch500:        mozilla-440908.patch
 %global freebsd_url https://svnweb.freebsd.org/ports/head/www/firefox/files
 %global freebsd_rev 454192
 %global freebsd_uri ?revision=%{freebsd_rev}&view=co&pathrev=%{freebsd_rev}
-Patch600:        %{freebsd_url}/patch-bug1386887%{freebsd_uri}#/FreeBSD-bug1386887.patch
-Patch601:        %{freebsd_url}/patch-servo17934%{freebsd_uri}#/FreeBSD-servo17934.patch
-Patch602:        %{freebsd_url}/patch-servo17969%{freebsd_uri}#/FreeBSD-servo17969.patch
-Patch603:        %{freebsd_url}/patch-servo18046%{freebsd_uri}#/FreeBSD-servo18046.patch
-Patch604:        %{freebsd_url}/patch-servo18126%{freebsd_uri}#/FreeBSD-servo18126.patch
-Patch605:        %{freebsd_url}/patch-bug1401573%{freebsd_uri}#/FreeBSD-bug1401573.patch
-Patch606:        %{freebsd_url}/patch-bug1186967%{freebsd_uri}#/FreeBSD-bug1186967.patch
-Patch607:        %{freebsd_url}/patch-bug1384701%{freebsd_uri}#/FreeBSD-bug1384701.patch
-Patch609:        %{freebsd_url}/patch-bug1409680%{freebsd_uri}#/FreeBSD-bug1409680.patch
+Patch600:        %{freebsd_url}/patch-bug1401573%{freebsd_uri}#/FreeBSD-bug1401573.patch
+Patch601:        %{freebsd_url}/patch-bug1186967%{freebsd_uri}#/FreeBSD-bug1186967.patch
+Patch602:        %{freebsd_url}/patch-bug1384701%{freebsd_uri}#/FreeBSD-bug1384701.patch
 
 # Chinforinfula patches
-Patch700:        firefox-nosocial.patch
-Patch701:        %{name}-nolangpacks.patch
-Patch702:        %{name}-waterfoxdir.patch
+Patch700:        %{name}-nolangpacks.patch
+Patch701:        %{name}-waterfoxdir.patch
 
-Patch800:        %{name}-rust-1.23.patch
-Patch801:        %{name}-rust-1.24.patch
-Patch802:        %{name}-FreeBSD-bug1433747.patch
+Patch800:        %{name}-FreeBSD-bug1433747.patch
 
 %if %{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -337,36 +328,27 @@ This package contains results of tests executed during build.
 %patch406 -p1 -b .256180
 %patch413 -p1 -b .1353817
 %patch415 -p1 -b .1405267
+%patch416 -p1 -b .1435695
 
 %if 0%{?fedora} > 27
 %patch481 -p1 -b .sqlcompat-1
 %endif
 
-%patch490 -p1
-%patch491 -p1
+#patch490 -p1
 
 # Debian extension patch
 %patch500 -p1 -b .440908
 
-# rust and servo fixes, plus backports
-%patch600 -p0 -b .bsd1386887
-%patch601 -p0 -b .servo17934
-%patch602 -p0 -b .servo17969
-%patch603 -p0 -b .servo18046
-%patch604 -p0 -b .servo18126
-%patch605 -p0 -b .bsd1401573
-%patch606 -p0 -b .bsd1186967
-%patch607 -p0 -b .bsd1384701
-%patch609 -p0 -b .bsd1409680
+# backports
+%patch600 -p0 -b .bsd1401573
+%patch601 -p0 -b .bsd1186967
+%patch602 -p0 -b .bsd1384701
 
-%patch700 -p1 -b .nosocial
 # Install langpacks other way
-%patch701 -p1 -b .nolangpacks
-%patch702 -p1 -b .waterfoxdir
+%patch700 -p1 -b .nolangpacks
+%patch701 -p1 -b .waterfoxdir
 
-%patch800 -p1 -b .rust123
-%patch801 -p1 -b .rust124
-%patch802 -p0 -b .bsd1433747
+%patch800 -p0 -b .bsd1433747
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -824,6 +806,11 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-2.20180412gita52b5ea
+- Build latest snapshot for servo fixes
+- Drop unneeded patches
+- gcc 8 fix
+
 * Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-1
 - 56.1.0
 

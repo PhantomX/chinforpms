@@ -17,7 +17,7 @@ Summary:        Manga Downloader
 
 License:        MIT
 URL:            https://sourceforge.net/projects/%{real_name}/
-Source0:        http://downloads.sourceforge.net/%{real_name}/%{name}_%{version}_linux_%{parch}.rpm
+Source0:        https://downloads.sourceforge.net/%{real_name}/%{name}_%{version}_linux_%{parch}.rpm
 
 ExclusiveArch:  %{ix86} x86_64
 

@@ -5,7 +5,7 @@ Summary:        PE file analysis toolkit
 
 License:        GPLv2
 URL:            http://pev.sourceforge.net/
-Source0:        http://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+Source0:        https://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 
 Patch0:         %{name}-optimization.patch
 # https://github.com/merces/pev/pull/104

@@ -34,6 +34,9 @@ ac_add_options --disable-profiling
 ac_add_options --disable-signmar
 ac_add_options --disable-verify-mar
 
+#ac_add_options --enable-rust-simd # on x86 requires SSE2, breaks with system llvm
+ac_add_options --enable-stylo=build
+
 ac_add_options --with-app-name=waterfox
 ac_add_options --with-app-basename=Waterfox
 ac_add_options --with-branding=browser/branding/unofficial

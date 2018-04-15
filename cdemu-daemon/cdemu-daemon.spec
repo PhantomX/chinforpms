@@ -4,8 +4,8 @@ Release:        2%{?dist}
 Summary:        CDEmu daemon
 
 License:        GPLv2
-URL:            http://sourceforge.net/projects/cdemu
-Source:         http://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.bz2
+URL:            https://sourceforge.net/projects/cdemu
+Source:         https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.bz2
 
 
 BuildRequires:  cmake

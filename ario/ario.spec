@@ -4,7 +4,7 @@ Release:  2%{?dist}
 Summary:  Ario MPD Client
 License:  GPLv2+
 URL:      http://ario-player.sourceforge.net/index.php
-Source0:  http://downloads.sourceforge.net/ario-player/%{name}-%{version}.tar.gz
+Source0:  https://downloads.sourceforge.net/ario-player/%{name}-%{version}.tar.gz
 
 BuildRequires: pkgconfig(avahi-glib)
 BuildRequires: pkgconfig(gnutls)

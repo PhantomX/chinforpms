@@ -2,14 +2,14 @@
 
 #global gitrel     140
 #global gitcommit  a70055b58568f7304ba46bd8742232337013487b
-#global shortcommit %(c=%{gitcommit}; echo ${c:0:5})
+#global shortcommit %%(c=%{gitcommit}; echo ${c:0:5})
 
 %global         _glib2                  2.32.0
 %global         _libxml2                2.4.0
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.12.4
+Version:        1.14.0
 Release:        100.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
@@ -24,6 +24,7 @@ Source0:        http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-%{versi
 %endif
 ## For GStreamer RPM provides
 Patch0:         gstreamer-inspect-rpm-format.patch
+Patch1:         0001-avoid-compilation-errors-with-newer-glib.patch
 Source1:        gstreamer1.prov
 Source2:        gstreamer1.attr
 
@@ -39,25 +40,23 @@ BuildRequires:  gtk-doc >= 1.3
 BuildRequires:  gettext
 BuildRequires:  pkgconfig
 
+# ./autogen.sh deps
+BuildRequires:  automake gettext-devel libtool
 BuildRequires:  chrpath
-
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  gettext-devel
 
 ### documentation requirements
 BuildRequires:  python2
 BuildRequires:  openjade
-BuildRequires:  jadetex
+BuildRequires:  texlive-jadetex
 BuildRequires:  libxslt
 BuildRequires:  docbook-style-dsssl
 BuildRequires:  docbook-style-xsl
 BuildRequires:  docbook-utils
 BuildRequires:  transfig
 BuildRequires:  netpbm-progs
-BuildRequires:  tetex-dvips
+BuildRequires:  texlive-dvips
 BuildRequires:  ghostscript
-%if !0%{?rhel}
+%if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires:  xfig
 %endif
 
@@ -72,11 +71,12 @@ plugins.
 
 %package devel
 Summary:        Libraries/include files for GStreamer streaming media framework
-Requires:       %{name} = %{version}-%{release}
-Requires:       glib2-devel >= %{_glib2}
-Requires:       libxml2-devel >= %{_libxml2}
+Requires:       %{name}%{?isa} = %{version}-%{release}
+Requires:       glib2-devel%{?_isa} >= %{_glib2}
+Requires:       libxml2-devel%{?_isa} >= %{_libxml2}
 Requires:       check-devel
-
+# file /usr/include/gstreamer-1.0/gst/base/gstaggregator.h conflicts between attempted installs of gstreamer1-plugins-bad-free-devel-1.12.4-3.fc28.x86_64 and gstreamer1-devel-1.13.1-1.fc29.x86_64
+Conflicts:      gstreamer1-plugins-bad-free-devel < 1.13
 
 %description devel
 The %{name}-devel package contains libraries and header files for
@@ -97,6 +97,7 @@ GStreamer streaming media framework.
 %prep
 %setup -q -n gstreamer-%{version}
 %patch0 -p1 -b .rpm-provides
+%patch1 -p1 -b .0001
 
 # Dirty multilib fix
 sed -e 's|$GST_API_VERSION/gst-plugin-scanner|\0-%{__isa_bits}|g' \
@@ -104,7 +105,8 @@ sed -e 's|$GST_API_VERSION/gst-plugin-scanner|\0-%{__isa_bits}|g' \
 sed -e 's|$(GST_API_VERSION)/gst-plugin-scanner|\0-%{__isa_bits}|g' \
   -i gst/Makefile.am
 
-autoreconf -ivf
+NOCONFIGURE=1 \
+./autogen.sh
 
 %build
 %configure \
@@ -112,37 +114,27 @@ autoreconf -ivf
   --with-package-origin='http://download.fedoraproject.org' \
   --enable-gtk-doc \
   --enable-debug \
+  --disable-fatal-warnings \
+  --disable-silent-rules \
   --disable-tests --disable-examples
-make %{?_smp_mflags} V=1
+
+%make_build V=1
 
 
 %install
-make install DESTDIR=%{buildroot}
-# Remove rpath.
-chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstbase-1.0.so.*
-chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstcheck-1.0.so.*
-chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstcontroller-1.0.so.* 
-chrpath --delete $RPM_BUILD_ROOT%{_libdir}/libgstnet-1.0.so.*
-chrpath --delete $RPM_BUILD_ROOT%{_libdir}/gstreamer-%{majorminor}/libgstcoreelements.so
-chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-completion-helper
-chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner
-chrpath --delete $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-ptp-helper
-chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-inspect-1.0
-chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-launch-1.0
-chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-stats-1.0
-chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gst-typefind-1.0
+%make_install
 
 # Dirty multilib fix
-mv $RPM_BUILD_ROOT%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner{,-%{__isa_bits}}
+mv %{buildroot}%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner{,-%{__isa_bits}}
 
 %find_lang gstreamer-%{majorminor}
 # Clean out files that should not be part of the rpm.
-find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
-find $RPM_BUILD_ROOT -name '*.a' -exec rm -f {} ';'
+find %{buildroot} -name '*.la' -exec rm -fv {} ';'
+find %{buildroot} -name '*.a' -exec rm -fv {} ';'
 # Add the provides script
-install -m0755 -D %{SOURCE1} $RPM_BUILD_ROOT%{_rpmconfigdir}/gstreamer1.prov
+install -m0755 -D %{SOURCE1} %{buildroot}%{_rpmconfigdir}/gstreamer1.prov
 # Add the gstreamer plugin file attribute entry (rpm >= 4.9.0)
-install -m0644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/gstreamer1.attr
+install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.attr
 
 %ldconfig_scriptlets
 
@@ -224,6 +216,10 @@ install -m0644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/gstreamer
 
 
 %changelog
+* Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.14.0-100.chinfo
+- 1.14.0
+- f28 sync
+
 * Thu Dec 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.12.4-100.chinfo
 - 1.12.4
 

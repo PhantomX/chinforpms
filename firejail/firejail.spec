@@ -5,7 +5,7 @@ Summary:        GUI tools for firejail
 
 License:        GPLv2
 URL:            https://firejail.wordpress.com/
-Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.xz
+Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.xz
 Source1:        README.suid
 
 BuildRequires:  gcc

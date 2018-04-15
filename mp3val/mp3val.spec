@@ -5,7 +5,7 @@ Summary:        A free software tool to validate and fix MPEG audio files
 
 License:        GPLv2
 URL:            http://mp3val.sourceforge.net/
-Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}-src.tar.gz
+Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}-src.tar.gz
 
 Patch01:        mp3val-0.1.8-gcc5.patch
 

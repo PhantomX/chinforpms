@@ -5,7 +5,7 @@ Summary:        YouTube browser for SMPlayer
 
 License:        GPLv2+
 URL:            http://www.smtube.org
-Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
+Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
 
 Patch0:         %{name}-16.3.0-system-qtsingleapplication.patch
 # Do not spam .xsession-errors

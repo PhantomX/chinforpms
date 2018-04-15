@@ -1,6 +1,6 @@
 Name:           bzrtp
 Version:        1.0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Opensource implementation of ZRTP keys exchange protocol
 
 License:        GPLv2
@@ -30,6 +30,10 @@ Development files.
 
 %prep
 %autosetup
+
+sed \
+  -e 's|"-Werror" ||g' \
+  -i CMakeLists.txt
 
 sed \
   -e 's|@prefix@|%{_prefix}|g' \
@@ -71,6 +75,9 @@ install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/lib%{name}.pc
 
 
 %changelog
+* Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0.6-3
+- Remove -Werror
+
 * Fri Sep 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.6-2
 - cmake and fixes for it
 

@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
 Name:           mednafen
-Version:        1.21.1
+Version:        1.21.2
 Release:        1.chinfo%{?dist}
 Epoch:          1
 Summary:        A multi-system emulator utilizing OpenGL and SDL
@@ -94,6 +94,9 @@ rm -rf Documentation/*.def Documentation/*.php Documentation/generate.sh \
 
 
 %changelog
+* Sun Apr 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.21.2-1.chinfo
+- 1.21.2
+
 * Sat Mar 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.21.1-1.chinfo
 - 1.21.1
 - URL update

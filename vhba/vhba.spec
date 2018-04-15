@@ -8,7 +8,7 @@ Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPLv2
 URL:            http://sourceforge.net/projects/cdemu
-Source0:        http://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.bz2
+Source0:        https://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.bz2
 Source1:        vhba.udev
 Source2:        vhba.modules
 
@@ -61,7 +61,7 @@ install -m644 -D %{SOURCE1} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
 - Renamed the udev rule file so it runs before 70-uaccess.rules
 
 * Sat Apr 23 2016 Rok Mandeljc <rok.mandeljc@gmail.com> - 20140928-4
-- Added systemd build dependency (%{_udevrulesdir} macro)
+- Added systemd build dependency (%%{_udevrulesdir} macro)
 
 * Sat Apr 23 2016 Rok Mandeljc <rok.mandeljc@gmail.com> - 20140928-3
 - Fixed rpmlint warnings and errors

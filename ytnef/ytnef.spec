@@ -2,7 +2,7 @@ Summary:        Yerase's TNEF Stream Reader
 Name:           ytnef
 Epoch:          1
 Version:        1.9.2
-Release:        100.chinfo%{?dist}
+Release:        101.chinfo%{?dist}
 License:        GPLv2+
 URL:            https://github.com/Yeraze/ytnef
 Source0:        https://github.com/Yeraze/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_libdir}/pkgconfig/libytnef.pc
 
 %changelog
+* Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.9.2-101.chinfo
+- ldconfig scriplets update
+
 * Thu Jul 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.9.2-100.chinfo
 - Download URL
 - Upstream patches

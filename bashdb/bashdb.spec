@@ -8,7 +8,7 @@ License:        GPLv2+
 Url:            http://bashdb.sourceforge.net/
 
 %global rversion %(c=%{version}; echo ${c//_/-})
-Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{rversion}.tar.bz2
+Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{rversion}.tar.bz2
 
 BuildArch:      noarch
 

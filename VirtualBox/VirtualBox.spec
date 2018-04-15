@@ -145,6 +145,8 @@ BuildRequires:  libXcomposite-devel
 BuildRequires:  libXcursor-devel
 BuildRequires:  libXinerama-devel
 BuildRequires:  libXmu-devel
+BuildRequires:  libXrandr-devel
+BuildRequires:  libXt-devel
 BuildRequires:  mesa-libEGL-devel
 BuildRequires:  mesa-libGL-devel
 BuildRequires:  mesa-libGLU-devel
@@ -337,6 +339,7 @@ kmk %{_smp_mflags}    \
     VBOX_WITH_SYSFS_BY_DEFAULT=1 \
     VBOX_XCURSOR_LIBS="Xcursor Xext X11 GL"             \
     VBOX_USE_SYSTEM_XORG_HEADERS=1 \
+    VBOX_USE_SYSTEM_GL_HEADERS=1 \
 %{!?legacy_vboxvideo_drv:   VBOX_NO_LEGACY_XORG_X11=1 } \
     VBOX_NO_LEGACY_XORG_X11=1 \
     SDK_VBOX_LIBPNG_INCS=/usr/include/libpng16 \

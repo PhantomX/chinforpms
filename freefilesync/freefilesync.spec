@@ -3,7 +3,7 @@
 
 Name:           freefilesync
 Version:        9.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A file synchronization utility
 
 License:        GPLv3
@@ -11,7 +11,7 @@ URL:            http://www.freefilesync.org/
 Source0:        http://www.freefilesync.org/download/%{pname}_%{version}_Source.zip
 Source1:        https://aur.archlinux.org/cgit/aur.git/plain/ffsicon.png?h=%{name}#/%{pname}.png
 Source2:        https://aur.archlinux.org/cgit/aur.git/plain/rtsicon.png?h=%{name}#/RealTimeSync.png
-Source3:        http://downloads.sourceforge.net/project/xbrz/xBRZ/xBRZ_%{xbrzver}.zip
+Source3:        https://downloads.sourceforge.net/project/xbrz/xBRZ/xBRZ_%{xbrzver}.zip
 
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
@@ -42,7 +42,7 @@ cp -p Changelog.txt %{pname}/Build
 
 sed \
   -e '/DOCSHAREDIR/d' \
-  -e 's|wx-config |wx-config-3.0-gtk2 |g' \
+  -e 's|wx-config |%{_libdir}/wx/config/gtk2-unicode-3.0 |g' \
   -e '/CXXFLAGS/s|-O3|-D"warn_static(arg)= " -DZEN_LINUX %{optflags}|g' \
   -e '/LINKFLAGS/s|-s|%{build_ldflags}|g' \
   -i %{pname}/Source/Makefile %{pname}/Source/RealTimeSync/Makefile
@@ -137,6 +137,9 @@ done
 
 
 %changelog
+* Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 9.9-2
+- Fix for Fedora 28 wx-config
+
 * Thu Apr 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 9.9-1
 - 9.9
 - More fixes from https://aur.archlinux.org/packages/freefilesync

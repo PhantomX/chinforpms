@@ -1,0 +1,41 @@
+From b4ff2c8805221bcff6895c543cb019a817ad7104 Mon Sep 17 00:00:00 2001
+From: Wim Taymans <wtaymans@redhat.com>
+Date: Thu, 22 Feb 2018 09:52:03 +0100
+Subject: [PATCH] avoid compilation errors with newer glib
+
+Newest glib does type propagation. Do an explicit cast to the
+right type to silence the compiler.
+---
+ gst/gstchildproxy.c | 2 +-
+ gst/parse/grammar.y | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/gst/gstchildproxy.c b/gst/gstchildproxy.c
+index ca5e47ea3..1bf983afa 100644
+--- a/gst/gstchildproxy.c
++++ b/gst/gstchildproxy.c
+@@ -209,7 +209,7 @@ gst_child_proxy_lookup (GstChildProxy * object, const gchar * name,
+   g_return_val_if_fail (GST_IS_CHILD_PROXY (object), FALSE);
+   g_return_val_if_fail (name != NULL, FALSE);
+ 
+-  obj = g_object_ref (object);
++  obj = G_OBJECT (g_object_ref (object));
+ 
+   current = names = g_strsplit (name, "::", -1);
+   /* find the owner of the property */
+diff --git a/gst/parse/grammar.y b/gst/parse/grammar.y
+index bc4c3c1ed..0b3d04821 100644
+--- a/gst/parse/grammar.y
++++ b/gst/parse/grammar.y
+@@ -406,7 +406,7 @@ static void gst_parse_element_set (gchar *value, GstElement *element, graph_t *g
+   } else {
+     pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (element), value);
+     if (pspec != NULL) {
+-      target = g_object_ref (element);
++      target = G_OBJECT(g_object_ref (element));
+       GST_CAT_LOG_OBJECT (GST_CAT_PIPELINE, target, "found %s property", value);
+     } else {
+       SET_ERROR (graph->error, GST_PARSE_ERROR_NO_SUCH_PROPERTY, \
+-- 
+2.14.3
+

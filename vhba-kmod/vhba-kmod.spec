@@ -3,12 +3,10 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-#define buildforkernels newest
-#define buildforkernels current
-%define buildforkernels akmod
+%global buildforkernels akmod
 
-%define orig_name vhba-module
-%define debug_package %{nil}
+%global orig_name vhba-module
+%global debug_package %{nil}
 
 Name:           vhba-kmod
 Version:        20170610
@@ -17,13 +15,14 @@ Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPLv2
 URL:            http://sourceforge.net/projects/cdemu
-Source0:        http://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.bz2
+Source0:        https://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.bz2
+Source1:        vhba-kmod-excludekernel-filter.txt
 
 # get the needed BuildRequires (in parts depending on what we build for)
 BuildRequires:  %{_bindir}/kmodtool
 %{!?kernels:BuildRequires: buildsys-build-rpmfusion-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
 # kmodtool does its magic here
-%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} 2>/dev/null) }
+%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null) }
 
 %description
 An implementation of a Virtual SCSI Host Bus Adapter (VHBA), which acts
@@ -74,11 +73,11 @@ done
 - Renamed the udev rule file so it runs before 70-uaccess.rules
 
 * Sat Apr 23 2016 Rok Mandeljc <rok.mandeljc@gmail.com> - 20140928-4
-- Added systemd build dependency (%{_udevrulesdir} macro)
+- Added systemd build dependency (%%{_udevrulesdir} macro)
 
 * Sat Apr 23 2016 Rok Mandeljc <rok.mandeljc@gmail.com> - 20140928-3
 - Fixed rpmlint warnings and errors
-- Install udev rule to %{_udevrulesdir}
+- Install udev rule to %%{_udevrulesdir}
 
 * Thu Apr 21 2016 Rok Mandeljc <rok.mandeljc@gmail.com> - 20140928-2
 - Removed broken NAME="%k" from udev rule

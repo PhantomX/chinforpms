@@ -5,7 +5,7 @@ Summary:        Multimedia converter for Linux
 
 License:        Waqf
 URL:            https://curlew.sourceforge.io/
-Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 

@@ -2,13 +2,12 @@
 
 %global with_fancy 0
 
-# 20171116 Rawhide
-# texlive currently uninstallable - several rebuilds failed!
+# toggle to avoid temporary docbook-utils and Tex Live dependency issues
 %global build_manual 1
 
 Name:           claws-mail
 Version:        3.16.0
-Release:        100.chinfo%{?dist}
+Release:        101.chinfo%{?dist}
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
 URL:            http://claws-mail.org
@@ -18,12 +17,17 @@ Patch1:         http://git.claws-mail.org/?p=claws.git;a=patch;h=174c03f1931636b
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
 
+# Fedora customization as to build with libxcrypt missing DES encrypt()
+# F28 System Wide Change: Replace glibc's libcrypt with libxcrypt
+Patch12: claws-mail-3.16.0-encrypt-nettle.patch
+
+# Fedora customization / https://bugzilla.redhat.com/1530613
+# NetworkManager-glib-devel will be gone
+Patch13: claws-mail-3.16.0-libnm.patch
+
 # Useful patches from Debian
 Patch50:        11mark_trashed_as_read.patch
 Patch51:        12fix_manpage_header.patch
-
-# added 20151220 / plugin has been deleted in 3.13.0
-Obsoletes:      %{name}-plugins-geolocation < %{version}
 
 # added 20170310 / webkitgtk removal from fedora rhbz#1375803
 %if !%{with_fancy}
@@ -55,7 +59,12 @@ BuildRequires:  compface-devel
 %endif
 BuildRequires:  perl-devel perl-generators perl(ExtUtils::Embed)
 BuildRequires:  libSM-devel
-BuildRequires:  NetworkManager-glib-devel dbus-glib-devel
+%if 0%{?fedora} > 27
+BuildRequires:  NetworkManager-libnm-devel
+%else
+BuildRequires:  NetworkManager-glib-devel
+%endif
+BuildRequires:  dbus-glib-devel
 BuildRequires:  libtool autoconf automake
 %if 0%{build_manual}
 BuildRequires:  docbook-utils docbook-utils-pdf
@@ -74,7 +83,7 @@ BuildRequires:  webkitgtk-devel
 %endif
 # fix #496149
 BuildRequires:  libnotify-devel
-BuildRequires:  python python-devel pygtk2-devel
+BuildRequires:  python2 python2-devel pygtk2-devel
 BuildRequires:  libcanberra-devel
 # this is an optional subpackage not pulled in by libcanberra-devel
 BuildRequires:  libcanberra-gtk2
@@ -389,6 +398,11 @@ exporting of your meetings or all your calendars.
 %patch11 -p1 -b.syscrypto
 %endif
 
+%if 0%{?fedora} > 27
+%patch12 -p1 -b .encrypt-via-nettle
+%patch13 -p1 -b .libnm
+%endif
+
 %patch50 -p1 -b.trash
 %patch51 -p1 -b.manheader
 
@@ -506,126 +520,129 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 %files plugins-acpi-notifier
 %{_libdir}/claws-mail/plugins/acpi_notifier*
-#{_datadir}/appdata/claws-mail-acpi_notifier.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-acpi_notifier.metainfo.xml
 
 %files plugins-archive
 %{_libdir}/claws-mail/plugins/archive*
-#{_datadir}/appdata/claws-mail-archive.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-archive.metainfo.xml
 
 %files plugins-attachwarner
 %{_libdir}/claws-mail/plugins/attachwarner*
-#{_datadir}/appdata/claws-mail-attachwarner.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-attachwarner.metainfo.xml
 
 %files plugins-address-keeper
 %{_libdir}/claws-mail/plugins/address_keeper*
-#{_datadir}/appdata/claws-mail-address_keeper.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-address_keeper.metainfo.xml
 
 %files plugins-att-remover
 %{_libdir}/claws-mail/plugins/att_remover*
-#{_datadir}/appdata/claws-mail-att_remover.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-att_remover.metainfo.xml
 
 %files plugins-bogofilter
 %{_libdir}/claws-mail/plugins/bogofilter.so
-#{_datadir}/appdata/claws-mail-bogofilter.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-bogofilter.metainfo.xml
 
 %if !0%{?rhel}
 %files plugins-bsfilter
 %{_libdir}/claws-mail/plugins/bsfilter*
-#{_datadir}/appdata/claws-mail-bsfilter.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-bsfilter.metainfo.xml
 %endif
 
 %files plugins-clamd
 %{_libdir}/claws-mail/plugins/clamd*
-#{_datadir}/appdata/claws-mail-clamd.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-clamd.metainfo.xml
 
 %if 0%{with_fancy}
 %files plugins-fancy
 %{_libdir}/claws-mail/plugins/fancy*
-#{_datadir}/appdata/claws-mail-fancy.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-fancy.metainfo.xml
 %endif
 
 %files plugins-fetchinfo
 %{_libdir}/claws-mail/plugins/fetchinfo*
-#{_datadir}/appdata/claws-mail-fetchinfo.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-fetchinfo.metainfo.xml
 
 %files plugins-gdata
 %{_libdir}/claws-mail/plugins/gdata*
-#{_datadir}/appdata/claws-mail-gdata.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-gdata.metainfo.xml
 
 %files plugins-mailmbox
 %{_libdir}/claws-mail/plugins/mailmbox*
-#{_datadir}/appdata/claws-mail-mailmbox.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-mailmbox.metainfo.xml
 
 %files plugins-managesieve
 %{_libdir}/claws-mail/plugins/managesieve.so
 
 %files plugins-newmail
 %{_libdir}/claws-mail/plugins/newmail.so
-#{_datadir}/appdata/claws-mail-newmail.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-newmail.metainfo.xml
 
 
 %files plugins-notification
 %{_libdir}/claws-mail/plugins/notification.so
-#{_datadir}/appdata/claws-mail-notification.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-notification.metainfo.xml
 
 
 %files plugins-pdf-viewer
 %{_libdir}/claws-mail/plugins/pdf_viewer.so
-#{_datadir}/appdata/claws-mail-pdf_viewer.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-pdf_viewer.metainfo.xml
 
 
 %files plugins-perl
 %{_libdir}/claws-mail/plugins/perl.so
-#{_datadir}/appdata/claws-mail-perl.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-perl.metainfo.xml
 
 
 %files plugins-pgp
 %{_libdir}/claws-mail/plugins/pgp*.so
 %{_libdir}/claws-mail/plugins/pgp*.deps
-#{_datadir}/appdata/claws-mail-pgp*.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-pgp*.metainfo.xml
 
 
 
 %files plugins-python
 %{_libdir}/claws-mail/plugins/python*
-#{_datadir}/appdata/claws-mail-python.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-python.metainfo.xml
 
 
 %files plugins-libravatar
 %{_libdir}/claws-mail/plugins/libravatar*
-#{_datadir}/appdata/claws-mail-libravatar.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-libravatar.metainfo.xml
 
 
 %files plugins-rssyl
 %{_libdir}/claws-mail/plugins/rssyl*
-#{_datadir}/appdata/claws-mail-rssyl.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-rssyl.metainfo.xml
 
 
 %files plugins-smime
 %{_libdir}/claws-mail/plugins/smime.so
 %{_libdir}/claws-mail/plugins/smime.deps
-#{_datadir}/appdata/claws-mail-smime.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-smime.metainfo.xml
 
 
 %files plugins-spamassassin
 %{_libdir}/claws-mail/plugins/spamassassin.so
-#{_datadir}/appdata/claws-mail-spamassassin.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-spamassassin.metainfo.xml
 
 
 %files plugins-spam-report
 %{_libdir}/claws-mail/plugins/spamreport.so
-#{_datadir}/appdata/claws-mail-spam_report.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-spam_report.metainfo.xml
 
 %files plugins-tnef
 %{_libdir}/claws-mail/plugins/tnef*
-#{_datadir}/appdata/claws-mail-tnef_parse.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-tnef_parse.metainfo.xml
 
 %files plugins-vcalendar
 %{_libdir}/claws-mail/plugins/vcalendar*
-#{_datadir}/appdata/claws-mail-vcalendar.metainfo.xml
+#%%{_datadir}/appdata/claws-mail-vcalendar.metainfo.xml
 
 
 %changelog
+* Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.16.0-101.chinfo
+- f28 sync
+
 * Wed Jan 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.16.0-100.chinfo
 - 3.16.0
 - Remove dillo again

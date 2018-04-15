@@ -21,7 +21,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 # https://github.com/TomaszGasior/gtk3-mushrooms
-%global mushroom_ver 695ca98cf8e85b778f3ab1e0f39c16cb8d67f7e5
+%global mushroom_ver 3.22.29-2
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name: gtk3

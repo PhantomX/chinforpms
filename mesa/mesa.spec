@@ -1,5 +1,3 @@
-%bcond_without wayland
-
 # https://bugzilla.redhat.com/show_bug.cgi?id=1546714
 %undefine _annotated_build
 
@@ -38,6 +36,12 @@
 %define with_freedreno 1
 %define with_vc4       1
 %define with_xa        1
+%endif
+
+%if 0%{?fedora} < 28
+%define with_wayland_egl 1
+%else
+%define with_wayland_egl 0
 %endif
 
 %define dri_drivers --with-dri-drivers=%{?base_drivers}%{?platform_drivers}
@@ -111,14 +115,12 @@ BuildRequires: clang-devel >= 3.0
 %endif
 %endif
 BuildRequires: elfutils-libelf-devel
-BuildRequires: libxml2-python
+BuildRequires: python3-libxml2
 BuildRequires: libudev-devel
 BuildRequires: bison flex
-%if %{with wayland}
 BuildRequires: pkgconfig(wayland-client)
 BuildRequires: pkgconfig(wayland-server)
 BuildRequires: pkgconfig(wayland-protocols)
-%endif
 %if 0%{?with_vdpau}
 BuildRequires: libvdpau-devel
 %endif
@@ -135,7 +137,7 @@ BuildRequires: libclc-devel opencl-filesystem
 %if 0%{?with_vulkan}
 BuildRequires: vulkan-devel
 %endif
-BuildRequires: python-mako
+BuildRequires: python3-mako
 %ifarch %{valgrind_arches}
 BuildRequires: pkgconfig(valgrind)
 %endif
@@ -263,7 +265,7 @@ Provides:       libgbm-devel%{?_isa}
 %description libgbm-devel
 %{summary}.
 
-%if %{with wayland}
+%if %{?with_wayland_egl}
 %package libwayland-egl
 Summary:        Mesa libwayland-egl runtime library
 Provides:       libwayland-egl
@@ -389,7 +391,7 @@ autoreconf -vfi
     --disable-xvmc \
     %{?with_vdpau:--enable-vdpau} \
     %{?with_vaapi:--enable-va} \
-    --with-platforms=x11,drm,surfaceless%{?with_wayland:,wayland} \
+    --with-platforms=x11,drm,surfaceless,wayland \
     --enable-shared-glapi \
     --enable-gbm \
     %{?with_omx:--enable-omx-bellagio} \
@@ -427,6 +429,12 @@ rm -f %{buildroot}%{_libdir}/libGLX_mesa.so
 rm -f %{buildroot}%{_libdir}/libEGL_mesa.so
 # XXX can we just not build this
 rm -f %{buildroot}%{_libdir}/libGLES*
+
+# remove libwayland-egl on F28+ where it's built as part of wayland source package
+%if !%{?with_wayland_egl}
+rm -f %{buildroot}%{_libdir}/libwayland-egl.so*
+rm -f %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
+%endif
 
 # glvnd needs a default provider for indirect rendering where it cannot
 # determine the vendor
@@ -527,7 +535,7 @@ popd
 %{_includedir}/gbm.h
 %{_libdir}/pkgconfig/gbm.pc
 
-%if %{with wayland}
+%if %{?with_wayland_egl}
 %ldconfig_scriptlets libwayland-egl
 %files libwayland-egl
 %{_libdir}/libwayland-egl.so.1

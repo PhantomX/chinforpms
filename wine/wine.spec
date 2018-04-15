@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.5
+%global stagingver 3.6
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -28,7 +28,7 @@
 %endif
 
 Name:           wine
-Version:        3.5
+Version:        3.6
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -95,6 +95,7 @@ Patch604:       keybindings.patch
 # wine staging patches for wine-staging
 %if 0%{?staging}
 Source900: https://github.com/wine-staging/wine-staging/archive/v%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
+Patch900: https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
 %endif
 
 %if !%{?no64bit}
@@ -683,6 +684,8 @@ This package adds the opencl driver for wine.
 # setup and apply wine-staging patches
 %if 0%{?staging}
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
+
+%patch900 -p1
 
 make -C patches DESTDIR="`pwd`" install
 
@@ -1806,6 +1809,7 @@ fi
 %{_libdir}/wine/snmpapi.dll.so
 %{_libdir}/wine/softpub.dll.so
 %{_libdir}/wine/spoolsv.exe.so
+%{_libdir}/wine/srclient.dll.so
 %{_libdir}/wine/sspicli.dll.so
 %{_libdir}/wine/stdole2.tlb.so
 %{_libdir}/wine/stdole32.tlb.so
@@ -2242,6 +2246,9 @@ fi
 %endif
 
 %changelog
+* Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.6-100.chinfo
+- 3.6
+
 * Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.5-100.chinfo
 - 3.5
 

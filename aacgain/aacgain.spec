@@ -12,7 +12,7 @@ URL:            http://altosdesign.com/aacgain/
 Source0:        http://sbriesen.de/gentoo/distfiles/%{name}-%{version}.tar.xz
 Source1:        http://downloads.sourceforge.net/mp3gain/mp3gain-%{mp3gainver}-src.zip
 Source2:        https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/mp4v2/mp4v2-%{mp4v2ver}.tar.bz2
-Source3:        http://downloads.sourceforge.net/faac/faad2-%{faadver}.tar.gz
+Source3:        https://downloads.sourceforge.net/faac/faad2-%{faadver}.tar.gz
 
 Patch0:         mp4v2-1.9.1-format-security.patch
 
