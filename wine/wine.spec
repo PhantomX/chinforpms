@@ -29,7 +29,7 @@
 
 Name:           wine
 Version:        3.6
-Release:        100%{?rctag}.chinfo%{?dist}
+Release:        102%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -687,7 +687,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch900 -p1
 
-make -C patches DESTDIR="`pwd`" install
+./patches/patchinstall.sh DESTDIR="`pwd`" --all
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -711,13 +711,7 @@ sed -i \
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
-%if 0%{?fedora} < 26
 export CFLAGS="`echo %{optflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
-%else
-# https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-export TEMP_CFLAGS="`echo %{build_cflags} | sed -e 's/-O2/-O1/'`"
-export CFLAGS="`echo $TEMP_CFLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
-%endif
 
 %configure \
  --sysconfdir=%{_sysconfdir}/wine \
@@ -2246,6 +2240,12 @@ fi
 %endif
 
 %changelog
+* Sun Apr 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.6-102.chinfo
+- Revert ARMv7 fix.
+
+* Sun Apr 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.6-101.chinfo
+- f28 sync
+
 * Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.6-100.chinfo
 - 3.6
 

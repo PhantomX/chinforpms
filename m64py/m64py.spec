@@ -1,24 +1,37 @@
+%global gitcommitid 164577efde5bb4400966a7073f577295d5500a2b
+%global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
+%global date 20180306
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           m64py
-Version:        0.2.3
-Release:        3%{?dist}
+Version:        0.2.5
+Release:        1%{?gver}%{?dist}
 Summary:        A frontend for Mupen64Plus 2.0
 
 License:        GPLv3
 URL:            http://m64py.sourceforge.net
+%if 0%{?with_snapshot}
+Source0:        https://github.com/mupen64plus/mupen64plus-ui-python/archive/%{gitcommitid}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        https://github.com/mupen64plus/mupen64plus-ui-python/releases/download/%{version}/%{name}-%{version}.tar.gz
+%endif
 
-Patch0:         %{name}-0.2.3-path.patch
-Patch1:         %{name}-0.2.3-libdir.patch
+Patch0:         %{name}-path.patch
+Patch1:         %{name}-libdir.patch
 
 BuildArch:      noarch
 BuildRequires:  desktop-file-utils
 BuildRequires:  python3-devel
-#BuildRequires:  python3-sdl2
+BuildRequires:  python3-sdl2
 BuildRequires:  python3-qt5-devel
 BuildRequires:  ImageMagick
 Requires:       mupen64plus
 Requires:       python3-qt5
-#Requires:       python3-sdl2
+Requires:       python3-sdl2
 Requires:       SDL2
 Requires:       hicolor-icon-theme
 
@@ -28,9 +41,13 @@ plugin-based Nintendo 64 emulator.
 
 
 %prep
+%if 0%{?with_snapshot}
+%autosetup -n mupen64plus-ui-python-%{gitcommitid} -p1
+%else
 %autosetup -p1
+%endif
 
-sed -e 's,^#!/usr/bin/env python,#!%{__python3},' -i %{name}
+sed -e 's,^#!/usr/bin/env python,#!%{__python3},' -i bin/%{name}
 
 find -name '*.py' -print0 | xargs -0 \
   sed -i -e 's,^#!/usr/bin/env python,#!%{__python3},'
@@ -40,7 +57,7 @@ find -name '*.py' -print0 | xargs -0 \
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{name} %{buildroot}%{_bindir}/
+install -pm0755 bin/%{name} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
 cp -a src/m64py/* %{buildroot}%{_datadir}/%{name}/
@@ -69,7 +86,7 @@ done
 
 %files
 %license COPYING LICENSES
-%doc AUTHORS README.md
+%doc AUTHORS README.rst
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %dir %{_datadir}/%{name}
@@ -77,6 +94,9 @@ done
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 
 %changelog
+* Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.2.5-1.20180306git164577e
+- New snapshot
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.2.3-3
 - Fix python3-qt5 BR
 

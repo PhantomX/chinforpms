@@ -1,13 +1,13 @@
-%global pkgname PySDL2
-
 Name:           pysdl2
-Version:        0.9.5
-Release:        2%{?dist}
+Version:        0.9.6
+Release:        1%{?dist}
 Summary:        Python wrapper around the SDL2 library
 
 License:        CC0
-URL:            https://pysdl2.readthedocs.io
-Source0:        https://bitbucket.org/marcusva/py-sdl2/downloads/%{pkgname}-%{version}.tar.gz
+URL:            https://github.com/marcusva/py-sdl2
+
+%global pkgversion %(c=%{version}; echo ${c//./_})
+Source0:        https://github.com/marcusva/py-sdl2/archive/rel_%{pkgversion}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
@@ -36,7 +36,7 @@ restrictions, nor does it rely on C code, but uses ctypes instead.
 
 
 %prep
-%autosetup -n PySDL2-%{version}
+%autosetup -n py-sdl2-rel_%{pkgversion}
 
 %build
 %py3_build
@@ -47,11 +47,14 @@ restrictions, nor does it rely on C code, but uses ctypes instead.
 
 %files -n python3-sdl2
 %license COPYING.txt
-%doc AUTHORS.txt README.txt
+%doc AUTHORS.txt README.rst
 %{python3_sitelib}/sdl2
-%{python3_sitelib}/%{pkgname}-*.egg-info
+%{python3_sitelib}/*-*.egg-info
 
 %changelog
+* Mon Apr 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.6-1
+- 0.9.6
+
 * Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.5-2
 - Drop python2 support
 

@@ -1,14 +1,15 @@
-%global gitcommitid e04107795398781aa88a973f7e9989c635a53b88
+%global gitcommitid 36e3ac8380e87193351fa3e1b061358b0a200fce
 %global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
-%global use_git 1
+%global date 20171127
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
-%global gver .git%{shortcommit}
+%global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           mpdnotify
 Version:        0
-Release:        2%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        'Now Playing' information via notify-send and mpc 
 
 License:        Public Domain
@@ -36,7 +37,7 @@ notifications about what song is currently playing in mpd.
 %endif
 
 # Search links too
-sed -e '/^cover=/s|-type f|\0 -o -type l|g' -i %{name}
+sed -e '/^    cover=/s|-type f|\0 -o -type l|g' -i.orig %{name}
 
 %build
 
@@ -52,6 +53,9 @@ install -pm0755 %{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Apr 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 0-3.20171127git6e3ac8
+- New snapshot.
+
 * Fri Dec 30 2016 Phantom X <megaphantomx at bol dot com dot br> - 0-2
 - Search for links.
 

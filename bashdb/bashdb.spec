@@ -5,7 +5,7 @@ Summary:        BASH debugger, the BASH symbolic debugger
 Version:        4.4_0.94
 Release:        1%{?dist}
 License:        GPLv2+
-Url:            http://bashdb.sourceforge.net/
+URL:            http://bashdb.sourceforge.net/
 
 %global rversion %(c=%{version}; echo ${c//_/-})
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{rversion}.tar.bz2
