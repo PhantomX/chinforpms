@@ -1,7 +1,7 @@
 %global commit fb377b0b8427d67d02bf59f4ee72d6f0146947ef
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180414
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Enable system ffmpeg
 %global with_sysffmpeg 0
@@ -95,8 +95,12 @@ Requires:       google-roboto-condensed-fonts
 %{summary}.
 
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p0
-echo %{?dist}
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p0
+%else
+%autosetup -n %{name}-%{version} -p0
+%endif
+
 %if 0%{?with_snapshot}
 tar -xf %{SOURCE1} -C assets/lang --strip-components 1
 %if !0%{?with_sysffmpeg}

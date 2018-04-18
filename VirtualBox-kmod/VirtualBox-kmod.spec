@@ -34,9 +34,9 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.2.8
+Version:        5.2.10
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        101.chinfo%{?dist}
+Release:        100.chinfo%{?dist}
 
 Summary:        Kernel module for VirtualBox
 License:        GPLv2 or CDDL
@@ -118,6 +118,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.10-100.chinfo
+- 5.2.10
+
 * Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.8-101.chinfo
 - Sync with rpmfusion.
 

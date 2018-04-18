@@ -1,11 +1,14 @@
 Name:           linphoneqt
 Version:        4.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Free VoIP and video softphone based on the SIP protocol
 
 License:        GPLv2
 URL:            http://www.linphone.org/
 Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{version}.tar.gz
+
+# Fix crash with Qt 5.10
+Patch0:         https://github.com/BelledonneCommunications/linphone-desktop/commit/ecaab0f73d0b74bbfbf150286305fa6e12970037.patch#/bd-%{name}-qt510.patch
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
@@ -39,7 +42,7 @@ Requires:       hicolor-icon-theme
 Linphone is a free VoIP and video softphone based on the SIP protocol.
 
 %prep
-%autosetup
+%autosetup -p1
 
 echo '#define LINPHONE_QT_GIT_VERSION "%{version}-%{release}"' > src/app/gitversion.h
 
@@ -86,5 +89,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Apr 17 2018 Phantom X - 4.1.1-2
+- Patch to fix crash with Qt 5.10
+
 * Sat Sep 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.1.1-1
 - Initial spec

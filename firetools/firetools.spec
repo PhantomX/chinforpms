@@ -1,5 +1,5 @@
 Name:           firetools
-Version:        0.9.50
+Version:        0.9.52
 Release:        1%{?dist}
 Summary:        GUI tools for firejail
 
@@ -67,6 +67,9 @@ done
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.52-1
+- 0.9.52
+
 * Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.9.50-1
 - 0.9.50
 

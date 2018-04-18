@@ -4,7 +4,7 @@
 %global prerel 0
 
 Name:           VirtualBox-guest-additions-iso
-Version:        5.2.8
+Version:        5.2.10
 Release:        1%{?prerel:.%{prerel}}%{?dist}
 Summary:        Guest additions for VirtualBox
 
@@ -45,6 +45,9 @@ install -pm0644 %{SOURCE0} \
 
 
 %changelog
+* Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.10-1.chinfo
+- 5.2.10
+
 * Tue Feb 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.8-1
 - 5.2.8
 

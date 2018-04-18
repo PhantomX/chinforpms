@@ -25,7 +25,7 @@
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name: gtk3
-Version: 3.22.29
+Version: 3.22.30
 Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -260,7 +260,8 @@ export CFLAGS='-fno-strict-aliasing %optflags'
         --enable-broadway-backend \
 %endif
         --enable-colord \
-        --enable-installed-tests
+        --enable-installed-tests \
+        --with-included-immodules=wayland
 )
 
 # fight unused direct deps
@@ -298,9 +299,6 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/%{bin_version}/theming-engines
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 %ldconfig_scriptlets
-
-%posttrans devel
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %transfiletriggerin -- %{_libdir}/gtk-3.0/3.0.0/immodules
 gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
@@ -359,9 +357,6 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %if 0%{?with_broadway}
 %{_libdir}/gtk-3.0/%{bin_version}/immodules/im-broadway.so
 %endif
-%if 0%{?with_wayland}
-%{_libdir}/gtk-3.0/%{bin_version}/immodules/im-wayland.so
-%endif
 %config(noreplace) %{_sysconfdir}/gtk-3.0/im-multipress.conf
 
 %files immodule-xim
@@ -406,6 +401,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.30-100.chinfo
+- 3.22.30
+- f28 sync, included wayland immodule
+
 * Wed Mar 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.29-100.chinfo
 - 3.22.29
 - Wayland immodule
