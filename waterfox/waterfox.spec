@@ -1,7 +1,9 @@
-%global commit a52b5eab5aa079a614683ad9442be74a852321b1
+%global commit 8864091a01f1fbbce361d654a4bae96ad20e2211
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180412
+%global date 20180419
 %global with_snapshot 1
+
+%global freebsd_rev 467805
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -17,7 +19,11 @@
 %global system_hunspell   1
 
 # Use system libevent?
-%global system_libevent   0
+%if 0%{?fedora} > 27
+%global system_libevent   1
+%else
+%global system_libevent     0
+%endif
 
 # Use system sqlite?
 %if 0%{?fedora} > 27
@@ -29,6 +35,13 @@
 
 # Use system cairo?
 %global system_cairo      0
+
+# Use system graphite2/harfbuzz?
+%if 0%{?fedora} > 27
+%global system_harfbuzz   1
+%else
+%global system_harfbuzz   0
+%endif
 
 # Use system libvpx?
 %global system_libvpx     1
@@ -66,6 +79,13 @@
 # Minimal required versions
 %global cairo_version 1.13.1
 %global freetype_version 2.1.9
+%if %{?system_harfbuzz}
+%global graphite2_version 1.3.10
+%global harfbuzz_version 1.4.7
+%endif
+%if %{?system_libevent}
+%global libevent_version 2.1.8
+%endif
 %global libnotify_version 0.7.0
 %if %{?system_libvpx}
 %global libvpx_version 1.4.0
@@ -95,7 +115,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.1.0
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -103,6 +123,10 @@ Source0:        https://github.com/MrAlex94/%{name}/archive/%{commit}.tar.gz#/%{
 %else
 Source0:        https://github.com/MrAlex94/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
+
+# FreeBSD patches
+# rev=revision ./FreeBSD-patches-snapshot.sh
+Source600:      http://dl.bintray.com/phantomx/tarballs/FreeBSD-patches-r%{freebsd_rev}.tar.xz
 
 Source10:       waterfox-mozconfig
 Source12:       waterfox-chinfo-default-prefs.js
@@ -150,9 +174,6 @@ Patch413:        mozilla-1353817.patch
 Patch415:        mozilla-1405267.patch
 Patch416:        mozilla-1435695.patch
 
-# Better compatibility with NSS sql database format, rhbz#1496563
-Patch481:        sqlcompat-ff57-1-backport-730495
-
 # Upstream updates
 
 %global wf_url https://github.com/MrAlex94/Waterfox/commit
@@ -161,19 +182,9 @@ Patch481:        sqlcompat-ff57-1-backport-730495
 # Debian patches
 Patch500:        mozilla-440908.patch
 
-# FreeBSD patches
-%global freebsd_url https://svnweb.freebsd.org/ports/head/www/firefox/files
-%global freebsd_rev 454192
-%global freebsd_uri ?revision=%{freebsd_rev}&view=co&pathrev=%{freebsd_rev}
-Patch600:        %{freebsd_url}/patch-bug1401573%{freebsd_uri}#/FreeBSD-bug1401573.patch
-Patch601:        %{freebsd_url}/patch-bug1186967%{freebsd_uri}#/FreeBSD-bug1186967.patch
-Patch602:        %{freebsd_url}/patch-bug1384701%{freebsd_uri}#/FreeBSD-bug1384701.patch
-
 # Chinforinfula patches
 Patch700:        %{name}-nolangpacks.patch
 Patch701:        %{name}-waterfoxdir.patch
-
-Patch800:        %{name}-FreeBSD-bug1433747.patch
 
 %if %{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -196,13 +207,17 @@ BuildRequires:  pkgconfig(gtk+-2.0)
 BuildRequires:  pkgconfig(krb5)
 BuildRequires:  pkgconfig(pango)
 BuildRequires:  pkgconfig(freetype2) >= %{freetype_version}
+%if %{?system_harfbuzz}
+BuildRequires:  pkgconfig(graphite2) >= %{graphite2_version}
+BuildRequires:  pkgconfig(harfbuzz) >= %{harfbuzz_version}
+%endif
 BuildRequires:  pkgconfig(xt)
 BuildRequires:  pkgconfig(xrender)
 %if %{?system_hunspell}
 BuildRequires:  pkgconfig(hunspell)
 %endif
 %if %{?system_libevent}
-BuildRequires:  pkgconfig(libevent)
+BuildRequires:  pkgconfig(libevent) >= %{libevent_version}
 %endif
 BuildRequires:  pkgconfig(libstartup-notification-1.0)
 %if %{?alsa_backend}
@@ -212,13 +227,13 @@ BuildRequires:  pkgconfig(libnotify) >= %{libnotify_version}
 BuildRequires:  pkgconfig(dri)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  dbus-glib-devel
+BuildRequires:  pkgconfig(libv4l2)
 %if %{?system_libvpx}
 BuildRequires:  libvpx-devel >= %{libvpx_version}
 %endif
 BuildRequires:  autoconf213
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(icu-i18n)
-BuildRequires:  pkgconfig(gconf-2.0)
 BuildRequires:  yasm
 BuildRequires:  llvm
 BuildRequires:  llvm-devel
@@ -276,9 +291,9 @@ This package contains results of tests executed during build.
 
 %prep
 %if 0%{?with_snapshot}
-%setup -q -n Waterfox-%{commit}
+%setup -q -n Waterfox-%{commit} -a 600
 %else
-%setup -q -n Waterfox-%{version}
+%setup -q -n Waterfox-%{version} -a 600
 %endif
 
 %if %{build_langpacks}
@@ -330,25 +345,41 @@ This package contains results of tests executed during build.
 %patch415 -p1 -b .1405267
 %patch416 -p1 -b .1435695
 
-%if 0%{?fedora} > 27
-%patch481 -p1 -b .sqlcompat-1
-%endif
-
 #patch490 -p1
 
 # Debian extension patch
 %patch500 -p1 -b .440908
 
-# backports
-%patch600 -p0 -b .bsd1401573
-%patch601 -p0 -b .bsd1186967
-%patch602 -p0 -b .bsd1384701
+# Prepare FreeBSD patches
+mkdir _temp
+mv FreeBSD-patches-r%{freebsd_rev}/patch-{bug*,typos,{a,z}-bug*} _temp/
+rm -f FreeBSD-patches-r%{freebsd_rev}/*
+
+for i in \
+  702179 991253 1021761 1144632 1288587 1341234 \
+  1343147 1381761 1386371 \
+  1404057 1404324 1404180 \
+  1386887 1387811 1388744 1401992 1409680 1413143 \
+  1434619 1440717 1444083 1405267 1447519
+do
+  rm -f _temp/patch-bug${i}
+done
+
+%if 0%{?fedora} < 28
+  rm -f _temp/patch-bug730495
+%endif
+
+mv _temp/* FreeBSD-patches-r%{freebsd_rev}/
+
+patchcommand='patch -p0 -s -i'
+
+for i in FreeBSD-patches-r%{freebsd_rev}/patch-{a-*,bug{??????,???????},typos,z-*} ;do
+  ${patchcommand} ${i}
+done
 
 # Install langpacks other way
 %patch700 -p1 -b .nolangpacks
 %patch701 -p1 -b .waterfoxdir
-
-%patch800 -p0 -b .bsd1433747
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -377,6 +408,14 @@ echo "ac_add_options --disable-system-sqlite" >> .mozconfig
 echo "ac_add_options --enable-system-cairo" >> .mozconfig
 %else
 echo "ac_add_options --disable-system-cairo" >> .mozconfig
+%endif
+
+%if %{?system_harfbuzz}
+echo "ac_add_options --enable-system-graphite2" >> .mozconfig
+echo "ac_add_options --enable-system-harfbuzz" >> .mozconfig
+%else
+echo "ac_add_options --disable-system-graphite2" >> .mozconfig
+echo "ac_add_options --disable-system-harfbuzz" >> .mozconfig
 %endif
 
 %if %{?system_ffi}
@@ -806,6 +845,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Thu Apr 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-3.20180419git8864091
+- Apply most of FreeBSD backport patches
+- Enable system libevent and harfbuzz
+
 * Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-2.20180412gita52b5ea
 - Build latest snapshot for servo fixes
 - Drop unneeded patches

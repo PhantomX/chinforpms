@@ -1,0 +1,57 @@
+From patchwork Mon Apr 16 10:17:50 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [net] Revert "macsec: missing dev_put() on error in macsec_newlink()"
+X-Patchwork-Submitter: Dan Carpenter <dan.carpenter@oracle.com>
+X-Patchwork-Id: 898556
+X-Patchwork-Delegate: davem@davemloft.net
+Message-Id: <20180416101750.GA19613@mwanda>
+To: Laura Abbott <labbott@redhat.com>, Sabrina Dubroca <sd@queasysnail.net>
+Cc: "David S. Miller" <davem@davemloft.net>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ netdev@vger.kernel.org
+Date: Mon, 16 Apr 2018 13:17:50 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+List-Id: <netdev.vger.kernel.org>
+
+This patch is just wrong, sorry.  I was trying to fix a static checker
+warning and misread the code.  The reference taken in macsec_newlink()
+is released in macsec_free_netdev() when the netdevice is destroyed.
+
+This reverts commit 5dcd8400884cc4a043a6d4617e042489e5d566a9.
+
+Reported-by: Laura Abbott <labbott@redhat.com>
+Fixes: 5dcd8400884c ("macsec: missing dev_put() on error in macsec_newlink()")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Sabrina Dubroca <sd@queasysnail.net>
+---
+I sent this earlier but I messed up the CC list.  I've updated the
+commit message as well.
+
+ drivers/net/macsec.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 9cbb0c8a896a..7de88b33d5b9 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -3277,7 +3277,7 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
+ 
+ 	err = netdev_upper_dev_link(real_dev, dev, extack);
+ 	if (err < 0)
+-		goto put_dev;
++		goto unregister;
+ 
+ 	/* need to be already registered so that ->init has run and
+ 	 * the MAC addr is set
+@@ -3316,8 +3316,7 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
+ 	macsec_del_dev(macsec);
+ unlink:
+ 	netdev_upper_dev_unlink(real_dev, dev);
+-put_dev:
+-	dev_put(real_dev);
++unregister:
+ 	unregister_netdevice(dev);
+ 	return err;
+ }

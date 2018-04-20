@@ -45,3 +45,5 @@ perl -p -i -e 's|%define gitrev.*|%define gitrev 0|' kernel.spec
 perl -p -i -e 's|%global baserelease.*|%global baserelease 0|' kernel.spec
 
 rpmdev-bumpspec -c "Linux v4.$BASE-rc$RC" kernel.spec
+
+echo "Don't forget to bump kernel-tools"

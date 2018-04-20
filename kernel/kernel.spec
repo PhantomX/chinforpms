@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -372,7 +372,7 @@ Summary: The Linux kernel
 
 Name: kernel%{?variant}
 License: GPLv2 and Redistributable, no modification permitted
-URL: http://www.kernel.org/
+URL: https://www.kernel.org/
 Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
@@ -575,6 +575,7 @@ Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
+# http://patchwork.ozlabs.org/patch/587554/
 Patch302: ARM-tegra-usb-no-reset.patch
 
 # https://patchwork.kernel.org/patch/9820417/
@@ -642,19 +643,19 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rhbz 1509461
 Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
-# rhbz 1558977
-Patch504: sunrpc-remove-incorrect-HMAC-request-initialization.patch
-
 # In v4.17
 # rhbz 1549316
 Patch505: ipmi-fixes.patch
+
+# rhbz 1566510
+Patch506: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 7b2d22b118d1ce275f762e1458e957a45ff84018
+%global opensuse_id e881e167cb9e0f0d39c1417e3d8d5a030d4cd615
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -685,6 +686,10 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 Patch3001: %{pf_url}/2597a2a58616cc8a1046ede0be762103221ea41b.patch#/pf-2597a2a58616cc8a1046ede0be762103221ea41b.patch
 Patch3002: %{pf_url}/a998885a48d9b7473040f59c63a8b0ea9f210afa.patch#/pf-a998885a48d9b7473040f59c63a8b0ea9f210afa.patch
 Patch3003: %{pf_url}/87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch#/pf-87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch
+Patch3004: %{pf_url}/bc54177ae06e2f03867380969629f4f13efcc238.patch#/pf-bc54177ae06e2f03867380969629f4f13efcc238.patch
+Patch3005: %{pf_url}/78abb892d634945f6f001a1fdefec1995eca0c36.patch#/pf-78abb892d634945f6f001a1fdefec1995eca0c36.patch
+Patch3006: %{pf_url}/2032c877108b4958d6d94c5b253910d540817cb5.patch#/pf-2032c877108b4958d6d94c5b253910d540817cb5.patch
+Patch3007: %{pf_url}/88e727af7bed4f8765e276ffe811ef7fc4f80411.patch#/pf-88e727af7bed4f8765e276ffe811ef7fc4f80411.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20180406)
@@ -693,8 +698,6 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_addit
 # END OF PATCH DEFINITIONS
 
 %endif
-
-BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
 
 %description
 The kernel meta package
@@ -764,7 +767,6 @@ Provides: installonlypkg(kernel)
 %description debuginfo-common-%{_target_cpu}
 This package is required by %{name}-debuginfo subpackages.
 It provides the kernel source files common to all builds.
-
 
 #
 # This macro creates a kernel-<subpackage>-debuginfo package.
@@ -1878,7 +1880,6 @@ fi
 
 # empty meta-package
 %files
-
 # This is %%{image_install_path} on an arch where that includes ELF files,
 # or empty otherwise.
 %define elf_image_install_path %{?kernel_image_elf:%{image_install_path}}
@@ -1944,6 +1945,10 @@ fi
 #
 #
 %changelog
+* Thu Apr 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.3-500.chinfo
+- 4.16.3
+- f28 sync
+
 * Thu Apr 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.2-500.chinfo
 - 4.16.2
 - f28 sync

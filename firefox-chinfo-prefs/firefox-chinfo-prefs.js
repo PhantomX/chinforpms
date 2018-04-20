@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20180315
+// 20180419
 
 pref("browser.bookmarks.showRecentlyBookmarked", false);
 pref("browser.ctrlTab.previews", false);
@@ -29,6 +29,9 @@ pref("toolkit.cosmeticAnimations.enabled", false);
 // Don't show 'know your rights' on first run
 pref("browser.rights.3.shown", true);
 
+// Don't show Onboarding on first run after every update
+pref("browser.onboarding.enabled", false);
+
 // Don't show WhatsNew on first run after every update
 pref("browser.startup.homepage_override.mstone","ignore");
 
@@ -55,6 +58,12 @@ pref("browser.eme.ui.enabled", false);
 pref("media.eme.enabled", false);
 pref("media.eme.apiVisible", false);
 
+// No Valence
+pref("devtools.webide.enabled", false);
+pref("devtools.webide.autoinstallADBHelper", false);
+pref("devtools.webide.autoinstallFxdtAdapters", false);
+pref("devtools.webide.autoConnectRuntime", false);
+
 // No blobs
 pref("media.gmp-gmpopenh264.provider.enabled",false);
 pref("media.gmp-gmpopenh264.autoupdate",false);
@@ -70,7 +79,7 @@ pref("browser.newtabpage.activity-stream.migrationExpired", true);
 pref("browser.newtabpage.activity-stream.prerender", false);
 pref("browser.newtabpage.activity-stream.showSearch", false);
 pref("browser.newtabpage.activity-stream.showTopSites", false);
-pref("browser.newtabpage.directory.source","");
+pref("browser.newtabpage.directory.source","data:application/json,{}");
 pref("browser.newtabpage.enabled", false);
 pref("browser.newtabpage.enhanced", false);
 pref("browser.newtabpage.directory.ping", "");
@@ -103,8 +112,11 @@ pref("privacy.trackingprotection.pbmode.enabled", true);
 
 // Disable datareporting and telemetry
 pref("browser.ping-centre.telemetry", false);
+pref("browser.tabs.crashReporting.sendReport", false);
 pref("datareporting.healthreport.dataSubmissionEnabled", false);
 pref("datareporting.healthreport.uploadEnabled", false);
+pref("dom.ipc.plugins.flash.subprocess.crashreporter.enabled", false);
+pref("dom.ipc.plugins.reportCrashURL", false);
 pref("toolkit.telemetry.archive.enabled", false);
 pref("toolkit.telemetry.bhrPing.enabled", false);
 pref("toolkit.telemetry.enabled", false);

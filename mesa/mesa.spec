@@ -56,7 +56,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        18.0.0
+Version:        18.0.1
 Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
@@ -367,6 +367,9 @@ Headers for development with the Vulkan API.
 %if 0%{sanitize}
   cp -f %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
   cp -f %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
+%else
+  cmp %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
+  cmp %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
 %endif
 
 cp %{SOURCE4} docs/
@@ -666,6 +669,9 @@ popd
 %endif
 
 %changelog
+* Wed Apr 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.0.1-100.chinfo
+- 18.0.1
+
 * Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.0.0-100.chinfo
 - 18.0.0
 - f28 sync

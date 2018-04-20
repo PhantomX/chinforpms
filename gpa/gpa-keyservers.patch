@@ -1,0 +1,10 @@
+--- gpa-0.9.10/src/keyserver.c.pgp.mit.edu	2018-04-18 11:50:38.329192609 -0300
++++ gpa-0.9.10/src/keyserver.c	2018-04-18 11:50:45.054170518 -0300
+@@ -184,6 +184,7 @@ keyserver_read_list (const gchar *confna
+ 
+       add_server (&serverlist, "http://gpg-keyserver.de");
+       add_server (&serverlist, "http://keyserver.pramberger.at");
++      add_server (&serverlist, "hkp://pgp.mit.edu");
+     }
+ 
+   return rc;
