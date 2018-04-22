@@ -125,8 +125,9 @@ Source0:        https://github.com/MrAlex94/%{name}/archive/%{version}.tar.gz#/%
 %endif
 
 # FreeBSD patches
-# rev=revision ./FreeBSD-patches-snapshot.sh
-Source600:      http://dl.bintray.com/phantomx/tarballs/FreeBSD-patches-r%{freebsd_rev}.tar.xz
+# https://www.freshports.org/www/waterfox
+# rev=revision ./waterfox-FreeBSD-patches-snapshot.sh
+Source600:      http://dl.bintray.com/phantomx/tarballs/%{name}-FreeBSD-patches-r%{freebsd_rev}.tar.xz
 
 Source10:       waterfox-mozconfig
 Source12:       waterfox-chinfo-default-prefs.js
@@ -352,8 +353,8 @@ This package contains results of tests executed during build.
 
 # Prepare FreeBSD patches
 mkdir _temp
-mv FreeBSD-patches-r%{freebsd_rev}/patch-{bug*,typos,{a,z}-bug*} _temp/
-rm -f FreeBSD-patches-r%{freebsd_rev}/*
+mv %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug*,typos,{a,z}-bug*} _temp/
+rm -f %{name}-FreeBSD-patches-r%{freebsd_rev}/*
 
 for i in \
   702179 991253 1021761 1144632 1288587 1341234 \
@@ -369,11 +370,11 @@ done
   rm -f _temp/patch-bug730495
 %endif
 
-mv _temp/* FreeBSD-patches-r%{freebsd_rev}/
+mv _temp/* %{name}-FreeBSD-patches-r%{freebsd_rev}/
 
 patchcommand='patch -p0 -s -i'
 
-for i in FreeBSD-patches-r%{freebsd_rev}/patch-{a-*,bug{??????,???????},typos,z-*} ;do
+for i in %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{a-*,bug{??????,???????},typos,z-*} ;do
   ${patchcommand} ${i}
 done
 

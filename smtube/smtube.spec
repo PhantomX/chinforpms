@@ -1,5 +1,5 @@
 Name:           smtube
-Version:        18.1.0
+Version:        18.3.0
 Release:        100.chinfo%{?dist}
 Summary:        YouTube browser for SMPlayer
 
@@ -65,5 +65,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Apr 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.3.0-100.chinfo
+- 18.3.0
+
 * Sun Jan 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.0-100.chinfo
 - Initial spec, borrowed from RPMFusion smplayer spec

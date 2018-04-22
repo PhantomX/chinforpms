@@ -1,7 +1,7 @@
 %global commit fb377b0b8427d67d02bf59f4ee72d6f0146947ef
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180414
-%global with_snapshot 0
+%global with_snapshot 1
 
 # Enable system ffmpeg
 %global with_sysffmpeg 0
