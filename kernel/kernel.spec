@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -581,31 +581,36 @@ Patch302: ARM-tegra-usb-no-reset.patch
 # https://patchwork.kernel.org/patch/9820417/
 Patch303: qcom-msm89xx-fixes.patch
 
+# https://patchwork.kernel.org/patch/10351797/
+Patch304: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
+
 # https://patchwork.kernel.org/patch/10173115/
-Patch304: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
+Patch305: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 
 # http://patches.linaro.org/patch/131764/
-Patch305: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
+Patch306: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
 
 # https://patchwork.kernel.org/patch/10245303/
-Patch306: wcn36xx-reduce-verbosity-of-drivers-messages.patch
+Patch307: wcn36xx-reduce-verbosity-of-drivers-messages.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg632925.html
-Patch307: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
+Patch308: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
 
 # https://marc.info/?l=linux-kernel&m=152328880417846&w=2
-Patch308: arm64-thunderx-crypto-zip-fixes.patch
+Patch309: arm64-thunderx-crypto-zip-fixes.patch
 
 # https://www.spinics.net/lists/linux-crypto/msg32725.html
-Patch309: crypto-testmgr-Allow-different-compression-results.patch
-
-Patch310: arm-tegra-fix-nouveau-crash.patch
+Patch310: crypto-testmgr-Allow-different-compression-results.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg630629.html
 Patch311: arm-sunxi-nvmem-fixH3.patch
 
 # https://patchwork.kernel.org/patch/10311335/
 Patch312: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
+
+Patch313: arm-dts-Add-am335x-pocketbeagle.patch
+
+Patch314: arm-tegra-fix-nouveau-crash.patch
 
 # Upstream 4.17 back port
 Patch319: of-i2c-fix-module-aliases.patch
@@ -655,7 +660,7 @@ Patch506: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 %global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id e881e167cb9e0f0d39c1417e3d8d5a030d4cd615
+%global opensuse_id 749a529ee125727a9f31381cef6254fc06306c67
 %global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -673,7 +678,6 @@ Patch1021: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patc
 Patch1022: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
 Patch1023: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
 Patch1024: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
-Patch1026: %{opensuse_url}/ext4-llseek-do-not-crop-offset-on-32bit.patch?id=%{opensuse_id}#/openSUSE-ext4-llseek-do-not-crop-offset-on-32bit.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -687,9 +691,8 @@ Patch3001: %{pf_url}/2597a2a58616cc8a1046ede0be762103221ea41b.patch#/pf-2597a2a5
 Patch3002: %{pf_url}/a998885a48d9b7473040f59c63a8b0ea9f210afa.patch#/pf-a998885a48d9b7473040f59c63a8b0ea9f210afa.patch
 Patch3003: %{pf_url}/87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch#/pf-87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch
 Patch3004: %{pf_url}/bc54177ae06e2f03867380969629f4f13efcc238.patch#/pf-bc54177ae06e2f03867380969629f4f13efcc238.patch
-Patch3005: %{pf_url}/78abb892d634945f6f001a1fdefec1995eca0c36.patch#/pf-78abb892d634945f6f001a1fdefec1995eca0c36.patch
-Patch3006: %{pf_url}/2032c877108b4958d6d94c5b253910d540817cb5.patch#/pf-2032c877108b4958d6d94c5b253910d540817cb5.patch
-Patch3007: %{pf_url}/88e727af7bed4f8765e276ffe811ef7fc4f80411.patch#/pf-88e727af7bed4f8765e276ffe811ef7fc4f80411.patch
+Patch3005: %{pf_url}/2032c877108b4958d6d94c5b253910d540817cb5.patch#/pf-2032c877108b4958d6d94c5b253910d540817cb5.patch
+Patch3006: %{pf_url}/88e727af7bed4f8765e276ffe811ef7fc4f80411.patch#/pf-88e727af7bed4f8765e276ffe811ef7fc4f80411.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch (20180406)
@@ -1945,6 +1948,11 @@ fi
 #
 #
 %changelog
+* Tue Apr 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.4-500.chinfo
+- 4.16.4
+- f28 sync
+
+- f28 sync
 * Thu Apr 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.3-500.chinfo
 - 4.16.3
 - f28 sync

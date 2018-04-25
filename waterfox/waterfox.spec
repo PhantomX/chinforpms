@@ -3,7 +3,7 @@
 %global date 20180419
 %global with_snapshot 1
 
-%global freebsd_rev 467805
+%global freebsd_rev 468197
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -19,39 +19,27 @@
 %global system_hunspell   1
 
 # Use system libevent?
-%if 0%{?fedora} > 27
 %global system_libevent   1
-%else
-%global system_libevent     0
-%endif
 
 # Use system sqlite?
-%if 0%{?fedora} > 27
 %global system_sqlite     1
-%else
-%global system_sqlite     0
-%endif
+
 %global system_ffi        1
 
 # Use system cairo?
 %global system_cairo      0
 
 # Use system graphite2/harfbuzz?
-%if 0%{?fedora} > 27
 %global system_harfbuzz   1
-%else
-%global system_harfbuzz   0
-%endif
 
 # Use system libvpx?
 %global system_libvpx     1
 
+# Use system libvpx?
+%global system_vorbis     1
+
 # Use system libicu?
-%if 0%{?fedora} > 27
 %global system_libicu     0
-%else
-%global system_libicu     0
-%endif
 
 # Big endian platforms
 %ifarch ppc64 s390x
@@ -90,6 +78,10 @@
 %if %{?system_libvpx}
 %global libvpx_version 1.4.0
 %endif
+%if %{?system_vorbis}
+%global ogg_version 1.3.3
+%global vorbis_version 1.3.5
+%endif
 
 %if %{?system_nss}
 %global nspr_version 4.17.0
@@ -115,7 +107,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.1.0
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -230,7 +222,11 @@ BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  dbus-glib-devel
 BuildRequires:  pkgconfig(libv4l2)
 %if %{?system_libvpx}
-BuildRequires:  libvpx-devel >= %{libvpx_version}
+BuildRequires:  pkgconfig(vpx) >= %{libvpx_version}
+%endif
+%if %{?system_vorbis}
+BuildRequires:  pkgconfig(ogg) >= %{ogg_version}
+BuildRequires:  pkgconfig(vorbis) >= %{vorbis_version}
 %endif
 BuildRequires:  autoconf213
 BuildRequires:  pkgconfig(libpulse)
@@ -241,6 +237,7 @@ BuildRequires:  llvm-devel
 BuildRequires:  clang
 BuildRequires:  clang-libs
 BuildRequires:  gcc-c++
+BuildRequires:  patchutils
 
 Requires:       mozilla-filesystem
 Requires:       waterfox-filesystem
@@ -353,13 +350,24 @@ This package contains results of tests executed during build.
 
 # Prepare FreeBSD patches
 mkdir _temp
-mv %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug*,typos,{a,z}-bug*} _temp/
+mv %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug*,typos,{a,z}-bug*,revert-bug*} _temp/
 rm -f %{name}-FreeBSD-patches-r%{freebsd_rev}/*
 
+filterdiff -x dom/svg/crashtests/crashtests.list _temp/patch-bug1343147 \
+  > %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-bug1343147
+filterdiff -x dom/security/test/csp/mochitest.ini _temp/patch-bug1381761 \
+  > %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-bug1381761
+
+for i in 1404057 1404324 1404180 ;do
+  filterdiff \
+    -x layout/style/crashtests/crashtests.list \
+    -x layout/reftests/bugs/reftest.list \
+    _temp/patch-bug${i} > %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-bug${i}
+done
+
 for i in \
-  702179 991253 1021761 1144632 1288587 1341234 \
-  1343147 1381761 1386371 \
-  1404057 1404324 1404180 \
+  702179 991253 1021761 1144632 1288587 1341234 1386371 \
+  1343147 1381761 1404057 1404324 1404180 \
   1386887 1387811 1388744 1401992 1409680 1413143 \
   1434619 1440717 1444083 1405267 1447519
 do
@@ -374,7 +382,7 @@ mv _temp/* %{name}-FreeBSD-patches-r%{freebsd_rev}/
 
 patchcommand='patch -p0 -s -i'
 
-for i in %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{a-*,bug{??????,???????},typos,z-*} ;do
+for i in %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{a-*,bug{??????,???????},typos,revert-bug*,z-*} ;do
   ${patchcommand} ${i}
 done
 
@@ -490,6 +498,14 @@ echo "ac_add_options --with-system-jpeg" >> .mozconfig
 echo "ac_add_options --with-system-libvpx" >> .mozconfig
 %else
 echo "ac_add_options --without-system-libvpx" >> .mozconfig
+%endif
+
+%if %{?system_vorbis}
+echo "ac_add_options --with-system-ogg" >> .mozconfig
+echo "ac_add_options --with-system-vorbis" >> .mozconfig
+%else
+echo "ac_add_options --without-system-ogg" >> .mozconfig
+echo "ac_add_options --without-system-vorbis" >> .mozconfig
 %endif
 
 %if %{?system_libicu}
@@ -846,6 +862,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue Apr 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-4.20180419git8864091
+- Some more FreeBSD backport patches, BR: patchutils
+- Enable ogg/vorbis, BR: pkgconfig(vorbis)
+
 * Thu Apr 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-3.20180419git8864091
 - Apply most of FreeBSD backport patches
 - Enable system libevent and harfbuzz
