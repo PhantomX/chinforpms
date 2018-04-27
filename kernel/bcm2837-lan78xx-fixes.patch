@@ -1,79 +1,961 @@
-From 6ed88d188a8240ba44da6578eab7d17e036d0e61 Mon Sep 17 00:00:00 2001
-From: Phil Elwell <phil@raspberrypi.org>
-Date: Tue, 17 Oct 2017 15:04:29 +0100
-Subject: [PATCH] lan78xx: Enable LEDs if no valid EEPROM or OTP
+From b23d39c166ca3ed30a2a0a4c8ba4cf29677eed83 Mon Sep 17 00:00:00 2001
+From: Raghuram Chary J <raghuramchary.jallipalli@microchip.com>
+Date: Wed, 11 Apr 2018 20:36:36 +0530
+Subject: [PATCH 1/9] lan78xx: PHY DSP registers initialization to address EEE
+ link drop issues with long cables
 
-For applications of the LAN78xx that don't have valid programmed
-EEPROMs or OTPs, enabling both LEDs by default seems reasonable.
+The patch is to configure DSP registers of PHY device
+to handle Gbe-EEE failures with >40m cable length.
 
-Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Fixes: 55d7de9de6c3 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet device driver")
+Signed-off-by: Raghuram Chary J <raghuramchary.jallipalli@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 ---
- drivers/net/usb/lan78xx.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/phy/microchip.c  | 178 ++++++++++++++++++++++++++++++++++-
+ include/linux/microchipphy.h |   8 ++
+ 2 files changed, 185 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/microchip.c b/drivers/net/phy/microchip.c
+index 0f293ef28935..a97ac8c12c4c 100644
+--- a/drivers/net/phy/microchip.c
++++ b/drivers/net/phy/microchip.c
+@@ -20,6 +20,7 @@
+ #include <linux/ethtool.h>
+ #include <linux/phy.h>
+ #include <linux/microchipphy.h>
++#include <linux/delay.h>
+ 
+ #define DRIVER_AUTHOR	"WOOJUNG HUH <woojung.huh@microchip.com>"
+ #define DRIVER_DESC	"Microchip LAN88XX PHY driver"
+@@ -30,6 +31,16 @@ struct lan88xx_priv {
+ 	__u32	wolopts;
+ };
+ 
++static int lan88xx_read_page(struct phy_device *phydev)
++{
++	return __phy_read(phydev, LAN88XX_EXT_PAGE_ACCESS);
++}
++
++static int lan88xx_write_page(struct phy_device *phydev, int page)
++{
++	return __phy_write(phydev, LAN88XX_EXT_PAGE_ACCESS, page);
++}
++
+ static int lan88xx_phy_config_intr(struct phy_device *phydev)
+ {
+ 	int rc;
+@@ -66,6 +77,150 @@ static int lan88xx_suspend(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static int lan88xx_TR_reg_set(struct phy_device *phydev, u16 regaddr,
++			      u32 data)
++{
++	int val, save_page, ret = 0;
++	u16 buf;
++
++	/* Save current page */
++	save_page = phy_save_page(phydev);
++	if (save_page < 0) {
++		pr_warn("Failed to get current page\n");
++		goto err;
++	}
++
++	/* Switch to TR page */
++	lan88xx_write_page(phydev, LAN88XX_EXT_PAGE_ACCESS_TR);
++
++	ret = __phy_write(phydev, LAN88XX_EXT_PAGE_TR_LOW_DATA,
++			  (data & 0xFFFF));
++	if (ret < 0) {
++		pr_warn("Failed to write TR low data\n");
++		goto err;
++	}
++
++	ret = __phy_write(phydev, LAN88XX_EXT_PAGE_TR_HIGH_DATA,
++			  (data & 0x00FF0000) >> 16);
++	if (ret < 0) {
++		pr_warn("Failed to write TR high data\n");
++		goto err;
++	}
++
++	/* Config control bits [15:13] of register */
++	buf = (regaddr & ~(0x3 << 13));/* Clr [14:13] to write data in reg */
++	buf |= 0x8000; /* Set [15] to Packet transmit */
++
++	ret = __phy_write(phydev, LAN88XX_EXT_PAGE_TR_CR, buf);
++	if (ret < 0) {
++		pr_warn("Failed to write data in reg\n");
++		goto err;
++	}
++
++	usleep_range(1000, 2000);/* Wait for Data to be written */
++	val = __phy_read(phydev, LAN88XX_EXT_PAGE_TR_CR);
++	if (!(val & 0x8000))
++		pr_warn("TR Register[0x%X] configuration failed\n", regaddr);
++err:
++	return phy_restore_page(phydev, save_page, ret);
++}
++
++static void lan88xx_config_TR_regs(struct phy_device *phydev)
++{
++	int err;
++
++	/* Get access to Channel 0x1, Node 0xF , Register 0x01.
++	 * Write 24-bit value 0x12B00A to register. Setting MrvlTrFix1000Kf,
++	 * MrvlTrFix1000Kp, MasterEnableTR bits.
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x0F82, 0x12B00A);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x0F82]\n");
++
++	/* Get access to Channel b'10, Node b'1101, Register 0x06.
++	 * Write 24-bit value 0xD2C46F to register. Setting SSTrKf1000Slv,
++	 * SSTrKp1000Mas bits.
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x168C, 0xD2C46F);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x168C]\n");
++
++	/* Get access to Channel b'10, Node b'1111, Register 0x11.
++	 * Write 24-bit value 0x620 to register. Setting rem_upd_done_thresh
++	 * bits
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x17A2, 0x620);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x17A2]\n");
++
++	/* Get access to Channel b'10, Node b'1101, Register 0x10.
++	 * Write 24-bit value 0xEEFFDD to register. Setting
++	 * eee_TrKp1Long_1000, eee_TrKp2Long_1000, eee_TrKp3Long_1000,
++	 * eee_TrKp1Short_1000,eee_TrKp2Short_1000, eee_TrKp3Short_1000 bits.
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x16A0, 0xEEFFDD);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x16A0]\n");
++
++	/* Get access to Channel b'10, Node b'1101, Register 0x13.
++	 * Write 24-bit value 0x071448 to register. Setting
++	 * slv_lpi_tr_tmr_val1, slv_lpi_tr_tmr_val2 bits.
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x16A6, 0x071448);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x16A6]\n");
++
++	/* Get access to Channel b'10, Node b'1101, Register 0x12.
++	 * Write 24-bit value 0x13132F to register. Setting
++	 * slv_sigdet_timer_val1, slv_sigdet_timer_val2 bits.
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x16A4, 0x13132F);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x16A4]\n");
++
++	/* Get access to Channel b'10, Node b'1101, Register 0x14.
++	 * Write 24-bit value 0x0 to register. Setting eee_3level_delay,
++	 * eee_TrKf_freeze_delay bits.
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x16A8, 0x0);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x16A8]\n");
++
++	/* Get access to Channel b'01, Node b'1111, Register 0x34.
++	 * Write 24-bit value 0x91B06C to register. Setting
++	 * FastMseSearchThreshLong1000, FastMseSearchThreshShort1000,
++	 * FastMseSearchUpdGain1000 bits.
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x0FE8, 0x91B06C);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x0FE8]\n");
++
++	/* Get access to Channel b'01, Node b'1111, Register 0x3E.
++	 * Write 24-bit value 0xC0A028 to register. Setting
++	 * FastMseKp2ThreshLong1000, FastMseKp2ThreshShort1000,
++	 * FastMseKp2UpdGain1000, FastMseKp2ExitEn1000 bits.
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x0FFC, 0xC0A028);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x0FFC]\n");
++
++	/* Get access to Channel b'01, Node b'1111, Register 0x35.
++	 * Write 24-bit value 0x041600 to register. Setting
++	 * FastMseSearchPhShNum1000, FastMseSearchClksPerPh1000,
++	 * FastMsePhChangeDelay1000 bits.
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x0FEA, 0x041600);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x0FEA]\n");
++
++	/* Get access to Channel b'10, Node b'1101, Register 0x03.
++	 * Write 24-bit value 0x000004 to register. Setting TrFreeze bits.
++	 */
++	err = lan88xx_TR_reg_set(phydev, 0x1686, 0x000004);
++	if (err < 0)
++		pr_warn("Failed to Set Register[0x1686]\n");
++}
++
+ static int lan88xx_probe(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+@@ -132,6 +287,25 @@ static void lan88xx_set_mdix(struct phy_device *phydev)
+ 	phy_write(phydev, LAN88XX_EXT_PAGE_ACCESS, LAN88XX_EXT_PAGE_SPACE_0);
+ }
+ 
++static int lan88xx_config_init(struct phy_device *phydev)
++{
++	int val;
++
++	genphy_config_init(phydev);
++	/*Zerodetect delay enable */
++	val = phy_read_mmd(phydev, MDIO_MMD_PCS,
++			   PHY_ARDENNES_MMD_DEV_3_PHY_CFG);
++	val |= PHY_ARDENNES_MMD_DEV_3_PHY_CFG_ZD_DLY_EN_;
++
++	phy_write_mmd(phydev, MDIO_MMD_PCS, PHY_ARDENNES_MMD_DEV_3_PHY_CFG,
++		      val);
++
++	/* Config DSP registers */
++	lan88xx_config_TR_regs(phydev);
++
++	return 0;
++}
++
+ static int lan88xx_config_aneg(struct phy_device *phydev)
+ {
+ 	lan88xx_set_mdix(phydev);
+@@ -151,7 +325,7 @@ static struct phy_driver microchip_phy_driver[] = {
+ 	.probe		= lan88xx_probe,
+ 	.remove		= lan88xx_remove,
+ 
+-	.config_init	= genphy_config_init,
++	.config_init	= lan88xx_config_init,
+ 	.config_aneg	= lan88xx_config_aneg,
+ 
+ 	.ack_interrupt	= lan88xx_phy_ack_interrupt,
+@@ -160,6 +334,8 @@ static struct phy_driver microchip_phy_driver[] = {
+ 	.suspend	= lan88xx_suspend,
+ 	.resume		= genphy_resume,
+ 	.set_wol	= lan88xx_set_wol,
++	.read_page	= lan88xx_read_page,
++	.write_page	= lan88xx_write_page,
+ } };
+ 
+ module_phy_driver(microchip_phy_driver);
+diff --git a/include/linux/microchipphy.h b/include/linux/microchipphy.h
+index eb492d47f717..8f9c90379732 100644
+--- a/include/linux/microchipphy.h
++++ b/include/linux/microchipphy.h
+@@ -70,4 +70,12 @@
+ #define	LAN88XX_MMD3_CHIP_ID			(32877)
+ #define	LAN88XX_MMD3_CHIP_REV			(32878)
+ 
++/* DSP registers */
++#define PHY_ARDENNES_MMD_DEV_3_PHY_CFG		(0x806A)
++#define PHY_ARDENNES_MMD_DEV_3_PHY_CFG_ZD_DLY_EN_	(0x2000)
++#define LAN88XX_EXT_PAGE_ACCESS_TR		(0x52B5)
++#define LAN88XX_EXT_PAGE_TR_CR			16
++#define LAN88XX_EXT_PAGE_TR_LOW_DATA		17
++#define LAN88XX_EXT_PAGE_TR_HIGH_DATA		18
++
+ #endif /* _MICROCHIPPHY_H */
+-- 
+2.17.0
+
+From 7d76fccb22d71c80209eb9ef5b013a630424cb6c Mon Sep 17 00:00:00 2001
+From: Alexander Graf <agraf@suse.de>
+Date: Wed, 4 Apr 2018 00:19:35 +0200
+Subject: [PATCH 2/9] lan78xx: Connect phy early
+
+When using wicked with a lan78xx device attached to the system, we
+end up with ethtool commands issued on the device before an ifup
+got issued. That lead to the following crash:
+
+    Unable to handle kernel NULL pointer dereference at virtual address 0000039c
+    pgd = ffff800035b30000
+    [0000039c] *pgd=0000000000000000
+    Internal error: Oops: 96000004 [#1] SMP
+    Modules linked in: [...]
+    Supported: Yes
+    CPU: 3 PID: 638 Comm: wickedd Tainted: G            E      4.12.14-0-default #1
+    Hardware name: raspberrypi rpi/rpi, BIOS 2018.03-rc2 02/21/2018
+    task: ffff800035e74180 task.stack: ffff800036718000
+    PC is at phy_ethtool_ksettings_get+0x20/0x98
+    LR is at lan78xx_get_link_ksettings+0x44/0x60 [lan78xx]
+    pc : [<ffff0000086f7f30>] lr : [<ffff000000dcca84>] pstate: 20000005
+    sp : ffff80003671bb20
+    x29: ffff80003671bb20 x28: ffff800035e74180
+    x27: ffff000008912000 x26: 000000000000001d
+    x25: 0000000000000124 x24: ffff000008f74d00
+    x23: 0000004000114809 x22: 0000000000000000
+    x21: ffff80003671bbd0 x20: 0000000000000000
+    x19: ffff80003671bbd0 x18: 000000000000040d
+    x17: 0000000000000001 x16: 0000000000000000
+    x15: 0000000000000000 x14: ffffffffffffffff
+    x13: 0000000000000000 x12: 0000000000000020
+    x11: 0101010101010101 x10: fefefefefefefeff
+    x9 : 7f7f7f7f7f7f7f7f x8 : fefefeff31677364
+    x7 : 0000000080808080 x6 : ffff80003671bc9c
+    x5 : ffff80003671b9f8 x4 : ffff80002c296190
+    x3 : 0000000000000000 x2 : 0000000000000000
+    x1 : ffff80003671bbd0 x0 : ffff80003671bc00
+    Process wickedd (pid: 638, stack limit = 0xffff800036718000)
+    Call trace:
+    Exception stack(0xffff80003671b9e0 to 0xffff80003671bb20)
+    b9e0: ffff80003671bc00 ffff80003671bbd0 0000000000000000 0000000000000000
+    ba00: ffff80002c296190 ffff80003671b9f8 ffff80003671bc9c 0000000080808080
+    ba20: fefefeff31677364 7f7f7f7f7f7f7f7f fefefefefefefeff 0101010101010101
+    ba40: 0000000000000020 0000000000000000 ffffffffffffffff 0000000000000000
+    ba60: 0000000000000000 0000000000000001 000000000000040d ffff80003671bbd0
+    ba80: 0000000000000000 ffff80003671bbd0 0000000000000000 0000004000114809
+    baa0: ffff000008f74d00 0000000000000124 000000000000001d ffff000008912000
+    bac0: ffff800035e74180 ffff80003671bb20 ffff000000dcca84 ffff80003671bb20
+    bae0: ffff0000086f7f30 0000000020000005 ffff80002c296000 ffff800035223900
+    bb00: 0000ffffffffffff 0000000000000000 ffff80003671bb20 ffff0000086f7f30
+    [<ffff0000086f7f30>] phy_ethtool_ksettings_get+0x20/0x98
+    [<ffff000000dcca84>] lan78xx_get_link_ksettings+0x44/0x60 [lan78xx]
+    [<ffff0000087cbc40>] ethtool_get_settings+0x68/0x210
+    [<ffff0000087cc0d4>] dev_ethtool+0x214/0x2180
+    [<ffff0000087e5008>] dev_ioctl+0x400/0x630
+    [<ffff00000879dd00>] sock_do_ioctl+0x70/0x88
+    [<ffff00000879f5f8>] sock_ioctl+0x208/0x368
+    [<ffff0000082cde10>] do_vfs_ioctl+0xb0/0x848
+    [<ffff0000082ce634>] SyS_ioctl+0x8c/0xa8
+    Exception stack(0xffff80003671bec0 to 0xffff80003671c000)
+    bec0: 0000000000000009 0000000000008946 0000fffff4e841d0 0000aa0032687465
+    bee0: 0000aaaafa2319d4 0000fffff4e841d4 0000000032687465 0000000032687465
+    bf00: 000000000000001d 7f7fff7f7f7f7f7f 72606b622e71ff4c 7f7f7f7f7f7f7f7f
+    bf20: 0101010101010101 0000000000000020 ffffffffffffffff 0000ffff7f510c68
+    bf40: 0000ffff7f6a9d18 0000ffff7f44ce30 000000000000040d 0000ffff7f6f98f0
+    bf60: 0000fffff4e842c0 0000000000000001 0000aaaafa2c2e00 0000ffff7f6ab000
+    bf80: 0000fffff4e842c0 0000ffff7f62a000 0000aaaafa2b9f20 0000aaaafa2c2e00
+    bfa0: 0000fffff4e84818 0000fffff4e841a0 0000ffff7f5ad0cc 0000fffff4e841a0
+    bfc0: 0000ffff7f44ce3c 0000000080000000 0000000000000009 000000000000001d
+    bfe0: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+
+The culprit is quite simple: The driver tries to access the phy left and right,
+but only actually has a working reference to it when the device is up.
+
+The fix thus is quite simple too: Get a reference to the phy on probe already
+and keep it even when the device is going down.
+
+With this patch applied, I can successfully run wicked on my system and bring
+the interface up and down as many times as I want, without getting NULL pointer
+dereferences in between.
+
+Signed-off-by: Alexander Graf <agraf@suse.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/usb/lan78xx.c | 34 ++++++++++++++++++----------------
+ 1 file changed, 18 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index a21039852f8d..cd20ce4ed87d 100644
+index 32cf21716f19..145bb7cbf5b2 100644
 --- a/drivers/net/usb/lan78xx.c
 +++ b/drivers/net/usb/lan78xx.c
-@@ -2414,6 +2414,12 @@ static int lan78xx_reset(struct lan78xx_net *dev)
+@@ -2083,10 +2083,6 @@ static int lan78xx_phy_init(struct lan78xx_net *dev)
  
- 	ret = lan78xx_read_reg(dev, HW_CFG, &buf);
- 	buf |= HW_CFG_MEF_;
-+
-+	/* If no valid EEPROM and no valid OTP, enable the LEDs by default */
-+	if (lan78xx_read_eeprom(dev, 0, 0, NULL) &&
-+	    lan78xx_read_otp(dev, 0, 0, NULL))
-+	    buf |= HW_CFG_LED0_EN_ | HW_CFG_LED1_EN_;
-+
- 	ret = lan78xx_write_reg(dev, HW_CFG, buf);
+ 	dev->fc_autoneg = phydev->autoneg;
  
- 	ret = lan78xx_read_reg(dev, USB_CFG0, &buf);
-From 4a4710f3847cd087e150f83382dffd92e09d9914 Mon Sep 17 00:00:00 2001
+-	phy_start(phydev);
+-
+-	netif_dbg(dev, ifup, dev->net, "phy initialised successfully");
+-
+ 	return 0;
+ 
+ error:
+@@ -2523,9 +2519,9 @@ static int lan78xx_open(struct net_device *net)
+ 	if (ret < 0)
+ 		goto done;
+ 
+-	ret = lan78xx_phy_init(dev);
+-	if (ret < 0)
+-		goto done;
++	phy_start(net->phydev);
++
++	netif_dbg(dev, ifup, dev->net, "phy initialised successfully");
+ 
+ 	/* for Link Check */
+ 	if (dev->urb_intr) {
+@@ -2586,13 +2582,8 @@ static int lan78xx_stop(struct net_device *net)
+ 	if (timer_pending(&dev->stat_monitor))
+ 		del_timer_sync(&dev->stat_monitor);
+ 
+-	phy_unregister_fixup_for_uid(PHY_KSZ9031RNX, 0xfffffff0);
+-	phy_unregister_fixup_for_uid(PHY_LAN8835, 0xfffffff0);
+-
+-	phy_stop(net->phydev);
+-	phy_disconnect(net->phydev);
+-
+-	net->phydev = NULL;
++	if (net->phydev)
++		phy_stop(net->phydev);
+ 
+ 	clear_bit(EVENT_DEV_OPEN, &dev->flags);
+ 	netif_stop_queue(net);
+@@ -3507,8 +3498,13 @@ static void lan78xx_disconnect(struct usb_interface *intf)
+ 		return;
+ 
+ 	udev = interface_to_usbdev(intf);
+-
+ 	net = dev->net;
++
++	phy_unregister_fixup_for_uid(PHY_KSZ9031RNX, 0xfffffff0);
++	phy_unregister_fixup_for_uid(PHY_LAN8835, 0xfffffff0);
++
++	phy_disconnect(net->phydev);
++
+ 	unregister_netdev(net);
+ 
+ 	cancel_delayed_work_sync(&dev->wq);
+@@ -3664,8 +3660,14 @@ static int lan78xx_probe(struct usb_interface *intf,
+ 	pm_runtime_set_autosuspend_delay(&udev->dev,
+ 					 DEFAULT_AUTOSUSPEND_DELAY);
+ 
++	ret = lan78xx_phy_init(dev);
++	if (ret < 0)
++		goto out4;
++
+ 	return 0;
+ 
++out4:
++	unregister_netdev(netdev);
+ out3:
+ 	lan78xx_unbind(dev, intf);
+ out2:
+@@ -4013,7 +4015,7 @@ static int lan78xx_reset_resume(struct usb_interface *intf)
+ 
+ 	lan78xx_reset(dev);
+ 
+-	lan78xx_phy_init(dev);
++	phy_start(dev->net->phydev);
+ 
+ 	return lan78xx_resume(intf);
+ }
+-- 
+2.17.0
+
+From 502356f8db439d77a41958041feec187c42f72bb Mon Sep 17 00:00:00 2001
 From: Phil Elwell <phil@raspberrypi.org>
-Date: Sat, 17 Mar 2018 00:10:02 +0100
-Subject: [PATCH] lan78xx: Read MAC address from DT if present
+Date: Wed, 11 Apr 2018 12:02:47 +0100
+Subject: [PATCH 3/9] lan78xx: Avoid spurious kevent 4 "error"
+
+lan78xx_defer_event generates an error message whenever the work item
+is already scheduled. lan78xx_open defers three events -
+EVENT_STAT_UPDATE, EVENT_DEV_OPEN and EVENT_LINK_RESET. Being aware
+of the likelihood (or certainty) of an error message, the DEV_OPEN
+event is added to the set of pending events directly, relying on
+the subsequent deferral of the EVENT_LINK_RESET call to schedule the
+work.  Take the same precaution with EVENT_STAT_UPDATE to avoid a
+totally unnecessary error message.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/usb/lan78xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 145bb7cbf5b2..bdb696612e11 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2503,7 +2503,7 @@ static void lan78xx_init_stats(struct lan78xx_net *dev)
+ 	dev->stats.rollover_max.eee_tx_lpi_transitions = 0xFFFFFFFF;
+ 	dev->stats.rollover_max.eee_tx_lpi_time = 0xFFFFFFFF;
+ 
+-	lan78xx_defer_kevent(dev, EVENT_STAT_UPDATE);
++	set_bit(EVENT_STAT_UPDATE, &dev->flags);
+ }
+ 
+ static int lan78xx_open(struct net_device *net)
+-- 
+2.17.0
+
+From d9332c56373a8c43bc4761267ba3a246082e2270 Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Tue, 10 Apr 2018 13:18:25 +0100
+Subject: [PATCH 4/9] lan78xx: Don't reset the interface on open
+
+Commit 92571a1aae40 ("lan78xx: Connect phy early") moves the PHY
+initialisation into lan78xx_probe, but lan78xx_open subsequently calls
+lan78xx_reset. As well as forcing a second round of link negotiation,
+this reset frequently prevents the phy interrupt from being generated
+(even though the link is up), rendering the interface unusable.
+
+Fix this issue by removing the lan78xx_reset call from lan78xx_open.
+
+Fixes: 92571a1aae40 ("lan78xx: Connect phy early")
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/usb/lan78xx.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index bdb696612e11..0867f7275852 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2515,10 +2515,6 @@ static int lan78xx_open(struct net_device *net)
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	ret = lan78xx_reset(dev);
+-	if (ret < 0)
+-		goto done;
+-
+ 	phy_start(net->phydev);
+ 
+ 	netif_dbg(dev, ifup, dev->net, "phy initialised successfully");
+-- 
+2.17.0
+
+From bce4fe9fa48df0cbbe842e80d9a520f7265b4cd4 Mon Sep 17 00:00:00 2001
+From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Wed, 4 Apr 2018 16:34:24 +0100
+Subject: [PATCH 5/9] net: lan78xx: Allow for VLAN headers in timeout.
+
+The frame abort timeout being set by lan78xx_set_rx_max_frame_length
+didn't account for any VLAN headers, resulting in very low
+throughput if used with tagged VLANs.
+Use VLAN_ETH_HLEN instead of ETH_HLEN to correct for this.
+
+See https://github.com/raspberrypi/linux/issues/2458
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+---
+ drivers/net/usb/lan78xx.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 0867f7275852..5b46998a6dce 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2178,7 +2178,7 @@ static int lan78xx_change_mtu(struct net_device *netdev, int new_mtu)
+ 	if ((ll_mtu % dev->maxpacket) == 0)
+ 		return -EDOM;
+ 
+-	ret = lan78xx_set_rx_max_frame_length(dev, new_mtu + ETH_HLEN);
++	ret = lan78xx_set_rx_max_frame_length(dev, new_mtu + VLAN_ETH_HLEN);
+ 
+ 	netdev->mtu = new_mtu;
+ 
+@@ -2467,7 +2467,8 @@ static int lan78xx_reset(struct lan78xx_net *dev)
+ 	buf |= FCT_TX_CTL_EN_;
+ 	ret = lan78xx_write_reg(dev, FCT_TX_CTL, buf);
+ 
+-	ret = lan78xx_set_rx_max_frame_length(dev, dev->net->mtu + ETH_HLEN);
++	ret = lan78xx_set_rx_max_frame_length(dev,
++					      dev->net->mtu + VLAN_ETH_HLEN);
+ 
+ 	ret = lan78xx_read_reg(dev, MAC_RX, &buf);
+ 	buf |= MAC_RX_RXEN_;
+-- 
+2.17.0
+
+From 6fecd97fd35e9c624d101495ca34c83b1cb23e3d Mon Sep 17 00:00:00 2001
+From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Mon, 9 Apr 2018 14:31:54 +0100
+Subject: [PATCH 6/9] net: lan78xx: Request s/w csum check on VLAN tagged
+ packets.
+
+There appears to be some issue in the LAN78xx where the checksum
+computed on a VLAN tagged packet is incorrect, or at least not
+in the form that the kernel is after. This is most easily shown
+by pinging a device via a VLAN tagged interface and it will dump
+out the error message and stack trace from netdev_rx_csum_fault.
+It has also been seen with standard TCP and UDP packets.
+
+Until this is fully understood, request that the network stack
+computes the checksum on packets signalled as having a VLAN tag
+applied.
+
+See https://github.com/raspberrypi/linux/issues/2458
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+---
+ drivers/net/usb/lan78xx.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 5b46998a6dce..6b61bb21f2ae 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2920,8 +2920,12 @@ static void lan78xx_rx_csum_offload(struct lan78xx_net *dev,
+ 				    struct sk_buff *skb,
+ 				    u32 rx_cmd_a, u32 rx_cmd_b)
+ {
++	/* Checksum offload appears to be flawed if used with VLANs.
++	 * Elect for sw checksum check instead.
++	 */
+ 	if (!(dev->net->features & NETIF_F_RXCSUM) ||
+-	    unlikely(rx_cmd_a & RX_CMD_A_ICSM_)) {
++	    unlikely(rx_cmd_a & RX_CMD_A_ICSM_) ||
++	    (rx_cmd_a & RX_CMD_A_FVTG_)) {
+ 		skb->ip_summed = CHECKSUM_NONE;
+ 	} else {
+ 		skb->csum = ntohs((u16)(rx_cmd_b >> RX_CMD_B_CSUM_SHIFT_));
+-- 
+2.17.0
+
+From 7528d39c5d01383fadb17a84b9840f9f685d1e0b Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Thu, 19 Apr 2018 17:59:38 +0100
+Subject: [PATCH 7/9] lan78xx: Read MAC address from DT if present
 
 There is a standard mechanism for locating and using a MAC address from
 the Device Tree. Use this facility in the lan78xx driver to support
-applications without programmed EEPROM or OTP.
+applications without programmed EEPROM or OTP. At the same time,
+regularise the handling of the different address sources.
 
 Signed-off-by: Phil Elwell <phil@raspberrypi.org>
 ---
- drivers/net/usb/lan78xx.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/usb/lan78xx.c | 42 +++++++++++++++++++--------------------
+ 1 file changed, 20 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index 60a604cc7647..a21039852f8d 100644
+index 6b61bb21f2ae..6c38a74bb32d 100644
 --- a/drivers/net/usb/lan78xx.c
 +++ b/drivers/net/usb/lan78xx.c
-@@ -36,6 +36,7 @@
- #include <linux/irq.h>
+@@ -37,6 +37,7 @@
  #include <linux/irqchip/chained_irq.h>
  #include <linux/microchipphy.h>
-+#include <linux/of_net.h>
  #include <linux/phy.h>
++#include <linux/of_net.h>
  #include "lan78xx.h"
  
-@@ -1639,6 +1640,14 @@ static void lan78xx_init_mac_address(struct lan78xx_net *dev)
- 	u32 addr_lo, addr_hi;
- 	int ret;
- 	u8 addr[6];
-+	const u8 *mac_addr;
+ #define DRIVER_AUTHOR	"WOOJUNG HUH <woojung.huh@microchip.com>"
+@@ -1652,34 +1653,31 @@ static void lan78xx_init_mac_address(struct lan78xx_net *dev)
+ 	addr[5] = (addr_hi >> 8) & 0xFF;
+ 
+ 	if (!is_valid_ether_addr(addr)) {
+-		/* reading mac address from EEPROM or OTP */
+-		if ((lan78xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN,
+-					 addr) == 0) ||
+-		    (lan78xx_read_otp(dev, EEPROM_MAC_OFFSET, ETH_ALEN,
+-				      addr) == 0)) {
+-			if (is_valid_ether_addr(addr)) {
+-				/* eeprom values are valid so use them */
+-				netif_dbg(dev, ifup, dev->net,
+-					  "MAC address read from EEPROM");
+-			} else {
+-				/* generate random MAC */
+-				random_ether_addr(addr);
+-				netif_dbg(dev, ifup, dev->net,
+-					  "MAC address set to random addr");
+-			}
+-
+-			addr_lo = addr[0] | (addr[1] << 8) |
+-				  (addr[2] << 16) | (addr[3] << 24);
+-			addr_hi = addr[4] | (addr[5] << 8);
+-
+-			ret = lan78xx_write_reg(dev, RX_ADDRL, addr_lo);
+-			ret = lan78xx_write_reg(dev, RX_ADDRH, addr_hi);
++		if (!eth_platform_get_mac_address(&dev->udev->dev, addr)) {
++			/* valid address present in Device Tree */
++			netif_dbg(dev, ifup, dev->net,
++				  "MAC address read from Device Tree");
++		} else if (((lan78xx_read_eeprom(dev, EEPROM_MAC_OFFSET,
++						 ETH_ALEN, addr) == 0) ||
++			    (lan78xx_read_otp(dev, EEPROM_MAC_OFFSET,
++					      ETH_ALEN, addr) == 0)) &&
++			   is_valid_ether_addr(addr)) {
++			/* eeprom values are valid so use them */
++			netif_dbg(dev, ifup, dev->net,
++				  "MAC address read from EEPROM");
+ 		} else {
+ 			/* generate random MAC */
+ 			random_ether_addr(addr);
+ 			netif_dbg(dev, ifup, dev->net,
+ 				  "MAC address set to random addr");
+ 		}
 +
-+	/* maybe the boot loader passed the MAC address in devicetree */
-+	mac_addr = of_get_mac_address(dev->udev->dev.of_node);
-+	if (mac_addr) {
-+		ether_addr_copy(addr, mac_addr);
-+		goto set_mac_addr;
++		addr_lo = addr[0] | (addr[1] << 8) |
++			  (addr[2] << 16) | (addr[3] << 24);
++		addr_hi = addr[4] | (addr[5] << 8);
++
++		ret = lan78xx_write_reg(dev, RX_ADDRL, addr_lo);
++		ret = lan78xx_write_reg(dev, RX_ADDRH, addr_hi);
+ 	}
+ 
+ 	ret = lan78xx_write_reg(dev, MAF_LO(0), addr_lo);
+-- 
+2.17.0
+
+From f8f9ad43b37f5db5895619e4304aa9ba286cbbb0 Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Thu, 19 Apr 2018 17:59:40 +0100
+Subject: [PATCH 8/9] dt-bindings: Document the DT bindings for lan78xx
+
+The Microchip LAN78XX family of devices are Ethernet controllers with
+a USB interface. Despite being discoverable devices it can be useful to
+be able to configure them from Device Tree, particularly in low-cost
+applications without an EEPROM or programmed OTP.
+
+Document the supported properties in a bindings file.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ .../bindings/net/microchip,lan78xx.txt        | 54 +++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/microchip,lan78xx.txt
+
+diff --git a/Documentation/devicetree/bindings/net/microchip,lan78xx.txt b/Documentation/devicetree/bindings/net/microchip,lan78xx.txt
+new file mode 100644
+index 000000000000..76786a0f6d3d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/microchip,lan78xx.txt
+@@ -0,0 +1,54 @@
++Microchip LAN78xx Gigabit Ethernet controller
++
++The LAN78XX devices are usually configured by programming their OTP or with
++an external EEPROM, but some platforms (e.g. Raspberry Pi 3 B+) have neither.
++The Device Tree properties, if present, override the OTP and EEPROM.
++
++Required properties:
++- compatible: Should be one of "usb424,7800", "usb424,7801" or "usb424,7850".
++
++Optional properties:
++- local-mac-address:   see ethernet.txt
++- mac-address:         see ethernet.txt
++
++Optional properties of the embedded PHY:
++- microchip,led-modes: a 0..4 element vector, with each element configuring
++  the operating mode of an LED. Omitted LEDs are turned off. Allowed values
++  are defined in "include/dt-bindings/net/microchip-lan78xx.h".
++
++Example:
++
++/* Based on the configuration for a Raspberry Pi 3 B+ */
++&usb {
++	usb-port@1 {
++		compatible = "usb424,2514";
++		reg = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		usb-port@1 {
++			compatible = "usb424,2514";
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			ethernet: ethernet@1 {
++				compatible = "usb424,7800";
++				reg = <1>;
++				local-mac-address = [ 00 11 22 33 44 55 ];
++
++				mdio {
++					#address-cells = <0x1>;
++					#size-cells = <0x0>;
++					eth_phy: ethernet-phy@1 {
++						reg = <1>;
++						microchip,led-modes = <
++							LAN78XX_LINK_1000_ACTIVITY
++							LAN78XX_LINK_10_100_ACTIVITY
++						>;
++					};
++				};
++			};
++		};
++	};
++};
+-- 
+2.17.0
+
+From be24db04ec2949e9b03763366f100ae40836c61e Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Mon, 23 Apr 2018 14:31:26 +0100
+Subject: [PATCH 9/9] lan78xx: Read LED states from Device Tree
+
+Add support for DT property "microchip,led-modes", a vector of zero
+to four cells (u32s) in the range 0-15, each of which sets the mode
+for one of the LEDs. Some possible values are:
+
+    0=link/activity          1=link1000/activity
+    2=link100/activity       3=link10/activity
+    4=link100/1000/activity  5=link10/1000/activity
+    6=link10/100/activity    14=off    15=on
+
+These values are given symbolic constants in a dt-bindings header.
+
+Also use the presence of the DT property to indicate that the
+LEDs should be enabled - necessary in the event that no valid OTP
+or EEPROM is available.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ MAINTAINERS                                 |  1 +
+ drivers/net/phy/microchip.c                 | 25 ++++++++++++++++
+ drivers/net/usb/lan78xx.c                   | 32 ++++++++++++++++++++-
+ include/dt-bindings/net/microchip-lan78xx.h | 21 ++++++++++++++
+ include/linux/microchipphy.h                |  3 ++
+ 5 files changed, 81 insertions(+), 1 deletion(-)
+ create mode 100644 include/dt-bindings/net/microchip-lan78xx.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6e950b8b4a41..c7d5f8c60a2c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14437,6 +14437,7 @@ M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/net/usb/lan78xx.*
++F:	include/dt-bindings/net/microchip-lan78xx.h
+ 
+ USB MASS STORAGE DRIVER
+ M:	Alan Stern <stern@rowland.harvard.edu>
+diff --git a/drivers/net/phy/microchip.c b/drivers/net/phy/microchip.c
+index a97ac8c12c4c..2d67937866a3 100644
+--- a/drivers/net/phy/microchip.c
++++ b/drivers/net/phy/microchip.c
+@@ -21,6 +21,8 @@
+ #include <linux/phy.h>
+ #include <linux/microchipphy.h>
+ #include <linux/delay.h>
++#include <linux/of.h>
++#include <dt-bindings/net/microchip-lan78xx.h>
+ 
+ #define DRIVER_AUTHOR	"WOOJUNG HUH <woojung.huh@microchip.com>"
+ #define DRIVER_DESC	"Microchip LAN88XX PHY driver"
+@@ -225,6 +227,8 @@ static int lan88xx_probe(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+ 	struct lan88xx_priv *priv;
++	u32 led_modes[4];
++	int len;
+ 
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+@@ -232,6 +236,27 @@ static int lan88xx_probe(struct phy_device *phydev)
+ 
+ 	priv->wolopts = 0;
+ 
++	len = of_property_read_variable_u32_array(dev->of_node,
++						  "microchip,led-modes",
++						  led_modes,
++						  0,
++						  ARRAY_SIZE(led_modes));
++	if (len >= 0) {
++		u32 reg = 0;
++		int i;
++
++		for (i = 0; i < len; i++) {
++			if (led_modes[i] > 15)
++				return -EINVAL;
++			reg |= led_modes[i] << (i * 4);
++		}
++		for (; i < ARRAY_SIZE(led_modes); i++)
++			reg |= LAN78XX_FORCE_LED_OFF << (i * 4);
++		(void)phy_write(phydev, LAN78XX_PHY_LED_MODE_SELECT, reg);
++	} else if (len == -EOVERFLOW) {
++		return -EINVAL;
 +	}
++
+ 	/* these values can be used to identify internal PHY */
+ 	priv->chip_id = phy_read_mmd(phydev, 3, LAN88XX_MMD3_CHIP_ID);
+ 	priv->chip_rev = phy_read_mmd(phydev, 3, LAN88XX_MMD3_CHIP_REV);
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 6c38a74bb32d..01b876daa600 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -37,6 +37,7 @@
+ #include <linux/irqchip/chained_irq.h>
+ #include <linux/microchipphy.h>
+ #include <linux/phy.h>
++#include <linux/of_mdio.h>
+ #include <linux/of_net.h>
+ #include "lan78xx.h"
  
- 	ret = lan78xx_read_reg(dev, RX_ADDRL, &addr_lo);
- 	ret = lan78xx_read_reg(dev, RX_ADDRH, &addr_hi);
-@@ -1667,6 +1676,7 @@ static void lan78xx_init_mac_address(struct lan78xx_net *dev)
- 					  "MAC address set to random addr");
- 			}
+@@ -1760,6 +1761,7 @@ static int lan78xx_mdiobus_write(struct mii_bus *bus, int phy_id, int idx,
  
-+set_mac_addr:
- 			addr_lo = addr[0] | (addr[1] << 8) |
- 				  (addr[2] << 16) | (addr[3] << 24);
- 			addr_hi = addr[4] | (addr[5] << 8);
+ static int lan78xx_mdio_init(struct lan78xx_net *dev)
+ {
++	struct device_node *node;
+ 	int ret;
+ 
+ 	dev->mdiobus = mdiobus_alloc();
+@@ -1788,7 +1790,13 @@ static int lan78xx_mdio_init(struct lan78xx_net *dev)
+ 		break;
+ 	}
+ 
+-	ret = mdiobus_register(dev->mdiobus);
++	node = of_get_child_by_name(dev->udev->dev.of_node, "mdio");
++	if (node) {
++		ret = of_mdiobus_register(dev->mdiobus, node);
++		of_node_put(node);
++	} else {
++		ret = mdiobus_register(dev->mdiobus);
++	}
+ 	if (ret) {
+ 		netdev_err(dev->net, "can't register MDIO bus\n");
+ 		goto exit1;
+@@ -2077,6 +2085,28 @@ static int lan78xx_phy_init(struct lan78xx_net *dev)
+ 	mii_adv = (u32)mii_advertise_flowctrl(dev->fc_request_control);
+ 	phydev->advertising |= mii_adv_to_ethtool_adv_t(mii_adv);
+ 
++	if (phydev->mdio.dev.of_node) {
++		u32 reg;
++		int len;
++
++		len = of_property_count_elems_of_size(phydev->mdio.dev.of_node,
++						      "microchip,led-modes",
++						      sizeof(u32));
++		if (len >= 0) {
++			/* Ensure the appropriate LEDs are enabled */
++			lan78xx_read_reg(dev, HW_CFG, &reg);
++			reg &= ~(HW_CFG_LED0_EN_ |
++				 HW_CFG_LED1_EN_ |
++				 HW_CFG_LED2_EN_ |
++				 HW_CFG_LED3_EN_);
++			reg |= (len > 0) * HW_CFG_LED0_EN_ |
++				(len > 1) * HW_CFG_LED1_EN_ |
++				(len > 2) * HW_CFG_LED2_EN_ |
++				(len > 3) * HW_CFG_LED3_EN_;
++			lan78xx_write_reg(dev, HW_CFG, reg);
++		}
++	}
++
+ 	genphy_config_aneg(phydev);
+ 
+ 	dev->fc_autoneg = phydev->autoneg;
+diff --git a/include/dt-bindings/net/microchip-lan78xx.h b/include/dt-bindings/net/microchip-lan78xx.h
+new file mode 100644
+index 000000000000..0742ff075307
+--- /dev/null
++++ b/include/dt-bindings/net/microchip-lan78xx.h
+@@ -0,0 +1,21 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _DT_BINDINGS_MICROCHIP_LAN78XX_H
++#define _DT_BINDINGS_MICROCHIP_LAN78XX_H
++
++/* LED modes for LAN7800/LAN7850 embedded PHY */
++
++#define LAN78XX_LINK_ACTIVITY           0
++#define LAN78XX_LINK_1000_ACTIVITY      1
++#define LAN78XX_LINK_100_ACTIVITY       2
++#define LAN78XX_LINK_10_ACTIVITY        3
++#define LAN78XX_LINK_100_1000_ACTIVITY  4
++#define LAN78XX_LINK_10_1000_ACTIVITY   5
++#define LAN78XX_LINK_10_100_ACTIVITY    6
++#define LAN78XX_DUPLEX_COLLISION        8
++#define LAN78XX_COLLISION               9
++#define LAN78XX_ACTIVITY                10
++#define LAN78XX_AUTONEG_FAULT           12
++#define LAN78XX_FORCE_LED_OFF           14
++#define LAN78XX_FORCE_LED_ON            15
++
++#endif
+diff --git a/include/linux/microchipphy.h b/include/linux/microchipphy.h
+index 8f9c90379732..fd1fc8c248ef 100644
+--- a/include/linux/microchipphy.h
++++ b/include/linux/microchipphy.h
+@@ -78,4 +78,7 @@
+ #define LAN88XX_EXT_PAGE_TR_LOW_DATA		17
+ #define LAN88XX_EXT_PAGE_TR_HIGH_DATA		18
+ 
++/* Registers specific to the LAN7800/LAN7850 embedded phy */
++#define LAN78XX_PHY_LED_MODE_SELECT		(0x1D)
++
+ #endif /* _MICROCHIPPHY_H */
+-- 
+2.17.0
+

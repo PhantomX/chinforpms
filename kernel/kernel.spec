@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -612,6 +612,12 @@ Patch313: arm-dts-Add-am335x-pocketbeagle.patch
 
 Patch314: arm-tegra-fix-nouveau-crash.patch
 
+# https://patchwork.kernel.org/patch/10354521/
+# https://patchwork.kernel.org/patch/10354187/
+# https://patchwork.kernel.org/patch/10306793/
+# https://patchwork.kernel.org/patch/10133165/
+Patch315: mvebu-a37xx-fixes.patch
+
 # Upstream 4.17 back port
 Patch319: of-i2c-fix-module-aliases.patch
 
@@ -630,8 +636,9 @@ Patch323: bcm2835-hwrng-Handle-deferred-clock-properly.patch
 Patch324: bcm283x-clk-audio-fixes.patch
 
 # Enabling Patches for the RPi3+
-Patch330: bcm2837-rpi-initial-support-for-the-3.patch
-Patch331: bcm2837-gpio-expander.patch
+Patch330: bcm2837-gpio-expander.patch
+# http://www.spinics.net/lists/arm-kernel/msg647617.html
+Patch331: bcm2837-rpi-initial-3plus-support.patch
 Patch332: bcm2837-enable-pmu.patch
 Patch333: bcm2837-lan78xx-fixes.patch
 
@@ -650,10 +657,17 @@ Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
 # In v4.17
 # rhbz 1549316
-Patch505: ipmi-fixes.patch
+Patch504: ipmi-fixes.patch
 
 # rhbz 1566510
-Patch506: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
+Patch505: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
+
+# rhbz 1571036
+# https://patchwork.kernel.org/patch/10345845/
+Patch506: ACPI-video-Only-default-only_lcd-to-true-on-Win8-ready-_desktops_.patch
+
+# rhbz 1565131
+Patch507: xhci-Fix-Kernel-oops-in-xhci-dbgtty.patch
 
 ### Extra
 
@@ -666,7 +680,7 @@ Patch506: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/VFS-expedite-umount.patch?id=%{opensuse_id}#/openSUSE-VFS-expedite-umount.patch
 Patch1012: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1013: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch?id=%{opensuse_id}#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
+Patch1013: btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
 Patch1014: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 #Patch1015: %%{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update?id=%{opensuse_id}#/openSUSE-dm-mpath-leastpending-path-update.patch
@@ -1948,6 +1962,10 @@ fi
 #
 #
 %changelog
+* Thu Apr 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.5-500.chinfo
+- 4.16.5
+- f28 sync
+
 * Tue Apr 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.4-500.chinfo
 - 4.16.4
 - f28 sync

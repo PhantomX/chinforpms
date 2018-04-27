@@ -1,0 +1,190 @@
+From patchwork Sun Apr 22 12:33:46 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: serial: mvebu-uart: Fix local flags handling on termios update
+From: Marc Zyngier <Marc.Zyngier@arm.com>
+X-Patchwork-Id: 10354521
+Message-Id: <20180422123346.15538-1-marc.zyngier@arm.com>
+To: linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Cc: Gregory CLEMENT <gregory.clement@free-electrons.com>,
+ Allen Yan <yanwei@marvell.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Miquel Raynal <miquel.raynal@free-electrons.com>
+Date: Sun, 22 Apr 2018 13:33:46 +0100
+
+Commit 68a0db1d7da2 reworked the baud rate selection, but also added
+a (not so) subtle change in the way the local flags (c_lflag in the
+termios structure) are handled, forcing the new flags to always be the
+same as the old ones.
+
+The reason for that particular change is both obscure and undocumented.
+It also completely breaks userspace. Something as trivial as getty is
+unusable:
+
+<example>
+	Debian GNU/Linux 9 sy-borg ttyMV0
+
+	sy-borg login: root
+	root
+	[timeout]
+
+	Debian GNU/Linux 9 sy-borg ttyMV0
+</example>
+
+which is quite obvious in retrospect: getty cannot get in control of
+the echo mode, is stuck in canonical mode, and times out without ever
+seeing anything valid. It also begs the question of how this change was
+ever tested.
+
+The fix is pretty obvious: stop messing with c_lflag, and the world
+will be a happier place.
+
+Cc: stable@vger.kernel.org # 4.15+
+Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
+Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
+---
+ drivers/tty/serial/mvebu-uart.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index 750e5645dc85..f503fab1e268 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -495,7 +495,6 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+ 		termios->c_iflag |= old->c_iflag & ~(INPCK | IGNPAR);
+ 		termios->c_cflag &= CREAD | CBAUD;
+ 		termios->c_cflag |= old->c_cflag & ~(CREAD | CBAUD);
+-		termios->c_lflag = old->c_lflag;
+ 	}
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
+From patchwork Sun Mar 25 19:57:36 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: arm64: dts: armada-3720-espressobin: wire up spi flash
+From: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+X-Patchwork-Id: 10306793
+Message-Id: <20180325195736.19782-1-u.kleine-koenig@pengutronix.de>
+To: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>,
+ Gregory Clement <gregory.clement@bootlin.com>,
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Cc: Ellie Reeves <ellierevves@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+Date: Sun, 25 Mar 2018 21:57:36 +0200
+
+From: Ellie Reeves <ellierevves@gmail.com>
+
+This is the storage the machine boots from by default. The partitioning
+is taken from the U-Boot that is shipped with the board. There is some
+more space on the flash that isn't used.
+
+Signed-off-by: Ellie Reeves <ellierevves@gmail.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ .../boot/dts/marvell/armada-3720-espressobin.dts   | 27 ++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
+index 882d6e4a04e4..5f98c2fecca4 100644
+--- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
++++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
+@@ -108,6 +108,33 @@
+ 	status = "okay";
+ };
+ 
++&spi0 {
++	status = "okay";
++
++	flash@0 {
++		reg = <0>;
++		compatible = "winbond,w25q32dw", "jedec,spi-flash";
++		spi-max-frequency = <104000000>;
++		m25p,fast-read;
++
++		partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			partition@0 {
++				label = "uboot";
++				reg = <0 0x180000>;
++			};
++
++			partition@180000 {
++				label = "ubootenv";
++				reg = <0x180000 0x10000>;
++			};
++		};
++	};
++};
++
+ /* Exported on the micro USB connector J5 through an FTDI */
+ &uart0 {
+ 	pinctrl-names = "default";
+From patchwork Sat Apr 21 14:03:42 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: arm64: dts: marvell: armada-37xx: reserve memory for ATF
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+X-Patchwork-Id: 10354187
+Message-Id: <20180421140342.25082-1-miquel.raynal@bootlin.com>
+To: Gregory Clement <gregory.clement@bootlin.com>,
+ Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>,
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
+ Antoine Tenart <antoine.tenart@bootlin.com>,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ Will Deacon <will.deacon@arm.com>, 
+ Maxime Chevallier <maxime.chevallier@bootlin.com>,
+ Nadav Haklai <nadavh@marvell.com>, Rob Herring <robh+dt@kernel.org>, 
+ Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+ Miquel Raynal <miquel.raynal@bootlin.com>, Victor Gu <xigu@marvell.com>, 
+ linux-arm-kernel@lists.infradead.org
+Date: Sat, 21 Apr 2018 16:03:42 +0200
+
+From: Victor Gu <xigu@marvell.com>
+
+The PSCI area should be reserved in Linux for PSCI operations such as
+suspend/resume.
+
+Reserve 2MiB of memory which matches the area used by ATF (BL1, BL2,
+BL3x, see [1] in ATF source code). This covers all PSCI code and data
+area and is 2MiB aligned, which is required by Linux for huge pages
+handling.
+
+[1] plat/marvell/a3700/common/include/platform_def.h
+
+Signed-off-by: Victor Gu <xigu@marvell.com>
+[miquel.raynal@bootlin.com: reword of commit message]
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+index 97207a61bc79..429ce91bfc39 100644
+--- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+@@ -22,6 +22,17 @@
+ 		serial1 = &uart1;
+ 	};
+ 
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		psci-area@4000000 {
++			reg = <0 0x4000000 0 0x200000>;
++			no-map;
++		};
++	};
++
+ 	cpus {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;

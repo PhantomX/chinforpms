@@ -1,19 +1,7 @@
-From patchwork Tue Feb 20 12:19:31 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [v5,1/5] ARM: bcm2835: sync firmware properties with downstream
+From 08af112e79cab22f318ca0ad1a48187eee5ac2f0 Mon Sep 17 00:00:00 2001
 From: Baruch Siach <baruch@tkos.co.il>
-X-Patchwork-Id: 10229963
-Message-Id: <e7d1f1d0789f11d37957a8998bee23d035115aeb.1519128054.git.baruch@tkos.co.il>
-To: Linus Walleij <linus.walleij@linaro.org>,
- Dave Stevenson <dave.stevenson@raspberrypi.org>,
- Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>
-Cc: devicetree@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
- linux-gpio@vger.kernel.org, Michael Zoran <mzoran@crowfest.net>,
- Rob Herring <robh+dt@kernel.org>, linux-rpi-kernel@lists.infradead.org,
- Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
 Date: Tue, 20 Feb 2018 14:19:31 +0200
+Subject: soc: bcm2835: sync firmware properties with downstream
 
 Add latest firmware property tags from the latest Raspberry Pi downstream
 kernel. This is needed for the GPIO tags, so we can control the GPIO
@@ -21,18 +9,13 @@ multiplexor lines.
 
 Acked-by: Stefan Wahren <stefan.wahren@i2se.com>
 Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
-v4: No change
-
-v3: Add Stefan's ack
-
-v2: No change
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
  include/soc/bcm2835/raspberrypi-firmware.h | 18 ++++++++++++++++++
  1 file changed, 18 insertions(+)
 
 diff --git a/include/soc/bcm2835/raspberrypi-firmware.h b/include/soc/bcm2835/raspberrypi-firmware.h
-index cb979ad90401..50df5b28d2c9 100644
+index cb979ad..50df5b2 100644
 --- a/include/soc/bcm2835/raspberrypi-firmware.h
 +++ b/include/soc/bcm2835/raspberrypi-firmware.h
 @@ -63,6 +63,7 @@ enum rpi_firmware_property_tag {
@@ -94,22 +77,12 @@ index cb979ad90401..50df5b28d2c9 100644
  
  	RPI_FIRMWARE_VCHIQ_INIT =                             0x00048010,
  
-From patchwork Tue Feb 20 12:19:32 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [v5,2/5] dt-bindings: gpio: add raspberry pi GPIO expander binding
+-- 
+cgit v1.1
+From 9777d8099a4a9df1625b4caaee1388c0158478c5 Mon Sep 17 00:00:00 2001
 From: Baruch Siach <baruch@tkos.co.il>
-X-Patchwork-Id: 10229965
-Message-Id: <f400b48cbcd8a138c39d4e8f63d6c1f569090dcc.1519128054.git.baruch@tkos.co.il>
-To: Linus Walleij <linus.walleij@linaro.org>,
- Dave Stevenson <dave.stevenson@raspberrypi.org>,
- Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>
-Cc: devicetree@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
- linux-gpio@vger.kernel.org, Michael Zoran <mzoran@crowfest.net>,
- Rob Herring <robh+dt@kernel.org>, linux-rpi-kernel@lists.infradead.org,
- Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
 Date: Tue, 20 Feb 2018 14:19:32 +0200
+Subject: dt-bindings: gpio: add raspberry pi GPIO expander binding
 
 The Raspberry Pi 3 GPIO expander is controlled by the VC4 firmware over
 I2C. The firmware mailbox interface allows the ARM core to control the
@@ -117,20 +90,7 @@ GPIO lines.
 
 Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 Reviewed-by: Rob Herring <robh@kernel.org>
----
-v5:
-  * Remove the 'firmware' property
-  * Note that the gpio node is a child of the firmware node
-
-v4:
-  * Move the example gpio node under the firmware node
-  * Rename gpio node name to plain 'gpio'
-
-v3:
-  * Rename node name.
-
-v2:
-  * Rename compatible string to raspberrypi,firmware-gpio
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
  .../bindings/gpio/raspberrypi,firmware-gpio.txt    | 30 ++++++++++++++++++++++
  1 file changed, 30 insertions(+)
@@ -138,7 +98,7 @@ v2:
 
 diff --git a/Documentation/devicetree/bindings/gpio/raspberrypi,firmware-gpio.txt b/Documentation/devicetree/bindings/gpio/raspberrypi,firmware-gpio.txt
 new file mode 100644
-index 000000000000..ce97265e23ba
+index 0000000..ce97265
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/gpio/raspberrypi,firmware-gpio.txt
 @@ -0,0 +1,30 @@
@@ -172,26 +132,13 @@ index 000000000000..ce97265e23ba
 +		 #gpio-cells = <2>;
 +	 };
 +};
-From patchwork Tue Feb 20 12:19:33 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [v5,
- 3/5] gpio: raspberrypi-exp: Driver for RPi3 GPIO expander via mailbox
- service
-From: Baruch Siach <baruch@tkos.co.il>
-X-Patchwork-Id: 10229967
-Message-Id: <8c34f287ee72b340fa9d693aa0e304b25541c74c.1519128054.git.baruch@tkos.co.il>
-To: Linus Walleij <linus.walleij@linaro.org>,
- Dave Stevenson <dave.stevenson@raspberrypi.org>,
- Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>
-Cc: devicetree@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
- linux-gpio@vger.kernel.org, Michael Zoran <mzoran@crowfest.net>,
- Rob Herring <robh+dt@kernel.org>, linux-rpi-kernel@lists.infradead.org,
- Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
-Date: Tue, 20 Feb 2018 14:19:33 +0200
-
+-- 
+cgit v1.1
+From a98d90e7d588045716c3c85d63f93dc3f15a079b Mon Sep 17 00:00:00 2001
 From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Tue, 20 Feb 2018 14:19:33 +0200
+Subject: gpio: raspberrypi-exp: Driver for RPi3 GPIO expander via mailbox
+ service
 
 Pi3 and Compute Module 3 have a GPIO expander that the
 VPU communicates with.
@@ -201,31 +148,7 @@ expander, so add a kernel driver that can make use of it.
 Reviewed-by: Stefan Wahren <stefan.wahren@i2se.com>
 Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
 Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
-v5:
-  * Use the parent node to find the firmware
-
-v4:
-  * Don't set the .owner driver field
-  * Add Stefan's review tag
-
-v3:
-  * Tweak Kconfig driver prompt
-  * Make GPIO_RASPBERRYPI_EXP tristate
-  * Make COMPILE_TEST independent of RASPBERRYPI_FIRMWARE
-  * Remove redundant DMA header
-  * Use less code lines for dev_err()
-  * Check rpi_exp_gpio_get_polarity() return value
-  * Remove redundant platform_set_drvdata() call
-
-v2:
-  * Rename driver to gpio-raspberrypi-exp
-  * Populate the gpiochip parent device pointer
-  * Use macro for the mailbox base GPIO number
-  * Drop linux/gpio.h and GPIOF_DIR_*
-  * Check and print firmware error value
-  * Use devm_gpiochip_add_data(); drop .remove
-  * A few more minor tweaks
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
  drivers/gpio/Kconfig                |   9 ++
  drivers/gpio/Makefile               |   1 +
@@ -234,7 +157,7 @@ v2:
  create mode 100644 drivers/gpio/gpio-raspberrypi-exp.c
 
 diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index 8dbb2280538d..fd0562a37f68 100644
+index 8dbb228..fd0562a 100644
 --- a/drivers/gpio/Kconfig
 +++ b/drivers/gpio/Kconfig
 @@ -122,6 +122,15 @@ config GPIO_ATH79
@@ -254,7 +177,7 @@ index 8dbb2280538d..fd0562a37f68 100644
  	bool "Broadcom Kona GPIO"
  	depends on OF_GPIO && (ARCH_BCM_MOBILE || COMPILE_TEST)
 diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
-index cccb0d40846c..76dc0a02bd56 100644
+index cccb0d4..76dc0a0 100644
 --- a/drivers/gpio/Makefile
 +++ b/drivers/gpio/Makefile
 @@ -32,6 +32,7 @@ obj-$(CONFIG_GPIO_AMDPT)	+= gpio-amdpt.o
@@ -267,7 +190,7 @@ index cccb0d40846c..76dc0a02bd56 100644
  obj-$(CONFIG_GPIO_BRCMSTB)	+= gpio-brcmstb.o
 diff --git a/drivers/gpio/gpio-raspberrypi-exp.c b/drivers/gpio/gpio-raspberrypi-exp.c
 new file mode 100644
-index 000000000000..d6d36d537e37
+index 0000000..d6d36d5
 --- /dev/null
 +++ b/drivers/gpio/gpio-raspberrypi-exp.c
 @@ -0,0 +1,252 @@
@@ -523,36 +446,26 @@ index 000000000000..d6d36d537e37
 +MODULE_AUTHOR("Dave Stevenson <dave.stevenson@raspberrypi.org>");
 +MODULE_DESCRIPTION("Raspberry Pi 3 expander GPIO driver");
 +MODULE_ALIAS("platform:rpi-exp-gpio");
-From patchwork Tue Feb 20 12:19:34 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [v5,4/5] ARM: dts: bcm2835: make the firmware node into a bus
+-- 
+cgit v1.1
+From b0c07c5af6d286f3d3b907743998e9d41f6ab042 Mon Sep 17 00:00:00 2001
 From: Baruch Siach <baruch@tkos.co.il>
-X-Patchwork-Id: 10229961
-Message-Id: <43f9082a6835df6d7bcd3e16d79db687c52826d2.1519128054.git.baruch@tkos.co.il>
-To: Linus Walleij <linus.walleij@linaro.org>,
- Dave Stevenson <dave.stevenson@raspberrypi.org>,
- Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>
-Cc: devicetree@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
- linux-gpio@vger.kernel.org, Michael Zoran <mzoran@crowfest.net>,
- Rob Herring <robh+dt@kernel.org>, linux-rpi-kernel@lists.infradead.org,
- Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
 Date: Tue, 20 Feb 2018 14:19:34 +0200
+Subject: ARM: dts: bcm2835: make the firmware node into a bus
 
 This allows adding devices for which the firmware exposes control interface
 via the mailbox. An example of such device is the GPIO expander.
 
 Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
----
-v4: New patch in this series
+Reviewed-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Eric Anholt <eric@anholt.net>
 ---
  arch/arm/boot/dts/bcm2835-rpi.dtsi | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/bcm2835-rpi.dtsi b/arch/arm/boot/dts/bcm2835-rpi.dtsi
-index e36c392a2b8f..0198bd46ef7c 100644
+index e36c392..0198bd4 100644
 --- a/arch/arm/boot/dts/bcm2835-rpi.dtsi
 +++ b/arch/arm/boot/dts/bcm2835-rpi.dtsi
 @@ -18,7 +18,9 @@
@@ -566,50 +479,26 @@ index e36c392a2b8f..0198bd46ef7c 100644
  			mboxes = <&mailbox>;
  		};
  
-From patchwork Tue Feb 20 12:19:35 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [v5,5/5] ARM: dts: bcm2837-rpi-3-b: add GPIO expander
+-- 
+cgit v1.1
+From 4d5b2eaf3ca80c56a59f230208c4ff11e3f68d55 Mon Sep 17 00:00:00 2001
 From: Baruch Siach <baruch@tkos.co.il>
-X-Patchwork-Id: 10229995
-Message-Id: <a6d59692dc4847e0b1639a26542e28c95ad5240f.1519128054.git.baruch@tkos.co.il>
-To: Linus Walleij <linus.walleij@linaro.org>,
- Dave Stevenson <dave.stevenson@raspberrypi.org>,
- Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>
-Cc: devicetree@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
- linux-gpio@vger.kernel.org, Michael Zoran <mzoran@crowfest.net>,
- Rob Herring <robh+dt@kernel.org>, linux-rpi-kernel@lists.infradead.org,
- Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
 Date: Tue, 20 Feb 2018 14:19:35 +0200
+Subject: ARM: dts: bcm2837-rpi-3-b: add GPIO expander
 
 Add a description of the RPi3 GPIO expander that the VC4 firmware controls.
 
 Acked-by: Stefan Wahren <stefan.wahren@i2se.com>
 Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
----
-v5:
-  * Drop the 'firmware' property
-
-v4:
-  * Move the gpio node under the firmware node
-  * Rename the gpio node to plain 'gpio'
-  * Add Stefan's ack
-
-v3:
-  * List GPIO names one per line.
-
-v2:
-  * Move GPIO expander node out of the soc container
-  * Rename compatible string
-  * Add gpio-line-names property
+Reviewed-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Eric Anholt <eric@anholt.net>
 ---
  arch/arm/boot/dts/bcm2837-rpi-3-b.dts | 17 +++++++++++++++++
  1 file changed, 17 insertions(+)
 
 diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
-index 3e4ed7c5b0b3..0b31d995a066 100644
+index 3e4ed7c..0b31d99 100644
 --- a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
 +++ b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
 @@ -25,6 +25,23 @@
@@ -636,72 +525,5 @@ index 3e4ed7c5b0b3..0b31d995a066 100644
  /* uart0 communicates with the BT module */
  &uart0 {
  	pinctrl-names = "default";
-From 257f497bb3e58f88500971145761ed55428618eb Mon Sep 17 00:00:00 2001
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Date: Wed, 7 Mar 2018 15:56:20 +0100
-Subject: [PATCH] ARM: dts: bcm2837: Add missing GPIOs of Expander
-
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- arch/arm/boot/dts/bcm2837-rpi-3-b.dts | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
-index 0b31d995a066..3e87ed05918e 100644
---- a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
-+++ b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
-@@ -20,9 +20,14 @@
- 
- 	leds {
- 		act {
--			gpios = <&gpio 47 GPIO_ACTIVE_HIGH>;
-+			gpios = <&expgpio 2 GPIO_ACTIVE_HIGH>;
- 		};
- 	};
-+
-+	wifi_pwrseq: wifi-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		reset-gpios = <&expgpio 1 GPIO_ACTIVE_HIGH>;
-+	};
- };
- 
- &firmware {
-@@ -42,6 +47,10 @@
- 	};
- };
- 
-+&hdmi {
-+	hpd-gpios = <&expgpio 4 GPIO_ACTIVE_LOW>;
-+};
-+
- /* uart0 communicates with the BT module */
- &uart0 {
- 	pinctrl-names = "default";
-@@ -51,6 +60,7 @@
- 	bluetooth {
- 		compatible = "brcm,bcm43438-bt";
- 		max-speed = <2000000>;
-+		shutdown-gpios = <&expgpio 0 GPIO_ACTIVE_HIGH>;
- 	};
- };
- 
-@@ -63,11 +73,19 @@
- 
- /* SDHCI is used to control the SDIO for wireless */
- &sdhci {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emmc_gpio34>;
- 	status = "okay";
- 	bus-width = <4>;
- 	non-removable;
-+	mmc-pwrseq = <&wifi_pwrseq>;
-+
-+	brcmf: wifi@1 {
-+		reg = <1>;
-+		compatible = "brcm,bcm4329-fmac";
-+	};
- };
- 
- /* SDHOST is used to drive the SD card */
+-- 
+cgit v1.1
