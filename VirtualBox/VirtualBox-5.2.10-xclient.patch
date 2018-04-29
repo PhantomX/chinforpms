@@ -1,6 +1,5 @@
-diff -up VirtualBox-5.2.6/src/VBox/Additions/x11/Installer/98vboxadd-xclient~ VirtualBox-5.2.6/src/VBox/Additions/x11/Installer/98vboxadd-xclient
---- VirtualBox-5.2.6/src/VBox/Additions/x11/Installer/98vboxadd-xclient~	2018-01-15 15:49:57.000000000 +0100
-+++ VirtualBox-5.2.6/src/VBox/Additions/x11/Installer/98vboxadd-xclient	2018-02-07 12:13:51.578170786 +0100
+--- VirtualBox-5.2.10.orig/src/VBox/Additions/x11/Installer/98vboxadd-xclient	2018-04-13 17:32:05.000000000 +0100
++++ VirtualBox-5.2.10/src/VBox/Additions/x11/Installer/98vboxadd-xclient	2018-04-22 04:31:42.483190045 +0100
 @@ -21,15 +21,9 @@ for i in $HOME/.vboxclient-*.pid; do
      test -w $i || rm -f $i
  done

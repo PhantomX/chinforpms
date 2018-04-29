@@ -56,7 +56,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        18.0.1
+Version:        18.0.2
 Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
@@ -78,6 +78,10 @@ Patch1:         0001-llvm-SONAME-without-version.patch
 Patch2:         0002-hardware-gloat.patch
 Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
+
+# Disable rgb10 configs by default:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1560481
+Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
 
 # glvnd support patches
 # non-upstreamed ones
@@ -106,7 +110,8 @@ BuildRequires:  libXi-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libxshmfence-devel
 BuildRequires:  elfutils
-BuildRequires:  python
+BuildRequires:  python3
+BuildRequires:  python2
 BuildRequires:  gettext
 %if 0%{?with_llvm}
 BuildRequires: llvm-devel >= 3.4-7
@@ -116,6 +121,7 @@ BuildRequires: clang-devel >= 3.0
 %endif
 BuildRequires: elfutils-libelf-devel
 BuildRequires: python3-libxml2
+BuildRequires: python2-libxml2
 BuildRequires: libudev-devel
 BuildRequires: bison flex
 BuildRequires: pkgconfig(wayland-client)
@@ -138,6 +144,7 @@ BuildRequires: libclc-devel opencl-filesystem
 BuildRequires: vulkan-devel
 %endif
 BuildRequires: python3-mako
+BuildRequires: python2-mako
 %ifarch %{valgrind_arches}
 BuildRequires: pkgconfig(valgrind)
 %endif
@@ -669,6 +676,10 @@ popd
 %endif
 
 %changelog
+* Sat Apr 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.0.2-100.chinfo
+- 18.0.2
+- f28 sync
+
 * Wed Apr 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.0.1-100.chinfo
 - 18.0.1
 

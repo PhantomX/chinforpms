@@ -118,11 +118,11 @@ Patch8: 0001-Switch-to-python3.patch
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
-%global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id e881e167cb9e0f0d39c1417e3d8d5a030d4cd615
-%global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
+#global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
+%global opensuse_id ef715ebb423b5779b3dc4ba1539044131d37b797
+%global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
-Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch?id=%{opensuse_id}#/openSUSE-perf_timechart_fix_zero_timestamps.patch
+Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
 
 Name: kernel-tools
 Summary: Assortment of tools for the Linux kernel

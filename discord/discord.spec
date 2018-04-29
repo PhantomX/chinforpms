@@ -12,7 +12,7 @@
 
 Name:           discord
 Version:        0.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
 
@@ -21,7 +21,7 @@ URL:            https://discordapp.com/
 %if 0%{?use_canary}
 Source0:        https://discordapp.com/api/download/canary?platform=linux&format=tar.gz#/%{name}-canary-%{version}.tar.gz
 %else
-Source0:        https://discordapp.com/api/download?platform=linux&format=tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://dl.discordapp.net/apps/linux/%{version}/%{name}-%{version}.tar.gz
 %endif
 
 ExclusiveArch:  x86_64
@@ -29,7 +29,13 @@ ExclusiveArch:  x86_64
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
+Requires:       alsa-lib%{_isa}
+Requires:       libappindicator%{_isa}
+Requires:       libatomic%{?_isa}
 Requires:       libcxx%{?_isa}
+Requires:       libnotify%{?_isa}
+Requires:       libX11%{?_isa}
+Requires:       libXi%{?_isa}
 Requires:       libXScrnSaver%{?_isa}
 Requires:       hicolor-icon-theme
 
@@ -104,6 +110,9 @@ done
 
 
 %changelog
+* Sat Apr 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.4-2
+- Add more required libraries.
+
 * Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.4-1
 - 0.0.4
 

@@ -11,7 +11,8 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.6
+%global stagingver 3.7
+%global strel %(echo %{stagingver} | grep -q \\. ; echo $?)
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -28,8 +29,8 @@
 %endif
 
 Name:           wine
-Version:        3.6
-Release:        102%{?rctag}.chinfo%{?dist}
+Version:        3.7
+Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -94,7 +95,7 @@ Patch604:       keybindings.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
-Source900: https://github.com/wine-staging/wine-staging/archive/v%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
+Source900: https://github.com/wine-staging/wine-staging/archive/%{?strel:v}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
 Patch900: https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
 %endif
 
@@ -2240,6 +2241,9 @@ fi
 %endif
 
 %changelog
+* Sat Apr 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.7-100.chinfo
+- 3.7
+
 * Sun Apr 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.6-102.chinfo
 - Revert ARMv7 fix.
 

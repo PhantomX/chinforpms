@@ -16,7 +16,7 @@
 %global larch x86
 %endif
 
-# Do no blame SpiderOak devs if setting YES in these
+# Do no blame SpiderOak devs if setting 1 in these
 # Set to 1 to use system libs
 %global with_curl 1
 %global with_dbusmenuqt 1
@@ -26,7 +26,7 @@
 %global with_pyqt 0
 
 Name:           spideroakone
-Version:        7.0.1
+Version:        7.1.0
 Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
@@ -70,10 +70,10 @@ Requires:       pyOpenSSL
 %if 0%{?with_pyqt}
 BuildRequires:  qt%{?_isa}
 BuildRequires:  PyQt4%{?_isa}
-BuildRequires:  sip%{?_isa}
+BuildRequires:  python2-sip%{?_isa}
 Requires:       qt%{?_isa}
 Requires:       PyQt4%{?_isa}
-Requires:       sip%{?_isa}
+Requires:       python2-sip%{?_isa}
 %endif
 
 Requires:       sqlite-libs%{?_isa}
@@ -288,6 +288,9 @@ done
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Sat Apr 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.1.0-1
+- 7.1.0
+
 * Thu Feb 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.0.1-1
 - 7.0.1
 

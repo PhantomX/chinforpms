@@ -30,6 +30,11 @@
 %endif
 %bcond_without vnc
 %bcond_with legacy_vboxvideo_drv
+%if 0%{?fedora} > 27
+    %bcond_with guest_additions
+%else
+    %bcond_without guest_additions
+%endif
 
 Name:       VirtualBox
 Version:    5.2.10
@@ -72,7 +77,7 @@ Patch28:    02-gsoap-build-fix.patch
 Patch50:    VirtualBox-5.1.0-add-Mageia-support.patch
 Patch51:    VirtualBox-5.1.0-revert-VBox.sh.patch
 
-Patch60:    VirtualBox-5.2.6-xclient.patch
+Patch60:    VirtualBox-5.2.10-xclient.patch
 Patch61:    0001-VBoxServiceAutoMount-Change-Linux-mount-code-to-use-.patch
 
 # Chinforinfula
@@ -181,14 +186,13 @@ Provides:   %{name}-kmod-common = %{version}-%{release}
 %{name} without Qt GUI part.
 
 
-%if %{with webservice}
 %package webservice
 Summary:        WebService GUI part for %{name}
 Requires:       %{name}-server%{?isa} = %{version}
 
 %description webservice
 webservice GUI part for %{name}.
-%endif
+
 
 %package devel
 Summary:    %{name} SDK
@@ -384,10 +388,10 @@ install -d %{buildroot}%{_sbindir}
 install -d %{buildroot}%{_libdir}
 install -d %{buildroot}%{_libdir}/virtualbox
 install -d %{buildroot}%{_libdir}/virtualbox/components
-install -d %{buildroot}%{_datadir}/virtualbox/nls
 install -d %{buildroot}%{_libdir}/virtualbox/ExtensionPacks
 install -d %{buildroot}%{_libdir}/virtualbox/sdk
 install -d %{buildroot}%{_datadir}/virtualbox
+install -d %{buildroot}%{_datadir}/virtualbox/nls
 install -d %{buildroot}%{_datadir}/pixmaps
 install -d %{buildroot}%{_datadir}/mime/packages
 install -d %{buildroot}%{_datadir}/icons
@@ -506,6 +510,7 @@ do
 done
 install -p -m 0644 obj/bin/virtualbox.xml %{buildroot}%{_datadir}/mime/packages
 
+%if %{with guest_additions}
 # Guest X.Org drivers
 mkdir -p %{buildroot}%{_libdir}/security
 mkdir -p %{buildroot}%{_libdir}/VBoxGuestAdditions
@@ -563,6 +568,7 @@ sed -i 's/vboxvideo/#vboxvideo/' %{buildroot}%{_prefix}/lib/modules-load.d/%{nam
 %if 0%{?fedora} > 27
 #sed -i s/vboxguest/d %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
 sed -i 's/vboxguest/#vboxguest/' %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
+%endif
 %endif
 
 # Module Source Code
@@ -625,9 +631,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/virtualbox.desktop
 getent group vboxusers >/dev/null || groupadd -r vboxusers
 
 %post
-# Icon Cache
-/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
 # Assign USB devices
 if /sbin/udevadm control --reload-rules >/dev/null 2>&1
 then
@@ -638,28 +641,17 @@ fi
 # should be in kmod package, not here
 /bin/systemctl restart systemd-modules-load.service >/dev/null 2>&1 || :
 
-%systemd_post vboxautostart.service
-
-%preun
-%systemd_preun vboxautostart.service
-
-%if %{with webservice}
 %post webservice
-    %systemd_post vboxweb-httpd.service
-%endif
+%systemd_post vboxweb-httpd.service
 
-%if %{with webservice}
 %preun webservice
-    %systemd_preun vboxweb.service
-%endif
+%systemd_preun vboxweb.service
 
 %postun
 %systemd_postun_with_restart vboxautostart.service
 
-%if %{with webservice}
 %postun webservice
-    %systemd_postun_with_restart vboxweb.service
-%endif
+%systemd_postun_with_restart vboxweb.service
 
 %pre guest-additions
 # Add a group "vboxsf" for Shared Folders access
@@ -799,6 +791,7 @@ getent passwd vboxadd >/dev/null || \
 %{_libdir}/virtualbox/VBoxPython2_7.so
 %{_libdir}/virtualbox/sdk/bindings/xpcom/python
 
+%if %{with guest_additions}
 %files guest-additions
 %license COPYING*
 %{_bindir}/VBoxClient
@@ -818,6 +811,7 @@ getent passwd vboxadd >/dev/null || \
 %{_prefix}/lib/modules-load.d/%{name}-guest.conf
 %{_unitdir}/vboxservice.service
 %{_presetdir}/96-vbox.preset
+%endif
 
 %files kmodsrc
 %{_datadir}/%{name}-kmod-%{version}

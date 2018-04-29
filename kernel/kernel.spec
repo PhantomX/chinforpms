@@ -673,25 +673,25 @@ Patch507: xhci-Fix-Kernel-oops-in-xhci-dbgtty.patch
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
-%global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 749a529ee125727a9f31381cef6254fc06306c67
-%global suse_sid %(c=%{opensuse_id}; echo ${c:0:7})
+#global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
+%global opensuse_id ef715ebb423b5779b3dc4ba1539044131d37b797
+%global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
-Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
-Patch1011: %{opensuse_url}/VFS-expedite-umount.patch?id=%{opensuse_id}#/openSUSE-VFS-expedite-umount.patch
-Patch1012: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev?id=%{opensuse_id}#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1013: btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
-Patch1014: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch?id=%{opensuse_id}#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
-#Patch1015: %%{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch?id=%%{opensuse_id}#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update?id=%{opensuse_id}#/openSUSE-dm-mpath-leastpending-path-update.patch
-#Patch1017: %%{opensuse_url}/dm-mpath-accept-failed-paths?id=%%{opensuse_id}#/openSUSE-dm-mpath-accept-failed-paths.patch
-Patch1018: %{opensuse_url}/dm-table-switch-to-readonly?id=%{opensuse_id}#/openSUSE-dm-table-switch-to-readonly.patch
-Patch1019: %{opensuse_url}/dm-mpath-no-partitions-feature?id=%{opensuse_id}#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1020: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch?id=%{opensuse_id}#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
-Patch1021: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patch?id=%{opensuse_id}#/openSUSE-0002-x86-stacktrace-make-clear-the-success-paths.patch
-Patch1022: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch?id=%{opensuse_id}#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
-Patch1023: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch?id=%{opensuse_id}#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
-Patch1024: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch?id=%{opensuse_id}#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
+Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
+Patch1011: %{opensuse_url}/VFS-expedite-umount.patch#/openSUSE-VFS-expedite-umount.patch
+Patch1012: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
+Patch1013: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
+Patch1014: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
+#Patch1015: %%{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
+#Patch1017: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
+Patch1018: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
+Patch1019: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1020: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
+Patch1021: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patch#/openSUSE-0002-x86-stacktrace-make-clear-the-success-paths.patch
+Patch1022: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
+Patch1023: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
+Patch1024: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
