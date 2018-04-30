@@ -5,7 +5,7 @@
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
 %global released_kernel 1
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 %global buildid .chinfo
@@ -19,7 +19,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 5
+%global stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -71,7 +71,7 @@ BuildRequires: kmod, patch, bash, tar, git
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl(Carp), perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc, elfutils-devel
-BuildRequires: zlib-devel binutils-devel newt-devel python2-devel perl(ExtUtils::Embed) bison flex xz-devel
+BuildRequires: zlib-devel binutils-devel newt-devel python2-devel python2-docutils perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel glibc-devel glibc-static
 BuildRequires: asciidoc xmlto
 %ifnarch s390x %{arm}
@@ -113,13 +113,14 @@ Patch4: 0001-tools-lib-Remove-FSF-address.patch
 Patch5: 0001-tools-power-Don-t-make-man-pages-executable.patch
 Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
 Patch8: 0001-Switch-to-python3.patch
+Patch9: 0001-tools-kvm_stat-Fix-python3-syntax.patch
 
 # Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id ef715ebb423b5779b3dc4ba1539044131d37b797
+%global opensuse_id 16c5ff9b98784fe2ee00491892473da2a008c6a4
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
@@ -177,6 +178,13 @@ Provides: kernel-tools-devel
 This package contains the development files for the tools/ directory from
 the kernel source.
 
+%package -n bpftool
+Summary: Inspection and simple manipulation of eBPF programs and maps
+License: GPLv2
+%description -n bpftool
+This package contains the bpftool, which allows inspection and simple
+manipulation of eBPF programs and maps.
+
 %prep
 %setup -q -n kernel-%{kversion}%{?dist} -c
 
@@ -198,6 +206,7 @@ cd linux-%{kversion}
 %patch5 -p1
 %patch6 -p1
 %patch8 -p1
+%patch9 -p1
 
 %patch1000 -p1
 
@@ -248,6 +257,9 @@ pushd tools/iio/
 make
 popd
 pushd tools/gpio/
+make
+popd
+pushd tools/bpf/bpftool
 make
 popd
 
@@ -323,6 +335,9 @@ popd
 pushd tools/kvm/kvm_stat
 make INSTALL_ROOT=%{buildroot} install-tools
 popd
+pushd tools/bpf/bpftool
+make DESTDIR=%{buildroot} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
+popd
 
 ###
 ### scripts
@@ -390,7 +405,22 @@ popd
 %{_includedir}/cpufreq.h
 %{_includedir}/cpuidle.h
 
+%files -n bpftool
+%{_sbindir}/bpftool
+%{_sysconfdir}/bash_completion.d/bpftool
+%{_mandir}/man8/bpftool-cgroup.8.gz
+%{_mandir}/man8/bpftool-map.8.gz
+%{_mandir}/man8/bpftool-prog.8.gz
+%{_mandir}/man8/bpftool.8.gz
+%license linux-%{kversion}/COPYING
+
 %changelog
+* Sun Apr 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.6-101.chinfo
+- f28 sync, bpftool
+
+* Sun Apr 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.6-100.chinfo
+- 4.16.6
+
 * Thu Apr 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.5-100.chinfo
 - 4.16.5
 

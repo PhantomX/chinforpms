@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -659,22 +659,18 @@ Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # rhbz 1549316
 Patch504: ipmi-fixes.patch
 
-# rhbz 1566510
-Patch505: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
-
-# rhbz 1571036
-# https://patchwork.kernel.org/patch/10345845/
-Patch506: ACPI-video-Only-default-only_lcd-to-true-on-Win8-ready-_desktops_.patch
-
 # rhbz 1565131
 Patch507: xhci-Fix-Kernel-oops-in-xhci-dbgtty.patch
+
+# rhbz 1514836
+Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id ef715ebb423b5779b3dc4ba1539044131d37b797
+%global opensuse_id 16c5ff9b98784fe2ee00491892473da2a008c6a4
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -692,6 +688,7 @@ Patch1021: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patc
 Patch1022: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
 Patch1023: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
 Patch1024: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
+Patch1025: %{opensuse_url}/xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch#/openSUSE-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -709,8 +706,9 @@ Patch3005: %{pf_url}/2032c877108b4958d6d94c5b253910d540817cb5.patch#/pf-2032c877
 Patch3006: %{pf_url}/88e727af7bed4f8765e276ffe811ef7fc4f80411.patch#/pf-88e727af7bed4f8765e276ffe811ef7fc4f80411.patch
 
 # Add additional cpu gcc optimization support
-# https://github.com/graysky2/kernel_gcc_patch (20180406)
-Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/master/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v4.13+.patch
+# https://github.com/graysky2/kernel_gcc_patch
+%global graysky2_id 70ecf6876bfbc426b333a3cb8becebd0b6b974b8
+Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v4.13+.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1962,6 +1960,9 @@ fi
 #
 #
 %changelog
+* Sun Apr 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.6-500.chinfo
+- 4.16.6
+
 * Thu Apr 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.5-500.chinfo
 - 4.16.5
 - f28 sync
