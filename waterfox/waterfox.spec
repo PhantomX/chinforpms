@@ -1,9 +1,9 @@
-%global commit 8864091a01f1fbbce361d654a4bae96ad20e2211
+%global commit d5c25411b0838a4578f8a96aa2e09568d900e9b6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180419
+%global date 20180430
 %global with_snapshot 1
 
-%global freebsd_rev 468197
+%global freebsd_rev 468800
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -34,6 +34,9 @@
 
 # Use system libvpx?
 %global system_libvpx     1
+
+# Use system webp?
+%global system_webp       1
 
 # Use system libvpx?
 %global system_vorbis     1
@@ -78,6 +81,9 @@
 %if %{?system_libvpx}
 %global libvpx_version 1.4.0
 %endif
+%if %{?system_webp}
+%global webp_version 1.0.0
+%endif
 %if %{?system_vorbis}
 %global ogg_version 1.3.3
 %global vorbis_version 1.3.5
@@ -107,7 +113,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.1.0
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -223,6 +229,9 @@ BuildRequires:  dbus-glib-devel
 BuildRequires:  pkgconfig(libv4l2)
 %if %{?system_libvpx}
 BuildRequires:  pkgconfig(vpx) >= %{libvpx_version}
+%endif
+%if %{?system_webp}
+BuildRequires:  pkgconfig(libwebp) >= %{webp_version}
 %endif
 %if %{?system_vorbis}
 BuildRequires:  pkgconfig(ogg) >= %{ogg_version}
@@ -350,7 +359,7 @@ This package contains results of tests executed during build.
 
 # Prepare FreeBSD patches
 mkdir _temp
-mv %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug*,typos,{a,z}-bug*,revert-bug*} _temp/
+mv %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug*,typos,z-bug*,revert-bug*} _temp/
 rm -f %{name}-FreeBSD-patches-r%{freebsd_rev}/*
 
 filterdiff -x dom/svg/crashtests/crashtests.list _temp/patch-bug1343147 \
@@ -369,7 +378,7 @@ for i in \
   702179 991253 1021761 1144632 1288587 1341234 1386371 \
   1343147 1381761 1404057 1404324 1404180 \
   1386887 1387811 1388744 1401992 1409680 1413143 \
-  1434619 1440717 1444083 1405267 1447519
+  1434619 1440717 1444083 1405267 1447519 1314928 1433715 1435212
 do
   rm -f _temp/patch-bug${i}
 done
@@ -382,7 +391,7 @@ mv _temp/* %{name}-FreeBSD-patches-r%{freebsd_rev}/
 
 patchcommand='patch -p0 -s -i'
 
-for i in %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{a-*,bug{??????,???????},typos,revert-bug*,z-*} ;do
+for i in %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug{??????,???????},typos,revert-bug*,z-*} ;do
   ${patchcommand} ${i}
 done
 
@@ -498,6 +507,12 @@ echo "ac_add_options --with-system-jpeg" >> .mozconfig
 echo "ac_add_options --with-system-libvpx" >> .mozconfig
 %else
 echo "ac_add_options --without-system-libvpx" >> .mozconfig
+%endif
+
+%if %{?system_webp}
+echo "ac_add_options --with-system-webp" >> .mozconfig
+%else
+echo "ac_add_options --without-system-webp" >> .mozconfig
 %endif
 
 %if %{?system_vorbis}
@@ -666,8 +681,8 @@ done
 #
 # See http://www.freedesktop.org/software/appstream/docs/ for more details.
 #
-mkdir -p %{buildroot}%{_datadir}/appdata
-cat > %{buildroot}%{_datadir}/appdata/%{name}.appdata.xml <<EOF
+mkdir -p %{buildroot}%{_metainfodir}
+cat > %{buildroot}%{_metainfodir}/%{name}.appdata.xml <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2014 Richard Hughes <richard@hughsie.com> -->
 <application>
@@ -810,7 +825,7 @@ fi
 %dir %{_sysconfdir}/%{name}/*
 %dir %{_datadir}/waterfox/extensions/*
 %dir %{_libdir}/waterfox/extensions/*
-%{_datadir}/appdata/*.appdata.xml
+%{_metainfodir}/*.appdata.xml
 %{_datadir}/applications/*.desktop
 %dir %{mozappdir}
 %license %{mozappdir}/LICENSE
@@ -862,6 +877,11 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue May 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-5.20180430gitd5c2541
+- New snapshot
+- Update patchset
+- Enable system webp
+
 * Tue Apr 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-4.20180419git8864091
 - Some more FreeBSD backport patches, BR: patchutils
 - Enable ogg/vorbis, BR: pkgconfig(vorbis)

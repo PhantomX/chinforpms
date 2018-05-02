@@ -11,8 +11,8 @@
 %endif
 
 Name:           discord
-Version:        0.0.4
-Release:        2%{?dist}
+Version:        0.0.5
+Release:        1%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
 
@@ -110,6 +110,9 @@ done
 
 
 %changelog
+* Wed May 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.5-1
+- 0.0.5
+
 * Sat Apr 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.4-2
 - Add more required libraries.
 

@@ -162,11 +162,9 @@ install -D -m 644 -p %{SOURCE3} \
 mkdir -p %{buildroot}%{_sysconfdir}/profile.d
 install -pm 644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d
 
-%if 0%{?fedora} >= 25
 # Install AppData
-mkdir -p %{buildroot}%{_datadir}/appdata
-install -p -m 0644 %{SOURCE4} %{buildroot}%{_datadir}/appdata/
-%endif
+mkdir -p %{buildroot}%{_metainfodir}
+install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 
 %post
 %firewalld_reload
@@ -176,9 +174,7 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_datadir}/appdata/
 %license COPYING steam_install_agreement.txt
 %doc README debian/changelog README.Fedora
 %{_bindir}/%{name}
-%if 0%{?fedora} >= 25
-%{_datadir}/appdata/%{name}.appdata.xml
-%endif
+%{_metainfodir}/%{name}.appdata.xml
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png

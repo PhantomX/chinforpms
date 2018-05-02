@@ -19,6 +19,7 @@ Source0:        https://github.com/mupen64plus/mupen64plus-ui-python/archive/%{g
 %else
 Source0:        https://github.com/mupen64plus/mupen64plus-ui-python/releases/download/%{version}/%{name}-%{version}.tar.gz
 %endif
+Source1:        %{name}.appdata.xml
 
 Patch0:         %{name}-path.patch
 Patch1:         %{name}-libdir.patch
@@ -84,6 +85,9 @@ for res in 16 22 24 32 36 48 64 72 ;do
     ${dir}/%{name}.png
 done
 
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+
 %files
 %license COPYING LICENSES
 %doc AUTHORS README.rst
@@ -92,6 +96,7 @@ done
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/*
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
+%{_metainfodir}/*.xml
 
 %changelog
 * Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.2.5-1.20180306git164577e

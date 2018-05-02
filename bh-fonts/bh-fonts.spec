@@ -52,7 +52,7 @@ Requires: %{?epoch:%{epoch}:}%{name}-common = %{version}-%{release}
 This package consists of the BH Luxi sans-serif variable-width font faces.
 
 %_font_pkg -n sans -f *-%{fontname}-sans.conf luxis*.ttf
-%{_datadir}/appdata/%{fontname}-sans.metainfo.xml
+%{_metainfodir}/%{fontname}-sans.metainfo.xml
 
 %package -n %{fontname}-serif-fonts
 Summary:  BH variable-width serif font faces
@@ -64,7 +64,7 @@ Requires: %{?epoch:%{epoch}:}%{name}-common = %{version}-%{release}
 This package consists of the BH serif variable-width font faces.
 
 %_font_pkg -n serif -f *-%{fontname}-serif.conf luxir*.ttf
-%{_datadir}/appdata/%{fontname}-serif.metainfo.xml
+%{_metainfodir}/%{fontname}-serif.metainfo.xml
 
 
 %package -n %{fontname}-mono-fonts
@@ -77,7 +77,7 @@ Requires: %{?epoch:%{epoch}:}%{name}-common = %{version}-%{release}
 This package consists of the BH sans-serif monospace font faces.
 
 %_font_pkg -n mono -f *-%{fontname}-mono.conf luxim*.ttf
-%{_datadir}/appdata/%{fontname}-mono.metainfo.xml
+%{_metainfodir}/%{fontname}-mono.metainfo.xml
 
 
 %prep
@@ -111,13 +111,13 @@ install -m 0644 -p %{SOURCE3} \
 
 # Add AppStream metadata
 install -Dm 0644 -p %{SOURCE4} \
-  %{buildroot}%{_datadir}/appdata/%{fontname}.metainfo.xml
+  %{buildroot}%{_metainfodir}/%{fontname}.metainfo.xml
 install -Dm 0644 -p %{SOURCE5} \
-  %{buildroot}%{_datadir}/appdata/%{fontname}-mono.metainfo.xml
+  %{buildroot}%{_metainfodir}/%{fontname}-mono.metainfo.xml
 install -Dm 0644 -p %{SOURCE6} \
-  %{buildroot}%{_datadir}/appdata/%{fontname}-sans.metainfo.xml
+  %{buildroot}%{_metainfodir}/%{fontname}-sans.metainfo.xml
 install -Dm 0644 -p %{SOURCE7} \
-  %{buildroot}%{_datadir}/appdata/%{fontname}-serif.metainfo.xml
+  %{buildroot}%{_metainfodir}/%{fontname}-serif.metainfo.xml
 
 for fconf in \
   %{fontconf}-mono.conf \
@@ -133,7 +133,7 @@ done
 %defattr(0644,root,root,0755)
 %license COPYING
 %doc ChangeLog README
-%{_datadir}/appdata/%{fontname}.metainfo.xml
+%{_metainfodir}/%{fontname}.metainfo.xml
 
 %changelog
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-3

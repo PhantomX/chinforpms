@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2016 Onuralp SEZER <thunderbirdtr@fedoraproject.org> -->
 <component type="addon">
-  <id>waterfox-noscript</id>
-  <extends>waterfox.desktop</extends>
+  <id>mozilla-noscript</id>
+  <extends>firefox.desktop</extends>
+  <extends>mozilla-seamonkey.desktop</extends>
   <name>NoScript</name>
-  <summary>A JavaScript white list extension for Waterfox</summary>
+  <summary>A JavaScript white list extension for Mozilla Firefox</summary>
   <url type="homepage">https://noscript.net/</url>
   <url type="bugtracker">https://noscript.net/forum</url>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-2.0+</project_license>
-  <updatecontact>megaphantomx at bol.com.br</updatecontact>
+  <updatecontact>thunderbirtdtr_at_fedoraproject.org</updatecontact>
 </component>

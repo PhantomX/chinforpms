@@ -118,8 +118,8 @@ pushd builddir
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
-mkdir -p %{buildroot}%{_datadir}/appdata
-install -pm0644 share/%{name}.appdata.xml %{buildroot}%{_datadir}/appdata/%{name}.appdata.xml
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm0644 share/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 rm -f %{buildroot}%{_bindir}/buddy_status
 rm -f %{buildroot}%{_bindir}/chatroom
@@ -157,7 +157,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/%{name}
 %{_datadir}/icons/hicolor/*/*/*
 %{_datadir}/sounds/%{name}
-%{_datadir}/appdata/%{name}.appdata.xml
+%{_metainfodir}/%{name}.appdata.xml
 
 %files libs
 %{_libdir}/lib%{name}*.so.*

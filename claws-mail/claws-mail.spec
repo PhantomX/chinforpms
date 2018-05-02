@@ -509,7 +509,7 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %{_mandir}/man1/*
 %{_datadir}/applications/*
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-#{_datadir}/appdata/claws-mail.appdata.xml
+#%%{_metainfodir}/claws-mail.appdata.xml
 
 %files devel
 %{_includedir}/claws-mail/
@@ -520,123 +520,123 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 %files plugins-acpi-notifier
 %{_libdir}/claws-mail/plugins/acpi_notifier*
-#%%{_datadir}/appdata/claws-mail-acpi_notifier.metainfo.xml
+#%%{_metainfodir}/claws-mail-acpi_notifier.metainfo.xml
 
 %files plugins-archive
 %{_libdir}/claws-mail/plugins/archive*
-#%%{_datadir}/appdata/claws-mail-archive.metainfo.xml
+#%%{_metainfodir}/claws-mail-archive.metainfo.xml
 
 %files plugins-attachwarner
 %{_libdir}/claws-mail/plugins/attachwarner*
-#%%{_datadir}/appdata/claws-mail-attachwarner.metainfo.xml
+#%%{_metainfodir}/claws-mail-attachwarner.metainfo.xml
 
 %files plugins-address-keeper
 %{_libdir}/claws-mail/plugins/address_keeper*
-#%%{_datadir}/appdata/claws-mail-address_keeper.metainfo.xml
+#%%{_metainfodir}/claws-mail-address_keeper.metainfo.xml
 
 %files plugins-att-remover
 %{_libdir}/claws-mail/plugins/att_remover*
-#%%{_datadir}/appdata/claws-mail-att_remover.metainfo.xml
+#%%{_metainfodir}/claws-mail-att_remover.metainfo.xml
 
 %files plugins-bogofilter
 %{_libdir}/claws-mail/plugins/bogofilter.so
-#%%{_datadir}/appdata/claws-mail-bogofilter.metainfo.xml
+#%%{_metainfodir}/claws-mail-bogofilter.metainfo.xml
 
 %if !0%{?rhel}
 %files plugins-bsfilter
 %{_libdir}/claws-mail/plugins/bsfilter*
-#%%{_datadir}/appdata/claws-mail-bsfilter.metainfo.xml
+#%%{_metainfodir}/claws-mail-bsfilter.metainfo.xml
 %endif
 
 %files plugins-clamd
 %{_libdir}/claws-mail/plugins/clamd*
-#%%{_datadir}/appdata/claws-mail-clamd.metainfo.xml
+#%%{_metainfodir}/claws-mail-clamd.metainfo.xml
 
 %if 0%{with_fancy}
 %files plugins-fancy
 %{_libdir}/claws-mail/plugins/fancy*
-#%%{_datadir}/appdata/claws-mail-fancy.metainfo.xml
+#%%{_metainfodir}/claws-mail-fancy.metainfo.xml
 %endif
 
 %files plugins-fetchinfo
 %{_libdir}/claws-mail/plugins/fetchinfo*
-#%%{_datadir}/appdata/claws-mail-fetchinfo.metainfo.xml
+#%%{_metainfodir}/claws-mail-fetchinfo.metainfo.xml
 
 %files plugins-gdata
 %{_libdir}/claws-mail/plugins/gdata*
-#%%{_datadir}/appdata/claws-mail-gdata.metainfo.xml
+#%%{_metainfodir}/claws-mail-gdata.metainfo.xml
 
 %files plugins-mailmbox
 %{_libdir}/claws-mail/plugins/mailmbox*
-#%%{_datadir}/appdata/claws-mail-mailmbox.metainfo.xml
+#%%{_metainfodir}/claws-mail-mailmbox.metainfo.xml
 
 %files plugins-managesieve
 %{_libdir}/claws-mail/plugins/managesieve.so
 
 %files plugins-newmail
 %{_libdir}/claws-mail/plugins/newmail.so
-#%%{_datadir}/appdata/claws-mail-newmail.metainfo.xml
+#%%{_metainfodir}/claws-mail-newmail.metainfo.xml
 
 
 %files plugins-notification
 %{_libdir}/claws-mail/plugins/notification.so
-#%%{_datadir}/appdata/claws-mail-notification.metainfo.xml
+#%%{_metainfodir}/claws-mail-notification.metainfo.xml
 
 
 %files plugins-pdf-viewer
 %{_libdir}/claws-mail/plugins/pdf_viewer.so
-#%%{_datadir}/appdata/claws-mail-pdf_viewer.metainfo.xml
+#%%{_metainfodir}/claws-mail-pdf_viewer.metainfo.xml
 
 
 %files plugins-perl
 %{_libdir}/claws-mail/plugins/perl.so
-#%%{_datadir}/appdata/claws-mail-perl.metainfo.xml
+#%%{_metainfodir}/claws-mail-perl.metainfo.xml
 
 
 %files plugins-pgp
 %{_libdir}/claws-mail/plugins/pgp*.so
 %{_libdir}/claws-mail/plugins/pgp*.deps
-#%%{_datadir}/appdata/claws-mail-pgp*.metainfo.xml
+#%%{_metainfodir}/claws-mail-pgp*.metainfo.xml
 
 
 
 %files plugins-python
 %{_libdir}/claws-mail/plugins/python*
-#%%{_datadir}/appdata/claws-mail-python.metainfo.xml
+#%%{_metainfodir}/claws-mail-python.metainfo.xml
 
 
 %files plugins-libravatar
 %{_libdir}/claws-mail/plugins/libravatar*
-#%%{_datadir}/appdata/claws-mail-libravatar.metainfo.xml
+#%%{_metainfodir}/claws-mail-libravatar.metainfo.xml
 
 
 %files plugins-rssyl
 %{_libdir}/claws-mail/plugins/rssyl*
-#%%{_datadir}/appdata/claws-mail-rssyl.metainfo.xml
+#%%{_metainfodir}/claws-mail-rssyl.metainfo.xml
 
 
 %files plugins-smime
 %{_libdir}/claws-mail/plugins/smime.so
 %{_libdir}/claws-mail/plugins/smime.deps
-#%%{_datadir}/appdata/claws-mail-smime.metainfo.xml
+#%%{_metainfodir}/claws-mail-smime.metainfo.xml
 
 
 %files plugins-spamassassin
 %{_libdir}/claws-mail/plugins/spamassassin.so
-#%%{_datadir}/appdata/claws-mail-spamassassin.metainfo.xml
+#%%{_metainfodir}/claws-mail-spamassassin.metainfo.xml
 
 
 %files plugins-spam-report
 %{_libdir}/claws-mail/plugins/spamreport.so
-#%%{_datadir}/appdata/claws-mail-spam_report.metainfo.xml
+#%%{_metainfodir}/claws-mail-spam_report.metainfo.xml
 
 %files plugins-tnef
 %{_libdir}/claws-mail/plugins/tnef*
-#%%{_datadir}/appdata/claws-mail-tnef_parse.metainfo.xml
+#%%{_metainfodir}/claws-mail-tnef_parse.metainfo.xml
 
 %files plugins-vcalendar
 %{_libdir}/claws-mail/plugins/vcalendar*
-#%%{_datadir}/appdata/claws-mail-vcalendar.metainfo.xml
+#%%{_metainfodir}/claws-mail-vcalendar.metainfo.xml
 
 
 %changelog

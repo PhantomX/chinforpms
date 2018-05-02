@@ -17,7 +17,6 @@ release tags).
 
 ## Differences from Fedora and RPM Fusion
 
- * **aegisub** - No openal and portaudio support
  * **belle-sip, linphone, ortp** - Updated version
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **easytag** - Tests
@@ -31,6 +30,7 @@ release tags).
  * **kernel** - _blk-mq_ enabled by default, [CPU optimizations](https://github.com/graysky2/kernel_gcc_patch) and some
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) patches
                 (kernel-local must be edited to modify gcc optimizations)
+ * **libogg** - Tests
  * **mesa** - Tests
  * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**
  * **psi** - Updated

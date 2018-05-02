@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>ppsspp.desktop</id>
+  <name>PPSSPP</name>
+  <summary>A PSP emulator</summary>
+  <developer_name>PPSSPP Project</developer_name>
+  <description>
+  <p>
+   PPSSPP is a PSP emulator written in C++. It translates PSP CPU instructions
+   directly into optimized x86, x64, ARM or ARM64 machine code, using JIT
+   recompilers (dynarecs).
+  </p>
+</description>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>PSPSDK</project_license>
+  <project_license>GPL-2.0+</project_license>
+  <url type="bugtracker">https://github.com/hrydgard/ppsspp/issues</url>
+  <url type="faq">http://www.ppsspp.org/faq.html</url>
+  <url type="homepage">http://www.ppsspp.org</url>
+  <updatecontact>megaphantomx at bol.com.br</updatecontact>
+</component>

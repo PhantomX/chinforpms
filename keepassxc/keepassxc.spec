@@ -75,7 +75,7 @@ desktop-file-edit \
   %{buildroot}%{_datadir}/applications/org.%{name}.KeePassXC.desktop
 
 #install appdata files
-appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.%{name}.KeePassXC.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.KeePassXC.appdata.xml
 
 %find_lang keepassx --with-qt
 
@@ -93,7 +93,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.%{nam
 %{_datadir}/man/man1/*.1*
 %{_datadir}/mime/packages/*.xml
 %{_datadir}/icons/hicolor/*/*/*%{name}*
-%{_datadir}/metainfo/*.appdata.xml
+%{_metainfodir}/*.appdata.xml
 
 
 %changelog

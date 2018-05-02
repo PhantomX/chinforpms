@@ -48,7 +48,7 @@ Version:        1.5.4
 Release:        4%{?gver}%{?dist}
 Summary:        A PSP emulator
 
-License:        PSPSDK
+License:        GPLv2+
 URL:            http://www.ppsspp.org/
 %if 0%{?with_snapshot}
 Source0:        https://github.com/hrydgard/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
@@ -63,6 +63,7 @@ Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}.t
 %else
 Source0:        https://github.com/hrydgard/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif #{?with_snapshot}
+Source1:        %{name}.appdata.xml
 
 Patch0:         %{name}-noupdate.patch
 
@@ -92,7 +93,9 @@ Requires:       google-roboto-condensed-fonts
 
 
 %description
-%{summary}.
+PPSSPP is a PSP emulator written in C++. It translates PSP CPU instructions
+directly into optimized x86, x64, ARM or ARM64 machine code, using JIT
+recompilers (dynarecs).
 
 %prep
 %if 0%{?with_snapshot}
@@ -224,6 +227,10 @@ cp -r icons/hicolor/* %{buildroot}%{_datadir}/icons/hicolor/
 install -pm0644 icons/icon-512.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+
+
 %files
 %license LICENSE.TXT
 %doc README.md
@@ -245,6 +252,7 @@ install -pm0644 icons/icon-512.svg \
 %{_datadir}/%{name}/assets/lang/*
 %dir %{_datadir}/%{name}/assets/shaders
 %{_datadir}/%{name}/assets/shaders/*
+%{_metainfodir}/*.xml
 
 
 %changelog
