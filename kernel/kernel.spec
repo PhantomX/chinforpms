@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -507,9 +507,6 @@ Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
 # ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
 
-# gcc -Werror=aliasing workaround
-Patch003: 0001-Temporarily-work-around-gcc-aliasing-warning-error.patch
-
 %if !%{nopatches}
 
 # Git trees.
@@ -659,9 +656,6 @@ Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # rhbz 1549316
 Patch504: ipmi-fixes.patch
 
-# rhbz 1565131
-Patch507: xhci-Fix-Kernel-oops-in-xhci-dbgtty.patch
-
 # rhbz 1514836
 Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
 
@@ -670,7 +664,7 @@ Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 16c5ff9b98784fe2ee00491892473da2a008c6a4
+%global opensuse_id ad991e835fd7c9d4261d438ec7384848244d3582
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -701,9 +695,6 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 Patch3001: %{pf_url}/2597a2a58616cc8a1046ede0be762103221ea41b.patch#/pf-2597a2a58616cc8a1046ede0be762103221ea41b.patch
 Patch3002: %{pf_url}/a998885a48d9b7473040f59c63a8b0ea9f210afa.patch#/pf-a998885a48d9b7473040f59c63a8b0ea9f210afa.patch
 Patch3003: %{pf_url}/87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch#/pf-87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch
-Patch3004: %{pf_url}/bc54177ae06e2f03867380969629f4f13efcc238.patch#/pf-bc54177ae06e2f03867380969629f4f13efcc238.patch
-Patch3005: %{pf_url}/2032c877108b4958d6d94c5b253910d540817cb5.patch#/pf-2032c877108b4958d6d94c5b253910d540817cb5.patch
-Patch3006: %{pf_url}/88e727af7bed4f8765e276ffe811ef7fc4f80411.patch#/pf-88e727af7bed4f8765e276ffe811ef7fc4f80411.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1960,6 +1951,9 @@ fi
 #
 #
 %changelog
+* Wed May 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.7-500.chinfo
+- 4.16.7
+
 * Sun Apr 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.6-500.chinfo
 - 4.16.6
 

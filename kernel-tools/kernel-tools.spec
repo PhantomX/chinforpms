@@ -5,7 +5,7 @@
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
 %global released_kernel 1
-%global baserelease 101
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 %global buildid .chinfo
@@ -19,7 +19,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 6
+%global stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -120,7 +120,7 @@ Patch9: 0001-tools-kvm_stat-Fix-python3-syntax.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 16c5ff9b98784fe2ee00491892473da2a008c6a4
+%global opensuse_id ad991e835fd7c9d4261d438ec7384848244d3582
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
@@ -415,6 +415,9 @@ popd
 %license linux-%{kversion}/COPYING
 
 %changelog
+* Wed May 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.7-100.chinfo
+- 4.16.7
+
 * Sun Apr 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.6-101.chinfo
 - f28 sync, bpftool
 

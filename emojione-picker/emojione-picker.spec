@@ -10,7 +10,7 @@
 
 Name:           emojione-picker
 Version:        0.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Emoji Picker for the indicator area using Emoji One
 
 License:        GPLv3
@@ -20,6 +20,10 @@ Source0:        https://github.com/gentakojima/%{fullname}/archive/%{commit}.tar
 %else
 Source0:        https://github.com/gentakojima/%{fullname}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
+Source1:        %{name}.appdata.xml
+
+Patch1:         https://github.com/gentakojima/%{fullname}/pull/25/commits/1faaefc71b18f1f982c1a803282a752c53248b0a.patch#/gh-pull-25.patch
+Patch2:         https://github.com/gentakojima/%{fullname}/pull/31.patch#/gh-pull-31.patch
 
 BuildArch:      noarch
 
@@ -41,7 +45,7 @@ You must paste the emojis wherever you want to use them.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{fullname}-%{commit}
+%autosetup -n %{fullname}-%{commit} -p1
 %else
 %autosetup -n %{fullname}-%{version}
 %endif
@@ -87,6 +91,9 @@ for res in 16 22 24 32 36 48 64 72 96 128 192 256 512 ;do
     -o ${dir}/%{name}.png || exit 1
 done
 
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+
 
 %files
 %license debian/copyright
@@ -96,7 +103,13 @@ done
 %{_sysconfdir}/xdg/autostart/%{name}_autostart.desktop
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/*/%{name}*
+%{_metainfodir}/*.xml
+
 
 %changelog
+* Wed May 02 2018 Phantom X - 0.1-2.20161009gitcb5f504
+- Add GitHub pull requests
+- Metainfo file
+
 * Fri Dec  1 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.1-1.20161009gitcb5f504
 - Initial spec.

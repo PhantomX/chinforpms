@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>emojione-picker.desktop</id>
+  <name>Emojione Picker</name>
+  <summary>Emoji Picker for Ubuntu</summary>
+  <developer_name>Jorge Suárez de Lis (gentakojima)</developer_name>
+  <description>
+  <p>
+   Emoji Picker featuring several menus and a search panel. You must
+   paste the emojis wherever you want to use them.
+  </p>
+</description>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <url type="bugtracker">https://github.com/gentakojima/emojione-picker-ubuntu/issues</url>
+  <url type="homepage">https://github.com/gentakojima/emojione-picker-ubuntu</url>
+  <updatecontact>megaphantomx at bol.com.br</updatecontact>
+</component>
