@@ -285,8 +285,7 @@ Summary: The Linux kernel
 %define asmarch s390
 %define hdrarch s390
 %define all_arch_configs kernel-%{version}-s390x.config
-%define make_target image
-%define kernel_image arch/s390/boot/image
+%define kernel_image arch/s390/boot/bzImage
 %endif
 
 %ifarch %{arm}
@@ -1432,6 +1431,9 @@ BuildKernel() {
     if [ -f arch/$Arch/*lds ]; then
       cp -a arch/$Arch/*lds $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/arch/%{_arch}/ || :
     fi
+    if [ -f arch/%{asmarch}/kernel/module.lds ]; then
+      cp -a --parents arch/%{asmarch}/kernel/module.lds $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+    fi
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*.o
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*/*.o
 %ifarch %{power64}
@@ -1441,8 +1443,6 @@ BuildKernel() {
       cp -a --parents arch/%{asmarch}/include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     fi
 %ifarch aarch64
-    # Needed for systemtap
-    cp -a --parents arch/arm64/kernel/module.lds $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     # arch/arm64/include/asm/xen references arch/arm
     cp -a --parents arch/arm/include/asm/xen $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     # arch/arm64/include/asm/opcodes.h references arch/arm

@@ -12,11 +12,12 @@ Source0:        https://mednafen.github.io/releases/files/%{name}-%{version}.tar
 
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
+#BuildRequires:  libmpcdec-devel >= 1.3.0
 #BuildRequires:  lzo-devel >= 2.0.9
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(sdl2) >= 2.0.5
-BuildRequires:  pkgconfig(jack) => 1.0.2
-BuildRequires:  pkgconfig(sndfile) => 1.0.2
+BuildRequires:  pkgconfig(jack) >= 1.0.2
+BuildRequires:  pkgconfig(sndfile) >= 1.0.2
 BuildRequires:  pkgconfig(zlib)
 
 %description
@@ -73,6 +74,7 @@ export ax_cv_cflags_gcc_option__mtune_haswell=no
 %configure \
   --disable-rpath \
   --disable-silent-rules
+#  --with-external-mpcdec
 #  --with-external-lzo
 %make_build
 

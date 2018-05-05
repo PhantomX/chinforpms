@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>mednaffe.desktop</id>
+  <name>Mednaffe</name>
+  <summary>A front-end (GUI) for mednafen emulator</summary>
+  <developer_name>AmatCoder</developer_name>
+  <description>
+  <p>
+   Mednaffe is a front-end (GUI) for mednafen emulator.
+  </p>
+</description>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <url type="bugtracker">https://github.com/AmatCoder/mednaffe/issues</url>
+  <url type="homepage">https://github.com/AmatCoder/mednaffe</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main window</caption>
+      <image height="1039" width="769">https://github.com/AmatCoder/mednaffe/raw/wiki/mednaffe_systems_settings_gtk2.png</image>
+    </screenshot>
+  </screenshots>
+  <updatecontact>megaphantomx at bol.com.br</updatecontact>
+</component>
