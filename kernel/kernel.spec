@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -614,6 +614,12 @@ Patch314: arm-tegra-fix-nouveau-crash.patch
 # https://patchwork.kernel.org/patch/10133165/
 Patch315: mvebu-a37xx-fixes.patch
 
+# https://www.spinics.net/lists/arm-kernel/msg643991.html
+Patch316: arm64-fix-usercopy-whitelist.patch
+
+# https://www.spinics.net/lists/linux-tegra/msg32920.html
+Patch318: arm-tegra-USB-driver-dependency-fix.patch
+
 # Upstream 4.17 back port
 Patch319: of-i2c-fix-module-aliases.patch
 
@@ -658,12 +664,22 @@ Patch504: ipmi-fixes.patch
 # rhbz 1514836
 Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
 
+# rhbz 1572944
+Patch509: Revert-the-random-series-for-4.16.4.patch
+
+# CVE-2018-10322 rhbz 1571623 1571624
+Patch510: 0001-xfs-enhance-dinode-verifier.patch
+
+# rhbz 1566258
+Patch512: KVM-vmx-update-sec-exec-controls-for-UMIP-iff-emulating-UMIP.patch
+
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id ad991e835fd7c9d4261d438ec7384848244d3582
+%global opensuse_id 9269cc18739d63d240276a2def6446eaec208dc6
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -694,6 +710,7 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 Patch3001: %{pf_url}/2597a2a58616cc8a1046ede0be762103221ea41b.patch#/pf-2597a2a58616cc8a1046ede0be762103221ea41b.patch
 Patch3002: %{pf_url}/a998885a48d9b7473040f59c63a8b0ea9f210afa.patch#/pf-a998885a48d9b7473040f59c63a8b0ea9f210afa.patch
 Patch3003: %{pf_url}/87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch#/pf-87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch
+Patch3004: %{pf_url}/038846fb7c9638cd528cea1bf8dd4b7fa109d134.patch#/pf-038846fb7c9638cd528cea1bf8dd4b7fa109d134.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1951,6 +1968,9 @@ fi
 #
 #
 %changelog
+* Wed May 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.8-500.chinfo
+- 4.16.8
+
 * Wed May 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.7-500.chinfo
 - 4.16.7
 
