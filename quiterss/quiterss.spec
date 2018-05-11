@@ -1,5 +1,5 @@
 Name:           quiterss
-Version:        0.18.9
+Version:        0.18.10
 Release:        100.chinfo%{?dist}
 Summary:        RSS/Atom aggregator
 License:        GPLv3
@@ -42,6 +42,10 @@ rm -rf 3rdparty/{qtsingleapplication,sqlite}
 make install INSTALL_ROOT=%{buildroot}
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm 0644 %{name}.appdata.xml \
+  %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+
 %find_lang %{name} --with-qt --without-mo
 
 %files -f %{name}.lang
@@ -54,8 +58,14 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/pixmaps/%{name}.png
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
+%{_metainfodir}/*.xml
+
 
 %changelog
+* Thu May 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.18.10-100.chinfo
+- 0.18.10
+- metainfo file
+
 * Thu Jan 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.18.9-100.chinfo
 - 0.18.9
 - Qt5

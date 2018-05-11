@@ -37,7 +37,7 @@
 %endif
 
 Name:       VirtualBox
-Version:    5.2.10
+Version:    5.2.12
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -817,6 +817,9 @@ getent passwd vboxadd >/dev/null || \
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Thu May 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.12-100.chinfo
+- 5.2.12
+
 * Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.10-100.chinfo
 - 5.2.10
 - Sync with RPMFusion
