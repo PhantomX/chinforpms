@@ -39,6 +39,7 @@ release tags).
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
                     and **VirtualBox-guest-additions-iso** support
  * **xboxdrv** - Tests
+ * **xfwm4** - -DMONITOR_ROOT_PIXMAP
  * **xorg-x11-server** - Tests
  * **wine** - Extra patches and personal fixes
 

@@ -1,5 +1,5 @@
 Name:           gamemode
-Version:        1.0
+Version:        1.1
 Release:        1%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 
@@ -62,5 +62,8 @@ install -pm0755 %{S:1} %{buildroot}/%{_bindir}/%{name}
 %{_libdir}/lib*.so
 
 %changelog
+* Sat May 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-1
+- 1.1
+
 * Wed Apr 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0-1
 - Initial spec
