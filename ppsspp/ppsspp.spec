@@ -1,6 +1,6 @@
-%global commit fb377b0b8427d67d02bf59f4ee72d6f0146947ef
+%global commit d10d57bc03343c05b301362290c79cf4b6609bda
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180414
+%global date 20180510
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -45,7 +45,7 @@
 
 Name:           ppsspp
 Version:        1.5.4
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        GPLv2+
@@ -63,7 +63,7 @@ Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}.t
 %else
 Source0:        https://github.com/hrydgard/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif #{?with_snapshot}
-Source1:        %{name}.appdata.xml
+Source10:        %{name}.appdata.xml
 
 Patch0:         %{name}-noupdate.patch
 
@@ -228,7 +228,7 @@ install -pm0644 icons/icon-512.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %files
@@ -256,6 +256,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat May 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-5.20180510gitd10d57b
+- New snapshot
+- Appdata
+
 * Sun Apr 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-4.20180414gitfb377b0
 - New snapshot
 

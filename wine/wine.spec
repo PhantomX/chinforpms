@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.7
+%global stagingver 3.8
 %global strel %(echo %{stagingver} | grep -q \\. ; echo $?)
 %endif # 0%{?fedora}
 
@@ -29,7 +29,7 @@
 %endif
 
 Name:           wine
-Version:        3.7
+Version:        3.8
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1428,6 +1428,7 @@ fi
 %{_libdir}/wine/atl90.dll.so
 %{_libdir}/wine/atl100.dll.so
 %{_libdir}/wine/atl110.dll.so
+%{_libdir}/wine/atmlib.dll.so
 %{_libdir}/wine/authz.dll.so
 %{_libdir}/wine/avicap32.dll.so
 %{_libdir}/wine/avifil32.dll.so
@@ -1559,15 +1560,13 @@ fi
 %{_libdir}/wine/ext-ms-win-rtcore-ntuser-sysparams-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-security-credui-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-security-cryptui-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-uxtheme-themes-l1-1-0.dll.so
 %if 0%{?staging}
 %{_libdir}/wine/ext-ms-win-appmodel-usercontext-l1-1-0.dll.so
-%{_libdir}/wine/ext-ms-win-uxtheme-themes-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-xaml-pal-l1-1-0.dll.so
 %endif
 %{_libdir}/wine/faultrep.dll.so
-%if 0%{?staging}
 %{_libdir}/wine/feclient.dll.so
-%endif
 %{_libdir}/wine/fltlib.dll.so
 %{_libdir}/wine/fltmgr.sys.so
 %{_libdir}/wine/fntcache.dll.so
@@ -1647,6 +1646,7 @@ fi
 %{_libdir}/wine/mofcomp.exe.so
 %{_libdir}/wine/mountmgr.sys.so
 %{_libdir}/wine/mpr.dll.so
+%{_libdir}/wine/mp3dmod.dll.so
 %{_libdir}/wine/mprapi.dll.so
 %{_libdir}/wine/msacm32.dll.so
 %{_libdir}/wine/msacm32.drv.so
@@ -1859,6 +1859,7 @@ fi
 %{_libdir}/wine/wevtapi.dll.so
 %{_libdir}/wine/wiaservc.dll.so
 %{_libdir}/wine/wimgapi.dll.so
+%{_libdir}/wine/winmgmt.exe.so
 %if 0%{?staging}
 %{_libdir}/wine/win32k.sys.so
 %endif
@@ -2241,6 +2242,9 @@ fi
 %endif
 
 %changelog
+* Sat May 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.8-100.chinfo
+- 3.8
+
 * Sat Apr 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.7-100.chinfo
 - 3.7
 

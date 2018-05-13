@@ -1,7 +1,6 @@
 %global pkgname VBoxGuestAdditions
 
-# Set to 0 for final release
-%global prerel 0
+#global prerel 0
 
 Name:           VirtualBox-guest-additions-iso
 Version:        5.2.12

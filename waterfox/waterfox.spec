@@ -1,9 +1,9 @@
-%global commit d5c25411b0838a4578f8a96aa2e09568d900e9b6
+%global commit 2bb1a86e5dbd601cd3b8812e45b69060e1f636de
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180430
+%global date 20180511
 %global with_snapshot 1
 
-%global freebsd_rev 468800
+%global freebsd_rev 469733
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -113,7 +113,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.1.0
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -175,8 +175,9 @@ Patch416:        mozilla-1435695.patch
 
 # Upstream updates
 
-%global wf_url https://github.com/MrAlex94/Waterfox/commit
-#Patch490: %%{wf_url}/commit.patch#/wf-commit.patch
+%global wf_url https://github.com/MrAlex94/Waterfox
+#Patch???:      %%{wf_url}/commit/commit.patch#/wf-commit.patch
+Patch490:       %{wf_url}/pull/547.patch#/wf-pull-547.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -352,7 +353,7 @@ This package contains results of tests executed during build.
 %patch415 -p1 -b .1405267
 %patch416 -p1 -b .1435695
 
-#patch490 -p1
+%patch490 -p1
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -367,18 +368,22 @@ filterdiff -x dom/svg/crashtests/crashtests.list _temp/patch-bug1343147 \
 filterdiff -x dom/security/test/csp/mochitest.ini _temp/patch-bug1381761 \
   > %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-bug1381761
 
-for i in 1404057 1404324 1404180 ;do
+for i in 1404057 1404324 1404180 1405878 ;do
   filterdiff \
     -x layout/style/crashtests/crashtests.list \
     -x layout/reftests/bugs/reftest.list \
     _temp/patch-bug${i} > %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-bug${i}
 done
 
+# 1: unneeded
+# 2: fixed above
+# 3: no apply
+# 4: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1341234 1386371 \
-  1343147 1381761 1404057 1404324 1404180 \
-  1386887 1387811 1388744 1401992 1409680 1413143 \
-  1434619 1440717 1444083 1405267 1447519 1314928 1433715 1435212
+  702179 991253 1021761 1144632 1288587 \
+  1343147 1381761 1404057 1404324 1404180 1405878 \
+  1388744 1405267 1413143 \
+  1447519
 do
   rm -f _temp/patch-bug${i}
 done
@@ -877,6 +882,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Sat May 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-6.20180511git2bb1a86
+- New snapshot
+- Update patchset
+
 * Tue May 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-5.20180430gitd5c2541
 - New snapshot
 - Update patchset
