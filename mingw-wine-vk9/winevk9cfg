@@ -1,0 +1,232 @@
+#!/bin/bash
+# -- winevk9cfg --
+# Sets wine VK9 dll redirection.
+#
+# Script by Phantom X <megaphantomx at bol.com.b>
+# Suggested usage: $ winevk9cfg --help
+#
+# Copyright 2018 Phantom X, Goiania, Brazil.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR `AS IS'' AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+set -e
+
+ver=20180514
+
+name="VK9"
+dllsuffix="_vk9"
+dlls="d3d9"
+nodlls="wined3d"
+dlldir="/usr/share/wine/vk9"
+
+unset winebits
+enabled=0
+enabledlnk=0
+disabled=0
+disabledlnk=0
+dllmissing=0
+retval=0
+redirectkey="HKCU\\Software\\Wine\\DllRedirects"
+
+txt() {
+cat <<EOF
+$(basename "$0")
+Uso : $0 <option>
+-c|--check        Check ${name} dll redirection settings.
+-s|1|--set        Enable ${name} dll redirection.
+-u|0|--unset      Disable ${name} dll redirection.
+-V|--version      Show version.
+-h|--help         Show this message.
+EOF
+}
+
+checkcfg(){
+  for winebits in 64 32 ;do
+    if [ "${winebits}" -eq 64 ] ;then
+      lib=64
+    else
+      lib=32
+    fi
+    native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+    for dll in ${dlls} ;do
+      if wine${winebits} reg query "${redirectkey}" /v "${dll}" 2>/dev/null | grep -q -F "${dll}${dllsuffix}.dll" ;then
+        enabled=1
+      else
+        disabled=1
+      fi
+    done
+    if [ -f "${native_path}/${dll}${dllsuffix}.dll" ] && [ "$(readlink -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}${dllsuffix}.dll")" ] ;then
+      enabledlnk=1
+    else
+      disabledlnk=1
+    fi
+  done
+
+  if [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 0 ] && [ "${enabledlnk}" -eq 1 ] && [ "${disabledlnk}" -eq 0 ] ;then
+    echo "${name} is enabled!"
+  elif [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 1 ] || [ "${enabledlnk}" -eq 1 ] && [ "${disabledlnk}" -eq 1 ] ;then
+    echo "${name} settings are corrupted!"
+    echo "Rerun with --set or --unset to fix!"
+  else
+    echo "${name} is not enabled!"
+  fi
+  exit 0
+}
+
+setcfg(){
+  csmtdisabled=0
+  enabled=1
+  enabledlnk=1
+  for winebits in 64 32 ;do
+    if wine${winebits} reg query /? &>/dev/null ;then
+      if [ "${winebits}" -eq 64 ] ;then
+        lib=64
+      else
+        lib=32
+      fi
+      native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+      for dll in ${dlls} ;do
+        if [ -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll" ];then
+          dllmissing=0
+        else
+          echo "Missing ${dll}${dllsuffix}.dll in ${dlldir}/${lib}/."
+          dllmissing=1
+        fi
+      done
+      if [ "${dllmissing}" -eq 1 ] ;then
+        continue
+      fi
+      for nodll in ${nodlls} ;do
+        if wine${winebits} reg query "${redirectkey}" /v "${nodll}" &>/dev/null ;then
+          wine${winebits} reg delete "${redirectkey}" /v "${nodll}" /f &>/dev/null
+          retval=$?
+          if [ "${retval}" -eq 0 ] && [ "${nodll}" == "wined3d" ] ;then
+            csmtdisabled=1
+          fi
+        fi
+      done
+      for dll in ${dlls} ;do
+        wine${winebits} reg add "${redirectkey}" /v "${dll}" -t REG_SZ /d "${dll}${dllsuffix}.dll" /f &>/dev/null
+        retval=$?
+        if [ "${retval}" -eq 0 ] ;then
+          enabled=1
+        else
+          enabled=0
+        fi
+        ln -sf "${dlldir}/${lib}/${dll}${dllsuffix}.dll" "${native_path}/${dll}${dllsuffix}.dll"
+        retval=$?
+        if [ "${retval}" -eq 0 ] ;then
+          enabledlnk=1
+        else
+          enabledlnk=0
+        fi
+      done
+    fi
+  done
+  if [ "${dllmissing}" -eq 1 ] ;then
+    echo "Reinstall wine-vk9."
+    exit 1
+  fi
+  if [ "${csmtdisabled}" -eq 1 ] ;then
+    echo "Staging CSMT was disabled..."
+  fi
+  if [ "${enabled}" -eq 1 ] && [ "${enabledlnk}" -eq 1 ] ;then
+    echo "${name} is enabled!"
+  else
+    echo "${name} configuration fail!"
+    echo "Check wine prefix or permissions."
+    exit 1
+  fi
+  exit $?
+}
+
+unsetcfg(){
+  disabled=1
+  disabledlnk=1
+  for winebits in 64 32 ;do
+    if [ "${winebits}" -eq 64 ] ;then
+      lib=64
+    else
+      lib=32
+    fi
+    if wine${winebits} reg query /? &>/dev/null ;then
+      native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+      for dll in ${dlls} ;do
+        if wine${winebits} reg query "${redirectkey}" /v ${dll} &>/dev/null ;then
+          wine${winebits} reg delete "${redirectkey}" /v ${dll} /f &>/dev/null
+          retval=$?
+          if [ "${retval}" -eq 0 ] ;then
+            disabled=1
+          else
+            disabled=0
+          fi
+        fi
+        if [ -f "${native_path}/${dll}${dllsuffix}.dll" ] && [ "$(readlink -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}${dllsuffix}.dll")" ] ;then
+          rm -f "${native_path}/${dll}${dllsuffix}.dll"
+          retval=$?
+          if [ "${retval}" -eq 0 ] ;then
+            disabledlnk=1
+          else
+            disabledlnk=0
+          fi
+        fi
+      done
+    fi
+  done
+  if [ "${disabled}" -eq 1 ] && [ "${disabledlnk}" -eq 1 ] ;then
+    echo "${name} is disabled!"
+  else
+    echo "${name} configuration fail!"
+    echo "Check wine prefix or permissions."
+    exit 1
+  fi
+  exit $?
+}
+
+if [ -z "$1" ] ;then
+  txt
+  exit 0
+fi
+
+while [ -n "$1" ] ;do
+  case "$1" in
+    -h|--help)
+      txt
+      exit 0
+      ;;
+    -V|--version)
+      echo "${ver}"
+      exit 0
+      ;;
+    -c|--check)
+      checkcfg
+      ;;
+    -s|1|--set|--enable|--on)
+      setcfg
+      ;;
+    -u|0|--unset|--disable|--off)
+      unsetcfg
+      ;;
+    -*)
+      echo "$0: unrecognized option '$1'"
+      echo "Try '$0 --help' for more information."
+      exit 2
+      ;;
+  esac
+  shift
+done

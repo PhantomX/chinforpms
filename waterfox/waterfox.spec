@@ -1,9 +1,9 @@
-%global commit 2bb1a86e5dbd601cd3b8812e45b69060e1f636de
+%global commit 94abeb3a320b2a846a08552b78ac0068139b3cf8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180511
+%global date 20180514
 %global with_snapshot 1
 
-%global freebsd_rev 469733
+%global freebsd_rev 469874
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -113,7 +113,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.1.0
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -143,8 +143,6 @@ Patch20:        firefox-build-prbool.patch
 Patch25:        rhbz-1219542-s390-build.patch
 Patch26:        build-icu-big-endian.patch
 Patch27:        mozilla-1335250.patch
-# Also fixes s390x: https://bugzilla.mozilla.org/show_bug.cgi?id=1376268
-Patch29:        build-big-endian.patch
 Patch30:        fedora-build.patch
 Patch31:        build-ppc64-s390x-curl.patch
 Patch32:        build-rust-ppc64le.patch
@@ -322,7 +320,6 @@ This package contains results of tests executed during build.
 %ifarch s390
 %patch25 -p1 -b .rhbz-1219542-s390
 %endif
-%patch29 -p1 -b .big-endian
 %patch30 -p1 -b .fedora-build
 %patch31 -p1 -b .ppc64-s390x-curl
 %patch32 -p1 -b .rust-ppc64le
@@ -360,7 +357,7 @@ This package contains results of tests executed during build.
 
 # Prepare FreeBSD patches
 mkdir _temp
-mv %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug*,typos,z-bug*,revert-bug*} _temp/
+mv %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug*,z-bug*,revert-bug*} _temp/
 rm -f %{name}-FreeBSD-patches-r%{freebsd_rev}/*
 
 filterdiff -x dom/svg/crashtests/crashtests.list _temp/patch-bug1343147 \
@@ -382,7 +379,7 @@ done
 for i in \
   702179 991253 1021761 1144632 1288587 \
   1343147 1381761 1404057 1404324 1404180 1405878 \
-  1388744 1405267 1413143 \
+  1381815 1388744 1405267 1413143 1436983 1439723 1444668 1445234 1449530 1448771 \
   1447519
 do
   rm -f _temp/patch-bug${i}
@@ -396,7 +393,7 @@ mv _temp/* %{name}-FreeBSD-patches-r%{freebsd_rev}/
 
 patchcommand='patch -p0 -s -i'
 
-for i in %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug{??????,???????},typos,revert-bug*,z-*} ;do
+for i in %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug{??????,???????},revert-bug*,z-*} ;do
   ${patchcommand} ${i}
 done
 
@@ -882,6 +879,11 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Mon May 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-7.20180514git94abeb3
+- New snapshot
+- Update patchset
+- Rebrand waterfox.sh.in
+
 * Sat May 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-6.20180511git2bb1a86
 - New snapshot
 - Update patchset

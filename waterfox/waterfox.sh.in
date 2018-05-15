@@ -48,13 +48,13 @@ case $MOZ_ARCH in
 		;;
 esac
 
-MOZ_FIREFOX_FILE="waterfox"
+MOZ_WATERFOX_FILE="waterfox"
 
-if [ ! -r $MOZ_LIB_DIR/waterfox/$MOZ_FIREFOX_FILE ]; then
-    if [ ! -r $SECONDARY_LIB_DIR/waterfox/$MOZ_FIREFOX_FILE ]; then
-	echo "Error: $MOZ_LIB_DIR/waterfox/$MOZ_FIREFOX_FILE not found"
+if [ ! -r $MOZ_LIB_DIR/waterfox/$MOZ_WATERFOX_FILE ]; then
+    if [ ! -r $SECONDARY_LIB_DIR/waterfox/$MOZ_WATERFOX_FILE ]; then
+	echo "Error: $MOZ_LIB_DIR/waterfox/$MOZ_WATERFOX_FILE not found"
 	if [ -d $SECONDARY_LIB_DIR ]; then
-	    echo "       $SECONDARY_LIB_DIR/waterfox/$MOZ_FIREFOX_FILE not found"
+	    echo "       $SECONDARY_LIB_DIR/waterfox/$MOZ_WATERFOX_FILE not found"
 	fi
 	exit 1
     fi
@@ -63,7 +63,7 @@ fi
 MOZ_DIST_BIN="$MOZ_LIB_DIR/waterfox"
 MOZ_LANGPACKS_DIR="$MOZ_DIST_BIN/langpacks"
 MOZ_EXTENSIONS_PROFILE_DIR="$HOME/.waterfox/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
-MOZ_PROGRAM="$MOZ_DIST_BIN/$MOZ_FIREFOX_FILE"
+MOZ_PROGRAM="$MOZ_DIST_BIN/$MOZ_WATERFOX_FILE"
 MOZ_LAUNCHER="$MOZ_DIST_BIN/run-mozilla.sh"
  
 ##
@@ -108,11 +108,10 @@ export FONTCONFIG_PATH
 
 ##
 ## In order to better support certain scripts (such as Indic and some CJK 
-## scripts), Fedora builds its Firefox, with permission from the Mozilla 
-## Corporation, with the Pango system as its text renderer.  This change 
-## may negatively impact performance on some pages.  To disable the use of
-## Pango, set MOZ_DISABLE_PANGO=1 in your environment before launching
-## Firefox.
+## scripts), this Waterfox is built with the Pango system as as its text
+## renderer.  This change may negatively impact performance on some pages.
+## To disable the use of Pango, set MOZ_DISABLE_PANGO=1 in your environment
+## before launching Waterfox.
 ##
 #
 # MOZ_DISABLE_PANGO=1
@@ -139,8 +138,8 @@ export MOZ_USE_XINPUT2=1
 
 
 ##
-## To disable the use of Firefox localization, set MOZ_DISABLE_LANGPACKS=1
-## in your environment before launching Firefox.
+## To disable the use of Waterfox localization, set MOZ_DISABLE_LANGPACKS=1
+## in your environment before launching Waterfox.
 ##
 #
 # MOZ_DISABLE_LANGPACKS=1
@@ -156,7 +155,7 @@ FEDORA_LANGPACK_CONFIG="$MOZ_EXTENSIONS_PROFILE_DIR/.fedora-langpack-install"
 # MOZ_DISABLE_LANGPACKS disables language packs completely
 MOZILLA_DOWN=0
 if ! [ $MOZ_DISABLE_LANGPACKS ] || [ $MOZ_DISABLE_LANGPACKS -eq 0 ]; then
-    if [ -x $MOZ_DIST_BIN/$MOZ_FIREFOX_FILE ]; then
+    if [ -x $MOZ_DIST_BIN/$MOZ_WATERFOX_FILE ]; then
         # Is waterfox running?
         /usr/bin/pidof waterfox > /dev/null 2>&1
         MOZILLA_DOWN=$?

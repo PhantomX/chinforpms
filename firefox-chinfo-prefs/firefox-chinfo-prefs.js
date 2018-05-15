@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20180419
+// 20180514
 
 pref("browser.bookmarks.showRecentlyBookmarked", false);
 pref("browser.ctrlTab.previews", false);
@@ -211,7 +211,7 @@ pref("extensions.classicthemerestorer.wincontrols", true);
 pref("extensions.downloadbar.autocleancompletedonquit", true);
 pref("extensions.downloadbar.autoclosebarwhendownloadscomplete", true);
 pref("extensions.downloadbar.autoclosesecond", 3);
-pref("extensions.downloadbar.firstrun", true)
+pref("extensions.downloadbar.firstrun", true);
 
 // Firetray
 pref("extensions.firetray.firstrun", false);
