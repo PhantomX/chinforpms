@@ -118,6 +118,8 @@ testing/
 /_snapshots/
 /_snapshots
 /_upstream/
+/BUILD/
+/BUILDROOT/
 /RPMS/
 /SRPMS/
 /SOURCES/

@@ -7,7 +7,7 @@ License:        CC0
 URL:            https://github.com/marcusva/py-sdl2
 
 %global pkgversion %(c=%{version}; echo ${c//./_})
-Source0:        https://github.com/marcusva/py-sdl2/archive/rel_%{pkgversion}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/rel_%{pkgversion}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  python3-devel

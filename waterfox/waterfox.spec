@@ -1,9 +1,9 @@
-%global commit 94abeb3a320b2a846a08552b78ac0068139b3cf8
+%global commit 436898372f8589d4a241e924084119358c58bf45
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180514
 %global with_snapshot 1
 
-%global freebsd_rev 469874
+%global freebsd_rev 470011
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -112,8 +112,8 @@
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.1.0
-Release:        7%{?gver}%{?dist}
+Version:        56.2.0
+Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -379,7 +379,7 @@ done
 for i in \
   702179 991253 1021761 1144632 1288587 \
   1343147 1381761 1404057 1404324 1404180 1405878 \
-  1381815 1388744 1405267 1413143 1436983 1439723 1444668 1445234 1449530 1448771 \
+  1388744 1405267 1413143 \
   1447519
 do
   rm -f _temp/patch-bug${i}
@@ -879,6 +879,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue May 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.0-1.20180514git4368983
+- New release/snapshot
+- Update patchset
+
 * Mon May 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.1.0-7.20180514git94abeb3
 - New snapshot
 - Update patchset

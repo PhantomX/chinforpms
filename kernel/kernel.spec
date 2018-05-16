@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -711,6 +711,23 @@ Patch3001: %{pf_url}/2597a2a58616cc8a1046ede0be762103221ea41b.patch#/pf-2597a2a5
 Patch3002: %{pf_url}/a998885a48d9b7473040f59c63a8b0ea9f210afa.patch#/pf-a998885a48d9b7473040f59c63a8b0ea9f210afa.patch
 Patch3003: %{pf_url}/87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch#/pf-87eb3e3566d16a69f6b2ab7eec5b7123d01239d6.patch
 Patch3004: %{pf_url}/038846fb7c9638cd528cea1bf8dd4b7fa109d134.patch#/pf-038846fb7c9638cd528cea1bf8dd4b7fa109d134.patch
+Patch3005: %{pf_url}/8d4ccada8246d5ed87628013e9ef530f54e1116c.patch#/pf-8d4ccada8246d5ed87628013e9ef530f54e1116c.patch
+Patch3006: %{pf_url}/5db98ae73e90224ceff653c15601a00ba37e89b8.patch#/pf-5db98ae73e90224ceff653c15601a00ba37e89b8.patch
+Patch3007: %{pf_url}/27d79d67dec2ce14aa5caac1e942e86510c59e49.patch#/pf-27d79d67dec2ce14aa5caac1e942e86510c59e49.patch
+Patch3008: %{pf_url}/5a41ccce2e3964c2d4a3787b01dca5cf1f523507.patch#/pf-5a41ccce2e3964c2d4a3787b01dca5cf1f523507.patch
+Patch3009: %{pf_url}/fc9985260ed5a85e80412e3d39424eef39c187b7.patch#/pf-fc9985260ed5a85e80412e3d39424eef39c187b7.patch
+Patch3010: %{pf_url}/4929612015a0cca9337021835b2c1b0ffb196464.patch#/pf-4929612015a0cca9337021835b2c1b0ffb196464.patch
+Patch3011: %{pf_url}/e2ef1b4ccd007b4b5723c6171ff04f79ff4f8dbe.patch#/pf-e2ef1b4ccd007b4b5723c6171ff04f79ff4f8dbe.patch
+Patch3012: %{pf_url}/5d95b532381de122f548e254631e37c2219a7735.patch#/pf-5d95b532381de122f548e254631e37c2219a7735.patch
+Patch3013: %{pf_url}/70a88de640dff248c5b1d90b4574c6e8dbb0d681.patch#/pf-70a88de640dff248c5b1d90b4574c6e8dbb0d681.patch
+Patch3014: %{pf_url}/e48bdf7b1b084942793acd4bd9232827f0d4dd7b.patch#/pf-e48bdf7b1b084942793acd4bd9232827f0d4dd7b.patch
+Patch3015: %{pf_url}/610c88ec87141e6444a27075593859a06ab416c2.patch#/pf-610c88ec87141e6444a27075593859a06ab416c2.patch
+Patch3016: %{pf_url}/583305dd9b79c3f448b0b7cfcf9fd933138da18e.patch#/pf-583305dd9b79c3f448b0b7cfcf9fd933138da18e.patch
+Patch3017: %{pf_url}/f39b892353a39a783c875d40cc1446a65335db2f.patch#/pf-f39b892353a39a783c875d40cc1446a65335db2f.patch
+Patch3018: %{pf_url}/de0c7c0eb42ed2dfb9c97c4bd61cde54fb4704d6.patch#/pf-de0c7c0eb42ed2dfb9c97c4bd61cde54fb4704d6.patch
+Patch3019: %{pf_url}/d1794080b8dd738c8040d4c4667eb2a882f1e58d.patch#/pf-d1794080b8dd738c8040d4c4667eb2a882f1e58d.patch
+Patch3020: %{pf_url}/8c6e25c2d81bace1a3fe998d9d734a78852c13ea.patch#/pf-8c6e25c2d81bace1a3fe998d9d734a78852c13ea.patch
+Patch3021: %{pf_url}/721943e959d64a3bfec4ff1a4dbe39d3ca3fe2e8.patch#/pf-721943e959d64a3bfec4ff1a4dbe39d3ca3fe2e8.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1968,6 +1985,9 @@ fi
 #
 #
 %changelog
+* Tue May 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.8-501.chinfo
+- Update pf patchset
+
 * Wed May 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.8-500.chinfo
 - 4.16.8
 
