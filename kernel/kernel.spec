@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -601,9 +601,6 @@ Patch310: crypto-testmgr-Allow-different-compression-results.patch
 # https://www.spinics.net/lists/arm-kernel/msg630629.html
 Patch311: arm-sunxi-nvmem-fixH3.patch
 
-# https://patchwork.kernel.org/patch/10311335/
-Patch312: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
-
 Patch313: arm-dts-Add-am335x-pocketbeagle.patch
 
 Patch314: arm-tegra-fix-nouveau-crash.patch
@@ -660,9 +657,6 @@ Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # In v4.17
 # rhbz 1549316
 Patch504: ipmi-fixes.patch
-
-# rhbz 1514836
-Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
 
 # rhbz 1572944
 Patch509: Revert-the-random-series-for-4.16.4.patch
@@ -731,8 +725,8 @@ Patch3021: %{pf_url}/721943e959d64a3bfec4ff1a4dbe39d3ca3fe2e8.patch#/pf-721943e9
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
-%global graysky2_id 70ecf6876bfbc426b333a3cb8becebd0b6b974b8
-Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v4.9+_kernel_v4.13+.patch
+%global graysky2_id 87168bfa27b782e1c9435ba28ebe3987ddea8d30
+Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v8.1+_kernel_v4.13+.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1985,6 +1979,10 @@ fi
 #
 #
 %changelog
+* Wed May 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.9-500.chinfo
+- 4.16.9
+- Update graysky patch, gcc 8+ only now
+
 * Tue May 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.8-501.chinfo
 - Update pf patchset
 
