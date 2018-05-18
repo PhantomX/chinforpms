@@ -56,8 +56,8 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        18.0.3
-Release:        101%{?rctag:.%{rctag}}.chinfo%{?dist}
+Version:        18.0.4
+Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -84,7 +84,6 @@ Patch4:         0004-bigendian-assert.patch
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
 
 # https://patchwork.freedesktop.org/series/42687
-Patch8:         loader_dri3-Wait-for-pending-swaps-to-complete-before-drawable_fini.patch
 Patch9:         loader_dri3-Variant-2-Wait-for-pending-swaps-to-complete-before-drawable_fini.patch
 
 # glvnd support patches
@@ -680,6 +679,9 @@ popd
 %endif
 
 %changelog
+* Thu May 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.0.4-100.chinfo
+- 18.0.4
+
 * Sun May 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.0.3-101.chinfo
 - Try fix hangs with xserver 1.20
 
