@@ -1,4 +1,4 @@
-VERSION ?= 18.0.4
+VERSION ?= 18.1.0
 
 DIRNAME = mesa-${VERSION}
 

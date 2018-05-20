@@ -3,6 +3,11 @@
 %else
 %bcond_without vboxvideo
 %endif
+%if 0%{?fedora} > 27
+%bcond_without  newvboxsf
+%else
+%bcond_with     newvboxsf
+%endif
 
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
@@ -43,6 +48,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
+Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -65,6 +71,14 @@ Kernel module for VirtualBox
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
+pushd %{name}-%{version}
+
+%if %{with newvboxsf}
+rm -rf vboxsf/
+unzip %{SOURCE2}
+mv vboxsf-master/ vboxsf/
+%endif
+popd
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
@@ -83,16 +97,17 @@ done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-    for module in vbox{drv,guest}; do
+    for module in vboxdrv %{!?with_newvboxsf:vboxguest}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
+    # copy vboxdrv (for host) module symbols which are used by vboxnetflt and vboxnetadp km's:
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
+    %if ! %{with newvboxsf}
+    # copy vboxguest (for guest) module symbols which are used by vboxsf km:
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
-%if %{with vboxvideo}
-    cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxvideo}
-%endif
-    for module in vbox{netadp,netflt,sf,%{?with_vboxvideo:video,}pci}; do
+    %endif
+    for module in vbox{netadp,netflt,sf%{?with_vboxvideo:,video},pci}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
@@ -112,6 +127,9 @@ done
 MODS=$(find $(ls -d %{buildroot}%{_prefix}/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
 %if ! %{with vboxvideo}
 rm -rf %{name}-%{version}/vboxvideo
+%endif
+%if %{with newvboxsf}
+rm -rf %{name}-%{version}/vboxguest
 %endif
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
