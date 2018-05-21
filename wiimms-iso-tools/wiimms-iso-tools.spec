@@ -1,4 +1,4 @@
-%global revision 7464
+%global revision 7505
 %global date 20171203
 
 Name:           wiimms-iso-tools
@@ -9,7 +9,7 @@ Summary:        Tools to manipulate Wii and GameCube ISO images
 License:        GPLv2
 URL:            http://wit.wiimm.de/
 # Get with snap=date|rev=revision ./wiimms-iso-tools-snapshot.sh
-Source0:        %{name}-%{revision}.tar.xz
+Source0:        %{name}-r%{revision}.tar.xz
 Source1:        wiimms-iso-tools-snapshot.sh
 
 BuildRequires:  gcc

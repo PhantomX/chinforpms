@@ -10,7 +10,7 @@ tmp=$(mktemp -d)
 trap cleanup EXIT
 cleanup() {
   set +e
-  [ -z "${tmp}" -o ! -d "${tmp}" ] || rm -rf "${tmp}"
+  ([ -z "${tmp}" ] || [ ! -d "${tmp}" ]) || rm -rf "${tmp}"
 }
 
 unset CDPATH
@@ -25,9 +25,9 @@ if [ -n "${rev}" ] ; then
 fi
 
 pushd "${tmp}"
-  svn export ${SNAP_COOPTS} ${snaproot} ${module}-${snap}
-  svn co --depth=files --force ${SNAP_COOPTS} ${snaproot} ${module}-${snap}
-  pushd ${module}-${snap}
+  svn export ${SNAP_COOPTS} ${snaproot} ${module}
+  svn co --depth=files --force ${SNAP_COOPTS} ${snaproot} ${module}
+  pushd ${module}
     # Force revision number
     SVNREV="$(LC_ALL=C svn info 2> /dev/null | grep Revision | cut -d' ' -f2)"
     sed -i -e "/^revision=/s|=.*|=${SVNREV}|g" ./setup.sh
@@ -40,5 +40,6 @@ pushd "${tmp}"
     find . -type d -name .svn -print0 | xargs -0r rm -rf
     sed -i -e '/^\.PHONY: version\.h$/d' Makefile
   popd
-  tar -Jcf "${pwd}"/${module}-${snap}.tar.xz ${module}-${snap}
+  mv "${module}" "${module}-r${SVNREV}"
+  tar -Jcf "${pwd}/${module}-r${SVNREV}.tar.xz" "${module}-r${SVNREV}"
 popd >/dev/null

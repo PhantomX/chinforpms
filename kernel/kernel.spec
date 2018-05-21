@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -722,6 +722,7 @@ Patch3018: %{pf_url}/de0c7c0eb42ed2dfb9c97c4bd61cde54fb4704d6.patch#/pf-de0c7c0e
 Patch3019: %{pf_url}/d1794080b8dd738c8040d4c4667eb2a882f1e58d.patch#/pf-d1794080b8dd738c8040d4c4667eb2a882f1e58d.patch
 Patch3020: %{pf_url}/8c6e25c2d81bace1a3fe998d9d734a78852c13ea.patch#/pf-8c6e25c2d81bace1a3fe998d9d734a78852c13ea.patch
 Patch3021: %{pf_url}/721943e959d64a3bfec4ff1a4dbe39d3ca3fe2e8.patch#/pf-721943e959d64a3bfec4ff1a4dbe39d3ca3fe2e8.patch
+Patch3022: %{pf_url}/fdb42a9e7c1e54b16b560fcf1e77c91b5bf21daa.patch#/pf-fdb42a9e7c1e54b16b560fcf1e77c91b5bf21daa.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1979,6 +1980,9 @@ fi
 #
 #
 %changelog
+* Sun May 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.10-500.chinfo
+- 4.16.10
+
 * Wed May 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.9-500.chinfo
 - 4.16.9
 - Update graysky patch, gcc 8+ only now

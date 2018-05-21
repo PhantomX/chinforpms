@@ -5,7 +5,7 @@
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
 %global released_kernel 1
-%global baserelease 100
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %global buildid .chinfo
@@ -19,7 +19,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 9
+%global stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -415,6 +415,9 @@ popd
 %license linux-%{kversion}/COPYING
 
 %changelog
+* Sun May 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.10-500.chinfo
+- 4.16.10
+
 * Wed May 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.9-100.chinfo
 - 4.16.9
 
