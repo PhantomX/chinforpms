@@ -15,8 +15,7 @@ Version:        5.2.12
 Release:        1%{?dist}
 Summary:        PUEL extensions for VirtualBox
 
-# PUEL
-License:        Proprietary
+License:        PUEL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source0:        http://download.virtualbox.org/virtualbox/%{version}/%{pkgname}-%{version}.vbox-extpack
 
