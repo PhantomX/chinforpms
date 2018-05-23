@@ -52,7 +52,7 @@ sed \
 
 sed \
   -e 's|$(gamesdir)|%{_datadir}|g' \
-  -e "s|-O2|%{optflags}|g" \
+  -e "s|-O2|%{build_cflags}|g" \
   -i Makefile
 
 %build

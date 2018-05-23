@@ -25,7 +25,7 @@ MP3val is also able to fix most of the problems.
 %patch01
 
 %{__sed} -i \
-  -e "/^CXXFLAGS/s|-O2|%{optflags}|g" \
+  -e "/^CXXFLAGS/s|-O2|%{build_cxxflags}|g" \
   -e '/$(CXX)/s|$(CXXFLAGS)|\0 $(LDFLAGS)|g' \
   Makefile.linux
 

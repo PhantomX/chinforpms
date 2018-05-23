@@ -26,7 +26,7 @@ manga reader websites.
 find . -name '*.a' -print -delete
 
 %{__sed} -i \
-  -e "s|-O2|%{optflags}|g" \
+  -e "s|-O2|%{build_cxxflags}|g" \
   -e '/LDFLAGS=/s|\"-s\"|"%{build_ldflags}"|g' \
   configure config_default.sh
 

@@ -2,7 +2,7 @@
 
 Name:           mupen64plus
 Version:        2.5
-Release:        3%{?dist}
+Release:        4.chinfo%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 License:        GPLv2 and LGPLv2
@@ -17,6 +17,7 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(minizip)
 BuildRequires:  pkgconfig(libpng)
+BuildRequires:  pkgconfig(lirc)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(speexdsp)
@@ -66,7 +67,7 @@ chmod 0755 ./m64p_build.sh ./m64p_install.sh
 sed -i -e '/projects\/unix install/g' ./m64p_build.sh
 
 %build
-export OPTFLAGS="%{optflags}"
+export OPTFLAGS="%{optflags} -flto"
 export LDFLAGS="%{build_ldflags}"
 export V=1
 export LDCONFIG=/bin/true
@@ -75,6 +76,7 @@ export LIBDIR=%{_libdir}
 export INCDIR=%{_includedir}/%{name}
 export SHAREDIR=%{_datadir}/%{name}
 export MANDIR=%{_mandir}
+export LIRC=1
 
 ./m64p_build.sh %{?_smp_mflags}
 
@@ -88,6 +90,7 @@ export LIBDIR=%{_libdir}
 export INCDIR=%{_includedir}/%{name}
 export SHAREDIR=%{_datadir}/%{name}
 export MANDIR=%{_mandir}
+export LIRC=1
 ./m64p_install.sh INSTALL="install -p" INSTALL_STRIP_FLAG= DESTDIR="%{buildroot}"
 
 chmod +x %{buildroot}%{_libdir}/lib%{name}.so.*
@@ -114,6 +117,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.5-4.chinfo
+- BR: lirc
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.5-3
 - Make library executable
 

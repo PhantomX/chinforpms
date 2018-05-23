@@ -40,7 +40,7 @@ sed -e 's|/usr/local|/usr|g' -i setup.sh
 sed -i \
   -e 's|$(PRE)strip|/bin/true|g' \
   -e "s|-static-libgcc|%{build_ldflags}|g" \
-  -e "/CFLAGS/s|-O3|%{optflags}|g" \
+  -e "/CFLAGS/s|-O3|%{build_cflags}|g" \
   -e 's|^doc: $(MAIN_TOOLS)|doc:|g' \
   Makefile
 

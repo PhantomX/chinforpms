@@ -1,3 +1,6 @@
+# src/types.h is set to issue error on i386 and warning on other architectures
+# when trying to enable position-independent code. It is not recommended for
+# performance reasons
 %undefine _hardened_build
 
 Name:           mednafen
@@ -69,6 +72,7 @@ CXXFLAGS="%{build_cxxflags} -Wl,-z,relro -Wl,-z,now"
 export CFLAGS
 export CXXFLAGS
 
+# Bad optmizations to non haswell
 export ax_cv_cflags_gcc_option__mtune_haswell=no
 
 %configure \

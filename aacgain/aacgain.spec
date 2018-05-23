@@ -87,7 +87,7 @@ popd
 
 pushd mp4v2
 
-CXXFLAGS="%{optflags} -fpermissive" \
+CXXFLAGS="%{build_cxxflags} -fpermissive" \
 %configure \
   %{conf2} \
   --disable-gch

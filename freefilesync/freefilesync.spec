@@ -43,7 +43,7 @@ cp -p Changelog.txt %{pname}/Build
 sed \
   -e '/DOCSHAREDIR/d' \
   -e 's|wx-config |%{_libdir}/wx/config/gtk2-unicode-3.0 |g' \
-  -e '/CXXFLAGS/s|-O3|-D"warn_static(arg)= " -DZEN_LINUX %{optflags}|g' \
+  -e '/CXXFLAGS/s|-O3|-D"warn_static(arg)= " -DZEN_LINUX %{build_cxxflags}|g' \
   -e '/LINKFLAGS/s|-s|%{build_ldflags}|g' \
   -i %{pname}/Source/Makefile %{pname}/Source/RealTimeSync/Makefile
 

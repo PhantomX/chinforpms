@@ -72,13 +72,9 @@ sed -i \
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
-%if 0%{?fedora} < 26
-export CFLAGS="`echo %{optflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
-%else
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
 export TEMP_CFLAGS="`echo %{build_cflags} | sed -e 's/-O2/-O1/'`"
 export CFLAGS="`echo $TEMP_CFLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
-%endif
 
 export CFLAGS="$CFLAGS -DWINE_STAGING=1"
 

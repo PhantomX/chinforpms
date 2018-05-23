@@ -243,7 +243,7 @@ cat %{S:2} | tee -a gtk/theme/Adwaita/gtk-contained{,-dark}.css > /dev/null
 rm -fv testsuite/gtk/gtkresources.c
 
 %build
-export CFLAGS='-fno-strict-aliasing %optflags'
+export CFLAGS='-fno-strict-aliasing %{build_cflags}'
 (if ! test -x configure; then NOCONFIGURE=1 ./autogen.sh; CONFIGFLAGS=--enable-gtk-doc; fi;
  %configure $CONFIGFLAGS \
         --enable-xkb \

@@ -31,6 +31,7 @@ release tags).
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) patches
                 (kernel-local must be edited to modify gcc optimizations)
  * **libogg** - Tests
+ * **mednafen** - No Haswell optimizations
  * **mesa** - Tests
  * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**
  * **psi** - Updated

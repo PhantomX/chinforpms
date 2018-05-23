@@ -9,6 +9,8 @@ URL:            https://www.xiph.org/
 
 Source:         https://downloads.xiph.org/releases/ogg/%{name}-%{version}.tar.xz
 
+BuildRequires:  gcc
+
 
 %description
 Libogg is a library for manipulating Ogg bitstream file formats.
@@ -45,7 +47,7 @@ Documentation for developing applications with libogg
 
 
 %build
-sed -i "s|-O20|%{optflags}|" configure
+sed -i "s|-O20|%{build_cflags}|" configure
 sed -i "s|-ffast-math||" configure
 %configure --disable-static
 %make_build

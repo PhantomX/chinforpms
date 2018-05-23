@@ -19,7 +19,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 10
+%global stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -120,7 +120,7 @@ Patch9: 0001-tools-kvm_stat-Fix-python3-syntax.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 9269cc18739d63d240276a2def6446eaec208dc6
+%global opensuse_id 68e48d747a46b585e4dc2988bbb5f6068a78d514
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
@@ -222,7 +222,7 @@ sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.conf
 cd linux-%{kversion}
 
 %global perf_make \
-  make -s EXTRA_CFLAGS="%{optflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
+  make -s EXTRA_CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
@@ -415,8 +415,8 @@ popd
 %license linux-%{kversion}/COPYING
 
 %changelog
-* Sun May 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.10-500.chinfo
-- 4.16.10
+* Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.11-500.chinfo
+- 4.16.11
 
 * Wed May 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.9-100.chinfo
 - 4.16.9

@@ -72,6 +72,7 @@ ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
 %endif
 
 BuildRequires:  cmake
+BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 %if 0%{?with_sysffmpeg}
@@ -140,7 +141,7 @@ rm -rf ext/native/ext/libzip
 pushd ffmpeg
 sed \
   -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
-  -e '/extra-cflags/s|-O3|%{optflags}|g' \
+  -e '/extra-cflags/s|-O3|%{build_cflags}|g' \
   -e 's|disable-everything|\0 --disable-debug --disable-stripping|g' \
   -e '/make install/d' \
   -i linux_*.sh

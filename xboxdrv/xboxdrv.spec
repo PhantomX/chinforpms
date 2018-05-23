@@ -72,8 +72,8 @@ scons \
  CC=gcc \
  CXX=g++ \
  BUILD=custom \
- CCFLAGS="%{optflags} -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
- CXXFLAGS="%{optflags} -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
+ CCFLAGS="%{build_cflags} -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
+ CXXFLAGS="%{build_cxxflags} -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
  CPPFLAGS=" -ansi -pedantic" \
  LINKFLAGS="%{build_ldflags} -fPIC -pie -Wl,-z,now"
 
