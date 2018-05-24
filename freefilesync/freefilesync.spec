@@ -2,8 +2,8 @@
 %global xbrzver 1.6
 
 Name:           freefilesync
-Version:        9.9
-Release:        2%{?dist}
+Version:        10.0
+Release:        1%{?dist}
 Summary:        A file synchronization utility
 
 License:        GPLv3
@@ -11,12 +11,12 @@ URL:            http://www.freefilesync.org/
 Source0:        http://www.freefilesync.org/download/%{pname}_%{version}_Source.zip
 Source1:        https://aur.archlinux.org/cgit/aur.git/plain/ffsicon.png?h=%{name}#/%{pname}.png
 Source2:        https://aur.archlinux.org/cgit/aur.git/plain/rtsicon.png?h=%{name}#/RealTimeSync.png
-Source3:        https://downloads.sourceforge.net/project/xbrz/xBRZ/xBRZ_%{xbrzver}.zip
 
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(gtk+-2.0)
 BuildRequires:  pkgconfig(libselinux)
+BuildRequires:  pkgconfig(zlib)
 BuildRequires:  boost-devel
 BuildRequires:  compat-wxGTK3-gtk2-devel
 Requires:       hicolor-icon-theme
@@ -27,11 +27,9 @@ files and synchronize folders for Windows, Linux and macOS. It is
 designed to save your time setting up and running backup jobs while
 having nice visual feedback along the way.
 
+
 %prep
 %autosetup -p0 -c -n %{pname}-%{version}
-
-mkdir -p xBRZ/src
-unzip %{SOURCE3} -d xBRZ/src
 
 cp %{SOURCE1} %{SOURCE2} .
 
@@ -43,8 +41,9 @@ cp -p Changelog.txt %{pname}/Build
 sed \
   -e '/DOCSHAREDIR/d' \
   -e 's|wx-config |%{_libdir}/wx/config/gtk2-unicode-3.0 |g' \
-  -e '/CXXFLAGS/s|-O3|-D"warn_static(arg)= " -DZEN_LINUX %{build_cxxflags}|g' \
+  -e 's|-O3 -DNDEBUG|-DNDEBUG -D"warn_static(arg)= " -DZEN_LINUX %{build_cxxflags}|g' \
   -e '/LINKFLAGS/s|-s|%{build_ldflags}|g' \
+  -e '/LINKFLAGS/s|-pthread|-lz \0|g' \
   -i %{pname}/Source/Makefile %{pname}/Source/RealTimeSync/Makefile
 
 # Fixes from https://aur.archlinux.org/packages/freefilesync
@@ -56,12 +55,6 @@ sed -i 's!static_assert!//static_assert!' zen/scope_guard.h
 
 # linker error
 sed 's#inline##g' -i %{pname}/Source/ui/version_check_impl.h
-
-# add xbrz.cpp entries in Makefile
-sed "/zlib_wrap.cpp/ a CPP_LIST+=../../xBRZ/src/xbrz.cpp" \
-  -i %{pname}/Source/Makefile
-sed "/popup_dlg_generated.cpp/ a CPP_LIST+=../../../xBRZ/src/xbrz.cpp" \
- -i %{pname}/Source/RealTimeSync/Makefile
 
 # edit lines to remove functions that require wxgtk 3.1.x  
 sed -e 's:m_textCtrlOfflineActivationKey->ForceUpper:// &:g' \
@@ -137,6 +130,9 @@ done
 
 
 %changelog
+* Thu May 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 10.0-1
+- 10.0
+
 * Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 9.9-2
 - Fix for Fedora 28 wx-config
 

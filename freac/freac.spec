@@ -11,7 +11,7 @@
 
 Name:           freac
 Version:        1.1
-Release:        0.1%{prereltag}%{?dist}
+Release:        0.2%{prereltag}%{?dist}
 Summary:        A free audio converter and CD ripper
 
 License:        GPLv2
@@ -86,7 +86,7 @@ Categories=GTK;AudioVideo;
 EOF
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
-ln -s ../../../%{name}/icons/%{name}.png \
+ln -s ../../../../%{name}/icons/%{name}.png \
   %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
 
 for res in 16 22 24 32 36 48 64 72 96 ;do
@@ -111,5 +111,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed May 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-0.2.alpha.20180306
+- Fix dangling icon link
+
 * Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-0.1.alpha.20180306
 - Initial spec
