@@ -108,7 +108,11 @@ ExclusiveArch:  %{ix86} %{arm}
 BuildRequires:  bison
 BuildRequires:  flex
 BuildRequires:  autoconf
-BuildRequires:  gcc-c++
+%ifarch aarch64
+BuildRequires:  clang >= 5.0
+%else
+BuildRequires:  gcc
+%endif
 BuildRequires:  desktop-file-utils
 BuildRequires:  alsa-lib-devel
 BuildRequires:  audiofile-devel
@@ -713,6 +717,12 @@ sed -i \
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+
+%ifarch aarch64
+# ARM64 now requires clang
+# https://source.winehq.org/git/wine.git/commit/8fb8cc03c3edb599dd98f369e14a08f899cbff95
+export CC="/usr/bin/clang"
+%endif
 
 %configure \
  --sysconfdir=%{_sysconfdir}/wine \

@@ -1,0 +1,49 @@
+From b68222e4e75d6cbe23c533f140733248df046c7e Mon Sep 17 00:00:00 2001
+From: bruvzg <7645683+bruvzg@users.noreply.github.com>
+Date: Mon, 14 May 2018 18:11:26 +0300
+Subject: [PATCH] Workaround for clang 6 bug.
+
+---
+ servers/physics/collision_solver_sat.cpp | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/servers/physics/collision_solver_sat.cpp b/servers/physics/collision_solver_sat.cpp
+index eefb0f03967..e587485fcbf 100644
+--- a/servers/physics/collision_solver_sat.cpp
++++ b/servers/physics/collision_solver_sat.cpp
+@@ -341,26 +341,26 @@ class SeparatorAxisTest {
+ 		min_B -= (max_A - min_A) * 0.5;
+ 		max_B += (max_A - min_A) * 0.5;
+ 
+-		real_t dmin = min_B - (min_A + max_A) * 0.5;
+-		real_t dmax = max_B - (min_A + max_A) * 0.5;
++		min_B -= (min_A + max_A) * 0.5;
++		max_B -= (min_A + max_A) * 0.5;
+ 
+-		if (dmin > 0.0 || dmax < 0.0) {
++		if (min_B > 0.0 || max_B < 0.0) {
+ 			separator_axis = axis;
+ 			return false; // doesn't contain 0
+ 		}
+ 
+ 		//use the smallest depth
+ 
+-		dmin = Math::abs(dmin);
++		min_B = -min_B;
+ 
+-		if (dmax < dmin) {
+-			if (dmax < best_depth) {
+-				best_depth = dmax;
++		if (max_B < min_B) {
++			if (max_B < best_depth) {
++				best_depth = max_B;
+ 				best_axis = axis;
+ 			}
+ 		} else {
+-			if (dmin < best_depth) {
+-				best_depth = dmin;
++			if (min_B < best_depth) {
++				best_depth = min_B;
+ 				best_axis = -axis; // keep it as A axis
+ 			}
+ 		}

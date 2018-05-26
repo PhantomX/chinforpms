@@ -3,7 +3,6 @@ Name:           libogg
 Epoch:          2
 Version:        1.3.3
 Release:        100.chinfo%{?dist}
-Group:          System Environment/Libraries
 License:        BSD
 URL:            https://www.xiph.org/
 
@@ -20,7 +19,6 @@ Ogg bitstreams.
 
 %package devel
 Summary:        Files needed for development using libogg
-Group:          Development/Libraries
 Requires:       libogg = %{epoch}:%{version}-%{release}
 Requires:       pkgconfig
 Requires:       automake
@@ -34,7 +32,6 @@ needed for development using libogg.
 
 %package devel-docs
 Summary:        Documentation for developing Ogg applications
-Group:          Development/Libraries
 BuildArch:      noarch
 
 

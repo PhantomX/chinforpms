@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -589,9 +589,6 @@ Patch306: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
 # https://patchwork.kernel.org/patch/10245303/
 Patch307: wcn36xx-reduce-verbosity-of-drivers-messages.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg632925.html
-Patch308: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
-
 # https://marc.info/?l=linux-kernel&m=152328880417846&w=2
 Patch309: arm64-thunderx-crypto-zip-fixes.patch
 
@@ -664,6 +661,9 @@ Patch509: Revert-the-random-series-for-4.16.4.patch
 # CVE-2018-10322 rhbz 1571623 1571624
 Patch510: 0001-xfs-enhance-dinode-verifier.patch
 
+# rbhz 1435837
+# https://www.spinics.net/lists/linux-acpi/msg82405.html
+Patch512: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 
 ### Extra
 
@@ -1977,6 +1977,9 @@ fi
 #
 #
 %changelog
+* Fri May 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.12-500.chinfo
+- 4.16.12
+
 * Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.11-500.chinfo
 - 4.16.11
 

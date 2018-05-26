@@ -1,0 +1,13 @@
+--- Cows-Revenge-7011a97f7071282fccaee58ba1c4eb7d166150fb/engine.cfg.orig	2018-05-10 07:00:51.000000000 -0300
++++ Cows-Revenge-7011a97f7071282fccaee58ba1c4eb7d166150fb/engine.cfg	2018-05-25 19:34:17.627574780 -0300
+@@ -43,8 +43,8 @@ ui_left=[key(Left), jbutton(0, 14)]
+ ui_right=[key(Right), jbutton(0, 15)]
+ ui_menu=[key(Escape), jbutton(0, 11)]
+ ui_jump=[key(A), key(Space), jbutton(0, 0)]
+-ui_shoot=[key(S), jbutton(0, 1)]
+-ui_change_weapon=[key(R), jbutton(0, 6), jbutton(0, 5)]
++ui_shoot=[key(S), jbutton(0, 2)]
++ui_change_weapon=[key(R), jbutton(0, 4), jbutton(0, 5)]
+ 
+ [locale]
+ 
