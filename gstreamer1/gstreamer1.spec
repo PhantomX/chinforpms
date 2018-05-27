@@ -10,7 +10,7 @@
 
 Name:           gstreamer1
 Version:        1.14.1
-Release:        100.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
+Release:        101.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPLv2+
@@ -214,6 +214,10 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Sun May 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.14.1-101.chinfo
+- 1.14.1
+- f28 sync (#1581325)
+
 * Thu May 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.14.1-100.chinfo
 - 1.14.1
 

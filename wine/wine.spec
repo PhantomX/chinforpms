@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.8
+%global stagingver 3.9
 %global strel %(echo %{stagingver} | grep -q \\. ; echo $?)
 %endif # 0%{?fedora}
 
@@ -29,7 +29,7 @@
 %endif
 
 Name:           wine
-Version:        3.8
+Version:        3.9
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -173,6 +173,7 @@ BuildRequires:  gstreamer1-plugins-base-devel
 BuildRequires:  mpg123-devel
 %endif
 BuildRequires:  SDL2-devel
+BuildRequires:  vkd3d-devel
 BuildRequires:  vulkan-devel
 
 # Silverlight DRM-stuff needs XATTR enabled.
@@ -2252,6 +2253,11 @@ fi
 %endif
 
 %changelog
+* Sat May 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.9-100.chinfo
+- 3.9
+- BR: vkd3d-devel
+- f28 sync
+
 * Sat May 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.8-100.chinfo
 - 3.8
 

@@ -9,7 +9,7 @@
 # Based on other provides scripts from RPM
 #
 
-filelist=`grep -e '.so$' | sed "s/['\"]/\\\&/g"`
+filelist=`grep -e '^.*/gstreamer-1.0/lib.*.so$' | sed "s/['\"]/\\\&/g"`
 
 # --- Alpha does not mark 64bit dependencies•
 case `uname -m` in
@@ -17,8 +17,8 @@ case `uname -m` in
   *)		mark64="()(64bit)" ;;
 esac
 
-solist=$(echo $filelist | grep "libgst" | \
-	xargs file -L 2>/dev/null | grep "ELF.*shared object" | cut -d: -f1 )
+solist=$(echo $filelist | \
+	xargs file -L 2>/dev/null | grep "ELF" | cut -d: -f1 )
 
 function getmark()
 {
