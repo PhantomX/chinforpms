@@ -1,9 +1,10 @@
-%global commit 436898372f8589d4a241e924084119358c58bf45
+%global commit 01e6727879b2aa363daa2bdd9878ca7df5039d96
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180514
+%global date 20180527
 %global with_snapshot 1
 
-%global freebsd_rev 470011
+%global freebsd_rev 471090
+%global freebsd_root %{name}-FreeBSD-patches-r%{freebsd_rev}
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -113,7 +114,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -125,7 +126,7 @@ Source0:        https://github.com/MrAlex94/%{name}/archive/%{version}.tar.gz#/%
 # FreeBSD patches
 # https://www.freshports.org/www/waterfox
 # rev=revision ./waterfox-FreeBSD-patches-snapshot.sh
-Source600:      http://dl.bintray.com/phantomx/tarballs/%{name}-FreeBSD-patches-r%{freebsd_rev}.tar.xz
+Source600:      http://dl.bintray.com/phantomx/tarballs/%{freebsd_root}.tar.xz
 
 Source10:       waterfox-mozconfig
 Source12:       waterfox-chinfo-default-prefs.js
@@ -176,6 +177,8 @@ Patch416:        mozilla-1435695.patch
 %global wf_url https://github.com/MrAlex94/Waterfox
 #Patch???:      %%{wf_url}/commit/commit.patch#/wf-commit.patch
 Patch490:       %{wf_url}/pull/547.patch#/wf-pull-547.patch
+Patch491:       %{wf_url}/pull/574.patch#/wf-pull-574.patch
+Patch492:       %{wf_url}/pull/594.patch#/wf-pull-594.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -351,49 +354,46 @@ This package contains results of tests executed during build.
 %patch416 -p1 -b .1435695
 
 %patch490 -p1
+%patch491 -p1
+%patch492 -p1
 
 # Debian extension patch
 %patch500 -p1 -b .440908
 
 # Prepare FreeBSD patches
-mkdir _temp
-mv %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug*,z-bug*,revert-bug*} _temp/
-rm -f %{name}-FreeBSD-patches-r%{freebsd_rev}/*
+mkdir _patches
+cp -p %{freebsd_root}/patch-{bug,z-bug,revert-bug}* _patches/
 
-filterdiff -x dom/svg/crashtests/crashtests.list _temp/patch-bug1343147 \
-  > %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-bug1343147
-filterdiff -x dom/security/test/csp/mochitest.ini _temp/patch-bug1381761 \
-  > %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-bug1381761
+filterdiff -x dom/svg/crashtests/crashtests.list %{freebsd_root}/patch-bug1343147 \
+  > _patches/patch-bug1343147
+filterdiff -x dom/security/test/csp/mochitest.ini %{freebsd_root}/patch-bug1381761 \
+  > _patches/patch-bug1381761
 
 for i in 1404057 1404324 1404180 1405878 ;do
   filterdiff \
     -x layout/style/crashtests/crashtests.list \
     -x layout/reftests/bugs/reftest.list \
-    _temp/patch-bug${i} > %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-bug${i}
+    %{freebsd_root}/patch-bug${i} > _patches/patch-bug${i}
 done
 
 # 1: unneeded
-# 2: fixed above
-# 3: no apply
-# 4: uncertain
+# 2: no apply
+# 3: uncertain
 for i in \
   702179 991253 1021761 1144632 1288587 \
-  1343147 1381761 1404057 1404324 1404180 1405878 \
   1388744 1405267 1413143 \
   1447519
 do
-  rm -f _temp/patch-bug${i}
+  rm -f _patches/patch-bug${i}
 done
 
 %if 0%{?fedora} < 28
-  rm -f _temp/patch-bug730495
+  rm -f _patches/patch-bug730495
 %endif
-
-mv _temp/* %{name}-FreeBSD-patches-r%{freebsd_rev}/
 
 patchcommand='patch -p0 -s -i'
 
-for i in %{name}-FreeBSD-patches-r%{freebsd_rev}/patch-{bug{??????,???????},revert-bug*,z-*} ;do
+for i in _patches/patch-{bug{??????,???????},revert-bug*,z-*} ;do
   ${patchcommand} ${i}
 done
 
@@ -879,6 +879,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue May 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.0-2.20180527git01e6727
+- New release/snapshot
+- Update patchset
+
 * Tue May 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.0-1.20180514git4368983
 - New release/snapshot
 - Update patchset

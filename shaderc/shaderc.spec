@@ -12,7 +12,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 glslang
 
-%global commit3 804e8884c483515e4b9fd2bcd5d0535462aa8f52
+%global commit3 545d6ca26d3beddcb8dc5dc363deb1544a2eeb87
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Tools
 
@@ -36,8 +36,8 @@ Source0:        https://github.com/google/%{name}/archive/%{commit}.tar.gz#/%{na
 %if 0%{?with_snapshot}
 Source1:        https://github.com/google/%{srcname1}/archive/%{commit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/google/%{srcname2}/archive/%{commit2}.tar.gz#/google-%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        https://github.com/KhronosGroup/SPIRV-Tools/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
-Source4:        https://github.com/KhronosGroup/SPIRV-Headers/archive/%{commit4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
+Source3:        https://github.com/KhronosGroup/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
+Source4:        https://github.com/KhronosGroup/%{srcname4}/archive/%{commit4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
 %endif
 
 BuildRequires:  cmake

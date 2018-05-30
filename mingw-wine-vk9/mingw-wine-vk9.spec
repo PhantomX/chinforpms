@@ -6,13 +6,11 @@
 
 %undefine _hardened_build
 
-%bcond_with tests
-
 %global srcname vk9
 %global vk9_dir %{_datadir}/wine/%{srcname}/%{__isa_bits}
 
 Name:           mingw-wine-%{srcname}
-Version:        970ae52381fc815c4323402a5135ebc1c9d619d4
+Version:        0.26.0
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D9 implementation for Linux / Wine
 
@@ -30,14 +28,14 @@ BuildRequires:  mingw%{__isa_bits}-boost-static
 BuildRequires:  mingw%{__isa_bits}-eigen3
 BuildRequires:  mingw%{__isa_bits}-gcc
 BuildRequires:  mingw%{__isa_bits}-gcc-c++
-BuildRequires:  mingw%{__isa_bits}-spirv
 BuildRequires:  mingw%{__isa_bits}-winpthreads-static
 BuildRequires:  mingw%{__isa_bits}-vulkan
+BuildRequires:  spirv-headers-devel
 
 # glslangValidator
 BuildRequires:  glslang
 # glslc
-#BuildRequires:  shaderc
+BuildRequires:  shaderc
 BuildRequires:  meson
 BuildRequires:  wine-core
 BuildRequires:  wine-devel >= 3.0
@@ -47,7 +45,7 @@ Provides a Vulkan-based implementation of D3D9 in order to
 run 3D applications on Linux using Wine.
 
 %package        -n mingw%{__isa_bits}-wine-%{srcname}
-Summary:        Vulkan-based D3D11 implementation for Linux / %{__isa_bits} bit Wine
+Summary:        Vulkan-based D3D9 implementation for Linux / %{__isa_bits} bit Wine
 BuildArch:      noarch
 Enhances:       wine
 Requires:       wine-common
@@ -60,11 +58,13 @@ Requires:       mingw32-wine-%{srcname} = %{version}-%{release}
 %endif
 
 %description   -n mingw%{__isa_bits}-wine-%{srcname}
-Provides a Vulkan-based implementation of DXGI and D3D11 in order to
+Provides a Vulkan-based implementation of D3D9 in order to
 run 3D applications on Linux using Wine.
 
 %prep
 %autosetup -n VK9-%{version}
+
+rm -f dep*/*.pc
 
 cp %{S:1} .
 
@@ -73,35 +73,40 @@ sed \
   -e "/dependency/s|'eigen'|'eigen3'|g" \
   -i meson.build
 
+sed \
+  -e "s|'-gdwarf-2'|\0, '-I/usr/include/spirv/1.2'|g" \
+  -i build-win%{__isa_bits}.txt
+
 %build
+
+export WINEPREFIX="$(pwd)/VK9-build"
 
 meson \
   --cross-file build-win%{__isa_bits}.txt \
   --buildtype "release" \
-  --strip \
   %{?with_tests:-Denable_tests=false} \
   build.%{__isa_bits}
 
+%ifarch x86_64
+  %global mingwarch x86_64
+%else
+  %global mingwarch i686
+%endif
+
 pushd build.%{__isa_bits}
+sed \
+  -e 's|-L/usr/%{mingwarch}-w64-mingw32/sys-root/mingw//usr/%{mingwarch}-w64-mingw32/sys-root/mingw/lib|-L/usr/%{mingwarch}-w64-mingw32/sys-root/mingw/lib|g' \
+  -e 's|-lvulkan |-lvulkan.dll |g' \
+  -i build.ninja
+
 ninja -v %{?_smp_mflags}
 popd
-exit 20
+
 %install
 mkdir -p %{buildroot}%{vk9_dir}
 
-install -pm0644 build.%{__isa_bits}/src/dxgi/d3d9.dll \
+install -pm0644 build.%{__isa_bits}/VK9-Library/d3d9.dll \
   %{buildroot}%{vk9_dir}/d3d9_vk9.dll
-
-%if %{with tests}
-for file in \
-  tests/d3d11/d3d11-{compute,triangle}.exe \
-  tests/dxbc/dxbc-{compiler,disasm}.exe tests/dxbc/hlsl-compiler.exe \
-  tests/dxgi/dxgi-factory.exe
-do
-  install -pm0755 build.%{__isa_bits}/${file} %{buildroot}%{vk9_dir}/
-done
-%{mingw_strip} --strip-unneeded %{buildroot}%{vk9_dir}/*.exe
-%endif
 
 %{mingw_strip} --strip-unneeded %{buildroot}%{vk9_dir}/*.dll
 
@@ -109,14 +114,12 @@ mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 %files -n mingw%{__isa_bits}-wine-%{srcname}
-%license LICENSE
-%doc README.md README.vk9
+%license LICENSE.md
+%doc README.md README.vk9 VK9-Library/VK9.conf
 %{_bindir}/winevk9cfg
 %{vk9_dir}/*.dll
-%if %{with tests}
-%{vk9_dir}/*.exe
-%endif
+
 
 %changelog
-* Sun May 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.25.0-1
+* Mon May 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.26.0-1
 - Initial spec
