@@ -57,7 +57,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        18.1.0
-Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
+Release:        101%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -82,6 +82,10 @@ Patch4:         0004-bigendian-assert.patch
 # Disable rgb10 configs by default:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
+
+# https://bugs.archlinux.org/task/58605
+# https://patchwork.freedesktop.org/series/42687
+Patch9:         0004-loader_dri3-Variant-2-Wait-for-pending-swaps-to-comp.patch
 
 # glvnd support patches
 # non-upstreamed ones
@@ -676,6 +680,9 @@ popd
 %endif
 
 %changelog
+* Wed May 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.0-101.chinfo
+- Updated patch to fix xserver 1.20 freezing
+
 * Fri May 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.0-100.chinfo
 - 18.1.0
 

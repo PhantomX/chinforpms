@@ -1,11 +1,14 @@
 Name:           thrash-protect
 Version:        0.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Simple-Stupid user-space program protecting a linux host from thrashing
 
 License:        GPLv3
 URL:            https://github.com/tobixen/%{name}
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+
+# Add some missing processes
+Patch0:         %{name}-whitelist.patch
 
 BuildArch:      noarch
 
@@ -26,7 +29,7 @@ problems, and in many cases the problems will resolve by themselves.
 
 
 %prep
-%autosetup
+%autosetup -p1
 
 sed -e '1s|^#!.*$|#!%{__python3}|' -i %{name}.py
 
@@ -61,5 +64,8 @@ install -pm0644 systemd/%{name}.service %{buildroot}%{_unitdir}/
 
 
 %changelog
+* Wed May 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.12-2
+- Patch to add more whitelisted processes
+
 * Tue May 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.12-1
 - Initial spec

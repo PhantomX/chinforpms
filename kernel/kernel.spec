@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -620,14 +620,8 @@ Patch319: of-i2c-fix-module-aliases.patch
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch320: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg621982.html
-Patch321: bcm283x-Fix-probing-of-bcm2835-i2s.patch
-
 # https://www.spinics.net/lists/arm-kernel/msg633942.html
 Patch322: mmc-sdhci-iproc-Disable-preset-values-for-BCM2835.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg633945.html
-Patch323: bcm2835-hwrng-Handle-deferred-clock-properly.patch
 
 Patch324: bcm283x-clk-audio-fixes.patch
 
@@ -1977,6 +1971,9 @@ fi
 #
 #
 %changelog
+* Wed May 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.13-500.chinfo
+- 4.16.13
+
 * Fri May 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.12-500.chinfo
 - 4.16.12
 
