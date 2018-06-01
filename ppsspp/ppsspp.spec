@@ -1,6 +1,6 @@
-%global commit d10d57bc03343c05b301362290c79cf4b6609bda
+%global commit cae79bf979c6d7e6d5249b1e03b9a4fcb099e9ca
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180510
+%global date 20180531
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -9,7 +9,6 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%if 0%{?with_snapshot}
 %global commit1 6537fc1bf38d0787a1d86375e5b3cb267349d2d5
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
@@ -33,7 +32,6 @@
 %global commit7 90966d50f57608587bafd95b4e345b02b814754a
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
-%endif
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -44,14 +42,17 @@
 %undefine _hardened_build
 
 Name:           ppsspp
-Version:        1.5.4
-Release:        5%{?gver}%{?dist}
+Version:        1.6.2
+Release:        1%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        GPLv2+
 URL:            http://www.ppsspp.org/
 %if 0%{?with_snapshot}
 Source0:        https://github.com/hrydgard/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+%else
+Source0:        https://github.com/hrydgard/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+%endif #{?with_snapshot}
 Source1:        https://github.com/hrydgard/%{srcname1}/archive/%{commit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
 %if !0%{?with_sysffmpeg}
 Source2:        https://github.com/hrydgard/%{srcname2}/archive/%{commit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
@@ -60,9 +61,6 @@ Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}.ta
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
 Source6:        https://github.com/hrydgard/glslang/archive/%{commit6}.tar.gz#/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}.tar.gz#/%{srcname7}-%{shortcommit7}.tar.gz
-%else
-Source0:        https://github.com/hrydgard/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-%endif #{?with_snapshot}
 Source10:        %{name}.appdata.xml
 
 Patch0:         %{name}-noupdate.patch
@@ -84,10 +82,16 @@ BuildRequires:  pkgconfig(libswscale)
 %else
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif #{?with_sysffmpeg}
+BuildRequires:  pkgconfig(glew)
+BuildRequires:  pkgconfig(libglvnd)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  snappy-devel
+BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  pkgconfig(wayland-server)
+BuildRequires:  pkgconfig(wayland-egl)
+BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
 Requires:       google-roboto-condensed-fonts
@@ -105,7 +109,6 @@ recompilers (dynarecs).
 %autosetup -n %{name}-%{version} -p0
 %endif
 
-%if 0%{?with_snapshot}
 tar -xf %{SOURCE1} -C assets/lang --strip-components 1
 %if !0%{?with_sysffmpeg}
 tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
@@ -114,7 +117,6 @@ tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
-%endif
 
 %if 0%{?with_snapshot}
 sed -i \
@@ -135,6 +137,7 @@ sed -e 's|png17|%{pngver}|g' \
 sed -e "/PNG_PNG_INCLUDE_DIR/s|libpng/|lib%{pngver}/|" \
   -i CMakeLists.txt
 
+rm -rf ext/glew/{GL,*.c}
 rm -rf ext/native/ext/libzip
 
 %if !0%{?with_sysffmpeg}
@@ -184,10 +187,12 @@ mkdir -p build
 pushd build
 
 %cmake .. \
+  -DOpenGL_GL_PREFERENCE=GLVND \
 %if 0%{?with_sysffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
 %endif #{?with_sysffmpeg}
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \
+  -DUSE_WAYLAND_WSI:BOOL=ON \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 
 %make_build
@@ -257,6 +262,12 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu May 31 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.2-1.20180531gitcae79bf
+- New snapshot, 1.6.2
+- BR: glew
+- BR: wayland-devel
+- Set default OpenGL provider to libglvnd
+
 * Sat May 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-5.20180510gitd10d57b
 - New snapshot
 - Appdata
