@@ -173,7 +173,7 @@ BuildRequires:  gstreamer1-plugins-base-devel
 BuildRequires:  mpg123-devel
 %endif
 BuildRequires:  SDL2-devel
-BuildRequires:  vkd3d-devel
+BuildRequires:  libvkd3d-devel
 BuildRequires:  vulkan-devel
 
 # Silverlight DRM-stuff needs XATTR enabled.

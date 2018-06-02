@@ -1,3 +1,5 @@
+%global with_xpi 1
+
 %global _waterfox_app_id \{ec8030f7-c20a-464f-9b0e-13a3a9e97384\}
 
 %global _waterfox_extensions %{_datadir}/waterfox/extensions
@@ -11,14 +13,21 @@
 %global pkgname ClassicThemeRestorer
 
 Name:           waterfox-classic-theme-restorer
-Version:        1.7.6
+Version:        1.7.6.1
 Release:        1%{?dist}
 Summary:        Customize Waterfox Australis UI
 
 License:        MPLv2.0
-URL:            https://github.com/Aris-t2/ClassicThemeRestorer
-Source0:        https://github.com/Aris-t2/ClassicThemeRestorer/archive/%{version}.tar.gz#/%{pkgname}-%{version}.tar.gz
-Source1:        %{name}.metainfo.xml
+URL:            https://github.com/Aris-t2/%{pkgname}
+%if 0%{?with_xpi}
+Source0:        %{url}/releases/download/%(echo %{version} | cut -d. -f-3)/CTR_v%{version}.xpi#/%{pkgname}-%{version}.xpi
+Source1:        %{url}/raw/master/license
+Source2:        %{url}/raw/master/README.md
+%else
+Source0:        %{url}/archive/%{version}.tar.gz#/%{pkgname}-%{version}.tar.gz
+%endif
+Source3:        %{name}.metainfo.xml
+
 
 BuildArch:      noarch
 
@@ -33,8 +42,17 @@ Waterfox Australis UI. Use 'Customize' menu to move buttons on
 toolbars.
 
 %prep
+%if 0%{?with_xpi}
+%autosetup -c %{pkgname}-%{version}
+mkdir xpi
+mv content defaults locale *.{png,manifest,rdf} xpi/
+cp -p %{S:1} .
+cp -p %{S:2} .
+%else
 %autosetup -n %{pkgname}-%{version}
+%endif
 
+cp -p %{S:3} .
 
 %build
 
@@ -55,8 +73,9 @@ pushd xpi
 popd
 
 # install MetaInfo file for waterfox, etc
-appstream-util validate-relax --nonet %{SOURCE1}
-DESTDIR=%{buildroot} appstream-util install %{SOURCE1}
+appstream-util validate-relax --nonet %{name}.metainfo.xml
+DESTDIR=%{buildroot} appstream-util install %{name}.metainfo.xml
+
 
 %files
 %license license
@@ -67,6 +86,10 @@ DESTDIR=%{buildroot} appstream-util install %{SOURCE1}
 
 
 %changelog
+* Fri Jun 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.6.1-1
+- 1.7.6.1
+- with_xpi
+
 * Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.6-1
 - 1.7.6
 
