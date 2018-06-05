@@ -1,7 +1,19 @@
-From bb86b4b0bbae12341df16fedf51aeda480364fbf Mon Sep 17 00:00:00 2001
-From: Peter Robinson <pbrobinson@gmail.com>
-Date: Thu, 19 Apr 2018 19:35:58 +0100
-Subject: [PATCH] ARM: dts: Add am335x-pocketbeagle
+From patchwork Tue Apr 17 17:14:04 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [v3] ARM: dts: Add am335x-pocketbeagle
+From: Robert Nelson <robertcnelson@gmail.com>
+X-Patchwork-Id: 10346089
+Message-Id: <20180417171404.13624-1-robertcnelson@gmail.com>
+To: tony@atomide.com,
+	devicetree@vger.kernel.org
+Cc: Drew Fustini <drew@beagleboard.org>,
+ Peter Robinson <pbrobinson@redhat.com>, 
+ Jason Kridner <jkridner@beagleboard.org>, linux-omap@vger.kernel.org, 
+ Robert Nelson <robertcnelson@gmail.com>,
+ linux-arm-kernel@lists.infradead.org
+Date: Tue, 17 Apr 2018 12:14:04 -0500
 
 PocketBeagle is an ultra-tiny-yet-complete open-source USB-key-fob computer.
 
@@ -12,7 +24,6 @@ http://beagleboard.org/pocket
 https://github.com/beagleboard/pocketbeagle
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
-Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
 CC: Tony Lindgren <tony@atomide.com>
 CC: Jason Kridner <jkridner@beagleboard.org>
 CC: Drew Fustini <drew@beagleboard.org>
@@ -35,11 +46,11 @@ Changes in v2:
  create mode 100644 arch/arm/boot/dts/am335x-pocketbeagle.dts
 
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index ade7a38543dc..a632bbef01f5 100644
+index 7e2424957809..5a09ff15743b 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -675,6 +675,7 @@ dtb-$(CONFIG_SOC_AM33XX) += \
- 	am335x-nano.dtb \
+@@ -688,6 +688,7 @@ dtb-$(CONFIG_SOC_AM33XX) += \
+ 	am335x-pdu001.dtb \
  	am335x-pepper.dtb \
  	am335x-phycore-rdk.dtb \
 +	am335x-pocketbeagle.dtb \
@@ -48,7 +59,7 @@ index ade7a38543dc..a632bbef01f5 100644
  	am335x-sl50.dtb \
 diff --git a/arch/arm/boot/dts/am335x-osd335x-common.dtsi b/arch/arm/boot/dts/am335x-osd335x-common.dtsi
 new file mode 100644
-index 000000000000..f8ff473f94f0
+index 000000000000..d2150d207b7a
 --- /dev/null
 +++ b/arch/arm/boot/dts/am335x-osd335x-common.dtsi
 @@ -0,0 +1,124 @@
@@ -419,6 +430,3 @@ index 000000000000..62fe5cab9fae
 +&cppi41dma  {
 +	status = "okay";
 +};
--- 
-2.17.0
-

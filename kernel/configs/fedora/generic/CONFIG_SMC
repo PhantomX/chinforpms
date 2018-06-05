@@ -1,1 +1,1 @@
-# CONFIG_SMC is not set
+CONFIG_SMC=m

@@ -1,1 +1,1 @@
-# CONFIG_IMA is not set
+CONFIG_IMA=y

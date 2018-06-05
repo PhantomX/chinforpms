@@ -1,1 +1,1 @@
-# CONFIG_FB is not set
+CONFIG_FB=m

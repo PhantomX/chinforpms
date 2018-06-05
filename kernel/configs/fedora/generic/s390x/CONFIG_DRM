@@ -1,1 +1,1 @@
-# CONFIG_DRM is not set
+CONFIG_DRM=m

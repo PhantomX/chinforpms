@@ -1,5 +1,16 @@
+Linux 4.17 rebase notes:
+- Turn off MTD + JFFS2 + extra infiniband options
+- Back out kernel-bootwrapper changes for power commit f360f7278a753796aec58ade5b149d12e49f8bc1
+- Drop CONFIG_CLK_RASPBERRYPI_CPU and bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
+
+Linux 4.16 rebase notes:
+- Consider turning off all the IMA features?
+- F27 and earlier, disable vboxguest driver (to avoid conflict with the out of
+  tree versions which get auto-installed by scripts from vbox upstream)
+ -Unset CONFIG_VBOXGUEST
+
 Linux 4.15 rebase notes:
-- Disable power-management features enabled for F28+
+- F27 and earlier, disable new F28+ only power-management features:
  -Set CONFIG_SND_HDA_POWER_SAVE_DEFAULT=0
  -Set CONFIG_SATA_MOBILE_LPM_POLICY=0
  -Unset CONFIG_BT_HCIBTUSB_AUTOSUSPEND
