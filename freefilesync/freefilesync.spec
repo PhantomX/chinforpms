@@ -2,7 +2,7 @@
 %global xbrzver 1.6
 
 Name:           freefilesync
-Version:        10.0
+Version:        10.1
 Release:        1%{?dist}
 Summary:        A file synchronization utility
 
@@ -130,6 +130,9 @@ done
 
 
 %changelog
+* Tue Jun 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 10.1-1
+- 10.1
+
 * Thu May 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 10.0-1
 - 10.0
 

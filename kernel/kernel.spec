@@ -676,6 +676,7 @@ Patch3018: %{pf_url}/b8289cc8103f91e9a3a4a0f38ae0b2cf77ce6fac.patch#/pf-b8289cc8
 Patch3019: %{pf_url}/34ca6b65d81d4f801649dc28a5a5da29419ec91c.patch#/pf-34ca6b65d81d4f801649dc28a5a5da29419ec91c.patch
 Patch3020: %{pf_url}/c216c3d38666fe0819c935a95796457b49209778.patch#/pf-c216c3d38666fe0819c935a95796457b49209778.patch
 Patch3021: %{pf_url}/bf78d40e79700352847dd773176297efe6c062cf.patch#/pf-bf78d40e79700352847dd773176297efe6c062cf.patch
+Patch3022: %{pf_url}/33d003a73ff8f10494d975ce124bd71ce8d19669.patch#/pf-33d003a73ff8f10494d975ce124bd71ce8d19669.patch
 
 
 # Add additional cpu gcc optimization support

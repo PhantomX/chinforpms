@@ -21,12 +21,12 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 # https://github.com/TomaszGasior/gtk3-mushrooms
-%global mushroom_ver 3.22.29-2
+%global mushroom_ver 3.22.30-6
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name: gtk3
 Version: 3.22.30
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
@@ -35,8 +35,7 @@ Source0: http://download.gnome.org/sources/gtk+/3.22/gtk+-%{version}.tar.xz
 Source1: https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}.tar.gz#/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2: chinforpms-adwaita.css
 
-# https://bugzilla.gnome.org/show_bug.cgi?id=790031
-Patch0: gtk3-wayland-emit-GDK_SELECTION_CLEAR-on-owner-changes.patch
+Patch10: https://gitlab.gnome.org/GNOME/gtk/commit/2ce63a86ba689aa41eb47409c889c469497478b0.patch#/gl-upstream_window_background._patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100: gtk+3-3.22.0-gtk-recent-files-limit.patch
@@ -202,6 +201,7 @@ the functionality of the installed %{name} package.
 %prep
 %setup -q -n gtk+-%{version} -a 1
 
+%patch10 -p1
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
@@ -225,15 +225,14 @@ patch_command appearance__print-dialog.patch
 patch_command appearance__smaller-statusbar.patch
 patch_command csd__clean-headerbar.patch
 patch_command csd__disabled-by-default.patch
-patch_command csd__headerbar-title.patch
 patch_command csd__server-side-shadow.patch
 patch_command fixes__atk-bridge-errors.patch
+patch_command fixes__labels-wrapping.patch
 patch_command fixes__too-large-menu-covers-bar.patch
 patch_command fixes__window-background.patch
 patch_command other__mnemonics-delay.patch
 patch_command popovers__color-chooser.patch
 patch_command popovers__file-chooser-list.patch
-patch_command popovers__menu-button.patch
 patch_command popovers__places-sidebar.patch
 
 cp %{mushroom_dir}/README.md README-mushrooms.md
@@ -401,6 +400,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Tue Jun 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.30-101.chinfo
+- mushroons sync
+
 * Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.22.30-100.chinfo
 - 3.22.30
 - f28 sync, included wayland immodule
