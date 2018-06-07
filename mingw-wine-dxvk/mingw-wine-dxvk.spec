@@ -12,7 +12,7 @@
 %global dxvk_dir %{_datadir}/wine/%{srcname}/%{__isa_bits}
 
 Name:           mingw-wine-%{srcname}
-Version:        0.52
+Version:        0.54
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
@@ -110,6 +110,12 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 %endif
 
 %changelog
+* Thu Jun 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.54-1
+- 0.54
+
+* Mon May 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.53-1
+- 0.53
+
 * Wed May 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.52-1
 - 0.52
 

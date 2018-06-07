@@ -35,7 +35,7 @@ Source0: http://download.gnome.org/sources/gtk+/3.22/gtk+-%{version}.tar.xz
 Source1: https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}.tar.gz#/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2: chinforpms-adwaita.css
 
-Patch10: https://gitlab.gnome.org/GNOME/gtk/commit/2ce63a86ba689aa41eb47409c889c469497478b0.patch#/gl-upstream_window_background._patch
+Patch10: https://gitlab.gnome.org/GNOME/gtk/commit/2ce63a86ba689aa41eb47409c889c469497478b0.patch#/gl-upstream_window_background.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100: gtk+3-3.22.0-gtk-recent-files-limit.patch
