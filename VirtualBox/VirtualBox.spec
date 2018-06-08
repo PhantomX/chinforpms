@@ -230,8 +230,7 @@ Requires:   %(xserver-sdk-abi-requires ansic)
 Requires:   %(xserver-sdk-abi-requires videodrv)
 Requires:   %(xserver-sdk-abi-requires xinput)
 %endif
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
+
 
 %description guest-additions
 This subpackage is like the VirtualBox Guest Additions but just for Fedora,
@@ -663,7 +662,6 @@ getent passwd vboxadd >/dev/null || \
 
 # Guest additions install
 %post guest-additions
-%{?ldconfig}
 # should be in kmod package, not here, but we need modules loaded to start
 # vboxservice
 /bin/systemctl restart systemd-modules-load.service >/dev/null 2>&1 || :
@@ -687,7 +685,6 @@ getent passwd vboxadd >/dev/null || \
 %systemd_preun vboxservice.service
 
 %postun guest-additions
-%{?ldconfig}
 %systemd_postun_with_restart vboxservice.service
 
 %files server

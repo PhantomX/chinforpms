@@ -66,7 +66,6 @@ autoreconf -ivf
 
 find %{buildroot} -type f -name '*.la' -print -delete
 
-%ldconfig_scriptlets
 
 %files
 %license COPYING

@@ -20,9 +20,7 @@ BuildRequires:  gtk-doc
 BuildRequires:  intltool
 
 BuildRequires:  shared-mime-info
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig shared-mime-info
-Requires(posttrans): shared-mime-info
+
 
 %description
 The libMirage library is a CD/DVD-ROM image access library - it aims to
@@ -61,19 +59,6 @@ popd
 
 %find_lang %{name}
 
-%post
-%{?ldconfig}
-touch --no-create %{_datadir}/mime/packages &>/dev/null || :
-
-%postun
-%{?ldconfig}
-if [ $1 -eq 0 ] ; then
-  touch --no-create %{_datadir}/mime/packages &>/dev/null || :
-  update-mime-database %{_datadir}/mime &>/dev/null || :
-fi
-
-%posttrans
-update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 
 %files -f %{name}.lang
 %license COPYING

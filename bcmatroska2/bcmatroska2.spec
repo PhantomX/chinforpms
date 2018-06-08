@@ -47,7 +47,6 @@ popd
 
 %make_install -C builddir
 
-%ldconfig_scriptlets
 
 %files
 %license COPYING

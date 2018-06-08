@@ -84,7 +84,6 @@ find %{buildroot}%{_libdir} -type f -name '*.la' -delete -print
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/dropbox.desktop
 
-%ldconfig_scriptlets
 
 %files -n dropbox
 %license COPYING

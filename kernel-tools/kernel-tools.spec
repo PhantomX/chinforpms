@@ -357,7 +357,6 @@ popd
 ### scripts
 ###
 
-%ldconfig_scriptlets libs
 
 %post
 %systemd_post cpupower.service

@@ -44,7 +44,6 @@ application integration with %{name}.
 
 install -pm0755 %{S:1} %{buildroot}/%{_bindir}/%{name}
 
-%ldconfig_scriptlets
 
 %files
 %license LICENSE.txt

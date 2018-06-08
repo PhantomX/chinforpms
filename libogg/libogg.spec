@@ -57,9 +57,6 @@ rm -f %{buildroot}%{_libdir}/*.la
 mv %{buildroot}%{_docdir}/%{name} __installed_docs
 
 
-%ldconfig_scriptlets
-
-
 %files
 %license COPYING
 %doc AUTHORS CHANGES README

@@ -8,11 +8,11 @@ Release:        1%{?dist}
 Summary:        Menu generator for Fluxbox based on XDG
 
 License:        GPLv3
-URL:            http://github.com/PhantomX/fluxbox-chinfo-menu
+URL:            https://github.com/PhantomX/fluxbox-chinfo-menu
 %if 0%{?with_snapshot}
-Source0:        https://github.com/PhantomX/%{name}/archive/%{gitcommitid}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{gitcommitid}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/PhantomX/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
 BuildArch:      noarch

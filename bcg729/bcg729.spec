@@ -55,7 +55,6 @@ popd
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/lib%{name}.pc
 
-%ldconfig_scriptlets
 
 %files
 %license COPYING

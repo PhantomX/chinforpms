@@ -1,18 +1,17 @@
 Name:           chinfo-extramimetypes
-Version:        11.1
-Release:        2%{?dist}
+Version:        11.2
+Release:        1%{?dist}
 Summary:        Extra mimetypes for DEs
 
 License:        GPLv2
-URL:            http://github.com/PhantomX/%{name}
-Source0:        http://dl.bintray.com/phantomx/tarballs/%{name}-%{version}.tar.xz
+URL:            https://github.com/PhantomX/%{name}
+Source0:        %{url}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 
 BuildRequires:  cmake
 BuildRequires:  shared-mime-info
-Requires(postun): shared-mime-info
-Requires(posttrans): shared-mime-info
+
 
 %description
 This package contains extra unusual mimetypes for DEs.
@@ -38,17 +37,6 @@ popd
 
 rm -f %{buildroot}%{_datadir}/mime/packages/%{name}-cdimage.xml
 
-%post
-touch --no-create %{_datadir}/mime/packages &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-  touch --no-create %{_datadir}/mime/packages &>/dev/null || :
-  update-mime-database %{_datadir}/mime &>/dev/null || :
-fi
-
-%posttrans
-update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 
 %files
 %license COPYING
@@ -57,6 +45,9 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &>/dev/null || :
 
 
 %changelog
+* Thu Jun 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 11.2-1
+- 11.2
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 11.1-2
 - BR: shared-mime-info
 

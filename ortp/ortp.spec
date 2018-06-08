@@ -55,7 +55,6 @@ pushd builddir
 rm -f builddir/doc/html/html.tar
 rm -rf %{buildroot}%{_datadir}/doc
 
-%ldconfig_scriptlets
 
 %files
 %doc AUTHORS NEWS README.md

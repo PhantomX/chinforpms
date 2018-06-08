@@ -56,7 +56,6 @@ pushd builddir
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
-%ldconfig_scriptlets
 
 %files
 %license COPYING

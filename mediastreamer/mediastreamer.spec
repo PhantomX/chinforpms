@@ -127,7 +127,6 @@ mkdir -p %{buildroot}%{_libdir}/%{name}/plugins
 rm -f builddir/help/doc/html/html.tar
 rm -rf %{buildroot}%{_datadir}/doc
 
-%ldconfig_scriptlets libs
 
 %files
 %license COPYING

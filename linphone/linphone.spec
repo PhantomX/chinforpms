@@ -138,7 +138,6 @@ rm -rf %{buildroot}%{_datadir}/gnome
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
-%ldconfig_scriptlets libs
 
 %files -f %{name}.lang
 %license COPYING

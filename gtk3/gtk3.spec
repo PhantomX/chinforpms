@@ -297,7 +297,6 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/%{bin_version}/theming-engines
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
-%ldconfig_scriptlets
 
 %transfiletriggerin -- %{_libdir}/gtk-3.0/3.0.0/immodules
 gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
