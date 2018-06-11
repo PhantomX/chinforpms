@@ -2,6 +2,7 @@ Name:           smtube
 Version:        18.3.0
 Release:        100.chinfo%{?dist}
 Summary:        YouTube browser for SMPlayer
+Epoch:          1
 
 License:        GPLv2+
 URL:            http://www.smtube.org
