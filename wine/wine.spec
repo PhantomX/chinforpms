@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.9
+%global stagingver 3.10
 %global strel %(echo %{stagingver} | grep -q \\. ; echo $?)
 %endif # 0%{?fedora}
 
@@ -29,7 +29,7 @@
 %endif
 
 Name:           wine
-Version:        3.9
+Version:        3.10
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1498,6 +1498,7 @@ fi
 %{_libdir}/wine/difxapi.dll.so
 %{_libdir}/wine/dinput.dll.so
 %{_libdir}/wine/dinput8.dll.so
+%{_libdir}/wine/dism.exe.so
 %{_libdir}/wine/dispex.dll.so
 %{_libdir}/wine/dmband.dll.so
 %{_libdir}/wine/dmcompos.dll.so
@@ -1577,7 +1578,9 @@ fi
 %{_libdir}/wine/ext-ms-win-xaml-pal-l1-1-0.dll.so
 %endif
 %{_libdir}/wine/faultrep.dll.so
+%{_libdir}/wine/fc.exe.so
 %{_libdir}/wine/feclient.dll.so
+%{_libdir}/wine/find.exe.so
 %{_libdir}/wine/fltlib.dll.so
 %{_libdir}/wine/fltmgr.sys.so
 %{_libdir}/wine/fntcache.dll.so
@@ -1834,6 +1837,9 @@ fi
 %{_libdir}/wine/tdi.sys.so
 %{_libdir}/wine/traffic.dll.so
 %{_libdir}/wine/ucrtbase.dll.so
+%if 0%{?staging}
+%{_libdir}/wine/uianimation.dll.so
+%endif
 %{_libdir}/wine/uiautomationcore.dll.so
 %{_libdir}/wine/uiribbon.dll.so
 %{_libdir}/wine/unicows.dll.so
@@ -2253,6 +2259,9 @@ fi
 %endif
 
 %changelog
+* Mon Jun 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.10-100.chinfo
+- 3.10
+
 * Sat May 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.9-100.chinfo
 - 3.9
 - BR: vkd3d-devel

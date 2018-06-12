@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -563,6 +563,10 @@ Patch210: disable-i8042-check-on-apple-mac.patch
 
 Patch211: drm-i915-hush-check-crtc-state.patch
 
+Patch212: efi-secureboot.patch
+
+Patch213: lockdown-fix-coordination-of-kernel-module-signature-verification.patch
+
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -623,12 +627,15 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # https://www.spinics.net/lists/linux-acpi/msg82405.html
 Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 
+# CVE-2018-10853 rhbz 1589890 1589892
+Patch505: kvm-x86-Check-CPL-in-segmented_write_std.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id bcb34222e06b31c82927014bce646cd786d519f7
+%global opensuse_id c31c53d61320c04dcbc5b48857fc4ba9ced1c6ea
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -646,11 +653,12 @@ Patch1021: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patc
 Patch1022: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
 Patch1023: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
 Patch1024: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
+Patch1025: %{opensuse_url}/mtd-spi-nor-intel-spi-Fix-atomic-sequence-handling#/mtd-spi-nor-intel-spi-Fix-atomic-sequence-handling.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
-# https://github.com/pfactum/pf-kernel/commits/pf-4.16
+# https://github.com/pfactum/pf-kernel
 # block fixes and updates, mostly
 
 %global pf_url https://github.com/pfactum/pf-kernel/commit
@@ -1932,6 +1940,10 @@ fi
 #
 #
 %changelog
+* Mon Jun 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.1-500.chinfo
+- 4.17.1
+- stabilization sync
+
 * Mon Jun 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.0-500.chinfo
 - 4.17.0
 - rawhide sync
