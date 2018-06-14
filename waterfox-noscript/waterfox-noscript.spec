@@ -7,7 +7,7 @@
 %global extension_id \{73a6fe31-595d-460b-a920-fcc0f8843232\}
 
 Name:           waterfox-noscript
-Version:        5.1.8.5
+Version:        5.1.8.6
 Release:        1%{?dist}
 Summary:        JavaScript white list extension for Waterfox
 
@@ -42,18 +42,22 @@ dos2unix -k NoScript_License.txt
 install -Dp -m 644 %{SOURCE0} %{buildroot}%{_waterfox_extdir}/%{extension_id}.xpi
 
 # install MetaInfo file for waterfox, etc
-appstream-util validate-relax --nonet %{SOURCE1}
-DESTDIR=%{buildroot} appstream-util install %{SOURCE1}
+install -Dpm644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
+
 
 %files
 %license GPL.txt
 %doc NoScript_License.txt mozilla.cfg
 %{_waterfox_extdir}/%{extension_id}.xpi
-# GNOME Software Center metadata
-%{_datadir}/appdata/%{name}.metainfo.xml
+%{_metainfodir}/%{name}.metainfo.xml
 
 
 %changelog
+* Wed Jun 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.1.8.6-1
+- 5.1.8.6
+- _metainfodir
+
 * Fri Apr 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.1.8.5-1
 - 5.1.8.5
 

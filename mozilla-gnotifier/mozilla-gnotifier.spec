@@ -24,12 +24,12 @@
 
 Name:           mozilla-%{pkgname}
 Version:        1.13.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Mozilla native notification system integration
 
 License:        GPLv3
 URL:            https://github.com/mkiol/GNotifier
-Source0:        https://github.com/mkiol/GNotifier/raw/master/xpi/%{pkgname}-%{version}-%{rel}.xpi
+Source0:        %{url}/raw/master/xpi/%{pkgname}-%{version}-%{rel}.xpi
 Source1:        %{name}.metainfo.xml
 Source2:        https://github.com/mkiol/GNotifier/blob/master/LICENSE
 Source3:        https://github.com/mkiol/GNotifier/blob/master/README.md
@@ -75,9 +75,9 @@ mkdir -p %{buildroot}%{_waterfox_extdir}
 ln -s ../../../mozilla/addons/%{pkgname}-%{version}.xpi \
   %{buildroot}%{_waterfox_extdir}/%{extension_id}.xpi
 
-# install MetaInfo file for waterfox, etc
-appstream-util validate-relax --nonet %{SOURCE1}
-DESTDIR=%{buildroot} appstream-util install %{SOURCE1}
+install -Dpm644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
+
 
 %files
 %license LICENSE
@@ -86,9 +86,12 @@ DESTDIR=%{buildroot} appstream-util install %{SOURCE1}
 %{_seamonkey_extdir}/%{extension_id}.xpi
 %{_thunderbird_extdir}/%{extension_id}.xpi
 %{_waterfox_extdir}/%{extension_id}.xpi
-# GNOME Software Center metadata
-%{_datadir}/appdata/%{name}.metainfo.xml
+%{_metainfodir}/%{name}.metainfo.xml
+
 
 %changelog
+* Wed Jun 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.13.2-2
+- _metainfodir
+
 * Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.4-1
 - Initial spec

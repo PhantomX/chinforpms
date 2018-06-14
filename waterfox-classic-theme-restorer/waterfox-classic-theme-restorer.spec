@@ -14,7 +14,7 @@
 
 Name:           waterfox-classic-theme-restorer
 Version:        1.7.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Customize Waterfox Australis UI
 
 License:        MPLv2.0
@@ -73,19 +73,21 @@ pushd xpi
 popd
 
 # install MetaInfo file for waterfox, etc
-appstream-util validate-relax --nonet %{name}.metainfo.xml
-DESTDIR=%{buildroot} appstream-util install %{name}.metainfo.xml
+install -Dpm644 %{S:3} %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
 
 
 %files
 %license license
 %doc README.md
 %{inst_path}
-# GNOME Software Center metadata
-%{_datadir}/appdata/%{name}.metainfo.xml
+%{_metainfodir}/%{name}.metainfo.xml
 
 
 %changelog
+* Wed Jun 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.6.1-2
+- _metainfodir
+
 * Fri Jun 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.6.1-1
 - 1.7.6.1
 - with_xpi

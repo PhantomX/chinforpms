@@ -11,6 +11,10 @@ Source1:        README.suid
 BuildRequires:  gcc
 BuildRequires:  make
 
+Requires:       group(%{name})
+Requires(pre):  group(%{name})
+
+
 %description
 Firejail is a SUID program that reduces the risk of security breaches by
 restricting the running environment of untrusted applications using

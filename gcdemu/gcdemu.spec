@@ -54,14 +54,6 @@ done
 
 %find_lang %{name}
 
-%postun
-if [ $1 -eq 0 ] ; then
-  glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
-fi
-
-%posttrans
-glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
-
 
 %files -f %{name}.lang
 %license COPYING

@@ -1,6 +1,6 @@
 Name:    easytag
 Version: 2.4.3
-Release: 101.chinfo%{?dist}
+Release: 102.chinfo%{?dist}
 Summary: Tag editor for MP3, Ogg, FLAC and other music files
 
 Group:   Applications/Multimedia
@@ -11,6 +11,11 @@ Source:  https://download.gnome.org/sources/%{name}/2.4/%{name}-%{version}.tar.x
 # Revert ogg patch
 # https://bugzilla.gnome.org/show_bug.cgi?id=776110
 Patch0:  0001-Do-not-maintain-an-open-handle-on-Ogg-files.patch
+# https://bugzilla.gnome.org/show_bug.cgi?id=779622
+Patch1:  https://gitlab.gnome.org/GNOME/easytag/commit/cac75c6d565cf7c54d72775216010e3698c11af1.patch#/gl-cac75c6d.patch
+Patch2:  https://gitlab.gnome.org/GNOME/easytag/commit/8a234621179ba9d92113bff68d766e5e5532b3c0.patch#/gl-8a234621.patch
+# https://bugzilla.gnome.org/show_bug.cgi?id=795018
+Patch3:  https://gitlab.gnome.org/GNOME/easytag/commit/b00ed316550df3ae94522455f56e306e659511e5.patch#/gl-b00ed316.patch
 
 BuildRequires: appdata-tools
 BuildRequires: desktop-file-utils
@@ -49,15 +54,25 @@ easier access to EasyTAG when opening directories and audio files.
 %prep
 %setup -q
 %patch0 -p1 -R
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
-%configure
-make V=1 %{?_smp_mflags}
+%configure --disable-silent-rules
+%make_build
 
 
 %install
-make DESTDIR=%{buildroot} INSTALL="install -p" install
+%make_install
+
 find %{buildroot} -type f -name "*.la" -delete
+
+mkdir -p %{buildroot}%{_metainfodir}
+mv %{buildroot}%{_datadir}/appdata/*.xml \
+  %{buildroot}%{_metainfodir}/
+rm -rf %{buildroot}%{_datadir}/appdata
+
 %find_lang %{name} --with-gnome
 
 
@@ -65,20 +80,11 @@ find %{buildroot} -type f -name "*.la" -delete
 make check
 
 
-%postun
-if [ $1 -eq 0 ] ; then
-  glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
-fi
-
-%posttrans
-glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
-
-
 %files -f %{name}.lang
 %doc ChangeLog HACKING README THANKS TODO
 %license COPYING
 %{_bindir}/easytag
-%{_datadir}/appdata/easytag.appdata.xml
+%{_metainfodir}/easytag.appdata.xml
 %{_datadir}/applications/easytag.desktop
 %{_datadir}/icons/hicolor/*/apps/easytag.*
 %{_datadir}/icons/hicolor/symbolic/apps/easytag-symbolic.svg
@@ -88,11 +94,17 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 %files nautilus
 %license COPYING.GPL3
-%{_datadir}/appdata/easytag-nautilus.metainfo.xml
+%{_metainfodir}/easytag-nautilus.metainfo.xml
 %{_libdir}/nautilus/extensions-3.0/libnautilus-easytag.so
 
 
 %changelog
+* Wed Jun 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.4.3-102.chinfo
+- Some upstream fixes
+- Make macros
+- Move appdata to new place
+- Remove uneeded scriptlets
+
 * Mon Jan 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.4.3-101.chinfo
 - Apply only the right patch
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2018 Phantom X <megaphantomx at bol.com.br> -->
+<component type="addon">
+  <id>waterfox-ublock-origin</id>
+  <extends>mozilla-seamonkey.desktop</extends>
+  <extends>waterfox.desktop</extends>
+  <name>uBlock Origin for Waterfox</name>
+  <summary>An efficient blocker for Waterfox. Fast and lean.</summary>
+  <url type="homepage">https://github.com/gorhill/uBlock</url>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <updatecontact>megaphantomx at bol.com.br</updatecontact>
+</component>
