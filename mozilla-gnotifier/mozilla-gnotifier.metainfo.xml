@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2016 Onuralp SEZER <thunderbirdtr@fedoraproject.org> -->
+<!-- Copyright 2018 Phantom X <megaphantomx at bol.com.br> -->
 <component type="addon">
-  <id>mozilla-noscript</id>
-  <extends>firefox.desktop</extends>
+  <id>waterfox-gnotifier</id>
+  <extends>waterfox.desktop</extends>
   <extends>mozilla-seamonkey.desktop</extends>
-  <name>NoScript</name>
-  <summary>A JavaScript white list extension for Mozilla Firefox</summary>
-  <url type="homepage">https://noscript.net/</url>
-  <url type="bugtracker">https://noscript.net/forum</url>
+  <extends>mozilla-thunderbird.desktop</extends>
+  <name>GNotifier</name>
+  <summary>Waterfox native notification system integration</summary>
+  <url type="homepage">https://github.com/mkiol/GNotifier</url>
+  <url type="bugtracker">https://github.com/mkiol/GNotifier/issues</url>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>GPL-2.0+</project_license>
-  <updatecontact>thunderbirtdtr_at_fedoraproject.org</updatecontact>
+  <project_license>GPLv3</project_license>
+  <updatecontact>megaphantomx at bol.com.br</updatecontact>
 </component>
