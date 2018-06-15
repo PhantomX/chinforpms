@@ -1,0 +1,105 @@
+diff -up pac/lib/PACConfig.pm.nogconf pac/lib/PACConfig.pm
+--- pac/lib/PACConfig.pm.nogconf	2015-11-04 19:46:13.000000000 -0200
++++ pac/lib/PACConfig.pm	2018-06-14 14:12:21.939086873 -0300
+@@ -31,7 +31,6 @@ use warnings;
+ use FindBin qw ( $RealBin $Bin $Script );
+ use YAML qw ( LoadFile DumpFile );
+ use Storable;
+-use Gnome2::GConf;
+ use Crypt::CBC;
+ 
+ # GTK2
+@@ -60,9 +59,6 @@ my $GLADE_FILE		= $RealBin . '/res/pac.g
+ my $CFG_DIR			= $ENV{'HOME'} . '/.config/pac';
+ my $RES_DIR			= $RealBin . '/res';
+ 
+-# Connect to Gnome's GConf
+-my $GCONF			= Gnome2::GConf::Client -> get_default;
+-
+ my $CIPHER			= Crypt::CBC -> new( -key => 'PAC Manager (David Torrejon Vaquerizas, david.tv@gmail.com)', -cipher => 'Blowfish', -salt => '12345678' ) or die "ERROR: $!";
+ 
+ # END: Define GLOBAL CLASS variables
+@@ -505,10 +501,10 @@ sub _updateGUIPreferences {
+ 	my $cfg = shift // $$self{_CFG};
+ 	
+ 	# Get PROXY from environment
+-	my $proxy_ip		= $GCONF -> get_string( '/system/http_proxy/host' ) || $GCONF -> get_string( '/system/proxy/http/host' );
+-	my $proxy_port		= $GCONF -> get_int( '/system/http_proxy/port' ) || $GCONF -> get_string( '/system/proxy/http/port' );
+-	my $proxy_user		= $GCONF -> get_string( '/system/http_proxy/authentication_user' ) || $GCONF -> get_string( '/system/proxy/http/host/authentication-user' );
+-	my $proxy_pass		= $GCONF -> get_string( '/system/http_proxy/authentication_password' ) || $GCONF -> get_string( '/system/proxy/http/host/authentication-password' );
++	my $proxy_ip		= '';
++	my $proxy_port		= '';
++	my $proxy_user		= '';
++	my $proxy_pass		= '';
+ 	my $proxy_string	= 'no proxy configured';
+ 	$proxy_ip		and $proxy_string = "$proxy_ip:$proxy_port";
+ 	$proxy_user		and $proxy_string .= "; User: $proxy_user, Pass: <password hidden!>";
+diff -up pac/lib/pac_conn.nogconf pac/lib/pac_conn
+--- pac/lib/pac_conn.nogconf	2015-11-04 19:46:13.000000000 -0200
++++ pac/lib/pac_conn	2018-06-14 14:13:10.682925296 -0300
+@@ -31,7 +31,6 @@ use FindBin qw ( $RealBin $Bin $Script )
+ use lib $RealBin, $RealBin . '/ex', $RealBin . '/edit';
+ use Storable qw ( dclone thaw retrieve fd_retrieve nstore_fd );
+ use Expect;
+-use Gnome2::GConf;
+ use POSIX qw ( strftime );
+ use Encode qw ( encode decode );
+ use IO::Socket::INET;
+@@ -81,9 +80,6 @@ $Expect::Multiline_Matching = 1;
+ my $EXP = new Expect;
+ eval { $EXP -> slave -> clone_winsize_from( \*STDIN ); };
+ 
+-# Connect to Gnome's GConf
+-my $GCONF = Gnome2::GConf::Client -> get_default;
+-
+ # END OF : Variables declaration/initialization
+ ########################################################
+ 
+@@ -112,10 +108,10 @@ $UUID		= shift or die $COLOR{'err'} . "E
+ $GETCMD		= shift // 0;
+ 
+ # Get PROXY from environment
+-$PROXY{'env'}{'ip'}		= $GCONF -> get_string( '/system/http_proxy/host' ) || $GCONF -> get_string( '/system/proxy/http/host' );
+-$PROXY{'env'}{'port'}	= $GCONF -> get_int( '/system/http_proxy/port' ) || $GCONF -> get_string( '/system/proxy/http/port' );
+-$PROXY{'env'}{'user'}	= $GCONF -> get_string( '/system/http_proxy/authentication_user' ) || $GCONF -> get_string( '/system/proxy/http/host/authentication-user' );
+-$PROXY{'env'}{'pass'}	= $GCONF -> get_string( '/system/http_proxy/authentication_password' ) || $GCONF -> get_string( '/system/proxy/http/host/authentication-password' );
++$PROXY{'env'}{'ip'}		= '';
++$PROXY{'env'}{'port'}	= '';
++$PROXY{'env'}{'user'}	= '';
++$PROXY{'env'}{'pass'}	= '';
+ 
+ # Load the 'freezed' configuration
+ $CFG = retrieve( $CFG_FILE ) or die "ERROR: Could not load config file '$CFG_FILE': $!";
+diff -up pac/lib/PACEdit.pm.nogconf pac/lib/PACEdit.pm
+--- pac/lib/PACEdit.pm.nogconf	2015-11-04 19:46:13.000000000 -0200
++++ pac/lib/PACEdit.pm	2018-06-14 13:50:51.174639842 -0300
+@@ -34,7 +34,6 @@ use warnings;
+ use YAML qw ( LoadFile DumpFile );
+ use Storable qw ( dclone nstore nstore_fd fd_retrieve );
+ use Encode;
+-use Gnome2::GConf;
+ 
+ # GTK2
+ use Gtk2 '-init';
+@@ -66,8 +65,6 @@ my $INIT_CFG_FILE	= $RES_DIR . '/pac.yml
+ my $CFG_DIR			= $ENV{'HOME'} . '/.config/pac';
+ my $CFG_FILE		= $CFG_DIR . '/pac.yml';
+ 
+-my $GCONF			= Gnome2::GConf::Client -> get_default;
+-
+ # END: Define GLOBAL CLASS variables
+ ###################################################################
+ 
+diff -up pac/lib/PACUtils.pm.nogconf pac/lib/PACUtils.pm
+diff -up pac/res/pac.glade.nogconf pac/res/pac.glade
+--- pac/res/pac.glade.nogconf	2015-11-04 19:46:13.000000000 -0200
++++ pac/res/pac.glade	2018-06-14 14:13:32.431853205 -0300
+@@ -4353,7 +4353,7 @@ tty</property>
+                             <property name="can_focus">True</property>
+                             <property name="receives_default">False</property>
+                             <property name="has_tooltip">True</property>
+-                            <property name="tooltip" translatable="yes">This option will make PAC try to use GConf's configured proxy (if any)</property>
++                            <property name="tooltip" translatable="yes">This option will do nothing</property>
+                             <property name="use_action_appearance">False</property>
+                             <property name="active">True</property>
+                             <property name="draw_indicator">True</property>

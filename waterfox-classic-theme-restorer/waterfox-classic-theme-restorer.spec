@@ -13,8 +13,8 @@
 %global pkgname ClassicThemeRestorer
 
 Name:           waterfox-classic-theme-restorer
-Version:        1.7.6.1
-Release:        2%{?dist}
+Version:        1.7.7
+Release:        1%{?dist}
 Summary:        Customize Waterfox Australis UI
 
 License:        MPLv2.0
@@ -85,6 +85,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Jun 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.7-1
+- 1.7.7
+
 * Wed Jun 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.6.1-2
 - _metainfodir
 
