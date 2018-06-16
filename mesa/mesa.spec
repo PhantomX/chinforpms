@@ -56,7 +56,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        18.1.1
+Version:        18.1.2
 Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
@@ -670,6 +670,9 @@ popd
 %endif
 
 %changelog
+* Fri Jun 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.2-100.chinfo
+- 18.1.2
+
 * Fri Jun 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.1-100.chinfo
 - 18.1.1
 

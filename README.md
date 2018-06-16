@@ -34,7 +34,6 @@ release tags).
  * **mednafen** - No Haswell optimizations
  * **mesa** - Tests
  * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**
- * **pacmanager** - No perl-Gnome2-GConf requirement
  * **psi** - Updated
  * **quiterss** - Updated, Qt5
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
