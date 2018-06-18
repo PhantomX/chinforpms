@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -627,8 +627,8 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # https://www.spinics.net/lists/linux-acpi/msg82405.html
 Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 
-# CVE-2018-10853 rhbz 1589890 1589892
-Patch505: kvm-x86-Check-CPL-in-segmented_write_std.patch
+# CVE-2018-12232 rhbz 1590215 1590216
+Patch506: 0001-socket-close-race-condition-between-sock_close-and-s.patch
 
 ### Extra
 
@@ -1940,6 +1940,10 @@ fi
 #
 #
 %changelog
+* Sat Jun 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.2-500.chinfo
+- 4.17.2
+- stabilization sync
+
 * Mon Jun 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.1-500.chinfo
 - 4.17.1
 - stabilization sync

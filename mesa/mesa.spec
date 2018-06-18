@@ -1,17 +1,7 @@
 # https://bugzilla.redhat.com/show_bug.cgi?id=1546714
 %undefine _annotated_build
 
-# S390 doesn't have video cards, but we need swrast for xserver's GLX
-# llvm (and thus llvmpipe) doesn't actually work on ppc32
-%ifnarch s390 ppc
-%define with_llvm 1
-%endif
-
-%if 0%{?with_llvm}
-%define with_radeonsi 1
-%endif
-
-%ifarch s390 s390x ppc
+%ifarch s390x
 %define with_hardware 0
 %define base_drivers swrast
 %else
@@ -34,8 +24,13 @@
 %ifarch %{arm} aarch64
 %define with_etnaviv   1
 %define with_freedreno 1
+%define with_tegra     1
 %define with_vc4       1
 %define with_xa        1
+%endif
+
+%ifnarch %{arm} s390x
+%define with_radeonsi 1
 %endif
 
 %if 0%{?fedora} < 28
@@ -86,7 +81,6 @@ Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
 # glvnd support patches
 # non-upstreamed ones
 Patch10:        glvnd-fix-gl-dot-pc.patch
-Patch11:        0001-Fix-linkage-against-shared-glapi.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -113,11 +107,9 @@ BuildRequires:  elfutils
 BuildRequires:  python3
 BuildRequires:  python2
 BuildRequires:  gettext
-%if 0%{?with_llvm}
 BuildRequires: llvm-devel >= 3.4-7
 %if 0%{?with_opencl}
 BuildRequires: clang-devel >= 3.0
-%endif
 %endif
 BuildRequires: elfutils-libelf-devel
 BuildRequires: python3-libxml2
@@ -131,7 +123,7 @@ BuildRequires: pkgconfig(wayland-protocols)
 BuildRequires: libvdpau-devel
 %endif
 %if 0%{?with_vaapi}
-BuildRequires: libva-devel
+BuildRequires: libva-devel >= 0.39.0
 %endif
 BuildRequires: pkgconfig(zlib)
 %if 0%{?with_omx}
@@ -411,15 +403,15 @@ autoreconf -vfi
 %if 0%{?with_vulkan}
     %{?vulkan_drivers} \
 %endif
-    %{?with_llvm:--enable-llvm} \
-    %{?with_llvm:--enable-llvm-shared-libs} \
+    --enable-llvm \
+    --enable-llvm-shared-libs \
     --enable-dri \
 %if %{with_hardware}
     %{?with_xa:--enable-xa} \
     %{?with_nine:--enable-nine} \
-    --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,}%{?with_llvm:swrast,r600,}%{?with_freedreno:freedreno,}%{?with_etnaviv:etnaviv,imx,}%{?with_vc4:vc4,}virgl,r300,nouveau \
+    --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,r600,}swrast,%{?with_freedreno:freedreno,}%{?with_etnaviv:etnaviv,imx,}%{?with_tegra:tegra,}%{?with_vc4:vc4,}virgl,r300,nouveau \
 %else
-    --with-gallium-drivers=%{?with_llvm:swrast,}virgl \
+    --with-gallium-drivers=swrast,virgl \
 %endif
     %{?dri_drivers}
 
@@ -594,11 +586,9 @@ popd
 %{_libdir}/dri/r200_dri.so
 %{_libdir}/dri/nouveau_vieux_dri.so
 %{_libdir}/dri/r300_dri.so
-%if 0%{?with_llvm}
-%{_libdir}/dri/r600_dri.so
 %if 0%{?with_radeonsi}
+%{_libdir}/dri/r600_dri.so
 %{_libdir}/dri/radeonsi_dri.so
-%endif
 %endif
 %ifarch %{ix86} x86_64
 %{_libdir}/dri/i915_dri.so
@@ -615,16 +605,17 @@ popd
 %{_libdir}/dri/etnaviv_dri.so
 %{_libdir}/dri/imx-drm_dri.so
 %endif
+%if 0%{?with_tegra}
+%{_libdir}/dri/tegra_dri.so
+%endif
 %{_libdir}/dri/nouveau_dri.so
 %if 0%{?with_vmware}
 %{_libdir}/dri/vmwgfx_dri.so
 %endif
 %{_libdir}/dri/nouveau_drv_video.so
-%if 0%{?with_llvm}
-%{_libdir}/dri/r600_drv_video.so
 %if 0%{?with_radeonsi}
+%{_libdir}/dri/r600_drv_video.so
 %{_libdir}/dri/radeonsi_drv_video.so
-%endif
 %endif
 %endif
 %if 0%{?with_hardware}
@@ -644,11 +635,12 @@ popd
 %files vdpau-drivers
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
 %{_libdir}/vdpau/libvdpau_r300.so.1*
-%if 0%{?with_llvm}
-%{_libdir}/vdpau/libvdpau_r600.so.1*
 %if 0%{?with_radeonsi}
+%{_libdir}/vdpau/libvdpau_r600.so.1*
 %{_libdir}/vdpau/libvdpau_radeonsi.so.1*
 %endif
+%if 0%{?with_tegra}
+%{_libdir}/vdpau/libvdpau_tegra.so.1*
 %endif
 %endif
 %endif
