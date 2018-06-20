@@ -52,7 +52,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        18.1.2
-Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
+Release:        101%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -156,7 +156,7 @@ Obsoletes:      mesa-dri-filesystem < %{?epoch:%{epoch}}%{version}-%{release}
 %package libGL
 Summary:        Mesa libGL runtime libraries
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
-Requires:       libglvnd-glx%{?_isa}
+Requires:       libglvnd-glx%{?_isa} >= 1:1.0.1-0.7
 
 %description libGL
 %{summary}.
@@ -440,7 +440,7 @@ rm -f %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 # glvnd needs a default provider for indirect rendering where it cannot
 # determine the vendor
-ln -s %{_libdir}/libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_indirect.so.0
+ln -s %{_libdir}/libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_fedora.so.0
 
 # strip out useless headers
 rm -f %{buildroot}%{_includedir}/GL/w*.h
@@ -470,7 +470,7 @@ popd
 
 %files libGL
 %{_libdir}/libGLX_mesa.so.0*
-%{_libdir}/libGLX_indirect.so.0*
+%{_libdir}/libGLX_fedora.so.0*
 %files libGL-devel
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/gl_mangle.h
@@ -662,6 +662,9 @@ popd
 %endif
 
 %changelog
+* Sun Jun 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.2-101.chinfo
+- rawhide sync
+
 * Fri Jun 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.2-100.chinfo
 - 18.1.2
 

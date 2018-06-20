@@ -1,9 +1,9 @@
-%global commit f435a827f82acd782b1070bffff5b212542c7f90
+%global commit ff88ad0b627dcf7d16cf35fe32e00687ea3cfeb2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180530
+%global date 20180618
 %global with_snapshot 1
 
-%global freebsd_rev 472109
+%global freebsd_rev 472783
 %global freebsd_root %{name}-FreeBSD-patches-r%{freebsd_rev}
 
 %if 0%{?with_snapshot}
@@ -113,8 +113,8 @@
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.0
-Release:        3%{?gver}%{?dist}
+Version:        56.2.1
+Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -177,7 +177,6 @@ Patch416:        mozilla-1435695.patch
 %global wf_url https://github.com/MrAlex94/Waterfox
 #Patch???:      %%{wf_url}/commit/commit.patch#/wf-commit.patch
 Patch490:       %{wf_url}/pull/547.patch#/wf-pull-547.patch
-Patch491:       %{wf_url}/pull/605.patch#/wf-pull-605.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -353,7 +352,6 @@ This package contains results of tests executed during build.
 %patch416 -p1 -b .1435695
 
 %patch490 -p1
-%patch491 -p1
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -877,6 +875,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue Jun 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.1-1.20180618gitff88ad0
+- New release/snapshot
+
 * Sat Jun 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.0-3.20180530gitf435a82
 - New release/snapshot
 
