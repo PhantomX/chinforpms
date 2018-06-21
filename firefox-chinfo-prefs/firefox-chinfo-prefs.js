@@ -124,6 +124,10 @@ pref("browser.newtabpage.introShown", true);
 // Disable home snippets
 pref("browser.aboutHomeSnippets.updateUrl", "data:text/html");
 
+// Disable Captive Portal
+pref("captivedetect.canonicalURL", "");
+pref("network.captive-portal-service.enabled", false);
+
 // Disable form autofill
 pref("browser.formfill.enable", false);
 // Manual autofill (if above is true)
