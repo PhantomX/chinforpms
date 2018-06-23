@@ -34,7 +34,6 @@ release tags).
  * **mednafen** - No Haswell optimizations
  * **mesa** - Tests
  * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**
- * **psi** - Updated
  * **quiterss** - Updated, Qt5
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**

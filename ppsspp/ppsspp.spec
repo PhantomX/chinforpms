@@ -1,6 +1,6 @@
-%global commit cae79bf979c6d7e6d5249b1e03b9a4fcb099e9ca
+%global commit 06340bfa9c92d0ad8423ca3cacdd84795f71094a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180531
+%global date 20180620
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -42,7 +42,7 @@
 %undefine _hardened_build
 
 Name:           ppsspp
-Version:        1.6.2
+Version:        1.6.3
 Release:        1%{?gver}%{?dist}
 Summary:        A PSP emulator
 
@@ -132,6 +132,7 @@ sed -i -e '/_FLAGS_/s| -O3 | |g' CMakeLists.txt
 rm -rf ext/native/ext/libpng
 sed -e 's|png17|%{pngver}|g' \
   -i CMakeLists.txt Core/Screenshot.cpp \
+     Core/Debugger/WebSocket/GPUBufferSubscriber.cpp \
      Core/TextureReplacer.cpp ext/native/image/png_load.cpp \
      ext/native/tools/CMakeLists.txt
 sed -e "/PNG_PNG_INCLUDE_DIR/s|libpng/|lib%{pngver}/|" \
@@ -262,6 +263,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Fri Jun 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-1.20180620git06340bf
+- New snapshot, 1.6.3
+
 * Thu May 31 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.2-1.20180531gitcae79bf
 - New snapshot, 1.6.2
 - BR: glew

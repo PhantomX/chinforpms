@@ -26,14 +26,14 @@
 %global with_pyqt 0
 
 Name:           spideroakone
-Version:        7.1.0
+Version:        7.2.0
 Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
 License:        Proprietary
 URL:            https://spideroak.com/
-Source0:        https://spideroak.com/release/spideroak/rpm_%{larch}#/%{pkgname}.%{version}.%{pkgrel}.%{parch}.rpm
+Source0:        https://spideroak.com/release/spideroak/rpm_%{larch}#/%{pkgname1}.%{version}.%{pkgrel}.%{parch}.rpm
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -288,6 +288,9 @@ done
 %{_datadir}/pixmaps/*.png
 
 %changelog
+* Sat Jun 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.2.0-1
+- 7.2.0
+
 * Sat Apr 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.1.0-1
 - 7.1.0
 
