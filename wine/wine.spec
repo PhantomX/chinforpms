@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.10
+%global stagingver 3.11
 %global strel %(echo %{stagingver} | grep -q \\. ; echo $?)
 %endif # 0%{?fedora}
 
@@ -29,7 +29,7 @@
 %endif
 
 Name:           wine
-Version:        3.10
+Version:        3.11
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -92,6 +92,7 @@ Patch602:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.
 Patch603:       wbemprox_query_v2.patch
 # Keybind patch reversion
 Patch604:       keybindings.patch
+Patch605:       poe-fix.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
@@ -686,6 +687,7 @@ This package adds the opencl driver for wine.
 %patch601 -p1
 %patch602 -p1
 %patch604 -p1 -R
+%patch605 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -2259,6 +2261,9 @@ fi
 %endif
 
 %changelog
+* Sun Jun 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.11-100.chinfo
+- 3.11
+
 * Mon Jun 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.10-100.chinfo
 - 3.10
 
