@@ -1,0 +1,46 @@
+From patchwork Thu Jun 21 13:00:20 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [1/2] xen-netfront: Fix mismatched rtnl_unlock
+X-Patchwork-Submitter: Ross Lagerwall <ross.lagerwall@citrix.com>
+X-Patchwork-Id: 932721
+Message-Id: <20180621130021.27029-2-ross.lagerwall@citrix.com>
+To: <netdev@vger.kernel.org>
+Cc: Ross Lagerwall <ross.lagerwall@citrix.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Juergen Gross <jgross@suse.com>, "David S. Miller" <davem@davemloft.net>,
+ <xen-devel@lists.xenproject.org>, <linux-kernel@vger.kernel.org>
+Date: Thu, 21 Jun 2018 14:00:20 +0100
+From: Ross Lagerwall <ross.lagerwall@citrix.com>
+List-Id: <netdev.vger.kernel.org>
+
+Fixes: f599c64fdf7d ("xen-netfront: Fix race between device setup and open")
+Reported-by: Ben Hutchings <ben.hutchings@codethink.co.uk>
+Signed-off-by: Ross Lagerwall <ross.lagerwall@citrix.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+---
+ drivers/net/xen-netfront.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index 922ce0a..ee4cb6c 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -1810,7 +1810,7 @@ static int talk_to_netback(struct xenbus_device *dev,
+ 	err = xen_net_read_mac(dev, info->netdev->dev_addr);
+ 	if (err) {
+ 		xenbus_dev_fatal(dev, err, "parsing %s/mac", dev->nodename);
+-		goto out;
++		goto out_unlocked;
+ 	}
+ 
+ 	rtnl_lock();
+@@ -1925,6 +1925,7 @@ static int talk_to_netback(struct xenbus_device *dev,
+ 	xennet_destroy_queues(info);
+  out:
+ 	rtnl_unlock();
++out_unlocked:
+ 	device_unregister(&dev->dev);
+ 	return err;
+ }

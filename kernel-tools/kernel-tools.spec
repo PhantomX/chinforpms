@@ -19,7 +19,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 2
+%global stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -119,7 +119,7 @@ Patch8: 0001-Switch-to-python3.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id c31c53d61320c04dcbc5b48857fc4ba9ced1c6ea
+%global opensuse_id 7faa585cbc13d219b08691e534d568b13cf37d30
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
@@ -432,6 +432,9 @@ popd
 %license linux-%{kversion}/COPYING
 
 %changelog
+* Mon Jun 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.3-500.chinfo
+- 4.17.3
+
 * Sat Jun 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.2-500.chinfo
 - 4.17.2
 

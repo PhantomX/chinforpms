@@ -1,0 +1,30 @@
+From c59b3715ac16544f8f68ab7af03f108e339b36aa Mon Sep 17 00:00:00 2001
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Date: Wed, 16 May 2018 21:08:42 +0200
+Subject: [PATCH] rtc: nvmem: don't return an error when not enabled
+
+Avoid reporting an error when RTC_NVMEM is not selected.
+
+Reported-by: kernel test robot <xiaolong.ye@intel.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
+---
+ include/linux/rtc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/rtc.h b/include/linux/rtc.h
+index 4c007f69082f..6268208760e9 100644
+--- a/include/linux/rtc.h
++++ b/include/linux/rtc.h
+@@ -285,7 +285,7 @@ void rtc_nvmem_unregister(struct rtc_device *rtc);
+ static inline int rtc_nvmem_register(struct rtc_device *rtc,
+ 				     struct nvmem_config *nvmem_config)
+ {
+-	return -ENODEV;
++	return 0;
+ }
+ static inline void rtc_nvmem_unregister(struct rtc_device *rtc) {}
+ #endif
+-- 
+2.17.1
+

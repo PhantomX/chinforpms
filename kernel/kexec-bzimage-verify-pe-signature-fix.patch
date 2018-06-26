@@ -1,0 +1,34 @@
+From: Dave Young <dyoung@redhat.com>
+
+Fix kexec_file_load pefile signature verification
+
+Similar with Fix-for-module-sig-verification.patch, kexec_file syscall also
+need pass 1UL to verify_pefile_signature so that secondary keys can be used.
+
+Fedora bug
+https://bugzilla.redhat.com/show_bug.cgi?id=1470995
+
+Latest upstream effort is below:
+https://www.spinics.net/lists/kernel/msg2825184.html
+
+Ideally this need an upstream fix, but since nobody response we can workaround
+it like the module code did.
+
+Signed-off-by: Dave Young <dyoung@redhat.com>
+---
+ arch/x86/kernel/kexec-bzimage64.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- linux-x86.orig/arch/x86/kernel/kexec-bzimage64.c
++++ linux-x86/arch/x86/kernel/kexec-bzimage64.c
+@@ -533,7 +533,7 @@ static int bzImage64_cleanup(void *loade
+ static int bzImage64_verify_sig(const char *kernel, unsigned long kernel_len)
+ {
+ 	return verify_pefile_signature(kernel, kernel_len,
+-				       NULL,
++				       (void *)1UL,
+ 				       VERIFYING_KEXEC_PE_SIGNATURE);
+ }
+ #endif
+-- 
+2.17.0

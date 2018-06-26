@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -600,6 +600,9 @@ Patch310: arm-dts-Add-am335x-pocketbeagle.patch
 # https://www.spinics.net/lists/linux-tegra/msg32920.html
 Patch311: arm-tegra-USB-driver-dependency-fix.patch
 
+# https://patchwork.kernel.org/patch/10348701/
+Patch312: arm64-msm8916-fix-gic_irq_domain_translate-warnings.patch
+
 # https://patchwork.kernel.org/patch/10354521/
 # https://patchwork.kernel.org/patch/10354187/
 # https://patchwork.kernel.org/patch/10306793/
@@ -623,19 +626,43 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
+# rhbz 1470995
+Patch503: kexec-bzimage-verify-pe-signature-fix.patch
+
 # rbhz 1435837
 # https://www.spinics.net/lists/linux-acpi/msg82405.html
 Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 
-# CVE-2018-12232 rhbz 1590215 1590216
-Patch506: 0001-socket-close-race-condition-between-sock_close-and-s.patch
+# https://www.spinics.net/lists/platform-driver-x86/msg15719.html
+Patch507: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
+
+# rhbz 1577106
+# http://lists.infradead.org/pipermail/ath10k/2018-June/011582.html
+Patch508: ath10k-Update-the-phymode-along-with-bandwidth-change.patch
+
+# rhbz 1568276
+# In 4.18
+Patch509: rtc-nvmem-don-t-return-an-error-when-not-enabled.patch
+
+# rhbz 1584216
+Patch510: 1-2-xen-netfront-Fix-mismatched-rtnl_unlock.patch
+Patch511: 2-2-xen-netfront-Update-features-after-registering-netdev.patch
+
+# CVE-2018-12633 rhbz 1594170 1594172
+Patch512: 0001-virt-vbox-Only-copy_from_user-the-request-header-onc.patch
+
+# rhbz 1592454
+Patch514: 0001-media-uvcvideo-Support-realtek-s-UVC-1.5-device.patch
+
+# rhbz 1591516
+Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id c31c53d61320c04dcbc5b48857fc4ba9ced1c6ea
+%global opensuse_id 7faa585cbc13d219b08691e534d568b13cf37d30
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -648,12 +675,14 @@ Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 #Patch1017: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
 Patch1018: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1019: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1020: %{opensuse_url}/0001-x86-stacktrace-do-now-unwind-after-user-regs.patch#/openSUSE-0001-x86-stacktrace-do-now-unwind-after-user-regs.patch
-Patch1021: %{opensuse_url}/0002-x86-stacktrace-make-clear-the-success-paths.patch#/openSUSE-0002-x86-stacktrace-make-clear-the-success-paths.patch
-Patch1022: %{opensuse_url}/0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch#/openSUSE-0003-x86-stacktrace-remove-STACKTRACE_DUMP_ONCE-from-__sa.patch
-Patch1023: %{opensuse_url}/0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch#/openSUSE-0004-x86-stacktrace-do-not-fail-for-ORC-with-regs-on-stac.patch
-Patch1024: %{opensuse_url}/0005-x86-stacktrace-orc-mark-it-as-reliable.patch#/openSUSE-0005-x86-stacktrace-orc-mark-it-as-reliable.patch
-Patch1025: %{opensuse_url}/mtd-spi-nor-intel-spi-Fix-atomic-sequence-handling#/mtd-spi-nor-intel-spi-Fix-atomic-sequence-handling.patch
+Patch1020: %{opensuse_url}/0001-x86-stacktrace-Do-not-unwind-after-user-regs.patch#/openSUSE-0001-x86-stacktrace-Do-not-unwind-after-user-regs.patch
+Patch1021: %{opensuse_url}/0002-x86-stacktrace-Remove-STACKTRACE_DUMP_ONCE.patch#/openSUSE-0002-x86-stacktrace-Remove-STACKTRACE_DUMP_ONCE.patch
+Patch1022: %{opensuse_url}/0003-x86-stacktrace-Clarify-the-reliable-success-paths.patch#/openSUSE-0003-x86-stacktrace-Clarify-the-reliable-success-paths.patch
+Patch1023: %{opensuse_url}/0004-x86-stacktrace-Do-not-fail-for-ORC-with-regs-on-stac.patch#/openSUSE-0004-x86-stacktrace-Do-not-fail-for-ORC-with-regs-on-stac.patch
+Patch1024: %{opensuse_url}/0005-x86-unwind-orc-Detect-the-end-of-the-stack.patch#/openSUSE-0005-x86-unwind-orc-Detect-the-end-of-the-stack.patch
+Patch1025: %{opensuse_url}/0006-x86-stacktrace-Enable-HAVE_RELIABLE_STACKTRACE-for-t.patch#/openSUSE-0006-x86-stacktrace-Enable-HAVE_RELIABLE_STACKTRACE-for-t.patch
+Patch1026: %{opensuse_url}/mtd-spi-nor-intel-spi-Fix-atomic-sequence-handling#/openSUSE-mtd-spi-nor-intel-spi-Fix-atomic-sequence-handling.patch
+Patch1027: %{opensuse_url}/input-psmouse-fix-button-reporting-for-basic-protoco.patch#/openSUSE-input-psmouse-fix-button-reporting-for-basic-protoco.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -685,6 +714,10 @@ Patch3019: %{pf_url}/34ca6b65d81d4f801649dc28a5a5da29419ec91c.patch#/pf-34ca6b65
 Patch3020: %{pf_url}/c216c3d38666fe0819c935a95796457b49209778.patch#/pf-c216c3d38666fe0819c935a95796457b49209778.patch
 Patch3021: %{pf_url}/bf78d40e79700352847dd773176297efe6c062cf.patch#/pf-bf78d40e79700352847dd773176297efe6c062cf.patch
 Patch3022: %{pf_url}/33d003a73ff8f10494d975ce124bd71ce8d19669.patch#/pf-33d003a73ff8f10494d975ce124bd71ce8d19669.patch
+Patch3023: %{pf_url}/ba43c9c2dd08e9028194e4c4a7857eacafbc858c.patch#/pf-ba43c9c2dd08e9028194e4c4a7857eacafbc858c.patch
+Patch3024: %{pf_url}/67777dc910f520f7dfb2d0aa339a89984488ba4c.patch#/pf-67777dc910f520f7dfb2d0aa339a89984488ba4c.patch
+Patch3025: %{pf_url}/09decfe656c0d3c3ba84c8a4f124b62a7de3af1e.patch#/pf-09decfe656c0d3c3ba84c8a4f124b62a7de3af1e.patch
+Patch3026: %{pf_url}/9fa976dc314e1b9136ba63cce277ff1c65d9659c.patch#/pf-9fa976dc314e1b9136ba63cce277ff1c65d9659c.patch
 
 
 # Add additional cpu gcc optimization support
@@ -1940,6 +1973,10 @@ fi
 #
 #
 %changelog
+* Mon Jun 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.3-500.chinfo
+- 4.17.3
+- f28 sync
+
 * Sat Jun 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.2-500.chinfo
 - 4.17.2
 - stabilization sync
