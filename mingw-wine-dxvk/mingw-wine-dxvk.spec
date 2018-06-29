@@ -11,8 +11,10 @@
 %global srcname dxvk
 %global dxvk_dir %{_datadir}/wine/%{srcname}/%{__isa_bits}
 
+%global winever 3.10
+
 Name:           mingw-wine-%{srcname}
-Version:        0.54
+Version:        0.61
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
@@ -33,8 +35,8 @@ BuildRequires:  mingw%{__isa_bits}-winpthreads-static
 # glslangValidator
 BuildRequires:  glslang
 BuildRequires:  meson
-BuildRequires:  wine-core
-BuildRequires:  wine-devel >= 3.0
+BuildRequires:  wine-core >= %{winever}
+BuildRequires:  wine-devel >= %{winever}
 
 %description
 Provides a Vulkan-based implementation of DXGI and D3D11 in order to
@@ -46,10 +48,10 @@ BuildArch:      noarch
 Enhances:       wine
 Requires:       wine-common
 %if %{__isa_bits} == 32
-Requires:       wine-core(x86-32)
+Requires:       wine-core(x86-32) >= %{winever}
 %endif
 %if %{__isa_bits} == 64
-Requires:       wine-core(x86-64)
+Requires:       wine-core(x86-64) >= %{winever}
 Requires:       mingw32-wine-%{srcname} = %{version}-%{release}
 %endif
 
@@ -110,6 +112,10 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 %endif
 
 %changelog
+* Thu Jun 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.61-1
+- 0.61
+- Set minimal version for wine requirements
+
 * Thu Jun 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.54-1
 - 0.54
 
