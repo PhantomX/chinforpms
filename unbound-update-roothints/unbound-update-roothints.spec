@@ -36,7 +36,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=%{_bindir}/curl -o /var/lib/unbound/root.hints https://www.internic.net/domain/named.cache
+ExecStart=%{_bindir}/curl -o %{_sharedstatedir}/unbound/root.hints https://www.internic.net/domain/named.cache
 ExecStartPost=-%{_bindir}/chown unbound. %{_sharedstatedir}/unbound/root.hints
 EOF
 

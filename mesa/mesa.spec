@@ -18,7 +18,9 @@
 %define platform_drivers ,i915,i965
 %define with_vmware 1
 %define with_xa     1
-%define with_vulkan 1
+%define vulkan_drivers --with-vulkan-drivers=intel,radeon
+%else
+%define vulkan_drivers --with-vulkan-drivers=radeon
 %endif
 
 %ifarch %{arm} aarch64
@@ -41,18 +43,14 @@
 
 %define dri_drivers --with-dri-drivers=%{?base_drivers}%{?platform_drivers}
 
-%if 0%{?with_vulkan}
-%define vulkan_drivers --with-vulkan-drivers=intel,radeon
-%endif
-
 %global sanitize 1
 
 #global rctag rc6
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        18.1.2
-Release:        101%{?rctag:.%{rctag}}.chinfo%{?dist}
+Version:        18.1.3
+Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -132,7 +130,7 @@ BuildRequires: libomxil-bellagio-devel
 %if 0%{?with_opencl}
 BuildRequires: libclc-devel opencl-filesystem
 %endif
-%if 0%{?with_vulkan}
+%if 0%{?with_hardware}
 BuildRequires: vulkan-devel
 %endif
 BuildRequires: python3-mako
@@ -344,7 +342,6 @@ Requires:       %{name}-libd3d%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
 %{summary}.
 %endif
 
-%if 0%{?with_vulkan}
 %package vulkan-drivers
 Summary:        Mesa Vulkan drivers
 Requires:       vulkan%{_isa}
@@ -359,7 +356,6 @@ Requires:       vulkan-devel
 
 %description vulkan-devel
 Headers for development with the Vulkan API.
-%endif
 
 %prep
 %autosetup -n %{name}-%{version}%{?rctag:-%{rctag}} -p1
@@ -400,9 +396,7 @@ autoreconf -vfi
     %{?with_opencl:--enable-opencl --enable-opencl-icd} %{!?with_opencl:--disable-opencl} \
     --enable-glx-tls \
     --enable-texture-float=yes \
-%if 0%{?with_vulkan}
     %{?vulkan_drivers} \
-%endif
     --enable-llvm \
     --enable-llvm-shared-libs \
     --enable-dri \
@@ -645,25 +639,26 @@ popd
 %endif
 %endif
 
-%if 0%{?with_vulkan}
 %files vulkan-drivers
+%if 0%{?with_hardware}
+%ifarch %{ix86} x86_64
 %{_libdir}/libvulkan_intel.so
+%{_datadir}/vulkan/icd.d/intel_icd.*.json
+%endif
 %{_libdir}/libvulkan_radeon.so
-%ifarch x86_64
-%{_datadir}/vulkan/icd.d/intel_icd.x86_64.json
-%{_datadir}/vulkan/icd.d/radeon_icd.x86_64.json
-%else
-%{_datadir}/vulkan/icd.d/intel_icd.i686.json
-%{_datadir}/vulkan/icd.d/radeon_icd.i686.json
+%{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %endif
 
 %files vulkan-devel
 %{_includedir}/vulkan/
-%endif
 
 %changelog
+* Fri Jun 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.3-100.chinfo
+- 18.1.3
+- Rawhide sync
+
 * Sun Jun 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.2-101.chinfo
-- rawhide sync
+- Rawhide sync
 
 * Fri Jun 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.2-100.chinfo
 - 18.1.2
