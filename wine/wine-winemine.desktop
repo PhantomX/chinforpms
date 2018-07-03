@@ -7,4 +7,6 @@ Exec=winemine
 Icon=winemine
 Terminal=false
 Type=Application
+StartupNotify=true
+StartupWMClass=winemine.exe
 Categories=X-Wine;

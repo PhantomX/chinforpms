@@ -2,8 +2,10 @@
 Name=Wine Task Manager
 Name[pt_BR]=Gerenciador de Tarefas do Wine
 Comment=Wine registry editor
-Exec=wine taskmgr
+Exec=wine taskmgr.exe
 Icon=taskmgr
 Terminal=false
 Type=Application
+StartupNotify=true
+StartupWMClass=taskmgr.exe
 Categories=X-Wine;

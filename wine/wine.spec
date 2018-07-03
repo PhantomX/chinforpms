@@ -387,6 +387,8 @@ handling. See man binfmt.d for further information.
 %package sysvinit
 Summary:        SysV initscript for the wine binfmt handler
 BuildArch:      noarch
+Requires(post): /sbin/chkconfig, /sbin/service
+Requires(preun): /sbin/chkconfig, /sbin/service
 
 %description sysvinit
 Register the wine binary handler for windows executables via SysV init files.
@@ -409,10 +411,6 @@ Common wine files and scripts.
 
 %package desktop
 Summary:        Desktop integration features for wine
-%if 0%{?rhel} == 6
-Requires(post): /sbin/chkconfig, /sbin/service,
-Requires(preun): /sbin/chkconfig, /sbin/service
-%endif
 Requires:       wine-core = %{version}-%{release}
 Requires:       wine-common = %{version}-%{release}
 %if 0%{?fedora} >= 15 || 0%{?rhel} >= 7

@@ -7,4 +7,6 @@ Exec=notepad
 Icon=notepad
 Terminal=false
 Type=Application
+StartupNotify=true
+StartupWMClass=notepad.exe
 Categories=X-Wine;

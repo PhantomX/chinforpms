@@ -7,4 +7,6 @@ Exec=winefile
 Icon=winefile
 Terminal=false
 Type=Application
+StartupNotify=true
+StartupWMClass=winefile.exe
 Categories=X-Wine;

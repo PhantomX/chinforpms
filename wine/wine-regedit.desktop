@@ -7,4 +7,6 @@ Exec=regedit
 Icon=regedit
 Terminal=false
 Type=Application
+StartupNotify=true
+StartupWMClass=regedit.exe
 Categories=X-Wine;

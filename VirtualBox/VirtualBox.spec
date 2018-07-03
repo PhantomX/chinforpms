@@ -37,7 +37,7 @@
 %endif
 
 Name:       VirtualBox
-Version:    5.2.12
+Version:    5.2.14
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -350,18 +350,7 @@ kmk %{_smp_mflags}    \
     SDK_VBOX_OPENSSL_INCS="" \
     SDK_VBOX_OPENSSL_LIBS="ssl crypto" \
     SDK_VBOX_ZLIB_INCS= \
-%if %{with docs}
-    VBOX_WITH_DOCS=1 \
-# doc/manual/fr_FR/ missing man_VBoxManage-debugvm.xml and man_VBoxManage-extpack.xml
-#    VBOX_WITH_DOCS_TRANSLATIONS=1 \
-# we can't build CHM DOCS we need hhc.exe which is not in source and we need
-# also install wine:
-# wine: cannot find
-# '/builddir/build/BUILD/VirtualBox-5.1.6/tools/win.x86/HTML_Help_Workshop/v1.3//hhc.exe'
-#    VBOX_WITH_DOCS_CHM=1 \
-%endif
-    VBOX_PATH_DOCBOOK_DTD=/usr/share/sgml/docbook/xml-dtd-4.5/ \
-    VBOX_PATH_DOCBOOK=/usr/share/sgml/docbook/xsl-stylesheets/ \
+%{?with_docs:   VBOX_WITH_DOCS=1 }
     VBOX_JAVA_HOME=%{_prefix}/lib/jvm/java \
     VBOX_BUILD_PUBLISHER=%{publisher} \
     VBOX_WITH_REGISTRATION_REQUEST= \
@@ -370,6 +359,15 @@ kmk %{_smp_mflags}    \
     VBOX_WITH_UPDATE=
 
 
+#    VBOX_PATH_DOCBOOK_DTD=/usr/share/sgml/docbook/xml-dtd-4.5/ \
+#    VBOX_PATH_DOCBOOK=/usr/share/sgml/docbook/xsl-stylesheets/ \
+# doc/manual/fr_FR/ missing man_VBoxManage-debugvm.xml and man_VBoxManage-extpack.xml
+#    VBOX_WITH_DOCS_TRANSLATIONS=1 \
+# we can't build CHM DOCS we need hhc.exe which is not in source and we need
+# also install wine:
+# wine: cannot find
+# '/builddir/build/BUILD/VirtualBox-5.1.6/tools/win.x86/HTML_Help_Workshop/v1.3//hhc.exe'
+#    VBOX_WITH_DOCS_CHM=1 \
 #    VBOX_WITH_ADDITION_DRIVERS = \
 #    VBOX_WITH_INSTALLER = 1 \
 #    VBOX_WITH_LINUX_ADDITIONS = 1 \
@@ -563,10 +561,6 @@ install -p -m 0644 -D %{SOURCE6} %{buildroot}%{_prefix}/lib/modules-load.d/%{nam
 %if 0%{?fedora}
 #sed -i s/vboxvideo/d %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
 sed -i 's/vboxvideo/#vboxvideo/' %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
-%endif
-%if 0%{?fedora} > 27
-#sed -i s/vboxguest/d %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
-sed -i 's/vboxguest/#vboxguest/' %{buildroot}%{_prefix}/lib/modules-load.d/%{name}-guest.conf
 %endif
 %endif
 
@@ -814,6 +808,10 @@ getent passwd vboxadd >/dev/null || \
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Mon Jul 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-100.chinfo
+- 5.2.14
+- Sync with RPMFusion
+
 * Thu May 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.12-100.chinfo
 - 5.2.12
 

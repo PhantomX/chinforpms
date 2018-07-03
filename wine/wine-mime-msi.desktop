@@ -6,3 +6,5 @@ Exec=wine %f
 MimeType=application/x-ole-storage;text/mspg-legacyinfo;
 Hidden=true
 Icon=wine
+StartupNotify=true
+StartupWMClass=msiexec.exe

@@ -1,8 +1,10 @@
 [Desktop Entry]
 Name=Wine Internet Explorer
 Comment=Wine Internet Explorer
-Exec=wine iexplore
+Exec=wine iexplore.exe
 Icon=iexplore
 Terminal=false
 Type=Application
+StartupNotify=true
+StartupWMClass=iexplore.exe
 Categories=X-Wine;
