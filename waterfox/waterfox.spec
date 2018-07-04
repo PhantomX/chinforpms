@@ -1,9 +1,9 @@
-%global commit ff88ad0b627dcf7d16cf35fe32e00687ea3cfeb2
+%global commit 485b83d22458bcf20e8f393dac9d485e5a8f729b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180618
+%global date 20180702
 %global with_snapshot 1
 
-%global freebsd_rev 472783
+%global freebsd_rev 473858
 %global freebsd_root %{name}-FreeBSD-patches-r%{freebsd_rev}
 
 %if 0%{?with_snapshot}
@@ -114,7 +114,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}

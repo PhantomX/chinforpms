@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -583,9 +583,6 @@ Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 # https://patchwork.kernel.org/patch/9820417/
 Patch305: qcom-msm89xx-fixes.patch
 
-# https://patchwork.kernel.org/patch/10173115/
-Patch306: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
-
 # https://marc.info/?l=linux-kernel&m=152328880417846&w=2
 Patch307: arm64-thunderx-crypto-zip-fixes.patch
 
@@ -648,21 +645,18 @@ Patch509: rtc-nvmem-don-t-return-an-error-when-not-enabled.patch
 Patch510: 1-2-xen-netfront-Fix-mismatched-rtnl_unlock.patch
 Patch511: 2-2-xen-netfront-Update-features-after-registering-netdev.patch
 
-# CVE-2018-12633 rhbz 1594170 1594172
-Patch512: 0001-virt-vbox-Only-copy_from_user-the-request-header-onc.patch
-
-# rhbz 1592454
-Patch514: 0001-media-uvcvideo-Support-realtek-s-UVC-1.5-device.patch
-
 # rhbz 1591516
 Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
+
+# rhbz 1572944
+Patch517: Revert-the-random-series-for-4.16.4.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 7faa585cbc13d219b08691e534d568b13cf37d30
+%global opensuse_id 3037396c90646b72039d5a906d299e1a52dba42b
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -681,8 +675,6 @@ Patch1022: %{opensuse_url}/0003-x86-stacktrace-Clarify-the-reliable-success-path
 Patch1023: %{opensuse_url}/0004-x86-stacktrace-Do-not-fail-for-ORC-with-regs-on-stac.patch#/openSUSE-0004-x86-stacktrace-Do-not-fail-for-ORC-with-regs-on-stac.patch
 Patch1024: %{opensuse_url}/0005-x86-unwind-orc-Detect-the-end-of-the-stack.patch#/openSUSE-0005-x86-unwind-orc-Detect-the-end-of-the-stack.patch
 Patch1025: %{opensuse_url}/0006-x86-stacktrace-Enable-HAVE_RELIABLE_STACKTRACE-for-t.patch#/openSUSE-0006-x86-stacktrace-Enable-HAVE_RELIABLE_STACKTRACE-for-t.patch
-Patch1026: %{opensuse_url}/mtd-spi-nor-intel-spi-Fix-atomic-sequence-handling#/openSUSE-mtd-spi-nor-intel-spi-Fix-atomic-sequence-handling.patch
-Patch1027: %{opensuse_url}/input-psmouse-fix-button-reporting-for-basic-protoco.patch#/openSUSE-input-psmouse-fix-button-reporting-for-basic-protoco.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -1973,6 +1965,10 @@ fi
 #
 #
 %changelog
+* Tue Jul 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.4-500.chinfo
+- 4.17.4
+- f28 sync
+
 * Mon Jun 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.3-500.chinfo
 - 4.17.3
 - f28 sync

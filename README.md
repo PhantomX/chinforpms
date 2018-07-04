@@ -36,6 +36,7 @@ release tags).
  * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**
  * **quiterss** - Updated, Qt5
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
+ * **telegram-desktop** - Personal fixes
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
                     and **VirtualBox-guest-additions-iso** support
  * **xboxdrv** - Tests

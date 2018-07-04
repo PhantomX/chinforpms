@@ -1,0 +1,13 @@
+diff -up tdesktop-1.3.9/Telegram/SourceFiles/ui/widgets/input_fields.cpp.noreplace tdesktop-1.3.9/Telegram/SourceFiles/ui/widgets/input_fields.cpp
+--- tdesktop-1.3.9/Telegram/SourceFiles/ui/widgets/input_fields.cpp.noreplace	2018-07-03 16:08:00.148942550 -0300
++++ tdesktop-1.3.9/Telegram/SourceFiles/ui/widgets/input_fields.cpp	2018-07-03 16:08:04.450932606 -0300
+@@ -787,9 +787,6 @@ void InstantReplaces::add(const QString
+ const InstantReplaces &InstantReplaces::Default() {
+ 	static const auto result = [] {
+ 		auto result = InstantReplaces();
+-		result.add("--", QString(1, QChar(8212)));
+-		result.add("<<", QString(1, QChar(171)));
+-		result.add(">>", QString(1, QChar(187)));
+ 		result.add(
+ 			":shrug:",
+ 			QChar(175) + QString("\\_(") + QChar(12484) + ")_/" + QChar(175));
