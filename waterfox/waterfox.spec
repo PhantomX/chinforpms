@@ -1,9 +1,9 @@
-%global commit 485b83d22458bcf20e8f393dac9d485e5a8f729b
+%global commit 75c40dec255910ac114639d7bb45a399f0ba9c14
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180702
+%global date 20180704
 %global with_snapshot 1
 
-%global freebsd_rev 473858
+%global freebsd_rev 473925
 %global freebsd_root %{name}-FreeBSD-patches-r%{freebsd_rev}
 
 %if 0%{?with_snapshot}
@@ -376,7 +376,7 @@ done
 # 2: no apply
 # 3: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 \
+  702179 991253 1021761 1144632 1288587 1452576 \
   1388744 1405267 1413143 \
   1447519
 do
@@ -875,6 +875,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Jul 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.1-2.20180618git75c40de
+- New snapshot
+
 * Tue Jun 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.1-1.20180618gitff88ad0
 - New release/snapshot
 
