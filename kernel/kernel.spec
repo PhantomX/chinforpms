@@ -656,7 +656,7 @@ Patch517: Revert-the-random-series-for-4.16.4.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 3037396c90646b72039d5a906d299e1a52dba42b
+%global opensuse_id 12954e158fa6e86217b8fa35e3119a53841f69fa
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -664,7 +664,7 @@ Patch1011: %{opensuse_url}/VFS-expedite-umount.patch#/openSUSE-VFS-expedite-umou
 Patch1012: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1013: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
 Patch1014: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
-#Patch1015: %%{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+Patch1015: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 #Patch1017: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
 Patch1018: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
