@@ -1,0 +1,40 @@
+From 8932efe44b59738952cfea7835f04b52dac2cd7e Mon Sep 17 00:00:00 2001
+From: Alex Smith <asmith@feralinteractive.com>
+Date: Wed, 4 Jul 2018 09:27:39 +0100
+Subject: [PATCH] Move man page to the correct section (8)
+
+Daemons belong in 8, as per issue #61.
+---
+ data/{gamemoded.1 => gamemoded.8} | 2 +-
+ data/meson.build                  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+ rename data/{gamemoded.1 => gamemoded.8} (98%)
+
+diff --git a/data/gamemoded.1 b/data/gamemoded.8
+similarity index 98%
+rename from data/gamemoded.1
+rename to data/gamemoded.8
+index 0a3133a..0f2ecfd 100644
+--- a/data/gamemoded.1
++++ b/data/gamemoded.8
+@@ -1,6 +1,6 @@
+ .\" Manpage for gamemoded.
+ .\" Contact linux-contact@feralinteractive.com to correct errors or typos.
+-.TH gamemoded 1 "6 March 2018" "1.1" "gamemoded man page"
++.TH gamemoded 8 "6 March 2018" "1.1" "gamemoded man page"
+ .SH NAME
+ gamemoded \- optimises system performance on demand
+ .SH SYNOPSIS
+diff --git a/data/meson.build b/data/meson.build
+index 93c03b8..2d32797 100644
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -29,4 +29,4 @@ configure_file(
+ )
+ 
+ # Install the man page
+-install_man('gamemoded.1')
++install_man('gamemoded.8')
+-- 
+2.17.1
+

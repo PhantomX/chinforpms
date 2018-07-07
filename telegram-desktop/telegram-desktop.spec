@@ -11,7 +11,7 @@
 Summary: Telegram Desktop official messaging app
 Name: telegram-desktop
 Version: 1.3.9
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 
 # Application and 3rd-party modules licensing:
 # * S0 (Telegram Desktop) - GPLv3+ with OpenSSL exception -- main source;
@@ -34,6 +34,7 @@ Patch2: %{name}-system-fonts.patch
 Patch100: %{name}-no-text-replace.patch
 # Do not show unread counter on muted chats
 Patch101: %{name}-realmute.patch
+Patch102: %{name}-nogtk2.patch
 
 Recommends: libappindicator-gtk3%{?_isa}
 Requires: qt5-qtimageformats%{?_isa}
@@ -52,8 +53,8 @@ BuildRequires: gyp
 # Development packages for Telegram Desktop...
 BuildRequires: guidelines-support-library-devel >= 1.0.0
 BuildRequires: mapbox-variant-devel >= 0.3.6
-BuildRequires: libtgvoip-devel >= 2.1
-BuildRequires: libappindicator-devel
+BuildRequires: libtgvoip-devel >= 2.1.1
+BuildRequires: libappindicator-gtk3-devel
 BuildRequires: ffmpeg-devel >= 3.1
 BuildRequires: openal-soft-devel
 BuildRequires: qt5-qtbase-devel
@@ -63,7 +64,6 @@ BuildRequires: openssl-devel
 BuildRequires: minizip-devel
 BuildRequires: opus-devel
 BuildRequires: gtk3-devel
-BuildRequires: dee-devel
 BuildRequires: xz-devel
 BuildRequires: python2
 
@@ -139,6 +139,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 %{_datadir}/metainfo/%{name}.appdata.xml
 
 %changelog
+* Fri Jul 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.3.9-101.chinfo
+- Update libtgvoip requirements
+- Remove gtk2 requirements
+
 * Tue Jul 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.3.9-100.chinfo
 - Add patches to fix some ugly issues that upstream will not fix
 

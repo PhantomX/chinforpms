@@ -1,7 +1,8 @@
 Name:           gamemode
 Version:        1.1
-Release:        1%{?dist}
+Release:        100%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
+Epoch:          1
 
 License:        BSD
 URL:            https://github.com/FeralInteractive/%{name}
@@ -10,7 +11,10 @@ Source1:        %{name}
 
 # Use system inih
 Patch0:         %{name}-system-inih.patch
-Patch1:         %{name}-soname.patch
+Patch1:         manpage-section-8.patch
+Patch2:         dbus-activatable.patch
+Patch3:         version-libraries.patch
+
 
 BuildRequires:  meson
 BuildRequires:  gcc
@@ -52,15 +56,22 @@ install -pm0755 %{S:1} %{buildroot}/%{_bindir}/%{name}
 %{_libdir}/lib*.so.*
 %{_libexecdir}/cpugovctl
 %{_userunitdir}/*.service
-%{_mandir}/man1/*.1.*
+%{_mandir}/man8/*.8.*
+%{_datadir}/dbus-1/services/*.service
 %{_datadir}/polkit-1/actions/*.policy
 
 %files devel
 %license LICENSE.txt
 %{_includedir}/%{name}*.h
+%{_libdir}/pkgconfig/*.pc
 %{_libdir}/lib*.so
 
+
 %changelog
+* Fri Jul 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-100
+- Sync patches with Rawhide. dbus file, manpage changes and better library versioning
+- Epoch
+
 * Sat May 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-1
 - 1.1
 
