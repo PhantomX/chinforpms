@@ -12,7 +12,7 @@
 
 Name:           discord
 Version:        0.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
 
@@ -72,6 +72,14 @@ mv %{name}-canary.desktop %{name}.desktop ||:
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/sh
+
+# Ugly fix to xdg-mime CPU spikes
+for module in discord_game_utils discord_utils ;do
+  if strings ${HOME}/.config/discord/*/modules/${module}/${module}.node 2>&1 | grep -q 'xdg-mime query' ;then
+    sed -e 's|xdg-mime query|true yes query|' -i.xdg-mime ${HOME}/.config/discord/*/modules/${module}/${module}.node >/dev/null 2>&1
+  fi
+done
+
 LD_LIBRARY_PATH="%{_libdir}/%{name}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
 exec %{_libdir}/%{name}/%{execname} "$@"
@@ -110,6 +118,9 @@ done
 
 
 %changelog
+* Sat Jul 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.5-2
+- Ugly fix to xdg-mime CPU spikes
+
 * Wed May 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.5-1
 - 0.0.5
 

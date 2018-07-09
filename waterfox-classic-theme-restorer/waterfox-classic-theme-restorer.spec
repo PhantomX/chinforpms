@@ -13,14 +13,14 @@
 %global pkgname ClassicThemeRestorer
 
 Name:           waterfox-classic-theme-restorer
-Version:        1.7.7
+Version:        1.7.7.1
 Release:        1%{?dist}
 Summary:        Customize Waterfox Australis UI
 
 License:        MPLv2.0
 URL:            https://github.com/Aris-t2/%{pkgname}
 %if 0%{?with_xpi}
-Source0:        %{url}/releases/download/%(echo %{version} | cut -d. -f-3)/CTR_v%{version}.xpi#/%{pkgname}-%{version}.xpi
+Source0:        %{url}/releases/download/%{version}/CTR_v%{version}.xpi#/%{pkgname}-%{version}.xpi
 Source1:        %{url}/raw/master/license
 Source2:        %{url}/raw/master/README.md
 %else
@@ -85,6 +85,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sun Jul 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.7.1-1
+- 1.7.7.1
+
 * Thu Jun 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.7-1
 - 1.7.7
 

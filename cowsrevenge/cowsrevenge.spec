@@ -7,7 +7,7 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global pname   Cows-Revenge
+%global pkgname Cows-Revenge
 
 Name:           cowsrevenge
 Version:        1.0.2
@@ -17,9 +17,9 @@ Summary:        Indie Platformer Pixel Art Game
 License:        GPLv3 and CC-BY-ND-SA
 URL:            https://pipoypipagames.itch.io/cows-revenge
 %if 0%{?with_snapshot}
-Source0:        https://github.com/Dariasteam/%{pname}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        https://github.com/Dariasteam/%{pkgname}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/Dariasteam/%{pname}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/Dariasteam/%{pkgname}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
 # Fix joystick buttons to match Xbox360
@@ -40,9 +40,9 @@ ain't that anymore. You have become better. You are... THE COWEST.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{pname}-%{commit} -p1
+%autosetup -n %{pkgname}-%{commit} -p1
 %else
-%autosetup -n %{pname}-%{version} -p1
+%autosetup -n %{pkgname}-%{version} -p1
 %endif
 
 %build

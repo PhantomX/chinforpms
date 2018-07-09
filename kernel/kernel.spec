@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -650,6 +650,19 @@ Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
 
 # rhbz 1572944
 Patch517: Revert-the-random-series-for-4.16.4.patch
+
+# CVE-2018-13053 rhbz 1597747 1597748
+Patch518: alarmtimer-prevent-overflow-for-relative-nanosleep.patch
+
+# CVE-2018-12896 rhbz 1597759 1597760
+Patch519: 1-2-posix-timers-Make-forward-callback-return-s64.patch
+Patch520: 2-2-posix-timers-Sanitize-overrun-handling.patch
+
+# CVE-2018-13093 rhbz 1597766 1597767
+Patch521: 0001-xfs-validate-cached-inodes-are-free-when-allocated.patch
+
+# CVE-2018-13094 rhbz 1597771 1597772
+Patch522: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 
 ### Extra
 
@@ -1965,6 +1978,10 @@ fi
 #
 #
 %changelog
+* Sun Jul 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.5-500.chinfo
+- 4.17.5
+- f28 sync
+
 * Tue Jul 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.4-500.chinfo
 - 4.17.4
 - f28 sync

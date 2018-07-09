@@ -17,7 +17,7 @@
 %define use_clang 1
 %endif
 
-%global rname   godot
+%global pkgname godot
 
 Name:           godot2
 Version:        2.1.5
@@ -27,9 +27,9 @@ Summary:        Multi-platform 2D and 3D game engine with a feature-rich editor
 License:        MIT and CC-BY and ASL 2.0 and BSD and zlib and OFL and FTL and ISC
 URL:            https://godotengine.org
 %if 0%{?with_snapshot}
-Source0:        https://github.com/godotengine/godot/archive/%{commit}/%{rname}-%{shortcommit}.tar.gz
+Source0:        https://github.com/godotengine/godot/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/godotengine/godot/archive/%{uversion}/%{rname}-%{uversion}.tar.gz
+Source0:        https://github.com/godotengine/godot/archive/%{uversion}/%{pkgname}-%{uversion}.tar.gz
 %endif
 
 # https://github.com/godotengine/godot/pull/18868
@@ -85,16 +85,16 @@ down to the last line of engine code.
 Summary:        Shared binary to play games developed with the Godot engine
 
 %description    runner
-This package contains a %{rname}-runner binary for the Linux X11 platform,
+This package contains a %{pkgname}-runner binary for the Linux X11 platform,
 which can be used to run any game developed with the Godot engine simply
 by pointing to the location of the game's data package.
 
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{rname}-%{commit} -p1
+%autosetup -n %{pkgname}-%{commit} -p1
 %else
-%autosetup -n %{rname}-%{uversion} -p1
+%autosetup -n %{pkgname}-%{uversion} -p1
 %endif
 
 # Windows-specific
@@ -129,7 +129,7 @@ export BUILD_REVISION="rhel"
 
 %install
 install -d %{buildroot}%{_bindir}
-install -p -m755 bin/%{rname}.x11.opt.%{__isa_bits}%{?use_clang:.llvm} %{buildroot}%{_bindir}/%{name}-runner
+install -p -m755 bin/%{pkgname}.x11.opt.%{__isa_bits}%{?use_clang:.llvm} %{buildroot}%{_bindir}/%{name}-runner
 
 
 %files          runner
