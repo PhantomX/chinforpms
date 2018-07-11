@@ -2,7 +2,7 @@
 %global fakever   1000
 
 Name:           chinforpms-fake-packages
-Version:        1
+Version:        2
 Release:        1%{?dist}
 Summary:        A package to obsolete and provides packages
 
@@ -32,9 +32,27 @@ cp -p %{S:0} .
 
 %install
 
+mkdir -p %{buildroot}%{_datadir}/pkgconfig
+cat > %{buildroot}%{_datadir}/pkgconfig/bash-completion.pc <<'EOF'
+prefix=/usr
+compatdir=/etc/bash_completion.d
+completionsdir=${prefix}/share/bash-completion/completions
+helpersdir=${prefix}/share/bash-completion/helpers
+
+Name: bash-completion
+Description: programmable completion for the bash shell
+URL: https://github.com/scop/bash-completion
+Version: %{fakever}
+EOF
+
 %files
 %doc README
+%{_datadir}/pkgconfig/*.pc
+
 
 %changelog
+* Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 2-1
+- Add bash-completion pkgconfig file, for some spec BRs
+
 * Sat Apr 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 1-1
 - Initial spec

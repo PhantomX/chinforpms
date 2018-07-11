@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           gcdemu
-Version:        3.1.0
-Release:        2%{?dist}
+Version:        3.2.0
+Release:        1%{?dist}
 Summary:        Gtk3-based CDEmu client
 
 License:        GPLv2
@@ -14,9 +14,13 @@ BuildArch:      noarch
 BuildRequires:  cmake
 BuildRequires:  intltool
 BuildRequires:  librsvg2-tools
-
-Requires:       python2
-Requires:       pygobject3
+BuildRequires:  python3-devel
+Requires:       python3
+Requires:       python3-gobject
+Requires:       gobject-introspection
+Requires:       gtk3
+Requires:       gdk-pixbuf2
+Requires:       libnotify
 Requires:       hicolor-icon-theme
 
 %description
@@ -25,6 +29,8 @@ of CDEmu, a CD/DVD-ROM device emulator for Linux.
 
 %prep
 %autosetup
+
+sed -e '1s|^#!.*$|#!%{__python3}|' -i src/%{name}
 
 %build
 mkdir build
@@ -49,7 +55,7 @@ for res in 16 22 24 32 36 48 64 72 96 128 192 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   rsvg-convert data/%{name}.svg -h ${res} -w ${res} \
-    -o ${dir}/%{name}.png || exit 1
+    -o ${dir}/%{name}.png
 done
 
 %find_lang %{name}
@@ -66,6 +72,9 @@ done
 
 
 %changelog
+* Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.2.0-1
+- 3.2.0
+
 * Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.1.0-2
 - chinforpms release
 

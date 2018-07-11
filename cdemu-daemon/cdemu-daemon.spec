@@ -1,6 +1,6 @@
 Name:           cdemu-daemon
-Version:        3.1.0
-Release:        2%{?dist}
+Version:        3.2.1
+Release:        1%{?dist}
 Summary:        CDEmu daemon
 
 License:        GPLv2
@@ -54,6 +54,9 @@ popd
 %{_datadir}/dbus-1/services/*
 
 %changelog
+* Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.2.1-1
+- 3.2.1
+
 * Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.1.0-2
 - chinforpms release
 

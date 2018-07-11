@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           cdemu-client
-Version:        3.1.0
-Release:        2%{?dist}
+Version:        3.2.0
+Release:        1%{?dist}
 Summary:        CDEmu CLI client
 
 License:        GPLv2
@@ -11,13 +11,13 @@ Source:         https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.b
 
 BuildArch:      noarch
 
+BuildRequires:  bash-completion
 BuildRequires:  cmake
 BuildRequires:  intltool
-BuildRequires:  python2-devel
-
-Requires:       python2
-Requires:       pygobject3
-Requires:       dbus-python
+BuildRequires:  python3-devel
+Requires:       gobject-introspection
+Requires:       python3
+Requires:       python3-gobject
 Requires:       hicolor-icon-theme
 
 %description
@@ -27,9 +27,7 @@ devices. It is part of CDEmu, a CD/DVD-ROM device emulator for Linux.
 %prep
 %autosetup
 
-sed -i \
-  -e 's|${CMAKE_INSTALL_SYSCONFDIR}/bash_completion.d|/usr/share/bash-completion/completions|g' \
-  CMakeLists.txt
+sed -e '1s|^#!.*$|#!%{__python3}|' -i src/cdemu
 
 %build
 mkdir build
@@ -65,7 +63,11 @@ ln -sf ../../../../pixmaps/%{name}.svg \
 %{_datadir}/bash-completion/completions/cdemu
 %{_datadir}/icons/hicolor/scalable/apps/*.svg
 
+
 %changelog
+* Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.2.0-1
+- 3.2.0
+
 * Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.1.0-2
 - chinforpms release
 

@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.11
+%global stagingver 3.12
 %global strel %(echo %{stagingver} | grep -q \\. ; echo $?)
 %endif # 0%{?fedora}
 
@@ -29,7 +29,7 @@
 %endif
 
 Name:           wine
-Version:        3.11
+Version:        3.12
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -205,6 +205,7 @@ Requires:       wine-twain(x86-32) = %{version}-%{release}
 Requires:       wine-pulseaudio(x86-32) = %{version}-%{release}
 %if 0%{?fedora} >= 10 || 0%{?rhel} == 6
 Requires:       wine-openal(x86-32) = %{version}-%{release}
+Requires:       wine-xaudio2(x86-32) >= %{version}-%{release}
 %endif
 %if 0%{?fedora}
 Requires:       wine-opencl(x86-32) = %{version}-%{release}
@@ -228,6 +229,7 @@ Requires:       wine-twain(x86-64) = %{version}-%{release}
 Requires:       wine-pulseaudio(x86-64) = %{version}-%{release}
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 Requires:       wine-openal(x86-64) = %{version}-%{release}
+Requires:       wine-xaudio2(x86-64) >= %{version}-%{release}
 %endif 
 %if 0%{?fedora}
 Requires:       wine-opencl(x86-64) = %{version}-%{release}
@@ -250,6 +252,7 @@ Requires:       wine-pulseaudio = %{version}-%{release}
 Requires:       wine-openal = %{version}-%{release}
 %if 0%{?fedora}
 Requires:       wine-opencl = %{version}-%{release}
+Requires:       wine-xaudio2 >= %{version}-%{release}
 %endif
 Requires:       mesa-dri-drivers
 Requires:       samba-winbind-clients
@@ -264,6 +267,7 @@ Requires:       wine-ldap(aarch-64) = %{version}-%{release}
 Requires:       wine-twain(aarch-64) = %{version}-%{release}
 Requires:       wine-pulseaudio(aarch-64) = %{version}-%{release}
 Requires:       wine-openal(aarch-64) = %{version}-%{release}
+Requires:       wine-xaudio2(aarch-64) >= %{version}-%{release}
 Requires:       wine-opencl(aarch-64) = %{version}-%{release}
 Requires:       mingw64-wine-gecko = %winegecko
 Requires:       mesa-dri-drivers(aarch-64)
@@ -309,7 +313,7 @@ Requires:       libv4l(x86-32)
 Requires:       samba-libs(x86-32)
 Requires:       unixODBC(x86-32)
 Requires:       SDL2(x86-32)
-Requires:       vulkan(x86-32)
+Requires:       vulkan-loader(x86-32)
 %if 0%{?staging}
 Requires:       libva(x86-32)
 %endif
@@ -335,7 +339,7 @@ Requires:       libv4l(x86-64)
 Requires:       samba-libs(x86-64)
 Requires:       unixODBC(x86-64)
 Requires:       SDL2(x86-64)
-Requires:       vulkan(x86-64)
+Requires:       vulkan-loader(x86-64)
 %if 0%{?staging}
 Requires:       libva(x86-64)
 %endif
@@ -677,6 +681,15 @@ Requires: wine-core = %{version}-%{release}
 This package adds the opencl driver for wine.
 %endif
 
+%package xaudio2
+Summary: xaudio2 support for wine
+Requires: wine-core = %{version}-%{release}
+Requires: wine-openal%{?_isa} = %{version}-%{release}
+
+%description xaudio2
+This package adds xaudio2 support for wine.
+
+
 %prep
 %setup -q -n wine-%{version}%{?rctagtarball}
 %patch511 -p1 -b.cjk
@@ -717,7 +730,7 @@ sed -i \
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
-export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error}"
 
 %ifarch aarch64
 # ARM64 now requires clang
@@ -729,6 +742,7 @@ export CC="/usr/bin/clang"
  --sysconfdir=%{_sysconfdir}/wine \
  --x-includes=%{_includedir} --x-libraries=%{_libdir} \
  --without-hal --with-dbus \
+ --without-ffmpeg \
  --with-x \
 %ifarch %{arm}
  --with-float-abi=hard \
@@ -1089,6 +1103,8 @@ fi
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %post openal -p /sbin/ldconfig
 %postun openal -p /sbin/ldconfig
+%post xaudio2 -p /sbin/ldconfig
+%postun xaudio2 -p /sbin/ldconfig
 %endif
 
 %files
@@ -1945,16 +1961,6 @@ fi
 %{_libdir}/wine/xapofx1_3.dll.so
 %{_libdir}/wine/xapofx1_4.dll.so
 %{_libdir}/wine/xapofx1_5.dll.so
-%{_libdir}/wine/xaudio2_0.dll.so
-%{_libdir}/wine/xaudio2_1.dll.so
-%{_libdir}/wine/xaudio2_2.dll.so
-%{_libdir}/wine/xaudio2_3.dll.so
-%{_libdir}/wine/xaudio2_4.dll.so
-%{_libdir}/wine/xaudio2_5.dll.so
-%{_libdir}/wine/xaudio2_6.dll.so
-%{_libdir}/wine/xaudio2_7.dll.so
-%{_libdir}/wine/xaudio2_8.dll.so
-%{_libdir}/wine/xaudio2_9.dll.so
 %{_libdir}/wine/xcopy.exe.so
 %{_libdir}/wine/xinput1_1.dll.so
 %{_libdir}/wine/xinput1_2.dll.so
@@ -2042,6 +2048,18 @@ fi
 %{_libdir}/wine/wintab.dll16.so
 %{_libdir}/wine/wow32.dll.so
 %endif
+
+%files xaudio2
+%{_libdir}/wine/xaudio2_0.dll.so
+%{_libdir}/wine/xaudio2_1.dll.so
+%{_libdir}/wine/xaudio2_2.dll.so
+%{_libdir}/wine/xaudio2_3.dll.so
+%{_libdir}/wine/xaudio2_4.dll.so
+%{_libdir}/wine/xaudio2_5.dll.so
+%{_libdir}/wine/xaudio2_6.dll.so
+%{_libdir}/wine/xaudio2_7.dll.so
+%{_libdir}/wine/xaudio2_8.dll.so
+%{_libdir}/wine/xaudio2_9.dll.so
 
 %files filesystem
 %doc COPYING.LIB
@@ -2259,6 +2277,10 @@ fi
 %endif
 
 %changelog
+* Tue Jul 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.12-100.chinfo
+- 3.12
+- Split xaudio2, for freeworld packages support
+
 * Sun Jun 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.11-100.chinfo
 - 3.11
 
