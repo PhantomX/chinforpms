@@ -16,7 +16,7 @@
 
 Name:           wine-freeworld
 Version:        3.12
-Release:        1%{?rctag}%{?dist}
+Release:        2%{?rctag}%{?dist}
 Summary:        Wine libraries with all codecs support
 Epoch:          1
 
@@ -52,6 +52,7 @@ BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xproto)
 
 Requires:       wine-core = %{version}
+Requires:       wine-openal = %{version}
 Enhances:       wine
 
 %ifarch x86_64
@@ -81,6 +82,7 @@ Requires:       wine-core(aarch-64) = %{version}
 Provides:       wine-xaudio2 = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       wine-xaudio2%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      wine-xaudio2%{?_isa} < %{?epoch:%{epoch}:}%{version}-%{release}
+Conflicts:      wine-xaudio2 < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description
 This package adds libraries with all codecs support for wine.
@@ -198,5 +200,8 @@ done
 
 
 %changelog
+* Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.12-2
+- Conflicts
+
 * Tue Jul 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.12-1
 - Initial spec

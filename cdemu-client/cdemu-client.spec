@@ -44,9 +44,6 @@ popd
 %install
 %make_install -C build
 
-mv %{buildroot}%{_datadir}/bash-completion/completions/cdemu-bash-completion.sh \
-  %{buildroot}%{_datadir}/bash-completion/completions/cdemu
-
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 ln -sf ../../../../pixmaps/%{name}.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg

@@ -1,5 +1,5 @@
 Name:           curlew
-Version:        0.2.4
+Version:        0.2.5
 Release:        1%{?dist}
 Summary:        Multimedia converter for Linux
 
@@ -16,7 +16,6 @@ BuildRequires:  gettext intltool
 BuildRequires:  librsvg2-tools
 Requires:       python3-gobject
 Requires:       ffmpeg
-Requires:       mencoder
 Requires:       mediainfo
 Requires:       hicolor-icon-theme
 
@@ -48,7 +47,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %files -f %{name}.lang
 %license LICENSE-ar.txt LICENSE-en.txt
-%doc AUTHORS ChangeLog README
+%doc AUTHORS changelog README
 %{_bindir}/%{name}
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/*.cfg
@@ -60,6 +59,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/pixmaps/%{name}.*
 
 %changelog
+* Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.2.5-1
+- 0.2.5
+- Remove unneeded mencoder requirement
+
 * Thu Jun 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.2.4-1
 - 0.2.4
 

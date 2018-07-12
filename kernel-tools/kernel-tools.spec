@@ -19,7 +19,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 5
+%global stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -119,7 +119,7 @@ Patch8: 0001-Switch-to-python3.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 7faa585cbc13d219b08691e534d568b13cf37d30
+%global opensuse_id 5933c66232df28da7803e1edd50947db05e0ec9e
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
@@ -150,22 +150,22 @@ License: GPLv2
 This package contains the perf tool, which enables performance monitoring
 of the Linux kernel.
 
-%global python-perf-sum Python bindings for apps which will manipulate perf events
-%global python-perf-desc A Python module that permits applications \
+%global python_perf_sum Python bindings for apps which will manipulate perf events
+%global python_perf_desc A Python module that permits applications \
 written in the Python programming language to use the interface \
 to manipulate perf events.
 
 %package -n python2-perf
-Summary: %{python-perf-sum}
+Summary: %{python_perf_sum}
 %{?python_provide:%python_provide python2-perf}
 %description -n python2-perf
-%{python-perf-desc}
+%{python_perf_desc}
 
 %package -n python3-perf
-Summary: %{python-perf-sum}
+Summary: %{python_perf_sum}
 %{?python_provide:%python_provide python3-perf}
 %description -n python3-perf
-%{python-perf-desc}
+%{python_perf_desc}
 
 %package -n kernel-tools-libs
 Summary: Libraries for the kernels-tools
@@ -432,6 +432,9 @@ popd
 %license linux-%{kversion}/COPYING
 
 %changelog
+* Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.6-500.chinfo
+- 4.17.6
+
 * Sun Jul 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.5-500.chinfo
 - 4.17.5
 
