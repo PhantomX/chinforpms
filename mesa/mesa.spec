@@ -49,7 +49,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        18.1.3
+Version:        18.1.4
 Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
@@ -68,7 +68,6 @@ Source3:        Makefile
 Source4:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch1:         0001-llvm-SONAME-without-version.patch
-Patch2:         0002-hardware-gloat.patch
 Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
 
@@ -396,7 +395,9 @@ autoreconf -vfi
     %{?with_opencl:--enable-opencl --enable-opencl-icd} %{!?with_opencl:--disable-opencl} \
     --enable-glx-tls \
     --enable-texture-float=yes \
+%if 0%{?with_hardware}
     %{?vulkan_drivers} \
+%endif
     --enable-llvm \
     --enable-llvm-shared-libs \
     --enable-dri \
@@ -440,6 +441,7 @@ ln -s %{_libdir}/libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_fedora.so.0
 rm -f %{buildroot}%{_includedir}/GL/w*.h
 
 # these are shipped already in vulkan-devel
+mkdir -p %{buildroot}/%{_includedir}/vulkan/
 rm -f %{buildroot}/%{_includedir}/vulkan/vk_platform.h
 rm -f %{buildroot}/%{_includedir}/vulkan/vulkan.h
 
@@ -653,6 +655,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Fri Jul 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.4-100.chinfo
+- 18.1.4
+
 * Fri Jun 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.3-100.chinfo
 - 18.1.3
 - Rawhide sync

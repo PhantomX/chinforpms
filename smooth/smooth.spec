@@ -1,4 +1,4 @@
-%global prerel 1
+%global prerel 2
 
 %if 0%{?prerel}
 %global prereltag .pre%{prerel}
@@ -7,7 +7,7 @@
 
 Name:           smooth
 Version:        0.8.74.0
-Release:        0.1%{?prereltag}%{?dist}
+Release:        0.2%{?prereltag}%{?dist}
 Summary:        An object oriented C++ class library
 
 License:        Artistic 2.0
@@ -45,7 +45,7 @@ development with %{name} library.
 %prep
 %autosetup -n %{name}-%{version}%{?prereltarball}
 
-sed -e 's/\r//' -i Readme Copying doc/reference/dtds/*.dtd
+sed -e 's/\r//' -i Readme.md Copying doc/reference/dtds/*.dtd
 
 %build
 export CFLAGS="%{build_cflags}"
@@ -63,7 +63,7 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 %files
 %license Copying
-%doc Readme
+%doc Readme.md
 %{_bindir}/*
 %{_libdir}/*.so.*
 
@@ -75,5 +75,8 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 
 %changelog
+* Fri Jul 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.74.0-0.2.pre2
+- 0.8.74.0-pre2
+
 * Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.74.0-0.1.pre1
 - Initial spec
