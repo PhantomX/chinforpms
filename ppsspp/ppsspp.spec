@@ -1,6 +1,6 @@
-%global commit 06340bfa9c92d0ad8423ca3cacdd84795f71094a
+%global commit 9be6b22dd818443197ce4fcc931914e0f085180f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180620
+%global date 20180717
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -9,7 +9,7 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 6537fc1bf38d0787a1d86375e5b3cb267349d2d5
+%global commit1 1153a4293006db9d2a6e701df72df843b98234b5
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -21,15 +21,15 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global commit4 8b4cadaf62d7de42d374056fc6aafc555f2bc7dc
+%global commit4 9efe3367284d2d1eeb14fc302a2c12c36e3e255e
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
-%global commit6 2edde6665d9a56ead5ea0e55b4e64d9a803e6164
+%global commit6 806af25f749b4d7cd861eaebc32474b3a7d102c0
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 90966d50f57608587bafd95b4e345b02b814754a
+%global commit7 be7425ef70231ab82930331959ab487d605d0482
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -43,7 +43,7 @@
 
 Name:           ppsspp
 Version:        1.6.3
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        GPLv2+
@@ -61,7 +61,7 @@ Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}.ta
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
 Source6:        https://github.com/hrydgard/glslang/archive/%{commit6}.tar.gz#/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}.tar.gz#/%{srcname7}-%{shortcommit7}.tar.gz
-Source10:        %{name}.appdata.xml
+Source10:       %{name}.appdata.xml
 
 Patch0:         %{name}-noupdate.patch
 
@@ -194,6 +194,7 @@ pushd build
 %endif #{?with_sysffmpeg}
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \
   -DUSE_WAYLAND_WSI:BOOL=ON \
+  -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 
 %make_build
@@ -263,6 +264,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Jul 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-2.20180717git9be6b22
+- New snapshot
+
 * Fri Jun 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-1.20180620git06340bf
 - New snapshot, 1.6.3
 

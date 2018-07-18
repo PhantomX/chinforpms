@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -667,16 +667,12 @@ Patch522: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # CVE-2018-13095 rhbz 1597775 1597777
 Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 
-# CVE-2018-13405 rhbz 1599161 1599162
-Patch524: CVE-2018-13405.patch
-
-
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 5933c66232df28da7803e1edd50947db05e0ec9e
+%global opensuse_id 7a74fb01ceedd1e6e1e720c5bb5c51eacf7dfaec
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -1985,6 +1981,9 @@ fi
 #
 #
 %changelog
+* Tue Jul 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.7-500.chinfo
+- 4.17.7
+
 * Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.6-500.chinfo
 - 4.17.6
 

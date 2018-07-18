@@ -37,7 +37,7 @@
 %endif
 
 Name:       VirtualBox
-Version:    5.2.14
+Version:    5.2.16
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -127,6 +127,7 @@ BuildRequires:  libpng-devel
 BuildRequires:  zlib-devel
 BuildRequires:  device-mapper-devel
 BuildRequires:  libvpx-devel
+BuildRequires:  opus-devel
 BuildRequires:  makeself
 
 # for 32bit on 64
@@ -808,6 +809,10 @@ getent passwd vboxadd >/dev/null || \
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Tue Jul 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.16-100.chinfo
+- 5.2.16
+- BR: opus-devel
+
 * Mon Jul 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-100.chinfo
 - 5.2.14
 - Sync with RPMFusion

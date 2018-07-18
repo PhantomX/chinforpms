@@ -11,7 +11,7 @@
 %endif
 
 Name:           VirtualBox-extpack-oracle
-Version:        5.2.14
+Version:        5.2.16
 Release:        1%{?dist}
 Summary:        PUEL extensions for VirtualBox
 
@@ -47,6 +47,9 @@ cp -rp ExtPack*.* *.rom linux.%{parch} \
 
 
 %changelog
+* Tue Jul 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.16-1
+- 5.2.16
+
 * Mon Jul 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-1
 - 5.2.14
 
