@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -672,7 +672,7 @@ Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 7a74fb01ceedd1e6e1e720c5bb5c51eacf7dfaec
+%global opensuse_id 38e4cdc4a8867e3609b43e7e1f1b6eed03988bb4
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -1981,6 +1981,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.8-500.chinfo
+- 4.17.8
+
 * Tue Jul 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.7-500.chinfo
 - 4.17.7
 
