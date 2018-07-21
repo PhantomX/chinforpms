@@ -2,7 +2,7 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%global version 6.0.1
+%global version 6.0.3
 %global pkgrel 1
 
 # rcrev predates betarev
@@ -108,10 +108,8 @@ chmod 0755 %{buildroot}%{_bindir}/pwsh
 if [ "$1" = 1 ]; then
   if [ ! -f %{_sysconfdir}/shells ] ; then
     echo "%{_bindir}/pwsh" > %{_sysconfdir}/shells
-    echo "/bin/pwsh" >> %{_sysconfdir}/shells
   else
     grep -q "^%{_bindir}/pwsh$" %{_sysconfdir}/shells || echo "%{_bindir}/pwsh" >> %{_sysconfdir}/shells
-    grep -q "^/bin/pwsh$" %{_sysconfdir}/shells || echo "/bin/pwsh" >> %{_sysconfdir}/shells
   fi
 fi
 
@@ -129,6 +127,10 @@ fi
 
 
 %changelog
+* Fri Jul 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 6.0.3-1
+- 6.0.3
+- Do not add /bin/pwsh to shells file
+
 * Thu Mar 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 6.0.1-1
 - 6.0.1
 - Fix post scriptlet

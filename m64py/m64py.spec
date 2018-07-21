@@ -1,6 +1,6 @@
-%global gitcommitid 164577efde5bb4400966a7073f577295d5500a2b
+%global gitcommitid fccb7724e289d9e81170bfeec0a2f5ab21e95f5d
 %global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
-%global date 20180306
+%global date 20180718
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           m64py
 Version:        0.2.5
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A frontend for Mupen64Plus 2.0
 
 License:        GPLv3
@@ -36,6 +36,7 @@ Requires:       python3-sdl2
 Requires:       SDL2
 Requires:       hicolor-icon-theme
 
+
 %description
 M64Py is a Qt5 front-end (GUI) for Mupen64Plus 2.0, a cross-platform
 plugin-based Nintendo 64 emulator.
@@ -53,8 +54,10 @@ sed -e 's,^#!/usr/bin/env python,#!%{__python3},' -i bin/%{name}
 find -name '*.py' -print0 | xargs -0 \
   sed -i -e 's,^#!/usr/bin/env python,#!%{__python3},'
 
+
 %build
 %py3_build
+
 
 %install
 mkdir -p %{buildroot}%{_bindir}
@@ -88,6 +91,7 @@ done
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
+
 %files
 %license COPYING LICENSES
 %doc AUTHORS README.rst
@@ -98,7 +102,11 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_metainfodir}/*.xml
 
+
 %changelog
+* Fri Jul 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.2.5-2.20180306gitfccb772
+- New snapshot
+
 * Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.2.5-1.20180306git164577e
 - New snapshot
 
