@@ -6,7 +6,7 @@
 #global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
-%global stagingver 3.12
+%global stagingver 3.13
 %global strel %(echo %{stagingver} | grep -q \\. ; echo $?)
 
 %if 0%{?rcrev}
@@ -15,8 +15,8 @@
 %endif
 
 Name:           wine-freeworld
-Version:        3.12
-Release:        2%{?rctag}%{?dist}
+Version:        3.13
+Release:        1%{?dist}
 Summary:        Wine libraries with all codecs support
 Epoch:          1
 
@@ -110,7 +110,7 @@ sed -i \
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
-export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error -I/usr/include/ffmpeg"
+export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 
 %ifarch aarch64
 # ARM64 now requires clang
@@ -164,14 +164,14 @@ export CC="/usr/bin/clang"
 make include
 make %{?_smp_mflags} TARGETFLAGS="" __builddeps__
 
-for i in {0..9} ;do
+for i in 7 ;do
   make %{?_smp_mflags} TARGETFLAGS="" xaudio2_$i.dll.so -C dlls/xaudio2_$i
 done
 
 
 %install
 
-for i in {0..9} ;do
+for i in 7 ;do
   %makeinstall xaudio2_$i.dll.so -C dlls/xaudio2_$i \
     includedir=%{buildroot}%{_includedir}/wine \
     sysconfdir=%{buildroot}%{_sysconfdir}/wine \
@@ -186,20 +186,14 @@ done
 %files
 %license COPYING.LIB
 %exclude %{_libdir}/wine/fakedlls
-%{_libdir}/wine/xaudio2_0.dll.so
-%{_libdir}/wine/xaudio2_0.dll.so
-%{_libdir}/wine/xaudio2_1.dll.so
-%{_libdir}/wine/xaudio2_2.dll.so
-%{_libdir}/wine/xaudio2_3.dll.so
-%{_libdir}/wine/xaudio2_4.dll.so
-%{_libdir}/wine/xaudio2_5.dll.so
-%{_libdir}/wine/xaudio2_6.dll.so
 %{_libdir}/wine/xaudio2_7.dll.so
-%{_libdir}/wine/xaudio2_8.dll.so
-%{_libdir}/wine/xaudio2_9.dll.so
 
 
 %changelog
+* Sat Jul 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:3.13-1
+- 3.13
+- Only build needed xaudio2_7.dll.so
+
 * Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.12-2
 - Conflicts
 

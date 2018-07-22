@@ -4,14 +4,14 @@
 %global rcrev 0
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.7.1
+%global winemono  4.7.3
 #global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.12
+%global stagingver 3.13
 %global strel %(echo %{stagingver} | grep -q \\. ; echo $?)
 %endif # 0%{?fedora}
 
@@ -29,7 +29,7 @@
 %endif
 
 Name:           wine
-Version:        3.12
+Version:        3.13
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -730,7 +730,7 @@ sed -i \
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
-export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error}"
+export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 
 %ifarch aarch64
 # ARM64 now requires clang
@@ -1961,6 +1961,15 @@ fi
 %{_libdir}/wine/xapofx1_3.dll.so
 %{_libdir}/wine/xapofx1_4.dll.so
 %{_libdir}/wine/xapofx1_5.dll.so
+%{_libdir}/wine/xaudio2_0.dll.so
+%{_libdir}/wine/xaudio2_1.dll.so
+%{_libdir}/wine/xaudio2_2.dll.so
+%{_libdir}/wine/xaudio2_3.dll.so
+%{_libdir}/wine/xaudio2_4.dll.so
+%{_libdir}/wine/xaudio2_5.dll.so
+%{_libdir}/wine/xaudio2_6.dll.so
+%{_libdir}/wine/xaudio2_8.dll.so
+%{_libdir}/wine/xaudio2_9.dll.so
 %{_libdir}/wine/xcopy.exe.so
 %{_libdir}/wine/xinput1_1.dll.so
 %{_libdir}/wine/xinput1_2.dll.so
@@ -2050,16 +2059,7 @@ fi
 %endif
 
 %files xaudio2
-%{_libdir}/wine/xaudio2_0.dll.so
-%{_libdir}/wine/xaudio2_1.dll.so
-%{_libdir}/wine/xaudio2_2.dll.so
-%{_libdir}/wine/xaudio2_3.dll.so
-%{_libdir}/wine/xaudio2_4.dll.so
-%{_libdir}/wine/xaudio2_5.dll.so
-%{_libdir}/wine/xaudio2_6.dll.so
 %{_libdir}/wine/xaudio2_7.dll.so
-%{_libdir}/wine/xaudio2_8.dll.so
-%{_libdir}/wine/xaudio2_9.dll.so
 
 %files filesystem
 %doc COPYING.LIB
@@ -2277,6 +2277,10 @@ fi
 %endif
 
 %changelog
+* Sat Jul 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.13-100.chinfo
+- 3.13
+- Clean xaudio2 package, only xaudio2_7.dll.so is needed
+
 * Tue Jul 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.12-100.chinfo
 - 3.12
 - Split xaudio2, for freeworld packages support

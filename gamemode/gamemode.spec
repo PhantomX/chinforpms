@@ -1,6 +1,6 @@
 Name:           gamemode
-Version:        1.1
-Release:        100%{?dist}
+Version:        1.2
+Release:        100.chinfo%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
 
@@ -11,9 +11,6 @@ Source1:        %{name}
 
 # Use system inih
 Patch0:         %{name}-system-inih.patch
-Patch1:         manpage-section-8.patch
-Patch2:         dbus-activatable.patch
-Patch3:         version-libraries.patch
 
 
 BuildRequires:  meson
@@ -68,6 +65,10 @@ install -pm0755 %{S:1} %{buildroot}/%{_bindir}/%{name}
 
 
 %changelog
+* Sat Jul 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.2-100.chinfo
+- 1.2
+- Remove upstreamed patches
+
 * Fri Jul 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-100
 - Sync patches with Rawhide. dbus file, manpage changes and better library versioning
 - Epoch

@@ -20,6 +20,7 @@ release tags).
  * **belle-sip, linphone, ortp** - Updated version
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **easytag** - Tests
+ * **gamemode** - System inih and launch script
  * **gnome-colors-icon-theme** - Post script and cleanup
  * **gstreamer1** - Added suffix -32/-64 to gst-plugin-scanner, so it can build
                     correct multilib plugins registry, as
