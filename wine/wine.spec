@@ -30,7 +30,7 @@
 
 Name:           wine
 Version:        3.13
-Release:        100%{?rctag}.chinfo%{?dist}
+Release:        101%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -98,6 +98,8 @@ Patch605:       poe-fix.patch
 %if 0%{?staging}
 Source900: https://github.com/wine-staging/wine-staging/archive/%{?strel:v}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
 Patch900: https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
+# New pulseaudio patches causing noise with a game
+Patch901: wine-staging-old-pulseaudio.patch
 %endif
 
 %if !%{?no64bit}
@@ -705,6 +707,10 @@ This package adds xaudio2 support for wine.
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch900 -p1
+%patch901 -p1
+
+mv patches/winepulse-PulseAudio_Support patches/winepulse-PulseAudio_Support_new
+mv patches/winepulse-PulseAudio_Support_old patches/winepulse-PulseAudio_Support 
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all
 
@@ -2277,6 +2283,9 @@ fi
 %endif
 
 %changelog
+* Sun Jul 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.13-101.chinfo
+- Revert to old staging winepulse patches
+
 * Sat Jul 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.13-100.chinfo
 - 3.13
 - Clean xaudio2 package, only xaudio2_7.dll.so is needed

@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -640,10 +640,6 @@ Patch508: ath10k-Update-the-phymode-along-with-bandwidth-change.patch
 # rhbz 1568276
 # In 4.18
 Patch509: rtc-nvmem-don-t-return-an-error-when-not-enabled.patch
-
-# rhbz 1584216
-Patch510: 1-2-xen-netfront-Fix-mismatched-rtnl_unlock.patch
-Patch511: 2-2-xen-netfront-Update-features-after-registering-netdev.patch
 
 # rhbz 1591516
 Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
@@ -1981,6 +1977,9 @@ fi
 #
 #
 %changelog
+* Sun Jul 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.9-500.chinfo
+- 4.17.9
+
 * Wed Jul 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.8-500.chinfo
 - 4.17.8
 
