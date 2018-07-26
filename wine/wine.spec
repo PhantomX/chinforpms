@@ -12,7 +12,9 @@
 %if 0%{?fedora}
 %global staging 1
 %global stagingver 3.13
-%global strel %(echo %{stagingver} | grep -q \\. ; echo $?)
+%if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
+%global strel v
+%endif
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -96,7 +98,7 @@ Patch605:       poe-fix.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
-Source900: https://github.com/wine-staging/wine-staging/archive/%{?strel:v}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
+Source900: https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
 Patch900: https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
 # New pulseaudio patches causing noise with a game
 Patch901: wine-staging-old-pulseaudio.patch

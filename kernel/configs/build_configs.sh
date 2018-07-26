@@ -11,6 +11,8 @@ SCRIPT="$(readlink -f $0)"
 OUTPUT_DIR="$PWD"
 SCRIPT_DIR="$(dirname $SCRIPT)"
 
+LANG=en_US.UTF-8
+
 # to handle this script being a symlink
 cd $SCRIPT_DIR
 

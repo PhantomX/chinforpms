@@ -7,7 +7,9 @@
 
 # build with staging-patches, see:  https://wine-staging.com/
 %global stagingver 3.13
-%global strel %(echo %{stagingver} | grep -q \\. ; echo $?)
+%if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
+%global strel v
+%endif
 
 %if 0%{?rcrev}
 %global rctag .rc%rcrev
@@ -26,7 +28,7 @@ Source0:        https://dl.winehq.org/wine/source/3.x/wine-%{version}%{?rctagtar
 Source10:       https://dl.winehq.org/wine/source/3.x/wine-%{version}%{?rctagtarball}.tar.xz.sign
 
 # wine staging patches for wine-staging
-Source900: https://github.com/wine-staging/wine-staging/archive/%{?strel:v}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
+Source900: https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
