@@ -1,7 +1,7 @@
-%define _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
+%global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
 Name:           asbru-cm
-Version:        5.0.0
+Version:        5.1.0
 Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
@@ -137,5 +137,8 @@ cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
 %changelog
+* Thu Jul 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-1
+- 5.1.0
+
 * Fri Jun 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-1
 - Initial spec, mixgin old Fedora pacmanager and asbru official specs
