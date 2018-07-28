@@ -26,7 +26,7 @@
 
 Name: gtk3
 Version: 3.23.1
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
@@ -241,6 +241,7 @@ rm -fv testsuite/gtk/gtkresources.c
 export CFLAGS='-fno-strict-aliasing %{build_cflags}'
 (if ! test -x configure; then NOCONFIGURE=1 ./autogen.sh; CONFIGFLAGS=--enable-gtk-doc; fi;
  %configure $CONFIGFLAGS \
+        --enable-debug=mininum \
         --enable-xkb \
         --enable-xinerama \
         --enable-xrandr \
@@ -395,6 +396,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Fri Jul 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.23.1-101.chinfo
+- Set debug to minimun
+
 * Tue Jul 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.23.1-100.chinfo
 - 3.23.1
 - Update minimum epoxy and pango versions

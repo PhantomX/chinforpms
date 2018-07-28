@@ -49,7 +49,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        18.1.4
+Version:        18.1.5
 Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
@@ -655,6 +655,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Fri Jul 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.5-100.chinfo
+- 18.1.5
+
 * Fri Jul 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.4-100.chinfo
 - 18.1.4
 
