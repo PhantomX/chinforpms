@@ -108,7 +108,9 @@ testing/
 !/qt5.options
 !/snapshot-git.sh
 !/snapshot-svn.sh
-
+!/build-order.txt
+!/multilib.txt
+!/nocopr.txt
 
 # TODO, dead or private
 

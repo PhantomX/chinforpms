@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -663,9 +663,6 @@ Patch522: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # CVE-2018-13095 rhbz 1597775 1597777
 Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 
-# rbhz 1607092
-Patch528: Revert-iommu-intel-iommu-Enable-CONFIG_DMA_DIRECT_OP.patch
-
 # rhbz 1602971
 Patch529: ext4-fix-false-negative-and-false-positives.patch
 
@@ -674,7 +671,7 @@ Patch529: ext4-fix-false-negative-and-false-positives.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id a76dc8b08c9288846a857c87c314a5caa1855307
+%global opensuse_id f604b8a2baa6f01a438c2d495a34820ed722aef5
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -1983,6 +1980,9 @@ fi
 #
 #
 %changelog
+* Sat Jul 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.11-500.chinfo
+- 4.17.11
+
 * Wed Jul 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.10-500.chinfo
 - 4.17.10
 

@@ -1,7 +1,7 @@
 %global xfceversion 4.12
 
 Name:           xfwm4
-Version:        4.12.4
+Version:        4.12.5
 Release:        100.chinfo%{?dist}
 Summary:        Next generation window manager for Xfce
 
@@ -27,7 +27,7 @@ Provides:       firstboot(windowmanager) = xfwm4
 xfwm4 is a window manager compatible with GNOME, GNOME2, KDE2, KDE3 and Xfce.
 
 %prep
-%setup -q
+%autosetup
 
 
 %build
@@ -64,6 +64,9 @@ done
 
 
 %changelog
+* Sun Jul 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.12.5-100.chinfo
+- 4.12.5
+
 * Thu May 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.12.4-100.chinfo
 - Enable MONITOR_ROOT_PIXMAP
 

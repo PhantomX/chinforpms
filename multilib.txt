@@ -1,0 +1,14 @@
+gamemode
+gstreamer1
+gtk3
+gtk-nocsd
+kernel-tools
+libmirage
+libogg
+mingw-wine-dxvk
+mingw-wine-vk9
+shaderc
+wine
+wine-freeworld
+wine-nine
+vkd3d
