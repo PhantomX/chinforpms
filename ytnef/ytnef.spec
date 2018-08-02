@@ -1,15 +1,12 @@
 Summary:        Yerase's TNEF Stream Reader
 Name:           ytnef
 Epoch:          1
-Version:        1.9.2
-Release:        101.chinfo%{?dist}
+Version:        1.9.3
+Release:        100.chinfo%{?dist}
 License:        GPLv2+
 URL:            https://github.com/Yeraze/ytnef
 Source0:        https://github.com/Yeraze/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Patch0:         ytnef-pkgconfig.patch
-Patch10:        https://github.com/Yeraze/%{name}/commit/a1ee98fc5b93fccc09303cc3b6edf12a12ebf49a.patch
-Patch11:        https://github.com/Yeraze/%{name}/commit/a428d93d4bdba94aa8df879fd65cf5c2e6e25715.patch
-Patch12:        https://github.com/Yeraze/%{name}/commit/e462cbed599399167e21ec0e4f65d72164f269fd.patch
 
 BuildRequires:  autoconf automake libtool
 BuildRequires:  gcc
@@ -40,9 +37,6 @@ developing applications that use libytnef.
 %setup -q
 ./autogen.sh
 %patch0 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
 
 %build
 %configure --disable-static
@@ -68,6 +62,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_libdir}/pkgconfig/libytnef.pc
 
 %changelog
+* Wed Aug 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.9.3-100.chinfo
+- 1.9.3
+
 * Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.9.2-101.chinfo
 - ldconfig scriplets update
 

@@ -9,9 +9,11 @@
 %global srcname vk9
 %global vk9_dir %{_datadir}/wine/%{srcname}/%{__isa_bits}
 
+%global sdk_ver 1.1.77.0
+
 Name:           mingw-wine-%{srcname}
 Version:        0.26.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan-based D3D9 implementation for Linux / Wine
 
 License:        zlib
@@ -20,6 +22,9 @@ URL:            https://github.com/disks86/VK9
 Source0:        https://github.com/disks86/VK9/archive/%{version}.tar.gz#/VK9-%{version}.tar.gz
 Source1:        README.vk9
 Source2:        winevk9cfg
+Source3:        https://sdk.lunarg.com/sdk/download/%{sdk_ver}/windows/VulkanSDK-%{sdk_ver}-Installer.exe?Human=true;u=#/VulkanSDK-%{sdk_ver}-Installer.exe
+
+Patch0:         VK9-build-fixes.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -37,8 +42,10 @@ BuildRequires:  glslang
 # glslc
 BuildRequires:  shaderc
 BuildRequires:  meson
+BuildRequires:  wine-common
 BuildRequires:  wine-core
-BuildRequires:  wine-devel >= 3.0
+BuildRequires:  wine-devel >= 3.5
+BuildRequires:  p7zip-plugins
 
 %description
 Provides a Vulkan-based implementation of D3D9 in order to
@@ -66,12 +73,19 @@ run 3D applications on Linux using Wine.
 
 rm -f dep*/*.pc
 
-cp %{S:1} .
+%ifarch %{ix86}
+%global vlib 32
+%endif
 
-sed \
-  -e '/dependency/s|vulkan-1|vulkan|g' \
-  -e "/dependency/s|'eigen'|'eigen3'|g" \
-  -i meson.build
+7z x %{S:3} Include/vulkan Source/lib%{?vlib}/vulkan-1.{dll,lib}
+
+mkdir include
+mv Include/vulkan include/
+
+mkdir lib
+mv Source/lib%{?vlib}/vulkan-1.{dll,lib} lib/
+
+cp %{S:1} .
 
 sed \
   -e "s|'-gdwarf-2'|\0, '-I/usr/include/spirv/1.2'|g" \
@@ -94,11 +108,6 @@ meson \
 %endif
 
 pushd build.%{__isa_bits}
-sed \
-  -e 's|-L/usr/%{mingwarch}-w64-mingw32/sys-root/mingw//usr/%{mingwarch}-w64-mingw32/sys-root/mingw/lib|-L/usr/%{mingwarch}-w64-mingw32/sys-root/mingw/lib|g' \
-  -e 's|-lvulkan |-lvulkan.dll |g' \
-  -i build.ninja
-
 ninja -v %{?_smp_mflags}
 popd
 
@@ -113,6 +122,7 @@ install -pm0644 build.%{__isa_bits}/VK9-Library/d3d9.dll \
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
+
 %files -n mingw%{__isa_bits}-wine-%{srcname}
 %license LICENSE.md
 %doc README.md README.vk9 VK9-Library/VK9.conf
@@ -121,5 +131,9 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Mon Jul 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.26.0-2
+- Proper build with LunarG Vulkan SDK
+- BR: p7zip-plugins, for SDK files extraction
+
 * Mon May 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.26.0-1
 - Initial spec

@@ -25,8 +25,8 @@
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name: gtk3
-Version: 3.23.1
-Release: 101.chinfo%{?dist}
+Version: 3.23.2
+Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
@@ -396,6 +396,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Tue Jul 31 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.23.2-100.chinfo
+- 3.23.2
+
 * Fri Jul 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.23.1-101.chinfo
 - Set debug to minimun
 
