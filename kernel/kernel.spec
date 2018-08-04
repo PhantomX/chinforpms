@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -663,15 +663,15 @@ Patch522: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # CVE-2018-13095 rhbz 1597775 1597777
 Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 
-# rhbz 1602971
-Patch529: ext4-fix-false-negative-and-false-positives.patch
+# CVE-2018-14678 rhbz 1608559 1608560
+Patch530: xsa274-linux-4_17.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id f604b8a2baa6f01a438c2d495a34820ed722aef5
+%global opensuse_id ef4920c04e8322b1da2cbf6d64135e8fce801f4b
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -713,7 +713,6 @@ Patch3011: %{pf_url}/1e45288d5804a42a91f14878d6faa0d9f8882a79.patch#/pf-1e45288d
 Patch3012: %{pf_url}/2d89b754b69064d584efd7a59893ab6351b17671.patch#/pf-2d89b754b69064d584efd7a59893ab6351b17671.patch
 Patch3013: %{pf_url}/1d8b16272fe1bc5d67a34c894e655f212740e972.patch#/pf-1d8b16272fe1bc5d67a34c894e655f212740e972.patch
 Patch3014: %{pf_url}/82d5e58becfbf97a2379e67b11eccc4c89100218.patch#/pf-82d5e58becfbf97a2379e67b11eccc4c89100218.patch
-Patch3015: %{pf_url}/93f08f737f9eb3516000cfe201af69abb99eb414.patch#/pf-93f08f737f9eb3516000cfe201af69abb99eb414.patch
 Patch3016: %{pf_url}/c64023c618485fef0454bbc21b04ca3d24c05673.patch#/pf-c64023c618485fef0454bbc21b04ca3d24c05673.patch
 Patch3017: %{pf_url}/754dd1afcea7cb1482602f7bb38622e17169d788.patch#/pf-754dd1afcea7cb1482602f7bb38622e17169d788.patch
 Patch3018: %{pf_url}/b8289cc8103f91e9a3a4a0f38ae0b2cf77ce6fac.patch#/pf-b8289cc8103f91e9a3a4a0f38ae0b2cf77ce6fac.patch
@@ -1980,6 +1979,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.12-500.chinfo
+- 4.17.12
+
 * Sat Jul 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.11-500.chinfo
 - 4.17.11
 
