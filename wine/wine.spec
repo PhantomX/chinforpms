@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.13
+%global stagingver 2f3ba1fb462894ad267d72d07ed2114e0ae1f5c2
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
@@ -32,7 +32,7 @@
 
 Name:           wine
 Version:        3.13
-Release:        101%{?rctag}.chinfo%{?dist}
+Release:        102%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -1391,6 +1391,9 @@ fi
 %{_libdir}/wine/api-ms-win-crt-string-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-crt-time-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-crt-utility-l1-1-0.dll.so
+%if 0%{?staging}
+%{_libdir}/wine/api-ms-win-devices-config-l1-1-0.dll.so
+%endif
 %{_libdir}/wine/api-ms-win-devices-config-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-devices-query-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-advapi32-l1-1-0.dll.so
@@ -2285,6 +2288,9 @@ fi
 %endif
 
 %changelog
+* Sun Aug 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.13-102.chinfo
+- Staging update
+
 * Sun Jul 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.13-101.chinfo
 - Revert to old staging winepulse patches
 

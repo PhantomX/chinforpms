@@ -14,7 +14,7 @@
 %global winever 3.10
 
 Name:           mingw-wine-%{srcname}
-Version:        0.63
+Version:        0.64
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
@@ -112,6 +112,9 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 %endif
 
 %changelog
+* Sun Aug 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.64-1
+- 0.64
+
 * Sat Jul 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.63-1
 - 0.63
 
