@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -662,9 +662,6 @@ Patch522: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 
 # CVE-2018-13095 rhbz 1597775 1597777
 Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
-
-# CVE-2018-14678 rhbz 1608559 1608560
-Patch530: xsa274-linux-4_17.patch
 
 ### Extra
 
@@ -1979,6 +1976,9 @@ fi
 #
 #
 %changelog
+* Mon Aug 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.13-500.chinfo
+- 4.17.13
+
 * Fri Aug 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.12-500.chinfo
 - 4.17.12
 
