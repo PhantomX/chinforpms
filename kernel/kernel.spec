@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -654,12 +654,6 @@ Patch518: alarmtimer-prevent-overflow-for-relative-nanosleep.patch
 Patch519: 1-2-posix-timers-Make-forward-callback-return-s64.patch
 Patch520: 2-2-posix-timers-Sanitize-overrun-handling.patch
 
-# CVE-2018-13093 rhbz 1597766 1597767
-Patch521: 0001-xfs-validate-cached-inodes-are-free-when-allocated.patch
-
-# CVE-2018-13094 rhbz 1597771 1597772
-Patch522: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
-
 # CVE-2018-13095 rhbz 1597775 1597777
 Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 
@@ -668,7 +662,7 @@ Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id ef4920c04e8322b1da2cbf6d64135e8fce801f4b
+%global opensuse_id dc49b435f95ff0ac6ea09480dd12f9bb52379e1a
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -1976,6 +1970,9 @@ fi
 #
 #
 %changelog
+* Thu Aug 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.14-500.chinfo
+- 4.17.14
+
 * Mon Aug 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.13-500.chinfo
 - 4.17.13
 
