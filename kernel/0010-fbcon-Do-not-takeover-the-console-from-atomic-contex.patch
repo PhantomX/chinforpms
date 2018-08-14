@@ -1,0 +1,63 @@
+From 8f571bbfc621fd0826bbc7a8924c811f3a3167c9 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Mon, 6 Aug 2018 16:32:27 +0200
+Subject: [PATCH] fbcon: Do not takeover the console from atomic context
+
+Taking over the console involves allocating mem with GFP_KERNEL, talking
+to drm drivers, etc. So this should not be done from an atomic context.
+
+But the console-output trigger deferred console takeover may happen from an
+atomic context, which leads to "BUG: sleeping function called from invalid
+context" errors.
+
+This commit fixes these errors by doing the deferred takeover from a
+workqueue when the notifier runs from an atomic context.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/video/fbdev/core/fbcon.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index a3fd510..f812891 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -3596,7 +3596,22 @@ static int fbcon_init_device(void)
+ }
+ 
+ #ifdef CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER
++static void fbcon_register_existing_fbs(struct work_struct *work)
++{
++	int i;
++
++	console_lock();
++
++	for (i = 0; i < FB_MAX; i++) {
++		if (registered_fb[i])
++			fbcon_fb_registered(registered_fb[i]);
++	}
++
++	console_unlock();
++}
++
+ static struct notifier_block fbcon_output_nb;
++static DECLARE_WORK(fbcon_deferred_takeover_work, fbcon_register_existing_fbs);
+ 
+ static int fbcon_output_notifier(struct notifier_block *nb,
+ 				 unsigned long action, void *data)
+@@ -3611,10 +3626,8 @@ static int fbcon_output_notifier(struct notifier_block *nb,
+ 	deferred_takeover = false;
+ 	logo_shown = FBCON_LOGO_DONTSHOW;
+ 
+-	for (i = 0; i < FB_MAX; i++) {
+-		if (registered_fb[i])
+-			fbcon_fb_registered(registered_fb[i]);
+-	}
++	/* We may get called in atomic context */
++	schedule_work(&fbcon_deferred_takeover_work);
+ 
+ 	return NOTIFY_OK;
+ }
+-- 
+2.18.0
+

@@ -49,7 +49,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        18.1.5
+Version:        18.1.6
 Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
 
 License:        MIT
@@ -94,6 +94,7 @@ BuildRequires:  expat-devel
 BuildRequires:  xorg-x11-proto-devel
 BuildRequires:  makedepend
 BuildRequires:  libselinux-devel
+BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  libXext-devel
 BuildRequires:  libXfixes-devel
 BuildRequires:  libXdamage-devel
@@ -144,15 +145,15 @@ BuildRequires: pkgconfig(libglvnd) >= 0.2.0
 
 %package filesystem
 Summary:        Mesa driver filesystem
-Provides:       mesa-dri-filesystem = %{?epoch:%{epoch}}%{version}-%{release}
-Obsoletes:      mesa-dri-filesystem < %{?epoch:%{epoch}}%{version}-%{release}
+Provides:       mesa-dri-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      mesa-dri-filesystem < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description filesystem
 %{summary}.
 
 %package libGL
 Summary:        Mesa libGL runtime libraries
-Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-glx%{?_isa} >= 1:1.0.1-0.7
 
 %description libGL
@@ -160,7 +161,7 @@ Requires:       libglvnd-glx%{?_isa} >= 1:1.0.1-0.7
 
 %package libGL-devel
 Summary:        Mesa libGL development package
-Requires:       %{name}-libGL%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-devel%{?_isa}
 Provides:       libGL-devel
 Provides:       libGL-devel%{?_isa}
@@ -177,7 +178,7 @@ Requires:       libglvnd-egl%{?_isa}
 
 %package libEGL-devel
 Summary:        Mesa libEGL development package
-Requires:       %{name}-libEGL%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libEGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-devel%{?_isa}
 Provides:       libEGL-devel
 Provides:       libEGL-devel%{?_isa}
@@ -187,7 +188,7 @@ Provides:       libEGL-devel%{?_isa}
 
 %package libGLES
 Summary:        Mesa libGLES runtime libraries
-Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-gles%{?_isa}
 
 %description libGLES
@@ -195,7 +196,7 @@ Requires:       libglvnd-gles%{?_isa}
 
 %package libGLES-devel
 Summary:        Mesa libGLES development package
-Requires:       %{name}-libGLES%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libGLES%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-devel%{?_isa}
 Provides:       libGLES-devel
 Provides:       libGLES-devel%{?_isa}
@@ -205,7 +206,7 @@ Provides:       libGLES-devel%{?_isa}
 
 %package dri-drivers
 Summary:        Mesa-based DRI drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description dri-drivers
 %{summary}.
@@ -213,7 +214,7 @@ Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}}%{version}-%{rele
 %if 0%{?with_omx}
 %package omx-drivers
 Summary:        Mesa-based OMX drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description omx-drivers
 %{summary}.
@@ -222,7 +223,7 @@ Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}}%{version}-%{rele
 %if 0%{?with_vdpau}
 %package        vdpau-drivers
 Summary:        Mesa-based VDPAU drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description vdpau-drivers
 %{summary}.
@@ -230,7 +231,7 @@ Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}}%{version}-%{rele
 
 %package libOSMesa
 Summary:        Mesa offscreen rendering libraries
-Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libOSMesa
 Provides:       libOSMesa%{?_isa}
 
@@ -239,7 +240,7 @@ Provides:       libOSMesa%{?_isa}
 
 %package libOSMesa-devel
 Summary:        Mesa offscreen rendering development package
-Requires:       %{name}-libOSMesa%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libOSMesa%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libOSMesa-devel
 %{summary}.
@@ -254,7 +255,7 @@ Provides:       libgbm%{?_isa}
 
 %package libgbm-devel
 Summary:        Mesa libgbm development package
-Requires:       %{name}-libgbm%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libgbm%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libgbm-devel
 Provides:       libgbm-devel%{?_isa}
 
@@ -312,7 +313,7 @@ Provides:       libglapi%{?_isa}
 Summary:        Mesa OpenCL runtime library
 Requires:       ocl-icd%{?_isa}
 Requires:       libclc%{?_isa}
-Requires:       %{name}-libgbm%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libgbm%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       opencl-filesystem
 
 %description libOpenCL
@@ -320,7 +321,7 @@ Requires:       opencl-filesystem
 
 %package libOpenCL-devel
 Summary:        Mesa OpenCL development package
-Requires:       %{name}-libOpenCL%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libOpenCL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libOpenCL-devel
 %{summary}.
@@ -335,7 +336,7 @@ Summary:        Mesa Direct3D9 state tracker
 
 %package libd3d-devel
 Summary:        Mesa Direct3D9 state tracker development package
-Requires:       %{name}-libd3d%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-libd3d%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libd3d-devel
 %{summary}.
@@ -350,7 +351,7 @@ The drivers with support for the Vulkan API.
 
 %package vulkan-devel
 Summary:        Mesa Vulkan development files
-Requires:       %{name}-vulkan-drivers%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       %{name}-vulkan-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       vulkan-devel
 
 %description vulkan-devel
@@ -655,6 +656,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Mon Aug 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.6-100.chinfo
+- 18.1.6
+
 * Fri Jul 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.5-100.chinfo
 - 18.1.5
 

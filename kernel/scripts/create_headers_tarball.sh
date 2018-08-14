@@ -15,7 +15,7 @@ ARCH_LIST="arm arm64 powerpc s390 x86"
 # If the kernel Makefile doesn't contain enough information for the tarball
 # release, you can specify the release of the package so it'll be included
 # in the name of the created tarball
-TB_RELEASE="1"
+TB_RELEASE="500"
 
 # If kernel Makefile has the package release number, you can specify the name of
 # Makefile variable here.

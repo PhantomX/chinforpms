@@ -1,19 +1,19 @@
-From 69e52712002cb6768b894cde9620fb426fd8728d Mon Sep 17 00:00:00 2001
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Date: Fri, 16 Mar 2018 21:49:37 +0100
-Subject: [PATCH] ARM: dts: bcm2837: Enable PMU on Raspberry Pi 3
+From 26611da3961755795d58595851eec350e75ae0e7 Mon Sep 17 00:00:00 2001
+From: Eric Anholt <eric@anholt.net>
+Date: Mon, 21 May 2018 11:39:07 -0700
+Subject: arm: bcm2835: Add the PMU to the devicetree.
 
-This enables the PMU (performance monitoring unit) on Raspberry Pi 3.
-In order to make it work on ARM and ARM64, we need to specify two
-compatible strings.
+This only probes on arm64 so far, but hopefully that driver will be
+generalized soon.
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Acked-by: Stefan Wahren <stefan.wahren@i2se.com>
 ---
  arch/arm/boot/dts/bcm2837.dtsi | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
-index 7704bb029605..1f5e5c782835 100644
+index 7704bb0..beb6c50 100644
 --- a/arch/arm/boot/dts/bcm2837.dtsi
 +++ b/arch/arm/boot/dts/bcm2837.dtsi
 @@ -17,6 +17,12 @@
@@ -21,7 +21,7 @@ index 7704bb029605..1f5e5c782835 100644
  	};
  
 +	arm-pmu {
-+		compatible = "arm,cortex-a53-pmu", "arm,cortex-a7-pmu";
++		compatible = "arm,cortex-a53-pmu";
 +		interrupt-parent = <&local_intc>;
 +		interrupts = <9 IRQ_TYPE_LEVEL_HIGH>;
 +	};
@@ -29,3 +29,5 @@ index 7704bb029605..1f5e5c782835 100644
  	timer {
  		compatible = "arm,armv7-timer";
  		interrupt-parent = <&local_intc>;
+-- 
+cgit v1.1

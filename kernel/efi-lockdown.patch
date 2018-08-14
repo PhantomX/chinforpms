@@ -565,22 +565,21 @@ index d89bebf85421..da6f55c96a61 100644
 
  	for (i = 0; i < measure_entries; i++)
  		list_add_tail(&dont_measure_rules[i].list, &ima_default_rules);
-@@ -471,11 +478,23 @@ void __init ima_init_policy(void)
-
+@@ -487,12 +494,24 @@ void __init ima_init_policy(void)
+ 
  	/*
  	 * Insert the appraise rules requiring file signatures, prior to
 -	 * any other appraise rules.
 +	 * any other appraise rules.  In secure boot lock-down mode, also
 +	 * require these appraise rules for custom policies.
  	 */
--	for (i = 0; i < secure_boot_entries; i++)
--		list_add_tail(&secure_boot_rules[i].list,
--			      &ima_default_rules);
-+	for (i = 0; i < secure_boot_entries; i++) {
+ 	for (i = 0; i < secure_boot_entries; i++) {
 +		struct ima_rule_entry *entry;
 +
 +		/* Include for builtin policies */
-+		list_add_tail(&secure_boot_rules[i].list, &ima_default_rules);
+ 		list_add_tail(&secure_boot_rules[i].list, &ima_default_rules);
+ 		temp_ima_appraise |=
+ 		    ima_appraise_flag(secure_boot_rules[i].func);
 +
 +		/* Include for custom policies */
 +		if (kernel_locked_down) {
@@ -589,10 +588,9 @@ index d89bebf85421..da6f55c96a61 100644
 +			if (entry)
 +				list_add_tail(&entry->list, &ima_policy_rules);
 +		}
-+	}
-
+ 	}
+ 
  	for (i = 0; i < appraise_entries; i++) {
- 		list_add_tail(&default_appraise_rules[i].list,
 -- 
 2.14.3
 
@@ -671,7 +669,7 @@ index a6e43a5806a1..9c1709a05037 100644
 -	}
 
 -	/* Not having a signature is only an error if we're strict. */
--	if (err == -ENOKEY && !sig_enforce)
+-	if (err == -ENOKEY && !is_module_sig_enforced())
 -		err = 0;
 +		/* We don't permit modules to be loaded into trusted kernels
 +		 * without a valid signature on them, but if we're not
@@ -1550,14 +1548,14 @@ diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
 index 0244973ee544..7457f2676c6d 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -2031,6 +2031,9 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
+@@ -2333,6 +2333,9 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
  	if (sysctl_unprivileged_bpf_disabled && !capable(CAP_SYS_ADMIN))
  		return -EPERM;
 
 +	if (kernel_is_locked_down("BPF"))
 +		return -EPERM;
 +
- 	err = check_uarg_tail_zero(uattr, sizeof(attr), size);
+ 	err = bpf_check_uarg_tail_zero(uattr, sizeof(attr), size);
  	if (err)
  		return err;
 -- 
@@ -1738,9 +1736,9 @@ index 13b01351dd1c..4daec17b8215 100644
  	inode->i_fop = proxy_fops;
  	dentry->d_fsdata = (void *)((unsigned long)real_fops |
  				DEBUGFS_FSDATA_IS_REAL_FOPS_BIT);
-@@ -513,7 +539,7 @@ struct dentry *debugfs_create_dir(const char *name, struct dentry *parent)
+@@ -515,7 +541,7 @@ struct dentry *debugfs_create_dir(const char *name, struct dentry *parent)
  		return failed_creating(dentry);
-
+ 
  	inode->i_mode = S_IFDIR | S_IRWXU | S_IRUGO | S_IXUGO;
 -	inode->i_op = &simple_dir_inode_operations;
 +	inode->i_op = &debugfs_dir_inode_operations;

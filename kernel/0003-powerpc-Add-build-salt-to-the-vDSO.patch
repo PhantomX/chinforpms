@@ -1,0 +1,51 @@
+From e9bb20873f9dff73fc6f381e32b43f198974ed71 Mon Sep 17 00:00:00 2001
+From: Laura Abbott <labbott@redhat.com>
+Date: Tue, 3 Jul 2018 15:59:53 -0700
+Subject: [PATCHv6 3/4] powerpc: Add build salt to the vDSO
+Cc: Andy Lutomirski <luto@kernel.org>
+To: mjw@fedoraproject.org
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+To: H. J. Lu <hjl.tools@gmail.com>
+Cc: X86 ML <x86@kernel.org>
+Cc: linux-kernel@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: Nick Clifton <nickc@redhat.com>
+Cc: Cary Coutant <ccoutant@gmail.com>
+Cc: linux-kbuild@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+To: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org
+
+The vDSO needs to have a unique build id in a similar manner
+to the kernel and modules. Use the build salt macro.
+
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+---
+v6: Remove semi-colon
+---
+ arch/powerpc/kernel/vdso32/note.S | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/powerpc/kernel/vdso32/note.S b/arch/powerpc/kernel/vdso32/note.S
+index d4b5be4f3d5f..227a7327399e 100644
+--- a/arch/powerpc/kernel/vdso32/note.S
++++ b/arch/powerpc/kernel/vdso32/note.S
+@@ -5,6 +5,7 @@
+ 
+ #include <linux/uts.h>
+ #include <linux/version.h>
++#include <linux/build-salt.h>
+ 
+ #define ASM_ELF_NOTE_BEGIN(name, flags, vendor, type)			      \
+ 	.section name, flags;						      \
+@@ -23,3 +24,5 @@
+ 	ASM_ELF_NOTE_BEGIN(".note.kernel-version", "a", UTS_SYSNAME, 0)
+ 	.long LINUX_VERSION_CODE
+ 	ASM_ELF_NOTE_END
++
++BUILD_SALT
+-- 
+2.17.1
+

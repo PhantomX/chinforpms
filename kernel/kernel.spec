@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 17
+%define base_sublevel 18
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -95,8 +95,6 @@ Summary: The Linux kernel
 %define with_cross_headers   %{?_without_cross_headers:   0} %{?!_without_cross_headers:   1}
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
-# kernel-bootwrapper (for creating zImages from kernel + initrd)
-%define with_bootwrapper %{?_without_bootwrapper: 0} %{?!_without_bootwrapper: 1}
 # Want to build a the vsdo directories installed
 %define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
 #
@@ -128,6 +126,10 @@ Summary: The Linux kernel
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
 %define debugbuildsenabled 1
+
+# Kernel headers are being split out into a separate package
+%define with_headers 0
+%define with_cross_headers 0
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -179,7 +181,7 @@ Summary: The Linux kernel
 %endif
 
 %if %{nopatches}
-%d%define variant -vanilla
+%define variant -vanilla
 %endif
 
 %if !%{debugbuildsenabled}
@@ -243,7 +245,6 @@ Summary: The Linux kernel
 %define all_arch_configs kernel-%{version}-*.config
 %endif
 
-# bootwrapper is only on ppc
 # sparse blows up on ppc
 %ifnarch %{power64}
 %define with_sparse 0
@@ -335,6 +336,7 @@ Summary: The Linux kernel
 %define with_up 0
 %define with_pae 0
 %define with_debuginfo 0
+%define with_debug 0
 %define _enable_debug_packages 0
 %endif
 
@@ -564,7 +566,6 @@ Patch210: disable-i8042-check-on-apple-mac.patch
 Patch211: drm-i915-hush-check-crtc-state.patch
 
 Patch212: efi-secureboot.patch
-
 Patch213: lockdown-fix-coordination-of-kernel-module-signature-verification.patch
 
 # 300 - ARM patches
@@ -583,35 +584,35 @@ Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 # https://patchwork.kernel.org/patch/9820417/
 Patch305: qcom-msm89xx-fixes.patch
 
-# https://marc.info/?l=linux-kernel&m=152328880417846&w=2
-Patch307: arm64-thunderx-crypto-zip-fixes.patch
+# https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
+Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# https://www.spinics.net/lists/linux-crypto/msg32725.html
-Patch308: crypto-testmgr-Allow-different-compression-results.patch
+Patch307: arm-tegra-fix-nouveau-crash.patch
 
-Patch309: arm-tegra-fix-nouveau-crash.patch
+# https://patchwork.kernel.org/patch/10539291/
+Patch308: mmc-sunxi-allow-3.3V-DDR-when-DDR-is-available.patch
+# https://patchwork.kernel.org/patch/10540521/
+Patch309: mmc-sunxi-remove-output-of-virtual-base-address.patch
 
-# https://patchwork.kernel.org/patch/10346089/
-Patch310: arm-dts-Add-am335x-pocketbeagle.patch
+Patch310: arm-dts-armada388-helios4.patch
 
-# https://www.spinics.net/lists/linux-tegra/msg32920.html
-Patch311: arm-tegra-USB-driver-dependency-fix.patch
-
-# https://patchwork.kernel.org/patch/10348701/
-Patch312: arm64-msm8916-fix-gic_irq_domain_translate-warnings.patch
-
-# https://patchwork.kernel.org/patch/10354521/
-# https://patchwork.kernel.org/patch/10354187/
-# https://patchwork.kernel.org/patch/10306793/
-# https://patchwork.kernel.org/patch/10133165/
-Patch313: mvebu-a37xx-fixes.patch
-
-Patch324: bcm283x-clk-audio-fixes.patch
+# https://www.spinics.net/lists/arm-kernel/msg670137.html
+Patch311: arm64-ZynqMP-firmware-clock-drivers-core.patch
 
 # Enabling Patches for the RPi3+
-Patch330: bcm2837-rpi-initial-3plus-support.patch
-Patch332: bcm2837-enable-pmu.patch
-Patch333: bcm2837-lan78xx-fixes.patch
+Patch330: bcm2837-enable-pmu.patch
+
+Patch331: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
+
+Patch332: bcm2835-hwmon-Add-support-for-RPi-voltage-sensor.patch
+
+# https://patchwork.freedesktop.org/patch/240917/
+Patch334: drm-vc4-Fix-the-no-scaling-case-on-multi-planar-YUV-formats.patch
+
+# Fix for AllWinner A64 Timer Errata, still not final
+# https://patchwork.kernel.org/patch/10392891/
+Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
+Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -624,45 +625,39 @@ Patch501: Fix-for-module-sig-verification.patch
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # rhbz 1470995
-Patch503: kexec-bzimage-verify-pe-signature-fix.patch
+Patch504: kexec-bzimage-verify-pe-signature-fix.patch
 
-# rbhz 1435837
-# https://www.spinics.net/lists/linux-acpi/msg82405.html
-Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
+# Support for unique build ids
+# All queued in the kbuild tree
+Patch506: 0001-kbuild-Add-build-salt-to-the-kernel-and-modules.patch
+Patch507: 0002-x86-Add-build-salt-to-the-vDSO.patch
+Patch508: 0003-powerpc-Add-build-salt-to-the-vDSO.patch
+Patch509: 0004-arm64-Add-build-salt-to-the-vDSO.patch
+Patch512: 0003-treewide-Rename-HOSTCFLAGS-KBUILD_HOSTCFLAGS.patch
+Patch513: 0004-treewide-Rename-HOSTCXXFLAGS-to-KBUILD_HOSTCXXFLAGS.patch
+Patch514: 0005-treewide-Rename-HOSTLDFLAGS-to-KBUILD_HOSTLDFLAGS.patch
+Patch515: 0006-treewide-Rename-HOST_LOADLIBES-to-KBUILD_HOSTLDLIBS.patch
+Patch516: 0007-Kbuild-Use-HOST-FLAGS-options-from-the-command-line.patch
 
-# https://www.spinics.net/lists/platform-driver-x86/msg15719.html
-Patch507: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
-
-# rhbz 1577106
-# http://lists.infradead.org/pipermail/ath10k/2018-June/011582.html
-Patch508: ath10k-Update-the-phymode-along-with-bandwidth-change.patch
-
-# rhbz 1568276
-# In 4.18
-Patch509: rtc-nvmem-don-t-return-an-error-when-not-enabled.patch
-
-# rhbz 1591516
-Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
-
-# rhbz 1572944
-Patch517: Revert-the-random-series-for-4.16.4.patch
-
-# CVE-2018-13053 rhbz 1597747 1597748
-Patch518: alarmtimer-prevent-overflow-for-relative-nanosleep.patch
-
-# CVE-2018-12896 rhbz 1597759 1597760
-Patch519: 1-2-posix-timers-Make-forward-callback-return-s64.patch
-Patch520: 2-2-posix-timers-Sanitize-overrun-handling.patch
-
-# CVE-2018-13095 rhbz 1597775 1597777
-Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
+# For quiet / flickerfree boot, all queued for merging into 4.19-rc1
+Patch521: 0001-printk-Make-CONSOLE_LOGLEVEL_QUIET-configurable.patch
+Patch522: 0002-printk-Export-is_console_locked.patch
+Patch523: 0003-fbcon-Call-WARN_CONSOLE_UNLOCKED-where-applicable.patch
+Patch524: 0004-console-fbcon-Add-support-for-deferred-console-takeo.patch
+Patch525: 0005-efi-bgrt-Drop-__initdata-from-bgrt_image_size.patch
+Patch526: 0006-efifb-Copy-the-ACPI-BGRT-boot-graphics-to-the-frameb.patch
+Patch527: 0007-efifb-BGRT-Do-not-copy-the-boot-graphics-for-non-nat.patch
+Patch528: 0008-console-dummycon-export-dummycon_-un-register_output.patch
+# Deferred fbcon takeover bugfix, pending upstream
+Patch529: 0009-fbcon-Only-defer-console-takeover-if-the-current-con.patch
+Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
 
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id dc49b435f95ff0ac6ea09480dd12f9bb52379e1a
+%global opensuse_id 6e2c3e02ead5b3947d01693d516b8864acc77323
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -681,6 +676,7 @@ Patch1022: %{opensuse_url}/0003-x86-stacktrace-Clarify-the-reliable-success-path
 Patch1023: %{opensuse_url}/0004-x86-stacktrace-Do-not-fail-for-ORC-with-regs-on-stac.patch#/openSUSE-0004-x86-stacktrace-Do-not-fail-for-ORC-with-regs-on-stac.patch
 Patch1024: %{opensuse_url}/0005-x86-unwind-orc-Detect-the-end-of-the-stack.patch#/openSUSE-0005-x86-unwind-orc-Detect-the-end-of-the-stack.patch
 Patch1025: %{opensuse_url}/0006-x86-stacktrace-Enable-HAVE_RELIABLE_STACKTRACE-for-t.patch#/openSUSE-0006-x86-stacktrace-Enable-HAVE_RELIABLE_STACKTRACE-for-t.patch
+Patch1026: %{opensuse_url}/alarmtimer-Prevent-overflow-for-relative-nanosleep.patch#/openSUSE-alarmtimer-Prevent-overflow-for-relative-nanosleep.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -690,31 +686,21 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 
 %global pf_url https://github.com/pfactum/pf-kernel/commit
 
-Patch3001: %{pf_url}/b97c297a69865f90b5a2471e372bd48763857cc7.patch#/pf-b97c297a69865f90b5a2471e372bd48763857cc7.patch
-Patch3002: %{pf_url}/1625a7ea212b35790d115f4f3d3ae25e3f542d7a.patch#/pf-1625a7ea212b35790d115f4f3d3ae25e3f542d7a.patch
-Patch3003: %{pf_url}/4de03ea9534724317d3e17021f8688af6e49082c.patch#/pf-4de03ea9534724317d3e17021f8688af6e49082c.patch
-Patch3004: %{pf_url}/1a34678781909fe0f41ef6089f8d0e8ad4707f90.patch#/pf-1a34678781909fe0f41ef6089f8d0e8ad4707f90.patch
-Patch3005: %{pf_url}/52b242a2b05c776a1c38c069502aace06f1554cd.patch#/pf-52b242a2b05c776a1c38c069502aace06f1554cd.patch
-Patch3006: %{pf_url}/8198e3e4a9c1d2f4bed7e0e5107e9a8369984e4a.patch#/pf-8198e3e4a9c1d2f4bed7e0e5107e9a8369984e4a.patch
-Patch3007: %{pf_url}/2f497493a9df01f63173c0bc4584dd1baf0f033d.patch#/pf-2f497493a9df01f63173c0bc4584dd1baf0f033d.patch
-Patch3008: %{pf_url}/26169116633ae554d32229347514714479024eed.patch#/pf-26169116633ae554d32229347514714479024eed.patch
-Patch3009: %{pf_url}/bc4b08c5636bfb7c1f4a0c5cdb0f16b8c24f4889.patch#/pf-bc4b08c5636bfb7c1f4a0c5cdb0f16b8c24f4889.patch
-Patch3010: %{pf_url}/384eb7bfa3fa5a3477d46f7319294ec9bfe1aec3.patch#/pf-384eb7bfa3fa5a3477d46f7319294ec9bfe1aec3.patch
-Patch3011: %{pf_url}/1e45288d5804a42a91f14878d6faa0d9f8882a79.patch#/pf-1e45288d5804a42a91f14878d6faa0d9f8882a79.patch
-Patch3012: %{pf_url}/2d89b754b69064d584efd7a59893ab6351b17671.patch#/pf-2d89b754b69064d584efd7a59893ab6351b17671.patch
-Patch3013: %{pf_url}/1d8b16272fe1bc5d67a34c894e655f212740e972.patch#/pf-1d8b16272fe1bc5d67a34c894e655f212740e972.patch
-Patch3014: %{pf_url}/82d5e58becfbf97a2379e67b11eccc4c89100218.patch#/pf-82d5e58becfbf97a2379e67b11eccc4c89100218.patch
-Patch3016: %{pf_url}/c64023c618485fef0454bbc21b04ca3d24c05673.patch#/pf-c64023c618485fef0454bbc21b04ca3d24c05673.patch
-Patch3017: %{pf_url}/754dd1afcea7cb1482602f7bb38622e17169d788.patch#/pf-754dd1afcea7cb1482602f7bb38622e17169d788.patch
-Patch3018: %{pf_url}/b8289cc8103f91e9a3a4a0f38ae0b2cf77ce6fac.patch#/pf-b8289cc8103f91e9a3a4a0f38ae0b2cf77ce6fac.patch
-Patch3019: %{pf_url}/34ca6b65d81d4f801649dc28a5a5da29419ec91c.patch#/pf-34ca6b65d81d4f801649dc28a5a5da29419ec91c.patch
-Patch3020: %{pf_url}/c216c3d38666fe0819c935a95796457b49209778.patch#/pf-c216c3d38666fe0819c935a95796457b49209778.patch
-Patch3021: %{pf_url}/bf78d40e79700352847dd773176297efe6c062cf.patch#/pf-bf78d40e79700352847dd773176297efe6c062cf.patch
-Patch3022: %{pf_url}/33d003a73ff8f10494d975ce124bd71ce8d19669.patch#/pf-33d003a73ff8f10494d975ce124bd71ce8d19669.patch
-Patch3023: %{pf_url}/ba43c9c2dd08e9028194e4c4a7857eacafbc858c.patch#/pf-ba43c9c2dd08e9028194e4c4a7857eacafbc858c.patch
-Patch3024: %{pf_url}/67777dc910f520f7dfb2d0aa339a89984488ba4c.patch#/pf-67777dc910f520f7dfb2d0aa339a89984488ba4c.patch
-Patch3025: %{pf_url}/09decfe656c0d3c3ba84c8a4f124b62a7de3af1e.patch#/pf-09decfe656c0d3c3ba84c8a4f124b62a7de3af1e.patch
-Patch3026: %{pf_url}/9fa976dc314e1b9136ba63cce277ff1c65d9659c.patch#/pf-9fa976dc314e1b9136ba63cce277ff1c65d9659c.patch
+Patch3001: %{pf_url}/a73e7d13516785fa2e0ce6ec171b200b4a0e45fd.patch#/pf-a73e7d13516785fa2e0ce6ec171b200b4a0e45fd.patch
+Patch3002: %{pf_url}/c05a7efccd3b3ca2424b790a8865bc6302fc4e8e.patch#/pf-c05a7efccd3b3ca2424b790a8865bc6302fc4e8e.patch
+Patch3003: %{pf_url}/dea12cc693e73694955680068c337f2b52c03f13.patch#/pf-dea12cc693e73694955680068c337f2b52c03f13.patch
+Patch3004: %{pf_url}/b1c1a5dd15048b64def7cf06739b4b66da9bcef4.patch#/pf-b1c1a5dd15048b64def7cf06739b4b66da9bcef4.patch
+Patch3005: %{pf_url}/f0a8344c7a75e34d3bb8e83be26b5837cc4b5ba0.patch#/pf-f0a8344c7a75e34d3bb8e83be26b5837cc4b5ba0.patch
+Patch3006: %{pf_url}/3ead6b10224424cba2663062ffd66b50deb6354b.patch#/pf-3ead6b10224424cba2663062ffd66b50deb6354b.patch
+Patch3007: %{pf_url}/9e7c0c63a5356ab9ed6f6457fd6260286029b6a2.patch#/pf-9e7c0c63a5356ab9ed6f6457fd6260286029b6a2.patch
+Patch3008: %{pf_url}/4b8613c88f02f0e197a90b6d375f41fa8dc35bda.patch#/pf-4b8613c88f02f0e197a90b6d375f41fa8dc35bda.patch
+Patch3009: %{pf_url}/ac6bedef6c14be898117f40864b4c39102b47976.patch#/pf-ac6bedef6c14be898117f40864b4c39102b47976.patch
+Patch3010: %{pf_url}/a6836dacb2ebd86744951532bbb80270102557d1.patch#/pf-a6836dacb2ebd86744951532bbb80270102557d1.patch
+Patch3011: %{pf_url}/5bf982716cae8129275717f47c01e75e66459e5c.patch#/pf-5bf982716cae8129275717f47c01e75e66459e5c.patch
+Patch3012: %{pf_url}/363653afbba49d09f344daca2dfb229e59601992.patch#/pf-363653afbba49d09f344daca2dfb229e59601992.patch
+Patch3013: %{pf_url}/712990b7c1fd6a04ce9996fcd0b422cca291f4bf.patch#/pf-712990b7c1fd6a04ce9996fcd0b422cca291f4bf.patch
+Patch3014: %{pf_url}/50e965433ecb0e251de2bafe6eb116510a122509.patch#/pf-50e965433ecb0e251de2bafe6eb116510a122509.patch
+Patch3015: %{pf_url}/8296e5a7dbddf3413225e7e4a6830c5f6b56ee1e.patch#/pf-8296e5a7dbddf3413225e7e4a6830c5f6b56ee1e.patch
 
 
 # Add additional cpu gcc optimization support
@@ -725,6 +711,7 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 # END OF PATCH DEFINITIONS
 
 %endif
+
 
 %description
 The kernel meta package
@@ -780,13 +767,6 @@ header files define structures and constants that are needed for
 building most standard programs and are also needed for rebuilding the
 cross-glibc package.
 
-
-%package bootwrapper
-Summary: Boot wrapper files for generating combined kernel + initrd images
-Requires: gzip binutils
-%description bootwrapper
-Kernel-bootwrapper contains the wrapper code which makes bootable "zImage"
-files combining both kernel and initial ramdisk.
 
 %package debuginfo-common-%{_target_cpu}
 Summary: Kernel source files used by %{name}-debuginfo packages
@@ -1296,6 +1276,27 @@ cp_vmlinux()
   eu-strip --remove-comment -o "$2" "$1"
 }
 
+# These are for host programs that get built as part of the kernel and
+# are required to be packaged in kernel-devel for building external modules.
+# Since they are userspace binaries, they are required to pickup the hardening
+# flags defined in the macros. The --build-id=uuid is a trick to get around
+# debuginfo limitations: Typically, find-debuginfo.sh will update the build
+# id of all binaries to allow for parllel debuginfo installs. The kernel
+# can't use this because it breaks debuginfo for the vDSO so we have to
+# use a special mechanism for kernel and modules to be unique. Unfortunately,
+# we still have userspace binaries which need unique debuginfo and because
+# they come from the kernel package, we can't just use find-debuginfo.sh to
+# rewrite only those binaries. The easiest option right now is just to have
+# the build id be a uuid for the host programs.
+#
+# Note we need to disable these flags for cross builds because the flags
+# from redhat-rpm-config assume that host == target so target arch
+# flags cause issues with the host compiler.
+%if !%{with_cross}
+%define build_hostcflags  %{build_cflags}
+%define build_hostldflags %{build_ldflags} -Wl,--build-id=uuid
+%endif
+
 BuildKernel() {
     MakeTarget=$1
     KernelImage=$2
@@ -1346,9 +1347,12 @@ BuildKernel() {
     Arch=`head -1 .config | cut -b 3-`
     echo USING ARCH=$Arch
 
-    make %{?make_opts} ARCH=$Arch olddefconfig >/dev/null
-    %{make} %{?make_opts} ARCH=$Arch %{?_smp_mflags} $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
-    %{make} %{?make_opts} ARCH=$Arch %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
+    make %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch olddefconfig
+
+    # This ensures build-ids are unique to allow parallel debuginfo
+    perl -p -i -e "s/^CONFIG_BUILD_SALT.*/CONFIG_BUILD_SALT=\"%{KVERREL}\"/" .config
+    %{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
+    %{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
 
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer
@@ -1970,6 +1974,10 @@ fi
 #
 #
 %changelog
+* Mon Aug 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.0-500.chinfo
+- 4.18.0
+- Rawhide sync
+
 * Thu Aug 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.14-500.chinfo
 - 4.17.14
 
@@ -2270,50 +2278,6 @@ fi
 - 4.12.1
 - f26 sync
 - Enable blk-mq by default, because BFQ
-
-* Wed Jul 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.10-500.chinfo
-- 4.11.10
-- f26 sync
-
-* Wed Jul 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.9-500.chinfo
-- 4.11.9
-
-* Thu Jun 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.8-500.chinfo
-- 4.11.8
-
-* Sat Jun 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.7-500.chinfo
-- 4.11.7
-
-* Fri Jun 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.6-501.chinfo
-- f26 sync
-
-* Sat Jun 17 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.6-500.chinfo
-- 4.11.6
-- f26 sync
-
-* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.5-500.chinfo
-- 4.11.5
-- f26 sync
-
-* Wed Jun 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.4-500.chinfo
-- 4.11.4
-- Enable CONFIG_ACPI_REV_OVERRIDE_POSSIBLE for x86
-- f26 sync
-
-* Thu May 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.3-500.chinfo
-- 4.11.3
-- f26 sync
-
-* Sat May 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.2-500.chinfo
-- 4.11.2
-- f26 sync
-
-* Sun May 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.1-500.chinfo
-- 4.11.1
-
-* Tue May 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.11.0-500.chinfo
-- 4.11.0
-- f26 sync
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

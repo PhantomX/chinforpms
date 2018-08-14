@@ -57,7 +57,7 @@ implementations:
 
 %package libs
 Summary:        %{summary}
-Provides:       liblinphone = %{?epoch:%{epoch}}%{version}-%{release}
+Provides:       liblinphone = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      liblinphone < %{version}-%{release}
 
 %description libs
@@ -68,7 +68,7 @@ Summary:        Development libraries for linphone
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       pkgconfig(glib-2.0)
 Requires:       pkgconfig(mediastreamer)
-Provides:       liblinphone-devel = %{?epoch:%{epoch}}%{version}-%{release}
+Provides:       liblinphone-devel = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      liblinphone-devel < %{version}-%{release}
 
 

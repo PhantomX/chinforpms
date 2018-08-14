@@ -1,0 +1,79 @@
+From 79bfd044ed82290603093be1a3759672176f3e6f Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 19 Jun 2018 13:30:04 +0200
+Subject: [PATCH] printk: Make CONSOLE_LOGLEVEL_QUIET configurable
+
+The goal of passing the "quiet" option to the kernel is for the kernel
+to be quiet unless something really is wrong.
+
+Sofar passing quiet has been (mostly) equivalent to passing
+loglevel=4 on the kernel commandline. Which means to show any messages
+with a level of KERN_ERR or higher severity on the console.
+
+In practice this often does not result in a quiet boot though, since
+there are many false-positive or otherwise harmless error messages printed,
+defeating the purpose of the quiet option. Esp. the ACPICA code is really
+bad wrt this, but there are plenty of others too.
+
+This commit makes CONSOLE_LOGLEVEL_QUIET configurable.
+
+This for example will allow distros which want quiet to really mean quiet
+to set CONSOLE_LOGLEVEL_QUIET so that only messages with a higher severity
+then KERN_ERR (CRIT, ALERT, EMERG) get printed, avoiding an endless game
+of whack-a-mole silencing harmless error messages.
+
+Acked-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ include/linux/printk.h |  6 +++---
+ lib/Kconfig.debug      | 11 +++++++++++
+ 2 files changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index 6d7e800affd8..18602bb3eca8 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -50,15 +50,15 @@ static inline const char *printk_skip_headers(const char *buffer)
+ /* We show everything that is MORE important than this.. */
+ #define CONSOLE_LOGLEVEL_SILENT  0 /* Mum's the word */
+ #define CONSOLE_LOGLEVEL_MIN	 1 /* Minimum loglevel we let people use */
+-#define CONSOLE_LOGLEVEL_QUIET	 4 /* Shhh ..., when booted with "quiet" */
+ #define CONSOLE_LOGLEVEL_DEBUG	10 /* issue debug messages */
+ #define CONSOLE_LOGLEVEL_MOTORMOUTH 15	/* You can't shut this one up */
+ 
+ /*
+- * Default used to be hard-coded at 7, we're now allowing it to be set from
+- * kernel config.
++ * Default used to be hard-coded at 7, quiet used to be hardcoded at 4,
++ * we're now allowing both to be set from kernel config.
+  */
+ #define CONSOLE_LOGLEVEL_DEFAULT CONFIG_CONSOLE_LOGLEVEL_DEFAULT
++#define CONSOLE_LOGLEVEL_QUIET	 CONFIG_CONSOLE_LOGLEVEL_QUIET
+ 
+ extern int console_printk[];
+ 
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 8838d1158d19..0d1c48dd22a9 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -30,6 +30,17 @@ config CONSOLE_LOGLEVEL_DEFAULT
+ 	  usage in the kernel. That is controlled by the MESSAGE_LOGLEVEL_DEFAULT
+ 	  option.
+ 
++config CONSOLE_LOGLEVEL_QUIET
++	int "quiet console loglevel (1-15)"
++	range 1 15
++	default "4"
++	help
++	  loglevel to use when "quiet" is passed on the kernel commandline.
++
++	  When "quiet" is passed on the kernel commandline this loglevel
++	  will be used as the loglevel. IOW passing "quiet" will be the
++	  equivalent of passing "loglevel=<CONSOLE_LOGLEVEL_QUIET>"
++
+ config MESSAGE_LOGLEVEL_DEFAULT
+ 	int "Default message log level (1-7)"
+ 	range 1 7
+-- 
+2.18.0
+
