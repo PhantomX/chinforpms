@@ -38,8 +38,10 @@
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
+%global vboxsf_ver 9451f61e6787e95aa51e42b6381db6b059bc49da
+
 Name:           VirtualBox-kmod
-Version:        5.2.16
+Version:        5.2.18
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:        100.chinfo%{?dist}
 
@@ -48,7 +50,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
-Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
+Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{vboxsf_ver}.tar.gz#/vboxsf-%{vboxsf_ver}.tar.gz
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -75,8 +77,8 @@ pushd %{name}-%{version}
 
 %if %{with newvboxsf}
 rm -rf vboxsf/
-unzip %{SOURCE2}
-mv vboxsf-master/ vboxsf/
+tar xvf %{SOURCE2}
+mv vboxsf-%{vboxsf_ver}/ vboxsf/
 %endif
 popd
 
@@ -136,6 +138,12 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Aug 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.18-100.chinfo
+- 5.2.18
+
+* Tue Aug 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.16-101.chinfo
+- Updated vboxsf
+
 * Tue Jul 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.16-100.chinfo
 - 5.2.16
 
