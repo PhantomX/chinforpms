@@ -702,7 +702,11 @@ Patch3012: %{pf_url}/363653afbba49d09f344daca2dfb229e59601992.patch#/pf-363653af
 Patch3013: %{pf_url}/712990b7c1fd6a04ce9996fcd0b422cca291f4bf.patch#/pf-712990b7c1fd6a04ce9996fcd0b422cca291f4bf.patch
 Patch3014: %{pf_url}/50e965433ecb0e251de2bafe6eb116510a122509.patch#/pf-50e965433ecb0e251de2bafe6eb116510a122509.patch
 Patch3015: %{pf_url}/8296e5a7dbddf3413225e7e4a6830c5f6b56ee1e.patch#/pf-8296e5a7dbddf3413225e7e4a6830c5f6b56ee1e.patch
-
+Patch3016: %{pf_url}/33e3b43082a58c90af511ad039c916f8eae79fe1.patch#/pf-33e3b43082a58c90af511ad039c916f8eae79fe1.patch
+Patch3017: %{pf_url}/89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch#/pf-89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch
+Patch3018: %{pf_url}/16cf1745ff9e12ba8914781133322cd14cdd0178.patch#/pf-16cf1745ff9e12ba8914781133322cd14cdd0178.patch
+Patch3019: %{pf_url}/8c1fddf8714b6809b91a1cf23709ba2d81127890.patch#/pf-8c1fddf8714b6809b91a1cf23709ba2d81127890.patch
+Patch3020: %{pf_url}/e4f0081917935db89ad8204ed005e9e5744794f3.patch#/pf-e4f0081917935db89ad8204ed005e9e5744794f3.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch

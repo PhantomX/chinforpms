@@ -1,8 +1,6 @@
 %global pkgname FreeFileSync
-%global xbrzver 1.6
-
 Name:           freefilesync
-Version:        10.2
+Version:        10.3
 Release:        1%{?dist}
 Summary:        A file synchronization utility
 
@@ -130,6 +128,9 @@ done
 
 
 %changelog
+* Fri Aug 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 10.3-1
+- 10.3
+
 * Fri Jul 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 10.2-1
 - 10.2
 

@@ -1,4 +1,4 @@
-%global pluginapi 3.16.0.0
+%global pluginapi 3.17.0.0
 
 %global with_fancy 0
 
@@ -6,24 +6,15 @@
 %global build_manual 1
 
 Name:           claws-mail
-Version:        3.16.0
-Release:        101.chinfo%{?dist}
+Version:        3.17.0
+Release:        100.chinfo%{?dist}
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
 URL:            http://claws-mail.org
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
-Patch1:         http://git.claws-mail.org/?p=claws.git;a=patch;h=174c03f1931636ba6a47415619c18ce5af572d69#/%{name}-3.16.0-fix-bug-3936.patch
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
-
-# Fedora customization as to build with libxcrypt missing DES encrypt()
-# F28 System Wide Change: Replace glibc's libcrypt with libxcrypt
-Patch12: claws-mail-3.16.0-encrypt-nettle.patch
-
-# Fedora customization / https://bugzilla.redhat.com/1530613
-# NetworkManager-glib-devel will be gone
-Patch13: claws-mail-3.16.0-libnm.patch
 
 # Useful patches from Debian
 Patch50:        11mark_trashed_as_read.patch
@@ -37,8 +28,8 @@ Provides:       %{name}-plugins-fancy = %{version}-%{release}
 
 BuildRequires:  gcc
 BuildRequires:  flex, bison
-BuildRequires:  glib2-devel >= 2.6.2
-BuildRequires:  gtk2-devel >= 2.10.0
+BuildRequires:  glib2-devel >= 2.28.0
+BuildRequires:  gtk2-devel >= 2.24.0
 BuildRequires:  gnutls-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  openldap-devel >= 2.0.7
@@ -59,11 +50,7 @@ BuildRequires:  compface-devel
 %endif
 BuildRequires:  perl-devel perl-generators perl(ExtUtils::Embed)
 BuildRequires:  libSM-devel
-%if 0%{?fedora} > 27
 BuildRequires:  NetworkManager-libnm-devel
-%else
-BuildRequires:  NetworkManager-glib-devel
-%endif
 BuildRequires:  dbus-glib-devel
 BuildRequires:  libtool autoconf automake
 %if 0%{build_manual}
@@ -92,9 +79,8 @@ BuildRequires:  libgnome-devel
 BuildRequires:  libical-devel
 BuildRequires:  librsvg2-devel
 
-# Patch20
-BuildRequires:  autoconf
-BuildRequires:  automake
+#BuildRequires:  autoconf
+#BuildRequires:  automake
 
 # provide plugin api version (see /usr/include/claws-mail/common/version.h)
 Provides:       claws-mail(plugin-api)%{?_isa} = %pluginapi
@@ -124,7 +110,10 @@ Requires: %{name}-plugins-bogofilter
 Requires: %{name}-plugins-bsfilter
 %endif
 Requires: %{name}-plugins-clamd
+Requires: %{name}-plugins-dillo
+%if 0%{with_fancy}
 Requires: %{name}-plugins-fancy
+%endif
 Requires: %{name}-plugins-fetchinfo
 Requires: %{name}-plugins-gdata
 Requires: %{name}-plugins-libravatar
@@ -220,6 +209,15 @@ received from an IMAP, LOCAL or POP account.
 When a message attachment is found to contain a virus it can be
 deleted or saved in a specially designated folder.
 Options can be found in /Configuration/Preferences/Plugins/Clam AntiVirus.
+
+
+%package plugins-dillo
+Summary:        Display HTML emails in Claws Mail
+Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       dillo
+
+%description plugins-dillo
+This plugin renders HTML email via the Dillo Web Browser.
 
 
 %if 0%{with_fancy}
@@ -392,15 +390,9 @@ exporting of your meetings or all your calendars.
 
 %prep
 %setup -q
-%patch1 -p1 -b.bug3936
 
 %if 0%{?fedora} > 20
 %patch11 -p1 -b.syscrypto
-%endif
-
-%if 0%{?fedora} > 27
-%patch12 -p1 -b .encrypt-via-nettle
-%patch13 -p1 -b .libnm
 %endif
 
 %patch50 -p1 -b.trash
@@ -434,8 +426,7 @@ Firefox and Claws Mail
 EOF
 %endif
 
-# Patch20
-autoreconf -ivf
+#autoreconf -ivf
 
 %build
 %configure --disable-dependency-tracking \
@@ -448,12 +439,12 @@ autoreconf -ivf
 %endif
            --enable-appdata 
 
-make %{?_smp_mflags} LIBTOOL=%{_bindir}/libtool
+%make_build LIBTOOL=%{_bindir}/libtool
 
 %install
 
 export LIBTOOL=%{_bindir}/false
-make DESTDIR=%{buildroot} install
+%make_install
 
 %find_lang claws-mail
 
@@ -518,29 +509,36 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %files plugins
 # meta-package only
 
+
 %files plugins-acpi-notifier
 %{_libdir}/claws-mail/plugins/acpi_notifier*
 #%%{_metainfodir}/claws-mail-acpi_notifier.metainfo.xml
+
 
 %files plugins-archive
 %{_libdir}/claws-mail/plugins/archive*
 #%%{_metainfodir}/claws-mail-archive.metainfo.xml
 
+
 %files plugins-attachwarner
 %{_libdir}/claws-mail/plugins/attachwarner*
 #%%{_metainfodir}/claws-mail-attachwarner.metainfo.xml
+
 
 %files plugins-address-keeper
 %{_libdir}/claws-mail/plugins/address_keeper*
 #%%{_metainfodir}/claws-mail-address_keeper.metainfo.xml
 
+
 %files plugins-att-remover
 %{_libdir}/claws-mail/plugins/att_remover*
 #%%{_metainfodir}/claws-mail-att_remover.metainfo.xml
 
+
 %files plugins-bogofilter
 %{_libdir}/claws-mail/plugins/bogofilter.so
 #%%{_metainfodir}/claws-mail-bogofilter.metainfo.xml
+
 
 %if !0%{?rhel}
 %files plugins-bsfilter
@@ -548,9 +546,16 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 #%%{_metainfodir}/claws-mail-bsfilter.metainfo.xml
 %endif
 
+
 %files plugins-clamd
 %{_libdir}/claws-mail/plugins/clamd*
 #%%{_metainfodir}/claws-mail-clamd.metainfo.xml
+
+
+%files plugins-dillo
+%{_libdir}/claws-mail/plugins/dillo*
+#{_datadir}/appdata/claws-mail-dillo.metainfo.xml
+
 
 %if 0%{with_fancy}
 %files plugins-fancy
@@ -558,20 +563,25 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 #%%{_metainfodir}/claws-mail-fancy.metainfo.xml
 %endif
 
+
 %files plugins-fetchinfo
 %{_libdir}/claws-mail/plugins/fetchinfo*
 #%%{_metainfodir}/claws-mail-fetchinfo.metainfo.xml
+
 
 %files plugins-gdata
 %{_libdir}/claws-mail/plugins/gdata*
 #%%{_metainfodir}/claws-mail-gdata.metainfo.xml
 
+
 %files plugins-mailmbox
 %{_libdir}/claws-mail/plugins/mailmbox*
 #%%{_metainfodir}/claws-mail-mailmbox.metainfo.xml
 
+
 %files plugins-managesieve
 %{_libdir}/claws-mail/plugins/managesieve.so
+
 
 %files plugins-newmail
 %{_libdir}/claws-mail/plugins/newmail.so
@@ -597,7 +607,6 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %{_libdir}/claws-mail/plugins/pgp*.so
 %{_libdir}/claws-mail/plugins/pgp*.deps
 #%%{_metainfodir}/claws-mail-pgp*.metainfo.xml
-
 
 
 %files plugins-python
@@ -630,9 +639,11 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %{_libdir}/claws-mail/plugins/spamreport.so
 #%%{_metainfodir}/claws-mail-spam_report.metainfo.xml
 
+
 %files plugins-tnef
 %{_libdir}/claws-mail/plugins/tnef*
 #%%{_metainfodir}/claws-mail-tnef_parse.metainfo.xml
+
 
 %files plugins-vcalendar
 %{_libdir}/claws-mail/plugins/vcalendar*
@@ -640,6 +651,10 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Thu Aug 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.17.0-100.chinfo
+- 3.17.0
+- dillo plugin again
+
 * Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.16.0-101.chinfo
 - f28 sync
 
