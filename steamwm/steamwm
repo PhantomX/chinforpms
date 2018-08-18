@@ -1,0 +1,89 @@
+#!/bin/bash
+#
+# steamwm - Wrapper to apply steamwm to steam
+#
+# Usage: ln -s /usr/bin/steamwm ~/bin/steam
+# Or:    steamwm steam
+#
+# Create a symlink to this wrapper script with the name of the program
+# you want run without client-side decorations. This wrapper script
+# will run the first matching executable in the PATH that is *not* a
+# symlink to steamwm. This wrapper script is useful if you don't
+# want to add steamwm to your system-wide LD_PRELOAD or if you only
+# want it applied to certain applications.
+#
+# Alternative mode of operation: call this wrapper directly with the
+# program to call as its arguments.
+#
+# Based on gtk3-csd wrapper
+#
+
+STEAMWM_NAME=steamwm.so
+
+# Determine if this script are installed in the system path
+STEAMWM_BINARY="$(readlink -fe "$(which "$0")")"
+case "${STEAMWM_BINARY%/*}" in
+    /sbin|/bin|/usr/bin|/usr/sbin|/usr/local/bin|/usr/local/sbin)  IN_SYSTEM_PATH=1  ;;
+    *)                                                             IN_SYSTEM_PATH=0  ;;
+esac
+
+# Determine if the library is in the system path. If that's the case,
+# just use the plain library name, because that way loading the library
+# on all architectures it's installed is supported (because the linker
+# will automatically pick out the right one).
+if [ $IN_SYSTEM_PATH -eq 1 ] ; then
+    if LC_ALL=C LD_PRELOAD="${STEAMWM_NAME}" /bin/true 2>&1  | grep LD_PRELOAD | grep -qF "${STEAMWM_NAME}" ; then
+        IN_SYSTEM_PATH=0
+    else
+        STEAMWM="${STEAMWM_NAME}"
+    fi
+fi
+
+if [ $IN_SYSTEM_PATH -eq 0 ] ; then
+    # Figure out where the library is installed.
+    BINARY_PATH="${STEAMWM_BINARY%/*}"
+    STEAMWM=""
+    for _path in "/usr/lib64" "/usr/lib" "${BINARY_PATH}" "${BINARY_PATH%/bin}/lib" ; do
+        if [ -e "${_path}/steamwm/${STEAMWM_NAME}" ] ; then
+            if [ "${_path}" == "/usr/lib64" ] || [ "${_path}" == "/usr/lib" ] ; then
+                STEAMWM="/usr/\${LIB}/steamwm/${STEAMWM_NAME}"
+            else
+                STEAMWM="${_path}/steamwm/${STEAMWM_NAME}"
+            fi
+            break
+        fi
+    done
+    if [ -z "${STEAMWM}" ] ; then
+        # this will _probably_ not work (unless the library is
+        # installed in a system path, but the binary wasn't), but at
+        # least the user will have a useful error message
+        STEAMWM="${STEAMWM_NAME}"
+    fi
+fi
+
+# This program was called directly, instead of via a symlink.
+if [ x"$(basename "$0")"x = x"steamwm"x ] ; then
+    if [ x"$1"x = x"-h"x ] || [ x"$1"x = x"--help"x ] ; then
+        echo "Usage: $0 program [args]"
+        exit 0
+    fi
+
+    export LD_PRELOAD="${STEAMWM}${LD_PRELOAD:+:$LD_PRELOAD}"
+    exec "$@"
+fi
+
+# Find the real program (the first one that's not symlinked to steamwm)
+APPNAME="$(basename "$0")"
+for APPPATH in $(which -a "$APPNAME") /bin/false; do
+    APPPATH_LINK="$(readlink -fe "$APPPATH")"
+    [ x"${APPPATH_LINK##*/}"x = x"steamwm"x ] || break
+done
+
+# Provide error message at all
+if [ x"$APPNAME"x != x"false"x ] && [ x"${APPPATH}"x = x"/bin/false"x ] ; then
+    APPPATH=/.steamwm./"$APPNAME"
+fi
+
+# Run the program with gamemod enabled
+export LD_PRELOAD="${STEAMWM}${LD_PRELOAD:+:$LD_PRELOAD}"
+exec "$APPPATH" "$@"

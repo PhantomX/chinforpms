@@ -1,6 +1,6 @@
-%global commit 9be6b22dd818443197ce4fcc931914e0f085180f
+%global commit ec5b0c21a82f26a5def7210df4f46230e5b7ff60
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180717
+%global date 20180815
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -25,7 +25,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
-%global commit6 806af25f749b4d7cd861eaebc32474b3a7d102c0
+%global commit6 29619b2312f7bc862221749f3f4d37c3e6a0dee2
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
@@ -43,7 +43,7 @@
 
 Name:           ppsspp
 Version:        1.6.3
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        GPLv2+
@@ -264,6 +264,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Fri Aug 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-3.20180515gitec5b0c2
+- New snapshot
+
 * Tue Jul 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-2.20180717git9be6b22
 - New snapshot
 
