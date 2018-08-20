@@ -10,7 +10,7 @@
 
 Summary: Telegram Desktop official messaging app
 Name: telegram-desktop
-Version: 1.3.10
+Version: 1.3.12
 Release: 100.chinfo%{?dist}
 
 # Application and 3rd-party modules licensing:
@@ -85,6 +85,11 @@ business messaging needs.
 # Unpacking Telegram Desktop source archive...
 %autosetup -n %{appname}-%{version} -p1
 
+if ld -V | grep -q gold ;then
+  echo "gold link not supported"
+  exit 1
+fi
+
 # Unpacking crl...
 pushd Telegram/ThirdParty
     rm -rf crl
@@ -104,7 +109,7 @@ sed -i "$LEN r Telegram/gyp/CMakeLists.inj" out/Release/CMakeLists.txt
 
 # Building Telegram Desktop using cmake...
 pushd out/Release
-    %cmake .
+    %cmake -DCMAKE_LINKER:FILEPATH=/usr/bin/ld.bfd .
     %make_build
 popd
 
@@ -140,6 +145,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 %{_datadir}/metainfo/%{name}.appdata.xml
 
 %changelog
+* Sun Aug 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.3.12-100.chinfo
+- 1.3.12
+
 * Mon Jul 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.3.10-100.chinfo
 - 1.3.10
 - RPMFusion sync

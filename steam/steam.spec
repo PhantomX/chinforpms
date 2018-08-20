@@ -53,6 +53,7 @@ Patch3:         %{name}-launcher.patch
 Patch4:         https://git.archlinux.org/svntogit/community.git/plain/trunk/alsa_sdl_audiodriver.patch?h=packages/%{name}#/alsa_sdl_audiodriver.patch
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  firewalld-filesystem
 BuildRequires:  systemd
 
 # Required to run the initial setup
@@ -84,13 +85,8 @@ Requires:       systemd-libs%{?_isa}
 
 # Required for the firewall rules
 # http://fedoraproject.org/wiki/PackagingDrafts/ScriptletSnippets/Firewalld
-%if 0%{?rhel}
-Requires:       firewalld
-Requires(post): firewalld
-%else
 Requires:       firewalld-filesystem
 Requires(post): firewalld-filesystem
-%endif
 
 # Required for hardware decoding during In-Home Streaming (intel)
 %if (0%{?fedora} && 0%{?fedora} < 28)
