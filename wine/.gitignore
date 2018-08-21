@@ -1,3 +1,4 @@
 !/wine.init
 /laino-*.patch
 /staging-*.patch
+/whq-*.patch

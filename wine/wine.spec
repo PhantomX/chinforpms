@@ -11,7 +11,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 2f3ba1fb462894ad267d72d07ed2114e0ae1f5c2
+%global stagingver 3.14
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
@@ -31,8 +31,8 @@
 %endif
 
 Name:           wine
-Version:        3.13
-Release:        102%{?rctag}.chinfo%{?dist}
+Version:        3.14
+Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -96,12 +96,20 @@ Patch603:       wbemprox_query_v2.patch
 Patch604:       keybindings.patch
 Patch605:       poe-fix.patch
 
+%global whq_url  https://source.winehq.org/git/wine.git/patch
+Patch700:       %{whq_url}/4526c5923cc55a7de0a6d803631898d63da325c7#/whq-4526c5923cc55a7de0a6d803631898d63da325c7.patch
+Patch701:       %{whq_url}/8343099ff51a5e398f75789fbec70bc566bac9ac#/whq-8343099ff51a5e398f75789fbec70bc566bac9ac.patch
+Patch702:       %{whq_url}/91ac8eb00ab85bc5d7bfaae1a32c9a8cc08c8a19#/whq-91ac8eb00ab85bc5d7bfaae1a32c9a8cc08c8a19.patch
+Patch703:       %{whq_url}/9ccf51e3c12b95d06b5cf8bfffc3b5990977146f#/whq-9ccf51e3c12b95d06b5cf8bfffc3b5990977146f.patch
+Patch704:       %{whq_url}/54ec72bc09126c35bf5bd8df67195c91718047b7#/whq-54ec72bc09126c35bf5bd8df67195c91718047b7.patch
+Patch705:       %{whq_url}/51ad009bacd297c0607bc6de4d5dae18afe6ea98#/whq-51ad009bacd297c0607bc6de4d5dae18afe6ea98.patch
+
 # wine staging patches for wine-staging
 %if 0%{?staging}
-Source900: https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
-Patch900: https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
+Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
+Patch900:       https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
 # New pulseaudio patches causing noise with a game
-Patch901: wine-staging-old-pulseaudio.patch
+Patch901:       wine-staging-old-pulseaudio.patch
 %endif
 
 %if !%{?no64bit}
@@ -704,6 +712,13 @@ This package adds xaudio2 support for wine.
 %patch604 -p1 -R
 %patch605 -p1
 
+%patch700 -p1
+%patch701 -p1
+%patch702 -p1
+%patch703 -p1
+%patch704 -p1
+%patch705 -p1
+
 # setup and apply wine-staging patches
 %if 0%{?staging}
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
@@ -712,7 +727,11 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch901 -p1
 
 mv patches/winepulse-PulseAudio_Support patches/winepulse-PulseAudio_Support_new
-mv patches/winepulse-PulseAudio_Support_old patches/winepulse-PulseAudio_Support 
+mv patches/winepulse-PulseAudio_Support_old patches/winepulse-PulseAudio_Support
+cp -f patches/winepulse-PulseAudio_Support_new/0001-winepulse.drv-Use-a-separate-mainloop-and-ctx-for-pu.patch \
+  patches/winepulse-PulseAudio_Support/
+cp -f patches/winepulse-PulseAudio_Support_new/0006-winepulse-fetch-actual-program-name-if-possible.patch \
+  patches/winepulse-PulseAudio_Support/
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all
 
@@ -1391,9 +1410,7 @@ fi
 %{_libdir}/wine/api-ms-win-crt-string-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-crt-time-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-crt-utility-l1-1-0.dll.so
-%if 0%{?staging}
 %{_libdir}/wine/api-ms-win-devices-config-l1-1-0.dll.so
-%endif
 %{_libdir}/wine/api-ms-win-devices-config-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-devices-query-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-advapi32-l1-1-0.dll.so
@@ -1937,6 +1954,9 @@ fi
 %{_libdir}/wine/wlanapi.dll.so
 %{_libdir}/wine/wmphoto.dll.so
 %{_libdir}/wine/wnaspi32.dll.so
+%if 0%{?staging}
+%{_libdir}/wine/wow64cpu.dll.so
+%endif
 %{_libdir}/wine/wpc.dll.so
 %{_libdir}/wine/wpcap.dll.so
 %{_libdir}/wine/ws2_32.dll.so
@@ -2288,6 +2308,9 @@ fi
 %endif
 
 %changelog
+* Mon Aug 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.14-100.chinfo
+- 3.14
+
 * Sun Aug 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.13-102.chinfo
 - Staging update
 
