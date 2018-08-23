@@ -1,7 +1,7 @@
 Name:    skrooge
 Summary: Personal finances manager
-Version: 2.10.5
-Release: 1.chinfo%{?dist}
+Version: 2.15.0
+Release: 100.chinfo%{?dist}
 
 License: GPLv2+
 URL:     http://skrooge.org
@@ -11,6 +11,7 @@ Source0: http://download.kde.org/stable/skrooge/skrooge-%{version}.tar.xz
 
 BuildRequires: desktop-file-utils
 BuildRequires: extra-cmake-modules
+BuildRequires: gcc-c++
 BuildRequires: gettext
 BuildRequires: grantlee-qt5-devel
 BuildRequires: kf5-kactivities-devel
@@ -36,6 +37,7 @@ BuildRequires: kf5-kwidgetsaddons-devel
 BuildRequires: kf5-kwindowsystem-devel
 BuildRequires: kf5-kxmlgui-devel
 BuildRequires: kf5-rpm-macros
+BuildRequires: cmake(KF5DesignerPlugin)
 BuildRequires: libappstream-glib
 BuildRequires: pkgconfig(qca2-qt5)
 BuildRequires: pkgconfig(libofx)
@@ -54,19 +56,18 @@ BuildRequires: pkgconfig(sqlcipher)
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: qca-qt5-ossl%{?_isa}
-Requires: aqbanking%{?_isa}
 
 # drop prior needless -devel pkg
 Obsoletes: skrooge-devel < 2.0.0
 
 %description
-%{name} is a personal finances manager, 
-aiming at being simple and intuitive. 
-It allows you to keep track of your expenses and incomes, 
+%{name} is a personal finances manager,
+aiming at being simple and intuitive.
+It allows you to keep track of your expenses and incomes,
 categorize them, and build reports of them.
 
 %package libs
-Summary: Runtime libraries for %{name} 
+Summary: Runtime libraries for %{name}
 Requires: %{name} = %{version}-%{release}
 %description libs
 %{summary}.
@@ -83,7 +84,7 @@ pushd %{_target_platform}
   -DCMAKE_BUILD_TYPE:STRING="Release"
 popd
 
-make %{?_smp_mflags} -C %{_target_platform}
+%make_build -C %{_target_platform}
 
 
 %install
@@ -96,35 +97,9 @@ rm -fv %{buildroot}%{_kf5_libdir}/lib*.so
 
 
 %check
-appstream-util validate-relax --nonet %{buildroot}%{_kf5_datadir}/appdata/org.kde.skrooge.appdata.xml ||:
+appstream-util validate-relax --nonet %{buildroot}%{_kf5_metainfodir}/org.kde.skrooge.appdata.xml
 desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.desktop
 
-
-%post 
-touch --no-create %{_kf5_datadir}/icons/breeze &>/dev/null || :
-touch --no-create %{_kf5_datadir}/icons/breeze-dark &>/dev/null || :
-touch --no-create %{_kf5_datadir}/icons/hicolor &>/dev/null || :
-touch --no-create %{_kf5_datadir}/mime ||:
-
-%postun
-if [ $1 -eq 0 ] ; then
-touch --no-create %{_kf5_datadir}/icons/breeze &>/dev/null || :
-touch --no-create %{_kf5_datadir}/icons/breeze-dark &>/dev/null || :
-touch --no-create %{_kf5_datadir}/icons/hicolor &>/dev/null || :
-gtk-update-icon-cache %{_kf5_datadir}/icons/breeze &>/dev/null || :
-gtk-update-icon-cache %{_kf5_datadir}/icons/breeze-dark &>/dev/null || :
-gtk-update-icon-cache %{_kf5_datadir}/icons/hicolor &>/dev/null || :
-update-desktop-database -q &> /dev/null
-touch --no-create %{_kf5_datadir}/mime ||:
-update-mime-database %{?fedora:-n} %{_kf5_datadir}/mime &> /dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_kf5_datadir}/icons/breeze &>/dev/null || :
-gtk-update-icon-cache %{_kf5_datadir}/icons/breeze-dark &>/dev/null || :
-gtk-update-icon-cache %{_kf5_datadir}/icons/hicolor &>/dev/null || :
-update-desktop-database -q &> /dev/null
-update-mime-database %{?fedora:-n} %{_kf5_datadir}/mime &> /dev/null || :
 
 %files -f %{name}.lang
 %doc AUTHORS CHANGELOG README
@@ -132,7 +107,7 @@ update-mime-database %{?fedora:-n} %{_kf5_datadir}/mime &> /dev/null || :
 %{_kf5_sysconfdir}/xdg/skrooge_monthly.knsrc
 %{_kf5_sysconfdir}/xdg/skrooge_unit.knsrc
 %{_kf5_bindir}/skrooge*
-%{_kf5_datadir}/appdata/org.kde.skrooge.appdata.xml
+%{_kf5_metainfodir}/org.kde.skrooge.appdata.xml
 %{_kf5_datadir}/applications/org.kde.skrooge.desktop
 %{_kf5_datadir}/skrooge/
 %{_kf5_datadir}/mime/packages/x-skg.xml
@@ -146,16 +121,13 @@ update-mime-database %{?fedora:-n} %{_kf5_datadir}/mime &> /dev/null || :
 %{_kf5_datadir}/kxmlgui5/skg*/
 %{_kf5_datadir}/kxmlgui5/skrooge_*/
 
-%post libs -p /sbin/ldconfig
-%postun libs -p /sbin/ldconfig
-
 %files libs
 %{_kf5_qtplugindir}/skg*.so
 %{_kf5_qtplugindir}/skrooge*.so
-%{_kf5_qtplugindir}/designer/libskgbankguidesigner.so
-%{_kf5_qtplugindir}/designer/libskgbaseguidesigner.so
 %{_kf5_qtplugindir}/grantlee/*/grantlee_skgfilters.so
 %{_kf5_qtplugindir}/sqldrivers/libskgsqlcipher.so
+%{_kf5_qtplugindir}/designer/libskgbankgui*.so*
+%{_kf5_qtplugindir}/designer/libskgbasegui*.so*
 %{_kf5_libdir}/libskgbankgui.so.2*
 %{_kf5_libdir}/libskgbankmodeler.so.2*
 %{_kf5_libdir}/libskgbasegui.so.2*
@@ -163,14 +135,57 @@ update-mime-database %{?fedora:-n} %{_kf5_datadir}/mime &> /dev/null || :
 
 
 %changelog
-* Thu Nov 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.10.5-1.chinfo
+* Wed Aug 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.15.0-100.chinfo
+- 2.15.0
+
+* Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.14.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Sun Jul 01 2018 Rex Dieter <rdieter@fedoraproject.org> - 2.14.0-1
+- skrooge-2.14.0 (#1594790)
+
+* Thu Jun 21 2018 Rex Dieter <rdieter@fedoraproject.org> - 2.13.0-3
+- rebuild (qt5)
+
+* Mon May 28 2018 Rex Dieter <rdieter@fedoraproject.org> - 2.13.0-2
+- rebuild (qt5)
+
+* Tue May 08 2018 Rex Dieter <rdieter@fedoraproject.org> - 2.13.0-1
+- skrooge-2.13.0 (#1575967)
+
+* Mon Apr 02 2018 Bill Nottingham <notting@splat.cc> - 2.12.0-2
+- rebuild for libofx soname change
+
+* Thu Mar 22 2018 Rex Dieter <rdieter@fedoraproject.org> - 2.12.0-1
+- 2.12.0 (#1553733)
+
+* Mon Mar 05 2018 Rex Dieter <rdieter@fedoraproject.org> - 2.11.0-3
+- BR: gcc-c++, use %%make_build, %%check: stricter appdata check
+
+* Wed Feb 14 2018 Jan Grulich <jgrulich@redhat.com> - 2.11.0-2
+- rebuild (qt5)
+
+* Thu Feb 08 2018 Rex Dieter <rdieter@fedoraproject.org> - 2.11.0-1
+- 2.11.0 (#1541683)
+- use %%ldconfig_scriptlets
+
+* Thu Jan 18 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 2.10.5-4
+- Remove obsolete scriptlets
+
+* Mon Jan 01 2018 Rex Dieter <rdieter@fedoraproject.org> - 2.10.5-3
+- rebuild (qt5)
+
+* Mon Nov 27 2017 Rex Dieter <rdieter@fedoraproject.org> - 2.10.5-2
+- rebuild (qt5)
+
+* Thu Nov 09 2017 Rex Dieter <rdieter@fedoraproject.org> - 2.10.5-1
 - 2.10.5
 
-* Sat Nov 04 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.10.3-1.chinfo
+* Mon Nov 06 2017 Rex Dieter <rdieter@fedoraproject.org> - 2.10.3-1
 - 2.10.3
 
-* Thu Oct 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.9.0-1.chinfo
-- 2.9.0
+* Wed Oct 11 2017 Rex Dieter <rdieter@fedoraproject.org> - 2.8.1-2
+- BR: qt5-qtbase-private-devel
 
 * Wed Aug 02 2017 Rex Dieter <rdieter@fedoraproject.org> - 2.8.1-1
 - update to latest release (#1365514)

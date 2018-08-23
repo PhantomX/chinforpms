@@ -95,6 +95,7 @@ Patch603:       wbemprox_query_v2.patch
 # Keybind patch reversion
 Patch604:       keybindings.patch
 Patch605:       poe-fix.patch
+Patch606:       explorer-Properly-handle-WM_SETTEXT-to-allow-setting-desktop-title.patch
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 Patch700:       %{whq_url}/4526c5923cc55a7de0a6d803631898d63da325c7#/whq-4526c5923cc55a7de0a6d803631898d63da325c7.patch
@@ -711,6 +712,7 @@ This package adds xaudio2 support for wine.
 %patch602 -p1
 %patch604 -p1 -R
 %patch605 -p1
+%patch606 -p1
 
 %patch700 -p1
 %patch701 -p1
