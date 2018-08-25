@@ -32,7 +32,7 @@
 
 Name:           wine
 Version:        3.14
-Release:        100%{?rctag}.chinfo%{?dist}
+Release:        101%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -104,6 +104,8 @@ Patch702:       %{whq_url}/91ac8eb00ab85bc5d7bfaae1a32c9a8cc08c8a19#/whq-91ac8eb
 Patch703:       %{whq_url}/9ccf51e3c12b95d06b5cf8bfffc3b5990977146f#/whq-9ccf51e3c12b95d06b5cf8bfffc3b5990977146f.patch
 Patch704:       %{whq_url}/54ec72bc09126c35bf5bd8df67195c91718047b7#/whq-54ec72bc09126c35bf5bd8df67195c91718047b7.patch
 Patch705:       %{whq_url}/51ad009bacd297c0607bc6de4d5dae18afe6ea98#/whq-51ad009bacd297c0607bc6de4d5dae18afe6ea98.patch
+Patch706:       %{whq_url}/0649ba662980187660d18d4d0b0f442379ca092b#/whq-0649ba662980187660d18d4d0b0f442379ca092b.patch
+Patch707:       %{whq_url}/702e4a4ca11bd5918d650bb13833da14d1f64379#/whq-702e4a4ca11bd5918d650bb13833da14d1f64379.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
@@ -720,6 +722,8 @@ This package adds xaudio2 support for wine.
 %patch703 -p1
 %patch704 -p1
 %patch705 -p1
+%patch706 -p1
+%patch707 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -2310,6 +2314,9 @@ fi
 %endif
 
 %changelog
+* Fri Aug 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.14-101.chinfo
+- Virtual desktop fix
+
 * Mon Aug 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.14-100.chinfo
 - 3.14
 
