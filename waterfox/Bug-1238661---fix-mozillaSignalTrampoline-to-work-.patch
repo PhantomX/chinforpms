@@ -1,0 +1,19 @@
+diff -up firefox-60.0/mfbt/LinuxSignal.h.mozilla-1238661 firefox-60.0/mfbt/LinuxSignal.h
+--- firefox-60.0/mfbt/LinuxSignal.h.mozilla-1238661	2018-04-27 08:55:38.848241768 +0200
++++ firefox-60.0/mfbt/LinuxSignal.h	2018-04-27 09:06:47.946769859 +0200
+@@ -25,10 +25,13 @@ SignalTrampoline(int aSignal, siginfo_t*
+     "nop; nop; nop; nop"
+     : : : "memory");
+ 
++  // Because the assembler may generate additional insturctions below, we
++  // need to ensure NOPs are inserted first by separating them out above.
++
+   asm volatile (
+-    "b %0"
++    "bx %0"
+     :
+-    : "X"(H)
++    : "r"(H), "l"(aSignal), "l"(aInfo), "l"(aContext)
+     : "memory");
+ }
+ 

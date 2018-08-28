@@ -1,9 +1,9 @@
-%global commit eb9e7d6bffad754061248f424212851706bfdb8e
+%global commit 9a88873ce5ec3755a4719949a1346346aaa5bac5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180713
+%global date 20180807
 %global with_snapshot 1
 
-%global freebsd_rev 474713
+%global freebsd_rev 478244
 %global freebsd_root %{name}-FreeBSD-patches-r%{freebsd_rev}
 
 %if 0%{?with_snapshot}
@@ -114,7 +114,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.2
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -169,8 +169,10 @@ Patch230:        rhbz-1497932.patch
 Patch402:        mozilla-1196777.patch
 Patch406:        mozilla-256180.patch
 Patch413:        mozilla-1353817.patch
-Patch415:        mozilla-1405267.patch
-Patch416:        mozilla-1435695.patch
+Patch414:        mozilla-1435695.patch
+Patch415:        Bug-1238661---fix-mozillaSignalTrampoline-to-work-.patch
+Patch416:        bug1375074-save-restore-x28.patch
+Patch417:        mozilla-1436242.patch
 
 # Upstream updates
 
@@ -348,8 +350,12 @@ This package contains results of tests executed during build.
 %patch402 -p1 -b .1196777
 %patch406 -p1 -b .256180
 %patch413 -p1 -b .1353817
-%patch415 -p1 -b .1405267
-%patch416 -p1 -b .1435695
+%patch414 -p1 -b .1435695
+%ifarch %{arm}
+%patch415 -p1 -b .mozilla-1238661
+%endif
+%patch416 -p1 -b .bug1375074-save-restore-x28
+%patch417 -p1 -b .mozilla-1436242
 
 %patch490 -p1
 
@@ -377,7 +383,7 @@ done
 # 3: uncertain
 for i in \
   702179 991253 1021761 1144632 1288587 1452576 \
-  1388744 1405267 1413143 \
+  1388744 1413143 \
   1447519
 do
   rm -f _patches/patch-bug${i}
@@ -875,6 +881,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Sun Jul 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.2-3.20180807git9a88873
+- Crash fixes
+
 * Sun Jul 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.2-2.20180713giteb9e7d6
 - New release
 

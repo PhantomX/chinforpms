@@ -1,0 +1,7 @@
+= wine-pba - https://github.com/Firerat/wine-pba =
+
+This wine build has experimental Wine PBA patches enabled. If you have
+problems because of it, set environment variable PBA_DISABLE to 1 before
+running the wine application:
+
+  export PBA_DISABLE=1

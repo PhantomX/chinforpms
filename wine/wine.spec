@@ -15,6 +15,12 @@
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
+%global pba 1
+%global pbaver 3.14
+%if 0%(echo %{pbaver} | grep -q \\. ; echo $?) == 0
+%global pbarel v
+%global bpapkg knobs_and_switches-
+%endif
 %endif # 0%{?fedora}
 
 # binfmt macros for RHEL
@@ -32,7 +38,7 @@
 
 Name:           wine
 Version:        3.14
-Release:        101%{?rctag}.chinfo%{?dist}
+Release:        103%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -113,6 +119,15 @@ Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{
 Patch900:       https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
 # New pulseaudio patches causing noise with a game
 Patch901:       wine-staging-old-pulseaudio.patch
+
+%endif
+
+%if 0%{?pba}
+# acomminos PBA patches from Firerat github
+# https://github.com/Firerat/wine-pba
+Source1000:     https://github.com/Firerat/wine-pba/archive/%{?bpapkg}%{?pbarel}%{pbaver}.tar.gz#/wine-pba-%{pbaver}.tar.gz
+Source1001:     wine-README-pba
+Patch1000:      wine-staging-pba.patch
 %endif
 
 %if !%{?no64bit}
@@ -732,6 +747,18 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch900 -p1
 %patch901 -p1
 
+%if 0%{?pba}
+tar xvf %{S:1000}
+mv wine-pba*/README.md README_pba.md
+mv wine-pba*/LICENSE LICENSE_pba.md
+mkdir -p patches/wined3d-Persistent_Buffer_Allocator
+mv wine-pba-*/patches/*.patch patches/wined3d-Persistent_Buffer_Allocator/
+
+%patch1000 -p1
+
+cp -p %{S:1001} README-pba-pkg
+%endif # 0%{?pba}
+
 mv patches/winepulse-PulseAudio_Support patches/winepulse-PulseAudio_Support_new
 mv patches/winepulse-PulseAudio_Support_old patches/winepulse-PulseAudio_Support
 cp -f patches/winepulse-PulseAudio_Support_new/0001-winepulse.drv-Use-a-separate-mainloop-and-ctx-for-pu.patch \
@@ -1144,10 +1171,10 @@ fi
 # meta package
 
 %files core
+%license COPYING.LIB
+%license LICENSE
+%license LICENSE.OLD
 %doc ANNOUNCE
-%doc COPYING.LIB
-%doc LICENSE
-%doc LICENSE.OLD
 %doc AUTHORS
 %doc README-FEDORA
 %doc README
@@ -1155,6 +1182,11 @@ fi
 # do not include huge changelogs .OLD .ALPHA .BETA (#204302)
 %doc documentation/README.*
 %if 0%{?staging}
+%if 0%{?pba}
+%license LICENSE_pba.md
+%doc README_pba.md
+%doc README-pba-pkg
+%endif
 %{_bindir}/msidb
 %{_libdir}/wine/runas.exe.so
 %endif
@@ -2314,6 +2346,14 @@ fi
 %endif
 
 %changelog
+* Mon Aug 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.14-103.chinfo
+- Revert pulseaudio fixes
+
+* Mon Aug 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.14-102.chinfo
+- wine-pba patches
+- Try new pulseaudio fixes
+- license macros
+
 * Fri Aug 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.14-101.chinfo
 - Virtual desktop fix
 

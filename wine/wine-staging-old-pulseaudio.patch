@@ -1,7 +1,7 @@
-diff -up wine-3.13/patches/patchinstall.sh.orig wine-3.13/patches/patchinstall.sh
---- wine-3.13/patches/patchinstall.sh.orig	2018-07-22 19:31:05.395411305 -0300
-+++ wine-3.13/patches/patchinstall.sh	2018-07-22 19:34:52.501610751 -0300
-@@ -7698,21 +7698,24 @@ fi
+diff -up wine-3.14/patches/patchinstall.sh.orig wine-3.14/patches/patchinstall.sh
+--- wine-3.14/patches/patchinstall.sh.orig	2018-08-19 19:41:58.579603203 -0300
++++ wine-3.14/patches/patchinstall.sh	2018-08-19 19:46:21.276461034 -0300
+@@ -7830,27 +7830,28 @@ fi
  
  # Patchset winepulse-PulseAudio_Support
  # |
@@ -22,6 +22,7 @@ diff -up wine-3.13/patches/patchinstall.sh.orig wine-3.13/patches/patchinstall.s
  	patch_apply winepulse-PulseAudio_Support/0005-winepulse-implement-GetPropValue.patch
  	patch_apply winepulse-PulseAudio_Support/0006-winepulse-fetch-actual-program-name-if-possible.patch
  	patch_apply winepulse-PulseAudio_Support/0007-winepulse-return-PKEY_AudioEndpoint_PhysicalSpeakers.patch
+-	patch_apply winepulse-PulseAudio_Support/0008-winepulse-Fix-up-recording.patch
  	(
  		printf '%s\n' '+    { "Sebastian Lackner", "winepulse.drv: Use a separate mainloop and ctx for pulse_test_connect.", 1 },';
 -		printf '%s\n' '+    { "Andrew Eikum", "winepulse: Don'\''t rely on pulseaudio callbacks for timing.", 1 },';
@@ -30,9 +31,14 @@ diff -up wine-3.13/patches/patchinstall.sh.orig wine-3.13/patches/patchinstall.s
  		printf '%s\n' '+    { "Mark Harmstone", "winepulse: Fix segfault in pulse_rd_loop.", 1 },';
  		printf '%s\n' '+    { "Mark Harmstone", "winepulse: Implement GetPropValue.", 1 },';
  		printf '%s\n' '+    { "Mark Harmstone", "winepulse: Fetch actual program name if possible.", 1 },';
-diff -up wine-3.13/patches/winepulse-PulseAudio_Support_old/definition.orig wine-3.13/patches/winepulse-PulseAudio_Support_old/definition
---- wine-3.13/patches/winepulse-PulseAudio_Support_old/definition.orig	2018-07-20 20:54:00.000000000 -0300
-+++ wine-3.13/patches/winepulse-PulseAudio_Support_old/definition	2018-07-22 19:34:00.686516624 -0300
+ 		printf '%s\n' '+    { "Mark Harmstone", "winepulse: Return PKEY_AudioEndpoint_PhysicalSpeakers device prop.", 1 },';
+-		printf '%s\n' '+    { "Andrew Eikum", "winepulse: Fix up recording.", 1 },';
+ 	) >> "$patchlist"
+ fi
+ 
+diff -up wine-3.14/patches/winepulse-PulseAudio_Support_old/definition.orig wine-3.14/patches/winepulse-PulseAudio_Support_old/definition
+--- wine-3.14/patches/winepulse-PulseAudio_Support_old/definition.orig	2018-08-19 19:21:50.000000000 -0300
++++ wine-3.14/patches/winepulse-PulseAudio_Support_old/definition	2018-08-19 19:47:02.943790545 -0300
 @@ -4,4 +4,3 @@ Fixes: Fix possible segfault in pulse_rd
  Fixes: Add support for GetPropValue to PulseAudio backend
  Fixes: Use actual program name if available to describe PulseAudio streams
