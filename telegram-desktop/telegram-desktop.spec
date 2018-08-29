@@ -2,7 +2,7 @@
 %global appname tdesktop
 
 # Git revision of crl...
-%global commit1 9bc641f2d4ab140a84aea64c7f2d4669f7633246
+%global commit1 4291015efab76bda5886a56b5007f4531be17d46
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 # Decrease debuginfo verbosity to reduce memory consumption...
@@ -10,7 +10,7 @@
 
 Summary: Telegram Desktop official messaging app
 Name: telegram-desktop
-Version: 1.3.12
+Version: 1.3.14
 Release: 100.chinfo%{?dist}
 
 # Application and 3rd-party modules licensing:
@@ -86,7 +86,7 @@ business messaging needs.
 %autosetup -n %{appname}-%{version} -p1
 
 if ld -V | grep -q gold ;then
-  echo "gold link not supported"
+  echo "gold linker not supported"
   exit 1
 fi
 
@@ -145,6 +145,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 %{_datadir}/metainfo/%{name}.appdata.xml
 
 %changelog
+* Tue Aug 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.3.14-100.chinfo
+- 1.3.14
+
 * Sun Aug 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.3.12-100.chinfo
 - 1.3.12
 
