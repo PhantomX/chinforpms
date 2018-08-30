@@ -15,7 +15,7 @@
 
 Name:           mingw-wine-%{srcname}
 Version:        0.70
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -70,7 +70,7 @@ meson \
   --cross-file build-win%{__isa_bits}.txt \
   --buildtype "release" \
   --strip \
-  %{?with_tests:-Denable_tests=false} \
+  %{?with_tests:-Denable_tests=true} \
   build.%{__isa_bits}
 
 pushd build.%{__isa_bits}
@@ -85,6 +85,11 @@ install -pm0644 build.%{__isa_bits}/src/dxgi/dxgi.dll \
 
 install -pm0644 build.%{__isa_bits}/src/d3d11/d3d11.dll \
   %{buildroot}%{dxvk_dir}/d3d11_vk.dll
+
+for dll in d3d10 d3d10_1 d3d10core ;do
+  install -pm0644 build.%{__isa_bits}/src/d3d10/${dll}.dll \
+    %{buildroot}%{dxvk_dir}/${dll}_vk.dll
+done
 
 %if %{with tests}
 for file in \
@@ -111,9 +116,13 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 %{dxvk_dir}/*.exe
 %endif
 
+
 %changelog
+* Wed Aug 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.70-2
+- Add forgotten d3d10 dlls
+
 * Fri Aug 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.70-1
-- new version
+- 0.70
 
 * Sun Aug 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.65-1
 - 0.65

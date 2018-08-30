@@ -26,11 +26,11 @@
 
 set -e
 
-ver=20180309
+ver=20180829
 
 name="DXVK"
 dllsuffix="_vk"
-dlls="dxgi d3d11"
+dlls="dxgi d3d11 d3d10 d3d10_1 d3d10core"
 nodlls="wined3d"
 dlldir="/usr/share/wine/dxvk"
 

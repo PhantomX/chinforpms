@@ -1,0 +1,31 @@
+From 23ae67306d7fa1c4d5a8a9c8653f63ab93100f88 Mon Sep 17 00:00:00 2001
+From: Grishka <grishka93@gmail.com>
+Date: Fri, 24 Aug 2018 18:38:09 +0300
+Subject: [PATCH] closes #50
+
+---
+ VoIPController.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/VoIPController.cpp b/VoIPController.cpp
+index 4032411..567de25 100644
+--- a/VoIPController.cpp
++++ b/VoIPController.cpp
+@@ -26,7 +26,7 @@
+ #include <stdexcept>
+ #include <algorithm>
+ #include <inttypes.h>
+-
++#include <float.h>
+ 
+ 
+ inline int pad4(int x){
+@@ -873,7 +873,7 @@ void VoIPController::RunRecvThread(void* arg){
+ 				stats.bytesRecvdWifi+=(uint64_t) len;
+ 			try{
+ 				ProcessIncomingPacket(packet, srcEndpoint);
+-			}catch(out_of_range x){
++			}catch(out_of_range& x){
+ 				LOGW("Error parsing packet: %s", x.what());
+ 			}
+ 		}

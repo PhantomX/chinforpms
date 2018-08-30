@@ -53,7 +53,7 @@ BuildRequires: gyp
 # Development packages for Telegram Desktop...
 BuildRequires: guidelines-support-library-devel >= 1.0.0
 BuildRequires: mapbox-variant-devel >= 0.3.6
-BuildRequires: libtgvoip-devel >= 2.1.1
+BuildRequires: libtgvoip-devel >= 2.2.3
 BuildRequires: libappindicator-gtk3-devel
 BuildRequires: ffmpeg-devel >= 3.1
 BuildRequires: openal-soft-devel
@@ -85,11 +85,6 @@ business messaging needs.
 # Unpacking Telegram Desktop source archive...
 %autosetup -n %{appname}-%{version} -p1
 
-if ld -V | grep -q gold ;then
-  echo "gold linker not supported"
-  exit 1
-fi
-
 # Unpacking crl...
 pushd Telegram/ThirdParty
     rm -rf crl
@@ -109,7 +104,7 @@ sed -i "$LEN r Telegram/gyp/CMakeLists.inj" out/Release/CMakeLists.txt
 
 # Building Telegram Desktop using cmake...
 pushd out/Release
-    %cmake -DCMAKE_LINKER:FILEPATH=/usr/bin/ld.bfd .
+    %cmake .
     %make_build
 popd
 

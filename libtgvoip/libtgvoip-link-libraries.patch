@@ -1,0 +1,14 @@
+--- libtgvoip-2.2.3/libtgvoip.gyp.orig	2018-08-29 08:18:09.011936398 -0300
++++ libtgvoip-2.2.3/libtgvoip.gyp	2018-08-29 08:41:28.569694617 -0300
+@@ -245,7 +245,10 @@
+           '<(tgvoip_src_loc)/webrtc_dsp/webrtc/typedefs.h',
+ 
+         ],
+-        'libraries': [],
++        'libraries': [
++            '<!(pkg-config --libs libcrypto)',
++            '<!(pkg-config --libs opus)',
++        ],
+         'configurations': {
+           'Debug': {},
+           'Release': {},

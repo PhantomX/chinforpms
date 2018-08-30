@@ -1,0 +1,33 @@
+From bfa1e6ab76a467c6c6bff7eabb7c213acc7a1b34 Mon Sep 17 00:00:00 2001
+From: Grishka <grishka93@gmail.com>
+Date: Mon, 27 Aug 2018 14:39:27 +0300
+Subject: [PATCH] Proxy fix
+
+---
+ VoIPController.cpp | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/VoIPController.cpp b/VoIPController.cpp
+index 567de25..b82899e 100644
+--- a/VoIPController.cpp
++++ b/VoIPController.cpp
+@@ -223,6 +223,10 @@ VoIPController::VoIPController() : activeNetItfName(""),
+ 	machTimestart=0;
+ #endif
+ 
++	sendQueue->SetOverflowCallback([](PendingOutgoingPacket p){
++		LOGW("Dropping outgoing packet (type %d seq %d) from queue", p.type, p.seq);
++	});
++
+ 	shared_ptr<Stream> stm=make_shared<Stream>();
+ 	stm->id=1;
+ 	stm->type=STREAM_TYPE_AUDIO;
+@@ -762,7 +766,7 @@ void VoIPController::RunRecvThread(void* arg){
+ 
+ 		vector<NetworkSocket*> readSockets;
+ 		vector<NetworkSocket*> errorSockets;
+-		readSockets.push_back(realUdpSocket);
++		readSockets.push_back(udpSocket);
+ 		errorSockets.push_back(realUdpSocket);
+ 
+ 		{
