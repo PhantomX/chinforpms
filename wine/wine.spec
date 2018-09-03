@@ -11,12 +11,12 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.14
+%global stagingver 3.15
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
 %global pba 1
-%global pbaver 3.14
+%global pbaver 3.15
 %if 0%(echo %{pbaver} | grep -q \\. ; echo $?) == 0
 %global pbarel v
 %global bpapkg knobs_and_switches-
@@ -37,8 +37,8 @@
 %endif
 
 Name:           wine
-Version:        3.14
-Release:        103%{?rctag}.chinfo%{?dist}
+Version:        3.15
+Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -104,14 +104,6 @@ Patch605:       poe-fix.patch
 Patch606:       explorer-Properly-handle-WM_SETTEXT-to-allow-setting-desktop-title.patch
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
-Patch700:       %{whq_url}/4526c5923cc55a7de0a6d803631898d63da325c7#/whq-4526c5923cc55a7de0a6d803631898d63da325c7.patch
-Patch701:       %{whq_url}/8343099ff51a5e398f75789fbec70bc566bac9ac#/whq-8343099ff51a5e398f75789fbec70bc566bac9ac.patch
-Patch702:       %{whq_url}/91ac8eb00ab85bc5d7bfaae1a32c9a8cc08c8a19#/whq-91ac8eb00ab85bc5d7bfaae1a32c9a8cc08c8a19.patch
-Patch703:       %{whq_url}/9ccf51e3c12b95d06b5cf8bfffc3b5990977146f#/whq-9ccf51e3c12b95d06b5cf8bfffc3b5990977146f.patch
-Patch704:       %{whq_url}/54ec72bc09126c35bf5bd8df67195c91718047b7#/whq-54ec72bc09126c35bf5bd8df67195c91718047b7.patch
-Patch705:       %{whq_url}/51ad009bacd297c0607bc6de4d5dae18afe6ea98#/whq-51ad009bacd297c0607bc6de4d5dae18afe6ea98.patch
-Patch706:       %{whq_url}/0649ba662980187660d18d4d0b0f442379ca092b#/whq-0649ba662980187660d18d4d0b0f442379ca092b.patch
-Patch707:       %{whq_url}/702e4a4ca11bd5918d650bb13833da14d1f64379#/whq-702e4a4ca11bd5918d650bb13833da14d1f64379.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
@@ -730,15 +722,6 @@ This package adds xaudio2 support for wine.
 %patch604 -p1 -R
 %patch605 -p1
 %patch606 -p1
-
-%patch700 -p1
-%patch701 -p1
-%patch702 -p1
-%patch703 -p1
-%patch704 -p1
-%patch705 -p1
-%patch706 -p1
-%patch707 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -1844,6 +1827,7 @@ fi
 %{_libdir}/wine/olepro32.dll.so
 %{_libdir}/wine/olesvr32.dll.so
 %{_libdir}/wine/olethk32.dll.so
+%{_libdir}/wine/opcservices.dll.so
 %{_libdir}/wine/packager.dll.so
 %{_libdir}/wine/pdh.dll.so
 %{_libdir}/wine/photometadatahandler.dll.so
@@ -2346,6 +2330,9 @@ fi
 %endif
 
 %changelog
+* Sun Sep 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.15-100.chinfo
+- 3.15
+
 * Mon Aug 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.14-103.chinfo
 - Revert pulseaudio fixes
 

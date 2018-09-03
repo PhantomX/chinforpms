@@ -1,4 +1,4 @@
-From ac7d2e4c4c95a52eef881a0b5b826437cf3c4c71 Mon Sep 17 00:00:00 2001
+From 9bae6eb0555636cd2950c69422f2e4a205242cb0 Mon Sep 17 00:00:00 2001
 From: Vitaly Zaitsev <vitaly@easycoding.org>
 Date: Thu, 6 Jul 2017 17:27:01 +0200
 Subject: [PATCH] Fixed build of libtgvoip under Fedora as shared library.

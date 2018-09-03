@@ -14,8 +14,8 @@
 %global winever 3.10
 
 Name:           mingw-wine-%{srcname}
-Version:        0.70
-Release:        2%{?dist}
+Version:        0.71
+Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -118,6 +118,9 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Sun Sep 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.71-1
+- 0.71
+
 * Wed Aug 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.70-2
 - Add forgotten d3d10 dlls
 

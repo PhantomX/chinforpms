@@ -1,5 +1,5 @@
 Name: libtgvoip
-Version: 2.2.3
+Version: 2.2.4
 Release: 100.chinfo%{?dist}
 Summary: VoIP library for Telegram clients
 
@@ -11,9 +11,6 @@ URL: https://github.com/grishka/%{name}
 Source0: %{url}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Patch0: %{name}-build-fixes.patch
 
-# Temporary backported from upstream patches.
-Patch100: %{name}-add-missing-headers.patch
-Patch101: %{name}-proxy-fix.patch
 Patch200: %{name}-link-libraries.patch
 
 Provides: bundled(webrtc-audio-processing) = 0.3
@@ -70,6 +67,10 @@ find audio -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{build
 %{_libdir}/%{name}.so
 
 %changelog
+* Sun Sep 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.2.4-100.chinfo
+- 2.2.4
+- RPMFusion sync
+
 * Wed Aug 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.2.3-100.chinfo
 - Fix unresolved symbols
 

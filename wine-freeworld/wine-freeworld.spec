@@ -6,7 +6,7 @@
 #global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
-%global stagingver 3.14
+%global stagingver 3.15
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
@@ -17,7 +17,7 @@
 %endif
 
 Name:           wine-freeworld
-Version:        3.14
+Version:        3.15
 Release:        1%{?dist}
 Summary:        Wine libraries with all codecs support
 Epoch:          1
@@ -192,6 +192,9 @@ done
 
 
 %changelog
+* Sun Sep 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:3.15-1
+- 3.15
+
 * Sun Aug 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:3.14-1
 - 3.14
 
