@@ -1,7 +1,7 @@
-diff -up gtk+-3.22.7/gtk/gtkfilechooserwidget.c.recent gtk+-3.22.7/gtk/gtkfilechooserwidget.c
---- gtk+-3.22.7/gtk/gtkfilechooserwidget.c.recent	2017-02-08 16:41:09.867330517 -0200
-+++ gtk+-3.22.7/gtk/gtkfilechooserwidget.c	2017-02-08 16:44:21.594677422 -0200
-@@ -430,8 +430,6 @@ enum {
+diff -up gtk+-3.23.3/gtk/gtkfilechooserwidget.c.recent gtk+-3.23.3/gtk/gtkfilechooserwidget.c
+--- gtk+-3.23.3/gtk/gtkfilechooserwidget.c.recent	2018-08-28 17:14:47.000000000 -0300
++++ gtk+-3.23.3/gtk/gtkfilechooserwidget.c	2018-09-03 09:29:49.386213416 -0300
+@@ -428,8 +428,6 @@ enum {
          G_TYPE_STRING,            /* MODEL_COL_LOCATION_TEXT */ \
          PANGO_TYPE_ELLIPSIZE_MODE /* MODEL_COL_ELLIPSIZE */
  
@@ -10,8 +10,8 @@ diff -up gtk+-3.22.7/gtk/gtkfilechooserwidget.c.recent gtk+-3.22.7/gtk/gtkfilech
  /* Icon size for if we can't get it from the theme */
  #define FALLBACK_ICON_SIZE 16
  
-@@ -7533,6 +7531,22 @@ recent_idle_cleanup (gpointer data)
-   g_free (load_data);
+@@ -7477,6 +7475,22 @@ recent_item_is_private (GtkRecentInfo *i
+   return is_private;
  }
  
 +static gint
@@ -33,7 +33,7 @@ diff -up gtk+-3.22.7/gtk/gtkfilechooserwidget.c.recent gtk+-3.22.7/gtk/gtkfilech
  /* Populates the file system model with the GtkRecentInfo* items
   * in the provided list; frees the items
   */
-@@ -7545,7 +7559,7 @@ populate_model_with_recent_items (GtkFil
+@@ -7489,7 +7503,7 @@ populate_model_with_recent_items (GtkFil
    GList *l;
    gint n;
  
@@ -42,9 +42,9 @@ diff -up gtk+-3.22.7/gtk/gtkfilechooserwidget.c.recent gtk+-3.22.7/gtk/gtkfilech
  
    n = 0;
  
-diff -up gtk+-3.22.7/gtk/gtkrecentchooser.c.recent gtk+-3.22.7/gtk/gtkrecentchooser.c
---- gtk+-3.22.7/gtk/gtkrecentchooser.c.recent	2016-12-30 12:55:56.000000000 -0200
-+++ gtk+-3.22.7/gtk/gtkrecentchooser.c	2017-02-08 16:41:09.868330506 -0200
+diff -up gtk+-3.23.3/gtk/gtkrecentchooser.c.recent gtk+-3.23.3/gtk/gtkrecentchooser.c
+--- gtk+-3.23.3/gtk/gtkrecentchooser.c.recent	2017-11-16 11:21:24.000000000 -0200
++++ gtk+-3.23.3/gtk/gtkrecentchooser.c	2018-09-03 09:28:20.028513730 -0300
 @@ -227,7 +227,10 @@ gtk_recent_chooser_default_init (GtkRece
     * GtkRecentChooser:limit:
     *
@@ -66,9 +66,9 @@ diff -up gtk+-3.22.7/gtk/gtkrecentchooser.c.recent gtk+-3.22.7/gtk/gtkrecentchoo
                                                           GTK_PARAM_READWRITE|G_PARAM_EXPLICIT_NOTIFY));
  
    /**
-diff -up gtk+-3.22.7/gtk/gtkrecentchooserdefault.c.recent gtk+-3.22.7/gtk/gtkrecentchooserdefault.c
---- gtk+-3.22.7/gtk/gtkrecentchooserdefault.c.recent	2016-12-30 12:55:56.000000000 -0200
-+++ gtk+-3.22.7/gtk/gtkrecentchooserdefault.c	2017-02-08 16:41:09.868330506 -0200
+diff -up gtk+-3.23.3/gtk/gtkrecentchooserdefault.c.recent gtk+-3.23.3/gtk/gtkrecentchooserdefault.c
+--- gtk+-3.23.3/gtk/gtkrecentchooserdefault.c.recent	2017-11-16 11:21:24.000000000 -0200
++++ gtk+-3.23.3/gtk/gtkrecentchooserdefault.c	2018-09-03 09:28:20.028513730 -0300
 @@ -169,8 +169,6 @@ enum {
  #define NUM_CHARS 40
  #define NUM_LINES 9
@@ -118,9 +118,9 @@ diff -up gtk+-3.22.7/gtk/gtkrecentchooserdefault.c.recent gtk+-3.22.7/gtk/gtkrec
  static void
  recent_manager_changed_cb (GtkRecentManager *manager,
  			   gpointer          user_data)
-diff -up gtk+-3.22.7/gtk/gtksettings.c.recent gtk+-3.22.7/gtk/gtksettings.c
---- gtk+-3.22.7/gtk/gtksettings.c.recent	2016-12-30 12:55:56.000000000 -0200
-+++ gtk+-3.22.7/gtk/gtksettings.c	2017-02-08 16:41:09.868330506 -0200
+diff -up gtk+-3.23.3/gtk/gtksettings.c.recent gtk+-3.23.3/gtk/gtksettings.c
+--- gtk+-3.23.3/gtk/gtksettings.c.recent	2018-07-30 18:08:01.000000000 -0300
++++ gtk+-3.23.3/gtk/gtksettings.c	2018-09-03 09:28:20.028513730 -0300
 @@ -1069,8 +1069,6 @@ gtk_settings_class_init (GtkSettingsClas
     * -1 means every recently used file stored.
     *

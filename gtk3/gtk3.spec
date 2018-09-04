@@ -25,7 +25,7 @@
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name: gtk3
-Version: 3.23.2
+Version: 3.24.0
 Release: 100.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -36,7 +36,7 @@ Source1: https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}.
 Source2: chinforpms-adwaita.css
 
 # Revert some good features dropped by upstream (3.10)
-Patch100: gtk+3-3.22.0-gtk-recent-files-limit.patch
+Patch100: gtk+3-3.23.0-gtk-recent-files-limit.patch
 Patch101: gtk+3-3.22.0-gtk-toolbar-icon-size.patch
 Patch102: gtk+3-3.22.0-gtk-toolbar-style.patch
 
@@ -199,7 +199,7 @@ the functionality of the installed %{name} package.
 %prep
 %setup -q -n gtk+-%{version} -a 1
 
-%patch100 -p1
+%patch100 -p1 -b.recent
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
@@ -396,6 +396,12 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Mon Sep 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.24.0-100.chinfo
+- 3.24.0
+
+* Mon Sep 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.23.3-100.chinfo
+- 3.23.3
+
 * Tue Jul 31 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.23.2-100.chinfo
 - 3.23.2
 
