@@ -59,7 +59,8 @@ BuildRequires: libtgvoip-devel >= 2.2.4
 BuildRequires: libappindicator-gtk3-devel
 BuildRequires: ffmpeg-devel >= 3.1
 BuildRequires: openal-soft-devel
-BuildRequires: qt5-qtbase-devel
+BuildRequires: qt5-qtbase-private-devel
+%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 BuildRequires: libstdc++-devel
 BuildRequires: range-v3-devel
 BuildRequires: openssl-devel

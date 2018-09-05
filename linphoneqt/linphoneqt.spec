@@ -36,6 +36,8 @@ BuildRequires:  python2
 BuildRequires:  python2-six
 BuildRequires:  pystache
 BuildRequires:  qt5-linguist
+BuildRequires:  qt5-qtbase-private-devel
+%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 Requires:       hicolor-icon-theme
 
 %description

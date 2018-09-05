@@ -1,0 +1,22 @@
+We have several options for redistributing Bink files. We have tried to
+handle most licensing situations, but it you don't see a license that
+works for you - just give us a call. We're happy that you're using Bink,
+and we want to make distribution easy!
+
+  1. For non-commerical use, your first distribution option is to
+     accompany your Bink files with one of the players from the RAD
+     Video Tools. These utilities all display a RAD Game Tools credit.
+     You can distribute these utilities for no licensing fees as long
+     as you do NOT circumvent this notice and if your use is
+     non-commmercial. Any attempt to hide the notice voids your right
+     to distribute the files.
+  2. The second distribution option is our Bink SDK. With the SDK, you
+     have complete control over the entire Bink decompression process.
+     The Bink SDK is licensed on a per-product or per-site basis.
+  3. Note that, in no case, can you use our Bink encoder for any
+     commercial use without a license (whether or not you use our Bink
+     decoder player or SDKs). 
+
+Again, we are committed to making distribution easy, so if you have any
+questions about the distribution options, just give us a call at
+425.893.4300, or drop us an E-mail.

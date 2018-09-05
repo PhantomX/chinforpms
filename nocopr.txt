@@ -1,6 +1,7 @@
 aacgain
 alac_decoder
 bh-fonts
+binkplayer
 cowsrevenge
 discord
 dropboxd
