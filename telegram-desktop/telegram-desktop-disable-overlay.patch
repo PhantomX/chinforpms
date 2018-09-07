@@ -1,0 +1,23 @@
+diff -up tdesktop-1.3.16/Telegram/SourceFiles/ui/widgets/scroll_area.cpp.nooverlay tdesktop-1.3.16/Telegram/SourceFiles/ui/widgets/scroll_area.cpp
+--- tdesktop-1.3.16/Telegram/SourceFiles/ui/widgets/scroll_area.cpp.nooverlay	2018-09-06 15:01:31.613635863 -0300
++++ tdesktop-1.3.16/Telegram/SourceFiles/ui/widgets/scroll_area.cpp	2018-09-06 15:19:58.273137861 -0300
+@@ -106,8 +106,8 @@ void ScrollBar::updateBar(bool force) {
+ 
+ void ScrollBar::onHideTimer() {
+ 	if (!_hiding) {
+-		_hiding = true;
+-		_a_opacity.start([this] { update(); }, 1., 0., _st->duration);
++		_hiding = false;
++		//_a_opacity.start([this] { update(); }, 1., 0., _st->duration);
+ 	}
+ }
+ 
+@@ -125,7 +125,7 @@ void ScrollBar::setOver(bool over) {
+ 		}
+ 		if (nowOver && _hiding) {
+ 			_hiding = false;
+-			_a_opacity.start([this] { update(); }, 0., 1., _st->duration);
++			//_a_opacity.start([this] { update(); }, 0., 1., _st->duration);
+ 		}
+ 	}
+ }

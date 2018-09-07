@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20180516
+// 20180906
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -159,6 +159,8 @@ pref("privacy.trackingprotection.pbmode.enabled", true);
 pref("app.normandy.enabled", false);
 pref("app.normandy.api_url", "");
 pref("app.shield.optoutstudies.enabled", false);
+pref("extensions.shield-recipe-client.enabled", false);
+pref("shield.savant.enabled", false);
 pref("breakpad.reportURL", "");
 pref("browser.chrome.errorReporter.enabled", false);
 pref("browser.chrome.errorReporter.submitUrl", "");
@@ -214,10 +216,6 @@ pref("browser.safebrowsing.provider.google4.dataSharingURL", "");
 
 // Disable Screenshots
 //pref("extensions.screenshots.disabled", true);
-
-// Disable SHIELD
-pref("extensions.shield-recipe-client.enabled", false);
-pref("app.shield.optoutstudies.enabled", false);
 
 // Disable battery api
 pref("dom.battery.enabled", false);

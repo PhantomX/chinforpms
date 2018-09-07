@@ -1,0 +1,13 @@
+diff -up sdl-jstest-aafbdb1ed3e687583037ba55ae88b1210d6ce98b/CMakeLists.txt.orig sdl-jstest-aafbdb1ed3e687583037ba55ae88b1210d6ce98b/CMakeLists.txt
+--- sdl-jstest-aafbdb1ed3e687583037ba55ae88b1210d6ce98b/CMakeLists.txt.orig	2018-07-15 04:57:40.000000000 -0300
++++ sdl-jstest-aafbdb1ed3e687583037ba55ae88b1210d6ce98b/CMakeLists.txt	2018-09-07 09:52:22.319642502 -0300
+@@ -106,9 +106,6 @@ if(BUILD_SDL2_JSTEST)
+   file(COPY sdl2-jstest.1
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+ 
+-  file(COPY SDL_GameControllerDB/gamecontrollerdb.txt
+-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+-
+   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sdl2-jstest.1
+     DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+ 

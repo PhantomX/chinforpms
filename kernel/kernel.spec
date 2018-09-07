@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -625,7 +625,10 @@ Patch501: Fix-for-module-sig-verification.patch
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # rhbz 1470995
-Patch504: kexec-bzimage-verify-pe-signature-fix.patch
+Patch503: kexec-bzimage-verify-pe-signature-fix.patch
+
+# CVE-2018-15471 rhbz 1610555 1618414
+Patch504: xsa270.patch
 
 # Support for unique build ids
 # All queued in the kbuild tree
@@ -657,7 +660,7 @@ Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 9e91e290fe276622e8629298d5db5c35a8abfab0
+%global opensuse_id 70ab8aebd252bd951d6916a76c8dc34ee09f9cdc
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -706,6 +709,7 @@ Patch3017: %{pf_url}/89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch#/pf-89d88c89
 Patch3018: %{pf_url}/16cf1745ff9e12ba8914781133322cd14cdd0178.patch#/pf-16cf1745ff9e12ba8914781133322cd14cdd0178.patch
 Patch3019: %{pf_url}/8c1fddf8714b6809b91a1cf23709ba2d81127890.patch#/pf-8c1fddf8714b6809b91a1cf23709ba2d81127890.patch
 Patch3020: %{pf_url}/e4f0081917935db89ad8204ed005e9e5744794f3.patch#/pf-e4f0081917935db89ad8204ed005e9e5744794f3.patch
+Patch3021: %{pf_url}/ea8f58d704199c2e0c268e9a28394727a1561752.patch#/pf-ea8f58d704199c2e0c268e9a28394727a1561752.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1978,6 +1982,10 @@ fi
 #
 #
 %changelog
+* Wed Sep 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.6-500.chinfo
+- 4.18.6
+- f28 sync
+
 * Fri Aug 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.5-500.chinfo
 - 4.18.5
 
