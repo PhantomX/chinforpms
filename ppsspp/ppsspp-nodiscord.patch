@@ -1,0 +1,45 @@
+diff -up CMakeLists.txt.nodiscord CMakeLists.txt
+--- CMakeLists.txt.nodiscord	2018-09-08 01:48:55.434088542 -0300
++++ CMakeLists.txt	2018-09-08 01:55:57.902262352 -0300
+@@ -1760,11 +1760,6 @@ if(FFmpeg_FOUND)
+   )
+ endif()
+ 
+-# Discord integration
+-if(NOT IOS)
+-target_link_libraries(${CoreLibName} discord-rpc)
+-endif()
+-
+ setup_target_project(${CoreLibName} Core)
+ 
+ # Generate git-version.cpp at build time.
+diff -up ext/CMakeLists.txt.nodiscord ext/CMakeLists.txt
+--- ext/CMakeLists.txt.nodiscord	2018-09-07 02:13:23.000000000 -0300
++++ ext/CMakeLists.txt	2018-09-08 01:56:22.304132925 -0300
+@@ -12,6 +12,3 @@ add_subdirectory(glslang)
+ add_subdirectory(snappy)
+ add_subdirectory(udis86)
+ add_subdirectory(SPIRV-Cross-build)
+-if(NOT IOS)
+-add_subdirectory(discord-rpc-build)
+-endif()
+diff -up UI/DiscordIntegration.cpp.nodiscord UI/DiscordIntegration.cpp
+--- UI/DiscordIntegration.cpp.nodiscord	2018-09-07 02:13:23.000000000 -0300
++++ UI/DiscordIntegration.cpp	2018-09-08 01:55:19.854260284 -0300
+@@ -7,15 +7,7 @@
+ #include "DiscordIntegration.h"
+ #include "i18n/i18n.h"
+ 
+-#if (PPSSPP_PLATFORM(WINDOWS) || PPSSPP_PLATFORM(MAC) || PPSSPP_PLATFORM(LINUX)) && !PPSSPP_PLATFORM(ANDROID)
+-
+-#define ENABLE_DISCORD
+-
+-#else
+-
+-// TODO
+-
+-#endif
++#define DISABLE_DISCORD
+ 
+ #ifdef ENABLE_DISCORD
+ #include "ext/discord-rpc/include/discord_rpc.h"

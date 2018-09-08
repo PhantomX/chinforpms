@@ -35,29 +35,22 @@
 %define with_radeonsi 1
 %endif
 
-%if 0%{?fedora} < 28
-%define with_wayland_egl 1
-%else
-%define with_wayland_egl 0
-%endif
-
 %define dri_drivers --with-dri-drivers=%{?base_drivers}%{?platform_drivers}
 
-%global sanitize 1
-
-#global rctag rc6
+%global sanitize 0
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        18.1.7
-Release:        100%{?rctag:.%{rctag}}.chinfo%{?dist}
+%global ver     18.2.0
+Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
+Release:        100.chinfo%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
 %if 0%{sanitize}
-Source0:        https://mesa.freedesktop.org/archive/%{name}-%{version}%{?rctag:-%{rctag}}.tar.xz
+Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 %else
-Source0:        %{name}-%{version}%{?rctag:-%{rctag}}.tar.xz
+Source0:        %{name}-%{ver}.tar.xz
 %endif
 Source1:        vl_decoder.c
 Source2:        vl_mpeg12_decoder.c
@@ -74,10 +67,6 @@ Patch4:         0004-bigendian-assert.patch
 # Disable rgb10 configs by default:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
-
-# glvnd support patches
-# non-upstreamed ones
-Patch10:        glvnd-fix-gl-dot-pc.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -154,7 +143,7 @@ Obsoletes:      mesa-dri-filesystem < %{?epoch:%{epoch}:}%{version}-%{release}
 %package libGL
 Summary:        Mesa libGL runtime libraries
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       libglvnd-glx%{?_isa} >= 1:1.0.1-0.7
+Requires:       libglvnd-glx%{?_isa} >= 1:1.0.1-0.9
 
 %description libGL
 %{summary}.
@@ -262,25 +251,6 @@ Provides:       libgbm-devel%{?_isa}
 %description libgbm-devel
 %{summary}.
 
-%if %{?with_wayland_egl}
-%package libwayland-egl
-Summary:        Mesa libwayland-egl runtime library
-Provides:       libwayland-egl
-Provides:       libwayland-egl%{?_isa}
-
-%description libwayland-egl
-%{summary}.
-
-%package libwayland-egl-devel
-Summary:        Mesa libwayland-egl development package
-Requires:       %{name}-libwayland-egl%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       libwayland-egl-devel
-Provides:       libwayland-egl-devel%{?_isa}
-
-%description libwayland-egl-devel
-%{summary}.
-%endif
-
 %if 0%{?with_xa}
 %package libxatracker
 Summary:        Mesa XA state tracker
@@ -358,10 +328,11 @@ Requires:       vulkan-devel
 Headers for development with the Vulkan API.
 
 %prep
-%autosetup -n %{name}-%{version}%{?rctag:-%{rctag}} -p1
+%autosetup -n %{name}-%{ver} -p1
 %if 0%{sanitize}
   cp -f %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
   cp -f %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
+  exit 0
 %else
   cmp %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
   cmp %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
@@ -370,6 +341,10 @@ Headers for development with the Vulkan API.
 cp %{SOURCE4} docs/
 
 %build
+%if !0%{sanitize}
+  cmp %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
+  cmp %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
+%endif
 autoreconf -vfi
 
 %ifarch %{ix86}
@@ -428,15 +403,9 @@ rm -f %{buildroot}%{_libdir}/libEGL_mesa.so
 # XXX can we just not build this
 rm -f %{buildroot}%{_libdir}/libGLES*
 
-# remove libwayland-egl on F28+ where it's built as part of wayland source package
-%if !%{?with_wayland_egl}
-rm -f %{buildroot}%{_libdir}/libwayland-egl.so*
-rm -f %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
-%endif
-
 # glvnd needs a default provider for indirect rendering where it cannot
 # determine the vendor
-ln -s %{_libdir}/libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_fedora.so.0
+ln -s %{_libdir}/libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 
 # strip out useless headers
 rm -f %{buildroot}%{_includedir}/GL/w*.h
@@ -467,7 +436,7 @@ popd
 
 %files libGL
 %{_libdir}/libGLX_mesa.so.0*
-%{_libdir}/libGLX_fedora.so.0*
+%{_libdir}/libGLX_system.so.0*
 %files libGL-devel
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/gl_mangle.h
@@ -530,15 +499,6 @@ popd
 %{_libdir}/libgbm.so
 %{_includedir}/gbm.h
 %{_libdir}/pkgconfig/gbm.pc
-
-%if %{?with_wayland_egl}
-%files libwayland-egl
-%{_libdir}/libwayland-egl.so.1
-%{_libdir}/libwayland-egl.so.1.*
-%files libwayland-egl-devel
-%{_libdir}/libwayland-egl.so
-%{_libdir}/pkgconfig/wayland-egl.pc
-%endif
 
 %if 0%{?with_xa}
 %files libxatracker
@@ -656,6 +616,10 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Fri Sep 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.2.0-100.chinfo
+- 18.2.0
+- Rawhide sync
+
 * Fri Aug 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.7-100.chinfo
 - 18.1.7
 

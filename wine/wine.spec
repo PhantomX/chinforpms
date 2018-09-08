@@ -38,7 +38,7 @@
 
 Name:           wine
 Version:        3.15
-Release:        100%{?rctag}.chinfo%{?dist}
+Release:        102%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -104,6 +104,21 @@ Patch605:       poe-fix.patch
 Patch606:       explorer-Properly-handle-WM_SETTEXT-to-allow-setting-desktop-title.patch
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
+Patch700:       %{whq_url}/e84742abccd8314ce5382bed8e1f83f3de796cd3#/whq-e84742abccd8314ce5382bed8e1f83f3de796cd3.patch
+Patch701:       %{whq_url}/53271d9567759634a84f901e5506084179940e87#/whq-53271d9567759634a84f901e5506084179940e87.patch
+Patch702:       %{whq_url}/c8175e6c7a73d1c510fe2285f74e6bcf808c9fe2#/whq-c8175e6c7a73d1c510fe2285f74e6bcf808c9fe2.patch
+Patch703:       %{whq_url}/8c9c2fca08bb654568071305ab98b16d5b712c47#/whq-8c9c2fca08bb654568071305ab98b16d5b712c47.patch
+Patch704:       %{whq_url}/c3af72019ef1141610d2116d66e3fb7591832557#/whq-c3af72019ef1141610d2116d66e3fb7591832557.patch
+Patch705:       %{whq_url}/58f3dc4becbb4afcb9b4ccc95ae635b59c9956e9#/whq-58f3dc4becbb4afcb9b4ccc95ae635b59c9956e9.patch
+Patch706:       %{whq_url}/9a96657910c2ce30f6f8492bdd562932d63ba430#/whq-9a96657910c2ce30f6f8492bdd562932d63ba430.patch
+Patch707:       %{whq_url}/12195e450fea6885eb2d3be05a8ed92dd93752c9#/whq-12195e450fea6885eb2d3be05a8ed92dd93752c9.patch
+Patch708:       %{whq_url}/68e35eb7456e68d4233ffc5e795511823a45ba6a#/whq-68e35eb7456e68d4233ffc5e795511823a45ba6a.patch
+Patch709:       %{whq_url}/fd044802b9de14416b4d5fa723d2596d39402c97#/whq-fd044802b9de14416b4d5fa723d2596d39402c97.patch
+Patch710:       %{whq_url}/d99f6821183ef16457f5cedb13289bc715d11f09#/whq-d99f6821183ef16457f5cedb13289bc715d11f09.patch
+Patch711:       %{whq_url}/54530bc4933ae1014c3697c95e22b8ca5a275bc4#/whq-54530bc4933ae1014c3697c95e22b8ca5a275bc4.patch
+Patch712:       %{whq_url}/ceea5bda14ecf4c8ce262fc7ab88df49e500bc38#/whq-ceea5bda14ecf4c8ce262fc7ab88df49e500bc38.patch
+Patch713:       %{whq_url}/4a6855a575c02aa1569aab8b2e96720fc02f3f26#/whq-4a6855a575c02aa1569aab8b2e96720fc02f3f26.patch
+Patch714:       %{whq_url}/7f567451b29b1c1d3e16f147136e00f545d640b1#/whq-7f567451b29b1c1d3e16f147136e00f545d640b1.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
@@ -722,6 +737,22 @@ This package adds xaudio2 support for wine.
 %patch604 -p1 -R
 %patch605 -p1
 %patch606 -p1
+
+%patch700 -p1
+%patch701 -p1
+%patch702 -p1
+%patch703 -p1
+%patch704 -p1
+%patch705 -p1
+%patch706 -p1
+%patch707 -p1
+%patch708 -p1
+%patch709 -p1
+%patch710 -p1
+%patch711 -p1
+%patch712 -p1
+%patch713 -p1
+%patch714 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -2330,6 +2361,12 @@ fi
 %endif
 
 %changelog
+* Fri Sep 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.15-102.chinfo
+- Try again
+
+* Thu Sep 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.15-101.chinfo
+- Random upstream patches
+
 * Sun Sep 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.15-100.chinfo
 - 3.15
 

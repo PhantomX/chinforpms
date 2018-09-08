@@ -1,6 +1,6 @@
-%global commit ec5b0c21a82f26a5def7210df4f46230e5b7ff60
+%global commit fd6c3145d5379a74fa7945f10855eb03e07a573a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180815
+%global date 20180907
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -43,7 +43,7 @@
 
 Name:           ppsspp
 Version:        1.6.3
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A PSP emulator
 
 License:        GPLv2+
@@ -64,6 +64,7 @@ Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}.t
 Source10:       %{name}.appdata.xml
 
 Patch0:         %{name}-noupdate.patch
+Patch1:         %{name}-nodiscord.patch
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -205,8 +206,7 @@ popd
 %install
 
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 build/PPSSPPSDL %{buildroot}%{_bindir}/%{name}.bin
-install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
+install -pm0755 build/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
 cp -r build/assets %{buildroot}%{_datadir}/%{name}/
@@ -243,7 +243,6 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %license LICENSE.TXT
 %doc README.md
 %{_bindir}/%{name}
-%{_bindir}/%{name}.bin
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
 %dir %{_datadir}/%{name}
@@ -264,6 +263,10 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Sep 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-4.20180907gitfd6c314
+- New snapshot
+- Dropped unneeded GL wrapper. Mesa 8.2 sets proper compat now.
+
 * Fri Aug 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-3.20180515gitec5b0c2
 - New snapshot
 
