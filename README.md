@@ -22,7 +22,6 @@ release tags).
  * **easytag** - Tests
  * **engrampa** - Split caja extension
  * **gamemode** - System inih and launch script
- * **gnome-colors-icon-theme** - Post script and cleanup
  * **gstreamer1** - Added suffix -32/-64 to gst-plugin-scanner, so it can build
                     correct multilib plugins registry, as
                     _~/.cache/gstreamer-1.0/registry.i686.bin_ on x86_64

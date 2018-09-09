@@ -1,4 +1,4 @@
-%global pluginapi 3.17.0.0
+%global pluginapi 3.17.1.0
 
 %global with_fancy 0
 
@@ -6,7 +6,7 @@
 %global build_manual 1
 
 Name:           claws-mail
-Version:        3.17.0
+Version:        3.17.1
 Release:        100.chinfo%{?dist}
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -651,6 +651,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Sat Sep 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.17.1-100.chinfo
+- 3.17.1
+
 * Thu Aug 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.17.0-100.chinfo
 - 3.17.0
 - dillo plugin again

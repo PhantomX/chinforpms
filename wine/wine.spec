@@ -38,7 +38,7 @@
 
 Name:           wine
 Version:        3.15
-Release:        102%{?rctag}.chinfo%{?dist}
+Release:        103%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -119,6 +119,13 @@ Patch711:       %{whq_url}/54530bc4933ae1014c3697c95e22b8ca5a275bc4#/whq-54530bc
 Patch712:       %{whq_url}/ceea5bda14ecf4c8ce262fc7ab88df49e500bc38#/whq-ceea5bda14ecf4c8ce262fc7ab88df49e500bc38.patch
 Patch713:       %{whq_url}/4a6855a575c02aa1569aab8b2e96720fc02f3f26#/whq-4a6855a575c02aa1569aab8b2e96720fc02f3f26.patch
 Patch714:       %{whq_url}/7f567451b29b1c1d3e16f147136e00f545d640b1#/whq-7f567451b29b1c1d3e16f147136e00f545d640b1.patch
+Patch715:       %{whq_url}/b3d819a1d7a406176e343ebfc9ef74341a2f098b#/whq-b3d819a1d7a406176e343ebfc9ef74341a2f098b.patch
+
+# Reversions
+Patch750:       %{whq_url}/6a4be7155d77c972e0c63a50f45be864584ccf87#/whq-6a4be7155d77c972e0c63a50f45be864584ccf87.patch
+Patch751:       %{whq_url}/6b3f6657876980f86d09e06bb1f35737acf96d12#/whq-6b3f6657876980f86d09e06bb1f35737acf96d12.patch
+Patch752:       %{whq_url}/44e794327436effc75478ff68def40f9d8801a82#/whq-44e794327436effc75478ff68def40f9d8801a82.patch
+Patch753:       %{whq_url}/c18f8e4c3235d0417bfb9fdba2d938bf2e42ee65#/whq-c18f8e4c3235d0417bfb9fdba2d938bf2e42ee65.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
@@ -126,7 +133,8 @@ Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{
 Patch900:       https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
 # New pulseaudio patches causing noise with a game
 Patch901:       wine-staging-old-pulseaudio.patch
-
+Patch902:       0001-winedevice-Avoid-invalid-memory-access-when-relocati.patch
+ 
 %endif
 
 %if 0%{?pba}
@@ -738,6 +746,11 @@ This package adds xaudio2 support for wine.
 %patch605 -p1
 %patch606 -p1
 
+%patch753 -p1 -R
+%patch752 -p1 -R
+%patch751 -p1 -R
+%patch750 -p1 -R
+
 %patch700 -p1
 %patch701 -p1
 %patch702 -p1
@@ -753,6 +766,7 @@ This package adds xaudio2 support for wine.
 %patch712 -p1
 %patch713 -p1
 %patch714 -p1
+%patch715 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -780,7 +794,9 @@ cp -f patches/winepulse-PulseAudio_Support_new/0001-winepulse.drv-Use-a-separate
 cp -f patches/winepulse-PulseAudio_Support_new/0006-winepulse-fetch-actual-program-name-if-possible.patch \
   patches/winepulse-PulseAudio_Support/
 
-./patches/patchinstall.sh DESTDIR="`pwd`" --all
+./patches/patchinstall.sh DESTDIR="`pwd`" --all -W ntoskrnl.exe-Fix_Relocation
+
+%patch902 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -2361,6 +2377,9 @@ fi
 %endif
 
 %changelog
+* Sat Sep 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.15-103.chinfo
+- Try again again
+
 * Fri Sep 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.15-102.chinfo
 - Try again
 
