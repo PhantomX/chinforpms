@@ -1,6 +1,6 @@
-%global commit 9a88873ce5ec3755a4719949a1346346aaa5bac5
+%global commit 2294d4556bf76a6293275a17dbf9ef5fd187459e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180807
+%global date 20180908
 %global with_snapshot 1
 
 %global freebsd_rev 478244
@@ -9,6 +9,9 @@
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
+
+# Build with only clang?
+%global with_clang        0
 
 # Use ALSA backend?
 %global alsa_backend      1
@@ -114,7 +117,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.2
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -247,7 +250,9 @@ BuildRequires:  llvm
 BuildRequires:  llvm-devel
 BuildRequires:  clang
 BuildRequires:  clang-libs
+%if !0%{?with_clang}
 BuildRequires:  gcc-c++
+%endif
 BuildRequires:  patchutils
 
 Requires:       mozilla-filesystem
@@ -382,7 +387,7 @@ done
 # 2: no apply
 # 3: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1452576 \
+  702179 991253 1021761 1144632 1288587 1452576 1425930 1469914 1469309 1470260 1472925 \
   1388744 1413143 \
   1447519
 do
@@ -411,6 +416,11 @@ done
 
 rm -f .mozconfig
 cp %{SOURCE10} .mozconfig
+
+%if 0%{?with_clang}
+echo 'export CC=clang' >> .mozconfig
+echo 'export CXX=clang++' >> .mozconfig
+%endif
 
 %if %{?system_nss}
 echo "ac_add_options --with-system-nspr" >> .mozconfig
@@ -881,6 +891,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Sun Sep 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.2-4.20180908git2294d45
+- New snapshot
+- clang only build switch
+
 * Sun Jul 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.2-3.20180807git9a88873
 - Crash fixes
 

@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -594,17 +594,11 @@ Patch308: mmc-sunxi-allow-3.3V-DDR-when-DDR-is-available.patch
 # https://patchwork.kernel.org/patch/10540521/
 Patch309: mmc-sunxi-remove-output-of-virtual-base-address.patch
 
-Patch310: arm-dts-armada388-helios4.patch
-
 # https://www.spinics.net/lists/arm-kernel/msg670137.html
 Patch311: arm64-ZynqMP-firmware-clock-drivers-core.patch
 
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-enable-pmu.patch
-
-Patch331: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
-Patch332: bcm2835-hwmon-Add-support-for-RPi-voltage-sensor.patch
 
 # https://patchwork.freedesktop.org/patch/240917/
 Patch334: drm-vc4-Fix-the-no-scaling-case-on-multi-planar-YUV-formats.patch
@@ -623,9 +617,6 @@ Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# rhbz 1470995
-Patch503: kexec-bzimage-verify-pe-signature-fix.patch
 
 # CVE-2018-15471 rhbz 1610555 1618414
 Patch504: xsa270.patch
@@ -660,7 +651,7 @@ Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 70ab8aebd252bd951d6916a76c8dc34ee09f9cdc
+%global opensuse_id 952d850f3777feaeb7b647ccad11f8f525fd8e8c
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -708,7 +699,6 @@ Patch3016: %{pf_url}/33e3b43082a58c90af511ad039c916f8eae79fe1.patch#/pf-33e3b430
 Patch3017: %{pf_url}/89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch#/pf-89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch
 Patch3018: %{pf_url}/16cf1745ff9e12ba8914781133322cd14cdd0178.patch#/pf-16cf1745ff9e12ba8914781133322cd14cdd0178.patch
 Patch3019: %{pf_url}/8c1fddf8714b6809b91a1cf23709ba2d81127890.patch#/pf-8c1fddf8714b6809b91a1cf23709ba2d81127890.patch
-Patch3020: %{pf_url}/e4f0081917935db89ad8204ed005e9e5744794f3.patch#/pf-e4f0081917935db89ad8204ed005e9e5744794f3.patch
 Patch3021: %{pf_url}/ea8f58d704199c2e0c268e9a28394727a1561752.patch#/pf-ea8f58d704199c2e0c268e9a28394727a1561752.patch
 
 # Add additional cpu gcc optimization support
@@ -1982,6 +1972,9 @@ fi
 #
 #
 %changelog
+* Sun Sep 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.7-500.chinfo
+- 4.18.7
+
 * Wed Sep 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.6-500.chinfo
 - 4.18.6
 - f28 sync
@@ -2261,50 +2254,6 @@ fi
 - f27 sync
 - More bfq fixes from patchwork
 - Update kernel_gcc_patch to 4.13+
-
-* Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.10-500.chinfo
-- 4.12.10
-- f26 sync
-
-* Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.9-500.chinfo
-- 4.12.9
-
-* Wed Aug 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.8-500.chinfo
-- 4.12.8
-
-* Sun Aug 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.7-500.chinfo
-- 4.12.7
-- f26 sync
-
-* Sat Aug 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.6-500.chinfo
-- 4.12.6
-- f26 sync
-
-* Mon Aug 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.5-500.chinfo
-- 4.12.5
-- f26 sync
-
-* Mon Jul 31 2017 Phantom X <megaphantomx at bol dot com dot br>
-- Some Patchwork works
-
-* Sat Jul 29 2017 Phantom X <megaphantomx at bol dot com dot br>
-- BFQ fixes
-
-* Thu Jul 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.4-500.chinfo
-- 4.12.4
-- f26 sync
-
-* Fri Jul 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.3-500.chinfo
-- 4.12.3
-
-* Sun Jul 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.2-500.chinfo
-- 4.12.2
-- f26 sync
-
-* Thu Jul 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.12.1-500.chinfo
-- 4.12.1
-- f26 sync
-- Enable blk-mq by default, because BFQ
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

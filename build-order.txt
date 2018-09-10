@@ -35,7 +35,6 @@ firejail
 firetools
 fluxbox-chinfo-menu
 freac-cdk
-freefilesync
 engrampa
 gamemode
 gcdemu
@@ -46,10 +45,8 @@ gkrellm-leds
 gkrellmpc
 gkrellm-themes
 gmysqlcc
-gnome-colors-icon-theme
 gpa
 gtk3-nocsd
-hakuneko
 hollywood
 image-analyzer
 joy2key
