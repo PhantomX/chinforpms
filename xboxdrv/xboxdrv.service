@@ -6,7 +6,7 @@ Documentation=man:xboxdrv(1)
 Type=forking
 User=root
 PIDFile=/var/run/xboxdrv.pid
-ExecStart=/bin/xboxdrv -c /etc/xboxdrv.conf --daemon --detach --pid-file /var/run/xboxdrv.pid --dbus system
+ExecStart=/bin/xboxdrv -c /etc/xboxdrv.conf --daemon --detach --pid-file /run/xboxdrv.pid --dbus system
 
 [Install]
 WantedBy=multi-user.target

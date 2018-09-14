@@ -8,13 +8,8 @@
 
 %global progdir %{_libdir}/%{pkgname1}
 
-%ifarch x86_64
 %global parch x86_64
 %global larch x64
-%else
-%global parch i386
-%global larch x86
-%endif
 
 # Do no blame SpiderOak devs if setting 1 in these
 # Set to 1 to use system libs
@@ -26,7 +21,7 @@
 %global with_pyqt 0
 
 Name:           spideroakone
-Version:        7.2.0
+Version:        7.3.0
 Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
@@ -35,7 +30,7 @@ License:        Proprietary
 URL:            https://spideroak.com/
 Source0:        https://spideroak.com/release/spideroak/rpm_%{larch}#/%{pkgname1}.%{version}.%{pkgrel}.%{parch}.rpm
 
-ExclusiveArch:  %{ix86} x86_64
+ExclusiveArch:  x86_64
 
 BuildRequires:  binutils
 BuildRequires:  patchelf
@@ -287,7 +282,12 @@ done
 %{_datadir}/icons/hicolor/*x*/apps/*.png
 %{_datadir}/pixmaps/*.png
 
+
 %changelog
+* Fri Sep 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.3.0-1
+- 7.3.0
+- Only x86_64 now
+
 * Sat Jun 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.2.0-1
 - 7.2.0
 

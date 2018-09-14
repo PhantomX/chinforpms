@@ -1,14 +1,20 @@
+%global gh_url  https://github.com/BelledonneCommunications/linphone-desktop
+
 Name:           linphoneqt
 Version:        4.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Free VoIP and video softphone based on the SIP protocol
 
 License:        GPLv2
 URL:            http://www.linphone.org/
 Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{version}.tar.gz
 
-# Fix crash with Qt 5.10
-Patch0:         https://github.com/BelledonneCommunications/linphone-desktop/commit/ecaab0f73d0b74bbfbf150286305fa6e12970037.patch#/bd-%{name}-qt510.patch
+# Qt 5.10 and 5.11 fixes, taken from openSUSE 
+Patch0:         linphoneqt-fix-cmake-i18n.patch
+Patch1:         linphoneqt-force-default-style.patch
+Patch2:         linphoneqt-fix-qt-5.11.patch
+Patch3:         linphoneqt-qt-5.9-fix-buttons.patch
+
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
@@ -91,6 +97,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Sep 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.1.1-3
+- Qt 5.11.1 rebuild
+
 * Tue Apr 17 2018 Phantom X - 4.1.1-2
 - Patch to fix crash with Qt 5.10
 

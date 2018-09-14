@@ -1,60 +1,45 @@
+%global gh_url  https://github.com/xboxdrv/xboxdrv
+
 Name:           xboxdrv
 Version:        0.8.8
-Release:        100.chinfo%{?dist}
+Release:        101.chinfo%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPLv3+
 URL:            http://pingus.seul.org/~grumbel/xboxdrv/
-Source0:        https://github.com/xboxdrv/xboxdrv/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{gh_url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Source1:        %{name}.service
 Source2:        %{name}-config.txt
 Source3:        %{name}-daemon
 
 # Fix 60 seconds delay
-Patch1:         https://github.com/xboxdrv/xboxdrv/pull/214.patch#/xboxdrv-github-214.patch
+Patch1:         %{gh_url}/pull/214.patch#/xboxdrv-github-214.patch
 # Fix "pure virtual function called" crash and related hang
-Patch2:         https://github.com/xboxdrv/xboxdrv/pull/220.patch#/xboxdrv-github-220.patch
+Patch2:         %{gh_url}/pull/220.patch#/xboxdrv-github-220.patch
 # Don't submit transfers when controller is disconnecting
-Patch3:         https://github.com/xboxdrv/xboxdrv/pull/221.patch#/xboxdrv-github-221.patch
+Patch3:         %{gh_url}/pull/221.patch#/xboxdrv-github-221.patch
 # Ensure string2btn matches btn2string's output
-Patch4:         https://github.com/xboxdrv/xboxdrv/pull/227.patch#/xboxdrv-github-227.patch
+Patch4:         %{gh_url}/pull/227.patch#/xboxdrv-github-227.patch
 # https://bugs.gentoo.org/show_bug.cgi?id=594674
 Patch5:         xboxdrv-0.8.8-fix-c++14.patch
+Patch6:         %{gh_url}/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/xboxdrv-github-ac6ebb1228962220482ea03743cadbe18754246c.patch
 
-BuildRequires:  pkgconfig(sdl)
-BuildRequires:  pkgconfig(zlib)
-BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  gcc-c++
 BuildRequires:  scons
-%if 0%{?fedora}
 BuildRequires:  libusbx-devel
 BuildRequires:  boost-devel
-%else
-BuildRequires:  libusb1-devel
-BuildRequires:  boost148-devel
-%endif
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig
 BuildRequires:  python2-devel
-Requires:       dbus-python
-
-%if 0%{?fedora} || 0%{?rhel} > 6
+Requires:       python2-dbus
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
 BuildRequires: systemd
-%endif
 
-%if 0%{?rhel} < 7
-Requires(post): chkconfig
-Requires(preun): chkconfig
-# This is for /sbin/service
-Requires(preun): initscripts
-Requires(postun): initscripts
-%endif
 
 %description
 This is a Xbox/Xbox360 gamepad driver for Linux that works in userspace.
@@ -112,6 +97,9 @@ install -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 
 
 %changelog
+* Wed Sep 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.8-101.chinfo
+- Upstream fix
+
 * Wed Jan 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.8-100.chinfo
 - Add some pull requests from github
 - Patch to fix c++14

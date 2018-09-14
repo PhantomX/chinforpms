@@ -1,7 +1,7 @@
 Name:    skrooge
 Summary: Personal finances manager
 Version: 2.15.0
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 
 License: GPLv2+
 URL:     http://skrooge.org
@@ -135,6 +135,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Tue Sep 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.15.0-101.chinfo
+- Qt 5.11.1 rebuild
+
 * Wed Aug 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.15.0-100.chinfo
 - 2.15.0
 

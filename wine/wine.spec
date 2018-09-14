@@ -19,7 +19,7 @@
 %global pbaver 3.15
 %if 0%(echo %{pbaver} | grep -q \\. ; echo $?) == 0
 %global pbarel v
-%global bpapkg knobs_and_switches-
+%global pbapkg knobs_and_switches-
 %endif
 %endif # 0%{?fedora}
 
@@ -38,7 +38,7 @@
 
 Name:           wine
 Version:        3.15
-Release:        103%{?rctag}.chinfo%{?dist}
+Release:        104%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -101,7 +101,7 @@ Patch603:       wbemprox_query_v2.patch
 # Keybind patch reversion
 Patch604:       keybindings.patch
 Patch605:       poe-fix.patch
-Patch606:       explorer-Properly-handle-WM_SETTEXT-to-allow-setting-desktop-title.patch
+Patch606:       user32-Call-DefWindowProc-in-DesktopWndProc.patch
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 Patch700:       %{whq_url}/e84742abccd8314ce5382bed8e1f83f3de796cd3#/whq-e84742abccd8314ce5382bed8e1f83f3de796cd3.patch
@@ -120,12 +120,12 @@ Patch712:       %{whq_url}/ceea5bda14ecf4c8ce262fc7ab88df49e500bc38#/whq-ceea5bd
 Patch713:       %{whq_url}/4a6855a575c02aa1569aab8b2e96720fc02f3f26#/whq-4a6855a575c02aa1569aab8b2e96720fc02f3f26.patch
 Patch714:       %{whq_url}/7f567451b29b1c1d3e16f147136e00f545d640b1#/whq-7f567451b29b1c1d3e16f147136e00f545d640b1.patch
 Patch715:       %{whq_url}/b3d819a1d7a406176e343ebfc9ef74341a2f098b#/whq-b3d819a1d7a406176e343ebfc9ef74341a2f098b.patch
+Patch716:       %{whq_url}/b29cdbd5f23548d9631e5c98ec923b6d2d16a3f8#/whq-b29cdbd5f23548d9631e5c98ec923b6d2d16a3f8.patch
 
 # Reversions
 Patch750:       %{whq_url}/6a4be7155d77c972e0c63a50f45be864584ccf87#/whq-6a4be7155d77c972e0c63a50f45be864584ccf87.patch
-Patch751:       %{whq_url}/6b3f6657876980f86d09e06bb1f35737acf96d12#/whq-6b3f6657876980f86d09e06bb1f35737acf96d12.patch
-Patch752:       %{whq_url}/44e794327436effc75478ff68def40f9d8801a82#/whq-44e794327436effc75478ff68def40f9d8801a82.patch
-Patch753:       %{whq_url}/c18f8e4c3235d0417bfb9fdba2d938bf2e42ee65#/whq-c18f8e4c3235d0417bfb9fdba2d938bf2e42ee65.patch
+Patch751:       %{whq_url}/44e794327436effc75478ff68def40f9d8801a82#/whq-44e794327436effc75478ff68def40f9d8801a82.patch
+Patch752:       %{whq_url}/c18f8e4c3235d0417bfb9fdba2d938bf2e42ee65#/whq-c18f8e4c3235d0417bfb9fdba2d938bf2e42ee65.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
@@ -134,13 +134,12 @@ Patch900:       https://github.com/wine-staging/wine-staging/pull/60.patch#/stag
 # New pulseaudio patches causing noise with a game
 Patch901:       wine-staging-old-pulseaudio.patch
 Patch902:       0001-winedevice-Avoid-invalid-memory-access-when-relocati.patch
- 
 %endif
 
 %if 0%{?pba}
 # acomminos PBA patches from Firerat github
 # https://github.com/Firerat/wine-pba
-Source1000:     https://github.com/Firerat/wine-pba/archive/%{?bpapkg}%{?pbarel}%{pbaver}.tar.gz#/wine-pba-%{pbaver}.tar.gz
+Source1000:     https://github.com/Firerat/wine-pba/archive/%{?pbapkg}%{?pbarel}%{pbaver}.tar.gz#/wine-pba-%{pbaver}.tar.gz
 Source1001:     wine-README-pba
 Patch1000:      wine-staging-pba.patch
 %endif
@@ -746,7 +745,6 @@ This package adds xaudio2 support for wine.
 %patch605 -p1
 %patch606 -p1
 
-%patch753 -p1 -R
 %patch752 -p1 -R
 %patch751 -p1 -R
 %patch750 -p1 -R
@@ -767,6 +765,7 @@ This package adds xaudio2 support for wine.
 %patch713 -p1
 %patch714 -p1
 %patch715 -p1
+%patch716 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -820,7 +819,9 @@ sed -i \
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
-export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+# Use -O1 optimization
+# https://bugs.winehq.org/show_bug.cgi?id=45199
+export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//' -e 's/-O2/-O1/'` -Wno-error"
 
 %ifarch aarch64
 # ARM64 now requires clang
@@ -1541,9 +1542,7 @@ fi
 %{_libdir}/wine/api-ms-win-shcore-thread-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-shell-shellcom-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-shell-shellfolders-l1-1-0.dll.so
-%if 0%{?staging}
 %{_libdir}/wine/api-ms-win-shcore-scaling-l1-1-1.dll.so
-%endif
 %{_libdir}/wine/apphelp.dll.so
 %{_libdir}/wine/appwiz.cpl.so
 %{_libdir}/wine/atl.dll.so
@@ -2377,6 +2376,10 @@ fi
 %endif
 
 %changelog
+* Thu Sep 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.15-104.chinfo
+- More upstream fixes
+- Change compiler optimizations to -O1 to fix whq#45199
+
 * Sat Sep 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.15-103.chinfo
 - Try again again
 
