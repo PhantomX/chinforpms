@@ -11,6 +11,7 @@ pref("browser.display.use_system_colors",   true);
 pref("browser.download.folderList",         1);
 pref("browser.link.open_external",          3);
 pref("browser.shell.checkDefaultBrowser",   false);
+pref("browser.urlbar.trimURLs",             false);
 pref("network.manage-offline-status",       true);
 pref("extensions.shownSelectionUI",         true);
 pref("ui.SpellCheckerUnderlineStyle",       1);

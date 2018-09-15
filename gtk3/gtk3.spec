@@ -26,7 +26,7 @@
 
 Name: gtk3
 Version: 3.24.0
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
@@ -34,6 +34,14 @@ URL: http://www.gtk.org
 Source0: http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
 Source1: https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}.tar.gz#/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2: chinforpms-adwaita.css
+
+# Backported from upstream
+Patch0: 0001-GtkApplication-Fix-CRITICAL-on-shutdown-when-registe.patch
+Patch1: 0001-Fix-portal-path-handling.patch
+# https://salsa.debian.org/gnome-team/gtk3/blob/debian/master/debian/patches/Revert-imwayland-clear-preedit-on-focus-out.patch
+# revert a problematic commit to fix
+# https://gitlab.gnome.org/GNOME/gtk/issues/1316#note_312942
+Patch2: Revert-imwayland-clear-preedit-on-focus-out.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100: gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -197,19 +205,7 @@ The %{name}-tests package contains tests that can be used to verify
 the functionality of the installed %{name} package.
 
 %prep
-%setup -q -n gtk+-%{version} -a 1
-
-%patch100 -p1 -b.recent
-%patch101 -p1
-%patch102 -p1
-%patch103 -p1
-%patch104 -p1 -b.startup_mode
-%patch105 -p1 -b.dateformat
-%patch106 -p1 -b.location_mode
-%patch200 -p1
-%patch201 -p1
-%patch202 -p1
-%patch300 -p1
+%autosetup -n gtk+-%{version} -p1 -a 1
 
 patch_command(){
   patch -p2 -F1 -s -i %{mushroom_dir}/$1
@@ -396,6 +392,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Fri Sep 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.24.0-101.chinfo
+- Rawhide sync
+
 * Mon Sep 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.24.0-100.chinfo
 - 3.24.0
 

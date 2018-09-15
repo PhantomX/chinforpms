@@ -1,6 +1,6 @@
-%global commit 2294d4556bf76a6293275a17dbf9ef5fd187459e
+%global commit 432b42717b0678a933f9d0731f02f9d1d32bdec2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180908
+%global date 20180911
 %global with_snapshot 1
 
 %global freebsd_rev 478244
@@ -10,7 +10,7 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-# Build with only clang?
+# Build with clang only?
 %global with_clang        0
 
 # Use ALSA backend?
@@ -116,8 +116,8 @@
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.2
-Release:        4%{?gver}%{?dist}
+Version:        56.2.3
+Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -181,14 +181,15 @@ Patch417:        mozilla-1436242.patch
 
 %global wf_url https://github.com/MrAlex94/Waterfox
 #Patch???:      %%{wf_url}/commit/commit.patch#/wf-commit.patch
-Patch490:       %{wf_url}/pull/547.patch#/wf-pull-547.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
 
 # Chinforinfula patches
 Patch700:        %{name}-nolangpacks.patch
-Patch701:        %{name}-waterfoxdir.patch
+# https://github.com/MrAlex94/Waterfox/pull/547.patch, down
+Patch701:        %{name}-waterfoxdir-1.patch
+Patch702:        %{name}-waterfoxdir-2.patch
 
 %if %{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -362,8 +363,6 @@ This package contains results of tests executed during build.
 %patch416 -p1 -b .bug1375074-save-restore-x28
 %patch417 -p1 -b .mozilla-1436242
 
-%patch490 -p1
-
 # Debian extension patch
 %patch500 -p1 -b .440908
 
@@ -406,7 +405,8 @@ done
 
 # Install langpacks other way
 %patch700 -p1 -b .nolangpacks
-%patch701 -p1 -b .waterfoxdir
+%patch701 -p1 -b .waterfoxdir-1
+%patch702 -p1 -b .waterfoxdir-2
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -891,6 +891,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Sep 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.3-1.20180911git432b427
+- New release/snapshot
+
 * Sun Sep 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.2-4.20180908git2294d45
 - New snapshot
 - clang only build switch

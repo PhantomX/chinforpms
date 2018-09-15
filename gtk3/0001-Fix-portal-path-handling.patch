@@ -1,0 +1,27 @@
+From 47122288b82e50b88e3185d960e2ba5ee8a27a36 Mon Sep 17 00:00:00 2001
+From: Matthias Clasen <mclasen@redhat.com>
+Date: Wed, 5 Sep 2018 19:54:32 -0400
+Subject: [PATCH] Fix portal path handling
+
+This was broken when I recently introduced this helper
+function.
+---
+ gtk/gtkprivate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gtk/gtkprivate.c b/gtk/gtkprivate.c
+index 6428347f04..a437047658 100644
+--- a/gtk/gtkprivate.c
++++ b/gtk/gtkprivate.c
+@@ -307,7 +307,7 @@ get_portal_path (GDBusConnection  *connection,
+     if (sender[i] == '.')
+       sender[i] = '_';
+ 
+-  path = g_strconcat ("/org/freedesktop/portal/desktop", "/", kind, "/", sender, "/", token, NULL);
++  path = g_strconcat ("/org/freedesktop/portal/desktop", "/", kind, "/", sender, "/", *token, NULL);
+ 
+   g_free (sender);
+ 
+-- 
+2.19.0.rc0
+

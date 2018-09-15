@@ -1,0 +1,60 @@
+From: Simon McVittie <smcv@debian.org>
+Date: Sun, 9 Sep 2018 23:06:12 +0100
+Subject: Revert "imwayland: clear preedit on focus out"
+
+This appears to cause the gnome-terminal cursor to disappear on focus
+changes. Revert it for now as a workaround.
+
+This reverts commit 49b17e6c1e853e81e2087a989524d8e0cad08d05.
+
+Bug: https://gitlab.gnome.org/GNOME/gtk/issues/1316
+Bug-Debian: https://bugs.debian.org/908120
+Forwarded: no
+---
+ modules/input/imwayland.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/modules/input/imwayland.c b/modules/input/imwayland.c
+index 11d09d2..3589c4c 100644
+--- a/modules/input/imwayland.c
++++ b/modules/input/imwayland.c
+@@ -135,7 +135,18 @@ static void
+ text_input_leave (void                     *data,
+                   struct zwp_text_input_v3 *text_input,
+                   struct wl_surface        *surface)
+-{}
++{
++  /*
++  GtkIMContextWayland *context;
++
++  if (!global->current)
++    return;
++
++  context = GTK_IM_CONTEXT_WAYLAND (global->current);
++  TODO: does this clear text input or modify text?
++  reset_preedit (context);
++  */
++}
+ 
+ static void
+ text_input_preedit (void                     *data,
+@@ -158,6 +169,7 @@ text_input_preedit (void                     *data,
+   context->pending_preedit.cursor_end = cursor_end;
+ }
+ 
++
+ static void
+ text_input_preedit_apply (GtkIMContextWaylandGlobal *global)
+ {
+@@ -652,11 +664,6 @@ gtk_im_context_wayland_focus_out (GtkIMContext *context)
+ 
+   zwp_text_input_v3_disable (global->text_input);
+   commit_state (context_wayland);
+-
+-  /* after disable, incoming state changes won't take effect anyway */
+-  text_input_preedit (global, global->text_input, "", 0, 0);
+-  text_input_preedit_apply (global);
+-
+   global->current = NULL;
+ }
+ 
