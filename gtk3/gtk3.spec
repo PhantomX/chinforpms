@@ -1,5 +1,4 @@
 %if 0%{?fedora} || 0%{?rhel} > 7
-%global with_wayland 1
 %global with_broadway 1
 %endif
 
@@ -10,7 +9,7 @@
 %global gdk_pixbuf_version 2.30.0
 %global xrandr_version 1.5.0
 %global wayland_version 1.9.91
-%global wayland_protocols_version 1.7
+%global wayland_protocols_version 1.12
 %global epoxy_version 1.4
 
 %global bin_version 3.0.0
@@ -93,14 +92,12 @@ BuildRequires: pkgconfig(colord)
 BuildRequires: pkgconfig(avahi-gobject)
 BuildRequires: sassc
 BuildRequires: desktop-file-utils
-%if 0%{?with_wayland}
 BuildRequires: pkgconfig(egl)
 BuildRequires: pkgconfig(wayland-client) >= %{wayland_version}
 BuildRequires: pkgconfig(wayland-cursor) >= %{wayland_version}
 BuildRequires: pkgconfig(wayland-egl) >= %{wayland_version}
 BuildRequires: pkgconfig(wayland-protocols) >= %{wayland_protocols_version}
 BuildRequires: pkgconfig(xkbcommon)
-%endif
 
 # standard icons
 Requires: adwaita-icon-theme
@@ -116,10 +113,8 @@ Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libepoxy%{?_isa} >= %{epoxy_version}
 Requires: libXrandr%{?_isa} >= %{xrandr_version}
 Requires: pango%{?_isa} >= %{pango_version}
-%if 0%{?with_wayland}
 Requires: libwayland-client%{?_isa} >= %{wayland_version}
 Requires: libwayland-cursor%{?_isa} >= %{wayland_version}
-%endif
 
 # required to support all the different image formats
 Requires: gdk-pixbuf2-modules%{?_isa}
@@ -231,7 +226,7 @@ cp %{mushroom_dir}/README.md README-mushrooms.md
 
 cat %{S:2} | tee -a gtk/theme/Adwaita/gtk-contained{,-dark}.css > /dev/null
 
-rm -fv testsuite/gtk/gtkresources.c
+rm -fv testsuite/gtk/gtkresources.c testsuite/gtk/gtkprivate.c
 
 %build
 export CFLAGS='-fno-strict-aliasing %{build_cflags}'
@@ -245,9 +240,7 @@ export CFLAGS='-fno-strict-aliasing %{build_cflags}'
         --enable-xcomposite \
         --enable-xdamage \
         --enable-x11-backend \
-%if 0%{?with_wayland}
         --enable-wayland-backend \
-%endif
 %if 0%{?with_broadway}
         --enable-broadway-backend \
 %endif

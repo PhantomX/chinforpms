@@ -1,0 +1,406 @@
+From patchwork Tue Sep  4 13:31:12 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+X-Patchwork-Id: 10587363
+Return-Path: <linux-input-owner@kernel.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id C6F0A13AC
+	for <patchwork-linux-input@patchwork.kernel.org>;
+ Tue,  4 Sep 2018 13:31:39 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id B853A297E4
+	for <patchwork-linux-input@patchwork.kernel.org>;
+ Tue,  4 Sep 2018 13:31:39 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id B5F90298AD; Tue,  4 Sep 2018 13:31:39 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-7.9 required=2.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	RCVD_IN_DNSWL_HI autolearn=ham version=3.3.1
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 59B642985E
+	for <patchwork-linux-input@patchwork.kernel.org>;
+ Tue,  4 Sep 2018 13:31:39 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1727136AbeIDR4q (ORCPT
+        <rfc822;patchwork-linux-input@patchwork.kernel.org>);
+        Tue, 4 Sep 2018 13:56:46 -0400
+Received: from mx3-rdu2.redhat.com ([66.187.233.73]:54264 "EHLO
+ mx1.redhat.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727057AbeIDR4q (ORCPT <rfc822;linux-input@vger.kernel.org>);
+        Tue, 4 Sep 2018 13:56:46 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com
+ [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id AEC9A804B9F2;
+        Tue,  4 Sep 2018 13:31:36 +0000 (UTC)
+Received: from plouf.redhat.com (ovpn-116-25.ams2.redhat.com [10.36.116.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 88B24A9EF9;
+        Tue,  4 Sep 2018 13:31:35 +0000 (UTC)
+From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To: Jiri Kosina <jikos@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH 1/4] HID: multitouch: fix Elan panels with 2 input modes
+ declaration
+Date: Tue,  4 Sep 2018 15:31:12 +0200
+Message-Id: <20180904133115.5111-2-benjamin.tissoires@redhat.com>
+In-Reply-To: <20180904133115.5111-1-benjamin.tissoires@redhat.com>
+References: <20180904133115.5111-1-benjamin.tissoires@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Greylist: Sender IP whitelisted,
+ not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.11.55.8]);
+ Tue, 04 Sep 2018 13:31:36 +0000 (UTC)
+X-Greylist: inspected by milter-greylist-4.5.16 (mx1.redhat.com [10.11.55.8]);
+ Tue,
+ 04 Sep 2018 13:31:36 +0000 (UTC) for IP:'10.11.54.5'
+ DOMAIN:'int-mx05.intmail.prod.int.rdu2.redhat.com'
+ HELO:'smtp.corp.redhat.com' FROM:'benjamin.tissoires@redhat.com' RCPT:''
+Sender: linux-input-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-input.vger.kernel.org>
+X-Mailing-List: linux-input@vger.kernel.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+When implementing commit 7f81c8db5489 ("HID: multitouch: simplify
+the settings of the various features"), I wrongly removed a test
+that made sure we never try to set the second InputMode feature
+to something else than 0.
+
+This broke badly some recent Elan panels that now forget to send the
+click button in some area of the touchpad.
+
+Fixes 7f81c8db5489
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=200899
+
+Cc: stable@vger.kernel.org # v4.18+
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+---
+ drivers/hid/hid-multitouch.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
+index 40fbb7c52723..88da991ef256 100644
+--- a/drivers/hid/hid-multitouch.c
++++ b/drivers/hid/hid-multitouch.c
+@@ -1375,7 +1375,8 @@ static bool mt_need_to_apply_feature(struct hid_device *hdev,
+ 				     struct hid_usage *usage,
+ 				     enum latency_mode latency,
+ 				     bool surface_switch,
+-				     bool button_switch)
++				     bool button_switch,
++				     bool *inputmode_found)
+ {
+ 	struct mt_device *td = hid_get_drvdata(hdev);
+ 	struct mt_class *cls = &td->mtclass;
+@@ -1387,6 +1388,14 @@ static bool mt_need_to_apply_feature(struct hid_device *hdev,
+ 
+ 	switch (usage->hid) {
+ 	case HID_DG_INPUTMODE:
++		/*
++		 * Some elan panels wrongly declare 2 input mode features,
++		 * and silently ignore when we set the value in the second
++		 * field. Skip the second feature and hope for the best.
++		 */
++		if (*inputmode_found)
++			return false;
++
+ 		if (cls->quirks & MT_QUIRK_FORCE_GET_FEATURE) {
+ 			report_len = hid_report_len(report);
+ 			buf = hid_alloc_report_buf(report, GFP_KERNEL);
+@@ -1402,6 +1411,7 @@ static bool mt_need_to_apply_feature(struct hid_device *hdev,
+ 		}
+ 
+ 		field->value[index] = td->inputmode_value;
++		*inputmode_found = true;
+ 		return true;
+ 
+ 	case HID_DG_CONTACTMAX:
+@@ -1439,6 +1449,7 @@ static void mt_set_modes(struct hid_device *hdev, enum latency_mode latency,
+ 	struct hid_usage *usage;
+ 	int i, j;
+ 	bool update_report;
++	bool inputmode_found = false;
+ 
+ 	rep_enum = &hdev->report_enum[HID_FEATURE_REPORT];
+ 	list_for_each_entry(rep, &rep_enum->report_list, list) {
+@@ -1457,7 +1468,8 @@ static void mt_set_modes(struct hid_device *hdev, enum latency_mode latency,
+ 							     usage,
+ 							     latency,
+ 							     surface_switch,
+-							     button_switch))
++							     button_switch,
++							     &inputmode_found))
+ 					update_report = true;
+ 			}
+ 		}
+
+From patchwork Tue Sep  4 13:31:13 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+X-Patchwork-Id: 10587365
+Return-Path: <linux-input-owner@kernel.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 0CE7013BB
+	for <patchwork-linux-input@patchwork.kernel.org>;
+ Tue,  4 Sep 2018 13:31:43 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id F2E1E29869
+	for <patchwork-linux-input@patchwork.kernel.org>;
+ Tue,  4 Sep 2018 13:31:42 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id F10BF2988D; Tue,  4 Sep 2018 13:31:42 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-7.9 required=2.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	RCVD_IN_DNSWL_HI autolearn=ham version=3.3.1
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id AA59D29869
+	for <patchwork-linux-input@patchwork.kernel.org>;
+ Tue,  4 Sep 2018 13:31:42 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1727401AbeIDR4u (ORCPT
+        <rfc822;patchwork-linux-input@patchwork.kernel.org>);
+        Tue, 4 Sep 2018 13:56:50 -0400
+Received: from mx3-rdu2.redhat.com ([66.187.233.73]:46152 "EHLO
+ mx1.redhat.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727057AbeIDR4u (ORCPT <rfc822;linux-input@vger.kernel.org>);
+        Tue, 4 Sep 2018 13:56:50 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com
+ [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E039740241C8;
+        Tue,  4 Sep 2018 13:31:40 +0000 (UTC)
+Received: from plouf.redhat.com (ovpn-116-25.ams2.redhat.com [10.36.116.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DC6AEA9EFD;
+        Tue,  4 Sep 2018 13:31:39 +0000 (UTC)
+From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To: Jiri Kosina <jikos@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/4] HID: input: do not append a suffix if the name already
+ has it
+Date: Tue,  4 Sep 2018 15:31:13 +0200
+Message-Id: <20180904133115.5111-3-benjamin.tissoires@redhat.com>
+In-Reply-To: <20180904133115.5111-1-benjamin.tissoires@redhat.com>
+References: <20180904133115.5111-1-benjamin.tissoires@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Greylist: Sender IP whitelisted,
+ not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.11.55.7]);
+ Tue, 04 Sep 2018 13:31:40 +0000 (UTC)
+X-Greylist: inspected by milter-greylist-4.5.16 (mx1.redhat.com [10.11.55.7]);
+ Tue,
+ 04 Sep 2018 13:31:40 +0000 (UTC) for IP:'10.11.54.5'
+ DOMAIN:'int-mx05.intmail.prod.int.rdu2.redhat.com'
+ HELO:'smtp.corp.redhat.com' FROM:'benjamin.tissoires@redhat.com' RCPT:''
+Sender: linux-input-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-input.vger.kernel.org>
+X-Mailing-List: linux-input@vger.kernel.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Or it creates some weird input names like:
+"MI Dongle MI Wireless Mouse Mouse"
+
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+---
+ drivers/hid/hid-input.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+index ac201817a2dd..1e9ba8f7a16b 100644
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -1516,6 +1516,7 @@ static struct hid_input *hidinput_allocate(struct hid_device *hid,
+ 	struct hid_input *hidinput = kzalloc(sizeof(*hidinput), GFP_KERNEL);
+ 	struct input_dev *input_dev = input_allocate_device();
+ 	const char *suffix = NULL;
++	size_t suffix_len, name_len;
+ 
+ 	if (!hidinput || !input_dev)
+ 		goto fail;
+@@ -1559,10 +1560,15 @@ static struct hid_input *hidinput_allocate(struct hid_device *hid,
+ 	}
+ 
+ 	if (suffix) {
+-		hidinput->name = kasprintf(GFP_KERNEL, "%s %s",
+-					   hid->name, suffix);
+-		if (!hidinput->name)
+-			goto fail;
++		name_len = strlen(hid->name);
++		suffix_len = strlen(suffix);
++		if ((name_len < suffix_len) ||
++		    strcmp(hid->name + name_len - suffix_len, suffix)) {
++			hidinput->name = kasprintf(GFP_KERNEL, "%s %s",
++						   hid->name, suffix);
++			if (!hidinput->name)
++				goto fail;
++		}
+ 	}
+ 
+ 	input_set_drvdata(input_dev, hid);
+
+From patchwork Tue Sep  4 13:31:14 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+X-Patchwork-Id: 10587369
+Return-Path: <linux-input-owner@kernel.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 5F2F2175A
+	for <patchwork-linux-input@patchwork.kernel.org>;
+ Tue,  4 Sep 2018 13:32:00 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 4F1E4297D5
+	for <patchwork-linux-input@patchwork.kernel.org>;
+ Tue,  4 Sep 2018 13:32:00 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 418FE297FE; Tue,  4 Sep 2018 13:32:00 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-7.9 required=2.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	RCVD_IN_DNSWL_HI autolearn=ham version=3.3.1
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id C746C297D5
+	for <patchwork-linux-input@patchwork.kernel.org>;
+ Tue,  4 Sep 2018 13:31:59 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1727490AbeIDR44 (ORCPT
+        <rfc822;patchwork-linux-input@patchwork.kernel.org>);
+        Tue, 4 Sep 2018 13:56:56 -0400
+Received: from mx3-rdu2.redhat.com ([66.187.233.73]:60400 "EHLO
+ mx1.redhat.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727057AbeIDR4z (ORCPT <rfc822;linux-input@vger.kernel.org>);
+        Tue, 4 Sep 2018 13:56:55 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com
+ [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 640FC4023842;
+        Tue,  4 Sep 2018 13:31:46 +0000 (UTC)
+Received: from plouf.redhat.com (ovpn-116-25.ams2.redhat.com [10.36.116.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6F8E8A9EF7;
+        Tue,  4 Sep 2018 13:31:43 +0000 (UTC)
+From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To: Jiri Kosina <jikos@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH 3/4] HID: core: fix grouping by application
+Date: Tue,  4 Sep 2018 15:31:14 +0200
+Message-Id: <20180904133115.5111-4-benjamin.tissoires@redhat.com>
+In-Reply-To: <20180904133115.5111-1-benjamin.tissoires@redhat.com>
+References: <20180904133115.5111-1-benjamin.tissoires@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Greylist: Sender IP whitelisted,
+ not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.11.55.6]);
+ Tue, 04 Sep 2018 13:31:46 +0000 (UTC)
+X-Greylist: inspected by milter-greylist-4.5.16 (mx1.redhat.com [10.11.55.6]);
+ Tue,
+ 04 Sep 2018 13:31:46 +0000 (UTC) for IP:'10.11.54.5'
+ DOMAIN:'int-mx05.intmail.prod.int.rdu2.redhat.com'
+ HELO:'smtp.corp.redhat.com' FROM:'benjamin.tissoires@redhat.com' RCPT:''
+Sender: linux-input-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-input.vger.kernel.org>
+X-Mailing-List: linux-input@vger.kernel.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+commit f07b3c1da92d ("HID: generic: create one input report per
+application type") was effectively the same as MULTI_INPUT:
+hidinput->report was never set, so hidinput_match_application()
+always returned null.
+
+Fix that by testing against the real application.
+
+Note that this breaks some old eGalax touchscreens that expect MULTI_INPUT
+instead of HID_QUIRK_INPUT_PER_APP. Enable this quirk for backward
+compatibility on all non-Win8 touchscreens.
+
+link: https://bugzilla.kernel.org/show_bug.cgi?id=200847
+link: https://bugzilla.kernel.org/show_bug.cgi?id=200849
+link: https://bugs.archlinux.org/task/59699
+link: https://github.com/NixOS/nixpkgs/issues/45165
+
+Cc: stable@vger.kernel.org # v4.18+
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+---
+
+This replaces https://patchwork.kernel.org/patch/10583471/
+A proper fix is better than a revert.
+
+ drivers/hid/hid-input.c      | 4 ++--
+ drivers/hid/hid-multitouch.c | 3 +++
+ include/linux/hid.h          | 1 +
+ 3 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+index 1e9ba8f7a16b..907b08e50a9b 100644
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -1588,6 +1588,7 @@ static struct hid_input *hidinput_allocate(struct hid_device *hid,
+ 	input_dev->dev.parent = &hid->dev;
+ 
+ 	hidinput->input = input_dev;
++	hidinput->application = application;
+ 	list_add_tail(&hidinput->list, &hid->inputs);
+ 
+ 	INIT_LIST_HEAD(&hidinput->reports);
+@@ -1683,8 +1684,7 @@ static struct hid_input *hidinput_match_application(struct hid_report *report)
+ 	struct hid_input *hidinput;
+ 
+ 	list_for_each_entry(hidinput, &hid->inputs, list) {
+-		if (hidinput->report &&
+-		    hidinput->report->application == report->application)
++		if (hidinput->application == report->application)
+ 			return hidinput;
+ 	}
+ 
+diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
+index 88da991ef256..da954f3f4da7 100644
+--- a/drivers/hid/hid-multitouch.c
++++ b/drivers/hid/hid-multitouch.c
+@@ -1697,6 +1697,9 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 	 */
+ 	hdev->quirks |= HID_QUIRK_INPUT_PER_APP;
+ 
++	if (id->group != HID_GROUP_MULTITOUCH_WIN_8)
++		hdev->quirks |= HID_QUIRK_MULTI_INPUT;
++
+ 	timer_setup(&td->release_timer, mt_expired_timeout, 0);
+ 
+ 	ret = hid_parse(hdev);
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index 834e6461a690..d44a78362942 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -526,6 +526,7 @@ struct hid_input {
+ 	const char *name;
+ 	bool registered;
+ 	struct list_head reports;	/* the list of reports */
++	unsigned int application;	/* application usage for this input */
+ };
+ 
+ enum hid_type {
+

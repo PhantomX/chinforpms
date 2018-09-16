@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -621,30 +621,37 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # CVE-2018-15471 rhbz 1610555 1618414
 Patch504: xsa270.patch
 
+# rhbz 1627963 1628715
+Patch505: HID-fixes.patch
+
+# rhbz 1572944
+Patch506: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
+Patch507: 0001-random-make-CPU-trust-a-boot-parameter.patch
+
 # Support for unique build ids
 # All queued in the kbuild tree
-Patch506: 0001-kbuild-Add-build-salt-to-the-kernel-and-modules.patch
-Patch507: 0002-x86-Add-build-salt-to-the-vDSO.patch
-Patch508: 0003-powerpc-Add-build-salt-to-the-vDSO.patch
-Patch509: 0004-arm64-Add-build-salt-to-the-vDSO.patch
-Patch512: 0003-treewide-Rename-HOSTCFLAGS-KBUILD_HOSTCFLAGS.patch
-Patch513: 0004-treewide-Rename-HOSTCXXFLAGS-to-KBUILD_HOSTCXXFLAGS.patch
-Patch514: 0005-treewide-Rename-HOSTLDFLAGS-to-KBUILD_HOSTLDFLAGS.patch
-Patch515: 0006-treewide-Rename-HOST_LOADLIBES-to-KBUILD_HOSTLDLIBS.patch
-Patch516: 0007-Kbuild-Use-HOST-FLAGS-options-from-the-command-line.patch
+Patch520: 0001-kbuild-Add-build-salt-to-the-kernel-and-modules.patch
+Patch521: 0002-x86-Add-build-salt-to-the-vDSO.patch
+Patch522: 0003-powerpc-Add-build-salt-to-the-vDSO.patch
+Patch523: 0004-arm64-Add-build-salt-to-the-vDSO.patch
+Patch524: 0003-treewide-Rename-HOSTCFLAGS-KBUILD_HOSTCFLAGS.patch
+Patch525: 0004-treewide-Rename-HOSTCXXFLAGS-to-KBUILD_HOSTCXXFLAGS.patch
+Patch526: 0005-treewide-Rename-HOSTLDFLAGS-to-KBUILD_HOSTLDFLAGS.patch
+Patch527: 0006-treewide-Rename-HOST_LOADLIBES-to-KBUILD_HOSTLDLIBS.patch
+Patch528: 0007-Kbuild-Use-HOST-FLAGS-options-from-the-command-line.patch
 
 # For quiet / flickerfree boot, all queued for merging into 4.19-rc1
-Patch521: 0001-printk-Make-CONSOLE_LOGLEVEL_QUIET-configurable.patch
-Patch522: 0002-printk-Export-is_console_locked.patch
-Patch523: 0003-fbcon-Call-WARN_CONSOLE_UNLOCKED-where-applicable.patch
-Patch524: 0004-console-fbcon-Add-support-for-deferred-console-takeo.patch
-Patch525: 0005-efi-bgrt-Drop-__initdata-from-bgrt_image_size.patch
-Patch526: 0006-efifb-Copy-the-ACPI-BGRT-boot-graphics-to-the-frameb.patch
-Patch527: 0007-efifb-BGRT-Do-not-copy-the-boot-graphics-for-non-nat.patch
-Patch528: 0008-console-dummycon-export-dummycon_-un-register_output.patch
+Patch531: 0001-printk-Make-CONSOLE_LOGLEVEL_QUIET-configurable.patch
+Patch532: 0002-printk-Export-is_console_locked.patch
+Patch533: 0003-fbcon-Call-WARN_CONSOLE_UNLOCKED-where-applicable.patch
+Patch534: 0004-console-fbcon-Add-support-for-deferred-console-takeo.patch
+Patch535: 0005-efi-bgrt-Drop-__initdata-from-bgrt_image_size.patch
+Patch536: 0006-efifb-Copy-the-ACPI-BGRT-boot-graphics-to-the-frameb.patch
+Patch537: 0007-efifb-BGRT-Do-not-copy-the-boot-graphics-for-non-nat.patch
+Patch538: 0008-console-dummycon-export-dummycon_-un-register_output.patch
 # Deferred fbcon takeover bugfix, pending upstream
-Patch529: 0009-fbcon-Only-defer-console-takeover-if-the-current-con.patch
-Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
+Patch539: 0009-fbcon-Only-defer-console-takeover-if-the-current-con.patch
+Patch540: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
 
 ### Extra
 
@@ -680,6 +687,7 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 
 %global pf_url https://github.com/pfactum/pf-kernel/commit
 
+Patch3000: postfactum-merge-fixes.patch
 Patch3001: %{pf_url}/a73e7d13516785fa2e0ce6ec171b200b4a0e45fd.patch#/pf-a73e7d13516785fa2e0ce6ec171b200b4a0e45fd.patch
 Patch3002: %{pf_url}/c05a7efccd3b3ca2424b790a8865bc6302fc4e8e.patch#/pf-c05a7efccd3b3ca2424b790a8865bc6302fc4e8e.patch
 Patch3003: %{pf_url}/dea12cc693e73694955680068c337f2b52c03f13.patch#/pf-dea12cc693e73694955680068c337f2b52c03f13.patch
@@ -699,7 +707,6 @@ Patch3016: %{pf_url}/33e3b43082a58c90af511ad039c916f8eae79fe1.patch#/pf-33e3b430
 Patch3017: %{pf_url}/89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch#/pf-89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch
 Patch3018: %{pf_url}/16cf1745ff9e12ba8914781133322cd14cdd0178.patch#/pf-16cf1745ff9e12ba8914781133322cd14cdd0178.patch
 Patch3019: %{pf_url}/8c1fddf8714b6809b91a1cf23709ba2d81127890.patch#/pf-8c1fddf8714b6809b91a1cf23709ba2d81127890.patch
-Patch3021: %{pf_url}/ea8f58d704199c2e0c268e9a28394727a1561752.patch#/pf-ea8f58d704199c2e0c268e9a28394727a1561752.patch
 Patch3022: %{pf_url}/73b03804b77d62dde759a9c193f4c6b0080a3373.patch#/pf-73b03804b77d62dde759a9c193f4c6b0080a3373.patch
 Patch3023: %{pf_url}/7f2d1c9cb63027fdd2b1e55b6f878b15cfaa2db5.patch#/pf-7f2d1c9cb63027fdd2b1e55b6f878b15cfaa2db5.patch
 Patch3024: %{pf_url}/5f61f18e084c29c3ee37c9acb5e6a9de1d3d211f.patch#/pf-5f61f18e084c29c3ee37c9acb5e6a9de1d3d211f.patch
@@ -1975,6 +1982,10 @@ fi
 #
 #
 %changelog
+* Sat Sep 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.8-500.chinfo
+- 4.18.8
+- f28 sync
+
 * Sun Sep 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.7-500.chinfo
 - 4.18.7
 
