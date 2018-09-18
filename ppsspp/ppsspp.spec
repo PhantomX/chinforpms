@@ -157,12 +157,6 @@ rm -rf linux/*/lib
 popd
 %endif
 
-cat > %{name}.wrapper <<'EOF'
-#!/usr/bin/sh
-MESA_GL_VERSION_OVERRIDE=4.3COMPAT
-export MESA_GL_VERSION_OVERRIDE
-exec /usr/bin/ppsspp.bin "$@"
-EOF
 
 %build
 
