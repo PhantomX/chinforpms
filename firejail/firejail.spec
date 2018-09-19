@@ -1,5 +1,5 @@
 Name:           firejail
-Version:        0.9.54
+Version:        0.9.56
 Release:        1%{?dist}
 Summary:        GUI tools for firejail
 
@@ -10,9 +10,6 @@ Source1:        README.suid
 
 BuildRequires:  gcc
 BuildRequires:  make
-
-Requires:       group(%{name})
-Requires(pre):  group(%{name})
 
 
 %description
@@ -62,6 +59,9 @@ getent group %{name} >/dev/null || groupadd -r %{name}
 
 
 %changelog
+* Tue Sep 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.56-1
+- 0.9.56
+
 * Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.54-1
 - 0.9.54
 
