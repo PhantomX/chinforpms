@@ -19,7 +19,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 8
+%global stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -118,7 +118,7 @@ Patch8: 0001-Switch-to-python3.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 952d850f3777feaeb7b647ccad11f8f525fd8e8c
+%global opensuse_id f48646996dbccd1cdad650b1ea8b929b2469ef81
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
@@ -303,8 +303,10 @@ rm -rf %{buildroot}%{_docdir}/perf-tip
 
 # remove examples
 rm -rf %{buildroot}/usr/lib/examples/perf
+rm -rf %{buildroot}/usr/lib/perf/examples
 # remove the stray header file that somehow got packaged in examples
 rm -rf %{buildroot}/usr/lib/include/perf/bpf/bpf.h
+rm -rf %{buildroot}/usr/lib/perf/include/bpf/bpf.h
 
 # python-perf extension
 %{perf_make} %{perf_python3} DESTDIR=%{buildroot} install-python_ext
@@ -440,6 +442,9 @@ popd
 %license linux-%{kversion}/COPYING
 
 %changelog
+* Wed Sep 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.9-500.chinfo
+- 4.18.9
+
 * Sat Sep 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.8-500.chinfo
 - 4.18.8
 
