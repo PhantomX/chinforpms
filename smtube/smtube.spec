@@ -1,5 +1,5 @@
 Name:           smtube
-Version:        18.3.0
+Version:        18.9.0
 Release:        100.chinfo%{?dist}
 Summary:        YouTube browser for SMPlayer
 Epoch:          1
@@ -66,6 +66,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Apr 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.9.0-100.chinfo
+- 18.9.0
+
 * Sat Apr 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.3.0-100.chinfo
 - 18.3.0
 

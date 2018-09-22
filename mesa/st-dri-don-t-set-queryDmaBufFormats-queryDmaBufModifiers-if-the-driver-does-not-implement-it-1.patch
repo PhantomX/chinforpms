@@ -1,0 +1,39 @@
+From patchwork Thu Mar 15 16:27:57 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: st/dri: don't set queryDmaBufFormats/queryDmaBufModifiers if the
+ driver does not implement it
+From: Michal Srb <msrb@suse.com>
+X-Patchwork-Id: 210872
+Message-Id: <20180315162757.23862-1-msrb@suse.com>
+To: mesa-dev@lists.freedesktop.org
+Date: Thu, 15 Mar 2018 17:27:57 +0100
+
+This is equivalent to commit a65db0ad1c3, but for dri_kms_init_screen. Without
+this gbm_dri_is_format_supported always returns false.
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=104926
+Fixes: e14fe41e0bf ("st/dri: implement createImageFromRenderbuffer(2)")
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+---
+ src/gallium/state_trackers/dri/dri2.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/gallium/state_trackers/dri/dri2.c b/src/gallium/state_trackers/dri/dri2.c
+index 415002d2cd..59740b1301 100644
+--- a/src/gallium/state_trackers/dri/dri2.c
++++ b/src/gallium/state_trackers/dri/dri2.c
+@@ -2162,8 +2162,10 @@ dri_kms_init_screen(__DRIscreen * sPriv)
+       dri2ImageExtension.createImageFromFds = dri2_from_fds;
+       dri2ImageExtension.createImageFromDmaBufs = dri2_from_dma_bufs;
+       dri2ImageExtension.createImageFromDmaBufs2 = dri2_from_dma_bufs2;
+-      dri2ImageExtension.queryDmaBufFormats = dri2_query_dma_buf_formats;
+-      dri2ImageExtension.queryDmaBufModifiers = dri2_query_dma_buf_modifiers;
++      if (pscreen->query_dmabuf_modifiers) {
++         dri2ImageExtension.queryDmaBufFormats = dri2_query_dma_buf_formats;
++         dri2ImageExtension.queryDmaBufModifiers = dri2_query_dma_buf_modifiers;
++      }
+    }
+ 
+    sPriv->extensions = dri_screen_extensions;

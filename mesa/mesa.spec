@@ -41,7 +41,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver     18.2.0
+%global ver     18.2.1
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        100.chinfo%{?dist}
 
@@ -67,6 +67,10 @@ Patch4:         0004-bigendian-assert.patch
 # Disable rgb10 configs by default:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
+
+# https://bugs.freedesktop.org/show_bug.cgi?id=104926
+# https://patchwork.freedesktop.org/patch/210872
+Patch8:         st-dri-don-t-set-queryDmaBufFormats-queryDmaBufModifiers-if-the-driver-does-not-implement-it-1.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -616,6 +620,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Fri Sep 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.2.1-100.chinfo
+- 18.2.1
+
 * Fri Sep 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.2.0-100.chinfo
 - 18.2.0
 - Rawhide sync
