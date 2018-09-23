@@ -35,7 +35,6 @@ release tags).
  * **libtgvoip** - No unresolved symbols
  * **mednafen** - No Haswell optimizations
  * **mesa** - Tests
- * **nautilus-dropbox** - Optional nautilus support and use system binary **dropboxd**
  * **quiterss** - Updated, Qt5
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **telegram-desktop** - Personal fixes

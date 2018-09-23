@@ -1,4 +1,4 @@
-%global prerel 2
+%global prerel 4
 
 %if 0%{?prerel}
 %global prereltag .pre%{prerel}
@@ -7,7 +7,7 @@
 
 Name:           smooth
 Version:        0.8.74.0
-Release:        0.2%{?prereltag}%{?dist}
+Release:        0.3%{?prereltag}%{?dist}
 Summary:        An object oriented C++ class library
 
 License:        Artistic 2.0
@@ -75,6 +75,9 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 
 %changelog
+* Sun Sep 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.74.0-0.3.pre4
+- 0.8.74.0-pre4
+
 * Fri Jul 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.74.0-0.2.pre2
 - 0.8.74.0-pre2
 

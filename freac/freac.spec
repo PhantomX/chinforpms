@@ -1,4 +1,4 @@
-%global date 20180710
+%global date 20180913
 %global prerel 1
 
 %global freaccdkver 1.1
@@ -11,7 +11,7 @@
 
 Name:           freac
 Version:        1.1
-Release:        0.3%{prereltag}%{?dist}
+Release:        0.4%{prereltag}%{?dist}
 Summary:        A free audio converter and CD ripper
 
 License:        GPLv2
@@ -111,6 +111,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Sep 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-0.4.alpha.20180913
+- 1.1-20180913
+
 * Fri Jul 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-0.3.alpha.20180710
 - 1.1-20180710
 

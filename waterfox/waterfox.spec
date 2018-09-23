@@ -3,7 +3,7 @@
 %global date 20180911
 %global with_snapshot 1
 
-%global freebsd_rev 478244
+%global freebsd_rev 480450
 %global freebsd_root %{name}-FreeBSD-patches-r%{freebsd_rev}
 
 %if 0%{?with_snapshot}
@@ -386,7 +386,7 @@ done
 # 2: no apply
 # 3: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1452576 1425930 1469914 1469309 1470260 1472925 \
+  702179 991253 1021761 1144632 1288587 1452576 \
   1388744 1413143 \
   1447519
 do

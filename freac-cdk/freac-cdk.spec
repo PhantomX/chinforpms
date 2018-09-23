@@ -1,4 +1,4 @@
-%global date 20180710
+%global date 20180913
 %global prerel 1
 
 %global smoothver 0.8.74
@@ -12,7 +12,7 @@
 
 Name:           freac-cdk
 Version:        1.1
-Release:        0.2%{prereltag}%{?dist}
+Release:        0.3%{prereltag}%{?dist}
 Summary:        Component development kit for fre:ac
 
 License:        GPLv2
@@ -85,6 +85,9 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 
 %changelog
+* Sun Sep 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-0.3.alpha.20180913
+- 1.1-20180913
+
 * Fri Jul 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-0.2.alpha.20180710
 - 1.1-20180710
 
