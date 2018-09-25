@@ -1,0 +1,7 @@
+[D-BUS Service]
+Name=org.seul.Xboxdrv
+SystemdService=xboxdrv.service
+
+# This service should not be bus activated if the systemd service 
+# isn't running to prevent conflicts.
+Exec=/bin/false

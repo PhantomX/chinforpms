@@ -14,6 +14,7 @@ silent=true
 
 # config=/etc/sysconfig/xboxdrvd
 # alt-config = otherconfig.xboxdrv
+# next-controller = true
 
 # busid = 
 # devid = 
@@ -68,10 +69,10 @@ mimic-xpad = true
 # wireless-id = 0
 
 [xboxdrv-daemon]
-detach=true
+# detach=true
 # on-connect = /home/juser/bin/on-connect.sh
 # on-disconnect = /home/juser/bin/on-connect.sh
-pid-file=/var/run/xboxdrv.pid
+# pid-file=/var/run/xboxdrv.pid
 
 [autofire]
 

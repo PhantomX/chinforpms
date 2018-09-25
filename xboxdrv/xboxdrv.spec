@@ -1,28 +1,36 @@
-%global gh_url  https://github.com/xboxdrv/xboxdrv
+%global gl_url  https://gitlab.com/xboxdrv/xboxdrv
 
 Name:           xboxdrv
 Version:        0.8.8
-Release:        101.chinfo%{?dist}
+Release:        102.chinfo%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPLv3+
-URL:            http://pingus.seul.org/~grumbel/xboxdrv/
-Source0:        %{gh_url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+URL:            https://xboxdrv.gitlab.io
+
+Source0:        https://xboxdrv.gitlab.io/%{name}-linux-%{version}.tar.bz2
 Source1:        %{name}.service
 Source2:        %{name}-config.txt
-Source3:        %{name}-daemon
+# Better dbus support
+# https://gist.github.com/saik0/11225735
+Source3:        org.seul.Xboxdrv.conf
+Source4:        org.seul.Xboxdrv.service
+# Borrowed and modified from Lutris
+Source5:        org.seul.xboxdrvctl.policy
+Source6:        org.seul.xboxdrv.policy
 
 # Fix 60 seconds delay
-Patch1:         %{gh_url}/pull/214.patch#/xboxdrv-github-214.patch
+Patch1:         %{gl_url}/merge_requests/214.patch#/xboxdrv-gl-214.patch
 # Fix "pure virtual function called" crash and related hang
-Patch2:         %{gh_url}/pull/220.patch#/xboxdrv-github-220.patch
+Patch2:         %{gl_url}/merge_requests/220.patch#/xboxdrv-gl-220.patch
 # Don't submit transfers when controller is disconnecting
-Patch3:         %{gh_url}/pull/221.patch#/xboxdrv-github-221.patch
+Patch3:         %{gl_url}/merge_requests/221.patch#/xboxdrv-gl-221.patch
 # Ensure string2btn matches btn2string's output
-Patch4:         %{gh_url}/pull/227.patch#/xboxdrv-github-227.patch
+Patch4:         %{gl_url}/merge_requests/227.patch#/xboxdrv-gl-227.patch
 # https://bugs.gentoo.org/show_bug.cgi?id=594674
 Patch5:         xboxdrv-0.8.8-fix-c++14.patch
-Patch6:         %{gh_url}/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/xboxdrv-github-ac6ebb1228962220482ea03743cadbe18754246c.patch
+Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/xboxdrv-gh-ac6ebb1228962220482ea03743cadbe18754246c.patch
+
 
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(x11)
@@ -48,12 +56,13 @@ Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless gamepads,
 both first and third party.
 
 %prep
-%autosetup -p1
+%autosetup -n %{name}-linux-%{version} -p1
 
 sed -i '1s|/usr/bin/env python|%{__python2}|' examples/responsecurve-generator.py
+sed -i '1s|/usr/bin/env python2|%{__python2}|' xboxdrvctl
 
 %build
-scons \
+scons %{?_smp_mflags} \
  CC=gcc \
  CXX=g++ \
  BUILD=custom \
@@ -65,16 +74,23 @@ scons \
 %install
 make install PREFIX=%{_prefix} DESTDIR=%{buildroot}
 
-rm -f %{buildroot}%{_bindir}/xboxdrvctl
-
 chmod 644 %{buildroot}%{_mandir}/man1/xboxdrv*
 install -pm 644 doc/xboxdrv-daemon.1 %{buildroot}%{_mandir}/man1
 
 # Install dbus rule
-mkdir -p %{buildroot}%{_sysconfdir}/dbus-1/system.d
-install -pm 644 data/org.seul.Xboxdrv.conf %{buildroot}%{_sysconfdir}/dbus-1/system.d
-install -pm 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}.conf
-install -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
+mkdir -p %{buildroot}%{_datadir}/dbus-1/system.d
+install -pm 644 %{S:3} %{buildroot}%{_datadir}/dbus-1/system.d/
+
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}
+install -pm 644 %{S:2} %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+install -D -m 644 %{S:1} %{buildroot}%{_unitdir}/%{name}.service
+
+mkdir -p %{buildroot}%{_datadir}/dbus-1/system-services
+install -pm0644 %{S:4} %{buildroot}%{_datadir}/dbus-1/system-services/
+
+mkdir -p %{buildroot}%{_datadir}/polkit-1/actions
+install -pm0644 %{S:5} %{S:6} %{buildroot}%{_datadir}/polkit-1/actions/
+
 
 %preun
 %systemd_preun %{name}.service
@@ -89,14 +105,26 @@ install -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 %files
 %doc PROTOCOL NEWS AUTHORS README.md examples
 %license COPYING
-%{_bindir}/xboxdrv
-%{_mandir}/man1/xboxdrv*
+%{_bindir}/%{name}
+%{_bindir}/%{name}ctl
+%{_mandir}/man1/%{name}*
 %{_unitdir}/%{name}.service
-%config(noreplace) %{_sysconfdir}/%{name}.conf
-%{_sysconfdir}/dbus-1/system.d/org.seul.Xboxdrv.conf
+%dir %{_sysconfdir}/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%{_datadir}/dbus-1/system.d/*.conf
+%{_datadir}/dbus-1/system-services/*.service
+%{_datadir}/polkit-1/actions/*.policy
 
 
 %changelog
+* Mon Sep 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.8-102.chinfo
+- Update URLs to gitlab
+- Update files to proper dbus support
+- Readd xboxdrvctl
+- %%{_sysconfdir}/xboxdrv
+- polkit policy
+- _smp_mflags
+
 * Wed Sep 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.8-101.chinfo
 - Upstream fix
 
