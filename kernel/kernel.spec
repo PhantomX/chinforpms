@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -587,8 +587,6 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-Patch307: arm-tegra-fix-nouveau-crash.patch
-
 # https://patchwork.kernel.org/patch/10539291/
 Patch308: mmc-sunxi-allow-3.3V-DDR-when-DDR-is-available.patch
 # https://patchwork.kernel.org/patch/10540521/
@@ -628,6 +626,9 @@ Patch505: HID-fixes.patch
 Patch506: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch507: 0001-random-make-CPU-trust-a-boot-parameter.patch
 
+# CVE-2018-14633 rhbz 1626035 1632185
+Patch508: CVE-2018-14633.patch
+
 # Support for unique build ids
 # All queued in the kbuild tree
 Patch520: 0001-kbuild-Add-build-salt-to-the-kernel-and-modules.patch
@@ -658,7 +659,7 @@ Patch540: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id f48646996dbccd1cdad650b1ea8b929b2469ef81
+%global opensuse_id 3aeb311d47a522d41dd47dc9ced46a8bfc0588c1
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -702,7 +703,6 @@ Patch3011: %{pf_url}/5bf982716cae8129275717f47c01e75e66459e5c.patch#/pf-5bf98271
 Patch3012: %{pf_url}/363653afbba49d09f344daca2dfb229e59601992.patch#/pf-363653afbba49d09f344daca2dfb229e59601992.patch
 Patch3013: %{pf_url}/712990b7c1fd6a04ce9996fcd0b422cca291f4bf.patch#/pf-712990b7c1fd6a04ce9996fcd0b422cca291f4bf.patch
 Patch3014: %{pf_url}/50e965433ecb0e251de2bafe6eb116510a122509.patch#/pf-50e965433ecb0e251de2bafe6eb116510a122509.patch
-Patch3015: %{pf_url}/8296e5a7dbddf3413225e7e4a6830c5f6b56ee1e.patch#/pf-8296e5a7dbddf3413225e7e4a6830c5f6b56ee1e.patch
 Patch3016: %{pf_url}/33e3b43082a58c90af511ad039c916f8eae79fe1.patch#/pf-33e3b43082a58c90af511ad039c916f8eae79fe1.patch
 Patch3017: %{pf_url}/89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch#/pf-89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch
 Patch3018: %{pf_url}/16cf1745ff9e12ba8914781133322cd14cdd0178.patch#/pf-16cf1745ff9e12ba8914781133322cd14cdd0178.patch
@@ -710,6 +710,8 @@ Patch3019: %{pf_url}/8c1fddf8714b6809b91a1cf23709ba2d81127890.patch#/pf-8c1fddf8
 Patch3022: %{pf_url}/73b03804b77d62dde759a9c193f4c6b0080a3373.patch#/pf-73b03804b77d62dde759a9c193f4c6b0080a3373.patch
 Patch3023: %{pf_url}/7f2d1c9cb63027fdd2b1e55b6f878b15cfaa2db5.patch#/pf-7f2d1c9cb63027fdd2b1e55b6f878b15cfaa2db5.patch
 Patch3024: %{pf_url}/5f61f18e084c29c3ee37c9acb5e6a9de1d3d211f.patch#/pf-5f61f18e084c29c3ee37c9acb5e6a9de1d3d211f.patch
+Patch3025: %{pf_url}/0e1f4ce203c1e95a881a96e9b26939c781f147d2.patch#/pf-0e1f4ce203c1e95a881a96e9b26939c781f147d2.patch
+Patch3500: postfactum-merge-fixes-2.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1982,6 +1984,10 @@ fi
 #
 #
 %changelog
+* Wed Sep 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.10-500.chinfo
+- 4.18.10
+- f28 sync
+
 * Wed Sep 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.9-500.chinfo
 - 4.18.9
 

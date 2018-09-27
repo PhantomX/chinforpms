@@ -1,0 +1,40 @@
+diff -up reicast-emulator-r8.1/shell/linux/Makefile.orig reicast-emulator-r8.1/shell/linux/Makefile
+--- reicast-emulator-r8.1/shell/linux/Makefile.orig	2018-09-12 07:43:26.000000000 -0300
++++ reicast-emulator-r8.1/shell/linux/Makefile	2018-09-25 09:50:31.419409036 -0300
+@@ -3,8 +3,8 @@ FOR_LINUX :=1
+ #NO_REC := 1
+ #NO_REND := 1
+ WEBUI :=1
+-USE_OSS := 1
+-#USE_PULSEAUDIO := 1
++#USE_OSS := 1
++USE_PULSEAUDIO := 1
+ #USE_LIBAO := 1
+ USE_EVDEV := 1
+ 
+@@ -15,12 +15,12 @@ STRIP=${CC_PREFIX}strip
+ LD=${CC}
+ 
+ MFLAGS :=
+-ASFLAGS :=
+-LDFLAGS :=
++#ASFLAGS :=
++#LDFLAGS :=
+ INCS :=
+ LIBS :=
+-CFLAGS :=
+-CXXFLAGS :=
++#CFLAGS :=
++#CXXFLAGS :=
+ 
+ ifneq (, $(filter $(shell uname -s), FreeBSD OpenBSD NetBSD DragonFly))
+     CFLAGS += -DTARGET_BSD
+@@ -239,7 +239,7 @@ include $(RZDCY_SRC_DIR)/core.mk
+ 
+ LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,-O3 -Wl,--sort-common
+ 
+-CFLAGS += -g -O3 -D RELEASE -c -D USES_HOMEDIR #-D NO_REND
++CFLAGS += -g -D RELEASE -c -D USES_HOMEDIR #-D NO_REND
+ CFLAGS += -frename-registers -fno-strict-aliasing
+ CFLAGS += -ffast-math -ftree-vectorize
+ 

@@ -1,0 +1,12 @@
+diff -up reicast-emulator-r8.1/shell/linux/Makefile.native reicast-emulator-r8.1/shell/linux/Makefile
+--- reicast-emulator-r8.1/shell/linux/Makefile.native	2018-09-12 07:43:26.000000000 -0300
++++ reicast-emulator-r8.1/shell/linux/Makefile	2018-09-25 09:50:31.419409036 -0300
+@@ -81,7 +81,7 @@ ifeq (,$(platform))
+         platform = lincpp
+     endif
+ 
+-    FLAGS = $(shell grep flags /proc/cpuinfo)
++    FLAGS = $(shell /bin/true)
+     ifneq (,$(findstring sse4_1,$(FLAGS)))
+         platform += sse4_1
+     endif

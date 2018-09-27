@@ -31,11 +31,11 @@ diff --git a/block/blk-mq.c b/block/blk-mq.c
 index 654b0dc7e001..2f9e14361673 100644
 --- a/block/blk-mq.c
 +++ b/block/blk-mq.c
-@@ -972,7 +970,6 @@ bool blk_mq_get_driver_tag(struct reques
+@@ -971,6 +971,7 @@ bool blk_mq_get_driver_tag(struct reques
  		.hctx = blk_mq_map_queue(rq->q, rq->mq_ctx->cpu),
- 		.flags = wait ? 0 : BLK_MQ_REQ_NOWAIT,
+ 		.flags = BLK_MQ_REQ_NOWAIT,
  	};
--	bool shared;
++	bool shared;
  
- 	might_sleep_if(wait);
- 
+ 	if (rq->tag != -1)
+ 		goto done;
