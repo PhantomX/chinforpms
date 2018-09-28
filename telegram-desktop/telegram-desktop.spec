@@ -10,7 +10,7 @@
 
 Summary: Telegram Desktop official messaging app
 Name: telegram-desktop
-Version: 1.3.16
+Version: 1.3.17
 Release: 100.chinfo%{?dist}
 
 Epoch: 1
@@ -81,7 +81,7 @@ BuildRequires: minizip-devel
 %endif
 
 %description
-Telegram is a messaging app with a focus on speed and security, it’s super
+Telegram is a messaging app with a focus on speed and security, it's super
 fast, simple and free. You can use Telegram on all your devices at the same
 time — your messages sync seamlessly across any number of your phones,
 tablets or computers.
@@ -152,6 +152,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 %{_datadir}/metainfo/%{name}.appdata.xml
 
 %changelog
+* Thu Sep 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.3.17-100.chinfo
+- 1.3.17
+
 * Thu Sep 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.3.16-100.chinfo
 - 1.3.16
 - RPMFusion sync

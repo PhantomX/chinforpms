@@ -83,6 +83,7 @@ BuildRequires:  pkgconfig(libswscale)
 %else
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif #{?with_sysffmpeg}
+BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(libglvnd)
 BuildRequires:  pkgconfig(libpng)
@@ -151,8 +152,8 @@ sed \
   -e '/make install/d' \
   -i linux_*.sh
 
-rm -rf linux/*/include
-rm -rf linux/*/lib
+rm -rf */*/include
+rm -rf */*/lib
 
 popd
 %endif
