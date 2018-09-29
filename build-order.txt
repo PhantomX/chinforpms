@@ -11,6 +11,7 @@ mesa
 shaderc
 smooth
 vkd3d
+webp-pixbuf-loader
 ytnef
 
 # 2
@@ -82,6 +83,7 @@ VirtualBox
 waterfox
 waterfox-filesystem
 waterfox-classic-theme-restorer
+waterfox-classic-toolbar-buttons
 waterfox-noscript
 wine
 xboxdrv

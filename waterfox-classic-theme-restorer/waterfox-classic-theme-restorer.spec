@@ -13,7 +13,7 @@
 %global pkgname ClassicThemeRestorer
 
 Name:           waterfox-classic-theme-restorer
-Version:        1.7.7.2
+Version:        1.7.7.7
 Release:        1%{?dist}
 Summary:        Customize Waterfox Australis UI
 
@@ -31,7 +31,6 @@ Source3:        %{name}.metainfo.xml
 
 BuildArch:      noarch
 
-# GNOME Software Center not present on EL < 7 and Fedora
 BuildRequires:  libappstream-glib
 Requires:       waterfox-filesystem
 
@@ -40,6 +39,7 @@ Classic Theme Restorer brings back appmenu button, squared tabs,
 add-ons bar, small nav-bar buttons, a few older buttons and more to
 Waterfox Australis UI. Use 'Customize' menu to move buttons on
 toolbars.
+
 
 %prep
 %if 0%{?with_xpi}
@@ -51,8 +51,6 @@ cp -p %{S:2} .
 %else
 %autosetup -n %{pkgname}-%{version}
 %endif
-
-cp -p %{S:3} .
 
 %build
 
@@ -85,6 +83,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Fri Sep 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.7.7-1
+- 1.7.7.7
+
 * Fri Jul 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.7.2-1
 - 1.7.7.2
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2018 Phantom X <megaphantomx at bol.com.br> -->
+<component type="addon">
+  <id>waterfox-classic-toolbar-buttons</id>
+  <extends>mozilla-seamonkey.desktop</extends>
+  <extends>mozilla-thunderbird.desktop</extends>
+  <extends>waterfox.desktop</extends>
+  <name>Classic Toolbar Buttons</name>
+  <summary>Classic toolbar button style for Waterfox</summary>
+  <url type="homepage">https://github.com/Aris-t2/ClassicThemeRestorer</url>
+  <url type="bugtracker">https://github.com/Aris-t2/ClassicThemeRestorer/issues</url>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MPLv2.0</project_license>
+  <updatecontact>megaphantomx at bol.com.br</updatecontact>
+</component>
