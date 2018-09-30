@@ -1,0 +1,11 @@
+diff -up webp-pixbuf-loader-9b92950d49d7939f90ba7413deb7ec6b392b2054/io-webp.c.nowrite webp-pixbuf-loader-9b92950d49d7939f90ba7413deb7ec6b392b2054/io-webp.c
+--- webp-pixbuf-loader-9b92950d49d7939f90ba7413deb7ec6b392b2054/io-webp.c.nowrite	2018-09-29 19:01:55.135211390 -0300
++++ webp-pixbuf-loader-9b92950d49d7939f90ba7413deb7ec6b392b2054/io-webp.c	2018-09-29 19:02:01.400897501 -0300
+@@ -465,6 +465,6 @@ fill_info (GdkPixbufFormat *info)
+         info->description = "The WebP image format";
+         info->mime_types  = mime_types;
+         info->extensions  = extensions;
+-        info->flags       = GDK_PIXBUF_FORMAT_WRITABLE | GDK_PIXBUF_FORMAT_THREADSAFE;
++        info->flags       = GDK_PIXBUF_FORMAT_THREADSAFE;
+         info->license     = "LGPL";
+ }

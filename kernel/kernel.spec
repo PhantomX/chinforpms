@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -598,9 +598,6 @@ Patch311: arm64-ZynqMP-firmware-clock-drivers-core.patch
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-enable-pmu.patch
 
-# https://patchwork.freedesktop.org/patch/240917/
-Patch334: drm-vc4-Fix-the-no-scaling-case-on-multi-planar-YUV-formats.patch
-
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://patchwork.kernel.org/patch/10392891/
 Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
@@ -619,15 +616,9 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # CVE-2018-15471 rhbz 1610555 1618414
 Patch504: xsa270.patch
 
-# rhbz 1627963 1628715
-Patch505: HID-fixes.patch
-
 # rhbz 1572944
 Patch506: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch507: 0001-random-make-CPU-trust-a-boot-parameter.patch
-
-# CVE-2018-14633 rhbz 1626035 1632185
-Patch508: CVE-2018-14633.patch
 
 # Support for unique build ids
 # All queued in the kbuild tree
@@ -1984,6 +1975,10 @@ fi
 #
 #
 %changelog
+* Sat Sep 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.11-500.chinfo
+- 4.18.11
+- f28 sync
+
 * Wed Sep 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.10-500.chinfo
 - 4.18.10
 - f28 sync
