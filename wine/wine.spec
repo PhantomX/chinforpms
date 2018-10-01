@@ -11,12 +11,12 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.16
+%global stagingver 3.17
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
 %global pba 1
-%global pbaver 3.16
+%global pbaver 3.17
 %if 0%(echo %{pbaver} | grep -q \\. ; echo $?) == 0
 %global pbarel v
 %global pbapkg knobs_and_switches-
@@ -37,7 +37,7 @@
 %endif
 
 Name:           wine
-Version:        3.16
+Version:        3.17
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -101,7 +101,6 @@ Patch603:       wbemprox_query_v2.patch
 # Keybind patch reversion
 Patch604:       keybindings.patch
 Patch605:       poe-fix.patch
-Patch606:       user32-Call-DefWindowProc-in-DesktopWndProc.patch
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 
@@ -721,7 +720,6 @@ This package adds xaudio2 support for wine.
 %patch602 -p1
 %patch604 -p1 -R
 %patch605 -p1
-%patch606 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -2333,6 +2331,9 @@ fi
 %endif
 
 %changelog
+* Sun Sep 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.17-100.chinfo
+- 3.17
+
 * Thu Sep 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.16-100.chinfo
 - 3.16
 

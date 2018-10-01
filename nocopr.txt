@@ -13,6 +13,7 @@ irpf2018
 mupen64plus-extraplugins
 ppsspp
 psximager
+reicast
 soulseekqt
 spideroakone
 steam
