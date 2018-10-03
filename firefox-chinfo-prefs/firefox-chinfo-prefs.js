@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20180906
+// 20181001
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -313,6 +313,12 @@ pref("extensions.classicthemerestorer.showtabclose", true);
 pref("extensions.classicthemerestorer.starinurl", true);
 pref("extensions.classicthemerestorer.tabsontop", "false");
 pref("extensions.classicthemerestorer.wincontrols", true);
+
+// Classic Toolbar Theme
+pref("extensions.cstbb-extension.navbarbuttons", "nabbuttons_small");
+pref("extensions.cstbb-extension.navbicons", "ico_ff45d");
+pref("extensions.cstbb-extension.svgfilters", true);
+pref("extensions.cstbb-extension.verdomainid", true);
 
 // Download Status Bar
 pref("extensions.downloadbar.autocleancompletedonquit", true);

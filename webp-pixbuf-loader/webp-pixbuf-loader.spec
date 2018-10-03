@@ -27,6 +27,7 @@ Source1:        https://www.gnu.org/licenses/old-licenses/lgpl-2.0.txt#/lgpl-2.0
 Patch0:         %{name}-nowrite.patch
 
 BuildRequires:  cmake
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= 2.22
 BuildRequires:  pkgconfig(libwebp) >= 0.4.3
 
