@@ -1,5 +1,5 @@
 Name:           xdgmenumaker
-Version:        1.4
+Version:        1.5
 Release:        1%{?dist}
 Summary:        Generates application menus using xdg information
 
@@ -13,7 +13,7 @@ Patch0:         %{name}-more-search.patch
 BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
-BuildRequires:  python3-rpm-macros
+BuildRequires:  python3-devel
 BuildRequires:  txt2tags
 Requires:       gobject-introspection
 Requires:       python3-gobject
@@ -56,5 +56,8 @@ done
 
 
 %changelog
+* Thu Oct 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.5-1
+- 1.5
+
 * Sat Jan  7 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1
 - Initial spec.

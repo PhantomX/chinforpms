@@ -27,7 +27,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -174,6 +174,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Thu Oct 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.12-500.chinfo
+- 4.18.12
+
 * Sat Sep 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.11-500.chinfo
 - 4.18.11
 

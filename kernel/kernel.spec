@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -650,7 +650,7 @@ Patch540: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 3aeb311d47a522d41dd47dc9ced46a8bfc0588c1
+%global opensuse_id 4a5c1c1693417565b0ee2b8ceb946bd3c587fd6f
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -669,7 +669,6 @@ Patch1022: %{opensuse_url}/0003-x86-stacktrace-Clarify-the-reliable-success-path
 Patch1023: %{opensuse_url}/0004-x86-stacktrace-Do-not-fail-for-ORC-with-regs-on-stac.patch#/openSUSE-0004-x86-stacktrace-Do-not-fail-for-ORC-with-regs-on-stac.patch
 Patch1024: %{opensuse_url}/0005-x86-unwind-orc-Detect-the-end-of-the-stack.patch#/openSUSE-0005-x86-unwind-orc-Detect-the-end-of-the-stack.patch
 Patch1025: %{opensuse_url}/0006-x86-stacktrace-Enable-HAVE_RELIABLE_STACKTRACE-for-t.patch#/openSUSE-0006-x86-stacktrace-Enable-HAVE_RELIABLE_STACKTRACE-for-t.patch
-Patch1026: %{opensuse_url}/alarmtimer-Prevent-overflow-for-relative-nanosleep.patch#/openSUSE-alarmtimer-Prevent-overflow-for-relative-nanosleep.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -1975,6 +1974,9 @@ fi
 #
 #
 %changelog
+* Thu Oct 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.12-500.chinfo
+- 4.18.12
+
 * Sat Sep 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.11-500.chinfo
 - 4.18.11
 - f28 sync
