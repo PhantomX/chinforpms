@@ -1,10 +1,14 @@
-%global gitcommitid a76094bc69dc0cfab7f02ae0270c09175196f902
+%global gitcommitid 0d9bd8671fa98d68912528638fdd6398d96b6aba
 %global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
 %global with_snapshot 0
 
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           fluxbox-chinfo-menu
-Version:        5.0.1
-Release:        1%{?dist}
+Version:        5.0.2
+Release:        1%{?gver}%{?dist}
 Summary:        Menu generator for Fluxbox based on XDG
 
 License:        GPLv3
@@ -58,6 +62,9 @@ popd
 
 
 %changelog
+* Fri Oct 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.0.2-1
+- 5.0.2
+
 * Wed Jun 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 5.0.1-1
 - 5.0.1
 

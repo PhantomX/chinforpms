@@ -1,6 +1,7 @@
 Name:           lutris
-Version:        0.4.19
-Release:        5%{?dist}
+Version:        0.4.20
+Epoch:          1
+Release:        1%{?dist}
 Summary:        Install and play any video game easily
 
 License:        GPL-3.0+
@@ -72,6 +73,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Oct 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.4.20-1
+- 0.4.20
+
 * Mon Sep 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.4.19-5
 - chinforpms cleanup
 
