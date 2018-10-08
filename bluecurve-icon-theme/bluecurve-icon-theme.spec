@@ -3,7 +3,7 @@
 Name:           bluecurve-icon-theme
 Summary:        Bluecurve icon theme
 Version:        8.0.2
-Release:        102.chinfo%{?dist}
+Release:        103.chinfo%{?dist}
 
 License:        GPL+
 # There is no official upstream yet
@@ -20,6 +20,7 @@ Requires:       system-logos
 Requires:       bluecurve-cursor-theme
 Requires(post): coreutils
 
+BuildRequires:  gcc
 # we require XML::Parser for our in-tree intltool
 BuildRequires:  perl(XML::Parser)
 BuildRequires:  perl(Getopt::Long)
@@ -239,6 +240,9 @@ missresize() {
 %{_datadir}/icons/Bluecurve-classic-inverse
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 8.0.2-103.chinfo
+- BR: gcc
+
 * Mon Mar 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 8.0.2-102.chinfo
 - Remove obsolete scriptlets
 

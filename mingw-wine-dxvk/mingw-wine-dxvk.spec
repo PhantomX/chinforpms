@@ -15,7 +15,7 @@
 
 Name:           mingw-wine-%{srcname}
 Version:        0.81
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -27,6 +27,8 @@ Source2:        winedxvkcfg
 
 ExclusiveArch:  %{ix86} x86_64
 
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  mingw%{__isa_bits}-filesystem
 BuildRequires:  mingw%{__isa_bits}-gcc
 BuildRequires:  mingw%{__isa_bits}-gcc-c++
@@ -118,6 +120,10 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.81-2
+- BR: gcc
+- BR: gcc-c++
+
 * Fri Oct 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.81-1
 - 0.81
 

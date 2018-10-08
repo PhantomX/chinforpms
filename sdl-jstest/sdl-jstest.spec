@@ -9,7 +9,7 @@
 
 Name:           sdl-jstest
 Version:        0.2.1
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        Simple SDL joystick test application for the console
 
 License:        GPLv3
@@ -25,6 +25,7 @@ Patch0:         %{name}-system-sdl_db.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(ncurses)
 BuildRequires:  pkgconfig(sdl2)
 Requires:       sdl_gamecontrollerdb
@@ -85,5 +86,8 @@ popd
 
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.2.1-0.2.20180715gitaafbdb1
+- BR: gcc-c++
+
 * Thu Sep 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.2.1-0.1.20180715gitaafbdb1
 - Initial spec

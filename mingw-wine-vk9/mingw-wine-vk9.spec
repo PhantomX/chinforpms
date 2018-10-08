@@ -13,7 +13,7 @@
 
 Name:           mingw-wine-%{srcname}
 Version:        0.26.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Vulkan-based D3D9 implementation for Linux / Wine
 
 License:        zlib
@@ -28,6 +28,8 @@ Patch0:         VK9-build-fixes.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  mingw%{__isa_bits}-filesystem
 BuildRequires:  mingw%{__isa_bits}-boost-static
 BuildRequires:  mingw%{__isa_bits}-eigen3
@@ -88,7 +90,7 @@ mv Source/lib%{?vlib}/vulkan-1.{dll,lib} lib/
 cp %{S:1} .
 
 sed \
-  -e "s|'-gdwarf-2'|\0, '-I/usr/include/spirv/1.2'|g" \
+  -e "s|'-gdwarf-2'|\0, '-I/usr/include/spirv/1.2', '-I%{_builddir}/VK9-%{version}/include' |g" \
   -i build-win%{__isa_bits}.txt
 
 %build
@@ -131,6 +133,10 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.26.0-3
+- BR: gcc
+- BR: gcc-c++
+
 * Mon Jul 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.26.0-2
 - Proper build with LunarG Vulkan SDK
 - BR: p7zip-plugins, for SDK files extraction

@@ -1,6 +1,6 @@
 Name:           vkd3d
 Version:        1.0
-Release:        101.chinfo%{?dist}
+Release:        102.chinfo%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
@@ -8,6 +8,7 @@ URL:            http://www.winehq.org/
 Source0:        https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz
 Source10:       https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz.sign
 
+BuildRequires:  gcc
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(xcb-event)
 BuildRequires:  pkgconfig(xcb-icccm)
@@ -104,6 +105,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Sun Oct 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0-102.chinfo
+- BR:gcc
+
 * Fri Jun 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0-101.chinfo
 - Sync with Fedora
 

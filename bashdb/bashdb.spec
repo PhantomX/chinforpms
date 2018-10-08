@@ -3,7 +3,7 @@
 Name:           bashdb
 Summary:        BASH debugger, the BASH symbolic debugger
 Version:        4.4_0.94
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://bashdb.sourceforge.net/
 
@@ -13,6 +13,7 @@ Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{rversion}.ta
 BuildArch:      noarch
 
 BuildRequires:  bash >= 4.4
+BuildRequires:  gcc
 Requires(post): /sbin/install-info
 Requires(preun): /sbin/install-info
 Requires:       bash >= 4.4
@@ -66,6 +67,9 @@ fi
 %{_infodir}/%{name}.info*
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.4_0.94-2
+- BR: gcc
+
 * Mon Oct 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.4_0.94-1
 - 4.4-0.94
 

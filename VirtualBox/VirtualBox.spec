@@ -39,7 +39,7 @@
 Name:       VirtualBox
 Version:    5.2.18
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
+Release:    101%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
 
 License:    GPLv2 or (GPLv2 and CDDL)
@@ -107,7 +107,7 @@ BuildRequires:  qt5-linguist
 BuildRequires:  gsoap-devel
 %endif
 BuildRequires:  pam-devel
-BuildRequires:  mkisofs
+BuildRequires:  genisoimage
 BuildRequires:  java-devel >= 1.6
 %if %{with docs}
 BuildRequires:  /usr/bin/pdflatex
@@ -809,6 +809,9 @@ getent passwd vboxadd >/dev/null || \
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.18-101.chinfo
+- BR: mkisofs -> genisoimage
+
 * Wed Aug 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.18-100.chinfo
 - 5.2.18
 

@@ -2,7 +2,7 @@
 
 Name:           mediastreamer
 Version:        2.16.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Mediastreaming library for telephony application
 
 License:        GPLv2
@@ -12,6 +12,7 @@ Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{vers
 BuildRequires:  cmake
 BuildRequires:  doxygen
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  gettext-devel
 BuildRequires:  git
 BuildRequires:  graphviz
@@ -147,6 +148,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 %{_datadir}/Mediastreamer2/cmake/*.cmake
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.16.1-3
+- BR: gcc-c++
+
 * Fri Sep 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.16.1-2
 - cmake and fixes for it
 

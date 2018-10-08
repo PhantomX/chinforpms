@@ -6,6 +6,7 @@ gstreamer1
 gtk3
 libmirage
 libogg
+libtgvoip
 libxspf
 mesa
 shaderc
@@ -16,6 +17,7 @@ ytnef
 
 # 2
 ario
+asbru-cm
 bashdb
 bcg729
 bcmatroska2
@@ -54,19 +56,19 @@ joy2key
 keepassxc
 kernel-tools
 ladspa-bs2b-plugins
+lutris
 mednafen
 mednaffe
 mozilla-gnotifier
 mp3val
 mpdnotify
 mps-youtube
-nautilus-dropbox
+mupen64plus
 openjazz
 opentyrian
 perl-rename
 pev
 phantomjs
-psi
 pspshrink
 pulsemixer
 pysdl2
@@ -74,16 +76,22 @@ python-pafy
 qmp3gain
 qt-virustotal-uploader
 quiterss
+sdl_gamecontrollerdb
+sdl-jstest
+skrooge
 smtube
+thrash-protect
 tyrian-data
 unbound-update-roothints
 vhba
 vhba-kmod
 VirtualBox
+waifu2x-converter-cpp
 waterfox
 waterfox-filesystem
 waterfox-classic-theme-restorer
 waterfox-classic-toolbar-buttons
+waterfox-ublock-origin
 waterfox-noscript
 wine
 xboxdrv

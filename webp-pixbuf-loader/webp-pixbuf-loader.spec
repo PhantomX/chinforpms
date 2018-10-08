@@ -11,7 +11,7 @@
 
 Name:           webp-pixbuf-loader
 Version:        0
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        WebM GDK Pixbuf Loader library
 
 License:        LGPLv2+
@@ -28,6 +28,7 @@ Patch0:         %{name}-nowrite.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= 2.22
 BuildRequires:  pkgconfig(libwebp) >= 0.4.3
 
@@ -74,6 +75,9 @@ popd
 
 
 %changelog
+* Sun Oct 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 0-3.20160328git9b92950
+- BR: gcc-c++
+
 * Sat Sep 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 0-2.20160328git9b92950
 - Disable write support, applications are crashing on image files writing
 - Fix snapshot build tag

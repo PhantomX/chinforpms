@@ -69,6 +69,11 @@
 # Build as a debug package?
 %global debug_build       0
 
+%global disable_elfhack       0
+%if 0%{?fedora} > 28
+%global disable_elfhack       1
+%endif
+
 %global default_bookmarks_file  %{_datadir}/bookmarks/default-bookmarks.html
 %global waterfox_app_id  \{ec8030f7-c20a-464f-9b0e-13a3a9e97384\}
 # Minimal required versions
@@ -117,7 +122,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.3
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -284,6 +289,7 @@ BuildRequires:  xorg-x11-server-Xvfb
 %endif
 BuildRequires:  rust
 BuildRequires:  cargo
+BuildRequires:  clang-devel
 
 Obsoletes:      mozilla <= 37:1.7.13
 Provides:       webclient
@@ -458,6 +464,10 @@ echo "ac_add_options --enable-system-ffi" >> .mozconfig
 echo "ac_add_options --disable-elf-hack" >> .mozconfig
 %endif
 
+%if 0%{?disable_elfhack}
+echo "ac_add_options --disable-elf-hack" >> .mozconfig
+%endif
+
 %if %{?alsa_backend}
 echo "ac_add_options --enable-alsa" >> .mozconfig
 %endif
@@ -479,10 +489,6 @@ echo "ac_add_options --enable-debug" >> .mozconfig
 echo "ac_add_options --disable-optimize" >> .mozconfig
 %else
 %global optimize_flags "none"
-# Fedora 26 (gcc7) needs to disable default build flags (mozbz#1342344)
-%ifnarch s390 s390x
-%global optimize_flags "-g -O2"
-%endif
 %ifarch armv7hl
 # ARMv7 need that (rhbz#1426850)
 %global optimize_flags "-g -O2 -fno-schedule-insns"
@@ -891,6 +897,12 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.3-2.20180911git432b427
+- Some spec cleanups adapted from Fedora Firefox
+- BR: clang-devel
+- Disable elfhack for Fedora 29+
+- Remove old gcc 7.2 fix
+
 * Fri Sep 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.3-1.20180911git432b427
 - New release/snapshot
 

@@ -1,6 +1,6 @@
 Name:    easytag
 Version: 2.4.3
-Release: 102.chinfo%{?dist}
+Release: 103.chinfo%{?dist}
 Summary: Tag editor for MP3, Ogg, FLAC and other music files
 
 Group:   Applications/Multimedia
@@ -22,6 +22,7 @@ BuildRequires: desktop-file-utils
 BuildRequires: docbook-dtds
 BuildRequires: docbook-style-xsl
 BuildRequires: gcc
+BuildRequires: gcc-c++
 BuildRequires: id3lib-devel >= 3.7.12
 BuildRequires: intltool
 BuildRequires: itstool
@@ -99,6 +100,9 @@ make check
 
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.4.3-103.chinfo
+- BR: gcc-c++
+
 * Wed Jun 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.4.3-102.chinfo
 - Some upstream fixes
 - Make macros

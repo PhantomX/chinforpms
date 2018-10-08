@@ -1,7 +1,7 @@
 Name:           gpa
 Summary:        Graphical user interface for GnuPG
 Version:        0.9.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 License:        GPLv3+
 URL:            https://www.gnupg.org/related_software/gpa/
@@ -11,6 +11,7 @@ Source1:        ftp://ftp.gnupg.org/gcrypt/gpa/%{name}-%{version}.tar.bz2.sig
 Patch1:         gpa-keyservers.patch
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  gcc
 BuildRequires:  gettext
 BuildRequires:  gnupg2
 BuildRequires:  gpgme-devel
@@ -75,6 +76,9 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.10-2
+- BR: gcc
+
 * Wed Apr 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.10-1
 - 0.9.10
 - Spec fully updated

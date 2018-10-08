@@ -1,6 +1,6 @@
 Name:           bzrtp
 Version:        1.0.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Opensource implementation of ZRTP keys exchange protocol
 
 License:        GPLv2
@@ -9,6 +9,7 @@ Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{vers
 
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(bctoolbox)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(sqlite3)
@@ -74,6 +75,9 @@ install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/lib%{name}.pc
 
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0.6-4
+- BR: gcc-c++
+
 * Sat Apr 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0.6-3
 - Remove -Werror
 

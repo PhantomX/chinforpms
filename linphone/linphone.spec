@@ -1,6 +1,6 @@
 Name:           linphone
 Version:        3.12.0
-Release:        2.chinfo%{?dist}
+Release:        3.chinfo%{?dist}
 Summary:        Phone anywhere in the whole world by using the Internet
 
 License:        GPLv2+
@@ -13,6 +13,7 @@ Patch1:         linphone-gitversion.patch
 BuildRequires:  cmake
 BuildRequires:  doxygen
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  gettext
 BuildRequires:  graphviz
 BuildRequires:  desktop-file-utils
@@ -34,7 +35,7 @@ BuildRequires:  pkgconfig(sqlite3)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  python2
 BuildRequires:  python2-six
-BuildRequires:  pystache
+BuildRequires:  python2-pystache
 Requires:       hicolor-icon-theme
 
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -173,6 +174,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/Linphone*/cmake/*.cmake
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.12.0-3.chinfo
+- BR: gcc-c++
+
 * Sat Sep 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.12.0-2.chinfo
 - cmake and fixes for it
 

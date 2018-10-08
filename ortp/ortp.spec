@@ -1,6 +1,6 @@
 Name:           ortp
 Version:        1.0.2
-Release:        101.chinfo%{?dist}
+Release:        102.chinfo%{?dist}
 Summary:        A C library implementing the RTP protocol (RFC3550)
 Epoch:          1
 
@@ -11,6 +11,7 @@ Source0:        https://www.linphone.org/releases/sources/%{name}/%{name}-%{vers
 BuildRequires:  cmake
 BuildRequires:  doxygen
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  graphviz
 BuildRequires:  perl-Carp
 BuildRequires:  pkgconfig(bctoolbox)
@@ -69,7 +70,10 @@ rm -rf %{buildroot}%{_datadir}/doc
 %{_datadir}/oRTP/cmake/*.cmake
 
 %changelog
-* Fri Sep 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.2-102.chinfo
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.2-102.chinfo
+- BR: gcc-c++
+
+* Fri Sep 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.2-101.chinfo
 - cmake and fixes for it
 
 * Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.2-100.chinfo

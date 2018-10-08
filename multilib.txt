@@ -1,7 +1,7 @@
 gamemode
 gstreamer1
 gtk3
-gtk-nocsd
+gtk3-nocsd
 kernel-tools
 libmirage
 libogg
