@@ -23,6 +23,8 @@ Requires:       mupen64plus
 %prep
 %autosetup -c
 
+find -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
+
 for plugin in %{build_plugins} ;do
   [ -f %{origname}-${plugin}/COPYING ] && cp %{origname}-${plugin}/COPYING COPYING.${plugin}
   [ -f %{origname}-${plugin}/README ] && cp %{origname}-${plugin}/README README.${plugin}

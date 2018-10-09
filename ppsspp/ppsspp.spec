@@ -45,6 +45,7 @@ Name:           ppsspp
 Version:        1.6.3
 Release:        4%{?gver}%{?dist}
 Summary:        A PSP emulator
+Epoch:          1
 
 License:        GPLv2+
 URL:            http://www.ppsspp.org/
@@ -98,6 +99,9 @@ BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
 Requires:       google-roboto-condensed-fonts
 
+Provides:       ppsspp-data.noarch = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      ppsspp-data.noarch < %{?epoch:%{epoch}:}%{version}-%{release}
+
 
 %description
 PPSSPP is a PSP emulator written in C++. It translates PSP CPU instructions
@@ -119,6 +123,8 @@ tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
+
+find ext Core -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" -o -name "*.y" \) -exec chmod -x {} ';'
 
 %if 0%{?with_snapshot}
 sed -i \

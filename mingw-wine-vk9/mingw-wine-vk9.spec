@@ -9,11 +9,11 @@
 %global srcname vk9
 %global vk9_dir %{_datadir}/wine/%{srcname}/%{__isa_bits}
 
-%global sdk_ver 1.1.77.0
+%global sdk_ver 1.1.85.0
 
 Name:           mingw-wine-%{srcname}
-Version:        0.26.0
-Release:        3%{?dist}
+Version:        0.28.1
+Release:        1%{?dist}
 Summary:        Vulkan-based D3D9 implementation for Linux / Wine
 
 License:        zlib
@@ -133,6 +133,9 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.28.1-1
+- 0.28.1
+
 * Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.26.0-3
 - BR: gcc
 - BR: gcc-c++

@@ -24,7 +24,6 @@ version ${kernelver}${debugid}
 linux ${bootprefix}/vmlinuz-${kernelver}
 initrd ${bootprefix}/initramfs-${kernelver}.img
 options \$kernelopts
-id ${ID}-${date}-${kernelver}${debugid}
 grub_users \$grub_users
 grub_arg --unrestricted
 grub_class kernel${variant}

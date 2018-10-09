@@ -9,7 +9,7 @@ X.Org Bigelow & Holmes TrueType fonts.
 
 Name:           bh-fonts
 Version:        1.0.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        X.Org BH TTF fonts
 
 License:        BH-Luxi
@@ -24,6 +24,7 @@ Source6:        %{fontname}-sans.metainfo.xml
 Source7:        %{fontname}-serif.metainfo.xml
 
 BuildArch:      noarch
+BuildRequires:  gcc
 BuildRequires:  fontpackages-devel
 BuildRequires:  xorg-x11-font-utils
 
@@ -136,6 +137,9 @@ done
 %{_metainfodir}/%{fontname}.metainfo.xml
 
 %changelog
+* Tue Oct 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-4
+- BR: gcc
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-3
 - BR: xorg-x11-font-utils
 

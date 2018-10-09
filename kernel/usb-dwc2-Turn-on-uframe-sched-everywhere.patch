@@ -1,0 +1,503 @@
+From patchwork Thu Jul 26 20:07:27 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Doug Anderson <dianders@chromium.org>
+X-Patchwork-Id: 10546405
+Return-Path: <linux-usb-owner@kernel.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id AF0DC14E2
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:26 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id A60BA2BCA3
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:26 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 9A60C2BCAD; Thu, 26 Jul 2018 20:08:26 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-7.8 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	MAILING_LIST_MULTI,RCVD_IN_DNSWL_HI,T_DKIM_INVALID autolearn=ham
+ version=3.3.1
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 351412BCA3
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:26 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1731286AbeGZV0Z (ORCPT
+        <rfc822;patchwork-linux-usb@patchwork.kernel.org>);
+        Thu, 26 Jul 2018 17:26:25 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:40947 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730402AbeGZV0Z (ORCPT
+        <rfc822;linux-usb@vger.kernel.org>); Thu, 26 Jul 2018 17:26:25 -0400
+Received: by mail-pg1-f195.google.com with SMTP id x5-v6so1799928pgp.7
+        for <linux-usb@vger.kernel.org>; Thu, 26 Jul 2018 13:08:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=l/myg6m+9/E2E5usmaA3mgBuQgW1vnAMb6sfkOe5tok=;
+        b=jYChSlM7RnMm2wPFHBUMCAw2dL4hsCluRiGF/p5szHUtz8pdiOYpM8xEXY0QvhCc2O
+         u6GuZehq+9VJJZmuLU2ukUtoqqq0FhAFla52X5fVdjHVrFYf9fWmlRwFBKIZKaj3idC3
+         wybTMcBcZF7hqLY9wR/f01qaRV88AICE09YTM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=l/myg6m+9/E2E5usmaA3mgBuQgW1vnAMb6sfkOe5tok=;
+        b=AVDLgOeFhI7B5+hnwZe7vKY4xHtW+U7LrLuav5rFornHmNLPLsoukLpUcL2DmRBeeE
+         fkqgOwT5SpinUMiDSryB7L1kYh76A8VpvCxceX3svLYgomScJnarr5rU2xk+KDpXLPWt
+         N1lq3Vlc9/D1gRa1hE0MqivrYUCTQ9vemqm3w/O8K3BdPKwKFzebUIuTpyG6QLqAGiHP
+         3/kgjUgO6/FFOi/cZHVQC7qLmzrtC/Hy4+Rzu2ZnuHqebyrQSksj1aeVCEFb+URq1ltN
+         aWshNBZf2p+WWtUatp8N4hCIcbMLfs9R2i2N7ebjvVO9E0nphvwLwLTsK1Md5Q72xj20
+         9L1A==
+X-Gm-Message-State: AOUpUlHwtoz2An49xh7Lh3/1VCAzzNFm565pY8hT4D5tT1bmwWsfgD9t
+        KzCry/EPfoIMBC8bRBH/iIIzCw==
+X-Google-Smtp-Source: 
+ AAOMgpcD9dtJtKK85I4RVkl1vzkP+CHk3cdc63Iv+Dt0fV67dvsEw0HGXsF6uml0d/rpFrfcIJXFQw==
+X-Received: by 2002:a62:930c:: with SMTP id
+ b12-v6mr3476478pfe.193.1532635680239;
+        Thu, 26 Jul 2018 13:08:00 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com
+ ([2620:0:1000:1501:38e4:86fe:ec0c:4007])
+        by smtp.gmail.com with ESMTPSA id
+ u11-v6sm5784169pfd.117.2018.07.26.13.07.58
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 26 Jul 2018 13:07:59 -0700 (PDT)
+From: Douglas Anderson <dianders@chromium.org>
+To: balbi@kernel.org, hminas@synopsys.com, gregkh@linuxfoundation.org
+Cc: stefan.wahren@i2se.com, grigor.tovmasyan@synopsys.com,
+        Bruno Herrera <bruherrera@gmail.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>, john.stultz@linaro.org,
+        Stephen Warren <swarren@wwwdotorg.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [REPOST PATCH 1/4] usb: dwc2: Turn on uframe_sched on "bcm" platforms
+Date: Thu, 26 Jul 2018 13:07:27 -0700
+Message-Id: <20180726200730.18290-2-dianders@chromium.org>
+X-Mailer: git-send-email 2.18.0.345.g5c9ce644c3-goog
+In-Reply-To: <20180726200730.18290-1-dianders@chromium.org>
+References: <20180726200730.18290-1-dianders@chromium.org>
+MIME-Version: 1.0
+Sender: linux-usb-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-usb.vger.kernel.org>
+X-Mailing-List: linux-usb@vger.kernel.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+There's no reason to have the uframe scheduler off on dwc2.  Running
+with uframe_sched = False is equivalent to saying "I don't want to run
+the correct code, I want to run the old and incorrect code".
+
+The uframe scheduler has been off on Broadcom since commit
+58b179dcf28c ("staging: dwc2: disable uframe_sched on the bcm2835").
+Since then there have been many many improvements, notably the commit
+9f9f09b048f5 ("usb: dwc2: host: Totally redo the microframe
+scheduler")
+
+Presumably if everyone is good w/ the uframe_sched turned back on we
+can kill all the old and crufty non-uframe sched code.
+
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+Acked-by: Minas Harutyunyan <hminas@synopsys.com>
+---
+
+ drivers/usb/dwc2/params.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/usb/dwc2/params.c b/drivers/usb/dwc2/params.c
+index af075d4da895..14b8742e62fa 100644
+--- a/drivers/usb/dwc2/params.c
++++ b/drivers/usb/dwc2/params.c
+@@ -47,7 +47,6 @@ static void dwc2_set_bcm_params(struct dwc2_hsotg *hsotg)
+ 	p->max_transfer_size = 65535;
+ 	p->max_packet_count = 511;
+ 	p->ahbcfg = 0x10;
+-	p->uframe_sched = false;
+ }
+ 
+ static void dwc2_set_his_params(struct dwc2_hsotg *hsotg)
+
+From patchwork Thu Jul 26 20:07:28 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Doug Anderson <dianders@chromium.org>
+X-Patchwork-Id: 10546403
+Return-Path: <linux-usb-owner@kernel.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id CCB37112E
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:23 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id C35652BCA3
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:23 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id B7B1D2BCAD; Thu, 26 Jul 2018 20:08:23 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-7.8 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	MAILING_LIST_MULTI,RCVD_IN_DNSWL_HI,T_DKIM_INVALID autolearn=ham
+ version=3.3.1
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 501742BCA3
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:23 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1731764AbeGZV0q (ORCPT
+        <rfc822;patchwork-linux-usb@patchwork.kernel.org>);
+        Thu, 26 Jul 2018 17:26:46 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:35268 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731233AbeGZV00 (ORCPT
+        <rfc822;linux-usb@vger.kernel.org>); Thu, 26 Jul 2018 17:26:26 -0400
+Received: by mail-pg1-f196.google.com with SMTP id e6-v6so1810484pgv.2
+        for <linux-usb@vger.kernel.org>; Thu, 26 Jul 2018 13:08:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=B5ISkcd4OFF7lL/r7udB8vKFGOj44Y74EZmaS9ksBcc=;
+        b=OD5guXgfjtPnqOoPztqSAT2onCZGRpWRpcqpqOJ6ix58Hbx9461pM8x7tqO1q/JN3S
+         3ohKncJQmwPuh5ypjtuO7AnTxlM2eMqddtWyNqis6Nd+xf2g5bfKZNPfsGoLqCpQTngn
+         EdEGXbZg1PqRcm6nYjs8yiMEI4Tm+I+/gdAUM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=B5ISkcd4OFF7lL/r7udB8vKFGOj44Y74EZmaS9ksBcc=;
+        b=K7NcdkmXdHp64bqY20aN08BR75pgF0anssT0ABkwZ5aGU/ikR8SuKWI8u9JB0P3Ue9
+         Vjwpo/HZOxywaEKEcNFu1ak7f8eVm3bjGXrl7/bjbs4TF4H54e0IbGhSGle3ApkIjY7e
+         px9bvBmbIYXTcqUgkXDbPq7+VE8LjXrAKXiuiBXWDMiQ0eOTnpDAMOXmtUkjysTbmWAD
+         fvVwHuRbh8QqCIzvMBW7SEktIHXh/Rlz3CkDQGfMX+o29vblHv481I8TOZQ6OmxR2yIX
+         Q3m83HRiNqZC1I76nCKzi3Ffzyp5QHz8V8ZPU7BFzLY+AwNJuAEHMFWVq2LZUIjGUHAn
+         Bz4A==
+X-Gm-Message-State: AOUpUlH1vxqnQ2Gtc5XVCmWY+jLtoWZPDvs77YzLPTOQasdUtp2DIUxc
+        U6QFTISg4mo0zqpIoiEEgWhbuBFFb6Y=
+X-Google-Smtp-Source: 
+ AAOMgpfZUUQvn0cT6OrLJVROHeARBUZI1ihZBf6CLB8hJ479EvKbBA9I8Z37qR0XhEdEhDL/CDSeLg==
+X-Received: by 2002:a63:7d48:: with SMTP id m8-v6mr3321908pgn.0.1532635681614;
+        Thu, 26 Jul 2018 13:08:01 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com
+ ([2620:0:1000:1501:38e4:86fe:ec0c:4007])
+        by smtp.gmail.com with ESMTPSA id
+ u11-v6sm5784169pfd.117.2018.07.26.13.08.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 26 Jul 2018 13:08:00 -0700 (PDT)
+From: Douglas Anderson <dianders@chromium.org>
+To: balbi@kernel.org, hminas@synopsys.com, gregkh@linuxfoundation.org
+Cc: stefan.wahren@i2se.com, grigor.tovmasyan@synopsys.com,
+        Bruno Herrera <bruherrera@gmail.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>, john.stultz@linaro.org,
+        Stephen Warren <swarren@wwwdotorg.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [REPOST PATCH 2/4] usb: dwc2: Turn on uframe_sched on "his" platforms
+Date: Thu, 26 Jul 2018 13:07:28 -0700
+Message-Id: <20180726200730.18290-3-dianders@chromium.org>
+X-Mailer: git-send-email 2.18.0.345.g5c9ce644c3-goog
+In-Reply-To: <20180726200730.18290-1-dianders@chromium.org>
+References: <20180726200730.18290-1-dianders@chromium.org>
+MIME-Version: 1.0
+Sender: linux-usb-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-usb.vger.kernel.org>
+X-Mailing-List: linux-usb@vger.kernel.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+There's no reason to have the uframe scheduler off on dwc2.  Running
+with uframe_sched = False is equivalent to saying "I don't want to run
+the correct code, I want to run the old and incorrect code".
+
+The uframe scheduler has been off on HiSilicon since commit
+37dd9d65cc41 ("usb: dwc2: add support of hi6220").  Since then there
+have been many many improvements, notably the commit 9f9f09b048f5
+("usb: dwc2: host: Totally redo the microframe scheduler")
+
+Presumably if everyone is good w/ the uframe_sched turned back on we
+can kill all the old and crufty non-uframe sched code.
+
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Tested-by: John Stultz <john.stultz@linaro.org>
+Acked-by: Minas Harutyunyan <hminas@synopsys.com>
+---
+
+ drivers/usb/dwc2/params.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/usb/dwc2/params.c b/drivers/usb/dwc2/params.c
+index 14b8742e62fa..db97bb16ecc4 100644
+--- a/drivers/usb/dwc2/params.c
++++ b/drivers/usb/dwc2/params.c
+@@ -67,7 +67,6 @@ static void dwc2_set_his_params(struct dwc2_hsotg *hsotg)
+ 	p->reload_ctl = false;
+ 	p->ahbcfg = GAHBCFG_HBSTLEN_INCR16 <<
+ 		GAHBCFG_HBSTLEN_SHIFT;
+-	p->uframe_sched = false;
+ 	p->change_speed_quirk = true;
+ 	p->power_down = false;
+ }
+
+From patchwork Thu Jul 26 20:07:29 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Doug Anderson <dianders@chromium.org>
+X-Patchwork-Id: 10546401
+Return-Path: <linux-usb-owner@kernel.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 00AA1112E
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:18 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id EBA122BCA3
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:17 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id DFBD62BCAD; Thu, 26 Jul 2018 20:08:17 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-7.8 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	MAILING_LIST_MULTI,RCVD_IN_DNSWL_HI,T_DKIM_INVALID autolearn=ham
+ version=3.3.1
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 80F1A2BCA3
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:17 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1731760AbeGZV0k (ORCPT
+        <rfc822;patchwork-linux-usb@patchwork.kernel.org>);
+        Thu, 26 Jul 2018 17:26:40 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34992 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731557AbeGZV02 (ORCPT
+        <rfc822;linux-usb@vger.kernel.org>); Thu, 26 Jul 2018 17:26:28 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q7-v6so932151pff.2
+        for <linux-usb@vger.kernel.org>; Thu, 26 Jul 2018 13:08:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=poRASEvlVBUAcfLB4RhlwSj/p7/jDuj4PF7wn26CH6s=;
+        b=EuZ996MDr/awcYYi/XmOHQH60XNrvktL6KUpom+u4h04Llj4H+kWvXsF4G83MBGwJA
+         FLASRPQBPuyYwGxHe48PcaQys8VTNtnBDzUPyxGg44JBQgIt8deE5Q8DIG7fGZhZKsMR
+         vEbHJEa2w4NSqRv5TFhdj0LqYKIYEnZb5Yb8Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=poRASEvlVBUAcfLB4RhlwSj/p7/jDuj4PF7wn26CH6s=;
+        b=mk5LbpJD8tXwgBRpWESITUpd8Cxl5frquJMsqVavNKf4i7ApHdAIzL1k3LdjbAJx0Y
+         V9RynHtNxn1V3OGefH0zJ8R5K7/DQBl0ro1ezx0alfwLZ2t1MWT0AV+mB7Yklo0797uS
+         HF4D2jy5XrdWJpf66VFL0aM9S3Pf8gAlBxiZzWeRL+rhy4DLFXwiz0p7KoHRDBeWe867
+         SdnV1RiEcmzxBxeVJsAh6ZdGDJzsOR3VgMWGhPsFFww8Jt98Qw4I7AKdqsBwrSB5NidR
+         +ujVHor7C0JkzBV+pZxJCkjIC1GWrvhsmHEIBUTYH/CFMgGZVtQK1wIFPyFiwBEVjqgS
+         xdcA==
+X-Gm-Message-State: AOUpUlH0HQCfvbelfBObzeFp05OY4YmlPJ8jzN9G7NckHDXOSfjcsbC7
+        wabC2Da7cvQj9EFSzB972NjALA==
+X-Google-Smtp-Source: 
+ AAOMgpeTZUEvqBv0EEh4ci8/3umHRH8aF6yjX+RHRA2ViJhGz627ApLDNUterAuw1dXDa3gOx2rt8A==
+X-Received: by 2002:a62:571b:: with SMTP id
+ l27-v6mr3539635pfb.29.1532635682969;
+        Thu, 26 Jul 2018 13:08:02 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com
+ ([2620:0:1000:1501:38e4:86fe:ec0c:4007])
+        by smtp.gmail.com with ESMTPSA id
+ u11-v6sm5784169pfd.117.2018.07.26.13.08.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 26 Jul 2018 13:08:02 -0700 (PDT)
+From: Douglas Anderson <dianders@chromium.org>
+To: balbi@kernel.org, hminas@synopsys.com, gregkh@linuxfoundation.org
+Cc: stefan.wahren@i2se.com, grigor.tovmasyan@synopsys.com,
+        Bruno Herrera <bruherrera@gmail.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>, john.stultz@linaro.org,
+        Stephen Warren <swarren@wwwdotorg.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [REPOST PATCH 3/4] usb: dwc2: Turn on uframe_sched on "amlogic"
+ platforms
+Date: Thu, 26 Jul 2018 13:07:29 -0700
+Message-Id: <20180726200730.18290-4-dianders@chromium.org>
+X-Mailer: git-send-email 2.18.0.345.g5c9ce644c3-goog
+In-Reply-To: <20180726200730.18290-1-dianders@chromium.org>
+References: <20180726200730.18290-1-dianders@chromium.org>
+MIME-Version: 1.0
+Sender: linux-usb-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-usb.vger.kernel.org>
+X-Mailing-List: linux-usb@vger.kernel.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+There's no reason to have the uframe scheduler off on dwc2.  Running
+with uframe_sched = False is equivalent to saying "I don't want to run
+the correct code, I want to run the old and incorrect code".
+
+The uframe scheduler has been off on Amlogic since commit f94310ac076e
+("usb: dwc2: add support for Meson8b and GXBB SoCs").  While this was
+after most of the recent improvements, notably the commit 9f9f09b048f5
+("usb: dwc2: host: Totally redo the microframe scheduler"), presumably
+the parameters were copied from another platform and the uframe
+scheduler wasn't tried.
+
+Presumably if everyone is good w/ the uframe_sched turned back on we
+can kill all the old and crufty non-uframe sched code.
+
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Minas Harutyunyan <hminas@synopsys.com>
+---
+
+ drivers/usb/dwc2/params.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/usb/dwc2/params.c b/drivers/usb/dwc2/params.c
+index db97bb16ecc4..93380f7c32b4 100644
+--- a/drivers/usb/dwc2/params.c
++++ b/drivers/usb/dwc2/params.c
+@@ -110,7 +110,6 @@ static void dwc2_set_amlogic_params(struct dwc2_hsotg *hsotg)
+ 	p->phy_type = DWC2_PHY_TYPE_PARAM_UTMI;
+ 	p->ahbcfg = GAHBCFG_HBSTLEN_INCR8 <<
+ 		GAHBCFG_HBSTLEN_SHIFT;
+-	p->uframe_sched = false;
+ }
+ 
+ static void dwc2_set_amcc_params(struct dwc2_hsotg *hsotg)
+
+From patchwork Thu Jul 26 20:07:30 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Doug Anderson <dianders@chromium.org>
+X-Patchwork-Id: 10546399
+Return-Path: <linux-usb-owner@kernel.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id EE5DF14E2
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:08 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id E29D12B8D1
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:08 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id D5BC72BC7A; Thu, 26 Jul 2018 20:08:08 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-7.8 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	MAILING_LIST_MULTI,RCVD_IN_DNSWL_HI,T_DKIM_INVALID autolearn=ham
+ version=3.3.1
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 777DF2B8D1
+	for <patchwork-linux-usb@patchwork.kernel.org>;
+ Thu, 26 Jul 2018 20:08:08 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1731694AbeGZV0b (ORCPT
+        <rfc822;patchwork-linux-usb@patchwork.kernel.org>);
+        Thu, 26 Jul 2018 17:26:31 -0400
+Received: from mail-pl0-f65.google.com ([209.85.160.65]:45724 "EHLO
+        mail-pl0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731687AbeGZV0a (ORCPT
+        <rfc822;linux-usb@vger.kernel.org>); Thu, 26 Jul 2018 17:26:30 -0400
+Received: by mail-pl0-f65.google.com with SMTP id j8-v6so1282332pll.12
+        for <linux-usb@vger.kernel.org>; Thu, 26 Jul 2018 13:08:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Wc5hbhavH7L2NkclXtN89Ag9ST2Hc6CGNYH6SJz0Sjs=;
+        b=J/2EgAKpJggjM+FxQO4ZigL5pOsa2VS81Zd4JTat8gkRSe4+w+e67RkxPndSCVr9s7
+         UWbWWIF9A8qeoHVZawq/yoqmkuv2MVhjaHQi8KGSCgDqBp3Eta0y5zQGH2w/N0Ms34Vq
+         M+Hhu0wAXOBFW+hBTFs57X8w1Wi+5PT/mZJNQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Wc5hbhavH7L2NkclXtN89Ag9ST2Hc6CGNYH6SJz0Sjs=;
+        b=hp0PTyRjmsnQoZEbfV4IIJw/wZH/hq0NhHKzTLITxRWFLI/Vk6nBTFwDRiTlPrwCSk
+         d4/9wiEKcw9WM/ZexzGrmHRD5CjTzf0fBvNICUdIq1R/MjiXxpmIQpFrEWbbub4ugk77
+         VozHSlefe9yOf8SUyZXudxfl7uSV+PzNSYjsDA1A+9rsqU7f7eZ1AF7i7I4Po6RxfBiH
+         Dc/wiJNG8Tr+MyEk4L6sOLYDL7Dg0ZQYwdMaosqxvhgLzV1GhEm5SI29daxWF+ZBPNCv
+         FwN6ScdhHcsolzdiJa8L0DVvBU7tF5Tvc7ZAtjmkv26uclQDtHluAl7PIxfoAgx9RMqX
+         Gc3g==
+X-Gm-Message-State: AOUpUlGRDVF5hQ9ZIzFRUWqXytjll0Gs1k1DVFlgnU4IWAA9SPBRRWsH
+        4TTaLsxJbT53PWuFKR9SA6gNgw==
+X-Google-Smtp-Source: 
+ AAOMgpf+aFE9GQhs9ldJn5LrKjljoJ5SWqNFcLU7bAEVC6sXMVeMJhRia4DThQe+gBmI0K/dV4X1Ig==
+X-Received: by 2002:a17:902:294a:: with SMTP id
+ g68-v6mr3361812plb.58.1532635684415;
+        Thu, 26 Jul 2018 13:08:04 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com
+ ([2620:0:1000:1501:38e4:86fe:ec0c:4007])
+        by smtp.gmail.com with ESMTPSA id
+ u11-v6sm5784169pfd.117.2018.07.26.13.08.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 26 Jul 2018 13:08:03 -0700 (PDT)
+From: Douglas Anderson <dianders@chromium.org>
+To: balbi@kernel.org, hminas@synopsys.com, gregkh@linuxfoundation.org
+Cc: stefan.wahren@i2se.com, grigor.tovmasyan@synopsys.com,
+        Bruno Herrera <bruherrera@gmail.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>, john.stultz@linaro.org,
+        Stephen Warren <swarren@wwwdotorg.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [REPOST PATCH 4/4] usb: dwc2: Turn on uframe_sched on
+ "stm32f4x9_fsotg" platforms
+Date: Thu, 26 Jul 2018 13:07:30 -0700
+Message-Id: <20180726200730.18290-5-dianders@chromium.org>
+X-Mailer: git-send-email 2.18.0.345.g5c9ce644c3-goog
+In-Reply-To: <20180726200730.18290-1-dianders@chromium.org>
+References: <20180726200730.18290-1-dianders@chromium.org>
+MIME-Version: 1.0
+Sender: linux-usb-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-usb.vger.kernel.org>
+X-Mailing-List: linux-usb@vger.kernel.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+There's no reason to have the uframe scheduler off on dwc2.  Running
+with uframe_sched = False is equivalent to saying "I don't want to run
+the correct code, I want to run the old and incorrect code".
+
+The uframe scheduler has been off on stm32f4x9_fsotg since commit
+e35b135055e2 ("usb: dwc2: Add support for STM32F429/439/469 USB OTG
+HS/FS in FS mode (internal PHY)").  That commit is pretty recent, so
+it's unclear to me why the uframe scheduler was left off.  Hopefully
+it's because someone copied it from other parameters and didn't think
+to try it?
+
+Presumably if everyone is good w/ the uframe_sched turned back on we
+can kill all the old and crufty non-uframe sched code.
+
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Minas Harutyunyan <hminas@synopsys.com>
+---
+
+ drivers/usb/dwc2/params.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/usb/dwc2/params.c b/drivers/usb/dwc2/params.c
+index 93380f7c32b4..7be35bcde713 100644
+--- a/drivers/usb/dwc2/params.c
++++ b/drivers/usb/dwc2/params.c
+@@ -131,7 +131,6 @@ static void dwc2_set_stm32f4x9_fsotg_params(struct dwc2_hsotg *hsotg)
+ 	p->max_packet_count = 256;
+ 	p->phy_type = DWC2_PHY_TYPE_PARAM_FS;
+ 	p->i2c_enable = false;
+-	p->uframe_sched = false;
+ 	p->activate_stm_fs_transceiver = true;
+ }
+ 

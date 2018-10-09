@@ -1,0 +1,56 @@
+From patchwork Sat Aug 25 08:44:17 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: gpio: pxa: handle corner case of unprobed device
+X-Patchwork-Submitter: Robert Jarzmik <robert.jarzmik@free.fr>
+X-Patchwork-Id: 962145
+Message-Id: <20180825084417.13526-1-robert.jarzmik@free.fr>
+To: Robert Jarzmik <robert.jarzmik@free.fr>,
+ Linus Walleij <linus.walleij@linaro.org>
+Cc: linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Sat, 25 Aug 2018 10:44:17 +0200
+From: Robert Jarzmik <robert.jarzmik@free.fr>
+List-Id: <linux-gpio.vger.kernel.org>
+
+In the corner case where the gpio driver probe fails, for whatever
+reason, the suspend and resume handlers will still be called as they
+have to be registered as syscore operations. This applies as well when
+no probe was called while the driver has been built in the kernel.
+
+Nicolas tracked this in :
+https://bugzilla.kernel.org/show_bug.cgi?id=200905
+
+Therefore, add a failsafe in these function, and test if a proper probe
+succeeded and the driver is functional.
+
+Signed-off-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Reported-by: Nicolas Chauvet <kwizart@gmail.com>
+---
+ drivers/gpio/gpio-pxa.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/gpio/gpio-pxa.c b/drivers/gpio/gpio-pxa.c
+index c18712dabf93..bfe4c5c9f41c 100644
+--- a/drivers/gpio/gpio-pxa.c
++++ b/drivers/gpio/gpio-pxa.c
+@@ -776,6 +776,9 @@ static int pxa_gpio_suspend(void)
+ 	struct pxa_gpio_bank *c;
+ 	int gpio;
+ 
++	if (!pchip)
++		return 0;
++
+ 	for_each_gpio_bank(gpio, c, pchip) {
+ 		c->saved_gplr = readl_relaxed(c->regbase + GPLR_OFFSET);
+ 		c->saved_gpdr = readl_relaxed(c->regbase + GPDR_OFFSET);
+@@ -794,6 +797,9 @@ static void pxa_gpio_resume(void)
+ 	struct pxa_gpio_bank *c;
+ 	int gpio;
+ 
++	if (!pchip)
++		return;
++
+ 	for_each_gpio_bank(gpio, c, pchip) {
+ 		/* restore level with set/clear */
+ 		writel_relaxed(c->saved_gplr, c->regbase + GPSR_OFFSET);

@@ -272,9 +272,6 @@ Summary: The Linux kernel
 %define make_target vmlinux
 %define kernel_image vmlinux
 %define kernel_image_elf 1
-%ifarch ppc64
-%define all_arch_configs kernel-%{version}-ppc64*.config
-%endif
 %ifarch ppc64le
 %define all_arch_configs kernel-%{version}-ppc64le*.config
 %endif
@@ -376,7 +373,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: %{all_x86} x86_64 ppc64 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: %{all_x86} x86_64 s390x %{arm} aarch64 ppc64le
 ExclusiveOS: Linux
 %ifnarch %{nobuildarches}
 Requires: kernel-core-uname-r = %{KVERREL}%{?variant}
@@ -437,9 +434,8 @@ Source90: filter-x86_64.sh
 Source91: filter-armv7hl.sh
 Source92: filter-i686.sh
 Source93: filter-aarch64.sh
-Source95: filter-ppc64.sh
-Source96: filter-ppc64le.sh
-Source97: filter-s390x.sh
+Source94: filter-ppc64le.sh
+Source95: filter-s390x.sh
 Source99: filter-modules.sh
 %define modsign_cmd %{SOURCE18}
 
@@ -453,14 +449,12 @@ Source26: kernel-i686.config
 Source27: kernel-i686-debug.config
 Source28: kernel-i686-PAE.config
 Source29: kernel-i686-PAEdebug.config
-Source30: kernel-ppc64.config
-Source31: kernel-ppc64-debug.config
-Source32: kernel-ppc64le.config
-Source33: kernel-ppc64le-debug.config
-Source36: kernel-s390x.config
-Source37: kernel-s390x-debug.config
-Source38: kernel-x86_64.config
-Source39: kernel-x86_64-debug.config
+Source30: kernel-ppc64le.config
+Source31: kernel-ppc64le-debug.config
+Source32: kernel-s390x.config
+Source33: kernel-s390x-debug.config
+Source34: kernel-x86_64.config
+Source35: kernel-x86_64-debug.config
 
 Source40: generate_all_configs.sh
 Source41: generate_debug_configs.sh
@@ -568,6 +562,10 @@ Patch211: drm-i915-hush-check-crtc-state.patch
 Patch212: efi-secureboot.patch
 Patch213: lockdown-fix-coordination-of-kernel-module-signature-verification.patch
 
+# Fix printing of "EFI stub: UEFI Secure Boot is enabled.",
+# queued upstream in efi.git/next
+Patch214: efi-x86-call-parse-options-from-efi-main.patch
+
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -592,16 +590,48 @@ Patch308: mmc-sunxi-allow-3.3V-DDR-when-DDR-is-available.patch
 # https://patchwork.kernel.org/patch/10540521/
 Patch309: mmc-sunxi-remove-output-of-virtual-base-address.patch
 
+Patch310: arm-dts-armada388-helios4.patch
+
 # https://www.spinics.net/lists/arm-kernel/msg670137.html
 Patch311: arm64-ZynqMP-firmware-clock-drivers-core.patch
 
+# https://www.spinics.net/lists/linux-usb/msg171314.html
+Patch312: usb-dwc2-Turn-on-uframe-sched-everywhere.patch
+
+Patch313: arm64-dts-marvell-a3700-reserve-ATF-memory.patch
+
+Patch315: arm64-96boards-RK3399-Ficus-board.patch
+Patch316: arm64-96boards-Rock960-CE-board-support.patch
+Patch317: arm64-rockchip-add-initial-Rockpro64.patch
+
+Patch318: arm64-drm-msm-fix-missing-CTL-flush.patch
+
+Patch319: gpio-pxa-handle-corner-case-of-unprobed-device.patch
+
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-enable-pmu.patch
+
+Patch331: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
+
+Patch332: bcm2835-hwmon-Add-support-for-RPi-voltage-sensor.patch
+
+# Patches enabling device specific brcm firmware nvram
+Patch340: 0001-brcmfmac-Remove-firmware-loading-code-duplication.patch
+Patch341: 0002-brcmfmac-Remove-recursion-from-firmware-load-error-h.patch
+Patch342: 0003-brcmfmac-Add-support-for-first-trying-to-get-a-board.patch
+Patch343: 0004-brcmfmac-Set-board_type-used-for-nvram-file-selectio.patch
 
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://patchwork.kernel.org/patch/10392891/
 Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
 Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
+Patch352: arm64-allwinner-fixes.patch
+
+# Patch series is in 4.19, needed for Ampere eMAG platform
+# first patch fixes a bug in OF/DT seen on some devices with series
+# http://git.infradead.org/users/hch/dma-mapping.git/commitdiff/a5516219b10218a87abb3352c82248ce3088e94a
+# https://www.spinics.net/lists/linux-acpi/msg83312.html
+Patch360: dma-stop-losing-firmware-set-dma-masks.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -613,37 +643,43 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# CVE-2018-15471 rhbz 1610555 1618414
-Patch504: xsa270.patch
-
-# rhbz 1572944
-Patch506: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
-Patch507: 0001-random-make-CPU-trust-a-boot-parameter.patch
-
 # Support for unique build ids
 # All queued in the kbuild tree
-Patch520: 0001-kbuild-Add-build-salt-to-the-kernel-and-modules.patch
-Patch521: 0002-x86-Add-build-salt-to-the-vDSO.patch
-Patch522: 0003-powerpc-Add-build-salt-to-the-vDSO.patch
-Patch523: 0004-arm64-Add-build-salt-to-the-vDSO.patch
-Patch524: 0003-treewide-Rename-HOSTCFLAGS-KBUILD_HOSTCFLAGS.patch
-Patch525: 0004-treewide-Rename-HOSTCXXFLAGS-to-KBUILD_HOSTCXXFLAGS.patch
-Patch526: 0005-treewide-Rename-HOSTLDFLAGS-to-KBUILD_HOSTLDFLAGS.patch
-Patch527: 0006-treewide-Rename-HOST_LOADLIBES-to-KBUILD_HOSTLDLIBS.patch
-Patch528: 0007-Kbuild-Use-HOST-FLAGS-options-from-the-command-line.patch
+Patch506: 0001-kbuild-Add-build-salt-to-the-kernel-and-modules.patch
+Patch507: 0002-x86-Add-build-salt-to-the-vDSO.patch
+Patch508: 0003-powerpc-Add-build-salt-to-the-vDSO.patch
+Patch509: 0004-arm64-Add-build-salt-to-the-vDSO.patch
+Patch512: 0003-treewide-Rename-HOSTCFLAGS-KBUILD_HOSTCFLAGS.patch
+Patch513: 0004-treewide-Rename-HOSTCXXFLAGS-to-KBUILD_HOSTCXXFLAGS.patch
+Patch514: 0005-treewide-Rename-HOSTLDFLAGS-to-KBUILD_HOSTLDFLAGS.patch
+Patch515: 0006-treewide-Rename-HOST_LOADLIBES-to-KBUILD_HOSTLDLIBS.patch
+Patch516: 0007-Kbuild-Use-HOST-FLAGS-options-from-the-command-line.patch
 
 # For quiet / flickerfree boot, all queued for merging into 4.19-rc1
-Patch531: 0001-printk-Make-CONSOLE_LOGLEVEL_QUIET-configurable.patch
-Patch532: 0002-printk-Export-is_console_locked.patch
-Patch533: 0003-fbcon-Call-WARN_CONSOLE_UNLOCKED-where-applicable.patch
-Patch534: 0004-console-fbcon-Add-support-for-deferred-console-takeo.patch
-Patch535: 0005-efi-bgrt-Drop-__initdata-from-bgrt_image_size.patch
-Patch536: 0006-efifb-Copy-the-ACPI-BGRT-boot-graphics-to-the-frameb.patch
-Patch537: 0007-efifb-BGRT-Do-not-copy-the-boot-graphics-for-non-nat.patch
-Patch538: 0008-console-dummycon-export-dummycon_-un-register_output.patch
+Patch521: 0001-printk-Make-CONSOLE_LOGLEVEL_QUIET-configurable.patch
+Patch522: 0002-printk-Export-is_console_locked.patch
+Patch523: 0003-fbcon-Call-WARN_CONSOLE_UNLOCKED-where-applicable.patch
+Patch524: 0004-console-fbcon-Add-support-for-deferred-console-takeo.patch
+Patch525: 0005-efi-bgrt-Drop-__initdata-from-bgrt_image_size.patch
+Patch526: 0006-efifb-Copy-the-ACPI-BGRT-boot-graphics-to-the-frameb.patch
+Patch527: 0007-efifb-BGRT-Do-not-copy-the-boot-graphics-for-non-nat.patch
+Patch528: 0008-console-dummycon-export-dummycon_-un-register_output.patch
 # Deferred fbcon takeover bugfix, pending upstream
-Patch539: 0009-fbcon-Only-defer-console-takeover-if-the-current-con.patch
-Patch540: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
+Patch529: 0009-fbcon-Only-defer-console-takeover-if-the-current-con.patch
+Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
+
+# CVE-2018-15471 rhbz 1610555 1618414
+Patch531: xsa270.patch
+
+# rhbz 1572944
+Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
+Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
+
+# rhbz 1634250
+Patch537: HID-intel-ish-hid-Enable-Sunrise-Point-H-ish-driver.patch
+
+#rhbz 1636249
+Patch538: 0001-Revert-drm-amd-pp-Send-khz-clock-values-to-DC-for-sm.patch
 
 ### Extra
 
@@ -1255,10 +1291,10 @@ cd ..
 # End of Configs stuff
 
 # get rid of unwanted files resulting from patch fuzz
-find . \( -name "*.orig" -o -name "*~" \) -exec rm -f {} \; >/dev/null
+find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
 
 # remove unnecessary SCM files
-find . -name .gitignore -exec rm -f {} \; >/dev/null
+find . -name .gitignore -delete >/dev/null
 
 cd ..
 

@@ -1,3 +1,9 @@
+Linux 4.18 rebase notes:
+- Turn off CONFIG_BCM2835_VCHIQ
+- Turn off CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER (for F28 and older)
+- Drop build-id/hardening flags patches and changes
+
+
 Linux 4.17 rebase notes:
 - Turn off MTD + JFFS2 + extra infiniband options
 - Back out kernel-bootwrapper changes for power commit f360f7278a753796aec58ade5b149d12e49f8bc1

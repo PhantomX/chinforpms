@@ -1,0 +1,45 @@
+From e1912a821a992f04c258e844d717733de03daeb7 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Wed, 15 Aug 2018 14:06:45 +0100
+Subject: [PATCH] arm64: dts: marvell: a3700: reserve ATF memory
+
+On Marvell Armada 3700, the ARM Trusted Firmware is loaded in RAM at address
+0x04000000, and can use up to 16MiB (0x01000000).
+
+As the ATF is responsible for handling PSCI calls (including, but not limited
+to, system reset management), its memory area should never be overwritten
+during runtime.
+
+Declaring a range of reserved memory solves this problem.
+
+Signed-off-by: Arnaud Ferraris <arnaud.ferraris.external@xxxxxxxxxx>
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+index 3353252d78a0a..2110e7dbc9818 100644
+--- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+@@ -34,6 +34,17 @@
+ 		};
+ 	};
+ 
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		arm-trusted-firmware@4000000 {
++			no-map;
++			reg = <0x0 0x04000000 0x0 0x01000000>;
++		};
++	};
++
+ 	psci {
+ 		compatible = "arm,psci-0.2";
+ 		method = "smc";
+-- 
+2.17.1
+

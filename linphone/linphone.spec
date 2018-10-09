@@ -34,6 +34,7 @@ BuildRequires:  pkgconfig(speex)
 BuildRequires:  pkgconfig(sqlite3)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  python2
+BuildRequires:  python2-devel
 BuildRequires:  python2-six
 BuildRequires:  python2-pystache
 Requires:       hicolor-icon-theme
@@ -79,6 +80,14 @@ Libraries and headers required to develop software with linphone.
 %prep
 %autosetup -p1
 
+sed -i '1s|/usr/bin/env python|%{__python2}|' tools/linphone-sample.py
+
+sed -i '1s|/usr/bin/python$|%{__python2}|' \
+  wrappers/*/genwrapper.py \
+  tools/python/apixml2python.py \
+  tools/python/doc/generate_enums.py \
+  tools/{metadoc,genapixml,lpconfig_items}.py
+
 sed \
   -e 's|@prefix@|%{_prefix}|g' \
   -e 's|@exec_prefix@|%{_exec_prefix}|g' \
@@ -98,6 +107,7 @@ pushd builddir
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DENABLE_STATIC:BOOL=OFF \
   -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON \
+  -DPYTHON_EXECUTABLE:PATH=%{__python2} \
   -DENABLE_TESTS:BOOL=OFF \
   -DENABLE_STRICT:BOOL=OFF \
   -DENABLE_CONSOLE_UI:BOOL=ON \
@@ -176,6 +186,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %changelog
 * Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.12.0-3.chinfo
 - BR: gcc-c++
+- Fix python2 shebangs
 
 * Sat Sep 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 3.12.0-2.chinfo
 - cmake and fixes for it
