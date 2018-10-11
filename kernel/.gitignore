@@ -10,3 +10,5 @@ enable_additional_cpu_optimizations_for_gcc_v*+_kernel_v*+.patch
 /patchwork-*.patch
 /pf-*.patch
 /openSUSE-*.patch
+/kernel-headers/
+/kernel-headers

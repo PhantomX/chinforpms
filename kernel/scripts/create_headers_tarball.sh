@@ -24,14 +24,15 @@ BASE=`grep "%define base_sublevel" kernel.spec| cut -d ' ' -f 3`
 STABLE=`grep "%define stable_update" kernel.spec| cut -d ' ' -f 3`
 RC=`grep "%global rcrev" kernel.spec| cut -d ' ' -f 3`
 GITREV=`grep "%define gitrev" kernel.spec| cut -d ' ' -f 3`
+BUILDID=`grep "^%global buildid" kernel.spec| cut -d ' ' -f 3`
 if [ $RELEASED -eq 0 ]; then
-	cd kernel-$MAJORVER.$BASE.fc??
+	cd "$(rpm -E %{_builddir})"/kernel-$MAJORVER.$BASE.fc??
 	NEWBASE=$(($BASE+1))
-	KVER=$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV.$BASERELEASE
-	cd linux-$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV.$BASERELEASE.fc*/
+	KVER=$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV.$BASERELEASE$BUILDID
+	cd linux-$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV.$BASERELEASE$BUILDID.fc*/
 else
-	cd kernel-$MAJORVER.$BASE.fc??/linux-$MAJORVER.$BASE.$STABLE-$BASERELEASE.fc*/
-	KVER=$MAJORVER.$BASE.$STABLE-$BASERELEASE
+	cd "$(rpm -E %{_builddir})"/kernel-$MAJORVER.$BASE.fc??/linux-$MAJORVER.$BASE.$STABLE-$BASERELEASE$BUILDID.fc*/
+	KVER=$MAJORVER.$BASE.$STABLE-$BASERELEASE$BUILDID
 fi
 
 # ARCH_LIST below has the default list of supported architectures

@@ -1,6 +1,6 @@
-%global commit fd6c3145d5379a74fa7945f10855eb03e07a573a
+%global commit 31893859cc93e2261847fda23fedbd0aff751e17
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180907
+%global date 20181009
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -9,11 +9,11 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 1153a4293006db9d2a6e701df72df843b98234b5
+%global commit1 2b15416501e64793204fc23fdf94c4365109198e
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
-%global commit2 a2e98d7ba4c7c5cac08608732c3058cb46e3e0ef
+%global commit2 7472c903ec771c00af9925097e8d37075e9a379f
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -43,7 +43,7 @@
 
 Name:           ppsspp
 Version:        1.6.3
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -101,6 +101,7 @@ Requires:       google-roboto-condensed-fonts
 
 Provides:       ppsspp-data.noarch = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      ppsspp-data.noarch < %{?epoch:%{epoch}:}%{version}-%{release}
+Conflicts:      ppsspp-data < %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
@@ -264,6 +265,10 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Oct 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-5.20181009git3189385
+- New snapshot
+- Provides ppsspp-data to not crash with RPMFusion package
+
 * Sat Sep 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-4.20180907gitfd6c314
 - New snapshot
 - Dropped unneeded GL wrapper. Mesa 8.2 sets proper compat now.

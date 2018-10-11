@@ -19,6 +19,7 @@ release tags).
 
  * **belle-sip, linphone, ortp** - Updated version
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
+ * **claws-mail** - Can't wait Fedora releases
  * **easytag** - Tests
  * **engrampa** - Split caja extension
  * **gamemode** - System inih and launch script
@@ -31,18 +32,18 @@ release tags).
  * **kernel** - _blk-mq_ enabled by default, [CPU optimizations](https://github.com/graysky2/kernel_gcc_patch) and some
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) patches
                 (kernel-local must be edited to modify gcc optimizations)
- * **libogg** - For Waterfox
  * **libtgvoip** - No unresolved symbols
  * **mednafen** - No Haswell optimizations
- * **mesa** - Tests
+ * **mesa** - Can't wait Fedora releases
  * **quiterss** - Updated, Qt5
+ * **skrooge** - Can't wait Fedora releases
+ * **smtube** - Patched to silence players output
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **telegram-desktop** - Personal fixes
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
                     and **VirtualBox-guest-additions-iso** support
+ * **vkd3d** - Can't wait Fedora releases
  * **xboxdrv** - Tests
- * **xfwm4** - -DMONITOR_ROOT_PIXMAP
- * **xorg-x11-server** - Tests
  * **wine** - Extra patches and personal fixes
 
 ## Credits (Patches, install procedures and other files)

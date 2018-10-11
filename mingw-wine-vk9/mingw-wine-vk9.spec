@@ -41,8 +41,7 @@ BuildRequires:  spirv-headers-devel
 
 # glslangValidator
 BuildRequires:  glslang
-# glslc
-BuildRequires:  shaderc
+BuildRequires:  glslc
 BuildRequires:  meson
 BuildRequires:  wine-common
 BuildRequires:  wine-core

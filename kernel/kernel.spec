@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -674,12 +674,6 @@ Patch531: xsa270.patch
 # rhbz 1572944
 Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
-
-# rhbz 1634250
-Patch537: HID-intel-ish-hid-Enable-Sunrise-Point-H-ish-driver.patch
-
-#rhbz 1636249
-Patch538: 0001-Revert-drm-amd-pp-Send-khz-clock-values-to-DC-for-sm.patch
 
 ### Extra
 
@@ -2010,6 +2004,10 @@ fi
 #
 #
 %changelog
+* Wed Oct 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.13-500.chinfo
+- 4.18.13
+- f29 sync
+
 * Thu Oct 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.12-500.chinfo
 - 4.18.12
 

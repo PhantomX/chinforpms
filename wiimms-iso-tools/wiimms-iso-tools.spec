@@ -1,9 +1,11 @@
-%global revision 7505
-%global date 20171203
+%global revision 7606
+%global date 20180923
+
+%global svnver .%{date}svn%{revision}
 
 Name:           wiimms-iso-tools
-Version:        3.01a
-Release:        1.%{date}svn%{revision}%{?dist}
+Version:        3.02a
+Release:        0.1%{svnver}%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
 License:        GPLv2
@@ -28,7 +30,7 @@ Wiimms ISO Tools is a set of command line tools to manipulate Wii and GameCube
 ISO images and WBFS containers.
 
 %prep
-%autosetup -n %{name}-%{revision}
+%autosetup -n %{name}-r%{revision}
 
 sed -e 's/\r//' -i templates/*.txt
 
@@ -70,6 +72,9 @@ install -pm0755 load-titles.sh %{buildroot}%{_datadir}/wit/
 
 
 %changelog
+* Tue Oct 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.02a-0.1.20180923svn7606
+- New snapshot
+
 * Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.01a-1.20171203svn7464
 - 3.01a
 
