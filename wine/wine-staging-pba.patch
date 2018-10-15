@@ -8,8 +8,8 @@ index 93484b40..a20bcaca 100755
  	enable_wined3d_Indexed_Vertex_Blending="$1"
 +	enable_wined3d_Persistent_Buffer_Allocator="$1"
  	enable_wined3d_QUERY_Stubs="$1"
+ 	enable_wined3d_Restore_DirectX10_Support="$1"
  	enable_wined3d_Silence_FIXMEs="$1"
- 	enable_wined3d_UAV_Counters="$1"
 @@ -1281,6 +1282,9 @@ patch_enable ()
  		wined3d-Indexed_Vertex_Blending)
  			enable_wined3d_Indexed_Vertex_Blending="$2"

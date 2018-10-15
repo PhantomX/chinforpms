@@ -1,13 +1,12 @@
 diff -up wine-3.15/patches/patchinstall.sh.orig wine-3.15/patches/patchinstall.sh
 --- wine-3.15/patches/patchinstall.sh.orig	2018-09-01 12:43:37.304114734 -0300
 +++ wine-3.15/patches/patchinstall.sh	2018-09-01 12:45:52.729631681 -0300
-@@ -7840,31 +7840,28 @@ fi
- 
- # Patchset winepulse-PulseAudio_Support
+@@ -7627,33 +7627,26 @@ fi
  # |
-+# | This patchset fixes the following Wine bugs:
-+# |   *	[#37042] Implement exclusive mode in PulseAudio backend
-+# |
+ # | This patchset fixes the following Wine bugs:
+ # |   *	[#37042] Implement exclusive mode in PulseAudio backend
+-# |   *	[#28282] Sound constantly crackling in a lot of games
+ # |
  # | Modified files:
 -# |   *	dlls/winepulse.drv/Makefile.in, dlls/winepulse.drv/mmdevdrv.c
 +# |   *	dlls/mmdevapi/tests/render.c, dlls/winepulse.drv/Makefile.in, dlls/winepulse.drv/mmdevdrv.c

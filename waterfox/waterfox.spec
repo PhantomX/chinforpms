@@ -1,6 +1,6 @@
-%global commit 432b42717b0678a933f9d0731f02f9d1d32bdec2
+%global commit 9c2c0e0c5593abb40b6093d9b2a28b294b2b0ce9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180911
+%global date 20181008
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -121,8 +121,8 @@
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.3
-Release:        2%{?gver}%{?dist}
+Version:        56.2.4
+Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -897,6 +897,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Sun Oct 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.4-1.20181008git9c2c0e0
+- New release/snapshot
+
 * Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.3-2.20180911git432b427
 - Some spec cleanups adapted from Fedora Firefox
 - BR: clang-devel

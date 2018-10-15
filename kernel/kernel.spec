@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -668,9 +668,6 @@ Patch528: 0008-console-dummycon-export-dummycon_-un-register_output.patch
 Patch529: 0009-fbcon-Only-defer-console-takeover-if-the-current-con.patch
 Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
 
-# CVE-2018-15471 rhbz 1610555 1618414
-Patch531: xsa270.patch
-
 # rhbz 1572944
 Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
@@ -680,7 +677,7 @@ Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 4a5c1c1693417565b0ee2b8ceb946bd3c587fd6f
+%global opensuse_id ce1c446aaf8af7aa98f9223eca4b479c640b165a
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -731,6 +728,7 @@ Patch3022: %{pf_url}/73b03804b77d62dde759a9c193f4c6b0080a3373.patch#/pf-73b03804
 Patch3023: %{pf_url}/7f2d1c9cb63027fdd2b1e55b6f878b15cfaa2db5.patch#/pf-7f2d1c9cb63027fdd2b1e55b6f878b15cfaa2db5.patch
 Patch3024: %{pf_url}/5f61f18e084c29c3ee37c9acb5e6a9de1d3d211f.patch#/pf-5f61f18e084c29c3ee37c9acb5e6a9de1d3d211f.patch
 Patch3025: %{pf_url}/0e1f4ce203c1e95a881a96e9b26939c781f147d2.patch#/pf-0e1f4ce203c1e95a881a96e9b26939c781f147d2.patch
+Patch3026: %{pf_url}/e270bf5faae2d15fffd1cb25a53fb01f83c6f62b.patch#/pf-e270bf5faae2d15fffd1cb25a53fb01f83c6f62b.patch
 Patch3500: postfactum-merge-fixes-2.patch
 
 # Add additional cpu gcc optimization support
@@ -1393,7 +1391,7 @@ BuildKernel() {
 %ifarch %{arm} aarch64
     %{make} %{?make_opts} ARCH=$Arch dtbs dtbs_install INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     cp -r $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/dtb
-    find arch/$Arch/boot/dts -name '*.dtb' -type f | xargs rm -f
+    find arch/$Arch/boot/dts -name '*.dtb' -type f -delete
 %endif
 
     # Start installing the results
@@ -1674,7 +1672,7 @@ BuildKernel() {
     ln -sf $DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
     # prune junk from kernel-devel
-    find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
+    find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
 
     # build a BLS config for this kernel
     %{SOURCE43} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
@@ -1784,7 +1782,7 @@ make ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr headers_install
 
 find $RPM_BUILD_ROOT/usr/include \
      \( -name .install -o -name .check -o \
-        -name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
+        -name ..install.cmd -o -name ..check.cmd \) -delete
 
 %endif
 
@@ -1794,7 +1792,7 @@ make ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers headers_in
 
 find $RPM_BUILD_ROOT/usr/tmp-headers/include \
      \( -name .install -o -name .check -o \
-        -name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
+        -name ..install.cmd -o -name ..check.cmd \) -delete
 
 # Copy all the architectures we care about to their respective asm directories
 for arch in arm arm64 powerpc s390 x86 ; do
@@ -2004,6 +2002,9 @@ fi
 #
 #
 %changelog
+* Sun Oct 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.14-500.chinfo
+- 4.18.14
+
 * Wed Oct 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.13-500.chinfo
 - 4.18.13
 - f29 sync

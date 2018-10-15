@@ -11,12 +11,12 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.17
+%global stagingver 3.18
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
 %global pba 1
-%global pbaver 3.17
+%global pbaver 3.18
 %if 0%(echo %{pbaver} | grep -q \\. ; echo $?) == 0
 %global pbarel v
 %global pbapkg knobs_and_switches-
@@ -37,7 +37,7 @@
 %endif
 
 Name:           wine
-Version:        3.17
+Version:        3.18
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -93,7 +93,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # Steam patch, Crossover Hack version
 # https://bugs.winehq.org/show_bug.cgi?id=39403
 Patch600:       steam.patch
-Patch601:       harmony-fix.patch
 Patch602:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.h-linked-list-cache-line-prefetching.patch#/laino-0003-wine-list.h-linked-list-cache-line-prefetching.patch
 # Wbemprox videocontroller query fix v2
 # https://bugs.winehq.org/show_bug.cgi?id=38879
@@ -716,7 +715,6 @@ This package adds xaudio2 support for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
-%patch601 -p1
 %patch602 -p1
 %patch604 -p1 -R
 %patch605 -p1
@@ -2331,6 +2329,9 @@ fi
 %endif
 
 %changelog
+* Sun Oct 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.18-100.chinfo
+- 3.18
+
 * Sun Sep 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.17-100.chinfo
 - 3.17
 

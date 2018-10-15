@@ -10,7 +10,7 @@
 
 Name:           gstreamer1
 Version:        1.14.4
-Release:        100.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
+Release:        101.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPLv2+
@@ -94,8 +94,7 @@ GStreamer streaming media framework.
 
 
 %prep
-%setup -q -n gstreamer-%{version}
-%patch0 -p1 -b .rpm-provides
+%autosetup -p1 -n gstreamer-%{version}
 
 # Dirty multilib fix
 sed -e 's|$GST_API_VERSION/gst-plugin-scanner|\0-%{__isa_bits}|g' \
@@ -124,6 +123,28 @@ NOCONFIGURE=1 \
 
 # Dirty multilib fix
 mv %{buildroot}%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner{,-%{__isa_bits}}
+
+for i in inspect launch stats typefind ;do
+  bin=gst-$i-%{majorminor}
+  mv %{buildroot}%{_bindir}/$bin{,-%{__isa_bits}}
+
+cat >> %{buildroot}%{_bindir}/$bin <<EOF
+#!/usr/bin/sh
+host=\$(uname -m)
+case "\$host" in
+  alpha*|ia64*|ppc64*|powerpc64*|s390x*|x86_64*|aarch64*)
+    exec %{_bindir}/$bin-64 "\$@"
+    ;;
+  *)
+    exec %{_bindir}/$bin "\$@"
+    ;;
+esac
+EOF
+  chmod 0755 %{buildroot}%{_bindir}/$bin
+
+echo ".so man1/$bin.1" > %{buildroot}%{_mandir}/man1/$bin-%{__isa_bits}.1
+
+done
 
 %find_lang gstreamer-%{majorminor}
 # Clean out files that should not be part of the rpm.
@@ -156,18 +177,18 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 %{_libdir}/girepository-1.0/GstController-%{majorminor}.typelib
 %{_libdir}/girepository-1.0/GstNet-%{majorminor}.typelib
 
-%{_bindir}/gst-inspect-%{majorminor}
-%{_bindir}/gst-launch-%{majorminor}
-%{_bindir}/gst-stats-%{majorminor}
-%{_bindir}/gst-typefind-%{majorminor}
+%{_bindir}/gst-inspect-%{majorminor}*
+%{_bindir}/gst-launch-%{majorminor}*
+%{_bindir}/gst-stats-%{majorminor}*
+%{_bindir}/gst-typefind-%{majorminor}*
 
 %{_rpmconfigdir}/gstreamer1.prov
 %{_rpmconfigdir}/fileattrs/gstreamer1.attr
 
-%doc %{_mandir}/man1/gst-inspect-%{majorminor}.*
-%doc %{_mandir}/man1/gst-launch-%{majorminor}.*
-%doc %{_mandir}/man1/gst-stats-%{majorminor}.*
-%doc %{_mandir}/man1/gst-typefind-%{majorminor}.*
+%doc %{_mandir}/man1/gst-inspect-%{majorminor}*.*
+%doc %{_mandir}/man1/gst-launch-%{majorminor}*.*
+%doc %{_mandir}/man1/gst-stats-%{majorminor}*.*
+%doc %{_mandir}/man1/gst-typefind-%{majorminor}*.*
 
 %{_datadir}/bash-completion/completions/gst-inspect-1.0
 %{_datadir}/bash-completion/completions/gst-launch-1.0
@@ -213,6 +234,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Thu Oct 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.14.4-101.chinfo
+- Multilib wrappers
+
 * Tue Oct 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.14.4-100.chinfo
 - 1.14.4
 
