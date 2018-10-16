@@ -10,7 +10,7 @@
 
 Summary: Telegram Desktop official messaging app
 Name: telegram-desktop
-Version: 1.4.0
+Version: 1.4.3
 Release: 100.chinfo%{?dist}
 
 Epoch: 1
@@ -152,6 +152,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 %{_datadir}/metainfo/%{name}.appdata.xml
 
 %changelog
+* Mon Oct 15 2018 Phantom X - 1:1.4.3-100.chinfo
+- 1.4.3
+
 * Sun Sep 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.4.0-100.chinfo
 - 1.4.0
 

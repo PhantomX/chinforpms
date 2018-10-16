@@ -1,4 +1,4 @@
-/* Chinforpms 20180109 */
+/* Chinforpms 20181015 */
 /* GTK3-mushrooms */
 
 button,
@@ -82,7 +82,7 @@ filechooser > actionbar > revealer > box {
   -GtkWindow-resize-grip-height: 0;
   -GtkWindow-resize-grip-default: false;
 
-  /* -gtk-icon-style: regular; */
+  -gtk-icon-style: regular;
 }
 
 messagedialog > box {
