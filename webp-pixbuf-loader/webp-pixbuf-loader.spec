@@ -56,8 +56,7 @@ sed \
 mkdir build
 pushd build
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-  -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 
 %make_build
 

@@ -71,7 +71,6 @@ mkdir builddir
 pushd builddir
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-  -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON \
   -DINSTALL_MODELS:BOOL=ON
 
 %make_build

@@ -136,15 +136,6 @@ rm -fv %{buildroot}%{progdir}/libsepol.so.*
 rm -fv %{buildroot}%{progdir}/libsqlite3.so.*
 rm -fv %{buildroot}%{progdir}/*/*/*.exe
 
-#( cd %{buildroot}%{progdir}
-#  # https://bugs.gentoo.org/show_bug.cgi?id=400979
-#  for x in $(find) ; do
-#    # Use \x7fELF header to separate ELF executables and libraries
-#    [[ -f ${x} && $(od -t x1 -N 4 "${x}") == *"7f 45 4c 46"* ]] || continue
-#    patchelf --set-rpath '$ORIGIN' "${x}"
-#  done
-#)
-
 abs2rel(){
   perl -e 'use File::Spec; print File::Spec->abs2rel($ARGV[0], $ARGV[1])' "$1" "$2"
 }
@@ -236,8 +227,8 @@ missing(){
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 usr/bin/%{pkgname1} %{buildroot}%{_bindir}
 
-mkdir -p %{buildroot}/usr/lib/sysctl.d
-cat > %{buildroot}/usr/lib/sysctl.d/30-spideroak.conf <<'EOF'
+mkdir -p %{buildroot}%{_sysctldir}
+cat > %{buildroot}%{_sysctldir}/30-spideroak.conf <<'EOF'
 fs.inotify.max_user_watches = 65536
 EOF
 
@@ -276,7 +267,7 @@ done
 %license usr/share/doc/%{pkgname1}/copyright
 %{_bindir}/%{pkgname1}
 %{progdir}
-/usr/lib/sysctl.d/30-spideroak.conf
+%{_sysctldir}/30-spideroak.conf
 %{_mandir}/man1/%{pkgname1}.1*
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*x*/apps/*.png

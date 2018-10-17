@@ -37,9 +37,9 @@
 %endif
 
 Name:       VirtualBox
-Version:    5.2.18
+Version:    5.2.20
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:    101%{?bugfix:.%{bugfix}}.chinfo%{?dist}
+Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
 
 License:    GPLv2 or (GPLv2 and CDDL)
@@ -809,6 +809,9 @@ getent passwd vboxadd >/dev/null || \
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Tue Oct 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.20-100.chinfo
+- 5.2.20
+
 * Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.18-101.chinfo
 - BR: mkisofs -> genisoimage
 

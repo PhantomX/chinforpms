@@ -41,7 +41,7 @@
 %global vboxsf_ver 9451f61e6787e95aa51e42b6381db6b059bc49da
 
 Name:           VirtualBox-kmod
-Version:        5.2.18
+Version:        5.2.20
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:        100.chinfo%{?dist}
 
@@ -138,6 +138,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Oct 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.20-100.chinfo
+- 5.2.20
+
 * Wed Aug 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.18-100.chinfo
 - 5.2.18
 

@@ -7,9 +7,9 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.54
+Version:        1.0.0.56
 Epoch:          1
-Release:        103.chinfo%{?dist}
+Release:        100.chinfo%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement
@@ -60,8 +60,18 @@ BuildRequires:  systemd
 Requires:       tar
 Requires:       zenity
 
-# Required for running the package on 32 bit systems with free drivers
+# Most games use OpenGL, some games already use Vulkan. Vulkan is also required
+# for Steam Play to run Windows games through emulation. i686 version of these
+# packages are necessary even on x86_64 systems for running 32bit games. Pull in
+# native arch drivers as well, by not specifying _isa macro, native arch
+# packages are preferred. This will make sure people have all necessary drivers
+# for both i686 and x86_64 games.
 Requires:       mesa-dri-drivers%{?_isa}
+Requires:       mesa-dri-drivers
+Requires:       mesa-vulkan-drivers%{?_isa}
+Requires:       mesa-vulkan-drivers
+Requires:       vulkan-loader%{?_isa}
+Requires:       vulkan-loader
 
 # Minimum requirements for starting the steam client for the first time
 Requires:       alsa-lib%{?_isa}
@@ -126,7 +136,7 @@ and screenshot functionality, and many social features.
 %patch4 -p1
 
 sed -i 's/\r$//' %{name}.desktop
-sed -i 's/\r$//' steam_install_agreement.txt
+sed -i 's/\r$//' steam_subscriber_agreement.txt
 
 cp %{SOURCE10} .
 
@@ -167,7 +177,7 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 
 %files
 %{!?_licensedir:%global license %%doc}
-%license COPYING steam_install_agreement.txt
+%license COPYING steam_subscriber_agreement.txt
 %doc README debian/changelog README.Fedora
 %{_bindir}/%{name}
 %{_metainfodir}/%{name}.appdata.xml
@@ -182,6 +192,10 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 %{_udevrulesdir}/*
 
 %changelog
+* Tue Oct 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.56-100.chinfo
+- 1.0.0.54
+- RPMFusion sync
+
 * Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-103
 - Sync with rpmfusion.
 
