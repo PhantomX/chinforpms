@@ -193,7 +193,7 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 
 %changelog
 * Tue Oct 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.56-100.chinfo
-- 1.0.0.54
+- 1.0.0.56
 - RPMFusion sync
 
 * Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-103
