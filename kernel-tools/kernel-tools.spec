@@ -19,7 +19,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 14
+%global stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -442,6 +442,12 @@ popd
 %license linux-%{kversion}/COPYING
 
 %changelog
+* Thu Oct 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.15-500.chinfo
+- 4.18.15
+
+* Sun Oct 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.14-500.chinfo
+- 4.18.14
+
 * Wed Oct 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.13-500.chinfo
 - 4.18.13
 
