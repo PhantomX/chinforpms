@@ -41,7 +41,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver     18.2.2
+%global ver     18.2.3
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        100.chinfo%{?dist}
 
@@ -616,6 +616,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Fri Oct 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.2.3-100.chinfo
+- 18.2.3
+
 * Fri Oct 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.2.2-100.chinfo
 - 18.2.2
 
