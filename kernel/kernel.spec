@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -677,7 +677,7 @@ Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id ce1c446aaf8af7aa98f9223eca4b479c640b165a
+%global opensuse_id 5a5367670ecbb60484de04a2ef9f92a8e83931df
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -2002,6 +2002,9 @@ fi
 #
 #
 %changelog
+* Sat Oct 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.16-500.chinfo
+- 4.18.16
+
 * Thu Oct 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.15-500.chinfo
 - 4.18.15
 
