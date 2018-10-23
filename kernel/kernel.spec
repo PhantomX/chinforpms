@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 18
+%define base_sublevel 19
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -387,7 +387,9 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
-BuildRequires: net-tools, hostname, bc, elfutils-devel
+BuildRequires: net-tools, hostname, bc, elfutils-devel, gcc-plugin-devel
+# Used to mangle unversioned shebangs to be Python 3
+BuildRequires: /usr/bin/pathfix.py
 BuildRequires: patchutils
 %if %{with_sparse}
 BuildRequires: sparse
@@ -447,8 +449,6 @@ Source24: kernel-armv7hl-lpae.config
 Source25: kernel-armv7hl-lpae-debug.config
 Source26: kernel-i686.config
 Source27: kernel-i686-debug.config
-Source28: kernel-i686-PAE.config
-Source29: kernel-i686-PAEdebug.config
 Source30: kernel-ppc64le.config
 Source31: kernel-ppc64le-debug.config
 Source32: kernel-s390x.config
@@ -525,7 +525,7 @@ Patch117: lis3-improve-handling-of-null-rate.patch
 
 Patch118: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
-Patch119: criu-no-expert.patch
+Patch119: namespaces-no-expert.patch
 
 Patch120: ath9k-rx-dma-stop-check.patch
 
@@ -560,11 +560,10 @@ Patch210: disable-i8042-check-on-apple-mac.patch
 Patch211: drm-i915-hush-check-crtc-state.patch
 
 Patch212: efi-secureboot.patch
-Patch213: lockdown-fix-coordination-of-kernel-module-signature-verification.patch
 
 # Fix printing of "EFI stub: UEFI Secure Boot is enabled.",
 # queued upstream in efi.git/next
-Patch214: efi-x86-call-parse-options-from-efi-main.patch
+Patch213: efi-x86-call-parse-options-from-efi-main.patch
 
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
@@ -585,53 +584,26 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# https://patchwork.kernel.org/patch/10539291/
-Patch308: mmc-sunxi-allow-3.3V-DDR-when-DDR-is-available.patch
-# https://patchwork.kernel.org/patch/10540521/
-Patch309: mmc-sunxi-remove-output-of-virtual-base-address.patch
-
-Patch310: arm-dts-armada388-helios4.patch
-
 # https://www.spinics.net/lists/arm-kernel/msg670137.html
-Patch311: arm64-ZynqMP-firmware-clock-drivers-core.patch
+Patch307: arm64-ZynqMP-firmware-clock-drivers-core.patch
 
-# https://www.spinics.net/lists/linux-usb/msg171314.html
-Patch312: usb-dwc2-Turn-on-uframe-sched-everywhere.patch
+Patch308: arm64-96boards-Rock960-CE-board-support.patch
+Patch309: arm64-rockchip-add-initial-Rockpro64.patch
 
-Patch313: arm64-dts-marvell-a3700-reserve-ATF-memory.patch
+Patch310: gpio-pxa-handle-corner-case-of-unprobed-device.patch
 
-Patch315: arm64-96boards-RK3399-Ficus-board.patch
-Patch316: arm64-96boards-Rock960-CE-board-support.patch
-Patch317: arm64-rockchip-add-initial-Rockpro64.patch
+Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
-Patch318: arm64-drm-msm-fix-missing-CTL-flush.patch
-
-Patch319: gpio-pxa-handle-corner-case-of-unprobed-device.patch
-
-# Enabling Patches for the RPi3+
-Patch330: bcm2837-enable-pmu.patch
-
-Patch331: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
-Patch332: bcm2835-hwmon-Add-support-for-RPi-voltage-sensor.patch
+Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
 
 # Patches enabling device specific brcm firmware nvram
-Patch340: 0001-brcmfmac-Remove-firmware-loading-code-duplication.patch
-Patch341: 0002-brcmfmac-Remove-recursion-from-firmware-load-error-h.patch
-Patch342: 0003-brcmfmac-Add-support-for-first-trying-to-get-a-board.patch
-Patch343: 0004-brcmfmac-Set-board_type-used-for-nvram-file-selectio.patch
+# https://www.spinics.net/lists/linux-wireless/msg178827.html
+Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
 
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://patchwork.kernel.org/patch/10392891/
 Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
 Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
-Patch352: arm64-allwinner-fixes.patch
-
-# Patch series is in 4.19, needed for Ampere eMAG platform
-# first patch fixes a bug in OF/DT seen on some devices with series
-# http://git.infradead.org/users/hch/dma-mapping.git/commitdiff/a5516219b10218a87abb3352c82248ce3088e94a
-# https://www.spinics.net/lists/linux-acpi/msg83312.html
-Patch360: dma-stop-losing-firmware-set-dma-masks.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -643,41 +615,12 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# Support for unique build ids
-# All queued in the kbuild tree
-Patch506: 0001-kbuild-Add-build-salt-to-the-kernel-and-modules.patch
-Patch507: 0002-x86-Add-build-salt-to-the-vDSO.patch
-Patch508: 0003-powerpc-Add-build-salt-to-the-vDSO.patch
-Patch509: 0004-arm64-Add-build-salt-to-the-vDSO.patch
-Patch512: 0003-treewide-Rename-HOSTCFLAGS-KBUILD_HOSTCFLAGS.patch
-Patch513: 0004-treewide-Rename-HOSTCXXFLAGS-to-KBUILD_HOSTCXXFLAGS.patch
-Patch514: 0005-treewide-Rename-HOSTLDFLAGS-to-KBUILD_HOSTLDFLAGS.patch
-Patch515: 0006-treewide-Rename-HOST_LOADLIBES-to-KBUILD_HOSTLDLIBS.patch
-Patch516: 0007-Kbuild-Use-HOST-FLAGS-options-from-the-command-line.patch
-
-# For quiet / flickerfree boot, all queued for merging into 4.19-rc1
-Patch521: 0001-printk-Make-CONSOLE_LOGLEVEL_QUIET-configurable.patch
-Patch522: 0002-printk-Export-is_console_locked.patch
-Patch523: 0003-fbcon-Call-WARN_CONSOLE_UNLOCKED-where-applicable.patch
-Patch524: 0004-console-fbcon-Add-support-for-deferred-console-takeo.patch
-Patch525: 0005-efi-bgrt-Drop-__initdata-from-bgrt_image_size.patch
-Patch526: 0006-efifb-Copy-the-ACPI-BGRT-boot-graphics-to-the-frameb.patch
-Patch527: 0007-efifb-BGRT-Do-not-copy-the-boot-graphics-for-non-nat.patch
-Patch528: 0008-console-dummycon-export-dummycon_-un-register_output.patch
-# Deferred fbcon takeover bugfix, pending upstream
-Patch529: 0009-fbcon-Only-defer-console-takeover-if-the-current-con.patch
-Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
-
-# rhbz 1572944
-Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
-Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
-
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 5a5367670ecbb60484de04a2ef9f92a8e83931df
+%global opensuse_id d04171e1c6341ae785e3d1ebe71f496b17ca2f45
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -690,12 +633,6 @@ Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 #Patch1017: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
 Patch1018: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1019: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1020: %{opensuse_url}/0001-x86-stacktrace-Do-not-unwind-after-user-regs.patch#/openSUSE-0001-x86-stacktrace-Do-not-unwind-after-user-regs.patch
-Patch1021: %{opensuse_url}/0002-x86-stacktrace-Remove-STACKTRACE_DUMP_ONCE.patch#/openSUSE-0002-x86-stacktrace-Remove-STACKTRACE_DUMP_ONCE.patch
-Patch1022: %{opensuse_url}/0003-x86-stacktrace-Clarify-the-reliable-success-paths.patch#/openSUSE-0003-x86-stacktrace-Clarify-the-reliable-success-paths.patch
-Patch1023: %{opensuse_url}/0004-x86-stacktrace-Do-not-fail-for-ORC-with-regs-on-stac.patch#/openSUSE-0004-x86-stacktrace-Do-not-fail-for-ORC-with-regs-on-stac.patch
-Patch1024: %{opensuse_url}/0005-x86-unwind-orc-Detect-the-end-of-the-stack.patch#/openSUSE-0005-x86-unwind-orc-Detect-the-end-of-the-stack.patch
-Patch1025: %{opensuse_url}/0006-x86-stacktrace-Enable-HAVE_RELIABLE_STACKTRACE-for-t.patch#/openSUSE-0006-x86-stacktrace-Enable-HAVE_RELIABLE_STACKTRACE-for-t.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -703,33 +640,21 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 # https://github.com/pfactum/pf-kernel
 # block fixes and updates, mostly
 
-%global pf_url https://github.com/pfactum/pf-kernel/commit
+%global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 
-Patch3000: postfactum-merge-fixes.patch
-Patch3001: %{pf_url}/a73e7d13516785fa2e0ce6ec171b200b4a0e45fd.patch#/pf-a73e7d13516785fa2e0ce6ec171b200b4a0e45fd.patch
-Patch3002: %{pf_url}/c05a7efccd3b3ca2424b790a8865bc6302fc4e8e.patch#/pf-c05a7efccd3b3ca2424b790a8865bc6302fc4e8e.patch
-Patch3003: %{pf_url}/dea12cc693e73694955680068c337f2b52c03f13.patch#/pf-dea12cc693e73694955680068c337f2b52c03f13.patch
-Patch3004: %{pf_url}/b1c1a5dd15048b64def7cf06739b4b66da9bcef4.patch#/pf-b1c1a5dd15048b64def7cf06739b4b66da9bcef4.patch
-Patch3005: %{pf_url}/f0a8344c7a75e34d3bb8e83be26b5837cc4b5ba0.patch#/pf-f0a8344c7a75e34d3bb8e83be26b5837cc4b5ba0.patch
-Patch3006: %{pf_url}/3ead6b10224424cba2663062ffd66b50deb6354b.patch#/pf-3ead6b10224424cba2663062ffd66b50deb6354b.patch
-Patch3007: %{pf_url}/9e7c0c63a5356ab9ed6f6457fd6260286029b6a2.patch#/pf-9e7c0c63a5356ab9ed6f6457fd6260286029b6a2.patch
-Patch3008: %{pf_url}/4b8613c88f02f0e197a90b6d375f41fa8dc35bda.patch#/pf-4b8613c88f02f0e197a90b6d375f41fa8dc35bda.patch
-Patch3009: %{pf_url}/ac6bedef6c14be898117f40864b4c39102b47976.patch#/pf-ac6bedef6c14be898117f40864b4c39102b47976.patch
-Patch3010: %{pf_url}/a6836dacb2ebd86744951532bbb80270102557d1.patch#/pf-a6836dacb2ebd86744951532bbb80270102557d1.patch
-Patch3011: %{pf_url}/5bf982716cae8129275717f47c01e75e66459e5c.patch#/pf-5bf982716cae8129275717f47c01e75e66459e5c.patch
-Patch3012: %{pf_url}/363653afbba49d09f344daca2dfb229e59601992.patch#/pf-363653afbba49d09f344daca2dfb229e59601992.patch
-Patch3013: %{pf_url}/712990b7c1fd6a04ce9996fcd0b422cca291f4bf.patch#/pf-712990b7c1fd6a04ce9996fcd0b422cca291f4bf.patch
-Patch3014: %{pf_url}/50e965433ecb0e251de2bafe6eb116510a122509.patch#/pf-50e965433ecb0e251de2bafe6eb116510a122509.patch
-Patch3016: %{pf_url}/33e3b43082a58c90af511ad039c916f8eae79fe1.patch#/pf-33e3b43082a58c90af511ad039c916f8eae79fe1.patch
-Patch3017: %{pf_url}/89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch#/pf-89d88c8913b7165faf732ba8f7b63e15eb9a2873.patch
-Patch3018: %{pf_url}/16cf1745ff9e12ba8914781133322cd14cdd0178.patch#/pf-16cf1745ff9e12ba8914781133322cd14cdd0178.patch
-Patch3019: %{pf_url}/8c1fddf8714b6809b91a1cf23709ba2d81127890.patch#/pf-8c1fddf8714b6809b91a1cf23709ba2d81127890.patch
-Patch3022: %{pf_url}/73b03804b77d62dde759a9c193f4c6b0080a3373.patch#/pf-73b03804b77d62dde759a9c193f4c6b0080a3373.patch
-Patch3023: %{pf_url}/7f2d1c9cb63027fdd2b1e55b6f878b15cfaa2db5.patch#/pf-7f2d1c9cb63027fdd2b1e55b6f878b15cfaa2db5.patch
-Patch3024: %{pf_url}/5f61f18e084c29c3ee37c9acb5e6a9de1d3d211f.patch#/pf-5f61f18e084c29c3ee37c9acb5e6a9de1d3d211f.patch
-Patch3025: %{pf_url}/0e1f4ce203c1e95a881a96e9b26939c781f147d2.patch#/pf-0e1f4ce203c1e95a881a96e9b26939c781f147d2.patch
-Patch3026: %{pf_url}/e270bf5faae2d15fffd1cb25a53fb01f83c6f62b.patch#/pf-e270bf5faae2d15fffd1cb25a53fb01f83c6f62b.patch
-Patch3500: postfactum-merge-fixes-2.patch
+#Patch3000: postfactum-merge-fixes.patch
+Patch3001: %{pf_url}/4b38af06b758979fd674096c0a64f7af49ce3022.patch#/pf-4b38af06b758979fd674096c0a64f7af49ce3022.patch
+Patch3002: %{pf_url}/eab264b2f1759d8f2279325d1070364f42387fdf.patch#/pf-eab264b2f1759d8f2279325d1070364f42387fdf.patch
+Patch3003: %{pf_url}/b8f3c82dc20cd684a7ba7789f28c96a9b8447cd0.patch#/pf-b8f3c82dc20cd684a7ba7789f28c96a9b8447cd0.patch
+Patch3004: %{pf_url}/60d157d9133b07857ecab741290364b06a10c23b.patch#/pf-60d157d9133b07857ecab741290364b06a10c23b.patch
+Patch3005: %{pf_url}/5b2e5548ee833fd291001edfce223e4a35f7d85e.patch#/pf-5b2e5548ee833fd291001edfce223e4a35f7d85e.patch
+Patch3006: %{pf_url}/2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch#/pf-2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch
+Patch3007: %{pf_url}/aa9742c0dc4654a0ec0a32b1337a2ee1ee50eedf.patch#/pf-aa9742c0dc4654a0ec0a32b1337a2ee1ee50eedf.patch
+Patch3008: %{pf_url}/fedaa60f03cb51fadf3e5c7cfed45a83177b1cc6.patch#/pf-fedaa60f03cb51fadf3e5c7cfed45a83177b1cc6.patch
+Patch3009: %{pf_url}/ef899b859d7917aff958ac2cfb87a54410ce0e37.patch#/pf-ef899b859d7917aff958ac2cfb87a54410ce0e37.patch
+Patch3010: %{pf_url}/3a14b305fdaf6b12f180e7c3a047d375907f8332.patch#/pf-3a14b305fdaf6b12f180e7c3a047d375907f8332.patch
+Patch3011: %{pf_url}/1e56b9b2a11898366df9d93b70580739bd18701e.patch#/pf-1e56b9b2a11898366df9d93b70580739bd18701e.patch
+#Patch3500: postfactum-merge-fixes-2.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1288,6 +1213,16 @@ find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
 # remove unnecessary SCM files
 find . -name .gitignore -delete >/dev/null
 
+# Mangle /usr/bin/python shebangs to /usr/bin/python3
+# Mangle all Python shebangs to be Python 3 explicitly
+# -p preserves timestamps
+# -n prevents creating ~backup files
+# -i specifies the interpreter for the shebang
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/diffconfig
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/bloat-o-meter
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/show_delta
+
 cd ..
 
 ###
@@ -1321,8 +1256,8 @@ cp_vmlinux()
 # from redhat-rpm-config assume that host == target so target arch
 # flags cause issues with the host compiler.
 %if !%{with_cross}
-%define build_hostcflags  %{build_cflags}
-%define build_hostldflags %{build_ldflags} -Wl,--build-id=uuid
+%define build_hostcflags  %{?build_cflags}
+%define build_hostldflags %{?build_ldflags} -Wl,--build-id=uuid
 %endif
 
 BuildKernel() {
@@ -1354,7 +1289,9 @@ BuildKernel() {
     %endif
 
     # make sure EXTRAVERSION says what we want it to say
-    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -%{release}.%{_target_cpu}${Flav}/" Makefile
+    # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
+    ShortRel=$(python3 -c "import re; print(re.sub(r'\.pr\.[0-9A-Fa-f]{32}', '', '%{release}'))")
+    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Flav}/" Makefile
 
     # if pre-rc1 devel kernel, must fix up PATCHLEVEL for our versioning scheme
     %if !0%{?rcrev}
@@ -2002,6 +1939,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.0-500.chinfo
+- 4.19.0
+
 * Sat Oct 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.16-500.chinfo
 - 4.18.16
 

@@ -1,7 +1,7 @@
-From 5f5251591ad0e9ae2e446eca48e27ac251c0d14b Mon Sep 17 00:00:00 2001
+From ecb77f61f10b36476133e31cdc001892b5463b90 Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Wed, 12 Sep 2018 20:32:05 +0200
-Subject: [PATCH] efi/x86: Call efi_parse_options() from efi_main()
+Subject: efi/x86: Call efi_parse_options() from efi_main()
 
 Before this commit we were only calling efi_parse_options() from
 make_boot_params(), but make_boot_params() only gets called if the
@@ -26,18 +26,18 @@ Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
  1 file changed, 10 insertions(+)
 
 diff --git a/arch/x86/boot/compressed/eboot.c b/arch/x86/boot/compressed/eboot.c
-index e98522e..8aa6f96 100644
+index 1458b1700fc7..8b4c5e001157 100644
 --- a/arch/x86/boot/compressed/eboot.c
 +++ b/arch/x86/boot/compressed/eboot.c
-@@ -918,6 +918,7 @@ struct boot_params *efi_main(struct efi_config *c,
+@@ -738,6 +738,7 @@ efi_main(struct efi_config *c, struct boot_params *boot_params)
  	struct desc_struct *desc;
  	void *handle;
  	efi_system_table_t *_table;
 +	unsigned long cmdline_paddr;
- 	bool is64;
  
  	efi_early = c;
-@@ -937,6 +938,15 @@ struct boot_params *efi_main(struct efi_config *c,
+ 
+@@ -755,6 +756,15 @@ efi_main(struct efi_config *c, struct boot_params *boot_params)
  	else
  		setup_boot_services32(efi_early);
  
@@ -54,5 +54,5 @@ index e98522e..8aa6f96 100644
  	 * If the boot loader gave us a value for secure_boot then we use that,
  	 * otherwise we ask the BIOS.
 -- 
-2.19.0.rc1
+cgit 1.2-0.3.lf.el7
 

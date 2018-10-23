@@ -1,5 +1,5 @@
 Name:           lutris
-Version:        0.4.20
+Version:        0.4.21
 Epoch:          1
 Release:        1%{?dist}
 Summary:        Install and play any video game easily
@@ -73,6 +73,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Oct 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.4.21-1
+- 0.4.21
+
 * Fri Oct 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.4.20-1
 - 0.4.20
 

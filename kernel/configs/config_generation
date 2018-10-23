@@ -15,8 +15,6 @@ x86_64-debug=generic:generic-x86:generic-x86-x86_64:debug:debug-x86:debug-x86-x8
 # i686
 i686=generic:generic-x86:generic-x86-i686
 i686-debug=generic:generic-x86:generic-x86-i686:debug:debug-x86
-i686-PAE=generic:generic-x86:generic-x86-i686PAE
-i686-PAEdebug=generic:generic-x86:generic-x86-i686PAE:debug:debug-x86
 
 # ppc64le
 ppc64le=generic:generic-powerpc:generic-powerpc-powerpc64le

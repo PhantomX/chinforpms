@@ -13,13 +13,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 18
+%global base_sublevel 19
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 16
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -74,6 +74,8 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: zlib-devel binutils-devel newt-devel python2-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel glibc-devel glibc-static python3-devel
 BuildRequires: asciidoc xmlto
+# Used to mangle unversioned shebangs to be Python 3
+BuildRequires: /usr/bin/pathfix.py
 %ifnarch s390x %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -118,7 +120,7 @@ Patch8: 0001-Switch-to-python3.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 5a5367670ecbb60484de04a2ef9f92a8e83931df
+%global opensuse_id d04171e1c6341ae785e3d1ebe71f496b17ca2f45
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
@@ -217,6 +219,12 @@ cd linux-%{kversion}
 
 # END OF PATCH APPLICATIONS
 
+# Mangle /usr/bin/python shebangs to /usr/bin/python3
+# -p preserves timestamps
+# -n prevents creating ~backup files
+# -i specifies the interpreter for the shebang
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" tools/ tools/perf/scripts/python/*.py
+
 cp -a tools/perf tools/python3-perf
 
 sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.config
@@ -302,11 +310,9 @@ rm -rf %{buildroot}%{_docdir}/perf-tip
 # Whoever wants examples can fix it up!
 
 # remove examples
-rm -rf %{buildroot}/usr/lib/examples/perf
 rm -rf %{buildroot}/usr/lib/perf/examples
 # remove the stray header file that somehow got packaged in examples
-rm -rf %{buildroot}/usr/lib/include/perf/bpf/bpf.h
-rm -rf %{buildroot}/usr/lib/perf/include/bpf/bpf.h
+rm -rf %{buildroot}/usr/lib/perf/include/bpf/
 
 # python-perf extension
 %{perf_make} %{perf_python3} DESTDIR=%{buildroot} install-python_ext
@@ -439,9 +445,13 @@ popd
 %{_mandir}/man8/bpftool-prog.8.gz
 %{_mandir}/man8/bpftool-perf.8.gz
 %{_mandir}/man8/bpftool.8.gz
+%{_mandir}/man7/bpf-helpers.7.gz
 %license linux-%{kversion}/COPYING
 
 %changelog
+* Mon Oct 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.0-500.chinfo
+- 4.19.0
+
 * Sat Oct 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.16-500.chinfo
 - 4.18.16
 
