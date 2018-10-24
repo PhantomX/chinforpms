@@ -1941,6 +1941,7 @@ fi
 %changelog
 * Mon Oct 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.0-500.chinfo
 - 4.19.0
+- Rawhide sync
 
 * Sat Oct 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.16-500.chinfo
 - 4.18.16
