@@ -134,7 +134,7 @@ Source0:        https://github.com/MrAlex94/%{name}/archive/%{version}.tar.gz#/%
 # FreeBSD patches
 # https://www.freshports.org/www/waterfox
 # rev=revision ./waterfox-FreeBSD-patches-snapshot.sh
-Source600:      http://dl.bintray.com/phantomx/tarballs/%{freebsd_root}.tar.xz
+Source600:      https://dl.bintray.com/phantomx/tarballs/%{freebsd_root}.tar.xz
 
 Source10:       waterfox-mozconfig
 Source12:       waterfox-chinfo-default-prefs.js

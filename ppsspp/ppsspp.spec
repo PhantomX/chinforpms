@@ -1,6 +1,6 @@
-%global commit 31893859cc93e2261847fda23fedbd0aff751e17
+%global commit caa506bf2a253a99850a4248a1cb5a399f32467a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20181009
+%global date 20181027
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -9,7 +9,7 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 2b15416501e64793204fc23fdf94c4365109198e
+%global commit1 cbad73fae5bbc18c6f5541852bbdfc4dd97a9c83
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -43,7 +43,7 @@
 
 Name:           ppsspp
 Version:        1.6.3
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -265,6 +265,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Oct 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-6.20181027gitcaa506b
+- New snapshot
+
 * Tue Oct 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-5.20181009git3189385
 - New snapshot
 - Provides ppsspp-data to not crash with RPMFusion package

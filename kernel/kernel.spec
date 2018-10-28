@@ -649,11 +649,12 @@ Patch3003: %{pf_url}/b8f3c82dc20cd684a7ba7789f28c96a9b8447cd0.patch#/pf-b8f3c82d
 Patch3004: %{pf_url}/60d157d9133b07857ecab741290364b06a10c23b.patch#/pf-60d157d9133b07857ecab741290364b06a10c23b.patch
 Patch3005: %{pf_url}/5b2e5548ee833fd291001edfce223e4a35f7d85e.patch#/pf-5b2e5548ee833fd291001edfce223e4a35f7d85e.patch
 Patch3006: %{pf_url}/2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch#/pf-2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch
-Patch3007: %{pf_url}/aa9742c0dc4654a0ec0a32b1337a2ee1ee50eedf.patch#/pf-aa9742c0dc4654a0ec0a32b1337a2ee1ee50eedf.patch
-Patch3008: %{pf_url}/fedaa60f03cb51fadf3e5c7cfed45a83177b1cc6.patch#/pf-fedaa60f03cb51fadf3e5c7cfed45a83177b1cc6.patch
-Patch3009: %{pf_url}/ef899b859d7917aff958ac2cfb87a54410ce0e37.patch#/pf-ef899b859d7917aff958ac2cfb87a54410ce0e37.patch
-Patch3010: %{pf_url}/3a14b305fdaf6b12f180e7c3a047d375907f8332.patch#/pf-3a14b305fdaf6b12f180e7c3a047d375907f8332.patch
-Patch3011: %{pf_url}/1e56b9b2a11898366df9d93b70580739bd18701e.patch#/pf-1e56b9b2a11898366df9d93b70580739bd18701e.patch
+Patch3007: %{pf_url}/8d28881d7f165e80352bb2472e546364ec8395a3.patch#/pf-8d28881d7f165e80352bb2472e546364ec8395a3.patch
+Patch3008: %{pf_url}/ef0d76219e04ecb867e7857cecdb430deaa6124c.patch#/pf-ef0d76219e04ecb867e7857cecdb430deaa6124c.patch
+Patch3009: %{pf_url}/40548db0cad811d018a4ac4a8b3fbf77eef129da.patch#/pf-40548db0cad811d018a4ac4a8b3fbf77eef129da.patch
+Patch3010: %{pf_url}/94b5d08bf6a8f1a3e0b22db15e9e43401e32de41.patch#/pf-94b5d08bf6a8f1a3e0b22db15e9e43401e32de41.patch
+Patch3011: %{pf_url}/ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch#/pf-ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch
+Patch3012: %{pf_url}/1eccf3238cf77405532540ced86b0f2591830135.patch#/pf-1eccf3238cf77405532540ced86b0f2591830135.patch
 #Patch3500: postfactum-merge-fixes-2.patch
 
 # Add additional cpu gcc optimization support

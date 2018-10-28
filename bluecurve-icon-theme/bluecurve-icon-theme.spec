@@ -8,7 +8,7 @@ Release:        103.chinfo%{?dist}
 License:        GPL+
 # There is no official upstream yet
 Source0:        http://src.fedoraproject.org/repo/pkgs/%{name}/%{name}-%{version}.tar.bz2/%{bit_hash}/%{name}-%{version}.tar.bz2
-Source1:        http://dl.bintray.com/phantomx/tarballs/Bluecurve-classic.tar.bz2
+Source1:        https://dl.bintray.com/phantomx/tarballs/Bluecurve-classic.tar.bz2
 Source3:        link.png
 URL:            http://www.redhat.com
 
