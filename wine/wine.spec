@@ -11,12 +11,12 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.18
+%global stagingver 3.19
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
 %global pba 1
-%global pbaver 3.18
+%global pbaver 3.19
 %if 0%(echo %{pbaver} | grep -q \\. ; echo $?) == 0
 %global pbarel v
 %global pbapkg knobs_and_switches-
@@ -37,7 +37,7 @@
 %endif
 
 Name:           wine
-Version:        3.18
+Version:        3.19
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2329,6 +2329,9 @@ fi
 %endif
 
 %changelog
+* Mon Oct 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.19-100.chinfo
+- 3.19
+
 * Sun Oct 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.18-100.chinfo
 - 3.18
 
