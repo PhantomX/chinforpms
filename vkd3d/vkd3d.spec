@@ -73,7 +73,7 @@ Development files for libvkd3d-utils.
 %install
 %make_install
 
-find %{buildroot} -name '*.la' -exec rm -f {} ';'
+find %{buildroot} -name '*.la' -delete
 
 
 %files -n libvkd3d

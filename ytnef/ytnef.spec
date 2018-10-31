@@ -44,7 +44,7 @@ developing applications that use libytnef.
 
 %install
 %make_install includedir=%{_includedir}/libytnef
-find %{buildroot} -name '*.la' -exec rm -f {} ';'
+find %{buildroot} -name '*.la' -delete
 
 
 %files

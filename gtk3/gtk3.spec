@@ -20,12 +20,12 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 # https://github.com/TomaszGasior/gtk3-mushrooms
-%global mushroom_ver 3.24.0-1
+%global mushroom_ver 3.24.1-2
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name: gtk3
 Version: 3.24.1
-Release: 100.chinfo%{?dist}
+Release: 101.chinfo%{?dist}
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License: LGPLv2+
@@ -33,6 +33,8 @@ URL: http://www.gtk.org
 Source0: http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
 Source1: https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}.tar.gz#/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2: chinforpms-adwaita.css
+
+Patch10: https://gitlab.gnome.org/GNOME/gtk/commit/9b7d886b723132eade2e76f3fd179cf81b7601f2.patch#/gl-9b7d886b723132eade2e76f3fd179cf81b7601f2._patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100: gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -209,6 +211,8 @@ patch_command csd__server-side-shadow.patch
 patch_command fixes__atk-bridge-errors.patch
 patch_command fixes__labels-wrapping.patch
 patch_command fixes__too-large-menu-covers-bar.patch
+patch_command fixes__trayicon-parent-relative.patch
+patch_command fixes__xfce-inhibit-errors.patch
 patch_command other__mnemonics-delay.patch
 patch_command popovers__color-chooser.patch
 patch_command popovers__file-chooser-list.patch
@@ -377,6 +381,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Tue Oct 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.24.1-101.chinfo
+- gtk3-mushrooms update
+
 * Wed Sep 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.24.1-100.chinfo
 - 3.24.1
 
@@ -393,7 +400,7 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 - 3.23.2
 
 * Fri Jul 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.23.1-101.chinfo
-- Set debug to minimun
+- Set debug to minimum
 
 * Tue Jul 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.23.1-100.chinfo
 - 3.23.1

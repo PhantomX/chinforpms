@@ -1,6 +1,6 @@
-%global commit 9c2c0e0c5593abb40b6093d9b2a28b294b2b0ce9
+%global commit 475fed0269120a3673ac55d8384022dc7f44eacf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20181008
+%global date 20181030
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -121,7 +121,7 @@
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.4
+Version:        56.2.5
 Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -162,6 +162,7 @@ Patch36:        build-missing-xlocale-h.patch
 Patch37:        build-jit-atomic-always-lucky.patch
 # Fixing missing cacheFlush when JS_CODEGEN_NONE is used (s390x)
 Patch38:        build-cacheFlush-missing.patch
+Patch39:        mozilla-1494037.patch
 
 # Fedora specific patches
 Patch215:        firefox-enable-addons.patch
@@ -186,6 +187,8 @@ Patch417:        mozilla-1436242.patch
 
 %global wf_url https://github.com/MrAlex94/Waterfox
 #Patch???:      %%{wf_url}/commit/commit.patch#/wf-commit.patch
+# Revert this until figure out
+Patch490:       %{wf_url}/commit/a89c49043079c720ea09ea3c7c523a5ef5db00e5.patch#/wf-a89c49043079c720ea09ea3c7c523a5ef5db00e5.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -342,6 +345,7 @@ This package contains results of tests executed during build.
 %patch35 -p1 -b .ppc-jit
 %endif
 %patch37 -p1 -b .jit-atomic-lucky
+%patch39 -p1 -b .1494037
 
 %patch3  -p1 -b .arm
 
@@ -368,6 +372,8 @@ This package contains results of tests executed during build.
 %endif
 %patch416 -p1 -b .bug1375074-save-restore-x28
 %patch417 -p1 -b .mozilla-1436242
+
+%patch490 -p1 -R -b .1420171
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -897,6 +903,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue Oct 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.5-1.20181030git475fed0
+- New release/snapshot
+
 * Sun Oct 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.4-1.20181008git9c2c0e0
 - New release/snapshot
 

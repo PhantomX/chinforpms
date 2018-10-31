@@ -461,7 +461,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 rm -f %{buildroot}%{_infodir}/dir
 
-find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
+find %{buildroot} -type f -name '*.la' -delete
 find %{buildroot}%{_libdir}/claws-mail/plugins/ -type f -name \
 "*.a" -exec rm -f {} ';'
 

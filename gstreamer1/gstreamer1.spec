@@ -148,8 +148,8 @@ done
 
 %find_lang gstreamer-%{majorminor}
 # Clean out files that should not be part of the rpm.
-find %{buildroot} -name '*.la' -exec rm -fv {} ';'
-find %{buildroot} -name '*.a' -exec rm -fv {} ';'
+find %{buildroot} -name '*.la' -delete
+find %{buildroot} -name '*.a' -delete
 # Add the provides script
 install -m0755 -D %{SOURCE1} %{buildroot}%{_rpmconfigdir}/gstreamer1.prov
 # Add the gstreamer plugin file attribute entry (rpm >= 4.9.0)

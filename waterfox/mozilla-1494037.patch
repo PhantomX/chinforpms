@@ -1,0 +1,21 @@
+# HG changeset patch
+# User A. Wilcox <AWilcox@Wilcox-Tech.com>
+# Date 1539547360 0
+#      Sun Oct 14 20:02:40 2018 +0000
+# Node ID e2e56a6a68b281301932f4fbf30cea6f7499ec41
+# Parent  ddb031ea38070f454bdc89429c501ec1ff9c54d4
+Bug 1494037 - Fix Cairo build bustage on PowerPC platforms.
+
+diff -r ddb031ea3807 -r e2e56a6a68b2 gfx/cairo/libpixman/src/pixman-vmx.c
+--- a/gfx/cairo/libpixman/src/pixman-vmx.c	Sun Oct 14 20:00:46 2018 +0000
++++ b/gfx/cairo/libpixman/src/pixman-vmx.c	Sun Oct 14 20:02:40 2018 +0000
+@@ -25,7 +25,9 @@
+  * Based on fbmmx.c by Owen Taylor, Søren Sandmann and Nicholas Miell
+  */
+ 
++#ifdef HAVE_CONFIG_H
+ #include <config.h>
++#endif
+ #include "pixman-private.h"
+ #include "pixman-combine32.h"
+ #include <altivec.h>

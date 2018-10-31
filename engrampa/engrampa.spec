@@ -85,7 +85,7 @@ desktop-file-install                                \
     --dir %{buildroot}%{_datadir}/applications      \
 %{buildroot}%{_datadir}/applications/engrampa.desktop
 
-find %{buildroot} -name "*.la" -exec rm -f {} ';'
+find %{buildroot} -name '*.la' -delete
 
 %find_lang %{name} --with-gnome --all-name
 

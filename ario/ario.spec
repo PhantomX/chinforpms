@@ -52,7 +52,7 @@ sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 %make_install INSTALL="install -p"
 
 %find_lang ario
-find %{buildroot} -name "*.la" -exec rm {} \;
+find %{buildroot} -name '*.la' -delete
 
 %check
 desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop

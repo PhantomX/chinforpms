@@ -36,9 +36,9 @@ Requires:  perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 %install
 
 make pure_install DESTDIR=%{buildroot}
-find %{buildroot} -type f -name .packlist -exec rm -f {} ';'
+find %{buildroot} -type f -name .packlist -delete
 # Remove the next line from noarch packages (unneeded)
-find %{buildroot} -type f -name '*.bs' -a -size 0 -exec rm -f {} ';'
+find %{buildroot} -type f -name '*.bs' -a -size 0 -delete
 find %{buildroot} -depth -type d -exec rmdir {} 2>/dev/null ';'
 %{_fixperms} %{buildroot}/*
 
