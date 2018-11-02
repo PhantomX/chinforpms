@@ -649,12 +649,15 @@ Patch3003: %{pf_url}/b8f3c82dc20cd684a7ba7789f28c96a9b8447cd0.patch#/pf-b8f3c82d
 Patch3004: %{pf_url}/60d157d9133b07857ecab741290364b06a10c23b.patch#/pf-60d157d9133b07857ecab741290364b06a10c23b.patch
 Patch3005: %{pf_url}/5b2e5548ee833fd291001edfce223e4a35f7d85e.patch#/pf-5b2e5548ee833fd291001edfce223e4a35f7d85e.patch
 Patch3006: %{pf_url}/2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch#/pf-2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch
-Patch3007: %{pf_url}/8d28881d7f165e80352bb2472e546364ec8395a3.patch#/pf-8d28881d7f165e80352bb2472e546364ec8395a3.patch
-Patch3008: %{pf_url}/ef0d76219e04ecb867e7857cecdb430deaa6124c.patch#/pf-ef0d76219e04ecb867e7857cecdb430deaa6124c.patch
-Patch3009: %{pf_url}/40548db0cad811d018a4ac4a8b3fbf77eef129da.patch#/pf-40548db0cad811d018a4ac4a8b3fbf77eef129da.patch
-Patch3010: %{pf_url}/94b5d08bf6a8f1a3e0b22db15e9e43401e32de41.patch#/pf-94b5d08bf6a8f1a3e0b22db15e9e43401e32de41.patch
-Patch3011: %{pf_url}/ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch#/pf-ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch
-Patch3012: %{pf_url}/1eccf3238cf77405532540ced86b0f2591830135.patch#/pf-1eccf3238cf77405532540ced86b0f2591830135.patch
+Patch3007: %{pf_url}/ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch#/pf-ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch
+Patch3008: %{pf_url}/1eccf3238cf77405532540ced86b0f2591830135.patch#/pf-1eccf3238cf77405532540ced86b0f2591830135.patch
+Patch3009: %{pf_url}/cfa886747c494ee1352844c81aa2f126f17c5885.patch#/pf-cfa886747c494ee1352844c81aa2f126f17c5885.patch
+Patch3010: %{pf_url}/adb5219bad550c82ccb588f463e7d699c7383f78.patch#/pf-adb5219bad550c82ccb588f463e7d699c7383f78.patch
+Patch3011: %{pf_url}/b1d9b4c2897aaf2fb6c42e7b9ba6fce833bc2906.patch#/pf-b1d9b4c2897aaf2fb6c42e7b9ba6fce833bc2906.patch
+Patch3012: %{pf_url}/bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch#/pf-bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch
+Patch3013: %{pf_url}/3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch#/pf-3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch
+Patch3014: %{pf_url}/72bbc6527229bbc17bf630559989b1f5a0f80353.patch#/pf-72bbc6527229bbc17bf630559989b1f5a0f80353.patch
+Patch3015: %{pf_url}/4a3998301f2389f93469c662d922193b32bc895d.patch#/pf-4a3998301f2389f93469c662d922193b32bc895d.patch
 #Patch3500: postfactum-merge-fixes-2.patch
 
 # Add additional cpu gcc optimization support

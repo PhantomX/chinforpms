@@ -26,6 +26,10 @@ ac_add_options BINDGEN_CFLAGS="$(pkg-config nspr pixman-1 --cflags)"
 
 mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/objdir
 
+export MOZ_GECKO_PROFILER=
+export MOZ_ENABLE_PROFILER_SPS=
+export MOZ_PROFILING=
+
 ac_add_options --disable-crashreporter
 ac_add_options --disable-js-shell
 ac_add_options --disable-maintenance-service
