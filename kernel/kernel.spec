@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -620,7 +620,7 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id d04171e1c6341ae785e3d1ebe71f496b17ca2f45
+%global opensuse_id 9a3b167edf58cd0e8ede0ea389d4d020433fb0df
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -633,6 +633,7 @@ Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 #Patch1017: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
 Patch1018: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1019: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1020: %{opensuse_url}/cdrom-fix-improper-type-cast-which-can-leat-to-infor.patch#/openSUSE-cdrom-fix-improper-type-cast-which-can-leat-to-infor.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -653,11 +654,10 @@ Patch3007: %{pf_url}/ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch#/pf-ee6bef56
 Patch3008: %{pf_url}/1eccf3238cf77405532540ced86b0f2591830135.patch#/pf-1eccf3238cf77405532540ced86b0f2591830135.patch
 Patch3009: %{pf_url}/cfa886747c494ee1352844c81aa2f126f17c5885.patch#/pf-cfa886747c494ee1352844c81aa2f126f17c5885.patch
 Patch3010: %{pf_url}/adb5219bad550c82ccb588f463e7d699c7383f78.patch#/pf-adb5219bad550c82ccb588f463e7d699c7383f78.patch
-Patch3011: %{pf_url}/b1d9b4c2897aaf2fb6c42e7b9ba6fce833bc2906.patch#/pf-b1d9b4c2897aaf2fb6c42e7b9ba6fce833bc2906.patch
-Patch3012: %{pf_url}/bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch#/pf-bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch
-Patch3013: %{pf_url}/3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch#/pf-3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch
-Patch3014: %{pf_url}/72bbc6527229bbc17bf630559989b1f5a0f80353.patch#/pf-72bbc6527229bbc17bf630559989b1f5a0f80353.patch
-Patch3015: %{pf_url}/4a3998301f2389f93469c662d922193b32bc895d.patch#/pf-4a3998301f2389f93469c662d922193b32bc895d.patch
+Patch3011: %{pf_url}/bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch#/pf-bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch
+Patch3012: %{pf_url}/3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch#/pf-3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch
+Patch3013: %{pf_url}/72bbc6527229bbc17bf630559989b1f5a0f80353.patch#/pf-72bbc6527229bbc17bf630559989b1f5a0f80353.patch
+Patch3014: %{pf_url}/4a3998301f2389f93469c662d922193b32bc895d.patch#/pf-4a3998301f2389f93469c662d922193b32bc895d.patch
 #Patch3500: postfactum-merge-fixes-2.patch
 
 # Add additional cpu gcc optimization support
@@ -1943,6 +1943,9 @@ fi
 #
 #
 %changelog
+* Sun Nov 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.1-500.chinfo
+- 4.19.1
+
 * Mon Oct 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.0-500.chinfo
 - 4.19.0
 - Rawhide sync

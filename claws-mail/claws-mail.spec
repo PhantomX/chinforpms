@@ -1,5 +1,7 @@
 %global pluginapi 3.17.1.0
 
+%global with_gtk3  0
+
 %global with_fancy 0
 
 # toggle to avoid temporary docbook-utils and Tex Live dependency issues
@@ -29,7 +31,11 @@ Provides:       %{name}-plugins-fancy = %{version}-%{release}
 BuildRequires:  gcc
 BuildRequires:  flex, bison
 BuildRequires:  glib2-devel >= 2.28.0
+%if 0%{?with_gtk3}
+BuildRequires:  gtk3-devel >= 3.24.0
+%else
 BuildRequires:  gtk2-devel >= 2.24.0
+%endif
 BuildRequires:  gnutls-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  openldap-devel >= 2.0.7
@@ -65,7 +71,7 @@ BuildRequires:  libytnef-devel
 BuildRequires:  ghostscript
 BuildRequires:  poppler-glib-devel
 # webkit removed since Fedora 27 due to unfixed security issues
-%if 0%{with_fancy}
+%if 0%{with_fancy} && !0%{?with_gtk3}
 BuildRequires:  webkitgtk-devel
 %endif
 # fix #496149
@@ -73,7 +79,11 @@ BuildRequires:  libnotify-devel
 BuildRequires:  python2 python2-devel pygtk2-devel
 BuildRequires:  libcanberra-devel
 # this is an optional subpackage not pulled in by libcanberra-devel
+%if 0%{?with_gtk3}
+BuildRequires:  libcanberra-gtk3
+%else
 BuildRequires:  libcanberra-gtk2
+%endif
 BuildRequires:  libgdata-devel >= 0.6.4
 BuildRequires:  libgnome-devel
 BuildRequires:  libical-devel
@@ -431,6 +441,9 @@ EOF
 %build
 %configure --disable-dependency-tracking \
            --disable-rpath \
+%if 0%{?with_gtk3}
+            --enable-gtk3 \
+%endif
 %if 0%{?rhel}
            --disable-bsfilter-plugin \
 %endif
