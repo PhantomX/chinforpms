@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20181001
+// 20181106
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -41,6 +41,12 @@ pref("media.block-autoplay-until-in-foreground", true);
 pref("middlemouse.contentLoadURL", false);
 pref("toolkit.cosmeticAnimations.enabled", false);
 
+// Startup
+pref("browser.startup.page", 0);
+pref("browser.startup.homepage", "about:blank");
+pref("browser.newtabpage.enabled", false);
+pref("browser.newtab.preload", false);
+
 // History
 pref("browser.sessionhistory.max_entries", 10);
 pref("browser.urlbar.filter.javascript", true);
@@ -49,6 +55,7 @@ pref("layout.css.visited_links_enabled", false);
 // Search
 pref("browser.search.openintab", true);
 pref("browser.urlbar.oneOffSearches", false);
+pref("browser.urlbar.unifiedcomplete", false);
 pref("browser.search.suggest.enabled", false);
 pref("browser.urlbar.maxHistoricalSearchSuggestions", 0);
 pref("browser.urlbar.suggest.searches", false);
@@ -63,8 +70,18 @@ pref("browser.rights.3.shown", true);
 // Don't show Onboarding on first run after every update
 pref("browser.onboarding.enabled", false);
 
-// Don't show WhatsNew on first run after every update
+// Activity Stream
 pref("browser.library.activity-stream.enabled", false);
+pref("browser.newtabpage.activity-stream.disableSnippets", true);
+pref("browser.newtabpage.activity-stream.feeds.snippets", false);
+pref("browser.newtabpage.activity-stream.feeds.section.topstories", false);
+pref("browser.newtabpage.activity-stream.section.highlights.includePocket", false);
+pref("browser.newtabpage.activity-stream.showSponsored", false);
+pref("browser.newtabpage.activity-stream.feeds.telemetry", false);
+pref("browser.newtabpage.activity-stream.telemetry", false);
+pref("browser.newtabpage.activity-stream.telemetry.ping.endpoint", "");
+
+// Don't show WhatsNew on first run after every update
 pref("browser.startup.homepage_override.mstone","ignore");
 pref("startup.homepage_welcome_url", "");
 pref("startup.homepage_welcome_url.additional", "");
