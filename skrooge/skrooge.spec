@@ -1,11 +1,11 @@
 Name:    skrooge
 Summary: Personal finances manager
-Version: 2.15.0
-Release: 101.chinfo%{?dist}
+Version: 2.16.2
+Release: 100.chinfo%{?dist}
 
 License: GPLv2+
-URL:     http://skrooge.org
-Source0: http://download.kde.org/stable/skrooge/skrooge-%{version}.tar.xz
+URL:     https://skrooge.org
+Source0: https://download.kde.org/stable/skrooge/skrooge-%{version}.tar.xz
 
 ## upstream patches
 
@@ -20,6 +20,7 @@ BuildRequires: kf5-kcompletion-devel
 BuildRequires: kf5-kconfig-devel
 BuildRequires: kf5-kconfigwidgets-devel
 BuildRequires: kf5-kcoreaddons-devel
+BuildRequires: kf5-kdbusaddons-devel
 BuildRequires: kf5-kdelibs4support-devel
 BuildRequires: kf5-kdesignerplugin-devel
 BuildRequires: kf5-kdoctools-devel
@@ -29,6 +30,7 @@ BuildRequires: kf5-kiconthemes-devel
 BuildRequires: kf5-kio-devel
 BuildRequires: kf5-kjobwidgets-devel
 BuildRequires: kf5-knewstuff-devel
+BuildRequires: kf5-knotifications-devel
 BuildRequires: kf5-knotifyconfig-devel
 BuildRequires: kf5-kparts-devel
 BuildRequires: kf5-krunner-devel
@@ -117,6 +119,7 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 %{_kf5_datadir}/config.kcfg/skg*.kcfg
 %{_kf5_datadir}/knotifications5/skrooge.notifyrc
 %{_kf5_datadir}/kservices5/*.desktop
+%{_kf5_datadir}/kservices5/sources/*.desktop
 %{_kf5_datadir}/kservicetypes5/*.desktop
 %{_kf5_datadir}/kxmlgui5/skg*/
 %{_kf5_datadir}/kxmlgui5/skrooge_*/
@@ -135,6 +138,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Wed Nov 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.16.2-100.chinfo
+- 2.16.2
+
 * Tue Sep 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.15.0-101.chinfo
 - Qt 5.11.1 rebuild
 

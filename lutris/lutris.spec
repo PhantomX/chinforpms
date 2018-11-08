@@ -1,5 +1,5 @@
 Name:           lutris
-Version:        0.4.21
+Version:        0.4.22
 Epoch:          1
 Release:        1%{?dist}
 Summary:        Install and play any video game easily
@@ -12,6 +12,7 @@ Source0:        http://lutris.net/releases/%{name}_%{version}.tar.xz
 BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  gtk3
 BuildRequires:  python3-devel
 BuildRequires:  python3-gobject
 BuildRequires:  python3-wheel
@@ -20,6 +21,7 @@ BuildRequires:  fdupes
 Requires:       cabextract
 Requires:       gtk3
 Requires:       psmisc
+Requires:       python3-evdev
 Requires:       python3-gobject
 Requires:       python3-PyYAML
 Requires:       xorg-x11-server-Xephyr
@@ -73,6 +75,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Nov 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.4.22-1
+- 0.4.22
+
 * Mon Oct 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.4.21-1
 - 0.4.21
 
