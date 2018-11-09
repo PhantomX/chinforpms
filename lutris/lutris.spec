@@ -1,13 +1,13 @@
 Name:           lutris
-Version:        0.4.22
+Version:        0.4.23
 Epoch:          1
-Release:        1%{?dist}
+Release:        100.chinfo%{?dist}
 Summary:        Install and play any video game easily
 
-License:        GPL-3.0+
-URL:            http://lutris.net
+License:        GPLv3
+URL:            https://lutris.net
 
-Source0:        http://lutris.net/releases/%{name}_%{version}.tar.xz
+Source0:        ${url}/releases/%{name}_%{version}.tar.xz
 
 BuildArch:      noarch
 
@@ -18,6 +18,7 @@ BuildRequires:  python3-gobject
 BuildRequires:  python3-wheel
 BuildRequires:  python3-setuptools
 BuildRequires:  fdupes
+Requires:       hicolor-icon-theme
 Requires:       cabextract
 Requires:       gtk3
 Requires:       psmisc
@@ -75,6 +76,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Nov 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.4.23-100.chinfo
+- 0.4.23
+
 * Thu Nov 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.4.22-1
 - 0.4.22
 
