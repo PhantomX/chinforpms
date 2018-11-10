@@ -86,8 +86,8 @@ diff -rup VirtualBox-5.2.4.orig/src/VBox/Installer/linux/distributions_rpm Virtu
 +mga2            = MAGEIA_2
 +mga1            = MAGEIA_1
  mdv2011.0       = MANDRIVA_2011_0
+ fedora29        = FEDORA_29
  fedora26        = FEDORA_26
- fedora25        = FEDORA_25
 diff -rup VirtualBox-5.2.4.orig/src/VBox/Installer/linux/VBoxSysInfo.sh VirtualBox-5.2.4/src/VBox/Installer/linux/VBoxSysInfo.sh
 --- VirtualBox-5.2.4.orig/src/VBox/Installer/linux/VBoxSysInfo.sh	2017-12-19 09:28:04.000000000 +0000
 +++ VirtualBox-5.2.4/src/VBox/Installer/linux/VBoxSysInfo.sh	2018-01-16 01:33:36.786057485 +0000

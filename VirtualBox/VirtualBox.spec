@@ -37,7 +37,7 @@
 %endif
 
 Name:       VirtualBox
-Version:    5.2.20
+Version:    5.2.22
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -812,6 +812,9 @@ getent passwd vboxadd >/dev/null || \
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Fri Nov 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.22-100.chinfo
+- 5.2.22
+
 * Tue Oct 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.20-100.chinfo
 - 5.2.20
 

@@ -12,7 +12,7 @@
 
 Name:           %{real_name}-desktop
 Version:        0.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Manga Downloader
 
 License:        MIT
@@ -56,7 +56,7 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp usr/lib/%{name}/{%{real_name},resources,*.{bin,dat,pak,so}} \
+cp -rp usr/lib/%{name}/{%{real_name},locales,resources,*.{bin,dat,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -75,6 +75,10 @@ cp -rp usr/share/icons %{buildroot}%{_datadir}/
 
 
 %changelog
+* Sun Aug 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.4.0-2
+- New source
+- Add missing locales directory
+
 * Sun Aug 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.4.0-1
 - 0.4.0
 
