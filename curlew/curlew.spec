@@ -36,7 +36,6 @@ Curlew written in python and GTK3 and it depends on (ffmpeg/avconv, mencoder).
 
 desktop-file-edit  \
   --remove-key=Encoding \
-  --add-category=GTK \
   %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %find_lang %{name}

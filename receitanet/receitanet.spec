@@ -68,7 +68,7 @@ convert imagens/Receitanet.xpm \
 convert imagens/Ajuda.xpm \
   %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}_ajuda.png
 
-for res in 16 20 22 24 ;do
+for res in 16 22 24 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   convert imagens/Receitanet.xpm -filter Lanczos -resize ${res}x${res} \

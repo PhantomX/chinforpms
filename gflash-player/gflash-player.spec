@@ -66,7 +66,7 @@ mkdir -p %{buildroot}%{_datadir}/icons/hicolor/48x48/apps
 install -pm0644 %{S:1} \
   %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{binname}.png
 
-for res in 16 20 22 24 32 36 ;do
+for res in 16 22 24 32 36 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   convert %{S:1} -filter Lanczos -resize ${res}x${res} \

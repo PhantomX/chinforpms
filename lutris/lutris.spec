@@ -57,7 +57,6 @@ rm -f %{buildroot}%{_datadir}/polkit-1/actions/net.lutris.xboxdrv*
 mv %{buildroot}%{_datadir}/appdata %{buildroot}%{_metainfodir}
 
 desktop-file-edit \
-  --add-category=GTK \
   %{buildroot}%{_datadir}/applications/%{name}.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
