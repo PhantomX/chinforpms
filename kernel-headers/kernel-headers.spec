@@ -15,7 +15,7 @@
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -174,6 +174,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Mon Nov 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.1-501.chinfo
+- 4.19.1-501
+
 * Sun Nov 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.1-500.chinfo
 - 4.19.1
 

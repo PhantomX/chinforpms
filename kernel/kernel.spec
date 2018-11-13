@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -52,6 +52,22 @@ Summary: The Linux kernel
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
+
+# Apply post-factum patches? (pf release number to enable, 0 to disable)
+# https://gitlab.com/post-factum/pf-kernel/
+# pf applies stable patches without updating stable_update number
+# stable_update below needs to match pf applied stable patches to proper rpm updates
+%global post_factum 5
+%if 0%{?post_factum}
+%global pftag pf%{post_factum}
+# Set a git commit hash to use it instead tag, 0 to use above tag
+%global pfcommit 16a3a813d9187404aa89838a817aa289c9efd28b
+%if "%{pfcommit}" == "0"
+%global pfrange v4.%{base_sublevel}-%{pftag}
+%else
+%global pfrange %{pfcommit}
+%endif
+%endif
 
 # Do we have a -stable update to apply?
 %define stable_update 1
@@ -469,11 +485,15 @@ Source1001: kernel-local-native
 
 # Here should be only the patches up to the upstream canonical Linus tree.
 
+%if 0%{?post_factum}
+Source5000: https://github.com/pfactum/pf-kernel/compare/v4.%{base_sublevel}...%{pfrange}.diff#/pf-kernel-v4.%{base_sublevel}-%{pfrange}.patch
+%else
 # For a stable release kernel
 %if 0%{?stable_update}
 %if 0%{?stable_base}
 %define    stable_patch_00  patch-4.%{base_sublevel}.%{stable_base}.xz
 Source5000: https://cdn.kernel.org/pub/linux/kernel/v4.x/%{stable_patch_00}
+%endif
 %endif
 
 # non-released_kernel case
@@ -638,6 +658,7 @@ Patch1020: %{opensuse_url}/cdrom-fix-improper-type-cast-which-can-leat-to-infor.
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
+%if !0%{?post_factum}
 # https://github.com/pfactum/pf-kernel
 # block fixes and updates, mostly
 
@@ -664,6 +685,8 @@ Patch3014: %{pf_url}/4a3998301f2389f93469c662d922193b32bc895d.patch#/pf-4a399830
 # https://github.com/graysky2/kernel_gcc_patch
 %global graysky2_id 87168bfa27b782e1c9435ba28ebe3987ddea8d30
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v8.1+_kernel_v4.13+.patch
+
+%endif
 
 # END OF PATCH DEFINITIONS
 
@@ -1111,11 +1134,16 @@ if [ ! -d .git ]; then
 fi
 
 
+%if 0%{?post_factum}
+$patch_command -i %{SOURCE5000}
+git commit -a -m "Stable post-factum update"
+%else
 # released_kernel with possible stable updates
 %if 0%{?stable_base}
 # This is special because the kernel spec is hell and nothing is consistent
 xzcat %{SOURCE5000} | patch -p1 -F1 -s
 git commit -a -m "Stable update"
+%endif
 %endif
 
 # Note: Even in the "nopatches" path some patches (build tweaks and compile
@@ -1123,7 +1151,9 @@ git commit -a -m "Stable update"
 
 git am %{patches}
 
+%if !0%{?post_factum}
 $patch_command -i %{SOURCE4000}
+%endif
 
 # END OF PATCH APPLICATIONS
 
@@ -1943,6 +1973,9 @@ fi
 #
 #
 %changelog
+* Mon Nov 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.1-501.chinfo
+- post-factum pf-kernel patch
+
 * Sun Nov 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.1-500.chinfo
 - 4.19.1
 
