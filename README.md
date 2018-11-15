@@ -30,7 +30,7 @@ release tags).
               _Ubuntu_ and [_gtk3-mushrooms_](https://github.com/TomaszGasior/gtk3-mushrooms) patches
  * **keepassxc** - Post script and cosmetic fixes
  * **kernel** - _blk-mq_ enabled by default, [CPU optimizations](https://github.com/graysky2/kernel_gcc_patch) and some
-                [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) and [_pf-kernel_](https://gitlab.com/post-factum/pf-kernel) patches
+                [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) and [_pf-kernel_](https://gitlab.com/post-factum/pf-kernel/wikis/README) patches
                 (kernel-local must be edited to modify gcc optimizations)
  * **libtgvoip** - No unresolved symbols
  * **mednafen** - No Haswell optimizations

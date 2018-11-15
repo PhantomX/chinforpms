@@ -7,7 +7,7 @@ Summary:        Install and play any video game easily
 License:        GPLv3
 URL:            https://lutris.net
 
-Source0:        ${url}/releases/%{name}_%{version}.tar.xz
+Source0:        %{url}/releases/%{name}_%{version}.tar.xz
 
 BuildArch:      noarch
 

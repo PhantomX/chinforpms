@@ -68,7 +68,7 @@ if [ $RELEASED -eq 0 ]; then
 	rpmdev-bumpspec -c "Linux v$MAJORVER.$NEWBASE-rc$RC.git$GITREV" kernel-headers.spec
 else
 	STABLE=$STABLE perl -p -i -e 's|%define stable_update.*|%define stable_update $ENV{'STABLE'}|' kernel-headers.spec
-	rpmdev-bumpspec -c "Linux v$MAJORVER.$BASE.$STABLE" kernel-headers.spec
+	rpmdev-bumpspec -c "$MAJORVER.$BASE.$STABLE" kernel-headers.spec
 fi
 echo "Modified $CURRENTDIR/$PKGLOC/kernel-headers.spec"
 echo "Don't forget to upload the sources"

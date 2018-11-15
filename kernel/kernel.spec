@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -61,7 +61,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 16a3a813d9187404aa89838a817aa289c9efd28b
+%global pfcommit 7021284f92357408f14c8b0950abc70e862b89c2
 %if "%{pfcommit}" == "0"
 %global pfrange v4.%{base_sublevel}-%{pftag}
 %else
@@ -70,7 +70,7 @@ Summary: The Linux kernel
 %endif
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -581,10 +581,6 @@ Patch211: drm-i915-hush-check-crtc-state.patch
 
 Patch212: efi-secureboot.patch
 
-# Fix printing of "EFI stub: UEFI Secure Boot is enabled.",
-# queued upstream in efi.git/next
-Patch213: efi-x86-call-parse-options-from-efi-main.patch
-
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -640,7 +636,7 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 9a3b167edf58cd0e8ede0ea389d4d020433fb0df
+%global opensuse_id 8adee6efe894d9cbecdfbc2da3fd555966b8a24b
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -1973,6 +1969,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.2-500.chinfo
+- 4.19.2
+
 * Mon Nov 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.1-501.chinfo
 - post-factum pf-kernel patch
 

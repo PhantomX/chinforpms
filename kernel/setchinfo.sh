@@ -27,10 +27,10 @@ MICELAKE
 MNATIVE
 "
 
-pfs="
+pf="
 KSM_LEGACY
 "
-pfsy="
+pfy="
 SCHED_PDS
 UKSM
 SMT_NICE
@@ -48,16 +48,16 @@ cd "${SCRIPT_DIR}"
 
 if [ -w "${OUTPUT_DIR}" ] ;then
   if [ "$1" = "del" ] ;then
-    for i in ${cpus} ${pfs} ${pfsy}
+    for i in ${cpus} ${pf} ${pfy}
     do
       rm -fv "${OUTPUT_DIR}/CONFIG_${i}"
     done
   else
-    for i in ${cpus} ${pfs}
+    for i in ${cpus} ${pf}
     do
       echo "# CONFIG_${i} is not set" > "${OUTPUT_DIR}/CONFIG_${i}"
     done
-    for i in ${pfsy}
+    for i in ${pfy}
     do
       echo "CONFIG_${i}=y" > "${OUTPUT_DIR}/CONFIG_${i}"
     done
