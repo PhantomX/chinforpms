@@ -11,12 +11,12 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.19
+%global stagingver 3.20
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
 %global pba 1
-%global pbaver 3.19
+%global pbaver 3.20
 %if 0%(echo %{pbaver} | grep -q \\. ; echo $?) == 0
 %global pbarel v
 %global pbapkg knobs_and_switches-
@@ -37,7 +37,7 @@
 %endif
 
 Name:           wine
-Version:        3.19
+Version:        3.20
 Release:        100%{?rctag}.chinfo%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -115,7 +115,7 @@ Patch901:       wine-staging-old-pulseaudio.patch
 %if 0%{?pba}
 # acomminos PBA patches from Firerat github
 # https://github.com/Firerat/wine-pba
-Source1000:     https://github.com/Firerat/wine-pba/archive/%{?pbapkg}%{?pbarel}%{pbaver}.tar.gz#/wine-pba-%{pbaver}.tar.gz
+Source1000:     https://gitlab.com/Firer4t/wine-pba/-/archive/%{?pbapkg}%{?pbarel}%{pbaver}/%{?pbapkg}%{?pbarel}%{pbaver}.tar.bz2#/wine-pba-%{pbaver}.tar.bz2
 Source1001:     wine-README-pba
 Patch1000:      wine-staging-pba.patch
 %endif
@@ -1364,6 +1364,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-2.dll.so
+%{_libdir}/wine/api-ms-win-core-processthreads-l1-1-3.dll.so
 %{_libdir}/wine/api-ms-win-core-profile-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-psapi-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-psapi-ansi-l1-1-0.dll.so
@@ -1412,6 +1413,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-winrt-registration-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-roparameterizediid-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-string-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-winrt-string-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-wow64-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-wow64-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-xstate-l1-1-0.dll.so
@@ -1457,6 +1459,7 @@ fi
 %{_libdir}/wine/api-ms-win-mm-time-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-ntuser-dc-access-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-ntuser-rectangle-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-ntuser-sysparams-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-perf-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-power-base-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-power-setting-l1-1-0.dll.so
@@ -1844,6 +1847,7 @@ fi
 %{_libdir}/wine/qmgrprxy.dll.so
 %{_libdir}/wine/quartz.dll.so
 %{_libdir}/wine/query.dll.so
+%{_libdir}/wine/qwave.dll.so
 %{_libdir}/wine/rasapi32.dll.so
 %{_libdir}/wine/rasdlg.dll.so
 %{_libdir}/wine/regapi.dll.so
@@ -2329,6 +2333,9 @@ fi
 %endif
 
 %changelog
+* Fri Nov 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.20-100.chinfo
+- 3.20
+
 * Mon Oct 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.19-100.chinfo
 - 3.19
 

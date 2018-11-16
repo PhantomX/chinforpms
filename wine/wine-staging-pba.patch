@@ -1,16 +1,16 @@
 diff --git a/patches/patchinstall.sh b/patches/patchinstall.sh
-index 93484b40..a20bcaca 100755
+index 25ff6218..2a3ce28e 100755
 --- a/patches/patchinstall.sh
 +++ b/patches/patchinstall.sh
-@@ -368,6 +368,7 @@ patch_enable_all ()
- 	enable_wined3d_DXTn="$1"
+@@ -354,6 +354,7 @@ patch_enable_all ()
  	enable_wined3d_Dual_Source_Blending="$1"
+ 	enable_wined3d_Improved_RCP_Support="$1"
  	enable_wined3d_Indexed_Vertex_Blending="$1"
 +	enable_wined3d_Persistent_Buffer_Allocator="$1"
  	enable_wined3d_QUERY_Stubs="$1"
  	enable_wined3d_Restore_DirectX10_Support="$1"
  	enable_wined3d_Silence_FIXMEs="$1"
-@@ -1281,6 +1282,9 @@ patch_enable ()
+@@ -1225,6 +1226,9 @@ patch_enable ()
  		wined3d-Indexed_Vertex_Blending)
  			enable_wined3d_Indexed_Vertex_Blending="$2"
  			;;
@@ -20,7 +20,7 @@ index 93484b40..a20bcaca 100755
  		wined3d-QUERY_Stubs)
  			enable_wined3d_QUERY_Stubs="$2"
  			;;
-@@ -8409,6 +8413,32 @@ if test "$enable_xaudio2_CommitChanges" -eq 1; then
+@@ -8114,6 +8118,32 @@ if test "$enable_xinput1_3_XInputSetState" -eq 1; then
  	) >> "$patchlist"
  fi
  

@@ -41,9 +41,9 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver     18.2.4
+%global ver     18.2.5
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        101.chinfo%{?dist}
+Release:        100.chinfo%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -616,6 +616,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Thu Nov 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.2.5-100.chinfo
+- 18.2.5
+
 * Fri Nov 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.2.4-101.chinfo
 - Rebuild for rhbz#1645400 (gcc 8.2.1-4 miscompiles bitset code in mesa)
 
