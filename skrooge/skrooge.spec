@@ -1,63 +1,63 @@
-Name:    skrooge
-Summary: Personal finances manager
-Version: 2.16.2
-Release: 100.chinfo%{?dist}
+Name:           skrooge
+Summary:        Personal finances manager
+Version:        2.16.2
+Release:        100.chinfo%{?dist}
 
-License: GPLv2+
-URL:     https://skrooge.org
-Source0: https://download.kde.org/stable/skrooge/skrooge-%{version}.tar.xz
+License:        GPLv2+
+URL:            https://skrooge.org
+Source0:        https://download.kde.org/stable/skrooge/skrooge-%{version}.tar.xz
 
 ## upstream patches
 
-BuildRequires: desktop-file-utils
-BuildRequires: extra-cmake-modules
-BuildRequires: gcc-c++
-BuildRequires: gettext
-BuildRequires: grantlee-qt5-devel
-BuildRequires: kf5-kactivities-devel
-BuildRequires: kf5-karchive-devel
-BuildRequires: kf5-kcompletion-devel
-BuildRequires: kf5-kconfig-devel
-BuildRequires: kf5-kconfigwidgets-devel
-BuildRequires: kf5-kcoreaddons-devel
-BuildRequires: kf5-kdbusaddons-devel
-BuildRequires: kf5-kdelibs4support-devel
-BuildRequires: kf5-kdesignerplugin-devel
-BuildRequires: kf5-kdoctools-devel
-BuildRequires: kf5-kguiaddons-devel
-BuildRequires: kf5-ki18n-devel
-BuildRequires: kf5-kiconthemes-devel
-BuildRequires: kf5-kio-devel
-BuildRequires: kf5-kjobwidgets-devel
-BuildRequires: kf5-knewstuff-devel
-BuildRequires: kf5-knotifications-devel
-BuildRequires: kf5-knotifyconfig-devel
-BuildRequires: kf5-kparts-devel
-BuildRequires: kf5-krunner-devel
-BuildRequires: kf5-kwallet-devel
-BuildRequires: kf5-kwidgetsaddons-devel
-BuildRequires: kf5-kwindowsystem-devel
-BuildRequires: kf5-kxmlgui-devel
-BuildRequires: kf5-rpm-macros
-BuildRequires: cmake(KF5DesignerPlugin)
-BuildRequires: libappstream-glib
-BuildRequires: pkgconfig(qca2-qt5)
-BuildRequires: pkgconfig(libofx)
-BuildRequires: pkgconfig(Qt5Designer)
-BuildRequires: pkgconfig(Qt5Qml)
-BuildRequires: pkgconfig(Qt5Script)
-BuildRequires: pkgconfig(Qt5Svg)
-BuildRequires: pkgconfig(Qt5WebKitWidgets)
+BuildRequires:  desktop-file-utils
+BuildRequires:  extra-cmake-modules
+BuildRequires:  gcc-c++
+BuildRequires:  gettext
+BuildRequires:  grantlee-qt5-devel
+BuildRequires:  kf5-kactivities-devel
+BuildRequires:  kf5-karchive-devel
+BuildRequires:  kf5-kcompletion-devel
+BuildRequires:  kf5-kconfig-devel
+BuildRequires:  kf5-kconfigwidgets-devel
+BuildRequires:  kf5-kcoreaddons-devel
+BuildRequires:  kf5-kdbusaddons-devel
+BuildRequires:  kf5-kdelibs4support-devel
+BuildRequires:  kf5-kdesignerplugin-devel
+BuildRequires:  kf5-kdoctools-devel
+BuildRequires:  kf5-kguiaddons-devel
+BuildRequires:  kf5-ki18n-devel
+BuildRequires:  kf5-kiconthemes-devel
+BuildRequires:  kf5-kio-devel
+BuildRequires:  kf5-kjobwidgets-devel
+BuildRequires:  kf5-knewstuff-devel
+BuildRequires:  kf5-knotifications-devel
+BuildRequires:  kf5-knotifyconfig-devel
+BuildRequires:  kf5-kparts-devel
+BuildRequires:  kf5-krunner-devel
+BuildRequires:  kf5-kwallet-devel
+BuildRequires:  kf5-kwidgetsaddons-devel
+BuildRequires:  kf5-kwindowsystem-devel
+BuildRequires:  kf5-kxmlgui-devel
+BuildRequires:  kf5-rpm-macros
+BuildRequires:  cmake(KF5DesignerPlugin)
+BuildRequires:  libappstream-glib
+BuildRequires:  pkgconfig(qca2-qt5)
+BuildRequires:  pkgconfig(libofx)
+BuildRequires:  pkgconfig(Qt5Designer)
+BuildRequires:  pkgconfig(Qt5Qml)
+BuildRequires:  pkgconfig(Qt5Script)
+BuildRequires:  pkgconfig(Qt5Svg)
+BuildRequires:  pkgconfig(Qt5WebKitWidgets)
 # I think due to custom sqlcipher plugin -- rex
-BuildRequires: qt5-qtbase-private-devel
+BuildRequires:  qt5-qtbase-private-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 
-BuildRequires: pkgconfig(sqlite3)
-BuildRequires: pkgconfig(sqlcipher)
+BuildRequires:  pkgconfig(sqlite3)
+BuildRequires:  pkgconfig(sqlcipher)
 
 
-Requires: %{name}-libs%{?_isa} = %{version}-%{release}
-Requires: qca-qt5-ossl%{?_isa}
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+Requires:       qca-qt5-ossl%{?_isa}
 
 # drop prior needless -devel pkg
 Obsoletes: skrooge-devel < 2.0.0

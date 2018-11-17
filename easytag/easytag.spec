@@ -1,52 +1,50 @@
-Name:    easytag
-Version: 2.4.3
-Release: 103.chinfo%{?dist}
-Summary: Tag editor for MP3, Ogg, FLAC and other music files
+Name:           easytag
+Version:        2.4.3
+Release:        103.chinfo%{?dist}
+Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
-Group:   Applications/Multimedia
-License: GPLv2+
-URL:     https://wiki.gnome.org/Apps/EasyTAG
-Source:  https://download.gnome.org/sources/%{name}/2.4/%{name}-%{version}.tar.xz
+License:        GPLv2+
+URL:            https://wiki.gnome.org/Apps/EasyTAG
+Source:         https://download.gnome.org/sources/%{name}/2.4/%{name}-%{version}.tar.xz
 
 # Revert ogg patch
 # https://bugzilla.gnome.org/show_bug.cgi?id=776110
-Patch0:  0001-Do-not-maintain-an-open-handle-on-Ogg-files.patch
+Patch0:         0001-Do-not-maintain-an-open-handle-on-Ogg-files.patch
 # https://bugzilla.gnome.org/show_bug.cgi?id=779622
-Patch1:  https://gitlab.gnome.org/GNOME/easytag/commit/cac75c6d565cf7c54d72775216010e3698c11af1.patch#/gl-cac75c6d.patch
-Patch2:  https://gitlab.gnome.org/GNOME/easytag/commit/8a234621179ba9d92113bff68d766e5e5532b3c0.patch#/gl-8a234621.patch
+Patch1:         https://gitlab.gnome.org/GNOME/easytag/commit/cac75c6d565cf7c54d72775216010e3698c11af1.patch#/%{name}-gl-cac75c6d.patch
+Patch2:         https://gitlab.gnome.org/GNOME/easytag/commit/8a234621179ba9d92113bff68d766e5e5532b3c0.patch#/%{name}-gl-8a234621.patch
 # https://bugzilla.gnome.org/show_bug.cgi?id=795018
-Patch3:  https://gitlab.gnome.org/GNOME/easytag/commit/b00ed316550df3ae94522455f56e306e659511e5.patch#/gl-b00ed316.patch
+Patch3:         https://gitlab.gnome.org/GNOME/easytag/commit/b00ed316550df3ae94522455f56e306e659511e5.patch#/%{name}-gl-b00ed316.patch
 
-BuildRequires: appdata-tools
-BuildRequires: desktop-file-utils
-BuildRequires: docbook-dtds
-BuildRequires: docbook-style-xsl
-BuildRequires: gcc
-BuildRequires: gcc-c++
-BuildRequires: id3lib-devel >= 3.7.12
-BuildRequires: intltool
-BuildRequires: itstool
-BuildRequires: libxslt
-BuildRequires: pkgconfig(flac)
-BuildRequires: pkgconfig(gtk+-3.0)
-BuildRequires: pkgconfig(id3tag)
-BuildRequires: pkgconfig(libnautilus-extension)
-BuildRequires: pkgconfig(opusfile)
-BuildRequires: pkgconfig(speex)
-BuildRequires: pkgconfig(taglib)
-BuildRequires: pkgconfig(vorbisfile)
-BuildRequires: pkgconfig(wavpack)
-Recommends:    yelp
+BuildRequires:  appdata-tools
+BuildRequires:  desktop-file-utils
+BuildRequires:  docbook-dtds
+BuildRequires:  docbook-style-xsl
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
+BuildRequires:  id3lib-devel >= 3.7.12
+BuildRequires:  intltool
+BuildRequires:  itstool
+BuildRequires:  libxslt
+BuildRequires:  pkgconfig(flac)
+BuildRequires:  pkgconfig(gtk+-3.0)
+BuildRequires:  pkgconfig(id3tag)
+BuildRequires:  pkgconfig(libnautilus-extension)
+BuildRequires:  pkgconfig(opusfile)
+BuildRequires:  pkgconfig(speex)
+BuildRequires:  pkgconfig(taglib)
+BuildRequires:  pkgconfig(vorbisfile)
+BuildRequires:  pkgconfig(wavpack)
+Recommends:     yelp
 
 %description
 EasyTAG is a utility for viewing, editing and writing the tags of MP4, MP3,
 MP2, FLAC, Ogg Opus, Ogg Speex, Ogg Vorbis, MusePack and Monkey's Audio files.
 
 %package nautilus
-Summary:  Nautilus extension for opening in EasyTAG
-Group:    User Interface/Desktops
-License:  GPLv3+
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Summary:        Nautilus extension for opening in EasyTAG
+License:        GPLv3+
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description nautilus
 Nautilus extension to add "Open with EasyTAG" to the Nautilus context menu, for

@@ -22,8 +22,8 @@ Source0:        https://github.com/gentakojima/%{fullname}/archive/v%{version}.t
 %endif
 Source1:        %{name}.appdata.xml
 
-Patch1:         https://github.com/gentakojima/%{fullname}/pull/25/commits/1faaefc71b18f1f982c1a803282a752c53248b0a.patch#/gh-pull-25.patch
-Patch2:         https://github.com/gentakojima/%{fullname}/pull/31.patch#/gh-pull-31.patch
+Patch1:         https://github.com/gentakojima/%{fullname}/pull/25/commits/1faaefc71b18f1f982c1a803282a752c53248b0a.patch#/%{name}-gh-pull-25.patch
+Patch2:         https://github.com/gentakojima/%{fullname}/pull/31.patch#/%{name}-gh-pull-31.patch
 
 BuildArch:      noarch
 

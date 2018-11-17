@@ -481,7 +481,9 @@ Source43: generate_bls_conf.sh
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
 Source1000: kernel-local
-Source1001: kernel-local-native
+Source1001: kernel-local-cpu
+Source1002: kernel-local-native
+Source1003: kernel-local-pf
 
 # Here should be only the patches up to the upstream canonical Linus tree.
 
@@ -1169,7 +1171,14 @@ cd configs
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/kernel-*.config .
 cp %{SOURCE1000} .
-cp %{SOURCE1001} .
+%if !%{with_native}
+cat %{SOURCE1001} >> kernel-local
+%else
+cat %{SOURCE1002} >> kernel-local
+%endif
+%if 0%{?post_factum}
+cat %{SOURCE1003} >> kernel-local
+%endif
 cp %{SOURCE15} .
 cp %{SOURCE40} .
 cp %{SOURCE41} .
@@ -1193,11 +1202,7 @@ VERSION=%{version} ./generate_all_configs.sh
 for i in %{all_arch_configs}
 do
   mv $i $i.tmp
-  %if !%{with_native}
-    ./merge.pl %{SOURCE1000} $i.tmp > $i
-  %else
-    ./merge.pl %{SOURCE1001} $i.tmp > $i
-  %endif
+  ./merge.pl kernel-local $i.tmp > $i
   rm $i.tmp
 done
 %endif

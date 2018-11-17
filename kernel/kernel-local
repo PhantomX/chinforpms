@@ -1,15 +1,6 @@
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
 
-CONFIG_MK10=y
-# CONFIG_GENERIC_CPU is not set
-# CONFIG_M686 is not set
-# CONFIG_MNATIVE is not set
-# CONFIG_X86_P6_NOP is not set
-
-# CONFIG_MAXSMP is not set
-CONFIG_NR_CPUS=4
-
 CONFIG_BFQ_GROUP_IOSCHED=y
 CONFIG_IOSCHED_BFQ=y
 

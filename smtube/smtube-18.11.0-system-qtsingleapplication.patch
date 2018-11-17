@@ -1,0 +1,18 @@
+--- ./src/smtube.pro.orig	2018-10-21 17:26:43.000000000 -0300
++++ ./src/smtube.pro	2018-11-16 17:25:40.653586394 -0200
+@@ -1,6 +1,7 @@
+ 
+ TEMPLATE = app
+ QT += network
++INCLUDEPATH += qtsingleapplication
+ 
+ CONFIG += release
+ #CONFIG += debug
+@@ -9,6 +10,7 @@ DEFINES += USE_PLAYERS
+ DEFINES += YT_USE_SIG
+ #DEFINES += D_BUTTON
+ DEFINES += STYLE_SWITCHING
++DEFINES += USE_SINGLE_APPLICATION
+ 
+ # If Qt >= 5.4
+ greaterThan(QT_MAJOR_VERSION, 4):greaterThan(QT_MINOR_VERSION, 3) {

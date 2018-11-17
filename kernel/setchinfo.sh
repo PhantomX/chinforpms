@@ -37,7 +37,7 @@ SMT_NICE
 "
 
 if [ "$1" != "del" ] && [ "$1" != "pf" ] ;then
-  pfs=
+  pf=
 fi
 
 SCRIPT="$(readlink -f $0)"

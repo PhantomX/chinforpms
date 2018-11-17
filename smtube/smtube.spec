@@ -1,5 +1,5 @@
 Name:           smtube
-Version:        18.9.0
+Version:        18.11.0
 Release:        100.chinfo%{?dist}
 Summary:        YouTube browser for SMPlayer
 Epoch:          1
@@ -8,7 +8,7 @@ License:        GPLv2+
 URL:            http://www.smtube.org
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
 
-Patch0:         %{name}-16.3.0-system-qtsingleapplication.patch
+Patch0:         %{name}-18.11.0-system-qtsingleapplication.patch
 # Do not spam .xsession-errors
 Patch1:         %{name}-18.1.0-quiet.patch
 
@@ -66,6 +66,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Nov 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.11.0-100.chinfo
+- 18.11.0
+
 * Sat Apr 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.9.0-100.chinfo
 - 18.9.0
 

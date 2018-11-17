@@ -8,10 +8,10 @@
 # Decrease debuginfo verbosity to reduce memory consumption...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
-Summary: Telegram Desktop official messaging app
-Name: telegram-desktop
-Version: 1.4.4
-Release: 100.chinfo%{?dist}
+Name:           telegram-desktop
+Version:        1.4.4
+Release:        100.chinfo%{?dist}
+Summary:        Telegram Desktop official messaging app
 
 Epoch: 1
 
@@ -19,65 +19,65 @@ Epoch: 1
 # * S0 (Telegram Desktop) - GPLv3+ with OpenSSL exception -- main source;
 # * S1 (crl) - GPLv3+ -- build-time dependency;
 # * P0 (qt_functions.cpp) - LGPLv3 -- build-time dependency.
-License: GPLv3+ and LGPLv3
-URL: https://github.com/telegramdesktop/%{appname}
+License:        GPLv3+ and LGPLv3
+URL:            https://github.com/telegramdesktop/%{appname}
 
 # Warning! Builds on i686 may fail due to technical limitations of this
 # architecture: https://github.com/telegramdesktop/tdesktop/issues/4101
-ExclusiveArch: i686 x86_64
+ExclusiveArch:  i686 x86_64
 
-Source0: %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
-Source1: https://github.com/telegramdesktop/crl/archive/%{commit1}.tar.gz#/crl-%{shortcommit1}.tar.gz
-Patch0: %{name}-build-fixes.patch
-Patch1: %{name}-api-tokens.patch
-Patch2: %{name}-system-fonts.patch
+Source0:        %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
+Source1:        https://github.com/telegramdesktop/crl/archive/%{commit1}.tar.gz#/crl-%{shortcommit1}.tar.gz
+Patch0:         %{name}-build-fixes.patch
+Patch1:         %{name}-api-tokens.patch
+Patch2:         %{name}-system-fonts.patch
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
-Patch100: %{name}-no-text-replace.patch
+Patch100:       %{name}-no-text-replace.patch
 # Do not show unread counter on muted chats
-Patch101: %{name}-realmute.patch
-Patch102: %{name}-nogtk2.patch
+Patch101:       %{name}-realmute.patch
+Patch102:       %{name}-nogtk2.patch
 # Always display scrollbars
-Patch103: %{name}-disable-overlay.patch
+Patch103:       %{name}-disable-overlay.patch
 
-Recommends: libappindicator-gtk3%{?_isa}
-Requires: qt5-qtimageformats%{?_isa}
-Requires: hicolor-icon-theme
-Requires: open-sans-fonts
-Requires: gtk3%{?_isa}
+Recommends:     libappindicator-gtk3%{?_isa}
+Requires:       qt5-qtimageformats%{?_isa}
+Requires:       hicolor-icon-theme
+Requires:       open-sans-fonts
+Requires:       gtk3%{?_isa}
 
 # Compilers and tools...
-BuildRequires: desktop-file-utils
-BuildRequires: libappstream-glib
-BuildRequires: gcc-c++
-BuildRequires: cmake
-BuildRequires: gcc
-BuildRequires: gyp
+BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
+BuildRequires:  gcc-c++
+BuildRequires:  cmake
+BuildRequires:  gcc
+BuildRequires:  gyp
 
 # Development packages for Telegram Desktop...
-BuildRequires: guidelines-support-library-devel >= 1.0.0
-BuildRequires: mapbox-variant-devel >= 0.3.6
-BuildRequires: libtgvoip-devel >= 2.2.4
-BuildRequires: libappindicator-gtk3-devel
-BuildRequires: ffmpeg-devel >= 3.1
-BuildRequires: openal-soft-devel
-BuildRequires: qt5-qtbase-private-devel
+BuildRequires:  guidelines-support-library-devel >= 1.0.0
+BuildRequires:  mapbox-variant-devel >= 0.3.6
+BuildRequires:  libtgvoip-devel >= 2.2.4
+BuildRequires:  libappindicator-gtk3-devel
+BuildRequires:  ffmpeg-devel >= 3.1
+BuildRequires:  openal-soft-devel
+BuildRequires:  qt5-qtbase-private-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
-BuildRequires: libstdc++-devel
-BuildRequires: range-v3-devel
-BuildRequires: openssl-devel
-BuildRequires: minizip-devel
-BuildRequires: xxhash-devel
-BuildRequires: lzma-devel
-BuildRequires: opus-devel
-BuildRequires: gtk3-devel
-BuildRequires: xz-devel
-BuildRequires: python2
+BuildRequires:  libstdc++-devel
+BuildRequires:  range-v3-devel
+BuildRequires:  openssl-devel
+BuildRequires:  minizip-devel
+BuildRequires:  xxhash-devel
+BuildRequires:  lzma-devel
+BuildRequires:  opus-devel
+BuildRequires:  gtk3-devel
+BuildRequires:  xz-devel
+BuildRequires:  python2
 
 %if 0%{?fedora} >= 30
-BuildRequires: minizip-compat-devel
+BuildRequires:  minizip-compat-devel
 %else
-BuildRequires: minizip-devel
+BuildRequires:  minizip-devel
 %endif
 
 %description

@@ -23,111 +23,111 @@
 %global mushroom_ver 3.24.1-2
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
-Name: gtk3
-Version: 3.24.1
-Release: 101.chinfo%{?dist}
-Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
+Name:           gtk3
+Version:        3.24.1
+Release:        101.chinfo%{?dist}
+Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
-License: LGPLv2+
+License:        LGPLv2+
 URL: http://www.gtk.org
-Source0: http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
-Source1: https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}.tar.gz#/gtk3-mushrooms-%{mushroom_ver}.tar.gz
-Source2: chinforpms-adwaita.css
+Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
+Source1:        https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}.tar.gz#/gtk3-mushrooms-%{mushroom_ver}.tar.gz
+Source2:        chinforpms-adwaita.css
 
-Patch10: https://gitlab.gnome.org/GNOME/gtk/commit/9b7d886b723132eade2e76f3fd179cf81b7601f2.patch#/gl-9b7d886b723132eade2e76f3fd179cf81b7601f2._patch
+Patch10:        https://gitlab.gnome.org/GNOME/gtk/commit/9b7d886b723132eade2e76f3fd179cf81b7601f2.patch#/%{name}-gl-9b7d886b723132eade2e76f3fd179cf81b7601f2.patch
 
 # Revert some good features dropped by upstream (3.10)
-Patch100: gtk+3-3.23.0-gtk-recent-files-limit.patch
-Patch101: gtk+3-3.22.0-gtk-toolbar-icon-size.patch
-Patch102: gtk+3-3.22.0-gtk-toolbar-style.patch
+Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
+Patch101:       gtk+3-3.22.0-gtk-toolbar-icon-size.patch
+Patch102:       gtk+3-3.22.0-gtk-toolbar-style.patch
 
 # Disable this @#$& by default
-Patch103: gtk+3-3.22.0-disable-overlay.patch
+Patch103:       gtk+3-3.22.0-disable-overlay.patch
 
-Patch104: gtk+3-startup-mode-cwd.patch
-Patch105: gtk+3-dateformat-with_time.patch
-Patch106: gtk+3-location_mode-filename.patch
+Patch104:       gtk+3-startup-mode-cwd.patch
+Patch105:       gtk+3-dateformat-with_time.patch
+Patch106:       gtk+3-location_mode-filename.patch
 
 # Debian
-Patch200: 016_no_offscreen_widgets_grabbing.patch
-Patch201: 017_no_offscreen_device_grabbing.patch
-Patch202: 060_ignore-random-icons.patch
+Patch200:       016_no_offscreen_widgets_grabbing.patch
+Patch201:       017_no_offscreen_device_grabbing.patch
+Patch202:       060_ignore-random-icons.patch
 
 # Ubuntu
-Patch300: restore_filechooser_typeaheadfind.patch
+Patch300:       restore_filechooser_typeaheadfind.patch
 
-BuildRequires: pkgconfig(atk) >= %{atk_version}
-BuildRequires: pkgconfig(atk-bridge-2.0)
-BuildRequires: pkgconfig(glib-2.0) >= %{glib2_version}
-BuildRequires: pkgconfig(gobject-introspection-1.0)
-BuildRequires: pkgconfig(cairo) >= %{cairo_version}
-BuildRequires: pkgconfig(cairo-gobject) >= %{cairo_version}
-BuildRequires: pkgconfig(pango) >= %{pango_version}
-BuildRequires: pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
-BuildRequires: pkgconfig(xi)
-BuildRequires: pkgconfig(xrandr) >= %{xrandr_version}
-BuildRequires: pkgconfig(xrender)
-BuildRequires: pkgconfig(xrender)
-BuildRequires: pkgconfig(xcursor)
-BuildRequires: pkgconfig(xfixes)
-BuildRequires: pkgconfig(xinerama)
-BuildRequires: pkgconfig(xcomposite)
-BuildRequires: pkgconfig(xdamage)
-BuildRequires: pkgconfig(epoxy) >= %{epoxy_version}
-BuildRequires: gcc
-BuildRequires: gettext-devel
-BuildRequires: gettext
-BuildRequires: gtk-doc
-BuildRequires: cups-devel
-BuildRequires: pkgconfig(rest-0.7)
-BuildRequires: pkgconfig(json-glib-1.0)
+BuildRequires:  pkgconfig(atk) >= %{atk_version}
+BuildRequires:  pkgconfig(atk-bridge-2.0)
+BuildRequires:  pkgconfig(glib-2.0) >= %{glib2_version}
+BuildRequires:  pkgconfig(gobject-introspection-1.0)
+BuildRequires:  pkgconfig(cairo) >= %{cairo_version}
+BuildRequires:  pkgconfig(cairo-gobject) >= %{cairo_version}
+BuildRequires:  pkgconfig(pango) >= %{pango_version}
+BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
+BuildRequires:  pkgconfig(xi)
+BuildRequires:  pkgconfig(xrandr) >= %{xrandr_version}
+BuildRequires:  pkgconfig(xrender)
+BuildRequires:  pkgconfig(xrender)
+BuildRequires:  pkgconfig(xcursor)
+BuildRequires:  pkgconfig(xfixes)
+BuildRequires:  pkgconfig(xinerama)
+BuildRequires:  pkgconfig(xcomposite)
+BuildRequires:  pkgconfig(xdamage)
+BuildRequires:  pkgconfig(epoxy) >= %{epoxy_version}
+BuildRequires:  gcc
+BuildRequires:  gettext-devel
+BuildRequires:  gettext
+BuildRequires:  gtk-doc
+BuildRequires:  cups-devel
+BuildRequires:  pkgconfig(rest-0.7)
+BuildRequires:  pkgconfig(json-glib-1.0)
 #BuildRequires: pkgconfig(cloudproviders)
-BuildRequires: pkgconfig(colord)
-BuildRequires: pkgconfig(avahi-gobject)
-BuildRequires: sassc
-BuildRequires: desktop-file-utils
-BuildRequires: pkgconfig(egl)
-BuildRequires: pkgconfig(wayland-client) >= %{wayland_version}
-BuildRequires: pkgconfig(wayland-cursor) >= %{wayland_version}
-BuildRequires: pkgconfig(wayland-egl) >= %{wayland_version}
-BuildRequires: pkgconfig(wayland-protocols) >= %{wayland_protocols_version}
-BuildRequires: pkgconfig(xkbcommon)
+BuildRequires:  pkgconfig(colord)
+BuildRequires:  pkgconfig(avahi-gobject)
+#BuildRequires:  sassc
+BuildRequires:  desktop-file-utils
+BuildRequires:  pkgconfig(egl)
+BuildRequires:  pkgconfig(wayland-client) >= %{wayland_version}
+BuildRequires:  pkgconfig(wayland-cursor) >= %{wayland_version}
+BuildRequires:  pkgconfig(wayland-egl) >= %{wayland_version}
+BuildRequires:  pkgconfig(wayland-protocols) >= %{wayland_protocols_version}
+BuildRequires:  pkgconfig(xkbcommon)
 
 # standard icons
-Requires: adwaita-icon-theme
+Requires:       adwaita-icon-theme
 # required for icon theme apis to work
-Requires: hicolor-icon-theme
+Requires:       hicolor-icon-theme
 # split out in a subpackage
-Requires: gtk-update-icon-cache
+Requires:       gtk-update-icon-cache
 
-Requires: atk%{?_isa} >= %{atk_version}
-Requires: cairo%{?_isa} >= %{cairo_version}
-Requires: cairo-gobject%{?_isa} >= %{cairo_version}
-Requires: glib2%{?_isa} >= %{glib2_version}
-Requires: libepoxy%{?_isa} >= %{epoxy_version}
-Requires: libXrandr%{?_isa} >= %{xrandr_version}
-Requires: pango%{?_isa} >= %{pango_version}
-Requires: libwayland-client%{?_isa} >= %{wayland_version}
-Requires: libwayland-cursor%{?_isa} >= %{wayland_version}
+Requires:       atk%{?_isa} >= %{atk_version}
+Requires:       cairo%{?_isa} >= %{cairo_version}
+Requires:       cairo-gobject%{?_isa} >= %{cairo_version}
+Requires:       glib2%{?_isa} >= %{glib2_version}
+Requires:       libepoxy%{?_isa} >= %{epoxy_version}
+Requires:       libXrandr%{?_isa} >= %{xrandr_version}
+Requires:       pango%{?_isa} >= %{pango_version}
+Requires:       libwayland-client%{?_isa} >= %{wayland_version}
+Requires:       libwayland-cursor%{?_isa} >= %{wayland_version}
 
 # required to support all the different image formats
-Requires: gdk-pixbuf2-modules%{?_isa}
+Requires:       gdk-pixbuf2-modules%{?_isa}
 
 # make sure we have a reasonable gsettings backend
 %if 0%{?fedora} || 0%{?rhel} > 7
-Recommends: dconf%{?_isa}
+Recommends:    dconf%{?_isa}
 %else
-Requires: dconf%{?_isa}
+Requires:      dconf%{?_isa}
 %endif
 
 # gtk3 itself includes the Adwaita theme now
-Obsoletes: adwaita-gtk3-theme < 3.13.3
-Provides: adwaita-gtk3-theme = %{version}-%{release}
+Obsoletes:      adwaita-gtk3-theme < 3.13.3
+Provides:       adwaita-gtk3-theme = %{version}-%{release}
 
 # gtk3 no longer provides the GtkThemeEngine interface used there
-Obsoletes: gtk3-engines <= 2.91.5-5.fc15
-Obsoletes: gtk-solidity-engine < 0.4.1-9
-Obsoletes: oxygen-gtk3 < 2:1.4.1
+Obsoletes:      gtk3-engines <= 2.91.5-5.fc15
+Obsoletes:      gtk-solidity-engine < 0.4.1-9
+Obsoletes:      oxygen-gtk3 < 2:1.4.1
 
 %description
 GTK+ is a multi-platform toolkit for creating graphical user
@@ -139,9 +139,9 @@ This package contains version 3 of GTK+, with gtk3-mushrooms and other
 usability and cosmetic modifications.
 
 %package -n gtk-update-icon-cache
-Summary: Icon theme caching utility
+Summary:        Icon theme caching utility
 # gtk-update-icon-cache used to be shipped in the gtk2 package
-Conflicts: gtk2 < 2.24.29
+Conflicts:      gtk2 < 2.24.29
 
 %description -n gtk-update-icon-cache
 GTK+ can use the cache files created by gtk-update-icon-cache to avoid a lot of
@@ -150,26 +150,26 @@ format of the cache files allows them to be mmap()ed shared between multiple
 applications, the overall memory consumption is reduced as well.
 
 %package immodules
-Summary: Input methods for GTK+
-Requires: gtk3%{?_isa} = %{version}-%{release}
+Summary:         Input methods for GTK+
+Requires:        gtk3%{?_isa} = %{version}-%{release}
 # for im-cedilla.conf
-Requires: gtk2-immodules%{?_isa}
+Requires:        gtk2-immodules%{?_isa}
 
 %description immodules
 The gtk3-immodules package contains standalone input methods that
 are shipped as part of GTK+ 3.
 
 %package immodule-xim
-Summary: XIM support for GTK+
-Requires: gtk3%{?_isa} = %{version}-%{release}
+Summary:        XIM support for GTK+
+Requires:       gtk3%{?_isa} = %{version}-%{release}
 
 %description immodule-xim
 The gtk3-immodule-xim package contains XIM support for GTK+ 3.
 
 %package devel
-Summary: Development files for GTK+
-Requires: gtk3%{?_isa} = %{version}-%{release}
-Obsoletes: gtk3-engines-devel <= 2.91.5-5.fc15
+Summary:        Development files for GTK+
+Requires:       gtk3%{?_isa} = %{version}-%{release}
+Obsoletes:      gtk3-engines-devel <= 2.91.5-5.fc15
 
 %description devel
 This package contains the libraries and header files that are needed
@@ -178,16 +178,16 @@ you plan to develop applications with GTK+, consider installing the
 gtk3-devel-docs package.
 
 %package devel-docs
-Summary: Developer documentation for GTK+
-Requires: gtk3 = %{version}-%{release}
+Summary:        Developer documentation for GTK+
+Requires:       gtk3 = %{version}-%{release}
 
 %description devel-docs
 This package contains developer documentation for version 3 of the GTK+
 widget toolkit.
 
 %package tests
-Summary: Tests for the %{name} package
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Summary:        Tests for the %{name} package
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description tests
 The %{name}-tests package contains tests that can be used to verify

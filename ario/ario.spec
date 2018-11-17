@@ -1,25 +1,26 @@
-Name:     ario
-Version:  1.5.1
-Release:  2%{?dist}
-Summary:  Ario MPD Client
-License:  GPLv2+
-URL:      http://ario-player.sourceforge.net/index.php
-Source0:  https://downloads.sourceforge.net/ario-player/%{name}-%{version}.tar.gz
+Name:           ario
+Version:        1.5.1
+Release:        2%{?dist}
+Summary:        Ario MPD Client
 
-BuildRequires: pkgconfig(avahi-glib)
-BuildRequires: pkgconfig(gnutls)
-BuildRequires: pkgconfig(libcurl)
-BuildRequires: pkgconfig(libmpdclient)
-BuildRequires: pkgconfig(libnotify)
-BuildRequires: pkgconfig(libsoup-2.4)
-BuildRequires: pkgconfig(libxml-2.0)
-BuildRequires: pkgconfig(pygtk-2.0)
-BuildRequires: pkgconfig(taglib)
-BuildRequires: pkgconfig(unique-1.0)
-BuildRequires: libgcrypt-devel
-BuildRequires: gcc
-BuildRequires: intltool
-BuildRequires: desktop-file-utils
+License:        GPLv2+
+URL:            http://ario-player.sourceforge.net/index.php
+Source0:        https://downloads.sourceforge.net/ario-player/%{name}-%{version}.tar.gz
+
+BuildRequires:  pkgconfig(avahi-glib)
+BuildRequires:  pkgconfig(gnutls)
+BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(libmpdclient)
+BuildRequires:  pkgconfig(libnotify)
+BuildRequires:  pkgconfig(libsoup-2.4)
+BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(pygtk-2.0)
+BuildRequires:  pkgconfig(taglib)
+BuildRequires:  pkgconfig(unique-1.0)
+BuildRequires:  libgcrypt-devel
+BuildRequires:  gcc
+BuildRequires:  intltool
+BuildRequires:  desktop-file-utils
 #BuildRequires: gettext
 #BuildRequires: perl(XML::Parser)
 #BuildRequires: autoconf automake libtool
@@ -28,6 +29,7 @@ BuildRequires: desktop-file-utils
 Ario is a GTK2 client for MPD (Music player daemon). The interface used to 
 browse the library is inspired by Rhythmbox but Ario aims to be much lighter 
 and faster.  It runs on Linux and Microsoft Windows
+
 
 %prep
 %autosetup
@@ -67,6 +69,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop
 %{_datadir}/applications/ario.desktop
 %{_datadir}/ario
 %{_datadir}/icons/hicolor/*/apps/ario.*
+
 
 %changelog
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-2
