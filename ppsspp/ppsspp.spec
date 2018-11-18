@@ -1,6 +1,6 @@
-%global commit caa506bf2a253a99850a4248a1cb5a399f32467a
+%global commit 04708fe88afab5259f41bfdc0faf98e400146b64
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20181027
+%global date 20181113
 %global with_snapshot 1
 
 # Enable system ffmpeg
@@ -9,7 +9,7 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 cbad73fae5bbc18c6f5541852bbdfc4dd97a9c83
+%global commit1 3f5e33f84319ab4d8b8e19612d46db431907706f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -44,8 +44,8 @@
 %global vc_url  https://github.com/hrydgard
 
 Name:           ppsspp
-Version:        1.6.3
-Release:        6%{?gver}%{?dist}
+Version:        1.7.2
+Release:        1%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -113,9 +113,9 @@ recompilers (dynarecs).
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p0
+%autosetup -n %{name}-%{commit} -p1
 %else
-%autosetup -n %{name}-%{version} -p0
+%autosetup -n %{name}-%{version} -p1
 %endif
 
 tar -xf %{SOURCE1} -C assets/lang --strip-components 1
@@ -198,6 +198,7 @@ pushd build
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
 %endif #{?with_sysffmpeg}
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \
+  -DUSE_DISCORD:BOOL=OFF \
   -DUSE_WAYLAND_WSI:BOOL=ON \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
@@ -267,6 +268,10 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Nov 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.2-1.20181113git04708fe
+- New snapshot
+- USE_DISCORD=OFF
+
 * Sat Oct 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.6.3-6.20181027gitcaa506b
 - New snapshot
 

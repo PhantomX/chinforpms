@@ -1,5 +1,5 @@
---- Core/Config.cpp.orig	2018-08-17 22:13:55.393642289 -0300
-+++ Core/Config.cpp	2018-08-17 22:13:59.299820799 -0300
+--- ppsspp/Core/Config.cpp.orig	2018-08-17 22:13:55.393642289 -0300
++++ ppsspp/Core/Config.cpp	2018-08-17 22:13:59.299820799 -0300
 @@ -393,7 +393,7 @@ static ConfigSetting generalSettings[] =
  	ConfigSetting("IgnoreBadMemAccess", &g_Config.bIgnoreBadMemAccess, true, true),
  	ConfigSetting("CurrentDirectory", &g_Config.currentDirectory, ""),
