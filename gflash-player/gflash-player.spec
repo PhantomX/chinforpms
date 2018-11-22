@@ -5,7 +5,7 @@
 %global binname gflashplayer
 
 Name:           gflash-player
-Version:        31.0.0.108
+Version:        31.0.0.153
 Release:        1%{?dist}
 Summary:        Adobe Flash Player Projector
 
@@ -20,10 +20,16 @@ ExclusiveArch:  x86_64
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
+# dlopen
+# libasound.so.2
 Requires:       alsa-lib%{?_isa}
+# libcurl.so.4
 Requires:       libcurl%{?_isa}
+# libvdpau.so.1
 Requires:       libvdpau%{?_isa}
+# libpulse.so.0
 Requires:       pulseaudio-libs%{?_isa}
+# libudev.so.1
 Requires:       systemd-libs%{?_isa}
 Requires:       hicolor-icon-theme
 
@@ -87,6 +93,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
 %changelog
+* Wed Nov 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 31.0.0.108-1
+- 31.0.0.153
+- Document explicit Requires
+
 * Fri Sep 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 31.0.0.108-1
 - 31.0.0.108
 

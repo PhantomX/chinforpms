@@ -86,13 +86,13 @@ unbound-update-roothints
 vhba
 vhba-kmod
 VirtualBox
-waifu2x-converter-cpp
 waterfox
 waterfox-filesystem
 waterfox-classic-theme-restorer
 waterfox-classic-toolbar-buttons
 waterfox-ublock-origin
 waterfox-noscript
+wimlib
 wine
 xboxdrv
 xdgmenumaker

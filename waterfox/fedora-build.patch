@@ -1,1 +1,23 @@
-../_pasture/firefox/fedora-build.patch
+diff -up firefox-54.0/media/libyuv/libyuv/tools_libyuv/autoroller/unittests/testdata/DEPS.chromium.old firefox-54.0/media/libyuv/libyuv/tools_libyuv/autoroller/unittests/testdata/DEPS.chromium
+diff -up firefox-54.0/media/mtransport/third_party/nICEr/nicer.gyp.old firefox-54.0/media/mtransport/third_party/nICEr/nicer.gyp
+--- firefox-54.0/media/mtransport/third_party/nICEr/nicer.gyp.old	2017-06-08 14:59:08.786996664 +0200
++++ firefox-54.0/media/mtransport/third_party/nICEr/nicer.gyp	2017-06-08 14:59:22.642946570 +0200
+@@ -211,7 +211,6 @@
+                     '-Wno-parentheses',
+                     '-Wno-strict-prototypes',
+                     '-Wmissing-prototypes',
+-                    '-Wno-format',
+                  ],
+                  'defines' : [
+                      'LINUX',
+diff -up firefox-54.0/media/mtransport/third_party/nrappkit/nrappkit.gyp.build firefox-54.0/media/mtransport/third_party/nrappkit/nrappkit.gyp
+--- firefox-54.0/media/mtransport/third_party/nrappkit/nrappkit.gyp.build	2017-06-08 15:08:03.627063097 +0200
++++ firefox-54.0/media/mtransport/third_party/nrappkit/nrappkit.gyp	2017-06-08 15:08:15.657019606 +0200
+@@ -206,7 +206,6 @@
+                      '-Wno-parentheses',
+                      '-Wno-strict-prototypes',
+                      '-Wmissing-prototypes',
+-                     '-Wno-format',
+                  ],
+                  'defines' : [
+                      'LINUX',

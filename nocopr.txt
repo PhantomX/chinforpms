@@ -3,6 +3,7 @@ alac_decoder
 bh-fonts
 binkplayer
 cowsrevenge
+desmume
 discord
 dropboxd
 gflash-player

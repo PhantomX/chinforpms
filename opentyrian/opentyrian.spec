@@ -15,7 +15,7 @@ Summary:        An arcade-style vertical scrolling shooter
 License:        GPLv2
 URL:            https://bitbucket.org/opentyrian/opentyrian
 %if 0%{?with_snapshot}
-Source0:        https://bitbucket.org/%{name}/%{name}/get/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/get/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        http://www.camanis.net/opentyrian/releases/%{name}-%{version}-src.tar.gz
 %endif
@@ -33,6 +33,7 @@ Requires:       hicolor-icon-theme
 Tyrian is an arcade-style vertical scrolling shooter. The story is set
 in 20,031 where you play as Trent Hawkins, a skilled fighter-pilot
 employed to fight Microsol and save the galaxy.
+
 
 %prep
 %if 0%{?with_snapshot}
@@ -54,6 +55,7 @@ sed \
   -e 's|$(gamesdir)|%{_datadir}|g' \
   -e "s|-O2|%{build_cflags}|g" \
   -i Makefile
+
 
 %build
 %make_build \
@@ -81,6 +83,7 @@ for res in 22 24 32 48 128 ;do
   install -pm0644 linux/icons/tyrian-${res}.png \
     ${dir}/%{name}.png
 done
+
 
 %files
 %license COPYING

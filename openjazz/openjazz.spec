@@ -1,15 +1,17 @@
-%global commit af172ec9c7c0b4c5243bff5c24a800a7240c1c2d
+%global commit 61a24c60b8eb8fa27236729c12f7182e899f3a8b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180219
+%global date 20180913
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global binname OpenJazz
+
 Name:           openjazz
 Version:        20171024
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A re-implemetantion of a known platform game engine
 
 License:        GPLv2+
@@ -19,11 +21,10 @@ Source0:        https://github.com/AlisterT/%{name}/archive/%{commit}.tar.gz#/%{
 %else
 Source0:        https://github.com/AlisterT/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
-Source1:        http://www.alister.eu/jazz/oj/ojlogo.png
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
-BuildRequires:  ImageMagick
+BuildRequires:  perl-podlators
 BuildRequires:  pkgconfig(libmodplug)
 BuildRequires:  pkgconfig(sdl)
 BuildRequires:  pkgconfig(zlib)
@@ -36,25 +37,24 @@ Requires:       hicolor-icon-theme
 %description
 %{summary}.
 
+
 %prep
 %autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p0
 
+pod2man -r "%{binname} %{version}" unix/%{binname}.6.pod > %{binname}.6
+
 sed -e 's|"/."|"/.local/share/%{name}/"|' -i src/main.cpp
 
-cp -p %{S:1} .
-convert \
-  ojlogo.png -resize 96x96 \
-  -background transparent -gravity center -extent 96x96 %{name}.png
-
-cat > %{name}.wrapper <<'EOF'
+cat > %{binname}.wrapper <<'EOF'
 #!/usr/bin/sh
 set -e
 mkdir -p ${HOME}/.local/share/%{name}
 cd ${HOME}/.local/share/%{name}
-exec %{_bindir}/%{name}.bin "$@"
+exec %{_bindir}/%{binname}.bin "$@"
 EOF
 
 %if 0%{?with_snapshot}
+sed -e '/AC_INIT/s|\[0\]|[%{version}]|g' -i configure.ac
 autoreconf -ivf
 %endif
 
@@ -68,44 +68,31 @@ export CPPFLAGS="-DDATAPATH=\\\"%{_datadir}/%{name}/\\\" -DHOMEDIR"
 %install
 %make_install
 
-mv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_bindir}/%{name}.bin
-install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
+mv %{buildroot}%{_bindir}/%{binname} %{buildroot}%{_bindir}/%{binname}.bin
+install -pm0755 %{binname}.wrapper %{buildroot}%{_bindir}/%{binname}
 
-mkdir -p %{buildroot}%{_datadir}/applications
+mkdir -p %{buildroot}%{_mandir}/man6
+install -pm0644 %{binname}.6 %{buildroot}%{_mandir}/man6/
 
-cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<EOF
-[Desktop Entry]
-Name=OpenJazz
-Comment=Platform game engine
-Exec=%{name}
-Icon=%{name}
-Terminal=false
-Type=Application
-StartupNotify=true
-Categories=Game;ActionGame;
-EOF
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
-
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/96x96/apps
-install -pm0644 %{name}.png %{buildroot}%{_datadir}/icons/hicolor/96x96/apps/
-
-for res in 16 22 24 32 48 64 72 ;do
-  dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
-  mkdir -p ${dir}
-  convert %{name}.png -filter Lanczos -resize ${res}x${res}  \
-    ${dir}/%{name}.png
-done
 
 %files
 %license gpl.txt licenses.txt
 %doc README.md
-%{_bindir}/%{name}
-%{_bindir}/%{name}.bin
-%{_datadir}/applications/%{name}.desktop
+%{_bindir}/%{binname}
+%{_bindir}/%{binname}.bin
+%{_datadir}/applications/%{binname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/%{name}/%{name}.000
+%{_mandir}/man6/%{binname}.6*
+
 
 %changelog
+* Thu Nov 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 20171024-2.20180913git61a24c6
+- New snapshot
+- Drop desktop file, now installed by default
+- Add manpage. BR: perl-podlators
+
 * Mon Mar 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 20171024-1.20180219gitaf172ec
 - Initial spec

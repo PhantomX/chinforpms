@@ -61,7 +61,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7021284f92357408f14c8b0950abc70e862b89c2
+%global pfcommit 4df744cfce46a21d952514d8c627f84dafd2926d
 %if "%{pfcommit}" == "0"
 %global pfrange v4.%{base_sublevel}-%{pftag}
 %else
@@ -70,7 +70,7 @@ Summary: The Linux kernel
 %endif
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -633,12 +633,24 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
+# rhbz 1526312, patch is in 4.20, can be dropped on rebase
+Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
+
+# Patches from 4.20 fixing black screen on CHT devices with i915.fastboot=1
+Patch508: cherrytrail-pwm-lpss-fixes.patch
+
+# rhbz 1644013, patch pending upstream
+Patch509: 0001-ACPI-platform-Add-SMB0001-HID-to-forbidden_id_list.patch
+
+# rhbz 1526312 (accelerometer part of the bug), patches pending upstream
+Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id 8adee6efe894d9cbecdfbc2da3fd555966b8a24b
+%global opensuse_id fc4ca8a927bd1cbd557f80887d5f59899159654e
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -651,7 +663,6 @@ Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 #Patch1017: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
 Patch1018: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1019: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1020: %{opensuse_url}/cdrom-fix-improper-type-cast-which-can-leat-to-infor.patch#/openSUSE-cdrom-fix-improper-type-cast-which-can-leat-to-infor.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -1974,6 +1985,10 @@ fi
 #
 #
 %changelog
+* Wed Nov 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.3-500.chinfo
+- 4.19.3
+- f29 sync
+
 * Wed Nov 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.2-500.chinfo
 - 4.19.2
 

@@ -1,1 +1,30 @@
-../_pasture/firefox/build-jit-atomic-always-lucky.patch
+diff -up firefox-55.0.2/js/src/jit/AtomicOperations.h.jit-atomic-lucky firefox-55.0.2/js/src/jit/AtomicOperations.h
+--- firefox-55.0.2/js/src/jit/AtomicOperations.h.jit-atomic-lucky	2017-07-31 18:20:47.000000000 +0200
++++ firefox-55.0.2/js/src/jit/AtomicOperations.h	2017-08-29 12:59:52.870926044 +0200
+@@ -348,7 +348,7 @@ AtomicOperations::isLockfree(int32_t siz
+ # elif defined(__sh__)
+ #  include "jit/none/AtomicOperations-feeling-lucky.h"
+ # else
+-#  include "jit/none/AtomicOperations-none.h" // These MOZ_CRASH() always
++#  include "jit/none/AtomicOperations-feeling-lucky.h"
+ # endif
+ #elif defined(JS_CODEGEN_X86) || defined(JS_CODEGEN_X64)
+ # include "jit/x86-shared/AtomicOperations-x86-shared.h"
+diff -up firefox-55.0.2/js/src/jit/none/AtomicOperations-feeling-lucky.h.jit-atomic-lucky firefox-55.0.2/js/src/jit/none/AtomicOperations-feeling-lucky.h
+--- firefox-55.0.2/js/src/jit/none/AtomicOperations-feeling-lucky.h.jit-atomic-lucky	2017-08-29 14:10:52.665031524 +0200
++++ firefox-55.0.2/js/src/jit/none/AtomicOperations-feeling-lucky.h	2017-08-29 14:09:40.756060235 +0200
+@@ -60,6 +60,14 @@
+ #  define GNUC_COMPATIBLE
+ #endif
+ 
++#ifdef __s390__
++#  define GNUC_COMPATIBLE
++#endif
++
++#ifdef __s390x__
++#  define GNUC_COMPATIBLE
++#endif
++
+ // The default implementation tactic for gcc/clang is to use the newer
+ // __atomic intrinsics added for use in C++11 <atomic>.  Where that
+ // isn't available, we use GCC's older __sync functions instead.
