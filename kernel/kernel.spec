@@ -57,11 +57,11 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update below needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 6
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 4df744cfce46a21d952514d8c627f84dafd2926d
+%global pfcommit 7425a3a8f09934a385a1d14994ad2e2e76c40e28
 %if "%{pfcommit}" == "0"
 %global pfrange v4.%{base_sublevel}-%{pftag}
 %else
@@ -69,8 +69,10 @@ Summary: The Linux kernel
 %endif
 %endif
 
+%global opensuse_id 2f383750943b0685cc61ab0956f342462e126d14
+
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -633,6 +635,9 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
+# Ena fixes from 4.20
+Patch503: ena-fixes.patch
+
 # rhbz 1526312, patch is in 4.20, can be dropped on rebase
 Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
 
@@ -649,8 +654,6 @@ Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
 
-#global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
-%global opensuse_id fc4ca8a927bd1cbd557f80887d5f59899159654e
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
@@ -1985,6 +1988,11 @@ fi
 #
 #
 %changelog
+* Sat Nov 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.4-500.chinfo
+- 4.19.4
+- pf6
+- f29 sync
+
 * Wed Nov 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.3-500.chinfo
 - 4.19.3
 - f29 sync
