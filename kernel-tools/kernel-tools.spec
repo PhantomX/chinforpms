@@ -21,7 +21,7 @@
 %global opensuse_id 2f383750943b0685cc61ab0956f342462e126d14
 
 # Do we have a -stable update to apply?
-%global stable_update 4
+%global stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -450,6 +450,9 @@ popd
 %license linux-%{kversion}/COPYING
 
 %changelog
+* Tue Nov 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-500.chinfo
+- 4.19.5
+
 * Sat Nov 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.4-500.chinfo
 - 4.19.4
 

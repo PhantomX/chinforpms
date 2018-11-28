@@ -61,7 +61,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7425a3a8f09934a385a1d14994ad2e2e76c40e28
+%global pfcommit 379b4b66b05bb50bbb381400c310095d2d8b38e6
 %if "%{pfcommit}" == "0"
 %global pfrange v4.%{base_sublevel}-%{pftag}
 %else
@@ -72,7 +72,7 @@ Summary: The Linux kernel
 %global opensuse_id 2f383750943b0685cc61ab0956f342462e126d14
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -644,11 +644,14 @@ Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
 # Patches from 4.20 fixing black screen on CHT devices with i915.fastboot=1
 Patch508: cherrytrail-pwm-lpss-fixes.patch
 
-# rhbz 1644013, patch pending upstream
-Patch509: 0001-ACPI-platform-Add-SMB0001-HID-to-forbidden_id_list.patch
-
 # rhbz 1526312 (accelerometer part of the bug), patches pending upstream
 Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
+
+# CVE-2018-16862 (rhbz 1649017 1653122)
+Patch512: mm-cleancache-fix-corruption-on-missed-inode-invalidation.patch
+
+# CVE-2018-19407 (rhbz 1652656 1652658)
+Patch513: CVE-2018-19407.patch
 
 ### Extra
 
@@ -1988,6 +1991,11 @@ fi
 #
 #
 %changelog
+* Tue Nov 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-500.chinfo
+- 4.19.5
+- pf sync
+- f29 sync
+
 * Sat Nov 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.4-500.chinfo
 - 4.19.4
 - pf6
