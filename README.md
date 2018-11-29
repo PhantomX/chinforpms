@@ -33,6 +33,7 @@ release tags).
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) and [_pf-kernel_](https://gitlab.com/post-factum/pf-kernel/wikis/README) patches
                 (kernel-local must be edited to modify gcc optimizations)
  * **libtgvoip** - No unresolved symbols
+ * **manaplus** - Updated
  * **mednafen** - No Haswell optimizations
  * **mesa** - Can't wait Fedora releases
  * **quiterss** - Updated, Qt5
