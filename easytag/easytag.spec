@@ -1,6 +1,6 @@
 Name:           easytag
 Version:        2.4.3
-Release:        103.chinfo%{?dist}
+Release:        103%{?dist}
 Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
 License:        GPLv2+

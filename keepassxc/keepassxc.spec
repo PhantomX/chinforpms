@@ -2,7 +2,7 @@
 
 Name:           keepassxc
 Version:        2.3.4
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
@@ -50,8 +50,8 @@ cross-platform and modern open-source password manager.
 sed -i '/\<icon/d' share/linux/org.%{name}.KeePassXC.appdata.xml
 
 %build
-mkdir build
-pushd build
+mkdir %{_target_platform}
+pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_BUILD_TYPE=release \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
@@ -67,7 +67,7 @@ popd
 
 %install
 
-%make_install -C build
+%make_install -C %{_target_platform}
  
 desktop-file-edit \
   --add-mime-type="application/x-keepass" \

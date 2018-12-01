@@ -39,7 +39,7 @@
 Name:       VirtualBox
 Version:    5.2.22
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:    100%{?bugfix:.%{bugfix}}.chinfo%{?dist}
+Release:    100%{?bugfix:.%{bugfix}}%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
 
 License:    GPLv2 or (GPLv2 and CDDL)

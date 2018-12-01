@@ -1,6 +1,6 @@
 Name:           ortp
 Version:        1.0.2
-Release:        102.chinfo%{?dist}
+Release:        102%{?dist}
 Summary:        A C library implementing the RTP protocol (RFC3550)
 Epoch:          1
 
@@ -40,8 +40,8 @@ sed \
 %{__perl} -pi.dot  -e 's/^(HAVE_DOT\s+=)\s+NO$/\1 YES/;s/^(CALL_GRAPH\s+=)\s+NO$/\1 YES/;s/^(CALLER_GRAPH\s+=)\s+NO$/\1 YES/' ortp.doxygen.in
 
 %build
-mkdir builddir
-pushd builddir
+mkdir %{_target_platform}
+pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DENABLE_STATIC:BOOL=OFF \
@@ -50,9 +50,9 @@ pushd builddir
 %make_build
 
 %install
-%make_install -C builddir
+%make_install -C %{_target_platform}
 
-rm -f builddir/doc/html/html.tar
+rm -f %{_target_platform}/doc/html/html.tar
 rm -rf %{buildroot}%{_datadir}/doc
 
 
@@ -62,7 +62,7 @@ rm -rf %{buildroot}%{_datadir}/doc
 %{_libdir}/libortp.so.*
 
 %files devel
-%doc builddir/doc/html
+%doc %{_target_platform}/doc/html
 %{_includedir}/%{name}
 %{_libdir}/libortp.so
 %{_libdir}/pkgconfig/ortp.pc

@@ -11,7 +11,7 @@
 
 Name:           desmume
 Version:        0.9.12
-Release:        0.1%{?gver}.chinfo%{?dist}
+Release:        0.1%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 Epoch:          1

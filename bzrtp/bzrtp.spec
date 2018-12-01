@@ -45,8 +45,8 @@ sed \
   lib%{name}.pc.in > lib%{name}.pc
 
 %build
-mkdir builddir
-pushd builddir
+mkdir %{_target_platform}
+pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DENABLE_STATIC:BOOL=OFF \
@@ -55,7 +55,7 @@ pushd builddir
 %make_build
 
 %install
-%make_install -C builddir
+%make_install -C %{_target_platform}
 
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/lib%{name}.pc

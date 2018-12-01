@@ -1,6 +1,6 @@
 Name:           belle-sip
 Version:        1.6.3
-Release:        3.chinfo%{?dist}
+Release:        3%{?dist}
 Summary:        Linphone SIP stack
 
 License:        GPLv2+ and BSD and BSD with advertising and MIT
@@ -46,8 +46,8 @@ sed \
   -i src/CMakeLists.txt
 
 %build
-mkdir builddir
-pushd builddir
+mkdir %{_target_platform}
+pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DENABLE_STATIC:BOOL=OFF \
@@ -56,7 +56,7 @@ pushd builddir
 %make_build
 
 %install
-%make_install -C builddir
+%make_install -C %{_target_platform}
 
 
 %files

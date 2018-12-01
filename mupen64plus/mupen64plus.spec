@@ -2,7 +2,7 @@
 
 Name:           mupen64plus
 Version:        2.5
-Release:        4.chinfo%{?dist}
+Release:        4%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 License:        GPLv2 and LGPLv2

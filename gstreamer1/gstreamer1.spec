@@ -10,7 +10,7 @@
 
 Name:           gstreamer1
 Version:        1.14.4
-Release:        101.chinfo%{?gitcommit:.git%{shortcommit}}%{?dist}
+Release:        101%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPLv2+

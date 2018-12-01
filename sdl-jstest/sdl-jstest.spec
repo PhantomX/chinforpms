@@ -62,8 +62,8 @@ sed \
 
 %build
 
-mkdir -p build
-pushd build
+mkdir -p %{_target_platform}
+pushd %{_target_platform}
 
 %cmake .. \
   -DBUILD_SDL_JSTEST:BOOL=OFF \
@@ -74,7 +74,7 @@ pushd build
 popd
 
 %install
-%make_install -C build
+%make_install -C %{_target_platform}
 
 
 %files

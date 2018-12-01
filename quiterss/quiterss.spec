@@ -1,6 +1,6 @@
 Name:           quiterss
 Version:        0.18.12
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 Summary:        RSS/Atom aggregator
 License:        GPLv3
 URL:            http://quiterss.org/

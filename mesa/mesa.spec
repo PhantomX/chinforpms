@@ -41,12 +41,14 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver     18.2.6
-Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        100.chinfo%{?dist}
+# If rc, use "~" instead "-", as ~rc1
+Version:        18.2.6
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
+
+%global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 %if 0%{sanitize}
 Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 %else

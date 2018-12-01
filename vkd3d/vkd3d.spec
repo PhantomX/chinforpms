@@ -1,6 +1,6 @@
 Name:           vkd3d
 Version:        1.0
-Release:        102.chinfo%{?dist}
+Release:        102%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+

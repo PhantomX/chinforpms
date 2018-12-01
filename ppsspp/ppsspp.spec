@@ -189,8 +189,8 @@ make install
 popd
 %endif
 
-mkdir -p build
-pushd build
+mkdir -p %{_target_platform}
+pushd %{_target_platform}
 
 %cmake .. \
   -DOpenGL_GL_PREFERENCE=GLVND \
@@ -211,10 +211,10 @@ popd
 %install
 
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 build/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
+install -pm0755 %{_target_platform}/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -r build/assets %{buildroot}%{_datadir}/%{name}/
+cp -r %{_target_platform}/assets %{buildroot}%{_datadir}/%{name}/
 rm -f %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
 ln -sf ../../fonts/google-roboto/RobotoCondensed-Regular.ttf \
   %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf

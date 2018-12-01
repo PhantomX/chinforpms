@@ -43,7 +43,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.22
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 
 Summary:        Kernel module for VirtualBox
 License:        GPLv2 or CDDL

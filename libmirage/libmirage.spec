@@ -1,6 +1,6 @@
 Name:           libmirage
 Version:        3.2.0
-Release:        1.chinfo%{?dist}
+Release:        1%{?dist}
 Summary:        A CD/DVD-ROM image access library
 
 License:        GPLv2+
@@ -43,8 +43,8 @@ This package contains files needed to develop with libMirage.
 %autosetup
 
 %build
-mkdir build
-pushd build
+mkdir %{_target_platform}
+pushd %{_target_platform}
 
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
@@ -55,7 +55,7 @@ pushd build
 popd
 
 %install
-%make_install -C build
+%make_install -C %{_target_platform}
 
 %find_lang %{name}
 

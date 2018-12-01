@@ -33,8 +33,8 @@ Development files.
 
 
 %build
-mkdir builddir
-pushd builddir
+mkdir %{_target_platform}
+pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DENABLE_STATIC:BOOL=OFF \
@@ -48,7 +48,7 @@ popd
 
 %install
 
-%make_install -C builddir
+%make_install -C %{_target_platform}
 
 
 %files

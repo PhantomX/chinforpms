@@ -9,7 +9,7 @@
 Name:           steam
 Version:        1.0.0.56
 Epoch:          1
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement

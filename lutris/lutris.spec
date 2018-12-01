@@ -1,7 +1,7 @@
 Name:           lutris
 Version:        0.4.23
 Epoch:          1
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 Summary:        Install and play any video game easily
 
 License:        GPLv3

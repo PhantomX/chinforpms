@@ -3,7 +3,7 @@
 Name:           bluecurve-icon-theme
 Summary:        Bluecurve icon theme
 Version:        8.0.2
-Release:        103.chinfo%{?dist}
+Release:        103%{?dist}
 
 License:        GPL+
 # There is no official upstream yet

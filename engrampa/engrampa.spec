@@ -15,7 +15,7 @@
 Name:          engrampa
 Version:       %{branch}.1
 %if 0%{?rel_build}
-Release:       100.chinfo%{?dist}
+Release:       100%{?dist}
 %else
 Release:       0.8%{?git_rel}%{?dist}
 %endif

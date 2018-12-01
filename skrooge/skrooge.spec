@@ -1,7 +1,7 @@
 Name:           skrooge
 Summary:        Personal finances manager
 Version:        2.16.2
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 
 License:        GPLv2+
 URL:            https://skrooge.org

@@ -1,7 +1,7 @@
 Name:           manaplus
 Version:        1.8.9.1
 Epoch:          1
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 Summary:        OpenSource 2D MMORPG client for Evol Online and The Mana World
 
 License:        GPLv2+
@@ -78,6 +78,7 @@ ln -s ../../../fonts/liberation/LiberationMono-Regular.ttf %{buildroot}%{_datadi
 ln -s ../../../fonts/liberation/LiberationSans-Regular.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/liberationsans.ttf
 ln -s ../../../fonts/mplus/mplus-1p-bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/mplus-1p-bold.ttf
 ln -s ../../../fonts/mplus/mplus-1p-regular.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/mplus-1p-regular.ttf
+install -pm0644 data/fonts/wqy-microhei.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}test.desktop

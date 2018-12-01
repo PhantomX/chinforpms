@@ -21,8 +21,8 @@ This package contains extra unusual mimetypes for DEs.
 
 
 %build
-mkdir build
-pushd build
+mkdir %{_target_platform}
+pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DCHINFO_LEGACY:BOOL=OFF
@@ -33,7 +33,7 @@ popd
 
 %install
 
-%make_install -C build
+%make_install -C %{_target_platform}
 
 rm -f %{buildroot}%{_datadir}/mime/packages/%{name}-cdimage.xml
 

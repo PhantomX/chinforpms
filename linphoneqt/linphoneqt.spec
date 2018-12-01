@@ -61,8 +61,8 @@ sed \
   -i assets/linphone.desktop
 
 %build
-mkdir builddir
-pushd builddir
+mkdir %{_target_platform}
+pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DENABLE_STATIC:BOOL=OFF \
@@ -74,7 +74,7 @@ cp ../assets/languages/*.qm assets/languages/
 %make_build
 
 %install
-%make_install -C builddir
+%make_install -C %{_target_platform}
 
 rename linphone %{name} \
   %{buildroot}%{_bindir}/linphone* \

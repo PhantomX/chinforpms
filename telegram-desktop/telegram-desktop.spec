@@ -10,7 +10,7 @@
 
 Name:           telegram-desktop
 Version:        1.4.4
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch: 1

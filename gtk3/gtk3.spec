@@ -25,7 +25,7 @@
 
 Name:           gtk3
 Version:        3.24.1
-Release:        101.chinfo%{?dist}
+Release:        101%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 License:        LGPLv2+

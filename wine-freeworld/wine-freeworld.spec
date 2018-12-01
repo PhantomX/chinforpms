@@ -1,7 +1,6 @@
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
 
-%global rcrev 0
 %global no64bit   0
 #global _default_patch_fuzz 2
 
@@ -11,12 +10,8 @@
 %global strel v
 %endif
 
-%if 0%{?rcrev}
-%global rctag .rc%rcrev
-%global rctagtarball -rc%rcrev
-%endif
-
 Name:           wine-freeworld
+# If rc, use "~" instead "-", as ~rc1
 Version:        3.20
 Release:        1%{?dist}
 Summary:        Wine libraries with all codecs support
@@ -24,8 +19,14 @@ Epoch:          1
 
 License:        LGPLv2+
 URL:            http://www.winehq.org/
-Source0:        https://dl.winehq.org/wine/source/3.x/wine-%{version}%{?rctagtarball}.tar.xz
-Source10:       https://dl.winehq.org/wine/source/3.x/wine-%{version}%{?rctagtarball}.tar.xz.sign
+
+%global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
+%global vermajor %(echo %{ver} | cut -d. -f1)
+%if "%(echo %{ver} | cut -d. -f2 | cut -d- -f1 )" == "0"
+%global verx 1
+%endif
+Source0:        https://dl.winehq.org/wine/source/%{vermajor}.%{?verx:0}%{!?verx:x}/wine-%{ver}.tar.xz
+Source10:       https://dl.winehq.org/wine/source/%{vermajor}.%{?verx:0}%{!?verx:x}/wine-%{ver}.tar.xz.sign
 
 # wine staging patches for wine-staging
 Source900: https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
@@ -91,7 +92,7 @@ This package adds libraries with all codecs support for wine.
 
 
 %prep
-%setup -q -n wine-%{version}%{?rctagtarball}
+%setup -q -n wine-%{ver}
 
 # setup and apply wine-staging patches
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1

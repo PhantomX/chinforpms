@@ -42,8 +42,10 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 502
 %global fedora_build %{baserelease}
+
+%define major_ver 4
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
@@ -61,15 +63,15 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 379b4b66b05bb50bbb381400c310095d2d8b38e6
+%global pfcommit e8f04f20bac0a2a5f0867b2f03a5aaf752b2966d
 %if "%{pfcommit}" == "0"
-%global pfrange v4.%{base_sublevel}-%{pftag}
+%global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
 %global pfrange %{pfcommit}
 %endif
 %endif
 
-%global opensuse_id 2f383750943b0685cc61ab0956f342462e126d14
+%global opensuse_id 6210279c032290dc658f1d7ba68547029521c419
 
 # Do we have a -stable update to apply?
 %define stable_update 5
@@ -78,7 +80,7 @@ Summary: The Linux kernel
 %define stablerev %{stable_update}
 %define stable_base %{stable_update}
 %endif
-%define rpmversion 4.%{base_sublevel}.%{stable_update}
+%define rpmversion %{major_ver}.%{base_sublevel}.%{stable_update}
 
 ## The not-released-kernel case ##
 %else
@@ -89,7 +91,7 @@ Summary: The Linux kernel
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
-%define rpmversion 4.%{upstream_sublevel}.0
+%define rpmversion %{major_ver}.%{upstream_sublevel}.0
 %endif
 # Nb: The above rcrev and gitrev values automagically define Patch00 and Patch01 below.
 
@@ -181,7 +183,7 @@ Summary: The Linux kernel
 %endif
 
 # The kernel tarball/base version
-%define kversion 4.%{base_sublevel}
+%define kversion %{major_ver}.%{base_sublevel}
 
 %define make_target bzImage
 %define image_install_path boot
@@ -442,7 +444,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define cross_opts CROSS_COMPILE=%{_build_arch}-linux-gnu-
 %endif
 
-Source0: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
+Source0: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/linux-%{kversion}.tar.xz
 
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
@@ -490,13 +492,13 @@ Source1003: kernel-local-pf
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 %if 0%{?post_factum}
-Source5000: https://github.com/pfactum/pf-kernel/compare/v4.%{base_sublevel}...%{pfrange}.diff#/pf-kernel-v4.%{base_sublevel}-%{pfrange}.patch
+Source5000: https://github.com/pfactum/pf-kernel/compare/v%{major_ver}.%{base_sublevel}...%{pfrange}.diff#/pf-kernel-v%{major_ver}.%{base_sublevel}-%{pfrange}.patch
 %else
 # For a stable release kernel
 %if 0%{?stable_update}
 %if 0%{?stable_base}
-%define    stable_patch_00  patch-4.%{base_sublevel}.%{stable_base}.xz
-Source5000: https://cdn.kernel.org/pub/linux/kernel/v4.x/%{stable_patch_00}
+%define    stable_patch_00  patch-%{major_ver}.%{base_sublevel}.%{stable_base}.xz
+Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/%{stable_patch_00}
 %endif
 %endif
 
@@ -505,14 +507,14 @@ Source5000: https://cdn.kernel.org/pub/linux/kernel/v4.x/%{stable_patch_00}
 # near the top of this spec file.
 %else
 %if 0%{?rcrev}
-Source5000: patch-4.%{upstream_sublevel}-rc%{rcrev}.xz
+Source5000: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}.xz
 %if 0%{?gitrev}
-Source5001: patch-4.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
+Source5001: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
 %endif
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
+Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
 %endif
 %endif
 %endif
@@ -1991,6 +1993,12 @@ fi
 #
 #
 %changelog
+* Fri Nov 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-502.chinfo
+- PDS-MQ disabled for now
+
+* Fri Nov 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-501.chinfo
+- CONFIG_NO_HZ_IDLE=y with pf
+
 * Tue Nov 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-500.chinfo
 - 4.19.5
 - pf sync

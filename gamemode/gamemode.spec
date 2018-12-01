@@ -1,6 +1,6 @@
 Name:           gamemode
 Version:        1.2
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
 

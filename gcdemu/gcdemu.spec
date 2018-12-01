@@ -33,8 +33,8 @@ of CDEmu, a CD/DVD-ROM device emulator for Linux.
 sed -e '1s|^#!.*$|#!%{__python3}|' -i src/%{name}
 
 %build
-mkdir build
-pushd build
+mkdir %{_target_platform}
+pushd %{_target_platform}
 
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
@@ -45,7 +45,7 @@ pushd build
 popd
 
 %install
-%make_install -C build
+%make_install -C %{_target_platform}
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 ln -sf ../../../../pixmaps/%{name}.svg \

@@ -28,8 +28,8 @@ devices.
 %autosetup
 
 %build
-mkdir build
-pushd build
+mkdir %{_target_platform}
+pushd %{_target_platform}
 
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
@@ -41,7 +41,7 @@ pushd build
 popd
 
 %install
-%make_install -C build
+%make_install -C %{_target_platform}
 
 %find_lang %{name}
 

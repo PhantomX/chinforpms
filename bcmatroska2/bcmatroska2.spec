@@ -31,8 +31,8 @@ Development files.
 cp %{SOURCE1} COPYING
 
 %build
-mkdir builddir
-pushd builddir
+mkdir %{_target_platform}
+pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_INSTALL_INCLUDEDIR:PATH=/usr/include/%{name} \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
@@ -44,7 +44,7 @@ popd
 
 %install
 
-%make_install -C builddir
+%make_install -C %{_target_platform}
 
 
 %files

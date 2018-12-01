@@ -1,6 +1,6 @@
 Name:           linphone
 Version:        3.12.0
-Release:        3.chinfo%{?dist}
+Release:        3%{?dist}
 Summary:        Phone anywhere in the whole world by using the Internet
 
 License:        GPLv2+
@@ -101,8 +101,8 @@ sed \
 echo '#define LIBLINPHONE_GIT_VERSION "%{version}-%{release}"' > coreapi/liblinphone_gitversion.h
 
 %build
-mkdir builddir
-pushd builddir
+mkdir %{_target_platform}
+pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DENABLE_STATIC:BOOL=OFF \
@@ -123,7 +123,7 @@ pushd builddir
 %make_build
 
 %install
-%make_install -C builddir
+%make_install -C %{_target_platform}
 
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
@@ -139,7 +139,7 @@ rm -f %{buildroot}%{_bindir}/notify
 rm -f %{buildroot}%{_bindir}/realtimetext_*
 rm -f %{buildroot}%{_bindir}/registration
 
-rm -f builddir/coreapi/help/doc/html/html.tar
+rm -f %{_target_platform}/coreapi/help/doc/html/html.tar
 rm -rf %{buildroot}%{_datadir}/doc
 rm -rf %{buildroot}%{_datadir}/gnome
 
@@ -172,7 +172,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_libdir}/lib%{name}*.so.*
 
 %files devel
-%doc builddir/coreapi/help/doc/doxygen/html
+%doc %{_target_platform}/coreapi/help/doc/doxygen/html
 %{_bindir}/lpc2xml_test
 %{_bindir}/xml2lpc_test
 %{_bindir}/lp-sendmsg

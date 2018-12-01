@@ -9,7 +9,7 @@
 
 Name:           claws-mail
 Version:        3.17.1
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
 URL:            http://claws-mail.org

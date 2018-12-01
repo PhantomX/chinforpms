@@ -87,8 +87,8 @@ sed \
 sed -e 's|(git: " MS2_GIT_VERSION ")||g' -i src/base/msfactory.c
 
 %build
-mkdir builddir
-pushd builddir
+mkdir %{_target_platform}
+pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DENABLE_STATIC:BOOL=OFF \
@@ -117,14 +117,14 @@ pushd builddir
 %make_build
 
 %install
-%make_install -C builddir
+%make_install -C %{_target_platform}
 
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
 mkdir -p %{buildroot}%{_libdir}/%{name}/plugins
 
-rm -f builddir/help/doc/html/html.tar
+rm -f %{_target_platform}/help/doc/html/html.tar
 rm -rf %{buildroot}%{_datadir}/doc
 
 
@@ -140,7 +140,7 @@ rm -rf %{buildroot}%{_datadir}/doc
 %dir %{_libdir}/%{name}/plugins
 
 %files devel
-%doc builddir/help/doc/html
+%doc %{_target_platform}/help/doc/html
 %{_includedir}/%{name}2
 %{_libdir}/lib%{name}*.so
 %{_libdir}/pkgconfig/%{name}.pc

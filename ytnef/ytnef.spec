@@ -2,7 +2,7 @@ Summary:        Yerase's TNEF Stream Reader
 Name:           ytnef
 Epoch:          1
 Version:        1.9.3
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 License:        GPLv2+
 URL:            https://github.com/Yeraze/ytnef
 Source0:        https://github.com/Yeraze/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz

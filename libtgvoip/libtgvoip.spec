@@ -1,6 +1,6 @@
 Name: libtgvoip
 Version: 2.2.4
-Release: 100.chinfo%{?dist}
+Release: 100%{?dist}
 Summary: VoIP library for Telegram clients
 
 # Libtgvoip shared library - Public Domain.

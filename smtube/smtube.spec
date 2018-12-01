@@ -1,6 +1,6 @@
 Name:           smtube
 Version:        18.11.0
-Release:        100.chinfo%{?dist}
+Release:        100%{?dist}
 Summary:        YouTube browser for SMPlayer
 Epoch:          1
 

@@ -5,7 +5,7 @@
 
 Name:           mednafen
 Version:        1.21.3
-Release:        1.chinfo%{?dist}
+Release:        1%{?dist}
 Epoch:          1
 Summary:        A multi-system emulator utilizing OpenGL and SDL
 #mednafen is a monstrosity build out of many emulators hence the colourful licensing

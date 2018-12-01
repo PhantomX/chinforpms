@@ -10,6 +10,8 @@
 
 %global buildid .chinfo
 
+%define major_ver 4
+
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
@@ -27,7 +29,7 @@
 %global stablerev %{stable_update}
 %global stable_base %{stable_update}
 %endif
-%global rpmversion 4.%{base_sublevel}.%{stable_update}
+%global rpmversion %{major_ver}.%{base_sublevel}.%{stable_update}
 
 ## The not-released-kernel case ##
 %else
@@ -36,7 +38,7 @@
 # The rc snapshot level
 %global rcrev 0
 # Set rpm version accordingly
-%global rpmversion 4.%{upstream_sublevel}.0
+%global rpmversion %{major_ver}.%{upstream_sublevel}.0
 %endif
 # Nb: The above rcrev values automagically define Patch00 and Patch01 below.
 
@@ -59,7 +61,7 @@
 %endif
 
 # The kernel tarball/base version
-%global kversion 4.%{base_sublevel}
+%global kversion %{major_ver}.%{base_sublevel}
 %global KVERREL %{version}-%{release}.%{_target_cpu}
 
 %global _debuginfo_subpackages 1
@@ -87,7 +89,7 @@ BuildRequires: rpm-build, elfutils
 %{?systemd_requires}
 BuildRequires: systemd
 
-Source0: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
+Source0: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/linux-%{kversion}.tar.xz
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -97,13 +99,13 @@ Source2001: cpupower.config
 
 # For a stable release kernel
 %if 0%{?stable_base}
-Source5000: https://cdn.kernel.org/pub/linux/kernel/v4.x/patch-4.%{base_sublevel}.%{stable_base}.xz
+Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/patch-%{major_ver}.%{base_sublevel}.%{stable_base}.xz
 %else
 # non-released_kernel case
 # These are automagically defined by the rcrev value set up
 # near the top of this spec file.
 %if 0%{?rcrev}
-Source5000: patch-4.%{upstream_sublevel}-rc%{rcrev}.xz
+Source5000: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}.xz
 %endif
 %endif
 

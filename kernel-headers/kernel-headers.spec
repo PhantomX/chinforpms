@@ -15,8 +15,10 @@
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 502
 %global fedora_build %{baserelease}
+
+%define major_ver 4
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
@@ -33,7 +35,7 @@
 %define stablerev %{stable_update}
 %define stable_base %{stable_update}
 %endif
-%define rpmversion 4.%{base_sublevel}.%{stable_update}
+%define rpmversion %{major_ver}.%{base_sublevel}.%{stable_update}
 
 ## The not-released-kernel case ##
 %else
@@ -44,7 +46,7 @@
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
-%define rpmversion 4.%{upstream_sublevel}.0
+%define rpmversion %{major_ver}.%{upstream_sublevel}.0
 %endif
 
 # pkg_release is what we'll fill in for the rpm Release: field
@@ -174,6 +176,12 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Fri Nov 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-502.chinfo
+- Rebuild
+
+* Fri Nov 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-501.chinfo
+- Rebuild
+
 * Tue Nov 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-500.chinfo
 - 4.19.5
 

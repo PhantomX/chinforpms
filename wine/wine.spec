@@ -1,7 +1,6 @@
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
 
-%global rcrev 0
 %global no64bit   0
 %global winegecko 2.47
 %global winemono  4.7.3
@@ -31,20 +30,22 @@
 %{nil}
 %endif
 
-%if 0%{?rcrev}
-%global rctag .rc%rcrev
-%global rctagtarball -rc%rcrev
-%endif
-
 Name:           wine
+# If rc, use "~" instead "-", as ~rc1
 Version:        3.20
-Release:        100%{?rctag}.chinfo%{?dist}
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
 URL:            http://www.winehq.org/
-Source0:        https://dl.winehq.org/wine/source/3.x/wine-%{version}%{?rctagtarball}.tar.xz
-Source10:       https://dl.winehq.org/wine/source/3.x/wine-%{version}%{?rctagtarball}.tar.xz.sign
+
+%global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
+%global vermajor %(echo %{ver} | cut -d. -f1)
+%if "%(echo %{ver} | cut -d. -f2 | cut -d- -f1 )" == "0"
+%global verx 1
+%endif
+Source0:        https://dl.winehq.org/wine/source/%{vermajor}.%{?verx:0}%{!?verx:x}/wine-%{ver}.tar.xz
+Source10:       https://dl.winehq.org/wine/source/%{vermajor}.%{?verx:0}%{!?verx:x}/wine-%{ver}.tar.xz.sign
 
 Source1:        wine.init
 Source2:        wine.systemd
@@ -711,7 +712,7 @@ This package adds xaudio2 support for wine.
 
 
 %prep
-%setup -q -n wine-%{version}%{?rctagtarball}
+%setup -q -n wine-%{ver}
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
