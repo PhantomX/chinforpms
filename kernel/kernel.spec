@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 502
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 4
@@ -63,7 +63,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e8f04f20bac0a2a5f0867b2f03a5aaf752b2966d
+%global pfcommit 906beb2ad4469077b8da494e651a5ab915441983
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -71,10 +71,10 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 6210279c032290dc658f1d7ba68547029521c419
+%global opensuse_id e8181d1487c7f18786f0aee43e05a8e841607be5
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -654,6 +654,13 @@ Patch512: mm-cleancache-fix-corruption-on-missed-inode-invalidation.patch
 
 # CVE-2018-19407 (rhbz 1652656 1652658)
 Patch513: CVE-2018-19407.patch
+
+# rhbz 1650984, in linux-next and Cc'd for stable
+Patch514: net-phy-add-workaround-for-issue-where-PHY-driver-do.patch
+
+# In the PCI tree and Cc'd for stable, fixes an issue with amdgpu
+# https://patchwork.freedesktop.org/patch/259364/
+Patch515: PCI-Fix-incorrect-value-returned-from-pcie_get_speed.patch 
 
 ### Extra
 
@@ -1993,6 +2000,10 @@ fi
 #
 #
 %changelog
+* Sun Dec 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.6-500.chinfo
+- 4.19.6
+- f29 sync
+
 * Fri Nov 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-502.chinfo
 - PDS-MQ disabled for now
 

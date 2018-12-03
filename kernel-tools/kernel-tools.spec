@@ -20,10 +20,10 @@
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
-%global opensuse_id 2f383750943b0685cc61ab0956f342462e126d14
+%global opensuse_id e8181d1487c7f18786f0aee43e05a8e841607be5
 
 # Do we have a -stable update to apply?
-%global stable_update 5
+%global stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -452,6 +452,9 @@ popd
 %license linux-%{kversion}/COPYING
 
 %changelog
+* Sun Dec 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.6-500.chinfo
+- 4.19.6
+
 * Tue Nov 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-500.chinfo
 - 4.19.5
 
