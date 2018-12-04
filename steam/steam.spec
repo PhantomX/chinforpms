@@ -76,6 +76,7 @@ Requires:       vulkan-loader
 # Minimum requirements for starting the steam client for the first time
 Requires:       alsa-lib%{?_isa}
 Requires:       gtk2%{?_isa}
+Requires:       libnsl%{?_isa}
 Requires:       libpng12%{?_isa}
 Requires:       libXext%{?_isa}
 Requires:       libXinerama%{?_isa}

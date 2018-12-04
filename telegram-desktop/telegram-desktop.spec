@@ -9,7 +9,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.4.4
+Version:        1.4.7
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -29,7 +29,7 @@ ExclusiveArch:  i686 x86_64
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
 Source1:        https://github.com/telegramdesktop/crl/archive/%{commit1}.tar.gz#/crl-%{shortcommit1}.tar.gz
 Patch0:         %{name}-build-fixes.patch
-Patch1:         %{name}-api-tokens.patch
+#Patch1:         %%{name}-api-tokens.patch
 Patch2:         %{name}-system-fonts.patch
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -57,7 +57,7 @@ BuildRequires:  gyp
 # Development packages for Telegram Desktop...
 BuildRequires:  guidelines-support-library-devel >= 1.0.0
 BuildRequires:  mapbox-variant-devel >= 0.3.6
-BuildRequires:  libtgvoip-devel >= 2.2.4
+BuildRequires:  libtgvoip-devel >= 2.3
 BuildRequires:  libappindicator-gtk3-devel
 BuildRequires:  ffmpeg-devel >= 3.1
 BuildRequires:  openal-soft-devel
@@ -104,10 +104,13 @@ pushd Telegram/ThirdParty
     mv crl-%{commit1} crl
 popd
 
+sed -e '/^Keywords=tg;chat;im;/d' -i lib/xdg/telegramdesktop.desktop
+
 %build
 # Generating cmake script using GYP...
 pushd Telegram/gyp
-    gyp --depth=. --generator-output=../.. -Goutput_dir=out Telegram.gyp --format=cmake
+    gyp --depth=. --generator-output=../.. -Goutput_dir=out Telegram.gyp --format=cmake \
+      -Dapi_id=208164 -Dapi_hash=dfbe1bc42dc9d20507e17d1814cc2f0a
 popd
 
 # Patching generated cmake script...
@@ -151,7 +154,11 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_datadir}/metainfo/%{name}.appdata.xml
 
+
 %changelog
+* Mon Dec 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.4.7-100.chinfo
+- 1.4.7
+
 * Sat Oct 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.4.4-100.chinfo
 - 1.4.4
 

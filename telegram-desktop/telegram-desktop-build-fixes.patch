@@ -222,7 +222,7 @@ index dd7779c7e..d92e36b79 100644
        'crl.gyp:crl',
        'lib_base.gyp:lib_base',
        'lib_export.gyp:lib_export',
-@@ -84,30 +78,20 @@
+@@ -84,28 +79,23 @@
      ],
  
      'defines': [
@@ -230,6 +230,8 @@ index dd7779c7e..d92e36b79 100644
 -      'AL_ALEXT_PROTOTYPES',
        'TGVOIP_USE_CXX11_LIB',
 -      'XXH_INLINE_ALL',
+       'TDESKTOP_API_ID=<(api_id)',
+       'TDESKTOP_API_HASH=<(api_hash)',
 -      '<!@(python -c "for s in \'<(build_defines)\'.split(\',\'): print(s)")',
 +      '__STDC_FORMAT_MACROS',
 +      'TDESKTOP_DISABLE_AUTOUPDATE',
@@ -237,6 +239,7 @@ index dd7779c7e..d92e36b79 100644
 +      'TDESKTOP_DISABLE_DESKTOP_FILE_GENERATION',
 +      'TDESKTOP_DISABLE_CRASH_REPORTS',
 +      'TDESKTOP_DISABLE_UNITY_INTEGRATION',
++      'TDESKTOP_DISABLE_OPENAL_EFFECTS',
      ],
  
      'include_dirs': [
@@ -252,15 +255,12 @@ index dd7779c7e..d92e36b79 100644
 -      '<(minizip_loc)',
 -      '<(sp_media_key_tap_loc)',
        '<(emoji_suggestions_loc)',
--      '<(submodules_loc)/GSL/include',
--      '<(submodules_loc)/variant/include',
++      '/usr/include/minizip',
+       '<(submodules_loc)/GSL/include',
+       '<(submodules_loc)/variant/include',
        '<(submodules_loc)/crl/src',
--      '<(submodules_loc)/xxHash',
-     ],
-     'sources': [
-       '<@(qrc_files)',
-@@ -129,7 +113,6 @@
-           'CUSTOM_API_ID',
+@@ -132,7 +120,6 @@
+           'TDESKTOP_OFFICIAL_TARGET=<(official_build_target)',
          ],
          'dependencies': [
 -          'utils.gyp:Packer',

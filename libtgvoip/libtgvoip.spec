@@ -1,5 +1,5 @@
 Name: libtgvoip
-Version: 2.2.4
+Version: 2.3
 Release: 100%{?dist}
 Summary: VoIP library for Telegram clients
 
@@ -55,8 +55,10 @@ ln -s %{name}.so.%{version} "%{buildroot}%{_libdir}/%{name}.so"
 
 # Installing additional development files...
 mkdir -p "%{buildroot}%{_includedir}/%{name}/audio"
+mkdir -p "%{buildroot}%{_includedir}/%{name}/video"
 find . -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{buildroot}%{_includedir}/%{name} \;
 find audio -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{buildroot}%{_includedir}/%{name}/audio \;
+find video -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{buildroot}%{_includedir}/%{name}/video \;
 
 %files
 %license UNLICENSE
@@ -67,6 +69,9 @@ find audio -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{build
 %{_libdir}/%{name}.so
 
 %changelog
+* Mon Dec 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.3-100.chinfo
+- 2.3
+
 * Sun Sep 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.2.4-100.chinfo
 - 2.2.4
 - RPMFusion sync
