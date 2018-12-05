@@ -1,18 +1,13 @@
-%global prerel 4
-
-%if 0%{?prerel}
-%global prereltag .pre%{prerel}
-%global prereltarball -pre%{prerel}
-%endif
-
 Name:           smooth
-Version:        0.8.74.0
-Release:        0.3%{?prereltag}%{?dist}
+Version:        0.8.74.0~pre5
+Release:        1%{?dist}
 Summary:        An object oriented C++ class library
 
 License:        Artistic 2.0
 URL:            http://www.smooth-project.org/
-Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}%{?prereltarball}.tar.gz
+
+%global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
+Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{ver}.tar.gz
 
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(bzip2)
@@ -43,7 +38,7 @@ development with %{name} library.
 
 
 %prep
-%autosetup -n %{name}-%{version}%{?prereltarball}
+%autosetup -n %{name}-%{ver}
 
 sed -e 's/\r//' -i Readme.md Copying doc/reference/dtds/*.dtd
 
@@ -75,6 +70,9 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 
 %changelog
+* Tue Dec 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.74.0~pre5-1
+- 0.8.74.0-pre5
+
 * Sun Sep 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.8.74.0-0.3.pre4
 - 0.8.74.0-pre4
 

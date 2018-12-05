@@ -1,27 +1,20 @@
-%global date 20180913
-%global prerel 1
-
-%global freaccdkver 1.1
 %global smoothver 0.8.74
 
-%if 0%{?prerel}
-%global prereltag .alpha.%{date}
-%global prereltarball -alpha-%{date}
-%endif
-
 Name:           freac
-Version:        1.1
-Release:        0.4%{prereltag}%{?dist}
+Version:        1.1~alpha_20181201a
+Release:        1%{?dist}
 Summary:        A free audio converter and CD ripper
 
 License:        GPLv2
 URL:            http://www.freac.org/
-Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{version}%{?prereltarball}.tar.gz
+
+%global ver     %(echo %{version} | tr '~' '-' | tr '_' '-')
+Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{ver}.tar.gz
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
-BuildRequires:  freac-cdk-devel >= %{freaccdkver}
+BuildRequires:  freac-cdk-devel
 BuildRequires:  smooth-devel >= %{smoothver}
 BuildRequires:  pkgconfig(libudev)
 Requires:       hicolor-icon-theme
@@ -48,7 +41,7 @@ WMA, Ogg Vorbis, FLAC, AAC, WAV and Bonk formats.
 
 
 %prep
-%autosetup -n %{name}-%{version}%{?prereltarball}
+%autosetup -n %{name}-%{ver}
 
 sed -e 's/\r//' -i COPYING Readme
 
@@ -111,6 +104,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Dec 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20181201a-1
+- 1.1-alpha-20181201a
+
 * Sun Sep 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-0.4.alpha.20180913
 - 1.1-20180913
 

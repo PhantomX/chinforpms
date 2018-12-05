@@ -10,11 +10,11 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.20
+%global stagingver 3.21
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global pba 1
+%global pba 0
 %global pbaver 3.20
 %if 0%(echo %{pbaver} | grep -q \\. ; echo $?) == 0
 %global pbarel v
@@ -32,7 +32,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        3.20
+Version:        3.21
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2334,6 +2334,11 @@ fi
 %endif
 
 %changelog
+* Tue Dec 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.21-100
+- 3.21
+- Disable broken wine-pba
+- Change rc versioning to "~" system
+
 * Fri Nov 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.20-100.chinfo
 - 3.20
 
