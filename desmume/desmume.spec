@@ -1,6 +1,6 @@
-%global commit 5d85ac2e237fc8af8144893c54c6af9666a53b2a
+%global commit 35e834ff2ccc2bdbfaa4cff0faf96b35e85b1bcd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20181108
+%global date 20181205
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           desmume
 Version:        0.9.12
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 Epoch:          1
@@ -29,8 +29,6 @@ Patch0:         %{name}-dontlookinbuilddir.patch
 # Use system tinyxml instead of the embedded copy
 Patch1:         %{name}-tinyxml.patch
 Patch2:         %{name}-format-security.patch
-
-Patch100:       %{vc_url}/pull/207.patch#/%{name}-gh-pull207.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -113,6 +111,7 @@ sed -i 's|Icon=DeSmuME|Icon=DeSmuME-glade|g' src/frontend/posix/gtk-glade/%{name
 sed -i 's|GETTEXT_PACKAGE=desmume|GETTEXT_PACKAGE=desmume-glade|g' src/frontend/posix/configure.ac
 
 %if 0%{?with_snapshot}
+sed -i 's|\$REVISION|%{shortcommit}|g' src/frontend/posix/configure.ac
 sed -i \
   -e '/SVN_REV_STR/s|"0"|"%{shortcommit}"|g' \
   src/version.cpp
@@ -197,6 +196,9 @@ done
 
 
 %changelog
+* Wed Dec 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.12-0.2.20181205git35e834f
+- New snapshot
+
 * Sat Nov 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.12-0.1.20181108git5d85ac2.chinfo
 - chinforpms cleanup
 - Build from snapshot
