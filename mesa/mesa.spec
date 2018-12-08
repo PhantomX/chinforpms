@@ -42,7 +42,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        18.2.6
+Version:        18.3.0
 Release:        100%{?dist}
 
 License:        MIT
@@ -64,11 +64,15 @@ Source4:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch1:         0001-llvm-SONAME-without-version.patch
 Patch3:         0003-evergreen-big-endian.patch
-Patch4:         0004-bigendian-assert.patch
 
 # Disable rgb10 configs by default:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
-Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
+#Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
+
+# https://lists.freedesktop.org/archives/mesa-dev/2018-November/210797.html
+# https://bugzilla.redhat.com/show_bug.cgi?id=1650929
+Patch10:        0001-wayland-egl-Ensure-EGL-surface-is-resized-on-DRI-upd.patch
+
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -142,6 +146,12 @@ Obsoletes:      mesa-dri-filesystem < %{?epoch:%{epoch}:}%{version}-%{release}
 %description filesystem
 %{summary}.
 
+%package khr-devel
+Summary:        Mesa Khronos development headers
+
+%description khr-devel
+%{summary}.
+
 %package libGL
 Summary:        Mesa libGL runtime libraries
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -154,6 +164,7 @@ Requires:       libglvnd-glx%{?_isa} >= 1:1.0.1-0.9
 Summary:        Mesa libGL development package
 Requires:       %{name}-libGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-devel%{?_isa}
+Requires:       %{name}-khr-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libGL-devel
 Provides:       libGL-devel%{?_isa}
 
@@ -171,6 +182,7 @@ Requires:       libglvnd-egl%{?_isa}
 Summary:        Mesa libEGL development package
 Requires:       %{name}-libEGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-devel%{?_isa}
+Requires:       %{name}-khr-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libEGL-devel
 Provides:       libEGL-devel%{?_isa}
 
@@ -189,6 +201,7 @@ Requires:       libglvnd-gles%{?_isa}
 Summary:        Mesa libGLES development package
 Requires:       %{name}-libGLES%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-devel%{?_isa}
+Requires:       %{name}-khr-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libGLES-devel
 Provides:       libGLES-devel%{?_isa}
 
@@ -350,7 +363,6 @@ cp %{SOURCE4} docs/
 autoreconf -vfi
 
 %ifarch %{ix86}
-# i do not have words for how much the assembly dispatch code infuriates me
 %global asm_flags --disable-asm
 %endif
 
@@ -393,10 +405,6 @@ autoreconf -vfi
 %install
 %make_install
 
-%if !%{with_hardware}
-rm -f %{buildroot}%{_sysconfdir}/drirc
-%endif
-
 # libvdpau opens the versioned name, don't bother including the unversioned
 rm -f %{buildroot}%{_libdir}/vdpau/*.so
 # likewise glvnd
@@ -436,6 +444,10 @@ popd
 %endif
 %endif
 
+%files khr-devel
+%dir %{_includedir}/KHR
+%{_includedir}/KHR/khrplatform.h
+
 %files libGL
 %{_libdir}/libGLX_mesa.so.0*
 %{_libdir}/libGLX_system.so.0*
@@ -463,8 +475,6 @@ popd
 %{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglplatform.h
 %{_includedir}/EGL/eglextchromium.h
-%dir %{_includedir}/KHR
-%{_includedir}/KHR/khrplatform.h
 %{_libdir}/pkgconfig/egl.pc
 
 %files libGLES
@@ -539,8 +549,9 @@ popd
 %endif
 
 %files dri-drivers
+%dir %{_datadir}/drirc.d
+%{_datadir}/drirc.d/00-mesa-defaults.conf
 %if %{with_hardware}
-%config(noreplace) %{_sysconfdir}/drirc
 %{_libdir}/dri/radeon_dri.so
 %{_libdir}/dri/r200_dri.so
 %{_libdir}/dri/nouveau_vieux_dri.so
@@ -618,6 +629,10 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Fri Dec 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.3.0-100
+- 18.3.0
+- Rawhide sync
+
 * Wed Nov 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.2.6-100.chinfo
 - 18.2.6
 

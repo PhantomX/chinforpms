@@ -10,7 +10,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 3.21
+%global stagingver 4.0-rc1
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
@@ -32,7 +32,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        3.21
+Version:        4.0~rc1
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -725,7 +725,7 @@ This package adds xaudio2 support for wine.
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch900 -p1
-%patch901 -p1
+#patch901 -p1
 
 %if 0%{?pba}
 tar xvf %{S:1000}
@@ -739,12 +739,12 @@ mv wine-pba-*/patches/*.patch patches/wined3d-Persistent_Buffer_Allocator/
 cp -p %{S:1001} README-pba-pkg
 %endif # 0%{?pba}
 
-mv patches/winepulse-PulseAudio_Support patches/winepulse-PulseAudio_Support_new
-mv patches/winepulse-PulseAudio_Support_old patches/winepulse-PulseAudio_Support
-cp -f patches/winepulse-PulseAudio_Support_new/0001-winepulse.drv-Use-a-separate-mainloop-and-ctx-for-pu.patch \
-  patches/winepulse-PulseAudio_Support/
-cp -f patches/winepulse-PulseAudio_Support_new/0006-winepulse-fetch-actual-program-name-if-possible.patch \
-  patches/winepulse-PulseAudio_Support/
+#mv patches/winepulse-PulseAudio_Support patches/winepulse-PulseAudio_Support_new
+#mv patches/winepulse-PulseAudio_Support_old patches/winepulse-PulseAudio_Support
+#cp -f patches/winepulse-PulseAudio_Support_new/0001-winepulse.drv-Use-a-separate-mainloop-and-ctx-for-pu.patch \
+#  patches/winepulse-PulseAudio_Support/
+#cp -f patches/winepulse-PulseAudio_Support_new/0006-winepulse-fetch-actual-program-name-if-possible.patch \
+#  patches/winepulse-PulseAudio_Support/
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all
 
@@ -1617,6 +1617,7 @@ fi
 %{_libdir}/wine/ext-ms-win-ntuser-gui-l1-3-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-keyboard-l1-3-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-message-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-misc-l1-2-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-misc-l1-5-1.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-mouse-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-private-l1-1-1.dll.so
@@ -1906,6 +1907,7 @@ fi
 %{_libdir}/wine/tdh.dll.so
 %{_libdir}/wine/tdi.sys.so
 %{_libdir}/wine/traffic.dll.so
+%{_libdir}/wine/tzres.dll.so
 %{_libdir}/wine/ucrtbase.dll.so
 %if 0%{?staging}
 %{_libdir}/wine/uianimation.dll.so
@@ -2334,6 +2336,9 @@ fi
 %endif
 
 %changelog
+* Sat Dec 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc1-100
+- 4.0-rc1
+
 * Tue Dec 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.21-100
 - 3.21
 - Disable broken wine-pba

@@ -59,11 +59,11 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update below needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 7
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 50f60edd385ed116d4473bb1fc97c7bf98f683cb
+%global pfcommit c50ccc3c1f58b7a32a323b185e818e52c91c81b1
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else

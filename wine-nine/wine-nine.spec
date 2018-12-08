@@ -3,7 +3,7 @@
 
 Name:           wine-nine
 Version:        3.0_2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 License:        LGPL-2.0
@@ -15,6 +15,13 @@ Source1:        ninewinecfg
 Source2:        wineninecfg
 
 Source100:      wine-ninecfg.desktop
+
+Patch0:       %{url}/commit/b372ba529fae41f3a8a255b3d080b3e0e9576d31.patch#/%{name}-gh-b372ba529fae41f3a8a255b3d080b3e0e9576d31.patch
+Patch1:       %{url}/commit/9954579ce24c6fbee26daa23bfce7b75bf9bf5ff.patch#/%{name}-gh-9954579ce24c6fbee26daa23bfce7b75bf9bf5ff.patch
+Patch2:       %{url}/commit/3d9f75de8ab938aa9bf47ee86f4b8924a0981628.patch#/%{name}-gh-3d9f75de8ab938aa9bf47ee86f4b8924a0981628.patch
+Patch3:       %{url}/commit/a30030646c1dd97b5aacfce870427cb8128aab16.patch#/%{name}-gh-a30030646c1dd97b5aacfce870427cb8128aab16.patch
+Patch4:       %{url}/commit/295876b7e19600f3015cd51b8f4a58aef60e4950.patch#/%{name}-gh-295876b7e19600f3015cd51b8f4a58aef60e4950.patch
+Patch5:       %{url}/commit/6a5e13e985ed2a34e0f27f06c57c79190262e7bf.patch#/%{name}-gh-6a5e13e985ed2a34e0f27f06c57c79190262e7bf.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -59,7 +66,7 @@ Provides:       d3d9-nine.dll.so%{?_isa} = %{version}
 %{summary} and tool to setting it.
 
 %prep
-%autosetup -n wine-%{name}-%{rversion}
+%autosetup -n wine-%{name}-%{rversion} -p1
 
 sed -i \
   -e 's|-lncurses |-lncursesw |g' \
@@ -164,6 +171,9 @@ desktop-file-install \
 %{_datadir}/applications/wine-ninecfg.desktop
 
 %changelog
+* Sat Dec 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.0_2-2
+- Add upstream patches
+
 * Sun Mar 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.0_2-1
 - 3.0_2
 
