@@ -69,12 +69,25 @@ Summary: The Linux kernel
 %else
 %global pfrange %{pfcommit}
 %endif
+%global extra_patch https://github.com/pfactum/pf-kernel/compare/v%{major_ver}.%{base_sublevel}...%{pfrange}.diff#/pf-kernel-v%{major_ver}.%{base_sublevel}-%{pfrange}.patch
+%endif
+
+# Apply zen patches? (zen release number to enable, 0 to disable)
+%global zen 0
+%if 0%{?zen}
+# Disable post_factum if zen is requested
+%global post_factum 0
 %endif
 
 %global opensuse_id e8181d1487c7f18786f0aee43e05a8e841607be5
 
 # Do we have a -stable update to apply?
 %define stable_update 7
+
+%if 0%{?zen}
+%global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
+%endif
+
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -488,11 +501,12 @@ Source1000: kernel-local
 Source1001: kernel-local-cpu
 Source1002: kernel-local-native
 Source1003: kernel-local-pf
+Source1004: kernel-local-zen
 
 # Here should be only the patches up to the upstream canonical Linus tree.
 
-%if 0%{?post_factum}
-Source5000: https://github.com/pfactum/pf-kernel/compare/v%{major_ver}.%{base_sublevel}...%{pfrange}.diff#/pf-kernel-v%{major_ver}.%{base_sublevel}-%{pfrange}.patch
+%if 0%{?post_factum} || 0%{?zen}
+Source5000: %{extra_patch}
 %else
 # For a stable release kernel
 %if 0%{?stable_update}
@@ -676,26 +690,31 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 
 #Patch3000: postfactum-merge-fixes.patch
+%if !0%{?zen}
 Patch3001: %{pf_url}/4b38af06b758979fd674096c0a64f7af49ce3022.patch#/pf-4b38af06b758979fd674096c0a64f7af49ce3022.patch
+%endif
 Patch3002: %{pf_url}/eab264b2f1759d8f2279325d1070364f42387fdf.patch#/pf-eab264b2f1759d8f2279325d1070364f42387fdf.patch
-Patch3003: %{pf_url}/b8f3c82dc20cd684a7ba7789f28c96a9b8447cd0.patch#/pf-b8f3c82dc20cd684a7ba7789f28c96a9b8447cd0.patch
-Patch3004: %{pf_url}/60d157d9133b07857ecab741290364b06a10c23b.patch#/pf-60d157d9133b07857ecab741290364b06a10c23b.patch
-Patch3005: %{pf_url}/5b2e5548ee833fd291001edfce223e4a35f7d85e.patch#/pf-5b2e5548ee833fd291001edfce223e4a35f7d85e.patch
-Patch3006: %{pf_url}/2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch#/pf-2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch
-Patch3007: %{pf_url}/ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch#/pf-ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch
-Patch3008: %{pf_url}/1eccf3238cf77405532540ced86b0f2591830135.patch#/pf-1eccf3238cf77405532540ced86b0f2591830135.patch
-Patch3009: %{pf_url}/cfa886747c494ee1352844c81aa2f126f17c5885.patch#/pf-cfa886747c494ee1352844c81aa2f126f17c5885.patch
-Patch3010: %{pf_url}/adb5219bad550c82ccb588f463e7d699c7383f78.patch#/pf-adb5219bad550c82ccb588f463e7d699c7383f78.patch
-Patch3011: %{pf_url}/bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch#/pf-bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch
-Patch3012: %{pf_url}/3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch#/pf-3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch
-Patch3013: %{pf_url}/72bbc6527229bbc17bf630559989b1f5a0f80353.patch#/pf-72bbc6527229bbc17bf630559989b1f5a0f80353.patch
-Patch3014: %{pf_url}/4a3998301f2389f93469c662d922193b32bc895d.patch#/pf-4a3998301f2389f93469c662d922193b32bc895d.patch
+Patch3003: %{pf_url}/60d157d9133b07857ecab741290364b06a10c23b.patch#/pf-60d157d9133b07857ecab741290364b06a10c23b.patch
+Patch3004: %{pf_url}/5b2e5548ee833fd291001edfce223e4a35f7d85e.patch#/pf-5b2e5548ee833fd291001edfce223e4a35f7d85e.patch
+Patch3005: %{pf_url}/2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch#/pf-2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch
+Patch3006: %{pf_url}/ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch#/pf-ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch
+Patch3007: %{pf_url}/1eccf3238cf77405532540ced86b0f2591830135.patch#/pf-1eccf3238cf77405532540ced86b0f2591830135.patch
+Patch3008: %{pf_url}/cfa886747c494ee1352844c81aa2f126f17c5885.patch#/pf-cfa886747c494ee1352844c81aa2f126f17c5885.patch
+Patch3009: %{pf_url}/adb5219bad550c82ccb588f463e7d699c7383f78.patch#/pf-adb5219bad550c82ccb588f463e7d699c7383f78.patch
+Patch3010: %{pf_url}/bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch#/pf-bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch
+Patch3011: %{pf_url}/3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch#/pf-3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch
+Patch3012: %{pf_url}/72bbc6527229bbc17bf630559989b1f5a0f80353.patch#/pf-72bbc6527229bbc17bf630559989b1f5a0f80353.patch
+Patch3013: %{pf_url}/4a3998301f2389f93469c662d922193b32bc895d.patch#/pf-4a3998301f2389f93469c662d922193b32bc895d.patch
+Patch3014: %{pf_url}/b334c0e8f76809cd8e1eaf55c6143eb6b9837b6a.patch#/pf-b334c0e8f76809cd8e1eaf55c6143eb6b9837b6a.patch
+Patch3015: %{pf_url}/bcb50e4968dab882c40cc080c548d88382ef58ba.patch#/pf-bcb50e4968dab882c40cc080c548d88382ef58ba.patch
 #Patch3500: postfactum-merge-fixes-2.patch
 
+%if !0%{?zen}
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
 %global graysky2_id 87168bfa27b782e1c9435ba28ebe3987ddea8d30
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v8.1+_kernel_v4.13+.patch
+%endif
 
 %endif
 
@@ -1162,7 +1181,7 @@ git commit -a -m "Stable update"
 
 git am %{patches}
 
-%if !0%{?post_factum}
+%if !0%{?post_factum} && !0%{?zen}
 $patch_command -i %{SOURCE4000}
 %endif
 
@@ -1191,6 +1210,9 @@ cat %{SOURCE1002} >> kernel-local
 %endif
 %if 0%{?post_factum}
 cat %{SOURCE1003} >> kernel-local
+%endif
+%if 0%{?zen}
+cat %{SOURCE1004} >> kernel-local
 %endif
 cp %{SOURCE15} .
 cp %{SOURCE40} .

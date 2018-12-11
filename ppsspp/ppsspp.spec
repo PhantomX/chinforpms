@@ -1,7 +1,10 @@
-%global commit 04708fe88afab5259f41bfdc0faf98e400146b64
+%global commit b282d83258d8a675cc9bb39cb43cb91dce7d746b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20181113
+%global date 20181210
 %global with_snapshot 1
+
+# Enable EGL/GLESV2
+%global with_egl 0
 
 # Enable system ffmpeg
 %global with_sysffmpeg 0
@@ -9,7 +12,7 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 3f5e33f84319ab4d8b8e19612d46db431907706f
+%global commit1 67c189ca63c68cba9e0146c98c89b2a8e9a10975
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -44,12 +47,12 @@
 %global vc_url  https://github.com/hrydgard
 
 Name:           ppsspp
-Version:        1.7.2
+Version:        1.7.5
 Release:        1%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
-License:        GPLv2+
+License:        BSD and GPLv2+
 URL:            http://www.ppsspp.org/
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
@@ -72,6 +75,8 @@ Patch1:         %{name}-nodiscord.patch
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
 %endif
+# https://github.com/hrydgard/ppsspp/issues/8823
+ExcludeArch: %{power64}
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -87,8 +92,13 @@ BuildRequires:  pkgconfig(libswscale)
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif #{?with_sysffmpeg}
 BuildRequires:  pkgconfig(gl)
+%if 0%{?with_egl}
+BuildRequires:  pkgconfig(egl)
+BuildRequires:  pkgconfig(glesv2)
+%else
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(libglvnd)
+%endif #{?with_egl}
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(sdl2)
@@ -100,16 +110,22 @@ BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
 Requires:       google-roboto-condensed-fonts
-
-Provides:       ppsspp-data.noarch = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      ppsspp-data.noarch < %{?epoch:%{epoch}:}%{version}-%{release}
-Conflicts:      ppsspp-data < %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
 PPSSPP is a PSP emulator written in C++. It translates PSP CPU instructions
 directly into optimized x86, x64, ARM or ARM64 machine code, using JIT
 recompilers (dynarecs).
+
+
+%package        data
+Summary:        Data files of %{name}
+BuildArch:      noarch
+
+%description data
+Data files of %{name}.
+
 
 %prep
 %if 0%{?with_snapshot}
@@ -138,7 +154,10 @@ sed -i \
 
 cp Qt/PPSSPP.desktop %{name}.desktop
 
-sed -i -e '/_FLAGS_/s| -O3 | |g' CMakeLists.txt
+sed \
+  -e '/_FLAGS_/s| -O3 | -O2 |g' \
+  -e '/Wno-deprecated-register/d' \
+  -i CMakeLists.txt
 
 rm -rf ext/native/ext/libpng
 sed -e 's|png17|%{pngver}|g' \
@@ -193,6 +212,12 @@ mkdir -p %{_target_platform}
 pushd %{_target_platform}
 
 %cmake .. \
+  -DBUILD_SHARED_LIBS:BOOL=OFF \
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+%if 0%{?with_egl}
+  -DUSING_EGL:BOOL=ON \
+  -DUSING_GLES2:BOOL=ON \
+%endif #{?with_egl}
   -DOpenGL_GL_PREFERENCE=GLVND \
 %if 0%{?with_sysffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
@@ -200,8 +225,22 @@ pushd %{_target_platform}
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \
   -DUSE_DISCORD:BOOL=OFF \
   -DUSE_WAYLAND_WSI:BOOL=ON \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+  -DUSING_X11_VULKAN=ON \
+  -DENABLE_HLSL:BOOL=OFF \
+  -DENABLE_GLSLANG_BINARIES:BOOL=OFF \
+%ifarch %{ix86}
+  -DX86:BOOL=ON \
+%endif
+%ifarch %{arm} aarch64
+  -DARM:BOOL=ON \
+%endif
+%ifarch armv7l armv7hl armv7hnl
+  -DARMV7:BOOL=ON \
+%endif
+%ifarch x86_64
+  -DX86_64:BOOL=ON \
+%endif
+  -DBUILD_TESTING:BOOL=OFF
 
 %make_build
 
@@ -250,24 +289,21 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
-%dir %{_datadir}/%{name}
-%dir %{_datadir}/%{name}/assets
-%{_datadir}/%{name}/assets/*.ini
-%{_datadir}/%{name}/assets/*.png
-%{_datadir}/%{name}/assets/*.ttf
-%{_datadir}/%{name}/assets/*.txt
-%{_datadir}/%{name}/assets/*.zim
-%dir %{_datadir}/%{name}/assets/flash0
-%dir %{_datadir}/%{name}/assets/flash0/font
-%{_datadir}/%{name}/assets/flash0/font/*
-%dir %{_datadir}/%{name}/assets/lang
-%{_datadir}/%{name}/assets/lang/*
-%dir %{_datadir}/%{name}/assets/shaders
-%{_datadir}/%{name}/assets/shaders/*
 %{_metainfodir}/*.xml
 
 
+%files data
+%doc README.md
+%license LICENSE.TXT
+%{_datadir}/%{name}
+
+
 %changelog
+* Mon Dec 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.5-1.20181210gitb282d83
+- New snapshot
+- Borrow some from RPMFusion
+- Split data package
+
 * Sat Nov 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.2-1.20181113git04708fe
 - New snapshot
 - USE_DISCORD=OFF

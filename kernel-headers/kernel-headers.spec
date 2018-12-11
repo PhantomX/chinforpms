@@ -78,7 +78,7 @@
 
 Name: kernel-headers
 Summary: Header files for the Linux kernel for use by glibc
-Group: Development/System
+
 License: GPLv2
 URL: http://www.kernel.org/
 Version: %{rpmversion}
