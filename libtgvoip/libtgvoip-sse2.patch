@@ -1,0 +1,43 @@
+From 7f54b9109cb37078aa34060e53091c8b4ad1f51a Mon Sep 17 00:00:00 2001
+From: Grishka <grishka93@gmail.com>
+Date: Mon, 10 Dec 2018 22:53:35 +0300
+Subject: [PATCH] crash fix
+
+also fixes #60
+---
+ os/posix/NetworkSocketPosix.cpp                           | 8 +++++---
+ .../modules/audio_processing/aec3/adaptive_fir_filter.cc  | 2 +-
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/os/posix/NetworkSocketPosix.cpp b/os/posix/NetworkSocketPosix.cpp
+index 26b449c..9eff048 100644
+--- a/os/posix/NetworkSocketPosix.cpp
++++ b/os/posix/NetworkSocketPosix.cpp
+@@ -377,9 +377,11 @@ std::string NetworkSocketPosix::GetLocalInterfaceInfo(IPv4Address *v4addr, IPv6A
+ 		jstring jitfName=static_cast<jstring>(env->GetObjectArrayElement(jinfo, 0));
+ 		jstring jipv4=static_cast<jstring>(env->GetObjectArrayElement(jinfo, 1));
+ 		jstring jipv6=static_cast<jstring>(env->GetObjectArrayElement(jinfo, 2));
+-		const char* itfchars=env->GetStringUTFChars(jitfName, NULL);
+-		name=std::string(itfchars);
+-		env->ReleaseStringUTFChars(jitfName, itfchars);
++		if(jitfName){
++			const char *itfchars=env->GetStringUTFChars(jitfName, NULL);
++			name=std::string(itfchars);
++			env->ReleaseStringUTFChars(jitfName, itfchars);
++		}
+ 
+ 		if(v4addr && jipv4){
+ 			const char* ipchars=env->GetStringUTFChars(jipv4, NULL);
+diff --git a/webrtc_dsp/modules/audio_processing/aec3/adaptive_fir_filter.cc b/webrtc_dsp/modules/audio_processing/aec3/adaptive_fir_filter.cc
+index 7449fdc..1cfa620 100644
+--- a/webrtc_dsp/modules/audio_processing/aec3/adaptive_fir_filter.cc
++++ b/webrtc_dsp/modules/audio_processing/aec3/adaptive_fir_filter.cc
+@@ -353,7 +353,7 @@ void ApplyFilter_NEON(const RenderBuffer& render_buffer,
+ }
+ #endif
+ 
+-#if defined(WEBRTC_ARCH_ARM_FAMILY) && defined(WEBRTC_ARCH_X86_FAMILY)
++#if defined(WEBRTC_ARCH_X86_FAMILY)
+ // Produces the filter output (SSE2 variant).
+ void ApplyFilter_SSE2(const RenderBuffer& render_buffer,
+                       rtc::ArrayView<const FftData> H,

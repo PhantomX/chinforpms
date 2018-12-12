@@ -16,10 +16,8 @@ ac_add_options --disable-updater
 ac_add_options --enable-url-classifier
 ac_add_options --enable-chrome-format=omni
 ac_add_options --enable-pulseaudio
-ac_add_options --with-system-icu
 ac_add_options --enable-release
 ac_add_options --enable-pie
-ac_add_options --enable-gold
 ac_add_options --disable-gconf
 # Workaround for mozbz#1341234
 ac_add_options BINDGEN_CFLAGS="$(pkg-config nspr pixman-1 --cflags)"
@@ -37,7 +35,6 @@ ac_add_options --disable-profiling
 ac_add_options --disable-signmar
 ac_add_options --disable-verify-mar
 
-#ac_add_options --enable-rust-simd # on x86 requires SSE2, breaks with system llvm
 ac_add_options --enable-stylo=build
 
 ac_add_options --with-app-name=waterfox

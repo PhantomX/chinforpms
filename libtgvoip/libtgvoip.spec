@@ -1,27 +1,28 @@
-Name: libtgvoip
-Version: 2.3
-Release: 100%{?dist}
-Summary: VoIP library for Telegram clients
+Name:           libtgvoip
+Version:        2.4
+Release:        100%{?dist}
+Summary:        VoIP library for Telegram clients
 
 # Libtgvoip shared library - Public Domain.
 # Bundled webrtc library - BSD with patented echo cancellation algorithms.
 License: Public Domain and BSD
-URL: https://github.com/grishka/%{name}
+URL:            https://github.com/grishka/%{name}
 
-Source0: %{url}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Patch0: %{name}-build-fixes.patch
+Source0:        %{url}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Patch0:         %{name}-build-fixes.patch
+Patch100:       %{name}-sse2.patch
 
-Patch200: %{name}-link-libraries.patch
+Patch200:       %{name}-link-libraries.patch
 
 Provides: bundled(webrtc-audio-processing) = 0.3
-BuildRequires: pulseaudio-libs-devel
-BuildRequires: alsa-lib-devel
-BuildRequires: openssl-devel
-BuildRequires: opus-devel
-BuildRequires: gcc-c++
-BuildRequires: cmake
-BuildRequires: gcc
-BuildRequires: gyp
+BuildRequires:  pulseaudio-libs-devel
+BuildRequires:  alsa-lib-devel
+BuildRequires:  openssl-devel
+BuildRequires:  opus-devel
+BuildRequires:  gcc-c++
+BuildRequires:  cmake
+BuildRequires:  gcc
+BuildRequires:  gyp
 
 %description
 Provides VoIP library for Telegram clients.
@@ -69,6 +70,10 @@ find video -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{build
 %{_libdir}/%{name}.so
 
 %changelog
+* Tue Dec 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.4-100.chinfo
+- 2.4
+- RPMFusion sync
+
 * Mon Dec 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.3-100.chinfo
 - 2.3
 

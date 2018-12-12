@@ -1,7 +1,7 @@
-diff -up tdesktop-1.3.9/Telegram/SourceFiles/dialogs/dialogs_layout.cpp.realmute tdesktop-1.3.9/Telegram/SourceFiles/dialogs/dialogs_layout.cpp
---- tdesktop-1.3.9/Telegram/SourceFiles/dialogs/dialogs_layout.cpp.realmute	2018-07-03 16:03:52.330515489 -0300
-+++ tdesktop-1.3.9/Telegram/SourceFiles/dialogs/dialogs_layout.cpp	2018-07-03 16:42:28.442640823 -0300
-@@ -478,7 +478,9 @@ void RowPainter::paint(
+diff -up tdesktop-1.5.1/Telegram/SourceFiles/dialogs/dialogs_layout.cpp.realmute tdesktop-1.5.1/Telegram/SourceFiles/dialogs/dialogs_layout.cpp
+--- tdesktop-1.5.1/Telegram/SourceFiles/dialogs/dialogs_layout.cpp.realmute	2018-12-11 17:09:11.104794469 -0200
++++ tdesktop-1.5.1/Telegram/SourceFiles/dialogs/dialogs_layout.cpp	2018-12-11 17:12:04.733689761 -0200
+@@ -121,7 +121,9 @@ int PaintWideCounter(
  		UnreadBadgeStyle st;
  		st.active = active;
  		st.muted = unreadMuted;
@@ -12,12 +12,24 @@ diff -up tdesktop-1.3.9/Telegram/SourceFiles/dialogs/dialogs_layout.cpp.realmute
  		availableWidth -= unreadWidth + st.padding;
  
  		hadOneBadge = true;
-@@ -663,7 +665,7 @@ void paintImportantSwitch(Painter &p, Mo
- 			int unreadRight = fullWidth - st::dialogsPadding.x();
- 			UnreadBadgeStyle st;
- 			st.muted = true;
--			paintUnreadCount(p, QString::number(unread), unreadRight, unreadTop, st, nullptr);
-+			//paintUnreadCount(p, QString::number(unread), unreadRight, unreadTop, st, nullptr);
- 		}
+@@ -801,13 +803,13 @@ void paintImportantSwitch(Painter &p, Mo
+ 		const auto unreadRight = fullWidth - st::dialogsPadding.x();
+ 		UnreadBadgeStyle st;
+ 		st.muted = true;
+-		paintUnreadCount(
+-			p,
+-			QString::number(unread),
+-			unreadRight,
+-			unreadTop,
+-			st,
+-			nullptr);
++		//paintUnreadCount(
++			//p,
++			//QString::number(unread),
++			//unreadRight,
++			//unreadTop,
++			//st,
++			//nullptr);
  	}
  }
+ 

@@ -1,5 +1,7 @@
 # Telegram Desktop's constants...
 %global appname tdesktop
+%global apiid 208164
+%global apihash dfbe1bc42dc9d20507e17d1814cc2f0a
 
 # Git revision of crl...
 %global commit1 4291015efab76bda5886a56b5007f4531be17d46
@@ -9,7 +11,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.4.7
+Version:        1.5.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -29,8 +31,8 @@ ExclusiveArch:  i686 x86_64
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
 Source1:        https://github.com/telegramdesktop/crl/archive/%{commit1}.tar.gz#/crl-%{shortcommit1}.tar.gz
 Patch0:         %{name}-build-fixes.patch
-#Patch1:         %%{name}-api-tokens.patch
-Patch2:         %{name}-system-fonts.patch
+Patch1:         %{name}-system-fonts.patch
+Patch2:         %{name}-unbundle-minizip.patch
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
 Patch100:       %{name}-no-text-replace.patch
@@ -72,7 +74,7 @@ BuildRequires:  lzma-devel
 BuildRequires:  opus-devel
 BuildRequires:  gtk3-devel
 BuildRequires:  xz-devel
-BuildRequires:  python2
+BuildRequires:  python3
 
 %if 0%{?fedora} >= 30
 BuildRequires:  minizip-compat-devel
@@ -104,13 +106,21 @@ pushd Telegram/ThirdParty
     mv crl-%{commit1} crl
 popd
 
-sed -e '/^Keywords=tg;chat;im;/d' -i lib/xdg/telegramdesktop.desktop
-
 %build
+# Setting build definitions...
+%if 0%{?fedora} < 30
+TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_OPENAL_EFFECTS,'
+%endif
+TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_AUTOUPDATE,'
+TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME,'
+TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_DESKTOP_FILE_GENERATION,'
+TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_CRASH_REPORTS,'
+TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_UNITY_INTEGRATION'
+
 # Generating cmake script using GYP...
 pushd Telegram/gyp
-    gyp --depth=. --generator-output=../.. -Goutput_dir=out Telegram.gyp --format=cmake \
-      -Dapi_id=208164 -Dapi_hash=dfbe1bc42dc9d20507e17d1814cc2f0a
+    gyp --depth=. --generator-output=../.. -Goutput_dir=out -Dapi_id=%{apiid} \
+      -Dapi_hash=%{apihash} -Dbuild_defines=$TDESKTOP_BUILD_DEFINES Telegram.gyp --format=cmake
 popd
 
 # Patching generated cmake script...
@@ -156,6 +166,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
+* Tue Dec 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.1-100.chinfo
+- 1.5.1
+- RPMFusion sync
+
 * Mon Dec 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.4.7-100.chinfo
 - 1.4.7
 

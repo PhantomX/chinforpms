@@ -1,6 +1,6 @@
-%global commit 475fed0269120a3673ac55d8384022dc7f44eacf
+%global commit 3e2c786a657a0b2e6e7a82c155a8ff6030888c4a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20181030
+%global date 20181211
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -10,43 +10,30 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-# Build with clang only?
-%global with_clang        0
 
-# Use ALSA backend?
 %global alsa_backend      1
-
-# Use system nspr/nss?
 %global system_nss        1
-
-# Use system hunspell?
 %global system_hunspell   1
-
-# Use system libevent?
 %global system_libevent   1
-
-# Use system sqlite?
 %global system_sqlite     1
-
 %global system_ffi        1
-
-# Use system cairo?
 %global system_cairo      0
-
-# Use system graphite2/harfbuzz?
 %global system_harfbuzz   1
-
-# Use system libvpx?
 %global system_libvpx     1
-
-# Use system webp?
 %global system_webp       1
-
-# Use system libvpx?
 %global system_vorbis     1
-
-# Use system libicu?
 %global system_libicu     0
+%global system_jpeg       1
+
+%global hardened_build    1
+
+%global build_with_clang  0
+%if 0%{?fedora} >= 29
+%ifarch x86_64 aarch64
+%global build_with_clang  1
+%endif
+%endif
+%global build_with_pgo    0
 
 # Big endian platforms
 %ifarch ppc64 s390x
@@ -55,23 +42,26 @@
 %global big_endian        1
 %endif
 
-# Hardened build?
-%global hardened_build    1
-
-%global system_jpeg       1
-
 %ifarch %{ix86} x86_64
 %global run_tests         0
 %else
 %global run_tests         0
 %endif
 
+%bcond_without debug_build
+%if %{with debug_build}
+%else
+%global debug_build       1
+%else
+%global debug_build       0
+%endif
+
 # Build as a debug package?
 %global debug_build       0
 
-%global disable_elfhack       0
-%if 0%{?fedora} > 28
-%global disable_elfhack       1
+%global disable_elfhack   0
+%if !0%{?build_with_clang} || 0%{?fedora} > 28
+%global disable_elfhack   1
 %endif
 
 %global default_bookmarks_file  %{_datadir}/bookmarks/default-bookmarks.html
@@ -122,7 +112,7 @@
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.5
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -182,13 +172,12 @@ Patch414:        mozilla-1435695.patch
 Patch415:        Bug-1238661---fix-mozillaSignalTrampoline-to-work-.patch
 Patch416:        bug1375074-save-restore-x28.patch
 Patch417:        mozilla-1436242.patch
+Patch418:        https://hg.mozilla.org/integration/autoland/raw-rev/342812d23eb9#/mozilla-1336978.patch
 
 # Upstream updates
 
 %global wf_url https://github.com/MrAlex94/Waterfox
 #Patch???:      %%{wf_url}/commit/commit.patch#/wf-commit.patch
-# Revert this until figure out
-Patch490:       %{wf_url}/commit/a89c49043079c720ea09ea3c7c523a5ef5db00e5.patch#/wf-a89c49043079c720ea09ea3c7c523a5ef5db00e5.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -259,7 +248,10 @@ BuildRequires:  llvm
 BuildRequires:  llvm-devel
 BuildRequires:  clang
 BuildRequires:  clang-libs
-%if !0%{?with_clang}
+%if 0%{?build_with_clang}
+BuildRequires:  lld
+BuildRequires:  libstdc++-static
+%else
 BuildRequires:  gcc-c++
 %endif
 BuildRequires:  patchutils
@@ -272,6 +264,7 @@ Requires:       nspr >= %{nspr_build_version}
 Requires:       nss >= %{nss_build_version}
 %endif
 BuildRequires:  python2-devel
+Requires:       u2f-hidraw-policy
 
 BuildRequires:  nss-devel >= 3.29.1-2.1
 Requires:       nss >= 3.29.1-2.1
@@ -372,8 +365,7 @@ This package contains results of tests executed during build.
 %endif
 %patch416 -p1 -b .bug1375074-save-restore-x28
 %patch417 -p1 -b .mozilla-1436242
-
-%patch490 -p1 -R -b .1420171
+%patch418 -p1 -b .mozilla-1336978
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -398,7 +390,7 @@ done
 # 2: no apply
 # 3: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1452576 \
+  702179 991253 1021761 1144632 1288587 1395486 1452576 \
   1388744 1413143 \
   1447519
 do
@@ -429,9 +421,22 @@ done
 rm -f .mozconfig
 cp %{SOURCE10} .mozconfig
 
-%if 0%{?with_clang}
+%if 0%{?build_with_clang}
+echo 'export LLVM_PROFDATA="llvm-profdata"' >> .mozconfig
 echo 'export CC=clang' >> .mozconfig
 echo 'export CXX=clang++' >> .mozconfig
+echo 'export AR="llvm-ar"' >> .mozconfig
+echo 'export NM="llvm-nm"' >> .mozconfig
+echo 'export RANLIB="llvm-ranlib"' >> .mozconfig
+echo "ac_add_options --enable-linker=lld" >> .mozconfig
+echo "ac_add_options --enable-rust-simd" >> .mozconfig
+%else
+echo 'export CC=gcc' >> .mozconfig
+echo 'export CXX=g++' >> .mozconfig
+echo "ac_add_options --enable-linker=gold" >> .mozconfig
+%endif
+%if 0%{?build_with_pgo}
+echo "ac_add_options MOZ_PGO=1" >> .mozconfig
 %endif
 
 %if %{?system_nss}
@@ -558,6 +563,9 @@ echo "ac_add_options --without-system-icu" >> .mozconfig
 echo "ac_add_options --disable-ion" >> .mozconfig
 %endif
 
+# Remove executable bit to make brp-mangle-shebangs happy.
+chmod -x third_party/rust/itertools/src/lib.rs
+
 
 #---------------------------------------------------------------------
 
@@ -613,8 +621,10 @@ MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | %{__sed} -e 's/-g/-g1/')
 # (OOM when linking, rhbz#1238225)
 export MOZ_DEBUG_FLAGS=" "
 %endif
+%if !0%{?build_with_clang}
 %ifarch s390 %{arm} ppc aarch64
 MOZ_LINK_FLAGS="-Wl,--no-keep-memory -Wl,--reduce-memory-overheads"
+%endif
 %endif
 export CFLAGS=$MOZ_OPT_FLAGS
 export CXXFLAGS=$MOZ_OPT_FLAGS
@@ -622,6 +632,16 @@ export LDFLAGS=$MOZ_LINK_FLAGS
 
 export PREFIX='%{_prefix}'
 export LIBDIR='%{_libdir}'
+
+%if 0%{?build_with_clang}
+export CC=clang
+export CXX=clang++
+export AR="llvm-ar"
+export NM="llvm-nm"
+%else
+export CC=gcc
+export CXX=g++
+%endif
 
 MOZ_SMP_FLAGS=-j1
 # On x86 architectures, Mozilla can build up to 4 jobs at once in parallel,
@@ -634,7 +654,10 @@ MOZ_SMP_FLAGS=-j1
 [ "$RPM_BUILD_NCPUS" -ge 8 ] && MOZ_SMP_FLAGS=-j8
 %endif
 
-make -f client.mk build STRIP="/bin/true" MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS" MOZ_SERVICES_SYNC="1"
+export MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS"
+export MOZ_SERVICES_SYNC="1"
+export STRIP=/bin/true
+./mach build
 
 %if %{?run_tests}
 %if %{?system_nss}
@@ -903,6 +926,11 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue Dec 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.5-2.20181211git3e2c786
+- New snapshot
+- Updated spec, more like Fedora Firefox one
+- clang build with lld linker
+
 * Tue Oct 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.5-1.20181030git475fed0
 - New release/snapshot
 

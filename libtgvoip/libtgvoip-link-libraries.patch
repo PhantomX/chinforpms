@@ -1,7 +1,7 @@
---- libtgvoip-2.2.3/libtgvoip.gyp.orig	2018-08-29 08:18:09.011936398 -0300
-+++ libtgvoip-2.2.3/libtgvoip.gyp	2018-08-29 08:41:28.569694617 -0300
-@@ -245,7 +245,10 @@
-           '<(tgvoip_src_loc)/webrtc_dsp/webrtc/typedefs.h',
+--- libtgvoip-2.4/libtgvoip.gyp.orig	2018-12-11 16:52:12.654488241 -0200
++++ libtgvoip-2.4/libtgvoip.gyp	2018-12-11 16:52:34.025413950 -0200
+@@ -721,7 +721,10 @@
+ 
  
          ],
 -        'libraries': [],

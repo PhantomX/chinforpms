@@ -42,7 +42,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        18.3.0
+Version:        18.3.1
 Release:        100%{?dist}
 
 License:        MIT
@@ -629,6 +629,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Wed Dec 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.3.1-100
+- 18.3.1
+
 * Fri Dec 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.3.0-100
 - 18.3.0
 - Rawhide sync
