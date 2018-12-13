@@ -55,15 +55,18 @@ Summary: The Linux kernel
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
+# Do we have a -stable update to apply?
+%define stable_update 8
+
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
-# stable_update below needs to match pf applied stable patches to proper rpm updates
+# stable_update above needs to match pf applied stable patches to proper rpm updates
 %global post_factum 7
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit c50ccc3c1f58b7a32a323b185e818e52c91c81b1
+%global pfcommit 94f685eb710dd42cba8ad3897ea79a16b4a9822d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -80,9 +83,6 @@ Summary: The Linux kernel
 %endif
 
 %global opensuse_id e8181d1487c7f18786f0aee43e05a8e841607be5
-
-# Do we have a -stable update to apply?
-%define stable_update 7
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2009,6 +2009,11 @@ fi
 #
 #
 %changelog
+* Wed Dec 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.8-500.chinfo
+- 4.19.8
+- f29 sync
+- zen patchset optional support
+
 * Thu Dec 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.7-500.chinfo
 - 4.19.7
 

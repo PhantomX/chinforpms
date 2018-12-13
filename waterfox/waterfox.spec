@@ -25,6 +25,8 @@
 %global system_libicu     0
 %global system_jpeg       1
 
+%global run_tests         0
+
 %global hardened_build    1
 
 %global build_with_clang  0
@@ -37,15 +39,17 @@
 
 # Big endian platforms
 %ifarch ppc64 s390x
-# Javascript Intl API is not supported on big endian platforms right now:
-# https://bugzilla.mozilla.org/show_bug.cgi?id=1322212
 %global big_endian        1
 %endif
 
-%ifarch %{ix86} x86_64
-%global run_tests         0
-%else
-%global run_tests         0
+%if 0%{?build_with_pgo}
+%global use_xvfb          1
+%global build_tests       1
+%endif
+
+%if !0%{?run_tests}
+%global use_xvfb          1
+%global build_tests       1
 %endif
 
 %bcond_without debug_build
@@ -55,9 +59,6 @@
 %else
 %global debug_build       0
 %endif
-
-# Build as a debug package?
-%global debug_build       0
 
 %global disable_elfhack   0
 %if !0%{?build_with_clang} || 0%{?fedora} > 28
@@ -249,7 +250,7 @@ BuildRequires:  llvm-devel
 BuildRequires:  clang
 BuildRequires:  clang-libs
 %if 0%{?build_with_clang}
-BuildRequires:  lld
+#BuildRequires:  lld
 BuildRequires:  libstdc++-static
 %else
 BuildRequires:  gcc-c++
@@ -280,7 +281,7 @@ Requires:       sqlite >= %{sqlite_build_version}
 BuildRequires:  pkgconfig(libffi)
 %endif
 
-%if %{?run_tests}
+%if 0%{?use_xvfb}
 BuildRequires:  xorg-x11-server-Xvfb
 %endif
 BuildRequires:  rust
@@ -295,7 +296,7 @@ Waterfox is an open-source web browser, specialised modification of the Mozilla
 platform, designed for privacy and user choice in mind.
 
 %if %{run_tests}
-%global testsuite_pkg_name mozilla-%{name}-testresults
+%global testsuite_pkg_name %{name}-testresults
 %package -n %{testsuite_pkg_name}
 Summary: Results of testsuite
 %description -n %{testsuite_pkg_name}
@@ -428,7 +429,7 @@ echo 'export CXX=clang++' >> .mozconfig
 echo 'export AR="llvm-ar"' >> .mozconfig
 echo 'export NM="llvm-nm"' >> .mozconfig
 echo 'export RANLIB="llvm-ranlib"' >> .mozconfig
-echo "ac_add_options --enable-linker=lld" >> .mozconfig
+echo "ac_add_options --enable-linker=gold" >> .mozconfig
 echo "ac_add_options --enable-rust-simd" >> .mozconfig
 %else
 echo 'export CC=gcc' >> .mozconfig
@@ -591,13 +592,6 @@ echo "Generate big endian version of config/external/icu/data/icud58l.dat"
 # Update the various config.guess to upstream release for aarch64 support
 find ./ -name config.guess -exec cp /usr/lib/rpm/config.guess {} ';'
 
-# -fpermissive is needed to build with gcc 4.6+ which has become stricter
-#
-# Mozilla builds with -Wall with exception of a few warnings which show up
-# everywhere in the code; so, don't override that.
-#
-# Disable C++ exceptions since Mozilla code is not exception-safe
-#
 MOZ_OPT_FLAGS=$(echo "%{optflags}" | %{__sed} -e 's/-Wall//')
 #rhbz#1037063
 # -Werror=format-security causes build failures when -Wno-format is explicitly given
@@ -605,9 +599,6 @@ MOZ_OPT_FLAGS=$(echo "%{optflags}" | %{__sed} -e 's/-Wall//')
 # Explicitly force the hardening flags for Waterfox so it passes the checksec test;
 # See also https://fedoraproject.org/wiki/Changes/Harden_All_Packages
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -Wformat-security -Wformat -Werror=format-security"
-# Disable null pointer gcc6 optimization in gcc6 (rhbz#1328045)
-MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -fno-delete-null-pointer-checks"
-# Use hardened build?
 %if %{?hardened_build}
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -fPIC -Wl,-z,relro -Wl,-z,now"
 %endif
@@ -621,10 +612,18 @@ MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | %{__sed} -e 's/-g/-g1/')
 # (OOM when linking, rhbz#1238225)
 export MOZ_DEBUG_FLAGS=" "
 %endif
+%ifarch %{arm}
+MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | %{__sed} -e 's/-g/-g0/')
+export MOZ_DEBUG_FLAGS=" "
+%endif
 %if !0%{?build_with_clang}
 %ifarch s390 %{arm} ppc aarch64
 MOZ_LINK_FLAGS="-Wl,--no-keep-memory -Wl,--reduce-memory-overheads"
 %endif
+%endif
+
+%ifarch %{arm} %{ix86}
+export RUSTFLAGS="-Cdebuginfo=0"
 %endif
 export CFLAGS=$MOZ_OPT_FLAGS
 export CXXFLAGS=$MOZ_OPT_FLAGS
@@ -657,7 +656,11 @@ MOZ_SMP_FLAGS=-j1
 export MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS"
 export MOZ_SERVICES_SYNC="1"
 export STRIP=/bin/true
+%if 0%{?build_with_pgo}
+xvfb-run ./mach build
+%else
 ./mach build
+%endif
 
 %if %{?run_tests}
 %if %{?system_nss}
@@ -926,10 +929,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
-* Tue Dec 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.5-2.20181211git3e2c786
+* Wed Dec 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.5-2.20181211git3e2c786
 - New snapshot
 - Updated spec, more like Fedora Firefox one
-- clang build with lld linker
+- clang build
 
 * Tue Oct 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.5-1.20181030git475fed0
 - New release/snapshot
