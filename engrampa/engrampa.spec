@@ -13,13 +13,15 @@
 %{!?rel_build:%global git_tar %{name}-%{version}-%{git_ver}.tar.xz}
 
 Name:          engrampa
-Version:       %{branch}.1
+Version:       %{branch}.2
 %if 0%{?rel_build}
 Release:       100%{?dist}
 %else
 Release:       0.8%{?git_rel}%{?dist}
 %endif
+Epoch:          1
 Summary:       MATE Desktop file archiver
+
 License:       GPLv2+ and LGPLv2+
 URL:           http://mate-desktop.org
 
@@ -42,8 +44,8 @@ Mate File Archiver is an application for creating and viewing archives files,
 such as zip, xv, bzip2, cab, rar and other compress formats.
 
 %package caja
-Summary: Engrampa extension for caja
-Requires: %{name}%{_isa} = %{version}-%{release}
+Summary:        Engrampa extension for caja
+Requires:       %{name}%{_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description caja
 This package contains the engrampa extension for the caja file manager.
@@ -110,6 +112,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Thu Dec 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.20.2-100
+- 1.20.2
+
 * Fri Jul 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.20.1-100.chinfo
 - Split caja plugin
 

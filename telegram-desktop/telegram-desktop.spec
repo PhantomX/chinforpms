@@ -11,7 +11,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.5.1
+Version:        1.5.2
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -108,9 +108,7 @@ popd
 
 %build
 # Setting build definitions...
-%if 0%{?fedora} < 30
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_OPENAL_EFFECTS,'
-%endif
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_AUTOUPDATE,'
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME,'
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_DESKTOP_FILE_GENERATION,'
@@ -166,7 +164,11 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
-* Tue Dec 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.1-100.chinfo
+* Thu Dec 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.2-100
+- 1.5.2
+- RPMFusion sync
+
+* Tue Dec 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.1-100
 - 1.5.1
 - RPMFusion sync
 

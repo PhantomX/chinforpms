@@ -1,10 +1,11 @@
 // Chinforinfula Firefox settings
-// 20181106
+// 20181213
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
 pref("beacon.enabled", false);
 pref("browser.bookmarks.showRecentlyBookmarked", false);
+pref("browser.contentblocking.enabled", true);
 pref("browser.ctrlTab.previews", false);
 pref("browser.fixup.alternate.enabled", false);
 pref("browser.fixup.hide_user_pass", true);
@@ -37,6 +38,7 @@ pref("general.warnOnAboutConfig", false);
 pref("keyword.enabled", false);
 pref("layout.spellcheckDefault", 0);
 pref("media.autoplay.enabled", false);
+pref("media.autoplay.default", 1);
 pref("media.block-autoplay-until-in-foreground", true);
 pref("middlemouse.contentLoadURL", false);
 pref("toolkit.cosmeticAnimations.enabled", false);
@@ -72,6 +74,7 @@ pref("browser.onboarding.enabled", false);
 
 // Activity Stream
 pref("browser.library.activity-stream.enabled", false);
+pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr", false);
 pref("browser.newtabpage.activity-stream.disableSnippets", true);
 pref("browser.newtabpage.activity-stream.feeds.snippets", false);
 pref("browser.newtabpage.activity-stream.feeds.section.topstories", false);
@@ -110,8 +113,12 @@ pref("browser.eme.ui.enabled", false);
 pref("media.eme.enabled", false);
 pref("media.eme.apiVisible", false);
 
-// No Valence
+// Developer tools
+pref("devtools.chrome.enabled", false);
+pref("devtools.debugger.remote-enabled", false);
 pref("devtools.webide.enabled", false);
+pref("devtools.webide.adbAddonURL", "");
+pref("devtools.webide.autoinstallADBExtension", false);
 pref("devtools.webide.autoinstallADBHelper", false);
 pref("devtools.webide.autoinstallFxdtAdapters", false);
 pref("devtools.webide.autoConnectRuntime", false);
@@ -212,6 +219,7 @@ pref("extensions.ui.experiment.hidden", false);
 pref("extensions.webcompat-reporter.enabled", false);
 pref("nsITelemetry.canRecordBase", false);
 pref("nsITelemetry.canRecordExtended", false);
+pref("toolkit.coverage.opt-out", true);
 
 // Disable Safe Browsing service
 //pref("browser.safebrowsing.malware.enabled", false);

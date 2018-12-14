@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 94f685eb710dd42cba8ad3897ea79a16b4a9822d
+%global pfcommit 4c6fddabb6f7adf28645904b5a5f53275d18e662
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -625,8 +625,9 @@ Patch307: arm64-ZynqMP-firmware-clock-drivers-core.patch
 
 Patch308: arm64-96boards-Rock960-CE-board-support.patch
 Patch309: arm64-rockchip-add-initial-Rockpro64.patch
+Patch310: arm64-rk3399-add-idle-states.patch
 
-Patch310: gpio-pxa-handle-corner-case-of-unprobed-device.patch
+Patch311: gpio-pxa-handle-corner-case-of-unprobed-device.patch
 
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
@@ -2009,6 +2010,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.9-500.chinfo
+- 4.19.9
+
 * Wed Dec 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.8-500.chinfo
 - 4.19.8
 - f29 sync

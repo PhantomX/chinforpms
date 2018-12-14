@@ -1,125 +1,8 @@
-From patchwork Mon Sep 10 15:13:53 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Manivannan Sadhasivam
- <manivannan.sadhasivam@linaro.org>
-X-Patchwork-Id: 10594431
-Return-Path: 
- <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
-Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
- [172.30.200.125])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 73CD514BD
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:15:33 +0000 (UTC)
-Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 5D47C28C27
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:15:33 +0000 (UTC)
-Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
-	id 5116628C53; Mon, 10 Sep 2018 15:15:33 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
-	pdx-wl-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [198.137.202.133])
-	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id EDF1528C27
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:15:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
-	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Owner;
-	bh=MsLZPB+rA3nDtNH8e90hVGAuKXNRnfg7yUTFRVYc6dI=; b=h4EvyRF3c6JHDN+V8CA1aCQ+Z1
-	YJv25g2qREcfTe43jtJB8EdndYJJvCH7lwCqcySm4a7gc6OmLzMHyOkbJpY5btuCSASttz84P5UQR
-	nQohc2vi6Gw0/0sRPpWedlb3lyVDOjQTqssy1EJ5AfGmF4zixU86HPfI/HSSMdvThPOtryoX5RLTb
-	ibxf8tARxEuJj2etn2yjSOPGVh/cqqFoYQ8bYx79baCtrqIhbZyf0FThVXv5zFoZs8P4dkl+6bQxL
-	g7qcM3JpsT5cNwPtXWHQu9wqV81v3HfC0KnEFn6LcoB3TE/ZwGpgPZjflJrCqpqAk7kWeWW+2dI4C
-	FHizu/pA==;
-Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1fzNuN-00006z-Ln; Mon, 10 Sep 2018 15:15:23 +0000
-Received: from mail-pg1-x543.google.com ([2607:f8b0:4864:20::543])
- by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
- id 1fzNtW-0007s1-E0
- for linux-arm-kernel@lists.infradead.org; Mon, 10 Sep 2018 15:14:34 +0000
-Received: by mail-pg1-x543.google.com with SMTP id 7-v6so10649320pgf.2
- for <linux-arm-kernel@lists.infradead.org>;
- Mon, 10 Sep 2018 08:14:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=Eog9j9IcKFaAzJXy1OcDk20W/serCK49+v6e5E41fYs=;
- b=UumzTjrKvICkslj9/rY1Ypqo4g/VFWMM/z4LWlc0YmDX6R7J7mkz84ZdTL5XsoDcXH
- bIJYtcSPWxrKlCExdB+l76HrTiEIwBTSpa+43+zkBZmBL96zkDP+ttgtuhQHuHLySPkk
- e5/P5mAeV67NX82dCuBHtDGkNgnXHKwGYVJ4E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=Eog9j9IcKFaAzJXy1OcDk20W/serCK49+v6e5E41fYs=;
- b=Zs0nhcL8gTYkjWpXtvcZzWYogSg7OWkFayoR/xLbsQSFpBzZ2Bz3l3SHbpp2ik8r4q
- ttai7OC70sE0YX+07kWmUskhY6DZ9v9Y9C12Gorn7R2Vrb8d9bJ0iYC/WDBKpvqPXRJh
- qxhB8hZQSDN5n1o7575Zra770wEz+2ZpuYn0XqV0Eu1GsTHpg2DM81R/ee2QB0H+DSPc
- nzWzZ0d1nw4hFMVzaZX/NxGZG8y0n0xJ1cczcixZk0i5rA8laVOK0F6NSIM0hSlVmpbA
- w8ABebeQMFhjDJzyuhpitWNVSqXUd8lL66MmLCJN0ywvaKlkCTOA3+YzKC3i13DI5GDe
- l3Uw==
-X-Gm-Message-State: APzg51DkGQG9g2kFMP8auJcqLZzVe9v0wPZb5nX0QBtWinR+6ggMBUHP
- q7OTJ5nOg3//Y7mKlI8nThBh
-X-Google-Smtp-Source: 
- ANB0VdazLqQZTiVhxGQkZGzXM/aTQSynf/Y1rCmuJyISmCcXxPMDwVVko2CYJbgXHjZ/o6nqP2KzHA==
-X-Received: by 2002:a62:63c2:: with SMTP id
- x185-v6mr24200641pfb.13.1536592467755;
- Mon, 10 Sep 2018 08:14:27 -0700 (PDT)
-Received: from localhost.localdomain
- ([2405:204:728c:6bba:60a8:6c40:2817:7ee1])
- by smtp.gmail.com with ESMTPSA id e202-v6sm26703907pfh.16.2018.09.10.08.14.19
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Mon, 10 Sep 2018 08:14:27 -0700 (PDT)
+From bfc9bab86121ad657a4564373e5d0ac8b40fb88d Mon Sep 17 00:00:00 2001
 From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To: heiko@sntech.de,
-	robh+dt@kernel.org
-Subject: [PATCH 1/4] arm64: dts: rockchip: Split out common nodes for Rock960
- based boards
 Date: Mon, 10 Sep 2018 20:43:53 +0530
-Message-Id: <20180910151356.25946-2-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20180910151356.25946-1-manivannan.sadhasivam@linaro.org>
-References: <20180910151356.25946-1-manivannan.sadhasivam@linaro.org>
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20180910_081430_502727_1CA120A0 
-X-CRM114-Status: GOOD (  17.07  )
-X-BeenThere: linux-arm-kernel@lists.infradead.org
-X-Mailman-Version: 2.1.21
-Precedence: list
-List-Id: <linux-arm-kernel.lists.infradead.org>
-List-Unsubscribe: 
- <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: 
- <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- tom@vamrs.com, amit.kucheria@linaro.org, shawn.lin@rock-chips.com,
- linux-kernel@vger.kernel.org, vicencb@gmail.com, dev@vamrs.com,
- linux-rockchip@lists.infradead.org, pbrobinson@gmail.com,
- Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- enric.balletbo@collabora.com, ezequiel@collabora.com, stephen@vamrs.com
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: 
- linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
-X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: [PATCH 1/5] arm64: dts: rockchip: Split out common nodes for Rock960
+ based boards
 
 Since the same family members of Rock960 boards (Rock960 and Ficus)
 share the same configuration, split out the common nodes into a common
@@ -127,14 +10,15 @@ dtsi file for reducing code duplication. The board specific nodes for
 Ficus boards are then placed in corresponding board DTS file.
 
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
 ---
- arch/arm64/boot/dts/rockchip/rk3399-ficus.dts | 429 +----------------
+ arch/arm64/boot/dts/rockchip/rk3399-ficus.dts | 417 +----------------
  .../boot/dts/rockchip/rk3399-rock960.dtsi     | 439 ++++++++++++++++++
- 2 files changed, 440 insertions(+), 428 deletions(-)
+ 2 files changed, 440 insertions(+), 416 deletions(-)
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-rock960.dtsi
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399-ficus.dts b/arch/arm64/boot/dts/rockchip/rk3399-ficus.dts
-index 8978d924eb83..7f6ec37d5a69 100644
+index 85cf0b6bdda9..7f6ec37d5a69 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399-ficus.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-ficus.dts
 @@ -7,8 +7,7 @@
@@ -179,24 +63,10 @@ index 8978d924eb83..7f6ec37d5a69 100644
  	vcc3v3_pcie: vcc3v3-pcie-regulator {
  		compatible = "regulator-fixed";
  		enable-active-high;
-@@ -75,46 +49,6 @@
- 		regulator-always-on;
- 		vin-supply = <&vcc_sys>;
+@@ -77,34 +51,6 @@
  	};
--
--	vdd_log: vdd-log {
--		compatible = "pwm-regulator";
--		pwms = <&pwm2 0 25000 0>;
--		regulator-name = "vdd_log";
--		regulator-min-microvolt = <800000>;
--		regulator-max-microvolt = <1400000>;
--		regulator-always-on;
--		regulator-boot-on;
--		vin-supply = <&vcc_sys>;
--	};
--
--};
--
+ };
+ 
 -&cpu_l0 {
 -	cpu-supply = <&vdd_cpu_l>;
 -};
@@ -223,10 +93,12 @@ index 8978d924eb83..7f6ec37d5a69 100644
 -
 -&emmc_phy {
 -	status = "okay";
- };
- 
+-};
+-
  &gmac {
-@@ -133,263 +67,6 @@
+ 	assigned-clocks = <&cru SCLK_RMII_SRC>;
+ 	assigned-clock-parents = <&clkin_gmac>;
+@@ -121,263 +67,6 @@
  	status = "okay";
  };
  
@@ -490,7 +362,7 @@ index 8978d924eb83..7f6ec37d5a69 100644
  &pcie_phy {
  	status = "okay";
  };
-@@ -403,11 +80,6 @@
+@@ -391,11 +80,6 @@
  	status = "okay";
  };
  
@@ -502,7 +374,7 @@ index 8978d924eb83..7f6ec37d5a69 100644
  &pinctrl {
  	gmac {
  		rgmii_sleep_pins: rgmii-sleep-pins {
-@@ -416,31 +88,6 @@
+@@ -404,31 +88,6 @@
  		};
  	};
  
@@ -534,7 +406,7 @@ index 8978d924eb83..7f6ec37d5a69 100644
  	pcie {
  		pcie_drv: pcie-drv {
  			rockchip,pins =
-@@ -448,23 +95,6 @@
+@@ -436,23 +95,6 @@
  			};
  	};
  
@@ -558,7 +430,7 @@ index 8978d924eb83..7f6ec37d5a69 100644
  	usb2 {
  		host_vbus_drv: host-vbus-drv {
  			rockchip,pins =
-@@ -473,37 +103,6 @@
+@@ -461,37 +103,6 @@
  	};
  };
  
@@ -596,7 +468,7 @@ index 8978d924eb83..7f6ec37d5a69 100644
  &tcphy0 {
  	status = "okay";
  };
-@@ -538,16 +137,6 @@
+@@ -526,16 +137,6 @@
  	status = "okay";
  };
  
@@ -613,7 +485,7 @@ index 8978d924eb83..7f6ec37d5a69 100644
  &usb_host0_ehci {
  	status = "okay";
  };
-@@ -581,19 +170,3 @@
+@@ -569,19 +170,3 @@
  	status = "okay";
  	dr_mode = "host";
  };
@@ -1078,132 +950,18 @@ index 000000000000..5a5d8e28ef55
 +&vopl_mmu {
 +	status = "okay";
 +};
+-- 
+2.19.2
 
-From patchwork Mon Sep 10 15:13:54 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Manivannan Sadhasivam
- <manivannan.sadhasivam@linaro.org>
-X-Patchwork-Id: 10594435
-Return-Path: 
- <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
-Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
- [172.30.200.125])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 2BF1F921
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:16:42 +0000 (UTC)
-Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 18E7328C53
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:16:42 +0000 (UTC)
-Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
-	id 0BCAE28EEA; Mon, 10 Sep 2018 15:16:42 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
-	pdx-wl-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [198.137.202.133])
-	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 8BD0528C53
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:16:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
-	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Owner;
-	bh=xmUkL5mhfsjBunlvmyohQp6j9uGJXfnKJf9vQglqLgg=; b=mVmqN9cD59M0SIET1b/PL7/vE9
-	pvFJkHJLmhp8Nf/jBRW1g+V1d+G5W7/6V3bHNBbhYfjjOoRhXr+XDaTWhJEHlYR2hUm3TxwBv5JEz
-	d1tE6BgOCfrCex3T4D+BwL9hyn1HbEnuM6Mgrx25O4Y/ggGLoZkIyYdLI12AVSd6Hk5cb5wFfS+rv
-	hx+PI1hQF9brC3kTjV43q2/j+K0ZGZuLmtUQr/Hd2RKRoDfqLjy38KFVEUQfln/YS8dxQ2h9GJc7B
-	36IaewzvWd8m2CicWSAhbTDb9pAK9i4bVRPwvF/JvZNPQ055lEu2vTsmVrDSbN9LyCxOwqK4x3Zc8
-	ke7bGLYA==;
-Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1fzNvS-0001Wo-Dn; Mon, 10 Sep 2018 15:16:30 +0000
-Received: from mail-pf1-x442.google.com ([2607:f8b0:4864:20::442])
- by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
- id 1fzNtm-0007u1-LE
- for linux-arm-kernel@lists.infradead.org; Mon, 10 Sep 2018 15:14:48 +0000
-Received: by mail-pf1-x442.google.com with SMTP id h69-v6so10643325pfd.4
- for <linux-arm-kernel@lists.infradead.org>;
- Mon, 10 Sep 2018 08:14:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=k14lBxRZet8JTP0sZsFzzMdrUIiDAx3PCahAr8M1lTM=;
- b=DbONVz7SNceTZXBZJ8Gl0rnlFDJW0nx0gDqbWxJjPAh0FU6WbQn5fnmnQX/SPblLQM
- R5dn8fXgoyp9F+BayRLiTZj1xjjwsa9c+cNblxab/snkslnvqb4DubBY+neFF4oPV9m+
- JZTvXyEfdmfD6P5xOPV4BcrIX1U5FSXgs2mBc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=k14lBxRZet8JTP0sZsFzzMdrUIiDAx3PCahAr8M1lTM=;
- b=s6q6nHAuMNRkVtpoFs76F3HMPL1m5eDLsaQ9pNi0FO4EtdT7IxWEN43Q/OXD9Ec6TA
- JLM/dXlx5I8Lc39SmhZxcP0BfMxOGnYRcEtU3zVgeY4bVHZydei8Nsk+W6Kp55r8+wAS
- QrArSMKy/SOcuZKPBdK7U7hkoT/gSX3/nsXVMTzFmwhvqjrn7nBULpCOQqrHKdleFz2H
- clVhr8XxqlgaZFHos2etV/H3MDabY6IMTdwWOv4CP7N77+eJu8TPOfzbsYv/CnwC78RR
- TIKMG7nK2XR0zJtxMkANNFduuNysv376xmaBLB83tJuKDY3bLvojBX+58mM3ebT4pPyD
- 7sfQ==
-X-Gm-Message-State: APzg51ANQPVOFbZPLMacirZdgZ298uzOkAJhfBNgbgq6OK+DDHULL1Uh
- 8q0GLuzZeY2eYX+Xn29czper
-X-Google-Smtp-Source: 
- ANB0VdY+YL+272sxvYeYxwuGJDW6P6/Y/3lJAb3pIhIsB8QKeqbJX/Nis0AJl0X6UUBDBYgnww6LFA==
-X-Received: by 2002:a65:5284:: with SMTP id
- y4-v6mr23235056pgp.283.1536592475955;
- Mon, 10 Sep 2018 08:14:35 -0700 (PDT)
-Received: from localhost.localdomain
- ([2405:204:728c:6bba:60a8:6c40:2817:7ee1])
- by smtp.gmail.com with ESMTPSA id e202-v6sm26703907pfh.16.2018.09.10.08.14.28
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Mon, 10 Sep 2018 08:14:35 -0700 (PDT)
+From 77f6a861cf9294e13720e87d0c43ce3494f45c90 Mon Sep 17 00:00:00 2001
 From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To: heiko@sntech.de,
-	robh+dt@kernel.org
-Subject: [PATCH 2/4] dt-bindings: arm: rockchip: Add binding for Rock960 board
 Date: Mon, 10 Sep 2018 20:43:54 +0530
-Message-Id: <20180910151356.25946-3-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20180910151356.25946-1-manivannan.sadhasivam@linaro.org>
-References: <20180910151356.25946-1-manivannan.sadhasivam@linaro.org>
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20180910_081446_721758_4D036032 
-X-CRM114-Status: GOOD (  10.68  )
-X-BeenThere: linux-arm-kernel@lists.infradead.org
-X-Mailman-Version: 2.1.21
-Precedence: list
-List-Id: <linux-arm-kernel.lists.infradead.org>
-List-Unsubscribe: 
- <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: 
- <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- tom@vamrs.com, amit.kucheria@linaro.org, shawn.lin@rock-chips.com,
- linux-kernel@vger.kernel.org, vicencb@gmail.com, dev@vamrs.com,
- linux-rockchip@lists.infradead.org, pbrobinson@gmail.com,
- Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- enric.balletbo@collabora.com, ezequiel@collabora.com, stephen@vamrs.com
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: 
- linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
-X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: [PATCH 2/5] dt-bindings: arm: rockchip: Add binding for Rock960 board
 
 Add devicetree binding for Rock960 board from Vamrs Limited.
 
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
 ---
  Documentation/devicetree/bindings/arm/rockchip.txt | 4 ++++
  1 file changed, 4 insertions(+)
@@ -1223,134 +981,20 @@ index acfd3c773dd0..aaad9e2ff9a3 100644
  - Amarula Vyasa RK3288 board
      Required root node properties:
        - compatible = "amarula,vyasa-rk3288", "rockchip,rk3288";
+-- 
+2.19.2
 
-From patchwork Mon Sep 10 15:13:55 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Manivannan Sadhasivam
- <manivannan.sadhasivam@linaro.org>
-X-Patchwork-Id: 10594437
-Return-Path: 
- <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
-Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
- [172.30.200.125])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 5454714BD
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:17:33 +0000 (UTC)
-Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 4324E28C53
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:17:33 +0000 (UTC)
-Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
-	id 3684A28EEA; Mon, 10 Sep 2018 15:17:33 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
-	pdx-wl-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [198.137.202.133])
-	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 9562128C53
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:17:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
-	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Owner;
-	bh=BlDZBHjhu66Mc2lMpXjbsv/4KpMpcTJgc9cuw0S3bQA=; b=JDfI6kvhr48gipdHeSTE7tPcUN
-	q5lSDa1z6DWLELD32uQ9dLmn8et3RT9krsAn+kJh1vBLmqlo5ciSIGC9Wl6qwNCskWn/zFietv0Bm
-	S+rDQncYZNJDSrASyv6gUpgjsQJOCcthqBseEX6O0zKSreyf2RX9BppBryBPINHPL6eG55Ard4Ort
-	fG6lSQajVnhRe3B/BdWo2v+j3+MAQixs8Z0udQ5rxCY7lY2jbcs2DPFxb9fkNKWCZZvPbMZ4CG1Z8
-	vCppSQoomPOfjp58Dvbxyc+DkNiGm8WccccSZkU7WRut/dZ5KsaFLNzTQFmDN226xo3+/5tp8imFM
-	gnrQk3Rw==;
-Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1fzNwI-0001tm-2P; Mon, 10 Sep 2018 15:17:22 +0000
-Received: from mail-pl1-x644.google.com ([2607:f8b0:4864:20::644])
- by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
- id 1fzNtu-0007xY-Os
- for linux-arm-kernel@lists.infradead.org; Mon, 10 Sep 2018 15:14:56 +0000
-Received: by mail-pl1-x644.google.com with SMTP id g2-v6so8931123plo.2
- for <linux-arm-kernel@lists.infradead.org>;
- Mon, 10 Sep 2018 08:14:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=znfZBHVDWIral+xe0reTBGcJ7dk9ivMDjn8uEGJfcT8=;
- b=Al3A4xuT8zmMMUoHO2mMDnqXf7kGCK9hCVkQJSQZFZzcSy+jmsteTH3xgr6KchUnj1
- 2j1TY1/JwFbt7AnCtLEHEsqI81Ish0NmRq1zZTjIu9xkJ9SgOxdf5wBa3TGzYWZoukb+
- CKfaB4Fv5Gj/U4qLXVxDT6wTw7vhRDNz1ZsRQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=znfZBHVDWIral+xe0reTBGcJ7dk9ivMDjn8uEGJfcT8=;
- b=pHwar4aOiw/cjrOxYMYxMuQ65Xs/Y2e9eqLAbhpyq3aMtSWES8sUya9sJf1/NA1FAN
- hLN94KSswIBrhHJIpTU73ntZwVPGSkj5m3kcOaL5+hqSAmG5Mze15d4Pe0mT1fUp5zSd
- tEv9erBdk11fJB7WR0TnG8JjDrFz9WitioFWAzA9qy9dtDH3w9bgoBYOXJbHQ/4LccFv
- tG5llBmw3VAaqQIj2CKTEOKUpYYhk2D+5V5tZ1/Hhx8Oeb7NBd0nAWRsUb5m1c6loXR2
- wxMPnk0flXzPiGH05Tn/PGLXOM0VY9NY5xljC0DBDmeziPPWjvlpxdJsYRTAqL8EiokC
- KXdw==
-X-Gm-Message-State: APzg51BkoY23CtrZPfldJhpIX8f8btFYkNpT825jAOFcY6CP1Pbqsx+W
- jmGEBdg90S9M/H0OWl3Lo+e0OsI2UQ==
-X-Google-Smtp-Source: 
- ANB0VdZ0RhAKUx7fA0XxuM8dKFymYLSLzCbRGtKYFlZfvEfM0z2IIetkAoJZsjfgCiGmtZMwRvEVuA==
-X-Received: by 2002:a17:902:740a:: with SMTP id
- g10-v6mr22947347pll.22.1536592483495;
- Mon, 10 Sep 2018 08:14:43 -0700 (PDT)
-Received: from localhost.localdomain
- ([2405:204:728c:6bba:60a8:6c40:2817:7ee1])
- by smtp.gmail.com with ESMTPSA id e202-v6sm26703907pfh.16.2018.09.10.08.14.36
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Mon, 10 Sep 2018 08:14:42 -0700 (PDT)
+From 7feb0235145ed6f81527dc7b66507d72fad7bdda Mon Sep 17 00:00:00 2001
 From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To: heiko@sntech.de,
-	robh+dt@kernel.org
-Subject: [PATCH 3/4] arm64: boot: dts: rockchip: Add support for Rock960 board
 Date: Mon, 10 Sep 2018 20:43:55 +0530
-Message-Id: <20180910151356.25946-4-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20180910151356.25946-1-manivannan.sadhasivam@linaro.org>
-References: <20180910151356.25946-1-manivannan.sadhasivam@linaro.org>
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20180910_081454_819186_85F98455 
-X-CRM114-Status: GOOD (  16.37  )
-X-BeenThere: linux-arm-kernel@lists.infradead.org
-X-Mailman-Version: 2.1.21
-Precedence: list
-List-Id: <linux-arm-kernel.lists.infradead.org>
-List-Unsubscribe: 
- <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: 
- <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- tom@vamrs.com, amit.kucheria@linaro.org, shawn.lin@rock-chips.com,
- linux-kernel@vger.kernel.org, vicencb@gmail.com, dev@vamrs.com,
- linux-rockchip@lists.infradead.org, pbrobinson@gmail.com,
- Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- enric.balletbo@collabora.com, ezequiel@collabora.com, stephen@vamrs.com
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: 
- linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
-X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: [PATCH 3/5] arm64: boot: dts: rockchip: Add support for Rock960 board
 
 Add devicetree support for Rock960 board, one of the Consumer Edition
 boards of the 96Boards family. This board support utilizes the common
 Rock960 family board support that includes Ficus 96Board.
 
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
  .../boot/dts/rockchip/rk3399-rock960.dts      | 139 ++++++++++++++++++
@@ -1513,134 +1157,20 @@ index 000000000000..281f3d79b38e
 +	status = "okay";
 +	dr_mode = "host";
 +};
+-- 
+2.19.2
 
-From patchwork Mon Sep 10 15:13:56 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Manivannan Sadhasivam
- <manivannan.sadhasivam@linaro.org>
-X-Patchwork-Id: 10594441
-Return-Path: 
- <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
-Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
- [172.30.200.125])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 6C84E921
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:18:21 +0000 (UTC)
-Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id A8B81290E9
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:18:16 +0000 (UTC)
-Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
-	id 9B4C2291F9; Mon, 10 Sep 2018 15:18:16 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
-	pdx-wl-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [198.137.202.133])
-	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 0A283290E9
-	for <patchwork-linux-arm@patchwork.kernel.org>;
- Mon, 10 Sep 2018 15:18:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
-	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Owner;
-	bh=0ikSWm9Ew4+OM0qaBWpLR7/qrsx402HdvOTbCVK6WLs=; b=iYHrXnke7eyKVXuqegTuZU2pVy
-	JOtS+JODGf3O3P3SHSVhr1nAkaq4DAOSy/kjn0O0/SY34a3Z7vQ1tLOWHKLXScDsC9ZnvlhwfBFDM
-	kLOKtlYqB5lpdJtP+vk3bKEcyLIL1gJcAApgWpS4yxEDyqP73S8/2rKjPhRk7A4FtUFhoCNAo6xAv
-	+A6Y5chj5PhQUddQ5FSV4h1uJWQtOICBRj/zGjm0pdHcZ8oMPhicXEfIUTsVA89tKbjr8U6J3bNE8
-	vAgcAmyYOWqOLiw3lrisMlKJLBagNU3M1Q1C5VKEn5TlqnqQ5waYcPAKn8SmKZzh57LMD0yOF0Vi1
-	p17NGt3Q==;
-Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1fzNwy-0002B7-RR; Mon, 10 Sep 2018 15:18:04 +0000
-Received: from mail-pf1-x443.google.com ([2607:f8b0:4864:20::443])
- by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
- id 1fzNu3-00081w-2X
- for linux-arm-kernel@lists.infradead.org; Mon, 10 Sep 2018 15:15:06 +0000
-Received: by mail-pf1-x443.google.com with SMTP id j26-v6so10630033pfi.10
- for <linux-arm-kernel@lists.infradead.org>;
- Mon, 10 Sep 2018 08:14:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=DddfjiWU+nwLV/my5PU24VcyaUhmZjI44x/ThHNh0Tk=;
- b=PWevnr2Lpw/bnA0HESa9iyVkClbxsJOYPlhP7AmMwy9a6c7eqqnS4kcFuumWD8eDqu
- 5TyPbARtJMbdmXcn+ZyEocjr/nOC+pLcQKBFUQPkfOwz8jVZ5fKgUmR0hiIx0crIxFFy
- 0qfls7qARHP7wRbThv1DW/l1pDMx20fE2zYwQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=DddfjiWU+nwLV/my5PU24VcyaUhmZjI44x/ThHNh0Tk=;
- b=cFEHSVGuJxHH7AjHGKTEZgKUfsxXK2Q2RwekMwNqTghG134tsp30N/eikGKSuVI1pQ
- e4zM5JqLDH0yBeEsAxxtiws41SL/1l+mm+9NBylbiDjJ2lU08Vz0LQxhB7E0Y8UnjbX7
- tuJNFuoFofCBux8/8/2/Bt9oAv26+yQIQnFvSzsvxduxD5ZlfUFI8K06sxlaMNlhwYIL
- rtps3m0KcFAeYIC+5CKuTMGIlH3XJ9L8xL/VWeell0rpmD1Xp1/tPtxuanBYkRVJjjIu
- 5sUDjfJ+w7uGwlSHBwYz/1DejPm7t3NZCHINwqx1Olwb8gInYbU7htJdtSwkxRanStos
- JzdQ==
-X-Gm-Message-State: APzg51A9iwtgmsDyP+CN23RCS/3YrB6AHMxq22H11ncEe+Dka8pkL1ti
- zurFCUUzVWuSFn4SpTO/sZVy
-X-Google-Smtp-Source: 
- ANB0Vda8CeIyNE1qDZp1KonBEUUFJCFFlGslTIiiPJ26+7Ys0yYeOHMxSM8/+E1iSjcD5FMm6WCxkw==
-X-Received: by 2002:a65:608b:: with SMTP id
- t11-v6mr23620131pgu.259.1536592491302;
- Mon, 10 Sep 2018 08:14:51 -0700 (PDT)
-Received: from localhost.localdomain
- ([2405:204:728c:6bba:60a8:6c40:2817:7ee1])
- by smtp.gmail.com with ESMTPSA id e202-v6sm26703907pfh.16.2018.09.10.08.14.43
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Mon, 10 Sep 2018 08:14:50 -0700 (PDT)
+From 3e38e9e596d44926a3d2abd2c7c1ff0515ef9517 Mon Sep 17 00:00:00 2001
 From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To: heiko@sntech.de,
-	robh+dt@kernel.org
-Subject: [PATCH 4/4] arm64: dts: rockchip: Enable SD card detection for
- Rock960 boards
 Date: Mon, 10 Sep 2018 20:43:56 +0530
-Message-Id: <20180910151356.25946-5-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20180910151356.25946-1-manivannan.sadhasivam@linaro.org>
-References: <20180910151356.25946-1-manivannan.sadhasivam@linaro.org>
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20180910_081503_224251_E8EEEA66 
-X-CRM114-Status: GOOD (  12.06  )
-X-BeenThere: linux-arm-kernel@lists.infradead.org
-X-Mailman-Version: 2.1.21
-Precedence: list
-List-Id: <linux-arm-kernel.lists.infradead.org>
-List-Unsubscribe: 
- <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: 
- <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- tom@vamrs.com, amit.kucheria@linaro.org, shawn.lin@rock-chips.com,
- linux-kernel@vger.kernel.org, vicencb@gmail.com, dev@vamrs.com,
- linux-rockchip@lists.infradead.org, pbrobinson@gmail.com,
- Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- enric.balletbo@collabora.com, ezequiel@collabora.com, stephen@vamrs.com
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: 
- linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
-X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: [PATCH 4/5] arm64: dts: rockchip: Enable SD card detection for
+ Rock960 boards
 
 For proper working of SD cards, let's add the Card Detect GPIO property
 to the common devicetree for Rock960 family boards.
 
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
 ---
  arch/arm64/boot/dts/rockchip/rk3399-rock960.dtsi | 1 +
  1 file changed, 1 insertion(+)
@@ -1657,93 +1187,14 @@ index 5a5d8e28ef55..f68254831ad9 100644
  	disable-wp;
  	sd-uhs-sdr104;
  	vqmmc-supply = <&vcc_sd>;
-From patchwork Tue Oct 16 14:00:20 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Daniel Lezcano <daniel.lezcano@linaro.org>
-X-Patchwork-Id: 1000432
-Return-Path: <SRS0=e/xi=M4=vger.kernel.org=linux-kernel-owner@kernel.org>
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41BB8C04EBD
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Oct 2018 14:01:24 +0000 (UTC)
-Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 032862089E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Oct 2018 14:01:24 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=linaro.org header.i=@linaro.org
- header.b="OwrJnI6D"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 032862089E
-Authentication-Results: mail.kernel.org;
- dmarc=fail (p=none dis=none) header.from=linaro.org
-Authentication-Results: mail.kernel.org;
- spf=none smtp.mailfrom=linux-kernel-owner@vger.kernel.org
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727241AbeJPVv6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Oct 2018 17:51:58 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43800 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727149AbeJPVv6 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Oct 2018 17:51:58 -0400
-Received: by mail-wr1-f68.google.com with SMTP id n1-v6so25672615wrt.10
-        for <linux-kernel@vger.kernel.org>;
- Tue, 16 Oct 2018 07:01:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=AyjUgKMFmAFThaK4GvWsdrdl4JZ3kTa6zVPrOmGMjOA=;
-        b=OwrJnI6D/huHRM5jiagiGiKBxUHFUlMvwe1t2GexoIKOTqtFGY3vwPCkrAUWdnT5+f
-         n+wvqEq+enR14QpmLTY3VNYAsxMcDtJOZ2R2Cw0rRdiHypMeUGRanfszUimV9omTlSGH
-         ApMgMERT+Pim+X1tp/uH775sDaVLHsJDyJb2Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=AyjUgKMFmAFThaK4GvWsdrdl4JZ3kTa6zVPrOmGMjOA=;
-        b=DO/kT4iXCQgCsPC53FV7CMKKHaDQNQtZUIfHfJGQ2iRgCRNsZSYU6JYHxxjsqWSLyq
-         c46PNGLDG4qPZf/tveVt9wc9SPdKTk3klyT5NnQvdlNY8uv5/GTXINOWmNE0xD9hqvaP
-         ml6yJRUA51/KJU73p7XhGvWlMmEuStLUtXa4rlqKgush6lllYhSFpca2xkiKFhqcd+Bc
-         HHXRh2i0OVgTdmdb0+lSKyLXm74UHrhv1WEbgjGm+Mharwz/qsidTCXfqKPC7izgstBS
-         L+mjOACqna60eEsABW/p2nH9vxXAsU2ArAnmB714yeh9uckl1uRzYmMQCSD1LmmBN0q4
-         4UvQ==
-X-Gm-Message-State: ABuFfojBZLkXjdlBc4AIjobar5Yk+68lR2+TEpPVGjsScLNzcmIj5eYO
-        yyEhPWYj3vc1MHjUcMfQLt7ahg==
-X-Google-Smtp-Source: 
- ACcGV614RNSZy+OjIvsEaE9ONlZaDAeI1a8EpD+wP5Gt58g75Bh8DJgL6KJJ2ZjTenoZPwHLydiQBg==
-X-Received: by 2002:adf:cd0c:: with SMTP id
- w12-v6mr19534363wrm.67.1539698480294;
-        Tue, 16 Oct 2018 07:01:20 -0700 (PDT)
-Received: from localhost.localdomain (221.56.88.92.rev.sfr.net.
- [92.88.56.221])
-        by smtp.gmail.com with ESMTPSA id
- b81-v6sm10195012wmh.47.2018.10.16.07.01.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 16 Oct 2018 07:01:19 -0700 (PDT)
+-- 
+2.19.2
+
+From cfe6b83c53aafd81f2b55c9ff25991f499edc49a Mon Sep 17 00:00:00 2001
 From: Daniel Lezcano <daniel.lezcano@linaro.org>
-To: heiko@sntech.de
-Cc: linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Vicente Bergas <vicencb@gmail.com>,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Ezequiel Garcia <ezequiel@collabora.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Rockchip SoC
-        support),
-        linux-rockchip@lists.infradead.org (open list:ARM/Rockchip SoC
- support)
-Subject: [PATCH] DT: rockchip: Fix stability issues with the 'performance'
- governor on rock960
 Date: Tue, 16 Oct 2018 16:00:20 +0200
-Message-Id: <1539698431-12616-1-git-send-email-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.7.4
-Sender: linux-kernel-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-kernel.vger.kernel.org>
-X-Mailing-List: linux-kernel@vger.kernel.org
+Subject: [PATCH 5/5] DT: rockchip: Fix stability issues with the 'performance'
+ governor on rock960
 
 When the performance governor is set as default, the rock960 hangs
 around one minute after booting, whatever the activity is (idle, key
@@ -1769,15 +1220,16 @@ DT.
 
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
 ---
  arch/arm64/boot/dts/rockchip/rk3399-rock960.dtsi | 12 ------------
  1 file changed, 12 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock960.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-rock960.dtsi
-index 6c8c4ab..56abbb0 100644
+index f68254831ad9..90bfc6e7ce68 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399-rock960.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-rock960.dtsi
-@@ -57,18 +57,6 @@
+@@ -33,18 +33,6 @@
  		regulator-always-on;
  		vin-supply = <&vcc_sys>;
  	};
@@ -1796,3 +1248,6 @@ index 6c8c4ab..56abbb0 100644
  };
  
  &cpu_l0 {
+-- 
+2.19.2
+
