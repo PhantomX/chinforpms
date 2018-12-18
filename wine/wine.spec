@@ -10,7 +10,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 4.0-rc1
+%global stagingver 4.0-rc2
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
@@ -32,7 +32,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0~rc1
+Version:        4.0~rc2
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -98,9 +98,7 @@ Patch602:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.
 # Wbemprox videocontroller query fix v2
 # https://bugs.winehq.org/show_bug.cgi?id=38879
 Patch603:       wbemprox_query_v2.patch
-# Keybind patch reversion
-Patch604:       keybindings.patch
-Patch605:       poe-fix.patch
+Patch604:       poe-fix.patch
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 
@@ -717,8 +715,7 @@ This package adds xaudio2 support for wine.
 %patch599 -p1
 %patch600 -p1
 %patch602 -p1
-%patch604 -p1 -R
-%patch605 -p1
+%patch604 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -2336,6 +2333,9 @@ fi
 %endif
 
 %changelog
+* Mon Dec 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc2-100
+- 4.0-rc2
+
 * Sat Dec 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc1-100
 - 4.0-rc1
 
