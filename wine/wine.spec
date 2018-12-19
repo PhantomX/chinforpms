@@ -4,7 +4,7 @@
 %global no64bit   0
 %global winegecko 2.47
 %global winemono  4.7.3
-#global _default_patch_fuzz 2
+%global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
@@ -20,7 +20,13 @@
 %global pbarel v
 %global pbapkg knobs_and_switches-
 %endif
+%global tkg_id b70bb671a5b56c1db1c600fdef572d63c85a22f2
+%global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
+%global esync 1
+%global esynccommit ce79346
 %endif # 0%{?fedora}
+
+%global whq_url  https://source.winehq.org/git/wine.git/patch
 
 # binfmt macros for RHEL
 %if 0%{?rhel} == 7
@@ -33,7 +39,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.0~rc2
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -100,8 +106,11 @@ Patch602:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.
 Patch603:       wbemprox_query_v2.patch
 Patch604:       poe-fix.patch
 
-%global whq_url  https://source.winehq.org/git/wine.git/patch
-
+# https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
+Patch700:       %{tkg_url}/use_clock_monotonic.patch#/tkg-use_clock_monotonic.patch
+Patch701:       %{tkg_url}/FS_bypass_compositor.patch#/tkg-FS_bypass_compositor.patch
+Patch702:       %{tkg_url}/GLSL-toggle.patch#/tkg-GLSL-toggle.patch
+Patch703:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve_proton_fullscreen_hack-staging.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
@@ -109,7 +118,6 @@ Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{
 Patch900:       https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
 # New pulseaudio patches causing noise with a game
 Patch901:       wine-staging-old-pulseaudio.patch
-%endif
 
 %if 0%{?pba}
 # acomminos PBA patches from Firerat github
@@ -117,7 +125,19 @@ Patch901:       wine-staging-old-pulseaudio.patch
 Source1000:     https://gitlab.com/Firer4t/wine-pba/-/archive/%{?pbapkg}%{?pbarel}%{pbaver}/%{?pbapkg}%{?pbarel}%{pbaver}.tar.bz2#/wine-pba-%{pbaver}.tar.bz2
 Source1001:     wine-README-pba
 Patch1000:      wine-staging-pba.patch
-%endif
+%endif #{?pba}
+
+%if 0%{?esync}
+# https://github.com/zfigura/wine/
+Source2000:     https://github.com/zfigura/wine/releases/download/esync%{esynccommit}/esync.tgz#/esync-%{esynccommit}.tar.gz
+# Configure limits in systemd
+# This should be only needed with systemd < 240
+Source2001:     01-wine.conf
+Patch2000:      %{tkg_url}/esync-staging-fixes-r3.patch#/tkg-esync-staging-fixes-r3.patch
+Patch2001:      %{tkg_url}/esync-compat-fixes-r3.patch#/tkg-esync-compat-fixes-r3.patch
+Patch2002:      %{tkg_url}/esync-no_alloc_handle.patch#/tkg-esync-no_alloc_handle.patch
+%endif #{?esync}
+%endif #{?staging}
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
@@ -201,7 +221,10 @@ BuildRequires:  vulkan-devel
 BuildRequires:  gtk3-devel
 BuildRequires:  libattr-devel
 BuildRequires:  libva-devel
-%endif # 0%{?staging}
+%if 0%{?esync}
+BuildRequires:  git
+%endif #{?esync}
+%endif #{?staging}
 
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
@@ -455,9 +478,9 @@ BuildArch:     noarch
 # arial-fonts are available with staging-patchset, only.
 %if 0%{?staging}
 Requires:      wine-arial-fonts = %{version}-%{release}
-%else # 0%{?staging}
+%else #{?staging}
 Obsoletes:     wine-arial-fonts <= %{version}-%{release}
-%endif # 0%{?staging}
+%endif #{?staging}
 Requires:      wine-courier-fonts = %{version}-%{release}
 Requires:      wine-fixedsys-fonts = %{version}-%{release}
 Requires:      wine-small-fonts = %{version}-%{release}
@@ -490,7 +513,7 @@ Requires:      fontpackages-filesystem
 
 %description arial-fonts
 %{summary}
-%endif # 0%{?staging}
+%endif #{?staging}
 
 %package courier-fonts
 Summary:       Wine Courier font family
@@ -716,6 +739,8 @@ This package adds xaudio2 support for wine.
 %patch600 -p1
 %patch602 -p1
 %patch604 -p1
+%patch700 -p1
+%patch701 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -734,7 +759,15 @@ mv wine-pba-*/patches/*.patch patches/wined3d-Persistent_Buffer_Allocator/
 %patch1000 -p1
 
 cp -p %{S:1001} README-pba-pkg
-%endif # 0%{?pba}
+%endif #{?pba}
+
+%if 0%{?esync}
+tar xvf %{SOURCE2000}
+pushd esync
+%patch2000 -p1
+%patch2001 -p1
+popd
+%endif #{?esync}
 
 #mv patches/winepulse-PulseAudio_Support patches/winepulse-PulseAudio_Support_new
 #mv patches/winepulse-PulseAudio_Support_old patches/winepulse-PulseAudio_Support
@@ -745,14 +778,26 @@ cp -p %{S:1001} README-pba-pkg
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all
 
+sed -i "s/  (Staging)//g" libs/wine/Makefile.in
+
+%if 0%{?esync}
+for i in esync/00??-*.patch ;do
+  git apply -C1 < $i
+done
+%patch2002 -p1
+%endif
+
+%patch702 -p1
+%patch703 -p1
+
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
 
-%else # 0%{?staging}
+%else #{?staging}
 
 rm -rf patches/
 
-%endif # 0%{?staging}
+%endif #{?staging}
 
 %patch603 -p1
 
@@ -1062,6 +1107,13 @@ install -p -m 0644 loader/wine.fr.UTF-8.man %{buildroot}%{_mandir}/fr.UTF-8/man1
 mkdir -p %{buildroot}%{_mandir}/pl.UTF-8/man1
 install -p -m 0644 loader/wine.pl.UTF-8.man %{buildroot}%{_mandir}/pl.UTF-8/man1/wine.1
 
+%if 0%{?esync}
+# Systemd configuration
+mkdir -p %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
+mkdir -p %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
+install -m 644 -p %{SOURCE2001} %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
+install -m 644 -p %{SOURCE2001} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
+%endif
 
 %if 0%{?rhel} == 6
 %post sysvinit
@@ -1161,6 +1213,9 @@ fi
 # do not include huge changelogs .OLD .ALPHA .BETA (#204302)
 %doc documentation/README.*
 %if 0%{?staging}
+%if 0%{?esync}
+%doc README.esync
+%endif
 %if 0%{?pba}
 %license LICENSE_pba.md
 %doc README_pba.md
@@ -2263,6 +2318,12 @@ fi
 %if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
 %files systemd
 %config %{_binfmtdir}/wine.conf
+%if 0%{?esync}
+%{_prefix}/lib/systemd/system.conf.d/
+%{_prefix}/lib/systemd/system.conf.d/01-wine.conf
+%{_prefix}/lib/systemd/user.conf.d/
+%{_prefix}/lib/systemd/user.conf.d/01-wine.conf
+%endif
 %endif
 
 %if 0%{?rhel} == 6
@@ -2333,6 +2394,9 @@ fi
 %endif
 
 %changelog
+* Tue Dec 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc2-101
+- Some Tk-Glitch patches, including optional esync
+
 * Mon Dec 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc2-100
 - 4.0-rc2
 

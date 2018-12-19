@@ -7,7 +7,7 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.56
+Version:        1.0.0.59
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
@@ -33,6 +33,9 @@ Source8:        https://raw.githubusercontent.com/denilsonsa/udev-joystick-black
 Source9:        https://raw.githubusercontent.com/cyndis/shield-controller-config/master/99-shield-controller.rules
 
 Source10:       README.Fedora
+# Configure limits in systemd
+# This should be only needed with systemd < 240
+Source11:       01-steam.conf
 
 # Remove temporary leftover files after run (fixes multiuser):
 # https://github.com/ValveSoftware/steam-for-linux/issues/3570
@@ -173,6 +176,13 @@ install -pm 644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d
 mkdir -p %{buildroot}%{_metainfodir}
 install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 
+# Systemd configuration
+mkdir -p %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
+mkdir -p %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
+install -m 644 -p %{SOURCE11} %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
+install -m 644 -p %{SOURCE11} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
+
+
 %post
 %firewalld_reload
 
@@ -191,8 +201,17 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 %{_prefix}/lib/firewalld/services/%{name}.xml
 %config(noreplace) %{_sysconfdir}/profile.d/%{name}.*sh
 %{_udevrulesdir}/*
+%{_prefix}/lib/systemd/system.conf.d/
+%{_prefix}/lib/systemd/system.conf.d/01-steam.conf
+%{_prefix}/lib/systemd/user.conf.d/
+%{_prefix}/lib/systemd/user.conf.d/01-steam.conf
+
 
 %changelog
+* Tue Dec 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.59-100
+- 1.0.0.59
+- RPMFusion sync
+
 * Tue Oct 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.56-100.chinfo
 - 1.0.0.56
 - RPMFusion sync

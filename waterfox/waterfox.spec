@@ -1,6 +1,6 @@
-%global commit 3e2c786a657a0b2e6e7a82c155a8ff6030888c4a
+%global commit ff4597172229f8d71940c3885b74b903b7b1821a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20181211
+%global date 20181217
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -10,6 +10,7 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+ExcludeArch: armv7hl
 
 %global alsa_backend      1
 %global system_nss        1
@@ -112,8 +113,8 @@
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.5
-Release:        2%{?gver}%{?dist}
+Version:        56.2.6
+Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
@@ -617,8 +618,11 @@ MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | %{__sed} -e 's/-g/-g0/')
 export MOZ_DEBUG_FLAGS=" "
 %endif
 %if !0%{?build_with_clang}
-%ifarch s390 %{arm} ppc aarch64
+%ifarch s390 ppc aarch64
 MOZ_LINK_FLAGS="-Wl,--no-keep-memory -Wl,--reduce-memory-overheads"
+%endif
+%ifarch %{arm}
+MOZ_LINK_FLAGS="-Wl,--no-keep-memory"
 %endif
 %endif
 
@@ -645,7 +649,12 @@ export CXX=g++
 MOZ_SMP_FLAGS=-j1
 # On x86 architectures, Mozilla can build up to 4 jobs at once in parallel,
 # however builds tend to fail on other arches when building in parallel.
-%ifarch %{ix86} x86_64 ppc ppc64 ppc64le aarch64
+%ifarch %{ix86}
+[ -z "$RPM_BUILD_NCPUS" ] && \
+     RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"
+[ "$RPM_BUILD_NCPUS" -ge 2 ] && MOZ_SMP_FLAGS=-j2
+%endif
+%ifarch x86_64 ppc ppc64 ppc64le aarch64
 [ -z "$RPM_BUILD_NCPUS" ] && \
      RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"
 [ "$RPM_BUILD_NCPUS" -ge 2 ] && MOZ_SMP_FLAGS=-j2
@@ -929,6 +938,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Dec 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.6-1.20181217gitff45971
+- New release/snapshot
+
 * Wed Dec 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.5-2.20181211git3e2c786
 - New snapshot
 - Updated spec, more like Fedora Firefox one
