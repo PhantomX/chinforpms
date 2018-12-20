@@ -1,5 +1,5 @@
 Name:           qt5ct
-Version:        0.36
+Version:        0.37
 Release:        100%{?dist}
 Summary:        Qt5 Configuration Tool
 
@@ -58,6 +58,9 @@ install -D -pm 644 src/%{name}/translations/*.qm %{buildroot}%{_datadir}/%{name}
 
 
 %changelog
+* Wed Dec 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.37-100
+- 0.37
+
 * Mon Dec 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.36-100
 - 0.36
 

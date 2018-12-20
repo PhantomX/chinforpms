@@ -1,5 +1,5 @@
-%global gitcommitid aafbdb1ed3e687583037ba55ae88b1210d6ce98b
-%global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
+%global commit aafbdb1ed3e687583037ba55ae88b1210d6ce98b
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180715
 %global with_snapshot 1
 
@@ -16,7 +16,7 @@ License:        GPLv3
 URL:            https://gitlab.com/sdl-jstest/sdl-jstest
 
 %if 0%{?with_snapshot}
-Source0:        %{url}/-/archive/%{gitcommitid}/%{name}-%{gitcommitid}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
+Source0:        %{url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
 %else
 Source0:        %{url}/-/archive/%{name}-%{version}.tar.gz#/%{name}-%{version}.tar.bz2
 %endif
@@ -42,7 +42,7 @@ you want to test your SDL_LINUX_JOYSTICK configuration.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{name}-%{gitcommitid} -p1
+%autosetup -n %{name}-%{commit} -p1
 %else
 %autosetup -n %{name}-%{version} -p1
 %endif

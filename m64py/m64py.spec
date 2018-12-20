@@ -1,5 +1,5 @@
-%global gitcommitid fccb7724e289d9e81170bfeec0a2f5ab21e95f5d
-%global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
+%global commit fccb7724e289d9e81170bfeec0a2f5ab21e95f5d
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180718
 %global with_snapshot 1
 
@@ -15,7 +15,7 @@ Summary:        A frontend for Mupen64Plus 2.0
 License:        GPLv3
 URL:            http://m64py.sourceforge.net
 %if 0%{?with_snapshot}
-Source0:        https://github.com/mupen64plus/mupen64plus-ui-python/archive/%{gitcommitid}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        https://github.com/mupen64plus/mupen64plus-ui-python/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/mupen64plus/mupen64plus-ui-python/releases/download/%{version}/%{name}-%{version}.tar.gz
 %endif
@@ -44,7 +44,7 @@ plugin-based Nintendo 64 emulator.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n mupen64plus-ui-python-%{gitcommitid} -p1
+%autosetup -n mupen64plus-ui-python-%{commit} -p1
 %else
 %autosetup -p1
 %endif

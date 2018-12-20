@@ -5,8 +5,9 @@ Summary:        Open source navigation scripting & testing utility
 
 License:        MIT
 URL:            http://casperjs.org/
+
 %global rversion %(c=%{version}; echo ${c//_/-})
-Source0:        https://github.com/%{name}/%{name}/archive/%{rversion}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/%{name}/%{name}/archive/%{rversion}/%{name}-%{version}.tar.gz
 Patch0:         %{name}-path.patch
 
 BuildArch:      noarch

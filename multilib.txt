@@ -1,4 +1,6 @@
+adwaita-qt
 gamemode
+gnome-theme-extras
 gstreamer1
 gtk3
 gtk3-nocsd

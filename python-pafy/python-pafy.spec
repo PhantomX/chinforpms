@@ -7,7 +7,7 @@ Summary:        Python library to download YouTube content and retrieve metadata
 
 License:        LGPLv3
 URL:            https://github.com/mps-youtube/pafy
-Source0:        %{url}/archive/v%{version}.tar.gz#/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  python3-devel

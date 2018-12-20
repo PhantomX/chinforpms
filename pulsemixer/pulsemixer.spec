@@ -5,7 +5,7 @@ Summary:        CLI and curses mixer for pulseaudio
 
 License:        MIT
 URL:            https://github.com/GeorgeFilipkin/pulsemixer
-Source0:        %{url}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 # Change volume step from 10 to 5
 Patch0:         %{name}-volume-step.patch

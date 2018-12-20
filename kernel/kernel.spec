@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit abdf4a2e20361ef0010df4850508bd3e4e834c0c
+%global pfcommit c160f9e9beeff8052854a948b6106eb6a84a8c6a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -717,6 +717,10 @@ Patch3015: %{pf_url}/bcb50e4968dab882c40cc080c548d88382ef58ba.patch#/pf-bcb50e49
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v8.1+_kernel_v4.13+.patch
 %endif
 
+%endif
+
+%if !0%{?zen}
+Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2010,6 +2014,10 @@ fi
 #
 #
 %changelog
+* Wed Dec 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.11-500.chinfo
+- 4.19.11
+- Set bfq as blk-mq default scheduler
+
 * Mon Dec 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.10-500.chinfo
 - 4.19.10
 

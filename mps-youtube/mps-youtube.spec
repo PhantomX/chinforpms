@@ -5,7 +5,7 @@ Summary:        Terminal based YouTube player and downloader
 
 License:        GPLv3
 URL:            https://github.com/%{name}/%{name}
-Source0:        %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 Patch0:         %{name}-noupdatecheck.patch
 

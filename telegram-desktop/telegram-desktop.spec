@@ -29,7 +29,7 @@ URL:            https://github.com/telegramdesktop/%{appname}
 ExclusiveArch:  i686 x86_64
 
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
-Source1:        https://github.com/telegramdesktop/crl/archive/%{commit1}.tar.gz#/crl-%{shortcommit1}.tar.gz
+Source1:        https://github.com/telegramdesktop/crl/archive/%{commit1}/crl-%{shortcommit1}.tar.gz
 Patch0:         %{name}-build-fixes.patch
 Patch1:         %{name}-system-fonts.patch
 Patch2:         %{name}-unbundle-minizip.patch

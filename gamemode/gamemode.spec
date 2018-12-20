@@ -6,7 +6,7 @@ Epoch:          1
 
 License:        BSD
 URL:            https://github.com/FeralInteractive/%{name}
-Source0:        https://github.com/FeralInteractive/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        %{name}
 
 # Use system inih

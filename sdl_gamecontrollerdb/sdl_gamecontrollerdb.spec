@@ -1,6 +1,6 @@
-%global gitcommitid 89224d5cbd85aa743d4dc7f8f197e714e21ac26e
-%global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
-%global date 20181120
+%global commit 04ebce52ee752ee3836ac00b1660e27f07c50fb0
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20181201
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,18 +11,20 @@
 
 Name:           sdl_gamecontrollerdb
 Version:        0
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A database of game controller mappings
 
 License:        zlib and MIT
 URL:            https://github.com/gabomdq/SDL_GameControllerDB
 %if 0%{?with_snapshot}
-Source0:        %{url}/archive/%{gitcommitid}.tar.gz#/%{pkgname}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}.tar.gz#/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 BuildArch:      noarch
+
+BuildRequires:  python3-devel
 
 Provides:       %{pkgname} = %{version}-%{release}
 
@@ -33,15 +35,20 @@ to be used with SDL2 Game Controller functionality.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{gitcommitid}
+%autosetup -n %{pkgname}-%{commit}
 %else
 %autosetup -n %{pkgname}-%{version}
 %endif
+
+sed -e '1s|/usr/bin/env python$|%{__python3}|' -i check.py
 
 
 %build
 
 %install
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 check.py %{buildroot}%{_bindir}/gamecontrollerdb-check
+
 mkdir -p %{buildroot}%{_datadir}/%{pkgname}
 install -pm0644 gamecontrollerdb.txt %{buildroot}%{_datadir}/%{pkgname}/
 install -pm0644 data/mapping_guide.png %{buildroot}%{_datadir}/%{pkgname}/
@@ -49,11 +56,16 @@ install -pm0644 data/mapping_guide.png %{buildroot}%{_datadir}/%{pkgname}/
 %files
 %license LICENSE
 %doc README.md
+%{_bindir}/gamecontrollerdb-check
 %{_datadir}/%{pkgname}/gamecontrollerdb.txt
 %{_datadir}/%{pkgname}/mapping_guide.png
 
 
 %changelog
+* Wed Dec 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 0-4.20181201git04ebce5
+- New snapshot
+- Install check script
+
 * Thu Nov 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 0-3.20181120git89224d5
 - New snapshot
 

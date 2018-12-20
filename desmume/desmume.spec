@@ -19,7 +19,7 @@ Epoch:          1
 License:        GPLv2+
 URL:            http://desmume.org/
 %if 0%{?with_snapshot}
-Source0:        %{vc_url}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 %endif #{?with_snapshot}

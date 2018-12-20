@@ -15,9 +15,9 @@ Summary:        Turns keyboard LEDs into hard disk indicator
 License:        GPLv3
 URL:            https://github.com/MeanEYE/Disk-Indicator/
 %if 0%{?with_snapshot}
-Source0:        https://github.com/MeanEYE/Disk-Indicator/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/MeanEYE/Disk-Indicator/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Patch0:         disk-indicator-homedir.patch

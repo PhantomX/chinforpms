@@ -29,7 +29,7 @@ Source0:        https://dl.winehq.org/wine/source/%{vermajor}.%{?verx:0}%{!?verx
 Source10:       https://dl.winehq.org/wine/source/%{vermajor}.%{?verx:0}%{!?verx:x}/wine-%{ver}.tar.xz.sign
 
 # wine staging patches for wine-staging
-Source900: https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
+Source900: https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}/wine-staging-%{stagingver}.tar.gz
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64

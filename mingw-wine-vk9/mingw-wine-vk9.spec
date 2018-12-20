@@ -19,7 +19,7 @@ Summary:        Vulkan-based D3D9 implementation for Linux / Wine
 License:        zlib
 URL:            https://github.com/disks86/VK9
 
-Source0:        https://github.com/disks86/VK9/archive/%{version}.tar.gz#/VK9-%{version}.tar.gz
+Source0:        https://github.com/disks86/VK9/archive/%{version}/VK9-%{version}.tar.gz
 Source1:        README.vk9
 Source2:        winevk9cfg
 Source3:        https://sdk.lunarg.com/sdk/download/%{sdk_ver}/windows/VulkanSDK-%{sdk_ver}-Installer.exe?Human=true;u=#/VulkanSDK-%{sdk_ver}-Installer.exe

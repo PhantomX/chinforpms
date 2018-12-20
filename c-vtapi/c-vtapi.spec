@@ -14,10 +14,12 @@ Summary:        VirusTotal C API library
 
 License:        ASL 2.0 
 URL:            https://www.virustotal.com/
+
+%global vc_url  https://github.com/VirusTotal/%{name}
 %if 0%{?with_snapshot}
-Source0:        https://github.com/VirusTotal/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/VirusTotal/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  autoconf

@@ -15,7 +15,7 @@ Summary:        VirusTotal uploader
 License:        ASL 2.0 
 URL:            https://www.virustotal.com/
 %if 0%{?with_snapshot}
-Source0:        https://github.com/VirusTotal/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        https://github.com/VirusTotal/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/VirusTotal/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %endif

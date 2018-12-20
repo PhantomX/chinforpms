@@ -21,7 +21,7 @@ Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 License:        zlib
 URL:            https://github.com/doitsujin/dxvk
 
-Source0:        https://github.com/doitsujin/%{srcname}/archive/v%{version}.tar.gz#/%{srcname}-%{version}.tar.gz
+Source0:        https://github.com/doitsujin/%{srcname}/archive/v%{version}/%{srcname}-%{version}.tar.gz
 Source1:        README.dxvk
 Source2:        winedxvkcfg
 

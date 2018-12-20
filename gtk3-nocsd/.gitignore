@@ -1,3 +1,2 @@
 /30-gtk3-nocsd.sh
-/c64*.patch
-/82f*.patch
+/gtk3-nocsd-gh-*.patch

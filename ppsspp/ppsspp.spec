@@ -55,18 +55,18 @@ Epoch:          1
 License:        BSD and GPLv2+
 URL:            http://www.ppsspp.org/
 %if 0%{?with_snapshot}
-Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif #{?with_snapshot}
-Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
+Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %if !0%{?with_sysffmpeg}
-Source2:        %{vc_url}/%{srcname2}/archive/%{commit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
+Source2:        %{vc_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif #{?with_sysffmpeg}
-Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
-Source6:        %{vc_url}/glslang/archive/%{commit6}.tar.gz#/%{srcname6}-%{shortcommit6}.tar.gz
-Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}.tar.gz#/%{srcname7}-%{shortcommit7}.tar.gz
+Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+Source6:        %{vc_url}/glslang/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source10:       %{name}.appdata.xml
 
 Patch0:         %{name}-noupdate.patch

@@ -114,7 +114,7 @@ Patch703:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
-Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}.tar.gz#/wine-staging-%{stagingver}.tar.gz
+Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}/wine-staging-%{stagingver}.tar.gz
 Patch900:       https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
 # New pulseaudio patches causing noise with a game
 Patch901:       wine-staging-old-pulseaudio.patch
@@ -122,7 +122,7 @@ Patch901:       wine-staging-old-pulseaudio.patch
 %if 0%{?pba}
 # acomminos PBA patches from Firerat github
 # https://github.com/Firerat/wine-pba
-Source1000:     https://gitlab.com/Firer4t/wine-pba/-/archive/%{?pbapkg}%{?pbarel}%{pbaver}/%{?pbapkg}%{?pbarel}%{pbaver}.tar.bz2#/wine-pba-%{pbaver}.tar.bz2
+Source1000:     https://gitlab.com/Firer4t/wine-pba/-/archive/%{?pbapkg}%{?pbarel}%{pbaver}/%{?pbapkg}%{?pbarel}%{pbaver}#/wine-pba-%{pbaver}.tar.bz2
 Source1001:     wine-README-pba
 Patch1000:      wine-staging-pba.patch
 %endif #{?pba}

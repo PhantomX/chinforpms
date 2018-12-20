@@ -7,7 +7,7 @@ Summary:        GUI client for mysql databases in GTK+
 
 License:        GPLv2
 URL:            https://github.com/thepozer/%{name}
-Source0:        https://github.com/thepozer/%{name}/archive/GMYSQLCC_%{pversion}.tar.gz
+Source0:        %{url}/archive/GMYSQLCC_%{pversion}.tar.gz
 
 Patch0:         http://http.debian.net/debian/pool/main/g/%{name}/%{name}_0.3.0-2.diff.gz
 

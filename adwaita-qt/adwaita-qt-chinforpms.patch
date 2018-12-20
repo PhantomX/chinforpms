@@ -1,0 +1,88 @@
+diff -up adwaita-qt-1.0/style/adwaita.h.chinforpms adwaita-qt-1.0/style/adwaita.h
+--- adwaita-qt-1.0/style/adwaita.h.chinforpms	2018-12-19 20:19:58.991541814 -0200
++++ adwaita-qt-1.0/style/adwaita.h	2018-12-19 22:53:59.298686309 -0200
+@@ -65,7 +65,7 @@ namespace Adwaita
+     {
+ 
+         // frames
+-        Frame_FrameWidth = 4,
++        Frame_FrameWidth = 1,
+         Frame_FrameRadius = 4,
+ 
+         // layout
+@@ -74,28 +74,31 @@ namespace Adwaita
+         Layout_DefaultSpacing = 6,
+ 
+         // line editors
+-        LineEdit_FrameWidth = 7,
++        LineEdit_FrameWidth = 4,
+ 
+         // menu items
+         Menu_FrameWidth = 0,
+-        MenuItem_MarginWidth = 5,
+-        MenuItem_ItemSpacing = 4,
++        MenuItem_MarginWidth = 3,
++        MenuItem_ItemSpacing = 3,
+         MenuItem_AcceleratorSpace = 16,
+         MenuButton_IndicatorWidth = 20,
+ 
+         // combobox
+-        ComboBox_FrameWidth = 7,
++        ComboBox_FrameWidth = 5,
+ 
+         // spinbox
+         SpinBox_FrameWidth = LineEdit_FrameWidth,
+-        SpinBox_ArrowButtonWidth = 20,
++        SpinBox_ArrowButtonWidth = 16,
+ 
+         // groupbox title margin
+         GroupBox_TitleMarginWidth = 4,
+ 
+         // buttons
++        Button_FrameWidth = 3,
+         Button_MinWidth = 80,
++        Button_MinHeight = 20,
+         Button_MarginWidth = 4,
++        Button_MarginHeight = 4,
+         Button_ItemSpacing = 3,
+ 
+         // tool buttons
+@@ -104,7 +107,7 @@ namespace Adwaita
+         ToolButton_InlineIndicatorWidth = 12,
+ 
+         // checkboxes and radio buttons
+-        CheckBox_Size = 20,
++        CheckBox_Size = 16,
+         CheckBox_FocusMarginWidth = 3,
+         CheckBox_ItemSpacing = 4,
+ 
+@@ -143,10 +146,10 @@ namespace Adwaita
+         Slider_ControlThickness = 24,
+ 
+         // tabbar
+-        TabBar_TabMarginHeight = 9,
++        TabBar_TabMarginHeight = 6,
+         TabBar_TabMarginWidth = 8,
+         TabBar_TabMinWidth = 80,
+-        TabBar_TabMinHeight = 36,
++        TabBar_TabMinHeight = 32,
+         TabBar_TabItemSpacing = 8,
+         TabBar_TabOverlap = 1,
+         TabBar_BaseOverlap = 0,
+diff -up adwaita-qt-1.0/style/adwaitastyle.cpp.chinforpms adwaita-qt-1.0/style/adwaitastyle.cpp
+--- adwaita-qt-1.0/style/adwaitastyle.cpp.chinforpms	2017-05-26 08:21:47.000000000 -0300
++++ adwaita-qt-1.0/style/adwaitastyle.cpp	2018-12-19 22:45:20.162680804 -0200
+@@ -2860,8 +2860,12 @@ namespace Adwaita
+         if( hasText )
+         { size.setWidth( qMax( size.width(), int( Metrics::Button_MinWidth ) ) ); }
+ 
++        // make sure buttons have a minimum height
++        if( hasText )
++        { size.setHeight( qMax( size.height(), int( Metrics::Button_MinHeight ) ) ); }
++
+         // finally add frame margins
+-        return expandSize( size, Metrics::Frame_FrameWidth );
++        return expandSize( size, Metrics::Button_FrameWidth );
+ 
+     }
+ 

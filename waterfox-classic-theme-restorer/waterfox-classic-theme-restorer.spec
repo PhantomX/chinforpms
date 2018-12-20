@@ -24,7 +24,7 @@ Source0:        %{url}/releases/download/%{version}/CTR_v%{version}.xpi#/%{pkgna
 Source1:        %{url}/raw/master/license
 Source2:        %{url}/raw/master/README.md
 %else
-Source0:        %{url}/archive/%{version}.tar.gz#/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source3:        %{name}.metainfo.xml
 

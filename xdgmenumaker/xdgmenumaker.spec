@@ -5,7 +5,7 @@ Summary:        Generates application menus using xdg information
 
 License:        GPLv3
 URL:            http://www.salixos.org/wiki/index.php/Xdgmenumaker
-Source0:        https://github.com/gapan/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/gapan/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 
 # Search applications/kde4, applications/wine and support X-Wine in desktop files
 Patch0:         %{name}-more-search.patch

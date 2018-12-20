@@ -7,7 +7,7 @@ Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
 URL:            https://asbru-cm.net
-Source0:        https://github.com/asbru-cm/asbru-cm/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/asbru-cm/asbru-cm/archive/%{version}/%{name}-%{version}.tar.gz
 
 # Dirty way to disable gconf
 Patch0:         %{name}-nogconf.patch

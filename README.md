@@ -16,12 +16,14 @@ RPMFusion and existent packages updated with extra changes.
 
 ## Differences from Fedora and RPM Fusion
 
+ * **adwaita-qt** - Remove some paddings
  * **belle-sip, linphone, ortp** - Updated version
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **claws-mail** - Can't wait Fedora releases
  * **easytag** - Tests
  * **engrampa** - Split caja extension
  * **gamemode** - System inih and launch script
+ * **gnome-themes-extra** - Remove some paddings from Adwaita
  * **gstreamer1** - Added suffix -32/-64 to gst-plugin-scanner, so it can build
                     correct multilib plugins registry, as
                     _~/.cache/gstreamer-1.0/registry.i686.bin_ on x86_64
@@ -33,7 +35,7 @@ RPMFusion and existent packages updated with extra changes.
                 (kernel-local must be edited to modify gcc optimizations)
  * **krename** - Updated, KF5
  * **libtgvoip** - No unresolved symbols
- * **manaplus** - Updated
+ * **manaplus** - Updated, SDL2
  * **mednafen** - No Haswell optimizations
  * **mesa** - Can't wait Fedora releases
  * **quiterss** - Updated, Qt5

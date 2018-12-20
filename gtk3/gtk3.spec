@@ -31,7 +31,7 @@ Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 License:        LGPLv2+
 URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
-Source1:        https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}.tar.gz#/gtk3-mushrooms-%{mushroom_ver}.tar.gz
+Source1:        https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2:        chinforpms-adwaita.css
 
 Patch10:        https://gitlab.gnome.org/GNOME/gtk/commit/2905fc861acda3d134a198e56ef2f6c962ad3061.patch#/%{name}-gl-2905fc861acda3d134a198e56ef2f6c962ad3061.patch

@@ -16,14 +16,14 @@ Summary:        Emoji Picker for the indicator area using Emoji One
 License:        GPLv3
 URL:            https://github.com/gentakojima/%{fullname}
 %if 0%{?with_snapshot}
-Source0:        https://github.com/gentakojima/%{fullname}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/gentakojima/%{fullname}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        %{name}.appdata.xml
 
-Patch1:         https://github.com/gentakojima/%{fullname}/pull/25/commits/1faaefc71b18f1f982c1a803282a752c53248b0a.patch#/%{name}-gh-pull-25.patch
-Patch2:         https://github.com/gentakojima/%{fullname}/pull/31.patch#/%{name}-gh-pull-31.patch
+Patch1:         %{url}/pull/25/commits/1faaefc71b18f1f982c1a803282a752c53248b0a.patch#/%{name}-gh-pull-25.patch
+Patch2:         %{url}/pull/31.patch#/%{name}-gh-pull-31.patch
 
 BuildArch:      noarch
 

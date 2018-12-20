@@ -8,7 +8,7 @@ Summary:        VoIP library for Telegram clients
 License: Public Domain and BSD
 URL:            https://github.com/grishka/%{name}
 
-Source0:        %{url}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Patch0:         %{name}-build-fixes.patch
 Patch100:       %{name}-sse2.patch
 

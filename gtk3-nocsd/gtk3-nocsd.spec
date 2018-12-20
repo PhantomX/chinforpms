@@ -5,13 +5,13 @@ Summary:        Disables the client side decoration of Gtk+ 3
 
 License:        LGPLv2.1
 URL:            https://github.com/PCMan/%{name}
-Source0:        https://github.com/PCMan/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 # AUR - Marco Kundt
 Source1:        https://aur.archlinux.org/cgit/aur.git/plain/30-%{name}.sh?h=%{name}-git#/30-%{name}.sh
 
 Patch0:         %{name}-multilib.patch
-Patch1:         https://github.com/PCMan/gtk3-nocsd/commit/c64505268575e60322de682ea751660eba8d0e71.patch
-Patch2:         https://github.com/PCMan/gtk3-nocsd/commit/82ff5a0da54aa6da27232b55eb93e5f4b5de22f2.patch
+Patch1:         %{url}/commit/c64505268575e60322de682ea751660eba8d0e71.patch#/%{name}-gh-c64505268575e60322de682ea751660eba8d0e71.patch
+Patch2:         %{url}/commit/82ff5a0da54aa6da27232b55eb93e5f4b5de22f2.patch#/%{name}-gh-82ff5a0da54aa6da27232b55eb93e5f4b5de22f2.patch
 
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(gobject-introspection-1.0)

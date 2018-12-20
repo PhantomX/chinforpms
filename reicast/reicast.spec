@@ -15,10 +15,11 @@ Summary:        Sega Dreamcast emulator
 License:        GPLv2 and BSD
 URL:            http://reicast.com/
 
+%global vc_url  https://github.com/%{name}/%{name}-emulator
 %if 0%{?with_snapshot}
-Source0:        https://github.com/%{name}/%{name}-emulator/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/%{name}/%{name}-emulator/archive/r%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif #{?with_snapshot}
 Source1:        %{name}.appdata.xml
 

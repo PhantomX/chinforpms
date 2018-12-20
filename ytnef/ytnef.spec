@@ -5,7 +5,7 @@ Version:        1.9.3
 Release:        100%{?dist}
 License:        GPLv2+
 URL:            https://github.com/Yeraze/ytnef
-Source0:        https://github.com/Yeraze/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 Patch0:         ytnef-pkgconfig.patch
 
 BuildRequires:  autoconf automake libtool

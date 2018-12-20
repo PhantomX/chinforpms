@@ -1,0 +1,54 @@
+diff -up gnome-themes-extra-3.28/themes/Adwaita-dark/gtk-2.0/main.rc.chinforpms gnome-themes-extra-3.28/themes/Adwaita-dark/gtk-2.0/main.rc
+--- gnome-themes-extra-3.28/themes/Adwaita-dark/gtk-2.0/main.rc.chinforpms	2018-01-24 14:24:06.000000000 -0200
++++ gnome-themes-extra-3.28/themes/Adwaita-dark/gtk-2.0/main.rc	2018-12-19 17:40:02.617210968 -0200
+@@ -40,10 +40,10 @@ style "default" {
+ 
+   GtkButton::default-border         = {0, 0, 0, 0}
+   GtkButton::default-outside-border = {0, 0, 0, 0}
+-  GtkButton::inner-border           = {4, 4, 4, 4}
++  GtkButton::inner-border           = {6, 6, 3, 3}
+ 
+   GtkEntry::state-hint = 1
+-  GtkEntry::inner-border = {7, 7, 4, 5}
++  GtkEntry::inner-border = {1, 1, 2, 3}
+ 
+   GtkPaned::handle-size = 9
+   GtkHPaned::handle-size = 9
+@@ -2451,8 +2451,8 @@ style "inline_toolbar" {
+ 
+ style "tooltip" {
+ 
+-  xthickness = 13
+-  ythickness = 13
++  xthickness = 5
++  ythickness = 5
+ 
+   bg[NORMAL]   = @tooltip_bg_color
+   fg[NORMAL]   = @tooltip_fg_color
+diff -up gnome-themes-extra-3.28/themes/Adwaita/gtk-2.0/main.rc.chinforpms gnome-themes-extra-3.28/themes/Adwaita/gtk-2.0/main.rc
+--- gnome-themes-extra-3.28/themes/Adwaita/gtk-2.0/main.rc.chinforpms	2018-01-24 14:24:06.000000000 -0200
++++ gnome-themes-extra-3.28/themes/Adwaita/gtk-2.0/main.rc	2018-12-19 17:38:36.948470384 -0200
+@@ -40,10 +40,10 @@ style "default" {
+ 
+   GtkButton::default-border         = {0, 0, 0, 0}
+   GtkButton::default-outside-border = {0, 0, 0, 0}
+-  GtkButton::inner-border           = {4, 4, 4, 4}
++  GtkButton::inner-border           = {6, 6, 3, 3}
+ 
+   GtkEntry::state-hint = 1
+-  GtkEntry::inner-border = {7, 7, 4, 5}
++  GtkEntry::inner-border = {1, 1, 2, 3}
+ 
+   GtkPaned::handle-size = 9
+   GtkHPaned::handle-size = 9
+@@ -2451,8 +2451,8 @@ style "inline_toolbar" {
+ 
+ style "tooltip" {
+ 
+-  xthickness = 13
+-  ythickness = 13
++  xthickness = 5
++  ythickness = 5
+ 
+   bg[NORMAL]   = @tooltip_bg_color
+   fg[NORMAL]   = @tooltip_fg_color

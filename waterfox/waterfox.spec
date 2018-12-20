@@ -117,10 +117,12 @@ Version:        56.2.6
 Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
+
+%global vc_url  https://github.com/MrAlex94/Waterfox
 %if 0%{?with_snapshot}
-Source0:        https://github.com/MrAlex94/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/MrAlex94/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
 # FreeBSD patches
@@ -178,8 +180,7 @@ Patch418:        https://hg.mozilla.org/integration/autoland/raw-rev/342812d23eb
 
 # Upstream updates
 
-%global wf_url https://github.com/MrAlex94/Waterfox
-#Patch???:      %%{wf_url}/commit/commit.patch#/wf-commit.patch
+#Patch???:      %%{vc_url}/commit/commit.patch#/wf-commit.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch

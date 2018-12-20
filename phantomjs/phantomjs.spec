@@ -9,7 +9,7 @@ Summary:        Minimalistic headless WebKit-based browser with JavaScript API
 
 License:        BSD
 URL:            http://phantomjs.org/
-Source0:        https://github.com/ariya/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/ariya/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        http://http.debian.net/debian/pool/main/p/%{name}/%{name}_%{debian_patch}.debian.tar.xz
 Patch0:         %{name}-qmake-qt5.patch
 

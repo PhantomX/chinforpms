@@ -16,10 +16,12 @@ Summary:        A re-implemetantion of a known platform game engine
 
 License:        GPLv2+
 URL:            http://www.alister.eu/jazz/oj/
+
+%global vc_url  https://github.com/AlisterT/%{name}
 %if 0%{?with_snapshot}
-Source0:        https://github.com/AlisterT/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/AlisterT/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  desktop-file-utils

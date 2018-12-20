@@ -50,7 +50,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
-Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{vboxsf_ver}.tar.gz#/vboxsf-%{vboxsf_ver}.tar.gz
+Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{vboxsf_ver}/vboxsf-%{vboxsf_ver}.tar.gz
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}

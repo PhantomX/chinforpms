@@ -5,7 +5,7 @@ Summary:        Simple-Stupid user-space program protecting a linux host from th
 
 License:        GPLv3
 URL:            https://github.com/tobixen/%{name}
-Source0:        %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 # Add some missing processes
 Patch0:         %{name}-whitelist.patch

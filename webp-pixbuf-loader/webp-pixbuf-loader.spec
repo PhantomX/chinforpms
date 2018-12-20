@@ -1,5 +1,5 @@
-%global gitcommitid 9b92950d49d7939f90ba7413deb7ec6b392b2054
-%global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
+%global commit 9b92950d49d7939f90ba7413deb7ec6b392b2054
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20160328
 %global with_snapshot 1
 
@@ -18,9 +18,9 @@ License:        LGPLv2+
 URL:            https://github.com/aruiz/%{name}
 
 %if 0%{?with_snapshot}
-Source0:        %{url}/archive/%{gitcommitid}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://www.gnu.org/licenses/old-licenses/lgpl-2.0.txt#/lgpl-2.0
 
@@ -41,7 +41,7 @@ Requires:       gdk-pixbuf2%{?_isa}
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{name}-%{gitcommitid} -p1
+%autosetup -n %{name}-%{commit} -p1
 %else
 %autosetup -n %{name}-%{version} -p1
 %endif

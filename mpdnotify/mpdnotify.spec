@@ -1,5 +1,5 @@
-%global gitcommitid 36e3ac8380e87193351fa3e1b061358b0a200fce
-%global shortcommit %(c=%{gitcommitid}; echo ${c:0:7})
+%global commit 36e3ac8380e87193351fa3e1b061358b0a200fce
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20171127
 %global with_snapshot 1
 
@@ -15,9 +15,9 @@ Summary:        'Now Playing' information via notify-send and mpc
 License:        Public Domain
 URL:            https://github.com/vehk/mpdnotify
 %if 0%{?with_snapshot}
-Source0:        https://github.com/vehk/mpdnotify/archive/%{gitcommitid}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        https://github.com/vehk/mpdnotify/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/vehk/mpdnotify/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/vehk/mpdnotify/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildArch:      noarch
@@ -31,7 +31,7 @@ notifications about what song is currently playing in mpd.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{name}-%{gitcommitid}
+%autosetup -n %{name}-%{commit}
 %else
 %autosetup -n %{name}-%{version}
 %endif

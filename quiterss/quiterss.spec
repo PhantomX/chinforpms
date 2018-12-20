@@ -5,7 +5,7 @@ Summary:        RSS/Atom aggregator
 License:        GPLv3
 URL:            http://quiterss.org/
 
-Source0:        https://github.com/QuiteRSS/quiterss/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/QuiteRSS/quiterss/archive/%{version}/%{name}-%{version}.tar.gz
 
 Patch0:         %{name}-defaults.patch
 
