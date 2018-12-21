@@ -1,0 +1,17 @@
+diff -up qt5ct-0.37/src/qt5ct/appearancepage.cpp.orig qt5ct-0.37/src/qt5ct/appearancepage.cpp
+--- qt5ct-0.37/src/qt5ct/appearancepage.cpp.orig	2018-12-19 13:44:04.000000000 -0200
++++ qt5ct-0.37/src/qt5ct/appearancepage.cpp	2018-12-20 14:14:39.438065607 -0200
+@@ -86,10 +86,10 @@ AppearancePage::AppearancePage(QWidget *
+ #else
+     keys = QPlatformThemeFactory::keys();
+     m_ui->dialogComboBox->addItem(tr("Default"), "default");
+-    if(keys.contains("gtk2") || keys.contains("qt5gtk2"))
+-        m_ui->dialogComboBox->addItem("GTK2", "gtk2");
+-    else if(keys.contains("gtk3") || keys.contains("qt5gtk3"))
++    if(keys.contains("gtk3") || keys.contains("qt5gtk3"))
+         m_ui->dialogComboBox->addItem("GTK3", "gtk3");
++    else if(keys.contains("gtk2") || keys.contains("qt5gtk2"))
++        m_ui->dialogComboBox->addItem("GTK2", "gtk2");
+     if(keys.contains("kde"))
+         m_ui->dialogComboBox->addItem("KDE", "kde");
+ #endif

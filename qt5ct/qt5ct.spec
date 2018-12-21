@@ -1,11 +1,13 @@
 Name:           qt5ct
 Version:        0.37
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
 URL:            https://sourceforge.net/projects/%{name}/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
+
+Patch0:         %{name}-gtk3-dialogs.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
@@ -27,7 +29,7 @@ qt5ct allows users to configure Qt5 settings (theme, font, icons, etc.) under
 DE/WM without Qt integration.
 
 %prep
-%autosetup
+%autosetup -p1
 
 
 %build
@@ -58,6 +60,9 @@ install -D -pm 644 src/%{name}/translations/*.qm %{buildroot}%{_datadir}/%{name}
 
 
 %changelog
+* Thu Dec 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.37-101
+- Set GTK dialog options to use GTK3 dialogs instead GTK2
+
 * Wed Dec 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.37-100
 - 0.37
 
