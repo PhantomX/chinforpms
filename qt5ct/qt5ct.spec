@@ -1,11 +1,12 @@
 Name:           qt5ct
 Version:        0.37
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
 URL:            https://sourceforge.net/projects/%{name}/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
+Source1:        README.gtk3
 
 Patch0:         %{name}-gtk3-dialogs.patch
 
@@ -29,30 +30,59 @@ qt5ct allows users to configure Qt5 settings (theme, font, icons, etc.) under
 DE/WM without Qt integration.
 
 %prep
-%autosetup -p1
+%setup -q -c
 
+cp -a %{name}-%{version} %{name}-%{version}-gtk3
+
+pushd %{name}-%{version}-gtk3
+cp -a COPYING AUTHORS ChangeLog README ../
+
+%patch0 -p1 -b.gtk3
+popd
+
+cp -p %{S:1} .
 
 %build
+pushd %{name}-%{version}
 %{qmake_qt5}
-%make_build
 
+%make_build
+popd
+
+pushd %{name}-%{version}-gtk3
+%{qmake_qt5}
+
+%make_build sub-src-qt5ct-all
+popd
 
 %install
-make install INSTALL_ROOT=%{buildroot}
+make install -C %{name}-%{version}-gtk3/src/qt5ct INSTALL_ROOT=%{buildroot}
+mv %{buildroot}%{_bindir}/%{name}{,-gtk3}
+
+make install -C %{name}-%{version} INSTALL_ROOT=%{buildroot}
 
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
+sed -e '/^Name/s|$| - GTK3|g' %{buildroot}/%{_datadir}/applications/%{name}.desktop \
+  > %{buildroot}/%{_datadir}/applications/%{name}-gtk3.desktop
+
+desktop-file-edit \
+  --set-key="Exec" \
+  --set-value="%{name}-gtk3" \
+  %{buildroot}/%{_datadir}/applications/%{name}-gtk3.desktop
+
 # Copy translations into right place
 install -d %{buildroot}%{_datadir}/%{name}/translations
-install -D -pm 644 src/%{name}/translations/*.qm %{buildroot}%{_datadir}/%{name}/translations/
+install -D -pm 644 %{name}-%{version}/src/%{name}/translations/*.qm \
+  %{buildroot}%{_datadir}/%{name}/translations/
 %find_lang %{name} --with-qt
 
 
 %files -f %{name}.lang
 %license COPYING
-%doc AUTHORS ChangeLog README
-%{_bindir}/%{name}
-%{_datadir}/applications/%{name}.desktop
+%doc AUTHORS ChangeLog README README.gtk3
+%{_bindir}/%{name}*
+%{_datadir}/applications/%{name}*.desktop
 %{_datadir}/%{name}/*
 %dir %{_datadir}/%{name}/translations/
 %{_qt5_plugindir}/platformthemes/libqt5ct.so
@@ -60,6 +90,9 @@ install -D -pm 644 src/%{name}/translations/*.qm %{buildroot}%{_datadir}/%{name}
 
 
 %changelog
+* Fri Dec 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.37-102
+- Install a -gtk3 binary, to set style with GTK3 dialogs and prevent some crashes
+
 * Thu Dec 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.37-101
 - Set GTK dialog options to use GTK3 dialogs instead GTK2
 

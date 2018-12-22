@@ -9,6 +9,7 @@ libmirage
 libogg
 mingw-wine-dxvk
 mingw-wine-vk9
+qt5ct
 shaderc
 webp-pixbuf-loader
 wine

@@ -30,7 +30,7 @@ RPMFusion and existent packages updated with extra changes.
  * **gtk3** - Revert some features ditched in 3.10 release, some _Debian_,
               _Ubuntu_ and [_gtk3-mushrooms_](https://github.com/TomaszGasior/gtk3-mushrooms) patches
  * **keepassxc** - Post script and cosmetic fixes
- * **kernel** - _blk-mq_ enabled by default, [CPU optimizations](https://github.com/graysky2/kernel_gcc_patch) and some
+ * **kernel** - _blk-mq_ and BFQ enabled by default, [CPU optimizations](https://github.com/graysky2/kernel_gcc_patch) and some
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) and [_pf-kernel_](https://gitlab.com/post-factum/pf-kernel/wikis/README) patches
                 (kernel-local must be edited to modify gcc optimizations)
  * **krename** - Updated, KF5

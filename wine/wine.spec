@@ -10,7 +10,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 4.0-rc2
+%global stagingver 4.0-rc3
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
@@ -20,7 +20,7 @@
 %global pbarel v
 %global pbapkg knobs_and_switches-
 %endif
-%global tkg_id b70bb671a5b56c1db1c600fdef572d63c85a22f2
+%global tkg_id d5f2ff5a1de9a11285d9a7ebe86c73b5e5135041
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -38,8 +38,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0~rc2
-Release:        101%{?dist}
+Version:        4.0~rc3
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 License:        LGPLv2+
@@ -122,7 +122,7 @@ Patch901:       wine-staging-old-pulseaudio.patch
 %if 0%{?pba}
 # acomminos PBA patches from Firerat github
 # https://github.com/Firerat/wine-pba
-Source1000:     https://gitlab.com/Firer4t/wine-pba/-/archive/%{?pbapkg}%{?pbarel}%{pbaver}/%{?pbapkg}%{?pbarel}%{pbaver}#/wine-pba-%{pbaver}.tar.bz2
+Source1000:     https://gitlab.com/Firer4t/wine-pba/-/archive/%{?pbapkg}%{?pbarel}%{pbaver}/%{?pbapkg}%{?pbarel}%{pbaver}.tar.bz2#/wine-pba-%{pbaver}.tar.bz2
 Source1001:     wine-README-pba
 Patch1000:      wine-staging-pba.patch
 %endif #{?pba}
@@ -2394,6 +2394,9 @@ fi
 %endif
 
 %changelog
+* Sat Dec 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc3-100
+- 4.0-rc3
+
 * Tue Dec 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc2-101
 - Some Tk-Glitch patches, including optional esync
 

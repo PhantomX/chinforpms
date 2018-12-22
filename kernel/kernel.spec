@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit c160f9e9beeff8052854a948b6106eb6a84a8c6a
+%global pfcommit cc2665815b2d49ba3bd38bc71f33c038d24ebbdb
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -2014,6 +2014,9 @@ fi
 #
 #
 %changelog
+* Fri Dec 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.12-500.chinfo
+- 4.19.12
+
 * Wed Dec 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.11-500.chinfo
 - 4.19.11
 - Set bfq as blk-mq default scheduler

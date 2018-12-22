@@ -1,7 +1,15 @@
-diff -up qt5ct-0.37/src/qt5ct/appearancepage.cpp.orig qt5ct-0.37/src/qt5ct/appearancepage.cpp
---- qt5ct-0.37/src/qt5ct/appearancepage.cpp.orig	2018-12-19 13:44:04.000000000 -0200
-+++ qt5ct-0.37/src/qt5ct/appearancepage.cpp	2018-12-20 14:14:39.438065607 -0200
-@@ -86,10 +86,10 @@ AppearancePage::AppearancePage(QWidget *
+diff -up qt5ct-0.37-gtk3/src/qt5ct/appearancepage.cpp.gtk3 qt5ct-0.37-gtk3/src/qt5ct/appearancepage.cpp
+--- qt5ct-0.37-gtk3/src/qt5ct/appearancepage.cpp.gtk3	2018-12-19 13:44:04.000000000 -0200
++++ qt5ct-0.37-gtk3/src/qt5ct/appearancepage.cpp	2018-12-21 08:28:41.361705527 -0200
+@@ -50,6 +50,7 @@ AppearancePage::AppearancePage(QWidget *
+ {
+     m_ui->setupUi(this);
+     QStringList keys = QStyleFactory::keys();
++    keys.removeAll("gtk2"); //hide gtk2 style
+     keys.removeAll("qt5ct-style"); //hide qt5ct proxy style
+     m_ui->styleComboBox->addItems(keys);
+ 
+@@ -86,10 +87,10 @@ AppearancePage::AppearancePage(QWidget *
  #else
      keys = QPlatformThemeFactory::keys();
      m_ui->dialogComboBox->addItem(tr("Default"), "default");
