@@ -10,7 +10,7 @@
 %global pkgname ublock-origin
 
 Name:           waterfox-%{pkgname}
-Version:        1.16.4.5
+Version:        1.16.4.6
 Release:        1%{?dist}
 Summary:        An efficient blocker for Waterfox
 
@@ -78,6 +78,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.16.4.6-1
+- 1.16.4.6
+
 * Tue Oct 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.16.4.5-1
 - 1.16.4.5
 

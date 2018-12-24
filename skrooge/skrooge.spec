@@ -1,7 +1,9 @@
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        2.16.2
+Version:        2.17.0
 Release:        100%{?dist}
+
+Epoch:          1
 
 License:        GPLv2+
 URL:            https://skrooge.org
@@ -70,7 +72,7 @@ categorize them, and build reports of them.
 
 %package libs
 Summary: Runtime libraries for %{name}
-Requires: %{name} = %{version}-%{release}
+Requires: %{?epoch:%{epoch}:}%{name} = %{version}-%{release}
 %description libs
 %{summary}.
 
@@ -138,6 +140,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.17.0-100
+- 2.17.0
+
 * Wed Nov 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.16.2-100.chinfo
 - 2.16.2
 
