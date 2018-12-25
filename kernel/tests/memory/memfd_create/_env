@@ -1,0 +1,8 @@
+#This file was generated automatically,do not manually change it.
+export TOPLEVEL_NAMESPACE=kernel
+export PKG_NAMESPACE=kernel/general
+export RELATIVE_PATH=memory/function/memfd_create
+export PACKAGE=general
+export PACKAGE_NAME=general
+export PKG_LIST=
+export TEST=/kernel/general/memory/function/memfd_create

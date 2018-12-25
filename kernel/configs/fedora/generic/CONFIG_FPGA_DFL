@@ -1,1 +1,1 @@
-# CONFIG_FPGA_DFL is not set
+CONFIG_FPGA_DFL=m

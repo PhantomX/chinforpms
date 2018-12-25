@@ -1,0 +1,6 @@
+---
+- name: memory test
+  import_playbook: memory.yml
+
+- name: filesystem test
+  import_playbook: filesystem.yml

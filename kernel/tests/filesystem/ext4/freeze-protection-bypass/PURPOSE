@@ -1,0 +1,5 @@
+Test Name: freeze-protection-bypass
+Author: Boyang Xue <bxue@redhat.com>
+Location: /kernel/filesystem/freeze-protection-bypass
+
+Description: regression test for Bug - ext4: fix freeze protection bypass

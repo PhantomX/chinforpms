@@ -1,0 +1,42 @@
+---
+# Tests suitable to run in a classic environment
+- hosts: localhost
+  tags:
+  - classic
+  roles:
+  - role: standard-test-beakerlib
+    tests:
+    - filesystem/ext4/freeze-protection-bypass
+    required_packages:
+    - kernel
+    - e2fsprogs
+    - util-linux
+    ignore_errors: yes
+
+# Tests suitable to run in a docker environment
+- hosts: localhost
+  tags:
+  - container
+  roles:
+  - role: standard-test-beakerlib
+    tests:
+    - filesystem/ext4/freeze-protection-bypass
+    required_packages:
+    - kernel
+    - e2fsprogs
+    - util-linux
+    ignore_errors: yes
+
+# Tests suitable to run in an Atomic Host environment
+- hosts: localhost
+  tags:
+  - atomic
+  roles:
+  - role: standard-test-beakerlib
+    tests:
+    - filesystem/ext4/freeze-protection-bypass
+    required_packages:
+    - kernel
+    - e2fsprogs
+    - util-linux
+    ignore_errors: yes

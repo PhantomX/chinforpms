@@ -1,0 +1,245 @@
+From patchwork Fri Nov 16 14:39:07 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: James Hughes <james.hughes@raspberrypi.org>
+X-Patchwork-Id: 10686407
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 9BA9C3CF1
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Fri, 16 Nov 2018 14:40:20 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 88C992D04D
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Fri, 16 Nov 2018 14:40:20 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 7C6802D0B5; Fri, 16 Nov 2018 14:40:20 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.6 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_LOW autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 02F272D0B9
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Fri, 16 Nov 2018 14:40:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Message-Id:Date:
+	Subject:To:From:Reply-To:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	References:List-Owner; bh=q+rr6CTCNe7Aj9DWt6k8ZBDJfuNlw6LK4NEqho/OsL8=; b=slV
+	BxeOcHW4UYDgm2VXfNMIZb+/8LPmzjGPpBpBe5IaMR/NthCsM9AL2A1aGdlPRKp8j/Oimcml9ytBG
+	vy3/u46ZlKFd5bAYEl5veGalWXzUg1KN7UhADmXD9fmMOzkFD4fMChA8+g2qK83F6SfqDM0VS3i14
+	/ubAQ9CUdaFi4Vr7F4EZtPdbPmSm76Rm9H8sWxWe6seIEmsL6VMpLVzRLAA0zvX5nslXgUPvDLEZj
+	uk7BIzGfdWU1oB15xwTu8kyp24WrC2Xd/DNCrrIlvBJ6Vn4lvfdqwPT+Xg59IAaibUhoj/fq1HNet
+	QenokEPTxg7SS3FsAKl96cR5mWeudtg==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gNfI9-0007DF-JA; Fri, 16 Nov 2018 14:40:17 +0000
+Received: from casper.infradead.org ([2001:8b0:10b:1236::1])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gNfI4-00075P-2l
+ for linux-arm-kernel@bombadil.infradead.org; Fri, 16 Nov 2018 14:40:12 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=Message-Id:Date:Subject:Cc:To:From:
+ Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=0v+Gt0Sb75ntX3ncvTo0T5q/LQ9HrDko5y0UEkZ6WVk=; b=SCmdpUIYIRr3Gb8eXMDGHl/os
+ AVmLBMIQEbA1mUB4WPQJlUjz7NKtNXgtLQxSY+yiwIb+LrripAgbQ6yK1Vkn+4bmhtSkb97glmraT
+ bMOZKrRj/cPhxW5osOa0o2BJQRqWqignWxy8539dbxXbpAAKW+12jA+dOqrjOFUftFH7geD4Ttwis
+ y/j75BOi7ObkcK1mBDyJDNuSEt2CZutCNZ+A7v7/zqkxnhS3hS7Y9hUD81+J+cIu5x103POH6i7FC
+ 7JazaqnBZYtl66kXXPOs62v3HA96/QLz7CxmdsnNQvw28MNKsxLw5TKnXJUDJmDCybQ5FL6k6Xomg
+ T9PDZO9+g==;
+Received: from mx08-00252a01.pphosted.com ([91.207.212.211])
+ by casper.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gNfHz-0006AE-RY
+ for linux-arm-kernel@lists.infradead.org; Fri, 16 Nov 2018 14:40:09 +0000
+Received: from pps.filterd (m0102629.ppops.net [127.0.0.1])
+ by mx08-00252a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+ wAGEcLBT000897
+ for <linux-arm-kernel@lists.infradead.org>; Fri, 16 Nov 2018 14:39:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=raspberrypi.org;
+ h=from : to : cc : subject : date : message-id; s=pp;
+ bh=0v+Gt0Sb75ntX3ncvTo0T5q/LQ9HrDko5y0UEkZ6WVk=;
+ b=ynWh6Gt8VRIRTTbVy4Q9U7IsJWRMWYUNzTD1MYt8M2mcj01ElaCuktcZdGoRxGBJXjLU
+ CYJP75gWsuHHvbSWSSn2l+qpGuEHm+ddFXuMB4nxC5VmQokt/Z0KPScc4Na2IOOU1Ci/
+ wUg2tPdhfupkGIPzTt32SXu3pQX4aAYqx0AEaeJ3ptU/223MOj2Z40HZui1SL0yHxdsT
+ 283+7DokK0bontWXs0j69cFVklLF+txi0untOXTxGuvtbzj0vu6uMErB9qhph6HVKlnH
+ kwaoGLPYrc0JnmZt1Kx7nmAQ+xxE3RaNA7E/IisHqX9m5C57JAMtN6WdWUTaLjWeIs8n 2Q==
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70])
+ by mx08-00252a01.pphosted.com with ESMTP id 2nr7cnhbky-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK)
+ for <linux-arm-kernel@lists.infradead.org>; Fri, 16 Nov 2018 14:39:55 +0000
+Received: by mail-wm1-f70.google.com with SMTP id d26-v6so24770633wmb.4
+ for <linux-arm-kernel@lists.infradead.org>;
+ Fri, 16 Nov 2018 06:39:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=raspberrypi.org; s=google;
+ h=from:to:cc:subject:date:message-id;
+ bh=0v+Gt0Sb75ntX3ncvTo0T5q/LQ9HrDko5y0UEkZ6WVk=;
+ b=TFhWj6OD0WYvVWhFc0RE+UyQKaAMuO0Da2ahzvPlkfTJj3d26Mf15Ai4ipbfJy4x9d
+ RLlgEH8Vj457x2kK3QmlXDC5Cy+kzp6FiZi2aFSBinKjY06Dmt4LElzlaye8szk/IuJ/
+ f6HdjG3Rmt6Ys/Kx8fct+p87NyvHNe/yfCGnUj5k1nz7+m2eApkvTkGxzYe5SXn5s1Jp
+ nv/30o4+CcPFK3SqAWo+GkWgD/Uae+4gCP38KxLx6dsYxCS7/kqIF46ac9WmAx9k44Jz
+ Wt18Pe1A7rIj38vRwLv2JuwUkZrOlAhav52EyDM/03QbgRKzEM9En5DYV2GFAqR1Xc3w
+ qLzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id;
+ bh=0v+Gt0Sb75ntX3ncvTo0T5q/LQ9HrDko5y0UEkZ6WVk=;
+ b=gFrGygir8lioHrOeF0abzZ3xbTuyQEnk7F/vaRJmx5SyMuxe5SQqcM/PozflvPaB4w
+ wHeng0ewo0t6S/xfZo9EpTKB19L5L5XnrxLoseo+tagkZJkCH2Bcw7dsBzALR2upGwrT
+ SfHywXMeCKH9fRAu3/Hj0W934lZDwMG3xqmWWebQ/wqDBE41Nk/dl9iHnGKp9QN61uee
+ Qv0jpp3sglzprI5CIEQqkElIXAF/jjnPqbknf+5nUyH4xUoe+CzTaEldVeHFc4iTerOZ
+ b48uPgriPJVTq7Gr7L8qWJ5yLZWqenG4sAIpLbanD8Mkw8ogaybVfIZyzrSKoTbtBiSa
+ oOEg==
+X-Gm-Message-State: AA+aEWaOCOYCkmegm7N2wWsL8XdrnmJenH+HXps2b21WEUnrWH3tCofP
+ O07nsIq/s30FFJwtMB9dMCaWwCmc2iSWxn7hnqFhagZMyuYFYcJ1Zs5caqAV/LcSS/BBriTI4M7
+ 4RALk0oVU/TiJvemnTTRSwFul6+hCHLFRxRM=
+X-Received: by 2002:a1c:1cc4:: with SMTP id
+ c187-v6mr2937585wmc.75.1542379194749;
+ Fri, 16 Nov 2018 06:39:54 -0800 (PST)
+X-Google-Smtp-Source: 
+ AFSGD/XjyVsHsmDi+oKxMsFZ/hLG36TQdg1uDC2wO1upiuvyI+72rZz3AeAffzu3LWvkW8xxAI1e0w==
+X-Received: by 2002:a1c:1cc4:: with SMTP id
+ c187-v6mr2937565wmc.75.1542379194454;
+ Fri, 16 Nov 2018 06:39:54 -0800 (PST)
+Received: from jamesh-VirtualBox.pitowers.org
+ ([2a00:2381:fdf7:14:4419:8784:6076:3820])
+ by smtp.gmail.com with ESMTPSA id a7sm26247594wrx.26.2018.11.16.06.39.53
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+ Fri, 16 Nov 2018 06:39:53 -0800 (PST)
+From: James Hughes <james.hughes@raspberrypi.org>
+To: eric@anholt.net, stefan.wahren@i2se.com,
+ linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3] firmware: raspberrypi: Fix firmware calls with large
+ buffers
+Date: Fri, 16 Nov 2018 14:39:07 +0000
+Message-Id: <20181116143907.6149-1-james.hughes@raspberrypi.org>
+X-Mailer: git-send-email 2.17.1
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+ definitions=2018-11-16_09:, , signatures=0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181116_144007_971248_9AC931E8 
+X-CRM114-Status: GOOD (  21.12  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: James Hughes <james.hughes@raspberrypi.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Commit a1547e0bca51 ("firmware: raspberrypi: Remove VLA usage")
+moved away from VLA's to a fixed maximum size for mailbox data.
+However, some mailbox calls use larger data buffers
+than the maximum allowed in that change. This fix therefor
+moves from using fixed buffers to kmalloc to ensure all sizes
+are catered for.
+
+There is some documentation, which is somewhat out of date,
+on the mailbox calls here :
+https://github.com/raspberrypi/firmware/wiki/Mailbox-property-interface
+
+Fixes: a1547e0bca51 ("firmware: raspberrypi: Remove VLA usage")
+
+Signed-off-by: James Hughes <james.hughes@raspberrypi.org>
+Reviewed-by: Eric Anholt <eric@anholt.net>
+---
+ drivers/firmware/raspberrypi.c | 35 +++++++++++++++++-----------------
+ 1 file changed, 18 insertions(+), 17 deletions(-)
+
+v2: Changes to commit message and format only. No code change.
+v3: Moved declaration of header back to original position
+
+diff --git a/drivers/firmware/raspberrypi.c b/drivers/firmware/raspberrypi.c
+index a200a2174611..44eb99807e33 100644
+--- a/drivers/firmware/raspberrypi.c
++++ b/drivers/firmware/raspberrypi.c
+@@ -14,6 +14,7 @@
+ #include <linux/module.h>
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
++#include <linux/slab.h>
+ #include <soc/bcm2835/raspberrypi-firmware.h>
+ 
+ #define MBOX_MSG(chan, data28)		(((data28) & ~0xf) | ((chan) & 0xf))
+@@ -21,8 +22,6 @@
+ #define MBOX_DATA28(msg)		((msg) & ~0xf)
+ #define MBOX_CHAN_PROPERTY		8
+ 
+-#define MAX_RPI_FW_PROP_BUF_SIZE	32
+-
+ static struct platform_device *rpi_hwmon;
+ 
+ struct rpi_firmware {
+@@ -144,28 +143,30 @@ EXPORT_SYMBOL_GPL(rpi_firmware_property_list);
+ int rpi_firmware_property(struct rpi_firmware *fw,
+ 			  u32 tag, void *tag_data, size_t buf_size)
+ {
+-	/* Single tags are very small (generally 8 bytes), so the
+-	 * stack should be safe.
+-	 */
+-	u8 data[sizeof(struct rpi_firmware_property_tag_header) +
+-		MAX_RPI_FW_PROP_BUF_SIZE];
+-	struct rpi_firmware_property_tag_header *header =
+-		(struct rpi_firmware_property_tag_header *)data;
++	struct rpi_firmware_property_tag_header *header;
+ 	int ret;
+ 
+-	if (WARN_ON(buf_size > sizeof(data) - sizeof(*header)))
+-		return -EINVAL;
++	/* Some mailboxes can use over 1k bytes. Rather than checking
++	 * size and using stack or kmalloc depending on requirements,
++	 * just use kmalloc. Mailboxes don't get called enough to worry
++	 * too much about the time taken in the allocation.
++	 */
++	void *data = kmalloc(sizeof(*header) + buf_size, GFP_KERNEL);
+ 
++	if (!data)
++		return -ENOMEM;
++
++	header = data;
+ 	header->tag = tag;
+ 	header->buf_size = buf_size;
+ 	header->req_resp_size = 0;
+-	memcpy(data + sizeof(struct rpi_firmware_property_tag_header),
+-	       tag_data, buf_size);
++	memcpy(data + sizeof(*header), tag_data, buf_size);
++
++	ret = rpi_firmware_property_list(fw, data, buf_size + sizeof(*header));
++
++	memcpy(tag_data, data + sizeof(*header), buf_size);
+ 
+-	ret = rpi_firmware_property_list(fw, &data, buf_size + sizeof(*header));
+-	memcpy(tag_data,
+-	       data + sizeof(struct rpi_firmware_property_tag_header),
+-	       buf_size);
++	kfree(data);
+ 
+ 	return ret;
+ }

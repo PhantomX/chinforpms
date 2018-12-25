@@ -1,1 +1,1 @@
-CONFIG_QCOM_SMEM=m
+# CONFIG_QCOM_SMEM is not set

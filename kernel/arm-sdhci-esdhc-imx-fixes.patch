@@ -47,11 +47,11 @@ index 23966f887da6..cb2433d6d61f 100644
 --- a/drivers/mmc/host/sdhci.h
 +++ b/drivers/mmc/host/sdhci.h
 @@ -450,6 +450,8 @@ struct sdhci_host {
-  * obtainable timeout.
+  * block count.
   */
- #define SDHCI_QUIRK2_DISABLE_HW_TIMEOUT			(1<<17)
+ #define SDHCI_QUIRK2_USE_32BIT_BLK_CNT			(1<<18)
 +/* Do not support any higher speeds (>50MHz) */
-+#define SDHCI_QUIRK2_NO_UHS_HS200_HS400			(1<<18)
++#define SDHCI_QUIRK2_NO_UHS_HS200_HS400			(1<<19)
  
  	int irq;		/* Device IRQ */
  	void __iomem *ioaddr;	/* Mapped address */

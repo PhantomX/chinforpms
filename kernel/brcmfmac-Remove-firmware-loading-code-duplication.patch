@@ -1,71 +1,7 @@
-From patchwork Wed Oct 10 11:00:58 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Hans de Goede <hdegoede@redhat.com>
-X-Patchwork-Id: 10634355
-X-Patchwork-Delegate: kvalo@adurom.com
-Return-Path: <linux-wireless-owner@kernel.org>
-Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
- [172.30.200.125])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 176D8679F
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:11 +0000 (UTC)
-Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 130EB29A62
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:10 +0000 (UTC)
-Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
-	id 05F4129AD0; Wed, 10 Oct 2018 11:01:10 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
-	pdx-wl-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-7.9 required=2.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	RCVD_IN_DNSWL_HI autolearn=ham version=3.3.1
-Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 6244B29A5D
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:09 +0000 (UTC)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726568AbeJJSWo (ORCPT
-        <rfc822;patchwork-linux-wireless@patchwork.kernel.org>);
-        Wed, 10 Oct 2018 14:22:44 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:41994 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726022AbeJJSWo (ORCPT <rfc822;linux-wireless@vger.kernel.org>);
-        Wed, 10 Oct 2018 14:22:44 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 66FEBA4D29;
-        Wed, 10 Oct 2018 11:01:07 +0000 (UTC)
-Received: from shalem.localdomain.com (ovpn-116-109.ams2.redhat.com
- [10.36.116.109])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8A0D658772;
-        Wed, 10 Oct 2018 11:01:05 +0000 (UTC)
+From 76202e874f06ab641fbe1caaddd4cfcf7158f174 Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
-To: Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-        linux-wireless@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com
-Subject: [PATCH v2 1/6] brcmfmac: Remove firmware-loading code duplication
 Date: Wed, 10 Oct 2018 13:00:58 +0200
-Message-Id: <20181010110103.21857-1-hdegoede@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted,
- not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]);
- Wed, 10 Oct 2018 11:01:07 +0000 (UTC)
-Sender: linux-wireless-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-wireless.vger.kernel.org>
-X-Mailing-List: linux-wireless@vger.kernel.org
-X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: [PATCH 1/5] brcmfmac: Remove firmware-loading code duplication
 
 brcmf_fw_request_next_item and brcmf_fw_request_done both have identical
 code to complete the fw-request depending on the item-type.
@@ -165,78 +101,14 @@ index 9095b830ae4d..784c84f0e9e7 100644
  		goto fail;
  
  	do {
+-- 
+2.19.1
 
-From patchwork Wed Oct 10 11:00:59 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Hans de Goede <hdegoede@redhat.com>
-X-Patchwork-Id: 10634357
-X-Patchwork-Delegate: kvalo@adurom.com
-Return-Path: <linux-wireless-owner@kernel.org>
-Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
- [172.30.200.125])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id AA07F933
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:14 +0000 (UTC)
-Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 9109229A3C
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:14 +0000 (UTC)
-Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
-	id 851B229A62; Wed, 10 Oct 2018 11:01:14 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
-	pdx-wl-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-7.9 required=2.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	RCVD_IN_DNSWL_HI autolearn=ham version=3.3.1
-Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 1D41829A3C
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:14 +0000 (UTC)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbeJJSWt (ORCPT
-        <rfc822;patchwork-linux-wireless@patchwork.kernel.org>);
-        Wed, 10 Oct 2018 14:22:49 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46618 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726022AbeJJSWt (ORCPT <rfc822;linux-wireless@vger.kernel.org>);
-        Wed, 10 Oct 2018 14:22:49 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B5295307D912;
-        Wed, 10 Oct 2018 11:01:12 +0000 (UTC)
-Received: from shalem.localdomain.com (ovpn-116-109.ams2.redhat.com
- [10.36.116.109])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A3EDA44FBF;
-        Wed, 10 Oct 2018 11:01:07 +0000 (UTC)
+From a3c4b522bff976360fb21c9205fcb37a121d4074 Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
-To: Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-        linux-wireless@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com
-Subject: [PATCH v2 2/6] brcmfmac: Remove recursion from firmware load error
- handling
 Date: Wed, 10 Oct 2018 13:00:59 +0200
-Message-Id: <20181010110103.21857-2-hdegoede@redhat.com>
-In-Reply-To: <20181010110103.21857-1-hdegoede@redhat.com>
-References: <20181010110103.21857-1-hdegoede@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted,
- not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]);
- Wed, 10 Oct 2018 11:01:13 +0000 (UTC)
-Sender: linux-wireless-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-wireless.vger.kernel.org>
-X-Mailing-List: linux-wireless@vger.kernel.org
-X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: [PATCH 2/5] brcmfmac: Remove recursion from firmware load error
+ handling
 
 Before this commit brcmf_fw_request_done would call
 brcmf_fw_request_next_item to load the next item, which on an error would
@@ -360,78 +232,14 @@ index 784c84f0e9e7..08aaf99fee34 100644
  	return 0;
  }
  
+-- 
+2.19.1
 
-From patchwork Wed Oct 10 11:01:00 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Hans de Goede <hdegoede@redhat.com>
-X-Patchwork-Id: 10634359
-X-Patchwork-Delegate: kvalo@adurom.com
-Return-Path: <linux-wireless-owner@kernel.org>
-Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
- [172.30.200.125])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 25C2D69B4
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:17 +0000 (UTC)
-Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 1A0EE29A3C
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:17 +0000 (UTC)
-Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
-	id 0E72C29A62; Wed, 10 Oct 2018 11:01:17 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
-	pdx-wl-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-7.9 required=2.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	RCVD_IN_DNSWL_HI autolearn=ham version=3.3.1
-Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id A6B3D29A3C
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:16 +0000 (UTC)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbeJJSWw (ORCPT
-        <rfc822;patchwork-linux-wireless@patchwork.kernel.org>);
-        Wed, 10 Oct 2018 14:22:52 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:35014 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726479AbeJJSWw (ORCPT <rfc822;linux-wireless@vger.kernel.org>);
-        Wed, 10 Oct 2018 14:22:52 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C2E0030820D3;
-        Wed, 10 Oct 2018 11:01:14 +0000 (UTC)
-Received: from shalem.localdomain.com (ovpn-116-109.ams2.redhat.com
- [10.36.116.109])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0495169608;
-        Wed, 10 Oct 2018 11:01:12 +0000 (UTC)
+From c2c41d3f837ed492369607940af950ef554b8685 Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
-To: Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-        linux-wireless@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com
-Subject: [PATCH v2 3/6] brcmfmac: Add support for first trying to get a board
- specific nvram file
 Date: Wed, 10 Oct 2018 13:01:00 +0200
-Message-Id: <20181010110103.21857-3-hdegoede@redhat.com>
-In-Reply-To: <20181010110103.21857-1-hdegoede@redhat.com>
-References: <20181010110103.21857-1-hdegoede@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted,
- not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]);
- Wed, 10 Oct 2018 11:01:15 +0000 (UTC)
-Sender: linux-wireless-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-wireless.vger.kernel.org>
-X-Mailing-List: linux-wireless@vger.kernel.org
-X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: [PATCH 3/5] brcmfmac: Add support for first trying to get a board
+ specific nvram file
 
 The nvram files which some brcmfmac chips need are board-specific. To be
 able to distribute these as part of linux-firmware, so that devices with
@@ -507,78 +315,14 @@ index 2893e56910f0..a0834be8864e 100644
  	struct brcmf_fw_item items[0];
  };
  
+-- 
+2.19.1
 
-From patchwork Wed Oct 10 11:01:01 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Hans de Goede <hdegoede@redhat.com>
-X-Patchwork-Id: 10634361
-X-Patchwork-Delegate: kvalo@adurom.com
-Return-Path: <linux-wireless-owner@kernel.org>
-Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
- [172.30.200.125])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id EE2A514DB
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:18 +0000 (UTC)
-Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id E298329A3C
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:18 +0000 (UTC)
-Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
-	id D5CD929A62; Wed, 10 Oct 2018 11:01:18 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
-	pdx-wl-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-7.9 required=2.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	RCVD_IN_DNSWL_HI autolearn=ham version=3.3.1
-Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 6E6F329A3C
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:18 +0000 (UTC)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbeJJSWy (ORCPT
-        <rfc822;patchwork-linux-wireless@patchwork.kernel.org>);
-        Wed, 10 Oct 2018 14:22:54 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:32633 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726479AbeJJSWy (ORCPT <rfc822;linux-wireless@vger.kernel.org>);
-        Wed, 10 Oct 2018 14:22:54 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D2E7630DF6F1;
-        Wed, 10 Oct 2018 11:01:16 +0000 (UTC)
-Received: from shalem.localdomain.com (ovpn-116-109.ams2.redhat.com
- [10.36.116.109])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0DBC544FBF;
-        Wed, 10 Oct 2018 11:01:14 +0000 (UTC)
-From: Hans de Goede <hdegoede@redhat.com>
-To: Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-        linux-wireless@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com
-Subject: [PATCH v2 4/6] brcmfmac: Set board_type used for nvram file selection
- to machine-compatible
-Date: Wed, 10 Oct 2018 13:01:01 +0200
-Message-Id: <20181010110103.21857-4-hdegoede@redhat.com>
-In-Reply-To: <20181010110103.21857-1-hdegoede@redhat.com>
-References: <20181010110103.21857-1-hdegoede@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted,
- not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]);
- Wed, 10 Oct 2018 11:01:17 +0000 (UTC)
-Sender: linux-wireless-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-wireless.vger.kernel.org>
-X-Mailing-List: linux-wireless@vger.kernel.org
-X-Virus-Scanned: ClamAV using ClamSMTP
+From 282477a8e4034ee2ea906d2eb234ce9c86f5685f Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Sat, 17 Nov 2018 15:18:35 +0000
+Subject: [PATCH 4/5] brcmfmac: Set board_type used for nvram file selection to
+ machine-compatible
 
 For of/devicetree using machines, set the board_type used for nvram file
 selection to the first string listed in the top-level's node compatible
@@ -589,169 +333,16 @@ a board-specific name so that we can ship files for each supported board
 in linux-firmware.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- .../net/wireless/broadcom/brcm80211/brcmfmac/common.h |  1 +
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 11 ++++++++++-
- .../net/wireless/broadcom/brcm80211/brcmfmac/pcie.c   |  1 +
- .../net/wireless/broadcom/brcm80211/brcmfmac/sdio.c   |  1 +
- 4 files changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-index a34642cb4d2f..e63a273642e9 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-@@ -59,6 +59,7 @@ struct brcmf_mp_device {
- 	bool		iapp;
- 	bool		ignore_probe_fail;
- 	struct brcmfmac_pd_cc *country_codes;
-+	const char	*board_type;
- 	union {
- 		struct brcmfmac_sdio_pd sdio;
- 	} bus;
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-index aee6e5937c41..84e3373289eb 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-@@ -27,11 +27,20 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
- 		    struct brcmf_mp_device *settings)
- {
- 	struct brcmfmac_sdio_pd *sdio = &settings->bus.sdio;
--	struct device_node *np = dev->of_node;
-+	struct device_node *root, *np = dev->of_node;
-+	struct property *prop;
- 	int irq;
- 	u32 irqf;
- 	u32 val;
- 
-+	/* Set board-type to the first string of the machine compatible prop */
-+	root = of_find_node_by_path("/");
-+	if (root) {
-+		prop = of_find_property(root, "compatible", NULL);
-+		settings->board_type = of_prop_next_string(prop, NULL);
-+		of_node_put(root);
-+	}
-+
- 	if (!np || bus_type != BRCMF_BUSTYPE_SDIO ||
- 	    !of_device_is_compatible(np, "brcm,bcm4329-fmac"))
- 		return;
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index 4fffa6988087..b12f3e0ee69c 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -1785,6 +1785,7 @@ brcmf_pcie_prepare_fw_request(struct brcmf_pciedev_info *devinfo)
- 	fwreq->items[BRCMF_PCIE_FW_CODE].type = BRCMF_FW_TYPE_BINARY;
- 	fwreq->items[BRCMF_PCIE_FW_NVRAM].type = BRCMF_FW_TYPE_NVRAM;
- 	fwreq->items[BRCMF_PCIE_FW_NVRAM].flags = BRCMF_FW_REQF_OPTIONAL;
-+	fwreq->board_type = devinfo->settings->board_type;
- 	/* NVRAM reserves PCI domain 0 for Broadcom's SDK faked bus */
- 	fwreq->domain_nr = pci_domain_nr(devinfo->pdev->bus) + 1;
- 	fwreq->bus_nr = devinfo->pdev->bus->number;
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index a907d7b065fa..3dbbbb117563 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -4177,6 +4177,7 @@ brcmf_sdio_prepare_fw_request(struct brcmf_sdio *bus)
- 
- 	fwreq->items[BRCMF_SDIO_FW_CODE].type = BRCMF_FW_TYPE_BINARY;
- 	fwreq->items[BRCMF_SDIO_FW_NVRAM].type = BRCMF_FW_TYPE_NVRAM;
-+	fwreq->board_type = bus->sdiodev->settings->board_type;
- 
- 	return fwreq;
- }
-
-From patchwork Wed Oct 10 11:01:02 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Hans de Goede <hdegoede@redhat.com>
-X-Patchwork-Id: 10634363
-X-Patchwork-Delegate: kvalo@adurom.com
-Return-Path: <linux-wireless-owner@kernel.org>
-Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
- [172.30.200.125])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 1CCB3679F
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:21 +0000 (UTC)
-Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 0CFFD29A3C
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:21 +0000 (UTC)
-Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
-	id 0058529A62; Wed, 10 Oct 2018 11:01:20 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
-	pdx-wl-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-7.9 required=2.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	RCVD_IN_DNSWL_HI autolearn=ham version=3.3.1
-Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 5CC2D29A3C
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:20 +0000 (UTC)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726712AbeJJSW4 (ORCPT
-        <rfc822;patchwork-linux-wireless@patchwork.kernel.org>);
-        Wed, 10 Oct 2018 14:22:56 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:25991 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726479AbeJJSW4 (ORCPT <rfc822;linux-wireless@vger.kernel.org>);
-        Wed, 10 Oct 2018 14:22:56 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id DCA9130821FF;
-        Wed, 10 Oct 2018 11:01:18 +0000 (UTC)
-Received: from shalem.localdomain.com (ovpn-116-109.ams2.redhat.com
- [10.36.116.109])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1EAEF2E03B;
-        Wed, 10 Oct 2018 11:01:16 +0000 (UTC)
-From: Hans de Goede <hdegoede@redhat.com>
-To: Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-        linux-wireless@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com
-Subject: [PATCH v2 5/6] brcmfmac: Set board_type from DMI on x86 based
- machines
-Date: Wed, 10 Oct 2018 13:01:02 +0200
-Message-Id: <20181010110103.21857-5-hdegoede@redhat.com>
-In-Reply-To: <20181010110103.21857-1-hdegoede@redhat.com>
-References: <20181010110103.21857-1-hdegoede@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted,
- not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]);
- Wed, 10 Oct 2018 11:01:19 +0000 (UTC)
-Sender: linux-wireless-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-wireless.vger.kernel.org>
-X-Mailing-List: linux-wireless@vger.kernel.org
-X-Virus-Scanned: ClamAV using ClamSMTP
-
-For x86 based machines, set the board_type used for nvram file selection
-based on the DMI sys-vendor and product-name strings.
-
-Since on some models these strings are too generic, this commit also adds
-a quirk table overriding the strings for models listed in that table.
-
-The board_type setting is used to load the board-specific nvram file with
-a board-specific name so that we can ship files for each supported board
-in linux-firmware.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
-Changes in v2:
--Use full ISC text for now instead of SPDX tag, because the ISC is not
- yet listed under LICENSES
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
 ---
  .../broadcom/brcm80211/brcmfmac/Makefile      |   2 +
  .../broadcom/brcm80211/brcmfmac/common.c      |   3 +-
- .../broadcom/brcm80211/brcmfmac/common.h      |   7 ++
+ .../broadcom/brcm80211/brcmfmac/common.h      |   8 ++
  .../broadcom/brcm80211/brcmfmac/dmi.c         | 116 ++++++++++++++++++
- 4 files changed, 127 insertions(+), 1 deletion(-)
+ .../wireless/broadcom/brcm80211/brcmfmac/of.c |  11 +-
+ .../broadcom/brcm80211/brcmfmac/pcie.c        |   1 +
+ .../broadcom/brcm80211/brcmfmac/sdio.c        |   1 +
+ 7 files changed, 140 insertions(+), 2 deletions(-)
  create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/dmi.c
 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/Makefile b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/Makefile
@@ -765,25 +356,32 @@ index 1f5a9b948abf..22fd95a736a8 100644
 +brcmfmac-$(CONFIG_DMI) += \
 +		dmi.o
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-index cd3651069d0c..a4bcbd1a57ac 100644
+index cd3651069d0c..b93b1e797333 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-@@ -450,8 +450,9 @@ struct brcmf_mp_device *brcmf_get_module_param(struct device *dev,
+@@ -450,7 +450,8 @@ struct brcmf_mp_device *brcmf_get_module_param(struct device *dev,
  		}
  	}
  	if (!found) {
 -		/* No platform data for this device, try OF (Open Firwmare) */
 +		/* No platform data for this device, try OF and DMI data */
- 		brcmf_of_probe(dev, bus_type, settings);
 +		brcmf_dmi_probe(settings, chip, chiprev);
+ 		brcmf_of_probe(dev, bus_type, settings);
  	}
  	return settings;
- }
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-index e63a273642e9..4ce56be90b74 100644
+index a34642cb4d2f..4ce56be90b74 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-@@ -75,4 +75,11 @@ void brcmf_release_module_param(struct brcmf_mp_device *module_param);
+@@ -59,6 +59,7 @@ struct brcmf_mp_device {
+ 	bool		iapp;
+ 	bool		ignore_probe_fail;
+ 	struct brcmfmac_pd_cc *country_codes;
++	const char	*board_type;
+ 	union {
+ 		struct brcmfmac_sdio_pd sdio;
+ 	} bus;
+@@ -74,4 +75,11 @@ void brcmf_release_module_param(struct brcmf_mp_device *module_param);
  /* Sets dongle media info (drv_version, mac address). */
  int brcmf_c_preinit_dcmds(struct brcmf_if *ifp);
  
@@ -917,77 +515,63 @@ index 000000000000..51d76ac45075
 +		settings->board_type = dmi_board_type;
 +	}
 +}
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+index aee6e5937c41..84e3373289eb 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+@@ -27,11 +27,20 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+ 		    struct brcmf_mp_device *settings)
+ {
+ 	struct brcmfmac_sdio_pd *sdio = &settings->bus.sdio;
+-	struct device_node *np = dev->of_node;
++	struct device_node *root, *np = dev->of_node;
++	struct property *prop;
+ 	int irq;
+ 	u32 irqf;
+ 	u32 val;
+ 
++	/* Set board-type to the first string of the machine compatible prop */
++	root = of_find_node_by_path("/");
++	if (root) {
++		prop = of_find_property(root, "compatible", NULL);
++		settings->board_type = of_prop_next_string(prop, NULL);
++		of_node_put(root);
++	}
++
+ 	if (!np || bus_type != BRCMF_BUSTYPE_SDIO ||
+ 	    !of_device_is_compatible(np, "brcm,bcm4329-fmac"))
+ 		return;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+index 4fffa6988087..b12f3e0ee69c 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -1785,6 +1785,7 @@ brcmf_pcie_prepare_fw_request(struct brcmf_pciedev_info *devinfo)
+ 	fwreq->items[BRCMF_PCIE_FW_CODE].type = BRCMF_FW_TYPE_BINARY;
+ 	fwreq->items[BRCMF_PCIE_FW_NVRAM].type = BRCMF_FW_TYPE_NVRAM;
+ 	fwreq->items[BRCMF_PCIE_FW_NVRAM].flags = BRCMF_FW_REQF_OPTIONAL;
++	fwreq->board_type = devinfo->settings->board_type;
+ 	/* NVRAM reserves PCI domain 0 for Broadcom's SDK faked bus */
+ 	fwreq->domain_nr = pci_domain_nr(devinfo->pdev->bus) + 1;
+ 	fwreq->bus_nr = devinfo->pdev->bus->number;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index a907d7b065fa..3dbbbb117563 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -4177,6 +4177,7 @@ brcmf_sdio_prepare_fw_request(struct brcmf_sdio *bus)
+ 
+ 	fwreq->items[BRCMF_SDIO_FW_CODE].type = BRCMF_FW_TYPE_BINARY;
+ 	fwreq->items[BRCMF_SDIO_FW_NVRAM].type = BRCMF_FW_TYPE_NVRAM;
++	fwreq->board_type = bus->sdiodev->settings->board_type;
+ 
+ 	return fwreq;
+ }
+-- 
+2.19.1
 
-From patchwork Wed Oct 10 11:01:03 2018
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Hans de Goede <hdegoede@redhat.com>
-X-Patchwork-Id: 10634365
-X-Patchwork-Delegate: kvalo@adurom.com
-Return-Path: <linux-wireless-owner@kernel.org>
-Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
- [172.30.200.125])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 9513614DB
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:22 +0000 (UTC)
-Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 873E929A3C
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:22 +0000 (UTC)
-Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
-	id 7B56829A62; Wed, 10 Oct 2018 11:01:22 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
-	pdx-wl-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-7.9 required=2.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	RCVD_IN_DNSWL_HI autolearn=ham version=3.3.1
-Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 312D329A3C
-	for <patchwork-linux-wireless@patchwork.kernel.org>;
- Wed, 10 Oct 2018 11:01:22 +0000 (UTC)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbeJJSW6 (ORCPT
-        <rfc822;patchwork-linux-wireless@patchwork.kernel.org>);
-        Wed, 10 Oct 2018 14:22:58 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:50166 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726479AbeJJSW6 (ORCPT <rfc822;linux-wireless@vger.kernel.org>);
-        Wed, 10 Oct 2018 14:22:58 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E53875F793;
-        Wed, 10 Oct 2018 11:01:20 +0000 (UTC)
-Received: from shalem.localdomain.com (ovpn-116-109.ams2.redhat.com
- [10.36.116.109])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 274442E199;
-        Wed, 10 Oct 2018 11:01:19 +0000 (UTC)
+From 6351ca678eb1391129cf5afccab518f376d57596 Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
-To: Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-        linux-wireless@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com
-Subject: [PATCH v2 6/6] brcmfmac: Cleanup brcmf_fw_request_done()
 Date: Wed, 10 Oct 2018 13:01:03 +0200
-Message-Id: <20181010110103.21857-6-hdegoede@redhat.com>
-In-Reply-To: <20181010110103.21857-1-hdegoede@redhat.com>
-References: <20181010110103.21857-1-hdegoede@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted,
- not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]);
- Wed, 10 Oct 2018 11:01:21 +0000 (UTC)
-Sender: linux-wireless-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-wireless.vger.kernel.org>
-X-Mailing-List: linux-wireless@vger.kernel.org
-X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: [PATCH 5/5] brcmfmac: Cleanup brcmf_fw_request_done()
 
 The "cur" variable is now only used for a debug print and we already
 print the same info from brcmf_fw_complete_request(), so the debug print
@@ -1026,3 +610,6 @@ index 6755b2388fbc..b38c4b40b235 100644
  		brcmf_fw_free_request(fwctx->req);
  		fwctx->req = NULL;
  	}
+-- 
+2.19.1
+

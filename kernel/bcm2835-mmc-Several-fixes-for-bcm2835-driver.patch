@@ -1,0 +1,1104 @@
+From patchwork Sun Nov 11 20:23:53 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10677859
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 9806E14BD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:26:27 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 8706B2969C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:26:27 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 7A63B296F9; Sun, 11 Nov 2018 20:26:27 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.6 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_LOW autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 2077F2969C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:26:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=X6yowzJzVgVJec82FwL8buWaYMPUhnGOUDSn6TrdnF8=; b=sPH+2ZSuR+fLyz6gV6Cc4biRCd
+	V0v4omXeiSKDUofGkEwhi7O+PwYxqZvBXld8Gj9IJqZOFoOSLjhFGlQp/UU1lGFLWB7o8CjH+nuxo
+	C4Bx1gtiB/oLhyMkKCLWTJN/NCX8rp5xEJzHIgsFHPqrKXL5iw+qAzYVbxuKEKauTta6wzDJ+LfJJ
+	gAm1Hq0j9yZ07dUH2c7OXMsWAtIBAmLByImmiaWB1qTkUWjVMveZLwqfXCifL4+qPDezrCQ0Y1O8y
+	tLI6QIW+Lu5DajrMz5+K1l3t0YotjroVmH2BrcDPSRAG/yvym2YmEnOivnUgyCO6bYbpFzWKFqkeq
+	O6DPNf9g==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gLwJL-0005LX-PU; Sun, 11 Nov 2018 20:26:23 +0000
+Received: from merlin.infradead.org ([2001:8b0:10b:1231::1])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHw-0002cb-14
+ for linux-arm-kernel@bombadil.infradead.org; Sun, 11 Nov 2018 20:24:56 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=merlin.20170209; h=References:In-Reply-To:Message-Id:Date:
+ Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=Tj2r30QTA4uqsfla6GYp1RVS1jz5Q3WyMYFesAbdUKw=; b=uTZum4O6SQ4rG78HHbORxkoAc
+ i9S8e6f78Q+zsNLLnIqd29HAmWUg2DmMMQIqFes9f2eG47nBkIpIQ+cHb/M60BqSpOBkk8ClMqQB0
+ 2neApAkR6vj2x+jctYYNX5ECoTLnhnkYnNfHo/ckZW47aZ69QSIlU+OWDzMPzD/Rx7hYHSpZJUW9p
+ oChapk4tFwN9k3bhqB3kXjPZ/c3y4/K+N4/3+AQHdGFamuFQlPGUGzFiL+oIvOli40pHd3yObLt3d
+ VyKGq8lWAKJ3VqgaVLOMuhHyofjogsyNYCV7/KcNqTjGWGwieMgzloYDJlNFuaTtFubN2a46lGZle
+ /0FnboMCQ==;
+Received: from mout.kundenserver.de ([212.227.126.133])
+ by merlin.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHs-0001ek-LE
+ for linux-arm-kernel@lists.infradead.org; Sun, 11 Nov 2018 20:24:54 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MFsAJ-1gHIdF11od-00HRC9; Sun, 11 Nov 2018 21:24:30 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, Florian Fainelli <f.fainelli@gmail.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH V2 1/7] mmc: bcm2835: reset host on timeout
+Date: Sun, 11 Nov 2018 21:23:53 +0100
+Message-Id: <1541967839-2847-2-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+References: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:9dCj+NxEXMy8FYSWT087C0qWiWpuXnUKaE9LFDImT+erQJJaYfQ
+ afhviGlaCUee+hC7LRqA9GKull3648mAUgO52xY3aMreroZB/2XIIIzronlCdQd6pYX6dOA
+ KBBYxlcz7woae/QQ5I2sTNZuW3qu9oJaiBC6nL0tpFXoKyJYwAy5XGSV5rVZdzeGjDCjR2K
+ nxD304MaNXMWrp5ReQQLQ==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:pUQrv0nromk=:j9gizncvy8GfWdNJFcRfWj
+ bO9nPfr7BSmAouq0vikpqgHvHFC76FvoBIZwzQ/6yPYaNN+0VVLe4ogV1CmSqE1oolnskVJb/
+ CpMr3K21XVMuHQfpFYZLrW+KpeNZt2e/2vL/C4C70Frij1Zywt9HHJA5FyrBT5ojnRDA1+dJb
+ v077BsWViC1w/SJLN11CJO4UBehS1Xa8564+HwJDDs5PZV1JcXa2inYx5xQxTbqBY7scOI5mJ
+ YunT0hSlKj172nnKPxqkgktSfCOZ01/yeqQocznS2MLZ8T4O8bd4GXx5qSzImnO/gRmgFu5Pu
+ OfLaxtJU3IcQwSZ7/3uCx/DveeXMCspaHm1rq8G/rOnIvHfiApbIilUoBuGon784I2Gqz5WEP
+ zjMA3kHnGgA/H1C7hm+eba4xbkjT7jCqGbmRY4TnE+cKRX9i3op9MstsCW3VAKBMUg7klCeSW
+ Z8WO+/kYY3jKJ8K7C8kQygOdcz64E8wSyHGyp3FtukWLuEw+j4MLyxBaPKJ/4/bBnnvKgbKnn
+ dh0aCOnrEkoFygCYevcFi3FF3Z4aCqSmZ9uK8PX6rvZck2xP0t/Yamo1HhwE6e/R//TTq/3pw
+ motW+JR8+YF514cM6Cm0P+TZAAdmsFlrS2n0jLKn6+8yhlC3zgZMfhk/HTQaieFkPEn2rWPZn
+ 9mHVsTHprDsVqzVIsKnlA1Nud+0HEv1lwGc3NsX354n3uokuoUOkLaNcGYxOuIiMcgd4dpgTB
+ 81uR39eHejOKAz7Edmkt/pXsynsTZ4RHZnIk+0cNaEGMnwTvk5mkyzLinlOujzRDHhQuPxvHl
+ EVobjFm/bi0KjZwfqDn7hi51gnWnA==
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181111_152452_934169_863500CC 
+X-CRM114-Status: GOOD (  13.44  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+ Phil Elwell <phil@raspberrypi.org>,
+ linux-mmc@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ Michal Suchanek <msuchanek@suse.de>, linux-arm-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+From: Michal Suchanek <msuchanek@suse.de>
+
+The bcm2835 mmc host tends to lock up for unknown reason so reset it on
+timeout. The upper mmc block layer tries retransimitting with single
+blocks which tends to work out after a long wait.
+
+This is better than giving up and leaving the machine broken for no
+obvious reason.
+
+Fixes: 660fc733bd74 ("mmc: bcm2835: Add new driver for the sdhost controller.")
+Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/mmc/host/bcm2835.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/mmc/host/bcm2835.c b/drivers/mmc/host/bcm2835.c
+index 768972a..f1712df 100644
+--- a/drivers/mmc/host/bcm2835.c
++++ b/drivers/mmc/host/bcm2835.c
+@@ -286,6 +286,7 @@ static void bcm2835_reset(struct mmc_host *mmc)
+ 
+ 	if (host->dma_chan)
+ 		dmaengine_terminate_sync(host->dma_chan);
++	host->dma_chan = NULL;
+ 	bcm2835_reset_internal(host);
+ }
+ 
+@@ -837,6 +838,8 @@ static void bcm2835_timeout(struct work_struct *work)
+ 		dev_err(dev, "timeout waiting for hardware interrupt.\n");
+ 		bcm2835_dumpregs(host);
+ 
++		bcm2835_reset(host->mmc);
++
+ 		if (host->data) {
+ 			host->data->error = -ETIMEDOUT;
+ 			bcm2835_finish_data(host);
+
+From patchwork Sun Nov 11 20:23:54 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10677841
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id A795C46E4
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:24:59 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 952C12969C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:24:59 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 89924296F9; Sun, 11 Nov 2018 20:24:59 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.6 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_LOW autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 8AD6F296EB
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:24:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=9/894Vj3Hh44WZdACkXEzclJroaVBEmmd2uid+n5cc0=; b=q8J6YfQ5DSevR4lzZl8Ylug69b
+	LB22Eq/vRjViRKyl9eDryrpjnQ3HURgt6R1WQd0anhtNZnmThl3SzV4PxNLwT7VaMi2GGMZwZjcQ9
+	RuUsnPZFR5TlPjGVAgbv5gasJWDNk8bcmtVnYK78MLaGzjthikOxAz6In70Vi9y4GoveJY+TkN3Wa
+	XfkFjM5v1UMihq6R85/CSDXrCHLeYfw+iyxcJFSYceHsgBPrVk7v1Ptmctfq1NYuFGpqJx8XVjs+B
+	BhdVfUT0rCahpHUBQxmt1No0VHZDiUSDSZy33AOFIqDzctAsEX6XLf3Uyg9meGShwAAT8E42+SyTX
+	EE1y8jHA==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gLwHw-0002dQ-32; Sun, 11 Nov 2018 20:24:56 +0000
+Received: from casper.infradead.org ([2001:8b0:10b:1236::1])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHu-0002cT-Kv; Sun, 11 Nov 2018 20:24:54 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=References:In-Reply-To:Message-Id:Date:
+ Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=5zlYx4yHtdkN1aLz+6xK2KY0kDn49GyOY54twksqhUU=; b=AtZX/1fVPvyutkyfSaFM0ktnf
+ JndLlnOImGAXCQoqQdS6UB7VnD1/L9q1+G2p8j4oohYeBKYOd73SN/BvCoUGP43WDf4UV0gpXRzP+
+ xBKuXF+u/ZFP0L3BIwsg90Ng5Tzs4440r7FV7V0RLmERBcVGqEdxEUCWyf7zt1wnUWYUMUKrJW6W0
+ oXLDefVl50GNjzUeabT6ldueypTit26FqINBdhvFlzdiQ/iIN0a5w5tMnJxK+NLgiDpkDR8ebEllv
+ zIA/gLMHZxZDtaViHrtE8WxwpWBRbxDb9JpNbqrJXxeiD8+qHjdGfiUJkqi2w7wG3U1DMj9kMlMLG
+ tQn15xR1Q==;
+Received: from mout.kundenserver.de ([212.227.126.130])
+ by casper.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHr-000148-EN; Sun, 11 Nov 2018 20:24:53 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1M2gt5-1gLeEL3aRD-004Dmn; Sun, 11 Nov 2018 21:24:31 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, Florian Fainelli <f.fainelli@gmail.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH V2 2/7] mmc: bcm2835: Recover from MMC_SEND_EXT_CSD
+Date: Sun, 11 Nov 2018 21:23:54 +0100
+Message-Id: <1541967839-2847-3-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+References: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:qkVHDztQK9oM/OWH+6qWZI9LSuHRY1RpFpl+s2YKMs4d8oxk94x
+ z+bRLCDAMoMZlHXwKf/J7SHvzs/39FUPM0YUYIjAKbX9PfQbvXfwMp8yk0aismQiLmHxBXt
+ mCu+tsWxl2jhHzQcGszhLTMptHvXpxSgC2G4nTLQmAtw/n7EMkS8s0AovGX1VGAmokDvta5
+ ovG571r+AYzu/g2G3Z34g==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:73XHbTz9krI=:EXicgjbIHFPLXK4C+Cbh1d
+ ZEoUX1EO1rCXZ/WTWgFBtQn1XwLqTiTUC6LguT1TUI2grd5SIHYGOUlwn9/rofPw1gEB2NEV0
+ ckDVYe4cJvlfnqKVFZHd+hYO0KNYncxOfbOFSPaoknKGPK6zNWUx2yUPhZTe/UPeJEoxU+N+F
+ ZZNalwF4gDtM0MfwgZWYJc/MQMTIZv2gtzvqakrYM/cBQpb00CLQmylHr7dDqX3oVRInx6Lcn
+ Yq9wUxCFDzm1sX8ZCE41Rn1qiPiQKtfAaTG2APO0RDfsK46wg3M6FFltLjZdwNzDRYNHVnKea
+ CEykG/WREPiwixVfxDike9pQtCELHAEBhnV+L/CpIBmWUb1rlBF/Yu6lRihSNd7DWzxQNmtTP
+ 1edVD2GS6mieVL/SZDKReHD1gQwvI4Thyhm4//s8jQbuSb1VrXOAiafV4ZvSGGaCDP8Yr3yKd
+ kB1/ED8SVgDxIpfOBN4hQ4GSsSk+FFXqJ5K4Cwa1GkJIPfw07eZ0Cy4EKuGeioSnswAyhFCFW
+ h5jdWHo82dpilIkpAyyZbh/Z1yof6vBpgmffGY6UD0ueCujx4c7JuG3FWyB00p8n12cActtTC
+ 8GVg58UnJ/BhkKTtAWvIBejfozCFYy+ICLziZvO3DiNBKfhfHZFWAgFnL+/ww2ZHRbAojHjuc
+ 9QiDYkajywZfkj+njhOzlycNozd2b6C2lZIQerfkIqgoeSOiHhl6he/xXj1dEI8hYDhs83FYc
+ tj5KY/AqfZLbGc2QYjrgwekBAm2fUaAndsrbiDy/ZIe+Uc/YThxgEaMwKq0sLRIj3/5DQ1gUt
+ /KtLRv8M26NI5lRUzOa1BQV/QXYmw==
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181111_202451_514418_79463313 
+X-CRM114-Status: GOOD (  10.31  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+ Phil Elwell <phil@raspberrypi.org>,
+ linux-mmc@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ Michal Suchanek <msuchanek@suse.de>, linux-arm-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+From: Phil Elwell <phil@raspberrypi.org>
+
+If the user issues an "mmc extcsd read", the SD controller receives
+what it thinks is a SEND_IF_COND command with an unexpected data block.
+The resulting operations leave the FSM stuck in READWAIT, a state which
+persists until the MMC framework resets the controller, by which point
+the root filesystem is likely to have been unmounted.
+
+A less heavyweight solution is to detect the condition and nudge the
+FSM by asserting the (self-clearing) FORCE_DATA_MODE bit.
+
+Link: https://github.com/raspberrypi/linux/issues/2728
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/mmc/host/bcm2835.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/mmc/host/bcm2835.c b/drivers/mmc/host/bcm2835.c
+index f1712df..a251be2 100644
+--- a/drivers/mmc/host/bcm2835.c
++++ b/drivers/mmc/host/bcm2835.c
+@@ -773,6 +773,8 @@ static void bcm2835_finish_command(struct bcm2835_host *host)
+ 
+ 		if (!(sdhsts & SDHSTS_CRC7_ERROR) ||
+ 		    (host->cmd->opcode != MMC_SEND_OP_COND)) {
++			u32 edm, fsm;
++
+ 			if (sdhsts & SDHSTS_CMD_TIME_OUT) {
+ 				host->cmd->error = -ETIMEDOUT;
+ 			} else {
+@@ -781,6 +783,13 @@ static void bcm2835_finish_command(struct bcm2835_host *host)
+ 				bcm2835_dumpregs(host);
+ 				host->cmd->error = -EILSEQ;
+ 			}
++			edm = readl(host->ioaddr + SDEDM);
++			fsm = edm & SDEDM_FSM_MASK;
++			if (fsm == SDEDM_FSM_READWAIT ||
++			    fsm == SDEDM_FSM_WRITESTART1)
++				/* Kick the FSM out of its wait */
++				writel(edm | SDEDM_FORCE_DATA_MODE,
++				       host->ioaddr + SDEDM);
+ 			bcm2835_finish_request(host);
+ 			return;
+ 		}
+
+From patchwork Sun Nov 11 20:23:55 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10677861
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 3920A14BD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:26:49 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 2BB86296F9
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:26:49 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 201BB296FF; Sun, 11 Nov 2018 20:26:49 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.6 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_LOW autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id CB68B296F9
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:26:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=Tt5EgaFovmpaVblg1vCoUL5KFNHfoZnIbMjvuoDpH+A=; b=YkFJNA/0JeWm1W0agi1fs65bw4
+	MuaP5Xd9dNXoiUTsnX7DaDk+CMixGON/AQSwqrRmPptbNpeKcoQ2xx08c2EyKnpDYGfzQ/HhclUjO
+	ZNhvf7TNzQknjeJ00NlJBnp1PwS4Mj9YZsHHTzC8GdMwzQ1IsBTh7F+j4sDJfF78FjjC14+nCgrjS
+	RiFJhoPq/9ddurP5XoM0scxQ6AziagQA3OPOalJK16OvXnyjBnZoFATKWhJ4ZbShRh6nlQoynEgIj
+	5WWVXJYzjquyUo2NV0tTq2QO/LSzrYscljqgOp7Fuu2YJeAa2QMRbFddcqempXwT0DDHLnFEvJ9kM
+	9VcVHbzw==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gLwJh-0005jD-Dj; Sun, 11 Nov 2018 20:26:45 +0000
+Received: from merlin.infradead.org ([2001:8b0:10b:1231::1])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHw-0002cc-12; Sun, 11 Nov 2018 20:24:56 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=merlin.20170209; h=References:In-Reply-To:Message-Id:Date:
+ Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=9cNmmn25bR2zeN1vbgdjE8/Y0JXpSDhSkPM5GZxTcOo=; b=mF/YFu0vAFm8Cr1Ty9Lek+w6Y
+ 8FRR01cy8fLjmnnNz+SVBTeEx6C/eTg7Q8SLdeJR6ql3cIeepC0WkIWJnFUCdWJ7fDkL5686pgjS7
+ 2+4K5o5D1t8yank/9kA464gHTrwO0u4FUse+XWEoSPiET3SmZXXsHAQkBgfzIh2gyckpB0wir7K6h
+ tY5UPKoEDSbOa7uFKvARA6LA+0p+LS3mrZMFPQedoC0Uir/fMY8YYdY2Pc+vMi2nPXQ9LJ0fQ1dSe
+ wqYoeLdrTYjWL2XRMPohx95JxWvxfmgEhxXIFm6RFJvO9WItczYLy90wYmLHBvv9vyVUTo+nsLmvK
+ /EjccIV6w==;
+Received: from mout.kundenserver.de ([212.227.126.130])
+ by merlin.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHt-0001en-8D; Sun, 11 Nov 2018 20:24:54 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1Mw9oq-1fWAVX1zBk-00s3Fm; Sun, 11 Nov 2018 21:24:31 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, Florian Fainelli <f.fainelli@gmail.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH V2 3/7] mmc: bcm2835: Release DMA channel on driver unload
+Date: Sun, 11 Nov 2018 21:23:55 +0100
+Message-Id: <1541967839-2847-4-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+References: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:vlovEOP4OCkjuj6JaOkYwfmgG3Bal1ftfBxnk4DH9YyAICNcm4/
+ BpDpxF7lig5Fm91zl9duBF8Z2zsadWWX/cwUNHvjuCQzK6hM1miYmPrje9c2so98xLmVH42
+ HbkSAtFcHSGlfkxFrEQpCHQq6PbLfHsRrCjnzfeVe04uliFFd5uM+615obhLT+kxiXePpJc
+ itTAXDImHIb6ZbKx/ZkrA==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:SzTlMsQfrIw=:CfsWr+obS+SWBvm2OG7mgE
+ HaKV29VvbZWHeGysa26FcFnpU/aMj/f1Gy1jD4K8dNbWm7JFhBgARL7w82/dLGaTZym+NfdIf
+ JejZEUwNxdLoJ2pl9V/bfXHUF+NpmE29dvPnKgjRwO9sNfSPkcGWIwbAQm/ZpwBet+X3duzf4
+ 3adSNuB6XHBEOognFdCt37nQs+pw397+jTcb4ATjYcbgok5ftyg9PBBRivJdBXxY3nZeZagWL
+ CQgDJv3jE8CEh1BPz/+UOxgAiV4Qmm6pirXi4NJ75cuHyWmhJBlWTNLxv2ocWyMD5c/korqqf
+ D61K0VeaRoL1EfiZ2pzJ9T/Do4lOYybMUWDQmeEMVN8pS9hv14rn98GqoOKydOW3jpPa7pZeu
+ 5sc8I2WO6wSk/VOaNclHgKHyeS+zmGMMRMweDF1bkrMKIh+rdxd+zGN54JEEI+/AWWJ5p4nNw
+ 0ob2FknCr0jsNWv7JUc3tQkjTxSnXD0gG/bdvnl9BQUPGwz683hyzdM6Gk31NuSk7JU/NOnzr
+ M3s6ysweEdzDS+wPOU9UBk5GcSxcGdlqvBN600TVgpUtaC9dwjVMk3qEot2fSp17KAUsrUaGz
+ YZz7fpiyWVZzj7dgOGvQ+SgjTs/8s4rj++ONlTl2OUtmp9eDw+/bsmML5z4nvQ0oLxKIDKRML
+ RMzjm6bjLc9KE6PagbagQbLHzPLziYIEkpEZmThm3Mm5oyTsh0l+ZD2hVE5yDtWVcz4wnNwbV
+ J1DxWtcAdy8X6WtYT27Eh7LxL2C8YyVtMRL3whClSs0RyGv3s3oe+qwqKa0rjtQDSAjosT651
+ gj54/sr39E84c9qNWL2IQmKZJs8rw==
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181111_152453_636383_8A225C26 
+X-CRM114-Status: GOOD (  10.02  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+ Phil Elwell <phil@raspberrypi.org>,
+ linux-mmc@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ Michal Suchanek <msuchanek@suse.de>, linux-arm-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+We need to release the slave DMA channel during driver unload.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/mmc/host/bcm2835.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/mmc/host/bcm2835.c b/drivers/mmc/host/bcm2835.c
+index a251be2..45724ef 100644
+--- a/drivers/mmc/host/bcm2835.c
++++ b/drivers/mmc/host/bcm2835.c
+@@ -1457,6 +1457,9 @@ static int bcm2835_remove(struct platform_device *pdev)
+ 	cancel_work_sync(&host->dma_work);
+ 	cancel_delayed_work_sync(&host->timeout_work);
+ 
++	if (host->dma_chan_rxtx)
++		dma_release_channel(host->dma_chan_rxtx);
++
+ 	mmc_free_host(host->mmc);
+ 	platform_set_drvdata(pdev, NULL);
+ 
+
+From patchwork Sun Nov 11 20:23:56 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10677851
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 9E68D14BD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:25:23 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 90CA42969C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:25:23 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 8516B296F9; Sun, 11 Nov 2018 20:25:23 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.6 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_LOW autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 3A73F2969C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:25:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=w/Gzy1FdXFoZZY/Bdgo4ocm33xnvBLknyOEQrYDJjx8=; b=AnOOH/JlAJanb/zGv8Tbhr5LUU
+	zhx/OjHDpTA+1ZN4gwSeeDWVgEHvlQ5b700sWdpjiUYxzkXMAtqOBCK20C8Cz7VIX9OtfFjhm43QL
+	Xn2eIdUXsmnEjJ4vN+c2GJ200/15T1/0eGCESCALXHcN5dVIfQTEXzzhuCLfDTra0py+5hc8tXRiZ
+	VeEkvMwNwmyYOMh7qoN4/GtOx96Y+Swupzns5QIJnWRuyu4kcFPTRiRQI7vOLJb6ahc53c/VWEGn5
+	CQKE7XPssSzcb8TnIRBhX5ChXO5V5J7hV8I6Mo467mbYpK1W7LtEkplA2JhZKcRJ3PkFXIya3Plqp
+	gLf70yzQ==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gLwIE-0003TU-1P; Sun, 11 Nov 2018 20:25:14 +0000
+Received: from casper.infradead.org ([2001:8b0:10b:1236::1])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHv-0002cV-24; Sun, 11 Nov 2018 20:24:55 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=References:In-Reply-To:Message-Id:Date:
+ Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=zHxxLEQsiHEhh7PVXEVNqUUxYM7wDjcAIJtcwJyNRQo=; b=DOPYo4t1y5vxpvZmFdW6hMyoZ
+ pBOQEji74bYHR5OwkWKuoDPpZlQiQRU21mZwp08MZHufSo0j5CcZapSY9kRCb5KszFqO98vRCYDCW
+ XP8SZxnfZV1eZ8OEGp82f8cQzrGl2FOpjKZNP1KX+0w2ibjMqcqZHppwTME1L96PAqzdexyzWJdGd
+ ofA4EK/v+6FQohG4RSPQX465ZGIiui3r/C1O0WKGVim2eK+cE1wVK88X+rhHk1BoNRP/5MOpaX/v3
+ O51RexHgFZ+0YlkVQTCb/Zfgd93BZb5XL/ewyaDlkmVuqCpSWOgj5jgrSkad88yRtx9A29PIbzWdB
+ JahBPzjOA==;
+Received: from mout.kundenserver.de ([212.227.126.187])
+ by casper.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHr-000149-RY; Sun, 11 Nov 2018 20:24:53 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MvsyF-1fX0UR1Q9v-00ssSz; Sun, 11 Nov 2018 21:24:32 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, Florian Fainelli <f.fainelli@gmail.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH V2 4/7] mmc: bcm2835: Avoid possible races on data requests
+Date: Sun, 11 Nov 2018 21:23:56 +0100
+Message-Id: <1541967839-2847-5-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+References: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:ZLc6V0DmkpQIP44hYwa3HseRh7CvRoA9oKdzKs8yIsk8165B4Wj
+ xh/v/qDrvpHbc6Mo7+ESlJoA7iV2QBpKIYXkV+l+LxP1hUGn0iO44fmLP2qBvLJtZvx/Ojh
+ 06wOufM/u9ZWw0FVd6z87NbwhQC+r0Hdx+GWumlgWYq9lppFAMYe+6pIqLKFwesssADK3OS
+ 0MJwlz/he/7bB9DxhEcnw==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:lLFqbCq1JEc=:4dOYlMJrif5X850MHJ4IKv
+ SsggGIkb+7xoay8mJWO2ixu2r0n0ZJp/p5GCqVWB8a8GEJ5AXj04izOlxindxB0yxAXLfOtEY
+ +MADRnLwkXLIyvJ52YOhbudb4v+KVS8LnZmdnl+7dYi8ILPPI8K1YyOA0Atm0Sc1zKCyzyrb+
+ HXYtIBmpCCeoXAn6iF9KtPShMQN90JkCkhQDCTtvuHKB4+XasgiJQqwLvDbMhUTfAiHKRbT6A
+ Ret67MCTcoBZMJ8Lv5IVe96pGyj6/IftFJwD456d201u/qlGUEcsrQlXoVDZyYQINncWlmCe9
+ nhfpQF8UozqPck8kat7pUYNcoUck660Ob7tS+eW6IQxtgNKjjkiaYgE0VlcnBWXS46anJouuq
+ rFWawTXHFsLU6SVpIIVC5wCmDIOpgnWg2E5Dg6O3JtD4JPpSw9V3hM8L34Ii6DfWsvPAlJ46O
+ kCFiB/zfxUDXTLqed/nM9eufpPmQGlkRVnwoBNh18c7patPv1MzAU94KuN0ciq4QgoPk400rI
+ 5AOu/Eb9ck9CqDcZnI9x3PGjBoRgf0O/cvmqP67kgt1u17W9OEGaqHaEkXh+xLTDICpauVWMp
+ kOXBFyQ2SWK4jxt/C1uNgcghWG4r8UDxx9LFHZA0Ut2oGO2bW8qkpXlRBI11lvMuK3P+jSSXu
+ 8ZdD0IA/lvl6PXMOo1Zs7F+mho7h8yoB6XvVBOO8Mh8VonIPfeFZAQOrF/WP5SI3te/r5jk8v
+ wI7Eoz+v7SK4TMhwvTrIv+Q6zGYykDWUFqpehDe/ZhMpdl/XnD0H+Z9jGWgv6Wyi6Rmwc2JEJ
+ 6Xq84VFzxbb0yps5VJcK6at8C/JGA==
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181111_202451_956461_704341B1 
+X-CRM114-Status: GOOD (  11.96  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+ Phil Elwell <phil@raspberrypi.org>,
+ linux-mmc@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ Michal Suchanek <msuchanek@suse.de>, linux-arm-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+There are two accesses on the data requests which are not protected by
+the mutex. So fix this accordingly.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/mmc/host/bcm2835.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/mmc/host/bcm2835.c b/drivers/mmc/host/bcm2835.c
+index 45724ef..1c60798 100644
+--- a/drivers/mmc/host/bcm2835.c
++++ b/drivers/mmc/host/bcm2835.c
+@@ -1064,10 +1064,12 @@ static void bcm2835_dma_complete_work(struct work_struct *work)
+ {
+ 	struct bcm2835_host *host =
+ 		container_of(work, struct bcm2835_host, dma_work);
+-	struct mmc_data *data = host->data;
++	struct mmc_data *data;
+ 
+ 	mutex_lock(&host->mutex);
+ 
++	data = host->data;
++
+ 	if (host->dma_chan) {
+ 		dma_unmap_sg(host->dma_chan->device->dev,
+ 			     data->sg, data->sg_len,
+@@ -1192,9 +1194,6 @@ static void bcm2835_request(struct mmc_host *mmc, struct mmc_request *mrq)
+ 		return;
+ 	}
+ 
+-	if (host->use_dma && mrq->data && (mrq->data->blocks > PIO_THRESHOLD))
+-		bcm2835_prepare_dma(host, mrq->data);
+-
+ 	mutex_lock(&host->mutex);
+ 
+ 	WARN_ON(host->mrq);
+@@ -1218,6 +1217,9 @@ static void bcm2835_request(struct mmc_host *mmc, struct mmc_request *mrq)
+ 		return;
+ 	}
+ 
++	if (host->use_dma && mrq->data && (mrq->data->blocks > PIO_THRESHOLD))
++		bcm2835_prepare_dma(host, mrq->data);
++
+ 	host->use_sbc = !!mrq->sbc && host->mrq->data &&
+ 			(host->mrq->data->flags & MMC_DATA_READ);
+ 	if (host->use_sbc) {
+
+From patchwork Sun Nov 11 20:23:57 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10677855
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id B72A114BD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:25:55 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id A8FBF2969C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:25:55 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 9BA4C296F9; Sun, 11 Nov 2018 20:25:55 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.6 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_LOW autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 3E5132969C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:25:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=MrabV/LatQSzA8nWJUbmpw6Z66+qt6yLE3DwaiTeQME=; b=C6Tp4s3/ByUA6gEAyLZXReuA6C
+	id+fWgoxsQzr2ckrLAgv48ru1ay5ieY89k0dCyY21EmJ+7DdHsVtlf8AU/pp7zc2v8WXZVjGc0Wre
+	YFPO0X47D1Ph+jrOAJ4EldEXPIk7KudaNJMF85Kayhvj4ehjIH10qF4pNR/GnBs5K4TVn0fqm5wkL
+	qXh8X60lZ8wzc/1kwor55UBVg6KsCr9RWAKxqVzvsq18LS5kgCLj32wFbWPdHWqEYYdMktOZnA+TZ
+	3yAKeFvxhZStgwUorKa3+KsbHzV7DRegF+0oVmQTR7IDEwQ7bsAjkCLS8MlMcgIBJbaIm70mraboJ
+	vf7ML3xg==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gLwIk-0004lM-CU; Sun, 11 Nov 2018 20:25:46 +0000
+Received: from merlin.infradead.org ([2001:8b0:10b:1231::1])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHv-0002cW-I3; Sun, 11 Nov 2018 20:24:55 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=merlin.20170209; h=References:In-Reply-To:Message-Id:Date:
+ Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=Mk5UAGVXcnL2nHBZi5EjPPjTnNXOrWMlTyZHVyM9yOc=; b=b2656ew26XY6iOFE1AUGP51qB
+ FsWiQqitmJrrBacXDcwxx4b77oSYgvwb2wnBa7LE5GPdb48OBeCpb++0pRdU6LH1mLGY75l+SJkTE
+ fuEGG9nI+c7ylMsmuHzyIug+IcRMttr9Rv+lguVfxj+05E3Mug1Yjde0yV4DeeaDQcrcBW+cDxPD+
+ zBUTdh155DbVSr//DRSSJT3w5iirXL6DmNZX9aH6RIz8prxs5PBfYuAKmZD3JkHHBosP2MuOzyfCN
+ UW3Jmr2T/p8nGj4c5ZgHVcwtYTZ8zbEVSNSshLyLCmRvAvbWw9R7i04nOAZFMDwJ+nJrAOzc4JEyR
+ Bd0redZPw==;
+Received: from mout.kundenserver.de ([212.227.126.133])
+ by merlin.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHs-0001ej-CS; Sun, 11 Nov 2018 20:24:53 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MMY9X-1g6LF00fdn-00JXiP; Sun, 11 Nov 2018 21:24:33 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, Florian Fainelli <f.fainelli@gmail.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH V2 5/7] mmc: bcm2835: Terminate timeout work synchronously
+Date: Sun, 11 Nov 2018 21:23:57 +0100
+Message-Id: <1541967839-2847-6-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+References: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:qNd5m8hilSIHpAhx5FhJUiaXDU7SU8xPGLPlkrJoWXv/UllNu+f
+ Z6MfgrWvjWpqxWfwowcV/8ImoMmyMh4JRxG2YbMxQXqKPs3IgT+uHUy/D8FHMMViil6gbjf
+ tQPTiuVKuzVualYbGsrj61hk9tmirGv3Idxmj6a5LmZWyqtBs+N/8+IESPXYZMMNePlqxh4
+ Dqnr1Ar9jhW2oYDHZeh4A==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:lvp7zKY2iuQ=:cBGp0NsOhdh4ZLCUkdL5pd
+ uZpSd0EXrWC/HNHCOrfgI5jErdtk8h8bAwHGFF9C12HB/cUTzhg8wPJL9Xy0yp40Hs6nh6qll
+ nIxKPiI2SHgGyMJojMc+SCNU4d0lbz36f5Eh2YngDbtaLgefteqUbZpEuWXdA5NHOoMAYj5GA
+ U7askfAl7jnbS6fpM/9Fr50J+y5g2WFb7g6Fb60eEWTi7qouSNuq/IsrOBhrOT1tgwZD3Tjxc
+ eCiIOvl8/12erXTfgm0ld79P12beE0yt8px7lBlfmStsDN2xbDUTVH8H9zhn34lSWULZ/oYvB
+ 3B/areZj3M0dZCZCRghHQ+/H9RLNAbWOai7+H5GS3Uf9RqKrw9aaFmoTuSEbdma2a3I5N+/W0
+ Wm+CxBBaV9fdVveQggOChcuux8o+VuyD1rEAE+25VrkUbsKntB+EVRkUUbnCG84nOx3JxnQ9q
+ aUnhYzwvOZecim21D5c60r/iU304m4B7jNCzfLmW1LWjLRyqJOaR7iwZQq7D+wBFKHiJLLsSj
+ ecNx1ABuG5R7WWdp1fC717kyGF0LrB6D4Z6t+Sv8jJhpQaEXVvti+oeKsNkydEekDki5paUFn
+ d1V91g9p1g4VRyPDDin4g5ZjvBEG5MxJbL84GTRzesrCj0QthiZp6Il75PHRbXdgXXPg7RdzA
+ lnIcwMWrcb7sBYl9phazVWbZu4I2V+FSEMbvxVQ/Bc0K1p3pQ22LpI99JhQ178HMQvbPD6bJC
+ 4ZIfHltA0+uOLgTG5XlOf8q+ra/Qfb1BzFhSsTv0nxcqcl1nqMFKGcG1mxVGJxSQhj7SyZkDC
+ ZNz0RUD94sGnsvkbhrtAMV7E/sbeQ==
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181111_152452_685437_9729AF90 
+X-CRM114-Status: GOOD (  11.39  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+ Phil Elwell <phil@raspberrypi.org>,
+ linux-mmc@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ Michal Suchanek <msuchanek@suse.de>, linux-arm-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+It's better to make sure that the timeout work is really terminated
+before calling mmc_request_done.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/mmc/host/bcm2835.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mmc/host/bcm2835.c b/drivers/mmc/host/bcm2835.c
+index 1c60798..2c7589f 100644
+--- a/drivers/mmc/host/bcm2835.c
++++ b/drivers/mmc/host/bcm2835.c
+@@ -608,7 +608,7 @@ static void bcm2835_finish_request(struct bcm2835_host *host)
+ 	struct dma_chan *terminate_chan = NULL;
+ 	struct mmc_request *mrq;
+ 
+-	cancel_delayed_work(&host->timeout_work);
++	cancel_delayed_work_sync(&host->timeout_work);
+ 
+ 	mrq = host->mrq;
+ 
+
+From patchwork Sun Nov 11 20:23:58 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10677853
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id B8F61139B
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:25:31 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id ABACE2969C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:25:31 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 9FBC6296F9; Sun, 11 Nov 2018 20:25:31 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.6 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_LOW autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 4A58B2969C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:25:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=hLouXFNypHlFaQAINMwgzkBeirVP1RY0gAHWHAnuLpo=; b=rmTlZsugtWGOssKkbRRBUkkaMC
+	1KnpesZRiXcQ3pdco/0rDLTQmYxTCEUjV4xsBFaLiaoMeezFdRRBXGZeSPhk38338Y976XJ4cVMz2
+	XEbMflV3FhK8eHtirh7evoVdHR93K8s2TnFG5umUjZP9CNK6jB1uaKvNeOQt7ysjNFYI/o6mSAWQ8
+	96SikljKpBqFYT7sfjGMWWxEneZVIcw0uQMa+gaOxVIiXtG4BrxHOs3Fw9RjRuZ5eKEU1p3gCQVbu
+	XbZW1eUFOHav2KoX7nPYCjHgWhH6YwMTgEBBAnxobbfRHrCEpD9qTd5jujkCLDGdlUfcIs0x0gwMY
+	NVzKWO6w==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gLwIR-0004Ov-6u; Sun, 11 Nov 2018 20:25:27 +0000
+Received: from merlin.infradead.org ([2001:8b0:10b:1231::1])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHv-0002cX-I3; Sun, 11 Nov 2018 20:24:55 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=merlin.20170209; h=References:In-Reply-To:Message-Id:Date:
+ Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=EGvrhwUaJ7ExcJvbLK8/AQ0rd/CXDt+a3em7ick8oO0=; b=hfLWj/nwTsxPLUALv1QKEYerW
+ kjTYzuw+nLWWi3Jmk4P9vRYMn7+DaGgrbi72/tY2ByngSSImu0PrCS8lm9Ptuq6yXd6tYsNVfzM2v
+ rmYwqdSBQg1JTzAY2Z9nFvV3PB1XFF36Lt1oFlkORRtQJSII2YZBaRJeyhjLpTqzBUwi4KgcWj56K
+ R6ymka+uGJPQ+KHwaOaS67glzE2ADOBMchS7gZu6WtPJEtwU5d7FMyWWPFV7PM4wKFS5Mkk59+9ee
+ hj7e7Zi/7YhnCEfVfZf7C6h6ejiW9YdnMadgdZttuh9DdLGUYVyGszdcNAwmEbpJUSvqM0MxYOBG7
+ /ZftqWKLA==;
+Received: from mout.kundenserver.de ([212.227.126.130])
+ by merlin.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHs-0001em-CO; Sun, 11 Nov 2018 20:24:53 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MvsyF-1fX0UQ3835-00ssSz; Sun, 11 Nov 2018 21:24:33 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, Florian Fainelli <f.fainelli@gmail.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH V2 6/7] mmc: bcm2835: Refactor dma_map_sg handling
+Date: Sun, 11 Nov 2018 21:23:58 +0100
+Message-Id: <1541967839-2847-7-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+References: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:Sla5WKzJYGbilks4eIirHiMlx29aYsbN7KwNBzyZekQFCAy53V8
+ 1SG4Lh3Be8yGw2tWhcGIWU4+p6Ui+o/TdYr+msz83Y0Sz252M6RAloy6wfmI9j/ONOhpARN
+ +Df5870IhZ0IcFsZwP4UNPyitLHHEtB7F0h3fH1ljMmy4qfxVgId5TqXkESoEci3lMhK7jI
+ tJt2agPN6ETkDIC1k0S1Q==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:SUFly36V7h8=:Vbqq6FwnjjUoAgvV8E+dwd
+ bvly0MobT7aTFxA6S7rJV76JrzK5Re4JsOiUl+7WNjHC+DT2hjNquy1oxd711UcXEAOqmPFAy
+ OJDhIHqS7UAkipQ25kMVV+BUFSDtsYwZhfhJUWMjETSgSOajgeWoTywu70K5P4OAAASvrVwUb
+ 5TED1Vlj0n4fcrmLZdSEpborCiHk3YNdLhHxo7AG1BES3nZGoIOGVdoJ46ueOSmNZlp0owl9C
+ M6Ojk98PRUoV+3jn1od8MDRUazJRG187IGTG+1VZESWHn7IZveLNLhDzy9+pchAhovgwQnFhL
+ 7cEt1VIJEk2QWc/pp3PrNUoQCHOI5lull8+TfBIrkPFQShcmEsXvtJ6xW70m7LKvLB1hQyGue
+ 51kaIx86/7KW5bKnONR8GsPRhAaPWpNwJGk0sl8QgnahjcjoSc5V1pcb41Zxsikmxh/zy3bUA
+ 93kQOzW2tjR1yw/Ppz+A2pvnad6QRY2pxB6+t2MJdrZTc4LZGCE7kTqYpoV40uPFTb9VNxhJK
+ fhNmDEgLBtlKz7usJIQXHfrsvC/0r0Efs194mqEs0U8S5C/ip+SYxzdNqy7950R3erQQJ4ABy
+ 87xgLsDdOxe4m9f0ncvU1pd6Ys03Hw9vN4IKH11GptHYaTkZeCF5YTS6I+rIjI+6s8cB5AUV+
+ ZdjGUkrqxgkOsWgD1WRTl0+ejxE6GWxX+gsLRlzis74GhO5+V2G/x5/A9oPGp5YsT9ZzqWRb4
+ qP502rMnCPihAEgYTtgKeezNgBny3yQT+LvwXEj4gaeiyNOn/d7082ZRkf0TNexaK77RI3zqH
+ C4R9zEnu6vgo7DndG6z+zIAO1Ihxg==
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181111_152452_682340_CD00EDF2 
+X-CRM114-Status: GOOD (  12.64  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+ Phil Elwell <phil@raspberrypi.org>,
+ linux-mmc@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ Michal Suchanek <msuchanek@suse.de>, linux-arm-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+There are two variables len within bcm2835_prepare_dma. So rename the result
+of dma_map_sg to sg_len. While we are at this add a bail out to simplify the
+following change.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/mmc/host/bcm2835.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/mmc/host/bcm2835.c b/drivers/mmc/host/bcm2835.c
+index 2c7589f..c42bdaa 100644
+--- a/drivers/mmc/host/bcm2835.c
++++ b/drivers/mmc/host/bcm2835.c
+@@ -464,7 +464,7 @@ static void bcm2835_transfer_pio(struct bcm2835_host *host)
+ static
+ void bcm2835_prepare_dma(struct bcm2835_host *host, struct mmc_data *data)
+ {
+-	int len, dir_data, dir_slave;
++	int sg_len, dir_data, dir_slave;
+ 	struct dma_async_tx_descriptor *desc = NULL;
+ 	struct dma_chan *dma_chan;
+ 
+@@ -510,15 +510,13 @@ void bcm2835_prepare_dma(struct bcm2835_host *host, struct mmc_data *data)
+ 				     &host->dma_cfg_rx :
+ 				     &host->dma_cfg_tx);
+ 
+-	len = dma_map_sg(dma_chan->device->dev, data->sg, data->sg_len,
+-			 dir_data);
++	sg_len = dma_map_sg(dma_chan->device->dev, data->sg, data->sg_len,
++			    dir_data);
++	if (!sg_len)
++		return;
+ 
+-	if (len > 0) {
+-		desc = dmaengine_prep_slave_sg(dma_chan, data->sg,
+-					       len, dir_slave,
+-					       DMA_PREP_INTERRUPT |
+-					       DMA_CTRL_ACK);
+-	}
++	desc = dmaengine_prep_slave_sg(dma_chan, data->sg, sg_len, dir_slave,
++				       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+ 
+ 	if (desc) {
+ 		desc->callback = bcm2835_dma_complete;
+
+From patchwork Sun Nov 11 20:23:59 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10677863
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 3D4A8139B
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:27:08 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 2EABA296EB
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:27:08 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 1FAB5296FF; Sun, 11 Nov 2018 20:27:08 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.6 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_LOW autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id C63FC296EB
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sun, 11 Nov 2018 20:27:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=w0gGu0RhdppnbHj+KC4eiYbqQi5jIFFj1vOCHvG7izk=; b=tSzVsJXA7bK2/gIIVp574/SFNR
+	BgvzhxZLA/OEkfPjbtzn6g7PhFHNYCY2tQT1NfP01NxDvDzgZB5TEcCqtrdjkJY0i0hpHS4Ex0SKr
+	oIYr7vZFZc3vcWcO/KC3Kmo+a6lT7nBNDddf/cXDJPS/+jOqm/QCf5ho2YvSATxAnxwgnSi60ZaUO
+	pr/6gai+PjYKpQFZOL6myQ0sWfTTlc1l2KdBGjXV/FLp6EVuwbVOO3xUNJ1ZRnY8Ku/4Hq7tVTYWO
+	oO45AJ1T+qe7lz9G/rfVbqXsnK8JZyhgubhZJXPRWAvoOGj1HIYGAwyOM4bKBfJn6LnKp6+bosthz
+	AN9aGK6g==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gLwK1-00061u-1u; Sun, 11 Nov 2018 20:27:05 +0000
+Received: from merlin.infradead.org ([2001:8b0:10b:1231::1])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHw-0002d9-OE; Sun, 11 Nov 2018 20:24:56 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=merlin.20170209; h=References:In-Reply-To:Message-Id:Date:
+ Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=6Y3NNECHfTEnbE17TZ4lEpf9LD6uJsc6TH5WZfUfuzk=; b=HvhoptR8U2ubhwrWMzaTVnGQy
+ II2zx46KApZRWsxtYONLMA5cwNuCa0IlO7pyZ2xzkmkvg3l9zY9tw0FIFvHHLhMUBT2QfLdXX47QA
+ 4IwFzcW0ZPkm1/jCaDHb+fjCb+4AHHBAae4C6MrN7+a6ykIfhqgPkEfTtZGdhAnxrTbMDTMhgqs3I
+ bSMEifAlxhV0ZMu8SNVAZNB1lgRsdsdgdcBY/t248mQgHc6o2D2ibCGnSYHMy8xjLjNIN2UHatXZf
+ O+ebwk3ljy5b6FcEOHgg0bOh3eTwjGlbh9jR06jAx95wa7gOJG7bJO2mLb1Q0TEg4O/jdMmSzmKZf
+ bnQ+8cx4A==;
+Received: from mout.kundenserver.de ([212.227.126.135])
+ by merlin.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gLwHt-0001eo-Ny; Sun, 11 Nov 2018 20:24:54 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1Mw9oq-1fWB8w1OlA-00s3Fm; Sun, 11 Nov 2018 21:24:34 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, Florian Fainelli <f.fainelli@gmail.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH V2 7/7] mmc: bcm2835: Properly handle dmaengine_prep_slave_sg
+Date: Sun, 11 Nov 2018 21:23:59 +0100
+Message-Id: <1541967839-2847-8-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+References: <1541967839-2847-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:YHuOF9ODbnoju/fZ6GEvx8dgsERlCPgAFKTWXLdnneRYXz5Rrwv
+ HmNp+EMMG4LCQ6yrw9geiQ8UMaSlKRlOogmYpjlT6+acj6AvpUhfV/V/QTZoIqWymmOLu00
+ ilWzNp6sUh0G36dYFqNQx/xxoevvSshDkQfngYwW4IylOJ5Ijw4q7mUNQJel0aDdT6VxcCF
+ vNXPaH6x5aju6BnVQQTZw==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:F8RnfZXOXFg=:/o9BXYY1XlPda36fnQR3pw
+ exiC7Lebj6iLmcKcGV1N+gYxVKa++UCwnlYE52iQ3aEq2FFOYc9MIGfKSXztp6aQJLMEcJ+Nl
+ Y6IvfEO9Wre/kOJHLSbnLgi5rdaSTR4mjKUA8jP7+hgmHvgkSbKeQPPA9NbLPN9j2p/jPQt6j
+ wWducLkOGSbZ5YW28XqMqKiEgyxjt72W7Ulgwt1l9fzu67fxmhDdc3UWHpofqHuJQ3dTz7iyH
+ kgg+rS8NAKZBCtm6dFRPHs5TFa1D75bGQE9WbGv828i+/KNpsIoAbBRLLRmeGAoFn+KRil/PA
+ 2NEyeFtr8QO/DsyVQUofQeZgtDmWXquT6il4a9R21nFM8UVN72Lt47MR7dQIKfjtCewO1XhKp
+ aCAhoeqoKuI++NlYUmTAzwHyR1AzSqbz3qFLL669z219gmvjFFlmzCiNNQuixrhw3CvbXxywa
+ F8FFVxEdPJRjt5v5xsfEQ9kWNm/UneKmSuw+sOIM6NjTYMbCxUA8s/SReuQtco4vZ5fMk2a0E
+ H6WbLHlCpPoxm6106p29jhQ1MkQBcRRc/Gnr283sXcshS2idax1s/BXgEYWoqn1IXoSipmSRS
+ uO7fLBnuonw9uYoUm30LeVzea9BSFsXSJQUAXYoj0FC51hOHYQG6yaC1EoGnL13niwbOV1w3V
+ t7MsLAFqvse4jRXAQ2daRMVsoFeXyREOFlyM2u0kJ7SlglZ7O0HJNvOHJsOTEJBUDsCQQskjd
+ UPyZ9p8NHWMKpnE18BgSypX/UwcNIarGvkM8pe6BN+IN6YbM+3leikxVVZ7pD64qCCITVHvjt
+ SkzE3mpbb2hZZ/3vD8VryvQAJ4A0Q==
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181111_152453_987059_DF242521 
+X-CRM114-Status: GOOD (  10.37  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+ Phil Elwell <phil@raspberrypi.org>,
+ linux-mmc@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ Michal Suchanek <msuchanek@suse.de>, linux-arm-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+In case dmaengine_prep_slave_sg fails we need to call dma_unmap_sg.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Acked-by: Eric Anholt <eric@anholt.net>
+---
+ drivers/mmc/host/bcm2835.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/mmc/host/bcm2835.c b/drivers/mmc/host/bcm2835.c
+index c42bdaa..82e4b08 100644
+--- a/drivers/mmc/host/bcm2835.c
++++ b/drivers/mmc/host/bcm2835.c
+@@ -518,13 +518,16 @@ void bcm2835_prepare_dma(struct bcm2835_host *host, struct mmc_data *data)
+ 	desc = dmaengine_prep_slave_sg(dma_chan, data->sg, sg_len, dir_slave,
+ 				       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+ 
+-	if (desc) {
+-		desc->callback = bcm2835_dma_complete;
+-		desc->callback_param = host;
+-		host->dma_desc = desc;
+-		host->dma_chan = dma_chan;
+-		host->dma_dir = dir_data;
++	if (!desc) {
++		dma_unmap_sg(dma_chan->device->dev, data->sg, sg_len, dir_data);
++		return;
+ 	}
++
++	desc->callback = bcm2835_dma_complete;
++	desc->callback_param = host;
++	host->dma_desc = desc;
++	host->dma_chan = dma_chan;
++	host->dma_dir = dir_data;
+ }
+ 
+ static void bcm2835_start_dma(struct bcm2835_host *host)

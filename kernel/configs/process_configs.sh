@@ -87,7 +87,7 @@ function process_configs()
 		fi
 		rm .newoptions
 
-		make ARCH=$arch KCONFIG_CONFIG=$cfg oldnoconfig > /dev/null || exit 1
+		make ARCH=$arch KCONFIG_CONFIG=$cfg olddefconfig > /dev/null || exit 1
 		echo "# $arch" > ${cfgtmp}
 		cat "${cfg}" >> ${cfgtmp}
 		if test -n "$CHECKOPTIONS"

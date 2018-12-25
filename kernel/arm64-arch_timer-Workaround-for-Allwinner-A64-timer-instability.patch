@@ -167,7 +167,7 @@ index 57cb2f00fc07..66ce13578c52 100644
  DEFINE_PER_CPU(const struct arch_timer_erratum_workaround *, timer_unstable_counter_workaround);
  EXPORT_SYMBOL_GPL(timer_unstable_counter_workaround);
 @@ -408,6 +438,15 @@ static const struct arch_timer_erratum_workaround ool_workarounds[] = {
- 		.read_cntvct_el0 = arm64_858921_read_cntvct_el0,
+ 		.read_cntvct_el0 = arm64_1188873_read_cntvct_el0,
  	},
  #endif
 +#ifdef CONFIG_SUN50I_A64_UNSTABLE_TIMER

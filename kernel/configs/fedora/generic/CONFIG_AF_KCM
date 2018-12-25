@@ -1,1 +1,1 @@
-# CONFIG_AF_KCM is not set
+CONFIG_AF_KCM=m

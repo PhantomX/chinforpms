@@ -7,6 +7,8 @@
 # Author: Herton R. Krzesinski <herton@redhat.com>
 # Author: Justin M. Forbes <jforbes@redhat.com>
 
+set -e
+
 # Location of kernel-headers checkout
 CURRENTDIR=`pwd`
 PKGLOC='kernel-headers'

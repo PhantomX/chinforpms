@@ -1,0 +1,1761 @@
+From patchwork Thu Oct 25 15:29:25 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656067
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id F102B13A9
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:35:56 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id DE4792BD1A
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:35:56 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id D0F412BD5E; Thu, 25 Oct 2018 15:35:56 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 773542BD1A
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:35:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=NrUDxMYLkyg5HPJonb+JuSxGDm5o24A0GKSFyklBhZY=; b=gIPewPsT/1O8WJ9RBPCw8ODGzW
+	GILyywTpIKZt+wEqFL8ScdQihvDDcwX6YW5W/3ZkouomaEz4nzgODZzq7bkVW8fuRuP1c28WOBAx2
+	a3X6zHbjHmyPb18xAcEwsL91xBXPeqD+sfeMopAJo0p1VEMKTbDCh0P/nKp1y36ofTOCR+dvgN6hK
+	JdAKxnhkJPP9LDZMms3ogdQm7+NS71j9z64/EDqKzMp4DFace5/1ctwTYZEKMj3xNOBTO3Tom/BLH
+	59C/qyNypStFV8v2nzuFKYtS1ridG1jEFWlgmGSb69kF6EPlD+aQqTYDhjBIWgH22pvo45Zr49RoF
+	pJRKp7TA==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFhfr-0003tV-EC; Thu, 25 Oct 2018 15:35:51 +0000
+Received: from mout.kundenserver.de ([212.227.126.130])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhae-0000Lj-TN; Thu, 25 Oct 2018 15:30:39 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1M5fZ4-1gE5122KBm-007FAs; Thu, 25 Oct 2018 17:30:06 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1M5fZ4-1gE5122KBm-007FAs; Thu, 25 Oct 2018 17:30:06 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFC 01/11] staging: bcm2835-camera: Abort probe if there is no
+ camera
+Date: Thu, 25 Oct 2018 17:29:25 +0200
+Message-Id: <1540481375-15952-2-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:dCzZlVGOCeNOZaUHjMGojvlwLXAOy+bBPiUsScqjgKIjyF4bZ2n
+ fTXGmEQwpFL7jVdjJ1Tt/6GWfp9EXq464h5IksjQtvjXzMY+E8O4jQmHfcRhfgclbZ0QsXp
+ +QyqZt1Hi1Zov7OF33PHPSgoWSTKQPxigf6k9poC8VJCR+zfTDvY8yBJEFdjjTgwvyR/Zuo
+ DrJX7U4zgIx+sVivwFxLg==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:i+6qK/+eezw=:zHpe+2lC0eBuqbOCeLBMRs
+ OLK2u2N1DuBkU16PQw4axU3u9xFcSRxHdsHmgcEk2ZM7VyT1yX05cu4oibgMckd4sc5V93Yo2
+ uGJ+QtrBZ64w7LwRcaB6vibyi+aYWgnR24t5G2K90+g9ZpOARA8bSdstLzC+stdzQgLEmIcpf
+ pmzX11g2PmmScD+VlfdHqsKfrRmTkY+aZaGFVw1tV7C6lmuruBW5fPbn7W3tRN1dVuKfTHl1g
+ jxKzV9Xavic8CVyxH2Ed0j/rFWibEDA0OOF57Noe2qM4thcoWXVGWanSYihfEJjulQTwA+uWx
+ yhZyD1cartFIMGNibv25CDJE6Yiw7cbvOVyZRrjjGuW7t2TqeSI43fXN7JI40DwoR4uI5yDpI
+ 0DNauNjL3jDcv7cHYAZuu3X/sGnafiJLrUI/vTMPNJfJDXtgLHkKSiAWfyFQevKqbZbs/Wnsg
+ FPqQQRyDCSxBZ83ou3taSI/6GCVI352484NjMO1hxC1Nxd3bhA9H3Oal/cZMJ3FZB7+y03rW2
+ cF8CTEOeafDA/x+X2qEfHao1RTxLlLriV6HtNQ5Sa7cMbysnvMlNqHIQw23mxOnGkvCbmHu2B
+ ZBjq2PFINdn0x4pydcpFzGpkRDAxov/3sLXxD3RDLK+xzJU/xvYUL08ISo3kwlTwzQz052/yj
+ sqcSBUKOqtvCX9IknBICrw7N95dTj1Kl9ljHYGBtxiPJ3SCQiK7aD8Ebp132zueF8o2Q=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083029_359138_0A882FDB 
+X-CRM114-Status: GOOD (  12.74  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Abort the probing of the camera driver in case there isn't a camera
+actually connected to the Raspberry Pi. This solution also avoids a
+NULL ptr dereference of mmal instance on driver unload.
+
+Fixes: 7b3ad5abf027 ("staging: Import the BCM2835 MMAL-based V4L2 camera driver.")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+index c04bdf0..d6fbef7 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
++++ b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+@@ -1841,6 +1841,12 @@ static int bcm2835_mmal_probe(struct platform_device *pdev)
+ 	num_cameras = get_num_cameras(instance,
+ 				      resolutions,
+ 				      MAX_BCM2835_CAMERAS);
++
++	if (num_cameras < 1) {
++		ret = -ENODEV;
++		goto cleanup_mmal;
++	}
++
+ 	if (num_cameras > MAX_BCM2835_CAMERAS)
+ 		num_cameras = MAX_BCM2835_CAMERAS;
+ 
+@@ -1940,6 +1946,9 @@ static int bcm2835_mmal_probe(struct platform_device *pdev)
+ 	pr_info("%s: error %d while loading driver\n",
+ 		BM2835_MMAL_MODULE_NAME, ret);
+ 
++cleanup_mmal:
++	vchiq_mmal_finalise(instance);
++
+ 	return ret;
+ }
+ 
+
+From patchwork Thu Oct 25 15:29:26 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656045
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id D9C5913A9
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:31:44 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id C4EFB2BD4C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:31:44 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id C2AE62BDD3; Thu, 25 Oct 2018 15:31:44 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 50A0A2BD7F
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:31:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=f5+zPkV9bQzKxofIro+gPaTzUd/PCNDu+hDGly5jF5o=; b=Ihz+91UOQshJynJXeM7bFbLlUx
+	zyIS0dd3Mn4Lsrw44QdpKDFJNo40yjuvyenYFVB0FHwGikhfjmE6YGaAuB86nt0gQKvMJ9QP1LoDH
+	znvPTOuz5jRxKIe1xzWrGqdAEOj+oyuAPjM3V1bBkX9jCWkLIj8XdMeTuS4cjZ8lLtEIJ8J83Cvb9
+	om84cHNfa1aXM+mWjvlgZMFJPuvf8nutj4avYe0FIOS98m0SRe84L2GTvSgbRtLuTlvyfRO+2u8ZF
+	hrkpzcmKkpRW3YN2k7yr5GJMS75d4kdUBkiAlihXRSvgcJ1t05jQrgSFkg3A0WudsLs33VeV+G7/l
+	tEPXZy8g==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFhbh-0000va-UJ; Thu, 25 Oct 2018 15:31:33 +0000
+Received: from mout.kundenserver.de ([212.227.126.133])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhae-0000Kk-U5; Thu, 25 Oct 2018 15:30:34 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1N332D-1faV7K0HuP-013MGX; Thu, 25 Oct 2018 17:30:07 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1N332D-1faV7K0HuP-013MGX; Thu, 25 Oct 2018 17:30:07 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFC 02/11] staging: bcm2835-camera: fix module autoloading
+Date: Thu, 25 Oct 2018 17:29:26 +0200
+Message-Id: <1540481375-15952-3-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:UKPEE3Ay/Jq4AoJU+2bmQQA64OpZEco/TqQHNxQV/cuCrT4vDF4
+ 16RxToISFJI9unOYdsaUOxdiy0U6PxNqqjApaDFzaMot2h773w5Vet/3zyQ76CVHOyIf1Du
+ zqIg+ENwL0QedYCvleI9sDY4+tLArJIE57NiimHZw9z19Ng23T19wig5ap82BBCjBxZAadW
+ nSt3GryJmtHNryZ7SUERQ==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:l5n3W8F7pSo=:z0kx8T/PTAsZyYfC+8lvA7
+ yZVV6Dn+PKbCZAvGlq4z/zOCTHkUBHh90rJu9pQID3Hb9vMDosJzfWtX6kJn0VR2ctsFVsS9k
+ 0nmvpZrsxYfX0SYIi5jYPOXrvyF4mZNXUrz4kRd49Vl+HLAjuTVY/hPqx/4fx1nSwAfepGerS
+ xNkyqRuFZXPychWNzxjwFjQy8sVdRk/fWabRnVxH9RQXsjQ9BJh5JxbqyP7R85e+vqym84OVx
+ YHyUiXQMBzlP4+bICBVi0hMEhlhx59llzXfcZaMBJpKJGYBag4lwjXw3ZpfJlOd+i31k2lwrG
+ XCc34mE0y7sHr9xE5b82hZvGvpPNteISLlu4ctPFwEFy8VY/QhnJgjuGjMoE1XKex5LERyENj
+ SbupgFzTI32Z1EtUqdhAfNz7J2b5sX9LKcvyDbdQzSWx/sNxRypK+svqpb8fi+BELz6XL/cNO
+ dzNBIn9jJa6vOmuInWJCEGRIk0r0zXCt12fKXoUqG8o9iveWiG8uFVCaZmGRGQCpupGPXzoxX
+ NZmFY40fJWwRSXjeP4jcUhBsCh50lUZUJPyaj4uXUin57DzFTpuu/35YQVFHxncYT/PIoQf5t
+ +JafuJWnbiDHzWUQy0Sx+u+2jvPxb63vJscDG3cpXA5e2NZJhmvUXDRV+0+VRspuFEaxoSXfX
+ 5m++tgZZF4OWfXk1WTvHG9yA8OaWg+NKmnFf+jFDQdE0YaAyUQ8Nn/vrCwOnpVeHcn9g=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083029_311727_3302F28F 
+X-CRM114-Status: GOOD (  10.69  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+In order to make the module bcm2835-camera load automatically, we need to
+add a module alias.
+
+Fixes: 4bebb0312ea9 ("staging/bcm2835-camera: Set ourselves up as a platform driver.")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+index d6fbef7..7d3222c 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
++++ b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+@@ -47,6 +47,7 @@ MODULE_DESCRIPTION("Broadcom 2835 MMAL video capture");
+ MODULE_AUTHOR("Vincent Sanders");
+ MODULE_LICENSE("GPL");
+ MODULE_VERSION(BM2835_MMAL_VERSION);
++MODULE_ALIAS("platform:bcm2835-camera");
+ 
+ int bcm2835_v4l2_debug;
+ module_param_named(debug, bcm2835_v4l2_debug, int, 0644);
+
+From patchwork Thu Oct 25 15:29:27 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656063
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 3D9D013A9
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:35:15 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 2717E2BD1A
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:35:15 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 173BC2BD5E; Thu, 25 Oct 2018 15:35:15 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 93B5F2BD1A
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:35:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=2yj1SMJtP4Ml/1G88Jr9/OktNCewkFJgiV1e/fbCuAI=; b=YmibdjGDcP4wujkQx9THL/o122
+	IukKCsRtTKeNAKmPTaKRjwYey42luZ2ePliuJl3N65U8BVcjg3jUMvz+z/74hg44DOlMHeufSjmpA
+	E6YtVGz0YfdBZaOJuSNUtknoPPicHtf8Zkle+bKDqBIBmdQxrqfBI5sCrhuLMICaf2kLrtZdlb3zI
+	2+gYOWrQoYFLFMpHyDtDrXeXGWhuC/P1OycCKc171cJaE2/n+JQ+m4smRQEQCCjwUqPg9+MsK1EyB
+	gdXpDOyC9GHLRmnQtMkf2KCQckXyPin11yhsm6wLugT8FP9Mk94VHbde+yb2QbXa6vf0YD/NR8zka
+	WDFHXmsg==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFhf8-0002OL-PK; Thu, 25 Oct 2018 15:35:06 +0000
+Received: from mout.kundenserver.de ([212.227.126.130])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhaf-0000Lg-0s; Thu, 25 Oct 2018 15:30:43 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1Mwfn8-1fN4r72Mu2-00y6oI; Thu, 25 Oct 2018 17:30:07 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1Mwfn8-1fN4r72Mu2-00y6oI; Thu, 25 Oct 2018 17:30:07 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFC 03/11] staging: bcm2835-camera: Move module info to the
+ end
+Date: Thu, 25 Oct 2018 17:29:27 +0200
+Message-Id: <1540481375-15952-4-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:8y2wFjs9qrSjG/qKBQnmgwNUDNfGIyFb7EIQrj2zwi6NcmglS9q
+ 6gs/xKBDxEiZHhL9gceaj3UaYKEzUaFHxHWzQ6wzPPl0WBXRCCw4Hhj2uIqjo3OUBjnQhfr
+ PjLP+e9HrXkjTUOTFh+BsPGMoG2h1c+vvVyB8LOFW6NSi0+ja8Yt1X7GNSSblAGQIS70vrq
+ Bn/yGBB8eb4SiROx2pq+w==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:3fJob6Kq7uw=:sqFrskHmjKOJ26DGHBqyfN
+ NBK/H9/qXWqgvO0JNCddv2yolL27PgoNHmuFqM/Ok2f02DfTQBmlwW9CK5njXOw2RK90Q0UCJ
+ 49g4D8mZ9poZ7Q4l62sM569r9qtGlS0FcSxVE+cG1zvGUvIRhmz3Z+xKJvFYICwGb9PB2gnUy
+ bLyJcGuqquzlWK52elAl9ZVWh7pnpgijobd2FqN6yULDoehObxBPqQgbggz/DX++lH5Iqo6R7
+ 1+wtwDeSpHWjGupxiNQlrinMxxxs+PMqU4/fnpubjmYpJlFcGuyH8PK90yk/CsaL9xkup0u72
+ njasdqw4iIyaAH5vLyRDXP0HSBB4WRchiItuwogC/ahEqak4nSJ7xLX8ap/H7ZrJoHdrbAY/1
+ eXLcDxuThrgRzth9oO7zLhk2BOblrleMCAUBPKWLl9fMtrt8jfFhiSL7ibOXNdMKTv3fjRsm0
+ hXFxRDiXBViGEkR04YJlm+XLUbO/5ErF21ke4P2jQ6ec8ea4x5BMUXYsyKCkrp8eu98RrmE0G
+ szbgb1GlbLNbn/ZbHWfBQiIRA8Fpnk0TRiObUgfzk222111SnnfMZZDa2+hj7w19YPaSuARoM
+ xXBEmD1h2S8QRuMlDDQa5BQjgTF4e5kWVnhZHvVBYpMA2Ju3T4Wt0wOmP5E5mI73lC1oREZ6U
+ jcLnJjhGkAt5X+WuxWyKlalcIccHp6/kMEeM5IzVDtAFu2GrWNyWgTkslnV0MVT8djOw=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083029_405735_14E5AE7D 
+X-CRM114-Status: GOOD (  11.33  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+In order to have this more consistent between the vc04 services move
+the module information to the end of the file.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ .../staging/vc04_services/bcm2835-camera/bcm2835-camera.c    | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+index 7d3222c..cd773eb 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
++++ b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+@@ -43,12 +43,6 @@
+ 
+ #define MAX_BCM2835_CAMERAS 2
+ 
+-MODULE_DESCRIPTION("Broadcom 2835 MMAL video capture");
+-MODULE_AUTHOR("Vincent Sanders");
+-MODULE_LICENSE("GPL");
+-MODULE_VERSION(BM2835_MMAL_VERSION);
+-MODULE_ALIAS("platform:bcm2835-camera");
+-
+ int bcm2835_v4l2_debug;
+ module_param_named(debug, bcm2835_v4l2_debug, int, 0644);
+ MODULE_PARM_DESC(bcm2835_v4l2_debug, "Debug level 0-2");
+@@ -1976,3 +1970,9 @@ static struct platform_driver bcm2835_camera_driver = {
+ };
+ 
+ module_platform_driver(bcm2835_camera_driver)
++
++MODULE_DESCRIPTION("Broadcom 2835 MMAL video capture");
++MODULE_AUTHOR("Vincent Sanders");
++MODULE_LICENSE("GPL");
++MODULE_VERSION(BM2835_MMAL_VERSION);
++MODULE_ALIAS("platform:bcm2835-camera");
+
+From patchwork Thu Oct 25 15:29:28 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656071
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 570A514DE
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:36:35 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 43A2F2BD42
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:36:35 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 365542BD6B; Thu, 25 Oct 2018 15:36:35 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id BF9182BD42
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:36:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=IaWX8cuJQ8XK23gnaA8rkCWxXWnW8njjz+TVhgK3fIw=; b=iHNLPfE+sBFSOZTNycMeTbbMGB
+	usdRTMHN3oqLwdcAnTIvN9ag9fPyjmP3WZLtF23+LcQ0IvkOLat44KVOi3j8HJG33HRaqkjCJViJo
+	Ea1xsz493mH/sTBt+g6idS5I1pjpxezYZpvhv7/8KCtYJIr9rGU9qyrG+WEhe6vOfMjLpBlwP0O9O
+	f8Mi+RJ7dk53JYupFaCXzTMo5Ok/4GcMOAeQI4bFjL5V0u58LD9KInRPDqZe9QZY32iNfNWSaa8fj
+	oBpUav0H7SJlBTYvWECoOnb/DYBUS+wbBA2PUaFukwy392FjWaemHx9Klo2gkDZTowTcRZdP91fXw
+	VhZg8afg==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFhgT-00048h-Bg; Thu, 25 Oct 2018 15:36:29 +0000
+Received: from mout.kundenserver.de ([212.227.126.131])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhag-0000U3-5d; Thu, 25 Oct 2018 15:30:43 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1N5FxN-1fYICA44vd-0119LN; Thu, 25 Oct 2018 17:30:08 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1N5FxN-1fYICA44vd-0119LN; Thu, 25 Oct 2018 17:30:08 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFC 04/11] staging: vchiq_arm: Fix platform device
+ unregistration
+Date: Thu, 25 Oct 2018 17:29:28 +0200
+Message-Id: <1540481375-15952-5-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:ZpfGsNRdlbw46XCRDhXAtssmOM+Uut/HISVLbmIGJbtYFzNnAPa
+ ZrEZBwltf5QZ2j3zQTV3Ri6JZ0EGo50dF6X5BapX5TIt6ortDXJbfZv0x2IYrPbe3qpNth7
+ EcaZvd5c28Z3fUpMcHLeuwDhSkHZzCkApUu1UQYCFPXl/kzciJSaPqDWzdMNiVlAPbvl3OO
+ eIWSfQCRucVI7ZjpV7eog==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:iZOgAN2ib3g=:Cq49TxyA1Y0SZbgfS6Opsz
+ W8InT8iYH17xsaqw0gbjx69OU7Msiqodf6E7VC0ll/IKrEcxuXBD2ZWiVLJ2rGF9xr7PI+WzP
+ DDUJZqUpmZS8pMwNT08GQj75ADaBMfTnFLeQyjsxNdpOrIrcU1/8MXBqRIuDHSvrXN5wvTnHs
+ FHf+Fc08pO21Qu7wnGDT+02y9clYejkHnAB5NFRl3uy5UqbRDaP2Sz8GGkaSzwLYtWCbliwgt
+ Ar/kQefm25m8AE/r+/SZOW84hUWgBvgZ5MH4Uo7vciZFhEWxjDgpuYuM1g2M86DVjx3WiyZqV
+ 5Rc/Zy5FqajYMHkEplyTIGrwSexgSjF6YEI4HKL8YlL80s0ISwOYZkUCMmkVOiMEddLEFDYPF
+ MyUTKdKPdsmJY1HBhv8SjxyfTT6I18g/HbA6FnkSU/s6ktoKxsZ9aAc+pvWqIK1ooJznLHJgv
+ 3+LHOn5x1Qdj4KwMS6wNLTWnx0NWqFUqI4XnilgJnrBBBZ7duHeC7MAeNf/t5+oMw50QR8oYb
+ fmSAmjIbkscdf0IeCIWaVyPWLGwBLiOmvkuM6rA9yZBQy6R2KrDfFy/CvwaQF+95GwN5UJe3j
+ oeNz8SU39CsCTvQVEkunc9EmIzLdkw9EFI2Py9kGFwtKt5QoB/xPW3DBlfAt+wD+SpfS0VVpt
+ s5L5+HCL506Pov4Gx57vaX1D50lxu8rcSJLoZdmIkb/aOcqKGW+dweTizdlsV+F5M4hY=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083030_530712_6CD3267F 
+X-CRM114-Status: GOOD (  12.05  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+In error case platform_device_register_data would return an ERR_PTR
+instead of NULL. So we better check this before unregistration.
+
+Fixes: 37b7b3087a2f ("staging/vc04_services: Register a platform device for the camera driver.")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index ea78937..d7d7c2f0 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -3672,7 +3672,8 @@ static int vchiq_probe(struct platform_device *pdev)
+ 
+ static int vchiq_remove(struct platform_device *pdev)
+ {
+-	platform_device_unregister(bcm2835_camera);
++	if (!IS_ERR(bcm2835_camera))
++		platform_device_unregister(bcm2835_camera);
+ 	vchiq_debugfs_deinit();
+ 	device_destroy(vchiq_class, vchiq_devid);
+ 	class_destroy(vchiq_class);
+
+From patchwork Thu Oct 25 15:29:29 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656047
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 1D61014DE
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:32:35 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 0B7F92BD4C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:32:35 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id F3AA72BD66; Thu, 25 Oct 2018 15:32:34 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 9758A2BD4C
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:32:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=A6M1yl+Vp913xlM2NDevmFI2qJkyIXqmWmqi3TEOUnA=; b=OH2QHIefAyg8RFQLQ2ZZ0b9TSK
+	SwyK7KN9Mcmodm63NgbhVP/M3bcuJ+rm9oN/SwqafSV/Dothhc1Q8QDlAILT1pX28V/I/Udcwuhu3
+	2j15cil3K2a31v7LNOfgKt95MtZsHkkGvif7iIi6N4zP5g4fCYjN7iaFg5CQCY7VAOGc+6wAdM9ae
+	i6rUl6GFS5xUzbwekJOMfNgqli9nHQMFoS9TpnsAAdr4a4IMwjTqNFI/ZPmrzCFTU7KT7j50K2RyZ
+	TxgkbVDhmJa+0VHZxFth9AS6SsBHb16CYeon5WCBL0v4ZTyntRztvQVA/lIUenSBuRYy+0VvSSfet
+	mGIvjO1w==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFhcS-0001HO-EZ; Thu, 25 Oct 2018 15:32:20 +0000
+Received: from mout.kundenserver.de ([212.227.126.130])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhae-0000Lo-Qz; Thu, 25 Oct 2018 15:30:34 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MqbDs-1fkkUq1YTg-00mej6; Thu, 25 Oct 2018 17:30:08 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MqbDs-1fkkUq1YTg-00mej6; Thu, 25 Oct 2018 17:30:08 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFC 05/11] staging: vchiq_arm: Fix camera device registration
+Date: Thu, 25 Oct 2018 17:29:29 +0200
+Message-Id: <1540481375-15952-6-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:eXM8wIsYDFj907gifn9aReZZheRe6ZU/R4ic5ERp58eKGEbsteD
+ CkhJ7dYD52n5rIELRbXxApodKIuW1oGIzeLEC3U5q8NbWCP1PJf+CPWp4QVW6Br7u4qA3Zk
+ mLsgbTWyrOgSNHATxnrWsx3ISIuyUCdLbGIryIvh3I0bynZzEgqZyqOEDaiayHIR2k+q1lZ
+ ekCorg3x4NfoCyJWDXnPA==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:nuW57etu7/M=:5pjngzlVFlHcgxH8YP46ev
+ xO2skvY4uwEf63sAIyllM3DdPzHF+aZzx7vWnohTze4vl6tbNT+N20vr7VBaQ3XIrS+W/sObb
+ im40VhcLuT9fZiA+CybPEtKEF3cf9RYCMqVtum9qGWedsZrV7XOomMh9y1sVyiW7GAoibmQ2j
+ 738RpZMWOzHxWgoEtDFA8rrE/unI9XcaxSP/TLr10hJxn9yo1bv6U4d50/TX4Zdn7wIWzXILd
+ rvxR/njfN30zn1GpGPKxwoM6K9Czc96ODN3iq/F2+hEGlPiSAjcLcAX8gbOfsawfSQ4w/oDMK
+ lAgX9y4QxNIuFFL/xhWG75UWaBzRuq7/mFkEb+NoRkoOBWivAPgQNLy0D8o6hwKV6jePtgMoE
+ XW1hbLLQUGMzAEGEeO77TbbH/5Ev4g+oC1elWdQoLUhokddUOSYvqaNXxuvfueRU5tn66Afmn
+ QFe5tW5GVR5DrurJFqogLgN6XHG7zLO96U6JV8CWMIV7cvs0HsI+lRKfznQPnpunoDuHZg82R
+ cVONtARucWAJp9k83s0LyQOO2vwor/ZB9utN4be03F7cXB+4aa5l9bqgSJ3woVw9bd66UMqO+
+ z7aXZDXWMB8kUV4cbfR8O/Ts3wX3QYBOyFmQVnXnreUQOGpSEzbOgVQ0FddZ//HS2BIEqNMzD
+ k/tuAymzBQWPOpHfwv0RW5GvbiVHvPJkzaDM/cJf5BG11eK3f1Jvu//mDBom6YY78W7s=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083029_212718_59E2DE9B 
+X-CRM114-Status: GOOD (  13.85  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Since the camera driver isn't probed via DT, we need to properly setup DMA.
+
+Fixes: 37b7b3087a2f ("staging/vc04_services: Register a platform device for the camera driver.")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ .../vc04_services/interface/vchiq_arm/vchiq_arm.c    | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index d7d7c2f0..778a252 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -49,6 +49,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/compat.h>
++#include <linux/dma-mapping.h>
+ #include <soc/bcm2835/raspberrypi-firmware.h>
+ 
+ #include "vchiq_core.h"
+@@ -3588,6 +3589,21 @@ static const struct of_device_id vchiq_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, vchiq_of_match);
+ 
++static struct platform_device *
++vchiq_register_child(struct platform_device *pdev, const char *name)
++{
++	struct platform_device_info pdevinfo;
++
++	memset(&pdevinfo, 0, sizeof(pdevinfo));
++
++	pdevinfo.parent = &pdev->dev;
++	pdevinfo.name = name;
++	pdevinfo.id = PLATFORM_DEVID_NONE;
++	pdevinfo.dma_mask = DMA_BIT_MASK(32);
++
++	return platform_device_register_full(&pdevinfo);
++}
++
+ static int vchiq_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *fw_node;
+@@ -3653,9 +3669,7 @@ static int vchiq_probe(struct platform_device *pdev)
+ 		VCHIQ_VERSION, VCHIQ_VERSION_MIN,
+ 		MAJOR(vchiq_devid), MINOR(vchiq_devid));
+ 
+-	bcm2835_camera = platform_device_register_data(&pdev->dev,
+-						       "bcm2835-camera", -1,
+-						       NULL, 0);
++	bcm2835_camera = vchiq_register_child(pdev, "bcm2835-camera");
+ 
+ 	return 0;
+ 
+
+From patchwork Thu Oct 25 15:29:30 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656039
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 462EB13A9
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:30:41 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 356102BD91
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:30:41 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 338232BD98; Thu, 25 Oct 2018 15:30:41 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 940AB2BDA1
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:30:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=dzlIUR5tyxs0ypx1KsmTLhg+vSxlQ51B/qgqyenThPw=; b=M7eGnXawRpXexevwj4B8ey9Isv
+	oWKFmnFh0p86JuMTPAqW7UmAtl3k5fHyMeS3n/WDWvzS/GFBnVanWSmtpY/WrWpLjnNaMGg0VolHT
+	SduTXG0d95n00ABKniwi7lZOu5kT7UL2bzfiO0rTI9xRbQ85fAmr30LWigJpHvrkBcZxrj7gQXNRl
+	FdkfGn0+jjuGshEL+UzyFqS0xiu4ll5R93yF79lB4WRyn3KZIwWsphSF5FpdhZyya9eb20Sy6Nf2h
+	w9yBN0mT8GOgrYdU/UipsQn/1/wsszbT2OGVdPn3M1hTSBWMxyYOsAewks/vsEfDOynCmlKEeEdPO
+	lLIaC6VA==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFhal-0000dc-4b; Thu, 25 Oct 2018 15:30:35 +0000
+Received: from mout.kundenserver.de ([212.227.126.187])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhae-0000Wx-QE; Thu, 25 Oct 2018 15:30:30 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1M27Bp-1gHdOb3IWP-002YTt; Thu, 25 Oct 2018 17:30:08 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1M27Bp-1gHdOb3IWP-002YTt; Thu, 25 Oct 2018 17:30:08 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFC 06/11] staging: vchiq_arm: Register a platform device for
+ audio
+Date: Thu, 25 Oct 2018 17:29:30 +0200
+Message-Id: <1540481375-15952-7-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:8V+9Ywu5lptAVAEwEvJbQR7/SLvh6grzlExBpBZeTaFNHtyKXcx
+ xfGTDbPYMOfVJBSVTXT69Yg2fQ8bL/sViK69LktEo6Ow25U9Z0G5SpSUn1xsJ4TXg6NqDiX
+ qW8Z1hSFxwdXEbkh91OqBfG6qlF1sQHXuERL7NdgoU4sMl5V1UaFjeO6aneHINs018ZETdy
+ BzLM6lcOcSv/xqhLOei/g==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:JpWVyWifFSg=:8S5h0xDCnejFH9cYGvYDYg
+ LcIlecwjyP3Cm1ntHRKBKlEFrIh0IrgJIzUlPsNXMcH9OhwGu1vx4ux+V1TXlsFxE52UlcfXP
+ KfWiUucQ5DuibZMCDqpsYG669U2NIx+HNqLv0XhPQRm0xqC4wVHw61PwaTAnj2aN7NZ6M/0cD
+ ftpwAP3E+ktlOn7rQlCNUGX8uUhHWdgC7+DWvnBLzupYgfUSiGk+ijNkCKIFJEc0yW/JKDvYY
+ 4HdsEekTHT+6yiwwD/63088MhL4NN20ZiuiSQ8vfrb3VLpvmVg9zXgnpU+Arqh5yQrpcLk44Q
+ bx+pPrA3KyAn3oRUjCqUIfu9h7FPYYlanI3UP+I7N88zAlAyD4Jyzv0+KkbkLRMYEL9tMKtix
+ 1LHmpSUdIMjkD9fpOPjLFfVVmTkMUzAiDtcPNCuwbBDOig54oKSnU8by3685i8wa2nuE+Zk/I
+ T4xpXq8owjCwTwIja98V73sErvVp31fc44Cszhkg4uj70X6F8KH9Rh4sp3R2OyxgoO+pbP0Jv
+ O3RK9sVOrYFggn/zVKt5Ewu2ZKEA7tO5MoKYOTjgG9dK2gOPaqYW9z1f3KndChRC+97FZh5ZL
+ Klnl2wBNddjY7+U3+9MdIYqItLXss0BoL+xtWnZRWKVZaiCNbzx66/EPu8KpjrxIBeyv1j4C9
+ hZsgNv+Uihei/9qa0wWUUQTg96DxKVy/CFxRZFjMY2aCIEdIQpiUnwd/vl98Qz9cV25E=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083029_183754_BC82271E 
+X-CRM114-Status: GOOD (  12.00  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Following Eric's commit 37b7b3087a2f ("staging/vc04_services: Register a
+platform device for the camera driver.") this register the audio driver as
+a platform device, too.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index 778a252..fc6388b 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -170,6 +170,7 @@ static struct class  *vchiq_class;
+ static struct device *vchiq_dev;
+ static DEFINE_SPINLOCK(msg_queue_spinlock);
+ static struct platform_device *bcm2835_camera;
++static struct platform_device *bcm2835_audio;
+ 
+ static struct vchiq_drvdata bcm2835_drvdata = {
+ 	.cache_line_size = 32,
+@@ -3670,6 +3671,7 @@ static int vchiq_probe(struct platform_device *pdev)
+ 		MAJOR(vchiq_devid), MINOR(vchiq_devid));
+ 
+ 	bcm2835_camera = vchiq_register_child(pdev, "bcm2835-camera");
++	bcm2835_audio = vchiq_register_child(pdev, "bcm2835_audio");
+ 
+ 	return 0;
+ 
+@@ -3686,6 +3688,8 @@ static int vchiq_probe(struct platform_device *pdev)
+ 
+ static int vchiq_remove(struct platform_device *pdev)
+ {
++	if (!IS_ERR(bcm2835_audio))
++		platform_device_unregister(bcm2835_audio);
+ 	if (!IS_ERR(bcm2835_camera))
+ 		platform_device_unregister(bcm2835_camera);
+ 	vchiq_debugfs_deinit();
+
+From patchwork Thu Oct 25 15:29:31 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656061
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id B7BB514DE
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:34:31 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id A523A2BB88
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:34:31 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 98CA82BDB0; Thu, 25 Oct 2018 15:34:31 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 14C062BB88
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:34:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=12+KvhX5E6VGVfGyFUcVRENo/rJYrrdwl6XNiatzzc4=; b=QJ5YbWbKXZKuvXZtqlCKzdK65t
+	Kwc+F3zfyOrgF+duDIotUcrlHR9ofFrdlWG8a6LUJUDsUBDzzVuH/ZwyBWBCD3aLE46WfizO6xugH
+	f8d+m/dlhNhOqz8Wi26QNoJhJX7DM9TQfxppmeuur8ka/0jionSSAuGIiawwQEQdEw7Xp3EZN//qi
+	TC+Ms9axyxtNTKyDKnlsnTnIilP3MGop0m+Dp8DzyS5hiRi8UoDpnOxe/I6Ge7GOKiWNMnFey0cDq
+	cLTsGLmNc1QiIGYK1fao3Z3ZkZpE0p5F/1EvlwHtXEVwHzmkf317KEcjXj0U7Y6Ns1OJOt84ww4cc
+	y4KA6elQ==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFheT-00026c-Hz; Thu, 25 Oct 2018 15:34:25 +0000
+Received: from mout.kundenserver.de ([212.227.126.130])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhae-0000Ke-Qh; Thu, 25 Oct 2018 15:30:34 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MF3U0-1gMIEz0n1s-00FWtg; Thu, 25 Oct 2018 17:30:09 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MF3U0-1gMIEz0n1s-00FWtg; Thu, 25 Oct 2018 17:30:09 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFC 07/11] staging: bcm2835-audio: Enable compile test
+Date: Thu, 25 Oct 2018 17:29:31 +0200
+Message-Id: <1540481375-15952-8-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:pGp0GjXgsiJJjrZIoTdokzUb4amG+8i7NGn+Y/BPM3GZUTudl5r
+ XrmHWCk55A1BU/hL9RioxjTmACK1mpwbrjYojLrKedKZfwPpegWMIIgV3/Lsto6tmLyOytV
+ mtX3ozndc5Lz6AtTtFMhlgOXn0IpyehVHG/bNonyV8vM7HABf9iDxO8qjinu1Ks0VTvFLlw
+ 7jC/2S/6CBs3xOC+NPRNg==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:e1Bk1RphuD4=:2RNuGVXaGV7E66QCn/5kSs
+ KZzKOmmMbfSv4D5GFw/mT+Dcl8hUFjeFmUOBcA3fY2wAbXOEDUEK2F350NE9M7OUCgb5HWCb6
+ BkgNT2udFhLBOdNr7vwCyWhSVMdTfBUaTKvC7N9VBQd7K1rhYPzyuHLb0YM4og0Z/UURHJ+Ml
+ zrxcUFWlfUP/MLA+1cGo8IjMNU9ydghJ6VROor8ntJRgFrEcd3oQqROK7Z/C9lfCzwtfGyjxK
+ SmU3QaUkujYcNq4/GvusaKvgiKEJFViRHRLQzFJ3oBFitE6cZ0H3uS6U2vzWTNWM/FkUhPWDp
+ taBkBKOSblEUN9Maf5KWH4Sm3w5rypm4DYUuTB6yawTKf2wEXGDW1k6ggU0Cv8cOP2Wrsah2z
+ BiMe7Xl1VQvj1jU2iVFl1djgPhFjdjJjHxQQHWJBVGEMUsRT1CRPGyHfOG7luRYzNQ8IinVK8
+ r1WK7yNfDRHOmxSScWbMpmSilF6kd1R/7OlmpDIZBVuVHEiinwkukFn/zSsnu1BBw2M5q+Kr0
+ aqv+9OKmAhMMBIMZ168EgbcWCYOnjpzNa7Vd+WrapQRB0dFZr+HusnlNXWkNg/jQPEonVtsoo
+ xbNAIQEJyDcPHpBA/mxgfCCb+twtl0rBrugJQwpUWwoPD81r8A+wqijHgYrHd/3DanVLRZN9J
+ MsaGTaCqJQlrEhVX/vviqiWi0bteFshSRMaIHnI1+q8fMjPlpdFZv2+EBVDe19JyVgzY=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083029_184617_918CAF17 
+X-CRM114-Status: GOOD (  11.88  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Enable the compilation test for bcm2835-audio to gain more build coverage.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/staging/vc04_services/bcm2835-audio/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/Kconfig b/drivers/staging/vc04_services/bcm2835-audio/Kconfig
+index 9f53653..62c1c8b 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/Kconfig
++++ b/drivers/staging/vc04_services/bcm2835-audio/Kconfig
+@@ -1,6 +1,6 @@
+ config SND_BCM2835
+         tristate "BCM2835 Audio"
+-        depends on ARCH_BCM2835 && SND
++        depends on (ARCH_BCM2835 || COMPILE_TEST) && SND
+         select SND_PCM
+         select BCM2835_VCHIQ
+         help
+
+From patchwork Thu Oct 25 15:29:32 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656105
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 6BDD114E2
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:46:58 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 56C382BDDB
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:46:58 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 47E2F2BDE0; Thu, 25 Oct 2018 15:46:58 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id DE36C2BDDB
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:46:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=cQ1bZNOIJOxef+yc//3jddf67yCHYKnMNQoani1C6aI=; b=DVJMaoqsWaz9Gn3lojTZHnD74e
+	47KvMmSULlxSyx4BiFzIiPfU3RzOx00GfFv8Kyd5wLXEJx8o1nYbKC4jbgbMC05roeUres05iepFp
+	B/xtPR+0Vom+i4evlhZzjm0gkgnxnFUxIAUsZGlzK+vvqlASDbLD6l31VnXB07AZTGzX3ZbOb6drp
+	iMrZLgXZjmdx4ksxDCt5D67rZQrnlftdcrUPljwbzys4DiAmNuxAHBwO4NN3rdUWU9z28gVpCK6eF
+	J53rZndSz7mk5DrY0rL2gl1W2p5lOAx6SBNY9bNYfUnMfbYFo3o1KqF7eJA1wop4gwxOWPlKbGyWx
+	W2iLxOog==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFhqX-0002Bz-GR; Thu, 25 Oct 2018 15:46:53 +0000
+Received: from mout.kundenserver.de ([212.227.126.134])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhag-0000Yh-HO; Thu, 25 Oct 2018 15:30:50 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MoOIi-1fmxQH2V9U-00oreG; Thu, 25 Oct 2018 17:30:09 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MoOIi-1fmxQH2V9U-00oreG; Thu, 25 Oct 2018 17:30:09 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFC 08/11] staging: bcm2835-audio: use
+ module_platform_driver() macro
+Date: Thu, 25 Oct 2018 17:29:32 +0200
+Message-Id: <1540481375-15952-9-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:UDMmZUKNPRzCgQbgWoUnYY5WU7ggOetVGMPRS+spstWmTEp/dID
+ bMJ+6epM/UZhKBNAKeibjGDfrquNCH/6APmBUc6S+9thzbqbNPdWe0MVuIu8US7SIAmEJyS
+ +s/z9NFDLkXZzCIfJzQMkgpmTr7k/ziOeZGgjdA7xDc0Jmu13Mw7oxxsdfHyuJykAuHcjA/
+ 2kOpvpnwZNmt6EPp3AsMw==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:DQ7ecbOgszU=:wFjPeYfv0Py0C5XLQv/V/H
+ cNa8C4ctvlJCAi88PdxcF0ROmTV4OuYxfYEQDEk73wx3ujPnBhC+GjHM4/nMBNR6AYxvV3RPr
+ odHTp5/JPfHBjyRtvMON2bx/mmGvGs6q007WzubrMbLgEPmv99KhdihpeTfcX/YNaaq0HJn9j
+ Qc58m/3TkuBnUt6QpTUoMtZ3NzhMdfEfurFfJKAx2bygZ+AZ3OZUhuVovY/kAWZNTCGqkbC2f
+ W8/1RTooQpRZxILxrBQD+On9ZA9sZQVjwBuNR2HwvSW3c2QUuGq80WtcMD5j3MbMDDEuR9wqQ
+ 3EMOUfI23fzMcTaEXSc4lW0iwePqO2LN5Lpu6zNzENVuMoBC7iePseFo8s/pESO6cPKNlsLFZ
+ TKx8UgkUFXBHlV4RIN/p88adp53EnGo+vbYxEKq4Jj78JX0LBZfjfaPGIJnKVAWKWYa/wf22h
+ hNBQyTL5WeGxOlVeoRO2SyI4bw9eCkUqePNSJkCLoCaXbkroyImV69CbAVD+cyTWOtKGBO+k1
+ +cG3puxg/+4awQn7smWsvaiurXZz14o0pTPAH3efCeoaxqO3cEQFHmoF7fHo7EndG2WdhO/PJ
+ HvEDeMj5joDiPWF/FkuBheEBAsM1Ec4chKOzlKqpH9rKsmVPLyBRfTTSM4qnKiGw2qrnVsaZK
+ qMcupYBBeRXhnFX85WabpckR2cgYR5s6Svdw5d56Yz9WyvZqFBEw9IhrPeGRp2ijEhjc=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083030_910418_95160F9F 
+X-CRM114-Status: GOOD (  11.27  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+There is not much value behind this boilerplate, so use
+module_platform_driver() instead.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ .../staging/vc04_services/bcm2835-audio/bcm2835.c    | 20 +-------------------
+ 1 file changed, 1 insertion(+), 19 deletions(-)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+index 87d56ab..87a27fd 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+@@ -356,25 +356,7 @@ static struct platform_driver bcm2835_alsa0_driver = {
+ 		.of_match_table = snd_bcm2835_of_match_table,
+ 	},
+ };
+-
+-static int bcm2835_alsa_device_init(void)
+-{
+-	int retval;
+-
+-	retval = platform_driver_register(&bcm2835_alsa0_driver);
+-	if (retval)
+-		pr_err("Error registering bcm2835_audio driver %d .\n", retval);
+-
+-	return retval;
+-}
+-
+-static void bcm2835_alsa_device_exit(void)
+-{
+-	platform_driver_unregister(&bcm2835_alsa0_driver);
+-}
+-
+-late_initcall(bcm2835_alsa_device_init);
+-module_exit(bcm2835_alsa_device_exit);
++module_platform_driver(bcm2835_alsa0_driver);
+ 
+ MODULE_AUTHOR("Dom Cobley");
+ MODULE_DESCRIPTION("Alsa driver for BCM2835 chip");
+
+From patchwork Thu Oct 25 15:29:33 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656075
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 7FB1714DE
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:37:44 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 6D6C12BD1A
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:37:44 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 61C762BD6B; Thu, 25 Oct 2018 15:37:44 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id D68322BD1A
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:37:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=lHBSzlhaN05wZrbTPN7o3ohOWwwUjDnTv0xIFQVkm3Q=; b=oQZ6xk76fq3DmF6HnCeh5h2eEu
+	hlD3GR4UtaF0fFaU+NsQVIJe3CiWGbhZcrXJoP/QGd9jHonC6E1YRSt6fPzcOtwMM2FF6qSMntb6C
+	WTUlwfj3eh2/8PKDL40D4vdQ39N7Wi01m6vt1hCwrGQuL/u6gQPAysFISAW23CYS1wN2FbiQpQOSY
+	cEtreOYw2E4NqrGUVNFlx5JH26zvuaXZ6yZoh3+zqTnoefJhFbmBb2AWRxx7gKyF+VRmesHDI2qfU
+	PuFpVyTVKbTr+LXzcTU0lcaSLNiVY4oe7G4kSSz1sPokN4+ARReQb2/JE4mkUVgkrpHYXlC6yACpj
+	B7VPl9FQ==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFhha-0004eC-RY; Thu, 25 Oct 2018 15:37:38 +0000
+Received: from mout.kundenserver.de ([212.227.126.131])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhag-0000T2-5b; Thu, 25 Oct 2018 15:30:50 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MS43X-1g9Hh449gx-00TT1D; Thu, 25 Oct 2018 17:30:10 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MS43X-1g9Hh449gx-00TT1D; Thu, 25 Oct 2018 17:30:10 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFX 09/11] staging: bcm2835-audio: Drop DT dependency
+Date: Thu, 25 Oct 2018 17:29:33 +0200
+Message-Id: <1540481375-15952-10-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:YsEVD03T8+51mvwe3093vHIL0A5idBFtaPS5ZzPz1WAWqKvQoOe
+ At4qoCwMd3tHwdOMLKWoIte3mupPIOoY7nKM6uPdPSJFxQZJ5axmtdSd1YACaL4MyhOumVk
+ VDN+524AWLN6FTGx9tOAE0ZZ483Rt8nN6k8E4v1g3r5rvedzsUErIdXS0C4f776rC/B6mWX
+ ExnAas95A8/csSoHr5F3g==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:5w+5bzc7iBQ=:7ubv64idFE+gcm1xSzP4jr
+ YFkCXwzaQIO26VYxPNtfMj0/LyjNj+ZdwSUFkSQ05aRfvhfBRyonEx0zRrJIiIsR9+iWn9Q4j
+ ORHFnZ4j+g6BFkHfAWIyli265hC3rdT/d2320btcqT4x/N32Vp1+4r1zfKSWMzGUrS3YZqXed
+ 8q1t922IVq8946wFT+pJtWFdoK2p2XqqG/CVsxZGcFQNGRNv0H47BPFwuikBAQxD8FkYGw26a
+ Wp6U2av1yTP+VAW+YoHZ/diO8Rjp3W+basdnRijo6ruku8qtg8P1G5jlz4qSzfPGf/cLwKGS/
+ 2X/As2lmmv/gZg6xsvN50h+RxgJbVG6tpo2oDTAUgIV/GVVDKEb+28pmuVAP5BuJC9yiZb2v2
+ 24TcGWO8gx9WzAuxTcKDcpQjOQUCK0WX6qSLAiObHmLmR4TwFALMIIt8f1hcaUFOKn3wc+EoQ
+ TSCB0fZDfPjtjuLq/b4IwEApLtjvqMO/7AokWY4lLoEq9+1t0PqNhi9LwHSP/hhnG0NYoZWcJ
+ V2Mq8bCnLh70ct/KEUwpJ7nU4/vT6pZN1T7pYgJonQ/YvZhLX0kOZDUV2zkWSxZqp0NtZJH7Q
+ Js2cyDXTG08zBukbOEkdeD/QlDGUV6AK0P4iPoO7omfgzPRzJXuz40OuatHo/M4BL64jb8snF
+ R+KJN03QH4N5mMx5pkF3v4gGbYbz4lyUZNQ8utc/G3js1YTUrkkhPlINCDP5v0/AaWQg=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083030_540870_3C868BAB 
+X-CRM114-Status: GOOD (  15.53  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Just like the bcm2835-video make this a platform driver which is probed
+by vchiq. In order to change the number of channels use a module
+parameter instead, but use the maximum as default.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ .../staging/vc04_services/bcm2835-audio/bcm2835.c  | 41 ++++++++++------------
+ 1 file changed, 19 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+index 87a27fd..5c5b600 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+@@ -4,15 +4,17 @@
+ #include <linux/platform_device.h>
+ 
+ #include <linux/init.h>
++#include <linux/dma-mapping.h>
++#include <linux/of_device.h>
+ #include <linux/slab.h>
+ #include <linux/module.h>
+-#include <linux/of.h>
+ 
+ #include "bcm2835.h"
+ 
+ static bool enable_hdmi;
+ static bool enable_headphones;
+ static bool enable_compat_alsa = true;
++static int num_channels = MAX_SUBSTREAMS;
+ 
+ module_param(enable_hdmi, bool, 0444);
+ MODULE_PARM_DESC(enable_hdmi, "Enables HDMI virtual audio device");
+@@ -21,6 +23,8 @@ MODULE_PARM_DESC(enable_headphones, "Enables Headphones virtual audio device");
+ module_param(enable_compat_alsa, bool, 0444);
+ MODULE_PARM_DESC(enable_compat_alsa,
+ 		 "Enables ALSA compatibility virtual audio device");
++module_param(num_channels, int, 0644);
++MODULE_PARM_DESC(num_channels, "Number of audio channels (default: 8)");
+ 
+ static void bcm2835_devm_free_vchi_ctx(struct device *dev, void *res)
+ {
+@@ -293,31 +297,30 @@ static int snd_add_child_devices(struct device *device, u32 numchans)
+ 	return 0;
+ }
+ 
+-static int snd_bcm2835_alsa_probe_dt(struct platform_device *pdev)
++static int snd_bcm2835_alsa_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+-	u32 numchans;
+ 	int err;
+ 
+-	err = of_property_read_u32(dev->of_node, "brcm,pwm-channels",
+-				   &numchans);
+-	if (err) {
+-		dev_err(dev, "Failed to get DT property 'brcm,pwm-channels'");
+-		return err;
++	if (num_channels <= 0 || num_channels > MAX_SUBSTREAMS) {
++		num_channels = MAX_SUBSTREAMS;
++		dev_warn(dev, "Illegal num_channels value, will use %u\n",
++			 num_channels);
+ 	}
+ 
+-	if (numchans == 0 || numchans > MAX_SUBSTREAMS) {
+-		numchans = MAX_SUBSTREAMS;
+-		dev_warn(dev,
+-			 "Illegal 'brcm,pwm-channels' value, will use %u\n",
+-			 numchans);
++	dev->coherent_dma_mask = DMA_BIT_MASK(32);
++	dev->dma_mask = &dev->coherent_dma_mask;
++	err = of_dma_configure(dev, NULL, true);
++	if (err) {
++		dev_err(dev, "Unable to setup DMA: %d\n", err);
++		return err;
+ 	}
+ 
+ 	err = bcm2835_devm_add_vchi_ctx(dev);
+ 	if (err)
+ 		return err;
+ 
+-	err = snd_add_child_devices(dev, numchans);
++	err = snd_add_child_devices(dev, num_channels);
+ 	if (err)
+ 		return err;
+ 
+@@ -339,21 +342,14 @@ static int snd_bcm2835_alsa_resume(struct platform_device *pdev)
+ 
+ #endif
+ 
+-static const struct of_device_id snd_bcm2835_of_match_table[] = {
+-	{ .compatible = "brcm,bcm2835-audio",},
+-	{},
+-};
+-MODULE_DEVICE_TABLE(of, snd_bcm2835_of_match_table);
+-
+ static struct platform_driver bcm2835_alsa0_driver = {
+-	.probe = snd_bcm2835_alsa_probe_dt,
++	.probe = snd_bcm2835_alsa_probe,
+ #ifdef CONFIG_PM
+ 	.suspend = snd_bcm2835_alsa_suspend,
+ 	.resume = snd_bcm2835_alsa_resume,
+ #endif
+ 	.driver = {
+ 		.name = "bcm2835_audio",
+-		.of_match_table = snd_bcm2835_of_match_table,
+ 	},
+ };
+ module_platform_driver(bcm2835_alsa0_driver);
+@@ -361,3 +357,4 @@ module_platform_driver(bcm2835_alsa0_driver);
+ MODULE_AUTHOR("Dom Cobley");
+ MODULE_DESCRIPTION("Alsa driver for BCM2835 chip");
+ MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:bcm2835_audio");
+
+From patchwork Thu Oct 25 15:29:34 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656077
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id A013414DE
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:38:21 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 8A77629F82
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:38:21 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 7D6002B0AD; Thu, 25 Oct 2018 15:38:21 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id BDC6E2B674
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:38:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=Olh7Xsf5+A/G0ePZja6YTc1fKKlcqZRNYiqLWlJAUfY=; b=VBjOHgzlTungtS+GiCJpYytDR2
+	o9G9DLzuqRo8rRUUq0jNHJNltCFQDNTEqvHMAMlNDj9Z5lz9TyRHJ67dmYlbSjFKlcRi0/SWy+6iQ
+	E0sJOZcRe7+w6rbyKL8D4CTNa3shUVQ3MwQ+SHmPlbIvxgRiWFaJ2JZw0NA01517D8Cf2AkuQGRE+
+	4mUwJffj9ggjdccoUzFYLkrW2YIimpO2v0bdmpxJTjMz9GeNI2z61+W1cvtQCr1wk3yAjSmzvaa4z
+	T5hH4Ickz9PurzbakNjTkTVV4Bcv15pi392mMK2MyPsb6mupB6ZhvGoeOK9NZv73y37PLujKCso8q
+	5rhUnmuw==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFhiC-0004wo-Rb; Thu, 25 Oct 2018 15:38:16 +0000
+Received: from mout.kundenserver.de ([212.227.126.134])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhag-0000Yi-HO; Thu, 25 Oct 2018 15:31:06 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1N9dg5-1fTuT91kcH-015ZBh; Thu, 25 Oct 2018 17:30:10 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1N9dg5-1fTuT91kcH-015ZBh; Thu, 25 Oct 2018 17:30:10 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFC 10/11] staging: bcm2835-camera: Provide more specific
+ probe error messages
+Date: Thu, 25 Oct 2018 17:29:34 +0200
+Message-Id: <1540481375-15952-11-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:hLFz0DajoKrTtygjjPrDNaA3I6RUW7+JtkQY4EZzcN4+eqE57T0
+ wH1Td/EEeqBD4ybkajz3rJlM7asjXaAHuuGiToidUKYI3ve7N01H1TSLNnEeqXtd1Wfs7Ew
+ Sc3Kioe34pPFEJOq7dCiuRt0hp/ik4ZMG35lnTGyQhKTeREpqvms5kq8LWb430S+7X2rKhS
+ 9ZV5Z9SQD34Rug1RkAh3Q==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:mC2y9c6LUIc=:26cbKrq0e92ADdJCgexLfQ
+ baH3YRrgdQ6MvmzkaJJ56MEes+RUtTahwJ4YBulCJhyBlZJaF0ibaf17oSZVbULNZj74anvHt
+ xIEhuvQQYMfjEX2WSslYdtVin7MEY9V7Lm6nO581PzpC70EpF8x20wc3lTk0OEqpZtoem2xpI
+ zTqPkBKxGcwIVl9h0TWM55EbDE9GAbXsCvu9FzjahFwCaG08YEKf65S6goVd1L03NJhn3puSw
+ qVs3DhJm5Kdxwk8s4rpNM7vGzIgJXuu8VTbx0c/DFJLWLcGNcKhAWJe+U6ZGJ4yR4QGj5A69j
+ 0Ood5v0ucLVaWivHisLe9uOWt5S6N0J7Q0gDtGP6lDNJAbUwBZnPdcHr9Ge42PpZAmnV+QU/c
+ nBTJc8wjkVU6etYTha4sIVSMERHiwnICe4ka/PQtgG4hFRIfiCW/QgkBLG1V7akk9rkhhXjRZ
+ /Jppx3cc+g65+UExTyliB9Ny8u4aQIksKP55vDXGGsMM2gRMA1+CWnrFllKPTOu5wQxiQBS3j
+ N7cOm1fdsNbBw7l4MCUYYmrbOm/aaKu1Q8MUmj8TaYeSoShM3prtOZsFUnkeWmkR8fcyS9RnT
+ b9MSOY/jPYHe/YoSiEsMWDen9n/Yon4o+CTlTzep5nac1xEiGnauxqIOxMojZ6wDwrPzYcocc
+ QifuV12x6PQtuyz8pqGcq2cDtWgckr9NQBQlBMQSZIjLBObpYzMfHf+o/eOlqFDSybVk=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083030_911887_F39F581E 
+X-CRM114-Status: GOOD (  16.32  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Currently there is only a catch-all info message which print the
+relevant error code without any context. So add more specific error
+messages in order to narrow down possible issues.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ .../vc04_services/bcm2835-camera/bcm2835-camera.c  | 58 +++++++++++++++-------
+ 1 file changed, 39 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+index cd773eb..84ca22d 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
++++ b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+@@ -1539,8 +1539,11 @@ static int mmal_init(struct bm2835_mmal_dev *dev)
+ 	struct vchiq_mmal_component  *camera;
+ 
+ 	ret = vchiq_mmal_init(&dev->instance);
+-	if (ret < 0)
++	if (ret < 0) {
++		v4l2_err(&dev->v4l2_dev, "%s: vchiq mmal init failed %d\n",
++			 __func__, ret);
+ 		return ret;
++	}
+ 
+ 	/* get the camera component ready */
+ 	ret = vchiq_mmal_component_init(dev->instance, "ril.camera",
+@@ -1549,7 +1552,9 @@ static int mmal_init(struct bm2835_mmal_dev *dev)
+ 		goto unreg_mmal;
+ 
+ 	camera = dev->component[MMAL_COMPONENT_CAMERA];
+-	if (camera->outputs <  MMAL_CAMERA_PORT_COUNT) {
++	if (camera->outputs < MMAL_CAMERA_PORT_COUNT) {
++		v4l2_err(&dev->v4l2_dev, "%s: too few camera outputs %d needed %d\n",
++			 __func__, camera->outputs, MMAL_CAMERA_PORT_COUNT);
+ 		ret = -EINVAL;
+ 		goto unreg_camera;
+ 	}
+@@ -1557,8 +1562,11 @@ static int mmal_init(struct bm2835_mmal_dev *dev)
+ 	ret = set_camera_parameters(dev->instance,
+ 				    camera,
+ 				    dev);
+-	if (ret < 0)
++	if (ret < 0) {
++		v4l2_err(&dev->v4l2_dev, "%s: unable to set camera parameters: %d\n",
++			 __func__, ret);
+ 		goto unreg_camera;
++	}
+ 
+ 	/* There was an error in the firmware that meant the camera component
+ 	 * produced BGR instead of RGB.
+@@ -1647,8 +1655,8 @@ static int mmal_init(struct bm2835_mmal_dev *dev)
+ 
+ 	if (dev->component[MMAL_COMPONENT_PREVIEW]->inputs < 1) {
+ 		ret = -EINVAL;
+-		pr_debug("too few input ports %d needed %d\n",
+-			 dev->component[MMAL_COMPONENT_PREVIEW]->inputs, 1);
++		v4l2_err(&dev->v4l2_dev, "%s: too few input ports %d needed %d\n",
++			 __func__, dev->component[MMAL_COMPONENT_PREVIEW]->inputs, 1);
+ 		goto unreg_preview;
+ 	}
+ 
+@@ -1661,8 +1669,8 @@ static int mmal_init(struct bm2835_mmal_dev *dev)
+ 
+ 	if (dev->component[MMAL_COMPONENT_IMAGE_ENCODE]->inputs < 1) {
+ 		ret = -EINVAL;
+-		v4l2_err(&dev->v4l2_dev, "too few input ports %d needed %d\n",
+-			 dev->component[MMAL_COMPONENT_IMAGE_ENCODE]->inputs,
++		v4l2_err(&dev->v4l2_dev, "%s: too few input ports %d needed %d\n",
++			 __func__, dev->component[MMAL_COMPONENT_IMAGE_ENCODE]->inputs,
+ 			 1);
+ 		goto unreg_image_encoder;
+ 	}
+@@ -1676,8 +1684,8 @@ static int mmal_init(struct bm2835_mmal_dev *dev)
+ 
+ 	if (dev->component[MMAL_COMPONENT_VIDEO_ENCODE]->inputs < 1) {
+ 		ret = -EINVAL;
+-		v4l2_err(&dev->v4l2_dev, "too few input ports %d needed %d\n",
+-			 dev->component[MMAL_COMPONENT_VIDEO_ENCODE]->inputs,
++		v4l2_err(&dev->v4l2_dev, "%s: too few input ports %d needed %d\n",
++			 __func__, dev->component[MMAL_COMPONENT_VIDEO_ENCODE]->inputs,
+ 			 1);
+ 		goto unreg_vid_encoder;
+ 	}
+@@ -1706,8 +1714,11 @@ static int mmal_init(struct bm2835_mmal_dev *dev)
+ 					      sizeof(enable));
+ 	}
+ 	ret = bm2835_mmal_set_all_camera_controls(dev);
+-	if (ret < 0)
++	if (ret < 0) {
++		v4l2_err(&dev->v4l2_dev, "%s: failed to set all camera controls: %d\n",
++			 __func__, ret);
+ 		goto unreg_vid_encoder;
++	}
+ 
+ 	return 0;
+ 
+@@ -1873,21 +1884,29 @@ static int bcm2835_mmal_probe(struct platform_device *pdev)
+ 		snprintf(dev->v4l2_dev.name, sizeof(dev->v4l2_dev.name),
+ 			 "%s", BM2835_MMAL_MODULE_NAME);
+ 		ret = v4l2_device_register(NULL, &dev->v4l2_dev);
+-		if (ret)
++		if (ret) {
++			dev_err(&pdev->dev, "%s: could not register V4L2 device: %d\n",
++				__func__, ret);
+ 			goto free_dev;
++		}
+ 
+ 		/* setup v4l controls */
+ 		ret = bm2835_mmal_init_controls(dev, &dev->ctrl_handler);
+-		if (ret < 0)
++		if (ret < 0) {
++			v4l2_err(&dev->v4l2_dev, "%s: could not init controls: %d\n",
++				__func__, ret);
+ 			goto unreg_dev;
++		}
+ 		dev->v4l2_dev.ctrl_handler = &dev->ctrl_handler;
+ 
+ 		/* mmal init */
+ 		dev->instance = instance;
+ 		ret = mmal_init(dev);
+-		if (ret < 0)
++		if (ret < 0) {
++			v4l2_err(&dev->v4l2_dev, "%s: mmal init failed: %d\n",
++				 __func__, ret);
+ 			goto unreg_dev;
+-
++		}
+ 		/* initialize queue */
+ 		q = &dev->capture.vb_vidq;
+ 		memset(q, 0, sizeof(*q));
+@@ -1905,16 +1924,19 @@ static int bcm2835_mmal_probe(struct platform_device *pdev)
+ 
+ 		/* initialise video devices */
+ 		ret = bm2835_mmal_init_device(dev, &dev->vdev);
+-		if (ret < 0)
++		if (ret < 0) {
++			v4l2_err(&dev->v4l2_dev, "%s: could not init device: %d\n",
++				 __func__, ret);
+ 			goto unreg_dev;
++		}
+ 
+ 		/* Really want to call vidioc_s_fmt_vid_cap with the default
+ 		 * format, but currently the APIs don't join up.
+ 		 */
+ 		ret = mmal_setup_components(dev, &default_v4l2_format);
+ 		if (ret < 0) {
+-			v4l2_err(&dev->v4l2_dev,
+-				 "%s: could not setup components\n", __func__);
++			v4l2_err(&dev->v4l2_dev, "%s: could not setup components: %d\n",
++				 __func__, ret);
+ 			goto unreg_dev;
+ 		}
+ 
+@@ -1938,8 +1960,6 @@ static int bcm2835_mmal_probe(struct platform_device *pdev)
+ 		bcm2835_cleanup_instance(gdev[i]);
+ 		gdev[i] = NULL;
+ 	}
+-	pr_info("%s: error %d while loading driver\n",
+-		BM2835_MMAL_MODULE_NAME, ret);
+ 
+ cleanup_mmal:
+ 	vchiq_mmal_finalise(instance);
+
+From patchwork Thu Oct 25 15:29:35 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10656057
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 43EF714DE
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:34:03 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 322262BD1A
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:34:03 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 257912BD81; Thu, 25 Oct 2018 15:34:03 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_NONE autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id C36612BD1A
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Thu, 25 Oct 2018 15:34:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=uFHfQUxOTO7S/FScNKIV35wbwjyqyBTU6tCN9uQO8y0=; b=C4xdZknyGCFYKC2O1jLA3uns9i
+	blxn9i5qFrq8VWlAIoPmmppiTmwdMTSTsl5JEzxmO+1SlHqfB9PJ/9bOAlED/nz2tI80GHwvvNHLF
+	Vt2U2XkJG02Bg+lEtsn2rqpq0OzaoDsv61uTiA9PsDl+5V429m+eEyYukS4dfgkYxseG5QAgTLAV9
+	ifd8vxrpNY+WVrJg9acf/rddKLlgcNjL3GRY+Uw6VyeOWlKay6RIfVjlVOlolRDJ6m739t7hqdo+E
+	hlUIBH4dFmKW8nXrP3b7HdGkapU5WW+c0pTE+GzEWzAFRrjj+U6zwJVOIdUW0eZyTetssvoG6RTRC
+	sbrh+NOQ==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1gFhdq-0001qT-7b; Thu, 25 Oct 2018 15:33:46 +0000
+Received: from mout.kundenserver.de ([212.227.126.130])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1gFhae-0000Q6-R9; Thu, 25 Oct 2018 15:30:33 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1N0WsG-1fLQ8s3Z9o-00wSNs; Thu, 25 Oct 2018 17:30:10 +0200
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1N0WsG-1fLQ8s3Z9o-00wSNs; Thu, 25 Oct 2018 17:30:10 +0200
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Eric Anholt <eric@anholt.net>, gregkh@linuxfoundation.org,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>
+Subject: [PATCH RFC 11/11] staging: bcm2835-camera: Add hint about possible
+ faulty config
+Date: Thu, 25 Oct 2018 17:29:35 +0200
+Message-Id: <1540481375-15952-12-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+References: <1540481375-15952-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:NRZtoAxO4KuB2XxhzFli1zm+3tWWFlCmYHnv5FFzBG1a6vRhTKj
+ NZktF717FC1kOsEt0Wo62etCCH/b7Tjmg2s3HvA7OUYCNyailz9BocAmP27vYDD8Fh8vRlS
+ E0IkMw2u0X67smI5fC3NlHfOL73gTAJ76u8Ml5z3S4ch4D20snCkUpEi26edMPn6WqNEXnA
+ Hto1pobYtndgG9uWreJrA==
+X-UI-Out-Filterresults: notjunk:1;V01:K0:eC8qlffpHwg=:WD2ZTiXk2RfdEBG8JTkAn5
+ Csjof/x/6e4u4+YcpI4/M742FyOuogauXE1NgZMOLUxksPEET4xlxrOkED3zAompxKMSUuwnK
+ Vz2upIliDVnW2y9lljonWyMl2inFVFp+/eLpOGVP6H7imQaPIPW+fXp7RUmkyuXOYTkllVVgj
+ v6aUJuSERgX3+e5LSqz27p2gNfWXaYds+GNBgbW6FDQPLC3pcE+E0WEtYRY3+Dp8FjqdImAnI
+ 7MfAQuT+MJiNunNyu8k29HPY93Sa9Yt2JL+IWaHksz/QGGd2I1VvSj1NGq2nO8Gp90ZqQNQz+
+ Uf1cf1FstPnvwnEUg+kyEWL2vOQeiBteV0tWdRimD2vOnsDRV5r9pfod5CGWFrV+U7DvVFhTw
+ h0NEvQEzm+QoUP1S/chFvN9A4+96rdZJ5HpZu/5frt5rbNtY+08jlTWj71dm0NdGWPEu7m/m+
+ O0PHN580SkLZxbHJu1AW9wxK7aRwj+im01FjJUjjsGc3hBMDtJgL04bkba6TgEsdDbg7SmmYd
+ K1d1HObsMz0VY5b3lj95S/loDpPQ9lKcRK1Tgw1l3dqYG3LXej3+Bh+N7jSiDAr2QCyvTfraK
+ KBKixQ/6xh5kii2QMFVplRVuz7l6T4N8XxLzHaBuBSXOwucAJk5J8rZ+uBtyCMFt705yqOcFL
+ p7N9OWJMeraBFmkzO43l40Z9U4+iBbe/RAjdl9akUiobbRAdq+99Wljhqgn4k8abICDc=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20181025_083029_201443_F3D80824 
+X-CRM114-Status: GOOD (  12.71  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devel@driverdev.osuosl.org, Stefan Wahren <stefan.wahren@i2se.com>,
+ linux-arm-kernel@lists.infradead.org, tiwai@suse.de, mikebrady@eircom.net,
+ pbrobinson@gmail.com, nsaenzjulienne@suse.de,
+ linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+As per default the GPU memory config of the Raspberry Pi isn't sufficient
+for the camera usage. Even worse the bcm2835 camera driver doesn't provide a
+helpful error message in this case. So let's add a hint to point the user
+to the likely cause.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/staging/vc04_services/bcm2835-camera/mmal-vchiq.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/mmal-vchiq.c b/drivers/staging/vc04_services/bcm2835-camera/mmal-vchiq.c
+index cc2d993..bffd75d 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/mmal-vchiq.c
++++ b/drivers/staging/vc04_services/bcm2835-camera/mmal-vchiq.c
+@@ -1623,8 +1623,11 @@ int vchiq_mmal_component_init(struct vchiq_mmal_instance *instance,
+ 	component = &instance->component[instance->component_idx];
+ 
+ 	ret = create_component(instance, component, name);
+-	if (ret < 0)
++	if (ret < 0) {
++		pr_err("%s: failed to create component %d (Not enough GPU mem?)\n",
++		       __func__, ret);
+ 		goto unlock;
++	}
+ 
+ 	/* ports info needs gathering */
+ 	component->control.type = MMAL_PORT_TYPE_CONTROL;

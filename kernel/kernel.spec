@@ -50,23 +50,23 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 19
+%define base_sublevel 20
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 8
+%global post_factum 1
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit cc2665815b2d49ba3bd38bc71f33c038d24ebbdb
+%global pfcommit 56c2440c11ae2a013e874968afbea4f1ba93de5d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id e8181d1487c7f18786f0aee43e05a8e841607be5
+%global opensuse_id c634493cc649767a69445e492031b9c1e93364fb
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -620,18 +620,24 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg670137.html
-Patch307: arm64-ZynqMP-firmware-clock-drivers-core.patch
-
-Patch308: arm64-96boards-Rock960-CE-board-support.patch
-Patch309: arm64-rockchip-add-initial-Rockpro64.patch
-Patch310: arm64-rk3399-add-idle-states.patch
-
-Patch311: gpio-pxa-handle-corner-case-of-unprobed-device.patch
-
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
+
+# https://patchwork.kernel.org/patch/10686407/
+Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
+
+# Improve raspberry pi camera and analog audio
+Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
+
+# Initall support for the 3A+
+Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
+
+# Fixes for bcm2835 mmc (sdcard) driver
+Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
+
+# https://patchwork.kernel.org/patch/10741809/
+Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
 
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
@@ -652,17 +658,11 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# Ena fixes from 4.20
-Patch503: ena-fixes.patch
-
-# rhbz 1526312, patch is in 4.20, can be dropped on rebase
-Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
-
-# Patches from 4.20 fixing black screen on CHT devices with i915.fastboot=1
-Patch508: cherrytrail-pwm-lpss-fixes.patch
-
 # rhbz 1526312 (accelerometer part of the bug), patches pending upstream
-Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
+Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
+
+# rhbz 1645070 patch queued upstream for merging into 4.21
+Patch505: asus-fx503-keyb.patch
 
 ### Extra
 
@@ -692,22 +692,9 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 
 #Patch3000: postfactum-merge-fixes.patch
 %if !0%{?zen}
-Patch3001: %{pf_url}/4b38af06b758979fd674096c0a64f7af49ce3022.patch#/pf-4b38af06b758979fd674096c0a64f7af49ce3022.patch
+Patch3001: %{pf_url}/3e325ba257db94dbb7601deadb0592ccf79bf08d.patch#/pf-3e325ba257db94dbb7601deadb0592ccf79bf08d.patch
 %endif
-Patch3002: %{pf_url}/eab264b2f1759d8f2279325d1070364f42387fdf.patch#/pf-eab264b2f1759d8f2279325d1070364f42387fdf.patch
-Patch3003: %{pf_url}/60d157d9133b07857ecab741290364b06a10c23b.patch#/pf-60d157d9133b07857ecab741290364b06a10c23b.patch
-Patch3004: %{pf_url}/5b2e5548ee833fd291001edfce223e4a35f7d85e.patch#/pf-5b2e5548ee833fd291001edfce223e4a35f7d85e.patch
-Patch3005: %{pf_url}/2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch#/pf-2c32a5f73af54c0b1ce54b9852657bf0b2f6ef4b.patch
-Patch3006: %{pf_url}/ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch#/pf-ee6bef56d17e2ee01a82a66586524bed9dca5d7a.patch
-Patch3007: %{pf_url}/1eccf3238cf77405532540ced86b0f2591830135.patch#/pf-1eccf3238cf77405532540ced86b0f2591830135.patch
-Patch3008: %{pf_url}/cfa886747c494ee1352844c81aa2f126f17c5885.patch#/pf-cfa886747c494ee1352844c81aa2f126f17c5885.patch
-Patch3009: %{pf_url}/adb5219bad550c82ccb588f463e7d699c7383f78.patch#/pf-adb5219bad550c82ccb588f463e7d699c7383f78.patch
-Patch3010: %{pf_url}/bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch#/pf-bcb1a5ce0ab4d1fc3091fc647872c83d6decda74.patch
-Patch3011: %{pf_url}/3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch#/pf-3a9b1b1e87b33539db59ddf48674a9813b5e0e79.patch
-Patch3012: %{pf_url}/72bbc6527229bbc17bf630559989b1f5a0f80353.patch#/pf-72bbc6527229bbc17bf630559989b1f5a0f80353.patch
-Patch3013: %{pf_url}/4a3998301f2389f93469c662d922193b32bc895d.patch#/pf-4a3998301f2389f93469c662d922193b32bc895d.patch
-Patch3014: %{pf_url}/b334c0e8f76809cd8e1eaf55c6143eb6b9837b6a.patch#/pf-b334c0e8f76809cd8e1eaf55c6143eb6b9837b6a.patch
-Patch3015: %{pf_url}/bcb50e4968dab882c40cc080c548d88382ef58ba.patch#/pf-bcb50e4968dab882c40cc080c548d88382ef58ba.patch
+Patch3002: %{pf_url}/f1dc4cde200f8c7113333c7f8687921e2ca4a700.patch#/pf-f1dc4cde200f8c7113333c7f8687921e2ca4a700.patch
 #Patch3500: postfactum-merge-fixes-2.patch
 
 %if !0%{?zen}
@@ -2014,6 +2001,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.20.0-500.chinfo
+- 4.20.0
+
 * Fri Dec 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.12-500.chinfo
 - 4.19.12
 

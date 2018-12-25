@@ -58,7 +58,7 @@ BuildRequires:  pkgconfig(sqlite3)
 BuildRequires:  pkgconfig(sqlcipher)
 
 
-Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       qca-qt5-ossl%{?_isa}
 
 # drop prior needless -devel pkg
@@ -71,8 +71,8 @@ It allows you to keep track of your expenses and incomes,
 categorize them, and build reports of them.
 
 %package libs
-Summary: Runtime libraries for %{name}
-Requires: %{?epoch:%{epoch}:}%{name} = %{version}-%{release}
+Summary:        Runtime libraries for %{name}
+Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 %description libs
 %{summary}.
 

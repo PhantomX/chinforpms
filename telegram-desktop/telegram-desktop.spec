@@ -11,7 +11,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.5.3
+Version:        1.5.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -33,7 +33,6 @@ Source1:        https://github.com/telegramdesktop/crl/archive/%{commit1}/crl-%{
 Patch0:         %{name}-build-fixes.patch
 Patch1:         %{name}-system-fonts.patch
 Patch2:         %{name}-unbundle-minizip.patch
-Patch50:        %{name}-gcc-fix.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -166,6 +165,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
+* Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.4-100
+- 1.5.4
+
 * Sun Dec 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.3-100
 - 1.5.3
 

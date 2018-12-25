@@ -23,13 +23,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 19
+%define base_sublevel 20
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -106,7 +106,6 @@ glibc package.
 
 %package -n kernel-cross-headers
 Summary: Header files for the Linux kernel for use by cross-glibc
-Group: Development/System
 
 %description -n kernel-cross-headers
 Kernel-cross-headers includes the C header files that specify the interface
@@ -176,6 +175,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.20.0-500.chinfo
+- 4.20.0
+
 * Fri Dec 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.12-500.chinfo
 - 4.19.12
 
