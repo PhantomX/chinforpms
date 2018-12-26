@@ -37,7 +37,7 @@
 %endif
 
 Name:       VirtualBox
-Version:    5.2.22
+Version:    6.0.0
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    100%{?bugfix:.%{bugfix}}%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -61,15 +61,14 @@ Source9:    VBoxOGLRun.sh
 Source10:   vboxweb.service
 Source20:   os_mageia.png
 Source21:   os_mageia_64.png
-Source100:   vboxlogo-bmp.sh
-Source101:   README.vboxlogo
-Source102:   vboxlogo.bmp
-Source103:   vboxautostart
-Source104:   vboxautostart.service
+Source100:  vboxlogo-bmp.sh
+Source101:  README.vboxlogo
+Source102:  vboxlogo.bmp
+Source103:  vboxautostart
+Source104:  vboxautostart.service
 Patch1:     VirtualBox-OSE-4.1.4-noupdate.patch
 Patch2:     VirtualBox-5.1.0-strings.patch
 Patch18:    VirtualBox-OSE-4.0.2-aiobug.patch
-Patch23:    VirtualBox-5.0.18-xserver_guest.patch
 Patch27:    VirtualBox-gcc.patch
 # from Debian
 Patch28:    02-gsoap-build-fix.patch
@@ -279,7 +278,6 @@ rm -rf src/libs/zlib-*/
 %patch1 -p1 -b .noupdates
 %patch2 -p1 -b .strings
 %patch18 -p1 -b .aiobug
-%patch23 -p1 -b .xserver_guest
 #patch27 -p1 -b .gcc
 %if 0%{?fedora} > 20
 %patch28 -p1 -b .gsoap2
@@ -320,7 +318,7 @@ umask 0022
 
 #TODO fix publisher in copr
 %global publisher _%{?vendor:%(echo "%{vendor}" | \
-     sed -e 's/[^[:alnum:]]//g; s/FedoraProject//' | cut -c -9)}%{?!vendor:custom}
+     sed -e 's/[^[:alnum:]]//g; s/FedoraProject//' | cut -c -9)}%{?!vendor:chinfo}
 
 # VirtualBox build system installs and builds in the same step,
 # not always looking for the installed files in places they have
@@ -351,17 +349,14 @@ kmk %{_smp_mflags}    \
     SDK_VBOX_OPENSSL_INCS="" \
     SDK_VBOX_OPENSSL_LIBS="ssl crypto" \
     SDK_VBOX_ZLIB_INCS= \
-%{?with_docs:   VBOX_WITH_DOCS=1 }
+%{?with_docs:   VBOX_WITH_DOCS=1 } \
     VBOX_JAVA_HOME=%{_prefix}/lib/jvm/java \
     VBOX_BUILD_PUBLISHER=%{publisher} \
-    VBOX_WITH_REGISTRATION_REQUEST= \
     VBOX_GUI_WITH_NETWORK_MANAGER= \
     VBOX_WITH_UPDATE_REQUEST= \
-    VBOX_WITH_UPDATE=
+    VBOX_PATH_DOCBOOK_DTD=/usr/share/sgml/docbook/xml-dtd-4.5/ \
+    VBOX_PATH_DOCBOOK=/usr/share/sgml/docbook/xsl-stylesheets/
 
-
-#    VBOX_PATH_DOCBOOK_DTD=/usr/share/sgml/docbook/xml-dtd-4.5/ \
-#    VBOX_PATH_DOCBOOK=/usr/share/sgml/docbook/xsl-stylesheets/ \
 # doc/manual/fr_FR/ missing man_VBoxManage-debugvm.xml and man_VBoxManage-extpack.xml
 #    VBOX_WITH_DOCS_TRANSLATIONS=1 \
 # we can't build CHM DOCS we need hhc.exe which is not in source and we need
@@ -812,6 +807,9 @@ getent passwd vboxadd >/dev/null || \
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Tue Dec 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 6.0.0-100
+- 6.0.0
+
 * Fri Nov 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.22-100.chinfo
 - 5.2.22
 

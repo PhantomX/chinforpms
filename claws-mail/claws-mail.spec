@@ -1,4 +1,4 @@
-%global pluginapi 3.17.2.0
+%global pluginapi 3.17.3.0
 
 %global with_gtk3  0
 
@@ -8,7 +8,7 @@
 %global build_manual 1
 
 Name:           claws-mail
-Version:        3.17.2
+Version:        3.17.3
 Release:        100%{?dist}
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -664,7 +664,10 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
-* Sat Sep 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.17.2-100.chinfo
+* Tue Dec 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.17.3-100
+- 3.17.3
+
+* Fri Dec 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.17.2-100.chinfo
 - 3.17.2
 
 * Sat Sep 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.17.1-100.chinfo

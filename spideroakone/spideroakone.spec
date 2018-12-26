@@ -21,7 +21,7 @@
 %global with_pyqt 0
 
 Name:           spideroakone
-Version:        7.3.0
+Version:        7.4.0
 Release:        1%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
@@ -275,6 +275,9 @@ done
 
 
 %changelog
+* Tue Dec 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.4.0-1
+- 7.4.0
+
 * Fri Sep 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.3.0-1
 - 7.3.0
 - Only x86_64 now

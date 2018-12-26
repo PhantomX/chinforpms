@@ -1,0 +1,22 @@
+diff -up VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/widgets/UINameAndSystemEditor.cpp.defsys VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/widgets/UINameAndSystemEditor.cpp
+--- VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/widgets/UINameAndSystemEditor.cpp.defsys	2018-12-18 10:59:47.000000000 -0200
++++ VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/widgets/UINameAndSystemEditor.cpp	2018-12-25 12:40:54.650089808 -0200
+@@ -254,7 +254,7 @@ void UINameAndSystemEditor::sltFamilyCha
+     /* Or select Oracle Linux item for Linux family as default: */
+     else if (m_strFamilyId == "Linux")
+     {
+-        QString strDefaultID = "Oracle";
++        QString strDefaultID = "Linux26";
+         if (ARCH_BITS == 64 && m_fSupportsHWVirtEx && m_fSupportsLongMode)
+             strDefaultID += "_64";
+         const int iIndexUbuntu = m_pComboType->findData(strDefaultID, TypeID);
+@@ -468,6 +468,9 @@ void UINameAndSystemEditor::prepareFamil
+ 
+     /* Choose the 1st item to be the current: */
+     m_pComboFamily->setCurrentIndex(0);
++    int iLinuxIndex = m_pComboFamily->findData ("Linux", TypeID);
++    if (iLinuxIndex != -1)
++        m_pComboFamily->setCurrentIndex (iLinuxIndex);
+     /* And update the linked widgets accordingly: */
+     sltFamilyChanged(m_pComboFamily->currentIndex());
+ }

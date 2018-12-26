@@ -11,12 +11,12 @@ Let's not bug the user with updates that are not yet packaged.
 
 --- a/src/VBox/Frontends/VirtualBox/src/net/UIUpdateDefs.cpp	2011-10-03 23:27:27.022252299 +0100
 +++ b/src/VBox/Frontends/VirtualBox/src/net/UIUpdateDefs.cpp	2011-10-03 23:27:37.597338185 +0100
-@@ -163,7 +163,7 @@
+@@ -164,7 +164,7 @@ void VBoxUpdateData::decode()
              if (m_dayList.isEmpty())
                  populate();
              PeriodType index = (PeriodType)m_dayList.indexOf(VBoxUpdateDay(QString(), parser[0]));
--            m_periodIndex = index == PeriodUndefined ? Period1Day : index;
-+            m_periodIndex = index == PeriodUndefined ? PeriodNever : index;
+-            m_enmPeriodIndex = index == PeriodUndefined ? Period1Day : index;
++            m_enmPeriodIndex = index == PeriodUndefined ? PeriodNever : index;
          }
  
          /* Parse 'date' value: */
