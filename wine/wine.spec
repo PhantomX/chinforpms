@@ -10,7 +10,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 4.0-rc3
+%global stagingver 4.0-rc4
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
@@ -20,7 +20,7 @@
 %global pbarel v
 %global pbapkg knobs_and_switches-
 %endif
-%global tkg_id d5f2ff5a1de9a11285d9a7ebe86c73b5e5135041
+%global tkg_id c96816ffc6e8a0b5937685ede8d474944926092a
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -38,9 +38,11 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0~rc3
+Version:        4.0~rc4
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
+
+Epoch:          1
 
 License:        LGPLv2+
 URL:            http://www.winehq.org/
@@ -104,13 +106,14 @@ Patch602:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.
 # Wbemprox videocontroller query fix v2
 # https://bugs.winehq.org/show_bug.cgi?id=38879
 Patch603:       wbemprox_query_v2.patch
-Patch604:       poe-fix.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch700:       %{tkg_url}/use_clock_monotonic.patch#/tkg-use_clock_monotonic.patch
-Patch701:       %{tkg_url}/FS_bypass_compositor.patch#/tkg-FS_bypass_compositor.patch
-Patch702:       %{tkg_url}/GLSL-toggle.patch#/tkg-GLSL-toggle.patch
-Patch703:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve_proton_fullscreen_hack-staging.patch
+Patch701:       %{tkg_url}/poe-fix.patch#/tkg-poe-fix.patch.patch
+Patch702:       %{tkg_url}/FS_bypass_compositor.patch#/tkg-FS_bypass_compositor.patch
+Patch703:       %{tkg_url}/GLSL-toggle.patch#/tkg-GLSL-toggle.patch
+Patch704:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve_proton_fullscreen_hack-staging.patch
+Patch705:       %{tkg_url}/large_address_aware-staging.patch#/large_address_aware-staging.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
@@ -232,25 +235,25 @@ BuildRequires:  icoutils
 BuildRequires:  librsvg2-tools
 %endif
 
-Requires:       wine-common = %{version}-%{release}
-Requires:       wine-desktop = %{version}-%{release}
-Requires:       wine-fonts = %{version}-%{release}
+Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-desktop = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 
 # x86-32 parts
 %ifarch %{ix86} x86_64
 %if 0%{?fedora} || 0%{?rhel} <= 6
-Requires:       wine-core(x86-32) = %{version}-%{release}
-Requires:       wine-capi(x86-32) = %{version}-%{release}
-Requires:       wine-cms(x86-32) = %{version}-%{release}
-Requires:       wine-ldap(x86-32) = %{version}-%{release}
-Requires:       wine-twain(x86-32) = %{version}-%{release}
-Requires:       wine-pulseaudio(x86-32) = %{version}-%{release}
+Requires:       wine-core(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-capi(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-cms(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-ldap(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-twain(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-pulseaudio(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?fedora} >= 10 || 0%{?rhel} == 6
-Requires:       wine-openal(x86-32) = %{version}-%{release}
-Requires:       wine-xaudio2(x86-32) >= %{version}-%{release}
+Requires:       wine-openal(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-xaudio2(x86-32) >= %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 %if 0%{?fedora}
-Requires:       wine-opencl(x86-32) = %{version}-%{release}
+Requires:       wine-opencl(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 %if 0%{?fedora} >= 17
 Requires:       mingw32-wine-gecko = %winegecko
@@ -263,18 +266,18 @@ Requires:       mesa-dri-drivers(x86-32)
 
 # x86-64 parts
 %ifarch x86_64
-Requires:       wine-core(x86-64) = %{version}-%{release}
-Requires:       wine-capi(x86-64) = %{version}-%{release}
-Requires:       wine-cms(x86-64) = %{version}-%{release}
-Requires:       wine-ldap(x86-64) = %{version}-%{release}
-Requires:       wine-twain(x86-64) = %{version}-%{release}
-Requires:       wine-pulseaudio(x86-64) = %{version}-%{release}
+Requires:       wine-core(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-capi(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-cms(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-ldap(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-twain(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-pulseaudio(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
-Requires:       wine-openal(x86-64) = %{version}-%{release}
-Requires:       wine-xaudio2(x86-64) >= %{version}-%{release}
+Requires:       wine-openal(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-xaudio2(x86-64) >= %{?epoch:%{epoch}:}%{version}-%{release}
 %endif 
 %if 0%{?fedora}
-Requires:       wine-opencl(x86-64) = %{version}-%{release}
+Requires:       wine-opencl(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 %if 0%{?fedora} >= 17
 Requires:       mingw64-wine-gecko = %winegecko
@@ -285,16 +288,16 @@ Requires:       mesa-dri-drivers(x86-64)
 
 # ARM parts
 %ifarch %{arm} aarch64
-Requires:       wine-core = %{version}-%{release}
-Requires:       wine-capi = %{version}-%{release}
-Requires:       wine-cms = %{version}-%{release}
-Requires:       wine-ldap = %{version}-%{release}
-Requires:       wine-twain = %{version}-%{release}
-Requires:       wine-pulseaudio = %{version}-%{release}
-Requires:       wine-openal = %{version}-%{release}
+Requires:       wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-capi = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-cms = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-ldap = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-twain = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-pulseaudio = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-openal = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?fedora}
-Requires:       wine-opencl = %{version}-%{release}
-Requires:       wine-xaudio2 >= %{version}-%{release}
+Requires:       wine-opencl = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-xaudio2 >= %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 Requires:       mesa-dri-drivers
 Requires:       samba-winbind-clients
@@ -302,15 +305,15 @@ Requires:       samba-winbind-clients
 
 # aarch64 parts
 %ifarch aarch64
-Requires:       wine-core(aarch-64) = %{version}-%{release}
-Requires:       wine-capi(aarch-64) = %{version}-%{release}
-Requires:       wine-cms(aarch-64) = %{version}-%{release}
-Requires:       wine-ldap(aarch-64) = %{version}-%{release}
-Requires:       wine-twain(aarch-64) = %{version}-%{release}
-Requires:       wine-pulseaudio(aarch-64) = %{version}-%{release}
-Requires:       wine-openal(aarch-64) = %{version}-%{release}
-Requires:       wine-xaudio2(aarch-64) >= %{version}-%{release}
-Requires:       wine-opencl(aarch-64) = %{version}-%{release}
+Requires:       wine-core(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-capi(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-cms(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-ldap(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-twain(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-pulseaudio(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-openal(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-xaudio2(aarch-64) >= %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-opencl(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mingw64-wine-gecko = %winegecko
 Requires:       mesa-dri-drivers(aarch-64)
 %endif
@@ -333,7 +336,7 @@ Requires(posttrans):   %{_sbindir}/alternatives
 Requires(preun):       %{_sbindir}/alternatives
 
 # require -filesystem
-Requires:       wine-filesystem = %{version}-%{release}
+Requires:       wine-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %ifarch %{ix86}
 # CUPS support uses dlopen - rhbz#1367537
@@ -449,7 +452,7 @@ Filesystem directories and basic configuration for wine.
 
 %package common
 Summary:        Common files
-Requires:       wine-core = %{version}-%{release}
+Requires:       wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 BuildArch:      noarch
 
 %description common
@@ -457,13 +460,13 @@ Common wine files and scripts.
 
 %package desktop
 Summary:        Desktop integration features for wine
-Requires:       wine-core = %{version}-%{release}
-Requires:       wine-common = %{version}-%{release}
+Requires:       wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
-Requires:       wine-systemd = %{version}-%{release}
+Requires:       wine-systemd = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 %if 0%{?rhel} == 6
-Requires:       wine-sysvinit = %{version}-%{release}
+Requires:       wine-sysvinit = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 Requires:       hicolor-icon-theme
 BuildArch:      noarch
@@ -477,25 +480,25 @@ Summary:       Wine font files
 BuildArch:     noarch
 # arial-fonts are available with staging-patchset, only.
 %if 0%{?staging}
-Requires:      wine-arial-fonts = %{version}-%{release}
+Requires:      wine-arial-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 %else #{?staging}
-Obsoletes:     wine-arial-fonts <= %{version}-%{release}
+Obsoletes:     wine-arial-fonts <= %{?epoch:%{epoch}:}%{version}-%{release}
 %endif #{?staging}
-Requires:      wine-courier-fonts = %{version}-%{release}
-Requires:      wine-fixedsys-fonts = %{version}-%{release}
-Requires:      wine-small-fonts = %{version}-%{release}
-Requires:      wine-system-fonts = %{version}-%{release}
-Requires:      wine-marlett-fonts = %{version}-%{release}
-Requires:      wine-ms-sans-serif-fonts = %{version}-%{release}
-Requires:      wine-tahoma-fonts = %{version}-%{release}
+Requires:      wine-courier-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:      wine-fixedsys-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:      wine-small-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:      wine-system-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:      wine-marlett-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:      wine-ms-sans-serif-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:      wine-tahoma-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 # times-new-roman-fonts are available with staging-patchset, only.
 %if 0%{?staging}
-Requires:      wine-times-new-roman-fonts = %{version}-%{release}
+Requires:      wine-times-new-roman-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 %else
-Obsoletes:     wine-times-new-roman-fonts <= %{version}-%{release}
+Obsoletes:     wine-times-new-roman-fonts <= %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
-Requires:      wine-symbol-fonts = %{version}-%{release}
-Requires:      wine-wingdings-fonts = %{version}-%{release}
+Requires:      wine-symbol-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:      wine-wingdings-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 # intermediate fix for #593140
 Requires:      liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts
 %if 0%{?fedora} > 12
@@ -570,7 +573,7 @@ Requires:      fontpackages-filesystem
 %package tahoma-fonts
 Summary:       Wine Tahoma font family
 BuildArch:     noarch
-Requires:      wine-filesystem = %{version}-%{release}
+Requires:      wine-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description tahoma-fonts
 %{summary}
@@ -581,7 +584,7 @@ wine-tahoma-fonts-system package.
 Summary:       Wine Tahoma font family system integration
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
-Requires:      wine-tahoma-fonts = %{version}-%{release}
+Requires:      wine-tahoma-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description tahoma-fonts-system
 %{summary}
@@ -590,7 +593,7 @@ Requires:      wine-tahoma-fonts = %{version}-%{release}
 %package times-new-roman-fonts
 Summary:       Wine Times New Roman font family
 BuildArch:     noarch
-Requires:      wine-filesystem = %{version}-%{release}
+Requires:      wine-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description times-new-roman-fonts
 %{summary}
@@ -601,7 +604,7 @@ wine-times-new-roman-fonts-system package.
 Summary:       Wine Times New Roman font family system integration
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
-Requires:      wine-times-new-roman-fonts = %{version}-%{release}
+Requires:      wine-times-new-roman-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description times-new-roman-fonts-system
 %{summary}
@@ -629,7 +632,7 @@ wine-wingdings-fonts-system package.
 Summary:       Wine Wingdings font family system integration
 BuildArch:     noarch
 Requires:      fontpackages-filesystem
-Requires:      wine-wingdings-fonts = %{version}-%{release}
+Requires:      wine-wingdings-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description wingdings-fonts-system
 %{summary}
@@ -637,21 +640,21 @@ Requires:      wine-wingdings-fonts = %{version}-%{release}
 
 %package ldap
 Summary: LDAP support for wine
-Requires: wine-core = %{version}-%{release}
+Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description ldap
 LDAP support for wine
 
 %package cms
 Summary: Color Management for wine
-Requires: wine-core = %{version}-%{release}
+Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description cms
 Color Management for wine
 
 %package twain
 Summary: Twain support for wine
-Requires: wine-core = %{version}-%{release}
+Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 %ifarch %{ix86}
 Requires: sane-backends-libs(x86-32)
 %endif
@@ -667,7 +670,7 @@ Twain support for wine
 
 %package capi
 Summary: ISDN support for wine
-Requires: wine-core = %{version}-%{release}
+Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 %ifarch x86_64
 Requires:       isdn4k-utils(x86-64)
 %endif
@@ -683,7 +686,7 @@ ISDN support for wine
 
 %package devel
 Summary: Wine development environment
-Requires: wine-core = %{version}-%{release}
+Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description devel
 Header, include files and library definition files for developing applications
@@ -691,16 +694,16 @@ with the Wine Windows(TM) emulation libraries.
 
 %package pulseaudio
 Summary: Pulseaudio support for wine
-Requires: wine-core = %{version}-%{release}
+Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 # midi output
-Requires: wine-alsa%{?_isa} = %{version}-%{release}
+Requires: wine-alsa%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description pulseaudio
 This package adds a pulseaudio driver for wine.
 
 %package alsa
 Summary: Alsa support for wine
-Requires: wine-core = %{version}-%{release}
+Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description alsa
 This package adds an alsa driver for wine.
@@ -708,7 +711,7 @@ This package adds an alsa driver for wine.
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %package openal
 Summary: Openal support for wine
-Requires: wine-core = %{version}-%{release}
+Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description openal
 This package adds an openal driver for wine.
@@ -717,7 +720,7 @@ This package adds an openal driver for wine.
 %if 0%{?fedora}
 %package opencl
 Summary: OpenCL support for wine
-Requires: wine-core = %{version}-%{release}
+Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %Description opencl
 This package adds the opencl driver for wine.
@@ -725,8 +728,8 @@ This package adds the opencl driver for wine.
 
 %package xaudio2
 Summary: xaudio2 support for wine
-Requires: wine-core = %{version}-%{release}
-Requires: wine-openal%{?_isa} = %{version}-%{release}
+Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: wine-openal%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description xaudio2
 This package adds xaudio2 support for wine.
@@ -738,9 +741,9 @@ This package adds xaudio2 support for wine.
 %patch599 -p1
 %patch600 -p1
 %patch602 -p1
-%patch604 -p1
 %patch700 -p1
 %patch701 -p1
+%patch702 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -787,8 +790,9 @@ done
 %patch2002 -p1
 %endif
 
-%patch702 -p1
 %patch703 -p1
+%patch704 -p1
+%patch705 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -2394,6 +2398,9 @@ fi
 %endif
 
 %changelog
+* Sun Dec 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc4-100
+- 4.0-rc4
+
 * Sat Dec 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc3-100
 - 4.0-rc3
 

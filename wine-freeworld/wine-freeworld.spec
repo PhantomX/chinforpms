@@ -5,17 +5,17 @@
 #global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
-%global stagingver 4.0-rc3
+%global stagingver 4.0-rc4
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
 
 Name:           wine-freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0~rc3
+Version:        4.0~rc4
 Release:        1%{?dist}
 Summary:        Wine libraries with all codecs support
-Epoch:          1
+Epoch:          2
 
 License:        LGPLv2+
 URL:            http://www.winehq.org/
@@ -54,8 +54,8 @@ BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xproto)
 
-Requires:       wine-core = %{version}
-Requires:       wine-openal = %{version}
+Requires:       wine-core = 1:%{version}
+Requires:       wine-openal = 1:%{version}
 Enhances:       wine
 
 %ifarch x86_64
@@ -64,22 +64,22 @@ Requires:       wine-freeworld(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release
 
 # x86-32 parts
 %ifarch %{ix86} x86_64
-Requires:       wine-core(x86-32) = %{version}
+Requires:       wine-core(x86-32) = 1:%{version}
 %endif
 
 # x86-64 parts
 %ifarch x86_64
-Requires:       wine-core(x86-64) = %{version}
+Requires:       wine-core(x86-64) = 1:%{version}
 %endif
 
 # ARM parts
 %ifarch %{arm} aarch64
-Requires:       wine-core = %{version}
+Requires:       wine-core = 1:%{version}
 %endif
 
 # aarch64 parts
 %ifarch aarch64
-Requires:       wine-core(aarch-64) = %{version}
+Requires:       wine-core(aarch-64) = 1:%{version}
 %endif
 
 Provides:       wine-xaudio2 = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -193,6 +193,9 @@ done
 
 
 %changelog
+* Sun Dec 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc4-1
+- 4.0-rc4
+
 * Sat Dec 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc3-1
 - 4.0-rc3
 
