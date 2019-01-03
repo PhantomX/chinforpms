@@ -1,6 +1,6 @@
-%global commit b282d83258d8a675cc9bb39cb43cb91dce7d746b
+%global commit 12e54baebb29ae090fa5b850addfcdda1fef92e6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20181210
+%global date 20190102
 %global with_snapshot 1
 
 # Enable EGL/GLESV2
@@ -12,7 +12,7 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 67c189ca63c68cba9e0146c98c89b2a8e9a10975
+%global commit1 0adba3e390d12e792bf272519d126113a771d6b1
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -48,7 +48,7 @@
 
 Name:           ppsspp
 Version:        1.7.5
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -299,6 +299,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Jan 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.7.5-2.20190102git12e54ba
+- New snapshot
+
 * Mon Dec 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.5-1.20181210gitb282d83
 - New snapshot
 - Borrow some from RPMFusion

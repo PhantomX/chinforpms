@@ -1,6 +1,6 @@
 diff -up VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk.noup VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk
 --- VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk.noup	2018-12-18 10:59:25.000000000 -0200
-+++ VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk	2018-12-25 19:27:04.550417108 -0200
++++ VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk	2019-01-02 15:22:06.681405759 -0200
 @@ -190,10 +190,6 @@ ifdef VBOX_WITH_VIDEOHWACCEL
  else ifdef VBOX_GUI_USE_QGL
   VirtualBox_DEFS          += VBOX_GUI_USE_QGL
@@ -23,9 +23,20 @@ diff -up VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk.noup Virtua
   if  "$(KBUILD_TYPE)" != "release" || defined(VBOX_GUI_WITH_EXTRADATA_MANAGER_UI)
    VirtualBoxVM_DEFS          += VBOX_GUI_WITH_EXTRADATA_MANAGER_UI
   endif
+@@ -318,10 +310,6 @@ ifdef VBOX_GUI_WITH_SHARED_LIBRARY
+  else ifdef VBOX_GUI_USE_QGL
+   VBoxGlobal_DEFS        += VBOX_GUI_USE_QGL
+  endif
+- ifdef VBOX_WITH_LIBCURL
+-  VBoxGlobal_DEFS        += VBOX_GUI_WITH_NETWORK_MANAGER
+-  VBOX_GUI_WITH_NETWORK_MANAGER := 1
+- endif
+  if  "$(KBUILD_TYPE)" != "release" || defined(VBOX_GUI_WITH_EXTRADATA_MANAGER_UI)
+   VBoxGlobal_DEFS        += VBOX_GUI_WITH_EXTRADATA_MANAGER_UI
+  endif
 diff -up VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp.noup VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp
 --- VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp.noup	2018-12-18 10:59:40.000000000 -0200
-+++ VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp	2018-12-25 19:25:10.316428897 -0200
++++ VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp	2019-01-02 15:21:31.037402242 -0200
 @@ -43,9 +43,9 @@
  # include "UIModalWindowManager.h"
  # include "UIExtraDataManager.h"

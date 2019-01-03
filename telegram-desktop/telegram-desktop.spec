@@ -4,14 +4,14 @@
 %global apihash dfbe1bc42dc9d20507e17d1814cc2f0a
 
 # Git revision of crl...
-%global commit1 4291015efab76bda5886a56b5007f4531be17d46
+%global commit1 9b7c6b5d9f1b59d2160bf6e9c4e74510f955efe1
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 # Decrease debuginfo verbosity to reduce memory consumption...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.5.4
+Version:        1.5.6
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -165,6 +165,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
+* Wed Jan 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.6-100
+- 1.5.6
+- Update crl
+
 * Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.4-100
 - 1.5.4
 

@@ -13,8 +13,8 @@
 # major version number, while the kernel module abi is not guaranteed
 # to be stable. This is so that we force the module update in sync with
 # userspace.
-#global prerel 106108
-%global prereltag %{?prerel:-%(awk 'BEGIN {print toupper("%{prerel}")}')}
+#global prerel RC1
+%global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 #global bugfix a
 
 %ifarch x86_64
@@ -22,12 +22,7 @@
 %else
     %bcond_with webservice
 %endif
-# el7 doesn't have all texlive requirements
-%if 0%{?rhel}
-    %bcond_with docs
-%else
-    %bcond_without docs
-%endif
+%bcond_with docs
 %bcond_without vnc
 %bcond_with legacy_vboxvideo_drv
 %if 0%{?fedora} > 27
@@ -51,6 +46,7 @@ Requires:   %{name}-server%{?isa} = %{version}
 Obsoletes:  %{name}-qt
 
 Source0:    https://download.virtualbox.org/virtualbox/%{version}%{?prereltag}/VirtualBox-%{version}%{?bugfix}%{?prereltag}.tar.bz2
+Source1:    https://download.virtualbox.org/virtualbox/%{version}%{?prereltag}/UserManual.pdf#/UserManual-%{version}%{?prereltag}.pdf
 Source3:    VirtualBox-60-vboxdrv.rules
 Source4:    VirtualBox.modules
 Source5:    VirtualBox-60-vboxguest.rules
@@ -251,7 +247,7 @@ which is generated during the build of main package.
 
 
 %prep
-%setup -q
+%setup -q -n %{name}-%{version}%{?prereltag}
 # add Mageia images
 cp -a %{SOURCE20} %{SOURCE21} src/VBox/Frontends/VirtualBox/images/
 
@@ -309,6 +305,10 @@ cat %{SOURCE102} \
   --disable-docs \
 %endif
 
+%if !%{with docs}
+cp %{SOURCE1} UserManual.pdf
+%endif
+
 #--enable-vde
 #--build-headless --build-libxml2
 #--disable-java
@@ -339,7 +339,6 @@ kmk %{_smp_mflags}    \
     VBOX_WITH_EXTPACK_VBOXDTRACE= \
     VBOX_WITH_VBOX_IMG=1 \
     VBOX_WITH_SYSFS_BY_DEFAULT=1 \
-    VBOX_XCURSOR_LIBS="Xcursor Xext X11 GL"             \
     VBOX_USE_SYSTEM_XORG_HEADERS=1 \
     VBOX_USE_SYSTEM_GL_HEADERS=1 \
 %{!?legacy_vboxvideo_drv:   VBOX_NO_LEGACY_XORG_X11=1 } \
@@ -351,11 +350,11 @@ kmk %{_smp_mflags}    \
     SDK_VBOX_ZLIB_INCS= \
 %{?with_docs:   VBOX_WITH_DOCS=1 } \
     VBOX_JAVA_HOME=%{_prefix}/lib/jvm/java \
-    VBOX_BUILD_PUBLISHER=%{publisher} \
     VBOX_GUI_WITH_NETWORK_MANAGER= \
     VBOX_WITH_UPDATE_REQUEST= \
-    VBOX_PATH_DOCBOOK_DTD=/usr/share/sgml/docbook/xml-dtd-4.5/ \
-    VBOX_PATH_DOCBOOK=/usr/share/sgml/docbook/xsl-stylesheets/
+    VBOX_BUILD_PUBLISHER=%{publisher}
+
+#     VBOX_XCURSOR_LIBS="Xcursor Xext X11 GL"             \
 
 # doc/manual/fr_FR/ missing man_VBoxManage-debugvm.xml and man_VBoxManage-extpack.xml
 #    VBOX_WITH_DOCS_TRANSLATIONS=1 \
@@ -432,6 +431,8 @@ install -p -m 0755 -t %{buildroot}%{_libdir}/virtualbox \
     obj/bin/vboxshell.py    \
     obj/bin/vbox-img    \
     obj/bin/VBoxDTrace    \
+    obj/bin/VBoxBugReport \
+    obj/bin/VirtualBoxVM \
 %if %{with webservice}
     obj/bin/vboxwebsrv  \
     obj/bin/webtest     \
@@ -460,19 +461,11 @@ ln -s VBox %{buildroot}%{_bindir}/vboxwebsrv
 %endif
 ln -s ../..%{_libdir}/virtualbox/vbox-img %{buildroot}%{_bindir}/vbox-img
 
-
 # rdesktop-vrdp
-install -p -m 0755 obj/bin/rdesktop-vrdp %{buildroot}%{_libdir}/virtualbox/
+install -p -m 0755 obj/bin/rdesktop-vrdp %{buildroot}%{_bindir}/
 cp -rp obj/bin/rdesktop-vrdp-keymaps %{buildroot}%{_libdir}/virtualbox/
+cp -rp obj/bin/rdesktop-vrdp.tar.gz %{buildroot}%{_libdir}/virtualbox/
 ln -sf rdesktop-vrdp-keymaps %{buildroot}%{_libdir}/virtualbox/keymaps
-
-cat > %{buildroot}%{_bindir}/rdesktop-vrdp <<'EOF'
-#!/bin/sh
-set -e
-cd %{_libdir}/virtualbox
-exec %{_libdir}/virtualbox/rdesktop-vrdp "$@"
-EOF
-chmod 0755 %{buildroot}%{_bindir}/rdesktop-vrdp
 
 # Components, preserve symlinks
 cp -a obj/bin/components/* %{buildroot}%{_libdir}/virtualbox/components/
@@ -684,6 +677,8 @@ getent passwd vboxadd >/dev/null || \
 %doc doc/*cpp doc/VMM
 %if %{with docs}
 %doc obj/bin/UserManual*.pdf
+%else
+%doc UserManual.pdf
 %endif
 %license COPYING*
 %{_bindir}/VBoxManage
@@ -706,7 +701,6 @@ getent passwd vboxadd >/dev/null || \
 %{_bindir}/VBoxTunctl
 %dir %{_libdir}/virtualbox
 %{_libdir}/virtualbox/*.[^p]*
-%exclude %{_libdir}/virtualbox/VirtualBox.so
 %exclude %{_libdir}/virtualbox/VBoxDbg.so
 %exclude %{_libdir}/virtualbox/VBoxPython2_7.so
 %{_libdir}/virtualbox/components
@@ -720,6 +714,7 @@ getent passwd vboxadd >/dev/null || \
 %{_libdir}/virtualbox/SUPUninstall
 %{_libdir}/virtualbox/VBoxAutostart
 %{_libdir}/virtualbox/VBoxVMMPreload
+%{_libdir}/virtualbox/VBoxBugReport
 %{_libdir}/virtualbox/VBoxDTrace
 %{_libdir}/virtualbox/vbox-img
 # This permissions have to be here, before generator of debuginfo need
@@ -730,7 +725,8 @@ getent passwd vboxadd >/dev/null || \
 %attr(4511,root,root) %{_libdir}/virtualbox/VBoxSDL
 %attr(4511,root,root) %{_libdir}/virtualbox/VBoxNetDHCP
 %attr(4511,root,root) %{_libdir}/virtualbox/VBoxNetAdpCtl
-%attr(4511,root,root) %{_libdir}/virtualbox/VirtualBox
+%attr(4511,root,root) %{_libdir}/virtualbox/VirtualBoxVM
+%{_libdir}/virtualbox/VirtualBox
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/icons/hicolor/*/mimetypes/*.png
 %{_datadir}/icons/hicolor/scalable/mimetypes/virtualbox.svg
@@ -741,9 +737,9 @@ getent passwd vboxadd >/dev/null || \
 %{_prefix}/lib/modules-load.d/%{name}.conf
 %{_prefix}/lib/udev/VBoxCreateUSBNode.sh
 %{_bindir}/rdesktop-vrdp
-%{_libdir}/virtualbox/rdesktop-vrdp
 %{_libdir}/virtualbox/keymaps
 %{_libdir}/virtualbox/rdesktop-vrdp-keymaps
+%{_libdir}/virtualbox/rdesktop-vrdp.tar.gz
 %{_datadir}/virtualbox
 %{_bindir}/vboxautostart
 %{_unitdir}/vboxautostart.service
@@ -755,7 +751,6 @@ getent passwd vboxadd >/dev/null || \
 %{_bindir}/VirtualBox
 %{_bindir}/virtualbox
 %{_libdir}/virtualbox/VBoxTestOGL
-%{_libdir}/virtualbox/VirtualBox.so
 %{_libdir}/virtualbox/VBoxDbg.so
 %{_datadir}/virtualbox/nls
 %{_datadir}/pixmaps/*.png
@@ -807,8 +802,9 @@ getent passwd vboxadd >/dev/null || \
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
-* Tue Dec 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 6.0.0-100
+* Wed Jan 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 6.0.0-100
 - 6.0.0
+- Sync with RPMFusion
 
 * Fri Nov 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.2.22-100.chinfo
 - 5.2.22
