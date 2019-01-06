@@ -5,6 +5,8 @@ Summary:        Bluecurve icon theme
 Version:        8.0.2
 Release:        103%{?dist}
 
+Epoch:          1
+
 License:        GPL+
 # There is no official upstream yet
 Source0:        http://src.fedoraproject.org/repo/pkgs/%{name}/%{name}-%{version}.tar.bz2/%{bit_hash}/%{name}-%{version}.tar.bz2

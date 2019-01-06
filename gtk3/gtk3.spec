@@ -28,6 +28,8 @@ Version:        3.24.2
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
+Epoch:          1
+
 License:        LGPLv2+
 URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
@@ -122,7 +124,7 @@ Requires:      dconf%{?_isa}
 
 # gtk3 itself includes the Adwaita theme now
 Obsoletes:      adwaita-gtk3-theme < 3.13.3
-Provides:       adwaita-gtk3-theme = %{version}-%{release}
+Provides:       adwaita-gtk3-theme = %{?epoch:%{epoch}:}%{version}-%{release}
 
 # gtk3 no longer provides the GtkThemeEngine interface used there
 Obsoletes:      gtk3-engines <= 2.91.5-5.fc15
@@ -151,7 +153,7 @@ applications, the overall memory consumption is reduced as well.
 
 %package immodules
 Summary:         Input methods for GTK+
-Requires:        gtk3%{?_isa} = %{version}-%{release}
+Requires:        gtk3%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 # for im-cedilla.conf
 Requires:        gtk2-immodules%{?_isa}
 
@@ -161,14 +163,14 @@ are shipped as part of GTK+ 3.
 
 %package immodule-xim
 Summary:        XIM support for GTK+
-Requires:       gtk3%{?_isa} = %{version}-%{release}
+Requires:       gtk3%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description immodule-xim
 The gtk3-immodule-xim package contains XIM support for GTK+ 3.
 
 %package devel
 Summary:        Development files for GTK+
-Requires:       gtk3%{?_isa} = %{version}-%{release}
+Requires:       gtk3%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      gtk3-engines-devel <= 2.91.5-5.fc15
 
 %description devel
@@ -179,7 +181,7 @@ gtk3-devel-docs package.
 
 %package devel-docs
 Summary:        Developer documentation for GTK+
-Requires:       gtk3 = %{version}-%{release}
+Requires:       gtk3 = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description devel-docs
 This package contains developer documentation for version 3 of the GTK+
@@ -187,7 +189,7 @@ widget toolkit.
 
 %package tests
 Summary:        Tests for the %{name} package
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description tests
 The %{name}-tests package contains tests that can be used to verify

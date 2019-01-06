@@ -10,7 +10,7 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 4.0-rc4
+%global stagingver 4.0-rc5
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
@@ -20,7 +20,7 @@
 %global pbarel v
 %global pbapkg knobs_and_switches-
 %endif
-%global tkg_id c96816ffc6e8a0b5937685ede8d474944926092a
+%global tkg_id 0624b89240b1bae5d01ca5250c074ee7180f3f82
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -38,7 +38,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0~rc4
+Version:        4.0~rc5
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -824,6 +824,9 @@ export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//' -e '
 # ARM64 now requires clang
 # https://source.winehq.org/git/wine.git/commit/8fb8cc03c3edb599dd98f369e14a08f899cbff95
 export CC="/usr/bin/clang"
+# Fedora's default compiler flags now conflict with what clang supports
+# https://bugzilla.redhat.com/show_bug.cgi?id=1658311
+export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`" 
 %endif
 
 %configure \
@@ -2398,6 +2401,9 @@ fi
 %endif
 
 %changelog
+* Sat Jan 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc5-100
+- 4.0-rc5
+
 * Sun Dec 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.0~rc4-100
 - 4.0-rc4
 
