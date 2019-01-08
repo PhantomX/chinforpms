@@ -1,44 +1,60 @@
 %undefine _hardened_build
 %global winecommonver 3.0
 
-Name:           wine-nine
-Version:        3.0_2
-Release:        2%{?dist}
+%global commit 136dca65e0afa96be752ef6b8385a693bfe18279
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20190107
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
+# Set to 1 if will be used with wine staging
+%global staging 1
+
+%global pkgname nine
+
+Name:           wine-%{pkgname}
+Version:        0.1.0.0
+Release:        1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
-License:        LGPL-2.0
-URL:            https://github.com/iXit/wine
+Epoch:          1
 
-%global rversion %(c=%{version}; echo ${c//_/-})
-Source0:        https://github.com/iXit/wine/archive/%{name}-%{rversion}.tar.gz
+License:        LGPLv2+
+URL:            https://github.com/dhewg/nine
+
+%if 0%{?with_snapshot}
+Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+%else
+Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+%endif
 Source1:        ninewinecfg
 Source2:        wineninecfg
 
 Source100:      wine-ninecfg.desktop
 
-Patch0:       %{url}/commit/b372ba529fae41f3a8a255b3d080b3e0e9576d31.patch#/%{name}-gh-b372ba529fae41f3a8a255b3d080b3e0e9576d31.patch
-Patch1:       %{url}/commit/9954579ce24c6fbee26daa23bfce7b75bf9bf5ff.patch#/%{name}-gh-9954579ce24c6fbee26daa23bfce7b75bf9bf5ff.patch
-Patch2:       %{url}/commit/3d9f75de8ab938aa9bf47ee86f4b8924a0981628.patch#/%{name}-gh-3d9f75de8ab938aa9bf47ee86f4b8924a0981628.patch
-Patch3:       %{url}/commit/a30030646c1dd97b5aacfce870427cb8128aab16.patch#/%{name}-gh-a30030646c1dd97b5aacfce870427cb8128aab16.patch
-Patch4:       %{url}/commit/295876b7e19600f3015cd51b8f4a58aef60e4950.patch#/%{name}-gh-295876b7e19600f3015cd51b8f4a58aef60e4950.patch
-Patch5:       %{url}/commit/6a5e13e985ed2a34e0f27f06c57c79190262e7bf.patch#/%{name}-gh-6a5e13e985ed2a34e0f27f06c57c79190262e7bf.patch
+Patch0:         %{name}-optflags.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
-BuildRequires:  bison
-BuildRequires:  flex
-BuildRequires:  autoconf
-BuildRequires:  gcc-c++
+BuildRequires:  gcc
+BuildRequires:  meson
 BuildRequires:  desktop-file-utils
-BuildRequires:  llvm-devel
 BuildRequires:  pkgconfig(d3d)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
+BuildRequires:  pkgconfig(xcb-dri3)
+BuildRequires:  pkgconfig(xcb-present)
+BuildRequires:  pkgconfig(xcb-xfixes)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xproto)
+BuildRequires:  wine-devel
 
 Requires:       wine-common >= %{winecommonver}
 Requires:       wine-desktop >= %{winecommonver}
@@ -46,105 +62,77 @@ Enhances:       wine
 
 Requires:       mesa-dri-drivers%{?_isa}
 Requires:       mesa-libd3d%{?_isa}
-Requires:       libxcb%{?_isa}
-Requires:       libX11%{?_isa}
-Requires:       libXext%{?_isa}
-Provides:       wine-nine%{?_isa} = %{version}-%{release}
-Obsoletes:      wine-nine%{?_isa} < %{version}-%{release}
+Provides:       wine-nine%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      wine-nine%{?_isa} < %{?epoch:%{epoch}:}%{version}-%{release}
 
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
 %ifarch x86_64
-Requires:       wine-nine(x86-32) = %{version}-%{release}
+Requires:       wine-nine(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
-Provides:       ninewinecfg.exe.so%{?_isa} = %{version}
-Provides:       d3d9-nine.dll.so%{?_isa} = %{version}
+Provides:       ninewinecfg.exe.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
+Provides:       d3d9-nine.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
 
 %description
 %{summary} and tool to setting it.
 
 %prep
-%autosetup -n wine-%{name}-%{rversion} -p1
+%if 0%{?with_snapshot}
+%autosetup -n %{pkgname}-%{commit} -p1
+%else
+%autosetup -n %{pkgname}-%{version} -p1
+%endif
 
-sed -i \
-  -e 's|-lncurses |-lncursesw |g' \
-  -e 's|"-lncurses"|"-lncursesw"|g' \
-  -e 's|OpenCL/opencl.h|CL/opencl.h|g' \
-  configure
+%if 0%{?staging}
+sed -e 's|DWINE_STAGING=0|DWINE_STAGING=1|g' -i meson.build
+%endif
 
-%build
+sed -e "/strip =/s|=.*|= 'true'|g" -i tools/cross-wine%{__isa_bits}.in
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-export TEMP_CFLAGS="`echo %{build_cflags} | sed -e 's/-O2/-O1/'`"
-export CFLAGS="`echo $TEMP_CFLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+TEMP_CFLAGS="`echo %{build_cflags} | sed -e 's/-O2/-O1/'`"
+TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed "s| |', '|g"`"
 
-export CFLAGS="$CFLAGS -DWINE_STAGING=1"
+TEMP_LDFLAGS="`echo %{build_ldflags} | sed "s| |', '|g"`"
 
-%configure \
-  --sysconfdir=%{_sysconfdir}/wine \
-  --x-includes=%{_includedir} --x-libraries=%{_libdir} \
-  --without-hal \
-  --with-x \
-%ifarch x86_64 aarch64
-  --enable-win64 \
-%endif
-  --with-d3d9-nine \
-  --disable-tests \
-  --without-alsa \
-  --without-capi \
-  --without-cms \
-  --without-coreaudio \
-  --without-cups \
-  --without-dbus \
-  --without-freetype \
-  --without-gnutls \
-  --without-gsm \
-  --without-gstreamer \
-  --without-jpeg \
-  --without-ldap \
-  --without-mpg123 \
-  --without-netapi  \
-  --without-opencl \
-  --without-openal \
-  --without-osmesa \
-  --without-oss  \
-  --without-pcap \
-  --without-png \
-  --without-pulse \
-  --without-sane \
-  --without-sdl \
-  --without-tiff \
-  --without-udev \
-  --without-v4l \
-  --without-xinput \
-  --without-xinput2 \
-  --without-xml \
-  --without-xslt \
-  --without-zlib
+sed -e "s|RPM_OPT_FLAGS|$TEMP_CFLAGS|g" -i tools/cross-wine%{__isa_bits}.in
+sed -e "s|RPM_LD_FLAGS|$TEMP_LDFLAGS|g" -i tools/cross-wine%{__isa_bits}.in
 
-make include
-make %{?_smp_mflags} TARGETFLAGS="" __builddeps__
-make %{?_smp_mflags} TARGETFLAGS="" d3d9-nine.dll.so -C dlls/d3d9-nine
-make %{?_smp_mflags} TARGETFLAGS="" d3d9-nine.dll.fake -C dlls/d3d9-nine
-make %{?_smp_mflags} TARGETFLAGS="" programs/ninewinecfg
+./bootstrap.sh
+
+%build
+
+meson \
+  --cross-file tools/cross-wine%{__isa_bits} \
+  --buildtype "release" \
+  %{_target_platform}
+
+pushd %{_target_platform}
+ninja -v %{?_smp_mflags}
+
+winebuild --dll --fake-module -E ../d3d9-nine/d3d9.spec -o d3d9-nine.dll.fake
+winebuild --exe --fake-module ninewinecfg/ninewinecfg.res -o ninewinecfg.exe.fake
+popd
+
 
 %install
 mkdir -p %{buildroot}/%{_libdir}/wine
 mkdir -p %{buildroot}/%{_libdir}/wine/fakedlls
 
-install -pm0755 programs/ninewinecfg/ninewinecfg.exe.so \
+install -pm0755 %{_target_platform}/ninewinecfg/ninewinecfg.exe.so \
   %{buildroot}/%{_libdir}/wine/ninewinecfg.exe.so
-install -pm0755 programs/ninewinecfg/ninewinecfg.exe.fake \
+install -pm0755 %{_target_platform}/ninewinecfg.exe.fake \
   %{buildroot}/%{_libdir}/wine/fakedlls/ninewinecfg.exe
 
-install -pm0755 dlls/d3d9-nine/d3d9-nine.dll.so \
+install -pm0755 %{_target_platform}/d3d9-nine/d3d9-nine.dll.so \
   %{buildroot}/%{_libdir}/wine/d3d9-nine.dll.so
-install -pm0755 dlls/d3d9-nine/d3d9-nine.dll.fake \
+install -pm0755 %{_target_platform}/d3d9-nine.dll.fake \
   %{buildroot}/%{_libdir}/wine/fakedlls/d3d9-nine.dll
 
 mkdir -p %{buildroot}/%{_bindir}
@@ -170,7 +158,11 @@ desktop-file-install \
 %{_libdir}/wine/fakedlls/ninewinecfg.exe
 %{_datadir}/applications/wine-ninecfg.desktop
 
+
 %changelog
+* Mon Jan 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.1.0.0-1.20190107git136dca6
+- Change to Nine Standalone
+
 * Sat Dec 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.0_2-2
 - Add upstream patches
 

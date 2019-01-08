@@ -39,7 +39,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.0~rc5
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -849,7 +849,7 @@ make %{?_smp_mflags} TARGETFLAGS=""
 %install
 
 %makeinstall \
-        includedir=%{buildroot}%{_includedir}/wine \
+        includedir=%{buildroot}%{_includedir} \
         sysconfdir=%{buildroot}%{_sysconfdir}/wine \
         dlldir=%{buildroot}%{_libdir}/wine \
         LDCONFIG=/bin/true \
@@ -2401,6 +2401,9 @@ fi
 %endif
 
 %changelog
+* Mon Jan 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc5-101
+- Fix includedir
+
 * Sat Jan 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc5-100
 - 4.0-rc5
 
