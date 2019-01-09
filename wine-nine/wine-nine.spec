@@ -17,7 +17,7 @@
 
 Name:           wine-%{pkgname}
 Version:        0.1.0.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          1
@@ -116,7 +116,7 @@ meson \
 pushd %{_target_platform}
 ninja -v %{?_smp_mflags}
 
-winebuild --dll --fake-module -E ../d3d9-nine/d3d9.spec -o d3d9-nine.dll.fake
+winebuild --dll --fake-module -E ../d3d9-nine/d3d9.spec -F d3d9-nine.dll -o d3d9-nine.dll.fake
 winebuild --exe --fake-module ninewinecfg/ninewinecfg.res -o ninewinecfg.exe.fake
 popd
 
@@ -137,7 +137,9 @@ install -pm0755 %{_target_platform}/d3d9-nine.dll.fake \
 
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:1} %{buildroot}/%{_bindir}/ninewinecfg
+%if 0%{?staging}
 install -pm0755 %{S:2} %{buildroot}/%{_bindir}/wineninecfg
+%endif
 
 mkdir -p %{buildroot}%{_datadir}/applications
 # install desktop file
@@ -149,9 +151,12 @@ desktop-file-install \
 %postun -p /sbin/ldconfig
 
 %files
-%license COPYING.LIB
+%doc README.rst
+%license COPYING.LIB LICENSE
 %{_bindir}/ninewinecfg
+%if 0%{?staging}
 %{_bindir}/wineninecfg
+%endif
 %{_libdir}/wine/d3d9-nine.dll.so
 %{_libdir}/wine/ninewinecfg.exe.so
 %{_libdir}/wine/fakedlls/d3d9-nine.dll
@@ -160,6 +165,9 @@ desktop-file-install \
 
 
 %changelog
+* Mon Jan 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.1.0.0-2.20190107git136dca6
+- Fix fake dll module name
+
 * Mon Jan 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.1.0.0-1.20190107git136dca6
 - Change to Nine Standalone
 

@@ -1,0 +1,28 @@
+diff -up Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/build/unix/mozconfig.linux.pgo Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/build/unix/mozconfig.linux
+--- Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/build/unix/mozconfig.linux.pgo	2018-12-17 10:39:21.000000000 -0200
++++ Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/build/unix/mozconfig.linux	2019-01-08 11:26:46.625843204 -0200
+@@ -17,6 +17,15 @@ then
+   CC="$TOOLTOOL_DIR/gcc/bin/gcc"
+   CXX="$TOOLTOOL_DIR/gcc/bin/g++"
+ 
++  if [ -n "$MOZ_PGO" ]; then
++#      if [ -z "$USE_ARTIFACT" ]; then
++#          ac_add_options --enable-lto
++#      fi
++      export AR="$topsrcdir/gcc/bin/gcc-ar"
++      export NM="$topsrcdir/gcc/bin/gcc-nm"
++      export RANLIB="$topsrcdir/gcc/bin/gcc-ranlib"
++  fi
++
+   # We want to make sure we use binutils and other binaries in the tooltool
+   # package.
+   mk_add_options PATH="$TOOLTOOL_DIR/gcc/bin:$PATH"
+diff -up Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/extensions/spellcheck/src/moz.build.pgo Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/extensions/spellcheck/src/moz.build
+--- Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/extensions/spellcheck/src/moz.build.pgo	2018-12-17 10:39:21.000000000 -0200
++++ Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/extensions/spellcheck/src/moz.build	2019-01-08 11:27:26.673823140 -0200
+@@ -32,3 +32,5 @@ EXPORTS.mozilla += [
+ 
+ if CONFIG['GNU_CXX']:
+     CXXFLAGS += ['-Wno-error=shadow']
++
++CXXFLAGS += ['-fno-devirtualize']

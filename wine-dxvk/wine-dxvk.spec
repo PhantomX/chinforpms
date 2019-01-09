@@ -1,125 +1,140 @@
-%?mingw_package_header
-
-%global debug_package %{nil}
-%global _build_id_links none
-%global __strip /bin/true
-
 %undefine _hardened_build
 
-%bcond_with tests
+%global winecommonver 3.10
 
-%global srcname dxvk
-%global dxvk_dir %{_datadir}/wine/%{srcname}/%{__isa_bits}
+%global pkgname dxvk
 
-%global winever 3.10
-
-Name:           mingw-wine-%{srcname}
-Version:        0.92
+Name:           wine-%{pkgname}
+Version:        0.94
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
-URL:            https://github.com/doitsujin/dxvk
+URL:            https://github.com/doitsujin/%{pkgname}
 
-Source0:        https://github.com/doitsujin/%{srcname}/archive/v%{version}/%{srcname}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        README.dxvk
 Source2:        winedxvkcfg
+
+Patch0:         %{name}-optflags.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  mingw%{__isa_bits}-filesystem
-BuildRequires:  mingw%{__isa_bits}-gcc
-BuildRequires:  mingw%{__isa_bits}-gcc-c++
-BuildRequires:  mingw%{__isa_bits}-winpthreads-static
 
 # glslangValidator
 BuildRequires:  glslang
 BuildRequires:  meson
-BuildRequires:  wine-core >= %{winever}
-BuildRequires:  wine-devel >= %{winever}
+BuildRequires:  wine-devel >= %{winecommonver}
+
+Requires:       wine-common >= %{winecommonver}
+Requires:       wine-desktop >= %{winecommonver}
+Enhances:       wine
+
+Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}%{?_isa} < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      mingw%{__isa_bits}-%{name} < %{?epoch:%{epoch}:}%{version}-%{release}
+
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
+%ifarch x86_64
+Requires:       %{name}(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
+%endif
+
+Provides:       dxgi_vk.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
+Provides:       d3d11_vk.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
+Provides:       d3d10_vk.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
+Provides:       d3d10_1_vk.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
+Provides:       d3d10core_vk.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
+
 
 %description
 Provides a Vulkan-based implementation of DXGI and D3D11 in order to
 run 3D applications on Linux using Wine.
 
-%package        -n mingw%{__isa_bits}-wine-%{srcname}
-Summary:        Vulkan-based D3D11 implementation for Linux / %{__isa_bits} bit Wine
-BuildArch:      noarch
-Enhances:       wine
-Requires:       wine-common
-%if %{__isa_bits} == 32
-Requires:       wine-core(x86-32) >= %{winever}
-%endif
-%if %{__isa_bits} == 64
-Requires:       wine-core(x86-64) >= %{winever}
-Requires:       mingw32-wine-%{srcname} = %{version}-%{release}
-%endif
-
-%description   -n mingw%{__isa_bits}-wine-%{srcname}
-Provides a Vulkan-based implementation of DXGI and D3D11 in order to
-run 3D applications on Linux using Wine.
 
 %prep
-%autosetup -n %{srcname}-%{version}
+%autosetup -n %{pkgname}-%{version} -p1
 
 cp %{S:1} .
+
+sed -e "/strip =/s|=.*|= 'true'|g" -i build-wine*.txt
+
+# disable fortify as it breaks wine
+# http://bugs.winehq.org/show_bug.cgi?id=24606
+# http://bugs.winehq.org/show_bug.cgi?id=25073
+# https://bugzilla.redhat.com/show_bug.cgi?id=1406093
+TEMP_CFLAGS="`echo %{build_cxxflags} | sed -e 's/-O2/-O1/'`"
+TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed "s| |', '|g"`"
+
+TEMP_LDFLAGS="`echo %{build_ldflags} | sed "s| |', '|g"`"
+
+sed \
+  -e "s|RPM_OPT_FLAGS|$TEMP_CFLAGS|g" \
+  -e "s|RPM_LD_FLAGS|$TEMP_LDFLAGS|g" \
+  -i build-wine%{__isa_bits}.txt
 
 %build
 
 meson \
-  --cross-file build-win%{__isa_bits}.txt \
+  --cross-file build-wine%{__isa_bits}.txt \
   --buildtype "release" \
-  --strip \
-  %{?with_tests:-Denable_tests=true} \
-  build.%{__isa_bits}
+  %{_target_platform}
 
-pushd build.%{__isa_bits}
+pushd %{_target_platform}
 ninja -v %{?_smp_mflags}
+
+for spec in dxgi d3d11 ;do
+  winebuild --dll --fake-module -E ../src/${spec}/${spec}.spec -F ${spec}_vk.dll -o ${spec}_vk.dll.fake
+done
+for spec in d3d10 d3d10core d3d10_1 ;do
+  winebuild --dll --fake-module -E ../src/d3d10/${spec}.spec -F ${spec}_vk.dll -o ${spec}_vk.dll.fake
+done
 popd
 
 %install
-mkdir -p %{buildroot}%{dxvk_dir}
+mkdir -p %{buildroot}/%{_libdir}/wine
+mkdir -p %{buildroot}/%{_libdir}/wine/fakedlls
 
-install -pm0644 build.%{__isa_bits}/src/dxgi/dxgi.dll \
-  %{buildroot}%{dxvk_dir}/dxgi_vk.dll
-
-install -pm0644 build.%{__isa_bits}/src/d3d11/d3d11.dll \
-  %{buildroot}%{dxvk_dir}/d3d11_vk.dll
+for dll in dxgi d3d11 ;do
+  install -pm0755 %{_target_platform}/src/${dll}/${dll}.dll.so \
+    %{buildroot}%{_libdir}/wine/${dll}_vk.dll.so
+done
 
 for dll in d3d10 d3d10_1 d3d10core ;do
-  install -pm0644 build.%{__isa_bits}/src/d3d10/${dll}.dll \
-    %{buildroot}%{dxvk_dir}/${dll}_vk.dll
+  install -pm0755 %{_target_platform}/src/d3d10/${dll}.dll.so \
+    %{buildroot}%{_libdir}/wine/${dll}_vk.dll.so
 done
 
-%if %{with tests}
-for file in \
-  tests/d3d11/d3d11-{compute,triangle}.exe \
-  tests/dxbc/dxbc-{compiler,disasm}.exe tests/dxbc/hlsl-compiler.exe \
-  tests/dxgi/dxgi-factory.exe
-do
-  install -pm0755 build.%{__isa_bits}/${file} %{buildroot}%{dxvk_dir}/
+for fake in dxgi d3d11 d3d10 d3d10_1 d3d10core ;do
+  install -pm0755 %{_target_platform}/${fake}_vk.dll.fake \
+    %{buildroot}/%{_libdir}/wine/fakedlls/${fake}_vk.dll
 done
-%{mingw_strip} --strip-unneeded %{buildroot}%{dxvk_dir}/*.exe
-%endif
-
-%{mingw_strip} --strip-unneeded %{buildroot}%{dxvk_dir}/*.dll
 
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
-%files -n mingw%{__isa_bits}-wine-%{srcname}
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
+
+%files
 %license LICENSE
 %doc README.md README.dxvk
 %{_bindir}/winedxvkcfg
-%{dxvk_dir}/*.dll
-%if %{with tests}
-%{dxvk_dir}/*.exe
-%endif
+%{_libdir}/wine/*.dll.so
+%{_libdir}/wine/fakedlls/*.dll
 
 
 %changelog
+* Tue Jan 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.94-1
+- 0.94
+- libwine renamed build
+
 * Mon Nov 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.92-1
 - 0.92
 

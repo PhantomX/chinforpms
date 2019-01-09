@@ -1,0 +1,80 @@
+diff -up Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/js/src/old-configure.in.1516081 Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/js/src/old-configure.in
+--- Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/js/src/old-configure.in.1516081	2018-12-17 10:39:21.000000000 -0200
++++ Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/js/src/old-configure.in	2019-01-08 11:37:40.962313001 -0200
+@@ -1829,7 +1829,7 @@ dnl Test for profiling options
+ dnl Under gcc 3.4+, use -fprofile-generate/-fprofile-use
+ 
+ _SAVE_CFLAGS="$CFLAGS"
+-CFLAGS="$CFLAGS -fprofile-generate -fprofile-correction"
++CFLAGS="$CFLAGS -fprofile-generate -fprofile-correction -DMOZ_PROFILE_INSTRUMENTATION"
+ 
+ AC_MSG_CHECKING([whether C compiler supports -fprofile-generate])
+ AC_TRY_COMPILE([], [return 0;],
+@@ -1839,7 +1839,7 @@ AC_MSG_RESULT([$result])
+ 
+ if test $result = "yes"; then
+   PROFILE_GEN_LDFLAGS="-fprofile-generate"
+-  PROFILE_USE_CFLAGS="-fprofile-use -fprofile-correction -Wcoverage-mismatch"
++  PROFILE_USE_CFLAGS="-fprofile-use -fprofile-correction -Wcoverage-mismatch -DMOZ_PROFILE_INSTRUMENTATION"
+   PROFILE_USE_LDFLAGS="-fprofile-use"
+ fi
+ 
+diff -up Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/nsprpub/configure.in.1516081 Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/nsprpub/configure.in
+--- Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/nsprpub/configure.in.1516081	2018-12-17 10:39:21.000000000 -0200
++++ Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/nsprpub/configure.in	2019-01-08 11:37:49.866304640 -0200
+@@ -756,7 +756,7 @@ dnl Test for profiling options
+ dnl Under gcc 3.4+, use -fprofile-generate/-fprofile-use
+ 
+ _SAVE_CFLAGS="$CFLAGS"
+-CFLAGS="$CFLAGS -fprofile-generate -fprofile-correction"
++CFLAGS="$CFLAGS -fprofile-generate -fprofile-correction -DMOZ_PROFILE_INSTRUMENTATION"
+ 
+ AC_MSG_CHECKING([whether C compiler supports -fprofile-generate])
+ AC_TRY_COMPILE([], [return 0;],
+@@ -766,7 +766,7 @@ AC_MSG_RESULT([$result])
+ 
+ if test $result = "yes"; then
+    PROFILE_GEN_LDFLAGS="-fprofile-generate"
+-   PROFILE_USE_CFLAGS="-fprofile-use -fprofile-correction -Wcoverage-mismatch"
++   PROFILE_USE_CFLAGS="-fprofile-use -fprofile-correction -Wcoverage-mismatch -DMOZ_PROFILE_INSTRUMENTATION"
+    PROFILE_USE_LDFLAGS="-fprofile-use"
+ fi
+ 
+diff -up Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/old-configure.in.1516081 Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/old-configure.in
+--- Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/old-configure.in.1516081	2018-12-17 10:39:21.000000000 -0200
++++ Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/old-configure.in	2019-01-08 11:38:01.282293920 -0200
+@@ -4219,7 +4219,7 @@ dnl Test for profiling options
+ dnl Under gcc 3.4+, use -fprofile-generate/-fprofile-use
+ 
+ _SAVE_CFLAGS="$CFLAGS"
+-CFLAGS="$CFLAGS -fprofile-generate -fprofile-correction"
++CFLAGS="$CFLAGS -fprofile-generate -fprofile-correction -DMOZ_PROFILE_INSTRUMENTATION"
+ 
+ AC_MSG_CHECKING([whether C compiler supports -fprofile-generate])
+ AC_TRY_COMPILE([], [return 0;],
+@@ -4229,7 +4229,7 @@ AC_MSG_RESULT([$result])
+ 
+ if test $result = "yes"; then
+   PROFILE_GEN_LDFLAGS="-fprofile-generate"
+-  PROFILE_USE_CFLAGS="-fprofile-use -fprofile-correction -Wcoverage-mismatch"
++  PROFILE_USE_CFLAGS="-fprofile-use -fprofile-correction -Wcoverage-mismatch -DMOZ_PROFILE_INSTRUMENTATION"
+   PROFILE_USE_LDFLAGS="-fprofile-use"
+ fi
+ 
+diff -up Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/toolkit/components/terminator/nsTerminator.cpp.1516081 Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/toolkit/components/terminator/nsTerminator.cpp
+--- Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/toolkit/components/terminator/nsTerminator.cpp.1516081	2018-12-17 10:39:21.000000000 -0200
++++ Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/toolkit/components/terminator/nsTerminator.cpp	2019-01-08 11:38:52.969192841 -0200
+@@ -389,6 +389,13 @@ nsTerminator::StartWatchdog()
+     crashAfterMS += ADDITIONAL_WAIT_BEFORE_CRASH_MS;
+   }
+ 
++  // Disable watchdog for PGO train builds - writting profile information at
++  // exit may take time and it is better to make build hang rather than
++  // silently produce poorly performing binary.
++#ifdef MOZ_PROFILE_INSTRUMENTATION
++  crashAfterMS = INT32_MAX;
++#endif
++
+   UniquePtr<Options> options(new Options());
+   const PRIntervalTime ticksDuration = PR_MillisecondsToInterval(1000);
+   options->crashAfterTicks = crashAfterMS / ticksDuration;

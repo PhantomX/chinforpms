@@ -31,12 +31,9 @@ ExcludeArch: armv7hl
 %global hardened_build    1
 
 %global build_with_clang  0
-%if 0%{?fedora} >= 29
-%ifarch x86_64 aarch64
-%global build_with_clang  1
-%endif
-%endif
+%ifnarch %{ix86} ppc64 s390x
 %global build_with_pgo    0
+%endif
 
 # Big endian platforms
 %ifarch ppc64 s390x
@@ -185,11 +182,17 @@ Patch418:        https://hg.mozilla.org/integration/autoland/raw-rev/342812d23eb
 # Debian patches
 Patch500:        mozilla-440908.patch
 
+# PGO/LTO patches
+Patch600:        pgo.patch
+Patch601:        mozilla-1516081.patch
+Patch602:        mozilla-1516803.patch
+
 # Chinforinfula patches
 Patch700:        %{name}-nolangpacks.patch
 # https://github.com/MrAlex94/Waterfox/pull/547.patch, down
 Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
+Patch703:        %{name}-webrtc-gtest-libv4l2.patch
 
 %if %{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -373,6 +376,11 @@ This package contains results of tests executed during build.
 # Debian extension patch
 %patch500 -p1 -b .440908
 
+# PGO patches
+%patch600 -p1 -b .pgo
+%patch601 -p1 -b .1516081
+%patch602 -p1 -b .1516803
+
 # Prepare FreeBSD patches
 mkdir _patches
 cp -p %{freebsd_root}/patch-{bug,z-bug,revert-bug}* _patches/
@@ -414,6 +422,7 @@ done
 %patch700 -p1 -b .nolangpacks
 %patch701 -p1 -b .waterfoxdir-1
 %patch702 -p1 -b .waterfoxdir-2
+%patch703 -p1 -b .lv4l2
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -432,14 +441,14 @@ echo 'export AR="llvm-ar"' >> .mozconfig
 echo 'export NM="llvm-nm"' >> .mozconfig
 echo 'export RANLIB="llvm-ranlib"' >> .mozconfig
 echo "ac_add_options --enable-linker=gold" >> .mozconfig
-echo "ac_add_options --enable-rust-simd" >> .mozconfig
 %else
 echo 'export CC=gcc' >> .mozconfig
 echo 'export CXX=g++' >> .mozconfig
 echo "ac_add_options --enable-linker=gold" >> .mozconfig
 %endif
 %if 0%{?build_with_pgo}
-echo "ac_add_options MOZ_PGO=1" >> .mozconfig
+echo "mk_add_options MOZ_PGO=1" >> .mozconfig
+#echo "ac_add_options --enable-lto" >> .mozconfig
 %endif
 
 %if %{?system_nss}
@@ -527,7 +536,7 @@ echo "ac_add_options --disable-jemalloc" >> .mozconfig
 echo "ac_add_options --disable-webrtc" >> .mozconfig
 %endif
 
-%if %{?run_tests}
+%if %{?build_tests}
 echo "ac_add_options --enable-tests" >> .mozconfig
 %endif
 
@@ -647,6 +656,8 @@ export CC=gcc
 export CXX=g++
 %endif
 
+smp_mflags_cpus=$(echo %{_smp_mflags} | sed 's|-j||g')
+
 MOZ_SMP_FLAGS=-j1
 # On x86 architectures, Mozilla can build up to 4 jobs at once in parallel,
 # however builds tend to fail on other arches when building in parallel.
@@ -658,6 +669,7 @@ MOZ_SMP_FLAGS=-j1
 %ifarch x86_64 ppc ppc64 ppc64le aarch64
 [ -z "$RPM_BUILD_NCPUS" ] && \
      RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"
+[ "$smp_mflags_cpus" -lt "$RPM_BUILD_NCPUS" ] && RPM_BUILD_NCPUS="$smp_mflags_cpus"
 [ "$RPM_BUILD_NCPUS" -ge 2 ] && MOZ_SMP_FLAGS=-j2
 [ "$RPM_BUILD_NCPUS" -ge 4 ] && MOZ_SMP_FLAGS=-j4
 [ "$RPM_BUILD_NCPUS" -ge 8 ] && MOZ_SMP_FLAGS=-j8
@@ -667,7 +679,7 @@ export MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS"
 export MOZ_SERVICES_SYNC="1"
 export STRIP=/bin/true
 %if 0%{?build_with_pgo}
-xvfb-run ./mach build
+GDK_BACKEND=x11 xvfb-run ./mach build
 %else
 ./mach build
 %endif

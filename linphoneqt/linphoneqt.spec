@@ -2,7 +2,7 @@
 
 Name:           linphoneqt
 Version:        4.1.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Free VoIP and video softphone based on the SIP protocol
 
 License:        GPLv2
@@ -96,6 +96,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Jan 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.1.1-4
+- Qt 5.11.3 rebuild
+
 * Tue Sep 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.1.1-3
 - Qt 5.11.1 rebuild
 

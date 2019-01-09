@@ -13,9 +13,11 @@ shaderc
 smooth
 vkd3d
 webp-pixbuf-loader
+xarchiver
 ytnef
 
 # 2
+adwaita-qt
 ario
 asbru-cm
 bashdb
@@ -48,6 +50,7 @@ gkrellm-leds
 gkrellmpc
 gkrellm-themes
 gmysqlcc
+gnome-themes-extra
 gpa
 gtk3-nocsd
 hollywood
@@ -57,6 +60,7 @@ keepassxc
 kernel-tools
 ladspa-bs2b-plugins
 lutris
+manaplus
 mednafen
 mednaffe
 mozilla-gnotifier
@@ -75,6 +79,7 @@ pysdl2
 python-pafy
 qmp3gain
 qt-virustotal-uploader
+qt5ct
 quiterss
 sdl_gamecontrollerdb
 sdl-jstest
@@ -104,10 +109,11 @@ belr
 bzrtp
 freac
 m64py
-mingw-wine-dxvk
 mingw-wine-vk9
 ortp
 VirtualBox-kmod
+whdd
+wine-dxvk
 wine-nine
 
 # 4

@@ -10,4 +10,4 @@ ln -s LIBDIR/wine/fakedlls/d3d11_vk.dll executable_directory/d3d11.dll
 ln -s LIBDIR/wine/fakedlls/d3d10_vk.dll executable_directory/d3d10.dll
 ln -s LIBDIR/wine/fakedlls/d3d10_1_vk.dll executable_directory/d3d10_1.dll
 ln -s LIBDIR/wine/fakedlls/d3d10core_vk.dll executable_directory/d3d10core.dll
-WINEDLLOVERRIDES="dxgi=n,d3d11=n,d3d10=n,d3d10_1=n,d3d10core=n' executable
+WINEDLLOVERRIDES="dxgi=n,d3d11=n,d3d10=n,d3d10_1=n,d3d10core=n" executable

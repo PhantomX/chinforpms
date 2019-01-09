@@ -1,6 +1,6 @@
 Name:           qt5ct
 Version:        0.37
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
@@ -90,6 +90,9 @@ install -D -pm 644 %{name}-%{version}/src/%{name}/translations/*.qm \
 
 
 %changelog
+* Tue Jan 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.37-103
+- Rebuild (qt5)
+
 * Fri Dec 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.37-102
 - Install a -gtk3 binary, to set style with GTK3 dialogs and prevent some crashes
 
