@@ -1,0 +1,16 @@
+diff -up Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/build/pgo/profileserver.py.mozilla-1397365 Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/build/pgo/profileserver.py
+--- Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/build/pgo/profileserver.py.mozilla-1397365	2019-01-09 13:37:54.237593732 -0200
++++ Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/build/pgo/profileserver.py	2019-01-09 13:38:59.149417440 -0200
+@@ -67,10 +67,11 @@ if __name__ == '__main__':
+                 env['PATH'] = '%s;%s' % (vcdir, env['PATH'])
+                 break
+ 
++    quitterHTML = 'data:text/html,<html><head><script>Quitter.quit();</script></head></html>'
+     # Run Firefox a first time to initialize its profile
+     runner = FirefoxRunner(profile=profile,
+                            binary=build.get_binary_path(where="staged-package"),
+-                           cmdargs=['javascript:Quitter.quit()'],
++                           cmdargs=[quitterHTML],
+                            env=env)
+     runner.start()
+     runner.wait()

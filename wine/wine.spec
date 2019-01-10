@@ -39,7 +39,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.0~rc5
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -101,26 +101,24 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 ### AUR - https://aur.archlinux.org/packages/wine-gaming-nine
 # Steam patch, Crossover Hack version
 # https://bugs.winehq.org/show_bug.cgi?id=39403
-Patch600:       steam.patch
-Patch602:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.h-linked-list-cache-line-prefetching.patch#/laino-0003-wine-list.h-linked-list-cache-line-prefetching.patch
+Patch600:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.h-linked-list-cache-line-prefetching.patch#/laino-0003-wine-list.h-linked-list-cache-line-prefetching.patch
 # Wbemprox videocontroller query fix v2
 # https://bugs.winehq.org/show_bug.cgi?id=38879
-Patch603:       wbemprox_query_v2.patch
+Patch601:       wbemprox_query_v2.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
-Patch700:       %{tkg_url}/use_clock_monotonic.patch#/tkg-use_clock_monotonic.patch
-Patch701:       %{tkg_url}/poe-fix.patch#/tkg-poe-fix.patch.patch
-Patch702:       %{tkg_url}/FS_bypass_compositor.patch#/tkg-FS_bypass_compositor.patch
-Patch703:       %{tkg_url}/GLSL-toggle.patch#/tkg-GLSL-toggle.patch
-Patch704:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve_proton_fullscreen_hack-staging.patch
-Patch705:       %{tkg_url}/large_address_aware-staging.patch#/large_address_aware-staging.patch
+Patch700:       %{tkg_url}/steam.patch#/tkg-steam.patch
+Patch701:       %{tkg_url}/CSMT-toggle.patch#/tkg-CSMT-toggle.patch
+Patch702:       %{tkg_url}/use_clock_monotonic.patch#/tkg-use_clock_monotonic.patch
+Patch703:       %{tkg_url}/poe-fix.patch#/tkg-poe-fix.patch
+Patch704:       %{tkg_url}/FS_bypass_compositor.patch#/tkg-FS_bypass_compositor.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}/wine-staging-%{stagingver}.tar.gz
-Patch900:       https://github.com/wine-staging/wine-staging/pull/60.patch#/staging-pull-60.patch
-# New pulseaudio patches causing noise with a game
-Patch901:       wine-staging-old-pulseaudio.patch
+Patch705:       %{tkg_url}/GLSL-toggle.patch#/tkg-GLSL-toggle.patch
+Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve_proton_fullscreen_hack-staging.patch
+Patch707:       %{tkg_url}/large_address_aware-staging.patch#/tkg-large_address_aware-staging.patch
 
 %if 0%{?pba}
 # acomminos PBA patches from Firerat github
@@ -136,7 +134,7 @@ Source2000:     https://github.com/zfigura/wine/releases/download/esync%{esyncco
 # Configure limits in systemd
 # This should be only needed with systemd < 240
 Source2001:     01-wine.conf
-Patch2000:      %{tkg_url}/esync-staging-fixes-r3.patch#/tkg-esync-staging-fixes-r3.patch
+Source2002:      %{tkg_url}/esync-staging-fixes-r3.patch#/tkg-esync-staging-fixes-r3.patch
 Patch2001:      %{tkg_url}/esync-compat-fixes-r3.patch#/tkg-esync-compat-fixes-r3.patch
 Patch2002:      %{tkg_url}/esync-no_alloc_handle.patch#/tkg-esync-no_alloc_handle.patch
 %endif #{?esync}
@@ -740,17 +738,16 @@ This package adds xaudio2 support for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
-%patch602 -p1
 %patch700 -p1
-%patch701 -p1
 %patch702 -p1
+%patch703 -p1
+%patch704 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
-%patch900 -p1
-#patch901 -p1
+%patch701 -p1
 
 %if 0%{?pba}
 tar xvf %{S:1000}
@@ -767,17 +764,10 @@ cp -p %{S:1001} README-pba-pkg
 %if 0%{?esync}
 tar xvf %{SOURCE2000}
 pushd esync
-%patch2000 -p1
+git apply -C1 < %{S:2002}
 %patch2001 -p1
 popd
 %endif #{?esync}
-
-#mv patches/winepulse-PulseAudio_Support patches/winepulse-PulseAudio_Support_new
-#mv patches/winepulse-PulseAudio_Support_old patches/winepulse-PulseAudio_Support
-#cp -f patches/winepulse-PulseAudio_Support_new/0001-winepulse.drv-Use-a-separate-mainloop-and-ctx-for-pu.patch \
-#  patches/winepulse-PulseAudio_Support/
-#cp -f patches/winepulse-PulseAudio_Support_new/0006-winepulse-fetch-actual-program-name-if-possible.patch \
-#  patches/winepulse-PulseAudio_Support/
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all
 
@@ -790,9 +780,9 @@ done
 %patch2002 -p1
 %endif
 
-%patch703 -p1
-%patch704 -p1
 %patch705 -p1
+%patch706 -p1
+%patch707 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -803,7 +793,7 @@ rm -rf patches/
 
 %endif #{?staging}
 
-%patch603 -p1
+%patch601 -p1
 
 sed -i \
   -e 's|-lncurses |-lncursesw |g' \
@@ -816,9 +806,7 @@ sed -i \
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
-# Use -O1 optimization
-# https://bugs.winehq.org/show_bug.cgi?id=45199
-export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//' -e 's/-O2/-O1/'` -Wno-error"
+export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 
 %ifarch aarch64
 # ARM64 now requires clang

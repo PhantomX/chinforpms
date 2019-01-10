@@ -1,0 +1,41 @@
+
+# HG changeset patch
+# User Mike Hommey <mh+mozilla@glandium.org>
+# Date 1502455819 -32400
+# Node ID 97dae871389b7f22a7096a020781b07a5a61de58
+# Parent  c73f64ef71d2d87f36008f5ff661f4050692bd06
+Bug 1389436 - Explicitly instantiate gfxFont::GetShapedWord<uint8_t> for its use in gfxTextRun.cpp. r=jfkthame
+
+diff --git a/gfx/thebes/gfxFont.cpp b/gfx/thebes/gfxFont.cpp
+--- a/gfx/thebes/gfxFont.cpp
++++ b/gfx/thebes/gfxFont.cpp
+@@ -2634,16 +2634,28 @@ gfxFont::GetShapedWord(DrawTarget *aDraw
+         ShapeText(aDrawTarget, aText, 0, aLength, aRunScript, aVertical,
+                   aRounding, sw);
+ 
+     NS_WARNING_ASSERTION(ok, "failed to shape word - expect garbled text");
+ 
+     return sw;
+ }
+ 
++template gfxShapedWord*
++gfxFont::GetShapedWord(DrawTarget *aDrawTarget,
++                       const uint8_t *aText,
++                       uint32_t    aLength,
++                       uint32_t    aHash,
++                       Script      aRunScript,
++                       bool        aVertical,
++                       int32_t     aAppUnitsPerDevUnit,
++                       gfx::ShapedTextFlags aFlags,
++                       RoundingFlags aRounding,
++                       gfxTextPerfMetrics *aTextPerf);
++
+ bool
+ gfxFont::CacheHashEntry::KeyEquals(const KeyTypePointer aKey) const
+ {
+     const gfxShapedWord* sw = mShapedWord.get();
+     if (!sw) {
+         return false;
+     }
+     if (sw->GetLength() != aKey->mLength ||
+

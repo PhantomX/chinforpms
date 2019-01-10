@@ -1,0 +1,31 @@
+From: Daniel Rammelt <d.rammelt@icloud.com>
+
+Add missing pgo-profile-run due to tests being disabled
+
+Patch modified for newer version by Andrew A. Savchenko <bircoph@gentoo.org>
+
+https://bugs.gentoo.org/show_bug.cgi?id=499650
+
+diff --git a/Makefile.in b/Makefile.in
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -50,16 +50,19 @@ ifndef MOZ_PROFILE_USE
+ ifndef JS_STANDALONE
+ ifdef COMPILE_ENVIRONMENT
+ $(TIERS) binaries:: $(topsrcdir)/js/src/configure js/src/config.status
+ endif
+ endif
+ endif
+ endif
+ 
++pgo-profile-run:
++	$(PYTHON) $(topsrcdir)/build/pgo/profileserver.py $(EXTRA_TEST_ARGS)
++
+ ifdef JS_STANDALONE
+ .PHONY: CLOBBER
+ CLOBBER:
+ else
+ CLOBBER: $(topsrcdir)/CLOBBER
+ 	@echo 'STOP!  The CLOBBER file has changed.'
+ 	@echo 'Please run the build through a sanctioned build wrapper, such as'
+ 	@echo '"mach build" or client.mk.'

@@ -7,7 +7,6 @@ ac_add_options --libdir="$LIBDIR"
 ac_add_options --with-system-zlib
 ac_add_options --with-system-bz2
 ac_add_options --disable-strip
-ac_add_options --disable-tests
 #ac_add_options --enable-libnotify
 ac_add_options --enable-necko-wifi
 ac_add_options --enable-startup-notification
@@ -23,6 +22,7 @@ ac_add_options --disable-gconf
 ac_add_options BINDGEN_CFLAGS="$(pkg-config nspr pixman-1 --cflags)"
 
 mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/objdir
+mk_add_options XARGS=/usr/bin/xargs
 
 export MOZ_GECKO_PROFILER=
 export MOZ_ENABLE_PROFILER_SPS=

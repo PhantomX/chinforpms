@@ -32,7 +32,7 @@ ExcludeArch: armv7hl
 
 %global build_with_clang  0
 %ifnarch %{ix86} ppc64 s390x
-%global build_with_pgo    0
+%global build_with_pgo    1
 %endif
 
 # Big endian platforms
@@ -111,7 +111,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.6
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -174,6 +174,8 @@ Patch415:        Bug-1238661---fix-mozillaSignalTrampoline-to-work-.patch
 Patch416:        bug1375074-save-restore-x28.patch
 Patch417:        mozilla-1436242.patch
 Patch418:        https://hg.mozilla.org/integration/autoland/raw-rev/342812d23eb9#/mozilla-1336978.patch
+Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mozilla-1320560.patch
+Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mozilla-1389436.patch
 
 # Upstream updates
 
@@ -186,6 +188,8 @@ Patch500:        mozilla-440908.patch
 Patch600:        pgo.patch
 Patch601:        mozilla-1516081.patch
 Patch602:        mozilla-1516803.patch
+Patch603:        mozilla-1397365-5.patch
+Patch604:        1003_gentoo_specific_pgo.patch
 
 # Chinforinfula patches
 Patch700:        %{name}-nolangpacks.patch
@@ -193,6 +197,7 @@ Patch700:        %{name}-nolangpacks.patch
 Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-webrtc-gtest-libv4l2.patch
+
 
 %if %{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -260,6 +265,7 @@ BuildRequires:  libstdc++-static
 %else
 BuildRequires:  gcc-c++
 %endif
+BuildRequires:  bash
 BuildRequires:  patchutils
 
 Requires:       mozilla-filesystem
@@ -372,6 +378,8 @@ This package contains results of tests executed during build.
 %patch416 -p1 -b .bug1375074-save-restore-x28
 %patch417 -p1 -b .mozilla-1436242
 %patch418 -p1 -b .mozilla-1336978
+%patch419 -p1 -b .mozilla-1320560
+%patch420 -p1 -b .mozilla-1389436
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -380,6 +388,8 @@ This package contains results of tests executed during build.
 %patch600 -p1 -b .pgo
 %patch601 -p1 -b .1516081
 %patch602 -p1 -b .1516803
+%patch603 -p1 -b .1397365
+%patch604 -p1 -b .gentoo_pgo
 
 # Prepare FreeBSD patches
 mkdir _patches
@@ -448,6 +458,7 @@ echo "ac_add_options --enable-linker=gold" >> .mozconfig
 %endif
 %if 0%{?build_with_pgo}
 echo "mk_add_options MOZ_PGO=1" >> .mozconfig
+echo "mk_add_options PROFILE_GEN_SCRIPT='EXTRA_TEST_ARGS=10 \$(MAKE) -C \$(MOZ_OBJDIR) pgo-profile-run'" >> .mozconfig
 #echo "ac_add_options --enable-lto" >> .mozconfig
 %endif
 
@@ -538,6 +549,8 @@ echo "ac_add_options --disable-webrtc" >> .mozconfig
 
 %if %{?build_tests}
 echo "ac_add_options --enable-tests" >> .mozconfig
+%else
+echo "ac_add_options --disable-tests" >> .mozconfig
 %endif
 
 %if !%{?system_jpeg}
@@ -677,11 +690,12 @@ MOZ_SMP_FLAGS=-j1
 
 export MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS"
 export MOZ_SERVICES_SYNC="1"
+export MOZ_NOSPAM=1
 export STRIP=/bin/true
 %if 0%{?build_with_pgo}
-GDK_BACKEND=x11 xvfb-run ./mach build
+SHELL=/usr/bin/bash GDK_BACKEND=x11 xvfb-run ./mach build -v
 %else
-./mach build
+SHELL=/usr/bin/bash ./mach build -v
 %endif
 
 %if %{?run_tests}
@@ -726,7 +740,7 @@ cat > objdir/dist/bin/browser/defaults/preferences/firefox-l10n.js << EOF
 pref("general.useragent.locale", "chrome://global/locale/intl.properties");
 EOF
 
-DESTDIR=%{buildroot} make -C objdir install
+DESTDIR=%{buildroot} SHELL=/usr/bin/bash MOZ_NOSPAM=1 make -C objdir install
 
 mkdir -p %{buildroot}{%{_libdir},%{_bindir},%{_datadir}/applications}
 
@@ -951,6 +965,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Jan 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.6-2.20181217gitff45971
+- PGO and fixes for it to work (from Gentoo and Fedora Firefox)
+- Return gcc build
+
 * Wed Dec 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 56.2.6-1.20181217gitff45971
 - New release/snapshot
 

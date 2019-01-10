@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 56c2440c11ae2a013e874968afbea4f1ba93de5d
+%global pfcommit ce0e9dc09f6200dde8e6e61b1321da42285a33f9
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id c634493cc649767a69445e492031b9c1e93364fb
+%global opensuse_id 5978cc855e23808461eb685c6d83088e26a5d455
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -663,6 +663,9 @@ Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch505: asus-fx503-keyb.patch
+
+# CVE-2019-3701 rhbz 1663729 1663730
+Patch506: CVE-2019-3701.patch
 
 ### Extra
 
@@ -2001,6 +2004,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.1-500.chinfo
+- 4.20.1
+
 * Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.20.0-500.chinfo
 - 4.20.0
 
