@@ -1,13 +1,18 @@
 Name:           lutris
 Version:        0.4.23
 Epoch:          1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Install and play any video game easily
 
 License:        GPLv3
 URL:            https://lutris.net
 
 Source0:        %{url}/releases/%{name}_%{version}.tar.xz
+# Configure limits in systemd
+# This should be only needed with systemd < 240
+Source1:        02-%{name}.conf
+
+Patch0:         %{name}-nofilelimit.patch
 
 BuildArch:      noarch
 
@@ -40,7 +45,7 @@ do is play the game. It aims to support every game that is playable
 on Linux.
 
 %prep
-%autosetup -n %{name}
+%autosetup -n %{name} -p1
 
 
 %build
@@ -60,6 +65,14 @@ desktop-file-edit \
   %{buildroot}%{_datadir}/applications/%{name}.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
+# Systemd configuration
+%if 0%{?fedora} && 0%{?fedora} < 30
+mkdir -p %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
+mkdir -p %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
+install -m 644 -p %{S:1} %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
+install -m 644 -p %{S:1} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
+%endif
+
 
 %files
 %license LICENSE
@@ -72,9 +85,19 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{python3_sitelib}/%{name}-*.egg-info
 %{python3_sitelib}/%{name}/
 %{_metainfodir}/*.appdata.xml
+%if 0%{?fedora} && 0%{?fedora} < 30
+%{_prefix}/lib/systemd/system.conf.d/
+%{_prefix}/lib/systemd/system.conf.d/02-%{name}.conf
+%{_prefix}/lib/systemd/user.conf.d/
+%{_prefix}/lib/systemd/user.conf.d/02-%{name}.conf
+%endif
 
 
 %changelog
+* Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.4.23-101
+- systemd file descriptor limit files
+- Sync NOFILE with systemd defaults
+
 * Thu Nov 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.4.23-100.chinfo
 - 0.4.23
 

@@ -1,0 +1,11 @@
+--- wine-mono-4.5.4/build-winemono.sh.orig	2014-11-14 18:02:57.810439383 +0100
++++ wine-mono-4.5.4/build-winemono.sh	2014-11-14 18:03:20.583738750 +0100
+@@ -434,7 +434,7 @@
+ 
+ build_msi ()
+ {
+-	MSIFILENAME=$OUTDIR/winemono.msi
++	MSIFILENAME=${MSIFILENAME:-winemono.msi}
+     rm -rf cab-contents
+     rm -f "$BUILDDIR/image.cab" "${MSIFILENAME}"
+ 

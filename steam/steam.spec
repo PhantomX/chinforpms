@@ -9,7 +9,7 @@
 Name:           steam
 Version:        1.0.0.59
 Epoch:          1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement
@@ -35,7 +35,7 @@ Source9:        https://raw.githubusercontent.com/cyndis/shield-controller-confi
 Source10:       README.Fedora
 # Configure limits in systemd
 # This should be only needed with systemd < 240
-Source11:       01-steam.conf
+Source11:       01-%{name}.conf
 
 # Remove temporary leftover files after run (fixes multiuser):
 # https://github.com/ValveSoftware/steam-for-linux/issues/3570
@@ -177,10 +177,12 @@ mkdir -p %{buildroot}%{_metainfodir}
 install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 
 # Systemd configuration
+%if 0%{?fedora} && 0%{?fedora} < 30
 mkdir -p %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
 mkdir -p %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 install -m 644 -p %{SOURCE11} %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
 install -m 644 -p %{SOURCE11} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
+%endif
 
 
 %post
@@ -201,13 +203,18 @@ install -m 644 -p %{SOURCE11} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 %{_prefix}/lib/firewalld/services/%{name}.xml
 %config(noreplace) %{_sysconfdir}/profile.d/%{name}.*sh
 %{_udevrulesdir}/*
+%if 0%{?fedora} && 0%{?fedora} < 30
 %{_prefix}/lib/systemd/system.conf.d/
-%{_prefix}/lib/systemd/system.conf.d/01-steam.conf
+%{_prefix}/lib/systemd/system.conf.d/01-%{name}.conf
 %{_prefix}/lib/systemd/user.conf.d/
-%{_prefix}/lib/systemd/user.conf.d/01-steam.conf
+%{_prefix}/lib/systemd/user.conf.d/01-%{name}.conf
+%endif
 
 
 %changelog
+* Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.59-101
+- Update NOFILE limits
+
 * Tue Dec 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.59-100
 - 1.0.0.59
 - RPMFusion sync

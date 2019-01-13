@@ -3,14 +3,14 @@
 
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.7.3
+%global winemono  4.7.5
 %global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 4.0-rc5
+%global stagingver 4.0-rc6
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
@@ -20,7 +20,7 @@
 %global pbarel v
 %global pbapkg knobs_and_switches-
 %endif
-%global tkg_id 0624b89240b1bae5d01ca5250c074ee7180f3f82
+%global tkg_id 7ed6859a8bb019cce9ed11554045a7391689cfe4
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -38,8 +38,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0~rc5
-Release:        102%{?dist}
+Version:        4.0~rc6
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -133,8 +133,8 @@ Patch1000:      wine-staging-pba.patch
 Source2000:     https://github.com/zfigura/wine/releases/download/esync%{esynccommit}/esync.tgz#/esync-%{esynccommit}.tar.gz
 # Configure limits in systemd
 # This should be only needed with systemd < 240
-Source2001:     01-wine.conf
-Source2002:      %{tkg_url}/esync-staging-fixes-r3.patch#/tkg-esync-staging-fixes-r3.patch
+Source2001:     01-%{name}.conf
+Source2002:     %{tkg_url}/esync-staging-fixes-r3.patch#/tkg-esync-staging-fixes-r3.patch
 Patch2001:      %{tkg_url}/esync-compat-fixes-r3.patch#/tkg-esync-compat-fixes-r3.patch
 Patch2002:      %{tkg_url}/esync-no_alloc_handle.patch#/tkg-esync-no_alloc_handle.patch
 %endif #{?esync}
@@ -795,6 +795,8 @@ rm -rf patches/
 
 %patch601 -p1
 
+sed -e '/winemenubuilder\.exe/s|-a ||g' -i loader/wine.inf.in
+
 sed -i \
   -e 's|-lncurses |-lncursesw |g' \
   -e 's|"-lncurses"|"-lncursesw"|g' \
@@ -1104,10 +1106,12 @@ install -p -m 0644 loader/wine.pl.UTF-8.man %{buildroot}%{_mandir}/pl.UTF-8/man1
 
 %if 0%{?esync}
 # Systemd configuration
+%if 0%{?fedora} && 0%{?fedora} < 30
 mkdir -p %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
 mkdir -p %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 install -m 644 -p %{SOURCE2001} %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
 install -m 644 -p %{SOURCE2001} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
+%endif
 %endif
 
 %if 0%{?rhel} == 6
@@ -2314,10 +2318,12 @@ fi
 %files systemd
 %config %{_binfmtdir}/wine.conf
 %if 0%{?esync}
+%if 0%{?fedora} && 0%{?fedora} < 30
 %{_prefix}/lib/systemd/system.conf.d/
-%{_prefix}/lib/systemd/system.conf.d/01-wine.conf
+%{_prefix}/lib/systemd/system.conf.d/01-%{name}.conf
 %{_prefix}/lib/systemd/user.conf.d/
-%{_prefix}/lib/systemd/user.conf.d/01-wine.conf
+%{_prefix}/lib/systemd/user.conf.d/01-%{name}.conf
+%endif
 %endif
 %endif
 
@@ -2389,6 +2395,11 @@ fi
 %endif
 
 %changelog
+* Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc6-100
+- 4.0-rc6
+- Revert -O1 optimizations, seems good now
+- Disable mime type registering
+
 * Mon Jan 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc5-101
 - Fix includedir
 

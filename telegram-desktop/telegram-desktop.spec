@@ -11,11 +11,11 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.5.6
+Version:        1.5.7
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
-Epoch: 1
+Epoch:          1
 
 # Application and 3rd-party modules licensing:
 # * S0 (Telegram Desktop) - GPLv3+ with OpenSSL exception -- main source;
@@ -60,7 +60,7 @@ BuildRequires:  gyp
 # Development packages for Telegram Desktop...
 BuildRequires:  guidelines-support-library-devel >= 1.0.0
 BuildRequires:  mapbox-variant-devel >= 0.3.6
-BuildRequires:  libtgvoip-devel >= 2.3
+BuildRequires:  libtgvoip-devel >= 2.4.2
 BuildRequires:  libappindicator-gtk3-devel
 BuildRequires:  ffmpeg-devel >= 3.1
 BuildRequires:  openal-soft-devel
@@ -72,7 +72,6 @@ BuildRequires:  openssl-devel
 BuildRequires:  minizip-devel
 BuildRequires:  xxhash-devel
 BuildRequires:  lzma-devel
-BuildRequires:  opus-devel
 BuildRequires:  gtk3-devel
 BuildRequires:  xz-devel
 BuildRequires:  python3
@@ -165,6 +164,11 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
+* Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.7-100
+- 1.5.7
+- RPMFusion sync
+- Drop opus BR, unneeded with libtgvoip with libraries link fixes
+
 * Wed Jan 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.6-100
 - 1.5.6
 - Update crl

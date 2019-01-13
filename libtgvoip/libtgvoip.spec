@@ -1,23 +1,24 @@
 Name:           libtgvoip
-Version:        2.4
+Version:        2.4.2
 Release:        100%{?dist}
 Summary:        VoIP library for Telegram clients
 
 # Libtgvoip shared library - Public Domain.
 # Bundled webrtc library - BSD with patented echo cancellation algorithms.
-License: Public Domain and BSD
+License:        Public Domain and BSD
 URL:            https://github.com/grishka/%{name}
 
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Patch0:         %{name}-build-fixes.patch
-Patch100:       %{name}-sse2.patch
 
 Patch200:       %{name}-link-libraries.patch
 
-Provides: bundled(webrtc-audio-processing) = 0.3
+Provides:       bundled(webrtc-audio-processing) = 0.3
+
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  alsa-lib-devel
 BuildRequires:  openssl-devel
+BuildRequires:  json11-devel
 BuildRequires:  opus-devel
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
@@ -28,8 +29,9 @@ BuildRequires:  gyp
 Provides VoIP library for Telegram clients.
 
 %package devel
-Summary: Development files for %{name}
-Requires: %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Summary:        Development files for %{name}
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       json11-devel%{?_isa}
 
 %description devel
 %{summary}.
@@ -69,7 +71,12 @@ find video -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{build
 %{_includedir}/%{name}
 %{_libdir}/%{name}.so
 
+
 %changelog
+* Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.4.2-100.chinfo
+- 2.4.2
+- RPMFusion sync
+
 * Tue Dec 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.4-100.chinfo
 - 2.4
 - RPMFusion sync
