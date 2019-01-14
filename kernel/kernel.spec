@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ce0e9dc09f6200dde8e6e61b1321da42285a33f9
+%global pfcommit edb106b15ae86b9cf04852d64581910f5379483b
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -621,8 +621,6 @@ Patch305: qcom-msm89xx-fixes.patch
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
-Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
 
 # https://patchwork.kernel.org/patch/10686407/
 Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
@@ -2004,6 +2002,9 @@ fi
 #
 #
 %changelog
+* Sun Jan 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.2-500.chinfo
+- 4.20.2
+
 * Wed Jan 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.1-500.chinfo
 - 4.20.1
 
