@@ -1,6 +1,6 @@
-diff -up VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk.noup VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk
---- VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk.noup	2018-12-18 10:59:25.000000000 -0200
-+++ VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk	2019-01-02 15:22:06.681405759 -0200
+diff -up VirtualBox-6.0.2/src/VBox/Frontends/VirtualBox/Makefile.kmk.noup VirtualBox-6.0.2/src/VBox/Frontends/VirtualBox/Makefile.kmk
+--- VirtualBox-6.0.2/src/VBox/Frontends/VirtualBox/Makefile.kmk.noup	2019-01-14 12:49:14.000000000 -0200
++++ VirtualBox-6.0.2/src/VBox/Frontends/VirtualBox/Makefile.kmk	2019-01-15 15:33:52.925031712 -0200
 @@ -190,10 +190,6 @@ ifdef VBOX_WITH_VIDEOHWACCEL
  else ifdef VBOX_GUI_USE_QGL
   VirtualBox_DEFS          += VBOX_GUI_USE_QGL
@@ -34,22 +34,22 @@ diff -up VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/Makefile.kmk.noup Virtua
   if  "$(KBUILD_TYPE)" != "release" || defined(VBOX_GUI_WITH_EXTRADATA_MANAGER_UI)
    VBoxGlobal_DEFS        += VBOX_GUI_WITH_EXTRADATA_MANAGER_UI
   endif
-diff -up VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp.noup VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp
---- VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp.noup	2018-12-18 10:59:40.000000000 -0200
-+++ VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp	2019-01-02 15:21:31.037402242 -0200
-@@ -43,9 +43,9 @@
- # include "UIModalWindowManager.h"
- # include "UIExtraDataManager.h"
- # include "UIMedium.h"
--# ifdef VBOX_OSE
-+# ifdef VBOX_GUI_WITH_NETWORK_MANAGER
- #  include "UIDownloaderUserManual.h"
--# endif /* VBOX_OSE */
-+# endif /* VBOX_GUI_WITH_NETWORK_MANAGER */
- # include "VBoxAboutDlg.h"
- # include "UIHostComboEditor.h"
- # ifdef VBOX_WS_MAC
-@@ -2767,7 +2767,7 @@ void UIMessageCenter::sltShowHelpAboutDi
+diff -up VirtualBox-6.0.2/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp.noup VirtualBox-6.0.2/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp
+--- VirtualBox-6.0.2/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp.noup	2019-01-14 12:49:34.000000000 -0200
++++ VirtualBox-6.0.2/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCenter.cpp	2019-01-15 15:35:02.134832166 -0200
+@@ -39,9 +39,9 @@
+ #include "UIModalWindowManager.h"
+ #include "UIExtraDataManager.h"
+ #include "UIMedium.h"
+-#ifdef VBOX_OSE
++#ifdef VBOX_GUI_WITH_NETWORK_MANAGER
+ # include "UIDownloaderUserManual.h"
+-#endif /* VBOX_OSE */
++#endif /* VBOX_GUI_WITH_NETWORK_MANAGER */
+ #include "VBoxAboutDlg.h"
+ #include "UIHostComboEditor.h"
+ #ifdef VBOX_WS_MAC
+@@ -2761,7 +2761,7 @@ void UIMessageCenter::sltShowHelpAboutDi
  
  void UIMessageCenter::sltShowHelpHelpDialog()
  {
@@ -58,7 +58,7 @@ diff -up VirtualBox-6.0.0/src/VBox/Frontends/VirtualBox/src/globals/UIMessageCen
      /* For non-OSE version we just open it: */
      sltShowUserManual(vboxGlobal().helpFile());
  #else /* #ifndef VBOX_OSE */
-@@ -2796,7 +2796,7 @@ void UIMessageCenter::sltShowHelpHelpDia
+@@ -2790,7 +2790,7 @@ void UIMessageCenter::sltShowHelpHelpDia
          /* Start downloading: */
          pDl->start();
      }

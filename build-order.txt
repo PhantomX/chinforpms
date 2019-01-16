@@ -31,6 +31,7 @@ cdemu-daemon
 chinfo-extramimetypes
 claws-mail
 claws-mail-themes
+compat-libva1
 curlew
 disk-indicator
 easytag
@@ -59,6 +60,7 @@ joy2key
 keepassxc
 kernel-tools
 ladspa-bs2b-plugins
+linux-steam-integration
 lutris
 manaplus
 mednafen

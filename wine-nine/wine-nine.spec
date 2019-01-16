@@ -1,9 +1,9 @@
 %undefine _hardened_build
 %global winecommonver 3.0
 
-%global commit 136dca65e0afa96be752ef6b8385a693bfe18279
+%global commit acc17f4e854a2c9f292f22242abc65ec7494de99
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190107
+%global date 20190115
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,8 +16,8 @@
 %global pkgname nine
 
 Name:           wine-%{pkgname}
-Version:        0.1.0.0
-Release:        2%{?gver}%{?dist}
+Version:        0.2.0.0
+Release:        1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          1
@@ -165,6 +165,9 @@ desktop-file-install \
 
 
 %changelog
+* Tue Jan 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.2.0.0-1.20190115gitacc17f4
+- New snapshot
+
 * Mon Jan 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.1.0.0-2.20190107git136dca6
 - Fix fake dll module name
 

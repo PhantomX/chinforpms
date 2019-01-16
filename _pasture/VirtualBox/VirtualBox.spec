@@ -32,7 +32,7 @@
 %endif
 
 Name:       VirtualBox
-Version:    6.0.0
+Version:    6.0.2
 #Release:   1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:    100%{?bugfix:.%{bugfix}}%{?dist}
 Summary:    A general-purpose full virtualizer for PC hardware
@@ -452,6 +452,8 @@ ln -s VBox %{buildroot}%{_bindir}/VBoxDTrace
 ln -s VBox %{buildroot}%{_bindir}/vboxdtrace
 ln -s VBox %{buildroot}%{_bindir}/VBoxBugReport
 ln -s VBox %{buildroot}%{_bindir}/vboxbugreport
+ln -s VBox %{buildroot}%{_bindir}/VirtualBoxVM
+ln -s VBox %{buildroot}%{_bindir}/virtualboxvm
 ln -s VBox %{buildroot}%{_bindir}/VBoxBalloonCtrl
 ln -s VBox %{buildroot}%{_bindir}/vboxballoonctrl
 ln -s VBox %{buildroot}%{_bindir}/VBoxAutostart
@@ -693,6 +695,8 @@ getent passwd vboxadd >/dev/null || \
 %{_bindir}/vboxdtrace
 %{_bindir}/VBoxBugReport
 %{_bindir}/vboxbugreport
+%{_bindir}/VirtualBoxVM
+%{_bindir}/virtualboxvm
 %{_bindir}/VBoxBalloonCtrl
 %{_bindir}/vboxballoonctrl
 %{_bindir}/VBoxAutostart
@@ -802,6 +806,9 @@ getent passwd vboxadd >/dev/null || \
 %{_datadir}/%{name}-kmod-%{version}
 
 %changelog
+* Tue Jan 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 6.0.2-100
+- 6.0.2
+
 * Wed Jan 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 6.0.0-100
 - 6.0.0
 - Sync with RPMFusion
