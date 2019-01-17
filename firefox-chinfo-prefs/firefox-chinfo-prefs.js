@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20181213
+// 20190116
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -38,7 +38,9 @@ pref("general.warnOnAboutConfig", false);
 pref("keyword.enabled", false);
 pref("layout.spellcheckDefault", 0);
 pref("media.autoplay.enabled", false);
+pref("media.autoplay.enabled.user-gestures-needed=false", false);
 pref("media.autoplay.default", 1);
+pref("media.autoplay.allow-muted", false);
 pref("media.block-autoplay-until-in-foreground", true);
 pref("middlemouse.contentLoadURL", false);
 pref("toolkit.cosmeticAnimations.enabled", false);
@@ -74,6 +76,7 @@ pref("browser.onboarding.enabled", false);
 
 // Activity Stream
 pref("browser.library.activity-stream.enabled", false);
+pref("browser.newtabpage.activity-stream.asrouter.providers.snippets", "");
 pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr", false);
 pref("browser.newtabpage.activity-stream.disableSnippets", true);
 pref("browser.newtabpage.activity-stream.feeds.snippets", false);
@@ -167,6 +170,9 @@ pref("extensions.formautofill.heuristics.enabled", false);
 // Display warning UI for insecure login fields
 pref("security.insecure_field_warning.contextual.enabled", true);
 
+// Potential credentials phishing hardening
+pref("network.auth.subresource-http-auth-allow", 1);
+
 // Disable password manager
 pref("signon.rememberSignons", false);
 
@@ -219,7 +225,9 @@ pref("extensions.ui.experiment.hidden", false);
 pref("extensions.webcompat-reporter.enabled", false);
 pref("nsITelemetry.canRecordBase", false);
 pref("nsITelemetry.canRecordExtended", false);
+pref("toolkit.coverage.endpoint.base", "");
 pref("toolkit.coverage.opt-out", true);
+pref("toolkit.telemetry.coverage.opt-out", true);
 
 // Disable Safe Browsing service
 //pref("browser.safebrowsing.malware.enabled", false);
