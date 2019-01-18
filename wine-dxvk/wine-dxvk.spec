@@ -62,15 +62,22 @@ cp %{S:1} .
 
 sed -e "/strip =/s|=.*|= 'true'|g" -i build-wine*.txt
 
+mesonarray(){
+  echo -n "$1" | sed -e "s|\s\s| |g" -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
+}
+
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo %{build_cxxflags} | sed -e 's/-O2/-O1/'`"
-TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
-TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed "s| |', '|g"`"
+TEMP_CFLAGS="`echo %{build_cflags} | sed -e 's/-O2/-O1/'`"
+TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+TEMP_CFLAGS="`mesonarray "$TEMP_CFLAGS"`"
 
-TEMP_LDFLAGS="`echo %{build_ldflags} | sed "s| |', '|g"`"
+TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"
+
+sed -e "s|RPM_OPT_FLAGS|$TEMP_CFLAGS|g" -i tools/cross-wine%{__isa_bits}.in
+sed -e "s|RPM_LD_FLAGS|$TEMP_LDFLAGS|g" -i tools/cross-wine%{__isa_bits}.in
 
 sed \
   -e "s|RPM_OPT_FLAGS|$TEMP_CFLAGS|g" \

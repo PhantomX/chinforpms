@@ -20,7 +20,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 # https://github.com/TomaszGasior/gtk3-mushrooms
-%global mushroom_ver 3.24.1-2
+%global mushroom_ver 3.24.3-1
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name:           gtk3
@@ -211,7 +211,6 @@ patch_command csd__server-side-shadow.patch
 patch_command fixes__atk-bridge-errors.patch
 patch_command fixes__labels-wrapping.patch
 patch_command fixes__too-large-menu-covers-bar.patch
-patch_command fixes__trayicon-parent-relative.patch
 patch_command fixes__xfce-inhibit-errors.patch
 patch_command other__mnemonics-delay.patch
 patch_command popovers__color-chooser.patch
