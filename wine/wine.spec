@@ -10,20 +10,15 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 4.0-rc6
+%global stagingver 4.0-rc7
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global pba 0
-%global pbaver 3.20
-%if 0%(echo %{pbaver} | grep -q \\. ; echo $?) == 0
-%global pbarel v
-%global pbapkg knobs_and_switches-
-%endif
-%global tkg_id 7ed6859a8bb019cce9ed11554045a7391689cfe4
+%global tkg_id 9fad5443e39025916bf0accbf7a4377aceedcf9e
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
+%global pba 0
 %endif # 0%{?fedora}
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
@@ -38,7 +33,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0~rc6
+Version:        4.0~rc7
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -121,11 +116,9 @@ Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve
 Patch707:       %{tkg_url}/large_address_aware-staging.patch#/tkg-large_address_aware-staging.patch
 
 %if 0%{?pba}
-# acomminos PBA patches from Firerat github
-# https://github.com/Firerat/wine-pba
-Source1000:     https://gitlab.com/Firer4t/wine-pba/-/archive/%{?pbapkg}%{?pbarel}%{pbaver}/%{?pbapkg}%{?pbarel}%{pbaver}.tar.bz2#/wine-pba-%{pbaver}.tar.bz2
+# acomminos PBA patches
 Source1001:     wine-README-pba
-Patch1000:      wine-staging-pba.patch
+Patch1000:      %{tkg_url}/PBA317+.patch#/tkg-PBA317+.patch
 %endif #{?pba}
 
 %if 0%{?esync}
@@ -749,18 +742,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
 
-%if 0%{?pba}
-tar xvf %{S:1000}
-mv wine-pba*/README.md README_pba.md
-mv wine-pba*/LICENSE LICENSE_pba.md
-mkdir -p patches/wined3d-Persistent_Buffer_Allocator
-mv wine-pba-*/patches/*.patch patches/wined3d-Persistent_Buffer_Allocator/
-
-%patch1000 -p1
-
-cp -p %{S:1001} README-pba-pkg
-%endif #{?pba}
-
 %if 0%{?esync}
 tar xvf %{SOURCE2000}
 pushd esync
@@ -779,6 +760,12 @@ for i in esync/00??-*.patch ;do
 done
 %patch2002 -p1
 %endif
+
+%if 0%{?pba}
+cp -p %{S:1001} README-pba-pkg
+
+%patch1000 -p1
+%endif #{?pba}
 
 %patch705 -p1
 %patch706 -p1
@@ -834,7 +821,7 @@ export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`"
 %{?staging: --with-xattr} \
  --disable-tests
 
-make %{?_smp_mflags} TARGETFLAGS=""
+%make_build TARGETFLAGS=""
 
 %install
 
@@ -2395,6 +2382,9 @@ fi
 %endif
 
 %changelog
+* Sat Jan 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc7-100
+- 4.0-rc7
+
 * Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc6-100
 - 4.0-rc6
 - Revert -O1 optimizations, seems good now

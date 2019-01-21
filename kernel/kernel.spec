@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit a38b1c8d30a341eeb3b48fcda900e76b14a8c7cf
+%global pfcommit 80ddf9e59468b67f73c87c8a8b5966bed66cbeac
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 5978cc855e23808461eb685c6d83088e26a5d455
+%global opensuse_id 4b478decd9bcbfea0500b4aa01126ba821e19c37
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -699,6 +699,8 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 Patch3001: %{pf_url}/3e325ba257db94dbb7601deadb0592ccf79bf08d.patch#/pf-3e325ba257db94dbb7601deadb0592ccf79bf08d.patch
 %endif
 Patch3002: %{pf_url}/f1dc4cde200f8c7113333c7f8687921e2ca4a700.patch#/pf-f1dc4cde200f8c7113333c7f8687921e2ca4a700.patch
+Patch3003: %{pf_url}/0fc63b8b54cf0d0767aec4cd874b9d2deb177300.patch#/pf-0fc63b8b54cf0d0767aec4cd874b9d2deb177300.patch
+Patch3004: %{pf_url}/3b48638c7d345d15a692a83e83718c2f983b066f.patch#/pf-3b48638c7d345d15a692a83e83718c2f983b066f.patch
 #Patch3500: postfactum-merge-fixes-2.patch
 
 %if !0%{?zen}

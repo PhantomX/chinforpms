@@ -5,14 +5,14 @@
 #global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
-%global stagingver 4.0-rc6
+%global stagingver 4.0-rc7
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
 
 Name:           wine-freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0~rc6
+Version:        4.0~rc7
 Release:        1%{?dist}
 Summary:        Wine libraries with all codecs support
 Epoch:          2
@@ -141,7 +141,9 @@ export CC="/usr/bin/clang"
   --without-freetype \
   --without-gnutls \
   --without-gsm \
+  --without-gssapi \
   --without-gstreamer \
+  --without-gtk3 \
   --without-jpeg \
   --without-ldap \
   --without-mpg123 \
@@ -164,11 +166,11 @@ export CC="/usr/bin/clang"
   --without-zlib
 
 
-make include
-make %{?_smp_mflags} TARGETFLAGS="" __builddeps__
+%make_build include
+%make_build TARGETFLAGS="" __builddeps__
 
 for i in 7 ;do
-  make %{?_smp_mflags} TARGETFLAGS="" xaudio2_$i.dll.so -C dlls/xaudio2_$i
+  %make_build TARGETFLAGS="" xaudio2_$i.dll.so -C dlls/xaudio2_$i
 done
 
 
@@ -176,7 +178,7 @@ done
 
 for i in 7 ;do
   %makeinstall xaudio2_$i.dll.so -C dlls/xaudio2_$i \
-    includedir=%{buildroot}%{_includedir}/wine \
+    includedir=%{buildroot}%{_includedir} \
     sysconfdir=%{buildroot}%{_sysconfdir}/wine \
     dlldir=%{buildroot}%{_libdir}/wine \
     LDCONFIG=/bin/true \
@@ -193,6 +195,9 @@ done
 
 
 %changelog
+* Sat Jan 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.0~rc7-1
+- 4.0-rc7
+
 * Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.0~rc6-1
 - 4.0-rc6
 

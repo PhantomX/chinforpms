@@ -20,7 +20,7 @@
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
-%global opensuse_id 5978cc855e23808461eb685c6d83088e26a5d455
+%global opensuse_id 4b478decd9bcbfea0500b4aa01126ba821e19c37
 
 # Do we have a -stable update to apply?
 %global stable_update 3

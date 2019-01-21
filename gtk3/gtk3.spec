@@ -25,7 +25,7 @@
 
 Name:           gtk3
 Version:        3.24.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -47,6 +47,7 @@ Patch103:       gtk+3-3.22.0-disable-overlay.patch
 Patch104:       gtk+3-startup-mode-cwd.patch
 Patch105:       gtk+3-dateformat-with_time.patch
 Patch106:       gtk+3-location_mode-filename.patch
+Patch107:       gtk+3-print-preview.patch
 
 # Debian
 Patch200:       016_no_offscreen_widgets_grabbing.patch
@@ -380,6 +381,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests
 
 %changelog
+* Fri Jan 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.24.3-101
+- gtk3-mushrooms update
+- atril as printer previewer, from gtk3-mushrooms
+
 * Mon Jan 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.24.3-100
 - 3.24.3
 

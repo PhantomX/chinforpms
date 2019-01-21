@@ -86,6 +86,7 @@ geany_run_script.sh
 *.old
 old/
 *.old/
+*.new
 new/
 *.new/
 *.bak
