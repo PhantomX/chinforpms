@@ -67,7 +67,6 @@ cp -rp assets %{buildroot}%{_datadir}/%{name}/
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  --add-category="GTK" \
   --add-category="Utility" \
   --remove-key="NoDisplay" \
   %{name}.desktop

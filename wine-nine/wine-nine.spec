@@ -1,9 +1,8 @@
 %undefine _hardened_build
-%global winecommonver 3.0
 
-%global commit acc17f4e854a2c9f292f22242abc65ec7494de99
+%global commit 13e9b400ef9d1d5a321d5fb0ebe37eed30540f10
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190115
+%global date 20190121
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -13,17 +12,19 @@
 # Set to 1 if will be used with wine staging
 %global staging 1
 
+%global winecommonver 3.0
+
 %global pkgname nine
 
 Name:           wine-%{pkgname}
 Version:        0.2.0.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          1
 
 License:        LGPLv2+
-URL:            https://github.com/dhewg/nine
+URL:            https://github.com/dhewg/%{pkgname}
 
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
@@ -31,7 +32,7 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        ninewinecfg
-Source2:        wineninecfg
+Source2:        wine%{pkgname}cfg
 
 Source100:      wine-ninecfg.desktop
 
@@ -62,14 +63,12 @@ Enhances:       wine
 
 Requires:       mesa-dri-drivers%{?_isa}
 Requires:       mesa-libd3d%{?_isa}
-Provides:       wine-nine%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      wine-nine%{?_isa} < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}%{?_isa} < %{?epoch:%{epoch}:}%{version}-%{release}
 
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
 
 %ifarch x86_64
-Requires:       wine-nine(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
 Provides:       ninewinecfg.exe.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
@@ -99,8 +98,7 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo %{build_cflags} | sed -e 's/-O2/-O1/'`"
-TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 TEMP_CFLAGS="`mesonarray "$TEMP_CFLAGS"`"
 
 TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"
@@ -142,7 +140,7 @@ install -pm0755 %{_target_platform}/d3d9-nine.dll.fake \
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:1} %{buildroot}/%{_bindir}/ninewinecfg
 %if 0%{?staging}
-install -pm0755 %{S:2} %{buildroot}/%{_bindir}/wineninecfg
+install -pm0755 %{S:2} %{buildroot}/%{_bindir}/wine%{pkgname}cfg
 %endif
 
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -151,15 +149,17 @@ desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{S:100}
 
+
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
+
 %files
 %doc README.rst
-%license COPYING.LIB LICENSE
+%license LICENSE
 %{_bindir}/ninewinecfg
 %if 0%{?staging}
-%{_bindir}/wineninecfg
+%{_bindir}/wine%{pkgname}cfg
 %endif
 %{_libdir}/wine/d3d9-nine.dll.so
 %{_libdir}/wine/ninewinecfg.exe.so
@@ -169,6 +169,9 @@ desktop-file-install \
 
 
 %changelog
+* Mon Jan 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.2.0.0-2.20190121git13e9b40
+- New snapshot
+
 * Tue Jan 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.2.0.0-1.20190115gitacc17f4
 - New snapshot
 

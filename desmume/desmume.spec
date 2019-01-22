@@ -138,7 +138,6 @@ popd
 %make_install -C %{name}/src/frontend/posix UPDATEDESKTOP=/usr/bin/true
 
 # Rename desktop files and fix categories
-mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-edit \
   --remove-key Version \
   --remove-category GNOME \

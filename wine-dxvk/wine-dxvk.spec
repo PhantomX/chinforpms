@@ -6,15 +6,15 @@
 
 Name:           wine-%{pkgname}
 Version:        0.95
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
 URL:            https://github.com/doitsujin/%{pkgname}
 
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
-Source1:        README.dxvk
-Source2:        winedxvkcfg
+Source1:        README.%{pkgname}
+Source2:        wine%{pkgname}cfg
 
 Patch0:         %{name}-optflags.patch
 
@@ -36,18 +36,14 @@ Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}%{?_isa} < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      mingw%{__isa_bits}-%{name} < %{?epoch:%{epoch}:}%{version}-%{release}
 
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
-
 %ifarch x86_64
 Requires:       %{name}(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
-Provides:       dxgi_vk.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
-Provides:       d3d11_vk.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
-Provides:       d3d10_vk.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
-Provides:       d3d10_1_vk.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
-Provides:       d3d10core_vk.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
+Provides:       d3d11_%{pkgname}.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
+Provides:       d3d10_%{pkgname}.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
+Provides:       d3d10_1_%{pkgname}.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
+Provides:       d3d10core_%{pkgname}.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
 
 
 %description
@@ -70,14 +66,10 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo %{build_cflags} | sed -e 's/-O2/-O1/'`"
-TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 TEMP_CFLAGS="`mesonarray "$TEMP_CFLAGS"`"
 
 TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"
-
-sed -e "s|RPM_OPT_FLAGS|$TEMP_CFLAGS|g" -i tools/cross-wine%{__isa_bits}.in
-sed -e "s|RPM_LD_FLAGS|$TEMP_LDFLAGS|g" -i tools/cross-wine%{__isa_bits}.in
 
 sed \
   -e "s|RPM_OPT_FLAGS|$TEMP_CFLAGS|g" \
@@ -94,11 +86,11 @@ meson \
 pushd %{_target_platform}
 ninja -v %{?_smp_mflags}
 
-for spec in dxgi d3d11 ;do
-  winebuild --dll --fake-module -E ../src/${spec}/${spec}.spec -F ${spec}_vk.dll -o ${spec}_vk.dll.fake
+for spec in d3d11 ;do
+  winebuild --dll --fake-module -E ../src/${spec}/${spec}.spec -F ${spec}_%{pkgname}.dll -o ${spec}_%{pkgname}.dll.fake
 done
 for spec in d3d10 d3d10core d3d10_1 ;do
-  winebuild --dll --fake-module -E ../src/d3d10/${spec}.spec -F ${spec}_vk.dll -o ${spec}_vk.dll.fake
+  winebuild --dll --fake-module -E ../src/d3d10/${spec}.spec -F ${spec}_%{pkgname}.dll -o ${spec}_%{pkgname}.dll.fake
 done
 popd
 
@@ -106,19 +98,19 @@ popd
 mkdir -p %{buildroot}/%{_libdir}/wine
 mkdir -p %{buildroot}/%{_libdir}/wine/fakedlls
 
-for dll in dxgi d3d11 ;do
+for dll in d3d11 ;do
   install -pm0755 %{_target_platform}/src/${dll}/${dll}.dll.so \
-    %{buildroot}%{_libdir}/wine/${dll}_vk.dll.so
+    %{buildroot}%{_libdir}/wine/${dll}_%{pkgname}.dll.so
 done
 
 for dll in d3d10 d3d10_1 d3d10core ;do
   install -pm0755 %{_target_platform}/src/d3d10/${dll}.dll.so \
-    %{buildroot}%{_libdir}/wine/${dll}_vk.dll.so
+    %{buildroot}%{_libdir}/wine/${dll}_%{pkgname}.dll.so
 done
 
-for fake in dxgi d3d11 d3d10 d3d10_1 d3d10core ;do
-  install -pm0755 %{_target_platform}/${fake}_vk.dll.fake \
-    %{buildroot}/%{_libdir}/wine/fakedlls/${fake}_vk.dll
+for fake in d3d11 d3d10 d3d10_1 d3d10core ;do
+  install -pm0755 %{_target_platform}/${fake}_%{pkgname}.dll.fake \
+    %{buildroot}/%{_libdir}/wine/fakedlls/${fake}_%{pkgname}.dll
 done
 
 mkdir -p %{buildroot}/%{_bindir}
@@ -132,12 +124,16 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 %files
 %license LICENSE
 %doc README.md README.dxvk
-%{_bindir}/winedxvkcfg
+%{_bindir}/wine%{pkgname}cfg
 %{_libdir}/wine/*.dll.so
 %{_libdir}/wine/fakedlls/*.dll
 
 
 %changelog
+* Mon Jan 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.95-2
+- dxgi unneeded now
+- Update dlls suffix
+
 * Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.95-1
 - 0.95
 

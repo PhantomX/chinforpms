@@ -36,7 +36,6 @@ touch -r ChangeLog.orig ChangeLog
 
 desktop-file-install \
   --remove-key="Encoding" \
-  --add-category="GTK" \
   --set-key="Version" \
   --set-value="1.0" \
   --set-icon="%{name}" \

@@ -1,9 +1,9 @@
 #!/bin/bash
-# -- winedxvkcfg --
-# Sets wine Gallium Nine dll redirection.
+# -- winedxupcfg --
+# Sets wine DXUP dll redirection.
 #
 # Script by Phantom X <megaphantomx at bol.com.b>
-# Suggested usage: $ wineninecfg --help
+# Suggested usage: $ winedxupcfg --help
 #
 # Copyright 2018-2019 Phantom X, Goiania, Brazil.
 #
@@ -28,10 +28,10 @@ set -e
 
 ver=20190121
 
-name="Gallium Nine"
-dllsuffix="-nine"
+name="DXUP"
+dllsuffix="_dxup"
 dlls="d3d9"
-nodlls=""
+nodlls="dxgi"
 
 unset winebits
 enabled=0
@@ -128,7 +128,7 @@ setcfg(){
     fi
   done
   if [ "${dllmissing}" -eq 1 ] ;then
-    echo "Reinstall wine-nine and/or run wineboot -u."
+    echo "Reinstall wine-dxup and/or run wineboot -u."
     exit 1
   fi
   if [ "${enabled}" -eq 1 ] && [ "${enabledlnk}" -eq 1 ] ;then

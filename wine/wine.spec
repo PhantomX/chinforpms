@@ -14,7 +14,7 @@
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global tkg_id 9fad5443e39025916bf0accbf7a4377aceedcf9e
+%global tkg_id 9dba2194c02def866a867ddc5f67e2f24a143080
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -34,7 +34,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.0~rc7
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -100,6 +100,9 @@ Patch600:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.
 # Wbemprox videocontroller query fix v2
 # https://bugs.winehq.org/show_bug.cgi?id=38879
 Patch601:       wbemprox_query_v2.patch
+# Needed for wine-dxup build
+Patch602:       https://source.winehq.org/patches/data/156703#/whq-dxup-d3d9header-fix.patch
+Patch603:       https://bugs.winehq.org/attachment.cgi?id=63321&action=diff&context=patch&collapsed=&headers=1&format=raw#/whq-bug46482.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch700:       %{tkg_url}/steam.patch#/tkg-steam.patch
@@ -114,6 +117,8 @@ Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{
 Patch705:       %{tkg_url}/GLSL-toggle.patch#/tkg-GLSL-toggle.patch
 Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve_proton_fullscreen_hack-staging.patch
 Patch707:       %{tkg_url}/large_address_aware-staging.patch#/tkg-large_address_aware-staging.patch
+
+Patch800:       revert-grab-fullscreen.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -731,6 +736,8 @@ This package adds xaudio2 support for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
+%patch602 -p1
+%patch603 -p1
 %patch700 -p1
 %patch702 -p1
 %patch703 -p1
@@ -770,6 +777,7 @@ cp -p %{S:1001} README-pba-pkg
 %patch705 -p1
 %patch706 -p1
 %patch707 -p1
+%patch800 -p1 -R
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -2381,7 +2389,11 @@ fi
 %{_libdir}/wine/opencl.dll.so
 %endif
 
+
 %changelog
+* Mon Jan 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc7-101
+- Patch to fix wine-dxup build
+
 * Sat Jan 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc7-100
 - 4.0-rc7
 

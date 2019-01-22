@@ -12,6 +12,7 @@ mingw-wine-vk9
 qt5ct
 webp-pixbuf-loader
 wine
+wine-dxup
 wine-dxvk
 wine-freeworld
 wine-nine

@@ -17,6 +17,7 @@ xarchiver
 ytnef
 
 # 2
+adriconf
 adwaita-qt
 ario
 asbru-cm
@@ -115,6 +116,7 @@ mingw-wine-vk9
 ortp
 VirtualBox-kmod
 whdd
+wine-dxup
 wine-dxvk
 wine-nine
 

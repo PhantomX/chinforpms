@@ -1,0 +1,32 @@
+diff -up dxvk-0.94/build-wine32.txt.optflags dxvk-0.94/build-wine32.txt
+--- dxvk-0.94/build-wine32.txt.optflags	2018-12-15 10:54:57.000000000 -0200
++++ dxvk-0.94/build-wine32.txt	2019-01-08 08:43:32.013406071 -0200
+@@ -7,9 +7,9 @@ strip = 'strip'
+ [properties]
+ needs_exe_wrapper = true
+ 
+-c_args=['-m32', '-msse', '-msse2']
+-cpp_args=['-m32', '--no-gnu-unique', '-msse', '-msse2']
+-cpp_link_args=['-m32', '-mwindows']
++c_args=['-m32', '-msse', '-msse2', 'RPM_OPT_FLAGS']
++cpp_args=['-m32', '--no-gnu-unique', '-msse', '-msse2', 'RPM_OPT_FLAGS']
++cpp_link_args=['-m32', '-mwindows', 'RPM_LD_FLAGS']
+ 
+ [host_machine]
+ system = 'linux'
+diff -up dxvk-0.94/build-wine64.txt.optflags dxvk-0.94/build-wine64.txt
+--- dxvk-0.94/build-wine64.txt.optflags	2018-12-15 10:54:57.000000000 -0200
++++ dxvk-0.94/build-wine64.txt	2019-01-08 08:43:35.164399929 -0200
+@@ -7,9 +7,9 @@ strip = 'strip'
+ [properties]
+ needs_exe_wrapper = true
+ 
+-c_args=['-m64']
+-cpp_args=['-m64', '--no-gnu-unique']
+-cpp_link_args=['-m64', '-mwindows']
++c_args=['-m64', 'RPM_OPT_FLAGS']
++cpp_args=['-m64', '--no-gnu-unique', 'RPM_OPT_FLAGS']
++cpp_link_args=['-m64', '-mwindows', 'RPM_LD_FLAGS']
+ 
+ [host_machine]
+ system = 'linux'
