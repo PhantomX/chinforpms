@@ -23,7 +23,7 @@
 %global opensuse_id 4b478decd9bcbfea0500b4aa01126ba821e19c37
 
 # Do we have a -stable update to apply?
-%global stable_update 3
+%global stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -128,28 +128,31 @@ Patch8: 0001-Switch-to-python3.patch
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
 
-Name: kernel-tools
-Summary: Assortment of tools for the Linux kernel
-License: GPLv2
-URL: http://www.kernel.org/
-Version: %{rpmversion}
-Release: %{pkg_release}
-Provides:  cpupowerutils = 1:009-0.6.p1
-Obsoletes: cpupowerutils < 1:009-0.6.p1
-Provides:  cpufreq-utils = 1:009-0.6.p1
-Provides:  cpufrequtils = 1:009-0.6.p1
-Obsoletes: cpufreq-utils < 1:009-0.6.p1
-Obsoletes: cpufrequtils < 1:009-0.6.p1
-Obsoletes: cpuspeed < 1:1.5-16
-Requires: kernel-tools-libs = %{version}-%{release}
+Name:           kernel-tools
+Summary:        Assortment of tools for the Linux kernel
+License:        GPLv2
+URL:            http://www.kernel.org/
+Version:        %{rpmversion}
+Release:        %{pkg_release}
+
+Provides:       cpupowerutils = 1:009-0.6.p1
+Obsoletes:      cpupowerutils < 1:009-0.6.p1
+Provides:       cpufreq-utils = 1:009-0.6.p1
+Provides:       cpufrequtils = 1:009-0.6.p1
+Obsoletes:      cpufreq-utils < 1:009-0.6.p1
+Obsoletes:      cpufrequtils < 1:009-0.6.p1
+Obsoletes:      cpuspeed < 1:1.5-16
+Requires:       kernel-tools-libs = %{version}-%{release}
+
 %description -n kernel-tools
 This package contains the tools/ directory from the kernel source
 and the supporting documentation.
 
 
 %package -n perf
-Summary: Performance monitoring for the Linux kernel
-License: GPLv2
+Summary:        Performance monitoring for the Linux kernel
+License:        GPLv2
+
 %description -n perf
 This package contains the perf tool, which enables performance monitoring
 of the Linux kernel.
@@ -162,37 +165,42 @@ to manipulate perf events.
 %package -n python2-perf
 Summary: %{python_perf_sum}
 %{?python_provide:%python_provide python2-perf}
+
 %description -n python2-perf
 %{python_perf_desc}
 
 %package -n python3-perf
 Summary: %{python_perf_sum}
 %{?python_provide:%python_provide python3-perf}
+
 %description -n python3-perf
 %{python_perf_desc}
 
 %package -n kernel-tools-libs
-Summary: Libraries for the kernels-tools
-License: GPLv2
+Summary:        Libraries for the kernels-tools
+License:        GPLv2
+
 %description -n kernel-tools-libs
 This package contains the libraries built from the tools/ directory
 from the kernel source.
 
 %package -n kernel-tools-libs-devel
-Summary: Assortment of tools for the Linux kernel
-License: GPLv2
-Requires: kernel-tools = %{version}-%{release}
-Provides:  cpupowerutils-devel = 1:009-0.6.p1
-Obsoletes: cpupowerutils-devel < 1:009-0.6.p1
-Requires: kernel-tools-libs = %{version}-%{release}
-Provides: kernel-tools-devel
+Summary:        Assortment of tools for the Linux kernel
+License:        GPLv2
+Requires:       kernel-tools = %{version}-%{release}
+Provides:       cpupowerutils-devel = 1:009-0.6.p1
+Obsoletes:      cpupowerutils-devel < 1:009-0.6.p1
+Requires:       kernel-tools-libs = %{version}-%{release}
+Provides:       kernel-tools-devel
+
 %description -n kernel-tools-libs-devel
 This package contains the development files for the tools/ directory from
 the kernel source.
 
 %package -n bpftool
-Summary: Inspection and simple manipulation of eBPF programs and maps
-License: GPLv2
+Summary:        Inspection and simple manipulation of eBPF programs and maps
+License:        GPLv2
+
 %description -n bpftool
 This package contains the bpftool, which allows inspection and simple
 manipulation of eBPF programs and maps.
@@ -454,6 +462,9 @@ popd
 
 
 %changelog
+* Tue Jan 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.4-500.chinfo
+- 4.20.4
+
 * Thu Jan 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.3-500.chinfo
 - 4.20.3
 

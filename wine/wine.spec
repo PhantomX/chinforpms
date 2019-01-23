@@ -10,11 +10,11 @@
 # uncomment to enable; comment-out to disable.
 %if 0%{?fedora}
 %global staging 1
-%global stagingver 4.0-rc7
+%global stagingver 4.0
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global tkg_id 9dba2194c02def866a867ddc5f67e2f24a143080
+%global tkg_id 14708044953657df5c47d458c3ef7fc59f218e8a
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -33,8 +33,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0~rc7
-Release:        101%{?dist}
+Version:        4.0
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -827,7 +827,8 @@ export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`"
  --enable-win64 \
 %endif
 %{?staging: --with-xattr} \
- --disable-tests
+ --disable-tests \
+%{nil}
 
 %make_build TARGETFLAGS=""
 
@@ -2391,6 +2392,9 @@ fi
 
 
 %changelog
+* Tue Jan 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0-100
+- 4.0
+
 * Mon Jan 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0~rc7-101
 - Patch to fix wine-dxup build
 

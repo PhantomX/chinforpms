@@ -11,7 +11,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.5.7
+Version:        1.5.8
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -148,7 +148,7 @@ for size in 16 32 48 64 128 256 512; do
 done
 
 # Installing appdata for Gnome Software...
-install -d "%{buildroot}%{_datadir}/metainfo"
+install -d "%{buildroot}%{_metainfodir}"
 install -m 0644 -p lib/xdg/telegramdesktop.appdata.xml "%{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml"
 
 %check
@@ -160,10 +160,13 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-%{_datadir}/metainfo/%{name}.appdata.xml
+%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Jan 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.8-100
+- 1.5.8
+
 * Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.7-100
 - 1.5.7
 - RPMFusion sync
