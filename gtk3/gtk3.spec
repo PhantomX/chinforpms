@@ -25,7 +25,7 @@
 
 Name:           gtk3
 Version:        3.24.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -35,6 +35,9 @@ URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
 Source1:        https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2:        chinforpms-adwaita.css
+
+# Revert gtkmenu changes that breaking xfce4-panel menu, temporarily
+Patch10:        gtk+3-revert-00486efd-c35878ec.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -242,7 +245,8 @@ export CFLAGS='-fno-strict-aliasing %{build_cflags}'
 %endif
         --enable-colord \
         --enable-installed-tests \
-        --with-included-immodules=wayland
+        --with-included-immodules=wayland \
+%{nil}
 )
 
 # fight unused direct deps
@@ -380,7 +384,11 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_libexecdir}/installed-tests/gtk+
 %{_datadir}/installed-tests
 
+
 %changelog
+* Wed Jan 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.24.4-101
+- Revert gtkmenu upstream commits to fix xfce4-panel large menus scrolling
+
 * Mon Jan 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.24.4-100
 - 3.24.4
 

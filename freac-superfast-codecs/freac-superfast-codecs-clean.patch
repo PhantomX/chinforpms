@@ -1,0 +1,16 @@
+diff -up superfast-1.0-pre3/components/Makefile.clean superfast-1.0-pre3/components/Makefile
+--- superfast-1.0-pre3/components/Makefile.clean	2018-07-21 05:42:03.000000000 -0300
++++ superfast-1.0-pre3/components/Makefile	2019-01-23 19:25:18.769504604 -0200
+@@ -4,11 +4,7 @@ BOCA_PATH = ..
+ 
+ include $(dir $(firstword $(MAKEFILE_LIST)))/$(BOCA_PATH)/Makefile-options
+ 
+-FOLDERS = fdkaac lame opus speex
+-
+-ifneq ($(BUILD_OSX),True)
+-	FOLDERS += faac
+-endif
++FOLDERS = lame opus speex
+ 
+ ifeq ($(BUILD_OSX),True)
+ 	FOLDERS += coreaudio

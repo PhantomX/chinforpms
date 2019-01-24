@@ -111,6 +111,9 @@ belle-sip
 belr
 bzrtp
 freac
+freac-cdk-freeworld
+freac-superfast-codecs
+freac-superfast-codecs-freeworld
 m64py
 mingw-wine-vk9
 ortp

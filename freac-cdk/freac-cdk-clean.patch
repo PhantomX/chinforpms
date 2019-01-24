@@ -1,0 +1,28 @@
+diff -up freac-cdk-1.1-alpha-20181201/components/decoder/Makefile.clean freac-cdk-1.1-alpha-20181201/components/decoder/Makefile
+--- freac-cdk-1.1-alpha-20181201/components/decoder/Makefile.clean	2017-11-18 21:08:06.000000000 -0200
++++ freac-cdk-1.1-alpha-20181201/components/decoder/Makefile	2019-01-23 17:19:48.883217123 -0200
+@@ -4,7 +4,7 @@ BOCA_PATH = ../..
+ 
+ include $(dir $(firstword $(MAKEFILE_LIST)))/$(BOCA_PATH)/Makefile-options
+ 
+-FOLDERS = cuesheet faad2 fdkaac flac mac mpg123 opus sndfile speex vorbis
++FOLDERS = cuesheet flac mpg123 opus sndfile speex vorbis
+ 
+ ifneq ($(BUILD_OSX),True)
+ 	FOLDERS += lame mad
+diff -up freac-cdk-1.1-alpha-20181201/components/encoder/Makefile.clean freac-cdk-1.1-alpha-20181201/components/encoder/Makefile
+--- freac-cdk-1.1-alpha-20181201/components/encoder/Makefile.clean	2017-11-18 21:08:06.000000000 -0200
++++ freac-cdk-1.1-alpha-20181201/components/encoder/Makefile	2019-01-23 17:19:46.907228283 -0200
+@@ -4,11 +4,7 @@ BOCA_PATH = ../..
+ 
+ include $(dir $(firstword $(MAKEFILE_LIST)))/$(BOCA_PATH)/Makefile-options
+ 
+-FOLDERS = fdkaac flac lame mac meh opus sndfile speex vorbis
+-
+-ifneq ($(BUILD_OSX),True)
+-	FOLDERS += faac voaacenc
+-endif
++FOLDERS = flac lame meh opus sndfile speex vorbis
+ 
+ ifeq ($(USE_WINE),True)
+ 	FOLDERS += coreaudioconnect

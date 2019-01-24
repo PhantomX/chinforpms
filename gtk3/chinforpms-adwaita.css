@@ -47,6 +47,7 @@ treeview button {
 scale {
   padding: 10px 0;
 }
+
 headerbar, switch slider {
   min-height: 0;
 }
@@ -63,6 +64,7 @@ placessidebar row {
   min-height: 20px;
   padding: 0px;
 }
+
 placessidebar row button.sidebar-button {
   min-height: 20px;
   min-width: 20px;
@@ -92,12 +94,11 @@ messagedialog buttonbox {
   margin-top: -17px;
 }
 
-.background:not(.tiled):not(.maximized):not(.solid-csd) .titlebar:backdrop,
-.background:not(.tiled):not(.maximized):not(.solid-csd) .titlebar,
-.titlebar:not(headerbar),
-headerbar {
-  background-image: none;
+.background:not(.csd):not(.solid-csd) .titlebar:not(.default-decoration),
+.background:not(.csd):not(.solid-csd) .titlebar:not(.default-decoration) headerbar {
+  background: inherit;
 }
+
 entry undershoot.left,
 entry undershoot.right,
 spinbutton:not(.vertical) undershoot.left,

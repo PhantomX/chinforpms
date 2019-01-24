@@ -11,8 +11,8 @@
 %endif
 
 Name:           discord
-Version:        0.0.5
-Release:        2%{?dist}
+Version:        0.0.8
+Release:        1%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
 
@@ -33,6 +33,8 @@ Requires:       alsa-lib%{_isa}
 Requires:       libappindicator%{_isa}
 Requires:       libatomic%{?_isa}
 Requires:       libcxx%{?_isa}
+Requires:       libglvnd-egl%{?_isa}
+Requires:       libglvnd-gles%{?_isa}
 Requires:       libnotify%{?_isa}
 Requires:       libX11%{?_isa}
 Requires:       libXi%{?_isa}
@@ -90,6 +92,11 @@ mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -rp %{execname} *.bin *.dat *.pak *.so locales resources \
   %{buildroot}%{_libdir}/%{name}/
 
+rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
+rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
+
+chmod 0755 %{buildroot}%{_libdir}/%{name}/%{execname}
+
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
@@ -118,6 +125,9 @@ done
 
 
 %changelog
+* Thu Jan 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.8-1
+- 0.0.8
+
 * Sat Jul 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.5-2
 - Ugly fix to xdg-mime CPU spikes
 

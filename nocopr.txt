@@ -6,6 +6,8 @@ cowsrevenge
 desmume
 discord
 dropboxd
+freac-cdk-freeworld
+freac-superfast-codecs-freeworld
 gflash-player
 hakuneko-desktop
 irpf2016
