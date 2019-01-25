@@ -1,0 +1,24 @@
+diff -up gkrellmpc-0.1_beta10/gkrellmpc.c.assertion gkrellmpc-0.1_beta10/gkrellmpc.c
+--- gkrellmpc-0.1_beta10/gkrellmpc.c.volnull	2019-01-24 22:38:36.177203451 -0200
++++ gkrellmpc-0.1_beta10/gkrellmpc.c	2019-01-24 23:04:57.446094723 -0200
+@@ -439,6 +439,7 @@ void mpc_update_songname (gchar * newnam
+ void mpc_sync_with_mpd() {
+ 	GHashTable * status;
+ 	GHashTable * currentsong;
++	gchar * volume;
+ 	gchar * temp;
+ 	gchar * state;
+ 	gchar * time;
+@@ -476,7 +477,11 @@ void mpc_sync_with_mpd() {
+ 	else {
+ 
+ 		/* Update global volume */
+-		if (!mpc_volume_inmotion) mpc_volume = (gint)g_strtod(g_hash_table_lookup(status, "volume"), NULL);
++		if (!mpc_volume_inmotion)
++			volume = g_hash_table_lookup(status, "volume");
++			if (volume != NULL) {
++				mpc_volume = (gint)g_strtod(volume, NULL);
++			}
+ 
+ 		time = g_hash_table_lookup(status, "time");
+ 		/* Update pos */

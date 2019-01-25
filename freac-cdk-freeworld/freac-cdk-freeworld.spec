@@ -40,9 +40,7 @@ sed -e 's|winegcc|\0-disabled|g' -i Makefile-options
 sed -e 's|/lib/|/%{_lib}/|g' -i runtime/common/utilities.cpp
 
 %build
-export CFLAGS="%{build_cflags}"
-export CXXFLAGS="%{build_cxxflags}"
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 
 %make_build -C runtime \
   config=%{systemlibs} \

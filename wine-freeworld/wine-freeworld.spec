@@ -186,8 +186,6 @@ for i in 7 ;do
     UPDATE_DESKTOP_DATABASE=/bin/true
 done
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
 
 %files
 %license COPYING.LIB

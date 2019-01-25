@@ -48,10 +48,7 @@ sed -e 's/\r//' -i COPYING Readme
 sed -e 's|/lib/|/%{_lib}/|g' -i src/loader/console.cpp src/loader/gui.cpp
 
 %build
-
-export CFLAGS="%{build_cflags}"
-export CXXFLAGS="%{build_cxxflags}"
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 
 %make_build prefix=/usr libdir=%{_libdir}
 

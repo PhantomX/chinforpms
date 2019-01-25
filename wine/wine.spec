@@ -326,8 +326,6 @@ wine-* sub packages.
 
 %package core
 Summary:        Wine core package
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
 Requires(posttrans):   %{_sbindir}/alternatives
 Requires(preun):       %{_sbindir}/alternatives
 
@@ -1135,8 +1133,6 @@ if [ $1 -eq 0 ]; then
 fi
 %endif
 
-%post core -p /sbin/ldconfig
-
 %posttrans core
 %ifarch x86_64 aarch64
 %{_sbindir}/alternatives --install %{_bindir}/wine \
@@ -1160,7 +1156,6 @@ fi
 %endif
 
 %postun core
-/sbin/ldconfig
 if [ $1 -eq 0 ] ; then
 %ifarch x86_64 aarch64 aarch64
   %{_sbindir}/alternatives --remove wine %{_bindir}/wine64
@@ -1170,28 +1165,6 @@ if [ $1 -eq 0 ] ; then
   %{_sbindir}/alternatives --remove wineserver %{_bindir}/wineserver32
 %endif
 fi
-
-%post ldap -p /sbin/ldconfig
-%postun ldap -p /sbin/ldconfig
-
-%post cms -p /sbin/ldconfig
-%postun cms -p /sbin/ldconfig
-
-%post twain -p /sbin/ldconfig
-%postun twain -p /sbin/ldconfig
-
-%post capi -p /sbin/ldconfig
-%postun capi -p /sbin/ldconfig
-
-%post alsa -p /sbin/ldconfig
-%postun alsa -p /sbin/ldconfig
-
-%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
-%post openal -p /sbin/ldconfig
-%postun openal -p /sbin/ldconfig
-%post xaudio2 -p /sbin/ldconfig
-%postun xaudio2 -p /sbin/ldconfig
-%endif
 
 %files
 # meta package

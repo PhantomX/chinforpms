@@ -150,10 +150,6 @@ desktop-file-install \
   %{S:100}
 
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
-
 %files
 %doc README.rst
 %license LICENSE

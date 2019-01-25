@@ -43,9 +43,7 @@ development with %{name} library.
 sed -e 's/\r//' -i Readme.md Copying doc/reference/dtds/*.dtd
 
 %build
-export CFLAGS="%{build_cflags}"
-export CXXFLAGS="%{build_cxxflags}"
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 
 %make_build prefix=/usr libdir=%{_libdir}
 

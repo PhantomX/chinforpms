@@ -60,9 +60,8 @@ sed -i '1s|/usr/bin/env python|%{__python2}|' shell/linux/tools/%{name}-joyconfi
 
 %build
 export PREFIX=%{_prefix}
-export CFLAGS="%{build_cflags}"
-export CXXFLAGS="%{build_cxxflags}"
-export LDFLAGS="%{build_ldflags} -Wl,--as-needed"
+%set_build_flags
+export LDFLAGS="$LDFLAGS -Wl,--as-needed"
 
 %make_build -C shell/linux
 

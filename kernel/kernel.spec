@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit b291b0aa514e8fcc878bf9b71bf93222bb473d5a
+%global pfcommit 3aaba3667bfabd735c6e8d1db368111701a33210
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 4b478decd9bcbfea0500b4aa01126ba821e19c37
+%global opensuse_id b458db8b35c5a584464d50f2ec78cadc4c922ce6
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -620,12 +620,11 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
 # https://patchwork.kernel.org/patch/10686407/
-Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
+Patch331: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
 # Improve raspberry pi camera and analog audio
+Patch332: bcm2836-Improve-VCHIQ-cache-line-size-handling.patch
 Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
 
 # Initall support for the 3A+
@@ -637,14 +636,20 @@ Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
 # https://patchwork.kernel.org/patch/10741809/
 Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
 
+# https://www.spinics.net/lists/arm-kernel/msg699583.html
+Patch337: ARM-dts-bcm283x-Several-DTS-improvements.patch
+
+Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
+
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
 
+Patch341: brcmfmac-Call-brcmf_dmi_probe-before-brcmf_of_probe.patch
+
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://patchwork.kernel.org/patch/10392891/
-Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
-Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
+Patch350: Allwinner-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -656,17 +661,17 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# rhbz 1526312 (accelerometer part of the bug), patches pending upstream
+# rhbz 1526312 patch merged into 5.0-rc#
 Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
-# rhbz 1645070 patch queued upstream for merging into 4.21
+# rhbz 1645070 patch merged into 5.0-rc#
 Patch505: asus-fx503-keyb.patch
-
-# CVE-2019-3701 rhbz 1663729 1663730
-Patch506: CVE-2019-3701.patch
 
 # CVE-2019-3459 and CVE-2019-3460 rhbz 1663176 1663179 1665925
 Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
+
+# rhbz 1663613 patch merged into 5.0-rc#
+Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch 
 
 ### Extra
 
@@ -2007,6 +2012,10 @@ fi
 #
 #
 %changelog
+* Thu Jan 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.4-500.chinfo
+- 4.20.4
+- f29 sync
+
 * Thu Jan 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.3-500.chinfo
 - 4.20.3
 - stabilization sync

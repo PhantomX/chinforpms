@@ -117,10 +117,6 @@ mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
-
 %files
 %license LICENSE
 %doc README.md README.dxvk

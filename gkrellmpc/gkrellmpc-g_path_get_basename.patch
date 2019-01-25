@@ -1,0 +1,46 @@
+From d69dc36e7c6feeeeef5a43e635f45c17229d9ff0 Mon Sep 17 00:00:00 2001
+From: Simon Marchi <simon.marchi@polymtl.ca>
+Date: Sun, 21 Jul 2013 23:53:22 -0400
+Subject: [PATCH] Use g_path_get_basename instead of home made version
+
+Signed-off-by: Simon Marchi <simon.marchi@polymtl.ca>
+---
+ addlist.c | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
+
+diff --git a/addlist.c b/addlist.c
+index e181d73..a232b05 100644
+--- a/addlist.c
++++ b/addlist.c
+@@ -304,8 +304,6 @@ gboolean mpc_addlist_update(void) {
+ 	GtkTreeIter * parentiter = NULL;
+ 	gint level = 0;
+ 	gchar * p;
+-	gchar ** parts;
+-	gchar ** tempparts;
+ 	gchar * nicename = NULL;
+ 
+ 	if (!mpc_addlist) {
+@@ -353,12 +351,7 @@ gboolean mpc_addlist_update(void) {
+ 			}
+ 
+ 			/* Set nicename */
+-			parts = g_strsplit((directory ? directory : file), "/", 0);
+-			tempparts = parts;
+-			while (tempparts[0]) {
+-				nicename = tempparts[0];
+-				tempparts++;
+-			}
++			nicename = g_path_get_basename((directory ? directory : file));
+ 
+ 			/* Add new row to store */
+ 			gtk_tree_store_append(mpc_addlist_store, &iter, parentiter);
+@@ -370,8 +363,6 @@ gboolean mpc_addlist_update(void) {
+ 					, MPC_ADDLIST_COLUMN_DISPLAYNAME, nicename
+ 					, -1);
+ 
+-			g_strfreev(parts);
+-
+ 			/* Update parentiter */
+ 			if (directory) {
+ 				tempiter = g_malloc(sizeof(iter));

@@ -24,9 +24,7 @@ sed \
   -i Makefile
 
 %build
-
-export CFLAGS="%{build_cflags}"
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 
 %make_build
 

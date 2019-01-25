@@ -1,0 +1,1130 @@
+From patchwork Sat Jan 12 12:43:23 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10760945
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 18CC36C5
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:44:49 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 042CF293AD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:44:49 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id E941C29533; Sat, 12 Jan 2019 12:44:48 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.2 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_MED autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 8DAD6293AD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:44:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=EmbYgTmQfiZZhkO7mYWDbYaqvNGlUz3wj91Matd8dpA=; b=nffTlcJCwsur+Fai1sgVqALGII
+	kD7qTYD+U+dXJomixK3RGzvmUkend8iIpN8lsPHFUn8oSTErIq4IvVHLN6MVxkikD1ZoJtkE0kaOT
+	x+7sxHuN2DKl5mgWtpNPHED8Kt63c6J5n8mfxvlayaxAlPEKQBeQa4QGBHuCoL9giKAFzjEUsBwFp
+	Xlf9YRXSuMKW89VTs0nZB2eEmdyC/El9Yw6VkczzewK059cNBo3qvdaoxsRPBoSFikwJfYd6K+l5r
+	z1RqVYlMgxr0IOsX6S/q1JWpt7WYzrjL3NmfJPrKJ2QPMQge7duaHR710ue/3HiqCjGVocIL5kVkH
+	Tqr7rFPA==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1giIed-0006QM-Vk; Sat, 12 Jan 2019 12:44:47 +0000
+Received: from mout.kundenserver.de ([212.227.17.24])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1giIe3-0005sk-Jd; Sat, 12 Jan 2019 12:44:15 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis)
+ id 1MsIfc-1hXFfJ1zr8-00tiod; Sat, 12 Jan 2019 13:43:59 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>, Eric Anholt <eric@anholt.net>
+Subject: [PATCH 1/6] ARM: dts: bcm283x: Fix DTC warning for memory node
+Date: Sat, 12 Jan 2019 13:43:23 +0100
+Message-Id: <1547297008-2740-2-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+References: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:m5PXnYOzUn8RRTmCqRKOFExPJaNp0DdLxyKAIZf66qbtTC2Kwdn
+ VyZLfI2pGBbHMFNiJDHBqHthbnu1WgPUMjcVRzZiWor4kcK3fjheT0306uv9RWpnHlgz2Wu
+ 8NkKHkDU26kZrrmYbtfKIYc4gJ8uEuvpDmA0nm9m9eiGINW9BBGmH34OB2LzxKRdz3RYQjk
+ 0Bp99FTc1Evx1XZZmr1vA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:AZVoUr0OV8c=:l2whGjTRwQ0ijNyYEBfhbh
+ jy0bH5tS2EGw9TNEqSEoHoyX0CjVGU7EVi8L4PKR43vq/Yuz0yn2ouIzgoFxOVRQVl2uBasX0
+ SlTVk79ECLSyvk/T2hzzdMngzWmYBtPbVzF+tQO4cZgnEHFA7OYQLG714VMuyd6ZPRWwJwQlM
+ fCMJjvl0Aw2b57E1+fkUSb9nFNB9R+Z6qxmHSoZifzykeTh6/xtoM5RE5F9ewlR5W/qFcS7ej
+ wPca65DjBXdYUv8ghIcuM6SVUF3qStTxY8TFgOCtlTPqTbsWQSkw7B7z3KK4N7MaB9hgo+5rW
+ H/VjaHdmoMmswUGgT0VtuD3Tu1hZU4UmoFjaDjsVky6juSgIfZPDoiVyfGLKNgtQq7Dhsk8Us
+ ZXc3iviiuQH4GY2PmEFqHAKpjmZNxJyAPqQlETOt7EorAhQLOWVZGZJU4Sokzwz17Jz+J6KC7
+ eN++aLE3MBm241/k8YYCoJOEBJIbkesfm3SgdjSGfcjbUS20iqf3moNHMoSRAZdfaYZeIzjbP
+ EPhQRsaXunMYLlsipP4/KKupfUdZxBJNljMLofkGn1oJLYjlB1C2aLvXZyYCc6y5h+rHwwH9v
+ a38rl9wVLNgyNHuwZAHX+z+V9Kn/UY23/fZj9zHGHn7Mwmn4Ohirr4KAiT2fEmPbyvOMpjXhu
+ LvvoCCmISIjlJykgW/jWqeEnUDzgIls+mBe3Vv0F8AvltMyqDbZkzoH/0HXynQy1iJ03tgigu
+ 5jyRqRJ6efIA3d4hp4dXHw+gd1xkJ49KPkg7US2FA4bRdAc2cOV77VU0sUU=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20190112_044412_170065_6199F88A 
+X-CRM114-Status: GOOD (  15.59  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Gottfried Haider <gottfried.haider@gmail.com>, devicetree@vger.kernel.org,
+ Stefan Wahren <stefan.wahren@i2se.com>, Phil Elwell <phil@raspberrypi.org>,
+ bcm-kernel-feedback-list@broadcom.com, Peter Robinson <pbrobinson@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Compiling the bcm283x DTS with W=1 leads to the following warning:
+
+Warning (unit_address_vs_reg): /memory: node has a reg or ranges property,
+but no unit name
+
+Fix this by adding the unit address.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ arch/arm/boot/dts/bcm2835-rpi.dtsi         | 2 +-
+ arch/arm/boot/dts/bcm2836-rpi-2-b.dts      | 2 +-
+ arch/arm/boot/dts/bcm2837-rpi-3-a-plus.dts | 2 +-
+ arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts | 2 +-
+ arch/arm/boot/dts/bcm2837-rpi-3-b.dts      | 2 +-
+ arch/arm/boot/dts/bcm2837-rpi-cm3.dtsi     | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm2835-rpi.dtsi b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+index c6e2b23..e490f2a 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+@@ -1,7 +1,7 @@
+ #include <dt-bindings/power/raspberrypi-power.h>
+ 
+ / {
+-	memory {
++	memory@0 {
+ 		device_type = "memory";
+ 		reg = <0 0x10000000>;
+ 	};
+diff --git a/arch/arm/boot/dts/bcm2836-rpi-2-b.dts b/arch/arm/boot/dts/bcm2836-rpi-2-b.dts
+index ac4408b..871fc4a 100644
+--- a/arch/arm/boot/dts/bcm2836-rpi-2-b.dts
++++ b/arch/arm/boot/dts/bcm2836-rpi-2-b.dts
+@@ -9,7 +9,7 @@
+ 	compatible = "raspberrypi,2-model-b", "brcm,bcm2836";
+ 	model = "Raspberry Pi 2 Model B";
+ 
+-	memory {
++	memory@0 {
+ 		reg = <0 0x40000000>;
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-a-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-a-plus.dts
+index e9fadd3..7f4437a 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-a-plus.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-a-plus.dts
+@@ -13,7 +13,7 @@
+ 		stdout-path = "serial1:115200n8";
+ 	};
+ 
+-	memory {
++	memory@0 {
+ 		reg = <0 0x20000000>;
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+index 42bb090..7d65013 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+@@ -14,7 +14,7 @@
+ 		stdout-path = "serial1:115200n8";
+ 	};
+ 
+-	memory {
++	memory@0 {
+ 		reg = <0 0x40000000>;
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
+index 0c155dd..9abb9c5 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
+@@ -14,7 +14,7 @@
+ 		stdout-path = "serial1:115200n8";
+ 	};
+ 
+-	memory {
++	memory@0 {
+ 		reg = <0 0x40000000>;
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-cm3.dtsi b/arch/arm/boot/dts/bcm2837-rpi-cm3.dtsi
+index 4a89a18..81399b2 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-cm3.dtsi
++++ b/arch/arm/boot/dts/bcm2837-rpi-cm3.dtsi
+@@ -4,7 +4,7 @@
+ #include "bcm2836-rpi.dtsi"
+ 
+ / {
+-	memory {
++	memory@0 {
+ 		reg = <0 0x40000000>;
+ 	};
+ 
+
+From patchwork Sat Jan 12 12:43:24 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10760943
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 1B05E6C5
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:44:26 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 0793A293AD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:44:26 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id EE8DD29533; Sat, 12 Jan 2019 12:44:25 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.2 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_MED autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id AA897293AD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:44:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=iilSd0gcaohejI3xv9TFYwe0Ye5T4Hj2qEiikJ8erjI=; b=EChRrFhS2H8yhVG0YOf3+VLeUo
+	29RSvYKWOZh+GcalDJ3UWM/CZEcYtJdwrHaiMenV8qMUYBy6r2iQArOPXLm1GLPJd9zl0/XtazPdH
+	Qw94tinCP/IiNDsF2KVGaTOfZXJyCJgErY5mo8rqdDbuLgzUDgQPxdjGohAdXPp0klMnWJvg79+DJ
+	gZ0m7loO4VU8h14wdkUL6AhWMBkHPxQ5B27NllGmQZuot6yd2t7XUDb0HeTmIVYmADtPojpiddU61
+	8OvJ1Zzty1JBOuT7KygeECCkplQCETwuI8xd/7eazeKY6X2fv7SrmYQ6d+kd+x/bKHf/P1ZsN9q3N
+	i2NiAeVg==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1giIeF-00062b-KO; Sat, 12 Jan 2019 12:44:23 +0000
+Received: from mout.kundenserver.de ([212.227.17.10])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1giIe3-0005sn-Dt; Sat, 12 Jan 2019 12:44:13 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis)
+ id 1Mhl4Q-1hCygq1uFM-00dryz; Sat, 12 Jan 2019 13:44:00 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>, Eric Anholt <eric@anholt.net>
+Subject: [PATCH 2/6] ARM: dts: bcm2835-rpi: Drop unnecessary
+ #address-cells/#size-cells
+Date: Sat, 12 Jan 2019 13:43:24 +0100
+Message-Id: <1547297008-2740-3-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+References: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:yDdpCIkPnWlSJ3Z4r2bhobta1joQXPe/STSUoa5WixjWPPfwU4x
+ udD1CZJtDZmEvZlnaqaRHT4DqTdIHV792iu+fm+onzk7UvvWYMlb0P2c0Rkzu4pjC7tuuGp
+ XUx+e3sR8fSFxWI5TPznbfwdv+dbw1XvVxA5j6lk3lXffzbAdI+a5nwaz+Bt3JdohJuHX5h
+ zVUCl3UpS4cdhRe4L9sHQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:h7oJyWPZWx0=:ewDE/uI7sLXJeiCxFnPOir
+ SBRu7BIo3HlO1tRgNHNtWKAuFLULv9iHVzKOznUNe035Cf6xR/YrwiTHACEQoNeSoBIlXTxUx
+ LR39u0hBZv/m9/ZW2g/M0IWThJPdatMo5YMuQXtLxf/wZptjgp5ICa0ZD9Uejxs94PfnH9ldX
+ qaIM+OZwVwXPVch1T5/ornZkS5sGQEg5vcWXIpxAlszTNI+y8+eWRidIBJdXKVF4Y2EagyhO3
+ RjjxHS2byfBHBpNWqDxv6uBkelvLnHoRCp9II5d1B+nqaOdlflZJLEM6+CzEpY2Vu+ISy8etm
+ K76fzcfFTT41PTlv5KMqALzQ5DdMmBJaZl7TxIQnByVJMk2GreVnXKmSSj0Z4EoBBKeg/myVt
+ aS5IoGVb6yk4AvxNdDZs4cSh/PCUtluvlcFIkOnFwsdmC663NYke1vDZw7X5xf4zQhXjV4/Dz
+ vfrNrY0mqcaNQtOa5vNqae2KLOb6bUP6O6topJx1MZH8TdzT7MYY2JoMDVEhoogPMHBIc794S
+ 4MUklcAgzUDJ3ATmj9ZrRrQXQcPs4U30NGCd5lr4A0RmjDd2IE1VMy287C0Z9h8qlhZ7gMFXu
+ RnD6gu7B6jT8XLgSqma+Ic1REknHFxf8MgfDFPml9bNg6/XWRBuckwWtLn2mNcGUBXcu56xs8
+ UGaZaTa2CSGDYIzq29gOki3LpY6E96lwi09ufHGz7lY1in7gew+KjMsVYsf7MJFMRE4w/YtYR
+ s4vtQDkjmmGMtxENGTxX8vqOWM60Xm5I6ERyJ8dxQjCEeuqmmdYQKKgmddI=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20190112_044411_769709_C6D68194 
+X-CRM114-Status: GOOD (  12.95  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Gottfried Haider <gottfried.haider@gmail.com>, devicetree@vger.kernel.org,
+ Stefan Wahren <stefan.wahren@i2se.com>, Phil Elwell <phil@raspberrypi.org>,
+ bcm-kernel-feedback-list@broadcom.com, Peter Robinson <pbrobinson@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Compiling the bcm2835-rpi.dtsi with W=1 leads to the following warning:
+
+Warning (avoid_unnecessary_addr_size): /soc/firmware: unnecessary
+ #address-cells/#size-cells without "ranges" or child "reg" property
+
+Fix this by removing these unnecessary properties.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ arch/arm/boot/dts/bcm2835-rpi.dtsi | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm2835-rpi.dtsi b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+index e490f2a..715d50c 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+@@ -19,8 +19,6 @@
+ 	soc {
+ 		firmware: firmware {
+ 			compatible = "raspberrypi,bcm2835-firmware", "simple-bus";
+-			#address-cells = <0>;
+-			#size-cells = <0>;
+ 			mboxes = <&mailbox>;
+ 		};
+ 
+
+From patchwork Sat Jan 12 12:43:25 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10760953
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 150F16C5
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:45:53 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 0396929536
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:45:53 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id EC19129538; Sat, 12 Jan 2019 12:45:52 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.2 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_MED autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 8884829536
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:45:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=FGAnBmb3C+XD38TkscBbWtKoHxSLGP5xWqQ6ieBTwN4=; b=ERCcXLwSEEYf/jvnRCw9D5WSgM
+	gSBbwrbWIqU74vqxrvigHSadclvJOnHRG3uSNoJfHQHQRRs29StZhCaQlrDRloCkrvAmqoGSXjvnY
+	bJYYwoTxG0/J6+2WzX5n3HLyDMnjUQkFf7n0krRBWUM7aDZHn+lwI4HBwmJsolb1AXMUHOMRAcjDT
+	Vp2z/TnooV1dbFteuZi80a+fvUl+7nfalHT1tkVOhQtdLkLV+mnWQKp5ovEZt+TS3MHNdmI/woKBM
+	XDLADnMyWUYNUu9Vjj945Uqx/wAAX+hCInCBKB8+9pa3iTFKCfV24Tshm/PsmxkcP1ukN+ZbWOvh/
+	NP6AlovA==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1giIfd-00007X-NX; Sat, 12 Jan 2019 12:45:49 +0000
+Received: from mout.kundenserver.de ([217.72.192.74])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1giIe3-0005sj-K0; Sat, 12 Jan 2019 12:44:15 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis)
+ id 1N49Qd-1hPmUb47ST-0101Wy; Sat, 12 Jan 2019 13:44:01 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>, Eric Anholt <eric@anholt.net>
+Subject: [PATCH 3/6] ARM: dts: bcm2835: Fix labels for GPIO 0,1
+Date: Sat, 12 Jan 2019 13:43:25 +0100
+Message-Id: <1547297008-2740-4-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+References: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:QJCZ1BJqaup6vHEhzK3pWfsZUAG8j96znb+fC6R3hbojjx4PWx5
+ Z6jL6mXzJTtOs3gaL2F5sTuT1mouRrms1+q/sy4YvDuI+b3rTMlTTrDNY0lusedCTF/WB5X
+ wxUsCoCchR+9YKiIVE7LibdIa149w6WTQBIz1ok1OnamK4CzAnj4u3TGeGjlJVAUy3xSLwf
+ V5O1qaxp4Db2F7NXXjqxw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:zL4cEz61ssA=:De3HcWXpJsDH3ZFrbhrFaI
+ bVIr/ZJy/dQt+7w/A+/+oSJ842N+lmEggXIpODEdEpn0TOhYEEicrCME4OczQ78IH+RLIwTpb
+ jfeAG7sH6kU/XSCtULAH3XVVWZ/6c4B8cFcjTVf9qq0Qa9C1/9Z7ZdFQAp/IDAeWnf+TQ1DX3
+ 5GimZwbwKFAghckAyiUHYQw5FI+3R5PuhZxLdgTHb3BQoY/3C+CZLwr6SedMChZTZ/oAQ6yB1
+ 6dH8DfYL1KyP3a9MgHaIQg9k14JgvMLKGQGAezJwy6izQTpUtVOStNSeuYtAQD1Y9iQXRmTqW
+ sT/z+FANDi8l2GANh055aoj+WFkrR4lM5pXOoa+2+AdDRaMOJbEf+zY8Xmzh6AOQX2mI6lpuX
+ BgAV6inaiUdxPHGcdJEW0251Q84o7JLhST1wxF2DouHIkNZBJnpePgXnIo/9er2UyOeedDHq9
+ juffppkif/MCGaW35SeUUO9Bk+S+L7euq5xytDJ7BP7EZC9MldSrbl4kj/e+9nhLjIzahBEw1
+ 1Vue9o55EQ9yEBYF5lIp3yqVAxlX4jz8Ma2wvWximaws5ZtwfEMYMcsvHIcKAMyPCY8XjFCHo
+ 87ELVJ/NeUId5aAsHrS3PFjMNk7pmbDBUcKaek/G9mG5hnU6M00tFuloRNEn+AdSyDEUWT8qx
+ 5a4hFcYA/3l9PAv5H/AMlvf0jfBg2URQkdSSTYdwo78Uou8NdzpaXmPCUafhhihGQjGVv8G9o
+ JZRk736AaIB6AtHXON0PxjAZRPf9k9ln/+x9MQ5RUqs0sAWcPSrIVUVV9GQ=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20190112_044412_170278_2B8BAEEE 
+X-CRM114-Status: GOOD (  14.47  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Gottfried Haider <gottfried.haider@gmail.com>, devicetree@vger.kernel.org,
+ Stefan Wahren <stefan.wahren@i2se.com>, Phil Elwell <phil@raspberrypi.org>,
+ bcm-kernel-feedback-list@broadcom.com, Peter Robinson <pbrobinson@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+According to the schematics for all RPis with a 40 pin header,
+the GPIOs 0 and 1 are labeled as ID_SD and ID_SC. In order to
+clarify that is a I2C bus, append the third letter.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ arch/arm/boot/dts/bcm2835-rpi-a-plus.dts | 4 ++--
+ arch/arm/boot/dts/bcm2835-rpi-b-plus.dts | 4 ++--
+ arch/arm/boot/dts/bcm2835-rpi-zero-w.dts | 4 ++--
+ arch/arm/boot/dts/bcm2835-rpi-zero.dts   | 4 ++--
+ 4 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-a-plus.dts b/arch/arm/boot/dts/bcm2835-rpi-a-plus.dts
+index 2cd9c5e..db8a601 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-a-plus.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-a-plus.dts
+@@ -31,8 +31,8 @@
+ 	 * "FOO" = GPIO line named "FOO" on the schematic
+ 	 * "FOO_N" = GPIO line named "FOO" on schematic, active low
+ 	 */
+-	gpio-line-names = "SDA0",
+-			  "SCL0",
++	gpio-line-names = "ID_SDA",
++			  "ID_SCL",
+ 			  "SDA1",
+ 			  "SCL1",
+ 			  "GPIO_GCLK",
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-b-plus.dts b/arch/arm/boot/dts/bcm2835-rpi-b-plus.dts
+index cfbdaac..1e40d67 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-b-plus.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-b-plus.dts
+@@ -33,8 +33,8 @@
+ 	 * "FOO" = GPIO line named "FOO" on the schematic
+ 	 * "FOO_N" = GPIO line named "FOO" on schematic, active low
+ 	 */
+-	gpio-line-names = "SDA0",
+-			  "SCL0",
++	gpio-line-names = "ID_SDA",
++			  "ID_SCL",
+ 			  "SDA1",
+ 			  "SCL1",
+ 			  "GPIO_GCLK",
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
+index 644d907..5765d34 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
+@@ -40,8 +40,8 @@
+ 	 * "FOO" = GPIO line named "FOO" on the schematic
+ 	 * "FOO_N" = GPIO line named "FOO" on schematic, active low
+ 	 */
+-	gpio-line-names = "GPIO0",
+-			  "GPIO1",
++	gpio-line-names = "ID_SDA",
++			  "ID_SCL",
+ 			  "SDA1",
+ 			  "SCL1",
+ 			  "GPIO_GCLK",
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-zero.dts b/arch/arm/boot/dts/bcm2835-rpi-zero.dts
+index 00323ba..3b35a8a 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-zero.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-zero.dts
+@@ -28,8 +28,8 @@
+ 	 * "FOO" = GPIO line named "FOO" on the schematic
+ 	 * "FOO_N" = GPIO line named "FOO" on schematic, active low
+ 	 */
+-	gpio-line-names = "SDA0",
+-			  "SCL0",
++	gpio-line-names = "ID_SDA",
++			  "ID_SCL",
+ 			  "SDA1",
+ 			  "SCL1",
+ 			  "GPIO_GCLK",
+
+From patchwork Sat Jan 12 12:43:26 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10760951
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 67262746
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:45:38 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 53C5529536
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:45:38 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 478F729538; Sat, 12 Jan 2019 12:45:38 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.2 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_MED autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id BDFD929536
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:45:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=pMqfB8+/Dg31NExFEdQseot0ioVPhWB+K2E0V2zr3ek=; b=VaiRyY8wYPYSGRt+KZ6P11hxR0
+	PIc0bS/Gqdy5bm7gsH1DOpj6NB9xyNphlPtRaUiyRsGGMfV/42Z8cAH9aCSpxfyGXXrZaMq7eoF95
+	ORbwNA+SnWXnDURPKTJ6i445cMLs2XuDR7YSUv6qeH9xYHBvbVhyYzcJSC8DqZSwELZ8P6AWApRG/
+	y+IL1ZRf8gp/c82TWX+h1rRwgbiTvpv8dOs3cmO2uyuKzKqh+13YcKG913KoHOj3VF5DxCpkrLNgc
+	xVbcFldW5+oVGXY7CLjUeGGEOIexvWDD4rnI0oiFlhdgoXdVorEogCNoMkkLV/keEuDrqb/q6Gq88
+	n1WR7aWA==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1giIfP-0008Jf-FS; Sat, 12 Jan 2019 12:45:35 +0000
+Received: from mout.kundenserver.de ([217.72.192.75])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1giIe3-0005sq-LX; Sat, 12 Jan 2019 12:44:14 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis)
+ id 1N94qX-1hN3Sw2Ced-0165Go; Sat, 12 Jan 2019 13:44:01 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>, Eric Anholt <eric@anholt.net>
+Subject: [PATCH 4/6] ARM: dts: bcm2837-rpi-3-b: Use consistent label for HDMI
+ hotplug
+Date: Sat, 12 Jan 2019 13:43:26 +0100
+Message-Id: <1547297008-2740-5-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+References: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:FR5dWh7Bc7ez/2t7UujYBV6wbjP24rJ3IIBr6DeJzE4EixhKGqS
+ 3ilshHe46R9iW17IU856fqbAJ+QTgMPdUZbyQvN4uc2gJQ3aaQCzy22HSKBWWrtMxX4CZn0
+ 4Nglfks85Fyde7xl7tx/zQUEFscUygaRRPK+rycSa2j0GcP+TdQV18NhCzao8PhxFDq8KQ3
+ jYwfBwpAwChPLMTBnjDtQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:W33OjkYlMVQ=:a9YtAGBv47gUQfX/RzJzAb
+ 18/pyrAjqIhGDroLfNmx5nzlwPNXIjmIJNNSYWOJvh1Jts7HAWWXO0sHfla8wsyuEnAt7LXXb
+ kCE5eGyAcAfD25PimxmlPdpafsCHU6+dbnnSHwY73PCQCvLnX8hDkJ1hmZthy33ZLAZvri+wd
+ UX3w/ajzz11VzFr8B7z3JgqVFmR9z/HPsMZ1jY+zELeRCBQIKgB2x1pHCQsZizz7iAIX4OynB
+ xcRtFG+tl9fidGvMev8KMfdOjPii5RWIwjEhtKqBGmjCOtjQh99JeL8AGQHnuexsDtvrGrsgx
+ rgUNfR6QrVgdZsBGJxT41rH+VPxW0SocMxrwXl3r1b+V9EBp1poHFooK2BiGqV/T3pz+7g8v4
+ Xb+joSpoOsJOT/6/4e1veQhotEF+b/CRGAYVyIpKbJ0nDdno1Dl89qFQwOFvLWdYaaY5bcbTg
+ 7vxZmKXI8bwY+tmVDhpGf9r5MemDQWZLS6M9bECCw530bvHH66n5a+ioMJxpIbQOwR5DZgEO1
+ b3YhR9k0u9n2Xgl+2eMDwEFRHEi18H92P1d+dL2euVkES5tWOWN8dqinuQ9+gxc1vf7fP2jgc
+ k/709lQMcU3/VBGAqrij1OpSjN1RPOrkh74g8IZW3+CCrnOF7GgMFU15KYDSCGHGGFXjmMeqN
+ +V6cgbrfthOE6UbkmTohuzsyDRYzUmDdJspzO/QBNIWlG3ubwHimSoDBRVPM1XH/mgTyy6NtW
+ 6MtW2hyGiz4TVUZytx5wDVqnevttmYirjAheH2lUeSFzi88rrV0tWl6k0HE=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20190112_044412_168490_F7C94FF0 
+X-CRM114-Status: GOOD (  15.90  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Gottfried Haider <gottfried.haider@gmail.com>, devicetree@vger.kernel.org,
+ Stefan Wahren <stefan.wahren@i2se.com>, Phil Elwell <phil@raspberrypi.org>,
+ bcm-kernel-feedback-list@broadcom.com, Peter Robinson <pbrobinson@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+This make the GPIO label for HDMI hotplug more consistent to the other
+boards.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ arch/arm/boot/dts/bcm2837-rpi-3-b.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
+index 9abb9c5..31b1c03 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
+@@ -39,7 +39,7 @@
+ 				  "WL_ON",
+ 				  "STATUS_LED",
+ 				  "LAN_RUN",
+-				  "HPD_N",
++				  "HDMI_HPD_N",
+ 				  "CAM_GPIO0",
+ 				  "CAM_GPIO1",
+ 				  "PWR_LOW_N";
+
+From patchwork Sat Jan 12 12:43:27 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10760941
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 7A9836C5
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:44:18 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 5C948293AD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:44:18 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 4E88529533; Sat, 12 Jan 2019 12:44:18 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.2 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_MED autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id EDA58293AD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:44:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=vjpemGuYHiTwY3lVr27MSE3qk08LTPB+mT7fxWRn4kk=; b=kQDEHsgOyJYgwJoAIsqszUvTNK
+	qDNRRDkkpoSybUM4JebCvCTuHfU9vch79LwwmNP2XY2oOn/P+0vAeX+CqH/dB/ivpqzT4vN+/WRV6
+	yl/jqKMBUhmg9vpmpYT1cVaAO812RSYdkr6AK346aTF4EA6Ix2UdEIFyzpHBgRVPGOF79ugqLGfgN
+	hw7EZBRfHzDAsEI8a4AkRvVgXsEgPR+FGFXMfRIvBiBumDQwfpkGYhR1mbWPZNt2q9WRzpiHKp6dR
+	obJ9eQ3M4evkHqGhkCOkS/CJj1qYVCBts21DMfPy0kGig2XuNEg3mCwMG5X/CWhrRlTOAJgyR8dyv
+	CpgI8j1Q==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1giIe7-0005us-C6; Sat, 12 Jan 2019 12:44:15 +0000
+Received: from mout.kundenserver.de ([212.227.17.24])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1giIe3-0005si-Ja; Sat, 12 Jan 2019 12:44:13 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis)
+ id 1MOzjW-1guMPe0AXs-00PLsD; Sat, 12 Jan 2019 13:44:02 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>, Eric Anholt <eric@anholt.net>
+Subject: [PATCH 5/6] ARM: dts: bcm2837-rpi-3-b-plus: Clarify label for
+ STATUS_LED
+Date: Sat, 12 Jan 2019 13:43:27 +0100
+Message-Id: <1547297008-2740-6-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+References: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:ha5xbI1IFxAJffKbcOahHfvrF1YkGngXGFBvP1qHThi9L3znK41
+ E3LIo+wciXqmmRcYNbIp/2j/SNPQwFoXVhFkoUbZvc3mwUpiwETqSHUbDZ0QXMT5k/r0izg
+ 3J1u6jTflVY67onCtbdQC4Dwi0Ecn7tkZkSQAugY528VUkkX42Mjh3nuqLA63Q41Bohhk8w
+ t2t4ZLSQ2KAjRiqaYjZlw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ah6l+wHVNhI=:BcR+alMAbkzIsVnA5m9fL7
+ ZLSaFsl76Bc/sVrAJ7k5qiKcJYKwjUZF3rnl1efNJCMVTs4iz2r0Im/hIqGOzig19CUcnLbYD
+ a6qwh4EqKBn70gaj6hwip7e3L/HiMMpIHUq6RG0iKCvdiWrB1Z/JA22FHe2CrKoQqfT/2LcpC
+ F4cbkXW8WRwUgJQW27Gd2zbJoG0//01ZvDocBrxWpsDo55cIcZe2GWXIANvdLxSpT93lp5SAE
+ kUWmL3FuOMFWtAt8RjeuZOu3cAyrelKhpg20IdsUbvJEieU1Kd1lMB2Ezt2wpLHxdfgb2JGqh
+ azGGsFJ2EfqRJUhMZw84sPP5p7liFyWitRj8H7UWI4GT+4f9vP0DS5njWPuMaqTK1sbfZPty5
+ VKbAVVrqWIEJNIsntaUkrdZ/cB6Pb6GEVtkaVeEo3GGLNVmdXPAeTJ6hYa3LWV52HJTUUhhpe
+ 256fPIWxk+SzIACj6tORxDBO/FQUBwuX7s9BSx1N+edo7XS/LNugJdPULMocafrG0Vz03LA5f
+ rRivPe+nrX5zJVg9xCKSMr9i7xshNxy4U0/bEWvHodMyA9pEhaOKg0Ly5D5Ch8WGEW/Y3S+X6
+ //S8bjEzpdjFpVwrmr3D3+amyLRTeURFMfrR6ZaSOsWHN/iFvAu6Y03MZIK7jH9pyXhJ90T7a
+ Niw/yA3UsmGkMMlY+4jyzhtEwMNNp3ky1610mCQiM5F54+pkD14wlR7NupK5Ia4f+rYuitzve
+ zh3V6W8d2v1Edk6UifFIf8fiWs72bTYvkjzcnlNsGnTKuktbrXp4nnJTnmU=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20190112_044412_167464_BDCA8B07 
+X-CRM114-Status: GOOD (  15.71  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Gottfried Haider <gottfried.haider@gmail.com>, devicetree@vger.kernel.org,
+ Stefan Wahren <stefan.wahren@i2se.com>, Phil Elwell <phil@raspberrypi.org>,
+ bcm-kernel-feedback-list@broadcom.com, Peter Robinson <pbrobinson@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+The RPI 3 B+ provides control to both LEDs (PWR and ACT). So append
+the first letter of the LED color (like in the schematics) in order
+to clarify this.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+index 7d65013..d3ec6cd 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+@@ -42,7 +42,7 @@
+ 		#gpio-cells = <2>;
+ 		gpio-line-names = "BT_ON",
+ 				  "WL_ON",
+-				  "STATUS_LED",
++				  "STATUS_LED_R",
+ 				  "LAN_RUN",
+ 				  "",
+ 				  "CAM_GPIO0",
+
+From patchwork Sat Jan 12 12:43:28 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Stefan Wahren <stefan.wahren@i2se.com>
+X-Patchwork-Id: 10760947
+Return-Path: 
+ <linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 41316746
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:45:07 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 2C0BC293AD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:45:07 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 1CAAF29533; Sat, 12 Jan 2019 12:45:07 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.2 required=2.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,MAILING_LIST_MULTI,RCVD_IN_DNSWL_MED autolearn=ham version=3.3.1
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 87405293AD
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 12 Jan 2019 12:45:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=82eyVmb/teUkiyYOgrWbVJQLYtsQCWdr3DQ80Lmv67M=; b=hlaXF/imjWGlkQaYvfkXxNWuWq
+	ykX2bMX+AkU9gjMGkXPIggo7p7YbQrL3l+WpsoatS16743+4NsCW+2hE6//jt12gqZwSSKFBOsB4H
+	iC+ZyU25g9WyLf2JJ/ZWd4rMwqYoMSueq/tGam5sdrPqu3BWwhf7ne8n3lz5fOwldQ10ZH82Ml0N6
+	Y0u1ZzTDHLLN/PPmx3fJgMhe4ONOoFa3lLte8hD7rnbJhJ9aLNgwrEBNUNKDjtNhuKMg+GhKHhRD7
+	0TuNnC6AFhsMTfDyDjsKNNBizb1CYxnfpU4zb6ZXwyhGgjZ1MrIi+W218nbA8qNGvW64wR+zSg6N5
+	wTNxqhjQ==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1giIer-0006aX-P8; Sat, 12 Jan 2019 12:45:01 +0000
+Received: from mout.kundenserver.de ([212.227.17.24])
+ by bombadil.infradead.org with esmtps (Exim 4.90_1 #2 (Red Hat Linux))
+ id 1giIe3-0005so-Jc; Sat, 12 Jan 2019 12:44:14 +0000
+Received: from localhost.localdomain ([37.4.249.153]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis)
+ id 1MdNLi-1hHMPa2aSu-00ZS8f; Sat, 12 Jan 2019 13:44:02 +0100
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>, Eric Anholt <eric@anholt.net>
+Subject: [PATCH 6/6] ARM: dts: bcm283x: Add missing GPIO line names
+Date: Sat, 12 Jan 2019 13:43:28 +0100
+Message-Id: <1547297008-2740-7-git-send-email-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+References: <1547297008-2740-1-git-send-email-stefan.wahren@i2se.com>
+X-Provags-ID: V03:K1:/sSYu93iPiHSiQiCSqyyEbNwieia6j63s13TxvEtjTitqqKhXZY
+ Ndi57wMqrE5bTZ8lYFXctODn+3Waj7YdUxRqgtgOyriZsRo+dZTH75NfP6Sk3hJ6S2x5aaK
+ eyuiMQSayQ9tx7JhPdOO6tz1iI3FIciYxVPKX2tlTlYma/gLie0yQZihf6fXXaTYlsqVG7B
+ nBa3cKKDG58JlTCUxIRug==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pc6olJVBpeU=:bSjBpD1/Zl36Ndgv3Lwgod
+ 4iRxQ7dg3/EQQjEM/FD1X4YIDT8D9gEynLUDO72+Dq6J4ErpP3nQxciEXHpEkXy6Q95+lPPWS
+ JpJSicn8M4hUV45oYPxHItC4dfs1fSPyjKL5IcBYnAnv6KBryrAoINloUB+u/6tb4m/HJdETE
+ 38J4LKOsaml5xJIX8PGRNrUaRbkasqzCgavggKlhqCYA4xeIebX1VHDlTUsTAzj5IvxDPzBGn
+ BlPFBGTaFmTKTAIUsvIwuk+EeDu8HqE4h7CpIhoP9LwTXaDSzsW/fDBI+FNFeCoN3IG90Y0XZ
+ r38YdbUR16ZCIQ/3jW0YTGUE5ZknqtU/TMdMHvEBZQumO0FH5D2DuApq073PCM8xvddUa2h3W
+ eN4eNWs+SplSMUaNH+AIHo4CsuSMCU/0Xn3cHToYdNv3K6iGaAQFklUU6OfWTkhkXGgclj/mq
+ OQTa4N/FtEjROBJiWVKpmfzGZ4a8ZAHGkhYjtIaEfOtXxJtErSJ7lnlFKopSb6KFKCIMXwNuK
+ niWNkruTCikAopZSsY0+fINBM/GXpti4QrmBt9n9b2gM5BKXDgbWm32O/E3W8OcYicvKh6bo6
+ YBkz5NVDHDbgzdD34VbCoiY9j+ZRZbJdpqjjS30Mb8eM6deMJLfMKTmXqUOQXSjHde9v735ij
+ d0pZymyAENGC0/CbfavX9Zz30PmvM7H4xl91vSQN2S84+cJUoWkE8Yu1nHdHiNrvSvCmN/Pxe
+ T9+48w0iw/AHd02Hg3inGhcdzrmGuAsxkOVzWpQQlCVUQiAN/dnOy8bK29Y=
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20190112_044412_167985_7F7DC01D 
+X-CRM114-Status: GOOD (  17.65  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.21
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Gottfried Haider <gottfried.haider@gmail.com>, devicetree@vger.kernel.org,
+ Stefan Wahren <stefan.wahren@i2se.com>, Phil Elwell <phil@raspberrypi.org>,
+ bcm-kernel-feedback-list@broadcom.com, Peter Robinson <pbrobinson@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+The GPIO sysfs is deprecated and disabled in the defconfig files.
+So in order to motivate the usage of the new GPIO character device API
+add the missing GPIO line names for Raspberry Pi 2 and 3. In the lack
+of full schematics i would leave all undocumented pins as unnamed.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ arch/arm/boot/dts/bcm2836-rpi-2-b.dts      | 66 ++++++++++++++++++++++++++++
+ arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts | 70 ++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/bcm2837-rpi-3-b.dts      | 70 ++++++++++++++++++++++++++++++
+ 3 files changed, 206 insertions(+)
+
+diff --git a/arch/arm/boot/dts/bcm2836-rpi-2-b.dts b/arch/arm/boot/dts/bcm2836-rpi-2-b.dts
+index 871fc4a..7b4e651 100644
+--- a/arch/arm/boot/dts/bcm2836-rpi-2-b.dts
++++ b/arch/arm/boot/dts/bcm2836-rpi-2-b.dts
+@@ -28,6 +28,72 @@
+ };
+ 
+ &gpio {
++	/*
++	 * Taken from rpi_SCH_2b_1p2_reduced.pdf and
++	 * the official GPU firmware DT blob.
++	 *
++	 * Legend:
++	 * "NC" = not connected (no rail from the SoC)
++	 * "FOO" = GPIO line named "FOO" on the schematic
++	 * "FOO_N" = GPIO line named "FOO" on schematic, active low
++	 */
++	gpio-line-names = "ID_SDA",
++			  "ID_SCL",
++			  "SDA1",
++			  "SCL1",
++			  "GPIO_GCLK",
++			  "GPIO5",
++			  "GPIO6",
++			  "SPI_CE1_N",
++			  "SPI_CE0_N",
++			  "SPI_MISO",
++			  "SPI_MOSI",
++			  "SPI_SCLK",
++			  "GPIO12",
++			  "GPIO13",
++			  /* Serial port */
++			  "TXD0",
++			  "RXD0",
++			  "GPIO16",
++			  "GPIO17",
++			  "GPIO18",
++			  "GPIO19",
++			  "GPIO20",
++			  "GPIO21",
++			  "GPIO22",
++			  "GPIO23",
++			  "GPIO24",
++			  "GPIO25",
++			  "GPIO26",
++			  "GPIO27",
++			  "SDA0",
++			  "SCL0",
++			  "", /* GPIO30 */
++			  "LAN_RUN",
++			  "CAM_GPIO1",
++			  "", /* GPIO33 */
++			  "", /* GPIO34 */
++			  "PWR_LOW_N",
++			  "", /* GPIO36 */
++			  "", /* GPIO37 */
++			  "USB_LIMIT",
++			  "", /* GPIO39 */
++			  "PWM0_OUT",
++			  "CAM_GPIO0",
++			  "SMPS_SCL",
++			  "SMPS_SDA",
++			  "ETHCLK",
++			  "PWM1_OUT",
++			  "HDMI_HPD_N",
++			  "STATUS_LED",
++			  /* Used by SD Card */
++			  "SD_CLK_R",
++			  "SD_CMD_R",
++			  "SD_DATA0_R",
++			  "SD_DATA1_R",
++			  "SD_DATA2_R",
++			  "SD_DATA3_R";
++
+ 	pinctrl-0 = <&gpioout &alt0 &i2s_alt0>;
+ 
+ 	/* I2S interface */
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+index d3ec6cd..c6fa34c 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+@@ -52,6 +52,76 @@
+ 	};
+ };
+ 
++&gpio {
++	/*
++	 * Taken from rpi_SCH_3bplus_1p0_reduced.pdf and
++	 * the official GPU firmware DT blob.
++	 *
++	 * Legend:
++	 * "NC" = not connected (no rail from the SoC)
++	 * "FOO" = GPIO line named "FOO" on the schematic
++	 * "FOO_N" = GPIO line named "FOO" on schematic, active low
++	 */
++	gpio-line-names = "ID_SDA",
++			  "ID_SCL",
++			  "SDA1",
++			  "SCL1",
++			  "GPIO_GCLK",
++			  "GPIO5",
++			  "GPIO6",
++			  "SPI_CE1_N",
++			  "SPI_CE0_N",
++			  "SPI_MISO",
++			  "SPI_MOSI",
++			  "SPI_SCLK",
++			  "GPIO12",
++			  "GPIO13",
++			  /* Serial port */
++			  "TXD1",
++			  "RXD1",
++			  "GPIO16",
++			  "GPIO17",
++			  "GPIO18",
++			  "GPIO19",
++			  "GPIO20",
++			  "GPIO21",
++			  "GPIO22",
++			  "GPIO23",
++			  "GPIO24",
++			  "GPIO25",
++			  "GPIO26",
++			  "GPIO27",
++			  "HDMI_HPD_N",
++			  "STATUS_LED_G",
++			  /* Used by BT module */
++			  "CTS0",
++			  "RTS0",
++			  "TXD0",
++			  "RXD0",
++			  /* Used by Wifi */
++			  "SD1_CLK",
++			  "SD1_CMD",
++			  "SD1_DATA0",
++			  "SD1_DATA1",
++			  "SD1_DATA2",
++			  "SD1_DATA3",
++			  "PWM0_OUT",
++			  "PWM1_OUT",
++			  "ETHCLK",
++			  "WIFI_CLK",
++			  "SDA0",
++			  "SCL0",
++			  "SMPS_SCL",
++			  "SMPS_SDA",
++			  /* Used by SD Card */
++			  "SD_CLK_R",
++			  "SD_CMD_R",
++			  "SD_DATA0_R",
++			  "SD_DATA1_R",
++			  "SD_DATA2_R",
++			  "SD_DATA3_R";
++};
++
+ &hdmi {
+ 	hpd-gpios = <&gpio 28 GPIO_ACTIVE_LOW>;
+ };
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
+index 31b1c03..ce71f57 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
+@@ -47,6 +47,76 @@
+ 	};
+ };
+ 
++&gpio {
++	/*
++	 * Taken from rpi_SCH_3b_1p2_reduced.pdf and
++	 * the official GPU firmware DT blob.
++	 *
++	 * Legend:
++	 * "NC" = not connected (no rail from the SoC)
++	 * "FOO" = GPIO line named "FOO" on the schematic
++	 * "FOO_N" = GPIO line named "FOO" on schematic, active low
++	 */
++	gpio-line-names = "ID_SDA",
++			  "ID_SCL",
++			  "SDA1",
++			  "SCL1",
++			  "GPIO_GCLK",
++			  "GPIO5",
++			  "GPIO6",
++			  "SPI_CE1_N",
++			  "SPI_CE0_N",
++			  "SPI_MISO",
++			  "SPI_MOSI",
++			  "SPI_SCLK",
++			  "GPIO12",
++			  "GPIO13",
++			  /* Serial port */
++			  "TXD1",
++			  "RXD1",
++			  "GPIO16",
++			  "GPIO17",
++			  "GPIO18",
++			  "GPIO19",
++			  "GPIO20",
++			  "GPIO21",
++			  "GPIO22",
++			  "GPIO23",
++			  "GPIO24",
++			  "GPIO25",
++			  "GPIO26",
++			  "GPIO27",
++			  "", /* GPIO 28 */
++			  "LAN_RUN_BOOT",
++			  /* Used by BT module */
++			  "CTS0",
++			  "RTS0",
++			  "TXD0",
++			  "RXD0",
++			  /* Used by Wifi */
++			  "SD1_CLK",
++			  "SD1_CMD",
++			  "SD1_DATA0",
++			  "SD1_DATA1",
++			  "SD1_DATA2",
++			  "SD1_DATA3",
++			  "PWM0_OUT",
++			  "PWM1_OUT",
++			  "ETHCLK",
++			  "WIFI_CLK",
++			  "SDA0",
++			  "SCL0",
++			  "SMPS_SCL",
++			  "SMPS_SDA",
++			  /* Used by SD Card */
++			  "SD_CLK_R",
++			  "SD_CMD_R",
++			  "SD_DATA0_R",
++			  "SD_DATA1_R",
++			  "SD_DATA2_R",
++			  "SD_DATA3_R";
++};
++
+ &pwm {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pwm0_gpio40 &pwm1_gpio41>;

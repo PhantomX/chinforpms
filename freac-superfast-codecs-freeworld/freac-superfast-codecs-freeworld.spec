@@ -38,9 +38,7 @@ sed -e 's|-L$(prefix)/lib |-L%{_libdir} |g' -i Makefile-commands
 
 
 %build
-export CFLAGS="%{build_cflags}"
-export CXXFLAGS="%{build_cxxflags}"
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 
 for i in %{codec} ;do
 %make_build -C components/$i \

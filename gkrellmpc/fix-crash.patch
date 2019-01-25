@@ -1,0 +1,29 @@
+From e95e865dbc7b068dc51b175da98e2ea6e72c6ff4 Mon Sep 17 00:00:00 2001
+From: Simon Marchi <simon.marchi@polymtl.ca>
+Date: Sun, 21 Jul 2013 23:54:15 -0400
+Subject: [PATCH] Fix: Add NULL check in mpc_addlist_update
+
+The code assumes that either "directory" or "file" will be present in
+the hash table, but MPD returns "playlist" entries as well. This fix
+avoids crashing by ignoring entries that are not "directory" or "file".
+
+Signed-off-by: Simon Marchi <simon.marchi@polymtl.ca>
+---
+ addlist.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/addlist.c b/addlist.c
+index a232b05..fabe791 100644
+--- a/addlist.c
++++ b/addlist.c
+@@ -327,6 +327,10 @@ gboolean mpc_addlist_update(void) {
+ 			file = g_hash_table_lookup(hash, "file");
+ 			directory = g_hash_table_lookup(hash, "directory");
+ 
++			if (!file && ! directory) {
++				continue;
++			}
++
+ 			/* Update parentiter */
+ 			if (directory) {
+ 
