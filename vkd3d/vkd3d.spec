@@ -1,10 +1,13 @@
 Name:           vkd3d
-Version:        1.0
-Release:        102%{?dist}
+Version:        1.1
+Release:        100%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
+
+Epoch:          1
 
 License:        LGPLv2+
 URL:            http://www.winehq.org/
+
 Source0:        https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz
 Source10:       https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz.sign
 
@@ -32,7 +35,7 @@ library built on top of Vulkan with an API very similar to Direct3D 12.
 
 %package -n libvkd3d-devel
 Summary:        Development files for vkd3d
-Requires:       libvkd3d%{?_isa} = %{version}-%{release}
+Requires:       libvkd3d%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description -n libvkd3d-devel
@@ -50,8 +53,8 @@ might be useful for source ports of Direct3D 12 applications.
 
 %package -n libvkd3d-utils-devel
 Summary:        Development files for libvkd3d-utils
-Requires:       libvkd3d-devel%{?_isa} = %{version}-%{release}
-Requires:       libvkd3d-utils%{?_isa} = %{version}-%{release}
+Requires:       libvkd3d-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       libvkd3d-utils%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description -n libvkd3d-utils-devel
@@ -105,6 +108,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Fri Jan 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1-100
+- 1.1
+
 * Sun Oct 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0-102.chinfo
 - BR:gcc
 

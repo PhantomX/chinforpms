@@ -1,6 +1,6 @@
 # chinforpms
 
-Personal Fedora RPM specs. Has specs to build RPMs not existent in Fedora or
+Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or
 RPMFusion and existent packages updated with extra changes.
 
 > Most packages can be found in this [COPR repository](https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms), except for those not allowed.
@@ -43,11 +43,12 @@ RPMFusion and existent packages updated with extra changes.
  * **smtube** - Patched to silence players output
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **telegram-desktop** - Personal fixes
- * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
-                    and **VirtualBox-guest-additions-iso** support
+ * **~~VirtualBox~~** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
+                    and **VirtualBox-guest-additions-iso** support.
  * **vkd3d** - Can't wait Fedora releases
  * **xboxdrv** - Tests
- * **wine** - Extra patches and personal fixes
+ * **wine** - Personal fixes and extra patches, like [_Esync_](https://github.com/zfigura/wine), [_FAudio_](https://github.com/FNA-XNA/FAudio), [_PBA_](https://github.com/acomminos/wine-pba) and
+              more gathered from [_TK-Glitch_](https://github.com/Tk-Glitch/PKGBUILDS/tree/master/wine-tkg-git), some of them not always enabled.
 
 ## Credits (Patches, install procedures and other files)
 * [Arch](https://www.archlinux.org)
@@ -57,4 +58,5 @@ RPMFusion and existent packages updated with extra changes.
 * [Gentoo](https://www.gentoo.org)
 * [openSUSE](https://www.opensuse.org)
 * [pf-kernel](https://gitlab.com/post-factum/pf-kernel)
+* [Tk-Glitch](https://github.com/Tk-Glitch)
 * [Ubuntu](https://www.ubuntu.com)

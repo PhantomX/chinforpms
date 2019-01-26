@@ -8,7 +8,6 @@
 
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
-%if 0%{?fedora}
 %global staging 1
 %global stagingver 4.0
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
@@ -18,8 +17,16 @@
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
+%global faudio 1
 %global pba 0
-%endif # 0%{?fedora}
+%if !%{?staging}
+%global esync 0
+%global faudio 0
+%global pba 0
+%endif
+%if 0%{?faudio}
+%global faudioopts -W xaudio2_7-CreateFX-FXEcho -W xaudio2_7-WMA_support -W xaudio2_CommitChanges
+%endif
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 
@@ -34,7 +41,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -136,6 +143,10 @@ Source2002:     %{tkg_url}/esync-staging-fixes-r3.patch#/tkg-esync-staging-fixes
 Patch2001:      %{tkg_url}/esync-compat-fixes-r3.patch#/tkg-esync-compat-fixes-r3.patch
 Patch2002:      %{tkg_url}/esync-no_alloc_handle.patch#/tkg-esync-no_alloc_handle.patch
 %endif #{?esync}
+
+%if 0%{?faudio}
+Patch3000:      %{tkg_url}/faudio-exp.patch#/tkg-faudio-exp.patch
+%endif #{?faudio}
 %endif #{?staging}
 
 %if !%{?no64bit}
@@ -168,10 +179,8 @@ BuildRequires:  libusb-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  ncurses-devel
-%if 0%{?fedora}
 BuildRequires:  ocl-icd-devel
 BuildRequires:  opencl-headers
-%endif
 BuildRequires:  openldap-devel
 BuildRequires:  perl-generators
 BuildRequires:  unixODBC-devel
@@ -208,9 +217,7 @@ BuildRequires:  gettext-devel
 BuildRequires:  chrpath
 BuildRequires:  gstreamer1-devel
 BuildRequires:  gstreamer1-plugins-base-devel
-%if 0%{?fedora} > 24
 BuildRequires:  mpg123-devel
-%endif
 BuildRequires:  SDL2-devel
 BuildRequires:  libvkd3d-devel
 BuildRequires:  vulkan-devel
@@ -223,13 +230,14 @@ BuildRequires:  libva-devel
 %if 0%{?esync}
 BuildRequires:  git
 %endif #{?esync}
+%if 0%{?faudio}
+BuildRequires:  pkgconfig(faudio)
+%endif #{?faudio}
 %endif #{?staging}
 
-%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
 BuildRequires:  icoutils
 BuildRequires:  librsvg2-tools
-%endif
 
 Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-desktop = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -237,27 +245,21 @@ Requires:       wine-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 
 # x86-32 parts
 %ifarch %{ix86} x86_64
-%if 0%{?fedora} || 0%{?rhel} <= 6
 Requires:       wine-core(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-capi(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-cms(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-ldap(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-%if 0%{?fedora} >= 10 || 0%{?rhel} == 6
 Requires:       wine-openal(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
+%if !%{?faudio}
 Requires:       wine-xaudio2(x86-32) >= %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
-%if 0%{?fedora}
+%endif #{faudio}
 Requires:       wine-opencl(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
-%if 0%{?fedora} >= 17
 Requires:       mingw32-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
-%endif
 Requires:       /usr/bin/ntlm_auth
 Requires:       mesa-dri-drivers(x86-32)
-%endif
 %endif
 
 # x86-64 parts
@@ -268,17 +270,13 @@ Requires:       wine-cms(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-ldap(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
-%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 Requires:       wine-openal(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+%if !%{?faudio}
 Requires:       wine-xaudio2(x86-64) >= %{?epoch:%{epoch}:}%{version}-%{release}
-%endif 
-%if 0%{?fedora}
+%endif #{?faudio}
 Requires:       wine-opencl(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
-%if 0%{?fedora} >= 17
 Requires:       mingw64-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
-%endif
 Requires:       mesa-dri-drivers(x86-64)
 %endif
 
@@ -291,10 +289,10 @@ Requires:       wine-ldap = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-openal = %{?epoch:%{epoch}:}%{version}-%{release}
-%if 0%{?fedora}
-Requires:       wine-opencl = %{?epoch:%{epoch}:}%{version}-%{release}
+%if !%{?faudio}
 Requires:       wine-xaudio2 >= %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
+%endif #{?faudio}
+Requires:       wine-opencl = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mesa-dri-drivers
 Requires:       samba-winbind-clients
 %endif
@@ -308,7 +306,9 @@ Requires:       wine-ldap(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-openal(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
+%if !%{?faudio}
 Requires:       wine-xaudio2(aarch-64) >= %{?epoch:%{epoch}:}%{version}-%{release}
+%endif #{?faudio}
 Requires:       wine-opencl(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mingw64-wine-gecko = %winegecko
 Requires:       mesa-dri-drivers(aarch-64)
@@ -409,10 +409,18 @@ Requires:       libva
 Obsoletes:      wine-wow < 1.7.35
 Provides:       wine-wow = %{version}-%{release}
 
+%if 0%{?faudio}
+Provides:       wine-xaudio2 = 2:%{version}-%{release}
+Provides:       wine-xaudio2%{?_isa} = 2:%{version}-%{release}
+Obsoletes:      wine-xaudio2 < 2:%{version}-%{release}
+Provides:       wine-freeworld = 2:%{version}-%{release}
+Provides:       wine-freeworld%{?_isa} = 2:%{version}-%{release}
+Obsoletes:      wine-freeworld < 2:%{version}-%{release}
+%endif #{faudio}
+
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
 
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
 %package systemd
 Summary:        Systemd config for the wine binfmt handler
 Requires:       systemd >= 23
@@ -424,18 +432,6 @@ Obsoletes:      wine-sysvinit < %{version}-%{release}
 %description systemd
 Register the wine binary handler for windows executables via systemd binfmt
 handling. See man binfmt.d for further information.
-%endif
-
-%if 0%{?rhel} == 6
-%package sysvinit
-Summary:        SysV initscript for the wine binfmt handler
-BuildArch:      noarch
-Requires(post): /sbin/chkconfig, /sbin/service
-Requires(preun): /sbin/chkconfig, /sbin/service
-
-%description sysvinit
-Register the wine binary handler for windows executables via SysV init files.
-%endif
 
 %package filesystem
 Summary:        Filesystem directories for wine
@@ -456,12 +452,7 @@ Common wine files and scripts.
 Summary:        Desktop integration features for wine
 Requires:       wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
 Requires:       wine-systemd = %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
-%if 0%{?rhel} == 6
-Requires:       wine-sysvinit = %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
 Requires:       hicolor-icon-theme
 BuildArch:      noarch
 
@@ -495,9 +486,7 @@ Requires:      wine-symbol-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:      wine-wingdings-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 # intermediate fix for #593140
 Requires:      liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts
-%if 0%{?fedora} > 12
 Requires:      liberation-narrow-fonts
-%endif
 
 %description fonts
 %{summary}
@@ -702,24 +691,21 @@ Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 %description alsa
 This package adds an alsa driver for wine.
 
-%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %package openal
 Summary: Openal support for wine
 Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description openal
 This package adds an openal driver for wine.
-%endif
 
-%if 0%{?fedora}
 %package opencl
 Summary: OpenCL support for wine
 Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %Description opencl
 This package adds the opencl driver for wine.
-%endif
 
+%if !%{?faudio}
 %package xaudio2
 Summary: xaudio2 support for wine
 Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -727,7 +713,7 @@ Requires: wine-openal%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description xaudio2
 This package adds xaudio2 support for wine.
-
+%endif #{faudio}
 
 %prep
 %setup -q -n wine-%{ver}
@@ -755,7 +741,7 @@ git apply -C1 < %{S:2002}
 popd
 %endif #{?esync}
 
-./patches/patchinstall.sh DESTDIR="`pwd`" --all
+./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?faudioopts}
 
 sed -i "s/  (Staging)//g" libs/wine/Makefile.in
 
@@ -771,6 +757,10 @@ cp -p %{S:1001} README-pba-pkg
 
 %patch1000 -p1
 %endif #{?pba}
+
+%if 0%{?faudio}
+%patch3000 -p1
+%endif #{?faudio}
 
 %patch705 -p1
 %patch706 -p1
@@ -824,8 +814,13 @@ export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`"
 %ifarch x86_64 aarch64
  --enable-win64 \
 %endif
-%{?staging: --with-xattr} \
+%if 0%{?staging}
+ --with-xattr \
+%endif
  --disable-tests \
+%if !%{?faudio}
+ --without-faudio \
+%endif
 %{nil}
 
 %make_build TARGETFLAGS=""
@@ -870,14 +865,8 @@ chrpath --delete %{buildroot}%{_bindir}/wineserver32
 mkdir -p %{buildroot}%{_sysconfdir}/wine
 
 # Allow users to launch Windows programs by just clicking on the .exe file...
-%if 0%{?rhel} < 7
-mkdir -p %{buildroot}%{_initrddir}
-install -p -c -m 755 %{SOURCE1} %{buildroot}%{_initrddir}/wine
-%endif
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
 mkdir -p %{buildroot}%{_binfmtdir}
 install -p -c -m 644 %{SOURCE2} %{buildroot}%{_binfmtdir}/wine.conf
-%endif
 
 # add wine dir to desktop
 mkdir -p %{buildroot}%{_sysconfdir}/xdg/menus/applications-merged
@@ -894,7 +883,6 @@ mkdir -p %{buildroot}%{_datadir}/wine/gecko
 mkdir -p %{buildroot}%{_datadir}/wine/mono
 
 # extract and install icons
-%if 0%{?fedora} > 10
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 
 # This replacement masks a composite program icon .SVG down
@@ -965,8 +953,6 @@ for file in %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/*.svg ;do
       -o ${dir}/${basefile}.png
   done
 done
-
-%endif
 
 # install desktop files
 desktop-file-install \
@@ -1087,9 +1073,7 @@ do iconv -f iso8859-1 -t utf-8 README.$lang > \
 done;
 popd
 
-%if 0%{?fedora} || 0%{?rhel} > 6
 rm -f %{buildroot}%{_initrddir}/wine
-%endif
 
 # wine makefiles are currently broken and don't install the wine man page
 install -p -m 0644 loader/wine.man %{buildroot}%{_mandir}/man1/wine.1
@@ -1100,7 +1084,7 @@ install -p -m 0644 loader/wine.pl.UTF-8.man %{buildroot}%{_mandir}/pl.UTF-8/man1
 
 %if 0%{?esync}
 # Systemd configuration
-%if 0%{?fedora} && 0%{?fedora} < 30
+%if 0%{?fedora} < 30
 mkdir -p %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
 mkdir -p %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 install -m 644 -p %{SOURCE2001} %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
@@ -1123,7 +1107,6 @@ if [ $1 -eq 0 ]; then
 fi
 %endif
 
-%if 0%{?fedora} >= 15 || 0%{?rhel} > 6
 %post systemd
 %binfmt_apply wine.conf
 
@@ -1131,7 +1114,6 @@ fi
 if [ $1 -eq 0 ]; then
 /bin/systemctl try-restart systemd-binfmt.service
 fi
-%endif
 
 %posttrans core
 %ifarch x86_64 aarch64
@@ -1722,9 +1704,7 @@ fi
 %{_libdir}/wine/kernelbase.dll.so
 %{_libdir}/wine/ksuser.dll.so
 %{_libdir}/wine/ktmw32.dll.so
-%if 0%{?fedora} > 24
 %{_libdir}/wine/l3codeca.acm.so
-%endif
 %{_libdir}/wine/loadperf.dll.so
 %{_libdir}/wine/localspl.dll.so
 %{_libdir}/wine/localui.dll.so
@@ -2047,6 +2027,9 @@ fi
 %{_libdir}/wine/xaudio2_4.dll.so
 %{_libdir}/wine/xaudio2_5.dll.so
 %{_libdir}/wine/xaudio2_6.dll.so
+%if 0%{?faudio}
+%{_libdir}/wine/xaudio2_7.dll.so
+%endif
 %{_libdir}/wine/xaudio2_8.dll.so
 %{_libdir}/wine/xaudio2_9.dll.so
 %{_libdir}/wine/xcopy.exe.so
@@ -2137,8 +2120,10 @@ fi
 %{_libdir}/wine/wow32.dll.so
 %endif
 
+%if !%{?faudio}
 %files xaudio2
 %{_libdir}/wine/xaudio2_7.dll.so
+%endif #{?faudio}
 
 %files filesystem
 %doc COPYING.LIB
@@ -2278,21 +2263,17 @@ fi
 %{_datadir}/applications/wine-oleview.desktop
 %{_datadir}/desktop-directories/Wine.directory
 %config %{_sysconfdir}/xdg/menus/applications-merged/wine.menu
-%if 0%{?fedora} >= 10
 %{_datadir}/icons/hicolor/*/apps/*png
 %{_datadir}/icons/hicolor/scalable/apps/*svg
-%endif
 
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
 %files systemd
 %config %{_binfmtdir}/wine.conf
 %if 0%{?esync}
-%if 0%{?fedora} && 0%{?fedora} < 30
+%if 0%{?fedora} < 30
 %{_prefix}/lib/systemd/system.conf.d/
 %{_prefix}/lib/systemd/system.conf.d/01-%{name}.conf
 %{_prefix}/lib/systemd/user.conf.d/
 %{_prefix}/lib/systemd/user.conf.d/01-%{name}.conf
-%endif
 %endif
 %endif
 
@@ -2353,18 +2334,18 @@ fi
 %files alsa
 %{_libdir}/wine/winealsa.drv.so
 
-%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %files openal
 %{_libdir}/wine/openal32.dll.so
-%endif
 
-%if 0%{?fedora}
 %files opencl
 %{_libdir}/wine/opencl.dll.so
-%endif
 
 
 %changelog
+* Fri Jan 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0-101
+- Optional enabled FAudio support. Obsoletes wine-xaudio and wine-freeworld
+- Remove old Fedora and RH conditionals, only current Fedora is supported
+
 * Tue Jan 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0-100
 - 4.0
 

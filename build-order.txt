@@ -2,6 +2,7 @@
 buildsys-build-rpmfusion
 c-vtapi
 chinforpms-fake-packages
+faudio
 gstreamer1
 gtk3
 libmirage
@@ -110,6 +111,7 @@ xorg-x11-server
 belle-sip
 belr
 bzrtp
+faudio-freeworld
 freac
 freac-cdk-freeworld
 freac-superfast-codecs

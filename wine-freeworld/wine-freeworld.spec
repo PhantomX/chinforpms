@@ -84,7 +84,7 @@ Requires:       wine-core(aarch-64) = 1:%{version}
 
 Provides:       wine-xaudio2 = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       wine-xaudio2%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      wine-xaudio2%{?_isa} < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      wine-xaudio2 < %{?epoch:%{epoch}:}%{version}-%{release}
 Conflicts:      wine-xaudio2 < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description

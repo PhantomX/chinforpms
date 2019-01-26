@@ -6,6 +6,7 @@ cowsrevenge
 desmume
 discord
 dropboxd
+faudio-freeworld
 freac-cdk-freeworld
 freac-superfast-codecs-freeworld
 gflash-player
