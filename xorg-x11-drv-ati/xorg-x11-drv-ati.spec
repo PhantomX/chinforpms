@@ -1,28 +1,36 @@
-%global tarball xf86-video-ati
+%global pkgname xf86-video-ati
 %global moduledir %(pkg-config xorg-server --variable=moduledir )
-%global driverdir	%{moduledir}/drivers
-#global gitdate 20160928
-#global gitversion 3fc839ff
+%global driverdir %{moduledir}/drivers
+
+%global commit b1c01698f577577e4a88bad0ae08fb5d998e7ebb
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20190109
+%global with_snapshot 1
 
 %undefine _hardened_build
 
-%if 0%{?gitdate}
-%global gver .%{gitdate}git%{gitversion}
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
 %endif
 
 Summary:   Xorg X11 ati video driver
 Name:      xorg-x11-drv-ati
 Version:   18.1.0
-Release:   100.chinfo%{?gver}%{?dist}
+Release:   100%{?gver}%{?dist}
+
 URL:       http://www.x.org
 License:   MIT
 
-Source0:   https://www.x.org/pub/individual/driver/%{tarball}-%{version}.tar.bz2
+%if 0%{?with_snapshot}
+Source0:        https://gitlab.freedesktop.org/xorg/driver/xf86-video-ati/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pkgname}-%{shortcommit}.tar.bz2
+%else
+Source0:        https://www.x.org/pub/individual/driver/%{pkgname}-%{version}.tar.bz2
+%endif
 
 ExcludeArch: s390 s390x
 
 BuildRequires: xorg-x11-server-devel >= 1.13
-BuildRequires: mesa-libGL-devel >= 6.4-4
+BuildRequires: pkgconfig(gbm) >= 10.6
 BuildRequires: libdrm-devel >= 2.4.33-1
 BuildRequires: kernel-headers >= 2.6.27-0.308
 BuildRequires: automake autoconf libtool pkgconfig
@@ -39,7 +47,11 @@ Requires: libdrm >= 2.4.36-1
 X.Org X11 ati video driver.
 
 %prep
-%autosetup -n %{tarball}-%{?gitdate:%{gitdate}}%{?!gitdate:%{version}}
+%if 0%{?with_snapshot}
+%autosetup -n %{pkgname}-%{commit} -p1
+%else
+%autosetup -n %{pkgname}-%{version} -p1
+%endif
 
 %build
 autoreconf -iv
@@ -59,6 +71,9 @@ find %{buildroot} -regex ".*\.la$" | xargs rm -f --
 
 
 %changelog
+* Sat Jan 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 18.1.0-100.20190109gitb1c0169
+- Update to latest snapshot
+
 * Fri Sep 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.1.0-1.chinfo
 - 18.1.0
 

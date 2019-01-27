@@ -43,8 +43,8 @@ RPMFusion and existent packages updated with extra changes.
  * **smtube** - Patched to silence players output
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **telegram-desktop** - Personal fixes
- * **~~VirtualBox~~** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
-                    and **VirtualBox-guest-additions-iso** support.
+ * ~~**VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
+                    and **VirtualBox-guest-additions-iso** support.~~
  * **vkd3d** - Can't wait Fedora releases
  * **xboxdrv** - Tests
  * **wine** - Personal fixes and extra patches, like [_Esync_](https://github.com/zfigura/wine), [_FAudio_](https://github.com/FNA-XNA/FAudio), [_PBA_](https://github.com/acomminos/wine-pba) and
