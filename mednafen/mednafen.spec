@@ -4,14 +4,18 @@
 %undefine _hardened_build
 
 Name:           mednafen
-Version:        1.21.3
-Release:        1%{?dist}
+Version:        1.22.0
+%if 1%(echo %{version} | cut -d. -f3) == 10
+%global unstable UNSTABLE
+%endif
+Release:        0.100%{?unstable:.%{unstable}}%{?dist}
 Epoch:          1
 Summary:        A multi-system emulator utilizing OpenGL and SDL
 #mednafen is a monstrosity build out of many emulators hence the colourful licensing
 License:        GPLv2+ and BSD and ISC and LGPLv2+ and MIT and zlib 
 URL:            https://mednafen.github.io
-Source0:        https://mednafen.github.io/releases/files/%{name}-%{version}.tar.xz
+
+Source0:        https://mednafen.github.io/releases/files/%{name}-%{version}%{?unstable:-%{unstable}}.tar.xz
 
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -100,6 +104,10 @@ rm -rf Documentation/*.def Documentation/*.php Documentation/generate.sh \
 
 
 %changelog
+* Sun Jan 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.0-0.100.UNSTABLE
+- 1.22.0
+- UNSTABLE automagic label
+
 * Sun Apr 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.21.3-1.chinfo
 - 1.21.3
 
