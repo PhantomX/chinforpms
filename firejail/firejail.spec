@@ -1,5 +1,5 @@
 Name:           firejail
-Version:        0.9.56
+Version:        0.9.58
 Release:        1%{?dist}
 Summary:        GUI tools for firejail
 
@@ -10,6 +10,7 @@ Source1:        README.suid
 
 BuildRequires:  gcc
 BuildRequires:  make
+BuildRequires:  python3-devel
 
 
 %description
@@ -22,6 +23,10 @@ Linux namespaces and seccomp-bpf.
 
 cp %{SOURCE1} .
 
+rm -f contrib/*.sh
+chmod -x contrib/*.py
+sed -e '1s|^#!.*$|#!%{__python3}|' -i contrib/*.py
+
 sed \
   -e '/$(DOCDIR)/d' \
   -i Makefile.in
@@ -29,7 +34,8 @@ sed \
 %build
 %configure \
   --disable-apparmor \
-  --disable-contrib-install
+ --disable-contrib-install \
+%{nil}
 
 %make_build DESTDIR=
 
@@ -47,7 +53,7 @@ getent group %{name} >/dev/null || groupadd -r %{name}
 
 %files
 %license COPYING
-%doc README* RELNOTES
+%doc README* RELNOTES contrib
 %config(noreplace) %{_sysconfdir}/%{name}
 %attr(4750,root,%{name}) %{_bindir}/%{name}
 %{_bindir}/firecfg
@@ -59,6 +65,10 @@ getent group %{name} >/dev/null || groupadd -r %{name}
 
 
 %changelog
+* Mon Jan 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.9.58-1
+- 0.9.58
+- Place contrib scripts on docdir
+
 * Tue Sep 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.56-1
 - 0.9.56
 

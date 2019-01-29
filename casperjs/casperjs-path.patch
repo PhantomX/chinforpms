@@ -32,3 +32,13 @@
      '--casper-path=%s' % CASPER_PATH,
      '--cli'
  ])
+--- casperjs-1.1.4-2/bin/bootstrap.js.orig	2017-08-23 11:26:41.000000000 -0300
++++ casperjs-1.1.4-2/bin/bootstrap.js	2019-01-28 15:02:36.514222814 -0200
+@@ -217,7 +217,7 @@ CasperError.prototype = Object.getProtot
+         return __terminate([
+             'CasperJS version ' + phantom.casperVersion.toString() +
+             ' at ' + phantom.casperPath + ', using ' + phantom.casperEngine + ' version ' + version,
+-            fs.read(fs.pathJoin(phantom.casperPath, 'bin', 'usage.txt'))
++            fs.read(fs.pathJoin(phantom.casperPath, 'usage.txt'))
+         ].join('\n'));
+     }

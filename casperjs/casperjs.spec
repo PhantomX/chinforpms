@@ -1,6 +1,6 @@
 Name:           casperjs
 Version:        1.1.4_2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open source navigation scripting & testing utility
 
 License:        MIT
@@ -15,6 +15,7 @@ BuildArch:      noarch
 BuildRequires:  python2-devel
 Requires:       python2
 Requires:       phantomjs
+
 
 %description
 CasperJS is an open source navigation scripting & testing utility written
@@ -38,7 +39,7 @@ install -pm0755 bin/%{name} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/{bin,modules,tests}
 install -pm0644 package.json %{buildroot}%{_datadir}/%{name}/
-install -pm0644 bin/bootstrap.js bin/usage.txt %{buildroot}%{_datadir}/%{name}/bin/
+install -pm0644 bin/bootstrap.js bin/usage.txt %{buildroot}%{_datadir}/%{name}/
 install -pm0644 modules/*.js %{buildroot}%{_datadir}/%{name}/modules/
 cp -pr tests/* %{buildroot}%{_datadir}/%{name}/tests/
 
@@ -47,11 +48,15 @@ cp -pr tests/* %{buildroot}%{_datadir}/%{name}/tests/
 %doc CONTRIBUTORS.md README.md samples
 %{_bindir}/%{name}
 %{_datadir}/%{name}/package.json
-%{_datadir}/%{name}/bin/*
+%{_datadir}/%{name}/bootstrap.js
+%{_datadir}/%{name}/usage.txt
 %{_datadir}/%{name}/modules/*.js
 %{_datadir}/%{name}/tests/*
 
 
 %changelog
+* Mon Jan 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1.4_2-2
+- Fix usage.txt path
+
 * Fri Dec 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.1.4_2-1
 - Initial spec
