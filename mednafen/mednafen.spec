@@ -4,11 +4,11 @@
 %undefine _hardened_build
 
 Name:           mednafen
-Version:        1.22.0
+Version:        1.22.1
 %if 1%(echo %{version} | cut -d. -f3) == 10
 %global unstable UNSTABLE
 %endif
-Release:        0.100%{?unstable:.%{unstable}}%{?dist}
+Release:        100%{?unstable:.%{unstable}}%{?dist}
 Epoch:          1
 Summary:        A multi-system emulator utilizing OpenGL and SDL
 #mednafen is a monstrosity build out of many emulators hence the colourful licensing
@@ -104,6 +104,9 @@ rm -rf Documentation/*.def Documentation/*.php Documentation/generate.sh \
 
 
 %changelog
+* Tue Jan 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.1-100
+- 1.22.1
+
 * Sun Jan 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.0-0.100.UNSTABLE
 - 1.22.0
 - UNSTABLE automagic label
