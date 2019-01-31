@@ -6,7 +6,7 @@
 
 Name:           wine-%{pkgname}
 Version:        0.96
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -40,6 +40,7 @@ Obsoletes:      mingw%{__isa_bits}-%{name} < %{?epoch:%{epoch}:}%{version}-%{rel
 Requires:       %{name}(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
+Provides:       dxgi_%{pkgname}.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
 Provides:       d3d11_%{pkgname}.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
 Provides:       d3d10_%{pkgname}.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
 Provides:       d3d10_1_%{pkgname}.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
@@ -86,7 +87,7 @@ meson \
 pushd %{_target_platform}
 ninja -v %{?_smp_mflags}
 
-for spec in d3d11 ;do
+for spec in dxgi d3d11 ;do
   winebuild --dll --fake-module -E ../src/${spec}/${spec}.spec -F ${spec}_%{pkgname}.dll -o ${spec}_%{pkgname}.dll.fake
 done
 for spec in d3d10 d3d10core d3d10_1 ;do
@@ -98,7 +99,7 @@ popd
 mkdir -p %{buildroot}/%{_libdir}/wine
 mkdir -p %{buildroot}/%{_libdir}/wine/fakedlls
 
-for dll in d3d11 ;do
+for dll in dxgi d3d11 ;do
   install -pm0755 %{_target_platform}/src/${dll}/${dll}.dll.so \
     %{buildroot}%{_libdir}/wine/${dll}_%{pkgname}.dll.so
 done
@@ -108,7 +109,7 @@ for dll in d3d10 d3d10_1 d3d10core ;do
     %{buildroot}%{_libdir}/wine/${dll}_%{pkgname}.dll.so
 done
 
-for fake in d3d11 d3d10 d3d10_1 d3d10core ;do
+for fake in dxgi d3d11 d3d10 d3d10_1 d3d10core ;do
   install -pm0755 %{_target_platform}/${fake}_%{pkgname}.dll.fake \
     %{buildroot}/%{_libdir}/wine/fakedlls/${fake}_%{pkgname}.dll
 done
@@ -126,6 +127,9 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Wed Jan 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.96-2
+- Reenable dxgi dll installation
+
 * Sat Jan 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.96-1
 - 0.96
 

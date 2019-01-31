@@ -26,12 +26,12 @@
 
 set -e
 
-ver=20190121
+ver=20190130
 
 name="DXUP"
 dllsuffix="_dxup"
 dlls="d3d9"
-nodlls="dxgi"
+nodlls=""
 
 unset winebits
 enabled=0
@@ -93,9 +93,7 @@ setcfg(){
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       for dll in ${dlls} ;do
-        if [ -f "${native_path}/${dll}${dllsuffix}.dll" ];then
-          dllmissing=0
-        else
+        if ! [ -f "${native_path}/${dll}${dllsuffix}.dll" ];then
           echo "Missing ${dll}${dllsuffix}.dll in ${native_path}/."
           dllmissing=1
         fi

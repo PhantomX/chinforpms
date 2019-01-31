@@ -26,12 +26,12 @@
 
 set -e
 
-ver=20190121
+ver=20190130
 
 name="DXVK"
 dllsuffix="_dxvk"
-dlls="d3d11 d3d10 d3d10_1 d3d10core"
-nodlls="dxgi"
+dlls="dxgi d3d11 d3d10 d3d10_1 d3d10core"
+nodlls=""
 
 unset winebits
 enabled=0
@@ -88,15 +88,12 @@ checkcfg(){
 }
 
 setcfg(){
-  csmtdisabled=0
   enabled=1
   for winebits in 64 32 ;do
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       for dll in ${dlls} ;do
-        if [ -f "${native_path}/${dll}${dllsuffix}.dll" ];then
-          dllmissing=0
-        else
+        if ! [ -f "${native_path}/${dll}${dllsuffix}.dll" ];then
           echo "Missing ${dll}${dllsuffix}.dll in ${native_path}/."
           dllmissing=1
         fi

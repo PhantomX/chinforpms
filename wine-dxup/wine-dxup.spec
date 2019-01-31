@@ -1,8 +1,8 @@
 %undefine _hardened_build
 
-%global commit e780aaff911ac8fb2a834f99e3d87906258fbd72
+%global commit 394c0525821d7003ea9d0b0ca269702351218224
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190121
+%global date 20190130
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -15,7 +15,7 @@
 
 Name:           wine-%{pkgname}
 Version:        0.00
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A D3D9 to D3D11 Translation Layer for Linux / Wine
 
 License:        zlib
@@ -128,5 +128,8 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Wed Jan 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.00-2.20190130git2394c052
+- New snapshot
+
 * Mon Jan 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.00-1.20190121gite780aaf
 - Initial spec

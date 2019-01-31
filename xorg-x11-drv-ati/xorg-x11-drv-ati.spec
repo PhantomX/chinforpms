@@ -22,7 +22,7 @@ URL:       http://www.x.org
 License:   MIT
 
 %if 0%{?with_snapshot}
-Source0:        https://gitlab.freedesktop.org/xorg/driver/xf86-video-ati/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pkgname}-%{shortcommit}.tar.bz2
+Source0:        https://gitlab.freedesktop.org/xorg/driver/%{pkgname}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pkgname}-%{shortcommit}.tar.bz2
 %else
 Source0:        https://www.x.org/pub/individual/driver/%{pkgname}-%{version}.tar.bz2
 %endif
@@ -37,7 +37,6 @@ BuildRequires: automake autoconf libtool pkgconfig
 BuildRequires: xorg-x11-util-macros >= 1.1.5
 BuildRequires: libudev-devel
 BuildRequires: xorg-x11-glamor-devel
-BuildRequires: pkgconfig(gbm) >= 10.6
 
 Requires: Xorg %(xserver-sdk-abi-requires ansic)
 Requires: Xorg %(xserver-sdk-abi-requires videodrv)
