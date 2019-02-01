@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 97ba757784fbdb0516ed71fa80ad352fdd451b3c
+%global pfcommit 5293e619c0f9cdc3eb04ad105ba1b8099bdc58ba
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id b458db8b35c5a584464d50f2ec78cadc4c922ce6
+%global opensuse_id 463cfd25c84819224a0a6dc800d8214af111d5ea
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -633,9 +633,6 @@ Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 # Fixes for bcm2835 mmc (sdcard) driver
 Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
 
-# https://patchwork.kernel.org/patch/10741809/
-Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
-
 # https://www.spinics.net/lists/arm-kernel/msg699583.html
 Patch337: ARM-dts-bcm283x-Several-DTS-improvements.patch
 
@@ -672,6 +669,9 @@ Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
 
 # rhbz 1663613 patch merged into 5.0-rc#
 Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch 
+
+# CVE-2018-16880 rhbz 1656472 1669545
+Patch509: CVE-2018-16880.patch
 
 ### Extra
 
@@ -2012,6 +2012,9 @@ fi
 #
 #
 %changelog
+* Thu Jan 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.6-500.chinfo
+- 4.20.6
+
 * Sat Jan 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.5-500.chinfo
 - 4.20.5
 - pf5

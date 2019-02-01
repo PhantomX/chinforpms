@@ -46,7 +46,7 @@ index 83f869e36..a3110d826 100644
 +++ b/Telegram/SourceFiles/core/launcher.cpp
 @@ -59,6 +59,7 @@ int Launcher::exec() {
  	Logs::start(this); // must be started before Platform is started
- 	Platform::start(); // must be started before QApplication is created
+ 	Platform::start(); // must be started before Sandbox is created
  
 +	unsetenv("QT_QPA_PLATFORMTHEME");
  	auto result = executeApplication();
@@ -771,7 +771,7 @@ index 9e6bc94d6..76604ac5a 100644
 --- a/Telegram/gyp/telegram_sources.txt
 +++ b/Telegram/gyp/telegram_sources.txt
 @@ -813,7 +813,7 @@
- <(src_loc)/messenger.h
+ <(src_loc)/mediaview.h
  <(src_loc)/observer_peer.cpp
  <(src_loc)/observer_peer.h
 -<(src_loc)/qt_static_plugins.cpp
