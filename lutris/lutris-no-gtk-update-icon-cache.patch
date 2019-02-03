@@ -1,0 +1,39 @@
+diff -up lutris-0.5.0/lutris/gui/config/common.py.noguic lutris-0.5.0/lutris/gui/config/common.py
+--- lutris-0.5.0/lutris/gui/config/common.py.noguic	2019-02-01 16:00:01.000000000 -0200
++++ lutris-0.5.0/lutris/gui/config/common.py	2019-02-02 09:58:56.092231578 -0200
+@@ -478,8 +478,8 @@ class GameDialogCommon:
+             pixbuf.savev(dest_path, file_format, [], [])
+             self._set_image(image_type)
+ 
+-            if image_type == "icon":
+-                resources.udpate_desktop_icons()
++            #if image_type == "icon":
++            #    resources.udpate_desktop_icons()
+ 
+         dialog.destroy()
+ 
+diff -up lutris-0.5.0/lutris/util/resources.py.noguic lutris-0.5.0/lutris/util/resources.py
+--- lutris-0.5.0/lutris/util/resources.py.noguic	2019-02-01 16:00:01.000000000 -0200
++++ lutris-0.5.0/lutris/util/resources.py	2019-02-02 09:59:08.073721492 -0200
+@@ -50,8 +50,8 @@ def fetch_icons(lutris_media, callback):
+             else:
+                 GLib.idle_add(callback, slug, priority=GLib.PRIORITY_LOW)
+ 
+-    if bool(available_icons):
+-        udpate_desktop_icons()
++    #if bool(available_icons):
++    #    udpate_desktop_icons()
+ 
+ 
+ def udpate_desktop_icons():
+diff -up lutris-0.5.0/lutris/util/linux.py.noguic lutris-0.5.0/lutris/util/linux.py
+--- lutris-0.5.0/lutris/util/linux.py.noguic	2019-02-01 16:00:01.000000000 -0200
++++ lutris-0.5.0/lutris/util/linux.py	2019-02-02 10:00:50.139336932 -0200
+@@ -22,7 +22,6 @@ SYSTEM_COMPONENTS = {
+         "lsi-steam",
+         "fuser",
+         "7z",
+-        "gtk-update-icon-cache",
+         "lspci",
+         "xgamma",
+         "ldconfig",

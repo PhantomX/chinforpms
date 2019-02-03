@@ -5,7 +5,7 @@
 # Script by Phantom X <megaphantomx at bol.com.b>
 # Suggested usage: $ winevk9cfg --help
 #
-# Copyright 2018 Phantom X, Goiania, Brazil.
+# Copyright 2018-2019 Phantom X, Goiania, Brazil.
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -26,12 +26,12 @@
 
 set -e
 
-ver=20180514
+ver=20190202
 
 name="VK9"
 dllsuffix="_vk9"
 dlls="d3d9"
-nodlls="wined3d"
+nodlls=""
 dlldir="/usr/share/wine/vk9"
 
 unset winebits
@@ -89,7 +89,6 @@ checkcfg(){
 }
 
 setcfg(){
-  csmtdisabled=0
   enabled=1
   enabledlnk=1
   for winebits in 64 32 ;do
@@ -101,9 +100,7 @@ setcfg(){
       fi
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       for dll in ${dlls} ;do
-        if [ -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll" ];then
-          dllmissing=0
-        else
+        if ! [ -f "${dlldir}/${lib}/${dll}${dllsuffix}.dll" ];then
           echo "Missing ${dll}${dllsuffix}.dll in ${dlldir}/${lib}/."
           dllmissing=1
         fi
@@ -141,9 +138,6 @@ setcfg(){
   if [ "${dllmissing}" -eq 1 ] ;then
     echo "Reinstall wine-vk9."
     exit 1
-  fi
-  if [ "${csmtdisabled}" -eq 1 ] ;then
-    echo "Staging CSMT was disabled..."
   fi
   if [ "${enabled}" -eq 1 ] && [ "${enabledlnk}" -eq 1 ] ;then
     echo "${name} is enabled!"

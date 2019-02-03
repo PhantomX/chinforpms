@@ -1,40 +1,63 @@
 Name:           lutris
-Version:        0.4.23
+Version:        0.5.0
 Epoch:          1
-Release:        101%{?dist}
+Release:        100%{?dist}
 Summary:        Install and play any video game easily
 
 License:        GPLv3
 URL:            https://lutris.net
 
-Source0:        %{url}/releases/%{name}_%{version}.tar.xz
+Source0:        https://github.com/lutris/lutris/archive/v%{version}/%{name}-%{version}.tar.gz
 # Configure limits in systemd
 # This should be only needed with systemd < 240
 Source1:        02-%{name}.conf
 
-Patch0:         %{name}-nofilelimit.patch
+Patch0:         %{name}-no-gtk-update-icon-cache.patch
 
 BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gtk3
 BuildRequires:  python3-devel
+BuildRequires:  python3-evdev
 BuildRequires:  python3-gobject
-BuildRequires:  python3-wheel
+BuildRequires:  python3-requests
 BuildRequires:  python3-setuptools
 BuildRequires:  fdupes
 Requires:       hicolor-icon-theme
 Requires:       cabextract
+Requires:       curl
+Requires:       fluidsynth
+Requires:       glx-utils
+Requires:       gnome-desktop3
 Requires:       gtk3
+Requires:       libnotify
 Requires:       psmisc
+Requires:       p7zip
+Requires:       p7zip-plugins
+Requires:       pciutils
 Requires:       python3-evdev
+Requires:       python3-gobject-base
 Requires:       python3-gobject
 Requires:       python3-PyYAML
+Requires:       python3-requests
+Requires:       unzip
+Requires:       vulkan-tools
 Requires:       xorg-x11-server-Xephyr
 Requires:       xorg-x11-server-utils
+Requires:       webkit2gtk3
+Recommends:     fluid-soundfont-gs
 Recommends:     xboxdrv
 Recommends:     wine
 Suggests:       steam
+
+
+%ifarch x86_64
+Requires:       mesa-dri-drivers(x86-32)
+Requires:       mesa-vulkan-drivers(x86-32)
+Requires:       vulkan-loader(x86-32)
+Requires:       libglvnd-glx(x86-32)
+%endif
 
 
 %description
@@ -45,7 +68,7 @@ do is play the game. It aims to support every game that is playable
 on Linux.
 
 %prep
-%autosetup -n %{name} -p1
+%autosetup -p1
 
 
 %build
@@ -61,9 +84,7 @@ rm -f %{buildroot}%{_datadir}/polkit-1/actions/net.lutris.xboxdrv*
 
 mv %{buildroot}%{_datadir}/appdata %{buildroot}%{_metainfodir}
 
-desktop-file-edit \
-  %{buildroot}%{_datadir}/applications/%{name}.desktop
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.desktop
 
 # Systemd configuration
 %if 0%{?fedora} && 0%{?fedora} < 30
@@ -77,23 +98,25 @@ install -m 644 -p %{S:1} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 %files
 %license LICENSE
 %doc AUTHORS README.rst
-%{_bindir}/%{name}
+%{_bindir}/%{name}*
 %{_datadir}/%{name}/
-%{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/polkit-1/actions/*.policy
 %{python3_sitelib}/%{name}-*.egg-info
 %{python3_sitelib}/%{name}/
 %{_metainfodir}/*.appdata.xml
 %if 0%{?fedora} && 0%{?fedora} < 30
-%{_prefix}/lib/systemd/system.conf.d/
 %{_prefix}/lib/systemd/system.conf.d/02-%{name}.conf
-%{_prefix}/lib/systemd/user.conf.d/
 %{_prefix}/lib/systemd/user.conf.d/02-%{name}.conf
 %endif
 
 
 %changelog
+* Sat Feb 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.0-100
+- 0.5.0
+- Pump requirements
+
 * Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.4.23-101
 - systemd file descriptor limit files
 - Sync NOFILE with systemd defaults

@@ -3,6 +3,8 @@
 %global date 20190102
 %global with_snapshot 1
 
+# Enable Qt build
+%bcond_with qt
 # Enable EGL/GLESV2
 %global with_egl 0
 
@@ -108,6 +110,11 @@ BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(zlib)
+%if %{with qt}
+BuildRequires:  cmake(Qt5Core)
+BuildRequires:  cmake(Qt5Gui)
+BuildRequires:  cmake(Qt5OpenGL)
+%endif
 Requires:       hicolor-icon-theme
 Requires:       google-roboto-condensed-fonts
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -240,7 +247,11 @@ pushd %{_target_platform}
 %ifarch x86_64
   -DX86_64:BOOL=ON \
 %endif
-  -DBUILD_TESTING:BOOL=OFF
+  -DBUILD_TESTING:BOOL=OFF \
+%if %{with qt}
+  -DUSING_QT_UI:BOOL=ON \
+%endif
+%{nil}
 
 %make_build
 
@@ -250,13 +261,21 @@ popd
 %install
 
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{_target_platform}/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
+%if %{with qt}
+  install -pm0755 %{_target_platform}/PPSSPPQt %{buildroot}%{_bindir}/%{name}
+%else
+  install -pm0755 %{_target_platform}/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
+%endif
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
 cp -r %{_target_platform}/assets %{buildroot}%{_datadir}/%{name}/
 rm -f %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
 ln -sf ../../fonts/google-roboto/RobotoCondensed-Regular.ttf \
   %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
+
+%if %{with qt}
+  install -pm 644 Qt/languages/* %{buildroot}%{_datadir}/%{name}/assets/lang/
+%endif
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install --mode 0644 \
