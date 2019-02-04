@@ -1,9 +1,9 @@
 %undefine _hardened_build
 
-%global commit 13e9b400ef9d1d5a321d5fb0ebe37eed30540f10
+%global commit 7f32544d22b45c178cb6a91008723fa206586873
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190121
-%global with_snapshot 1
+%global date 20190202
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -14,17 +14,17 @@
 
 %global winecommonver 3.0
 
-%global pkgname nine
+%global pkgname wine-nine-standalone
 
-Name:           wine-%{pkgname}
-Version:        0.2.0.0
-Release:        2%{?gver}%{?dist}
+Name:           wine-nine
+Version:        0.2
+Release:        1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
-Epoch:          1
+Epoch:          2
 
 License:        LGPLv2+
-URL:            https://github.com/dhewg/%{pkgname}
+URL:            https://github.com/iXit/%{pkgname}
 
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
@@ -32,7 +32,7 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        ninewinecfg
-Source2:        wine%{pkgname}cfg
+Source2:        wineninecfg
 
 Source100:      wine-ninecfg.desktop
 
@@ -140,7 +140,7 @@ install -pm0755 %{_target_platform}/d3d9-nine.dll.fake \
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:1} %{buildroot}/%{_bindir}/ninewinecfg
 %if 0%{?staging}
-install -pm0755 %{S:2} %{buildroot}/%{_bindir}/wine%{pkgname}cfg
+install -pm0755 %{S:2} %{buildroot}/%{_bindir}/wineninecfg
 %endif
 
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -155,7 +155,7 @@ desktop-file-install \
 %license LICENSE
 %{_bindir}/ninewinecfg
 %if 0%{?staging}
-%{_bindir}/wine%{pkgname}cfg
+%{_bindir}/wineninecfg
 %endif
 %{_libdir}/wine/d3d9-nine.dll.so
 %{_libdir}/wine/ninewinecfg.exe.so
@@ -165,6 +165,10 @@ desktop-file-install \
 
 
 %changelog
+* Sun Feb 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.2-1
+- 0.2.0.0 final
+- Update urls
+
 * Mon Jan 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.2.0.0-2.20190121git13e9b40
 - New snapshot
 
