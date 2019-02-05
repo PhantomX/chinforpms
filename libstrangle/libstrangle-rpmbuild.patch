@@ -1,0 +1,74 @@
+diff -up libstrangle-0.0.4/makefile.rpmbuild libstrangle-0.0.4/makefile
+--- libstrangle-0.0.4/makefile.rpmbuild	2018-08-24 11:20:58.000000000 -0300
++++ libstrangle-0.0.4/makefile	2019-02-04 08:53:32.569474059 -0200
+@@ -1,48 +1,38 @@
+ CC=gcc
+-CFLAGS=-rdynamic -fPIC -shared -Wall -std=c99 -fvisibility=hidden -DHOOK_DLSYM
+-LDFLAGS=-Wl,-z,relro,-z,now
++CFLAGS+=-rdynamic -fPIC -shared -Wall -std=c99 -fvisibility=hidden -DHOOK_DLSYM
++LDFLAGS+=-Wl,-z,relro,-z,now
+ LDLIBS=-ldl -lrt
+-prefix=/usr/local
+-bindir=$(prefix)/bin
+-libdir=$(prefix)/lib
++prefix?=/usr
++bindir?=$(prefix)/bin
++libdir?=$(prefix)/lib
+ DOC_PATH=$(prefix)/share/doc/libstrangle
+-LIB32_PATH=$(libdir)/libstrangle/lib32
+-LIB64_PATH=$(libdir)/libstrangle/lib64
++LIB_PATH=$(libdir)/libstrangle
+ SOURCEDIR=src/
+ BUILDDIR=build/
+ SOURCES=$(wildcard $(SOURCEDIR)*.c)
+ 
+-all: $(BUILDDIR)libstrangle64.so $(BUILDDIR)libstrangle32.so $(BUILDDIR)libstrangle.conf
++all: $(BUILDDIR)libstrangle.so $(BUILDDIR)libstrangle.conf
+ 
+ $(BUILDDIR):
+ 	mkdir -p $(BUILDDIR)
+ 
+ $(BUILDDIR)libstrangle.conf: $(BUILDDIR)
+-	@echo "$(LIB32_PATH)/" > $(BUILDDIR)libstrangle.conf
+-	@echo "$(LIB64_PATH)/" >> $(BUILDDIR)libstrangle.conf
++	@echo "$(LIB_PATH)/" > $(BUILDDIR)libstrangle.conf
+ 
+-$(BUILDDIR)libstrangle64.so: $(BUILDDIR)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -m64 -o $(BUILDDIR)libstrangle64.so $(SOURCES) $(LDLIBS)
+-
+-$(BUILDDIR)libstrangle32.so: $(BUILDDIR)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -m32 -o $(BUILDDIR)libstrangle32.so $(SOURCES) $(LDLIBS)
++$(BUILDDIR)libstrangle.so: $(BUILDDIR)
++	$(CC) $(CFLAGS) $(LDFLAGS) -o $(BUILDDIR)libstrangle.so $(SOURCES) $(LDLIBS)
+ 
+ install: all
+ 	install -m 0644 -D -T $(BUILDDIR)libstrangle.conf $(DESTDIR)/etc/ld.so.conf.d/libstrangle.conf
+-	install -m 0755 -D -T $(BUILDDIR)libstrangle32.so $(DESTDIR)$(LIB32_PATH)/libstrangle.so
+-	install -m 0755 -D -T $(BUILDDIR)libstrangle64.so $(DESTDIR)$(LIB64_PATH)/libstrangle.so
++	install -m 0755 -D -T $(BUILDDIR)libstrangle.so $(DESTDIR)$(LIB_PATH)/libstrangle.so
+ 	install -m 0755 -D -T $(SOURCEDIR)strangle.sh $(DESTDIR)$(bindir)/strangle
+-	install -m 0644 -D -T COPYING $(DESTDIR)$(DOC_PATH)/LICENSE
+-	ldconfig
+ 
+ clean:
+-	rm -f $(BUILDDIR)libstrangle64.so
+-	rm -f $(BUILDDIR)libstrangle32.so
++	rm -f $(BUILDDIR)libstrangle.so
+ 	rm -f $(BUILDDIR)libstrangle.conf
+ 
+ uninstall:
+ 	rm -f $(DESTDIR)/etc/ld.so.conf.d/libstrangle.conf
+-	rm -f $(DESTDIR)$(LIB32_PATH)/libstrangle.so
+-	rm -f $(DESTDIR)$(LIB64_PATH)/libstrangle.so
++	rm -f $(DESTDIR)$(LIB_PATH)/libstrangle.so
+ 	rm -f $(DESTDIR)$(bindir)/strangle
+ 	rm -f $(DESTDIR)$(DOC_PATH)/LICENSE
+diff -up libstrangle-0.0.4/src/strangle.sh.rpmbuild libstrangle-0.0.4/src/strangle.sh
+--- libstrangle-0.0.4/src/strangle.sh.rpmbuild	2018-08-24 11:20:58.000000000 -0300
++++ libstrangle-0.0.4/src/strangle.sh	2019-02-04 08:53:06.390501400 -0200
+@@ -26,4 +26,4 @@ fi
+ 
+ # Execute the strangled program under a clean environment
+ # pass through the FPS and overriden LD_PRELOAD environment variables
+-exec env FPS="${FPS}" LD_PRELOAD="${LD_PRELOAD}:libstrangle.so" "$@"
++exec env FPS="${FPS}" LD_PRELOAD="${LD_PRELOAD}:/usr/\$LIB/libstrangle/libstrangle.so" "$@"

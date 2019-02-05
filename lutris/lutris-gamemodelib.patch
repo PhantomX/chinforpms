@@ -1,0 +1,24 @@
+diff -up lutris-0.5.0/lutris/game.py.gamemodelib lutris-0.5.0/lutris/game.py
+--- lutris-0.5.0/lutris/game.py.gamemodelib	2019-02-01 16:00:01.000000000 -0200
++++ lutris-0.5.0/lutris/game.py	2019-02-04 09:48:13.307389367 -0200
+@@ -441,7 +441,7 @@ class Game(GObject.Object):
+                     path
+                     for path in [
+                         env.get("LD_PRELOAD"),
+-                        "/usr/$LIB/libgamemodeauto.so",
++                        "/usr/$LIB/libgamemodeauto.so.0",
+                     ]
+                     if path
+                 ]
+diff -up lutris-0.5.0/lutris/util/linux.py.gamemodelib lutris-0.5.0/lutris/util/linux.py
+--- lutris-0.5.0/lutris/util/linux.py.gamemodelib	2019-02-04 09:28:20.958204701 -0200
++++ lutris-0.5.0/lutris/util/linux.py	2019-02-04 09:48:04.578412546 -0200
+@@ -71,7 +71,7 @@ SYSTEM_COMPONENTS = {
+             "libvulkan_radeon.so"
+         ],
+         "GAMEMODE": [
+-            "libgamemodeauto.so"
++            "libgamemodeauto.so.0"
+         ]
+     }
+ }

@@ -1,6 +1,6 @@
-%global commit 3fa3c2a1bb8b8e6c30b1ccebe50d5133cd355953
+%global commit f367fd24ba208519742e7370fb1478c3ed0d14c7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190129
+%global date 20190201
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -110,7 +110,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.7
+Version:        56.2.7.1
 Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -801,11 +801,6 @@ for langpack in `ls waterfox-langpacks/*.xpi`; do
   find $extensionID -type f | xargs chmod 644
 
   cd $extensionID
-  # Temporary fix
-  placesfixpath="browser/chrome/$language/locale/browser/places/places.dtd"
-  echo '<!ENTITY col.parentfolder.label  "Parent Folder">' >> ./${placesfixpath}
-  echo '<!ENTITY col.parentpath.label  "Parent Path">' >> ./${placesfixpath}
-
   zip -qq -r9mX ../${extensionID}.xpi *
   cd -
 
@@ -966,6 +961,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7.1-1.20190201gitf367fd2
+- New release/snapshot
+
 * Thu Jan 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7-1.20190129git3fa3c2a
 - New release/snapshot
 

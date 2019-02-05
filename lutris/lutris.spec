@@ -1,5 +1,7 @@
+%global debug_package %{nil}
+
 Name:           lutris
-Version:        0.5.0
+Version:        0.5.0.1
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -13,8 +15,7 @@ Source0:        https://github.com/lutris/lutris/archive/v%{version}/%{name}-%{v
 Source1:        02-%{name}.conf
 
 Patch0:         %{name}-no-gtk-update-icon-cache.patch
-
-BuildArch:      noarch
+Patch1:         %{name}-gamemodelib.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gtk3
@@ -29,9 +30,11 @@ Requires:       cabextract
 Requires:       curl
 Requires:       fluidsynth
 Requires:       glx-utils
+Requires:       gamemode
 Requires:       gnome-desktop3
 Requires:       gtk3
 Requires:       libnotify
+Requires:       libstrangle
 Requires:       psmisc
 Requires:       p7zip
 Requires:       p7zip-plugins
@@ -53,6 +56,8 @@ Suggests:       steam
 
 
 %ifarch x86_64
+Requires:       gamemode(x86-32)
+Requires:       libstrangle(x86-32)
 Requires:       mesa-dri-drivers(x86-32)
 Requires:       mesa-vulkan-drivers(x86-32)
 Requires:       vulkan-loader(x86-32)
@@ -113,6 +118,12 @@ install -m 644 -p %{S:1} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 
 
 %changelog
+* Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.0.1-100
+- 0.5.0.1
+- Drop noarch, needed for better dependencies
+- R: gamemode
+- R: libstrangle
+
 * Sat Feb 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.0-100
 - 0.5.0
 - Pump requirements

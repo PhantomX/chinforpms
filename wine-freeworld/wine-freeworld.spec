@@ -5,14 +5,14 @@
 #global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
-%global stagingver 4.0
+%global stagingver 4.1
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
 
 Name:           wine-freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0
+Version:        4.1
 Release:        1%{?dist}
 Summary:        Wine libraries with all codecs support
 Epoch:          2
@@ -194,6 +194,9 @@ done
 
 
 %changelog
+* Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.1-1
+- 4.1
+
 * Tue Jan 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.0-1
 - 4.0
 

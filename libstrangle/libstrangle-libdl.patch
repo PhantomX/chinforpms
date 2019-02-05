@@ -1,0 +1,13 @@
+diff -up libstrangle-0.0.4/src/real_dlsym.c.dlopen libstrangle-0.0.4/src/real_dlsym.c
+--- libstrangle-0.0.4/src/real_dlsym.c.dlopen	2018-08-24 11:20:58.000000000 -0300
++++ libstrangle-0.0.4/src/real_dlsym.c	2019-02-04 09:15:54.137261731 -0200
+@@ -31,6 +31,9 @@ void* real_dlsym( void* handle, const ch
+ 	static void *(*the_real_dlsym)( void*, const char* );
+ 	if ( the_real_dlsym == NULL ) {
+ 		void* libdl = dlopen( "libdl.so", RTLD_NOW | RTLD_LOCAL );
++		if ( libdl == NULL ) {
++			libdl = dlopen( "libdl.so.2", RTLD_NOW | RTLD_LOCAL );
++		}
+ 		the_real_dlsym = __libc_dlsym( libdl, "dlsym" );
+ 	}
+ 

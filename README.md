@@ -36,6 +36,7 @@ RPMFusion and existent packages updated with extra changes.
                 (kernel-local must be edited to modify gcc optimizations)
  * **krename** - Updated, KF5
  * **libtgvoip** - No unresolved symbols
+ * **lutris** - Personal changes
  * **manaplus** - Updated, SDL2
  * **mednafen** - No Haswell optimizations
  * **mesa** - Can't wait Fedora releases

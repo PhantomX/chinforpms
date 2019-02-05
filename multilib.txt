@@ -7,6 +7,7 @@ gtk3-nocsd
 kernel-tools
 libmirage
 libogg
+libstrangle
 linux-steam-integration
 mingw-wine-vk9
 qt5ct

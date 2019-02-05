@@ -9,11 +9,11 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 4.0
+%global stagingver 4.1
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global tkg_id 14708044953657df5c47d458c3ef7fc59f218e8a
+%global tkg_id 170d59fc76946ca21a60ff7a3ec13ae23104d264
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -40,8 +40,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.0
-Release:        101%{?dist}
+Version:        4.1
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -107,9 +107,6 @@ Patch600:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.
 # Wbemprox videocontroller query fix v2
 # https://bugs.winehq.org/show_bug.cgi?id=38879
 Patch601:       wbemprox_query_v2.patch
-# Needed for wine-dxup build
-Patch602:       https://source.winehq.org/patches/data/156703#/whq-dxup-d3d9header-fix.patch
-Patch603:       https://bugs.winehq.org/attachment.cgi?id=63321&action=diff&context=patch&collapsed=&headers=1&format=raw#/whq-bug46482.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch700:       %{tkg_url}/steam.patch#/tkg-steam.patch
@@ -720,8 +717,6 @@ This package adds xaudio2 support for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
-%patch602 -p1
-%patch603 -p1
 %patch700 -p1
 %patch702 -p1
 %patch703 -p1
@@ -2342,6 +2337,9 @@ fi
 
 
 %changelog
+* Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.1-100
+- 4.1
+
 * Fri Jan 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.0-101
 - Optional enabled FAudio support. Obsoletes wine-xaudio and wine-freeworld
 - Remove old Fedora and RH conditionals, only current Fedora is supported

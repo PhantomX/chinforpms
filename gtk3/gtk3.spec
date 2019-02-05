@@ -20,12 +20,12 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 # https://github.com/TomaszGasior/gtk3-mushrooms
-%global mushroom_ver 3.24.3-1
+%global mushroom_ver 3.24.5-1
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name:           gtk3
-Version:        3.24.4
-Release:        101%{?dist}
+Version:        3.24.5
+Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -386,6 +386,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.24.5-100
+- 3.24.5
+
 * Wed Jan 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.24.4-101
 - Revert gtkmenu upstream commits to fix xfce4-panel large menus scrolling
 
