@@ -102,10 +102,10 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %license test/doc/gpl-license test/doc/LICENSES-*
 %doc test/doc/README-* test/doc/RELEASE-*
 %{_bindir}/%{name}
-%{_libdir}/%{name}
+%{_libdir}/%{name}/
 %{_mandir}/man6/%{name}.*
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/%{name}
+%{_datadir}/%{name}/
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 
 %files libs

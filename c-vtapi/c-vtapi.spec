@@ -78,7 +78,7 @@ find %{buildroot} -type f -name '*.la' -print -delete
 %license COPYING
 %doc AUTHORS README
 %{_libdir}/libcvtapi.so
-%{_includedir}/%{name}
+%{_includedir}/%{name}/
 
 
 %changelog

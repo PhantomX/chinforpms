@@ -58,7 +58,7 @@ getent group %{name} >/dev/null || groupadd -r %{name}
 %attr(4750,root,%{name}) %{_bindir}/%{name}
 %{_bindir}/firecfg
 %{_bindir}/firemon
-%{_libdir}/%{name}
+%{_libdir}/%{name}/
 %{_datadir}/bash-completion/completions/*
 %{_mandir}/man1/*.1*
 %{_mandir}/man5/*.5*

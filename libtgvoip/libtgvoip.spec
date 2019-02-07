@@ -68,7 +68,7 @@ find video -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{build
 %{_libdir}/%{name}.so.*
 
 %files devel
-%{_includedir}/%{name}
+%{_includedir}/%{name}/
 %{_libdir}/%{name}.so
 
 

@@ -195,12 +195,12 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 %{_datadir}/bash-completion/helpers/gst
 
 %files devel
-%dir %{_includedir}/gstreamer-%{majorminor}
-%dir %{_includedir}/gstreamer-%{majorminor}/gst
-%dir %{_includedir}/gstreamer-%{majorminor}/gst/base
-%dir %{_includedir}/gstreamer-%{majorminor}/gst/check
-%dir %{_includedir}/gstreamer-%{majorminor}/gst/controller
-%dir %{_includedir}/gstreamer-%{majorminor}/gst/net
+%dir %{_includedir}/gstreamer-%{majorminor}/
+%dir %{_includedir}/gstreamer-%{majorminor}/gst/
+%dir %{_includedir}/gstreamer-%{majorminor}/gst/base/
+%dir %{_includedir}/gstreamer-%{majorminor}/gst/check/
+%dir %{_includedir}/gstreamer-%{majorminor}/gst/controller/
+%dir %{_includedir}/gstreamer-%{majorminor}/gst/net/
 %{_includedir}/gstreamer-%{majorminor}/gst/*.h
 %{_includedir}/gstreamer-%{majorminor}/gst/base/*.h
 %{_includedir}/gstreamer-%{majorminor}/gst/check/*.h
@@ -228,9 +228,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 %{_libdir}/pkgconfig/gstreamer-net-%{majorminor}.pc
 
 %files devel-docs
-%doc %{_datadir}/gtk-doc/html/gstreamer-%{majorminor}
-%doc %{_datadir}/gtk-doc/html/gstreamer-libs-%{majorminor}
-%doc %{_datadir}/gtk-doc/html/gstreamer-plugins-%{majorminor}
+%doc %{_datadir}/gtk-doc/html/gstreamer-%{majorminor}/
+%doc %{_datadir}/gtk-doc/html/gstreamer-libs-%{majorminor}/
+%doc %{_datadir}/gtk-doc/html/gstreamer-plugins-%{majorminor}/
 
 
 %changelog

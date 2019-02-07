@@ -58,7 +58,7 @@ popd
 %doc ChangeLog README
 %{_bindir}/%{name}
 %{_bindir}/fluxbox-dm-helper
-%{_datadir}/%{name}
+%{_datadir}/%{name}/
 
 
 %changelog

@@ -69,7 +69,7 @@ cp -rp usr/share/icons %{buildroot}%{_datadir}/
 
 %files
 %{_bindir}/%{name}
-%{_libdir}/%{name}
+%{_libdir}/%{name}/
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 

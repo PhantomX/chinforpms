@@ -53,7 +53,7 @@ popd
 
 %files devel
 %{_libdir}/lib%{name}.so
-%{_includedir}/%{name}
+%{_includedir}/%{name}/
 %{_datadir}/%{name}/cmake/*.cmake
 
 

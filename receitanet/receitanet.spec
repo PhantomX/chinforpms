@@ -40,7 +40,7 @@ find %{buildroot}%{_datadir}/ProgramasRFB/%{name} -type d | xargs chmod 0755 2> 
 
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
-#!/bin/sh
+#!/usr/bin/sh
 
 exec java -jar %{_datadir}/ProgramasRFB/%{name}/%{name}.jar "${@}"
 EOF
@@ -82,7 +82,7 @@ done
 %{_bindir}/%{name}
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/*/*.png
-%{_datadir}/ProgramasRFB/%{name}
+%{_datadir}/ProgramasRFB/%{name}/
 
 %changelog
 * Thu Mar 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.10-2

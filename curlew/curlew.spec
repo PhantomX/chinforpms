@@ -48,11 +48,11 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %license LICENSE-ar.txt LICENSE-en.txt
 %doc AUTHORS changelog README
 %{_bindir}/%{name}
-%dir %{_datadir}/%{name}
+%dir %{_datadir}/%{name}/
 %{_datadir}/%{name}/*.cfg
 %{_datadir}/%{name}/modules/*
 %exclude %{python3_sitelib}
-%{_datadir}/%{name}
+%{_datadir}/%{name}/
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/pixmaps/%{name}.*

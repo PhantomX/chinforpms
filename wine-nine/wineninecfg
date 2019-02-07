@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # -- winedxvkcfg --
 # Sets wine Gallium Nine dll redirection.
 #

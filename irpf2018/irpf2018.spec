@@ -48,7 +48,7 @@ find %{buildroot}%{_datadir}/ProgramasRFB/%{name} -type d | xargs chmod 0755 2> 
 
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
-#!/bin/sh
+#!/usr/bin/sh
 
 exec java -jar %{_datadir}/ProgramasRFB/%{name}/irpf.jar "${@}"
 EOF
@@ -88,7 +88,7 @@ rm -f %{buildroot}%{_datadir}/ProgramasRFB/%{name}/IRPF-Licenses.txt
 %{_bindir}/%{name}
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/*/*.png
-%{_datadir}/ProgramasRFB/%{name}
+%{_datadir}/ProgramasRFB/%{name}/
 
 %changelog
 * Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1

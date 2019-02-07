@@ -55,7 +55,7 @@ install -pm0755 disk_indicator %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d
 cat > %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d/%{name}.sh <<EOF
-#!/bin/sh
+#!/usr/bin/sh
 # Hangs without forking
 /usr/bin/disk_indicator &
 EOF

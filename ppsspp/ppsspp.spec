@@ -314,7 +314,7 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %files data
 %doc README.md
 %license LICENSE.TXT
-%{_datadir}/%{name}
+%{_datadir}/%{name}/
 
 
 %changelog

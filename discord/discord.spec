@@ -119,7 +119,7 @@ done
 
 %files
 %{_bindir}/%{name}
-%{_libdir}/%{name}
+%{_libdir}/%{name}/
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 

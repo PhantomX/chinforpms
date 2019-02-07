@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/sh
 #
 # Wrapper script to start a Winelib application once it is installed
 #

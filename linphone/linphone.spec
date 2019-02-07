@@ -162,10 +162,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_bindir}/lp-test-ecc
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/audio-assistant.desktop
-%{_datadir}/pixmaps/%{name}
-%{_datadir}/%{name}
+%{_datadir}/pixmaps/%{name}/
+%{_datadir}/%{name}/
 %{_datadir}/icons/hicolor/*/*/*
-%{_datadir}/sounds/%{name}
+%{_datadir}/sounds/%{name}/
 %{_metainfodir}/%{name}.appdata.xml
 
 %files libs

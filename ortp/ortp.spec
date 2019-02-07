@@ -62,8 +62,8 @@ rm -rf %{buildroot}%{_datadir}/doc
 %{_libdir}/libortp.so.*
 
 %files devel
-%doc %{_target_platform}/doc/html
-%{_includedir}/%{name}
+%doc %{_target_platform}/doc/html/
+%{_includedir}/%{name}/
 %{_libdir}/libortp.so
 %{_libdir}/pkgconfig/ortp.pc
 %{_datadir}/oRTP/cmake/*.cmake

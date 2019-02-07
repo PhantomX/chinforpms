@@ -70,8 +70,8 @@ install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 %{_libdir}/*.so.*
 
 %files devel
-%{_includedir}/%{pkgname}
-%{_libdir}/cmake/%{pkgname}
+%{_includedir}/%{pkgname}/
+%{_libdir}/cmake/%{pkgname}/
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.so
 

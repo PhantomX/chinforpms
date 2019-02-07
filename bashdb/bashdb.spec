@@ -2,8 +2,9 @@
 
 Name:           bashdb
 Summary:        BASH debugger, the BASH symbolic debugger
-Version:        4.4_0.94
-Release:        2%{?dist}
+Version:        4.4_1.0.1
+Release:        1%{?dist}
+
 License:        GPLv2+
 URL:            http://bashdb.sourceforge.net/
 
@@ -14,12 +15,12 @@ BuildArch:      noarch
 
 BuildRequires:  bash >= 4.4
 BuildRequires:  gcc
-Requires(post): /sbin/install-info
-Requires(preun): /sbin/install-info
+BuildRequires:  python2-devel
 Requires:       bash >= 4.4
 
 Obsoletes:      emacs-bashdb < %{version}
 Obsoletes:      emacs-bashdb-el < %{version}
+
 
 %description
 The Bash Debugger Project is a source-code debugger for bash,
@@ -33,8 +34,11 @@ what is going on “inside” a bash script, while it executes:
 The 4.0 series is a complete rewrite of the previous series.
 Bashdb can be used with ddd: ddd --debugger %{_bindir}/%{name} <script-name>.
 
+
 %prep
-%setup -q -n %{name}-%{rversion}
+%autosetup -n %{name}-%{rversion}
+
+sed -i '1s|/usr/bin/env python|%{__python2}|' lib/term-highlight.py
 
 %build
 %configure
@@ -50,23 +54,21 @@ rm -f "%{buildroot}%{_infodir}/dir"
 make check
 %endif
 
-%post
-/sbin/install-info %{_infodir}/%{name}.info.gz %{_infodir}/dir || :
-
-%postun
-if [ "$1" = 0 ]; then
-   /sbin/install-info --delete %{_infodir}/%{name}.info.gz %{_infodir}/dir || :
-fi
 
 %files
 %license COPYING
-%doc doc/*.html AUTHORS ChangeLog NEWS README THANKS TODO
+%doc doc/*.html AUTHORS ChangeLog NEWS README.md THANKS TODO
 %{_bindir}/%{name}
-%{_datadir}/%{name}
+%{_datadir}/%{name}/
 %{_mandir}/man1/%{name}.1*
 %{_infodir}/%{name}.info*
 
+
 %changelog
+* Wed Feb 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.4_1.0.1-1
+- 4.4-1.0.1
+- Remove info scriplets
+
 * Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.4_0.94-2
 - BR: gcc
 

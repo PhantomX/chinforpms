@@ -66,9 +66,9 @@ install -pm 0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 %license LICENSE*
 %doc README.md
 %{_bindir}/*
-%{_libdir}/%{name}
+%{_libdir}/%{name}/
 %{_mandir}/man1/*.1*
-%{_datadir}/%{name}
+%{_datadir}/%{name}/
 
 %files -n libpe
 %license lib/libpe/LICENSE
@@ -77,7 +77,7 @@ install -pm 0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 
 %files -n libpe-devel
 %license lib/libpe/LICENSE
-%{_includedir}/%{name}
+%{_includedir}/%{name}/
 %{_libdir}/libpe.so
 
 %changelog

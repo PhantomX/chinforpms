@@ -60,7 +60,7 @@ done
 %doc README RELNOTES
 %{_bindir}/%{name}
 %{_bindir}/firejail-ui
-%{_libdir}/%{name}
+%{_libdir}/%{name}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/pixmaps/*.png

@@ -66,7 +66,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %doc doc/dbus doc/README doc/translators
 %{_bindir}/%{name}
 %{python2_sitelib}/*.egg-info
-%{_datadir}/%{name}
+%{_datadir}/%{name}/
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_mandir}/man1/*.1*

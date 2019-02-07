@@ -90,7 +90,7 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/pixmaps/%{name}.png
-%{_datadir}/%{name}
+%{_datadir}/%{name}/
 %{_mandir}/man1/%{name}*.1*
 %{_metainfodir}/*.xml
 

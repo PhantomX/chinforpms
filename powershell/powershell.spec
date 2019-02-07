@@ -122,7 +122,7 @@ fi
 %files
 %license LICENSE.txt
 %{_bindir}/pwsh
-%{_libdir}/%{name}
+%{_libdir}/%{name}/
 %{_mandir}/man1/*.1*
 
 

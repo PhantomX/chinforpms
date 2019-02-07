@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # -- winevk9cfg --
 # Sets wine VK9 dll redirection.
 #

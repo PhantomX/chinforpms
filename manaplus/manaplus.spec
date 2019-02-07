@@ -107,7 +107,7 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 %{_datadir}/appdata/%{name}.appdata.xml
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/%{name}test.desktop
-%{_datadir}/%{name}
+%{_datadir}/%{name}/
 %{_datadir}/icons/hicolor/*/*/%{name}*
 %{_mandir}/man6/%{name}.6*
 %{_mandir}/man6/%{name}test.6*

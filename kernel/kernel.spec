@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 5293e619c0f9cdc3eb04ad105ba1b8099bdc58ba
+%global pfcommit 1112ca70ad8bc5b1a13f3aaa81ea15920294ecf2
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -670,9 +670,6 @@ Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
 # rhbz 1663613 patch merged into 5.0-rc#
 Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch 
 
-# CVE-2018-16880 rhbz 1656472 1669545
-Patch509: CVE-2018-16880.patch
-
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -684,7 +681,7 @@ Patch1011: %{opensuse_url}/VFS-expedite-umount.patch#/openSUSE-VFS-expedite-umou
 Patch1012: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1013: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
 Patch1014: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
-Patch1015: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+Patch1015: btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 #Patch1017: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
 Patch1018: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
@@ -2012,6 +2009,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.7-500.chinfo
+- 4.20.7
+
 * Thu Jan 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.6-500.chinfo
 - 4.20.6
 
