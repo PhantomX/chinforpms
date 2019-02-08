@@ -1,6 +1,6 @@
-%global commit 12e54baebb29ae090fa5b850addfcdda1fef92e6
+%global commit bff58d0921acc2654d485a81231cc592235939b2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190102
+%global date 20190207
 %global with_snapshot 1
 
 # Enable Qt build
@@ -14,7 +14,7 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 0adba3e390d12e792bf272519d126113a771d6b1
+%global commit1 f97aa5d000b0a27e27b88b0072ccf932de506eae
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -26,11 +26,11 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global commit4 9efe3367284d2d1eeb14fc302a2c12c36e3e255e
+%global commit4 7885552b208493a6a0f21663770c446c3ba65576
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
-%global commit6 29619b2312f7bc862221749f3f4d37c3e6a0dee2
+%global commit6 9983f99e87ab0b6608b236ea59bcf873f90e1435
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
@@ -50,7 +50,7 @@
 
 Name:           ppsspp
 Version:        1.7.5
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -318,6 +318,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Feb 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.7.5-3.20190207gitbff58d0
+- New snapshot
+
 * Wed Jan 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.7.5-2.20190102git12e54ba
 - New snapshot
 

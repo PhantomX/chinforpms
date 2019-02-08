@@ -1,6 +1,6 @@
 diff -up ppsspp/Core/Config.cpp.nodiscord ppsspp/Core/Config.cpp
---- ppsspp/Core/Config.cpp.nodiscord	2018-09-21 20:41:22.115412789 -0300
-+++ ppsspp/Core/Config.cpp	2018-09-21 20:41:46.037394391 -0300
+--- ppsspp/Core/Config.cpp.nodiscord	2019-02-07 23:27:59.356215087 -0200
++++ ppsspp/Core/Config.cpp	2019-02-07 23:27:59.359214459 -0200
 @@ -397,7 +397,6 @@ static ConfigSetting generalSettings[] =
  	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false),
  	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion),
@@ -10,9 +10,9 @@ diff -up ppsspp/Core/Config.cpp.nodiscord ppsspp/Core/Config.cpp
  	ReportedConfigSetting("NumWorkerThreads", &g_Config.iNumWorkerThreads, &DefaultNumWorkers, true, true),
  	ConfigSetting("AutoLoadSaveState", &g_Config.iAutoLoadSaveState, 0, true, true),
 diff -up ppsspp/Core/Config.h.nodiscord ppsspp/Core/Config.h
---- ppsspp/Core/Config.h.nodiscord	2018-09-07 02:13:23.000000000 -0300
-+++ ppsspp/Core/Config.h	2018-09-21 20:41:46.037394391 -0300
-@@ -117,8 +117,6 @@ public:
+--- ppsspp/Core/Config.h.nodiscord	2019-02-07 12:44:26.000000000 -0200
++++ ppsspp/Core/Config.h	2019-02-07 23:27:59.360214249 -0200
+@@ -118,8 +118,6 @@ public:
  	std::vector<std::string> vPinnedPaths;
  	std::string sLanguageIni;
  
@@ -21,20 +21,9 @@ diff -up ppsspp/Core/Config.h.nodiscord ppsspp/Core/Config.h
  	// GFX
  	int iGPUBackend;
  	std::string sFailedGPUBackends;
-diff -up ppsspp/UI/GameSettingsScreen.cpp.nodiscord ppsspp/UI/GameSettingsScreen.cpp
---- ppsspp/UI/GameSettingsScreen.cpp.nodiscord	2018-09-07 02:13:23.000000000 -0300
-+++ ppsspp/UI/GameSettingsScreen.cpp	2018-09-21 20:42:54.211092081 -0300
-@@ -644,7 +644,6 @@ void GameSettingsScreen::CreateViews() {
- 	networkingSettings->Add(new Choice(n->T("Adhoc Multiplayer forum")))->OnClick.Handle(this, &GameSettingsScreen::OnAdhocGuides);
- 
- 	networkingSettings->Add(new CheckBox(&g_Config.bEnableWlan, n->T("Enable networking", "Enable networking/wlan (beta)")));
--	networkingSettings->Add(new CheckBox(&g_Config.bDiscordPresence, n->T("Send Discord Presence information")));
- 
- #if !defined(MOBILE_DEVICE) && !defined(USING_QT_UI)
- 	networkingSettings->Add(new PopupTextInputChoice(&g_Config.proAdhocServer, n->T("Change proAdhocServer Address"), "", 255, screenManager()));
 diff -up ppsspp/UI/DiscordIntegration.cpp.nodiscord ppsspp/UI/DiscordIntegration.cpp
---- ppsspp/UI/DiscordIntegration.cpp.nodiscord	2018-11-13 07:22:34.000000000 -0200
-+++ ppsspp/UI/DiscordIntegration.cpp	2018-11-17 13:55:43.166309019 -0200
+--- ppsspp/UI/DiscordIntegration.cpp.nodiscord	2019-02-07 12:44:26.000000000 -0200
++++ ppsspp/UI/DiscordIntegration.cpp	2019-02-07 23:27:59.361214040 -0200
 @@ -41,7 +41,11 @@ Discord::~Discord() {
  }
  
@@ -47,3 +36,14 @@ diff -up ppsspp/UI/DiscordIntegration.cpp.nodiscord ppsspp/UI/DiscordIntegration
  }
  
  void Discord::Init() {
+diff -up ppsspp/UI/GameSettingsScreen.cpp.nodiscord ppsspp/UI/GameSettingsScreen.cpp
+--- ppsspp/UI/GameSettingsScreen.cpp.nodiscord	2019-02-07 23:27:59.360214249 -0200
++++ ppsspp/UI/GameSettingsScreen.cpp	2019-02-07 23:28:37.489224505 -0200
+@@ -638,7 +638,6 @@ void GameSettingsScreen::CreateViews() {
+ 	networkingSettings->Add(new Choice(n->T("Adhoc Multiplayer forum")))->OnClick.Handle(this, &GameSettingsScreen::OnAdhocGuides);
+ 
+ 	networkingSettings->Add(new CheckBox(&g_Config.bEnableWlan, n->T("Enable networking", "Enable networking/wlan (beta)")));
+-	networkingSettings->Add(new CheckBox(&g_Config.bDiscordPresence, n->T("Send Discord Presence information")));
+ 
+ #if !defined(MOBILE_DEVICE)
+ 	networkingSettings->Add(new PopupTextInputChoice(&g_Config.proAdhocServer, n->T("Change proAdhocServer Address"), "", 255, screenManager()));
