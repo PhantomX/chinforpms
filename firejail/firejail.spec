@@ -1,5 +1,5 @@
 Name:           firejail
-Version:        0.9.58
+Version:        0.9.58.2
 Release:        1%{?dist}
 Summary:        GUI tools for firejail
 
@@ -65,6 +65,9 @@ getent group %{name} >/dev/null || groupadd -r %{name}
 
 
 %changelog
+* Fri Feb 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.9.58.2-1
+- 0.9.58.2
+
 * Mon Jan 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.9.58-1
 - 0.9.58
 - Place contrib scripts on docdir

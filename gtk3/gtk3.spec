@@ -25,7 +25,7 @@
 
 Name:           gtk3
 Version:        3.24.5
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -35,9 +35,11 @@ URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
 Source1:        https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2:        chinforpms-adwaita.css
+Source3:        fixes__too-large-menu-covers-bar.patch
 
-# Revert gtkmenu changes that breaking xfce4-panel menu, temporarily
-Patch10:        gtk+3-revert-00486efd-c35878ec.patch
+Patch10:        https://gitlab.gnome.org/GNOME/gtk/commit/d9d3ec7cad305d169b1f5df3c3e9e0fd5fbf6922.patch#/gtk3-gl-d9d3ec7.patch
+# Fix submenus size
+Patch11:        https://gitlab.gnome.org/GNOME/gtk/commit/1d4eac211c09624d29b9309e2b92173f7477a9b7.patch#/gtk3-gl-1d4eac2.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -199,6 +201,8 @@ the functionality of the installed %{name} package.
 
 %prep
 %autosetup -n gtk+-%{version} -p1 -a 1
+
+cp -f %{S:3} %{mushroom_dir}/fixes__too-large-menu-covers-bar.patch
 
 patch_command(){
   patch -p2 -F1 -s -i %{mushroom_dir}/$1
@@ -381,11 +385,14 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/gtk-doc
 
 %files tests
-%{_libexecdir}/installed-tests/gtk+
-%{_datadir}/installed-tests
+%{_libexecdir}/installed-tests/
+%{_datadir}/installed-tests/
 
 
 %changelog
+* Fri Feb 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.5-101
+- gtkmenu upstream branch fixes
+
 * Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.24.5-100
 - 3.24.5
 
