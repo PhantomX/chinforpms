@@ -1,9 +1,8 @@
-Wine Staging:
-- Run wineboot -u after first install and enable with winevk9cfg.
+Enable with winevk9cfg.
 
+or
 
-Stock Wine:
-The needed dll files are in LIBDIR/wine/fakedlls, LIBDIR must match to
+The needed dll files are in LIBDIR/wine/, LIBDIR must match to
 the architecture from executable, /usr/lib or /usr/lib64.
-ln -s LIBDIR/wine/fakedlls/d3d9_vk9.dll executable_directory/d3d9.dll
+ln -s LIBDIR/wine/d3d9_vk9.dll.so executable_directory/d3d9.dll
 WINEDLLOVERRIDES="d3d9=n' executable

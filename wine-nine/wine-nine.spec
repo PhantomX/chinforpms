@@ -9,9 +9,6 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-# Set to 1 if will be used with wine staging
-%global staging 1
-
 %global winecommonver 3.0
 
 %global pkgname wine-nine-standalone
@@ -82,10 +79,6 @@ Provides:       d3d9-nine.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
 %autosetup -n %{pkgname}-%{commit} -p1
 %else
 %autosetup -n %{pkgname}-%{version} -p1
-%endif
-
-%if 0%{?staging}
-sed -e 's|DWINE_STAGING=0|DWINE_STAGING=1|g' -i meson.build
 %endif
 
 sed -e "/strip =/s|=.*|= 'true'|g" -i tools/cross-wine%{__isa_bits}.in

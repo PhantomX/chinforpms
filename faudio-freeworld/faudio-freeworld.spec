@@ -1,7 +1,7 @@
 %global pkgname FAudio
 
 Name:           faudio-freeworld
-Version:        19.01
+Version:        19.02
 Release:        1%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - freeworld
 
@@ -71,5 +71,8 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Mon Feb 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.02-1
+- 19.02
+
 * Fri Jan 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.01-1
 - Initial spec

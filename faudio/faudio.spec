@@ -1,7 +1,7 @@
 %global pkgname FAudio
 
 Name:           faudio
-Version:        19.01
+Version:        19.02
 Release:        1%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -77,5 +77,8 @@ install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Mon Feb 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.02-1
+- 19.02
+
 * Fri Jan 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.01-1
 - Initial spec

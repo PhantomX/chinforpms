@@ -26,9 +26,10 @@
 
 set -e
 
-ver=20190130
+ver=20190211
 
 name="DXVK"
+pkgname="wine-dxvk"
 dllsuffix="_dxvk"
 dlls="dxgi d3d11 d3d10 d3d10_1 d3d10core"
 nodlls=""
@@ -40,7 +41,7 @@ disabled=0
 disabledlnk=0
 dllmissing=0
 retval=0
-redirectkey="HKCU\\Software\\Wine\\DllRedirects"
+overrideskey="HKCU\\Software\\Wine\\DllOverrides"
 
 txt() {
 cat <<EOF
@@ -62,14 +63,15 @@ checkcfg(){
       lib=''
     fi
     native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+    lib_path="/usr/lib${lib}/wine"
     for dll in ${dlls} ;do
-      if wine${winebits} reg query "${redirectkey}" /v "${dll}" 2>/dev/null | grep -q -F "${dll}${dllsuffix}.dll" ;then
+      if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" ;then
         enabled=1
       else
         disabled=1
       fi
     done
-    if [ -f "${native_path}/${dll}${dllsuffix}.dll" ] && cmp "/usr/lib${lib}/wine/fakedlls/${dll}${dllsuffix}.dll" "${native_path}/${dll}${dllsuffix}.dll" &>/dev/null ;then
+    if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll.so")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
       enabledlnk=1
     else
       disabledlnk=1
@@ -80,7 +82,7 @@ checkcfg(){
     echo "${name} is enabled!"
   elif [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 1 ] || [ "${enabledlnk}" -eq 1 ] && [ "${disabledlnk}" -eq 1 ] ;then
     echo "${name} settings are corrupted!"
-    echo "Run wineboot -u and/or rerun with --set or --unset to fix!"
+    echo "Rerun with --set or --unset to fix!"
   else
     echo "${name} is not enabled!"
   fi
@@ -90,11 +92,17 @@ checkcfg(){
 setcfg(){
   enabled=1
   for winebits in 64 32 ;do
+    if [ "${winebits}" -eq 64 ] ;then
+      lib=64
+    else
+      lib=''
+    fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+      lib_path="/usr/lib${lib}/wine"
       for dll in ${dlls} ;do
-        if ! [ -f "${native_path}/${dll}${dllsuffix}.dll" ];then
-          echo "Missing ${dll}${dllsuffix}.dll in ${native_path}/."
+        if ! [ -f "${lib_path}/${dll}${dllsuffix}.dll.so" ];then
+          echo "Missing ${dll}${dllsuffix}.dll in /usr/lib${lib}/wine/."
           dllmissing=1
         fi
       done
@@ -103,21 +111,23 @@ setcfg(){
       fi
       if [ -n "${nodlls}" ] ;then
         for nodll in ${nodlls} ;do
-          if wine${winebits} reg query "${redirectkey}" /v "${nodll}" &>/dev/null ;then
-            wine${winebits} reg delete "${redirectkey}" /v "${nodll}" /f &>/dev/null
+          if wine${winebits} reg query "${overrideskey}" /v "${nodll}" &>/dev/null ;then
+            wine${winebits} reg delete "${overrideskey}" /v "${nodll}" /f &>/dev/null
             retval=$?
           fi
         done
       fi
       for dll in ${dlls} ;do
-        wine${winebits} reg add "${redirectkey}" /v "${dll}" -t REG_SZ /d "${dll}${dllsuffix}.dll" /f &>/dev/null
+        wine${winebits} reg add "${overrideskey}" /v "${dll}" -t REG_SZ /d native /f &>/dev/null
         retval=$?
         if [ "${retval}" -eq 0 ] ;then
           enabled=1
         else
-          enabled=0
+          disabled=1
         fi
-        if [ -r "${native_path}/${dll}${dllsuffix}.dll" ] ;then
+        ln -sf "${lib_path}/${dll}${dllsuffix}.dll.so" "${native_path}/${dll}.dll"
+        retval=$?
+        if [ "${retval}" -eq 0 ] ;then
           enabledlnk=1
         else
           enabledlnk=0
@@ -126,10 +136,10 @@ setcfg(){
     fi
   done
   if [ "${dllmissing}" -eq 1 ] ;then
-    echo "Reinstall wine-dxvk and/or run wineboot -u."
+    echo "Reinstall ${pkgname}."
     exit 1
   fi
-  if [ "${enabled}" -eq 1 ] && [ "${enabledlnk}" -eq 1 ] ;then
+  if [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 0 ] && [ "${enabledlnk}" -eq 1 ] ;then
     echo "${name} is enabled!"
   else
     echo "${name} configuration fail!"
@@ -141,11 +151,19 @@ setcfg(){
 
 unsetcfg(){
   disabled=1
+  disabledlnk=1
   for winebits in 64 32 ;do
+    if [ "${winebits}" -eq 64 ] ;then
+      lib=64
+    else
+      lib=''
+    fi
     if wine${winebits} reg query /? &>/dev/null ;then
+      native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+      lib_path="/usr/lib${lib}/wine"
       for dll in ${dlls} ;do
-        if wine${winebits} reg query "${redirectkey}" /v ${dll} &>/dev/null ;then
-          wine${winebits} reg delete "${redirectkey}" /v ${dll} /f &>/dev/null
+        if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" &>/dev/null ;then
+          wine${winebits} reg delete "${overrideskey}" /v "${dll}" /f &>/dev/null
           retval=$?
           if [ "${retval}" -eq 0 ] ;then
             disabled=1
@@ -153,10 +171,19 @@ unsetcfg(){
             disabled=0
           fi
         fi
+        if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll.so")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+          rm -f "${native_path}/${dll}.dll"
+          retval=$?
+          if [ "${retval}" -eq 0 ] ;then
+            disabledlnk=1
+          else
+            disabledlnk=0
+          fi
+        fi
       done
     fi
   done
-  if [ "${disabled}" -eq 1 ] ;then
+  if [ "${disabled}" -eq 1 ] && [ "${disabledlnk}" -eq 1 ] ;then
     echo "${name} is disabled!"
   else
     echo "${name} configuration fail!"

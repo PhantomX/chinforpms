@@ -1,13 +1,12 @@
-Wine Staging:
-- Run wineboot -u after first install and enable with winedxvkcfg.
+Enable with winedxvkcfg.
 
+or
 
-Stock Wine:
-The needed dll files are in LIBDIR/wine/fakedlls, LIBDIR must match to
+The needed dll files are in LIBDIR/wine/, LIBDIR must match to
 the architecture from executable, /usr/lib or /usr/lib64.
-ln -s LIBDIR/wine/fakedlls/dxgi_dxvk.dll executable_directory/dxgi.dll
-ln -s LIBDIR/wine/fakedlls/d3d11_dxvk.dll executable_directory/d3d11.dll
-ln -s LIBDIR/wine/fakedlls/d3d10_dxvk.dll executable_directory/d3d10.dll
-ln -s LIBDIR/wine/fakedlls/d3d10_1_dxvk.dll executable_directory/d3d10_1.dll
-ln -s LIBDIR/wine/fakedlls/d3d10core_dxvk.dll executable_directory/d3d10core.dll
+ln -s LIBDIR/wine/dxgi_dxvk.dll.so executable_directory/dxgi.dll
+ln -s LIBDIR/wine/d3d11_dxvk.dll.so executable_directory/d3d11.dll
+ln -s LIBDIR/wine/d3d10_dxvk.dll.so executable_directory/d3d10.dll
+ln -s LIBDIR/wine/d3d10_1_dxvk.dll.so executable_directory/d3d10_1.dll
+ln -s LIBDIR/wine/d3d10core_dxvk.dll.so executable_directory/d3d10core.dll
 WINEDLLOVERRIDES="dxgi=n,d3d11=n,d3d10=n,d3d10_1=n,d3d10core=n" executable
