@@ -1,7 +1,7 @@
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        2.17.0
-Release:        101%{?dist}
+Version:        2.18.0
+Release:        100%{?dist}
 
 Epoch:          1
 
@@ -149,6 +149,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.18.0-100
+- 2.18.0
+
 * Tue Jan 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.17.0-101
 - Rebuild (qt5)
 

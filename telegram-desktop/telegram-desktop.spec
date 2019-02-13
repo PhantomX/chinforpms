@@ -4,14 +4,14 @@
 %global apihash dfbe1bc42dc9d20507e17d1814cc2f0a
 
 # Git revision of crl...
-%global commit1 9b7c6b5d9f1b59d2160bf6e9c4e74510f955efe1
+%global commit1 40063abec74e560220891443f6d5157de15e1b62
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 # Decrease debuginfo verbosity to reduce memory consumption...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.5.12
+Version:        1.5.15
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -113,7 +113,6 @@ TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_AUTOUPDATE,'
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME,'
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_DESKTOP_FILE_GENERATION,'
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_CRASH_REPORTS,'
-TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_UNITY_INTEGRATION'
 
 # Generating cmake script using GYP...
 pushd Telegram/gyp
@@ -124,6 +123,11 @@ popd
 # Patching generated cmake script...
 LEN=$(($(wc -l < out/Release/CMakeLists.txt) - 2))
 sed -i "$LEN r Telegram/gyp/CMakeLists.inj" out/Release/CMakeLists.txt
+
+# Exporting correct paths to AR and RANLIB in order to use FLTO optimizations...
+%ifarch x86_64
+sed -e '/set(configuration "Release")/a\' -e 'set(CMAKE_AR "%{_bindir}/gcc-ar")\' -e 'set(CMAKE_RANLIB "%{_bindir}/gcc-ranlib")\' -e 'set(CMAKE_NM "%{_bindir}/gcc-nm")' -i out/Release/CMakeLists.txt
+%endif
 
 # Building Telegram Desktop using cmake...
 pushd out/Release
@@ -164,6 +168,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
+* Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.15-100
+- 1.5.15
+- RPMFusion sync (lto fixes)
+
 * Mon Feb 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.12-100
 - 1.5.12
 

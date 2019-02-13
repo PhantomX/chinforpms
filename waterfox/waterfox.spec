@@ -111,7 +111,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.7.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -439,19 +439,6 @@ done
 rm -f .mozconfig
 cp %{SOURCE10} .mozconfig
 
-%if 0%{?build_with_clang}
-echo 'export LLVM_PROFDATA="llvm-profdata"' >> .mozconfig
-echo 'export CC=clang' >> .mozconfig
-echo 'export CXX=clang++' >> .mozconfig
-echo 'export AR="llvm-ar"' >> .mozconfig
-echo 'export NM="llvm-nm"' >> .mozconfig
-echo 'export RANLIB="llvm-ranlib"' >> .mozconfig
-echo "ac_add_options --enable-linker=gold" >> .mozconfig
-%else
-echo 'export CC=gcc' >> .mozconfig
-echo 'export CXX=g++' >> .mozconfig
-echo "ac_add_options --enable-linker=gold" >> .mozconfig
-%endif
 %if 0%{?build_with_pgo}
 echo "mk_add_options MOZ_PGO=1" >> .mozconfig
 echo "mk_add_options PROFILE_GEN_SCRIPT='EXTRA_TEST_ARGS=10 \$(MAKE) -C \$(MOZ_OBJDIR) pgo-profile-run'" >> .mozconfig
@@ -619,6 +606,11 @@ MOZ_OPT_FLAGS=$(echo "%{optflags}" | %{__sed} -e 's/-Wall//')
 # Explicitly force the hardening flags for Waterfox so it passes the checksec test;
 # See also https://fedoraproject.org/wiki/Changes/Harden_All_Packages
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -Wformat-security -Wformat -Werror=format-security"
+%if 0%{?build_with_pgo}
+# LTO
+MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -flto"
+MOZ_LINK_FLAGS="$MOZ_LINK_FLAGS -flto -fdisable-ipa-cdtor"
+%endif
 %if %{?hardened_build}
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -fPIC -Wl,-z,relro -Wl,-z,now"
 %endif
@@ -656,13 +648,20 @@ export PREFIX='%{_prefix}'
 export LIBDIR='%{_libdir}'
 
 %if 0%{?build_with_clang}
+export LLVM_PROFDATA="llvm-profdata"
 export CC=clang
 export CXX=clang++
 export AR="llvm-ar"
 export NM="llvm-nm"
+export RANLIB="llvm-ranlib"
+echo "ac_add_options --enable-linker=gold" >> .mozconfig
 %else
 export CC=gcc
 export CXX=g++
+export AR="gcc-ar"
+export NM="gcc-nm"
+export RANLIB="gcc-ranlib"
+echo "ac_add_options --enable-linker=gold" >> .mozconfig
 %endif
 
 smp_mflags_cpus=$(echo %{_smp_mflags} | sed 's|-j||g')
@@ -961,6 +960,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7.1-2.20190201gitf367fd2
+- LTO
+
 * Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7.1-1.20190201gitf367fd2
 - New release/snapshot
 

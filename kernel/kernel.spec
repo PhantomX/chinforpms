@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 1112ca70ad8bc5b1a13f3aaa81ea15920294ecf2
+%global pfcommit 886278c3845c3d1418db82547f800c8e3f89396c
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -620,6 +620,12 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
+# https://patchwork.kernel.org/patch/10765783/
+Patch307: wlcore-sdio-Fixup-power-on-off-sequence.patch
+
+# https://patchwork.kernel.org/patch/10778815/
+Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch 
+
 # https://patchwork.kernel.org/patch/10686407/
 Patch331: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
@@ -657,9 +663,6 @@ Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# rhbz 1526312 patch merged into 5.0-rc#
-Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1645070 patch merged into 5.0-rc#
 Patch505: asus-fx503-keyb.patch
@@ -2009,6 +2012,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.8-500.chinfo
+- 4.20.8
+
 * Wed Feb 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.7-500.chinfo
 - 4.20.7
 

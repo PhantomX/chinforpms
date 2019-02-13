@@ -1,5 +1,5 @@
 Name:           adriconf
-Version:        1.3
+Version:        1.4
 Release:        1%{?dist}
 Summary:        Advanced DRI Configurator
 
@@ -20,7 +20,7 @@ BuildRequires:  pkgconfig(gtkmm-3.0)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libglvnd)
 BuildRequires:  pkgconfig(libpci)
-BuildRequires:  pkgconfig(libxml++-2.6)
+BuildRequires:  pkgconfig(libxml++-3.0)
 BuildRequires:  pkgconfig(x11)
 Requires:       hicolor-icon-theme
 
@@ -86,5 +86,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/br.com.jeanher
 
 
 %changelog
+* Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1
+- 1.4
+- BR: libxml++-3.0
+
 * Mon Jan 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3-1
 - Initial spec
