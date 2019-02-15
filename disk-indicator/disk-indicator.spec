@@ -1,6 +1,6 @@
-%global commit 7620d561ac4d965eb7822b7922ed458de23ee9a6
+%global commit ec2d2f6833f038f07a72d15e2d52625c23e10b12
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20151215
+%global date 20181218
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           disk-indicator
 Version:        0.2.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Turns keyboard LEDs into hard disk indicator
 
 License:        GPLv3
@@ -31,21 +31,21 @@ on your ThinkPad laptop into hard disk indicator.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n Disk-Indicator-%{commit} -p0
+%autosetup -n Disk-Indicator-%{commit} -p1
 %else
-%autosetup -n Disk-Indicator-%{version} -p0
+%autosetup -n Disk-Indicator-%{version} -p1
 %endif
 
 sed \
   -e '/^LINK_FLAGS=/s|=|\0$(LDFLAGS) |g' \
-  -e '/^COMPILE_FLAGS=/s|$|\0 $(CFLAGS)|g' \
+  -e '/^COMPILE_FLAGS=/s|-O2 -march=native|-Wno-error=unused-result $(CFLAGS)|g' \
   -i Makefile 
 
 %build
 
-export CFLAGS="%{build_cflags} -Wno-error=unused-result"
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 
+./configure.sh --all
 %make_build 
 
 %install
@@ -67,6 +67,10 @@ chmod 0755 %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d/%{name}.sh
 %{_bindir}/disk_indicator
 %{_sysconfdir}/X11/xinit/xinitrc.d/%{name}.sh
 
+
 %changelog
+* Fri Feb 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.2.1-2.20181218gitec2d2f6
+- New snapshot
+
 * Tue Dec 27 2016 Phantom X <megaphantomx at bol dot com dot br> - 0.2.1-1.20151215git7620d56
 - Initial spec.

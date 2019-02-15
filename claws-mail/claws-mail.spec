@@ -412,6 +412,16 @@ exporting of your meetings or all your calendars.
 SOURCEAPI=$(grep -A 1 VERSION_NUMERIC src/common/version.h | tr -d '\n' | perl -ne 's/[\\\s]//g; m/(\d+),(\d+),(\d+),(\d+)/; print("$1.$2.$3.$4");')
 [ "%pluginapi" == "$SOURCEAPI" ] || exit -1
 
+# change DEFAULT_INC_PATH for the optional external "inc" tool to match
+# Fedora's "nmh" package // unimportant fix, but add a grep guard, too
+sed -i -e 's!\"/usr/bin/mh/inc\"!\"/usr/bin/inc\"!g' src/common/defs.h
+grep DEFAULT_INC_PATH src/common/defs.h || exit -1
+
+# avoid relinking with several shared libs used by libperl
+# when linking with libperl
+grep 'PERL_LDFLAGS *=' configure || exit -1
+sed -i 's!\(PERL_LDFLAGS *=\).*$!\1-lperl!g' configure
+
 # a really ugly hack to have the Python plug-in dlopen the versioned
 # run-time lib, with grep guards so we don't need a patch
 #

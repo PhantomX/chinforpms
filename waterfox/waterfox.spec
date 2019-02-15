@@ -35,6 +35,10 @@ ExcludeArch: armv7hl
 %global build_with_pgo    1
 %endif
 
+%ifarch x86_64
+%global build_with_lto    1
+%endif
+
 # Big endian platforms
 %ifarch ppc64 s390x
 %global big_endian        1
@@ -442,7 +446,6 @@ cp %{SOURCE10} .mozconfig
 %if 0%{?build_with_pgo}
 echo "mk_add_options MOZ_PGO=1" >> .mozconfig
 echo "mk_add_options PROFILE_GEN_SCRIPT='EXTRA_TEST_ARGS=10 \$(MAKE) -C \$(MOZ_OBJDIR) pgo-profile-run'" >> .mozconfig
-#echo "ac_add_options --enable-lto" >> .mozconfig
 %endif
 
 %if %{?system_nss}
@@ -606,10 +609,12 @@ MOZ_OPT_FLAGS=$(echo "%{optflags}" | %{__sed} -e 's/-Wall//')
 # Explicitly force the hardening flags for Waterfox so it passes the checksec test;
 # See also https://fedoraproject.org/wiki/Changes/Harden_All_Packages
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -Wformat-security -Wformat -Werror=format-security"
-%if 0%{?build_with_pgo}
+%if 0%{?build_with_lto}
 # LTO
-MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -flto"
+MOZ_OPT_FLAGS="$(echo "%{optflags}" | %{__sed} -e 's/-O2/-O3/' -e 's/-g/-g1/') -flto"
+# -fdisable-ipa-cdtor removes possible AVX2 instructions
 MOZ_LINK_FLAGS="$MOZ_LINK_FLAGS -flto -fdisable-ipa-cdtor"
+export MOZ_DEBUG_FLAGS=" "
 %endif
 %if %{?hardened_build}
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -fPIC -Wl,-z,relro -Wl,-z,now"
@@ -687,6 +692,10 @@ export MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS"
 export MOZ_SERVICES_SYNC="1"
 export MOZ_NOSPAM=1
 export STRIP=/bin/true
+%if 0%{?build_with_lto}
+export TMPDIR="$(pwd)/tmpdir"
+mkdir -p "$TMPDIR"
+%endif
 %if 0%{?build_with_pgo}
 SHELL=/usr/bin/bash GDK_BACKEND=x11 xvfb-run ./mach build -v
 %else
@@ -960,8 +969,8 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
-* Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7.1-2.20190201gitf367fd2
-- LTO
+* Wed Feb 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7.1-2.20190201gitf367fd2
+- LTO and fixes to build with it
 
 * Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7.1-1.20190201gitf367fd2
 - New release/snapshot
