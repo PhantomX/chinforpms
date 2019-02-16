@@ -326,7 +326,7 @@ index 0000000..085378a
 +#include <linux/miscdevice.h>
 +#include <linux/init.h>
 +#include <asm/io.h>
-+#include <asm/uaccess.h>
++#include <linux/uaccess.h>
 +#include <asm/types.h>
 +#include <asm/crash-driver.h>
 +

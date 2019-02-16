@@ -5,6 +5,8 @@ RPMFusion and existent packages updated with extra changes.
 
 > Most packages can be found in this [COPR repository](https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms), except for those not allowed.
 
+> Builds are tested with current stable Fedora release. Rawhide have very limited support and older releases don't have none. 
+
 >_Before use, remember that **YOU ARE AT YOUR OWN RISK**! Don't blame me if your
 >system explodes or suffer any other bad things._
 

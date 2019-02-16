@@ -240,9 +240,6 @@ install -m 644 -p %{SOURCE11} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 
 * Wed Jan 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.54-4
 - Sync with rpmfusion.
-- Sun Jan 08 2017 Simone Caronni <negativo17@gmail.com> - 1.0.0.54-3
-- Microsoft keyboards have been fixed in kernel 4.9 and backported to other
-  kernels.
 
 * Wed Jan 04 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.0.54-3
 - Patches updates.
