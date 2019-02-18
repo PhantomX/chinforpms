@@ -42,7 +42,3 @@ ipa-pmincho-fonts
 ko:
 nhn-nanum-gothic-fonts
 nhn-nanum-myeongjo-fonts.noarch
-
-IMAGE_FILE_LARGE_ADDRESS_AWARE override
-=========================================
-Enable with WINE_LARGE_ADDRESS_AWARE=1 environment variable

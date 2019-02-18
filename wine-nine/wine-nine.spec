@@ -1,9 +1,9 @@
 %undefine _hardened_build
 
-%global commit 7f32544d22b45c178cb6a91008723fa206586873
+%global commit e55dcabf8780364c00c2afeb53ca502b1f310def
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190202
-%global with_snapshot 0
+%global date 20190216
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -14,8 +14,8 @@
 %global pkgname wine-nine-standalone
 
 Name:           wine-nine
-Version:        0.2
-Release:        1%{?gver}%{?dist}
+Version:        0.3
+Release:        0.1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -111,8 +111,6 @@ meson \
 pushd %{_target_platform}
 ninja -v %{?_smp_mflags}
 
-winebuild --dll --fake-module -E ../d3d9-nine/d3d9.spec -F d3d9-nine.dll -o d3d9-nine.dll.fake
-winebuild --exe --fake-module ninewinecfg/ninewinecfg.res -o ninewinecfg.exe.fake
 popd
 
 
@@ -122,19 +120,17 @@ mkdir -p %{buildroot}/%{_libdir}/wine/fakedlls
 
 install -pm0755 %{_target_platform}/ninewinecfg/ninewinecfg.exe.so \
   %{buildroot}/%{_libdir}/wine/ninewinecfg.exe.so
-install -pm0755 %{_target_platform}/ninewinecfg.exe.fake \
+install -pm0755 %{_target_platform}/ninewinecfg/ninewinecfg.exe.fake \
   %{buildroot}/%{_libdir}/wine/fakedlls/ninewinecfg.exe
 
 install -pm0755 %{_target_platform}/d3d9-nine/d3d9-nine.dll.so \
   %{buildroot}/%{_libdir}/wine/d3d9-nine.dll.so
-install -pm0755 %{_target_platform}/d3d9-nine.dll.fake \
+install -pm0755 %{_target_platform}/d3d9-nine/d3d9-nine.dll.fake \
   %{buildroot}/%{_libdir}/wine/fakedlls/d3d9-nine.dll
 
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:1} %{buildroot}/%{_bindir}/ninewinecfg
-%if 0%{?staging}
 install -pm0755 %{S:2} %{buildroot}/%{_bindir}/wineninecfg
-%endif
 
 mkdir -p %{buildroot}%{_datadir}/applications
 # install desktop file
@@ -147,9 +143,7 @@ desktop-file-install \
 %doc README.rst
 %license LICENSE
 %{_bindir}/ninewinecfg
-%if 0%{?staging}
 %{_bindir}/wineninecfg
-%endif
 %{_libdir}/wine/d3d9-nine.dll.so
 %{_libdir}/wine/ninewinecfg.exe.so
 %{_libdir}/wine/fakedlls/d3d9-nine.dll
@@ -158,6 +152,10 @@ desktop-file-install \
 
 
 %changelog
+* Sat Feb 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.3-0.1.20190216gite55dcab
+- New snapshot
+- Install official fake dlls
+
 * Sun Feb 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.2-1
 - 0.2.0.0 final
 - Update urls

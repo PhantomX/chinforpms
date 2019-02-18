@@ -9,11 +9,11 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 4.1
+%global stagingver 4.2
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global tkg_id 170d59fc76946ca21a60ff7a3ec13ae23104d264
+%global tkg_id 90a6411501bbd8abf06a118b1a8aeb740212d686
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -40,7 +40,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.1
+Version:        4.2
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -120,7 +120,7 @@ Patch704:       %{tkg_url}/FS_bypass_compositor.patch#/tkg-FS_bypass_compositor.
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}/wine-staging-%{stagingver}.tar.gz
 Patch705:       %{tkg_url}/GLSL-toggle.patch#/tkg-GLSL-toggle.patch
 Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve_proton_fullscreen_hack-staging.patch
-Patch707:       %{tkg_url}/large_address_aware-staging.patch#/tkg-large_address_aware-staging.patch
+Patch707:       %{tkg_url}/enable_stg_shared_mem_def.patch#/tkg-enable_stg_shared_mem_def.patch
 
 Patch800:       revert-grab-fullscreen.patch
 
@@ -351,6 +351,7 @@ Requires:       unixODBC(x86-32)
 Requires:       SDL2(x86-32)
 Requires:       vulkan-loader(x86-32)
 %if 0%{?staging}
+Requires:       gtk3(x86-32)
 Requires:       libva(x86-32)
 %endif
 %endif
@@ -377,6 +378,7 @@ Requires:       unixODBC(x86-64)
 Requires:       SDL2(x86-64)
 Requires:       vulkan-loader(x86-64)
 %if 0%{?staging}
+Requires:       gtk3(x86-64)
 Requires:       libva(x86-64)
 %endif
 %endif
@@ -398,6 +400,7 @@ Requires:       unixODBC
 Requires:       SDL2
 Requires:       vulkan
 %if 0%{?staging}
+Requires:       gtk3
 Requires:       libva
 %endif
 %endif
@@ -719,7 +722,7 @@ This package adds xaudio2 support for wine.
 %patch600 -p1
 %patch700 -p1
 %patch702 -p1
-%patch703 -p1
+#patch703 -p1
 %patch704 -p1
 
 # setup and apply wine-staging patches
@@ -787,6 +790,8 @@ sed -i \
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+
+export CFLAGS="$CFLAGS -ftree-vectorize -ftree-slp-vectorize"
 
 %ifarch aarch64
 # ARM64 now requires clang
@@ -1918,9 +1923,6 @@ fi
 %{_libdir}/wine/user32.dll.so
 %{_libdir}/wine/usp10.dll.so
 %{_libdir}/wine/uxtheme.dll.so
-%if 0%{?staging}
-%{_libdir}/wine/uxtheme-gtk.dll.so
-%endif
 %{_libdir}/wine/userenv.dll.so
 %{_libdir}/wine/vbscript.dll.so
 %{_libdir}/wine/vcomp.dll.so
@@ -2337,6 +2339,10 @@ fi
 
 
 %changelog
+* Sun Feb 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.2-100
+- 4.2
+- Add -ftree-vectorize -ftree-slp-vectorize to CFLAGS
+
 * Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.1-100
 - 4.1
 
