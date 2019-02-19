@@ -115,7 +115,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.7.1
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -264,8 +264,11 @@ BuildRequires:  llvm-devel
 BuildRequires:  clang
 BuildRequires:  clang-libs
 %if 0%{?build_with_clang}
-#BuildRequires:  lld
+BuildRequires:  lld
 BuildRequires:  libstdc++-static
+%if 0%{?build_with_pgo}
+BuildRequires:  compiler-rt
+%endif
 %else
 BuildRequires:  gcc-c++
 %endif
@@ -602,35 +605,59 @@ echo "Generate big endian version of config/external/icu/data/icud58l.dat"
 # Update the various config.guess to upstream release for aarch64 support
 find ./ -name config.guess -exec cp /usr/lib/rpm/config.guess {} ';'
 
-MOZ_OPT_FLAGS=$(echo "%{optflags}" | %{__sed} -e 's/-Wall//')
+RPM_SMP_MFLAGS_NCPUS=$(echo %{_smp_mflags} | sed 's|-j||')
+
+RPM_NCPUS=1
+# On x86 architectures, Mozilla can build up to 4 jobs at once in parallel,
+# however builds tend to fail on other arches when building in parallel.
+%ifarch %{ix86}
+[ "$RPM_SMP_MFLAGS_NCPUS" -ge 2 ] && RPM_NCPUS=2
+%endif
+%ifarch x86_64 ppc ppc64 ppc64le aarch64
+[ "$RPM_SMP_MFLAGS_NCPUS" -ge 2 ] && RPM_NCPUS=2
+[ "$RPM_SMP_MFLAGS_NCPUS" -ge 4 ] && RPM_NCPUS=4
+[ "$RPM_SMP_MFLAGS_NCPUS" -ge 8 ] && RPM_NCPUS=8
+%endif
+MOZ_SMP_FLAGS=-j$RPM_NCPUS
+
+MOZ_OPT_FLAGS=$(echo "%{optflags}" | sed -e 's/-Wall//')
 #rhbz#1037063
 # -Werror=format-security causes build failures when -Wno-format is explicitly given
 # for some sources
 # Explicitly force the hardening flags for Waterfox so it passes the checksec test;
 # See also https://fedoraproject.org/wiki/Changes/Harden_All_Packages
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -Wformat-security -Wformat -Werror=format-security"
+%if 0%{?build_with_clang}
+# Fedora's default compiler flags conflict with what clang supports
+MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-fstack-clash-protection//')"
+%endif
 %if 0%{?build_with_lto}
-# LTO
-MOZ_OPT_FLAGS="$(echo "%{optflags}" | %{__sed} -e 's/-O2/-O3/' -e 's/-g/-g1/') -flto"
+%if 0%{?build_with_clang}
+RPM_FLTO_FLAGS="-flto=thin -Wl,--thinlto-jobs=$RPM_NCPUS"
+%else
+RPM_FLTO_FLAGS="-flto=$RPM_NCPUS"
 # -fdisable-ipa-cdtor removes possible AVX2 instructions
-MOZ_LINK_FLAGS="$MOZ_LINK_FLAGS -flto -fdisable-ipa-cdtor"
+MOZ_LINK_FLAGS="-fdisable-ipa-cdtor"
+%endif
+MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2/-O3/' -e 's/-g/-g1/') $RPM_FLTO_FLAGS"
+MOZ_LINK_FLAGS="$MOZ_LINK_FLAGS $RPM_FLTO_FLAGS"
 export MOZ_DEBUG_FLAGS=" "
 %endif
 %if %{?hardened_build}
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -fPIC -Wl,-z,relro -Wl,-z,now"
 %endif
 %if %{?debug_build}
-MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | %{__sed} -e 's/-O2//')
+MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2//' -e 's/-O3//')
 %endif
 %ifarch s390
-MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | %{__sed} -e 's/-g/-g1/')
+MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-g/-g1/')
 # If MOZ_DEBUG_FLAGS is empty, waterfox's build will default it to "-g" which
 # overrides the -g1 from line above and breaks building on s390
 # (OOM when linking, rhbz#1238225)
 export MOZ_DEBUG_FLAGS=" "
 %endif
 %ifarch %{arm}
-MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | %{__sed} -e 's/-g/-g0/')
+MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-g/-g0/')
 export MOZ_DEBUG_FLAGS=" "
 %endif
 %if !0%{?build_with_clang}
@@ -659,7 +686,7 @@ export CXX=clang++
 export AR="llvm-ar"
 export NM="llvm-nm"
 export RANLIB="llvm-ranlib"
-echo "ac_add_options --enable-linker=gold" >> .mozconfig
+echo "ac_add_options --enable-linker=lld" >> .mozconfig
 %else
 export CC=gcc
 export CXX=g++
@@ -667,25 +694,6 @@ export AR="gcc-ar"
 export NM="gcc-nm"
 export RANLIB="gcc-ranlib"
 echo "ac_add_options --enable-linker=gold" >> .mozconfig
-%endif
-
-smp_mflags_cpus=$(echo %{_smp_mflags} | sed 's|-j||g')
-
-MOZ_SMP_FLAGS=-j1
-# On x86 architectures, Mozilla can build up to 4 jobs at once in parallel,
-# however builds tend to fail on other arches when building in parallel.
-%ifarch %{ix86}
-[ -z "$RPM_BUILD_NCPUS" ] && \
-     RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"
-[ "$RPM_BUILD_NCPUS" -ge 2 ] && MOZ_SMP_FLAGS=-j2
-%endif
-%ifarch x86_64 ppc ppc64 ppc64le aarch64
-[ -z "$RPM_BUILD_NCPUS" ] && \
-     RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"
-[ "$smp_mflags_cpus" -lt "$RPM_BUILD_NCPUS" ] && RPM_BUILD_NCPUS="$smp_mflags_cpus"
-[ "$RPM_BUILD_NCPUS" -ge 2 ] && MOZ_SMP_FLAGS=-j2
-[ "$RPM_BUILD_NCPUS" -ge 4 ] && MOZ_SMP_FLAGS=-j4
-[ "$RPM_BUILD_NCPUS" -ge 8 ] && MOZ_SMP_FLAGS=-j8
 %endif
 
 export MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS"

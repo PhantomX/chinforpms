@@ -13,7 +13,7 @@
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global tkg_id 90a6411501bbd8abf06a118b1a8aeb740212d686
+%global tkg_id 1d9e75f2d0c44147b1c474c9cb3f0ca05e66b887
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -41,7 +41,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.2
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -731,12 +731,12 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
 
+%if 0%{?faudio}
+%patch3000 -p1
+%endif #{?faudio}
+
 %if 0%{?esync}
 tar xvf %{SOURCE2000}
-pushd esync
-git apply -C1 < %{S:2002}
-%patch2001 -p1
-popd
 %endif #{?esync}
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?faudioopts}
@@ -744,21 +744,21 @@ popd
 sed -i "s/  (Staging)//g" libs/wine/Makefile.in
 
 %if 0%{?esync}
+pushd esync
+git apply -C1 < %{S:2002}
+%patch2001 -p1
+popd
 for i in esync/00??-*.patch ;do
   git apply -C1 < $i
 done
 %patch2002 -p1
-%endif
+%endif #{?esync}
 
 %if 0%{?pba}
 cp -p %{S:1001} README-pba-pkg
 
 %patch1000 -p1
 %endif #{?pba}
-
-%if 0%{?faudio}
-%patch3000 -p1
-%endif #{?faudio}
 
 %patch705 -p1
 %patch706 -p1
@@ -2004,6 +2004,16 @@ fi
 %{_libdir}/wine/wined3d.dll.so
 %{_libdir}/wine/dnsapi.dll.so
 %{_libdir}/wine/iexplore.exe.so
+%if 0%{?faudio}
+%{_libdir}/wine/xactengine3_0.dll.so
+%{_libdir}/wine/xactengine3_1.dll.so
+%{_libdir}/wine/xactengine3_2.dll.so
+%{_libdir}/wine/xactengine3_3.dll.so
+%{_libdir}/wine/xactengine3_4.dll.so
+%{_libdir}/wine/xactengine3_5.dll.so
+%{_libdir}/wine/xactengine3_6.dll.so
+%{_libdir}/wine/xactengine3_7.dll.so
+%endif
 %{_libdir}/wine/x3daudio1_0.dll.so
 %{_libdir}/wine/x3daudio1_1.dll.so
 %{_libdir}/wine/x3daudio1_2.dll.so
@@ -2339,6 +2349,9 @@ fi
 
 
 %changelog
+* Mon Feb 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.2-101
+- faudio update from tkg
+
 * Sun Feb 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.2-100
 - 4.2
 - Add -ftree-vectorize -ftree-slp-vectorize to CFLAGS
