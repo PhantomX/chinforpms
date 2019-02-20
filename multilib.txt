@@ -1,4 +1,6 @@
 adwaita-qt
+faudio
+faudio-freeworld
 gamemode
 gnome-theme-extras
 gstreamer1
@@ -11,6 +13,7 @@ libstrangle
 linux-steam-integration
 mingw-wine-vk9
 qt5ct
+taglib
 webp-pixbuf-loader
 wine
 wine-dxup

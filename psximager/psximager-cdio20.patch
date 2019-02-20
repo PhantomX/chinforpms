@@ -14,7 +14,7 @@
  	catalog << string(level * 2, ' ') << "}\n";
  
 -	_cdio_list_free(entries, true);
-+	iso9660_filelist_free(entries);
++	_cdio_list_free(entries, true, (CdioDataFree_t) iso9660_stat_free);
  }
  
  

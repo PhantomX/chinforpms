@@ -46,7 +46,7 @@ MP2, FLAC, Ogg Opus, Ogg Speex, Ogg Vorbis, MusePack and Monkey's Audio files.
 %package nautilus
 Summary:        Nautilus extension for opening in EasyTAG
 License:        GPLv3+
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description nautilus
 Nautilus extension to add "Open with EasyTAG" to the Nautilus context menu, for

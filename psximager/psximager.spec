@@ -5,7 +5,7 @@ Summary:        A collection of tools for dumping PSX images
 
 License:        GPLv2
 URL:            https://github.com/cebix/psximager
-Source0:        https://github.com/cebix/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 Patch0:         %{name}-cdio20.patch
 

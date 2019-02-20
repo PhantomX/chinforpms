@@ -12,6 +12,11 @@
 
 ExcludeArch: armv7hl
 
+%global verbose_build     0
+%if 0%{?verbose_build}
+%global verbose_mach     -v
+%endif
+
 %global alsa_backend      1
 %global system_nss        1
 %global system_hunspell   1
@@ -54,9 +59,8 @@ ExcludeArch: armv7hl
 %global build_tests       1
 %endif
 
-%bcond_without debug_build
+%bcond_with debug_build
 %if %{with debug_build}
-%else
 %global debug_build       1
 %else
 %global debug_build       0
@@ -67,31 +71,37 @@ ExcludeArch: armv7hl
 %global disable_elfhack   1
 %endif
 
+%if 0%{?build_with_clang}
+%global build_with_ld    lld
+%else
+%global build_with_ld    gold
+%endif
+
 %global default_bookmarks_file  %{_datadir}/bookmarks/default-bookmarks.html
 %global waterfox_app_id  \{ec8030f7-c20a-464f-9b0e-13a3a9e97384\}
 # Minimal required versions
 %global cairo_version 1.13.1
 %global freetype_version 2.1.9
-%if %{?system_harfbuzz}
+%if 0%{?system_harfbuzz}
 %global graphite2_version 1.3.10
 %global harfbuzz_version 1.4.7
 %endif
-%if %{?system_libevent}
+%if 0%{?system_libevent}
 %global libevent_version 2.1.8
 %endif
 %global libnotify_version 0.7.0
-%if %{?system_libvpx}
+%if 0%{?system_libvpx}
 %global libvpx_version 1.4.0
 %endif
-%if %{?system_webp}
+%if 0%{?system_webp}
 %global webp_version 1.0.0
 %endif
-%if %{?system_vorbis}
+%if 0%{?system_vorbis}
 %global ogg_version 1.3.3
 %global vorbis_version 1.3.5
 %endif
 
-%if %{?system_nss}
+%if 0%{?system_nss}
 %global nspr_version 4.17.0
 # NSS/NSPR quite often ends in build override, so as requirement the version
 # we're building against could bring us some broken dependencies from time to time.
@@ -100,7 +110,7 @@ ExcludeArch: armv7hl
 %global nss_build_version %{nss_version}
 %endif
 
-%if %{?system_sqlite}
+%if 0%{?system_sqlite}
 %global sqlite_version 3.8.4.2
 # The actual sqlite version (see #480989):
 %global sqlite_build_version %(pkg-config --silence-errors --modversion sqlite3 2>/dev/null || echo 65536)
@@ -115,7 +125,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.7.1
-Release:        3%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -203,16 +213,16 @@ Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-webrtc-gtest-libv4l2.patch
 
 
-%if %{?system_nss}
+%if 0%{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
 BuildRequires:  pkgconfig(nss) >= %{nss_version}
 BuildRequires:  nss-static >= %{nss_version}
 %endif
-%if %{?system_cairo}
+%if 0%{?system_cairo}
 BuildRequires:  pkgconfig(cairo) >= %{cairo_version}
 %endif
 BuildRequires:  pkgconfig(libpng)
-%if %{?system_jpeg}
+%if 0%{?system_jpeg}
 BuildRequires:  libjpeg-devel
 %endif
 BuildRequires:  zip
@@ -224,16 +234,16 @@ BuildRequires:  pkgconfig(gtk+-2.0)
 BuildRequires:  pkgconfig(krb5)
 BuildRequires:  pkgconfig(pango)
 BuildRequires:  pkgconfig(freetype2) >= %{freetype_version}
-%if %{?system_harfbuzz}
+%if 0%{?system_harfbuzz}
 BuildRequires:  pkgconfig(graphite2) >= %{graphite2_version}
 BuildRequires:  pkgconfig(harfbuzz) >= %{harfbuzz_version}
 %endif
 BuildRequires:  pkgconfig(xt)
 BuildRequires:  pkgconfig(xrender)
-%if %{?system_hunspell}
+%if 0%{?system_hunspell}
 BuildRequires:  pkgconfig(hunspell)
 %endif
-%if %{?system_libevent}
+%if 0%{?system_libevent}
 BuildRequires:  pkgconfig(libevent) >= %{libevent_version}
 %endif
 BuildRequires:  pkgconfig(libstartup-notification-1.0)
@@ -245,13 +255,13 @@ BuildRequires:  pkgconfig(dri)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  dbus-glib-devel
 BuildRequires:  pkgconfig(libv4l2)
-%if %{?system_libvpx}
+%if 0%{?system_libvpx}
 BuildRequires:  pkgconfig(vpx) >= %{libvpx_version}
 %endif
-%if %{?system_webp}
+%if 0%{?system_webp}
 BuildRequires:  pkgconfig(libwebp) >= %{webp_version}
 %endif
-%if %{?system_vorbis}
+%if 0%{?system_vorbis}
 BuildRequires:  pkgconfig(ogg) >= %{ogg_version}
 BuildRequires:  pkgconfig(vorbis) >= %{vorbis_version}
 %endif
@@ -278,7 +288,7 @@ BuildRequires:  patchutils
 Requires:       mozilla-filesystem
 Requires:       waterfox-filesystem
 Requires:       p11-kit-trust
-%if %{?system_nss}
+%if 0%{?system_nss}
 Requires:       nspr >= %{nspr_build_version}
 Requires:       nss >= %{nss_build_version}
 %endif
@@ -290,12 +300,12 @@ Requires:       nss >= 3.29.1-2.1
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  system-bookmarks
-%if %{?system_sqlite}
+%if 0%{?system_sqlite}
 BuildRequires:  pkgconfig(sqlite3) >= %{sqlite_version}
 Requires:       sqlite >= %{sqlite_build_version}
 %endif
 
-%if %{?system_ffi}
+%if 0%{?system_ffi}
 BuildRequires:  pkgconfig(libffi)
 %endif
 
@@ -451,7 +461,7 @@ echo "mk_add_options MOZ_PGO=1" >> .mozconfig
 echo "mk_add_options PROFILE_GEN_SCRIPT='EXTRA_TEST_ARGS=10 \$(MAKE) -C \$(MOZ_OBJDIR) pgo-profile-run'" >> .mozconfig
 %endif
 
-%if %{?system_nss}
+%if 0%{?system_nss}
 echo "ac_add_options --with-system-nspr" >> .mozconfig
 echo "ac_add_options --with-system-nss" >> .mozconfig
 %else
@@ -459,19 +469,19 @@ echo "ac_add_options --without-system-nspr" >> .mozconfig
 echo "ac_add_options --without-system-nss" >> .mozconfig
 %endif
 
-%if %{?system_sqlite}
+%if 0%{?system_sqlite}
 echo "ac_add_options --enable-system-sqlite" >> .mozconfig
 %else
 echo "ac_add_options --disable-system-sqlite" >> .mozconfig
 %endif
 
-%if %{?system_cairo}
+%if 0%{?system_cairo}
 echo "ac_add_options --enable-system-cairo" >> .mozconfig
 %else
 echo "ac_add_options --disable-system-cairo" >> .mozconfig
 %endif
 
-%if %{?system_harfbuzz}
+%if 0%{?system_harfbuzz}
 echo "ac_add_options --enable-system-graphite2" >> .mozconfig
 echo "ac_add_options --enable-system-harfbuzz" >> .mozconfig
 %else
@@ -479,7 +489,7 @@ echo "ac_add_options --disable-system-graphite2" >> .mozconfig
 echo "ac_add_options --disable-system-harfbuzz" >> .mozconfig
 %endif
 
-%if %{?system_ffi}
+%if 0%{?system_ffi}
 echo "ac_add_options --enable-system-ffi" >> .mozconfig
 %endif
 
@@ -495,19 +505,19 @@ echo "ac_add_options --disable-elf-hack" >> .mozconfig
 echo "ac_add_options --enable-alsa" >> .mozconfig
 %endif
 
-%if %{?system_hunspell}
+%if 0%{?system_hunspell}
 echo "ac_add_options --enable-system-hunspell" >> .mozconfig
 %else
 echo "ac_add_options --disable-system-hunspell" >> .mozconfig
 %endif
 
-%if %{?system_libevent}
+%if 0%{?system_libevent}
 echo "ac_add_options --enable-system-libevent" >> .mozconfig
 %else
 echo "ac_add_options --disable-system-libevent" >> .mozconfig
 %endif
 
-%if %{?debug_build}
+%if 0%{?debug_build}
 echo "ac_add_options --enable-debug" >> .mozconfig
 echo "ac_add_options --disable-optimize" >> .mozconfig
 %else
@@ -542,25 +552,25 @@ echo "ac_add_options --enable-tests" >> .mozconfig
 echo "ac_add_options --disable-tests" >> .mozconfig
 %endif
 
-%if !%{?system_jpeg}
+%if !0%{?system_jpeg}
 echo "ac_add_options --without-system-jpeg" >> .mozconfig
 %else
 echo "ac_add_options --with-system-jpeg" >> .mozconfig
 %endif
 
-%if %{?system_libvpx}
+%if 0%{?system_libvpx}
 echo "ac_add_options --with-system-libvpx" >> .mozconfig
 %else
 echo "ac_add_options --without-system-libvpx" >> .mozconfig
 %endif
 
-%if %{?system_webp}
+%if 0%{?system_webp}
 echo "ac_add_options --with-system-webp" >> .mozconfig
 %else
 echo "ac_add_options --without-system-webp" >> .mozconfig
 %endif
 
-%if %{?system_vorbis}
+%if 0%{?system_vorbis}
 echo "ac_add_options --with-system-ogg" >> .mozconfig
 echo "ac_add_options --with-system-vorbis" >> .mozconfig
 %else
@@ -568,7 +578,7 @@ echo "ac_add_options --without-system-ogg" >> .mozconfig
 echo "ac_add_options --without-system-vorbis" >> .mozconfig
 %endif
 
-%if %{?system_libicu}
+%if 0%{?system_libicu}
 echo "ac_add_options --with-system-icu" >> .mozconfig
 %else
 echo "ac_add_options --without-system-icu" >> .mozconfig
@@ -584,7 +594,7 @@ chmod -x third_party/rust/itertools/src/lib.rs
 #---------------------------------------------------------------------
 
 %build
-%if %{?system_sqlite}
+%if 0%{?system_sqlite}
 # Do not proceed with build if the sqlite require would be broken:
 # make sure the minimum requirement is non-empty, ...
 sqlite_version=$(expr "%{sqlite_version}" : '\([0-9]*\.\)[0-9]*\.') || exit 1
@@ -620,7 +630,7 @@ RPM_NCPUS=1
 %endif
 MOZ_SMP_FLAGS=-j$RPM_NCPUS
 
-MOZ_OPT_FLAGS=$(echo "%{optflags}" | sed -e 's/-Wall//')
+MOZ_OPT_FLAGS="-fuse-ld=%{build_with_ld} $MOZ_OPT_FLAGS $(echo "%{optflags}" | sed -e 's/-Wall//')"
 #rhbz#1037063
 # -Werror=format-security causes build failures when -Wno-format is explicitly given
 # for some sources
@@ -635,18 +645,16 @@ MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-fstack-clash-protection//')"
 %if 0%{?build_with_clang}
 RPM_FLTO_FLAGS="-flto=thin -Wl,--thinlto-jobs=$RPM_NCPUS"
 %else
-RPM_FLTO_FLAGS="-flto=$RPM_NCPUS"
-# -fdisable-ipa-cdtor removes possible AVX2 instructions
-MOZ_LINK_FLAGS="-fdisable-ipa-cdtor"
+RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fdisable-ipa-cdtor"
 %endif
 MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2/-O3/' -e 's/-g/-g1/') $RPM_FLTO_FLAGS"
-MOZ_LINK_FLAGS="$MOZ_LINK_FLAGS $RPM_FLTO_FLAGS"
+MOZ_LINK_FLAGS="$RPM_FLTO_FLAGS"
 export MOZ_DEBUG_FLAGS=" "
 %endif
 %if %{?hardened_build}
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -fPIC -Wl,-z,relro -Wl,-z,now"
 %endif
-%if %{?debug_build}
+%if 0%{?debug_build}
 MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2//' -e 's/-O3//')
 %endif
 %ifarch s390
@@ -672,12 +680,6 @@ MOZ_LINK_FLAGS="-Wl,--no-keep-memory"
 %ifarch %{arm} %{ix86}
 export RUSTFLAGS="-Cdebuginfo=0"
 %endif
-export CFLAGS=$MOZ_OPT_FLAGS
-export CXXFLAGS=$MOZ_OPT_FLAGS
-export LDFLAGS=$MOZ_LINK_FLAGS
-
-export PREFIX='%{_prefix}'
-export LIBDIR='%{_libdir}'
 
 %if 0%{?build_with_clang}
 export LLVM_PROFDATA="llvm-profdata"
@@ -686,15 +688,22 @@ export CXX=clang++
 export AR="llvm-ar"
 export NM="llvm-nm"
 export RANLIB="llvm-ranlib"
-echo "ac_add_options --enable-linker=lld" >> .mozconfig
+echo "ac_add_options --enable-linker=%{build_with_ld}" >> .mozconfig
 %else
 export CC=gcc
 export CXX=g++
 export AR="gcc-ar"
 export NM="gcc-nm"
 export RANLIB="gcc-ranlib"
-echo "ac_add_options --enable-linker=gold" >> .mozconfig
+echo "ac_add_options --enable-linker=%{build_with_ld}" >> .mozconfig
 %endif
+
+export CFLAGS=$MOZ_OPT_FLAGS
+export CXXFLAGS=$MOZ_OPT_FLAGS
+export LDFLAGS=$MOZ_LINK_FLAGS
+
+export PREFIX='%{_prefix}'
+export LIBDIR='%{_libdir}'
 
 export MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS"
 export MOZ_SERVICES_SYNC="1"
@@ -705,13 +714,13 @@ export TMPDIR="$(pwd)/tmpdir"
 mkdir -p "$TMPDIR"
 %endif
 %if 0%{?build_with_pgo}
-SHELL=/usr/bin/bash GDK_BACKEND=x11 xvfb-run ./mach build -v
+SHELL=/usr/bin/bash GDK_BACKEND=x11 xvfb-run ./mach build %{?verbose_mach}
 %else
-SHELL=/usr/bin/bash ./mach build -v
+SHELL=/usr/bin/bash ./mach build %{?verbose_mach}
 %endif
 
 %if %{?run_tests}
-%if %{?system_nss}
+%if 0%{?system_nss}
 ln -s /usr/bin/certutil objdir/dist/bin/certutil
 ln -s /usr/bin/pk12util objdir/dist/bin/pk12util
 
@@ -734,7 +743,7 @@ xvfb-run ./mach --log-no-times webapprt-test-chrome &> test_results/webapprt-tes
 xvfb-run ./mach --log-no-times webapprt-test-content &> test_results/webapprt-test-content || true
 ./mach --log-no-times webidl-parser-test &> test_results/webidl-parser-test || true
 xvfb-run ./mach --log-no-times xpcshell-test &> test_results/xpcshell-test || true
-%if %{?system_nss}
+%if 0%{?system_nss}
 rm -f  objdir/dist/bin/certutil
 rm -f  objdir/dist/bin/pk12util
 %endif
@@ -964,10 +973,10 @@ fi
 %{mozappdir}/plugin-container
 %{mozappdir}/gmp-clearkey
 %{mozappdir}/fonts/EmojiOneMozilla.ttf
-%if !%{?system_libicu}
+%if !0%{?system_libicu}
 %{mozappdir}/icudt*.dat
 %endif
-%if !%{?system_nss}
+%if !0%{?system_nss}
 %{mozappdir}/libfreeblpriv3.chk
 %{mozappdir}/libnssdbm3.chk
 %{mozappdir}/libsoftokn3.chk

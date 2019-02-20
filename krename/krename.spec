@@ -1,12 +1,25 @@
+%global commit e0ee6335f8fc39b8d7c41deb8f14e2f289a6cd7e
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20190205
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           krename
-Version:        5.0.0
-Release:        100%{?dist}
+Version:        5.0.60
+Release:        0.100%{?gver}%{?dist}
 
 Summary:        Powerful batch file renamer
 License:        GPLv2
 
 URL:            https://userbase.kde.org/KRename
+%if 0%{?with_snapshot}
+Source0:        https://github.com/KDE/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        https://download.kde.org/stable/%{name}/%{version}/src/%{name}-%{version}.tar.xz
+%endif
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -46,7 +59,11 @@ image.
 
 
 %prep
-%autosetup
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+%else
+%autosetup -n %{name}-%{version} -p1
+%endif
 
 %build
 mkdir -p %{_target_platform}
@@ -60,15 +77,19 @@ popd
 %install
 make install/fast -C %{_target_platform} DESTDIR=%{buildroot}
 
+%if !0%{?with_snapshot}
 %find_lang %{name}
+%endif
 
-
-%check
 appstream-util validate-relax --nonet %{buildroot}%{_kf5_metainfodir}/org.kde.%{name}.appdata.xml
 desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.desktop
 
 
+%if 0%{?with_snapshot}
+%files
+%else
 %files -f %{name}.lang
+%endif
 %license COPYING
 %doc AUTHORS README.md TODO
 %{_kf5_bindir}/%{name}
@@ -80,6 +101,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.d
 
 
 %changelog
+* Tue Feb 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.60-0.100.20190205gite0ee633
+- Snapshot build, fixing some bugs
+
 * Fri Nov 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-100
 - 5.0.0
 - cmake style BRs

@@ -13,6 +13,7 @@ libxspf
 mesa
 shaderc
 smooth
+taglib
 vkd3d
 webp-pixbuf-loader
 xarchiver
@@ -100,6 +101,7 @@ waterfox
 waterfox-filesystem
 waterfox-classic-theme-restorer
 waterfox-classic-toolbar-buttons
+waterfox-tabmixplus
 waterfox-ublock-origin
 waterfox-noscript
 wimlib

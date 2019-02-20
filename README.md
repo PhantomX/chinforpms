@@ -7,6 +7,8 @@ RPMFusion and existent packages updated with extra changes.
 
 > Builds are tested with current stable Fedora release. Rawhide have very limited support and older releases don't have none. 
 
+> *Epoch* is used without regard, running **dnf distro-sync** is recommended sometimes.
+
 >_Before use, remember that **YOU ARE AT YOUR OWN RISK**! Don't blame me if your
 >system explodes or suffer any other bad things._
 
@@ -46,6 +48,7 @@ RPMFusion and existent packages updated with extra changes.
  * **skrooge** - Can't wait Fedora releases
  * **smtube** - Patched to silence players output
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
+ * **taglib** - Tests
  * **telegram-desktop** - Personal fixes
  * ~~**VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
                     and **VirtualBox-guest-additions-iso** support.~~
