@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d1a706a59962d4e4430583239a39060a59459f5c
+%global pfcommit 29011591a1c003e29bd1756ed410901fb4851b89
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 4c06520b7c1e9ac2f5d9f4bf0d78cb5cbfb998e3
+%global opensuse_id eba2b6821d2d3212a325bc28d8e9d665de29ad8b
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -626,6 +626,10 @@ Patch307: wlcore-sdio-Fixup-power-on-off-sequence.patch
 # https://patchwork.kernel.org/patch/10778815/
 Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch 
 
+# omap4 fixes
+Patch309: arm-omap4-fix-lack-of-time-interupts-after-hotplug.patch
+Patch310: arm-omap4-fix-omap4_dsi_mux_pads-uninitialized-variable.patch 
+
 # https://patchwork.kernel.org/patch/10686407/
 Patch331: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
@@ -672,6 +676,9 @@ Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
 
 # rhbz 1663613 patch merged into 5.0-rc#
 Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch 
+
+# CVE-2019-8912 rhbz 1678685 1678686
+Patch509: net-crypto-set-sk-to-NULL-when-af_alg_release.patch 
 
 ### Extra
 
@@ -2012,7 +2019,11 @@ fi
 #
 #
 %changelog
-* Fri Feb 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.8-500.chinfo
+* Wed Feb 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.11-500.chinfo
+- 4.20.11 - pf6
+- f29 sync
+
+* Fri Feb 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.10-500.chinfo
 - 4.20.10
 
 * Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.8-500.chinfo

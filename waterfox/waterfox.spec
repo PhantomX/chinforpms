@@ -461,6 +461,8 @@ echo "mk_add_options MOZ_PGO=1" >> .mozconfig
 echo "mk_add_options PROFILE_GEN_SCRIPT='EXTRA_TEST_ARGS=10 \$(MAKE) -C \$(MOZ_OBJDIR) pgo-profile-run'" >> .mozconfig
 %endif
 
+echo "ac_add_options --enable-linker=%{build_with_ld}" >> .mozconfig
+
 %if 0%{?system_nss}
 echo "ac_add_options --with-system-nspr" >> .mozconfig
 echo "ac_add_options --with-system-nss" >> .mozconfig
@@ -688,14 +690,12 @@ export CXX=clang++
 export AR="llvm-ar"
 export NM="llvm-nm"
 export RANLIB="llvm-ranlib"
-echo "ac_add_options --enable-linker=%{build_with_ld}" >> .mozconfig
 %else
 export CC=gcc
 export CXX=g++
 export AR="gcc-ar"
 export NM="gcc-nm"
 export RANLIB="gcc-ranlib"
-echo "ac_add_options --enable-linker=%{build_with_ld}" >> .mozconfig
 %endif
 
 export CFLAGS=$MOZ_OPT_FLAGS
