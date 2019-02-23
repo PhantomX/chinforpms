@@ -1,0 +1,22 @@
+From: Tobias Gruetzmacher <tobias-git@23.gs>
+Date: Tue, 23 Feb 2016 22:26:50 +0100
+Subject: Don't link wfuse against libdl.
+
+It's not necessary.
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: wit/Makefile
+===================================================================
+--- wit.orig/Makefile
++++ wit/Makefile
+@@ -171,7 +171,7 @@ endif
+ TOPT_wit	:= $(OPT_STATIC)
+ TOPT_wwt	:= $(OPT_STATIC)
+ TOPT_wdf	:= $(OPT_STATIC)
+-TOPT_wfuse	:= -lfuse -lpthread -ldl
++TOPT_wfuse	:= -lfuse -lpthread
+ 
+ #TOPT_ALL	:= $(TOPT_wit) $(TOPT_wwt) $(TOPT_wdf) $(TOPT_wfuse)
+ 

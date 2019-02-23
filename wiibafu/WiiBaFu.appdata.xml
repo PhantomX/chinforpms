@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>wiibafu.desktop</id>
+  <name>Wii Backup Fusion</name>
+  <summary>Wii games backup</summary>
+  <developer_name>Kai Heitkamp</developer_name>
+  <description>
+  <p>
+   The complete and simply to use backup solution for your Wii games.
+  </p>
+</description>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <url type="bugtracker">https://sourceforge.net/p/wiibafu/tickets</url>
+  <url type="faq">https://sourceforge.net/p/wiibafu/wiki/FAQ</url>
+  <url type="homepage">https://wiibafu.sourceforge.io</url>
+  <updatecontact>megaphantomx at bol.com.br</updatecontact>
+</component>
