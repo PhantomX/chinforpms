@@ -44,6 +44,7 @@ RPMFusion and existent packages updated with extra changes.
  * **manaplus** - Updated, SDL2
  * **mednafen** - No Haswell optimizations
  * **mesa** - Can't wait Fedora releases
+ * **ppsspp** - Build options, no Qt frontend
  * **quiterss** - Updated, Qt5
  * **skrooge** - Can't wait Fedora releases
  * **smtube** - Patched to silence players output

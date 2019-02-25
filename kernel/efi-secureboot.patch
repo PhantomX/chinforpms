@@ -149,7 +149,7 @@ diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 100ce4a4aff6..62361b647a75 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -1155,6 +1155,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -1191,6 +1191,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_DBG			8	/* Print additional debug info at runtime */
  #define EFI_NX_PE_DATA		9	/* Can runtime data regions be mapped non-executable? */
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
@@ -164,25 +164,25 @@ index 100ce4a4aff6..62361b647a75 100644
  
  #ifdef CONFIG_EFI
  /*
-@@ -1169,6 +1177,8 @@ extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
- extern bool efi_is_table_address(unsigned long phys_addr);
+@@ -1203,6 +1211,8 @@ static inline bool efi_enabled(int feature)
+ extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
  
- extern int efi_apply_persistent_mem_reservations(void);
+ extern bool efi_is_table_address(unsigned long phys_addr);
 +
 +extern void __init efi_set_secure_boot(enum efi_secureboot_mode mode);
  #else
  static inline bool efi_enabled(int feature)
  {
-@@ -1192,6 +1202,8 @@ static inline int efi_apply_persistent_mem_reservations(void)
+@@ -1221,6 +1231,8 @@ static inline bool efi_is_table_address(unsigned long phys_addr)
  {
- 	return 0;
+ 	return false;
  }
 +
 +static inline void efi_set_secure_boot(enum efi_secureboot_mode mode) {}
  #endif
  
  extern int efi_status_to_err(efi_status_t status);
-@@ -1577,12 +1589,6 @@ efi_status_t efi_setup_gop(efi_system_table_t *sys_table_arg,
+@@ -1607,12 +1619,6 @@ efi_status_t efi_setup_gop(efi_system_table_t *sys_table_arg,
  bool efi_runtime_disabled(void);
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  
