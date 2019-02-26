@@ -1,0 +1,25 @@
+From f577b144ec12cb3467873fb24105ff68f7af01d8 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 25 Feb 2019 19:45:41 -0300
+Subject: [PATCH] List more browsers
+
+---
+ modules/openwith.jsm | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/openwith.jsm b/modules/openwith.jsm
+index 68309f2..7655d33 100644
+--- a/modules/openwith.jsm
++++ b/modules/openwith.jsm
+@@ -135,7 +135,7 @@ let OpenWithCore = {
+ 				}
+ 			}
+ 		} else {
+-			for (let app of ['google-chrome', 'chromium-browser', 'firefox', 'opera', 'seamonkey']) {
++			for (let app of ['dillo', 'org.kde.falkon', 'google-chrome', 'chromium-browser', 'firefox', 'opera', 'seamonkey', 'vivaldi', 'waterfox']) {
+ 				let desktopFile = FileUtils.getFile('Home', ['.local', 'share', 'applications', app + '.desktop'], true);
+ 				if (desktopFile.exists()) {
+ 					unsorted.push(this.readDesktopFile(desktopFile));
+-- 
+2.20.1
+

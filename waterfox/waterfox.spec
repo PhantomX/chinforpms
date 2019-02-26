@@ -647,7 +647,7 @@ MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-fstack-clash-protection//')"
 %if 0%{?build_with_clang}
 RPM_FLTO_FLAGS="-flto=thin -Wl,--thinlto-jobs=$RPM_NCPUS"
 %else
-RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fdisable-ipa-cdtor"
+RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
 %endif
 MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2/-O3/' -e 's/-g/-g1/') $RPM_FLTO_FLAGS"
 MOZ_LINK_FLAGS="$RPM_FLTO_FLAGS"

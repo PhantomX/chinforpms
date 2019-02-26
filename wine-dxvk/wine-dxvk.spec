@@ -5,8 +5,8 @@
 %global pkgname dxvk
 
 Name:           wine-%{pkgname}
-Version:        0.96
-Release:        3%{?dist}
+Version:        1.0
+Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -127,6 +127,9 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Mon Feb 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.0-1
+- 1.0
+
 * Sat Feb 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.96-3
 - Update script to overrides, staging don't have redirect support anymore
 

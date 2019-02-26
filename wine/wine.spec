@@ -13,7 +13,7 @@
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global tkg_id 1d9e75f2d0c44147b1c474c9cb3f0ca05e66b887
+%global tkg_id 3fe41d2ea5dfcbda57053d3e963f0875357c5cf9
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -121,6 +121,7 @@ Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{
 Patch705:       %{tkg_url}/GLSL-toggle.patch#/tkg-GLSL-toggle.patch
 Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve_proton_fullscreen_hack-staging.patch
 Patch707:       %{tkg_url}/enable_stg_shared_mem_def.patch#/tkg-enable_stg_shared_mem_def.patch
+Patch708:       %{tkg_url}/LAA-staging.patch#/tkg-LAA-staging.patch
 
 Patch800:       revert-grab-fullscreen.patch
 
@@ -763,6 +764,7 @@ cp -p %{S:1001} README-pba-pkg
 %patch705 -p1
 %patch706 -p1
 %patch707 -p1
+%patch708 -p1
 %patch800 -p1 -R
 
 # fix parallelized build

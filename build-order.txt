@@ -101,9 +101,12 @@ waterfox
 waterfox-filesystem
 waterfox-classic-theme-restorer
 waterfox-classic-toolbar-buttons
+waterfox-openwith
 waterfox-tabmixplus
 waterfox-ublock-origin
 waterfox-noscript
+wiibafu
+wiimms-iso-tools
 wimlib
 wine
 xboxdrv

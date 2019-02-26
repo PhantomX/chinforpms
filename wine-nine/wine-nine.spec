@@ -1,8 +1,8 @@
 %undefine _hardened_build
 
-%global commit e55dcabf8780364c00c2afeb53ca502b1f310def
+%global commit eeeb350fd956f2bc92472aaae80bd346508b2788
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190216
+%global date 20190225
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -14,7 +14,7 @@
 %global pkgname wine-nine-standalone
 
 Name:           wine-nine
-Version:        0.3
+Version:        0.4
 Release:        0.1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
@@ -58,6 +58,8 @@ Requires:       wine-common >= %{winecommonver}
 Requires:       wine-desktop >= %{winecommonver}
 Enhances:       wine
 
+Requires:       libglvnd-egl%{?_isa}
+Requires:       libglvnd-glx%{?_isa}
 Requires:       mesa-dri-drivers%{?_isa}
 Requires:       mesa-libd3d%{?_isa}
 Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -152,6 +154,9 @@ desktop-file-install \
 
 
 %changelog
+* Tue Feb 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.4-0.1.20190225giteeeb350
+- New snapshot
+
 * Sat Feb 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.3-0.1.20190216gite55dcab
 - New snapshot
 - Install official fake dlls

@@ -24,5 +24,4 @@ steam
 telegram-desktop
 VirtualBox-extpack-oracle
 VirtualBox-guest-additions-iso
-wiimms-iso-tools
 wine-freeworld
