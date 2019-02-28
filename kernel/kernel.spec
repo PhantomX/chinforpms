@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit dd0a069cf16f0db91febe15d76f137e6e89c09c3
+%global pfcommit 3ae5eaa75608c5550189dd16a84e91b9bcb78cab
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -2016,6 +2016,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.13-500.chinfo
+- 4.20.13
+
 * Sun Feb 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.12-500.chinfo
 - 4.20.12
 

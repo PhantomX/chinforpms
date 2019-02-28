@@ -12,7 +12,7 @@
 
 Name:           waterfox-%{pkgname}
 Version:        6.8.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Quickly test out your web pages in other browsers from Waterfox
 
 License:        MPLv2.0
@@ -74,5 +74,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Tue Feb 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 6.8.6-2
+- Seamonkey desktop file is named mozilla-seamonkey
+- Add links, icecat and konqueror on the search list
+
 * Mon Feb 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 6.8.6-1
 - Initial spec

@@ -16,7 +16,7 @@ index 68309f2..7655d33 100644
  			}
  		} else {
 -			for (let app of ['google-chrome', 'chromium-browser', 'firefox', 'opera', 'seamonkey']) {
-+			for (let app of ['dillo', 'org.kde.falkon', 'google-chrome', 'chromium-browser', 'firefox', 'opera', 'seamonkey', 'vivaldi', 'waterfox']) {
++			for (let app of ['dillo', 'org.kde.falkon', 'google-chrome', 'chromium-browser', 'firefox', 'icecat', 'konqbrowser', 'links', 'opera', 'mozilla-seamonkey', 'seamonkey', 'vivaldi', 'waterfox']) {
  				let desktopFile = FileUtils.getFile('Home', ['.local', 'share', 'applications', app + '.desktop'], true);
  				if (desktopFile.exists()) {
  					unsorted.push(this.readDesktopFile(desktopFile));

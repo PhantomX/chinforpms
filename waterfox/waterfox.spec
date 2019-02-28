@@ -71,12 +71,6 @@ ExcludeArch: armv7hl
 %global disable_elfhack   1
 %endif
 
-%if 0%{?build_with_clang}
-%global build_with_ld    lld
-%else
-%global build_with_ld    gold
-%endif
-
 %global default_bookmarks_file  %{_datadir}/bookmarks/default-bookmarks.html
 %global waterfox_app_id  \{ec8030f7-c20a-464f-9b0e-13a3a9e97384\}
 # Minimal required versions
@@ -267,7 +261,9 @@ BuildRequires:  pkgconfig(vorbis) >= %{vorbis_version}
 %endif
 BuildRequires:  autoconf213
 BuildRequires:  pkgconfig(libpulse)
+%if 0%{?system_libicu}
 BuildRequires:  pkgconfig(icu-i18n)
+%endif
 BuildRequires:  yasm
 BuildRequires:  llvm
 BuildRequires:  llvm-devel
@@ -461,8 +457,6 @@ echo "mk_add_options MOZ_PGO=1" >> .mozconfig
 echo "mk_add_options PROFILE_GEN_SCRIPT='EXTRA_TEST_ARGS=10 \$(MAKE) -C \$(MOZ_OBJDIR) pgo-profile-run'" >> .mozconfig
 %endif
 
-echo "ac_add_options --enable-linker=%{build_with_ld}" >> .mozconfig
-
 %if 0%{?system_nss}
 echo "ac_add_options --with-system-nspr" >> .mozconfig
 echo "ac_add_options --with-system-nss" >> .mozconfig
@@ -632,7 +626,17 @@ RPM_NCPUS=1
 %endif
 MOZ_SMP_FLAGS=-j$RPM_NCPUS
 
-MOZ_OPT_FLAGS="-fuse-ld=%{build_with_ld} $MOZ_OPT_FLAGS $(echo "%{optflags}" | sed -e 's/-Wall//')"
+%if 0%{?build_with_clang}
+echo "ac_add_options --enable-linker=lld" >> .mozconfig
+MOZ_OPT_FLAGS="-fuse-ld=lld"
+%else
+%ifarch %{ix86} x86_64 %{arm}
+echo "ac_add_options --enable-linker=gold" >> .mozconfig
+MOZ_OPT_FLAGS="-fuse-ld=gold"
+%endif
+%endif
+
+MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS $(echo "%{optflags}" | sed -e 's/-Wall//')"
 #rhbz#1037063
 # -Werror=format-security causes build failures when -Wno-format is explicitly given
 # for some sources
@@ -643,21 +647,23 @@ MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -Wformat-security -Wformat -Werror=format-security
 # Fedora's default compiler flags conflict with what clang supports
 MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-fstack-clash-protection//')"
 %endif
-%if 0%{?build_with_lto}
-%if 0%{?build_with_clang}
-RPM_FLTO_FLAGS="-flto=thin -Wl,--thinlto-jobs=$RPM_NCPUS"
-%else
-RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
-%endif
-MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2/-O3/' -e 's/-g/-g1/') $RPM_FLTO_FLAGS"
-MOZ_LINK_FLAGS="$RPM_FLTO_FLAGS"
-export MOZ_DEBUG_FLAGS=" "
-%endif
 %if %{?hardened_build}
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -fPIC -Wl,-z,relro -Wl,-z,now"
 %endif
 %if 0%{?debug_build}
 MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2//' -e 's/-O3//')
+%else
+export MOZ_DEBUG_FLAGS=" "
+%endif
+%if 0%{?build_with_lto}
+MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2/-O3/' -e 's/-g/-g1/')"
+%if 0%{?build_with_clang}
+RPM_FLTO_FLAGS="-flto=thin -Wl,--thinlto-jobs=$RPM_NCPUS"
+%else
+RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -flifetime-dse=1 -fdisable-ipa-cdtor"
+%endif
+MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS $RPM_FLTO_FLAGS"
+MOZ_LINK_FLAGS="$MOZ_OPT_FLAGS"
 %endif
 %ifarch s390
 MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-g/-g1/')

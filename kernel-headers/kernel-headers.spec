@@ -29,7 +29,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -175,13 +175,16 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Wed Feb 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.13-500.chinfo
+- 4.20.13
+
 * Sun Feb 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.12-500.chinfo
 - 4.20.12
 
-* Wed Feb 20 2019 Phantom X - 4.20.11-500.chinfo
+* Wed Feb 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.11-500.chinfo
 - 4.20.11
 
-* Fri Feb 15 2019 Phantom X - 4.20.10-500.chinfo
+* Fri Feb 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.10-500.chinfo
 - 4.20.10
 
 * Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.8-500.chinfo
