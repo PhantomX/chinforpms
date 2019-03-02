@@ -1,7 +1,7 @@
 %global pkgname FAudio
 
 Name:           faudio
-Version:        19.02
+Version:        19.03
 Release:        1%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -10,8 +10,6 @@ URL:            https://github.com/FNA-XNA/FAudio
 
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        %{name}.pc
-
-Patch0:         %{name}-soversion.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -77,6 +75,10 @@ install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Fri Mar 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.03-1
+- 19.03
+- Drop unneeded soversion patch
+
 * Mon Feb 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.02-1
 - 19.02
 

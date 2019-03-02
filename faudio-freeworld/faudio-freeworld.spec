@@ -1,7 +1,7 @@
 %global pkgname FAudio
 
 Name:           faudio-freeworld
-Version:        19.02
+Version:        19.03
 Release:        1%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - freeworld
 
@@ -9,8 +9,6 @@ License:        zlib
 URL:            https://github.com/FNA-XNA/FAudio
 
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
-
-Patch0:         faudio-soversion.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -71,6 +69,10 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Fri Mar 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.03-1
+- 19.03
+- Drop unneeded soversion patch
+
 * Mon Feb 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.02-1
 - 19.02
 
