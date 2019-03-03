@@ -1,11 +1,25 @@
---- ppsspp/Core/Config.cpp.orig	2018-08-17 22:13:55.393642289 -0300
-+++ ppsspp/Core/Config.cpp	2018-08-17 22:13:59.299820799 -0300
-@@ -393,7 +393,7 @@ static ConfigSetting generalSettings[] =
+From 44ca0dec289b4f831f0b6c1528f10bccc543b9cb Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 2 Mar 2019 23:43:44 -0300
+Subject: [PATCH] Disable check for new versions
+
+This is a package
+---
+ Core/Config.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Core/Config.cpp b/Core/Config.cpp
+index f1805da..daad3b1 100644
+--- a/Core/Config.cpp
++++ b/Core/Config.cpp
+@@ -394,7 +394,7 @@ static ConfigSetting generalSettings[] = {
  	ConfigSetting("IgnoreBadMemAccess", &g_Config.bIgnoreBadMemAccess, true, true),
  	ConfigSetting("CurrentDirectory", &g_Config.currentDirectory, ""),
  	ConfigSetting("ShowDebuggerOnLoad", &g_Config.bShowDebuggerOnLoad, false),
 -	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, true),
 +	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false),
  	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion),
- 	ConfigSetting("ForceLagSync", &g_Config.bForceLagSync, false, true, true),
+ 	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, true, true),
  	ConfigSetting("DiscordPresence", &g_Config.bDiscordPresence, true, true, false),  // Or maybe it makes sense to have it per-game? Race conditions abound...
+-- 
+2.20.1

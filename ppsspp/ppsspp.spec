@@ -1,6 +1,6 @@
-%global commit bff58d0921acc2654d485a81231cc592235939b2
+%global commit 7c7d276d1d33d28085f8a77ee4b4f8dbf17ebb7a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190207
+%global date 20190302
 %global with_snapshot 1
 
 # Enable Qt build
@@ -50,7 +50,7 @@
 
 Name:           ppsspp
 Version:        1.7.5
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -318,6 +318,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.5-4.20190302git7c7d276
+- New snapshot
+
 * Thu Feb 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.7.5-3.20190207gitbff58d0
 - New snapshot
 
