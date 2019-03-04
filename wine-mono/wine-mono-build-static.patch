@@ -16,10 +16,10 @@
      fi
      if test 1 = $USE_MONOLITE; then
          make get-monolite-latest || exit 1
-@@ -172,6 +174,7 @@
+@@ -180,6 +182,7 @@
      # build mono-basic
      cd "$SRCDIR/mono-basic"
-     ./configure --prefix="$BUILDDIR/build-cross-cli-install" || exit 1
+     ./configure --prefix="$BUILDDIR/build-cross-cli-win32-install" || exit 1
 +    sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i libtool
      make $MAKEOPTS || exit 1
      make install || exit 1

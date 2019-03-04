@@ -2,7 +2,7 @@
 %{?mingw_package_header}
 
 Name:           wine-mono
-Version:        4.7.5
+Version:        4.8.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -47,6 +47,7 @@ BuildRequires:  zip
 BuildRequires:  wine-core
 BuildRequires:  wine-devel
 BuildRequires:  mono-core
+BuildRequires:  /usr/bin/pathfix.py
 
 Requires: wine-filesystem
 
@@ -57,6 +58,10 @@ Windows Mono library required for Wine.
 %setup -q
 %patch0 -p1 -b.msifilename
 %patch1 -p1 -b.static
+
+# Fix all Python shebangs
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" . 
+sed -i 's/GENMDESC_PRG=python/GENMDESC_PRG=python3/' mono/mono/mini/Makefile.am.in
 
 %build
 MAKEOPTS=%{_smp_mflags} MSIFILENAME=wine-mono-%{version}.msi ./build-winemono.sh.static
@@ -89,6 +94,10 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 %{_datadir}/wine/mono/wine-mono-%{version}.msi
 
 %changelog
+* Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.8.0-100
+- 4.8.0
+- Rawhide sync
+
 * Mon Jan 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.7.5-100
 - 4.7.5
 

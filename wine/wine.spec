@@ -3,30 +3,26 @@
 
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.7.5
+%global winemono  4.8.0
 %global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 4.2
+%global stagingver 4.3
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global tkg_id 3fe41d2ea5dfcbda57053d3e963f0875357c5cf9
+%global tkg_id d82d9753c6e887ddb426c065783edade7f5a55ce
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
-%global faudio 1
 %global pba 0
 %if !%{?staging}
 %global esync 0
-%global faudio 0
 %global pba 0
 %endif
-%if 0%{?faudio}
-%global faudioopts -W xaudio2_7-CreateFX-FXEcho -W xaudio2_7-WMA_support -W xaudio2_CommitChanges
-%endif
+%global faudioopts -W xaudio2-revert -W xaudio2_7-CreateFX-FXEcho -W xaudio2_7-WMA_support -W xaudio2_CommitChanges
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 
@@ -40,8 +36,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.2
-Release:        101%{?dist}
+Version:        4.3
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -142,9 +138,6 @@ Patch2001:      %{tkg_url}/esync-compat-fixes-r3.patch#/tkg-esync-compat-fixes-r
 Patch2002:      %{tkg_url}/esync-no_alloc_handle.patch#/tkg-esync-no_alloc_handle.patch
 %endif #{?esync}
 
-%if 0%{?faudio}
-Patch3000:      %{tkg_url}/faudio-exp.patch#/tkg-faudio-exp.patch
-%endif #{?faudio}
 %endif #{?staging}
 
 %if !%{?no64bit}
@@ -161,81 +154,82 @@ BuildRequires:  clang >= 5.0
 %else
 BuildRequires:  gcc
 %endif
+BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
-BuildRequires:  alsa-lib-devel
-BuildRequires:  audiofile-devel
-BuildRequires:  freeglut-devel
-BuildRequires:  krb5-devel
-BuildRequires:  lcms2-devel
+BuildRequires:  fontforge
+BuildRequires:  icoutils
+BuildRequires:  perl-generators
+BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(capi20)
+BuildRequires:  cups-devel
+BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  pkgconfig(faudio)
+BuildRequires:  pkgconfig(fontconfig)
+BuildRequires:  pkgconfig(freeglut)
+BuildRequires:  pkgconfig(freetype2)
+BuildRequires:  fontpackages-devel
+BuildRequires:  gettext-devel
+BuildRequires:  giflib-devel
+BuildRequires:  gsm-devel
+BuildRequires:  pkgconfig(gl)
+BuildRequires:  pkgconfig(glu)
+BuildRequires:  pkgconfig(gnutls)
+BuildRequires:  pkgconfig(gstreamer-1.0)
+BuildRequires:  pkgconfig(gstreamer-audio-1.0)
+BuildRequires:  pkgconfig(gstreamer-video-1.0)
+BuildRequires:  pkgconfig(krb5)
+BuildRequires:  pkgconfig(lcms2)
+BuildRequires:  pkgconfig(libgphoto2)
 BuildRequires:  libieee1284-devel
-BuildRequires:  libjpeg-devel
-BuildRequires:  libpng-devel
+BuildRequires:  pkgconfig(libjpeg)
+BuildRequires:  pkgconfig(libmpg123)
+BuildRequires:  libpcap-devel
+BuildRequires:  pkgconfig(libpng)
+BuildRequires:  pkgconfig(libpulse)
+BuildRequires:  pkgconfig(librsvg-2.0)
 BuildRequires:  librsvg2
-BuildRequires:  librsvg2-devel
+BuildRequires:  librsvg2-tools
 BuildRequires:  libstdc++-devel
-BuildRequires:  libusb-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  libxslt-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  ocl-icd-devel
+BuildRequires:  pkgconfig(libtiff-4)
+BuildRequires:  pkgconfig(libusb)
+BuildRequires:  pkgconfig(libv4l1)
+BuildRequires:  pkgconfig(libvkd3d)
+BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(libxslt)
+BuildRequires:  pkgconfig(ncurses)
+BuildRequires:  pkgconfig(netapi)
+BuildRequires:  pkgconfig(ocl-icd)
+BuildRequires:  pkgconfig(odbc)
+BuildRequires:  pkgconfig(openal)
 BuildRequires:  opencl-headers
 BuildRequires:  openldap-devel
-BuildRequires:  perl-generators
-BuildRequires:  unixODBC-devel
-BuildRequires:  sane-backends-devel
-BuildRequires:  samba-devel
-BuildRequires:  systemd-devel
-BuildRequires:  zlib-devel
-BuildRequires:  fontforge freetype-devel
-BuildRequires:  libgphoto2-devel
-BuildRequires:  isdn4k-utils-devel
-BuildRequires:  libpcap-devel
-# modular x
-BuildRequires:  libX11-devel
-BuildRequires:  mesa-libGL-devel mesa-libGLU-devel mesa-libOSMesa-devel
-BuildRequires:  libXxf86dga-devel libXxf86vm-devel
-BuildRequires:  libXrandr-devel libXrender-devel
-BuildRequires:  libXext-devel
-BuildRequires:  libXinerama-devel
-BuildRequires:  libXcomposite-devel
-BuildRequires:  fontconfig-devel
-BuildRequires:  giflib-devel
-BuildRequires:  cups-devel
-BuildRequires:  libXmu-devel
-BuildRequires:  libXi-devel
-BuildRequires:  libXcursor-devel
-BuildRequires:  dbus-devel
-BuildRequires:  gnutls-devel
-BuildRequires:  pulseaudio-libs-devel
-BuildRequires:  gsm-devel
-BuildRequires:  libv4l-devel
-BuildRequires:  fontpackages-devel
-BuildRequires:  libtiff-devel
-BuildRequires:  gettext-devel
-BuildRequires:  chrpath
-BuildRequires:  gstreamer1-devel
-BuildRequires:  gstreamer1-plugins-base-devel
-BuildRequires:  mpg123-devel
-BuildRequires:  SDL2-devel
-BuildRequires:  libvkd3d-devel
+BuildRequires:  pkgconfig(osmesa)
+BuildRequires:  pkgconfig(sane-backends)
+BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(systemd)
 BuildRequires:  vulkan-devel
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xcomposite)
+BuildRequires:  pkgconfig(xcursor)
+BuildRequires:  pkgconfig(xext)
+BuildRequires:  pkgconfig(xi)
+BuildRequires:  pkgconfig(xinerama)
+BuildRequires:  pkgconfig(xmu)
+BuildRequires:  pkgconfig(xrandr)
+BuildRequires:  pkgconfig(xrender)
+BuildRequires:  pkgconfig(xxf86dga)
+BuildRequires:  pkgconfig(xxf86vm)
+BuildRequires:  pkgconfig(zlib)
 
 # Silverlight DRM-stuff needs XATTR enabled.
 %if 0%{?staging}
-BuildRequires:  gtk3-devel
-BuildRequires:  libattr-devel
-BuildRequires:  libva-devel
+BuildRequires:  pkgconfig(gtk+-3.0)
+BuildRequires:  pkgconfig(libattr)
+BuildRequires:  pkgconfig(libva)
 %if 0%{?esync}
 BuildRequires:  git
 %endif #{?esync}
-%if 0%{?faudio}
-BuildRequires:  pkgconfig(faudio)
-%endif #{?faudio}
 %endif #{?staging}
-
-BuildRequires:  openal-soft-devel
-BuildRequires:  icoutils
-BuildRequires:  librsvg2-tools
 
 Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-desktop = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -250,9 +244,6 @@ Requires:       wine-ldap(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-openal(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-%if !%{?faudio}
-Requires:       wine-xaudio2(x86-32) >= %{?epoch:%{epoch}:}%{version}-%{release}
-%endif #{faudio}
 Requires:       wine-opencl(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mingw32-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
@@ -269,9 +260,6 @@ Requires:       wine-ldap(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-openal(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
-%if !%{?faudio}
-Requires:       wine-xaudio2(x86-64) >= %{?epoch:%{epoch}:}%{version}-%{release}
-%endif #{?faudio}
 Requires:       wine-opencl(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mingw64-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
@@ -287,9 +275,6 @@ Requires:       wine-ldap = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-openal = %{?epoch:%{epoch}:}%{version}-%{release}
-%if !%{?faudio}
-Requires:       wine-xaudio2 >= %{?epoch:%{epoch}:}%{version}-%{release}
-%endif #{?faudio}
 Requires:       wine-opencl = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mesa-dri-drivers
 Requires:       samba-winbind-clients
@@ -304,9 +289,6 @@ Requires:       wine-ldap(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-openal(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
-%if !%{?faudio}
-Requires:       wine-xaudio2(aarch-64) >= %{?epoch:%{epoch}:}%{version}-%{release}
-%endif #{?faudio}
 Requires:       wine-opencl(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mingw64-wine-gecko = %winegecko
 Requires:       mesa-dri-drivers(aarch-64)
@@ -409,15 +391,6 @@ Requires:       libva
 # removed as of 1.7.35
 Obsoletes:      wine-wow < 1.7.35
 Provides:       wine-wow = %{version}-%{release}
-
-%if 0%{?faudio}
-Provides:       wine-xaudio2 = 2:%{version}-%{release}
-Provides:       wine-xaudio2%{?_isa} = 2:%{version}-%{release}
-Obsoletes:      wine-xaudio2 < 2:%{version}-%{release}
-Provides:       wine-freeworld = 2:%{version}-%{release}
-Provides:       wine-freeworld%{?_isa} = 2:%{version}-%{release}
-Obsoletes:      wine-freeworld < 2:%{version}-%{release}
-%endif #{faudio}
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
@@ -706,16 +679,6 @@ Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 %Description opencl
 This package adds the opencl driver for wine.
 
-%if !%{?faudio}
-%package xaudio2
-Summary: xaudio2 support for wine
-Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: wine-openal%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description xaudio2
-This package adds xaudio2 support for wine.
-%endif #{faudio}
-
 %prep
 %setup -q -n wine-%{ver}
 %patch511 -p1 -b.cjk
@@ -731,10 +694,6 @@ This package adds xaudio2 support for wine.
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
-
-%if 0%{?faudio}
-%patch3000 -p1
-%endif #{?faudio}
 
 %if 0%{?esync}
 tar xvf %{SOURCE2000}
@@ -778,6 +737,18 @@ rm -rf patches/
 
 %patch601 -p1
 
+# Verify gecko and mono versions
+GECKO_VER="$(grep '^#define' dlls/appwiz.cpl/addons.c | grep ' GECKO_VERSION ' | awk '{print $3}' | tr -d \")"
+if [ "${GECKO_VER}" != "%{winegecko}" ] ;then
+  echo "winegecko version mismatch. Edit %%global winegecko to ${GECKO_VER}."
+  exit 1
+fi
+MONO_VER="$(grep '^#define' dlls/appwiz.cpl/addons.c | grep ' MONO_VERSION ' | awk '{print $3}' | tr -d \")"
+if [ "${MONO_VER}" != "%{winemono}" ] ;then
+  echo "winemono version mismatch. Edit %%global winemono to ${MONO_VER}."
+  exit 1
+fi
+
 sed -e '/winemenubuilder\.exe/s|-a ||g' -i loader/wine.inf.in
 
 sed -i \
@@ -808,7 +779,6 @@ export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`"
  --sysconfdir=%{_sysconfdir}/wine \
  --x-includes=%{_includedir} --x-libraries=%{_libdir} \
  --without-hal --with-dbus \
- --without-ffmpeg \
  --with-x \
 %ifarch %{arm}
  --with-float-abi=hard \
@@ -820,9 +790,6 @@ export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`"
  --with-xattr \
 %endif
  --disable-tests \
-%if !%{?faudio}
- --without-faudio \
-%endif
 %{nil}
 
 %make_build TARGETFLAGS=""
@@ -1511,6 +1478,7 @@ fi
 %{_libdir}/wine/atl90.dll.so
 %{_libdir}/wine/atl100.dll.so
 %{_libdir}/wine/atl110.dll.so
+%{_libdir}/wine/atlthunk.dll.so
 %{_libdir}/wine/atmlib.dll.so
 %{_libdir}/wine/authz.dll.so
 %{_libdir}/wine/avicap32.dll.so
@@ -1611,16 +1579,24 @@ fi
 %{_libdir}/wine/ext-ms-win-domainjoin-netjoin-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-dwmapi-ext-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-dc-l1-2-0.dll.so
+%{_libdir}/wine/ext-ms-win-gdi-dc-create-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-dc-create-l1-1-1.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-devcaps-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-gdi-draw-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-draw-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-gdi-font-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-gdi-font-l1-1-1.dll.so
 %{_libdir}/wine/ext-ms-win-gdi-render-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-kernel32-package-current-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-kernel32-package-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-dialogbox-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-draw-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-gui-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-gui-l1-3-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-keyboard-l1-3-0.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-message-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-message-l1-1-1.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-misc-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-misc-l1-2-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-misc-l1-5-1.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-mouse-l1-1-0.dll.so
@@ -1628,8 +1604,10 @@ fi
 %{_libdir}/wine/ext-ms-win-ntuser-private-l1-3-1.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-rectangle-ext-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-uicontext-ext-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-window-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-window-l1-1-1.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-window-l1-1-4.dll.so
+%{_libdir}/wine/ext-ms-win-ntuser-windowclass-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ntuser-windowclass-l1-1-1.dll.so
 %{_libdir}/wine/ext-ms-win-oleacc-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-ras-rasapi32-l1-1-0.dll.so
@@ -1722,6 +1700,7 @@ fi
 %{_libdir}/wine/mf.dll.so
 %{_libdir}/wine/mf3216.dll.so
 %{_libdir}/wine/mfplat.dll.so
+%{_libdir}/wine/mfplay.dll.so
 %{_libdir}/wine/mfreadwrite.dll.so
 %{_libdir}/wine/mgmtapi.dll.so
 %{_libdir}/wine/midimap.dll.so
@@ -2006,16 +1985,14 @@ fi
 %{_libdir}/wine/wined3d.dll.so
 %{_libdir}/wine/dnsapi.dll.so
 %{_libdir}/wine/iexplore.exe.so
-%if 0%{?faudio}
-%{_libdir}/wine/xactengine3_0.dll.so
-%{_libdir}/wine/xactengine3_1.dll.so
-%{_libdir}/wine/xactengine3_2.dll.so
-%{_libdir}/wine/xactengine3_3.dll.so
-%{_libdir}/wine/xactengine3_4.dll.so
-%{_libdir}/wine/xactengine3_5.dll.so
-%{_libdir}/wine/xactengine3_6.dll.so
-%{_libdir}/wine/xactengine3_7.dll.so
-%endif
+#{_libdir}/wine/xactengine3_0.dll.so
+#{_libdir}/wine/xactengine3_1.dll.so
+#{_libdir}/wine/xactengine3_2.dll.so
+#{_libdir}/wine/xactengine3_3.dll.so
+#{_libdir}/wine/xactengine3_4.dll.so
+#{_libdir}/wine/xactengine3_5.dll.so
+#{_libdir}/wine/xactengine3_6.dll.so
+#{_libdir}/wine/xactengine3_7.dll.so
 %{_libdir}/wine/x3daudio1_0.dll.so
 %{_libdir}/wine/x3daudio1_1.dll.so
 %{_libdir}/wine/x3daudio1_2.dll.so
@@ -2036,9 +2013,7 @@ fi
 %{_libdir}/wine/xaudio2_4.dll.so
 %{_libdir}/wine/xaudio2_5.dll.so
 %{_libdir}/wine/xaudio2_6.dll.so
-%if 0%{?faudio}
 %{_libdir}/wine/xaudio2_7.dll.so
-%endif
 %{_libdir}/wine/xaudio2_8.dll.so
 %{_libdir}/wine/xaudio2_9.dll.so
 %{_libdir}/wine/xcopy.exe.so
@@ -2128,11 +2103,6 @@ fi
 %{_libdir}/wine/wintab.dll16.so
 %{_libdir}/wine/wow32.dll.so
 %endif
-
-%if !%{?faudio}
-%files xaudio2
-%{_libdir}/wine/xaudio2_7.dll.so
-%endif #{?faudio}
 
 %files filesystem
 %doc COPYING.LIB
@@ -2351,6 +2321,11 @@ fi
 
 
 %changelog
+* Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.3-100
+- 4.3
+- pkgconfig style BRs
+- Upstream FAudio support
+
 * Mon Feb 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.2-101
 - faudio update from tkg
 

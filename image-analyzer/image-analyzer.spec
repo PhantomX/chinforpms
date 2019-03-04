@@ -1,5 +1,5 @@
 Name:           image-analyzer
-Version:        3.2.0
+Version:        3.2.1
 Release:        1%{?dist}
 Summary:        A libMirage-based CD/DVD-ROM image analyzer
 
@@ -69,6 +69,9 @@ done
 
 
 %changelog
+* Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.2.1-1
+- 3.2.1
+
 * Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.2.0-1
 - 3.2.0
 

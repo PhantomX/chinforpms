@@ -9,8 +9,8 @@
 %global debug_package %{nil}
 
 Name:           vhba-kmod
-Version:        20170610
-Release:        2%{?dist}
+Version:        20190302
+Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPLv2
@@ -31,6 +31,7 @@ or more virtual SCSI devices. It is part of cdemu, a CD/DVD-ROM device
 emulator for Linux.
 
 This package provides kernel module for kernel %{kversion}.
+
 
 %prep
 # error out if there was something wrong with kmodtool
@@ -55,7 +56,11 @@ for kernel_version in %{?kernel_versions}; do
 done
 %{?akmod_install}
 
+
 %changelog
+* Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 20190302-1
+- 20190302
+
 * Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 20170610-2
 - chinforpms release
 

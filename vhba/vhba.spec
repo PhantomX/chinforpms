@@ -2,8 +2,8 @@
 %global debug_package %{nil}
 
 Name:           vhba
-Version:        20170610
-Release:        100%{?dist}
+Version:        20190302
+Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPLv2
@@ -22,6 +22,7 @@ An implementation of a Virtual SCSI Host Bus Adapter (VHBA), which acts
 as a low-level SCSI driver that provides a virtual SCSI adapter with one
 or more virtual SCSI devices. It is part of cdemu, a CD/DVD-ROM device
 emulator for linux.
+
 
 %prep
 %autosetup -n %{orig_name}-%{version}
@@ -43,7 +44,11 @@ install -m644 -D %{SOURCE1} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
 %{_prefix}/lib/modules-load.d/%{name}.conf
 %{_udevrulesdir}/69-%{name}.rules
 
+
 %changelog
+* Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 20190302-1
+- 20190302
+
 * Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 20170610-100
 - chinforpms release
 
