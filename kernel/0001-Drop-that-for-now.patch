@@ -1,0 +1,25 @@
+From 12cec6680e67d6b4fed9e30cd8c1f13871996cc1 Mon Sep 17 00:00:00 2001
+From: Laura Abbott <labbott@redhat.com>
+Date: Wed, 23 Jan 2019 14:36:37 +0100
+Subject: [PATCH] Drop that for now
+
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index f5b1d0d168e0..5f31107b22d1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -430,7 +430,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+ KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
+ 		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
+ 		   -Werror-implicit-function-declaration -Werror=implicit-int \
+-		   -Wno-format-security \
++		   -Wno-format-security -Wno-address-of-packed-member \
+ 		   -std=gnu89
+ KBUILD_CPPFLAGS := -D__KERNEL__
+ KBUILD_AFLAGS_KERNEL :=
+-- 
+2.20.1
+

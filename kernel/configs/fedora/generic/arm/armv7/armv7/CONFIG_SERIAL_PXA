@@ -1,1 +1,1 @@
-CONFIG_SERIAL_PXA=y
+# CONFIG_SERIAL_PXA is not set

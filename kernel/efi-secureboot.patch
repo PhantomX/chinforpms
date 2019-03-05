@@ -149,7 +149,7 @@ diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 100ce4a4aff6..62361b647a75 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -1191,6 +1191,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -1155,6 +1155,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_DBG			8	/* Print additional debug info at runtime */
  #define EFI_NX_PE_DATA		9	/* Can runtime data regions be mapped non-executable? */
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
@@ -164,16 +164,16 @@ index 100ce4a4aff6..62361b647a75 100644
  
  #ifdef CONFIG_EFI
  /*
-@@ -1203,6 +1211,8 @@ static inline bool efi_enabled(int feature)
+@@ -1198,6 +1206,8 @@ static inline bool efi_enabled(int feature)
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
- 
+
  extern bool efi_is_table_address(unsigned long phys_addr);
 +
 +extern void __init efi_set_secure_boot(enum efi_secureboot_mode mode);
  #else
  static inline bool efi_enabled(int feature)
  {
-@@ -1221,6 +1231,8 @@ static inline bool efi_is_table_address(unsigned long phys_addr)
+@@ -1216,6 +1226,8 @@ static inline bool efi_is_table_address(unsigned long phys_addr)
  {
  	return false;
  }
@@ -182,7 +182,7 @@ index 100ce4a4aff6..62361b647a75 100644
  #endif
  
  extern int efi_status_to_err(efi_status_t status);
-@@ -1607,12 +1619,6 @@ efi_status_t efi_setup_gop(efi_system_table_t *sys_table_arg,
+@@ -1577,12 +1589,6 @@ efi_status_t efi_setup_gop(efi_system_table_t *sys_table_arg,
  bool efi_runtime_disabled(void);
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  
@@ -285,8 +285,8 @@ index 461d5acc3616..13fdada1ffc2 100644
 +	  triggered if EFI Secure Boot is set.
 +
 
- source security/selinux/Kconfig
- source security/smack/Kconfig
+ source "security/selinux/Kconfig"
+ source "security/smack/Kconfig"
 diff --git a/security/lock_down.c b/security/lock_down.c
 index 2c6b00f0c229..527f7e51dc8d 100644
 --- a/security/lock_down.c

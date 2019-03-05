@@ -1,1 +1,1 @@
-# CONFIG_DRM_PANEL is not set
+CONFIG_DRM_PANEL=y

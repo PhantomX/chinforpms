@@ -1,0 +1,53 @@
+From c3d75c94de553c3084dd4dfd0d5d9aa6e53f3457 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 29 Jan 2019 12:53:32 +0100
+Subject: [PATCH] drm/i915: Enable fastboot by default on VLV and CHV
+
+We really want to have fastboot enabled by default to avoid an ugly
+modeset during boot.
+
+Currently we are enabling fastboot by default on gen9+ (Skylake and newer).
+The intention is to enable it on older generations after it has seen more
+testing on gen9+.
+
+VLV and CHV devices are still being sold in stores today, as such it is
+desirable to also enable fastboot by default on these now.
+
+I've extensively tested fastboot=1 support on over 50 different
+Bay- and Cherry-Trail devices. Testing DSI and eDP panels as well as
+HDMI output (and even DP over Type-C on one device).
+
+All 50 devices work fine with fastboot=1. On 2 devices their DSI panel
+turns black as soon as the i915 driver loads when fastboot=0, so having
+fastboot enabled is required for these 2 to work properly (for lack of
+a better fix).
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/gpu/drm/i915/intel_display.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
+index d756d7358292..0ff42a38023c 100644
+--- a/drivers/gpu/drm/i915/intel_display.c
++++ b/drivers/gpu/drm/i915/intel_display.c
+@@ -11672,7 +11672,15 @@ static bool fastboot_enabled(struct drm_i915_private *dev_priv)
+ 		return i915_modparams.fastboot;
+ 
+ 	/* Enable fastboot by default on Skylake and newer */
+-	return INTEL_GEN(dev_priv) >= 9;
++	if (INTEL_GEN(dev_priv) >= 9)
++		return true;
++
++	/* Enable fastboot by default on VLV and CHV */
++	if (IS_VALLEYVIEW(dev_priv) || IS_CHERRYVIEW(dev_priv))
++		return true;
++
++	/* Disabled by default on all others */
++	return false;
+ }
+ 
+ static bool
+-- 
+2.20.1
+

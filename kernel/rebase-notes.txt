@@ -1,3 +1,10 @@
+Linux 5.0 rebase notes:
+- Disable fastboot by defauly for F29 and older, drop:
+  i915-enable-fastboot-on-skylake.patch and i915-enable-fastboot-on-vlv-chv.patch
+
+Linux 4.19 rebase notes:
+- Turn off CONFIG_AF_KCM
+
 Linux 4.18 rebase notes:
 - Turn off CONFIG_BCM2835_VCHIQ
 - Turn off CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER (for F28 and older)

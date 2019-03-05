@@ -45,28 +45,28 @@ Summary: The Linux kernel
 %global baserelease 500
 %global fedora_build %{baserelease}
 
-%define major_ver 4
+%define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 20
+%define base_sublevel 0
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 1
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 3ae5eaa75608c5550189dd16a84e91b9bcb78cab
+%global pfcommit 4c5a3f64b88c2dcd16086705afa5df5399156fba
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id b35c1fcde32148be9e4f9211ff1eb0920a714592
+%global opensuse_id 6bc64779811b7f47756325c60f0bf1d5a848fdb5
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -582,14 +582,6 @@ Patch201: efi-lockdown.patch
 
 Patch202: KEYS-Allow-unrestricted-boot-time-addition-of-keys-t.patch
 
-Patch203: Add-EFI-signature-data-types.patch
-
-Patch204: Add-an-EFI-signature-blob-parser-and-key-loader.patch
-
-Patch205: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
-
-Patch206: MODSIGN-Support-not-importing-certs-from-db.patch
-
 # bz 1497559 - Make kernel MODSIGN code not error on missing variables
 Patch207: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
 Patch208: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
@@ -620,62 +612,46 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# https://patchwork.kernel.org/patch/10765783/
-Patch307: wlcore-sdio-Fixup-power-on-off-sequence.patch
-
 # https://patchwork.kernel.org/patch/10778815/
-Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch 
+Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch
 
-# omap4 fixes
-Patch309: arm-omap4-fix-lack-of-time-interupts-after-hotplug.patch
-Patch310: arm-omap4-fix-omap4_dsi_mux_pads-uninitialized-variable.patch 
-
-# https://patchwork.kernel.org/patch/10686407/
-Patch331: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
-
-# Improve raspberry pi camera and analog audio
-Patch332: bcm2836-Improve-VCHIQ-cache-line-size-handling.patch
-Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
+Patch310: arm64-rock960-enable-hdmi-audio.patch
+Patch311: arm64-rock960-add-onboard-wifi-bt.patch
+Patch312: arm64-rock960-enable-tsadc.patch
 
 # Initall support for the 3A+
-Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
-
-# Fixes for bcm2835 mmc (sdcard) driver
-Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
+Patch330: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg699583.html
-Patch337: ARM-dts-bcm283x-Several-DTS-improvements.patch
+Patch332: ARM-dts-bcm283x-Several-DTS-improvements.patch
 
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
-# Patches enabling device specific brcm firmware nvram
-# https://www.spinics.net/lists/linux-wireless/msg178827.html
-Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
-
-Patch341: brcmfmac-Call-brcmf_dmi_probe-before-brcmf_of_probe.patch
-
 # Fix for AllWinner A64 Timer Errata, still not final
-# https://patchwork.kernel.org/patch/10392891/
+# https://www.spinics.net/lists/arm-kernel/msg699622.html
 Patch350: Allwinner-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
 
-# rhbz 1476467
-Patch501: Fix-for-module-sig-verification.patch
-
 # rhbz 1431375
-Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# rhbz 1645070 patch merged into 5.0-rc#
-Patch505: asus-fx503-keyb.patch
+# https://patchwork.kernel.org/patch/10752253/
+Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
 
-# CVE-2019-3459 and CVE-2019-3460 rhbz 1663176 1663179 1665925
-Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
+# gcc9 fixes
+Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
+Patch507: 0001-Drop-that-for-now.patch
 
-# rhbz 1663613 patch merged into 5.0-rc#
-Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch 
+# patches for https://fedoraproject.org/wiki/Changes/FlickerFreeBoot
+# fixes, queued in -next for merging into 5.1
+Patch508: i915-fixes-for-fastboot.patch
+# fastboot by default on Skylake and newer, queued in -next for merging into 5.1
+Patch509: i915-enable-fastboot-on-skylake.patch
+# fastboot by default on VLV/CHV (BYT/CHT), queued in -next for merging into 5.1
+Patch510: i915-enable-fastboot-on-vlv-chv.patch
 
 ### Extra
 
@@ -684,15 +660,14 @@ Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
-Patch1011: %{opensuse_url}/VFS-expedite-umount.patch#/openSUSE-VFS-expedite-umount.patch
-Patch1012: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1013: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
-Patch1014: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
-Patch1015: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1016: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
-#Patch1017: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
-Patch1018: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
-Patch1019: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
+Patch1012: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
+Patch1013: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
+Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
+#Patch1016: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
+Patch1017: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
+Patch1018: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -705,11 +680,24 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 
 #Patch3000: postfactum-merge-fixes.patch
 %if !0%{?zen}
-Patch3001: %{pf_url}/3e325ba257db94dbb7601deadb0592ccf79bf08d.patch#/pf-3e325ba257db94dbb7601deadb0592ccf79bf08d.patch
+Patch3001: %{pf_url}/d39e5219fd5d5ca642d26a968d7dce34d55780a4.patch#/pf-d39e5219.patch
 %endif
-Patch3002: %{pf_url}/f1dc4cde200f8c7113333c7f8687921e2ca4a700.patch#/pf-f1dc4cde200f8c7113333c7f8687921e2ca4a700.patch
-Patch3003: %{pf_url}/0fc63b8b54cf0d0767aec4cd874b9d2deb177300.patch#/pf-0fc63b8b54cf0d0767aec4cd874b9d2deb177300.patch
-Patch3004: %{pf_url}/3b48638c7d345d15a692a83e83718c2f983b066f.patch#/pf-3b48638c7d345d15a692a83e83718c2f983b066f.patch
+Patch3002: %{pf_url}/76dfb5b9eb45073375191f0f6d1035268a7be0ec.patch#/pf-76dfb5b9.patch
+Patch3003: %{pf_url}/5019e2418b06adb078ef092d47e1453025fb2f7e.patch#/pf-5019e241.patch
+Patch3004: %{pf_url}/c2674b7a7262c15a6185bd29d6cb0edb452be7a4.patch#/pf-c2674b7a.patch
+Patch3005: %{pf_url}/89360a9a8b0060f7408e40f6f79cf8e4b2f361c9.patch#/pf-89360a9a.patch
+Patch3006: %{pf_url}/bc9802d76707362f9659b7d156ce709a0e23f49c.patch#/pf-bc9802d7.patch
+Patch3007: %{pf_url}/8cf98b231f93ad8cdd0ea83304f1597ae7ef3226.patch#/pf-8cf98b23.patch
+Patch3008: %{pf_url}/a075f1be57077fd06cb6bbfb3ece1b9b26344f45.patch#/pf-a075f1be.patch
+Patch3009: %{pf_url}/76a6cd52ac72e974d21949df25365b6cedf11a34.patch#/pf-76a6cd52.patch
+Patch3010: %{pf_url}/28d4f47317bcabbd6d28fedffa45d5d0e079f4d2.patch#/pf-28d4f473.patch
+Patch3011: %{pf_url}/1bb88376c1c968c224b73690fe5ccf845dd15f7a.patch#/pf-1bb88376.patch
+Patch3012: %{pf_url}/63ab287c5717a204c355332a436064331a942239.patch#/pf-63ab287c.patch
+Patch3013: %{pf_url}/3220c2038fe145feec45f5ba85cfb55911e30fc4.patch#/pf-3220c203.patch
+Patch3014: %{pf_url}/e936a72917afc6688cb446f0bbdf4e0275404d3b.patch#/pf-e936a729.patch
+Patch3015: %{pf_url}/4a334fc9b1fa54d2d80f6b6bbcab7ced07d3d246.patch#/pf-4a334fc9.patch
+Patch3016: %{pf_url}/3e5f01146250d8dea10335622012c244373d2381.patch#/pf-3e5f0114.patch
+Patch3017: %{pf_url}/0105d985bdb7ca136d577592948f8b57c8c0fd8c.patch#/pf-0105d985.patch
 #Patch3500: postfactum-merge-fixes-2.patch
 
 %if !0%{?zen}
@@ -995,7 +983,7 @@ ApplyPatch()
     exit 1
   fi
   if ! grep -E "^Patch[0-9]+: $patch\$" %{_specdir}/${RPM_PACKAGE_NAME%%%%%{?variant}}.spec ; then
-    if [ "${patch:0:8}" != "patch-4." ] ; then
+    if [ "${patch:0:8}" != "patch-%{major_ver}." ] ; then
       echo "ERROR: Patch  $patch  not listed as a source patch in specfile"
       exit 1
     fi
@@ -1028,20 +1016,20 @@ ApplyOptionalPatch()
 
 # Update to latest upstream.
 %if 0%{?released_kernel}
-%define vanillaversion 4.%{base_sublevel}
+%define vanillaversion %{major_ver}.%{base_sublevel}
 # non-released_kernel case
 %else
 %if 0%{?rcrev}
-%define vanillaversion 4.%{upstream_sublevel}-rc%{rcrev}
+%define vanillaversion %{major_ver}.%{upstream_sublevel}-rc%{rcrev}
 %if 0%{?gitrev}
-%define vanillaversion 4.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}
+%define vanillaversion %{major_ver}.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}
 %endif
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-%define vanillaversion 4.%{base_sublevel}-git%{gitrev}
+%define vanillaversion %{major_ver}.%{base_sublevel}-git%{gitrev}
 %else
-%define vanillaversion 4.%{base_sublevel}
+%define vanillaversion %{major_ver}.%{base_sublevel}
 %endif
 %endif
 %endif
@@ -1054,7 +1042,7 @@ ApplyOptionalPatch()
 
 # Build a list of the other top-level kernel tree directories.
 # This will be used to hardlink identical vanilla subdirs.
-sharedirs=$(find "$PWD" -maxdepth 1 -type d -name 'kernel-4.*' \
+sharedirs=$(find "$PWD" -maxdepth 1 -type d -name 'kernel-%{major_ver}.*' \
             | grep -x -v "$PWD"/kernel-%{kversion}%{?dist}) ||:
 
 # Delete all old stale trees.
@@ -1290,6 +1278,7 @@ find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
 # remove unnecessary SCM files
 find . -name .gitignore -delete >/dev/null
 
+%if 0%{?fedora}
 # Mangle /usr/bin/python shebangs to /usr/bin/python3
 # Mangle all Python shebangs to be Python 3 explicitly
 # -p preserves timestamps
@@ -1299,6 +1288,7 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/diffconfig
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/bloat-o-meter
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/show_delta
+%endif
 
 cd ..
 
@@ -1367,7 +1357,7 @@ BuildKernel() {
 
     # make sure EXTRAVERSION says what we want it to say
     # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
-    ShortRel=$(python3 -c "import re; print(re.sub(r'\.pr\.[0-9A-Fa-f]{32}', '', '%{release}'))")
+    ShortRel=$(perl -e "print \"%{release}\" =~ s/\.pr\.[0-9A-Fa-f]{32}//r")
     perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Flav}/" Makefile
 
     # if pre-rc1 devel kernel, must fix up PATCHLEVEL for our versioning scheme
@@ -2016,6 +2006,10 @@ fi
 #
 #
 %changelog
+* Mon Mar 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-500.chinfo
+- 5.0.0 - p1
+- Rawhide sync
+
 * Wed Feb 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.13-500.chinfo
 - 4.20.13
 
@@ -2313,123 +2307,6 @@ fi
 * Mon Jan 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.0-500.chinfo
 - 4.15.0
 - rawhide sync
-
-* Wed Jan 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.15-501.chinfo
-- f27 sync
-
-* Tue Jan 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.15-500.chinfo
-- 4.14.15
-
-* Wed Jan 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.14-500.chinfo
-- 4.14.14
-- f27 sync
-
-* Wed Jan 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.13-500.chinfo
-- 4.14.13
-- f27 sync
-
-* Fri Jan 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.12-500.chinfo
-- 4.14.12
-- f27 sync
-
-* Wed Jan 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.11-501.chinfo
-- f27 sync
-- PTI fixes
-
-* Tue Jan 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.11-500.chinfo
-- 4.14.11
-
-* Mon Jan 01 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.14.10-500.chinfo
-- 4.14.10
-
-* Tue Dec 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.9-500.chinfo
-- 4.14.9
-
-* Thu Dec 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.8-500.chinfo
-- 4.14.8
-- f27 sync
-
-* Mon Dec 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.7-500.chinfo
-- 4.14.7
-- f27 sync
-
-* Thu Dec 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.6-500.chinfo
-- 4.14.6
-
-* Mon Dec 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.5-500.chinfo
-- 4.14.5
-
-* Tue Dec 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.4-500.chinfo
-- 4.14.4
-
-* Thu Nov 30 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.3-500.chinfo
-- 4.14.3
-
-* Fri Nov 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.2-500.chinfo
-- 4.14.2
-- stabilization sync
-- More openSUSE and pf borrowed patches
-
-* Tue Nov 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.1-500.chinfo
-- 4.14.1
-
-* Mon Nov 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.14.0-500.chinfo
-- 4.14.0
-- rawhide sync
-- Better handling of external patches
-
-* Wed Nov 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.12-500.chinfo
-- 4.13.12
-- f27 sync
-
-* Thu Nov 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.11-500.chinfo
-- 4.13.11
-
-* Fri Oct 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.10-500.chinfo
-- 4.13.10
-
-* Mon Oct 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.9-500.chinfo
-- 4.13.9
-- f27 sync
-
-* Wed Oct 18 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.8-500.chinfo
-- 4.13.8
-
-* Mon Oct 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.7-500.chinfo
-- 4.13.7
-- f27 sync
-
-* Thu Oct 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.5-500.chinfo
-- 4.13.6
-- f27 sync
-
-* Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.6-500.chinfo
-- 4.13.5
-- f26 sync
-
-* Wed Sep 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.4-500.chinfo
-- 4.13.4
-
-* Sat Sep 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.3-501.chinfo
-- f26 sync
-
-* Wed Sep 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.3-500.chinfo
-- 4.13.3
-- f27 sync
-
-* Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.2-500.chinfo
-- 4.13.2
-- f27 sync
-
-* Mon Sep 11 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.1-500.chinfo
-- 4.13.1
-- f27 sync
-
-* Sat Sep 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 4.13.0-500.chinfo
-- 4.13.0
-- f27 sync
-- More bfq fixes from patchwork
-- Update kernel_gcc_patch to 4.13+
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

@@ -10,20 +10,20 @@
 
 %global buildid .chinfo
 
-%define major_ver 4
+%define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 20
+%global base_sublevel 0
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
-%global opensuse_id eba2b6821d2d3212a325bc28d8e9d665de29ad8b
+%global opensuse_id 6bc64779811b7f47756325c60f0bf1d5a848fdb5
 
 # Do we have a -stable update to apply?
-%global stable_update 13
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -75,7 +75,7 @@ BuildRequires: kmod, patch, bash, tar, git
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl(Carp), perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc, elfutils-devel
-BuildRequires: zlib-devel binutils-devel newt-devel python2-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
+BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel glibc-devel glibc-static python3-devel
 BuildRequires: asciidoc xmlto
 # Used to mangle unversioned shebangs to be Python 3
@@ -117,7 +117,6 @@ Patch1: 0001-perf-Remove-FSF-address.patch
 Patch3: 0001-tools-include-Sync-vmx.h-header-for-FSF-removal.patch
 Patch4: 0001-tools-lib-Remove-FSF-address.patch
 Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
-Patch8: 0001-Switch-to-python3.patch
 
 # Extra
 
@@ -161,13 +160,6 @@ of the Linux kernel.
 %global python_perf_desc A Python module that permits applications \
 written in the Python programming language to use the interface \
 to manipulate perf events.
-
-%package -n python2-perf
-Summary: %{python_perf_sum}
-%{?python_provide:%python_provide python2-perf}
-
-%description -n python2-perf
-%{python_perf_desc}
 
 %package -n python3-perf
 Summary: %{python_perf_sum}
@@ -224,7 +216,6 @@ cd linux-%{kversion}
 %patch3 -p1
 %patch4 -p1
 %patch6 -p1
-%patch8 -p1
 
 %patch1000 -p1
 
@@ -234,9 +225,7 @@ cd linux-%{kversion}
 # -p preserves timestamps
 # -n prevents creating ~backup files
 # -i specifies the interpreter for the shebang
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" tools/ tools/perf/scripts/python/*.py
-
-cp -a tools/perf tools/python3-perf
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" tools/ tools/perf/scripts/python/*.py scripts/gen_compile_commands.py
 
 sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.config
 
@@ -249,13 +238,10 @@ cd linux-%{kversion}
 
 %global perf_make \
   make EXTRA_CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
-%global perf_python2 -C tools/perf PYTHON=%{__python2}
-%global perf_python3 -C tools/python3-perf PYTHON=%{__python3}
+%global perf_python3 -C tools/perf PYTHON=%{__python3}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
-chmod +x tools/python3-perf/check-headers.sh
-%{perf_make} %{perf_python2} all
 %{perf_make} %{perf_python3} all
 
 # cpupower
@@ -310,7 +296,7 @@ popd
 cd linux-%{kversion}
 
 # perf tool binary and supporting scripts/binaries
-%{perf_make} %{perf_python2} DESTDIR=%{buildroot} lib=%{_lib} install-bin install-traceevent-plugins
+%{perf_make} %{perf_python3} DESTDIR=%{buildroot} lib=%{_lib} install-bin install-traceevent-plugins
 # remove the 'trace' symlink.
 rm -f %{buildroot}%{_bindir}/trace
 # remove the perf-tips
@@ -327,7 +313,6 @@ rm -rf %{buildroot}/usr/lib/perf/include/bpf/
 
 # python-perf extension
 %{perf_make} %{perf_python3} DESTDIR=%{buildroot} install-python_ext
-%{perf_make} %{perf_python2} DESTDIR=%{buildroot} install-python_ext
 
 # perf man pages (note: implicit rpm magic compresses them later)
 install -d %{buildroot}/%{_mandir}/man1
@@ -404,16 +389,13 @@ popd
 %doc linux-%{kversion}/tools/perf/Documentation/examples.txt
 %license linux-%{kversion}/COPYING
 
-%files -n python2-perf
-%license linux-%{kversion}/COPYING
-%{python2_sitearch}/*
-
 %files -n python3-perf
 %license linux-%{kversion}/COPYING
 %{python3_sitearch}/*
 
 %files -f cpupower.lang
 %{_bindir}/cpupower
+%{_datadir}/bash-completion/completions/cpupower
 %ifarch %{ix86} x86_64
 %{_bindir}/centrino-decode
 %{_bindir}/powernow-k8-decode
@@ -462,6 +444,10 @@ popd
 
 
 %changelog
+* Mon Mar 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-500.chinfo
+- 5.0.0
+- Rawhide sync
+
 * Wed Feb 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.13-500.chinfo
 - 4.20.13
 

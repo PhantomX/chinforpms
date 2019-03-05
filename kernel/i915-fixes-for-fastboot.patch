@@ -1,0 +1,555 @@
+From bd9df6522501c69f07651b6f5afcdde516731b64 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Thu, 20 Dec 2018 14:21:18 +0100
+Subject: [PATCH 1/3] drm/i915: Add an update_pipe callback to intel_encoder
+ and call this on fastsets (v2)
+
+When we are doing a fastset (needs_modeset=false, update_pipe=true) we
+may need to update some encoder-level things such as checking that PSR
+is enabled.
+
+This commit adds an update_pipe callback to intel_encoder and a new
+intel_encoders_update_pipe helper which calls this for all encoders
+connected to a crtc. The new intel_encoders_update_pipe helper is called
+from intel_update_crtc when doing a fastset.
+
+Changes in v2:
+-Name the new encoder callback update_pipe instead of just update
+
+Reviewed-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/gpu/drm/i915/intel_display.c | 23 +++++++++++++++++++++++
+ drivers/gpu/drm/i915/intel_drv.h     |  3 +++
+ 2 files changed, 26 insertions(+)
+
+diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
+index 3da9c0f9e948..7b502e5dc287 100644
+--- a/drivers/gpu/drm/i915/intel_display.c
++++ b/drivers/gpu/drm/i915/intel_display.c
+@@ -5578,6 +5578,26 @@ static void intel_encoders_post_pll_disable(struct drm_crtc *crtc,
+ 	}
+ }
+ 
++static void intel_encoders_update_pipe(struct drm_crtc *crtc,
++				       struct intel_crtc_state *crtc_state,
++				       struct drm_atomic_state *old_state)
++{
++	struct drm_connector_state *conn_state;
++	struct drm_connector *conn;
++	int i;
++
++	for_each_new_connector_in_state(old_state, conn, conn_state, i) {
++		struct intel_encoder *encoder =
++			to_intel_encoder(conn_state->best_encoder);
++
++		if (conn_state->crtc != crtc)
++			continue;
++
++		if (encoder->update_pipe)
++			encoder->update_pipe(encoder, crtc_state, conn_state);
++	}
++}
++
+ static void ironlake_crtc_enable(struct intel_crtc_state *pipe_config,
+ 				 struct drm_atomic_state *old_state)
+ {
+@@ -12755,6 +12775,9 @@ static void intel_update_crtc(struct drm_crtc *crtc,
+ 	} else {
+ 		intel_pre_plane_update(to_intel_crtc_state(old_crtc_state),
+ 				       pipe_config);
++
++		if (pipe_config->update_pipe)
++			intel_encoders_update_pipe(crtc, pipe_config, state);
+ 	}
+ 
+ 	if (new_plane_state)
+diff --git a/drivers/gpu/drm/i915/intel_drv.h b/drivers/gpu/drm/i915/intel_drv.h
+index f94a04b4ad87..5162aa2841d1 100644
+--- a/drivers/gpu/drm/i915/intel_drv.h
++++ b/drivers/gpu/drm/i915/intel_drv.h
+@@ -243,6 +243,9 @@ struct intel_encoder {
+ 	void (*post_pll_disable)(struct intel_encoder *,
+ 				 const struct intel_crtc_state *,
+ 				 const struct drm_connector_state *);
++	void (*update_pipe)(struct intel_encoder *,
++			    const struct intel_crtc_state *,
++			    const struct drm_connector_state *);
+ 	/* Read out the current hw state of this connector, returning true if
+ 	 * the encoder is active. If the encoder is enabled it also set the pipe
+ 	 * it is connected to in the pipe parameter. */
+-- 
+2.20.1
+
+From 3da6c4b508820c910979d037e3e9835d04e5b492 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Thu, 20 Dec 2018 14:21:19 +0100
+Subject: [PATCH 2/3] drm/i915: Allow calling intel_edp_drrs_enable twice
+
+Do not make it an error to call intel_edp_drrs_enable while drrs has
+already been enabled, instead exit silently in this case.
+
+This is a preparation patch for ensuring that DRRS is enabled on fastsets.
+
+Note that the removed WARN_ON could also be triggered from userspace
+through the i915_drrs_ctl debugfs entry which was added by
+commit 35954e88bc50 ("drm/i915: Runtime disable for eDP DRRS")
+
+Reviewed-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/gpu/drm/i915/intel_dp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/intel_dp.c b/drivers/gpu/drm/i915/intel_dp.c
+index fdd2cbc56fa3..dd86c341dbe4 100644
+--- a/drivers/gpu/drm/i915/intel_dp.c
++++ b/drivers/gpu/drm/i915/intel_dp.c
+@@ -6361,8 +6361,8 @@ void intel_edp_drrs_enable(struct intel_dp *intel_dp,
+ 	}
+ 
+ 	mutex_lock(&dev_priv->drrs.mutex);
+-	if (WARN_ON(dev_priv->drrs.dp)) {
+-		DRM_ERROR("DRRS already enabled\n");
++	if (dev_priv->drrs.dp) {
++		DRM_DEBUG_KMS("DRRS already enabled\n");
+ 		goto unlock;
+ 	}
+ 
+-- 
+2.20.1
+
+From 6370a95e20db702c6fcc4bb6c38359db609a70e1 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Thu, 20 Dec 2018 14:21:20 +0100
+Subject: [PATCH 3/3] drm/i915: DDI: call intel_psr_ and _edp_drrs_enable() on
+ pipe updates (v2)
+
+Call intel_psr_enable() and intel_edp_drrs_enable() on pipe updates to make
+sure that we enable PSR / DRRS (when applicable) on fastsets.
+
+Note calling these functions when PSR / DRRS has already been enabled is a
+no-op, so it is safe to do this on every encoder->update_pipe callback.
+
+Changes in v2:
+-Merge the patches adding the intel_psr_enable() and intel_edp_drrs_enable()
+ calls into a single patch
+
+Reviewed-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+---
+ drivers/gpu/drm/i915/intel_ddi.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/drivers/gpu/drm/i915/intel_ddi.c b/drivers/gpu/drm/i915/intel_ddi.c
+index f3e1d6a0b7dd..9985bb209512 100644
+--- a/drivers/gpu/drm/i915/intel_ddi.c
++++ b/drivers/gpu/drm/i915/intel_ddi.c
+@@ -3603,6 +3603,24 @@ static void intel_disable_ddi(struct intel_encoder *encoder,
+ 		intel_disable_ddi_dp(encoder, old_crtc_state, old_conn_state);
+ }
+ 
++static void intel_ddi_update_pipe_dp(struct intel_encoder *encoder,
++				     const struct intel_crtc_state *crtc_state,
++				     const struct drm_connector_state *conn_state)
++{
++	struct intel_dp *intel_dp = enc_to_intel_dp(&encoder->base);
++
++	intel_psr_enable(intel_dp, crtc_state);
++	intel_edp_drrs_enable(intel_dp, crtc_state);
++}
++
++static void intel_ddi_update_pipe(struct intel_encoder *encoder,
++				  const struct intel_crtc_state *crtc_state,
++				  const struct drm_connector_state *conn_state)
++{
++	if (!intel_crtc_has_type(crtc_state, INTEL_OUTPUT_HDMI))
++		intel_ddi_update_pipe_dp(encoder, crtc_state, conn_state);
++}
++
+ static void intel_ddi_set_fia_lane_count(struct intel_encoder *encoder,
+ 					 const struct intel_crtc_state *pipe_config,
+ 					 enum port port)
+@@ -4195,6 +4213,7 @@ void intel_ddi_init(struct drm_i915_private *dev_priv, enum port port)
+ 	intel_encoder->pre_enable = intel_ddi_pre_enable;
+ 	intel_encoder->disable = intel_disable_ddi;
+ 	intel_encoder->post_disable = intel_ddi_post_disable;
++	intel_encoder->update_pipe = intel_ddi_update_pipe;
+ 	intel_encoder->get_hw_state = intel_ddi_get_hw_state;
+ 	intel_encoder->get_config = intel_ddi_get_config;
+ 	intel_encoder->suspend = intel_dp_encoder_suspend;
+-- 
+2.20.1
+
+From f28c23260d593150eba0104a676f3a8be1c48394 Mon Sep 17 00:00:00 2001
+From: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Date: Tue, 8 Jan 2019 17:08:38 +0100
+Subject: [PATCH 1/4] drm/i915/backlight: Restore backlight on resume, v3.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Restore our saved values for backlight. This way even with fastset on
+S4 resume we will correctly restore the backlight to the active values.
+
+Changes since v1:
+- Call enable_backlight() when backlight.level is set. On suspend
+  backlight.enabled is always cleared, this makes it not a good
+  indicator. Also check for crtc->state->active.
+Changes since v2:
+- Use the new update_pipe() callback to run this on resume as well.
+
+Signed-off-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Tolga Cakir <cevelnet@gmail.com>
+Cc: Basil Eric Rabi <ericbasil.rabi@gmail.com>
+Cc: Hans de Goede <jwrdegoede@fedoraproject.org>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Signed-off-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+---
+ drivers/gpu/drm/i915/icl_dsi.c     |  1 +
+ drivers/gpu/drm/i915/intel_ddi.c   |  2 ++
+ drivers/gpu/drm/i915/intel_dp.c    |  1 +
+ drivers/gpu/drm/i915/intel_drv.h   |  3 ++
+ drivers/gpu/drm/i915/intel_lvds.c  |  1 +
+ drivers/gpu/drm/i915/intel_panel.c | 49 +++++++++++++++++++++++-------
+ drivers/gpu/drm/i915/vlv_dsi.c     |  1 +
+ 7 files changed, 47 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/icl_dsi.c b/drivers/gpu/drm/i915/icl_dsi.c
+index 4dd793b78996..3f92881600c5 100644
+--- a/drivers/gpu/drm/i915/icl_dsi.c
++++ b/drivers/gpu/drm/i915/icl_dsi.c
+@@ -1378,6 +1378,7 @@ void icl_dsi_init(struct drm_i915_private *dev_priv)
+ 	encoder->disable = gen11_dsi_disable;
+ 	encoder->port = port;
+ 	encoder->get_config = gen11_dsi_get_config;
++	encoder->update_pipe = intel_panel_update_backlight;
+ 	encoder->compute_config = gen11_dsi_compute_config;
+ 	encoder->get_hw_state = gen11_dsi_get_hw_state;
+ 	encoder->type = INTEL_OUTPUT_DSI;
+diff --git a/drivers/gpu/drm/i915/intel_ddi.c b/drivers/gpu/drm/i915/intel_ddi.c
+index 9985bb209512..8ae3dd5f8d29 100644
+--- a/drivers/gpu/drm/i915/intel_ddi.c
++++ b/drivers/gpu/drm/i915/intel_ddi.c
+@@ -3611,6 +3611,8 @@ static void intel_ddi_update_pipe_dp(struct intel_encoder *encoder,
+ 
+ 	intel_psr_enable(intel_dp, crtc_state);
+ 	intel_edp_drrs_enable(intel_dp, crtc_state);
++
++	intel_panel_update_backlight(encoder, crtc_state, conn_state);
+ }
+ 
+ static void intel_ddi_update_pipe(struct intel_encoder *encoder,
+diff --git a/drivers/gpu/drm/i915/intel_dp.c b/drivers/gpu/drm/i915/intel_dp.c
+index dd86c341dbe4..cc74caf1f7b5 100644
+--- a/drivers/gpu/drm/i915/intel_dp.c
++++ b/drivers/gpu/drm/i915/intel_dp.c
+@@ -6910,6 +6910,7 @@ bool intel_dp_init(struct drm_i915_private *dev_priv,
+ 	intel_encoder->compute_config = intel_dp_compute_config;
+ 	intel_encoder->get_hw_state = intel_dp_get_hw_state;
+ 	intel_encoder->get_config = intel_dp_get_config;
++	intel_encoder->update_pipe = intel_panel_update_backlight;
+ 	intel_encoder->suspend = intel_dp_encoder_suspend;
+ 	if (IS_CHERRYVIEW(dev_priv)) {
+ 		intel_encoder->pre_pll_enable = chv_dp_pre_pll_enable;
+diff --git a/drivers/gpu/drm/i915/intel_drv.h b/drivers/gpu/drm/i915/intel_drv.h
+index 5162aa2841d1..e4791ae65de1 100644
+--- a/drivers/gpu/drm/i915/intel_drv.h
++++ b/drivers/gpu/drm/i915/intel_drv.h
+@@ -2017,6 +2017,9 @@ int intel_panel_setup_backlight(struct drm_connector *connector,
+ 				enum pipe pipe);
+ void intel_panel_enable_backlight(const struct intel_crtc_state *crtc_state,
+ 				  const struct drm_connector_state *conn_state);
++void intel_panel_update_backlight(struct intel_encoder *encoder,
++				  const struct intel_crtc_state *crtc_state,
++				  const struct drm_connector_state *conn_state);
+ void intel_panel_disable_backlight(const struct drm_connector_state *old_conn_state);
+ extern struct drm_display_mode *intel_find_panel_downclock(
+ 				struct drm_i915_private *dev_priv,
+diff --git a/drivers/gpu/drm/i915/intel_lvds.c b/drivers/gpu/drm/i915/intel_lvds.c
+index e6c5d985ea0a..d868298eacf8 100644
+--- a/drivers/gpu/drm/i915/intel_lvds.c
++++ b/drivers/gpu/drm/i915/intel_lvds.c
+@@ -909,6 +909,7 @@ void intel_lvds_init(struct drm_i915_private *dev_priv)
+ 	}
+ 	intel_encoder->get_hw_state = intel_lvds_get_hw_state;
+ 	intel_encoder->get_config = intel_lvds_get_config;
++	intel_encoder->update_pipe = intel_panel_update_backlight;
+ 	intel_connector->get_hw_state = intel_connector_get_hw_state;
+ 
+ 	intel_connector_attach_encoder(intel_connector, intel_encoder);
+diff --git a/drivers/gpu/drm/i915/intel_panel.c b/drivers/gpu/drm/i915/intel_panel.c
+index e6cd7b55c018..fc8d372f43d6 100644
+--- a/drivers/gpu/drm/i915/intel_panel.c
++++ b/drivers/gpu/drm/i915/intel_panel.c
+@@ -1087,20 +1087,11 @@ static void pwm_enable_backlight(const struct intel_crtc_state *crtc_state,
+ 	intel_panel_actually_set_backlight(conn_state, panel->backlight.level);
+ }
+ 
+-void intel_panel_enable_backlight(const struct intel_crtc_state *crtc_state,
+-				  const struct drm_connector_state *conn_state)
++static void __intel_panel_enable_backlight(const struct intel_crtc_state *crtc_state,
++					   const struct drm_connector_state *conn_state)
+ {
+ 	struct intel_connector *connector = to_intel_connector(conn_state->connector);
+-	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
+ 	struct intel_panel *panel = &connector->panel;
+-	enum pipe pipe = to_intel_crtc(crtc_state->base.crtc)->pipe;
+-
+-	if (!panel->backlight.present)
+-		return;
+-
+-	DRM_DEBUG_KMS("pipe %c\n", pipe_name(pipe));
+-
+-	mutex_lock(&dev_priv->backlight_lock);
+ 
+ 	WARN_ON(panel->backlight.max == 0);
+ 
+@@ -1117,6 +1108,24 @@ void intel_panel_enable_backlight(const struct intel_crtc_state *crtc_state,
+ 	panel->backlight.enabled = true;
+ 	if (panel->backlight.device)
+ 		panel->backlight.device->props.power = FB_BLANK_UNBLANK;
++}
++
++void intel_panel_enable_backlight(const struct intel_crtc_state *crtc_state,
++				  const struct drm_connector_state *conn_state)
++{
++	struct intel_connector *connector = to_intel_connector(conn_state->connector);
++	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
++	struct intel_panel *panel = &connector->panel;
++	enum pipe pipe = to_intel_crtc(crtc_state->base.crtc)->pipe;
++
++	if (!panel->backlight.present)
++		return;
++
++	DRM_DEBUG_KMS("pipe %c\n", pipe_name(pipe));
++
++	mutex_lock(&dev_priv->backlight_lock);
++
++	__intel_panel_enable_backlight(crtc_state, conn_state);
+ 
+ 	mutex_unlock(&dev_priv->backlight_lock);
+ }
+@@ -1773,6 +1782,24 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+ 	return 0;
+ }
+ 
++void intel_panel_update_backlight(struct intel_encoder *encoder,
++				  const struct intel_crtc_state *crtc_state,
++				  const struct drm_connector_state *conn_state)
++{
++	struct intel_connector *connector = to_intel_connector(conn_state->connector);
++	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
++	struct intel_panel *panel = &connector->panel;
++
++	if (!panel->backlight.present)
++		return;
++
++	mutex_lock(&dev_priv->backlight_lock);
++	if (!panel->backlight.enabled)
++		__intel_panel_enable_backlight(crtc_state, conn_state);
++
++	mutex_unlock(&dev_priv->backlight_lock);
++}
++
+ int intel_panel_setup_backlight(struct drm_connector *connector, enum pipe pipe)
+ {
+ 	struct drm_i915_private *dev_priv = to_i915(connector->dev);
+diff --git a/drivers/gpu/drm/i915/vlv_dsi.c b/drivers/gpu/drm/i915/vlv_dsi.c
+index 4aab714235fa..0cfd91232fe7 100644
+--- a/drivers/gpu/drm/i915/vlv_dsi.c
++++ b/drivers/gpu/drm/i915/vlv_dsi.c
+@@ -1694,6 +1694,7 @@ void vlv_dsi_init(struct drm_i915_private *dev_priv)
+ 	intel_encoder->post_disable = intel_dsi_post_disable;
+ 	intel_encoder->get_hw_state = intel_dsi_get_hw_state;
+ 	intel_encoder->get_config = intel_dsi_get_config;
++	intel_encoder->update_pipe = intel_panel_update_backlight;
+ 
+ 	intel_connector->get_hw_state = intel_connector_get_hw_state;
+ 
+-- 
+2.20.1
+
+From 51564ca5e898f2297a571a997d98f3b462634991 Mon Sep 17 00:00:00 2001
+From: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Date: Tue, 8 Jan 2019 17:08:39 +0100
+Subject: [PATCH 2/4] drm/i915/backlight: Fix backlight takeover on LPT, v3.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+On lynxpoint the bios sometimes sets up the backlight using the CPU
+display, but the driver expects using the PWM PCH override register.
+
+Read the value from the CPU register, then convert it to the other
+units by converting from the old duty cycle, to freq, to the new units.
+
+This value is then programmed in the override register, after which
+we set the override and disable the CPU display control. This allows
+us to switch the source without flickering, and make the backlight
+controls work in the driver.
+
+Changes since v1:
+- Read BLC_PWM_CPU_CTL2 to cpu_ctl2.
+- Clean up cpu_mode if slightly.
+- Always disable BLM_PWM_ENABLE in cpu_ctl2.
+Changes since v2:
+- Simplify cpu_mode handling (Jani)
+
+Signed-off-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=108225
+Cc: Basil Eric Rabi <ericbasil.rabi@gmail.com>
+Cc: Hans de Goede <jwrdegoede@fedoraproject.org>
+Cc: Tolga Cakir <cevelnet@gmail.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Tested-by: Tolga Cakir <cevelnet@gmail.com>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+---
+ drivers/gpu/drm/i915/intel_panel.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/intel_panel.c b/drivers/gpu/drm/i915/intel_panel.c
+index fc8d372f43d6..c4881c43888d 100644
+--- a/drivers/gpu/drm/i915/intel_panel.c
++++ b/drivers/gpu/drm/i915/intel_panel.c
+@@ -1493,8 +1493,8 @@ static int lpt_setup_backlight(struct intel_connector *connector, enum pipe unus
+ {
+ 	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
+ 	struct intel_panel *panel = &connector->panel;
+-	u32 pch_ctl1, pch_ctl2, val;
+-	bool alt;
++	u32 cpu_ctl2, pch_ctl1, pch_ctl2, val;
++	bool alt, cpu_mode;
+ 
+ 	if (HAS_PCH_LPT(dev_priv))
+ 		alt = I915_READ(SOUTH_CHICKEN2) & LPT_PWM_GRANULARITY;
+@@ -1508,6 +1508,8 @@ static int lpt_setup_backlight(struct intel_connector *connector, enum pipe unus
+ 	pch_ctl2 = I915_READ(BLC_PWM_PCH_CTL2);
+ 	panel->backlight.max = pch_ctl2 >> 16;
+ 
++	cpu_ctl2 = I915_READ(BLC_PWM_CPU_CTL2);
++
+ 	if (!panel->backlight.max)
+ 		panel->backlight.max = get_backlight_max_vbt(connector);
+ 
+@@ -1516,12 +1518,28 @@ static int lpt_setup_backlight(struct intel_connector *connector, enum pipe unus
+ 
+ 	panel->backlight.min = get_backlight_min_vbt(connector);
+ 
+-	val = lpt_get_backlight(connector);
++	panel->backlight.enabled = pch_ctl1 & BLM_PCH_PWM_ENABLE;
++
++	cpu_mode = panel->backlight.enabled && HAS_PCH_LPT(dev_priv) &&
++		   !(pch_ctl1 & BLM_PCH_OVERRIDE_ENABLE) &&
++		   (cpu_ctl2 & BLM_PWM_ENABLE);
++	if (cpu_mode)
++		val = pch_get_backlight(connector);
++	else
++		val = lpt_get_backlight(connector);
+ 	val = intel_panel_compute_brightness(connector, val);
+ 	panel->backlight.level = clamp(val, panel->backlight.min,
+ 				       panel->backlight.max);
+ 
+-	panel->backlight.enabled = pch_ctl1 & BLM_PCH_PWM_ENABLE;
++	if (cpu_mode) {
++		DRM_DEBUG_KMS("CPU backlight register was enabled, switching to PCH override\n");
++
++		/* Write converted CPU PWM value to PCH override register */
++		lpt_set_backlight(connector->base.state, panel->backlight.level);
++		I915_WRITE(BLC_PWM_PCH_CTL1, pch_ctl1 | BLM_PCH_OVERRIDE_ENABLE);
++
++		I915_WRITE(BLC_PWM_CPU_CTL2, cpu_ctl2 & ~BLM_PWM_ENABLE);
++	}
+ 
+ 	return 0;
+ }
+-- 
+2.20.1
+
+From cc3e7fce24f78c2d0a90fd4361640a998180f09e Mon Sep 17 00:00:00 2001
+From: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Date: Tue, 8 Jan 2019 17:08:40 +0100
+Subject: [PATCH 3/4] drm/i915: Enable fastset for non-boot modesets.
+
+Now that our state comparison functions are pretty complete, we should
+enable fastset by default when a modeset can be avoided. Even if we're
+not completely certain about the inherited state, we can be certain
+after the first modeset that our sw state matches the hw state.
+
+There is one testcase explicitly testing fastset,
+kms_panel_fitting.atomic-fastset but other testcases do so indirectly
+because most tests don't clean up the display during exit, or otherwise
+indirectly preserve mode by doing igt_display_reset or inheriting during
+init.
+
+Signed-off-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+[mlankhorst: Use DRM_DEBUG_KMS. (j4ni)]
+Link: https://patchwork.freedesktop.org/patch/msgid/20190108160842.13396-3-maarten.lankhorst@linux.intel.com
+---
+ drivers/gpu/drm/i915/intel_display.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
+index 7b502e5dc287..0824b161e4af 100644
+--- a/drivers/gpu/drm/i915/intel_display.c
++++ b/drivers/gpu/drm/i915/intel_display.c
+@@ -11676,6 +11676,11 @@ intel_pipe_config_compare(struct drm_i915_private *dev_priv,
+ 		(current_config->base.mode.private_flags & I915_MODE_FLAG_INHERITED) &&
+ 		!(pipe_config->base.mode.private_flags & I915_MODE_FLAG_INHERITED);
+ 
++	if (fixup_inherited && !i915_modparams.fastboot) {
++		DRM_DEBUG_KMS("initial modeset and fastboot not set\n");
++		ret = false;
++	}
++
+ #define PIPE_CONF_CHECK_X(name) do { \
+ 	if (current_config->name != pipe_config->name) { \
+ 		pipe_config_err(adjust, __stringify(name), \
+@@ -12699,8 +12704,7 @@ static int intel_atomic_check(struct drm_device *dev,
+ 			return ret;
+ 		}
+ 
+-		if (i915_modparams.fastboot &&
+-		    intel_pipe_config_compare(dev_priv,
++		if (intel_pipe_config_compare(dev_priv,
+ 					to_intel_crtc_state(old_crtc_state),
+ 					pipe_config, true)) {
+ 			crtc_state->mode_changed = false;
+-- 
+2.20.1
+
+From bf964e2afe2d60d8257d41057dcc080685f6bef9 Mon Sep 17 00:00:00 2001
+From: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Date: Tue, 8 Jan 2019 17:08:41 +0100
+Subject: [PATCH 4/4] drm/i915: Make HW readout mark CRTC scaler as in use.
+
+This way we don't accidentally double allocate it.
+Noticed this when I wrote a patch to sanity check all of
+the scaler state.
+
+Signed-off-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/gpu/drm/i915/intel_display.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
+index 0824b161e4af..4a552eeb591c 100644
+--- a/drivers/gpu/drm/i915/intel_display.c
++++ b/drivers/gpu/drm/i915/intel_display.c
+@@ -8869,6 +8869,7 @@ static void skylake_get_pfit_config(struct intel_crtc *crtc,
+ 			pipe_config->pch_pfit.enabled = true;
+ 			pipe_config->pch_pfit.pos = I915_READ(SKL_PS_WIN_POS(crtc->pipe, i));
+ 			pipe_config->pch_pfit.size = I915_READ(SKL_PS_WIN_SZ(crtc->pipe, i));
++			scaler_state->scalers[i].in_use = true;
+ 			break;
+ 		}
+ 	}
+-- 
+2.20.1
+

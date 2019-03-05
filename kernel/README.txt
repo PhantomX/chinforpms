@@ -21,14 +21,14 @@ As an added bonus, doing a diff between the clean tree and the symlink
 tree is slightly faster than it would be doing two proper copies of the tree.
 
 
-build logs.
+Build logs.
 -----------
 There's a convenience helper script in scripts/grab-logs.sh
 that will grab the build logs from koji for the kernel version reported
 by make verrel
 
 
-config heirarchy.
+Config hierarchy.
 -----------------
 Instead of having to maintain a config file for every arch variant we build on,
 the kernel spec uses a nested system of configs. Each option CONFIG_FOO is
@@ -55,7 +55,7 @@ echo "CONFIG_XYZ321=m" > configs/base-generic/x86/CONFIG_XYZ321
 The file config_generation gives a listing of what folders go into each
 config file generated.
 
-debug options.
+Debug options.
 --------------
 This is a little complicated, as the purpose & meaning of this changes
 depending on where we are in the release cycle.
