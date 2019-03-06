@@ -26,7 +26,7 @@ a set of optimizations be temporarily applied to the host OS.
 
 %package devel
 Summary:        GameMode development files
-Requires:       gamemode%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description devel
 The %{name}-devel package contains the development files libraries needed for

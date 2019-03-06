@@ -2,7 +2,7 @@ prefix=/usr
 libdir=${prefix}/_LIB_
 includedir=${prefix}/include/FAudio
 
-Name: faudio
+Name: FAudio
 Description: Accuracy-focused XAudio reimplementation for open platforms
 Version: _VERSION_
 

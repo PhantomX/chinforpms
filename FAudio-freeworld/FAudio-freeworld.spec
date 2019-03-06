@@ -1,14 +1,15 @@
 %global pkgname FAudio
 
-Name:           faudio-freeworld
+Name:           %{pkgname}-freeworld
 Version:        19.03
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - freeworld
+Epoch:          1
 
 License:        zlib
-URL:            https://github.com/FNA-XNA/FAudio
+URL:            https://fna-xna.github.io/
 
-Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        https://github.com/FNA-XNA/%{pkgname}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -18,13 +19,28 @@ BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(sdl2)
 
-Requires:       faudio%{?_isa} = %{version}
-
 
 %description
 FAudio is a XAudio reimplementation that focuses solely on developing
 fully accurate DirectX Audio runtime libraries for the FNA project,
 including XAudio2, X3DAudio, XAPO, and XACT3.
+
+This version is compiled with ffmpeg support.
+
+
+%package -n lib%{name}
+Summary:        %{summary}
+Requires:       lib%{pkgname}%{?_isa}
+Provides:       lib%{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       lib%{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       faudio-freeworld = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       faudio-freeworld%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      faudio-freeworld < %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description -n lib%{name}
+This is FAudio, an XAudio reimplementation that focuses solely on developing
+fully accurate DirectX Audio runtime libraries for the FNA project, including
+XAudio2, X3DAudio, XAPO, and XACT3.
 
 This version is compiled with ffmpeg support.
 
@@ -61,7 +77,7 @@ echo "%{_libdir}/%{name}" \
   > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 
 
-%files
+%files -n lib%{name}
 %license LICENSE
 %doc README
 %{_libdir}/%{name}/*.so.*
@@ -69,6 +85,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Tue Mar 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:19.03-2
+- Rename
+
 * Fri Mar 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.03-1
 - 19.03
 - Drop unneeded soversion patch

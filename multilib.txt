@@ -1,6 +1,6 @@
 adwaita-qt
-faudio
-faudio-freeworld
+FAudio
+FAudio-freeworld
 gamemode
 gnome-theme-extras
 gstreamer1

@@ -26,6 +26,7 @@ RPMFusion and existent packages updated with extra changes.
  * **claws-mail** - Can't wait Fedora releases
  * **easytag** - Tests
  * **engrampa** - Split caja extension
+ * **FAudio** - Tests
  * **firejail** - suid bit enabled and "firejail" group to use it
  * **gamemode** - System inih and launch script
  * **gnome-themes-extra** - Remove some paddings from Adwaita
