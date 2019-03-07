@@ -5,7 +5,7 @@
 %global commit 15697ee242c30b9ea6775624e8282e0171a113a7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20190128
-%global with_snapshot 1
+%global with_snapshot 0
 
 %undefine _hardened_build
 
@@ -15,8 +15,8 @@
 
 Summary:   Xorg X11 ati video driver
 Name:      xorg-x11-drv-ati
-Version:   18.1.0
-Release:   101%{?gver}%{?dist}
+Version:   19.0.0
+Release:   100%{?gver}%{?dist}
 
 URL:       http://www.x.org
 License:   MIT
@@ -70,6 +70,9 @@ find %{buildroot} -regex ".*\.la$" | xargs rm -f --
 
 
 %changelog
+* Thu Mar 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.0-100
+- 19.0.0
+
 * Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 18.1.0-101.20190128git15697ee
 - Update to latest snapshot
 

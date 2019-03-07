@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 4c5a3f64b88c2dcd16086705afa5df5399156fba
+%global pfcommit c9f7c4ed1b056e0f48a4959fb9638397bcea80b6
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -652,6 +652,8 @@ Patch508: i915-fixes-for-fastboot.patch
 Patch509: i915-enable-fastboot-on-skylake.patch
 # fastboot by default on VLV/CHV (BYT/CHT), queued in -next for merging into 5.1
 Patch510: i915-enable-fastboot-on-vlv-chv.patch
+
+Patch900: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
 
 ### Extra
 
@@ -2006,6 +2008,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-501.chinfo
+- Revert patch to fix Intel drm bug
+
 * Mon Mar 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-500.chinfo
 - 5.0.0 - p1
 - Rawhide sync

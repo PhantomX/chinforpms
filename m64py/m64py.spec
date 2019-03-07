@@ -1,6 +1,6 @@
-%global commit fccb7724e289d9e81170bfeec0a2f5ab21e95f5d
+%global commit 30e05dd9a357bf6e56fc2b23cf64f5d0ada03192
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180718
+%global date 20190122
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           m64py
 Version:        0.2.5
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A frontend for Mupen64Plus 2.0
 
 License:        GPLv3
@@ -104,6 +104,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Mar 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.2.5-3.20190122git30e05dd
+- New snapshot
+
 * Fri Jul 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.2.5-2.20180306gitfccb772
 - New snapshot
 

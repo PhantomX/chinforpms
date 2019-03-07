@@ -705,11 +705,11 @@ sed -i "s/  (Staging)//g" libs/wine/Makefile.in
 
 %if 0%{?esync}
 pushd esync
-git apply -C1 < %{S:2002}
+git apply -C1 %{S:2002}
 %patch2001 -p1
 popd
 for i in esync/00??-*.patch ;do
-  git apply -C1 < $i
+  git apply -C1 $i
 done
 %patch2002 -p1
 %endif #{?esync}

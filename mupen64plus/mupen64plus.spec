@@ -1,17 +1,21 @@
 #undefine _hardened_build
 
 Name:           mupen64plus
-Version:        2.5
-Release:        4%{?dist}
+Version:        2.5.9
+Release:        100%{?dist}
 Summary:        A Nintendo 64 Emulator
+
+Epoch:          1
 
 License:        GPLv2 and LGPLv2
 URL:            http://www.mupen64plus.org/
 Source0:        https://github.com/%{name}/%{name}-core/releases/download/%{version}/%{name}-bundle-src-%{version}.tar.gz
 
 BuildRequires:  boost-devel
+BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
+BuildRequires:  nasm
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glu)
@@ -59,16 +63,14 @@ plugins building.
 %prep
 %autosetup -n %{name}-bundle-src-%{version}
 
-sed -e '/FONT_FILENAME/s|"font.ttf"|"%{_datadir}/fonts/dejavu/DejaVuSans.ttf"|g' \
-  -i source/mupen64plus-core/src/osd/osd.cpp
-
 chmod 0755 ./m64p_build.sh ./m64p_install.sh
 
 sed -i -e '/projects\/unix install/g' ./m64p_build.sh
 
-%build
-export OPTFLAGS="%{optflags} -flto"
-export LDFLAGS="%{build_ldflags}"
+cat > %{name}-env <<'EOF'
+RPM_NCPUS=$(echo %{_smp_mflags} | sed 's/-j//')
+export OPTFLAGS="%{optflags} -flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
+export LDFLAGS="$OPTFLAGS %{build_ldflags}"
 export V=1
 export LDCONFIG=/bin/true
 export PREFIX=/usr
@@ -77,26 +79,24 @@ export INCDIR=%{_includedir}/%{name}
 export SHAREDIR=%{_datadir}/%{name}
 export MANDIR=%{_mandir}
 export LIRC=1
+EOF
+
+%build
+source ./%{name}-env
 
 ./m64p_build.sh %{?_smp_mflags}
 
 %install
-
-export OPTFLAGS="%{optflags}"
-export LDFLAGS="%{build_ldflags}"
-export LDCONFIG=/bin/true
-export PREFIX=/usr
-export LIBDIR=%{_libdir}
-export INCDIR=%{_includedir}/%{name}
-export SHAREDIR=%{_datadir}/%{name}
-export MANDIR=%{_mandir}
-export LIRC=1
+source ./%{name}-env
 ./m64p_install.sh INSTALL="install -p" INSTALL_STRIP_FLAG= DESTDIR="%{buildroot}"
 
 chmod +x %{buildroot}%{_libdir}/lib%{name}.so.*
 chmod +x %{buildroot}%{_libdir}/%{name}/%{name}-*.so
 
-desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
+rm -f %{buildroot}%{_datadir}/%{name}/font.ttf
+ln -sf ../fonts/dejavu/DejaVuSans.ttf %{buildroot}%{_datadir}/%{name}/font.ttf
+
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %files
 %license test/doc/gpl-license test/doc/LICENSES-*
@@ -117,6 +117,12 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Mar 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.5.9-100
+- 2.5.9
+- BR: nasm
+- Update to -flto flags
+- Link font instead file sed
+
 * Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.5-4.chinfo
 - BR: lirc
 
