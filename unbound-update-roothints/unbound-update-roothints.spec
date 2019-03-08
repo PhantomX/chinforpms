@@ -1,5 +1,5 @@
 Name:           unbound-update-roothints
-Version:        1.0
+Version:        1.1
 Release:        1%{?dist}
 Summary:        Updates unbound root-hints file
 
@@ -32,7 +32,7 @@ mkdir -p %{buildroot}%{_unitdir}
 cat > %{buildroot}%{_unitdir}/%{name}.service <<'EOF'
 [Unit]
 Description=Update root hints for unbound
-After=network.target
+After=network.target network-online.target nss-lookup.target
 
 [Service]
 Type=oneshot
@@ -43,11 +43,13 @@ EOF
 cat > %{buildroot}%{_unitdir}/%{name}.timer <<'EOF'
 [Unit]
 Description=Run root.hints monthly
+Wants=network-online.target
 
 [Timer]
 OnCalendar=monthly
 Persistent=true
- 
+Unit=%{name}.service
+
 [Install]
 WantedBy=timers.target
 EOF
@@ -67,5 +69,8 @@ EOF
 
 
 %changelog
+* Fri Mar 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1-1
+- Run after network-online.target
+
 * Fri Jun 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0-1
 - First spec

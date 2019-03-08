@@ -106,6 +106,10 @@ pushd Telegram/ThirdParty
     mv crl-%{commit1} crl
 popd
 
+RPM_NCPUS=$(echo %{_smp_mflags} | sed 's/-j//')
+sed -e "s|'-flto'|'-flto=$RPM_NCPUS', '-fdisable-ipa-cdtor'|g" \
+  -i Telegram/gyp/settings_linux.gypi
+
 %build
 # Setting build definitions...
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_OPENAL_EFFECTS,'
