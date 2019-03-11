@@ -14,6 +14,7 @@ BuildArch:      noarch
 BuildRequires:  cmake
 BuildRequires:  intltool
 BuildRequires:  librsvg2-tools
+BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  python3-devel
 Requires:       python3
 Requires:       python3-gobject
@@ -30,7 +31,8 @@ of CDEmu, a CD/DVD-ROM device emulator for Linux.
 %prep
 %autosetup
 
-sed -e '1s|^#!.*$|#!%{__python3}|' -i src/%{name}
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/%{name}
+
 
 %build
 mkdir %{_target_platform}

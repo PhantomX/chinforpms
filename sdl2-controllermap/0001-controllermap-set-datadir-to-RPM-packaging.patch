@@ -1,0 +1,30 @@
+From ed4f607618732f27aa30cc7fac5180679fc0b078 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 9 Mar 2019 10:06:32 -0300
+Subject: [PATCH] controllermap: set datadir to RPM packaging
+
+Set datadir to install bitmaps for RPM packaging
+---
+ test/controllermap.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/test/controllermap.c b/test/controllermap.c
+index 2ca5351..290d4e7 100644
+--- a/test/controllermap.c
++++ b/test/controllermap.c
+@@ -381,9 +381,9 @@ WatchJoystick(SDL_Joystick * joystick)
+         return;
+     }
+     
+-    background = LoadTexture(screen, "controllermap.bmp", SDL_FALSE);
+-    button = LoadTexture(screen, "button.bmp", SDL_TRUE);
+-    axis = LoadTexture(screen, "axis.bmp", SDL_TRUE);
++    background = LoadTexture(screen, "_RPM_DATADIR_/controllermap.bmp", SDL_FALSE);
++    button = LoadTexture(screen, "_RPM_DATADIR_/button.bmp", SDL_TRUE);
++    axis = LoadTexture(screen, "_RPM_DATADIR_/axis.bmp", SDL_TRUE);
+     SDL_RaiseWindow(window);
+ 
+     /* scale for platforms that don't give you the window size you asked for. */
+-- 
+2.20.1
+

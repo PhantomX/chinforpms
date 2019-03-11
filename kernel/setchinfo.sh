@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20181214
+# 20190310
 
 set -e
 
@@ -36,6 +36,7 @@ MNATIVE
 "
 
 pf="
+CC_OPTIMIZE_HARDER
 KSM_LEGACY
 "
 pfy="
@@ -91,6 +92,15 @@ case "$1" in
     zenv=
     ;;
   zen)
+    pf=
+    pfy=
+    ;;
+  del)
+    ;;
+  *)
+    zen=
+    zeny=
+    zenv=
     pf=
     pfy=
     ;;

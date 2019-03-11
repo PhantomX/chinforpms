@@ -1,6 +1,6 @@
-%global commit 40e3a34962e4edf6730bd941efdba89d0a95229a
+%global commit 3182bfaeea99ac8578f7e4c5310a6b2ad691fb67
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190131
+%global date 20190307
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           sdl_gamecontrollerdb
 Version:        0
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        A database of game controller mappings
 
 License:        zlib and MIT
@@ -24,7 +24,7 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 
 BuildArch:      noarch
 
-BuildRequires:  python3-devel
+BuildRequires:  /usr/bin/pathfix.py
 
 Provides:       %{pkgname} = %{version}-%{release}
 
@@ -40,7 +40,7 @@ to be used with SDL2 Game Controller functionality.
 %autosetup -n %{pkgname}-%{version}
 %endif
 
-sed -e '1s|/usr/bin/env python$|%{__python3}|' -i check.py
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" check.py
 
 
 %build
@@ -62,6 +62,9 @@ install -pm0644 data/mapping_guide.png %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Sat Mar 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 0-6.20190307git3182bfa
+- New snapshot
+
 * Fri Feb 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 0-5.20190131git40e3a34
 - New snapshot
 

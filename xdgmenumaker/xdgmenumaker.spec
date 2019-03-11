@@ -13,6 +13,7 @@ Patch0:         %{name}-more-search.patch
 BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  python3-devel
 BuildRequires:  txt2tags
 Requires:       gobject-introspection
@@ -28,8 +29,8 @@ in all $XDG_DATA_DIRS/applications directories.
 %prep
 %autosetup -p0
 
-sed -e '/^#!/s|/usr/bin/env python|%{__python3}|1 g' \
-  -i src/%{name}
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/%{name}
+
 
 %build
 export PREFIX=/usr

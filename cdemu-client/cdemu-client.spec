@@ -15,6 +15,7 @@ BuildRequires:  bash-completion
 BuildRequires:  cmake
 BuildRequires:  intltool
 BuildRequires:  python3-devel
+BuildRequires:  /usr/bin/pathfix.py
 Requires:       gobject-introspection
 Requires:       python3
 Requires:       python3-gobject
@@ -27,7 +28,8 @@ devices. It is part of CDEmu, a CD/DVD-ROM device emulator for Linux.
 %prep
 %autosetup
 
-sed -e '1s|^#!.*$|#!%{__python3}|' -i src/cdemu
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/cdemu
+
 
 %build
 mkdir %{_target_platform}

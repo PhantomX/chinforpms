@@ -49,10 +49,10 @@ plugin-based Nintendo 64 emulator.
 %autosetup -p1
 %endif
 
-sed -e 's,^#!/usr/bin/env python,#!%{__python3},' -i bin/%{name}
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" bin/%{name}
 
 find -name '*.py' -print0 | xargs -0 \
-  sed -i -e 's,^#!/usr/bin/env python,#!%{__python3},'
+  pathfix.py -pni "%{__python3} %{py3_shbang_opts}"
 
 
 %build

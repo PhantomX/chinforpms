@@ -23,7 +23,7 @@
 %global opensuse_id 6bc64779811b7f47756325c60f0bf1d5a848fdb5
 
 # Do we have a -stable update to apply?
-%global stable_update 0
+%global stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -444,6 +444,9 @@ popd
 
 
 %changelog
+* Sun Mar 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.1-500.chinfo
+- 5.0.1
+
 * Mon Mar 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-500.chinfo
 - 5.0.0
 - Rawhide sync

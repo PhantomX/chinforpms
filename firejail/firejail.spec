@@ -10,7 +10,7 @@ Source1:        README.suid
 
 BuildRequires:  gcc
 BuildRequires:  make
-BuildRequires:  python3-devel
+BuildRequires:  /usr/bin/pathfix.py
 
 
 %description
@@ -25,7 +25,7 @@ cp %{SOURCE1} .
 
 rm -f contrib/*.sh
 chmod -x contrib/*.py
-sed -e '1s|^#!.*$|#!%{__python3}|' -i contrib/*.py
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" contrib/*.py
 
 sed \
   -e '/$(DOCDIR)/d' \

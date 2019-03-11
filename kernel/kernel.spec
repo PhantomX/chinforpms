@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -56,17 +56,17 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 3
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit c9f7c4ed1b056e0f48a4959fb9638397bcea80b6
+%global pfcommit f263a7ff7092b6408aa373b43d1c3e21ec264765
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -675,9 +675,6 @@ Patch1018: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
 %if !0%{?post_factum}
-# https://github.com/pfactum/pf-kernel
-# block fixes and updates, mostly
-
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 
 #Patch3000: postfactum-merge-fixes.patch
@@ -700,6 +697,14 @@ Patch3014: %{pf_url}/e936a72917afc6688cb446f0bbdf4e0275404d3b.patch#/pf-e936a729
 Patch3015: %{pf_url}/4a334fc9b1fa54d2d80f6b6bbcab7ced07d3d246.patch#/pf-4a334fc9.patch
 Patch3016: %{pf_url}/3e5f01146250d8dea10335622012c244373d2381.patch#/pf-3e5f0114.patch
 Patch3017: %{pf_url}/0105d985bdb7ca136d577592948f8b57c8c0fd8c.patch#/pf-0105d985.patch
+Patch3018: %{pf_url}/67bdf877112c6b3a6dd088415c8ae4ed45f45b79.patch#/pf-67bdf877.patch
+Patch3019: %{pf_url}/9e894c5a865fa8f1a6e535cfc70d5ecd388e33a8.patch#/pf-9e894c5a.patch
+Patch3020: %{pf_url}/74bc81192ff3fcf99e5797dcd354852280ae2614.patch#/pf-74bc8119.patch
+Patch3021: %{pf_url}/f223ab87f96e2e0d7f337d1f5e933f8699681a2c.patch#/pf-f223ab87.patch
+Patch3022: %{pf_url}/5a3ccd11319e9193a1266ec1a64e2ef40934cf18.patch#/pf-5a3ccd11.patch
+Patch3023: %{pf_url}/7d0de534e2803fa461759bcb3aedf6a386363ae6.patch#/pf-7d0de534.patch
+Patch3024: %{pf_url}/881bc26453692caefea06c1713581b796ebc8889.patch#/pf-881bc264.patch
+Patch3025: %{pf_url}/eb95b85a541571b276e3bd66032648022f279f68.patch#/pf-eb95b85a.patch
 #Patch3500: postfactum-merge-fixes-2.patch
 
 %if !0%{?zen}
@@ -2008,11 +2013,17 @@ fi
 #
 #
 %changelog
+* Sun Mar 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.1-500.chinfo
+- 5.0.1 - pf3
+
+* Fri Mar 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-502.chinfo
+- BFQ fixes
+
 * Wed Mar 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-501.chinfo
 - Revert patch to fix Intel drm bug
 
 * Mon Mar 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-500.chinfo
-- 5.0.0 - p1
+- 5.0.0 - pf1
 - Rawhide sync
 
 * Wed Feb 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.13-500.chinfo
