@@ -4,14 +4,14 @@
 %global apihash dfbe1bc42dc9d20507e17d1814cc2f0a
 
 # Git revision of crl...
-%global commit1 40063abec74e560220891443f6d5157de15e1b62
+%global commit1 84072fba75f14620935e5e91788ce603daeb1988
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 # Decrease debuginfo verbosity to reduce memory consumption...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.5.15
+Version:        1.5.16
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -172,6 +172,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
+* Tue Mar 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.16-100
+- 1.5.16
+
 * Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.15-100
 - 1.5.15
 - RPMFusion sync (lto fixes)

@@ -37,7 +37,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -78,6 +78,12 @@ Source113:      wine-taskmgr.desktop
 # build fixes
 
 # wine bugs
+# whq#42982
+Patch100: %{whq_url}/53c0eef15f78a48105d38c9ffb936323bb962594#/whq-53c0eef.patch
+Patch101: %{whq_url}/56f34c7489cb463981e987a59aee9f8780fef7cd#/whq-56f34c7.patch
+# whq#43071
+Patch102: %{whq_url}/fb5bf0ec8a2f746e1d6931f06607f068efdce3b4#/whq-fb5bf0e.patch
+Patch103: %{whq_url}/730b47e5309618fdb563f299b3dbebecb5a39af8#/whq-730b47e.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -681,6 +687,10 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -2321,6 +2331,9 @@ fi
 
 
 %changelog
+* Mon Mar 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.3-101
+- Upstream fixes for whq#42982 and whq#43071
+
 * Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.3-100
 - 4.3
 - pkgconfig style BRs

@@ -1,6 +1,6 @@
 
-# CONFIG_SCHED_PDS is not set
-# CONFIG_SMT_NICE is not set
+# CONFIG_SCHED_BMQ is not set
+# CONFIG_SCHED_TIMESLICE is not set
 
 CONFIG_UKSM=y
 # CONFIG_KSM_LEGACY is not set

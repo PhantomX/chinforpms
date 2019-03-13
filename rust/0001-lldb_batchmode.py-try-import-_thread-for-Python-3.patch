@@ -1,0 +1,33 @@
+From d9ddc39052c91568936427e3dee087b608140cf4 Mon Sep 17 00:00:00 2001
+From: Josh Stone <jistone@redhat.com>
+Date: Tue, 8 Jan 2019 13:19:50 -0800
+Subject: [PATCH] lldb_batchmode.py: try `import _thread` for Python 3
+
+---
+ src/etc/lldb_batchmode.py | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/etc/lldb_batchmode.py b/src/etc/lldb_batchmode.py
+index 6b4c44806740..537b419b3279 100644
+--- a/src/etc/lldb_batchmode.py
++++ b/src/etc/lldb_batchmode.py
+@@ -18,10 +18,15 @@ import lldb
+ import os
+ import sys
+ import threading
+-import thread
+ import re
+ import time
+ 
++try:
++    import thread
++except ModuleNotFoundError:
++    # The `thread` module was renamed to `_thread` in Python 3.
++    import _thread as thread
++
+ # Set this to True for additional output
+ DEBUG_OUTPUT = False
+ 
+-- 
+2.20.1
+

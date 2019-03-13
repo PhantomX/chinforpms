@@ -39,10 +39,14 @@ pf="
 CC_OPTIMIZE_HARDER
 KSM_LEGACY
 "
+
+pfv="
+SCHED_TIMESLICE=4
+"
+
 pfy="
-SCHED_PDS
+SCHED_BMQ
 UKSM
-SMT_NICE
 "
 
 zen="
@@ -85,57 +89,62 @@ LOGO_RANDOM
 LOGO_FEDORASIMPLE_CLUT224
 "
 
-case "$1" in
-  pf)
-    zen=
-    zeny=
-    zenv=
-    ;;
-  zen)
-    pf=
-    pfy=
-    ;;
-  del)
-    ;;
-  *)
-    zen=
-    zeny=
-    zenv=
-    pf=
-    pfy=
-    ;;
-esac
-
 SCRIPT="$(readlink -f $0)"
 SCRIPT_DIR="$(dirname ${SCRIPT})"
 OUTPUT_DIR="${SCRIPT_DIR}/configs/fedora/generic"
 
 cd "${SCRIPT_DIR}"
 
-if [ -w "${OUTPUT_DIR}" ] ;then
-  if [ "$1" = "del" ] ;then
-    for i in ${default} ${pf} ${pfy} ${zen} ${zenv} ${zeny}
-    do
-      rm -fv "${OUTPUT_DIR}/CONFIG_${i%%=*}"
-    done
-  else
-    for i in ${default} ${pf} ${zen}
-    do
-      echo "# CONFIG_${i} is not set" > "${OUTPUT_DIR}/CONFIG_${i}"
-    done
-    if [ "$1" == "pf" ] || [ "$1" == "zen" ];then
-    for i in ${pfy} ${zeny}
-      do
-        echo "CONFIG_${i}=y" > "${OUTPUT_DIR}/CONFIG_${i}"
-      done
-    fi
-    if [ "$1" == "zen" ] ;then
-      for i in ${zenv}
-      do
-        echo "CONFIG_${i}" > "${OUTPUT_DIR}/CONFIG_${i%%=*}"
-      done
-    fi
-  fi
-fi
+del(){
+  for i in ${default} ${pf} ${pfv} ${pfy} ${zen} ${zenv} ${zeny}
+  do
+    rm -fv "${OUTPUT_DIR}/CONFIG_${i%%=*}"
+  done
+}
 
-./build_configs.sh
+main(){
+  del
+  for i in ${default} ${pf} ${zen}
+  do
+    echo "# CONFIG_${i} is not set" > "${OUTPUT_DIR}/CONFIG_${i}"
+  done
+  for i in ${pfy} ${zeny}
+  do
+    echo "CONFIG_${i}=y" > "${OUTPUT_DIR}/CONFIG_${i}"
+  done
+  for i in ${pfv} ${zenv}
+  do
+    echo "CONFIG_${i}" > "${OUTPUT_DIR}/CONFIG_${i%%=*}"
+  done
+}
+
+if [ -w "${OUTPUT_DIR}" ] ;then
+  case "$1" in
+    del)
+      del
+      ;;
+    pf)
+      zen=
+      zeny=
+      zenv=
+      main
+      ;;
+    zen)
+      pf=
+      pfv=
+      pfy=
+      main
+      ;;
+    *)
+      zen=
+      zeny=
+      zenv=
+      pf=
+      pfv=
+      pfy=
+      main
+      ;;
+  esac
+
+  ./build_configs.sh
+fi

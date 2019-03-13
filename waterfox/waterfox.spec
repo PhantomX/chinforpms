@@ -1,6 +1,6 @@
-%global commit f367fd24ba208519742e7370fb1478c3ed0d14c7
+%global commit 61bdb81a2bba36515acf036c39e2f1a3000d4dba
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190201
+%global date 20190403
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -119,7 +119,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.7.1
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -150,7 +150,6 @@ Patch18:        xulrunner-24.0-jemalloc-ppc.patch
 Patch20:        firefox-build-prbool.patch
 Patch25:        rhbz-1219542-s390-build.patch
 Patch26:        build-icu-big-endian.patch
-Patch27:        mozilla-1335250.patch
 Patch30:        fedora-build.patch
 Patch31:        build-ppc64-s390x-curl.patch
 Patch32:        build-rust-ppc64le.patch
@@ -159,8 +158,6 @@ Patch36:        build-missing-xlocale-h.patch
 # Always feel lucky for unsupported platforms:
 # https://bugzilla.mozilla.org/show_bug.cgi?id=1347128
 Patch37:        build-jit-atomic-always-lucky.patch
-# Fixing missing cacheFlush when JS_CODEGEN_NONE is used (s390x)
-Patch38:        build-cacheFlush-missing.patch
 Patch39:        mozilla-1494037.patch
 
 # Fedora specific patches
@@ -177,7 +174,6 @@ Patch230:        rhbz-1497932.patch
 Patch402:        mozilla-1196777.patch
 Patch406:        mozilla-256180.patch
 Patch413:        mozilla-1353817.patch
-Patch414:        mozilla-1435695.patch
 Patch415:        Bug-1238661---fix-mozillaSignalTrampoline-to-work-.patch
 Patch416:        bug1375074-save-restore-x28.patch
 Patch417:        mozilla-1436242.patch
@@ -308,6 +304,9 @@ BuildRequires:  pkgconfig(libffi)
 %if 0%{?use_xvfb}
 BuildRequires:  xorg-x11-server-Xvfb
 %endif
+%if 0%{?build_with_pgo} || !0%{?run_tests}
+BuildRequires:  librsvg2
+%endif
 BuildRequires:  rust
 BuildRequires:  cargo
 BuildRequires:  clang-devel
@@ -384,7 +383,6 @@ This package contains results of tests executed during build.
 %patch402 -p1 -b .1196777
 %patch406 -p1 -b .256180
 %patch413 -p1 -b .1353817
-%patch414 -p1 -b .1435695
 %ifarch %{arm}
 %patch415 -p1 -b .mozilla-1238661
 %endif
@@ -992,6 +990,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Mon Mar 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7.1-3.20190403git61bdb81
+- New snapshot
+- Rework MOZ_OPT_FLAGS to enable better parallel LTO build support
+
 * Wed Feb 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7.1-2.20190201gitf367fd2
 - LTO and fixes to build with it
 

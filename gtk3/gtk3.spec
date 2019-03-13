@@ -4,6 +4,7 @@
 
 %global glib2_version 2.53.4
 %global pango_version 1.41.0
+%global fribidi_version 0.19.7
 %global atk_version 2.15.1
 %global cairo_version 1.14.0
 %global gdk_pixbuf_version 2.30.0
@@ -24,8 +25,8 @@
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name:           gtk3
-Version:        3.24.5
-Release:        101%{?dist}
+Version:        3.24.7
+Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -36,10 +37,6 @@ Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -
 Source1:        https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2:        chinforpms-adwaita.css
 Source3:        fixes__too-large-menu-covers-bar.patch
-
-Patch10:        https://gitlab.gnome.org/GNOME/gtk/commit/d9d3ec7cad305d169b1f5df3c3e9e0fd5fbf6922.patch#/gtk3-gl-d9d3ec7.patch
-# Fix submenus size
-Patch11:        https://gitlab.gnome.org/GNOME/gtk/commit/1d4eac211c09624d29b9309e2b92173f7477a9b7.patch#/gtk3-gl-1d4eac2.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -69,6 +66,7 @@ BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(cairo) >= %{cairo_version}
 BuildRequires:  pkgconfig(cairo-gobject) >= %{cairo_version}
 BuildRequires:  pkgconfig(pango) >= %{pango_version}
+BuildRequires:  pkgconfig(fribidi) >= %{fribidi_version}
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xrandr) >= %{xrandr_version}
@@ -390,6 +388,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Tue Mar 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.7-100
+- 3.24.7
+- BR: pkgconfig(fribidi)
+
 * Fri Feb 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.5-101
 - gtkmenu upstream branch fixes
 
