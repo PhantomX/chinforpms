@@ -21,12 +21,12 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 # https://github.com/TomaszGasior/gtk3-mushrooms
-%global mushroom_ver 3.24.5-1
+%global mushroom_ver 3.24.7-1
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name:           gtk3
 Version:        3.24.7
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -36,7 +36,6 @@ URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
 Source1:        https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2:        chinforpms-adwaita.css
-Source3:        fixes__too-large-menu-covers-bar.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -200,8 +199,6 @@ the functionality of the installed %{name} package.
 %prep
 %autosetup -n gtk+-%{version} -p1 -a 1
 
-cp -f %{S:3} %{mushroom_dir}/fixes__too-large-menu-covers-bar.patch
-
 patch_command(){
   patch -p2 -F1 -s -i %{mushroom_dir}/$1
 }
@@ -216,8 +213,6 @@ patch_command csd__disabled-by-default.patch
 patch_command csd__server-side-shadow.patch
 patch_command fixes__atk-bridge-errors.patch
 patch_command fixes__labels-wrapping.patch
-patch_command fixes__too-large-menu-covers-bar.patch
-patch_command fixes__xfce-inhibit-errors.patch
 patch_command other__mnemonics-delay.patch
 patch_command popovers__color-chooser.patch
 patch_command popovers__file-chooser-list.patch
@@ -388,6 +383,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Wed Mar 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.7-101
+- gtk3-mushrooms update
+
 * Tue Mar 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.7-100
 - 3.24.7
 - BR: pkgconfig(fribidi)

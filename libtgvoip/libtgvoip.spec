@@ -1,5 +1,5 @@
 Name:           libtgvoip
-Version:        2.4.2
+Version:        2.4.4
 Release:        100%{?dist}
 Summary:        VoIP library for Telegram clients
 
@@ -10,6 +10,8 @@ URL:            https://github.com/grishka/%{name}
 
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Patch0:         %{name}-build-fixes.patch
+
+Patch100:       %{url}/commit/ed276b4ad1dcd1b50af801d83b2ba4befc0099b1.patch#/%{name}-gh-ed276b4.patch
 
 Patch200:       %{name}-link-libraries.patch
 
@@ -73,6 +75,9 @@ find video -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{build
 
 
 %changelog
+* Wed Mar 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.4.4-100
+- 2.4.4
+
 * Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.4.2-100.chinfo
 - 2.4.2
 - RPMFusion sync

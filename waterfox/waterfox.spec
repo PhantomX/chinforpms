@@ -1,6 +1,6 @@
-%global commit 61bdb81a2bba36515acf036c39e2f1a3000d4dba
+%global commit fa114d424de1ccfc6a8ee5b13cef8b506d0d87eb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190403
+%global date 20190313
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -118,8 +118,8 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.7.1
-Release:        3%{?gver}%{?dist}
+Version:        56.2.8
+Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -181,9 +181,9 @@ Patch418:        https://hg.mozilla.org/integration/autoland/raw-rev/342812d23eb
 Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mozilla-1320560.patch
 Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mozilla-1389436.patch
 
-# Upstream updates
+# Upstream updates/PRs
 
-#Patch???:      %%{vc_url}/commit/commit.patch#/wf-commit.patch
+#Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -307,7 +307,9 @@ BuildRequires:  xorg-x11-server-Xvfb
 %if 0%{?build_with_pgo} || !0%{?run_tests}
 BuildRequires:  librsvg2
 %endif
-BuildRequires:  rust
+#FIXME: using specific "epochized" rust package to build
+#FIXME: remove version check when patched to work with 1.33+
+BuildRequires:  (rust >= 1:1.32 with rust < 1:1.33)
 BuildRequires:  cargo
 BuildRequires:  clang-devel
 
@@ -640,7 +642,12 @@ MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS $(echo "%{optflags}" | sed -e 's/-Wall//')"
 # for some sources
 # Explicitly force the hardening flags for Waterfox so it passes the checksec test;
 # See also https://fedoraproject.org/wiki/Changes/Harden_All_Packages
+%if 0%{?fedora} < 30
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -Wformat-security -Wformat -Werror=format-security"
+%else
+# Workaround for mozbz#1531309
+MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-Werror=format-security//')
+%endif
 %if 0%{?build_with_clang}
 # Fedora's default compiler flags conflict with what clang supports
 MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-fstack-clash-protection//')"
@@ -944,7 +951,7 @@ fi
 %license %{mozappdir}/LICENSE
 %{mozappdir}/browser/chrome
 %{mozappdir}/browser/chrome.manifest
-%{mozappdir}/browser/defaults/preferences/waterfox-chinfo-default-prefs.js
+%{mozappdir}/browser/defaults/preferences/*-default-prefs.js
 %{mozappdir}/browser/features
 %{mozappdir}/distribution/distribution.ini
 # That's Windows only
@@ -990,7 +997,12 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
-* Mon Mar 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7.1-3.20190403git61bdb81
+* Wed Mar 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.8-1.20190313gitfa114d4
+- New release/snapshot
+- Temporary fix to rust BR, build is failing with 1.33+
+- format-security flags changes from Fedora Firefox
+
+* Mon Mar 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.7.1-3.20190303git61bdb81
 - New snapshot
 - Rework MOZ_OPT_FLAGS to enable better parallel LTO build support
 

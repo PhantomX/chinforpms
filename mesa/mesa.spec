@@ -22,6 +22,7 @@
 %ifarch %{arm} aarch64
 %global with_etnaviv   1
 %global with_freedreno 1
+%global with_kmsro     1
 %global with_tegra     1
 %global with_vc4       1
 %global with_xa        1
@@ -48,7 +49,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        18.3.4
+Version:        19.0.0
 Release:        100%{?dist}
 
 License:        MIT
@@ -70,9 +71,9 @@ Source4:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch3:         0003-evergreen-big-endian.patch
 
-# https://lists.freedesktop.org/archives/mesa-dev/2018-November/210797.html
-# https://bugzilla.redhat.com/show_bug.cgi?id=1650929
-Patch10:        0001-wayland-egl-Ensure-EGL-surface-is-resized-on-DRI-upd.patch
+# Disable rgb10 configs by default:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1560481
+Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
 
 
 BuildRequires:  meson >= 0.45
@@ -88,7 +89,7 @@ BuildRequires:  kernel-headers
 BuildRequires:  pkgconfig(libdrm_intel) >= 2.4.75
 %endif
 %if 0%{?with_radeonsi}
-BuildRequires:  pkgconfig(libdrm_amdgpu) >= 2.4.95
+BuildRequires:  pkgconfig(libdrm_amdgpu) >= 2.4.97
 %endif
 BuildRequires:  pkgconfig(libdrm_radeon) >= 2.4.71
 BuildRequires:  pkgconfig(libdrm_nouveau) >= 2.4.66
@@ -122,7 +123,7 @@ BuildRequires:  pkgconfig(xshmfence) >= 1.1
 BuildRequires:  pkgconfig(dri2proto) >= 2.8
 BuildRequires:  pkgconfig(glproto) >= 1.4.14
 BuildRequires:  pkgconfig(xcb-xfixes)
-BuildRequires:  pkgconfig(xcb-randr) >= 1.12
+BuildRequires:  pkgconfig(xcb-randr)
 BuildRequires:  pkgconfig(xrandr) >= 1.3
 BuildRequires:  bison
 BuildRequires:  flex
@@ -137,7 +138,7 @@ BuildRequires:  pkgconfig(libomxil-bellagio)
 %endif
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 0.2.0
-BuildRequires:  llvm-devel >= 6.0.0
+BuildRequires:  llvm-devel >= 7.0.0
 %if 0%{?with_opencl}
 BuildRequires:  clang-devel
 BuildRequires:  pkgconfig(libclc)
@@ -383,7 +384,7 @@ cp %{SOURCE4} docs/
   -Ddri3=true \
   -Ddri-drivers=%{?dri_drivers} \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv,imx}%{?with_tegra:,tegra}%{?with_vc4:,vc4} \
+  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_kmsro:,kmsro} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -595,6 +596,10 @@ popd
 %dir %{_libdir}/gallium-pipe
 %{_libdir}/gallium-pipe/*.so
 %endif
+%if 0%{?with_kmsro}
+%{_libdir}/dri/hx8357d_dri.so
+%{_libdir}/dri/pl111_dri.so
+%endif 
 %{_libdir}/dri/kms_swrast_dri.so
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
@@ -634,6 +639,10 @@ popd
 
 
 %changelog
+* Wed Mar 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.0-100
+- 19.0.0
+- Rawhide sync
+
 * Mon Feb 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 18.3.4-100
 - 18.3.4
 

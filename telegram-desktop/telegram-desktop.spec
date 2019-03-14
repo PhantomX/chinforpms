@@ -11,7 +11,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.5.16
+Version:        1.5.17
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -60,7 +60,7 @@ BuildRequires:  gyp
 # Development packages for Telegram Desktop...
 BuildRequires:  guidelines-support-library-devel >= 1.0.0
 BuildRequires:  mapbox-variant-devel >= 0.3.6
-BuildRequires:  libtgvoip-devel >= 2.4.2
+BuildRequires:  libtgvoip-devel >= 2.4.4
 BuildRequires:  libappindicator-gtk3-devel
 BuildRequires:  ffmpeg-devel >= 3.1
 BuildRequires:  openal-soft-devel
@@ -172,7 +172,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
-* Tue Mar 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.16-100
+* Wed Mar 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.17-100
+- 1.5.17
+
+* Wed Mar 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.16-100
 - 1.5.16
 
 * Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.15-100
