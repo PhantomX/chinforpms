@@ -9,7 +9,9 @@
 
 Name:           krename
 Version:        5.0.60
-Release:        0.100%{?gver}%{?dist}
+Release:        100%{?gver}%{?dist}
+
+Epoch:          1
 
 Summary:        Powerful batch file renamer
 License:        GPLv2
@@ -101,6 +103,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.d
 
 
 %changelog
+* Fri Mar 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0.60-100.20190205gite0ee633
+- Epoch
+
 * Tue Feb 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.60-0.100.20190205gite0ee633
 - Snapshot build, fixing some bugs
 

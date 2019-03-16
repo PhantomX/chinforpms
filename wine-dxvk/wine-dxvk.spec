@@ -5,7 +5,7 @@
 %global pkgname dxvk
 
 Name:           wine-%{pkgname}
-Version:        1.0
+Version:        1.0.1
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
@@ -78,7 +78,11 @@ sed \
   -i build-wine%{__isa_bits}.txt
 
 %build
+export WINEPREFIX="$(pwd)/%{_target_platform}/wine-build"
 
+#FIXME: remove compiler variables when meson is fixed
+CC=winegcc \
+CXX=wineg++ \
 meson \
   --cross-file build-wine%{__isa_bits}.txt \
   --buildtype "release" \
@@ -127,6 +131,10 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Fri Mar 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.0.1-1
+- 1.0.1
+- Set WINEPREFIX
+
 * Mon Feb 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.0-1
 - 1.0
 

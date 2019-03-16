@@ -184,6 +184,7 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 # Upstream updates/PRs
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
+Patch450:       %{vc_url}/pull/888.patch#/%{name}-gh-pull888.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -201,6 +202,7 @@ Patch700:        %{name}-nolangpacks.patch
 Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-webrtc-gtest-libv4l2.patch
+Patch704:        %{name}-fix-testing-file.patch
 
 
 %if 0%{?system_nss}
@@ -394,6 +396,8 @@ This package contains results of tests executed during build.
 %patch419 -p1 -b .mozilla-1320560
 %patch420 -p1 -b .mozilla-1389436
 
+%patch450 -p1 -b .pull888
+
 # Debian extension patch
 %patch500 -p1 -b .440908
 
@@ -412,7 +416,7 @@ filterdiff -x dom/svg/crashtests/crashtests.list %{freebsd_root}/patch-bug134314
   > _patches/patch-bug1343147
 filterdiff -x dom/security/test/csp/mochitest.ini %{freebsd_root}/patch-bug1381761 \
   > _patches/patch-bug1381761
-
+  
 for i in 1404057 1404324 1404180 1405878 ;do
   filterdiff \
     -x layout/style/crashtests/crashtests.list \
@@ -442,6 +446,7 @@ done
 %patch701 -p1 -b .waterfoxdir-1
 %patch702 -p1 -b .waterfoxdir-2
 %patch703 -p1 -b .lv4l2
+%patch704 -p1 -b .fix-testing-file
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -997,7 +1002,7 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
-* Wed Mar 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.8-1.20190313gitfa114d4
+* Thu Mar 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.8-1.20190313gitfa114d4
 - New release/snapshot
 - Temporary fix to rust BR, build is failing with 1.33+
 - format-security flags changes from Fedora Firefox

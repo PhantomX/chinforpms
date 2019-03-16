@@ -10,9 +10,11 @@
 %global         loaders_dir %(pkg-config --variable gdk_pixbuf_moduledir gdk-pixbuf-2.0)
 
 Name:           webp-pixbuf-loader
-Version:        0
-Release:        3%{?gver}%{?dist}
+Version:        0.0.1
+Release:        100%{?gver}%{?dist}
 Summary:        WebM GDK Pixbuf Loader library
+
+Epoch:          1
 
 License:        LGPLv2+
 URL:            https://github.com/aruiz/%{name}
@@ -22,7 +24,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        https://www.gnu.org/licenses/old-licenses/lgpl-2.0.txt#/lgpl-2.0
+Source1:        https://www.gnu.org/licenses/lgpl-2.1.txt#/lgpl-2.1
 
 Patch0:         %{name}-nowrite.patch
 
@@ -74,6 +76,10 @@ popd
 
 
 %changelog
+* Fri Mar 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.1-100.20160328git9b92950
+- Epoch
+- Fix license file
+
 * Sun Oct 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 0-3.20160328git9b92950
 - BR: gcc-c++
 

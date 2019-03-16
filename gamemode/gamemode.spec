@@ -1,5 +1,5 @@
 Name:           gamemode
-Version:        1.2
+Version:        1.3
 Release:        100%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
@@ -7,10 +7,10 @@ Epoch:          1
 License:        BSD
 URL:            https://github.com/FeralInteractive/%{name}
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
-Source1:        %{name}
 
 # Use system inih
 Patch0:         %{name}-system-inih.patch
+Patch1:         0001-gamemoderun-do-not-hardcode-libdir-in-LD_PRELOAD.patch
 
 
 BuildRequires:  meson
@@ -36,22 +36,20 @@ application integration with %{name}.
 %autosetup -p1
 
 %build
-%meson
+%meson --libexecdir=%{_libexecdir}/%{name}
 %meson_build
 
 
 %install
 %meson_install
 
-install -pm0755 %{S:1} %{buildroot}/%{_bindir}/%{name}
-
 
 %files
 %license LICENSE.txt
-%doc README.md
+%doc README.md example/%{name}.ini
 %{_bindir}/%{name}*
 %{_libdir}/lib*.so.*
-%{_libexecdir}/cpugovctl
+%{_libexecdir}/%{name}
 %{_userunitdir}/*.service
 %{_mandir}/man8/*.8.*
 %{_datadir}/dbus-1/services/*.service
@@ -65,6 +63,12 @@ install -pm0755 %{S:1} %{buildroot}/%{_bindir}/%{name}
 
 
 %changelog
+* Fri Mar 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3-100
+- 1.3
+- Drop wrapper and patch provided for multilib
+- Add example ini file to docs
+- Set libexecdir, have two binaries inside
+
 * Sat Jul 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.2-100.chinfo
 - 1.2
 - Remove upstreamed patches
