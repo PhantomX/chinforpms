@@ -43,6 +43,8 @@ application integration with %{name}.
 %install
 %meson_install
 
+mkdir -p %{buildroot}%{_datadir}/%{name}
+
 
 %files
 %license LICENSE.txt
@@ -54,6 +56,7 @@ application integration with %{name}.
 %{_mandir}/man8/*.8.*
 %{_datadir}/dbus-1/services/*.service
 %{_datadir}/polkit-1/actions/*.policy
+%dir %{_datadir}/%{name}
 
 %files devel
 %license LICENSE.txt

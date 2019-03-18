@@ -9,11 +9,11 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 4.3
+%global stagingver 4.4
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global tkg_id d82d9753c6e887ddb426c065783edade7f5a55ce
+%global tkg_id d80d26596fc13fed130e2f15f62b92c16f7d1e44
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -36,8 +36,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.3
-Release:        101%{?dist}
+Version:        4.4
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -78,12 +78,6 @@ Source113:      wine-taskmgr.desktop
 # build fixes
 
 # wine bugs
-# whq#42982
-Patch100: %{whq_url}/53c0eef15f78a48105d38c9ffb936323bb962594#/whq-53c0eef.patch
-Patch101: %{whq_url}/56f34c7489cb463981e987a59aee9f8780fef7cd#/whq-56f34c7.patch
-# whq#43071
-Patch102: %{whq_url}/fb5bf0ec8a2f746e1d6931f06607f068efdce3b4#/whq-fb5bf0e.patch
-Patch103: %{whq_url}/730b47e5309618fdb563f299b3dbebecb5a39af8#/whq-730b47e.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -141,7 +135,8 @@ Source2000:     https://github.com/zfigura/wine/releases/download/esync%{esyncco
 Source2001:     01-%{name}.conf
 Source2002:     %{tkg_url}/esync-staging-fixes-r3.patch#/tkg-esync-staging-fixes-r3.patch
 Patch2001:      %{tkg_url}/esync-compat-fixes-r3.patch#/tkg-esync-compat-fixes-r3.patch
-Patch2002:      %{tkg_url}/esync-no_alloc_handle.patch#/tkg-esync-no_alloc_handle.patch
+Patch2002:      %{tkg_url}/esync-compat-fixes-r3.1.patch#/tkg-esync-compat-fixes-r3.1.patch
+Patch2003:      %{tkg_url}/esync-no_alloc_handle.patch#/tkg-esync-no_alloc_handle.patch
 %endif #{?esync}
 
 %endif #{?staging}
@@ -687,10 +682,6 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
-%patch103 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -717,11 +708,12 @@ sed -i "s/  (Staging)//g" libs/wine/Makefile.in
 pushd esync
 git apply -C1 %{S:2002}
 %patch2001 -p1
+%patch2002 -p1
 popd
 for i in esync/00??-*.patch ;do
   git apply -C1 $i
 done
-%patch2002 -p1
+%patch2003 -p1
 %endif #{?esync}
 
 %if 0%{?pba}
@@ -1265,6 +1257,7 @@ fi
 %{_libdir}/wine/adsldpc.dll.so
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.dll.so
+%{_libdir}/wine/amsi.dll.so
 %{_libdir}/wine/amstream.dll.so
 %{_libdir}/wine/api-ms-win-appmodel-identity-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-appmodel-runtime-l1-1-1.dll.so
@@ -2331,6 +2324,9 @@ fi
 
 
 %changelog
+* Sun Mar 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.4-100
+- 4.4
+
 * Mon Mar 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.3-101
 - Upstream fixes for whq#42982 and whq#43071
 
