@@ -1,6 +1,6 @@
 Name:           image-analyzer
-Version:        3.2.1
-Release:        1%{?dist}
+Version:        3.2.2
+Release:        100%{?dist}
 Summary:        A libMirage-based CD/DVD-ROM image analyzer
 
 License:        GPLv2
@@ -12,7 +12,7 @@ BuildArch:      noarch
 BuildRequires:  cmake
 BuildRequires:  intltool
 BuildRequires:  librsvg2-tools
-BuildRequires:  python3-devel
+BuildRequires:  /usr/bin/pathfix.py
 Requires:       gobject-introspection
 Requires:       gtk3
 Requires:       libmirage
@@ -29,7 +29,7 @@ CD/DVD-ROM image analyzer, based on libMirage library.
 %prep
 %autosetup
 
-sed -e '1s|^#!.*$|#!%{__python3}|' -i src/%{name}
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/%{name}
 
 %build
 mkdir %{_target_platform}
@@ -69,6 +69,9 @@ done
 
 
 %changelog
+* Mon Mar 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.2.2-1
+- new version
+
 * Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.2.1-1
 - 3.2.1
 

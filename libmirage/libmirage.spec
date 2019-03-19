@@ -1,7 +1,9 @@
 Name:           libmirage
-Version:        3.2.1
-Release:        1%{?dist}
+Version:        3.2.2
+Release:        100%{?dist}
 Summary:        A CD/DVD-ROM image access library
+
+Epoch:          1
 
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/cdemu
@@ -77,6 +79,9 @@ popd
 
 
 %changelog
+* Mon Mar 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.2.2-100
+- 3.2.2
+
 * Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.2.1-1
 - 3.2.1
 
