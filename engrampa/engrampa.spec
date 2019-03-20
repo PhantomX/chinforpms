@@ -2,7 +2,7 @@
 %global rel_build 1
 
 # This is needed, because src-url contains branched part of versioning-scheme.
-%global branch 1.20
+%global branch 1.22
 
 # Settings used for build from snapshots.
 %{!?rel_build:%global commit f4611c3411c44e792f729a0780c31b0aa55fe004}
@@ -13,13 +13,13 @@
 %{!?rel_build:%global git_tar %{name}-%{version}-%{git_ver}.tar.xz}
 
 Name:          engrampa
-Version:       %{branch}.2
+Version:       %{branch}.0
 %if 0%{?rel_build}
 Release:       100%{?dist}
 %else
 Release:       0.8%{?git_rel}%{?dist}
 %endif
-Epoch:          1
+Epoch:         1
 Summary:       MATE Desktop file archiver
 
 License:       GPLv2+ and LGPLv2+
@@ -80,7 +80,7 @@ make %{?_smp_mflags} V=1
 
 
 %install
-%{make_install}
+%make_install
 
 desktop-file-install                                \
     --delete-original                               \
@@ -99,7 +99,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libexecdir}/engrampa
 %{_libexecdir}/engrampa-server
 %{_datadir}/engrampa
-%{_datadir}/appdata/engrampa.appdata.xml
+%{_metainfodir}/engrampa.appdata.xml
 %{_datadir}/applications/engrampa.desktop
 %{_datadir}/dbus-1/services/org.mate.Engrampa.service
 %{_datadir}/icons/hicolor/*/apps/*.png
@@ -112,6 +112,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Tue Mar 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.0-100
+- 1.22.0
+
 * Thu Dec 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.20.2-100
 - 1.20.2
 

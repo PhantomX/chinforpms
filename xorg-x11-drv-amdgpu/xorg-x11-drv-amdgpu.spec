@@ -15,7 +15,7 @@
 %endif
 
 Name:           xorg-x11-drv-amdgpu
-Version:        19.0.0
+Version:        19.0.1
 Release:        100%{?gver}%{?dist}
 
 Summary:        AMD GPU video driver
@@ -72,6 +72,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Tue Mar 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.1-100
+- 19.0.1
+
 * Thu Mar 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.0-100
 - 19.0.0
 

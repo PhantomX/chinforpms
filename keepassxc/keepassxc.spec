@@ -1,14 +1,14 @@
 %bcond_with yubikey
 
 Name:           keepassxc
-Version:        2.3.4
+Version:        2.4.0
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
 License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain
 URL:            https://keepassxc.org/
-Source0:        https://github.com/keepassxreboot/%{name}/releases/download/%{version}/%{name}-%{version}-src.tar.xz
+Source0:        https://github.com/keepassxreboot/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -18,10 +18,12 @@ BuildRequires:  libgcrypt-devel >= 1.7.0
 BuildRequires:  libgpg-error-devel
 BuildRequires:  pkgconfig(libargon2)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(libqrencode)
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core) >= 5.2
 BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2
 BuildRequires:  pkgconfig(Qt5Network) >= 5.2
+BuildRequires:  pkgconfig(Qt5Svg) >= 5.2
 BuildRequires:  pkgconfig(Qt5Test) >= 5.2
 BuildRequires:  pkgconfig(Qt5Widgets) >= 5.2
 BuildRequires:  pkgconfig(Qt5X11Extras) >= 5.2
@@ -45,9 +47,7 @@ cross-platform and modern open-source password manager.
 %prep
 %autosetup
 
-# get rid of icon tag in appdata file
-# icon tag is not allowed in desktop appdata file
-sed -i '/\<icon/d' share/linux/org.%{name}.KeePassXC.appdata.xml
+sed -e '/mandb -q/d' -i src/cli/CMakeLists.txt
 
 %build
 mkdir %{_target_platform}

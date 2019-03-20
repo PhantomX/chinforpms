@@ -15,7 +15,7 @@
 
 Summary:   Xorg X11 ati video driver
 Name:      xorg-x11-drv-ati
-Version:   19.0.0
+Version:   19.0.1
 Release:   100%{?gver}%{?dist}
 
 URL:       http://www.x.org
@@ -70,6 +70,9 @@ find %{buildroot} -regex ".*\.la$" | xargs rm -f --
 
 
 %changelog
+* Tue Mar 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.1-100
+- 19.0.1
+
 * Thu Mar 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.0-100
 - 19.0.0
 

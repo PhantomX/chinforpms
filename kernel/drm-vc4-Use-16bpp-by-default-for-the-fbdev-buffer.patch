@@ -1,0 +1,46 @@
+From patchwork Wed Mar  6 14:02:45 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: drm/vc4: Use 16bpp by default for the fbdev buffer
+From: Maxime Ripard <maxime.ripard@bootlin.com>
+X-Patchwork-Id: 290632
+Message-Id: <20190306140245.21973-1-maxime.ripard@bootlin.com>
+To: Eric Anholt <eric@anholt.net>
+Cc: eben@raspberrypi.org, Maxime Ripard <maxime.ripard@bootlin.com>,
+ dri-devel@lists.freedesktop.org,
+ Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+ Sean Paul <seanpaul@chromium.org>,
+ Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+ linux-arm-kernel@lists.infradead.org
+Date: Wed,  6 Mar 2019 15:02:45 +0100
+
+The preferred bpp for the fbdev emulation buffer has been 32 so far, which
+means that by default we will allocate an 8MB buffer with a 1920x1080
+resolution.
+
+Worse this memory will be allocated from the CMA pool, and will never be
+freed even if we don't use the fbdev emulation. Therefore, reducing it is a
+big deal, and switching to 16bpp by default will gain us around 4MB at
+1920x1080, while keeping decent color depth. And users still have the
+option to switch to 32bpp using the kernel command line.
+
+Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+---
+ drivers/gpu/drm/vc4/vc4_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
+index 52576dee809e..c38cf64837e1 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.c
++++ b/drivers/gpu/drm/vc4/vc4_drv.c
+@@ -286,7 +286,7 @@ static int vc4_drm_bind(struct device *dev)
+ 
+ 	vc4_kms_load(drm);
+ 
+-	drm_fbdev_generic_setup(drm, 32);
++	drm_fbdev_generic_setup(drm, 16);
+ 
+ 	return 0;
+ 
