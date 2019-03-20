@@ -10,6 +10,8 @@ License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv
 URL:            https://keepassxc.org/
 Source0:        https://github.com/keepassxreboot/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 
+Patch0:         https://github.com/keepassxreboot/keepassxc/pull/2810.patch#/%{name}-gh-2810.patch
+
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
@@ -45,7 +47,7 @@ with new features and bugfixes to provide a feature-rich, fully
 cross-platform and modern open-source password manager.
  
 %prep
-%autosetup
+%autosetup -p1
 
 sed -e '/mandb -q/d' -i src/cli/CMakeLists.txt
 
@@ -88,6 +90,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 %{_libdir}/%{name}/*.so
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/icons
+%{_datadir}/%{name}/wizard
 %{_datadir}/%{name}/wordlists
 %{_datadir}/applications/*.desktop
 %{_datadir}/man/man1/*.1*
@@ -97,6 +100,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Wed Mar 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.0-100
+- 2.4.0
+- BR: Qt5Svg, libqrencode
+
 * Thu Aug 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.3.4-100.chinfo
 - 2.3.4
 
