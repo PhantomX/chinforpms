@@ -1,0 +1,56 @@
+From 50f5e2caeb735fc08185cbf666b42c6356174250 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 20 Mar 2019 11:59:43 -0300
+Subject: [PATCH] Disable update checking
+
+---
+ src/gui/ApplicationSettingsWidget.cpp |  2 +-
+ src/gui/MainWindow.cpp                | 10 +---------
+ 2 files changed, 2 insertions(+), 10 deletions(-)
+
+diff --git a/src/gui/ApplicationSettingsWidget.cpp b/src/gui/ApplicationSettingsWidget.cpp
+index 90b851b..2b39530 100644
+--- a/src/gui/ApplicationSettingsWidget.cpp
++++ b/src/gui/ApplicationSettingsWidget.cpp
+@@ -91,8 +91,8 @@ ApplicationSettingsWidget::ApplicationSettingsWidget(QWidget* parent)
+             m_secUi->touchIDResetSpinBox, SLOT(setEnabled(bool)));
+     // clang-format on
+ 
+-#ifndef WITH_XC_NETWORKING
+     m_generalUi->checkForUpdatesOnStartupCheckBox->setVisible(false);
++#ifndef WITH_XC_NETWORKING
+     m_secUi->privacy->setVisible(false);
+ #endif
+ 
+diff --git a/src/gui/MainWindow.cpp b/src/gui/MainWindow.cpp
+index 6e3c96a..848c369 100644
+--- a/src/gui/MainWindow.cpp
++++ b/src/gui/MainWindow.cpp
+@@ -372,15 +372,7 @@ MainWindow::MainWindow()
+     setUnifiedTitleAndToolBarOnMac(true);
+ #endif
+ 
+-#ifdef WITH_XC_NETWORKING
+-    connect(m_ui->actionCheckForUpdates, SIGNAL(triggered()), SLOT(showUpdateCheckDialog()));
+-    connect(UpdateChecker::instance(),
+-            SIGNAL(updateCheckFinished(bool, QString, bool)),
+-            SLOT(hasUpdateAvailable(bool, QString, bool)));
+-    QTimer::singleShot(3000, this, SLOT(showUpdateCheckStartup()));
+-#else
+     m_ui->actionCheckForUpdates->setVisible(false);
+-#endif
+ 
+     // clang-format off
+ 	 connect(m_ui->tabWidget,
+@@ -726,7 +718,7 @@ void MainWindow::hasUpdateAvailable(bool hasUpdate, const QString& version, bool
+ void MainWindow::showUpdateCheckDialog()
+ {
+ #ifdef WITH_XC_NETWORKING
+-    updateCheck()->checkForUpdates(true);
++    updateCheck()->checkForUpdates(false);
+     auto* updateCheckDialog = new UpdateCheckDialog(this);
+     updateCheckDialog->show();
+ #endif
+-- 
+2.20.1
+

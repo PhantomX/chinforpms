@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           lutris
-Version:        0.5.0.1
+Version:        0.5.1
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -87,8 +87,6 @@ rm -f %{buildroot}%{_datadir}/polkit-1/actions/net.lutris.xboxdrv*
 
 %fdupes %{buildroot}%{python3_sitelib}
 
-mv %{buildroot}%{_datadir}/appdata %{buildroot}%{_metainfodir}
-
 desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.desktop
 
 # Systemd configuration
@@ -118,6 +116,9 @@ install -m 644 -p %{S:1} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 
 
 %changelog
+* Sat Mar 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.1-100
+- 0.5.1
+
 * Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.0.1-100
 - 0.5.0.1
 - Drop noarch, needed for better dependencies

@@ -2,7 +2,7 @@
 
 Name:           keepassxc
 Version:        2.4.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
@@ -11,6 +11,8 @@ URL:            https://keepassxc.org/
 Source0:        https://github.com/keepassxreboot/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 
 Patch0:         https://github.com/keepassxreboot/keepassxc/pull/2810.patch#/%{name}-gh-2810.patch
+
+Patch100:       0001-Disable-update-checking.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -57,6 +59,7 @@ pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_BUILD_TYPE=release \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+  -DKEEPASSXC_BUILD_TYPE:STRING=Release \
   -DWITH_TESTS:BOOL=OFF \
   -DWITH_XC_NETWORKING:BOOL=ON \
   -DWITH_XC_AUTOTYPE:BOOL=ON \
@@ -70,7 +73,7 @@ popd
 %install
 
 %make_install -C %{_target_platform}
- 
+
 desktop-file-edit \
   --add-mime-type="application/x-keepass" \
   --add-mime-type="application/x-keepassxc" \
@@ -100,6 +103,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Wed Mar 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.0-101
+- Disable update check by default
+
 * Wed Mar 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.0-100
 - 2.4.0
 - BR: Qt5Svg, libqrencode

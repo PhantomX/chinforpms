@@ -50,7 +50,6 @@ BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xcb-dri3)
 BuildRequires:  pkgconfig(xcb-present)
 BuildRequires:  pkgconfig(xcb-xfixes)
-BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xproto)
 BuildRequires:  wine-devel
 

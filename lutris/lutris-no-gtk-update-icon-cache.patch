@@ -1,35 +1,56 @@
-diff -up lutris-0.5.0/lutris/gui/config/common.py.noguic lutris-0.5.0/lutris/gui/config/common.py
---- lutris-0.5.0/lutris/gui/config/common.py.noguic	2019-02-01 16:00:01.000000000 -0200
-+++ lutris-0.5.0/lutris/gui/config/common.py	2019-02-02 09:58:56.092231578 -0200
-@@ -478,8 +478,8 @@ class GameDialogCommon:
+From 1433d76d8f2cbaf81dfba6fa151051b3b170c231 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 22 Mar 2019 22:59:36 -0300
+Subject: [PATCH] Disable gtk-update-icon-cache execution
+
+---
+ lutris/gui/config/common.py | 3 ---
+ lutris/gui/views/store.py   | 4 +---
+ lutris/util/linux.py        | 1 -
+ lutris/util/resources.py    | 4 ++--
+ 4 files changed, 3 insertions(+), 9 deletions(-)
+
+diff --git a/lutris/gui/config/common.py b/lutris/gui/config/common.py
+index 636299a..f65aaf7 100644
+--- a/lutris/gui/config/common.py
++++ b/lutris/gui/config/common.py
+@@ -517,9 +517,6 @@ class GameDialogCommon:
              pixbuf.savev(dest_path, file_format, [], [])
              self._set_image(image_type)
  
 -            if image_type == "icon":
--                resources.udpate_desktop_icons()
-+            #if image_type == "icon":
-+            #    resources.udpate_desktop_icons()
- 
+-                resources.update_desktop_icons()
+-
          dialog.destroy()
  
-diff -up lutris-0.5.0/lutris/util/resources.py.noguic lutris-0.5.0/lutris/util/resources.py
---- lutris-0.5.0/lutris/util/resources.py.noguic	2019-02-01 16:00:01.000000000 -0200
-+++ lutris-0.5.0/lutris/util/resources.py	2019-02-02 09:59:08.073721492 -0200
-@@ -50,8 +50,8 @@ def fetch_icons(lutris_media, callback):
-             else:
-                 GLib.idle_add(callback, slug, priority=GLib.PRIORITY_LOW)
+     def on_custom_image_reset_clicked(self, _widget, image_type):
+diff --git a/lutris/gui/views/store.py b/lutris/gui/views/store.py
+index 536f3e5..e65c8d9 100644
+--- a/lutris/gui/views/store.py
++++ b/lutris/gui/views/store.py
+@@ -5,7 +5,7 @@ from gi.repository import Gtk, GObject, GLib
+ from gi.repository.GdkPixbuf import Pixbuf
+ from lutris import pga
+ from lutris.gui.widgets.utils import get_pixbuf_for_game
+-from lutris.util.resources import get_icon_path, download_media, update_desktop_icons
++from lutris.util.resources import get_icon_path, download_media
+ from lutris.util.log import logger
+ from lutris.util import system
+ from lutris import api
+@@ -368,8 +368,6 @@ class GameStore(GObject.Object):
+                     logger.exception('%r failed: %s', slug, ex)
+                 else:
+                     self.emit("icon-loaded", slug, media_type)
+-        if media_type == "icon":
+-            update_desktop_icons()
  
--    if bool(available_icons):
--        udpate_desktop_icons()
-+    #if bool(available_icons):
-+    #    udpate_desktop_icons()
- 
- 
- def udpate_desktop_icons():
-diff -up lutris-0.5.0/lutris/util/linux.py.noguic lutris-0.5.0/lutris/util/linux.py
---- lutris-0.5.0/lutris/util/linux.py.noguic	2019-02-01 16:00:01.000000000 -0200
-+++ lutris-0.5.0/lutris/util/linux.py	2019-02-02 10:00:50.139336932 -0200
-@@ -22,7 +22,6 @@ SYSTEM_COMPONENTS = {
+     def add_games_by_ids(self, game_ids):
+         self.add_games(pga.get_games_by_ids(game_ids))
+diff --git a/lutris/util/linux.py b/lutris/util/linux.py
+index 26f8a06..068ee65 100644
+--- a/lutris/util/linux.py
++++ b/lutris/util/linux.py
+@@ -26,7 +26,6 @@ SYSTEM_COMPONENTS = {
          "lsi-steam",
          "fuser",
          "7z",
@@ -37,3 +58,23 @@ diff -up lutris-0.5.0/lutris/util/linux.py.noguic lutris-0.5.0/lutris/util/linux
          "lspci",
          "xgamma",
          "ldconfig",
+diff --git a/lutris/util/resources.py b/lutris/util/resources.py
+index a3c3ccc..a8a6b51 100644
+--- a/lutris/util/resources.py
++++ b/lutris/util/resources.py
+@@ -26,10 +26,10 @@ def update_desktop_icons():
+     """Update Icon for GTK+ desktop manager
+     Other desktop manager icon cache commands must be added here if needed
+     """
+-    gtk_update_icon_cache = system.find_executable("gtk-update-icon-cache")
++    gtk_update_icon_cache = system.find_executable("true")
+     if gtk_update_icon_cache:
+         os.system(
+-            "gtk-update-icon-cache -tf %s"
++            "true %s"
+             % os.path.join(GLib.get_user_data_dir(), "icons", "hicolor")
+         )
+ 
+-- 
+2.20.1
+
