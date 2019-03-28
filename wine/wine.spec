@@ -13,7 +13,7 @@
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global tkg_id d80d26596fc13fed130e2f15f62b92c16f7d1e44
+%global tkg_id b520389182bfc0a57077d32cab0674f8b01a2c3c
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global esync 1
 %global esynccommit ce79346
@@ -25,6 +25,7 @@
 %global faudioopts -W xaudio2-revert -W xaudio2_7-CreateFX-FXEcho -W xaudio2_7-WMA_support -W xaudio2_CommitChanges
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
+%global valve_url https://github.com/ValveSoftware/wine
 
 # binfmt macros for RHEL
 %if 0%{?rhel} == 7
@@ -37,7 +38,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.4
-Release:        100%{?dist}
+Release:        103%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -99,32 +100,36 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 ### AUR - https://aur.archlinux.org/packages/wine-gaming-nine
 # Steam patch, Crossover Hack version
 # https://bugs.winehq.org/show_bug.cgi?id=39403
-Patch600:       https://github.com/laino/wine-patches/raw/master/0003-wine-list.h-linked-list-cache-line-prefetching.patch#/laino-0003-wine-list.h-linked-list-cache-line-prefetching.patch
+Patch600:       https://github.com/laino/wine-patches/raw/3ffdac0356ca3d64924e75851acc545efd259a05/0003-wine-list.h-linked-list-cache-line-prefetching.patch#/%{name}-laino-0003-wine-list.h-linked-list-cache-line-prefetching.patch
 # Wbemprox videocontroller query fix v2
 # https://bugs.winehq.org/show_bug.cgi?id=38879
 Patch601:       wbemprox_query_v2.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
-Patch700:       %{tkg_url}/steam.patch#/tkg-steam.patch
-Patch701:       %{tkg_url}/CSMT-toggle.patch#/tkg-CSMT-toggle.patch
-Patch702:       %{tkg_url}/use_clock_monotonic.patch#/tkg-use_clock_monotonic.patch
-Patch703:       %{tkg_url}/poe-fix.patch#/tkg-poe-fix.patch
-Patch704:       %{tkg_url}/FS_bypass_compositor.patch#/tkg-FS_bypass_compositor.patch
+Patch700:       %{tkg_url}/steam.patch#/%{name}-tkg-steam.patch
+Patch701:       %{tkg_url}/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
+Patch702:       %{tkg_url}/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
+Patch703:       %{tkg_url}/poe-fix.patch#/%{name}-tkg-poe-fix.patch
+Patch704:       %{tkg_url}/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}/wine-staging-%{stagingver}.tar.gz
-Patch705:       %{tkg_url}/GLSL-toggle.patch#/tkg-GLSL-toggle.patch
-Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/tkg-valve_proton_fullscreen_hack-staging.patch
-Patch707:       %{tkg_url}/enable_stg_shared_mem_def.patch#/tkg-enable_stg_shared_mem_def.patch
-Patch708:       %{tkg_url}/LAA-staging.patch#/tkg-LAA-staging.patch
+Patch705:       %{tkg_url}/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
+Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging-4.4.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging-4.4.patch
+Patch707:       %{tkg_url}/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch708:       %{tkg_url}/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 
 Patch800:       revert-grab-fullscreen.patch
+Patch801:       %{valve_url}/commit/ff95f1927cdb923907ef1fa9660203004b9ee36d.patch#/%{name}-valve-ff95f19.patch
+Patch802:       %{valve_url}/commit/36017749b370b38860aaa167494d200569902d25.patch#/%{name}-valve-3601774.patch
+Patch803:       0001-XACT3_VER-typos-IXAudio23-compatibility-fix.patch
+Patch804:       wine-xaudio2-pulseaudio-app-name.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
 Source1001:     wine-README-pba
-Patch1000:      %{tkg_url}/PBA317+.patch#/tkg-PBA317+.patch
+Patch1000:      %{tkg_url}/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 %endif #{?pba}
 
 %if 0%{?esync}
@@ -133,10 +138,10 @@ Source2000:     https://github.com/zfigura/wine/releases/download/esync%{esyncco
 # Configure limits in systemd
 # This should be only needed with systemd < 240
 Source2001:     01-%{name}.conf
-Source2002:     %{tkg_url}/esync-staging-fixes-r3.patch#/tkg-esync-staging-fixes-r3.patch
-Patch2001:      %{tkg_url}/esync-compat-fixes-r3.patch#/tkg-esync-compat-fixes-r3.patch
-Patch2002:      %{tkg_url}/esync-compat-fixes-r3.1.patch#/tkg-esync-compat-fixes-r3.1.patch
-Patch2003:      %{tkg_url}/esync-no_alloc_handle.patch#/tkg-esync-no_alloc_handle.patch
+Source2002:     %{tkg_url}/esync-staging-fixes-r3.patch#/%{name}-tkg-esync-staging-fixes-r3.patch
+Patch2001:      %{tkg_url}/esync-compat-fixes-r3.patch#/%{name}-tkg-esync-compat-fixes-r3.patch
+Patch2002:      %{tkg_url}/esync-compat-fixes-r3.1.patch#/%{name}-tkg-esync-compat-fixes-r3.1.patch
+Patch2003:      %{tkg_url}/esync-no_alloc_handle.patch#/%{name}-tkg-esync-no_alloc_handle.patch
 %endif #{?esync}
 
 %endif #{?staging}
@@ -689,6 +694,10 @@ This package adds the opencl driver for wine.
 %patch702 -p1
 #patch703 -p1
 %patch704 -p1
+%patch801 -p1
+%patch802 -p1
+%patch803 -p1
+%patch804 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -1988,14 +1997,14 @@ fi
 %{_libdir}/wine/wined3d.dll.so
 %{_libdir}/wine/dnsapi.dll.so
 %{_libdir}/wine/iexplore.exe.so
-#{_libdir}/wine/xactengine3_0.dll.so
-#{_libdir}/wine/xactengine3_1.dll.so
-#{_libdir}/wine/xactengine3_2.dll.so
-#{_libdir}/wine/xactengine3_3.dll.so
-#{_libdir}/wine/xactengine3_4.dll.so
-#{_libdir}/wine/xactengine3_5.dll.so
-#{_libdir}/wine/xactengine3_6.dll.so
-#{_libdir}/wine/xactengine3_7.dll.so
+%{_libdir}/wine/xactengine3_0.dll.so
+%{_libdir}/wine/xactengine3_1.dll.so
+%{_libdir}/wine/xactengine3_2.dll.so
+%{_libdir}/wine/xactengine3_3.dll.so
+%{_libdir}/wine/xactengine3_4.dll.so
+%{_libdir}/wine/xactengine3_5.dll.so
+%{_libdir}/wine/xactengine3_6.dll.so
+%{_libdir}/wine/xactengine3_7.dll.so
 %{_libdir}/wine/x3daudio1_0.dll.so
 %{_libdir}/wine/x3daudio1_1.dll.so
 %{_libdir}/wine/x3daudio1_2.dll.so
@@ -2324,6 +2333,15 @@ fi
 
 
 %changelog
+* Wed Mar 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.4-103
+- Revert xaudio2_7 application name patch, new one fail
+
+* Wed Mar 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.4-102
+- Replace xaudio2_7 application name with pulseaudio patch
+
+* Mon Mar 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.4-101
+- Some FAudio updates from Valve git
+
 * Sun Mar 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.4-100
 - 4.4
 

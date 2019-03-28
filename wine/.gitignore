@@ -1,5 +1,6 @@
 !/wine.init
-/laino-*.patch
-/staging-*.patch
-/tkg-*.patch
-/whq-*.patch
+/wine-laino-*.patch
+/wine-staging-*.patch
+/wine-tkg-*.patch
+/wine-valve-*.patch
+/wine-whq-*.patch

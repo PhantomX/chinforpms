@@ -49,7 +49,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.0.0
+Version:        19.0.1
 Release:        100%{?dist}
 
 License:        MIT
@@ -408,6 +408,7 @@ cp %{SOURCE4} docs/
   -Dllvm=true \
   -Dshared-llvm=true \
   -Dvalgrind=%{?with_valgrind:true}%{!?with_valgrind:false} \
+  -Db_ndebug=true \
   -Dbuild-tests=false \
   -Dselinux=true \
   -Dosmesa=gallium \
@@ -639,6 +640,12 @@ popd
 
 
 %changelog
+* Wed Mar 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.1-100
+- 19.0.1
+
+* Tue Mar 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.0-101
+- -Db_ndebug=true
+
 * Wed Mar 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.0-100
 - 19.0.0
 - Rawhide sync

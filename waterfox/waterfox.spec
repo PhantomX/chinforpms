@@ -312,7 +312,7 @@ BuildRequires:  librsvg2
 #FIXME: using specific "epochized" rust package to build
 #FIXME: remove version check when patched to work with 1.33+
 BuildRequires:  (rust >= 1:1.32 with rust < 1:1.33)
-BuildRequires:  cargo
+BuildRequires:  (cargo >= 1:1.32 with cargo < 1:1.33)
 BuildRequires:  clang-devel
 
 Obsoletes:      mozilla <= 37:1.7.13

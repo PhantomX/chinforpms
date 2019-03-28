@@ -3,7 +3,7 @@
 %global commit 30992a8e07d0362aefc99ad8f564532d38561e35
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20190312
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -15,7 +15,7 @@
 
 Name:           wine-nine
 Version:        0.4
-Release:        0.2%{?gver}%{?dist}
+Release:        1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -157,6 +157,9 @@ desktop-file-install \
 
 
 %changelog
+* Wed Mar 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.4-1
+- 0.4
+
 * Fri Mar 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.4-0.2.20190312git30992a8
 - New snapshot
 - Set WINEPREFIX
