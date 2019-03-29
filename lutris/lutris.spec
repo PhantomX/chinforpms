@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           lutris
-Version:        0.5.1
+Version:        0.5.1.2
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -33,6 +33,7 @@ Requires:       glx-utils
 Requires:       gamemode
 Requires:       gnome-desktop3
 Requires:       gtk3
+Requires:       gvfs
 Requires:       libnotify
 Requires:       libstrangle
 Requires:       psmisc
@@ -116,6 +117,9 @@ install -m 644 -p %{S:1} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 
 
 %changelog
+* Thu Mar 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.1.2-100
+- 0.5.1.2
+
 * Sat Mar 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.1-100
 - 0.5.1
 
