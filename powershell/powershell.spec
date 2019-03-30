@@ -2,7 +2,7 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%global version 6.1.1
+%global version 6.2.0
 %global pkgrel 1
 
 # rcrev predates betarev
@@ -127,6 +127,9 @@ fi
 
 
 %changelog
+* Sat Mar 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 6.2.0-1
+- 6.2.0
+
 * Tue Dec 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 6.1.1-1
 - 6.1.1
 

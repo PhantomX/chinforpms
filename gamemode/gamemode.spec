@@ -1,12 +1,12 @@
 Name:           gamemode
-Version:        1.3
+Version:        1.3.1
 Release:        100%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
 
 License:        BSD
 URL:            https://github.com/FeralInteractive/%{name}
-Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
 
 # Use system inih
 Patch0:         %{name}-system-inih.patch
@@ -66,6 +66,10 @@ mkdir -p %{buildroot}%{_datadir}/%{name}
 
 
 %changelog
+* Fri Mar 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.3.1-100
+- 1.3.1
+- tar.xz source
+
 * Fri Mar 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3-100
 - 1.3
 - Drop wrapper and patch provided for multilib

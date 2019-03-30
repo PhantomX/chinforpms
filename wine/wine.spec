@@ -9,7 +9,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 4.4
+%global stagingver 4.5
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
@@ -37,8 +37,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.4
-Release:        103%{?dist}
+Version:        4.5
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -116,7 +116,7 @@ Patch704:       %{tkg_url}/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_com
 %if 0%{?staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}/wine-staging-%{stagingver}.tar.gz
 Patch705:       %{tkg_url}/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
-Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging-4.4.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging-4.4.patch
+Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch707:       %{tkg_url}/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch708:       %{tkg_url}/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 
@@ -141,7 +141,8 @@ Source2001:     01-%{name}.conf
 Source2002:     %{tkg_url}/esync-staging-fixes-r3.patch#/%{name}-tkg-esync-staging-fixes-r3.patch
 Patch2001:      %{tkg_url}/esync-compat-fixes-r3.patch#/%{name}-tkg-esync-compat-fixes-r3.patch
 Patch2002:      %{tkg_url}/esync-compat-fixes-r3.1.patch#/%{name}-tkg-esync-compat-fixes-r3.1.patch
-Patch2003:      %{tkg_url}/esync-no_alloc_handle.patch#/%{name}-tkg-esync-no_alloc_handle.patch
+Patch2003:      %{tkg_url}/esync-compat-fixes-r3.2.patch#/%{name}-tkg-esync-compat-fixes-r3.2.patch
+Patch2004:      %{tkg_url}/esync-no_kernel_obj_list.patch#/%{name}-tkg-esync-no_kernel_obj_list.patch
 %endif #{?esync}
 
 %endif #{?staging}
@@ -718,11 +719,12 @@ pushd esync
 git apply -C1 %{S:2002}
 %patch2001 -p1
 %patch2002 -p1
+%patch2003 -p1
 popd
 for i in esync/00??-*.patch ;do
   git apply -C1 $i
 done
-%patch2003 -p1
+%patch2004 -p1
 %endif #{?esync}
 
 %if 0%{?pba}
@@ -2333,6 +2335,9 @@ fi
 
 
 %changelog
+* Sat Mar 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.5-100
+- 4.5
+
 * Wed Mar 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.4-103
 - Revert xaudio2_7 application name patch, new one fail
 
