@@ -94,7 +94,8 @@ Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 mkdir %{_target_platform}
 pushd %{_target_platform}
 %{cmake_kf5} .. \
-  -DCMAKE_BUILD_TYPE:STRING="Release"
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
+%{nil}
 popd
 
 %make_build -C %{_target_platform}

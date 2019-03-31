@@ -1713,6 +1713,7 @@ fi
 %{_libdir}/wine/mciwave.dll.so
 %{_libdir}/wine/mf.dll.so
 %{_libdir}/wine/mf3216.dll.so
+%{_libdir}/wine/mferror.dll.so
 %{_libdir}/wine/mfplat.dll.so
 %{_libdir}/wine/mfplay.dll.so
 %{_libdir}/wine/mfreadwrite.dll.so

@@ -64,7 +64,8 @@ pushd %{_target_platform}
   -DWITH_XC_NETWORKING:BOOL=ON \
   -DWITH_XC_AUTOTYPE:BOOL=ON \
   -DWITH_XC_SSHAGENT:BOOL=ON \
-  -DWITH_XC_YUBIKEY:BOOL=%{?_with_yubikey:ON}%{!?_with_yubikey:OFF}
+  -DWITH_XC_YUBIKEY:BOOL=%{?_with_yubikey:ON}%{!?_with_yubikey:OFF} \
+%{nil}
 
 %make_build
 

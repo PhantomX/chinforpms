@@ -59,7 +59,8 @@ autoreconf -ivf
 
 %build
 %configure \
-  --disable-silent-rules
+  --disable-silent-rules \
+%{nil}
 
 %make_build
 

@@ -81,9 +81,10 @@ export ax_cv_cflags_gcc_option__mtune_haswell=no
 
 %configure \
   --disable-rpath \
-  --disable-silent-rules
-#  --with-external-mpcdec
-#  --with-external-lzo
+  --disable-silent-rules \
+#  --with-external-mpcdec \
+#  --with-external-lzo \
+%{nil}
 %make_build
 
 
