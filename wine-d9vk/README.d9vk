@@ -1,0 +1,8 @@
+Enable with wined9vkcfg.
+
+or
+
+The needed dll files are in LIBDIR/wine/, LIBDIR must match to
+the architecture from executable, /usr/lib or /usr/lib64.
+ln -s LIBDIR/wine/d3d9_d9vk.dll executable_directory/d3d9.dll
+WINEDLLOVERRIDES="d3d9=n" executable
