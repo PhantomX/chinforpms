@@ -17,6 +17,7 @@ taglib
 webp-pixbuf-loader
 wine
 wine-dxup
+wine-d9vk
 wine-dxvk
 wine-freeworld
 wine-nine

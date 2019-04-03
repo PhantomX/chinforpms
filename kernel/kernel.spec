@@ -56,17 +56,17 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 53a1d0edfde46fb58250bb90a8a62d72969a4a3e
+%global pfcommit 07f993f193a0fdab8807703c101a18a663587c6d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 018878b257ecdc5e269780c1a27ecb1ade8d48f2
+%global opensuse_id 0b959591a2ae153ad3411e14e112b0d3d34dc395
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -627,10 +627,6 @@ Patch332: drm-vc4-Use-16bpp-by-default-for-the-fbdev-buffer.patch
 
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
-# Fix for AllWinner A64 Timer Errata, still not final
-# https://www.spinics.net/lists/arm-kernel/msg699622.html
-Patch350: Allwinner-A64-timer-workaround.patch
-
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -653,7 +649,20 @@ Patch509: i915-enable-fastboot-on-skylake.patch
 # fastboot by default on VLV/CHV (BYT/CHT), queued in -next for merging into 5.1
 Patch510: i915-enable-fastboot-on-vlv-chv.patch
 
-Patch900: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
+# https://bugs.freedesktop.org/show_bug.cgi?id=109806
+Patch512: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
+
+# rhbz 1689750, patch submitted upstream
+Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
+
+# rhbz 1688283
+Patch514: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
+
+# rhbz 1683382
+Patch515: nfsv4.1-avoid-false-retries.patch
+
+# CVE-2019-9857 rhbz 1694758 1694759
+Patch516: 0001-inotify-Fix-fsnotify_mark-refcount-leak-in-inotify_u.patch
 
 ### Extra
 
@@ -2013,6 +2022,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.5-500.chinfo
+- 5.0.5 - pf4
+
 * Tue Mar 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.3-500.chinfo
 - 5.0.3
 - stabilization sync

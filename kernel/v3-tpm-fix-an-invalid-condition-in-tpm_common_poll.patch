@@ -1,0 +1,103 @@
+From patchwork Thu Mar 21 23:02:12 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Patchwork-Submitter: Tadeusz Struk <tadeusz.struk@intel.com>
+X-Patchwork-Id: 10864497
+Return-Path: <linux-integrity-owner@kernel.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+ [172.30.200.125])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 711816C2
+	for <patchwork-linux-integrity@patchwork.kernel.org>;
+ Thu, 21 Mar 2019 23:02:15 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 57B312A4A8
+	for <patchwork-linux-integrity@patchwork.kernel.org>;
+ Thu, 21 Mar 2019 23:02:15 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 4AA482A539; Thu, 21 Mar 2019 23:02:15 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-7.9 required=2.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	RCVD_IN_DNSWL_HI autolearn=ham version=3.3.1
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id C399A2A4A8
+	for <patchwork-linux-integrity@patchwork.kernel.org>;
+ Thu, 21 Mar 2019 23:02:14 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1727157AbfCUXCO (ORCPT
+        <rfc822;patchwork-linux-integrity@patchwork.kernel.org>);
+        Thu, 21 Mar 2019 19:02:14 -0400
+Received: from mga04.intel.com ([192.55.52.120]:7149 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727086AbfCUXCO (ORCPT <rfc822;linux-integrity@vger.kernel.org>);
+        Thu, 21 Mar 2019 19:02:14 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 21 Mar 2019 16:02:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,254,1549958400";
+   d="scan'208";a="284777192"
+Received: from jdemuth-mobl.amr.corp.intel.com (HELO
+ tstruk-mobl1.jf.intel.com) ([10.251.150.110])
+  by orsmga004.jf.intel.com with ESMTP; 21 Mar 2019 16:02:13 -0700
+Subject: [PATCH v3] tpm: fix an invalid condition in tpm_common_poll
+From: Tadeusz Struk <tadeusz.struk@intel.com>
+To: jarkko.sakkinen@linux.intel.com
+Cc: grawity@gmail.com, James.Bottomley@HansenPartnership.com,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, tadeusz.struk@intel.com
+Date: Thu, 21 Mar 2019 16:02:12 -0700
+Message-ID: 
+ <155320933278.5015.1752135965699928631.stgit@tstruk-mobl1.jf.intel.com>
+User-Agent: StGit/unknown-version
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-integrity-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-integrity.vger.kernel.org>
+X-Mailing-List: linux-integrity@vger.kernel.org
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+The poll condition should only check response_length,
+because reads should only be issued if there is data to read.
+The response_read flag only prevents double writes.
+The problem was that the write set the response_read to false,
+enqued a tpm job, and returned. Then application called poll
+which checked the response_read flag and returned EPOLLIN.
+Then the application called read, but got nothing.
+After all that the async_work kicked in.
+Added also mutex_lock around the poll check to prevent
+other possible race conditions.
+
+Fixes: 9488585b21bef0df12 ("tpm: add support for partial reads")
+Reported-by: Mantas Mikulėnas <grawity@gmail.com>
+Tested-by: Mantas Mikulėnas <grawity@gmail.com>
+Signed-off-by: Tadeusz Struk <tadeusz.struk@intel.com>
+---
+ drivers/char/tpm/tpm-dev-common.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/char/tpm/tpm-dev-common.c b/drivers/char/tpm/tpm-dev-common.c
+index 5eecad233ea1..7312d3214381 100644
+--- a/drivers/char/tpm/tpm-dev-common.c
++++ b/drivers/char/tpm/tpm-dev-common.c
+@@ -203,12 +203,14 @@ __poll_t tpm_common_poll(struct file *file, poll_table *wait)
+ 	__poll_t mask = 0;
+ 
+ 	poll_wait(file, &priv->async_wait, wait);
++	mutex_lock(&priv->buffer_mutex);
+ 
+-	if (!priv->response_read || priv->response_length)
++	if (priv->response_length)
+ 		mask = EPOLLIN | EPOLLRDNORM;
+ 	else
+ 		mask = EPOLLOUT | EPOLLWRNORM;
+ 
++	mutex_unlock(&priv->buffer_mutex);
+ 	return mask;
+ }
+ 

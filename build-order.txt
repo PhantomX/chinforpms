@@ -30,6 +30,7 @@ bcmatroska2
 bctoolbox
 bluecurve-icon-theme
 casperjs
+cavestory-nx
 cdemu-client
 cdemu-daemon
 chinfo-extramimetypes
@@ -105,6 +106,7 @@ waterfox-classic-toolbar-buttons
 waterfox-openwith
 waterfox-tabmixplus
 waterfox-ublock-origin
+waterfox-useragent-switcher
 waterfox-noscript
 wiibafu
 wiimms-iso-tools
@@ -128,6 +130,7 @@ ortp
 VirtualBox-kmod
 whdd
 wine-dxup
+wine-d9vk
 wine-dxvk
 wine-nine
 
