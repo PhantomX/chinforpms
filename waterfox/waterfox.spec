@@ -309,10 +309,10 @@ BuildRequires:  xorg-x11-server-Xvfb
 %if 0%{?build_with_pgo} || !0%{?run_tests}
 BuildRequires:  librsvg2
 %endif
-#FIXME: using specific "epochized" rust package to build
+#FIXME: using specific rust package to build
 #FIXME: remove version check when patched to work with 1.33+
-BuildRequires:  (rust >= 1:1.32 with rust < 1:1.33)
-BuildRequires:  (cargo >= 1:1.32 with cargo < 1:1.33)
+BuildRequires:  (rust >= 1.32 with rust < 1.33)
+BuildRequires:  (cargo >= 1.32 with cargo < 1.33)
 BuildRequires:  clang-devel
 
 Obsoletes:      mozilla <= 37:1.7.13
@@ -656,6 +656,8 @@ MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-Werror=format-security//')
 %if 0%{?build_with_clang}
 # Fedora's default compiler flags conflict with what clang supports
 MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-fstack-clash-protection//')"
+%else
+MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -Wno-error=alloc-size-larger-than= -Wno-error=free-nonheap-object"
 %endif
 %if %{?hardened_build}
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -fPIC -Wl,-z,relro -Wl,-z,now"

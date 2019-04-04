@@ -15,7 +15,7 @@
 %global bootstrap_date 2018-12-20
 
 # Only the specified arches will use bootstrap binaries.
-#global bootstrap_arches %%{rust_arches}
+%global bootstrap_arches %%{rust_arches}
 
 # Using llvm-static may be helpful as an opt-in, e.g. to aid LLVM rebases.
 %bcond_with llvm_static
@@ -54,8 +54,8 @@
 
 Name:           rust
 Version:        1.32.0
-Release:        100%{?dist}
-Epoch:          1
+Release:        101%{?dist}
+
 Summary:        The Rust Programming Language
 License:        (ASL 2.0 or MIT) and (BSD and MIT)
 # ^ written as: (rust itself) and (bundled libraries)
@@ -686,6 +686,9 @@ rm -f %{buildroot}%{rustlibdir}/etc/lldb_*.py*
 
 
 %changelog
+* Wed Apr 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.32.0-101
+- Drop epoch, Waterfox spec have proper version requirements
+
 * Mon Mar 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.32.0-100
 - Temporary package only to build Waterfox
 
