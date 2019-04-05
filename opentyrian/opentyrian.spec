@@ -9,7 +9,7 @@
 
 Name:           opentyrian
 Version:        2.1
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        An arcade-style vertical scrolling shooter
 
 License:        GPLv2
@@ -21,6 +21,9 @@ Source0:        http://www.camanis.net/opentyrian/releases/%{name}-%{version}-sr
 %endif
 
 Patch0:         %{name}-wild.patch
+Patch1:         %{name}-fallthrough.patch
+Patch2:         %{name}-grabmouse.patch
+Patch3:         %{name}-fix-memory-corruption.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
@@ -37,9 +40,9 @@ employed to fight Microsol and save the galaxy.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{name}-%{name}-%{shortcommit} -p0
+%autosetup -n %{name}-%{name}-%{shortcommit} -p1
 %else
-%autosetup -p0
+%autosetup -p1
 %endif
 
 chmod -x CREDITS
@@ -59,6 +62,7 @@ sed \
 
 %build
 %make_build \
+  WITH_GRAB_MOUSE=false \
   STRIP=/bin/true \
   LDFLAGS="%{build_ldflags}"
 
@@ -96,6 +100,10 @@ done
 
 
 %changelog
+* Thu Apr 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.1-4.20180303git24df4a4651f7
+- Add some upstream and pull requests from default branch
+- Disable mouse grabbing from start
+
 * Mon Mar 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.1-3.20180303git24df4a4651f7
 - New snapshot
 - Remove obsolete scriptets

@@ -1,14 +1,27 @@
+%global commit 3d14c360734c0defef9a9c2206046331464e372b
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20190402
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           pulsemixer
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        CLI and curses mixer for pulseaudio
 
 License:        MIT
 URL:            https://github.com/GeorgeFilipkin/pulsemixer
+%if 0%{?with_snapshot}
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+%endif
 
 # Change volume step from 10 to 5
-Patch0:         %{name}-volume-step.patch
+Patch0:         0001-Decrease-volume-step_big-to-5.patch
 
 BuildArch:      noarch
 
@@ -22,7 +35,11 @@ Requires:       pulseaudio
 
 
 %prep
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+%else
 %autosetup -p1
+%endif
 
 %build
 %py3_build
@@ -40,5 +57,8 @@ Requires:       pulseaudio
 
 
 %changelog
+* Thu Apr 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4.0-2.20190402git3d14c36
+- Update to snapshot
+
 * Wed May 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.4.0-1
 - Initial spec

@@ -1,0 +1,53 @@
+# HG changeset patch
+# User Olof-Joachim Frahm <olof@macrolet.net>
+# Date 1483401619 -3600
+# Branch disable-mouse-grab
+# Node ID 4edd909046d45b87797e7e029526881530d8f10f
+# Parent  98afb31c73439770068bc8e46603471fe67cf53b
+Add Makefile option to disable initial mouse grab.
+
+Specify WITH_MOUSE_GRAB=false or when the debug target is being built.
+
+diff --git a/Makefile b/Makefile
+--- a/Makefile
++++ b/Makefile
+@@ -9,6 +9,7 @@ else
+ endif
+ 
+ WITH_NETWORK := true
++WITH_GRAB_MOUSE := true
+ 
+ ################################################################################
+ 
+@@ -57,6 +58,10 @@ ifneq ($(HG_REV), )
+     EXTRA_CPPFLAGS += -DHG_REV='"$(HG_REV)"'
+ endif
+ 
++ifeq ($(WITH_GRAB_MOUSE), true)
++    EXTRA_CPPFLAGS += -DWITH_GRAB_MOUSE
++endif
++
+ CPPFLAGS := -DNDEBUG
+ CFLAGS := -pedantic
+ CFLAGS += -MMD
+@@ -93,7 +98,7 @@ ALL_LDLIBS = -lm \
+ all : $(TARGET)
+ 
+ .PHONY : debug
+-debug : CPPFLAGS += -UNDEBUG
++debug : CPPFLAGS += -UNDEBUG -UWITH_GRAB_MOUSE
+ debug : CFLAGS += -Werror
+ debug : CFLAGS += -O0
+ debug : CFLAGS += -g3
+diff --git a/src/keyboard.c b/src/keyboard.c
+--- a/src/keyboard.c
++++ b/src/keyboard.c
+@@ -41,7 +41,7 @@ Uint8 keysactive[SDL_NUM_SCANCODES];
+ bool new_text;
+ char last_text[SDL_TEXTINPUTEVENT_TEXT_SIZE];
+ 
+-#ifdef NDEBUG
++#ifdef WITH_GRAB_MOUSE
+ bool input_grab_enabled = true;
+ #else
+ bool input_grab_enabled = false;

@@ -1,0 +1,31 @@
+# HG changeset patch
+# User K. Sinclaire <mattwcstrfan@gmail.com>
+# Date 1553322490 25200
+# Node ID 91f46dd794ca75075eac63bac2c009d1ad49bc53
+# Parent  6edd3686f939cdb801f0f5d3608a20ff22411378
+fixed memory corruption in event 12
+
+diff --git a/src/tyrian2.c b/src/tyrian2.c
+--- a/src/tyrian2.c
++++ b/src/tyrian2.c
+@@ -4250,11 +4250,20 @@
+ 			}
+ 			eventRec[eventLoc-1].eventdat6 = 0;   /* We use EVENTDAT6 for the background */
+ 			JE_createNewEventEnemy(0, temp, 0);
++
+ 			JE_createNewEventEnemy(1, temp, 0);
++			if (b == 0)
++				break;
+ 			enemy[b-1].ex += 24;
++
+ 			JE_createNewEventEnemy(2, temp, 0);
++			if (b == 0)
++				break;
+ 			enemy[b-1].ey -= 28;
++
+ 			JE_createNewEventEnemy(3, temp, 0);
++			if (b == 0)
++				break;
+ 			enemy[b-1].ex += 24;
+ 			enemy[b-1].ey -= 28;
+ 			break;
