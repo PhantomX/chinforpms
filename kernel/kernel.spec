@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 5948a08768e507683c1d33c4538c0b5206ea123c
+%global pfcommit 53d239f484bb03d4d04ea33a247decf09f11cb60
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 0b959591a2ae153ad3411e14e112b0d3d34dc395
+%global opensuse_id dff56e4988727a44631953af28f369dc6f96cd57
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2025,6 +2025,9 @@ fi
 #
 #
 %changelog
+* Sat Apr 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-500.chinfo
+- 5.0.7
+
 * Wed Apr 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.6-500.chinfo
 - 5.0.6 - pf5
 - f29 sync
