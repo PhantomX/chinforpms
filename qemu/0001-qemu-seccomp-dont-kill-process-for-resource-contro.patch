@@ -1,0 +1,103 @@
+From: Daniel P. Berrangé <berrange@redhat.com>
+Date: Wed, 13 Mar 2019 09:49:03 +0000
+Subject: [PATCH RFC] seccomp: don't kill process for resource control syscalls
+
+The Mesa library tries to set process affinity on some of its threads in
+order to optimize its performance. Currently this results in QEMU being
+immediately terminated when seccomp is enabled.
+
+Mesa doesn't consider failure of the process affinity settings to be
+fatal to its operation, but our seccomp policy gives it no choice in
+gracefully handling this denial.
+
+It is reasonable to consider that malicious code using the resource
+control syscalls to be a less serious attack than if they were trying
+to spawn processes or change UIDs and other such things. Generally
+speaking changing the resource control setting will "merely" affect
+quality of service of processes on the host. With this in mind, rather
+than kill the process, we can relax the policy for these syscalls to
+return the EPERM errno value. This allows callers to detect that QEMU
+does not want them to change resource allocations, and apply some
+reasonable fallback logic.
+
+The main downside to this is for code which uses these syscalls but does
+not check the return value, blindly assuming they will always
+succeeed. Returning an errno could result in sub-optimal behaviour.
+Arguably though such code is already broken & needs fixing regardless.
+
+Signed-off-by: Daniel P. Berrangé <berrange@redhat.com>
+---
+ qemu-seccomp.c | 32 +++++++++++++++++++++++++-------
+ 1 file changed, 25 insertions(+), 7 deletions(-)
+
+diff --git a/qemu-seccomp.c b/qemu-seccomp.c
+index 36d5829831..9776c9ef40 100644
+--- a/qemu-seccomp.c
++++ b/qemu-seccomp.c
+@@ -121,20 +121,37 @@ qemu_seccomp(unsigned int operation, unsigned int flags, void *args)
+ #endif
+ }
+ 
+-static uint32_t qemu_seccomp_get_kill_action(void)
++static uint32_t qemu_seccomp_get_kill_action(int set)
+ {
++    switch (set) {
++    case QEMU_SECCOMP_SET_DEFAULT:
++    case QEMU_SECCOMP_SET_OBSOLETE:
++    case QEMU_SECCOMP_SET_PRIVILEGED:
++    case QEMU_SECCOMP_SET_SPAWN: {
+ #if defined(SECCOMP_GET_ACTION_AVAIL) && defined(SCMP_ACT_KILL_PROCESS) && \
+     defined(SECCOMP_RET_KILL_PROCESS)
+-    {
+-        uint32_t action = SECCOMP_RET_KILL_PROCESS;
++        static int kill_process = -1;
++        if (kill_process == -1) {
++            uint32_t action = SECCOMP_RET_KILL_PROCESS;
+ 
+-        if (qemu_seccomp(SECCOMP_GET_ACTION_AVAIL, 0, &action) == 0) {
++            if (qemu_seccomp(SECCOMP_GET_ACTION_AVAIL, 0, &action) == 0) {
++                kill_process = 1;
++            }
++            kill_process = 0;
++        }
++        if (kill_process == 1) {
+             return SCMP_ACT_KILL_PROCESS;
+         }
+-    }
+ #endif
++        return SCMP_ACT_TRAP;
++    }
++
++    case QEMU_SECCOMP_SET_RESOURCECTL:
++        return SCMP_ACT_ERRNO(EPERM);
+ 
+-    return SCMP_ACT_TRAP;
++    default:
++        g_assert_not_reached();
++    }
+ }
+ 
+ 
+@@ -143,7 +160,6 @@ static int seccomp_start(uint32_t seccomp_opts)
+     int rc = 0;
+     unsigned int i = 0;
+     scmp_filter_ctx ctx;
+-    uint32_t action = qemu_seccomp_get_kill_action();
+ 
+     ctx = seccomp_init(SCMP_ACT_ALLOW);
+     if (ctx == NULL) {
+@@ -157,10 +173,12 @@ static int seccomp_start(uint32_t seccomp_opts)
+     }
+ 
+     for (i = 0; i < ARRAY_SIZE(blacklist); i++) {
++        uint32_t action;
+         if (!(seccomp_opts & blacklist[i].set)) {
+             continue;
+         }
+ 
++        action = qemu_seccomp_get_kill_action(blacklist[i].set);
+         rc = seccomp_rule_add_array(ctx, action, blacklist[i].num,
+                                     blacklist[i].narg, blacklist[i].arg_cmp);
+         if (rc < 0) {
+-- 
+2.20.1

@@ -11,7 +11,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.6.3
+Version:        1.6.5
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -172,6 +172,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
+* Mon Apr 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.5-100
+- 1.6.5
+
 * Tue Mar 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.3-100
 - 1.6.3
 

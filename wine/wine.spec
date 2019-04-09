@@ -735,7 +735,7 @@ cp -p %{S:1001} README-pba-pkg
 
 %patch705 -p1
 %patch706 -p1
-#patch707 -p1
+%patch707 -p1
 %patch708 -p1
 %patch800 -p1 -R
 

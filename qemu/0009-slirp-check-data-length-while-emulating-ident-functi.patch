@@ -1,0 +1,32 @@
+From: Prasad J Pandit <pjp@fedoraproject.org>
+Date: Sun, 13 Jan 2019 23:29:48 +0530
+Subject: [PATCH] slirp: check data length while emulating ident function
+
+While emulating identification protocol, tcp_emu() does not check
+available space in the 'sc_rcv->sb_data' buffer. It could lead to
+heap buffer overflow issue. Add check to avoid it.
+
+Reported-by: Kira <864786842@qq.com>
+Signed-off-by: Prasad J Pandit <pjp@fedoraproject.org>
+Signed-off-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
+(cherry picked from commit a7104eda7dab99d0cdbd3595c211864cba415905)
+---
+ slirp/tcp_subr.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/slirp/tcp_subr.c b/slirp/tcp_subr.c
+index fa61349cbb..c41a683988 100644
+--- a/slirp/tcp_subr.c
++++ b/slirp/tcp_subr.c
+@@ -635,6 +635,11 @@ tcp_emu(struct socket *so, struct mbuf *m)
+ 			socklen_t addrlen = sizeof(struct sockaddr_in);
+ 			struct sbuf *so_rcv = &so->so_rcv;
+ 
++			if (m->m_len > so_rcv->sb_datalen
++					- (so_rcv->sb_wptr - so_rcv->sb_data)) {
++			    return 1;
++			}
++
+ 			memcpy(so_rcv->sb_wptr, m->m_data, m->m_len);
+ 			so_rcv->sb_wptr += m->m_len;
+ 			so_rcv->sb_rptr += m->m_len;
