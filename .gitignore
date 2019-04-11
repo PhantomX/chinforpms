@@ -25,8 +25,8 @@ geany_run_script.sh
 *.deb
 #*.patch
 #*.diff
-*.init
-*.sysconfig
+#*.init
+#*.sysconfig
 
 *.tar.bz2
 *.tar.bz
