@@ -309,10 +309,13 @@ BuildRequires:  xorg-x11-server-Xvfb
 %if 0%{?build_with_pgo} || !0%{?run_tests}
 BuildRequires:  librsvg2
 %endif
-#FIXME: using specific rust package to build
-#FIXME: remove version check when patched to work with 1.33+
+%if 0%{?fedora} > 29
+BuildRequires:  rust
+BuildRequires:  cargo
+%else
 BuildRequires:  (rust >= 1.32 with rust < 1.33)
 BuildRequires:  (cargo >= 1.32 with cargo < 1.33)
+%endif
 BuildRequires:  clang-devel
 
 Obsoletes:      mozilla <= 37:1.7.13
@@ -586,6 +589,12 @@ echo "ac_add_options --without-system-icu" >> .mozconfig
 %endif
 %ifarch s390 s390x
 echo "ac_add_options --disable-ion" >> .mozconfig
+%endif
+
+%if 0%{?fedora} > 29
+ac_add_options --disable-stylo
+%else
+ac_add_options --enable-stylo=build
 %endif
 
 # Remove executable bit to make brp-mangle-shebangs happy.

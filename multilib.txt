@@ -9,6 +9,7 @@ gtk3-nocsd
 kernel-tools
 libmirage
 libogg
+libvorbis
 libstrangle
 linux-steam-integration
 mingw-wine-vk9

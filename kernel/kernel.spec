@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -62,11 +62,11 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 6
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 53d239f484bb03d4d04ea33a247decf09f11cb60
+%global pfcommit 30cc11a2b61c23faf309ccef6261dacecc3f6513
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id dff56e4988727a44631953af28f369dc6f96cd57
+%global opensuse_id 508a450f18af6f071dac6b8cc3294745c35c4c53
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -667,6 +667,13 @@ Patch516: 0001-inotify-Fix-fsnotify_mark-refcount-leak-in-inotify_u.patch
 # CVE-2019-3882 rhbz 1689426 1695571
 Patch517: vfio-type1-limit-dma-mappings-per-container.patch
 
+# CVE-2019 rhbz 1695044 1697187
+Patch518: 0001-KVM-x86-nVMX-close-leak-of-L0-s-x2APIC-MSRs-CVE-2019.patch
+Patch519: 0001-KVM-x86-nVMX-fix-x2APIC-VTPR-read-intercept.patch
+
+# drm fix
+Patch520: 0001-drm-i915-dp-revert-back-to-max-link-rate-and-lane-co.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -682,6 +689,7 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 #Patch1016: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
 Patch1017: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1018: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1019: %{opensuse_url}/kcm-switch-order-of-device-registration-to-fix-a-cra.patch#/openSUSE-kcm-switch-order-of-device-registration-to-fix-a-cra.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -725,6 +733,9 @@ Patch3025: %{pf_url}/eb95b85a541571b276e3bd66032648022f279f68.patch#/pf-eb95b85a
 %global graysky2_id 87168bfa27b782e1c9435ba28ebe3987ddea8d30
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v8.1+_kernel_v4.13+.patch
 %endif
+
+%else
+Patch4009:  https://gitlab.com/alfredchen/linux-bmq/commit/1b66bf997e19f3fa59e0871cce0de4778e91bce3.patch#/zzz-bmq-1b66bf9.patch
 
 %endif
 
@@ -1180,6 +1191,7 @@ fi
 
 %if 0%{?post_factum}
 $patch_command -i %{SOURCE5000}
+git add .
 git commit -a -m "Stable post-factum update"
 %else
 # released_kernel with possible stable updates
@@ -2025,6 +2037,10 @@ fi
 #
 #
 %changelog
+* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-500.chinfo
+- pf6
+- f29 sync
+
 * Sat Apr 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-500.chinfo
 - 5.0.7
 

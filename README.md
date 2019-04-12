@@ -21,7 +21,7 @@ RPMFusion and existent packages updated with extra changes.
 ## Differences from Fedora and RPM Fusion
 
  * **adwaita-qt** - Remove some paddings
- * **belle-sip, linphone, ortp** - Updated version
+ * ~~**belle-sip, linphone, ortp** - Updated version~~
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **claws-mail** - Can't wait Fedora releases
  * **easytag** - Tests
@@ -40,14 +40,16 @@ RPMFusion and existent packages updated with extra changes.
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) and [_pf-kernel_](https://gitlab.com/post-factum/pf-kernel/wikis/README) patches
                 (kernel-local must be edited to modify gcc optimizations)
  * **krename** - Updated, KF5
+ * **libmirage** - Can't wait Fedora releases and better matching with cdemu builds from here
  * **libtgvoip** - No unresolved symbols
+ * **libvirt, qemu** - Updated
  * **lutris** - Personal changes
  * **manaplus** - Updated, SDL2
  * **mednafen** - No Haswell optimizations
  * **mesa** - Can't wait Fedora releases
  * **ppsspp** - Build options, no Qt frontend
  * **quiterss** - Updated, Qt5
- * **rust** - Fixed version for Waterfox build
+ * **rust** - Pinned version for Waterfox build
  * **skrooge** - Can't wait Fedora releases
  * **smtube** - Patched to silence players output
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
@@ -57,7 +59,7 @@ RPMFusion and existent packages updated with extra changes.
                     and **VirtualBox-guest-additions-iso** support.~~
  * **vkd3d** - Can't wait Fedora releases
  * **xboxdrv** - Tests
- * **wine** - Personal fixes and extra patches, like [_Esync_](https://github.com/zfigura/wine), [_FAudio_](https://github.com/FNA-XNA/FAudio), [_PBA_](https://github.com/acomminos/wine-pba) and
+ * **wine** - Personal fixes and extra patches, like [_PBA_](https://github.com/acomminos/wine-pba) and
               more gathered from [_TK-Glitch_](https://github.com/Tk-Glitch/PKGBUILDS/tree/master/wine-tkg-git), some of them not always enabled.
 
 ## Credits (Patches, install procedures and other files)

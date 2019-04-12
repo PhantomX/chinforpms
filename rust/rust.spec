@@ -22,7 +22,7 @@
 
 # We can also choose to just use Rust's bundled LLVM, in case the system LLVM
 # is insufficient.  Rust currently requires LLVM 5.0+.
-%if 0%{?rhel} && !0%{?epel}
+%if (0%{?rhel} && !0%{?epel}) || 0%{?fedora} > 29
 %bcond_without bundled_llvm
 %else
 %bcond_with bundled_llvm
@@ -54,7 +54,7 @@
 
 Name:           rust
 Version:        1.32.0
-Release:        101%{?dist}
+Release:        102%{?dist}
 
 Summary:        The Rust Programming Language
 License:        (ASL 2.0 or MIT) and (BSD and MIT)
@@ -468,18 +468,21 @@ export LIBSSH2_SYS_USE_PKG_CONFIG=1
 %global common_libdir %{_prefix}/lib
 %global rustlibdir %{common_libdir}/rustlib
 
+%if %{with bundled_llvm}
+export CFLAGS="$(echo "%{build_cflags}" | sed -e 's/-g/-g1/')"
+export CXXFLAGS="$(echo "%{build_cxxflags}" | sed -e 's/-g/-g1/')"
+%endif
+
 %ifarch %{arm} %{ix86}
 # full debuginfo is exhausting memory; just do libstd for now
 # https://github.com/rust-lang/rust/issues/45854
-%if (0%{?fedora} && 0%{?fedora} < 27) || (0%{?rhel} && 0%{?rhel} <= 7)
-# Older rpmbuild didn't work with partial debuginfo coverage.
-%global debug_package %{nil}
-%define enable_debuginfo --disable-debuginfo --disable-debuginfo-only-std --disable-debuginfo-tools --disable-debuginfo-lines
-%else
 %define enable_debuginfo --enable-debuginfo --enable-debuginfo-only-std --disable-debuginfo-tools --disable-debuginfo-lines
-%endif
+%else
+%if %{with bundled_llvm}
+%define enable_debuginfo --enable-debuginfo --enable-debuginfo-only-std --disable-debuginfo-tools --disable-debuginfo-lines
 %else
 %define enable_debuginfo --enable-debuginfo --disable-debuginfo-only-std --enable-debuginfo-tools --disable-debuginfo-lines
+%endif
 %endif
 
 %configure --disable-option-checking \
@@ -686,6 +689,9 @@ rm -f %{buildroot}%{rustlibdir}/etc/lldb_*.py*
 
 
 %changelog
+* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.32.0-102
+- Use bundled llvm for Fedora > 29
+
 * Wed Apr 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.32.0-101
 - Drop epoch, Waterfox spec have proper version requirements
 

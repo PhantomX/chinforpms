@@ -1,6 +1,6 @@
 Name:           firejail
 Version:        0.9.58.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        GUI tools for firejail
 
 License:        GPLv2
@@ -32,6 +32,8 @@ sed \
   -i Makefile.in
 
 %build
+export CFLAGS="`echo %{build_cflags} | sed -e 's/-fcf-protection//'`"
+
 %configure \
   --disable-apparmor \
  --disable-contrib-install \
@@ -65,6 +67,9 @@ getent group %{name} >/dev/null || groupadd -r %{name}
 
 
 %changelog
+* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.9.58.2-2
+- Remove not compatible -fcf-protection with -mindirect-branch from optflags
+
 * Fri Feb 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.9.58.2-1
 - 0.9.58.2
 

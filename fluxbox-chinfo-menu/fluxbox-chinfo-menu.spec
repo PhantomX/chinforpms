@@ -12,7 +12,7 @@ Release:        1%{?gver}%{?dist}
 Summary:        Menu generator for Fluxbox based on XDG
 
 License:        GPLv3
-URL:            https://github.com/PhantomX/%
+URL:            https://github.com/PhantomX/%{name}
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else

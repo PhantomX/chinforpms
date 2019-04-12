@@ -13,7 +13,7 @@
 %global pkgname tab_mix_plus
 
 Name:           waterfox-tabmixplus
-Version:        0.5.6.0
+Version:        0.5.7.0
 Release:        1%{?dist}
 Summary:        Enhances Waterfox tab browsing abilities
 
@@ -21,9 +21,9 @@ License:        MPLv1.1
 URL:            http://tabmixplus.org/
 
 %if 0%{?with_xpi}
-Source0:        https://bitbucket.org/onemen/tabmixplus/downloads/tab_mix_plus-0.5.6.0-fx.xpi
+Source0:        https://bitbucket.org/onemen/tabmixplus/downloads/tab_mix_plus-%{version}-fx.xpi
 %else
-Source0:        https://bitbucket.org/onemen/tabmixplus/get/0.5.6.0.tar.bz2#/%{pkgname}-%{version}.tar.bz2
+Source0:        https://bitbucket.org/onemen/tabmixplus/get/%{version}.tar.bz2#/%{pkgname}-%{version}.tar.bz2
 %endif
 Source1:        license.txt
 Source2:        %{name}.metainfo.xml
@@ -86,5 +86,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.5.7.0-1
+- 0.5.7.0
+
 * Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.5.6.0-1
 - Initial spec

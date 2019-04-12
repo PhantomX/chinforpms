@@ -1,6 +1,6 @@
 Name:           gmysqlcc
 Version:        0.3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        GUI client for mysql databases in GTK+
 
 %global pversion %(c=%{version}; echo ${c//./_})
@@ -9,7 +9,7 @@ License:        GPLv2
 URL:            https://github.com/thepozer/%{name}
 Source0:        %{url}/archive/GMYSQLCC_%{pversion}.tar.gz
 
-Patch0:         http://http.debian.net/debian/pool/main/g/%{name}/%{name}_0.3.0-2.diff.gz
+Source1:         http://http.debian.net/debian/pool/main/g/%{name}/%{name}_0.3.0-6.debian.tar.xz
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -27,9 +27,10 @@ access your MySQL database. It provides you a powerful way to
 create/edit all MySQL database objects most easy and simple way.
 
 %prep
-%autosetup -n %{name}-GMYSQLCC_%{pversion}
+%autosetup -n %{name}-GMYSQLCC_%{pversion} -a 1
 
-patch -p1 -i dont_override_cflags.patch
+patch -p1 -i debian/patches/dont_override_cflags.patch
+patch -p1 -i debian/patches/clang-ftbfs.patch
 
 cp -p %{_datadir}/automake*/mkinstalldirs .
 
@@ -49,7 +50,7 @@ autoreconf -ivf
 rm -rf %{buildroot}%{_prefix}/doc
 
 mkdir -p %{buildroot}%{_mandir}/man1
-install -pm0644 %{name}.1 %{buildroot}%{_mandir}/man1/
+install -pm0644 debian/%{name}.1 %{buildroot}%{_mandir}/man1/
 
 desktop-file-edit  \
   --remove-key=Encoding \
@@ -79,6 +80,9 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 
 
 %changelog
+* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.3.0-5
+- Update Debian patches to tarball style
+
 * Mon Jun 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.3.0-4
 - Update spec
 

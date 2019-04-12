@@ -1,12 +1,12 @@
 Name:           gpa
 Summary:        Graphical user interface for GnuPG
 Version:        0.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 License:        GPLv3+
 URL:            https://www.gnupg.org/related_software/gpa/
-Source0:        ftp://ftp.gnupg.org/gcrypt/gpa/%{name}-%{version}.tar.bz2
-Source1:        ftp://ftp.gnupg.org/gcrypt/gpa/%{name}-%{version}.tar.bz2.sig
+Source0:        https://gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
+Source1:        https://gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2.sig
 
 Patch1:         gpa-keyservers.patch
 
@@ -76,6 +76,9 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 
 
 %changelog
+* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.10.0-2
+- http download links
+
 * Wed Oct 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.10.0-1
 - 0.10.0
 

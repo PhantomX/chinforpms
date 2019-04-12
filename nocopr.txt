@@ -14,6 +14,7 @@ hakuneko-desktop
 irpf2016
 irpf2017
 irpf2018
+irpf2019
 mupen64plus-extraplugins
 ppsspp
 psximager

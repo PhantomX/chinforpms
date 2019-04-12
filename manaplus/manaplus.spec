@@ -1,5 +1,5 @@
 Name:           manaplus
-Version:        1.8.12.8
+Version:        1.9.3.23
 Epoch:          1
 Release:        100%{?dist}
 Summary:        OpenSource 2D MMORPG client for Evol Online and The Mana World
@@ -114,6 +114,9 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 
 
 %changelog
+* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.3.23-100
+- 1.9.3.23
+
 * Fri Dec 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.12.8-100
 - 1.8.12.8
 

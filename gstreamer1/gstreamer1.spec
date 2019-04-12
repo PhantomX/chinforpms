@@ -9,8 +9,8 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.14.4
-Release:        101%{?gitcommit:.git%{shortcommit}}%{?dist}
+Version:        1.15.2
+Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPLv2+
@@ -44,7 +44,7 @@ BuildRequires:  automake gettext-devel libtool
 BuildRequires:  chrpath
 
 ### documentation requirements
-BuildRequires:  python2
+BuildRequires:  python3
 BuildRequires:  openjade
 BuildRequires:  texlive-jadetex
 BuildRequires:  libxslt
@@ -221,6 +221,10 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 %{_datadir}/aclocal/gst-element-check-%{majorminor}.m4
 
+%dir %{_datadir}/gstreamer-%{majorminor}/gdb/
+%{_datadir}/gstreamer-%{majorminor}/gdb/
+%{_datadir}/gdb/auto-load/
+
 %{_libdir}/pkgconfig/gstreamer-%{majorminor}.pc
 %{_libdir}/pkgconfig/gstreamer-base-%{majorminor}.pc
 %{_libdir}/pkgconfig/gstreamer-controller-%{majorminor}.pc
@@ -234,6 +238,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.15.2-100
+- 1.15.2
+
 * Thu Oct 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.14.4-101.chinfo
 - Multilib wrappers
 

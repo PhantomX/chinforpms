@@ -1,4 +1,4 @@
-VERSION ?= 19.0.1
+VERSION ?= 19.0.2
 SANITIZE ?= 1
 
 DIRNAME = mesa-${VERSION}

@@ -65,7 +65,7 @@ install -pm0644 %{name}.sh %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh
 %{_sysconfdir}/profile.d/%{name}.sh
 %{_bindir}/%{name}
 %{_libdir}/lib%{name}.so.0
-%{_datadir}/bash-completion/completions/%{name}/
+%{_datadir}/bash-completion/completions/%{name}
 %{_mandir}/man1/%{name}.1*
 
 

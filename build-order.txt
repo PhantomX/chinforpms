@@ -2,16 +2,14 @@
 buildsys-build-rpmfusion
 c-vtapi
 chinforpms-fake-packages
-FAudio
 gstreamer1
 gtk3
 libmirage
-libogg
+libvorbis
 libstrangle
 libtgvoip
 libxspf
 mesa
-shaderc
 smooth
 taglib
 vkd3d
@@ -36,12 +34,11 @@ cdemu-daemon
 chinfo-extramimetypes
 claws-mail
 claws-mail-themes
-compat-libva1
 curlew
 disk-indicator
 easytag
 emojione-picker
-FAudio-freeworld
+FAudio
 firefox-chinfo-prefs
 firejail
 firetools
@@ -98,7 +95,6 @@ tyrian-data
 unbound-update-roothints
 vhba
 vhba-kmod
-VirtualBox
 waterfox
 waterfox-filesystem
 waterfox-classic-theme-restorer
@@ -111,7 +107,6 @@ waterfox-noscript
 wiibafu
 wiimms-iso-tools
 wimlib
-wine
 xboxdrv
 xdgmenumaker
 xorg-x11-server
@@ -120,22 +115,24 @@ xorg-x11-server
 belle-sip
 belr
 bzrtp
+FAudio-freeworld
 freac
 freac-cdk-freeworld
 freac-superfast-codecs
 freac-superfast-codecs-freeworld
 m64py
-mingw-wine-vk9
 ortp
-VirtualBox-kmod
 whdd
+wine
+
+# 4
+belcard
+mingw-wine-vk9
 wine-dxup
 wine-d9vk
 wine-dxvk
 wine-nine
 
-# 4
-belcard
 
 # 5
 mediastreamer
