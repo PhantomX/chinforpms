@@ -1,6 +1,6 @@
-%global commit fa114d424de1ccfc6a8ee5b13cef8b506d0d87eb
+%global commit eeb3b0b1fd0e42ea902f3f3731f1265597e6627d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190313
+%global date 20190411
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -25,7 +25,12 @@ ExcludeArch: armv7hl
 %global system_ffi        1
 %global system_cairo      0
 %global system_harfbuzz   1
+# libvpx is too new for Firefox 65
+%if 0%{?fedora} < 30
 %global system_libvpx     1
+%else
+%global system_libvpx     0
+%endif
 %global system_webp       1
 %global system_vorbis     1
 %global system_libicu     0
@@ -70,6 +75,13 @@ ExcludeArch: armv7hl
 %if !0%{?build_with_clang} || 0%{?fedora} > 28
 %global disable_elfhack   1
 %endif
+
+# Set to build with pinned rust version
+# This enables stylo build when default rust version is not supported
+# and a downgraded rust package exists
+%global build_with_pinned_rust 1
+%global rust_build_min_ver 1.32
+%global rust_build_min_nover 1.33
 
 %global default_bookmarks_file  %{_datadir}/bookmarks/default-bookmarks.html
 %global waterfox_app_id  \{ec8030f7-c20a-464f-9b0e-13a3a9e97384\}
@@ -119,7 +131,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.8
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -184,7 +196,7 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 # Upstream updates/PRs
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
-Patch450:       %{vc_url}/pull/888.patch#/%{name}-gh-pull888.patch
+Patch450:       %{vc_url}/pull/915.patch#/%{name}-gh-pull915.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -309,12 +321,12 @@ BuildRequires:  xorg-x11-server-Xvfb
 %if 0%{?build_with_pgo} || !0%{?run_tests}
 BuildRequires:  librsvg2
 %endif
-%if 0%{?fedora} > 29
+%if 0%{?build_with_pinned_rust}
+BuildRequires:  (rust >= %{rust_build_min_ver} with rust < %{rust_build_min_nover})
+BuildRequires:  (cargo >= %{rust_build_min_ver} with cargo < %{rust_build_min_nover})
+%else
 BuildRequires:  rust
 BuildRequires:  cargo
-%else
-BuildRequires:  (rust >= 1.32 with rust < 1.33)
-BuildRequires:  (cargo >= 1.32 with cargo < 1.33)
 %endif
 BuildRequires:  clang-devel
 
@@ -591,10 +603,10 @@ echo "ac_add_options --without-system-icu" >> .mozconfig
 echo "ac_add_options --disable-ion" >> .mozconfig
 %endif
 
-%if 0%{?fedora} > 29
-ac_add_options --disable-stylo
+%if 0%{?build_with_pinned_rust}
+echo "ac_add_options --enable-stylo=build" >> .mozconfig
 %else
-ac_add_options --enable-stylo=build
+echo "ac_add_options --disable-stylo" >> .mozconfig
 %endif
 
 # Remove executable bit to make brp-mangle-shebangs happy.
@@ -999,7 +1011,7 @@ fi
 %{mozappdir}/platform.ini
 %{mozappdir}/plugin-container
 %{mozappdir}/gmp-clearkey
-%{mozappdir}/fonts/EmojiOneMozilla.ttf
+%{mozappdir}/fonts/TwemojiMozilla.ttf
 %if !0%{?system_libicu}
 %{mozappdir}/icudt*.dat
 %endif
@@ -1013,6 +1025,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Apr 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.8-2.20190411giteeb3b0b
+- New snapshot
+- Better rust BR version control with build_with_pinned_rust switch
+
 * Thu Mar 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.8-1.20190313gitfa114d4
 - New release/snapshot
 - Temporary fix to rust BR, build is failing with 1.33+

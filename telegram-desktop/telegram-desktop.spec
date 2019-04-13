@@ -11,7 +11,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        1.6.5
+Version:        1.6.6
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -69,9 +69,7 @@ BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  libstdc++-devel
 BuildRequires:  range-v3-devel
 BuildRequires:  openssl-devel
-BuildRequires:  minizip-devel
 BuildRequires:  xxhash-devel
-BuildRequires:  lzma-devel
 BuildRequires:  gtk3-devel
 BuildRequires:  xz-devel
 BuildRequires:  python3
@@ -172,6 +170,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
+* Fri Apr 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.6-100
+- 1.6.6
+
 * Mon Apr 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.5-100
 - 1.6.5
 

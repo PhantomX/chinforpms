@@ -1,18 +1,14 @@
 %bcond_with yubikey
 
 Name:           keepassxc
-Version:        2.4.0
-Release:        101%{?dist}
+Version:        2.4.1
+Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
 License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain
 URL:            https://keepassxc.org/
 Source0:        https://github.com/keepassxreboot/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
-
-Patch0:         https://github.com/keepassxreboot/keepassxc/pull/2810.patch#/%{name}-gh-2810.patch
-
-Patch100:       0001-Disable-update-checking.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -65,6 +61,7 @@ pushd %{_target_platform}
   -DWITH_XC_AUTOTYPE:BOOL=ON \
   -DWITH_XC_SSHAGENT:BOOL=ON \
   -DWITH_XC_YUBIKEY:BOOL=%{?_with_yubikey:ON}%{!?_with_yubikey:OFF} \
+  -DWITH_XC_UPDATECHECK:BOOL=OFF \
 %{nil}
 
 %make_build
@@ -104,6 +101,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Sat Apr 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.1-100
+- 2.4.1
+
 * Wed Mar 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.0-101
 - Disable update check by default
 

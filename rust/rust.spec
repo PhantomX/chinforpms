@@ -15,7 +15,7 @@
 %global bootstrap_date 2018-12-20
 
 # Only the specified arches will use bootstrap binaries.
-%global bootstrap_arches %%{rust_arches}
+#global bootstrap_arches %%{rust_arches}
 
 # Using llvm-static may be helpful as an opt-in, e.g. to aid LLVM rebases.
 %bcond_with llvm_static
@@ -54,7 +54,7 @@
 
 Name:           rust
 Version:        1.32.0
-Release:        102%{?dist}
+Release:        103%{?dist}
 
 Summary:        The Rust Programming Language
 License:        (ASL 2.0 or MIT) and (BSD and MIT)
@@ -521,6 +521,10 @@ find %{buildroot}%{common_libdir} -maxdepth 1 -type f -name '*.so' \
 find %{buildroot}%{_libdir} -maxdepth 1 -type f -name '*.so' \
   -exec chmod -v +x '{}' '+'
 
+%if %{with bundled_llvm} && %{without llvm_static}
+chmod +x %{buildroot}%{rustlibdir}/%{rust_triple}/lib/libLLVM-*.so
+%endif
+
 # The libdir libraries are identical to those under rustlib/.  It's easier on
 # library loading if we keep them in libdir, but we do need them in rustlib/
 # to support dynamic linking for compiler plugins, so we'll symlink.
@@ -689,6 +693,9 @@ rm -f %{buildroot}%{rustlibdir}/etc/lldb_*.py*
 
 
 %changelog
+* Fri Apr 12 2019 Phantom X <megaphantomx at bol dot com dot br>- 1.32.0-103
+- Make libLLVM-8svn.so executable to perform proper debuginfo, when bundling is enabled
+
 * Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.32.0-102
 - Use bundled llvm for Fedora > 29
 

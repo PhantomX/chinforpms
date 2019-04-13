@@ -30,7 +30,6 @@ Requires:       vorbis-tools
 Requires:       wavpack
 Requires:       xmp
 #Suggests:       aften
-Suggests:       alac_decoder
 Suggests:       ffmpeg
 
 

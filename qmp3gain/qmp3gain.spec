@@ -5,7 +5,7 @@ Summary:        MP3Gain GUI front end
 
 License:        GPLv2
 URL:            http://sourceforge.net/projects/qmp3gain/
-Source0:        https://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(QtGui)

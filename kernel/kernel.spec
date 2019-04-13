@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 30cc11a2b61c23faf309ccef6261dacecc3f6513
+%global pfcommit d64919a172dc6074cecdb4b7c68086a01bef996e
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -733,9 +733,6 @@ Patch3025: %{pf_url}/eb95b85a541571b276e3bd66032648022f279f68.patch#/pf-eb95b85a
 %global graysky2_id 87168bfa27b782e1c9435ba28ebe3987ddea8d30
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v8.1+_kernel_v4.13+.patch
 %endif
-
-%else
-Patch4009:  https://gitlab.com/alfredchen/linux-bmq/commit/1b66bf997e19f3fa59e0871cce0de4778e91bce3.patch#/zzz-bmq-1b66bf9.patch
 
 %endif
 
