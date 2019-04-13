@@ -9,6 +9,7 @@ dropboxd
 FAudio-freeworld
 freac-cdk-freeworld
 freac-superfast-codecs-freeworld
+gens-gs
 gflash-player
 hakuneko-desktop
 irpf2016
@@ -16,6 +17,7 @@ irpf2017
 irpf2018
 irpf2019
 mupen64plus-extraplugins
+pcsx2
 ppsspp
 psximager
 reicast

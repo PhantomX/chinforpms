@@ -147,6 +147,10 @@ missing(){
   fi
 }
 
+xtcsoname(){
+  objdump -p "${1}" | grep SONAME | awk '{print $2}'
+}
+
 # curl
 %if 0%{?with_curl}
   reldir=$(abs2rel %{python2_sitearch} %{progdir})

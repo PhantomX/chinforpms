@@ -7,9 +7,13 @@
 
 %bcond_with     native
 
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           reicast
 Version:        8.1
-Release:        1%{?dist}
+Release:        1%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
