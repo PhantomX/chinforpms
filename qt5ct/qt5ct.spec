@@ -1,6 +1,6 @@
 Name:           qt5ct
 Version:        0.38
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
@@ -9,6 +9,8 @@ Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.
 Source1:        README.gtk3
 
 Patch0:         %{name}-gtk3-dialogs.patch
+Patch1:         %{name}-r531.patch
+Patch2:         %{name}-r532.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
@@ -31,6 +33,11 @@ DE/WM without Qt integration.
 
 %prep
 %setup -q -c
+
+pushd %{name}-%{version}
+%patch1 -p1
+%patch2 -p1
+popd
 
 cp -a %{name}-%{version} %{name}-%{version}-gtk3
 
@@ -90,6 +97,9 @@ install -D -pm 644 %{name}-%{version}/src/%{name}/translations/*.qm \
 
 
 %changelog
+* Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.38-101
+- Apply some upstream patches
+
 * Fri Apr 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.38-100
 - 0.38
 

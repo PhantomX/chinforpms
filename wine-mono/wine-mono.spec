@@ -1,15 +1,26 @@
+%global with_bin 0
+
+%if 0%{?with_bin}
 %undefine _hardened_build
 %{?mingw_package_header}
+%endif
 
 Name:           wine-mono
-Version:        4.8.0
+Version:        4.8.1
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
 License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
 URL:            http://wiki.winehq.org/Mono
 
-Source0:        http://dl.winehq.org/wine/wine-mono/%{version}/wine-mono-%{version}.tar.gz
+%if 0%{?with_bin}
+Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-bin-%{version}.tar.gz
+%else
+Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}.tar.gz
+%endif
+Source1:        https://github.com/madewokherd/wine-mono/raw/master/COPYING
+Source2:        https://github.com/madewokherd/wine-mono/raw/master/README
+
 Patch0:         wine-mono-build-msifilename.patch
 # to statically link in winpthreads
 Patch1:         wine-mono-build-static.patch
@@ -19,6 +30,7 @@ Patch1:         wine-mono-build-static.patch
 BuildArch:      noarch
 ExcludeArch:    %{power64} s390x s390
 
+%if !0%{?with_bin}
 # 64
 BuildRequires:  mingw64-filesystem >= 95
 BuildRequires:  mingw64-headers
@@ -48,6 +60,7 @@ BuildRequires:  wine-core
 BuildRequires:  wine-devel
 BuildRequires:  mono-core
 BuildRequires:  /usr/bin/pathfix.py
+%endif
 
 Requires: wine-filesystem
 
@@ -56,21 +69,38 @@ Windows Mono library required for Wine.
 
 %prep
 %setup -q
+%if 0%{?with_bin}
+cp -p %{S:1} %{S:2} .
+
+tar xvf %{S:0}
+chmod -R g-w %{name}-%{version}
+
+%else
+
 %patch0 -p1 -b.msifilename
 %patch1 -p1 -b.static
 
 # Fix all Python shebangs
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" . 
 sed -i 's/GENMDESC_PRG=python/GENMDESC_PRG=python3/' mono/mono/mini/Makefile.am.in
+%endif
 
 %build
-MAKEOPTS=%{_smp_mflags} MSIFILENAME=wine-mono-%{version}.msi ./build-winemono.sh.static
+%if !0%{?with_bin}
+export WINEPREFIX="$(pwd)/wine-build"
+MAKEOPTS=%{_smp_mflags} MSIFILENAME=wine-mono-%{version}.msi ./build-winemono.sh 
+%endif
 
 %install
 mkdir -p %{buildroot}%{_datadir}/wine/mono
-install -p -m 0644 cab-contents/wine-mono-%{version}.msi \
-    %{buildroot}%{_datadir}/wine/mono/wine-mono-%{version}.msi
+%if 0%{?with_bin}
 
+cp -r %{name}-%{version} %{buildroot}%{_datadir}/wine/mono/
+
+%else
+
+cp -r image %{buildroot}%{_datadir}/wine/mono/wine-mono-%{version}
+find %{buildroot}%{_datadir}/wine/mono/wine-mono-%{version} -name '*.debug' -delete
 # prep licenses
 cp mono/LICENSE mono-LICENSE
 cp mono/COPYING.LIB mono-COPYING.LIB
@@ -88,12 +118,23 @@ popd
 cp mono-basic/README mono-basic-README
 cp mono-basic/LICENSE mono-basic-LICENSE
 
+%endif
+
 %files
-%license COPYING mono-LICENSE mono-COPYING.LIB mono-basic-LICENSE mono-mcs*
-%doc README mono-basic-README
-%{_datadir}/wine/mono/wine-mono-%{version}.msi
+%license COPYING
+%doc README
+%if !0%{?with_bin}
+%license mono-LICENSE mono-COPYING.LIB mono-basic-LICENSE mono-mcs*
+%doc mono-basic-README
+%endif
+%{_datadir}/wine/mono/wine-mono-%{version}/
+
 
 %changelog
+* Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.8.1-100
+- 4.8.1
+- Shared location instead MSI
+
 * Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.8.0-100
 - 4.8.0
 - Rawhide sync

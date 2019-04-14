@@ -3,23 +3,20 @@
 
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.8.0
+%global winemono  4.8.1
 %global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 4.5
+%global stagingver 4.6
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %endif
-%global tkg_id b520389182bfc0a57077d32cab0674f8b01a2c3c
+%global tkg_id e4f33a52b0b9f659cf9f569ad93f2a4e6098c5ef
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global esync 1
-%global esynccommit ce79346
 %global pba 0
 %if !%{?staging}
-%global esync 0
 %global pba 0
 %endif
 %global faudioopts -W xaudio2-revert -W xaudio2_7-CreateFX-FXEcho -W xaudio2_7-WMA_support -W xaudio2_CommitChanges
@@ -37,7 +34,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.5
+Version:        4.6
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -132,19 +129,6 @@ Source1001:     wine-README-pba
 Patch1000:      %{tkg_url}/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 %endif #{?pba}
 
-%if 0%{?esync}
-# https://github.com/zfigura/wine/
-Source2000:     https://github.com/zfigura/wine/releases/download/esync%{esynccommit}/esync.tgz#/esync-%{esynccommit}.tar.gz
-# Configure limits in systemd
-# This should be only needed with systemd < 240
-Source2001:     01-%{name}.conf
-Source2002:     %{tkg_url}/esync-staging-fixes-r3.patch#/%{name}-tkg-esync-staging-fixes-r3.patch
-Patch2001:      %{tkg_url}/esync-compat-fixes-r3.patch#/%{name}-tkg-esync-compat-fixes-r3.patch
-Patch2002:      %{tkg_url}/esync-compat-fixes-r3.1.patch#/%{name}-tkg-esync-compat-fixes-r3.1.patch
-Patch2003:      %{tkg_url}/esync-compat-fixes-r3.2.patch#/%{name}-tkg-esync-compat-fixes-r3.2.patch
-Patch2004:      %{tkg_url}/esync-no_kernel_obj_list.patch#/%{name}-tkg-esync-no_kernel_obj_list.patch
-%endif #{?esync}
-
 %endif #{?staging}
 
 %if !%{?no64bit}
@@ -233,9 +217,6 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(libattr)
 BuildRequires:  pkgconfig(libva)
-%if 0%{?esync}
-BuildRequires:  git
-%endif #{?esync}
 %endif #{?staging}
 
 Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -706,26 +687,9 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
 
-%if 0%{?esync}
-tar xvf %{SOURCE2000}
-%endif #{?esync}
-
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?faudioopts}
 
 sed -i "s/  (Staging)//g" libs/wine/Makefile.in
-
-%if 0%{?esync}
-pushd esync
-git apply -C1 %{S:2002}
-%patch2001 -p1
-%patch2002 -p1
-%patch2003 -p1
-popd
-for i in esync/00??-*.patch ;do
-  git apply -C1 $i
-done
-%patch2004 -p1
-%endif #{?esync}
 
 %if 0%{?pba}
 cp -p %{S:1001} README-pba-pkg
@@ -1064,16 +1028,6 @@ install -p -m 0644 loader/wine.fr.UTF-8.man %{buildroot}%{_mandir}/fr.UTF-8/man1
 mkdir -p %{buildroot}%{_mandir}/pl.UTF-8/man1
 install -p -m 0644 loader/wine.pl.UTF-8.man %{buildroot}%{_mandir}/pl.UTF-8/man1/wine.1
 
-%if 0%{?esync}
-# Systemd configuration
-%if 0%{?fedora} < 30
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
-install -m 644 -p %{SOURCE2001} %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
-install -m 644 -p %{SOURCE2001} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
-%endif
-%endif
-
 %if 0%{?rhel} == 6
 %post sysvinit
 if [ $1 -eq 1 ]; then
@@ -1145,9 +1099,7 @@ fi
 # do not include huge changelogs .OLD .ALPHA .BETA (#204302)
 %doc documentation/README.*
 %if 0%{?staging}
-%if 0%{?esync}
 %doc README.esync
-%endif
 %if 0%{?pba}
 %license LICENSE_pba.md
 %doc README_pba.md
@@ -1696,6 +1648,7 @@ fi
 %{_libdir}/wine/kerberos.dll.so
 %{_libdir}/wine/kernel32.dll.so
 %{_libdir}/wine/kernelbase.dll.so
+%{_libdir}/wine/ksecdd.sys.so
 %{_libdir}/wine/ksuser.dll.so
 %{_libdir}/wine/ktmw32.dll.so
 %{_libdir}/wine/l3codeca.acm.so
@@ -1905,9 +1858,8 @@ fi
 %{_libdir}/wine/traffic.dll.so
 %{_libdir}/wine/tzres.dll.so
 %{_libdir}/wine/ucrtbase.dll.so
-%if 0%{?staging}
 %{_libdir}/wine/uianimation.dll.so
-%endif
+%{_libdir}/wine/uiautomationcore.dll.so
 %{_libdir}/wine/uiautomationcore.dll.so
 %{_libdir}/wine/uiribbon.dll.so
 %{_libdir}/wine/unicows.dll.so
@@ -2262,14 +2214,6 @@ fi
 
 %files systemd
 %config %{_binfmtdir}/wine.conf
-%if 0%{?esync}
-%if 0%{?fedora} < 30
-%{_prefix}/lib/systemd/system.conf.d/
-%{_prefix}/lib/systemd/system.conf.d/01-%{name}.conf
-%{_prefix}/lib/systemd/user.conf.d/
-%{_prefix}/lib/systemd/user.conf.d/01-%{name}.conf
-%endif
-%endif
 
 %if 0%{?rhel} == 6
 %files sysvinit
@@ -2336,6 +2280,10 @@ fi
 
 
 %changelog
+* Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.6-100
+- 4.6
+- esync merged with staging
+
 * Sat Mar 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.5-100
 - 4.5
 

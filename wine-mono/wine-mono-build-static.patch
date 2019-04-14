@@ -14,8 +14,8 @@
          "$SRCDIR"/mono/configure --prefix="$BUILDDIR/build-cross-cli-install" --with-mcs-docs=no --disable-system-aot || exit 1
 +        sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i libtool
      fi
-     if test 1 = $USE_MONOLITE; then
-         make get-monolite-latest || exit 1
+
+ 	# put a System.Native library somewhere monolite can find it during the build
 @@ -180,6 +182,7 @@
      # build mono-basic
      cd "$SRCDIR/mono-basic"

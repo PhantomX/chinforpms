@@ -1,0 +1,215 @@
+Index: qt5ct/src/qt5ct/appearancepage.cpp
+===================================================================
+--- qt5ct/src/qt5ct/appearancepage.cpp	(revisão 530)
++++ qt5ct/src/qt5ct/appearancepage.cpp	(revisão 531)
+@@ -107,7 +107,7 @@
+ 
+ void AppearancePage::writeSettings()
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     settings.beginGroup("Appearance");
+     settings.setValue("style", m_ui->styleComboBox->currentText());
+     settings.setValue("custom_palette", m_ui->customPaletteButton->isChecked());
+@@ -327,7 +327,7 @@
+ 
+ void AppearancePage::readSettings()
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     settings.beginGroup("Appearance");
+     QString style = settings.value("style", "Fusion").toString();
+     m_ui->styleComboBox->setCurrentText(style);
+Index: qt5ct/src/qt5ct/fontspage.cpp
+===================================================================
+--- qt5ct/src/qt5ct/fontspage.cpp	(revisão 530)
++++ qt5ct/src/qt5ct/fontspage.cpp	(revisão 531)
+@@ -60,7 +60,7 @@
+ 
+ void FontsPage::writeSettings()
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     settings.beginGroup("Fonts");
+     settings.setValue("general", m_ui->generalFontLabel->font());
+     settings.setValue("fixed", m_ui->fixedFontLabel->font());
+@@ -80,7 +80,7 @@
+ 
+ void FontsPage::readSettings()
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     settings.beginGroup("Fonts");
+     loadFont(&settings, m_ui->generalFontLabel, "general");
+     loadFont(&settings, m_ui->fixedFontLabel, "fixed");
+Index: qt5ct/src/qt5ct/iconthemepage.cpp
+===================================================================
+--- qt5ct/src/qt5ct/iconthemepage.cpp	(revisão 530)
++++ qt5ct/src/qt5ct/iconthemepage.cpp	(revisão 531)
+@@ -53,7 +53,7 @@
+ 
+ void IconThemePage::writeSettings()
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     QTreeWidgetItem *item = m_ui->treeWidget->currentItem();
+     if(item)
+         settings.setValue("Appearance/icon_theme", item->data(3, Qt::UserRole));
+@@ -61,7 +61,7 @@
+ 
+ void IconThemePage::readSettings()
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     QString name = settings.value("Appearance/icon_theme").toString();
+ 
+     if(name.isEmpty())
+Index: qt5ct/src/qt5ct/interfacepage.cpp
+===================================================================
+--- qt5ct/src/qt5ct/interfacepage.cpp	(revisão 530)
++++ qt5ct/src/qt5ct/interfacepage.cpp	(revisão 531)
+@@ -74,7 +74,7 @@
+ 
+ void InterfacePage::writeSettings()
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     settings.beginGroup("Interface");
+     settings.setValue("double_click_interval", m_ui->doubleClickIntervalSpinBox->value());
+     settings.setValue("cursor_flash_time", m_ui->cursorFlashTimeSpinBox->value());
+@@ -115,7 +115,7 @@
+ 
+ void InterfacePage::readSettings()
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     settings.beginGroup("Interface");
+     m_ui->doubleClickIntervalSpinBox->setValue(qApp->doubleClickInterval());
+     m_ui->cursorFlashTimeSpinBox->setValue(qApp->cursorFlashTime());
+Index: qt5ct/src/qt5ct/mainwindow.cpp
+===================================================================
+--- qt5ct/src/qt5ct/mainwindow.cpp	(revisão 530)
++++ qt5ct/src/qt5ct/mainwindow.cpp	(revisão 531)
+@@ -54,7 +54,7 @@
+     m_ui->tabWidget->addTab(new QSSPage(this), tr("Style Sheets"));
+ #endif
+ 
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     restoreGeometry(settings.value("SettingsWindow/geometry").toByteArray());
+ 
+     setWindowIcon(QIcon::fromTheme("preferences-desktop-theme"));
+@@ -78,7 +78,7 @@
+ 
+ void MainWindow::closeEvent(QCloseEvent *)
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     settings.setValue("SettingsWindow/geometry", saveGeometry());
+ }
+ 
+Index: qt5ct/src/qt5ct/paletteeditdialog.cpp
+===================================================================
+--- qt5ct/src/qt5ct/paletteeditdialog.cpp	(revisão 530)
++++ qt5ct/src/qt5ct/paletteeditdialog.cpp	(revisão 531)
+@@ -50,7 +50,7 @@
+     m_ui->tableWidget->setHorizontalHeaderLabels(labels);
+     setPalette(palette);
+ 
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     restoreGeometry(settings.value("PaletteEditor/geometry").toByteArray());
+ }
+ 
+@@ -100,7 +100,7 @@
+ 
+ void PaletteEditDialog::hideEvent(QHideEvent *)
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     settings.setValue("PaletteEditor/geometry", saveGeometry());
+ }
+ 
+Index: qt5ct/src/qt5ct/qsseditordialog.cpp
+===================================================================
+--- qt5ct/src/qt5ct/qsseditordialog.cpp	(revisão 530)
++++ qt5ct/src/qt5ct/qsseditordialog.cpp	(revisão 531)
+@@ -52,7 +52,7 @@
+         m_ui->textEdit->setReadOnly(true);
+     }
+ 
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     restoreGeometry(settings.value("QSSEditor/geometry").toByteArray());
+ }
+ 
+@@ -70,7 +70,7 @@
+ 
+ void QSSEditorDialog::hideEvent(QHideEvent *)
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     settings.setValue("QSSEditor/geometry", saveGeometry());
+ }
+ 
+Index: qt5ct/src/qt5ct/qsspage.cpp
+===================================================================
+--- qt5ct/src/qt5ct/qsspage.cpp	(revisão 530)
++++ qt5ct/src/qt5ct/qsspage.cpp	(revisão 531)
+@@ -70,7 +70,7 @@
+ void QSSPage::writeSettings()
+ {
+     QStringList styleSheets;
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+ 
+     for(int i = 0; i < m_ui->qssListWidget->count(); ++i)
+     {
+@@ -166,7 +166,7 @@
+     findStyleSheets(Qt5CT::userStyleSheetPath());
+     findStyleSheets(Qt5CT::sharedStyleSheetPaths());
+ 
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     QStringList styleSheets = settings.value("Interface/stylesheets").toStringList();
+     for(int i = 0; i < m_ui->qssListWidget->count(); ++i)
+     {
+Index: qt5ct/src/qt5ct-style/plugin.cpp
+===================================================================
+--- qt5ct/src/qt5ct-style/plugin.cpp	(revisão 530)
++++ qt5ct/src/qt5ct-style/plugin.cpp	(revisão 531)
+@@ -45,7 +45,7 @@
+ {
+     if (key == "qt5ct-style")
+     {
+-        QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++        QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+         QString style = settings.value("Appearance/style", "Fusion").toString();
+         if(key == style || !QStyleFactory::keys().contains(style))
+             style = "Fusion";
+Index: qt5ct/src/qt5ct-style/qt5ctproxystyle.cpp
+===================================================================
+--- qt5ct/src/qt5ct-style/qt5ctproxystyle.cpp	(revisão 530)
++++ qt5ct/src/qt5ct-style/qt5ctproxystyle.cpp	(revisão 531)
+@@ -33,7 +33,7 @@
+ Qt5CTProxyStyle::Qt5CTProxyStyle(const QString &key) :
+     QProxyStyle(key)
+ {
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+     m_dialogButtonsHaveIcons = settings.value("Interface/dialog_buttons_have_icons", Qt::PartiallyChecked).toInt();
+     m_activateItemOnSingleClick = settings.value("Interface/activate_item_on_single_click", Qt::PartiallyChecked).toInt();
+     m_underlineShortcut = settings.value("Interface/underline_shortcut", Qt::PartiallyChecked).toInt();
+Index: qt5ct/src/qt5ct-qtplugin/qt5ctplatformtheme.cpp
+===================================================================
+--- qt5ct/src/qt5ct-qtplugin/qt5ctplatformtheme.cpp	(revisão 530)
++++ qt5ct/src/qt5ct-qtplugin/qt5ctplatformtheme.cpp	(revisão 531)
+@@ -289,7 +289,7 @@
+         m_customPalette = nullptr;
+     }
+ 
+-    QSettings settings(QSettings::UserScope, QLatin1String("qt5ct"), QLatin1String("qt5ct"));
++    QSettings settings(Qt5CT::configFile(), QSettings::IniFormat);
+ 
+     settings.beginGroup("Appearance");
+     m_style = settings.value("style", "Fusion").toString();

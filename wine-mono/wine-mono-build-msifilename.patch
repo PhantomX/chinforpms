@@ -2,10 +2,10 @@
 +++ wine-mono-4.5.4/build-winemono.sh	2014-11-14 18:03:20.583738750 +0100
 @@ -434,7 +434,7 @@
  
- build_msi ()
+ build_runtime_msi ()
  {
 -	MSIFILENAME=$OUTDIR/winemono.msi
 +	MSIFILENAME=${MSIFILENAME:-winemono.msi}
-     rm -rf cab-contents
-     rm -f "$BUILDDIR/image.cab" "${MSIFILENAME}"
+ 	CABFILENAME=$BUILDDIR/image.cab
+ 	TABLEDIR=$BUILDDIR/build-msi-tables/runtime/
  
