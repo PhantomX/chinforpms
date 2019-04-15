@@ -2,7 +2,7 @@
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -19,7 +19,11 @@ BuildRequires:  nasm
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glu)
-BuildRequires:  pkgconfig(minizip)
+%if 0%{?fedora} >= 30
+BuildRequires:  minizip-compat-devel
+%else
+BuildRequires:  minizip-devel
+%endif
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(lirc)
 BuildRequires:  pkgconfig(sdl2)
@@ -117,6 +121,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.9-101
+- Fedora 30 minizip devel mess
+
 * Thu Mar 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.5.9-100
 - 2.5.9
 - BR: nasm

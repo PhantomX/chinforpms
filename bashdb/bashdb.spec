@@ -3,7 +3,7 @@
 Name:           bashdb
 Summary:        BASH debugger, the BASH symbolic debugger
 Version:        4.4_1.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 License:        GPLv2+
 URL:            http://bashdb.sourceforge.net/
@@ -11,11 +11,18 @@ URL:            http://bashdb.sourceforge.net/
 %global rversion %(c=%{version}; echo ${c//_/-})
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{rversion}.tar.bz2
 
+Patch0:         0001-Bump-bash-supported-version.patch
+
 BuildArch:      noarch
 
 BuildRequires:  bash >= 4.4
 BuildRequires:  gcc
 BuildRequires:  python2-devel
+# Patch0
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+
 Requires:       bash >= 4.4
 
 Obsoletes:      emacs-bashdb < %{version}
@@ -36,9 +43,12 @@ Bashdb can be used with ddd: ddd --debugger %{_bindir}/%{name} <script-name>.
 
 
 %prep
-%autosetup -n %{name}-%{rversion}
+%autosetup -n %{name}-%{rversion} -p1
 
 sed -i '1s|/usr/bin/env python|%{__python2}|' lib/term-highlight.py
+
+touch README
+autoreconf -ivf
 
 %build
 %configure
@@ -65,6 +75,9 @@ make check
 
 
 %changelog
+* Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.4_1.0.1-2
+- Bump bash supported version dirtily
+
 * Wed Feb 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.4_1.0.1-1
 - 4.4-1.0.1
 - Remove info scriplets

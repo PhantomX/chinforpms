@@ -1,6 +1,6 @@
 Name:           sdl2-controllermap
 Version:        2.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Official tool to create SDL2 Game Controller controller mappings
 
 License:        zlib and MIT
@@ -25,7 +25,7 @@ sed -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' -i test/controllermap.c
 
 
 %build
-gcc %{build_cflags} %{build_ldflags} $(pkg-config --cflags --libs sdl2) \
+gcc %{build_cflags} $(pkg-config --cflags --libs sdl2) %{build_ldflags} \
   test/controllermap.c -o %{name}
 
 
@@ -46,5 +46,8 @@ install -pm0644 test/{axis,button,controllermap}.bmp \
 
 
 %changelog
+* Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.9-2
+- Reorder linking to fix build with as-needed
+
 * Sat Mar  9 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.9-1
 - Initial spec

@@ -1,13 +1,10 @@
-%global with_bin 0
-
-%if 0%{?with_bin}
 %undefine _hardened_build
-%{?mingw_package_header}
-%endif
+
+%global with_bin 0
 
 Name:           wine-mono
 Version:        4.8.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Mono library required for Wine
 
 License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
@@ -18,12 +15,11 @@ Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-bin-%{versi
 %else
 Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        https://github.com/madewokherd/wine-mono/raw/master/COPYING
-Source2:        https://github.com/madewokherd/wine-mono/raw/master/README
+Source1:        https://github.com/madewokherd/%{name}/raw/master/COPYING
+Source2:        https://github.com/madewokherd/%{name}/raw/master/README
 
-Patch0:         wine-mono-build-msifilename.patch
 # to statically link in winpthreads
-Patch1:         wine-mono-build-static.patch
+Patch0:         %{name}-build-static.patch
 
 # see git://github.com/madewokherd/wine-mono
 
@@ -67,6 +63,13 @@ Requires: wine-filesystem
 %description
 Windows Mono library required for Wine.
 
+
+%if !0%{?with_bin}
+%global mingw_build_win32 0
+%{?mingw_package_header}
+%endif
+
+
 %prep
 %setup -q
 %if 0%{?with_bin}
@@ -77,8 +80,7 @@ chmod -R g-w %{name}-%{version}
 
 %else
 
-%patch0 -p1 -b.msifilename
-%patch1 -p1 -b.static
+%patch0 -p1 -b.static
 
 # Fix all Python shebangs
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" . 
@@ -88,19 +90,19 @@ sed -i 's/GENMDESC_PRG=python/GENMDESC_PRG=python3/' mono/mono/mini/Makefile.am.
 %build
 %if !0%{?with_bin}
 export WINEPREFIX="$(pwd)/wine-build"
-MAKEOPTS=%{_smp_mflags} MSIFILENAME=wine-mono-%{version}.msi ./build-winemono.sh 
+MAKEOPTS=%{_smp_mflags} MSIFILENAME=%{name}-%{version}.msi ./build-winemono.sh 
 %endif
 
 %install
-mkdir -p %{buildroot}%{_datadir}/wine/mono
+mkdir -p %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/
 %if 0%{?with_bin}
 
-cp -r %{name}-%{version} %{buildroot}%{_datadir}/wine/mono/
+cp -r %{name}-%{version}/* %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/
 
 %else
 
-cp -r image %{buildroot}%{_datadir}/wine/mono/wine-mono-%{version}
-find %{buildroot}%{_datadir}/wine/mono/wine-mono-%{version} -name '*.debug' -delete
+cp -r image/* %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/
+find %{buildroot}%{_datadir}/wine/mono/%{name}-%{version} -name '*.debug' -delete
 # prep licenses
 cp mono/LICENSE mono-LICENSE
 cp mono/COPYING.LIB mono-COPYING.LIB
@@ -131,6 +133,9 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 
 
 %changelog
+* Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.8.1-101
+- Fedora sync
+
 * Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.8.1-100
 - 4.8.1
 - Shared location instead MSI

@@ -53,7 +53,7 @@ command line programs at runtime.
 %prep
 %autosetup -p1
 
-touch AUTHORS INSTALL NEWS 
+touch AUTHORS INSTALL NEWS
 autoreconf -ivf
 
 
