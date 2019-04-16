@@ -1,7 +1,7 @@
-%global commit 91ffb109a9e2a1c02e98e6924af69b7e55df6915
+%global commit ce90d43c344f19fdce915deef636ded933bc0d08
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180923
-%global with_snapshot 0
+%global date 20190412
+%global with_snapshot 1
 
 %undefine _hardened_build
 
@@ -13,7 +13,7 @@
 
 Name:           reicast
 Version:        8.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -28,6 +28,7 @@ Source0:        %{vc_url}/archive/r%{version}/%{name}-%{version}.tar.gz
 Source1:        %{name}.appdata.xml
 
 Patch0:         %{name}-build-fixes.patch
+Patch1:         0001-Fix-format-security-error.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
@@ -36,6 +37,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libpulse-simple)
+BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  python2-devel
 Requires:       hicolor-icon-theme
@@ -61,6 +63,18 @@ sed -e 's|grep flags /proc/cpuinfo|/bin/true|g' -i shell/linux/Makefile
 %endif
 
 sed -i '1s|/usr/bin/env python|%{__python2}|' shell/linux/tools/%{name}-joyconfig.py
+
+
+sed \
+  -e 's|`git describe --tags --always`|%{version}-%{release}|g' \
+  -i core/core.mk
+
+%if 0%{?with_snapshot}
+  sed \
+    -e 's|`git rev-parse --short HEAD`|%{shortcommit}|g' \
+    -i core/core.mk
+%endif
+
 
 %build
 export PREFIX=%{_prefix}
@@ -100,5 +114,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Apr 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 8.1-2.20190412gitce90d43
+- Snapshot
+- BR: libudev
+
 * Tue Sep 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 8.1-1
 - Initial spec

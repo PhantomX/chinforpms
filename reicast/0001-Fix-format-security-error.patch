@@ -1,0 +1,25 @@
+From e8d5e8861e591c4298370d2708be8cce04473ccf Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 15 Apr 2019 23:08:38 -0300
+Subject: [PATCH] Fix format security error
+
+---
+ core/rend/gui.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/rend/gui.cpp b/core/rend/gui.cpp
+index a530f5b..b19c107 100644
+--- a/core/rend/gui.cpp
++++ b/core/rend/gui.cpp
+@@ -1058,7 +1058,7 @@ static void gui_display_settings()
+ 					if (ImGui::Selectable(backend->slug.c_str(), &is_selected))
+ 						settings.audio.backend = backend->slug;
+ 					ImGui::SameLine(); ImGui::Text("-");
+-					ImGui::SameLine(); ImGui::Text(backend->name.c_str());
++					ImGui::SameLine(); ImGui::Text(backend->name.c_str(), "%s");
+ 	                if (is_selected)
+ 	                    ImGui::SetItemDefaultFocus();
+ 				}
+-- 
+2.21.0
+

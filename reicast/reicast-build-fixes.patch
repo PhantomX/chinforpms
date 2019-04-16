@@ -1,7 +1,17 @@
-diff -up reicast-emulator-r8.1/shell/linux/Makefile.orig reicast-emulator-r8.1/shell/linux/Makefile
---- reicast-emulator-r8.1/shell/linux/Makefile.orig	2018-09-12 07:43:26.000000000 -0300
-+++ reicast-emulator-r8.1/shell/linux/Makefile	2018-09-25 09:50:31.419409036 -0300
-@@ -3,8 +3,8 @@ FOR_LINUX :=1
+From 5c8512151f2fb200dfb811ece26c113b24d41a28 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 15 Apr 2019 23:47:55 -0300
+Subject: [PATCH] Build fixes
+
+---
+ shell/linux/Makefile | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/shell/linux/Makefile b/shell/linux/Makefile
+index 6af3aed..c80a679 100644
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -4,8 +4,8 @@ FOR_LINUX :=1
  #NO_REC := 1
  #NO_REND := 1
  WEBUI :=1
@@ -11,9 +21,9 @@ diff -up reicast-emulator-r8.1/shell/linux/Makefile.orig reicast-emulator-r8.1/s
 +USE_PULSEAUDIO := 1
  #USE_LIBAO := 1
  USE_EVDEV := 1
- 
-@@ -15,12 +15,12 @@ STRIP=${CC_PREFIX}strip
- LD=${CC}
+ USE_UDEV := 1
+@@ -20,12 +20,12 @@ CHD5_LZMA := 1
+ CHD5_FLAC := 1
  
  MFLAGS :=
 -ASFLAGS :=
@@ -29,12 +39,29 @@ diff -up reicast-emulator-r8.1/shell/linux/Makefile.orig reicast-emulator-r8.1/s
  
  ifneq (, $(filter $(shell uname -s), FreeBSD OpenBSD NetBSD DragonFly))
      CFLAGS += -DTARGET_BSD
-@@ -239,7 +239,7 @@ include $(RZDCY_SRC_DIR)/core.mk
+@@ -279,11 +279,11 @@ include $(RZDCY_SRC_DIR)/core.mk
  
- LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,-O3 -Wl,--sort-common
+ LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,-O3 -Wl,--sort-common -fopenmp
  
--CFLAGS += -g -O3 -D RELEASE -c -D USES_HOMEDIR #-D NO_REND
-+CFLAGS += -g -D RELEASE -c -D USES_HOMEDIR #-D NO_REND
+-CFLAGS += $(RZDCY_CFLAGS) -g -O3 -D RELEASE -c -D USES_HOMEDIR -fopenmp #-D NO_REND
++CFLAGS += $(RZDCY_CFLAGS) -D RELEASE -c -D USES_HOMEDIR -fopenmp #-D NO_REND
  CFLAGS += -frename-registers -fno-strict-aliasing
  CFLAGS += -ffast-math -ftree-vectorize
  
+-CXXFLAGS += $(RZDCY_CFLAGS) -fno-rtti -fpermissive -fno-operator-names -D_GLIBCXX_USE_CXX11_ABI=0 -std=gnu++11
++CXXFLAGS += $(RZDCY_CFLAGS) -fno-rtti -fpermissive -fno-operator-names -std=gnu++11
+ 
+ INCS += -I$(RZDCY_SRC_DIR) -I$(RZDCY_SRC_DIR)/deps -I$(RZDCY_SRC_DIR)/khronos
+ 
+@@ -472,7 +472,7 @@ $(BUILDDIR)/%.build_obj : $(RZDCY_SRC_DIR)/%.S $(VERSION_HEADER)
+ 	mkdir -p $(dir $@)
+ 	$(AS) $(ASFLAGS) $(INCS) $< -o $@
+ 
+-install: $(EXECUTABLE)
++install:
+ 	mkdir -p $(DESTDIR)$(PREFIX)/bin 2>/dev/null || true
+ 	mkdir -p $(DESTDIR)$(PREFIX)/share/reicast/mappings 2>/dev/null || true
+ 	mkdir -p $(DESTDIR)$(MAN_DIR) 2>/dev/null || true
+-- 
+2.21.0
+
