@@ -183,7 +183,7 @@ BuildRequires:  librsvg2-tools
 BuildRequires:  libstdc++-devel
 BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(libusb)
-BuildRequires:  pkgconfig(libv4l1)
+BuildRequires:  pkgconfig(libv4l2)
 BuildRequires:  pkgconfig(libvkd3d)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(libxslt)

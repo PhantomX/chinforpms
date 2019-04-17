@@ -693,8 +693,9 @@ rm -f %{buildroot}%{rustlibdir}/etc/lldb_*.py*
 
 
 %changelog
-* Fri Apr 12 2019 Phantom X <megaphantomx at bol dot com dot br>- 1.32.0-103
-- Make libLLVM-8svn.so executable to perform proper debuginfo, when bundling is enabled
+* Fri Apr 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.32.0-103
+- Make libLLVM-8svn.so executable to build proper debuginfo, when bundling is enabled
+- Rebuild without bootstrap binaries.
 
 * Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.32.0-102
 - Use bundled llvm for Fedora > 29

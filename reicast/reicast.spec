@@ -13,7 +13,7 @@
 
 Name:           reicast
 Version:        8.1
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -28,18 +28,24 @@ Source0:        %{vc_url}/archive/r%{version}/%{name}-%{version}.tar.gz
 Source1:        %{name}.appdata.xml
 
 Patch0:         %{name}-build-fixes.patch
-Patch1:         0001-Fix-format-security-error.patch
+Patch1:         %{name}-use-system-libs.patch
+Patch2:         0001-Fix-format-security-error.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(gl)
-BuildRequires:  pkgconfig(libpulse-simple)
+BuildRequires:  pkgconfig(libpng)
+#BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(libudev)
+BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(zlib)
 BuildRequires:  python2-devel
+BuildRequires:  xxhash-devel
 Requires:       hicolor-icon-theme
 Requires:       python2-evdev
 
@@ -57,6 +63,8 @@ Requires:       python2-evdev
 
 rm -f shell/linux/gcwz/enta_viv/*.so
 rm -f shell/linux-deps/lib/*.so
+
+rm -rf core/deps/{flac,libpng,libzip,xxhash,zlib}
 
 %if ! %{with native}
 sed -e 's|grep flags /proc/cpuinfo|/bin/true|g' -i shell/linux/Makefile
@@ -100,6 +108,7 @@ done
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
+
 %files
 %license LICENSE
 %doc README.md
@@ -114,6 +123,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Apr 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 8.1-3.20190412gitce90d43
+- System libs
+- Disable broken pulseaudio support
+
 * Tue Apr 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 8.1-2.20190412gitce90d43
 - Snapshot
 - BR: libudev

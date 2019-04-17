@@ -18,7 +18,7 @@ index 6af3aed..c80a679 100644
 -USE_OSS := 1
 -#USE_PULSEAUDIO := 1
 +#USE_OSS := 1
-+USE_PULSEAUDIO := 1
++#Crashy# USE_PULSEAUDIO := 1
  #USE_LIBAO := 1
  USE_EVDEV := 1
  USE_UDEV := 1

@@ -1,0 +1,326 @@
+From aac26f0850cde58755957272c3a9d50ba1a5541f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 16 Apr 2019 14:16:26 -0300
+Subject: [PATCH] Use system libs
+
+---
+ core/archive/ZipArchive.h                     |  4 +++
+ core/core.mk                                  | 26 ++++++++++++--
+ core/deps/chdr/chd.c                          |  4 +++
+ core/deps/chdr/flac.h                         |  4 +++
+ .../libwebsocket/extension-deflate-frame.h    |  4 +++
+ .../libwebsocket/extension-deflate-stream.h   |  4 +++
+ core/hw/maple/maple_devs.cpp                  |  8 +++++
+ core/hw/pvr/Renderer_if.cpp                   |  4 +++
+ core/reios/reios_elf.cpp                      |  2 +-
+ core/rend/TexCache.cpp                        |  4 +++
+ core/rend/gles/CustomTexture.cpp              |  4 +++
+ core/rend/gles/gles.cpp                       |  4 +++
+ core/rend/gles/gltex.cpp                      |  8 +++++
+ shell/linux/Makefile                          | 34 +++++++++++++++++++
+ 14 files changed, 110 insertions(+), 4 deletions(-)
+
+diff --git a/core/archive/ZipArchive.h b/core/archive/ZipArchive.h
+index 05a0f0f..ff24960 100644
+--- a/core/archive/ZipArchive.h
++++ b/core/archive/ZipArchive.h
+@@ -22,7 +22,11 @@
+ #ifndef CORE_ARCHIVE_ZIPARCHIVE_H_
+ #define CORE_ARCHIVE_ZIPARCHIVE_H_
+ #include "archive.h"
++#ifdef SYSTEM_LIBZIP
++#include <zip.h>
++#else
+ #include "deps/libzip/zip.h"
++#endif
+ 
+ class ZipArchive : public Archive
+ {
+diff --git a/core/core.mk b/core/core.mk
+index 2ced4ac..81c1708 100755
+--- a/core/core.mk
++++ b/core/core.mk
+@@ -9,18 +9,36 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
+ 
+ RZDCY_MODULES	:=	cfg/ hw/arm7/ hw/aica/ hw/holly/ hw/ hw/gdrom/ hw/maple/ hw/modem/ \
+  hw/mem/ hw/pvr/ hw/sh4/ hw/sh4/interpr/ hw/sh4/modules/ plugins/ profiler/ oslib/ \
+- hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/zlib/ deps/chdr/ deps/crypto/ \
+- deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/libpng/ deps/xbrz/ \
+- deps/picotcp/modules/ deps/picotcp/stack/ deps/xxhash/ deps/libzip/ deps/imgui/ \
++ hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/chdr/ deps/crypto/ \
++ deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
++ deps/picotcp/modules/ deps/picotcp/stack/ deps/imgui/ \
+  archive/ input/
+ 
++ifndef SYSTEM_LIBPNG
++RZDCY_MODULES += deps/libpng/
++endif
++
++ifndef SYSTEM_LIBZIP
++RZDCY_MODULES +=  deps/libzip/
++endif
++
++ifndef SYSTEM_XXHASH
++RZDCY_MODULES +=   deps/xxhash/
++endif
++
++ifndef SYSTEM_ZLIB
++RZDCY_MODULES +=  deps/zlib/
++endif
++
+ ifdef CHD5_LZMA
+ 	RZDCY_MODULES += deps/lzma/
+ endif
+ 
+ ifdef CHD5_FLAC
++ifndef SYSTEM_FLAC
+ 	RZDCY_MODULES += deps/flac/src/libFLAC/
+ endif
++endif
+ 
+ ifdef WEBUI
+ 	RZDCY_MODULES += webui/
+@@ -149,9 +167,11 @@ ifdef HAS_SOFTREND
+ endif
+ 
+ ifdef CHD5_FLAC
++ifndef SYSTEM_FLAC
+ 	RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/flac/src/libFLAC/include/ -I$(RZDCY_SRC_DIR)/deps/flac/include
+ 	RZDCY_CFLAGS += -DPACKAGE_VERSION=\"1.3.2\" -DFLAC__HAS_OGG=0 -DFLAC__NO_DLL -DHAVE_LROUND -DHAVE_STDINT_H -DHAVE_STDLIB_H -DHAVE_SYS_PARAM_H
+ endif
++endif
+ 
+ RZDCY_CXXFLAGS := $(RZDCY_CFLAGS) -fno-exceptions -fno-rtti -std=gnu++11
+ 
+diff --git a/core/deps/chdr/chd.c b/core/deps/chdr/chd.c
+index 4461bdf..05a64aa 100644
+--- a/core/deps/chdr/chd.c
++++ b/core/deps/chdr/chd.c
+@@ -54,7 +54,11 @@
+ #endif // CHD5_LZMA
+ #include "deps/crypto/md5.h"
+ #include "deps/crypto/sha1.h"
++#ifdef SYSTEM_ZLIB
++#include <zlib.h>
++#else
+ #include "deps/zlib/zlib.h"
++#endif
+ 
+ #define TRUE 1
+ #define FALSE 0
+diff --git a/core/deps/chdr/flac.h b/core/deps/chdr/flac.h
+index 3de00eb..6f51ffa 100644
+--- a/core/deps/chdr/flac.h
++++ b/core/deps/chdr/flac.h
+@@ -14,7 +14,11 @@
+ #define __FLAC_H__
+ 
+ #include <stdint.h>
++#ifdef SYSTEM_FLAC
++#include <FLAC/all.h>
++#else
+ #include "deps/flac/include/FLAC/all.h"
++#endif
+ 
+ /***************************************************************************
+  *  TYPE DEFINITIONS
+diff --git a/core/deps/libwebsocket/extension-deflate-frame.h b/core/deps/libwebsocket/extension-deflate-frame.h
+index 685cdeb..564f80e 100644
+--- a/core/deps/libwebsocket/extension-deflate-frame.h
++++ b/core/deps/libwebsocket/extension-deflate-frame.h
+@@ -1,5 +1,9 @@
+ #pragma once
++#ifdef SYSTEM_ZLIB
++#include <zlib.h>
++#else
+ #include "deps/zlib/zlib.h"
++#endif
+ 
+ #define DEFLATE_FRAME_COMPRESSION_LEVEL_SERVER 1
+ #define DEFLATE_FRAME_COMPRESSION_LEVEL_CLIENT Z_DEFAULT_COMPRESSION
+diff --git a/core/deps/libwebsocket/extension-deflate-stream.h b/core/deps/libwebsocket/extension-deflate-stream.h
+index ff17741..8421a97 100644
+--- a/core/deps/libwebsocket/extension-deflate-stream.h
++++ b/core/deps/libwebsocket/extension-deflate-stream.h
+@@ -1,5 +1,9 @@
+ 
++#ifdef SYSTEM_ZLIB
++#include <zlib.h>
++#else
+ #include "deps/zlib/zlib.h"
++#endif
+ 
+ #define DEFLATE_STREAM_CHUNK 128
+ #define DEFLATE_STREAM_COMPRESSION_LEVEL 1
+diff --git a/core/hw/maple/maple_devs.cpp b/core/hw/maple/maple_devs.cpp
+index 90b4c97..3219ee4 100755
+--- a/core/hw/maple/maple_devs.cpp
++++ b/core/hw/maple/maple_devs.cpp
+@@ -10,8 +10,16 @@
+ #include "input/gamepad.h"
+ #include <time.h>
+ 
++#ifdef SYSTEM_ZLIB
++#include <zlib.h>
++#else
+ #include "deps/zlib/zlib.h"
++#endif
++#ifdef SYSTEM_XXHASH
++#include <xxhash.h>
++#else
+ #include "deps/xxhash/xxhash.h"
++#endif
+ 
+ #if _ANDROID
+ #include <android/log.h>
+diff --git a/core/hw/pvr/Renderer_if.cpp b/core/hw/pvr/Renderer_if.cpp
+index fc4db31..9560740 100644
+--- a/core/hw/pvr/Renderer_if.cpp
++++ b/core/hw/pvr/Renderer_if.cpp
+@@ -4,7 +4,11 @@
+ #include "rend/TexCache.h"
+ #include "rend/gui.h"
+ 
++#ifdef SYSTEM_ZLIB
++#include <zlib.h>
++#else
+ #include "deps/zlib/zlib.h"
++#endif
+ 
+ #include "deps/crypto/md5.h"
+ 
+diff --git a/core/reios/reios_elf.cpp b/core/reios/reios_elf.cpp
+index ff17c93..9d688dd 100644
+--- a/core/reios/reios_elf.cpp
++++ b/core/reios/reios_elf.cpp
+@@ -54,4 +54,4 @@ bool reios_loadElf(const string& elf) {
+ 	}
+ 
+ 	return true;
+-}
+\ No newline at end of file
++}
+diff --git a/core/rend/TexCache.cpp b/core/rend/TexCache.cpp
+index b0480c2..5adde69 100644
+--- a/core/rend/TexCache.cpp
++++ b/core/rend/TexCache.cpp
+@@ -8,7 +8,11 @@
+ #include "hw/pvr/pvr_regs.h"
+ #include "hw/mem/_vmem.h"
+ #include "deps/xbrz/xbrz.h"
++#ifdef SYSTEM_XXHASH
++#include <xxhash.h>
++#else
+ #include "deps/xxhash/xxhash.h"
++#endif
+ 
+ u8* vq_codebook;
+ u32 palette_index;
+diff --git a/core/rend/gles/CustomTexture.cpp b/core/rend/gles/CustomTexture.cpp
+index 8f062d1..c1a02ad 100644
+--- a/core/rend/gles/CustomTexture.cpp
++++ b/core/rend/gles/CustomTexture.cpp
+@@ -28,7 +28,11 @@
+ #include <dirent.h>
+ #endif
+ 
++#ifdef SYSTEM_LIBPNG
++#include <png.h>
++#else
+ #include "deps/libpng/png.h"
++#endif
+ #include "reios/reios.h"
+ 
+ void CustomTexture::LoaderThread()
+diff --git a/core/rend/gles/gles.cpp b/core/rend/gles/gles.cpp
+index a2155f4..00a5031 100644
+--- a/core/rend/gles/gles.cpp
++++ b/core/rend/gles/gles.cpp
+@@ -2014,7 +2014,11 @@ struct glesrend : Renderer
+ };
+ 
+ 
++#ifdef SYSTEM_LIBPNG
++#include <png.h>
++#else
+ #include "deps/libpng/png.h"
++#endif
+ 
+ FILE* pngfile;
+ 
+diff --git a/core/rend/gles/gltex.cpp b/core/rend/gles/gltex.cpp
+index 1a3802f..d21bf02 100644
+--- a/core/rend/gles/gltex.cpp
++++ b/core/rend/gles/gltex.cpp
+@@ -3,8 +3,16 @@
+ #include "rend/TexCache.h"
+ #include "hw/pvr/pvr_mem.h"
+ #include "hw/mem/_vmem.h"
++#ifdef SYSTEM_LIBPNG
++#include <png.h>
++#else
+ #include "deps/libpng/png.h"
++#endif
++#ifdef SYSTEM_XXHASH
++#include <xxhash.h>
++#else
+ #include "deps/xxhash/xxhash.h"
++#endif
+ #include "CustomTexture.h"
+ 
+ /*
+diff --git a/shell/linux/Makefile b/shell/linux/Makefile
+index 9f5ae86..f82fb86 100644
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -11,6 +11,12 @@ USE_EVDEV := 1
+ USE_UDEV := 1
+ PLATFORM_EXT := elf
+ 
++SYSTEM_FLAC := 1
++SYSTEM_LIBPNG := 1
++SYSTEM_LIBZIP := 1
++SYSTEM_XXHASH := 1
++SYSTEM_ZLIB := 1
++
+ CXX=${CC_PREFIX}g++
+ CC=${CC_PREFIX}gcc
+ AS=${CC_PREFIX}as
+@@ -384,6 +390,34 @@ ifdef HAS_SOFTREND
+     CXXFLAGS += -DTARGET_SOFTREND
+ endif
+ 
++ifdef SYSTEM_FLAC
++    CFLAGS += `pkg-config --cflags flac` -D SYSTEM_FLAC
++    CXXFLAGS += `pkg-config --cflags flac` -D SYSTEM_FLAC
++    LIBS += `pkg-config --libs flac`
++endif
++
++ifdef SYSTEM_LIBPNG
++    CXXFLAGS += `pkg-config --cflags libpng` -D SYSTEM_LIBPNG
++    LIBS += `pkg-config --libs libpng`
++endif
++
++ifdef SYSTEM_LIBZIP
++    CXXFLAGS += `pkg-config --cflags libzip` -D SYSTEM_LIBZIP
++    LIBS += `pkg-config --libs libzip`
++endif
++
++ifdef SYSTEM_XXHASH
++    CXXFLAGS += -D SYSTEM_XXHASH
++    LIBS += -lxxhash
++endif
++
++ifdef SYSTEM_ZLIB
++    CFLAGS += `pkg-config --cflags zlib` -D SYSTEM_ZLIB
++    CXXFLAGS += `pkg-config --cflags zlib` -D SYSTEM_ZLIB
++    LIBS += `pkg-config --libs zlib`
++endif
++
++
+ EXECUTABLE_STRIPPED=nosym-reicast.$(PLATFORM_EXT)
+ ifdef NAOMI
+     CFLAGS += -D TARGET_NAOMI
+-- 
+2.21.0
+

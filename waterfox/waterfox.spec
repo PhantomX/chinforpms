@@ -1,6 +1,6 @@
-%global commit eeb3b0b1fd0e42ea902f3f3731f1265597e6627d
+%global commit cd00fc4ae708bccfc6bebeaedf803845ec9b5e20
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190411
+%global date 20190416
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -130,8 +130,8 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.8
-Release:        2%{?gver}%{?dist}
+Version:        56.2.9
+Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -605,8 +605,10 @@ echo "ac_add_options --disable-ion" >> .mozconfig
 
 %if 0%{?build_with_pinned_rust}
 echo "ac_add_options --enable-stylo=build" >> .mozconfig
+echo "ac_add_options --enable-rust-simd" >> .mozconfig
 %else
 echo "ac_add_options --disable-stylo" >> .mozconfig
+echo "ac_add_options --disable-rust-simd" >> .mozconfig
 %endif
 
 # Remove executable bit to make brp-mangle-shebangs happy.
