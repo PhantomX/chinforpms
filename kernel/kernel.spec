@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d64919a172dc6074cecdb4b7c68086a01bef996e
+%global pfcommit b12f1ad50d04052b9423610c7bdbf5ee068b6452
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 508a450f18af6f071dac6b8cc3294745c35c4c53
+%global opensuse_id 4835ec05cd8c529daf829c32d39f5954c558e813
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -667,13 +667,6 @@ Patch516: 0001-inotify-Fix-fsnotify_mark-refcount-leak-in-inotify_u.patch
 # CVE-2019-3882 rhbz 1689426 1695571
 Patch517: vfio-type1-limit-dma-mappings-per-container.patch
 
-# CVE-2019 rhbz 1695044 1697187
-Patch518: 0001-KVM-x86-nVMX-close-leak-of-L0-s-x2APIC-MSRs-CVE-2019.patch
-Patch519: 0001-KVM-x86-nVMX-fix-x2APIC-VTPR-read-intercept.patch
-
-# drm fix
-Patch520: 0001-drm-i915-dp-revert-back-to-max-link-rate-and-lane-co.patch
-
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -689,7 +682,6 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 #Patch1016: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
 Patch1017: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1018: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1019: %{opensuse_url}/kcm-switch-order-of-device-registration-to-fix-a-cra.patch#/openSUSE-kcm-switch-order-of-device-registration-to-fix-a-cra.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -2034,7 +2026,11 @@ fi
 #
 #
 %changelog
-* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-500.chinfo
+* Wed Apr 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.8-500.chinfo
+- 5.0.8
+- f30 sync
+
+* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-501.chinfo
 - pf6
 - f29 sync
 

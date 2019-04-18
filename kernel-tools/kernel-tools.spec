@@ -20,10 +20,10 @@
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
-%global opensuse_id dff56e4988727a44631953af28f369dc6f96cd57
+%global opensuse_id 4835ec05cd8c529daf829c32d39f5954c558e813
 
 # Do we have a -stable update to apply?
-%global stable_update 7
+%global stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -444,6 +444,9 @@ popd
 
 
 %changelog
+* Wed Apr 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.8-500.chinfo
+- 5.0.8
+
 * Fri Apr 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-500.chinfo
 - 5.0.7
 
