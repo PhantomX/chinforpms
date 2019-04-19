@@ -3,7 +3,7 @@
 
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.8.1
+%global winemono  4.8.2
 %global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
@@ -35,7 +35,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.6
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -122,6 +122,7 @@ Patch801:       %{valve_url}/commit/ff95f1927cdb923907ef1fa9660203004b9ee36d.pat
 Patch802:       %{valve_url}/commit/36017749b370b38860aaa167494d200569902d25.patch#/%{name}-valve-3601774.patch
 Patch803:       0001-XACT3_VER-typos-IXAudio23-compatibility-fix.patch
 Patch804:       wine-xaudio2-pulseaudio-app-name.patch
+Patch805:       %{valve_url}/commit/7db0aa426bb4ddb4c306ca1049081d4265e8d7ff.patch#/%{name}-valve-7db0aa4.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -680,6 +681,7 @@ This package adds the opencl driver for wine.
 %patch802 -p1
 %patch803 -p1
 %patch804 -p1
+%patch805 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -2280,6 +2282,9 @@ fi
 
 
 %changelog
+* Thu Apr 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.6-101
+- wine-mono 4.8.2
+
 * Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.6-100
 - 4.6
 - esync merged with staging

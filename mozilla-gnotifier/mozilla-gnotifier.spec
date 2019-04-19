@@ -23,8 +23,8 @@
 %global pkgname gnotifier
 
 Name:           mozilla-%{pkgname}
-Version:        1.13.2
-Release:        2%{?dist}
+Version:        1.13.4
+Release:        1%{?dist}
 Summary:        Mozilla native notification system integration
 
 License:        GPLv3
@@ -90,6 +90,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Apr 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.13.4-1
+- 1.13.4
+
 * Wed Jun 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.13.2-2
 - _metainfodir
 

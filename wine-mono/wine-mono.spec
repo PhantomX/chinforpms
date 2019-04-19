@@ -3,8 +3,8 @@
 %global with_bin 0
 
 Name:           wine-mono
-Version:        4.8.1
-Release:        101%{?dist}
+Version:        4.8.2
+Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
 License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
@@ -133,6 +133,9 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 
 
 %changelog
+* Thu Apr 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.8.2-100
+- 4.8.2
+
 * Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.8.1-101
 - Fedora sync
 

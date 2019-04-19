@@ -21,7 +21,6 @@ RPMFusion and existent packages updated with extra changes.
 ## Differences from Fedora and RPM Fusion
 
  * **adwaita-qt** - Remove some paddings
- * ~~**belle-sip, linphone, ortp** - Updated version~~
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **claws-mail** - Can't wait Fedora releases
  * **easytag** - Tests
@@ -55,8 +54,6 @@ RPMFusion and existent packages updated with extra changes.
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **taglib** - Tests
  * **telegram-desktop** - Personal fixes
- * ~~**VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
-                    and **VirtualBox-guest-additions-iso** support.~~
  * **vkd3d** - Can't wait Fedora releases
  * **xboxdrv** - Tests
  * **wine** - Personal fixes and extra patches, like [_PBA_](https://github.com/acomminos/wine-pba) and

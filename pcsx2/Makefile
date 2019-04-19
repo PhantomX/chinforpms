@@ -30,7 +30,7 @@ ifdef SANITIZE
 	rm -rf $(DIRNAME)/3rdparty
 	rm -rf $(DIRNAME)/fps2bios
 	rm -rf $(DIRNAME)/tools
-	$(foreach var,$(PLUGINS),rm -rf plugins/$(var);)
+	$(foreach var,$(PLUGINS),rm -rf $(DIRNAME)/plugins/$(var);)
 	rm -rf $(DIRNAME)/unfree
 	rm -rf $(DIRNAME)/plugins/GSdx/baseclasses
 	rm -f  $(DIRNAME)/plugins/zzogl-pg/opengl/Win32/aviUtil.h

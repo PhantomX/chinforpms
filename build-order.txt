@@ -2,6 +2,7 @@
 buildsys-build-rpmfusion
 c-vtapi
 chinforpms-fake-packages
+cubeb
 gstreamer1
 gtk3
 libmirage
@@ -36,6 +37,7 @@ claws-mail
 claws-mail-themes
 curlew
 disk-indicator
+dolphin-emu
 easytag
 emojione-picker
 FAudio
