@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit b12f1ad50d04052b9423610c7bdbf5ee068b6452
+%global pfcommit df64995f112ac22418a58919f5247423226e0413
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -660,9 +660,6 @@ Patch514: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
 
 # rhbz 1683382
 Patch515: nfsv4.1-avoid-false-retries.patch
-
-# CVE-2019-9857 rhbz 1694758 1694759
-Patch516: 0001-inotify-Fix-fsnotify_mark-refcount-leak-in-inotify_u.patch
 
 # CVE-2019-3882 rhbz 1689426 1695571
 Patch517: vfio-type1-limit-dma-mappings-per-container.patch
@@ -2026,6 +2023,9 @@ fi
 #
 #
 %changelog
+* Sat Apr 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.9-500.chinfo
+- 5.0.9
+
 * Wed Apr 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.8-500.chinfo
 - 5.0.8
 - f30 sync
