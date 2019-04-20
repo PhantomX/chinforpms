@@ -1,4 +1,5 @@
 %undefine _hardened_build
+%bcond_with ffmpeg
 
 %global commit 5c5e6df0380c518d098f20d9ffc832887782335c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
@@ -76,7 +77,12 @@ BuildRequires:  lzo-devel
 BuildRequires:  mbedtls-devel
 BuildRequires:  pugixml-devel
 BuildRequires:  xxhash-devel
-
+%if %{with ffmpeg}
+BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavformat)
+BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libswscale)
+%endif
 
 BuildRequires:  gettext
 BuildRequires:  desktop-file-utils
@@ -88,6 +94,9 @@ ExclusiveArch:  x86_64 armv7l aarch64
 
 Requires:       hicolor-icon-theme
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
+
+Provides:       bundled(soundtouch) = 1.9.2
+
 
 #Most of below is taken bundled spec file in source#
 %description
@@ -136,7 +145,7 @@ sed 's| this directory | %{name}/Sys/GC |g' \
 pushd Externals
 rm -rf \
   cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi libiconv-* \
-  libpng libusb LZO mbedtls miniupnpc OpenAL pugixml Qt SFML \
+  libpng libusb LZO mbedtls miniupnpc OpenAL pugixml Qt SFML MoltenVK \
   XAudio2_7 xxhash zlib
 
 #Remove Bundled Bochs source and replace with links:
@@ -169,6 +178,9 @@ pushd %{_target_platform}
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \
   -DUSE_SHARED_ENET:BOOL=ON \
+%if !%{with ffmpeg}
+  -DENCODE_FRAMEDUMPS:BOOL=OFF \
+%endif
   -DENABLE_TESTS:BOOL=OFF \
   -DOpenGL_GL_PREFERENCE=GLVND \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
