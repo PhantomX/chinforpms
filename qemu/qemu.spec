@@ -48,16 +48,19 @@
 %endif
 
 # Matches spice ExclusiveArch
+%global have_spice 0
 %ifarch %{ix86} x86_64 %{arm} aarch64
-%global have_spice   1
+%global have_spice 1
 %endif
 
 # Matches xen ExclusiveArch
+%global have_xen 0
 %ifarch %{ix86} x86_64 armv7hl aarch64
 %global have_xen 1
 %endif
 
 # Matches edk2.spec ExclusiveArch
+%global have_edk2 0
 %ifarch %{ix86} x86_64 %{arm} aarch64
 %global have_edk2 1
 %endif
@@ -82,9 +85,7 @@
 %else
 %define with_block_rbd 1
 %endif
-
-# Temp disabled due to API breakage https://bugzilla.redhat.com/show_bug.cgi?id=1684298
-%global with_block_gluster 0
+%global with_block_gluster 1
 
 %define evr %{epoch}:%{version}-%{release}
 
@@ -137,7 +138,7 @@
 %{obsoletes_block_rbd}
 
 # Release candidate version tracking
-# global rcver rc1
+# global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -146,8 +147,8 @@
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 3.1.0
-Release: 101%{?rcrel}%{?dist}
+Version: 4.0.0
+Release: 100%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -171,33 +172,11 @@ Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
 
-# Restore patch to drop phantom 86 key from en-us keymap (bz #1658676)
-Patch0001: 0001-Remove-problematic-evdev-86-key-from-en-us-keymap.patch
-# linux-user: make pwrite64/pread64(fd, NULL, 0, offset) return 0 (bz
-# #1174267)
-Patch0002: 0002-linux-user-make-pwrite64-pread64-fd-NULL-0-offset-re.patch
-# Fix build with latest gluster (bz #1684298)
-Patch0003: 0003-gluster-Handle-changed-glfs_ftruncate-signature.patch
-Patch0004: 0004-gluster-the-glfs_io_cbk-callback-function-pointer-ad.patch
-# CVE-2018-20123: pvrdma: memory leakage in device hotplug (bz #1658964)
-Patch0005: 0005-pvrdma-release-device-resources-in-case-of-an-error.patch
-# CVE-2018-16872: usb-mtp: path traversal issue (bz #1659150)
-Patch0006: 0006-usb-mtp-use-O_NOFOLLOW-and-O_CLOEXEC.patch
-# CVE-2018-20191: pvrdma: uar_read leads to NULL deref (bz #1660315)
-Patch0007: 0007-pvrdma-add-uar_read-routine.patch
-# CVE-2019-6501: scsi-generic: possible OOB access (bz #1669005)
-Patch0008: 0008-scsi-generic-avoid-possible-out-of-bounds-access-to-.patch
-# CVE-2019-6778: slirp: heap buffer overflow (bz #1669072)
-Patch0009: 0009-slirp-check-data-length-while-emulating-ident-functi.patch
-# CVE-2019-3812: Out-of-bounds read in hw/i2c/i2c-ddc.c allows for memory
-# disclosure (bz #1678081)
-Patch0010: 0010-i2c-ddc-fix-oob-read.patch
+# Don't block migration with nested VMX (bz #1697997)
+# Not upstream: temporary workaround until kernel supports lands for nested
+# VMX migration
+Patch0001: 0001-Revert-target-i386-kvm-add-VMX-migration-blocker.patch
 
-
-# Fix a crasher with 3D acceleration enabled (RHBZ#1692323)
-# https://lists.gnu.org/archive/html/qemu-devel/2019-03/msg04413.html
-# (danpb's original version, not the broken Otobo version)
-Patch0100: 0001-qemu-seccomp-dont-kill-process-for-resource-contro.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -247,7 +226,7 @@ BuildRequires: libcap-devel
 BuildRequires: libcap-ng-devel
 # spice usb redirection support
 BuildRequires: usbredir-devel >= 0.5.2
-%if 0%{?have_spice:1}
+%if %{have_spice}
 # spice graphics support
 BuildRequires: spice-protocol >= 0.12.2
 BuildRequires: spice-server-devel >= 0.12.0
@@ -292,7 +271,7 @@ BuildRequires: vte291-devel
 BuildRequires: gettext
 # RDMA migration
 BuildRequires: rdma-core-devel
-%if 0%{?have_xen:1}
+%if %{have_xen}
 # Xen support
 BuildRequires: xen-devel
 %endif
@@ -316,14 +295,25 @@ BuildRequires: mesa-libgbm-devel
 BuildRequires: capstone-devel
 # qemu 2.12: parallels disk images require libxml2 now
 BuildRequires: libxml2-devel
-# python scripts in the build process
-BuildRequires: python3
 %ifarch x86_64
 # qemu 3.1: Used for nvdimm
 BuildRequires: libpmem-devel
 %endif
 # qemu 3.1: Used for qemu-ga
 BuildRequires: libudev-devel
+# qemu 4.0: Use for qauth infrastructure
+BuildRequires: pam-devel
+# qemu 4.0: sphinx-build used for some docs
+%if 0%{?fedora} > 30
+BuildRequires: python3-sphinx
+%else
+BuildRequires: python2-sphinx
+%endif
+# qemu 4.0: Used by test suite ./scripts/tap-driver.pl
+BuildRequires: perl-Test-Harness
+# Required for making python shebangs versioned
+BuildRequires: /usr/bin/pathfix.py
+BuildRequires: python3-devel
 
 BuildRequires: glibc-static pcre-static glib2-static zlib-static
 
@@ -592,7 +582,7 @@ This package provides the QEMU system emulator for AArch64.
 %package system-aarch64-core
 Summary: QEMU system emulator for AArch64
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%if 0%{?have_edk2:1}
+%if %{have_edk2}
 Requires: edk2-aarch64
 %endif
 %description system-aarch64-core
@@ -872,7 +862,7 @@ Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: seabios-bin
 Requires: sgabios-bin
 Requires: seavgabios-bin
-%if 0%{?have_edk2:1}
+%if %{have_edk2}
 Requires: edk2-ovmf
 %endif
 %description system-x86-core
@@ -900,6 +890,14 @@ This package provides the QEMU system emulator for Xtensa boards.
 %setup -q -n qemu-%{version}%{?rcstr}
 %autopatch -p1
 
+# https://fedoraproject.org/wiki/Changes/Make_ambiguous_python_shebangs_error
+# Fix all Python shebangs recursively in .
+# -p preserves timestamps
+# -n prevents creating ~backup files
+# -i specifies the interpreter for the shebang
+# Need to list files that do not match ^[a-zA-Z0-9_]+\.py$ explicitly!
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/qemu-trace-stap
+
 
 %build
 
@@ -923,7 +921,7 @@ buildldflags="VL_LDFLAGS=-Wl,--build-id"
 # but there's a performance impact for non-dtrace so we don't use them
 tracebackends="dtrace"
 
-%if 0%{?have_spice:1}
+%if %{have_spice}
     %global spiceflag --enable-spice
 %else
     %global spiceflag --disable-spice
@@ -941,7 +939,7 @@ run_configure() {
         --disable-strip \
         --disable-werror \
         --enable-kvm \
-        --python=/usr/bin/python3 \
+        --python=%{__python3} \
 %ifarch s390 %{mips64}
         --enable-tcg-interpreter \
 %endif
@@ -962,8 +960,7 @@ run_configure \
     --audio-drv-list=pa,sdl,alsa,oss \
     --tls-priority=@QEMU,SYSTEM \
     --enable-mpath \
-    %{spiceflag} \
-    --with-sdlabi="2.0" \
+    %{spiceflag}
 
 echo "config-host.mak contents:"
 echo "==="
@@ -1171,8 +1168,6 @@ done
 # RPM won't pick up their dependencies.
 chmod +x %{buildroot}%{_libdir}/qemu/*.so
 
-mkdir -p %{buildroot}%{_localstatedir}/lib/qemu/
-
 
 %check
 
@@ -1183,6 +1178,9 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/qemu/
 %global archs_skip_tests s390
 %global archs_ignore_test_failures 0
 
+# Enable this temporarily if tests are broken
+%global temp_skip_check 0
+
 pushd build-dynamic
 %ifnarch %{archs_skip_tests}
 
@@ -1191,6 +1189,8 @@ b="./x86_64-softmmu/qemu-system-x86_64"
 if [ -x "$b" ]; then "$b" -help; fi
 
 %ifarch %{archs_ignore_test_failures}
+make check V=1 || :
+%else if %{temp_skip_check}
 make check V=1 || :
 %else
 make check V=1
@@ -1252,9 +1252,10 @@ getent passwd qemu >/dev/null || \
 %doc %{qemudocdir}/qemu-qmp-ref.html
 %doc %{qemudocdir}/qemu-qmp-ref.txt
 %doc %{qemudocdir}/README
+%doc %{qemudocdir}/interop
 %dir %{_datadir}/%{name}/
-%{_datadir}/%{name}/qemu-icon.bmp
-%{_datadir}/%{name}/qemu_logo_no_text.svg
+%{_datadir}/applications/qemu.desktop
+%{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/%{name}/keymaps/
 %{_datadir}/%{name}/trace-events-all
 %{_datadir}/%{name}/vgabios.bin
@@ -1280,15 +1281,18 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/pxe-vmxnet3.rom
 %{_datadir}/%{name}/efi-vmxnet3.rom
 %{_mandir}/man1/qemu.1*
+%{_mandir}/man1/qemu-trace-stap.1*
 %{_mandir}/man1/virtfs-proxy-helper.1*
 %{_mandir}/man7/qemu-block-drivers.7*
 %{_mandir}/man7/qemu-cpu-models.7*
 %{_mandir}/man7/qemu-ga-ref.7*
 %{_mandir}/man7/qemu-qmp-ref.7*
-%{_bindir}/virtfs-proxy-helper
+%{_bindir}/elf2dmp
 %{_bindir}/qemu-edid
 %{_bindir}/qemu-keymap
 %{_bindir}/qemu-pr-helper
+%{_bindir}/qemu-trace-stap
+%{_bindir}/virtfs-proxy-helper
 %{_unitdir}/qemu-pr-helper.service
 %{_unitdir}/qemu-pr-helper.socket
 %attr(4755, root, root) %{_libexecdir}/qemu-bridge-helper
@@ -1407,74 +1411,109 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-xtensaeb
 
 %{_datadir}/systemtap/tapset/qemu-i386.stp
+%{_datadir}/systemtap/tapset/qemu-i386-log.stp
 %{_datadir}/systemtap/tapset/qemu-i386-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-x86_64.stp
+%{_datadir}/systemtap/tapset/qemu-x86_64-log.stp
 %{_datadir}/systemtap/tapset/qemu-x86_64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-aarch64.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64-log.stp
 %{_datadir}/systemtap/tapset/qemu-aarch64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-aarch64_be.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64_be-log.stp
 %{_datadir}/systemtap/tapset/qemu-aarch64_be-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-alpha.stp
+%{_datadir}/systemtap/tapset/qemu-alpha-log.stp
 %{_datadir}/systemtap/tapset/qemu-alpha-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-arm.stp
+%{_datadir}/systemtap/tapset/qemu-arm-log.stp
 %{_datadir}/systemtap/tapset/qemu-arm-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-armeb.stp
+%{_datadir}/systemtap/tapset/qemu-armeb-log.stp
 %{_datadir}/systemtap/tapset/qemu-armeb-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-cris.stp
+%{_datadir}/systemtap/tapset/qemu-cris-log.stp
 %{_datadir}/systemtap/tapset/qemu-cris-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-hppa.stp
+%{_datadir}/systemtap/tapset/qemu-hppa-log.stp
 %{_datadir}/systemtap/tapset/qemu-hppa-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-m68k.stp
+%{_datadir}/systemtap/tapset/qemu-m68k-log.stp
 %{_datadir}/systemtap/tapset/qemu-m68k-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-microblaze.stp
+%{_datadir}/systemtap/tapset/qemu-microblaze-log.stp
 %{_datadir}/systemtap/tapset/qemu-microblaze-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-microblazeel.stp
+%{_datadir}/systemtap/tapset/qemu-microblazeel-log.stp
 %{_datadir}/systemtap/tapset/qemu-microblazeel-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-mips.stp
+%{_datadir}/systemtap/tapset/qemu-mips-log.stp
 %{_datadir}/systemtap/tapset/qemu-mips-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-mipsel.stp
+%{_datadir}/systemtap/tapset/qemu-mipsel-log.stp
 %{_datadir}/systemtap/tapset/qemu-mipsel-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-mips64.stp
+%{_datadir}/systemtap/tapset/qemu-mips64-log.stp
 %{_datadir}/systemtap/tapset/qemu-mips64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-mips64el.stp
+%{_datadir}/systemtap/tapset/qemu-mips64el-log.stp
 %{_datadir}/systemtap/tapset/qemu-mips64el-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32.stp
+%{_datadir}/systemtap/tapset/qemu-mipsn32-log.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32el.stp
+%{_datadir}/systemtap/tapset/qemu-mipsn32el-log.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32el-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-nios2.stp
+%{_datadir}/systemtap/tapset/qemu-nios2-log.stp
 %{_datadir}/systemtap/tapset/qemu-nios2-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-or1k.stp
+%{_datadir}/systemtap/tapset/qemu-or1k-log.stp
 %{_datadir}/systemtap/tapset/qemu-or1k-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-ppc.stp
+%{_datadir}/systemtap/tapset/qemu-ppc-log.stp
 %{_datadir}/systemtap/tapset/qemu-ppc-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64.stp
+%{_datadir}/systemtap/tapset/qemu-ppc64-log.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64abi32.stp
+%{_datadir}/systemtap/tapset/qemu-ppc64abi32-log.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64abi32-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64le.stp
+%{_datadir}/systemtap/tapset/qemu-ppc64le-log.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64le-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-riscv32.stp
+%{_datadir}/systemtap/tapset/qemu-riscv32-log.stp
 %{_datadir}/systemtap/tapset/qemu-riscv32-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-riscv64.stp
+%{_datadir}/systemtap/tapset/qemu-riscv64-log.stp
 %{_datadir}/systemtap/tapset/qemu-riscv64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-s390x.stp
+%{_datadir}/systemtap/tapset/qemu-s390x-log.stp
 %{_datadir}/systemtap/tapset/qemu-s390x-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-sh4.stp
+%{_datadir}/systemtap/tapset/qemu-sh4-log.stp
 %{_datadir}/systemtap/tapset/qemu-sh4-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-sh4eb.stp
+%{_datadir}/systemtap/tapset/qemu-sh4eb-log.stp
 %{_datadir}/systemtap/tapset/qemu-sh4eb-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-sparc.stp
+%{_datadir}/systemtap/tapset/qemu-sparc-log.stp
 %{_datadir}/systemtap/tapset/qemu-sparc-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-sparc32plus.stp
+%{_datadir}/systemtap/tapset/qemu-sparc32plus-log.stp
 %{_datadir}/systemtap/tapset/qemu-sparc32plus-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-sparc64.stp
+%{_datadir}/systemtap/tapset/qemu-sparc64-log.stp
 %{_datadir}/systemtap/tapset/qemu-sparc64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-tilegx.stp
+%{_datadir}/systemtap/tapset/qemu-tilegx-log.stp
 %{_datadir}/systemtap/tapset/qemu-tilegx-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-xtensa.stp
+%{_datadir}/systemtap/tapset/qemu-xtensa-log.stp
 %{_datadir}/systemtap/tapset/qemu-xtensa-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-xtensaeb.stp
+%{_datadir}/systemtap/tapset/qemu-xtensaeb-log.stp
 %{_datadir}/systemtap/tapset/qemu-xtensaeb-simpletrace.stp
 
 %files user-binfmt
@@ -1666,11 +1705,12 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-x86_64.1*
 %{_datadir}/%{name}/bios.bin
 %{_datadir}/%{name}/bios-256k.bin
-%{_datadir}/%{name}/sgabios.bin
+%{_datadir}/%{name}/kvmvapic.bin
 %{_datadir}/%{name}/linuxboot.bin
 %{_datadir}/%{name}/linuxboot_dma.bin
 %{_datadir}/%{name}/multiboot.bin
-%{_datadir}/%{name}/kvmvapic.bin
+%{_datadir}/%{name}/pvh.bin
+%{_datadir}/%{name}/sgabios.bin
 %if 0%{?need_qemu_kvm}
 %{_bindir}/qemu-kvm
 %{_mandir}/man1/qemu-kvm.1*
@@ -1688,26 +1728,34 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
-* Mon Apr 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:3.1.0-101
+* Tue Apr 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.0.0-100
+- 4.0.0
 - %%{_localstatedir}/lib/qemu as user directory
 
-* Mon Apr 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:3.1.0-100
-- Fedora 29 build
+* Tue Apr 16 2019 Cole Robinson <crobinso@redhat.com> - 2:4.0.0-0.7.rc3
+- Don't block migration with nested VMX (bz #1697997)
+- Update to qemu-4.0.0-rc3
 
-* Mon Mar 25 2019 Adam Williamson <awilliam@redhat.com> - 2:3.1.0-6
+* Sat Apr 06 2019 Richard W.M. Jones <rjones@redhat.com> - 2:4.0.0-0.6.rc2
+- Rebuild against xen 4.12.
+
+* Wed Apr 03 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.5.rc2
+- Update to 4.0.0-rc2
+
+* Wed Mar 27 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.4.rc1
+- Update to 4.0.0-rc1
+
+* Mon Mar 25 2019 Adam Williamson <awilliam@redhat.com> - 2:4.0.0-0.3.rc0
 - Backport patch to fix 3D crasher bug (bz #1692323)
 
-* Thu Mar 21 2019 Cole Robinson <crobinso@redhat.com> - 2:3.1.0-5
-- linux-user: make pwrite64/pread64(fd, NULL, 0, offset) return 0 (bz
-  #1174267)
-- Fix build with latest gluster (bz #1684298)
-- CVE-2018-20123: pvrdma: memory leakage in device hotplug (bz #1658964)
-- CVE-2018-16872: usb-mtp: path traversal issue (bz #1659150)
-- CVE-2018-20191: pvrdma: uar_read leads to NULL deref (bz #1660315)
-- CVE-2019-6501: scsi-generic: possible OOB access (bz #1669005)
-- CVE-2019-6778: slirp: heap buffer overflow (bz #1669072)
-- CVE-2019-3812: Out-of-bounds read in hw/i2c/i2c-ddc.c allows for memory
-  disclosure (bz #1678081)
+* Thu Mar 21 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.2.rc0
+- Fix python paths for qemu-trace-stap
+
+* Wed Mar 20 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.2.rc0
+- Update to 4.0.0-rc0
+
+* Wed Mar 20 2019 Daniel P. Berrangé <berrange@redhat.com> - 2:3.1.0-5
+- Fix compat with latest glibc which has gettid func
 
 * Sun Mar 03 2019 Cole Robinson <aintdiscole@gmail.com> - 2:3.1.0-4.3
 - Temporarily disable glusterfs (bz #1684298)

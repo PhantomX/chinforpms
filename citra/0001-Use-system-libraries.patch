@@ -1,0 +1,156 @@
+From 2e0fac6be0d252f73f83b34b3a090859440ef2ab Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 23 Apr 2019 23:08:32 -0300
+Subject: [PATCH] Use system libraries
+
+FindCubeb.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
+https://github.com/dolphin-emu/dolphin
+---
+ CMakeLists.txt                          |  1 -
+ externals/CMakeLists.txt                | 19 +++++---
+ externals/cmake-modules/CheckLib.cmake  | 58 +++++++++++++++++++++++++
+ externals/cmake-modules/FindCubeb.cmake | 15 +++++++
+ 4 files changed, 87 insertions(+), 6 deletions(-)
+ create mode 100644 externals/cmake-modules/CheckLib.cmake
+ create mode 100644 externals/cmake-modules/FindCubeb.cmake
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 46ad976..b1b96ac 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -46,7 +46,6 @@ function(check_submodules_present)
+         endif()
+     endforeach()
+ endfunction()
+-check_submodules_present()
+ 
+ configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
+                ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
+diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
+index ae92ce8..d65bd3d 100644
+--- a/externals/CMakeLists.txt
++++ b/externals/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ # Definitions for all external bundled libraries
+ 
+ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
+-include(DownloadExternals)
++include(CheckLib)
+ include(ExternalProject)
+ 
+ # Catch
+@@ -63,13 +63,22 @@ if (ARCHITECTURE_x86_64)
+ endif()
+ 
+ # ENet
+-add_subdirectory(enet)
+-target_include_directories(enet INTERFACE ./enet/include)
++include(CheckLib)
++check_lib(ENET libenet enet enet/enet.h QUIET)
++include(CheckSymbolExists)
++if (ENET_FOUND)
++  set(CMAKE_REQUIRED_INCLUDES ${ENET_INCLUDE_DIRS})
++  set(CMAKE_REQUIRED_FLAGS ${ENET_LDFLAGS})
++  set(CMAKE_REQUIRED_LIBRARIES ${ENET_LIBRARIES})
++  check_symbol_exists(enet_socket_get_address enet/enet.h ENET_HAVE_SGA)
++  set(CMAKE_REQUIRED_INCLUDES)
++  set(CMAKE_REQUIRED_FLAGS)
++  set(CMAKE_REQUIRED_LIBRARIES)
++endif()
+ 
+ # Cubeb
+ if (ENABLE_CUBEB)
+-    set(BUILD_TESTS OFF CACHE BOOL "")
+-    add_subdirectory(cubeb EXCLUDE_FROM_ALL)
++    find_package(Cubeb)
+ endif()
+ 
+ # DiscordRPC
+diff --git a/externals/cmake-modules/CheckLib.cmake b/externals/cmake-modules/CheckLib.cmake
+new file mode 100644
+index 0000000..64c05e9
+--- /dev/null
++++ b/externals/cmake-modules/CheckLib.cmake
+@@ -0,0 +1,58 @@
++find_package(PkgConfig)
++
++macro(_internal_message msg)
++	if(NOT ${_is_quiet})
++		message(STATUS "${msg}")
++	endif()
++endmacro()
++
++macro(check_lib var pc lib)
++	set(_is_required 0)
++	set(_is_quiet 0)
++	set(_arg_list ${ARGN})
++	foreach(_arg ${ARGN})
++		if(_arg STREQUAL "REQUIRED")
++			list(REMOVE_ITEM _arg_list "REQUIRED")
++			set(_is_required 1)
++		endif()
++		if(_arg STREQUAL "QUIET")
++			list(REMOVE_ITEM _arg_list "QUIET")
++			set(_is_quiet 1)
++		endif()
++	endforeach()
++
++	if(PKG_CONFIG_FOUND AND NOT ${var}_FOUND)
++		pkg_search_module(${var} QUIET ${pc})
++	endif()
++
++	if(${var}_FOUND)
++		if(${var}_INCLUDE_DIRS)
++			include_directories(${${var}_INCLUDE_DIRS})
++		endif()
++		# Make sure include directories for headers found using find_path below
++		# are re-added when reconfiguring
++		if(${var}_INCLUDE)
++			include_directories(${${var}_INCLUDE})
++		endif()
++		_internal_message("${lib} found")
++	else()
++		find_library(${var} ${lib})
++		if(_arg_list)
++			find_path(${var}_INCLUDE ${_arg_list})
++		else()
++			set(${var}_INCLUDE FALSE)
++		endif()
++		if(${var} AND ${var}_INCLUDE)
++			include_directories(${${var}_INCLUDE})
++			_internal_message("${lib} found")
++			set(${var}_FOUND 1 CACHE INTERNAL "")
++		else()
++			if(_is_required)
++				message(FATAL_ERROR "${lib} is required but not found")
++			else()
++				_internal_message("${lib} not found")
++			endif()
++		endif()
++	endif()
++endmacro()
++
+diff --git a/externals/cmake-modules/FindCubeb.cmake b/externals/cmake-modules/FindCubeb.cmake
+new file mode 100644
+index 0000000..c0a730c
+--- /dev/null
++++ b/externals/cmake-modules/FindCubeb.cmake
+@@ -0,0 +1,15 @@
++find_path(CUBEB_INCLUDE_DIR cubeb.h PATH_SUFFIXES cubeb)
++find_library(CUBEB_LIBRARY cubeb)
++mark_as_advanced(CUBEB_INCLUDE_DIR CUBEB_LIBRARY)
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(CUBEB DEFAULT_MSG
++	CUBEB_INCLUDE_DIR CUBEB_LIBRARY)
++
++if(CUBEB_FOUND AND NOT TARGET CUBEB)
++  add_library(cubeb::cubeb UNKNOWN IMPORTED)
++  set_target_properties(cubeb::cubeb PROPERTIES
++    IMPORTED_LOCATION "${CUBEB_LIBRARY}"
++    INTERFACE_INCLUDE_DIRECTORIES "${CUBEB_INCLUDE_DIR}"
++  )
++endif()
+-- 
+2.21.0
+

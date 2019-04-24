@@ -1,6 +1,6 @@
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        2.18.0
+Version:        2.19.1
 Release:        100%{?dist}
 
 Epoch:          1
@@ -71,7 +71,7 @@ Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       qca-qt5-ossl%{?_isa}
 
 # drop prior needless -devel pkg
-Obsoletes: skrooge-devel < 2.0.0
+Obsoletes:      skrooge-devel < 2.0.0
 
 %description
 %{name} is a personal finances manager,
@@ -150,6 +150,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Tue Apr 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.19.1-100
+- 2.19.1
+
 * Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.18.0-100
 - 2.18.0
 

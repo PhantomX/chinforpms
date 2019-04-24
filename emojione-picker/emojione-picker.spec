@@ -10,7 +10,7 @@
 
 Name:           emojione-picker
 Version:        0.1
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Emoji Picker for the indicator area using Emoji One
 
 License:        GPLv3
@@ -30,6 +30,7 @@ BuildArch:      noarch
 BuildRequires:  desktop-file-utils
 BuildRequires:  librsvg2-tools
 BuildRequires:  python2-rpm-macros
+Requires:       python2-gobject-base
 Requires:       gtk3
 Requires:       libnotify >= 0.7
 Requires:       libappindicator-gtk3
@@ -106,7 +107,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
-* Wed May 02 2018 Phantom X - 0.1-2.20161009gitcb5f504
+* Tue Apr 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.1-3.20161009gitcb5f504
+- BR: python2-gobject-base
+
+* Wed May 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.1-2.20161009gitcb5f504
 - Add GitHub pull requests
 - Metainfo file
 
