@@ -52,7 +52,7 @@
 
 Name:           citra
 Version:        0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -76,6 +76,7 @@ Source9:        https://github.com/herumi/%{srcname9}/archive/%{commit9}/%{srcna
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
+Patch1:         0001-Disable-telemetry-initial-dialog.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -144,6 +145,15 @@ sed \
   -e '/-pedantic-errors/d' \
   -i externals/teakra/CMakeLists.txt externals/dynarmic/CMakeLists.txt
 
+%if 0%{?with_snapshot}
+  sed \
+    -e 's|@GIT_REV@|%{commit}|g' \
+    -e 's|@GIT_BRANCH@|HEAD|g' \
+    -e 's|@GIT_DESC@|%{shortcommit}|g' \
+    -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
+    -i src/common/scm_rev.cpp.in
+%endif
+
 %build
 mkdir -p %{_target_platform}
 pushd %{_target_platform}
@@ -151,13 +161,12 @@ pushd %{_target_platform}
 mkdir -p dist/compatibility_list/
 cp %{S:20} dist/compatibility_list/
 
+%if 0%{?with_snapshot}
 export CI=true
 export TRAVIS=true
-export TRAVIS_REPO_SLUG=citra-emu/citra-nightly
+export TRAVIS_REPO_SLUG=%{name}/%{name}-nightly
 export TRAVIS_TAG="%{version}-%{release}"
-
-export CFLAGS="%(echo %{build_cflags} | sed 's/-g /-g1 /')"
-export CXXFLAGS="%(echo %{build_cxxflags} | sed 's/-g /-g1 /')"
+%endif
 
 %cmake .. \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
@@ -195,12 +204,18 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %if %{with qt}
 %files qt
 %{_bindir}/%{name}-qt
+%license license.txt
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
-%{_datadir}/mime/packages/%{name}-*.xml
+%{_datadir}/mime/packages/%{name}.xml
 %{_mandir}/man6/%{name}-qt.6*
 %endif
 
+
 %changelog
+* Wed Apr 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 0-2.20190423gitb9e51f0
+- Disable telemetry initial dialog
+- Update version strings
+
 * Tue Apr 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 0-1.20190423gitb9e51f0
 - Initial spec

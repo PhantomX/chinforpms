@@ -691,7 +691,7 @@ MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2//' -e 's/-O3//')
 export MOZ_DEBUG_FLAGS=" "
 %endif
 %if 0%{?build_with_lto}
-MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2/-O3/' -e 's/-g/-g1/')"
+MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2/-O3/' -e 's/ -g\b/ -g1/')"
 %if 0%{?build_with_clang}
 RPM_FLTO_FLAGS="-flto=thin -Wl,--thinlto-jobs=$RPM_NCPUS"
 %else
@@ -701,14 +701,14 @@ MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS $RPM_FLTO_FLAGS"
 MOZ_LINK_FLAGS="$MOZ_OPT_FLAGS"
 %endif
 %ifarch s390
-MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-g/-g1/')
+MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/ -g\b/ -g1/')
 # If MOZ_DEBUG_FLAGS is empty, waterfox's build will default it to "-g" which
 # overrides the -g1 from line above and breaks building on s390
 # (OOM when linking, rhbz#1238225)
 export MOZ_DEBUG_FLAGS=" "
 %endif
 %ifarch %{arm}
-MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-g/-g0/')
+MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/ -g\b/-g0 /')
 export MOZ_DEBUG_FLAGS=" "
 %endif
 %if !0%{?build_with_clang}

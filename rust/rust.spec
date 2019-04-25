@@ -469,8 +469,8 @@ export LIBSSH2_SYS_USE_PKG_CONFIG=1
 %global rustlibdir %{common_libdir}/rustlib
 
 %if %{with bundled_llvm}
-export CFLAGS="$(echo "%{build_cflags}" | sed -e 's/-g/-g1/')"
-export CXXFLAGS="$(echo "%{build_cxxflags}" | sed -e 's/-g/-g1/')"
+export CFLAGS="$(echo "%{build_cflags}" | sed -e 's/-g\b/-g1/')"
+export CXXFLAGS="$(echo "%{build_cxxflags}" | sed -e 's/-g\b/-g1/')"
 %endif
 
 %ifarch %{arm} %{ix86}

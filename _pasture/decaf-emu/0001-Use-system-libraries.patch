@@ -1,0 +1,67 @@
+From 2f8c718e4e21d9656cc4b8185aef9d07dc0523ff Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 24 Apr 2019 15:50:08 -0300
+Subject: [PATCH] Use system libraries
+
+Findpugixml.cmake from Dolphin-emu project:
+https://github.com/dolphin-emu/dolphin
+---
+ CMakeModules/Findpugixml.cmake | 14 ++++++++++++++
+ libraries/CMakeLists.txt       | 13 +++++--------
+ 2 files changed, 19 insertions(+), 8 deletions(-)
+ create mode 100644 CMakeModules/Findpugixml.cmake
+
+diff --git a/CMakeModules/Findpugixml.cmake b/CMakeModules/Findpugixml.cmake
+new file mode 100644
+index 0000000..e026b8d
+--- /dev/null
++++ b/CMakeModules/Findpugixml.cmake
+@@ -0,0 +1,14 @@
++find_path(pugixml_INCLUDE_DIRS pugixml.hpp)
++find_library(pugixml_LIBRARIES NAMES pugixml)
++mark_as_advanced(pugixml_INCLUDE_DIRS pugixml_LIBRARIES)
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(pugixml REQUIRED_VARS pugixml_LIBRARIES pugixml_INCLUDE_DIRS)
++
++if(pugixml_FOUND AND NOT TARGET pugixml)
++  add_library(pugixml UNKNOWN IMPORTED)
++  set_target_properties(pugixml PROPERTIES
++    IMPORTED_LOCATION "${pugixml_LIBRARIES}"
++    INTERFACE_INCLUDE_DIRECTORIES "${pugixml_INCLUDE_DIRS}"
++  )
++endif()
+diff --git a/libraries/CMakeLists.txt b/libraries/CMakeLists.txt
+index 900ef06..ac567d3 100644
+--- a/libraries/CMakeLists.txt
++++ b/libraries/CMakeLists.txt
+@@ -24,9 +24,10 @@ set_target_properties(catch2 PROPERTIES
+     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/catch/single_include/catch2")
+ 
+ # cereal
+-add_library(cereal INTERFACE IMPORTED GLOBAL)
+-set_target_properties(cereal PROPERTIES
+-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/cereal/include")
++ADD_LIBRARY(cereal INTERFACE)
++TARGET_INCLUDE_DIRECTORIES(
++    cereal INTERFACE include
++)
+ 
+ # cpptoml
+ add_library(cpptoml INTERFACE IMPORTED GLOBAL)
+@@ -189,11 +190,7 @@ set_target_properties(peglib PROPERTIES
+     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/cpp-peglib")
+ 
+ # pugixml
+-add_library(pugixml STATIC
+-    "pugixml/src/pugixml.cpp")
+-set_target_properties(pugixml PROPERTIES
+-    FOLDER libraries
+-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/pugixml/src")
++find_package(pugixml)
+ 
+ # spdlog
+ add_library(spdlog INTERFACE IMPORTED GLOBAL)
+-- 
+2.21.0
+

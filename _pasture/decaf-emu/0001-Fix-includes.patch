@@ -1,0 +1,63 @@
+From 47f1fd4aff1801b3489e9ed8712fb094f873ed51 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 24 Apr 2019 16:52:57 -0300
+Subject: [PATCH] Fix includes
+
+---
+ src/libdecaf/src/cafe/cafe_tinyheap.cpp                     | 1 +
+ src/libdecaf/src/cafe/libraries/h264/h264_decode_ffmpeg.cpp | 1 +
+ src/libdecaf/src/decaf.cpp                                  | 1 +
+ src/libdecaf/src/ios/fs/ios_fs_fsa_device.h                 | 1 +
+ 4 files changed, 4 insertions(+)
+
+diff --git a/src/libdecaf/src/cafe/cafe_tinyheap.cpp b/src/libdecaf/src/cafe/cafe_tinyheap.cpp
+index 7fa5f4d..fa62e5c 100644
+--- a/src/libdecaf/src/cafe/cafe_tinyheap.cpp
++++ b/src/libdecaf/src/cafe/cafe_tinyheap.cpp
+@@ -1,6 +1,7 @@
+ #include "cafe_tinyheap.h"
+ 
+ #include <common/align.h>
++#include <common/log.h>
+ #include <cstring>
+ #include <libcpu/be2_struct.h>
+ 
+diff --git a/src/libdecaf/src/cafe/libraries/h264/h264_decode_ffmpeg.cpp b/src/libdecaf/src/cafe/libraries/h264/h264_decode_ffmpeg.cpp
+index 746f0dc..71777e6 100644
+--- a/src/libdecaf/src/cafe/libraries/h264/h264_decode_ffmpeg.cpp
++++ b/src/libdecaf/src/cafe/libraries/h264/h264_decode_ffmpeg.cpp
+@@ -8,6 +8,7 @@
+ 
+ #include <common/align.h>
+ #include <common/decaf_assert.h>
++#include <common/log.h>
+ #include <fmt/format.h>
+ 
+ extern "C" {
+diff --git a/src/libdecaf/src/decaf.cpp b/src/libdecaf/src/decaf.cpp
+index 5673769..e243184 100644
+--- a/src/libdecaf/src/decaf.cpp
++++ b/src/libdecaf/src/decaf.cpp
+@@ -18,6 +18,7 @@
+ 
+ #include <chrono>
+ #include <common/decaf_assert.h>
++#include <common/log.h>
+ #include <common/platform.h>
+ #include <common/platform_dir.h>
+ #include <condition_variable>
+diff --git a/src/libdecaf/src/ios/fs/ios_fs_fsa_device.h b/src/libdecaf/src/ios/fs/ios_fs_fsa_device.h
+index 77e2d0b..7bf0777 100644
+--- a/src/libdecaf/src/ios/fs/ios_fs_fsa_device.h
++++ b/src/libdecaf/src/ios/fs/ios_fs_fsa_device.h
+@@ -5,6 +5,7 @@
+ #include "ios_fs_fsa_types.h"
+ 
+ #include "ios/ios_device.h"
++#include <vector>
+ #include "vfs/vfs_device.h"
+ #include "vfs/vfs_permissions.h"
+ 
+-- 
+2.21.0
+

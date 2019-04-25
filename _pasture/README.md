@@ -14,6 +14,7 @@ some seasonal packages too, these can return when needed
  * **bitlbee-facebook** - Updated release, Fedora included
  * **bzrtp** - Unneeded
  * **compat-libva1** - linux-steam-integration
+ * **decaf-emu** - needs SSE4.1
  * **cowsrevenge** - Do not have interest anymore
  * **dropboxd** - Do not have interest anymore, upstream bad decisions
  * **firefox** - Old 56 release

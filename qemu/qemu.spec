@@ -1168,6 +1168,8 @@ done
 # RPM won't pick up their dependencies.
 chmod +x %{buildroot}%{_libdir}/qemu/*.so
 
+mkdir -p %{buildroot}%{_localstatedir}/lib/qemu/
+
 
 %check
 
