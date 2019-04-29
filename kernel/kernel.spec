@@ -56,17 +56,17 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 7
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit df64995f112ac22418a58919f5247423226e0413
+%global pfcommit 2bd4d00dac4fb0b48458ac1bf836b21e0c25f087
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 4835ec05cd8c529daf829c32d39f5954c558e813
+%global opensuse_id 048e1d279e4d522573b14fa5405b2800b5f4a191
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -580,8 +580,6 @@ Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
 Patch201: efi-lockdown.patch
 
-Patch202: KEYS-Allow-unrestricted-boot-time-addition-of-keys-t.patch
-
 # bz 1497559 - Make kernel MODSIGN code not error on missing variables
 Patch207: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
 Patch208: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
@@ -649,20 +647,32 @@ Patch509: i915-enable-fastboot-on-skylake.patch
 # fastboot by default on VLV/CHV (BYT/CHT), queued in -next for merging into 5.1
 Patch510: i915-enable-fastboot-on-vlv-chv.patch
 
-# https://bugs.freedesktop.org/show_bug.cgi?id=109806
-Patch512: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
-
 # rhbz 1689750, patch submitted upstream
 Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
-
-# rhbz 1688283
-Patch514: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
 
 # rhbz 1683382
 Patch515: nfsv4.1-avoid-false-retries.patch
 
+# https://bugs.freedesktop.org/show_bug.cgi?id=109806
+Patch516: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
+
 # CVE-2019-3882 rhbz 1689426 1695571
 Patch517: vfio-type1-limit-dma-mappings-per-container.patch
+
+# rhbz 1701077
+Patch519: nfsd-wake-waiters-blocked-on-file_lock-before-deleting-it.patch
+ 
+# CVE-2019-9503 rhbz 1701842 1701843
+Patch520: 0001-brcmfmac-add-subtype-check-for-event-handling-in-dat.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1701096
+Patch521: 0001-integrity-KEYS-add-a-reference-to-platform-keyring.patch
+Patch522: 0001-kexec-KEYS-Make-use-of-platform-keyring-for-signatur.patch
+# Submitted upstream at https://lkml.org/lkml/2019/4/23/89
+Patch523: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
+
+# CVE-2019-3900 rhbz 1698757 1702940
+Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 
 ### Extra
 
@@ -2023,6 +2033,10 @@ fi
 #
 #
 %changelog
+* Sun Apr 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.10-500.chinfo
+- 5.0.10 - pf7
+- f30 sync
+
 * Sat Apr 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.9-500.chinfo
 - 5.0.9
 

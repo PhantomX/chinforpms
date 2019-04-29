@@ -3,23 +3,29 @@
 
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.8.2
+%global winemono  4.8.3
 %global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 4.6
+%global stagingver 8f3347776090dbfb5c878c44bcd113b56bb1e573
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
+%global stpkgver %{stagingver}
+%else
+%global stpkgver %(c=%{stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id e4f33a52b0b9f659cf9f569ad93f2a4e6098c5ef
+%global tkg_id 11873b6ba84b12616415899f6e047cd50710cbc6
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global pba 0
 %if !%{?staging}
 %global pba 0
 %endif
-%global faudioopts -W xaudio2-revert -W xaudio2_7-CreateFX-FXEcho -W xaudio2_7-WMA_support -W xaudio2_CommitChanges
+# FAudio
+%global staging_opts -W xaudio2-revert -W xaudio2_7-CreateFX-FXEcho -W xaudio2_7-WMA_support -W xaudio2_CommitChanges
+# proton FS hack
+%global staging_opts %{?staging_opts} -W winex11.drv-mouse-coorrds
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global valve_url https://github.com/ValveSoftware/wine
@@ -34,8 +40,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.6
-Release:        101%{?dist}
+Version:        4.7
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -111,7 +117,7 @@ Patch704:       %{tkg_url}/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_com
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
-Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}/wine-staging-%{stagingver}.tar.gz
+Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}/wine-staging-%{stpkgver}.tar.gz
 Patch705:       %{tkg_url}/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
 Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch707:       %{tkg_url}/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
@@ -122,7 +128,6 @@ Patch801:       %{valve_url}/commit/ff95f1927cdb923907ef1fa9660203004b9ee36d.pat
 Patch802:       %{valve_url}/commit/36017749b370b38860aaa167494d200569902d25.patch#/%{name}-valve-3601774.patch
 Patch803:       0001-XACT3_VER-typos-IXAudio23-compatibility-fix.patch
 Patch804:       wine-xaudio2-pulseaudio-app-name.patch
-Patch805:       %{valve_url}/commit/7db0aa426bb4ddb4c306ca1049081d4265e8d7ff.patch#/%{name}-valve-7db0aa4.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -681,7 +686,6 @@ This package adds the opencl driver for wine.
 %patch802 -p1
 %patch803 -p1
 %patch804 -p1
-%patch805 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?staging}
@@ -689,7 +693,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
 
-./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?faudioopts}
+./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?staging_opts}
 
 sed -i "s/  (Staging)//g" libs/wine/Makefile.in
 
@@ -699,7 +703,8 @@ cp -p %{S:1001} README-pba-pkg
 %patch1000 -p1
 %endif #{?pba}
 
-%patch705 -p1
+# Breaks Gallium HUD
+#patch705 -p1
 %patch706 -p1
 %patch707 -p1
 %patch708 -p1
@@ -2282,6 +2287,9 @@ fi
 
 
 %changelog
+* Mon Apr 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.7-100
+- 4.7
+
 * Thu Apr 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.6-101
 - wine-mono 4.8.2
 

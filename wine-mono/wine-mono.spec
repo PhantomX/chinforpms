@@ -3,7 +3,7 @@
 %global with_bin 0
 
 Name:           wine-mono
-Version:        4.8.2
+Version:        4.8.3
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -133,6 +133,9 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 
 
 %changelog
+* Fri Apr 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.8.3-100
+- 4.8.3
+
 * Thu Apr 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.8.2-100
 - 4.8.2
 

@@ -186,6 +186,7 @@ sed -e "/PNG_PNG_INCLUDE_DIR/s|libpng/|lib%{pngver}/|" \
 rm -rf ext/glew/{GL,*.c}
 rm -rf ext/native/ext/libzip
 
+%if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
 pushd ffmpeg
 sed \
@@ -199,6 +200,7 @@ rm -rf */*/include
 rm -rf */*/lib
 
 popd
+%endif
 %endif
 
 
