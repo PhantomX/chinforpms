@@ -1,21 +1,21 @@
 %undefine _hardened_build
 
-%global commit 88670330690f6bc18b127ba2e28cfa9106a10474
+%global commit 65b8ace70f90fc4501ca000562f15060dcfa91f4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190401
+%global date 20190429
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global winecommonver 3.10
+%global winecommonver 4.6
 
 %global pkgname d9vk
 
 Name:           wine-%{pkgname}
 Version:        1.0.1
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        A D3D9 to VK Translation Layer for Linux / Wine
 
 License:        zlib
@@ -90,9 +90,6 @@ sed \
 %build
 export WINEPREFIX="$(pwd)/%{_target_platform}/wine-build"
 
-#FIXME: remove compiler variables when meson is fixed
-CC=winegcc \
-CXX=wineg++ \
 meson \
   --cross-file build-wine%{__isa_bits}.txt \
   --buildtype "release" \
@@ -133,5 +130,10 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Mon Apr 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.0.1-0.2.20190429git65b8ace
+- New snapshot
+- Bump minimal wine version
+- Remove meson fix
+
 * Mon Apr 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.00-0.1.20190401git8867033
 - Initial spec

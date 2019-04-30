@@ -8,7 +8,7 @@
 %global pkgname freac-cdk
 
 Name:           %{pkgname}-freeworld
-Version:        1.1~alpha_20181201
+Version:        1.1~alpha_20190423
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac - freeworld codecs
 
@@ -36,6 +36,11 @@ This build contains freeworld codecs, like AAC.
 sed -e 's/\r//' -i Readme*
 
 sed -e 's|winegcc|\0-disabled|g' -i Makefile-options
+
+sed \
+  -e 's|-L$(prefix)/lib\b||g' \
+  -e 's|-L/usr/X11R6/lib -L/usr/local/lib||g' \
+  -i Makefile runtime/Makefile Makefile-commands
 
 sed -e 's|/lib/|/%{_lib}/|g' -i runtime/common/utilities.cpp
 
@@ -82,5 +87,8 @@ rm -f %{buildroot}%{_libdir}/*.so
 
 
 %changelog
+* Tue Apr 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20190423-1
+- 1.1-alpha-20190423
+
 * Wed Jan 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20181201-1
 - Initial spec

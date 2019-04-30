@@ -1,5 +1,5 @@
 NAME = freac-cdk
-VERSION ?= 1.1-alpha-20181201
+VERSION ?= 1.1-alpha-20190423
 SANITIZE ?= 1
 CLEAN_PATCH = $(NAME)-clean.patch
 

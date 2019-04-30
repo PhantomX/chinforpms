@@ -1,21 +1,21 @@
 %undefine _hardened_build
 
-%global commit 30992a8e07d0362aefc99ad8f564532d38561e35
+%global commit 5a9da8f6b02230948a0ab45393afaa4caa84cd93
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190312
-%global with_snapshot 0
+%global date 20190420
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global winecommonver 3.0
+%global winecommonver 4.6
 
 %global pkgname wine-nine-standalone
 
 Name:           wine-nine
-Version:        0.4
-Release:        1%{?gver}%{?dist}
+Version:        0.5
+Release:        0.1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -106,9 +106,6 @@ sed -e "s|RPM_LD_FLAGS|$TEMP_LDFLAGS|g" -i tools/cross-wine%{__isa_bits}.in
 %build
 export WINEPREFIX="$(pwd)/%{_target_platform}/wine-build"
 
-#FIXME: remove compiler variables when meson is fixed
-CC=winegcc \
-CXX=wineg++ \
 meson \
   --cross-file tools/cross-wine%{__isa_bits} \
   --buildtype "release" \
@@ -158,6 +155,11 @@ desktop-file-install \
 
 
 %changelog
+* Mon Apr 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.5-0.1.20190420git5a9da8f
+- New snapshot
+- Remove meson fix
+- Bump minimal wine version
+
 * Wed Mar 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.4-1
 - 0.4
 

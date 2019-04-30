@@ -5,8 +5,8 @@
 %global systemlibs systemlibexpat,systemliburiparser,systemlibxspf,systemzlib
 
 Name:           freac-cdk
-Version:        1.1~alpha_20181201
-Release:        2%{?dist}
+Version:        1.1~alpha_20190423
+Release:        1%{?dist}
 Summary:        Component development kit for fre:ac
 
 License:        GPLv2
@@ -27,6 +27,7 @@ BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(libcdio)
 BuildRequires:  pkgconfig(libcdio_paranoia)
+BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(liburiparser)
 BuildRequires:  pkgconfig(xspf)
 BuildRequires:  pkgconfig(zlib)
@@ -66,6 +67,11 @@ sed -e 's/\r//' -i Readme*
 
 sed -e 's|winegcc|\0-disabled|g' -i Makefile-options
 
+sed \
+  -e 's|-L$(prefix)/lib\b||g' \
+  -e 's|-L/usr/X11R6/lib -L/usr/local/lib||g' \
+  -i Makefile runtime/Makefile Makefile-commands
+
 sed -e 's|/lib/|/%{_lib}/|g' -i runtime/common/utilities.cpp
 
 %build
@@ -99,6 +105,10 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 
 %changelog
+* Tue Apr 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20190423-1
+- 1.1-alpha-20190423
+- BR: pkgconfig(libpulse)
+
 * Wed Jan 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20181201-2
 - devel: R: smooth-devel
 - Clean tarball

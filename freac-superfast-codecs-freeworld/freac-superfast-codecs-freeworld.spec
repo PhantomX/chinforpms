@@ -6,7 +6,7 @@
 
 Name:           freac-%{pkgname}-codecs-freeworld
 Version:        1.0~pre3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        SuperFast Codecs for fre:ac - freeworld
 
 License:        GPLv2
@@ -34,8 +34,7 @@ in parallel to provide faster processing on systems with multiple CPU cores.
 
 sed -e 's/\r//' -i Readme*
 
-sed -e 's|-L$(prefix)/lib |-L%{_libdir} |g' -i Makefile-commands
-
+sed -e 's|-L$(prefix)/lib\b||g' -i Makefile-commands
 
 %build
 %set_build_flags
@@ -62,5 +61,8 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 
 %changelog
+* Tue Apr 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.0~pre3-2
+- Rebuilt for smooth
+
 * Wed Jan 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.0~pre3-1
 - Initial spec

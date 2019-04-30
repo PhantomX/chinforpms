@@ -45,6 +45,7 @@ some seasonal packages too, these can return when needed
  * **VirtualBox-guest-additions-iso** - VirtualBox
  * **VirtualBox-kmod** - VirtualBox
  * **waifu2x-converter-cpp** - Fedora included
+ * **wine-dxup** - wine-d9vk
  * **wine-freeworld** - Unneeded, FAudio-freeworld
  * **xfwm4** - MONITOR_ROOT_PIXMAP is default now
  * **xorg-x11-drv-amdgpu** - Seasonal package

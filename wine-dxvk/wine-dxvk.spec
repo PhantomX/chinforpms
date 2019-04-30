@@ -80,9 +80,6 @@ sed \
 %build
 export WINEPREFIX="$(pwd)/%{_target_platform}/wine-build"
 
-#FIXME: remove compiler variables when meson is fixed
-CC=winegcc \
-CXX=wineg++ \
 meson \
   --cross-file build-wine%{__isa_bits}.txt \
   --buildtype "release" \

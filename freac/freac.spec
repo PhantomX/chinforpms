@@ -1,7 +1,7 @@
 %global smoothver 0.8.74
 
 Name:           freac
-Version:        1.1~alpha_20181201a
+Version:        1.1~alpha_20190423
 Release:        1%{?dist}
 Summary:        A free audio converter and CD ripper
 
@@ -17,6 +17,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  freac-cdk-devel
 BuildRequires:  smooth-devel >= %{smoothver}
 BuildRequires:  pkgconfig(libudev)
+BuildRequires:  libappstream-glib
 Requires:       hicolor-icon-theme
 Requires:       flac
 Requires:       lame
@@ -43,6 +44,11 @@ WMA, Ogg Vorbis, FLAC, AAC, WAV and Bonk formats.
 %autosetup -n %{name}-%{ver}
 
 sed -e 's/\r//' -i COPYING Readme
+
+sed \
+  -e 's|-L$(prefix)/lib||g' \
+  -e 's|-L/usr/X11R6/lib -L/usr/local/lib||g' \
+  -i Makefile
 
 sed -e 's|/lib/|/%{_lib}/|g' -i src/loader/console.cpp src/loader/gui.cpp
 
@@ -86,6 +92,7 @@ for res in 16 22 24 32 36 48 64 72 96 ;do
 done
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.%{name}.appdata.xml
 
 
 %files
@@ -96,9 +103,13 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/%{name}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
+%{_metainfodir}/*.xml
 
 
 %changelog
+* Tue Apr 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20190423-1
+- 1.1-alpha-20190423
+
 * Tue Dec 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20181201a-1
 - 1.1-alpha-20181201a
 
