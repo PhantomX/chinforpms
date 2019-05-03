@@ -14,7 +14,7 @@ clone: clean
 	tar xf mesa-${VERSION}.tar.xz
 
 sanitize: clone vl_mpeg12_decoder.c vl_decoder.c
-ifdef SANITIZE
+ifeq ($(SANITIZE),1)
 	cat < vl_mpeg12_decoder.c > $(DIRNAME)/src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
 	cat < vl_decoder.c > $(DIRNAME)/src/gallium/auxiliary/vl/vl_decoder.c
 endif

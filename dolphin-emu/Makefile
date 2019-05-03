@@ -3,7 +3,7 @@ VERSION ?= 5c5e6df0380c518d098f20d9ffc832887782335c
 SNAPSHOT ?= 0
 EXTERNALS = cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi libiconv-1.14 libpng libusb LZO mbedtls miniupnpc OpenAL pugixml Qt SFML MoltenVK XAudio2_7 xxhash zlib
 
-ifdef SNAPSHOT
+ifeq ($(SNAPSHOT),1)
 	TARBALLVER = $(shell echo ${VERSION} | cut -c-7 )
 	DLSTR = ${VERSION}
 else

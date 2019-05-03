@@ -16,7 +16,7 @@ clone: clean
 	tar xf ${NAME}-${VERSION}.tar.gz
 
 sanitize: clone $(CLEAN_PATCH)
-ifdef SANITIZE
+ifeq ($(SANITIZE),1)
 	rm -rf $(DIRNAME)/components/coreaudio
 	rm -rf $(DIRNAME)/components/faac
 	rm -rf $(DIRNAME)/components/fdkaac

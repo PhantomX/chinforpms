@@ -1,4 +1,5 @@
 %undefine _hardened_build
+
 %bcond_with ffmpeg
 
 %global commit 5c5e6df0380c518d098f20d9ffc832887782335c

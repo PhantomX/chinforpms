@@ -23,7 +23,6 @@ Source1:        Makefile
 Patch0:         %{name}-clean.patch
 
 BuildRequires:  gcc-c++
-BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(libcdio)
 BuildRequires:  pkgconfig(libcdio_paranoia)

@@ -2,7 +2,7 @@
 %global debug_package %{nil}
 
 Name:           vhba
-Version:        20190302
+Version:        20190410
 Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
@@ -16,6 +16,7 @@ Provides:       %{name}-kmod-common = %{version}
 Requires:       %{name}-kmod >= %{version}
 
 BuildRequires:  systemd
+
 
 %description
 An implementation of a Virtual SCSI Host Bus Adapter (VHBA), which acts
@@ -46,6 +47,9 @@ install -m644 -D %{SOURCE1} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
 
 
 %changelog
+* Fri May 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 20190410-1
+- 20190410
+
 * Sun Mar 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 20190302-1
 - 20190302
 

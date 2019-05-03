@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 2bd4d00dac4fb0b48458ac1bf836b21e0c25f087
+%global pfcommit ecc3c0cc180aa7cc7417bbb1ae52464e3f3a75b0
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 048e1d279e4d522573b14fa5405b2800b5f4a191
+%global opensuse_id 13cf3aa9acd801d0b3258ab14052234f9c0b323d
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -653,15 +653,6 @@ Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
 # rhbz 1683382
 Patch515: nfsv4.1-avoid-false-retries.patch
 
-# https://bugs.freedesktop.org/show_bug.cgi?id=109806
-Patch516: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
-
-# CVE-2019-3882 rhbz 1689426 1695571
-Patch517: vfio-type1-limit-dma-mappings-per-container.patch
-
-# rhbz 1701077
-Patch519: nfsd-wake-waiters-blocked-on-file_lock-before-deleting-it.patch
- 
 # CVE-2019-9503 rhbz 1701842 1701843
 Patch520: 0001-brcmfmac-add-subtype-check-for-event-handling-in-dat.patch
 
@@ -673,6 +664,9 @@ Patch523: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # CVE-2019-3900 rhbz 1698757 1702940
 Patch524: net-vhost_net-fix-possible-infinite-loop.patch
+
+# Fix wifi on various ideapad models not working (rhbz#1703338)
+Patch525: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch 
 
 ### Extra
 
@@ -689,6 +683,10 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 #Patch1016: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
 Patch1017: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1018: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1019: %{opensuse_url}/memcg-make-it-work-on-sparse-non-0-node-systems.patch#/openSUSE-memcg-make-it-work-on-sparse-non-0-node-systems.patch
+Patch1020: %{opensuse_url}/Revert-ACPICA-Clear-status-of-GPEs-before-enabling-t.patch#/openSUSE-Revert-ACPICA-Clear-status-of-GPEs-before-enabling-t.patch
+Patch1021: %{opensuse_url}/HID-i2c-hid-Ignore-input-report-if-there-s-no-data-p.patch#/openSUSE-HID-i2c-hid-Ignore-input-report-if-there-s-no-data-p.patch
+Patch1022: %{opensuse_url}/KVM-x86-Whitelist-port-0x7e-for-pre-incrementing-rip.patch#/openSUSE-KVM-x86-Whitelist-port-0x7e-for-pre-incrementing-rip.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -2033,6 +2031,9 @@ fi
 #
 #
 %changelog
+* Thu May 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.11-500.chinfo
+- 5.0.11
+
 * Sun Apr 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.10-500.chinfo
 - 5.0.10 - pf7
 - f30 sync
@@ -2286,95 +2287,6 @@ fi
 
 * Mon Jun 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.0-500.chinfo
 - 4.17.0
-- rawhide sync
-
-* Wed May 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.13-500.chinfo
-- 4.16.13
-
-* Fri May 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.12-500.chinfo
-- 4.16.12
-
-* Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.11-500.chinfo
-- 4.16.11
-
-* Sun May 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.10-500.chinfo
-- 4.16.10
-
-* Wed May 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.9-500.chinfo
-- 4.16.9
-- Update graysky patch, gcc 8+ only now
-
-* Tue May 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.8-501.chinfo
-- Update pf patchset
-
-* Wed May 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.8-500.chinfo
-- 4.16.8
-
-* Wed May 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.7-500.chinfo
-- 4.16.7
-
-* Sun Apr 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.6-500.chinfo
-- 4.16.6
-
-* Thu Apr 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.5-500.chinfo
-- 4.16.5
-- f28 sync
-
-* Tue Apr 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.4-500.chinfo
-- 4.16.4
-- f28 sync
-
-- f28 sync
-* Thu Apr 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.3-500.chinfo
-- 4.16.3
-- f28 sync
-
-* Thu Apr 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.2-500.chinfo
-- 4.16.2
-- f28 sync
-
-* Sun Apr 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.1-500.chinfo
-- 4.16.1
-
-* Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.0-500.chinfo
-- 4.16.0
-- f28 sync
-
-* Mon Mar 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.11-500.chinfo
-- 4.15.11
-
-* Thu Mar 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.10-500.chinfo
-- 4.15.10
-
-* Sun Mar 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.9-500.chinfo
-- 4.15.9
-
-* Fri Mar 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.8-500.chinfo
-- 4.15.8
-
-* Wed Feb 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.7-500.chinfo
-- 4.15.7
-
-* Tue Feb 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.6-500.chinfo
-- 4.15.6
-
-* Thu Feb 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.5-500.chinfo
-- 4.15.5
-
-* Sat Feb 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.4-500.chinfo
-- 4.15.4
-
-* Mon Feb 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.3-500.chinfo
-- 4.15.3
-
-* Wed Feb 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.2-500.chinfo
-- 4.15.2
-
-* Sat Feb 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.1-500.chinfo
-- 4.15.1
-
-* Mon Jan 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.0-500.chinfo
-- 4.15.0
 - rawhide sync
 
 ###

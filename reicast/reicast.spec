@@ -1,6 +1,6 @@
-%global commit ce90d43c344f19fdce915deef636ded933bc0d08
+%global commit 3f8328da2524c948d3d2bb7d712a60155c8080f0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190412
+%global date 20190502
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 
 Name:           reicast
 Version:        8.1
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -123,6 +123,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Fri May 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 8.1-4.20190502git3f8328d
+- New snapshot
+
 * Tue Apr 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 8.1-3.20190412gitce90d43
 - System libs
 - Disable broken pulseaudio support

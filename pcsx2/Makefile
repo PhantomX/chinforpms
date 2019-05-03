@@ -1,10 +1,10 @@
 NAME = pcsx2
-VERSION ?= 163fd2bad97b006d7439abfd377a6b54d2d959be
-SNAPSHOT ?= 0
+VERSION ?= 079baaed9913d4c993500c43b323107b1de7438c
+SNAPSHOT ?= 1
 SANITIZE ?= 1
 PLUGINS = CDVDiso CDVDisoEFP CDVDlinuz CDVDolio CDVDpeops dev9ghzdrk PeopsSPU2 SSSPSXPAD USBqemu xpad zerogs zerospu2
 
-ifdef SNAPSHOT
+ifeq ($(SNAPSHOT),1)
 	TARBALLVER = $(shell echo ${VERSION} | cut -c-7 )
 	DLSTR = ${VERSION}
 else
@@ -26,7 +26,7 @@ clone: clean
 	rm -f ${NAME}-${TARBALLVER}.tar.gz
 
 sanitize: clone
-ifdef SANITIZE
+ifeq ($(SANITIZE),1)
 	rm -rf $(DIRNAME)/3rdparty
 	rm -rf $(DIRNAME)/fps2bios
 	rm -rf $(DIRNAME)/tools

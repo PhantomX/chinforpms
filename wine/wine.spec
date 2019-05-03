@@ -16,7 +16,7 @@
 %else
 %global stpkgver %(c=%{stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 11873b6ba84b12616415899f6e047cd50710cbc6
+%global tkg_id 5f13777453a518e94442dab9b61f649157b59364
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global pba 0
 %if !%{?staging}
@@ -41,7 +41,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.7
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -81,7 +81,12 @@ Source113:      wine-taskmgr.desktop
 
 # build fixes
 
-# wine bugs
+# wine bugs/upstream
+Patch100: %{whq_url}/d97e544387e69d31842c3302915975711b0b405a#/%{name}-whq-d97e544.patch
+Patch101: %{whq_url}/8f732c66ab37b54c30d63c74f7822ba1d4f04996#/%{name}-whq-8f732c6.patch
+Patch102: %{whq_url}/8039941c52758113955d376bd7b6b6e1e5b5f76c#/%{name}-whq-8039941.patch
+Patch103: %{whq_url}/21e1018ebdbe3d7d1b3f657c14105f8e6ce67474#/%{name}-whq-21e1018.patch
+Patch104: %{whq_url}/74799527b022649c75a2ef4c8d5916cccdb7ab35#/%{name}-whq-7479952.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -128,6 +133,8 @@ Patch801:       %{valve_url}/commit/ff95f1927cdb923907ef1fa9660203004b9ee36d.pat
 Patch802:       %{valve_url}/commit/36017749b370b38860aaa167494d200569902d25.patch#/%{name}-valve-3601774.patch
 Patch803:       0001-XACT3_VER-typos-IXAudio23-compatibility-fix.patch
 Patch804:       wine-xaudio2-pulseaudio-app-name.patch
+
+Patch900:       update-staging-05f918d.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -675,6 +682,11 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%patch104 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -692,6 +704,7 @@ This package adds the opencl driver for wine.
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
+%patch900 -p1
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?staging_opts}
 
@@ -2287,6 +2300,9 @@ fi
 
 
 %changelog
+* Thu May 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.7-101
+- no-PIC flags patches from upstream
+
 * Mon Apr 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.7-100
 - 4.7
 

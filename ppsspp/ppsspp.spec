@@ -3,8 +3,8 @@
 %global date 20190410
 %global with_snapshot 1
 
-# Enable ffmpeg support
-%bcond_with ffmpeg
+# Disable ffmpeg support
+%bcond_without ffmpeg
 # Enable Qt build
 %bcond_with qt
 # Enable EGL/GLESV2
@@ -16,11 +16,11 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 86c62b9a23936d556ea0899673f7b078a2f12224
+%global commit1 152c6893e9a30cc45f363cc87a8f48dc5d63cddb
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
-%global commit2 7472c903ec771c00af9925097e8d37075e9a379f
+%global commit2 4e8e6a1e7a9ecb4736b4c96f8b3ef1f0e267080b
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -52,7 +52,7 @@
 
 Name:           ppsspp
 Version:        1.8.0
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -174,7 +174,7 @@ sed \
   -e '/Wno-deprecated-register/d' \
   -i CMakeLists.txt
 
-rm -rf ext/native/ext/libpng
+rm -rf ext/native/ext/libpng*
 sed -e 's|png17|%{pngver}|g' \
   -i CMakeLists.txt Core/Screenshot.cpp \
      Core/Debugger/WebSocket/GPUBufferSubscriber.cpp \
@@ -334,6 +334,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu May 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-102.20190410git54e102c
+- New snapshot
+
 * Sat Apr 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-101.20190410git54e102c
 - New snapshot
 
