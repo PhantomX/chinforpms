@@ -1,6 +1,6 @@
-%global commit 54e102cfad8e9fcc8bc7cf2e40c09357ea3fc7da
+%global commit 709c9dc93cd5148dc23ee4e701371ab310eab0a0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190410
+%global date 20190502
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -334,7 +334,7 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
-* Thu May 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-102.20190410git54e102c
+* Fri May 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-102.20190502git709c9dc
 - New snapshot
 
 * Sat Apr 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-101.20190410git54e102c

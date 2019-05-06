@@ -96,18 +96,6 @@ index 8594f64482..5ffae32f2a 100644
  
  exclude_file_name_regexp--sc_trailing_blank = \
    /sysinfodata/.*\.data|/virhostcpudata/.*\.cpuinfo|^gnulib/local/.*/.*diff$$
-diff --git a/tests/Makefile.am b/tests/Makefile.am
-index d3cdbff8bb..436aac285f 100644
---- a/tests/Makefile.am
-+++ b/tests/Makefile.am
-@@ -146,6 +146,7 @@ EXTRA_DIST = \
- 	virjsondata \
- 	virmacmaptestdata \
- 	virmock.h \
-+	virmockstathelpers.h \
- 	virnetdaemondata \
- 	virnetdevtestdata \
- 	virnwfilterbindingxml2xmldata \
 diff --git a/tests/qemusecuritymock.c b/tests/qemusecuritymock.c
 index d1b17d8aa4..3fdc165fb1 100644
 --- a/tests/qemusecuritymock.c

@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 13
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ecc3c0cc180aa7cc7417bbb1ae52464e3f3a75b0
+%global pfcommit e7743d7f06c606c93f0e0f37b25a07867b5d7399
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 13cf3aa9acd801d0b3258ab14052234f9c0b323d
+%global opensuse_id 0b5ff0fff4b0a8c8fb17f79b538d6d84d72d84b8
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -684,9 +684,7 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1017: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1018: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1019: %{opensuse_url}/memcg-make-it-work-on-sparse-non-0-node-systems.patch#/openSUSE-memcg-make-it-work-on-sparse-non-0-node-systems.patch
-Patch1020: %{opensuse_url}/Revert-ACPICA-Clear-status-of-GPEs-before-enabling-t.patch#/openSUSE-Revert-ACPICA-Clear-status-of-GPEs-before-enabling-t.patch
 Patch1021: %{opensuse_url}/HID-i2c-hid-Ignore-input-report-if-there-s-no-data-p.patch#/openSUSE-HID-i2c-hid-Ignore-input-report-if-there-s-no-data-p.patch
-Patch1022: %{opensuse_url}/KVM-x86-Whitelist-port-0x7e-for-pre-incrementing-rip.patch#/openSUSE-KVM-x86-Whitelist-port-0x7e-for-pre-incrementing-rip.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -2031,6 +2029,9 @@ fi
 #
 #
 %changelog
+* Sun May 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.13-500.chinfo
+- 5.0.13 - pf8
+
 * Thu May 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.11-500.chinfo
 - 5.0.11
 

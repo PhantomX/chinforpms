@@ -15,7 +15,7 @@
 # Default to skipping autoreconf.  Distros can change just this one line
 # (or provide a command-line override) if they backport any patches that
 # touch configure.ac or Makefile.am.
-%{!?enable_autotools:%global enable_autotools 1}
+%{!?enable_autotools:%global enable_autotools 0}
 
 # The hypervisor drivers that run in libvirtd
 %define with_qemu          0%{!?_without_qemu:1}
@@ -215,7 +215,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 5.2.0
+Version: 5.3.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -224,7 +224,6 @@ URL: https://libvirt.org/
     %define mainturl stable_updates/
 %endif
 Source: https://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.xz
-Patch1: 0001-tests-fix-mocking-of-stat-lstat-functions.patch
 
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
@@ -1888,6 +1887,9 @@ exit 0
 
 
 %changelog
+* Sun May 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.0-100
+- 5.3.0
+
 * Wed Apr 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.0-100
 - Fedora 29 build
 
