@@ -1,4 +1,4 @@
-From de5d850913e9d5fb272f386fb36ef5f5776afb0c Mon Sep 17 00:00:00 2001
+From 4ef7fb944ba1e4ca9ccfbd7a43afda5a1cc884c1 Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Mon, 29 Apr 2019 15:11:26 +0200
 Subject: [PATCH] platform/x86: ideapad-laptop: Remove no_hw_rfkill_list
@@ -59,7 +59,7 @@ diff --git a/drivers/platform/x86/ideapad-laptop.c b/drivers/platform/x86/ideapa
 index c53ae86b59c7..2d94536dea88 100644
 --- a/drivers/platform/x86/ideapad-laptop.c
 +++ b/drivers/platform/x86/ideapad-laptop.c
-@@ -980,277 +980,21 @@ static void ideapad_wmi_notify(u32 value, void *context)
+@@ -980,312 +980,21 @@ static void ideapad_wmi_notify(u32 value, void *context)
  #endif
  
  /*
@@ -187,6 +187,27 @@ index c53ae86b59c7..2d94536dea88 100644
 -		},
 -	},
 -	{
+-		.ident = "Lenovo ideapad 330-15ICH",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo ideapad 330-15ICH"),
+-		},
+-	},
+-	{
+-		.ident = "Lenovo ideapad 530S-14ARR",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo ideapad 530S-14ARR"),
+-		},
+-	},
+-	{
+-		.ident = "Lenovo ideapad S130-14IGM",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo ideapad S130-14IGM"),
+-		},
+-	},
+-	{
 -		.ident = "Lenovo ideapad Y700-14ISK",
 -		.matches = {
 -			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
@@ -247,6 +268,13 @@ index c53ae86b59c7..2d94536dea88 100644
 -		.matches = {
 -			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 -			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo Legion Y530-15ICH"),
+-		},
+-	},
+-	{
+-		.ident = "Lenovo Legion Y530-15ICH-1060",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo Legion Y530-15ICH-1060"),
 -		},
 -	},
 -	{
@@ -338,6 +366,13 @@ index c53ae86b59c7..2d94536dea88 100644
 -		.matches = {
 -			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 -			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo YOGA 920-13IKB"),
+-		},
+-	},
+-	{
+-		.ident = "Lenovo YOGA C930-13IKB",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo YOGA C930-13IKB"),
 -		},
 -	},
 -	{

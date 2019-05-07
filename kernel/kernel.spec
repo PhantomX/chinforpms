@@ -50,23 +50,23 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 0
+%define base_sublevel 1
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 7
+%global post_factum 1
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e7743d7f06c606c93f0e0f37b25a07867b5d7399
+%global pfcommit 68a78959e5dcbc537805dfd870613a30fee8ab1b
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 0b5ff0fff4b0a8c8fb17f79b538d6d84d72d84b8
+%global opensuse_id a974d8b62e58541b513be8afddc4967498538d16
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -119,7 +119,7 @@ Summary: The Linux kernel
 #
 # standard kernel
 %define with_up        %{?_without_up:        0} %{?!_without_up:        1}
-# kernel PAE (only valid for i686 (PAE) and ARM (lpae))
+# kernel PAE (only valid for ARM (lpae))
 %define with_pae       %{?_without_pae:       0} %{?!_without_pae:       1}
 # kernel-debug
 %define with_debug     0
@@ -229,9 +229,7 @@ Summary: The Linux kernel
 # and debuginfo generation. Currently we rely on the old alldebug setting.
 %global _build_id_links alldebug
 
-# kernel PAE is only built on ARMv7 in rawhide.
-# Fedora 27 and earlier still support PAE, so change this on rebases.
-# %ifnarch i686 armv7hl
+# kernel PAE is only built on ARMv7
 %ifnarch armv7hl
 %define with_pae 0
 %endif
@@ -288,7 +286,6 @@ Summary: The Linux kernel
 %ifarch %{all_x86}
 %define asmarch x86
 %define hdrarch i386
-%define pae PAE
 %define all_arch_configs kernel-%{version}-i?86*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
@@ -322,7 +319,6 @@ Summary: The Linux kernel
 %define skip_nonpae_vdso 1
 %define asmarch arm
 %define hdrarch arm
-%define pae lpae
 %define make_target bzImage
 %define kernel_image arch/arm/boot/zImage
 # http://lists.infradead.org/pipermail/linux-arm-kernel/2012-March/091404.html
@@ -370,13 +366,8 @@ Summary: The Linux kernel
 %define _enable_debug_packages 0
 %endif
 
-%define with_pae_debug 0
-%if %{with_pae}
-%define with_pae_debug %{with_debug}
-%endif
-
 # Architectures we build tools/cpupower on
-%define cpupowerarchs %{ix86} x86_64 %{power64} %{arm} aarch64
+%define cpupowerarchs %{ix86} x86_64 ppc64le %{arm} aarch64
 
 %if %{use_vdso}
 
@@ -439,7 +430,6 @@ BuildConflicts: rpm < 4.13.0.1-19
 %undefine _unique_debug_srcs
 %undefine _debugsource_packages
 %undefine _debuginfo_subpackages
-%undefine _include_gdb_index
 %global _find_debuginfo_opts -r
 %global _missing_build_ids_terminate_build 1
 %global _no_recompute_build_ids 1
@@ -537,9 +527,6 @@ Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
 
 ## compile fixes
 
-# ongoing complaint, full discussion delayed until ksummit/plumbers
-Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
-
 %if !%{nopatches}
 
 # Git trees.
@@ -555,8 +542,6 @@ Patch112: die-floppy-die.patch
 
 Patch113: no-pcspkr-modalias.patch
 
-Patch114: silence-fbcon-logo.patch
-
 Patch115: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
 
 Patch116: crash-driver.patch
@@ -568,8 +553,6 @@ Patch118: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 Patch119: namespaces-no-expert.patch
 
 Patch120: ath9k-rx-dma-stop-check.patch
-
-Patch121: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
 
 Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
@@ -610,20 +593,15 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-Patch310: arm64-rock960-enable-hdmi-audio.patch
-Patch311: arm64-rock960-add-onboard-wifi-bt.patch
 Patch312: arm64-rock960-enable-tsadc.patch
 
-# Initall support for the 3A+
-Patch330: bcm2837-dts-add-Raspberry-Pi-3-A.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg699583.html
-Patch331: ARM-dts-bcm283x-Several-DTS-improvements.patch
-
-# https://patchwork.freedesktop.org/patch/290632/
-Patch332: drm-vc4-Use-16bpp-by-default-for-the-fbdev-buffer.patch
-
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
+
+# Tegra bits
+Patch340: arm64-tegra-jetson-tx1-fixes.patch
+
+# https://patchwork.kernel.org/patch/10858639/
+Patch341: arm64-tegra-Add-NVIDIA-Jetson-Nano-Developer-Kit-support.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -632,41 +610,19 @@ Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 # rhbz 1431375
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# https://patchwork.kernel.org/patch/10752253/
-Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
-
 # gcc9 fixes
 Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
 
-# patches for https://fedoraproject.org/wiki/Changes/FlickerFreeBoot
-# fixes, queued in -next for merging into 5.1
-Patch508: i915-fixes-for-fastboot.patch
-# fastboot by default on Skylake and newer, queued in -next for merging into 5.1
-Patch509: i915-enable-fastboot-on-skylake.patch
-# fastboot by default on VLV/CHV (BYT/CHT), queued in -next for merging into 5.1
-Patch510: i915-enable-fastboot-on-vlv-chv.patch
-
-# rhbz 1689750, patch submitted upstream
-Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
-
-# rhbz 1683382
-Patch515: nfsv4.1-avoid-false-retries.patch
-
-# CVE-2019-9503 rhbz 1701842 1701843
-Patch520: 0001-brcmfmac-add-subtype-check-for-event-handling-in-dat.patch
-
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
-Patch521: 0001-integrity-KEYS-add-a-reference-to-platform-keyring.patch
-Patch522: 0001-kexec-KEYS-Make-use-of-platform-keyring-for-signatur.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
-Patch523: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
+Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # CVE-2019-3900 rhbz 1698757 1702940
 Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 
 # Fix wifi on various ideapad models not working (rhbz#1703338)
-Patch525: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch 
+Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
 
 ### Extra
 
@@ -680,11 +636,8 @@ Patch1012: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_bl
 Patch1013: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
-#Patch1016: %%{opensuse_url}/dm-mpath-accept-failed-paths#/openSUSE-dm-mpath-accept-failed-paths.patch
-Patch1017: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
-Patch1018: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1019: %{opensuse_url}/memcg-make-it-work-on-sparse-non-0-node-systems.patch#/openSUSE-memcg-make-it-work-on-sparse-non-0-node-systems.patch
-Patch1021: %{opensuse_url}/HID-i2c-hid-Ignore-input-report-if-there-s-no-data-p.patch#/openSUSE-HID-i2c-hid-Ignore-input-report-if-there-s-no-data-p.patch
+Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
+Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -694,32 +647,19 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 
 #Patch3000: postfactum-merge-fixes.patch
 %if !0%{?zen}
-Patch3001: %{pf_url}/d39e5219fd5d5ca642d26a968d7dce34d55780a4.patch#/pf-d39e5219.patch
+Patch3001: %{pf_url}/e847736de234b273f40844bc2406d1f18d127979.patch#/pf-e847736d.patch
 %endif
-Patch3002: %{pf_url}/76dfb5b9eb45073375191f0f6d1035268a7be0ec.patch#/pf-76dfb5b9.patch
-Patch3003: %{pf_url}/5019e2418b06adb078ef092d47e1453025fb2f7e.patch#/pf-5019e241.patch
-Patch3004: %{pf_url}/c2674b7a7262c15a6185bd29d6cb0edb452be7a4.patch#/pf-c2674b7a.patch
-Patch3005: %{pf_url}/89360a9a8b0060f7408e40f6f79cf8e4b2f361c9.patch#/pf-89360a9a.patch
-Patch3006: %{pf_url}/bc9802d76707362f9659b7d156ce709a0e23f49c.patch#/pf-bc9802d7.patch
-Patch3007: %{pf_url}/8cf98b231f93ad8cdd0ea83304f1597ae7ef3226.patch#/pf-8cf98b23.patch
-Patch3008: %{pf_url}/a075f1be57077fd06cb6bbfb3ece1b9b26344f45.patch#/pf-a075f1be.patch
-Patch3009: %{pf_url}/76a6cd52ac72e974d21949df25365b6cedf11a34.patch#/pf-76a6cd52.patch
-Patch3010: %{pf_url}/28d4f47317bcabbd6d28fedffa45d5d0e079f4d2.patch#/pf-28d4f473.patch
-Patch3011: %{pf_url}/1bb88376c1c968c224b73690fe5ccf845dd15f7a.patch#/pf-1bb88376.patch
-Patch3012: %{pf_url}/63ab287c5717a204c355332a436064331a942239.patch#/pf-63ab287c.patch
-Patch3013: %{pf_url}/3220c2038fe145feec45f5ba85cfb55911e30fc4.patch#/pf-3220c203.patch
-Patch3014: %{pf_url}/e936a72917afc6688cb446f0bbdf4e0275404d3b.patch#/pf-e936a729.patch
-Patch3015: %{pf_url}/4a334fc9b1fa54d2d80f6b6bbcab7ced07d3d246.patch#/pf-4a334fc9.patch
-Patch3016: %{pf_url}/3e5f01146250d8dea10335622012c244373d2381.patch#/pf-3e5f0114.patch
-Patch3017: %{pf_url}/0105d985bdb7ca136d577592948f8b57c8c0fd8c.patch#/pf-0105d985.patch
-Patch3018: %{pf_url}/67bdf877112c6b3a6dd088415c8ae4ed45f45b79.patch#/pf-67bdf877.patch
-Patch3019: %{pf_url}/9e894c5a865fa8f1a6e535cfc70d5ecd388e33a8.patch#/pf-9e894c5a.patch
-Patch3020: %{pf_url}/74bc81192ff3fcf99e5797dcd354852280ae2614.patch#/pf-74bc8119.patch
-Patch3021: %{pf_url}/f223ab87f96e2e0d7f337d1f5e933f8699681a2c.patch#/pf-f223ab87.patch
-Patch3022: %{pf_url}/5a3ccd11319e9193a1266ec1a64e2ef40934cf18.patch#/pf-5a3ccd11.patch
-Patch3023: %{pf_url}/7d0de534e2803fa461759bcb3aedf6a386363ae6.patch#/pf-7d0de534.patch
-Patch3024: %{pf_url}/881bc26453692caefea06c1713581b796ebc8889.patch#/pf-881bc264.patch
-Patch3025: %{pf_url}/eb95b85a541571b276e3bd66032648022f279f68.patch#/pf-eb95b85a.patch
+Patch3002: %{pf_url}/2e96b764784524c1f8aa83e9688118569bdaca40.patch#/pf-2e96b764.patch
+Patch3002: %{pf_url}/f01c0609f9f126d45a30727e78f4e2121a2ffad0.patch#/pf-f01c0609.patch
+Patch3002: %{pf_url}/3360098a25074b4f8914292e1fddf24ea65ba056.patch#/pf-3360098a.patch
+Patch3002: %{pf_url}/e3aa6163237821f7b94a3ba876c710e614f6cbac.patch#/pf-e3aa6163.patch
+Patch3002: %{pf_url}/3d6631a6b1dc5432aa323cecb9d4979215966dd7.patch#/pf-3d6631a6.patch
+Patch3002: %{pf_url}/2223e774b56e536865e8ad3137cb99d14d8693d4.patch#/pf-2223e774.patch
+Patch3002: %{pf_url}/44fa38afade1d0f42b80bc6c8aa140977a02fe78.patch#/pf-44fa38af.patch
+Patch3002: %{pf_url}/7b3c2539e17beccc8d9d1ba8f6f0e7d6f33b9654.patch#/pf-7b3c2539.patch
+Patch3002: %{pf_url}/94b5f9cf52bcbcc68a5cdd7a2bd1250df8f0b9fa.patch#/pf-94b5f9cf.patch
+Patch3002: %{pf_url}/05948f91ac32a0a828486063fcdd1468f6c73a35.patch#/pf-05948f91.patch
+
 #Patch3500: postfactum-merge-fixes-2.patch
 
 %if !0%{?zen}
@@ -902,7 +842,7 @@ The meta-package for the %{1} kernel\
 Summary: %{variant_summary}\
 Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
-%ifarch %{power64}\
+%ifarch ppc64le\
 Obsoletes: kernel-bootwrapper\
 %endif\
 %{expand:%%kernel_reqprovconf}\
@@ -918,36 +858,13 @@ Obsoletes: kernel-bootwrapper\
 # Now, each variant package.
 
 %if %{with_pae}
-%ifnarch armv7hl
-%define variant_summary The Linux kernel compiled for PAE capable machines
-%kernel_variant_package %{pae}
-%description %{pae}-core
-This package includes a version of the Linux kernel with support for up to
-64GB of high memory. It requires a CPU with Physical Address Extensions (PAE).
-The non-PAE kernel can only address up to 4GB of memory.
-Install the kernel-PAE package if your machine has more than 4GB of memory.
-%else
 %define variant_summary The Linux kernel compiled for Cortex-A15
-%kernel_variant_package %{pae}
-%description %{pae}-core
+%kernel_variant_package lpae
+%description lpae-core
 This package includes a version of the Linux kernel with support for
 Cortex-A15 devices with LPAE and HW virtualisation support
 %endif
 
-
-%define variant_summary The Linux kernel compiled with extra debugging enabled for PAE capable machines
-%kernel_variant_package %{pae}debug
-Obsoletes: kernel-PAE-debug
-%description %{pae}debug-core
-This package includes a version of the Linux kernel with support for up to
-64GB of high memory. It requires a CPU with Physical Address Extensions (PAE).
-The non-PAE kernel can only address up to 4GB of memory.
-Install the kernel-PAE package if your machine has more than 4GB of memory.
-
-This variant of the kernel has numerous debugging options enabled.
-It should only be installed when trying to gather additional information
-on kernel bugs, as some of these options impact performance noticably.
-%endif
 
 %define variant_summary The Linux kernel compiled with extra debugging enabled
 %kernel_variant_package debug
@@ -1522,7 +1439,7 @@ BuildKernel() {
     fi
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*.o
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*/*.o
-%ifarch %{power64}
+%ifarch ppc64le
     cp -a --parents arch/powerpc/lib/crtsavres.[So] $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
 %endif
     if [ -d arch/%{asmarch}/include ]; then
@@ -1721,12 +1638,8 @@ cd linux-%{KVERREL}
 BuildKernel %make_target %kernel_image %{_use_vdso} debug
 %endif
 
-%if %{with_pae_debug}
-BuildKernel %make_target %kernel_image %{use_vdso} %{pae}debug
-%endif
-
 %if %{with_pae}
-BuildKernel %make_target %kernel_image %{use_vdso} %{pae}
+BuildKernel %make_target %kernel_image %{use_vdso} lpae
 %endif
 
 %if %{with_up}
@@ -1747,13 +1660,10 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
     if [ "%{with_pae}" -ne "0" ]; then \
-      %{modsign_cmd} certs/signing_key.pem.sign+%{pae} certs/signing_key.x509.sign+%{pae} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+%{pae}/ \
+      %{modsign_cmd} certs/signing_key.pem.sign+lpae certs/signing_key.x509.sign+lpae $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+lpae/ \
     fi \
     if [ "%{with_debug}" -ne "0" ]; then \
       %{modsign_cmd} certs/signing_key.pem.sign+debug certs/signing_key.x509.sign+debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+debug/ \
-    fi \
-    if [ "%{with_pae_debug}" -ne "0" ]; then \
-      %{modsign_cmd} certs/signing_key.pem.sign+%{pae}debug certs/signing_key.x509.sign+%{pae}debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+%{pae}debug/ \
     fi \
     if [ "%{with_up}" -ne "0" ]; then \
       %{modsign_cmd} certs/signing_key.pem.sign certs/signing_key.x509.sign $RPM_BUILD_ROOT/lib/modules/%{KVERREL}/ \
@@ -1933,11 +1843,8 @@ fi}\
 %kernel_variant_post -r kernel-smp
 
 %if %{with_pae}
-%kernel_variant_preun %{pae}
-%kernel_variant_post -v %{pae} -r (kernel|kernel-smp)
-
-%kernel_variant_post -v %{pae}debug -r (kernel|kernel-smp)
-%kernel_variant_preun %{pae}debug
+%kernel_variant_preun lpae
+%kernel_variant_post -v lpae -r (kernel|kernel-smp)
 %endif
 
 %kernel_variant_preun debug
@@ -2021,14 +1928,17 @@ fi
 
 %kernel_variant_files %{_use_vdso} %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
-%kernel_variant_files %{use_vdso} %{with_pae} %{pae}
-%kernel_variant_files %{use_vdso} %{with_pae_debug} %{pae}debug
+%kernel_variant_files %{use_vdso} %{with_pae} lpae
 
 # plz don't put in a version string unless you're going to tag
 # and build.
 #
 #
 %changelog
+* Mon May 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-500.chinfo
+- 5.1.0 - pf1
+- Rawhide sync
+
 * Sun May 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.13-500.chinfo
 - 5.0.13 - pf8
 

@@ -1,3 +1,4 @@
+From a446d2f94ce540689c7a46bf457d92409e9c4d7e Mon Sep 17 00:00:00 2001
 From: Josh Stone <jistone@redhat.com>
 Date: Fri, 21 Nov 2014 10:40:00 -0800
 Subject: [PATCH] Kbuild: Add an option to enable GCC VTA
@@ -37,32 +38,33 @@ Cc: Andrew Morton <akpm@linux-foundation.org>
 Cc: Markus Trippelsdorf <markus@trippelsdorf.de>
 Cc: Michel Dänzer <michel@daenzer.net>
 Signed-off-by: Josh Stone <jistone@redhat.com>
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
 ---
  Makefile          |  4 ++++
  lib/Kconfig.debug | 18 +++++++++++++++++-
  2 files changed, 21 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 257ef5892ab7..3cc6f4477e78 100644
+index 9ef547fc7ffe..5777d902f8f3 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -701,7 +701,11 @@ KBUILD_CFLAGS	+= -fomit-frame-pointer
+@@ -735,7 +735,11 @@ KBUILD_CFLAGS	+= -fomit-frame-pointer
  endif
  endif
  
 +ifdef CONFIG_DEBUG_INFO_VTA
-+KBUILD_CFLAGS   += $(call cc-option, -fvar-tracking-assignments)
++DEBUG_CFLAGS   += $(call cc-option, -fvar-tracking-assignments)
 +else
- KBUILD_CFLAGS   += $(call cc-option, -fno-var-tracking-assignments)
+ DEBUG_CFLAGS	:= $(call cc-option, -fno-var-tracking-assignments)
 +endif
  
  ifdef CONFIG_DEBUG_INFO
  ifdef CONFIG_DEBUG_INFO_SPLIT
 diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index e2894b23efb6..d98afe18f704 100644
+index 0d9e81779e37..424206212931 100644
 --- a/lib/Kconfig.debug
 +++ b/lib/Kconfig.debug
-@@ -165,7 +165,23 @@ config DEBUG_INFO_DWARF4
+@@ -217,7 +217,23 @@ config DEBUG_INFO_DWARF4
  	  Generate dwarf4 debug info. This requires recent versions
  	  of gcc and gdb. It makes the debug information larger.
  	  But it significantly improves the success of resolving
@@ -87,3 +89,6 @@ index e2894b23efb6..d98afe18f704 100644
  
  config GDB_SCRIPTS
  	bool "Provide GDB scripts for kernel debugging"
+-- 
+2.20.1
+

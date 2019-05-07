@@ -14,7 +14,7 @@ index f5b1d0d168e0..5f31107b22d1 100644
 @@ -430,7 +430,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
- 		   -Werror-implicit-function-declaration -Werror=implicit-int \
+ 		   -Werror=implicit-function-declaration -Werror=implicit-int \
 -		   -Wno-format-security \
 +		   -Wno-format-security -Wno-address-of-packed-member \
  		   -std=gnu89

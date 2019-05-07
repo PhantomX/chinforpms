@@ -18,7 +18,7 @@ i686-debug=generic:generic-x86:generic-x86-i686:debug:debug-x86
 
 # ppc64le
 ppc64le=generic:generic-powerpc
-ppc64le-debug=generic:generic-powerpc:generic-powerpc:debug
+ppc64le-debug=generic:generic-powerpc:debug
 
 # s390x
 s390x=generic:generic-s390x

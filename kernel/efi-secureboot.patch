@@ -1,43 +1,3 @@
-From b96ff1fd9e94772fde7b58fd69969d1a1c87eb6d Mon Sep 17 00:00:00 2001
-From: Dave Young <dyoung@redhat.com>
-Date: Tue, 27 Feb 2018 10:04:51 +0000
-Subject: [PATCH 07/31] Copy secure_boot flag in boot params across kexec
- reboot
-
-Kexec reboot in case secure boot being enabled does not keep the secure
-boot mode in new kernel, so later one can load unsigned kernel via legacy
-kexec_load.  In this state, the system is missing the protections provided
-by secure boot.
-
-Adding a patch to fix this by retain the secure_boot flag in original
-kernel.
-
-secure_boot flag in boot_params is set in EFI stub, but kexec bypasses the
-stub.  Fixing this issue by copying secure_boot flag across kexec reboot.
-
-Signed-off-by: Dave Young <dyoung@redhat.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: "Lee, Chun-Yi" <jlee@suse.com>
-cc: kexec@lists.infradead.org
----
- arch/x86/kernel/kexec-bzimage64.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/x86/kernel/kexec-bzimage64.c b/arch/x86/kernel/kexec-bzimage64.c
-index fb095ba0c02f..7d0fac5bcbbe 100644
---- a/arch/x86/kernel/kexec-bzimage64.c
-+++ b/arch/x86/kernel/kexec-bzimage64.c
-@@ -179,6 +179,7 @@ setup_efi_state(struct boot_params *params, unsigned long params_load_addr,
- 	if (efi_enabled(EFI_OLD_MEMMAP))
- 		return 0;
-
-+	params->secure_boot = boot_params.secure_boot;
- 	ei->efi_loader_signature = current_ei->efi_loader_signature;
- 	ei->efi_systab = current_ei->efi_systab;
- 	ei->efi_systab_hi = current_ei->efi_systab_hi;
--- 
-2.14.3
-
 From b5123d0553f4ed5e734f6457696cdd30228d1eee Mon Sep 17 00:00:00 2001
 From: David Howells <dhowells@redhat.com>
 Date: Tue, 27 Feb 2018 10:04:55 +0000
@@ -183,8 +143,10 @@ index 100ce4a4aff6..62361b647a75 100644
  
  extern int efi_status_to_err(efi_status_t status);
 @@ -1577,12 +1589,6 @@ efi_status_t efi_setup_gop(efi_system_table_t *sys_table_arg,
- bool efi_runtime_disabled(void);
+ #endif
+ 
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
+ extern unsigned long efi_call_virt_save_flags(void);
  
 -enum efi_secureboot_mode {
 -	efi_secureboot_mode_unset,
@@ -220,34 +182,36 @@ cc: linux-efi@vger.kernel.org
  4 files changed, 20 insertions(+), 3 deletions(-)
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index a7c240f00d78..1277d1857c5c 100644
+index adeee6329f55..27a54ec878bd 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -64,6 +64,7 @@
+@@ -65,6 +65,7 @@
  #include <linux/dma-mapping.h>
  #include <linux/ctype.h>
  #include <linux/uaccess.h>
 +#include <linux/security.h>
-
+ 
  #include <linux/percpu.h>
  #include <linux/crash_dump.h>
-@@ -997,6 +998,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1005,6 +1006,10 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
-
+ 
 +	efi_set_secure_boot(boot_params.secure_boot);
 +
- 	init_lockdown();
-
++	init_lockdown();
++
  	dmi_scan_machine();
-@@ -1150,8 +1154,6 @@ void __init setup_arch(char **cmdline_p)
+ 	dmi_memdev_walk();
+ 	dmi_set_dump_stack_arch_desc();
+@@ -1159,8 +1164,6 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
-
+ 
 -	efi_set_secure_boot(boot_params.secure_boot);
 -
  	reserve_initrd();
-
+ 
  	acpi_table_upgrade();
 diff --git a/fs/debugfs/inode.c b/fs/debugfs/inode.c
 index ce261e1765ff..7aff55b309a6 100644
@@ -263,13 +227,13 @@ index ce261e1765ff..7aff55b309a6 100644
  	return simple_setattr(dentry, ia);
  }
 diff --git a/security/Kconfig b/security/Kconfig
-index 461d5acc3616..13fdada1ffc2 100644
+index 9c343f262bdd..30788bc47863 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
-@@ -248,6 +248,20 @@ config ALLOW_LOCKDOWN_LIFT_BY_SYSRQ
- 	  Allow the lockdown on a kernel to be lifted, by pressing a SysRq key
- 	  combination on a wired keyboard.  On x86, this is SysRq+x.
-
+@@ -244,6 +244,20 @@ config LOCK_DOWN_KERNEL_FORCE
+         help
+           Enable the kernel lock down functionality automatically at boot.
+ 
 +config LOCK_DOWN_IN_EFI_SECURE_BOOT
 +	bool "Lock down the kernel in EFI Secure Boot mode"
 +	default n
@@ -284,31 +248,31 @@ index 461d5acc3616..13fdada1ffc2 100644
 +	  Enabling this option turns on results in kernel lockdown being
 +	  triggered if EFI Secure Boot is set.
 +
-
  source "security/selinux/Kconfig"
  source "security/smack/Kconfig"
+ source "security/tomoyo/Kconfig"
 diff --git a/security/lock_down.c b/security/lock_down.c
-index 2c6b00f0c229..527f7e51dc8d 100644
+index ee00ca2677e7..bb4dc7838f3e 100644
 --- a/security/lock_down.c
 +++ b/security/lock_down.c
 @@ -12,6 +12,7 @@
+ 
+ #include <linux/security.h>
  #include <linux/export.h>
- #include <linux/sched.h>
- #include <linux/sysrq.h>
 +#include <linux/efi.h>
- #include <asm/setup.h>
-
- #ifndef CONFIG_LOCK_DOWN_MANDATORY
-@@ -55,6 +55,10 @@ void __init init_lockdown(void)
- #ifdef CONFIG_LOCK_DOWN_MANDATORY
- 	pr_notice("Kernel is locked down from config; see man kernel_lockdown.7\n");
+ 
+ static __ro_after_init bool kernel_locked_down;
+ 
+@@ -44,6 +45,10 @@ void __init init_lockdown(void)
+ #ifdef CONFIG_LOCK_DOWN_FORCE
+ 	lock_kernel_down("Kernel configuration");
  #endif
 +#ifdef CONFIG_LOCK_DOWN_IN_EFI_SECURE_BOOT
 +	if (efi_enabled(EFI_SECURE_BOOT))
 +		lock_kernel_down("EFI secure boot");
 +#endif
  }
-
+ 
  /**
 -- 
 2.14.3

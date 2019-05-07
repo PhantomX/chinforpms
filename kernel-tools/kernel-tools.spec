@@ -15,15 +15,15 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 0
+%global base_sublevel 1
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
-%global opensuse_id 0b5ff0fff4b0a8c8fb17f79b538d6d84d72d84b8
+%global opensuse_id a974d8b62e58541b513be8afddc4967498538d16
 
 # Do we have a -stable update to apply?
-%global stable_update 13
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -197,6 +197,20 @@ License:        GPLv2
 This package contains the bpftool, which allows inspection and simple
 manipulation of eBPF programs and maps.
 
+%package -n libbpf
+Summary: The bpf library from kernel source
+License: GPLv2
+%description -n libbpf
+This package contains the kernel source bpf library.
+
+%package -n libbpf-devel
+Summary: Developement files for the bpf library from kernel source
+License: GPLv2
+%description -n libbpf-devel
+This package includes libraries and header files needed for development
+of applications which use bpf library from kernel source.
+
+
 %prep
 %setup -q -n kernel-%{kversion}%{?dist} -c
 
@@ -277,6 +291,9 @@ make
 popd
 pushd tools/bpf/bpftool
 make
+popd
+pushd tools/lib/bpf
+make V=1
 popd
 
 # Build the docs
@@ -362,6 +379,12 @@ make INSTALL_ROOT=%{buildroot} install-tools
 popd
 pushd tools/bpf/bpftool
 make DESTDIR=%{buildroot} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
+# man-pages packages this (rhbz #1686954)
+#FIXME: uncomment when man-pages 5.00
+#rm -f %{buildroot}%{_mandir}/man7/bpf-helpers.7
+popd
+pushd tools/lib/bpf
+make DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} V=1 install install_headers
 popd
 
 ###
@@ -438,12 +461,31 @@ popd
 %{_mandir}/man8/bpftool-net.8.gz
 %{_mandir}/man8/bpftool-prog.8.gz
 %{_mandir}/man8/bpftool-perf.8.gz
+%{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool.8.gz
 %{_mandir}/man7/bpf-helpers.7.gz
 %license linux-%{kversion}/COPYING
 
+%files -n libbpf
+%{_libdir}/libbpf.so.0
+%{_libdir}/libbpf.so.0.0.2
+%license linux-%{kversion}/COPYING
+
+%files -n libbpf-devel
+%{_libdir}/libbpf.a
+%{_libdir}/libbpf.so
+%{_includedir}/bpf/bpf.h
+%{_includedir}/bpf/btf.h
+%{_includedir}/bpf/libbpf.h
+%{_includedir}/bpf/xsk.h
+%license linux-%{kversion}/COPYING
+
 
 %changelog
+* Mon May 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-500.chinfo
+- 5.1.0
+- Rawhide sync
+
 * Sun May 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.13-500.chinfo
 - 5.0.13
 
@@ -674,81 +716,3 @@ popd
 
 * Wed May 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.7-100.chinfo
 - 4.16.7
-
-* Sun Apr 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.6-101.chinfo
-- f28 sync, bpftool
-
-* Sun Apr 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.6-100.chinfo
-- 4.16.6
-
-* Thu Apr 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.5-100.chinfo
-- 4.16.5
-
-* Tue Apr 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.4-100.chinfo
-- 4.16.4
-
-* Thu Apr 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.3-100.chinfo
-- 4.16.3
-
-* Thu Apr 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.2-100.chinfo
-- 4.16.2
-
-* Sun Apr 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.1-100.chinfo
-- 4.16.1
-
-* Fri Apr 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.0-100.chinfo
-- 4.16.0
-- Rawhide sync
-
-* Mon Mar 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.11-100.chinfo
-- 4.15.11
-
-* Thu Mar 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.10-100.chinfo
-- 4.15.10
-
-* Sun Mar 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.9-100.chinfo
-- 4.15.9
-
-* Fri Mar 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.8-100.chinfo
-- 4.15.8
-
-* Wed Feb 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.7-100.chinfo
-- 4.15.7
-
-* Tue Feb 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.6-100.chinfo
-- 4.15.6
-
-* Thu Feb 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.5-100.chinfo
-- 4.15.5
-
-* Sat Feb 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.4-100.chinfo
-- 4.15.4
-
-* Mon Feb 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.3-100.chinfo
-- 4.15.3
-
-* Wed Feb 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.2-100.chinfo
-- 4.15.2
-
-* Sat Feb 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.1-100.chinfo
-- 4.15.1
-- Apply missing patch
-
-* Mon Jan 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.15.0-100.chinfo
-- chinforpms
-- openSUSE patch
-
-* Mon Jan 29 2018 Laura Abbott <labbott@redhat.com> - 4.15.0-1
-- Linux v4.15
-
-* Tue Jan 23 2018 Laura Abbott <labbott@redhat.com> - 4.15.0-0.rc9.git0.1
-- Linux 4.15-rc9
-
-* Sat Jan 20 2018 Björn Esser <besser82@fedoraproject.org> - 4.15.0-0.rc8.git0.2
-- Rebuilt for switch to libxcrypt
-
-* Tue Jan 16 2018 Laura Abbott <labbott@redhat.com> - 4.15.0-0.rc8.git0.1
-- Linux 4.15-rc8
-
-* Fri Jan 05 2018 Laura Abbott <labbott@redhat.com> - 4.15.0-0.rc7.git0.1
-- Fork from the kernel package
