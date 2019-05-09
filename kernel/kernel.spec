@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 68a78959e5dcbc537805dfd870613a30fee8ab1b
+%global pfcommit c8be066a51c8e7b21cbc7e7bcfe576997ff035f7
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id a974d8b62e58541b513be8afddc4967498538d16
+%global opensuse_id 26ddffa2cd81ad74895ead924be01024bd1f11cf
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -1935,6 +1935,9 @@ fi
 #
 #
 %changelog
+* Wed May 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-501.chinfo
+- Disable UKSM
+
 * Mon May 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-500.chinfo
 - 5.1.0 - pf1
 - Rawhide sync

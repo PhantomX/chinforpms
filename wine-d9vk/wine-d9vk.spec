@@ -1,9 +1,9 @@
 %undefine _hardened_build
 
-%global commit 65b8ace70f90fc4501ca000562f15060dcfa91f4
+%global commit 70b8ce869e35a69a002921e9282d7bab1a55715b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190429
-%global with_snapshot 1
+%global date 20190508
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -14,9 +14,11 @@
 %global pkgname d9vk
 
 Name:           wine-%{pkgname}
-Version:        1.0.1
-Release:        0.2%{?gver}%{?dist}
+Version:        0.10
+Release:        1%{?gver}%{?dist}
 Summary:        A D3D9 to VK Translation Layer for Linux / Wine
+
+Epoch:          1
 
 License:        zlib
 URL:            https://github.com/Joshua-Ashton/%{pkgname}
@@ -24,7 +26,7 @@ URL:            https://github.com/Joshua-Ashton/%{pkgname}
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        README.%{pkgname}
 Source2:        wine%{pkgname}cfg
@@ -130,6 +132,9 @@ install -pm0755 %{S:2} %{buildroot}/%{_bindir}/
 
 
 %changelog
+* Wed May 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.10-1
+- 0.10
+
 * Mon Apr 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.0.1-0.2.20190429git65b8ace
 - New snapshot
 - Bump minimal wine version
