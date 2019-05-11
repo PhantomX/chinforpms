@@ -4,9 +4,9 @@
 #bcond_without doc
 %global apidocdir __api-doc_fedora
 
-%global commit 5cb589a5b82c13ba8f0542e5e79629da7645cb3c
+%global commit 6455671ecef7014ee83e91e1fd4e1f9b93dff53a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20181028
+%global date 20190317
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,21 +16,23 @@
 Name:           taglib
 Summary:        Audio Meta-Data Library
 Version:        1.11.1
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 Epoch:          1
 
 License:        LGPLv2 or MPLv1.1
 URL:            https://taglib.org/
 
+%global vc_url  https://github.com/%{name}/%{name}
 %if 0%{?with_snapshot}
-Source0:        https://github.com/%{name}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/%{name}/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 # http://bugzilla.redhat.com/343241
 Patch102:       taglib-1.5rc1-multilib.patch
+Patch103:       %{vc_url}/pull/896.patch#/%{name}-gh-pull896.patch
 
 
 BuildRequires:  gcc
@@ -139,6 +141,9 @@ make check -C %{_target_platform}
 
 
 %changelog
+* Fri May 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.11.1-101.20190317git6455671
+- New snapshot
+
 * Tue Feb 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.11.1-100.20181028git5cb589a
 - Snapshot test
 

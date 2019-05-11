@@ -11,7 +11,7 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.6.7
+Version:        1.7.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -33,6 +33,7 @@ Source1:        https://github.com/telegramdesktop/crl/archive/%{commit1}/crl-%{
 Patch0:         %{name}-build-fixes.patch
 Patch1:         %{name}-system-fonts.patch
 Patch2:         %{name}-unbundle-minizip.patch
+Patch3:         0001-Temporary-fix-for-gcc-9.1.1-regression.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -73,12 +74,8 @@ BuildRequires:  xxhash-devel
 BuildRequires:  gtk3-devel
 BuildRequires:  xz-devel
 BuildRequires:  python3
-
-%if 0%{?fedora} >= 30
 BuildRequires:  minizip-compat-devel
-%else
-BuildRequires:  minizip-devel
-%endif
+
 
 %description
 Telegram is a messaging app with a focus on speed and security, it's super
@@ -110,7 +107,7 @@ sed -e "s|'-flto'|'-flto=$RPM_NCPUS', '-fdisable-ipa-cdtor'|g" \
 
 %build
 # Setting build definitions...
-TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_OPENAL_EFFECTS,'
+TDESKTOP_BUILD_DEFINES+='TDESKTOP_LAUNCHER_FILENAME=%{name}.desktop,'
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_AUTOUPDATE,'
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME,'
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_DESKTOP_FILE_GENERATION,'
@@ -170,6 +167,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.
 
 
 %changelog
+* Fri May 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.0-100
+- 1.7.0
+- RPMFusion sync
+
 * Sat Apr 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.7-100
 - 1.6.7
 

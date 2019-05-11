@@ -1,0 +1,36 @@
+From 97b24f85a1fa28c221e07f660474473a33a635f3 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 10 May 2019 15:24:27 -0300
+Subject: [PATCH] Do not show unread counter on muted chats
+
+---
+ Telegram/SourceFiles/dialogs/dialogs_layout.cpp | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/Telegram/SourceFiles/dialogs/dialogs_layout.cpp b/Telegram/SourceFiles/dialogs/dialogs_layout.cpp
+index e029f63..18e45df 100644
+--- a/Telegram/SourceFiles/dialogs/dialogs_layout.cpp
++++ b/Telegram/SourceFiles/dialogs/dialogs_layout.cpp
+@@ -330,7 +330,9 @@ void RowPainter::paint(Painter &p, const Row *row, int fullWidth, bool active, b
+ 			    UnreadBadgeStyle st;
+ 			    st.active = active;
+ 			    st.muted = history->mute();
+-			    paintUnreadCount(p, counter, unreadRight, unreadTop, st, &unreadWidth);
++			    if (!st.muted) {
++			      paintUnreadCount(p, counter, unreadRight, unreadTop, st, &unreadWidth);
++			    }
+ 			    availableWidth -= unreadWidth + st.padding;
+ 
+ 			    hadOneBadge = true;
+@@ -434,7 +436,7 @@ void paintImportantSwitch(Painter &p, Mode current, int fullWidth, bool selected
+ 			int unreadRight = fullWidth - st::dialogsPadding.x();
+ 			UnreadBadgeStyle st;
+ 			st.muted = true;
+-			paintUnreadCount(p, QString::number(unread), unreadRight, unreadTop, st, nullptr);
++			//paintUnreadCount(p, QString::number(unread), unreadRight, unreadTop, st, nullptr);
+ 		}
+ 	}
+ }
+-- 
+2.21.0
+

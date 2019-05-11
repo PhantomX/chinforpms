@@ -1,0 +1,96 @@
+From 19cb4389127bb95a33453d2747748de7651b542c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 10 May 2019 14:56:09 -0300
+Subject: [PATCH] Use system libraries
+
+FindMiniZip.cmake from https://github.com/open-eid
+---
+ CMakeLists.txt            |  1 +
+ Telegram/CMakeLists.txt   |  7 ++-----
+ modules/FindMiniZip.cmake | 30 ++++++++++++++++++++++++++++++
+ 3 files changed, 33 insertions(+), 5 deletions(-)
+ create mode 100644 modules/FindMiniZip.cmake
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bc41373..f0fa05e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -76,6 +76,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
+ find_package(Threads)
+ find_package(ZLIB REQUIRED)
+ find_package(FFmpeg REQUIRED)
++find_package(MiniZip REQUIRED)
+ find_package(Opus REQUIRED)
+ find_package(Qt5 COMPONENTS Core Gui Widgets Network REQUIRED)
+ 
+diff --git a/Telegram/CMakeLists.txt b/Telegram/CMakeLists.txt
+index 767f0df..560ae76 100644
+--- a/Telegram/CMakeLists.txt
++++ b/Telegram/CMakeLists.txt
+@@ -537,10 +537,6 @@ if (APPLE)
+ endif()
+ 
+ target_sources(Kepka PRIVATE
+-    ThirdParty/minizip/ioapi.c
+-    ThirdParty/minizip/zip.c
+-    ThirdParty/minizip/unzip.c
+-
+     ThirdParty/emoji_suggestions/emoji_suggestions.cpp
+ )
+ 
+@@ -629,7 +625,7 @@ if(MSVC AND MSVC_VERSION GREATER_EQUAL 1912)
+ endif()
+ 
+ target_include_directories(Kepka PRIVATE ${OPENAL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR}
+-    ${OPUS_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIRS} ${ALSA_INCLUDE_DIRS} ${PULSEAUDIO_INCLUDE_DIR} )
++    ${OPUS_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIRS} ${ALSA_INCLUDE_DIRS} ${PULSEAUDIO_INCLUDE_DIR} ${MINIZIP_INCLUDE_DIR} )
+ 
+ target_link_libraries(Kepka
+     Qt5::Core
+@@ -646,6 +642,7 @@ target_link_libraries(Kepka
+     ${OPENSSL_LIBRARIES}
+     ${OPUS_LIBRARIES}
+     ${CONAN_LIBS}
++    ${MINIZIP_LIBRARIES}
+ ) # crashpad::crashpad_client)
+ 
+ if (APPLE)
+diff --git a/modules/FindMiniZip.cmake b/modules/FindMiniZip.cmake
+new file mode 100644
+index 0000000..04fb521
+--- /dev/null
++++ b/modules/FindMiniZip.cmake
+@@ -0,0 +1,30 @@
++# - Find minizip
++# Find the native MINIZIP includes and library
++#
++#  MINIZIP_INCLUDE_DIR - where to find minizip.h, etc.
++#  MINIZIP_LIBRARIES   - List of libraries when using minizip.
++#  MINIZIP_FOUND       - True if minizip found.
++
++
++IF (MINIZIP_INCLUDE_DIR)
++  # Already in cache, be silent
++  SET(MINIZIP_FIND_QUIETLY TRUE)
++ENDIF (MINIZIP_INCLUDE_DIR)
++
++FIND_PATH(MINIZIP_INCLUDE_DIR zip.h PATH_SUFFIXES minizip)
++
++SET(MINIZIP_NAMES minizip)
++FIND_LIBRARY(MINIZIP_LIBRARY NAMES ${MINIZIP_NAMES} )
++
++# handle the QUIETLY and REQUIRED arguments and set MINIZIP_FOUND to TRUE if 
++# all listed variables are TRUE
++INCLUDE(FindPackageHandleStandardArgs)
++FIND_PACKAGE_HANDLE_STANDARD_ARGS(MiniZip DEFAULT_MSG MINIZIP_LIBRARY MINIZIP_INCLUDE_DIR)
++
++IF(MINIZIP_FOUND)
++  SET( MINIZIP_LIBRARIES ${MINIZIP_LIBRARY} )
++ELSE(MINIZIP_FOUND)
++  SET( MINIZIP_LIBRARIES )
++ENDIF(MINIZIP_FOUND)
++
++MARK_AS_ADVANCED( MINIZIP_LIBRARY MINIZIP_INCLUDE_DIR )
+-- 
+2.21.0
+

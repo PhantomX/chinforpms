@@ -1,5 +1,5 @@
 Name:           hollywood
-Version:        1.14
+Version:        1.15
 Release:        1%{?dist}
 Summary:        Fill your console with Hollywood melodrama technobabble
 
@@ -95,6 +95,9 @@ install -pm0644 share/man/man1/%{name}.1 %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Fri May 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.15-1
+- 1.15
+
 * Thu Jul 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.14-1
 - 1.14
 - R: cmatrix, jp2a, newsbeuter, python3-pygments, speedometer, w3m

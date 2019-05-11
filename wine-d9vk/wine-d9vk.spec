@@ -98,7 +98,7 @@ meson \
   %{_target_platform}
 
 pushd %{_target_platform}
-ninja -v %{?_smp_mflags} src/d3d9/d3d9.dll.so
+%ninja_build src/d3d9/d3d9.dll.so
 
 for spec in d3d9 ;do
   winebuild --dll --fake-module -E ../src/${spec}/${spec}.spec -F ${spec}_%{pkgname}.dll -o ${spec}_%{pkgname}.dll.fake

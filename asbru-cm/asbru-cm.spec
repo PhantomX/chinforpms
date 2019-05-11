@@ -1,18 +1,21 @@
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
 Name:           asbru-cm
-Version:        5.1.0
+Version:        5.2.0
 Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
 URL:            https://asbru-cm.net
-Source0:        https://github.com/asbru-cm/asbru-cm/archive/%{version}/%{name}-%{version}.tar.gz
+
+%global vc_url  https://github.com/%{name}/%{name}
+Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 # Dirty way to disable gconf
 Patch0:         %{name}-nogconf.patch
 # Fix passwords with TigerVNC
 Patch1:         %{name}-vncpasswd.patch
+Patch100:       %{vc_url}/commit/f380ac277ac8381de5548c554ff095b7444594ad.patch#/%{name}-gh-f380ac2.patch
 
 BuildArch:      noarch
 
@@ -66,6 +69,7 @@ Requires:       perl(utf8)
 Requires:       perl(vars)
 Requires:       perl(warnings)
 Requires:       perl-Gnome2-Vte
+Requires:       dbus-x11
 Requires:       vte
 Requires:       ftp
 Requires:       telnet
@@ -137,6 +141,9 @@ cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
 %changelog
+* Fri May 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.0-1
+- 5.2.0
+
 * Thu Jul 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-1
 - 5.1.0
 

@@ -86,7 +86,7 @@ meson \
   %{_target_platform}
 
 pushd %{_target_platform}
-ninja -v %{?_smp_mflags}
+%ninja_build
 
 for spec in dxgi d3d11 ;do
   winebuild --dll --fake-module -E ../src/${spec}/${spec}.spec -F ${spec}_%{pkgname}.dll -o ${spec}_%{pkgname}.dll.fake

@@ -16,6 +16,7 @@ irpf2016
 irpf2017
 irpf2018
 irpf2019
+kepka
 mupen64plus-extraplugins
 pcsx2
 ppsspp

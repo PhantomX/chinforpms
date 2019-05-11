@@ -1,0 +1,26 @@
+From 7194fa6676694158abeffb9069de000210d69e80 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 10 May 2019 16:29:30 -0300
+Subject: [PATCH] Temporary fix for gcc 9.1.1 regression
+
+https://github.com/telegramdesktop/tdesktop/issues/5996
+---
+ Telegram/SourceFiles/data/data_session.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Telegram/SourceFiles/data/data_session.cpp b/Telegram/SourceFiles/data/data_session.cpp
+index 381889b..e23556a 100644
+--- a/Telegram/SourceFiles/data/data_session.cpp
++++ b/Telegram/SourceFiles/data/data_session.cpp
+@@ -3295,7 +3295,7 @@ void Session::updateNotifySettings(
+ 	}
+ }
+ 
+-bool Session::notifyIsMuted(
++bool __attribute__((optimize("O0"))) Session::notifyIsMuted(
+ 		not_null<const PeerData*> peer,
+ 		crl::time *changesIn) const {
+ 	const auto resultFromUntil = [&](TimeId until) {
+-- 
+2.21.0
+

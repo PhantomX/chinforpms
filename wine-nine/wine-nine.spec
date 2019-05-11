@@ -111,10 +111,7 @@ meson \
   --buildtype "release" \
   %{_target_platform}
 
-pushd %{_target_platform}
-ninja -v %{?_smp_mflags}
-
-popd
+%ninja_build -C %{_target_platform}
 
 
 %install

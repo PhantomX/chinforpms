@@ -1,0 +1,36 @@
+From 1b4ccb662e03daa246518336543b6e2594ef109a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 10 May 2019 15:27:59 -0300
+Subject: [PATCH] Always display scrollbars
+
+---
+ Telegram/SourceFiles/ui/widgets/scroll_area.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Telegram/SourceFiles/ui/widgets/scroll_area.cpp b/Telegram/SourceFiles/ui/widgets/scroll_area.cpp
+index 0091044..f2db217 100644
+--- a/Telegram/SourceFiles/ui/widgets/scroll_area.cpp
++++ b/Telegram/SourceFiles/ui/widgets/scroll_area.cpp
+@@ -133,8 +133,8 @@ void ScrollBar::updateBar(bool force) {
+ 
+ void ScrollBar::onHideTimer() {
+ 	if (!_hiding) {
+-		_hiding = true;
+-		_a_opacity.start([this] { update(); }, 1., 0., _st->duration);
++		_hiding = false;
++		//_a_opacity.start([this] { update(); }, 1., 0., _st->duration);
+ 	}
+ }
+ 
+@@ -152,7 +152,7 @@ void ScrollBar::setOver(bool over) {
+ 		}
+ 		if (nowOver && _hiding) {
+ 			_hiding = false;
+-			_a_opacity.start([this] { update(); }, 0., 1., _st->duration);
++			//_a_opacity.start([this] { update(); }, 0., 1., _st->duration);
+ 		}
+ 	}
+ }
+-- 
+2.21.0
+
