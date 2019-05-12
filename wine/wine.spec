@@ -9,14 +9,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 8f3347776090dbfb5c878c44bcd113b56bb1e573
+%global stagingver 4.8
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{stagingver}
 %else
 %global stpkgver %(c=%{stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 5f13777453a518e94442dab9b61f649157b59364
+%global tkg_id 21fbd8491a157c29f4e0b8fe64a739539393b9be
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global pba 0
 %if !%{?staging}
@@ -40,7 +40,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.7
+Version:        4.8
 Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -82,11 +82,11 @@ Source113:      wine-taskmgr.desktop
 # build fixes
 
 # wine bugs/upstream
-Patch100: %{whq_url}/d97e544387e69d31842c3302915975711b0b405a#/%{name}-whq-d97e544.patch
-Patch101: %{whq_url}/8f732c66ab37b54c30d63c74f7822ba1d4f04996#/%{name}-whq-8f732c6.patch
-Patch102: %{whq_url}/8039941c52758113955d376bd7b6b6e1e5b5f76c#/%{name}-whq-8039941.patch
-Patch103: %{whq_url}/21e1018ebdbe3d7d1b3f657c14105f8e6ce67474#/%{name}-whq-21e1018.patch
-Patch104: %{whq_url}/74799527b022649c75a2ef4c8d5916cccdb7ab35#/%{name}-whq-7479952.patch
+Patch100: %{whq_url}/d0c5a5e89f5b086bfdcd0a7e57088afc4bda986d#/%{name}-whq-d0c5a5e.patch
+Patch101: %{whq_url}/2239aae97f274d21c92857a4561bb10e483556f2#/%{name}-whq-2239aae.patch
+Patch102: %{whq_url}/564e7b4db9b37f6f0d52843b81a04990998e2795#/%{name}-whq-564e7b4.patch
+Patch103: %{whq_url}/ba79a14369e52f7e932211288bde0a487155b439#/%{name}-whq-ba79a14.patch
+Patch104: %{whq_url}/5ff326f80147f4608fd64ad37510d0cff330676e#/%{name}-whq-5ff326f.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -134,7 +134,8 @@ Patch802:       %{valve_url}/commit/36017749b370b38860aaa167494d200569902d25.pat
 Patch803:       0001-XACT3_VER-typos-IXAudio23-compatibility-fix.patch
 Patch804:       wine-xaudio2-pulseaudio-app-name.patch
 
-Patch900:       update-staging-05f918d.patch
+# https://bugs.winehq.org/show_bug.cgi?id=47160
+Patch900:       https://github.com/wine-staging/wine-staging/commit/082a898ad4b267397cafaef1bcff0f86357f0cdf.patch#/wine-staging-082a898.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -682,11 +683,11 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
-%patch103 -p1
-%patch104 -p1
+%patch104 -p1 -R
+%patch103 -p1 -R
+%patch102 -p1 -R
+%patch101 -p1 -R
+%patch100 -p1 -R
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -704,7 +705,7 @@ This package adds the opencl driver for wine.
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
-%patch900 -p1
+%patch900 -p1 -R
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?staging_opts}
 
@@ -2300,6 +2301,13 @@ fi
 
 
 %changelog
+* Sat May 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.8-101
+- Revert some upstream patches to fix joystick issues
+- Revert staging patch to fix symlink issues
+
+* Sat May 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.8-100
+- 4.8
+
 * Thu May 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.7-101
 - no-PIC flags patches from upstream
 
