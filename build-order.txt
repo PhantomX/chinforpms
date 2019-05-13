@@ -36,6 +36,7 @@ chinfo-extramimetypes
 claws-mail
 claws-mail-themes
 curlew
+devedeng
 disk-indicator
 dolphin-emu
 easytag

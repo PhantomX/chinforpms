@@ -7,7 +7,7 @@
 %bcond_without ffmpeg
 # Enable Qt build
 %bcond_with qt
-# Enable EGL/GLESV2
+# Enable EGL/GLESV2 (currently only working with Qt build)
 %global with_egl 0
 
 # Enable system ffmpeg

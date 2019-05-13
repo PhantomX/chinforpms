@@ -23,6 +23,7 @@ RPMFusion and existent packages updated with extra changes.
  * **adwaita-qt** - Remove some paddings
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **claws-mail** - Can't wait Fedora releases
+ * **devedeng** - Boolean dependencies for video players and disc burners
  * **easytag** - Tests
  * **engrampa** - Split caja extension
  * **FAudio** - Tests
