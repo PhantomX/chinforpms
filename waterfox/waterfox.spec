@@ -1,6 +1,6 @@
-%global commit cd00fc4ae708bccfc6bebeaedf803845ec9b5e20
+%global commit 9eb36acf01129e5e196363895c6c3eee30ebeacf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190416
+%global date 20190517
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -25,7 +25,7 @@ ExcludeArch: armv7hl
 %global system_ffi        1
 %global system_cairo      0
 %global system_harfbuzz   1
-# libvpx is too new for Firefox 65
+# libvpx is too new for Waterfox 56
 %if 0%{?fedora} < 30
 %global system_libvpx     1
 %else
@@ -130,7 +130,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.9
+Version:        56.2.10
 Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -196,7 +196,6 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 # Upstream updates/PRs
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
-Patch450:       %{vc_url}/pull/915.patch#/%{name}-gh-pull915.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -410,8 +409,6 @@ This package contains results of tests executed during build.
 %patch418 -p1 -b .mozilla-1336978
 %patch419 -p1 -b .mozilla-1320560
 %patch420 -p1 -b .mozilla-1389436
-
-%patch450 -p1 -b .pull888
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -1027,6 +1024,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Sun May 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.10-1.20190517git9eb36ac
+- New release/snapshot
+
 * Fri Apr 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.8-2.20190411giteeb3b0b
 - New snapshot
 - Better rust BR version control with build_with_pinned_rust switch
