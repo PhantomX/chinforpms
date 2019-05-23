@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20190116
+// 20190522
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -35,10 +35,11 @@ pref("extensions.getAddons.showPane", false);
 pref("general.autoScroll", false);
 pref("general.smoothScroll", false);
 pref("general.warnOnAboutConfig", false);
+pref("browser.aboutConfig.showWarning", false);
 pref("keyword.enabled", false);
 pref("layout.spellcheckDefault", 0);
 pref("media.autoplay.enabled", false);
-pref("media.autoplay.enabled.user-gestures-needed=false", false);
+pref("media.autoplay.enabled.user-gestures-needed", false);
 pref("media.autoplay.default", 1);
 pref("media.autoplay.allow-muted", false);
 pref("media.block-autoplay-until-in-foreground", true);
@@ -77,12 +78,15 @@ pref("browser.onboarding.enabled", false);
 // Activity Stream
 pref("browser.library.activity-stream.enabled", false);
 pref("browser.newtabpage.activity-stream.asrouter.providers.snippets", "");
+pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons", false);
+pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", false);
 pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr", false);
 pref("browser.newtabpage.activity-stream.disableSnippets", true);
 pref("browser.newtabpage.activity-stream.feeds.snippets", false);
 pref("browser.newtabpage.activity-stream.feeds.section.topstories", false);
 pref("browser.newtabpage.activity-stream.section.highlights.includePocket", false);
 pref("browser.newtabpage.activity-stream.showSponsored", false);
+pref("browser.newtabpage.activity-stream.feeds.discoverystreamfeed", false);
 pref("browser.newtabpage.activity-stream.feeds.telemetry", false);
 pref("browser.newtabpage.activity-stream.telemetry", false);
 pref("browser.newtabpage.activity-stream.telemetry.ping.endpoint", "");
@@ -148,12 +152,18 @@ pref("browser.newtabpage.enhanced", false);
 pref("browser.newtabpage.directory.ping", "");
 pref("browser.newtabpage.introShown", true);
 
+// Disable DoH
+pref("network.trr.mode", 0);
+pref("network.trr.bootstrapAddress", "");
+pref("network.trr.uri", "");
+
 // Disable home snippets
 pref("browser.aboutHomeSnippets.updateUrl", "data:text/html");
 
 // Disable Captive Portal
 pref("captivedetect.canonicalURL", "");
 pref("network.captive-portal-service.enabled", false);
+pref("network.connectivity-service.enabled", false);
 
 // Disable form autofill
 pref("browser.formfill.enable", false);
@@ -197,6 +207,7 @@ pref("browser.chrome.errorReporter.submitUrl", "");
 pref("browser.crashReports.unsubmittedCheck.enabled", false);
 pref("browser.crashReports.unsubmittedCheck.autoSubmit", false);
 pref("browser.crashReports.unsubmittedCheck.autoSubmit2", false);
+pref("browser.discovery.enabled", false);
 pref("browser.ping-centre.telemetry", false);
 pref("browser.tabs.crashReporting.sendReport", false);
 pref("datareporting.policy.dataSubmissionEnabled", false);

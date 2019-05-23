@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit c78674082518c93fbfbc5b98cf47b03967435ad5
+%global pfcommit a2c5e940ad6dd3dda9b6d2954d0b7017da60096d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id a3b49050a2c62f2915620eca83b1b5f0ef1840dd
+%global opensuse_id 0739fa4bcf7a21941c7e28c52b33b0f531044868
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -641,6 +641,8 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
+Patch2001: %{patchwork_url}/10953115/mbox/#/patchwork-10953115.patch
+Patch2002: %{patchwork_url}/10953117/mbox/#/patchwork-10953117.patch
 
 %if !0%{?post_factum}
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
@@ -1935,6 +1937,9 @@ fi
 #
 #
 %changelog
+* Wed May 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.4-500.chinfo
+- 5.1.4
+
 * Thu May 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.3-500.chinfo
 - 5.1.3 - pf3
 
