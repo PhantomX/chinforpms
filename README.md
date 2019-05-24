@@ -21,6 +21,7 @@ RPMFusion and existent packages updated with extra changes.
 ## Differences from Fedora and RPM Fusion
 
  * **adwaita-qt** - Remove some paddings
+ * **aisleriot** - No Gconf support
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **claws-mail** - Can't wait Fedora releases
  * **devedeng** - Boolean dependencies for video players and disc burners
