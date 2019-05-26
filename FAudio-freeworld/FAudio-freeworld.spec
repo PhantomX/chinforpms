@@ -1,15 +1,30 @@
+%global commit c724fb28c784fee8d9db2f784e1f55b5ce6710fb
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20190523
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 %global pkgname FAudio
 
 Name:           %{pkgname}-freeworld
 Version:        19.05
-Release:        1%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - freeworld
 Epoch:          1
 
 License:        zlib
 URL:            https://fna-xna.github.io/
 
-Source0:        https://github.com/FNA-XNA/%{pkgname}/archive/%{version}/%{pkgname}-%{version}.tar.gz
+%global vc_url  https://github.com/FNA-XNA/%{pkgname}
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+%else
+Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
+%endif
+
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -46,7 +61,11 @@ This version is compiled with ffmpeg support.
 
 
 %prep
+%if 0%{?with_snapshot}
+%autosetup -n %{pkgname}-%{commit} -p1
+%else
 %autosetup -n %{pkgname}-%{version} -p1
+%endif
 
 
 %build
@@ -85,6 +104,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Fri May 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:19.05-2.20190523gitc724fb2
+- 19.05 snapshot
+
 * Fri May 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:19.05-1
 - 19.05
 

@@ -9,14 +9,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 6e49a945cf128424b5f72f1d4f56eed74e4fe3df
+%global stagingver 4.9
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{stagingver}
 %else
 %global stpkgver %(c=%{stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 3fac29a650bb57e44ad33f49011b30dcb2e2d8a6
+%global tkg_id 62cc460e50516462417e457444b160d51a63e42e
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global pba 0
 %if !%{?staging}
@@ -40,8 +40,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.8
-Release:        102%{?dist}
+Version:        4.9
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -83,7 +83,8 @@ Source113:      wine-taskmgr.desktop
 # build fixes
 
 # wine bugs/upstream
-Patch100:       %{whq_url}/5ff326f80147f4608fd64ad37510d0cff330676e#/%{name}-whq-5ff326f.patch
+#Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
+
 
 # desktop dir
 Source200:      wine.menu
@@ -680,7 +681,6 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
-%patch100 -p1 -R
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1

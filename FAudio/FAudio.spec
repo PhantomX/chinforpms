@@ -1,6 +1,15 @@
+%global commit c724fb28c784fee8d9db2f784e1f55b5ce6710fb
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20190523
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           FAudio
 Version:        19.05
-Release:        100%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
 Epoch:          1
@@ -8,7 +17,12 @@ Epoch:          1
 License:        zlib
 URL:            https://fna-xna.github.io/
 
-Source0:        https://github.com/FNA-XNA/FAudio/archive/%{version}/%{name}-%{version}.tar.gz
+%global vc_url  https://github.com/FNA-XNA/%{name}
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
+Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
+%endif
 Source1:        %{name}.pc
 
 BuildRequires:  cmake
@@ -46,7 +60,11 @@ Development files for the FAudio library.
 
 
 %prep
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+%else
 %autosetup -p1
+%endif
 
 cp -p %{S:1} .
 sed \
@@ -89,6 +107,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Fri May 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:19.05-101.20190523gitc724fb2
+- 19.05 snapshot
+
 * Fri May 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:19.05-100
 - 19.05
 
