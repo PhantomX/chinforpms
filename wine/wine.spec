@@ -2296,6 +2296,9 @@ fi
 
 
 %changelog
+* Sat May 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.9-100
+- 4.9
+
 * Tue May 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.8-102
 - Trim down reverts
 - Update staging

@@ -152,10 +152,10 @@ done
 
 # Installing appdata for Gnome Software...
 install -d "%{buildroot}%{_metainfodir}"
-install -m 0644 -p lib/xdg/telegramdesktop.appdata.xml "%{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml"
+install -m 0644 -p lib/xdg/telegramdesktop.appdata.xml "%{buildroot}%{_metainfodir}/%{name}.appdata.xml"
 
 %check
-appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml"
+appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appdata.xml"
 
 %files
 %doc README.md changelog.txt
