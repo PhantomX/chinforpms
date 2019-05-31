@@ -88,9 +88,10 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DPACKAGED_BUILD:BOOL=TRUE \
-  -DCMAKE_AR:FILEPATH="gcc-ar" \
-  -DCMAKE_NM:FILEPATH="gcc-nm" \
-  -DCMAKE_RANLIB:FILEPATH="gcc-ranlib"
+  -DCMAKE_AR:FILEPATH=%{_bindir}/gcc-ar \
+  -DCMAKE_NM:FILEPATH=%{_bindir}/gcc-nm \
+  -DCMAKE_RANLIB:FILEPATH=%{_bindir}/gcc-ranlib \
+%{nil}
 
 %make_build
 popd

@@ -1,10 +1,12 @@
 %undefine _hardened_build
 
 %bcond_with ffmpeg
+%global with_egl 1
+%global with_llvm 0
 
-%global commit 5c5e6df0380c518d098f20d9ffc832887782335c
+%global commit 00ecfb3c598ec08e5863db9c697e91ab5a4965bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190416
+%global date 20190530
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -17,7 +19,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -52,7 +54,9 @@ BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(ao)
 BuildRequires:  pkgconfig(bluez)
+%if 0%{?with_egl}
 BuildRequires:  pkgconfig(egl)
+%endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libenet)
@@ -73,7 +77,9 @@ BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  bochs-devel
 BuildRequires:  hidapi-devel
+%if 0%{?with_llvm}
 BuildRequires:  llvm-devel
+%endif
 BuildRequires:  lzo-devel
 BuildRequires:  mbedtls-devel
 BuildRequires:  pugixml-devel
@@ -182,8 +188,13 @@ pushd %{_target_platform}
 %if !%{with ffmpeg}
   -DENCODE_FRAMEDUMPS:BOOL=OFF \
 %endif
+%if !0%{?with_egl}
+  -DENABLE_EGL:BOOL=OFF \
+%endif
+%if !0%{?with_llvm}
+  -DENABLE_LLVM:BOOL=OFF \
+%endif
   -DENABLE_TESTS:BOOL=OFF \
-  -DOpenGL_GL_PREFERENCE=GLVND \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DDISTRIBUTOR='%{distributor}' \
   -DDOLPHIN_WC_REVISION:STRING=%{release} \
@@ -199,6 +210,7 @@ popd
 
 %install
 %make_install -C %{_target_platform}
+
 #Install appdata.xml
 install -p -D -m 0644 %{SOURCE1} \
   %{buildroot}/%{_datadir}/appdata/%{name}.appdata.xml
@@ -208,6 +220,7 @@ install -p -D -m 0644 %{SOURCE1} \
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 appstream-util validate-relax --nonet \
   %{buildroot}/%{_datadir}/appdata/*.appdata.xml
+
 
 %files -f %{name}.lang
 %doc Readme.md
@@ -238,6 +251,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu May 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-101.20190530git00ecfb3
+- New snapshot
+
 * Fri Apr 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-100.20190416git5c5e6df
 - Snapshot
 - chinforpms

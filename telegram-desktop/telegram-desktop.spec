@@ -4,14 +4,22 @@
 %global apihash dfbe1bc42dc9d20507e17d1814cc2f0a
 
 # Git revision of crl...
-%global commit1 84072fba75f14620935e5e91788ce603daeb1988
+%global commit1 d259aebc11df52cb6ff8c738580dc4d8f245d681
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 crl
+
+%global commit2 6cd5e323645746620f96450487e05900a0fbc7ce
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 qtlottie
+
+# Enable or disable build with GTK support...
+%bcond_without gtk3
 
 # Decrease debuginfo verbosity to reduce memory consumption...
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.7.0
+Version:        1.7.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -29,7 +37,8 @@ URL:            https://github.com/telegramdesktop/%{appname}
 ExclusiveArch:  i686 x86_64
 
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
-Source1:        https://github.com/telegramdesktop/crl/archive/%{commit1}/crl-%{shortcommit1}.tar.gz
+Source1:        https://github.com/telegramdesktop/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        https://github.com/telegramdesktop/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Patch0:         %{name}-build-fixes.patch
 Patch1:         %{name}-system-fonts.patch
 Patch2:         %{name}-unbundle-minizip.patch
@@ -44,11 +53,9 @@ Patch102:       %{name}-nogtk2.patch
 # Always display scrollbars
 Patch103:       %{name}-disable-overlay.patch
 
-Recommends:     libappindicator-gtk3%{?_isa}
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
 Requires:       open-sans-fonts
-Requires:       gtk3%{?_isa}
 
 # Compilers and tools...
 BuildRequires:  desktop-file-utils
@@ -62,19 +69,25 @@ BuildRequires:  gyp
 BuildRequires:  guidelines-support-library-devel >= 1.0.0
 BuildRequires:  mapbox-variant-devel >= 0.3.6
 BuildRequires:  libtgvoip-devel >= 2.4.4
-BuildRequires:  libappindicator-gtk3-devel
 BuildRequires:  ffmpeg-devel >= 3.1
 BuildRequires:  openal-soft-devel
 BuildRequires:  qt5-qtbase-private-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 BuildRequires:  libstdc++-devel
+BuildRequires:  rapidjson-devel
 BuildRequires:  range-v3-devel
 BuildRequires:  openssl-devel
 BuildRequires:  xxhash-devel
-BuildRequires:  gtk3-devel
 BuildRequires:  xz-devel
 BuildRequires:  python3
 BuildRequires:  minizip-compat-devel
+
+%if %{with gtk3}
+Recommends:     libappindicator-gtk3%{?_isa}
+BuildRequires:  libappindicator-gtk3-devel
+BuildRequires:  gtk3-devel
+Requires:       gtk3%{?_isa}
+%endif
 
 
 %description
@@ -96,17 +109,25 @@ business messaging needs.
 
 # Unpacking crl...
 pushd Telegram/ThirdParty
-    rm -rf crl
+    rm -rf %{srcname1}
     tar -xf %{SOURCE1}
-    mv crl-%{commit1} crl
+    mv %{srcname1}-%{commit1} %{srcname1}
+
+    rm -rf %{srcname2}
+    tar -xf %{SOURCE2}
+    mv %{srcname2}-%{commit2} %{srcname2}
 popd
 
-RPM_NCPUS=$(echo %{_smp_mflags} | sed 's/-j//')
-sed -e "s|'-flto'|'-flto=$RPM_NCPUS', '-fdisable-ipa-cdtor'|g" \
-  -i Telegram/gyp/settings_linux.gypi
+sed -e '/^#include <QFile>/a#include <QDebug>' \
+  -i Telegram/SourceFiles/lottie/lottie_animation.cpp
+sed -e '/^#include <QList>/a#include <QDebug>' \
+  -i Telegram/ThirdParty/qtlottie/src/bodymovin/bmbase.h
 
 %build
 # Setting build definitions...
+%if %{without gtk3}
+TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_GTK_INTEGRATION,'
+%endif
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_LAUNCHER_FILENAME=%{name}.desktop,'
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_AUTOUPDATE,'
 TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME,'
@@ -123,14 +144,22 @@ popd
 LEN=$(($(wc -l < out/Release/CMakeLists.txt) - 2))
 sed -i "$LEN r Telegram/gyp/CMakeLists.inj" out/Release/CMakeLists.txt
 
-# Exporting correct paths to AR and RANLIB in order to use FLTO optimizations...
-%ifarch x86_64
-sed -e '/set(configuration "Release")/a\' -e 'set(CMAKE_AR "%{_bindir}/gcc-ar")\' -e 'set(CMAKE_RANLIB "%{_bindir}/gcc-ranlib")\' -e 'set(CMAKE_NM "%{_bindir}/gcc-nm")' -i out/Release/CMakeLists.txt
-%endif
+export CC=gcc
+export CXX=g++
+
+RPM_NCPUS=$(echo %{_smp_mflags} | sed 's/-j//')
+RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
+export CFLAGS="%{optflags} $RPM_FLTO_FLAGS"
+export CXXFLAGS="%{optflags} $RPM_FLTO_FLAGS"
+export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 
 # Building Telegram Desktop using cmake...
 pushd out/Release
-    %cmake .
+    %cmake . \
+       -DCMAKE_AR:FILEPATH=%{_bindir}/gcc-ar \
+       -DCMAKE_NM:FILEPATH=%{_bindir}/gcc-nm \
+       -DCMAKE_RANLIB:FILEPATH=%{_bindir}/gcc-ranlib \
+    %{nil}
     %make_build
 popd
 
@@ -167,6 +196,12 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Wed May 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.1-100
+- 1.7.1
+- Update crl
+- qtlottie
+- RPMFusion sync
+
 * Fri May 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.0-100
 - 1.7.0
 - RPMFusion sync

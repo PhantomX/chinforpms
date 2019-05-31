@@ -1,4 +1,4 @@
-%global with_xpi 1
+%global with_xpi 0
 
 %global _waterfox_app_id \{ec8030f7-c20a-464f-9b0e-13a3a9e97384\}
 
@@ -13,7 +13,7 @@
 %global pkgname ClassicThemeRestorer
 
 Name:           waterfox-classic-theme-restorer
-Version:        1.7.8
+Version:        1.7.8.2019
 Release:        1%{?dist}
 Summary:        Customize Waterfox Australis UI
 
@@ -52,6 +52,10 @@ cp -p %{S:2} .
 %autosetup -n %{pkgname}-%{version}
 %endif
 
+sed \
+  -e 's|<em:version>.*</em:version>|<em:version>%{version}</em:version>|' \
+  -i xpi/install.rdf
+
 %build
 
 
@@ -83,6 +87,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu May 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.7.8.2019-1
+- 1.7.8.2019
+
 * Sat Oct 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.7.8-1
 - 1.7.8
 

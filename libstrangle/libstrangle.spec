@@ -2,7 +2,7 @@
 
 Name:           libstrangle
 Version:        0.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Frame rate limiter
 
 License:        GPLv3
@@ -35,8 +35,7 @@ BuildRequires:  gcc
 %install
 %make_install libdir=%{_libdir}
 
-mv %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}.conf \
-  %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
+rm -rf %{buildroot}%{_sysconfdir}
 
 
 %files
@@ -44,9 +43,11 @@ mv %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}.conf \
 %doc README.md
 %{_bindir}/strangle
 %{_libdir}/%{name}/%{name}.so
-%config(noreplace) %{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 
 
 %changelog
+* Thu May 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.0.4-2
+- Remove unneeded ld.so.conf file
+
 * Mon Feb 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.0.4-1
 - Initial spec

@@ -1,6 +1,6 @@
-%global commit 241e3c7b8a6ce76ad9e075ee5761cd4d0906bc16
+%global commit b9e2c50e51fc58b31b553b5364efacec24ebb76e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190416
+%global date 20190516
 %global with_snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -106,5 +106,8 @@ pushd %{_target_platform}
 
 
 %changelog
+* Thu May 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.2-2.20190516gitb9e2c50
+- New snapshot
+
 * Fri Apr 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.2-2.20190416git241e3c7
 - Initial spec
