@@ -45,6 +45,7 @@ RPMFusion and existent packages updated with extra changes.
  * **libtgvoip** - No unresolved symbols
  * **libvirt, qemu** - Updated
  * **lutris** - Personal changes
+ * **lzzip** - Updated, build flags
  * **manaplus** - Updated, SDL2
  * **mednafen** - No Haswell optimizations
  * **mesa** - Can't wait Fedora releases
