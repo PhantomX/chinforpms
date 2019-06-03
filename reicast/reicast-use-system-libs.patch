@@ -1,11 +1,11 @@
-From aac26f0850cde58755957272c3a9d50ba1a5541f Mon Sep 17 00:00:00 2001
+From 04024c70fa4bafed8f89a8f42f794c8a457d1a9d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 16 Apr 2019 14:16:26 -0300
+Date: Sun, 2 Jun 2019 14:49:44 -0300
 Subject: [PATCH] Use system libs
 
 ---
  core/archive/ZipArchive.h                     |  4 +++
- core/core.mk                                  | 26 ++++++++++++--
+ core/core.mk                                  | 24 +++++++++++--
  core/deps/chdr/chd.c                          |  4 +++
  core/deps/chdr/flac.h                         |  4 +++
  .../libwebsocket/extension-deflate-frame.h    |  4 +++
@@ -18,7 +18,7 @@ Subject: [PATCH] Use system libs
  core/rend/gles/gles.cpp                       |  4 +++
  core/rend/gles/gltex.cpp                      |  8 +++++
  shell/linux/Makefile                          | 34 +++++++++++++++++++
- 14 files changed, 110 insertions(+), 4 deletions(-)
+ 14 files changed, 108 insertions(+), 4 deletions(-)
 
 diff --git a/core/archive/ZipArchive.h b/core/archive/ZipArchive.h
 index 05a0f0f..ff24960 100644
@@ -37,21 +37,20 @@ index 05a0f0f..ff24960 100644
  class ZipArchive : public Archive
  {
 diff --git a/core/core.mk b/core/core.mk
-index 2ced4ac..81c1708 100755
+index 66d89a6..79a80b9 100755
 --- a/core/core.mk
 +++ b/core/core.mk
-@@ -9,18 +9,36 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
+@@ -9,9 +9,25 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
  
- RZDCY_MODULES	:=	cfg/ hw/arm7/ hw/aica/ hw/holly/ hw/ hw/gdrom/ hw/maple/ hw/modem/ \
+ RZDCY_MODULES	:=	cfg/ hw/arm7/ hw/aica/ hw/holly/ hw/ hw/gdrom/ hw/maple/ \
   hw/mem/ hw/pvr/ hw/sh4/ hw/sh4/interpr/ hw/sh4/modules/ plugins/ profiler/ oslib/ \
 - hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/zlib/ deps/chdr/ deps/crypto/ \
 - deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/libpng/ deps/xbrz/ \
-- deps/picotcp/modules/ deps/picotcp/stack/ deps/xxhash/ deps/libzip/ deps/imgui/ \
+- deps/xxhash/ deps/libzip/ deps/imgui/ archive/ input/
 + hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/chdr/ deps/crypto/ \
 + deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
-+ deps/picotcp/modules/ deps/picotcp/stack/ deps/imgui/ \
-  archive/ input/
- 
++ deps/imgui/ archive/ input/
++
 +ifndef SYSTEM_LIBPNG
 +RZDCY_MODULES += deps/libpng/
 +endif
@@ -67,31 +66,22 @@ index 2ced4ac..81c1708 100755
 +ifndef SYSTEM_ZLIB
 +RZDCY_MODULES +=  deps/zlib/
 +endif
-+
- ifdef CHD5_LZMA
- 	RZDCY_MODULES += deps/lzma/
+ 
+ ifdef WEBUI
+ 	RZDCY_MODULES += webui/
+@@ -134,10 +150,12 @@ ifdef HAS_SOFTREND
  endif
  
  ifdef CHD5_FLAC
 +ifndef SYSTEM_FLAC
+ 	RZDCY_CFLAGS += -DCHD5_FLAC -I$(RZDCY_SRC_DIR)/deps/flac/src/libFLAC/include/ -I$(RZDCY_SRC_DIR)/deps/flac/include
+ 	RZDCY_CFLAGS += -DPACKAGE_VERSION=\"1.3.2\" -DFLAC__HAS_OGG=0 -DFLAC__NO_DLL -DHAVE_LROUND -DHAVE_STDINT_H -DHAVE_STDLIB_H -DHAVE_SYS_PARAM_H
  	RZDCY_MODULES += deps/flac/src/libFLAC/
  endif
 +endif
  
- ifdef WEBUI
- 	RZDCY_MODULES += webui/
-@@ -149,9 +167,11 @@ ifdef HAS_SOFTREND
- endif
- 
- ifdef CHD5_FLAC
-+ifndef SYSTEM_FLAC
- 	RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/flac/src/libFLAC/include/ -I$(RZDCY_SRC_DIR)/deps/flac/include
- 	RZDCY_CFLAGS += -DPACKAGE_VERSION=\"1.3.2\" -DFLAC__HAS_OGG=0 -DFLAC__NO_DLL -DHAVE_LROUND -DHAVE_STDINT_H -DHAVE_STDLIB_H -DHAVE_SYS_PARAM_H
- endif
-+endif
- 
- RZDCY_CXXFLAGS := $(RZDCY_CFLAGS) -fno-exceptions -fno-rtti -std=gnu++11
- 
+ # 7-Zip/LZMA settings (CHDv5)
+ ifdef CHD5_LZMA
 diff --git a/core/deps/chdr/chd.c b/core/deps/chdr/chd.c
 index 4461bdf..05a64aa 100644
 --- a/core/deps/chdr/chd.c
@@ -153,7 +143,7 @@ index ff17741..8421a97 100644
  #define DEFLATE_STREAM_CHUNK 128
  #define DEFLATE_STREAM_COMPRESSION_LEVEL 1
 diff --git a/core/hw/maple/maple_devs.cpp b/core/hw/maple/maple_devs.cpp
-index 90b4c97..3219ee4 100755
+index f506c66..7128805 100755
 --- a/core/hw/maple/maple_devs.cpp
 +++ b/core/hw/maple/maple_devs.cpp
 @@ -10,8 +10,16 @@
@@ -174,7 +164,7 @@ index 90b4c97..3219ee4 100755
  #if _ANDROID
  #include <android/log.h>
 diff --git a/core/hw/pvr/Renderer_if.cpp b/core/hw/pvr/Renderer_if.cpp
-index fc4db31..9560740 100644
+index 71c954e..62a03d0 100644
 --- a/core/hw/pvr/Renderer_if.cpp
 +++ b/core/hw/pvr/Renderer_if.cpp
 @@ -4,7 +4,11 @@
@@ -201,10 +191,10 @@ index ff17c93..9d688dd 100644
 \ No newline at end of file
 +}
 diff --git a/core/rend/TexCache.cpp b/core/rend/TexCache.cpp
-index b0480c2..5adde69 100644
+index 7a81e89..896bdd1 100644
 --- a/core/rend/TexCache.cpp
 +++ b/core/rend/TexCache.cpp
-@@ -8,7 +8,11 @@
+@@ -9,7 +9,11 @@
  #include "hw/pvr/pvr_regs.h"
  #include "hw/mem/_vmem.h"
  #include "deps/xbrz/xbrz.h"
@@ -233,10 +223,10 @@ index 8f062d1..c1a02ad 100644
  
  void CustomTexture::LoaderThread()
 diff --git a/core/rend/gles/gles.cpp b/core/rend/gles/gles.cpp
-index a2155f4..00a5031 100644
+index 0f65d02..2538fdc 100644
 --- a/core/rend/gles/gles.cpp
 +++ b/core/rend/gles/gles.cpp
-@@ -2014,7 +2014,11 @@ struct glesrend : Renderer
+@@ -2027,7 +2027,11 @@ struct glesrend : Renderer
  };
  
  
@@ -270,11 +260,11 @@ index 1a3802f..d21bf02 100644
  
  /*
 diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index 9f5ae86..f82fb86 100644
+index bc699aa..7ae56b3 100644
 --- a/shell/linux/Makefile
 +++ b/shell/linux/Makefile
-@@ -11,6 +11,12 @@ USE_EVDEV := 1
- USE_UDEV := 1
+@@ -13,6 +13,12 @@ USE_UDEV := 1
+ USE_MODEM := 1
  PLATFORM_EXT := elf
  
 +SYSTEM_FLAC := 1
@@ -286,7 +276,7 @@ index 9f5ae86..f82fb86 100644
  CXX=${CC_PREFIX}g++
  CC=${CC_PREFIX}gcc
  AS=${CC_PREFIX}as
-@@ -384,6 +390,34 @@ ifdef HAS_SOFTREND
+@@ -399,6 +405,34 @@ ifdef HAS_SOFTREND
      CXXFLAGS += -DTARGET_SOFTREND
  endif
  
@@ -323,4 +313,3 @@ index 9f5ae86..f82fb86 100644
      CFLAGS += -D TARGET_NAOMI
 -- 
 2.21.0
-

@@ -1,6 +1,6 @@
-%global commit 3f8328da2524c948d3d2bb7d712a60155c8080f0
+%global commit 605e00e7483ea533d690baf09c6f8b5cc85e0855
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190502
+%global date 20190527
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 
 Name:           reicast
 Version:        8.1
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -123,6 +123,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Jun 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 8.1-5.20190527git605e00e
+- New snapshot
+
 * Fri May 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 8.1-4.20190502git3f8328d
 - New snapshot
 

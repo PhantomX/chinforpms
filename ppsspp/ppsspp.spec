@@ -1,6 +1,6 @@
-%global commit 709c9dc93cd5148dc23ee4e701371ab310eab0a0
+%global commit 816abce8fc3d8db8ea9a64305bb9bc8f5653874f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190502
+%global date 20190602
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -16,15 +16,15 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 152c6893e9a30cc45f363cc87a8f48dc5d63cddb
+%global commit1 a1993a6dd7e963c9bba0d8b81d826169b2627c6c
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
-%global commit2 4e8e6a1e7a9ecb4736b4c96f8b3ef1f0e267080b
+%global commit2 90701640c7f458461310b54e7d4041230e2d5d5a
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
-%global commit3 36bacb4cba27003c572e5bf7a9c4dfe3c9a8d40d
+%global commit3 cbe88474ec196370161032a3863ec65050f70ba4
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
@@ -52,7 +52,7 @@
 
 Name:           ppsspp
 Version:        1.8.0
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -334,6 +334,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Jun 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-103.20190602git816abce
+- New snapshot
+
 * Fri May 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-102.20190502git709c9dc
 - New snapshot
 

@@ -1,15 +1,15 @@
 %global commit 3d14c360734c0defef9a9c2206046331464e372b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20190402
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           pulsemixer
-Version:        1.4.0
-Release:        2%{?gver}%{?dist}
+Version:        1.5.0
+Release:        1%{?gver}%{?dist}
 Summary:        CLI and curses mixer for pulseaudio
 
 License:        MIT
@@ -57,6 +57,9 @@ Requires:       pulseaudio
 
 
 %changelog
+* Sun Jun 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-1
+- 1.5.0
+
 * Thu Apr 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4.0-2.20190402git3d14c36
 - Update to snapshot
 

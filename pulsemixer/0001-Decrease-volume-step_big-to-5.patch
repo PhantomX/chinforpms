@@ -1,17 +1,17 @@
-From 33a11629fd56b1c8ba6746e10b4d11ab2e1dbb55 Mon Sep 17 00:00:00 2001
+From 52f04f0d38ff45b163deb97893eeaf1104ed77df Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 4 Apr 2019 16:04:14 -0300
+Date: Sun, 2 Jun 2019 14:20:59 -0300
 Subject: [PATCH] Decrease volume step_big to 5
 
 ---
- pulsemixer | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ pulsemixer | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/pulsemixer b/pulsemixer
-index 399d04c..d733e12 100755
+index f4f825a..3ec10f5 100755
 --- a/pulsemixer
 +++ b/pulsemixer
-@@ -1712,7 +1712,7 @@ class Config():
+@@ -1723,7 +1723,7 @@ class Config():
  
          class General:
              step = 1
@@ -20,15 +20,6 @@ index 399d04c..d733e12 100755
              server = None
  
          self._more_keys = {'KEY_ESC': 27, 'KEY_TAB': 9, 'C': -96, 'M': 128}
-@@ -1781,7 +1781,7 @@ class Config():
- 
-         [general]
-         step = 1
--        step-big = 10
-+        step-big = 5
-         ; server = 
- 
-         [keys]
 -- 
-2.20.1
+2.21.0
 

@@ -49,7 +49,7 @@ Requires:       %{name}%{_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description caja
 This package contains the engrampa extension for the caja file manager.
-It adds an item to the nautilus context menu that lets you compress files
+It adds an item to the caja context menu that lets you compress files
 or directories.
 
 
