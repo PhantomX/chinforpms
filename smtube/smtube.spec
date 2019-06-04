@@ -1,6 +1,6 @@
 Name:           smtube
 Version:        18.11.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        YouTube browser for SMPlayer
 Epoch:          1
 
@@ -11,6 +11,7 @@ Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar
 Patch0:         %{name}-18.11.0-system-qtsingleapplication.patch
 # Do not spam .xsession-errors
 Patch1:         %{name}-18.1.0-quiet.patch
+Patch2:         %{name}-r9217.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
@@ -66,6 +67,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Jun 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:18.11.0-101
+- Upstream patch for yt
+
 * Fri Nov 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 18.11.0-100.chinfo
 - 18.11.0
 

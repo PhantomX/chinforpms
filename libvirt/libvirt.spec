@@ -215,7 +215,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 5.3.0
+Version: 5.4.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -1300,7 +1300,7 @@ rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
 %endif
 
 # Copied into libvirt-docs subpackage eventually
-mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version} libvirt-docs
+mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt libvirt-docs
 
 %ifarch %{power64} s390x x86_64 ia64 alpha sparc64
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes.stp \
@@ -1887,6 +1887,9 @@ exit 0
 
 
 %changelog
+* Mon Jun 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.0-100
+- 5.4.0
+
 * Sun May 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.0-100
 - 5.3.0
 

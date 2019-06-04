@@ -8,7 +8,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 crl
 
-%global commit2 6cd5e323645746620f96450487e05900a0fbc7ce
+%global commit2 ddccffed3c87ce6763dd73a6453b1edfb1389743
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 qtlottie
 
@@ -19,7 +19,7 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.7.1
+Version:        1.7.3
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -28,6 +28,7 @@ Epoch:          1
 # Application and 3rd-party modules licensing:
 # * S0 (Telegram Desktop) - GPLv3+ with OpenSSL exception -- main source;
 # * S1 (crl) - GPLv3+ -- build-time dependency;
+# * S2 (qtlottie) - GPLv3+ -- build-time dependency;
 # * P0 (qt_functions.cpp) - LGPLv3 -- build-time dependency.
 License:        GPLv3+ and LGPLv3
 URL:            https://github.com/telegramdesktop/%{appname}
@@ -56,6 +57,9 @@ Patch103:       %{name}-disable-overlay.patch
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
 Requires:       open-sans-fonts
+
+# Special patched version of qtlottie required.
+Provides: bundled(qtlottie) = 0
 
 # Compilers and tools...
 BuildRequires:  desktop-file-utils
@@ -196,6 +200,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Mon Jun 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.3-100
+- 1.7.3
+- RPMFusion sync
+
 * Wed May 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.1-100
 - 1.7.1
 - Update crl
