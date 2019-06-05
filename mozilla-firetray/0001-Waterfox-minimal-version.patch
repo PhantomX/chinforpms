@@ -1,0 +1,27 @@
+From d8cbe39a3686fe4d810f3d11fc43378886081e40 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 4 Jun 2019 19:30:12 -0300
+Subject: [PATCH] Waterfox minimal version
+
+---
+ src/install.rdf | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/install.rdf b/src/install.rdf
+index f567417..6d43fb2 100644
+--- a/src/install.rdf
++++ b/src/install.rdf
+@@ -22,8 +22,8 @@
+     <em:targetApplication>
+       <Description>
+         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
+-        <em:minVersion>7.0</em:minVersion>
+-        <em:maxVersion>38.0</em:maxVersion>
++        <em:minVersion>56.0</em:minVersion>
++        <em:maxVersion>60.*</em:maxVersion>
+       </Description>
+     </em:targetApplication>
+ 
+-- 
+2.21.0
+

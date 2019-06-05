@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2018 Phantom X <megaphantomx at bol.com.br> -->
+<!-- Copyright 2019 Phantom X <megaphantomx at bol.com.br> -->
 <component type="addon">
-  <id>mozilla-gnotifier</id>
+  <id>mozilla-firetray</id>
   <extends>waterfox.desktop</extends>
   <extends>mozilla-seamonkey.desktop</extends>
   <extends>mozilla-thunderbird.desktop</extends>
-  <name>GNotifier</name>
-  <summary>Waterfox native notification system integration</summary>
-  <url type="homepage">https://github.com/mkiol/GNotifier</url>
-  <url type="bugtracker">https://github.com/mkiol/GNotifier/issues</url>
+  <name>FireTray</name>
+  <summary>A system tray addon for mozilla</summary>
+  <url type="homepage">https://github.com/Ximi1970/FireTray</url>
+  <url type="bugtracker">https://github.com/Ximi1970/FireTray/issues</url>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPLv3</project_license>
   <updatecontact>megaphantomx at bol.com.br</updatecontact>

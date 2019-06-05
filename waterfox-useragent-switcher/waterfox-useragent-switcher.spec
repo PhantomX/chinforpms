@@ -11,14 +11,14 @@
 %global waterfox_min 56.0
 
 # Don't have release urls
-%global commit aa31d04c32393bae9a9e65fa943a033f3b3c0bd9
+%global commit 6a5c4c4783d268a5d997269fcb560d3ff583ee20
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190314
+%global date 20190516
 
 %global gver .%{date}git%{shortcommit}
 
 Name:           waterfox-useragent-switcher
-Version:        0.2.8
+Version:        0.3.0
 Release:        1%{?gver}%{?dist}
 Summary:        Spoofs and mimics Waterfox User-Agent strings
 
@@ -80,5 +80,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Tue Jun 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.3.0-1.20190516git6a5c4c4
+- 0.3.0
+
 * Fri Mar 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.2.8-1.20190314gitaa31d04
 - Initial spec

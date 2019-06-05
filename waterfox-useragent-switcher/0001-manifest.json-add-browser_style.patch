@@ -21,7 +21,7 @@ index 72b8977..8ef00d3 100755
        "32": "data/icons/32.png",
 @@ -45,6 +46,7 @@
    },
-   "homepage_url": "http://add0n.com/useragent-switcher.html",
+   "homepage_url": "https://add0n.com/useragent-switcher.html",
    "options_ui": {
 +    "browser_style": false,
      "page": "data/options/index.html",

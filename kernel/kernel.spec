@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ef4ccc1aff0f982d31b950904d5217029629f337
+%global pfcommit 95d6dc54319a0cba6bbaa821fccb4a83a52e9759
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 0739fa4bcf7a21941c7e28c52b33b0f531044868
+%global opensuse_id 55f2451c7a489069e9144e81bda3e375644a5983
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -623,6 +623,34 @@ Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 
 # Fix wifi on various ideapad models not working (rhbz#1703338)
 Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
+
+# rhbz 1711468
+# https://lore.kernel.org/linux-bluetooth/20190522070540.48895-1-marcel@holtmann.org/
+Patch527: Bluetooth-Check-key-sizes-only-when-Secure-Simple-Pa.patch
+
+# CVE-2019-12378 rhbz 1715459 1715460
+Patch528: ipv6_sockglue-fix-missing-check-bug-in-ip6_ra_control.patch
+
+# CVE-2019-3846 rhbz 1713059 1715475
+Patch529: Buffer-overflow-read-checks-in-mwifiex.patch
+
+# CVE-2019-12380 rhbz 1715494 1715495
+Patch530: 0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
+
+# CVE-2019-12381 rhbz 1715501 1715502
+Patch531: 0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+
+# CVE-2019-12382 rhbz 1715554 1715556
+Patch532: drm-edid-fix-missing-check-bug-in-drm_load_edid_firmware.patch
+
+# CVE-2019-12379 rhbz 1715491 1715706
+Patch533: consolemap-fix-memory-leaking-bug.patch
+
+# CVE-2019-12455 rhbz 1716990 1717003
+Patch534: clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_setup.patch
+
+# CVE-2019-12454 rhbz 1716996 1717003
+Patch535: wcd9335-fix-a-incorrect-use-of-kstrndup.patch
 
 ### Extra
 
@@ -1937,6 +1965,10 @@ fi
 #
 #
 %changelog
+* Tue Jun 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.7-500.chinfo
+- 5.1.7
+- f30 sync
+
 * Fri May 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.6-500.chinfo
 - 5.1.6
 - f30 sync
