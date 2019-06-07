@@ -11,6 +11,7 @@ URL:            https://github.com/procxx/%{name}
 
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 Source0:        %{url}/archive/v%{ver}/%{name}-%{ver}.tar.gz
+Source1:        thunar-sendto-%{name}.desktop
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         %{name}-system-fonts.patch
@@ -102,6 +103,12 @@ popd
 
 rm -rf %{buildroot}%{_datadir}/kservices5
 
+mkdir -p %{buildroot}%{_datadir}/Thunar/sendto
+desktop-file-install \
+  --dir=%{buildroot}%{_datadir}/Thunar/sendto \
+  %{S:1}
+
+
 %check
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
@@ -113,6 +120,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
+%{_datadir}/Thunar/sendto/thunar-sendto-%{name}.desktop
 %{_metainfodir}/%{name}.appdata.xml
 
 

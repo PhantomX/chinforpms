@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Kepka recipient
+Name[pt_BR]=Destinatário do Kepka
+Exec=kepka -sendpath %F
+TryExec=kepka
+Icon=kepka
+Terminal=false
+Type=Application

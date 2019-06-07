@@ -1,7 +1,7 @@
 %bcond_with yubikey
 
 Name:           keepassxc
-Version:        2.4.1
+Version:        2.4.2
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -19,6 +19,7 @@ BuildRequires:  libgpg-error-devel
 BuildRequires:  pkgconfig(libargon2)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libqrencode)
+BuildRequires:  pkgconfig(libsodium)
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core) >= 5.2
 BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2
@@ -47,7 +48,6 @@ cross-platform and modern open-source password manager.
 %prep
 %autosetup -p1
 
-sed -e '/mandb -q/d' -i src/cli/CMakeLists.txt
 
 %build
 mkdir %{_target_platform}
@@ -101,6 +101,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Thu Jun 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.2-100
+- 2.4.2
+- BR: libsodium
+
 * Sat Apr 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.1-100
 - 2.4.1
 

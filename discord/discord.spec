@@ -64,7 +64,10 @@ chmod +x *.so
 
 chrpath --delete %{execname}
 
-mv %{name}-canary.desktop %{name}.desktop ||:
+if [ -f %{name}-canary.desktop ] ; then
+  mv %{name}-canary.desktop %{name}.desktop
+fi
+
 
 %build
 

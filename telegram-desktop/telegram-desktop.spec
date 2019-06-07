@@ -8,7 +8,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 crl
 
-%global commit2 ddccffed3c87ce6763dd73a6453b1edfb1389743
+%global commit2 a3fac9db920b167a5f91d678ee7968f100f6fe51
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 qtlottie
 
@@ -19,7 +19,7 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.7.3
+Version:        1.7.6
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -40,6 +40,8 @@ ExclusiveArch:  i686 x86_64
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
 Source1:        https://github.com/telegramdesktop/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/telegramdesktop/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        thunar-sendto-%{name}.desktop
+
 Patch0:         %{name}-build-fixes.patch
 Patch1:         %{name}-system-fonts.patch
 Patch2:         %{name}-unbundle-minizip.patch
@@ -187,6 +189,13 @@ done
 install -d "%{buildroot}%{_metainfodir}"
 install -m 0644 -p lib/xdg/telegramdesktop.appdata.xml "%{buildroot}%{_metainfodir}/%{name}.appdata.xml"
 
+# sendto
+mkdir -p "%{buildroot}%{_datadir}/Thunar/sendto"
+desktop-file-install \
+  --dir="%{buildroot}%{_datadir}/Thunar/sendto" \
+  %{S:3}
+
+
 %check
 appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appdata.xml"
 
@@ -196,10 +205,15 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
+%{_datadir}/Thunar/sendto/thunar-sendto-%{name}.desktop
 %{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Jun 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.6-100
+- 1.7.6
+- Thunar sendto
+
 * Mon Jun 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.3-100
 - 1.7.3
 - RPMFusion sync
