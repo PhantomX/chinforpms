@@ -1,16 +1,20 @@
 Name:           pev
 Version:        0.80
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        PE file analysis toolkit
 
 License:        GPLv2
 URL:            http://pev.sourceforge.net/
 Source0:        https://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 
+%global vc_url  https://github.com/merces/%{name}
+
 Patch0:         %{name}-optimization.patch
-# https://github.com/merces/pev/pull/104
-Patch1:         https://github.com/merces/pev/commit/98f5f22f91f02821be1604bbce61efb45f7e3696.patch
-Patch2:         https://github.com/merces/pev/commit/3fc1d6ac863cfb596e8e9263e03871aec8c00d22.patch
+Patch1:         %{vc_url}/commit/98f5f22f91f02821be1604bbce61efb45f7e3696.patch#/%{name}-gh-98f5f22.patch
+Patch2:         %{vc_url}/commit/3fc1d6ac863cfb596e8e9263e03871aec8c00d22.patch#/%{name}-gh-3fc1d6a.patch
+Patch3:         %{vc_url}/commit/d1632ef4ff5705fa3819e29b37c0ccef85e6d62a.patch#/%{name}-gh-d1632ef.patch
+Patch4:         %{vc_url}/commit/3c2b0737f8b09ab7300bb8bbd5e0e2728367327f.patch#/%{name}-gh-3c2b073.patch
+
 
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(libpcre)
@@ -81,6 +85,9 @@ install -pm 0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 %{_libdir}/libpe.so
 
 %changelog
+* Fri Jun 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.80-3
+- Upstream patches to fix crashes
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.80-2
 - Upstream patches for openssl 1.1.0 support
 

@@ -11,4 +11,4 @@ diff -up Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/security/sandbox/linu
 +    LDFLAGS += ['--param', 'lto-partitions=1']
  
  DEFINES['NS_NO_XPCOM'] = True
- DISABLE_STL_WRAPPING = True
+ DisableStlWrapping()

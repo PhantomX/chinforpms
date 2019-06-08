@@ -1,6 +1,6 @@
-%global commit 9eb36acf01129e5e196363895c6c3eee30ebeacf
+%global commit 3d735123dd028d1b306cfb0031a4099e3ed4f87f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190517
+%global date 20190606
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -130,7 +130,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.10
+Version:        56.2.10.1
 Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -440,7 +440,7 @@ done
 # 2: no apply
 # 3: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1393283 1395486 1452576 1453127 \
+  702179 991253 1021761 1144632 1288587 1393283 1395486 1452576 1453127 1466606 \
   1388744 1413143 \
   1447519
 do
@@ -1024,6 +1024,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Jun 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.10.1-1.20190606git3d73512
+- New snapshot
+
 * Sun May 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.10-1.20190517git9eb36ac
 - New release/snapshot
 
