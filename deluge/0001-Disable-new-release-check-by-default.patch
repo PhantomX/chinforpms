@@ -1,0 +1,25 @@
+From 128e543641342508978315f3b8e447cb11b3cd83 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 8 Jun 2019 20:47:12 -0300
+Subject: [PATCH] Disable new release check by default
+
+---
+ deluge/core/preferencesmanager.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/deluge/core/preferencesmanager.py b/deluge/core/preferencesmanager.py
+index db9556a..90f3831 100644
+--- a/deluge/core/preferencesmanager.py
++++ b/deluge/core/preferencesmanager.py
+@@ -106,7 +106,7 @@ DEFAULT_PREFS = {
+     'path_chooser_accelerator_string': 'Tab',
+     'path_chooser_max_popup_rows': 20,
+     'path_chooser_show_hidden_files': False,
+-    'new_release_check': True,
++    'new_release_check': False,
+     'proxy': {
+         'type': 0,
+         'hostname': '',
+-- 
+2.21.0
+
