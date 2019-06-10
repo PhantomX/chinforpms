@@ -56,17 +56,17 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 6
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 95d6dc54319a0cba6bbaa821fccb4a83a52e9759
+%global pfcommit c309f5bbd7664a6da13ac7cb52b9567c392e9fd1
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 55f2451c7a489069e9144e81bda3e375644a5983
+%global opensuse_id ed4965b5e8a54b081bc84d357f53069ecc2799f3
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -652,6 +652,15 @@ Patch534: clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_setup.patch
 # CVE-2019-12454 rhbz 1716996 1717003
 Patch535: wcd9335-fix-a-incorrect-use-of-kstrndup.patch
 
+# CVE-2019-12456 rhbz 1717182 1717183
+Patch536: scsi-mpt3sas_ctl-fix-double-fetch-bug-in_ctl_ioctl_main.patch 
+
+# rhbz 1708717
+Patch537: neighbor-Reset-gc_entries-counter-if-new-entry-is-re.patch 
+
+# CVE-2019-12614 rhbz 1718176 1718185
+Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch 
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -669,8 +678,6 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{patchwork_url}/10953115/mbox/#/patchwork-10953115.patch
-Patch2002: %{patchwork_url}/10953117/mbox/#/patchwork-10953117.patch
 
 %if !0%{?post_factum}
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
@@ -1965,6 +1972,10 @@ fi
 #
 #
 %changelog
+* Sun Jun 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.8-500.chinfo
+- 5.1.8 - pf6
+- f30 sync
+
 * Tue Jun 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.7-500.chinfo
 - 5.1.7
 - f30 sync

@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20190310
+# 20190609
 
 set -e
 
@@ -47,11 +47,11 @@ SCHED_TIMESLICE=4
 pfy="
 SCHED_BMQ
 UKSM
+USER_NS_UNPRIVILEGED
 "
 
 zen="
 CC_OPTIMIZE_HARDER
-USER_NS_UNPRIVILEGED
 RQ_NONE
 RQ_MC
 RQ_SMP
@@ -87,6 +87,7 @@ MQ_IOSCHED_BFQ
 MQ_BFQ_GROUP_IOSCHED
 LOGO_RANDOM
 LOGO_FEDORASIMPLE_CLUT224
+USER_NS_UNPRIVILEGED
 "
 
 SCRIPT="$(readlink -f $0)"

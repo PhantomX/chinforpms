@@ -1794,3 +1794,60 @@ index 122797023bdb..f8f1cdb74a4f 100644
 -- 
 2.21.0
 
+From patchwork Wed Nov 21 12:05:10 2018
+Date: Wed, 21 Nov 2018 13:05:10 +0100
+From: Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH next-lockdown 1/1] debugfs: avoid EPERM when no open file
+ operation defined
+
+With "debugfs: Restrict debugfs when the kernel is locked down"
+return code "r" is unconditionally set to -EPERM, which stays like that
+until function return if no "open" file operation defined, effectivelly
+resulting in "Operation not permitted" for all such files despite kernel
+lock down status or CONFIG_LOCK_DOWN_KERNEL being enabled.
+
+In particular this breaks 2 debugfs files on s390:
+/sys/kernel/debug/s390_hypfs/diag_304
+/sys/kernel/debug/s390_hypfs/diag_204
+
+To address that set EPERM return code only when debugfs_is_locked_down
+returns true.
+
+Fixes: 3fc322605158 ("debugfs: Restrict debugfs when the kernel is locked down")
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+---
+ fs/debugfs/file.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
+index 51cb894c21f2..89c86faaa02a 100644
+--- a/fs/debugfs/file.c
++++ b/fs/debugfs/file.c
+@@ -167,9 +167,10 @@ static int open_proxy_open(struct inode *inode, struct file *filp)
+ 
+ 	real_fops = debugfs_real_fops(filp);
+ 
+-	r = -EPERM;
+-	if (debugfs_is_locked_down(inode, filp, real_fops))
++	if (debugfs_is_locked_down(inode, filp, real_fops)) {
++		r = -EPERM;
+ 		goto out;
++	}
+ 
+ 	real_fops = fops_get(real_fops);
+ 	if (!real_fops) {
+@@ -296,9 +297,10 @@ static int full_proxy_open(struct inode *inode, struct file *filp)
+ 		return r == -EIO ? -ENOENT : r;
+ 
+ 	real_fops = debugfs_real_fops(filp);
+-	r = -EPERM;
+-	if (debugfs_is_locked_down(inode, filp, real_fops))
++	if (debugfs_is_locked_down(inode, filp, real_fops)) {
++		r = -EPERM;
+ 		goto out;
++	}
+ 
+ 	real_fops = fops_get(real_fops);
+ 	if (!real_fops) {
+-- 
+2.21.0
