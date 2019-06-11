@@ -9,7 +9,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 4.9
+%global stagingver 4.10
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{stagingver}
@@ -40,8 +40,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.9
-Release:        101%{?dist}
+Version:        4.10
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -84,8 +84,6 @@ Source113:      wine-taskmgr.desktop
 
 # wine bugs/upstream
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-Patch100:       https://bugs.winehq.org/attachment.cgi?id=64599&action=diff&context=patch&collapsed=&headers=1&format=raw#/%{name}-whq-bug47255.patch
-Patch101:       https://bugs.winehq.org/attachment.cgi?id=64567&action=diff&context=patch&collapsed=&headers=1&format=raw#/%{name}-whq-bug47265.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -682,8 +680,6 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
-%patch100 -p1
-%patch101 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -1608,6 +1604,9 @@ fi
 %{_libdir}/wine/ext-ms-win-rtcore-ntuser-sysparams-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-security-credui-l1-1-0.dll.so
 %{_libdir}/wine/ext-ms-win-security-cryptui-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-shell-comctl32-init-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-shell-comdlg32-l1-1-0.dll.so
+%{_libdir}/wine/ext-ms-win-shell-shell32-l1-2-0.dll.so
 %{_libdir}/wine/ext-ms-win-uxtheme-themes-l1-1-0.dll.so
 %if 0%{?staging}
 %{_libdir}/wine/ext-ms-win-appmodel-usercontext-l1-1-0.dll.so
@@ -1879,7 +1878,6 @@ fi
 %{_libdir}/wine/ucrtbase.dll.so
 %{_libdir}/wine/uianimation.dll.so
 %{_libdir}/wine/uiautomationcore.dll.so
-%{_libdir}/wine/uiautomationcore.dll.so
 %{_libdir}/wine/uiribbon.dll.so
 %{_libdir}/wine/unicows.dll.so
 %{_libdir}/wine/unlodctr.exe.so
@@ -2097,6 +2095,7 @@ fi
 %dir %{_datadir}/wine/mono
 %dir %{_datadir}/wine/fonts
 %{_datadir}/wine/wine.inf
+%{_datadir}/wine/winehid.inf
 %{_datadir}/wine/l_intl.nls
 
 %files common
@@ -2299,6 +2298,9 @@ fi
 
 
 %changelog
+* Mon Jun 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.10-100
+- 4.10
+
 * Fri May 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.9-101
 - Some fixes from bugzilla
 

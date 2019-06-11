@@ -1,0 +1,39 @@
+From 66fa5604b499a4892eaff68294bc5280263bbaf8 Mon Sep 17 00:00:00 2001
+From: Dmitry Shachnev <mitya57@gmail.com>
+Date: Thu, 5 Oct 2017 11:58:34 +0700
+Subject: [PATCH] Update references to the screenshot
+
+---
+ README.md                          | 2 +-
+ data/me.mitya57.ReText.appdata.xml | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/README.md b/README.md
+index 4a8be3d..b6e4e21 100644
+--- a/README.md
++++ b/README.md
+@@ -8,7 +8,7 @@ ReText is a simple but powerful editor for Markdown and reStructuredText markup
+ languages. ReText is written in Python language and works on Linux and other
+ POSIX-compatible platforms. To install ReText, use `setup.py install` command.
+ 
+-![ReText under KDE 5](https://a.fsdn.com/con/app/proj/retext/screenshots/retext-kde5.png)
++![ReText on Plasma 5 desktop](data/retext-kde5.png)
+ 
+ You can read more about ReText in the [wiki].
+ 
+diff --git a/data/me.mitya57.ReText.appdata.xml b/data/me.mitya57.ReText.appdata.xml
+index 8d37fdf..2a7d189 100644
+--- a/data/me.mitya57.ReText.appdata.xml
++++ b/data/me.mitya57.ReText.appdata.xml
+@@ -37,7 +37,7 @@
+   </provides>
+   <screenshots>
+     <screenshot type="default">
+-      <image width="1116" height="650">https://a.fsdn.com/con/app/proj/retext/screenshots/retext-kde5.png</image>
++      <image width="1116" height="650">https://raw.githubusercontent.com/retext-project/retext/master/data/retext-kde5.png</image>
+     </screenshot>
+   </screenshots>
+   <developer_name>Dmitry Shachnev</developer_name>
+-- 
+2.17.0
+
