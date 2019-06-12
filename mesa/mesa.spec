@@ -23,6 +23,8 @@
 %global with_etnaviv   1
 %global with_freedreno 1
 %global with_kmsro     1
+%global with_lima      1
+%global with_panfrost  1
 %global with_tegra     1
 %global with_vc4       1
 %global with_xa        1
@@ -44,30 +46,22 @@
 
 %global dri_drivers %{?base_drivers}%{?platform_drivers}
 
-%global sanitize 0
-
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.0.6
+Version:        19.1.0
 Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
 
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
-%if 0%{sanitize}
 Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
-%else
-Source0:        %{name}-%{ver}.tar.xz
-%endif
-Source1:        vl_decoder.c
-Source2:        vl_mpeg12_decoder.c
-Source3:        Makefile
 # src/gallium/auxiliary/postprocess/pp_mlaa* have an ... interestingly worded license.
-# Source4 contains email correspondence clarifying the license terms.
+# Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
-Source4:        Mesa-MLAA-License-Clarification-Email.txt
+Source1:        Mesa-MLAA-License-Clarification-Email.txt
+Source2:        glesv2.pc
 
 Patch3:         0003-evergreen-big-endian.patch
 
@@ -362,29 +356,18 @@ Headers for development with the Vulkan API.
 
 %prep
 %autosetup -n %{name}-%{ver} -p1
-%if 0%{sanitize}
-  cp -f %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
-  cp -f %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
-  exit 0
-%else
-  cmp %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
-  cmp %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
-%endif
+cp %{SOURCE1} docs/
 
-cp %{SOURCE4} docs/
+sed -e 's|_RPMVER_|%{ver}|g' %{SOURCE2} > glesv2.pc
 
 %build
-%if !0%{sanitize}
-  cmp %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
-  cmp %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
-%endif
 
 %meson -Dcpp_std=gnu++11 \
   -Dplatforms=x11,wayland,drm,surfaceless \
   -Ddri3=true \
   -Ddri-drivers=%{?dri_drivers} \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_kmsro:,kmsro} \
+  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -420,6 +403,8 @@ cp %{SOURCE4} docs/
 %install
 %meson_install
 
+install -m0644 glesv2.pc %{buildroot}%{_libdir}/pkgconfig/
+
 # libvdpau opens the versioned name, don't bother including the unversioned
 rm -vf %{buildroot}%{_libdir}/vdpau/*.so
 # likewise glvnd
@@ -443,7 +428,7 @@ popd
 %files filesystem
 %doc docs/Mesa-MLAA-License-Clarification-Email.txt
 %dir %{_libdir}/dri
-%if 0%{with_hardware}
+%if 0%{?with_hardware}
 %if 0%{?with_vdpau}
 %dir %{_libdir}/vdpau
 %endif
@@ -519,13 +504,13 @@ popd
 
 %if 0%{?with_xa}
 %files libxatracker
-%if 0%{with_hardware}
+%if 0%{?with_hardware}
 %{_libdir}/libxatracker.so.2
 %{_libdir}/libxatracker.so.2.*
 %endif
 
 %files libxatracker-devel
-%if 0%{with_hardware}
+%if 0%{?with_hardware}
 %{_libdir}/libxatracker.so
 %{_includedir}/xa_tracker.h
 %{_includedir}/xa_composite.h
@@ -556,7 +541,7 @@ popd
 %files dri-drivers
 %dir %{_datadir}/drirc.d
 %{_datadir}/drirc.d/00-mesa-defaults.conf
-%if 0%{with_hardware}
+%if 0%{?with_hardware}
 %{_libdir}/dri/radeon_dri.so
 %{_libdir}/dri/r200_dri.so
 %{_libdir}/dri/nouveau_vieux_dri.so
@@ -583,6 +568,12 @@ popd
 %if 0%{?with_tegra}
 %{_libdir}/dri/tegra_dri.so
 %endif
+%if 0%{?with_lima}
+%{_libdir}/dri/lima_dri.so
+%endif
+%if 0%{?with_panfrost}
+%{_libdir}/dri/panfrost_dri.so
+%endif
 %{_libdir}/dri/nouveau_dri.so
 %if 0%{?with_vmware}
 %{_libdir}/dri/vmwgfx_dri.so
@@ -598,14 +589,25 @@ popd
 %{_libdir}/gallium-pipe/*.so
 %endif
 %if 0%{?with_kmsro}
+%{_libdir}/dri/armada-drm_dri.so
+%{_libdir}/dri/exynos_dri.so
 %{_libdir}/dri/hx8357d_dri.so
+%{_libdir}/dri/ili9225_dri.so
+%{_libdir}/dri/ili9341_dri.so
+%{_libdir}/dri/meson_dri.so
+%{_libdir}/dri/mi0283qt_dri.so
 %{_libdir}/dri/pl111_dri.so
-%endif 
+%{_libdir}/dri/repaper_dri.so
+%{_libdir}/dri/rockchip_dri.so
+%{_libdir}/dri/st7586_dri.so
+%{_libdir}/dri/st7735r_dri.so
+%{_libdir}/dri/sun4i-drm_dri.so
+%endif
 %{_libdir}/dri/kms_swrast_dri.so
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
 
-%if 0%{with_hardware}
+%if 0%{?with_hardware}
 %if 0%{?with_omx}
 %files omx-drivers
 %{_libdir}/bellagio/libomx_mesa.so
@@ -640,6 +642,10 @@ popd
 
 
 %changelog
+* Tue Jun 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.1.0-100
+- 19.1.0
+- Rawhide sync
+
 * Wed Jun 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.6-100
 - 19.0.6
 

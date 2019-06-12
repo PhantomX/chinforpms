@@ -1,0 +1,33 @@
+From 7500096ef55989594c5e699a8ea078110bd3fc1a Mon Sep 17 00:00:00 2001
+From: Florian Westphal <fw@strlen.de>
+Date: Mon, 20 May 2019 13:48:10 +0200
+Subject: [PATCH] netfilter: nat: fix udp checksum corruption
+
+Due to copy&paste error nf_nat_mangle_udp_packet passes IPPROTO_TCP,
+resulting in incorrect udp checksum when payload had to be mangled.
+
+Fixes: dac3fe72596f9 ("netfilter: nat: remove csum_recalc hook")
+Reported-by: Marc Haber <mh+netdev@zugschlus.de>
+Tested-by: Marc Haber <mh+netdev@zugschlus.de>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/nf_nat_helper.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/netfilter/nf_nat_helper.c b/net/netfilter/nf_nat_helper.c
+index ccc06f7539d7..53aeb12b70fb 100644
+--- a/net/netfilter/nf_nat_helper.c
++++ b/net/netfilter/nf_nat_helper.c
+@@ -170,7 +170,7 @@ nf_nat_mangle_udp_packet(struct sk_buff *skb,
+ 	if (!udph->check && skb->ip_summed != CHECKSUM_PARTIAL)
+ 		return true;
+ 
+-	nf_nat_csum_recalc(skb, nf_ct_l3num(ct), IPPROTO_TCP,
++	nf_nat_csum_recalc(skb, nf_ct_l3num(ct), IPPROTO_UDP,
+ 			   udph, &udph->check, datalen, oldlen);
+ 
+ 	return true;
+-- 
+2.21.0
+
