@@ -20,7 +20,7 @@
 
 Name:           telegram-desktop
 Version:        1.7.7
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -46,6 +46,7 @@ Patch0:         %{name}-build-fixes.patch
 Patch1:         %{name}-system-fonts.patch
 Patch2:         %{name}-unbundle-minizip.patch
 Patch3:         0001-Temporary-fix-for-gcc-9.1.1-regression.patch
+Patch4:         0001-Unset-QT-scale-env-vars.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -210,6 +211,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Thu Jun 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.7-101
+- Arch Linux patch to fix hidpi bug
+
 * Mon Jun 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.7-100
 - 1.7.7
 

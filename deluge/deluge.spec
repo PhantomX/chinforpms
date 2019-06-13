@@ -1,5 +1,5 @@
 Name:           deluge
-Version:        2.0.2
+Version:        2.0.3
 Release:        100%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
@@ -8,7 +8,8 @@ Epoch:          1
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/
 
-Source0:        http://download.deluge-torrent.org/source/2.0/%{name}-%{version}.tar.xz
+%global vermm %(echo %{version} | cut -d. -f-2)
+Source0:        http://download.deluge-torrent.org/source/%{vermm}/%{name}-%{version}.tar.xz
 
 Patch0:         0001-Disable-GConf2-magnet-registering.patch
 Patch1:         0001-Disable-new-release-check-by-default.patch
@@ -49,7 +50,7 @@ Requires:       python3-dbus
 Requires:       python3-pillow
 Requires:       python3-pygame
 Requires:       python3-pyxdg
-# FIXME: python3-twisted need this, remove when Fedora package is fixed
+# FIXME: this must be in Fedora python3-twisted Requires, remove when it is fixed
 Requires:       python3-service-identity
 Requires:       python3-setproctitle
 Requires:       python3-six
@@ -250,6 +251,9 @@ exit 0
 
 
 %changelog
+* Wed Jun 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.2-100
+- 2.0.3
+
 * Sat Jun 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.2-100
 - 2.0.2
 - Requirements updated for python3, gtk3
