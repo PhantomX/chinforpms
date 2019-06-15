@@ -1,19 +1,44 @@
-%global pluginapi 3.17.3.0
+%global commit 08293cc6790f8e465383caf9fe9e07cdadaedbe1
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20190529
+%global with_snapshot 1
 
 %global with_gtk3  0
+%global with_python  0
 
+%if 0%{?with_gtk3}
+%global with_fancy 1
+# Only snapshot currently
+%global with_snapshot 1
+%else
 %global with_fancy 0
+%endif
+
+%{!?with_autotools:%global with_autotools 0}
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%global with_autotools 1
+%endif
 
 # toggle to avoid temporary docbook-utils and Tex Live dependency issues
 %global build_manual 1
 
 Name:           claws-mail
 Version:        3.17.3
-Release:        100%{?dist}
+Release:        102%{?gver}%{?dist}
+Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
 URL:            http://claws-mail.org
+
+%global pluginapi %{version}.0
+
+%if 0%{?with_snapshot}
+Source0:        https://git.claws-mail.org/?p=claws.git;a=snapshot;h=%{commit};sf=tgz#/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
+%endif
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
@@ -23,12 +48,18 @@ Patch50:        11mark_trashed_as_read.patch
 Patch51:        12fix_manpage_header.patch
 
 # added 20170310 / webkitgtk removal from fedora rhbz#1375803
-%if !%{with_fancy}
-Obsoletes:      %{name}-plugins-fancy < %{version}-%{release}
-Provides:       %{name}-plugins-fancy = %{version}-%{release}
+%if !0%{with_fancy}
+Obsoletes:      %{name}-plugins-fancy < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}-plugins-fancy = %{?epoch:%{epoch}:}%{version}-%{release}
+%endif
+
+%if !0%{?with_python}
+Obsoletes:      %{name}-plugins-python < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}-plugins-python = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  flex, bison
 BuildRequires:  glib2-devel >= 2.28.0
 %if 0%{?with_gtk3}
@@ -58,7 +89,11 @@ BuildRequires:  perl-devel perl-generators perl(ExtUtils::Embed)
 BuildRequires:  libSM-devel
 BuildRequires:  NetworkManager-libnm-devel
 BuildRequires:  dbus-glib-devel
-BuildRequires:  libtool autoconf automake
+%if 0%{?with_autotools}
+BuildRequires:  autoconf
+BuildRequires:  automake
+%endif
+BuildRequires:  libtool
 %if 0%{build_manual}
 BuildRequires:  docbook-utils docbook-utils-pdf
 %endif
@@ -69,14 +104,18 @@ BuildRequires:  libidn-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  libytnef-devel
 BuildRequires:  ghostscript
+BuildRequires:  gumbo-parser-devel
 BuildRequires:  poppler-glib-devel
 # webkit removed since Fedora 27 due to unfixed security issues
-%if 0%{with_fancy} && !0%{?with_gtk3}
-BuildRequires:  webkitgtk-devel
+%if 0%{with_fancy}
+BuildRequires:  webkit2gtk3-devel
+BuildRequires:  libsoup-devel
 %endif
 # fix #496149
 BuildRequires:  libnotify-devel
+%if 0%{?with_python}
 BuildRequires:  python2 python2-devel pygtk2-devel
+%endif
 BuildRequires:  libcanberra-devel
 # this is an optional subpackage not pulled in by libcanberra-devel
 %if 0%{?with_gtk3}
@@ -89,11 +128,9 @@ BuildRequires:  libgnome-devel
 BuildRequires:  libical-devel
 BuildRequires:  librsvg2-devel
 
-#BuildRequires:  autoconf
-#BuildRequires:  automake
-
 # provide plugin api version (see /usr/include/claws-mail/common/version.h)
 Provides:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+
 
 %description
 Claws Mail is an email client (and news reader), based on GTK+, featuring
@@ -102,6 +139,7 @@ intuitive operation, abundant features, and extensibility.
 
 %package        devel
 Summary:        Development package for %{name}
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description    devel
 The %{name}-devel package contains the header files
@@ -109,46 +147,49 @@ and pkgconfig file needed for development with %{name}.
 
 
 %package plugins
-Summary: Additional plugins for Claws Mail
-Requires: %{name}-plugins-acpi-notifier
-Requires: %{name}-plugins-address-keeper
-Requires: %{name}-plugins-archive
-Requires: %{name}-plugins-att-remover
-Requires: %{name}-plugins-attachwarner
-Requires: %{name}-plugins-bogofilter
+Summary:  Additional plugins for Claws Mail
+Requires: %{name}-plugins-acpi-notifier = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-address-keeper = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-archive = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-att-remover = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-attachwarner = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-bogofilter = %{?epoch:%{epoch}:}%{version}-%{release}
 %if !0%{?rhel}
-Requires: %{name}-plugins-bsfilter
+Requires: %{name}-plugins-bsfilter = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
-Requires: %{name}-plugins-clamd
-Requires: %{name}-plugins-dillo
+Requires: %{name}-plugins-clamd = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-dillo = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{with_fancy}
-Requires: %{name}-plugins-fancy
+Requires: %{name}-plugins-fancy = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
-Requires: %{name}-plugins-fetchinfo
-Requires: %{name}-plugins-gdata
-Requires: %{name}-plugins-libravatar
-Requires: %{name}-plugins-mailmbox
-Requires: %{name}-plugins-managesieve
-Requires: %{name}-plugins-newmail
-Requires: %{name}-plugins-notification
-Requires: %{name}-plugins-pdf-viewer
-Requires: %{name}-plugins-perl
-Requires: %{name}-plugins-pgp
-Requires: %{name}-plugins-python
-Requires: %{name}-plugins-rssyl
-Requires: %{name}-plugins-smime
-Requires: %{name}-plugins-spamassassin
-Requires: %{name}-plugins-spam-report
-Requires: %{name}-plugins-tnef
-Requires: %{name}-plugins-vcalendar
+Requires: %{name}-plugins-fetchinfo = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-gdata = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-litehtml = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-libravatar = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-mailmbox = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-managesieve = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-newmail = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-notification = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-pdf-viewer = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-perl = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-pgp = %{?epoch:%{epoch}:}%{version}-%{release}
+%if 0%{?with_python}
+Requires: %{name}-plugins-python = %{?epoch:%{epoch}:}%{version}-%{release}
+%endif
+Requires: %{name}-plugins-rssyl = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-smime = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-spamassassin = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-spam-report = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-tnef = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: %{name}-plugins-vcalendar = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins
 Additional plugins for Claws Mail.
 
 
 %package plugins-acpi-notifier
-Summary:        ACPI notification plugin for Claws Mail 
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Summary:        ACPI notification plugin for Claws Mail
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-acpi-notifier
 Enables mail notification via LEDs on some laptops. Options can be found on
@@ -157,7 +198,7 @@ the 'Plugins/Acpi Notifier' page of the preferences.
 
 %package plugins-address-keeper
 Summary:        Never forget a typed address in Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-address-keeper
 This plugin allows saving outgoing addresses to a designated folder
@@ -167,7 +208,7 @@ address book to avoid unwanted duplicates.
 
 %package plugins-archive
 Summary:        Archiving features for Claws Mail 
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-archive
 %{summary}
@@ -175,7 +216,7 @@ Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
 
 %package plugins-attachwarner
 Summary:        Attachment warner plugin for Claws Mail 
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-attachwarner
 Warns when the user composes a message mentioning an attachment in the message
@@ -184,7 +225,7 @@ body but without attaching any files to the message.
 
 %package plugins-att-remover
 Summary:        Attachments remover plugin for Claws Mail 
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-att-remover
 Enables the removal of attachments from emails. When right-clicking a message,
@@ -192,7 +233,7 @@ choose 'Remove attachments' from the sub-menu.
 
 %package plugins-bogofilter
 Summary:        Bogofilter plugin for Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       bogofilter
 
 %description plugins-bogofilter
@@ -201,7 +242,7 @@ Requires:       bogofilter
 %if !0%{?rhel}
 %package plugins-bsfilter
 Summary:        Bayesian spam filtering for Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       bsfilter
 
 %description plugins-bsfilter
@@ -211,7 +252,7 @@ Bayesian spam filtering for Claws Mail using Bsfilter.
 
 %package plugins-clamd
 Summary:        Use Clam AntiVirus to scan messages in Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-clamd
 This plugin uses Clam AntiVirus to scan all messages that are
@@ -223,17 +264,25 @@ Options can be found in /Configuration/Preferences/Plugins/Clam AntiVirus.
 
 %package plugins-dillo
 Summary:        Display HTML emails in Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       dillo
 
 %description plugins-dillo
 This plugin renders HTML email via the Dillo Web Browser.
 
 
+%package plugins-litehtml
+Summary:        Display HTML emails in Claws Mail
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description plugins-litehtml
+This plugin renders HTML email via the Gumbo parsing library.
+
+
 %if 0%{with_fancy}
 %package plugins-fancy
 Summary:        Display HTML emails in Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-fancy
 This plugin renders HTML email via the GTK+ port of the WebKit library.
@@ -242,7 +291,7 @@ This plugin renders HTML email via the GTK+ port of the WebKit library.
 
 %package plugins-fetchinfo
 Summary:        Modify headers of downloaded messages in Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-fetchinfo
 This plugin inserts headers containing some download information:
@@ -251,7 +300,7 @@ UIDL, Sylpheeds account name, POP server, user ID and retrieval time.
 
 %package plugins-gdata
 Summary:        Access to GData (Google services) for Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-gdata
 Access to GData (Google services) for Claws Mail.
@@ -262,21 +311,21 @@ Google contacts into the address completion.
 
 %package plugins-mailmbox
 Summary:        Add support for mailboxes in mbox format to Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-mailmbox
 This plugin provides direct support for mailboxes in mbox format.
 
 %package plugins-managesieve
 Summary:        Add Manage sieve support to Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-managesieve
 Manage sieve filters on a server using the ManageSieve protocol.
 
 %package plugins-newmail
 Summary:        Make Claws Mail write a message header summary to a file
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-newmail
 Write a message header summary to a log file (defaults to ~/Mail/NewLog) on
@@ -285,7 +334,7 @@ arrival of new mail *after* sorting.
 
 %package plugins-notification
 Summary:        Various ways to notify about new messages in Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-notification
 This plugin collects various ways to notify the user of new (and possibly
@@ -294,7 +343,7 @@ unread) mail. Currently, a pop-up and a mail banner are implemented.
 
 %package plugins-pdf-viewer
 Summary:        Enables the viewing of PDF and PostScript attachments
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-pdf-viewer
 This plugin handles PDF and Postscript attachments.
@@ -303,7 +352,7 @@ This plugin handles PDF and Postscript attachments.
 %package plugins-perl
 Summary:        Perl based extended filtering engine for Claws Mail
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-perl
 This plugin provides an extended filtering engine for the email client
@@ -311,33 +360,27 @@ Claws Mail. It allows for the use of full perl power in email filters.
 
 %package plugins-pgp
 Summary:        PGP plugin for signing and encrypting with Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
-%if 0%{?rhel}
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       pinentry-gui
-%endif
-%if 0%{?fedora} > 19
-Requires:       pinentry-gui
-%else
-# Fedora 19 requires gtk as pinentry-qt fails silently #981923
-Requires:       pinentry-gtk
-%endif
 
 %description plugins-pgp
 %{summary}
 
+%if 0%{?with_python}
 %package plugins-python
 Summary:        Python scripting access to Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-python
 This plugin offers a Python scripting access to Claws Mail. Python code can be
 entered interactively into an embedded Python console or stored in scripts
 under ~/.claws-mail/python-scripts. The scripts are then accessible via the
 menu of the main window.
+%endif
 
 %package plugins-libravatar
 Summary:        Libravatar plugin for Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-libravatar
 This plugin allows showing the profile picture associated to email
@@ -346,7 +389,7 @@ more about what is this at http://wiki.libravatar.org/description/.
 
 %package plugins-rssyl
 Summary:        RSS plugin for Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-rssyl
 Allows you to read your favorite RSS news feeds in Claws Mail. RSS 1.0,
@@ -355,8 +398,8 @@ Allows you to read your favorite RSS news feeds in Claws Mail. RSS 1.0,
 
 %package plugins-smime
 Summary:        S/MIME support for Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
-Requires:       claws-mail-plugins-pgp%{?_isa} = %{version}-%{release}
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       claws-mail-plugins-pgp%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-smime
 This plugin handles S/MIME signed and/or encrypted mails. You can decrypt
@@ -365,7 +408,7 @@ mails, verify signatures or sign and encrypt your own mails.
 
 %package plugins-spamassassin
 Summary:        Spamassassin plugin for Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       spamassassin
 
 %description plugins-spamassassin
@@ -374,7 +417,7 @@ Requires:       spamassassin
 
 %package plugins-spam-report
 Summary:        Report spam mail to various places with Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-spam-report
 This plugin for Claws Mail can report spam mail to various places.
@@ -382,7 +425,7 @@ This plugin for Claws Mail can report spam mail to various places.
 
 %package plugins-tnef
 Summary:        TNEF message parsing for Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-tnef
 This plugin allows reading of application/ms-tnef attachments.
@@ -390,7 +433,7 @@ This plugin allows reading of application/ms-tnef attachments.
 
 %package plugins-vcalendar
 Summary:        Handling of vCalendar messages in Claws Mail
-Requires:       claws-mail(plugin-api)%{?_isa} = %pluginapi
+Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins-vcalendar
 This plugin enables vCalendar message handling like that produced by
@@ -399,7 +442,12 @@ exporting of your meetings or all your calendars.
 
 
 %prep
+%if 0%{?with_snapshot}
+%setup -q -n claws-%{shortcommit}
+echo 'echo %{version}-%{shortcommit}' > version
+%else
 %setup -q
+%endif
 
 %if 0%{?fedora} > 20
 %patch11 -p1 -b.syscrypto
@@ -408,9 +456,9 @@ exporting of your meetings or all your calendars.
 %patch50 -p1 -b.trash
 %patch51 -p1 -b.manheader
 
-# guard for pluginapi
-SOURCEAPI=$(grep -A 1 VERSION_NUMERIC src/common/version.h | tr -d '\n' | perl -ne 's/[\\\s]//g; m/(\d+),(\d+),(\d+),(\d+)/; print("$1.$2.$3.$4");')
-[ "%pluginapi" == "$SOURCEAPI" ] || exit -1
+%if 0%{?with_autotools}
+NOCONFIGURE=1 ./autogen.sh
+%endif
 
 # change DEFAULT_INC_PATH for the optional external "inc" tool to match
 # Fedora's "nmh" package // unimportant fix, but add a grep guard, too
@@ -446,21 +494,25 @@ Firefox and Claws Mail
 EOF
 %endif
 
-#autoreconf -ivf
 
 %build
-%configure --disable-dependency-tracking \
+%configure \
            --disable-rpath \
-%if 0%{?with_gtk3}
-            --enable-gtk3 \
-%endif
 %if 0%{?rhel}
            --disable-bsfilter-plugin \
 %endif
 %if !0%{with_fancy}
            --disable-fancy-plugin \
 %endif
-           --enable-appdata 
+%if !0%{?with_python}
+           --disable-python-plugin \
+%endif
+           --enable-appdata \
+%{nil}
+
+# guard for pluginapi
+SOURCEAPI=$(grep -A 1 VERSION_NUMERIC src/common/version.h | tr -d '\n' | perl -ne 's/[\\\s]//g; m/(\d+),(\d+),(\d+),(\d+)/; print("$1.$2.$3.$4");')
+[ "%pluginapi" == "$SOURCEAPI" ] || exit -1
 
 %make_build LIBTOOL=%{_bindir}/libtool
 
@@ -510,7 +562,10 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 %files -f claws-mail.lang
 %license COPYING
-%doc ABOUT-NLS AUTHORS ChangeLog NEWS README RELEASE_NOTES TODO
+%doc ABOUT-NLS AUTHORS NEWS README RELEASE_NOTES TODO
+%if !0%{with_snapshot}
+%doc ChangeLog
+%endif
 %if 0%{?fedora}
 %doc README.Fedora
 %endif
@@ -577,7 +632,12 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 %files plugins-dillo
 %{_libdir}/claws-mail/plugins/dillo*
-#{_datadir}/appdata/claws-mail-dillo.metainfo.xml
+#%%{_datadir}/_metainfodir/claws-mail-dillo.metainfo.xml
+
+
+%files plugins-litehtml
+%{_libdir}/claws-mail/plugins/litehtml*
+#%%{_datadir}/appdata/claws-mail-litehtml.metainfo.xml
 
 
 %if 0%{with_fancy}
@@ -632,9 +692,11 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 #%%{_metainfodir}/claws-mail-pgp*.metainfo.xml
 
 
+%if 0%{?with_python}
 %files plugins-python
 %{_libdir}/claws-mail/plugins/python*
 #%%{_metainfodir}/claws-mail-python.metainfo.xml
+%endif
 
 
 %files plugins-libravatar
@@ -674,6 +736,16 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Fri Jun 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.17.3-102.20190529git08293cc
+- gtk2 again, gtk3 needs more work
+
+* Thu Jun 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.17.3-103.20190518git3c18210
+- Snapshot and gtk3
+- litehtml plugin, BR: gumbo-parser-devel
+- Optional python2 plugin
+- Epoch
+- Explicit plugins Requires, instead plugin-abi
+
 * Tue Dec 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 3.17.3-100
 - 3.17.3
 

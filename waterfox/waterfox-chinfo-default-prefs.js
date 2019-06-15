@@ -14,17 +14,18 @@ pref("browser.shell.checkDefaultBrowser",   false);
 pref("browser.urlbar.trimURLs",             false);
 pref("network.manage-offline-status",       true);
 pref("extensions.shownSelectionUI",         true);
+pref("ui.use_unity_menubar",                false);
 pref("ui.SpellCheckerUnderlineStyle",       1);
 pref("startup.homepage_override_url",       "");
 pref("browser.startup.homepage",            "data:text/plain,browser.startup.homepage=https://start.fedoraproject.org/");
 pref("browser.newtabpage.pinned",           '[{"url":"https://start.fedoraproject.org/","title":"Fedora Project - Start Page"}]');
 pref("media.gmp-gmpopenh264.provider.enabled",false);
-pref("media.gmp-gmpopenh264.autoupdate",false);
-pref("media.gmp-gmpopenh264.enabled",false);
-pref("media.gmp-gmpopenh264.enabled",false);
-pref("plugins.notifyMissingFlash", false);
+pref("media.gmp-gmpopenh264.autoupdate",    false);
+pref("media.gmp-gmpopenh264.enabled",       false);
+pref("media.gmp-gmpopenh264.enabled",       false);
+pref("plugins.notifyMissingFlash",          false);
 /* See https://bugzilla.redhat.com/show_bug.cgi?id=1226489 */
-pref("browser.display.use_system_colors", false);
+pref("browser.display.use_system_colors",   false);
 pref("layers.use-image-offscreen-surfaces", false);
 /* Allow sending credetials to all https:// sites */
 pref("network.negotiate-auth.trusted-uris", "https://");

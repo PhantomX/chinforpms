@@ -13,14 +13,14 @@
 %global srcname2 qtlottie
 
 # Enable or disable build with GTK support...
-%bcond_without gtk3
+%bcond_with gtk3
 
 # Decrease debuginfo verbosity to reduce memory consumption...
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
 Version:        1.7.7
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -62,7 +62,7 @@ Requires:       hicolor-icon-theme
 Requires:       open-sans-fonts
 
 # Special patched version of qtlottie required.
-Provides: bundled(qtlottie) = 0
+Provides:       bundled(qtlottie) = 0
 
 # Compilers and tools...
 BuildRequires:  desktop-file-utils
@@ -73,6 +73,7 @@ BuildRequires:  gcc
 BuildRequires:  gyp
 
 # Development packages for Telegram Desktop...
+BuildRequires:  glib2-devel
 BuildRequires:  guidelines-support-library-devel >= 1.0.0
 BuildRequires:  mapbox-variant-devel >= 0.3.6
 BuildRequires:  libtgvoip-devel >= 2.4.4
@@ -211,6 +212,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Thu Jun 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.7-102
+- Disable gtk3 integration by default
+
 * Thu Jun 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.7-101
 - Arch Linux patch to fix hidpi bug
 

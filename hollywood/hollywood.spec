@@ -1,5 +1,5 @@
 Name:           hollywood
-Version:        1.15
+Version:        1.18
 Release:        1%{?dist}
 Summary:        Fill your console with Hollywood melodrama technobabble
 
@@ -33,7 +33,7 @@ Requires:       openssh-clients
 # pygmentize
 Requires:       python3-pygments
 #Requires:       rsstail
-Requires:       speedometer
+#Requires:       speedometer
 #Requires:       ticker
 Requires:       tmux
 Requires:       tree
@@ -54,7 +54,8 @@ background of any excellent schlock technothriller.
 
 sed -i \
   -e 's|lib/hollywood/|/usr/libexec/$PKG/|g' \
-  -e '/^widget_dir=/s|=.*$|=/usr/libexec/$PKG|g' \
+  -e '/^widget_dir=/s|=.*$|="/usr/libexec/$PKG"|g' \
+  -e '/^WIDGET_DIR=/s|=.*$|="/usr/libexec/$PKG"|g' \
   -e 's|lib/$PKG/|/usr/libexec/$PKG/|g' \
   bin/%{name} bin/wallstreet
 
@@ -95,6 +96,10 @@ install -pm0644 share/man/man1/%{name}.1 %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Sat Jun 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.18-1
+- 1.18
+- Disable speedometer requires, no python3
+
 * Fri May 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.15-1
 - 1.15
 

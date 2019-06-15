@@ -23,7 +23,7 @@ RPMFusion and existent packages updated with extra changes.
  * **adwaita-qt** - Remove some paddings
  * **aisleriot** - No Gconf support
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
- * **claws-mail** - Can't wait Fedora releases
+ * **claws-mail** - Can't wait Fedora releases. Tests
  * **deluge** - Updated, no GConf support
  * **devedeng** - Boolean dependencies for video players and disc burners
  * **easytag** - Tests

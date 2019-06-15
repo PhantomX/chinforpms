@@ -1,6 +1,6 @@
-%global commit 605e00e7483ea533d690baf09c6f8b5cc85e0855
+%global commit 41b74994f31756870b4148f6f3e9b6e4d5e64768
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190527
+%global date 20190614
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 
 Name:           reicast
 Version:        8.1
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -44,10 +44,10 @@ BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 BuildRequires:  xxhash-devel
 Requires:       hicolor-icon-theme
-Requires:       python2-evdev
+Requires:       python3-evdev
 
 
 %description
@@ -70,8 +70,7 @@ rm -rf core/deps/{flac,libpng,libzip,xxhash,zlib}
 sed -e 's|grep flags /proc/cpuinfo|/bin/true|g' -i shell/linux/Makefile
 %endif
 
-sed -i '1s|/usr/bin/env python|%{__python2}|' shell/linux/tools/%{name}-joyconfig.py
-
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" shell/linux/tools/%{name}-joyconfig.py
 
 sed \
   -e 's|`git describe --tags --always`|%{version}-%{release}|g' \
@@ -123,6 +122,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Jun 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 8.1-6.20190614git41b7499
+- New snapshot
+- Python 3
+
 * Sun Jun 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 8.1-5.20190527git605e00e
 - New snapshot
 
