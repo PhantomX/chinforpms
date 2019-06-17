@@ -1,0 +1,77 @@
+From f158b268ddbb3758dec49861bdf3ad8c9aae2e87 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Thu, 29 Nov 2018 12:40:05 +0100
+Subject: [PATCH] drm/i915/dsi: Use a fuzzy check for burst mode clock check
+
+Prior to this commit we fail to init the DSI panel on the GPD MicroPC:
+https://www.indiegogo.com/projects/gpd-micropc-6-inch-handheld-industry-laptop#/
+
+The problem is intel_dsi_vbt_init() failing with the following error:
+*ERROR* Burst mode freq is less than computed
+
+The pclk in the VBT panel modeline is 70000, together with 24 bpp and
+4 lines this results in a bitrate value of 70000 * 24 / 4 = 420000.
+But the target_burst_mode_freq in the VBT is 418000.
+
+This commit works around this problem by adding an intel_fuzzy_clock_check
+when target_burst_mode_freq < bitrate and setting target_burst_mode_freq to
+bitrate when that checks succeeds, fixing the panel not working.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/gpu/drm/i915/intel_display.c |  2 +-
+ drivers/gpu/drm/i915/intel_drv.h     |  1 +
+ drivers/gpu/drm/i915/intel_dsi_vbt.c | 11 +++++++++++
+ 3 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
+index 5098228f1302..ceb78f44f087 100644
+--- a/drivers/gpu/drm/i915/intel_display.c
++++ b/drivers/gpu/drm/i915/intel_display.c
+@@ -11942,7 +11942,7 @@ intel_modeset_pipe_config(struct drm_crtc *crtc,
+ 	return 0;
+ }
+ 
+-static bool intel_fuzzy_clock_check(int clock1, int clock2)
++bool intel_fuzzy_clock_check(int clock1, int clock2)
+ {
+ 	int diff;
+ 
+diff --git a/drivers/gpu/drm/i915/intel_drv.h b/drivers/gpu/drm/i915/intel_drv.h
+index a38b9cff5cd0..e85cd377a652 100644
+--- a/drivers/gpu/drm/i915/intel_drv.h
++++ b/drivers/gpu/drm/i915/intel_drv.h
+@@ -1742,6 +1742,7 @@ int vlv_force_pll_on(struct drm_i915_private *dev_priv, enum pipe pipe,
+ 		     const struct dpll *dpll);
+ void vlv_force_pll_off(struct drm_i915_private *dev_priv, enum pipe pipe);
+ int lpt_get_iclkip(struct drm_i915_private *dev_priv);
++bool intel_fuzzy_clock_check(int clock1, int clock2);
+ 
+ /* modesetting asserts */
+ void assert_panel_unlocked(struct drm_i915_private *dev_priv,
+diff --git a/drivers/gpu/drm/i915/intel_dsi_vbt.c b/drivers/gpu/drm/i915/intel_dsi_vbt.c
+index 3074448446bc..4b8e48db1843 100644
+--- a/drivers/gpu/drm/i915/intel_dsi_vbt.c
++++ b/drivers/gpu/drm/i915/intel_dsi_vbt.c
+@@ -853,6 +853,17 @@ bool intel_dsi_vbt_init(struct intel_dsi *intel_dsi, u16 panel_id)
+ 		if (mipi_config->target_burst_mode_freq) {
+ 			u32 bitrate = intel_dsi_bitrate(intel_dsi);
+ 
++			/*
++			 * Sometimes the VBT contains a slightly lower clock,
++			 * then the bitrate we have calculated, in this case
++			 * just replace it with the calculated bitrate.
++			 */
++			if (mipi_config->target_burst_mode_freq < bitrate &&
++			    intel_fuzzy_clock_check(
++					mipi_config->target_burst_mode_freq,
++					bitrate))
++				mipi_config->target_burst_mode_freq = bitrate;
++
+ 			if (mipi_config->target_burst_mode_freq < bitrate) {
+ 				DRM_ERROR("Burst mode freq is less than computed\n");
+ 				return false;
+-- 
+2.21.0
+

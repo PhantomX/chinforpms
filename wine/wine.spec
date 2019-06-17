@@ -16,7 +16,7 @@
 %else
 %global stpkgver %(c=%{stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 62cc460e50516462417e457444b160d51a63e42e
+%global tkg_id 8b65d866061ce827f777a3364553d39a166480e2
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global pba 0
 %if !%{?staging}
@@ -41,7 +41,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.10
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -84,6 +84,9 @@ Source113:      wine-taskmgr.desktop
 
 # wine bugs/upstream
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
+Patch100:       %{whq_url}/a6b1c493be482c3301163f61675d001eaa7ce841#/%{name}-whq-a6b1c49.patch
+Patch101:       %{whq_url}/d34d87cf879b876d69500ced23e1aa6f1efc9666#/%{name}-whq-d34d87c.patch
+Patch102:       %{whq_url}/f8a04c7f2e2c77eef663c5bb2109e3dbd51b22e0#/%{name}-whq-f8a04c7.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -116,14 +119,15 @@ Patch701:       %{tkg_url}/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch702:       %{tkg_url}/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
 Patch703:       %{tkg_url}/poe-fix.patch#/%{name}-tkg-poe-fix.patch
 Patch704:       %{tkg_url}/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
+Patch705:       %{tkg_url}/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}/wine-staging-%{stpkgver}.tar.gz
-Patch705:       %{tkg_url}/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
-Patch706:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch707:       %{tkg_url}/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
-Patch708:       %{tkg_url}/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
+Patch710:       %{tkg_url}/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
+Patch711:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
+Patch712:       %{tkg_url}/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch713:       %{tkg_url}/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/ff95f1927cdb923907ef1fa9660203004b9ee36d.patch#/%{name}-valve-ff95f19.patch
@@ -680,6 +684,9 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -687,6 +694,7 @@ This package adds the opencl driver for wine.
 %patch702 -p1
 #patch703 -p1
 %patch704 -p1
+%patch705 -p1
 %patch801 -p1
 %patch802 -p1
 %patch803 -p1
@@ -710,10 +718,10 @@ cp -p %{S:1001} README-pba-pkg
 %endif #{?pba}
 
 # Breaks Gallium HUD
-#patch705 -p1
-%patch706 -p1
-%patch707 -p1
-%patch708 -p1
+#patch710 -p1
+%patch711 -p1
+%patch712 -p1
+%patch713 -p1
 %patch800 -p1 -R
 
 # fix parallelized build
@@ -2298,6 +2306,9 @@ fi
 
 
 %changelog
+* Sat Jun 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.10-101
+- Monotonic patch update from tkg
+
 * Mon Jun 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.10-100
 - 4.10
 

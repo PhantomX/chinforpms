@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit cb10d81501dbd70f64014b7330f1463fcc6ec4f5
+%global pfcommit a1a2ab1679b13c768d55e9996e66c8fa8f286526
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id ed4965b5e8a54b081bc84d357f53069ecc2799f3
+%global opensuse_id 8904439af5485b57688027ef8a49ad96283b789d
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -624,9 +624,6 @@ Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 # Fix wifi on various ideapad models not working (rhbz#1703338)
 Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
 
-# https://lore.kernel.org/linux-bluetooth/af8cf6f4-4979-2f6f-68ed-e5b368b17ec7@redhat.com/
-Patch527: Revert-Bluetooth-Align-minimum-encryption-key-size.patch 
-
 # CVE-2019-12378 rhbz 1715459 1715460
 Patch528: ipv6_sockglue-fix-missing-check-bug-in-ip6_ra_control.patch
 
@@ -662,6 +659,17 @@ Patch539: usb-dwc2-Fix-DMA-cache-alignment-issues.patch
 
 # Mainlined, https://bugzilla.redhat.com/show_bug.cgi?id=1716289
 Patch540: 0001-netfilter-nat-fix-udp-checksum-corruption.patch
+
+# CVE-2019-10126 rhbz 1716992 1720122
+Patch541: mwifiex-Fix-heap-overflow-in-mwifiex_uap_parse_tail_ies.patch
+
+# 1697069 LCD panel an Asus EeePC 1025C not lighting up, submitted upstream
+Patch542: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
+
+# Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
+Patch543: 0001-drm-i915-dsi-Use-a-fuzzy-check-for-burst-mode-clock-.patch
+Patch544: drm-panel-orientation-quirks.patch
+Patch545: efi-bgrt-acpi6.2-support.patch 
 
 ### Extra
 
@@ -1974,6 +1982,9 @@ fi
 #
 #
 %changelog
+* Sun Jun 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.10-500.chinfo
+- 5.1.10
+
 * Tue Jun 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.9-500.chinfo
 - 5.1.9
 - f30 sync

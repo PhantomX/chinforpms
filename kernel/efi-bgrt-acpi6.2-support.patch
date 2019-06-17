@@ -1,0 +1,82 @@
+From 240090cb2d72f5de98f8fc2e3aa27803cab378b2 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Wed, 29 May 2019 14:50:17 +0200
+Subject: [PATCH] efi/bgrt: Drop BGRT status field reserved bits check
+
+Starting with ACPI 6.2 bits 1 and 2 of the BGRT status field are no longer
+reserved. These bits are now used to indicate if the image needs to be
+rotated before being displayed.
+
+The first device using these bits has now shown up (the GPD MicroPC) and
+the reserved bits check causes us to reject the valid BGRT table on this
+device.
+
+Rather then changing the reserved bits check, allowing only the 2 new bits,
+instead just completely remove it so that we do not end up with a similar
+problem when more bits are added in the future.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/firmware/efi/efi-bgrt.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/drivers/firmware/efi/efi-bgrt.c b/drivers/firmware/efi/efi-bgrt.c
+index a2384184a7de..b07c17643210 100644
+--- a/drivers/firmware/efi/efi-bgrt.c
++++ b/drivers/firmware/efi/efi-bgrt.c
+@@ -47,11 +47,6 @@ void __init efi_bgrt_init(struct acpi_table_header *table)
+ 		       bgrt->version);
+ 		goto out;
+ 	}
+-	if (bgrt->status & 0xfe) {
+-		pr_notice("Ignoring BGRT: reserved status bits are non-zero %u\n",
+-		       bgrt->status);
+-		goto out;
+-	}
+ 	if (bgrt->image_type != 0) {
+ 		pr_notice("Ignoring BGRT: invalid image type %u (expected 0)\n",
+ 		       bgrt->image_type);
+-- 
+2.21.0
+
+From 8f8d779bd966ef8af2279906772dec322220e73a Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Wed, 29 May 2019 15:44:09 +0200
+Subject: [PATCH] efifb: BGRT: Add check for new BGRT status field rotation
+ bits
+
+Starting with ACPI 6.2 bits 1 and 2 of the BGRT status field are no longer
+reserved. These bits are now used to indicate if the image needs to be
+rotated before being displayed.
+
+The efifb code does not support rotating the image before copying it to
+the screen.
+
+This commit adds a check for these new bits and if they are set leaves the
+fb contents as is instead of trying to use the un-rotated BGRT image.
+
+Acked-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/video/fbdev/efifb.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
+index 9f39f0c360e0..dfa8dd47d19d 100644
+--- a/drivers/video/fbdev/efifb.c
++++ b/drivers/video/fbdev/efifb.c
+@@ -169,6 +169,11 @@ static void efifb_show_boot_graphics(struct fb_info *info)
+ 		return;
+ 	}
+ 
++	if (bgrt_tab.status & 0x06) {
++		pr_info("efifb: BGRT rotation bits set, not showing boot graphics\n");
++		return;
++	}
++
+ 	/* Avoid flashing the logo if we're going to print std probe messages */
+ 	if (console_loglevel > CONSOLE_LOGLEVEL_QUIET)
+ 		return;
+-- 
+2.21.0
+
