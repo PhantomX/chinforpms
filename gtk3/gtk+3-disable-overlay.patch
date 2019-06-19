@@ -1,0 +1,44 @@
+diff -up gtk+-3.24.9/gdk/wayland/gdkscreen-wayland.c.nooverlay gtk+-3.24.9/gdk/wayland/gdkscreen-wayland.c
+--- gtk+-3.24.9/gdk/wayland/gdkscreen-wayland.c.nooverlay	2019-06-18 13:56:29.854875701 -0300
++++ gtk+-3.24.9/gdk/wayland/gdkscreen-wayland.c	2019-06-18 13:57:57.159641125 -0300
+@@ -504,7 +504,7 @@ static TranslationEntry translations[] =
+   { FALSE, "org.gnome.desktop.interface", "toolbar-style", "gtk-toolbar-style", G_TYPE_STRING, { .s = "both-horiz"} },
+   { FALSE, "org.gnome.desktop.interface", "toolbar-icons-size", "gtk-toolbar-icon-size", G_TYPE_STRING, { .s = "large"} },
+   { FALSE, "org.gnome.desktop.interface", "gtk-enable-primary-paste", "gtk-enable-primary-paste", G_TYPE_BOOLEAN, { .b = TRUE } },
+-  { FALSE, "org.gnome.desktop.interface", "overlay-scrolling", "gtk-overlay-scrolling", G_TYPE_BOOLEAN, { .b = TRUE } },
++  { FALSE, "org.gnome.desktop.interface", "overlay-scrolling", "gtk-overlay-scrolling", G_TYPE_BOOLEAN, { .b = FALSE } },
+   { FALSE, "org.gnome.settings-daemon.peripherals.mouse", "double-click", "gtk-double-click-time", G_TYPE_INT, { .i = 400 } },
+   { FALSE, "org.gnome.settings-daemon.peripherals.mouse", "drag-threshold", "gtk-dnd-drag-threshold", G_TYPE_INT, {.i = 8 } },
+   { FALSE, "org.gnome.desktop.sound", "theme-name", "gtk-sound-theme-name", G_TYPE_STRING, { .s = "freedesktop" } },
+diff -up gtk+-3.24.9/gtk/gtkscrolledwindow.c.nooverlay gtk+-3.24.9/gtk/gtkscrolledwindow.c
+--- gtk+-3.24.9/gtk/gtkscrolledwindow.c.nooverlay	2019-06-17 14:04:21.000000000 -0300
++++ gtk+-3.24.9/gtk/gtkscrolledwindow.c	2019-06-18 13:59:49.439339888 -0300
+@@ -713,7 +713,7 @@ gtk_scrolled_window_class_init (GtkScrol
+       g_param_spec_boolean ("overlay-scrolling",
+                             P_("Overlay Scrolling"),
+                             P_("Overlay scrolling mode"),
+-                            TRUE,
++                            FALSE,
+                             GTK_PARAM_READWRITE|G_PARAM_EXPLICIT_NOTIFY);
+ 
+   /**
+@@ -2148,7 +2148,7 @@ gtk_scrolled_window_init (GtkScrolledWin
+   priv->max_content_width = -1;
+   priv->max_content_height = -1;
+ 
+-  priv->overlay_scrolling = TRUE;
++  priv->overlay_scrolling = FALSE;
+ 
+   priv->drag_gesture = gtk_gesture_drag_new (widget);
+   gtk_gesture_single_set_touch_only (GTK_GESTURE_SINGLE (priv->drag_gesture), TRUE);
+@@ -4448,8 +4448,8 @@ gtk_scrolled_window_update_use_indicator
+ 
+   use_indicators = overlay_scrolling && priv->overlay_scrolling;
+ 
+-  if (g_strcmp0 (g_getenv ("GTK_OVERLAY_SCROLLING"), "0") == 0)
+-    use_indicators = FALSE;
++  if (g_strcmp0 (g_getenv ("GTK_OVERLAY_SCROLLING"), "1") == 0)
++    use_indicators = TRUE;
+ 
+   if (priv->use_indicators != use_indicators)
+     {

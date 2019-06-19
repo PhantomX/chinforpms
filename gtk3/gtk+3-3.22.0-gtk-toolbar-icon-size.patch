@@ -7,8 +7,8 @@ diff -up gtk+-3.22.7/gdk/wayland/gdkscreen-wayland.c.iconsize gtk+-3.22.7/gdk/wa
    { FALSE, "org.gnome.desktop.interface", "enable-animations", "gtk-enable-animations", G_TYPE_BOOLEAN, { .b = TRUE } },
 +  { FALSE, "org.gnome.desktop.interface", "toolbar-icons-size", "gtk-toolbar-icon-size", G_TYPE_STRING, { .s = "large"} },
    { FALSE, "org.gnome.desktop.interface", "gtk-enable-primary-paste", "gtk-enable-primary-paste", G_TYPE_BOOLEAN, { .b = TRUE } },
+   { FALSE, "org.gnome.desktop.interface", "overlay-scrolling", "gtk-overlay-scrolling", G_TYPE_BOOLEAN, { .b = TRUE } },
    { FALSE, "org.gnome.settings-daemon.peripherals.mouse", "double-click", "gtk-double-click-time", G_TYPE_INT, { .i = 400 } },
-   { FALSE, "org.gnome.settings-daemon.peripherals.mouse", "drag-threshold", "gtk-dnd-drag-threshold", G_TYPE_INT, {.i = 8 } },
 diff -up gtk+-3.22.7/gdk/win32/gdkproperty-win32.c.iconsize gtk+-3.22.7/gdk/win32/gdkproperty-win32.c
 --- gtk+-3.22.7/gdk/win32/gdkproperty-win32.c.iconsize	2017-02-08 16:46:40.746545348 -0200
 +++ gtk+-3.22.7/gdk/win32/gdkproperty-win32.c	2017-02-08 16:48:58.870407971 -0200

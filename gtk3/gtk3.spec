@@ -25,7 +25,7 @@
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name:           gtk3
-Version:        3.24.8
+Version:        3.24.9
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -43,7 +43,7 @@ Patch101:       gtk+3-3.22.0-gtk-toolbar-icon-size.patch
 Patch102:       gtk+3-3.22.0-gtk-toolbar-style.patch
 
 # Disable this @#$& by default
-Patch103:       gtk+3-3.22.0-disable-overlay.patch
+Patch103:       gtk+3-disable-overlay.patch
 
 Patch104:       gtk+3-startup-mode-cwd.patch
 Patch105:       gtk+3-dateformat-with_time.patch
@@ -383,6 +383,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Tue Jun 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.9-100
+- 3.24.9
+
 * Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.8-100
 - 3.24.8
 
