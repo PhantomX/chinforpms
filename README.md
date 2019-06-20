@@ -44,7 +44,7 @@ RPMFusion and existent packages updated with extra changes.
  * **krename** - Updated, KF5
  * **libmirage** - Can't wait Fedora releases and better matching with cdemu builds from here
  * **libtgvoip** - No unresolved symbols
- * **libvirt, qemu** - Updated
+ * **libvirt, qemu, virt-manager** - Updated
  * **lutris** - Personal changes
  * **lzip** - Updated, build flags
  * **manaplus** - Updated, SDL2

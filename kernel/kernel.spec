@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 4e203f075816e69bc02cecdae0dcc50a25e0356a
+%global pfcommit 17ce46d1d8e94510447dd6bb03766369f33562ae
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id ad24342b53c2ac90b16b903f897bd01f775351e5
+%global opensuse_id c3db4a3590ec0b518006e9c778864ac203b48c62
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -654,9 +654,6 @@ Patch536: scsi-mpt3sas_ctl-fix-double-fetch-bug-in_ctl_ioctl_main.patch
 # CVE-2019-12614 rhbz 1718176 1718185
 Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch 
 
-# https://patchwork.kernel.org/patch/10817377/
-Patch539: usb-dwc2-Fix-DMA-cache-alignment-issues.patch
-
 # Mainlined, https://bugzilla.redhat.com/show_bug.cgi?id=1716289
 Patch540: 0001-netfilter-nat-fix-udp-checksum-corruption.patch
 
@@ -667,7 +664,6 @@ Patch541: mwifiex-Fix-heap-overflow-in-mwifiex_uap_parse_tail_ies.patch
 Patch542: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
 
 # Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
-Patch543: 0001-drm-i915-dsi-Use-a-fuzzy-check-for-burst-mode-clock-.patch
 Patch544: drm-panel-orientation-quirks.patch
 Patch545: efi-bgrt-acpi6.2-support.patch 
 
@@ -1982,6 +1978,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.12-500.chinfo
+- 5.1.12
+
 * Mon Jun 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.11-500.chinfo
 - 5.1.11
 

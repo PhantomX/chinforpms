@@ -137,7 +137,7 @@
 
 %define with_firewalld 1
 
-%if 0%{?fedora} >= 30 || 0%{?rhel} > 7
+%if 0%{?fedora} >= 31 || 0%{?rhel} > 7
     %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
 %endif
 
@@ -216,7 +216,7 @@
 Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: 5.4.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
 
@@ -720,9 +720,6 @@ parted and more.
 Summary: QEMU driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
-# There really is a hard cross-driver dependency here
-Requires: libvirt-daemon-driver-network = %{version}-%{release}
-Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
 Requires: /usr/bin/qemu-img
 # For image compression
 Requires: gzip
@@ -1232,8 +1229,6 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 
 %make_install %{?_smp_mflags} SYSTEMD_UNIT_DIR=%{_unitdir} V=1
 
-make %{?_smp_mflags} -C examples distclean V=1
-
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.la
@@ -1255,8 +1250,8 @@ install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/
 cp $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml \
    $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/default.xml
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
+# libvirt saves this file with mode 0600
+chmod 0600 $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
 
 # nwfilter files are installed in /usr/share/libvirt and copied to /etc in %post
 # to avoid verification errors on changed files in /etc
@@ -1387,12 +1382,12 @@ fi
 rm -rf %{_localstatedir}/lib/rpm-state/libvirt || :
 
 %post daemon-driver-network
-%if %{with_firewalld}
+%if %{with_firewalld_zone}
     %firewalld_reload
 %endif
 
 %postun daemon-driver-network
-%if %{with_firewalld}
+%if %{with_firewalld_zone}
     %firewalld_reload
 %endif
 
@@ -1432,6 +1427,8 @@ if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ;
          < %{_datadir}/libvirt/networks/default.xml \
          > %{_sysconfdir}/libvirt/qemu/networks/default.xml
     ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
+    # libvirt saves this file with mode 0600
+    chmod 0600 %{_sysconfdir}/libvirt/qemu/networks/default.xml
 
     # Make sure libvirt picks up the new network defininiton
     mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || :
@@ -1446,6 +1443,8 @@ rm -rf %{_localstatedir}/lib/rpm-state/libvirt || :
 
 %post daemon-config-nwfilter
 cp %{_datadir}/libvirt/nwfilter/*.xml %{_sysconfdir}/libvirt/nwfilter/
+# libvirt saves these files with mode 600
+chmod 600 %{_sysconfdir}/libvirt/nwfilter/*.xml
 # Make sure libvirt picks up the new nwfilter defininitons
 mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || :
 touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
@@ -1484,14 +1483,6 @@ exit 0
 %postun client
 %systemd_postun libvirt-guests.service
 
-%if %{with_sanlock}
-%post lock-sanlock
-if getent group sanlock > /dev/null ; then
-    chmod 0770 %{_localstatedir}/lib/libvirt/sanlock
-    chown root:sanlock %{_localstatedir}/lib/libvirt/sanlock
-fi
-%endif
-
 %if %{with_lxc}
 %pre login-shell
 getent group virtlogin >/dev/null || groupadd -r virtlogin
@@ -1510,16 +1501,6 @@ exit 0
 %doc %{_datadir}/gtk-doc/html/libvirt/*.html
 %doc %{_datadir}/gtk-doc/html/libvirt/*.png
 %doc %{_datadir}/gtk-doc/html/libvirt/*.css
-%doc examples/hellolibvirt
-%doc examples/object-events
-%doc examples/dominfo
-%doc examples/domsuspend
-%doc examples/dommigrate
-%doc examples/openauth
-%doc examples/xml
-%doc examples/rename
-%doc examples/systemtap
-%doc examples/admin
 
 
 %files daemon
@@ -1592,6 +1573,8 @@ exit 0
 %files daemon-config-network
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
+%ghost %{_sysconfdir}/libvirt/qemu/networks/default.xml
+%ghost %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 
 %files daemon-config-nwfilter
 %dir %{_datadir}/libvirt/nwfilter/
@@ -1682,7 +1665,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
 %config(noreplace) %{_sysconfdir}/libvirt/qemu-lockd.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.qemu
-%ghost %dir %attr(0700, root, root) %{_localstatedir}/run/libvirt/qemu/
+%ghost %dir %{_localstatedir}/run/libvirt/qemu/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
 %dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/cache/libvirt/qemu/
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug
@@ -1754,7 +1737,7 @@ exit 0
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/sanlock.so
 %{_datadir}/augeas/lenses/libvirt_sanlock.aug
 %{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/sanlock
+%dir %attr(0770, root, sanlock) %{_localstatedir}/lib/libvirt/sanlock
 %{_sbindir}/virt-sanlock-cleanup
 %{_mandir}/man8/virt-sanlock-cleanup.8*
 %attr(0755, root, root) %{_libexecdir}/libvirt_sanlock_helper
@@ -1887,6 +1870,9 @@ exit 0
 
 
 %changelog
+* Wed Jun 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.0-101
+- f31 sync
+
 * Mon Jun 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.0-100
 - 5.4.0
 
