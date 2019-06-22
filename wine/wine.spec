@@ -3,20 +3,20 @@
 
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.8.3
+%global winemono  4.9.0
 %global _default_patch_fuzz 2
 
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global staging 1
-%global stagingver 4.10
+%global stagingver 4.11
 %if 0%(echo %{stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{stagingver}
 %else
 %global stpkgver %(c=%{stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 8b65d866061ce827f777a3364553d39a166480e2
+%global tkg_id b1c7c46da41f9eaffa205ecb3515e85f133c63b9
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global pba 0
 %if !%{?staging}
@@ -40,8 +40,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.10
-Release:        101%{?dist}
+Version:        4.11
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -84,9 +84,6 @@ Source113:      wine-taskmgr.desktop
 
 # wine bugs/upstream
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-Patch100:       %{whq_url}/a6b1c493be482c3301163f61675d001eaa7ce841#/%{name}-whq-a6b1c49.patch
-Patch101:       %{whq_url}/d34d87cf879b876d69500ced23e1aa6f1efc9666#/%{name}-whq-d34d87c.patch
-Patch102:       %{whq_url}/f8a04c7f2e2c77eef663c5bb2109e3dbd51b22e0#/%{name}-whq-f8a04c7.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -114,20 +111,21 @@ Patch600:       https://github.com/laino/wine-patches/raw/3ffdac0356ca3d64924e75
 Patch601:       wbemprox_query_v2.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
-Patch700:       %{tkg_url}/steam.patch#/%{name}-tkg-steam.patch
-Patch701:       %{tkg_url}/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
-Patch702:       %{tkg_url}/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
-Patch703:       %{tkg_url}/poe-fix.patch#/%{name}-tkg-poe-fix.patch
-Patch704:       %{tkg_url}/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
-Patch705:       %{tkg_url}/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
+Patch700:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
+Patch701:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
+Patch702:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
+Patch703:       %{tkg_url}/game-specific/poe-fix.patch#/%{name}-tkg-poe-fix.patch
+Patch704:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
+Patch705:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
+Patch706:       %{tkg_url}/game-specific/overwatch-mfstub.patch#/%{name}-tkg-overwatch-mfstub.patch
 
 # wine staging patches for wine-staging
 %if 0%{?staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{stagingver}/wine-staging-%{stpkgver}.tar.gz
-Patch710:       %{tkg_url}/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
-Patch711:       %{tkg_url}/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch712:       %{tkg_url}/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
-Patch713:       %{tkg_url}/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
+Patch710:       %{tkg_url}/misc/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
+Patch711:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
+Patch712:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch713:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/ff95f1927cdb923907ef1fa9660203004b9ee36d.patch#/%{name}-valve-ff95f19.patch
@@ -138,7 +136,7 @@ Patch804:       wine-xaudio2-pulseaudio-app-name.patch
 %if 0%{?pba}
 # acomminos PBA patches
 Source1001:     wine-README-pba
-Patch1000:      %{tkg_url}/PBA317+.patch#/%{name}-tkg-PBA317+.patch
+Patch1000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 %endif #{?pba}
 
 # Patch the patch
@@ -684,9 +682,6 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -695,6 +690,7 @@ This package adds the opencl driver for wine.
 #patch703 -p1
 %patch704 -p1
 %patch705 -p1
+%patch706 -p1
 %patch801 -p1
 %patch802 -p1
 %patch803 -p1
@@ -2306,6 +2302,9 @@ fi
 
 
 %changelog
+* Sat Jun 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.11-100
+- 4.11
+
 * Sat Jun 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.10-101
 - Monotonic patch update from tkg
 

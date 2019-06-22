@@ -1,6 +1,6 @@
-%global commit 816abce8fc3d8db8ea9a64305bb9bc8f5653874f
+%global commit 53e8263371c2c48795c48666a3d5d6c3ca4e8d58
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190602
+%global date 20190618
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -16,7 +16,7 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 a1993a6dd7e963c9bba0d8b81d826169b2627c6c
+%global commit1 9d93983574606d2af15be8cc0b49604bb4cafad6
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -52,7 +52,7 @@
 
 Name:           ppsspp
 Version:        1.8.0
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -334,6 +334,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Jun 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-104.20190618git53e8263
+- New snapshot
+
 * Sun Jun 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-103.20190602git816abce
 - New snapshot
 

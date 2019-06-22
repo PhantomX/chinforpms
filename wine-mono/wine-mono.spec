@@ -3,7 +3,7 @@
 %global with_bin 0
 
 Name:           wine-mono
-Version:        4.8.3
+Version:        4.9.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -48,6 +48,7 @@ BuildRequires:  autoconf automake
 BuildRequires:  bc
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
+BuildRequires:  git
 BuildRequires:  libtool
 BuildRequires:  pkgconfig
 BuildRequires:  gettext
@@ -83,14 +84,19 @@ chmod -R g-w %{name}-%{version}
 %patch0 -p1 -b.static
 
 # Fix all Python shebangs
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" . 
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" .
 sed -i 's/GENMDESC_PRG=python/GENMDESC_PRG=python3/' mono/mono/mini/Makefile.am.in
+sed -i 's/CP_R=python /CP_R=python3 /' Makefile
+sed -i 's/python /python3 /' \
+  tools/git-updated-files mono/netcore/Makefile \
+  mono/mono/tests/Makefile.am mono/scripts/submodules/versions.mk \
+  mono/sdks/builds/runtime.mk mono/sdks/wasm/Makefile
 %endif
 
 %build
 %if !0%{?with_bin}
 export WINEPREFIX="$(pwd)/wine-build"
-MAKEOPTS=%{_smp_mflags} MSIFILENAME=%{name}-%{version}.msi ./build-winemono.sh 
+%make_build image
 %endif
 
 %install
@@ -133,6 +139,9 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 
 
 %changelog
+* Fri Jun 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.9.0-100
+- 4.9.0
+
 * Fri Apr 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.8.3-100
 - 4.8.3
 

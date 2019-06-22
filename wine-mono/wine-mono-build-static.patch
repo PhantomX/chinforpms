@@ -1,26 +1,29 @@
---- wine-mono-4.8.1/build-winemono.sh.orig	2015-04-20 10:34:32.150114394 -0500
-+++ wine-mono-4.8.1/build-winemono.sh	2015-04-20 10:33:13.699274928 -0500
-@@ -73,6 +73,7 @@
-     cd "$BUILDDIR/build-cross-$ARCH"
-     if test 1 != $REBUILD || test ! -e Makefile; then
-         CPPFLAGS="-gdwarf-2 -gstrict-dwarf" "$SRCDIR"/mono/configure --prefix="$BUILDDIR/build-cross-$ARCH-install" --build=$BUILD --target=$MINGW --host=$MINGW --with-tls=none --disable-mcs-build --enable-win32-dllmain=yes --with-libgc-threads=win32 PKG_CONFIG=false mono_cv_clang=no || exit 1
-+        sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i libtool
-         sed -e 's/-lgcc_s//' -i libtool
-     fi
-     WINEPREFIX=/dev/null make $MAKEOPTS || exit 1
-@@ -162,6 +163,7 @@
-     cd "$BUILDDIR/build-cross-cli"
-     if test 1 != $REBUILD || test ! -e Makefile; then
-         "$SRCDIR"/mono/configure --prefix="$BUILDDIR/build-cross-cli-install" --with-mcs-docs=no --disable-system-aot || exit 1
-+        sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i libtool
-     fi
+--- wine-mono-4.9.0/Makefile.orig	2019-06-17 11:48:44.000000000 -0300
++++ wine-mono-4.9.0/Makefile	2019-06-21 21:07:51.009518293 -0300
+@@ -105,7 +105,7 @@ define MINGW_TEMPLATE =
+ # libmono dll's
+ $$(BUILDDIR)/mono-$(1)/Makefile: $$(SRCDIR)/mono/configure $$(BUILDDIR)/.dir
+ 	mkdir -p $$(@D)
+-	cd $$(BUILDDIR)/mono-$(1); CPPFLAGS="-gdwarf-2 -gstrict-dwarf" $$(SRCDIR_ABS)/mono/configure --prefix="$$(BUILDDIR_ABS)/build-cross-$(1)-install" --build=$$(shell $$(SRCDIR)/mono/config.guess) --target=$$(MINGW_$(1)) --host=$$(MINGW_$(1)) --with-tls=none --disable-mcs-build --enable-win32-dllmain=yes --with-libgc-threads=win32 PKG_CONFIG=false mono_cv_clang=no
++	cd $$(BUILDDIR)/mono-$(1); CPPFLAGS="-gdwarf-2 -gstrict-dwarf" $$(SRCDIR_ABS)/mono/configure --prefix="$$(BUILDDIR_ABS)/build-cross-$(1)-install" --build=$$(shell $$(SRCDIR)/mono/config.guess) --target=$$(MINGW_$(1)) --host=$$(MINGW_$(1)) --with-tls=none --disable-mcs-build --enable-win32-dllmain=yes --with-libgc-threads=win32 PKG_CONFIG=false mono_cv_clang=no && sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i libtool
+ 	sed -e 's/-lgcc_s//' -i $$(BUILDDIR)/mono-$(1)/libtool
  
- 	# put a System.Native library somewhere monolite can find it during the build
-@@ -232,6 +234,7 @@
-     # build mono-basic
-     cd "$SRCDIR/mono-basic"
-     ./configure --prefix="$BUILDDIR/build-cross-cli-win32-install" || exit 1
-+    sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i libtool
-     make $MAKEOPTS || exit 1
-     make install || exit 1
+ $$(BUILDDIR)/mono-$(1)/.built: $$(BUILDDIR)/mono-$(1)/Makefile $$(MONO_MONO_SRCS)
+@@ -259,7 +259,7 @@ $(eval $(call MINGW_TEMPLATE,x86_64))
+ # mono native/classlib build
+ $(BUILDDIR)/mono-unix/Makefile: $(SRCDIR)/mono/configure $(BUILDDIR)/.dir
+ 	mkdir -p $(@D)
+-	cd $(@D) && $(SRCDIR_ABS)/mono/configure --prefix="$(BUILDDIR_ABS)/mono-unix-install" --with-mcs-docs=no --disable-system-aot
++	cd $(@D) && $(SRCDIR_ABS)/mono/configure --prefix="$(BUILDDIR_ABS)/mono-unix-install" --with-mcs-docs=no --disable-system-aot && sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i libtool
  
+ $(BUILDDIR)/mono-unix/mono/lib/libSystem.Native.so: $(BUILDDIR)/mono-unix/Makefile $(MONO_LIBNATIVE_SRCS)
+ 	mkdir -p $(@D)
+@@ -339,7 +339,7 @@ clean-build-mono-unix:
+ clean-build: clean-build-mono-unix
+ 
+ $(SRCDIR)/mono-basic/build/config.make: $(SRCDIR)/mono-basic/configure $(BUILDDIR)/mono-unix/.installed
+-	cd $(SRCDIR)/mono-basic && $(MONO_ENV) ./configure --prefix=$(BUILDDIR_ABS)/mono-basic-install
++	cd $(SRCDIR)/mono-basic && $(MONO_ENV) ./configure --prefix=$(BUILDDIR_ABS)/mono-basic-install && sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i libtool
+ 
+ $(SRCDIR)/mono-basic/.built: $(SRCDIR)/mono-basic/build/config.make $(MONO_BASIC_SRCS) $(BUILDDIR)/.dir
+ 	+$(MONO_ENV) $(MAKE) -C $(SRCDIR)/mono-basic PROFILE_VBNC_FLAGS=/sdkpath:$(BUILDDIR_ABS)/mono-unix-install/lib/mono/4.5-api

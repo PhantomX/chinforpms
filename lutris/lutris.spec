@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           lutris
-Version:        0.5.2
+Version:        0.5.2.1
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -10,9 +10,6 @@ License:        GPLv3
 URL:            https://lutris.net
 
 Source0:        https://github.com/lutris/lutris/archive/v%{version}/%{name}-%{version}.tar.gz
-# Configure limits in systemd
-# This should be only needed with systemd < 240
-Source1:        02-%{name}.conf
 
 Patch0:         %{name}-no-gtk-update-icon-cache.patch
 Patch1:         %{name}-gamemodelib.patch
@@ -90,14 +87,6 @@ rm -f %{buildroot}%{_datadir}/polkit-1/actions/net.lutris.xboxdrv*
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.desktop
 
-# Systemd configuration
-%if 0%{?fedora} && 0%{?fedora} < 30
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
-install -m 644 -p %{S:1} %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
-install -m 644 -p %{S:1} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
-%endif
-
 
 %files
 %license LICENSE
@@ -110,13 +99,12 @@ install -m 644 -p %{S:1} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 %{python3_sitelib}/%{name}-*.egg-info
 %{python3_sitelib}/%{name}/
 %{_metainfodir}/*.appdata.xml
-%if 0%{?fedora} && 0%{?fedora} < 30
-%{_prefix}/lib/systemd/system.conf.d/02-%{name}.conf
-%{_prefix}/lib/systemd/user.conf.d/02-%{name}.conf
-%endif
 
 
 %changelog
+* Fri Jun 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.2.1-100
+- 0.5.2.1
+
 * Tue Apr 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.2-100
 - 0.5.2
 

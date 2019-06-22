@@ -1,6 +1,6 @@
-%global commit 3d735123dd028d1b306cfb0031a4099e3ed4f87f
+%global commit aa2e4043f859225117d652f85b28ab4a6eb6838e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190606
+%global date 20190621
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -130,7 +130,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.10.1
+Version:        56.2.11
 Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -196,6 +196,7 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 # Upstream updates/PRs
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
+Patch450:       %{vc_url}/pull/1037.patch#/%{name}-gh-pull1037.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -409,6 +410,8 @@ This package contains results of tests executed during build.
 %patch418 -p1 -b .mozilla-1336978
 %patch419 -p1 -b .mozilla-1320560
 %patch420 -p1 -b .mozilla-1389436
+
+%patch450 -p1 -b .pull1037
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -1024,6 +1027,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Jun 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.11-1.20190621gitaa2e404
+- New release/snapshot
+- Set ui.use_unity_menubar to false in defaults file
+
 * Fri Jun 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.10.1-1.20190606git3d73512
 - New snapshot
 

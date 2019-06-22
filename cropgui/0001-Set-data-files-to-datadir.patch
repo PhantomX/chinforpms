@@ -1,0 +1,35 @@
+From 98b32543f6cbdcfe9562abc001836054232fcc00 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 22 Jun 2019 00:35:32 -0300
+Subject: [PATCH] Set data files to datadir
+
+---
+ cropgtk.py | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/cropgtk.py b/cropgtk.py
+index e994d41..4f9550a 100755
+--- a/cropgtk.py
++++ b/cropgtk.py
+@@ -15,6 +15,10 @@
+ #    along with this program; if not, write to the Free Software
+ #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 
++import os
++import sys
++sys.path.append(os.path.realpath("_RPM_DATADIR_"))
++
+ from cropgui_common import *
+ from cropgui_common import _
+ 
+@@ -27,7 +31,6 @@ from gi.repository import Gdk as gdk
+ import filechooser
+ from gi.repository import GdkPixbuf as GdkPixbuf
+ 
+-import sys
+ import traceback
+ import imghdr
+ 
+-- 
+2.21.0
+
