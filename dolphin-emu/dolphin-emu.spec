@@ -162,7 +162,7 @@ ln -s %{_includedir}/bochs/* ./
 ln -s %{_includedir}/bochs/disasm/* ./
 popd
 
-RPM_NCPUS=$(echo %{_smp_mflags} | sed 's/-j//')
+RPM_NCPUS=%(echo %{_smp_mflags} | sed 's/-j//')
 sed \
   -e "/LTO/s|-flto|-flto=$RPM_NCPUS|g" \
   -e '/-flto=4/a\  check_and_add_flag(LTO -fdisable-ipa-cdtor)' \

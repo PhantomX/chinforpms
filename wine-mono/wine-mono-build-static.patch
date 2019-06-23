@@ -18,12 +18,3 @@
  
  $(BUILDDIR)/mono-unix/mono/lib/libSystem.Native.so: $(BUILDDIR)/mono-unix/Makefile $(MONO_LIBNATIVE_SRCS)
  	mkdir -p $(@D)
-@@ -339,7 +339,7 @@ clean-build-mono-unix:
- clean-build: clean-build-mono-unix
- 
- $(SRCDIR)/mono-basic/build/config.make: $(SRCDIR)/mono-basic/configure $(BUILDDIR)/mono-unix/.installed
--	cd $(SRCDIR)/mono-basic && $(MONO_ENV) ./configure --prefix=$(BUILDDIR_ABS)/mono-basic-install
-+	cd $(SRCDIR)/mono-basic && $(MONO_ENV) ./configure --prefix=$(BUILDDIR_ABS)/mono-basic-install && sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i libtool
- 
- $(SRCDIR)/mono-basic/.built: $(SRCDIR)/mono-basic/build/config.make $(MONO_BASIC_SRCS) $(BUILDDIR)/.dir
- 	+$(MONO_ENV) $(MAKE) -C $(SRCDIR)/mono-basic PROFILE_VBNC_FLAGS=/sdkpath:$(BUILDDIR_ABS)/mono-unix-install/lib/mono/4.5-api

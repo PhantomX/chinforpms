@@ -26,6 +26,7 @@ Patch0:         0001-Set-data-files-to-datadir.patch
 BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  ImageMagick
 Requires:       ImageMagick
 Requires:       gtk3
 Requires:       libjpeg-turbo-utils
@@ -69,8 +70,10 @@ desktop-file-install \
   --remove-key="X-GNOME-DocPath" \
   %{name}.desktop
 
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/24x24/apps
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/{24x24,16x16}/apps
 install -pm0644 %{name}.png %{buildroot}%{_datadir}/icons/hicolor/24x24/apps/
+convert %{name}.png -filter Lanczos -resize 16x16 \
+  %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 

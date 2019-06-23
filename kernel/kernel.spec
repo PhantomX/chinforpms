@@ -22,6 +22,8 @@ Summary: The Linux kernel
 
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.xz/'
+# for parallel xz processes, replace with 1 to go back to single process
+%global zcpu %(echo %{_smp_mflags} | sed 's|-j||')
 %endif
 
 %global buildid .chinfo
@@ -56,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 14
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -66,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 17ce46d1d8e94510447dd6bb03766369f33562ae
+%global pfcommit dbb5a4a9291af20698e0754f2f15a4a6ce32200b
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -82,7 +84,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id c3db4a3590ec0b518006e9c778864ac203b48c62
+%global opensuse_id f2910422fade67260018eeba7a0d50450650ffb2
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -653,9 +655,6 @@ Patch536: scsi-mpt3sas_ctl-fix-double-fetch-bug-in_ctl_ioctl_main.patch
 
 # CVE-2019-12614 rhbz 1718176 1718185
 Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch 
-
-# Mainlined, https://bugzilla.redhat.com/show_bug.cgi?id=1716289
-Patch540: 0001-netfilter-nat-fix-udp-checksum-corruption.patch
 
 # CVE-2019-10126 rhbz 1716992 1720122
 Patch541: mwifiex-Fix-heap-overflow-in-mwifiex_uap_parse_tail_ies.patch
@@ -1713,7 +1712,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
     fi \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
-    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs xz; \
+    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -P %{zcpu} xz; \
   fi \
 %{nil}
 
@@ -1978,6 +1977,9 @@ fi
 #
 #
 %changelog
+* Sat Jun 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.14-500.chinfo
+- 5.1.14
+
 * Wed Jun 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.12-500.chinfo
 - 5.1.12
 

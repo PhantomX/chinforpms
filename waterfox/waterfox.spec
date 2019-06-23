@@ -639,7 +639,7 @@ echo "Generate big endian version of config/external/icu/data/icud58l.dat"
 # Update the various config.guess to upstream release for aarch64 support
 find ./ -name config.guess -exec cp /usr/lib/rpm/config.guess {} ';'
 
-RPM_SMP_MFLAGS_NCPUS=$(echo %{_smp_mflags} | sed 's|-j||')
+RPM_SMP_MFLAGS_NCPUS=%(echo %{_smp_mflags} | sed 's|-j||')
 
 RPM_NCPUS=1
 # On x86 architectures, Mozilla can build up to 4 jobs at once in parallel,

@@ -155,7 +155,7 @@ sed -i "$LEN r Telegram/gyp/CMakeLists.inj" out/Release/CMakeLists.txt
 export CC=gcc
 export CXX=g++
 
-RPM_NCPUS=$(echo %{_smp_mflags} | sed 's/-j//')
+RPM_NCPUS=%(echo %{_smp_mflags} | sed 's/-j//')
 RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
 export CFLAGS="%{optflags} $RPM_FLTO_FLAGS"
 export CXXFLAGS="%{optflags} $RPM_FLTO_FLAGS"
