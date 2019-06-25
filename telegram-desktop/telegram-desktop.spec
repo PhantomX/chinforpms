@@ -8,7 +8,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 crl
 
-%global commit2 a3fac9db920b167a5f91d678ee7968f100f6fe51
+%global commit2 eeeb4edb2a087c3f8175dafafcad330864d3efc0
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 qtlottie
 
@@ -19,7 +19,7 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.7.9
+Version:        1.7.10
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -212,6 +212,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Tue Jun 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.10-100
+- 1.7.10
+
 * Sun Jun 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.9-100
 - 1.7.9
 
