@@ -20,7 +20,7 @@
 # Filter provides for private modules
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
-# https://github.com/TomaszGasior/gtk3-mushrooms
+# https://github.com/krumelmonster/gtk3-mushrooms
 %global mushroom_ver 3.24.8-1
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
@@ -34,7 +34,7 @@ Epoch:          1
 License:        LGPLv2+
 URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
-Source1:        https://github.com/TomaszGasior/gtk3-mushrooms/archive/%{mushroom_ver}/gtk3-mushrooms-%{mushroom_ver}.tar.gz
+Source1:        https://github.com/krumelmonster/gtk3-mushrooms/archive/%{mushroom_ver}/gtk3-mushrooms-%{mushroom_ver}.tar.gz
 Source2:        chinforpms-adwaita.css
 
 # Revert some good features dropped by upstream (3.10)

@@ -1,6 +1,6 @@
-%global commit aa2e4043f859225117d652f85b28ab4a6eb6838e
+%global commit 63b480e7462482482f6609c305cd793d938f58c0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190621
+%global date 20190625
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -64,24 +64,21 @@ ExcludeArch: armv7hl
 %global build_tests       1
 %endif
 
-%bcond_with debug_build
-%if %{with debug_build}
-%global debug_build       1
-%else
 %global debug_build       0
-%endif
 
 %global disable_elfhack   0
 %if !0%{?build_with_clang} || 0%{?fedora} > 28
 %global disable_elfhack   1
 %endif
 
+%global build_stylo       1
+%global build_rust_simd   1
 # Set to build with pinned rust version
 # This enables stylo build when default rust version is not supported
 # and a downgraded rust package exists
-%global build_with_pinned_rust 1
-%global rust_build_min_ver 1.32
-%global rust_build_min_nover 1.33
+%global build_with_pinned_rust 0
+%global rust_build_min_ver 1.35
+%global rust_build_min_nover 1.36
 
 %global default_bookmarks_file  %{_datadir}/bookmarks/default-bookmarks.html
 %global waterfox_app_id  \{ec8030f7-c20a-464f-9b0e-13a3a9e97384\}
@@ -131,7 +128,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.11
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfoxproject.org
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -155,7 +152,6 @@ Source23:       waterfox.1
 Source26:       distribution.ini
 
 # Build patches
-Patch0:         firefox-install-dir.patch
 Patch3:         mozilla-build-arm.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=814879#c3
 Patch18:        xulrunner-24.0-jemalloc-ppc.patch
@@ -196,7 +192,6 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 # Upstream updates/PRs
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
-Patch450:       %{vc_url}/pull/1037.patch#/%{name}-gh-pull1037.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -363,12 +358,6 @@ This package contains results of tests executed during build.
   rm -f browser/extensions/langpack-*.xpi
 %endif
 
-# Build patches, can't change backup suffix from default because during build
-# there is a compare of config and js/config directories and .orig suffix is
-# ignored during this compare.
-%patch0  -p1
-
-
 %patch18 -p1 -b .jemalloc-ppc
 %patch20 -p1 -b .prbool
 %ifarch s390
@@ -411,8 +400,6 @@ This package contains results of tests executed during build.
 %patch419 -p1 -b .mozilla-1320560
 %patch420 -p1 -b .mozilla-1389436
 
-%patch450 -p1 -b .pull1037
-
 # Debian extension patch
 %patch500 -p1 -b .440908
 
@@ -443,7 +430,7 @@ done
 # 2: no apply
 # 3: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1393283 1395486 1452576 1453127 1466606 \
+  702179 991253 1021761 1144632 1288587 1393283 1395486 1433747 1452576 1453127 1466606 \
   1388744 1413143 \
   1447519
 do
@@ -603,11 +590,15 @@ echo "ac_add_options --without-system-icu" >> .mozconfig
 echo "ac_add_options --disable-ion" >> .mozconfig
 %endif
 
-%if 0%{?build_with_pinned_rust}
+%if 0%{?build_stylo}
 echo "ac_add_options --enable-stylo=build" >> .mozconfig
-echo "ac_add_options --enable-rust-simd" >> .mozconfig
 %else
 echo "ac_add_options --disable-stylo" >> .mozconfig
+%endif
+
+%if 0%{?build_rust_simd}
+echo "ac_add_options --enable-rust-simd" >> .mozconfig
+%else
 echo "ac_add_options --disable-rust-simd" >> .mozconfig
 %endif
 
@@ -675,6 +666,9 @@ MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -Wformat-security -Wformat -Werror=format-security
 %else
 # Workaround for mozbz#1531309
 MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-Werror=format-security//')
+%endif
+%if 0%{?fedora} > 30
+MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -fpermissive"
 %endif
 %if 0%{?build_with_clang}
 # Fedora's default compiler flags conflict with what clang supports
@@ -749,21 +743,21 @@ export LIBDIR='%{_libdir}'
 export MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS"
 export MOZ_SERVICES_SYNC="1"
 export MOZ_NOSPAM=1
-export STRIP=/bin/true
+export STRIP=%{_prefix}/bin/true
 %if 0%{?build_with_lto}
 export TMPDIR="$(pwd)/tmpdir"
 mkdir -p "$TMPDIR"
 %endif
 %if 0%{?build_with_pgo}
-SHELL=/usr/bin/bash GDK_BACKEND=x11 xvfb-run ./mach build %{?verbose_mach}
+SHELL=%{_prefix}/bin/bash GDK_BACKEND=x11 xvfb-run ./mach build %{?verbose_mach}
 %else
-SHELL=/usr/bin/bash ./mach build %{?verbose_mach}
+SHELL=%{_prefix}/bin/bash ./mach build %{?verbose_mach}
 %endif
 
 %if %{?run_tests}
 %if 0%{?system_nss}
-ln -s /usr/bin/certutil objdir/dist/bin/certutil
-ln -s /usr/bin/pk12util objdir/dist/bin/pk12util
+ln -s %{_prefix}/bin/certutil objdir/dist/bin/certutil
+ln -s %{_prefix}/bin/pk12util objdir/dist/bin/pk12util
 
 %endif
 mkdir test_results
@@ -810,7 +804,8 @@ desktop-file-install --dir %{buildroot}%{_datadir}/applications %{SOURCE20}
 
 # set up the waterfox start script
 rm -rf %{buildroot}%{_bindir}/waterfox
-cat %{SOURCE21} > %{buildroot}%{_bindir}/waterfox
+sed -e 's,/__PREFIX__,%{_prefix},g' %{SOURCE21} \
+  > %{buildroot}%{_bindir}/waterfox
 chmod 755 %{buildroot}%{_bindir}/waterfox
 
 install -p -D -m 644 %{SOURCE23} %{buildroot}%{_mandir}/man1/waterfox.1
@@ -818,7 +813,7 @@ install -p -D -m 644 %{SOURCE23} %{buildroot}%{_mandir}/man1/waterfox.1
 rm -f %{buildroot}/%{mozappdir}/waterfox-config
 rm -f %{buildroot}/%{mozappdir}/update-settings.ini
 
-for s in 16 22 24 32 48 256; do
+for s in 16 22 24 32 48 64 128 256; do
   mkdir -p %{buildroot}%{_datadir}/icons/hicolor/${s}x${s}/apps
   cp -p browser/branding/unofficial/default${s}.png \
     %{buildroot}%{_datadir}/icons/hicolor/${s}x${s}/apps/waterfox.png
@@ -848,7 +843,7 @@ cat > %{buildroot}%{_metainfodir}/%{name}.appdata.xml <<EOF
     </p>
     <!-- FIXME: Needs another couple of paragraphs -->
   </description>
-  <url type="homepage">http://www.mozilla.org/</url>
+  <url type="homepage">https://www.waterfox.net/</url>
   <!-- FIXME: change this to an upstream email address for spec updates
   <updatecontact>someone_who_cares@upstream_project.org</updatecontact>
    -->
@@ -987,8 +982,6 @@ fi
 # That's Windows only
 %ghost %{mozappdir}/browser/features/aushelper@mozilla.org.xpi
 %attr(644, root, root) %{mozappdir}/browser/blocklist.xml
-%dir %{mozappdir}/browser/extensions
-%{mozappdir}/browser/extensions/*
 %if %{build_langpacks}
 %dir %{langpackdir}
 %endif
@@ -1027,6 +1020,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue Jun 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.11-2.20190625git63b480e
+- New snapshot
+- stylo and rust-simd switches
+
 * Fri Jun 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.11-1.20190621gitaa2e404
 - New release/snapshot
 - Set ui.use_unity_menubar to false in defaults file

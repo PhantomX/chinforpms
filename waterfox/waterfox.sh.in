@@ -39,12 +39,12 @@ cmdname=`basename $0`
 MOZ_ARCH=$(uname -m)
 case $MOZ_ARCH in
 	x86_64 | s390x | sparc64)
-		MOZ_LIB_DIR="/usr/lib64"
-		SECONDARY_LIB_DIR="/usr/lib"
+		MOZ_LIB_DIR="/__PREFIX__/lib64"
+		SECONDARY_LIB_DIR="/__PREFIX__/lib"
 		;;
 	* )
-		MOZ_LIB_DIR="/usr/lib"
-		SECONDARY_LIB_DIR="/usr/lib64"
+		MOZ_LIB_DIR="/__PREFIX__/lib"
+		SECONDARY_LIB_DIR="/__PREFIX__/lib64"
 		;;
 esac
 
@@ -70,7 +70,7 @@ MOZ_LAUNCHER="$MOZ_DIST_BIN/run-mozilla.sh"
 ## Set MOZ_GRE_CONF
 ##
 MOZ_GRE_CONF=/etc/gre.d/gre.conf
-if [ "$MOZ_LIB_DIR" == "/usr/lib64" ]; then
+if [ "$MOZ_LIB_DIR" == "/__PREFIX__/lib64" ]; then
   MOZ_GRE_CONF=/etc/gre.d/gre64.conf
 fi
 export MOZ_GRE_CONF
@@ -98,7 +98,7 @@ export MOZ_PLUGIN_PATH
 ##
 ## Set MOZ_APP_LAUNCHER for gnome-session
 ##
-export MOZ_APP_LAUNCHER="/usr/bin/waterfox"
+export MOZ_APP_LAUNCHER="/__PREFIX__/bin/waterfox"
 
 ##
 ## Set FONTCONFIG_PATH for Xft/fontconfig
@@ -157,7 +157,7 @@ MOZILLA_DOWN=0
 if ! [ $MOZ_DISABLE_LANGPACKS ] || [ $MOZ_DISABLE_LANGPACKS -eq 0 ]; then
     if [ -x $MOZ_DIST_BIN/$MOZ_WATERFOX_FILE ]; then
         # Is waterfox running?
-        /usr/bin/pidof waterfox > /dev/null 2>&1
+        /__PREFIX__/bin/pidof waterfox > /dev/null 2>&1
         MOZILLA_DOWN=$?
     fi
 fi
@@ -181,8 +181,8 @@ if [ $MOZILLA_DOWN -ne 0 ]; then
     CURRENT_LOCALE=${CURRENT_LOCALE:-$LANG}
 
     # Try with a local variant first, then without a local variant
-    SHORTMOZLOCALE=`echo $CURRENT_LOCALE | sed "s|_\([^.]*\).*||g"`
-    MOZLOCALE=`echo $CURRENT_LOCALE | sed "s|_\([^.]*\).*|-\1|g"`
+    SHORTMOZLOCALE=`echo $CURRENT_LOCALE | sed "s|_\([^.]*\).*||g" | sed "s|\..*||g"`
+    MOZLOCALE=`echo $CURRENT_LOCALE | sed "s|_\([^.]*\).*|-\1|g" | sed "s|\..*||g"`
 
     function create_langpack_link() {
         local language=$*

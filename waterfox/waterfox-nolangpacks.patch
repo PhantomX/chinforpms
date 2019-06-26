@@ -103,7 +103,7 @@ diff -up Waterfox-7b7aa8b4b5d17ce21072054285618fd6434e5482/browser/installer/pac
 --- Waterfox-7b7aa8b4b5d17ce21072054285618fd6434e5482/browser/installer/package-manifest.in.nolangpacks	2017-12-13 19:42:11.000000000 -0200
 +++ Waterfox-7b7aa8b4b5d17ce21072054285618fd6434e5482/browser/installer/package-manifest.in	2017-12-14 00:42:50.480760374 -0200
 @@ -625,7 +625,6 @@
- @RESPATH@/browser/chrome/icons/default/default48.png
+ @RESPATH@/browser/chrome/icons/default/default128.png
  @RESPATH@/browser/chrome/icons/default/default256.png
  #endif
 -@RESPATH@/browser/features/*
