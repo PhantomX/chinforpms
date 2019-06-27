@@ -982,21 +982,17 @@ fi
 # That's Windows only
 %ghost %{mozappdir}/browser/features/aushelper@mozilla.org.xpi
 %attr(644, root, root) %{mozappdir}/browser/blocklist.xml
+%dir %{mozappdir}/browser/extensions
+%{mozappdir}/browser/extensions/*
 %if %{build_langpacks}
 %dir %{langpackdir}
 %endif
 %{mozappdir}/browser/omni.ja
-%{mozappdir}/browser/icons
 %{mozappdir}/chrome.manifest
 %{mozappdir}/run-mozilla.sh
 %{mozappdir}/application.ini
 %exclude %{mozappdir}/removed-files
-%{_datadir}/icons/hicolor/16x16/apps/waterfox.png
-%{_datadir}/icons/hicolor/22x22/apps/waterfox.png
-%{_datadir}/icons/hicolor/24x24/apps/waterfox.png
-%{_datadir}/icons/hicolor/256x256/apps/waterfox.png
-%{_datadir}/icons/hicolor/32x32/apps/waterfox.png
-%{_datadir}/icons/hicolor/48x48/apps/waterfox.png
+%{_datadir}/icons/hicolor/*/apps/waterfox.png
 %{mozappdir}/*.so
 %{mozappdir}/gtk2/*.so
 %{mozappdir}/defaults/pref/channel-prefs.js
