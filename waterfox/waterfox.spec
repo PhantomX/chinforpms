@@ -67,9 +67,6 @@ ExcludeArch: armv7hl
 %global debug_build       0
 
 %global disable_elfhack   0
-%if !0%{?build_with_clang} || 0%{?fedora} > 28
-%global disable_elfhack   1
-%endif
 
 %global build_stylo       1
 %global build_rust_simd   1

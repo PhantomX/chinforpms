@@ -32,6 +32,8 @@ Requires:       python3-markdown
 Requires:       python3-pygments
 Requires:       python3-textile
 
+%{?python_provide:%python_provide python3-markups}
+
 
 %description -n python3-markups
 This module provides a Python 3 wrapper around the various text markup
