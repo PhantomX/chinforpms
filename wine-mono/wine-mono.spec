@@ -61,6 +61,9 @@ BuildRequires:  /usr/bin/pathfix.py
 
 Requires: wine-filesystem
 
+# Bundles FAudio, libtheorafile, libmojoshader, SDL2, SDL2_image
+
+
 %description
 Windows Mono library required for Wine.
 
@@ -108,7 +111,7 @@ cp -r %{name}-%{version}/* %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/
 %else
 
 cp -r image/* %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/
-find %{buildroot}%{_datadir}/wine/mono/%{name}-%{version} -name '*.debug' -delete
+
 # prep licenses
 cp mono/LICENSE mono-LICENSE
 cp mono/COPYING.LIB mono-COPYING.LIB
