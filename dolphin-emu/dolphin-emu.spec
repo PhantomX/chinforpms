@@ -4,9 +4,9 @@
 %global with_egl 1
 %global with_llvm 0
 
-%global commit 00ecfb3c598ec08e5863db9c697e91ab5a4965bf
+%global commit 0a7395bfba99719f71de5186a9916e66c1901f37
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190530
+%global date 20190630
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,7 +19,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -103,6 +103,7 @@ Requires:       hicolor-icon-theme
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       bundled(soundtouch) = 1.9.2
+Provides:       bundled(fmt) = 5.3.0
 
 
 #Most of below is taken bundled spec file in source#
@@ -137,9 +138,6 @@ This package provides the data files for dolphin-emu.
 %else
 %autosetup -n %{pkgname}-%{version} -p1
 %endif
-
-#Patch for GCC8
-sed -i 's/_xgetbv(/de_xgetbv(/g' Source/Core/Common/x64CPUDetect.cpp
 
 #Allow building with cmake macro
 sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
@@ -211,6 +209,9 @@ popd
 %install
 %make_install -C %{_target_platform}
 
+mkdir -p %{buildroot}%{_udevrulesdir}/
+install -pm0644 Data/51-usb-device.rules %{buildroot}%{_udevrulesdir}/
+
 #Install appdata.xml
 install -p -D -m 0644 %{SOURCE1} \
   %{buildroot}/%{_datadir}/appdata/%{name}.appdata.xml
@@ -248,9 +249,13 @@ appstream-util validate-relax --nonet \
 #Already packaged:
 %exclude %{_datadir}/%{name}/sys/GC/font-licenses.txt
 %{_datadir}/%{name}/
+%{_udevrulesdir}/*.rules
 
 
 %changelog
+* Tue Jul 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-102.20190630git0a7395b
+- New snapshot
+
 * Thu May 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-101.20190530git00ecfb3
 - New snapshot
 
