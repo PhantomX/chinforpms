@@ -20,7 +20,7 @@
 
 Name:           telegram-desktop
 Version:        1.7.10
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -212,6 +212,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.10-101
+- Rebuild (qt5)
+
 * Tue Jun 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.10-100
 - 1.7.10
 

@@ -1,7 +1,9 @@
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
 
+%ifarch %{ix86} x86_64
 %global wine_mingw 0
+%endif
 %global no64bit   0
 %global winegecko 2.47
 %global winemono  4.9.0
@@ -176,8 +178,10 @@ BuildRequires:  clang >= 5.0
 BuildRequires:  gcc
 %endif
 %if 0%{?wine_mingw}
+%ifarch %{ix86} x86_64
 BuildRequires:  mingw32-gcc
 BuildRequires:  mingw64-gcc
+%endif
 %endif
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
@@ -791,7 +795,17 @@ export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`"
 %endif
 
 %if 0%{?wine_mingw}
-export LDFLAGS="`echo %{build_ldflags} | sed -e 's/-Wl,-z,relro//'`"
+# mingw linker do not support -z,relro and now
+export LDFLAGS="`echo %{build_ldflags} | sed -e 's/-Wl,-z,relro//' -e 's/-Wl,-z,now//'`"
+
+# Put them again on gcc
+mkdir bin
+cat > bin/gcc <<'EOF'
+#!/usr/bin/sh
+exec %{_bindir}/gcc -Wl,-z,relro%{?_hardened_build: -Wl,-z,now} "$@"
+EOF
+chmod 0755 bin/gcc
+export PATH=$(pwd)/bin:$PATH
 %endif
 
 %configure \

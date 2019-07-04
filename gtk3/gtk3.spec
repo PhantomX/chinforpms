@@ -25,7 +25,7 @@
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name:           gtk3
-Version:        3.24.9
+Version:        3.24.10
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -383,6 +383,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Thu Jul 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.10-100
+- 3.24.10
+
 * Tue Jun 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.9-100
 - 3.24.9
 

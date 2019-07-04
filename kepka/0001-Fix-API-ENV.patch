@@ -1,0 +1,27 @@
+From a413ec11bf819a4042adcda69a4287ac6005e7a4 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 3 Jul 2019 08:34:22 -0300
+Subject: [PATCH] Fix API ENV
+
+---
+ Telegram/CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Telegram/CMakeLists.txt b/Telegram/CMakeLists.txt
+index 65f6f4b..861ff22 100644
+--- a/Telegram/CMakeLists.txt
++++ b/Telegram/CMakeLists.txt
+@@ -11,8 +11,8 @@ endif()
+ ## API tokens
+ ##================================================
+ if (DEFINED ENV{API_ID} AND DEFINED ENV{API_HASH})
+-    set(API_ID ENV{API_ID})
+-    set(API_HASH ENV{API_HASH})
++    set(API_ID $ENV{API_ID})
++    set(API_HASH $ENV{API_HASH})
+ else()
+     message(WARNING "No custom API tokens detected. You must grab your own tokens from https://core.telegram.org/api/obtaining_api_id and export them using environment options. Will use default for testing purposes.")
+     set(API_ID 17349)
+-- 
+2.21.0
+

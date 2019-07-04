@@ -58,17 +58,17 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 7
+%global post_factum 8
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e73ddee520f1b0c3b48fa7b3c24fdecae45fc7d8
+%global pfcommit e133ce51a9d21401957816263180008a4591fd80
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -84,7 +84,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id e22274311ea2d45083ef2d7a9f019a21c7701b87
+%global opensuse_id 2af8a2224f4156e4762b8d19b3ed64b47ba1d941
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -595,8 +595,6 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-Patch312: arm64-rock960-enable-tsadc.patch
-
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 # Tegra bits
@@ -664,7 +662,9 @@ Patch542: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
 
 # Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
 Patch544: drm-panel-orientation-quirks.patch
-Patch545: efi-bgrt-acpi6.2-support.patch 
+Patch545: efi-bgrt-acpi6.2-support.patch
+
+Patch546: netfilter-ctnetlink-Fix-regression-in-conntrack-entry.patch
 
 ### Extra
 
@@ -1977,6 +1977,10 @@ fi
 #
 #
 %changelog
+* Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.16-500.chinfo
+- 5.1.16 - pf8
+- f30 sync
+
 * Tue Jun 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.15-500.chinfo
 - 5.1.15
 

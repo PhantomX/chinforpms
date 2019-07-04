@@ -1,22 +1,39 @@
+%global commit bd5484299779080bd24e97b0a1f50603447a623a
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20190528
+%global with_snapshot 1
+
+%global apiid 17349
+%global apihash 344583e45741c457fe1862106095a5eb
+
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
 
 Name:           kepka
 # If rc, use "~" instead "-", as ~rc1
 Version:        2.0.0~rc2
-Release:        1%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Unofficial Telegram desktop messaging app
 
 License:        GPLv3+
 URL:            https://github.com/procxx/%{name}
 
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
+%if 0%{?with_snapshot}
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        %{url}/archive/v%{ver}/%{name}-%{ver}.tar.gz
+%endif
 Source1:        thunar-sendto-%{name}.desktop
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         %{name}-system-fonts.patch
 Patch2:         0001-Do-not-show-unread-counter-on-muted-chats.patch
 Patch3:         0001-Always-display-scrollbars.patch
+Patch4:         0001-Fix-API-ENV.patch
 
 ExclusiveArch:  i686 x86_64
 
@@ -66,7 +83,11 @@ personal or business messaging needs.
 
 %prep
 # Unpacking main source archive...
-%autosetup -p1 -n %{name}-%{ver}
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+%else
+%autosetup -n %{name}-%{ver} -p1
+%endif
 
 rm -rf Telegram/ThirdParty/minizip
 
@@ -84,6 +105,9 @@ RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
 export CFLAGS="%{optflags} $RPM_FLTO_FLAGS"
 export CXXFLAGS="%{optflags} $RPM_FLTO_FLAGS"
 export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
+
+export API_ID=%{apiid}
+export API_HASH=%{apihash}
 
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
@@ -125,6 +149,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0~rc2-2.20190528gitbd54842
+- Snapshot
+
 * Fri May 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0~rc2-1
 - chinforpms
 
