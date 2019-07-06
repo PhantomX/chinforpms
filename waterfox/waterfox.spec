@@ -126,7 +126,7 @@ Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.11
 Release:        2%{?gver}%{?dist}
-URL:            https://www.waterfoxproject.org
+URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
 %global vc_url  https://github.com/MrAlex94/Waterfox
@@ -269,8 +269,9 @@ BuildRequires:  pkgconfig(icu-i18n)
 BuildRequires:  yasm
 BuildRequires:  llvm
 BuildRequires:  llvm-devel
+# clang needed even with gcc
 BuildRequires:  clang
-BuildRequires:  clang-libs
+BuildRequires:  clang-devel
 %if 0%{?build_with_clang}
 BuildRequires:  lld
 BuildRequires:  libstdc++-static
@@ -290,6 +291,7 @@ Requires:       p11-kit-trust
 Requires:       nspr >= %{nspr_build_version}
 Requires:       nss >= %{nss_build_version}
 %endif
+BuildRequires:  perl-interpreter
 BuildRequires:  python2-devel
 Requires:       u2f-hidraw-policy
 
@@ -320,7 +322,6 @@ BuildRequires:  (cargo >= %{rust_build_min_ver} with cargo < %{rust_build_min_no
 BuildRequires:  rust
 BuildRequires:  cargo
 %endif
-BuildRequires:  clang-devel
 
 Obsoletes:      mozilla <= 37:1.7.13
 Provides:       webclient
@@ -698,12 +699,12 @@ MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/ -g\b/ -g1/')
 # (OOM when linking, rhbz#1238225)
 export MOZ_DEBUG_FLAGS=" "
 %endif
-%ifarch %{arm}
+%ifarch %{arm} %{ix86}
 MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/ -g\b/-g0 /')
 export MOZ_DEBUG_FLAGS=" "
 %endif
 %if !0%{?build_with_clang}
-%ifarch s390 ppc aarch64
+%ifarch s390 ppc aarch64 %{ix86}
 MOZ_LINK_FLAGS="-Wl,--no-keep-memory -Wl,--reduce-memory-overheads"
 %endif
 %ifarch %{arm}
