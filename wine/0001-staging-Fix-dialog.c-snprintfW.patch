@@ -1,0 +1,25 @@
+From eddf4a383b0983a29ae95ff6f2293a1c76d3fa07 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 6 Jul 2019 22:33:43 -0300
+Subject: [PATCH] staging: Fix dialog.c snprintfW
+
+---
+ ...1-setupapi-Add-support-for-IDF_CHECKFIRST-flag-in-Setu.patch | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/patches/setupapi-SetupPromptForDisk/0001-setupapi-Add-support-for-IDF_CHECKFIRST-flag-in-Setu.patch b/patches/setupapi-SetupPromptForDisk/0001-setupapi-Add-support-for-IDF_CHECKFIRST-flag-in-Setu.patch
+index d6d7f03..67aec6f 100644
+--- a/patches/setupapi-SetupPromptForDisk/0001-setupapi-Add-support-for-IDF_CHECKFIRST-flag-in-Setu.patch
++++ b/patches/setupapi-SetupPromptForDisk/0001-setupapi-Add-support-for-IDF_CHECKFIRST-flag-in-Setu.patch
+@@ -23,7 +23,7 @@ index 24a46e8..daacaf5 100644
+ +
+ +        if (lstrlenW(PathToSource) + 1 + lstrlenW(FileSought) < sizeof(filepath))
+ +        {
+-+            snwprintf(filepath, MAX_PATH, format, PathToSource, FileSought);
+++            snprintfW(filepath, MAX_PATH, format, PathToSource, FileSought);
+ +
+ +            if (GetFileAttributesW(filepath) != INVALID_FILE_ATTRIBUTES)
+ +            {
+-- 
+2.21.0
+
