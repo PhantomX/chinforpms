@@ -33,7 +33,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 4.12
+%global wine_stagingver 4.12.1
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -64,7 +64,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.12
+Version:        4.12.1
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -108,10 +108,6 @@ Source113:      wine-taskmgr.desktop
 
 # wine bugs/upstream
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-Patch100:       %{whq_url}/e245df2a0c8d1270a4cc0129407072c917a0c325#/%{name}-whq-e245df2.patch
-Patch101:       %{whq_url}/862cc117c1d6dfcd313f7318fa60974cdb1bfe40#/%{name}-whq-862cc11.patch
-Patch102:       %{whq_url}/83f04e3850532c3963090f7467a4e96713eee7ec#/%{name}-whq-83f04e3.patch
-Patch103:       %{whq_url}/40a83b2ff3bca9ef58d03400a3c8e4aac94a0dc7#/%{name}-whq-40a83b2.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -168,7 +164,6 @@ Patch1000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
-Patch5001:      0001-staging-Fix-dialog.c-snprintfW.patch
 
 %endif #{?wine_staging}
 
@@ -716,10 +711,6 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
-%patch103 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -739,7 +730,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
 %patch5000 -p1
-%patch5001 -p1
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
@@ -2368,6 +2358,9 @@ fi
 
 
 %changelog
+* Sun Jul 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-100
+- 4.12.1
+
 * Sat Jul 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12-100
 - 4.12
 - f30 sync
