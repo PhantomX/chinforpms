@@ -15,15 +15,15 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 1
+%global base_sublevel 2
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
-%global opensuse_id 2af8a2224f4156e4762b8d19b3ed64b47ba1d941
+%global opensuse_id b36439f4e2e3b756e49409616053e3a88688c927
 
 # Do we have a -stable update to apply?
-%global stable_update 16
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -113,9 +113,6 @@ Source5000: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}.xz
 Patch0: 0001-iio-Use-event-header-from-kernel-tree.patch
 
 # rpmlint cleanup
-Patch1: 0001-perf-Remove-FSF-address.patch
-Patch3: 0001-tools-include-Sync-vmx.h-header-for-FSF-removal.patch
-Patch4: 0001-tools-lib-Remove-FSF-address.patch
 Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
 
 # Extra
@@ -226,9 +223,6 @@ cd linux-%{kversion}
 %endif
 
 %patch0 -p1
-%patch1 -p1
-%patch3 -p1
-%patch4 -p1
 %patch6 -p1
 
 %patch1000 -p1
@@ -380,8 +374,9 @@ popd
 pushd tools/bpf/bpftool
 make DESTDIR=%{buildroot} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
 # man-pages packages this (rhbz #1686954)
-#FIXME: uncomment when man-pages 5.00
-#rm -f %{buildroot}%{_mandir}/man7/bpf-helpers.7
+%if 0%{?fedora} > 30
+rm -f %{buildroot}%{_mandir}/man7/bpf-helpers.7
+%endif
 popd
 pushd tools/lib/bpf
 make DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} V=1 install install_headers
@@ -456,6 +451,7 @@ popd
 %files -n bpftool
 %{_sbindir}/bpftool
 %{_sysconfdir}/bash_completion.d/bpftool
+%{_mandir}/man8/bpftool-btf.8.gz
 %{_mandir}/man8/bpftool-cgroup.8.gz
 %{_mandir}/man8/bpftool-map.8.gz
 %{_mandir}/man8/bpftool-net.8.gz
@@ -463,25 +459,32 @@ popd
 %{_mandir}/man8/bpftool-perf.8.gz
 %{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool.8.gz
+%if 0%{?fedora} < 31
 %{_mandir}/man7/bpf-helpers.7.gz
+%endif
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf
 %{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.0.2
+%{_libdir}/libbpf.so.0.0.3
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf-devel
 %{_libdir}/libbpf.a
 %{_libdir}/libbpf.so
+%{_libdir}/pkgconfig/libbpf.pc
 %{_includedir}/bpf/bpf.h
 %{_includedir}/bpf/btf.h
 %{_includedir}/bpf/libbpf.h
+%{_includedir}/bpf/libbpf_util.h
 %{_includedir}/bpf/xsk.h
 %license linux-%{kversion}/COPYING
 
 
 %changelog
+* Mon Jul 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.0-500.chinfo
+- 5.2.0
+
 * Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.16-500.chinfo
 - 5.1.16
 

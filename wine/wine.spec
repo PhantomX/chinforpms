@@ -40,7 +40,7 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id a324e1942c50fed1ff7e0ae4271baadf82552a55
+%global tkg_id 2f43a4b68cd1f6996b661dff4f99396639d7b647
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global pba 0
 %if !0%{?wine_staging}
@@ -798,8 +798,13 @@ export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`"
 %endif
 
 %if 0%{?wine_mingw}
-# mingw compiler do not support plugins
-export CROSSCFLAGS="`echo $CFLAGS | sed -e 's/-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1//'`"
+# mingw compiler do not support plugins and some flags are crashing it
+export CROSSCFLAGS="`echo $CFLAGS | sed \
+  -e 's/-fstack-protector-strong//' \
+  -e 's,-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1,,' \
+  -e 's/-fstack-clash-protection//' \
+  -e 's/-fcf-protection//' \
+  `"
 # mingw linker do not support -z,relro and now
 export LDFLAGS="`echo %{build_ldflags} | sed -e 's/-Wl,-z,relro//' -e 's/-Wl,-z,now//'`"
 
@@ -847,8 +852,12 @@ export PATH=$(pwd)/bin:$PATH
         UPDATE_DESKTOP_DATABASE=/bin/true
 
 %if 0%{?wine_mingw}
-%{mingw_strip} --strip-unneeded %{buildroot}%{_libdir}/wine/*.dll
-%{mingw_strip} --strip-unneeded %{buildroot}%{_libdir}/wine/*.exe
+# Extract mingw debuginfo and remove it.
+# too much work to put them together with default debuginfo packages
+mv %{buildroot}%{_libdir}/wine/fakedlls tmp_fakedlls
+RPM_BUILD_ROOT=%{buildroot} /usr/lib/rpm/mingw-find-debuginfo.sh %{_builddir}/wine-%{ver} mingw
+rm -f %{buildroot}%{_libdir}/wine/*.debug
+mv tmp_fakedlls %{buildroot}%{_libdir}/wine/fakedlls
 %endif
 
 # setup for alternatives usage

@@ -173,14 +173,13 @@ new file mode 100644
 index 000000000..3a98b10a1
 --- /dev/null
 +++ b/Telegram/gyp/CMakeLists.inj
-@@ -0,0 +1,7 @@
+@@ -0,0 +1,6 @@
 +set_target_properties(Telegram PROPERTIES SKIP_BUILD_RPATH TRUE)
 +include(../../Telegram/gyp/PrecompiledHeader.cmake)
 +add_precompiled_header(Telegram ../../Telegram/SourceFiles/stdafx.h)
 +add_precompiled_header(lib_export ../../Telegram/SourceFiles/export/export_pch.h)
 +add_precompiled_header(lib_base ../../Telegram/SourceFiles/base/base_pch.h)
 +add_precompiled_header(lib_storage ../../Telegram/SourceFiles/storage/storage_pch.h)
-+add_precompiled_header(lib_lottie ../../Telegram/SourceFiles/lottie/lottie_pch.h)
 diff --git a/Telegram/gyp/PrecompiledHeader.cmake b/Telegram/gyp/PrecompiledHeader.cmake
 index dfe1193be..75bcd675d 100644
 --- a/Telegram/gyp/PrecompiledHeader.cmake
@@ -368,27 +367,24 @@ index 6ca841f17..515c238a0 100644
 -      'openssl.gypi',
        'qt.gypi',
        'telegram_linux.gypi',
-       'pch.gypi',
-@@ -43,16 +42,14 @@
+     ],
+@@ -43,13 +42,12 @@
      'include_dirs': [
        '<(src_loc)',
        '<(SHARED_INTERMEDIATE_DIR)',
 -      '<(libs_loc)/range-v3/include',
 -      '<(libs_loc)/zlib',
-       '<(lottie_loc)',
-       '<(lottie_loc)/bodymovin',
-       '<(lottie_loc)/imports',
-       '<(lottie_helper_loc)',
+       '<(libs_loc)/ffmpeg',
+       '<(rlottie_loc)',
+       '<(lz4_loc)',
 -      '<(submodules_loc)/GSL/include',
 -      '<(submodules_loc)/variant/include',
 +      '<!(rpm --eval "%{_includedir}")/guidelines-support-library',
 +      '<!(rpm --eval "%{_includedir}")/mapbox',
 +      '<!(rpm --eval "%{_includedir}")',
        '<(submodules_loc)/crl/src',
--      '<(submodules_loc)/rapidjson/include',
      ],
      'sources': [
-       # interface for tdesktop
 diff --git a/Telegram/gyp/lib_scheme.gyp b/Telegram/gyp/lib_scheme.gyp
 index b52a9d071..4850157a8 100644
 --- a/Telegram/gyp/lib_scheme.gyp
@@ -708,7 +704,7 @@ index ffe0e5a96..9bc686d44 100644
        'pkgconfig_libs': [
  # In order to work libxkbcommon must be linked statically,
  # PKGCONFIG links it like "-L/usr/local/lib -lxkbcommon"
-@@ -18,51 +18,28 @@
+@@ -18,51 +18,29 @@
  # QApplication() -> createPlatformIntegration -> QXcbIntegrationPlugin::create
          #'xkbcommon',
        ],
@@ -773,10 +769,11 @@ index ffe0e5a96..9bc686d44 100644
 +      'tgvoip',
 +      'lzma',
 +      'xxhash',
++      'dl',
  #      '<!(pkg-config 2> /dev/null --libs <@(pkgconfig_libs))',
      ],
      'cflags_cc': [
-@@ -70,35 +47,23 @@
+@@ -71,35 +48,23 @@
        '-Wno-maybe-uninitialized',
      ],
      'ldflags': [

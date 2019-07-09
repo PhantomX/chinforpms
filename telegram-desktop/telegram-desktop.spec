@@ -4,23 +4,31 @@
 %global apihash dfbe1bc42dc9d20507e17d1814cc2f0a
 
 # Git revision of crl...
-%global commit1 d259aebc11df52cb6ff8c738580dc4d8f245d681
+%global commit1 9ea870038a2a667add7f621be6252db909068386
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 crl
 
-%global commit2 eeeb4edb2a087c3f8175dafafcad330864d3efc0
+%global commit2 40ccf084445c60a32d72d4811edf0efd0580dcaa
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 qtlottie
+%global srcname2 rlottie
+
+%global commit3 9a2a9f2d0f38a39c5ec9b329042ca5f060b058e0
+%global shortcommit3 %(c=%{commit2}; echo ${c:0:7})
+%global srcname3 lz4
 
 # Enable or disable build with GTK support...
 %bcond_with gtk3
+
+%ifarch x86_64
+%global build_with_lto    1
+%endif
 
 # Decrease debuginfo verbosity to reduce memory consumption...
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.7.10
-Release:        101%{?dist}
+Version:        1.7.14
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -39,14 +47,18 @@ ExclusiveArch:  i686 x86_64
 
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
 Source1:        https://github.com/telegramdesktop/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        https://github.com/telegramdesktop/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        thunar-sendto-%{name}.desktop
+Source2:        https://github.com/john-preston/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        https://github.com/lz4/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source20:       thunar-sendto-%{name}.desktop
 
 Patch0:         %{name}-build-fixes.patch
 Patch1:         %{name}-system-fonts.patch
 Patch2:         %{name}-unbundle-minizip.patch
 Patch3:         0001-Temporary-fix-for-gcc-9.1.1-regression.patch
 Patch4:         0001-Unset-QT-scale-env-vars.patch
+# Patches for Arch
+Patch5:         tdesktop-ffmpeg-fix-convertFromARGB32PM.patch
+Patch6:         tdesktop-rlottie-static-qt.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -62,7 +74,7 @@ Requires:       hicolor-icon-theme
 Requires:       open-sans-fonts
 
 # Special patched version of qtlottie required.
-Provides:       bundled(qtlottie) = 0
+Provides:       bundled(rlottie) = 0
 
 # Compilers and tools...
 BuildRequires:  desktop-file-utils
@@ -124,12 +136,15 @@ pushd Telegram/ThirdParty
     rm -rf %{srcname2}
     tar -xf %{SOURCE2}
     mv %{srcname2}-%{commit2} %{srcname2}
+
+    rm -rf %{srcname3}
+    tar -xf %{SOURCE3}
+    mv %{srcname3}-%{commit3} %{srcname3}
 popd
 
 sed -e '/^#include <QFile>/a#include <QDebug>' \
   -i Telegram/SourceFiles/lottie/lottie_animation.cpp
-sed -e '/^#include <QList>/a#include <QDebug>' \
-  -i Telegram/ThirdParty/qtlottie/src/bodymovin/bmbase.h
+
 
 %build
 # Setting build definitions...
@@ -152,6 +167,7 @@ popd
 LEN=$(($(wc -l < out/Release/CMakeLists.txt) - 2))
 sed -i "$LEN r Telegram/gyp/CMakeLists.inj" out/Release/CMakeLists.txt
 
+%if 0%{?build_with_lto}
 export CC=gcc
 export CXX=g++
 
@@ -160,14 +176,18 @@ RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
 export CFLAGS="%{optflags} $RPM_FLTO_FLAGS"
 export CXXFLAGS="%{optflags} $RPM_FLTO_FLAGS"
 export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
+%endif
 
 # Building Telegram Desktop using cmake...
 pushd out/Release
     %cmake . \
+%if 0%{?build_with_lto}
        -DCMAKE_AR:FILEPATH=%{_bindir}/gcc-ar \
        -DCMAKE_NM:FILEPATH=%{_bindir}/gcc-nm \
        -DCMAKE_RANLIB:FILEPATH=%{_bindir}/gcc-ranlib \
-    %{nil}
+%endif
+%{nil}
+
     %make_build
 popd
 
@@ -195,7 +215,7 @@ install -m 0644 -p lib/xdg/telegramdesktop.appdata.xml "%{buildroot}%{_metainfod
 mkdir -p "%{buildroot}%{_datadir}/Thunar/sendto"
 desktop-file-install \
   --dir="%{buildroot}%{_datadir}/Thunar/sendto" \
-  %{S:3}
+  %{S:20}
 
 
 %check
@@ -212,6 +232,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Mon Jul 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.14-100
+- 1.7.14
+
 * Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.10-101
 - Rebuild (qt5)
 
