@@ -2,10 +2,10 @@
 %global moduledir %(pkg-config xorg-server --variable=moduledir )
 %global driverdir %{moduledir}/drivers
 
-%global commit 15697ee242c30b9ea6775624e8282e0171a113a7
+%global commit 33803c85f761d343aa7300311b8e9489b1a89495
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190128
-%global with_snapshot 0
+%global date 20190625
+%global with_snapshot 1
 
 %undefine _hardened_build
 
@@ -16,7 +16,7 @@
 Summary:   Xorg X11 ati video driver
 Name:      xorg-x11-drv-ati
 Version:   19.0.1
-Release:   100%{?gver}%{?dist}
+Release:   101%{?gver}%{?dist}
 
 URL:       http://www.x.org
 License:   MIT
@@ -70,6 +70,9 @@ find %{buildroot} -regex ".*\.la$" | xargs rm -f --
 
 
 %changelog
+* Tue Jul 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.1-101.20190625git33803c8
+- Update to latest snapshot
+
 * Tue Mar 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.1-100
 - 19.0.1
 

@@ -27,6 +27,7 @@
 %global with_panfrost  1
 %global with_tegra     1
 %global with_vc4       1
+%global with_v3d       1
 %global with_xa        1
 %endif
 
@@ -49,7 +50,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.1.1
+Version:        19.1.2
 Release:        100%{?dist}
 
 License:        MIT
@@ -367,7 +368,7 @@ sed -e 's|_RPMVER_|%{ver}|g' %{SOURCE2} > glesv2.pc
   -Ddri3=true \
   -Ddri-drivers=%{?dri_drivers} \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost} \
+  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -557,6 +558,9 @@ popd
 %if 0%{?with_vc4}
 %{_libdir}/dri/vc4_dri.so
 %endif
+%if 0%{?with_v3d}
+%{_libdir}/dri/v3d_dri.so
+%endif
 %if 0%{?with_freedreno}
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
@@ -642,6 +646,9 @@ popd
 
 
 %changelog
+* Tue Jul 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.1.2-100
+- 19.1.2
+
 * Tue Jun 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.1.1-100
 - 19.1.1
 
