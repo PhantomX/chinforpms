@@ -1,0 +1,59 @@
+From e63e1480c016e59f684d92b8091589ae501996a4 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Wed, 3 Jul 2019 12:33:55 +0100
+Subject: [PATCH 1/2] Revert "ARM: bcm283x: Switch V3D over to using the PM
+ driver instead of firmware."
+
+This reverts commit e1dc2b2e1bef7237fd8fc055fe1ec2a6ff001f91.
+---
+ arch/arm/boot/dts/bcm2835-rpi.dtsi | 4 ++++
+ arch/arm/boot/dts/bcm283x.dtsi     | 4 +---
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm2835-rpi.dtsi b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+index 715d50c64529..9d11cb759b5b 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+@@ -85,6 +85,10 @@
+ 	power-domains = <&power RPI_POWER_DOMAIN_USB>;
+ };
+ 
++&v3d {
++	power-domains = <&power RPI_POWER_DOMAIN_V3D>;
++};
++
+ &hdmi {
+ 	power-domains = <&power RPI_POWER_DOMAIN_HDMI>;
+ 	status = "okay";
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index 9777644c6c2b..20ed8b1da11b 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -3,7 +3,6 @@
+ #include <dt-bindings/clock/bcm2835-aux.h>
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
+-#include <dt-bindings/soc/bcm2835-pm.h>
+ 
+ /* firmware-provided startup stubs live here, where the secondary CPUs are
+  * spinning.
+@@ -121,7 +120,7 @@
+ 			#interrupt-cells = <2>;
+ 		};
+ 
+-		pm: watchdog@7e100000 {
++		watchdog@7e100000 {
+ 			compatible = "brcm,bcm2835-pm", "brcm,bcm2835-pm-wdt";
+ 			#power-domain-cells = <1>;
+ 			#reset-cells = <1>;
+@@ -639,7 +638,6 @@
+ 			compatible = "brcm,bcm2835-v3d";
+ 			reg = <0x7ec00000 0x1000>;
+ 			interrupts = <1 10>;
+-			power-domains = <&pm BCM2835_POWER_DOMAIN_GRAFX_V3D>;
+ 		};
+ 
+ 		vc4: gpu {
+-- 
+2.21.0
+

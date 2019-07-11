@@ -1,6 +1,6 @@
-%global commit 63b480e7462482482f6609c305cd793d938f58c0
+%global commit 1bc2fb60abf0fa173b69ca94f660115d76f09f4f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190625
+%global date 20190709
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -75,7 +75,7 @@ ExcludeArch: armv7hl
 # and a downgraded rust package exists
 %global build_with_pinned_rust 0
 %global rust_build_min_ver 1.35
-%global rust_build_min_nover 1.36
+%global rust_build_min_nover 1.37
 
 %global default_bookmarks_file  %{_datadir}/bookmarks/default-bookmarks.html
 %global waterfox_app_id  \{ec8030f7-c20a-464f-9b0e-13a3a9e97384\}
@@ -124,8 +124,8 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.11
-Release:        2%{?gver}%{?dist}
+Version:        56.2.12
+Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -269,7 +269,7 @@ BuildRequires:  pkgconfig(icu-i18n)
 BuildRequires:  yasm
 BuildRequires:  llvm
 BuildRequires:  llvm-devel
-# clang needed even with gcc
+# clang is needed even with gcc
 BuildRequires:  clang
 BuildRequires:  clang-devel
 %if 0%{?build_with_clang}
@@ -1014,6 +1014,12 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Jul 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.12-1.20190709git1bc2fb6
+- New release/snapshot
+- Fix URL
+- BR: perl-interpreter
+- Reenable elfhack
+
 * Tue Jun 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.11-2.20190625git63b480e
 - New snapshot
 - stylo and rust-simd switches

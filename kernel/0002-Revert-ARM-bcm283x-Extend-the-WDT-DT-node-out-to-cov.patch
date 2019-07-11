@@ -1,0 +1,38 @@
+From 8b213eacdfbf67978a94f28f52481ea611e83f15 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Wed, 3 Jul 2019 12:34:19 +0100
+Subject: [PATCH 2/2] Revert "ARM: bcm283x: Extend the WDT DT node out to cover
+ the whole PM block. (v4)"
+
+This reverts commit 81fc035f07d230c0f687ef09d5ecf2c885dba8ae.
+---
+ arch/arm/boot/dts/bcm283x.dtsi | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index 20ed8b1da11b..31b29646b14c 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -121,17 +121,8 @@
+ 		};
+ 
+ 		watchdog@7e100000 {
+-			compatible = "brcm,bcm2835-pm", "brcm,bcm2835-pm-wdt";
+-			#power-domain-cells = <1>;
+-			#reset-cells = <1>;
+-			reg = <0x7e100000 0x114>,
+-			      <0x7e00a000 0x24>;
+-			clocks = <&clocks BCM2835_CLOCK_V3D>,
+-				 <&clocks BCM2835_CLOCK_PERI_IMAGE>,
+-				 <&clocks BCM2835_CLOCK_H264>,
+-				 <&clocks BCM2835_CLOCK_ISP>;
+-			clock-names = "v3d", "peri_image", "h264", "isp";
+-			system-power-controller;
++			compatible = "brcm,bcm2835-pm-wdt";
++			reg = <0x7e100000 0x28>;
+ 		};
+ 
+ 		clocks: cprman@7e101000 {
+-- 
+2.21.0
+

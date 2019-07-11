@@ -6,6 +6,10 @@
 %global apiid 17349
 %global apihash 344583e45741c457fe1862106095a5eb
 
+%ifarch x86_64
+%global build_with_lto    1
+%endif
+
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 %if 0%{?with_snapshot}
@@ -97,6 +101,7 @@ find Telegram/ThirdParty/libtgvoip -type f \( -name "*.cpp" -o -name "*.h" \) -e
 mkdir -p %{_target_platform}
 pushd %{_target_platform}
 
+%if 0%{?build_with_lto}
 export CC=gcc
 export CXX=g++
 
@@ -105,6 +110,7 @@ RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
 export CFLAGS="%{optflags} $RPM_FLTO_FLAGS"
 export CXXFLAGS="%{optflags} $RPM_FLTO_FLAGS"
 export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
+%endif
 
 export API_ID=%{apiid}
 export API_HASH=%{apihash}
@@ -113,9 +119,11 @@ export API_HASH=%{apihash}
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DPACKAGED_BUILD:BOOL=TRUE \
+%if 0%{?build_with_lto}
   -DCMAKE_AR:FILEPATH=%{_bindir}/gcc-ar \
   -DCMAKE_NM:FILEPATH=%{_bindir}/gcc-nm \
   -DCMAKE_RANLIB:FILEPATH=%{_bindir}/gcc-ranlib \
+%endif
 %{nil}
 
 %make_build

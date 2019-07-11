@@ -1,0 +1,800 @@
+From 0fa32f5500a1b4a81d6856ad389d654f1377f744 Mon Sep 17 00:00:00 2001
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date: Thu, 9 May 2019 16:31:33 +0200
+Subject: [PATCH 1/4] staging: vchiq_2835_arm: revert "quit using custom
+ down_interruptible()"
+
+The killable version of down() is meant to be used on situations where
+it should not fail at all costs, but still have the convenience of being
+able to kill it if really necessary. VCHIQ doesn't fit this criteria, as
+it's mainly used as an interface to V4L2 and ALSA devices.
+
+Fixes: ff5979ad8636 ("staging: vchiq_2835_arm: quit using custom down_interruptible()")
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Acked-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ .../staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c  | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
+index a9cc01e8e6c5..833b28e9ba4b 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
+@@ -553,7 +553,7 @@ create_pagelist(char __user *buf, size_t count, unsigned short type)
+ 		(g_cache_line_size - 1)))) {
+ 		char *fragments;
+ 
+-		if (down_killable(&g_free_fragments_sema)) {
++		if (down_interruptible(&g_free_fragments_sema) != 0) {
+ 			cleanup_pagelistinfo(pagelistinfo);
+ 			return NULL;
+ 		}
+-- 
+2.21.0
+
+From 7c73f359a4f269b611ebc00a910933d2d1926ebe Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Thu, 4 Jul 2019 17:31:38 +0100
+Subject: [PATCH 2/4] staging: vchiq: revert "switch to
+ wait_for_completion_killable"
+
+The killable version of wait_for_completion() is meant to be used on
+situations where it should not fail at all costs, but still have the
+convenience of being able to kill it if really necessary. VCHIQ doesn't
+fit this criteria, as it's mainly used as an interface to V4L2 and ALSA
+devices.
+
+Fixes: a772f116702e ("staging: vchiq: switch to wait_for_completion_killable")
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ .../interface/vchiq_arm/vchiq_arm.c           | 21 ++++++++++---------
+ .../interface/vchiq_arm/vchiq_core.c          | 21 ++++++++++---------
+ .../interface/vchiq_arm/vchiq_util.c          |  6 +++---
+ 3 files changed, 25 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index 064d0db4c51e..ccfb8218b83c 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -560,7 +560,8 @@ add_completion(VCHIQ_INSTANCE_T instance, VCHIQ_REASON_T reason,
+ 		vchiq_log_trace(vchiq_arm_log_level,
+ 			"%s - completion queue full", __func__);
+ 		DEBUG_COUNT(COMPLETION_QUEUE_FULL_COUNT);
+-		if (wait_for_completion_killable( &instance->remove_event)) {
++		if (wait_for_completion_interruptible(
++					&instance->remove_event)) {
+ 			vchiq_log_info(vchiq_arm_log_level,
+ 				"service_callback interrupted");
+ 			return VCHIQ_RETRY;
+@@ -671,7 +672,7 @@ service_callback(VCHIQ_REASON_T reason, struct vchiq_header *header,
+ 			}
+ 
+ 			DEBUG_TRACE(SERVICE_CALLBACK_LINE);
+-			if (wait_for_completion_killable(
++			if (wait_for_completion_interruptible(
+ 						&user_service->remove_event)
+ 				!= 0) {
+ 				vchiq_log_info(vchiq_arm_log_level,
+@@ -1006,7 +1007,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 		   has been closed until the client library calls the
+ 		   CLOSE_DELIVERED ioctl, signalling close_event. */
+ 		if (user_service->close_pending &&
+-			wait_for_completion_killable(
++			wait_for_completion_interruptible(
+ 				&user_service->close_event))
+ 			status = VCHIQ_RETRY;
+ 		break;
+@@ -1182,7 +1183,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 
+ 			DEBUG_TRACE(AWAIT_COMPLETION_LINE);
+ 			mutex_unlock(&instance->completion_mutex);
+-			rc = wait_for_completion_killable(
++			rc = wait_for_completion_interruptible(
+ 						&instance->insert_event);
+ 			mutex_lock(&instance->completion_mutex);
+ 			if (rc != 0) {
+@@ -1352,7 +1353,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 			do {
+ 				spin_unlock(&msg_queue_spinlock);
+ 				DEBUG_TRACE(DEQUEUE_MESSAGE_LINE);
+-				if (wait_for_completion_killable(
++				if (wait_for_completion_interruptible(
+ 					&user_service->insert_event)) {
+ 					vchiq_log_info(vchiq_arm_log_level,
+ 						"DEQUEUE_MESSAGE interrupted");
+@@ -2360,7 +2361,7 @@ vchiq_keepalive_thread_func(void *v)
+ 	while (1) {
+ 		long rc = 0, uc = 0;
+ 
+-		if (wait_for_completion_killable(&arm_state->ka_evt)
++		if (wait_for_completion_interruptible(&arm_state->ka_evt)
+ 				!= 0) {
+ 			vchiq_log_error(vchiq_susp_log_level,
+ 				"%s interrupted", __func__);
+@@ -2611,7 +2612,7 @@ block_resume(struct vchiq_arm_state *arm_state)
+ 		write_unlock_bh(&arm_state->susp_res_lock);
+ 		vchiq_log_info(vchiq_susp_log_level, "%s wait for previously "
+ 			"blocked clients", __func__);
+-		if (wait_for_completion_killable_timeout(
++		if (wait_for_completion_interruptible_timeout(
+ 				&arm_state->blocked_blocker, timeout_val)
+ 					<= 0) {
+ 			vchiq_log_error(vchiq_susp_log_level, "%s wait for "
+@@ -2637,7 +2638,7 @@ block_resume(struct vchiq_arm_state *arm_state)
+ 		write_unlock_bh(&arm_state->susp_res_lock);
+ 		vchiq_log_info(vchiq_susp_log_level, "%s wait for resume",
+ 			__func__);
+-		if (wait_for_completion_killable_timeout(
++		if (wait_for_completion_interruptible_timeout(
+ 				&arm_state->vc_resume_complete, timeout_val)
+ 					<= 0) {
+ 			vchiq_log_error(vchiq_susp_log_level, "%s wait for "
+@@ -2844,7 +2845,7 @@ vchiq_arm_force_suspend(struct vchiq_state *state)
+ 	do {
+ 		write_unlock_bh(&arm_state->susp_res_lock);
+ 
+-		rc = wait_for_completion_killable_timeout(
++		rc = wait_for_completion_interruptible_timeout(
+ 				&arm_state->vc_suspend_complete,
+ 				msecs_to_jiffies(FORCE_SUSPEND_TIMEOUT_MS));
+ 
+@@ -2940,7 +2941,7 @@ vchiq_arm_allow_resume(struct vchiq_state *state)
+ 	write_unlock_bh(&arm_state->susp_res_lock);
+ 
+ 	if (resume) {
+-		if (wait_for_completion_killable(
++		if (wait_for_completion_interruptible(
+ 			&arm_state->vc_resume_complete) < 0) {
+ 			vchiq_log_error(vchiq_susp_log_level,
+ 				"%s interrupted", __func__);
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+index 819813e742d8..bc5661dde987 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+@@ -590,7 +590,7 @@ reserve_space(struct vchiq_state *state, size_t space, int is_blocking)
+ 			remote_event_signal(&state->remote->trigger);
+ 
+ 			if (!is_blocking ||
+-				(wait_for_completion_killable(
++				(wait_for_completion_interruptible(
+ 				&state->slot_available_event)))
+ 				return NULL; /* No space available */
+ 		}
+@@ -860,7 +860,7 @@ queue_message(struct vchiq_state *state, struct vchiq_service *service,
+ 			spin_unlock(&quota_spinlock);
+ 			mutex_unlock(&state->slot_mutex);
+ 
+-			if (wait_for_completion_killable(
++			if (wait_for_completion_interruptible(
+ 						&state->data_quota_event))
+ 				return VCHIQ_RETRY;
+ 
+@@ -891,7 +891,7 @@ queue_message(struct vchiq_state *state, struct vchiq_service *service,
+ 				service_quota->slot_use_count);
+ 			VCHIQ_SERVICE_STATS_INC(service, quota_stalls);
+ 			mutex_unlock(&state->slot_mutex);
+-			if (wait_for_completion_killable(
++			if (wait_for_completion_interruptible(
+ 						&service_quota->quota_event))
+ 				return VCHIQ_RETRY;
+ 			if (service->closing)
+@@ -1740,7 +1740,8 @@ parse_rx_slots(struct vchiq_state *state)
+ 					&service->bulk_rx : &service->bulk_tx;
+ 
+ 				DEBUG_TRACE(PARSE_LINE);
+-				if (mutex_lock_killable(&service->bulk_mutex)) {
++				if (mutex_lock_killable(
++					&service->bulk_mutex) != 0) {
+ 					DEBUG_TRACE(PARSE_LINE);
+ 					goto bail_not_ready;
+ 				}
+@@ -2458,7 +2459,7 @@ vchiq_open_service_internal(struct vchiq_service *service, int client_id)
+ 			       QMFLAGS_IS_BLOCKING);
+ 	if (status == VCHIQ_SUCCESS) {
+ 		/* Wait for the ACK/NAK */
+-		if (wait_for_completion_killable(&service->remove_event)) {
++		if (wait_for_completion_interruptible(&service->remove_event)) {
+ 			status = VCHIQ_RETRY;
+ 			vchiq_release_service_internal(service);
+ 		} else if ((service->srvstate != VCHIQ_SRVSTATE_OPEN) &&
+@@ -2825,7 +2826,7 @@ vchiq_connect_internal(struct vchiq_state *state, VCHIQ_INSTANCE_T instance)
+ 	}
+ 
+ 	if (state->conn_state == VCHIQ_CONNSTATE_CONNECTING) {
+-		if (wait_for_completion_killable(&state->connect))
++		if (wait_for_completion_interruptible(&state->connect))
+ 			return VCHIQ_RETRY;
+ 
+ 		vchiq_set_conn_state(state, VCHIQ_CONNSTATE_CONNECTED);
+@@ -2924,7 +2925,7 @@ vchiq_close_service(VCHIQ_SERVICE_HANDLE_T handle)
+ 	}
+ 
+ 	while (1) {
+-		if (wait_for_completion_killable(&service->remove_event)) {
++		if (wait_for_completion_interruptible(&service->remove_event)) {
+ 			status = VCHIQ_RETRY;
+ 			break;
+ 		}
+@@ -2985,7 +2986,7 @@ vchiq_remove_service(VCHIQ_SERVICE_HANDLE_T handle)
+ 		request_poll(service->state, service, VCHIQ_POLL_REMOVE);
+ 	}
+ 	while (1) {
+-		if (wait_for_completion_killable(&service->remove_event)) {
++		if (wait_for_completion_interruptible(&service->remove_event)) {
+ 			status = VCHIQ_RETRY;
+ 			break;
+ 		}
+@@ -3068,7 +3069,7 @@ VCHIQ_STATUS_T vchiq_bulk_transfer(VCHIQ_SERVICE_HANDLE_T handle,
+ 		VCHIQ_SERVICE_STATS_INC(service, bulk_stalls);
+ 		do {
+ 			mutex_unlock(&service->bulk_mutex);
+-			if (wait_for_completion_killable(
++			if (wait_for_completion_interruptible(
+ 						&service->bulk_remove_event)) {
+ 				status = VCHIQ_RETRY;
+ 				goto error_exit;
+@@ -3145,7 +3146,7 @@ VCHIQ_STATUS_T vchiq_bulk_transfer(VCHIQ_SERVICE_HANDLE_T handle,
+ 
+ 	if (bulk_waiter) {
+ 		bulk_waiter->bulk = bulk;
+-		if (wait_for_completion_killable(&bulk_waiter->event))
++		if (wait_for_completion_interruptible(&bulk_waiter->event))
+ 			status = VCHIQ_RETRY;
+ 		else if (bulk_waiter->actual == VCHIQ_BULK_ACTUAL_ABORTED)
+ 			status = VCHIQ_ERROR;
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_util.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_util.c
+index 55c5fd82b911..30deea1b57f7 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_util.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_util.c
+@@ -80,7 +80,7 @@ void vchiu_queue_push(struct vchiu_queue *queue, struct vchiq_header *header)
+ 		return;
+ 
+ 	while (queue->write == queue->read + queue->size) {
+-		if (wait_for_completion_killable(&queue->pop))
++		if (wait_for_completion_interruptible(&queue->pop))
+ 			flush_signals(current);
+ 	}
+ 
+@@ -93,7 +93,7 @@ void vchiu_queue_push(struct vchiu_queue *queue, struct vchiq_header *header)
+ struct vchiq_header *vchiu_queue_peek(struct vchiu_queue *queue)
+ {
+ 	while (queue->write == queue->read) {
+-		if (wait_for_completion_killable(&queue->push))
++		if (wait_for_completion_interruptible(&queue->push))
+ 			flush_signals(current);
+ 	}
+ 
+@@ -107,7 +107,7 @@ struct vchiq_header *vchiu_queue_pop(struct vchiu_queue *queue)
+ 	struct vchiq_header *header;
+ 
+ 	while (queue->write == queue->read) {
+-		if (wait_for_completion_killable(&queue->push))
++		if (wait_for_completion_interruptible(&queue->push))
+ 			flush_signals(current);
+ 	}
+ 
+-- 
+2.21.0
+
+From 4d0d97ce18dc90a3ca6296ee669c51b5a55a61c7 Mon Sep 17 00:00:00 2001
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date: Thu, 9 May 2019 16:31:35 +0200
+Subject: [PATCH 3/4] staging: vchiq: make wait events interruptible
+
+The killable version of wait_event() is meant to be used on situations
+where it should not fail at all costs, but still have the convenience of
+being able to kill it if really necessary. Wait events in VCHIQ doesn't
+fit this criteria, as it's mainly used as an interface to V4L2 and ALSA
+devices.
+
+Fixes: 852b2876a8a8 ("staging: vchiq: rework remove_event handling")
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+---
+ .../vc04_services/interface/vchiq_arm/vchiq_core.c     | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+index bc5661dde987..0958d86aebe6 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+@@ -425,13 +425,21 @@ remote_event_create(wait_queue_head_t *wq, struct remote_event *event)
+ 	init_waitqueue_head(wq);
+ }
+ 
++/*
++ * All the event waiting routines in VCHIQ used a custom semaphore
++ * implementation that filtered most signals. This achieved a behaviour similar
++ * to the "killable" family of functions. While cleaning up this code all the
++ * routines where switched to the "interruptible" family of functions, as the
++ * former was deemed unjustified and the use "killable" set all VCHIQ's
++ * threads in D state.
++ */
+ static inline int
+ remote_event_wait(wait_queue_head_t *wq, struct remote_event *event)
+ {
+ 	if (!event->fired) {
+ 		event->armed = 1;
+ 		dsb(sy);
+-		if (wait_event_killable(*wq, event->fired)) {
++		if (wait_event_interruptible(*wq, event->fired)) {
+ 			event->armed = 0;
+ 			return 0;
+ 		}
+-- 
+2.21.0
+
+From e4d9fccaaf6e61bbc7416d92d73cec5a5f0cb458 Mon Sep 17 00:00:00 2001
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date: Thu, 9 May 2019 16:31:36 +0200
+Subject: [PATCH 4/4] staging: vchiq: stop explicitly comparing with zero to
+ catch errors
+
+The vchiq code tends to follow a coding pattern that's not accepted as
+per the Linux kernel coding style
+
+We have this:
+	if (expression != 0)
+
+We want this:
+	if (expression)
+
+We make an exception if the expression refers to a size, in which case
+it's accepted for the sake of clarity.
+
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+---
+ .../bcm2835-camera/bcm2835-camera.c           | 11 ++--
+ .../interface/vchiq_arm/vchiq_2835_arm.c      |  2 +-
+ .../interface/vchiq_arm/vchiq_arm.c           | 66 ++++++++-----------
+ .../interface/vchiq_arm/vchiq_connected.c     |  4 +-
+ .../interface/vchiq_arm/vchiq_core.c          | 28 ++++----
+ .../interface/vchiq_arm/vchiq_debugfs.c       |  4 +-
+ 6 files changed, 52 insertions(+), 63 deletions(-)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+index 7c6cf41645eb..c5b29a28d326 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
++++ b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+@@ -328,7 +328,7 @@ static void buffer_cb(struct vchiq_mmal_instance *instance,
+ 		 "%s: status:%d, buf:%p, length:%lu, flags %u, pts %lld\n",
+ 		 __func__, status, buf, length, mmal_flags, pts);
+ 
+-	if (status != 0) {
++	if (status) {
+ 		/* error in transfer */
+ 		if (buf) {
+ 			/* there was a buffer with the error so return it */
+@@ -360,8 +360,7 @@ static void buffer_cb(struct vchiq_mmal_instance *instance,
+ 		}
+ 	} else {
+ 		if (dev->capture.frame_count) {
+-			if (dev->capture.vc_start_timestamp != -1 &&
+-			    pts != 0) {
++			if (dev->capture.vc_start_timestamp != -1 && pts) {
+ 				ktime_t timestamp;
+ 				s64 runtime_us = pts -
+ 				    dev->capture.vc_start_timestamp;
+@@ -829,7 +828,7 @@ static int vidioc_enum_input(struct file *file, void *priv,
+ 			     struct v4l2_input *inp)
+ {
+ 	/* only a single camera input */
+-	if (inp->index != 0)
++	if (inp->index)
+ 		return -EINVAL;
+ 
+ 	inp->type = V4L2_INPUT_TYPE_CAMERA;
+@@ -845,7 +844,7 @@ static int vidioc_g_input(struct file *file, void *priv, unsigned int *i)
+ 
+ static int vidioc_s_input(struct file *file, void *priv, unsigned int i)
+ {
+-	if (i != 0)
++	if (i)
+ 		return -EINVAL;
+ 
+ 	return 0;
+@@ -1291,7 +1290,7 @@ static int vidioc_s_fmt_vid_cap(struct file *file, void *priv,
+ 	}
+ 
+ 	ret = mmal_setup_components(dev, f);
+-	if (ret != 0) {
++	if (ret) {
+ 		v4l2_err(&dev->v4l2_dev,
+ 			 "%s: failed to setup mmal components: %d\n",
+ 			 __func__, ret);
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
+index 833b28e9ba4b..e87d6e290a9f 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
+@@ -553,7 +553,7 @@ create_pagelist(char __user *buf, size_t count, unsigned short type)
+ 		(g_cache_line_size - 1)))) {
+ 		char *fragments;
+ 
+-		if (down_interruptible(&g_free_fragments_sema) != 0) {
++		if (down_interruptible(&g_free_fragments_sema)) {
+ 			cleanup_pagelistinfo(pagelistinfo);
+ 			return NULL;
+ 		}
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index ccfb8218b83c..934014cf08b2 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -266,7 +266,7 @@ VCHIQ_STATUS_T vchiq_shutdown(VCHIQ_INSTANCE_T instance)
+ 	vchiq_log_trace(vchiq_core_log_level,
+ 		"%s(%p) called", __func__, instance);
+ 
+-	if (mutex_lock_killable(&state->mutex) != 0)
++	if (mutex_lock_killable(&state->mutex))
+ 		return VCHIQ_RETRY;
+ 
+ 	/* Remove all services */
+@@ -308,7 +308,7 @@ VCHIQ_STATUS_T vchiq_connect(VCHIQ_INSTANCE_T instance)
+ 	vchiq_log_trace(vchiq_core_log_level,
+ 		"%s(%p) called", __func__, instance);
+ 
+-	if (mutex_lock_killable(&state->mutex) != 0) {
++	if (mutex_lock_killable(&state->mutex)) {
+ 		vchiq_log_trace(vchiq_core_log_level,
+ 			"%s: call to mutex_lock failed", __func__);
+ 		status = VCHIQ_RETRY;
+@@ -673,8 +673,7 @@ service_callback(VCHIQ_REASON_T reason, struct vchiq_header *header,
+ 
+ 			DEBUG_TRACE(SERVICE_CALLBACK_LINE);
+ 			if (wait_for_completion_interruptible(
+-						&user_service->remove_event)
+-				!= 0) {
++						&user_service->remove_event)) {
+ 				vchiq_log_info(vchiq_arm_log_level,
+ 					"%s interrupted", __func__);
+ 				DEBUG_TRACE(SERVICE_CALLBACK_LINE);
+@@ -878,7 +877,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 			break;
+ 		}
+ 		rc = mutex_lock_killable(&instance->state->mutex);
+-		if (rc != 0) {
++		if (rc) {
+ 			vchiq_log_error(vchiq_arm_log_level,
+ 				"vchiq: connect: could not lock mutex for "
+ 				"state %d: %d",
+@@ -902,9 +901,8 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 		void *userdata;
+ 		int srvstate;
+ 
+-		if (copy_from_user
+-			 (&args, (const void __user *)arg,
+-			  sizeof(args)) != 0) {
++		if (copy_from_user(&args, (const void __user *)arg,
++				   sizeof(args))) {
+ 			ret = -EFAULT;
+ 			break;
+ 		}
+@@ -968,7 +966,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 				&(((struct vchiq_create_service __user *)
+ 					arg)->handle),
+ 				(const void *)&service->handle,
+-				sizeof(service->handle)) != 0) {
++				sizeof(service->handle))) {
+ 				ret = -EFAULT;
+ 				vchiq_remove_service(service->handle);
+ 			}
+@@ -1043,9 +1041,8 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 	case VCHIQ_IOC_QUEUE_MESSAGE: {
+ 		struct vchiq_queue_message args;
+ 
+-		if (copy_from_user
+-			 (&args, (const void __user *)arg,
+-			  sizeof(args)) != 0) {
++		if (copy_from_user(&args, (const void __user *)arg,
++				   sizeof(args))) {
+ 			ret = -EFAULT;
+ 			break;
+ 		}
+@@ -1077,9 +1074,8 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 			(cmd == VCHIQ_IOC_QUEUE_BULK_TRANSMIT) ?
+ 			VCHIQ_BULK_TRANSMIT : VCHIQ_BULK_RECEIVE;
+ 
+-		if (copy_from_user
+-			(&args, (const void __user *)arg,
+-			sizeof(args)) != 0) {
++		if (copy_from_user(&args, (const void __user *)arg,
++				   sizeof(args))) {
+ 			ret = -EFAULT;
+ 			break;
+ 		}
+@@ -1153,7 +1149,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 				&(((struct vchiq_queue_bulk_transfer __user *)
+ 					arg)->mode),
+ 				(const void *)&mode_waiting,
+-				sizeof(mode_waiting)) != 0)
++				sizeof(mode_waiting)))
+ 				ret = -EFAULT;
+ 		}
+ 	} break;
+@@ -1168,7 +1164,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 		}
+ 
+ 		if (copy_from_user(&args, (const void __user *)arg,
+-			sizeof(args)) != 0) {
++			sizeof(args))) {
+ 			ret = -EFAULT;
+ 			break;
+ 		}
+@@ -1186,7 +1182,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 			rc = wait_for_completion_interruptible(
+ 						&instance->insert_event);
+ 			mutex_lock(&instance->completion_mutex);
+-			if (rc != 0) {
++			if (rc) {
+ 				DEBUG_TRACE(AWAIT_COMPLETION_LINE);
+ 				vchiq_log_info(vchiq_arm_log_level,
+ 					"AWAIT_COMPLETION interrupted");
+@@ -1252,7 +1248,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 					if (copy_from_user(&msgbuf,
+ 						(const void __user *)
+ 						&args.msgbufs[msgbufcount],
+-						sizeof(msgbuf)) != 0) {
++						sizeof(msgbuf))) {
+ 						if (ret == 0)
+ 							ret = -EFAULT;
+ 						break;
+@@ -1260,7 +1256,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 
+ 					/* Copy the message to user space */
+ 					if (copy_to_user(msgbuf, header,
+-						msglen) != 0) {
++						msglen)) {
+ 						if (ret == 0)
+ 							ret = -EFAULT;
+ 						break;
+@@ -1285,8 +1281,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 					(size_t)args.buf + ret *
+ 					sizeof(struct vchiq_completion_data)),
+ 					completion,
+-					sizeof(struct vchiq_completion_data))
+-									!= 0) {
++					sizeof(struct vchiq_completion_data))) {
+ 						if (ret == 0)
+ 							ret = -EFAULT;
+ 					break;
+@@ -1306,13 +1301,13 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 					&((struct vchiq_await_completion *)arg)
+ 						->msgbufcount,
+ 					&msgbufcount,
+-					sizeof(msgbufcount)) != 0) {
++					sizeof(msgbufcount))) {
+ 					ret = -EFAULT;
+ 				}
+ 			}
+ 		}
+ 
+-		if (ret != 0)
++		if (ret)
+ 			complete(&instance->remove_event);
+ 		mutex_unlock(&instance->completion_mutex);
+ 		DEBUG_TRACE(AWAIT_COMPLETION_LINE);
+@@ -1324,9 +1319,8 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 		struct vchiq_header *header;
+ 
+ 		DEBUG_TRACE(DEQUEUE_MESSAGE_LINE);
+-		if (copy_from_user
+-			 (&args, (const void __user *)arg,
+-			  sizeof(args)) != 0) {
++		if (copy_from_user(&args, (const void __user *)arg,
++				   sizeof(args))) {
+ 			ret = -EFAULT;
+ 			break;
+ 		}
+@@ -1412,7 +1406,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 		struct vchiq_config config;
+ 
+ 		if (copy_from_user(&args, (const void __user *)arg,
+-			sizeof(args)) != 0) {
++				   sizeof(args))) {
+ 			ret = -EFAULT;
+ 			break;
+ 		}
+@@ -1431,9 +1425,8 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 	case VCHIQ_IOC_SET_SERVICE_OPTION: {
+ 		struct vchiq_set_service_option args;
+ 
+-		if (copy_from_user(
+-			&args, (const void __user *)arg,
+-			sizeof(args)) != 0) {
++		if (copy_from_user(&args, (const void __user *)arg,
++				   sizeof(args))) {
+ 			ret = -EFAULT;
+ 			break;
+ 		}
+@@ -2361,8 +2354,7 @@ vchiq_keepalive_thread_func(void *v)
+ 	while (1) {
+ 		long rc = 0, uc = 0;
+ 
+-		if (wait_for_completion_interruptible(&arm_state->ka_evt)
+-				!= 0) {
++		if (wait_for_completion_interruptible(&arm_state->ka_evt)) {
+ 			vchiq_log_error(vchiq_susp_log_level,
+ 				"%s interrupted", __func__);
+ 			flush_signals(current);
+@@ -3043,7 +3035,7 @@ vchiq_use_internal(struct vchiq_state *state, struct vchiq_service *service,
+ 			vchiq_log_info(vchiq_susp_log_level, "%s %s resume "
+ 				"blocked - waiting...", __func__, entity);
+ 			if (wait_for_completion_killable(
+-					&arm_state->resume_blocker) != 0) {
++					&arm_state->resume_blocker)) {
+ 				vchiq_log_error(vchiq_susp_log_level, "%s %s "
+ 					"wait for resume blocker interrupted",
+ 					__func__, entity);
+@@ -3092,7 +3084,7 @@ vchiq_use_internal(struct vchiq_state *state, struct vchiq_service *service,
+ 		vchiq_log_info(vchiq_susp_log_level, "%s %s wait for resume",
+ 			__func__, entity);
+ 		if (wait_for_completion_killable(
+-				&arm_state->vc_resume_complete) != 0) {
++				&arm_state->vc_resume_complete)) {
+ 			vchiq_log_error(vchiq_susp_log_level, "%s %s wait for "
+ 				"resume interrupted", __func__, entity);
+ 			ret = VCHIQ_ERROR;
+@@ -3537,13 +3529,13 @@ static int vchiq_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, drvdata);
+ 
+ 	err = vchiq_platform_init(pdev, &g_state);
+-	if (err != 0)
++	if (err)
+ 		goto failed_platform_init;
+ 
+ 	cdev_init(&vchiq_cdev, &vchiq_fops);
+ 	vchiq_cdev.owner = THIS_MODULE;
+ 	err = cdev_add(&vchiq_cdev, vchiq_devid, 1);
+-	if (err != 0) {
++	if (err) {
+ 		vchiq_log_error(vchiq_arm_log_level,
+ 			"Unable to register device");
+ 		goto failed_platform_init;
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_connected.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_connected.c
+index 7d64e2ed7b42..5bcb6396b23b 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_connected.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_connected.c
+@@ -71,7 +71,7 @@ void vchiq_add_connected_callback(VCHIQ_CONNECTED_CALLBACK_T callback)
+ {
+ 	connected_init();
+ 
+-	if (mutex_lock_killable(&g_connected_mutex) != 0)
++	if (mutex_lock_killable(&g_connected_mutex))
+ 		return;
+ 
+ 	if (g_connected)
+@@ -106,7 +106,7 @@ void vchiq_call_connected_callbacks(void)
+ 
+ 	connected_init();
+ 
+-	if (mutex_lock_killable(&g_connected_mutex) != 0)
++	if (mutex_lock_killable(&g_connected_mutex))
+ 		return;
+ 
+ 	for (i = 0; i <  g_num_deferred_callbacks; i++)
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+index 0958d86aebe6..bbdf16977afb 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+@@ -830,7 +830,7 @@ queue_message(struct vchiq_state *state, struct vchiq_service *service,
+ 	WARN_ON(!(stride <= VCHIQ_SLOT_SIZE));
+ 
+ 	if (!(flags & QMFLAGS_NO_MUTEX_LOCK) &&
+-		(mutex_lock_killable(&state->slot_mutex) != 0))
++	    mutex_lock_killable(&state->slot_mutex))
+ 		return VCHIQ_RETRY;
+ 
+ 	if (type == VCHIQ_MSG_DATA) {
+@@ -842,8 +842,8 @@ queue_message(struct vchiq_state *state, struct vchiq_service *service,
+ 			return VCHIQ_ERROR;
+ 		}
+ 
+-		WARN_ON((flags & (QMFLAGS_NO_MUTEX_LOCK |
+-				  QMFLAGS_NO_MUTEX_UNLOCK)) != 0);
++		WARN_ON(flags & (QMFLAGS_NO_MUTEX_LOCK |
++				 QMFLAGS_NO_MUTEX_UNLOCK));
+ 
+ 		if (service->closing) {
+ 			/* The service has been closed */
+@@ -904,7 +904,7 @@ queue_message(struct vchiq_state *state, struct vchiq_service *service,
+ 				return VCHIQ_RETRY;
+ 			if (service->closing)
+ 				return VCHIQ_ERROR;
+-			if (mutex_lock_killable(&state->slot_mutex) != 0)
++			if (mutex_lock_killable(&state->slot_mutex))
+ 				return VCHIQ_RETRY;
+ 			if (service->srvstate != VCHIQ_SRVSTATE_OPEN) {
+ 				/* The service has been closed */
+@@ -942,8 +942,8 @@ queue_message(struct vchiq_state *state, struct vchiq_service *service,
+ 			header, size, VCHIQ_MSG_SRCPORT(msgid),
+ 			VCHIQ_MSG_DSTPORT(msgid));
+ 
+-		WARN_ON((flags & (QMFLAGS_NO_MUTEX_LOCK |
+-				  QMFLAGS_NO_MUTEX_UNLOCK)) != 0);
++		WARN_ON(flags & (QMFLAGS_NO_MUTEX_LOCK |
++				 QMFLAGS_NO_MUTEX_UNLOCK));
+ 
+ 		callback_result =
+ 			copy_message_data(copy_callback, context,
+@@ -1070,8 +1070,8 @@ queue_message_sync(struct vchiq_state *state, struct vchiq_service *service,
+ 
+ 	local = state->local;
+ 
+-	if ((VCHIQ_MSG_TYPE(msgid) != VCHIQ_MSG_RESUME) &&
+-		(mutex_lock_killable(&state->sync_mutex) != 0))
++	if (VCHIQ_MSG_TYPE(msgid) != VCHIQ_MSG_RESUME &&
++	    mutex_lock_killable(&state->sync_mutex))
+ 		return VCHIQ_RETRY;
+ 
+ 	remote_event_wait(&state->sync_release_event, &local->sync_release);
+@@ -1748,8 +1748,7 @@ parse_rx_slots(struct vchiq_state *state)
+ 					&service->bulk_rx : &service->bulk_tx;
+ 
+ 				DEBUG_TRACE(PARSE_LINE);
+-				if (mutex_lock_killable(
+-					&service->bulk_mutex) != 0) {
++				if (mutex_lock_killable(&service->bulk_mutex)) {
+ 					DEBUG_TRACE(PARSE_LINE);
+ 					goto bail_not_ready;
+ 				}
+@@ -2553,7 +2552,7 @@ do_abort_bulks(struct vchiq_service *service)
+ 	VCHIQ_STATUS_T status;
+ 
+ 	/* Abort any outstanding bulk transfers */
+-	if (mutex_lock_killable(&service->bulk_mutex) != 0)
++	if (mutex_lock_killable(&service->bulk_mutex))
+ 		return 0;
+ 	abort_outstanding_bulks(service, &service->bulk_tx);
+ 	abort_outstanding_bulks(service, &service->bulk_rx);
+@@ -3068,7 +3067,7 @@ VCHIQ_STATUS_T vchiq_bulk_transfer(VCHIQ_SERVICE_HANDLE_T handle,
+ 	queue = (dir == VCHIQ_BULK_TRANSMIT) ?
+ 		&service->bulk_tx : &service->bulk_rx;
+ 
+-	if (mutex_lock_killable(&service->bulk_mutex) != 0) {
++	if (mutex_lock_killable(&service->bulk_mutex)) {
+ 		status = VCHIQ_RETRY;
+ 		goto error_exit;
+ 	}
+@@ -3082,8 +3081,7 @@ VCHIQ_STATUS_T vchiq_bulk_transfer(VCHIQ_SERVICE_HANDLE_T handle,
+ 				status = VCHIQ_RETRY;
+ 				goto error_exit;
+ 			}
+-			if (mutex_lock_killable(&service->bulk_mutex)
+-				!= 0) {
++			if (mutex_lock_killable(&service->bulk_mutex)) {
+ 				status = VCHIQ_RETRY;
+ 				goto error_exit;
+ 			}
+@@ -3111,7 +3109,7 @@ VCHIQ_STATUS_T vchiq_bulk_transfer(VCHIQ_SERVICE_HANDLE_T handle,
+ 
+ 	/* The slot mutex must be held when the service is being closed, so
+ 	   claim it here to ensure that isn't happening */
+-	if (mutex_lock_killable(&state->slot_mutex) != 0) {
++	if (mutex_lock_killable(&state->slot_mutex)) {
+ 		status = VCHIQ_RETRY;
+ 		goto cancel_bulk_error_exit;
+ 	}
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_debugfs.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_debugfs.c
+index 3928287cf5f7..8799c30f397c 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_debugfs.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_debugfs.c
+@@ -114,7 +114,7 @@ static ssize_t debugfs_log_write(struct file *file,
+ 	if (count >= DEBUGFS_WRITE_BUF_SIZE)
+ 		count = DEBUGFS_WRITE_BUF_SIZE;
+ 
+-	if (copy_from_user(kbuf, buffer, count) != 0)
++	if (copy_from_user(kbuf, buffer, count))
+ 		return -EFAULT;
+ 	kbuf[count - 1] = 0;
+ 
+@@ -179,7 +179,7 @@ static ssize_t debugfs_trace_write(struct file *file,
+ 	VCHIQ_INSTANCE_T instance = f->private;
+ 	char firstchar;
+ 
+-	if (copy_from_user(&firstchar, buffer, 1) != 0)
++	if (copy_from_user(&firstchar, buffer, 1))
+ 		return -EFAULT;
+ 
+ 	switch (firstchar) {
+-- 
+2.21.0
+
