@@ -8,14 +8,6 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 crl
 
-%global commit2 40ccf084445c60a32d72d4811edf0efd0580dcaa
-%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 rlottie
-
-%global commit3 9a2a9f2d0f38a39c5ec9b329042ca5f060b058e0
-%global shortcommit3 %(c=%{commit2}; echo ${c:0:7})
-%global srcname3 lz4
-
 # Enable or disable build with GTK support...
 %bcond_with gtk3
 
@@ -28,7 +20,7 @@
 
 Name:           telegram-desktop
 Version:        1.7.14
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -47,8 +39,6 @@ ExclusiveArch:  i686 x86_64
 
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
 Source1:        https://github.com/telegramdesktop/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        https://github.com/john-preston/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        https://github.com/lz4/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch0:         %{name}-build-fixes.patch
@@ -56,9 +46,8 @@ Patch1:         %{name}-system-fonts.patch
 Patch2:         %{name}-unbundle-minizip.patch
 Patch3:         0001-Temporary-fix-for-gcc-9.1.1-regression.patch
 Patch4:         0001-Unset-QT-scale-env-vars.patch
-# Patches for Arch
-Patch5:         tdesktop-ffmpeg-fix-convertFromARGB32PM.patch
-Patch6:         tdesktop-rlottie-static-qt.patch
+Patch5:         %{url}/commit/0710dde4d5526454318b2748331e887c01ecfdce.patch#/%{name}-gh-0710dde.patch
+Patch6:         %{url}/commit/9c909c8992ab52b278c718ecf50c9ac41fb207a6.patch#/%{name}-gh-9c909c8.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -72,9 +61,6 @@ Patch103:       %{name}-disable-overlay.patch
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
 Requires:       open-sans-fonts
-
-# Special patched version of qtlottie required.
-Provides:       bundled(rlottie) = 0
 
 # Compilers and tools...
 BuildRequires:  desktop-file-utils
@@ -94,9 +80,10 @@ BuildRequires:  openal-soft-devel
 BuildRequires:  qt5-qtbase-private-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 BuildRequires:  libstdc++-devel
-BuildRequires:  rapidjson-devel
+BuildRequires:  lz4-devel
 BuildRequires:  range-v3-devel
 BuildRequires:  openssl-devel
+BuildRequires:  rlottie-devel
 BuildRequires:  xxhash-devel
 BuildRequires:  xz-devel
 BuildRequires:  python3
@@ -132,14 +119,6 @@ pushd Telegram/ThirdParty
     rm -rf %{srcname1}
     tar -xf %{SOURCE1}
     mv %{srcname1}-%{commit1} %{srcname1}
-
-    rm -rf %{srcname2}
-    tar -xf %{SOURCE2}
-    mv %{srcname2}-%{commit2} %{srcname2}
-
-    rm -rf %{srcname3}
-    tar -xf %{SOURCE3}
-    mv %{srcname3}-%{commit3} %{srcname3}
 popd
 
 sed -e '/^#include <QFile>/a#include <QDebug>' \
@@ -232,6 +211,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Thu Jul 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.14-101
+- RPMFusion sync. System rlottie
+
 * Mon Jul 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.14-100
 - 1.7.14
 

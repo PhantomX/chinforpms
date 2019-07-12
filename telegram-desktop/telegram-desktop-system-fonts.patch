@@ -1,4 +1,4 @@
-From 67936057480c18f23723d95cfa9bf5ad4913a226 Mon Sep 17 00:00:00 2001
+From 31cbef1756e5f4c02d7b2cd6a72f3407c07ffe3d Mon Sep 17 00:00:00 2001
 From: Vitaly Zaitsev <vitaly@easycoding.org>
 Date: Sun, 24 Jun 2018 22:59:34 +0200
 Subject: [PATCH 2/3] Backported and rebased patch from Debian maintainer
@@ -11,7 +11,7 @@ Subject: [PATCH 2/3] Backported and rebased patch from Debian maintainer
  2 files changed, 3 insertions(+), 6 deletions(-)
 
 diff --git a/Telegram/Resources/qrc/telegram.qrc b/Telegram/Resources/qrc/telegram.qrc
-index 8e39756ac..29b3d55e6 100644
+index 4db29b204..52028412c 100644
 --- a/Telegram/Resources/qrc/telegram.qrc
 +++ b/Telegram/Resources/qrc/telegram.qrc
 @@ -42,9 +42,6 @@
@@ -25,10 +25,10 @@ index 8e39756ac..29b3d55e6 100644
      <file alias="art/bg_initial.jpg">../art/bg_initial.jpg</file>
      <file alias="art/logo_256.png">../art/logo_256.png</file>
 diff --git a/Telegram/SourceFiles/ui/twidget.cpp b/Telegram/SourceFiles/ui/twidget.cpp
-index d40813859..53d0cbc77 100644
+index 3113e597b..7d0b25b55 100644
 --- a/Telegram/SourceFiles/ui/twidget.cpp
 +++ b/Telegram/SourceFiles/ui/twidget.cpp
-@@ -70,9 +70,9 @@ void Start() {
+@@ -71,9 +71,9 @@ void Start() {
  	}
  	Started = true;
  
