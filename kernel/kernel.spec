@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 17
+%define stable_update 18
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -75,13 +75,14 @@ Summary: The Linux kernel
 %global pfrange %(c=%{pfcommit}; echo ${c:0:7})
 %endif
 %global extra_patch https://github.com/pfactum/pf-kernel/compare/v%{major_ver}.%{base_sublevel}...%{pfrange}.diff#/pf-kernel-v%{major_ver}.%{base_sublevel}-%{pfrange}.patch
+%global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 
 # Apply a patch range from stable repository, extending pf unmantained branches
 # Root Makefile are stripped from patching
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit 8584aaf1c3262ca17d1e4a614ede9179ef462bb0
-%global st_last_commit 4b886fa2b8f167b70af8a21340dfb3e24711e084
+%global st_last_commit 22bc18377bd45c060733e1ed09f34b769e4b4bef
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
@@ -512,6 +513,7 @@ Source1004: kernel-local-zen
 Source5000: %{extra_patch}
 %if 0%{?pf_stable_extra}
 Source5002: %{stable_extra_patch}
+Source5003: %{pf_url}/f48f9c2b01953f0488d27637339f8aa6548864dc.patch#/pf-f48f9c2.patch
 %endif
 %else
 # For a stable release kernel
@@ -612,9 +614,6 @@ Patch306: arm-sdhci-esdhc-imx-fixes.patch
 # Raspberry Pi bits
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
-# Fix spurious "load avg 4" issue
-Patch333: bcm2835-vchiq-use-interruptible-waits.patch
-
 # The new power driver has regressed display so disable it until the problem is diagnosed
 Patch334: 0001-Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-d.patch
 # Patch335: 0002-Revert-ARM-bcm283x-Extend-the-WDT-DT-node-out-to-cov.patch 
@@ -649,9 +648,6 @@ Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
 # CVE-2019-12378 rhbz 1715459 1715460
 Patch528: ipv6_sockglue-fix-missing-check-bug-in-ip6_ra_control.patch
 
-# CVE-2019-3846 rhbz 1713059 1715475
-Patch529: Buffer-overflow-read-checks-in-mwifiex.patch
-
 # CVE-2019-12380 rhbz 1715494 1715495
 Patch530: 0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
 
@@ -675,9 +671,6 @@ Patch536: scsi-mpt3sas_ctl-fix-double-fetch-bug-in_ctl_ioctl_main.patch
 
 # CVE-2019-12614 rhbz 1718176 1718185
 Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch 
-
-# CVE-2019-10126 rhbz 1716992 1720122
-Patch541: mwifiex-Fix-heap-overflow-in-mwifiex_uap_parse_tail_ies.patch
 
 # Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
 Patch545: efi-bgrt-acpi6.2-support.patch
@@ -707,8 +700,6 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
 %if !0%{?post_factum}
-%global pf_url https://gitlab.com/post-factum/pf-kernel/commit
-
 #Patch3000: postfactum-merge-fixes.patch
 %if !0%{?zen}
 Patch3001: %{pf_url}/e847736de234b273f40844bc2406d1f18d127979.patch#/pf-e847736d.patch
@@ -1166,6 +1157,7 @@ fi
 $patch_command -i %{SOURCE5000}
 %if 0%{?pf_stable_extra}
 filterdiff -p1 -x Makefile %{SOURCE5002} > pf_stable_extra.patch
+$patch_command -R -i %{SOURCE5003}
 $patch_command -i pf_stable_extra.patch
 rm -f pf_stable_extra.patch
 %endif
@@ -2004,6 +1996,9 @@ fi
 #
 #
 %changelog
+* Sun Jul 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.18-500.chinfo
+- 5.1.18
+
 * Wed Jul 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.17-500.chinfo
 - 5.1.17
 - Option to apply stable patches over pf
