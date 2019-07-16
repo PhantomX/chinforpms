@@ -2,7 +2,7 @@
 %undefine _hardened_build
 
 %ifarch %{ix86} x86_64
-%global wine_mingw 0
+%global wine_mingw 1
 %endif
 %global no64bit   0
 %global winegecko 2.47
@@ -11,9 +11,7 @@
 
 %global libext .so
 %if 0%{?wine_mingw}
-%ifarch %{ix86} x86_64
 %global libext %{nil}
-%endif
 %endif
 
 %global wineacm acm%{?libext}
@@ -42,10 +40,10 @@
 %endif
 %global tkg_id 2f43a4b68cd1f6996b661dff4f99396639d7b647
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
+
+%global gtk3 0
 %global pba 0
-%if !0%{?wine_staging}
-%global pba 0
-%endif
+
 # FAudio
 %global wine_staging_opts -W xaudio2-revert -W xaudio2_7-CreateFX-FXEcho -W xaudio2_7-WMA_support -W xaudio2_CommitChanges
 # proton FS hack
@@ -65,7 +63,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.12.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -256,7 +254,9 @@ BuildRequires:  pkgconfig(zlib)
 
 # Silverlight DRM-stuff needs XATTR enabled.
 %if 0%{?wine_staging}
+%if 0%{?gtk3}
 BuildRequires:  pkgconfig(gtk+-3.0)
+%endif #{?gtk3}
 BuildRequires:  pkgconfig(libattr)
 BuildRequires:  pkgconfig(libva)
 %endif #{?wine_staging}
@@ -814,7 +814,16 @@ cat > bin/gcc <<'EOF'
 #!/usr/bin/sh
 exec %{_bindir}/gcc -Wl,-z,relro%{?_hardened_build: -Wl,-z,now} "$@"
 EOF
-chmod 0755 bin/gcc
+# -Wl -S to build working stripped PEs
+cat > bin/x86_64-w64-mingw32-gcc <<'EOF'
+#!/usr/bin/sh
+exec %{_bindir}/x86_64-w64-mingw32-gcc -Wl,-S "$@"
+EOF
+cat > bin/i686-w64-mingw32-gcc <<'EOF'
+#!/usr/bin/sh
+exec %{_bindir}/i686-w64-mingw32-gcc -Wl,-S "$@"
+EOF
+chmod 0755 bin/*gcc
 export PATH=$(pwd)/bin:$PATH
 %endif
 
@@ -836,6 +845,9 @@ export PATH=$(pwd)/bin:$PATH
 %endif
 %if 0%{?wine_staging}
  --with-xattr \
+%if !0%{?gtk3}
+ --without-gtk3 \
+%endif
 %endif
  --disable-tests \
 %{nil}
@@ -850,15 +862,6 @@ export PATH=$(pwd)/bin:$PATH
         dlldir=%{buildroot}%{_libdir}/wine \
         LDCONFIG=/bin/true \
         UPDATE_DESKTOP_DATABASE=/bin/true
-
-%if 0%{?wine_mingw}
-# Extract mingw debuginfo and remove it.
-# too much work to put them together with default debuginfo packages
-mv %{buildroot}%{_libdir}/wine/fakedlls tmp_fakedlls
-RPM_BUILD_ROOT=%{buildroot} /usr/lib/rpm/mingw-find-debuginfo.sh %{_builddir}/wine-%{ver} mingw
-rm -f %{buildroot}%{_libdir}/wine/*.debug
-mv tmp_fakedlls %{buildroot}%{_libdir}/wine/fakedlls
-%endif
 
 # setup for alternatives usage
 %ifarch x86_64 aarch64
@@ -2367,6 +2370,10 @@ fi
 
 
 %changelog
+* Sun Jul 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-101
+- mingw build
+- gtk3 switch, disabled by default
+
 * Sun Jul 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-100
 - 4.12.1
 

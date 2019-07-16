@@ -26,13 +26,15 @@
 
 set -e
 
-ver=20190211
+ver=20190715
 
 name="DXVK"
 pkgname="wine-dxvk"
 dllsuffix="_dxvk"
 dlls="dxgi d3d11 d3d10 d3d10_1 d3d10core"
 nodlls=""
+
+wineext=dll.so
 
 unset winebits
 enabled=0
@@ -71,7 +73,7 @@ checkcfg(){
         disabled=1
       fi
     done
-    if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll.so")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+    if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.${wineext}")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
       enabledlnk=1
     else
       disabledlnk=1
@@ -101,7 +103,7 @@ setcfg(){
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       lib_path="/usr/lib${lib}/wine"
       for dll in ${dlls} ;do
-        if ! [ -f "${lib_path}/${dll}${dllsuffix}.dll.so" ];then
+        if ! [ -f "${lib_path}/${dll}${dllsuffix}.${wineext}" ];then
           echo "Missing ${dll}${dllsuffix}.dll in /usr/lib${lib}/wine/."
           dllmissing=1
         fi
@@ -125,7 +127,7 @@ setcfg(){
         else
           disabled=1
         fi
-        ln -sf "${lib_path}/${dll}${dllsuffix}.dll.so" "${native_path}/${dll}.dll"
+        ln -sf "${lib_path}/${dll}${dllsuffix}.${wineext}" "${native_path}/${dll}.dll"
         retval=$?
         if [ "${retval}" -eq 0 ] ;then
           enabledlnk=1
@@ -171,7 +173,7 @@ unsetcfg(){
             disabled=0
           fi
         fi
-        if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll.so")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+        if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.${wineext}")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
           rm -f "${native_path}/${dll}.dll"
           retval=$?
           if [ "${retval}" -eq 0 ] ;then

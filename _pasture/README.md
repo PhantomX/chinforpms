@@ -29,7 +29,10 @@ some seasonal packages too, these can return when needed
  * **linux-steam-integration** - Missing dependencies
  * **mangastream-downloader** - Unneeded
  * **mediastreamer** - linphoneqt
- * **mingw-wine-vk9** - Unneeded
+ * **mingw-crt** - Seasonal package, only for dxvk
+ * **mingw-headers** - Seasonal package, only for dxvk
+ * **mingw-winpthreads** - Seasonal package, only for dxvk
+ * **mingw-wine-vk9** - Seasonal package
  * **mupen64plus-extraplugins** - 
  * **nautilus-dropbox** - Unneeded
  * **ortp** - linphoneqt
