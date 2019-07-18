@@ -1,10 +1,11 @@
 %undefine _hardened_build
+%{?mingw_package_header}
 
 %global with_bin 0
 
 Name:           wine-mono
 Version:        4.9.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Mono library required for Wine
 
 License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
@@ -26,7 +27,9 @@ Patch0:         %{name}-build-static.patch
 BuildArch:      noarch
 ExcludeArch:    %{power64} s390x s390
 
-%if !0%{?with_bin}
+%if 0%{?with_bin}
+BuildRequires:  mingw-filesystem-base
+%else
 # 64
 BuildRequires:  mingw64-filesystem >= 95
 BuildRequires:  mingw64-headers
@@ -68,10 +71,15 @@ Requires: wine-filesystem
 Windows Mono library required for Wine.
 
 
-%if !0%{?with_bin}
-%global mingw_build_win32 0
-%{?mingw_package_header}
-%endif
+%package mingw-debuginfo
+Summary:        Debug information for package %{name}
+AutoReq:        0
+AutoProv:       1
+BuildArch:      noarch
+%description mingw-debuginfo
+This package provides debug information for package %{name}.
+Debug information is useful when developing applications that use this
+package or when debugging this package.
 
 
 %prep
@@ -95,6 +103,9 @@ sed -i 's/python /python3 /' \
   mono/mono/tests/Makefile.am mono/scripts/submodules/versions.mk \
   mono/sdks/builds/runtime.mk mono/sdks/wasm/Makefile
 %endif
+
+cp -p  /usr/lib/rpm/mingw-find-debuginfo.sh .
+sed -e 's|${target}_prefix|_prefix|g' -i mingw-find-debuginfo.sh
 
 %build
 %if !0%{?with_bin}
@@ -138,10 +149,19 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 %license mono-LICENSE mono-COPYING.LIB mono-basic-LICENSE mono-mcs*
 %doc mono-basic-README
 %endif
-%{_datadir}/wine/mono/wine-mono-%{version}/
+%{_datadir}/wine/mono/%{name}-%{version}/
+%exclude %{_datadir}/wine/mono/%{name}-%{version}/bin/*.debug
+%exclude %{_datadir}/wine/mono/%{name}-%{version}/lib/*.debug
+
+%files mingw-debuginfo
+%{_datadir}/wine/mono/%{name}-%{version}/bin/*.debug
+%{_datadir}/wine/mono/%{name}-%{version}/lib/*.debug
 
 
 %changelog
+* Wed Jul 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.9.0-101
+- Split not compliant debug package
+
 * Fri Jun 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.9.0-100
 - 4.9.0
 

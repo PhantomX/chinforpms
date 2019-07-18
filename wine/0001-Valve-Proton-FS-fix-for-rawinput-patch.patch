@@ -1,0 +1,25 @@
+From 5557666acfc24229a6f1e8dd06e9a6427c1ef7bc Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 17 Jul 2019 16:29:15 -0300
+Subject: [PATCH] Valve Proton-FS: fix for rawinput patch
+
+---
+ wine-tkg-valve_proton_fullscreen_hack-staging.patch | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/wine-tkg-valve_proton_fullscreen_hack-staging.patch b/wine-tkg-valve_proton_fullscreen_hack-staging.patch
+index 2833b5f..da874c6 100644
+--- a/wine-tkg-valve_proton_fullscreen_hack-staging.patch
++++ b/wine-tkg-valve_proton_fullscreen_hack-staging.patch
+@@ -2577,7 +2577,7 @@ index 1209a250b0..077c18ac10 100644
+ +    input.u.mi.dx = pt.x;
+ +    input.u.mi.dy = pt.y;
+ +
+-     TRACE( "pos %d,%d (event %f,%f, accum %f,%f)\n", input.u.mi.dx, input.u.mi.dy, dx, dy, x_rel->accum, y_rel->accum );
++     TRACE( "pos %d,%d (event %f,%f)\n", input.u.mi.dx, input.u.mi.dy, dx, dy );
+  
+      input.type = INPUT_MOUSE;
+ diff --git a/dlls/winex11.drv/opengl.c b/dlls/winex11.drv/opengl.c
+-- 
+2.21.0
+

@@ -10,21 +10,21 @@
 %endif
 
 %ifarch %{ix86} x86_64
-%global wine_mingw 1
+%global with_mingw 1
 %endif
 
 %global libext .so
 %global cfname wine
 %global targetbits %{__isa_bits}
+%global instmode 0755
 
-%if 0%{?wine_mingw}
-%global debug_package %{nil}
-%global _build_id_links none
-%global __strip /bin/true
+%if 0%{?with_mingw}
+%{?mingw_package_header}
 
 %global libext %{nil}
 %global cfname win
 %global targetbits 64 32
+%global instmode 0644
 %endif
 
 %global winedll dll%{?libext}
@@ -54,7 +54,7 @@ Source3:        wine%{pkgname}cfg
 
 ExclusiveArch:  %{ix86} x86_64
 
-%if 0%{?wine_mingw}
+%if 0%{?with_mingw}
 BuildArch:      noarch
 
 BuildRequires:  mingw64-gcc
@@ -77,7 +77,7 @@ Requires:       wine-common >= %{winecommonver}
 Requires:       wine-desktop >= %{winecommonver}
 Enhances:       wine
 
-%if 0%{?wine_mingw}
+%if 0%{?with_mingw}
 Obsoletes:      %{name}(x86-64) < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}(x86-32) < %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -98,9 +98,16 @@ Provides:       d3d9_%{pkgname}.%{winedll}%{?_isa} = %{?epoch:%{epoch}:}%{versio
 %{summary}.
 
 
-%if 0%{?wine_mingw}
-%global mingw_build_win32 0
-%{?mingw_package_header}
+%if 0%{?with_mingw}
+%package mingw-debuginfo
+Summary:        Debug information for package %{name}
+AutoReq:        0
+AutoProv:       1
+BuildArch:      noarch
+%description mingw-debuginfo
+This package provides debug information for package %{name}.
+Debug information is useful when developing applications that use this
+package or when debugging this package.
 %endif
 
 
@@ -111,7 +118,7 @@ Provides:       d3d9_%{pkgname}.%{winedll}%{?_isa} = %{?epoch:%{epoch}:}%{versio
 %autosetup -n %{pkgname}-%{version} -p1
 %endif
 
-%if 0%{?wine_mingw}
+%if 0%{?with_mingw}
 cp %{S:2} README.%{pkgname}
 %else
 cp %{S:1} .
@@ -127,7 +134,7 @@ sed \
 sed -e "/strip =/s|=.*|= 'true'|g" -i build-wine*.txt
 
 mesonarray(){
-  echo -n "$1" | sed -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
+  echo -n "$1" | sed -e "s|\s\s\s\s\s| |g" -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
 }
 
 # disable fortify as it breaks wine
@@ -136,30 +143,38 @@ mesonarray(){
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
 TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 
-TEMP_LDFLAGS="%{build_ldflags}"
-
-%if 0%{?wine_mingw}
+%if 0%{?with_mingw}
 export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-m64//' \
   -e 's/-m32//' \
+  -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//' \
   -e 's/-fstack-protector-strong//' \
+  -e 's/-grecord-gcc-switches//' \
+  -e 's,-specs=/usr/lib/rpm/redhat/redhat-hardened-cc1,,' \
   -e 's,-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1,,' \
+  -e 's/-fasynchronous-unwind-tables//' \
   -e 's/-fstack-clash-protection//' \
   -e 's/-fcf-protection//' \
-  `"
+  ` --param=ssp-buffer-size=4"
 
-export TEMP_LDFLAGS="`echo ${TEMP_LDFLAGS} | sed -e 's/-Wl,-z,relro//' -e 's/-Wl,-z,now//'` -Wl,-S"
+cp -p  /usr/lib/rpm/mingw-find-debuginfo.sh .
+sed -e 's|${target}_prefix|_prefix|g' -i mingw-find-debuginfo.sh
+%else
+TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"
 %endif
 
 TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
-TEMP_LDFLAGS="`mesonarray "${TEMP_LDFLAGS}"`"
 
 sed \
   -e "/^c_args/s|]|, '$TEMP_CFLAGS'\0|g" \
   -e "/^cpp_args/s|]|, '$TEMP_CFLAGS'\0|g" \
+%if !0%{?with_mingw}
   -e "/^c_link_args/s|]|, '$TEMP_LDFLAGS'\0|g" \
   -e "/^cpp_link_args/s|]|, '$TEMP_LDFLAGS'\0|g" \
+%endif
   -i build-win*.txt
+
+sed -e "/^c_link_args =/acpp_args = ['$TEMP_CFLAGS']" -i build-win64.txt
 
 
 %build
@@ -169,13 +184,13 @@ for i in %{targetbits}
 do
 meson \
   --cross-file build-%{cfname}${i}.txt \
-  --buildtype "release" \
+  --buildtype "plain" \
   %{_target_platform}${i}
 
 pushd %{_target_platform}${i}
 %ninja_build src/d3d9/d3d9.%{winedll}
 
-%if !0%{?wine_mingw}
+%if !0%{?with_mingw}
   for spec in d3d9 ;do
     winebuild --dll --fake-module -E ../src/${spec}/${spec}.spec -F ${spec}_%{pkgname}.dll -o ${spec}_%{pkgname}.dll.fake
   done
@@ -185,40 +200,46 @@ done
 
 %install
 for dll in d3d9 ;do
-%if 0%{?wine_mingw}
   for i in %{targetbits} ;do
-    mkdir -p %{buildroot}%{_datadir}/wine/%{pkgname}/${i}
-    install -pm0755 %{_target_platform}${i}/src/${dll}/${dll}.%{winedll} \
-      %{buildroot}%{_datadir}/wine/%{pkgname}/${i}/${dll}.%{winedll}
-  done
+%if 0%{?with_mingw}
+    instdir=%{buildroot}%{_datadir}/wine/%{pkgname}/${i}
+    dllname=${dll}
 %else
-  mkdir -p %{buildroot}/%{_libdir}/wine
-  install -pm0755 %{_target_platform}%{targetbits}/src/${dll}/${dll}.%{winedll} \
-    %{buildroot}%{_libdir}/wine/${dll}_%{pkgname}.%{winedll}
+    instdir=%{buildroot}%{_libdir}/wine
+    dllname=${dll}_%{pkgname}
 %endif
+    mkdir -p ${instdir}
+    install -pm%{instmode} %{_target_platform}${i}/src/${dll}/${dll}.%{winedll} \
+      ${instdir}/${dllname}.%{winedll}
+  done
 done
 
-%if !0%{?wine_mingw}
-  mkdir -p %{buildroot}/%{_libdir}/wine/fakedlls
+%if !0%{?with_mingw}
+  mkdir -p %{buildroot}%{_libdir}/wine/fakedlls
   for fake in d3d9 ;do
     install -pm0755 %{_target_platform}%{targetbits}/${fake}_%{pkgname}.dll.fake \
-      %{buildroot}/%{_libdir}/wine/fakedlls/${fake}_%{pkgname}.dll
+      %{buildroot}%{_libdir}/wine/fakedlls/${fake}_%{pkgname}.dll
   done
 %endif
 
 mkdir -p %{buildroot}/%{_bindir}
-install -pm0755 wine%{pkgname}cfg %{buildroot}/%{_bindir}/
+install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %files
 %license LICENSE
 %doc README.md README.%{pkgname}
 %{_bindir}/wine%{pkgname}cfg
-%if 0%{?wine_mingw}
+%if 0%{?with_mingw}
 %{_datadir}/wine/%{pkgname}/*/*.dll
 %else
 %{_libdir}/wine/*.%{winedll}
 %{_libdir}/wine/fakedlls/*.dll
+%endif
+
+%if 0%{?with_mingw}
+%files mingw-debuginfo
+%{_datadir}/wine/%{pkgname}/*/*.debug
 %endif
 
 

@@ -86,7 +86,7 @@ Provides:       d3d9-nine.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
 sed -e "/strip =/s|=.*|= 'true'|g" -i tools/cross-wine%{__isa_bits}.in
 
 mesonarray(){
-  echo -n "$1" | sed -e "s|\s\s| |g" -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
+  echo -n "$1" | sed -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
 }
 
 # disable fortify as it breaks wine

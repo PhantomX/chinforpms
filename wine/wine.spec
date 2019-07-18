@@ -3,6 +3,8 @@
 
 %ifarch %{ix86} x86_64
 %global wine_mingw 1
+# Package mingw files with debuginfo
+%global with_debug 0
 %endif
 %global no64bit   0
 %global winegecko 2.47
@@ -31,22 +33,22 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 4.12.1
+%global wine_stagingver a0735f083da6fc04a1a227b913a3967a016d4dbb
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 2f43a4b68cd1f6996b661dff4f99396639d7b647
+%global tkg_id 8fe1682464a3a0fd2459c39dc466e1b8f26036d2
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
 %global pba 0
 
-# FAudio
-%global wine_staging_opts -W xaudio2-revert -W xaudio2_7-CreateFX-FXEcho -W xaudio2_7-WMA_support -W xaudio2_CommitChanges
-# proton FS hack
+# raw input fix
+%global wine_staging_opts -W winex11-mouse-movements
+# proton FS hack and raw input fix
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
@@ -63,7 +65,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.12.1
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -144,9 +146,12 @@ Patch705:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_c
 %if 0%{?wine_staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 Patch710:       %{tkg_url}/misc/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
-Patch711:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch712:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
-Patch713:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
+Source711:      %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
+Patch712:       0001-Valve-Proton-FS-fix-for-rawinput-patch.patch
+Patch713:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch714:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
+Patch715:       %{tkg_url}/proton-tkg-specific/raw-input-proton.patch#/%{name}-tkg-raw-input-proton.patch
+Patch716:       %{tkg_url}/hotfixes/staging_4.12.1r14_gamepad_regression.myrevert#/%{name}-tkg-staging_4.12.1r14_gamepad_regression.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/ff95f1927cdb923907ef1fa9660203004b9ee36d.patch#/%{name}-valve-ff95f19.patch
@@ -743,9 +748,13 @@ cp -p %{S:1001} README-pba-pkg
 
 # Breaks Gallium HUD
 #patch710 -p1
-%patch711 -p1
+cp %{S:711} .
 %patch712 -p1
+patch -p1 -i wine-tkg-valve_proton_fullscreen_hack-staging.patch
 %patch713 -p1
+%patch714 -p1
+%patch715 -p1
+%patch716 -p1 -R
 %patch800 -p1 -R
 
 # fix parallelized build
@@ -779,6 +788,9 @@ sed -i \
   -e 's|OpenCL/opencl.h|CL/opencl.h|g' \
   configure
 
+./tools/make_requests
+
+
 %build
 
 # disable fortify as it breaks wine
@@ -800,20 +812,25 @@ export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`"
 %if 0%{?wine_mingw}
 # mingw compiler do not support plugins and some flags are crashing it
 export CROSSCFLAGS="`echo $CFLAGS | sed \
+  -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//' \
   -e 's/-fstack-protector-strong//' \
+  -e 's/-grecord-gcc-switches//' \
+  -e 's,-specs=/usr/lib/rpm/redhat/redhat-hardened-cc1,,' \
   -e 's,-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1,,' \
+  -e 's/-fasynchronous-unwind-tables//' \
   -e 's/-fstack-clash-protection//' \
   -e 's/-fcf-protection//' \
-  `"
+  ` --param=ssp-buffer-size=4"
 # mingw linker do not support -z,relro and now
-export LDFLAGS="`echo %{build_ldflags} | sed -e 's/-Wl,-z,relro//' -e 's/-Wl,-z,now//'`"
+export LDFLAGS=" "
 
 # Put them again on gcc
 mkdir bin
 cat > bin/gcc <<'EOF'
 #!/usr/bin/sh
-exec %{_bindir}/gcc -Wl,-z,relro%{?_hardened_build: -Wl,-z,now} "$@"
+exec %{_bindir}/gcc %{build_ldflags} "$@"
 EOF
+%if !0%{?with_debug}
 # -Wl -S to build working stripped PEs
 cat > bin/x86_64-w64-mingw32-gcc <<'EOF'
 #!/usr/bin/sh
@@ -823,8 +840,9 @@ cat > bin/i686-w64-mingw32-gcc <<'EOF'
 #!/usr/bin/sh
 exec %{_bindir}/i686-w64-mingw32-gcc -Wl,-S "$@"
 EOF
+%endif
 chmod 0755 bin/*gcc
-export PATH=$(pwd)/bin:$PATH
+export PATH="$(pwd)/bin:$PATH"
 %endif
 
 %configure \
@@ -855,6 +873,9 @@ export PATH=$(pwd)/bin:$PATH
 %make_build TARGETFLAGS=""
 
 %install
+%if 0%{?wine_mingw}
+export PATH="$(pwd)/bin:$PATH"
+%endif
 
 %makeinstall \
         includedir=%{buildroot}%{_includedir} \
@@ -1627,7 +1648,7 @@ fi
 %endif
 %{_libdir}/wine/dxva2.dll.so
 %{_libdir}/wine/esent.%{winedll}
-%{_libdir}/wine/evr.dll.so
+%{_libdir}/wine/evr.%{winedll}
 %{_libdir}/wine/explorerframe.%{winedll}
 %{_libdir}/wine/ext-ms-win-authz-context-l1-1-0.%{winedll}
 %{_libdir}/wine/ext-ms-win-domainjoin-netjoin-l1-1-0.%{winedll}
@@ -1882,7 +1903,7 @@ fi
 %{_libdir}/wine/psapi.%{winedll}
 %{_libdir}/wine/pstorec.%{winedll}
 %{_libdir}/wine/qcap.dll.so
-%{_libdir}/wine/qedit.dll.so
+%{_libdir}/wine/qedit.%{winedll}
 %{_libdir}/wine/qmgr.%{winedll}
 %{_libdir}/wine/qmgrprxy.%{winedll}
 %{_libdir}/wine/quartz.dll.so
@@ -2167,6 +2188,7 @@ fi
 %dir %{_datadir}/wine/mono
 %dir %{_datadir}/wine/fonts
 %{_datadir}/wine/wine.inf
+#{_datadir}/wine/winebus.inf
 %{_datadir}/wine/winehid.inf
 %{_datadir}/wine/l_intl.nls
 
@@ -2370,6 +2392,10 @@ fi
 
 
 %changelog
+* Wed Jul 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-102
+- Update staging patchset
+- Raw input fix by Guy1524
+
 * Sun Jul 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-101
 - mingw build
 - gtk3 switch, disabled by default
