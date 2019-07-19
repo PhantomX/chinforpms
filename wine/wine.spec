@@ -40,7 +40,7 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 8fe1682464a3a0fd2459c39dc466e1b8f26036d2
+%global tkg_id 2228215dd5318366d1369ea15cceb932bad3b6e8
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -65,7 +65,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.12.1
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -151,7 +151,6 @@ Patch712:       0001-Valve-Proton-FS-fix-for-rawinput-patch.patch
 Patch713:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch714:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 Patch715:       %{tkg_url}/proton-tkg-specific/raw-input-proton.patch#/%{name}-tkg-raw-input-proton.patch
-Patch716:       %{tkg_url}/hotfixes/staging_4.12.1r14_gamepad_regression.myrevert#/%{name}-tkg-staging_4.12.1r14_gamepad_regression.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/ff95f1927cdb923907ef1fa9660203004b9ee36d.patch#/%{name}-valve-ff95f19.patch
@@ -167,6 +166,7 @@ Patch1000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
+Patch5001:      0001-Revert-wuauserv-to-before-winebus-split.patch
 
 %endif #{?wine_staging}
 
@@ -735,6 +735,17 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
 %patch5000 -p1
+%patch5001 -p1
+
+for patch in \
+  0001-winebus.inf-Add-new-INF-file-and-copy-it-to-the-INF-.patch \
+  0002-winebus.sys-Implement-AddDevice.patch \
+  0004-winebus.sys-Initialize-and-teardown-the-HID-backends.patch \
+  0005-ntoskrnl.exe-IoInvalidateDeviceRelations-receives-th.patch \
+  0028-wine.inf-Remove-registration-for-the-winebus-service.patch
+do
+  sed -e "/${patch}/d" -i patches/patchinstall.sh
+done
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
@@ -754,7 +765,6 @@ patch -p1 -i wine-tkg-valve_proton_fullscreen_hack-staging.patch
 %patch713 -p1
 %patch714 -p1
 %patch715 -p1
-%patch716 -p1 -R
 %patch800 -p1 -R
 
 # fix parallelized build
@@ -1614,6 +1624,7 @@ fi
 %{_libdir}/wine/difxapi.%{winedll}
 %{_libdir}/wine/dinput.dll.so
 %{_libdir}/wine/dinput8.dll.so
+%{_libdir}/wine/directmanipulation.%{winedll}
 %{_libdir}/wine/dispex.%{winedll}
 %{_libdir}/wine/dmband.%{winedll}
 %{_libdir}/wine/dmcompos.%{winedll}
@@ -1796,6 +1807,7 @@ fi
 %{_libdir}/wine/msasn1.%{winedll}
 %{_libdir}/wine/mscat32.%{winedll}
 %{_libdir}/wine/mscoree.%{winedll}
+%{_libdir}/wine/mscorwks.%{winedll}
 %{_libdir}/wine/msctf.%{winedll}
 %{_libdir}/wine/msctfp.%{winedll}
 %{_libdir}/wine/msdaps.%{winedll}
@@ -2392,6 +2404,9 @@ fi
 
 
 %changelog
+* Thu Jul 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-103
+- Something broke
+
 * Wed Jul 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-102
 - Update staging patchset
 - Raw input fix by Guy1524
