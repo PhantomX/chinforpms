@@ -1,29 +1,28 @@
-From 04024c70fa4bafed8f89a8f42f794c8a457d1a9d Mon Sep 17 00:00:00 2001
+From 12c34aba50a838b6b9714430c110c00db1069f4a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 2 Jun 2019 14:49:44 -0300
+Date: Sat, 20 Jul 2019 01:02:00 -0300
 Subject: [PATCH] Use system libs
 
 ---
- core/archive/ZipArchive.h                     |  4 +++
- core/core.mk                                  | 24 +++++++++++--
- core/deps/chdr/chd.c                          |  4 +++
- core/deps/chdr/flac.h                         |  4 +++
- .../libwebsocket/extension-deflate-frame.h    |  4 +++
- .../libwebsocket/extension-deflate-stream.h   |  4 +++
- core/hw/maple/maple_devs.cpp                  |  8 +++++
- core/hw/pvr/Renderer_if.cpp                   |  4 +++
- core/reios/reios_elf.cpp                      |  2 +-
- core/rend/TexCache.cpp                        |  4 +++
- core/rend/gles/CustomTexture.cpp              |  4 +++
- core/rend/gles/gles.cpp                       |  4 +++
- core/rend/gles/gltex.cpp                      |  8 +++++
- shell/linux/Makefile                          | 34 +++++++++++++++++++
- 14 files changed, 108 insertions(+), 4 deletions(-)
+ libswirl/archive/ZipArchive.h        |  4 +++
+ libswirl/core.mk                     | 26 ++++++++++++++++---
+ libswirl/deps/chdr/chd.c             |  4 +++
+ libswirl/deps/chdr/flac.h            |  4 +++
+ libswirl/hw/maple/maple_devs.cpp     |  8 ++++++
+ libswirl/hw/pvr/Renderer_if.cpp      |  4 +++
+ libswirl/reios/reios_elf.cpp         |  2 +-
+ libswirl/rend/TexCache.cpp           |  4 +++
+ libswirl/rend/gles/CustomTexture.cpp |  4 +++
+ libswirl/rend/gles/glesrend.cpp      |  7 +++--
+ libswirl/rend/gles/glestex.cpp       |  8 ++++++
+ libswirl/scripting/lua_bindings.h    |  4 +++
+ reicast/linux/Makefile               | 39 ++++++++++++++++++++++++++++
+ 13 files changed, 112 insertions(+), 6 deletions(-)
 
-diff --git a/core/archive/ZipArchive.h b/core/archive/ZipArchive.h
+diff --git a/libswirl/archive/ZipArchive.h b/libswirl/archive/ZipArchive.h
 index 05a0f0f..ff24960 100644
---- a/core/archive/ZipArchive.h
-+++ b/core/archive/ZipArchive.h
+--- a/libswirl/archive/ZipArchive.h
++++ b/libswirl/archive/ZipArchive.h
 @@ -22,7 +22,11 @@
  #ifndef CORE_ARCHIVE_ZIPARCHIVE_H_
  #define CORE_ARCHIVE_ZIPARCHIVE_H_
@@ -36,20 +35,20 @@ index 05a0f0f..ff24960 100644
  
  class ZipArchive : public Archive
  {
-diff --git a/core/core.mk b/core/core.mk
-index 66d89a6..79a80b9 100755
---- a/core/core.mk
-+++ b/core/core.mk
-@@ -9,9 +9,25 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
+diff --git a/libswirl/core.mk b/libswirl/core.mk
+index 0fbc1ff..f098d7e 100644
+--- a/libswirl/core.mk
++++ b/libswirl/core.mk
+@@ -9,14 +9,32 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
  
  RZDCY_MODULES	:=	cfg/ hw/arm7/ hw/aica/ hw/holly/ hw/ hw/gdrom/ hw/maple/ \
   hw/mem/ hw/pvr/ hw/sh4/ hw/sh4/interpr/ hw/sh4/modules/ plugins/ profiler/ oslib/ \
 - hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/zlib/ deps/chdr/ deps/crypto/ \
-- deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/libpng/ deps/xbrz/ \
-- deps/xxhash/ deps/libzip/ deps/imgui/ archive/ input/
+- deps/libelf/ deps/cdipsr/ arm_emitter/ rend/ reios/ deps/libpng/ deps/xbrz/ \
+- deps/xxhash/ deps/libzip/ deps/imgui/ archive/ input/ glwrap/
 + hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/chdr/ deps/crypto/ \
-+ deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
-+ deps/imgui/ archive/ input/
++ deps/libelf/ deps/cdipsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
++ deps/imgui/ archive/ input/ glwrap/
 +
 +ifndef SYSTEM_LIBPNG
 +RZDCY_MODULES += deps/libpng/
@@ -67,9 +66,16 @@ index 66d89a6..79a80b9 100755
 +RZDCY_MODULES +=  deps/zlib/
 +endif
  
- ifdef WEBUI
+ ifdef SCRIPTING
+ 	RZDCY_MODULES += scripting/
++ifndef SYSTEM_LUA
+ 	RZDCY_MODULES += deps/lua/
+ endif
++endif
+ 
+ ifdef _NO_WEBUI
  	RZDCY_MODULES += webui/
-@@ -134,10 +150,12 @@ ifdef HAS_SOFTREND
+@@ -141,10 +159,12 @@ ifdef HAS_SOFTREND
  endif
  
  ifdef CHD5_FLAC
@@ -82,10 +88,10 @@ index 66d89a6..79a80b9 100755
  
  # 7-Zip/LZMA settings (CHDv5)
  ifdef CHD5_LZMA
-diff --git a/core/deps/chdr/chd.c b/core/deps/chdr/chd.c
+diff --git a/libswirl/deps/chdr/chd.c b/libswirl/deps/chdr/chd.c
 index 4461bdf..05a64aa 100644
---- a/core/deps/chdr/chd.c
-+++ b/core/deps/chdr/chd.c
+--- a/libswirl/deps/chdr/chd.c
++++ b/libswirl/deps/chdr/chd.c
 @@ -54,7 +54,11 @@
  #endif // CHD5_LZMA
  #include "deps/crypto/md5.h"
@@ -98,10 +104,10 @@ index 4461bdf..05a64aa 100644
  
  #define TRUE 1
  #define FALSE 0
-diff --git a/core/deps/chdr/flac.h b/core/deps/chdr/flac.h
+diff --git a/libswirl/deps/chdr/flac.h b/libswirl/deps/chdr/flac.h
 index 3de00eb..6f51ffa 100644
---- a/core/deps/chdr/flac.h
-+++ b/core/deps/chdr/flac.h
+--- a/libswirl/deps/chdr/flac.h
++++ b/libswirl/deps/chdr/flac.h
 @@ -14,7 +14,11 @@
  #define __FLAC_H__
  
@@ -114,38 +120,10 @@ index 3de00eb..6f51ffa 100644
  
  /***************************************************************************
   *  TYPE DEFINITIONS
-diff --git a/core/deps/libwebsocket/extension-deflate-frame.h b/core/deps/libwebsocket/extension-deflate-frame.h
-index 685cdeb..564f80e 100644
---- a/core/deps/libwebsocket/extension-deflate-frame.h
-+++ b/core/deps/libwebsocket/extension-deflate-frame.h
-@@ -1,5 +1,9 @@
- #pragma once
-+#ifdef SYSTEM_ZLIB
-+#include <zlib.h>
-+#else
- #include "deps/zlib/zlib.h"
-+#endif
- 
- #define DEFLATE_FRAME_COMPRESSION_LEVEL_SERVER 1
- #define DEFLATE_FRAME_COMPRESSION_LEVEL_CLIENT Z_DEFAULT_COMPRESSION
-diff --git a/core/deps/libwebsocket/extension-deflate-stream.h b/core/deps/libwebsocket/extension-deflate-stream.h
-index ff17741..8421a97 100644
---- a/core/deps/libwebsocket/extension-deflate-stream.h
-+++ b/core/deps/libwebsocket/extension-deflate-stream.h
-@@ -1,5 +1,9 @@
- 
-+#ifdef SYSTEM_ZLIB
-+#include <zlib.h>
-+#else
- #include "deps/zlib/zlib.h"
-+#endif
- 
- #define DEFLATE_STREAM_CHUNK 128
- #define DEFLATE_STREAM_COMPRESSION_LEVEL 1
-diff --git a/core/hw/maple/maple_devs.cpp b/core/hw/maple/maple_devs.cpp
-index f506c66..7128805 100755
---- a/core/hw/maple/maple_devs.cpp
-+++ b/core/hw/maple/maple_devs.cpp
+diff --git a/libswirl/hw/maple/maple_devs.cpp b/libswirl/hw/maple/maple_devs.cpp
+index f506c66..7128805 100644
+--- a/libswirl/hw/maple/maple_devs.cpp
++++ b/libswirl/hw/maple/maple_devs.cpp
 @@ -10,8 +10,16 @@
  #include "input/gamepad.h"
  #include <time.h>
@@ -163,10 +141,10 @@ index f506c66..7128805 100755
  
  #if _ANDROID
  #include <android/log.h>
-diff --git a/core/hw/pvr/Renderer_if.cpp b/core/hw/pvr/Renderer_if.cpp
-index 71c954e..62a03d0 100644
---- a/core/hw/pvr/Renderer_if.cpp
-+++ b/core/hw/pvr/Renderer_if.cpp
+diff --git a/libswirl/hw/pvr/Renderer_if.cpp b/libswirl/hw/pvr/Renderer_if.cpp
+index aa4b4f5..fb3ce67 100644
+--- a/libswirl/hw/pvr/Renderer_if.cpp
++++ b/libswirl/hw/pvr/Renderer_if.cpp
 @@ -4,7 +4,11 @@
  #include "rend/TexCache.h"
  #include "rend/gui.h"
@@ -179,10 +157,10 @@ index 71c954e..62a03d0 100644
  
  #include "deps/crypto/md5.h"
  
-diff --git a/core/reios/reios_elf.cpp b/core/reios/reios_elf.cpp
+diff --git a/libswirl/reios/reios_elf.cpp b/libswirl/reios/reios_elf.cpp
 index ff17c93..9d688dd 100644
---- a/core/reios/reios_elf.cpp
-+++ b/core/reios/reios_elf.cpp
+--- a/libswirl/reios/reios_elf.cpp
++++ b/libswirl/reios/reios_elf.cpp
 @@ -54,4 +54,4 @@ bool reios_loadElf(const string& elf) {
  	}
  
@@ -190,10 +168,10 @@ index ff17c93..9d688dd 100644
 -}
 \ No newline at end of file
 +}
-diff --git a/core/rend/TexCache.cpp b/core/rend/TexCache.cpp
+diff --git a/libswirl/rend/TexCache.cpp b/libswirl/rend/TexCache.cpp
 index 7a81e89..896bdd1 100644
---- a/core/rend/TexCache.cpp
-+++ b/core/rend/TexCache.cpp
+--- a/libswirl/rend/TexCache.cpp
++++ b/libswirl/rend/TexCache.cpp
 @@ -9,7 +9,11 @@
  #include "hw/pvr/pvr_regs.h"
  #include "hw/mem/_vmem.h"
@@ -206,10 +184,10 @@ index 7a81e89..896bdd1 100644
  
  u8* vq_codebook;
  u32 palette_index;
-diff --git a/core/rend/gles/CustomTexture.cpp b/core/rend/gles/CustomTexture.cpp
-index 8f062d1..c1a02ad 100644
---- a/core/rend/gles/CustomTexture.cpp
-+++ b/core/rend/gles/CustomTexture.cpp
+diff --git a/libswirl/rend/gles/CustomTexture.cpp b/libswirl/rend/gles/CustomTexture.cpp
+index 3d6f371..4cb24fe 100644
+--- a/libswirl/rend/gles/CustomTexture.cpp
++++ b/libswirl/rend/gles/CustomTexture.cpp
 @@ -28,7 +28,11 @@
  #include <dirent.h>
  #endif
@@ -221,15 +199,16 @@ index 8f062d1..c1a02ad 100644
 +#endif
  #include "reios/reios.h"
  
- void CustomTexture::LoaderThread()
-diff --git a/core/rend/gles/gles.cpp b/core/rend/gles/gles.cpp
-index 0f65d02..2538fdc 100644
---- a/core/rend/gles/gles.cpp
-+++ b/core/rend/gles/gles.cpp
-@@ -2027,7 +2027,11 @@ struct glesrend : Renderer
+ #include "scripting/lua_bindings.h"
+diff --git a/libswirl/rend/gles/glesrend.cpp b/libswirl/rend/gles/glesrend.cpp
+index 2e31e4b..8acac10 100644
+--- a/libswirl/rend/gles/glesrend.cpp
++++ b/libswirl/rend/gles/glesrend.cpp
+@@ -1615,8 +1615,11 @@ struct glesrend : Renderer
+ 	}
  };
  
- 
+-
 +#ifdef SYSTEM_LIBPNG
 +#include <png.h>
 +#else
@@ -238,10 +217,17 @@ index 0f65d02..2538fdc 100644
  
  FILE* pngfile;
  
-diff --git a/core/rend/gles/gltex.cpp b/core/rend/gles/gltex.cpp
+@@ -1777,4 +1780,4 @@ GLuint loadPNG(const string& fname, int &width, int &height)
+ 
+ #include "hw/pvr/Renderer_if.h"
+ 
+-static auto gles2rend = RegisterRendererBackend(rendererbackend_t{ "gles", "OpenGL ES 2/PC41 (Per Triangle Sort)", 1, []() { return (Renderer*) new glesrend(); } });
+\ No newline at end of file
++static auto gles2rend = RegisterRendererBackend(rendererbackend_t{ "gles", "OpenGL ES 2/PC41 (Per Triangle Sort)", 1, []() { return (Renderer*) new glesrend(); } });
+diff --git a/libswirl/rend/gles/glestex.cpp b/libswirl/rend/gles/glestex.cpp
 index 1a3802f..d21bf02 100644
---- a/core/rend/gles/gltex.cpp
-+++ b/core/rend/gles/gltex.cpp
+--- a/libswirl/rend/gles/glestex.cpp
++++ b/libswirl/rend/gles/glestex.cpp
 @@ -3,8 +3,16 @@
  #include "rend/TexCache.h"
  #include "hw/pvr/pvr_mem.h"
@@ -259,24 +245,40 @@ index 1a3802f..d21bf02 100644
  #include "CustomTexture.h"
  
  /*
-diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index bc699aa..7ae56b3 100644
---- a/shell/linux/Makefile
-+++ b/shell/linux/Makefile
-@@ -13,6 +13,12 @@ USE_UDEV := 1
- USE_MODEM := 1
+diff --git a/libswirl/scripting/lua_bindings.h b/libswirl/scripting/lua_bindings.h
+index e2f3366..b3c41d0 100644
+--- a/libswirl/scripting/lua_bindings.h
++++ b/libswirl/scripting/lua_bindings.h
+@@ -1,6 +1,10 @@
+ #pragma once
+ 
++#ifdef SYSTEM_LUA
++#include <lua.hpp>
++#else
+ #include "lua/lua.hpp"
++#endif
+ #include <string>
+ 
+ void emulib_expose(lua_State* L);
+diff --git a/reicast/linux/Makefile b/reicast/linux/Makefile
+index be0d424..3810148 100644
+--- a/reicast/linux/Makefile
++++ b/reicast/linux/Makefile
+@@ -14,6 +14,13 @@ USE_MODEM := 1
  PLATFORM_EXT := elf
+ SCRIPTING := 1
  
 +SYSTEM_FLAC := 1
 +SYSTEM_LIBPNG := 1
 +SYSTEM_LIBZIP := 1
++SYSTEM_LUA := 1
 +SYSTEM_XXHASH := 1
-+SYSTEM_ZLIB := 1
++SYSTEM_ZLIB := 1d
 +
  CXX=${CC_PREFIX}g++
  CC=${CC_PREFIX}gcc
  AS=${CC_PREFIX}as
-@@ -399,6 +405,34 @@ ifdef HAS_SOFTREND
+@@ -437,6 +444,38 @@ ifdef HAS_SOFTREND
      CXXFLAGS += -DTARGET_SOFTREND
  endif
  
@@ -296,6 +298,11 @@ index bc699aa..7ae56b3 100644
 +    LIBS += `pkg-config --libs libzip`
 +endif
 +
++ifdef SYSTEM_LUA
++    CXXFLAGS += `pkg-config --cflags lua` -D SYSTEM_LUA
++    LIBS += `pkg-config --libs lua`
++endif
++
 +ifdef SYSTEM_XXHASH
 +    CXXFLAGS += -D SYSTEM_XXHASH
 +    LIBS += -lxxhash
@@ -307,9 +314,9 @@ index bc699aa..7ae56b3 100644
 +    LIBS += `pkg-config --libs zlib`
 +endif
 +
-+
  EXECUTABLE_STRIPPED=nosym-reicast.$(PLATFORM_EXT)
  ifdef NAOMI
      CFLAGS += -D TARGET_NAOMI
 -- 
 2.21.0
+

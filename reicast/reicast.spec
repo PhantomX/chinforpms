@@ -1,6 +1,6 @@
-%global commit 41b74994f31756870b4148f6f3e9b6e4d5e64768
+%global commit 44d548744a19336b07622086c40289f4ba16e3f5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190614
+%global date 20190720
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -12,8 +12,8 @@
 %endif
 
 Name:           reicast
-Version:        8.1
-Release:        6%{?gver}%{?dist}
+Version:        19.07.3
+Release:        1%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -42,6 +42,7 @@ BuildRequires:  pkgconfig(libpng)
 #BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libzip)
+BuildRequires:  pkgconfig(lua)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  python3-devel
@@ -61,25 +62,24 @@ Requires:       python3-evdev
 %autosetup -n %{name}-emulator-r%{version} -p1
 %endif
 
-rm -f shell/linux/gcwz/enta_viv/*.so
-rm -f shell/linux-deps/lib/*.so
+rm -rf %{name}/linux-deps/*
 
-rm -rf core/deps/{flac,libpng,libzip,xxhash,zlib}
+rm -rf libswirl/deps/{flac,libpng,libzip,lua,xxhash,zlib}
 
 %if ! %{with native}
-sed -e 's|grep flags /proc/cpuinfo|/bin/true|g' -i shell/linux/Makefile
+sed -e 's|grep flags /proc/cpuinfo|/bin/true|g' -i %{name}/linux/Makefile
 %endif
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" shell/linux/tools/%{name}-joyconfig.py
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{name}/linux/tools/%{name}-joyconfig.py
 
 sed \
   -e 's|`git describe --tags --always`|%{version}-%{release}|g' \
-  -i core/core.mk
+  -i libswirl/core.mk
 
 %if 0%{?with_snapshot}
   sed \
     -e 's|`git rev-parse --short HEAD`|%{shortcommit}|g' \
-    -i core/core.mk
+    -i libswirl/core.mk
 %endif
 
 
@@ -88,12 +88,12 @@ export PREFIX=%{_prefix}
 %set_build_flags
 export LDFLAGS="$LDFLAGS -Wl,--as-needed"
 
-%make_build -C shell/linux
+%make_build -C %{name}/linux
 
 
 %install
 export PREFIX=%{_prefix}
-%make_install -C shell/linux
+%make_install -C %{name}/linux
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
@@ -122,6 +122,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Jul 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.07.3-1.20190720git44d5487
+- 19.07.3
+
 * Sat Jun 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 8.1-6.20190614git41b7499
 - New snapshot
 - Python 3

@@ -20,7 +20,7 @@
 
 Name:           telegram-desktop
 Version:        1.7.14
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -152,8 +152,8 @@ export CXX=g++
 
 RPM_NCPUS=%(echo %{_smp_mflags} | sed 's/-j//')
 RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
-export CFLAGS="%{optflags} $RPM_FLTO_FLAGS"
-export CXXFLAGS="%{optflags} $RPM_FLTO_FLAGS"
+export CFLAGS="$(echo %{optflags} | sed -e 's/-O2\b/-O3/') $RPM_FLTO_FLAGS"
+export CXXFLAGS="$CFLAGS"
 export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 %endif
 
@@ -211,6 +211,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Fri Jul 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.14-102
+- -O3 optimization with LTO builds
+
 * Thu Jul 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.14-101
 - RPMFusion sync. System rlottie
 

@@ -33,14 +33,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver a0735f083da6fc04a1a227b913a3967a016d4dbb
+%global wine_stagingver 5d7a86d0540ad22ab45bf5cbf8aabcca0f56b137
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 2228215dd5318366d1369ea15cceb932bad3b6e8
+%global tkg_id 550b25dcb50a0a7e7279f6250bf13452dd341c73
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -65,7 +65,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.12.1
-Release:        103%{?dist}
+Release:        104%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -166,7 +166,6 @@ Patch1000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
-Patch5001:      0001-Revert-wuauserv-to-before-winebus-split.patch
 
 %endif #{?wine_staging}
 
@@ -735,17 +734,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
 %patch5000 -p1
-%patch5001 -p1
-
-for patch in \
-  0001-winebus.inf-Add-new-INF-file-and-copy-it-to-the-INF-.patch \
-  0002-winebus.sys-Implement-AddDevice.patch \
-  0004-winebus.sys-Initialize-and-teardown-the-HID-backends.patch \
-  0005-ntoskrnl.exe-IoInvalidateDeviceRelations-receives-th.patch \
-  0028-wine.inf-Remove-registration-for-the-winebus-service.patch
-do
-  sed -e "/${patch}/d" -i patches/patchinstall.sh
-done
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
@@ -2200,7 +2188,7 @@ fi
 %dir %{_datadir}/wine/mono
 %dir %{_datadir}/wine/fonts
 %{_datadir}/wine/wine.inf
-#{_datadir}/wine/winebus.inf
+%{_datadir}/wine/winebus.inf
 %{_datadir}/wine/winehid.inf
 %{_datadir}/wine/l_intl.nls
 
@@ -2404,6 +2392,9 @@ fi
 
 
 %changelog
+* Fri Jul 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-104
+- Try again
+
 * Thu Jul 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-103
 - Something broke
 

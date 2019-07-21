@@ -1,6 +1,6 @@
-%global commit 53e8263371c2c48795c48666a3d5d6c3ca4e8d58
+%global commit 37a97e7414b4702d38528c952ad43a252b7b702a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190618
+%global date 20190718
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -16,7 +16,7 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 9d93983574606d2af15be8cc0b49604bb4cafad6
+%global commit1 03707d64bffc594d5707780a34ada77e8f43cdc0
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -32,11 +32,11 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
-%global commit6 9983f99e87ab0b6608b236ea59bcf873f90e1435
+%global commit6 f9d08a25fbe17e0677a89d398f4d7f232339c3f9
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 be7425ef70231ab82930331959ab487d605d0482
+%global commit7 a1f7c8dc8ea2f94443951ee27003bffa562c1f13
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -52,7 +52,7 @@
 
 Name:           ppsspp
 Version:        1.8.0
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -248,7 +248,7 @@ pushd %{_target_platform}
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \
   -DUSE_DISCORD:BOOL=OFF \
   -DUSE_WAYLAND_WSI:BOOL=ON \
-  -DUSING_X11_VULKAN=ON \
+  -DUSING_X11_VULKAN:BOOL=ON \
   -DENABLE_HLSL:BOOL=OFF \
   -DENABLE_GLSLANG_BINARIES:BOOL=OFF \
 %ifarch %{ix86}
@@ -334,6 +334,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Jul 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-105.20190718git37a97e7
+- New snapshot
+
 * Thu Jun 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.0-104.20190618git53e8263
 - New snapshot
 

@@ -19,7 +19,7 @@
 Name:           kepka
 # If rc, use "~" instead "-", as ~rc1
 Version:        2.0.0~rc2
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Unofficial Telegram desktop messaging app
 
 License:        GPLv3+
@@ -107,8 +107,8 @@ export CXX=g++
 
 RPM_NCPUS=%(echo %{_smp_mflags} | sed 's/-j//')
 RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
-export CFLAGS="%{optflags} $RPM_FLTO_FLAGS"
-export CXXFLAGS="%{optflags} $RPM_FLTO_FLAGS"
+export CFLAGS="$(echo %{optflags} | sed -e 's/-O2\b/-O3/') $RPM_FLTO_FLAGS"
+export CXXFLAGS="$CFLAGS"
 export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 %endif
 
@@ -157,6 +157,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Jul 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0~rc2-3.20190528gitbd54842
+- -O3 optimization with LTO builds
+
 * Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0~rc2-2.20190528gitbd54842
 - Snapshot
 

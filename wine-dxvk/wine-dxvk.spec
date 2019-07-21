@@ -7,6 +7,7 @@
 %global libext .so
 %global cfname wine
 %global targetbits %{__isa_bits}
+%global instmode 0755
 
 %if 0%{?with_mingw}
 %{?mingw_package_header}
@@ -14,6 +15,7 @@
 %global libext %{nil}
 %global cfname win
 %global targetbits 64 32
+%global instmode 0644
 %endif
 
 %global winedll dll%{?libext}
@@ -23,8 +25,8 @@
 %global pkgname dxvk
 
 Name:           wine-%{pkgname}
-Version:        1.3
-Release:        2%{?dist}
+Version:        1.3.1
+Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -244,6 +246,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Jul 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3.1-1
+- 1.3.1
+
 * Mon Jul 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3-2
 - mingw build fu
 
