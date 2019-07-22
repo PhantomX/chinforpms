@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 19
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit 8584aaf1c3262ca17d1e4a614ede9179ef462bb0
-%global st_last_commit 22bc18377bd45c060733e1ed09f34b769e4b4bef
+%global st_last_commit 0d4f1b2afde8df3b0ca79818123a43a184a0e1ea
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
@@ -514,6 +514,8 @@ Source5000: %{extra_patch}
 %if 0%{?pf_stable_extra}
 Source5002: %{stable_extra_patch}
 Source5003: %{pf_url}/f48f9c2b01953f0488d27637339f8aa6548864dc.patch#/pf-f48f9c2.patch
+Source5004: %{pf_url}/2186b2b14e8226edd6d647c21198d50bc743a6ad.patch#/pf-2186b2b.patch
+Source5005: %{pf_url}/bb28f93267d772b47534e1d8c8693bf29c93d4cf.patch#/pf-bb28f93.patch
 %endif
 %else
 # For a stable release kernel
@@ -681,6 +683,9 @@ Patch546: netfilter-ctnetlink-Fix-regression-in-conntrack-entry.patch
 # https://patchwork.kernel.org/patch/11029027/
 Patch547: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
 
+# CVE-2019-13631 rhbz 1731000 1731001
+Patch548: Input-gtco-bounds-check-collection-indent-level.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -705,15 +710,15 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 Patch3001: %{pf_url}/e847736de234b273f40844bc2406d1f18d127979.patch#/pf-e847736d.patch
 %endif
 Patch3002: %{pf_url}/2e96b764784524c1f8aa83e9688118569bdaca40.patch#/pf-2e96b764.patch
-Patch3002: %{pf_url}/f01c0609f9f126d45a30727e78f4e2121a2ffad0.patch#/pf-f01c0609.patch
-Patch3002: %{pf_url}/3360098a25074b4f8914292e1fddf24ea65ba056.patch#/pf-3360098a.patch
-Patch3002: %{pf_url}/e3aa6163237821f7b94a3ba876c710e614f6cbac.patch#/pf-e3aa6163.patch
-Patch3002: %{pf_url}/3d6631a6b1dc5432aa323cecb9d4979215966dd7.patch#/pf-3d6631a6.patch
-Patch3002: %{pf_url}/2223e774b56e536865e8ad3137cb99d14d8693d4.patch#/pf-2223e774.patch
-Patch3002: %{pf_url}/44fa38afade1d0f42b80bc6c8aa140977a02fe78.patch#/pf-44fa38af.patch
-Patch3002: %{pf_url}/7b3c2539e17beccc8d9d1ba8f6f0e7d6f33b9654.patch#/pf-7b3c2539.patch
-Patch3002: %{pf_url}/94b5f9cf52bcbcc68a5cdd7a2bd1250df8f0b9fa.patch#/pf-94b5f9cf.patch
-Patch3002: %{pf_url}/05948f91ac32a0a828486063fcdd1468f6c73a35.patch#/pf-05948f91.patch
+Patch3003: %{pf_url}/f01c0609f9f126d45a30727e78f4e2121a2ffad0.patch#/pf-f01c0609.patch
+Patch3004: %{pf_url}/3360098a25074b4f8914292e1fddf24ea65ba056.patch#/pf-3360098a.patch
+Patch3005: %{pf_url}/e3aa6163237821f7b94a3ba876c710e614f6cbac.patch#/pf-e3aa6163.patch
+Patch3006: %{pf_url}/3d6631a6b1dc5432aa323cecb9d4979215966dd7.patch#/pf-3d6631a6.patch
+Patch3007: %{pf_url}/2223e774b56e536865e8ad3137cb99d14d8693d4.patch#/pf-2223e774.patch
+Patch3008: %{pf_url}/44fa38afade1d0f42b80bc6c8aa140977a02fe78.patch#/pf-44fa38af.patch
+Patch3009: %{pf_url}/7b3c2539e17beccc8d9d1ba8f6f0e7d6f33b9654.patch#/pf-7b3c2539.patch
+Patch3010: %{pf_url}/94b5f9cf52bcbcc68a5cdd7a2bd1250df8f0b9fa.patch#/pf-94b5f9cf.patch
+Patch3011: %{pf_url}/05948f91ac32a0a828486063fcdd1468f6c73a35.patch#/pf-05948f91.patch
 
 #Patch3500: postfactum-merge-fixes-2.patch
 
@@ -723,7 +728,8 @@ Patch3002: %{pf_url}/05948f91ac32a0a828486063fcdd1468f6c73a35.patch#/pf-05948f91
 %global graysky2_id 87168bfa27b782e1c9435ba28ebe3987ddea8d30
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v8.1+_kernel_v4.13+.patch
 %endif
-
+%else
+Patch3050: %{patchwork_url}/11048599/mbox/#/patchwork-11048599.patch
 %endif
 
 %if !0%{?zen}
@@ -1158,6 +1164,8 @@ $patch_command -i %{SOURCE5000}
 %if 0%{?pf_stable_extra}
 filterdiff -p1 -x Makefile %{SOURCE5002} > pf_stable_extra.patch
 $patch_command -R -i %{SOURCE5003}
+$patch_command -R -i %{SOURCE5004}
+$patch_command -R -i %{SOURCE5005}
 $patch_command -i pf_stable_extra.patch
 rm -f pf_stable_extra.patch
 %endif
@@ -1996,6 +2004,9 @@ fi
 #
 #
 %changelog
+* Sun Jul 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.19-500.chinfo
+- 5.1.19
+
 * Sun Jul 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.18-500.chinfo
 - 5.1.18
 
