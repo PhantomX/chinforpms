@@ -1,5 +1,5 @@
 Name:           gamemode
-Version:        1.3.1
+Version:        1.4
 Release:        100%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
@@ -10,13 +10,15 @@ Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
 
 # Use system inih
 Patch0:         %{name}-system-inih.patch
-Patch1:         0001-gamemoderun-do-not-hardcode-libdir-in-LD_PRELOAD.patch
 
 
 BuildRequires:  meson
 BuildRequires:  gcc
 BuildRequires:  inih-devel
+BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(libsystemd)
+BuildRequires:  pkgconfig(systemd)
+Requires:       polkit
 Requires:       PolicyKit-authentication-agent
 Requires:       systemd
 
@@ -66,6 +68,9 @@ mkdir -p %{buildroot}%{_datadir}/%{name}
 
 
 %changelog
+* Mon Jul 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.4-100
+- 1.4
+
 * Fri Mar 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.3.1-100
 - 1.3.1
 - tar.xz source

@@ -1,5 +1,5 @@
 Name:           devedeng
-Version:        4.14.0
+Version:        4.15.0
 Release:        100%{?dist}
 Summary:        A program to create video DVDs and CDs (VCD, sVCD or CVD)
 
@@ -101,6 +101,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
 
 
 %changelog
+* Mon Jul 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.15.0-100
+- 4.15.0
+
 * Mon May 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.14.0-100
 - Boolean requires
 
