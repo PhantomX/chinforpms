@@ -2,26 +2,19 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%ifarch x86_64
-%global parch x86_64
-%else
-%global parch i686
-%endif
+%global app_name OpenDrive
 
-%global real_name rocketchat
-%global app_name Rocket.Chat
-
-Name:           %{real_name}-desktop
-Version:        2.15.3
+Name:           odrive
+Version:        0.2.2
 Release:        1%{?dist}
-Summary:        Rocket.Chat desktop application
+Summary:        Google Drive GUI
 
-License:        MIT
-URL:            https://rocket.chat
-Source0:        https://github.com/RocketChat/Rocket.Chat.Electron/releases/download/%{version}/%{real_name}-%{version}.%{parch}.rpm
-Source1:        https://github.com/RocketChat/Rocket.Chat.Electron/raw/develop/LICENSE
+License:        GPL-3.0 and MIT
+URL:            https://liberodark.github.io/ODrive/
+Source0:        https://github.com/liberodark/ODrive/releases/download/%{version}/%{name}-%{version}.%{_arch}.rpm
+Source1:        https://github.com/liberodark/ODrive/raw/master/LICENSE.md
 
-ExclusiveArch:  %{ix86} x86_64
+ExclusiveArch:  x86_64
 
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
@@ -37,7 +30,7 @@ Requires:       hicolor-icon-theme
 
 
 %description
-Rocket.Chat Native Cross-Platform Desktop Application via Electron.
+%{summary}.
 
 
 %prep
@@ -47,9 +40,9 @@ rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
 cp %{S:1} .
 
 find opt/%{app_name}/ -name '*.so*' | xargs chmod +x
-chmod -x opt/%{app_name}/resources/dictionaries/*.{aff,dic}
 
 chrpath --delete opt/%{app_name}/%{name}
+
 
 %build
 
@@ -78,8 +71,7 @@ desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   --set-key="Exec" \
   --set-value="%{name}" \
-  --remove-category=GNOME \
-  --remove-category=GTK \
+  --add-category=Utility \
   usr/share/applications/%{name}.desktop
 
 for res in 16 24 32 48 64 96 128 256 512 ;do
@@ -91,14 +83,13 @@ done
 
 
 %files
-%license LICENSE opt/%{app_name}/LICENSE*
+%license LICENSE.md opt/%{app_name}/LICENSE*
 %{_bindir}/%{name}
 %{_libdir}/%{name}/
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 
 
-
 %changelog
-* Fri Jul 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.5.3-1
+* Tue Jul 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.2.2-1
 - Initial spec
