@@ -1,0 +1,69 @@
+From 449fa54d6815be8c2c1f68fa9dbbae9384a7c03e Mon Sep 17 00:00:00 2001
+From: Fugang Duan <fugang.duan@nxp.com>
+Date: Fri, 19 Jul 2019 17:26:48 +0800
+Subject: [PATCH] dma-direct: correct the physical addr in
+ dma_direct_sync_sg_for_cpu/device
+
+dma_map_sg() may use swiotlb buffer when the kernel command line includes
+"swiotlb=force" or the dma_addr is out of dev->dma_mask range.  After
+DMA complete the memory moving from device to memory, then user call
+dma_sync_sg_for_cpu() to sync with DMA buffer, and copy the original
+virtual buffer to other space.
+
+So dma_direct_sync_sg_for_cpu() should use swiotlb physical addr, not
+the original physical addr from sg_phys(sg).
+
+dma_direct_sync_sg_for_device() also has the same issue, correct it as
+well.
+
+Fixes: 55897af63091("dma-direct: merge swiotlb_dma_ops into the dma_direct code")
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ kernel/dma/direct.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index e269b6f9b444..59bdceea3737 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -234,12 +234,14 @@ void dma_direct_sync_sg_for_device(struct device *dev,
+ 	int i;
+ 
+ 	for_each_sg(sgl, sg, nents, i) {
+-		if (unlikely(is_swiotlb_buffer(sg_phys(sg))))
+-			swiotlb_tbl_sync_single(dev, sg_phys(sg), sg->length,
++		phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
++
++		if (unlikely(is_swiotlb_buffer(paddr)))
++			swiotlb_tbl_sync_single(dev, paddr, sg->length,
+ 					dir, SYNC_FOR_DEVICE);
+ 
+ 		if (!dev_is_dma_coherent(dev))
+-			arch_sync_dma_for_device(dev, sg_phys(sg), sg->length,
++			arch_sync_dma_for_device(dev, paddr, sg->length,
+ 					dir);
+ 	}
+ }
+@@ -271,11 +273,13 @@ void dma_direct_sync_sg_for_cpu(struct device *dev,
+ 	int i;
+ 
+ 	for_each_sg(sgl, sg, nents, i) {
++		phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
++
+ 		if (!dev_is_dma_coherent(dev))
+-			arch_sync_dma_for_cpu(dev, sg_phys(sg), sg->length, dir);
+-	
+-		if (unlikely(is_swiotlb_buffer(sg_phys(sg))))
+-			swiotlb_tbl_sync_single(dev, sg_phys(sg), sg->length, dir,
++			arch_sync_dma_for_cpu(dev, paddr, sg->length, dir);
++
++		if (unlikely(is_swiotlb_buffer(paddr)))
++			swiotlb_tbl_sync_single(dev, paddr, sg->length, dir,
+ 					SYNC_FOR_CPU);
+ 	}
+ 
+-- 
+2.21.0
+

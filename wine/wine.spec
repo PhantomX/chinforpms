@@ -33,14 +33,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 5d7a86d0540ad22ab45bf5cbf8aabcca0f56b137
+%global wine_stagingver 7ebc640edbc2b887c5ea80cff24112c252cb44b7
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 550b25dcb50a0a7e7279f6250bf13452dd341c73
+%global tkg_id 7ad525efc80fea3fc234166720c61dd6486f7ff4
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0

@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 19
+%define stable_update 21
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit 8584aaf1c3262ca17d1e4a614ede9179ef462bb0
-%global st_last_commit 0d4f1b2afde8df3b0ca79818123a43a184a0e1ea
+%global st_last_commit 4a9b1eb8bc3ba4ad8b3b1aa3317cf8d4a3aaad83
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
@@ -677,14 +677,15 @@ Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch
 # Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
 Patch545: efi-bgrt-acpi6.2-support.patch
 
-Patch546: netfilter-ctnetlink-Fix-regression-in-conntrack-entry.patch
-
 # rhbz 1716334
 # https://patchwork.kernel.org/patch/11029027/
 Patch547: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
 
-# CVE-2019-13631 rhbz 1731000 1731001
-Patch548: Input-gtco-bounds-check-collection-indent-level.patch
+# CVE-2019-????? rhbz 1731784
+Patch550: 8250_lpss-check-null-return-when-calling-pci_ioremap.patch
+
+# rhbz 1732045            
+Patch551: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch            
 
 ### Extra
 
@@ -730,6 +731,7 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 %endif
 %else
 Patch3050: %{patchwork_url}/11048599/mbox/#/patchwork-11048599.patch
+Patch3051: %{patchwork_url}/11053193/mbox/#/patchwork-11053193.patch
 %endif
 
 %if !0%{?zen}
@@ -2004,6 +2006,12 @@ fi
 #
 #
 %changelog
+* Sun Jul 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.21-500.chinfo
+- 5.1.21
+
+* Fri Jul 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.20-500.chinfo
+- 5.1.20
+
 * Sun Jul 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.19-500.chinfo
 - 5.1.19
 
