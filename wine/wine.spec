@@ -33,14 +33,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 7ebc640edbc2b887c5ea80cff24112c252cb44b7
+%global wine_stagingver 276ed085b71b68ab9ff6bf6cc613b94baf44bbc9
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 7ad525efc80fea3fc234166720c61dd6486f7ff4
+%global tkg_id f3f3d8308d13753c18c1cb281b62b33e16e29017
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -65,7 +65,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.12.1
-Release:        104%{?dist}
+Release:        105%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -1642,8 +1642,8 @@ fi
 %{_libdir}/wine/dxdiagn.%{winedll}
 %{_libdir}/wine/dxgi.dll.so
 %if 0%{?wine_staging}
-%{_libdir}/wine/dxgkrnl.sys.so
-%{_libdir}/wine/dxgmms1.sys.so
+%{_libdir}/wine/dxgkrnl.%{winesys}
+%{_libdir}/wine/dxgmms1.%{winesys}
 %endif
 %{_libdir}/wine/dxva2.dll.so
 %{_libdir}/wine/esent.%{winedll}
@@ -2005,7 +2005,7 @@ fi
 %{_libdir}/wine/wiaservc.%{winedll}
 %{_libdir}/wine/wimgapi.%{winedll}
 %if 0%{?wine_staging}
-%{_libdir}/wine/win32k.sys.so
+%{_libdir}/wine/win32k.%{winesys}
 %endif
 %{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/windowscodecsext.%{winedll}
@@ -2051,7 +2051,7 @@ fi
 %{_libdir}/wine/wuapi.%{winedll}
 %{_libdir}/wine/wuaueng.%{winedll}
 %if 0%{?wine_staging}
-%{_libdir}/wine/wuauserv.exe.so
+%{_libdir}/wine/wuauserv.%{wineexe}
 %endif
 %{_libdir}/wine/security.%{winedll}
 %{_libdir}/wine/sfc.%{winedll}
@@ -2392,6 +2392,9 @@ fi
 
 
 %changelog
+* Tue Jul 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-105
+- Staging and tkg updates
+
 * Fri Jul 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.12.1-104
 - Try again
 

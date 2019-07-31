@@ -4,9 +4,9 @@
 %global with_egl 1
 %global with_llvm 0
 
-%global commit 0a7395bfba99719f71de5186a9916e66c1901f37
+%global commit dea2b9c509b96cb58182b883c1df9f9f7f9234bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190630
+%global date 20190729
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,7 +19,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -37,7 +37,7 @@ Url:            https://dolphin-emu.org/
 #dolphin-5.0/Source/Core/VideoBackends/Software/Clipper.cpp
 #dolphin-5.0/Source/Core/AudioCommon/aldlist.cpp
 ##Any code in Externals has a license break down in Externals/licenses.md
-License:        GPLv2+ and BSD and MIT and zlib
+License:        GPLv2+ and LGPLv2+ and BSD and MIT and zlib
 
 %if 0%{?with_snapshot}
 Source0:        %{pkgname}-%{shortcommit}.tar.xz
@@ -253,6 +253,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Tue Jul 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-103.20190729gitdea2b9c
+- New snapshot
+
 * Tue Jul 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-102.20190630git0a7395b
 - New snapshot
 

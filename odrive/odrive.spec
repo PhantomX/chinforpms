@@ -3,21 +3,32 @@
 %global __strip /bin/true
 
 %global app_name OpenDrive
+%global app_pkg deb
 
 Name:           odrive
-Version:        0.2.2
+Version:        0.3.0
 Release:        1%{?dist}
 Summary:        Google Drive GUI
 
 License:        GPL-3.0 and MIT
 URL:            https://liberodark.github.io/ODrive/
-Source0:        https://github.com/liberodark/ODrive/releases/download/%{version}/%{name}-%{version}.%{_arch}.rpm
+
+%if %{app_pkg} == deb
+%global app_src %{name}_%{version}_amd64.deb
+%else
+%global app_src %{name}-%{version}.%{_arch}.rpm
+%endif
+
+Source0:        https://github.com/liberodark/ODrive/releases/download/%{version}/%{app_src}
 Source1:        https://github.com/liberodark/ODrive/raw/master/LICENSE.md
 
 ExclusiveArch:  x86_64
 
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
+%if %{app_pkg} == deb
+BuildRequires:  binutils
+%endif
 Requires:       libappindicator-gtk3%{?_isa}
 Requires:       libglvnd-egl%{?_isa}
 Requires:       libglvnd-gles%{?_isa}
@@ -35,7 +46,11 @@ Requires:       hicolor-icon-theme
 
 %prep
 %setup -c -T
-rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
+%if %{app_pkg} == deb
+  ar p %{S:0} data.tar.xz | tar xJ
+%else
+  rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
+%endif
 
 cp %{S:1} .
 
@@ -91,5 +106,8 @@ done
 
 
 %changelog
+* Tue Jul 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.3.0-1
+- 0.3.0
+
 * Tue Jul 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.2.2-1
 - Initial spec
