@@ -201,9 +201,9 @@ index adeee6329f55..27a54ec878bd 100644
 +
 +	init_lockdown();
 +
- 	dmi_scan_machine();
- 	dmi_memdev_walk();
- 	dmi_set_dump_stack_arch_desc();
+ 	dmi_setup();
+ 
+ 	/*
 @@ -1159,8 +1164,6 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
@@ -231,8 +231,8 @@ index 9c343f262bdd..30788bc47863 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -244,6 +244,20 @@ config LOCK_DOWN_KERNEL_FORCE
-         help
-           Enable the kernel lock down functionality automatically at boot.
+           Allow the lockdown on a kernel to be lifted, by pressing a SysRq key
+           combination on a wired keyboard.  On x86, this is SysRq+x.
  
 +config LOCK_DOWN_IN_EFI_SECURE_BOOT
 +	bool "Lock down the kernel in EFI Secure Boot mode"
@@ -260,8 +260,8 @@ index ee00ca2677e7..bb4dc7838f3e 100644
  #include <linux/security.h>
  #include <linux/export.h>
 +#include <linux/efi.h>
- 
- static __ro_after_init bool kernel_locked_down;
+ #include <linux/sysrq.h>
+ #include <asm/setup.h>
  
 @@ -44,6 +45,10 @@ void __init init_lockdown(void)
  #ifdef CONFIG_LOCK_DOWN_FORCE

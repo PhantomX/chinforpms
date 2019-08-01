@@ -1,6 +1,3 @@
 
 # CONFIG_SCHED_BMQ is not set
 # CONFIG_SCHED_TIMESLICE is not set
-
-# CONFIG_UKSM is not set
-CONFIG_KSM_LEGACY=y

@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20190609
+# 20190731
 
 set -e
 
@@ -21,6 +21,7 @@ MPILEDRIVER
 MSTEAMROLLER
 MEXCAVATOR
 MZEN
+MZEN2
 MNEHALEM
 MWESTMERE
 MSILVERMONT
@@ -37,7 +38,10 @@ MNATIVE
 
 pf="
 CC_OPTIMIZE_HARDER
-KSM_LEGACY
+BFQ_CGROUP_DEBUG
+"
+
+pfd="
 "
 
 pfv="
@@ -46,7 +50,6 @@ SCHED_TIMESLICE=4
 
 pfy="
 SCHED_BMQ
-UKSM
 USER_NS_UNPRIVILEGED
 "
 
@@ -92,14 +95,24 @@ USER_NS_UNPRIVILEGED
 
 SCRIPT="$(readlink -f $0)"
 SCRIPT_DIR="$(dirname ${SCRIPT})"
-OUTPUT_DIR="${SCRIPT_DIR}/configs/fedora/generic"
+CONFIG_DIR="${SCRIPT_DIR}/configs/fedora"
+OUTPUT_DIR="${CONFIG_DIR}/generic"
+DEBUG_DIR="${CONFIG_DIR}/debug"
 
 cd "${SCRIPT_DIR}"
 
 del(){
   for i in ${default} ${pf} ${pfv} ${pfy} ${zen} ${zenv} ${zeny}
   do
-    rm -fv "${OUTPUT_DIR}/CONFIG_${i%%=*}"
+    if [ -e "${OUTPUT_DIR}/CONFIG_${i%%=*}" ] ;then
+      rm -fv "${OUTPUT_DIR}/CONFIG_${i%%=*}"
+    fi
+  done
+  for i in ${pfd}
+  do
+    if [ -e "${OUTPUT_DIR}/CONFIG_${i%%=*}" ] ;then
+      rm -fv "${DEBUG_DIR}/CONFIG_${i%%=*}"
+    fi
   done
 }
 
@@ -112,6 +125,10 @@ main(){
   for i in ${pfy} ${zeny}
   do
     echo "CONFIG_${i}=y" > "${OUTPUT_DIR}/CONFIG_${i}"
+  done
+  for i in ${pfd}
+  do
+    echo "CONFIG_${i}=y" > "${DEBUG_DIR}/CONFIG_${i}"
   done
   for i in ${pfv} ${zenv}
   do

@@ -1,4 +1,4 @@
-From 6ca24249f0ff8939fbc8afe94a929b1b65d1b1d0 Mon Sep 17 00:00:00 2001
+From 5fcca5565c3e0c203a891093c33bbe3571e64685 Mon Sep 17 00:00:00 2001
 From: Andrew Eikum <aeikum@codeweavers.com>
 Date: Mon, 10 Dec 2018 12:48:41 -0600
 Subject: [PATCH] xaudio2: Set PulseAudio application name property in the
@@ -11,18 +11,18 @@ allows PA to store per-application settings.
  2 files changed, 22 insertions(+)
 
 diff --git a/dlls/xaudio2_7/xaudio_dll.c b/dlls/xaudio2_7/xaudio_dll.c
-index b9fc68ab462..b92752d2ae0 100644
+index 6be2ae4e3b4..cec78bd88a7 100644
 --- a/dlls/xaudio2_7/xaudio_dll.c
 +++ b/dlls/xaudio2_7/xaudio_dll.c
-@@ -37,6 +37,7 @@
- 
+@@ -38,6 +38,7 @@
+ #include "wine/asm.h"
  #include "wine/debug.h"
  #include "wine/heap.h"
 +#include "wine/unicode.h"
  
  WINE_DEFAULT_DEBUG_CHANNEL(xaudio2);
  
-@@ -1938,6 +1939,26 @@ static HRESULT WINAPI XAudio2CF_CreateInstance(IClassFactory *iface, IUnknown *p
+@@ -1948,6 +1949,26 @@ static HRESULT WINAPI XAudio2CF_CreateInstance(IClassFactory *iface, IUnknown *p
      pthread_cond_init(&object->mst.engine_done, NULL);
      pthread_cond_init(&object->mst.engine_ready, NULL);
  

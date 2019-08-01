@@ -40,7 +40,7 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id f3f3d8308d13753c18c1cb281b62b33e16e29017
+%global tkg_id bc04f2557e4ed4de42fa89f38eb413342790b13c
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -151,12 +151,12 @@ Patch712:       0001-Valve-Proton-FS-fix-for-rawinput-patch.patch
 Patch713:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch714:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 Patch715:       %{tkg_url}/proton-tkg-specific/raw-input-proton.patch#/%{name}-tkg-raw-input-proton.patch
+Patch716:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 
 Patch800:       revert-grab-fullscreen.patch
-Patch801:       %{valve_url}/commit/ff95f1927cdb923907ef1fa9660203004b9ee36d.patch#/%{name}-valve-ff95f19.patch
-Patch802:       %{valve_url}/commit/36017749b370b38860aaa167494d200569902d25.patch#/%{name}-valve-3601774.patch
-Patch803:       0001-XACT3_VER-typos-IXAudio23-compatibility-fix.patch
-Patch804:       wine-xaudio2-pulseaudio-app-name.patch
+Patch801:       %{valve_url}/commit/9cf81304c03046cb337d8b7275af600e39373702.patch#/%{name}-valve-9cf8130.patch
+Patch802:       %{valve_url}/commit/561975d6da534cfe608d7c4068387e734c32b77c.patch#/%{name}-valve-561975d.patch
+Patch803:       wine-xaudio2-pulseaudio-app-name.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -726,7 +726,6 @@ This package adds the opencl driver for wine.
 %patch801 -p1
 %patch802 -p1
 %patch803 -p1
-%patch804 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -753,6 +752,7 @@ patch -p1 -i wine-tkg-valve_proton_fullscreen_hack-staging.patch
 %patch713 -p1
 %patch714 -p1
 %patch715 -p1
+%patch716 -p1
 %patch800 -p1 -R
 
 # fix parallelized build

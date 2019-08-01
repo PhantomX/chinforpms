@@ -52,23 +52,23 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 1
+%define base_sublevel 2
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 21
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 8
+%global post_factum 4
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e133ce51a9d21401957816263180008a4591fd80
+%global pfcommit 4b45eca037ec359030f1949b1b59ce9641cafd58
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -79,7 +79,7 @@ Summary: The Linux kernel
 
 # Apply a patch range from stable repository, extending pf unmantained branches
 # Root Makefile are stripped from patching
-%global pf_stable_extra 1
+%global pf_stable_extra 0
 %if 0%{?pf_stable_extra}
 %global st_first_commit 8584aaf1c3262ca17d1e4a614ede9179ef462bb0
 %global st_last_commit 4a9b1eb8bc3ba4ad8b3b1aa3317cf8d4a3aaad83
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 2af8a2224f4156e4762b8d19b3ed64b47ba1d941
+%global opensuse_id 0a5eef387749ad50d237a71f33edf43b4f10df29
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -513,9 +513,6 @@ Source1004: kernel-local-zen
 Source5000: %{extra_patch}
 %if 0%{?pf_stable_extra}
 Source5002: %{stable_extra_patch}
-Source5003: %{pf_url}/f48f9c2b01953f0488d27637339f8aa6548864dc.patch#/pf-f48f9c2.patch
-Source5004: %{pf_url}/2186b2b14e8226edd6d647c21198d50bc743a6ad.patch#/pf-2186b2b.patch
-Source5005: %{pf_url}/bb28f93267d772b47534e1d8c8693bf29c93d4cf.patch#/pf-bb28f93.patch
 %endif
 %else
 # For a stable release kernel
@@ -607,29 +604,29 @@ Patch303: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 # rhbz 1574718
 Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
-# https://patchwork.kernel.org/patch/9820417/
-Patch305: qcom-msm89xx-fixes.patch
-
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
-Patch306: arm-sdhci-esdhc-imx-fixes.patch
+Patch305: arm-sdhci-esdhc-imx-fixes.patch
+
+# Fix accepted for 5.3 https://patchwork.kernel.org/patch/10992783/
+Patch306: arm64-dts-rockchip-Update-DWC3-modules-on-RK3399-SoCs.patch
+
+# RHBZ Bug 1576593 - work around while vendor investigates
+Patch307: arm-make-highpte-not-expert.patch
 
 # Raspberry Pi bits
-Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
+Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
-# The new power driver has regressed display so disable it until the problem is diagnosed
+Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
+
 Patch334: 0001-Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-d.patch
-# Patch335: 0002-Revert-ARM-bcm283x-Extend-the-WDT-DT-node-out-to-cov.patch 
+Patch335: 0002-Revert-ARM-bcm283x-Extend-the-WDT-DT-node-out-to-cov.patch
 
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
-# https://patchwork.kernel.org/patch/10858639/
-Patch341: arm64-tegra-Add-NVIDIA-Jetson-Nano-Developer-Kit-support.patch
-
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
-
 # rhbz 1431375
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
@@ -641,51 +638,14 @@ Patch507: 0001-Drop-that-for-now.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
-# CVE-2019-3900 rhbz 1698757 1702940
-Patch524: net-vhost_net-fix-possible-infinite-loop.patch
+# Fix the LCD panel orientation on the GPD MicroPC, pending as fix for 5.3
+Patch531: drm-panel-orientation-quirks.patch
 
-# Fix wifi on various ideapad models not working (rhbz#1703338)
-Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
+# rhbz 1732045
+Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
-# CVE-2019-12378 rhbz 1715459 1715460
-Patch528: ipv6_sockglue-fix-missing-check-bug-in-ip6_ra_control.patch
-
-# CVE-2019-12380 rhbz 1715494 1715495
-Patch530: 0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
-
-# CVE-2019-12381 rhbz 1715501 1715502
-Patch531: 0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
-
-# CVE-2019-12382 rhbz 1715554 1715556
-Patch532: drm-edid-fix-missing-check-bug-in-drm_load_edid_firmware.patch
-
-# CVE-2019-12379 rhbz 1715491 1715706
-Patch533: consolemap-fix-memory-leaking-bug.patch
-
-# CVE-2019-12455 rhbz 1716990 1717003
-Patch534: clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_setup.patch
-
-# CVE-2019-12454 rhbz 1716996 1717003
-Patch535: wcd9335-fix-a-incorrect-use-of-kstrndup.patch
-
-# CVE-2019-12456 rhbz 1717182 1717183
-Patch536: scsi-mpt3sas_ctl-fix-double-fetch-bug-in_ctl_ioctl_main.patch 
-
-# CVE-2019-12614 rhbz 1718176 1718185
-Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch 
-
-# Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
-Patch545: efi-bgrt-acpi6.2-support.patch
-
-# rhbz 1716334
-# https://patchwork.kernel.org/patch/11029027/
-Patch547: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
-
-# CVE-2019-????? rhbz 1731784
-Patch550: 8250_lpss-check-null-return-when-calling-pci_ioremap.patch
-
-# rhbz 1732045            
-Patch551: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch            
+# These should make stable soon
+Patch534: stable-v5.2-drm-i915-vbt-Fix-VBT-parsing-for-the-PSR-section.patch
 
 ### Extra
 
@@ -706,20 +666,12 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
 %if !0%{?post_factum}
+%global pf_url https://gitlab.com/post-factum/pf-kernel/commit
+
 #Patch3000: postfactum-merge-fixes.patch
 %if !0%{?zen}
-Patch3001: %{pf_url}/e847736de234b273f40844bc2406d1f18d127979.patch#/pf-e847736d.patch
+Patch3001: %{pf_url}/a6c083c2e4274c7e203c5ef989f568c6d5f945eb.patch#/pf-a6c083c.patch
 %endif
-Patch3002: %{pf_url}/2e96b764784524c1f8aa83e9688118569bdaca40.patch#/pf-2e96b764.patch
-Patch3003: %{pf_url}/f01c0609f9f126d45a30727e78f4e2121a2ffad0.patch#/pf-f01c0609.patch
-Patch3004: %{pf_url}/3360098a25074b4f8914292e1fddf24ea65ba056.patch#/pf-3360098a.patch
-Patch3005: %{pf_url}/e3aa6163237821f7b94a3ba876c710e614f6cbac.patch#/pf-e3aa6163.patch
-Patch3006: %{pf_url}/3d6631a6b1dc5432aa323cecb9d4979215966dd7.patch#/pf-3d6631a6.patch
-Patch3007: %{pf_url}/2223e774b56e536865e8ad3137cb99d14d8693d4.patch#/pf-2223e774.patch
-Patch3008: %{pf_url}/44fa38afade1d0f42b80bc6c8aa140977a02fe78.patch#/pf-44fa38af.patch
-Patch3009: %{pf_url}/7b3c2539e17beccc8d9d1ba8f6f0e7d6f33b9654.patch#/pf-7b3c2539.patch
-Patch3010: %{pf_url}/94b5f9cf52bcbcc68a5cdd7a2bd1250df8f0b9fa.patch#/pf-94b5f9cf.patch
-Patch3011: %{pf_url}/05948f91ac32a0a828486063fcdd1468f6c73a35.patch#/pf-05948f91.patch
 
 #Patch3500: postfactum-merge-fixes-2.patch
 
@@ -729,9 +681,7 @@ Patch3011: %{pf_url}/05948f91ac32a0a828486063fcdd1468f6c73a35.patch#/pf-05948f91
 %global graysky2_id 87168bfa27b782e1c9435ba28ebe3987ddea8d30
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v8.1+_kernel_v4.13+.patch
 %endif
-%else
-Patch3050: %{patchwork_url}/11048599/mbox/#/patchwork-11048599.patch
-Patch3051: %{patchwork_url}/11053193/mbox/#/patchwork-11053193.patch
+
 %endif
 
 %if !0%{?zen}
@@ -1165,9 +1115,6 @@ fi
 $patch_command -i %{SOURCE5000}
 %if 0%{?pf_stable_extra}
 filterdiff -p1 -x Makefile %{SOURCE5002} > pf_stable_extra.patch
-$patch_command -R -i %{SOURCE5003}
-$patch_command -R -i %{SOURCE5004}
-$patch_command -R -i %{SOURCE5005}
 $patch_command -i pf_stable_extra.patch
 rm -f pf_stable_extra.patch
 %endif
@@ -2006,6 +1953,13 @@ fi
 #
 #
 %changelog
+* Wed Jul 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.5-500.chinfo
+- 5.2.5
+- f30 sync
+
+* Mon Jul 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.4-500.chinfo
+- 5.2.4
+
 * Sun Jul 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.21-500.chinfo
 - 5.1.21
 
@@ -2022,6 +1976,7 @@ fi
 - 5.1.17
 - Option to apply stable patches over pf
 
+- f30 sync
 * Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.16-500.chinfo
 - 5.1.16 - pf8
 - f30 sync

@@ -1,1 +1,1 @@
-CONFIG_HIGHPTE=y
+# CONFIG_HIGHPTE is not set

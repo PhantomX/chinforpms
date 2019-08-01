@@ -49,11 +49,11 @@ index 9ef547fc7ffe..5777d902f8f3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -735,7 +735,11 @@ KBUILD_CFLAGS	+= -fomit-frame-pointer
- endif
+ KBUILD_CFLAGS	+= -ftrivial-auto-var-init=pattern
  endif
  
 +ifdef CONFIG_DEBUG_INFO_VTA
-+DEBUG_CFLAGS   += $(call cc-option, -fvar-tracking-assignments)
++DEBUG_CFLAGS	+= $(call cc-option, -fvar-tracking-assignments)
 +else
  DEBUG_CFLAGS	:= $(call cc-option, -fno-var-tracking-assignments)
 +endif
@@ -87,8 +87,8 @@ index 0d9e81779e37..424206212931 100644
 +	  environment to automatically compile everything both ways,
 +	  generating an error if anything differs.
  
- config GDB_SCRIPTS
- 	bool "Provide GDB scripts for kernel debugging"
+ config DEBUG_INFO_BTF
+ 	bool "Generate BTF typeinfo"
 -- 
 2.20.1
 
