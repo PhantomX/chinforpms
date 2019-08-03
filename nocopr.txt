@@ -22,6 +22,8 @@ pcsx2
 ppsspp
 psximager
 reicast
+odrive
+rocketchat-desktop
 soulseekqt
 spideroakone
 steam

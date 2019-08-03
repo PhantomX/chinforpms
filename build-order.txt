@@ -10,7 +10,11 @@ libvorbis
 libstrangle
 libtgvoip
 libxspf
+lzlib
 mesa
+pysdl2
+python-markups
+python-vdf
 smooth
 taglib
 vkd3d
@@ -21,6 +25,7 @@ ytnef
 # 2
 adriconf
 adwaita-qt
+aisleriot
 ario
 asbru-cm
 bashdb
@@ -35,6 +40,7 @@ cdemu-daemon
 chinfo-extramimetypes
 claws-mail
 claws-mail-themes
+cropgui
 curlew
 devedeng
 disk-indicator
@@ -47,6 +53,7 @@ firejail
 firetools
 fluxbox-chinfo-menu
 freac-cdk
+fss-parallel-tools
 engrampa
 gamemode
 gcdemu
@@ -68,6 +75,9 @@ kernel-tools
 ladspa-bs2b-plugins
 linux-steam-integration
 lutris
+lunzip
+lzip
+m64py
 manaplus
 mednafen
 mednaffe
@@ -81,14 +91,17 @@ opentyrian
 perl-rename
 pev
 phantomjs
+plzip
+protontricks
 pspshrink
 pulsemixer
-pysdl2
+purple-rocketchat
 python-pafy
 qmp3gain
 qt-virustotal-uploader
 qt5ct
 quiterss
+retext
 sdl_gamecontrollerdb
 sdl-jstest
 skrooge
@@ -110,6 +123,7 @@ waterfox-noscript
 wiibafu
 wiimms-iso-tools
 wimlib
+uksmd
 xboxdrv
 xdgmenumaker
 xorg-x11-server
@@ -123,7 +137,6 @@ freac
 freac-cdk-freeworld
 freac-superfast-codecs
 freac-superfast-codecs-freeworld
-m64py
 ortp
 whdd
 wine
