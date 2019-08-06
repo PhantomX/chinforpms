@@ -17,7 +17,7 @@
 # End local config
 
 Name: virt-manager
-Version: 2.2.0
+Version: 2.2.1
 Release: 100%{?dist}
 %global verrel %{version}-%{release}
 
@@ -34,6 +34,9 @@ Requires: gtk3
 Requires: libvirt-glib >= 0.0.9
 Requires: gtk-vnc2
 Requires: spice-gtk3
+
+
+# We can work with gtksourceview 3 or gtksourceview4, pick the latest one
 Requires: gtksourceview4
 
 # virt-manager is one of those apps that people will often install onto
@@ -60,11 +63,6 @@ Suggests: python3-libguestfs
 BuildRequires: intltool
 BuildRequires: /usr/bin/pod2man
 BuildRequires: python3-devel
-BuildRequires: python3-gobject-base
-BuildRequires: python3-libvirt
-BuildRequires: python3-libxml2
-BuildRequires: python3-requests
-BuildRequires: libosinfo >= 0.2.10
 
 
 %description
@@ -198,6 +196,10 @@ done
 
 
 %changelog
+* Mon Aug 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.2.1-100
+- 2.2.1
+- Rawhide sync
+
 * Wed Jun 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.2.0-100
 - Fedora 30 build
 

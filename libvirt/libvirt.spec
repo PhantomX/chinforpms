@@ -215,7 +215,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 5.5.0
+Version: 5.6.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -1342,14 +1342,14 @@ exit 0
 
 %systemd_post virtlockd.socket virtlockd-admin.socket
 %systemd_post virtlogd.socket virtlogd-admin.socket
-%systemd_post libvirtd.service
+%systemd_post libvirtd.socket
 
 # request daemon restart in posttrans
 mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || :
 touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
 
 %preun daemon
-%systemd_preun libvirtd.service
+%systemd_preun libvirtd.socket libvirtd.service
 %systemd_preun virtlogd.socket virtlogd-admin.socket virtlogd.service
 %systemd_preun virtlockd.socket virtlockd-admin.socket virtlockd.service
 
@@ -1505,6 +1505,11 @@ exit 0
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 
 %{_unitdir}/libvirtd.service
+%{_unitdir}/libvirtd-admin.socket
+%{_unitdir}/libvirtd-ro.socket
+%{_unitdir}/libvirtd-tcp.socket
+%{_unitdir}/libvirtd-tls.socket
+%{_unitdir}/libvirtd.socket
 %{_unitdir}/virt-guest-shutdown.target
 %{_unitdir}/virtlogd.service
 %{_unitdir}/virtlogd.socket
@@ -1783,6 +1788,7 @@ exit 0
 %{_datadir}/libvirt/schemas/domain.rng
 %{_datadir}/libvirt/schemas/domaincaps.rng
 %{_datadir}/libvirt/schemas/domaincommon.rng
+%{_datadir}/libvirt/schemas/domaincheckpoint.rng
 %{_datadir}/libvirt/schemas/domainsnapshot.rng
 %{_datadir}/libvirt/schemas/interface.rng
 %{_datadir}/libvirt/schemas/network.rng
@@ -1841,6 +1847,7 @@ exit 0
 %{_includedir}/libvirt/libvirt-admin.h
 %{_includedir}/libvirt/libvirt-common.h
 %{_includedir}/libvirt/libvirt-domain.h
+%{_includedir}/libvirt/libvirt-domain-checkpoint.h
 %{_includedir}/libvirt/libvirt-domain-snapshot.h
 %{_includedir}/libvirt/libvirt-event.h
 %{_includedir}/libvirt/libvirt-host.h
@@ -1868,6 +1875,9 @@ exit 0
 
 
 %changelog
+* Mon Aug 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.6.0-100
+- 5.6.0
+
 * Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.5.0-100
 - 5.5.0
 
