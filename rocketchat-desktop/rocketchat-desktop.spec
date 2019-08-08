@@ -13,7 +13,7 @@
 
 Name:           %{real_name}-desktop
 Version:        2.15.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Rocket.Chat desktop application
 
 License:        MIT
@@ -73,6 +73,9 @@ rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
 
 chmod 0755 %{buildroot}%{_libdir}/%{name}/%{name}
 
+rm -rf %{buildroot}%{_libdir}/%{name}/resources/dictionaries
+ln -sf ../../../share/myspell %{buildroot}%{_libdir}/%{name}/resources/dictionaries
+
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
@@ -100,5 +103,8 @@ done
 
 
 %changelog
+* Wed Aug 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.5.3-2
+- System dictionaries
+
 * Fri Jul 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.5.3-1
 - Initial spec

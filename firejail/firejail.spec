@@ -11,6 +11,7 @@ Source1:        README.suid
 BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  /usr/bin/pathfix.py
+Requires(pre):  shadow-utils
 
 
 %description

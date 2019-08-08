@@ -216,7 +216,7 @@
 Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: 5.6.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
 
@@ -1342,14 +1342,18 @@ exit 0
 
 %systemd_post virtlockd.socket virtlockd-admin.socket
 %systemd_post virtlogd.socket virtlogd-admin.socket
-%systemd_post libvirtd.socket
+%systemd_post libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket
+%systemd_post libvirtd-tcp.socket libvirtd-tls.socket
+%systemd_post libvirtd.service 
 
 # request daemon restart in posttrans
 mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || :
 touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
 
 %preun daemon
-%systemd_preun libvirtd.socket libvirtd.service
+%systemd_preun libvirtd.service
+%systemd_preun libvirtd-tcp.socket libvirtd-tls.socket
+%systemd_preun libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket 
 %systemd_preun virtlogd.socket virtlogd-admin.socket virtlogd.service
 %systemd_preun virtlockd.socket virtlockd-admin.socket virtlockd.service
 
@@ -1374,7 +1378,20 @@ fi
 
 %posttrans daemon
 if [ -f %{_localstatedir}/lib/rpm-state/libvirt/restart ]; then
-    /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
+     # Old libvirtd owns the sockets and will delete them on
+     # shutdown. Can't use a try-restart as libvirtd will simply
+     # own the sockets again when it comes back up. Thus we must
+     # do this particular ordering
+     /bin/systemctl is-active libvirtd.service 1>/dev/null 2>&1
+     if test $? = 0 ; then
+         /bin/systemctl stop libvirtd.service >/dev/null 2>&1 || :
+
+         /bin/systemctl try-restart libvirtd.socket >/dev/null 2>&1 || :
+         /bin/systemctl try-restart libvirtd-ro.socket >/dev/null 2>&1 || :
+         /bin/systemctl try-restart libvirtd-admin.socket >/dev/null 2>&1 || :
+
+         /bin/systemctl start libvirtd.service >/dev/null 2>&1 || :
+     fi
 fi
 rm -rf %{_localstatedir}/lib/rpm-state/libvirt || :
 
@@ -1505,11 +1522,11 @@ exit 0
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 
 %{_unitdir}/libvirtd.service
-%{_unitdir}/libvirtd-admin.socket
-%{_unitdir}/libvirtd-ro.socket
-%{_unitdir}/libvirtd-tcp.socket
-%{_unitdir}/libvirtd-tls.socket
 %{_unitdir}/libvirtd.socket
+%{_unitdir}/libvirtd-ro.socket
+%{_unitdir}/libvirtd-admin.socket
+%{_unitdir}/libvirtd-tcp.socket
+%{_unitdir}/libvirtd-tls.socket 
 %{_unitdir}/virt-guest-shutdown.target
 %{_unitdir}/virtlogd.service
 %{_unitdir}/virtlogd.socket
@@ -1787,8 +1804,8 @@ exit 0
 %{_datadir}/libvirt/schemas/cputypes.rng
 %{_datadir}/libvirt/schemas/domain.rng
 %{_datadir}/libvirt/schemas/domaincaps.rng
-%{_datadir}/libvirt/schemas/domaincommon.rng
 %{_datadir}/libvirt/schemas/domaincheckpoint.rng
+%{_datadir}/libvirt/schemas/domaincommon.rng
 %{_datadir}/libvirt/schemas/domainsnapshot.rng
 %{_datadir}/libvirt/schemas/interface.rng
 %{_datadir}/libvirt/schemas/network.rng
@@ -1875,6 +1892,9 @@ exit 0
 
 
 %changelog
+* Wed Aug 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.6.0-101
+- Rawhide sync (socket units)
+
 * Mon Aug 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.6.0-100
 - 5.6.0
 

@@ -50,7 +50,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.1.3
+Version:        19.1.4
 Release:        100%{?dist}
 
 License:        MIT
@@ -646,6 +646,9 @@ popd
 
 
 %changelog
+* Wed Aug 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.1.4-100
+- 19.1.4
+
 * Tue Jul 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.1.3-100
 - 19.1.3
 

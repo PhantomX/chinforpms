@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit eb97649c092ff48ef50faf40e2a05ba2530b81a0
+%global pfcommit 5473dccff60e4cbc992f2375a4aee0d3f1ef5e99
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 79b6a9ca79e652cfcb5fcde4b7613f623c1d056a
+%global opensuse_id a3e04b12075fef2f407834c0006e3f4e3779b55f
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -646,6 +646,9 @@ Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
 # These should make stable soon
 Patch534: stable-v5.2-drm-i915-vbt-Fix-VBT-parsing-for-the-PSR-section.patch
+
+# rhbz 1737046 temporary revert until issue is fixed upstream
+Patch535: 0001-Revert-for-bz-1737046.patch
 
 ### Extra
 
@@ -1954,6 +1957,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.7-501.chinfo
+- BFQ updates
+
 * Tue Aug 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.7-500.chinfo
 - 5.2.7
 
