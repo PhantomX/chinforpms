@@ -4,8 +4,8 @@
 %global with_bin 0
 
 Name:           wine-mono
-Version:        4.9.0
-Release:        101%{?dist}
+Version:        4.9.2
+Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
 License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
@@ -159,6 +159,9 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 
 
 %changelog
+* Fri Aug 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.9.2-100
+- 4.9.2
+
 * Wed Jul 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.9.0-101
 - Split not compliant debug package
 

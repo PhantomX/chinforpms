@@ -1,5 +1,5 @@
 Name:           adwaita-qt
-Version:        1.0
+Version:        1.1.0
 Release:        100%{?dist}
 
 License:        LGPLv2+
@@ -10,8 +10,9 @@ Epoch:          1
 Url:            https://github.com/MartinBriza/adwaita-qt
 Source0:        %{url}/archive/%{version}/adwaita-qt-%{version}.tar.gz
 
+Patch0:         %{name}-upstream-fixes.patch
 # Remove some ugly paddings
-Patch0:         %{name}-chinforpms.patch
+Patch10:        %{name}-chinforpms.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -82,6 +83,10 @@ make install/fast DESTDIR=%{buildroot} -C "%{_target_platform}-qt5"
 
 
 %changelog
+* Fri Aug 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1.0-100
+- 1.1.0
+- Rawhide sync
+
 * Wed Dec 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0-100
 - Remove ugly paddings
 

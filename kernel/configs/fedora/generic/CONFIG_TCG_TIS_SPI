@@ -1,1 +1,1 @@
-# CONFIG_TCG_TIS_SPI is not set
+CONFIG_TCG_TIS_SPI=m

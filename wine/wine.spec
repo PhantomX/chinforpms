@@ -8,7 +8,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.9.0
+%global winemono  4.9.2
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -40,10 +40,11 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 43e21688f6735d4b536ccd1ae94f7eb95f7e9bee
+%global tkg_id a9c06bf9d37a8afd156c273d9330cf90a7ef9db2
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
+# Broken
 %global pba 0
 
 # raw input fix
@@ -65,7 +66,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.13
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -108,6 +109,10 @@ Source113:      wine-taskmgr.desktop
 
 # wine bugs/upstream
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
+Patch100:       %{whq_url}/d593a80bb6359f9cbcd47dd243e0bf5d08387cf5#/%{name}-whq-d593a80.patch
+Patch101:       %{whq_url}/2859c22cc6c10a7f3aa5e853b0151284b96be235#/%{name}-whq-2859c22.patch
+Patch102:       %{whq_url}/9855fbe252ff3664d879e8cd9f5d1ea879af47dd#/%{name}-whq-9855fbe.patch
+Patch103:       %{whq_url}/6e3d68b14120563fd584fe9c5a27885f51e7ae66#/%{name}-whq-6e3d68b.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -152,6 +157,8 @@ Patch713:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-ena
 Patch714:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 Patch715:       %{tkg_url}/proton-tkg-specific/raw-input-proton.patch#/%{name}-tkg-raw-input-proton.patch
 Patch716:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
+Patch717:       %{tkg_url}/proton/valve_proton_fullscreen_hack_realmodes.patch#/%{name}-tkg-valve_proton_fullscreen_hack_realmodes.patch
+Patch718:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/9cf81304c03046cb337d8b7275af600e39373702.patch#/%{name}-valve-9cf8130.patch
@@ -715,6 +722,10 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -753,6 +764,8 @@ patch -p1 -i wine-tkg-valve_proton_fullscreen_hack-staging.patch
 %patch714 -p1
 %patch715 -p1
 %patch716 -p1
+%patch717 -p1
+%patch718 -p1
 %patch800 -p1 -R
 
 # fix parallelized build
@@ -2392,6 +2405,10 @@ fi
 
 
 %changelog
+* Fri Aug 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.13-101
+- Upstream and tkg updates
+- Mono update
+
 * Sat Aug 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.13-100
 - 4.13
 

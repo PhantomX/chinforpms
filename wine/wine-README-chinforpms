@@ -8,6 +8,14 @@ experimental patches, mostly from https://github.com/Tk-Glitch.
 If a bug happens, revert to Fedora official and try to reproduce it again.
 
 
+WINEESYNC override
+=================================
+Enable with WINEESYNC=1 environment variable
+
+WINEFSYNC override
+=================================
+Enable with WINEFSYNC=1 environment variable
+
 WINE_LARGE_ADDRESS_AWARE override
 =================================
 Enable with WINE_LARGE_ADDRESS_AWARE=1 environment variable

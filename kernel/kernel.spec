@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 5473dccff60e4cbc992f2375a4aee0d3f1ef5e99
+%global pfcommit 967e3b96b21e6b95bf1722bbb1cf39a2b2e603e1
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -644,9 +644,6 @@ Patch531: drm-panel-orientation-quirks.patch
 # rhbz 1732045
 Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
-# These should make stable soon
-Patch534: stable-v5.2-drm-i915-vbt-Fix-VBT-parsing-for-the-PSR-section.patch
-
 # rhbz 1737046 temporary revert until issue is fixed upstream
 Patch535: 0001-Revert-for-bz-1737046.patch
 
@@ -687,6 +684,8 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 %endif
 
 %endif
+
+Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/7ac860864c1c03e34dfd86f3d069c41e47fda653/linux52-tkg/linux52-tkg-patches/0012-v5.2-fsync.patch#/tkg-0012-v5.2-fsync.patch
 
 %if !0%{?zen}
 Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1141,6 +1140,8 @@ git am %{patches}
 %if !0%{?post_factum} && !0%{?zen}
 $patch_command -i %{SOURCE4000}
 %endif
+
+$patch_command -i %{SOURCE4005}
 
 # END OF PATCH APPLICATIONS
 
@@ -1957,6 +1958,10 @@ fi
 #
 #
 %changelog
+* Fri Aug 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.8-500.chinfo
+- 5.2.8
+- Experimental fsync patch
+
 * Wed Aug 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.7-501.chinfo
 - BFQ updates
 
