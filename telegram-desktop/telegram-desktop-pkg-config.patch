@@ -1,0 +1,57 @@
+From cc06b0fe60e25696e10d9d122c7672ec6b2b2665 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 12 Aug 2019 07:13:17 -0300
+Subject: [PATCH] Get Qt5 devel locations with pkg-config instead rpm
+
+---
+ Telegram/gyp/qt.gypi | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/Telegram/gyp/qt.gypi b/Telegram/gyp/qt.gypi
+index 125ab25..7f67860 100644
+--- a/Telegram/gyp/qt.gypi
++++ b/Telegram/gyp/qt.gypi
+@@ -14,7 +14,7 @@
+               [ 'build_macold', {
+                 'qt_version%': '5.3.2',
+               }, {
+-                'qt_version%': '<!(rpm -qa --queryformat "%{VERSION}" qt5-qtbase)',
++                'qt_version%': '<!(pkg-config --modversion Qt5Gui)',
+               }]
+             ],
+           },
+@@ -28,7 +28,7 @@
+             [ 'build_macold', {
+               'linux_path_qt%': '/usr/local/macold/Qt-<(qt_version)',
+             }, {
+-              'linux_path_qt%': '<!(rpm --eval "%{_qt5_libdir}")',
++              'linux_path_qt%': '<!(pkg-config --variable=libdir Qt5)',
+             }]
+           ]
+         },
+@@ -152,14 +152,14 @@
+   },
+ 
+   'include_dirs': [
+-    '<!(rpm --eval "%{_includedir}")/qt5',
+-    '<!(rpm --eval "%{_includedir}")/qt5/QtCore',
+-    '<!(rpm --eval "%{_includedir}")/qt5/QtGui',
+-    '<!(rpm --eval "%{_includedir}")/qt5/QtDBus',
+-    '<!(rpm --eval "%{_includedir}")/qt5/QtCore/<(qt_version)',
+-    '<!(rpm --eval "%{_includedir}")/qt5/QtGui/<(qt_version)',
+-    '<!(rpm --eval "%{_includedir}")/qt5/QtCore/<(qt_version)/QtCore',
+-    '<!(rpm --eval "%{_includedir}")/qt5/QtGui/<(qt_version)/QtGui',
++    '<!(pkg-config --variable=headerdir Qt5)',
++    '<!(pkg-config --variable=includedir Qt5Core)/QtCore',
++    '<!(pkg-config --variable=includedir Qt5Gui)/QtGui',
++    '<!(pkg-config --variable=includedir Qt5DBus)/QtDBus',
++    '<!(pkg-config --variable=includedir Qt5Core)/QtCore/<(qt_version)',
++    '<!(pkg-config --variable=includedir Qt5Gui)/QtGui/<(qt_version)',
++    '<!(pkg-config --variable=includedir Qt5Core)/QtCore/<(qt_version)/QtCore',
++    '<!(pkg-config --variable=includedir Qt5Gui)/QtGui/<(qt_version)/QtGui',
+   ],
+   'library_dirs': [
+     '<(qt_loc)',
+-- 
+2.21.0
+

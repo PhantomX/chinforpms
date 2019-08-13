@@ -12,8 +12,8 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        2.15.3
-Release:        2%{?dist}
+Version:        2.15.5
+Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
 License:        MIT
@@ -103,6 +103,9 @@ done
 
 
 %changelog
+* Mon Aug 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.15.5-1
+- 2.15.5
+
 * Wed Aug 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.5.3-2
 - System dictionaries
 

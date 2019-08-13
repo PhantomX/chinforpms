@@ -1,14 +1,14 @@
 %global commit 2b0f02b3c2fbcd76bc6d1fd680217c73f6ac5752
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180709
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           xinput-gui
-Version:        0.1.1
+Version:        0.3.1
 Release:        1%{?gver}%{?dist}
 Summary:        A simple GUI for Xorg's Xinput tool
 
@@ -76,5 +76,8 @@ EOF
 
 
 %changelog
+* Mon Aug 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.3.1-1
+- 0.3.1
+
 * Wed Jul 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.1.1-1.20180709git2b0f02b
 - Initial spec

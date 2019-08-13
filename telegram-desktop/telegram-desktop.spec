@@ -4,9 +4,14 @@
 %global apihash dfbe1bc42dc9d20507e17d1814cc2f0a
 
 # Git revision of crl...
-%global commit1 9ea870038a2a667add7f621be6252db909068386
+%global commit1 52baf11aaeb7f5ea6955a438abaa1aee4c4308d8
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 crl
+
+# Git revision of patched rlottie...
+%global commit2 d08a03b6508b390af20491f2dbeee3453594afc8
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 rlottie
 
 # Enable or disable build with GTK support...
 %bcond_with gtk3
@@ -19,8 +24,8 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.7.14
-Release:        102%{?dist}
+Version:        1.8.1
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -28,26 +33,24 @@ Epoch:          1
 # Application and 3rd-party modules licensing:
 # * S0 (Telegram Desktop) - GPLv3+ with OpenSSL exception -- main source;
 # * S1 (crl) - GPLv3+ -- build-time dependency;
-# * S2 (qtlottie) - GPLv3+ -- build-time dependency;
+# * S2 (rlottie) - LGPLv2+ -- static dependency;
 # * P0 (qt_functions.cpp) - LGPLv3 -- build-time dependency.
 License:        GPLv3+ and LGPLv3
 URL:            https://github.com/telegramdesktop/%{appname}
 
-# Warning! Builds on i686 may fail due to technical limitations of this
-# architecture: https://github.com/telegramdesktop/tdesktop/issues/4101
-ExclusiveArch:  i686 x86_64
+ExclusiveArch:  x86_64
 
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
 Source1:        https://github.com/telegramdesktop/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        https://github.com/john-preston/%{srcname2}/archive/%{commit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch0:         %{name}-build-fixes.patch
 Patch1:         %{name}-system-fonts.patch
 Patch2:         %{name}-unbundle-minizip.patch
-Patch3:         0001-Temporary-fix-for-gcc-9.1.1-regression.patch
-Patch4:         0001-Unset-QT-scale-env-vars.patch
-Patch5:         %{url}/commit/0710dde4d5526454318b2748331e887c01ecfdce.patch#/%{name}-gh-0710dde.patch
-Patch6:         %{url}/commit/9c909c8992ab52b278c718ecf50c9ac41fb207a6.patch#/%{name}-gh-9c909c8.patch
+Patch3:         %{name}-pkg-config.patch
+Patch4:         0001-Temporary-fix-for-gcc-9.1.1-regression.patch
+Patch5:         0001-Unset-QT-scale-env-vars.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -61,6 +64,10 @@ Patch103:       %{name}-disable-overlay.patch
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
 Requires:       open-sans-fonts
+
+# Telegram Desktop require patched version of rlottie since 1.8.0.
+# Pull Request pending: https://github.com/Samsung/rlottie/pull/252
+Provides:       bundled(rlottie) = 0~git%{shortcommit2}
 
 # Compilers and tools...
 BuildRequires:  desktop-file-utils
@@ -83,7 +90,7 @@ BuildRequires:  libstdc++-devel
 BuildRequires:  lz4-devel
 BuildRequires:  range-v3-devel
 BuildRequires:  openssl-devel
-BuildRequires:  rlottie-devel
+#BuildRequires:  rlottie-devel
 BuildRequires:  xxhash-devel
 BuildRequires:  xz-devel
 BuildRequires:  python3
@@ -119,10 +126,11 @@ pushd Telegram/ThirdParty
     rm -rf %{srcname1}
     tar -xf %{SOURCE1}
     mv %{srcname1}-%{commit1} %{srcname1}
-popd
 
-sed -e '/^#include <QFile>/a#include <QDebug>' \
-  -i Telegram/SourceFiles/lottie/lottie_animation.cpp
+    rm -rf %{srcname2}
+    tar -xf %{SOURCE2}
+    mv %{srcname2}-%{commit2} %{srcname2}
+popd
 
 
 %build
@@ -211,6 +219,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Mon Aug 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.1-100
+- 1.8.1
+- RPMFusion sync. Bundled rlottie
+
 * Fri Jul 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.7.14-102
 - -O3 optimization with LTO builds
 
