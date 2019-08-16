@@ -1,0 +1,70 @@
+From b50a6dc6bacc5e09fb3bd6c306ae5b4042d33259 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 14 Aug 2019 09:55:45 -0300
+Subject: [PATCH] Build fixes
+
+---
+ shell/linux/Makefile | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/shell/linux/Makefile b/shell/linux/Makefile
+index 2b5ae5f..f7f7423 100644
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -3,8 +3,8 @@ LOCAL_PATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+ FOR_LINUX :=1
+ #NO_REC := 1
+ #NO_REND := 1
+-USE_OSS := 1
+-#USE_PULSEAUDIO := 1
++#USE_OSS := 1
++#Crashy# USE_PULSEAUDIO := 1
+ #USE_SDLAUDIO := 1
+ #USE_LIBAO := 1
+ USE_EVDEV := 1
+@@ -22,12 +22,12 @@ CHD5_LZMA := 1
+ CHD5_FLAC := 1
+ 
+ MFLAGS :=
+-ASFLAGS :=
+-LDFLAGS :=
++#ASFLAGS :=
++#LDFLAGS :=
+ INCS :=
+ LIBS :=
+-CFLAGS :=
+-CXXFLAGS :=
++#CFLAGS :=
++#CXXFLAGS :=
+ 
+ ifneq (, $(filter $(shell uname -s), FreeBSD OpenBSD NetBSD DragonFly))
+     CFLAGS += -DTARGET_BSD
+@@ -279,13 +279,13 @@ endif
+ RZDCY_SRC_DIR = $(LOCAL_PATH)/../../core
+ include $(RZDCY_SRC_DIR)/core.mk
+ 
+-LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,-O3 -Wl,--sort-common -fopenmp
++LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,--sort-common -fopenmp
+ 
+-CFLAGS += $(RZDCY_CFLAGS) -g -O3 -D RELEASE -c -D USES_HOMEDIR -fopenmp #-D NO_REND
++CFLAGS += $(RZDCY_CFLAGS) -D RELEASE -c -D USES_HOMEDIR -fopenmp #-D NO_REND
+ CFLAGS += -frename-registers -fno-strict-aliasing
+ CFLAGS += -ffast-math -ftree-vectorize
+ 
+-CXXFLAGS += $(RZDCY_CFLAGS) -fno-rtti -fpermissive -fno-operator-names -D_GLIBCXX_USE_CXX11_ABI=0 -std=gnu++11
++CXXFLAGS += $(RZDCY_CFLAGS) -fno-rtti -fpermissive -fno-operator-names -std=gnu++11
+ 
+ INCS += -I$(RZDCY_SRC_DIR) -I$(RZDCY_SRC_DIR)/deps -I$(RZDCY_SRC_DIR)/khronos
+ 
+@@ -470,7 +470,7 @@ $(BUILDDIR)/%.build_obj : $(RZDCY_SRC_DIR)/%.S $(VERSION_HEADER)
+ 	mkdir -p $(dir $@)
+ 	$(AS) $(ASFLAGS) $(INCS) $< -o $@
+ 
+-install: $(EXECUTABLE)
++install:
+ 	mkdir -p $(DESTDIR)$(PREFIX)/bin 2>/dev/null || true
+ 	mkdir -p $(DESTDIR)$(PREFIX)/share/reicast/mappings 2>/dev/null || true
+ 	mkdir -p $(DESTDIR)$(MAN_DIR) 2>/dev/null || true
+-- 
+2.21.0
+

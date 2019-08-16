@@ -1,0 +1,273 @@
+From aac273fed3f5e8803068c2a1431d1daa6e85d8f6 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 14 Aug 2019 10:16:18 -0300
+Subject: [PATCH] Use system libs
+
+---
+ core/archive/ZipArchive.h        |  4 ++++
+ core/core.mk                     | 24 ++++++++++++++++++++---
+ core/deps/chdr/chd.c             |  4 ++++
+ core/deps/chdr/flac.h            |  4 ++++
+ core/hw/maple/maple_devs.cpp     |  8 ++++++++
+ core/hw/pvr/Renderer_if.cpp      |  4 ++++
+ core/rend/TexCache.cpp           |  4 ++++
+ core/rend/gles/CustomTexture.cpp |  4 ++++
+ core/rend/gles/gles.cpp          |  4 ++++
+ core/rend/gles/gltex.cpp         |  8 ++++++++
+ shell/linux/Makefile             | 33 ++++++++++++++++++++++++++++++++
+ 11 files changed, 98 insertions(+), 3 deletions(-)
+
+diff --git a/core/archive/ZipArchive.h b/core/archive/ZipArchive.h
+index 05a0f0f..ff24960 100644
+--- a/core/archive/ZipArchive.h
++++ b/core/archive/ZipArchive.h
+@@ -22,7 +22,11 @@
+ #ifndef CORE_ARCHIVE_ZIPARCHIVE_H_
+ #define CORE_ARCHIVE_ZIPARCHIVE_H_
+ #include "archive.h"
++#ifdef SYSTEM_LIBZIP
++#include <zip.h>
++#else
+ #include "deps/libzip/zip.h"
++#endif
+ 
+ class ZipArchive : public Archive
+ {
+diff --git a/core/core.mk b/core/core.mk
+index 27370ca..cc8b4af 100755
+--- a/core/core.mk
++++ b/core/core.mk
+@@ -9,9 +9,25 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
+ 
+ RZDCY_MODULES	:=	cfg/ hw/arm7/ hw/aica/ hw/holly/ hw/ hw/gdrom/ hw/maple/ \
+  hw/mem/ hw/pvr/ hw/sh4/ hw/sh4/interpr/ hw/sh4/modules/ plugins/ profiler/ oslib/ \
+- hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/zlib/ deps/chdr/ deps/crypto/ \
+- deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/libpng/ deps/xbrz/ \
+- deps/xxhash/ deps/libzip/ deps/imgui/ archive/ input/ log/
++ hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/chdr/ deps/crypto/ \
++ deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
++ deps/imgui/ archive/ input/ log/
++
++ifndef SYSTEM_LIBPNG
++RZDCY_MODULES += deps/libpng/
++endif
++
++ifndef SYSTEM_LIBZIP
++RZDCY_MODULES +=  deps/libzip/
++endif
++
++ifndef SYSTEM_XXHASH
++RZDCY_MODULES +=   deps/xxhash/
++endif
++
++ifndef SYSTEM_ZLIB
++RZDCY_MODULES +=  deps/zlib/
++endif
+ 
+ ifndef NOT_ARM
+     RZDCY_MODULES += rec-ARM/
+@@ -125,10 +141,12 @@ ifdef HAS_SOFTREND
+ endif
+ 
+ ifdef CHD5_FLAC
++ifndef SYSTEM_FLAC
+ 	RZDCY_CFLAGS += -DCHD5_FLAC -I$(RZDCY_SRC_DIR)/deps/flac/src/libFLAC/include/ -I$(RZDCY_SRC_DIR)/deps/flac/include
+ 	RZDCY_CFLAGS += -DHAVE_CONFIG_H
+ 	RZDCY_MODULES += deps/flac/src/libFLAC/
+ endif
++endif
+ 
+ # 7-Zip/LZMA settings (CHDv5)
+ ifdef CHD5_LZMA
+diff --git a/core/deps/chdr/chd.c b/core/deps/chdr/chd.c
+index 4461bdf..05a64aa 100644
+--- a/core/deps/chdr/chd.c
++++ b/core/deps/chdr/chd.c
+@@ -54,7 +54,11 @@
+ #endif // CHD5_LZMA
+ #include "deps/crypto/md5.h"
+ #include "deps/crypto/sha1.h"
++#ifdef SYSTEM_ZLIB
++#include <zlib.h>
++#else
+ #include "deps/zlib/zlib.h"
++#endif
+ 
+ #define TRUE 1
+ #define FALSE 0
+diff --git a/core/deps/chdr/flac.h b/core/deps/chdr/flac.h
+index 3de00eb..6f51ffa 100644
+--- a/core/deps/chdr/flac.h
++++ b/core/deps/chdr/flac.h
+@@ -14,7 +14,11 @@
+ #define __FLAC_H__
+ 
+ #include <stdint.h>
++#ifdef SYSTEM_FLAC
++#include <FLAC/all.h>
++#else
+ #include "deps/flac/include/FLAC/all.h"
++#endif
+ 
+ /***************************************************************************
+  *  TYPE DEFINITIONS
+diff --git a/core/hw/maple/maple_devs.cpp b/core/hw/maple/maple_devs.cpp
+index 5d8128f..10dff50 100755
+--- a/core/hw/maple/maple_devs.cpp
++++ b/core/hw/maple/maple_devs.cpp
+@@ -10,8 +10,16 @@
+ #include "input/gamepad.h"
+ #include <time.h>
+ 
++#ifdef SYSTEM_ZLIB
++#include <zlib.h>
++#else
+ #include "deps/zlib/zlib.h"
++#endif
++#ifdef SYSTEM_XXHASH
++#include <xxhash.h>
++#else
+ #include "deps/xxhash/xxhash.h"
++#endif
+ 
+ #define LOGJVS(...) DEBUG_LOG(JVS, __VA_ARGS__)
+ 
+diff --git a/core/hw/pvr/Renderer_if.cpp b/core/hw/pvr/Renderer_if.cpp
+index 8a8a8e8..ed79f5d 100644
+--- a/core/hw/pvr/Renderer_if.cpp
++++ b/core/hw/pvr/Renderer_if.cpp
+@@ -5,7 +5,11 @@
+ #include "rend/gui.h"
+ #include "hw/mem/_vmem.h"
+ 
++#ifdef SYSTEM_ZLIB
++#include <zlib.h>
++#else
+ #include "deps/zlib/zlib.h"
++#endif
+ 
+ #include "deps/crypto/md5.h"
+ 
+diff --git a/core/rend/TexCache.cpp b/core/rend/TexCache.cpp
+index 41fe8df..a4919e2 100644
+--- a/core/rend/TexCache.cpp
++++ b/core/rend/TexCache.cpp
+@@ -10,7 +10,11 @@
+ #include "hw/mem/vmem32.h"
+ #include "hw/sh4/modules/mmu.h"
+ #include "deps/xbrz/xbrz.h"
++#ifdef SYSTEM_XXHASH
++#include <xxhash.h>
++#else
+ #include "deps/xxhash/xxhash.h"
++#endif
+ 
+ u8* vq_codebook;
+ u32 palette_index;
+diff --git a/core/rend/gles/CustomTexture.cpp b/core/rend/gles/CustomTexture.cpp
+index 270cef2..7217864 100644
+--- a/core/rend/gles/CustomTexture.cpp
++++ b/core/rend/gles/CustomTexture.cpp
+@@ -28,7 +28,11 @@
+ #include <dirent.h>
+ #endif
+ 
++#ifdef SYSTEM_LIBPNG
++#include <png.h>
++#else
+ #include "deps/libpng/png.h"
++#endif
+ #include "reios/reios.h"
+ 
+ void CustomTexture::LoaderThread()
+diff --git a/core/rend/gles/gles.cpp b/core/rend/gles/gles.cpp
+index 0582f10..ad62e37 100644
+--- a/core/rend/gles/gles.cpp
++++ b/core/rend/gles/gles.cpp
+@@ -33,7 +33,11 @@ int fbdev = -1;
+ #ifdef _ANDROID
+ #include <android/native_window.h> // requires ndk r5 or newer
+ #endif
++#ifdef SYSTEM_LIBPNG
++#include <png.h>
++#else
+ #include "deps/libpng/png.h"
++#endif
+ 
+ /*
+ GL|ES 2
+diff --git a/core/rend/gles/gltex.cpp b/core/rend/gles/gltex.cpp
+index 22d6f14..0dd7cd2 100644
+--- a/core/rend/gles/gltex.cpp
++++ b/core/rend/gles/gltex.cpp
+@@ -3,8 +3,16 @@
+ #include "rend/TexCache.h"
+ #include "hw/pvr/pvr_mem.h"
+ #include "hw/mem/_vmem.h"
++#ifdef SYSTEM_LIBPNG
++#include <png.h>
++#else
+ #include "deps/libpng/png.h"
++#endif
++#ifdef SYSTEM_XXHASH
++#include <xxhash.h>
++#else
+ #include "deps/xxhash/xxhash.h"
++#endif
+ #include "CustomTexture.h"
+ 
+ /*
+diff --git a/shell/linux/Makefile b/shell/linux/Makefile
+index 2bc4b29..2985450 100644
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -12,6 +12,12 @@ USE_UDEV := 1
+ USE_MODEM := 1
+ PLATFORM_EXT := elf
+ 
++SYSTEM_FLAC := 1
++SYSTEM_LIBPNG := 1
++SYSTEM_LIBZIP := 1
++SYSTEM_XXHASH := 1
++SYSTEM_ZLIB := 1
++
+ CXX ?= ${CC_PREFIX}g++
+ CC ?= ${CC_PREFIX}gcc
+ AS ?= ${CC_PREFIX}as
+@@ -399,6 +405,33 @@ ifdef DEBUGFAST
+     CFLAGS += -DDEBUGFAST
+ endif
+ 
++ifdef SYSTEM_FLAC
++    CFLAGS += `pkg-config --cflags flac` -D SYSTEM_FLAC
++    CXXFLAGS += `pkg-config --cflags flac` -D SYSTEM_FLAC
++    LIBS += `pkg-config --libs flac`
++endif
++
++ifdef SYSTEM_LIBPNG
++    CXXFLAGS += `pkg-config --cflags libpng` -D SYSTEM_LIBPNG
++    LIBS += `pkg-config --libs libpng`
++endif
++
++ifdef SYSTEM_LIBZIP
++    CXXFLAGS += `pkg-config --cflags libzip` -D SYSTEM_LIBZIP
++    LIBS += `pkg-config --libs libzip`
++endif
++
++ifdef SYSTEM_XXHASH
++    CXXFLAGS += -D SYSTEM_XXHASH
++    LIBS += -lxxhash
++endif
++
++ifdef SYSTEM_ZLIB
++    CFLAGS += `pkg-config --cflags zlib` -D SYSTEM_ZLIB
++    CXXFLAGS += `pkg-config --cflags zlib` -D SYSTEM_ZLIB
++    LIBS += `pkg-config --libs zlib`
++endif
++
+ EXECUTABLE_STRIPPED=nosym-reicast.$(PLATFORM_EXT)
+ DC_PLATFORM=dreamcast
+ EXECUTABLE=reicast.$(PLATFORM_EXT)
+-- 
+2.21.0
+

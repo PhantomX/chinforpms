@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>flycast.desktop</id>
+  <name>Flycast</name>
+  <summary>A Sega Dreamcast emulator</summary>
+  <developer_name>Flycast Team</developer_name>
+  <description>
+  <p>
+   Flycast is a multi-platform Sega Dreamcast emulator.
+  </p>
+</description>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>BSD</project_license>
+  <project_license>GPL-2.0+</project_license>
+  <url type="bugtracker">https://github.com/flyinghead/flycast/issues</url>
+  <url type="homepage">https://github.com/flyinghead/flycast</url>
+  <updatecontact>megaphantomx at bol.com.br</updatecontact>
+</component>

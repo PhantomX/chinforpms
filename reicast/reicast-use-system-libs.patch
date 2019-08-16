@@ -1,6 +1,6 @@
-From 12c34aba50a838b6b9714430c110c00db1069f4a Mon Sep 17 00:00:00 2001
+From 0ab9a277928d55a3d7720428782f5da23633220d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 20 Jul 2019 01:02:00 -0300
+Date: Thu, 15 Aug 2019 20:59:34 -0300
 Subject: [PATCH] Use system libs
 
 ---
@@ -36,7 +36,7 @@ index 05a0f0f..ff24960 100644
  class ZipArchive : public Archive
  {
 diff --git a/libswirl/core.mk b/libswirl/core.mk
-index 0fbc1ff..f098d7e 100644
+index 140df97..8cc4f43 100644
 --- a/libswirl/core.mk
 +++ b/libswirl/core.mk
 @@ -9,14 +9,32 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
@@ -45,10 +45,10 @@ index 0fbc1ff..f098d7e 100644
   hw/mem/ hw/pvr/ hw/sh4/ hw/sh4/interpr/ hw/sh4/modules/ plugins/ profiler/ oslib/ \
 - hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/zlib/ deps/chdr/ deps/crypto/ \
 - deps/libelf/ deps/cdipsr/ arm_emitter/ rend/ reios/ deps/libpng/ deps/xbrz/ \
-- deps/xxhash/ deps/libzip/ deps/imgui/ archive/ input/ glwrap/
+- deps/xxhash/ deps/libzip/ deps/imgui/ archive/ input/ utils/ utils/glwrap/ gui/
 + hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/chdr/ deps/crypto/ \
 + deps/libelf/ deps/cdipsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
-+ deps/imgui/ archive/ input/ glwrap/
++ deps/imgui/ archive/ input/ utils/ utils/glwrap/ gui/
 +
 +ifndef SYSTEM_LIBPNG
 +RZDCY_MODULES += deps/libpng/
@@ -75,7 +75,7 @@ index 0fbc1ff..f098d7e 100644
  
  ifdef _NO_WEBUI
  	RZDCY_MODULES += webui/
-@@ -141,10 +159,12 @@ ifdef HAS_SOFTREND
+@@ -123,10 +141,12 @@ else
  endif
  
  ifdef CHD5_FLAC
@@ -142,12 +142,12 @@ index f506c66..7128805 100644
  #if _ANDROID
  #include <android/log.h>
 diff --git a/libswirl/hw/pvr/Renderer_if.cpp b/libswirl/hw/pvr/Renderer_if.cpp
-index aa4b4f5..fb3ce67 100644
+index 073e62d..a8becb0 100644
 --- a/libswirl/hw/pvr/Renderer_if.cpp
 +++ b/libswirl/hw/pvr/Renderer_if.cpp
 @@ -4,7 +4,11 @@
  #include "rend/TexCache.h"
- #include "rend/gui.h"
+ #include "gui/gui.h"
  
 +#ifdef SYSTEM_ZLIB
 +#include <zlib.h>
@@ -185,7 +185,7 @@ index 7a81e89..896bdd1 100644
  u8* vq_codebook;
  u32 palette_index;
 diff --git a/libswirl/rend/gles/CustomTexture.cpp b/libswirl/rend/gles/CustomTexture.cpp
-index 3d6f371..4cb24fe 100644
+index e5f4209..3baecbb 100644
 --- a/libswirl/rend/gles/CustomTexture.cpp
 +++ b/libswirl/rend/gles/CustomTexture.cpp
 @@ -28,7 +28,11 @@
@@ -201,10 +201,10 @@ index 3d6f371..4cb24fe 100644
  
  #include "scripting/lua_bindings.h"
 diff --git a/libswirl/rend/gles/glesrend.cpp b/libswirl/rend/gles/glesrend.cpp
-index 2e31e4b..8acac10 100644
+index cff920e..31d080a 100644
 --- a/libswirl/rend/gles/glesrend.cpp
 +++ b/libswirl/rend/gles/glesrend.cpp
-@@ -1615,8 +1615,11 @@ struct glesrend : Renderer
+@@ -1621,8 +1621,11 @@ struct glesrend : Renderer
  	}
  };
  
@@ -217,7 +217,7 @@ index 2e31e4b..8acac10 100644
  
  FILE* pngfile;
  
-@@ -1777,4 +1780,4 @@ GLuint loadPNG(const string& fname, int &width, int &height)
+@@ -1783,4 +1786,4 @@ GLuint loadPNG(const string& fname, int &width, int &height)
  
  #include "hw/pvr/Renderer_if.h"
  
@@ -246,7 +246,7 @@ index 1a3802f..d21bf02 100644
  
  /*
 diff --git a/libswirl/scripting/lua_bindings.h b/libswirl/scripting/lua_bindings.h
-index e2f3366..b3c41d0 100644
+index e2f3366..ca6eebd 100644
 --- a/libswirl/scripting/lua_bindings.h
 +++ b/libswirl/scripting/lua_bindings.h
 @@ -1,6 +1,10 @@
@@ -261,10 +261,10 @@ index e2f3366..b3c41d0 100644
  
  void emulib_expose(lua_State* L);
 diff --git a/reicast/linux/Makefile b/reicast/linux/Makefile
-index be0d424..3810148 100644
+index d74af07..f5c3ae8 100644
 --- a/reicast/linux/Makefile
 +++ b/reicast/linux/Makefile
-@@ -14,6 +14,13 @@ USE_MODEM := 1
+@@ -12,6 +12,13 @@ USE_MODEM := 1
  PLATFORM_EXT := elf
  SCRIPTING := 1
  
@@ -277,9 +277,9 @@ index be0d424..3810148 100644
 +
  CXX=${CC_PREFIX}g++
  CC=${CC_PREFIX}gcc
- AS=${CC_PREFIX}as
-@@ -437,6 +444,38 @@ ifdef HAS_SOFTREND
-     CXXFLAGS += -DTARGET_SOFTREND
+ AS=${CC_PREFIX}gcc
+@@ -201,6 +208,38 @@ ifdef LTO_TEST
+     LDFLAGS +=-flto -fwhole-program
  endif
  
 +ifdef SYSTEM_FLAC
@@ -314,9 +314,9 @@ index be0d424..3810148 100644
 +    LIBS += `pkg-config --libs zlib`
 +endif
 +
+ # executable name configuration
  EXECUTABLE_STRIPPED=nosym-reicast.$(PLATFORM_EXT)
  ifdef NAOMI
-     CFLAGS += -D TARGET_NAOMI
 -- 
 2.21.0
 

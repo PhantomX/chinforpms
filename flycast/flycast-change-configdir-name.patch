@@ -1,0 +1,130 @@
+From beb7e902ff9ca0776e6178e6d38ed9930b4fbe5c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 15 Aug 2019 18:45:26 -0300
+Subject: [PATCH] Change configdir name
+
+---
+ core/linux-dist/main.cpp               | 32 +++++++++++++-------------
+ core/oslib/audiobackend_pulseaudio.cpp |  2 +-
+ 2 files changed, 17 insertions(+), 17 deletions(-)
+
+diff --git a/core/linux-dist/main.cpp b/core/linux-dist/main.cpp
+index f9d2ce5..ffc96e5 100644
+--- a/core/linux-dist/main.cpp
++++ b/core/linux-dist/main.cpp
+@@ -208,10 +208,10 @@ string find_user_config_dir()
+ 		if(getenv("HOME") != NULL)
+ 		{
+ 			// Support for the legacy config dir at "$HOME/.reicast"
+-			string legacy_home = (string)getenv("HOME") + "/.reicast";
++			string legacy_home = (string)getenv("HOME") + "/.flycast";
+ 			if((stat(legacy_home.c_str(), &info) == 0) && (info.st_mode & S_IFDIR))
+ 			{
+-				// "$HOME/.reicast" already exists, let's use it!
++				// "$HOME/.flycast" already exists, let's use it!
+ 				return legacy_home;
+ 			}
+ 
+@@ -219,12 +219,12 @@ string find_user_config_dir()
+ 			 * Consult the XDG Base Directory Specification for details:
+ 			 *   http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html#variables
+ 			 */
+-			home = (string)getenv("HOME") + "/.config/reicast";
++			home = (string)getenv("HOME") + "/.config/flycast";
+ 		}
+ 		if(getenv("XDG_CONFIG_HOME") != NULL)
+ 		{
+ 			// If XDG_CONFIG_HOME is set explicitly, we'll use that instead of $HOME/.config
+-			home = (string)getenv("XDG_CONFIG_HOME") + "/reicast";
++			home = (string)getenv("XDG_CONFIG_HOME") + "/flycast";
+ 		}
+ 
+ 		if(!home.empty())
+@@ -250,10 +250,10 @@ string find_user_data_dir()
+ 		if(getenv("HOME") != NULL)
+ 		{
+ 			// Support for the legacy config dir at "$HOME/.reicast"
+-			string legacy_data = (string)getenv("HOME") + "/.reicast";
++			string legacy_data = (string)getenv("HOME") + "/.flycast";
+ 			if((stat(legacy_data.c_str(), &info) == 0) && (info.st_mode & S_IFDIR))
+ 			{
+-				// "$HOME/.reicast" already exists, let's use it!
++				// "$HOME/.flycast" already exists, let's use it!
+ 				return legacy_data;
+ 			}
+ 
+@@ -261,12 +261,12 @@ string find_user_data_dir()
+ 			 * Consult the XDG Base Directory Specification for details:
+ 			 *   http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html#variables
+ 			 */
+-			data = (string)getenv("HOME") + "/.local/share/reicast";
++			data = (string)getenv("HOME") + "/.local/share/flycast";
+ 		}
+ 		if(getenv("XDG_DATA_HOME") != NULL)
+ 		{
+ 			// If XDG_DATA_HOME is set explicitly, we'll use that instead of $HOME/.config
+-			data = (string)getenv("XDG_DATA_HOME") + "/reicast";
++			data = (string)getenv("XDG_DATA_HOME") + "/flycast";
+ 		}
+ 
+ 		if(!data.empty())
+@@ -295,17 +295,17 @@ std::vector<string> find_system_config_dirs()
+ 		string::size_type n = s.find(":", pos);
+ 		while(n != std::string::npos)
+ 		{
+-			dirs.push_back(s.substr(pos, n-pos) + "/reicast");
++			dirs.push_back(s.substr(pos, n-pos) + "/flycast");
+ 			pos = n + 1;
+ 			n = s.find(":", pos);
+ 		}
+ 		// Separator not found
+-		dirs.push_back(s.substr(pos) + "/reicast");
++		dirs.push_back(s.substr(pos) + "/flycast");
+ 	}
+ 	else
+ 	{
+-		dirs.push_back("/etc/reicast"); // This isn't part of the XDG spec, but much more common than /etc/xdg/
+-		dirs.push_back("/etc/xdg/reicast");
++		dirs.push_back("/etc/flycast"); // This isn't part of the XDG spec, but much more common than /etc/xdg/
++		dirs.push_back("/etc/xdg/flycast");
+ 	}
+ 	return dirs;
+ }
+@@ -321,17 +321,17 @@ std::vector<string> find_system_data_dirs()
+ 		string::size_type n = s.find(":", pos);
+ 		while(n != std::string::npos)
+ 		{
+-			dirs.push_back(s.substr(pos, n-pos) + "/reicast");
++			dirs.push_back(s.substr(pos, n-pos) + "/flycast");
+ 			pos = n + 1;
+ 			n = s.find(":", pos);
+ 		}
+ 		// Separator not found
+-		dirs.push_back(s.substr(pos) + "/reicast");
++		dirs.push_back(s.substr(pos) + "/flycast");
+ 	}
+ 	else
+ 	{
+-		dirs.push_back("/usr/local/share/reicast");
+-		dirs.push_back("/usr/share/reicast");
++		dirs.push_back("/usr/local/share/flycast");
++		dirs.push_back("/usr/share/flycast");
+ 	}
+ 	return dirs;
+ }
+diff --git a/core/oslib/audiobackend_pulseaudio.cpp b/core/oslib/audiobackend_pulseaudio.cpp
+index 16c0295..ff233a1 100644
+--- a/core/oslib/audiobackend_pulseaudio.cpp
++++ b/core/oslib/audiobackend_pulseaudio.cpp
+@@ -14,7 +14,7 @@ static void pulseaudio_init()
+ 	ss.channels = 2;
+ 	ss.rate = 44100;
+ 	/* Create a new playback stream */
+-	pulse_stream = pa_simple_new(NULL, "reicast", PA_STREAM_PLAYBACK, NULL, "reicast", &ss, NULL, NULL, NULL);
++	pulse_stream = pa_simple_new(NULL, "flycast", PA_STREAM_PLAYBACK, NULL, "flycast", &ss, NULL, NULL, NULL);
+ 	if (!pulse_stream) {
+ 		WARN_LOG(AUDIO, "PulseAudio: pa_simple_new() failed!");
+ 	}
+-- 
+2.21.0
+

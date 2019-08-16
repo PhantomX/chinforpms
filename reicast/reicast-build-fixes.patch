@@ -1,17 +1,17 @@
-From 885270d6673319965bd73a2d50dc0abb05fe10bc Mon Sep 17 00:00:00 2001
+From 8f3d71b293185646e86de474d84a817daf5665cd Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 20 Jul 2019 00:42:54 -0300
+Date: Thu, 15 Aug 2019 20:53:49 -0300
 Subject: [PATCH] Build fixes
 
 ---
- reicast/linux/Makefile | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ reicast/linux/Makefile | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/reicast/linux/Makefile b/reicast/linux/Makefile
-index a2a1fe0..be0d424 100644
+index ca8df9e..d74af07 100644
 --- a/reicast/linux/Makefile
 +++ b/reicast/linux/Makefile
-@@ -4,8 +4,8 @@ FOR_LINUX :=1
+@@ -3,8 +3,8 @@ LOCAL_PATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
  #NO_REC := 1
  #NO_REND := 1
  WEBUI :=1
@@ -22,43 +22,30 @@ index a2a1fe0..be0d424 100644
  #USE_SDLAUDIO := 1
  #USE_LIBAO := 1
  USE_EVDEV := 1
-@@ -24,12 +24,12 @@ CHD5_LZMA := 1
+@@ -22,16 +22,16 @@ CHD5_LZMA := 1
  CHD5_FLAC := 1
  
  MFLAGS :=
 -ASFLAGS :=
--LDFLAGS :=
+-LDFLAGS := -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,-O3 -Wl,--sort-common -fopenmp #defaults
 +#ASFLAGS :=
-+#LDFLAGS :=
++LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,--sort-common -fopenmp #defaults
  INCS :=
- LIBS :=
--CFLAGS :=
--CXXFLAGS :=
-+#CFLAGS :=
-+#CXXFLAGS :=
+ LIBS := -lm -lpthread #defaults
  
- ifneq (, $(filter $(shell uname -s), FreeBSD OpenBSD NetBSD DragonFly))
-     CFLAGS += -DTARGET_BSD
-@@ -319,13 +319,13 @@ endif
- RZDCY_SRC_DIR = $(LOCAL_PATH)/../../libswirl
- include $(RZDCY_SRC_DIR)/core.mk
- 
--LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,-O3 -Wl,--sort-common -fopenmp
-+LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,--sort-common -fopenmp
- 
--CFLAGS += $(RZDCY_CFLAGS) -g -O3 -D RELEASE -c -D USES_HOMEDIR -fopenmp #-D NO_REND
-+CFLAGS += $(RZDCY_CFLAGS) -D RELEASE -c -D USES_HOMEDIR -fopenmp #-D NO_REND
+-CFLAGS := -g -O3 -D RELEASE -c -D USES_HOMEDIR -fopenmp # defaults
++CFLAGS += -D RELEASE -c -D USES_HOMEDIR -fopenmp # defaults
  CFLAGS += -frename-registers -fno-strict-aliasing
  CFLAGS += -ffast-math -ftree-vectorize
  
--CXXFLAGS += $(RZDCY_CFLAGS) -fno-rtti -fpermissive -fno-operator-names -D_GLIBCXX_USE_CXX11_ABI=0 -std=gnu++14
-+CXXFLAGS += $(RZDCY_CFLAGS) -fno-rtti -fpermissive -fno-operator-names -std=gnu++14
+-CXXFLAGS :=  -fno-rtti -fpermissive -fno-operator-names -D_GLIBCXX_USE_CXX11_ABI=0 -std=c++14 # defaults
++CXXFLAGS +=  -fno-rtti -fpermissive -fno-operator-names -std=c++14 # defaults
  
- INCS += -I$(RZDCY_SRC_DIR) -I$(RZDCY_SRC_DIR)/deps -I$(RZDCY_SRC_DIR)/khronos
  
-@@ -525,7 +525,7 @@ $(BUILDDIR)/%.build_obj : $(RZDCY_SRC_DIR)/%.S $(VERSION_HEADER)
- 	mkdir -p $(dir $@)
- 	$(AS) $(ASFLAGS) $(INCS) $< -o $@
+ 
+@@ -296,7 +296,7 @@ $(BUILDDIR)/%.build_obj : $(RZDCY_SRC_DIR)/%.S $(VERSION_HEADER)
+ $(BUILDDIR)/reicastres.build_obj: $(LOCAL_PATH)/../windows/reicast.rc $(LOCAL_PATH)/../windows/reicast.ico $(RZDCY_SRC_DIR)/version.h
+ 	$(WINDRES) $< $@
  
 -install: $(EXECUTABLE)
 +install:

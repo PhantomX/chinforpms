@@ -1,34 +1,53 @@
-From 9866efcabbf4219066ed47862059fd48c24b7ec0 Mon Sep 17 00:00:00 2001
+From d5ad60082de4de94797eb78e1c0df9777d204d3d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 20 Jul 2019 08:54:05 -0300
+Date: Thu, 15 Aug 2019 22:23:18 -0300
 Subject: [PATCH] Fix format security error
 
 ---
- libswirl/rend/gui.cpp | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ libswirl/gui/gui_settings_audio.cpp | 4 ++--
+ libswirl/gui/gui_settings_video.cpp | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/libswirl/rend/gui.cpp b/libswirl/rend/gui.cpp
-index a3d9974..72be7f1 100644
---- a/libswirl/rend/gui.cpp
-+++ b/libswirl/rend/gui.cpp
-@@ -955,7 +955,7 @@ static void gui_display_settings()
- 					if (ImGui::Selectable(backend.slug.c_str(), &is_selected))
- 						settings.pvr.backend = backend.slug;
- 					ImGui::SameLine(); ImGui::Text("-");
--					ImGui::SameLine(); ImGui::Text(backend.desc.c_str());
-+					ImGui::SameLine(); ImGui::Text(backend.desc.c_str(), "%s");
- 				}
+diff --git a/libswirl/gui/gui_settings_audio.cpp b/libswirl/gui/gui_settings_audio.cpp
+index 0b76a13..3fa7621 100644
+--- a/libswirl/gui/gui_settings_audio.cpp
++++ b/libswirl/gui/gui_settings_audio.cpp
+@@ -60,7 +60,7 @@ void gui_settings_audio()
+ 				if (ImGui::Selectable(backend->slug.c_str(), &is_selected))
+ 					settings.audio.backend = backend->slug;
+ 				ImGui::SameLine(); ImGui::Text("-");
+-				ImGui::SameLine(); ImGui::Text(backend->name.c_str());
++				ImGui::SameLine(); ImGui::Text(backend->name.c_str(), "%s");
+                 if (is_selected)
+                     ImGui::SetItemDefaultFocus();
+ 			}
+@@ -134,4 +134,4 @@ void gui_settings_audio()
+ 		ImGui::PopStyleVar();
+ 		ImGui::EndTabItem();
+ 	}
+-}
+\ No newline at end of file
++}
+diff --git a/libswirl/gui/gui_settings_video.cpp b/libswirl/gui/gui_settings_video.cpp
+index 6e5e899..342f203 100644
+--- a/libswirl/gui/gui_settings_video.cpp
++++ b/libswirl/gui/gui_settings_video.cpp
+@@ -30,7 +30,7 @@ void gui_settings_video()
+ 				if (ImGui::Selectable(backend.slug.c_str(), &is_selected))
+ 					settings.pvr.backend = backend.slug;
+ 				ImGui::SameLine(); ImGui::Text("-");
+-				ImGui::SameLine(); ImGui::Text(backend.desc.c_str());
++				ImGui::SameLine(); ImGui::Text(backend.desc.c_str(), "%s");
+ 			}
  
- 				ImGui::EndCombo();
-@@ -1074,7 +1074,7 @@ static void gui_display_settings()
- 					if (ImGui::Selectable(backend->slug.c_str(), &is_selected))
- 						settings.audio.backend = backend->slug;
- 					ImGui::SameLine(); ImGui::Text("-");
--					ImGui::SameLine(); ImGui::Text(backend->name.c_str());
-+					ImGui::SameLine(); ImGui::Text(backend->name.c_str(), "%s");
- 	                if (is_selected)
- 	                    ImGui::SetItemDefaultFocus();
- 				}
+ 			ImGui::EndCombo();
+@@ -98,4 +98,4 @@ void gui_settings_video()
+ 		ImGui::PopStyleVar();
+ 		ImGui::EndTabItem();
+ 	}
+-}
+\ No newline at end of file
++}
 -- 
 2.21.0
 
