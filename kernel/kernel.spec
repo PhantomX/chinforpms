@@ -58,17 +58,17 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 6
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 967e3b96b21e6b95bf1722bbb1cf39a2b2e603e1
+%global pfcommit ebf2ee21452d1f86b33aaa67cb7fc5764363e919
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id a3e04b12075fef2f407834c0006e3f4e3779b55f
+%global opensuse_id a44175ee389754f990c066ca0cf9ab926cbe768c
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -644,9 +644,6 @@ Patch531: drm-panel-orientation-quirks.patch
 # rhbz 1732045
 Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
-# rhbz 1737046 temporary revert until issue is fixed upstream
-Patch535: 0001-Revert-for-bz-1737046.patch
-
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -662,6 +659,7 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/driver_core-Fix_use-after-free_and_double_free_on_glue.patch#/openSUSE-driver_core-Fix_use-after-free_and_double_free_on_glue.patch
+Patch1019: %{opensuse_url}/x86-apic-Handle-missing-global-clockevent-gracefully.patch#/openSUSE-x86-apic-Handle-missing-global-clockevent-gracefully.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -1501,7 +1499,8 @@ BuildKernel() {
     cp -a --parents tools/include/* $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/purgatory.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/stack.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/x86/purgatory/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+    cp -a --parents arch/x86/boot/compressed/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+    cp -a --parents lib/sha256.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/setup-x86_64.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/entry64.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
@@ -1958,6 +1957,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.9-500.chinfo
+- 5.2.9 - pf6
+
 * Fri Aug 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.8-500.chinfo
 - 5.2.8
 - Experimental fsync patch
