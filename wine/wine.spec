@@ -33,14 +33,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 4.13
+%global wine_stagingver 4.14
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id a9c06bf9d37a8afd156c273d9330cf90a7ef9db2
+%global tkg_id 848fd6b69a0e5e1626b8dcf431b21e9398f9570c
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -65,8 +65,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.13
-Release:        101%{?dist}
+Version:        4.14
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -109,10 +109,6 @@ Source113:      wine-taskmgr.desktop
 
 # wine bugs/upstream
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-Patch100:       %{whq_url}/d593a80bb6359f9cbcd47dd243e0bf5d08387cf5#/%{name}-whq-d593a80.patch
-Patch101:       %{whq_url}/2859c22cc6c10a7f3aa5e853b0151284b96be235#/%{name}-whq-2859c22.patch
-Patch102:       %{whq_url}/9855fbe252ff3664d879e8cd9f5d1ea879af47dd#/%{name}-whq-9855fbe.patch
-Patch103:       %{whq_url}/6e3d68b14120563fd584fe9c5a27885f51e7ae66#/%{name}-whq-6e3d68b.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -140,10 +136,10 @@ Patch600:       https://github.com/laino/wine-patches/raw/3ffdac0356ca3d64924e75
 Patch601:       wbemprox_query_v2.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
-Patch700:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
+Patch700:       %{tkg_url}/misc/legacy/steam.patch#/%{name}-tkg-steam.patch
 Patch701:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch702:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
-Patch703:       %{tkg_url}/game-specific/poe-fix.patch#/%{name}-tkg-poe-fix.patch
+Patch703:       %{tkg_url}/game-specific/legacy/poe-fix.patch#/%{name}-tkg-poe-fix.patch
 Patch704:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 Patch705:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
 
@@ -722,10 +718,6 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
-%patch103 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch600 -p1
@@ -1223,7 +1215,7 @@ fi
 %doc README-pba-pkg
 %endif
 %{_bindir}/msidb
-%{_libdir}/wine/runas.exe.so
+%{_libdir}/wine/runas.%{wineexe}
 %endif
 %{_bindir}/winedump
 %{_libdir}/wine/explorer.%{wineexe}
@@ -1244,7 +1236,7 @@ fi
 %{_libdir}/wine/winver.exe.so
 %{_libdir}/wine/wordpad.%{wineexe}
 %{_libdir}/wine/write.%{wineexe}
-%{_libdir}/wine/wusa.exe.so
+%{_libdir}/wine/wusa.%{wineexe}
 
 %ifarch %{ix86} %{arm}
 %{_bindir}/wine32
@@ -1288,7 +1280,7 @@ fi
 %{_libdir}/wine/fc.%{wineexe}
 %{_libdir}/wine/find.%{wineexe}
 %{_libdir}/wine/findstr.%{wineexe}
-%{_libdir}/wine/fsutil.exe.so
+%{_libdir}/wine/fsutil.%{wineexe}
 %{_libdir}/wine/hostname.%{wineexe}
 %{_libdir}/wine/ipconfig.%{wineexe}
 %{_libdir}/wine/winhlp32.%{wineexe}
@@ -1342,7 +1334,7 @@ fi
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.%{winedll}
 %{_libdir}/wine/amsi.%{winedll}
-%{_libdir}/wine/amstream.dll.so
+%{_libdir}/wine/amstream.%{winedll}
 %{_libdir}/wine/api-ms-win-appmodel-identity-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-appmodel-runtime-l1-1-1.%{winedll}
 %{_libdir}/wine/api-ms-win-appmodel-runtime-l1-1-2.%{winedll}
@@ -1919,7 +1911,7 @@ fi
 %{_libdir}/wine/qedit.%{winedll}
 %{_libdir}/wine/qmgr.%{winedll}
 %{_libdir}/wine/qmgrprxy.%{winedll}
-%{_libdir}/wine/quartz.dll.so
+%{_libdir}/wine/quartz.%{winedll}
 %{_libdir}/wine/query.%{winedll}
 %{_libdir}/wine/qwave.%{winedll}
 %{_libdir}/wine/rasapi32.%{winedll}
@@ -1994,6 +1986,7 @@ fi
 %{_libdir}/wine/usbd.%{winesys}
 %{_libdir}/wine/user32.dll.so
 %{_libdir}/wine/usp10.%{winedll}
+%{_libdir}/wine/utildll.%{winedll}
 %{_libdir}/wine/uxtheme.dll.so
 %{_libdir}/wine/userenv.%{winedll}
 %{_libdir}/wine/vbscript.%{winedll}
@@ -2036,6 +2029,7 @@ fi
 %{_libdir}/wine/winnls32.%{winedll}
 %{_libdir}/wine/winspool.drv.so
 %{_libdir}/wine/winsta.%{winedll}
+%{_libdir}/wine/wlanui.%{winedll}
 %{_libdir}/wine/wmasf.%{winedll}
 %{_libdir}/wine/wmi.%{winedll}
 %{_libdir}/wine/wmic.%{wineexe}
@@ -2405,6 +2399,9 @@ fi
 
 
 %changelog
+* Sat Aug 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.14-100
+- 4.14
+
 * Fri Aug 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.13-101
 - Upstream and tkg updates
 - Mono update
