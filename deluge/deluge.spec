@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        2.0.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -13,6 +13,13 @@ Source0:        http://download.deluge-torrent.org/source/%{vermm}/%{name}-%{ver
 
 Patch0:         0001-Disable-GConf2-magnet-registering.patch
 Patch1:         0001-Disable-new-release-check-by-default.patch
+
+%global vc_url  https://git.deluge-torrent.org/deluge/patch
+Patch10:        %{vc_url}/?id=833b5a1f306dad600d0f64a5c897407ba1584830#/%{name}-git-833b5a1.patch
+Patch11:        %{vc_url}/?id=4b29436cd5eabf9af271f3fa6250cd7c91cdbc9d#/%{name}-git-4b29436.patch
+Patch12:        %{vc_url}/?id=1b4ac88ce72515bcf36684b942e3998900f13cea#/%{name}-git-1b4ac88.patch
+Patch13:        %{vc_url}/?id=63a4301a8be8f13c1aa21c1cc7b123ba013b2c3a#/%{name}-git-63a4301.patch
+Patch14:        %{vc_url}/?id=3f9ae337932da550f2623daa6dedd9c3e0e5cfb3#/%{name}-git-3f9ae33.patch
 
 BuildArch:      noarch
 
@@ -251,6 +258,9 @@ exit 0
 
 
 %changelog
+* Mon Aug 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.3-101
+- Some upstream fixes
+
 * Wed Jun 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.2-100
 - 2.0.3
 

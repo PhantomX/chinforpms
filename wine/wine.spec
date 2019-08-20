@@ -66,7 +66,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.14
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -127,14 +127,6 @@ Source502:      wine-README-tahoma
 Patch511:       wine-cjk.patch
 Patch599:       0003-winemenubuilder-silence-an-err.patch
 
-### AUR - https://aur.archlinux.org/packages/wine-gaming-nine
-# Steam patch, Crossover Hack version
-# https://bugs.winehq.org/show_bug.cgi?id=39403
-Patch600:       https://github.com/laino/wine-patches/raw/3ffdac0356ca3d64924e75851acc545efd259a05/0003-wine-list.h-linked-list-cache-line-prefetching.patch#/%{name}-laino-0003-wine-list.h-linked-list-cache-line-prefetching.patch
-# Wbemprox videocontroller query fix v2
-# https://bugs.winehq.org/show_bug.cgi?id=38879
-Patch601:       wbemprox_query_v2.patch
-
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch700:       %{tkg_url}/misc/legacy/steam.patch#/%{name}-tkg-steam.patch
 Patch701:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
@@ -155,6 +147,7 @@ Patch715:       %{tkg_url}/proton-tkg-specific/raw-input-proton.patch#/%{name}-t
 Patch716:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch717:       %{tkg_url}/proton/valve_proton_fullscreen_hack_realmodes.patch#/%{name}-tkg-valve_proton_fullscreen_hack_realmodes.patch
 Patch718:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
+Patch719:       %{tkg_url}/proton/fsync-staging-no_alloc_handle.patch#/%{name}-tkg-fsync-staging-no_alloc_handle.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/9cf81304c03046cb337d8b7275af600e39373702.patch#/%{name}-valve-9cf8130.patch
@@ -720,7 +713,6 @@ This package adds the opencl driver for wine.
 %setup -q -n wine-%{ver}
 %patch511 -p1 -b.cjk
 %patch599 -p1
-%patch600 -p1
 %patch700 -p1
 %patch702 -p1
 #patch703 -p1
@@ -758,6 +750,7 @@ patch -p1 -i wine-tkg-valve_proton_fullscreen_hack-staging.patch
 %patch716 -p1
 %patch717 -p1
 %patch718 -p1
+%patch719 -p1
 %patch800 -p1 -R
 
 # fix parallelized build
@@ -768,8 +761,6 @@ sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
 rm -rf patches/
 
 %endif #{?wine_staging}
-
-%patch601 -p1
 
 # Verify gecko and mono versions
 GECKO_VER="$(grep '^#define' dlls/appwiz.cpl/addons.c | grep ' GECKO_VERSION ' | awk '{print $3}' | tr -d \")"
@@ -2399,6 +2390,10 @@ fi
 
 
 %changelog
+* Mon Aug 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.14-101
+- Missing patch
+- Deprecate old unmaintained patches
+
 * Sat Aug 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.14-100
 - 4.14
 

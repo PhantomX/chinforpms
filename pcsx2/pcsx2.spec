@@ -1,6 +1,6 @@
-%global commit c6fcf0aaabf7cd1c5a75f1b8be819aa3fa5d7673
+%global commit 33571dda4239a91e52bf988d2e02be1d92a97750
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190517
+%global date 20190818
 %global with_snapshot 1
 
 %global sanitize 0
@@ -11,7 +11,7 @@
 
 Name:           pcsx2
 Version:        1.5.0
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -52,6 +52,8 @@ BuildRequires:  pkgconfig(ice)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libsparsehash)
 BuildRequires:  pkgconfig(libudev)
+BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(harfbuzz)
 BuildRequires:  pkgconfig(portaudio-2.0)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(soundtouch)
@@ -62,6 +64,7 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  compat-wxGTK3-gtk2-devel
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
+BuildRequires:  libpcap-devel
 BuildRequires:  perl-interpreter
 
 Requires:       joystick
@@ -185,6 +188,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Sun Aug 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-103.20190818git33571dd
+- New snapshot
+
 * Wed May 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-102.20190517gitc6fcf0a
 - New snapshot
 

@@ -1,6 +1,6 @@
-%global commit 1bc2fb60abf0fa173b69ca94f660115d76f09f4f
+%global commit dc34e4b9d6fccdc97ce8b267eb04ca2c27490d2a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190709
+%global date 20190819
 %global with_snapshot 1
 
 %global freebsd_rev 480450
@@ -124,7 +124,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.12
+Version:        56.2.13
 Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -207,6 +207,7 @@ Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-webrtc-gtest-libv4l2.patch
 Patch704:        %{name}-fix-testing-file.patch
+Patch705:        %{name}-remove-SetCurrentProcessPrivileges.patch
 
 
 %if 0%{?system_nss}
@@ -428,7 +429,7 @@ done
 # 2: no apply
 # 3: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1393283 1395486 1433747 1452576 1453127 1466606 \
+  702179 991253 1021761 1144632 1288587 1393235 1393283 1395486 1433747 1452576 1453127 1466606 \
   1388744 1413143 \
   1447519
 do
@@ -447,6 +448,7 @@ done
 %patch702 -p1 -b .waterfoxdir-2
 %patch703 -p1 -b .lv4l2
 %patch704 -p1 -b .fix-testing-file
+%patch705 -p1 -b .remove-privs
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -980,6 +982,7 @@ fi
 # That's Windows only
 %ghost %{mozappdir}/browser/features/aushelper@mozilla.org.xpi
 %attr(644, root, root) %{mozappdir}/browser/blocklist.xml
+%attr(644, root, root) %{mozappdir}/browser/ua-update.json
 %dir %{mozappdir}/browser/extensions
 %{mozappdir}/browser/extensions/*
 %if %{build_langpacks}
@@ -1014,6 +1017,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Mon Aug 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.13-1.20190709gitdc34e4b
+- New release/snapshot
+
 * Wed Jul 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.12-1.20190709git1bc2fb6
 - New release/snapshot
 - Fix URL
