@@ -24,7 +24,7 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.8.1
+Version:        1.8.2
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -219,6 +219,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Tue Aug 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.1-100
+- 1.8.2
+
 * Mon Aug 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.1-100
 - 1.8.1
 - RPMFusion sync. Bundled rlottie
