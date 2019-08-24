@@ -33,14 +33,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 4.14
+%global wine_stagingver fb4fcb4da619e6c516c127e76e97c24813d15972
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 848fd6b69a0e5e1626b8dcf431b21e9398f9570c
+%global tkg_id 99663361197097f9bb5fff9d1c39adc843f559b4
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -66,7 +66,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.14
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -139,15 +139,17 @@ Patch705:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_c
 %if 0%{?wine_staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 Patch710:       %{tkg_url}/misc/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
-Source711:      %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
+Source711:      %{tkg_url}/proton/valve_proton_fullscreen_hack-staging-938dddf.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging-938dddf.patch
 Patch712:       0001-Valve-Proton-FS-fix-for-rawinput-patch.patch
 Patch713:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch714:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
-Patch715:       %{tkg_url}/proton-tkg-specific/raw-input-proton.patch#/%{name}-tkg-raw-input-proton.patch
+Patch715:       %{tkg_url}/proton-tkg-specific/legacy/raw-input-proton.patch#/%{name}-tkg-raw-input-proton.patch
 Patch716:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch717:       %{tkg_url}/proton/valve_proton_fullscreen_hack_realmodes.patch#/%{name}-tkg-valve_proton_fullscreen_hack_realmodes.patch
 Patch718:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
 Patch719:       %{tkg_url}/proton/fsync-staging-no_alloc_handle.patch#/%{name}-tkg-fsync-staging-no_alloc_handle.patch
+Patch720:       %{tkg_url}/proton-tkg-specific/winevulkan-1.1.113-proton.patch#/%{name}-tkg-winevulkan-1.1.113-proton.patch
+Patch721:       %{tkg_url}/misc/0001-kernelbase-Remove-DECLSPEC_HOTPATCH-from-SetThreadSt.patch#/%{name}-tkg-0001-kernelbase-Remove-DECLSPEC_HOTPATCH-from-SetThreadSt.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/9cf81304c03046cb337d8b7275af600e39373702.patch#/%{name}-valve-9cf8130.patch
@@ -743,7 +745,7 @@ cp -p %{S:1001} README-pba-pkg
 #patch710 -p1
 cp %{S:711} .
 %patch712 -p1
-patch -p1 -i wine-tkg-valve_proton_fullscreen_hack-staging.patch
+patch -p1 -i wine-tkg-valve_proton_fullscreen_hack-staging-938dddf.patch
 %patch713 -p1
 %patch714 -p1
 %patch715 -p1
@@ -751,6 +753,8 @@ patch -p1 -i wine-tkg-valve_proton_fullscreen_hack-staging.patch
 %patch717 -p1
 %patch718 -p1
 %patch719 -p1
+%patch720 -p1
+%patch721 -p1
 %patch800 -p1 -R
 
 # fix parallelized build
@@ -2390,6 +2394,9 @@ fi
 
 
 %changelog
+* Fri Aug 23 2019 Phantom X <megaphantomx at bol dot com dot br>  - 1:4.14-102
+- tkg updates
+
 * Mon Aug 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.14-101
 - Missing patch
 - Deprecate old unmaintained patches

@@ -7,9 +7,9 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.59
+Version:        1.0.0.61
 Epoch:          1
-Release:        101%{?dist}
+Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement
@@ -44,10 +44,6 @@ Patch0:         %{name}-3570.patch
 # Remove libstdc++ from runtime:
 # https://github.com/ValveSoftware/steam-for-linux/issues/3273
 Patch1: %{name}-3273.patch
-
-# Make Steam Controller usable as a GamePad:
-# https://steamcommunity.com/app/353370/discussions/0/490123197956024380/
-Patch2:         %{name}-controller-gamepad-emulation.patch
 
 # Disable desktop files installation on desktop and create logs on user directory
 Patch3:         %{name}-launcher.patch
@@ -113,7 +109,6 @@ Requires:       libva%{?_isa}
 Requires:       libvdpau%{?_isa}
 
 # Required for having a functioning menu on the tray icon
-Requires:       libdbusmenu-gtk2%{?_isa} >= 16.04.0
 Requires:       libdbusmenu-gtk3%{?_isa} >= 16.04.0
 
 # Required by Feral interactive games
@@ -121,6 +116,9 @@ Requires:       libatomic%{?_isa}
 
 # Required by Shank
 Requires:       alsa-plugins-pulseaudio%{?_isa}
+
+Recommends:     gamemode
+Recommends:     gamemode%{?_isa}
 
 Provides:       steam-noruntime = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      steam-noruntime < %{?epoch:%{epoch}:}%{version}-%{release}
@@ -135,7 +133,6 @@ and screenshot functionality, and many social features.
 %setup -q -n %{name}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 
@@ -212,6 +209,9 @@ install -m 644 -p %{SOURCE11} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 
 
 %changelog
+* Wed Aug 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.61-100
+- 1.0.0.61
+
 * Sat Jan 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.59-101
 - Update NOFILE limits
 
