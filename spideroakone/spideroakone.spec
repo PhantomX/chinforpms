@@ -22,7 +22,7 @@
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -86,6 +86,7 @@ Provides:       SpiderOak = %{version}-%{release}
 %global __requires_exclude %__requires_exclude|^libcrypto.so.1.0.0
 %global __requires_exclude %__requires_exclude|^libgmp.so.3
 %global __requires_exclude %__requires_exclude|^libpng12.so.0
+%if !0%{?with_pyqt}
 %global __requires_exclude %__requires_exclude|^libQtCore.so.4
 %global __requires_exclude %__requires_exclude|^libQtCore.so.4
 %global __requires_exclude %__requires_exclude|^libQtDBus.so.4
@@ -97,6 +98,12 @@ Provides:       SpiderOak = %{version}-%{release}
 %global __requires_exclude %__requires_exclude|^libQtSvg.so.4
 %global __requires_exclude %__requires_exclude|^libQtXmlPatterns.so.4
 %global __requires_exclude %__requires_exclude|^libQtXml.so.4
+%global __requires_exclude %__requires_exclude|^PyQt4.QtCore.so
+%global __requires_exclude %__requires_exclude|^PyQt4.QtDeclarative.so
+%global __requires_exclude %__requires_exclude|^PyQt4.QtGui.so
+%global __requires_exclude %__requires_exclude|^PyQt4.QtNetwork.so
+%global __requires_exclude %__requires_exclude|^PyQt4.QtSvg.so
+%endif
 
 %description
 SpiderOak provides an easy, secure and consolidated online backup, storage,
@@ -279,6 +286,9 @@ done
 
 
 %changelog
+* Mon Aug 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-2
+- Fix requires
+
 * Tue Mar 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-1
 - 7.5.0
 
