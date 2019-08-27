@@ -16,6 +16,8 @@ WINEFSYNC override
 =================================
 Enable with WINEFSYNC=1 environment variable
 
+WINEFSYNC_SPINCOUNT=value
+
 WINE_LARGE_ADDRESS_AWARE override
 =================================
 Enable with WINE_LARGE_ADDRESS_AWARE=1 environment variable

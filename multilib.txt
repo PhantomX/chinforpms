@@ -1,4 +1,5 @@
 adwaita-qt
+amdvlk-vulkan-driver
 cubeb
 FAudio
 FAudio-freeworld
@@ -15,13 +16,11 @@ libstrangle
 linux-steam-integration
 mingw-crt
 mingw-headers
-mingw-wine-vk9
 mingw-winpthreads
 qt5ct
 taglib
 webp-pixbuf-loader
 wine
-wine-dxup
 wine-d9vk - no mingw
 wine-dxvk - no mingw
 wine-freeworld

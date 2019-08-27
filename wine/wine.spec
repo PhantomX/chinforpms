@@ -40,7 +40,7 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 99663361197097f9bb5fff9d1c39adc843f559b4
+%global tkg_id b486a3f3a984de9ce1dfe79cf0719f659979c703
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -66,7 +66,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.14
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -139,7 +139,7 @@ Patch705:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_c
 %if 0%{?wine_staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 Patch710:       %{tkg_url}/misc/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
-Source711:      %{tkg_url}/proton/valve_proton_fullscreen_hack-staging-938dddf.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging-938dddf.patch
+Source711:      %{tkg_url}/proton/legacy/valve_proton_fullscreen_hack-staging-938dddf.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging-938dddf.patch
 Patch712:       0001-Valve-Proton-FS-fix-for-rawinput-patch.patch
 Patch713:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch714:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
@@ -2394,6 +2394,9 @@ fi
 
 
 %changelog
+* Tue Aug 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.14-103
+- tkg updates
+
 * Fri Aug 23 2019 Phantom X <megaphantomx at bol dot com dot br>  - 1:4.14-102
 - tkg updates
 

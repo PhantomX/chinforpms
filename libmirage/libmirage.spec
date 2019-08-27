@@ -1,5 +1,5 @@
 Name:           libmirage
-Version:        3.2.2
+Version:        3.2.3
 Release:        100%{?dist}
 Summary:        A CD/DVD-ROM image access library
 
@@ -79,6 +79,9 @@ popd
 
 
 %changelog
+* Tue Aug 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.2.3-100
+- 3.2.3
+
 * Mon Mar 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.2.2-100
 - 3.2.2
 

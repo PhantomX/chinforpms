@@ -26,6 +26,7 @@ ytnef
 adriconf
 adwaita-qt
 aisleriot
+amdvlk-vulkan-driver
 ario
 asbru-cm
 bashdb

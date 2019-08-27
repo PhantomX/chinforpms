@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ebf2ee21452d1f86b33aaa67cb7fc5764363e919
+%global pfcommit e8657000751d5ad99b06f51a24d9f754c0e6ac42
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -1957,6 +1957,9 @@ fi
 #
 #
 %changelog
+* Mon Aug 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.10-500.chinfo
+- 5.2.9 - pf7
+
 * Fri Aug 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.9-500.chinfo
 - 5.2.9 - pf6
 
