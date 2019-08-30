@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e8657000751d5ad99b06f51a24d9f754c0e6ac42
+%global pfcommit bac578b5e47234ff50aff011e3f45f8d631acd53
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 5878ee66182973951394c95f74851a1df456dd71
+%global opensuse_id 638511006109a60917e424dc002a3599671ec2c0
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -639,10 +639,14 @@ Patch507: 0001-Drop-that-for-now.patch
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # Fix the LCD panel orientation on the GPD MicroPC, pending as fix for 5.3
-Patch531: drm-panel-orientation-quirks.patch
+Patch510: drm-panel-orientation-quirks.patch
 
 # rhbz 1732045
-Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
+Patch511: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
+
+# CVE-2019-14814 CVE-2019-14815 CVE-2019-14816
+# rhbz 1744130 1744137 1744149 1746566 1746567 
+Patch514: mwifiex-Fix-three-heap-overflow-at-parsing-element-in-cfg80211_ap_settings.patch
 
 ### Extra
 
@@ -659,7 +663,6 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/driver_core-Fix_use-after-free_and_double_free_on_glue.patch#/openSUSE-driver_core-Fix_use-after-free_and_double_free_on_glue.patch
-Patch1019: %{opensuse_url}/x86-apic-Handle-missing-global-clockevent-gracefully.patch#/openSUSE-x86-apic-Handle-missing-global-clockevent-gracefully.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -683,7 +686,7 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 
 %endif
 
-Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/7ac860864c1c03e34dfd86f3d069c41e47fda653/linux52-tkg/linux52-tkg-patches/0012-v5.2-fsync.patch#/tkg-0012-v5.2-fsync.patch
+Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/4385f69191aba79ee7c4d4245b1e7316e6931f09/linux52-tkg/linux52-tkg-patches/0012-v5.2-fsync.patch#/tkg-0012-v5.2-fsync.patch
 
 %if !0%{?zen}
 Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1957,8 +1960,11 @@ fi
 #
 #
 %changelog
+* Thu Aug 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.11-500.chinfo
+- 5.2.11
+
 * Mon Aug 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.10-500.chinfo
-- 5.2.9 - pf7
+- 5.2.10 - pf7
 
 * Fri Aug 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.9-500.chinfo
 - 5.2.9 - pf6

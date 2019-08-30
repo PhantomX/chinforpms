@@ -1,0 +1,2 @@
+Start your executable with either VK_ICD_FILENAMES=/etc/vulkan/icd.d/amdpro_icd.x86_64.json
+for 64-bit or VK_ICD_FILENAMES=/etc/vulkan/icd.d/amdpro_icd.i686.json for 32-bit.

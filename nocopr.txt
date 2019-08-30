@@ -1,5 +1,6 @@
 aacgain
 alac_decoder
+amdgpu-pro-vulkan-driver
 bh-fonts
 binkplayer
 cowsrevenge

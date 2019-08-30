@@ -17,15 +17,15 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm
 
-%global commit2 0da6ca8e09f41639636a106f9b9ca74df50321ce
+%global commit2 4fa48ef1cf0f81eafdb56df91c2f2180d4865101
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 9b632ef4f132bddc94769702ed8b49efbc39d89c
+%global commit3 331558e93794068a786bf699d3fe23bb11bac021
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 66e78b997748d03d77e1d706c10f1f17e18e5654
+%global commit4 68b57dba33a4d922e8f1ef1b3781c2f659ffbd1c
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -58,13 +58,13 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2019.3.4
+Version:        2019.3.5
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
 URL:            %{vc_url}/AMDVLK
 
-%global ver     %(echo %{version} | sed '0,/\\./s//\\0Q/')
+%global ver     %(echo %{version} | sed 's/\\./.Q/1')
 %if 0%{?with_bin}
 Source0:        %{url}/releases/download/v-%{ver}/%{pkgname}_%{ver}_amd64.deb
 
@@ -123,7 +123,7 @@ ar p %{S:0} data.tar.xz | tar xJ
 cp -p %{S:20} .
 mv usr/share/doc/amdvlk/copyright LICENSE.txt
 
-sed -e 's|/usr/lib/x86_64-linux-gnu|%{libdir}|g' -i etc/vulkan/icd.d/*.json
+sed -e 's|/usr/lib/x86_64-linux-gnu|%{_libdir}|g' -i etc/vulkan/icd.d/*.json
 
 %else
 %setup -q -c -n %{name}-%{version} -a 0 -a 1 -a 2 -a 3 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9
@@ -138,7 +138,7 @@ ln -sf llpc-%{commit2} llpc
 ln -sf xgl-%{commit3} xgl
 ln -sf pal-%{commit4} pal
 ln -sf spvgen-%{commit5} spvgen
-ln -sf MetroHash-%{commit6} MetroHash
+mv MetroHash-%{commit6} pal/src/util/imported/metrohash
 mv SPIRV-Tools-%{commit7} spvgen/external/SPIRV-tools
 mv SPIRV-Headers-%{commit8} spvgen/external/SPIRV-tools/external/SPIRV-Headers
 mv glslang-%{commit9} spvgen/external/glslang
@@ -148,8 +148,10 @@ cp -p AMDVLK/README.md .
 
 # workaround for AMDVLK#89
 find . -name 'CMakeLists.txt' -exec sed -e "s/-Werror\b//g" -i "{}" ';'
+sed -e "s/-Werror\b//g" -i pal/shared/gpuopen/cmake/AMD.cmake
 
 sed -e '/CMAKE_SHARED_LINKER_FLAGS_RELEASE/s| -s\b| |g' -i xgl/CMakeLists.txt
+sed -e '/soname=/s|so.1|so|g' -i xgl/icd/CMakeLists.txt
 %endif
 
 %build
@@ -189,11 +191,11 @@ mkdir _temp_install
   mv xgl/%{_target_platform}/spvgen/spvgen.so _temp_install/
   mv AMDVLK/json/Redhat/amd_icd64.json _temp_install/
 %endif
-  install -m 644 _temp_install/amd_icd64.json \
+  install -pm0644 _temp_install/amd_icd64.json \
     %{buildroot}%{_datadir}/vulkan/icd.d/amd_icd.%{_arch}.json
   install -pm0755 _temp_install/*.so %{buildroot}%{_libdir}/
 %else
-  install -m 644 AMDVLK/json/Redhat/amd_icd32.json \
+  install -pm0644 AMDVLK/json/Redhat/amd_icd32.json \
     %{buildroot}%{_datadir}/vulkan/icd.d/amd_icd.%{_arch}.json
   install -pm0755 xgl/%{_target_platform}/icd/amdvlk32.so %{buildroot}%{_libdir}/
   install -pm0755 xgl/%{_target_platform}/spvgen/spvgen.so %{buildroot}%{_libdir}/
@@ -214,6 +216,9 @@ echo "MaxNumCmdStreamsPerSubmit,4" > %{buildroot}%{_sysconfdir}/amd/amdPalSettin
 
 
 %changelog
+* Thu Aug 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.3.5-1
+- 2019.Q3.5
+
 * Tue Aug 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.3.4-1
 - chinforpms changes and bin support
 
