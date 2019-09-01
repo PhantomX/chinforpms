@@ -9,7 +9,7 @@
 %global debug_package %{nil}
 
 Name:           vhba-kmod
-Version:        20190410
+Version:        20190831
 Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
@@ -58,6 +58,9 @@ done
 
 
 %changelog
+* Sun Sep 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 20190831-1
+- 20190831
+
 * Fri May 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 20190410-1
 - 20190410
 

@@ -49,8 +49,7 @@ Patch0:         %{name}-build-fixes.patch
 Patch1:         %{name}-system-fonts.patch
 Patch2:         %{name}-unbundle-minizip.patch
 Patch3:         %{name}-pkg-config.patch
-Patch4:         0001-Temporary-fix-for-gcc-9.1.1-regression.patch
-Patch5:         0001-Unset-QT-scale-env-vars.patch
+Patch4:         0001-Unset-QT-scale-env-vars.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522

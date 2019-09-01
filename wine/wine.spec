@@ -33,22 +33,20 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver fb4fcb4da619e6c516c127e76e97c24813d15972
+%global wine_stagingver 4.15
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id b486a3f3a984de9ce1dfe79cf0719f659979c703
+%global tkg_id 752a8b2ef4f36cf0d9e57ff3487a91a53dbfdc9f
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
 # Broken
 %global pba 0
 
-# raw input fix
-%global wine_staging_opts -W winex11-mouse-movements
 # proton FS hack and raw input fix
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds
 
@@ -65,8 +63,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.14
-Release:        103%{?dist}
+Version:        4.15
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -139,11 +137,10 @@ Patch705:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_c
 %if 0%{?wine_staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 Patch710:       %{tkg_url}/misc/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
-Source711:      %{tkg_url}/proton/legacy/valve_proton_fullscreen_hack-staging-938dddf.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging-938dddf.patch
-Patch712:       0001-Valve-Proton-FS-fix-for-rawinput-patch.patch
+Patch711:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
+Patch712:       %{tkg_url}/hotfixes/rawinput-staging-restore.mystagingrevert#/%{name}-tkg-rawinput-staging-restore.patch
 Patch713:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch714:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
-Patch715:       %{tkg_url}/proton-tkg-specific/legacy/raw-input-proton.patch#/%{name}-tkg-raw-input-proton.patch
 Patch716:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch717:       %{tkg_url}/proton/valve_proton_fullscreen_hack_realmodes.patch#/%{name}-tkg-valve_proton_fullscreen_hack_realmodes.patch
 Patch718:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
@@ -721,6 +718,7 @@ This package adds the opencl driver for wine.
 %patch704 -p1
 %patch705 -p1
 %patch801 -p1
+sed -e 's|__stdcall XACT_NOTIFICATION_CALLBACK|XACT_NOTIFICATION_CALLBACK|g' -i include/xact3.idl
 %patch802 -p1
 %patch803 -p1
 
@@ -729,6 +727,7 @@ This package adds the opencl driver for wine.
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch701 -p1
+%patch712 -p1 -R
 %patch5000 -p1
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
@@ -743,12 +742,9 @@ cp -p %{S:1001} README-pba-pkg
 
 # Breaks Gallium HUD
 #patch710 -p1
-cp %{S:711} .
-%patch712 -p1
-patch -p1 -i wine-tkg-valve_proton_fullscreen_hack-staging-938dddf.patch
+%patch711 -p1
 %patch713 -p1
 %patch714 -p1
-%patch715 -p1
 %patch716 -p1
 %patch717 -p1
 %patch718 -p1
@@ -1294,6 +1290,7 @@ fi
 %{_libdir}/wine/reg.%{wineexe}
 %{_libdir}/wine/regasm.%{wineexe}
 %{_libdir}/wine/regedit.%{wineexe}
+%{_libdir}/wine/regini.%{wineexe}
 %{_libdir}/wine/regsvcs.%{wineexe}
 %{_libdir}/wine/regsvr32.%{wineexe}
 %{_libdir}/wine/rpcss.%{wineexe}
@@ -1726,6 +1723,7 @@ fi
 %{_libdir}/wine/hidclass.%{winesys}
 %{_libdir}/wine/hlink.%{winedll}
 %{_libdir}/wine/hnetcfg.%{winedll}
+%{_libdir}/wine/http.%{winesys}
 %{_libdir}/wine/httpapi.%{winedll}
 %{_libdir}/wine/icacls.%{wineexe}
 %{_libdir}/wine/iccvid.%{winedll}
@@ -1776,6 +1774,7 @@ fi
 %{_libdir}/wine/mf.%{winedll}
 %{_libdir}/wine/mf3216.%{winedll}
 %{_libdir}/wine/mferror.%{winedll}
+%{_libdir}/wine/mfmediaengine.%{winedll}
 %{_libdir}/wine/mfplat.%{winedll}
 %{_libdir}/wine/mfplay.%{winedll}
 %{_libdir}/wine/mfreadwrite.%{winedll}
@@ -2394,6 +2393,9 @@ fi
 
 
 %changelog
+* Sat Aug 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.15-100
+- 4.15
+
 * Tue Aug 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.14-103
 - tkg updates
 
