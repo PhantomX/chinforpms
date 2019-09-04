@@ -1066,7 +1066,7 @@ desktop-file-install \
   %{SOURCE300}
 
 cp -p %{SOURCE3} README-FEDORA
-cp -p %{SOURCE4} README-chinforpms
+cp -p %{SOURCE6} README-chinforpms
 
 cp -p %{SOURCE502} README-tahoma
 
