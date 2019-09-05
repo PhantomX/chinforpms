@@ -1,7 +1,7 @@
-%global commit dc34e4b9d6fccdc97ce8b267eb04ca2c27490d2a
+%global commit 4f22b84524c911ee3d9dba38180304c0a324bca9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190819
-%global with_snapshot 1
+%global date 20190902
+%global with_snapshot 0
 
 %global freebsd_rev 480450
 %global freebsd_root %{name}-FreeBSD-patches-r%{freebsd_rev}
@@ -124,7 +124,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.13
+Version:        56.2.14
 Release:        1%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -207,7 +207,6 @@ Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-webrtc-gtest-libv4l2.patch
 Patch704:        %{name}-fix-testing-file.patch
-Patch705:        %{name}-remove-SetCurrentProcessPrivileges.patch
 
 
 %if 0%{?system_nss}
@@ -430,7 +429,7 @@ done
 # 3: uncertain
 for i in \
   702179 991253 1021761 1144632 1288587 1393235 1393283 1395486 1433747 1452576 1453127 1466606 \
-  1388744 1413143 \
+  1384121 1388744 1413143 \
   1447519
 do
   rm -f _patches/patch-bug${i}
@@ -448,7 +447,6 @@ done
 %patch702 -p1 -b .waterfoxdir-2
 %patch703 -p1 -b .lv4l2
 %patch704 -p1 -b .fix-testing-file
-%patch705 -p1 -b .remove-privs
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -1017,6 +1015,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Sep 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.14-1
+- 5.2.14
+
 * Mon Aug 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.13-1.20190709gitdc34e4b
 - New release/snapshot
 

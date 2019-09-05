@@ -1,6 +1,6 @@
 Name:           qt5ct
-Version:        0.39
-Release:        101%{?dist}
+Version:        0.41
+Release:        100%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
@@ -90,6 +90,9 @@ install -D -pm 644 %{name}-%{version}/src/%{name}/translations/*.qm \
 
 
 %changelog
+* Thu Sep 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.41-100
+- 0.41
+
 * Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.39-101
 - Rebuild (qt5)
 
