@@ -157,8 +157,6 @@ export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-fcf-protection//' \
   ` --param=ssp-buffer-size=4"
 
-cp -p  /usr/lib/rpm/mingw-find-debuginfo.sh .
-sed -e 's|${target}_prefix|_prefix|g' -i mingw-find-debuginfo.sh
 %else
 TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"
 %endif
@@ -185,10 +183,13 @@ do
 meson \
   --cross-file build-%{cfname}${i}.txt \
   --buildtype "plain" \
+  -Denable_dxgi=false \
+  -Denable_d3d10=false \
+  -Denable_d3d11=false \
   %{_target_platform}${i}
 
 pushd %{_target_platform}${i}
-%ninja_build src/d3d9/d3d9.%{winedll}
+%ninja_build
 
 %if !0%{?with_mingw}
   for spec in d3d9 ;do
@@ -228,7 +229,7 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 %files
 %license LICENSE
-%doc README.md README.%{pkgname}
+%doc README.md README.%{pkgname} dxvk.conf
 %{_bindir}/wine%{pkgname}cfg
 %if 0%{?with_mingw}
 %{_datadir}/wine/%{pkgname}/*/*.dll

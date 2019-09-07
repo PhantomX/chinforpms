@@ -58,17 +58,17 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 13
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 7
+%global post_factum 8
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit bac578b5e47234ff50aff011e3f45f8d631acd53
+%global pfcommit e7bde1002c3ea69b3ec9c089a3ce708e4375f40f
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 638511006109a60917e424dc002a3599671ec2c0
+%global opensuse_id acd8e88224e971d4efd3d9b1a86c87b58ac24561
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -615,8 +615,6 @@ Patch307: arm-make-highpte-not-expert.patch
 
 # Raspberry Pi bits
 Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
-
-Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 
 Patch334: 0001-Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-d.patch
 Patch335: 0002-Revert-ARM-bcm283x-Extend-the-WDT-DT-node-out-to-cov.patch
@@ -1960,6 +1958,9 @@ fi
 #
 #
 %changelog
+* Fri Sep 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.13-500.chinfo
+- 5.2.13 - pf8
+
 * Thu Aug 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.11-500.chinfo
 - 5.2.11
 

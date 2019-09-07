@@ -104,8 +104,6 @@ sed -i 's/python /python3 /' \
   mono/sdks/builds/runtime.mk mono/sdks/wasm/Makefile
 %endif
 
-cp -p  /usr/lib/rpm/mingw-find-debuginfo.sh .
-sed -e 's|${target}_prefix|_prefix|g' -i mingw-find-debuginfo.sh
 
 %build
 %if !0%{?with_bin}

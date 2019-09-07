@@ -145,8 +145,6 @@ export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-fcf-protection//' \
   ` --param=ssp-buffer-size=4"
 
-cp -p  /usr/lib/rpm/mingw-find-debuginfo.sh .
-sed -e 's|${target}_prefix|_prefix|g' -i mingw-find-debuginfo.sh
 %else
 TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"
 %endif
@@ -230,7 +228,7 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 %files
 %license LICENSE
-%doc README.md README.dxvk
+%doc README.md README.dxvk dxvk.conf
 %{_bindir}/wine%{pkgname}cfg
 %if 0%{?with_mingw}
 %{_datadir}/wine/%{pkgname}/*/*.dll

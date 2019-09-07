@@ -9,7 +9,7 @@
 %global srcname1 crl
 
 # Git revision of patched rlottie...
-%global commit2 d08a03b6508b390af20491f2dbeee3453594afc8
+%global commit2 589db026ec211bc4979e3bffe074f6e48ce7cedc
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 rlottie
 
@@ -24,7 +24,7 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.8.2
+Version:        1.8.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -218,6 +218,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Fri Sep 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.4-100
+- 1.8.4
+
 * Tue Aug 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.1-100
 - 1.8.2
 

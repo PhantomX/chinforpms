@@ -3,6 +3,7 @@ alac_decoder
 amdgpu-pro-vulkan-driver
 bh-fonts
 binkplayer
+bsnes
 cowsrevenge
 desmume
 discord
