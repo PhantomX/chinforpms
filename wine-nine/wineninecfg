@@ -32,7 +32,7 @@ name="Gallium Nine"
 pkgname="wine-nine"
 dllsuffix="-nine"
 dlls="d3d9"
-nodlls=""
+nodlls="dxgi"
 
 unset winebits
 enabled=0

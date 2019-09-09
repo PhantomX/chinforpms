@@ -1,5 +1,5 @@
 Name:           adriconf
-Version:        1.4
+Version:        1.5.1
 Release:        1%{?dist}
 Summary:        Advanced DRI Configurator
 
@@ -39,7 +39,9 @@ them to the standard drirc file used by the Mesa drivers.
 mkdir %{_target_platform}
 pushd %{_target_platform}
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+  -DENABLE_UNIT_TESTS:BOOL=OFF \
+%{nil}
 
 %make_build
 
@@ -86,6 +88,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/br.com.jeanher
 
 
 %changelog
+* Sun Sep 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-1
+- 1.5.1
+
 * Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1
 - 1.4
 - BR: libxml++-3.0
