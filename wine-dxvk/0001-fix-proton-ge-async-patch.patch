@@ -1,0 +1,25 @@
+From 572361484e6f2cb3bf7a8ebbbb45564098e9702c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 9 Sep 2019 11:40:35 -0300
+Subject: [PATCH] fix proton-ge async patch
+
+---
+ dxvk-async.patch | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/dxvk-async.patch b/dxvk-async.patch
+index 5d924a4..bae8ba8 100644
+--- a/dxvk-async.patch
++++ b/dxvk-async.patch
+@@ -422,7 +422,7 @@ index 79259875..db2f8a32 100644
+ +    bool useAsync;
+  
+      /// Number of compiler threads
+-     /// when using the state cache
++     bool enableTransferQueue;
+ diff --git a/src/dxvk/dxvk_pipemanager.h b/src/dxvk/dxvk_pipemanager.h
+ index f0087d15..29e758c7 100644
+ --- a/src/dxvk/dxvk_pipemanager.h
+-- 
+2.21.0
+

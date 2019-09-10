@@ -20,13 +20,18 @@
 
 %global winedll dll%{?libext}
 
+%global pge_id 1e2a7ed967c16a37ce6d7d7932cad0ae8eb3afd7
+%global pge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{pge_id}/game-patches-testing/dxvk-patches
+
+%global dxvk_async 1
+
 %global winecommonver 4.6
 
 %global pkgname dxvk
 
 Name:           wine-%{pkgname}
-Version:        1.3.3
-Release:        1%{?dist}
+Version:        1.3.4
+Release:        2%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -36,6 +41,14 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        README.%{pkgname}
 Source2:        README.%{pkgname}-mingw
 Source3:        wine%{pkgname}cfg
+Source4:        README.async
+
+%if 0%{?dxvk_async}
+Patch100:       %{pge_url}/valve-dxvk-avoid-spamming-log-with-requests-for-IWineD3D11Texture2D.patch#/%{name}-pge-valve-dxvk-avoid-spamming-log-with-requests-for-IWineD3D11Texture2D.patch
+Source101:      %{pge_url}/dxvk-async.patch#/%{name}-pge-dxvk-async.patch
+Patch102:       0001-fix-proton-ge-async-patch.patch
+Patch103:       0001-dxvk.conf-async-option.patch
+%endif
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -104,13 +117,21 @@ package or when debugging this package.
 
 
 %prep
+%if 0%{?dxvk_async}
+%setup -q -n %{pkgname}-%{version}
+%patch100 -p1
+cp %{S:101} dxvk-async.patch
+%patch102 -p1
+patch -p1 -i dxvk-async.patch
+%patch103 -p1
+
+cp %{S:4} .
+%else
 %autosetup -n %{pkgname}-%{version} -p1
+%endif
 
 %if 0%{?with_mingw}
 cp %{S:2} README.%{pkgname}
-%else
-cp %{S:1} .
-%endif
 
 sed \
   -e '/^dllsuffix=/s|=.*|=""|g' \
@@ -118,6 +139,11 @@ sed \
   -e "s|lib=''|lib=32|g" \
   -e 's|/usr/lib${lib}/wine|%{_datadir}/wine/%{pkgname}/${lib}|g' \
   %{S:3} > wine%{pkgname}cfg
+
+%else
+cp %{S:1} .
+cp %{S:3} .
+%endif
 
 sed -e "/strip =/s|=.*|= 'true'|g" -i build-win*.txt
 
@@ -130,6 +156,8 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
 TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+
+TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-O2\b/-O3/'`"
 
 %if 0%{?with_mingw}
 export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
@@ -170,7 +198,7 @@ for i in %{targetbits}
 do
 meson \
   --cross-file build-%{cfname}${i}.txt \
-  --buildtype "plain" \
+  --buildtype "release" \
   %{_target_platform}${i}
 
 pushd %{_target_platform}${i}
@@ -229,6 +257,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 %files
 %license LICENSE
 %doc README.md README.dxvk dxvk.conf
+%if 0%{?dxvk_async}
+%doc README.async
+%endif
 %{_bindir}/wine%{pkgname}cfg
 %if 0%{?with_mingw}
 %{_datadir}/wine/%{pkgname}/*/*.dll
@@ -244,6 +275,12 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Sep 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3.4-2
+- async patch
+
+* Mon Sep 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3.4-1
+- 1.3.4
+
 * Thu Aug 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3.3-1
 - 1.3.3
 

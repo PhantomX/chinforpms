@@ -120,9 +120,6 @@ package or when debugging this package.
 
 %if 0%{?with_mingw}
 cp %{S:2} README.%{pkgname}
-%else
-cp %{S:1} .
-%endif
 
 sed \
   -e '/^dllsuffix=/s|=.*|=""|g' \
@@ -130,6 +127,11 @@ sed \
   -e "s|lib=''|lib=32|g" \
   -e 's|/usr/lib${lib}/wine|%{_datadir}/wine/%{pkgname}/${lib}|g' \
   %{S:3} > wine%{pkgname}cfg
+
+%else
+cp %{S:1} .
+cp %{S:3} .
+%endif
 
 sed -e "/strip =/s|=.*|= 'true'|g" -i build-wine*.txt
 
@@ -142,6 +144,8 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
 TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+
+TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-O2\b/-O3/'`"
 
 %if 0%{?with_mingw}
 export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
@@ -182,7 +186,7 @@ for i in %{targetbits}
 do
 meson \
   --cross-file build-%{cfname}${i}.txt \
-  --buildtype "plain" \
+  --buildtype "release" \
   -Denable_dxgi=false \
   -Denable_d3d10=false \
   -Denable_d3d11=false \
