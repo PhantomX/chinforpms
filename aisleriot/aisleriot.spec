@@ -1,6 +1,6 @@
 Name:           aisleriot
 Epoch:          2
-Version:        3.22.8
+Version:        3.22.9
 Release:        100%{?dist}
 Summary:        A collection of card games
 
@@ -74,6 +74,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/sol.desktop
 
 
 %changelog
+* Tue Sep 10 2019 Phantom X <megaphantomx at bol dot com dot br>  - 2:3.22.9-100
+- 3.22.9
+
 * Thu May 23 2019 Phantom X  <megaphantomx at bol dot com dot br> - 2:3.22.8-100
 - --with-platform=gtk-only to remove GConf support
 

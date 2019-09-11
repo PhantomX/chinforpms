@@ -23,7 +23,7 @@
 %global opensuse_id acd8e88224e971d4efd3d9b1a86c87b58ac24561
 
 # Do we have a -stable update to apply?
-%global stable_update 13
+%global stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -482,6 +482,9 @@ popd
 
 
 %changelog
+* Tue Sep 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-500.chinfo
+- 5.2.14
+
 * Fri Sep 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.13-500.chinfo
 - 5.2.13
 
