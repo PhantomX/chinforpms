@@ -30,6 +30,7 @@ RPMFusion and existent packages updated with extra changes.
  * **engrampa** - Split caja extension
  * **FAudio** - Tests
  * **firejail** - suid bit enabled and "firejail" group to use it
+ * **firewalld** - Tests
  * **gamemode** - System inih and launch script
  * **gnome-themes-extra** - Remove some paddings from Adwaita
  * **gstreamer1** - Added suffix -32/-64 to gst-plugin-scanner, so it can build
@@ -45,6 +46,7 @@ RPMFusion and existent packages updated with extra changes.
  * **libmirage** - Can't wait Fedora releases and better matching with cdemu builds from here
  * **libtgvoip** - No unresolved symbols
  * **libvirt, qemu, virt-manager** - Updated
+ * **libvorbis** - aoTuV patches
  * **lutris** - Personal changes
  * **lzip** - Updated, build flags
  * **manaplus** - Updated, SDL2

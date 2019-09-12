@@ -137,7 +137,7 @@
 
 %define with_firewalld 1
 
-%if 0%{?fedora} >= 31 || 0%{?rhel} > 7
+%if 0%{?fedora} >= 30 || 0%{?rhel} > 7
     %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
 %endif
 
@@ -216,7 +216,7 @@
 Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: 5.7.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
 
@@ -2010,6 +2010,9 @@ exit 0
 
 
 %changelog
+* Wed Sep 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-101
+- Enable firewalld zone for fedora >= 30
+
 * Tue Sep 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-100
 - 5.7.0
 - Rawhide sync

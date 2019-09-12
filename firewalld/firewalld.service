@@ -1,0 +1,13 @@
+[Unit]
+Description=Firewall dynamic change handling daemon
+After=syslog.target
+
+[Service]
+Type=forking
+EnvironmentFile=-/etc/sysconfig/firewalld
+ExecStart=/usr/sbin/firewalld $FIREWALLD_ARGS
+ExecReload=/usr/bin/firewall-cmd --reload
+
+[Install]
+WantedBy=multi-user.target
+Alias=dbus-org.fedoraproject.FirewallD.service

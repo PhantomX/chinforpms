@@ -1,0 +1,123 @@
+From fe5db9f2c71ed9b1f4886ebc48938cd73de4fcdf Mon Sep 17 00:00:00 2001
+From: Eric Garver <eric@garver.life>
+Date: Thu, 25 Jul 2019 15:19:34 -0400
+Subject: [PATCH] fedora patch to default to iptables backend
+
+---
+ config/firewalld.conf                  |  7 -------
+ src/firewall/config/__init__.py.in     |  2 +-
+ src/firewall/core/io/firewalld_conf.py | 17 +++++++++++++++++
+ src/tests/dbus/firewalld.conf.at       |  2 +-
+ src/tests/functions.at                 |  4 ++--
+ 5 files changed, 21 insertions(+), 11 deletions(-)
+
+diff --git a/config/firewalld.conf b/config/firewalld.conf
+index 423b7ea0733a..11e94c9cd9f6 100644
+--- a/config/firewalld.conf
++++ b/config/firewalld.conf
+@@ -50,13 +50,6 @@ LogDenied=off
+ # Default: system
+ AutomaticHelpers=system
+ 
+-# FirewallBackend
+-# Selects the firewall backend implementation.
+-# Choices are:
+-#	- nftables (default)
+-#	- iptables (iptables, ip6tables, ebtables and ipset)
+-FirewallBackend=nftables
+-
+ # FlushAllOnReload
+ # Flush all runtime rules on a reload. In previous releases some runtime
+ # configuration was retained during a reload, namely; interface to zone
+diff --git a/src/firewall/config/__init__.py.in b/src/firewall/config/__init__.py.in
+index 5bb318c5b269..6e0854242105 100644
+--- a/src/firewall/config/__init__.py.in
++++ b/src/firewall/config/__init__.py.in
+@@ -129,6 +129,6 @@ FALLBACK_IPV6_RPFILTER = True
+ FALLBACK_INDIVIDUAL_CALLS = False
+ FALLBACK_LOG_DENIED = "off"
+ FALLBACK_AUTOMATIC_HELPERS = "system"
+-FALLBACK_FIREWALL_BACKEND = "nftables"
++FALLBACK_FIREWALL_BACKEND = "iptables"
+ FALLBACK_FLUSH_ALL_ON_RELOAD = True
+ FALLBACK_RFC3964_IPV4 = True
+diff --git a/src/firewall/core/io/firewalld_conf.py b/src/firewall/core/io/firewalld_conf.py
+index c7a7ba283e0e..fca372368a40 100644
+--- a/src/firewall/core/io/firewalld_conf.py
++++ b/src/firewall/core/io/firewalld_conf.py
+@@ -259,6 +259,12 @@ class firewalld_conf(object):
+                     if key not in done:
+                         if (key in self._config and \
+                                 self._config[key] != value):
++                            # Only write FirewallBackend if it's not the default.
++                            # We will change the default in the future.
++                            if key == "FirewallBackend" and \
++                               self._config[key] == config.FALLBACK_FIREWALL_BACKEND:
++                                done.append(key)
++                                continue
+                             empty = False
+                             temp_file.write(u'%s=%s\n' %
+                                             (key, self._config[key]))
+@@ -266,6 +272,12 @@ class firewalld_conf(object):
+                         elif key in self._deleted:
+                             modified = True
+                         else:
++                            # Only write FirewallBackend if it's not the default.
++                            # We will change the default in the future.
++                            if key == "FirewallBackend" and \
++                               value == config.FALLBACK_FIREWALL_BACKEND:
++                                done.append(key)
++                                continue
+                             empty = False
+                             temp_file.write(line+u"\n")
+                         done.append(key)
+@@ -279,6 +291,11 @@ class firewalld_conf(object):
+                     continue
+                 if key in ["MinimalMark"]: # omit deprecated from new config
+                     continue
++                # Only write FirewallBackend if it's not the default.
++                # We will change the default in the future.
++                if key == "FirewallBackend" and \
++                   value == config.FALLBACK_FIREWALL_BACKEND:
++                    continue
+                 if not empty:
+                     temp_file.write(u"\n")
+                     empty = True
+diff --git a/src/tests/dbus/firewalld.conf.at b/src/tests/dbus/firewalld.conf.at
+index 45559311eabb..4c0b1ce84d3d 100644
+--- a/src/tests/dbus/firewalld.conf.at
++++ b/src/tests/dbus/firewalld.conf.at
+@@ -6,7 +6,7 @@ DBUS_GETALL([config], [config], 0, [dnl
+ string "AutomaticHelpers" : variant string "system"
+ string "CleanupOnExit" : variant string "no"
+ string "DefaultZone" : variant string "public"
+-string "FirewallBackend" : variant string "nftables"
++string "FirewallBackend" : variant string "iptables"
+ string "FlushAllOnReload" : variant string "yes"
+ m4_if(no, HOST_SUPPORTS_NFT_FIB, [dnl
+ string "IPv6_rpfilter" : variant string "no"],[dnl
+diff --git a/src/tests/functions.at b/src/tests/functions.at
+index 3771bb8bd5a7..ede3d37688e8 100644
+--- a/src/tests/functions.at
++++ b/src/tests/functions.at
+@@ -67,7 +67,7 @@ m4_define([FWD_START_TEST], [
+     m4_ifdef([TESTING_FIREWALL_OFFLINE_CMD], [
+         AT_KEYWORDS(offline)
+     ], [
+-        m4_define_default([FIREWALL_BACKEND], [nftables])
++        m4_define_default([FIREWALL_BACKEND], [iptables])
+ 
+         AT_KEYWORDS(FIREWALL_BACKEND)
+ 
+@@ -75,7 +75,7 @@ m4_define([FWD_START_TEST], [
+         AT_CHECK([sed -i 's/^CleanupOnExit.*/CleanupOnExit=no/' ./firewalld.conf])
+ 
+         dnl set the appropriate backend
+-        AT_CHECK([sed -i 's/^FirewallBackend.*/FirewallBackend=FIREWALL_BACKEND/' ./firewalld.conf])
++        AT_CHECK([echo "FirewallBackend=FIREWALL_BACKEND" >> ./firewalld.conf])
+ 
+         dnl fib matching is pretty new in nftables. Don't use rpfilter on older
+         dnl kernels.
+-- 
+2.20.1
+

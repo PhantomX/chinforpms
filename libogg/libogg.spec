@@ -1,8 +1,9 @@
 Summary:        The Ogg bitstream file format library
 Name:           libogg
 Epoch:          2
-Version:        1.3.3
-Release:        100.chinfo%{?dist}
+Version:        1.3.4
+Release:        100%{?dist}
+
 License:        BSD
 URL:            https://www.xiph.org/
 
@@ -42,24 +43,40 @@ Documentation for developing applications with libogg
 %prep
 %autosetup
 
-
-%build
 sed -i "s|-O20|%{build_cflags}|" configure
 sed -i "s|-ffast-math||" configure
+
+%build
 %configure --disable-static
+
 %make_build
+
 
 %install
 %make_install
 
 rm -f %{buildroot}%{_libdir}/*.la
 
+mv %{buildroot}%{_includedir}/ogg/config_types.h \
+  %{buildroot}%{_includedir}/ogg/config_types-%{__isa_bits}.h
+
+cat > %{buildroot}%{_includedir}/ogg/config_types.h <<'EOF'
+#include <bits/wordsize.h>
+#if __WORDSIZE == 32
+#include "config_types-32.h"
+#elif __WORDSIZE == 64
+#include "config_types-64.h"
+#else
+#error "Unknown word size"
+#endif
+EOF
+
 mv %{buildroot}%{_docdir}/%{name} __installed_docs
 
 
 %files
 %license COPYING
-%doc AUTHORS CHANGES README
+%doc AUTHORS CHANGES README.md
 %{_libdir}/libogg.so.*
 
 
@@ -68,6 +85,7 @@ mv %{buildroot}%{_docdir}/%{name} __installed_docs
 %{_includedir}/ogg/ogg.h
 %{_includedir}/ogg/os_types.h
 %{_includedir}/ogg/config_types.h
+%{_includedir}/ogg/config_types-%{__isa_bits}.h
 %{_libdir}/libogg.so
 %{_libdir}/pkgconfig/ogg.pc
 %{_datadir}/aclocal/ogg.m4
@@ -78,7 +96,10 @@ mv %{buildroot}%{_docdir}/%{name} __installed_docs
 
 
 %changelog
-* Tue Apr 24 2018 Phantom X <megaphantomx at bol dot com dot br>  - 2:1.3.3-100.chinfo
+* Wed Sep 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:1.3.4-100
+- 1.3.4
+
+* Tue Apr 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 2:1.3.3-100.chinfo
 - 1.3.3
 - chinforpms updates
 

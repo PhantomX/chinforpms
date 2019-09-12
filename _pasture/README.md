@@ -23,7 +23,7 @@ some seasonal packages too, these can return when needed
  * **godot2** - cowsrevenge
  * **hakuneko** - Unmantained by upstream
  * **kBuild** - VirtualBox, Fedora included
- * **libogg** - Updated release for Waterfox, Fedora included
+ * **libogg** - Updated release for Waterfox, Fedora included, seasonal package
  * **linphone** - linphoneqt
  * **linphoneqt** - Do not have interest anymore
  * **linux-steam-integration** - Missing dependencies
