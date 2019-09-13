@@ -1,0 +1,25 @@
+From bbc421e2db22cdbb1a312df9bb64683c8fdda93e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 12 Sep 2019 10:06:50 -0300
+Subject: [PATCH] Fix pull 6529
+
+---
+ .../SourceFiles/history/view/media/history_view_sticker.cpp     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Telegram/SourceFiles/history/view/media/history_view_sticker.cpp b/Telegram/SourceFiles/history/view/media/history_view_sticker.cpp
+index 0f9bacd..8ea3437 100644
+--- a/Telegram/SourceFiles/history/view/media/history_view_sticker.cpp
++++ b/Telegram/SourceFiles/history/view/media/history_view_sticker.cpp
+@@ -109,7 +109,7 @@ void Sticker::paintLottie(Painter &p, const QRect &r, bool selected) {
+ 	const auto playOnce = isEmojiSticker()
+ 		|| !_document->session().settings().loopAnimatedStickers();
+ 	if (!paused
+-		&& !_document->session().settings().disableAnimatedStickers();
++		&& !_document->session().settings().disableAnimatedStickers()
+ 		&& (!playOnce || frame.index != 0 || !_lottieOncePlayed)
+ 		&& _lottie->markFrameShown()
+ 		&& playOnce
+-- 
+2.21.0
+

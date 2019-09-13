@@ -1,7 +1,47 @@
-diff -up tdesktop-1.5.1/Telegram/gyp/telegram_linux.gypi.orig tdesktop-1.5.1/Telegram/gyp/telegram_linux.gypi
---- tdesktop-1.5.1/Telegram/gyp/telegram_linux.gypi.orig	2018-12-11 17:19:50.239623621 -0200
-+++ tdesktop-1.5.1/Telegram/gyp/telegram_linux.gypi	2018-12-11 17:19:59.971599010 -0200
-@@ -66,18 +66,9 @@
+From e834e765a07270a6861fe790745b3a04d796634f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 12 Sep 2019 09:16:01 -0300
+Subject: [PATCH] Never try to link or load GTK2
+
+---
+ Telegram/SourceFiles/platform/linux/linux_libs.cpp | 12 ------------
+ Telegram/gyp/telegram_linux.gypi                   |  9 ---------
+ 2 files changed, 21 deletions(-)
+
+diff --git a/Telegram/SourceFiles/platform/linux/linux_libs.cpp b/Telegram/SourceFiles/platform/linux/linux_libs.cpp
+index 5071d63..671d0e6 100644
+--- a/Telegram/SourceFiles/platform/linux/linux_libs.cpp
++++ b/Telegram/SourceFiles/platform/linux/linux_libs.cpp
+@@ -243,24 +243,12 @@ void start() {
+ 			indicatorLoaded = setupAppIndicator(lib_indicator);
+ 		}
+ 	}
+-	if ((!gtkLoaded || !indicatorLoaded) && !isWayland) {
+-		if (loadLibrary(lib_indicator, "ayatana-appindicator", 1) || loadLibrary(lib_indicator, "appindicator", 1)) {
+-			if (loadLibrary(lib_gtk, "gtk-x11-2.0", 0)) {
+-				gtkLoaded = indicatorLoaded = false;
+-				gtkLoaded = setupGtkBase(lib_gtk);
+-				indicatorLoaded = setupAppIndicator(lib_indicator);
+-			}
+-		}
+-	}
+ 
+ 	// If no appindicator, try at least load gtk.
+ 	if (!gtkLoaded && !indicatorLoaded) {
+ 		if (loadLibrary(lib_gtk, "gtk-3", 0)) {
+ 			gtkLoaded = setupGtkBase(lib_gtk);
+ 		}
+-		if (!gtkLoaded && !isWayland && loadLibrary(lib_gtk, "gtk-x11-2.0", 0)) {
+-			gtkLoaded = setupGtkBase(lib_gtk);
+-		}
+ 	}
+ 
+ 	if (gtkLoaded) {
+diff --git a/Telegram/gyp/telegram_linux.gypi b/Telegram/gyp/telegram_linux.gypi
+index b314ba1..53bf64f 100644
+--- a/Telegram/gyp/telegram_linux.gypi
++++ b/Telegram/gyp/telegram_linux.gypi
+@@ -67,18 +67,9 @@
        ['not_need_gtk!="True"', {
          'cflags_cc': [
            '<!(pkg-config 2> /dev/null --cflags gtk+-3.0)',
@@ -20,38 +60,6 @@ diff -up tdesktop-1.5.1/Telegram/gyp/telegram_linux.gypi.orig tdesktop-1.5.1/Tel
        }]
      ],
    }]],
-diff -up tdesktop-1.5.1/Telegram/SourceFiles/platform/linux/linux_libs.cpp.orig tdesktop-1.5.1/Telegram/SourceFiles/platform/linux/linux_libs.cpp
---- tdesktop-1.5.1/Telegram/SourceFiles/platform/linux/linux_libs.cpp.orig	2018-12-11 17:20:13.295565317 -0200
-+++ tdesktop-1.5.1/Telegram/SourceFiles/platform/linux/linux_libs.cpp	2018-12-11 17:21:45.420332318 -0200
-@@ -234,30 +234,18 @@ void start() {
- 	bool gtkLoaded = false;
- 	bool indicatorLoaded = false;
- 	QLibrary lib_gtk, lib_indicator;
--	if (loadLibrary(lib_indicator, "ayatana-appindicator3", 1) || loadLibrary(lib_indicator, "appindicator3", 1)) {
-+	if (loadLibrary(lib_indicator, "appindicator3", 1)) {
- 		if (loadLibrary(lib_gtk, "gtk-3", 0)) {
- 			gtkLoaded = setupGtkBase(lib_gtk);
- 			indicatorLoaded = setupAppIndicator(lib_indicator);
- 		}
- 	}
--	if (!gtkLoaded || !indicatorLoaded) {
--		if (loadLibrary(lib_indicator, "ayatana-appindicator", 1) || loadLibrary(lib_indicator, "appindicator", 1)) {
--			if (loadLibrary(lib_gtk, "gtk-x11-2.0", 0)) {
--				gtkLoaded = indicatorLoaded = false;
--				gtkLoaded = setupGtkBase(lib_gtk);
--				indicatorLoaded = setupAppIndicator(lib_indicator);
--			}
--		}
--	}
- 
- 	// If no appindicator, try at least load gtk.
- 	if (!gtkLoaded && !indicatorLoaded) {
- 		if (loadLibrary(lib_gtk, "gtk-3", 0)) {
- 			gtkLoaded = setupGtkBase(lib_gtk);
- 		}
--		if (!gtkLoaded && loadLibrary(lib_gtk, "gtk-x11-2.0", 0)) {
--			gtkLoaded = setupGtkBase(lib_gtk);
--		}
- 	}
- 
- 	if (gtkLoaded) {
+-- 
+2.21.0
+

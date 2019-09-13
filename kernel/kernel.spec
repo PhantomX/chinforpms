@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -64,11 +64,11 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 8
+%global post_factum 9
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 36fe9e8e44f6fdc32d677b95e650318927707c74
+%global pfcommit a376c0098effcbaf99d2fb476cb6097b73fcb87c
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -663,7 +663,10 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch1018: %{opensuse_url}/driver_core-Fix_use-after-free_and_double_free_on_glue.patch#/openSUSE-driver_core-Fix_use-after-free_and_double_free_on_glue.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
+%global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
+Patch2001: %{patchwork_xdg_url}/309520/mbox/#/patchwork-xdg-309520.patch
+Patch2002: %{patchwork_xdg_url}/330307/mbox/#/patchwork-xdg-330307.patch
 
 %if !0%{?post_factum}
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
@@ -1958,6 +1961,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-501.chinfo
+- Try some amdgpu patches
+
 * Tue Sep 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-500.chinfo
 - 5.2.14
 

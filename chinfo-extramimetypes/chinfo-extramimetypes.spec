@@ -1,5 +1,5 @@
 Name:           chinfo-extramimetypes
-Version:        11.2
+Version:        11.3
 Release:        1%{?dist}
 Summary:        Extra mimetypes for DEs
 
@@ -25,7 +25,8 @@ mkdir %{_target_platform}
 pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-  -DCHINFO_LEGACY:BOOL=OFF
+  -DCHINFO_LEGACY:BOOL=OFF \
+%{nil}
 
 %make_build
 
@@ -45,6 +46,9 @@ rm -f %{buildroot}%{_datadir}/mime/packages/%{name}-cdimage.xml
 
 
 %changelog
+* Thu Sep 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 11.3-1
+- 11.3
+
 * Thu Jun 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 11.2-1
 - 11.2
 

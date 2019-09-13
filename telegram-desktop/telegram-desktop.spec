@@ -24,7 +24,7 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.8.4
+Version:        1.8.8
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -59,6 +59,8 @@ Patch101:       %{name}-realmute.patch
 Patch102:       %{name}-nogtk2.patch
 # Always display scrollbars
 Patch103:       %{name}-disable-overlay.patch
+Patch104:       https://github.com/telegramdesktop/tdesktop/pull/6529.patch#/%{name}-gh-pull6529.patch
+Patch105:       0001-Fix-pull-6529.patch
 
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
@@ -150,8 +152,7 @@ pushd Telegram/gyp
 popd
 
 # Patching generated cmake script...
-LEN=$(($(wc -l < out/Release/CMakeLists.txt) - 2))
-sed -i "$LEN r Telegram/gyp/CMakeLists.inj" out/Release/CMakeLists.txt
+sed -i "$(($(wc -l < out/Release/CMakeLists.txt) - 2)) r Telegram/gyp/CMakeLists.inj" out/Release/CMakeLists.txt
 
 %if 0%{?build_with_lto}
 export CC=gcc
@@ -179,8 +180,8 @@ popd
 
 %install
 # Installing executables...
-mkdir -p "%{buildroot}%{_bindir}"
-install -m 0755 -p out/Release/Telegram "%{buildroot}%{_bindir}/%{name}"
+mkdir -p %{buildroot}%{_bindir}
+install -m 0755 -p out/Release/Telegram %{buildroot}%{_bindir}/%{name}
 
 # Installing desktop shortcut...
 mv lib/xdg/telegramdesktop.desktop lib/xdg/%{name}.desktop
@@ -188,9 +189,9 @@ desktop-file-install --dir="%{buildroot}%{_datadir}/applications" lib/xdg/%{name
 
 # Installing icons...
 for size in 16 32 48 64 128 256 512; do
-    dir="%{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps"
-    install -d "$dir"
-    install -m 0644 -p Telegram/Resources/art/icon${size}.png "$dir/%{name}.png"
+    dir=%{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps
+    install -d $dir
+    install -m 0644 -p Telegram/Resources/art/icon${size}.png $dir/%{name}.png
 done
 
 # Installing appdata for Gnome Software...
@@ -218,6 +219,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Thu Sep 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.8-100
+- 1.8.8
+- RPMFusion sync
+
 * Fri Sep 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.4-100
 - 1.8.4
 
