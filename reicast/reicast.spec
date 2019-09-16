@@ -1,6 +1,6 @@
-%global commit 49f1f585bf5d22d109eb8be26f1a313c05d86593
+%global commit d350e68e859eba7fbc546fef1331f2825517a062
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190815
+%global date 20190930
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 
 Name:           reicast
 Version:        19.07.4
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -40,7 +40,7 @@ BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libpng)
-#BuildRequires:  pkgconfig(libpulse-simple)
+BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(lua)
@@ -124,6 +124,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Sep 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.07.4-2.20190930gitd350e68
+- New snapshot
+- Enable pulseaudio support
+
 * Thu Aug 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.07.4-1.20190815git49f1f58
 - 19.07.4
 - Enable EGL

@@ -1,6 +1,6 @@
-%global commit b2475c49a18195c19fab0f3ded5c0e7ec2e13e2f
+%global commit 732e685ea7228f7fa4c3a2afd68657c50c381f38
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190815
+%global date 20190915
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 
 Name:           flycast
 Version:        7
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -38,7 +38,7 @@ BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libpng)
-#BuildRequires:  pkgconfig(libpulse-simple)
+BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(x11)
@@ -134,5 +134,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Sep 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 7-2.20190915git732e685
+- New snapshot
+- Enable pulseaudio support
+
 * Thu Aug 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 7-1.20190815gitb2475c4
 - Initial spec

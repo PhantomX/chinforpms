@@ -1,6 +1,6 @@
-From beb7e902ff9ca0776e6178e6d38ed9930b4fbe5c Mon Sep 17 00:00:00 2001
+From e2b5e557f274d51f4401b5e8699e2dfb63ee2c97 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 15 Aug 2019 18:45:26 -0300
+Date: Sun, 15 Sep 2019 17:35:51 -0300
 Subject: [PATCH] Change configdir name
 
 ---
@@ -9,23 +9,21 @@ Subject: [PATCH] Change configdir name
  2 files changed, 17 insertions(+), 17 deletions(-)
 
 diff --git a/core/linux-dist/main.cpp b/core/linux-dist/main.cpp
-index f9d2ce5..ffc96e5 100644
+index a048187..e1e0179 100644
 --- a/core/linux-dist/main.cpp
 +++ b/core/linux-dist/main.cpp
-@@ -208,10 +208,10 @@ string find_user_config_dir()
+@@ -198,8 +198,8 @@ string find_user_config_dir()
+ 		string home = "";
  		if(getenv("HOME") != NULL)
  		{
- 			// Support for the legacy config dir at "$HOME/.reicast"
+-			// Support for the legacy config dir at "$HOME/.reicast"
 -			string legacy_home = (string)getenv("HOME") + "/.reicast";
++			// Support for the legacy config dir at "$HOME/.flycast"
 +			string legacy_home = (string)getenv("HOME") + "/.flycast";
  			if((stat(legacy_home.c_str(), &info) == 0) && (info.st_mode & S_IFDIR))
  			{
--				// "$HOME/.reicast" already exists, let's use it!
-+				// "$HOME/.flycast" already exists, let's use it!
- 				return legacy_home;
- 			}
- 
-@@ -219,12 +219,12 @@ string find_user_config_dir()
+ 				// "$HOME/.reicast" already exists, let's use it!
+@@ -210,12 +210,12 @@ string find_user_config_dir()
  			 * Consult the XDG Base Directory Specification for details:
  			 *   http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html#variables
  			 */
@@ -40,20 +38,18 @@ index f9d2ce5..ffc96e5 100644
  		}
  
  		if(!home.empty())
-@@ -250,10 +250,10 @@ string find_user_data_dir()
+@@ -240,8 +240,8 @@ string find_user_data_dir()
+ 		string data = "";
  		if(getenv("HOME") != NULL)
  		{
- 			// Support for the legacy config dir at "$HOME/.reicast"
+-			// Support for the legacy config dir at "$HOME/.reicast"
 -			string legacy_data = (string)getenv("HOME") + "/.reicast";
++			// Support for the legacy config dir at "$HOME/.flycast"
 +			string legacy_data = (string)getenv("HOME") + "/.flycast";
  			if((stat(legacy_data.c_str(), &info) == 0) && (info.st_mode & S_IFDIR))
  			{
--				// "$HOME/.reicast" already exists, let's use it!
-+				// "$HOME/.flycast" already exists, let's use it!
- 				return legacy_data;
- 			}
- 
-@@ -261,12 +261,12 @@ string find_user_data_dir()
+ 				// "$HOME/.reicast" already exists, let's use it!
+@@ -252,12 +252,12 @@ string find_user_data_dir()
  			 * Consult the XDG Base Directory Specification for details:
  			 *   http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html#variables
  			 */
@@ -68,14 +64,14 @@ index f9d2ce5..ffc96e5 100644
  		}
  
  		if(!data.empty())
-@@ -295,17 +295,17 @@ std::vector<string> find_system_config_dirs()
- 		string::size_type n = s.find(":", pos);
+@@ -286,17 +286,17 @@ std::vector<string> find_system_config_dirs()
+ 		string::size_type n = s.find(':', pos);
  		while(n != std::string::npos)
  		{
 -			dirs.push_back(s.substr(pos, n-pos) + "/reicast");
 +			dirs.push_back(s.substr(pos, n-pos) + "/flycast");
  			pos = n + 1;
- 			n = s.find(":", pos);
+ 			n = s.find(':', pos);
  		}
  		// Separator not found
 -		dirs.push_back(s.substr(pos) + "/reicast");
@@ -90,14 +86,14 @@ index f9d2ce5..ffc96e5 100644
  	}
  	return dirs;
  }
-@@ -321,17 +321,17 @@ std::vector<string> find_system_data_dirs()
- 		string::size_type n = s.find(":", pos);
+@@ -312,17 +312,17 @@ std::vector<string> find_system_data_dirs()
+ 		string::size_type n = s.find(':', pos);
  		while(n != std::string::npos)
  		{
 -			dirs.push_back(s.substr(pos, n-pos) + "/reicast");
 +			dirs.push_back(s.substr(pos, n-pos) + "/flycast");
  			pos = n + 1;
- 			n = s.find(":", pos);
+ 			n = s.find(':', pos);
  		}
  		// Separator not found
 -		dirs.push_back(s.substr(pos) + "/reicast");
@@ -113,7 +109,7 @@ index f9d2ce5..ffc96e5 100644
  	return dirs;
  }
 diff --git a/core/oslib/audiobackend_pulseaudio.cpp b/core/oslib/audiobackend_pulseaudio.cpp
-index 16c0295..ff233a1 100644
+index 4ffab67..6641b28 100644
 --- a/core/oslib/audiobackend_pulseaudio.cpp
 +++ b/core/oslib/audiobackend_pulseaudio.cpp
 @@ -14,7 +14,7 @@ static void pulseaudio_init()
@@ -127,4 +123,3 @@ index 16c0295..ff233a1 100644
  	}
 -- 
 2.21.0
-
