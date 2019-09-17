@@ -1,1 +1,1 @@
-CONFIG_ISDN=y
+# CONFIG_ISDN is not set

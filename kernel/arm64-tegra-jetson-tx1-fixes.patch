@@ -1,32 +1,3 @@
-From 005e0b987019fff6013dff99f44d9f6ce68f08ad Mon Sep 17 00:00:00 2001
-From: Peter Robinson <pbrobinson@gmail.com>
-Date: Sat, 23 Mar 2019 17:42:18 +0000
-Subject: [PATCH 1/3] arm64: tegra210: Jetson TX1: disable WP to make SD card
- work
-
-There's some issue with Write Protect detection on the Jetson TX1
-so just apply a quirk to disable the check for the time being.
-
-Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
----
- arch/arm64/boot/dts/nvidia/tegra210-p2597.dtsi | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm64/boot/dts/nvidia/tegra210-p2597.dtsi b/arch/arm64/boot/dts/nvidia/tegra210-p2597.dtsi
-index a96e6ee70c21..072788646cbf 100644
---- a/arch/arm64/boot/dts/nvidia/tegra210-p2597.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra210-p2597.dtsi
-@@ -1456,6 +1456,7 @@
- 	sdhci@700b0000 {
- 		status = "okay";
- 		bus-width = <4>;
-+		disable-wp;
- 
- 		cd-gpios = <&gpio TEGRA_GPIO(Z, 1) GPIO_ACTIVE_LOW>;
- 
--- 
-2.20.1
-
 From aea4a7a551fd7342299d34f04a8b75f58644ac07 Mon Sep 17 00:00:00 2001
 From: Peter Robinson <pbrobinson@gmail.com>
 Date: Sat, 23 Mar 2019 17:45:10 +0000

@@ -45,7 +45,14 @@ ARCH_LIST="arm arm64 powerpc s390 x86"
 headers_dir=$(mktemp -d)
 trap 'rm -rf "$headers_dir"' SIGHUP SIGINT SIGTERM EXIT
 
-make HDR_ARCH_LIST="$ARCH_LIST" INSTALL_HDR_PATH=$headers_dir headers_install_all
+archs=${ARCH_LIST:-$(ls arch)}
+echo $archs
+
+# Upstream rmeoved the headers_install_all target so do it manually
+for arch in $archs; do
+	mkdir $headers_dir/arch-$arch
+	make ARCH=$arch INSTALL_HDR_PATH=$headers_dir/arch-$arch KBUILD_HEADERS=install headers_install
+done
 find $headers_dir \
 	\( -name .install -o -name .check -o \
 	-name ..install.cmd -o -name ..check.cmd \) | xargs rm -f

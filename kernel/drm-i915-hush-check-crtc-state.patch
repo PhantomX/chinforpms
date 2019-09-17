@@ -1,4 +1,4 @@
-From 63a9dfe66b3b82b6eb10c6548aaf22dd7e543d2d Mon Sep 17 00:00:00 2001
+From 8f8f3ee1e3ae35df618761475293dc5d8285b6e0 Mon Sep 17 00:00:00 2001
 From: Adam Jackson <ajax@redhat.com>
 Date: Mon, 10 Jul 2017 08:11:48 -0700
 Subject: [PATCH] drm/i915: hush check crtc state
@@ -11,22 +11,22 @@ KMS debugging so we can still get it if we want it.
 Bugzilla: 1027037 1028785
 Upstream-status: http://lists.freedesktop.org/archives/intel-gfx/2013-November/035948.html
 ---
- drivers/gpu/drm/i915/intel_display.c | 2 +-
+ drivers/gpu/drm/i915/display/intel_display.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
-index dec9e58..620f378a 100644
---- a/drivers/gpu/drm/i915/intel_display.c
-+++ b/drivers/gpu/drm/i915/intel_display.c
-@@ -12277,7 +12277,7 @@ verify_crtc_state(struct drm_crtc *crtc,
+diff --git a/drivers/gpu/drm/i915/display/intel_display.c b/drivers/gpu/drm/i915/display/intel_display.c
+index 8592a7d422de..e915cf6b0ba6 100644
+--- a/drivers/gpu/drm/i915/display/intel_display.c
++++ b/drivers/gpu/drm/i915/display/intel_display.c
+@@ -12982,7 +12982,7 @@ verify_crtc_state(struct drm_crtc *crtc,
+ 
  	sw_config = to_intel_crtc_state(new_crtc_state);
- 	if (!intel_pipe_config_compare(dev_priv, sw_config,
- 				       pipe_config, false)) {
+ 	if (!intel_pipe_config_compare(sw_config, pipe_config, false)) {
 -		I915_STATE_WARN(1, "pipe state doesn't match!\n");
-+		DRM_DEBUG_KMS("pipe state doesn't match!\n");
- 		intel_dump_pipe_config(intel_crtc, pipe_config,
- 				       "[hw state]");
- 		intel_dump_pipe_config(intel_crtc, sw_config,
++		DRM_DEBUG_KMS(1, "pipe state doesn't match!\n");
+ 		intel_dump_pipe_config(pipe_config, NULL, "[hw state]");
+ 		intel_dump_pipe_config(sw_config, NULL, "[sw state]");
+ 	}
 -- 
-2.7.5
+2.21.0
 

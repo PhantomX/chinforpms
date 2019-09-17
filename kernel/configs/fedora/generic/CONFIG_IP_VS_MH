@@ -1,1 +1,1 @@
-# CONFIG_IP_VS_MH is not set
+CONFIG_IP_VS_MH=m

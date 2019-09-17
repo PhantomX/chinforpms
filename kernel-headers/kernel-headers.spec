@@ -15,7 +15,7 @@
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -23,13 +23,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 2
+%define base_sublevel 3
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -123,8 +123,6 @@ cross-glibc package.
 # List of architectures we support and want to copy their headers
 ARCH_LIST="arm arm64 powerpc s390 x86"
 
-cd include
-
 ARCH=%_target_cpu
 case $ARCH in
 	armv7hl)
@@ -144,20 +142,17 @@ case $ARCH in
 		;;
 esac
 
+cd arch-$ARCH/include
 mkdir -p $RPM_BUILD_ROOT%{_includedir}
-cp -a arch-$ARCH/asm $RPM_BUILD_ROOT%{_includedir}/
 cp -a asm-generic $RPM_BUILD_ROOT%{_includedir}
 
 # Copy all the architectures we care about to their respective asm directories
 for arch in $ARCH_LIST; do
 	mkdir -p $RPM_BUILD_ROOT%{_prefix}/${arch}-linux-gnu/include
-	mv arch-${arch}/asm $RPM_BUILD_ROOT%{_prefix}/${arch}-linux-gnu/include/
 	cp -a asm-generic $RPM_BUILD_ROOT%{_prefix}/${arch}-linux-gnu/include/
 done
 
 # Remove what we copied already
-rm -rf arch-*/asm
-rmdir arch-*
 rm -rf asm-generic
 
 # Copy the rest of the headers over
@@ -175,6 +170,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Mon Sep 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.0-500.chinfo
+- 5.3.0
+
 * Thu Sep 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-501.chinfo
 - Rebuild
 

@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -52,23 +52,23 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 2
+%define base_sublevel 3
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 9
+%global post_factum 1
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit a376c0098effcbaf99d2fb476cb6097b73fcb87c
+%global pfcommit 7fce38a5b2f475a42f660eaece365094bb2a1b85
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id acd8e88224e971d4efd3d9b1a86c87b58ac24561
+%global opensuse_id a541a6cc8e4e3e1d9d8f2d49d00ee50ee03a3a36
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -594,33 +594,32 @@ Patch212: efi-secureboot.patch
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
-# http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
-# http://patchwork.ozlabs.org/patch/587554/
-Patch302: ARM-tegra-usb-no-reset.patch
+# RHBZ Bug 1576593 - work around while vendor investigates
+Patch301: arm-make-highpte-not-expert.patch
 
 # https://patchwork.kernel.org/patch/10351797/
-Patch303: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
+Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 # rhbz 1574718
-Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
+Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
+
+# http://www.spinics.net/lists/linux-tegra/msg26029.html
+Patch304: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+# http://patchwork.ozlabs.org/patch/587554/
+Patch305: ARM-tegra-usb-no-reset.patch
 
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
-Patch305: arm-sdhci-esdhc-imx-fixes.patch
-
-# Fix accepted for 5.3 https://patchwork.kernel.org/patch/10992783/
-Patch306: arm64-dts-rockchip-Update-DWC3-modules-on-RK3399-SoCs.patch
-
-# RHBZ Bug 1576593 - work around while vendor investigates
-Patch307: arm-make-highpte-not-expert.patch
-
-# Raspberry Pi bits
-Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
-
-Patch334: 0001-Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-d.patch
-Patch335: 0002-Revert-ARM-bcm283x-Extend-the-WDT-DT-node-out-to-cov.patch
+Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
 # Tegra bits
-Patch340: arm64-tegra-jetson-tx1-fixes.patch
+Patch320: arm64-tegra-jetson-tx1-fixes.patch
+# https://www.spinics.net/lists/linux-tegra/msg43110.html
+Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
+
+# QCom laptop bits
+# https://patchwork.kernel.org/patch/11133827/
+Patch330: arm64-qcom-i2c-geni-Disable-DMA-processing-on-the-Lenovo-Yoga-C630.patch
+# https://patchwork.kernel.org/patch/11133293/
+Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -629,22 +628,11 @@ Patch340: arm64-tegra-jetson-tx1-fixes.patch
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # gcc9 fixes
-Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
-
-# Fix the LCD panel orientation on the GPD MicroPC, pending as fix for 5.3
-Patch510: drm-panel-orientation-quirks.patch
-
-# rhbz 1732045
-Patch511: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
-
-# CVE-2019-14814 CVE-2019-14815 CVE-2019-14816
-# rhbz 1744130 1744137 1744149 1746566 1746567 
-Patch514: mwifiex-Fix-three-heap-overflow-at-parsing-element-in-cfg80211_ap_settings.patch
 
 ### Extra
 
@@ -660,7 +648,6 @@ Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1018: %{opensuse_url}/driver_core-Fix_use-after-free_and_double_free_on_glue.patch#/openSUSE-driver_core-Fix_use-after-free_and_double_free_on_glue.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -687,7 +674,7 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 
 %endif
 
-Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/4385f69191aba79ee7c4d4245b1e7316e6931f09/linux52-tkg/linux52-tkg-patches/0012-v5.2-fsync.patch#/tkg-0012-v5.2-fsync.patch
+Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/aa09f7906f2eca142485535a674e54e548844490/linux53-tkg/linux53-tkg-patches/0007-v5.3-fsync.patch#/tkg-0007-v5.3-fsync.patch
 
 %if !0%{?zen}
 Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -932,40 +919,6 @@ if [ "%{patches}" != "%%{patches}" ] ; then
 fi 2>/dev/null
 
 patch_command='patch -p1 -F1 -s'
-ApplyPatch()
-{
-  local patch=$1
-  shift
-  if [ ! -f $RPM_SOURCE_DIR/$patch ]; then
-    exit 1
-  fi
-  if ! grep -E "^Patch[0-9]+: $patch\$" %{_specdir}/${RPM_PACKAGE_NAME%%%%%{?variant}}.spec ; then
-    if [ "${patch:0:8}" != "patch-%{major_ver}." ] ; then
-      echo "ERROR: Patch  $patch  not listed as a source patch in specfile"
-      exit 1
-    fi
-  fi 2>/dev/null
-  case "$patch" in
-  *.bz2) bunzip2 < "$RPM_SOURCE_DIR/$patch" | $patch_command ${1+"$@"} ;;
-  *.gz)  gunzip  < "$RPM_SOURCE_DIR/$patch" | $patch_command ${1+"$@"} ;;
-  *.xz)  unxz    < "$RPM_SOURCE_DIR/$patch" | $patch_command ${1+"$@"} ;;
-  *) $patch_command ${1+"$@"} < "$RPM_SOURCE_DIR/$patch" ;;
-  esac
-}
-
-# don't apply patch if it's empty
-ApplyOptionalPatch()
-{
-  local patch=$1
-  shift
-  if [ ! -f $RPM_SOURCE_DIR/$patch ]; then
-    exit 1
-  fi
-  local C=$(wc -l $RPM_SOURCE_DIR/$patch | awk '{print $1}')
-  if [ "$C" -gt 9 ]; then
-    ApplyPatch $patch ${1+"$@"}
-  fi
-}
 
 # First we unpack the kernel tarball.
 # If this isn't the first make prep, we use links to the existing clean tarball
@@ -1072,14 +1025,14 @@ cp %{SOURCE12} .
 # Update vanilla to the latest upstream.
 # (non-released_kernel case only)
 %if 0%{?rcrev}
-    xzcat %{SOURCE5000} | ./remove-binary-diff.pl | patch -p1 -F1 -s
+    xzcat %{SOURCE5000} | ./remove-binary-diff.pl | $patch_command
 %if 0%{?gitrev}
-    xzcat %{SOURCE5001} | ./remove-binary-diff.pl | patch -p1 -F1 -s
+    xzcat %{SOURCE5001} | ./remove-binary-diff.pl | $patch_command
 %endif
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-    xzcat %{SOURCE5000} | ./remove-binary-diff.pl | patch -p1 -F1 -s
+    xzcat %{SOURCE5000} | ./remove-binary-diff.pl | $patch_command
 %endif
 %endif
     git init
@@ -1129,7 +1082,7 @@ git commit -a -m "Stable post-factum update"
 # released_kernel with possible stable updates
 %if 0%{?stable_base}
 # This is special because the kernel spec is hell and nothing is consistent
-xzcat %{SOURCE5000} | patch -p1 -F1 -s
+xzcat %{SOURCE5000} | $patch_command
 git commit -a -m "Stable update"
 %endif
 %endif
@@ -1961,6 +1914,10 @@ fi
 #
 #
 %changelog
+* Mon Sep 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.0-500.chinfo
+- 5.3.0 - pf1
+- Rawhide sync
+
 * Thu Sep 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-501.chinfo
 - Try some amdgpu patches
 

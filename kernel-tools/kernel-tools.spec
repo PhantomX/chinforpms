@@ -15,15 +15,15 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 2
+%global base_sublevel 3
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
-%global opensuse_id acd8e88224e971d4efd3d9b1a86c87b58ac24561
+%global opensuse_id a541a6cc8e4e3e1d9d8f2d49d00ee50ee03a3a36
 
 # Do we have a -stable update to apply?
-%global stable_update 14
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -374,9 +374,7 @@ popd
 pushd tools/bpf/bpftool
 make DESTDIR=%{buildroot} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
 # man-pages packages this (rhbz #1686954)
-%if 0%{?fedora} > 30
 rm -f %{buildroot}%{_mandir}/man7/bpf-helpers.7
-%endif
 popd
 pushd tools/lib/bpf
 make DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} V=1 install install_headers
@@ -459,14 +457,11 @@ popd
 %{_mandir}/man8/bpftool-perf.8.gz
 %{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool.8.gz
-%if 0%{?fedora} < 31
-%{_mandir}/man7/bpf-helpers.7.gz
-%endif
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf
 %{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.0.3
+%{_libdir}/libbpf.so.0.0.4
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf-devel
@@ -482,6 +477,10 @@ popd
 
 
 %changelog
+* Mon Sep 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.0-500.chinfo
+- 5.3.0
+- Rawhide sync
+
 * Tue Sep 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-500.chinfo
 - 5.2.14
 
