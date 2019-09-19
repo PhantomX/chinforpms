@@ -4,6 +4,7 @@ amdgpu-pro-vulkan-driver
 bh-fonts
 binkplayer
 bsnes
+cdrtools
 cowsrevenge
 desmume
 discord

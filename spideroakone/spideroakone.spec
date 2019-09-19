@@ -14,15 +14,18 @@
 # Do no blame SpiderOak devs if setting 1 in these
 # Set to 1 to use system libs
 %global with_curl 1
+%if 0%{?fedora} > 30
+%global with_curl 0
+%endif
 %global with_dbusmenuqt 1
 %global with_ffi 1
-%global with_python 0
+%global with_python 1
 %global with_pillow 1
 %global with_pyqt 0
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -36,6 +39,7 @@ BuildRequires:  binutils
 BuildRequires:  patchelf
 BuildRequires:  perl
 BuildRequires:  python2-rpm-macros
+BuildRequires:  systemd
 BuildRequires:  ImageMagick
 BuildRequires:  desktop-file-utils
 %if 0%{?with_curl}
@@ -286,6 +290,9 @@ done
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-3
+- Update python2 requirements for Fedora 31
+
 * Mon Aug 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-2
 - Fix requires
 

@@ -2,16 +2,14 @@
 
 Name:           bashdb
 Summary:        BASH debugger, the BASH symbolic debugger
-Version:        4.4_1.0.1
-Release:        2%{?dist}
+Version:        5.0_1.1.0
+Release:        1%{?dist}
 
 License:        GPLv2+
 URL:            http://bashdb.sourceforge.net/
 
 %global rversion %(c=%{version}; echo ${c//_/-})
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{rversion}.tar.bz2
-
-Patch0:         0001-Bump-bash-supported-version.patch
 
 BuildArch:      noarch
 
@@ -67,7 +65,7 @@ make check
 
 %files
 %license COPYING
-%doc doc/*.html AUTHORS ChangeLog NEWS README.md THANKS TODO
+%doc doc/*.html AUTHORS ChangeLog NEWS.md README.md THANKS TODO
 %{_bindir}/%{name}
 %{_datadir}/%{name}/
 %{_mandir}/man1/%{name}.1*
@@ -75,6 +73,9 @@ make check
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0_1.1.0-1
+- rebuilt
+
 * Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.4_1.0.1-2
 - Bump bash supported version dirtily
 

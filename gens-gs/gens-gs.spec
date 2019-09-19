@@ -2,7 +2,7 @@
 
 Name:           %{orgname}-gs
 Version:        2.16.7
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Sega Genesis, Sega CD, and Sega 32X emulator
 
 URL:            http://segaretro.org/Gens/GS
@@ -21,6 +21,7 @@ Patch0:         %{name}-gtk.patch
 ExclusiveArch:  i686
 
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
 BuildRequires:  automake
@@ -135,6 +136,9 @@ rm -f %{buildroot}%{_libdir}/mdp/*.la
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.16.7-101
+- BR: gcc-c++
+
 * Sat Apr 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.16.7-100
 - chinforpms
 

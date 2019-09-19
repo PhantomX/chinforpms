@@ -1,6 +1,6 @@
-%global commit 552ae7b472027507d30814cea4242316e65abd20
+%global commit 78db49a17788b2db78e5502a8d5617b11c2f0b26
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180727
+%global date 20190904
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           cropgui
 Version:        0.3
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        GTK frontend for lossless cropping of jpeg images
 
 License:        GPLv2+
@@ -31,9 +31,10 @@ Requires:       ImageMagick
 Requires:       gtk3
 Requires:       libjpeg-turbo-utils
 Requires:       perl-Image-ExifTool
-Requires:       python2
-Requires:       python2-gobject-base
-Requires:       python2-pillow
+Requires:       python3
+Requires:       python3-gobject
+Requires:       python3-gobject-base
+Requires:       python3-pillow
 Requires:       hicolor-icon-theme
 
 
@@ -88,5 +89,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.3-2.20190904git78db49a
+- Python 3
+
 * Sat Jun 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.3-1.20180727git552ae7b
 - Initial spec

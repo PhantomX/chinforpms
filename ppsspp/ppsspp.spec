@@ -62,14 +62,14 @@ URL:            http://www.ppsspp.org/
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
-%endif #{?with_snapshot}
+%endif
 Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
 Source2:        %{vc_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
-%endif #{?with_sysffmpeg}
-%endif #{?with_ffmpeg}
+%endif
+%endif
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source6:        %{vc_url}/glslang/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
@@ -97,8 +97,8 @@ BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
 %else
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
-%endif #{?with_sysffmpeg}
-%endif #{?with_ffmpeg}
+%endif
+%endif
 BuildRequires:  pkgconfig(gl)
 %if 0%{?with_egl}
 BuildRequires:  pkgconfig(egl)
@@ -106,7 +106,7 @@ BuildRequires:  pkgconfig(glesv2)
 %else
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(libglvnd)
-%endif #{?with_egl}
+%endif
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(sdl2)
@@ -152,8 +152,8 @@ tar -xf %{SOURCE1} -C assets/lang --strip-components 1
 %if !0%{?with_sysffmpeg}
 tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
 tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
-%endif #{?with_sysffmpeg}
-%endif #{?with_ffmpeg}
+%endif
+%endif
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
@@ -225,7 +225,7 @@ pushd ffmpeg
 make install
 popd
 %endif
-%endif #{?with_ffmpeg}
+%endif
 
 mkdir -p %{_target_platform}
 pushd %{_target_platform}
@@ -236,15 +236,15 @@ pushd %{_target_platform}
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \
-%endif #{?with_egl}
+%endif
   -DOpenGL_GL_PREFERENCE=GLVND \
 %if %{with ffmpeg}
 %if 0%{?with_sysffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
-%endif #{?with_sysffmpeg}
+%endif
 %else
   -DUSE_FFMPEG:BOOL=OFF \
-%endif #{?with_ffmpeg}
+%endif
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \
   -DUSE_DISCORD:BOOL=OFF \
   -DUSE_WAYLAND_WSI:BOOL=ON \

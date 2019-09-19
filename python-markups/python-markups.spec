@@ -1,7 +1,7 @@
 %global pkgname pymarkups
 
 Name:           python-markups
-Version:        2.0.1
+Version:        3.0.0
 Release:        1%{?dist}
 License:        BSD
 Summary:        A wrapper around various text markups
@@ -12,6 +12,8 @@ Source0:        https://github.com/retext-project/pymarkups/archive/%{version}/%
 BuildRequires:  python3-devel
 BuildRequires:  python3-docutils
 BuildRequires:  python3-markdown
+BuildRequires:  python3-markdown-math
+BuildRequires:  python3-pygments
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-textile
 

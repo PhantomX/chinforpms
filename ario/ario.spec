@@ -1,6 +1,6 @@
 Name:           ario
 Version:        1.5.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Ario MPD Client
 
 License:        GPLv2+
@@ -14,7 +14,6 @@ BuildRequires:  pkgconfig(libmpdclient)
 BuildRequires:  pkgconfig(libnotify)
 BuildRequires:  pkgconfig(libsoup-2.4)
 BuildRequires:  pkgconfig(libxml-2.0)
-BuildRequires:  pkgconfig(pygtk-2.0)
 BuildRequires:  pkgconfig(taglib)
 BuildRequires:  pkgconfig(unique-1.0)
 BuildRequires:  libgcrypt-devel
@@ -42,7 +41,7 @@ sed -i -e 's|<glib/gslist\.h>|<glib.h>|g' src/ario-profiles.h
   --enable-static=no \
   --disable-silent-rules \
   --enable-libmpdclient2 \
-  --enable-python \
+  --disable-python \
   --disable-dbus
 
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
@@ -72,6 +71,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-3
+- Disable python plugin support, needs python 2
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-2
 - Update BR format and Requires
 

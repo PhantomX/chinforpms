@@ -13,7 +13,7 @@
 %{!?rel_build:%global git_tar %{name}-%{version}-%{git_ver}.tar.xz}
 
 Name:          engrampa
-Version:       %{branch}.1
+Version:       %{branch}.2
 %if 0%{?rel_build}
 Release:       100%{?dist}
 %else
@@ -62,10 +62,10 @@ or directories.
 
 %if 0%{?rel_build}
 #NOCONFIGURE=1 ./autogen.sh
-%else # 0%{?rel_build}
+%else
 # needed for git snapshots
 NOCONFIGURE=1 ./autogen.sh
-%endif # 0%{?rel_build}
+%endif
 
 
 %build
@@ -112,7 +112,10 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
-* Thu May 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.0-100
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.2-100
+- 1.22.2
+
+* Thu May 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.1-100
 - 1.22.1
 
 * Tue Mar 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.0-100

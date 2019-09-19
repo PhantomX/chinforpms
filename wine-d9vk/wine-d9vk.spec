@@ -35,7 +35,7 @@
 
 Name:           wine-%{pkgname}
 Version:        0.20
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A D3D9 to VK Translation Layer for Linux / Wine
 
 Epoch:          1
@@ -77,14 +77,10 @@ Requires:       wine-common >= %{winecommonver}
 Requires:       wine-desktop >= %{winecommonver}
 Enhances:       wine
 
-%if 0%{?with_mingw}
-Obsoletes:      %{name}(x86-64) < %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      %{name}(x86-32) < %{?epoch:%{epoch}:}%{version}-%{release}
-
-%else
-
+Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
+%if !0%{?with_mingw}
 Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      %{name}%{?_isa} < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %ifarch x86_64
 Requires:       %{name}(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -249,6 +245,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.20-2
+- Fix obsoletes
+
 * Mon Aug 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.20-1
 - 0.20
 

@@ -1,6 +1,6 @@
-%global commit bd5484299779080bd24e97b0a1f50603447a623a
+%global commit f1fb375e0253654a7cc8efcaaaf8d570df6880e7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190528
+%global date 20190807
 %global with_snapshot 1
 
 %global apiid 17349
@@ -19,7 +19,7 @@
 Name:           kepka
 # If rc, use "~" instead "-", as ~rc1
 Version:        2.0.0~rc2
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        Unofficial Telegram desktop messaging app
 
 License:        GPLv3+
@@ -157,6 +157,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0~rc2-4.20190807gitf1fb375
+- New snapshot
+
 * Fri Jul 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0~rc2-3.20190528gitbd54842
 - -O3 optimization with LTO builds
 

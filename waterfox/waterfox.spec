@@ -1,7 +1,7 @@
-%global commit 4f22b84524c911ee3d9dba38180304c0a324bca9
+%global commit d516ab77b8af8bd8b47bcf0772d41a10180e2412
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190902
-%global with_snapshot 0
+%global date 20190916
+%global with_snapshot 1
 
 %global freebsd_rev 480450
 %global freebsd_root %{name}-FreeBSD-patches-r%{freebsd_rev}
@@ -125,7 +125,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        56.2.14
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -279,6 +279,9 @@ BuildRequires:  libstdc++-static
 BuildRequires:  compiler-rt
 %endif
 %else
+%if 0%{?fedora} > 30
+BuildRequires:  binutils-gold
+%endif
 BuildRequires:  gcc-c++
 %endif
 BuildRequires:  bash
@@ -893,7 +896,7 @@ create_default_langpack "pa-IN" "pa"
 create_default_langpack "pt-PT" "pt"
 create_default_langpack "sv-SE" "sv"
 create_default_langpack "zh-TW" "zh"
-%endif # build_langpacks
+%endif
 
 mkdir -p %{buildroot}/%{mozappdir}/browser/features
 
@@ -1015,6 +1018,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.14-2.20190916gitd516ab7
+- New snapshot
+
 * Wed Sep 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.14-1
 - 5.2.14
 

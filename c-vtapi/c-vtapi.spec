@@ -1,6 +1,6 @@
-%global commit d771b6612534ab8bf518a556d0303df43d1e0a12
+%global commit dae474e476de6e8b276604987212aa33102b9fbe
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20161228
+%global date 20190710
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           c-vtapi
 Version:        0.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        VirusTotal C API library
 
 License:        ASL 2.0 
@@ -82,5 +82,8 @@ find %{buildroot} -type f -name '*.la' -print -delete
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.1-2.20190710gitdae474e
+- New snapshot
+
 * Thu Aug 17 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.1-1.20161228gitd771b66
 - Initial spec

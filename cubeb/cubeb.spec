@@ -1,6 +1,6 @@
-%global commit 797779866bee11adb1a0dc323159be2fabe5584e
+%global commit 9eb4c89535fdf3726900231a804aa35e19b9f93c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190909
+%global date 20190916
 %global with_snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -27,7 +27,7 @@ URL:            https://github.com/kinetiknz/cubeb
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{name}-%{version}.tar.gz
-%endif #{?with_snapshot}
+%endif
 Source1:        https://github.com/google/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/arsenm/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 
@@ -106,6 +106,9 @@ pushd %{_target_platform}
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.2-6.20190916git9eb4c89
+- New snapshot
+
 * Sun Sep 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.2-5.20190909git7977798
 - New snapshot
 

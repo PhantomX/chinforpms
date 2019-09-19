@@ -18,7 +18,7 @@ URL:            http://sourceforge.net/projects/qmp3gain/
 Source0:        https://github.com/luigino/%{name}-qt5/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%endif #{?with_snapshot}
+%endif
 
 
 BuildRequires:  gcc-c++

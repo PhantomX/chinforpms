@@ -273,7 +273,7 @@ make %{?_smp_mflags} -C tools/power/cpupower CPUFREQ_BENCH=false
    pushd tools/power/x86/turbostat
    make
    popd
-%endif #turbostat/x86_energy_perf_policy
+%endif
 pushd tools/thermal/tmon/
 make
 popd
@@ -358,7 +358,7 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
    pushd tools/power/x86/turbostat
    make DESTDIR=%{buildroot} install
    popd
-%endif #turbostat/x86_energy_perf_policy
+%endif
 pushd tools/thermal/tmon
 make INSTALL_ROOT=%{buildroot} install
 popd

@@ -24,7 +24,7 @@ URL:            http://reicast.com/
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/r%{version}/%{name}-%{version}.tar.gz
-%endif #{?with_snapshot}
+%endif
 Source1:        %{name}.appdata.xml
 
 Patch0:         %{name}-build-fixes.patch

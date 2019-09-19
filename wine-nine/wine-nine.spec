@@ -15,7 +15,7 @@
 
 Name:           wine-nine
 Version:        0.5
-Release:        0.1%{?gver}%{?dist}
+Release:        0.3%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -63,7 +63,7 @@ Requires:       libglvnd-glx%{?_isa}
 Requires:       mesa-dri-drivers%{?_isa}
 Requires:       mesa-libd3d%{?_isa}
 Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      %{name}%{?_isa} < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %ifarch x86_64
@@ -152,6 +152,9 @@ desktop-file-install \
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.5-0.3.20190420git5a9da8f
+- Fix obsoletes
+
 * Mon Apr 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.5-0.1.20190420git5a9da8f
 - New snapshot
 - Remove meson fix

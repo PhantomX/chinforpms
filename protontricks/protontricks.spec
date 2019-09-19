@@ -1,5 +1,5 @@
 Name:           protontricks
-Version:        1.2.4
+Version:        1.2.5
 Release:        1%{?dist}
 Summary:        A simple wrapper that does winetricks things for Proton enabled games
 
@@ -46,5 +46,8 @@ Suggests:       zenity
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.2.5-1
+- 1.2.5
+
 * Wed Jul 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.2.4-1
 - Initial spec

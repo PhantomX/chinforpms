@@ -35,7 +35,7 @@ URL:            https://bsnes.byuu.org/
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
-%endif #{?with_snapshot}
+%endif
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++

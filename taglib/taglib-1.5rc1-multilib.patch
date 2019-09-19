@@ -3,18 +3,18 @@ diff -up taglib-1.5rc1/taglib-config.cmake.multilib-2 taglib-1.5rc1/taglib-confi
 +++ taglib-1.5rc1/taglib-config.cmake	2008-02-13 06:41:11.000000000 -0600
 @@ -16,7 +16,6 @@ EOH
  
- prefix=${CMAKE_INSTALL_PREFIX}
- exec_prefix=${CMAKE_INSTALL_PREFIX}
--libdir=${LIB_INSTALL_DIR}
- includedir=${INCLUDE_INSTALL_DIR}
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=@CMAKE_INSTALL_PREFIX@
+-libdir=${exec_prefix}/lib
+ includedir=${prefix}/include
  
  flags=""
 @@ -29,7 +28,7 @@ while test $# -gt 0
  do
    case $1 in
      --libs)
--	  flags="$flags -L$libdir -ltag"
-+	  flags="$flags -ltag"
+-	  flags="$flags -L$libdir -ltag @ZLIB_LIBRARIES_FLAGS@"
++	  flags="$flags -ltag @ZLIB_LIBRARIES_FLAGS@"
  	  ;;
      --cflags)
  	  flags="$flags -I$includedir/taglib"

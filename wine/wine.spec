@@ -160,12 +160,12 @@ Patch803:       wine-xaudio2-pulseaudio-app-name.patch
 # acomminos PBA patches
 Source1001:     wine-README-pba
 Patch1000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
-%endif #{?pba}
+%endif
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
 
-%endif #{?wine_staging}
+%endif
 
 %if !0%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
@@ -258,10 +258,10 @@ BuildRequires:  pkgconfig(zlib)
 %if 0%{?wine_staging}
 %if 0%{?gtk3}
 BuildRequires:  pkgconfig(gtk+-3.0)
-%endif #{?gtk3}
+%endif
 BuildRequires:  pkgconfig(libattr)
 BuildRequires:  pkgconfig(libva)
-%endif #{?wine_staging}
+%endif
 
 Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-desktop = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -472,9 +472,9 @@ BuildArch:     noarch
 # arial-fonts are available with staging-patchset, only.
 %if 0%{?wine_staging}
 Requires:      wine-arial-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
-%else #{?wine_staging}
+%else
 Obsoletes:     wine-arial-fonts <= %{?epoch:%{epoch}:}%{version}-%{release}
-%endif #{?wine_staging}
+%endif
 Requires:      wine-courier-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:      wine-fixedsys-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:      wine-small-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -505,7 +505,7 @@ Requires:      fontpackages-filesystem
 
 %description arial-fonts
 %{summary}
-%endif #{?wine_staging}
+%endif
 
 %package courier-fonts
 Summary:       Wine Courier font family
@@ -741,7 +741,7 @@ sed -i "s/  (Staging)//g" libs/wine/Makefile.in
 cp -p %{S:1001} README-pba-pkg
 
 %patch1000 -p1
-%endif #{?pba}
+%endif
 
 # Breaks Gallium HUD
 #patch710 -p1
@@ -750,7 +750,7 @@ cp -p %{S:1001} README-pba-pkg
 %patch714 -p1
 %if 0%{?raw_input}
 %patch715 -p1
-%endif #{?raw_input}
+%endif
 %patch716 -p1
 %patch717 -p1
 %patch718 -p1
@@ -763,11 +763,11 @@ cp -p %{S:1001} README-pba-pkg
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
 
-%else #{?wine_staging}
+%else
 
 rm -rf patches/
 
-%endif #{?wine_staging}
+%endif
 
 # Verify gecko and mono versions
 GECKO_VER="$(grep '^#define' dlls/appwiz.cpl/addons.c | grep ' GECKO_VERSION ' | awk '{print $3}' | tr -d \")"
@@ -2238,7 +2238,7 @@ fi
 %files arial-fonts
 %doc COPYING.LIB
 %{_datadir}/wine/fonts/arial*
-%endif #0%{?wine_staging}
+%endif
 
 %files courier-fonts
 %doc COPYING.LIB

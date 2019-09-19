@@ -84,7 +84,7 @@ URL:            https://github.com/%{name}/%{name}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-%endif #{?with_snapshot}
+%endif
 Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        %{vc_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/philsquared/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz

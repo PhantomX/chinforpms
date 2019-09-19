@@ -23,7 +23,7 @@ URL:            https://github.com/flyinghead/%{name}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
-%endif #{?with_snapshot}
+%endif
 Source1:        %{name}.appdata.xml
 
 Patch0:         %{name}-build-fixes.patch

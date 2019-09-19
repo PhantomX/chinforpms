@@ -31,7 +31,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.3.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -76,14 +76,9 @@ Requires:       wine-common >= %{winecommonver}
 Requires:       wine-desktop >= %{winecommonver}
 Enhances:       wine
 
-%if 0%{?with_mingw}
-Obsoletes:      %{name}(x86-64) < %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      %{name}(x86-32) < %{?epoch:%{epoch}:}%{version}-%{release}
-
-%else
-
+Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
+%if !0%{?with_mingw}
 Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      %{name}%{?_isa} < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      mingw%{__isa_bits}-%{name} < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %ifarch x86_64
@@ -275,6 +270,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3.4-3
+- Fix obsoletes
+
 * Mon Sep 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3.4-2
 - async patch
 

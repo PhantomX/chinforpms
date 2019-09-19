@@ -31,7 +31,7 @@ BuildRequires:  python3-markups
 BuildRequires:  python3-pygments
 BuildRequires:  python3-qt5
 BuildRequires:  qt5-qtbase-gui
-%endif # with_tests
+%endif
 
 Requires:       hicolor-icon-theme
 Requires:       python3-chardet
@@ -89,7 +89,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/me.mitya57.ReText.des
 
 %if 0%{?with_tests}
 %{__python3} setup.py test
-%endif # with_tests
+%endif
 
 
 %files

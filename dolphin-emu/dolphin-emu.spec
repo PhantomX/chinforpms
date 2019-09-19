@@ -4,9 +4,9 @@
 %global with_egl 1
 %global with_llvm 0
 
-%global commit 755601c64aaeb5b74ddfd5f022ff719ef3603cd3
+%global commit 82fd7f576e1dff6b616ff088955c18aa76ed45d5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190825
+%global date 20190915
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -43,7 +43,7 @@ License:        GPLv2+ and LGPLv2+ and BSD and MIT and zlib
 Source0:        %{pkgname}-%{shortcommit}.tar.xz
 %else
 Source0:        %{pkgname}-%{version}.tar.xz
-%endif #{?with_snapshot}
+%endif
 Source1:        %{name}.appdata.xml
 
 

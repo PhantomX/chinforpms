@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7fce38a5b2f475a42f660eaece365094bb2a1b85
+%global pfcommit 9d7d6b5fe038bb0892405524de2d164dc7b5f7e7
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -521,7 +521,6 @@ Source5002: %{stable_extra_patch}
 %define    stable_patch_00  patch-%{major_ver}.%{base_sublevel}.%{stable_base}.xz
 Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/%{stable_patch_00}
 %endif
-%endif
 
 # non-released_kernel case
 # These are automagically defined by the rcrev and gitrev values set up
@@ -536,6 +535,7 @@ Source5001: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
 Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
+%endif
 %endif
 %endif
 %endif

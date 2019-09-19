@@ -22,7 +22,7 @@ URL:            http://desmume.org/
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%endif #{?with_snapshot}
+%endif
 
 # Do not look into builddir
 Patch0:         %{name}-dontlookinbuilddir.patch

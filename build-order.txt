@@ -6,14 +6,15 @@ cubeb
 gstreamer1
 gtk3
 libmirage
-libvorbis
+libogg
+libvirt
 libstrangle
 libtgvoip
 libxspf
 lzlib
 mesa
 pysdl2
-python-markups
+python-markdown-math
 python-vdf
 smooth
 taglib
@@ -23,6 +24,10 @@ xarchiver
 ytnef
 
 # 2
+libvorbis
+python-markups
+
+# 3
 adriconf
 adwaita-qt
 aisleriot
@@ -34,6 +39,7 @@ bcg729
 bcmatroska2
 bctoolbox
 bluecurve-icon-theme
+browsh
 casperjs
 cavestory-nx
 cdemu-client
@@ -43,6 +49,7 @@ claws-mail
 claws-mail-themes
 cropgui
 curlew
+deluge
 devedeng
 disk-indicator
 dolphin-emu
@@ -73,6 +80,7 @@ image-analyzer
 joy2key
 keepassxc
 kernel-tools
+krename
 ladspa-bs2b-plugins
 linux-steam-integration
 lutris
@@ -98,11 +106,13 @@ pspshrink
 pulsemixer
 purple-rocketchat
 python-pafy
+qemu
 qmp3gain
 qt-virustotal-uploader
 qt5ct
 quiterss
 retext
+sdl2-controllermap
 sdl_gamecontrollerdb
 sdl-jstest
 skrooge
@@ -124,12 +134,15 @@ waterfox-noscript
 wiibafu
 wiimms-iso-tools
 wimlib
+wxmp3gain
+wxmp3val
 uksmd
 xboxdrv
 xdgmenumaker
+xinput-gui
 xorg-x11-server
 
-# 3
+# 4
 belle-sip
 belr
 bzrtp
@@ -142,20 +155,19 @@ ortp
 whdd
 wine
 
-# 4
+# 5
 belcard
-mingw-wine-vk9
-wine-dxup
 wine-d9vk
 wine-dxvk
+wine-mono
 wine-nine
 
 
-# 5
+# 6
 mediastreamer
 
-# 6
+# 7
 linphone
 
-# 7
+# 8
 linphoneqt
