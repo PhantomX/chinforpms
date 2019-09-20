@@ -14,9 +14,6 @@
 # Do no blame SpiderOak devs if setting 1 in these
 # Set to 1 to use system libs
 %global with_curl 1
-%if 0%{?fedora} > 30
-%global with_curl 0
-%endif
 %global with_dbusmenuqt 1
 %global with_ffi 1
 %global with_python 1
@@ -44,9 +41,9 @@ BuildRequires:  ImageMagick
 BuildRequires:  desktop-file-utils
 %if 0%{?with_curl}
 BuildRequires:  libcurl%{?_isa}
-BuildRequires:  python-pycurl%{?_isa}
+BuildRequires:  python2-pycurl%{?_isa}
 Requires:       libcurl%{?_isa}
-Requires:       python-pycurl%{?_isa}
+Requires:       python2-pycurl%{?_isa}
 %endif
 %if 0%{?with_dbusmenuqt}
 BuildRequires:  dbusmenu-qt%{?_isa}
@@ -290,6 +287,9 @@ done
 
 
 %changelog
+* Thu Sep 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-4
+- Update python2 requirements for Fedora 31 for real
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-3
 - Update python2 requirements for Fedora 31
 
