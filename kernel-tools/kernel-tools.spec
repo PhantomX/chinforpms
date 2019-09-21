@@ -23,7 +23,7 @@
 %global opensuse_id a541a6cc8e4e3e1d9d8f2d49d00ee50ee03a3a36
 
 # Do we have a -stable update to apply?
-%global stable_update 0
+%global stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -71,23 +71,12 @@
 # perf needs this
 %undefine _strict_symbol_defs_build
 
-BuildRequires: kmod, patch, bash, tar, git
-BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl(Carp), perl-devel, perl-generators, make, diffutils, gawk
-BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
-BuildRequires: net-tools, hostname, bc, elfutils-devel
-BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
-BuildRequires: audit-libs-devel glibc-devel glibc-static python3-devel
-BuildRequires: asciidoc xmlto
-# Used to mangle unversioned shebangs to be Python 3
-BuildRequires: /usr/bin/pathfix.py
-%ifnarch s390x %{arm}
-BuildRequires: numactl-devel
-%endif
-BuildRequires: pciutils-devel gettext ncurses-devel
-BuildConflicts: rhbuildsys(DiskFree) < 500Mb
-BuildRequires: rpm-build, elfutils
-%{?systemd_requires}
-BuildRequires: systemd
+Name:           kernel-tools
+Summary:        Assortment of tools for the Linux kernel
+License:        GPLv2
+URL:            http://www.kernel.org/
+Version:        %{rpmversion}
+Release:        %{pkg_release}
 
 Source0: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/linux-%{kversion}.tar.xz
 
@@ -124,13 +113,6 @@ Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
 
 Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
 
-Name:           kernel-tools
-Summary:        Assortment of tools for the Linux kernel
-License:        GPLv2
-URL:            http://www.kernel.org/
-Version:        %{rpmversion}
-Release:        %{pkg_release}
-
 Provides:       cpupowerutils = 1:009-0.6.p1
 Obsoletes:      cpupowerutils < 1:009-0.6.p1
 Provides:       cpufreq-utils = 1:009-0.6.p1
@@ -140,10 +122,27 @@ Obsoletes:      cpufrequtils < 1:009-0.6.p1
 Obsoletes:      cpuspeed < 1:1.5-16
 Requires:       kernel-tools-libs = %{version}-%{release}
 
-%description -n kernel-tools
+BuildRequires: kmod, patch, bash, tar, git
+BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl(Carp), perl-devel, perl-generators, make, diffutils, gawk
+BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
+BuildRequires: net-tools, hostname, bc, elfutils-devel
+BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
+BuildRequires: audit-libs-devel glibc-devel glibc-static python3-devel
+BuildRequires: asciidoc xmlto
+# Used to mangle unversioned shebangs to be Python 3
+BuildRequires: /usr/bin/pathfix.py
+%ifnarch s390x %{arm}
+BuildRequires: numactl-devel
+%endif
+BuildRequires: pciutils-devel gettext ncurses-devel
+BuildConflicts: rhbuildsys(DiskFree) < 500Mb
+BuildRequires: rpm-build, elfutils
+%{?systemd_requires}
+BuildRequires: systemd
+
+%description
 This package contains the tools/ directory from the kernel source
 and the supporting documentation.
-
 
 %package -n perf
 Summary:        Performance monitoring for the Linux kernel
@@ -318,9 +317,9 @@ rm -rf %{buildroot}%{_docdir}/perf-tip
 # Whoever wants examples can fix it up!
 
 # remove examples
-rm -rf %{buildroot}/usr/lib/perf/examples
+rm -rf %{buildroot}/usr/lib*/perf/examples
 # remove the stray header file that somehow got packaged in examples
-rm -rf %{buildroot}/usr/lib/perf/include/bpf/
+rm -rf %{buildroot}/usr/lib*/perf/include/bpf/
 
 # python-perf extension
 %{perf_make} %{perf_python3} DESTDIR=%{buildroot} install-python_ext
@@ -477,6 +476,9 @@ popd
 
 
 %changelog
+* Sat Sep 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.1-500.chinfo
+- 5.3.1
+
 * Mon Sep 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.0-500.chinfo
 - 5.3.0
 - Rawhide sync

@@ -1,6 +1,6 @@
-%global commit b9e51f0a0be303270006e4cdbe0b6592a3e3bcf9
+%global commit 223bfc9a2aaa37a6ef0e255ebad5dc042fe1bf81
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190423
+%global date 20190921
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -20,7 +20,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
-%global commit4 9e554999ce02cf86fcdfe74fe740c4fe3f5a56d5
+%global commit4 7512a55aa3ae309587ca89668ef9ec4074a51a1f
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
@@ -52,7 +52,7 @@
 
 Name:           citra
 Version:        0
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -213,6 +213,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Sep 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 0-3.20190921git223bfc9
+- New snapshot
+
 * Wed Apr 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 0-2.20190423gitb9e51f0
 - Disable telemetry initial dialog
 - Update version strings

@@ -1,6 +1,6 @@
 %global commit d350e68e859eba7fbc546fef1331f2825517a062
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190930
+%global date 20190830
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -124,7 +124,7 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
-* Sun Sep 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.07.4-2.20190930gitd350e68
+* Sun Sep 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.07.4-2.20190830gitd350e68
 - New snapshot
 - Enable pulseaudio support
 

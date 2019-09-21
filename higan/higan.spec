@@ -1,6 +1,6 @@
-%global commit 6d19b5422dc421c11d0a4fc5d83575ea10946ba9
+%global commit f745dcf7156a9ef00ea22ab2f7401090267ddf34
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190807
+%global date 20190916
 %global with_snapshot 1
 
 %ifarch x86_64
@@ -22,7 +22,7 @@
 %endif
 
 Name:           higan
-Version:        106.193
+Version:        106.215
 Release:        1%{?gver}%{?dist}
 Summary:        Multi-system emulator
 
@@ -155,5 +155,8 @@ done
 
 
 %changelog
+* Sat Sep 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 106.215-1.20190916gitf745dcf
+- 106.215
+
 * Thu Aug 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 106.193-2.20190807git6d19b54
 - Initial spec
