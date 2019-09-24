@@ -163,7 +163,7 @@ pushd xgl/%{_target_platform}
   -DCMAKE_VERBOSE_MAKEFILE=ON \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DBUILD_WAYLAND_SUPPORT:BOOL=ON \
-  -D-DCMAKE_BUILD_TYPE:STRING="Release" \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_AR:FILEPATH=%{_bindir}/gcc-ar \
   -DCMAKE_NM:FILEPATH=%{_bindir}/gcc-nm \
   -DCMAKE_RANLIB:FILEPATH=%{_bindir}/gcc-ranlib \

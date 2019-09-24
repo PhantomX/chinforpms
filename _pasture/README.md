@@ -38,6 +38,7 @@ some seasonal packages too, these can return when needed
  * **ortp** - linphoneqt
  * **psi** - Seasonal package
  * **qemu** - Seasonal package
+ * **rust** - Pinned version for Waterfox build
  * **shaderc** - Fedora included
  * **steamwm** - Broken
  * **telegram** - Unneeded

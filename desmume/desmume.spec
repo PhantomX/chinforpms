@@ -11,7 +11,7 @@
 
 Name:           desmume
 Version:        0.9.12
-Release:        0.10%{?gver}%{?dist}
+Release:        0.11%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 Epoch:          1
@@ -123,6 +123,7 @@ popd
 
 %build
 pushd %{name}/src/frontend/posix
+CXXFLAGS="%{build_cxxflags} -DGLIB_DISABLE_DEPRECATION_WARNINGS" \
 %configure \
   --disable-silent-rules \
   --enable-glx \
@@ -195,6 +196,9 @@ done
 
 
 %changelog
+* Sun Sep 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.9.12-0.11.20190728git9e6b4f1
+- -DGLIB_DISABLE_DEPRECATION_WARNINGS
+
 * Fri Aug 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.9.12-0.10.20190728git9e6b4f1
 - New snapshot
 

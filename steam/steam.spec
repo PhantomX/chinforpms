@@ -9,7 +9,7 @@
 Name:           steam
 Version:        1.0.0.61
 Epoch:          1
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement
@@ -19,7 +19,6 @@ ExclusiveArch:  i686
 Source0:        http://repo.steampowered.com/%{name}/pool/%{name}/s/%{name}/%{name}_%{version}.tar.gz
 Source1:        %{name}.sh
 Source2:        %{name}.csh
-Source3:        %{name}.xml
 Source4:        %{name}.appdata.xml
 
 # Ghost touches in Big Picture mode:
@@ -49,7 +48,6 @@ Patch3:         %{name}-launcher.patch
 Patch4:         https://git.archlinux.org/svntogit/community.git/plain/trunk/alsa_sdl_audiodriver.patch?h=packages/%{name}#/alsa_sdl_audiodriver.patch
 
 BuildRequires:  desktop-file-utils
-BuildRequires:  firewalld-filesystem
 BuildRequires:  systemd
 
 # Required to run the initial setup
@@ -159,9 +157,6 @@ desktop-file-edit \
 ln -sf ../icons/hicolor/48x48/apps/steam.png \
   %{buildroot}/%{_datadir}/pixmaps/%{name}_tray_mono.png
 
-install -D -m 644 -p %{SOURCE3} \
-    %{buildroot}%{_prefix}/lib/firewalld/services/steam.xml
-
 # Environment files
 mkdir -p %{buildroot}%{_sysconfdir}/profile.d
 install -pm 644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d
@@ -170,9 +165,6 @@ install -pm 644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d
 mkdir -p %{buildroot}%{_metainfodir}
 install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 
-
-%post
-%firewalld_reload
 
 %files
 %{!?_licensedir:%global license %%doc}
@@ -186,12 +178,14 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 %{_datadir}/pixmaps/%{name}_tray_mono.png
 %{_libdir}/%{name}/
 %{_mandir}/man6/%{name}.*
-%{_prefix}/lib/firewalld/services/%{name}.xml
 %config(noreplace) %{_sysconfdir}/profile.d/%{name}.*sh
 %{_udevrulesdir}/*
 
 
 %changelog
+* Sun Sep 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.61-102
+- Remove unneeded firewalld file
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.61-101
 - Remove limits files
 

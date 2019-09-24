@@ -160,9 +160,8 @@ ln -s %{_includedir}/bochs/* ./
 ln -s %{_includedir}/bochs/disasm/* ./
 popd
 
-RPM_NCPUS=%(echo %{_smp_mflags} | sed 's/-j//')
 sed \
-  -e "/LTO/s|-flto|-flto=$RPM_NCPUS|g" \
+  -e "/LTO/s|-flto|-flto=%{_smp_build_ncpus}|g" \
   -e '/-flto=4/a\  check_and_add_flag(LTO -fdisable-ipa-cdtor)' \
   -i CMakeLists.txt
 

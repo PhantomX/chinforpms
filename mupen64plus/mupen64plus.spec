@@ -72,8 +72,7 @@ chmod 0755 ./m64p_build.sh ./m64p_install.sh
 sed -i -e '/projects\/unix install/g' ./m64p_build.sh
 
 cat > %{name}-env <<'EOF'
-RPM_NCPUS=%(echo %{_smp_mflags} | sed 's/-j//')
-export OPTFLAGS="$(echo %{optflags} | sed -e 's/-O2\b/-O3/') -flto=$RPM_NCPUS -fuse-linker-plugin -fdisable-ipa-cdtor"
+export OPTFLAGS="$(echo %{optflags} | sed -e 's/-O2\b/-O3/') -flto=%{_smp_build_ncpus} -fuse-linker-plugin -fdisable-ipa-cdtor"
 export LDFLAGS="$OPTFLAGS %{build_ldflags}"
 export V=1
 export LDCONFIG=/bin/true

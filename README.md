@@ -54,7 +54,6 @@ RPMFusion and existent packages updated with extra changes.
  * **mesa** - Can't wait Fedora releases
  * **ppsspp** - Build options, no Qt frontend
  * **quiterss** - Updated, Qt5
- * **rust** - Pinned version for Waterfox build
  * **skrooge** - Can't wait Fedora releases
  * **smtube** - Patched to silence players output
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
