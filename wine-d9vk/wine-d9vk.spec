@@ -34,8 +34,8 @@
 %global pkgname d9vk
 
 Name:           wine-%{pkgname}
-Version:        0.20
-Release:        2%{?gver}%{?dist}
+Version:        0.21
+Release:        1%{?gver}%{?dist}
 Summary:        A D3D9 to VK Translation Layer for Linux / Wine
 
 Epoch:          1
@@ -245,6 +245,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Sep 24 2019 Phantom X <megaphantomx at bol dot com dot br>  - 1:0.21-1
+- 0.21
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.20-2
 - Fix obsoletes
 

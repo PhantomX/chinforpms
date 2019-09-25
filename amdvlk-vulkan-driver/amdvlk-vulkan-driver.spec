@@ -13,19 +13,19 @@
 
 %global pkgname amdvlk
 
-%global commit1 9bc5dd4450a6361faf5c5661056a7ee494fad830
+%global commit1 1fc1a7d4248b4749c3df21eb48f7ae97b6cddf74
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm
 
-%global commit2 4fa48ef1cf0f81eafdb56df91c2f2180d4865101
+%global commit2 ec210a78b6a280b00fb1765dd588c3970b6dc818
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 331558e93794068a786bf699d3fe23bb11bac021
+%global commit3 2cb5558b94c5dc839e093cb439057a1802426c8e
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 68b57dba33a4d922e8f1ef1b3781c2f659ffbd1c
+%global commit4 88d997710b4e405f3a8e3fd60a38afee9e3e77e2
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -37,17 +37,21 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{pkgname}-MetroHash
 
-%global commit7 9702d47c6fe4cefbc55f905b0e9966452124b6c2
+%global commit7 b601c88aeca7a7b08becb3d32709de383c8ee428
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
-%global srcname7 SPIRV-Tools
+%global srcname7 %{pkgname}-CWPack
 
-%global commit8 123dc278f204f8e833e1a88d31c46d0edf81d4b2
+%global commit8 9702d47c6fe4cefbc55f905b0e9966452124b6c2
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
-%global srcname8 SPIRV-Headers
+%global srcname8 SPIRV-Tools
 
-%global commit9 22683b409e6df419da940df561b24b4b5d8ab90a
+%global commit9 63d4d272f6e5b3cb9bb2bb50718a886a3eef4dab
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
-%global srcname9 glslang
+%global srcname9 SPIRV-Headers
+
+%global commit10 3aac2d44b20d2fcedfbded41ca3cfa932b90ae6f
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+%global srcname10 glslang
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -58,7 +62,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2019.3.5
+Version:        2019.3.6
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -73,37 +77,41 @@ ExclusiveArch:  x86_64
 
 %else
 %if 0%{?with_snapshot}
-Source0:        %{url}/archive/%{commit}.tar.gz#/%{pkgname}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v-%{ver}.tar.gz#/%{pkgname}-%{ver}.tar.gz
+Source0:        %{url}/archive/v-%{ver}/%{pkgname}-%{ver}.tar.gz
 %endif
-Source1:        %{vc_url}/llvm/archive/%{commit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        %{vc_url}/llpc/archive/%{commit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        %{vc_url}/xgl/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
-Source4:        %{vc_url}/pal/archive/%{commit4}.tar.gz#/%{srcname4}-%{shortcommit4}.tar.gz
-Source5:        %{vc_url}/spvgen/archive/%{commit5}.tar.gz#/%{srcname5}-%{shortcommit5}.tar.gz
-Source6:        %{vc_url}/MetroHash/archive/%{commit6}.tar.gz#/%{srcname6}-%{shortcommit6}.tar.gz
-Source7:        https://github.com/KhronosGroup/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+Source1:        %{vc_url}/llvm/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        %{vc_url}/llpc/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        %{vc_url}/xgl/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source4:        %{vc_url}/pal/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+Source5:        %{vc_url}/spvgen/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+Source6:        %{vc_url}/MetroHash/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+Source7:        %{vc_url}/CWPack/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/KhronosGroup/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source9:        https://github.com/KhronosGroup/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
+Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 %endif
-Source20:        %{url}/raw/master/README.md
+Source20:       %{url}/raw/master/README.md
 
 %if !0%{?with_bin}
-BuildRequires:   gcc
-BuildRequires:   gcc-c++
-BuildRequires:   cmake
-BuildRequires:   ninja-build
-BuildRequires:   perl-interpreter
-BuildRequires:   python3
-BuildRequires:   glibc-devel
-BuildRequires:   libstdc++-devel
-BuildRequires:   pkgconfig(gtest)
-BuildRequires:   pkgconfig(x11)
-BuildRequires:   pkgconfig(xcb)
-BuildRequires:   pkgconfig(xrandr)
-BuildRequires:   pkgconfig(xshmfence)
-BuildRequires:   pkgconfig(wayland-client)
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
+BuildRequires:  cmake
+BuildRequires:  ninja-build
+BuildRequires:  perl-interpreter
+BuildRequires:  python3
+BuildRequires:  glibc-devel
+BuildRequires:  libstdc++-devel
+BuildRequires:  pkgconfig(gtest)
+BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(openssl)
+BuildRequires:  pkgconfig(xcb)
+BuildRequires:  pkgconfig(xrandr)
+BuildRequires:  pkgconfig(xshmfence)
+BuildRequires:  pkgconfig(wayland-client)
 %endif
 
 Requires:       vulkan
@@ -126,7 +134,7 @@ mv usr/share/doc/amdvlk/copyright LICENSE.txt
 sed -e 's|/usr/lib/x86_64-linux-gnu|%{_libdir}|g' -i etc/vulkan/icd.d/*.json
 
 %else
-%setup -q -c -n %{name}-%{version} -a 0 -a 1 -a 2 -a 3 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9
+%setup -q -c -n %{name}-%{version} -a 0 -a 1 -a 2 -a 3 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9 -a 10
 
 %if 0%{?with_snapshot}
 ln -sf AMDVLK-%{commit} AMDVLK
@@ -138,10 +146,11 @@ ln -sf llpc-%{commit2} llpc
 ln -sf xgl-%{commit3} xgl
 ln -sf pal-%{commit4} pal
 ln -sf spvgen-%{commit5} spvgen
-mv MetroHash-%{commit6} pal/src/util/imported/metrohash
-mv SPIRV-Tools-%{commit7} spvgen/external/SPIRV-tools
-mv SPIRV-Headers-%{commit8} spvgen/external/SPIRV-tools/external/SPIRV-Headers
-mv glslang-%{commit9} spvgen/external/glslang
+mv MetroHash-%{commit6} MetroHash
+mv CWPack-%{commit7} CWPack
+mv SPIRV-Tools-%{commit8} spvgen/external/SPIRV-tools
+mv SPIRV-Headers-%{commit9} spvgen/external/SPIRV-tools/external/SPIRV-Headers
+mv glslang-%{commit10} spvgen/external/glslang
 
 cp -p AMDVLK/LICENSE.txt .
 cp -p AMDVLK/README.md .
@@ -156,13 +165,21 @@ sed -e '/soname=/s|so.1|so|g' -i xgl/icd/CMakeLists.txt
 
 %build
 %if !0%{?with_bin}
+
+extdir=$(pwd)
+
 mkdir -p xgl/%{_target_platform}
 pushd xgl/%{_target_platform}
+
+export CFLAGS="%{build_cflags} -fno-plt -mno-avx"
+export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
 
 %cmake .. \
   -DCMAKE_VERBOSE_MAKEFILE=ON \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DBUILD_WAYLAND_SUPPORT:BOOL=ON \
+  -DXGL_METROHASH_PATH:PATH=${extdir}/MetroHash \
+  -DXGL_CWPACK_PATH:PATH=${extdir}/CWPack \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_AR:FILEPATH=%{_bindir}/gcc-ar \
   -DCMAKE_NM:FILEPATH=%{_bindir}/gcc-nm \
@@ -216,6 +233,9 @@ echo "MaxNumCmdStreamsPerSubmit,4" > %{buildroot}%{_sysconfdir}/amd/amdPalSettin
 
 
 %changelog
+* Tue Sep 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.3.6-1
+- 2019.Q3.6
+
 * Thu Aug 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.3.5-1
 - 2019.Q3.5
 

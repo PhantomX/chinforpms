@@ -16,13 +16,13 @@
 %global with_curl 1
 %global with_dbusmenuqt 1
 %global with_ffi 1
-%global with_python 1
+%global with_python 0
 %global with_pillow 1
 %global with_pyqt 0
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -287,6 +287,9 @@ done
 
 
 %changelog
+* Tue Sep 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-4
+- with_python 0
+
 * Thu Sep 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-4
 - Update python2 requirements for Fedora 31 for real
 

@@ -40,9 +40,9 @@ URL:            https://github.com/telegramdesktop/%{appname}
 
 ExclusiveArch:  x86_64
 
-Source0:        %{url}/archive/v%{version}.tar.gz#/%{appname}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{appname}-%{version}.tar.gz
 Source1:        https://github.com/telegramdesktop/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        https://github.com/john-preston/%{srcname2}/archive/%{commit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
+Source2:        https://github.com/john-preston/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch0:         %{name}-build-fixes.patch
