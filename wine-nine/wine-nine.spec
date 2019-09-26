@@ -3,7 +3,7 @@
 %global commit 5a9da8f6b02230948a0ab45393afaa4caa84cd93
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20190420
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -15,7 +15,7 @@
 
 Name:           wine-nine
 Version:        0.5
-Release:        0.3%{?gver}%{?dist}
+Release:        1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -32,8 +32,6 @@ Source1:        ninewinecfg
 Source2:        wineninecfg
 
 Source100:      wine-ninecfg.desktop
-
-Patch0:         %{name}-optflags.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -83,10 +81,10 @@ Provides:       d3d9-nine.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
 %autosetup -n %{pkgname}-%{version} -p1
 %endif
 
-sed -e "/strip =/s|=.*|= 'true'|g" -i tools/cross-wine%{__isa_bits}.in
+sed -e "/strip =/s|=.*|= 'true'|g" -i tools/cross-wine*.in
 
 mesonarray(){
-  echo -n "$1" | sed -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
+  echo -n "$1" | sed -e "s|\s\s\s\s\s| |g" -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
 }
 
 # disable fortify as it breaks wine
@@ -94,12 +92,14 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
 TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
-TEMP_CFLAGS="`mesonarray "$TEMP_CFLAGS"`"
 
+TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
 TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"
 
-sed -e "s|RPM_OPT_FLAGS|$TEMP_CFLAGS|g" -i tools/cross-wine%{__isa_bits}.in
-sed -e "s|RPM_LD_FLAGS|$TEMP_LDFLAGS|g" -i tools/cross-wine%{__isa_bits}.in
+sed \
+  -e "/^c_args/s|]|, '$TEMP_CFLAGS'\0|g" \
+  -e "/^c_link_args/s|]|, '$TEMP_LDFLAGS'\0|g" \
+  -i tools/cross-wine*.in
 
 ./bootstrap.sh
 
@@ -152,6 +152,9 @@ desktop-file-install \
 
 
 %changelog
+* Wed Sep 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.5-1
+- 0.5
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.5-0.3.20190420git5a9da8f
 - Fix obsoletes
 

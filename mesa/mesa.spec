@@ -10,6 +10,7 @@
 
 %ifarch %{ix86} x86_64
 %global platform_drivers ,i915,i965
+%global with_iris   1
 %global with_vmware 1
 %global with_xa     1
 %global vulkan_drivers intel,amd
@@ -50,7 +51,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.1.7
+Version:        19.2.0
 Release:        100%{?dist}
 
 License:        MIT
@@ -63,6 +64,7 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 Source2:        glesv2.pc
+Source3:        egl.pc
 
 Patch3:         0003-evergreen-big-endian.patch
 
@@ -144,7 +146,7 @@ BuildRequires:  pkgconfig(valgrind)
 BuildRequires:  python3-devel
 BuildRequires:  python3-mako
 %if 0%{?with_hardware}
-BuildRequires:  vulkan-devel
+BuildRequires:  vulkan-headers
 %endif
 
 
@@ -360,6 +362,7 @@ Headers for development with the Vulkan API.
 cp %{SOURCE1} docs/
 
 sed -e 's|_RPMVER_|%{ver}|g' %{SOURCE2} > glesv2.pc
+sed -e 's|_RPMVER_|%{ver}|g' %{SOURCE3} > egl.pc
 
 %build
 
@@ -368,7 +371,7 @@ sed -e 's|_RPMVER_|%{ver}|g' %{SOURCE2} > glesv2.pc
   -Ddri3=true \
   -Ddri-drivers=%{?dri_drivers} \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost} \
+  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -405,6 +408,8 @@ sed -e 's|_RPMVER_|%{ver}|g' %{SOURCE2} > glesv2.pc
 %meson_install
 
 install -m0644 glesv2.pc %{buildroot}%{_libdir}/pkgconfig/
+
+install -m0644 egl.pc %{buildroot}%{_libdir}/pkgconfig/
 
 # libvdpau opens the versioned name, don't bother including the unversioned
 rm -vf %{buildroot}%{_libdir}/vdpau/*.so
@@ -554,6 +559,11 @@ popd
 %ifarch %{ix86} x86_64
 %{_libdir}/dri/i915_dri.so
 %{_libdir}/dri/i965_dri.so
+%{_libdir}/dri/iris_dri.so
+%endif
+%ifarch %{arm} aarch64
+%{_libdir}/dri/mxsfb-drm_dri.so
+%{_libdir}/dri/stm_dri.so
 %endif
 %if 0%{?with_vc4}
 %{_libdir}/dri/vc4_dri.so
@@ -646,6 +656,10 @@ popd
 
 
 %changelog
+* Wed Sep 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.2.0-100
+- 19.2.0
+- Rawhide sync
+
 * Tue Sep 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.1.7-100
 - 19.1.7
 

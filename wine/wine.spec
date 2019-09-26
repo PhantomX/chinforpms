@@ -40,7 +40,7 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id b4cb07989c97b3cff0235086c5c4cc5d99840470
+%global tkg_id 6af22519986c0bfd6803da5ea5e366e49aabad55
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -65,7 +65,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.16
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -108,6 +108,7 @@ Source113:      wine-taskmgr.desktop
 
 # wine bugs/upstream
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
+Patch100:       %{whq_url}/cb703739e5c138e3beffab321b84edb129156000#/%{name}-whq-cb70373.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -133,13 +134,12 @@ Patch702:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clo
 Patch703:       %{tkg_url}/game-specific/legacy/poe-fix.patch#/%{name}-tkg-poe-fix.patch
 Patch704:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 Patch705:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
-Patch706:       %{tkg_url}/misc/revert-c6b6935.patch#/%{name}-tkg-revert-c6b6935.patch
 
 # wine staging patches for wine-staging
 %if 0%{?wine_staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 Patch710:       %{tkg_url}/misc/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
-Patch711:      %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
+Patch711:       %{tkg_url}/proton/legacy/raw-valve_proton_fullscreen_hack-staging-c0389b0.patch#/%{name}-tkg-raw-valve_proton_fullscreen_hack-staging-c0389b0.patch
 Patch713:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch714:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 Patch715:       %{tkg_url}/proton-tkg-specific/raw-input-proton.patch#/%{name}-tkg-raw-input-proton.patch
@@ -713,6 +713,7 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
+%patch100 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch700 -p1
@@ -720,7 +721,6 @@ This package adds the opencl driver for wine.
 #patch703 -p1
 %patch704 -p1
 %patch705 -p1
-%patch706 -p1
 %patch801 -p1
 sed -e 's|__stdcall XACT_NOTIFICATION_CALLBACK|XACT_NOTIFICATION_CALLBACK|g' -i include/xact3.idl
 %patch802 -p1
@@ -2400,6 +2400,9 @@ fi
 
 
 %changelog
+* Wed Sep 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.16-102
+- tkg updates
+
 * Sun Sep 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.16-101
 - tkg updates
 
