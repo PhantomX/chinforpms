@@ -48,11 +48,13 @@
 
 %global dri_drivers %{?base_drivers}%{?platform_drivers}
 
+%global vc_url  https://gitlab.freedesktop.org/mesa/mesa
+
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        19.2.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -72,6 +74,7 @@ Patch3:         0003-evergreen-big-endian.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
 
+Patch100:       %{vc_url}/commit/a2ee29c3daad8fcfe98204f9d8927b0b1a637713.patch#/mesa-gl-a2ee29c.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -559,7 +562,9 @@ popd
 %ifarch %{ix86} x86_64
 %{_libdir}/dri/i915_dri.so
 %{_libdir}/dri/i965_dri.so
+%if 0%{?with_iris}
 %{_libdir}/dri/iris_dri.so
+%endif
 %endif
 %ifarch %{arm} aarch64
 %{_libdir}/dri/mxsfb-drm_dri.so
@@ -656,6 +661,9 @@ popd
 
 
 %changelog
+* Thu Sep 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.2.0-101
+- Disk cache thread count patch
+
 * Wed Sep 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.2.0-100
 - 19.2.0
 - Rawhide sync

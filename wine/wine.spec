@@ -8,7 +8,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47
-%global winemono  4.9.2
+%global winemono  4.9.3
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -33,22 +33,21 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 4.16
+%global wine_stagingver 4.17
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 6af22519986c0bfd6803da5ea5e366e49aabad55
+%global tkg_id e747df6e2709bfdda5c70e28c1db178f29e7a877
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
 # Broken
 %global pba 0
-%global raw_input 0
 
-# proton FS hack and raw input fix
+# proton FS hack
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
@@ -64,8 +63,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.16
-Release:        102%{?dist}
+Version:        4.17
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -108,7 +107,9 @@ Source113:      wine-taskmgr.desktop
 
 # wine bugs/upstream
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-Patch100:       %{whq_url}/cb703739e5c138e3beffab321b84edb129156000#/%{name}-whq-cb70373.patch
+Patch100:       %{whq_url}/ffd4caa5f0e401cf973078fbbd54e4950d408792#/%{name}-whq-ffd4caa.patch
+Patch101:       %{whq_url}/22795243b2d21e1a667215f54c3a15634735749c#/%{name}-whq-2279524.patch
+Patch102:       %{whq_url}/ec09dcf89594f459dd8d26f3ed2c312294b9911e#/%{name}-whq-ec09dcf.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -139,10 +140,9 @@ Patch705:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_c
 %if 0%{?wine_staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 Patch710:       %{tkg_url}/misc/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
-Patch711:       %{tkg_url}/proton/legacy/raw-valve_proton_fullscreen_hack-staging-c0389b0.patch#/%{name}-tkg-raw-valve_proton_fullscreen_hack-staging-c0389b0.patch
+Patch711:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch713:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch714:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
-Patch715:       %{tkg_url}/proton-tkg-specific/raw-input-proton.patch#/%{name}-tkg-raw-input-proton.patch
 Patch716:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch717:       %{tkg_url}/proton/valve_proton_fullscreen_hack_realmodes.patch#/%{name}-tkg-valve_proton_fullscreen_hack_realmodes.patch
 Patch718:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
@@ -193,7 +193,6 @@ BuildRequires:  fontforge
 BuildRequires:  icoutils
 BuildRequires:  perl-generators
 BuildRequires:  pkgconfig(alsa)
-BuildRequires:  pkgconfig(capi20)
 BuildRequires:  cups-devel
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(faudio)
@@ -660,15 +659,6 @@ Twain support for wine
 %package capi
 Summary: ISDN support for wine
 Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
-%ifarch x86_64
-Requires:       isdn4k-utils(x86-64)
-%endif
-%ifarch %{ix86}
-Requires:       isdn4k-utils(x86-32)
-%endif
-%ifarch %{arm} aarch64
-Requires:       isdn4k-utils
-%endif
 
 %description capi
 ISDN support for wine
@@ -713,7 +703,9 @@ This package adds the opencl driver for wine.
 
 %prep
 %setup -q -n wine-%{ver}
-%patch100 -p1
+%patch100 -p1 -R
+%patch101 -p1 -R
+%patch102 -p1 -R
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch700 -p1
@@ -748,9 +740,6 @@ cp -p %{S:1001} README-pba-pkg
 %patch711 -p1
 %patch713 -p1
 %patch714 -p1
-%if 0%{?raw_input}
-%patch715 -p1
-%endif
 %patch716 -p1
 %patch717 -p1
 %patch718 -p1
@@ -1636,6 +1625,9 @@ fi
 %{_libdir}/wine/dpvoice.%{winedll}
 %{_libdir}/wine/dpwsockx.%{winedll}
 %{_libdir}/wine/drmclien.%{winedll}
+%if 0%{?wine_staging}
+%{_libdir}/wine/dsdmo.%{winedll}
+%endif
 %{_libdir}/wine/dsound.%{winedll}
 %{_libdir}/wine/dsquery.%{winedll}
 %{_libdir}/wine/dssenh.%{winedll}
@@ -2400,6 +2392,10 @@ fi
 
 
 %changelog
+* Sat Sep 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.17-100
+- 4.17
+- Retire deprecated isdn4k-utils support
+
 * Wed Sep 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.16-102
 - tkg updates
 

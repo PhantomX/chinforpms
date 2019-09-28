@@ -20,7 +20,7 @@
 
 %global winedll dll%{?libext}
 
-%global pge_id 1e2a7ed967c16a37ce6d7d7932cad0ae8eb3afd7
+%global pge_id 71f953e12d930c15c92b6832cdeb06d9c1c828df
 %global pge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{pge_id}/game-patches-testing/dxvk-patches
 
 %global dxvk_async 1
@@ -30,7 +30,7 @@
 %global pkgname dxvk
 
 Name:           wine-%{pkgname}
-Version:        1.4
+Version:        1.4.1
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
@@ -118,7 +118,7 @@ package or when debugging this package.
 cp %{S:101} dxvk-async.patch
 %patch102 -p1
 patch -p1 -i dxvk-async.patch
-%patch103 -p1
+#patch103 -p1
 
 cp %{S:4} .
 %else
@@ -270,6 +270,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Sep 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4.1-1
+- 1.4.1
+
 * Sat Sep 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1
 - 1.4
 
