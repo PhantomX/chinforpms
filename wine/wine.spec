@@ -40,15 +40,16 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id e747df6e2709bfdda5c70e28c1db178f29e7a877
+%global tkg_id eabd70187cf5362037cc928cd717c77a3f8b867e
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
 # Broken
 %global pba 0
 
-# proton FS hack
-%global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds
+# proton FS hack and raw input fix
+%global wine_staging_opts -W winex11.drv-mouse-coorrds 
+%global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global valve_url https://github.com/ValveSoftware/wine
@@ -64,7 +65,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.17
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -109,7 +110,9 @@ Source113:      wine-taskmgr.desktop
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 Patch100:       %{whq_url}/ffd4caa5f0e401cf973078fbbd54e4950d408792#/%{name}-whq-ffd4caa.patch
 Patch101:       %{whq_url}/22795243b2d21e1a667215f54c3a15634735749c#/%{name}-whq-2279524.patch
-Patch102:       %{whq_url}/ec09dcf89594f459dd8d26f3ed2c312294b9911e#/%{name}-whq-ec09dcf.patch
+Patch102:       %{whq_url}/be54adcffc249a44cb52c24320a7ad3db758ba54#/%{name}-whq-be54adc.patch
+Patch103:       %{whq_url}/ec09dcf89594f459dd8d26f3ed2c312294b9911e#/%{name}-whq-ec09dcf.patch
+Patch104:       %{whq_url}/efbbe66669a060dd01b3ae399f5a9e7328312f03#/%{name}-whq-efbbe66.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -133,16 +136,17 @@ Patch700:       %{tkg_url}/misc/legacy/steam.patch#/%{name}-tkg-steam.patch
 Patch701:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch702:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
 Patch703:       %{tkg_url}/game-specific/legacy/poe-fix.patch#/%{name}-tkg-poe-fix.patch
-Patch704:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
-Patch705:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
+Patch704:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
 
 # wine staging patches for wine-staging
 %if 0%{?wine_staging}
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 Patch710:       %{tkg_url}/misc/GLSL-toggle.patch#/%{name}-tkg-GLSL-toggle.patch
-Patch711:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch713:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
-Patch714:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
+Patch711:       %{tkg_url}/misc/raw-input.patch#/%{name}-tkg-raw-input.patch
+Patch712:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
+Patch713:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
+Patch714:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch715:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 Patch716:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch717:       %{tkg_url}/proton/valve_proton_fullscreen_hack_realmodes.patch#/%{name}-tkg-valve_proton_fullscreen_hack_realmodes.patch
 Patch718:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
@@ -706,13 +710,14 @@ This package adds the opencl driver for wine.
 %patch100 -p1 -R
 %patch101 -p1 -R
 %patch102 -p1 -R
+%patch103 -p1 -R
+%patch104 -p1 -R
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch700 -p1
 %patch702 -p1
 #patch703 -p1
 %patch704 -p1
-%patch705 -p1
 %patch801 -p1
 sed -e 's|__stdcall XACT_NOTIFICATION_CALLBACK|XACT_NOTIFICATION_CALLBACK|g' -i include/xact3.idl
 %patch802 -p1
@@ -738,8 +743,10 @@ cp -p %{S:1001} README-pba-pkg
 # Breaks Gallium HUD
 #patch710 -p1
 %patch711 -p1
+%patch712 -p1
 %patch713 -p1
 %patch714 -p1
+%patch715 -p1
 %patch716 -p1
 %patch717 -p1
 %patch718 -p1
@@ -2392,6 +2399,9 @@ fi
 
 
 %changelog
+* Sun Sep 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.17-101
+- tkg updates and some reverts
+
 * Sat Sep 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.17-100
 - 4.17
 - Retire deprecated isdn4k-utils support

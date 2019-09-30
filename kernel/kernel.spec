@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -655,8 +655,11 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{patchwork_xdg_url}/309520/mbox/#/patchwork-xdg-309520.patch
-Patch2002: %{patchwork_xdg_url}/330307/mbox/#/patchwork-xdg-330307.patch
+Patch2001: %{patchwork_xdg_url}/330307/mbox/#/patchwork-xdg-330307.patch
+Patch2002: %{patchwork_xdg_url}/320795/mbox/#/patchwork-xdg-320795.patch
+Patch2003: %{patchwork_xdg_url}/320796/mbox/#/patchwork-xdg-320796.patch
+Patch2004: %{patchwork_xdg_url}/320797/mbox/#/patchwork-xdg-320797.patch
+Patch2005: %{patchwork_xdg_url}/323977/mbox/#/patchwork-xdg-323977.patch
 
 %if !0%{?post_factum}
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
@@ -1917,6 +1920,9 @@ fi
 #
 #
 %changelog
+* Sun Sep 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.1-501.chinfo
+- Add some patchwork amdgpu bits
+
 * Sat Sep 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.1-500.chinfo
 - 5.3.1 - pf2
 - f31 sync
