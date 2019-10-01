@@ -24,7 +24,7 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.8.8
+Version:        1.8.9
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -60,7 +60,6 @@ Patch102:       %{name}-nogtk2.patch
 # Always display scrollbars
 Patch103:       %{name}-disable-overlay.patch
 Patch104:       https://github.com/telegramdesktop/tdesktop/pull/6529.patch#/%{name}-gh-pull6529.patch
-Patch105:       0001-Fix-pull-6529.patch
 
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
@@ -218,6 +217,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Sun Sep 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.9-100
+- 1.8.9
+
 * Thu Sep 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.8-100
 - 1.8.8
 - RPMFusion sync

@@ -3,9 +3,11 @@
 
 %global with_bin 0
 
+%global vc_url  https://github.com/madewokherd/wine-mono
+
 Name:           wine-mono
 Version:        4.9.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Mono library required for Wine
 
 License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
@@ -16,13 +18,16 @@ Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-bin-%{versi
 %else
 Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        https://github.com/madewokherd/%{name}/raw/master/COPYING
-Source2:        https://github.com/madewokherd/%{name}/raw/master/README
+Source1:        %{vc_url}/%{name}/raw/master/COPYING
+Source2:        %{vc_url}/%{name}/raw/master/README
 
 # to statically link in winpthreads
 Patch0:         %{name}-build-static.patch
 
 # see git://github.com/madewokherd/wine-mono
+# https://bugs.winehq.org/show_bug.cgi?id=47807
+Patch100:       %{name}-7c73ec8.patch
+
 
 BuildArch:      noarch
 ExcludeArch:    %{power64} s390x s390
@@ -93,6 +98,7 @@ chmod -R g-w %{name}-%{version}
 %else
 
 %patch0 -p1 -b.static
+%patch100 -p1
 
 # Fix all Python shebangs
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" .
@@ -150,13 +156,18 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 %{_datadir}/wine/mono/%{name}-%{version}/
 %exclude %{_datadir}/wine/mono/%{name}-%{version}/bin/*.debug
 %exclude %{_datadir}/wine/mono/%{name}-%{version}/lib/*.debug
+%exclude %{_datadir}/wine/mono/%{name}-%{version}/support/*.debug
 
 %files mingw-debuginfo
 %{_datadir}/wine/mono/%{name}-%{version}/bin/*.debug
 %{_datadir}/wine/mono/%{name}-%{version}/lib/*.debug
+%{_datadir}/wine/mono/%{name}-%{version}/support/*.debug
 
 
 %changelog
+* Mon Sep 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.9.3-101
+- Patch to fix whq#47807
+
 * Fri Sep 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.9.3-100
 - 4.9.3
 
