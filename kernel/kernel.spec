@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 103f0dec9b1abed765f1b5319b1e08c5f5c4f535
+%global pfcommit 48de9e0867b40c9be7feb7f3ddc2a6c5dbbf42a7
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id a541a6cc8e4e3e1d9d8f2d49d00ee50ee03a3a36
+%global opensuse_id ac7680aa183ea8a52a8bb5bd81dd032027adc0e2
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -628,14 +628,21 @@ Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # gcc9 fixes
-Patch507: 0001-Drop-that-for-now.patch
+Patch502: 0001-Drop-that-for-now.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
-Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
+Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # rhbz 1753099
-Patch509: dwc3-fix.patch 
+Patch504: dwc3-fix.patch
+
+# new ids
+Patch506: 0001-x86-amd_nb-Add-PCI-device-IDs-for-family-17h-model-7.patch
+
+# rhbz 1752961
+Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
+Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-parsing.patch
 
 ### Extra
 
@@ -656,10 +663,7 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: %{patchwork_xdg_url}/330307/mbox/#/patchwork-xdg-330307.patch
-Patch2002: %{patchwork_xdg_url}/320795/mbox/#/patchwork-xdg-320795.patch
-Patch2003: %{patchwork_xdg_url}/320796/mbox/#/patchwork-xdg-320796.patch
-Patch2004: %{patchwork_xdg_url}/320797/mbox/#/patchwork-xdg-320797.patch
-Patch2005: %{patchwork_xdg_url}/323977/mbox/#/patchwork-xdg-323977.patch
+Patch2002: %{patchwork_xdg_url}/323977/mbox/#/patchwork-xdg-323977.patch
 
 %if !0%{?post_factum}
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
@@ -1920,6 +1924,10 @@ fi
 #
 #
 %changelog
+* Tue Oct 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.2-500.chinfo
+- 5.3.2
+- f31 sync
+
 * Sun Sep 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.1-501.chinfo
 - Add some patchwork amdgpu bits
 
