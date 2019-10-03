@@ -10,7 +10,7 @@
 %global pkgname FAudio
 
 Name:           %{pkgname}-freeworld
-Version:        19.09
+Version:        19.10
 Release:        1%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - freeworld
 Epoch:          1
@@ -104,7 +104,10 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
-* Tue Sep 03 2019 <megaphantomx at bol dot com dot br> Phantom X - 1:19.09-1
+* Wed Oct 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:19.10-1
+- 19.10
+
+* Tue Sep 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:19.09-1
 - 19.09
 
 * Sat Aug 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:19.08-1

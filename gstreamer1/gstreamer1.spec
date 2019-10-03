@@ -10,7 +10,7 @@
 
 Name:           gstreamer1
 Version:        1.16.1
-Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
+Release:        101%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPLv2+
@@ -38,6 +38,7 @@ BuildRequires:  check-devel
 BuildRequires:  gtk-doc >= 1.3
 BuildRequires:  gettext
 BuildRequires:  pkgconfig
+BuildRequires:  libcap-devel
 
 # ./autogen.sh deps
 BuildRequires:  automake gettext-devel libtool
@@ -113,7 +114,8 @@ NOCONFIGURE=1 \
   --enable-debug \
   --disable-fatal-warnings \
   --disable-silent-rules \
-  --disable-tests --disable-examples
+  --disable-tests --disable-examples \
+  --with-ptp-helper-permissions=capabilities
 
 %make_build V=1
 
@@ -136,7 +138,7 @@ case "\$host" in
     exec %{_bindir}/$bin-64 "\$@"
     ;;
   *)
-    exec %{_bindir}/$bin "\$@"
+    exec %{_bindir}/$bin-32 "\$@"
     ;;
 esac
 EOF
@@ -238,6 +240,10 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Wed Oct 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.16.1-101
+- f31 sync, libpcap
+- Fix multilib wrappers
+
 * Tue Sep 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.16.1-100
 - 1.16.1
 

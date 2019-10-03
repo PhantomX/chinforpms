@@ -1,0 +1,23 @@
+--- a/common/mp4ff/Makefile.am
++++ b/common/mp4ff/Makefile.am
+@@ -1,7 +1,7 @@
+ noinst_LIBRARIES = libmp4ff.a
+ noinst_HEADERS = mp4ff.h mp4ffint.h
+ 
+-libmp4ff_a_CFLAGS = -DUSE_TAGGING=1
++libmp4ff_a_CFLAGS = -DUSE_TAGGING=1 -DPIC -fPIC
+ 
+ libmp4ff_a_SOURCES = mp4ff.c mp4atom.c mp4meta.c mp4sample.c mp4util.c \
+ 		     mp4tagupdate.c mp4ff.h mp4ffint.h
+
+--- a/common/mp4ff/Makefile.in
++++ b/common/mp4ff/Makefile.in
+@@ -308,7 +307,7 @@
+ top_srcdir = @top_srcdir@
+ noinst_LIBRARIES = libmp4ff.a
+ noinst_HEADERS = mp4ff.h mp4ffint.h
+-libmp4ff_a_CFLAGS = -DUSE_TAGGING=1
++libmp4ff_a_CFLAGS = -DUSE_TAGGING=1 -DPIC -fPIC
+ libmp4ff_a_SOURCES = mp4ff.c mp4atom.c mp4meta.c mp4sample.c mp4util.c \
+ 		     mp4tagupdate.c mp4ff.h mp4ffint.h
+ 

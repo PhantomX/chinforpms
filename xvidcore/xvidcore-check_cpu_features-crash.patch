@@ -1,0 +1,27 @@
+[PATCH] alway use .text for machine
+---
+ src/nasm.inc | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/src/nasm.inc b/src/nasm.inc
+index e5181c9..f79efe6 100644
+--- a/src/nasm.inc
++++ b/src/nasm.inc
+@@ -175,15 +175,7 @@ BITS 32
+ %endmacro
+
+ %macro TEXT 0
+-%ifidn __OUTPUT_FORMAT__,macho32
+       SECTION .text align=SECTION_ALIGN
+-%else
+-%ifidn __OUTPUT_FORMAT__,macho64
+-      SECTION .text align=SECTION_ALIGN
+-%else
+-      SECTION .rotext align=SECTION_ALIGN
+-%endif
+-%endif
+ %endmacro
+
+ %macro cglobal 1
+--
+2.17.1
