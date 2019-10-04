@@ -1,3 +1,8 @@
+%global commit 5e8eb5f4c54c3a6d3c92fd414372da2fbd5bd91a
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20191002
+%global with_snapshot 1
+
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
 
@@ -33,23 +38,22 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 4.17
+%global wine_stagingver cf04b8d6ac710c83dc9a433aea3e5d3c451095a1
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id eabd70187cf5362037cc928cd717c77a3f8b867e
+%global tkg_id 0ebea0c0f15902f7fc7a6711f9fdc155f4b71fd8
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
 # Broken
 %global pba 0
 
-# proton FS hack and raw input fix
-%global wine_staging_opts -W winex11.drv-mouse-coorrds 
-%global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput
+# proton FS hack
+%global wine_staging_opts -W winex11.drv-mouse-coorrds
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global valve_url https://github.com/ValveSoftware/wine
@@ -62,10 +66,14 @@
 %{nil}
 %endif
 
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.17
-Release:        101%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -78,8 +86,12 @@ URL:            http://www.winehq.org/
 %if "%(echo %{ver} | cut -d. -f2 | cut -d- -f1 )" == "0"
 %global verx 1
 %endif
+%if 0%{?with_snapshot}
+Source0:        https://github.com/wine-mirror/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        https://dl.winehq.org/wine/source/%{vermajor}.%{?verx:0}%{!?verx:x}/wine-%{ver}.tar.xz
 Source10:       https://dl.winehq.org/wine/source/%{vermajor}.%{?verx:0}%{!?verx:x}/wine-%{ver}.tar.xz.sign
+%endif
 
 Source1:        wine.init
 Source2:        wine.systemd
@@ -152,7 +164,7 @@ Patch717:       %{tkg_url}/proton/valve_proton_fullscreen_hack_realmodes.patch#/
 Patch718:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
 Patch719:       %{tkg_url}/proton/fsync-staging-no_alloc_handle.patch#/%{name}-tkg-fsync-staging-no_alloc_handle.patch
 Patch720:       %{tkg_url}/proton-tkg-specific/winevulkan-1.1.113-proton.patch#/%{name}-tkg-winevulkan-1.1.113-proton.patch
-Patch721:       %{tkg_url}/misc/0001-kernelbase-Remove-DECLSPEC_HOTPATCH-from-SetThreadSt.patch#/%{name}-tkg-0001-kernelbase-Remove-DECLSPEC_HOTPATCH-from-SetThreadSt.patch
+Patch721:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch722:       %{tkg_url}/misc/usvfs.patch#/%{name}-tkg-usvfs.patch
 
 Patch800:       revert-grab-fullscreen.patch
@@ -706,7 +718,12 @@ Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 This package adds the opencl driver for wine.
 
 %prep
-%setup -q -n wine-%{ver}
+%if 0%{?with_snapshot}
+%setup -q -n %{name}-%{commit}
+%else
+%setup -q -n %{name}-%{ver}
+%endif
+
 %patch100 -p1 -R
 %patch101 -p1 -R
 %patch102 -p1 -R
@@ -2399,6 +2416,9 @@ fi
 
 
 %changelog
+* Thu Oct 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.17-102.20191002git5e8eb5f
+- Snapshot
+
 * Sun Sep 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.17-101
 - tkg updates and some reverts
 

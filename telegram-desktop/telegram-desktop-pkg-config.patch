@@ -9,8 +9,8 @@ Subject: [PATCH] Get Qt5 devel locations with pkg-config instead rpm
 
 diff --git a/Telegram/gyp/qt.gypi b/Telegram/gyp/qt.gypi
 index 125ab25..7f67860 100644
---- a/Telegram/gyp/qt.gypi
-+++ b/Telegram/gyp/qt.gypi
+--- a/Telegram/gyp/modules/qt.gypi
++++ b/Telegram/gyp/modules/qt.gypi
 @@ -14,7 +14,7 @@
                [ 'build_macold', {
                  'qt_version%': '5.3.2',

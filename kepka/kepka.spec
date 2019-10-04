@@ -19,7 +19,7 @@
 Name:           kepka
 # If rc, use "~" instead "-", as ~rc1
 Version:        2.0.0~rc2
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        Unofficial Telegram desktop messaging app
 
 License:        GPLv3+
@@ -156,6 +156,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Oct 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0~rc2-5.20190807gitf1fb375
+- Rebuild (qt5)
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0~rc2-4.20190807gitf1fb375
 - New snapshot
 

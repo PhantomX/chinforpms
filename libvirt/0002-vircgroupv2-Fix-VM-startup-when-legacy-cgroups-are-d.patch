@@ -1,0 +1,55 @@
+From: Cole Robinson <crobinso@redhat.com>
+Date: Thu, 26 Sep 2019 15:00:55 -0400
+Subject: [PATCH] vircgroupv2: Fix VM startup when legacy cgroups are defined
+
+On Fedora 31, starting a 'mock' build alters /proc/$pid/cgroup,
+probably due to usage of systemd-nspawn.
+
+Before:
+$ cat /proc/self/cgroup
+0::/user.slice/user-1000.slice/...
+
+After:
+$ cat /proc/self/cgroup
+1:name=systemd:/
+0::/user.slice/user-1000.slice/...
+
+The cgroupv2 code mishandles that first line in the second case, which
+causes VM startup to fail with: Unable to read from
+'/sys/fs/cgroup/machine/cgroup.controllers': No such file or directory
+
+The kernel docs[1] say that the cgroupv2 path will always start with
+'0::', which in the code here controllers="". Only set the v2 placement
+path when we see that cgroup file entry.
+
+[1] https://www.kernel.org/doc/html/v5.3/admin-guide/cgroup-v2.html#processes
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1751120
+
+Signed-off-by: Cole Robinson <crobinso@redhat.com>
+---
+ src/util/vircgroupv2.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/util/vircgroupv2.c b/src/util/vircgroupv2.c
+index 2aca4e5d62..ecf7d42076 100644
+--- a/src/util/vircgroupv2.c
++++ b/src/util/vircgroupv2.c
+@@ -194,12 +194,16 @@ virCgroupV2DetectMounts(virCgroupPtr group,
+ static int
+ virCgroupV2DetectPlacement(virCgroupPtr group,
+                            const char *path,
+-                           const char *controllers ATTRIBUTE_UNUSED,
++                           const char *controllers,
+                            const char *selfpath)
+ {
+     if (group->unified.placement)
+         return 0;
+ 
++    /* controllers="" indicates the cgroupv2 controller path */
++    if (STRNEQ_NULLABLE(controllers, ""))
++        return 0;
++
+     /*
+      * selfpath == "/" + path="" -> "/"
+      * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"

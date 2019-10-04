@@ -39,8 +39,8 @@ index 5071d63..671d0e6 100644
  	if (gtkLoaded) {
 diff --git a/Telegram/gyp/telegram_linux.gypi b/Telegram/gyp/telegram_linux.gypi
 index b314ba1..53bf64f 100644
---- a/Telegram/gyp/telegram_linux.gypi
-+++ b/Telegram/gyp/telegram_linux.gypi
+--- a/Telegram/gyp/telegram/linux.gypi
++++ b/Telegram/gyp/telegram/linux.gypi
 @@ -67,18 +67,9 @@
        ['not_need_gtk!="True"', {
          'cflags_cc': [

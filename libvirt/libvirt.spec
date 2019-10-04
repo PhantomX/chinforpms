@@ -216,7 +216,7 @@
 Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: 5.7.0
-Release: 101%{?dist}
+Release: 102%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
 
@@ -224,6 +224,13 @@ URL: https://libvirt.org/
     %define mainturl stable_updates/
 %endif
 Source: https://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.xz
+
+# Fix systemd socket activation with TLS socket
+Patch0001: 0001-remote-fix-registration-of-TLS-socket.patch
+# Fix VM startup when legacy cgroups are defined (bz #1612383)
+Patch0002: 0002-vircgroupv2-Fix-VM-startup-when-legacy-cgroups-are-d.patch
+Patch0003: 0003-vircgroup-Add-some-VIR_DEBUG-statements.patch
+
 
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
@@ -2010,6 +2017,9 @@ exit 0
 
 
 %changelog
+* Thu Oct 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-102
+- Rawhide sync
+
 * Wed Sep 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-101
 - Enable firewalld zone for fedora >= 30
 

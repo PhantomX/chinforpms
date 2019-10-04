@@ -1,0 +1,72 @@
+From: Cole Robinson <crobinso@redhat.com>
+Date: Thu, 26 Sep 2019 15:25:52 -0400
+Subject: [PATCH] vircgroup: Add some VIR_DEBUG statements
+
+These helped with debugging
+https://bugzilla.redhat.com/show_bug.cgi?id=1612383
+
+Signed-off-by: Cole Robinson <crobinso@redhat.com>
+---
+ src/util/vircgroup.c   | 3 ++-
+ src/util/vircgroupv2.c | 9 +++++++++
+ 2 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/src/util/vircgroup.c b/src/util/vircgroup.c
+index 825f62a97b..4f9d80666d 100644
+--- a/src/util/vircgroup.c
++++ b/src/util/vircgroup.c
+@@ -1157,7 +1157,8 @@ virCgroupNewMachineSystemd(const char *name,
+     virCgroupFree(&init);
+ 
+     if (!path || STREQ(path, "/") || path[0] != '/') {
+-        VIR_DEBUG("Systemd didn't setup its controller");
++        VIR_DEBUG("Systemd didn't setup its controller, path=%s",
++                  NULLSTR(path));
+         return -2;
+     }
+ 
+diff --git a/src/util/vircgroupv2.c b/src/util/vircgroupv2.c
+index ecf7d42076..ff079be718 100644
+--- a/src/util/vircgroupv2.c
++++ b/src/util/vircgroupv2.c
+@@ -155,10 +155,14 @@ virCgroupV2CopyPlacement(virCgroupPtr group,
+                          const char *path,
+                          virCgroupPtr parent)
+ {
++    VIR_DEBUG("group=%p path=%s parent=%p", group, path, parent);
++
+     if (path[0] == '/') {
+         if (VIR_STRDUP(group->unified.placement, path) < 0)
+             return -1;
+     } else {
++        VIR_DEBUG("parent->unified.placement=%s", parent->unified.placement);
++
+         /*
+          * parent == "/" + path="" => "/"
+          * parent == "/libvirt.service" + path == "" => "/libvirt.service"
+@@ -172,6 +176,7 @@ virCgroupV2CopyPlacement(virCgroupPtr group,
+             return -1;
+     }
+ 
++    VIR_DEBUG("set group->unified.placement=%s", group->unified.placement);
+     return 0;
+ }
+ 
+@@ -200,6 +205,9 @@ virCgroupV2DetectPlacement(virCgroupPtr group,
+     if (group->unified.placement)
+         return 0;
+ 
++    VIR_DEBUG("group=%p path=%s controllers=%s selfpath=%s",
++              group, path, controllers, selfpath);
++
+     /* controllers="" indicates the cgroupv2 controller path */
+     if (STRNEQ_NULLABLE(controllers, ""))
+         return 0;
+@@ -216,6 +224,7 @@ virCgroupV2DetectPlacement(virCgroupPtr group,
+                     path) < 0)
+         return -1;
+ 
++    VIR_DEBUG("set group->unified.placement=%s", group->unified.placement);
+     return 0;
+ }
+ 
