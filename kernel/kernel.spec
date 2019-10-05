@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 48de9e0867b40c9be7feb7f3ddc2a6c5dbbf42a7
+%global pfcommit 15e8d60bc2060e7ca2d0ac2035974c05d9d2c446
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -636,9 +636,6 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # rhbz 1753099
 Patch504: dwc3-fix.patch
-
-# new ids
-Patch506: 0001-x86-amd_nb-Add-PCI-device-IDs-for-family-17h-model-7.patch
 
 # rhbz 1752961
 Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
@@ -1924,6 +1921,9 @@ fi
 #
 #
 %changelog
+* Sat Oct 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.4-500.chinfo
+- 5.3.4
+
 * Tue Oct 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.2-500.chinfo
 - 5.3.2
 - f31 sync

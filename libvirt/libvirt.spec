@@ -215,8 +215,8 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 5.7.0
-Release: 102%{?dist}
+Version: 5.8.0
+Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
 
@@ -224,13 +224,6 @@ URL: https://libvirt.org/
     %define mainturl stable_updates/
 %endif
 Source: https://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.xz
-
-# Fix systemd socket activation with TLS socket
-Patch0001: 0001-remote-fix-registration-of-TLS-socket.patch
-# Fix VM startup when legacy cgroups are defined (bz #1612383)
-Patch0002: 0002-vircgroupv2-Fix-VM-startup-when-legacy-cgroups-are-d.patch
-Patch0003: 0003-vircgroup-Add-some-VIR_DEBUG-statements.patch
-
 
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
@@ -1542,13 +1535,6 @@ exit 0
 %doc AUTHORS ChangeLog.gz NEWS README README.md
 %doc libvirt-docs/*
 
-# API docs
-%dir %{_datadir}/gtk-doc/html/libvirt/
-%doc %{_datadir}/gtk-doc/html/libvirt/*.devhelp
-%doc %{_datadir}/gtk-doc/html/libvirt/*.html
-%doc %{_datadir}/gtk-doc/html/libvirt/*.png
-%doc %{_datadir}/gtk-doc/html/libvirt/*.css
-
 
 %files daemon
 
@@ -2017,6 +2003,9 @@ exit 0
 
 
 %changelog
+* Sat Oct 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.8.0-100
+- 5.8.0
+
 * Thu Oct 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-102
 - Rawhide sync
 
