@@ -1,0 +1,27 @@
+From d0f85997c8bb366bd0343775e72a1e4ec65f9fb0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 4 Oct 2019 13:19:03 -0300
+Subject: [PATCH] gtk3-mushrooms gtk+ 3.2.12 fix
+
+---
+ popovers__file-chooser-list.patch | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/popovers__file-chooser-list.patch b/popovers__file-chooser-list.patch
+index 538b3f4..61913f8 100644
+--- a/popovers__file-chooser-list.patch
++++ b/popovers__file-chooser-list.patch
+@@ -62,9 +62,9 @@ diff --color -U 5 -r -Z -B ./org/gtk/gtkfilechooserwidget.c ./mod/gtk/gtkfilecho
+    priv->copy_file_location_item = add_button (box, _("_Copy Location"), "item.copy-location");
+    priv->add_shortcut_item = add_button (box, _("_Add to Bookmarks"), "item.add-shortcut");
+ @@ -2281,10 +2297,16 @@
+- 
+    priv->hidden_files_item = add_button (box, _("Show _Hidden Files"), "item.toggle-show-hidden");
+    priv->size_column_item = add_button (box, _("Show _Size Column"), "item.toggle-show-size");
++   priv->type_column_item = add_button (box, _("Show T_ype Column"), "item.toggle-show-type");
+    priv->show_time_item = add_button (box, _("Show _Time"), "item.toggle-show-time");
+    priv->sort_directories_item = add_button (box, _("Sort _Folders before Files"), "item.toggle-sort-dirs-first");
+ +  g_object_set (priv->visit_file_item,         "image", gtk_image_new_from_icon_name ("gtk-jump-to",    GTK_ICON_SIZE_MENU), NULL);
+-- 
+2.23.0
+

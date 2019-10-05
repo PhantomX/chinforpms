@@ -20,7 +20,7 @@ Index: b/gtk/gtkfilechooserwidget.c
 ===================================================================
 --- a/gtk/gtkfilechooserwidget.c
 +++ b/gtk/gtkfilechooserwidget.c
-@@ -2453,12 +2453,12 @@
+@@ -2453,13 +2453,13 @@
  {
    GtkFileChooserWidgetPrivate *priv = impl->priv;
  
@@ -29,6 +29,7 @@ Index: b/gtk/gtkfilechooserwidget.c
    gtk_tree_view_column_set_sort_column_id (priv->list_name_column, MODEL_COL_NAME);
    gtk_tree_view_column_set_sort_column_id (priv->list_time_column, MODEL_COL_TIME);
    gtk_tree_view_column_set_sort_column_id (priv->list_size_column, MODEL_COL_SIZE);
+   gtk_tree_view_column_set_sort_column_id (priv->list_type_column, MODEL_COL_TYPE);
    gtk_tree_view_column_set_sort_column_id (priv->list_location_column, MODEL_COL_LOCATION_TEXT);
 +
 +  gtk_tree_view_set_search_column (GTK_TREE_VIEW (priv->browse_files_tree_view), MODEL_COL_NAME);

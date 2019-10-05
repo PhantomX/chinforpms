@@ -20,12 +20,17 @@
 # Filter provides for private modules
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
-# https://github.com/krumelmonster/gtk3-mushrooms
-%global mushroom_ver 3.24.8-1
+%global mushroom_url https://github.com/krumelmonster/gtk3-mushrooms
+%global mushroom_ver cc4b3da5df5357d643a043a2c64b50644fbc6a7c
+%if 0%(echo %{mushroom_ver} | grep -q \\. ; echo $?) == 0
+%global mspkgver %{mushroom_ver}
+%else
+%global mspkgver %(c=%{mushroom_ver}; echo ${c:0:7})
+%endif
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name:           gtk3
-Version:        3.24.11
+Version:        3.24.12
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -34,8 +39,9 @@ Epoch:          1
 License:        LGPLv2+
 URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
-Source1:        https://github.com/krumelmonster/gtk3-mushrooms/archive/%{mushroom_ver}/gtk3-mushrooms-%{mushroom_ver}.tar.gz
+Source1:        %{mushroom_url}/archive/%{mushroom_ver}/gtk3-mushrooms-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
+Source3:        gtk3-mushrooms-gtk-3.2.12-fix.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -202,6 +208,7 @@ the functionality of the installed %{name} package.
 patch_command(){
   patch -p2 -F1 -s -i %{mushroom_dir}/$1
 }
+patch -p1 -F1 -s -d %{mushroom_dir} -i %{S:3}
 patch_command appearance__buttons-menus-icons.patch
 patch_command appearance__disable-backdrop.patch
 patch_command appearance__file-chooser.patch
@@ -383,6 +390,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Fri Oct 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.12-100
+- 3.24.12
+
 * Wed Sep 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.11-100
 - 3.24.11
 
