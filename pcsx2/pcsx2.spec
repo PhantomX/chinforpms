@@ -1,6 +1,6 @@
-%global commit 6392f79fb63854496b3d01673ba0ab07449940ac
+%global commit afde59bb1983fd7f9bdc6d90b36686851a37b496
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190917
+%global date 20191006
 %global with_snapshot 1
 
 %global sanitize 0
@@ -11,7 +11,7 @@
 
 Name:           pcsx2
 Version:        1.5.0
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -188,8 +188,11 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Mon Oct 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-105.20191006gitafde59b
+- New snapshot
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-104.20190917git6392f79
-- rebuilt
+- New snapshot
 
 * Sun Aug 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-103.20190818git33571dd
 - New snapshot

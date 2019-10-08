@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 15e8d60bc2060e7ca2d0ac2035974c05d9d2c446
+%global pfcommit f094603d10321f272b310cb1261f29f9aa3cf4d8
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -640,6 +640,8 @@ Patch504: dwc3-fix.patch
 # rhbz 1752961
 Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
 Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-parsing.patch
+
+Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
 ### Extra
 
@@ -1921,6 +1923,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.5-500.chinfo
+- 5.3.5
+
 * Sat Oct 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.4-500.chinfo
 - 5.3.4
 
