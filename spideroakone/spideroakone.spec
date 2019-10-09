@@ -14,7 +14,7 @@
 # Do no blame SpiderOak devs if setting 1 in these
 # Set to 1 to use system libs
 %global with_curl 1
-%global with_dbusmenuqt 1
+%global with_dbusmenuqt 0
 %global with_ffi 1
 %global with_python 0
 %global with_pillow 1
@@ -22,7 +22,7 @@
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -64,10 +64,10 @@ BuildRequires:  pyOpenSSL
 Requires:       pyOpenSSL
 %endif
 %if 0%{?with_pyqt}
-BuildRequires:  qt%{?_isa}
+BuildRequires:  qt4%{?_isa}
 BuildRequires:  PyQt4%{?_isa}
 BuildRequires:  python2-sip%{?_isa}
-Requires:       qt%{?_isa}
+Requires:       qt4%{?_isa}
 Requires:       PyQt4%{?_isa}
 Requires:       python2-sip%{?_isa}
 %endif
@@ -87,6 +87,9 @@ Provides:       SpiderOak = %{version}-%{release}
 %global __requires_exclude %__requires_exclude|^libcrypto.so.1.0.0
 %global __requires_exclude %__requires_exclude|^libgmp.so.3
 %global __requires_exclude %__requires_exclude|^libpng12.so.0
+%if !0%{?with_dbusmenuqt}
+%global __requires_exclude %__requires_exclude|^libdbusmenu-qt.so.2
+%endif
 %if !0%{?with_pyqt}
 %global __requires_exclude %__requires_exclude|^libQtCore.so.4
 %global __requires_exclude %__requires_exclude|^libQtCore.so.4
@@ -287,6 +290,9 @@ done
 
 
 %changelog
+* Tue Oct 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-5
+- with_dbusmenuqt 0
+
 * Tue Sep 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-4
 - with_python 0
 

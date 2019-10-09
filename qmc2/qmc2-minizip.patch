@@ -1,0 +1,175 @@
+diff -up qmc2/arcade/imageprovider.h.minizip qmc2/arcade/imageprovider.h
+--- qmc2/arcade/imageprovider.h.minizip	2017-06-26 13:57:37.887309253 +0200
++++ qmc2/arcade/imageprovider.h	2018-10-20 12:57:12.388427005 +0200
+@@ -22,7 +22,7 @@
+ #define QMC2_ARCADE_IMAGE_FORMAT_INDEX_TGA     11
+ #define QMC2_ARCADE_IMAGE_FORMAT_INDEX_ICO     12
+ 
+-#include "../minizip/unzip.h"
++#include "mz_compat.h"
+ #include "../sevenzipfile.h"
+ #if defined(QMC2_ARCADE_LIBARCHIVE_ENABLED)
+ #include "../archivefile.h"
+diff -up qmc2/collectionrebuilder.cpp.minizip qmc2/collectionrebuilder.cpp
+--- qmc2/collectionrebuilder.cpp.minizip	2017-09-04 11:21:36.270573331 +0200
++++ qmc2/collectionrebuilder.cpp	2018-10-20 12:57:12.401427129 +0200
+@@ -17,8 +17,8 @@
+ #include "collectionrebuilder.h"
+ #include "settings.h"
+ #include "options.h"
+-#include "unzip.h"
+-#include "zip.h"
++#include "mz_compat.h"
++#include "mz.h"
+ #include "sevenzipfile.h"
+ #if defined(QMC2_LIBARCHIVE_ENABLED)
+ #include "archivefile.h"
+@@ -1431,7 +1431,7 @@ bool CollectionRebuilderThread::writeAll
+ 						errorReason = tr("unknown file type '%1'").arg(type);
+ 						break;
+ 				}
+-				if ( success && zipOpenNewFileInZip(zip, file.toUtf8().constData(), &zipInfo, file.toUtf8().constData(), file.length(), 0, 0, 0, Z_DEFLATED, zipLevel) == ZIP_OK ) {
++				if ( success && zipOpenNewFileInZip3(zip, file.toUtf8().constData(), &zipInfo, file.toUtf8().constData(), file.length(), 0, 0, 0, MZ_COMPRESS_METHOD_DEFLATE, zipLevel, 0, MAX_WBITS, DEF_MEM_LEVEL, 0, NULL, 0) == ZIP_OK ) {
+ 					emit log(tr("writing '%1' to ZIP archive '%2' (uncompressed size: %3)").arg(file).arg(fileName).arg(ROMAlyzer::humanReadable(data.length())));
+ 					quint64 bytesWritten = 0;
+ 					while ( bytesWritten < (quint64)data.length() && !exitThread && success ) {
+@@ -1625,8 +1625,8 @@ bool CollectionRebuilderThread::readZipF
+ 	if ( zipFile ) {
+   		char ioBuffer[QMC2_ZIP_BUFFER_SIZE];
+ 		unz_file_info zipInfo;
+-		QMultiMap<uLong, QString> crcIdentMap;
+-		uLong ulCRC = crc.toULong(0, 16);
++		QMultiMap<uint32_t, QString> crcIdentMap;
++		uint32_t ulCRC = crc.toULong(0, 16);
+ 		do {
+ 			if ( unzGetCurrentFileInfo(zipFile, &zipInfo, ioBuffer, QMC2_ROMALYZER_ZIP_BUFFER_SIZE, 0, 0, 0, 0) == UNZ_OK )
+ 				crcIdentMap.insert(zipInfo.crc, QString((const char *)ioBuffer));
+diff -up qmc2/filesystemmodel.h.minizip qmc2/filesystemmodel.h
+--- qmc2/filesystemmodel.h.minizip	2017-09-04 11:21:36.322573194 +0200
++++ qmc2/filesystemmodel.h	2018-10-20 12:57:12.390427024 +0200
+@@ -21,7 +21,7 @@
+ #endif
+ 
+ #include "macros.h"
+-#include "unzip.h"
++#include "mz_compat.h"
+ #include "sevenzipfile.h"
+ #include "fileiconprovider.h"
+ 
+diff -up qmc2/imagechecker.cpp.minizip qmc2/imagechecker.cpp
+--- qmc2/imagechecker.cpp.minizip	2016-09-04 16:08:00.260925261 +0200
++++ qmc2/imagechecker.cpp	2018-10-20 12:57:12.390427024 +0200
+@@ -18,7 +18,7 @@
+ #include "qmc2main.h"
+ #include "options.h"
+ #include "toolexec.h"
+-#include "unzip.h"
++#include "mz_compat.h"
+ #include "sevenzipfile.h"
+ #include "softwarelist.h"
+ #include "macros.h"
+diff -up qmc2/imagechecker.h.minizip qmc2/imagechecker.h
+--- qmc2/imagechecker.h.minizip	2017-06-26 13:00:14.887536292 +0200
++++ qmc2/imagechecker.h	2018-10-20 12:57:12.391427034 +0200
+@@ -13,7 +13,7 @@
+ #include "ui_imagechecker.h"
+ #include "imagewidget.h"
+ #include "softwareimagewidget.h"
+-#include "unzip.h"
++#include "mz_compat.h"
+ #include "sevenzipfile.h"
+ #if defined(QMC2_LIBARCHIVE_ENABLED)
+ #include "archivefile.h"
+diff -up qmc2/imagewidget.h.minizip qmc2/imagewidget.h
+--- qmc2/imagewidget.h.minizip	2017-06-26 13:00:26.559431292 +0200
++++ qmc2/imagewidget.h	2018-10-20 12:57:12.391427034 +0200
+@@ -10,7 +10,7 @@
+ #include <QAction>
+ #include <QStringList>
+ 
+-#include "unzip.h"
++#include "mz_compat.h"
+ #include "sevenzipfile.h"
+ #if defined(QMC2_LIBARCHIVE_ENABLED)
+ #include "archivefile.h"
+diff -up qmc2/machinelist.cpp.minizip qmc2/machinelist.cpp
+--- qmc2/machinelist.cpp.minizip	2018-02-28 15:39:33.030400954 +0100
++++ qmc2/machinelist.cpp	2018-10-20 12:57:12.392427043 +0200
+@@ -40,7 +40,7 @@
+ #include "miniwebbrowser.h"
+ #include "romalyzer.h"
+ #include "macros.h"
+-#include "unzip.h"
++#include "mz_compat.h"
+ #include "sevenzipfile.h"
+ #include "demomode.h"
+ #include "deviceconfigurator.h"
+diff -up qmc2/options.cpp.minizip qmc2/options.cpp
+--- qmc2/options.cpp.minizip	2017-12-08 10:17:12.737602327 +0100
++++ qmc2/options.cpp	2018-10-20 12:57:12.393427053 +0200
+@@ -34,7 +34,7 @@
+ #include "machinelist.h"
+ #include "imagechecker.h"
+ #include "macros.h"
+-#include "unzip.h"
++#include "mz_compat.h"
+ #include "keyseqscan.h"
+ #include "romalyzer.h"
+ #include "romstatusexport.h"
+diff -up qmc2/qmc2main.cpp.minizip qmc2/qmc2main.cpp
+--- qmc2/qmc2main.cpp.minizip	2018-02-28 14:15:18.223222688 +0100
++++ qmc2/qmc2main.cpp	2018-10-20 12:57:12.396427081 +0200
+@@ -60,7 +60,7 @@
+ #include "romstatusexport.h"
+ #include "componentsetup.h"
+ #include "miniwebbrowser.h"
+-#include "unzip.h"
++#include "mz_compat.h"
+ #include "sevenzipfile.h"
+ #include "downloaditem.h"
+ #include "embedder.h"
+diff -up qmc2/romalyzer.cpp.minizip qmc2/romalyzer.cpp
+--- qmc2/romalyzer.cpp.minizip	2017-11-21 11:52:45.358924500 +0100
++++ qmc2/romalyzer.cpp	2018-10-20 12:57:12.400427119 +0200
+@@ -27,8 +27,9 @@
+ #include "machinelist.h"
+ #include "softwarelist.h"
+ #include "macros.h"
+-#include "unzip.h"
+-#include "zip.h"
++#include "mz_compat.h"
++#include "mz.h"
++#include "zlib.h"
+ #include "sevenzipfile.h"
+ #if defined(QMC2_LIBARCHIVE_ENABLED)
+ #include "archivefile.h"
+@@ -528,7 +529,7 @@ void ROMAlyzer::showEvent(QShowEvent *e)
+ 	if ( index > QMC2_ROMALYZER_RT_FOLDERS )
+ 		index = QMC2_ROMALYZER_RT_FOLDERS;
+ 	comboBoxSetRewriterReproductionType->setCurrentIndex(index);
+-	spinBoxSetRewriterZipLevel->setValue(qmc2Config->value(QMC2_FRONTEND_PREFIX + m_settingsKey + "/SetRewriterZipLevel", Z_DEFAULT_COMPRESSION).toInt());
++	spinBoxSetRewriterZipLevel->setValue(qmc2Config->value(QMC2_FRONTEND_PREFIX + m_settingsKey + "/SetRewriterZipLevel", MZ_COMPRESS_LEVEL_DEFAULT).toInt());
+ 	checkBoxSetRewriterUniqueCRCs->setChecked(qmc2Config->value(QMC2_FRONTEND_PREFIX + m_settingsKey + "/SetRewriterUniqueCRCs", false).toBool());
+ 	comboBoxSetRewriterLibArchiveDeflate->setCurrentIndex(qmc2Config->value(QMC2_FRONTEND_PREFIX + m_settingsKey + "/SetRewriterLibArchiveDeflate", true).toBool() ? 0 : 1);
+ 	checkBoxSetRewriterAddZipComment->setChecked(qmc2Config->value(QMC2_FRONTEND_PREFIX + m_settingsKey + "/SetRewriterAddZipComment", true).toBool());
+@@ -3635,7 +3636,7 @@ bool ROMAlyzer::writeAllZipData(QString
+ 			QByteArray data = it.value();
+ 			if ( writeLog )
+ 				log(tr("set rewriter: deflating '%1' (uncompressed size: %2)").arg(file).arg(humanReadable(data.length())));
+-			if ( zipOpenNewFileInZip(zip, file.toUtf8().constData(), &zipInfo, file.toUtf8().constData(), file.length(), 0, 0, 0, Z_DEFLATED, spinBoxSetRewriterZipLevel->value()) == ZIP_OK ) {
++			if ( zipOpenNewFileInZip3(zip, file.toUtf8().constData(), &zipInfo, file.toUtf8().constData(), file.length(), 0, 0, 0, MZ_COMPRESS_METHOD_DEFLATE, spinBoxSetRewriterZipLevel->value(), 0, MAX_WBITS, DEF_MEM_LEVEL, 0, NULL, 0) == ZIP_OK ) {
+ 				quint64 bytesWritten = 0;
+ 				progressBarFileIO->setInvertedAppearance(true);
+ 				progressBarFileIO->setRange(0, data.length());
+diff -up qmc2/softwarelist.h.minizip qmc2/softwarelist.h
+--- qmc2/softwarelist.h.minizip	2017-06-26 13:03:39.029701674 +0200
++++ qmc2/softwarelist.h	2018-10-20 12:57:12.398427100 +0200
+@@ -15,7 +15,7 @@
+ #include <QWidgetAction>
+ 
+ #include "ui_softwarelist.h"
+-#include "unzip.h"
++#include "mz_compat.h"
+ #include "sevenzipfile.h"
+ #include "swlistexport.h"
+ #include "imagewidget.h"

@@ -57,6 +57,7 @@ RPMFusion and existent packages updated with extra changes.
  * **mednafen** - No Haswell optimizations
  * **mesa** - Can't wait Fedora releases
  * **ppsspp** - Build options, no Qt frontend
+ * **qmc2** - Qt5, no game-menus
  * **quiterss** - Updated, Qt5
  * **skrooge** - Can't wait Fedora releases
  * **simplescreenrecorder** - Updated to build only glinject library when i686 for multilib

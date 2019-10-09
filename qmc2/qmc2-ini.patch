@@ -1,0 +1,36 @@
+diff -up qmc2/inst/qmc2.ini.template.fedora qmc2/inst/qmc2.ini.template
+--- qmc2/inst/qmc2.ini.template.fedora	2017-05-10 09:51:54.733465994 +0200
++++ qmc2/inst/qmc2.ini.template	2017-06-18 22:28:15.282512851 +0200
+@@ -2,6 +2,26 @@
+ FilesAndDirectories\DataDirectory=DATADIR/qmc2/
+ 
+ [MAME]
++Configuration\Global\artpath="DATADIR/mame/artwork;DATADIR/mame/effects"
++Configuration\Global\bgfx_path="DATADIR/mame/bgfx"
++Configuration\Global\cheatpath=DATADIR/mame/cheat
++Configuration\Global\crosshairpath=DATADIR/mame/crosshair
++Configuration\Global\ctrlrpath=DATADIR/mame/ctrlr
++Configuration\Global\fontpath=DATADIR/mame/fonts
++Configuration\Global\hashpath=DATADIR/mame/hash
++Configuration\Global\languagepath=DATADIR/mame/language
++Configuration\Global\pluginspath=DATADIR/mame/plugins
++Configuration\Global\rompath="DATADIR/mame/roms;DATADIR/mame/chds"
++Configuration\Global\samplepath=DATADIR/mame/samples
++Configuration\Global\inipath="$HOME/.mame/ini;/etc/mame"
++Configuration\Global\cfg_directory=$HOME/.mame/cfg
++Configuration\Global\nvram_directory=$HOME/.mame/nvram
++Configuration\Global\input_directory=$HOME/.mame/inp
++Configuration\Global\state_directory=$HOME/.mame/sta
++Configuration\Global\snapshot_directory=$HOME/.mame/snap
++Configuration\Global\diff_directory=$HOME/.mame/diff
++Configuration\Global\comment_directory=$HOME/.mame/comments
++Configuration\Global\video=opengl
+ FilesAndDirectories\OptionsTemplateFile=DATADIR/qmc2/opt/SDLMAME/template-SDL2.xml
+ FilesAndDirectories\PreviewDirectory=DATADIR/qmc2/prv/
+ FilesAndDirectories\PreviewFile=DATADIR/qmc2/prv/previews.zip
+@@ -28,3 +48,5 @@ FilesAndDirectories\SystemNotesTemplate=
+ FilesAndDirectories\VideoSnapFolder=DATADIR/qmc2/vdo/
+ FilesAndDirectories\SystemManualFolder=DATADIR/qmc2/man/systems/
+ FilesAndDirectories\SoftwareManualFolder=DATADIR/qmc2/man/software/
++FilesAndDirectories\ExecutableFile=/usr/bin/mame
++FilesAndDirectories\CategoryIni=DATADIR/qmc2/cat/category.ini

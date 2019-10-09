@@ -21,6 +21,7 @@ taglib
 vkd3d
 webp-pixbuf-loader
 xarchiver
+xwit
 ytnef
 
 # 2
@@ -107,10 +108,13 @@ pulsemixer
 purple-rocketchat
 python-pafy
 qemu
+qmc2
 qmp3gain
 qt-virustotal-uploader
 qt5ct
 quiterss
+radeon-profile
+radeon-profile-daemon
 retext
 sdl2-controllermap
 sdl_gamecontrollerdb

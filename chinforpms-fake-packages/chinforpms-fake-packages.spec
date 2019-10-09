@@ -2,7 +2,7 @@
 %global fakever   1000
 
 Name:           chinforpms-fake-packages
-Version:        2
+Version:        3
 Release:        1%{?dist}
 Summary:        A package to obsolete and provides packages
 
@@ -17,6 +17,10 @@ Obsoletes:      bash-completion < %{fakeepoch}:%{fakever}-%{release}
 
 Provides:       games-menus = %{fakeepoch}:%{fakever}-%{release}
 Obsoletes:      games-menus < %{fakeepoch}:%{fakever}-%{release}
+
+Provides:       PackageKit-session-service = %{fakeepoch}:%{fakever}-%{release}
+Obsoletes:      PackageKit-session-service < %{fakeepoch}:%{fakever}-%{release}
+
 
 %description
 This package exists to obsolete and provides other packages that chinforpms don't
@@ -51,6 +55,9 @@ EOF
 
 
 %changelog
+* Tue Oct 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 3-1
+- PackageKit-session-service
+
 * Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 2-1
 - Add bash-completion pkgconfig file, for some spec BRs
 
