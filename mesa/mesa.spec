@@ -53,8 +53,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.2.0
-Release:        101%{?dist}
+Version:        19.2.1
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -661,6 +661,9 @@ popd
 
 
 %changelog
+* Wed Oct 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.2.1-100
+- 10.9.1
+
 * Thu Sep 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.2.0-101
 - Disk cache thread count patch
 
