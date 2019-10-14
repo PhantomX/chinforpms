@@ -5,7 +5,7 @@
 %global commit a1b7263277c033e109629829c370c0e95978e061
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20190926
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Xorg cannot load hardened build
 %undefine _hardened_build
@@ -15,8 +15,8 @@
 %endif
 
 Name:           xorg-x11-drv-amdgpu
-Version:        19.0.1
-Release:        105%{?gver}%{?dist}
+Version:        19.1.0
+Release:        100%{?gver}%{?dist}
 
 Summary:        AMD GPU video driver
 License:        MIT
@@ -72,6 +72,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Fri Oct 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.1.0-100
+- 19.1.0
+
 * Thu Oct 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.0.1-105.20190926gita1b7263
 - New snapshot
 

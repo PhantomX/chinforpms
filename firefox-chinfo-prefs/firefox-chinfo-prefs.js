@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20190522
+// 20191013
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -114,6 +114,7 @@ pref("browser.pocket.oAuthConsumerKey", "");
 pref("browser.pocket.useLocaleList", false);
 pref("browser.pocket.enabledLocales", "");
 pref("browser.newtabpage.activity-stream.feeds.section.topstories", false);
+pref("extensions.pocket.enabled", false);
 
 // No DRM too
 pref("browser.eme.ui.enabled", false);
