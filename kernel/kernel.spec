@@ -58,17 +58,17 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 4
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit f094603d10321f272b310cb1261f29f9aa3cf4d8
+%global pfcommit e17afcf1d646c5f8609d19dfac82ec245f8a46d4
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id ac7680aa183ea8a52a8bb5bd81dd032027adc0e2
+%global opensuse_id 519ea7bac25dc4d2157749bec188ffe0db93d43e
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -616,8 +616,6 @@ Patch320: arm64-tegra-jetson-tx1-fixes.patch
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 
 # QCom laptop bits
-# https://patchwork.kernel.org/patch/11133827/
-Patch330: arm64-qcom-i2c-geni-Disable-DMA-processing-on-the-Lenovo-Yoga-C630.patch
 # https://patchwork.kernel.org/patch/11133293/
 Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
 
@@ -642,6 +640,12 @@ Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
 Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-parsing.patch
 
 Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
+
+Patch510: iwlwifi-exclude-GEO-SAR-support-for-3168.patch
+Patch511: iwlwifi-pcie-change-qu-with-jf-devices-to-use-qu-configuration.patch
+
+# rhbz 1738614
+Patch512: drm-i915-Mark-contents-as-dirty-on-a-write-fault.patch
 
 ### Extra
 
@@ -1923,6 +1927,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.6-500.chinfo
+- 5.3.6 - pf4
+
 * Mon Oct 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.5-500.chinfo
 - 5.3.5
 

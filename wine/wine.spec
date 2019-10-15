@@ -1,6 +1,6 @@
-%global commit 5e8eb5f4c54c3a6d3c92fd414372da2fbd5bd91a
+%global commit 71e96bd3b757a2b058b6a769c341d81f82329d79
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191002
+%global date 20191009
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -38,14 +38,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver cf04b8d6ac710c83dc9a433aea3e5d3c451095a1
+%global wine_stagingver c96aa29030039c0252e3780f534236849bef229c
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 0ebea0c0f15902f7fc7a6711f9fdc155f4b71fd8
+%global tkg_id daad4a4c20018eb5b29018e070bb9994d187410a
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -73,7 +73,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.17
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -365,6 +365,7 @@ Requires:       cups-libs(x86-32)
 Requires:       freetype(x86-32)
 Requires:       nss-mdns(x86-32)
 Requires:       gnutls(x86-32)
+Requires:       gstreamer1-plugins-good(x86-32)
 Requires:       libxslt(x86-32)
 Requires:       libXcomposite(x86-32)
 Requires:       libXcursor(x86-32)
@@ -392,6 +393,7 @@ Requires:       cups-libs(x86-64)
 Requires:       freetype(x86-64)
 Requires:       nss-mdns(x86-64)
 Requires:       gnutls(x86-64)
+Requires:       gstreamer1-plugins-good(x86-64)
 Requires:       libxslt(x86-64)
 Requires:       libXcomposite(x86-64)
 Requires:       libXcursor(x86-64)
@@ -419,6 +421,7 @@ Requires:       cups-libs
 Requires:       freetype
 Requires:       nss-mdns
 Requires:       gnutls
+Requires:       gstreamer1-plugins-good
 Requires:       libXrender
 Requires:       libXcursor
 #dlopen in windowscodesc (fixes rhbz#1085075)
@@ -2416,6 +2419,10 @@ fi
 
 
 %changelog
+* Mon Oct 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.17-103.20191009git71e96bd
+- New snapshot
+- R: gstreamer1-plugins-good
+
 * Thu Oct 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.17-102.20191002git5e8eb5f
 - Snapshot
 
