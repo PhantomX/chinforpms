@@ -1,11 +1,11 @@
 Name:           devedeng
-Version:        4.15.0
+Version:        4.16.0
 Release:        100%{?dist}
 Summary:        A program to create video DVDs and CDs (VCD, sVCD or CVD)
 
 Epoch:          1
 
-License:        GPLv3+
+License:        GPLv3
 URL:            http://www.rastersoft.com/programas/devede.html
 Source0:        https://gitlab.com/rastersoft/%{name}/-/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        devede_ng.py.appdata.xml
@@ -101,6 +101,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
 
 
 %changelog
+* Tue Oct 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.16.0-100
+- 4.16.0
+
 * Mon Jul 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.15.0-100
 - 4.15.0
 

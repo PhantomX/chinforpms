@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        2.15.5
+Version:        2.16.0
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -85,7 +85,7 @@ desktop-file-install \
   --remove-category=GTK \
   usr/share/applications/%{name}.desktop
 
-for res in 16 24 32 48 64 96 128 256 512 ;do
+for res in 16 32 48 64 128 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   install -pm0644 usr/share/icons/hicolor/${res}x${res}/apps/%{name}.png \
@@ -103,6 +103,9 @@ done
 
 
 %changelog
+* Tue Oct 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.16.0-1
+- 2.16.0
+
 * Mon Aug 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.15.5-1
 - 2.15.5
 

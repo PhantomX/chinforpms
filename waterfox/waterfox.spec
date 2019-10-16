@@ -1,7 +1,9 @@
-%global commit d516ab77b8af8bd8b47bcf0772d41a10180e2412
+%global commit 68014c079a1d4afa26aaad13466fcc76d0f6dcc4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190916
+%global date 20191016
 %global with_snapshot 1
+
+%global branch classic
 
 %global freebsd_rev 480450
 %global freebsd_root %{name}-FreeBSD-patches-r%{freebsd_rev}
@@ -68,14 +70,14 @@ ExcludeArch: armv7hl
 
 %global disable_elfhack   0
 
-%global build_stylo       1
+%global build_stylo       0
 %global build_rust_simd   1
 # Set to build with pinned rust version
 # This enables stylo build when default rust version is not supported
 # and a downgraded rust package exists
 %global build_with_pinned_rust 0
 %global rust_build_min_ver 1.35
-%global rust_build_min_nover 1.37
+%global rust_build_min_nover 1.38
 
 %global default_bookmarks_file  %{_datadir}/bookmarks/default-bookmarks.html
 %global waterfox_app_id  \{ec8030f7-c20a-464f-9b0e-13a3a9e97384\}
@@ -124,8 +126,8 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        56.2.14
-Release:        2%{?gver}%{?dist}
+Version:        2019.10
+Release:        2.%{branch}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -133,7 +135,7 @@ License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/%{version}-%{branch}/%{name}-%{version}-%{branch}.tar.gz
 %endif
 
 # FreeBSD patches
@@ -186,9 +188,13 @@ Patch418:        https://hg.mozilla.org/integration/autoland/raw-rev/342812d23eb
 Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mozilla-1320560.patch
 Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mozilla-1389436.patch
 
-# Upstream updates/PRs
+# Upstream updates/PRs/Reverts
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
+## These seems to breaking LTO
+Patch450:       %{vc_url}/commit/8f87cbc0938fec17726dd09b4af2648c084fdbf7.patch#/%{name}-gh-8f87cbc.patch
+Patch451:       %{vc_url}/commit/8eacc27e9529f29dea26625ca2a28a9b9aff62c4.patch#/%{name}-gh-8eacc27.patch
+Patch452:       %{vc_url}/commit/94dc86561e44725210db9491ca7a06ed0322dff6.patch#/%{name}-gh-94dc865.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -207,7 +213,6 @@ Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-webrtc-gtest-libv4l2.patch
 Patch704:        %{name}-fix-testing-file.patch
-
 
 %if 0%{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -349,7 +354,7 @@ This package contains results of tests executed during build.
 %if 0%{?with_snapshot}
 %setup -q -n Waterfox-%{commit} -a 600
 %else
-%setup -q -n Waterfox-%{version} -a 600
+%setup -q -n Waterfox-%{version}-%{branch} -a 600
 %endif
 
 %if %{build_langpacks}
@@ -401,6 +406,10 @@ This package contains results of tests executed during build.
 %patch419 -p1 -b .mozilla-1320560
 %patch420 -p1 -b .mozilla-1389436
 
+%patch450 -p1 -R
+%patch451 -p1 -R
+%patch452 -p1 -R
+
 # Debian extension patch
 %patch500 -p1 -b .440908
 
@@ -431,7 +440,7 @@ done
 # 2: no apply
 # 3: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1393235 1393283 1395486 1433747 1452576 1453127 1466606 \
+  702179 991253 1021761 1144632 1288587 1379148 1393235 1393283 1395486 1433747 1452576 1453127 1466606 \
   1384121 1388744 1413143 \
   1447519
 do
@@ -983,7 +992,6 @@ fi
 # That's Windows only
 %ghost %{mozappdir}/browser/features/aushelper@mozilla.org.xpi
 %attr(644, root, root) %{mozappdir}/browser/blocklist.xml
-%attr(644, root, root) %{mozappdir}/browser/ua-update.json
 %dir %{mozappdir}/browser/extensions
 %{mozappdir}/browser/extensions/*
 %if %{build_langpacks}
@@ -1018,6 +1026,14 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Oct 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.10-2.classic.20191016git68014c0
+- Try to fix crash with LTO, reverting some commits
+
+* Wed Oct 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.10-1.classic
+- 2019.10-classic
+- Enable av1
+- Disable stylo, rust 1.38 build error
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 56.2.14-2.20190916gitd516ab7
 - New snapshot
 
