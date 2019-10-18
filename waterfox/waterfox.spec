@@ -127,7 +127,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        2019.10
-Release:        2.%{branch}%{?gver}%{?dist}
+Release:        3.%{branch}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -195,6 +195,7 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 Patch450:       %{vc_url}/commit/8f87cbc0938fec17726dd09b4af2648c084fdbf7.patch#/%{name}-gh-8f87cbc.patch
 Patch451:       %{vc_url}/commit/8eacc27e9529f29dea26625ca2a28a9b9aff62c4.patch#/%{name}-gh-8eacc27.patch
 Patch452:       %{vc_url}/commit/94dc86561e44725210db9491ca7a06ed0322dff6.patch#/%{name}-gh-94dc865.patch
+Patch453:       %{vc_url}/pull/1203.patch#/%{name}-gh-pull1203.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -409,6 +410,7 @@ This package contains results of tests executed during build.
 %patch450 -p1 -R
 %patch451 -p1 -R
 %patch452 -p1 -R
+%patch453 -p1
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -992,6 +994,7 @@ fi
 # That's Windows only
 %ghost %{mozappdir}/browser/features/aushelper@mozilla.org.xpi
 %attr(644, root, root) %{mozappdir}/browser/blocklist.xml
+%attr(644, root, root) %{mozappdir}/browser/ua-update.json
 %dir %{mozappdir}/browser/extensions
 %{mozappdir}/browser/extensions/*
 %if %{build_langpacks}
@@ -1026,6 +1029,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Thu Oct 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.10-3.classic.20191016git68014c0
+- PR to restore user-agent overrides
+
 * Wed Oct 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.10-2.classic.20191016git68014c0
 - Try to fix crash with LTO, reverting some commits
 

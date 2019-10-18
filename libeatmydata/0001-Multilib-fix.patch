@@ -1,0 +1,34 @@
+From 0f43a85edc865e90fe5100f7262199eaf30f5e0c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 17 Oct 2019 09:07:15 -0300
+Subject: [PATCH] Multilib fix
+
+---
+ eatmydata.sh.in | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/eatmydata.sh.in b/eatmydata.sh.in
+index 2607e8c..5d98074 100644
+--- a/eatmydata.sh.in
++++ b/eatmydata.sh.in
+@@ -15,7 +15,7 @@
+ # You should have received a copy of the GNU General Public License
+ # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+-libeatmydata="@libdir@/libeatmydata"
++libeatmydata="/usr/\$LIB/libeatmydata/libeatmydata"
+ name="eatmydata"
+ 
+ if [ "x`uname`" = "xDarwin" ]; then
+@@ -74,8 +74,3 @@ eatmydata_exec()
+     shift
+     exec "$cmd" "$@"
+ }
+-
+-# Verify environment
+-if [ ! -f "$libeatmydata" ]; then
+-    eatmydata_error "could not find $name library $libeatmydata"
+-fi
+-- 
+2.23.0
+

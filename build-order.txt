@@ -5,6 +5,7 @@ chinforpms-fake-packages
 cubeb
 gstreamer1
 gtk3
+libeatmydata
 libmirage
 libogg
 libvirt
