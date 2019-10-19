@@ -1,4 +1,5 @@
 %undefine _hardened_build
+%global _default_patch_fuzz 2
 
 %ifarch %{ix86} x86_64
 %global with_mingw 1
@@ -23,7 +24,7 @@
 %global pge_id 71f953e12d930c15c92b6832cdeb06d9c1c828df
 %global pge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{pge_id}/game-patches-testing/dxvk-patches
 
-%global tkg_id 2c6f4bd04c010f2fd3df66ec43e5afbc1d4e0c19
+%global tkg_id a51bed936229dc1ebbda0dff7ccfe49349925ee3
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/dxvk-tools/DXVKBUILD/patches
 
 %global dxvk_async 1
@@ -33,7 +34,7 @@
 %global pkgname dxvk
 
 Name:           wine-%{pkgname}
-Version:        1.4.2
+Version:        1.4.3
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
@@ -48,8 +49,7 @@ Source4:        README.async
 
 %if 0%{?dxvk_async}
 Patch100:       %{pge_url}/valve-dxvk-avoid-spamming-log-with-requests-for-IWineD3D11Texture2D.patch#/%{name}-pge-valve-dxvk-avoid-spamming-log-with-requests-for-IWineD3D11Texture2D.patch
-Source101:      %{tkg_url}/dxvk-async.dxvkpatchb#/%{name}-tkg-dxvk-async.patch
-Patch102:       0001-fix-async-patch.patch
+Patch101:       %{tkg_url}/dxvk-async.dxvkpatchb#/%{name}-tkg-dxvk-async.patch
 Patch103:       0001-dxvk.conf-async-option.patch
 %endif
 
@@ -118,9 +118,7 @@ package or when debugging this package.
 %if 0%{?dxvk_async}
 %setup -q -n %{pkgname}-%{version}
 %patch100 -p1
-cp %{S:101} dxvk-async.patch
-%patch102 -p1
-patch -p1 -i dxvk-async.patch
+%patch101 -p1
 %patch103 -p1
 
 cp %{S:4} .
@@ -273,6 +271,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Oct 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4.3-1
+- 1.4.3
+
 * Fri Oct 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4.2-1
 - 1.4.2
 

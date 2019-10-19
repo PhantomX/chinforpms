@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e17afcf1d646c5f8609d19dfac82ec245f8a46d4
+%global pfcommit d80ee0c9d6fccc6d958c9abf11775c5b3c96f705
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 519ea7bac25dc4d2157749bec188ffe0db93d43e
+%global opensuse_id d6c109dee202c76c1c4adc3e240e1dce1aa9bb16
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -607,17 +607,32 @@ Patch304: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch305: ARM-tegra-usb-no-reset.patch
 
-# https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
-Patch306: arm-sdhci-esdhc-imx-fixes.patch
+# https://patchwork.kernel.org/patch/11173461/
+Patch307: arm64-dts-rockchip-fix-RockPro64-vdd-log-regulator-settings.patch
+# https://patchwork.kernel.org/patch/11155461/
+Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
+# https://patchwork.kernel.org/patch/11171225/
+Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
+# https://patchwork.ozlabs.org/patch/1170631/
+Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
+# https://www.spinics.net/lists/linux-tegra/msg44216.html
+Patch325: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
 
 # QCom laptop bits
 # https://patchwork.kernel.org/patch/11133293/
 Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
+
+# This is typical rpi, we have a driver but it has problems because ¯\_(ツ)_/¯ but this revert makes pictures work again.
+# https://patchwork.kernel.org/patch/11136979/
+Patch341: Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-driver-instead-of-firmware.patch
+
+# https://www.spinics.net/lists/arm-kernel/msg761152.html
+Patch342: efi-libstub-arm-account-for-firmware-reserved-memory-at-the-base-of-RAM.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -635,17 +650,15 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # rhbz 1753099
 Patch504: dwc3-fix.patch
 
-# rhbz 1752961
-Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
-Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-parsing.patch
+# it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
+# https://lore.kernel.org/patchwork/patch/1132459/
+# https://lkml.org/lkml/2019/8/29/1772
+Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
 Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
 Patch510: iwlwifi-exclude-GEO-SAR-support-for-3168.patch
 Patch511: iwlwifi-pcie-change-qu-with-jf-devices-to-use-qu-configuration.patch
-
-# rhbz 1738614
-Patch512: drm-i915-Mark-contents-as-dirty-on-a-write-fault.patch
 
 ### Extra
 
@@ -1927,6 +1940,10 @@ fi
 #
 #
 %changelog
+* Fri Oct 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.7-500.chinfo
+- 5.3.7
+- f31 sync
+
 * Mon Oct 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.6-500.chinfo
 - 5.3.6 - pf4
 

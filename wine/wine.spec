@@ -1,7 +1,7 @@
 %global commit 71e96bd3b757a2b058b6a769c341d81f82329d79
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20191009
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -38,14 +38,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver c96aa29030039c0252e3780f534236849bef229c
+%global wine_stagingver 4.18
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id daad4a4c20018eb5b29018e070bb9994d187410a
+%global tkg_id d7fb984339ce11acc9ebe9443df178bbe0a87e04
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -72,8 +72,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.17
-Release:        103%{?gver}%{?dist}
+Version:        4.18
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -165,7 +165,6 @@ Patch718:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging
 Patch719:       %{tkg_url}/proton/fsync-staging-no_alloc_handle.patch#/%{name}-tkg-fsync-staging-no_alloc_handle.patch
 Patch720:       %{tkg_url}/proton-tkg-specific/winevulkan-1.1.113-proton.patch#/%{name}-tkg-winevulkan-1.1.113-proton.patch
 Patch721:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
-Patch722:       %{tkg_url}/misc/usvfs.patch#/%{name}-tkg-usvfs.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/9cf81304c03046cb337d8b7275af600e39373702.patch#/%{name}-valve-9cf8130.patch
@@ -773,7 +772,6 @@ cp -p %{S:1001} README-pba-pkg
 %patch719 -p1
 %patch720 -p1
 %patch721 -p1
-%patch722 -p1
 %patch800 -p1 -R
 
 # fix parallelized build
@@ -2419,6 +2417,9 @@ fi
 
 
 %changelog
+* Sat Oct 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.18-100
+- 4.18
+
 * Mon Oct 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.17-103.20191009git71e96bd
 - New snapshot
 - R: gstreamer1-plugins-good

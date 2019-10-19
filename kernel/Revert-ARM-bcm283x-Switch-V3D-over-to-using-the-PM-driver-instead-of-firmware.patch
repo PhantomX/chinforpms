@@ -1,0 +1,78 @@
+From 9d1a8ad3c56f4e84a0ec46246b4c08a6d139f638 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Sun, 13 Oct 2019 14:33:23 +0100
+Subject: [PATCH] Revert "ARM: bcm283x: Switch V3D over to using the PM driver
+ instead of firmware."
+
+Since release of the new BCM2835 PM driver there has been several reports
+of V3D probing issues. This is caused by timeouts during powering-up the
+GRAFX PM domain:
+
+  bcm2835-power: Timeout waiting for grafx power OK
+
+I was able to reproduce this reliable on my Raspberry Pi 3B+ after setting
+force_turbo=1 in the firmware configuration. Since there are no issues
+using the firmware PM driver with the same setup, there must be an issue
+in the BCM2835 PM driver.
+
+Unfortunately there hasn't been much progress in identifying the root cause
+since June (mostly in the lack of documentation), so i decided to switch
+back until the issue in the BCM2835 PM driver is fixed.
+
+Link: https://github.com/raspberrypi/linux/issues/3046
+Fixes: e1dc2b2e1bef (" ARM: bcm283x: Switch V3D over to using the PM driver instead of firmware.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+Acked-by: Eric Anholt <eric@anholt.net>
+---
+ a/arch/arm/boot/dts/bcm2835-rpi.dtsi | 4 ++++
+ b/arch/arm/boot/dts/bcm283x.dtsi     | 4 +---
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm2835-rpi.dtsi b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+index 715d50c64529..d136867c317f 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+@@ -90,6 +90,10 @@
+ 	status = "okay";
+ };
+ 
++&v3d {
++	power-domains = <&power RPI_POWER_DOMAIN_V3D>;
++};
++
+ &vec {
+ 	power-domains = <&power RPI_POWER_DOMAIN_VEC>;
+ 	status = "okay";
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index 4b21ddb26aa5..0c6a6611f285 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -3,7 +3,6 @@
+ #include <dt-bindings/clock/bcm2835-aux.h>
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
+-#include <dt-bindings/soc/bcm2835-pm.h>
+ 
+ /* firmware-provided startup stubs live here, where the secondary CPUs are
+  * spinning.
+@@ -121,7 +120,7 @@
+ 			#interrupt-cells = <2>;
+ 		};
+ 
+-		pm: watchdog@7e100000 {
++		watchdog@7e100000 {
+ 			compatible = "brcm,bcm2835-pm", "brcm,bcm2835-pm-wdt";
+ 			#power-domain-cells = <1>;
+ 			#reset-cells = <1>;
+@@ -641,7 +640,6 @@
+ 			compatible = "brcm,bcm2835-v3d";
+ 			reg = <0x7ec00000 0x1000>;
+ 			interrupts = <1 10>;
+-			power-domains = <&pm BCM2835_POWER_DOMAIN_GRAFX_V3D>;
+ 		};
+ 
+ 		vc4: gpu {
+-- 
+2.21.0
+
