@@ -13,23 +13,23 @@
 
 %global pkgname amdvlk
 
-%global commit1 1fc1a7d4248b4749c3df21eb48f7ae97b6cddf74
+%global commit1 40fbaf4c5446a361269c241d9112fff26575b5d0
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global srcname1 %{pkgname}-llvm
+%global srcname1 %{pkgname}-llvm-project
 
-%global commit2 ec210a78b6a280b00fb1765dd588c3970b6dc818
+%global commit2 3f15347d38da804814fdd9e24e2875ee0b2b9245
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 2cb5558b94c5dc839e093cb439057a1802426c8e
+%global commit3 19a031d9f73b95101fd4d3d594aca27c00feb180
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 88d997710b4e405f3a8e3fd60a38afee9e3e77e2
+%global commit4 39abe2297ca58a2b84dcd9bc5e238fbc399bd6e0
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
-%global commit5 2f31d1170e8a12a66168b23235638c4bbc43ecdc
+%global commit5 f1bc2ba988273c3724afffe72fe9cd933a022ce7
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{pkgname}-spvgen
 
@@ -45,7 +45,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
-%global commit9 63d4d272f6e5b3cb9bb2bb50718a886a3eef4dab
+%global commit9 af64a9e826bf5bb5fcd2434dd71be1e41e922563
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
@@ -62,7 +62,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2019.3.6
+Version:        2019.4.1
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -81,7 +81,7 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v-%{ver}/%{pkgname}-%{ver}.tar.gz
 %endif
-Source1:        %{vc_url}/llvm/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source1:        %{vc_url}/llvm-project/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        %{vc_url}/llpc/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        %{vc_url}/xgl/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        %{vc_url}/pal/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
@@ -93,6 +93,7 @@ Source9:        https://github.com/KhronosGroup/%{srcname9}/archive/%{commit9}/%
 Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 %endif
 Source20:       %{url}/raw/master/README.md
+Source21:       amdPalSettings.cfg
 
 %if !0%{?with_bin}
 BuildRequires:  gcc
@@ -114,8 +115,7 @@ BuildRequires:  pkgconfig(xshmfence)
 BuildRequires:  pkgconfig(wayland-client)
 %endif
 
-Requires:       vulkan
-Requires:       vulkan-filesystem
+Requires:       vulkan-loader%{?_isa}
 
 
 %description
@@ -141,7 +141,7 @@ ln -sf AMDVLK-%{commit} AMDVLK
 %else
 ln -sf AMDVLK-v-%{ver} AMDVLK
 %endif
-ln -sf llvm-%{commit1} llvm
+ln -sf llvm-project-%{commit1} llvm-project
 ln -sf llpc-%{commit2} llpc
 ln -sf xgl-%{commit3} xgl
 ln -sf pal-%{commit4} pal
@@ -219,7 +219,7 @@ mkdir _temp_install
 %endif
 
 mkdir -p %{buildroot}%{_sysconfdir}/amd
-echo "MaxNumCmdStreamsPerSubmit,4" > %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
+cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %files
@@ -233,6 +233,10 @@ echo "MaxNumCmdStreamsPerSubmit,4" > %{buildroot}%{_sysconfdir}/amd/amdPalSettin
 
 
 %changelog
+* Tue Oct 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.4.1-1
+- 2019.Q4.1
+- Improve settings file
+
 * Tue Sep 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.3.6-1
 - 2019.Q3.6
 

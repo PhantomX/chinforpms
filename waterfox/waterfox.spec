@@ -1,6 +1,6 @@
-%global commit 68014c079a1d4afa26aaad13466fcc76d0f6dcc4
+%global commit f80144efd74f252d18ff8b26fbaea26e5ee03147
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191016
+%global date 20191020
 %global with_snapshot 1
 
 %global branch classic
@@ -118,6 +118,12 @@ ExcludeArch: armv7hl
 %global sqlite_build_version %(pkg-config --silence-errors --modversion sqlite3 2>/dev/null || echo 65536)
 %endif
 
+%if %{branch} == "classic"
+%global channel Classic
+%else
+%global channel Current
+%endif
+
 %global mozappdir     %{_libdir}/%{name}
 %global mozappdirdev  %{_libdir}/%{name}-devel-%{version}
 %global langpackdir   %{mozappdir}/langpacks
@@ -127,7 +133,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        2019.10
-Release:        3.%{branch}%{?gver}%{?dist}
+Release:        4.%{branch}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -195,7 +201,11 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 Patch450:       %{vc_url}/commit/8f87cbc0938fec17726dd09b4af2648c084fdbf7.patch#/%{name}-gh-8f87cbc.patch
 Patch451:       %{vc_url}/commit/8eacc27e9529f29dea26625ca2a28a9b9aff62c4.patch#/%{name}-gh-8eacc27.patch
 Patch452:       %{vc_url}/commit/94dc86561e44725210db9491ca7a06ed0322dff6.patch#/%{name}-gh-94dc865.patch
-Patch453:       %{vc_url}/pull/1203.patch#/%{name}-gh-pull1203.patch
+# PR 1203 without language pack updates
+Patch453:       %{vc_url}/pull/1203/commits/02999ce8d80bd2d996e61faaec654a69820d6c65.patch#/%{name}-gh-pull1203-02999ce.patch
+Patch454:       %{vc_url}/pull/1203/commits/8ce67f3229df1fd636cfb9677daf84712021cda8.patch#/%{name}-gh-pull1203-8ce67f3.patch
+Patch455:       %{vc_url}/pull/1203/commits/f6d002d51d897bc59eb7a9f3220a0d1b57c8771a.patch#/%{name}-gh-pull1203-f6d002d.patch
+Patch456:       %{vc_url}/pull/1203/commits/cf3a35a1601198f3a48677556c0eea1a9f4b14e7.patch#/%{name}-gh-pull1203-cf3a35a.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -411,6 +421,9 @@ This package contains results of tests executed during build.
 %patch451 -p1 -R
 %patch452 -p1 -R
 %patch453 -p1
+%patch454 -p1
+%patch455 -p1
+%patch456 -p1
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -467,6 +480,9 @@ done
 %patch26 -p1 -b .icu
 %patch36 -p2 -b .xlocale
 %endif
+
+cp %{SOURCE26} .
+sed -e 's|_BRANCH_|%{channel}|g' -i distribution.ini
 
 rm -f .mozconfig
 cp %{SOURCE10} .mozconfig
@@ -938,7 +954,7 @@ cp %{SOURCE12} %{buildroot}%{mozappdir}/browser/defaults/preferences
 
 # Add distribution.ini
 mkdir -p %{buildroot}%{mozappdir}/distribution
-cp %{SOURCE26} %{buildroot}%{mozappdir}/distribution
+cp distribution.ini %{buildroot}%{mozappdir}/distribution
 
 # Remove copied libraries to speed up build
 rm -f %{buildroot}%{mozappdirdev}/sdk/lib/libmozjs.so
@@ -975,8 +991,8 @@ fi
 
 %files -f %{name}.lang
 %{_bindir}/waterfox
-%{mozappdir}/waterfox
-%{mozappdir}/waterfox-bin
+%{mozappdir}/%{name}
+%{mozappdir}/%{name}-bin
 %doc %{_mandir}/man1/*
 %dir %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}/*
@@ -1005,7 +1021,7 @@ fi
 %{mozappdir}/run-mozilla.sh
 %{mozappdir}/application.ini
 %exclude %{mozappdir}/removed-files
-%{_datadir}/icons/hicolor/*/apps/waterfox.png
+%{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{mozappdir}/*.so
 %{mozappdir}/gtk2/*.so
 %{mozappdir}/defaults/pref/channel-prefs.js
@@ -1029,6 +1045,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Thu Oct 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.10-4.classic.20191020gitf80144e
+- New snapshot
+- Add channel to distribution.ini
+
 * Thu Oct 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.10-3.classic.20191016git68014c0
 - PR to restore user-agent overrides
 

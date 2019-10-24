@@ -1,14 +1,18 @@
+%bcond_with keeshare
 %bcond_with yubikey
 
 Name:           keepassxc
 Version:        2.4.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
 License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain
 URL:            https://keepassxc.org/
 Source0:        https://github.com/keepassxreboot/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+
+Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
+
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -33,6 +37,9 @@ BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xtst)
 BuildRequires:  pkgconfig(zlib) >= 1.2.0
 BuildRequires:  qt5-linguist
+%if %{with keeshare}
+BuildRequires:  quazip-qt5-devel
+%endif
 %if %{with yubikey}
 BuildRequires:  libyubikey-devel
 BuildRequires:  ykpers-devel
@@ -59,7 +66,12 @@ pushd %{_target_platform}
   -DWITH_TESTS:BOOL=OFF \
   -DWITH_XC_NETWORKING:BOOL=ON \
   -DWITH_XC_AUTOTYPE:BOOL=ON \
+  -DWITH_XC_BROWSER:BOOL=ON \
   -DWITH_XC_SSHAGENT:BOOL=ON \
+%if %{with keeshare}
+  -DWITH_XC_KEESHARE:BOOL=ON \
+  -DWITH_XC_KEESHARE_SECURE:BOOL=ON \
+%endif
   -DWITH_XC_YUBIKEY:BOOL=%{?_with_yubikey:ON}%{!?_with_yubikey:OFF} \
   -DWITH_XC_UPDATECHECK:BOOL=OFF \
 %{nil}
@@ -87,6 +99,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 %doc CHANGELOG README.md
 %{_bindir}/%{name}
 %{_bindir}/%{name}-cli
+%{_bindir}/%{name}-proxy
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/*.so
 %dir %{_datadir}/%{name}
@@ -101,6 +114,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Tue Oct 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.3-101
+- Conditional KeeShare support. BR: quazip-qt5-devel
+- Browser support
+- Waterfox support with browser
+
 * Wed Jun 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.3-100
 - 2.4.3
 

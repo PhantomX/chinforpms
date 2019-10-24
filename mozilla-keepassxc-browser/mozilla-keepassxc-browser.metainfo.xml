@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2019 Phantom X <megaphantomx at bol.com.br> -->
+<component type="addon">
+  <id>mozilla-keepassxc-browser</id>
+  <extends>firefox.desktop</extends>
+  <extends>waterfox.desktop</extends>
+  <name>KeePassXC-Browser</name>
+  <summary>Browser extension for KeePassXC with Native Messaging</summary>
+  <url type="homepage">https://keepassxc.org/</url>
+  <url type="bugtracker">https://github.com/keepassxreboot/keepassxc-browser/issues</url>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPLv3</project_license>
+  <updatecontact>megaphantomx at bol.com.br</updatecontact>
+</component>
