@@ -53,7 +53,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.2.1
+Version:        19.2.2
 Release:        100%{?dist}
 
 License:        MIT
@@ -424,7 +424,7 @@ rm -vf %{buildroot}%{_libdir}/libGLES*
 
 # glvnd needs a default provider for indirect rendering where it cannot
 # determine the vendor
-ln -s %{_libdir}/libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
+ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 
 # this keeps breaking, check it early.  note that the exit from eu-ftr is odd.
 pushd %{buildroot}%{_libdir}
@@ -452,10 +452,8 @@ popd
 %{_libdir}/libGLX_system.so.0*
 %files libGL-devel
 %{_includedir}/GL/gl.h
-%{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/glx.h
-%{_includedir}/GL/glx_mangle.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glcorearb.h
 %dir %{_includedir}/GL/internal
@@ -661,8 +659,11 @@ popd
 
 
 %changelog
+* Thu Oct 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.2.2-100
+- 19.2.2
+
 * Wed Oct 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.2.1-100
-- 10.9.1
+- 12.2.1
 
 * Thu Sep 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.2.0-101
 - Disk cache thread count patch

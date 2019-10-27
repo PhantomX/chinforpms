@@ -2,8 +2,8 @@
 %bcond_with yubikey
 
 Name:           keepassxc
-Version:        2.4.3
-Release:        101%{?dist}
+Version:        2.5.0
+Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
@@ -67,6 +67,7 @@ pushd %{_target_platform}
   -DWITH_XC_NETWORKING:BOOL=ON \
   -DWITH_XC_AUTOTYPE:BOOL=ON \
   -DWITH_XC_BROWSER:BOOL=ON \
+  -DWITH_XC_FDOSECRETS:BOOL=ON \
   -DWITH_XC_SSHAGENT:BOOL=ON \
 %if %{with keeshare}
   -DWITH_XC_KEESHARE:BOOL=ON \
@@ -96,13 +97,14 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 %files -f keepassx.lang
 %license COPYING LICENSE*
-%doc CHANGELOG README.md
+%doc README.md
 %{_bindir}/%{name}
 %{_bindir}/%{name}-cli
 %{_bindir}/%{name}-proxy
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/*.so
 %dir %{_datadir}/%{name}
+%{_datadir}/%{name}/docs
 %{_datadir}/%{name}/icons
 %{_datadir}/%{name}/wizard
 %{_datadir}/%{name}/wordlists
@@ -114,6 +116,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Sat Oct 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.0-100
+- 2.5.0
+
 * Tue Oct 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.3-101
 - Conditional KeeShare support. BR: quazip-qt5-devel
 - Browser support

@@ -1,6 +1,6 @@
-From 24c36c893375eea7f255be6a81341a257cd2f52b Mon Sep 17 00:00:00 2001
+From 7528563a266e96563e9a7dd9d13076c8f120cded Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 22 Oct 2019 15:38:30 -0300
+Date: Sat, 26 Oct 2019 23:46:04 -0300
 Subject: [PATCH] keepassxc-browser: add Waterfox support
 
 ---
@@ -14,11 +14,11 @@ Subject: [PATCH] keepassxc-browser: add Waterfox support
  7 files changed, 42 insertions(+), 3 deletions(-)
 
 diff --git a/share/translations/keepassx_en.ts b/share/translations/keepassx_en.ts
-index 3579db2..7708425 100644
+index d635609..ede0e16 100644
 --- a/share/translations/keepassx_en.ts
 +++ b/share/translations/keepassx_en.ts
-@@ -639,6 +639,10 @@ Please select the correct database for saving credentials.</translation>
-         <source>&amp;Allow returning expired credentials.</source>
+@@ -539,6 +539,10 @@ Please select whether you want to allow access.</translation>
+         <source>Deny access</source>
          <translation type="unfinished"></translation>
      </message>
 +    <message>
@@ -27,12 +27,12 @@ index 3579db2..7708425 100644
 +    </message>
  </context>
  <context>
-     <name>BrowserService</name>
+     <name>BrowserEntrySaveDialog</name>
 diff --git a/src/browser/BrowserOptionDialog.cpp b/src/browser/BrowserOptionDialog.cpp
-index e212fc6..4681319 100644
+index a5bb921..fb97c9b 100644
 --- a/src/browser/BrowserOptionDialog.cpp
 +++ b/src/browser/BrowserOptionDialog.cpp
-@@ -80,9 +80,10 @@ BrowserOptionDialog::BrowserOptionDialog(QWidget* parent)
+@@ -74,9 +74,10 @@ BrowserOptionDialog::BrowserOptionDialog(QWidget* parent)
      // Vivaldi uses Chrome's registry settings
      m_ui->vivaldiSupport->setHidden(true);
      m_ui->chromeSupport->setText("Chrome, Vivaldi, and Brave");
@@ -44,7 +44,7 @@ index e212fc6..4681319 100644
  #endif
      m_ui->browserGlobalWarningWidget->setVisible(false);
  }
-@@ -128,6 +129,7 @@ void BrowserOptionDialog::loadSettings()
+@@ -123,6 +124,7 @@ void BrowserOptionDialog::loadSettings()
      m_ui->braveSupport->setChecked(settings->braveSupport());
      m_ui->vivaldiSupport->setChecked(settings->vivaldiSupport());
      m_ui->torBrowserSupport->setChecked(settings->torBrowserSupport());
@@ -61,10 +61,10 @@ index e212fc6..4681319 100644
      settings->setBraveSupport(m_ui->braveSupport->isChecked());
      settings->setVivaldiSupport(m_ui->vivaldiSupport->isChecked());
 diff --git a/src/browser/BrowserOptionDialog.ui b/src/browser/BrowserOptionDialog.ui
-index 0229649..e3d6f30 100755
+index 638c400..f23b1b7 100755
 --- a/src/browser/BrowserOptionDialog.ui
 +++ b/src/browser/BrowserOptionDialog.ui
-@@ -160,6 +160,16 @@
+@@ -167,6 +167,16 @@
              </property>
             </widget>
            </item>
@@ -82,10 +82,10 @@ index 0229649..e3d6f30 100755
          </widget>
         </item>
 diff --git a/src/browser/BrowserSettings.cpp b/src/browser/BrowserSettings.cpp
-index f44c5e8..60642b0 100644
+index 0467342..cac9b9a 100644
 --- a/src/browser/BrowserSettings.cpp
 +++ b/src/browser/BrowserSettings.cpp
-@@ -270,6 +270,17 @@ void BrowserSettings::setTorBrowserSupport(bool enabled)
+@@ -280,6 +280,17 @@ void BrowserSettings::setTorBrowserSupport(bool enabled)
          HostInstaller::SupportedBrowsers::TOR_BROWSER, enabled, supportBrowserProxy(), customProxyLocation());
  }
  
@@ -104,10 +104,10 @@ index f44c5e8..60642b0 100644
  {
      return config()->get("generator/Numbers", PasswordGenerator::DefaultNumbers).toBool();
 diff --git a/src/browser/BrowserSettings.h b/src/browser/BrowserSettings.h
-index b47e928..001b15b 100644
+index 0fa2359..7408474 100644
 --- a/src/browser/BrowserSettings.h
 +++ b/src/browser/BrowserSettings.h
-@@ -78,6 +78,8 @@ public:
+@@ -80,6 +80,8 @@ public:
      void setBraveSupport(bool enabled);
      bool torBrowserSupport();
      void setTorBrowserSupport(bool enabled);
@@ -117,7 +117,7 @@ index b47e928..001b15b 100644
      bool passwordUseNumbers();
      void setPasswordUseNumbers(bool useNumbers);
 diff --git a/src/browser/HostInstaller.cpp b/src/browser/HostInstaller.cpp
-index 20c5545..6f543ad 100644
+index 4928ba6..531cacb 100644
 --- a/src/browser/HostInstaller.cpp
 +++ b/src/browser/HostInstaller.cpp
 @@ -40,6 +40,7 @@ HostInstaller::HostInstaller()
@@ -125,45 +125,45 @@ index 20c5545..6f543ad 100644
      , TARGET_DIR_TOR_BROWSER("/Library/Application Support/TorBrowser-Data/Browser/Mozilla/NativeMessagingHosts")
      , TARGET_DIR_BRAVE("/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts")
 +    , TARGET_DIR_WATERFOX("/Library/Application Support/Waterfox/NativeMessagingHosts")
- #elif defined(Q_OS_LINUX)
-     , TARGET_DIR_CHROME("/.config/google-chrome/NativeMessagingHosts")
-     , TARGET_DIR_CHROMIUM("/.config/chromium/NativeMessagingHosts")
-@@ -47,6 +48,7 @@ HostInstaller::HostInstaller()
-     , TARGET_DIR_VIVALDI("/.config/vivaldi/NativeMessagingHosts")
-     , TARGET_DIR_TOR_BROWSER("/.tor-browser/app/Browser/TorBrowser/Data/Browser/.mozilla/native-messaging-hosts")
-     , TARGET_DIR_BRAVE("/.config/BraveSoftware/Brave-Browser/NativeMessagingHosts")
-+    , TARGET_DIR_WATERFOX("/.waterfox/native-messaging-hosts")
  #elif defined(Q_OS_WIN)
      // clang-format off
      , TARGET_DIR_CHROME("HKEY_CURRENT_USER\\Software\\Google\\Chrome\\NativeMessagingHosts\\org.keepassxc.keepassxc_browser")
-@@ -56,6 +58,7 @@ HostInstaller::HostInstaller()
+@@ -49,6 +50,7 @@ HostInstaller::HostInstaller()
      , TARGET_DIR_VIVALDI(TARGET_DIR_CHROME)
      , TARGET_DIR_TOR_BROWSER(TARGET_DIR_FIREFOX)
      , TARGET_DIR_BRAVE(TARGET_DIR_CHROME)
 +    , TARGET_DIR_WATERFOX("HKEY_CURRENT_USER\\Software\\Waterfox\\NativeMessagingHosts\\org.keepassxc.keepassxc_browser")
+ #else
+     , TARGET_DIR_CHROME("/.config/google-chrome/NativeMessagingHosts")
+     , TARGET_DIR_CHROMIUM("/.config/chromium/NativeMessagingHosts")
+@@ -56,6 +58,7 @@ HostInstaller::HostInstaller()
+     , TARGET_DIR_VIVALDI("/.config/vivaldi/NativeMessagingHosts")
+     , TARGET_DIR_TOR_BROWSER("/.tor-browser/app/Browser/TorBrowser/Data/Browser/.mozilla/native-messaging-hosts")
+     , TARGET_DIR_BRAVE("/.config/BraveSoftware/Brave-Browser/NativeMessagingHosts")
++    , TARGET_DIR_WATERFOX("/.waterfox/native-messaging-hosts")
  #endif
  {
  }
-@@ -172,6 +175,8 @@ QString HostInstaller::getTargetPath(SupportedBrowsers browser) const
+@@ -168,6 +171,8 @@ QString HostInstaller::getTargetPath(SupportedBrowsers browser) const
          return TARGET_DIR_TOR_BROWSER;
      case SupportedBrowsers::BRAVE:
-       return TARGET_DIR_BRAVE;
+         return TARGET_DIR_BRAVE;
 +    case SupportedBrowsers::WATERFOX:
 +        return TARGET_DIR_WATERFOX;
      default:
          return QString();
      }
-@@ -199,6 +204,8 @@ QString HostInstaller::getBrowserName(SupportedBrowsers browser) const
+@@ -195,6 +200,8 @@ QString HostInstaller::getBrowserName(SupportedBrowsers browser) const
          return "tor-browser";
      case SupportedBrowsers::BRAVE:
-       return "brave";
+         return "brave";
 +    case SupportedBrowsers::WATERFOX:
 +        return "waterfox";
      default:
          return QString();
      }
-@@ -304,7 +311,7 @@ QJsonObject HostInstaller::constructFile(SupportedBrowsers browser, const bool&
-     script["type"] = "stdio";
+@@ -300,7 +307,7 @@ QJsonObject HostInstaller::constructFile(SupportedBrowsers browser, const bool&
+     script["type"] = QString("stdio");
  
      QJsonArray arr;
 -    if (browser == SupportedBrowsers::FIREFOX || browser == SupportedBrowsers::TOR_BROWSER) {
