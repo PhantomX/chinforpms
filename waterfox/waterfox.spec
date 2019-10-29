@@ -742,6 +742,8 @@ MOZ_LINK_FLAGS="-Wl,--no-keep-memory"
 %endif
 %endif
 
+# Source file to improve testing
+cat > %{name}-env <<EOF
 %ifarch %{arm} %{ix86}
 export RUSTFLAGS="-Cdebuginfo=0"
 %endif
@@ -761,9 +763,9 @@ export NM="gcc-nm"
 export RANLIB="gcc-ranlib"
 %endif
 
-export CFLAGS=$MOZ_OPT_FLAGS
-export CXXFLAGS=$MOZ_OPT_FLAGS
-export LDFLAGS=$MOZ_LINK_FLAGS
+export CFLAGS="$MOZ_OPT_FLAGS"
+export CXXFLAGS="$MOZ_OPT_FLAGS"
+export LDFLAGS="$MOZ_LINK_FLAGS"
 
 export PREFIX='%{_prefix}'
 export LIBDIR='%{_libdir}'
@@ -776,6 +778,10 @@ export STRIP=%{_prefix}/bin/true
 export TMPDIR="$(pwd)/tmpdir"
 mkdir -p "$TMPDIR"
 %endif
+EOF
+
+source ./%{name}-env
+
 %if 0%{?build_with_pgo}
 SHELL=%{_prefix}/bin/bash GDK_BACKEND=x11 xvfb-run ./mach build %{?verbose_mach}
 %else

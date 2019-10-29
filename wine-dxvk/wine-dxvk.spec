@@ -34,7 +34,7 @@
 %global pkgname dxvk
 
 Name:           wine-%{pkgname}
-Version:        1.4.3
+Version:        1.4.4
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
@@ -271,6 +271,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Oct 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4.4-1
+- 1.4.4
+
 * Fri Oct 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4.3-1
 - 1.4.3
 
