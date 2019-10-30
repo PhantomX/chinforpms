@@ -58,17 +58,17 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 5
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d80ee0c9d6fccc6d958c9abf11775c5b3c96f705
+%global pfcommit 8b45ec2fbb6586e32852ae749fe1c91e66a70ad4
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id d6c109dee202c76c1c4adc3e240e1dce1aa9bb16
+%global opensuse_id f0ffcb7b6506536d01c5b1c58576dae54a30e7e8
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -655,10 +655,13 @@ Patch504: dwc3-fix.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
+# CVE-2019-17666
+# rhbz 176362
+Patch506: 0001-rtlwifi-Fix-potential-overflow-on-P2P-code.patch 
+
 Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
 Patch510: iwlwifi-exclude-GEO-SAR-support-for-3168.patch
-Patch511: iwlwifi-pcie-change-qu-with-jf-devices-to-use-qu-configuration.patch
 
 ### Extra
 
@@ -1940,6 +1943,9 @@ fi
 #
 #
 %changelog
+* Tue Oct 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.8-500.chinfo
+- 5.3.8 - pf5
+
 * Fri Oct 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.7-500.chinfo
 - 5.3.7
 - f31 sync

@@ -1,0 +1,35 @@
+From 93be8ac7ab10bf0dbbad30f6569e9a4f5f8598ca Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 29 Oct 2019 08:30:03 -0300
+Subject: [PATCH] Disable test_program build
+
+---
+ CMakeLists.txt | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1987b27..427a526 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -33,11 +33,11 @@ endif()
+ 
+ 
+ # test programs...
+-macro(test_program _NAME _SRCS)
+-    add_executable(${_NAME} ${_SRCS})
+-    target_include_directories(${_NAME} PUBLIC "/usr/local/include/SDL")  # !!! FIXME
+-    target_include_directories(${_NAME} PUBLIC "/usr/X11/include")  # !!! FIXME
+-    target_link_libraries(${_NAME} SDL)
+-endmacro()
++#macro(test_program _NAME _SRCS)
++#    add_executable(${_NAME} ${_SRCS})
++#    target_include_directories(${_NAME} PUBLIC "/usr/local/include/SDL")  # !!! FIXME
++#    target_include_directories(${_NAME} PUBLIC "/usr/X11/include")  # !!! FIXME
++#    target_link_libraries(${_NAME} SDL -ldl -lm)
++#endmacro()
+ 
+-test_program(testsprite "test/testsprite.c")
++#test_program(testsprite "test/testsprite.c")
+-- 
+2.23.0
+

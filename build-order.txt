@@ -120,6 +120,7 @@ retext
 sdl2-controllermap
 sdl_gamecontrollerdb
 sdl-jstest
+sdlcl
 skrooge
 smtube
 thrash-protect

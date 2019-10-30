@@ -20,6 +20,7 @@ mingw-crt
 mingw-headers
 mingw-winpthreads
 qt5ct
+sdlcl
 taglib
 webp-pixbuf-loader
 wine
