@@ -38,14 +38,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 4.18
+%global wine_stagingver 4.19
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id d7fb984339ce11acc9ebe9443df178bbe0a87e04
+%global tkg_id 0325007d7aa92ed7d381569921436b6bcf7130e9
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -72,7 +72,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.18
+Version:        4.19
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -125,6 +125,8 @@ Patch101:       %{whq_url}/22795243b2d21e1a667215f54c3a15634735749c#/%{name}-whq
 Patch102:       %{whq_url}/be54adcffc249a44cb52c24320a7ad3db758ba54#/%{name}-whq-be54adc.patch
 Patch103:       %{whq_url}/ec09dcf89594f459dd8d26f3ed2c312294b9911e#/%{name}-whq-ec09dcf.patch
 Patch104:       %{whq_url}/efbbe66669a060dd01b3ae399f5a9e7328312f03#/%{name}-whq-efbbe66.patch
+Patch105:       %{whq_url}/413aad39135b0b0f8255500b85fcc05337a5f138#/%{name}-whq-413aad3.patch
+Patch106:       %{whq_url}/de94cfa775f9f41d1d65cbd8e7bf861cd7f9a871#/%{name}-whq-de94cfa.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -726,6 +728,8 @@ This package adds the opencl driver for wine.
 %setup -q -n %{name}-%{ver}
 %endif
 
+%patch105 -p1 -R
+%patch106 -p1 -R
 %patch100 -p1 -R
 %patch101 -p1 -R
 %patch102 -p1 -R
@@ -2417,6 +2421,9 @@ fi
 
 
 %changelog
+* Sat Nov 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.19-100
+- 4.19
+
 * Sat Oct 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.18-100
 - 4.18
 

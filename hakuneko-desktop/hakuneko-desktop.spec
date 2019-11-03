@@ -11,13 +11,13 @@
 %global real_name hakuneko
 
 Name:           %{real_name}-desktop
-Version:        5.0.6
+Version:        5.0.8
 Release:        1%{?dist}
 Summary:        Manga Downloader
 
 License:        Unlicense and MIT
 URL:            https://sourceforge.net/projects/%{real_name}/
-Source0:        https://downloads.sourceforge.net/%{real_name}/%{name}_%{version}_linux_%{parch}.rpm
+Source0:        https://github.com/manga-download/hakuneko/releases/download/v%{version}/%{name}_%{version}_linux_%{parch}.rpm
 Source1:        https://github.com/manga-download/hakuneko/raw/master/UNLICENSE
 
 ExclusiveArch:  %{ix86} x86_64
@@ -61,7 +61,7 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp usr/lib/%{name}/{%{real_name},locales,resources,*.{bin,dat,pak,so}} \
+cp -rp usr/lib/%{name}/{%{real_name},kindlegen,locales,resources,*.{bin,dat,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
@@ -91,6 +91,9 @@ done
 
 
 %changelog
+* Wed Oct 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.8-1
+- 5.0.8
+
 * Tue Jul 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.6-1
 - 5.0.6 testing
 
