@@ -40,6 +40,7 @@ bashdb
 bcg729
 bcmatroska2
 bctoolbox
+blastem
 bluecurve-icon-theme
 browsh
 casperjs

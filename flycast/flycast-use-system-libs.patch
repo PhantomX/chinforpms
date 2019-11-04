@@ -1,13 +1,14 @@
-From b9490b34384939dfa01501cb18d137fa0f5e44c3 Mon Sep 17 00:00:00 2001
+From d4b5364ae99628419d375c4fa7f85d9dc5bb7035 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 15 Sep 2019 17:30:17 -0300
+Date: Sun, 3 Nov 2019 19:06:15 -0300
 Subject: [PATCH] Use system libs
 
 ---
- core/archive/ZipArchive.h |  4 ++++
- core/core.mk              | 33 ++++++++++++++++++++++++++++-----
- shell/linux/Makefile      | 32 ++++++++++++++++++++++++++++++++
- 3 files changed, 64 insertions(+), 5 deletions(-)
+ core/archive/ZipArchive.h   |  4 ++++
+ core/core.mk                | 30 ++++++++++++++++++++++++++----
+ core/hw/sh4/dyna/driver.cpp |  4 ++++
+ shell/linux/Makefile        | 32 ++++++++++++++++++++++++++++++++
+ 4 files changed, 67 insertions(+), 4 deletions(-)
 
 diff --git a/core/archive/ZipArchive.h b/core/archive/ZipArchive.h
 index 05a0f0f..ff24960 100644
@@ -26,7 +27,7 @@ index 05a0f0f..ff24960 100644
  class ZipArchive : public Archive
  {
 diff --git a/core/core.mk b/core/core.mk
-index a91ad3f..444e4b7 100755
+index a91ad3f..68d3c88 100755
 --- a/core/core.mk
 +++ b/core/core.mk
 @@ -9,9 +9,21 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
@@ -70,7 +71,6 @@ index a91ad3f..444e4b7 100755
  endif
  
 -RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/libpng -I$(RZDCY_SRC_DIR)/deps/zlib
--RZDCY_CFLAGS +=  -DXXH_INLINE_ALL -I$(RZDCY_SRC_DIR)/deps/xxhash
 +ifndef SYSTEM_LIBPNG
 +RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/libpng
 +endif
@@ -79,13 +79,29 @@ index a91ad3f..444e4b7 100755
 +endif
 +
 +ifndef SYSTEM_XXHASH
-+RZDCY_CFLAGS +=  -DXXH_INLINE_ALL -I$(RZDCY_SRC_DIR)/deps/xxhash
+ RZDCY_CFLAGS +=  -DXXH_INLINE_ALL -I$(RZDCY_SRC_DIR)/deps/xxhash
 +endif
  
  RZDCY_CXXFLAGS := $(RZDCY_CFLAGS) -fno-exceptions -fno-rtti -std=gnu++11
  
+diff --git a/core/hw/sh4/dyna/driver.cpp b/core/hw/sh4/dyna/driver.cpp
+index fdf06bc..ba0ff62 100644
+--- a/core/hw/sh4/dyna/driver.cpp
++++ b/core/hw/sh4/dyna/driver.cpp
+@@ -1,7 +1,11 @@
+ #include "types.h"
+ #include <unordered_set>
+ 
++#ifdef SYSTEM_XXHASH
++#include <xxhash.h>
++#else
+ #include "deps/xxhash/xxhash.h"
++#endif
+ #include "../sh4_interpreter.h"
+ #include "../sh4_opcode_list.h"
+ #include "../sh4_core.h"
 diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index a7c5e6c..7ccf9d3 100644
+index 45090ec..9a412c9 100644
 --- a/shell/linux/Makefile
 +++ b/shell/linux/Makefile
 @@ -12,6 +12,12 @@ USE_UDEV := 1
@@ -101,7 +117,7 @@ index a7c5e6c..7ccf9d3 100644
  CXX ?= ${CC_PREFIX}g++
  CC ?= ${CC_PREFIX}gcc
  AS ?= ${CC_PREFIX}as
-@@ -399,6 +405,32 @@ ifdef DEBUGFAST
+@@ -391,6 +397,33 @@ ifdef DEBUGFAST
      CFLAGS += -DDEBUGFAST
  endif
  
@@ -122,6 +138,7 @@ index a7c5e6c..7ccf9d3 100644
 +endif
 +
 +ifdef SYSTEM_XXHASH
++    CXXFLAGS += -D SYSTEM_XXHASH
 +    LIBS += -lxxhash
 +endif
 +
@@ -135,4 +152,5 @@ index a7c5e6c..7ccf9d3 100644
  DC_PLATFORM=dreamcast
  EXECUTABLE=reicast.$(PLATFORM_EXT)
 -- 
-2.21.0
+2.23.0
+
