@@ -1,0 +1,26 @@
+From 8fe3cd404af462cb8a42a30b666b969224e119df Mon Sep 17 00:00:00 2001
+From: Jacek Caban <jacek@codeweavers.com>
+Date: Mon, 12 Aug 2019 21:08:40 +0200
+Subject: [PATCH 4/7] Explicitly cast GetInitialProcessData result to
+ nsIGlobalProcessScriptLoader.
+
+---
+ dom/ipc/ContentParent.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/dom/ipc/ContentParent.cpp b/dom/ipc/ContentParent.cpp
+index 9c134b9e823d..7b748f1bcc44 100644
+--- a/dom/ipc/ContentParent.cpp
++++ b/dom/ipc/ContentParent.cpp
+@@ -3436,7 +3436,7 @@ ContentParent::RecvGetXPCOMProcessAttributes(bool* aIsOffline,
+       return false;
+     }
+     JS::RootedValue init(jsapi.cx());
+-    nsresult result = mm->GetInitialProcessData(jsapi.cx(), &init);
++    nsresult result = static_cast<nsIGlobalProcessScriptLoader*>(mm)->GetInitialProcessData(jsapi.cx(), &init);
+     if (NS_FAILED(result)) {
+       return false;
+     }
+-- 
+2.21.0
+

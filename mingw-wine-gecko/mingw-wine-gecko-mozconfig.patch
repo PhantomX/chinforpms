@@ -1,0 +1,22 @@
+diff -u wine-mozilla-2.47-beta1/wine/mozconfig-common.orig wine-mozilla-2.47-beta1/wine/mozconfig-common
+--- wine-mozilla-2.47-beta1/wine/mozconfig-common.orig	2016-05-05 02:59:46.000000000 -0500
++++ wine-mozilla-2.47-beta1/wine/mozconfig-common	2016-05-18 00:23:25.765835454 -0500
+@@ -12,6 +12,7 @@
+ ac_add_options --disable-gamepad
+ ac_add_options --disable-maintenance-service
+ ac_add_options --disable-parental-controls
++ac_add_options --enable-win32-target=WINNT
+ 
+ export CFLAGS="$CFLAGS -DWINE_GECKO_SRC"
+ export CXXFLAGS="$CXXFLAGS -DWINE_GECKO_SRC"
+--- wine-mozilla-2.47/configure.py.orig	2016-06-13 09:34:12.000000000 -0500
++++ wine-mozilla-2.47/configure.py	2019-02-17 01:25:43.701686736 -0600
+@@ -116,6 +116,8 @@
+         print(e.message, file=sys.stderr)
+         return 1
+ 
++    subprocess.call("sed -i 's/^ac_exeext=/ac_exeext=.exe/' " + old_configure, shell=True)
++
+     return subprocess.call([shell, old_configure] + args)
+ 
+ 

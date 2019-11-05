@@ -45,7 +45,7 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 0325007d7aa92ed7d381569921436b6bcf7130e9
+%global tkg_id 9c23bce5f57b6fbc10d95dd6400a498382a1fd07
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -53,7 +53,7 @@
 %global pba 0
 
 # proton FS hack
-%global wine_staging_opts -W winex11.drv-mouse-coorrds
+%global wine_staging_opts -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global valve_url https://github.com/ValveSoftware/wine
@@ -73,7 +73,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.19
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -118,15 +118,17 @@ Source113:      wine-taskmgr.desktop
 
 # build fixes
 
-# wine bugs/upstream
+# wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-Patch100:       %{whq_url}/ffd4caa5f0e401cf973078fbbd54e4950d408792#/%{name}-whq-ffd4caa.patch
-Patch101:       %{whq_url}/22795243b2d21e1a667215f54c3a15634735749c#/%{name}-whq-2279524.patch
-Patch102:       %{whq_url}/be54adcffc249a44cb52c24320a7ad3db758ba54#/%{name}-whq-be54adc.patch
-Patch103:       %{whq_url}/ec09dcf89594f459dd8d26f3ed2c312294b9911e#/%{name}-whq-ec09dcf.patch
-Patch104:       %{whq_url}/efbbe66669a060dd01b3ae399f5a9e7328312f03#/%{name}-whq-efbbe66.patch
+Patch100:       %{whq_url}/efbbe66669a060dd01b3ae399f5a9e7328312f03#/%{name}-whq-efbbe66.patch
+Patch101:       %{whq_url}/81f8b6e8c215dc04a19438e4369fcba8f7f4f333#/%{name}-whq-81f8b6e.patch
+Patch102:       %{whq_url}/6dbb153ede48e77a87dddf37e5276276a701c5c3#/%{name}-whq-6dbb153.patch
+Patch103:       %{whq_url}/9ae8da6bb4a8f66d55975fa0f14e5e413756d324#/%{name}-whq-9ae8da6.patch
+Patch104:       %{whq_url}/de94cfa775f9f41d1d65cbd8e7bf861cd7f9a871#/%{name}-whq-de94cfa.patch
 Patch105:       %{whq_url}/413aad39135b0b0f8255500b85fcc05337a5f138#/%{name}-whq-413aad3.patch
-Patch106:       %{whq_url}/de94cfa775f9f41d1d65cbd8e7bf861cd7f9a871#/%{name}-whq-de94cfa.patch
+
+# https://bugs.winehq.org/show_bug.cgi?id=48032
+Patch120:       %{name}-bug48032.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -729,12 +731,12 @@ This package adds the opencl driver for wine.
 %endif
 
 %patch105 -p1 -R
-%patch106 -p1 -R
-%patch100 -p1 -R
-%patch101 -p1 -R
-%patch102 -p1 -R
-%patch103 -p1 -R
 %patch104 -p1 -R
+%patch103 -p1 -R
+%patch102 -p1 -R
+%patch101 -p1 -R
+%patch100 -p1 -R
+%patch120 -p1
 %patch511 -p1 -b.cjk
 %patch599 -p1
 %patch700 -p1
@@ -2421,6 +2423,9 @@ fi
 
 
 %changelog
+* Mon Nov 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.19-101
+- Update revert list
+
 * Sat Nov 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.19-100
 - 4.19
 

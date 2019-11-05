@@ -1,0 +1,35 @@
+From d443e4e62eb1cf5d67ef2f032bc3cfbd5d87d870 Mon Sep 17 00:00:00 2001
+From: Jacek Caban <jacek@codeweavers.com>
+Date: Mon, 12 Aug 2019 21:09:27 +0200
+Subject: [PATCH 5/7] Use assembly xgetbv implementation on mingw.
+
+---
+ gfx/skia/skia/src/core/SkOpts.cpp | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/gfx/skia/skia/src/core/SkOpts.cpp b/gfx/skia/skia/src/core/SkOpts.cpp
+index 970672e32cad..62e5261e0a43 100644
+--- a/gfx/skia/skia/src/core/SkOpts.cpp
++++ b/gfx/skia/skia/src/core/SkOpts.cpp
+@@ -26,7 +26,6 @@
+         #include <intrin.h>
+         static void cpuid (uint32_t abcd[4]) { __cpuid  ((int*)abcd, 1);    }
+         static void cpuid7(uint32_t abcd[4]) { __cpuidex((int*)abcd, 7, 0); }
+-        static uint64_t xgetbv(uint32_t xcr) { return _xgetbv(xcr); }
+     #else
+         #include <cpuid.h>
+         #if !defined(__cpuid_count)  // Old Mac Clang doesn't have this defined.
+@@ -37,6 +36,10 @@
+         static void cpuid7(uint32_t abcd[4]) {
+             __cpuid_count(7, 0, abcd[0], abcd[1], abcd[2], abcd[3]);
+         }
++    #endif
++    #if defined(SK_BUILD_FOR_WIN32) && !defined(__GNUC__)
++        static uint64_t xgetbv(uint32_t xcr) { return _xgetbv(xcr); }
++    #else
+         static uint64_t xgetbv(uint32_t xcr) {
+             uint32_t eax, edx;
+             __asm__ __volatile__ ( "xgetbv" : "=a"(eax), "=d"(edx) : "c"(xcr));
+-- 
+2.21.0
+

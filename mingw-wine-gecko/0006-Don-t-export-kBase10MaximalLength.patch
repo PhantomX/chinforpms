@@ -1,0 +1,26 @@
+From 1cf47033a8f95d5384c321784da941df7c498578 Mon Sep 17 00:00:00 2001
+From: Jacek Caban <jacek@codeweavers.com>
+Date: Mon, 12 Aug 2019 21:09:46 +0200
+Subject: [PATCH 6/7] Don't export kBase10MaximalLength.
+
+It's not needed and causes ICE on some GCC versions.
+---
+ mfbt/double-conversion/double-conversion.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mfbt/double-conversion/double-conversion.h b/mfbt/double-conversion/double-conversion.h
+index 957575cfb8fd..4af1b03d23fc 100644
+--- a/mfbt/double-conversion/double-conversion.h
++++ b/mfbt/double-conversion/double-conversion.h
+@@ -294,7 +294,7 @@ class DoubleToStringConverter {
+   // kBase10MaximalLength.
+   // Note that DoubleToAscii null-terminates its input. So the given buffer
+   // should be at least kBase10MaximalLength + 1 characters long.
+-  static const MFBT_DATA int kBase10MaximalLength = 17;
++  static const int kBase10MaximalLength = 17;
+ 
+   // Converts the given double 'v' to ascii. 'v' must not be NaN, +Infinity, or
+   // -Infinity. In SHORTEST_SINGLE-mode this restriction also applies to 'v'
+-- 
+2.21.0
+

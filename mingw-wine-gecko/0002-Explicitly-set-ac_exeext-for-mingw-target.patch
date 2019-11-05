@@ -1,0 +1,45 @@
+From 87fea2051d420ac21453541166ed39e44dde7a8d Mon Sep 17 00:00:00 2001
+From: Jacek Caban <jacek@codeweavers.com>
+Date: Mon, 12 Aug 2019 21:07:28 +0200
+Subject: [PATCH 2/7] Explicitly set ac_exeext for mingw target.
+
+---
+ js/src/old-configure.in | 5 +++++
+ old-configure.in        | 5 +++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/js/src/old-configure.in b/js/src/old-configure.in
+index 336f6a2e9b3c..04458ea78743 100644
+--- a/js/src/old-configure.in
++++ b/js/src/old-configure.in
+@@ -255,6 +255,11 @@ if test "$COMPILE_ENVIRONMENT"; then
+ #     - $target (in its correct usage) is for compilers who generate code for a
+ #       different platform than $host, so it would not be used by Mozilla.
+ if test "$target" != "$host"; then
++    case "$target" in
++    *-mingw*)
++        ac_exeext=".exe"
++        ;;
++    esac
+     MOZ_CROSS_COMPILER
+ else
+     AC_PROG_CC
+diff --git a/old-configure.in b/old-configure.in
+index 157e2d464aed..f549dfc0082f 100644
+--- a/old-configure.in
++++ b/old-configure.in
+@@ -379,6 +379,11 @@ fi # !COMPILE_ENVIRONMENT
+ if test "$COMPILE_ENVIRONMENT"; then
+ 
+ if test "$target" != "$host"; then
++    case "$target" in
++    *-mingw*)
++        ac_exeext=".exe"
++        ;;
++    esac
+     MOZ_CROSS_COMPILER
+ else
+     AC_PROG_CC
+-- 
+2.21.0
+
