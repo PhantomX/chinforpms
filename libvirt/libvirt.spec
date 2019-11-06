@@ -215,7 +215,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 5.8.0
+Version: 5.9.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -274,6 +274,7 @@ BuildRequires: systemd-units
 %if %{with_libxl}
 BuildRequires: xen-devel
 %endif
+BuildRequires: glib2-devel
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
 BuildRequires: readline-devel
@@ -2003,6 +2004,9 @@ exit 0
 
 
 %changelog
+* Tue Nov 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.9.0-100
+- 5.9.0
+
 * Sat Oct 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.8.0-100
 - 5.8.0
 
