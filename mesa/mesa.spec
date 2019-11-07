@@ -46,6 +46,8 @@
 %bcond_with valgrind
 %endif
 
+%global with_lto 1
+
 %global dri_drivers %{?base_drivers}%{?platform_drivers}
 
 %global vc_url  https://gitlab.freedesktop.org/mesa/mesa
@@ -53,7 +55,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.2.2
+Version:        19.3.0~rc2
 Release:        100%{?dist}
 
 License:        MIT
@@ -65,16 +67,12 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
-Source2:        glesv2.pc
-Source3:        egl.pc
 
 Patch3:         0003-evergreen-big-endian.patch
 
 # Disable rgb10 configs by default:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
-
-Patch100:       %{vc_url}/commit/a2ee29c3daad8fcfe98204f9d8927b0b1a637713.patch#/mesa-gl-a2ee29c.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -137,7 +135,7 @@ BuildRequires:  pkgconfig(libva) >= 0.38.0
 BuildRequires:  pkgconfig(libomxil-bellagio)
 %endif
 BuildRequires:  pkgconfig(libelf)
-BuildRequires:  pkgconfig(libglvnd) >= 0.2.0
+BuildRequires:  pkgconfig(libglvnd) >= 1.2.0
 BuildRequires:  llvm-devel >= 7.0.0
 %if 0%{?with_opencl}
 BuildRequires:  clang-devel
@@ -164,12 +162,6 @@ Obsoletes:      mesa-dri-filesystem < %{?epoch:%{epoch}:}%{version}-%{release}
 %description filesystem
 %{summary}.
 
-%package khr-devel
-Summary:        Mesa Khronos development headers
-
-%description khr-devel
-%{summary}.
-
 %package libGL
 Summary:        Mesa libGL runtime libraries
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -182,7 +174,6 @@ Requires:       libglvnd-glx%{?_isa} >= 1:1.0.1-0.9
 Summary:        Mesa libGL development package
 Requires:       %{name}-libGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-devel%{?_isa}
-Requires:       %{name}-khr-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libGL-devel
 Provides:       libGL-devel%{?_isa}
 
@@ -200,30 +191,11 @@ Requires:       libglvnd-egl%{?_isa}
 Summary:        Mesa libEGL development package
 Requires:       %{name}-libEGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-devel%{?_isa}
-Requires:       %{name}-khr-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-khr-devel%{?_isa}
 Provides:       libEGL-devel
 Provides:       libEGL-devel%{?_isa}
 
 %description libEGL-devel
-%{summary}.
-
-%package libGLES
-Summary:        Mesa libGLES runtime libraries
-Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       libglvnd-gles%{?_isa}
-
-%description libGLES
-%{summary}.
-
-%package libGLES-devel
-Summary:        Mesa libGLES development package
-Requires:       %{name}-libGLES%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       libglvnd-devel%{?_isa}
-Requires:       %{name}-khr-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       libGLES-devel
-Provides:       libGLES-devel%{?_isa}
-
-%description libGLES-devel
 %{summary}.
 
 %package dri-drivers
@@ -364,10 +336,27 @@ Headers for development with the Vulkan API.
 %autosetup -n %{name}-%{ver} -p1
 cp %{SOURCE1} docs/
 
-sed -e 's|_RPMVER_|%{ver}|g' %{SOURCE2} > glesv2.pc
-sed -e 's|_RPMVER_|%{ver}|g' %{SOURCE3} > egl.pc
-
 %build
+
+%if 0%{?with_lto}
+MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -fuse-linker-plugin -ffat-lto-objects -flto-odr-type-merging"
+MESA_COMMON_FLAGS="-falign-functions=32 -fno-semantic-interposition $MESA_LTO_FLAGS"
+MESA_CFLAGS="%(echo %{build_cflags} | sed -e 's/-O2\b/-O3/' -e 's/ -g\b/ -g1/')"
+MESA_CXXFLAGS="%(echo %{build_cxxflags} | sed -e 's/-O2\b/-O3/' -e 's/ -g\b/ -g1/')"
+
+export CFLAGS="$MESA_CFLAGS $MESA_COMMON_FLAGS"
+export FCFLAGS="$CFLAGS"
+export FFLAGS="$CFLAGS"
+export CFLAGS="$MESA_CFLAGS $MESA_COMMON_FLAGS"
+export CXXFLAGS="$MESA_CXXFLAGS -std=c++14 $MESA_COMMON_FLAGS"
+export LDFLAGS="%{build_ldflags} $MESA_LTO_FLAGS"
+
+export CC=gcc
+export CXX=g++
+export AR="gcc-ar"
+export NM="gcc-nm"
+export RANLIB="gcc-ranlib"
+%endif
 
 %meson -Dcpp_std=gnu++11 \
   -Dplatforms=x11,wayland,drm,surfaceless \
@@ -410,10 +399,6 @@ sed -e 's|_RPMVER_|%{ver}|g' %{SOURCE3} > egl.pc
 %install
 %meson_install
 
-install -m0644 glesv2.pc %{buildroot}%{_libdir}/pkgconfig/
-
-install -m0644 egl.pc %{buildroot}%{_libdir}/pkgconfig/
-
 # libvdpau opens the versioned name, don't bother including the unversioned
 rm -vf %{buildroot}%{_libdir}/vdpau/*.so
 # likewise glvnd
@@ -443,51 +428,22 @@ popd
 %endif
 %endif
 
-%files khr-devel
-%dir %{_includedir}/KHR
-%{_includedir}/KHR/khrplatform.h
-
 %files libGL
 %{_libdir}/libGLX_mesa.so.0*
 %{_libdir}/libGLX_system.so.0*
 %files libGL-devel
-%{_includedir}/GL/gl.h
-%{_includedir}/GL/glext.h
-%{_includedir}/GL/glx.h
-%{_includedir}/GL/glxext.h
-%{_includedir}/GL/glcorearb.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_libdir}/pkgconfig/dri.pc
 %{_libdir}/libglapi.so
-%{_libdir}/pkgconfig/gl.pc
 
 %files libEGL
 %{_datadir}/glvnd/egl_vendor.d/50_mesa.json
 %{_libdir}/libEGL_mesa.so.0*
 %files libEGL-devel
 %dir %{_includedir}/EGL
-%{_includedir}/EGL/eglext.h
-%{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglmesaext.h
-%{_includedir}/EGL/eglplatform.h
 %{_includedir}/EGL/eglextchromium.h
-%{_libdir}/pkgconfig/egl.pc
-
-%files libGLES
-# No files, all provided by libglvnd
-%files libGLES-devel
-%dir %{_includedir}/GLES2
-%{_includedir}/GLES2/gl2platform.h
-%{_includedir}/GLES2/gl2.h
-%{_includedir}/GLES2/gl2ext.h
-%dir %{_includedir}/GLES3
-%{_includedir}/GLES3/gl3platform.h
-%{_includedir}/GLES3/gl3.h
-%{_includedir}/GLES3/gl3ext.h
-%{_includedir}/GLES3/gl31.h
-%{_includedir}/GLES3/gl32.h
-%{_libdir}/pkgconfig/glesv2.pc
 
 %files libglapi
 %{_libdir}/libglapi.so.0
@@ -659,6 +615,11 @@ popd
 
 
 %changelog
+* Wed Nov 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.0~rc2-100
+- 19.3.0-rc2
+- Update file list for libglvnd 1.2
+- LTO support borrowed from xxmitsu COPR
+
 * Thu Oct 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.2.2-100
 - 19.2.2
 

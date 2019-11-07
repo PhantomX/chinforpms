@@ -1,0 +1,54 @@
+diff -up libglvnd-1.0.0/src/generate/eglFunctionList.py.jx libglvnd-1.0.0/src/generate/eglFunctionList.py
+--- libglvnd-1.0.0/src/generate/eglFunctionList.py.jx	2017-11-02 12:58:38.000000000 -0400
++++ libglvnd-1.0.0/src/generate/eglFunctionList.py	2018-03-15 12:43:19.113294070 -0400
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ 
+ """
+ Contains a list of EGL functions to generate dispatch functions for.
+diff -up libglvnd-1.0.0/src/generate/genCommon.py.jx libglvnd-1.0.0/src/generate/genCommon.py
+--- libglvnd-1.0.0/src/generate/genCommon.py.jx	2017-11-02 12:58:38.000000000 -0400
++++ libglvnd-1.0.0/src/generate/genCommon.py	2018-03-15 12:37:13.260268667 -0400
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # (C) Copyright 2015, NVIDIA CORPORATION.
+ # All Rights Reserved.
+diff -up libglvnd-1.0.0/src/generate/gen_egl_dispatch.py.jx libglvnd-1.0.0/src/generate/gen_egl_dispatch.py
+--- libglvnd-1.0.0/src/generate/gen_egl_dispatch.py.jx	2017-11-02 12:58:38.000000000 -0400
++++ libglvnd-1.0.0/src/generate/gen_egl_dispatch.py	2018-03-15 12:43:00.057032312 -0400
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ 
+ """
+ Generates dispatch functions for EGL.
+diff -up libglvnd-1.0.0/src/generate/gen_gldispatch_mapi.py.jx libglvnd-1.0.0/src/generate/gen_gldispatch_mapi.py
+--- libglvnd-1.0.0/src/generate/gen_gldispatch_mapi.py.jx	2017-11-02 12:58:38.000000000 -0400
++++ libglvnd-1.0.0/src/generate/gen_gldispatch_mapi.py	2018-03-15 12:37:13.283268982 -0400
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # Copyright (C) 2010 LunarG Inc.
+ # (C) Copyright 2015, NVIDIA CORPORATION.
+diff -up libglvnd-1.0.0/src/generate/gen_libgl_glxstubs.py.jx libglvnd-1.0.0/src/generate/gen_libgl_glxstubs.py
+--- libglvnd-1.0.0/src/generate/gen_libgl_glxstubs.py.jx	2017-11-02 12:58:38.000000000 -0400
++++ libglvnd-1.0.0/src/generate/gen_libgl_glxstubs.py	2018-03-15 12:37:10.684233282 -0400
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # (C) Copyright 2015, NVIDIA CORPORATION.
+ # All Rights Reserved.
+diff -up libglvnd-1.0.0/src/generate/gen_libOpenGL_exports.py.jx libglvnd-1.0.0/src/generate/gen_libOpenGL_exports.py
+--- libglvnd-1.0.0/src/generate/gen_libOpenGL_exports.py.jx	2017-11-02 12:58:38.000000000 -0400
++++ libglvnd-1.0.0/src/generate/gen_libOpenGL_exports.py	2018-03-15 12:37:13.308269324 -0400
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # (C) Copyright 2015, NVIDIA CORPORATION.
+ # All Rights Reserved.

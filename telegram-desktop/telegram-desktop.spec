@@ -157,7 +157,7 @@ sed -i "$(($(wc -l < out/Release/CMakeLists.txt) - 2)) r Telegram/gyp/CMakeLists
 export CC=gcc
 export CXX=g++
 
-RPM_FLTO_FLAGS="-flto=%{_smp_build_ncpus} -fuse-linker-plugin -fdisable-ipa-cdtor"
+RPM_FLTO_FLAGS="-flto=%{_smp_build_ncpus} -fuse-linker-plugin"
 export CFLAGS="$(echo %{optflags} | sed -e 's/-O2\b/-O3/') $RPM_FLTO_FLAGS"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"

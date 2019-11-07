@@ -58,17 +58,17 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 6
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 8b45ec2fbb6586e32852ae749fe1c91e66a70ad4
+%global pfcommit 5f7c1a7b496355ad73cce4a4138c24e8caf7c1a3
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -618,8 +618,6 @@ Patch320: arm64-tegra-jetson-tx1-fixes.patch
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 # https://patchwork.kernel.org/patch/11171225/
 Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
-# https://patchwork.ozlabs.org/patch/1170631/
-Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
 # https://www.spinics.net/lists/linux-tegra/msg44216.html
 Patch325: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
 
@@ -655,13 +653,7 @@ Patch504: dwc3-fix.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# CVE-2019-17666
-# rhbz 176362
-Patch506: 0001-rtlwifi-Fix-potential-overflow-on-P2P-code.patch 
-
 Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
-
-Patch510: iwlwifi-exclude-GEO-SAR-support-for-3168.patch
 
 ### Extra
 
@@ -1943,6 +1935,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.9-500.chinfo
+- 5.3.9 - pf6
+
 * Tue Oct 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.8-500.chinfo
 - 5.3.8 - pf5
 

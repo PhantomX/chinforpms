@@ -717,7 +717,7 @@ MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2/-O3/' -e 's/ -g\b/ -g1/')
 %if 0%{?build_with_clang}
 RPM_FLTO_FLAGS="-flto=thin -Wl,--thinlto-jobs=$RPM_NCPUS"
 %else
-RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -flifetime-dse=1 -fdisable-ipa-cdtor"
+RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -flifetime-dse=1"
 %endif
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS $RPM_FLTO_FLAGS"
 MOZ_LINK_FLAGS="$MOZ_OPT_FLAGS"

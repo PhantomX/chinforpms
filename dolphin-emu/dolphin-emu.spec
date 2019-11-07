@@ -162,7 +162,7 @@ popd
 
 sed \
   -e "/LTO/s|-flto|-flto=%{_smp_build_ncpus}|g" \
-  -e '/-flto=4/a\  check_and_add_flag(LTO -fdisable-ipa-cdtor)' \
+  -e '/-flto=4/a\  check_and_add_flag(LTO)' \
   -i CMakeLists.txt
 
 %if 0%{?with_snapshot}

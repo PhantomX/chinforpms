@@ -41,7 +41,7 @@ sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c png.c zip.c
 
 sed -e 's|./termhelper|%{_bindir}/%{name}-termhelper|g' -i terminal.c
 
-BLASTEM_OPTFLAGS="%(echo %{build_cflags} | sed -e 's/-O2\b/-O2/') -flto=%{_smp_build_ncpus} -fuse-linker-plugin -fdisable-ipa-cdtor"
+BLASTEM_OPTFLAGS="%(echo %{build_cflags} | sed -e 's/-O2\b/-O3/') -flto=%{_smp_build_ncpus} -fuse-linker-plugin"
 sed \
   -e "/^OPT:=/s|-O2 -flto|$BLASTEM_OPTFLAGS|g" \
   -e 's|$(OPT) $(LDFLAGS)|\0 %{build_ldflags}|g' \
@@ -52,7 +52,7 @@ icotool -x icons/windows.ico
 
 
 %build
-%make_build DATA_PATH=%{_datadir}/%{name} HOST_ZLIB=1
+%make_build CC=gcc DATA_PATH=%{_datadir}/%{name} HOST_ZLIB=1
 
 
 %install
