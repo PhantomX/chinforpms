@@ -1,11 +1,11 @@
 Name:           protontricks
-Version:        1.2.5
+Version:        1.3
 Release:        1%{?dist}
 Summary:        A simple wrapper that does winetricks things for Proton enabled games
 
 License:        GPLv3
 URL:            https://github.com/Matoking/protontricks
-Source0:        https://github.com/Matoking/protontricks/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 
@@ -46,6 +46,9 @@ Suggests:       zenity
 
 
 %changelog
+* Sat Nov 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3-1
+- 1.3
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.2.5-1
 - 1.2.5
 

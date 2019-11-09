@@ -1,7 +1,7 @@
 %global commit f2058389add08357910e736aab256d15cebb17e9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20191106
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -38,7 +38,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 0c89d96edcc37dfad1bc80dd81c52634f6832689
+%global wine_stagingver 4.19
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -75,7 +75,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.19
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -128,23 +128,16 @@ Patch101:       %{whq_url}/6dbb153ede48e77a87dddf37e5276276a701c5c3#/%{name}-whq
 Patch102:       %{whq_url}/9ae8da6bb4a8f66d55975fa0f14e5e413756d324#/%{name}-whq-9ae8da6.patch
 Patch103:       %{whq_url}/de94cfa775f9f41d1d65cbd8e7bf861cd7f9a871#/%{name}-whq-de94cfa.patch
 Patch104:       %{whq_url}/413aad39135b0b0f8255500b85fcc05337a5f138#/%{name}-whq-413aad3.patch
-Patch105:       %{whq_url}/99d047724e768822d6508573cd82a5c75b30bdcb#/%{name}-whq-99d0477.patch
-Patch106:       %{whq_url}/914b5519b1cd96f9ae19f1eec226e94af96354b9#/%{name}-whq-914b551.patch
-Patch107:       %{whq_url}/acf03ed9da0f7d3f94de9b47c44366be3ee47f8e#/%{name}-whq-acf03ed.patch
-Patch108:       %{whq_url}/b7b4bacaf99661e07c2f07a0260680b4e8bed4f8#/%{name}-whq-b7b4bac.patch
-Patch109:       %{whq_url}/427152ec7b4ee85631617b693dbf1deea763c0ba#/%{name}-whq-427152e.patch
-Patch110:       %{whq_url}/461b5e56f95eb095d97e4af1cb1c5fd64bb2862a#/%{name}-whq-61b5e5.patch
-Patch111:       %{whq_url}/e5354008f46bc0e345c06ac06a7a7780faa9398b#/%{name}-whq-e535400.patch
-Patch112:       %{whq_url}/b466419c32550cac59f4b6a891d02255eb94c5f2#/%{name}-whq-b466419.patch
-Patch113:       %{whq_url}/87307de2173ee813daca9bd93ec750f17d3eda94#/%{name}-whq-87307de.patch
-Patch114:       %{whq_url}/4a58d67106b63772322a682cf1022b1a290acdca#/%{name}-whq-4a58d67.patch
-Patch115:       %{whq_url}/0b7f4b40cf2f19f80765f798bfdb4733c8952c26#/%{name}-whq-0b7f4b4.patch
-Patch116:       %{whq_url}/6d7828e8df68178ca662bc618f7598254afcfbe1#/%{name}-whq-6d7828e.patch
-Patch117:       %{whq_url}/9099b9843f048565b8bc5b3ee084df55956c5bf4#/%{name}-whq-9099b98.patch
+Patch105:       %{whq_url}/1b3fa021909fcb13d1517a8df0b84b6a225e6b98#/%{name}-whq-1b3fa02.patch
+Patch106:       %{whq_url}/0b2e65f53aeb4fbda660828ad06bff554fccb1d5#/%{name}-whq-0b2e65f.patch
+Patch107:       %{whq_url}/0e183cc3c0d3b6f89f79047cdd71c389afc75073#/%{name}-whq-0e183cc.patch
+Patch108:       %{whq_url}/6796cd8ac4a3a03d7af3dd2139c12c53b984a089#/%{name}-whq-6796cd8.patch
+Patch109:       %{whq_url}/aef11864a47a33830eca086de8bf337ee9b5114a#/%{name}-whq-aef1186.patch
+Patch110:       %{whq_url}/1fddf230ffff2b0946f6b9ae13648b454785e23e#/%{name}-whq-1fddf23.patch
+Patch111:       %{whq_url}/b06d272d635d30f570b440da2308b53fcc43c7e9#/%{name}-whq-b06d272.patch
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch120:       %{name}-bug48032.patch
-Patch121:       %{name}-staging-revert-ded2e2.patch
 %endif
 
 # desktop dir
@@ -745,24 +738,18 @@ This package adds the opencl driver for wine.
 %endif
 
 %if 0%{?wine_staging}
-%patch117 -p1 -R
-%patch116 -p1 -R
-%patch115 -p1 -R
-%patch114 -p1 -R
-%patch113 -p1 -R
-%patch112 -p1 -R
-%patch111 -p1 -R
-%patch110 -p1 -R
-%patch109 -p1 -R
-%patch108 -p1 -R
-%patch107 -p1 -R
-%patch106 -p1 -R
-%patch105 -p1 -R
 %patch104 -p1 -R
 %patch103 -p1 -R
 %patch102 -p1 -R
 %patch101 -p1 -R
 %patch100 -p1 -R
+%patch105 -p1
+%patch106 -p1
+%patch107 -p1
+%patch108 -p1
+%patch109 -p1
+%patch110 -p1
+%patch111 -p1
 %patch120 -p1
 %endif
 
@@ -773,7 +760,6 @@ This package adds the opencl driver for wine.
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
-%patch121 -p1 -R
 
 %patch700 -p1
 %patch701 -p1
@@ -2451,6 +2437,9 @@ fi
 
 
 %changelog
+* Thu Nov 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.19-104
+- Revert to release
+
 * Thu Nov 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.19-103.20191106gitf205838
 - Try to fix last one
 

@@ -13,7 +13,7 @@
 
 Name:           libglvnd
 Version:        1.2.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 # Provide an upgrade path from the negativo17.org pkgs which have Epoch 1
 Epoch:          1
 Summary:        The GL Vendor-Neutral Dispatch library
@@ -76,10 +76,10 @@ Requires:       %{name}-core-devel%{?_isa} = %{epoch}:%{version}-%{release}
 # Required by any glx.h users.
 Requires:       libX11-devel%{?_isa}
 # We might split into more sub-packages
-Obsoletes:      mesa-libGLES-devel < 19.2.2-2
+Obsoletes:      mesa-libGLES-devel < 19.2.2-101
 Provides:       mesa-libGLES-devel
 Provides:       mesa-libGLES-devel%{?_isa}
-Obsoletes:      mesa-khr-devel < 19.2.2-2
+Obsoletes:      mesa-khr-devel < 19.2.2-101
 Provides:       mesa-khr-devel
 Provides:       mesa-khr-devel%{?_isa}
 Provides:       libGLES-devel
@@ -112,7 +112,7 @@ libOpenGL is the common dispatch interface for the workstation OpenGL API.
 Summary:        GLES support for libglvnd
 Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
 %{!?_without_mesa_glvnd_default:
-Obsoletes:      mesa-libGLES < 19.2.2-2
+Obsoletes:      mesa-libGLES < 19.2.2-101
 Provides:       mesa-libGLES
 Provides:       mesa-libGLES%{?_isa}
 Provides:       libGLES
@@ -278,6 +278,9 @@ xvfb-run -s '-screen 0 640x480x24' -d make check V=1 || \
 
 
 %changelog
+* Thu Nov 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.2.0-101
+- Fix obsoletes
+
 * Wed Nov 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.2.0-100
 - f31 backport
 
