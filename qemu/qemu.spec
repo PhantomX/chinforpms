@@ -137,23 +137,18 @@
 %{obsoletes_block_gluster} \
 %{obsoletes_block_rbd}
 
-# Release candidate version tracking
-# global rcver rc3
-%if 0%{?rcver:1}
-%global rcrel .%{rcver}
-%global rcstr -%{rcver}
-%endif
-
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
+# If rc, use "~" instead "-", as ~rc1
 Version: 4.1.0
-Release: 100%{?rcrel}%{?dist}
+Release: 101%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}%{?rcstr}.tar.xz
+%global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
+Source0: http://wiki.qemu-project.org/download/%{name}-%{ver}.tar.xz
 
 # guest agent service
 Source10: qemu-guest-agent.service
@@ -171,6 +166,14 @@ Source15: qemu-pr-helper.socket
 Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
+
+# gluster 4K block size fixes (bz #1737256)
+Patch0001: 0001-file-posix-Handle-undetectable-alignment.patch
+Patch0002: 0002-block-posix-Always-allocate-the-first-block.patch
+# Fix tests on kernel 5.3+
+Patch0003: 0003-tests-make-filemonitor-test-more-robust-to-event-ord.patch
+# Workaround for qcow2 triggered XFS corruption (bz #1763519)
+Patch0004: 0004-Revert-block-avoid-recursive-block_status-call-if-po.patch
 
 
 # documentation deps
@@ -887,7 +890,7 @@ This package provides the QEMU system emulator for Xtensa boards.
 
 
 %prep
-%setup -q -n qemu-%{version}%{?rcstr}
+%setup -q -n qemu-%{ver}
 %autopatch -p1
 
 # https://fedoraproject.org/wiki/Changes/Make_ambiguous_python_shebangs_error
@@ -1022,6 +1025,7 @@ run_configure_disable_everything() {
         --disable-sparse \
         --disable-spice \
         --disable-system \
+        --disable-tcg \
         --disable-tcmalloc \
         --disable-tools \
         --disable-tpm \
@@ -1063,6 +1067,7 @@ run_configure_disable_everything \
     --disable-pie \
     --enable-attr \
     --enable-linux-user \
+    --enable-tcg \
     --static
 
 make V=1 %{?_smp_mflags} $buildldflags
@@ -1080,6 +1085,7 @@ run_configure \
     --audio-drv-list=pa,sdl,alsa,oss \
     --enable-kvm \
     --enable-system \
+    --enable-tcg \
     --enable-linux-user \
     --enable-pie \
     --enable-modules \
@@ -1846,6 +1852,13 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sat Nov 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.1.0-101
+- Rawhide sync
+- Change rc versioning to "~" system
+
+* Sat Nov 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.1.0-100.1
+- rebuilt
+
 * Fri Aug 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.1.0-100
 - 4.1.0
 - Rawhide sync

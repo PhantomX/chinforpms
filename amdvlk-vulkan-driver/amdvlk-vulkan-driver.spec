@@ -13,19 +13,19 @@
 
 %global pkgname amdvlk
 
-%global commit1 40fbaf4c5446a361269c241d9112fff26575b5d0
+%global commit1 2c15e55bc4b7171d6fa4bbb0cd9265bb8ad999b8
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 3f15347d38da804814fdd9e24e2875ee0b2b9245
+%global commit2 2ba438ad4c592229a4ae14bd4368e318ac4f81eb
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 19a031d9f73b95101fd4d3d594aca27c00feb180
+%global commit3 ef2f9c22455a79eea10c14e44fe371c003322ba1
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 39abe2297ca58a2b84dcd9bc5e238fbc399bd6e0
+%global commit4 76c5b997630e558158dbdd8ca24a120071068631
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -62,7 +62,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2019.4.1
+Version:        2019.4.2
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -233,6 +233,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Sat Nov 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.4.2-1
+- 2019.Q4.2
+
 * Tue Oct 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.4.1-1
 - 2019.Q4.1
 - Improve settings file
