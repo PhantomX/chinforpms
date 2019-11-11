@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 5f7c1a7b496355ad73cce4a4138c24e8caf7c1a3
+%global pfcommit 20d4e1c63849675b687e9dcbb6b7d84df65bcf4d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id f0ffcb7b6506536d01c5b1c58576dae54a30e7e8
+%global opensuse_id 3bf0c5aa8136e50877aee8d4760668771e326ee7
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -606,11 +606,6 @@ Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 Patch304: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch305: ARM-tegra-usb-no-reset.patch
-
-# https://patchwork.kernel.org/patch/11173461/
-Patch307: arm64-dts-rockchip-fix-RockPro64-vdd-log-regulator-settings.patch
-# https://patchwork.kernel.org/patch/11155461/
-Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
@@ -1935,6 +1930,9 @@ fi
 #
 #
 %changelog
+* Sun Nov 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.10-500.chinfo
+- 5.3.10
+
 * Wed Nov 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.9-500.chinfo
 - 5.3.9 - pf6
 
