@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -68,7 +68,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 20d4e1c63849675b687e9dcbb6b7d84df65bcf4d
+%global pfcommit d7e68d7f5e1715540421c75eceafe8fc7b0184e1
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -623,9 +623,6 @@ Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
 # This is typical rpi, we have a driver but it has problems because ¯\_(ツ)_/¯ but this revert makes pictures work again.
 # https://patchwork.kernel.org/patch/11136979/
 Patch341: Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-driver-instead-of-firmware.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg761152.html
-Patch342: efi-libstub-arm-account-for-firmware-reserved-memory-at-the-base-of-RAM.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1930,6 +1927,10 @@ fi
 #
 #
 %changelog
+* Tue Nov 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.11-500.chinfo
+- 5.3.11 - pf7
+- f31 sync
+
 * Sun Nov 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.10-500.chinfo
 - 5.3.10
 

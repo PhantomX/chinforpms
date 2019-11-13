@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20191013
+// 20191112
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -45,6 +45,7 @@ pref("media.autoplay.allow-muted", false);
 pref("media.block-autoplay-until-in-foreground", true);
 pref("middlemouse.contentLoadURL", false);
 pref("toolkit.cosmeticAnimations.enabled", false);
+pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 
 // Startup
 pref("browser.startup.page", 0);

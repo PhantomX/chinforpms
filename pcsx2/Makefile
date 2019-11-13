@@ -28,7 +28,6 @@ clone: clean
 sanitize: clone
 ifeq ($(SANITIZE),1)
 	rm -rf $(DIRNAME)/3rdparty
-	rm -rf $(DIRNAME)/fps2bios
 	rm -rf $(DIRNAME)/tools
 	$(foreach var,$(PLUGINS),rm -rf $(DIRNAME)/plugins/$(var);)
 	rm -rf $(DIRNAME)/unfree

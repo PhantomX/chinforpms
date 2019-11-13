@@ -86,7 +86,6 @@ this emulator anyway.
 
 %if 0%{sanitize}
   rm -rf 3rdparty
-  rm -rf fps2bios
   rm -rf tools
   for plugin in \
     CDVDiso CDVDisoEFP CDVDlinuz CDVDolio CDVDpeops dev9ghzdrk PeopsSPU2 \

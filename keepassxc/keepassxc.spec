@@ -2,7 +2,7 @@
 %bcond_with yubikey
 
 Name:           keepassxc
-Version:        2.5.0
+Version:        2.5.1
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -116,6 +116,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Tue Nov 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.1-100
+- 2.5.1
+
 * Sat Oct 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.0-100
 - 2.5.0
 
