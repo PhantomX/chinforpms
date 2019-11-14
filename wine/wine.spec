@@ -1,7 +1,7 @@
-%global commit f2058389add08357910e736aab256d15cebb17e9
+%global commit 292b728908563952f56b0585d072f3d7a08e93b2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191106
-%global with_snapshot 0
+%global date 20191112
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -38,14 +38,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # uncomment to enable; comment-out to disable.
 %global wine_staging 1
-%global wine_stagingver 4.19
+%global wine_stagingver cec9c7c73e2643a0d5a778b844878225a4a8f21a
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 2a80677c9da0da3c450732bad55f03ffb036ddeb
+%global tkg_id ccf52520ec85b8d7c50c208562951420f8ea87f1
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -75,7 +75,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.19
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -128,13 +128,11 @@ Patch101:       %{whq_url}/6dbb153ede48e77a87dddf37e5276276a701c5c3#/%{name}-whq
 Patch102:       %{whq_url}/9ae8da6bb4a8f66d55975fa0f14e5e413756d324#/%{name}-whq-9ae8da6.patch
 Patch103:       %{whq_url}/de94cfa775f9f41d1d65cbd8e7bf861cd7f9a871#/%{name}-whq-de94cfa.patch
 Patch104:       %{whq_url}/413aad39135b0b0f8255500b85fcc05337a5f138#/%{name}-whq-413aad3.patch
-Patch105:       %{whq_url}/1b3fa021909fcb13d1517a8df0b84b6a225e6b98#/%{name}-whq-1b3fa02.patch
-Patch106:       %{whq_url}/0b2e65f53aeb4fbda660828ad06bff554fccb1d5#/%{name}-whq-0b2e65f.patch
-Patch107:       %{whq_url}/0e183cc3c0d3b6f89f79047cdd71c389afc75073#/%{name}-whq-0e183cc.patch
-Patch108:       %{whq_url}/6796cd8ac4a3a03d7af3dd2139c12c53b984a089#/%{name}-whq-6796cd8.patch
-Patch109:       %{whq_url}/aef11864a47a33830eca086de8bf337ee9b5114a#/%{name}-whq-aef1186.patch
-Patch110:       %{whq_url}/1fddf230ffff2b0946f6b9ae13648b454785e23e#/%{name}-whq-1fddf23.patch
-Patch111:       %{whq_url}/b06d272d635d30f570b440da2308b53fcc43c7e9#/%{name}-whq-b06d272.patch
+Patch105:       %{whq_url}/99d047724e768822d6508573cd82a5c75b30bdcb#/%{name}-whq-99d0477.patch
+Patch106:       %{whq_url}/914b5519b1cd96f9ae19f1eec226e94af96354b9#/%{name}-whq-914b551.patch
+Patch107:       %{whq_url}/acf03ed9da0f7d3f94de9b47c44366be3ee47f8e#/%{name}-whq-acf03ed.patch
+Patch108:       %{whq_url}/b7b4bacaf99661e07c2f07a0260680b4e8bed4f8#/%{name}-whq-b7b4bac.patch
+Patch109:       %{whq_url}/427152ec7b4ee85631617b693dbf1deea763c0ba#/%{name}-whq-427152e.patch
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch120:       %{name}-bug48032.patch
@@ -166,16 +164,15 @@ Patch700:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clo
 Patch701:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
 Patch702:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 Patch703:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
-Patch704:       %{tkg_url}/misc/legacy/steam.patch#/%{name}-tkg-steam.patch
+Patch704:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch705:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 
 Patch720:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
 Patch721:       %{tkg_url}/proton/fsync-staging-no_alloc_handle.patch#/%{name}-tkg-fsync-staging-no_alloc_handle.patch
 Patch722:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch723:       %{tkg_url}/proton-tkg-specific/winevulkan-1.1.113-proton.patch#/%{name}-tkg-winevulkan-1.1.113-proton.patch
-Patch724:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
-Patch725:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
-Patch726:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch723:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
+Patch724:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
+Patch725:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/9cf81304c03046cb337d8b7275af600e39373702.patch#/%{name}-valve-9cf8130.patch
@@ -738,18 +735,16 @@ This package adds the opencl driver for wine.
 %endif
 
 %if 0%{?wine_staging}
+%patch109 -p1 -R
+%patch108 -p1 -R
+%patch107 -p1 -R
+%patch106 -p1 -R
+%patch105 -p1 -R
 %patch104 -p1 -R
 %patch103 -p1 -R
 %patch102 -p1 -R
 %patch101 -p1 -R
 %patch100 -p1 -R
-%patch105 -p1
-%patch106 -p1
-%patch107 -p1
-%patch108 -p1
-%patch109 -p1
-%patch110 -p1
-%patch111 -p1
 %patch120 -p1
 %endif
 
@@ -776,7 +771,9 @@ sed -e 's|__stdcall XACT_NOTIFICATION_CALLBACK|XACT_NOTIFICATION_CALLBACK|g' -i 
 
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
-sed -i "s/  (Staging)/  (%{staging_banner})/g" libs/wine/Makefile.in
+sed \
+  -e "s/ (Staging)/ (%{staging_banner})/g" \
+  -i libs/wine/Makefile.in programs/winecfg/about.c
 
 %if 0%{?pba}
 cp -p %{S:1001} README-pba-pkg
@@ -790,7 +787,6 @@ cp -p %{S:1001} README-pba-pkg
 %patch723 -p1
 %patch724 -p1
 %patch725 -p1
-%patch726 -p1
 %patch800 -p1 -R
 
 
@@ -2437,6 +2433,9 @@ fi
 
 
 %changelog
+* Tue Nov 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.19-105.20191112git292b728
+- New snapshot, again
+
 * Thu Nov 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.19-104
 - Revert to release
 

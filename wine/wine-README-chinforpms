@@ -21,3 +21,7 @@ WINEFSYNC_SPINCOUNT=value
 WINE_LARGE_ADDRESS_AWARE override
 =================================
 Enable with WINE_LARGE_ADDRESS_AWARE=1 environment variable
+
+PROTON_FSHACK_INTEGER_SCALING override (nearest neighbour upscaling)
+=================================
+Enable with PROTON_FSHACK_INTEGER_SCALING=1 environment variable

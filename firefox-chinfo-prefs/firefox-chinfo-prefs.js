@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20191112
+// 20191113
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -69,6 +69,9 @@ pref("browser.urlbar.userMadeSearchSuggestionsChoice", true);
 
 // Enable Containers 
 // pref("privacy.userContext.enabled", true);
+
+// No reset nagging
+pref("browser.disableResetPrompt", true);
 
 // Don't show 'know your rights' on first run
 pref("browser.rights.3.shown", true);
