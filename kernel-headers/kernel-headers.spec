@@ -15,7 +15,7 @@
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 502
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -170,6 +170,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Thu Nov 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.11-502.chinfo
+- More bump
+
 * Wed Nov 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.11-501.chinfo
 - Bump
 

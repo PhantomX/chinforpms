@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20191113
+// 20191114
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -17,6 +17,7 @@ pref("browser.pagethumbnails.capturing_disabled", true);
 pref("browser.shell.checkDefaultBrowser", false);
 pref("browser.tabs.closeWindowWithLastTab", false);
 pref("browser.tabs.insertRelatedAfterCurrent", true);
+pref("browser.tabs.loadBookmarksInTabs", true);
 pref("browser.tabs.opentabfor.middleclick", false);
 //pref("browser.tabs.remote.allowLinkedWebInFileUriProcess", false);
 pref("browser.urlbar.clickSelectsAll", false);

@@ -1,0 +1,40 @@
+From d64c9aa098cc6e5c0b638438c4959eddfa7e24e2 Mon Sep 17 00:00:00 2001
+Message-Id: <d64c9aa098cc6e5c0b638438c4959eddfa7e24e2.1573679311.git.crobinso@redhat.com>
+From: Cole Robinson <crobinso@redhat.com>
+Date: Wed, 13 Nov 2019 16:05:11 -0500
+Subject: [PATCH] tests: fix modules-test 'duplicate test case' error
+
+./configure --enable-sdl --audio-drv-list=sdl --enable-modules
+
+Will generate two identical test names: /$arch/module/load/sdl
+Which generates an error like:
+
+(tests/modules-test:23814): GLib-ERROR **: 18:23:06.359: duplicate test case path: /aarch64//module/load/sdl
+
+Add the subsystem prefix in the name as well, so instead we get:
+
+/$arch/module/load/audio-sdl
+/$arch/module/load/ui-sdl
+
+Signed-off-by: Cole Robinson <crobinso@redhat.com>
+---
+ tests/modules-test.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tests/modules-test.c b/tests/modules-test.c
+index d1a6ace218..88217686e1 100644
+--- a/tests/modules-test.c
++++ b/tests/modules-test.c
+@@ -64,7 +64,8 @@ int main(int argc, char *argv[])
+     g_test_init(&argc, &argv, NULL);
+ 
+     for (i = 0; i < G_N_ELEMENTS(modules); i += 2) {
+-        char *testname = g_strdup_printf("/module/load/%s", modules[i + 1]);
++        char *testname = g_strdup_printf("/module/load/%s%s",
++                                         modules[i], modules[i + 1]);
+         qtest_add_data_func(testname, modules + i, test_modules_load);
+         g_free(testname);
+     }
+-- 
+2.23.0
+

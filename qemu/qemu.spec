@@ -115,6 +115,7 @@
 %define requires_ui_curses Requires: %{name}-ui-curses = %{evr}
 %define requires_ui_gtk Requires: %{name}-ui-gtk = %{evr}
 %define requires_ui_sdl Requires: %{name}-ui-sdl = %{evr}
+%define requires_ui_spice_app Requires: %{name}-ui-spice-app = %{evr}
 
 %global requires_all_modules \
 %{requires_block_curl} \
@@ -130,7 +131,8 @@
 %{requires_audio_sdl} \
 %{requires_ui_curses} \
 %{requires_ui_gtk} \
-%{requires_ui_sdl}
+%{requires_ui_sdl} \
+%{requires_ui_spice_app}
 
 # Modules which can be conditionally built
 %global obsoletes_some_modules \
@@ -141,8 +143,8 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 4.1.0
-Release: 101%{?dist}
+Version: 4.2.0~rc1
+Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -167,22 +169,16 @@ Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
 
-# gluster 4K block size fixes (bz #1737256)
-Patch0001: 0001-file-posix-Handle-undetectable-alignment.patch
-Patch0002: 0002-block-posix-Always-allocate-the-first-block.patch
-# Fix tests on kernel 5.3+
-Patch0003: 0003-tests-make-filemonitor-test-more-robust-to-event-ord.patch
-# Workaround for qcow2 triggered XFS corruption (bz #1763519)
-Patch0004: 0004-Revert-block-avoid-recursive-block_status-call-if-po.patch
-
+# Fix a test suite error
+Patch1: 0001-tests-fix-modules-test-duplicate-test-case-error.patch
 
 # documentation deps
 BuildRequires: texinfo
 # For /usr/bin/pod2man
 BuildRequires: perl-podlators
+%ifnarch %{ix86}
 # For sanity test
 BuildRequires: qemu-sanity-check-nodeps
-%ifnarch %{ix86}
 BuildRequires: kernel
 %endif
 %if %{have_iasl}
@@ -519,6 +515,11 @@ Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description ui-sdl
 This package provides the additional SDL UI for QEMU.
 
+%package  ui-spice-app
+Summary: QEMU spice-app UI driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description ui-spice-app
+This package provides the additional spice-app UI for QEMU. 
 
 %if %{have_kvm}
 %package kvm
@@ -1174,7 +1175,7 @@ popd
 %find_lang %{name}
 
 # Copy some static data into place
-install -D -p -m 0644 -t %{buildroot}%{qemudocdir} Changelog README COPYING COPYING.LIB LICENSE
+install -D -p -m 0644 -t %{buildroot}%{qemudocdir} Changelog README.rst COPYING COPYING.LIB LICENSE
 install -D -p -m 0644 qemu.sasl %{buildroot}%{_sysconfdir}/sasl2/qemu.conf
 
 # Generate qemu-system-* man pages
@@ -1358,18 +1359,18 @@ getent passwd qemu >/dev/null || \
 %files common -f %{name}.lang
 %dir %{qemudocdir}
 %doc %{qemudocdir}/Changelog
-%doc %{qemudocdir}/COPYING
-%doc %{qemudocdir}/COPYING.LIB
-%doc %{qemudocdir}/LICENSE
 %doc %{qemudocdir}/qemu-doc.html
 %doc %{qemudocdir}/qemu-doc.txt
 %doc %{qemudocdir}/qemu-ga-ref.html
 %doc %{qemudocdir}/qemu-ga-ref.txt
 %doc %{qemudocdir}/qemu-qmp-ref.html
 %doc %{qemudocdir}/qemu-qmp-ref.txt
-%doc %{qemudocdir}/README
+%doc %{qemudocdir}/README.rst
 %doc %{qemudocdir}/interop
 %doc %{qemudocdir}/specs
+%license %{qemudocdir}/COPYING
+%license %{qemudocdir}/COPYING.LIB
+%license %{qemudocdir}/LICENSE
 %dir %{_datadir}/%{name}/
 %{_datadir}/applications/qemu.desktop
 %{_datadir}/icons/hicolor/*/apps/*
@@ -1480,7 +1481,8 @@ getent passwd qemu >/dev/null || \
 %{_libdir}/qemu/ui-gtk.so
 %files ui-sdl
 %{_libdir}/qemu/ui-sdl.so
-
+%files ui-spice-app
+%{_libdir}/qemu/ui-spice-app.so
 
 %files -n ivshmem-tools
 %{_bindir}/ivshmem-client
@@ -1759,7 +1761,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/ppc_rom.bin
 %{_datadir}/%{name}/qemu_vga.ndrv
 %{_datadir}/%{name}/skiboot.lid
-%{_datadir}/%{name}/spapr-rtas.bin
 %{_datadir}/%{name}/u-boot.e500
 %{_datadir}/%{name}/u-boot-sam460-20100605.bin
 %ifarch %{power64}
@@ -1829,6 +1830,7 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-x86_64.1*
 %{_datadir}/%{name}/bios.bin
 %{_datadir}/%{name}/bios-256k.bin
+%{_datadir}/%{name}/bios-microvm.bin
 %{_datadir}/%{name}/kvmvapic.bin
 %{_datadir}/%{name}/linuxboot.bin
 %{_datadir}/%{name}/linuxboot_dma.bin
@@ -1852,6 +1854,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Nov 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc1-100
+- 4.2.0-rc1
+- Rawhide sync
+
 * Sat Nov 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.1.0-101
 - Rawhide sync
 - Change rc versioning to "~" system

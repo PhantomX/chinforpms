@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 502
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -64,18 +64,18 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 8
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d7e68d7f5e1715540421c75eceafe8fc7b0184e1
+%global pfcommit d75d82e62c5f24246d9420900f9d45ee6d50e037
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
 %global pfrange %(c=%{pfcommit}; echo ${c:0:7})
 %endif
-%global extra_patch https://github.com/pfactum/pf-kernel/compare/v%{major_ver}.%{base_sublevel}...%{pfrange}.diff#/pf-kernel-v%{major_ver}.%{base_sublevel}-%{pfrange}.patch
+%global extra_patch https://github.com/pfactum/pf-kernel/compare/v%{major_ver}.%{base_sublevel}...%{pfcommit}.diff#/pf-kernel-v%{major_ver}.%{base_sublevel}-%{pfrange}.patch
 
 # Apply a patch range from stable repository, extending pf unmantained branches
 # Root Makefile are stripped from patching
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 3bf0c5aa8136e50877aee8d4760668771e326ee7
+%global opensuse_id 0a195a872b500a84c204b5a097349911bc7433b7
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -661,6 +661,11 @@ Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1018: %{opensuse_url}/ata-sata_mv-avoid-trigerrable-BUG_ON.patch#/openSUSE-ata-sata_mv-avoid-trigerrable-BUG_ON.patch
+Patch1019: %{opensuse_url}/ata-define-AC_ERR_OK.patch#/openSUSE-ata-define-AC_ERR_OK.patch
+Patch1020: %{opensuse_url}/ata-make-qc_prep-return-ata_completion_errors.patch#/openSUSE-ata-make-qc_prep-return-ata_completion_errors.patch
+Patch1021: %{opensuse_url}/x86-boot-64-Round-memory-hole-size-up-to-next-PMD-pa.patch#/openSUSE-x86-boot-64-Round-memory-hole-size-up-to-next-PMD-pa.patch
+Patch1022: %{opensuse_url}/drm-amdgpu-Add-DC-feature-mask-to-disable-fractional.patch#/openSUSE-drm-amdgpu-Add-DC-feature-mask-to-disable-fractional.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -683,9 +688,6 @@ Patch3001: %{pf_url}/a6c083c2e4274c7e203c5ef989f568c6d5f945eb.patch#/pf-a6c083c.
 %global graysky2_id 87168bfa27b782e1c9435ba28ebe3987ddea8d30
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v8.1+_kernel_v4.13+.patch
 %endif
-
-%else
-Patch4004:  0001-block-bfq-revert-deschedule-empty-bfq_queues-not-ref.patch
 
 %endif
 
@@ -1929,6 +1931,10 @@ fi
 #
 #
 %changelog
+* Thu Nov 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.11-502.chinfo
+- pf8, BFQ fix
+- Add some openSUSE patches
+
 * Wed Nov 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.11-501.chinfo
 - Revert bfq patch
 
