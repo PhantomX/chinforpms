@@ -1,7 +1,7 @@
-%global commit 292b728908563952f56b0585d072f3d7a08e93b2
+%global commit a63a98c3884fa4d9b299450634d6aea25c3ad48b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191112
-%global with_snapshot 1
+%global date 20191114
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -36,16 +36,16 @@
 %global winevxd vxd%{?libext}
 
 # build with staging-patches, see:  https://wine-staging.com/
-# uncomment to enable; comment-out to disable.
+# 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver cec9c7c73e2643a0d5a778b844878225a4a8f21a
+%global wine_stagingver 4.20
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id ccf52520ec85b8d7c50c208562951420f8ea87f1
+%global tkg_id 7f11af7e7704f7b5bb261eb9f28a45f2062b708a
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -74,8 +74,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.19
-Release:        105%{?gver}%{?dist}
+Version:        4.20
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -173,6 +173,7 @@ Patch722:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{
 Patch723:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 Patch724:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch725:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/9cf81304c03046cb337d8b7275af600e39373702.patch#/%{name}-valve-9cf8130.patch
@@ -787,6 +788,7 @@ cp -p %{S:1001} README-pba-pkg
 %patch723 -p1
 %patch724 -p1
 %patch725 -p1
+%patch790 -p1
 %patch800 -p1 -R
 
 
@@ -2433,6 +2435,9 @@ fi
 
 
 %changelog
+* Sat Nov 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.20-100
+- 4.20
+
 * Tue Nov 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.19-105.20191112git292b728
 - New snapshot, again
 
