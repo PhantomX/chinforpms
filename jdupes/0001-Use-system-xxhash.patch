@@ -1,0 +1,47 @@
+From 4f89b97b2a7d739869fadf40d26e29ce32500156 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 16 Nov 2019 19:23:20 -0300
+Subject: [PATCH] Use system xxhash
+
+---
+ Makefile | 3 +--
+ jdupes.c | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index d3cc5e8..372a8b5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -124,7 +124,6 @@ INSTALL_DATA    = $(INSTALL) -m 0644
+ OBJS += jdupes.o jody_paths.o jody_sort.o jody_win_unicode.o string_malloc.o
+ OBJS += jody_cacheinfo.o
+ OBJS += act_deletefiles.o act_linkfiles.o act_printmatches.o act_summarize.o act_printjson.o
+-OBJS += xxhash.o
+ OBJS += $(ADDITIONAL_OBJECTS)
+ 
+ OBJS_CLEAN += jdupes-standalone
+@@ -132,7 +131,7 @@ OBJS_CLEAN += jdupes-standalone
+ all: $(PROGRAM_NAME)
+ 
+ $(PROGRAM_NAME): $(OBJS)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -o $(PROGRAM_NAME) $(OBJS)
++	$(CC) $(CFLAGS) -lxxhash $(LDFLAGS) -o $(PROGRAM_NAME) $(OBJS)
+ 
+ winres.o : winres.rc winres.manifest.xml
+ 	windres winres.rc winres.o
+diff --git a/jdupes.c b/jdupes.c
+index a13f95d..aef864d 100644
+--- a/jdupes.c
++++ b/jdupes.c
+@@ -41,7 +41,7 @@
+ #include <sys/time.h>
+ #include "jdupes.h"
+ #include "string_malloc.h"
+-#include "xxhash.h"
++#include <xxhash.h>
+ #include "jody_sort.h"
+ #include "jody_win_unicode.h"
+ #include "jody_cacheinfo.h"
+-- 
+2.23.0
+
