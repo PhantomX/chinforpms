@@ -148,9 +148,9 @@ index 45090ec..9a412c9 100644
 +    LIBS += `pkg-config --libs zlib`
 +endif
 +
- EXECUTABLE_STRIPPED=nosym-reicast.$(PLATFORM_EXT)
- DC_PLATFORM=dreamcast
- EXECUTABLE=reicast.$(PLATFORM_EXT)
+ ifdef UNIT_TESTS
+     CFLAGS += -DUNIT_TESTS
+ endif
 -- 
 2.23.0
 
