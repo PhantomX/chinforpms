@@ -24,7 +24,7 @@
 %global pge_id 71f953e12d930c15c92b6832cdeb06d9c1c828df
 %global pge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{pge_id}/game-patches-testing/dxvk-patches
 
-%global tkg_id a51bed936229dc1ebbda0dff7ccfe49349925ee3
+%global tkg_id 6a94c5fd0cfec7eb2bece3459e2b23b2e4eb15bf
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/dxvk-tools/DXVKBUILD/patches
 
 %global dxvk_async 1
@@ -34,7 +34,7 @@
 %global pkgname dxvk
 
 Name:           wine-%{pkgname}
-Version:        1.4.4
+Version:        1.4.5
 Release:        1%{?dist}
 Summary:        Vulkan-based D3D11 implementation for Linux / Wine
 
@@ -271,6 +271,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Nov 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4.5-1
+- 1.4.5
+
 * Mon Oct 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4.4-1
 - 1.4.4
 

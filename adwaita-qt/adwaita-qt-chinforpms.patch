@@ -1,24 +1,22 @@
-From 4e671a8c80286e9032136057396f989d2e64cfa6 Mon Sep 17 00:00:00 2001
+From 699e3c2a8c5c282986cd63b5d1d8a399932fb047 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 9 Aug 2019 15:24:50 -0300
+Date: Tue, 19 Nov 2019 09:51:03 -0300
 Subject: [PATCH] Remove some ugly paddings
 
 ---
- style/adwaita.h | 43 ++++++++++++++++++++++---------------------
- 1 file changed, 22 insertions(+), 21 deletions(-)
+ style/adwaita.h | 41 +++++++++++++++++++++--------------------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
 
 diff --git a/style/adwaita.h b/style/adwaita.h
-index b7c830a..d804e2e 100644
+index 09b970a..3a396f7 100644
 --- a/style/adwaita.h
 +++ b/style/adwaita.h
-@@ -136,50 +136,51 @@ namespace Adwaita
- 
+@@ -137,49 +137,50 @@ namespace Adwaita
          // line editors
          LineEdit_FrameWidth = 3,
--        LineEdit_MarginHeight = 4,
+         LineEdit_MarginHeight = 2,
 -        LineEdit_MarginWidth = 8,
 -        LineEdit_MinHeight = 36,
-+        LineEdit_MarginHeight = 3,
 +        LineEdit_MarginWidth = 6,
 +        LineEdit_MinHeight = 30,
          LineEdit_MinWidth = 80,
@@ -61,7 +59,7 @@ index b7c830a..d804e2e 100644
          // buttons
 -        Button_MinHeight = 36,
 +        Button_FrameWidth = 3,
-+        Button_MinHeight = 20,
++        Button_MinHeight = 30,
          Button_MinWidth = 80,
 -        Button_MarginHeight = 4,
 -        Button_MarginWidth = 8,
@@ -70,9 +68,9 @@ index b7c830a..d804e2e 100644
          Button_ItemSpacing = 4,
  
          // tool buttons
--        ToolButton_MarginWidth = 6,
-+        ToolButton_MarginWidth = 5,
-         ToolButton_ItemSpacing = 4,
+         ToolButton_MarginWidth = 6,
+-        ToolButton_ItemSpacing = 4,
++        ToolButton_ItemSpacing = 5,
          ToolButton_InlineIndicatorWidth = 12,
  
          // checkboxes and radio buttons
@@ -104,5 +102,5 @@ index b7c830a..d804e2e 100644
          TabBar_TabOverlap = 1,
          TabBar_BaseOverlap = 0,
 -- 
-2.21.0
+2.23.0
 

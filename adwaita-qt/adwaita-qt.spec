@@ -1,6 +1,15 @@
+%global commit 1d09ba4c764a62e4275ad0667ec3e61916fa9957
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20191104
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           adwaita-qt
 Version:        1.1.0
-Release:        100%{?dist}
+Release:        101%{?gver}%{?dist}
 
 License:        LGPLv2+
 Summary:        Adwaita theme for Qt-based applications
@@ -8,9 +17,13 @@ Summary:        Adwaita theme for Qt-based applications
 Epoch:          1
 
 Url:            https://github.com/MartinBriza/adwaita-qt
-Source0:        %{url}/archive/%{version}/adwaita-qt-%{version}.tar.gz
 
-Patch0:         %{name}-upstream-fixes.patch
+%if 0%{?with_snapshot}
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+%endif
+
 # Remove some ugly paddings
 Patch10:        %{name}-chinforpms.patch
 
@@ -46,7 +59,11 @@ Summary:        Adwaita Qt common files
 
 
 %prep
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+%else
 %autosetup -p1
+%endif
 
 
 %build
@@ -83,6 +100,9 @@ make install/fast DESTDIR=%{buildroot} -C "%{_target_platform}-qt5"
 
 
 %changelog
+* Tue Nov 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1.0-101.20191104git1d09ba4
+- Snapshot
+
 * Fri Aug 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1.0-100
 - 1.1.0
 - Rawhide sync

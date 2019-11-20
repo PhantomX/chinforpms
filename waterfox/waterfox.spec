@@ -776,7 +776,7 @@ export MOZ_NOSPAM=1
 export STRIP=%{_prefix}/bin/true
 %if 0%{?build_with_lto}
 export TMPDIR="$(pwd)/tmpdir"
-mkdir -p "$TMPDIR"
+mkdir -p "\$TMPDIR"
 %endif
 EOF
 
@@ -837,12 +837,12 @@ mkdir -p %{buildroot}{%{_libdir},%{_bindir},%{_datadir}/applications}
 desktop-file-install --dir %{buildroot}%{_datadir}/applications %{SOURCE20}
 
 # set up the waterfox start script
-rm -rf %{buildroot}%{_bindir}/waterfox
+rm -rf %{buildroot}%{_bindir}/%{name}
 sed -e 's,/__PREFIX__,%{_prefix},g' %{SOURCE21} \
-  > %{buildroot}%{_bindir}/waterfox
-chmod 755 %{buildroot}%{_bindir}/waterfox
+  > %{buildroot}%{_bindir}/%{name}
+chmod 755 %{buildroot}%{_bindir}/%{name}
 
-install -p -D -m 644 %{SOURCE23} %{buildroot}%{_mandir}/man1/waterfox.1
+install -p -D -m 644 %{SOURCE23} %{buildroot}%{_mandir}/man1/%{name}.1
 
 rm -f %{buildroot}/%{mozappdir}/waterfox-config
 rm -f %{buildroot}/%{mozappdir}/update-settings.ini
@@ -850,7 +850,7 @@ rm -f %{buildroot}/%{mozappdir}/update-settings.ini
 for s in 16 22 24 32 48 64 128 256; do
   mkdir -p %{buildroot}%{_datadir}/icons/hicolor/${s}x${s}/apps
   cp -p browser/branding/unofficial/default${s}.png \
-    %{buildroot}%{_datadir}/icons/hicolor/${s}x${s}/apps/waterfox.png
+    %{buildroot}%{_datadir}/icons/hicolor/${s}x${s}/apps/%{name}.png
 done
 
 # Register as an application to be visible in the software center
@@ -996,14 +996,14 @@ if [ $1 -eq 0 ]; then
 fi
 
 %files -f %{name}.lang
-%{_bindir}/waterfox
+%{_bindir}/%{name}
 %{mozappdir}/%{name}
 %{mozappdir}/%{name}-bin
 %doc %{_mandir}/man1/*
 %dir %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}/*
-%dir %{_datadir}/waterfox/extensions/*
-%dir %{_libdir}/waterfox/extensions/*
+%dir %{_datadir}/%{name}/extensions/*
+%dir %{_libdir}/%{name}/extensions/*
 %{_metainfodir}/*.appdata.xml
 %{_datadir}/applications/*.desktop
 %dir %{mozappdir}

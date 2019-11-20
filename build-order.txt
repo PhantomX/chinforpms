@@ -80,6 +80,7 @@ gpa
 gtk3-nocsd
 hollywood
 image-analyzer
+jdupes
 joy2key
 keepassxc
 kernel-tools

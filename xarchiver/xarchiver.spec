@@ -1,6 +1,15 @@
+%global commit edb6aa7921dc4af97ff772812bdf123fed27d650
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20191013
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           xarchiver
 Version:        0.5.4.14
-Release:        100%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        Desktop Environment independent archive manager
 
 Epoch:          1
@@ -8,7 +17,11 @@ Epoch:          1
 License:        GPLv2+
 URL:            https://github.com/ib/%{name}
 
+%if 0%{?with_snapshot}
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+%endif
 # Metainfo from Arch
 Source1:        %{name}.appdata.xml
 
@@ -51,7 +64,11 @@ command line programs at runtime.
 
 
 %prep
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+%else
 %autosetup -p1
+%endif
 
 touch AUTHORS INSTALL NEWS
 autoreconf -ivf
@@ -99,6 +116,9 @@ rm -f _docs/{AUTHORS,COPYING,ChangeLog,NEWS,README,TODO}
 
 
 %changelog
+* Tue Nov 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.4.14-101.20191013gitedb6aa7
+- Snapshot
+
 * Thu Jan 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.4.14-100
 - Updated to 0.5.4.14
 - Update summary, URLs and description
