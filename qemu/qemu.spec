@@ -143,7 +143,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 4.2.0~rc1
+Version: 4.2.0~rc2
 Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
@@ -171,6 +171,8 @@ Source21: 95-kvm-ppc64-memlock.conf
 
 # Fix a test suite error
 Patch1: 0001-tests-fix-modules-test-duplicate-test-case-error.patch
+# Properly skip pseries test on not-kvm
+Patch2: 0002-pseries-disable-migration-test-if-dev-kvm-cannot-be-.patch 
 
 # documentation deps
 BuildRequires: texinfo
@@ -1854,6 +1856,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Nov 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc2-100
+- 4.2.0-rc2
+- Rawhide sync
+
 * Thu Nov 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc1-100
 - 4.2.0-rc1
 - Rawhide sync

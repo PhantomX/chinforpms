@@ -1,7 +1,7 @@
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
 Name:           asbru-cm
-Version:        5.2.0
+Version:        5.2.1
 Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
@@ -15,7 +15,6 @@ Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 Patch0:         %{name}-nogconf.patch
 # Fix passwords with TigerVNC
 Patch1:         %{name}-vncpasswd.patch
-Patch100:       %{vc_url}/commit/f380ac277ac8381de5548c554ff095b7444594ad.patch#/%{name}-gh-f380ac2.patch
 
 BuildArch:      noarch
 
@@ -141,6 +140,9 @@ cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
 %changelog
+* Wed Nov 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.1-1
+- 5.2.1
+
 * Fri May 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.0-1
 - 5.2.0
 

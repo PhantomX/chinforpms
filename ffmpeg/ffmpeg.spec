@@ -157,6 +157,7 @@ BuildRequires:  nasm
 %{!?_without_nvenc:BuildRequires: nv-codec-headers}
 %{!?_without_amr:BuildRequires: opencore-amr-devel vo-amrwbenc-devel}
 %{?_with_omx:BuildRequires: libomxil-bellagio-devel}
+BuildRequires:  libxcb-devel
 %{!?_without_openal:BuildRequires: openal-soft-devel}
 %if 0%{!?_without_opencl:1}
 BuildRequires:  opencl-headers ocl-icd-devel
@@ -182,6 +183,7 @@ BuildRequires:  texinfo
 %{!?_without_x264:BuildRequires: x264-devel >= 0.0.0-0.31}
 %{!?_without_x265:BuildRequires: x265-devel}
 %{!?_without_xvid:BuildRequires: xvidcore-devel}
+BuildRequires:  zimg-devel >= 2.7.0
 BuildRequires:  zlib-devel
 %{?_with_zmq:BuildRequires: zeromq-devel}
 %{!?_without_zvbi:BuildRequires: zvbi-devel}
@@ -305,6 +307,7 @@ This package contains development files for %{name}
     %{!?_without_x264:--enable-libx264} \\\
     %{!?_without_x265:--enable-libx265} \\\
     %{!?_without_xvid:--enable-libxvid} \\\
+    --enable-libzimg \\\
     %{?_with_zmq:--enable-libzmq} \\\
     %{!?_without_zvbi:--enable-libzvbi} \\\
     --enable-avfilter \\\
@@ -432,6 +435,9 @@ install -pm755 tools/qt-faststart %{buildroot}%{_bindir}
 
 
 %changelog
+* Wed Nov 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.2.1-3
+- RPMFusion sync - dav1d 0.5.1 rebuild
+
 * Wed Oct 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.2.1-2
 - Fixes for multilib, do not bump
 
