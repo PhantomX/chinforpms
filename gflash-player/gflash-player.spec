@@ -5,7 +5,7 @@
 %global binname gflashplayer
 
 Name:           gflash-player
-Version:        32.0.0.238
+Version:        32.0.0.293
 Release:        1%{?dist}
 Summary:        Adobe Flash Player Projector
 
@@ -93,6 +93,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
 %changelog
+* Thu Nov 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 32.0.0.293-1
+- 32.0.0.293
+
 * Mon Aug 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 32.0.0.238-1
 - 32.0.0.238
 

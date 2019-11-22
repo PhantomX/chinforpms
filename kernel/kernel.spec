@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 502
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -58,18 +58,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 8
+%global post_factum 9
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d75d82e62c5f24246d9420900f9d45ee6d50e037
+%global pfcommit ea4a761f4a8d6aef0473f82b0b3aae2e2a8109cf
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -96,7 +96,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 0a195a872b500a84c204b5a097349911bc7433b7
+%global opensuse_id a6f60814d3dbf81b05caf84e6143251ca14f5f37
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -691,7 +691,7 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 
 %endif
 
-Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/aa09f7906f2eca142485535a674e54e548844490/linux53-tkg/linux53-tkg-patches/0007-v5.3-fsync.patch#/tkg-0007-v5.3-fsync.patch
+Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/29e1f0028080335ae1ba4aa553a5d576402299f4/linux53-tkg/linux53-tkg-patches/0007-v5.3-fsync.patch#/tkg-0007-v5.3-fsync.patch
 
 %if !0%{?zen}
 Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1931,6 +1931,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.12-500.chinfo
+- 5.3.12 - pf9
+
 * Thu Nov 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.11-502.chinfo
 - pf8, BFQ fix
 - Add some openSUSE patches

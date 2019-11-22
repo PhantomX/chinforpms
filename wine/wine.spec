@@ -1,7 +1,7 @@
-%global commit a63a98c3884fa4d9b299450634d6aea25c3ad48b
+%global commit aa3d01e65019fb2f135f74cf26cfa1661ca09325
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191114
-%global with_snapshot 0
+%global date 20191120
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -38,14 +38,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 4.20
+%global wine_stagingver 29cc0422576f93bb032e966ae107b7cf9d717695
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 7f11af7e7704f7b5bb261eb9f28a45f2062b708a
+%global tkg_id 7c7a21acd691801e6fb0fca51796fa971e34812b
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -75,7 +75,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.20
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -117,6 +117,9 @@ Source110:      wine-iexplore.desktop
 Source111:      wine-inetcpl.desktop
 Source112:      wine-joycpl.desktop
 Source113:      wine-taskmgr.desktop
+
+# AppData files
+Source150:      wine.appdata.xml
 
 # build fixes
 
@@ -170,9 +173,11 @@ Patch705:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch720:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
 Patch721:       %{tkg_url}/proton/fsync-staging-no_alloc_handle.patch#/%{name}-tkg-fsync-staging-no_alloc_handle.patch
 Patch722:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch723:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
-Patch724:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
-Patch725:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch723:       %{tkg_url}/proton-tkg-specific/proton-vk-bits-4.5.patch#/%{name}-tkg-proton-vk-bits-4.5.patch
+Patch724:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-tkg-proton_fs_hack_integer_scaling.patch
+Patch725:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
+Patch726:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
+Patch727:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 
 Patch800:       revert-grab-fullscreen.patch
@@ -276,6 +281,7 @@ BuildRequires:  pkgconfig(xrender)
 BuildRequires:  pkgconfig(xxf86dga)
 BuildRequires:  pkgconfig(xxf86vm)
 BuildRequires:  pkgconfig(zlib)
+BuildRequires:  libappstream-glib
 
 # Silverlight DRM-stuff needs XATTR enabled.
 %if 0%{?wine_staging}
@@ -788,6 +794,8 @@ cp -p %{S:1001} README-pba-pkg
 %patch723 -p1
 %patch724 -p1
 %patch725 -p1
+%patch726 -p1
+%patch727 -p1
 %patch790 -p1
 %patch800 -p1 -R
 
@@ -1165,6 +1173,11 @@ install -p -m 0644 loader/wine.de.UTF-8.man %{buildroot}%{_mandir}/de.UTF-8/man1
 install -p -m 0644 loader/wine.fr.UTF-8.man %{buildroot}%{_mandir}/fr.UTF-8/man1/wine.1
 mkdir -p %{buildroot}%{_mandir}/pl.UTF-8/man1
 install -p -m 0644 loader/wine.pl.UTF-8.man %{buildroot}%{_mandir}/pl.UTF-8/man1/wine.1
+
+# install and validate AppData file
+mkdir -p %{buildroot}/%{_metainfodir}/
+install -p -m 0644 %{SOURCE150} %{buildroot}/%{_metainfodir}/%{name}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}/%{_metainfodir}/%{name}.appdata.xml
 
 %if 0%{?rhel} == 6
 %post sysvinit
@@ -2059,7 +2072,7 @@ fi
 %{_libdir}/wine/winevulkan.dll.so
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing32.%{winedll}
-%{_libdir}/wine/winhttp.dll.so
+%{_libdir}/wine/winhttp.%{winedll}
 %{_libdir}/wine/wininet.dll.so
 %{_libdir}/wine/winmm.%{winedll}
 %{_libdir}/wine/winnls32.%{winedll}
@@ -2364,6 +2377,7 @@ fi
 %{_datadir}/applications/wine-oleview.desktop
 %{_datadir}/desktop-directories/Wine.directory
 %config %{_sysconfdir}/xdg/menus/applications-merged/wine.menu
+%{_metainfodir}/%{name}.appdata.xml
 %{_datadir}/icons/hicolor/*/apps/*png
 %{_datadir}/icons/hicolor/scalable/apps/*svg
 
@@ -2435,6 +2449,9 @@ fi
 
 
 %changelog
+* Thu Nov 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.20-101.20191120gitaa3d01e
+- Snapshot
+
 * Sat Nov 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.20-100
 - 4.20
 
