@@ -91,7 +91,7 @@ ExclusiveArch: armv7hnl
 Summary:        Digital VCR and streaming server
 Name:           ffmpeg%{?flavor}
 Version:        4.2.1
-Release:        2%{?date}%{?date:git}%{?rel}%{?dist}
+Release:        3%{?date}%{?date:git}%{?rel}%{?dist}
 License:        %{ffmpeg_license}
 URL:            http://ffmpeg.org/
 %if 0%{?date}
@@ -435,7 +435,7 @@ install -pm755 tools/qt-faststart %{buildroot}%{_bindir}
 
 
 %changelog
-* Wed Nov 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.2.1-3
+* Fri Nov 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.2.1-3
 - RPMFusion sync - dav1d 0.5.1 rebuild
 
 * Wed Oct 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.2.1-2

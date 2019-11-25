@@ -1,0 +1,102 @@
+From patchwork Mon Oct 21 20:06:48 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Navid Emamdoost <navid.emamdoost@gmail.com>
+X-Patchwork-Id: 1142634
+Return-Path: <SRS0=BTkm=YO=vger.kernel.org=linux-kernel-owner@kernel.org>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA234CA9EAF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Oct 2019 20:06:59 +0000 (UTC)
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+	by mail.kernel.org (Postfix) with ESMTP id BED092084C
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Oct 2019 20:06:59 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key)
+ header.d=gmail.com header.i=@gmail.com header.b="X0MaxGN8"
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1730272AbfJUUG6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Oct 2019 16:06:58 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:34607 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729406AbfJUUG6 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 21 Oct 2019 16:06:58 -0400
+Received: by mail-io1-f68.google.com with SMTP id q1so17550475ion.1
+        for <linux-kernel@vger.kernel.org>;
+ Mon, 21 Oct 2019 13:06:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=DIJwALRySeQ5zjngsNl1Oe1bgDriLGNlywHknPtGNKc=;
+        b=X0MaxGN8uxeLjYheUzuflEGcTyAqv8YypCRnHwa4mTnDTdSFogTx9CmYGVwjKjmBXc
+         ImeJqPHySwSBK5FlsHysS8KWszaYtbNOrRgojf/0F+/RfarheahIQiunZyUotRZ9TAof
+         xIVIJOh6WGISCOs5n1WzwQq1osMxUM9HEh3Szg6lGyhQQ7k6jd7Jemg1+TpOtd8USEPH
+         r3a/x+xk11Q/5Opu+1zLFcPL9hujVi3s+U9By+5oBW5H6sgEMiQdgX9KSjIN0fWYy6p2
+         vxxpECwHW/25y9nXwmH/GJvl9MgOHRHPBm4IGzRvu6ppe9DHbvB6CFaDWsXRNxK+lzJf
+         Idjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DIJwALRySeQ5zjngsNl1Oe1bgDriLGNlywHknPtGNKc=;
+        b=j2RCkPeTaplVf86HaOq2gLcWX/ri2fSs8uSZL59RuMcUohLJhfdxMZ5PCO5yGpm3vz
+         9U3Eo7NyCGuTCv+xLJvanDw5YSe+QadEz92hTBZbP5vdhYcWlT1byLjRnLXr1n3O7fvG
+         irPww56P/AyO4hZBMwQpJLvAcwgKYLYbUVdL2QQVAIk+RAnIfYxFEMG56H6NPDhOyDer
+         rmEyr3Z1yQZHEmrqPSvaYyQ5rWLgfHl9GVACAz/nNoF2+j5H7NFRWyfPFAD4qBtnaimm
+         GVINQdfuXGU18S4Qlt26cvs4G3kx05gVVDtEn1LYJ/Wrim1vPPalKKJ3CJtvUd6NH5pC
+         /jxQ==
+X-Gm-Message-State: APjAAAXVQAU+1Bai+XjnGC0zCaCEr0QIS571QaPV5KbcsMXjGxIQjnYr
+        zFmkQrr1KoRu2rZPwhOr/yU=
+X-Google-Smtp-Source: 
+ APXvYqwEYhuc38vwAbFtVAVtw8KV1JZMFhL3O31vXn9gEH9A2rMxW/fJ2esBpTWkjZy7Hbvve2Y6Tg==
+X-Received: by 2002:a02:3208:: with SMTP id j8mr93347jaa.86.1571688417041;
+        Mon, 21 Oct 2019 13:06:57 -0700 (PDT)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id
+ d21sm4743611iom.29.2019.10.21.13.06.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Oct 2019 13:06:56 -0700 (PDT)
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc: emamd001@umn.edu, kjlu@umn.edu, smccaman@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Corey Minyard <minyard@acm.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        openipmi-developer@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ipmi: Fix memory leak in __ipmi_bmc_register
+Date: Mon, 21 Oct 2019 15:06:48 -0500
+Message-Id: <20191021200649.1511-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To: unlisted-recipients:; (no To-header on input)
+Sender: linux-kernel-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-kernel.vger.kernel.org>
+X-Mailing-List: linux-kernel@vger.kernel.org
+
+In the impelementation of __ipmi_bmc_register() the allocated memory for
+bmc should be released in case ida_simple_get() fails.
+
+Fixes: 68e7e50f195f ("ipmi: Don't use BMC product/dev ids in the BMC name")
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+ drivers/char/ipmi/ipmi_msghandler.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
+index 2aab80e19ae0..e4928ed46396 100644
+--- a/drivers/char/ipmi/ipmi_msghandler.c
++++ b/drivers/char/ipmi/ipmi_msghandler.c
+@@ -3031,8 +3031,11 @@ static int __ipmi_bmc_register(struct ipmi_smi *intf,
+ 		bmc->pdev.name = "ipmi_bmc";
+ 
+ 		rv = ida_simple_get(&ipmi_bmc_ida, 0, 0, GFP_KERNEL);
+-		if (rv < 0)
++		if (rv < 0) {
++			kfree(bmc);
+ 			goto out;
++		}
++
+ 		bmc->pdev.dev.driver = &ipmidriver.driver;
+ 		bmc->pdev.id = rv;
+ 		bmc->pdev.dev.release = release_bmc_device;

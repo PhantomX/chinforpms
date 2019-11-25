@@ -58,7 +58,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -69,7 +69,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ea4a761f4a8d6aef0473f82b0b3aae2e2a8109cf
+%global pfcommit e89ab15e7ff5d0d3b0a2266862cb3f467156aa7a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -627,6 +627,9 @@ Patch341: Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-driver-instead-of-f
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
+
+Patch500: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
+
 # rhbz 1431375
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
@@ -645,7 +648,66 @@ Patch504: dwc3-fix.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
+# CVE-2019-19074 rhbz 1774933 1774934
+Patch506: 0001-ath9k-release-allocated-buffer-if-timed-out.patch
+
+# CVE-2019-19073 rhbz 1774937 1774939
+Patch507: 0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
+
+# CVE-2019-19072 rhbz 1774946 1774947
+Patch508: 0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
+
+# CVE-2019-19071 rhbz 1774949 1774950
+Patch509: rsi-release-skb-if-rsi_prepare_beacon-fails.patch
+
+# CVE-2019-19070 rhbz 1774957 1774958
+Patch510: spi-gpio-prevent-memory-leak-in-spi_gpio_probe.patch
+
+# CVE-2019-19068 rhbz 1774963 1774965
+Patch511: rtl8xxxu-prevent-leaking-urb.patch
+
+# CVE-2019-19043 rhbz 1774972 1774973
+Patch512: net-next-v2-9-9-i40e-prevent-memory-leak-in-i40e_setup_macvlans.patch
+
+# CVE-2019-19066 rhbz 1774976 1774978
+Patch513: scsi-bfa-release-allocated-memory-in-case-of-error.patch
+
+# CVE-2019-19046 rhbz 1774988 1774989
+Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
+
+# CVE-2019-19050 rhbz 1774998 1775002
+# CVE-2019-19062 rhbz 1775021 1775023
+Patch515: crypto-user-fix-memory-leak-in-crypto_reportstat.patch
+
+# CVE-2019-19064 rhbz 1775010 1775011
+Patch516: spi-lpspi-fix-memory-leak-in-fsl_lpspi_probe.patch
+
+# CVE-2019-19063 rhbz 1775015 1775016
+Patch517: rtlwifi-prevent-memory-leak-in-rtl_usb_probe.patch
+
+# CVE-2019-19059 rhbz 1775042 1775043
+Patch518: 0001-iwlwifi-pcie-fix-memory-leaks-in-iwl_pcie_ctxt_info_.patch
+
+# CVE-2019-19058 rhbz 1775047 1775048
+Patch519: 0001-iwlwifi-dbg_ini-fix-memory-leak-in-alloc_sgtable.patch
+
+# CVE-2019-19057 rhbz 1775050 1775051
+Patch520: mwifiex-pcie-Fix-memory-leak-in-mwifiex_pcie_init_evt_ring.patch
+
+# CVE-2019-19053 rhbz 1775956 1775110
+Patch521: rpmsg-char-release-allocated-memory.patch
+
+# CVE-2019-19056 rhbz 1775097 1775115
+Patch522: mwifiex-pcie-fix-memory-leak-in-mwifiex_pcie_alloc_cmdrsp_buf.patch
+
+# CVE-2019-19055 rhbz 1775074 1775116
+Patch523: 0001-nl80211-fix-memory-leak-in-nl80211_get_ftm_responder.patch
+
+# CVE-2019-19054 rhbz 1775063 1775117
+Patch524: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
+
+# CVE-2019-19077 rhbz 1775724 1775725
+Patch525: 0001-RDMA-Fix-goto-target-to-release-the-allocated-memory.patch
 
 ### Extra
 
@@ -1931,6 +1993,10 @@ fi
 #
 #
 %changelog
+* Sun Nov 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.13-500.chinfo
+- 5.3.13
+- f31 sync
+
 * Thu Nov 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.12-500.chinfo
 - 5.3.12 - pf9
 
