@@ -15,15 +15,15 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 3
+%global base_sublevel 4
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
-%global opensuse_id a6f60814d3dbf81b05caf84e6143251ca14f5f37
+%global opensuse_id f582eb16431f7adb0c4aac39d11d0c7d92a333a2
 
 # Do we have a -stable update to apply?
-%global stable_update 13
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -241,6 +241,8 @@ sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.conf
 ###
 %build
 
+export LD=ld.bfq
+
 cd linux-%{kversion}
 
 %global perf_make \
@@ -302,6 +304,7 @@ popd
 ###
 
 %install
+export LD=ld.bfq
 
 cd linux-%{kversion}
 
@@ -460,7 +463,7 @@ popd
 
 %files -n libbpf
 %{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.0.4
+%{_libdir}/libbpf.so.0.0.5
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf-devel
@@ -476,6 +479,9 @@ popd
 
 
 %changelog
+* Mon Nov 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.0-500.chinfo
+- 5.4.0
+
 * Sun Nov 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.13-500.chinfo
 - 5.3.13
 

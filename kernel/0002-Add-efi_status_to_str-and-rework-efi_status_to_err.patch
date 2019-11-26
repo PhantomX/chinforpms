@@ -39,9 +39,9 @@ index 557a47829d0..e8f9c7d84e9 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
- #include <linux/acpi.h>
  #include <linux/ucs2_string.h>
  #include <linux/memblock.h>
+ #include <linux/security.h>
 +#include <linux/bsearch.h>
  
  #include <asm/early_ioremap.h>
@@ -177,7 +177,7 @@ index 557a47829d0..e8f9c7d84e9 100644
 +	return found->description;
  }
  
- bool efi_is_table_address(unsigned long phys_addr)
+ static DEFINE_SPINLOCK(efi_mem_reserve_persistent_lock);
 -- 
 2.15.0
 

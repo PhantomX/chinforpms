@@ -72,6 +72,7 @@ BASERELEASE=$(($BASERELEASE-1))
 BASERELEASE=$BASERELEASE perl -p -i -e 's|%global baserelease.*|%global baserelease $ENV{'BASERELEASE'}|' kernel-headers.spec
 
 if [ $RELEASED -eq 0 ]; then
+	[ -n "$BUILDID" ] && sed -i -e 's/^# define buildid .local/%define buildid '$BUILDID'/' kernel-headers.spec
 	RC=$RC perl -p -i -e 's|%global rcrev.*|%global rcrev $ENV{'RC'}|' kernel-headers.spec
 	GITREV=$GITREV perl -p -i -e 's|%define gitrev.*|%define gitrev $ENV{'GITREV'}|' kernel-headers.spec
 	rpmdev-bumpspec -c "Linux v$MAJORVER.$NEWBASE-rc$RC.git$GITREV" kernel-headers.spec

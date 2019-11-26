@@ -2,6 +2,10 @@
 
 Dir=$1
 List=$2
+Dest="extra"
+
+# Destination was specified on the command line
+test -n "$3" && Dest="$3"
 
 pushd $Dir
 rm -rf modnames
@@ -11,43 +15,45 @@ find . -name "*.ko" -type f > modnames
 rm -rf dep.list dep2.list
 rm -rf req.list req2.list
 touch dep.list req.list
-cp $2 .
+cp "$List" .
 
-for dep in `cat modnames`
-do
-  depends=`modinfo $dep | grep depends| cut -f2 -d":" | sed -e 's/^[ \t]*//'`
-  [ -z "$depends" ] && continue;
-  for mod in `echo $depends | sed -e 's/,/ /g'`
+# This variable needs to be exported because it is used in sub-script
+# executed by xargs
+export ListName=$(basename "$List")
+
+# NB: this loop runs 2000+ iterations. Try to be fast.
+NPROC=`nproc`
+[ -z "$NPROC" ] && NPROC=1
+cat modnames | xargs -r -n1 -P $NPROC sh -c '
+  dep=$1
+  depends=`modinfo $dep | sed -n -e "/^depends/ s/^depends:[ \t]*//p"`
+  [ -z "$depends" ] && exit
+  for mod in ${depends//,/ }
   do
-    match=`grep "^$mod.ko" mod-extra.list` ||:
-    if [ -z "$match" ]
+    match=$(grep "^$mod.ko" "$ListName")
+    [ -z "$match" ] && continue
+    # check if the module we are looking at is in mod-extra too.
+    # if so we do not need to mark the dep as required.
+    mod2=${dep##*/}  # same as `basename $dep`, but faster
+    match2=$(grep "^$mod2" "$ListName")
+    if [ -n "$match2" ]
     then
+      #echo $mod2 >> notreq.list
       continue
-    else
-      # check if the module we're looking at is in mod-extra too.  if so
-      # we don't need to mark the dep as required
-      mod2=`basename $dep`
-      match2=`grep "^$mod2" mod-extra.list` ||:
-      if [ -n "$match2" ]
-      then
-        continue
-          #echo $mod2 >> notreq.list
-        else
-          echo $mod.ko >> req.list
-      fi
     fi
+    echo $mod.ko >> req.list
   done
-done
+' DUMMYARG0   # xargs appends MODNAME, which becomes $dep in the script above
 
 sort -u req.list > req2.list
-sort -u mod-extra.list > mod-extra2.list
-join -v 1 mod-extra2.list req2.list > mod-extra3.list
+sort -u "$ListName" > modules2.list
+join -v 1 modules2.list req2.list > modules3.list
 
-for mod in `cat mod-extra3.list`
+for mod in $(cat modules3.list)
 do
   # get the path for the module
-  modpath=`grep /$mod modnames` ||:
-  [ -z "$modpath" ]  && continue;
+  modpath=`grep /$mod modnames`
+  [ -z "$modpath" ] && continue
   echo $modpath >> dep.list
 done
 
@@ -56,7 +62,7 @@ sort -u dep.list > dep2.list
 # now move the modules into the extra/ directory
 for mod in `cat dep2.list`
 do
-  newpath=`dirname $mod | sed -e 's/kernel\//extra\//'`
+  newpath=`dirname $mod | sed -e "s/kernel\\//$Dest\//"`
   mkdir -p $newpath
   mv $mod $newpath
 done
@@ -76,5 +82,5 @@ done
 
 pushd $Dir
 rm modnames dep.list dep2.list req.list req2.list
-rm mod-extra.list mod-extra2.list mod-extra3.list
+rm "$ListName" modules2.list modules3.list
 popd

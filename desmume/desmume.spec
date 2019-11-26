@@ -1,6 +1,6 @@
-%global commit 9e6b4f128f45f84155c6e971e464de84c88986a7
+%global commit 7a3699aba6318ac5818a162dfc55feb3718bcd0e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190728
+%global date 20191120
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           desmume
 Version:        0.9.12
-Release:        0.11%{?gver}%{?dist}
+Release:        0.12%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 Epoch:          1
@@ -29,6 +29,8 @@ Patch0:         %{name}-dontlookinbuilddir.patch
 # Use system tinyxml instead of the embedded copy
 Patch1:         %{name}-tinyxml.patch
 Patch2:         %{name}-format-security.patch
+
+Patch100:       %{vc_url}/pull/294.patch#/%{name}-gh-294.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -196,6 +198,9 @@ done
 
 
 %changelog
+* Mon Nov 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.9.12-0.12.20191120git7a3699a
+- New snapshot
+
 * Sun Sep 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.9.12-0.11.20190728git9e6b4f1
 - -DGLIB_DISABLE_DEPRECATION_WARNINGS
 

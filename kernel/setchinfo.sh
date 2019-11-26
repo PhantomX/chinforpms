@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20190916
+# 20191125
 
 set -e
 
@@ -41,6 +41,7 @@ MNATIVE
 
 pf="
 CC_OPTIMIZE_HARDER
+CC_OPTIMIZE_FOR_PERFORMANCE_O3
 "
 
 pfd="

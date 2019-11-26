@@ -2,7 +2,20 @@
 #
 # This script takes the merged config files and processes them through oldconfig
 # and listnewconfig
+#
 
+usage()
+{
+	# alphabetical order please
+	echo "process_configs.sh [ options ] package_name kernel_version"
+	echo "     -a: report all errors, equivalent to [-c -n -w -i]"
+	echo "     -c: error on mismatched config options"
+	echo "     -i: continue on error"
+	echo "     -n: error on unset config options"
+	echo "     -t: test run, do not overwrite original config"
+	echo "     -w: error on misconfigured config options"
+	exit 1
+}
 
 die()
 {
@@ -14,16 +27,16 @@ die()
 switch_to_toplevel()
 {
 	path="$(pwd)"
-	while test "$path" != "/"
+	while test -n "$path"
 	do
 		test -e $path/MAINTAINERS && \
-		test -d $path/drivers && \
-		break
+			test -d $path/drivers && \
+			break
 
 		path="$(dirname $path)"
 	done
 
-	test "$path" != "/" || die "Can't find toplevel"
+	test -n "$path"  || die "Can't find toplevel"
 	echo "$path"
 }
 
@@ -48,7 +61,7 @@ checkoptions()
 				configs[a[1]]=a[2];
 			} else {
 				if (configs[a[1]] != "" && configs[a[1]] != a[2])
-					 print "Found "a[1]"="configs[a[1]]" after generation, had " a[1]"="a[2]" in Source tree";
+					 print "Found "a[1]"="a[2]" after generation, had " a[1]"="configs[a[1]]" in Source tree";
 			}
 		}
 	' $1 $2 > .mismatches
@@ -57,14 +70,15 @@ checkoptions()
 	then
 		echo "Error: Mismatches found in configuration files"
 		cat .mismatches
-		exit 1
+		RETURNCODE=1
+		[ "$CONTINUEONERROR" ] || exit 1
 	fi
 }
 
 function process_configs()
 {
 	# assume we are in $source_tree/configs, need to get to top level
-	pushd $(switch_to_toplevel)
+	pushd $(switch_to_toplevel) &>/dev/null
 
 	for cfg in $SCRIPT_DIR/${PACKAGE_NAME}${KVERREL}${SUBARCH}*.config
 	do
@@ -73,48 +87,96 @@ function process_configs()
 		cfgorig="${cfg}.orig"
 		cat $cfg > $cfgorig
 
+		if [ "$arch" = "EMPTY" ]
+		then
+			# This arch is intentionally left blank
+			continue
+		fi
 		echo -n "Processing $cfg ... "
 
-		# an empty grep is good but leaves a return value, so use # 'true' to bypass
-		make ARCH=$arch KCONFIG_CONFIG=$cfg listnewconfig | grep -E 'CONFIG_' > .newoptions || true
+		make ARCH=$arch KCONFIG_CONFIG=$cfgorig LD=ld.bfd listnewconfig >& .listnewconfig
+		grep -E 'CONFIG_' .listnewconfig > .newoptions
 		if test -n "$NEWOPTIONS" && test -s .newoptions
 		then
 			echo "Found unset config items, please set them to an appropriate value"
 			cat .newoptions
 			rm .newoptions
-			exit 1
+			RETURNCODE=1
+			[ "$CONTINUEONERROR" ] || exit 1
 		fi
 		rm .newoptions
 
-		make ARCH=$arch KCONFIG_CONFIG=$cfg olddefconfig > /dev/null || exit 1
+		grep -E 'config.*warning' .listnewconfig > .warnings
+		if test -n "$CHECKWARNINGS" && test -s .warnings
+		then
+			echo "Found misconfigured config items, please set them to an appropriate value"
+			cat .warnings
+			rm .warnings
+			RETURNCODE=1
+			[ "$CONTINUEONERROR" ] || exit 1
+		fi
+		rm .warnings
+
+		rm .listnewconfig
+
+		make ARCH=$arch KCONFIG_CONFIG=$cfgorig LD=ld.bfd olddefconfig > /dev/null || exit 1
 		echo "# $arch" > ${cfgtmp}
-		cat "${cfg}" >> ${cfgtmp}
+		cat "${cfgorig}" >> ${cfgtmp}
 		if test -n "$CHECKOPTIONS"
 		then
-			checkoptions $cfgtmp $cfgorig
+			checkoptions $cfg $cfgtmp
 		fi
-		mv ${cfgtmp} ${cfg}
+		# if test run, don't overwrite original
+		if test -n "$TESTRUN"
+		then
+			rm ${cfgtmp}
+		else
+			mv ${cfgtmp} ${cfg}
+		fi
 		rm ${cfgorig}
 		echo "done"
 	done
-	rm "$SCRIPT_DIR"/*.config.old
+	rm "$SCRIPT_DIR"/*.config*.old
 	popd > /dev/null
 
 	echo "Processed config files are in $SCRIPT_DIR"
 }
 
-NEWOPTIONS=""
 CHECKOPTIONS=""
+CONTINUEONERROR=""
+NEWOPTIONS=""
+TESTRUN=""
+CHECKWARNINGS=""
+
+RETURNCODE=0
 
 while [[ $# -gt 0 ]]
 do
 	key="$1"
 	case $key in
-		-n)
+		-a)
+			CHECKOPTIONS="x"
+			CONTINUEONERROR="x"
 			NEWOPTIONS="x"
+			CHECKWARNINGS="x"
 			;;
 		-c)
 			CHECKOPTIONS="x"
+			;;
+		-h)
+			usage
+			;;
+		-i)
+			CONTINUEONERROR="x"
+			;;
+		-n)
+			NEWOPTIONS="x"
+			;;
+		-t)
+			TESTRUN="x"
+			;;
+		-w)
+			CHECKWARNINGS="x"
 			;;
 		*)
 			break;;
@@ -133,3 +195,4 @@ SCRIPT_DIR="$(dirname $SCRIPT)"
 cd $SCRIPT_DIR
 
 process_configs
+exit $RETURNCODE

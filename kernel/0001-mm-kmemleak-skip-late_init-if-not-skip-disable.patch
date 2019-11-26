@@ -1,0 +1,71 @@
+From 14d329da03ea1145efce866b127b10ea6390b5e1 Mon Sep 17 00:00:00 2001
+From: Murphy Zhou <jencce.kernel@gmail.com>
+Date: Sun, 29 Sep 2019 17:56:59 +0800
+Subject: [PATCH] mm/kmemleak: skip late_init if not skip disable
+
+Now if DEFAULT_OFF set to y, kmemleak_init will start the cleanup_work
+workqueue. Then late_init call will set kmemleak_initialized to 1, the
+cleaup workqueue will try to do cleanup, triggering:
+
+[24.738773] ==================================================================
+[24.742784] BUG: KASAN: global-out-of-bounds in __kmemleak_do_cleanup+0x166/0x180
+[24.744144] Key type ._fscrypt registered
+[24.745680] Read of size 8 at addr ffffffff88746c90 by task kworker/3:1/171
+[24.745687]
+[24.745697] CPU: 3 PID: 171 Comm: kworker/3:1 Not tainted 5.3.0-v5.3-12475-gcbafe18 #1
+[24.745701] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+[24.745710] Workqueue: events kmemleak_do_cleanup
+[24.745717] Call Trace:
+[24.745736]  dump_stack+0x7c/0xc0
+[24.745755]  print_address_description.constprop.4+0x1f/0x300
+[24.751562] Key type .fscrypt registered
+[24.754370]  __kasan_report.cold.8+0x76/0xb2
+[24.754388]  ? __kmemleak_do_cleanup+0x166/0x180
+[24.754407]  kasan_report+0xe/0x20
+[24.778543]  __kmemleak_do_cleanup+0x166/0x180
+[24.780795]  process_one_work+0x919/0x17d0
+[24.782929]  ? pwq_dec_nr_in_flight+0x320/0x320
+[24.785092]  worker_thread+0x87/0xb40
+[24.786948]  ? __kthread_parkme+0xc3/0x190
+[24.789217]  ? process_one_work+0x17d0/0x17d0
+[24.791414]  kthread+0x333/0x3f0
+[24.793031]  ? kthread_create_worker_on_cpu+0xc0/0xc0
+[24.795473]  ret_from_fork+0x3a/0x50
+[24.797303]
+[24.798091] The buggy address belongs to the variable:
+[24.800634]  mem_pool_free_count+0x10/0x40
+[24.802656]
+[24.803434] Memory state around the buggy address:
+[24.805793]  ffffffff88746b80: 04 fa fa fa fa fa fa fa 00 00 00 00 00 00 00 00
+[24.809177]  ffffffff88746c00: 00 fa fa fa fa fa fa fa 00 00 fa fa fa fa fa fa
+[24.812407] >ffffffff88746c80: 04 fa fa fa fa fa fa fa 00 00 fa fa fa fa fa fa
+[24.815638]                          ^
+[24.817372]  ffffffff88746d00: 00 00 fa fa fa fa fa fa 00 00 00 00 00 00 00 00
+[24.820740]  ffffffff88746d80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[24.824021] ==================================================================
+
+Fixes: c5665868183f ("mm: kmemleak: use the memory pool for early allocations")
+Signed-off-by: Murphy Zhou <jencce.kernel@gmail.com>
+---
+ mm/kmemleak.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/mm/kmemleak.c b/mm/kmemleak.c
+index 03a8d84badad..b9baf617fe35 100644
+--- a/mm/kmemleak.c
++++ b/mm/kmemleak.c
+@@ -1946,6 +1946,11 @@ void __init kmemleak_init(void)
+  */
+ static int __init kmemleak_late_init(void)
+ {
++	if (!kmemleak_skip_disable) {
++		kmemleak_disable();
++		return 0;
++	}
++
+ 	kmemleak_initialized = 1;
+ 
+ 	debugfs_create_file("kmemleak", 0644, NULL, NULL, &kmemleak_fops);
+-- 
+2.21.0
+

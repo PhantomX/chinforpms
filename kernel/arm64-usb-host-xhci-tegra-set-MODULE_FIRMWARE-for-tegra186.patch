@@ -1,0 +1,36 @@
+From 5a39c1ffc4e18603f2c9af3c0a556e2db6e70705 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Sat, 2 Nov 2019 16:52:15 +0000
+Subject: [PATCH 1/2] usb: host: xhci-tegra: set MODULE_FIRMWARE for tegra186
+
+Set the MODULE_FIRMWARE for tegra186, it's registered for 124/210 and
+ensures the firmware is available at the appropriate time such as in
+the initrd, else if the firmware is unavailable the driver fails with
+the following errors:
+
+tegra-xusb 3530000.usb: Direct firmware load for nvidia/tegra186/xusb.bin failed with error -2
+tegra-xusb 3530000.usb: failed to request firmware: -2
+tegra-xusb 3530000.usb: failed to load firmware: -2
+tegra-xusb: probe of 3530000.usb failed with error -2
+
+Fixes: 5f9be5f3f899 ("usb: host: xhci-tegra: Add Tegra186 XUSB support")
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ drivers/usb/host/xhci-tegra.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/usb/host/xhci-tegra.c b/drivers/usb/host/xhci-tegra.c
+index 2ff7c911fbd0..d25aba8fa219 100644
+--- a/drivers/usb/host/xhci-tegra.c
++++ b/drivers/usb/host/xhci-tegra.c
+@@ -1433,6 +1433,7 @@ static const struct tegra_xusb_soc tegra186_soc = {
+ 	.scale_ss_clock = false,
+ 	.has_ipfs = false,
+ };
++MODULE_FIRMWARE("nvidia/tegra186/xusb.bin");
+ 
+ static const struct of_device_id tegra_xusb_of_match[] = {
+ 	{ .compatible = "nvidia,tegra124-xusb", .data = &tegra124_soc },
+-- 
+2.23.0
+

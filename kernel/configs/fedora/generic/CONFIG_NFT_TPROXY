@@ -1,1 +1,1 @@
-# CONFIG_NFT_TPROXY is not set
+CONFIG_NFT_TPROXY=m
