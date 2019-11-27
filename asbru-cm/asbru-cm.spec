@@ -2,7 +2,7 @@
 
 Name:           asbru-cm
 Version:        5.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
@@ -84,7 +84,7 @@ remote terminal sessions and automating repetitive tasks.
 %autosetup -p1
 
 sed -r -e "s|\\\$RealBin[ ]*\.[ ]*'|'%{_datadir}/%{name}/lib|g" -i lib/pac_conn
-sed -r -e "s|\\\$RealBin,|'%{_datadir}/%{name}',|g" -i lib/pac_conn
+sed -r -e "s|\\\$RealBin,|'%{_datadir}/%{name}/lib',|g" -i lib/pac_conn
 find . -type f -exec sed -i \
   -e "s|\$RealBin[ ]*\.[ ]*'|'%{_datadir}/%{name}|g" \
   -e 's|"\$RealBin/|"%{_datadir}/%{name}/|g' \
@@ -140,6 +140,9 @@ cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
 %changelog
+* Tue Nov 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.1-2
+- Fix search path
+
 * Wed Nov 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.1-1
 - 5.2.1
 

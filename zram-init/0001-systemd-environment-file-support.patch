@@ -1,0 +1,106 @@
+From d94478d2fb6eccd94ed4e8e780a06c10a05f0711 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 26 Nov 2019 13:52:31 -0300
+Subject: [PATCH] systemd: environment file support
+
+---
+ systemd/system/zram_btrfs.service   | 5 ++++-
+ systemd/system/zram_swap.service    | 4 +++-
+ systemd/system/zram_tmp.service     | 5 ++++-
+ systemd/system/zram_var_tmp.service | 5 ++++-
+ 4 files changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/systemd/system/zram_btrfs.service b/systemd/system/zram_btrfs.service
+index 8f7fb94..c24ac14 100644
+--- a/systemd/system/zram_btrfs.service
++++ b/systemd/system/zram_btrfs.service
+@@ -5,6 +5,9 @@ Conflicts=umount.target
+ Before=local-fs.target umount.target
+ 
+ [Service]
++Environment=BTRFS_ALGO=zstd
++Environment=BTRFS_SIZE=2048
++EnvironmentFile=-/etc/sysconfig/zram-init
+ Type=oneshot
+ RemainAfterExit=true
+ 
+@@ -14,7 +17,7 @@ RemainAfterExit=true
+ # zram_swap.service, zram_var_tmp.service, zram_tmp.service, and
+ # that num_devices in modprobe.d/zram.conf contains the maximal used number + 1
+ 
+-ExecStart=/sbin/zram-init -d1 -s2 -azstd -tbtrfs -Lzbtrfs 2048 -
++ExecStart=/sbin/zram-init -d1 -s2 -a${BTRFS_ALGO} -tbtrfs -Lzbtrfs ${BTRFS_SIZE} -
+ ExecStop=/sbin/zram-init -d1 0 -
+ 
+ [Install]
+diff --git a/systemd/system/zram_swap.service b/systemd/system/zram_swap.service
+index e869fe6..e13c89e 100644
+--- a/systemd/system/zram_swap.service
++++ b/systemd/system/zram_swap.service
+@@ -4,6 +4,8 @@ DefaultDependencies=no
+ Before=swap.target
+ 
+ [Service]
++Environment=SWAP_ALGO=zstd
++EnvironmentFile=-/etc/sysconfig/zram-init
+ Type=oneshot
+ RemainAfterExit=true
+ 
+@@ -14,7 +16,7 @@ RemainAfterExit=true
+ # zram_tmp.service and zram_var_tmp.service and that
+ # num_devices in modprobe.d/zram.conf contains the maximal used number + 1
+ 
+-ExecStart=/bin/sh -c "exec /sbin/zram-init -s2 -azstd -Lzram_swap `LC_ALL=C free -m | awk '/^Mem:/{print int($2/2)}'`"
++ExecStart=/bin/sh -c "exec /sbin/zram-init -s2 -a${SWAP_ALGO} -Lzram_swap `LC_ALL=C free -m | awk '/^Mem:/{print int($2/2)}'`"
+ ExecStop=/sbin/zram-init 0
+ 
+ [Install]
+diff --git a/systemd/system/zram_tmp.service b/systemd/system/zram_tmp.service
+index 156cacd..9e518ea 100644
+--- a/systemd/system/zram_tmp.service
++++ b/systemd/system/zram_tmp.service
+@@ -5,6 +5,9 @@ Conflicts=umount.target
+ Before=local-fs.target umount.target
+ 
+ [Service]
++Environment=TMP_ALGO=zstd
++Environment=TMP_SIZE=2048
++EnvironmentFile=-/etc/sysconfig/zram-init
+ Type=oneshot
+ RemainAfterExit=true
+ 
+@@ -14,7 +17,7 @@ RemainAfterExit=true
+ # zram_swap.service and zram_var_tmp.service and
+ # that num_devices in modprobe.d/zram.conf contains the maximal used number + 1
+ 
+-ExecStart=/sbin/zram-init -d1 -s2 -azstd -text4 -ostrictatime -m1777 -Ltmp_dir 2048 /tmp
++ExecStart=/sbin/zram-init -d1 -s2 -a${TMP_ALGO} -text4 -ostrictatime -m1777 -Ltmp_dir ${TMP_SIZE} /tmp
+ ExecStop=/sbin/zram-init -d1 0 /tmp
+ 
+ [Install]
+diff --git a/systemd/system/zram_var_tmp.service b/systemd/system/zram_var_tmp.service
+index 7254ccb..e161a96 100644
+--- a/systemd/system/zram_var_tmp.service
++++ b/systemd/system/zram_var_tmp.service
+@@ -5,6 +5,9 @@ Conflicts=umount.target
+ Before=local-fs.target umount.target
+ 
+ [Service]
++Environment=VAR_TMP_ALGO=zstd
++Environment=VAR_TMP_SIZE=2048
++EnvironmentFile=-/etc/sysconfig/zram-init
+ Type=oneshot
+ RemainAfterExit=true
+ 
+@@ -14,7 +17,7 @@ RemainAfterExit=true
+ # zram_swap.service and zram_tmp.service and
+ # that num_devices in modprobe.d/zram.conf contains the maximal used number + 1
+ 
+-ExecStart=/sbin/zram-init -d2 -s2 -azstd -text4 -orelatime -m1777 -Lvar_tmp_dir 2048 /var/tmp
++ExecStart=/sbin/zram-init -d2 -s2 -a${VAR_TMP_ALGO} -text4 -orelatime -m1777 -Lvar_tmp_dir ${VAR_TMP_SIZE} /var/tmp
+ ExecStop=/sbin/zram-init -d2 0 /var/tmp
+ 
+ [Install]
+-- 
+2.23.0
+

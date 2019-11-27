@@ -1,0 +1,11 @@
+
+## Set compression algorithm to ALGO (e.g. zstd, lz4, or lzo)
+#BTRFS_ALGO=zstd
+#SWAP_ALGO=zstd
+#TMP_ALGO=zstd
+#VAR_TMP_ALGO=zstd
+
+## Set the maximal size in megabytes.
+#BTRFS_SIZE=2048
+#TMP_SIZE=2048
+#VAR_TMP_SIZE=2048

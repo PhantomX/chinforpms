@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           lutris
-Version:        0.5.3
+Version:        0.5.4
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -98,10 +98,13 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.des
 %{_datadir}/polkit-1/actions/*.policy
 %{python3_sitelib}/%{name}-*.egg-info
 %{python3_sitelib}/%{name}/
-%{_metainfodir}/*.appdata.xml
+%{_metainfodir}/*.metainfo.xml
 
 
 %changelog
+* Tue Nov 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.4-100
+- 0.5.4
+
 * Sun Sep 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.3-100
 - 0.5.3
 

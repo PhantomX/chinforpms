@@ -1,24 +1,24 @@
-diff -up lutris-0.5.0/lutris/game.py.gamemodelib lutris-0.5.0/lutris/game.py
---- lutris-0.5.0/lutris/game.py.gamemodelib	2019-02-01 16:00:01.000000000 -0200
-+++ lutris-0.5.0/lutris/game.py	2019-02-04 09:48:13.307389367 -0200
-@@ -441,7 +441,7 @@ class Game(GObject.Object):
+diff -up ./lutris/game.py.gamemodelib ./lutris/game.py
+--- ./lutris/game.py.gamemodelib	2019-11-26 23:35:02.416147868 -0300
++++ ./lutris/game.py	2019-11-26 23:36:08.977179843 -0300
+@@ -497,7 +497,7 @@ class Game(GObject.Object):
+             env["LD_PRELOAD"] = ":".join(
+                 [
                      path
-                     for path in [
-                         env.get("LD_PRELOAD"),
--                        "/usr/$LIB/libgamemodeauto.so",
-+                        "/usr/$LIB/libgamemodeauto.so.0",
-                     ]
+-                    for path in [env.get("LD_PRELOAD"), "libgamemodeauto.so", ]
++                    for path in [env.get("LD_PRELOAD"), "libgamemodeauto.so.0", ]
                      if path
                  ]
-diff -up lutris-0.5.0/lutris/util/linux.py.gamemodelib lutris-0.5.0/lutris/util/linux.py
---- lutris-0.5.0/lutris/util/linux.py.gamemodelib	2019-02-04 09:28:20.958204701 -0200
-+++ lutris-0.5.0/lutris/util/linux.py	2019-02-04 09:48:04.578412546 -0200
+             )
+diff -up ./lutris/util/linux.py.gamemodelib ./lutris/util/linux.py
+--- ./lutris/util/linux.py.gamemodelib	2019-11-26 23:35:26.428108887 -0300
++++ ./lutris/util/linux.py	2019-11-26 23:36:09.705027103 -0300
 @@ -71,7 +71,7 @@ SYSTEM_COMPONENTS = {
-             "libvulkan_radeon.so"
-         ],
-         "GAMEMODE": [
--            "libgamemodeauto.so"
-+            "libgamemodeauto.so.0"
-         ]
-     }
+         "VULKAN": ["libvulkan.so.1"],
+         "WINE": ["libsqlite3.so.0"],
+         "RADEON": ["libvulkan_radeon.so"],
+-        "GAMEMODE": ["libgamemodeauto.so"],
++        "GAMEMODE": ["libgamemodeauto.so.0"],
+     },
  }
+ 

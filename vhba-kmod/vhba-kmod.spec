@@ -10,7 +10,7 @@
 
 Name:           vhba-kmod
 Version:        20190831
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPLv2
@@ -47,7 +47,7 @@ done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-  make %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS=${PWD}/_kmod_build_${kernel_version%%___*} modules
+  make %{?_smp_mflags} -C "${kernel_version##*___}" M=${PWD}/_kmod_build_${kernel_version%%___*} modules
 done
 
 %install
@@ -58,6 +58,9 @@ done
 
 
 %changelog
+* Tue Nov 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 20190831-2
+- M instead SUBDIRS
+
 * Sun Sep 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 20190831-1
 - 20190831
 

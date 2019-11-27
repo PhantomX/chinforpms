@@ -149,6 +149,7 @@ xboxdrv
 xdgmenumaker
 xinput-gui
 xorg-x11-server
+zram-init
 
 # 4
 belle-sip

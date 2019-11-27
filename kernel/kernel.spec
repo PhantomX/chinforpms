@@ -656,14 +656,23 @@ Source13: secureboot.cer
 
 Source12: redhatsecurebootca2.cer
 Source13: redhatsecureboot003.cer
+Source14: secureboot_s390.cer
+Source15: secureboot_ppc.cer 
 
 %define secureboot_ca %{SOURCE12}
 %define secureboot_key %{SOURCE13}
 %define pesign_name redhatsecureboot003
-
+%ifarch s390x
+%define secureboot_key %{SOURCE14}
+%define pesign_name redhatsecureboot302
+%endif
+%ifarch ppc64le
+%define secureboot_key %{SOURCE15}
+%define pesign_name redhatsecureboot303
+%endif 
 %endif
 
-Source15: mod-extra.list.rhel
+Source22: mod-extra.list.rhel
 Source16: mod-extra.list.fedora
 Source17: mod-extra.sh
 Source18: mod-sign.sh
@@ -889,6 +898,19 @@ Patch522: mwifiex-pcie-fix-memory-leak-in-mwifiex_pcie_alloc_cmdrsp_buf.patch
 # CVE-2019-19054 rhbz 1775063 1775117
 Patch524: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
 
+# CVE-2019-14895 rhbz 1774870 1776139
+Patch525: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
+
+# CVE-2019-14896 rhbz 1774875 1776143
+# CVE-2019-14897 rhbz 1774879 1776146
+Patch526: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
+
+# CVE-2019-14901 rhbz 1773519 1776184
+Patch527: mwifiex-Fix-heap-overflow-in-mmwifiex_process_tdls_action_frame.patch
+
+# CVE-2019-19078 rhbz 1776354 1776353
+Patch528: ath10k-fix-memory-leak.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -930,7 +952,7 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 
 %endif
 
-Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/eacda7d91fc69eba85939bec8704dc97b81146a7/linux54-rc-tkg/linux54-tkg-patches/0007-v5.4-fsync.patch#/tkg-0007-v5.4-fsync.patch
+Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/e3b2d894ece23347ee05bba714df5926752e4284/linux54-tkg/linux54-tkg-patches/0007-v5.4-fsync.patch#/tkg-0007-v5.4-fsync.patch
 
 %if !0%{?zen}
 Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1674,6 +1696,9 @@ BuildKernel() {
 
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer
+    # CONFIG_KERNEL_HEADER_TEST generates some extra files in the process of
+    # testing so just delete
+    find . -name *.h.s -delete 
 %if %{with_debuginfo}
     mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/%{image_install_path}
 %endif
@@ -2589,9 +2614,6 @@ fi
 %{expand:%%files %{?3:%{3}-}modules-extra}\
 %config(noreplace) /etc/modprobe.d/*-blacklist.conf\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/extra\
-%%defattr(-,root,root)\
-%defverify(not mtime)\
-/usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
 %{expand:%%files %{?3:%{3}-}modules-internal}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/internal\
 %if %{with_debuginfo}\
