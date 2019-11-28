@@ -1,6 +1,15 @@
+%global commit 5f1eada3eae215f0fd489000e97792c892fb7b17
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20191115
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           deluge
 Version:        2.0.3
-Release:        101%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -8,18 +17,17 @@ Epoch:          1
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/
 
+%if 0%{?with_snapshot}
+Source0:        https://git.deluge-torrent.org/deluge/snapshot/deluge-%{commit}.tar.bz2#/deluge-%{shortcommit}.tar.bz2
+%else
 %global vermm %(echo %{version} | cut -d. -f-2)
 Source0:        http://download.deluge-torrent.org/source/%{vermm}/%{name}-%{version}.tar.xz
+%endif
 
 Patch0:         0001-Disable-GConf2-magnet-registering.patch
 Patch1:         0001-Disable-new-release-check-by-default.patch
 
 %global vc_url  https://git.deluge-torrent.org/deluge/patch
-Patch10:        %{vc_url}/?id=833b5a1f306dad600d0f64a5c897407ba1584830#/%{name}-git-833b5a1.patch
-Patch11:        %{vc_url}/?id=4b29436cd5eabf9af271f3fa6250cd7c91cdbc9d#/%{name}-git-4b29436.patch
-Patch12:        %{vc_url}/?id=1b4ac88ce72515bcf36684b942e3998900f13cea#/%{name}-git-1b4ac88.patch
-Patch13:        %{vc_url}/?id=63a4301a8be8f13c1aa21c1cc7b123ba013b2c3a#/%{name}-git-63a4301.patch
-Patch14:        %{vc_url}/?id=3f9ae337932da550f2623daa6dedd9c3e0e5cfb3#/%{name}-git-3f9ae33.patch
 
 BuildArch:      noarch
 
@@ -127,7 +135,13 @@ BuildRequires: systemd
 Files for the Deluge daemon
 
 %prep
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+echo "%{version}" > RELEASE-VERSION
+%else
 %autosetup -p1
+%endif
+
 
 %build
 %py3_build
@@ -258,6 +272,9 @@ exit 0
 
 
 %changelog
+* Thu Nov 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.3-102.20191115git5f1eada
+- Snapshot
+
 * Mon Aug 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.3-101
 - Some upstream fixes
 
