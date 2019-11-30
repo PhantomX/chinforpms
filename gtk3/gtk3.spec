@@ -2,7 +2,7 @@
 %global with_broadway 1
 %endif
 
-%global glib2_version 2.53.4
+%global glib2_version 2.57.2
 %global pango_version 1.41.0
 %global fribidi_version 0.19.7
 %global atk_version 2.15.1
@@ -10,7 +10,7 @@
 %global gdk_pixbuf_version 2.30.0
 %global xrandr_version 1.5.0
 %global wayland_version 1.9.91
-%global wayland_protocols_version 1.12
+%global wayland_protocols_version 1.14
 %global epoxy_version 1.4
 
 %global bin_version 3.0.0
@@ -30,7 +30,7 @@
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
 Name:           gtk3
-Version:        3.24.12
+Version:        3.24.13
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -390,6 +390,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Thu Nov 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.13-100
+- 3.24.13
+
 * Fri Oct 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.12-100
 - 3.24.12
 

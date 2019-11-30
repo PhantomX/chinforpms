@@ -20,10 +20,10 @@
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
-%global opensuse_id f582eb16431f7adb0c4aac39d11d0c7d92a333a2
+%global opensuse_id 3e31e0f8907819d6f7b112022cd2b20046e04f0e
 
 # Do we have a -stable update to apply?
-%global stable_update 0
+%global stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -241,7 +241,7 @@ sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.conf
 ###
 %build
 
-export LD=ld.bfq
+export LD=ld.bfd
 
 cd linux-%{kversion}
 
@@ -304,7 +304,7 @@ popd
 ###
 
 %install
-export LD=ld.bfq
+export LD=ld.bfd
 
 cd linux-%{kversion}
 
@@ -479,6 +479,9 @@ popd
 
 
 %changelog
+* Fri Nov 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.1-500.chinfo
+- 5.4.1
+
 * Mon Nov 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.0-500.chinfo
 - 5.4.0
 

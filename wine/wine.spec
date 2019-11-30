@@ -1,6 +1,6 @@
-%global commit aa3d01e65019fb2f135f74cf26cfa1661ca09325
+%global commit 4ccdf3e58a816ebf9c58000e985fd21737ffd485
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191120
+%global date 20191127
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -38,19 +38,21 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 29cc0422576f93bb032e966ae107b7cf9d717695
+%global wine_stagingver 14a1f8bd0c8c5cf09f0d5aa1b8682f4cacec0eb6
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 7c7a21acd691801e6fb0fca51796fa971e34812b
+%global tkg_id b4f449bc34a7d72b1e3f1334159eac3285a86ff1
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
 # Broken
 %global pba 0
+
+%global fsync_spincounts 0
 
 # proton FS hack
 %global wine_staging_opts -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
@@ -75,7 +77,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.20
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -796,7 +798,9 @@ cp -p %{S:1001} README-pba-pkg
 %patch725 -p1
 %patch726 -p1
 %patch727 -p1
+%if 0%{?fsync_spincounts}
 %patch790 -p1
+%endif
 %patch800 -p1 -R
 
 
@@ -850,6 +854,8 @@ export CC="/usr/bin/clang"
 export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`" 
 %endif
 
+export CXXFLAGS="$CFLAGS -std=c++17 -fno-gnu-unique"
+
 %if 0%{?wine_mingw}
 # mingw compiler do not support plugins and some flags are crashing it
 export CROSSCFLAGS="`echo $CFLAGS | sed \
@@ -871,6 +877,13 @@ cat > bin/gcc <<'EOF'
 #!/usr/bin/sh
 exec %{_bindir}/gcc %{build_ldflags} "$@"
 EOF
+if [ -x %{_bindir}/g++ ] ;then
+cat > bin/g++ <<'EOF'
+#!/usr/bin/sh
+exec %{_bindir}/g++ %{build_ldflags} "$@"
+EOF
+chmod 0755 bin/*g++
+fi
 %if !0%{?with_debug}
 # -Wl -S to build working stripped PEs
 cat > bin/x86_64-w64-mingw32-gcc <<'EOF'
@@ -1611,7 +1624,7 @@ fi
 %{_libdir}/wine/bluetoothapis.%{winedll}
 %{_libdir}/wine/browseui.%{winedll}
 %{_libdir}/wine/bthprops.%{winecpl}
-%{_libdir}/wine/cabinet.dll.so
+%{_libdir}/wine/cabinet.%{winedll}
 %{_libdir}/wine/cards.%{winedll}
 %{_libdir}/wine/cdosys.%{winedll}
 %{_libdir}/wine/cfgmgr32.%{winedll}
@@ -1944,7 +1957,7 @@ fi
 %{_libdir}/wine/olepro32.%{winedll}
 %{_libdir}/wine/olesvr32.%{winedll}
 %{_libdir}/wine/olethk32.%{winedll}
-%{_libdir}/wine/opcservices.dll.so
+%{_libdir}/wine/opcservices.%{winedll}
 %{_libdir}/wine/packager.%{winedll}
 %{_libdir}/wine/pdh.%{winedll}
 %{_libdir}/wine/photometadatahandler.%{winedll}
@@ -2073,7 +2086,7 @@ fi
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing32.%{winedll}
 %{_libdir}/wine/winhttp.%{winedll}
-%{_libdir}/wine/wininet.dll.so
+%{_libdir}/wine/wininet.%{winedll}
 %{_libdir}/wine/winmm.%{winedll}
 %{_libdir}/wine/winnls32.%{winedll}
 %{_libdir}/wine/winspool.drv.so
@@ -2449,6 +2462,9 @@ fi
 
 
 %changelog
+* Thu Nov 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.20-102.20191127git4ccdf3e
+- Snapshot
+
 * Thu Nov 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.20-101.20191120gitaa3d01e
 - Snapshot
 

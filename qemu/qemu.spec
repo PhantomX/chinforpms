@@ -143,7 +143,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 4.2.0~rc2
+Version: 4.2.0~rc3
 Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
@@ -1856,6 +1856,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri Nov 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc3-100
+- 4.2.0-rc3
+
 * Wed Nov 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc2-100
 - 4.2.0-rc2
 - Rawhide sync
