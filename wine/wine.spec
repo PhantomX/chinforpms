@@ -1,7 +1,7 @@
 %global commit 4ccdf3e58a816ebf9c58000e985fd21737ffd485
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20191127
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -38,14 +38,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 14a1f8bd0c8c5cf09f0d5aa1b8682f4cacec0eb6
+%global wine_stagingver 4.21
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id b4f449bc34a7d72b1e3f1334159eac3285a86ff1
+%global tkg_id 6401ce3c7545b6d217724b4d3c24f2185745a4dd
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -76,8 +76,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.20
-Release:        102%{?gver}%{?dist}
+Version:        4.21
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2462,6 +2462,9 @@ fi
 
 
 %changelog
+* Sat Nov 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.21-100
+- 4.21
+
 * Thu Nov 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.20-102.20191127git4ccdf3e
 - Snapshot
 
