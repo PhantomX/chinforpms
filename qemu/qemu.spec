@@ -174,6 +174,7 @@ Patch1: 0001-tests-fix-modules-test-duplicate-test-case-error.patch
 # Properly skip pseries test on not-kvm
 Patch2: 0002-pseries-disable-migration-test-if-dev-kvm-cannot-be-.patch 
 
+BuildRequires: gcc
 # documentation deps
 BuildRequires: texinfo
 # For /usr/bin/pod2man

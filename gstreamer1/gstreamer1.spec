@@ -9,8 +9,8 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.16.1
-Release:        101%{?gitcommit:.git%{shortcommit}}%{?dist}
+Version:        1.16.2
+Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPLv2+
@@ -240,6 +240,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Wed Dec 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.16.2-100
+- 1.16.2
+
 * Wed Oct 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.16.1-101
 - f31 sync, libpcap
 - Fix multilib wrappers

@@ -4,7 +4,7 @@
 # that's still supported by the vendor. It may work on other distros
 # or versions, but no effort will be made to ensure that going forward.
 %define min_rhel 7
-%define min_fedora 28
+%define min_fedora 29
 
 %if (0%{?fedora} && 0%{?fedora} >= %{min_fedora}) || (0%{?rhel} && 0%{?rhel} >= %{min_rhel})
     %define supported_platform 1
@@ -61,6 +61,13 @@
     %define with_storage_sheepdog 0
 %endif
 %define with_storage_gluster 0%{!?_without_storage_gluster:1}
+%ifnarch %{qemu_kvm_arches}
+    # gluster is only built where qemu driver is enabled on RHEL 8
+    %if 0%{?rhel} >= 8
+        %define with_storage_gluster 0
+    %endif
+%endif
+
 %define with_numactl          0%{!?_without_numactl:1}
 
 # F25+ has zfs-fuse
@@ -118,14 +125,13 @@
 %endif
 
 # RHEL doesn't ship OpenVZ, VBox, PowerHypervisor,
-# VMware, libxenserver (xenapi), libxenlight (Xen 4.1 and newer),
+# VMware, libxenlight (Xen 4.1 and newer),
 # or HyperV.
 %if 0%{?rhel}
     %define with_openvz 0
     %define with_vbox 0
     %define with_phyp 0
     %define with_vmware 0
-    %define with_xenapi 0
     %define with_libxl 0
     %define with_hyperv 0
     %define with_vz 0
@@ -137,7 +143,7 @@
 
 %define with_firewalld 1
 
-%if 0%{?fedora} >= 30 || 0%{?rhel} > 7
+%if 0%{?fedora} >= 31 || 0%{?rhel} > 7
     %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
 %endif
 
@@ -215,7 +221,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 5.9.0
+Version: 5.10.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -224,6 +230,9 @@ URL: https://libvirt.org/
     %define mainturl stable_updates/
 %endif
 Source: https://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.xz
+
+Patch100: https://libvirt.org/git/?p=libvirt.git;a=patch;h=0a65cba423781f2cbf123354b7f670c4f441b385#/%{name}-git-0a65cba.patch
+
 
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
@@ -274,7 +283,7 @@ BuildRequires: systemd-units
 %if %{with_libxl}
 BuildRequires: xen-devel
 %endif
-BuildRequires: glib2-devel
+BuildRequires: glib2-devel >= 2.48
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
 BuildRequires: readline-devel
@@ -1127,27 +1136,6 @@ exit 1
 
 %define arg_selinux_mount --with-selinux-mount="/sys/fs/selinux"
 
-%if 0%{?fedora}
-    # Nightly edk2.git-ovmf-x64
-    LOADERS="/usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd:/usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd"
-    # Nightly edk2.git-ovmf-ia32
-    LOADERS="$LOADERS:/usr/share/edk2.git/ovmf-ia32/OVMF_CODE-pure-efi.fd:/usr/share/edk2.git/ovmf-ia32/OVMF_VARS-pure-efi.fd"
-    # Nightly edk2.git-aarch64
-    LOADERS="$LOADERS:/usr/share/edk2.git/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2.git/aarch64/vars-template-pflash.raw"
-    # Nightly edk2.git-arm
-    LOADERS="$LOADERS:/usr/share/edk2.git/arm/QEMU_EFI-pflash.raw:/usr/share/edk2.git/arm/vars-template-pflash.raw"
-
-    # Fedora edk2-ovmf
-    LOADERS="$LOADERS:/usr/share/edk2/ovmf/OVMF_CODE.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd"
-    # Fedora edk2-ovmf-ia32
-    LOADERS="$LOADERS:/usr/share/edk2/ovmf-ia32/OVMF_CODE.fd:/usr/share/edk2/ovmf-ia32/OVMF_VARS.fd"
-    # Fedora edk2-aarch64
-    LOADERS="$LOADERS:/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw"
-    # Fedora edk2-arm
-    LOADERS="$LOADERS:/usr/share/edk2/arm/QEMU_EFI-pflash.raw:/usr/share/edk2/arm/vars-template-pflash.raw"
-    %define arg_loader_nvram --with-loader-nvram="$LOADERS"
-%endif
-
 # place macros above and build commands below this comment
 
 export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
@@ -1157,7 +1145,13 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 %endif
 
 rm -f po/stamp-po
-%configure --with-runstatedir=%{_rundir} \
+
+%global _configure ../configure
+mkdir -p %{_target_platform}
+pushd %{_target_platform}
+
+%configure --enable-dependency-tracking \
+           --with-runstatedir=%{_rundir} \
            %{?arg_qemu} \
            %{?arg_openvz} \
            %{?arg_lxc} \
@@ -1170,7 +1164,6 @@ rm -f po/stamp-po
            %{?arg_esx} \
            %{?arg_hyperv} \
            %{?arg_vmware} \
-           --without-xenapi \
            --without-vz \
            --with-remote-default-mode=legacy \
            --without-bhyve \
@@ -1215,20 +1208,19 @@ rm -f po/stamp-po
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            --with-tls-priority=%{tls_priority} \
-           %{?arg_loader_nvram} \
            %{?enable_werror} \
            --enable-expensive-tests \
            --with-init-script=systemd \
            %{?arg_login_shell}
-make %{?_smp_mflags} V=1
+%make_build
+
+popd
 gzip -9 ChangeLog
 
 %install
-rm -fr %{buildroot}
-
 export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 
-%make_install %{?_smp_mflags} SYSTEMD_UNIT_DIR=%{_unitdir} V=1
+%make_install %{?_smp_mflags} SYSTEMD_UNIT_DIR=%{_unitdir} V=1 -C %{_target_platform}
 
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
@@ -1314,15 +1306,7 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/qemu/
 
 
 %check
-cd tests
-# These tests don't current work in a mock build root
-for i in nodeinfotest seclabeltest
-do
-  rm -f $i
-  printf 'int main(void) { return 0; }' > $i.c
-  printf '#!/bin/sh\nexit 0\n' > $i
-  chmod +x $i
-done
+cd %{_target_platform}
 if ! make %{?_smp_mflags} check VIR_TEST_DEBUG=1
 then
   cat test-suite.log || true
@@ -1353,7 +1337,7 @@ exit 0
 %systemd_post virtlogd.socket virtlogd-admin.socket
 %systemd_post libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket
 %systemd_post libvirtd-tcp.socket libvirtd-tls.socket
-%systemd_post libvirtd.service 
+%systemd_post libvirtd.service
 
 # request daemon restart in posttrans
 mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || :
@@ -1362,7 +1346,7 @@ touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
 %preun daemon
 %systemd_preun libvirtd.service
 %systemd_preun libvirtd-tcp.socket libvirtd-tls.socket
-%systemd_preun libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket 
+%systemd_preun libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket
 %systemd_preun virtlogd.socket virtlogd-admin.socket virtlogd.service
 %systemd_preun virtlockd.socket virtlockd-admin.socket virtlockd.service
 
@@ -1573,7 +1557,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
 %dir %{_datadir}/libvirt/
 
-%ghost %dir %{_rundir}/run/libvirt/
+%ghost %dir %{_rundir}/libvirt/
 
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/images/
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/filesystems/
@@ -1616,8 +1600,6 @@ exit 0
 %{_mandir}/man8/virtlogd.8*
 %{_mandir}/man8/virtlockd.8*
 %{_mandir}/man7/virkey*.7*
-
-%doc examples/polkit/*.rules
 
 %files daemon-config-network
 %dir %{_datadir}/libvirt/networks/
@@ -1999,11 +1981,12 @@ exit 0
 %{_datadir}/libvirt/api/libvirt-admin-api.xml
 %{_datadir}/libvirt/api/libvirt-qemu-api.xml
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
-# Needed building python bindings
-%doc docs/libvirt-api.xml
 
 
 %changelog
+* Tue Dec 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.10.0-100
+- 5.10.0
+
 * Tue Nov 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.9.0-100
 - 5.9.0
 
