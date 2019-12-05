@@ -55,7 +55,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.3.0~rc5
+Version:        19.3.0~rc6
 Release:        100%{?dist}
 
 License:        MIT
@@ -69,10 +69,6 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch3:         0003-evergreen-big-endian.patch
-
-# Disable rgb10 configs by default:
-# https://bugzilla.redhat.com/show_bug.cgi?id=1560481
-Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -615,6 +611,9 @@ popd
 
 
 %changelog
+* Thu Dec 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.0~rc6-100
+- 19.3.0-rc6
+
 * Thu Nov 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.0~rc5-100
 - 19.3.0-rc5
 

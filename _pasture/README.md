@@ -55,6 +55,8 @@ some seasonal packages too, these can return when needed
  * **VirtualBox-kmod** - VirtualBox
  * **vo-amrwbenc** - For i686 mock build
  * **waifu2x-converter-cpp** - Fedora included
+ * **webp-pixbuf-loader** - Fedora included
+ * **wimlib** - Fedora included
  * **wine-dxup** - wine-d9vk
  * **wine-freeworld** - Unneeded, FAudio-freeworld
  * **xfwm4** - MONITOR_ROOT_PIXMAP is default now

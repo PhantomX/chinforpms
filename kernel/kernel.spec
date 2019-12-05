@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 8c6ca13f0f30b6e54bd86d97863ae36d03e422ac
+%global pfcommit 2cc78cb0f90701c8522b642d9051cf0f389bdd9c
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 3e31e0f8907819d6f7b112022cd2b20046e04f0e
+%global opensuse_id b3d18f467bcbfef1acbdcfdc8191d8563cfaa31d
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -821,6 +821,9 @@ Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 # rhbz 1574718
 Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
+# http://www.spinics.net/lists/linux-tegra/msg26029.html
+Patch304: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+# http://patchwork.ozlabs.org/patch/587554/
 Patch305: ARM-tegra-usb-no-reset.patch
 
 # Tegra bits
@@ -849,9 +852,7 @@ Patch502: 0001-Drop-that-for-now.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
-# Fixes a boot hang on debug kernels
-# https://bugzilla.redhat.com/show_bug.cgi?id=1756655
-Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch500: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
 # it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
 # https://lore.kernel.org/patchwork/patch/1132459/
@@ -899,17 +900,29 @@ Patch522: mwifiex-pcie-fix-memory-leak-in-mwifiex_pcie_alloc_cmdrsp_buf.patch
 Patch524: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
 
 # CVE-2019-14895 rhbz 1774870 1776139
-Patch525: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
+Patch526: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
 
 # CVE-2019-14896 rhbz 1774875 1776143
 # CVE-2019-14897 rhbz 1774879 1776146
-Patch526: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
+Patch527: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
 
 # CVE-2019-14901 rhbz 1773519 1776184
-Patch527: mwifiex-Fix-heap-overflow-in-mmwifiex_process_tdls_action_frame.patch
+Patch528: mwifiex-Fix-heap-overflow-in-mmwifiex_process_tdls_action_frame.patch
 
 # CVE-2019-19078 rhbz 1776354 1776353
-Patch528: ath10k-fix-memory-leak.patch
+Patch529: ath10k-fix-memory-leak.patch
+
+# CVE-2019-18808 rhbz 1777418 1777421
+Patch531: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
+
+# CVE-2019-18809 rhbz 1777449 1777451
+Patch532: 0001-media-usb-fix-memory-leak-in-af9005_identify_state.patch
+
+# CVE-2019-16232 rhbz 1760351 1760352
+Patch535: 0001-libertas-fix-a-potential-NULL-pointer-dereference.patch
+
+# rhbz 1769600
+Patch536: powerpc-xive-skip-ioremap-of-ESB-pages-for-LSI-interrupts.patch
 
 ### Extra
 
@@ -2650,6 +2663,10 @@ fi
 #
 #
 %changelog
+* Thu Dec 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.2-500.chinfo
+- 5.4.2
+- stabilization sync
+
 * Fri Nov 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.1-500.chinfo
 - 5.4.1 - pf2
 
