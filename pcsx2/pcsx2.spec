@@ -1,6 +1,6 @@
-%global commit 3c38087e78b8b5302375dbb571e8c76b904ee697
+%global commit 23174f3a00250b9c473b192b2556d66c46ab8a84
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191103
+%global date 20191206
 %global with_snapshot 1
 
 %global sanitize 0
@@ -11,7 +11,7 @@
 
 Name:           pcsx2
 Version:        1.5.0
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -32,6 +32,8 @@ Source0:        %{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
+Patch100:       %{url}/pull/3110.patch#/%{name}-gh-pull3110.patch
+
 # PCSX2 does not support running as a 64 bit application.
 # http://code.google.com/p/pcsx2/wiki/ChrootAnd64bStatusLinux
 ExclusiveArch:  i686
@@ -40,6 +42,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
+BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(freetype2)
@@ -54,7 +57,7 @@ BuildRequires:  pkgconfig(libsparsehash)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(harfbuzz)
-BuildRequires:  pkgconfig(portaudio-2.0)
+#BuildRequires:  pkgconfig(portaudio-2.0)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(x11)
@@ -128,19 +131,20 @@ sed -i \
 
 %cmake . \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-  -DDISABLE_BUILD_DATE=TRUE \
-  -DPACKAGE_MODE=TRUE \
-  -DBUILD_REPLAY_LOADERS=FALSE \
-  -DXDG_STD=TRUE \
-  -DGLSL_API=TRUE \
-  -DPLUGIN_DIR=%{_libdir}/pcsx2 \
-  -DGAMEINDEX_DIR=%{_datadir}/pcsx2 \
-  -DCMAKE_BUILD_STRIP=FALSE \
-  -DGTK3_API=FALSE \
-  -DWX28_API=FALSE \
-  -DSDL2_API=TRUE \
-  -DEXTRA_PLUGINS=FALSE \
-  -DDISABLE_ADVANCE_SIMD=TRUE \
+  -DDISABLE_BUILD_DATE:BOOL=TRUE \
+  -DPACKAGE_MODE:BOOL=TRUE \
+  -DBUILD_REPLAY_LOADERS:BOOL=FALSE \
+  -DXDG_STD:BOOL=TRUE \
+  -DGLSL_API:BOOL=TRUE \
+  -DPLUGIN_DIR:PATH=%{_libdir}/pcsx2 \
+  -DGAMEINDEX_DIR:PATH=%{_datadir}/pcsx2 \
+  -DCMAKE_BUILD_STRIP:BOOL=FALSE \
+  -DGTK3_API:BOOL=FALSE \
+  -DPORTAUDIO_API:BOOL=FALSE \
+  -DSDL2_API:BOOL=TRUE \
+  -DEXTRA_PLUGINS:BOOL=FALSE \
+  -DDISABLE_ADVANCE_SIMD:BOOL=TRUE \
+  -DDISABLE_PCSX2_WRAPPER:BOOL=TRUE \
   -DOpenGL_GL_PREFERENCE=GLVND \
   -DCMAKE_BUILD_TYPE=Release \
 %{nil}
@@ -151,17 +155,39 @@ sed -i \
 %install
 %make_install
 
+mv %{buildroot}%{_bindir}/PCSX2 %{buildroot}%{_bindir}/PCSX2.bin
+
+cat > %{buildroot}%{_bindir}/PCSX2 <<EOF
+#!/usr/bin/sh
+export GDK_BACKEND=x11
+export __GL_THREADED_OPTIMIZATIONS=1
+export mesa_glthread=true
+export MESA_NO_ERROR=1
+exec %{_bindir}/PCSX2.bin
+EOF
+chmod 0755 %{buildroot}%{_bindir}/PCSX2
+
 # strip extra copies of pdf files, which are now in /doc/pcsx2
 rm -rf %{buildroot}/usr/share/doc/PCSX2
 
 # Install icon
 mkdir -p %{buildroot}/%{_datadir}/icons/hicolor/128x128/apps/
-install -pm 0644 linux_various/PCSX2.xpm %{buildroot}/%{_datadir}/icons/hicolor/128x128/apps/
+convert linux_various/PCSX2.xpm \
+  %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/PCSX2.png
+
+for res in 16 22 24 32 36 48 64 72 96 ;do
+  dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
+  mkdir -p ${dir}
+  convert linux_various/PCSX2.xpm -filter Lanczos -resize ${res}x${res} \
+    ${dir}/PCSX2.png
+done
 
 # Install Desktop file
 mv linux_various/PCSX2.desktop.in -f linux_various/PCSX2.desktop
 desktop-file-install \
   --dir=%{buildroot}/%{_datadir}/applications \
+  --set-key="Exec" \
+  --set-value="PCSX2" \
   linux_various/PCSX2.desktop
 
 #strip extra copy of icon file, Wrong place for fedora
@@ -178,15 +204,20 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 %files -f pcsx2_Iconized.lang -f pcsx2_Main.lang
 %doc bin/docs/PCSX2_Readme.pdf bin/docs/PCSX2_FAQ.pdf
 %{_bindir}/PCSX2
-%{_bindir}/PCSX2-linux.sh
+%{_bindir}/PCSX2.bin
 %{_libdir}/pcsx2/
 %{_datadir}/applications/PCSX2.desktop
-%{_datadir}/icons/hicolor/128x128/apps/*.xpm
+%{_datadir}/icons/hicolor/*/apps/*.png
 %{_mandir}/man1/PCSX2.*
 %{_datadir}/pcsx2/
 
 
 %changelog
+* Fri Dec 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-107.20191202git23174f3
+- New snapshot
+- PR to remove portaudio support, SDL2 do the work already
+- Convert and resize icon to png
+
 * Sun Nov 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-106.20191103git3c38087
 - New snapshot
 
