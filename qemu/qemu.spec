@@ -87,6 +87,12 @@
 %endif
 %global with_block_gluster 1
 
+%ifarch %{arm}
+%define with_rdma 0
+%else
+%define with_rdma 1
+%endif
+
 %define evr %{epoch}:%{version}-%{release}
 
 %define requires_block_curl Requires: %{name}-block-curl = %{evr}
@@ -139,11 +145,13 @@
 %{obsoletes_block_gluster} \
 %{obsoletes_block_rbd}
 
+%global vc_url https://git.qemu.org/?p=qemu.git;a=patch
+
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 4.2.0~rc3
+Version: 4.2.0~rc4
 Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
@@ -173,6 +181,9 @@ Source21: 95-kvm-ppc64-memlock.conf
 Patch1: 0001-tests-fix-modules-test-duplicate-test-case-error.patch
 # Properly skip pseries test on not-kvm
 Patch2: 0002-pseries-disable-migration-test-if-dev-kvm-cannot-be-.patch 
+
+Patch100:  %{vc_url};h=2605188240f939fa9ae9353f53a0985620b34769#/%{name}-git-2605188.patch
+Patch101:  %{vc_url};h=f56281abd957561b30538cbe606c3793b9b4c56d#/%{name}-git-f56281a.patch
 
 BuildRequires: gcc
 # documentation deps
@@ -269,7 +280,9 @@ BuildRequires: vte291-devel
 # GTK translations
 BuildRequires: gettext
 # RDMA migration
+%if %{with_rdma}
 BuildRequires: rdma-core-devel
+%endif
 %if %{have_xen}
 # Xen support
 BuildRequires: xen-devel
@@ -1857,6 +1870,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Dec 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc4-100
+- 4.2.0-rc4
+
 * Fri Nov 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc3-100
 - 4.2.0-rc3
 

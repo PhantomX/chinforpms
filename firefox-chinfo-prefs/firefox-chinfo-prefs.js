@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20191204
+// 20191209
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -157,9 +157,11 @@ pref("devtools.webide.autoConnectRuntime", false);
 pref("media.gmp-gmpopenh264.provider.enabled",false);
 pref("media.gmp-gmpopenh264.autoupdate",false);
 pref("media.gmp-gmpopenh264.enabled",false);
+pref("media.gmp-gmpopenh264.visible",false);
 pref("media.gmp-manager.url","http://127.0.0.1/");
 pref("media.gmp-manager.url.override", "data:text/plain,");
 pref("media.gmp-provider.enabled",false);
+pref("media.gmp.trial-create.enabled",false);
 pref("media.gmp-widevinecdm.visible", false);
 pref("media.gmp-widevinecdm.enabled", false);
 
