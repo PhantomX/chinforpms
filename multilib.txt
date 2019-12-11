@@ -1,6 +1,7 @@
 adwaita-qt
 amdgpu-pro-vulkan-driver
 amdvlk-vulkan-driver
+chinforpms-rpm-config
 cubeb
 FAudio
 FAudio-freeworld

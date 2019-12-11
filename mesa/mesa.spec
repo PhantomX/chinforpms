@@ -13,6 +13,7 @@
 %global with_iris   1
 %global with_vmware 1
 %global with_xa     1
+%global with_zink   0
 %global vulkan_drivers intel,amd
 %else
 %ifnarch s390x
@@ -144,6 +145,9 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-mako
 %if 0%{?with_hardware}
 BuildRequires:  vulkan-headers
+%if 0%{?with_zink}
+BuildRequires:  pkgconfig(vulkan)
+%endif
 %endif
 
 
@@ -359,7 +363,7 @@ export RANLIB="gcc-ranlib"
   -Ddri3=true \
   -Ddri-drivers=%{?dri_drivers} \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost} \
+  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_zink:,zink} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -514,6 +518,9 @@ popd
 %{_libdir}/dri/i965_dri.so
 %if 0%{?with_iris}
 %{_libdir}/dri/iris_dri.so
+%endif
+%if 0%{?with_zink}
+%{_libdir}/dri/zink_dri.so
 %endif
 %endif
 %ifarch %{arm} aarch64

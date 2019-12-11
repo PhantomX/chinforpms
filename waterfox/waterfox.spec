@@ -1,12 +1,12 @@
-%global commit f80144efd74f252d18ff8b26fbaea26e5ee03147
+%global commit 8864e433baf07e995e7047e840d8f94d8f1b2496
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191020
-%global with_snapshot 1
+%global date 20191205
+%global with_snapshot 0
 
 %global branch classic
 
-%global freebsd_rev 480450
-%global freebsd_root %{name}-FreeBSD-patches-r%{freebsd_rev}
+%global freebsd_rev 20191102
+%global freebsd_root %{name}-FreeBSD-patches-%{freebsd_rev}
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -34,7 +34,6 @@ ExcludeArch: armv7hl
 %global system_libvpx     0
 %endif
 %global system_webp       1
-%global system_vorbis     1
 %global system_libicu     0
 %global system_jpeg       1
 
@@ -98,10 +97,6 @@ ExcludeArch: armv7hl
 %if 0%{?system_webp}
 %global webp_version 1.0.0
 %endif
-%if 0%{?system_vorbis}
-%global ogg_version 1.3.3
-%global vorbis_version 1.3.5
-%endif
 
 %if 0%{?system_nss}
 %global nspr_version 4.17.0
@@ -132,8 +127,8 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2019.10
-Release:        4.%{branch}%{?gver}%{?dist}
+Version:        2019.12
+Release:        1.%{branch}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -147,6 +142,7 @@ Source0:        %{vc_url}/archive/%{version}-%{branch}/%{name}-%{version}-%{bran
 # FreeBSD patches
 # https://www.freshports.org/www/waterfox
 # rev=revision ./waterfox-FreeBSD-patches-snapshot.sh
+# https://github.com/MrAlex94/Waterfox/issues/1220
 Source600:      https://dl.bintray.com/phantomx/tarballs/%{freebsd_root}.tar.xz
 
 Source10:       waterfox-mozconfig
@@ -197,15 +193,6 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 # Upstream updates/PRs/Reverts
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
-## These seems to breaking LTO
-Patch450:       %{vc_url}/commit/8f87cbc0938fec17726dd09b4af2648c084fdbf7.patch#/%{name}-gh-8f87cbc.patch
-Patch451:       %{vc_url}/commit/8eacc27e9529f29dea26625ca2a28a9b9aff62c4.patch#/%{name}-gh-8eacc27.patch
-Patch452:       %{vc_url}/commit/94dc86561e44725210db9491ca7a06ed0322dff6.patch#/%{name}-gh-94dc865.patch
-# PR 1203 without language pack updates
-Patch453:       %{vc_url}/pull/1203/commits/02999ce8d80bd2d996e61faaec654a69820d6c65.patch#/%{name}-gh-pull1203-02999ce.patch
-Patch454:       %{vc_url}/pull/1203/commits/8ce67f3229df1fd636cfb9677daf84712021cda8.patch#/%{name}-gh-pull1203-8ce67f3.patch
-Patch455:       %{vc_url}/pull/1203/commits/f6d002d51d897bc59eb7a9f3220a0d1b57c8771a.patch#/%{name}-gh-pull1203-f6d002d.patch
-Patch456:       %{vc_url}/pull/1203/commits/cf3a35a1601198f3a48677556c0eea1a9f4b14e7.patch#/%{name}-gh-pull1203-cf3a35a.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -222,8 +209,7 @@ Patch700:        %{name}-nolangpacks.patch
 # https://github.com/MrAlex94/Waterfox/pull/547.patch, down
 Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
-Patch703:        %{name}-webrtc-gtest-libv4l2.patch
-Patch704:        %{name}-fix-testing-file.patch
+Patch703:        %{name}-fix-testing-file.patch
 
 %if 0%{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -266,16 +252,11 @@ BuildRequires:  pkgconfig(libnotify) >= %{libnotify_version}
 BuildRequires:  pkgconfig(dri)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  dbus-glib-devel
-BuildRequires:  pkgconfig(libv4l2)
 %if 0%{?system_libvpx}
 BuildRequires:  pkgconfig(vpx) >= %{libvpx_version}
 %endif
 %if 0%{?system_webp}
 BuildRequires:  pkgconfig(libwebp) >= %{webp_version}
-%endif
-%if 0%{?system_vorbis}
-BuildRequires:  pkgconfig(ogg) >= %{ogg_version}
-BuildRequires:  pkgconfig(vorbis) >= %{vorbis_version}
 %endif
 BuildRequires:  autoconf213
 BuildRequires:  pkgconfig(libpulse)
@@ -417,14 +398,6 @@ This package contains results of tests executed during build.
 %patch419 -p1 -b .mozilla-1320560
 %patch420 -p1 -b .mozilla-1389436
 
-%patch450 -p1 -R
-%patch451 -p1 -R
-%patch452 -p1 -R
-%patch453 -p1
-%patch454 -p1
-%patch455 -p1
-%patch456 -p1
-
 # Debian extension patch
 %patch500 -p1 -b .440908
 
@@ -472,8 +445,7 @@ done
 %patch700 -p1 -b .nolangpacks
 %patch701 -p1 -b .waterfoxdir-1
 %patch702 -p1 -b .waterfoxdir-2
-%patch703 -p1 -b .lv4l2
-%patch704 -p1 -b .fix-testing-file
+%patch703 -p1 -b .fix-testing-file
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -486,6 +458,9 @@ sed -e 's|_BRANCH_|%{channel}|g' -i distribution.ini
 
 rm -f .mozconfig
 cp %{SOURCE10} .mozconfig
+
+echo "ac_add_options --prefix=\"%{_prefix}\"" >> .mozconfig
+echo "ac_add_options --libdir=\"%{_libdir}\"" >> .mozconfig
 
 %if 0%{?build_with_pgo}
 echo "mk_add_options MOZ_PGO=1" >> .mozconfig
@@ -599,14 +574,6 @@ echo "ac_add_options --without-system-libvpx" >> .mozconfig
 echo "ac_add_options --with-system-webp" >> .mozconfig
 %else
 echo "ac_add_options --without-system-webp" >> .mozconfig
-%endif
-
-%if 0%{?system_vorbis}
-echo "ac_add_options --with-system-ogg" >> .mozconfig
-echo "ac_add_options --with-system-vorbis" >> .mozconfig
-%else
-echo "ac_add_options --without-system-ogg" >> .mozconfig
-echo "ac_add_options --without-system-vorbis" >> .mozconfig
 %endif
 
 %if 0%{?system_libicu}
@@ -742,45 +709,39 @@ MOZ_LINK_FLAGS="-Wl,--no-keep-memory"
 %endif
 %endif
 
-# Source file to improve testing
-cat > %{name}-env <<EOF
 %ifarch %{arm} %{ix86}
-export RUSTFLAGS="-Cdebuginfo=0"
+echo "export RUSTFLAGS=\"-Cdebuginfo=0"\" >> .mozconfig
 %endif
 
 %if 0%{?build_with_clang}
-export LLVM_PROFDATA="llvm-profdata"
-export CC=clang
-export CXX=clang++
-export AR="llvm-ar"
-export NM="llvm-nm"
-export RANLIB="llvm-ranlib"
+echo "export LLVM_PROFDATA=\"llvm-profdata"\" >> .mozconfig
+echo "export CC=clang" >> .mozconfig
+echo "export CXX=clang++" >> .mozconfig
+echo "export AR=\"llvm-ar\"" >> .mozconfig
+echo "export NM=\"llvm-nm\"" >> .mozconfig
+echo "export RANLIB=\"llvm-ranlib\"" >> .mozconfig
 %else
-export CC=gcc
-export CXX=g++
-export AR="gcc-ar"
-export NM="gcc-nm"
-export RANLIB="gcc-ranlib"
+echo "export CC=gcc" >> .mozconfig
+echo "export CXX=g++" >> .mozconfig
+echo "export AR=\"gcc-ar\"" >> .mozconfig
+echo "export NM=\"gcc-nm\"" >> .mozconfig
+echo "export RANLIB=\"gcc-ranlib\"" >> .mozconfig
 %endif
 
-export CFLAGS="$MOZ_OPT_FLAGS"
-export CXXFLAGS="$MOZ_OPT_FLAGS"
-export LDFLAGS="$MOZ_LINK_FLAGS"
+echo "export CFLAGS=\"$MOZ_OPT_FLAGS\"" >> .mozconfig
+echo "export CXXFLAGS=\"$MOZ_OPT_FLAGS\"" >> .mozconfig
+echo "export LDFLAGS=\"$MOZ_LINK_FLAGS\"" >> .mozconfig
 
-export PREFIX='%{_prefix}'
-export LIBDIR='%{_libdir}'
+echo "export MOZ_MAKE_FLAGS=\"$MOZ_SMP_FLAGS\"" >> .mozconfig
+echo "export MOZ_SERVICES_SYNC=1" >> .mozconfig
+echo "export MOZ_NOSPAM=1" >> .mozconfig
+echo "export STRIP=%{_prefix}/bin/true" >> .mozconfig
 
-export MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS"
-export MOZ_SERVICES_SYNC="1"
-export MOZ_NOSPAM=1
-export STRIP=%{_prefix}/bin/true
 %if 0%{?build_with_lto}
-export TMPDIR="$(pwd)/tmpdir"
-mkdir -p "\$TMPDIR"
+TMPDIR="$(pwd)/tmpdir"
+echo "export TMPDIR=\"$TMPDIR\"" >> .mozconfig
+mkdir -p "$TMPDIR"
 %endif
-EOF
-
-source ./%{name}-env
 
 %if 0%{?build_with_pgo}
 SHELL=%{_prefix}/bin/bash GDK_BACKEND=x11 xvfb-run ./mach build %{?verbose_mach}
@@ -1051,6 +1012,11 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue Dec 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.12-1.classic
+- 2019.12
+- Disable broken lto for the time
+- Update FreeBSD patches. No system ogg/vorbis anymore
+
 * Thu Oct 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.10-4.classic.20191020gitf80144e
 - New snapshot
 - Add channel to distribution.ini

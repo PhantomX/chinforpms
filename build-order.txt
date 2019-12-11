@@ -1,3 +1,6 @@
+# 0 - needed for mock/copr
+chinforpms-rpm-config
+
 # 1
 buildsys-build-rpmfusion
 c-vtapi
