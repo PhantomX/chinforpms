@@ -1,0 +1,31 @@
+From 0bf3ae1ba71921b3725c0ac2830bbe5cbdb95656 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 11 Dec 2019 11:45:18 -0300
+Subject: [PATCH] Disable diagnostics color output
+
+This dump a lot of garbage in mock logs
+---
+ build/moz.configure/toolchain.configure | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/build/moz.configure/toolchain.configure b/build/moz.configure/toolchain.configure
+index a31acb7..10868e0 100755
+--- a/build/moz.configure/toolchain.configure
++++ b/build/moz.configure/toolchain.configure
+@@ -969,12 +969,7 @@ def color_cflags(info):
+     # value changes to e.g. "<x>=always", exact string match may fail and
+     # multiple color flags could be added. So examine downstream consumers
+     # before adding flags to return values.
+-    if info.type == 'gcc' and info.version >= '4.9.0':
+-        return '-fdiagnostics-color'
+-    elif info.type == 'clang':
+-        return '-fcolor-diagnostics'
+-    else:
+-        return ''
++    return '-fno-diagnostics-color'
+ 
+ set_config('COLOR_CFLAGS', color_cflags)
+ 
+-- 
+2.24.1
+

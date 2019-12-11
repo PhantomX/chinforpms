@@ -1,5 +1,5 @@
 Name:           chinforpms-rpm-config
-Version:        1
+Version:        2
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
@@ -40,5 +40,8 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Wed Dec 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 2-1
+- Clean log files with -fno-diagnostics-color optflag
+
 * Tue Dec 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 1-1
 - Initial spec

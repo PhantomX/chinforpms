@@ -128,7 +128,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        2019.12
-Release:        1.%{branch}%{?gver}%{?dist}
+Release:        2.%{branch}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -210,6 +210,7 @@ Patch700:        %{name}-nolangpacks.patch
 Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-fix-testing-file.patch
+Patch704:        %{name}-disable-diagnostics-color.patch
 
 %if 0%{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -446,6 +447,7 @@ done
 %patch701 -p1 -b .waterfoxdir-1
 %patch702 -p1 -b .waterfoxdir-2
 %patch703 -p1 -b .fix-testing-file
+%patch704 -p1 -b .no-diagnostics-color
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -709,41 +711,47 @@ MOZ_LINK_FLAGS="-Wl,--no-keep-memory"
 %endif
 %endif
 
+# Source file to improve testing
+cat > %{name}-env <<EOF
 %ifarch %{arm} %{ix86}
-echo "export RUSTFLAGS=\"-Cdebuginfo=0"\" >> .mozconfig
+export RUSTFLAGS="-Cdebuginfo=0"
 %endif
 
 %if 0%{?build_with_clang}
-echo "export LLVM_PROFDATA=\"llvm-profdata"\" >> .mozconfig
-echo "export CC=clang" >> .mozconfig
-echo "export CXX=clang++" >> .mozconfig
-echo "export AR=\"llvm-ar\"" >> .mozconfig
-echo "export NM=\"llvm-nm\"" >> .mozconfig
-echo "export RANLIB=\"llvm-ranlib\"" >> .mozconfig
+export LLVM_PROFDATA="llvm-profdata"
+export CC=clang
+export CXX=clang++
+export AR="llvm-ar"
+export NM="llvm-nm"
+export RANLIB="llvm-ranlib"
 %else
-echo "export CC=gcc" >> .mozconfig
-echo "export CXX=g++" >> .mozconfig
-echo "export AR=\"gcc-ar\"" >> .mozconfig
-echo "export NM=\"gcc-nm\"" >> .mozconfig
-echo "export RANLIB=\"gcc-ranlib\"" >> .mozconfig
+export CC=gcc
+export CXX=g++
+export AR="gcc-ar"
+export NM="gcc-nm"
+export RANLIB="gcc-ranlib"
 %endif
 
-echo "export CFLAGS=\"$MOZ_OPT_FLAGS\"" >> .mozconfig
-echo "export CXXFLAGS=\"$MOZ_OPT_FLAGS\"" >> .mozconfig
-echo "export LDFLAGS=\"$MOZ_LINK_FLAGS\"" >> .mozconfig
+export CFLAGS="$MOZ_OPT_FLAGS"
+export CXXFLAGS="$MOZ_OPT_FLAGS"
+export LDFLAGS="$MOZ_LINK_FLAGS"
 
-echo "export MOZ_MAKE_FLAGS=\"$MOZ_SMP_FLAGS\"" >> .mozconfig
-echo "export MOZ_SERVICES_SYNC=1" >> .mozconfig
-echo "export MOZ_NOSPAM=1" >> .mozconfig
-echo "export STRIP=%{_prefix}/bin/true" >> .mozconfig
+export MOZ_MAKE_FLAGS="$MOZ_SMP_FLAGS"
+export MOZ_SERVICES_SYNC="1"
+export MOZ_NOSPAM=1
+export STRIP=%{_prefix}/bin/true
 
-%if 0%{?build_with_lto}
-TMPDIR="$(pwd)/tmpdir"
-echo "export TMPDIR=\"$TMPDIR\"" >> .mozconfig
-mkdir -p "$TMPDIR"
+%if 0%{?build_with_lto} || 0%{?build_with_pgo}
+export TMPDIR="$(pwd)/tmpdir"
+mkdir -p "\$TMPDIR"
 %endif
+EOF
+
+source ./%{name}-env
 
 %if 0%{?build_with_pgo}
+mkdir -p objdir/dist/%{name}-%{branch}
+ln -sf %{name}-%{branch} objdir/dist/%{name}
 SHELL=%{_prefix}/bin/bash GDK_BACKEND=x11 xvfb-run ./mach build %{?verbose_mach}
 %else
 SHELL=%{_prefix}/bin/bash ./mach build %{?verbose_mach}
@@ -1012,9 +1020,12 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
-* Tue Dec 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.12-1.classic
+* Wed Dec 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.12-2.classic
+- PGO again
+
+* Wed Dec 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.12-1.classic
 - 2019.12
-- Disable broken lto for the time
+- Disable broken PGO for the time
 - Update FreeBSD patches. No system ogg/vorbis anymore
 
 * Thu Oct 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.10-4.classic.20191020gitf80144e

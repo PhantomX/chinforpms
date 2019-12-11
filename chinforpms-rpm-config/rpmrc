@@ -1,2 +1,2 @@
-optflags: i686 %{__global_compiler_flags_glevel} %{?_native_flags_i686}
-optflags: x86_64 %{__global_compiler_flags_glevel} %{?_native_flags_x86_64}
+optflags: i686 %{__global_compiler_flags_glevel} -fno-diagnostics-color %{?_native_flags_i686}
+optflags: x86_64 %{__global_compiler_flags_glevel} -fno-diagnostics-color %{?_native_flags_x86_64}

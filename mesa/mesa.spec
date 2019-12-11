@@ -13,7 +13,7 @@
 %global with_iris   1
 %global with_vmware 1
 %global with_xa     1
-%global with_zink   0
+%global with_zink   1
 %global vulkan_drivers intel,amd
 %else
 %ifnarch s390x
@@ -47,7 +47,7 @@
 %bcond_with valgrind
 %endif
 
-%global with_lto 1
+%global with_lto 0
 
 %global dri_drivers %{?base_drivers}%{?platform_drivers}
 
@@ -57,7 +57,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        19.3.0~rc6
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -339,7 +339,7 @@ cp %{SOURCE1} docs/
 %build
 
 %if 0%{?with_lto}
-MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -fuse-linker-plugin -ffat-lto-objects -flto-odr-type-merging"
+MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -fuse-linker-plugin -flto-odr-type-merging"
 MESA_COMMON_FLAGS="-falign-functions=32 -fno-semantic-interposition $MESA_LTO_FLAGS"
 MESA_CFLAGS="%(echo %{build_cflags} | sed -e 's/-O2\b/-O3/' -e 's/ -g\b/ -g1/')"
 MESA_CXXFLAGS="%(echo %{build_cxxflags} | sed -e 's/-O2\b/-O3/' -e 's/ -g\b/ -g1/')"
@@ -348,7 +348,7 @@ export CFLAGS="$MESA_CFLAGS $MESA_COMMON_FLAGS"
 export FCFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
 export CFLAGS="$MESA_CFLAGS $MESA_COMMON_FLAGS"
-export CXXFLAGS="$MESA_CXXFLAGS -std=c++14 $MESA_COMMON_FLAGS"
+export CXXFLAGS="$MESA_CXXFLAGS $MESA_COMMON_FLAGS"
 export LDFLAGS="%{build_ldflags} $MESA_LTO_FLAGS"
 
 export CC=gcc
@@ -358,7 +358,7 @@ export NM="gcc-nm"
 export RANLIB="gcc-ranlib"
 %endif
 
-%meson -Dcpp_std=gnu++11 \
+%meson -Dcpp_std=gnu++14 \
   -Dplatforms=x11,wayland,drm,surfaceless \
   -Ddri3=true \
   -Ddri-drivers=%{?dri_drivers} \
@@ -618,6 +618,11 @@ popd
 
 
 %changelog
+* Wed Dec 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.0~rc6-101
+- Enable zink driver
+- Disable broken LTO
+- Fix build with gnu++14 instead gnu++11
+
 * Thu Dec 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.0~rc6-100
 - 19.3.0-rc6
 
