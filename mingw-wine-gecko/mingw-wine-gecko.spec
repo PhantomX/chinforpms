@@ -1,12 +1,13 @@
 %?mingw_package_header
 
-%global with_bin 1
+%global with_bin 0
 
 %global msiname wine_gecko
+%global pkgname wine-gecko
 %global vc_url  https://sourceforge.net/p/wine/wine-gecko
 
 Name:           mingw-wine-gecko
-Version:        2.47
+Version:        2.47.1
 Release:        100%{?dist}
 Summary:        Gecko library required for Wine
 
@@ -16,7 +17,7 @@ URL:            http://wiki.winehq.org/Gecko
 Source0:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-x86_64.msi
 Source1:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-x86.msi
 %else
-Source0:        http://dl.winehq.org/wine/wine-gecko/%{version}/wine-mozilla-%{version}-src.tar.bz2
+Source0:        http://dl.winehq.org/wine/wine-gecko/%{version}/%{pkgname}-%{version}-src.tar.bz2
 %endif
 Source2:        %{vc_url}/ci/master/tree/LICENSE?format=raw#/LICENSE
 Source3:        %{vc_url}/ci/master/tree/LEGAL?format=raw#/LEGAL
@@ -24,15 +25,6 @@ Source4:        %{vc_url}/ci/master/tree/README.txt?format=raw#/README.txt
 
 
 Patch0:         %{name}-mozconfig.patch
-
-# MinGW compile fixes
-Patch1:         0001-Use-make-instead-of-mach-in-make_package.patch
-Patch2:         0002-Explicitly-set-ac_exeext-for-mingw-target.patch
-Patch3:         0003-Disable-CLOCK_MONOTONIC-check-on-mingw.patch
-Patch4:         0004-Explicitly-cast-GetInitialProcessData-result-to-nsIG.patch
-Patch5:         0005-Use-assembly-xgetbv-implementation-on-mingw.patch
-Patch6:         0006-Don-t-export-kBase10MaximalLength.patch
-Patch7:         0007-Use-HAVE_PTHREAD_H-in-pthread.h.patch
 
 BuildArch:      noarch
 
@@ -78,18 +70,18 @@ BuildRequires:  wine-devel
 %description
 Windows Gecko library required for Wine.
 
-%package -n mingw32-wine-gecko
+%package -n mingw32-%{pkgname}
 Summary:       Gecko library for 32bit wine
 Requires:      wine-common
 
-%description -n mingw32-wine-gecko
+%description -n mingw32-%{pkgname}
 Windows Gecko library required for Wine.
 
-%package -n mingw64-wine-gecko
+%package -n mingw64-%{pkgname}
 Summary:       Gecko library for 64bit wine
 Requires:      wine-common
 
-%description -n mingw64-wine-gecko
+%description -n mingw64-%{pkgname}
 Windows Gecko library required for Wine.
 
 %prep
@@ -100,22 +92,15 @@ mkdir -p %{msiname}-%{version}-{x86,x86_64}/dist/
 cp -p %{S:0} %{msiname}-%{version}-x86_64/dist/
 cp -p %{S:1} %{msiname}-%{version}-x86/dist/
 
-mkdir wine-mozilla-%{version}
-cp -p %{S:2} %{S:3} %{S:4} wine-mozilla-%{version}/
+mkdir %{pkgname}-%{version}
+cp -p %{S:2} %{S:3} %{S:4} %{pkgname}-%{version}/
 
 %else
 
-%setup -q -c -n wine-mozilla-%{version}
-cd wine-mozilla-%{version}
+%setup -q -c -n %{pkgname}-%{version}
+cd %{pkgname}-%{version}
 
 %patch0 -p1 -b.mozconfig
-%patch1 -p1 -b.mingw
-%patch2 -p1 -b.mingw
-%patch3 -p1 -b.mingw
-%patch4 -p1 -b.mingw
-%patch5 -p1 -b.mingw
-%patch6 -p1 -b.mingw
-%patch7 -p1 -b.mingw
 
 # fix nsprpub cross compile detection
 sed -i 's,cross_compiling=.*$,cross_compiling=yes,' nsprpub/configure
@@ -124,10 +109,13 @@ sed -i 's,cross_compiling=.*$,cross_compiling=yes,' nsprpub/configure
 rm -f media/libstagefright/ports/win32/include/pthread.h
 %endif
 
+# fix wine cabinet tool
+sed -i 's,$WINE cabarc.exe -r -m mszip N $cabfile msi/files,$WINE cabarc.exe -r -m mszip N $cabfile msi/files/*,' wine/make_package
+
 
 %build
 %if !0%{?with_bin}
-cd wine-mozilla-%{version}
+cd %{pkgname}-%{version}
 # setup build options...
 echo "mk_add_options MOZ_MAKE_FLAGS=%{_smp_mflags}" >> wine/mozconfig-common
 echo "export CFLAGS=\"-DWINE_GECKO_SRC\"" >> wine/mozconfig-common
@@ -136,9 +124,9 @@ echo "export CXXFLAGS=\"\$CFLAGS -fpermissive -mxsave\"" >> wine/mozconfig-commo
 cp wine/mozconfig-common wine/mozconfig-common.build
 
 # ... and build
-TOOLCHAIN_PREFIX=i686-w64-mingw32- ./wine/make_package --msi-package -win32
+TOOLCHAIN_PREFIX=i686-w64-mingw32- MAKEOPTS="%{_smp_mflags}" ./wine/make_package --msi-package -win32
 
-TOOLCHAIN_PREFIX=x86_64-w64-mingw32- ./wine/make_package --msi-package -win64
+TOOLCHAIN_PREFIX=x86_64-w64-mingw32- MAKEOPTS="%{_smp_mflags}" ./wine/make_package --msi-package -win64
 %endif
 
 
@@ -149,20 +137,23 @@ install -p -m 0644 %{msiname}-%{version}-x86/dist/%{msiname}-%{version}-x86.msi 
 install -p -m 0644 %{msiname}-%{version}-x86_64/dist/%{msiname}-%{version}-x86_64.msi \
    %{buildroot}%{_datadir}/wine/gecko/%{msiname}-%{version}-x86_64.msi
 
-%files -n mingw32-wine-gecko
-%license wine-mozilla-%{version}/LICENSE
-%doc wine-mozilla-%{version}/LEGAL
-%doc wine-mozilla-%{version}/README.txt
+%files -n mingw32-%{pkgname}
+%license %{pkgname}-%{version}/LICENSE
+%doc %{pkgname}-%{version}/LEGAL
+%doc %{pkgname}-%{version}/README.txt
 %{_datadir}/wine/gecko/%{msiname}-%{version}-x86.msi
 
-%files -n mingw64-wine-gecko
-%license wine-mozilla-%{version}/LICENSE
-%doc wine-mozilla-%{version}/LEGAL
-%doc wine-mozilla-%{version}/README.txt
+%files -n mingw64-%{pkgname}
+%license %{pkgname}-%{version}/LICENSE
+%doc %{pkgname}-%{version}/LEGAL
+%doc %{pkgname}-%{version}/README.txt
 %{_datadir}/wine/gecko/%{msiname}-%{version}-x86_64.msi
 
 
 %changelog
+* Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.47.1-100
+- 2.47.1
+
 * Mon Nov 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.47-100
 - bin package support
 

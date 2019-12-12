@@ -1,6 +1,6 @@
-%global commit 7ca1c4900e42d608150822ef87a7ce2847a59b6f
+%global commit 5f0b5d350566a46f0f999e4cff7ad9e280fcfa05
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191205
+%global date 20191211
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -12,7 +12,7 @@
 %global with_debug 0
 %endif
 %global no64bit   0
-%global winegecko 2.47
+%global winegecko 2.47.1
 %global winemono  4.9.4
 %global _default_patch_fuzz 2
 
@@ -38,14 +38,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver cb9aa710d509004c6600d925c4ef3b76dbe8b43f
+%global wine_stagingver 2326756550163c13db4dc3d74dd92d14533b3d9b
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 890c2dfbdc8e548210e71e970227d44874ada949
+%global tkg_id 1577f79172618478428e978ae5159d80f0263ed2
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -77,7 +77,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        4.21
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -398,7 +398,9 @@ Requires:       unixODBC(x86-32)
 Requires:       SDL2(x86-32)
 Requires:       vulkan-loader(x86-32)
 %if 0%{?wine_staging}
+%if 0%{?gtk3}
 Requires:       gtk3(x86-32)
+%endif
 Requires:       libva(x86-32)
 %endif
 %endif
@@ -426,7 +428,9 @@ Requires:       unixODBC(x86-64)
 Requires:       SDL2(x86-64)
 Requires:       vulkan-loader(x86-64)
 %if 0%{?wine_staging}
+%if 0%{?gtk3}
 Requires:       gtk3(x86-64)
+%endif
 Requires:       libva(x86-64)
 %endif
 %endif
@@ -449,7 +453,9 @@ Requires:       unixODBC
 Requires:       SDL2
 Requires:       vulkan
 %if 0%{?wine_staging}
+%if 0%{?gtk3}
 Requires:       gtk3
+%endif
 Requires:       libva
 %endif
 %endif
@@ -1858,6 +1864,7 @@ fi
 %{_libdir}/wine/mprapi.%{winedll}
 %{_libdir}/wine/msacm32.%{winedll}
 %{_libdir}/wine/msacm32.%{winedrv}
+%{_libdir}/wine/msado15.%{winedll}
 %{_libdir}/wine/msadp32.%{wineacm}
 %{_libdir}/wine/msasn1.%{winedll}
 %{_libdir}/wine/mscat32.%{winedll}
@@ -1946,6 +1953,7 @@ fi
 %endif
 %{_libdir}/wine/objsel.%{winedll}
 %{_libdir}/wine/odbc32.dll.so
+%{_libdir}/wine/odbcbcp.%{winedll}
 %{_libdir}/wine/odbccp32.%{winedll}
 %{_libdir}/wine/odbccu32.%{winedll}
 %{_libdir}/wine/ole32.%{winedll}
@@ -2462,6 +2470,11 @@ fi
 
 
 %changelog
+* Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.21-102.20191211git5f0b5d3
+- New snapshot
+- wine-gecko 2.47.1
+- Fix gtk3 requires when disabled
+
 * Fri Dec 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.21-101.20191205git7ca1c49
 - Snapshot
 

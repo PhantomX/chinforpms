@@ -41,6 +41,8 @@ ExcludeArch: armv7hl
 
 %global hardened_build    1
 
+%global disable_elfhack   0
+
 %global build_with_clang  0
 %ifnarch %{ix86} ppc64 s390x
 %global build_with_pgo    1
@@ -58,6 +60,7 @@ ExcludeArch: armv7hl
 %if 0%{?build_with_pgo}
 %global use_xvfb          1
 %global build_tests       1
+%global disable_elfhack   1
 %endif
 
 %if !0%{?run_tests}
@@ -66,8 +69,6 @@ ExcludeArch: armv7hl
 %endif
 
 %global debug_build       0
-
-%global disable_elfhack   0
 
 %global build_stylo       0
 %global build_rust_simd   1
@@ -128,7 +129,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        2019.12
-Release:        2.%{branch}%{?gver}%{?dist}
+Release:        3.%{branch}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -1020,6 +1021,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.12-3.classic
+- PGO build from COPR crashing, try to fix disabling elfhack
+
 * Wed Dec 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.12-2.classic
 - PGO again
 

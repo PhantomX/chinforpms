@@ -14,7 +14,7 @@
 %global vc_url  https://github.com/keepassxreboot/%{pkgname}
 
 Name:           mozilla-%{pkgname}
-Version:        1.5.3
+Version:        1.5.4
 Release:        1%{?dist}
 Summary:        KeePassXC Browser Extension 
 
@@ -79,5 +79,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.4-1
+- 1.5.4
+
 * Tue Oct 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.3-1
 - Initial spec
