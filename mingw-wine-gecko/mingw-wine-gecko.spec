@@ -2,8 +2,7 @@
 
 %global with_bin 0
 
-%global msiname wine_gecko
-%global pkgname wine-gecko
+%global msiname wine-gecko
 %global vc_url  https://sourceforge.net/p/wine/wine-gecko
 
 Name:           mingw-wine-gecko
@@ -17,7 +16,7 @@ URL:            http://wiki.winehq.org/Gecko
 Source0:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-x86_64.msi
 Source1:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-x86.msi
 %else
-Source0:        http://dl.winehq.org/wine/wine-gecko/%{version}/%{pkgname}-%{version}-src.tar.bz2
+Source0:        http://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-src.tar.bz2
 %endif
 Source2:        %{vc_url}/ci/master/tree/LICENSE?format=raw#/LICENSE
 Source3:        %{vc_url}/ci/master/tree/LEGAL?format=raw#/LEGAL
@@ -70,18 +69,18 @@ BuildRequires:  wine-devel
 %description
 Windows Gecko library required for Wine.
 
-%package -n mingw32-%{pkgname}
+%package -n mingw32-%{msiname}
 Summary:       Gecko library for 32bit wine
 Requires:      wine-common
 
-%description -n mingw32-%{pkgname}
+%description -n mingw32-%{msiname}
 Windows Gecko library required for Wine.
 
-%package -n mingw64-%{pkgname}
+%package -n mingw64-%{msiname}
 Summary:       Gecko library for 64bit wine
 Requires:      wine-common
 
-%description -n mingw64-%{pkgname}
+%description -n mingw64-%{msiname}
 Windows Gecko library required for Wine.
 
 %prep
@@ -92,13 +91,13 @@ mkdir -p %{msiname}-%{version}-{x86,x86_64}/dist/
 cp -p %{S:0} %{msiname}-%{version}-x86_64/dist/
 cp -p %{S:1} %{msiname}-%{version}-x86/dist/
 
-mkdir %{pkgname}-%{version}
-cp -p %{S:2} %{S:3} %{S:4} %{pkgname}-%{version}/
+mkdir %{msiname}-%{version}
+cp -p %{S:2} %{S:3} %{S:4} %{msiname}-%{version}/
 
 %else
 
-%setup -q -c -n %{pkgname}-%{version}
-cd %{pkgname}-%{version}
+%setup -q -c -n %{msiname}-%{version}
+cd %{msiname}-%{version}
 
 %patch0 -p1 -b.mozconfig
 
@@ -115,7 +114,7 @@ sed -i 's,$WINE cabarc.exe -r -m mszip N $cabfile msi/files,$WINE cabarc.exe -r 
 
 %build
 %if !0%{?with_bin}
-cd %{pkgname}-%{version}
+cd %{msiname}-%{version}
 # setup build options...
 echo "mk_add_options MOZ_MAKE_FLAGS=%{_smp_mflags}" >> wine/mozconfig-common
 echo "export CFLAGS=\"-DWINE_GECKO_SRC\"" >> wine/mozconfig-common
@@ -137,16 +136,16 @@ install -p -m 0644 %{msiname}-%{version}-x86/dist/%{msiname}-%{version}-x86.msi 
 install -p -m 0644 %{msiname}-%{version}-x86_64/dist/%{msiname}-%{version}-x86_64.msi \
    %{buildroot}%{_datadir}/wine/gecko/%{msiname}-%{version}-x86_64.msi
 
-%files -n mingw32-%{pkgname}
-%license %{pkgname}-%{version}/LICENSE
-%doc %{pkgname}-%{version}/LEGAL
-%doc %{pkgname}-%{version}/README.txt
+%files -n mingw32-%{msiname}
+%license %{msiname}-%{version}/LICENSE
+%doc %{msiname}-%{version}/LEGAL
+%doc %{msiname}-%{version}/README.txt
 %{_datadir}/wine/gecko/%{msiname}-%{version}-x86.msi
 
-%files -n mingw64-%{pkgname}
-%license %{pkgname}-%{version}/LICENSE
-%doc %{pkgname}-%{version}/LEGAL
-%doc %{pkgname}-%{version}/README.txt
+%files -n mingw64-%{msiname}
+%license %{msiname}-%{version}/LICENSE
+%doc %{msiname}-%{version}/LEGAL
+%doc %{msiname}-%{version}/README.txt
 %{_datadir}/wine/gecko/%{msiname}-%{version}-x86_64.msi
 
 

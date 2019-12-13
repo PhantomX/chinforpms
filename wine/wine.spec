@@ -1,6 +1,6 @@
-%global commit 5f0b5d350566a46f0f999e4cff7ad9e280fcfa05
+%global commit 750d382f54e494771128c6b331122be2bc747484
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191211
+%global date 20191212
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -22,6 +22,7 @@
 %endif
 
 %global wineacm acm%{?libext}
+%global winecom com%{?libext}
 %global winecpl cpl%{?libext}
 %global winedll dll%{?libext}
 %global winedll16 dll16%{?libext}
@@ -38,7 +39,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 2326756550163c13db4dc3d74dd92d14533b3d9b
+%global wine_stagingver 45d69ec48b4a5a462630d2fcf385ef7044f92dc9
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -1634,6 +1635,7 @@ fi
 %{_libdir}/wine/cards.%{winedll}
 %{_libdir}/wine/cdosys.%{winedll}
 %{_libdir}/wine/cfgmgr32.%{winedll}
+%{_libdir}/wine/chcp.%{winecom}
 %{_libdir}/wine/clock.%{wineexe}
 %{_libdir}/wine/clusapi.%{winedll}
 %{_libdir}/wine/combase.%{winedll}
@@ -2470,7 +2472,7 @@ fi
 
 
 %changelog
-* Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.21-102.20191211git5f0b5d3
+* Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.21-102.20191211git750d382
 - New snapshot
 - wine-gecko 2.47.1
 - Fix gtk3 requires when disabled

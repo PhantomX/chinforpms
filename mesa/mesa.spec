@@ -56,8 +56,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.3.0~rc6
-Release:        101%{?dist}
+Version:        19.3.0
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -618,6 +618,9 @@ popd
 
 
 %changelog
+* Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.0-100
+- 19.3.0
+
 * Wed Dec 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.0~rc6-101
 - Enable zink driver
 - Disable broken LTO
