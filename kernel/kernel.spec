@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 2cc78cb0f90701c8522b642d9051cf0f389bdd9c
+%global pfcommit dfb78261e737321a9b66832852ff19dfee219002
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id b3d18f467bcbfef1acbdcfdc8191d8563cfaa31d
+%global opensuse_id e16f7d410c94f7c0aeebc96ca73d320b1ece0a7d
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -859,9 +859,6 @@ Patch500: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# CVE-2019-19071 rhbz 1774949 1774950
-Patch509: rsi-release-skb-if-rsi_prepare_beacon-fails.patch
-
 # CVE-2019-19070 rhbz 1774957 1774958
 Patch510: spi-gpio-prevent-memory-leak-in-spi_gpio_probe.patch
 
@@ -876,10 +873,6 @@ Patch513: scsi-bfa-release-allocated-memory-in-case-of-error.patch
 
 # CVE-2019-19046 rhbz 1774988 1774989
 Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
-
-# CVE-2019-19050 rhbz 1774998 1775002
-# CVE-2019-19062 rhbz 1775021 1775023
-Patch515: crypto-user-fix-memory-leak-in-crypto_reportstat.patch
 
 # CVE-2019-19064 rhbz 1775010 1775011
 Patch516: spi-lpspi-fix-memory-leak-in-fsl_lpspi_probe.patch
@@ -924,6 +917,12 @@ Patch535: 0001-libertas-fix-a-potential-NULL-pointer-dereference.patch
 # rhbz 1769600
 Patch536: powerpc-xive-skip-ioremap-of-ESB-pages-for-LSI-interrupts.patch
 
+# ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
+Patch600: alsa-5.5.patch
+
+# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
+Patch607: alsa-5.6.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -942,6 +941,7 @@ Patch1018: %{opensuse_url}/ata-sata_mv-avoid-trigerrable-BUG_ON.patch#/openSUSE-
 Patch1019: %{opensuse_url}/ata-define-AC_ERR_OK.patch#/openSUSE-ata-define-AC_ERR_OK.patch
 Patch1020: %{opensuse_url}/ata-make-qc_prep-return-ata_completion_errors.patch#/openSUSE-ata-make-qc_prep-return-ata_completion_errors.patch
 Patch1021: %{opensuse_url}/drm-amdgpu-Add-DC-feature-mask-to-disable-fractional.patch#/openSUSE-drm-amdgpu-Add-DC-feature-mask-to-disable-fractional.patch
+Patch1022: %{opensuse_url}/EDAC-ghes-Do-not-warn-when-incrementing-refcount-on-.patch#/openSUSE-EDAC-ghes-Do-not-warn-when-incrementing-refcount-on-.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2663,6 +2663,10 @@ fi
 #
 #
 %changelog
+* Fri Dec 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.3-500.chinfo
+- 5.4.3
+- stabilization sync
+
 * Thu Dec 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.2-500.chinfo
 - 5.4.2
 - stabilization sync

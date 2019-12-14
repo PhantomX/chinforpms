@@ -13,19 +13,19 @@
 
 %global pkgname amdvlk
 
-%global commit1 2c15e55bc4b7171d6fa4bbb0cd9265bb8ad999b8
+%global commit1 a62a00e933c3dc76053d7e9aa2efecb82d473d24
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 380c746e52f69c39869b154b1d5b56e81902f7f7
+%global commit2 dffcaf4565b4153c8cbff64847efbc0f9fb835f9
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 54a1ba508fd82ed2a11d0960f0f2f35f975b2f12
+%global commit3 83c89cd727653c4514e2abe30e1633220fdb666e
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 831f334a9f4ef429b5d4e953b86b4624a7c2db54
+%global commit4 5d72cf9890fe2fbb1b87eecc497114e04afaa277
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -62,7 +62,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2019.4.3
+Version:        2019.4.4
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -156,7 +156,7 @@ cp -p AMDVLK/LICENSE.txt .
 cp -p AMDVLK/README.md .
 
 # workaround for AMDVLK#89
-find . -name 'CMakeLists.txt' -exec sed -e 's/-Werror=unused-variable\b//g' -e "s/-Werror\b//g" -i "{}" ';'
+find . -name 'CMakeLists.txt' -exec sed -e 's/-Werror=/-W/g' -e "s/-Werror\b//g" -i "{}" ';'
 sed -e "s/-Werror\b//g" -i pal/shared/gpuopen/cmake/AMD.cmake
 
 sed -e '/CMAKE_SHARED_LINKER_FLAGS_RELEASE/s| -s\b| |g' -i xgl/CMakeLists.txt
@@ -233,6 +233,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Fri Dec 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.4.4-1
+- 2019.Q4.4
+
 * Wed Nov 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.4.3-1
 - 2019.Q4.3
 
