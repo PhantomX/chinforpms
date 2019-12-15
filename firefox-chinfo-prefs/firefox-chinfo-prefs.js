@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20191209
+// 20191214
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -31,6 +31,7 @@ pref("browser.tabs.opentabfor.middleclick", false);
 //pref("browser.tabs.remote.allowLinkedWebInFileUriProcess", false);
 pref("browser.urlbar.clickSelectsAll", false);
 pref("browser.urlbar.doubleClickSelectsAll", true);
+pref("browser.urlbar.megabar", false);
 pref("browser.urlbar.openintab", true);
 pref("browser.urlbar.trimURLs", false);
 pref("browser.urlbar.speculativeConnect.enabled", false);

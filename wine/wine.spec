@@ -1,7 +1,7 @@
 %global commit 750d382f54e494771128c6b331122be2bc747484
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20191212
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 45d69ec48b4a5a462630d2fcf385ef7044f92dc9
+%global wine_stagingver 5.0-rc1
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 1577f79172618478428e978ae5159d80f0263ed2
+%global tkg_id 6dd3929cc3dfba75c00f970d0ec6230933aeeb9b
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -77,8 +77,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        4.21
-Release:        102%{?gver}%{?dist}
+Version:        5.0~rc1
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2472,6 +2472,9 @@ fi
 
 
 %changelog
+* Sat Dec 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0~rc1-100
+- 5.0-rc1
+
 * Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.21-102.20191211git750d382
 - New snapshot
 - wine-gecko 2.47.1

@@ -7,14 +7,14 @@
 
 Name:           mingw-wine-gecko
 Version:        2.47.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Gecko library required for Wine
 
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 URL:            http://wiki.winehq.org/Gecko
 %if 0%{?with_bin}
-Source0:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-x86_64.msi
-Source1:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-x86.msi
+Source0:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-x86_64.tar.bz2
+Source1:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-x86.tar.bz2
 %else
 Source0:        http://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-src.tar.bz2
 %endif
@@ -88,8 +88,8 @@ Windows Gecko library required for Wine.
 %setup -q -T -c -n %{name}-%{version}
 
 mkdir -p %{msiname}-%{version}-{x86,x86_64}/dist/
-cp -p %{S:0} %{msiname}-%{version}-x86_64/dist/
-cp -p %{S:1} %{msiname}-%{version}-x86/dist/
+tar xf %{S:0} -C %{msiname}-%{version}-x86_64/dist/
+tar xf %{S:1} -C %{msiname}-%{version}-x86/dist/
 
 mkdir %{msiname}-%{version}
 cp -p %{S:2} %{S:3} %{S:4} %{msiname}-%{version}/
@@ -106,10 +106,11 @@ sed -i 's,cross_compiling=.*$,cross_compiling=yes,' nsprpub/configure
 
 # remove blank includes
 rm -f media/libstagefright/ports/win32/include/pthread.h
-%endif
 
 # fix wine cabinet tool
 sed -i 's,$WINE cabarc.exe -r -m mszip N $cabfile msi/files,$WINE cabarc.exe -r -m mszip N $cabfile msi/files/*,' wine/make_package
+
+%endif
 
 
 %build
@@ -123,33 +124,36 @@ echo "export CXXFLAGS=\"\$CFLAGS -fpermissive -mxsave\"" >> wine/mozconfig-commo
 cp wine/mozconfig-common wine/mozconfig-common.build
 
 # ... and build
-TOOLCHAIN_PREFIX=i686-w64-mingw32- MAKEOPTS="%{_smp_mflags}" ./wine/make_package --msi-package -win32
+TOOLCHAIN_PREFIX=i686-w64-mingw32- MAKEOPTS="%{_smp_mflags}" ./wine/make_package --no-package -win32
 
-TOOLCHAIN_PREFIX=x86_64-w64-mingw32- MAKEOPTS="%{_smp_mflags}" ./wine/make_package --msi-package -win64
+TOOLCHAIN_PREFIX=x86_64-w64-mingw32- MAKEOPTS="%{_smp_mflags}" ./wine/make_package --no-package -win64
 %endif
 
 
 %install
 mkdir -p %{buildroot}%{_datadir}/wine/gecko
-install -p -m 0644 %{msiname}-%{version}-x86/dist/%{msiname}-%{version}-x86.msi \
-   %{buildroot}%{_datadir}/wine/gecko/%{msiname}-%{version}-x86.msi
-install -p -m 0644 %{msiname}-%{version}-x86_64/dist/%{msiname}-%{version}-x86_64.msi \
-   %{buildroot}%{_datadir}/wine/gecko/%{msiname}-%{version}-x86_64.msi
+cp -rp %{msiname}-%{version}-x86/dist/%{msiname}-%{version}-x86 \
+   %{buildroot}%{_datadir}/wine/gecko/
+cp -rp %{msiname}-%{version}-x86_64/dist/%{msiname}-%{version}-x86_64 \
+   %{buildroot}%{_datadir}/wine/gecko/
 
 %files -n mingw32-%{msiname}
 %license %{msiname}-%{version}/LICENSE
 %doc %{msiname}-%{version}/LEGAL
 %doc %{msiname}-%{version}/README.txt
-%{_datadir}/wine/gecko/%{msiname}-%{version}-x86.msi
+%{_datadir}/wine/gecko/%{msiname}-%{version}-x86/
 
 %files -n mingw64-%{msiname}
 %license %{msiname}-%{version}/LICENSE
 %doc %{msiname}-%{version}/LEGAL
 %doc %{msiname}-%{version}/README.txt
-%{_datadir}/wine/gecko/%{msiname}-%{version}-x86_64.msi
+%{_datadir}/wine/gecko/%{msiname}-%{version}-x86_64/
 
 
 %changelog
+* Sat Dec 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.47.1-101
+- Global location
+
 * Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.47.1-100
 - 2.47.1
 
