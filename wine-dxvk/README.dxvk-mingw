@@ -5,6 +5,7 @@ or
 The needed dll files are in /usr/share/wine/dxvk/ARCH, ARCH must match to
 the architecture from executable, 32 or 64.
 ln -s /usr/share/wine/dxvk/ARCH/dxgi.dll executable_directory/dxgi.dll
+ln -s /usr/share/wine/dxvk/ARCH/d3d9.dll executable_directory/d3d9.dll
 ln -s /usr/share/wine/dxvk/ARCH/d3d11.dll executable_directory/d3d11.dll
 ln -s /usr/share/wine/dxvk/ARCH/d3d10.dll executable_directory/d3d10.dll
 ln -s /usr/share/wine/dxvk/ARCH/d3d10_1.dll executable_directory/d3d10_1.dll

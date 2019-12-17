@@ -26,12 +26,12 @@
 
 set -e
 
-ver=20190715
+ver=20191216
 
 name="DXVK"
 pkgname="wine-dxvk"
 dllsuffix="_dxvk"
-dlls="dxgi d3d11 d3d10 d3d10_1 d3d10core"
+dlls="dxgi d3d9 d3d11 d3d10 d3d10_1 d3d10core"
 nodlls=""
 
 wineext=dll.so

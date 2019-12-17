@@ -1,5 +1,5 @@
 Name:           smooth
-Version:        0.8.74.0~pre6
+Version:        0.9.0
 Release:        1%{?dist}
 Summary:        An object oriented C++ class library
 
@@ -19,7 +19,6 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(pangocairo)
 BuildRequires:  pkgconfig(xmu)
-#Requires:       
 
 Provides:       %{name}-libs = %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -68,6 +67,9 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 
 %changelog
+* Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.9.0-1
+- 0.9.0
+
 * Tue Apr 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.8.74.0~pre6-1
 - 0.8.74.0-pre6
 

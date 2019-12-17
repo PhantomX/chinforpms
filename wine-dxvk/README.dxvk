@@ -5,6 +5,7 @@ or
 The needed dll files are in LIBDIR/wine/, LIBDIR must match to
 the architecture from executable, /usr/lib or /usr/lib64.
 ln -s LIBDIR/wine/dxgi_dxvk.dll.so executable_directory/dxgi.dll
+ln -s LIBDIR/wine/d3d9_dxvk.dll.so executable_directory/d3d9.dll
 ln -s LIBDIR/wine/d3d11_dxvk.dll.so executable_directory/d3d11.dll
 ln -s LIBDIR/wine/d3d10_dxvk.dll.so executable_directory/d3d10.dll
 ln -s LIBDIR/wine/d3d10_1_dxvk.dll.so executable_directory/d3d10_1.dll

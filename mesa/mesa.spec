@@ -52,12 +52,13 @@
 %global dri_drivers %{?base_drivers}%{?platform_drivers}
 
 %global vc_url  https://gitlab.freedesktop.org/mesa/mesa
+%global ixit_url  https://github.com/iXit/Mesa-3D/commit
 
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        19.3.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -70,6 +71,22 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch3:         0003-evergreen-big-endian.patch
+
+# Not upstreamed updates from iXit
+Patch50:        %{ixit_url}/9a7820d624f8a6596323ada5b39eb86253a11a9d.patch#/%{name}-ixit-9a7820d.patch
+Patch51:        %{ixit_url}/afffc4dffcb54dc4429f4e04596745b34da48254.patch#/%{name}-ixit-afffc4d.patch
+Patch52:        %{ixit_url}/32f12f1b21285d824c75c71392c58242f44aa557.patch#/%{name}-ixit-32f12f1.patch
+Patch53:        %{ixit_url}/41703b3f3e7c238243ddf129d8c75c4b0c6448c2.patch#/%{name}-ixit-41703b3.patch
+Patch54:        %{ixit_url}/5ffa4acf11c918557c4ef5b058f751a4c3b12436.patch#/%{name}-ixit-5ffa4ac.patch
+Patch55:        %{ixit_url}/57fff4c0af7dce01e1740dba0a7f06aeb1d841c3.patch#/%{name}-ixit-57fff4c.patch
+Patch56:        %{ixit_url}/78cecabc2aa06567b49470d3858ac6868d6f564b.patch#/%{name}-ixit-78cecab.patch
+Patch57:        %{ixit_url}/024dfa17037b48dd5c87d45cb8a00146ae2dc28c.patch#/%{name}-ixit-024dfa1.patch
+Patch58:        %{ixit_url}/e1b7b37bf319820d812a4e64cab765c39f9c0659.patch#/%{name}-ixit-e1b7b37.patch
+Patch59:        %{ixit_url}/9fcb65e6808358bcf1d6ae0113a7253d8fa84504.patch#/%{name}-ixit-9fcb65e.patch
+Patch60:        %{ixit_url}/2e4b559548391a1839efd82f054bd4dd652150c0.patch#/%{name}-ixit-2e4b559.patch
+Patch61:        %{ixit_url}/cf5ac1a78a7f42359e78aa279555af89eda84b19.patch#/%{name}-ixit-cf5ac1a.patch
+Patch62:        %{ixit_url}/f307be7ab84f1493e9aa1bbdaf848eb7ed58e73a.patch#/%{name}-ixit-f307be7.patch
+
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -618,6 +635,9 @@ popd
 
 
 %changelog
+* Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.0-101
+- Apply not upstreamed updates from iXit
+
 * Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.0-100
 - 19.3.0
 

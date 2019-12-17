@@ -24,7 +24,7 @@
 %global pge_id de5b2cd9ad4652b0498ed715ae5fd1e590cbe922
 %global pge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{pge_id}/game-patches-testing/dxvk-patches
 
-%global tkg_id a21e6aa5e726ec11a4aa1037b410a526939811ac
+%global tkg_id 0fda9b379a88b51091c086937710ad0be72e6fe6
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/dxvk-tools/DXVKBUILD/patches
 
 %global dxvk_async 1
@@ -34,9 +34,9 @@
 %global pkgname dxvk
 
 Name:           wine-%{pkgname}
-Version:        1.4.6
+Version:        1.5
 Release:        1%{?dist}
-Summary:        Vulkan-based D3D11 implementation for Linux / Wine
+Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
 License:        zlib
 URL:            https://github.com/doitsujin/%{pkgname}
@@ -80,6 +80,10 @@ Requires:       wine-desktop >= %{winecommonver}
 Enhances:       wine
 
 Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      wine-d9vk < %{?epoch:%{epoch}:}%{version}-%{release}
+
+Provides:       wine-d9vk = %{?epoch:%{epoch}:}%{version}-%{release}
+
 %if !0%{?with_mingw}
 Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      mingw%{__isa_bits}-%{name} < %{?epoch:%{epoch}:}%{version}-%{release}
@@ -88,17 +92,12 @@ Obsoletes:      mingw%{__isa_bits}-%{name} < %{?epoch:%{epoch}:}%{version}-%{rel
 Requires:       %{name}(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
-Provides:       dxgi_%{pkgname}.%{winedll}%{?_isa} = %{?epoch:%{epoch}:}%{version}
-Provides:       d3d11_%{pkgname}.%{winedll}%{?_isa} = %{?epoch:%{epoch}:}%{version}
-Provides:       d3d10_%{pkgname}.%{winedll}%{?_isa} = %{?epoch:%{epoch}:}%{version}
-Provides:       d3d10_1_%{pkgname}.%{winedll}%{?_isa} = %{?epoch:%{epoch}:}%{version}
-Provides:       d3d10core_%{pkgname}.%{winedll}%{?_isa} = %{?epoch:%{epoch}:}%{version}
 %endif
 
 
 %description
-Provides a Vulkan-based implementation of DXGI and D3D11 in order to
-run 3D applications on Linux using Wine.
+Provides a Vulkan-based implementation of DXGI, D3D9, D3D10 and D3D11
+in order to run 3D applications on Linux using Wine.
 
 
 %if 0%{?with_mingw}
@@ -201,7 +200,7 @@ pushd %{_target_platform}${i}
 %ninja_build
 
 %if !0%{?with_mingw}
-  for spec in dxgi d3d11 ;do
+  for spec in dxgi d3d9 d3d11 ;do
     winebuild --dll --fake-module -E ../src/${spec}/${spec}.spec -F ${spec}_%{pkgname}.dll -o ${spec}_%{pkgname}.dll.fake
   done
   for spec in d3d10 d3d10core d3d10_1 ;do
@@ -213,10 +212,10 @@ done
 
 %install
 
-for dll in dxgi d3d11 d3d10 d3d10_1 d3d10core ;do
+for dll in dxgi d3d9 d3d11 d3d10 d3d10_1 d3d10core ;do
 
   case ${dll} in
-    dxgi|d3d11)
+    dxgi|d3d9|d3d11)
       dlldir=${dll}
       ;;
     d3d10|d3d10_1|d3d10core)
@@ -240,7 +239,7 @@ done
 
 %if !0%{?with_mingw}
   mkdir -p %{buildroot}%{_libdir}/wine/fakedlls
-  for fake in dxgi d3d11 d3d10 d3d10_1 d3d10core ;do
+  for fake in dxgi d3d9 d3d11 d3d10 d3d10_1 d3d10core ;do
     install -pm0755 %{_target_platform}/${fake}_%{pkgname}.dll.fake \
       %{buildroot}%{_libdir}/wine/fakedlls/${fake}_%{pkgname}.dll
   done
@@ -271,6 +270,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5-1
+- 1.5
+- Provides wine-d9vk, merged upstream
+
 * Tue Dec 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.4.6-1
 - 1.4.6
 

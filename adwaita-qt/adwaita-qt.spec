@@ -1,6 +1,6 @@
-%global commit 1d09ba4c764a62e4275ad0667ec3e61916fa9957
+%global commit d1e76197e5db24b6d1d286c6e73439d4b1a0500a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191104
+%global date 20191211
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,8 +8,8 @@
 %endif
 
 Name:           adwaita-qt
-Version:        1.1.0
-Release:        101%{?gver}%{?dist}
+Version:        1.1.1
+Release:        100%{?gver}%{?dist}
 
 License:        LGPLv2+
 Summary:        Adwaita theme for Qt-based applications
@@ -100,6 +100,9 @@ make install/fast DESTDIR=%{buildroot} -C "%{_target_platform}-qt5"
 
 
 %changelog
+* Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1.1-100.20191211gitd1e7619
+- 1.1.1
+
 * Tue Nov 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1.0-101.20191104git1d09ba4
 - Snapshot
 

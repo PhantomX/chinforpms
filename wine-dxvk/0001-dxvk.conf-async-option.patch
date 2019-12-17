@@ -1,6 +1,6 @@
-From fd97ccd07aa8890666696f27110136676bea0707 Mon Sep 17 00:00:00 2001
+From bf758611d71306e567e28370eb740636a14f5029 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 9 Sep 2019 14:11:15 -0300
+Date: Mon, 16 Dec 2019 15:46:01 -0300
 Subject: [PATCH] dxvk.conf: async option
 
 ---
@@ -8,13 +8,13 @@ Subject: [PATCH] dxvk.conf: async option
  1 file changed, 8 insertions(+)
 
 diff --git a/dxvk.conf b/dxvk.conf
-index 32065ec..55fc061 100644
+index 1abe286..938a728 100644
 --- a/dxvk.conf
 +++ b/dxvk.conf
-@@ -220,3 +220,11 @@
- # ignored. The syntax is identical.
+@@ -289,3 +289,11 @@
  
- # dxvk.hud = 
+ # d3d9.enableDialogMode = False
+ 
 +
 +# Sets the async pipeline compiler
 +# 
@@ -24,5 +24,5 @@ index 32065ec..55fc061 100644
 +
 +# dxvk.useAsync = False
 -- 
-2.21.0
+2.24.1
 

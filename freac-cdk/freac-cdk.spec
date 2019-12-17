@@ -1,11 +1,11 @@
-%global smoothver 0.8.74
+%global smoothver 0.9.0
 
 %global sanitize 0
 
 %global systemlibs systemlibexpat,systemliburiparser,systemlibxspf,systemzlib
 
 Name:           freac-cdk
-Version:        1.1~alpha_20190423
+Version:        1.1~beta1
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac
 
@@ -62,7 +62,9 @@ done
 %setup -q -n %{name}-%{ver}
 %endif
 
-sed -e 's/\r//' -i Readme*
+sed -e 's/\r//' -i Readme* components/dsp/rnnoise/boca.dsp.rnnoise/Readme.md
+
+cp -p components/dsp/rnnoise/boca.dsp.rnnoise/Readme.md Readme-rnnoise.md
 
 sed -e 's|winegcc|\0-disabled|g' -i Makefile-options
 
@@ -92,10 +94,12 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 %files
 %license COPYING
-%doc Readme.md
+%doc Readme.md Readme-rnnoise.md
 %{_libdir}/*.so.*
 %{_libdir}/boca/*.so*
 %{_libdir}/boca/*.xml
+%{_libdir}/boca/boca.dsp.rnnoise/*.rnnn
+%exclude %{_libdir}/boca/boca.dsp.rnnoise/Readme.md
 
 %files devel
 %{_includedir}/boca/
@@ -104,6 +108,9 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 
 %changelog
+* Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~beta1-1
+- 1.1-beta1
+
 * Tue Apr 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20190423-1
 - 1.1-alpha-20190423
 - BR: pkgconfig(libpulse)
