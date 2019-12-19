@@ -22,7 +22,7 @@
 %endif
 
 Name:           bsnes
-Version:        109
+Version:        113
 Release:        1%{?gver}%{?dist}
 Summary:        Nintendo SNES emulator
 
@@ -138,5 +138,8 @@ done
 
 
 %changelog
+* Wed Dec 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 113-1
+- 113
+
 * Sat Sep 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 109-1
 - Initial spec

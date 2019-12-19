@@ -20,6 +20,7 @@ some seasonal packages too, these can return when needed
  * **faad2** - For i686 mock build
  * **ffmpeg** - For i686 mock build
  * **firefox** - Old 56 release
+ * **freac-superfast-codecs** - Unneeded
  * **freefilesync** - Do not have interest anymore
  * **gnome-colors-icon-theme** - Do not have interest anymore
  * **godot2** - cowsrevenge
@@ -57,7 +58,8 @@ some seasonal packages too, these can return when needed
  * **waifu2x-converter-cpp** - Fedora included
  * **webp-pixbuf-loader** - Fedora included
  * **wimlib** - Fedora included
- * **wine-dxup** - wine-d9vk
+ * **wine-d9vk** - wine-dxvk
+ * **wine-dxup** - wine-dxvk
  * **wine-freeworld** - Unneeded, FAudio-freeworld
  * **xfwm4** - MONITOR_ROOT_PIXMAP is default now
  * **xorg-x11-drv-amdgpu** - Seasonal package

@@ -1,0 +1,101 @@
+From 9c1151b4d65c356f0d25d952fe1a10c89fdb834a Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Mon, 5 Mar 2018 11:03:18 -0500
+Subject: [PATCH] Fix build on F28 and later
+
+Newer gcc complains that it doesn't know how to always-inline memcpy():
+
+  /usr/include/bits/string_fortified.h:31:1: error: inlining failed in
+  call to always_inline 'memcpy': target specific option mismatch
+
+This is because we need to wrap our declaration of memcpy() in the
+options we're trying to push at the top of blt.c. So: include compiler.h
+to define sse2, then push options, then include everything else.
+
+However if you do that, the word 'nonnull' collides with the usage in
+<X11/Xfuncproto.h>. I'm too lazy to fix that properly, just expand it to
+the __attribute__ form in the few places we say it.
+
+Signed-off-by: Adam Jackson <ajax@redhat.com>
+---
+ src/sna/blt.c         | 6 ++++--
+ src/sna/compiler.h    | 2 --
+ src/sna/gen6_common.h | 6 +++---
+ 3 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/src/sna/blt.c b/src/sna/blt.c
+index cb90437a..fb357d35 100644
+--- a/src/sna/blt.c
++++ b/src/sna/blt.c
+@@ -29,13 +29,15 @@
+ #include "config.h"
+ #endif
+ 
+-#include "sna.h"
+-#include <pixman.h>
++#include "compiler.h"
+ 
+ #if defined(sse2)
+ #pragma GCC push_options
+ #pragma GCC target("sse2,inline-all-stringops,fpmath=sse")
+ #pragma GCC optimize("Ofast")
++
++#include <pixman.h>
++#include "sna.h"
+ #include <xmmintrin.h>
+ 
+ #if __x86_64__
+diff --git a/src/sna/compiler.h b/src/sna/compiler.h
+index 0f3775ec..3c176a16 100644
+--- a/src/sna/compiler.h
++++ b/src/sna/compiler.h
+@@ -39,7 +39,6 @@
+ #define pure __attribute__((pure))
+ #define tightly_packed __attribute__((__packed__))
+ #define flatten __attribute__((flatten))
+-#define nonnull __attribute__((nonnull))
+ #define page_aligned __attribute__((aligned(4096)))
+ #else
+ #define likely(expr) (expr)
+@@ -52,7 +51,6 @@
+ #define pure
+ #define tighly_packed
+ #define flatten
+-#define nonnull
+ #define page_aligned
+ #endif
+ 
+diff --git a/src/sna/gen6_common.h b/src/sna/gen6_common.h
+index b53ec0c9..119a2d5d 100644
+--- a/src/sna/gen6_common.h
++++ b/src/sna/gen6_common.h
+@@ -133,7 +133,7 @@ inline static bool force_blt_ring(struct sna *sna, struct kgem_bo *bo)
+ 	return false;
+ }
+ 
+-nonnull inline static bool
++__attribute__((nonnull)) inline static bool
+ prefer_blt_ring(struct sna *sna, struct kgem_bo *bo, unsigned flags)
+ {
+ 	if (PREFER_RENDER)
+@@ -148,7 +148,7 @@ prefer_blt_ring(struct sna *sna, struct kgem_bo *bo, unsigned flags)
+ 	return can_switch_to_blt(sna, bo, flags);
+ }
+ 
+-nonnull inline static bool
++__attribute__((nonnull)) inline static bool
+ prefer_render_ring(struct sna *sna, struct kgem_bo *bo)
+ {
+ 	if (sna->kgem.ring == KGEM_RENDER)
+@@ -191,7 +191,7 @@ prefer_blt_composite(struct sna *sna, struct sna_composite_op *tmp)
+ 	return prefer_blt_bo(sna, tmp->src.bo, tmp->dst.bo);
+ }
+ 
+-nonnull static inline bool
++__attribute__((nonnull)) static inline bool
+ prefer_blt_fill(struct sna *sna, struct kgem_bo *bo, unsigned flags)
+ {
+ 	if (PREFER_RENDER)
+-- 
+2.16.2
+

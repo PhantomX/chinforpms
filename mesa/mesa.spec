@@ -57,8 +57,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.3.0
-Release:        101%{?dist}
+Version:        19.3.1
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -635,6 +635,9 @@ popd
 
 
 %changelog
+* Wed Dec 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.1-100
+- 19.3.1
+
 * Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.3.0-101
 - Apply not upstreamed updates from iXit
 
