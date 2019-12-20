@@ -10351,10 +10351,10 @@ Bugzilla: 1772498
  1 file changed, 3 insertions(+), 32 deletions(-)
 
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 80f66ba85f87..4c83ed4b0d5c 100644
+index a6020d9..2804bd9 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -7608,38 +7608,6 @@ static const struct snd_hda_pin_quirk alc269_pin_fixup_tbl[] = {
+@@ -7637,38 +7637,6 @@ static const struct snd_hda_pin_quirk alc269_pin_fixup_tbl[] = {
  	SND_HDA_PIN_QUIRK(0x10ec0255, 0x1028, "Dell", ALC255_FIXUP_DELL1_MIC_NO_PRESENCE,
  		{0x1b, 0x01011020},
  		{0x21, 0x02211010}),
@@ -10393,16 +10393,16 @@ index 80f66ba85f87..4c83ed4b0d5c 100644
  	SND_HDA_PIN_QUIRK(0x10ec0256, 0x1043, "ASUS", ALC256_FIXUP_ASUS_MIC,
  		{0x14, 0x90170110},
  		{0x1b, 0x90a70130},
-@@ -7852,6 +7820,9 @@ static const struct snd_hda_pin_quirk alc269_fallback_pin_fixup_tbl[] = {
+@@ -7876,6 +7844,9 @@ static const struct snd_hda_pin_quirk alc269_fallback_pin_fixup_tbl[] = {
  	SND_HDA_PIN_QUIRK(0x10ec0289, 0x1028, "Dell", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE,
  		{0x19, 0x40000000},
  		{0x1b, 0x40000000}),
 +	SND_HDA_PIN_QUIRK(0x10ec0256, 0x1028, "Dell", ALC255_FIXUP_DELL1_MIC_NO_PRESENCE,
 +		{0x19, 0x40000000},
 +		{0x1a, 0x40000000}),
- 	{}
- };
- 
+ 	SND_HDA_PIN_QUIRK(0x10ec0274, 0x1028, "Dell", ALC274_FIXUP_DELL_AIO_LINEOUT_VERB,
+ 		{0x19, 0x40000000},
+ 		{0x1a, 0x40000000}),
 -- 
 2.20.1
 
@@ -10430,10 +10430,10 @@ Bugzilla: 1772498
  1 file changed, 3 insertions(+), 14 deletions(-)
 
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 4c83ed4b0d5c..4ebe104cb592 100644
+index 2804bd9..dbfafee 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -7512,20 +7512,6 @@ static const struct snd_hda_pin_quirk alc269_pin_fixup_tbl[] = {
+@@ -7541,20 +7541,6 @@ static const struct snd_hda_pin_quirk alc269_pin_fixup_tbl[] = {
  		{0x19, 0x02a11020},
  		{0x1a, 0x02a11030},
  		{0x21, 0x0221101f}),
@@ -10454,16 +10454,16 @@ index 4c83ed4b0d5c..4ebe104cb592 100644
  	SND_HDA_PIN_QUIRK(0x10ec0255, 0x1028, "Dell", ALC255_FIXUP_DELL2_MIC_NO_PRESENCE,
  		{0x14, 0x90170110},
  		{0x21, 0x02211020}),
-@@ -7823,6 +7809,9 @@ static const struct snd_hda_pin_quirk alc269_fallback_pin_fixup_tbl[] = {
+@@ -7847,6 +7833,9 @@ static const struct snd_hda_pin_quirk alc269_fallback_pin_fixup_tbl[] = {
  	SND_HDA_PIN_QUIRK(0x10ec0256, 0x1028, "Dell", ALC255_FIXUP_DELL1_MIC_NO_PRESENCE,
  		{0x19, 0x40000000},
  		{0x1a, 0x40000000}),
 +	SND_HDA_PIN_QUIRK(0x10ec0236, 0x1028, "Dell", ALC255_FIXUP_DELL1_MIC_NO_PRESENCE,
 +		{0x19, 0x40000000},
 +		{0x1a, 0x40000000}),
- 	{}
- };
- 
+ 	SND_HDA_PIN_QUIRK(0x10ec0274, 0x1028, "Dell", ALC274_FIXUP_DELL_AIO_LINEOUT_VERB,
+ 		{0x19, 0x40000000},
+ 		{0x1a, 0x40000000}),
 -- 
 2.20.1
 

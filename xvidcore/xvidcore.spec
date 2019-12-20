@@ -1,13 +1,12 @@
 #global pre -rc1
 
 Name:           xvidcore
-Version:        1.3.5
-Release:        6%{?dist}
+Version:        1.3.6
+Release:        1%{?dist}
 Summary:        MPEG-4 Simple and Advanced Simple Profile codec
 License:        GPLv2+
-URL:            http://www.xvid.org/
-Source0:        http://downloads.xvid.org/downloads/%{name}-%{version}%{?pre}.tar.bz2
-Patch0:         xvidcore-check_cpu_features-crash.patch
+URL:            https://www.xvid.com/
+Source0:        https://downloads.xvid.com/downloads/%{name}-%{version}%{?pre}.tar.bz2
 
 BuildRequires:  gcc
 %ifarch %{ix86} x86_64
@@ -78,6 +77,9 @@ find %{buildroot} -name "*.a" -delete
 
 
 %changelog
+* Thu Dec 12 2019 Leigh Scott <leigh123linux@gmail.com> - 1.3.6-1
+- Update to 1.3.6
+
 * Fri Aug 09 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1.3.5-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 

@@ -66,6 +66,7 @@
 # Disable some support for multilib builds
 %ifarch %{ix86}
 %if 0%{?fedora} > 30
+%global _without_mfx     1
 %global _without_x264    1
 %global _without_x265    1
 %endif

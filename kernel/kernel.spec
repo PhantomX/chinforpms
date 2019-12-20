@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 868db4d117292ef191210affc847257f649173dd
+%global pfcommit dfb78261e737321a9b66832852ff19dfee219002
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -112,10 +112,10 @@ Summary: The Linux kernel
 
 # Apply a patch range from stable repository, extending pf unmantained branches
 # Root Makefile are stripped from patching
-%global pf_stable_extra 0
+%global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
-%global st_first_commit 8584aaf1c3262ca17d1e4a614ede9179ef462bb0
-%global st_last_commit 4a9b1eb8bc3ba4ad8b3b1aa3317cf8d4a3aaad83
+%global st_first_commit f7688b48ac46e9a669e279f1bc167722d5141eda
+%global st_last_commit 9a088971000c4e7a4abddf9751649ead4d8a0fe0
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id e16f7d410c94f7c0aeebc96ca73d320b1ece0a7d
+%global opensuse_id 47eef04b0c2cb6bf297b737770e4596de6862e34
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -914,9 +914,6 @@ Patch532: 0001-media-usb-fix-memory-leak-in-af9005_identify_state.patch
 # CVE-2019-16232 rhbz 1760351 1760352
 Patch535: 0001-libertas-fix-a-potential-NULL-pointer-dereference.patch
 
-# rhbz 1769600
-Patch536: powerpc-xive-skip-ioremap-of-ESB-pages-for-LSI-interrupts.patch
-
 # ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
 Patch600: alsa-5.5.patch
 
@@ -941,11 +938,11 @@ Patch1018: %{opensuse_url}/ata-sata_mv-avoid-trigerrable-BUG_ON.patch#/openSUSE-
 Patch1019: %{opensuse_url}/ata-define-AC_ERR_OK.patch#/openSUSE-ata-define-AC_ERR_OK.patch
 Patch1020: %{opensuse_url}/ata-make-qc_prep-return-ata_completion_errors.patch#/openSUSE-ata-make-qc_prep-return-ata_completion_errors.patch
 Patch1021: %{opensuse_url}/drm-amdgpu-Add-DC-feature-mask-to-disable-fractional.patch#/openSUSE-drm-amdgpu-Add-DC-feature-mask-to-disable-fractional.patch
-Patch1022: %{opensuse_url}/EDAC-ghes-Do-not-warn-when-incrementing-refcount-on-.patch#/openSUSE-EDAC-ghes-Do-not-warn-when-incrementing-refcount-on-.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
+Patch2001: %{pf_url}/fc6efba39a7651b0c97777229ac7a7a819ddeeaa.patch#/pf-fc6efb.patch
 
 %if !0%{?post_factum}
 
@@ -2663,6 +2660,9 @@ fi
 #
 #
 %changelog
+* Fri Dec 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.5-500.chinfo
+- 5.4.5
+
 * Fri Dec 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.3-500.chinfo
 - 5.4.3
 - stabilization sync
