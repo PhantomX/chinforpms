@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.0-rc1
+%global wine_stagingver 5.0-rc2
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 6dd3929cc3dfba75c00f970d0ec6230933aeeb9b
+%global tkg_id 968547047de0b5dc92acefe5100125131ca6000c
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -77,7 +77,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.0~rc1
+Version:        5.0~rc2
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2472,6 +2472,9 @@ fi
 
 
 %changelog
+* Sat Dec 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0~rc2-100
+- 5.0-rc2
+
 * Sat Dec 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0~rc1-100
 - 5.0-rc1
 

@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -115,7 +115,7 @@ Summary: The Linux kernel
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit f7688b48ac46e9a669e279f1bc167722d5141eda
-%global st_last_commit 9a088971000c4e7a4abddf9751649ead4d8a0fe0
+%global st_last_commit 957a16c3e6e19777865c2d629408d8b4396d6a4b
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
@@ -568,6 +568,9 @@ BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 %if 0%{?fedora}
 BuildRequires: dwarves
+%endif
+%if 0%{?pf_stable_extra}
+BuildRequires: patchutils
 %endif
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: python3-devel
@@ -2660,6 +2663,9 @@ fi
 #
 #
 %changelog
+* Sat Dec 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.6-500.chinfo
+- 5.4.6
+
 * Fri Dec 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.5-500.chinfo
 - 5.4.5
 
