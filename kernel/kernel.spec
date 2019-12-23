@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit dfb78261e737321a9b66832852ff19dfee219002
+%global pfcommit 9e755d39d22cb0fdc090c5c6e14343f98f0923ca
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -112,7 +112,7 @@ Summary: The Linux kernel
 
 # Apply a patch range from stable repository, extending pf unmantained branches
 # Root Makefile are stripped from patching
-%global pf_stable_extra 1
+%global pf_stable_extra 0
 %if 0%{?pf_stable_extra}
 %global st_first_commit f7688b48ac46e9a669e279f1bc167722d5141eda
 %global st_last_commit 957a16c3e6e19777865c2d629408d8b4396d6a4b
@@ -945,7 +945,6 @@ Patch1021: %{opensuse_url}/drm-amdgpu-Add-DC-feature-mask-to-disable-fractional.
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{pf_url}/fc6efba39a7651b0c97777229ac7a7a819ddeeaa.patch#/pf-fc6efb.patch
 
 %if !0%{?post_factum}
 

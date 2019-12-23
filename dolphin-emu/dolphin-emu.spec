@@ -4,9 +4,9 @@
 %global with_egl 1
 %global with_llvm 0
 
-%global commit 0f4c971326ae9389b3ad55b0fefacb708d148f4d
+%global commit 8a50d9c540de1528baf0e5fbb076ccf7e484c988
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191102
+%global date 20191221
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,7 +19,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -75,7 +75,7 @@ BuildRequires:  pkgconfig(sfml-system)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  bochs-devel
+#BuildRequires:  bochs-devel
 BuildRequires:  hidapi-devel
 %if 0%{?with_llvm}
 BuildRequires:  llvm-devel
@@ -154,10 +154,10 @@ rm -rf \
   XAudio2_7 xxhash zlib
 
 #Remove Bundled Bochs source and replace with links:
-cd Bochs_disasm
-rm -rf `ls | grep -v 'stdafx' | grep -v 'CMakeLists.txt'`
-ln -s %{_includedir}/bochs/* ./
-ln -s %{_includedir}/bochs/disasm/* ./
+#cd Bochs_disasm
+#rm -rf `ls | grep -v 'stdafx' | grep -v 'CMakeLists.txt'`
+#ln -s %{_includedir}/bochs/* ./
+#ln -s %{_includedir}/bochs/disasm/* ./
 popd
 
 sed \
@@ -252,6 +252,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Dec 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-106.20191221git8a50d9c
+- New snapshot
+- Disable system bochs-devel
+
 * Sun Nov 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-105.20191102git0f4c971
 - New snapshot
 
