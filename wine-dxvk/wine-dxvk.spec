@@ -1,6 +1,11 @@
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 
+%global commit 0993f6f25dfa1ae3e6b9891190c1ffec8aec680e
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20191225
+%global with_snapshot 1
+
 %ifarch %{ix86} x86_64
 %global with_mingw 1
 %endif
@@ -33,15 +38,23 @@
 
 %global pkgname dxvk
 
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           wine-%{pkgname}
 Version:        1.5
-Release:        1%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
 License:        zlib
 URL:            https://github.com/doitsujin/%{pkgname}
 
+%if 0%{?with_snapshot}
+Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+%else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+%endif
 Source1:        README.%{pkgname}
 Source2:        README.%{pkgname}-mingw
 Source3:        wine%{pkgname}cfg
@@ -115,15 +128,24 @@ package or when debugging this package.
 
 %prep
 %if 0%{?dxvk_async}
+%if 0%{?with_snapshot}
+%setup -q -n %{pkgname}-%{commit}
+%else
 %setup -q -n %{pkgname}-%{version}
+%endif
 %patch100 -p1
 %patch101 -p1
 %patch103 -p1
 
 cp %{S:4} .
 %else
+%if 0%{?with_snapshot}
+%autosetup -n %{pkgname}-%{commit} -p1
+%else
 %autosetup -n %{pkgname}-%{version} -p1
 %endif
+%endif
+
 
 %if 0%{?with_mingw}
 cp %{S:2} README.%{pkgname}
@@ -270,6 +292,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Dec 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5-2.20191225git0993f6f
+- Snapshot
+
 * Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5-1
 - 1.5
 - Provides wine-d9vk, merged upstream

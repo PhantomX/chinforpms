@@ -1,5 +1,5 @@
 Name:           unbound-update-roothints
-Version:        1.1
+Version:        1.2
 Release:        1%{?dist}
 Summary:        Updates unbound root-hints file
 
@@ -36,7 +36,8 @@ After=network.target network-online.target nss-lookup.target
 
 [Service]
 Type=oneshot
-ExecStart=%{_bindir}/curl -o %{_sharedstatedir}/unbound/root.hints https://www.internic.net/domain/named.cache
+ExecStartPre=%{_bindir}/curl -o %{_sharedstatedir}/unbound/root.hints.new https://www.internic.net/domain/named.cache
+ExecStart=%{_bindir}/mv -f %{_sharedstatedir}/unbound/root.hints.new %{_sharedstatedir}/unbound/root.hints
 ExecStartPost=-%{_bindir}/chown unbound. %{_sharedstatedir}/unbound/root.hints
 EOF
 
@@ -69,6 +70,9 @@ EOF
 
 
 %changelog
+* Mon Dec 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.2-1
+- Download failsafe
+
 * Fri Mar 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1-1
 - Run after network-online.target
 
