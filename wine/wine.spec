@@ -1,7 +1,7 @@
-%global commit 750d382f54e494771128c6b331122be2bc747484
+%global commit 5034d109e033fbe820829ae43adba0cc30bf9b99
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191212
-%global with_snapshot 0
+%global date 20191230
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.0-rc2
+%global wine_stagingver db1f94bae4e9cb591ba962f1d0d7ca21cfd87d8f
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 968547047de0b5dc92acefe5100125131ca6000c
+%global tkg_id ca71b917bb723fe32ffbf51a6c1f2ec72d7b6cea
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -56,7 +56,9 @@
 %global fsync_spincounts 0
 
 # proton FS hack
-%global wine_staging_opts -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
+%global wine_staging_opts -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
+%global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
+%global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput-mouse -W user32-rawinput-nolegacy -W user32-rawinput-mouse-experimental -W user32-rawinput-hid -W user32-rawinput-keyboard -W winex11-key_translation
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global valve_url https://github.com/ValveSoftware/wine
@@ -77,7 +79,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.0~rc2
+Version:        5.0~rc3
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -176,11 +178,12 @@ Patch705:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch720:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
 Patch721:       %{tkg_url}/proton/fsync-staging-no_alloc_handle.patch#/%{name}-tkg-fsync-staging-no_alloc_handle.patch
 Patch722:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch723:       %{tkg_url}/proton-tkg-specific/proton-vk-bits-4.5.patch#/%{name}-tkg-proton-vk-bits-4.5.patch
-Patch724:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-tkg-proton_fs_hack_integer_scaling.patch
-Patch725:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
-Patch726:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
-Patch727:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch723:       %{tkg_url}/proton/proton-rawinput.patch#/%{name}-tkg-proton-rawinput.patch
+Patch724:       %{tkg_url}/proton-tkg-specific/proton-vk-bits-4.5.patch#/%{name}-tkg-proton-vk-bits-4.5.patch
+Patch725:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-tkg-proton_fs_hack_integer_scaling.patch
+Patch726:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
+Patch727:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
+Patch728:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 
 Patch800:       revert-grab-fullscreen.patch
@@ -801,10 +804,14 @@ cp -p %{S:1001} README-pba-pkg
 %patch721 -p1
 %patch722 -p1
 %patch723 -p1
+patch -p1 -i patches/winex11-key_translation/0001-winex11-Match-keyboard-in-Unicode.patch
+patch -p1 -i patches/winex11-key_translation/0002-winex11-Fix-more-key-translation.patch
+patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-keyboard-layout.patch
 %patch724 -p1
 %patch725 -p1
 %patch726 -p1
 %patch727 -p1
+%patch728 -p1
 %if 0%{?fsync_spincounts}
 %patch790 -p1
 %endif
@@ -2472,6 +2479,9 @@ fi
 
 
 %changelog
+* Wed Jan 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0~rc3-100.20191230git5034d10
+- 5.0-rc3
+
 * Sat Dec 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0~rc2-100
 - 5.0-rc2
 

@@ -4999,65 +4999,6 @@ index 56a3ab66b46b..6435eb531668 100644
 2.20.1
 
 
-From 34edfaf5c61574b5156daeb173476650be7b87a0 Mon Sep 17 00:00:00 2001
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Date: Fri, 1 Nov 2019 12:30:39 -0500
-Subject: [PATCH 050/130] ASoC: SOF: imx: fix reverse CONFIG_SND_SOC_SOF_OF
- dependency
-
-updated solution to the problem reported with randconfig:
-
-CONFIG_SND_SOC_SOF_IMX depends on CONFIG_SND_SOC_SOF, but is in
-turn referenced by the sof-of-dev driver. This creates a reverse
-dependency that manifests in a link error when CONFIG_SND_SOC_SOF_OF
-is built-in but CONFIG_SND_SOC_SOF_IMX=m:
-
-sound/soc/sof/sof-of-dev.o:(.data+0x118): undefined reference to `sof_imx8_ops'
-
-use def_trisate to propagate the right settings without select.
-
-Fixes: f4df4e4042b0 ("ASoC: SOF: imx8: Fix COMPILE_TEST error")
-Fixes: 202acc565a1f ("ASoC: SOF: imx: Add i.MX8 HW support")
-Suggested-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20191101173045.27099-6-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-
-Signed-off-by: Jaroslav Kysela <jkysela@redhat.com>
-(cherry picked from commit f9ad75468453b019b92c5296e6a04bf7c37f49e4)
-Bugzilla: 1772498
----
- sound/soc/sof/imx/Kconfig | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/sound/soc/sof/imx/Kconfig b/sound/soc/sof/imx/Kconfig
-index 5acae75f5750..71f318bc2c74 100644
---- a/sound/soc/sof/imx/Kconfig
-+++ b/sound/soc/sof/imx/Kconfig
-@@ -11,8 +11,8 @@ config SND_SOC_SOF_IMX_TOPLEVEL
- 
- if SND_SOC_SOF_IMX_TOPLEVEL
- 
--config SND_SOC_SOF_IMX8
--	tristate "SOF support for i.MX8"
-+config SND_SOC_SOF_IMX8_SUPPORT
-+	bool "SOF support for i.MX8"
- 	depends on IMX_SCU
- 	depends on IMX_DSP
- 	help
-@@ -20,4 +20,8 @@ config SND_SOC_SOF_IMX8
-           Say Y if you have such a device.
-           If unsure select "N".
- 
-+config SND_SOC_SOF_IMX8
-+	def_tristate SND_SOC_SOF_OF
-+	depends on SND_SOC_SOF_IMX8_SUPPORT
-+
- endif ## SND_SOC_SOF_IMX_IMX_TOPLEVEL
--- 
-2.20.1
-
-
 From 5efd9ba11e644ef74a0c51d543145f116a886438 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:30:40 -0500
@@ -9999,47 +9940,6 @@ index ad798fb3bb32..d4aea5422ea8 100644
 2.20.1
 
 
-From b0ba4b0be937405c5982db296e5d9e57a9239c5a Mon Sep 17 00:00:00 2001
-From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Date: Mon, 4 Nov 2019 14:48:12 -0800
-Subject: [PATCH 099/130] ASoC: SOF: topology: set trigger order for FE DAI
- link
-
-Set trigger order for FE DAI links to SND_SOC_DPCM_TRIGGER_POST
-to trigger the BE DAI's before the FE DAI's. This prevents the
-xruns seen on playback pipelines using the link DMA.
-
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20191104224812.3393-3-ranjani.sridharan@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-
-Signed-off-by: Jaroslav Kysela <jkysela@redhat.com>
-(cherry picked from commit 5eee2b3f60065a2530d13f28e771be48b989eb4c)
-Bugzilla: 1772498
----
- sound/soc/sof/topology.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index d4aea5422ea8..143b8259a70a 100644
---- a/sound/soc/sof/topology.c
-+++ b/sound/soc/sof/topology.c
-@@ -2952,6 +2952,10 @@ static int sof_link_load(struct snd_soc_component *scomp, int index,
- 	if (!link->no_pcm) {
- 		link->nonatomic = true;
- 
-+		/* set trigger order */
-+		link->trigger[0] = SND_SOC_DPCM_TRIGGER_POST;
-+		link->trigger[1] = SND_SOC_DPCM_TRIGGER_POST;
-+
- 		/* nothing more to do for FE dai links */
- 		return 0;
- 	}
--- 
-2.20.1
-
-
 From 00e0accc297d44a65b09af38a2d6813467f5b8e9 Mon Sep 17 00:00:00 2001
 From: Jaroslav Kysela <perex@perex.cz>
 Date: Tue, 19 Nov 2019 18:49:32 +0100
@@ -11347,47 +11247,6 @@ index eeb9a11e4e14..b2475e3eff7b 100644
 2.20.1
 
 
-From 4ed26c72c431638378a523c30aea7842a84b48d7 Mon Sep 17 00:00:00 2001
-From: Yu-Hsuan Hsu <yuhsuan@chromium.org>
-Date: Tue, 24 Sep 2019 00:29:40 +0800
-Subject: [PATCH 120/130] ASoC: Intel: kbl_rt5663_rt5514_max98927: Add dmic
- format constraint
-
-On KBL platform, the microphone is attached to external codec(rt5514)
-instead of PCH. However, TDM slot between PCH and codec is 16 bits only.
-In order to avoid setting wrong format, we should add a constraint to
-force to use 16 bits format forever.
-
-Signed-off-by: Yu-Hsuan Hsu <yuhsuan@chromium.org>
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20190923162940.199580-1-yuhsuan@chromium.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-
-Signed-off-by: Jaroslav Kysela <jkysela@redhat.com>
-(cherry picked from commit e2db787bdcb4f2722ecf410168f0583764634e45)
-Bugzilla: 1772498
----
- sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c b/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
-index a1056cda3dd7..3e5f6bead229 100644
---- a/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
-+++ b/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
-@@ -465,6 +465,9 @@ static int kabylake_dmic_startup(struct snd_pcm_substream *substream)
- 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
- 			dmic_constraints);
- 
-+	runtime->hw.formats = SNDRV_PCM_FMTBIT_S16_LE;
-+	snd_pcm_hw_constraint_msbits(runtime, 0, 16, 16);
-+
- 	return snd_pcm_hw_constraint_list(substream->runtime, 0,
- 			SNDRV_PCM_HW_PARAM_RATE, &constraints_rates);
- }
--- 
-2.20.1
-
-
 From 0305b5a5db77305fc43a76efd39aed84c5561f96 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Mon, 11 Nov 2019 16:28:59 -0600
@@ -11587,57 +11446,6 @@ index 16d0bae8b316..27588841c8b0 100644
  	{},
  };
  EXPORT_SYMBOL_GPL(snd_soc_acpi_intel_cnl_machines);
--- 
-2.20.1
-
-
-From 5013754204158edfa1252330c1120226af2dca7f Mon Sep 17 00:00:00 2001
-From: Hans de Goede <hdegoede@redhat.com>
-Date: Tue, 19 Nov 2019 15:51:38 +0100
-Subject: [PATCH 122/130] ASoC: Intel: bytcr_rt5640: Update quirk for Acer
- Switch 10 SW5-012 2-in-1
-
-When the Acer Switch 10 SW5-012 quirk was added we did not have
-jack-detection support yet; and the builtin microphone selection of
-the original quirk is wrong too.
-
-Fix the microphone-input quirk and add jack-detection info so that the
-internal-microphone and headphone/set jack on the Switch 10 work properly.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20191119145138.59162-1-hdegoede@redhat.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-
-Signed-off-by: Jaroslav Kysela <jkysela@redhat.com>
-(cherry picked from commit 0bb887709eb16bdc4b5baddd8337abf3de72917f)
-Bugzilla: 1772498
----
- sound/soc/intel/boards/bytcr_rt5640.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/sound/soc/intel/boards/bytcr_rt5640.c b/sound/soc/intel/boards/bytcr_rt5640.c
-index 9c1aa4ec9cba..dd2b5ad08659 100644
---- a/sound/soc/intel/boards/bytcr_rt5640.c
-+++ b/sound/soc/intel/boards/bytcr_rt5640.c
-@@ -405,10 +405,12 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire SW5-012"),
- 		},
--		.driver_data = (void *)(BYT_RT5640_IN1_MAP |
--						 BYT_RT5640_MCLK_EN |
--						 BYT_RT5640_SSP0_AIF1),
--
-+		.driver_data = (void *)(BYT_RT5640_DMIC1_MAP |
-+					BYT_RT5640_JD_SRC_JD2_IN4N |
-+					BYT_RT5640_OVCD_TH_2000UA |
-+					BYT_RT5640_OVCD_SF_0P75 |
-+					BYT_RT5640_SSP0_AIF1 |
-+					BYT_RT5640_MCLK_EN),
- 	},
- 	{
- 		.matches = {
 -- 
 2.20.1
 

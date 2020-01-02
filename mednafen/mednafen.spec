@@ -4,7 +4,7 @@
 %undefine _hardened_build
 
 Name:           mednafen
-Version:        1.23.0
+Version:        1.24.0
 %if 1%(echo %{version} | cut -d. -f3) == 10
 %global unstable UNSTABLE
 %endif
@@ -105,6 +105,9 @@ rm -rf Documentation/*.def Documentation/*.php Documentation/generate.sh \
 
 
 %changelog
+* Thu Dec 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.24.0-100.UNSTABLE
+- 1.24.0
+
 * Wed Sep 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.23.0-100.UNSTABLE
 - 1.23.0
 
