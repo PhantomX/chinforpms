@@ -1,6 +1,6 @@
-%global commit 5f1eada3eae215f0fd489000e97792c892fb7b17
+%global commit 2f1c008a26b50ab3487bd03bcabb39347d441f23
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191115
+%global date 20191128
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           deluge
 Version:        2.0.3
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -23,6 +23,7 @@ Source0:        https://git.deluge-torrent.org/deluge/snapshot/deluge-%{commit}.
 %global vermm %(echo %{version} | cut -d. -f-2)
 Source0:        http://download.deluge-torrent.org/source/%{vermm}/%{name}-%{version}.tar.xz
 %endif
+Source1:        %{name}-daemon-sysusers.conf
 
 Patch0:         0001-Disable-GConf2-magnet-registering.patch
 Patch1:         0001-Disable-new-release-check-by-default.patch
@@ -125,11 +126,8 @@ Deluge bittorent client web interface
 Summary:       The Deluge daemon
 License:       GPLv3 with exceptions
 Requires:      %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires(pre): shadow-utils
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
 BuildRequires: systemd
+%{?systemd_requires}
 
 %description daemon
 Files for the Deluge daemon
@@ -154,6 +152,8 @@ install -m644 packaging/systemd/deluged.service %{buildroot}%{_unitdir}/%{name}-
 install -m644 packaging/systemd/deluge-web.service %{buildroot}%{_unitdir}/%{name}-web.service
 install -m644 packaging/systemd/user.conf %{buildroot}%{_unitdir}/%{name}-daemon.service.d/
 install -m644 packaging/systemd/user.conf %{buildroot}%{_unitdir}/%{name}-web.service.d/
+
+install -Dpm 644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}-daemon.conf
 
 mkdir -p %{buildroot}/var/lib/%{name}
 
@@ -238,6 +238,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 %files daemon
 %{_bindir}/%{name}d
+%{_sysusersdir}/%{name}-daemon.conf
 %{_unitdir}/%{name}-daemon.service
 %dir %{_unitdir}/%{name}-daemon.service.d
 %{_unitdir}/%{name}-daemon.service.d/user.conf
@@ -245,12 +246,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_mandir}/man?/%{name}d*
 
 %pre daemon
-getent group %{name} >/dev/null || groupadd -r %{name}
-getent passwd %{name} >/dev/null || \
-useradd -r -g %{name} -d /var/lib/%{name} -s /sbin/nologin \
-        -c "deluge daemon account" %{name}
-exit 0
-
+%sysusers_create_package %{name}-daemon %{SOURCE1}
 
 %post daemon
 %systemd_post deluge-daemon.service
@@ -272,6 +268,10 @@ exit 0
 
 
 %changelog
+* Fri Jan 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.3-103.20191128git2f1c008
+- New snapshot
+- sysusersdir support
+
 * Thu Nov 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.3-102.20191115git5f1eada
 - Snapshot
 

@@ -230,6 +230,8 @@ URL: https://libvirt.org/
     %define mainturl stable_updates/
 %endif
 Source: https://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.xz
+Source1: %{name}-sysusers.conf
+Source2: %{name}-qemu-sysusers.conf
 
 Patch100: https://libvirt.org/git/?p=libvirt.git;a=patch;h=0a65cba423781f2cbf123354b7f670c4f441b385#/%{name}-git-0a65cba.patch
 
@@ -1300,8 +1302,11 @@ mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
     %endif
 %endif
 
+install -Dpm 644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysusersdir}/%{name}.conf
+
 %if %{with_qemu}
 mkdir -p %{buildroot}%{_localstatedir}/lib/qemu/
+install -Dpm 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysusersdir}/%{name}-qemu.conf
 %endif
 
 
@@ -1327,12 +1332,10 @@ fi
 # 'libvirt' group is just to allow password-less polkit access to
 # libvirtd. The uid number is irrelevant, so we use dynamic allocation
 # described at the above link.
-getent group libvirt >/dev/null || groupadd -r libvirt
+%sysusers_create_package %{name} %{SOURCE1}
 
-exit 0
 
 %post daemon
-
 %systemd_post virtlockd.socket virtlockd-admin.socket
 %systemd_post virtlogd.socket virtlogd-admin.socket
 %systemd_post libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket
@@ -1486,15 +1489,7 @@ rm -rf %{_localstatedir}/lib/rpm-state/libvirt || :
 # We want soft static allocation of well-known ids, as disk images
 # are commonly shared across NFS mounts by id rather than name; see
 # https://fedoraproject.org/wiki/Packaging:UsersAndGroups
-getent group kvm >/dev/null || groupadd -f -g 36 -r kvm
-getent group qemu >/dev/null || groupadd -f -g 107 -r qemu
-if ! getent passwd qemu >/dev/null; then
-  if ! getent passwd 107 >/dev/null; then
-    useradd -r -u 107 -g qemu -G kvm -d %{_localstatedir}/lib/qemu -s /sbin/nologin -c "qemu user" qemu
-  else
-    useradd -r -g qemu -G kvm -d %{_localstatedir}/lib/qemu -s /sbin/nologin -c "qemu user" qemu
-  fi
-fi
+%sysusers_create_package %{name}-qemu %{SOURCE2}
 exit 0
 %endif
 
@@ -1525,6 +1520,7 @@ exit 0
 
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 
+%{_sysusersdir}/%{name}.conf
 %{_unitdir}/libvirtd.service
 %{_unitdir}/libvirtd.socket
 %{_unitdir}/libvirtd-ro.socket
@@ -1742,6 +1738,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/libvirt/virtqemud.conf
 %{_datadir}/augeas/lenses/virtqemud.aug
 %{_datadir}/augeas/lenses/tests/test_virtqemud.aug
+%{_sysusersdir}/%{name}-qemu.conf
 %{_unitdir}/virtqemud.service
 %{_unitdir}/virtqemud.socket
 %{_unitdir}/virtqemud-ro.socket

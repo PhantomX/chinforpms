@@ -1,5 +1,5 @@
 Name:           firejail
-Version:        0.9.60
+Version:        0.9.62
 Release:        1%{?dist}
 Summary:        GUI tools for firejail
 
@@ -7,11 +7,14 @@ License:        GPLv2
 URL:            https://firejail.wordpress.com/
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.xz
 Source1:        README.suid
+Source2:        %{name}-sysusers.conf
+
 
 BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  /usr/bin/pathfix.py
-Requires(pre):  shadow-utils
+BuildRequires:  systemd
+%{?systemd_requires}
 
 
 %description
@@ -50,9 +53,12 @@ chmod +x %{buildroot}%{_libdir}/%{name}/*.so
 
 rm -rf %{buildroot}/usr/share/doc
 
+install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
+
 
 %pre
-getent group %{name} >/dev/null || groupadd -r %{name}
+%sysusers_create_package %{name} %{SOURCE2}
+
 
 %files
 %license COPYING
@@ -65,9 +71,14 @@ getent group %{name} >/dev/null || groupadd -r %{name}
 %{_datadir}/bash-completion/completions/*
 %{_mandir}/man1/*.1*
 %{_mandir}/man5/*.5*
+%{_sysusersdir}/%{name}.conf
 
 
 %changelog
+* Fri Jan 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.9.62-1
+- 0.9.62
+- sysusers.d support
+
 * Mon May 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.9.60-1
 - 0.9.60
 

@@ -172,6 +172,7 @@ Source13: qemu-kvm.sh
 # PR manager service
 Source14: qemu-pr-helper.service
 Source15: qemu-pr-helper.socket
+Source16: %{name}-sysusers.conf
 # /etc/modprobe.d/kvm.conf, for x86
 Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
@@ -1294,6 +1295,8 @@ chmod +x %{buildroot}%{_libdir}/qemu/*.so
 
 mkdir -p %{buildroot}%{_localstatedir}/lib/qemu/
 
+install -Dpm 644 %{SOURCE16} %{buildroot}%{_sysusersdir}/%{name}.conf
+
 
 %check
 
@@ -1335,11 +1338,7 @@ popd
 
 
 %post common
-getent group kvm >/dev/null || groupadd -g 36 -r kvm
-getent group qemu >/dev/null || groupadd -g 107 -r qemu
-getent passwd qemu >/dev/null || \
-  useradd -r -u 107 -g qemu -G kvm -d %{_localstatedir}/lib/qemu -s /sbin/nologin \
-    -c "qemu user" qemu
+%sysusers_create_package %{name} %{SOURCE16}
 
 
 %post user-binfmt
@@ -1427,6 +1426,7 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-pr-helper
 %{_bindir}/qemu-trace-stap
 %{_bindir}/virtfs-proxy-helper
+%{_sysusersdir}/%{name}.conf
 %{_unitdir}/qemu-pr-helper.service
 %{_unitdir}/qemu-pr-helper.socket
 %attr(4755, root, root) %{_libexecdir}/qemu-bridge-helper

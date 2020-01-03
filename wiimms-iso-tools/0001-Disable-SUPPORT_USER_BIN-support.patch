@@ -1,0 +1,26 @@
+From d955fc0181bcf058e99b3675d704f7e1bc26d729 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 2 Jan 2020 23:41:59 -0300
+Subject: [PATCH] Disable SUPPORT_USER_BIN support
+
+This is crashing GC conversion/copying
+---
+ src/libwbfs/wiidisc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/libwbfs/wiidisc.h b/src/libwbfs/wiidisc.h
+index de7d9fe..b50e16e 100644
+--- a/src/libwbfs/wiidisc.h
++++ b/src/libwbfs/wiidisc.h
+@@ -61,7 +61,7 @@
+ ///////////////////////////////////////////////////////////////////////////////
+ 
+ // search and load 'sys/user.bin'  =>  0=off, 1=readonly, 2=read+create
+-#define SUPPORT_USER_BIN	2
++#define SUPPORT_USER_BIN	0
+ 
+ //
+ ///////////////////////////////////////////////////////////////////////////////
+-- 
+2.24.1
+

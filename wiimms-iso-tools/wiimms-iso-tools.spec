@@ -8,7 +8,7 @@
 
 Name:           wiimms-iso-tools
 Version:        3.02a
-Release:        1%{?svnver}%{?dist}
+Release:        2%{?svnver}%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
 License:        GPLv2+
@@ -18,7 +18,7 @@ URL:            http://wit.wiimm.de/
 # Get with snap=date|rev=revision ./wiimms-iso-tools-snapshot.sh
 Source0:        %{name}-r%{revision}.tar.xz
 %else
-Source0:       https://download.wiimm.de/source/%{name}/%{name}.source-%{version}.tar.bz2
+Source0:       https://download.wiimm.de/source/%{name}/%{name}.source-%{version}.txz
 %endif
 Source1:        wiimms-iso-tools-snapshot.sh
 Source2:        wit.1
@@ -27,6 +27,7 @@ Source2:        wit.1
 Patch0:         use-libbz2-and-mhash.patch
 Patch1:         fix-usr-local.patch
 Patch2:         0003-Don-t-link-wfuse-against-libdl.patch
+Patch3:         0001-Disable-SUPPORT_USER_BIN-support.patch
 
 BuildRequires:  gcc
 BuildRequires:  mhash-devel
@@ -50,6 +51,8 @@ ISO images and WBFS containers.
 %else
 %autosetup -n %{name}.source-%{version} -p1
 %endif
+
+rm -rf src/{libbz2,crypto} setup/*.exe
 
 sed -e 's/\r//' -i templates/*.txt
 
@@ -99,6 +102,9 @@ done
 
 
 %changelog
+* Fri Jan 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.02a-2
+- Fix GC image conversion crash
+
 * Thu Feb 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.02a-1
 - 3.02a final
 - Patches and manpage from Debian. Unbundles bzip2 and mhash instead OpenSSL SHA1
