@@ -1,7 +1,7 @@
 %global commit 5034d109e033fbe820829ae43adba0cc30bf9b99
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20191230
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,7 +39,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver db1f94bae4e9cb591ba962f1d0d7ca21cfd87d8f
+%global wine_stagingver 5.0-rc4
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -79,7 +79,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.0~rc3
+Version:        5.0~rc4
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2479,6 +2479,9 @@ fi
 
 
 %changelog
+* Fri Jan 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0~rc4-100
+- 5.0-rc4
+
 * Wed Jan 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0~rc3-100.20191230git5034d10
 - 5.0-rc3
 
