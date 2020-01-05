@@ -23,7 +23,7 @@
 %global opensuse_id 34ebd00cfe5fe0f030f33cc081662ff856d0f36e
 
 # Do we have a -stable update to apply?
-%global stable_update 7
+%global stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -479,6 +479,9 @@ popd
 
 
 %changelog
+* Sat Jan 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.8-500.chinfo
+- 5.4.8
+
 * Wed Jan 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.7-500.chinfo
 - 5.4.7
 

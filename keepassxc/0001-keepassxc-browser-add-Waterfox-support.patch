@@ -1,6 +1,6 @@
-From 7528563a266e96563e9a7dd9d13076c8f120cded Mon Sep 17 00:00:00 2001
+From c33ce844877ace5942c509db81aa09f1d5a5c76a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 26 Oct 2019 23:46:04 -0300
+Date: Sat, 4 Jan 2020 15:39:38 -0300
 Subject: [PATCH] keepassxc-browser: add Waterfox support
 
 ---
@@ -14,10 +14,10 @@ Subject: [PATCH] keepassxc-browser: add Waterfox support
  7 files changed, 42 insertions(+), 3 deletions(-)
 
 diff --git a/share/translations/keepassx_en.ts b/share/translations/keepassx_en.ts
-index d635609..ede0e16 100644
+index 581eeb2..771eb81 100644
 --- a/share/translations/keepassx_en.ts
 +++ b/share/translations/keepassx_en.ts
-@@ -539,6 +539,10 @@ Please select whether you want to allow access.</translation>
+@@ -558,6 +558,10 @@ Please select whether you want to allow access.</translation>
          <source>Deny access</source>
          <translation type="unfinished"></translation>
      </message>
@@ -29,10 +29,10 @@ index d635609..ede0e16 100644
  <context>
      <name>BrowserEntrySaveDialog</name>
 diff --git a/src/browser/BrowserOptionDialog.cpp b/src/browser/BrowserOptionDialog.cpp
-index a5bb921..fb97c9b 100644
+index 1af989e..e063d04 100644
 --- a/src/browser/BrowserOptionDialog.cpp
 +++ b/src/browser/BrowserOptionDialog.cpp
-@@ -74,9 +74,10 @@ BrowserOptionDialog::BrowserOptionDialog(QWidget* parent)
+@@ -78,9 +78,10 @@ BrowserOptionDialog::BrowserOptionDialog(QWidget* parent)
      // Vivaldi uses Chrome's registry settings
      m_ui->vivaldiSupport->setHidden(true);
      m_ui->chromeSupport->setText("Chrome, Vivaldi, and Brave");
@@ -44,15 +44,15 @@ index a5bb921..fb97c9b 100644
  #endif
      m_ui->browserGlobalWarningWidget->setVisible(false);
  }
-@@ -123,6 +124,7 @@ void BrowserOptionDialog::loadSettings()
+@@ -127,6 +128,7 @@ void BrowserOptionDialog::loadSettings()
      m_ui->braveSupport->setChecked(settings->braveSupport());
      m_ui->vivaldiSupport->setChecked(settings->vivaldiSupport());
      m_ui->torBrowserSupport->setChecked(settings->torBrowserSupport());
 +    m_ui->waterfoxSupport->setChecked(settings->waterfoxSupport());
  #endif
- 
- #if defined(KEEPASSXC_DIST_APPIMAGE)
-@@ -187,6 +189,7 @@ void BrowserOptionDialog::saveSettings()
+ #ifndef Q_OS_LINUX
+     m_ui->snapWarningLabel->setVisible(false);
+@@ -194,6 +196,7 @@ void BrowserOptionDialog::saveSettings()
      settings->setChromeSupport(m_ui->chromeSupport->isChecked());
      settings->setChromiumSupport(m_ui->chromiumSupport->isChecked());
      settings->setFirefoxSupport(m_ui->firefoxSupport->isChecked());
@@ -61,7 +61,7 @@ index a5bb921..fb97c9b 100644
      settings->setBraveSupport(m_ui->braveSupport->isChecked());
      settings->setVivaldiSupport(m_ui->vivaldiSupport->isChecked());
 diff --git a/src/browser/BrowserOptionDialog.ui b/src/browser/BrowserOptionDialog.ui
-index 638c400..f23b1b7 100755
+index 84fc5bd..df47ac9 100755
 --- a/src/browser/BrowserOptionDialog.ui
 +++ b/src/browser/BrowserOptionDialog.ui
 @@ -167,6 +167,16 @@
@@ -194,5 +194,5 @@ index 154fe21..1eba030 100644
  
  #endif // HOSTINSTALLER_H
 -- 
-2.23.0
+2.24.1
 
