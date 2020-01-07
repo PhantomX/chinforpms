@@ -1,0 +1,25 @@
+From f66312aff3da682293a3e3d1b1d0589f8a9e045d Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 6 Jan 2020 22:37:19 -0300
+Subject: [PATCH] Use python3
+
+---
+ Telegram/cmake/generate_scheme.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Telegram/cmake/generate_scheme.cmake b/Telegram/cmake/generate_scheme.cmake
+index 75d3995..8286f8a 100644
+--- a/Telegram/cmake/generate_scheme.cmake
++++ b/Telegram/cmake/generate_scheme.cmake
+@@ -22,7 +22,7 @@ function(generate_scheme target_name script scheme_files)
+     BYPRODUCTS
+         ${gen_files}
+     COMMAND
+-        python
++        python3
+         ${script}
+         -o${gen_dst}/scheme
+         ${scheme_files}
+-- 
+2.24.1
+

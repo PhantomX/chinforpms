@@ -4,9 +4,9 @@
 %global with_egl 1
 %global with_llvm 0
 
-%global commit 8a50d9c540de1528baf0e5fbb076ccf7e484c988
+%global commit f35f4f2bf06eefe20ee3338a84b82aa30fe20e3a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191221
+%global date 20200105
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,7 +19,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -252,6 +252,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Jan 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-107.20200105gitf35f4f2
+- New snapshot
+
 * Sun Dec 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-106.20191221git8a50d9c
 - New snapshot
 - Disable system bochs-devel

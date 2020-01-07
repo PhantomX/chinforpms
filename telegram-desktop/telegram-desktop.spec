@@ -3,18 +3,76 @@
 %global apiid 208164
 %global apihash dfbe1bc42dc9d20507e17d1814cc2f0a
 
-# Git revision of crl...
-%global commit1 52baf11aaeb7f5ea6955a438abaa1aee4c4308d8
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global srcname1 crl
+%global da_url https://github.com/desktop-app
 
-# Git revision of patched rlottie...
-%global commit2 589db026ec211bc4979e3bffe074f6e48ce7cedc
+%global commit1 b087501d66ea13395acd91397b3ab6a3a77c41b8
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 cmake_helpers
+
+%global commit2 d14ae77ad5ed27ca6ddbc9579c0c5e0afa18ffca
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 rlottie
+%global srcname2 codegen
+
+%global commit3 baae6cdd9ba5216732222e7dec9a76b9ea3a7c83
+%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
+%global srcname3 lib_base
+
+%global commit4 5a740bf0b7fe8f1f9a7f3e0878d5238f56502da1
+%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
+%global srcname4 lib_crl
+
+%global commit5 a0a0269ffa44d1e23f0911eaeb286004a075b089
+%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%global srcname5 lib_lottie
+
+%global commit6 9877397dbf97b7198d539a3994bf0e9619cf653c
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
+%global srcname6 lib_qr
+
+%global commit7 0671bf70547381effcf442ec9618e04502a8adbc
+%global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
+%global srcname7 lib_rlottie
+
+%global commit8 2888aabf28bf9ca89f3d6d67a523bc5f2ce802ce
+%global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
+%global srcname8 lib_rpl
+
+%global commit9 d305de6d67ca4f3891bad96a0e49e40f5c904189
+%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
+%global srcname9 lib_spellcheck
+
+%global commit10 cb56ad46ca1bee22570a7f3f64d21531283ad84d
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+%global srcname10 lib_storage
+
+%global commit11 b0388a1a02b3f035f1486a6b66a01522c290b198
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 lib_tl
+
+%global commit12 4ec9e32f8f5f6b8192fd60d73ae0b575e82c1c60
+%global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
+%global srcname12 lib_ui
+
+%global commit13 c490c7a098b9b3cbc3195b00e90d6fc3989e2ba2
+%global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
+%global srcname13 rlottie
+
+%global commit14 67c62461d380352500fc39557fd9f046b7fe1d18
+%global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
+%global srcname14 QR-Code-generator
+
+%global commit15 1d9c5d8c0da84b8ddc54bd3d90d632eec95c1f13
+%global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
+%global srcname15 expected
+
+%global commit16 303dcacc2ad0428fd165c71455056d3f8f884d6f
+%global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
+%global srcname16 libtgvoip
 
 # Enable or disable build with GTK support...
 %bcond_with gtk3
+%global with_sysrlottie 0
+%global with_systgvoip 1
 
 %ifarch x86_64
 %global build_with_lto    1
@@ -24,8 +82,8 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.8.15
-Release:        101%{?dist}
+Version:        1.9.3
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -41,33 +99,47 @@ URL:            https://github.com/telegramdesktop/%{appname}
 ExclusiveArch:  x86_64
 
 Source0:        %{url}/archive/v%{version}/%{appname}-%{version}.tar.gz
-Source1:        https://github.com/telegramdesktop/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        https://github.com/john-preston/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source1:        %{da_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        %{da_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        %{da_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source4:        %{da_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+Source5:        %{da_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+Source6:        %{da_url}/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+Source7:        %{da_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+Source8:        %{da_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+Source9:        %{da_url}/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
+Source10:       %{da_url}/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+Source11:       %{da_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+Source12:       %{da_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
+%if !0%{with_sysrlottie}
+Source13:       %{da_url}/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
+%endif
+Source14:       https://github.com/nayuki/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
+Source15:       https://github.com/TartanLlama/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
+%if !0%{with_systgvoip}
+Source16:       https://github.com/telegramdesktop/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
+%endif
+
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch0:         %{name}-build-fixes.patch
-Patch1:         %{name}-system-fonts.patch
-Patch2:         %{name}-unbundle-minizip.patch
-Patch3:         %{name}-pkg-config.patch
-Patch4:         0001-Unset-QT-scale-env-vars.patch
+Patch1:         https://github.com/desktop-app/cmake_helpers/pull/8.patch#/%{name}-gh-cmake_helpers-pull6.patch
+Patch2:         0001-System-libraries.patch
+Patch3:         %{name}-system-fonts.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
 Patch100:       %{name}-no-text-replace.patch
 # Do not show unread counter on muted chats
 Patch101:       %{name}-realmute.patch
-Patch102:       %{name}-nogtk2.patch
 # Always display scrollbars
-Patch103:       %{name}-disable-overlay.patch
-Patch104:       https://github.com/telegramdesktop/tdesktop/pull/6529.patch#/%{name}-gh-pull6529.patch
+Patch102:       %{name}-disable-overlay.patch
+Patch103:       %{name}-disable-animated-stickers.patch
+Patch104:       0001-Use-python3.patch
 
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
 Requires:       open-sans-fonts
-
-# Telegram Desktop require patched version of rlottie since 1.8.0.
-# Pull Request pending: https://github.com/Samsung/rlottie/pull/252
-Provides:       bundled(rlottie) = 0~git%{shortcommit2}
 
 # Compilers and tools...
 BuildRequires:  desktop-file-utils
@@ -75,9 +147,9 @@ BuildRequires:  libappstream-glib
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  gcc
-BuildRequires:  gyp
 
 # Development packages for Telegram Desktop...
+BuildRequires:  enchant-devel
 BuildRequires:  glib2-devel
 BuildRequires:  guidelines-support-library-devel >= 1.0.0
 BuildRequires:  mapbox-variant-devel >= 0.3.6
@@ -90,7 +162,6 @@ BuildRequires:  libstdc++-devel
 BuildRequires:  lz4-devel
 BuildRequires:  range-v3-devel >= 0.9.1
 BuildRequires:  openssl-devel
-#BuildRequires:  rlottie-devel
 BuildRequires:  xxhash-devel
 BuildRequires:  xz-devel
 BuildRequires:  python3
@@ -101,6 +172,24 @@ Recommends:     libappindicator-gtk3%{?_isa}
 BuildRequires:  libappindicator-gtk3-devel
 BuildRequires:  gtk3-devel
 Requires:       gtk3%{?_isa}
+%endif
+
+%if 0%{with_sysrlottie}
+BuildRequires:  rlottie-devel
+%else
+# Telegram Desktop require patched version of rlottie since 1.8.0.
+# Pull Request pending: https://github.com/Samsung/rlottie/pull/252
+Provides:       bundled(rlottie) = 0~git%{shortcommit13}
+%endif
+
+%if !0%{with_systgvoip}
+BuildRequires:  pulseaudio-libs-devel
+BuildRequires:  alsa-lib-devel
+BuildRequires:  openssl-devel
+BuildRequires:  json11-devel
+BuildRequires:  opus-devel
+
+Provides:       bundled(libtgvoip) = 0~git%{shortcommit16}
 %endif
 
 
@@ -119,39 +208,96 @@ business messaging needs.
 
 %prep
 # Unpacking Telegram Desktop source archive...
-%autosetup -n %{appname}-%{version} -p1
+%setup -q -n %{appname}-%{version}
 
-# Unpacking crl...
-pushd Telegram/ThirdParty
-    rm -rf %{srcname1}
-    tar -xf %{SOURCE1}
-    mv %{srcname1}-%{commit1} %{srcname1}
+rm -rf cmake
+tar -xf %{S:1}
+mv %{srcname1}-%{commit1} cmake
 
+pushd Telegram
     rm -rf %{srcname2}
-    tar -xf %{SOURCE2}
+    tar -xf %{S:2}
     mv %{srcname2}-%{commit2} %{srcname2}
+
+    rm -rf %{srcname3}
+    tar -xf %{S:3}
+    mv %{srcname3}-%{commit3} %{srcname3}
+
+    rm -rf %{srcname4}
+    tar -xf %{S:4}
+    mv %{srcname4}-%{commit4} %{srcname4}
+
+    rm -rf %{srcname5}
+    tar -xf %{S:5}
+    mv %{srcname5}-%{commit5} %{srcname5}
+
+    rm -rf %{srcname6}
+    tar -xf %{S:6}
+    mv %{srcname6}-%{commit6} %{srcname6}
+
+    rm -rf %{srcname7}
+    tar -xf %{S:7}
+    mv %{srcname7}-%{commit7} %{srcname7}
+
+    rm -rf %{srcname8}
+    tar -xf %{S:8}
+    mv %{srcname8}-%{commit8} %{srcname8}
+
+    rm -rf %{srcname9}
+    tar -xf %{S:9}
+    mv %{srcname9}-%{commit9} %{srcname9}
+
+    rm -rf %{srcname10}
+    tar -xf %{S:10}
+    mv %{srcname10}-%{commit10} %{srcname10}
+
+    rm -rf %{srcname11}
+    tar -xf %{S:11}
+    mv %{srcname11}-%{commit11} %{srcname11}
+
+    rm -rf %{srcname12}
+    tar -xf %{S:12}
+    mv %{srcname12}-%{commit12} %{srcname12}
 popd
+
+pushd Telegram/ThirdParty
+%if !0%{with_sysrlottie}
+    rm -rf %{srcname13}
+    tar -xf %{S:13}
+    mv %{srcname13}-%{commit13} %{srcname13}
+%endif
+
+    rm -rf QR
+    tar -xf %{S:14}
+    mv %{srcname14}-%{commit14} QR
+
+    rm -rf %{srcname15}
+    tar -xf %{S:15}
+    mv %{srcname15}-%{commit15} %{srcname15}
+
+%if !0%{with_systgvoip}
+    rm -rf %{srcname16}
+    tar -xf %{S:16}
+    mv %{srcname16}-%{commit16} %{srcname16}
+%endif
+
+popd
+
+%patch0 -p1
+%patch1 -p1 -d cmake
+%patch2 -p1
+%patch3 -p1
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%patch104 -p1
+
+sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
 
 %build
-# Setting build definitions...
-%if %{without gtk3}
-TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_GTK_INTEGRATION,'
-%endif
-TDESKTOP_BUILD_DEFINES+='TDESKTOP_LAUNCHER_FILENAME=%{name}.desktop,'
-TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_AUTOUPDATE,'
-TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME,'
-TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_DESKTOP_FILE_GENERATION,'
-TDESKTOP_BUILD_DEFINES+='TDESKTOP_DISABLE_CRASH_REPORTS,'
-
-# Generating cmake script using GYP...
-pushd Telegram/gyp
-    gyp --depth=. --generator-output=../.. -Goutput_dir=out -Dapi_id=%{apiid} \
-      -Dapi_hash=%{apihash} -Dbuild_defines=$TDESKTOP_BUILD_DEFINES Telegram.gyp --format=cmake
-popd
-
-# Patching generated cmake script...
-sed -i "$(($(wc -l < out/Release/CMakeLists.txt) - 2)) r Telegram/gyp/CMakeLists.inj" out/Release/CMakeLists.txt
+%global optflags %{optflags} -DTDESKTOP_LAUNCHER_FILENAME=%{name}.desktop
 
 %if 0%{?build_with_lto}
 export CC=gcc
@@ -164,13 +310,31 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 %endif
 
 # Building Telegram Desktop using cmake...
-pushd out/Release
-    %cmake . \
+mkdir -p %{_target_platform}
+pushd %{_target_platform}
+    %cmake .. \
+       -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if 0%{?build_with_lto}
        -DCMAKE_AR:FILEPATH=%{_bindir}/gcc-ar \
        -DCMAKE_NM:FILEPATH=%{_bindir}/gcc-nm \
        -DCMAKE_RANLIB:FILEPATH=%{_bindir}/gcc-ranlib \
 %endif
+%if %{without gtk3}
+       -DTDESKTOP_DISABLE_GTK_INTEGRATION:BOOL=ON \
+%endif
+       -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
+       -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
+       -DDESKTOP_APP_SPECIAL_TARGET:STRING="" \
+       -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
+       -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
+%if !0%{with_sysrlottie}
+       -DDESKTOP_APP_USE_PACKAGED_RLOTTIE:BOOL=OFF \
+%endif
+%if !0%{with_systgvoip}
+       -DDESKTOP_APP_USE_PACKAGED_TGVOIP:BOOL=OFF \
+%endif
+       -DTDESKTOP_API_ID:STRING=%{apiid} \
+       -DTDESKTOP_API_HASH:STRING=%{apihash} \
 %{nil}
 
     %make_build
@@ -179,7 +343,7 @@ popd
 %install
 # Installing executables...
 mkdir -p %{buildroot}%{_bindir}
-install -m 0755 -p out/Release/Telegram %{buildroot}%{_bindir}/%{name}
+install -m 0755 -p %{_target_platform}/Telegram %{buildroot}%{_bindir}/%{name}
 
 # Installing desktop shortcut...
 mv lib/xdg/telegramdesktop.desktop lib/xdg/%{name}.desktop
@@ -217,6 +381,11 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Mon Jan 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.3-100
+- 1.9.3
+- BR: enchant-devel
+- Remove gyp, only cmake is needed
+
 * Sun Dec 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.8.15-101
 - Rebuild (qt5)
 

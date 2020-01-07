@@ -1,4 +1,4 @@
-From 6f921dcc68023c6bf55dcf48d8c2714b3bcf4762 Mon Sep 17 00:00:00 2001
+From 7dae800678004cf3365d02c582ffb1ffdd571bde Mon Sep 17 00:00:00 2001
 From: Vitaly Zaitsev <vitaly@easycoding.org>
 Date: Sun, 24 Jun 2018 22:59:34 +0200
 Subject: [PATCH 2/3] Backported and rebased patch from Debian maintainer
@@ -6,39 +6,38 @@ Subject: [PATCH 2/3] Backported and rebased patch from Debian maintainer
  will use packaged versions.
 
 ---
- Telegram/Resources/qrc/fonts.qrc                  | 5 -----
- Telegram/SourceFiles/ui/style/style_core_font.cpp | 6 +++---
- 2 files changed, 3 insertions(+), 8 deletions(-)
+ Telegram/lib_ui/fonts/fonts.qrc              | 8 --------
+ Telegram/lib_ui/ui/style/style_core_font.cpp | 2 +-
+ 2 files changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/Telegram/Resources/qrc/fonts.qrc b/Telegram/Resources/qrc/fonts.qrc
-index 233b8d572..03585ec03 100644
---- a/Telegram/Resources/qrc/fonts.qrc
-+++ b/Telegram/Resources/qrc/fonts.qrc
-@@ -1,7 +1,2 @@
+diff --git a/Telegram/lib_ui/fonts/fonts.qrc b/Telegram/lib_ui/fonts/fonts.qrc
+index fb1208d..03585ec 100644
+--- a/Telegram/lib_ui/fonts/fonts.qrc
++++ b/Telegram/lib_ui/fonts/fonts.qrc
+@@ -1,10 +1,2 @@
  <RCC>
--  <qresource prefix="/gui">
--    <file alias="fonts/OpenSans-Regular.ttf">../fonts/OpenSans-Regular.ttf</file>
--    <file alias="fonts/OpenSans-Bold.ttf">../fonts/OpenSans-Bold.ttf</file>
--    <file alias="fonts/OpenSans-Semibold.ttf">../fonts/OpenSans-Semibold.ttf</file>
+-  <qresource prefix="/gui/fonts">
+-    <file>DAOpenSansRegular.ttf</file>
+-    <file>DAOpenSansRegularItalic.ttf</file>
+-    <file>DAOpenSansBold.ttf</file>
+-    <file>DAOpenSansBoldItalic.ttf</file>
+-    <file>DAOpenSansSemibold.ttf</file>
+-    <file>DAOpenSansSemiboldItalic.ttf</file>
 -  </qresource>
  </RCC>
-diff --git a/Telegram/SourceFiles/ui/style/style_core_font.cpp b/Telegram/SourceFiles/ui/style/style_core_font.cpp
-index 653dbfff0..62527327f 100644
---- a/Telegram/SourceFiles/ui/style/style_core_font.cpp
-+++ b/Telegram/SourceFiles/ui/style/style_core_font.cpp
-@@ -84,9 +84,9 @@ void StartFonts() {
- 	}
- 	Started = true;
- 
--	auto regular = LoadCustomFont(":/gui/fonts/OpenSans-Regular.ttf", "Open Sans");
--	auto bold = LoadCustomFont(":/gui/fonts/OpenSans-Bold.ttf", "Open Sans", style::internal::FontBold);
--	auto semibold = LoadCustomFont(":/gui/fonts/OpenSans-Semibold.ttf", "Open Sans Semibold");
-+	auto regular = ValidateFont(QStringLiteral("Open Sans"));
-+	auto bold = ValidateFont(QStringLiteral("Open Sans"), style::internal::FontBold);
-+	auto semibold = ValidateFont(QStringLiteral("Open Sans Semibold"));
- 
+diff --git a/Telegram/lib_ui/ui/style/style_core_font.cpp b/Telegram/lib_ui/ui/style/style_core_font.cpp
+index cfe2111..33b50c9 100644
+--- a/Telegram/lib_ui/ui/style/style_core_font.cpp
++++ b/Telegram/lib_ui/ui/style/style_core_font.cpp
+@@ -135,7 +135,7 @@ void StartFonts() {
+ 	for (auto i = 0; i != FontTypesCount; ++i) {
+ 		const auto name = FontTypeNames[i];
+ 		const auto flags = FontTypeFlags[i];
+-		areGood[i] = LoadCustomFont(":/gui/fonts/" + name + ".ttf", name, flags);
++		areGood[i] = ValidateFont(QStringLiteral("Open Sans"));
+ 		Overrides[i] = name;
  #ifdef Q_OS_WIN
- 	// Attempt to workaround a strange font bug with Open Sans Semibold not loading.
+ 		// Attempt to workaround a strange font bug with Open Sans Semibold not loading.
 -- 
-2.21.0
+2.24.1
 

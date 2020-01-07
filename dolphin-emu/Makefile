@@ -1,5 +1,5 @@
 NAME = dolphin
-VERSION ?= 8a50d9c540de1528baf0e5fbb076ccf7e484c988
+VERSION ?= f35f4f2bf06eefe20ee3338a84b82aa30fe20e3a
 SNAPSHOT ?= 1
 EXTERNALS = cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi libiconv-1.14 libpng libusb LZO mbedtls miniupnpc OpenAL pugixml Qt SFML MoltenVK XAudio2_7 xxhash zlib
 

@@ -1,9 +1,11 @@
 --- libtgvoip-2.4.2/libtgvoip.gyp.orig	2019-01-12 14:27:45.771561035 -0200
 +++ libtgvoip-2.4.2/libtgvoip.gyp	2019-01-12 14:29:34.888559427 -0200
-@@ -723,6 +723,8 @@
+@@ -723,6 +723,10 @@
          ],
          'libraries': [
              'json11',
++            'dl',
++            'pthread',
 +            '<!(pkg-config --libs libcrypto)',
 +            '<!(pkg-config --libs opus)',
          ],

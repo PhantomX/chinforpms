@@ -5,6 +5,7 @@ bh-fonts
 binkplayer
 bsnes
 cdrtools
+citra
 cowsrevenge
 desmume
 discord

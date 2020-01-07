@@ -1,0 +1,121 @@
+From 2d5b52d7f7c30ffd49d9c2ffc06db321b0b2d675 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 6 Jan 2020 14:56:22 -0300
+Subject: [PATCH] Add option to disable animated stickers
+
+Rebased from pull 629 from "Ben Scholzen (DASPRiD)" <mail@dasprids.de>
+---
+ Telegram/Resources/langs/lang.strings                     | 1 +
+ .../history/view/media/history_view_sticker.cpp           | 1 +
+ Telegram/SourceFiles/main/main_settings.cpp               | 4 ++++
+ Telegram/SourceFiles/main/main_settings.h                 | 7 +++++++
+ Telegram/SourceFiles/settings/settings_chat.cpp           | 8 ++++++++
+ 5 files changed, 21 insertions(+)
+
+diff --git a/Telegram/Resources/langs/lang.strings b/Telegram/Resources/langs/lang.strings
+index 7e8254a..3e8eca5 100644
+--- a/Telegram/Resources/langs/lang.strings
++++ b/Telegram/Resources/langs/lang.strings
+@@ -337,6 +337,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+ "lng_settings_suggest_emoji" = "Suggest emoji replacements";
+ "lng_settings_suggest_by_emoji" = "Suggest popular stickers by emoji";
+ "lng_settings_loop_stickers" = "Loop animated stickers";
++"lng_settings_disable_animated_stickers" = "Disable animated stickers";
+ "lng_settings_large_emoji" = "Large emoji";
+ "lng_settings_view_emojis" = "View list";
+ "lng_settings_send_enter" = "Send by Enter";
+diff --git a/Telegram/SourceFiles/history/view/media/history_view_sticker.cpp b/Telegram/SourceFiles/history/view/media/history_view_sticker.cpp
+index 717a0bf..a8c0a09 100644
+--- a/Telegram/SourceFiles/history/view/media/history_view_sticker.cpp
++++ b/Telegram/SourceFiles/history/view/media/history_view_sticker.cpp
+@@ -113,6 +113,7 @@ void Sticker::paintLottie(Painter &p, const QRect &r, bool selected) {
+ 	const auto playOnce = isEmojiSticker()
+ 		|| !_document->session().settings().loopAnimatedStickers();
+ 	if (!paused
++		&& !_document->session().settings().disableAnimatedStickers()
+ 		&& (!playOnce || frame.index != 0 || !_lottieOncePlayed)
+ 		&& _lottie->markFrameShown()
+ 		&& playOnce
+diff --git a/Telegram/SourceFiles/main/main_settings.cpp b/Telegram/SourceFiles/main/main_settings.cpp
+index acb3c1d..27bafd4 100644
+--- a/Telegram/SourceFiles/main/main_settings.cpp
++++ b/Telegram/SourceFiles/main/main_settings.cpp
+@@ -89,6 +89,7 @@ QByteArray Settings::serialize() const {
+ 		stream << qint32(_variables.skipArchiveInSearch.current() ? 1 : 0);
+ 		stream << qint32(0);// LEGACY _variables.autoplayGifs ? 1 : 0);
+ 		stream << qint32(_variables.loopAnimatedStickers ? 1 : 0);
++		stream << qint32(_variables.disableAnimatedStickers ? 1 : 0);
+ 		stream << qint32(_variables.largeEmoji.current() ? 1 : 0);
+ 		stream << qint32(_variables.replaceEmoji.current() ? 1 : 0);
+ 		stream << qint32(_variables.suggestEmoji ? 1 : 0);
+@@ -142,6 +143,7 @@ void Settings::constructFromSerialized(const QByteArray &serialized) {
+ 	qint32 skipArchiveInSearch = _variables.skipArchiveInSearch.current() ? 1 : 0;
+ 	qint32 autoplayGifs = 1;
+ 	qint32 loopAnimatedStickers = _variables.loopAnimatedStickers ? 1 : 0;
++	qint32 disableAnimatedStickers = _variables.disableAnimatedStickers ? 1 : 0;
+ 	qint32 largeEmoji = _variables.largeEmoji.current() ? 1 : 0;
+ 	qint32 replaceEmoji = _variables.replaceEmoji.current() ? 1 : 0;
+ 	qint32 suggestEmoji = _variables.suggestEmoji ? 1 : 0;
+@@ -248,6 +250,7 @@ void Settings::constructFromSerialized(const QByteArray &serialized) {
+ 	if (!stream.atEnd()) {
+ 		stream >> autoplayGifs;
+ 		stream >> loopAnimatedStickers;
++		stream >> disableAnimatedStickers;
+ 		stream >> largeEmoji;
+ 		stream >> replaceEmoji;
+ 		stream >> suggestEmoji;
+@@ -349,6 +352,7 @@ void Settings::constructFromSerialized(const QByteArray &serialized) {
+ 	_variables.archiveInMainMenu = (archiveInMainMenu == 1);
+ 	_variables.skipArchiveInSearch = (skipArchiveInSearch == 1);
+ 	_variables.loopAnimatedStickers = (loopAnimatedStickers == 1);
++	_variables.disableAnimatedStickers = (disableAnimatedStickers == 1);
+ 	_variables.largeEmoji = (largeEmoji == 1);
+ 	_variables.replaceEmoji = (replaceEmoji == 1);
+ 	_variables.suggestEmoji = (suggestEmoji == 1);
+diff --git a/Telegram/SourceFiles/main/main_settings.h b/Telegram/SourceFiles/main/main_settings.h
+index 4cf55aa..ab44c0e 100644
+--- a/Telegram/SourceFiles/main/main_settings.h
++++ b/Telegram/SourceFiles/main/main_settings.h
+@@ -207,6 +207,12 @@ public:
+ 	void setLoopAnimatedStickers(bool value) {
+ 		_variables.loopAnimatedStickers = value;
+ 	}
++	[[nodiscard]] bool disableAnimatedStickers() const {
++		return _variables.disableAnimatedStickers;
++	}
++	void setDisableAnimatedStickers(bool value) {
++		_variables.disableAnimatedStickers = value;
++	}
+ 	void setLargeEmoji(bool value);
+ 	[[nodiscard]] bool largeEmoji() const;
+ 	[[nodiscard]] rpl::producer<bool> largeEmojiValue() const;
+@@ -275,6 +281,7 @@ private:
+ 		rpl::variable<bool> notifyAboutPinned = true;
+ 		rpl::variable<bool> skipArchiveInSearch = false;
+ 		bool loopAnimatedStickers = true;
++		bool disableAnimatedStickers = false;
+ 		rpl::variable<bool> largeEmoji = true;
+ 		rpl::variable<bool> replaceEmoji = true;
+ 		bool suggestEmoji = true;
+diff --git a/Telegram/SourceFiles/settings/settings_chat.cpp b/Telegram/SourceFiles/settings/settings_chat.cpp
+index 3477ca2..76fb66f 100644
+--- a/Telegram/SourceFiles/settings/settings_chat.cpp
++++ b/Telegram/SourceFiles/settings/settings_chat.cpp
+@@ -725,6 +725,14 @@ void SetupStickersEmoji(
+ 			session->saveSettingsDelayed();
+ 		});
+ 
++	add(
++		tr::lng_settings_disable_animated_stickers(tr::now),
++		session->settings().disableAnimatedStickers(),
++		[=](bool checked) {
++			session->settings().setDisableAnimatedStickers(checked);
++			session->saveSettingsDelayed();
++		});
++
+ 	AddButton(
+ 		container,
+ 		tr::lng_stickers_you_have(),
+-- 
+2.24.1
+

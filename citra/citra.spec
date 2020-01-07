@@ -1,6 +1,6 @@
-%global commit 223bfc9a2aaa37a6ef0e255ebad5dc042fe1bf81
+%global commit 01686f78fed196e5c7b19fafc8a1f6d8a609c7f8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190921
+%global date 20200101
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -20,7 +20,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
-%global commit4 7512a55aa3ae309587ca89668ef9ec4074a51a1f
+%global commit4 4b8f8fac96a7819f28f4be523ca10a2d5d8aaaf2
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
@@ -44,6 +44,10 @@
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 xbyak
 
+%global commit10 31d9704fdcca0b68fb9656d4764fa0fb60e460c2
+%global shortcommit10 %(c=%{commit9}; echo ${c:0:7})
+%global srcname10 lodepng
+
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
@@ -52,7 +56,7 @@
 
 Name:           citra
 Version:        0
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -72,6 +76,7 @@ Source6:        https://github.com/neobrain/%{srcname6}/archive/%{commit6}/%{src
 Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/wwylele/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source9:        https://github.com/herumi/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
+Source10:       https://github.com/lvandeve/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
@@ -135,6 +140,7 @@ tar -xf %{S:6} -C externals/nihstro --strip-components 1
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
 tar -xf %{S:8} -C externals/teakra --strip-components 1
 tar -xf %{S:9} -C externals/xbyak --strip-components 1
+tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
 
 sed -e '/ENABLE_WEB_SERVICE/s|ON|OFF|g' -i CMakeLists.txt
 
@@ -213,6 +219,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Jan 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-4.20200101git01686f7
+- New snapshot
+- lodepng
+
 * Sat Sep 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 0-3.20190921git223bfc9
 - New snapshot
 

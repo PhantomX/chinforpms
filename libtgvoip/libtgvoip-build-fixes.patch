@@ -4,11 +4,11 @@ Date: Thu, 6 Jul 2017 17:27:01 +0200
 Subject: [PATCH] Fixed build of libtgvoip under Fedora as shared library.
 
 ---
- libtgvoip.gyp | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ libtgvoip.gyp | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/libtgvoip.gyp b/libtgvoip.gyp
-index 8c62b56..8fe9c5b 100644
+index 05bdb6c..e3820b2 100644
 --- a/libtgvoip.gyp
 +++ b/libtgvoip.gyp
 @@ -4,7 +4,8 @@
@@ -21,30 +21,27 @@ index 8c62b56..8fe9c5b 100644
          'dependencies': [],
          'defines': [
            'WEBRTC_APM_DEBUG_DUMP=0',
-@@ -14,11 +15,11 @@
-         'variables': {
-           'tgvoip_src_loc': '.',
-           'official_build_target%': '',
--          'linux_path_opus_include%': '<(DEPTH)/../../../Libraries/opus/include',
-         },
-         'include_dirs': [
-           '<(tgvoip_src_loc)/webrtc_dsp',
--          '<(linux_path_opus_include)',
-+          '<!(rpm --eval "%{_includedir}")',
-+          '<!(rpm --eval "%{_includedir}/opus")',
-         ],
-         'direct_dependent_settings': {
-           'include_dirs': [
-@@ -70,8 +71,6 @@
-           '<(tgvoip_src_loc)/video/VideoSource.h',
-           '<(tgvoip_src_loc)/video/VideoRenderer.cpp',
-           '<(tgvoip_src_loc)/video/VideoRenderer.h',
+@@ -46,8 +47,10 @@
+           '<(tgvoip_src_loc)/OpusEncoder.cpp',
+           '<(tgvoip_src_loc)/OpusEncoder.h',
+           '<(tgvoip_src_loc)/threading.h',
++          '<(tgvoip_src_loc)/TgVoip.cpp',
+           '<(tgvoip_src_loc)/VoIPController.cpp',
+           '<(tgvoip_src_loc)/VoIPGroupController.cpp',
++          '<(tgvoip_src_loc)/TgVoip.h',
+           '<(tgvoip_src_loc)/VoIPController.h',
+           '<(tgvoip_src_loc)/PrivateDefines.h',
+           '<(tgvoip_src_loc)/VoIPServerConfig.cpp',
+@@ -78,8 +81,6 @@
+           '<(tgvoip_src_loc)/video/VideoPacketSender.h',
+           '<(tgvoip_src_loc)/video/VideoFEC.cpp',
+           '<(tgvoip_src_loc)/video/VideoFEC.h',
 -          '<(tgvoip_src_loc)/json11.cpp',
 -          '<(tgvoip_src_loc)/json11.hpp',
  
            # Windows
            '<(tgvoip_src_loc)/os/windows/NetworkSocketWinsock.cpp',
-@@ -722,7 +721,9 @@
+@@ -730,7 +731,9 @@
  
  
          ],
@@ -56,5 +53,5 @@ index 8c62b56..8fe9c5b 100644
            'Debug': {},
            'Release': {},
 -- 
-2.20.1
+2.24.1
 
