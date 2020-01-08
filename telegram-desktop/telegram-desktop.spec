@@ -126,6 +126,8 @@ Patch0:         %{name}-build-fixes.patch
 Patch1:         https://github.com/desktop-app/cmake_helpers/pull/8.patch#/%{name}-gh-cmake_helpers-pull6.patch
 Patch2:         0001-System-libraries.patch
 Patch3:         %{name}-system-fonts.patch
+Patch4:         0001-Plugin-loading-dirty-fix-with-system-Qt.patch
+Patch10:        %{name}-322367c.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -287,6 +289,8 @@ popd
 %patch1 -p1 -d cmake
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch10 -p1
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
@@ -294,7 +298,9 @@ popd
 %patch104 -p1
 
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
-
+# Patch 4
+sed -e 's|_RPM_QT_PLUGIN_PATH_|%{_qt5_plugindir}|g' \
+  -i Telegram/SourceFiles/core/launcher.cpp
 
 %build
 %global optflags %{optflags} -DTDESKTOP_LAUNCHER_FILENAME=%{name}.desktop
@@ -343,7 +349,7 @@ popd
 %install
 # Installing executables...
 mkdir -p %{buildroot}%{_bindir}
-install -m 0755 -p %{_target_platform}/Telegram %{buildroot}%{_bindir}/%{name}
+install -m 0755 -p %{_target_platform}/bin/Telegram %{buildroot}%{_bindir}/%{name}
 
 # Installing desktop shortcut...
 mv lib/xdg/telegramdesktop.desktop lib/xdg/%{name}.desktop
@@ -381,7 +387,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
-* Mon Jan 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.3-100
+* Tue Jan 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.3-100
 - 1.9.3
 - BR: enchant-devel
 - Remove gyp, only cmake is needed

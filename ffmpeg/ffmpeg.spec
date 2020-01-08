@@ -91,8 +91,8 @@ ExclusiveArch: armv7hnl
 
 Summary:        Digital VCR and streaming server
 Name:           ffmpeg%{?flavor}
-Version:        4.2.1
-Release:        3%{?date}%{?date:git}%{?rel}%{?dist}
+Version:        4.2.2
+Release:        1%{?date}%{?date:git}%{?rel}%{?dist}
 License:        %{ffmpeg_license}
 URL:            http://ffmpeg.org/
 %if 0%{?date}
@@ -149,7 +149,7 @@ BuildRequires:  libvdpau-devel
 BuildRequires:  libvorbis-devel
 %{?!_without_vpx:BuildRequires: libvpx-devel >= 1.4.0}
 %ifarch %{ix86} x86_64
-%{!?_without_mfx:BuildRequires: libmfx-devel >= 1.23-1}
+%{!?_without_mfx:BuildRequires: pkgconfig(libmfx) >= 1.23-1}
 BuildRequires:  nasm
 %endif
 %{?_with_webp:BuildRequires: libwebp-devel}
@@ -436,6 +436,9 @@ install -pm755 tools/qt-faststart %{buildroot}%{_bindir}
 
 
 %changelog
+* Tue Jan 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 4.2.2-1
+- RPMFusion sync - 4.2.2
+
 * Fri Nov 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.2.1-3
 - RPMFusion sync - dav1d 0.5.1 rebuild
 

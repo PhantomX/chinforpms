@@ -16,12 +16,13 @@ diff --git a/Telegram/CMakeLists.txt b/Telegram/CMakeLists.txt
 index e8eef03..50c3415 100644
 --- a/Telegram/CMakeLists.txt
 +++ b/Telegram/CMakeLists.txt
-@@ -86,10 +86,14 @@ PRIVATE
+@@ -86,10 +86,15 @@ PRIVATE
      desktop-app::external_qr_code_generator
      desktop-app::external_auto_updates
      desktop-app::external_openssl
 -    desktop-app::external_opus
      desktop-app::external_openal
++    dl
 +    pthread
  )
  
