@@ -1,7 +1,7 @@
 #global pre -rc1
 
 Name:           xvidcore
-Version:        1.3.6
+Version:        1.3.7
 Release:        1%{?dist}
 Summary:        MPEG-4 Simple and Advanced Simple Profile codec
 License:        GPLv2+
@@ -77,6 +77,9 @@ find %{buildroot} -name "*.a" -delete
 
 
 %changelog
+* Thu Jan 02 2020 Leigh Scott <leigh123linux@googlemail.com> - 1.3.7-1
+- Update to 1.3.7
+
 * Thu Dec 12 2019 Leigh Scott <leigh123linux@gmail.com> - 1.3.6-1
 - Update to 1.3.6
 

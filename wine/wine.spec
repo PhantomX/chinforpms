@@ -211,6 +211,7 @@ ExclusiveArch:  %{ix86} %{arm}
 BuildRequires:  bison
 BuildRequires:  flex
 BuildRequires:  autoconf
+BuildRequires:  automake
 %ifarch aarch64
 BuildRequires:  clang >= 5.0
 %else
@@ -788,6 +789,7 @@ sed -e 's|__stdcall XACT_NOTIFICATION_CALLBACK|XACT_NOTIFICATION_CALLBACK|g' -i 
 
 %patch5000 -p1
 
+sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
 sed \
@@ -848,6 +850,7 @@ sed -i \
   configure
 
 ./tools/make_requests
+autoreconf -f
 
 
 %build
