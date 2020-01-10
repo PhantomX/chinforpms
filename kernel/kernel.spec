@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 6a0a917cbd8f84eee832dbab05605481dcb2794f
+%global pfcommit 82387504fbac290fb7013211ef269736ab1db276
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 34ebd00cfe5fe0f030f33cc081662ff856d0f36e
+%global opensuse_id 556a6fedae3fb6edb8e82270a37ceaf38d8666cf
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -902,14 +902,12 @@ Patch529: ath10k-fix-memory-leak.patch
 # CVE-2019-18808 rhbz 1777418 1777421
 Patch531: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
 
-# CVE-2019-18809 rhbz 1777449 1777451
-Patch532: 0001-media-usb-fix-memory-leak-in-af9005_identify_state.patch
+# rhbz 1781288
+Patch610: 0001-tracing-Do-not-create-directories-if-lockdown-is-in-.patch
 
-# ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
-Patch600: alsa-5.5.patch
+# rhbz 1788653
+Patch611: tpm-handle-negative-priv--response_len-in-tpm_common_read.patch
 
-# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
-Patch607: alsa-5.6.patch
 
 ### Extra
 
@@ -2650,6 +2648,10 @@ fi
 #
 #
 %changelog
+* Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.10-500.chinfo
+- 5.4.10 -pf5
+- f31 sync
+
 * Sat Jan 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.8-500.chinfo
 - 5.4.8
 

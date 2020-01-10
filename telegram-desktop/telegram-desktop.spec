@@ -5,7 +5,7 @@
 
 %global da_url https://github.com/desktop-app
 
-%global commit1 b087501d66ea13395acd91397b3ab6a3a77c41b8
+%global commit1 652bbaf002546ae1822fff4474ffe95091bfc2e4
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 cmake_helpers
 
@@ -57,20 +57,13 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 rlottie
 
-%global commit14 67c62461d380352500fc39557fd9f046b7fe1d18
+%global commit14 303dcacc2ad0428fd165c71455056d3f8f884d6f
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
-%global srcname14 QR-Code-generator
-
-%global commit15 1d9c5d8c0da84b8ddc54bd3d90d632eec95c1f13
-%global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
-%global srcname15 expected
-
-%global commit16 303dcacc2ad0428fd165c71455056d3f8f884d6f
-%global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
-%global srcname16 libtgvoip
+%global srcname14 libtgvoip
 
 # Enable or disable build with GTK support...
 %bcond_with gtk3
+%bcond_with spellcheck
 %global with_sysrlottie 0
 %global with_systgvoip 1
 
@@ -83,7 +76,7 @@
 
 Name:           telegram-desktop
 Version:        1.9.3
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -114,30 +107,38 @@ Source12:       %{da_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortc
 %if !0%{with_sysrlottie}
 Source13:       %{da_url}/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
-Source14:       https://github.com/nayuki/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
-Source15:       https://github.com/TartanLlama/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if !0%{with_systgvoip}
-Source16:       https://github.com/telegramdesktop/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
+Source14:       https://github.com/telegramdesktop/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %endif
 
 Source20:       thunar-sendto-%{name}.desktop
 
-Patch0:         %{name}-build-fixes.patch
-Patch1:         https://github.com/desktop-app/cmake_helpers/pull/8.patch#/%{name}-gh-cmake_helpers-pull6.patch
-Patch2:         0001-System-libraries.patch
-Patch3:         %{name}-system-fonts.patch
-Patch4:         0001-Plugin-loading-dirty-fix-with-system-Qt.patch
-Patch10:        %{name}-322367c.patch
+# Permanent downstream patches...
+Patch0:         %{name}-fix-desktop.patch
+Patch1:         %{name}-fix-appdata.patch
+Patch10:        cmake_helpers-system-expected.patch
+Patch11:        cmake_helpers-system-gsl.patch
+Patch12:        cmake_helpers-system-qrcode.patch
+Patch13:        cmake_helpers-system-variant.patch
+Patch20:        lib_ui-remove-configs.patch
+
+# Temporary upstream and proposed to upstream patches...
+Patch100:       %{name}-pr6956.patch
+Patch101:       https://github.com/desktop-app/cmake_helpers/pull/8.patch#/%{name}-gh-cmake_helpers-pull8.patch
+Patch102:       %{name}-commit-100fed3.patch
+Patch103:       %{name}-commit-322367c.patch
+Patch104:       %{name}-pr6985.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
-Patch100:       %{name}-no-text-replace.patch
+Patch200:       %{name}-no-text-replace.patch
 # Do not show unread counter on muted chats
-Patch101:       %{name}-realmute.patch
+Patch201:       %{name}-realmute.patch
 # Always display scrollbars
-Patch102:       %{name}-disable-overlay.patch
-Patch103:       %{name}-disable-animated-stickers.patch
-Patch104:       0001-Use-python3.patch
+Patch202:       %{name}-disable-overlay.patch
+Patch203:       %{name}-disable-animated-stickers.patch
+Patch204:       %{name}-system-fonts.patch
+Patch205:       %{name}-build-fixes.patch
 
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
@@ -149,18 +150,19 @@ BuildRequires:  libappstream-glib
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  ninja-build
 
 # Development packages for Telegram Desktop...
-BuildRequires:  enchant-devel
-BuildRequires:  glib2-devel
 BuildRequires:  guidelines-support-library-devel >= 1.0.0
 BuildRequires:  mapbox-variant-devel >= 0.3.6
 BuildRequires:  libtgvoip-devel >= 2.4.4
+BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  ffmpeg-devel >= 3.1
 BuildRequires:  openal-soft-devel
 BuildRequires:  qt5-qtbase-private-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 BuildRequires:  libstdc++-devel
+BuildRequires:  expected-devel
 BuildRequires:  lz4-devel
 BuildRequires:  range-v3-devel >= 0.9.1
 BuildRequires:  openssl-devel
@@ -172,8 +174,15 @@ BuildRequires:  minizip-compat-devel
 %if %{with gtk3}
 Recommends:     libappindicator-gtk3%{?_isa}
 BuildRequires:  libappindicator-gtk3-devel
+BuildRequires:  glib2-devel
 BuildRequires:  gtk3-devel
 Requires:       gtk3%{?_isa}
+%endif
+
+%if %{with spellcheck}
+BuildRequires: enchant2-devel
+BuildRequires: glib2-devel
+Requires:      enchant2%{?_isa}
 %endif
 
 %if 0%{with_sysrlottie}
@@ -269,42 +278,45 @@ pushd Telegram/ThirdParty
     mv %{srcname13}-%{commit13} %{srcname13}
 %endif
 
-    rm -rf QR
-    tar -xf %{S:14}
-    mv %{srcname14}-%{commit14} QR
-
-    rm -rf %{srcname15}
-    tar -xf %{S:15}
-    mv %{srcname15}-%{commit15} %{srcname15}
-
 %if !0%{with_systgvoip}
-    rm -rf %{srcname16}
-    tar -xf %{S:16}
-    mv %{srcname16}-%{commit16} %{srcname16}
+    rm -rf %{srcname14}
+    tar -xf %{S:14}
+    mv %{srcname14}-%{commit14} %{srcname14}
 %endif
 
 popd
 
-%patch0 -p1
-%patch1 -p1 -d cmake
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch10 -p1
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
-%patch103 -p1
-%patch104 -p1
+# Applying patches for core application...
+%patch0 -p1 -b .desktop
+%patch1 -p1 -b .appdata
+%patch102 -p1 -b .commit-100fed3
+%patch103 -p1 -b .commit-322367c
+%patch100 -p1 -b .pr6956
+%patch104 -p1 -b .pr6985
+
+# Applying patches for build system...
+%patch101 -d cmake -p1 -b .system-libraries
+%patch10 -d cmake -p1 -b .system-expected
+%patch11 -d cmake -p1 -b .system-gsl
+%patch12 -d cmake -p1 -b .system-qrcode
+%patch13 -d cmake -p1 -b .system-variant
+
+# Applying patches for lib_ui...
+%patch20 -d Telegram/lib_ui -p1 -b .remove-configs
+
+%patch200 -p1
+%patch201 -p1
+%patch202 -p1
+%patch203 -p1
+%patch204 -p1
+%patch205 -p1
 
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
-# Patch 4
-sed -e 's|_RPM_QT_PLUGIN_PATH_|%{_qt5_plugindir}|g' \
-  -i Telegram/SourceFiles/core/launcher.cpp
+
+sed -e '/qt_version/s|5.12.5|%{_qt5_version}|g' \
+  -i cmake/external/qt/package.cmake
 
 %build
-%global optflags %{optflags} -DTDESKTOP_LAUNCHER_FILENAME=%{name}.desktop
-
 %if 0%{?build_with_lto}
 export CC=gcc
 export CXX=g++
@@ -318,7 +330,7 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 # Building Telegram Desktop using cmake...
 mkdir -p %{_target_platform}
 pushd %{_target_platform}
-    %cmake .. \
+    %cmake .. -G Ninja \
        -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if 0%{?build_with_lto}
        -DCMAKE_AR:FILEPATH=%{_bindir}/gcc-ar \
@@ -328,23 +340,30 @@ pushd %{_target_platform}
 %if %{without gtk3}
        -DTDESKTOP_DISABLE_GTK_INTEGRATION:BOOL=ON \
 %endif
-       -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
-       -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
+%if %{without spellcheck}
+       -DDESKTOP_APP_DISABLE_SPELLCHECK:BOOL=ON \
+%endif
        -DDESKTOP_APP_SPECIAL_TARGET:STRING="" \
-       -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
+       -DTDESKTOP_API_ID=%{apiid} \
+       -DTDESKTOP_API_HASH=%{apihash} \
        -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
 %if !0%{with_sysrlottie}
        -DDESKTOP_APP_USE_PACKAGED_RLOTTIE:BOOL=OFF \
 %endif
-%if !0%{with_systgvoip}
-       -DDESKTOP_APP_USE_PACKAGED_TGVOIP:BOOL=OFF \
+%if 0%{with_systgvoip}
+       -DTDESKTOP_USE_PACKAGED_TGVOIP:BOOL=ON \
 %endif
-       -DTDESKTOP_API_ID:STRING=%{apiid} \
-       -DTDESKTOP_API_HASH:STRING=%{apihash} \
+       -DDESKTOP_APP_USE_GLIBC_WRAPS:BOOL=OFF \
+       -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
+       -DTDESKTOP_DISABLE_AUTOUPDATE:BOOL=ON \
+       -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
+       -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
+       -DTDESKTOP_LAUNCHER_FILENAME=%{name}.desktop \
 %{nil}
-
-    %make_build
 popd
+
+%ninja_build -C %{_target_platform}
+
 
 %install
 # Installing executables...
@@ -387,6 +406,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 
 %changelog
+* Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.3-102
+- RPMFusion sync
+
 * Wed Jan 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.3-101
 - Fix system font patch
 

@@ -4,7 +4,7 @@
 %global commit 0993f6f25dfa1ae3e6b9891190c1ffec8aec680e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20191225
-%global with_snapshot 1
+%global with_snapshot 0
 
 %ifarch %{ix86} x86_64
 %global with_mingw 1
@@ -43,8 +43,8 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.5
-Release:        2%{?gver}%{?dist}
+Version:        1.5.1
+Release:        1%{?gver}%{?dist}
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -292,6 +292,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-1
+- 1.5.1
+
 * Wed Dec 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5-2.20191225git0993f6f
 - Snapshot
 

@@ -10,6 +10,8 @@
 
 %global buildid .chinfo
 
+%global opensuse_id 556a6fedae3fb6edb8e82270a37ceaf38d8666cf
+
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -20,10 +22,8 @@
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
-%global opensuse_id 34ebd00cfe5fe0f030f33cc081662ff856d0f36e
-
 # Do we have a -stable update to apply?
-%global stable_update 8
+%global stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -479,6 +479,9 @@ popd
 
 
 %changelog
+* Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.10-500.chinfo
+- 5.4.10
+
 * Sat Jan 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.8-500.chinfo
 - 5.4.8
 

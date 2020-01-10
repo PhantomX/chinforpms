@@ -1,7 +1,7 @@
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        2.20.0
-Release:        103%{?dist}
+Version:        2.21.1
+Release:        100%{?dist}
 
 Epoch:          1
 
@@ -10,7 +10,6 @@ URL:            https://skrooge.org
 Source0:        https://download.kde.org/stable/skrooge/skrooge-%{version}.tar.xz
 
 ## upstream patches
-Patch100:       https://cgit.kde.org/skrooge.git/patch/?id=79aeb3f4d3cc01761d99af5868c7fb5101cf2258#/%{name}-cgit-79aeb3f.patch
 
 
 BuildRequires:  desktop-file-utils
@@ -152,6 +151,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.21.1-100
+- 2.21.1
+
 * Sun Dec 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.20.0-103
 - Rebuild (qt5)
 

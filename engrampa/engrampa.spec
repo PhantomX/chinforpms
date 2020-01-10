@@ -13,11 +13,11 @@
 %{!?rel_build:%global git_tar %{name}-%{version}-%{git_ver}.tar.xz}
 
 Name:          engrampa
-Version:       %{branch}.2
+Version:       %{branch}.3
 %if 0%{?rel_build}
 Release:       100%{?dist}
 %else
-Release:       0.8%{?git_rel}%{?dist}
+Release:       0.9%{?git_rel}%{?dist}
 %endif
 Epoch:         1
 Summary:       MATE Desktop file archiver
@@ -112,6 +112,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.3-100
+- 1.22.3
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.2-100
 - 1.22.2
 

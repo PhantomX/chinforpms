@@ -1,50 +1,273 @@
-From 6226665cc0f206363723c0da59a0849c999cbc05 Mon Sep 17 00:00:00 2001
-From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 6 Jan 2020 14:28:28 -0300
-Subject: [PATCH] System libraries
+From b4cd7e5fc7c2d92bbcc307d40bcd841eb50fc446 Mon Sep 17 00:00:00 2001
+From: Ilya Fedin <fedin-ilja2010@ya.ru>
+Date: Fri, 3 Jan 2020 08:41:48 +0400
+Subject: [PATCH] Make packaged build working
 
 ---
- Telegram/CMakeLists.txt               |    5 +-
- Telegram/cmake/lib_tgvoip.cmake       | 1521 +++++++++++++------------
- cmake/external/CMakeLists.txt         |    2 +
- cmake/external/gsl/CMakeLists.txt     |   15 +-
- cmake/external/variant/CMakeLists.txt |   15 +-
- cmake/variables.cmake                 |    1 +
- 6 files changed, 796 insertions(+), 763 deletions(-)
+ Telegram/CMakeLists.txt               |   46 +-
+ Telegram/SourceFiles/qt_functions.cpp |   99 ++
+ Telegram/cmake/generate_scheme.cmake  |    4 +-
+ Telegram/cmake/lib_tgvoip.cmake       | 1519 +++++++++++++------------
+ Telegram/cmake/telegram_options.cmake |    1 +
+ 5 files changed, 899 insertions(+), 770 deletions(-)
+ create mode 100644 Telegram/SourceFiles/qt_functions.cpp
 
 diff --git a/Telegram/CMakeLists.txt b/Telegram/CMakeLists.txt
-index e8eef03..50c3415 100644
+index 8e6f8648db..7fc8f3a18a 100644
 --- a/Telegram/CMakeLists.txt
 +++ b/Telegram/CMakeLists.txt
-@@ -86,10 +86,15 @@ PRIVATE
+@@ -65,8 +65,13 @@ generate_numbers(Telegram ${res_loc}/numbers.txt)
+ 
+ set_target_properties(Telegram PROPERTIES AUTOMOC ON AUTORCC ON)
+ 
++set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
++find_package(Threads)
++
+ target_link_libraries(Telegram
+ PRIVATE
++    ${CMAKE_DL_LIBS}
++    Threads::Threads
+     tdesktop::lib_mtproto
+     tdesktop::lib_scheme
+     tdesktop::lib_export
+@@ -83,15 +88,15 @@ PRIVATE
+     desktop-app::external_zlib
+     desktop-app::external_qt
      desktop-app::external_qr_code_generator
++    desktop-app::external_crash_reports
      desktop-app::external_auto_updates
+     tdesktop::lib_tgvoip
      desktop-app::external_openssl
 -    desktop-app::external_opus
      desktop-app::external_openal
-+    dl
-+    pthread
  )
  
-+if (NOT DESKTOP_APP_USE_PACKAGED_TGVOIP)
+-if (NOT DESKTOP_APP_DISABLE_CRASH_REPORTS)
+-    target_link_libraries(Telegram PRIVATE desktop-app::external_crash_reports)
++if (NOT DESKTOP_APP_USE_PACKAGED)
 +    target_link_libraries(Telegram PRIVATE desktop-app::external_opus)
+ endif()
+ 
+ target_precompile_headers(Telegram PRIVATE ${src_loc}/stdafx.h)
+@@ -936,11 +941,16 @@ PRIVATE
+     mainwindow.h
+     observer_peer.cpp
+     observer_peer.h
+-    qt_static_plugins.cpp
+     settings.cpp
+     settings.h
+ )
+ 
++if (DESKTOP_APP_USE_PACKAGED)
++    nice_target_sources(Telegram ${src_loc} PRIVATE qt_functions.cpp)
++else()
++    nice_target_sources(Telegram ${src_loc} PRIVATE qt_static_plugins.cpp)
 +endif()
 +
- if (NOT DESKTOP_APP_DISABLE_CRASH_REPORTS)
-     target_link_libraries(Telegram PRIVATE desktop-app::external_crash_reports)
- endif()
+ nice_target_sources(Telegram ${res_loc}
+ PRIVATE
+     qrc/emoji_1.qrc
+@@ -1018,10 +1028,13 @@ elseif (LINUX)
+     if (NOT TDESKTOP_DISABLE_GTK_INTEGRATION)
+         find_package(PkgConfig REQUIRED)
+ 
+-        pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
+-        target_include_directories(Telegram PRIVATE ${GTK2_INCLUDE_DIRS})
++        pkg_search_module(GTK REQUIRED gtk+-2.0 gtk+-3.0)
++        target_include_directories(Telegram PRIVATE ${GTK_INCLUDE_DIRS})
+         target_compile_options(Telegram PRIVATE -Wno-register)
+ 
++        find_library(X11_LIBRARY X11)
++        target_link_libraries(Telegram PRIVATE ${X11_LIBRARY})
++
+         set(appindicator_packages
+             ayatana-appindicator3-0.1
+             ayatana-appindicator-0.1
+@@ -1094,23 +1107,26 @@ set(entitlement_sources
+ target_sources(Telegram PRIVATE ${entitlement_sources})
+ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Telegram PREFIX Resources FILES ${entitlement_sources})
+ 
+-target_include_directories(Telegram
+-PRIVATE
+-    ${src_loc}
+-    ${third_party_loc}/minizip
+-)
++target_include_directories(Telegram PRIVATE ${src_loc})
++
++if (NOT DESKTOP_APP_USE_PACKAGED)
++    target_include_directories(Telegram PRIVATE ${third_party_loc}/minizip)
++endif()
+ 
+ target_compile_definitions(Telegram
+ PRIVATE
+     TDESKTOP_API_ID=${TDESKTOP_API_ID}
+     TDESKTOP_API_HASH=${TDESKTOP_API_HASH}
+-    AL_LIBTYPE_STATIC
+     AL_ALEXT_PROTOTYPES
+ )
+ 
+-if (${CMAKE_GENERATOR} MATCHES "(Visual Studio|Xcode|Ninja)")
++if (NOT DESKTOP_APP_USE_PACKAGED)
++    target_compile_definitions(Telegram PRIVATE AL_LIBTYPE_STATIC)
++endif()
++
++if (${CMAKE_GENERATOR} MATCHES "(Visual Studio|Xcode)")
+     set(output_folder ${CMAKE_BINARY_DIR})
+-elseif((${CMAKE_GENERATOR} MATCHES "(Unix Makefiles)") AND DESKTOP_APP_SPECIAL_TARGET STREQUAL "")
++elseif (DESKTOP_APP_SPECIAL_TARGET STREQUAL "")
+     set(output_folder ${CMAKE_BINARY_DIR}/bin)
+ else()
+     set(output_folder ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>)
+@@ -1118,7 +1134,7 @@ endif()
+ 
+ set_target_properties(Telegram PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${output_folder})
+ 
+-if (NOT build_macstore AND NOT build_winstore)
++if (NOT disable_autoupdate AND NOT build_macstore AND NOT build_winstore)
+     add_executable(Updater WIN32)
+     init_target(Updater)
+ 
+diff --git a/Telegram/SourceFiles/qt_functions.cpp b/Telegram/SourceFiles/qt_functions.cpp
+new file mode 100644
+index 0000000000..5a9117773c
+--- /dev/null
++++ b/Telegram/SourceFiles/qt_functions.cpp
+@@ -0,0 +1,99 @@
++/****************************************************************************
++**
++** Copyright (C) 2015 The Qt Company Ltd.
++** Contact: http://www.qt.io/licensing/
++**
++** This file contains some parts of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL21$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and The Qt Company. For licensing terms
++** and conditions see http://www.qt.io/terms-conditions. For further
++** information use the contact form at http://www.qt.io/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 or version 3 as published by the Free
++** Software Foundation and appearing in the file LICENSE.LGPLv21 and
++** LICENSE.LGPLv3 included in the packaging of this file. Please review the
++** following information to ensure the GNU Lesser General Public License
++** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
++** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** As a special exception, The Qt Company gives you certain additional
++** rights. These rights are described in The Qt Company LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++// For QTextItemInt declaraion
++#include <private/qtextengine_p.h>
++
++#ifndef TDESKTOP_DISABLE_GTK_INTEGRATION
++/* TODO: find a dynamic library with these symbols. */
++
++/* Debian maintainer: this function is taken from qfiledialog.cpp */
++/*
++    Makes a list of filters from ;;-separated text.
++    Used by the mac and windows implementations
++*/
++QStringList qt_make_filter_list(const QString &filter)
++{
++    QString f(filter);
++
++    if (f.isEmpty())
++        return QStringList();
++
++    QString sep(QLatin1String(";;"));
++    int i = f.indexOf(sep, 0);
++    if (i == -1) {
++        if (f.indexOf(QLatin1Char('\n'), 0) != -1) {
++            sep = QLatin1Char('\n');
++            i = f.indexOf(sep, 0);
++        }
++    }
++
++    return f.split(sep);
++}
++#endif // !TDESKTOP_DISABLE_GTK_INTEGRATION
++
++/* Debian maintainer: this constructor is taken from qtextengine.cpp for TextPainter::drawLine */
++QTextItemInt::QTextItemInt(const QGlyphLayout &g, QFont *font, const QChar *chars_, int numChars, QFontEngine *fe, const QTextCharFormat &format)
++    : flags(0), justified(false), underlineStyle(QTextCharFormat::NoUnderline), charFormat(format),
++      num_chars(numChars), chars(chars_), logClusters(0), f(font),  glyphs(g), fontEngine(fe)
++{
++}
++
++/* Debian maintainer: this method is also taken from qtextengine.cpp */
++// Fix up flags and underlineStyle with given info
++void QTextItemInt::initWithScriptItem(const QScriptItem &si)
++{
++    // explicitly initialize flags so that initFontAttributes can be called
++    // multiple times on the same TextItem
++    flags = 0;
++    if (si.analysis.bidiLevel %2)
++        flags |= QTextItem::RightToLeft;
++    ascent = si.ascent;
++    descent = si.descent;
++
++    if (charFormat.hasProperty(QTextFormat::TextUnderlineStyle)) {
++        underlineStyle = charFormat.underlineStyle();
++    } else if (charFormat.boolProperty(QTextFormat::FontUnderline)
++               || f->d->underline) {
++        underlineStyle = QTextCharFormat::SingleUnderline;
++    }
++
++    // compat
++    if (underlineStyle == QTextCharFormat::SingleUnderline)
++        flags |= QTextItem::Underline;
++
++    if (f->d->overline || charFormat.fontOverline())
++        flags |= QTextItem::Overline;
++    if (f->d->strikeOut || charFormat.fontStrikeOut())
++        flags |= QTextItem::StrikeOut;
++}
+diff --git a/Telegram/cmake/generate_scheme.cmake b/Telegram/cmake/generate_scheme.cmake
+index 75d3995e23..e5802742ad 100644
+--- a/Telegram/cmake/generate_scheme.cmake
++++ b/Telegram/cmake/generate_scheme.cmake
+@@ -5,6 +5,8 @@
+ # https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+ 
+ function(generate_scheme target_name script scheme_files)
++    find_package(Python REQUIRED)
++
+     set(gen_dst ${CMAKE_CURRENT_BINARY_DIR}/gen)
+     file(MAKE_DIRECTORY ${gen_dst})
+ 
+@@ -22,7 +24,7 @@ function(generate_scheme target_name script scheme_files)
+     BYPRODUCTS
+         ${gen_files}
+     COMMAND
+-        python
++        ${Python_EXECUTABLE}
+         ${script}
+         -o${gen_dst}/scheme
+         ${scheme_files}
 diff --git a/Telegram/cmake/lib_tgvoip.cmake b/Telegram/cmake/lib_tgvoip.cmake
-index 38fa632..0dd821f 100644
+index 38fa632a40..e820a5d5f1 100644
 --- a/Telegram/cmake/lib_tgvoip.cmake
 +++ b/Telegram/cmake/lib_tgvoip.cmake
-@@ -4,781 +4,795 @@
+@@ -4,781 +4,792 @@
  # For license and copyright information please follow this link:
  # https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
  
 -add_library(lib_tgvoip STATIC)
 -init_target(lib_tgvoip cxx_std_11)
 -add_library(tdesktop::lib_tgvoip ALIAS lib_tgvoip)
-+if (DESKTOP_APP_USE_PACKAGED_TGVOIP)
++if (TDESKTOP_USE_PACKAGED_TGVOIP)
++    add_library(lib_tgvoip INTERFACE IMPORTED GLOBAL)
++    add_library(tdesktop::lib_tgvoip ALIAS lib_tgvoip)
  
 -if (NOT APPLE)
 -    # On macOS if you build libtgvoip with C++17 it uses std::optional
@@ -54,9 +277,14 @@ index 38fa632..0dd821f 100644
 -    target_compile_features(lib_tgvoip PUBLIC cxx_std_17)
 -endif()
 +    find_package(PkgConfig REQUIRED)
++    pkg_check_modules(TGVOIP REQUIRED tgvoip)
  
 -set(tgvoip_loc ${third_party_loc}/libtgvoip)
-+    add_library(lib_tgvoip INTERFACE IMPORTED GLOBAL)
++    target_include_directories(lib_tgvoip INTERFACE ${TGVOIP_INCLUDE_DIRS})
++    target_link_libraries(lib_tgvoip INTERFACE ${TGVOIP_LIBRARIES})
++else()
++    add_library(lib_tgvoip STATIC)
++    init_target(lib_tgvoip cxx_std_11)
 +    add_library(tdesktop::lib_tgvoip ALIAS lib_tgvoip)
  
 -nice_target_sources(lib_tgvoip ${tgvoip_loc}
@@ -108,13 +336,13 @@ index 38fa632..0dd821f 100644
 -    video/VideoRenderer.h
 -    json11.cpp
 -    json11.hpp
-+    pkg_check_modules(TGVOIP REQUIRED tgvoip)
-+    target_include_directories(lib_tgvoip INTERFACE ${TGVOIP_INCLUDE_DIRS})
-+    target_link_libraries(lib_tgvoip INTERFACE ${TGVOIP_LIBRARIES})
-+else()
-+    add_library(lib_tgvoip STATIC)
-+    init_target(lib_tgvoip cxx_std_11)
-+    add_library(tdesktop::lib_tgvoip ALIAS lib_tgvoip)
++    if (NOT APPLE)
++        # On macOS if you build libtgvoip with C++17 it uses std::optional
++        # instead of absl::optional and when it uses optional::value, the
++        # build fails, because optional::value is available starting with
++        # macOS 10.14+. This way we force using absl::optional.
++        target_compile_features(lib_tgvoip PUBLIC cxx_std_17)
++    endif()
  
 -    # Windows
 -    os/windows/NetworkSocketWinsock.cpp
@@ -129,6 +357,7 @@ index 38fa632..0dd821f 100644
 -    os/windows/AudioInputWASAPI.h
 -    os/windows/WindowsSpecific.cpp
 -    os/windows/WindowsSpecific.h
++    set(tgvoip_loc ${third_party_loc}/libtgvoip)
  
 -    # macOS
 -    os/darwin/AudioInputAudioUnit.cpp
@@ -143,13 +372,55 @@ index 38fa632..0dd821f 100644
 -    os/darwin/AudioUnitIO.h
 -    os/darwin/DarwinSpecific.mm
 -    os/darwin/DarwinSpecific.h
-+    if (NOT APPLE)
-+        # On macOS if you build libtgvoip with C++17 it uses std::optional
-+        # instead of absl::optional and when it uses optional::value, the
-+        # build fails, because optional::value is available starting with
-+        # macOS 10.14+. This way we force using absl::optional.
-+        target_compile_features(lib_tgvoip PUBLIC cxx_std_17)
-+    endif()
++    nice_target_sources(lib_tgvoip ${tgvoip_loc}
++    PRIVATE
++        BlockingQueue.cpp
++        BlockingQueue.h
++        Buffers.cpp
++        Buffers.h
++        CongestionControl.cpp
++        CongestionControl.h
++        EchoCanceller.cpp
++        EchoCanceller.h
++        JitterBuffer.cpp
++        JitterBuffer.h
++        logging.cpp
++        logging.h
++        MediaStreamItf.cpp
++        MediaStreamItf.h
++        OpusDecoder.cpp
++        OpusDecoder.h
++        OpusEncoder.cpp
++        OpusEncoder.h
++        threading.h
++        VoIPController.cpp
++        VoIPGroupController.cpp
++        VoIPController.h
++        PrivateDefines.h
++        VoIPServerConfig.cpp
++        VoIPServerConfig.h
++        audio/AudioInput.cpp
++        audio/AudioInput.h
++        audio/AudioOutput.cpp
++        audio/AudioOutput.h
++        audio/Resampler.cpp
++        audio/Resampler.h
++        NetworkSocket.cpp
++        NetworkSocket.h
++        PacketReassembler.cpp
++        PacketReassembler.h
++        MessageThread.cpp
++        MessageThread.h
++        audio/AudioIO.cpp
++        audio/AudioIO.h
++        video/ScreamCongestionController.cpp
++        video/ScreamCongestionController.h
++        video/VideoSource.cpp
++        video/VideoSource.h
++        video/VideoRenderer.cpp
++        video/VideoRenderer.h
++        json11.cpp
++        json11.hpp
  
 -    # Linux
 -    os/linux/AudioInputALSA.cpp
@@ -162,11 +433,36 @@ index 38fa632..0dd821f 100644
 -    os/linux/AudioInputPulse.h
 -    os/linux/AudioPulse.cpp
 -    os/linux/AudioPulse.h
++        # Windows
++        os/windows/NetworkSocketWinsock.cpp
++        os/windows/NetworkSocketWinsock.h
++        os/windows/AudioInputWave.cpp
++        os/windows/AudioInputWave.h
++        os/windows/AudioOutputWave.cpp
++        os/windows/AudioOutputWave.h
++        os/windows/AudioOutputWASAPI.cpp
++        os/windows/AudioOutputWASAPI.h
++        os/windows/AudioInputWASAPI.cpp
++        os/windows/AudioInputWASAPI.h
++        os/windows/WindowsSpecific.cpp
++        os/windows/WindowsSpecific.h
  
 -    # POSIX
 -    os/posix/NetworkSocketPosix.cpp
 -    os/posix/NetworkSocketPosix.h
-+    set(tgvoip_loc ${third_party_loc}/libtgvoip)
++        # macOS
++        os/darwin/AudioInputAudioUnit.cpp
++        os/darwin/AudioInputAudioUnit.h
++        os/darwin/AudioOutputAudioUnit.cpp
++        os/darwin/AudioOutputAudioUnit.h
++        os/darwin/AudioInputAudioUnitOSX.cpp
++        os/darwin/AudioInputAudioUnitOSX.h
++        os/darwin/AudioOutputAudioUnitOSX.cpp
++        os/darwin/AudioOutputAudioUnitOSX.h
++        os/darwin/AudioUnitIO.cpp
++        os/darwin/AudioUnitIO.h
++        os/darwin/DarwinSpecific.mm
++        os/darwin/DarwinSpecific.h
  
 -    # WebRTC APM
 -    webrtc_dsp/system_wrappers/include/field_trial.h
@@ -754,55 +1050,17 @@ index 38fa632..0dd821f 100644
 -    webrtc_dsp/common_audio/vad/vad_sp.h
 -    webrtc_dsp/common_audio/vad/vad_filterbank.h
 -    webrtc_dsp/common_audio/vad/vad_gmm.c 
-+    nice_target_sources(lib_tgvoip ${tgvoip_loc}
-+    PRIVATE
-+        BlockingQueue.cpp
-+        BlockingQueue.h
-+        Buffers.cpp
-+        Buffers.h
-+        CongestionControl.cpp
-+        CongestionControl.h
-+        EchoCanceller.cpp
-+        EchoCanceller.h
-+        JitterBuffer.cpp
-+        JitterBuffer.h
-+        logging.cpp
-+        logging.h
-+        MediaStreamItf.cpp
-+        MediaStreamItf.h
-+        OpusDecoder.cpp
-+        OpusDecoder.h
-+        OpusEncoder.cpp
-+        OpusEncoder.h
-+        threading.h
-+        VoIPController.cpp
-+        VoIPGroupController.cpp
-+        VoIPController.h
-+        PrivateDefines.h
-+        VoIPServerConfig.cpp
-+        VoIPServerConfig.h
-+        audio/AudioInput.cpp
-+        audio/AudioInput.h
-+        audio/AudioOutput.cpp
-+        audio/AudioOutput.h
-+        audio/Resampler.cpp
-+        audio/Resampler.h
-+        NetworkSocket.cpp
-+        NetworkSocket.h
-+        PacketReassembler.cpp
-+        PacketReassembler.h
-+        MessageThread.cpp
-+        MessageThread.h
-+        audio/AudioIO.cpp
-+        audio/AudioIO.h
-+        video/ScreamCongestionController.cpp
-+        video/ScreamCongestionController.h
-+        video/VideoSource.cpp
-+        video/VideoSource.h
-+        video/VideoRenderer.cpp
-+        video/VideoRenderer.h
-+        json11.cpp
-+        json11.hpp
++        # Linux
++        os/linux/AudioInputALSA.cpp
++        os/linux/AudioInputALSA.h
++        os/linux/AudioOutputALSA.cpp
++        os/linux/AudioOutputALSA.h
++        os/linux/AudioOutputPulse.cpp
++        os/linux/AudioOutputPulse.h
++        os/linux/AudioInputPulse.cpp
++        os/linux/AudioInputPulse.h
++        os/linux/AudioPulse.cpp
++        os/linux/AudioPulse.h
  
 -    # ARM/NEON sources
 -    # TODO check if there's a good way to make these compile with ARM ports of TDesktop
@@ -822,19 +1080,9 @@ index 38fa632..0dd821f 100644
 -    # webrtc_dsp/common_audio/signal_processing/cross_correlation_neon.c
 -    # webrtc_dsp/common_audio/signal_processing/filter_ar_fast_q12_armv7.S
 -)
-+        # Windows
-+        os/windows/NetworkSocketWinsock.cpp
-+        os/windows/NetworkSocketWinsock.h
-+        os/windows/AudioInputWave.cpp
-+        os/windows/AudioInputWave.h
-+        os/windows/AudioOutputWave.cpp
-+        os/windows/AudioOutputWave.h
-+        os/windows/AudioOutputWASAPI.cpp
-+        os/windows/AudioOutputWASAPI.h
-+        os/windows/AudioInputWASAPI.cpp
-+        os/windows/AudioInputWASAPI.h
-+        os/windows/WindowsSpecific.cpp
-+        os/windows/WindowsSpecific.h
++        # POSIX
++        os/posix/NetworkSocketPosix.cpp
++        os/posix/NetworkSocketPosix.h
  
 -target_compile_definitions(lib_tgvoip
 -PUBLIC
@@ -842,45 +1090,6 @@ index 38fa632..0dd821f 100644
 -    TGVOIP_USE_DESKTOP_DSP
 -    WEBRTC_NS_FLOAT
 -)
-+        # macOS
-+        os/darwin/AudioInputAudioUnit.cpp
-+        os/darwin/AudioInputAudioUnit.h
-+        os/darwin/AudioOutputAudioUnit.cpp
-+        os/darwin/AudioOutputAudioUnit.h
-+        os/darwin/AudioInputAudioUnitOSX.cpp
-+        os/darwin/AudioInputAudioUnitOSX.h
-+        os/darwin/AudioOutputAudioUnitOSX.cpp
-+        os/darwin/AudioOutputAudioUnitOSX.h
-+        os/darwin/AudioUnitIO.cpp
-+        os/darwin/AudioUnitIO.h
-+        os/darwin/DarwinSpecific.mm
-+        os/darwin/DarwinSpecific.h
- 
--if (WIN32)
--    target_compile_options(lib_tgvoip
--    PRIVATE
--        /wd4005
--        /wd4244 # conversion from 'int' to 'float', possible loss of data (several in webrtc)
--    )
--    target_compile_definitions(lib_tgvoip
--    PUBLIC
--        WEBRTC_WIN
-+        # Linux
-+        os/linux/AudioInputALSA.cpp
-+        os/linux/AudioInputALSA.h
-+        os/linux/AudioOutputALSA.cpp
-+        os/linux/AudioOutputALSA.h
-+        os/linux/AudioOutputPulse.cpp
-+        os/linux/AudioOutputPulse.h
-+        os/linux/AudioInputPulse.cpp
-+        os/linux/AudioInputPulse.h
-+        os/linux/AudioPulse.cpp
-+        os/linux/AudioPulse.h
-+
-+        # POSIX
-+        os/posix/NetworkSocketPosix.cpp
-+        os/posix/NetworkSocketPosix.h
-+
 +        # WebRTC APM
 +        webrtc_dsp/system_wrappers/include/field_trial.h
 +        webrtc_dsp/system_wrappers/include/cpu_features_wrapper.h
@@ -1467,7 +1676,16 @@ index 38fa632..0dd821f 100644
 +        webrtc_dsp/common_audio/vad/vad_sp.h
 +        webrtc_dsp/common_audio/vad/vad_filterbank.h
 +        webrtc_dsp/common_audio/vad/vad_gmm.c 
-+
+ 
+-if (WIN32)
+-    target_compile_options(lib_tgvoip
+-    PRIVATE
+-        /wd4005
+-        /wd4244 # conversion from 'int' to 'float', possible loss of data (several in webrtc)
+-    )
+-    target_compile_definitions(lib_tgvoip
+-    PUBLIC
+-        WEBRTC_WIN
 +        # ARM/NEON sources
 +        # TODO check if there's a good way to make these compile with ARM ports of TDesktop
 +        # webrtc_dsp/modules/audio_processing/ns/nsx_core_neon.c
@@ -1511,9 +1729,8 @@ index 38fa632..0dd821f 100644
 +            WEBRTC_WIN
 +        )
 +    elseif (APPLE)
-         target_compile_definitions(lib_tgvoip
-         PUBLIC
--            TGVOIP_NO_OSX_PRIVATE_API
++        target_compile_definitions(lib_tgvoip
++        PUBLIC
 +            WEBRTC_POSIX
 +            WEBRTC_MAC
 +            TARGET_OS_OSX
@@ -1535,8 +1752,9 @@ index 38fa632..0dd821f 100644
 +        if (build_linux32)
 +            target_compile_options(lib_tgvoip PRIVATE -msse2)
 +        endif()
-+        target_compile_definitions(lib_tgvoip
-+        PUBLIC
+         target_compile_definitions(lib_tgvoip
+         PUBLIC
+-            TGVOIP_NO_OSX_PRIVATE_API
 +            WEBRTC_POSIX
 +            WEBRTC_LINUX
          )
@@ -1587,78 +1805,15 @@ index 38fa632..0dd821f 100644
 -    desktop-app::external_openssl
 -    desktop-app::external_opus
 -)
-diff --git a/cmake/external/CMakeLists.txt b/cmake/external/CMakeLists.txt
-index 4187ad3..c7682e9 100644
---- a/cmake/external/CMakeLists.txt
-+++ b/cmake/external/CMakeLists.txt
-@@ -13,7 +13,9 @@ add_subdirectory(iconv)
- add_subdirectory(lz4)
- add_subdirectory(openal)
- add_subdirectory(openssl)
-+if (NOT DESKTOP_APP_USE_PACKAGED_TGVOIP)
- add_subdirectory(opus)
-+endif()
- add_subdirectory(qt)
- add_subdirectory(qr_code_generator)
- add_subdirectory(ranges)
-diff --git a/cmake/external/gsl/CMakeLists.txt b/cmake/external/gsl/CMakeLists.txt
-index c7a0883..a46090a 100644
---- a/cmake/external/gsl/CMakeLists.txt
-+++ b/cmake/external/gsl/CMakeLists.txt
-@@ -7,7 +7,14 @@
- add_library(external_gsl INTERFACE IMPORTED GLOBAL)
- add_library(desktop-app::external_gsl ALIAS external_gsl)
- 
--target_include_directories(external_gsl SYSTEM
--INTERFACE
--    ${third_party_loc}/GSL/include
--)
-+if (DESKTOP_APP_USE_PACKAGED)
-+    target_include_directories(external_gsl SYSTEM
-+    INTERFACE
-+        /usr/include/guidelines-support-library
-+    )
-+else()
-+    target_include_directories(external_gsl SYSTEM
-+    INTERFACE
-+        ${third_party_loc}/GSL/include
-+    )
-+endif()
-diff --git a/cmake/external/variant/CMakeLists.txt b/cmake/external/variant/CMakeLists.txt
-index 5b5beef..9e358a0 100644
---- a/cmake/external/variant/CMakeLists.txt
-+++ b/cmake/external/variant/CMakeLists.txt
-@@ -7,7 +7,14 @@
- add_library(external_variant INTERFACE IMPORTED GLOBAL)
- add_library(desktop-app::external_variant ALIAS external_variant)
- 
--target_include_directories(external_variant SYSTEM
--INTERFACE
--    ${third_party_loc}/variant/include
--)
-+if (DESKTOP_APP_USE_PACKAGED)
-+    target_include_directories(external_variant SYSTEM
-+    INTERFACE
-+        /usr/include/mapbox
-+    )
-+else()
-+    target_include_directories(external_variant SYSTEM
-+    INTERFACE
-+        ${third_party_loc}/variant/include
-+    )
-+endif()
-diff --git a/cmake/variables.cmake b/cmake/variables.cmake
-index 2d5c371..06f26b3 100644
---- a/cmake/variables.cmake
-+++ b/cmake/variables.cmake
-@@ -11,6 +11,7 @@ option(DESKTOP_APP_LOTTIE_USE_CACHE "Use caching in lottie animations." ON)
- option(DESKTOP_APP_USE_GLIBC_WRAPS "Use wraps for new GLIBC features." OFF)
- option(DESKTOP_APP_USE_PACKAGED "Find libraries using CMake instead of exact paths." ON)
- option(DESKTOP_APP_USE_PACKAGED_RLOTTIE "Find rlottie using CMake instead of bundled one." ${DESKTOP_APP_USE_PACKAGED})
-+option(DESKTOP_APP_USE_PACKAGED_TGVOIP "Find tgvoip using CMake instead of bundled one." ${DESKTOP_APP_USE_PACKAGED})
- 
- function(report_bad_special_target)
-     message(FATAL_ERROR "Bad special target '${DESKTOP_APP_SPECIAL_TARGET}'")
--- 
-2.24.1
-
+diff --git a/Telegram/cmake/telegram_options.cmake b/Telegram/cmake/telegram_options.cmake
+index cb721e5903..6ba0579c19 100644
+--- a/Telegram/cmake/telegram_options.cmake
++++ b/Telegram/cmake/telegram_options.cmake
+@@ -9,6 +9,7 @@ option(TDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME "Disable automatic 'tg://' URL sc
+ option(TDESKTOP_DISABLE_NETWORK_PROXY "Disable all code for working through Socks5 or MTProxy." OFF)
+ option(TDESKTOP_DISABLE_DESKTOP_FILE_GENERATION "Disable automatic '.desktop' file generation (Linux only)." OFF)
+ option(TDESKTOP_DISABLE_GTK_INTEGRATION "Disable all code for GTK integration (Linux only)." OFF)
++option(TDESKTOP_USE_PACKAGED_TGVOIP "Find libtgvoip using CMake instead of bundled one." ${DESKTOP_APP_USE_PACKAGED})
+ option(TDESKTOP_API_TEST "Use test API credentials." OFF)
+ set(TDESKTOP_API_ID "0" CACHE STRING "Provide 'api_id' for the Telegram API access.")
+ set(TDESKTOP_API_HASH "" CACHE STRING "Provide 'api_hash' for the Telegram API access.")
