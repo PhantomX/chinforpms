@@ -36,4 +36,6 @@ steam
 telegram-desktop
 VirtualBox-extpack-oracle
 VirtualBox-guest-additions-iso
+vvvvvv
+vvvvvv-data
 wine-freeworld

@@ -1,12 +1,13 @@
-diff -up asbru-cm-5.0.0/lib/pac_conn.vncpasswd asbru-cm-5.0.0/lib/pac_conn
---- asbru-cm-5.0.0/lib/pac_conn.vncpasswd	2018-06-15 17:05:21.482590633 -0300
-+++ asbru-cm-5.0.0/lib/pac_conn	2018-06-15 17:09:12.483879641 -0300
-@@ -972,7 +972,7 @@ if ( defined $METHOD ) {
- 		$CONNECT_OPTS =~ s/\s*-embed//go;
- 		if ( `vncviewer --help 2>&1 | /bin/grep TigerVNC` ) {
- 			my $pfile = $CFG_DIR . '/tmp/pac_conn_' . $$ . '_' . $UUID;
--			system( "echo \"$PASS\" | vncpasswd -f > $pfile" );
-+			system( "echo \'$PASS\' | vncpasswd -f > $pfile" );
- 			if ( defined $$CFG{'tmp'}{'xid'} ) {
- 				$connection_cmd = "$METHOD $CONNECT_OPTS -PasswordFile=$pfile -Parent=$$CFG{'tmp'}{'xid'} $IP:$PORT";
- 				$connection_txt = "$METHOD $CONNECT_OPTS -PasswordFile=$pfile -Parent=$$CFG{'tmp'}{'xid'} $IP:$PORT";
+diff --git a/lib/pac_conn.vncpasswd b/lib/pac_conn
+index d95c399..664fe26 100755
+--- a/lib/pac_conn.vncpasswd
++++ b/lib/pac_conn
+@@ -1126,7 +1126,7 @@ if (defined $METHOD) {
+         $CONNECT_OPTS =~ s/\s*-embed//go;
+         if (`vncviewer --help 2>&1 | /bin/grep TigerVNC`) {
+             my $pfile = "$CFG_DIR/tmp/pac_conn_{$$}_$UUID";
+-            system("echo \"$PASS\" | vncpasswd -f > $pfile");
++            system("echo \'$PASS\' | vncpasswd -f > $pfile");
+             if (defined $$CFG{'tmp'}{'xid'}) {
+                 $connection_cmd = "$METHOD $CONNECT_OPTS -PasswordFile=$pfile -Parent=$$CFG{'tmp'}{'xid'} $IP:$PORT";
+                 $connection_txt = "$METHOD $CONNECT_OPTS -PasswordFile=$pfile -Parent=$$CFG{'tmp'}{'xid'} $IP:$PORT";

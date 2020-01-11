@@ -39,6 +39,7 @@ Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
+BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)
 %if 0%{?with_libao}
 BuildRequires:  pkgconfig(ao)

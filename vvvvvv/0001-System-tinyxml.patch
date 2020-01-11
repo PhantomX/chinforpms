@@ -1,0 +1,38 @@
+From 2b8b47e68e6b017c8ace9c7d4cb6cb609dfbab01 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 10 Jan 2020 18:45:32 -0300
+Subject: [PATCH] System tinyxml
+
+---
+ desktop_version/CMakeLists.txt | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/desktop_version/CMakeLists.txt b/desktop_version/CMakeLists.txt
+index 3cf9ef7..96eca0f 100644
+--- a/desktop_version/CMakeLists.txt
++++ b/desktop_version/CMakeLists.txt
+@@ -4,6 +4,8 @@
+ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
+ PROJECT(VVVVVV)
+ 
++find_package(PkgConfig REQUIRED)
++
+ # Architecture Flags
+ IF(APPLE)
+ 	# Wow, Apple is a huge jerk these days huh?
+@@ -95,7 +97,11 @@ ELSE()
+ ENDIF()
+ 
+ # Library information
+-ADD_LIBRARY(tinyxml-static STATIC ${XML_SRC})
++add_library(tinyxml-static INTERFACE IMPORTED GLOBAL)
++pkg_check_modules(TINYXML REQUIRED tinyxml)
++target_include_directories(tinyxml-static INTERFACE ${TINYXML_INCLUDE_DIRS})
++target_link_libraries(tinyxml-static INTERFACE ${TINYXML_LIBRARIES})
++
+ ADD_LIBRARY(physfs-static STATIC ${PFS_SRC} ${PFSP_SRC})
+ ADD_LIBRARY(lodepng-static STATIC ${PNG_SRC})
+ 
+-- 
+2.24.1
+

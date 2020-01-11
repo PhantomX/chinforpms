@@ -1,8 +1,8 @@
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
 Name:           asbru-cm
-Version:        5.2.1
-Release:        2%{?dist}
+Version:        6.0.1
+Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
@@ -11,8 +11,6 @@ URL:            https://asbru-cm.net
 %global vc_url  https://github.com/%{name}/%{name}
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 
-# Dirty way to disable gconf
-Patch0:         %{name}-nogconf.patch
 # Fix passwords with TigerVNC
 Patch1:         %{name}-vncpasswd.patch
 
@@ -36,13 +34,8 @@ Requires:       perl(Exporter)
 Requires:       perl(File::Basename)
 Requires:       perl(File::Copy)
 Requires:       perl(FindBin)
-Requires:       perl(Gtk2)
-#Requires:       perl(Gtk2::AppIndicator)
-Requires:       perl(Gtk2::Ex::Simple::List)
-Requires:       perl(Gtk2::Ex::Simple::TiedCommon)
-Requires:       perl(Gtk2::GladeXML)
-Requires:       perl(Gtk2::SourceView2)
-Requires:       perl(Gtk2::Unique)
+Requires:       perl(Gtk3)
+Requires:       perl(Gtk3::SimpleList)
 Requires:       perl(IO::Handle)
 Requires:       perl(IO::Stty)
 Requires:       perl(IO::Tty)
@@ -67,9 +60,10 @@ Requires:       perl(strict)
 Requires:       perl(utf8)
 Requires:       perl(vars)
 Requires:       perl(warnings)
-Requires:       perl-Gnome2-Vte
+Requires:       perl-X11-GUITest
 Requires:       dbus-x11
-Requires:       vte
+Requires:       libwnck3
+Requires:       vte291
 Requires:       ftp
 Requires:       telnet
 Requires:       bash
@@ -85,6 +79,8 @@ remote terminal sessions and automating repetitive tasks.
 
 sed -r -e "s|\\\$RealBin[ ]*\.[ ]*'|'%{_datadir}/%{name}/lib|g" -i lib/pac_conn
 sed -r -e "s|\\\$RealBin,|'%{_datadir}/%{name}/lib',|g" -i lib/pac_conn
+sed -r -e "s|\\\$RealBin/\.\./|%{_datadir}/%{name}/|g" -i lib/pac_conn
+sed -r -e "s|\\\$RealBin/|%{_datadir}/%{name}/lib/|g" -i lib/pac_conn
 find . -type f -exec sed -i \
   -e "s|\$RealBin[ ]*\.[ ]*'|'%{_datadir}/%{name}|g" \
   -e 's|"\$RealBin/|"%{_datadir}/%{name}/|g' \
@@ -124,7 +120,7 @@ cp -a res/asbru-logo-256.png %{buildroot}/%{_datadir}/icons/hicolor/256x256/apps
 cp -a res/asbru-logo.svg %{buildroot}/%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
 # Copy the remaining resources and libraries
-cp -a res/*.{png,jpg,pl,glade} res/termcap %{buildroot}/%{_datadir}/%{name}/res/
+cp -a res/*.{png,jpg,pl,glade,css} %{buildroot}/%{_datadir}/%{name}/res/
 cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
@@ -140,6 +136,9 @@ cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
 %changelog
+* Fri Jan 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.0.1-1
+- 6.0.1
+
 * Tue Nov 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.1-2
 - Fix search path
 
