@@ -1,38 +1,27 @@
-From 4afdf8d7da58ca93b40298cc38ff7e25b2843200 Mon Sep 17 00:00:00 2001
+From 34d3cc0250c673f77e060f821c563c8eaf54a194 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 10 Jan 2020 18:52:09 -0300
+Date: Sat, 11 Jan 2020 19:11:33 -0300
 Subject: [PATCH] System data file
 
 ---
- desktop_version/src/FileSystemUtils.cpp | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ desktop_version/src/FileSystemUtils.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/desktop_version/src/FileSystemUtils.cpp b/desktop_version/src/FileSystemUtils.cpp
-index 40e54da..e45fc9e 100644
+index f8f415a..0ec4a5d 100644
 --- a/desktop_version/src/FileSystemUtils.cpp
 +++ b/desktop_version/src/FileSystemUtils.cpp
-@@ -74,18 +74,18 @@ int FILESYSTEM_init(char *argvZero)
- 	strcpy(output, PHYSFS_getBaseDir());
- 	strcat(output, "data.zip");
- #else
--	strcpy(output, "data.zip");
-+	strcpy(output, "_RPM_DATA_DIR_/data.zip");
- #endif
+@@ -70,8 +70,8 @@ int FILESYSTEM_init(char *argvZero)
+ 	}
+ 
+ 	/* Mount the stock content last */
+-	strcpy(output, PHYSFS_getBaseDir());
+-	strcat(output, "data.zip");
++	strcpy(output, "_RPM_DATA_DIR_/");
++	strcat(output, "VVVVVV/data.zip");
  	if (!PHYSFS_mount(output, NULL, 1))
  	{
--		puts("Error: data.zip missing!");
-+		puts("Error: _RPM_DATA_DIR_/data.zip missing!");
- 		puts("You do not have data.zip!");
- 		puts("Grab it from your purchased copy of the game,");
- 		puts("or get it from the free Make and Play Edition.");
- 
- 		SDL_ShowSimpleMessageBox(
- 			SDL_MESSAGEBOX_ERROR,
--			"data.zip missing!",
-+			"_RPM_DATA_DIR_/data.zip missing!",
- 			"You do not have data.zip!"
- 			"\n\nGrab it from your purchased copy of the game,"
- 			"\nor get it from the free Make and Play Edition.",
+ 		puts("Error: data.zip missing!");
 -- 
 2.24.1
 

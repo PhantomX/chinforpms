@@ -1,21 +1,19 @@
-%global commit 3f3ea6eac7713aa3d36b3296058d52a7d3f0c913
+%global commit 901de4166e22d2795ead941de7d40a3e2444c2df
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200110
+%global date 20200111
 
 %undefine _hardened_build
 
 %global bundlelodepngver 20191109
 %global bundlephysfsver 0
 
-%if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
-%endif
 
 %global pkgname VVVVVV
 
 Name:           vvvvvv
-Version:        2.0
-Release:        1%{?gver}%{?dist}
+Version:        2.2
+Release:        2%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -57,9 +55,9 @@ rm -rf desktop_version/tinyxml/*
 
 cp -p desktop_version/README.md README_desktop.md
 
-sed -e '/CMAKE_EXECUTABLE_SUFFIX/d' -i desktop_version/CMakeLists.txt
+sed -e '/CMAKE_INSTALL_RPATH/d' -i desktop_version/CMakeLists.txt
 
-sed -e 's|_RPM_DATA_DIR_|%{_datadir}/%{pkgname}|g' -i desktop_version/src/FileSystemUtils.cpp
+sed -e 's|_RPM_DATA_DIR_|%{_datadir}|g' -i desktop_version/src/FileSystemUtils.cpp
 
 
 %build
@@ -89,7 +87,7 @@ popd
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{_target_platform}/%{name} %{buildroot}%{_bindir}/%{pkgname}
+install -pm0755 %{_target_platform}/%{pkgname} %{buildroot}%{_bindir}/%{pkgname}
 
 mkdir -p %{buildroot}%{_datadir}/%{pkgname}
 
@@ -128,5 +126,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
-* Fri Jan 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.0-1
+* Sat Jan 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-2.20200111git901de41
+- Bump
+
+* Fri Jan 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-1
 - Initial spec

@@ -1,14 +1,28 @@
+%global commit 3ca002d783974539f5be4e683b67a58f4cc9fce0
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20191205
+%global with_snapshot 0
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 %global gl_url  https://gitlab.com/xboxdrv/xboxdrv
 
 Name:           xboxdrv
 Version:        0.8.8
-Release:        103%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPLv3+
 URL:            https://xboxdrv.gitlab.io
 
+%if 0%{?with_snapshot}
+Source0:        %{gl_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
+%else
 Source0:        https://xboxdrv.gitlab.io/%{name}-linux-%{version}.tar.bz2
+%endif
+
 Source1:        %{name}.service
 Source2:        %{name}-config.txt
 # Better dbus support
@@ -20,18 +34,19 @@ Source5:        org.seul.xboxdrvctl.policy
 Source6:        org.seul.xboxdrv.policy
 
 # Fix 60 seconds delay
-Patch1:         %{gl_url}/merge_requests/214.patch#/xboxdrv-gl-214.patch
+Patch1:         %{gl_url}/merge_requests/214.patch#/%{name}-gl-214.patch
 # Fix "pure virtual function called" crash and related hang
-Patch2:         %{gl_url}/merge_requests/220.patch#/xboxdrv-gl-220.patch
+Patch2:         %{gl_url}/merge_requests/220.patch#/%{name}-gl-220.patch
 # Don't submit transfers when controller is disconnecting
-Patch3:         %{gl_url}/merge_requests/221.patch#/xboxdrv-gl-221.patch
+Patch3:         %{gl_url}/merge_requests/221.patch#/%{name}-gl-221.patch
 # Ensure string2btn matches btn2string's output
-Patch4:         %{gl_url}/merge_requests/227.patch#/xboxdrv-gl-227.patch
+Patch4:         %{gl_url}/merge_requests/227.patch#/%{name}-gl-227.patch
 # https://bugs.gentoo.org/show_bug.cgi?id=594674
 Patch5:         xboxdrv-0.8.8-fix-c++14.patch
-Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/xboxdrv-gh-ac6ebb1228962220482ea03743cadbe18754246c.patch
+Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/%{name}-gh-ac6ebb1228962220482ea03743cadbe18754246c.patch
 # https://aur.archlinux.org/cgit/aur.git/plain/scons-py3.patch?h=xboxdrv
 Patch7:         %{name}-scons-py3.patch
+Patch8:         %{gl_url}/commit/3ca002d783974539f5be4e683b67a58f4cc9fce0.patch#/%{name}-gl-3ca002d.patch
 
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(x11)
@@ -42,12 +57,12 @@ BuildRequires:  boost-devel
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig
-BuildRequires:  python2-devel
-Requires:       python2-dbus
+BuildRequires:  python3-devel
+Requires:       python3-dbus
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-BuildRequires: systemd
+BuildRequires:  systemd
 
 
 %description
@@ -57,10 +72,14 @@ Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless gamepads,
 both first and third party.
 
 %prep
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+%else
 %autosetup -n %{name}-linux-%{version} -p1
+%endif
 
-sed -i '1s|/usr/bin/env python|%{__python2}|' examples/responsecurve-generator.py
-sed -i '1s|/usr/bin/env python2|%{__python2}|' xboxdrvctl
+sed -i '1s|/usr/bin/env python|%{__python3}|' examples/responsecurve-generator.py
+sed -i '1s|/usr/bin/env python3|%{__python3}|' xboxdrvctl
 
 %build
 scons %{?_smp_mflags} \
@@ -118,6 +137,9 @@ install -pm0644 %{S:5} %{S:6} %{buildroot}%{_datadir}/polkit-1/actions/
 
 
 %changelog
+* Sat Jan 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.8.8-104
+- python3
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.8.8-103
 - Patch to fix build with python3 scons, from AUR
 
