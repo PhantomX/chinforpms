@@ -29,9 +29,11 @@
 %endif
 %global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
 
+%global vc_url https://gitlab.gnome.org/GNOME/gtk/commit
+
 Name:           gtk3
 Version:        3.24.13
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -42,6 +44,11 @@ Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -
 Source1:        %{mushroom_url}/archive/%{mushroom_ver}/gtk3-mushrooms-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
 Source3:        gtk3-mushrooms-gtk-3.2.12-fix.patch
+
+
+Patch10:        %{vc_url}/a3cff0add1dec4db3ddc0a3dff8f41ff9e205b63.patch#/gtk3-gl-a3cff0a.patch
+Patch11:        %{vc_url}/0d6cff45c3acb3288eaea5a123b2ee81ec7d12d6.patch#/gtk3-gl-0d6cff4.patch
+Patch12:        %{vc_url}/5cdca80c0c97383df7d10b3d2f55583167f64179.patch#/gtk3-gl-5cdca80.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -390,6 +397,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Tue Jan 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.13-101
+- chinforpms-adwaita.css update
+- Some upstream fixes
+
 * Thu Nov 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.13-100
 - 3.24.13
 

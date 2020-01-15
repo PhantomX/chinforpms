@@ -1,5 +1,17 @@
-/* Chinforpms 20181015 */
+/* Chinforpms 20200114 */
 /* GTK3-mushrooms */
+
+.default-decoration.titlebar:not(headerbar), headerbar.default-decoration {
+  min-height: 0px;
+  padding: 1px;
+}
+
+.default-decoration.titlebar:not(headerbar) button.titlebutton, headerbar.default-decoration button.titlebutton {
+  min-height: 0px;
+  min-width: 0px;
+  margin: 0;
+  padding: 1px;
+}
 
 button,
 button.titlebutton,

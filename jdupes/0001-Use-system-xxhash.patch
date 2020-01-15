@@ -1,6 +1,6 @@
-From 4f89b97b2a7d739869fadf40d26e29ce32500156 Mon Sep 17 00:00:00 2001
+From 90eb703a9d390324eb260712e655ea758ca8da6e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 16 Nov 2019 19:23:20 -0300
+Date: Tue, 14 Jan 2020 14:45:08 -0300
 Subject: [PATCH] Use system xxhash
 
 ---
@@ -9,10 +9,10 @@ Subject: [PATCH] Use system xxhash
  2 files changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index d3cc5e8..372a8b5 100644
+index 3296b77..2d54b88 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -124,7 +124,6 @@ INSTALL_DATA    = $(INSTALL) -m 0644
+@@ -138,7 +138,6 @@ INSTALL_DATA    = $(INSTALL) -m 0644
  OBJS += jdupes.o jody_paths.o jody_sort.o jody_win_unicode.o string_malloc.o
  OBJS += jody_cacheinfo.o
  OBJS += act_deletefiles.o act_linkfiles.o act_printmatches.o act_summarize.o act_printjson.o
@@ -20,7 +20,7 @@ index d3cc5e8..372a8b5 100644
  OBJS += $(ADDITIONAL_OBJECTS)
  
  OBJS_CLEAN += jdupes-standalone
-@@ -132,7 +131,7 @@ OBJS_CLEAN += jdupes-standalone
+@@ -146,7 +145,7 @@ OBJS_CLEAN += jdupes-standalone
  all: $(PROGRAM_NAME)
  
  $(PROGRAM_NAME): $(OBJS)
@@ -28,9 +28,9 @@ index d3cc5e8..372a8b5 100644
 +	$(CC) $(CFLAGS) -lxxhash $(LDFLAGS) -o $(PROGRAM_NAME) $(OBJS)
  
  winres.o : winres.rc winres.manifest.xml
- 	windres winres.rc winres.o
+ 	./tune_winres.sh
 diff --git a/jdupes.c b/jdupes.c
-index a13f95d..aef864d 100644
+index 0292f04..3426cb8 100644
 --- a/jdupes.c
 +++ b/jdupes.c
 @@ -41,7 +41,7 @@
@@ -43,5 +43,5 @@ index a13f95d..aef864d 100644
  #include "jody_win_unicode.h"
  #include "jody_cacheinfo.h"
 -- 
-2.23.0
+2.24.1
 

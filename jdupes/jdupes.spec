@@ -1,5 +1,5 @@
 Name:           jdupes
-Version:        1.13.2
+Version:        1.14.0
 Release:        1%{?dist}
 Summary:        A powerful duplicate file finder
 
@@ -24,9 +24,9 @@ rm -f xxhash.*
 
 %build
 %make_build \
-  COMPILER_OPTIONS="%{build_cflags} -DSMA_MAX_FREE=11" \
+  COMPILER_OPTIONS="%{build_cflags} -DNDEBUG -DSMA_MAX_FREE=11" \
   LDFLAGS="%{build_ldflags}" \
-  CFLAGS_EXTRA="-DENABLE_BTRFS" \
+  CFLAGS_EXTRA="-DENABLE_DEDUPE -DSTATIC_DEDUPE_H=1" \
 %{nil}
 
 
@@ -53,5 +53,8 @@ rm -f xxhash.*
 
 
 %changelog
+* Tue Jan 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.14.0-1
+- 1.14.0
+
 * Sat Nov 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.13.2-1
 - Initial spec
