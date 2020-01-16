@@ -4,7 +4,7 @@
 # that's still supported by the vendor. It may work on other distros
 # or versions, but no effort will be made to ensure that going forward.
 %define min_rhel 7
-%define min_fedora 29
+%define min_fedora 30
 
 %if (0%{?fedora} && 0%{?fedora} >= %{min_fedora}) || (0%{?rhel} && 0%{?rhel} >= %{min_rhel})
     %define supported_platform 1
@@ -49,7 +49,6 @@
 # Then the hypervisor drivers that run outside libvirtd, in libvirt.so
 %define with_openvz        0%{!?_without_openvz:1}
 %define with_vmware        0%{!?_without_vmware:1}
-%define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
 %define with_hyperv        0%{!?_without_hyperv:1}
 
@@ -130,7 +129,6 @@
 %if 0%{?rhel}
     %define with_openvz 0
     %define with_vbox 0
-    %define with_phyp 0
     %define with_vmware 0
     %define with_libxl 0
     %define with_hyperv 0
@@ -182,14 +180,6 @@
 
 %define with_bash_completion  0%{!?_without_bash_completion:1}
 
-# Use Python 3 when possible, Python 2 otherwise
-%if 0%{?fedora} || 0%{?rhel} > 7
-    %define python python3
-%else
-    %define python python2
-%endif
-
-
 %if %{with_qemu} || %{with_lxc}
 # numad is used to manage the CPU and memory placement dynamically,
 # it's not available on many non-x86 architectures.
@@ -221,7 +211,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 5.10.0
+Version: 6.0.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -229,11 +219,9 @@ URL: https://libvirt.org/
 %if %(echo %{version} | grep -q "\.0$"; echo $?) == 1
     %define mainturl stable_updates/
 %endif
-Source: https://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.xz
+Source0: https://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.xz
 Source1: %{name}-sysusers.conf
 Source2: %{name}-qemu-sysusers.conf
-
-Patch100: https://libvirt.org/git/?p=libvirt.git;a=patch;h=0a65cba423781f2cbf123354b7f670c4f441b385#/%{name}-git-0a65cba.patch
 
 
 Requires: libvirt-daemon = %{version}-%{release}
@@ -273,6 +261,11 @@ BuildRequires: gettext-devel
 BuildRequires: libtool
 BuildRequires: /usr/bin/pod2man
 %endif
+%if 0%{?rhel} == 7
+BuildRequires: python36-docutils
+%else
+BuildRequires: python3-docutils
+%endif
 BuildRequires: gcc
 BuildRequires: git
 %if 0%{?fedora} || 0%{?rhel} > 7
@@ -280,7 +273,7 @@ BuildRequires: perl-interpreter
 %else
 BuildRequires: perl
 %endif
-BuildRequires: %{python}
+BuildRequires: python3
 BuildRequires: systemd-units
 %if %{with_libxl}
 BuildRequires: xen-devel
@@ -340,8 +333,13 @@ BuildRequires: device-mapper-devel
 # For XFS reflink clone support
 BuildRequires: xfsprogs-devel
 %if %{with_storage_rbd}
+    %if 0%{?fedora} || 0%{?rhel} > 7
+BuildRequires: librados-devel
+BuildRequires: librbd-devel
+    %else
 BuildRequires: librados2-devel
 BuildRequires: librbd1-devel
+    %endif
 %endif
 %if %{with_storage_gluster}
 BuildRequires: glusterfs-api-devel >= 3.4.1
@@ -364,7 +362,7 @@ BuildRequires: libcap-ng-devel >= 0.5.0
 %if %{with_fuse}
 BuildRequires: fuse-devel >= 2.8.6
 %endif
-%if %{with_phyp} || %{with_libssh2}
+%if %{with_libssh2}
 BuildRequires: libssh2-devel >= 1.3.0
 %endif
 
@@ -1034,12 +1032,6 @@ exit 1
     %define arg_libxl --without-libxl
 %endif
 
-%if %{with_phyp}
-    %define arg_phyp --with-phyp
-%else
-    %define arg_phyp --without-phyp
-%endif
-
 %if %{with_esx}
     %define arg_esx --with-esx
 %else
@@ -1162,7 +1154,6 @@ pushd %{_target_platform}
            --with-sasl \
            --with-polkit \
            --with-libvirtd \
-           %{?arg_phyp} \
            %{?arg_esx} \
            %{?arg_hyperv} \
            %{?arg_vmware} \
@@ -1239,7 +1230,7 @@ rm -f $RPM_BUILD_ROOT%{wireshark_plugindir}/libvirt.la
 %endif
 
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
-# We don't want to install /etc/libvirt/qemu/networks in the main %files list
+# We don't want to install /etc/libvirt/qemu/networks in the main %%files list
 # because if the admin wants to delete the default network completely, we don't
 # want to end up re-incarnating it on every RPM upgrade.
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/
@@ -1248,7 +1239,7 @@ cp $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml \
 # libvirt saves this file with mode 0600
 chmod 0600 $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
 
-# nwfilter files are installed in /usr/share/libvirt and copied to /etc in %post
+# nwfilter files are installed in /usr/share/libvirt and copied to /etc in %%post
 # to avoid verification errors on changed files in /etc
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/libvirt/nwfilter/
 cp -a $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/nwfilter/*.xml \
@@ -1314,7 +1305,7 @@ install -Dpm 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysusersdir}/%{name}-qemu.conf
 cd %{_target_platform}
 if ! make %{?_smp_mflags} check VIR_TEST_DEBUG=1
 then
-  cat test-suite.log || true
+  cat tests/test-suite.log || true
   exit 1
 fi
 
@@ -1893,6 +1884,7 @@ exit 0
 %{_datadir}/libvirt/schemas/capability.rng
 %{_datadir}/libvirt/schemas/cputypes.rng
 %{_datadir}/libvirt/schemas/domain.rng
+%{_datadir}/libvirt/schemas/domainbackup.rng
 %{_datadir}/libvirt/schemas/domaincaps.rng
 %{_datadir}/libvirt/schemas/domaincheckpoint.rng
 %{_datadir}/libvirt/schemas/domaincommon.rng
@@ -1981,6 +1973,10 @@ exit 0
 
 
 %changelog
+* Wed Jan 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.0.0-100
+- 6.0.0
+- Rawhide sync
+
 * Tue Dec 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.10.0-100
 - 5.10.0
 
@@ -2045,58 +2041,3 @@ exit 0
 
 * Mon Jan 21 2019 Daniel P. Berrangé <berrange@redhat.com> - 5.0.0-1
 - Update to 5.0.0 release
-
-* Mon Dec 10 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.10.0-2
-- Disable RBD on 32-bit arches (rhbz #1657928)
-
-* Mon Dec  3 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.10.0-1
-- Update to 4.10.0 release
-
-* Mon Nov 12 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.9.0-1
-- Update to 4.9.0 release
-
-* Fri Oct  5 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.8.0-1
-- Update to 4.8.0 release
-
-* Tue Sep  4 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.7.0-1
-- Update to 4.7.0 release
-
-* Sat Aug 18 2018 David Abdurachmanov <david.abdurachmanov@gmail.com> - 4.6.0-2
-- Add support for RISC-V (riscv64)
-
-* Mon Aug  6 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.6.0-1
-- Update to 4.6.0 release
-
-* Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 4.5.0-3
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
-
-* Fri Jul  6 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.5.0-2
-- Fix regressions with chardev handling
-
-* Tue Jul  3 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.5.0-1
-- Update to 4.5.0 release
-
-* Tue Jun  5 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.4.0-1
-- Update to 4.4.0 release
-
-* Thu May  3 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.3.0-1
-- Update to 4.3.0 release
-
-* Tue Apr  3 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.2.0-1
-- Update to 4.2.0 release
-
-* Fri Mar 23 2018 Iryna Shcherbina <ishcherb@redhat.com> - 4.1.0-3
-- Update Python 2 dependency declarations to new packaging standards
-  (See https://fedoraproject.org/wiki/FinalizingFedoraSwitchtoPython3)
-
-* Wed Mar 21 2018 Daniel P. Berrangé <berrange@redhat.com> - 4.1.0-2
-- Fix systemd macro argument with line continuations (rhbz#1558648)
-
-* Mon Mar  5 2018 Daniel Berrange <berrange@redhat.com> - 4.1.0-1
-- Rebase to version 4.1.0
-
-* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.0-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
-
-* Fri Jan 19 2018 Daniel P. Berrange <berrange@redhat.com> - 4.0.0-1
-- Rebase to version 4.0.0

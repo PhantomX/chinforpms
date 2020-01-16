@@ -1,6 +1,6 @@
-%global commit 901de4166e22d2795ead941de7d40a3e2444c2df
+%global commit 6f8d2dc90b1629e5490df16afe40919c88c0c694
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200111
+%global date 20200115
 
 %undefine _hardened_build
 
@@ -13,7 +13,7 @@
 
 Name:           vvvvvv
 Version:        2.2
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -25,7 +25,7 @@ URL:            https://github.com/TerryCavanagh/%{pkgname}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        %{pkgname}.png
 
-Patch10:        0001-System-tinyxml.patch
+Patch10:        0001-System-libraries.patch
 Patch11:        0001-System-data-file.patch
 
 
@@ -35,13 +35,14 @@ BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(SDL2_mixer)
+BuildRequires:  pkgconfig(physfs)
 BuildRequires:  pkgconfig(tinyxml)
 Requires:       vvvvvv-data >= 2.1
 Requires:       hicolor-icon-theme
 
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(lodepng) = %{bundlelodepngver}
-Provides:       bundled(physfs) = %{bundlephysfsver}
+#Provides:       bundled(physfs) = %%{bundlephysfsver}
 
 
 %description
@@ -51,11 +52,16 @@ Provides:       bundled(physfs) = %{bundlephysfsver}
 %prep
 %autosetup -n %{pkgname}-%{commit} -p1
 
-rm -rf desktop_version/tinyxml/*
+# Make sure that we are using system ones
+rm -rf third_party/physfs/
+rm -rf third_party/tinyxml/
 
 cp -p desktop_version/README.md README_desktop.md
 
-sed -e '/CMAKE_INSTALL_RPATH/d' -i desktop_version/CMakeLists.txt
+sed \
+  -e '/CMAKE_BUILD_WITH_INSTALL_RPATH/d' \
+  -e '/CMAKE_INSTALL_RPATH/d' \
+  -i desktop_version/CMakeLists.txt
 
 sed -e 's|_RPM_DATA_DIR_|%{_datadir}|g' -i desktop_version/src/FileSystemUtils.cpp
 
@@ -78,6 +84,8 @@ mkdir -p %{_target_platform}
 pushd %{_target_platform}
 
 %cmake ../desktop_version \
+  -DUSE_SYSTEM_PHYSFS:BOOL=ON \
+  -DUSE_SYSTEM_TINYXML:BOOL=ON \
 %{nil}
 
 %make_build
@@ -126,6 +134,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Wed Jan 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-3.20200115git6f8d2dc
+- Bump
+- Patch cmake to use system libraries
+
 * Sat Jan 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-2.20200111git901de41
 - Bump
 

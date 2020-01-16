@@ -1,0 +1,76 @@
+From 6f52cefb3d20ab956a48634ac782a4b5d5644ba6 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 15 Jan 2020 11:49:15 -0300
+Subject: [PATCH] System libraries
+
+---
+ desktop_version/CMakeLists.txt | 33 +++++++++++++++++++++++++++++----
+ 1 file changed, 29 insertions(+), 4 deletions(-)
+
+diff --git a/desktop_version/CMakeLists.txt b/desktop_version/CMakeLists.txt
+index 3edafd1..2596e2a 100644
+--- a/desktop_version/CMakeLists.txt
++++ b/desktop_version/CMakeLists.txt
+@@ -3,9 +3,13 @@
+ 
+ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
+ 
++find_package(PkgConfig REQUIRED)
++
+ # CMake Options
+ OPTION(ENABLE_WARNINGS "Enable compilation warnings" ON)
+ OPTION(ENABLE_WERROR "Treat compilation warnings as errors" OFF)
++OPTION(USE_SYSTEM_PHYSFS "Dynamically link against system tinyxml" OFF)
++OPTION(USE_SYSTEM_TINYXML "Dynamically link against system tinyxml" OFF)
+ 
+ # Architecture Flags
+ IF(APPLE)
+@@ -53,11 +57,16 @@ ENDIF()
+ # Include Directories
+ INCLUDE_DIRECTORIES(
+ 	src
+-	../third_party/tinyxml
+-	../third_party/physfs
+ 	../third_party/lodepng
+ )
+ 
++IF(NOT USE_SYSTEM_TINYXML)
++  INCLUDE_DIRECTORIES(../third_party/tinyxml)
++ENDIF()
++IF(NOT USE_SYSTEM_PHYSFS)
++  INCLUDE_DIRECTORIES(../third_party/physfs)
++ENDIF()
++
+ # Source Lists
+ SET(VVV_SRC
+ 	src/BinaryBlob.cpp
+@@ -138,8 +147,24 @@ IF(ENABLE_WARNINGS)
+ ENDIF()
+ 
+ # Library information
+-ADD_LIBRARY(tinyxml-static STATIC ${XML_SRC})
+-ADD_LIBRARY(physfs-static STATIC ${PFS_SRC} ${PFSP_SRC})
++IF(USE_SYSTEM_TINYXML)
++  ADD_LIBRARY(tinyxml-static INTERFACE IMPORTED GLOBAL)
++  pkg_check_modules(TINYXML REQUIRED tinyxml)
++  target_include_directories(tinyxml-static INTERFACE ${TINYXML_INCLUDE_DIRS})
++  target_link_libraries(tinyxml-static INTERFACE ${TINYXML_LIBRARIES})
++ELSE()
++  ADD_LIBRARY(tinyxml-static STATIC ${XML_SRC})
++ENDIF()
++
++IF(USE_SYSTEM_PHYSFS)
++  add_library(physfs-static INTERFACE IMPORTED GLOBAL)
++  pkg_check_modules(PHYSFS REQUIRED physfs)
++  target_include_directories(physfs-static INTERFACE ${PHYSFS_INCLUDE_DIRS})
++  target_link_libraries(physfs-static INTERFACE ${PHYSFS_LIBRARIES})
++ELSE()
++  ADD_LIBRARY(physfs-static STATIC ${PFS_SRC} ${PFSP_SRC})
++ENDIF()
++
+ ADD_LIBRARY(lodepng-static STATIC ${PNG_SRC})
+ 
+ # Static Dependencies
+-- 
+2.24.1
+

@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 6
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 991818b122a14a4516f5c5a9dcf54f29ad4bf3c3
+%global pfcommit 325b60a0b923fe7d9990fabffa2e7dbc2090b60a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -862,14 +862,8 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch504: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# CVE-2019-19068 rhbz 1774963 1774965
-Patch511: rtl8xxxu-prevent-leaking-urb.patch
-
 # CVE-2019-19043 rhbz 1774972 1774973
 Patch512: net-next-v2-9-9-i40e-prevent-memory-leak-in-i40e_setup_macvlans.patch
-
-# CVE-2019-19066 rhbz 1774976 1774978
-Patch513: scsi-bfa-release-allocated-memory-in-case-of-error.patch
 
 # CVE-2019-19046 rhbz 1774988 1774989
 Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
@@ -877,30 +871,15 @@ Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
 # CVE-2019-19064 rhbz 1775010 1775011
 Patch515: spi-lpspi-fix-memory-leak-in-fsl_lpspi_probe.patch
 
-# CVE-2019-19053 rhbz 1775956 1775110
-Patch521: rpmsg-char-release-allocated-memory.patch
-
-# CVE-2019-19056 rhbz 1775097 1775115
-Patch522: mwifiex-pcie-fix-memory-leak-in-mwifiex_pcie_alloc_cmdrsp_buf.patch
-
 # CVE-2019-19054 rhbz 1775063 1775117
 Patch523: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
-
-# CVE-2019-14895 rhbz 1774870 1776139
-Patch524: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
 
 # CVE-2019-14896 rhbz 1774875 1776143
 # CVE-2019-14897 rhbz 1774879 1776146
 Patch525: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
 
-# CVE-2019-19078 rhbz 1776354 1776353
-Patch526: ath10k-fix-memory-leak.patch
-
 # CVE-2019-18808 rhbz 1777418 1777421
 Patch527: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
-
-# rhbz 1788653
-Patch530: tpm-handle-negative-priv--response_len-in-tpm_common_read.patch
 
 
 ### Extra
@@ -2642,6 +2621,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.12-500.chinfo
+- 5.4.12 - pf6
+
 * Mon Jan 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.11-500.chinfo
 - 5.4.11
 

@@ -1,7 +1,7 @@
-%global commit 8864e433baf07e995e7047e840d8f94d8f1b2496
+%global commit 45130a237874aaa96bdf23ee107b0be0e0a2afab
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191205
-%global with_snapshot 0
+%global date 20200110
+%global with_snapshot 1
 
 %global branch classic
 
@@ -77,7 +77,7 @@ ExcludeArch: armv7hl
 # and a downgraded rust package exists
 %global build_with_pinned_rust 0
 %global rust_build_min_ver 1.35
-%global rust_build_min_nover 1.38
+%global rust_build_min_nover 1.40
 
 %global default_bookmarks_file  %{_datadir}/bookmarks/default-bookmarks.html
 %global waterfox_app_id  \{ec8030f7-c20a-464f-9b0e-13a3a9e97384\}
@@ -128,8 +128,8 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2019.12
-Release:        3.%{branch}%{?gver}%{?dist}
+Version:        2020.01
+Release:        1.%{branch}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -194,6 +194,7 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 # Upstream updates/PRs/Reverts
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
+Patch450:       %{vc_url}/pull/1349.patch#/%{name}-gh-pr1349.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -400,6 +401,8 @@ This package contains results of tests executed during build.
 %patch419 -p1 -b .mozilla-1320560
 %patch420 -p1 -b .mozilla-1389436
 
+%patch450 -p1 -b .pr1349
+
 # Debian extension patch
 %patch500 -p1 -b .440908
 
@@ -430,7 +433,7 @@ done
 # 2: no apply
 # 3: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1379148 1393235 1393283 1395486 1433747 1452576 1453127 1466606 \
+  702179 991253 1021761 1144632 1288587 1379148 1393235 1393283 1395486 1430508 1433747 1452576 1453127 1466606 \
   1384121 1388744 1413143 \
   1447519
 do
@@ -1021,6 +1024,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Jan 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.01-1.classic.20200110git45130a2
+- New release/snapshot
+
 * Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 2019.12-3.classic
 - PGO build from COPR crashing, try to fix disabling elfhack
 

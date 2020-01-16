@@ -1,7 +1,7 @@
-%global commit 5034d109e033fbe820829ae43adba0cc30bf9b99
+%global commit 9f8935d823cd554856e15015bf6225bfcee8db82
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191230
-%global with_snapshot 0
+%global date 20200114
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.0-rc5
+%global wine_stagingver 329005baaf5cb49fea7cc11db8427d1cf181b9fb
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 32ded821e96d410cd44fd5477c6828a44750c0d8
+%global tkg_id 19e5be8f30636704dc2e846735f595e220585352
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -58,7 +58,7 @@
 # proton FS hack
 %global wine_staging_opts -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
-%global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput-mouse -W user32-rawinput-nolegacy -W user32-rawinput-mouse-experimental -W user32-rawinput-hid -W user32-rawinput-keyboard -W winex11-key_translation
+%global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput-mouse -W user32-rawinput-nolegacy -W user32-rawinput-mouse-experimental -W user32-rawinput-hid -W winex11-key_translation
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global valve_url https://github.com/ValveSoftware/wine
@@ -80,7 +80,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.0~rc5
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2482,6 +2482,9 @@ fi
 
 
 %changelog
+* Wed Jan 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0~rc5-101.20200114git9f8935d
+- New snapshot
+
 * Sat Jan 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0~rc5-100
 - 5.0-rc5
 
