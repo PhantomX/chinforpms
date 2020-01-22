@@ -2,7 +2,7 @@
 %bcond_with yubikey
 
 Name:           keepassxc
-Version:        2.5.2
+Version:        2.5.3
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -61,7 +61,6 @@ mkdir %{_target_platform}
 pushd %{_target_platform}
 %cmake .. \
   -DCMAKE_BUILD_TYPE=release \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DKEEPASSXC_BUILD_TYPE:STRING=Release \
   -DWITH_TESTS:BOOL=OFF \
   -DWITH_XC_NETWORKING:BOOL=ON \
@@ -116,6 +115,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Tue Jan 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.3-100
+- 2.5.3
+
 * Sat Jan 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.2-100
 - 2.5.2
 

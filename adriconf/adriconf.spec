@@ -1,5 +1,5 @@
 Name:           adriconf
-Version:        1.5.1
+Version:        1.6
 Release:        1%{?dist}
 Summary:        Advanced DRI Configurator
 
@@ -16,6 +16,9 @@ BuildRequires:  gettext
 BuildRequires:  gtest-devel
 BuildRequires:  ImageMagick
 BuildRequires:  libappstream-glib
+BuildRequires:  pkgconfig(egl)
+BuildRequires:  pkgconfig(gbm)
+BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gtkmm-3.0)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libglvnd)
@@ -39,7 +42,6 @@ them to the standard drirc file used by the Mesa drivers.
 mkdir %{_target_platform}
 pushd %{_target_platform}
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DENABLE_UNIT_TESTS:BOOL=OFF \
 %{nil}
 
@@ -88,6 +90,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/br.com.jeanher
 
 
 %changelog
+* Tue Jan 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.6-1
+- 1.6
+
 * Sun Sep 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-1
 - 1.5.1
 

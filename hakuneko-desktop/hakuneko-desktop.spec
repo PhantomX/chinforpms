@@ -11,7 +11,7 @@
 %global real_name hakuneko
 
 Name:           %{real_name}-desktop
-Version:        5.0.8
+Version:        6.1.7
 Release:        1%{?dist}
 Summary:        Manga Downloader
 
@@ -91,6 +91,9 @@ done
 
 
 %changelog
+* Mon Jan 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.1.7-1
+- 6.1.7
+
 * Wed Oct 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.8-1
 - 5.0.8
 
