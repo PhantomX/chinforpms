@@ -69,6 +69,8 @@ RPMFusion and existent packages updated with extra changes.
  * **xboxdrv** - Tests
  * **wine** - Personal fixes and extra patches, like [_PBA_](https://github.com/acomminos/wine-pba) and
               more gathered from [_TK-Glitch_](https://github.com/Tk-Glitch/PKGBUILDS/tree/master/wine-tkg-git), some of them not always enabled.
+              No alternatives support
+ * **wine-dxvk** - mingw build and no alternatives support, enabled by script
 
 ## Credits (Patches, install procedures and other files)
 * [Arch](https://www.archlinux.org)

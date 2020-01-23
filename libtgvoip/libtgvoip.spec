@@ -1,6 +1,6 @@
-%global commit f77531160a2ef4cd2fd27f68186f2768033b594d
+%global commit ade4434f1c6efabecc3b548ca1f692f8d103d22a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191230
+%global date 201200121
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           libtgvoip
 Version:        2.4.4
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        VoIP library for Telegram clients
 
 # Libtgvoip shared library - Public Domain.
@@ -23,10 +23,6 @@ Source0:        %{tg_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-Patch0:         %{name}-build-fixes.patch
-
-Patch100:       %{tg_url}/pull/6.patch#/%{name}-gh-pull6.patch
-Patch200:       %{name}-link-libraries.patch
 
 Provides:       bundled(webrtc-audio-processing) = 0.3
 
@@ -35,10 +31,11 @@ BuildRequires:  alsa-lib-devel
 BuildRequires:  openssl-devel
 BuildRequires:  json11-devel
 BuildRequires:  opus-devel
+BuildRequires:  automake
+BuildRequires:  autoconf
 BuildRequires:  gcc-c++
-BuildRequires:  cmake
+BuildRequires:  libtool
 BuildRequires:  gcc
-BuildRequires:  gyp
 
 %description
 Provides VoIP library for Telegram clients.
@@ -58,41 +55,21 @@ Requires:       json11-devel%{?_isa}
 %autosetup -p1
 %endif
 
-sed \
-  -e 's|@prefix@|%{_prefix}|g' \
-  -e 's|@exec_prefix@|%{_prefix}|g' \
-  -e 's|@libdir@|%{_libdir}|g' \
-  -e 's|@includedir@|%{_includedir}|g' \
-  tgvoip.pc.in > tgvoip.pc
+autoreconf -ivf
+
 
 %build
-export VOIPVER="%{version}"
-gyp --format=cmake --depth=. --generator-output=. -Goutput_dir=out -Gconfig=Release %{name}.gyp
+%configure \
+  --disable-silent-rules \
+  --disable-static \
+%{nil}
 
-pushd out/Release
-    %cmake .
-    %make_build
-popd
 
 %install
-# Installing shared library...
-mkdir -p %{buildroot}%{_libdir}/pkgconfig
-%global major %(echo %{version} | cut -d. -f1)
-%global minor %(echo %{version} | cut -d. -f1-2)
-install -m 0755 -p out/Release/lib.target/%{name}.so.%{version} "%{buildroot}%{_libdir}/%{name}.so.%{version}"
-ln -s %{name}.so.%{version} "%{buildroot}%{_libdir}/%{name}.so.%{major}"
-ln -s %{name}.so.%{major} "%{buildroot}%{_libdir}/%{name}.so"
+%make_install
 
-install -pm0644 tgvoip.pc %{buildroot}%{_libdir}/pkgconfig/
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
-# Installing additional development files...
-mkdir -p "%{buildroot}%{_includedir}/%{name}/audio"
-mkdir -p "%{buildroot}%{_includedir}/%{name}/video"
-find . -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{buildroot}%{_includedir}/%{name} \;
-find audio -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{buildroot}%{_includedir}/%{name}/audio \;
-find video -maxdepth 1 -type f -name "*.h" -exec install -m 0644 -p '{}' %{buildroot}%{_includedir}/%{name}/video \;
-
-ln -sf %{name} %{buildroot}%{_includedir}/tgvoip
 
 
 %files
@@ -100,13 +77,15 @@ ln -sf %{name} %{buildroot}%{_includedir}/tgvoip
 %{_libdir}/%{name}.so.*
 
 %files devel
-%{_includedir}/%{name}/
-%{_includedir}/tgvoip
+%{_includedir}/tgvoip/
 %{_libdir}/%{name}.so
 %{_libdir}/pkgconfig/tgvoip.pc
 
 
 %changelog
+* Wed Jan 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.4.4-102.201200121gitade4434
+- Bump, autoconf only
+
 * Mon Jan 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.4.4-101.20191230gitf775311
 - Change to internal telegram fork
 - pkgconfig file

@@ -1,27 +1,30 @@
 # Telegram Desktop's constants...
 %global appname tdesktop
+%global launcher telegramdesktop
+
+# Telegram API tokens...
 %global apiid 208164
 %global apihash dfbe1bc42dc9d20507e17d1814cc2f0a
 
 %global da_url https://github.com/desktop-app
 
-%global commit1 652bbaf002546ae1822fff4474ffe95091bfc2e4
+%global commit1 67cf2a5abdb01658c1cf852b29e25808dcc02c56
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 cmake_helpers
 
-%global commit2 d14ae77ad5ed27ca6ddbc9579c0c5e0afa18ffca
+%global commit2 d3cc394974bbaa48159261786edd2e543216c84b
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 codegen
 
-%global commit3 baae6cdd9ba5216732222e7dec9a76b9ea3a7c83
+%global commit3 db99f556f328f8e1fdc44ab30041f655b68b8312
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 lib_base
 
-%global commit4 5a740bf0b7fe8f1f9a7f3e0878d5238f56502da1
+%global commit4 83ce48f25b3056a1bdbbea64244e3d8f997f51c6
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 lib_crl
 
-%global commit5 a0a0269ffa44d1e23f0911eaeb286004a075b089
+%global commit5 2d75b1a35a984f2a0379acbd0869b50b66acdf3c
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 lib_lottie
 
@@ -37,19 +40,19 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 lib_rpl
 
-%global commit9 d305de6d67ca4f3891bad96a0e49e40f5c904189
+%global commit9 b1d635f9271040ae57c999fe9436c44470484372
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 lib_spellcheck
 
-%global commit10 cb56ad46ca1bee22570a7f3f64d21531283ad84d
+%global commit10 57027c7d6c071f0d958576a530c7c0411d8d4274
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 lib_storage
 
-%global commit11 b0388a1a02b3f035f1486a6b66a01522c290b198
+%global commit11 404c83d77e5edb8a39f8e9f56a6340960fe5070e
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 lib_tl
 
-%global commit12 4ec9e32f8f5f6b8192fd60d73ae0b575e82c1c60
+%global commit12 ea176df168049cef521c0760dd7dcf73981bfa97
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 lib_ui
 
@@ -57,7 +60,7 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 rlottie
 
-%global commit14 303dcacc2ad0428fd165c71455056d3f8f884d6f
+%global commit14 ade4434f1c6efabecc3b548ca1f692f8d103d22a
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 libtgvoip
 
@@ -75,8 +78,8 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.9.3
-Release:        102%{?dist}
+Version:        1.9.6
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -114,20 +117,10 @@ Source14:       https://github.com/telegramdesktop/%{srcname14}/archive/%{commit
 Source20:       thunar-sendto-%{name}.desktop
 
 # Permanent downstream patches...
-Patch0:         %{name}-fix-desktop.patch
-Patch1:         %{name}-fix-appdata.patch
 Patch10:        cmake_helpers-system-expected.patch
 Patch11:        cmake_helpers-system-gsl.patch
 Patch12:        cmake_helpers-system-qrcode.patch
 Patch13:        cmake_helpers-system-variant.patch
-Patch20:        lib_ui-remove-configs.patch
-
-# Temporary upstream and proposed to upstream patches...
-Patch100:       %{name}-pr6956.patch
-Patch101:       https://github.com/desktop-app/cmake_helpers/pull/8.patch#/%{name}-gh-cmake_helpers-pull8.patch
-Patch102:       %{name}-commit-100fed3.patch
-Patch103:       %{name}-commit-322367c.patch
-Patch104:       %{name}-pr6985.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -137,8 +130,7 @@ Patch201:       %{name}-realmute.patch
 # Always display scrollbars
 Patch202:       %{name}-disable-overlay.patch
 Patch203:       %{name}-disable-animated-stickers.patch
-Patch204:       %{name}-system-fonts.patch
-Patch205:       %{name}-build-fixes.patch
+Patch204:       %{name}-build-fixes.patch
 
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
@@ -164,7 +156,7 @@ BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  libstdc++-devel
 BuildRequires:  expected-devel
 BuildRequires:  lz4-devel
-BuildRequires:  range-v3-devel >= 0.9.1
+BuildRequires:  range-v3-devel >= 0.10.0
 BuildRequires:  openssl-devel
 BuildRequires:  xxhash-devel
 BuildRequires:  xz-devel
@@ -269,6 +261,8 @@ pushd Telegram
     rm -rf %{srcname12}
     tar -xf %{S:12}
     mv %{srcname12}-%{commit12} %{srcname12}
+
+    rm -f lib_ui/qt_conf/linux.qrc
 popd
 
 pushd Telegram/ThirdParty
@@ -286,35 +280,23 @@ pushd Telegram/ThirdParty
 
 popd
 
-# Applying patches for core application...
-%patch0 -p1 -b .desktop
-%patch1 -p1 -b .appdata
-%patch102 -p1 -b .commit-100fed3
-%patch103 -p1 -b .commit-322367c
-%patch100 -p1 -b .pr6956
-%patch104 -p1 -b .pr6985
-
 # Applying patches for build system...
-%patch101 -d cmake -p1 -b .system-libraries
 %patch10 -d cmake -p1 -b .system-expected
 %patch11 -d cmake -p1 -b .system-gsl
 %patch12 -d cmake -p1 -b .system-qrcode
 %patch13 -d cmake -p1 -b .system-variant
-
-# Applying patches for lib_ui...
-%patch20 -d Telegram/lib_ui -p1 -b .remove-configs
 
 %patch200 -p1
 %patch201 -p1
 %patch202 -p1
 %patch203 -p1
 %patch204 -p1
-%patch205 -p1
 
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
 sed -e '/qt_version/s|5.12.5|%{_qt5_version}|g' \
   -i cmake/external/qt/package.cmake
+
 
 %build
 %if 0%{?build_with_lto}
@@ -347,6 +329,7 @@ pushd %{_target_platform}
        -DTDESKTOP_API_ID=%{apiid} \
        -DTDESKTOP_API_HASH=%{apihash} \
        -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
+       -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=ON \
 %if !0%{with_sysrlottie}
        -DDESKTOP_APP_USE_PACKAGED_RLOTTIE:BOOL=OFF \
 %endif
@@ -358,7 +341,7 @@ pushd %{_target_platform}
        -DTDESKTOP_DISABLE_AUTOUPDATE:BOOL=ON \
        -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
        -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
-       -DTDESKTOP_LAUNCHER_FILENAME=%{name}.desktop \
+       -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
 %{nil}
 popd
 
@@ -371,8 +354,12 @@ mkdir -p %{buildroot}%{_bindir}
 install -m 0755 -p %{_target_platform}/bin/Telegram %{buildroot}%{_bindir}/%{name}
 
 # Installing desktop shortcut...
-mv lib/xdg/telegramdesktop.desktop lib/xdg/%{name}.desktop
-desktop-file-install --dir="%{buildroot}%{_datadir}/applications" lib/xdg/%{name}.desktop
+mv lib/xdg/telegramdesktop.desktop lib/xdg/%{launcher}.desktop || :
+desktop-file-install \
+  --dir="%{buildroot}%{_datadir}/applications" \
+  --set-key=Exec \
+  --set-value=%{_bindir}/%{name} \
+  lib/xdg/%{launcher}.desktop
 
 # Installing icons...
 for size in 16 32 48 64 128 256 512; do
@@ -383,7 +370,7 @@ done
 
 # Installing appdata for Gnome Software...
 install -d "%{buildroot}%{_metainfodir}"
-install -m 0644 -p lib/xdg/telegramdesktop.appdata.xml "%{buildroot}%{_metainfodir}/%{name}.appdata.xml"
+install -m 0644 -p lib/xdg/telegramdesktop.appdata.xml "%{buildroot}%{_metainfodir}/%{launcher}.appdata.xml"
 
 # sendto
 mkdir -p "%{buildroot}%{_datadir}/Thunar/sendto"
@@ -393,19 +380,23 @@ desktop-file-install \
 
 
 %check
-appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appdata.xml"
+appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{launcher}.appdata.xml"
 
 %files
 %doc README.md changelog.txt
 %license LICENSE LEGAL
 %{_bindir}/%{name}
-%{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/%{launcher}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_datadir}/Thunar/sendto/thunar-sendto-%{name}.desktop
-%{_metainfodir}/%{name}.appdata.xml
+%{_metainfodir}/%{launcher}.appdata.xml
 
 
 %changelog
+* Wed Jan 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.6-100
+- 1.9.6
+- RPMFusion sync
+
 * Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.3-102
 - RPMFusion sync
 

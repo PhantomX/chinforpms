@@ -94,8 +94,12 @@ Enhances:       wine
 
 Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      wine-d9vk < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      wine-dxvk-d3d9 < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      wine-dxvk-dxgi < %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       wine-d9vk = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       wine-dxvk-d3d9 = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       wine-dxvk-dxgi = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %if !0%{?with_mingw}
 Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
