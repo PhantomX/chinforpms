@@ -1,5 +1,5 @@
 Name:           gamemode
-Version:        1.4
+Version:        1.5
 Release:        100%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
@@ -68,6 +68,9 @@ mkdir -p %{buildroot}%{_datadir}/%{name}
 
 
 %changelog
+* Thu Jan 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5-100
+- 1.5
+
 * Mon Jul 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.4-100
 - 1.4
 

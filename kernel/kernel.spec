@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 7
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 9ad50917b4bba495f00d9de4138ff214c0f73503
+%global pfcommit 093a28fa762e700d81c8d4236e15649c96788231
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 5cf5394811b9a6d0d2325bd34aa811e3db842ef2
+%global opensuse_id fc4ea7a80b3635a53f6e0ec89f89204d49646c59
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -862,9 +862,6 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch504: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# CVE-2019-19043 rhbz 1774972 1774973
-Patch512: net-next-v2-9-9-i40e-prevent-memory-leak-in-i40e_setup_macvlans.patch
-
 # CVE-2019-19046 rhbz 1774988 1774989
 Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
 
@@ -878,6 +875,14 @@ Patch525: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
 # CVE-2019-18808 rhbz 1777418 1777421
 Patch527: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
 
+# ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
+Patch600: alsa-5.5.patch
+
+# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
+Patch601: alsa-5.6.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1772498#c101
+Patch602: ASoC-topology-fix-soc_tplg_fe_link_create-link-dobj-.patch
 
 ### Extra
 
@@ -2621,6 +2626,9 @@ fi
 #
 #
 %changelog
+* Thu Jan 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.14-500.chinfo
+- 5.4.14 - pf7
+
 * Sat Jan 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.13-500.chinfo
 - 5.4.13
 

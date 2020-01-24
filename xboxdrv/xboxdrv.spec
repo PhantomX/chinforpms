@@ -43,7 +43,7 @@ Patch3:         %{gl_url}/merge_requests/221.patch#/%{name}-gl-221.patch
 Patch4:         %{gl_url}/merge_requests/227.patch#/%{name}-gl-227.patch
 # https://bugs.gentoo.org/show_bug.cgi?id=594674
 Patch5:         xboxdrv-0.8.8-fix-c++14.patch
-Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/%{name}-gh-ac6ebb1228962220482ea03743cadbe18754246c.patch
+Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/%{name}-gh-ac6ebb1.patch
 # https://aur.archlinux.org/cgit/aur.git/plain/scons-py3.patch?h=xboxdrv
 Patch7:         %{name}-scons-py3.patch
 Patch8:         %{gl_url}/commit/3ca002d783974539f5be4e683b67a58f4cc9fce0.patch#/%{name}-gl-3ca002d.patch

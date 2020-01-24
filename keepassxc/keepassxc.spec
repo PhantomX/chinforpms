@@ -3,13 +3,18 @@
 
 Name:           keepassxc
 Version:        2.5.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
+%global vc_url  https://github.com/keepassxreboot/%{name}
+
 License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain
 URL:            https://keepassxc.org/
-Source0:        https://github.com/keepassxreboot/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
+
+Patch0:        %{vc_url}/commit/b34a8f9d94fff78950f70d7d941acaac0a0480ca.patch#/%{name}-gh-b34a8f9.patch
+Patch1:        %{vc_url}/commit/796b5ceacb9f87f812c3ec9e3beed370e24edff0.patch#/%{name}-gh-796b5ce.patch
 
 Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
 
@@ -115,6 +120,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Thu Jan 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.3-101
+- Bump
+
 * Tue Jan 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.3-100
 - 2.5.3
 

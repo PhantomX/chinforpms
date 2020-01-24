@@ -1,0 +1,417 @@
+From 4ef91c45a5a283dc8899402bc68adfe0aa9a026d Mon Sep 17 00:00:00 2001
+From: Jaroslav Kysela <perex@perex.cz>
+Date: Wed, 4 Dec 2019 15:15:44 -0600
+Subject: [PATCH 1/4] ASoC: intel/skl/hda - export number of digital
+ microphones via control components
+
+It is required for the auto-detection in the user space (for UCM).
+
+Signed-off-by: Jaroslav Kysela <perex@perex.cz>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20191204211556.12671-2-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+Signed-off-by: Jaroslav Kysela <jkysela@redhat.com>
+(cherry picked from commit 8cd9956f61c65022209ce6d1e55ed12aea12357d)
+Bugzilla: 1772498
+---
+ sound/soc/intel/boards/skl_hda_dsp_generic.c | 8 ++++++++
+ sound/soc/sof/intel/hda.c                    | 3 ++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/sound/soc/intel/boards/skl_hda_dsp_generic.c b/sound/soc/intel/boards/skl_hda_dsp_generic.c
+index 4e45901e3a2f..11eaee9ae41f 100644
+--- a/sound/soc/intel/boards/skl_hda_dsp_generic.c
++++ b/sound/soc/intel/boards/skl_hda_dsp_generic.c
+@@ -100,6 +100,8 @@ static struct snd_soc_card hda_soc_card = {
+ 	.late_probe = skl_hda_card_late_probe,
+ };
+ 
++static char hda_soc_components[30];
++
+ #define IDISP_DAI_COUNT		3
+ #define HDAC_DAI_COUNT		2
+ #define DMIC_DAI_COUNT		2
+@@ -183,6 +185,12 @@ static int skl_hda_audio_probe(struct platform_device *pdev)
+ 	hda_soc_card.dev = &pdev->dev;
+ 	snd_soc_card_set_drvdata(&hda_soc_card, ctx);
+ 
++	if (mach->mach_params.dmic_num > 0) {
++		snprintf(hda_soc_components, sizeof(hda_soc_components),
++				"cfg-dmics:%d", mach->mach_params.dmic_num);
++		hda_soc_card.components = hda_soc_components;
++	}
++
+ 	return devm_snd_soc_register_card(&pdev->dev, &hda_soc_card);
+ }
+ 
+diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
+index 91bd88fddac7..eea01f75d23d 100644
+--- a/sound/soc/sof/intel/hda.c
++++ b/sound/soc/sof/intel/hda.c
+@@ -351,7 +351,7 @@ static int hda_init_caps(struct snd_sof_dev *sdev)
+ 	const char *tplg_filename;
+ 	const char *idisp_str;
+ 	const char *dmic_str;
+-	int dmic_num;
++	int dmic_num = 0;
+ 	int codec_num = 0;
+ 	int i;
+ #endif
+@@ -472,6 +472,7 @@ static int hda_init_caps(struct snd_sof_dev *sdev)
+ 		mach_params->codec_mask = bus->codec_mask;
+ 		mach_params->platform = dev_name(sdev->dev);
+ 		mach_params->common_hdmi_codec_drv = hda_codec_use_common_hdmi;
++		mach_params->dmic_num = dmic_num;
+ 	}
+ 
+ 	/* create codec instances */
+-- 
+2.20.1
+
+
+From 89be5f69889f7e9aeab05279869bba3e9e0d2002 Mon Sep 17 00:00:00 2001
+From: Jaroslav Kysela <perex@perex.cz>
+Date: Wed, 4 Dec 2019 15:15:45 -0600
+Subject: [PATCH 2/4] ASoC: Intel - use control components to describe card
+ config
+
+Use the control interface (field 'components' in the info structure)
+to pass the I/O configuration details. The goal is to replace
+the card long name with this.
+
+Signed-off-by: Jaroslav Kysela <perex@perex.cz>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20191204211556.12671-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+Signed-off-by: Jaroslav Kysela <jkysela@redhat.com>
+(cherry picked from commit 0d5c8187562848b619a35f2ffc5e18ce703e9f3d)
+Bugzilla: 1772498
+---
+ sound/soc/intel/boards/bytcht_es8316.c |  9 ++++++++-
+ sound/soc/intel/boards/bytcr_rt5640.c  |  6 ++++++
+ sound/soc/intel/boards/bytcr_rt5651.c  | 18 +++++++++++-------
+ 3 files changed, 25 insertions(+), 8 deletions(-)
+
+diff --git a/sound/soc/intel/boards/bytcht_es8316.c b/sound/soc/intel/boards/bytcht_es8316.c
+index 46612331f5ea..efa33f30dcac 100644
+--- a/sound/soc/intel/boards/bytcht_es8316.c
++++ b/sound/soc/intel/boards/bytcht_es8316.c
+@@ -361,6 +361,7 @@ static struct snd_soc_dai_link byt_cht_es8316_dais[] = {
+ /* SoC card */
+ static char codec_name[SND_ACPI_I2C_ID_LEN];
+ static char long_name[50]; /* = "bytcht-es8316-*-spk-*-mic" */
++static char components_string[32]; /* = "cfg-spk:* cfg-mic:* */
+ 
+ static int byt_cht_es8316_suspend(struct snd_soc_card *card)
+ {
+@@ -572,11 +573,17 @@ static int snd_byt_cht_es8316_mc_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	/* register the soc card */
++	snprintf(components_string, sizeof(components_string),
++		 "cfg-spk:%s cfg-mic:%s",
++		 (quirk & BYT_CHT_ES8316_MONO_SPEAKER) ? "1" : "2",
++		 mic_name[BYT_CHT_ES8316_MAP(quirk)]);
++	byt_cht_es8316_card.components = components_string;
+ 	snprintf(long_name, sizeof(long_name), "bytcht-es8316-%s-spk-%s-mic",
+ 		 (quirk & BYT_CHT_ES8316_MONO_SPEAKER) ? "mono" : "stereo",
+ 		 mic_name[BYT_CHT_ES8316_MAP(quirk)]);
+ 	byt_cht_es8316_card.long_name = long_name;
++
++	/* register the soc card */
+ 	snd_soc_card_set_drvdata(&byt_cht_es8316_card, priv);
+ 
+ 	ret = devm_snd_soc_register_card(dev, &byt_cht_es8316_card);
+diff --git a/sound/soc/intel/boards/bytcr_rt5640.c b/sound/soc/intel/boards/bytcr_rt5640.c
+index dd2b5ad08659..7bc6d3cec94c 100644
+--- a/sound/soc/intel/boards/bytcr_rt5640.c
++++ b/sound/soc/intel/boards/bytcr_rt5640.c
+@@ -1083,6 +1083,7 @@ static char byt_rt5640_codec_name[SND_ACPI_I2C_ID_LEN];
+ static char byt_rt5640_codec_aif_name[12]; /*  = "rt5640-aif[1|2]" */
+ static char byt_rt5640_cpu_dai_name[10]; /*  = "ssp[0|2]-port" */
+ static char byt_rt5640_long_name[40]; /* = "bytcr-rt5640-*-spk-*-mic" */
++static char byt_rt5640_components[32]; /* = "cfg-spk:* cfg-mic:*" */
+ 
+ static int byt_rt5640_suspend(struct snd_soc_card *card)
+ {
+@@ -1305,6 +1306,11 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	snprintf(byt_rt5640_components, sizeof(byt_rt5640_components),
++		 "cfg-spk:%s cfg-mic:%s",
++		 (byt_rt5640_quirk & BYT_RT5640_MONO_SPEAKER) ? "1" : "2",
++		 map_name[BYT_RT5640_MAP(byt_rt5640_quirk)]);
++	byt_rt5640_card.components = byt_rt5640_components;
+ 	snprintf(byt_rt5640_long_name, sizeof(byt_rt5640_long_name),
+ 		 "bytcr-rt5640-%s-spk-%s-mic",
+ 		 (byt_rt5640_quirk & BYT_RT5640_MONO_SPEAKER) ?
+diff --git a/sound/soc/intel/boards/bytcr_rt5651.c b/sound/soc/intel/boards/bytcr_rt5651.c
+index 4606f6f582d6..80a5674ddb1b 100644
+--- a/sound/soc/intel/boards/bytcr_rt5651.c
++++ b/sound/soc/intel/boards/bytcr_rt5651.c
+@@ -798,6 +798,7 @@ static char byt_rt5651_codec_name[SND_ACPI_I2C_ID_LEN];
+ static char byt_rt5651_codec_aif_name[12]; /*  = "rt5651-aif[1|2]" */
+ static char byt_rt5651_cpu_dai_name[10]; /*  = "ssp[0|2]-port" */
+ static char byt_rt5651_long_name[50]; /* = "bytcr-rt5651-*-spk-*-mic[-swapped-hp]" */
++static char byt_rt5651_components[50]; /* = "cfg-spk:* cfg-mic:*" */
+ 
+ static int byt_rt5651_suspend(struct snd_soc_card *card)
+ {
+@@ -876,7 +877,6 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
+ 	const char *platform_name;
+ 	struct acpi_device *adev;
+ 	struct device *codec_dev;
+-	const char *hp_swapped;
+ 	bool is_bytcr = false;
+ 	int ret_val = 0;
+ 	int dai_index = 0;
+@@ -1080,16 +1080,20 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	if (byt_rt5651_quirk & BYT_RT5651_HP_LR_SWAPPED)
+-		hp_swapped = "-hp-swapped";
+-	else
+-		hp_swapped = "";
+-
++	snprintf(byt_rt5651_components, sizeof(byt_rt5651_components),
++		 "cfg-spk:%s cfg-mic:%s%s",
++		 (byt_rt5651_quirk & BYT_RT5651_MONO_SPEAKER) ? "1" : "2",
++		 mic_name[BYT_RT5651_MAP(byt_rt5651_quirk)],
++		 (byt_rt5651_quirk & BYT_RT5651_HP_LR_SWAPPED) ?
++			" cfg-hp:lrswap" : "");
++	byt_rt5651_card.components = byt_rt5651_components;
+ 	snprintf(byt_rt5651_long_name, sizeof(byt_rt5651_long_name),
+ 		 "bytcr-rt5651-%s-spk-%s-mic%s",
+ 		 (byt_rt5651_quirk & BYT_RT5651_MONO_SPEAKER) ?
+ 			"mono" : "stereo",
+-		 mic_name[BYT_RT5651_MAP(byt_rt5651_quirk)], hp_swapped);
++		 mic_name[BYT_RT5651_MAP(byt_rt5651_quirk)],
++		 (byt_rt5651_quirk & BYT_RT5651_HP_LR_SWAPPED) ?
++			"-hp-swapped" : "");
+ 	byt_rt5651_card.long_name = byt_rt5651_long_name;
+ 
+ 	/* override plaform name, if required */
+-- 
+2.20.1
+
+
+From 36c175e19e9cbb685708519d41e27cd803206737 Mon Sep 17 00:00:00 2001
+From: Jaroslav Kysela <perex@perex.cz>
+Date: Wed, 4 Dec 2019 15:15:46 -0600
+Subject: [PATCH 3/4] ASoC: Intel - do not describe I/O configuration in the
+ long card name
+
+The long card name might be used in GUI. This information should be hidden.
+
+Add CONFIG_SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES configuration option.
+
+Signed-off-by: Jaroslav Kysela <perex@perex.cz>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20191204211556.12671-4-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+Signed-off-by: Jaroslav Kysela <jkysela@redhat.com>
+(cherry picked from commit b5706f8ec29fb461571d25e3e813ede121fe31cd)
+Bugzilla: 1772498
+---
+ sound/soc/intel/boards/Kconfig         | 13 +++++++++++++
+ sound/soc/intel/boards/bytcht_es8316.c |  4 ++++
+ sound/soc/intel/boards/bytcr_rt5640.c  |  4 ++++
+ sound/soc/intel/boards/bytcr_rt5651.c  |  4 ++++
+ 4 files changed, 25 insertions(+)
+
+diff --git a/sound/soc/intel/boards/Kconfig b/sound/soc/intel/boards/Kconfig
+index ef20316e83d1..145eb55bd691 100644
+--- a/sound/soc/intel/boards/Kconfig
++++ b/sound/soc/intel/boards/Kconfig
+@@ -13,6 +13,19 @@ menuconfig SND_SOC_INTEL_MACH
+ 
+ if SND_SOC_INTEL_MACH
+ 
++config SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES
++	bool "Use more user friendly long card names"
++	help
++	  Some drivers report the I/O configuration to userspace through the
++	  soundcard's long card name in the control user space AP. An unfortunate
++	  side effect is that this long name may also be used by the GUI,
++	  confusing users with information they don't need.
++	  This option prevents the long name from being modified, and the I/O
++	  configuration will be provided through a different component interface.
++	  Select Y if userspace like UCM (Use Case Manager) uses the component
++	  interface.
++	  If unsure select N.
++
+ if SND_SOC_INTEL_HASWELL
+ 
+ config SND_SOC_INTEL_HASWELL_MACH
+diff --git a/sound/soc/intel/boards/bytcht_es8316.c b/sound/soc/intel/boards/bytcht_es8316.c
+index efa33f30dcac..12a1c5255484 100644
+--- a/sound/soc/intel/boards/bytcht_es8316.c
++++ b/sound/soc/intel/boards/bytcht_es8316.c
+@@ -360,7 +360,9 @@ static struct snd_soc_dai_link byt_cht_es8316_dais[] = {
+ 
+ /* SoC card */
+ static char codec_name[SND_ACPI_I2C_ID_LEN];
++#if !IS_ENABLED(CONFIG_SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES)
+ static char long_name[50]; /* = "bytcht-es8316-*-spk-*-mic" */
++#endif
+ static char components_string[32]; /* = "cfg-spk:* cfg-mic:* */
+ 
+ static int byt_cht_es8316_suspend(struct snd_soc_card *card)
+@@ -578,10 +580,12 @@ static int snd_byt_cht_es8316_mc_probe(struct platform_device *pdev)
+ 		 (quirk & BYT_CHT_ES8316_MONO_SPEAKER) ? "1" : "2",
+ 		 mic_name[BYT_CHT_ES8316_MAP(quirk)]);
+ 	byt_cht_es8316_card.components = components_string;
++#if !IS_ENABLED(CONFIG_SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES)
+ 	snprintf(long_name, sizeof(long_name), "bytcht-es8316-%s-spk-%s-mic",
+ 		 (quirk & BYT_CHT_ES8316_MONO_SPEAKER) ? "mono" : "stereo",
+ 		 mic_name[BYT_CHT_ES8316_MAP(quirk)]);
+ 	byt_cht_es8316_card.long_name = long_name;
++#endif
+ 
+ 	/* register the soc card */
+ 	snd_soc_card_set_drvdata(&byt_cht_es8316_card, priv);
+diff --git a/sound/soc/intel/boards/bytcr_rt5640.c b/sound/soc/intel/boards/bytcr_rt5640.c
+index 7bc6d3cec94c..648fcc1d07b5 100644
+--- a/sound/soc/intel/boards/bytcr_rt5640.c
++++ b/sound/soc/intel/boards/bytcr_rt5640.c
+@@ -1082,7 +1082,9 @@ static struct snd_soc_dai_link byt_rt5640_dais[] = {
+ static char byt_rt5640_codec_name[SND_ACPI_I2C_ID_LEN];
+ static char byt_rt5640_codec_aif_name[12]; /*  = "rt5640-aif[1|2]" */
+ static char byt_rt5640_cpu_dai_name[10]; /*  = "ssp[0|2]-port" */
++#if !IS_ENABLED(CONFIG_SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES)
+ static char byt_rt5640_long_name[40]; /* = "bytcr-rt5640-*-spk-*-mic" */
++#endif
+ static char byt_rt5640_components[32]; /* = "cfg-spk:* cfg-mic:*" */
+ 
+ static int byt_rt5640_suspend(struct snd_soc_card *card)
+@@ -1311,12 +1313,14 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
+ 		 (byt_rt5640_quirk & BYT_RT5640_MONO_SPEAKER) ? "1" : "2",
+ 		 map_name[BYT_RT5640_MAP(byt_rt5640_quirk)]);
+ 	byt_rt5640_card.components = byt_rt5640_components;
++#if !IS_ENABLED(CONFIG_SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES)
+ 	snprintf(byt_rt5640_long_name, sizeof(byt_rt5640_long_name),
+ 		 "bytcr-rt5640-%s-spk-%s-mic",
+ 		 (byt_rt5640_quirk & BYT_RT5640_MONO_SPEAKER) ?
+ 			"mono" : "stereo",
+ 		 map_name[BYT_RT5640_MAP(byt_rt5640_quirk)]);
+ 	byt_rt5640_card.long_name = byt_rt5640_long_name;
++#endif
+ 
+ 	/* override plaform name, if required */
+ 	platform_name = mach->mach_params.platform;
+diff --git a/sound/soc/intel/boards/bytcr_rt5651.c b/sound/soc/intel/boards/bytcr_rt5651.c
+index 80a5674ddb1b..c0d322a859f7 100644
+--- a/sound/soc/intel/boards/bytcr_rt5651.c
++++ b/sound/soc/intel/boards/bytcr_rt5651.c
+@@ -797,7 +797,9 @@ static struct snd_soc_dai_link byt_rt5651_dais[] = {
+ static char byt_rt5651_codec_name[SND_ACPI_I2C_ID_LEN];
+ static char byt_rt5651_codec_aif_name[12]; /*  = "rt5651-aif[1|2]" */
+ static char byt_rt5651_cpu_dai_name[10]; /*  = "ssp[0|2]-port" */
++#if !IS_ENABLED(CONFIG_SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES)
+ static char byt_rt5651_long_name[50]; /* = "bytcr-rt5651-*-spk-*-mic[-swapped-hp]" */
++#endif
+ static char byt_rt5651_components[50]; /* = "cfg-spk:* cfg-mic:*" */
+ 
+ static int byt_rt5651_suspend(struct snd_soc_card *card)
+@@ -1087,6 +1089,7 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
+ 		 (byt_rt5651_quirk & BYT_RT5651_HP_LR_SWAPPED) ?
+ 			" cfg-hp:lrswap" : "");
+ 	byt_rt5651_card.components = byt_rt5651_components;
++#if !IS_ENABLED(CONFIG_SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES)
+ 	snprintf(byt_rt5651_long_name, sizeof(byt_rt5651_long_name),
+ 		 "bytcr-rt5651-%s-spk-%s-mic%s",
+ 		 (byt_rt5651_quirk & BYT_RT5651_MONO_SPEAKER) ?
+@@ -1095,6 +1098,7 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
+ 		 (byt_rt5651_quirk & BYT_RT5651_HP_LR_SWAPPED) ?
+ 			"-hp-swapped" : "");
+ 	byt_rt5651_card.long_name = byt_rt5651_long_name;
++#endif
+ 
+ 	/* override plaform name, if required */
+ 	platform_name = mach->mach_params.platform;
+-- 
+2.20.1
+
+
+From 9aa9b367e35494f2d02112ca440a78908f645a04 Mon Sep 17 00:00:00 2001
+From: Jaroslav Kysela <perex@perex.cz>
+Date: Fri, 22 Nov 2019 09:31:03 +0100
+Subject: [PATCH 4/4] ASoC: SOF - topology - do not change the link triger
+ order for old firmare
+
+This is patch for SOF v1.3 firmware. The DSP firmware will crash
+without this patch. The 1.4.1 firmare has this issue fixed.
+
+BugLink: https://github.com/thesofproject/sof/issues/2102
+Signed-off-by: Jaroslav Kysela <perex@perex.cz>
+---
+ sound/soc/sof/topology.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index d82ab981e840..cbbbf96416ef 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2971,6 +2971,7 @@ static int sof_link_load(struct snd_soc_component *scomp, int index,
+ 	struct snd_soc_tplg_private *private = &cfg->priv;
+ 	struct sof_ipc_dai_config config;
+ 	struct snd_soc_tplg_hw_config *hw_config;
++	struct sof_ipc_fw_version *v = &sdev->fw_ready.version;
+ 	int num_hw_configs;
+ 	int ret;
+ 	int i = 0;
+@@ -2988,9 +2989,12 @@ static int sof_link_load(struct snd_soc_component *scomp, int index,
+ 	if (!link->no_pcm) {
+ 		link->nonatomic = true;
+ 
+-		/* set trigger order */
+-		link->trigger[0] = SND_SOC_DPCM_TRIGGER_POST;
+-		link->trigger[1] = SND_SOC_DPCM_TRIGGER_POST;
++		/* this causes DSP panic on firmware v1.3 */
++		if (SOF_ABI_VER(v->major, v->minor, v->micro) > SOF_ABI_VER(3, 7, 0)) {
++			/* set trigger order */
++			link->trigger[0] = SND_SOC_DPCM_TRIGGER_POST;
++			link->trigger[1] = SND_SOC_DPCM_TRIGGER_POST;
++		}
+ 
+ 		/* nothing more to do for FE dai links */
+ 		return 0;
+-- 
+2.20.1
+
+
+From 264fe78e03d860f8bbf92f250cd22f54cabca59b Mon Sep 17 00:00:00 2001
+From: Fedora Kernel Team <kernel-team@fedoraproject.org>
+Date: Tue, 21 Jan 2020 11:57:17 -0500
+Subject: [PATCH] Force the DSP driver for Intel DSP to "legacy" by default
+
+Signed-off-by: Fedora Kernel Team <kernel-team@fedoraproject.org>
+---
+ sound/hda/intel-dsp-config.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/hda/intel-dsp-config.c b/sound/hda/intel-dsp-config.c
+index be1df80..2167ae3 100644
+--- a/sound/hda/intel-dsp-config.c
++++ b/sound/hda/intel-dsp-config.c
+@@ -9,7 +9,7 @@
+ #include <sound/intel-dsp-config.h>
+ #include <sound/intel-nhlt.h>
+ 
+-static int dsp_driver;
++static int dsp_driver = 1;
+ 
+ module_param(dsp_driver, int, 0444);
+ MODULE_PARM_DESC(dsp_driver, "Force the DSP driver for Intel DSP (0=auto, 1=legacy, 2=SST, 3=SOF)");
+-- 
+2.24.1
+

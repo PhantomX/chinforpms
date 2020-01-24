@@ -68,7 +68,7 @@ index 1c00da1..50a3fac 100755
              </property>
             </widget>
            </item>
-+          <item row="0" column="3">
++          <item row="1" column="3">
 +           <widget class="QCheckBox" name="waterfoxSupport">
 +            <property name="text">
 +             <string>&amp;Waterfox</string>
