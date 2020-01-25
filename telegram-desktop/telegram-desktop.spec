@@ -24,7 +24,7 @@
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
 Name:           telegram-desktop
-Version:        1.9.7
+Version:        1.9.8
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -158,9 +158,6 @@ rm -f Telegram/lib_ui/qt_conf/linux.qrc
 
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
-sed -e '/qt_version/s|5.12.5|%{_qt5_version}|g' \
-  -i cmake/external/qt/package.cmake
-
 
 %build
 %if 0%{?build_with_lto}
@@ -243,6 +240,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Jan 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.8-100
+- 1.9.8
+
 * Thu Jan 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.7-100
 - 1.9.7
 - RPMFusion sync

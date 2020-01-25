@@ -1,10 +1,11 @@
---- thrash-protect-0.12/thrash-protect.py.whitelist	2018-05-30 11:12:09.260539273 -0300
-+++ thrash-protect-0.12/thrash-protect.py	2018-05-30 11:13:34.592380481 -0300
-@@ -68,7 +68,7 @@ class config:
+diff -up thrash-protect-0.13.0/thrash-protect.py.whitelist thrash-protect-0.13.0/thrash-protect.py
+--- thrash-protect-0.13.0/thrash-protect.py.whitelist	2019-08-29 07:23:45.000000000 -0300
++++ thrash-protect-0.13.0/thrash-protect.py	2020-01-24 11:11:25.769394866 -0300
+@@ -67,7 +67,7 @@ class config:
  
      ## process name whitelist 
      cmd_whitelist = getenv('THRASH_PROTECT_CMD_WHITELIST', '')
--    cmd_whitelist = cmd_whitelist.split(' ') if cmd_whitelist else ['sshd', 'bash', 'xinit', 'X', 'spectrwm', 'screen', 'SCREEN', 'mutt', 'ssh', 'xterm', 'rxvt', 'urxvt', 'Xorg.bin', 'systemd-journal']
+-    cmd_whitelist = cmd_whitelist.split(' ') if cmd_whitelist else ['sshd', 'bash', 'xinit', 'X', 'spectrwm', 'screen', 'SCREEN', 'mutt', 'ssh', 'xterm', 'rxvt', 'urxvt', 'Xorg.bin', 'Xorg', 'systemd-journal']
 +    cmd_whitelist = cmd_whitelist.split(' ') if cmd_whitelist else ['sshd', 'bash', 'xinit', 'X', 'spectrwm', 'screen', 'SCREEN', 'tmux', 'mutt', 'ssh', 'xterm', 'rxvt', 'urxvt', 'Xorg.bin', 'Xorg', 'Xorg.wrap', 'systemd-journal']
      cmd_blacklist = getenv('THRASH_PROTECT_CMD_BLACKLIST', '').split(' ')
      cmd_jobctrllist = getenv('THRASH_PROTECT_CMD_JOBCTRLLIST', 'bash sudo').split(' ')

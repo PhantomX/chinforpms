@@ -1,6 +1,6 @@
 Name:           thrash-protect
-Version:        0.12
-Release:        2%{?dist}
+Version:        0.13.0
+Release:        1%{?dist}
 Summary:        Simple-Stupid user-space program protecting a linux host from thrashing
 
 License:        GPLv3
@@ -12,11 +12,9 @@ Patch0:         %{name}-whitelist.patch
 
 BuildArch:      noarch
 
-BuildRequires:  python3-rpm-macros
+BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  systemd
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+%{?systemd_requires}
 
 
 %description
@@ -31,7 +29,7 @@ problems, and in many cases the problems will resolve by themselves.
 %prep
 %autosetup -p1
 
-sed -e '1s|^#!.*$|#!%{__python3}|' -i %{name}.py
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{name}.py
 
 sed -e 's|/usr/sbin/|%{_sbindir}/|g' -i systemd/%{name}.service
 
@@ -58,12 +56,15 @@ install -pm0644 systemd/%{name}.service %{buildroot}%{_unitdir}/
 
 %files
 %license LICENSE
-%doc AUTHORS ChangeLog README.md
+%doc AUTHORS ChangeLog README.rst
 %{_sbindir}/%{name}
 %{_unitdir}/%{name}.service
 
 
 %changelog
+* Fri Jan 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.13.0-1
+- 0.13.0
+
 * Wed May 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.12-2
 - Patch to add more whitelisted processes
 

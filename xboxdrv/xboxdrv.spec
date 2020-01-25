@@ -58,11 +58,10 @@ BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig
 BuildRequires:  python3-devel
-Requires:       python3-dbus
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
 BuildRequires:  systemd
+BuildRequires:  /usr/bin/pathfix.py
+Requires:       python3-dbus
+%{?systemd_requires}
 
 
 %description
@@ -78,8 +77,10 @@ both first and third party.
 %autosetup -n %{name}-linux-%{version} -p1
 %endif
 
-sed -i '1s|/usr/bin/env python|%{__python3}|' examples/responsecurve-generator.py
-sed -i '1s|/usr/bin/env python3|%{__python3}|' xboxdrvctl
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
+  examples/responsecurve-generator.py \
+  xboxdrvctl
+
 
 %build
 scons %{?_smp_mflags} \

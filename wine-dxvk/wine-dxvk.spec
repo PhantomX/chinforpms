@@ -1,10 +1,10 @@
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 
-%global commit 0993f6f25dfa1ae3e6b9891190c1ffec8aec680e
+%global commit 9b486515fa8d24939143265f15530c500bd238f8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191225
-%global with_snapshot 0
+%global date 20200124
+%global with_snapshot 1
 
 %ifarch %{ix86} x86_64
 %global with_mingw 1
@@ -29,7 +29,7 @@
 %global pge_id de5b2cd9ad4652b0498ed715ae5fd1e590cbe922
 %global pge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{pge_id}/game-patches-testing/dxvk-patches
 
-%global tkg_id 0fda9b379a88b51091c086937710ad0be72e6fe6
+%global tkg_id e3d5a83aae06c5c63003bd1da2b7f6ed40db5a8e
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/dxvk-tools/DXVKBUILD/patches
 
 %global dxvk_async 1
@@ -43,8 +43,9 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.5.1
-Release:        1%{?gver}%{?dist}
+Version:        1.5.2
+Release:        100%{?gver}%{?dist}
+Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
 License:        zlib
@@ -87,6 +88,8 @@ BuildRequires:  gcc-c++
 BuildRequires:  glslang
 BuildRequires:  meson
 BuildRequires:  wine-devel >= %{winecommonver}
+
+Requires:       vulkan-loader >= 1.1
 
 Requires:       wine-common >= %{winecommonver}
 Requires:       wine-desktop >= %{winecommonver}
@@ -296,6 +299,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Jan 25 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.5.2-100.20200124git9b48651
+- 1.5.2
+
 * Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-1
 - 1.5.1
 

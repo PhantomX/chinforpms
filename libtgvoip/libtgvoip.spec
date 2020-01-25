@@ -1,6 +1,6 @@
-%global commit ade4434f1c6efabecc3b548ca1f692f8d103d22a
+%global commit c5651ffc728336e56d8567f5c6c179e8a5d4fe55
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 201200121
+%global date 20200123
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           libtgvoip
 Version:        2.4.4
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        VoIP library for Telegram clients
 
 # Libtgvoip shared library - Public Domain.
@@ -23,6 +23,8 @@ Source0:        %{tg_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
+
+Patch0:        %{name}-system-json11.patch
 
 Provides:       bundled(webrtc-audio-processing) = 0.3
 
@@ -55,6 +57,8 @@ Requires:       json11-devel%{?_isa}
 %autosetup -p1
 %endif
 
+rm -f json11.*
+
 autoreconf -ivf
 
 
@@ -83,6 +87,9 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 
 
 %changelog
+* Fri Jan 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.4.4-103.20200123gitc5651ff
+- RPMFusion sync
+
 * Wed Jan 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.4.4-102.201200121gitade4434
 - Bump, autoconf only
 

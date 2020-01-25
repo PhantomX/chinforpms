@@ -12,9 +12,7 @@ BuildRequires:  systemd
 Requires:       coreutils
 Requires:       curl
 Requires:       unbound
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+%{?systemd_requires}
 
 %description
 unbound-update-roothints contains systemd timer files to update unbound

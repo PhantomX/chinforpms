@@ -48,6 +48,7 @@ BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  python3-devel
 BuildRequires:  xxhash-devel
+BuildRequires:  /usr/bin/pathfix.py
 Requires:       hicolor-icon-theme
 Requires:       python3-evdev
 
