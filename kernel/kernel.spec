@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 093a28fa762e700d81c8d4236e15649c96788231
+%global pfcommit eb47713b3522e3e29c5388f22e7eb5c2d25275e0
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -862,9 +862,6 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch504: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# CVE-2019-19046 rhbz 1774988 1774989
-Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
-
 # CVE-2019-19054 rhbz 1775063 1775117
 Patch523: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
 
@@ -902,7 +899,6 @@ Patch1018: %{opensuse_url}/ata-sata_mv-avoid-trigerrable-BUG_ON.patch#/openSUSE-
 Patch1019: %{opensuse_url}/ata-define-AC_ERR_OK.patch#/openSUSE-ata-define-AC_ERR_OK.patch
 Patch1020: %{opensuse_url}/ata-make-qc_prep-return-ata_completion_errors.patch#/openSUSE-ata-make-qc_prep-return-ata_completion_errors.patch
 Patch1021: %{opensuse_url}/cpuidle-teo-Avoid-using-early-hits-incorrectly.patch#/openSUSE-cpuidle-teo-Avoid-using-early-hits-incorrectly.patch
-Patch1022: %{opensuse_url}/bpf-Force-.BTF-section-start-to-zero-when-dumping-fr.patch#/openSUSE-bpf-Force-.BTF-section-start-to-zero-when-dumping-fr.patch
 Patch1023: %{opensuse_url}/Revert-rsi-fix-potential-null-dereference-in-rsi_pro.patch#/openSUSE-Revert-rsi-fix-potential-null-dereference-in-rsi_pro.patch
 Patch1024: %{opensuse_url}/drm-amdgpu-remove-redundant-variable-r-and-redundant.patch#/openSUSE-drm-amdgpu-remove-redundant-variable-r-and-redundant.patch
 
@@ -2626,6 +2622,9 @@ fi
 #
 #
 %changelog
+* Sun Jan 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.14-500.chinfo
+- 5.4.15
+
 * Thu Jan 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.14-500.chinfo
 - 5.4.14 - pf7
 
