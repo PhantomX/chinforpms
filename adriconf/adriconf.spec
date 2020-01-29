@@ -1,5 +1,5 @@
 Name:           adriconf
-Version:        1.6
+Version:        1.6.1
 Release:        1%{?dist}
 Summary:        Advanced DRI Configurator
 
@@ -90,6 +90,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/br.com.jeanher
 
 
 %changelog
+* Tue Jan 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.6.1-1
+- 1.6.1
+
 * Tue Jan 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.6-1
 - 1.6
 

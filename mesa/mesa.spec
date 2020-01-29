@@ -57,7 +57,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        19.3.2
+Version:        19.3.3
 Release:        100%{?dist}
 
 License:        MIT
@@ -73,19 +73,22 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 Patch3:         0003-evergreen-big-endian.patch
 
 # Not upstreamed updates from iXit
-Patch50:        %{ixit_url}/9a7820d624f8a6596323ada5b39eb86253a11a9d.patch#/%{name}-ixit-9a7820d.patch
-Patch51:        %{ixit_url}/afffc4dffcb54dc4429f4e04596745b34da48254.patch#/%{name}-ixit-afffc4d.patch
-Patch52:        %{ixit_url}/32f12f1b21285d824c75c71392c58242f44aa557.patch#/%{name}-ixit-32f12f1.patch
-Patch53:        %{ixit_url}/41703b3f3e7c238243ddf129d8c75c4b0c6448c2.patch#/%{name}-ixit-41703b3.patch
-Patch54:        %{ixit_url}/5ffa4acf11c918557c4ef5b058f751a4c3b12436.patch#/%{name}-ixit-5ffa4ac.patch
-Patch55:        %{ixit_url}/57fff4c0af7dce01e1740dba0a7f06aeb1d841c3.patch#/%{name}-ixit-57fff4c.patch
-Patch56:        %{ixit_url}/78cecabc2aa06567b49470d3858ac6868d6f564b.patch#/%{name}-ixit-78cecab.patch
-Patch57:        %{ixit_url}/024dfa17037b48dd5c87d45cb8a00146ae2dc28c.patch#/%{name}-ixit-024dfa1.patch
-Patch58:        %{ixit_url}/e1b7b37bf319820d812a4e64cab765c39f9c0659.patch#/%{name}-ixit-e1b7b37.patch
-Patch59:        %{ixit_url}/9fcb65e6808358bcf1d6ae0113a7253d8fa84504.patch#/%{name}-ixit-9fcb65e.patch
-Patch60:        %{ixit_url}/2e4b559548391a1839efd82f054bd4dd652150c0.patch#/%{name}-ixit-2e4b559.patch
-Patch61:        %{ixit_url}/cf5ac1a78a7f42359e78aa279555af89eda84b19.patch#/%{name}-ixit-cf5ac1a.patch
-Patch62:        %{ixit_url}/f307be7ab84f1493e9aa1bbdaf848eb7ed58e73a.patch#/%{name}-ixit-f307be7.patch
+Patch50:        %{ixit_url}/fcf28c3314fbad1f236067de316016f92a9683de.patch#/%{name}-ixit-fcf28c3.patch
+Patch51:        %{ixit_url}/5ddf82c5745b93b4b530b824f32943d670643310.patch#/%{name}-ixit-5ddf82c.patch
+Patch52:        %{ixit_url}/6f4e3dec20c088d8c1efa2947c56b058a48cc6c6.patch#/%{name}-ixit-6f4e3de.patch
+Patch53:        %{ixit_url}/c602d89c9ca07b767cd87d469a7d5a14ab891bc3.patch#/%{name}-ixit-c602d89.patch
+Patch54:        %{ixit_url}/3cca9b245c9078ce863405de7f2aec4eda6dd14f.patch#/%{name}-ixit-3cca9b2.patch
+Patch55:        %{ixit_url}/0d709461c000c5c01a92fbfdaef1386391fbb514.patch#/%{name}-ixit-0d70946.patch
+Patch56:        %{ixit_url}/c1c3069bd4a28ef5fd7fa4de10c85f5a4583aba4.patch#/%{name}-ixit-c1c3069.patch
+Patch57:        %{ixit_url}/e8fcb43dc1b59645e1df95ee9d77f5220f1488fe.patch#/%{name}-ixit-e8fcb43.patch
+Patch58:        %{ixit_url}/0224efdf863a2dfd907b3d5214dccc4bbe447dd4.patch#/%{name}-ixit-0224efd.patch
+Patch59:        %{ixit_url}/1e72b4976437b872dc5ee2ef1e5a0469ded74006.patch#/%{name}-ixit-1e72b49.patch
+Patch60:        %{ixit_url}/07fabea3318a7672a320db1022b46a31ecb4351b.patch#/%{name}-ixit-07fabea.patch
+Patch61:        %{ixit_url}/53ac6e7f2af59df279952407b1b5931706129721.patch#/%{name}-ixit-53ac6e7.patch
+Patch62:        %{ixit_url}/977936b2917dc28ee9ed08e73323d385444f7806.patch#/%{name}-ixit-977936b.patch
+Patch63:        %{ixit_url}/8324653c079a68932cea6e08f01b5fd7035219b6.patch#/%{name}-ixit-8324653.patch
+Patch64:        %{ixit_url}/4cdba4c41ed6f56a373fb51d8aa3a552503fccb6.patch#/%{name}-ixit-4cdba4c.patch
+Patch65:        %{ixit_url}/56db608d111bc810d00a6d82dda333eb387bd331.patch#/%{name}-ixit-56db608.patch
 
 
 BuildRequires:  meson >= 0.45
@@ -635,6 +638,9 @@ popd
 
 
 %changelog
+* Tue Jan 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 19.3.3-100
+- 19.3.3
+
 * Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 19.3.2-100
 - 19.3.2
 
