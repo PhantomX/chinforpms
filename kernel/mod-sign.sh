@@ -11,21 +11,22 @@
 
 MODSECKEY=$1
 MODPUBKEY=$2
-
 moddir=$3
 
-modules=`find $moddir -name *.ko`
+modules=`find $moddir -type f -name '*.ko'`
 
-for mod in $modules
-do
-    dir=`dirname $mod`
-    file=`basename $mod`
+NPROC=`nproc`
+[ -z "$NPROC" ] && NPROC=1
 
-    ./scripts/sign-file sha256 ${MODSECKEY} ${MODPUBKEY} ${dir}/${file}
-    rm -f ${dir}/${file}.{sig,dig}
+# NB: this loop runs 2000+ iterations. Try to be fast.
+echo "$modules" | xargs -r -n16 -P $NPROC sh -c "
+for mod; do
+    ./scripts/sign-file sha256 $MODSECKEY $MODPUBKEY \$mod
+    rm -f \$mod.sig \$mod.dig
 done
+" DUMMYARG0   # xargs appends ARG1 ARG2..., which go into $mod in for loop.
 
-RANDOMMOD=$(find $moddir -type f -name '*.ko' | sort -R | head -n 1)
+RANDOMMOD=$(echo "$modules" | sort -R | head -n 1)
 if [ "~Module signature appended~" != "$(tail -c 28 $RANDOMMOD)" ]; then
     echo "*****************************"
     echo "*** Modules are unsigned! ***"

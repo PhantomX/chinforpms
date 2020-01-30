@@ -38,11 +38,12 @@ fi
 
 function sanity_memfd_create()
 {
-    rlRun "./t_memfd_create memf 1024 gswS &"
-    rlRun "./t_get_seals /proc/$!/fd/3 > seals"
+    rlRun "coproc ./t_memfd_create memf 1024 gswS"
+    rlRun "read -u ${COPROC[0]} MEMFD_PATH"
+    rlRun "./t_get_seals $MEMFD_PATH > ./seals"
     rlRun "cat ./seals"
     rlAssertGrep "SEAL GROW WRITE SHRINK" ./seals
-    rlRun "pkill t_memfd_create"
+    rlRun "kill $COPROC_PID"
 }
 
 

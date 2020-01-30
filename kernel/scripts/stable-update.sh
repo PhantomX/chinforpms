@@ -35,27 +35,29 @@ if [ -z $VERSION ]; then
 fi
 
 if [ ! -f patch-$1.xz ]; then
-	wget https://cdn.kernel.org/pub/linux/kernel/v4.x/patch-$1.xz
+	wget https://cdn.kernel.org/pub/linux/kernel/v5.x/patch-$1.xz
 	if [ ! $? -eq 0 ]; then
 		echo "Download fail"
 		exit 1
 	fi
 fi
 
-if [ ! -f "patch-$1.sign" ]; then
-        wget "https://cdn.kernel.org/pub/linux/kernel/v4.x/patch-$1.sign"
-        if [ ! $? -eq 0 ]; then
-                echo "Signature download failed"
-                exit 1
-        fi
-fi
+# This all needs to be updated for the new generation system
+#
+# if [ ! -f "patch-$1.sign" ]; then
+#        wget "https://cdn.kernel.org/pub/linux/kernel/v4.x/patch-$1.sign"
+#        if [ ! $? -eq 0 ]; then
+#                echo "Signature download failed"
+#                exit 1
+#        fi
+# fi
 
-xzcat "patch-$1.xz" | gpg2 --verify "patch-$1.sign" -
-if [ ! $? -eq 0 ]; then
-        echo "Patch file has invalid or untrusted signature!"
-        echo "See https://www.kernel.org/category/signatures.html"
-        exit 1
-fi
+# xzcat "patch-$1.xz" | gpg2 --verify "patch-$1.sign" -
+# if [ ! $? -eq 0 ]; then
+#        echo "Patch file has invalid or untrusted signature!"
+#        echo "See https://www.kernel.org/category/signatures.html"
+#        exit 1
+# fi
 
 grep $1 sources &> /dev/null
 if [ ! $? -eq 0 ]; then

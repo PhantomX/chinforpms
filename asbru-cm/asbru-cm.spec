@@ -2,7 +2,7 @@
 
 Name:           asbru-cm
 Version:        6.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
@@ -13,6 +13,7 @@ Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 # Fix passwords with TigerVNC
 Patch1:         %{name}-vncpasswd.patch
+Patch2:         0001-Issue-232-fix.patch
 
 BuildArch:      noarch
 
@@ -136,6 +137,9 @@ cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
 %changelog
+* Wed Jan 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.0.3-2
+- Patch to fix resizing crashes
+
 * Wed Jan 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.0.3-1
 - 6.0.3
 

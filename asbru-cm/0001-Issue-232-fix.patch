@@ -1,0 +1,48 @@
+From 592247907614059af3291f4312d7d30b2073c5f6 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 29 Jan 2020 18:37:03 -0300
+Subject: [PATCH] Issue#232 fix
+
+Official fix is not working with gtk3-mushrooms, so trying the old fix by hanspr.
+
+See: https://github.com/asbru-cm/asbru-cm/issues/232#issuecomment-559838021
+---
+ lib/pac_conn | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/lib/pac_conn b/lib/pac_conn
+index ef1fe0c..3b789a4 100755
+--- a/lib/pac_conn
++++ b/lib/pac_conn
+@@ -1788,16 +1788,18 @@ elsif (! $MANUAL) {
+     }
+ }
+ 
+-$SIG{'WINCH'} = sub {
+-    if (!$CONNECTED) {
+-        return 1;
+-    }
+-    while (! $EXP -> slave) {
+-        select(undef, undef, undef, 0.25);
+-    };
+-    $EXP -> slave -> clone_winsize_from(\*STDIN);
+-    kill WINCH => $EXP -> pid if $EXP -> pid;
+-};
++sub winch {
++    $SIG{'WINCH'} = undef;
++    select(undef, undef, undef, 0.2);
++    while (!$EXP->slave) {                                                                                               
++        select(undef, undef, undef, 0.1);                                                                                
++    };                                                                                                                   
++    $EXP->slave->clone_winsize_from(\*STDIN);
++    kill 'WINCH'=>$EXP->pid if $EXP->pid;
++    $SIG{'WINCH'} = \&winch;
++    return 1;
++}
++$SIG{'WINCH'} = \&winch;
+ 
+ $SIG{'INT'} = undef;
+ $SIG{'HUP'} = sub {
+-- 
+2.24.1
+

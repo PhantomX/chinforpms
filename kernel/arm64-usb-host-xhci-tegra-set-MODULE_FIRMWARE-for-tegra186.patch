@@ -1,7 +1,7 @@
-From 5a39c1ffc4e18603f2c9af3c0a556e2db6e70705 Mon Sep 17 00:00:00 2001
+From 406d27321583d444cd2067dc1130c1260b072576 Mon Sep 17 00:00:00 2001
 From: Peter Robinson <pbrobinson@gmail.com>
-Date: Sat, 2 Nov 2019 16:52:15 +0000
-Subject: [PATCH 1/2] usb: host: xhci-tegra: set MODULE_FIRMWARE for tegra186
+Date: Mon, 20 Jan 2020 13:48:55 +0000
+Subject: [PATCH] usb: host: xhci-tegra: set MODULE_FIRMWARE for tegra186
 
 Set the MODULE_FIRMWARE for tegra186, it's registered for 124/210 and
 ensures the firmware is available at the appropriate time such as in
@@ -20,17 +20,17 @@ Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/usb/host/xhci-tegra.c b/drivers/usb/host/xhci-tegra.c
-index 2ff7c911fbd0..d25aba8fa219 100644
+index bf9065438320..7b0d175ad708 100644
 --- a/drivers/usb/host/xhci-tegra.c
 +++ b/drivers/usb/host/xhci-tegra.c
-@@ -1433,6 +1433,7 @@ static const struct tegra_xusb_soc tegra186_soc = {
- 	.scale_ss_clock = false,
- 	.has_ipfs = false,
+@@ -1432,6 +1432,7 @@ MODULE_FIRMWARE("nvidia/tegra210/xusb.bin");
+ 
+ static const char * const tegra186_supply_names[] = {
  };
 +MODULE_FIRMWARE("nvidia/tegra186/xusb.bin");
  
- static const struct of_device_id tegra_xusb_of_match[] = {
- 	{ .compatible = "nvidia,tegra124-xusb", .data = &tegra124_soc },
+ static const struct tegra_xusb_phy_type tegra186_phy_types[] = {
+ 	{ .name = "usb3", .num = 3, },
 -- 
-2.23.0
+2.24.1
 

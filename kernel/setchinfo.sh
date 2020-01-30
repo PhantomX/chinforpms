@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20191125
+# 20200127
 
 set -e
 
@@ -42,6 +42,9 @@ MNATIVE
 pf="
 CC_OPTIMIZE_HARDER
 CC_OPTIMIZE_FOR_PERFORMANCE_O3
+SENSORS_DRIVETEMP
+WIREGUARD
+WIREGUARD_DEBUG
 "
 
 pfd="
@@ -75,7 +78,6 @@ LOGO_TITS_CLUT224
 LOGO_BSD_CLUT224
 LOGO_FBSD_CLUT224
 TP_SMAPI
-EXFAT_FS
 "
 
 zenv="

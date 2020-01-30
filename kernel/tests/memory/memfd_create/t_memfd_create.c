@@ -16,11 +16,12 @@
  *
  */
 
-#include <linux/memfd.h>
-#include <linux/fcntl.h>
+#define _GNU_SOURCE
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 #include <sys/syscall.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -66,10 +67,6 @@ int main(int argc, char *argv[])
 	if (write(fd, message, strlen(message)) <= 0)
 		errExit("write");
 
-	//printf("PID: %ld; fd: %d; /proc/%ld/fd/%d\n",
-	//        (long) getpid(), fd, (long) getpid(), fd);
-	printf("/proc/%ld/fd/%d\n", (long) getpid(), fd);
-
 	/* Code to map the file and populate the mapping with data
 	   omitted */
 
@@ -91,6 +88,13 @@ int main(int argc, char *argv[])
 		if (fcntl(fd, F_ADD_SEALS, seals) == -1)
 			errExit("fcntl");
 	}
+
+	/* Output the pathname of (a symbolic link to) the file
+	   created by memfd_create() */
+
+	printf("/proc/%ld/fd/%d\n", (long) getpid(), fd);
+
+	fflush(stdout);
 
 	/* Keep running, so that the file created by memfd_create()
 	   continues to exist */

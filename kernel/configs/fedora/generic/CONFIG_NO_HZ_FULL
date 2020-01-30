@@ -1,1 +1,1 @@
-# CONFIG_NO_HZ_FULL is not set
+CONFIG_NO_HZ_FULL=y

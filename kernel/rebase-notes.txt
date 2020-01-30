@@ -1,3 +1,14 @@
+Linux 5.3 rebase notes:
+- Need to re-enable ISDN
+  Should be able to just revert a2832dc62417 and ./build_config.sh
+
+For all F29 and F30 builds:
+- Re-enable i686
+
+Linux 5.1 rebase notes:
+- CONFIG_CONFIG_SUNRPC_DISABLE_INSECURE_ENCTYPES should probably be turned off as
+  it removes support for deprecated encryption types.
+
 Linux 5.0 rebase notes:
 - Disable fastboot by defauly for F29 and older, drop:
   i915-enable-fastboot-on-skylake.patch and i915-enable-fastboot-on-vlv-chv.patch

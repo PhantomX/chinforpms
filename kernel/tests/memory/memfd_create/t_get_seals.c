@@ -16,8 +16,9 @@
  *
  */
 
-#include <linux/fcntl.h>
+#define _GNU_SOURCE
 #include <unistd.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

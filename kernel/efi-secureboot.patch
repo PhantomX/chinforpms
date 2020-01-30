@@ -36,17 +36,17 @@ index a3763247547c..8d76d1f153ed 100644
  #endif /* CONFIG_BPF_SYSCALL */
  	int (*locked_down)(enum lockdown_reason what);
 +	int (*lock_kernel_down)(const char *where, enum lockdown_reason level);
- };
- 
- struct security_hook_heads {
+ #ifdef CONFIG_PERF_EVENTS
+ 	int (*perf_event_open)(struct perf_event_attr *attr, int type);
+ 	int (*perf_event_alloc)(struct perf_event *event);
 @@ -2060,6 +2067,7 @@ struct security_hook_heads {
  	struct hlist_head bpf_prog_free_security;
  #endif /* CONFIG_BPF_SYSCALL */
  	struct hlist_head locked_down;
 +	struct hlist_head lock_kernel_down;
- } __randomize_layout;
- 
- /*
+ #ifdef CONFIG_PERF_EVENTS
+ 	struct hlist_head perf_event_open;
+ 	struct hlist_head perf_event_alloc;
 diff --git a/include/linux/security.h b/include/linux/security.h
 index a8d59d612d27..467b9ccdf993 100644
 --- a/include/linux/security.h
@@ -86,7 +86,7 @@ diff --git a/security/security.c b/security/security.c
 index 1bc000f834e2..1506b95427cf 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2404,3 +2404,9 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2404,6 +2404,12 @@ int security_locked_down(enum lockdown_reason what)
  	return call_int_hook(locked_down, 0, what);
  }
  EXPORT_SYMBOL(security_locked_down);
@@ -96,6 +96,9 @@ index 1bc000f834e2..1506b95427cf 100644
 +	return call_int_hook(lock_kernel_down, 0, where, level);
 +}
 +EXPORT_SYMBOL(security_lock_kernel_down);
+ 
+ #ifdef CONFIG_PERF_EVENTS
+ int security_perf_event_open(struct perf_event_attr *attr, int type)
 -- 
 2.21.0
 
@@ -202,7 +205,7 @@ index 000000000000..9070055de0a1
 +			pr_info("Secure boot enabled\n");
 +			break;
 +		default:
-+			pr_warning("Secure boot could not be determined (mode %u)\n",
++			pr_warn("Secure boot could not be determined (mode %u)\n",
 +				   mode);
 +			break;
 +		}
@@ -213,10 +216,10 @@ index 21d81021c1f4..758ec061d03b 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -1204,6 +1204,14 @@ extern int __init efi_setup_pcdp_console(char *);
- #define EFI_DBG			8	/* Print additional debug info at runtime */
  #define EFI_NX_PE_DATA		9	/* Can runtime data regions be mapped non-executable? */
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
-+#define EFI_SECURE_BOOT		11	/* Are we in Secure Boot mode? */
+ #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
++#define EFI_SECURE_BOOT		12	/* Are we in Secure Boot mode? */
 +
 +enum efi_secureboot_mode {
 +	efi_secureboot_mode_unset,
@@ -233,18 +236,18 @@ index 21d81021c1f4..758ec061d03b 100644
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 +
 +extern void __init efi_set_secure_boot(enum efi_secureboot_mode mode);
- #else
- static inline bool efi_enabled(int feature)
- {
+ 
+ bool __pure __efi_soft_reserve_enabled(void);
+ 
 @@ -1227,6 +1237,8 @@ efi_capsule_pending(int *reset_type)
  {
  	return false;
  }
 +
 +static inline void efi_set_secure_boot(enum efi_secureboot_mode mode) {}
- #endif
  
- extern int efi_status_to_err(efi_status_t status);
+ static inline bool efi_soft_reserve_enabled(void)
+ {
 @@ -1619,12 +1631,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);

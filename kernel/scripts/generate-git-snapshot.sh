@@ -20,7 +20,7 @@ VER=$(grep patch sources | head -n1 | awk '{ print $2 }' | sed s/patch-// | sed 
 
 if [ -z "$VER" ] ;
 then
-    VER=$(grep linux sources | head -1 | awk '{ print $2 }' | sed s/linux-// | sed s/.tar.gz// | sed s/[\(\)]//g)
+    VER=$(grep linux sources | head -1 | awk '{ print $2 }' | sed s/linux-// | sed s/.tar.xz// | sed s/[\(\)]//g)
 fi
 
 OLDGIT=$(grep gitrev kernel.spec | head -n1 | sed s/%define\ gitrev\ //)

@@ -13,18 +13,19 @@
 %bcond_with gtk3
 %bcond_with spellcheck
 %bcond_without fonts
+%bcond_without ipo
+%bcond_without mindbg
+
 %global with_sysrlottie 0
 %global with_systgvoip 1
 
-%ifarch x86_64
-%global build_with_lto    1
+# Decrease debuginfo verbosity to reduce memory consumption...
+%if %{with mindbg}
+%global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 %endif
 
-# Decrease debuginfo verbosity to reduce memory consumption...
-%global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
-
 Name:           telegram-desktop
-Version:        1.9.8
+Version:        1.9.9
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -104,6 +105,7 @@ Requires:       gtk3%{?_isa}
 BuildRequires: enchant2-devel
 BuildRequires: glib2-devel
 Requires:      enchant2%{?_isa}
+Requires:      hunspell%{?_isa}
 %endif
 
 %if 0%{with_sysrlottie}
@@ -160,7 +162,7 @@ sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
 
 %build
-%if 0%{?build_with_lto}
+%if %{with ipo} && %{with mindbg}
 export CC=gcc
 export CXX=g++
 
@@ -175,7 +177,7 @@ mkdir -p %{_target_platform}
 pushd %{_target_platform}
     %cmake .. -G Ninja \
        -DCMAKE_BUILD_TYPE:STRING="Release" \
-%if 0%{?build_with_lto}
+%if %{with ipo} && %{with mindbg}
        -DCMAKE_AR:FILEPATH=%{_bindir}/gcc-ar \
        -DCMAKE_NM:FILEPATH=%{_bindir}/gcc-nm \
        -DCMAKE_RANLIB:FILEPATH=%{_bindir}/gcc-ranlib \
@@ -240,6 +242,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Wed Jan 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.9-100
+- 1.9.9
+- RPMFusion sync
+
 * Fri Jan 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.8-100
 - 1.9.8
 

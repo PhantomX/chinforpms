@@ -10,20 +10,20 @@
 
 %global buildid .chinfo
 
-%global opensuse_id fc4ea7a80b3635a53f6e0ec89f89204d49646c59
+%global opensuse_id 3f183bf18c0fa5c8de360e9ae66496e011115470
 
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 4
+%global base_sublevel 5
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 15
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -127,7 +127,7 @@ BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl(Carp), per
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
-BuildRequires: audit-libs-devel glibc-devel glibc-static python3-devel
+BuildRequires: audit-libs-devel glibc-devel glibc-static python3-devel java-devel
 BuildRequires: asciidoc xmlto
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: /usr/bin/pathfix.py
@@ -156,6 +156,20 @@ of the Linux kernel.
 %global python_perf_desc A Python module that permits applications \
 written in the Python programming language to use the interface \
 to manipulate perf events.
+
+%package -n perf-debuginfo
+Summary:        Debug information for package perf
+Requires:       %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
+AutoReqProv:    no
+%description -n perf-debuginfo
+This package provides debug information for the perf package.
+
+# Note that this pattern only works right to match the .build-id
+# symlinks because of the trailing nonmatching alternation and
+# the leading .*, because of find-debuginfo.sh's buggy handling
+# of matching the pattern against the symlinks file.
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/perf(\.debug)?|.*%%{_libexecdir}/perf-core/.*|.*%%{_libdir}/traceevent/plugins/.*|.*%%{_libdir}/libperf-jvmti.so(\.debug)?|XXX' -o perf-debuginfo.list}
+
 
 %package -n python3-perf
 Summary: %{python_perf_sum}
@@ -246,49 +260,56 @@ export LD=ld.bfd
 cd linux-%{kversion}
 
 %global perf_make \
-  make EXTRA_CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
+  make EXTRA_CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix}
 %global perf_python3 -C tools/perf PYTHON=%{__python3}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
 %{perf_make} %{perf_python3} all
 
+%global tools_make \
+  make CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}" HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" V=1
+
 # cpupower
 # make sure version-gen.sh is executable.
 chmod +x tools/power/cpupower/utils/version-gen.sh
-make %{?_smp_mflags} -C tools/power/cpupower CPUFREQ_BENCH=false
+%{tools_make} %{?_smp_mflags} -C tools/power/cpupower CPUFREQ_BENCH=false
 %ifarch %{ix86}
     pushd tools/power/cpupower/debug/i386
-    make %{?_smp_mflags} centrino-decode powernow-k8-decode
+    %{tools_make} %{?_smp_mflags} centrino-decode powernow-k8-decode
     popd
 %endif
 %ifarch x86_64
     pushd tools/power/cpupower/debug/x86_64
-    make %{?_smp_mflags} centrino-decode powernow-k8-decode
+    %{tools_make} %{?_smp_mflags} centrino-decode powernow-k8-decode
     popd
 %endif
 %ifarch %{ix86} x86_64
    pushd tools/power/x86/x86_energy_perf_policy/
-   make
+   %{tools_make}
    popd
    pushd tools/power/x86/turbostat
-   make
+   %{tools_make}
    popd
 %endif
 pushd tools/thermal/tmon/
-make
+%{tools_make}
 popd
 pushd tools/iio/
-make
+%{tools_make}
 popd
 pushd tools/gpio/
-make
+%{tools_make}
 popd
+
+%global bpftool_make \
+  make EXTRA_CFLAGS="%{build_cflags}" EXTRA_LDFLAGS="%{build_ldflags}" DESTDIR=%{buildroot} V=1
+
 pushd tools/bpf/bpftool
-make
+%{bpftool_make}
 popd
 pushd tools/lib/bpf
-make V=1
+%{tools_make} V=1
 popd
 
 # Build the docs
@@ -312,8 +333,6 @@ cd linux-%{kversion}
 %{perf_make} %{perf_python3} DESTDIR=%{buildroot} lib=%{_lib} install-bin install-traceevent-plugins
 # remove the 'trace' symlink.
 rm -f %{buildroot}%{_bindir}/trace
-# remove the perf-tips
-rm -rf %{buildroot}%{_docdir}/perf-tip
 
 # For both of the below, yes, this should be using a macro but right now
 # it's hard coded and we don't actually want it anyway right now.
@@ -332,7 +351,7 @@ install -d %{buildroot}/%{_mandir}/man1
 install -pm0644 tools/kvm/kvm_stat/kvm_stat.1 %{buildroot}/%{_mandir}/man1/
 install -pm0644 tools/perf/Documentation/*.1 %{buildroot}/%{_mandir}/man1/
 
-make -C tools/power/cpupower DESTDIR=%{buildroot} libdir=%{_libdir} mandir=%{_mandir} CPUFREQ_BENCH=false install
+%{tools_make} -C tools/power/cpupower DESTDIR=%{buildroot} libdir=%{_libdir} mandir=%{_mandir} CPUFREQ_BENCH=false install
 rm -f %{buildroot}%{_libdir}/*.{a,la}
 %find_lang cpupower
 mv cpupower.lang ../
@@ -355,31 +374,31 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
 %ifarch %{ix86} x86_64
    mkdir -p %{buildroot}%{_mandir}/man8
    pushd tools/power/x86/x86_energy_perf_policy
-   make DESTDIR=%{buildroot} install
+   %{tools_make} DESTDIR=%{buildroot} install
    popd
    pushd tools/power/x86/turbostat
-   make DESTDIR=%{buildroot} install
+   %{tools_make} DESTDIR=%{buildroot} install
    popd
 %endif
 pushd tools/thermal/tmon
-make INSTALL_ROOT=%{buildroot} install
+%{tools_make} INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/iio
-make DESTDIR=%{buildroot} install
+%{tools_make} DESTDIR=%{buildroot} install
 popd
 pushd tools/gpio
-make DESTDIR=%{buildroot} install
+%{tools_make} DESTDIR=%{buildroot} install
 popd
 pushd tools/kvm/kvm_stat
-make INSTALL_ROOT=%{buildroot} install-tools
+%{tools_make} INSTALL_ROOT=%{buildroot} install-tools
 popd
 pushd tools/bpf/bpftool
-make DESTDIR=%{buildroot} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
+%{bpftool_make} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
 # man-pages packages this (rhbz #1686954)
 rm -f %{buildroot}%{_mandir}/man7/bpf-helpers.7
 popd
 pushd tools/lib/bpf
-make DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} V=1 install install_headers
+%{tools_make} DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} V=1 install install_headers
 popd
 
 ###
@@ -400,16 +419,20 @@ popd
 %{_bindir}/perf
 %dir %{_libdir}/traceevent
 %{_libdir}/traceevent/plugins/
+%{_libdir}/libperf-jvmti.so
 %{_libexecdir}/perf-core
 %{_datadir}/perf-core/
 %{_mandir}/man[1-8]/perf*
 %{_sysconfdir}/bash_completion.d/perf
 %doc linux-%{kversion}/tools/perf/Documentation/examples.txt
 %license linux-%{kversion}/COPYING
+%{_docdir}/perf-tip/tips.txt
 
 %files -n python3-perf
 %license linux-%{kversion}/COPYING
 %{python3_sitearch}/*
+
+%files -f perf-debuginfo.list -n perf-debuginfo
 
 %files -f cpupower.lang
 %{_bindir}/cpupower
@@ -463,7 +486,7 @@ popd
 
 %files -n libbpf
 %{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.0.5
+%{_libdir}/libbpf.so.0.0.6
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf-devel
@@ -471,6 +494,11 @@ popd
 %{_libdir}/libbpf.so
 %{_libdir}/pkgconfig/libbpf.pc
 %{_includedir}/bpf/bpf.h
+%{_includedir}/bpf/bpf_core_read.h
+%{_includedir}/bpf/bpf_endian.h
+%{_includedir}/bpf/bpf_helper_defs.h
+%{_includedir}/bpf/bpf_helpers.h
+%{_includedir}/bpf/bpf_tracing.h
 %{_includedir}/bpf/btf.h
 %{_includedir}/bpf/libbpf.h
 %{_includedir}/bpf/libbpf_util.h
@@ -479,7 +507,11 @@ popd
 
 
 %changelog
-* Sun Jan 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.14-500.chinfo
+* Mon Jan 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.0-500.chinfo
+- 5.5.0
+- Rawhide sync
+
+* Sun Jan 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.15-500.chinfo
 - 5.4.15
 
 * Thu Jan 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.14-500.chinfo
@@ -718,158 +750,3 @@ popd
 
 * Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.20.0-500.chinfo
 - 4.20.0
-
-* Fri Dec 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.12-500.chinfo
-- 4.19.12
-
-* Wed Dec 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.11-500.chinfo
-- 4.19.11
-
-* Mon Dec 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.10-500.chinfo
-- 4.19.10
-
-* Thu Dec 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.9-500.chinfo
-- 4.19.9
-
-* Wed Dec 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.8-500.chinfo
-- 4.19.8
-
-* Thu Dec 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.7-500.chinfo
-- 4.19.7
-
-* Sun Dec 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.6-500.chinfo
-- 4.19.6
-
-* Tue Nov 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-500.chinfo
-- 4.19.5
-
-* Sat Nov 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.4-500.chinfo
-- 4.19.4
-
-* Wed Nov 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.3-500.chinfo
-- 4.19.3
-
-* Wed Nov 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.2-500.chinfo
-- 4.19.2
-
-* Sun Nov 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.1-500.chinfo
-- 4.19.1
-
-* Mon Oct 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.0-500.chinfo
-- 4.19.0
-
-* Sat Oct 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.16-500.chinfo
-- 4.18.16
-
-* Thu Oct 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.15-500.chinfo
-- 4.18.15
-
-* Sun Oct 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.14-500.chinfo
-- 4.18.14
-
-* Wed Oct 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.13-500.chinfo
-- 4.18.13
-
-* Thu Oct 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.12-500.chinfo
-- 4.18.12
-
-* Sat Sep 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.11-500.chinfo
-- 4.18.11
-
-* Wed Sep 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.10-500.chinfo
-- 4.18.10
-
-* Wed Sep 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.9-500.chinfo
-- 4.18.9
-
-* Sat Sep 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.8-500.chinfo
-- 4.18.8
-
-* Sun Sep 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.7-500.chinfo
-- 4.18.7
-
-* Wed Sep 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.6-500.chinfo
-- 4.18.6
-
-* Fri Aug 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.5-500.chinfo
-- 4.18.5
-
-* Wed Aug 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.4-500.chinfo
-- 4.18.4
-
-* Sat Aug 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.3-500.chinfo
-- 4.18.3
-
-* Fri Aug 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.2-500.chinfo
-- 4.18.2
-
-* Wed Aug 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.1-500.chinfo
-- 4.18.1
-
-* Mon Aug 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.0-500.chinfo
-- 4.18.0
-- Rawhide sync
-
-* Thu Aug 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.14-500.chinfo
-- 4.17.14
-
-* Mon Aug 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.13-500.chinfo
-- 4.17.13
-
-* Fri Aug 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.12-500.chinfo
-- 4.17.12
-
-* Sat Jul 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.11-500.chinfo
-- 4.17.11
-
-* Wed Jul 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.10-500.chinfo
-- 4.17.10
-
-* Sun Jul 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.9-500.chinfo
-- 4.17.9
-
-* Wed Jul 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.8-500.chinfo
-- 4.17.8
-
-* Tue Jul 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.7-500.chinfo
-- 4.17.7
-
-* Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.6-500.chinfo
-- 4.17.6
-
-* Sun Jul 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.5-500.chinfo
-- 4.17.5
-
-* Tue Jul 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.4-500.chinfo
-- 4.17.4
-
-* Mon Jun 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.3-500.chinfo
-- 4.17.3
-
-* Sat Jun 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.2-500.chinfo
-- 4.17.2
-
-* Mon Jun 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.1-500.chinfo
-- 4.17.1
-
-* Mon Jun 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.0-500.chinfo
-- 4.17.0
-- rawhide sync
-
-* Wed May 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.13-500.chinfo
-- 4.16.13
-
-* Fri May 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.12-500.chinfo
-- 4.16.12
-
-* Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.11-500.chinfo
-- 4.16.11
-
-* Wed May 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.9-100.chinfo
-- 4.16.9
-
-* Wed May 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.8-100.chinfo
-- 4.16.8
-
-* Wed May 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.16.7-100.chinfo
-- 4.16.7

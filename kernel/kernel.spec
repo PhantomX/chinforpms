@@ -85,24 +85,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 4
+%define base_sublevel 5
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 7
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit eb47713b3522e3e29c5388f22e7eb5c2d25275e0
+%global pfcommit 847f2cd4416a1d3489ee16d215b8cc602a00f3d6
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id fc4ea7a80b3635a53f6e0ec89f89204d49646c59
+%global opensuse_id 3f183bf18c0fa5c8de360e9ae66496e011115470
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -236,6 +236,9 @@ Summary: The Linux kernel
 
 # Use kernel-local-native (CONFIG_MNATIVE=y)
 %global with_native  %{?_with_native:     1} %{?!_with_native:     0}
+
+# Use kernel-local-generic (CONFIG_GENERIC_CPU=y)
+%global with_generic %{?_with_generic:     1} %{?!_with_generic:     0}
 
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
@@ -513,13 +516,6 @@ Summary: The Linux kernel
 %define _enable_debug_packages 0
 %endif
 
-# Architectures we build tools/cpupower on
-%if 0%{?fedora}
-%define cpupowerarchs %{ix86} x86_64 ppc64le %{arm} aarch64
-%else
-%define cpupowerarchs i686 x86_64 ppc64le aarch64
-%endif
-
 %if %{use_vdso}
 
 %if 0%{?skip_nonpae_vdso}
@@ -648,23 +644,14 @@ Source11: x509.genkey.fedora
 
 Source12: securebootca.cer
 Source13: secureboot.cer
+Source14: secureboot_s390.cer
+Source15: secureboot_ppc.cer
 
 %define secureboot_ca %{SOURCE12}
 %ifarch x86_64 aarch64
 %define secureboot_key %{SOURCE13}
 %define pesign_name redhatsecureboot301
 %endif
-
-%else
-
-Source12: redhatsecurebootca2.cer
-Source13: redhatsecureboot003.cer
-Source14: secureboot_s390.cer
-Source15: secureboot_ppc.cer 
-
-%define secureboot_ca %{SOURCE12}
-%define secureboot_key %{SOURCE13}
-%define pesign_name redhatsecureboot003
 %ifarch s390x
 %define secureboot_key %{SOURCE14}
 %define pesign_name redhatsecureboot302
@@ -672,7 +659,17 @@ Source15: secureboot_ppc.cer
 %ifarch ppc64le
 %define secureboot_key %{SOURCE15}
 %define pesign_name redhatsecureboot303
-%endif 
+%endif
+
+%else
+
+Source12: redhatsecurebootca2.cer
+Source13: redhatsecureboot003.cer
+
+%define secureboot_ca %{SOURCE12}
+%define secureboot_key %{SOURCE13}
+%define pesign_name redhatsecureboot003
+
 %endif
 
 Source22: mod-extra.list.rhel
@@ -752,6 +749,7 @@ Source1001: kernel-local-cpu
 Source1002: kernel-local-native
 Source1003: kernel-local-pf
 Source1004: kernel-local-zen
+Source1005: kernel-local-generic
 
 ## Patches needed for building this package
 
@@ -813,6 +811,8 @@ Patch204: efi-secureboot.patch
 
 Patch205: lift-lockdown-sysrq.patch
 
+Patch206: s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
+
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -824,29 +824,26 @@ Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 # rhbz 1574718
 Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
-# http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch304: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
-# http://patchwork.ozlabs.org/patch/587554/
-Patch305: ARM-tegra-usb-no-reset.patch
+Patch304: ARM-tegra-usb-no-reset.patch
+
+# Raspberry Pi
+# https://patchwork.kernel.org/cover/11271017/
+Patch310: Raspberry-Pi-4-PCIe-support.patch
+# https://patchwork.kernel.org/patch/11223139/
+Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
+# https://patchwork.kernel.org/patch/11299997/
+Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
-# https://patchwork.kernel.org/patch/11171225/
-Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
-# https://patchwork.ozlabs.org/patch/1170631/
-Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
-# https://www.spinics.net/lists/linux-tegra/msg44216.html
-Patch324: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
-# https://patchwork.kernel.org/patch/11224177/
-Patch325: arm64-usb-host-xhci-tegra-set-MODULE_FIRMWARE-for-tegra186.patch
+
+Patch322: arm64-usb-host-xhci-tegra-set-MODULE_FIRMWARE-for-tegra186.patch
 
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
-Patch500: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
-
 # rhbz 1431375
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
@@ -857,29 +854,17 @@ Patch502: 0001-Drop-that-for-now.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
+# Fixes a boot hang on debug kernels
+# https://bugzilla.redhat.com/show_bug.cgi?id=1756655
+Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+
 # it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
 # https://lore.kernel.org/patchwork/patch/1132459/
 # https://lkml.org/lkml/2019/8/29/1772
-Patch504: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# CVE-2019-19054 rhbz 1775063 1775117
-Patch523: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
-
-# CVE-2019-14896 rhbz 1774875 1776143
-# CVE-2019-14897 rhbz 1774879 1776146
-Patch525: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
-
-# CVE-2019-18808 rhbz 1777418 1777421
-Patch527: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
-
-# ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
-Patch600: alsa-5.5.patch
+Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
 # ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
-Patch601: alsa-5.6.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1772498#c101
-Patch602: ASoC-topology-fix-soc_tplg_fe_link_create-link-dobj-.patch
+Patch527: alsa-5.6.patch
 
 ### Extra
 
@@ -895,13 +880,6 @@ Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1018: %{opensuse_url}/ata-sata_mv-avoid-trigerrable-BUG_ON.patch#/openSUSE-ata-sata_mv-avoid-trigerrable-BUG_ON.patch
-Patch1019: %{opensuse_url}/ata-define-AC_ERR_OK.patch#/openSUSE-ata-define-AC_ERR_OK.patch
-Patch1020: %{opensuse_url}/ata-make-qc_prep-return-ata_completion_errors.patch#/openSUSE-ata-make-qc_prep-return-ata_completion_errors.patch
-Patch1021: %{opensuse_url}/cpuidle-teo-Avoid-using-early-hits-incorrectly.patch#/openSUSE-cpuidle-teo-Avoid-using-early-hits-incorrectly.patch
-Patch1023: %{opensuse_url}/Revert-rsi-fix-potential-null-dereference-in-rsi_pro.patch#/openSUSE-Revert-rsi-fix-potential-null-dereference-in-rsi_pro.patch
-Patch1024: %{opensuse_url}/drm-amdgpu-remove-redundant-variable-r-and-redundant.patch#/openSUSE-drm-amdgpu-remove-redundant-variable-r-and-redundant.patch
-
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -911,7 +889,7 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 
 #Patch3000: postfactum-merge-fixes.patch
 %if !0%{?zen}
-Patch3001: %{pf_url}/a6c083c2e4274c7e203c5ef989f568c6d5f945eb.patch#/pf-a6c083c.patch
+#Patch3001: %{pf_url}/a6c083c2e4274c7e203c5ef989f568c6d5f945eb.patch#/pf-a6c083c.patch
 %endif
 
 #Patch3500: postfactum-merge-fixes-2.patch
@@ -919,13 +897,13 @@ Patch3001: %{pf_url}/a6c083c2e4274c7e203c5ef989f568c6d5f945eb.patch#/pf-a6c083c.
 %if !0%{?zen}
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
-%global graysky2_id 87168bfa27b782e1c9435ba28ebe3987ddea8d30
-Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v8.1+_kernel_v4.13+.patch
+%global graysky2_id b9aeee77b2c3e76c1faeca297e4e4a448babaaee
+Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v9.1+_kernel_v5.5+.patch
 %endif
 
 %endif
 
-Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/e3b2d894ece23347ee05bba714df5926752e4284/linux54-tkg/linux54-tkg-patches/0007-v5.4-fsync.patch#/tkg-0007-v5.4-fsync.patch
+Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/15fdf755a0f48e923e7859caf1026f0fbce6850d/linux55-tkg/linux55-tkg-patches/0007-v5.5-fsync.patch#/tkg-0007-v5.5-fsync.patch
 
 %if !0%{?zen}
 Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1478,6 +1456,7 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
     scripts/show_delta \
     scripts/diffconfig \
     scripts/bloat-o-meter \
+    scripts/jobserver-exec \
     tools/perf/tests/attr.py \
     tools/perf/scripts/python/stat-cpi.py \
     tools/perf/scripts/python/sched-migration.py \
@@ -1497,11 +1476,16 @@ cd configs
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/kernel-*.config .
 cp %{SOURCE1000} .
-%if !%{with_native}
-cat %{SOURCE1001} >> kernel-local
-%else
+%if %{with_native}
 cat %{SOURCE1002} >> kernel-local
+%else
+%if %{with_generic}
+cat %{SOURCE1005} >> kernel-local
+%else
+cat %{SOURCE1001} >> kernel-local
 %endif
+%endif
+
 %if 0%{?post_factum}
 cat %{SOURCE1003} >> kernel-local
 %endif
@@ -1549,7 +1533,7 @@ RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
 %endif
 
 cd ..
-# End of Configs stuff
+# # End of Configs stuff
 
 # get rid of unwanted files resulting from patch fuzz
 find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
@@ -2569,12 +2553,7 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca.cer\
-%ifarch s390x ppc64le\
-%if 0%{!?4:1}\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/%{signing_key_filename} \
-%endif\
-%endif\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
 %endif\
@@ -2622,6 +2601,10 @@ fi
 #
 #
 %changelog
+* Tue Jan 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.0-500.chinfo
+- 5.5.0
+- Rawhide sync
+
 * Sun Jan 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.14-500.chinfo
 - 5.4.15
 
@@ -2936,171 +2919,6 @@ fi
 * Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.20.0-500.chinfo
 - 4.20.0
 
-* Fri Dec 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.12-500.chinfo
-- 4.19.12
-
-* Wed Dec 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.11-500.chinfo
-- 4.19.11
-- Set bfq as blk-mq default scheduler
-
-* Mon Dec 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.10-500.chinfo
-- 4.19.10
-
-* Thu Dec 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.9-500.chinfo
-- 4.19.9
-
-* Wed Dec 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.8-500.chinfo
-- 4.19.8
-- f29 sync
-- zen patchset optional support
-
-* Thu Dec 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.7-500.chinfo
-- 4.19.7
-
-* Sun Dec 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.6-500.chinfo
-- 4.19.6
-- f29 sync
-
-* Fri Nov 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-502.chinfo
-- PDS-MQ disabled for now
-
-* Fri Nov 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-501.chinfo
-- CONFIG_NO_HZ_IDLE=y with pf
-
-* Tue Nov 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.5-500.chinfo
-- 4.19.5
-- pf sync
-- f29 sync
-
-* Sat Nov 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.4-500.chinfo
-- 4.19.4
-- pf6
-- f29 sync
-
-* Wed Nov 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.3-500.chinfo
-- 4.19.3
-- f29 sync
-
-* Wed Nov 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.2-500.chinfo
-- 4.19.2
-
-* Mon Nov 12 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.1-501.chinfo
-- post-factum pf-kernel patch
-
-* Sun Nov 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.1-500.chinfo
-- 4.19.1
-
-* Mon Oct 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.19.0-500.chinfo
-- 4.19.0
-- Rawhide sync
-
-* Sat Oct 20 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.16-500.chinfo
-- 4.18.16
-
-* Thu Oct 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.15-500.chinfo
-- 4.18.15
-
-* Sun Oct 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.14-500.chinfo
-- 4.18.14
-
-* Wed Oct 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.13-500.chinfo
-- 4.18.13
-- f29 sync
-
-* Thu Oct 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.12-500.chinfo
-- 4.18.12
-
-* Sat Sep 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.11-500.chinfo
-- 4.18.11
-- f28 sync
-
-* Wed Sep 26 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.10-500.chinfo
-- 4.18.10
-- f28 sync
-
-* Wed Sep 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.9-500.chinfo
-- 4.18.9
-
-* Sat Sep 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.8-500.chinfo
-- 4.18.8
-- f28 sync
-
-* Sun Sep 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.7-500.chinfo
-- 4.18.7
-
-* Wed Sep 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.6-500.chinfo
-- 4.18.6
-- f28 sync
-
-* Fri Aug 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.5-500.chinfo
-- 4.18.5
-
-* Wed Aug 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.4-500.chinfo
-- 4.18.4
-
-* Sat Aug 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.3-500.chinfo
-- 4.18.3
-
-* Fri Aug 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.2-500.chinfo
-- 4.18.2
-
-* Wed Aug 15 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.1-500.chinfo
-- 4.18.1
-
-* Mon Aug 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.18.0-500.chinfo
-- 4.18.0
-- Rawhide sync
-
-* Thu Aug 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.14-500.chinfo
-- 4.17.14
-
-* Mon Aug 06 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.13-500.chinfo
-- 4.17.13
-
-* Fri Aug 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.12-500.chinfo
-- 4.17.12
-
-* Sat Jul 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.11-500.chinfo
-- 4.17.11
-
-* Wed Jul 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.10-500.chinfo
-- 4.17.10
-
-* Sun Jul 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.9-500.chinfo
-- 4.17.9
-
-* Wed Jul 18 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.8-500.chinfo
-- 4.17.8
-
-* Tue Jul 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.7-500.chinfo
-- 4.17.7
-
-* Wed Jul 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.6-500.chinfo
-- 4.17.6
-
-* Sun Jul 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.5-500.chinfo
-- 4.17.5
-- f28 sync
-
-* Tue Jul 03 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.4-500.chinfo
-- 4.17.4
-- f28 sync
-
-* Mon Jun 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.3-500.chinfo
-- 4.17.3
-- f28 sync
-
-* Sat Jun 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.2-500.chinfo
-- 4.17.2
-- stabilization sync
-
-* Mon Jun 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.1-500.chinfo
-- 4.17.1
-- stabilization sync
-
-* Mon Jun 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.17.0-500.chinfo
-- 4.17.0
-- rawhide sync
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.
