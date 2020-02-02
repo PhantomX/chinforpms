@@ -1,6 +1,6 @@
-%global commit ce2c1a6774d52982b370fbb9e0a613e58a05d7e2
+%global commit bca921ddae6c8736e938b0010a2ad15da6af51f8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191211
+%global date 20200120
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           desmume
 Version:        0.9.12
-Release:        0.13%{?gver}%{?dist}
+Release:        0.14%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 Epoch:          1
@@ -198,6 +198,9 @@ done
 
 
 %changelog
+* Sat Feb 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:0.9.12-0.14.20200120gitbca921d
+- New snapshot
+
 * Wed Dec 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.9.12-0.13.20191211gitce2c1a6
 - New snapshot
 

@@ -1,6 +1,6 @@
-%global commit 23174f3a00250b9c473b192b2556d66c46ab8a84
+%global commit 69ae598b7eed4dccb2cacdd5081e4b961194839c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191206
+%global date 20200131
 %global with_snapshot 1
 
 %global sanitize 0
@@ -11,7 +11,7 @@
 
 Name:           pcsx2
 Version:        1.5.0
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -213,6 +213,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Sat Feb 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-108.20200131git69ae598
+- New snapshot
+
 * Fri Dec 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-107.20191202git23174f3
 - New snapshot
 - PR to remove portaudio support, SDL2 do the work already

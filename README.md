@@ -1,7 +1,6 @@
 # chinforpms
 
-Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or
-RPMFusion and existent packages updated with extra changes.
+Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMFusion and existent packages updated with extra changes, or only backports from Rawhide.
 
 > Most packages can be found in this [COPR repository](https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms), except for those not allowed.
 
@@ -71,6 +70,7 @@ RPMFusion and existent packages updated with extra changes.
               more gathered from [_TK-Glitch_](https://github.com/Tk-Glitch/PKGBUILDS/tree/master/wine-tkg-git), some of them not always enabled.
               No alternatives support
  * **wine-dxvk** - mingw build and no alternatives support, enabled by script
+ * More not listed here
 
 ## Credits (Patches, install procedures and other files)
 * [Arch](https://www.archlinux.org)

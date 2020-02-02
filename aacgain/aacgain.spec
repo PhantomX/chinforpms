@@ -1,44 +1,48 @@
-%global commit 93440798a533ea101ff178689fa6ce6724b253b7
+%global commit 0421ca2b5f9a50bc2408b983eb8c807aebaf0f2a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191215
+%global date 20200102
 %global with_snapshot 1
 
+%global commit1 baf67bb94d5772373bf2d2e9801e8c4d4df46f36
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 faad2
 
-%global mp3gainver 1_5_2
-%global mp4v2ver 4.1.0.0
-%global faadver 2.8.8
+%global commit2 cf634bb7ed2d3bd453d707a5c7896dcd6f12e458
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 mp4v2
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global vc_url  https://github.com/dgilman
+
 Name:           aacgain
-Version:        1.9.1
+Version:        2.0.0
 Release:        1%{?gver}%{?dist}
 Summary:        Normalizes the volume of digital music AAC files
 
 License:        GPLv2
 URL:            http://aacgain.altosdesign.com/
-%if 0%{?with_snapshot}
-Source0:        https://github.com/dgilman/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
-%else
-Source0:        http://sbriesen.de/gentoo/distfiles/%{name}-%{version}.tar.xz
-Source1:        http://downloads.sourceforge.net/mp3gain/mp3gain-%{mp3gainver}-src.zip
-%endif
-Source2:        https://github.com/TechSmith/mp4v2/archive/Release-ThirdParty-MP4v2-%{mp4v2ver}.tar.gz
-Source3:        https://downloads.sourceforge.net/faac/faad2-%{faadver}.tar.gz
 
-Patch0:         mp4v2-1.9.1-format-security.patch
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
+Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
+%endif
+Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        %{vc_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  libtool
-BuildRequires:  unzip
 
-Provides:       bundle(libfaad2) = %{faadver}
-Provides:       bundle(libmp4v2) = %{mp4v2ver}
+Provides:       bundle(libfaad2) = 0~git
+Provides:       bundle(libmp4v2) = 0~git
+
 
 %description
 Gain normalizes the volume of digital music files using the Replay Gain
@@ -49,88 +53,42 @@ making the normalization process reversable.
 
 %prep
 %if 0%{?with_snapshot}
-%setup -q -n %{name}-%{commit}
+%autosetup -n %{name}-%{commit} -p1
 %else
-%setup -c
-
-tar xvf %{SOURCE0}
-mkdir mp3gain
-unzip %{SOURCE1} -d mp3gain
+%autosetup -n %{name}-%{version} -p1
 %endif
 
-mkdir faad2 mp4v2
-tar xvf %{SOURCE2} --strip-components 1 -C mp4v2
-tar xvf %{SOURCE3} --strip-components 1 -C faad2
+pushd 3rdparty
+sed \
+  -e '/ProcessorCount/d' \
+  -e 's|${N}|%{_smp_build_ncpus}|g' \
+  -i CMakeLists.txt
 
-cp -p faad2/COPYING COPYING.faad2
-cp -p faad2/COPYING COPYING.mp4v2
+
+tar -xf %{S:1} -C faad2 --strip-components 1
+tar -xf %{S:2} -C mp4v2 --strip-components 1
+
+cp -p faad2/COPYING ../COPYING.faad2
+cp -p faad2/COPYING ../COPYING.mp4v2
+popd
 cp -p mp3gain/lgpl.txt COPYING.mp3gain
-
-%if !0%{?with_snapshot}
-cp -p aacgain/README .
-sed -i -e 's:../\(mp4v2/\):\1:g' %{name}/mp4v2.patch
-sed -i -e 's:\(libmp4v2\|libfaad/libfaad\)\.la:README:g' \
-  -e 's:^\(autoreconf\|pushd\|popd\):# \1:g' %{name}/linux/prepare.sh
-
-pushd %{name}/linux
-  sed -i "s|^patch|#patch|" ./prepare.sh
-  sh prepare.sh
-popd
-
-pushd mp3gain
-  patch -p3 -i ../%{name}/linux/mp3gain.patch
-popd
-%endif
-
-autoreconf -ivf
-
-pushd faad2
-  autoreconf -ivf
-popd
-
-%if !0%{?with_snapshot}
-pushd mp4v2
-  #patch -p1 -i ../%{name}/mp4v2.patch
-  patch -p1 -i %{PATCH0}
-popd
-%endif
 
 
 %build
 
-%global conf2 --disable-shared --enable-static
+mkdir -p %{_target_platform}
+pushd %{_target_platform}
 
-pushd faad2
-%configure \
-  %{conf2} \
-  --without-xmms \
-  --without-mpeg4ip
-popd
-
-pushd mp4v2
-
-CXXFLAGS="%{build_cxxflags} -fpermissive" \
-%configure \
-  %{conf2} \
-  --disable-gch
-popd
-
-%configure
-
-pushd faad2/libfaad
-%make_build
-popd
-
-pushd mp4v2
-%make_build
-popd
+%cmake .. \
+%{nil}
 
 %make_build
+
+popd
 
 %install
+%make_install -C %{_target_platform}
 
-mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{name}/%{name} %{buildroot}%{_bindir}/
 
 %files
 %license aacgain/COPYING COPYING.*
@@ -139,6 +97,11 @@ install -pm0755 %{name}/%{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Feb 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0-1.20200102git0421ca2
+- 2.0.0
+- cmake
+- Remove old release support
+
 * Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.9.1-1.20191215git9344079
 - 1.9.1 dgilman fork
 

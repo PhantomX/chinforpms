@@ -1,6 +1,6 @@
-%global commit 01686f78fed196e5c7b19fafc8a1f6d8a609c7f8
+%global commit eb0364dd5f17c330a53e514482ef02acacfac779
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200101
+%global date 20200201
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -56,7 +56,7 @@
 
 Name:           citra
 Version:        0
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -93,6 +93,7 @@ BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(libavcodec)
 %endif
 BuildRequires:  pkgconfig(libenet)
+BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(sdl2)
 %if %{with qt}
 BuildRequires:  pkgconfig(Qt5Core)
@@ -219,6 +220,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Feb 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-5.20200201giteb0364d
+- New snapshot
+- libzstd
+
 * Sun Jan 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-4.20200101git01686f7
 - New snapshot
 - lodepng

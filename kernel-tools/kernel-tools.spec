@@ -10,7 +10,7 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 3f183bf18c0fa5c8de360e9ae66496e011115470
+%global opensuse_id fcd8e64c5669005540cbba9c1ce892c7081e011c
 
 %define major_ver 5
 
@@ -23,7 +23,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 0
+%global stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -507,6 +507,9 @@ popd
 
 
 %changelog
+* Sat Feb 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.1-500.chinfo
+- 5.5.1
+
 * Mon Jan 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.0-500.chinfo
 - 5.5.0
 - Rawhide sync

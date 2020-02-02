@@ -1,24 +1,40 @@
-From 2e0fac6be0d252f73f83b34b3a090859440ef2ab Mon Sep 17 00:00:00 2001
+From 6ad04584150925c73dd834542571a725720b84c4 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 23 Apr 2019 23:08:32 -0300
+Date: Sat, 1 Feb 2020 23:05:59 -0300
 Subject: [PATCH] Use system libraries
 
 FindCubeb.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
 https://github.com/dolphin-emu/dolphin
+https://github.com/dolphin-emu/dolphin/raw/master/CMake/CheckLib.cmake
+https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCubeb.cmake
+
+FindZstd.cmake from Debian apt
+https://salsa.debian.org/tbm/apt/raw/master/CMake/FindZstd.cmake
 ---
- CMakeLists.txt                          |  1 -
- externals/CMakeLists.txt                | 19 +++++---
- externals/cmake-modules/CheckLib.cmake  | 58 +++++++++++++++++++++++++
+ CMakeLists.txt                          |  2 -
+ externals/CMakeLists.txt                | 23 ++++++----
+ externals/cmake-modules/CheckLib.cmake  | 57 +++++++++++++++++++++++++
  externals/cmake-modules/FindCubeb.cmake | 15 +++++++
- 4 files changed, 87 insertions(+), 6 deletions(-)
+ externals/cmake-modules/FindZstd.cmake  | 25 +++++++++++
+ src/common/CMakeLists.txt               |  2 +-
+ 6 files changed, 113 insertions(+), 11 deletions(-)
  create mode 100644 externals/cmake-modules/CheckLib.cmake
  create mode 100644 externals/cmake-modules/FindCubeb.cmake
+ create mode 100644 externals/cmake-modules/FindZstd.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 46ad976..b1b96ac 100644
+index 41d55f3..470085d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -46,7 +46,6 @@ function(check_submodules_present)
+@@ -2,7 +2,6 @@
+ cmake_minimum_required(VERSION 3.8)
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modules")
+-include(DownloadExternals)
+ include(CMakeDependentOption)
+ 
+ project(citra)
+@@ -55,7 +54,6 @@ function(check_submodules_present)
          endif()
      endforeach()
  endfunction()
@@ -27,7 +43,7 @@ index 46ad976..b1b96ac 100644
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
                 ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index ae92ce8..d65bd3d 100644
+index 63159a5..41a3a4f 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -1,7 +1,7 @@
@@ -39,13 +55,17 @@ index ae92ce8..d65bd3d 100644
  include(ExternalProject)
  
  # Catch
-@@ -63,13 +63,22 @@ if (ARCHITECTURE_x86_64)
+@@ -63,17 +63,24 @@ if (ARCHITECTURE_x86_64)
  endif()
+ 
+ # Zstandard
+-add_subdirectory(zstd/build/cmake EXCLUDE_FROM_ALL)
+-target_include_directories(libzstd_static INTERFACE ./zstd/lib)
++find_package(Zstd)
  
  # ENet
 -add_subdirectory(enet)
 -target_include_directories(enet INTERFACE ./enet/include)
-+include(CheckLib)
 +check_lib(ENET libenet enet enet/enet.h QUIET)
 +include(CheckSymbolExists)
 +if (ENET_FOUND)
@@ -66,12 +86,19 @@ index ae92ce8..d65bd3d 100644
  endif()
  
  # DiscordRPC
+@@ -106,4 +113,4 @@ if (ENABLE_WEB_SERVICE)
+ endif()
+ 
+ # lodepng
+-add_subdirectory(lodepng)
+\ No newline at end of file
++add_subdirectory(lodepng)
 diff --git a/externals/cmake-modules/CheckLib.cmake b/externals/cmake-modules/CheckLib.cmake
 new file mode 100644
-index 0000000..64c05e9
+index 0000000..e6408a4
 --- /dev/null
 +++ b/externals/cmake-modules/CheckLib.cmake
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,57 @@
 +find_package(PkgConfig)
 +
 +macro(_internal_message msg)
@@ -129,7 +156,6 @@ index 0000000..64c05e9
 +		endif()
 +	endif()
 +endmacro()
-+
 diff --git a/externals/cmake-modules/FindCubeb.cmake b/externals/cmake-modules/FindCubeb.cmake
 new file mode 100644
 index 0000000..c0a730c
@@ -151,6 +177,50 @@ index 0000000..c0a730c
 +    INTERFACE_INCLUDE_DIRECTORIES "${CUBEB_INCLUDE_DIR}"
 +  )
 +endif()
+diff --git a/externals/cmake-modules/FindZstd.cmake b/externals/cmake-modules/FindZstd.cmake
+new file mode 100644
+index 0000000..6811804
+--- /dev/null
++++ b/externals/cmake-modules/FindZstd.cmake
+@@ -0,0 +1,25 @@
++# - Try to find ZSTD
++# Once done, this will define
++#
++#  ZSTD_FOUND - system has ZSTD
++#  ZSTD_INCLUDE_DIRS - the ZSTD include directories
++#  ZSTD_LIBRARIES - the ZSTD library
++find_package(PkgConfig)
++
++pkg_check_modules(ZSTD_PKGCONF libzstd)
++
++find_path(ZSTD_INCLUDE_DIRS
++  NAMES zstd.h
++  PATHS ${ZSTD_PKGCONF_INCLUDE_DIRS}
++)
++
++
++find_library(ZSTD_LIBRARIES
++  NAMES zstd
++  PATHS ${ZSTD_PKGCONF_LIBRARY_DIRS}
++)
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(ZSTD DEFAULT_MSG ZSTD_INCLUDE_DIRS ZSTD_LIBRARIES)
++
++mark_as_advanced(ZSTD_INCLUDE_DIRS ZSTD_LIBRARIES)
+diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
+index af07ac2..4e63d26 100644
+--- a/src/common/CMakeLists.txt
++++ b/src/common/CMakeLists.txt
+@@ -122,7 +122,7 @@ endif()
+ create_target_directory_groups(common)
+ 
+ target_link_libraries(common PUBLIC fmt microprofile)
+-target_link_libraries(common PRIVATE libzstd_static)
++target_link_libraries(common PRIVATE zstd)
+ if (ARCHITECTURE_x86_64)
+     target_link_libraries(common PRIVATE xbyak)
+ endif()
 -- 
-2.21.0
+2.24.1
 

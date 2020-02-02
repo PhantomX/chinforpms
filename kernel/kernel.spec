@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 8a30270859da7e36562a700c6fbd02d998c526ad
+%global pfcommit 67c3fbcd724bd8bdc2134719aa1647c666838b54
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 3f183bf18c0fa5c8de360e9ae66496e011115470
+%global opensuse_id fcd8e64c5669005540cbba9c1ce892c7081e011c
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -234,6 +234,8 @@ Summary: The Linux kernel
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
 
+### CPU optimizations
+### with native take precedence, next is generic, then one set in kernel-local-cpu
 # Use kernel-local-native (CONFIG_MNATIVE=y)
 %global with_native  %{?_with_native:     1} %{?!_with_native:     0}
 
@@ -839,8 +841,6 @@ Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 
-Patch322: arm64-usb-host-xhci-tegra-set-MODULE_FIRMWARE-for-tegra186.patch
-
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -880,6 +880,12 @@ Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
+Patch1019: %{opensuse_url}/0001-x86-kvm-Be-careful-not-to-clear-KVM_VCPU_FLUSH_TLB-b.patch#/openSUSE-0001-x86-kvm-Be-careful-not-to-clear-KVM_VCPU_FLUSH_TLB-b.patch
+Patch1020: %{opensuse_url}/0002-x86-kvm-Introduce-kvm_-un-map_gfn.patch#/openSUSE-0002-x86-kvm-Introduce-kvm_-un-map_gfn.patch
+Patch1021: %{opensuse_url}/0003-x86-kvm-Cache-gfn-to-pfn-translation.patch#/openSUSE-0003-x86-kvm-Cache-gfn-to-pfn-translation.patch
+Patch1022: %{opensuse_url}/0004-x86-KVM-Make-sure-KVM_VCPU_FLUSH_TLB-flag-is-not-mis.patch#/openSUSE-0004-x86-KVM-Make-sure-KVM_VCPU_FLUSH_TLB-flag-is-not-mis.patch
+Patch1023: %{opensuse_url}/0005-x86-KVM-Clean-up-host-s-steal-time-structure.patch#/openSUSE-0005-x86-KVM-Clean-up-host-s-steal-time-structure.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2601,6 +2607,9 @@ fi
 #
 #
 %changelog
+* Sat Feb 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.1-500.chinfo
+- 5.5.1
+
 * Fri Jan 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.0-501.chinfo
 - 5.5.0 - pf2
 
