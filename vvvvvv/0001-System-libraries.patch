@@ -1,6 +1,6 @@
-From 6f52cefb3d20ab956a48634ac782a4b5d5644ba6 Mon Sep 17 00:00:00 2001
+From 448ab2edd35405fe74736c39cfdb34eaad46c58b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 15 Jan 2020 11:49:15 -0300
+Date: Sun, 2 Feb 2020 11:29:55 -0300
 Subject: [PATCH] System libraries
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] System libraries
  1 file changed, 29 insertions(+), 4 deletions(-)
 
 diff --git a/desktop_version/CMakeLists.txt b/desktop_version/CMakeLists.txt
-index 3edafd1..2596e2a 100644
+index 010a09d..5e5424f 100644
 --- a/desktop_version/CMakeLists.txt
 +++ b/desktop_version/CMakeLists.txt
 @@ -3,9 +3,13 @@
@@ -25,13 +25,14 @@ index 3edafd1..2596e2a 100644
  
  # Architecture Flags
  IF(APPLE)
-@@ -53,11 +57,16 @@ ENDIF()
+@@ -53,12 +57,17 @@ ENDIF()
  # Include Directories
  INCLUDE_DIRECTORIES(
  	src
 -	../third_party/tinyxml
 -	../third_party/physfs
  	../third_party/lodepng
+ 	../third_party/utfcpp/source
  )
  
 +IF(NOT USE_SYSTEM_TINYXML)
@@ -44,7 +45,7 @@ index 3edafd1..2596e2a 100644
  # Source Lists
  SET(VVV_SRC
  	src/BinaryBlob.cpp
-@@ -138,8 +147,24 @@ IF(ENABLE_WARNINGS)
+@@ -139,8 +148,24 @@ IF(ENABLE_WARNINGS)
  ENDIF()
  
  # Library information

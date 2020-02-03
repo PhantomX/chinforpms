@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.0
+%global wine_stagingver 5.1
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id e64f0fcc779fde34c4074d8527576fd058f9f490
+%global tkg_id 1509671c79c5ceefb5ec9619e825aad4c0ffd8e0
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -79,7 +79,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.0
+Version:        5.1
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -782,7 +782,10 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch703 -p1
 %patch704 -p1
 %patch705 -p1
+
+sed -e '/xact3wb.h \\/d' -i include/Makefile.in
 %patch801 -p1
+sed -e '/x3daudio.h \\/a\	xact3wb.h \\' -i include/Makefile.in
 sed -e 's|__stdcall XACT_NOTIFICATION_CALLBACK|XACT_NOTIFICATION_CALLBACK|g' -i include/xact3.idl
 %patch802 -p1
 %patch803 -p1
@@ -2079,6 +2082,7 @@ fi
 %{_libdir}/wine/vcomp120.%{winedll}
 %{_libdir}/wine/vcomp140.%{winedll}
 %{_libdir}/wine/vcruntime140.%{winedll}
+%{_libdir}/wine/vcruntime140_1.%{winedll}
 %{_libdir}/wine/vdmdbg.%{winedll}
 %{_libdir}/wine/version.%{winedll}
 %{_libdir}/wine/virtdisk.%{winedll}
@@ -2482,6 +2486,9 @@ fi
 
 
 %changelog
+* Sun Feb 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.1-100
+- 5.1
+
 * Tue Jan 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-100
 - 5.0
 

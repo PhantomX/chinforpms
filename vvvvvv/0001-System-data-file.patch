@@ -1,17 +1,17 @@
-From 34d3cc0250c673f77e060f821c563c8eaf54a194 Mon Sep 17 00:00:00 2001
+From 6b712c2da577221c9d41a4d948b36945850a45da Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 11 Jan 2020 19:11:33 -0300
+Date: Sun, 2 Feb 2020 19:08:14 -0300
 Subject: [PATCH] System data file
 
 ---
- desktop_version/src/FileSystemUtils.cpp | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ desktop_version/src/FileSystemUtils.cpp | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/desktop_version/src/FileSystemUtils.cpp b/desktop_version/src/FileSystemUtils.cpp
-index f8f415a..0ec4a5d 100644
+index 2a1d2df..5e50f2c 100644
 --- a/desktop_version/src/FileSystemUtils.cpp
 +++ b/desktop_version/src/FileSystemUtils.cpp
-@@ -70,8 +70,8 @@ int FILESYSTEM_init(char *argvZero)
+@@ -79,8 +79,8 @@ int FILESYSTEM_init(char *argvZero)
  	}
  
  	/* Mount the stock content last */
@@ -22,6 +22,16 @@ index f8f415a..0ec4a5d 100644
  	if (!PHYSFS_mount(output, NULL, 1))
  	{
  		puts("Error: data.zip missing!");
+@@ -99,8 +99,7 @@ int FILESYSTEM_init(char *argvZero)
+ 		return 0;
+ 	}
+ 
+-	strcpy(output, PHYSFS_getBaseDir());
+-	strcpy(output, "gamecontrollerdb.txt");
++	strcpy(output, "_RPM_DATA_DIR_/SDL_GameControllerDB/gamecontrollerdb.txt");
+ 	if (SDL_GameControllerAddMappingsFromFile(output) < 0)
+ 	{
+ 		printf("gamecontrollerdb.txt not found!\n");
 -- 
 2.24.1
 

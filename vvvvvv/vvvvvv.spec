@@ -1,6 +1,6 @@
-%global commit 6f8d2dc90b1629e5490df16afe40919c88c0c694
+%global commit 8260bb2696f4843b3e6a29b0c4deea7ba6779aea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200115
+%global date 20200202
 
 %undefine _hardened_build
 
@@ -13,7 +13,7 @@
 
 Name:           vvvvvv
 Version:        2.2
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -39,6 +39,7 @@ BuildRequires:  pkgconfig(physfs)
 BuildRequires:  pkgconfig(tinyxml)
 Requires:       vvvvvv-data >= 2.1
 Requires:       hicolor-icon-theme
+Requires:       sdl_gamecontrollerdb
 
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(lodepng) = %{bundlelodepngver}
@@ -134,6 +135,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Sun Feb 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-4.20200202git8260bb2
+- Bump
+
 * Wed Jan 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-3.20200115git6f8d2dc
 - Bump
 - Patch cmake to use system libraries
