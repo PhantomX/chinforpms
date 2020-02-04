@@ -1,4 +1,4 @@
-%global commit 8260bb2696f4843b3e6a29b0c4deea7ba6779aea
+%global commit cefc95d324a6a7f602e7a0fc99cf28631f81fb23
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200202
 
@@ -13,7 +13,7 @@
 
 Name:           vvvvvv
 Version:        2.2
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -135,6 +135,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Mon Feb 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-5.20200202gitcefc95d
+- Update data files patch
+
 * Sun Feb 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-4.20200202git8260bb2
 - Bump
 

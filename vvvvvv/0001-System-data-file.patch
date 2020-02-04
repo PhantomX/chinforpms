@@ -1,28 +1,27 @@
-From 6b712c2da577221c9d41a4d948b36945850a45da Mon Sep 17 00:00:00 2001
+From 26c7ea9a4d0f7bc3b879a32af210257d9226a62d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 2 Feb 2020 19:08:14 -0300
+Date: Mon, 3 Feb 2020 14:32:48 -0300
 Subject: [PATCH] System data file
 
 ---
- desktop_version/src/FileSystemUtils.cpp | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ desktop_version/src/FileSystemUtils.cpp | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/desktop_version/src/FileSystemUtils.cpp b/desktop_version/src/FileSystemUtils.cpp
-index 2a1d2df..5e50f2c 100644
+index 9ab1e5c..76d1ed6 100644
 --- a/desktop_version/src/FileSystemUtils.cpp
 +++ b/desktop_version/src/FileSystemUtils.cpp
-@@ -79,8 +79,8 @@ int FILESYSTEM_init(char *argvZero)
+@@ -82,8 +82,7 @@ int FILESYSTEM_init(char *argvZero, char *assetsPath)
+ 	if (assetsPath) {
+ 		strcpy(output, assetsPath);
+ 	} else {
+-		strcpy(output, PHYSFS_getBaseDir());
+-		strcat(output, "data.zip");
++		strcpy(output, "_RPM_DATA_DIR_/VVVVVV/data.zip");
  	}
- 
- 	/* Mount the stock content last */
--	strcpy(output, PHYSFS_getBaseDir());
--	strcat(output, "data.zip");
-+	strcpy(output, "_RPM_DATA_DIR_/");
-+	strcat(output, "VVVVVV/data.zip");
  	if (!PHYSFS_mount(output, NULL, 1))
  	{
- 		puts("Error: data.zip missing!");
-@@ -99,8 +99,7 @@ int FILESYSTEM_init(char *argvZero)
+@@ -103,8 +102,7 @@ int FILESYSTEM_init(char *argvZero, char *assetsPath)
  		return 0;
  	}
  
