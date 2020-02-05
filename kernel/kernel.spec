@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 67c3fbcd724bd8bdc2134719aa1647c666838b54
+%global pfcommit d3175f772de87500529452a0065fa9a487846031
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -835,6 +835,10 @@ Patch310: Raspberry-Pi-4-PCIe-support.patch
 Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
 # https://patchwork.kernel.org/patch/11299997/
 Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
+# https://patchwork.kernel.org/cover/11353083/
+Patch313: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
+# https://github.com/raspberrypi/linux/commit/c74b1b53254016fd83b580b8d49bb02d72ce4836
+Patch314: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
@@ -2607,6 +2611,10 @@ fi
 #
 #
 %changelog
+* Tue Feb 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.2-500.chinfo
+- 5.5.2
+- stabilization sync
+
 * Sat Feb 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.1-500.chinfo
 - 5.5.1
 
