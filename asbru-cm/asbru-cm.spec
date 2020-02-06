@@ -1,8 +1,8 @@
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
 Name:           asbru-cm
-Version:        6.0.3
-Release:        2%{?dist}
+Version:        6.0.4
+Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
@@ -14,6 +14,7 @@ Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 # Fix passwords with TigerVNC
 Patch1:         %{name}-vncpasswd.patch
 Patch2:         0001-Issue-232-fix.patch
+Patch10:        https://github.com/asbru-cm/asbru-cm/commit/38d704c0417483d222b0b15ead78b5f76674de7e.patch#/%{name}-gh-38d704c.patch
 
 BuildArch:      noarch
 
@@ -137,6 +138,9 @@ cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
 %changelog
+* Wed Feb 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.0.4-1
+- 6.0.4
+
 * Wed Jan 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.0.3-2
 - Patch to fix resizing crashes
 

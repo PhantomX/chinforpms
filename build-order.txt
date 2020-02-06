@@ -95,6 +95,7 @@ lunzip
 lzip
 m64py
 manaplus
+mangohud
 mednafen
 mednaffe
 mozilla-gnotifier

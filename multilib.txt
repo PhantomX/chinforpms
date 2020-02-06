@@ -17,6 +17,7 @@ libogg
 libvorbis
 libstrangle
 linux-steam-integration
+mangohud
 mingw-crt
 mingw-headers
 mingw-winpthreads

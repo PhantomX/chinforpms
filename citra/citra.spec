@@ -1,6 +1,6 @@
-%global commit eb0364dd5f17c330a53e514482ef02acacfac779
+%global commit 821a35bd2b5d8ddad9cf622d604953be0c9e8a89
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200201
+%global date 20200204
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -51,6 +51,8 @@
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
+
+%undefine _hardened_build
 
 %global vc_url  https://github.com/citra-emu
 
@@ -162,6 +164,8 @@ sed \
 %endif
 
 %build
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+
 mkdir -p %{_target_platform}
 pushd %{_target_platform}
 

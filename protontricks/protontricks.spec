@@ -7,9 +7,11 @@ License:        GPLv3
 URL:            https://github.com/Matoking/protontricks
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
+Patch0:         %{url}/commit/ca4ce8f4a70192332791d33f98b70c9442ed91df.patch#/%{name}-gh-ca4ce8f.patch
+Patch10:        0001-Disable-setuptools_scm-version-check.patch
+
 BuildArch:      noarch
 
-BuildRequires:  git
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-vdf
@@ -24,6 +26,7 @@ Suggests:       zenity
 %prep
 %autosetup -p1
 
+echo "version = '%{version}'" > src/protontricks/_version.py
 
 %build
 %py3_build
@@ -46,8 +49,9 @@ Suggests:       zenity
 
 
 %changelog
-* Sun Feb 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1
+* Wed Feb 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1
 - 1.4
+- Remove git BR
 
 * Sat Nov 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.3-1
 - 1.3

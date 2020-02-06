@@ -12,6 +12,7 @@
 %global platform_drivers ,i915,i965
 %global with_iris   1
 %global with_vmware 1
+%global with_vulkan_overlay 1
 %global with_xa     1
 %global with_zink   1
 %global vulkan_drivers intel,amd
@@ -165,6 +166,11 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-mako
 %if 0%{?with_hardware}
 BuildRequires:  vulkan-headers
+%if 0%{?with_vulkan_overlay}
+BuildRequires:  glslang
+BuildRequires:  lm_sensors-devel
+BuildRequires:  /usr/bin/pathfix.py
+%endif
 %if 0%{?with_zink}
 BuildRequires:  pkgconfig(vulkan)
 %endif
@@ -352,9 +358,25 @@ Requires:       vulkan-devel
 %description vulkan-devel
 Headers for development with the Vulkan API.
 
+%if 0%{?with_vulkan_overlay}
+%package vulkan-overlay
+Summary:        Mesa Vulkan overlay layer
+Requires:       %{name}-vulkan-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description vulkan-overlay
+A Vulkan layer to display information about the running application using
+an overlay.
+%endif
+
+
 %prep
 %autosetup -n %{name}-%{ver} -p1
 cp %{SOURCE1} docs/
+
+%if 0%{?with_vulkan_overlay}
+  pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
+    src/vulkan/overlay-layer/mesa-overlay-control.py
+%endif
 
 %build
 
@@ -411,6 +433,9 @@ export RANLIB="gcc-ranlib"
   -Dbuild-tests=false \
   -Dselinux=true \
   -Dosmesa=gallium \
+%if 0%{?with_vulkan_overlay}
+  -Dvulkan-overlay-layer=true \
+%endif
   %{nil}
 
 %meson_build
@@ -634,6 +659,14 @@ popd
 %ifarch %{ix86} x86_64
 %{_includedir}/vulkan/vulkan_intel.h
 %endif
+%endif
+
+%if 0%{?with_vulkan_overlay}
+%files vulkan-overlay
+%docs src/vulkan/overlay-layer/README
+%{_bindir}/mesa-overlay-control.py
+%{_libdir}/libVkLayer_MESA_overlay.so
+%{_datadir}/vulkan/explicit_layer.d/VkLayer_MESA_overlay.json
 %endif
 
 
