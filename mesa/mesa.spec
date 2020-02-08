@@ -58,7 +58,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        20.0.0~rc1
+Version:        20.0.0~rc2
 Release:        100%{?dist}
 
 License:        MIT
@@ -569,6 +569,8 @@ popd
 %endif
 %endif
 %ifarch %{arm} aarch64
+%{_libdir}/dri/ingenic-drm_dri.so
+%{_libdir}/dri/mcde_dri.so 
 %{_libdir}/dri/mxsfb-drm_dri.so
 %{_libdir}/dri/stm_dri.so
 %endif
@@ -663,7 +665,7 @@ popd
 
 %if 0%{?with_vulkan_overlay}
 %files vulkan-overlay
-%docs src/vulkan/overlay-layer/README
+%doc src/vulkan/overlay-layer/README
 %{_bindir}/mesa-overlay-control.py
 %{_libdir}/libVkLayer_MESA_overlay.so
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_MESA_overlay.json
@@ -671,6 +673,10 @@ popd
 
 
 %changelog
+* Fri Feb 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.0~rc2-100
+- 20.0.0-rc2
+- vulkan-overlay
+
 * Fri Jan 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.0~rc1-100
 - 20.0.0-rc1
 

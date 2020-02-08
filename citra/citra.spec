@@ -224,7 +224,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
-* Sat Feb 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-5.20200201giteb0364d
+* Thu Feb 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-5.20200204git821a35b
 - New snapshot
 - libzstd
 
