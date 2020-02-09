@@ -1,7 +1,7 @@
-%global commit 9f8935d823cd554856e15015bf6225bfcee8db82
+%global commit f909d18baf1d97831c55a1d47610427ac2084ca3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200114
-%global with_snapshot 0
+%global date 20200207
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.1
+%global wine_stagingver c26be86c42e046eaa781b4b269f1d9b2530a5aad
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 1509671c79c5ceefb5ec9619e825aad4c0ffd8e0
+%global tkg_id b4f118b09998bf1846c78bd186b1c9ff57b26f99
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -187,9 +187,10 @@ Patch728:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-ena
 Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 
 Patch800:       revert-grab-fullscreen.patch
-Patch801:       %{valve_url}/commit/9cf81304c03046cb337d8b7275af600e39373702.patch#/%{name}-valve-9cf8130.patch
-Patch802:       %{valve_url}/commit/561975d6da534cfe608d7c4068387e734c32b77c.patch#/%{name}-valve-561975d.patch
-Patch803:       wine-xaudio2-pulseaudio-app-name.patch
+Patch801:       %{valve_url}/commit/8ef1125a8f08454ac2e2136d910374555584949d.patch#/%{name}-valve-8ef1125.patch
+Patch802:       %{valve_url}/commit/7778c1cbd59dd676943aa1df7e76d32b3eee8567.patch#/%{name}-valve-7778c1c.patch
+Patch803:       %{valve_url}/commit/a4310c0cf1e27f0a90f737c2e7cfe9cdbde07522.patch#/%{name}-valve-a4310c0.patch
+Patch804:       wine-xaudio2-pulseaudio-app-name.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -786,9 +787,9 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 sed -e '/xact3wb.h \\/d' -i include/Makefile.in
 %patch801 -p1
 sed -e '/x3daudio.h \\/a\	xact3wb.h \\' -i include/Makefile.in
-sed -e 's|__stdcall XACT_NOTIFICATION_CALLBACK|XACT_NOTIFICATION_CALLBACK|g' -i include/xact3.idl
 %patch802 -p1
 %patch803 -p1
+%patch804 -p1
 
 %patch5000 -p1
 

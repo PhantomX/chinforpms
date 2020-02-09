@@ -1,5 +1,5 @@
 Name:           smtube
-Version:        19.6.0
+Version:        20.1.0
 Release:        100%{?dist}
 Summary:        YouTube browser for SMPlayer
 Epoch:          1
@@ -66,6 +66,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Feb 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:20.1.0-100
+- 20.1.0
+
 * Mon Jun 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:19.6.0-100
 - 19.6.0
 
