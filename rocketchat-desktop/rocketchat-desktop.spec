@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        2.17.0
+Version:        2.17.5
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -47,7 +47,7 @@ rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
 cp %{S:1} .
 
 find opt/%{app_name}/ -name '*.so*' | xargs chmod +x
-chmod -x opt/%{app_name}/resources/dictionaries/*.{aff,dic}
+chmod -x opt/%{app_name}/resources/dictionaries/*.bdic
 
 chrpath --delete opt/%{app_name}/%{name}
 
@@ -103,6 +103,9 @@ done
 
 
 %changelog
+* Mon Feb 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.17.5-1
+- 2.17.5
+
 * Tue Dec 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.17.0-1
 - 2.17.0
 

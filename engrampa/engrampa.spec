@@ -2,7 +2,7 @@
 %global rel_build 1
 
 # This is needed, because src-url contains branched part of versioning-scheme.
-%global branch 1.22
+%global branch 1.24
 
 # Settings used for build from snapshots.
 %{!?rel_build:%global commit f4611c3411c44e792f729a0780c31b0aa55fe004}
@@ -13,11 +13,11 @@
 %{!?rel_build:%global git_tar %{name}-%{version}-%{git_ver}.tar.xz}
 
 Name:          engrampa
-Version:       %{branch}.3
+Version:       %{branch}.0
 %if 0%{?rel_build}
 Release:       100%{?dist}
 %else
-Release:       0.9%{?git_rel}%{?dist}
+Release:       0.10%{?git_rel}%{?dist}
 %endif
 Epoch:         1
 Summary:       MATE Desktop file archiver
@@ -102,6 +102,7 @@ find %{buildroot} -name '*.la' -delete
 %{_metainfodir}/engrampa.appdata.xml
 %{_datadir}/applications/engrampa.desktop
 %{_datadir}/dbus-1/services/org.mate.Engrampa.service
+%{_datadir}/icons/hicolor/*/actions/*.png
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/icons/hicolor/scalable/apps/*.svg
 %{_datadir}/glib-2.0/schemas/org.mate.engrampa.gschema.xml
@@ -112,6 +113,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Mon Feb 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.24.0-100
+- 1.24.0
+
 * Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.22.3-100
 - 1.22.3
 

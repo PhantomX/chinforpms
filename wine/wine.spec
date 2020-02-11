@@ -46,7 +46,7 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id b4f118b09998bf1846c78bd186b1c9ff57b26f99
+%global tkg_id f1b0f2d4128b66905faf9435dfa7ee5272145327
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -80,7 +80,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.1
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2011,6 +2011,7 @@ fi
 %{_libdir}/wine/rsaenh.%{winedll}
 %{_libdir}/wine/rstrtmgr.%{winedll}
 %{_libdir}/wine/rtutils.%{winedll}
+%{_libdir}/wine/rtworkq.%{winedll}
 %{_libdir}/wine/samlib.%{winedll}
 %{_libdir}/wine/sapi.%{winedll}
 %{_libdir}/wine/sas.%{winedll}
@@ -2487,6 +2488,9 @@ fi
 
 
 %changelog
+* Sun Feb 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.1-101.20200207gitf909d18
+- New snapshot
+
 * Sun Feb 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.1-100
 - 5.1
 

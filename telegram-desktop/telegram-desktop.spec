@@ -25,7 +25,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        1.9.9
+Version:        1.9.10
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -44,10 +44,7 @@ Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}%{tars
 Source20:       thunar-sendto-%{name}.desktop
 
 # Permanent downstream patches...
-Patch10:        cmake_helpers-system-expected.patch
-Patch11:        cmake_helpers-system-gsl.patch
 Patch12:        cmake_helpers-system-qrcode.patch
-Patch13:        cmake_helpers-system-variant.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -83,6 +80,7 @@ BuildRequires:  ffmpeg-devel >= 3.1
 BuildRequires:  openal-soft-devel
 BuildRequires:  qt5-qtbase-private-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
+BuildRequires:  dbusmenu-qt5-devel
 BuildRequires:  libstdc++-devel
 BuildRequires:  expected-devel
 BuildRequires:  lz4-devel
@@ -191,6 +189,8 @@ pushd %{_target_platform}
        -DTDESKTOP_API_ID=%{apiid} \
        -DTDESKTOP_API_HASH=%{apihash} \
        -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
+       -DDESKTOP_APP_USE_PACKAGED_EXPECTED:BOOL=ON \
+       -DDESKTOP_APP_USE_PACKAGED_VARIANT:BOOL=ON \
 %if %{without fonts}
        -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=OFF \
 %endif
@@ -242,6 +242,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Feb 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.10-100
+- 1.9.10
+- BR: dbusmenu-qt5-devel
+
 * Wed Jan 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.9-100
 - 1.9.9
 - RPMFusion sync
