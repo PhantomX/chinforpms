@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d3175f772de87500529452a0065fa9a487846031
+%global pfcommit 5b966c77963fa8836f6f314a10fcbd6c6a1b5dba
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id fcd8e64c5669005540cbba9c1ce892c7081e011c
+%global opensuse_id 994cf1f3cd948310f125c08ff9cbaedf6ec78671
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -811,8 +811,6 @@ Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 
 Patch204: efi-secureboot.patch
 
-Patch205: lift-lockdown-sysrq.patch
-
 Patch206: s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 
 # 300 - ARM patches
@@ -885,11 +883,6 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/0001-x86-kvm-Be-careful-not-to-clear-KVM_VCPU_FLUSH_TLB-b.patch#/openSUSE-0001-x86-kvm-Be-careful-not-to-clear-KVM_VCPU_FLUSH_TLB-b.patch
-Patch1020: %{opensuse_url}/0002-x86-kvm-Introduce-kvm_-un-map_gfn.patch#/openSUSE-0002-x86-kvm-Introduce-kvm_-un-map_gfn.patch
-Patch1021: %{opensuse_url}/0003-x86-kvm-Cache-gfn-to-pfn-translation.patch#/openSUSE-0003-x86-kvm-Cache-gfn-to-pfn-translation.patch
-Patch1022: %{opensuse_url}/0004-x86-KVM-Make-sure-KVM_VCPU_FLUSH_TLB-flag-is-not-mis.patch#/openSUSE-0004-x86-KVM-Make-sure-KVM_VCPU_FLUSH_TLB-flag-is-not-mis.patch
-Patch1023: %{opensuse_url}/0005-x86-KVM-Clean-up-host-s-steal-time-structure.patch#/openSUSE-0005-x86-KVM-Clean-up-host-s-steal-time-structure.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -912,8 +905,6 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 %endif
 
 %endif
-
-Source4005: https://github.com/Tk-Glitch/PKGBUILDS/raw/15fdf755a0f48e923e7859caf1026f0fbce6850d/linux55-tkg/linux55-tkg-patches/0007-v5.5-fsync.patch#/tkg-0007-v5.5-fsync.patch
 
 %if !0%{?zen}
 Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1439,8 +1430,6 @@ git am %{patches}
 %if !0%{?post_factum} && !0%{?zen}
 $patch_command -i %{SOURCE4000}
 %endif
-
-$patch_command -i %{SOURCE4005}
 
 # END OF PATCH APPLICATIONS
 
@@ -2611,6 +2600,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.3-500.chinfo
+- 5.5.3
+
 * Tue Feb 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.2-500.chinfo
 - 5.5.2
 - stabilization sync

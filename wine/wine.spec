@@ -1,6 +1,6 @@
-%global commit f909d18baf1d97831c55a1d47610427ac2084ca3
+%global commit 0df9cce29d0d32d3f1f13c4ec4eabc81675a17ed
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200207
+%global date 20200210
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -39,26 +39,29 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver c26be86c42e046eaa781b4b269f1d9b2530a5aad
+%global wine_stagingver b3f1e5566f86f06dce547374808a895c93abd126
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id f1b0f2d4128b66905faf9435dfa7ee5272145327
+%global tkg_id 918392ead04ea9083912f046d1b15e2a0642b21a
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
+# proton FS hack (wine virtual desktop with DXVK is not working well)
+%global fshack 0
 # Broken
 %global pba 0
 
 %global fsync_spincounts 0
 
-# proton FS hack
+%if 0%{?fshack}
 %global wine_staging_opts -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
 %global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput-mouse -W user32-rawinput-nolegacy -W user32-rawinput-mouse-experimental -W user32-rawinput-hid -W winex11-key_translation
+%endif
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global valve_url https://github.com/ValveSoftware/wine
@@ -80,7 +83,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.1
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -131,16 +134,7 @@ Source150:      wine.appdata.xml
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 %if 0%{?wine_staging}
-Patch100:       %{whq_url}/81f8b6e8c215dc04a19438e4369fcba8f7f4f333#/%{name}-whq-81f8b6e.patch
-Patch101:       %{whq_url}/6dbb153ede48e77a87dddf37e5276276a701c5c3#/%{name}-whq-6dbb153.patch
-Patch102:       %{whq_url}/9ae8da6bb4a8f66d55975fa0f14e5e413756d324#/%{name}-whq-9ae8da6.patch
-Patch103:       %{whq_url}/de94cfa775f9f41d1d65cbd8e7bf861cd7f9a871#/%{name}-whq-de94cfa.patch
-Patch104:       %{whq_url}/413aad39135b0b0f8255500b85fcc05337a5f138#/%{name}-whq-413aad3.patch
-Patch105:       %{whq_url}/99d047724e768822d6508573cd82a5c75b30bdcb#/%{name}-whq-99d0477.patch
-Patch106:       %{whq_url}/914b5519b1cd96f9ae19f1eec226e94af96354b9#/%{name}-whq-914b551.patch
-Patch107:       %{whq_url}/acf03ed9da0f7d3f94de9b47c44366be3ee47f8e#/%{name}-whq-acf03ed.patch
-Patch108:       %{whq_url}/b7b4bacaf99661e07c2f07a0260680b4e8bed4f8#/%{name}-whq-b7b4bac.patch
-Patch109:       %{whq_url}/427152ec7b4ee85631617b693dbf1deea763c0ba#/%{name}-whq-427152e.patch
+Patch100:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch120:       %{name}-bug48032.patch
@@ -175,12 +169,15 @@ Patch703:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch704:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch705:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 
+# fsync
 Patch720:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
 Patch721:       %{tkg_url}/proton/fsync-staging-no_alloc_handle.patch#/%{name}-tkg-fsync-staging-no_alloc_handle.patch
+# FS Hack
 Patch722:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch723:       %{tkg_url}/proton/proton-rawinput.patch#/%{name}-tkg-proton-rawinput.patch
 Patch724:       %{tkg_url}/proton-tkg-specific/proton-vk-bits-4.5.patch#/%{name}-tkg-proton-vk-bits-4.5.patch
 Patch725:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-tkg-proton_fs_hack_integer_scaling.patch
+
 Patch726:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 Patch727:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch728:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
@@ -189,8 +186,9 @@ Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spin
 Patch800:       revert-grab-fullscreen.patch
 Patch801:       %{valve_url}/commit/8ef1125a8f08454ac2e2136d910374555584949d.patch#/%{name}-valve-8ef1125.patch
 Patch802:       %{valve_url}/commit/7778c1cbd59dd676943aa1df7e76d32b3eee8567.patch#/%{name}-valve-7778c1c.patch
-Patch803:       %{valve_url}/commit/a4310c0cf1e27f0a90f737c2e7cfe9cdbde07522.patch#/%{name}-valve-a4310c0.patch
-Patch804:       wine-xaudio2-pulseaudio-app-name.patch
+Patch803:       %{valve_url}/commit/4aa052e0c8ae276fc07afcd93d6e290a88214837.patch#/%{name}-valve-4aa052e.patch
+Patch804:       %{valve_url}/commit/a4310c0cf1e27f0a90f737c2e7cfe9cdbde07522.patch#/%{name}-valve-a4310c0.patch
+Patch805:       wine-xaudio2-pulseaudio-app-name.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -756,16 +754,9 @@ This package adds the opencl driver for wine.
 %endif
 
 %if 0%{?wine_staging}
-%patch109 -p1 -R
-%patch108 -p1 -R
-%patch107 -p1 -R
-%patch106 -p1 -R
-%patch105 -p1 -R
-%patch104 -p1 -R
-%patch103 -p1 -R
-%patch102 -p1 -R
-%patch101 -p1 -R
+%if 0%{?fshack}
 %patch100 -p1 -R
+%endif
 %patch120 -p1
 %endif
 
@@ -790,6 +781,7 @@ sed -e '/x3daudio.h \\/a\	xact3wb.h \\' -i include/Makefile.in
 %patch802 -p1
 %patch803 -p1
 %patch804 -p1
+%patch805 -p1
 
 %patch5000 -p1
 
@@ -808,6 +800,7 @@ cp -p %{S:1001} README-pba-pkg
 
 %patch720 -p1
 %patch721 -p1
+%if 0%{?fshack}
 %patch722 -p1
 %patch723 -p1
 patch -p1 -i patches/winex11-key_translation/0001-winex11-Match-keyboard-in-Unicode.patch
@@ -815,14 +808,17 @@ patch -p1 -i patches/winex11-key_translation/0002-winex11-Fix-more-key-translati
 patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-keyboard-layout.patch
 %patch724 -p1
 %patch725 -p1
+%endif
 %patch726 -p1
 %patch727 -p1
 %patch728 -p1
 %if 0%{?fsync_spincounts}
 %patch790 -p1
 %endif
-%patch800 -p1 -R
 
+%if 0%{?fshack}
+%patch800 -p1 -R
+%endif
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -2488,6 +2484,11 @@ fi
 
 
 %changelog
+* Tue Feb 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.1-102.20200210git0df9cce
+- New snapshot
+- tkg sync
+- FS hack switch, disabled for the time
+
 * Sun Feb 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.1-101.20200207gitf909d18
 - New snapshot
 

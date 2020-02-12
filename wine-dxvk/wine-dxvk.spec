@@ -26,11 +26,10 @@
 
 %global winedll dll%{?libext}
 
-%global pge_id 16463c951546924ad03454f9721a78093cbb682d
-%global pge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{pge_id}/game-patches-testing/dxvk-patches
-
 %global tkg_id e3d5a83aae06c5c63003bd1da2b7f6ed40db5a8e
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/dxvk-tools/DXVKBUILD/patches
+
+%global valve_url https://github.com/ValveSoftware/dxvk
 
 %global dxvk_async 1
 
@@ -62,7 +61,7 @@ Source3:        wine%{pkgname}cfg
 Source4:        README.async
 
 %if 0%{?dxvk_async}
-Patch100:       %{pge_url}/valve-dxvk-avoid-spamming-log-with-requests-for-IWineD3D11Texture2D.patch#/%{name}-pge-valve-dxvk-avoid-spamming-log-with-requests-for-IWineD3D11Texture2D.patch
+Patch100:       %{valve_url}/commit/5388a8db837f7dd61e331eebf7ffa24c554c75e9.patch#/%{name}-valve-5388a8d.patch
 Patch101:       %{tkg_url}/dxvk-async.dxvkpatchb#/%{name}-tkg-dxvk-async.patch
 Patch103:       0001-dxvk.conf-async-option.patch
 %endif

@@ -59,7 +59,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        20.0.0~rc2
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -116,6 +116,7 @@ BuildRequires:  pkgconfig(libdrm_etnaviv) >= 2.4.89
 BuildRequires:  pkgconfig(libdrm) >= 2.4.89
 %endif
 BuildRequires:  pkgconfig(expat)
+BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libselinux)
 BuildRequires:  pkgconfig(wayland-scanner)
@@ -673,6 +674,9 @@ popd
 
 
 %changelog
+* Tue Feb 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.0~rc2-101
+- BR: ZSTD cache support
+
 * Fri Feb 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.0~rc2-100
 - 20.0.0-rc2
 - vulkan-overlay
