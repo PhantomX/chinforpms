@@ -25,7 +25,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        1.9.10
+Version:        1.9.13
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -42,9 +42,6 @@ ExclusiveArch:  x86_64
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}%{tarsuffix}.tar.gz
 
 Source20:       thunar-sendto-%{name}.desktop
-
-# Permanent downstream patches...
-Patch12:        cmake_helpers-system-qrcode.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -123,6 +120,7 @@ BuildRequires:  opus-devel
 
 Provides:       bundled(libtgvoip) = 0~git%{shortcommit16}
 %endif
+Provides: bundled(lxqt-qtplugin) = 0.14.0~git
 
 
 %description
@@ -145,7 +143,7 @@ business messaging needs.
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,lz4,minizip,variant,xxHash}
+rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,libdbusmenu-qt,lz4,minizip,variant,xxHash}
 
 %if 0%{with_sysrlottie}
   rm -rf Telegram/ThirdParty/rlottie
@@ -189,8 +187,10 @@ pushd %{_target_platform}
        -DTDESKTOP_API_ID=%{apiid} \
        -DTDESKTOP_API_HASH=%{apihash} \
        -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
+       -DDESKTOP_APP_USE_PACKAGED_GSL:BOOL=ON \
        -DDESKTOP_APP_USE_PACKAGED_EXPECTED:BOOL=ON \
        -DDESKTOP_APP_USE_PACKAGED_VARIANT:BOOL=ON \
+       -DDESKTOP_APP_USE_PACKAGED_QRCODE:BOOL=ON \
 %if %{without fonts}
        -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=OFF \
 %endif
@@ -242,6 +242,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Wed Feb 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.13-100
+- 1.9.13
+
 * Mon Feb 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.10-100
 - 1.9.10
 - BR: dbusmenu-qt5-devel
