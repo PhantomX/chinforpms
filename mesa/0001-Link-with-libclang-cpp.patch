@@ -1,0 +1,37 @@
+From c9987fca1fa611e48f85644493edd8d5a30cf403 Mon Sep 17 00:00:00 2001
+From: Tom Stellard <tstellar@redhat.com>
+Date: Fri, 13 Dec 2019 17:42:17 +0000
+Subject: [PATCH] Link with libclang-cpp
+
+---
+ src/gallium/targets/opencl/meson.build | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
+
+diff --git a/src/gallium/targets/opencl/meson.build b/src/gallium/targets/opencl/meson.build
+index 907cc74337d..031d35b9716 100644
+--- a/src/gallium/targets/opencl/meson.build
++++ b/src/gallium/targets/opencl/meson.build
+@@ -43,19 +43,7 @@ libopencl = shared_library(
+   dependencies : [
+     idep_mesautil,
+     dep_clock, dep_dl, dep_unwind, dep_elf,
+-    cpp.find_library('clangCodeGen', dirs : llvm_libdir),
+-    cpp.find_library('clangFrontendTool', dirs : llvm_libdir),
+-    cpp.find_library('clangFrontend', dirs : llvm_libdir),
+-    cpp.find_library('clangDriver', dirs : llvm_libdir),
+-    cpp.find_library('clangSerialization', dirs : llvm_libdir),
+-    cpp.find_library('clangParse', dirs : llvm_libdir),
+-    cpp.find_library('clangSema', dirs : llvm_libdir),
+-    cpp.find_library('clangAnalysis', dirs : llvm_libdir),
+-    cpp.find_library('clangAST', dirs : llvm_libdir),
+-    cpp.find_library('clangASTMatchers', dirs : llvm_libdir),
+-    cpp.find_library('clangEdit', dirs : llvm_libdir),
+-    cpp.find_library('clangLex', dirs : llvm_libdir),
+-    cpp.find_library('clangBasic', dirs : llvm_libdir),
++    cpp.find_library('clang-cpp', dirs : llvm_libdir),
+   ],
+   version : '@0@.0.0'.format(opencl_version),
+   install : true,
+-- 
+2.20.1
+

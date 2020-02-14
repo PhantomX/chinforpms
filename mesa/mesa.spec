@@ -58,8 +58,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        20.0.0~rc2
-Release:        101%{?dist}
+Version:        20.0.0~rc3
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -72,6 +72,8 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch3:         0003-evergreen-big-endian.patch
+# https://fedoraproject.org/wiki/Changes/Stop-Shipping-Individual-Component-Libraries-In-clang-lib-Package
+Patch4:         0001-Link-with-libclang-cpp.patch
 
 # Not upstreamed updates from iXit
 Patch50:        %{ixit_url}/fcf28c3314fbad1f236067de316016f92a9683de.patch#/%{name}-ixit-fcf28c3.patch
@@ -382,7 +384,7 @@ cp %{SOURCE1} docs/
 %build
 
 %if 0%{?with_lto}
-MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -fuse-linker-plugin -flto-odr-type-merging"
+MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -ffat-lto-objects -flto-odr-type-merging"
 MESA_COMMON_FLAGS="-falign-functions=32 -fno-semantic-interposition $MESA_LTO_FLAGS"
 MESA_CFLAGS="%(echo %{build_cflags} | sed -e 's/-O2\b/-O3/' -e 's/ -g\b/ -g1/')"
 MESA_CXXFLAGS="%(echo %{build_cxxflags} | sed -e 's/-O2\b/-O3/' -e 's/ -g\b/ -g1/')"
@@ -674,6 +676,12 @@ popd
 
 
 %changelog
+* Thu Feb 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.0~rc3-100
+- 20.0.0-rc3
+
+* Thu Feb 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.0~rc2-102
+- Rawhide sync
+
 * Tue Feb 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.0~rc2-101
 - BR: ZSTD cache support
 

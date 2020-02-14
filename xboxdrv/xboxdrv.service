@@ -8,6 +8,36 @@ User=root
 BusName=org.seul.Xboxdrv
 ExecStart=/bin/xboxdrv -c /etc/xboxdrv/xboxdrv.conf --daemon --dbus system
 
+ProtectSystem=strict
+TemporaryFileSystem=/etc:ro
+BindReadOnlyPaths=-/etc/xboxdrv/xboxdrv.conf
+BindReadOnlyPaths=-/etc/ld.so.preload
+BindReadOnlyPathsPaths=-/etc/ld.so.cache
+BindReadOnlyPathsPaths=-/etc/system-fips
+BindReadOnlyPathsPaths=-/etc/selinux/config
+
+ProtectControlGroups=true
+PrivateTmp=true
+PrivateDevices=false
+
+ProtectHome=true
+#TemporaryFileSystem=/home:ro
+#BindReadOnlyPaths=-/path/to/xboxdrv.conf
+
+IPAddressDeny=any
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+MemoryDenyWriteExecute=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+NoNewPrivileges=true
+CapabilityBoundingSet=
+LockPersonality=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+LimitMEMLOCK=0
+
 [Install]
 WantedBy=multi-user.target
 Alias=dbus-org.seul.Xboxdrv.service
