@@ -10,8 +10,8 @@
 
 Summary:        GStreamer 1.0 streaming media framework "ugly" plug-ins
 Name:           gstreamer1-plugins-ugly
-Version:        1.16.1
-Release:        1%{?dist}
+Version:        1.16.2
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://gstreamer.freedesktop.org/
 Source0:        %{url}/src/%{src_name}/%{src_name}-%{version}.tar.xz
@@ -96,6 +96,9 @@ rm -fv %{buildroot}%{_datadir}/gtk-doc/html/%{src_name}-plugins-1.0/*
 %endif
 
 %changelog
+* Fri Feb 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.16.2-2
+- 1.16.2
+
 * Wed Oct 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.16.1-1
 - Fixes for multilib, do not bump
 

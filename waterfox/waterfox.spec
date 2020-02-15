@@ -1,6 +1,6 @@
-%global commit 45130a237874aaa96bdf23ee107b0be0e0a2afab
+%global commit df884bb1dbafb2c23595ec74b0fd74bc92e5c3c7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200110
+%global date 20200213
 %global with_snapshot 1
 
 %global branch classic
@@ -36,6 +36,8 @@ ExcludeArch: armv7hl
 %global system_webp       1
 %global system_libicu     0
 %global system_jpeg       1
+
+%global eme               0
 
 %global run_tests         0
 
@@ -128,8 +130,8 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2020.01
-Release:        2.%{branch}%{?gver}%{?dist}
+Version:        2020.02
+Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -430,7 +432,7 @@ done
 # 2: no apply
 # 3: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1379148 1393235 1393283 1395486 1430508 1433747 1452576 1453127 1466606 \
+  702179 991253 1021761 1144632 1288587 1379148 1393235 1393283 1395486 1430508 1433747 1452576 1453127 1466606 1469257 \
   1384121 1388744 1413143 \
   1447519
 do
@@ -455,6 +457,8 @@ done
 %patch26 -p1 -b .icu
 %patch36 -p2 -b .xlocale
 %endif
+
+ln -s media/test dom/test
 
 cp %{SOURCE26} .
 sed -e 's|_BRANCH_|%{channel}|g' -i distribution.ini
@@ -598,6 +602,12 @@ echo "ac_add_options --disable-stylo" >> .mozconfig
 echo "ac_add_options --enable-rust-simd" >> .mozconfig
 %else
 echo "ac_add_options --disable-rust-simd" >> .mozconfig
+%endif
+
+%if 0%{?eme}
+echo "ac_add_options --enable-eme=widevine" >> .mozconfig
+%else
+echo "ac_add_options --disable-eme" >> .mozconfig
 %endif
 
 # Remove executable bit to make brp-mangle-shebangs happy.
@@ -1021,6 +1031,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Feb 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.02-1.classic.20200213gitdf884bb
+- 2020.02
+- eme optional support switch, disabled by default
+
 * Thu Jan 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.01-2.classic.20200110git45130a2
 - PGO crash fix try #1
 

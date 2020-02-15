@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 5b966c77963fa8836f6f314a10fcbd6c6a1b5dba
+%global pfcommit 79ef8a4aaeb33761ca2fbe6a4042aa97f123d981
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 994cf1f3cd948310f125c08ff9cbaedf6ec78671
+%global opensuse_id d88857662ee60df6a540a91e99d242dd1201c624
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -837,6 +837,8 @@ Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
 Patch313: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
 # https://github.com/raspberrypi/linux/commit/c74b1b53254016fd83b580b8d49bb02d72ce4836
 Patch314: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
+# https://patchwork.kernel.org/patch/11372935/
+Patch315: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch 
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
@@ -2600,6 +2602,9 @@ fi
 #
 #
 %changelog
+* Fri Feb 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.4-500.chinfo
+- 5.5.4 - pf4
+
 * Tue Feb 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.3-500.chinfo
 - 5.5.3
 
