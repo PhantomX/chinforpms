@@ -1,7 +1,7 @@
 %global commit 0df9cce29d0d32d3f1f13c4ec4eabc81675a17ed
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200210
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver b3f1e5566f86f06dce547374808a895c93abd126
+%global wine_stagingver 5.2
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 918392ead04ea9083912f046d1b15e2a0642b21a
+%global tkg_id bd2185f923662e8da0b89faa464bd575b03049fc
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -82,8 +82,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.1
-Release:        102%{?gver}%{?dist}
+Version:        5.2
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2082,6 +2082,7 @@ fi
 %{_libdir}/wine/vcruntime140.%{winedll}
 %{_libdir}/wine/vcruntime140_1.%{winedll}
 %{_libdir}/wine/vdmdbg.%{winedll}
+%{_libdir}/wine/vga.%{winedll}
 %{_libdir}/wine/version.%{winedll}
 %{_libdir}/wine/virtdisk.%{winedll}
 %{_libdir}/wine/vssapi.%{winedll}
@@ -2281,7 +2282,73 @@ fi
 %{_datadir}/wine/wine.inf
 %{_datadir}/wine/winebus.inf
 %{_datadir}/wine/winehid.inf
-%{_datadir}/wine/l_intl.nls
+%{_datadir}/wine/nls/c_037.nls
+%{_datadir}/wine/nls/c_10000.nls
+%{_datadir}/wine/nls/c_10001.nls
+%{_datadir}/wine/nls/c_10002.nls
+%{_datadir}/wine/nls/c_10003.nls
+%{_datadir}/wine/nls/c_10004.nls
+%{_datadir}/wine/nls/c_10005.nls
+%{_datadir}/wine/nls/c_10006.nls
+%{_datadir}/wine/nls/c_10007.nls
+%{_datadir}/wine/nls/c_10008.nls
+%{_datadir}/wine/nls/c_10010.nls
+%{_datadir}/wine/nls/c_10017.nls
+%{_datadir}/wine/nls/c_10021.nls
+%{_datadir}/wine/nls/c_10029.nls
+%{_datadir}/wine/nls/c_10079.nls
+%{_datadir}/wine/nls/c_10081.nls
+%{_datadir}/wine/nls/c_10082.nls
+%{_datadir}/wine/nls/c_1026.nls
+%{_datadir}/wine/nls/c_1250.nls
+%{_datadir}/wine/nls/c_1251.nls
+%{_datadir}/wine/nls/c_1252.nls
+%{_datadir}/wine/nls/c_1253.nls
+%{_datadir}/wine/nls/c_1254.nls
+%{_datadir}/wine/nls/c_1255.nls
+%{_datadir}/wine/nls/c_1256.nls
+%{_datadir}/wine/nls/c_1257.nls
+%{_datadir}/wine/nls/c_1258.nls
+%{_datadir}/wine/nls/c_1361.nls
+%{_datadir}/wine/nls/c_20127.nls
+%{_datadir}/wine/nls/c_20866.nls
+%{_datadir}/wine/nls/c_20932.nls
+%{_datadir}/wine/nls/c_21866.nls
+%{_datadir}/wine/nls/c_28591.nls
+%{_datadir}/wine/nls/c_28592.nls
+%{_datadir}/wine/nls/c_28593.nls
+%{_datadir}/wine/nls/c_28594.nls
+%{_datadir}/wine/nls/c_28595.nls
+%{_datadir}/wine/nls/c_28596.nls
+%{_datadir}/wine/nls/c_28597.nls
+%{_datadir}/wine/nls/c_28598.nls
+%{_datadir}/wine/nls/c_28599.nls
+%{_datadir}/wine/nls/c_28603.nls
+%{_datadir}/wine/nls/c_28605.nls
+%{_datadir}/wine/nls/c_437.nls
+%{_datadir}/wine/nls/c_500.nls
+%{_datadir}/wine/nls/c_737.nls
+%{_datadir}/wine/nls/c_775.nls
+%{_datadir}/wine/nls/c_850.nls
+%{_datadir}/wine/nls/c_852.nls
+%{_datadir}/wine/nls/c_855.nls
+%{_datadir}/wine/nls/c_857.nls
+%{_datadir}/wine/nls/c_860.nls
+%{_datadir}/wine/nls/c_861.nls
+%{_datadir}/wine/nls/c_862.nls
+%{_datadir}/wine/nls/c_863.nls
+%{_datadir}/wine/nls/c_864.nls
+%{_datadir}/wine/nls/c_865.nls
+%{_datadir}/wine/nls/c_866.nls
+%{_datadir}/wine/nls/c_869.nls
+%{_datadir}/wine/nls/c_874.nls
+%{_datadir}/wine/nls/c_875.nls
+%{_datadir}/wine/nls/c_932.nls
+%{_datadir}/wine/nls/c_936.nls
+%{_datadir}/wine/nls/c_949.nls
+%{_datadir}/wine/nls/c_950.nls
+%{_datadir}/wine/nls/l_intl.nls
+
 
 %files common
 %{_bindir}/notepad
@@ -2484,6 +2551,9 @@ fi
 
 
 %changelog
+* Sun Feb 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.2-100
+- 5.2
+
 * Tue Feb 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.1-102.20200210git0df9cce
 - New snapshot
 - tkg sync

@@ -47,7 +47,7 @@ ExcludeArch: armv7hl
 
 %global build_with_clang  0
 %ifnarch %{ix86} ppc64 s390x
-%global build_with_pgo    1
+%global build_with_pgo    0
 %endif
 
 %ifarch x86_64
@@ -131,7 +131,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        2020.02
-Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
+Release:        2%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -1031,6 +1031,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Sun Feb 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.02-2.classic.20200213gitdf884bb
+- Disable PGO again
+
 * Fri Feb 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.02-1.classic.20200213gitdf884bb
 - 2020.02
 - eme optional support switch, disabled by default

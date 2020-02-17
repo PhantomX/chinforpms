@@ -9,7 +9,7 @@
 Name:           steam
 Version:        1.0.0.61
 Epoch:          1
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        Installer for the Steam software distribution service
 # Redistribution and repackaging for Linux is allowed, see license file
 License:        Steam License Agreement
@@ -25,17 +25,14 @@ Source4:        %{name}.appdata.xml
 # https://github.com/ValveSoftware/steam-for-linux/issues/3384
 # https://bugzilla.kernel.org/show_bug.cgi?id=28912
 # https://github.com/denilsonsa/udev-joystick-blacklist
-#
+
 # Input devices seen as joysticks:
-Source8:        https://raw.githubusercontent.com/denilsonsa/udev-joystick-blacklist/master/after_kernel_4_9/51-these-are-not-joysticks-rm.rules
-# First generation Nvidia Shield controller seen as mouse:
-Source9:        https://raw.githubusercontent.com/cyndis/shield-controller-config/master/99-shield-controller.rules
+Source6:        https://raw.githubusercontent.com/denilsonsa/udev-joystick-blacklist/master/after_kernel_4_9/51-these-are-not-joysticks-rm.rules
 
 Source10:       README.Fedora
 
-# Remove temporary leftover files after run (fixes multiuser):
-# https://github.com/ValveSoftware/steam-for-linux/issues/3570
-Patch0:         %{name}-3570.patch
+# Updated UDEV rules
+Patch0:         %{name}-udev-rules-update.patch
 
 # Remove libstdc++ from runtime:
 # https://github.com/ValveSoftware/steam-for-linux/issues/3273
@@ -112,8 +109,8 @@ Requires:       libatomic%{?_isa}
 # Required by Shank
 Requires:       alsa-plugins-pulseaudio%{?_isa}
 
-Recommends:     gamemode
-Recommends:     gamemode%{?_isa}
+Requires:       gamemode
+Requires:       gamemode%{?_isa}
 
 Provides:       steam-noruntime = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      steam-noruntime < %{?epoch:%{epoch}:}%{version}-%{release}
@@ -147,7 +144,7 @@ rm -fr %{buildroot}%{_docdir}/%{name}/ \
 
 mkdir -p %{buildroot}%{_udevrulesdir}/
 install -m 644 -p lib/udev/rules.d/* \
-    %{SOURCE8} %{SOURCE9} %{buildroot}%{_udevrulesdir}/
+    %{SOURCE6} %{buildroot}%{_udevrulesdir}/
 
 desktop-file-edit \
   --remove-category="Network" \
@@ -183,6 +180,9 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 
 
 %changelog
+* Sun Feb 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.61-103
+- RPMFusion sync
+
 * Sun Sep 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.61-102
 - Remove unneeded firewalld file
 
