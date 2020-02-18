@@ -1,14 +1,14 @@
-%global commit e4a6ba94efe4b2dd6400d7ba78234fa8edade407
+%global commit 876e342d8735d32d66d57810bcc27721a87a47b2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190329
+%global date 20191231
 %global with_snapshot 1
 
 # Enable ffmpeg support
 %bcond_with ffmpeg
 # Enable Qt build (build broken, vulkan issues)
-%bcond_with qt
+%bcond_without qt
 
-%global commit1 0a4a794b7d83dc14d1ca795bbede108ffd8bb775
+%global commit1 3bca3e3fe0aaf1188b49c5df50921a3f727602e7
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 addrlib
 
@@ -28,19 +28,19 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 excmd
 
-%global commit6 383948922fef42ab0e2de628563c1c1caf6c19d9
+%global commit6 ec6c5c4a75920f5ff659abcb364aec88b8170d2c
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
-%global srcname6 fixed_point
+%global srcname6 cnl
 
-%global commit7 295a0d84d947be5cd623daa240b0ce038c560063
+%global commit7 071794ec654a7c503b6214de4032c8ec8a07440b
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 fmt
 
-%global commit8 f32808fdc4f684e51b2efc9f91ab71dc082d0ad0
+%global commit8 664a1674abdb346d0c101028a6679bc54211d40c
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
-%global srcname8 glbinding
+%global srcname8 Qt-Advanced-Docking-System
 
-%global commit9 1bc601c674aecc2fee0dee8ff7a118db76b4c439
+%global commit9 3aac2d44b20d2fcedfbded41ca3cfa932b90ae6f
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 glslang
 
@@ -60,7 +60,7 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 cpp-peglib
 
-%global commit14 b6b9d835c588c35227410a9830e7a4586f90777a
+%global commit14 1586c4b0c7ed1e8d8d9b4f2d8aa80ff3a31c5728
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 spdlog
 
@@ -92,7 +92,7 @@ Source4:        https://github.com/skystrife/%{srcname4}/archive/%{commit4}/%{sr
 Source5:        https://github.com/exjam/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/johnmcfarlane/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/fmtlib/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
-Source8:        https://github.com/cginternals/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+Source8:        https://github.com/githubuser0xFFFF/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source9:        https://github.com/KhronosGroup/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       %{vc_url}/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
@@ -101,7 +101,8 @@ Source13:       https://github.com/yhirose/%{srcname13}/archive/%{commit13}/%{sr
 Source14:       https://github.com/gabime/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 
 Patch0:         0001-Use-system-libraries.patch
-Patch1:         0001-Fix-includes.patch
+
+ExclusiveArch:  x86_64
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -114,11 +115,15 @@ BuildRequires:  pkgconfig(libswscale)
 %endif
 BuildRequires:  cmake(cereal)
 BuildRequires:  pugixml-devel
+BuildRequires:  pkgconfig(libcares)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libcrypto)
+BuildRequires:  pkgconfig(libuv)
+#BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(sdl2)
-#BuildRequires:  pkgconfig(vulkan)
+#BuildRequires:  pkgconfig(vulkan) >= 1.1.92.1
+#BuildRequires:  vulkan-validation-layers-devel
 BuildRequires:  pkgconfig(zlib)
 %if %{with qt}
 BuildRequires:  pkgconfig(Qt5Core)
@@ -134,6 +139,9 @@ BuildRequires:  hicolor-icon-theme
 BuildRequires:  shared-mime-info
 
 Requires:       dejavu-sans-fonts
+
+Provides:       bundled(fmt) = 6.1.0
+
 
 %description
 %{name} is a researching Wii U emulator.
@@ -172,9 +180,9 @@ tar -xf %{S:2} -C libraries/libbinrec --strip-components 1
 tar -xf %{S:3} -C libraries/catch --strip-components 1
 tar -xf %{S:4} -C libraries/cpptoml --strip-components 1
 tar -xf %{S:5} -C libraries/excmd --strip-components 1
-tar -xf %{S:6} -C libraries/fixed_point --strip-components 1
+tar -xf %{S:6} -C libraries/cnl --strip-components 1
 tar -xf %{S:7} -C libraries/fmt --strip-components 1
-tar -xf %{S:8} -C libraries/glbinding --strip-components 1
+tar -xf %{S:8} -C libraries/qtads --strip-components 1
 tar -xf %{S:9} -C libraries/glslang --strip-components 1
 tar -xf %{S:10} -C libraries/gsl-lite --strip-components 1
 tar -xf %{S:11} -C libraries/imgui --strip-components 1
@@ -208,15 +216,17 @@ export TRAVIS_REPO_SLUG=%{name}/%{name}-nightly
 export TRAVIS_TAG="%{version}-%{release}"
 %endif
 
-export CXXFLAGS="%(pkg-config --silence-errors --cflags-only-I libavformat || :) %{build_cxxflags} -fpermissive"
+export CXXFLAGS="%{build_cxxflags} -fpermissive"
+%if %{with ffmpeg}
+export CXXFLAGS+="%(pkg-config --silence-errors --cflags-only-I libavformat || :)"
+%endif
 
 #FIXME: vulkan failing to build
 %cmake .. \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
-  -DOpenGL_GL_PREFERENCE=GLVND \
-  -DDECAF_VULKAN:BOOL=OFF \
-%if %{with qt}
-  -DDECAF_QT:BOOL=ON \
+  -DDECAF_VULKAN:BOOL=ON \
+%if !%{with qt}
+  -DDECAF_QT:BOOL=OFF \
 %endif
 %if !%{with ffmpeg}
   -DDECAF_FFMPEG:BOOL=OFF \

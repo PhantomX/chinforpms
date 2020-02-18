@@ -1,6 +1,6 @@
-From 2f8c718e4e21d9656cc4b8185aef9d07dc0523ff Mon Sep 17 00:00:00 2001
+From bad206440dc17c03f7411ac4195e6d1458ceabe9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 24 Apr 2019 15:50:08 -0300
+Date: Mon, 17 Feb 2020 14:07:41 -0300
 Subject: [PATCH] Use system libraries
 
 Findpugixml.cmake from Dolphin-emu project:
@@ -32,24 +32,24 @@ index 0000000..e026b8d
 +  )
 +endif()
 diff --git a/libraries/CMakeLists.txt b/libraries/CMakeLists.txt
-index 900ef06..ac567d3 100644
+index 32fcdab..c17e57e 100644
 --- a/libraries/CMakeLists.txt
 +++ b/libraries/CMakeLists.txt
-@@ -24,9 +24,10 @@ set_target_properties(catch2 PROPERTIES
+@@ -22,9 +22,10 @@ set_target_properties(catch2 PROPERTIES
      INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/catch/single_include/catch2")
  
  # cereal
 -add_library(cereal INTERFACE IMPORTED GLOBAL)
 -set_target_properties(cereal PROPERTIES
 -    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/cereal/include")
-+ADD_LIBRARY(cereal INTERFACE)
-+TARGET_INCLUDE_DIRECTORIES(
++add_library(cereal INTERFACE)
++target_include_directories(
 +    cereal INTERFACE include
 +)
  
- # cpptoml
- add_library(cpptoml INTERFACE IMPORTED GLOBAL)
-@@ -189,11 +190,7 @@ set_target_properties(peglib PROPERTIES
+ # cnl
+ add_library(cnl INTERFACE IMPORTED GLOBAL)
+@@ -94,11 +95,7 @@ set_target_properties(peglib PROPERTIES
      INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/cpp-peglib")
  
  # pugixml
@@ -61,7 +61,7 @@ index 900ef06..ac567d3 100644
 +find_package(pugixml)
  
  # spdlog
- add_library(spdlog INTERFACE IMPORTED GLOBAL)
+ add_subdirectory(spdlog)
 -- 
-2.21.0
+2.24.1
 
