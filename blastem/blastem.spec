@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
-%global commit 59a83c21d9d2
-%global date 20200109
+%global commit 5433252329fb
+%global date 20200216
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,7 +10,7 @@
 
 Name:           blastem
 Version:        0.6.2
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPLv3
@@ -64,7 +64,7 @@ for i in dis zdis stateview vgmplay termhelper ;do
 done
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/{images,shaders}
-install -pm0644 rom.db default.cfg %{buildroot}%{_datadir}/%{name}/
+install -pm0644 rom.db default.cfg systems.cfg %{buildroot}%{_datadir}/%{name}/
 install -pm0644 images/*.png %{buildroot}%{_datadir}/%{name}/images/
 install -pm0644 shaders/*.glsl %{buildroot}%{_datadir}/%{name}/shaders/
 
@@ -101,6 +101,9 @@ done
 
 
 %changelog
+* Wed Feb 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.6.2-3.20200216git5433252329fb
+- Bump
+
 * Sun Feb 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.6.2-2.20200109git59a83c21d9d2
 - New snapshot
 

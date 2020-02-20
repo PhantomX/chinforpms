@@ -33,7 +33,7 @@
 
 Name:           gtk3
 Version:        3.24.14
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -44,8 +44,6 @@ Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -
 Source1:        %{mushroom_url}/archive/%{mushroom_ver}/gtk3-mushrooms-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
 Source3:        gtk3-mushrooms-gtk-3.2.12-fix.patch
-
-Patch10:        0001-Revert-Annotate-GtkTreeModelSort.new_with_model-appr.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -394,6 +392,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Wed Feb 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.14-101
+- Remove new_with_model revert, is a perl-Gtk3 issue
+
 * Mon Feb 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.14-100
 - 3.24.14
 
