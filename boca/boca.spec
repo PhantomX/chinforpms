@@ -1,11 +1,11 @@
-%global smoothver 0.9.0
+%global smoothver 0.9.2
 
 %global sanitize 0
 
 %global systemlibs systemlibexpat,systemliburiparser,systemlibxspf,systemzlib
 
-Name:           freac-cdk
-Version:        1.1~beta1
+Name:           boca
+Version:        1.0~beta3
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac
 
@@ -32,6 +32,9 @@ BuildRequires:  pkgconfig(xspf)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  smooth-devel >= %{smoothver}
 
+Obsoletes:      freac-cdk < 1.2
+Provides:       freac-cdk = 1.2
+
 
 %description
 The fre:ac Component Development Kit (CDK) enables software developers
@@ -42,6 +45,8 @@ to create custom BoCA components for fre:ac development releases.
 Summary:        %{summary} development files
 Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       smooth-devel%{?_isa} >= %{smoothver}
+Obsoletes:      freac-cdk-devel < 1.2
+Provides:       freac-cdk-devel = 1.2
 
 %description devel
 The %{name}-devel package contains the development files needed for 
@@ -108,25 +113,6 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 
 %changelog
-* Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~beta1-1
-- 1.1-beta1
-
-* Tue Apr 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20190423-1
-- 1.1-alpha-20190423
-- BR: pkgconfig(libpulse)
-
-* Wed Jan 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20181201-2
-- devel: R: smooth-devel
-- Clean tarball
-
-* Tue Dec 04 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20181201-1
-- 1.1-alpha-20181201
-
-* Sun Sep 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-0.3.alpha.20180913
-- 1.1-20180913
-
-* Fri Jul 13 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-0.2.alpha.20180710
-- 1.1-20180710
-
-* Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.1-0.1.alpha.20180306
+* Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0~beta3-1
 - Initial spec
+- Replaces freac-cdk

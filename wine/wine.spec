@@ -1,7 +1,7 @@
-%global commit 0df9cce29d0d32d3f1f13c4ec4eabc81675a17ed
+%global commit b253bd65658fe7dde8e50d7f7e6930cd215282df
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200210
-%global with_snapshot 0
+%global date 20200221
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.2
+%global wine_stagingver 469cbe7ed827636c48007badd9f70e23087273ce
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id bd2185f923662e8da0b89faa464bd575b03049fc
+%global tkg_id 6790bc8ad0f5042b3606072f2c1e6b15eef38262
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -83,7 +83,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.2
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -1339,6 +1339,7 @@ fi
 %dir %{_libdir}/wine/fakedlls
 %{_libdir}/wine/fakedlls/*
 
+%{_libdir}/wine/activeds.tlb
 %{_libdir}/wine/attrib.%{wineexe}
 %{_libdir}/wine/arp.%{wineexe}
 %{_libdir}/wine/aspnet_regiis.%{wineexe}
@@ -1989,6 +1990,7 @@ fi
 %{_libdir}/wine/propsys.%{winedll}
 %{_libdir}/wine/psapi.%{winedll}
 %{_libdir}/wine/pstorec.%{winedll}
+%{_libdir}/wine/qasf.%{winedll}
 %{_libdir}/wine/qcap.dll.so
 %{_libdir}/wine/qedit.%{winedll}
 %{_libdir}/wine/qmgr.%{winedll}
@@ -2348,7 +2350,11 @@ fi
 %{_datadir}/wine/nls/c_949.nls
 %{_datadir}/wine/nls/c_950.nls
 %{_datadir}/wine/nls/l_intl.nls
-
+%{_datadir}/wine/nls/normidna.nls
+%{_datadir}/wine/nls/normnfc.nls
+%{_datadir}/wine/nls/normnfd.nls
+%{_datadir}/wine/nls/normnfkc.nls
+%{_datadir}/wine/nls/normnfkd.nls
 
 %files common
 %{_bindir}/notepad
@@ -2551,6 +2557,9 @@ fi
 
 
 %changelog
+* Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.2-101.20200221gitb253bd6
+- Snapshot
+
 * Sun Feb 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.2-100
 - 5.2
 

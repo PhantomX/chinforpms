@@ -13,23 +13,23 @@
 
 %global pkgname amdvlk
 
-%global commit1 08268e9955d48ca075b239ae46328694ddff2413
+%global commit1 a163b38723cbc05f3014d4eaa1936c82bbfbf3ea
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 93f91d8e6258aec02369b63c3248c9fab15c6956
+%global commit2 f5268c3f6f906a3ae430a1aada7f54f70df091e8
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 5ee2a33520138966eb5e2745dd3f2e5401d2f3b6
+%global commit3 8024f27f9457e3235bf4fcde0d2879bbaae7b0f2
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 9fab16015e522fff05890a045a1e9d8d3c23a636
+%global commit4 45f531beaf2c2b0bc2272e63a2da0022f1b07ccf
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
-%global commit5 6c9a5cf8789681e31b9cd3df8af245b9aaa2c259
+%global commit5 e9b2bc3a889ed6ac4f5a47b6c4c58460988e352e
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{pkgname}-spvgen
 
@@ -41,15 +41,15 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 ab7ac60f14ae66006bed5c989a2cfd4c4881704c
+%global commit8 c316fb15fb0ffdcb23b93e824604d31eed46b136
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
-%global commit9 dc77030acc9c6fe7ca21fff54c5a9d7b532d7da6
+%global commit9 5dbc1c32182e17b8ab8e8158a802ecabaf35aad3
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 b0ada80356ca7b560c600b93a596af1331442542
+%global commit10 c12493ff69e21800fb08b6d6e92eb0b9c5cb5efb
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
@@ -62,7 +62,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.1.1
+Version:        2020.1.2
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -233,6 +233,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.1.2-1
+- 2020.Q1.2
+
 * Thu Jan 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.1.1-1
 - 2020.Q1.1
 

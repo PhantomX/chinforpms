@@ -1,5 +1,5 @@
-NAME = freac-cdk
-VERSION ?= 1.1-beta1
+NAME = boca
+VERSION ?= 1.0-beta3
 SANITIZE ?= 1
 CLEAN_PATCH = $(NAME)-clean.patch
 

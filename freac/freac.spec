@@ -1,7 +1,7 @@
-%global smoothver 0.9.0
+%global smoothver 0.9.2
 
 Name:           freac
-Version:        1.1~beta1
+Version:        1.1~beta3
 Release:        1%{?dist}
 Summary:        A free audio converter and CD ripper
 
@@ -13,7 +13,7 @@ Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{ver}.tar.gz
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
-BuildRequires:  freac-cdk-devel
+BuildRequires:  boca-devel
 BuildRequires:  smooth-devel >= %{smoothver}
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  libappstream-glib
@@ -87,6 +87,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.%{
 
 
 %changelog
+* Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.1~beta3-1
+- 1.1-beta3
+
 * Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~beta1-1
 - 1.1-beta1
 

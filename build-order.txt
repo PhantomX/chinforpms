@@ -45,6 +45,7 @@ bcmatroska2
 bctoolbox
 blastem
 bluecurve-icon-theme
+boca
 browsh
 casperjs
 cavestory-nx
@@ -66,7 +67,6 @@ firefox-chinfo-prefs
 firejail
 firetools
 fluxbox-chinfo-menu
-freac-cdk
 fss-parallel-tools
 engrampa
 gamemode

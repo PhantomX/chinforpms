@@ -1,14 +1,14 @@
-%global smoothver 0.9.0
+%global smoothver 0.9.2
 
 %global systemlibs systemlibexpat,systemliburiparser,systemlibxspf,systemzlib
 
 %global decoder faad2 fdkaac mac
 %global encoder faac fdkaac mac voaacenc
 
-%global pkgname freac-cdk
+%global pkgname boca
 
 Name:           %{pkgname}-freeworld
-Version:        1.1~beta1
+Version:        1.0~beta3
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac - freeworld codecs
 
@@ -22,6 +22,10 @@ BuildRequires:  gcc-c++
 BuildRequires:  smooth-devel >= %{smoothver}
 
 Requires:       %{pkgname}%{?_isa} = %{version}
+
+Obsoletes:      freac-cdk-freeworld < 1.2
+Provides:       freac-cdk-freeworld = 1.2
+
 
 %description
 The fre:ac Component Development Kit (CDK) enables software developers
@@ -87,11 +91,6 @@ rm -f %{buildroot}%{_libdir}/*.so
 
 
 %changelog
-* Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~beta1-1
-- 1.1-beta1
-
-* Tue Apr 30 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20190423-1
-- 1.1-alpha-20190423
-
-* Wed Jan 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1~alpha_20181201-1
+* Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0~beta3-1
 - Initial spec
+- Replaces freac-cdk-freeworld

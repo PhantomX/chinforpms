@@ -3,6 +3,7 @@ alac_decoder
 amdgpu-pro-vulkan-driver
 bh-fonts
 binkplayer
+boca-freeworld
 bsnes
 cdrtools
 citra
@@ -12,7 +13,6 @@ discord
 dropboxd
 FAudio-freeworld
 flycast
-freac-cdk-freeworld
 freac-superfast-codecs-freeworld
 gens-gs
 gflash-player
@@ -39,3 +39,4 @@ VirtualBox-guest-additions-iso
 vvvvvv
 vvvvvv-data
 wine-freeworld
+wps-office
