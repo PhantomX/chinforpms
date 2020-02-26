@@ -4,9 +4,9 @@
 %global with_egl 1
 %global with_llvm 0
 
-%global commit 69ee15e5ef369d51681540e6714f02554e3bd8a6
+%global commit 459b47295dd0af91c24d921b4c8f1e17958e8c68
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200131
+%global date 20200225
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,7 +19,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        108%{?gver}%{?dist}
+Release:        109%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -39,6 +39,7 @@ Url:            https://dolphin-emu.org/
 ##Any code in Externals has a license break down in Externals/licenses.md
 License:        GPLv2+ and LGPLv2+ and BSD and MIT and zlib
 
+# Use Makefile do download
 %if 0%{?with_snapshot}
 Source0:        %{pkgname}-%{shortcommit}.tar.xz
 %else
@@ -252,6 +253,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Feb 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-109.20200225git459b472
+- Bump
+
 * Sat Feb 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-108.20200131git69ee15e
 - New snapshot
 

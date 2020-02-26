@@ -24,6 +24,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 %else
+# Use Makefile do download
 %if 0%{?with_snapshot}
 Source0:        %{name}-%{shortcommit}.tar.xz
 %else

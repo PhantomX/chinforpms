@@ -342,26 +342,32 @@ index 80a5674ddb1b..c0d322a859f7 100644
 2.20.1
 
 
-From 9aa9b367e35494f2d02112ca440a78908f645a04 Mon Sep 17 00:00:00 2001
+From 9008dcbcf36b9d67ea24920e05b50c8754488ebd Mon Sep 17 00:00:00 2001
 From: Jaroslav Kysela <perex@perex.cz>
 Date: Fri, 22 Nov 2019 09:31:03 +0100
-Subject: [PATCH 4/4] ASoC: SOF - topology - do not change the link triger
- order for old firmare
+Subject: [PATCH] ASoC: SOF - topology - do not change the link trigger order
+ for pre-1.4 firmware
 
-This is patch for SOF v1.3 firmware. The DSP firmware will crash
+This patch is for SOF v1.3 firmware. The DSP firmware will crash (DSP oops)
 without this patch. The 1.4.1 firmare has this issue fixed.
+
+The ABI version is used for the comparison, because the firmware version
+for the firmware files before 1.4.2 was not set properly (git hash was
+used).
 
 BugLink: https://github.com/thesofproject/sof/issues/2102
 Signed-off-by: Jaroslav Kysela <perex@perex.cz>
+Cc: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc: Mark Brown <broonie@kernel.org>
 ---
  sound/soc/sof/topology.c | 10 +++++++---
  1 file changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index d82ab981e840..cbbbf96416ef 100644
+index 9f4f8868b386..58ff4766b47b 100644
 --- a/sound/soc/sof/topology.c
 +++ b/sound/soc/sof/topology.c
-@@ -2971,6 +2971,7 @@ static int sof_link_load(struct snd_soc_component *scomp, int index,
+@@ -3111,6 +3111,7 @@ static int sof_link_load(struct snd_soc_component *scomp, int index,
  	struct snd_soc_tplg_private *private = &cfg->priv;
  	struct sof_ipc_dai_config config;
  	struct snd_soc_tplg_hw_config *hw_config;
@@ -369,7 +375,7 @@ index d82ab981e840..cbbbf96416ef 100644
  	int num_hw_configs;
  	int ret;
  	int i = 0;
-@@ -2988,9 +2989,12 @@ static int sof_link_load(struct snd_soc_component *scomp, int index,
+@@ -3128,9 +3129,12 @@ static int sof_link_load(struct snd_soc_component *scomp, int index,
  	if (!link->no_pcm) {
  		link->nonatomic = true;
  
@@ -377,7 +383,7 @@ index d82ab981e840..cbbbf96416ef 100644
 -		link->trigger[0] = SND_SOC_DPCM_TRIGGER_POST;
 -		link->trigger[1] = SND_SOC_DPCM_TRIGGER_POST;
 +		/* this causes DSP panic on firmware v1.3 */
-+		if (SOF_ABI_VER(v->major, v->minor, v->micro) > SOF_ABI_VER(3, 7, 0)) {
++		if (v->abi_version > SOF_ABI_VER(3, 7, 0)) {
 +			/* set trigger order */
 +			link->trigger[0] = SND_SOC_DPCM_TRIGGER_POST;
 +			link->trigger[1] = SND_SOC_DPCM_TRIGGER_POST;
@@ -386,5 +392,115 @@ index d82ab981e840..cbbbf96416ef 100644
  		/* nothing more to do for FE dai links */
  		return 0;
 -- 
-2.20.1
+2.24.1
+
+
+From c37c0ab029569a75fd180edb03d411e7a28a936f Mon Sep 17 00:00:00 2001
+From: Hui Wang <hui.wang@canonical.com>
+Date: Wed, 19 Feb 2020 13:23:06 +0800
+Subject: [PATCH] ALSA: hda/realtek - Fix a regression for mute led on Lenovo
+ Carbon X1
+
+Need to chain the THINKPAD_ACPI, otherwise the mute led will not
+work.
+
+Fixes: d2cd795c4ece ("ALSA: hda - fixup for the bass speaker on Lenovo Carbon X1 7th gen")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
+Link: https://lore.kernel.org/r/20200219052306.24935-1-hui.wang@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ sound/pci/hda/patch_realtek.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 477589e7ec1d..31bee0512334 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -6684,6 +6684,8 @@ static const struct hda_fixup alc269_fixups[] = {
+ 	[ALC285_FIXUP_SPEAKER2_TO_DAC1] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = alc285_fixup_speaker2_to_dac1,
++		.chained = true,
++		.chain_id = ALC269_FIXUP_THINKPAD_ACPI
+ 	},
+ 	[ALC256_FIXUP_DELL_INSPIRON_7559_SUBWOOFER] = {
+ 		.type = HDA_FIXUP_PINS,
+-- 
+2.24.1
+
+
+From af7aae1b1f6306a1cda4da393e920a1334eaa3d4 Mon Sep 17 00:00:00 2001
+From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Date: Thu, 6 Feb 2020 22:02:23 +0200
+Subject: [PATCH] ASoC: SOF: Intel: hda: move i915 init earlier
+
+To be compliant with i915 display driver requirements, i915 power-up
+must be done before any HDA communication takes place, including
+parsing the bus capabilities. Otherwise the initial codec probe
+may fail.
+
+Move i915 initialization earlier in the SOF HDA sequence. This
+sequence is now aligned with the snd-hda-intel driver where the
+display_power() call is before snd_hdac_bus_parse_capabilities()
+and rest of the capability parsing.
+
+Also remove unnecessary ifdef around hda_codec_i915_init(). There's
+a dummy implementation provided if CONFIG_SND_SOC_SOF_HDA is not
+enabled.
+
+Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Takashi Iwai <tiwai@suse.de>
+Link: https://lore.kernel.org/r/20200206200223.7715-3-kai.vehmanen@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ sound/soc/sof/intel/hda.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
+index 8fddafb5c1d4..25946a1c2822 100644
+--- a/sound/soc/sof/intel/hda.c
++++ b/sound/soc/sof/intel/hda.c
+@@ -286,6 +286,13 @@ static int hda_init(struct snd_sof_dev *sdev)
+ 	/* HDA base */
+ 	sdev->bar[HDA_DSP_HDA_BAR] = bus->remap_addr;
+ 
++	/* init i915 and HDMI codecs */
++	ret = hda_codec_i915_init(sdev);
++	if (ret < 0) {
++		dev_err(sdev->dev, "error: init i915 and HDMI codec failed\n");
++		return ret;
++	}
++
+ 	/* get controller capabilities */
+ 	ret = hda_dsp_ctrl_get_caps(sdev);
+ 	if (ret < 0)
+@@ -353,15 +360,6 @@ static int hda_init_caps(struct snd_sof_dev *sdev)
+ 	if (bus->ppcap)
+ 		dev_dbg(sdev->dev, "PP capability, will probe DSP later.\n");
+ 
+-#if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA)
+-	/* init i915 and HDMI codecs */
+-	ret = hda_codec_i915_init(sdev);
+-	if (ret < 0) {
+-		dev_err(sdev->dev, "error: init i915 and HDMI codec failed\n");
+-		return ret;
+-	}
+-#endif
+-
+ 	/* Init HDA controller after i915 init */
+ 	ret = hda_dsp_ctrl_init_chip(sdev, true);
+ 	if (ret < 0) {
+@@ -611,6 +609,7 @@ int hda_dsp_probe(struct snd_sof_dev *sdev)
+ 	iounmap(sdev->bar[HDA_DSP_BAR]);
+ hdac_bus_unmap:
+ 	iounmap(bus->remap_addr);
++	hda_codec_i915_exit(sdev);
+ err:
+ 	return ret;
+ }
+-- 
+2.24.1
 

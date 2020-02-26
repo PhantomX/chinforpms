@@ -2,7 +2,7 @@
 %global debug_package %{nil}
 
 Name:           vhba
-Version:        20190831
+Version:        20200106
 Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
@@ -47,6 +47,9 @@ install -m644 -D %{SOURCE1} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
 
 
 %changelog
+* Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 20200106-1
+- 20200106
+
 * Sun Sep 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 20190831-1
 - 20190831
 

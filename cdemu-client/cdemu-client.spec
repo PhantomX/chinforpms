@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           cdemu-client
-Version:        3.2.3
+Version:        3.2.4
 Release:        1%{?dist}
 Summary:        CDEmu CLI client
 
@@ -64,6 +64,9 @@ ln -sf ../../../../pixmaps/%{name}.svg \
 
 
 %changelog
+* Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.2.4-1
+- 3.2.4
+
 * Sun Sep 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.2.3-1
 - 3.2.3
 

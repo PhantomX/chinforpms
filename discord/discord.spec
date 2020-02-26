@@ -11,7 +11,7 @@
 %endif
 
 Name:           discord
-Version:        0.0.9
+Version:        0.0.10
 Release:        100%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
@@ -128,6 +128,9 @@ done
 
 
 %changelog
+* Wed Feb 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.10-100
+- 0.0.10
+
 * Sun Mar 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.9-100
 - 0.0.9
 

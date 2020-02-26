@@ -1,5 +1,5 @@
 Name:           cdemu-daemon
-Version:        3.2.3
+Version:        3.2.4
 Release:        1%{?dist}
 Summary:        CDEmu daemon
 
@@ -54,6 +54,9 @@ popd
 %{_datadir}/dbus-1/services/*
 
 %changelog
+* Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.2.4-1
+- 3.2.4
+
 * Tue Aug 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.2.3-1
 - 3.2.3
 

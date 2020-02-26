@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 6
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 1b3dc1402f7607f4331e537e04038e37a03de7e5
+%global pfcommit 163f033345ba21be3ee4397b1c510c2117679ff1
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 5157fffd4c3251d3bddbfbfb66ce2bae0cd32bf5
+%global opensuse_id 4a830b16604db6d70acd1ba41c4d0b0fe1b8acca
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -868,7 +868,13 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
 # ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
-Patch527: alsa-5.6.patch
+Patch506: alsa-5.6.patch
+
+# rhbz 1797052
+Patch507: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
+
+# Backport vboxsf from 5.6, can be dropped when we move to 5.6
+Patch509: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 
 ### Extra
 
@@ -885,10 +891,10 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/bcache-fix-incorrect-data-type-usage-in-btree_flush_.patch#/openSUSE-bcache-fix-incorrect-data-type-usage-in-btree_flush_.patch
+Patch1019: %{opensuse_url}/ice-Remove-possible-null-dereference.patch#/openSUSE-ice-Remove-possible-null-dereference.patch
 Patch1020: %{opensuse_url}/vt-selection-handle-pending-signals-in-paste_selecti.patch#/openSUSE-vt-selection-handle-pending-signals-in-paste_selecti.patch
 Patch1021: %{opensuse_url}/vt-selection-close-sel_buffer-race.patch#/openSUSE-vt-selection-close-sel_buffer-race.patch
-
+Patch1022: %{opensuse_url}/Revert-drm-fbdev-Fallback-to-non-tiled-mode-if-all-t.patch#/openSUSE-Revert-drm-fbdev-Fallback-to-non-tiled-mode-if-all-t.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2606,6 +2612,10 @@ fi
 #
 #
 %changelog
+* Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.6-500.chinfo
+- 5.5.6 - pf6
+- f31 sync
+
 * Thu Feb 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.5-500.chinfo
 - 5.5.5 - pf5
 
