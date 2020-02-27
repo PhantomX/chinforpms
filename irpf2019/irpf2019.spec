@@ -35,6 +35,8 @@ mv icones/RFB.png .
 
 rm -rf exec.{bat,sh} Execute.txt icones
 
+find -type f -exec chmod 0644 '{}' ';'
+
 
 %build
 # Nothing to build

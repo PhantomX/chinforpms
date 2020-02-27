@@ -9,5 +9,5 @@ index d8c623a..e5b6833 100644
 -set_target_properties(Telegram PROPERTIES AUTOMOC ON AUTORCC ON)
 +set_target_properties(Telegram PROPERTIES AUTOMOC ON AUTORCC ON SKIP_BUILD_RPATH ON)
  
- if (DESKTOP_APP_USE_PACKAGED)
-     set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+ if (LINUX AND NOT DESKTOP_APP_DISABLE_DBUS_INTEGRATION)
+     target_link_libraries(Telegram

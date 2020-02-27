@@ -25,7 +25,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        1.9.14
+Version:        1.9.19
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -99,6 +99,7 @@ Requires:       gtk3%{?_isa}
 %if %{with spellcheck}
 BuildRequires: enchant2-devel
 BuildRequires: glib2-devel
+BuildRequires: hunspell-devel
 Requires:      enchant2%{?_isa}
 Requires:      hunspell%{?_isa}
 %endif
@@ -143,7 +144,7 @@ business messaging needs.
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,libdbusmenu-qt,lz4,minizip,variant,xxHash}
+rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,hunspell,libdbusmenu-qt,lz4,minizip,variant,xxHash}
 
 %if 0%{with_sysrlottie}
   rm -rf Telegram/ThirdParty/rlottie
@@ -242,6 +243,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Wed Feb 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.14-100
+- 1.9.19
+
 * Wed Feb 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.14-100
 - 1.9.14
 
