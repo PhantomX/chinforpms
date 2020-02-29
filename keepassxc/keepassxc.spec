@@ -23,10 +23,10 @@ BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
-BuildRequires:  libgcrypt-devel >= 1.7.0
-BuildRequires:  libgpg-error-devel
+BuildRequires:  pkgconfig(gpg-error)
 BuildRequires:  pkgconfig(libargon2)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(libgcrypt)
 BuildRequires:  pkgconfig(libqrencode)
 BuildRequires:  pkgconfig(libsodium)
 BuildRequires:  pkgconfig(Qt5)

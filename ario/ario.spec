@@ -10,13 +10,13 @@ Source0:        https://downloads.sourceforge.net/ario-player/%{name}-%{version}
 BuildRequires:  pkgconfig(avahi-glib)
 BuildRequires:  pkgconfig(gnutls)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(libgcrypt)
 BuildRequires:  pkgconfig(libmpdclient)
 BuildRequires:  pkgconfig(libnotify)
 BuildRequires:  pkgconfig(libsoup-2.4)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(taglib)
 BuildRequires:  pkgconfig(unique-1.0)
-BuildRequires:  libgcrypt-devel
 BuildRequires:  gcc
 BuildRequires:  intltool
 BuildRequires:  desktop-file-utils

@@ -1,7 +1,7 @@
-%global commit b253bd65658fe7dde8e50d7f7e6930cd215282df
+%global commit c6b852e3c37247a01547d8ab9d1630684f9c5aaa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200221
-%global with_snapshot 1
+%global date 20200227
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 469cbe7ed827636c48007badd9f70e23087273ce
+%global wine_stagingver 5.3
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 6790bc8ad0f5042b3606072f2c1e6b15eef38262
+%global tkg_id b31da0250339d3471bb94fb449abe8144d9085fa
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 
 %global gtk3 0
@@ -82,8 +82,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.2
-Release:        101%{?gver}%{?dist}
+Version:        5.3
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -246,6 +246,7 @@ BuildRequires:  pkgconfig(gstreamer-audio-1.0)
 BuildRequires:  pkgconfig(gstreamer-video-1.0)
 BuildRequires:  pkgconfig(krb5)
 BuildRequires:  pkgconfig(lcms2)
+BuildRequires:  pkgconfig(libgcrypt)
 BuildRequires:  pkgconfig(libgphoto2)
 BuildRequires:  libieee1284-devel
 BuildRequires:  pkgconfig(libjpeg)
@@ -386,6 +387,7 @@ Requires:       freetype(x86-32)
 Requires:       nss-mdns(x86-32)
 Requires:       gnutls(x86-32)
 Requires:       gstreamer1-plugins-good(x86-32)
+Requires:       libgcrypt(x86-32)
 Requires:       libxslt(x86-32)
 Requires:       libXcomposite(x86-32)
 Requires:       libXcursor(x86-32)
@@ -416,6 +418,7 @@ Requires:       freetype(x86-64)
 Requires:       nss-mdns(x86-64)
 Requires:       gnutls(x86-64)
 Requires:       gstreamer1-plugins-good(x86-64)
+Requires:       libgcrypt(x86-64)
 Requires:       libxslt(x86-64)
 Requires:       libXcomposite(x86-64)
 Requires:       libXcursor(x86-64)
@@ -446,6 +449,7 @@ Requires:       freetype
 Requires:       nss-mdns
 Requires:       gnutls
 Requires:       gstreamer1-plugins-good
+Requires:       libgcrypt
 Requires:       libXrender
 Requires:       libXcursor
 #dlopen in windowscodesc (fixes rhbz#1085075)
@@ -810,7 +814,7 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 %patch725 -p1
 %endif
 %patch726 -p1
-%patch727 -p1
+#patch727 -p1
 %patch728 -p1
 %if 0%{?fsync_spincounts}
 %patch790 -p1
@@ -2557,6 +2561,13 @@ fi
 
 
 %changelog
+* Sat Feb 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.3-100
+- 5.3
+
+* Fri Feb 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.2-102.20200227gitc6b852e
+- Bump
+- BR: libgcrypt
+
 * Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.2-101.20200221gitb253bd6
 - Snapshot
 

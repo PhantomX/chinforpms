@@ -1,24 +1,26 @@
-%global commit 3ca002d783974539f5be4e683b67a58f4cc9fce0
+%global commit 7f2251bc1b6c8ac6b81f0cfcc6a9a4894899ee28
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191205
-%global with_snapshot 0
+%global date 20200226
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 %global gl_url  https://gitlab.com/xboxdrv/xboxdrv
+# cebtenzzre fork
+%global glc_url  https://gitlab.com/cebtenzzre/xboxdrv
 
 Name:           xboxdrv
 Version:        0.8.8
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPLv3+
 URL:            https://xboxdrv.gitlab.io
 
 %if 0%{?with_snapshot}
-Source0:        %{gl_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
+Source0:        %{glc_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
 %else
 Source0:        https://xboxdrv.gitlab.io/%{name}-linux-%{version}.tar.bz2
 %endif
@@ -33,6 +35,7 @@ Source4:        org.seul.Xboxdrv.service
 Source5:        org.seul.xboxdrvctl.policy
 Source6:        org.seul.xboxdrv.policy
 
+%if !%{?with_snapshot}
 # Fix 60 seconds delay
 Patch1:         %{gl_url}/merge_requests/214.patch#/%{name}-gl-214.patch
 # Fix "pure virtual function called" crash and related hang
@@ -46,6 +49,7 @@ Patch5:         xboxdrv-0.8.8-fix-c++14.patch
 Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/%{name}-gh-ac6ebb1.patch
 # https://aur.archlinux.org/cgit/aur.git/plain/scons-py3.patch?h=xboxdrv
 Patch7:         %{name}-scons-py3.patch
+%endif
 Patch8:         %{gl_url}/commit/3ca002d783974539f5be4e683b67a58f4cc9fce0.patch#/%{name}-gl-3ca002d.patch
 
 BuildRequires:  pkgconfig(libudev)
@@ -138,6 +142,10 @@ install -pm0644 %{S:5} %{S:6} %{buildroot}%{_datadir}/polkit-1/actions/
 
 
 %changelog
+* Thu Feb 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.8.8-105.20200226git7f2251b
+- Cebtenzzre fork
+- Hardened systemd unit
+
 * Sat Jan 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.8.8-104
 - python3
 

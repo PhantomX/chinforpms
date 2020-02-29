@@ -2,7 +2,7 @@
 
 Name:           bashdb
 Summary:        BASH debugger, the BASH symbolic debugger
-Version:        5.0_1.1.0
+Version:        5.0_1.1.2
 Release:        1%{?dist}
 
 License:        GPLv2+
@@ -13,15 +13,16 @@ Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{rversion}.ta
 
 BuildArch:      noarch
 
-BuildRequires:  bash >= 4.4
+BuildRequires:  bash >= 5.0
 BuildRequires:  gcc
-BuildRequires:  python2-devel
+BuildRequires:  /usr/bin/pathfix.py
 # Patch0
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
 
-Requires:       bash >= 4.4
+Requires:       bash >= 5.0
+Requires:       python3-pygments
 
 Obsoletes:      emacs-bashdb < %{version}
 Obsoletes:      emacs-bashdb-el < %{version}
@@ -43,7 +44,7 @@ Bashdb can be used with ddd: ddd --debugger %{_bindir}/%{name} <script-name>.
 %prep
 %autosetup -n %{name}-%{rversion} -p1
 
-sed -i '1s|/usr/bin/env python|%{__python2}|' lib/term-highlight.py
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" lib/term-highlight.py
 
 touch README
 autoreconf -ivf
@@ -73,8 +74,12 @@ make check
 
 
 %changelog
+* Fri Feb 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.0_1.1.2-1
+- 5.0-1.1.2
+- R: python3-pygments
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0_1.1.0-1
-- rebuilt
+- 5.0-1.1.0
 
 * Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.4_1.0.1-2
 - Bump bash supported version dirtily
