@@ -1,7 +1,7 @@
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
 Name:           asbru-cm
-Version:        6.0.4
+Version:        6.1.0~rc1
 Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
@@ -9,12 +9,10 @@ License:        GPLv3+
 URL:            https://asbru-cm.net
 
 %global vc_url  https://github.com/%{name}/%{name}
-Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
+%global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
+Source0:        %{vc_url}/archive/%{ver}/%{name}-%{ver}.tar.gz
 
-# Fix passwords with TigerVNC
 Patch1:         %{name}-vncpasswd.patch
-Patch2:         0001-Issue-232-fix.patch
-Patch10:        https://github.com/asbru-cm/asbru-cm/commit/38d704c0417483d222b0b15ead78b5f76674de7e.patch#/%{name}-gh-38d704c.patch
 
 BuildArch:      noarch
 
@@ -46,7 +44,6 @@ Requires:       perl(IO::Socket::INET)
 Requires:       perl(MIME::Base64)
 Requires:       perl(Net::ARP)
 Requires:       perl(Net::Ping)
-Requires:       perl(HTTP::Proxy)
 Requires:       perl(OSSP::uuid)
 Requires:       perl(POSIX)
 Requires:       perl(Socket)
@@ -77,7 +74,7 @@ remote terminal sessions and automating repetitive tasks.
 
 
 %prep
-%autosetup -p1
+%autosetup -n %{name}-%{ver} -p1
 
 sed -r -e "s|\\\$RealBin[ ]*\.[ ]*'|'%{_datadir}/%{name}/lib|g" -i lib/pac_conn
 sed -r -e "s|\\\$RealBin,|'%{_datadir}/%{name}/lib',|g" -i lib/pac_conn
@@ -122,7 +119,7 @@ cp -a res/asbru-logo-256.png %{buildroot}/%{_datadir}/icons/hicolor/256x256/apps
 cp -a res/asbru-logo.svg %{buildroot}/%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
 # Copy the remaining resources and libraries
-cp -a res/*.{png,jpg,pl,glade,css} %{buildroot}/%{_datadir}/%{name}/res/
+cp -a res/*.{png,jpg,pl,glade,css,svg} %{buildroot}/%{_datadir}/%{name}/res/
 cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
@@ -138,6 +135,9 @@ cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
 %changelog
+* Mon Mar 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.1.0~rc1-1
+- 6.1.0rc1
+
 * Wed Feb 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.0.4-1
 - 6.0.4
 
