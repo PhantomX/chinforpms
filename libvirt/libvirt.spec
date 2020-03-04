@@ -211,7 +211,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 6.0.0
+Version: 6.1.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -1749,6 +1749,8 @@ exit 0
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/swtpm/
 %dir %attr(0711, root, root) %{_localstatedir}/log/swtpm/libvirt/qemu/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/qemu/
+%{_bindir}/virt-qemu-run
+%{_mandir}/man1/virt-qemu-run.1*
 %endif
 
 %if %{with_lxc}
@@ -1973,6 +1975,9 @@ exit 0
 
 
 %changelog
+* Tue Mar 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.1.0-100
+- 6.1.0
+
 * Wed Jan 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.0.0-100
 - 6.0.0
 - Rawhide sync
