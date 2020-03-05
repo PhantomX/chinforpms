@@ -1,5 +1,5 @@
 Name:           gamemode
-Version:        1.5
+Version:        1.5.1
 Release:        100%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
@@ -7,9 +7,6 @@ Epoch:          1
 License:        BSD
 URL:            https://github.com/FeralInteractive/%{name}
 Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
-
-# Use system inih
-Patch0:         %{name}-system-inih.patch
 
 
 BuildRequires:  meson
@@ -36,6 +33,9 @@ application integration with %{name}.
 
 %prep
 %autosetup -p1
+
+rm -rf subprojects/inih/*
+
 
 %build
 %meson --libexecdir=%{_libexecdir}/%{name}
@@ -68,6 +68,9 @@ mkdir -p %{buildroot}%{_datadir}/%{name}
 
 
 %changelog
+* Thu Mar 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.1-100
+- 1.5.1
+
 * Thu Jan 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5-100
 - 1.5
 
