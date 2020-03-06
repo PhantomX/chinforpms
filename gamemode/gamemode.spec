@@ -8,6 +8,8 @@ License:        BSD
 URL:            https://github.com/FeralInteractive/%{name}
 Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
 
+# Use system inih
+Patch0:         %{name}-system-inih.patch
 
 BuildRequires:  meson
 BuildRequires:  gcc
@@ -34,7 +36,7 @@ application integration with %{name}.
 %prep
 %autosetup -p1
 
-rm -rf subprojects/inih/*
+rm -rf subprojects/inih
 
 
 %build

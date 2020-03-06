@@ -1,7 +1,7 @@
-%global commit c6b852e3c37247a01547d8ab9d1630684f9c5aaa
+%global commit 0eea1b09d3f619ea35b6b4a70b4091eae85c4834
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200227
-%global with_snapshot 0
+%global date 20200304
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,15 +39,16 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.3
+%global wine_stagingver e61a75f75f3b3c857a40824c33035f14ed9f0b66
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id b31da0250339d3471bb94fb449abe8144d9085fa
+%global tkg_id 099a0f1b2a425a512e06aa1509e7fcfdab71ac9c
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
+%global tkg_curl https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/community-patches/wine-tkg-git
 
 %global gtk3 0
 # proton FS hack (wine virtual desktop with DXVK is not working well)
@@ -83,7 +84,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.3
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -181,10 +182,13 @@ Patch725:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-
 Patch726:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 Patch727:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch728:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+
+Patch750:       %{tkg_curl}/winevulkan_fshack_opts.mypatch#/%{name}-tkg-winevulkan_fshack_opts.patch
+Patch751:       %{tkg_curl}/winevulkan_nofshack_opts.mypatch#/%{name}-tkg-winevulkan_nofshack_opts.patch
+
 Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 
 Patch800:       revert-grab-fullscreen.patch
-Patch801:       %{valve_url}/commit/8ef1125a8f08454ac2e2136d910374555584949d.patch#/%{name}-valve-8ef1125.patch
 Patch802:       %{valve_url}/commit/7778c1cbd59dd676943aa1df7e76d32b3eee8567.patch#/%{name}-valve-7778c1c.patch
 Patch803:       %{valve_url}/commit/4aa052e0c8ae276fc07afcd93d6e290a88214837.patch#/%{name}-valve-4aa052e.patch
 Patch804:       %{valve_url}/commit/a4310c0cf1e27f0a90f737c2e7cfe9cdbde07522.patch#/%{name}-valve-a4310c0.patch
@@ -779,10 +783,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch704 -p1
 %patch705 -p1
 
-sed -e '/xact3wb.h \\/d' -i include/Makefile.in
-%patch801 -p1
-sed -e '/x3daudio.h \\/a\	xact3wb.h \\' -i include/Makefile.in
-%patch802 -p1
 %patch803 -p1
 %patch804 -p1
 %patch805 -p1
@@ -816,6 +816,12 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 %patch726 -p1
 #patch727 -p1
 %patch728 -p1
+%if 0%{?fshack}
+%patch750 -p1
+%else
+%patch751 -p1
+%endif
+
 %if 0%{?fsync_spincounts}
 %patch790 -p1
 %endif
@@ -823,6 +829,7 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 %if 0%{?fshack}
 %patch800 -p1 -R
 %endif
+%patch802 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -2561,6 +2568,9 @@ fi
 
 
 %changelog
+* Thu Mar 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.3-101.20200304git0eea1b0
+- Snapshot
+
 * Sat Feb 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.3-100
 - 5.3
 
