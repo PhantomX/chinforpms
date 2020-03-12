@@ -14,7 +14,7 @@
 %global minsdkver 1.2.121.1
 
 Name:           amdgpu-pro-vulkan-driver
-Version:        19.50.967956
+Version:        19.50.1011208
 Release:        1%{?dist}
 Summary:        AMDGPU Pro Driver For Vulkan
 License:        AMD GPU PRO
@@ -79,6 +79,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/amd
 
 
 %changelog
+* Wed Mar 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 19.50.1011208-1
+- 19.50.1011208
+
 * Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 19.50.967956-1
 - 19.50.967956
 

@@ -1,6 +1,6 @@
-%global commit 0eea1b09d3f619ea35b6b4a70b4091eae85c4834
+%global commit 4dfd5f22f4032efdc283adf861d82e43c3b08d42
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200304
+%global date 20200310
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver e61a75f75f3b3c857a40824c33035f14ed9f0b66
+%global wine_stagingver d14250ab037c8c652bb95b074fff00cbd1a11ba6
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 099a0f1b2a425a512e06aa1509e7fcfdab71ac9c
+%global tkg_id 225073bdb2d517baa1ddb18c6008433694ea91c0
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_curl https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/community-patches/wine-tkg-git
 
@@ -84,7 +84,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.3
-Release:        101%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -178,10 +178,13 @@ Patch722:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{
 Patch723:       %{tkg_url}/proton/proton-rawinput.patch#/%{name}-tkg-proton-rawinput.patch
 Patch724:       %{tkg_url}/proton-tkg-specific/proton-vk-bits-4.5.patch#/%{name}-tkg-proton-vk-bits-4.5.patch
 Patch725:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-tkg-proton_fs_hack_integer_scaling.patch
+Patch726:       %{tkg_url}/proton-tkg-specific/proton-staging_winex11-MWM_Decorations.patch#/%{name}-tkg-proton-staging_winex11-MWM_Decorations.patch
+Patch727:       %{valve_url}/commit/a1e5640b60439f0df83fc24c8a69629cef2c6c67.patch#/%{name}-valve-a1e5640.patch
 
-Patch726:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
-Patch727:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
-Patch728:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch730:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
+Patch731:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
+Patch732:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
+Patch733:       %{tkg_url}/proton/msvcrt_nativebuiltin.patch#/%{name}-tkg-msvcrt_nativebuiltin.patch
 
 Patch750:       %{tkg_curl}/winevulkan_fshack_opts.mypatch#/%{name}-tkg-winevulkan_fshack_opts.patch
 Patch751:       %{tkg_curl}/winevulkan_nofshack_opts.mypatch#/%{name}-tkg-winevulkan_nofshack_opts.patch
@@ -812,10 +815,13 @@ patch -p1 -i patches/winex11-key_translation/0002-winex11-Fix-more-key-translati
 patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-keyboard-layout.patch
 %patch724 -p1
 %patch725 -p1
-%endif
 %patch726 -p1
-#patch727 -p1
-%patch728 -p1
+%patch727 -p1 -R
+%endif
+%patch730 -p1
+#patch731 -p1
+%patch732 -p1
+#patch733 -p1
 %if 0%{?fshack}
 %patch750 -p1
 %else
@@ -871,7 +877,7 @@ autoreconf -f
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 
-export CFLAGS="$CFLAGS -ftree-vectorize"
+export CFLAGS="$CFLAGS -ftree-vectorize -mno-avx"
 
 %ifarch aarch64
 # ARM64 now requires clang
@@ -1025,10 +1031,16 @@ PROGRAM_ICONFIX='s/height="272"/height="256"/;'\
 '   y="8"\n'\
 '   viewBox="368, 8, 256, 256"/;'
 
+MAIN_ICONFIX='s/height="272"/height="256"/;'\
+'s/width="632"/width="256"\n'\
+'   x="8"\n'\
+'   y="8"\n'\
+'   viewBox="8, 8, 256, 256"/;'
+
 # This icon file is still in the legacy format
 install -p -m 644 dlls/user32/resources/oic_winlogo.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wine.svg
-sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wine.svg
+sed -i -e "$MAIN_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wine.svg
 
 # The rest come from programs/, and contain larger scalable icons
 # with a new layout that requires the PROGRAM_ICONFIX sed adjustment
@@ -1350,7 +1362,6 @@ fi
 %dir %{_libdir}/wine/fakedlls
 %{_libdir}/wine/fakedlls/*
 
-%{_libdir}/wine/activeds.tlb
 %{_libdir}/wine/attrib.%{wineexe}
 %{_libdir}/wine/arp.%{wineexe}
 %{_libdir}/wine/aspnet_regiis.%{wineexe}
@@ -1414,6 +1425,7 @@ fi
 %{_libdir}/wine/acledit.%{winedll}
 %{_libdir}/wine/aclui.%{winedll}
 %{_libdir}/wine/activeds.%{winedll}
+%{_libdir}/wine/activeds.%{winetlb}
 %{_libdir}/wine/actxprxy.%{winedll}
 %{_libdir}/wine/adsldp.%{winedll}
 %{_libdir}/wine/adsldpc.%{winedll}
@@ -2106,6 +2118,7 @@ fi
 %{_libdir}/wine/webservices.%{winedll}
 %{_libdir}/wine/wer.%{winedll}
 %{_libdir}/wine/wevtapi.%{winedll}
+%{_libdir}/wine/whoami.%{wineexe}
 %{_libdir}/wine/wiaservc.%{winedll}
 %{_libdir}/wine/wimgapi.%{winedll}
 %if 0%{?wine_staging}
@@ -2243,7 +2256,7 @@ fi
 %{_libdir}/wine/ddeml.%{winedll16}
 %{_libdir}/wine/dispdib.%{winedll16}
 %{_libdir}/wine/display.%{winedrv16}
-%{_libdir}/wine/gdi.exe16.so
+%{_libdir}/wine/gdi.%{wineexe16}
 %{_libdir}/wine/imm.%{winedll16}
 %{_libdir}/wine/krnl386.exe16.so
 %{_libdir}/wine/keyboard.%{winedrv16}
@@ -2274,7 +2287,7 @@ fi
 %{_libdir}/wine/w32sys.%{winedll16}
 %{_libdir}/wine/win32s16.%{winedll16}
 %{_libdir}/wine/win87em.%{winedll16}
-%{_libdir}/wine/winaspi.dll16.so
+%{_libdir}/wine/winaspi.%{winedll16}
 %{_libdir}/wine/windebug.%{winedll16}
 %{_libdir}/wine/wineps16.%{winedrv16}
 %{_libdir}/wine/wing.%{winedll16}
@@ -2568,6 +2581,12 @@ fi
 
 
 %changelog
+* Wed Mar 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.3-103.20200310git4dfd5f2
+- Bump
+
+* Sat Mar 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.3-102.20200306giteb63713
+- Bump
+
 * Thu Mar 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.3-101.20200304git0eea1b0
 - Snapshot
 
