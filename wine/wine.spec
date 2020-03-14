@@ -1,7 +1,7 @@
 %global commit 4dfd5f22f4032efdc283adf861d82e43c3b08d42
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200310
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver d14250ab037c8c652bb95b074fff00cbd1a11ba6
+%global wine_stagingver 5.4
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 225073bdb2d517baa1ddb18c6008433694ea91c0
+%global tkg_id 5758edc55898ea49ac574ce557d83156cfe5b19f
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_curl https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/community-patches/wine-tkg-git
 
@@ -83,8 +83,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.3
-Release:        103%{?gver}%{?dist}
+Version:        5.4
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2581,6 +2581,9 @@ fi
 
 
 %changelog
+* Sat Mar 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.4-100
+- 5.4
+
 * Wed Mar 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.3-103.20200310git4dfd5f2
 - Bump
 

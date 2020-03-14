@@ -1,6 +1,6 @@
-%global commit df884bb1dbafb2c23595ec74b0fd74bc92e5c3c7
+%global commit f6fe91ce29333271a5ef97ba148294404d28ab3f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200213
+%global date 20200313
 %global with_snapshot 1
 
 %global branch classic
@@ -130,8 +130,8 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2020.02
-Release:        2%{?branch:.%{branch}}%{?gver}%{?dist}
+Version:        2020.03.1
+Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -187,7 +187,6 @@ Patch402:        mozilla-1196777.patch
 Patch406:        mozilla-256180.patch
 Patch413:        mozilla-1353817.patch
 Patch415:        Bug-1238661---fix-mozillaSignalTrampoline-to-work-.patch
-Patch416:        bug1375074-save-restore-x28.patch
 Patch417:        mozilla-1436242.patch
 Patch418:        https://hg.mozilla.org/integration/autoland/raw-rev/342812d23eb9#/mozilla-1336978.patch
 Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mozilla-1320560.patch
@@ -396,7 +395,6 @@ This package contains results of tests executed during build.
 %ifarch %{arm}
 %patch415 -p1 -b .mozilla-1238661
 %endif
-%patch416 -p1 -b .bug1375074-save-restore-x28
 %patch417 -p1 -b .mozilla-1436242
 %patch418 -p1 -b .mozilla-1336978
 %patch419 -p1 -b .mozilla-1320560
@@ -429,11 +427,13 @@ for i in 1404057 1404324 1404180 1405878 ;do
 done
 
 # 1: unneeded
-# 2: no apply
-# 3: uncertain
+# 2: unneeded
+# 3: no apply
+# 4: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1379148 1393235 1393283 1395486 1430508 1433747 1452576 1453127 1466606 1469257 \
-  1384121 1388744 1413143 \
+  702179 991253 1021761 1144632 1288587 1379148 1393235 1393283 1393627 \
+  1395486 1427126 1430508 1433747 1452576 1453127 1454285 1466606 1469257 \
+  1384121 1388744 1413143 1415883 1437450 \
   1447519
 do
   rm -f _patches/patch-bug${i}
@@ -1031,6 +1031,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Mar 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.03.1-2.classic.20200313gitf6fe91c
+- 2020.03.1
+
 * Sun Feb 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.02-2.classic.20200213gitdf884bb
 - Disable PGO again
 

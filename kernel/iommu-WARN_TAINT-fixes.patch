@@ -1,0 +1,164 @@
+From 2f2265a8cbc6b43deb169c525204ea7df02e9363 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Mon, 9 Mar 2020 13:55:02 +0100
+Subject: [PATCH 1/2] iommu/vt-d: dmar: replace WARN_TAINT with pr_warn +
+ add_taint
+
+Quoting from the comment describing the WARN functions in
+include/asm-generic/bug.h:
+
+ * WARN(), WARN_ON(), WARN_ON_ONCE, and so on can be used to report
+ * significant kernel issues that need prompt attention if they should ever
+ * appear at runtime.
+ *
+ * Do not use these macros when checking for invalid external inputs
+
+The (buggy) firmware tables which the dmar code was calling WARN_TAINT
+for really are invalid external inputs. They are not under the kernel's
+control and the issues in them cannot be fixed by a kernel update.
+So logging a backtrace, which invites bug reports to be filed about this,
+is not helpful.
+
+Some distros, e.g. Fedora, have tools watching for the kernel backtraces
+logged by the WARN macros and offer the user an option to file a bug for
+this when these are encountered. The WARN_TAINT in warn_invalid_dmar()
++ another iommu WARN_TAINT, addressed in another patch, have lead to over
+a 100 bugs being filed this way.
+
+This commit replaces the WARN_TAINT("...") calls, with
+pr_warn(FW_BUG "...") + add_taint(TAINT_FIRMWARE_WORKAROUND, ...) calls
+avoiding the backtrace and thus also avoiding bug-reports being filed
+about this against the kernel.
+
+BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1564895
+Fixes: e625b4a95d50 ("iommu/vt-d: Parse ANDD records")
+Fixes: fd0c8894893c ("intel-iommu: Set a more specific taint flag for invalid BI
+Cc: stable@vger.kernel.org
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iommu/dmar.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 071bb42bbbc5..87194a46cb0b 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -440,12 +440,13 @@ static int __init dmar_parse_one_andd(struct acpi_dmar_header *header,
+ 
+ 	/* Check for NUL termination within the designated length */
+ 	if (strnlen(andd->device_name, header->length - 8) == header->length - 8) {
+-		WARN_TAINT(1, TAINT_FIRMWARE_WORKAROUND,
++		pr_warn(FW_BUG
+ 			   "Your BIOS is broken; ANDD object name is not NUL-terminated\n"
+ 			   "BIOS vendor: %s; Ver: %s; Product Version: %s\n",
+ 			   dmi_get_system_info(DMI_BIOS_VENDOR),
+ 			   dmi_get_system_info(DMI_BIOS_VERSION),
+ 			   dmi_get_system_info(DMI_PRODUCT_VERSION));
++		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
+ 		return -EINVAL;
+ 	}
+ 	pr_info("ANDD device: %x name: %s\n", andd->device_number,
+@@ -471,14 +472,14 @@ static int dmar_parse_one_rhsa(struct acpi_dmar_header *header, void *arg)
+ 			return 0;
+ 		}
+ 	}
+-	WARN_TAINT(
+-		1, TAINT_FIRMWARE_WORKAROUND,
++	pr_warn(FW_BUG
+ 		"Your BIOS is broken; RHSA refers to non-existent DMAR unit at %llx\n"
+ 		"BIOS vendor: %s; Ver: %s; Product Version: %s\n",
+ 		drhd->reg_base_addr,
+ 		dmi_get_system_info(DMI_BIOS_VENDOR),
+ 		dmi_get_system_info(DMI_BIOS_VERSION),
+ 		dmi_get_system_info(DMI_PRODUCT_VERSION));
++	add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
+ 
+ 	return 0;
+ }
+@@ -827,14 +828,14 @@ int __init dmar_table_init(void)
+ 
+ static void warn_invalid_dmar(u64 addr, const char *message)
+ {
+-	WARN_TAINT_ONCE(
+-		1, TAINT_FIRMWARE_WORKAROUND,
++	pr_warn_once(FW_BUG
+ 		"Your BIOS is broken; DMAR reported at address %llx%s!\n"
+ 		"BIOS vendor: %s; Ver: %s; Product Version: %s\n",
+ 		addr, message,
+ 		dmi_get_system_info(DMI_BIOS_VENDOR),
+ 		dmi_get_system_info(DMI_BIOS_VERSION),
+ 		dmi_get_system_info(DMI_PRODUCT_VERSION));
++	add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
+ }
+ 
+ static int __ref
+-- 
+2.25.1
+
+From 038ebd8952c5fb3ba3b5e09b0b55a4e617ae22bf Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Mon, 9 Mar 2020 14:12:37 +0100
+Subject: [PATCH 2/2] iommu/vt-d: dmar_parse_one_rmrr: replace WARN_TAINT with
+ pr_warn + add_taint
+
+Quoting from the comment describing the WARN functions in
+include/asm-generic/bug.h:
+
+ * WARN(), WARN_ON(), WARN_ON_ONCE, and so on can be used to report
+ * significant kernel issues that need prompt attention if they should ever
+ * appear at runtime.
+ *
+ * Do not use these macros when checking for invalid external inputs
+
+The (buggy) firmware tables which the dmar code was calling WARN_TAINT
+for really are invalid external inputs. They are not under the kernel's
+control and the issues in them cannot be fixed by a kernel update.
+So logging a backtrace, which invites bug reports to be filed about this,
+is not helpful.
+
+Some distros, e.g. Fedora, have tools watching for the kernel backtraces
+logged by the WARN macros and offer the user an option to file a bug for
+this when these are encountered. The WARN_TAINT in dmar_parse_one_rmrr
++ another iommu WARN_TAINT, addressed in another patch, have lead to over
+a 100 bugs being filed this way.
+
+This commit replaces the WARN_TAINT("...") call, with a
+pr_warn(FW_BUG "...") + add_taint(TAINT_FIRMWARE_WORKAROUND, ...) call
+avoiding the backtrace and thus also avoiding bug-reports being filed
+about this against the kernel.
+
+BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1808874
+Fixes: f5a68bb0752e ("iommu/vt-d: Mark firmware tainted if RMRR fails sanity check")
+Cc: Barret Rhoden <brho@google.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iommu/intel-iommu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6fa6de2b6ad5..3857a5cd1a75 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4460,14 +4460,16 @@ int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
+ 	struct dmar_rmrr_unit *rmrru;
+ 
+ 	rmrr = (struct acpi_dmar_reserved_memory *)header;
+-	if (arch_rmrr_sanity_check(rmrr))
+-		WARN_TAINT(1, TAINT_FIRMWARE_WORKAROUND,
++	if (arch_rmrr_sanity_check(rmrr)) {
++		pr_warn(FW_BUG
+ 			   "Your BIOS is broken; bad RMRR [%#018Lx-%#018Lx]\n"
+ 			   "BIOS vendor: %s; Ver: %s; Product Version: %s\n",
+ 			   rmrr->base_address, rmrr->end_address,
+ 			   dmi_get_system_info(DMI_BIOS_VENDOR),
+ 			   dmi_get_system_info(DMI_BIOS_VERSION),
+ 			   dmi_get_system_info(DMI_PRODUCT_VERSION));
++		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
++	}
+ 
+ 	rmrru = kzalloc(sizeof(*rmrru), GFP_KERNEL);
+ 	if (!rmrru)
+-- 
+2.25.1
+
