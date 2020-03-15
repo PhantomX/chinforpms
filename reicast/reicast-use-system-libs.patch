@@ -1,6 +1,6 @@
-From 0ab9a277928d55a3d7720428782f5da23633220d Mon Sep 17 00:00:00 2001
+From 3441b1466e5f915cffb9fa41f03408165cd1ecc5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 15 Aug 2019 20:59:34 -0300
+Date: Sat, 14 Mar 2020 22:40:55 -0300
 Subject: [PATCH] Use system libs
 
 ---
@@ -9,21 +9,21 @@ Subject: [PATCH] Use system libs
  libswirl/deps/chdr/chd.c             |  4 +++
  libswirl/deps/chdr/flac.h            |  4 +++
  libswirl/hw/maple/maple_devs.cpp     |  8 ++++++
- libswirl/hw/pvr/Renderer_if.cpp      |  4 +++
+ libswirl/hw/pvr/ta_ctx.cpp           |  4 +++
  libswirl/reios/reios_elf.cpp         |  2 +-
  libswirl/rend/TexCache.cpp           |  4 +++
  libswirl/rend/gles/CustomTexture.cpp |  4 +++
- libswirl/rend/gles/glesrend.cpp      |  7 +++--
+ libswirl/rend/gles/glesrend.cpp      |  5 +++-
  libswirl/rend/gles/glestex.cpp       |  8 ++++++
  libswirl/scripting/lua_bindings.h    |  4 +++
  reicast/linux/Makefile               | 39 ++++++++++++++++++++++++++++
- 13 files changed, 112 insertions(+), 6 deletions(-)
+ 13 files changed, 111 insertions(+), 5 deletions(-)
 
 diff --git a/libswirl/archive/ZipArchive.h b/libswirl/archive/ZipArchive.h
-index 05a0f0f..ff24960 100644
+index d111873..482eec0 100644
 --- a/libswirl/archive/ZipArchive.h
 +++ b/libswirl/archive/ZipArchive.h
-@@ -22,7 +22,11 @@
+@@ -9,7 +9,11 @@
  #ifndef CORE_ARCHIVE_ZIPARCHIVE_H_
  #define CORE_ARCHIVE_ZIPARCHIVE_H_
  #include "archive.h"
@@ -36,7 +36,7 @@ index 05a0f0f..ff24960 100644
  class ZipArchive : public Archive
  {
 diff --git a/libswirl/core.mk b/libswirl/core.mk
-index 140df97..8cc4f43 100644
+index ce04013..69c487b 100644
 --- a/libswirl/core.mk
 +++ b/libswirl/core.mk
 @@ -9,14 +9,32 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
@@ -44,10 +44,10 @@ index 140df97..8cc4f43 100644
  RZDCY_MODULES	:=	cfg/ hw/arm7/ hw/aica/ hw/holly/ hw/ hw/gdrom/ hw/maple/ \
   hw/mem/ hw/pvr/ hw/sh4/ hw/sh4/interpr/ hw/sh4/modules/ plugins/ profiler/ oslib/ \
 - hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/zlib/ deps/chdr/ deps/crypto/ \
-- deps/libelf/ deps/cdipsr/ arm_emitter/ rend/ reios/ deps/libpng/ deps/xbrz/ \
+- deps/libelf/ deps/cdipsr/ arm_emitter/ rend/ reios/ deps/libpng/ gpl/deps/xbrz/ \
 - deps/xxhash/ deps/libzip/ deps/imgui/ archive/ input/ utils/ utils/glwrap/ gui/
 + hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/chdr/ deps/crypto/ \
-+ deps/libelf/ deps/cdipsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
++ deps/libelf/ deps/cdipsr/ arm_emitter/ rend/ reios/ gpl/deps/xbrz/ \
 + deps/imgui/ archive/ input/ utils/ utils/glwrap/ gui/
 +
 +ifndef SYSTEM_LIBPNG
@@ -75,7 +75,7 @@ index 140df97..8cc4f43 100644
  
  ifdef _NO_WEBUI
  	RZDCY_MODULES += webui/
-@@ -123,10 +141,12 @@ else
+@@ -128,10 +146,12 @@ else
  endif
  
  ifdef CHD5_FLAC
@@ -121,10 +121,10 @@ index 3de00eb..6f51ffa 100644
  /***************************************************************************
   *  TYPE DEFINITIONS
 diff --git a/libswirl/hw/maple/maple_devs.cpp b/libswirl/hw/maple/maple_devs.cpp
-index f506c66..7128805 100644
+index bff59c4..f3258ad 100644
 --- a/libswirl/hw/maple/maple_devs.cpp
 +++ b/libswirl/hw/maple/maple_devs.cpp
-@@ -10,8 +10,16 @@
+@@ -16,8 +16,16 @@
  #include "input/gamepad.h"
  #include <time.h>
  
@@ -141,27 +141,27 @@ index f506c66..7128805 100644
  
  #if _ANDROID
  #include <android/log.h>
-diff --git a/libswirl/hw/pvr/Renderer_if.cpp b/libswirl/hw/pvr/Renderer_if.cpp
-index 073e62d..a8becb0 100644
---- a/libswirl/hw/pvr/Renderer_if.cpp
-+++ b/libswirl/hw/pvr/Renderer_if.cpp
-@@ -4,7 +4,11 @@
- #include "rend/TexCache.h"
- #include "gui/gui.h"
+diff --git a/libswirl/hw/pvr/ta_ctx.cpp b/libswirl/hw/pvr/ta_ctx.cpp
+index c697c41..30f477e 100644
+--- a/libswirl/hw/pvr/ta_ctx.cpp
++++ b/libswirl/hw/pvr/ta_ctx.cpp
+@@ -319,7 +319,11 @@ void tactx_Term()
+ 	mtx_pool.Unlock();
+ }
  
 +#ifdef SYSTEM_ZLIB
 +#include <zlib.h>
 +#else
  #include "deps/zlib/zlib.h"
 +#endif
+ #include "hw/pvr/pvr_mem.h"
  
- #include "deps/crypto/md5.h"
- 
+ void tactx_write_frame(const char* file, TA_context* ctx, u8* vram, u8* vram_ref) {
 diff --git a/libswirl/reios/reios_elf.cpp b/libswirl/reios/reios_elf.cpp
-index ff17c93..9d688dd 100644
+index e6be934..6ec67d4 100644
 --- a/libswirl/reios/reios_elf.cpp
 +++ b/libswirl/reios/reios_elf.cpp
-@@ -54,4 +54,4 @@ bool reios_loadElf(const string& elf) {
+@@ -60,4 +60,4 @@ bool reios_loadElf(const string& elf) {
  	}
  
  	return true;
@@ -169,13 +169,13 @@ index ff17c93..9d688dd 100644
 \ No newline at end of file
 +}
 diff --git a/libswirl/rend/TexCache.cpp b/libswirl/rend/TexCache.cpp
-index 7a81e89..896bdd1 100644
+index aee9054..134b5dc 100644
 --- a/libswirl/rend/TexCache.cpp
 +++ b/libswirl/rend/TexCache.cpp
-@@ -9,7 +9,11 @@
- #include "hw/pvr/pvr_regs.h"
+@@ -18,7 +18,11 @@
+ #include "hw/pvr/Renderer_if.h"
  #include "hw/mem/_vmem.h"
- #include "deps/xbrz/xbrz.h"
+ #include "gpl/deps/xbrz/xbrz.h"
 +#ifdef SYSTEM_XXHASH
 +#include <xxhash.h>
 +#else
@@ -185,10 +185,10 @@ index 7a81e89..896bdd1 100644
  u8* vq_codebook;
  u32 palette_index;
 diff --git a/libswirl/rend/gles/CustomTexture.cpp b/libswirl/rend/gles/CustomTexture.cpp
-index e5f4209..3baecbb 100644
+index ae0afc3..d4b6d5f 100644
 --- a/libswirl/rend/gles/CustomTexture.cpp
 +++ b/libswirl/rend/gles/CustomTexture.cpp
-@@ -28,7 +28,11 @@
+@@ -18,7 +18,11 @@
  #include <dirent.h>
  #endif
  
@@ -201,10 +201,10 @@ index e5f4209..3baecbb 100644
  
  #include "scripting/lua_bindings.h"
 diff --git a/libswirl/rend/gles/glesrend.cpp b/libswirl/rend/gles/glesrend.cpp
-index cff920e..31d080a 100644
+index 1603f49..b0540e2 100644
 --- a/libswirl/rend/gles/glesrend.cpp
 +++ b/libswirl/rend/gles/glesrend.cpp
-@@ -1621,8 +1621,11 @@ struct glesrend : Renderer
+@@ -1256,8 +1256,11 @@ struct glesrend final : Renderer
  	}
  };
  
@@ -217,18 +217,11 @@ index cff920e..31d080a 100644
  
  FILE* pngfile;
  
-@@ -1783,4 +1786,4 @@ GLuint loadPNG(const string& fname, int &width, int &height)
- 
- #include "hw/pvr/Renderer_if.h"
- 
--static auto gles2rend = RegisterRendererBackend(rendererbackend_t{ "gles", "OpenGL ES 2/PC41 (Per Triangle Sort)", 1, []() { return (Renderer*) new glesrend(); } });
-\ No newline at end of file
-+static auto gles2rend = RegisterRendererBackend(rendererbackend_t{ "gles", "OpenGL ES 2/PC41 (Per Triangle Sort)", 1, []() { return (Renderer*) new glesrend(); } });
 diff --git a/libswirl/rend/gles/glestex.cpp b/libswirl/rend/gles/glestex.cpp
-index 1a3802f..d21bf02 100644
+index d9fa675..2e0fbb5 100644
 --- a/libswirl/rend/gles/glestex.cpp
 +++ b/libswirl/rend/gles/glestex.cpp
-@@ -3,8 +3,16 @@
+@@ -9,8 +9,16 @@
  #include "rend/TexCache.h"
  #include "hw/pvr/pvr_mem.h"
  #include "hw/mem/_vmem.h"
@@ -246,10 +239,11 @@ index 1a3802f..d21bf02 100644
  
  /*
 diff --git a/libswirl/scripting/lua_bindings.h b/libswirl/scripting/lua_bindings.h
-index e2f3366..ca6eebd 100644
+index ad1e4e3..edc96e4 100644
 --- a/libswirl/scripting/lua_bindings.h
 +++ b/libswirl/scripting/lua_bindings.h
-@@ -1,6 +1,10 @@
+@@ -6,7 +6,11 @@
+ 
  #pragma once
  
 +#ifdef SYSTEM_LUA
@@ -261,7 +255,7 @@ index e2f3366..ca6eebd 100644
  
  void emulib_expose(lua_State* L);
 diff --git a/reicast/linux/Makefile b/reicast/linux/Makefile
-index d74af07..f5c3ae8 100644
+index c660006..0889c3f 100644
 --- a/reicast/linux/Makefile
 +++ b/reicast/linux/Makefile
 @@ -12,6 +12,13 @@ USE_MODEM := 1
@@ -318,5 +312,5 @@ index d74af07..f5c3ae8 100644
  EXECUTABLE_STRIPPED=nosym-reicast.$(PLATFORM_EXT)
  ifdef NAOMI
 -- 
-2.21.0
+2.24.1
 

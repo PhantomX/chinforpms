@@ -1,6 +1,6 @@
-%global commit d350e68e859eba7fbc546fef1331f2825517a062
+%global commit 1e5a875bcfb4e800760351130166a5165afe0e3d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190830
+%global date 20200312
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -12,8 +12,8 @@
 %endif
 
 Name:           reicast
-Version:        19.07.4
-Release:        2%{?gver}%{?dist}
+Version:        20.02
+Release:        1%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -125,6 +125,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Mar 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.02-1.20200312git1e5a875
+- New snapshot
+
 * Sun Sep 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.07.4-2.20190830gitd350e68
 - New snapshot
 - Enable pulseaudio support

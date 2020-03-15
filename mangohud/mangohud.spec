@@ -3,7 +3,7 @@
 %global date 20200205
 %global with_snapshot 0
 
-%global commit1 6c1a73774dabd2be64f85543b1286e44632d1905
+%global commit1 e628122da006c0e9f7e695592765696d8253cf6f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 flightlessmango-ImGui
 
@@ -11,11 +11,13 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global __filter_GLIBC_PRIVATE 1
+
 %global pkgname MangoHud
 %global vc_url https://github.com/flightlessmango
 
 Name:           mangohud
-Version:        0.2.0
+Version:        0.3.0
 Release:        1%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -24,10 +26,13 @@ URL:            %{vc_url}/%{pkgname}
 
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
-%else
-Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
-%endif
 Source1:        %{vc_url}/ImGui/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+%else
+Source0:        %{url}/releases/download/v%{version}/%{pkgname}-src-v%{version}.tar.xz
+%endif
+
+Patch0:         0001-preload-fix-for-multilib.patch
+Patch1:         0001-dlsym-fix-soname-search.patch
 
 
 BuildRequires:  gcc
@@ -42,6 +47,7 @@ BuildRequires:  python3
 BuildRequires:  python3-mako
 BuildRequires:  vulkan-headers
 Requires:       libglvnd%{?_isa}
+Requires:       libglvnd-glx%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
 %description
@@ -52,11 +58,10 @@ improvements, temperature reporting, and logging capabilities.
 %prep
 %if 0%{?with_snapshot}
 %autosetup -n %{pkgname}-%{commit} -p1
-%else
-%autosetup -n %{pkgname}-%{version} -p1
-%endif
-
 tar -xf %{S:1} -C modules/ImGui/src --strip-components 1
+%else
+%autosetup -n %{pkgname}-v%{version} -p1
+%endif
 
 mesonarray(){
   echo -n "$1" | sed -e "s|\s\s\s\s\s| |g" -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
@@ -68,16 +73,13 @@ TEMP_CFLAGS="`mesonarray "%{optflags}"`"
 
 sed -e "/-D__STDC_CONSTANT_MACROS/i\  '${TEMP_CFLAGS}'," -i meson.build
 
-sed \
-  -e '/name/s|64bit|%{_arch}|g' \
-  -e '/library_path/s|libMangoHud.so|%{_libdir}/%{name}/\0|g' \
-  -i src/mangohud.json
-
 
 %build
 
 %meson \
-  --libdir=%{_libdir}/%{name} \
+  --libdir=%{_libdir} \
+  -Dappend_libdir_mangohud=true \
+  -Dglibcxx_asserts=false \
   -Duse_system_vulkan=enabled \
 %{nil}
 
@@ -87,18 +89,22 @@ sed \
 %install
 %meson_install
 
-mv %{buildroot}%{_datadir}/vulkan/implicit_layer.d/mangohud.json \
-   %{buildroot}%{_datadir}/vulkan/implicit_layer.d/mangohud.%{_arch}.json
+rm -rf %{buildroot}%{_datadir}/doc
 
 
 %files
 %license LICENSE
 %doc README.md bin/%{pkgname}.conf
+%{_bindir}/%{name}
 %{_libdir}/%{name}/lib%{pkgname}.so
-%{_datadir}/vulkan/implicit_layer.d/mangohud.%{_arch}.json
+%{_datadir}/vulkan/implicit_layer.d/%{pkgname}.*.json
 
 
 %changelog
+* Sat Mar 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.3.0-1
+- 0.3.0
+- __filter_GLIBC_PRIVATE 1 until upstream fix __libc_dlsym usage
+
 * Fri Feb 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.2.0-1
 - 0.2.0
 

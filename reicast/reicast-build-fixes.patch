@@ -1,6 +1,6 @@
-From 8f3d71b293185646e86de474d84a817daf5665cd Mon Sep 17 00:00:00 2001
+From e85fb00a069ace28c39ec57e2c2ed3c5160321f4 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 15 Aug 2019 20:53:49 -0300
+Date: Sat, 14 Mar 2020 22:30:30 -0300
 Subject: [PATCH] Build fixes
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] Build fixes
  1 file changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/reicast/linux/Makefile b/reicast/linux/Makefile
-index ca8df9e..d74af07 100644
+index 168724f..c660006 100644
 --- a/reicast/linux/Makefile
 +++ b/reicast/linux/Makefile
 @@ -3,8 +3,8 @@ LOCAL_PATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
@@ -31,15 +31,15 @@ index ca8df9e..d74af07 100644
 +#ASFLAGS :=
 +LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,--sort-common -fopenmp #defaults
  INCS :=
- LIBS := -lm -lpthread #defaults
+ LIBS := -lm -lpthread -lutil #defaults
  
--CFLAGS := -g -O3 -D RELEASE -c -D USES_HOMEDIR -fopenmp # defaults
-+CFLAGS += -D RELEASE -c -D USES_HOMEDIR -fopenmp # defaults
+-CFLAGS := -g -O3 -D RELEASE -c -fopenmp # defaults
++CFLAGS += -D RELEASE -c -fopenmp # defaults
  CFLAGS += -frename-registers -fno-strict-aliasing
  CFLAGS += -ffast-math -ftree-vectorize
  
--CXXFLAGS :=  -fno-rtti -fpermissive -fno-operator-names -D_GLIBCXX_USE_CXX11_ABI=0 -std=c++14 # defaults
-+CXXFLAGS +=  -fno-rtti -fpermissive -fno-operator-names -std=c++14 # defaults
+-CXXFLAGS :=  -fpermissive -fno-operator-names -D_GLIBCXX_USE_CXX11_ABI=0 -std=c++14 # defaults
++CXXFLAGS +=  -fpermissive -fno-operator-names -std=c++14 # defaults
  
  
  
@@ -53,5 +53,5 @@ index ca8df9e..d74af07 100644
  	mkdir -p $(DESTDIR)$(PREFIX)/share/reicast/mappings 2>/dev/null || true
  	mkdir -p $(DESTDIR)$(MAN_DIR) 2>/dev/null || true
 -- 
-2.21.0
+2.24.1
 

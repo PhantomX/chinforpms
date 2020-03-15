@@ -1,6 +1,6 @@
-%global commit 8f86be37f0574ebcb2443c33f43452bb2f068794
+%global commit 1abfdaf64e1b781ce7b2e6bc70d3b92b6027a19b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191110
+%global date 20200314
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 
 Name:           flycast
 Version:        7
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -46,6 +46,7 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  python3-devel
 BuildRequires:  xxhash-devel
 Requires:       hicolor-icon-theme
+Requires:       vulkan-loader%{?_isa}
 
 
 %description
@@ -134,6 +135,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Mar 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 7-6.20200314git1abfdaf
+- New snapshot
+
 * Mon Nov 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 7-5.20191110git8f86be3
 - New snapshot
 

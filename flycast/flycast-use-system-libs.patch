@@ -1,33 +1,16 @@
-From d4b5364ae99628419d375c4fa7f85d9dc5bb7035 Mon Sep 17 00:00:00 2001
+From 9b949b6d06d9a85287cf08e8527c990ef208222b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 3 Nov 2019 19:06:15 -0300
+Date: Sat, 14 Mar 2020 22:17:47 -0300
 Subject: [PATCH] Use system libs
 
 ---
- core/archive/ZipArchive.h   |  4 ++++
- core/core.mk                | 30 ++++++++++++++++++++++++++----
+ core/core.mk                | 33 +++++++++++++++++++++++++++++----
  core/hw/sh4/dyna/driver.cpp |  4 ++++
- shell/linux/Makefile        | 32 ++++++++++++++++++++++++++++++++
- 4 files changed, 67 insertions(+), 4 deletions(-)
+ shell/linux/Makefile        | 33 +++++++++++++++++++++++++++++++++
+ 3 files changed, 66 insertions(+), 4 deletions(-)
 
-diff --git a/core/archive/ZipArchive.h b/core/archive/ZipArchive.h
-index 05a0f0f..ff24960 100644
---- a/core/archive/ZipArchive.h
-+++ b/core/archive/ZipArchive.h
-@@ -22,7 +22,11 @@
- #ifndef CORE_ARCHIVE_ZIPARCHIVE_H_
- #define CORE_ARCHIVE_ZIPARCHIVE_H_
- #include "archive.h"
-+#ifdef SYSTEM_LIBZIP
-+#include <zip.h>
-+#else
- #include "deps/libzip/zip.h"
-+#endif
- 
- class ZipArchive : public Archive
- {
 diff --git a/core/core.mk b/core/core.mk
-index a91ad3f..68d3c88 100755
+index d3db6d8..1c97e49 100755
 --- a/core/core.mk
 +++ b/core/core.mk
 @@ -9,9 +9,21 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
@@ -36,10 +19,10 @@ index a91ad3f..68d3c88 100755
   hw/mem/ hw/pvr/ hw/sh4/ hw/sh4/interpr/ hw/sh4/modules/ plugins/ profiler/ oslib/ \
 - hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/zlib/ deps/chdr/ deps/crypto/ \
 - deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/libpng/ deps/xbrz/ \
-- deps/libzip/ deps/imgui/ archive/ input/ log/
+- deps/libzip/ deps/imgui/ archive/ input/ log/ wsi/
 + hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/chdr/ deps/crypto/ \
 + deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
-+ deps/imgui/ archive/ input/ log/
++ deps/imgui/ archive/ input/ log/ wsi/
 +
 +ifndef SYSTEM_LIBPNG
 +RZDCY_MODULES += deps/libpng/
@@ -55,7 +38,7 @@ index a91ad3f..68d3c88 100755
  
  ifndef NOT_ARM
      RZDCY_MODULES += rec-ARM/
-@@ -127,8 +139,10 @@ endif
+@@ -151,8 +163,10 @@ endif
  ifdef CHD5_FLAC
  	RZDCY_CFLAGS += -DCHD5_FLAC -I$(RZDCY_SRC_DIR)/deps/flac/src/libFLAC/include/ -I$(RZDCY_SRC_DIR)/deps/flac/include
  	RZDCY_CFLAGS += -DHAVE_CONFIG_H
@@ -66,13 +49,16 @@ index a91ad3f..68d3c88 100755
  
  # 7-Zip/LZMA settings (CHDv5)
  ifdef CHD5_LZMA
-@@ -136,8 +150,16 @@ ifdef CHD5_LZMA
+@@ -160,8 +174,19 @@ ifdef CHD5_LZMA
  	RZDCY_CFLAGS += -D_7ZIP_ST -DCHD5_LZMA
  endif
  
--RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/libpng -I$(RZDCY_SRC_DIR)/deps/zlib
+-RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/libpng -I$(RZDCY_SRC_DIR)/deps/libzip -I$(RZDCY_SRC_DIR)/deps/zlib
 +ifndef SYSTEM_LIBPNG
 +RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/libpng
++endif
++ifndef SYSTEM_LIBZIP
++RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/libzip
 +endif
 +ifndef SYSTEM_ZLIB
 +RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/zlib
@@ -85,7 +71,7 @@ index a91ad3f..68d3c88 100755
  RZDCY_CXXFLAGS := $(RZDCY_CFLAGS) -fno-exceptions -fno-rtti -std=gnu++11
  
 diff --git a/core/hw/sh4/dyna/driver.cpp b/core/hw/sh4/dyna/driver.cpp
-index fdf06bc..ba0ff62 100644
+index dbb0fbd..2d0b834 100644
 --- a/core/hw/sh4/dyna/driver.cpp
 +++ b/core/hw/sh4/dyna/driver.cpp
 @@ -1,7 +1,11 @@
@@ -101,10 +87,10 @@ index fdf06bc..ba0ff62 100644
  #include "../sh4_opcode_list.h"
  #include "../sh4_core.h"
 diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index 45090ec..9a412c9 100644
+index 0e4f56f..fa7b0b4 100644
 --- a/shell/linux/Makefile
 +++ b/shell/linux/Makefile
-@@ -12,6 +12,12 @@ USE_UDEV := 1
+@@ -14,6 +14,12 @@ endif
  USE_MODEM := 1
  PLATFORM_EXT := elf
  
@@ -117,7 +103,7 @@ index 45090ec..9a412c9 100644
  CXX ?= ${CC_PREFIX}g++
  CC ?= ${CC_PREFIX}gcc
  AS ?= ${CC_PREFIX}as
-@@ -391,6 +397,33 @@ ifdef DEBUGFAST
+@@ -407,6 +413,33 @@ ifdef DEBUGFAST
      CFLAGS += -DDEBUGFAST
  endif
  
@@ -152,5 +138,5 @@ index 45090ec..9a412c9 100644
      CFLAGS += -DUNIT_TESTS
  endif
 -- 
-2.23.0
+2.24.1
 
