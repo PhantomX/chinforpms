@@ -1,6 +1,6 @@
-%global commit 821a35bd2b5d8ddad9cf622d604953be0c9e8a89
+%global commit ad3c464e2d91f08d0a60355d444f2dcf28d609ff
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200204
+%global date 20200312
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -58,7 +58,7 @@
 
 Name:           citra
 Version:        0
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -224,6 +224,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Mar 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-6.20200312gitad3c464
+- Bump
+
 * Thu Feb 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-5.20200204git821a35b
 - New snapshot
 - libzstd
