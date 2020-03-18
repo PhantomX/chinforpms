@@ -1,0 +1,89 @@
+2003-07-14  Mark Mitchell  <mark@codesourcery.com>
+
+	PR c++/7053
+	* pt.c (unregister_specialization): Rename to ...
+	(reregister_specialization): ... this.
+	(tsubst_friend_function): Use it.
+	(regenerate_decl_from_template): Likewise.
+
+	* g++.dg/template/friend20.C: New test.
+
+--- gcc/cp/pt.c	14 Jul 2003 10:08:58 -0000	1.635.2.33
++++ gcc/cp/pt.c	14 Jul 2003 20:18:18 -0000	1.635.2.34
+@@ -128,7 +128,7 @@ static tree retrieve_specialization PARA
+ static tree retrieve_local_specialization PARAMS ((tree));
+ static tree register_specialization PARAMS ((tree, tree, tree));
+ static void register_local_specialization PARAMS ((tree, tree));
+-static int unregister_specialization PARAMS ((tree, tree));
++static int reregister_specialization PARAMS ((tree, tree, tree));
+ static tree reduce_template_parm_level PARAMS ((tree, tree, int));
+ static tree build_template_decl PARAMS ((tree, tree));
+ static int mark_template_parm PARAMS ((tree, void *));
+@@ -969,13 +969,11 @@ register_specialization (spec, tmpl, arg
+ }
+ 
+ /* Unregister the specialization SPEC as a specialization of TMPL.
+-   Returns nonzero if the SPEC was listed as a specialization of
+-   TMPL.  */
++   Replace it with NEW_SPEC, if NEW_SPEC is non-NULL.  Returns true
++   if the SPEC was listed as a specialization of TMPL.  */
+ 
+ static int
+-unregister_specialization (spec, tmpl)
+-     tree spec;
+-     tree tmpl;
++reregister_specialization (tree spec, tree tmpl, tree new_spec)
+ {
+   tree* s;
+ 
+@@ -984,7 +982,10 @@ unregister_specialization (spec, tmpl)
+        s = &TREE_CHAIN (*s))
+     if (TREE_VALUE (*s) == spec)
+       {
+-	*s = TREE_CHAIN (*s);
++	if (!new_spec)
++	  *s = TREE_CHAIN (*s);
++	else
++	  TREE_VALUE (*s) = new_spec;
+ 	return 1;
+       }
+ 
+@@ -4807,8 +4808,9 @@ tsubst_friend_function (decl, args)
+ 	      DECL_TEMPLATE_INFO (old_decl) = new_friend_template_info;
+ 
+ 	      if (TREE_CODE (old_decl) != TEMPLATE_DECL)
+-		/* duplicate_decls will take care of this case.  */
+-		;
++		reregister_specialization (new_friend,
++					   most_general_template (old_decl),
++					   old_decl);
+ 	      else 
+ 		{
+ 		  tree t;
+@@ -9897,7 +9899,7 @@ regenerate_decl_from_template (decl, tmp
+      instantiation of a specialization, which it isn't: it's a full
+      instantiation.  */
+   gen_tmpl = most_general_template (tmpl);
+-  unregistered = unregister_specialization (decl, gen_tmpl);
++  unregistered = reregister_specialization (decl, gen_tmpl, NULL_TREE);
+ 
+   /* If the DECL was not unregistered then something peculiar is
+      happening: we created a specialization but did not call
+--- gcc/testsuite/g++.dg/template/friend20.C	2004-12-09 13:34:01.422415552 +0100
++++ gcc/testsuite/g++.dg/template/friend20.C	2003-07-15 02:29:07.000000000 +0200
+@@ -0,0 +1,15 @@
++template <class T>
++struct A
++{
++  friend void bar(A<T> a) {}
++};
++
++void bar(A<int>);
++
++int main()
++{
++  A<int> a;
++
++  bar(a);
++}
++

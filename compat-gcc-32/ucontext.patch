@@ -1,0 +1,31 @@
+--- gcc-3.3.6/gcc/config/i386/linux.h	2018-07-03 18:44:10.490000000 +0000
++++ gcc-3.3.6/gcc/config/i386/linux.h	2018-07-03 18:44:27.140000000 +0000
+@@ -260,7 +260,7 @@
+ 	  siginfo_t *pinfo;					\
+ 	  void *puc;							\
+ 	  siginfo_t info;						\
+-	  struct ucontext uc;						\
++	  ucontext_t uc;						\
+ 	} *rt_ = (CONTEXT)->cfa;					\
+ 	sc_ = (struct sigcontext *) &rt_->uc.uc_mcontext;		\
+       }									\
+--- gcc-3.3.6/gcc/config/i386/linux64.h	2018-07-03 18:43:38.240000000 +0000
++++ gcc-3.3.6/gcc/config/i386/linux64.h	2018-07-03 18:44:27.140000000 +0000
+@@ -101,7 +101,7 @@
+     if (*(unsigned char *)(pc_+0) == 0x48				\
+ 	&& *(unsigned long *)(pc_+1) == 0x050f0000000fc0c7)		\
+       {									\
+-	struct ucontext *uc_ = (CONTEXT)->cfa;				\
++	ucontext_t *uc_ = (CONTEXT)->cfa;				\
+ 	sc_ = (struct sigcontext *) &uc_->uc_mcontext;			\
+       }									\
+     else								\
+@@ -171,7 +171,7 @@
+ 	  siginfo_t *pinfo;					\
+ 	  void *puc;							\
+ 	  siginfo_t info;						\
+-	  struct ucontext uc;						\
++	  ucontext_t uc;						\
+ 	} *rt_ = (CONTEXT)->cfa;					\
+ 	sc_ = (struct sigcontext *) &rt_->uc.uc_mcontext;		\
+       }									\

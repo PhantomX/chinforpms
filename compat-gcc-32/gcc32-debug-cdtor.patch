@@ -1,0 +1,17 @@
+2003-07-14  Mark Mitchell  <mark@codesourcery.com>
+
+	PR debug/11098
+	* integrate.c (copy_decl_for_inlining): Do not mark copied decls
+	as DECL_ABSTRACT.
+
+--- gcc/integrate.c.jj	2003-02-14 09:26:34.000000000 +0100
++++ gcc/integrate.c	2005-01-28 21:28:44.332792466 +0100
+@@ -368,6 +368,8 @@ copy_decl_for_inlining (decl, from_fn, t
+   else
+     {
+       copy = copy_node (decl);
++      /* The COPY is not abstract; it will be generated in TO_FN.  */
++      DECL_ABSTRACT (copy) = 0;
+       if (DECL_LANG_SPECIFIC (copy))
+ 	copy_lang_decl (copy);
+ 

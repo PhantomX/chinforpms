@@ -1,0 +1,49 @@
+2005-02-15  Jakub Jelinek  <jakub@redhat.com>
+
+	PR libstdc++/19946
+	* testsuite/demangle/abi_examples/01.cc (main): Adjust for 2005-02-13
+	demangler change.
+	* testsuite/demangle/abi_examples/02.cc (main): Likewise.
+
+--- libstdc++33-v3/testsuite/demangle/abi_examples/01.cc.jj	2004-03-09 16:09:24.000000000 +0100
++++ libstdc++33-v3/testsuite/demangle/abi_examples/01.cc	2005-02-14 09:05:09.383834357 +0100
+@@ -1,6 +1,6 @@
+ // 2003-02-26 Benjamin Kosnik <bkoz@redhat.com>
+ 
+-// Copyright (C) 2003 Free Software Foundation, Inc.
++// Copyright (C) 2003, 2005 Free Software Foundation, Inc.
+ //
+ // This file is part of the GNU ISO C++ Library.  This library is free
+ // software; you can redistribute it and/or modify it under the
+@@ -31,7 +31,9 @@ int main()
+   // extern "C" function 
+   // extern "C" float f(void) { };
+   // T f
+-  verify_demangle("f", "error code = -2: invalid mangled name");
++  // f is ambiguous between "C" external name and internal built-in type
++  // name.  The ambiguity is resolved to the built-in type name.
++  verify_demangle("f", "float");
+ 
+   return 0;
+ }
+--- libstdc++33-v3/testsuite/demangle/abi_examples/02.cc.jj	2004-03-09 16:09:24.000000000 +0100
++++ libstdc++33-v3/testsuite/demangle/abi_examples/02.cc	2005-02-14 09:05:59.661857808 +0100
+@@ -1,6 +1,6 @@
+ // 2003-02-26 Benjamin Kosnik <bkoz@redhat.com>
+ 
+-// Copyright (C) 2003 Free Software Foundation, Inc.
++// Copyright (C) 2003, 2005 Free Software Foundation, Inc.
+ //
+ // This file is part of the GNU ISO C++ Library.  This library is free
+ // software; you can redistribute it and/or modify it under the
+@@ -31,7 +31,9 @@ int main()
+   // or variable "f" 
+   // int f;
+   // B f
+-  verify_demangle("f", "error code = -2: invalid mangled name");
++  // f is ambiguous between variable external name and internal built-in type
++  // name.  The ambiguity is resolved to the built-in type name.
++  verify_demangle("f", "float");
+ 
+   return 0;
+ }

@@ -23,14 +23,15 @@ python-vdf
 smooth
 taglib
 vkd3d
-webp-pixbuf-loader
+-webp-pixbuf-loader
 xarchiver
 xwit
-ytnef
+-ytnef
 
 # 2
 libvorbis
 python-markups
+perl-Gtk3
 
 # 3
 adriconf
@@ -40,9 +41,9 @@ amdvlk-vulkan-driver
 ario
 asbru-cm
 bashdb
-bcg729
-bcmatroska2
-bctoolbox
+-bcg729
+-bcmatroska2
+-bctoolbox
 blastem
 bluecurve-icon-theme
 boca

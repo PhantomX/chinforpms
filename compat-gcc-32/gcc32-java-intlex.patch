@@ -1,0 +1,175 @@
+2002-11-05  Tom Tromey  <tromey@redhat.com>
+
+	Fix for PR java/6388.
+	* lex.h (JAVA_INTEGRAL_RANGE_ERROR): Wrap in do...while.
+	* java-tree.h (enum java_tree_index): New values
+	JTI_DECIMAL_INT_MAX_NODE, JTI_DECIMAL_LONG_MAX_NODE.
+	(decimal_int_max, decimal_long_max): New defines.
+	* lex.c (yylex): Rewrote range checking.  Sign extend literals.
+	(error_if_numeric_overflow): Rewrote range checking.
+	* decl.c (java_init_decl_processing): Initialize decimal_int_max,
+	decimal_long_max.
+
+--- gcc/java/decl.c	2 Nov 2002 21:29:36 -0000	1.134
++++ gcc/java/decl.c	6 Nov 2002 00:01:00 -0000	1.135
+@@ -454,6 +454,20 @@ java_init_decl_processing ()
+   integer_four_node = build_int_2 (4, 0);
+   integer_minus_one_node = build_int_2 (-1, -1);
+ 
++  /* A few values used for range checking in the lexer.  */
++  decimal_int_max = build_int_2 (0x80000000, 0);
++  TREE_TYPE (decimal_int_max) = unsigned_int_type_node;
++#if HOST_BITS_PER_WIDE_INT == 64
++  decimal_long_max = build_int_2 (0x8000000000000000, 0);
++#else
++#if HOST_BITS_PER_WIDE_INT == 32
++  decimal_long_max = build_int_2 (0, 0x80000000);
++#else
++ #error "unsupported size"
++#endif
++#endif
++  TREE_TYPE (decimal_long_max) = unsigned_long_type_node;
++
+   size_zero_node = size_int (0);
+   size_one_node = size_int (1);
+   bitsize_zero_node = bitsize_int (0);
+--- gcc/java/java-tree.h	2 Nov 2002 23:52:26 -0000	1.161
++++ gcc/java/java-tree.h	6 Nov 2002 00:01:00 -0000	1.162
+@@ -275,6 +275,9 @@ enum java_tree_index
+   JTI_UNSIGNED_INT_TYPE_NODE,
+   JTI_UNSIGNED_LONG_TYPE_NODE,
+   
++  JTI_DECIMAL_INT_MAX_NODE,
++  JTI_DECIMAL_LONG_MAX_NODE,
++
+   JTI_BOOLEAN_TYPE_NODE,
+ 
+   JTI_OBJECT_TYPE_NODE,
+@@ -441,6 +444,11 @@ extern GTY(()) tree java_global_trees[JT
+ #define unsigned_long_type_node \
+   java_global_trees[JTI_UNSIGNED_LONG_TYPE_NODE]
+ 
++#define decimal_int_max \
++  java_global_trees[JTI_DECIMAL_INT_MAX_NODE]
++#define decimal_long_max \
++  java_global_trees[JTI_DECIMAL_LONG_MAX_NODE]
++
+ #define boolean_type_node \
+   java_global_trees[JTI_BOOLEAN_TYPE_NODE]
+ 
+--- gcc/java/lex.c	2 Nov 2002 21:29:36 -0000	1.94
++++ gcc/java/lex.c	6 Nov 2002 00:01:01 -0000	1.95
+@@ -1218,34 +1218,35 @@ java_lex (java_lval)
+ 	}
+       /* End borrowed section.  */
+ 
++#ifndef JC1_LITE
+       /* Range checking.  */
+-      if (long_suffix)
++      value = build_int_2 (low, high);
++      /* Temporarily set type to unsigned.  */
++      SET_LVAL_NODE_TYPE (value, (long_suffix
++				  ? unsigned_long_type_node
++				  : unsigned_int_type_node));
++
++      /* For base 10 numbers, only values up to the highest value
++	 (plus one) can be written.  For instance, only ints up to
++	 2147483648 can be written.  The special case of the largest
++	 negative value is handled elsewhere.  For other bases, any
++	 number can be represented.  */
++      if (overflow || (radix == 10
++		       && tree_int_cst_lt (long_suffix
++					   ? decimal_long_max
++					   : decimal_int_max,
++					   value)))
+ 	{
+-	  /* 9223372036854775808L is valid if operand of a '-'. Otherwise
+-	     9223372036854775807L is the biggest `long' literal that can be
+-	     expressed using a 10 radix. For other radices, everything that
+-	     fits withing 64 bits is OK.  */
+-	  int hb = (high >> 31);
+-	  if (overflow || (hb && low && radix == 10)
+-	      || (hb && high & 0x7fffffff && radix == 10))
++	  if (long_suffix)
+ 	    JAVA_INTEGRAL_RANGE_ERROR ("Numeric overflow for `long' literal");
+-	}
+-      else
+-	{
+-	  /* 2147483648 is valid if operand of a '-'. Otherwise,
+-	     2147483647 is the biggest `int' literal that can be
+-	     expressed using a 10 radix. For other radices, everything
+-	     that fits within 32 bits is OK.  As all literals are
+-	     signed, we sign extend here.  */
+-	  int hb = (low >> 31) & 0x1;
+-	  if (overflow || high || (hb && low & 0x7fffffff && radix == 10))
++	  else
+ 	    JAVA_INTEGRAL_RANGE_ERROR ("Numeric overflow for `int' literal");
+-	  high = -hb;
+ 	}
+-#ifndef JC1_LITE
+-      value = build_int_2 (low, high);
++
++      /* Sign extend the value.  */
++      SET_LVAL_NODE_TYPE (value, (long_suffix ? long_type_node : int_type_node));
++      force_fit_type (value, 0);
+       JAVA_RADIX10_FLAG (value) = radix == 10;
+-      SET_LVAL_NODE_TYPE (value, long_suffix ? long_type_node : int_type_node);
+ #else
+       SET_LVAL_NODE_TYPE (build_int_2 (low, high),
+ 			  long_suffix ? long_type_node : int_type_node);
+@@ -1661,24 +1662,14 @@ static void
+ error_if_numeric_overflow (value)
+      tree value;
+ {
+-  if (TREE_CODE (value) == INTEGER_CST && JAVA_RADIX10_FLAG (value))
++  if (TREE_CODE (value) == INTEGER_CST
++      && JAVA_RADIX10_FLAG (value)
++      && tree_int_cst_sgn (value) < 0)
+     {
+-      unsigned HOST_WIDE_INT lo, hi;
+-
+-      lo = TREE_INT_CST_LOW (value);
+-      hi = TREE_INT_CST_HIGH (value);
+       if (TREE_TYPE (value) == long_type_node)
+-	{
+-	  int hb = (hi >> 31);
+-	  if (hb && !(hi & 0x7fffffff))
+-	    java_lex_error ("Numeric overflow for `long' literal", 0);
+-	}
++	java_lex_error ("Numeric overflow for `long' literal", 0);
+       else
+-	{
+-	  int hb = (lo >> 31) & 0x1;
+-	  if (hb && !(lo & 0x7fffffff))
+-	    java_lex_error ("Numeric overflow for `int' literal", 0);
+-	}
++	java_lex_error ("Numeric overflow for `int' literal", 0);
+     }
+ }
+ #endif /* JC1_LITE */
+--- gcc/java/lex.h	2 Nov 2002 21:29:36 -0000	1.28
++++ gcc/java/lex.h	6 Nov 2002 00:01:01 -0000	1.29
+@@ -185,7 +185,7 @@ extern void java_destroy_lexer PARAMS ((
+ #define SET_LVAL_NODE_TYPE(NODE, TYPE)
+ #define BUILD_ID_WFL(EXP) (EXP)
+ #define JAVA_FLOAT_RANGE_ERROR(S) {}
+-#define JAVA_INTEGRAL_RANGE_ERROR(S) {}
++#define JAVA_INTEGRAL_RANGE_ERROR(S) do { } while (0)
+ 
+ #else
+ 
+@@ -237,12 +237,12 @@ extern void java_destroy_lexer PARAMS ((
+     ctxp->c_line->current = i;						  \
+   }
+ #define JAVA_INTEGRAL_RANGE_ERROR(m)		\
+-  {						\
++  do {						\
+     int i = ctxp->c_line->current;		\
+     ctxp->c_line->current = number_beginning;	\
+     java_lex_error (m, 0);			\
+     ctxp->c_line->current = i;			\
+-  }
++  } while (0)
+ 
+ #endif /* Definitions for jc1 compilation only */
+ 

@@ -1,0 +1,37 @@
+2005-09-23  Alexandre Oliva  <aoliva@redhat.com>
+
+	* decl.c (finish_function): Skip no-return-statment warning if
+	the return type uses template parms.
+
+	* g++.dg/warn/return-void-1.C: New test.
+
+--- gcc/cp/decl.c.orig
++++ gcc/cp/decl.c
+@@ -14475,7 +14475,8 @@ finish_function (flags)
+       && !DECL_NAME (DECL_RESULT (fndecl))
+       /* Normally, with -Wreturn-type, flow will complain.  Unless we're an
+ 	 inline function, as we might never be compiled separately.  */
+-      && (DECL_INLINE (fndecl) || processing_template_decl))
++      && (DECL_INLINE (fndecl) || processing_template_decl)
++      && !uses_template_parms (TREE_TYPE (fntype)))
+     warning ("no return statement in function returning non-void");
+     
+   /* Clear out memory we no longer need.  */
+--- gcc/testsuite/g++.dg/warn/return-void-1.C
++++ gcc/testsuite/g++.dg/warn/return-void-1.C
+@@ -0,0 +1,15 @@
++// { dg-do compile }
++// { dg-options "-Wall" }
++
++template <typename T> T dummy1() {}
++template <typename T> T dummy2() {} // { dg-warning "end of non-void" }
++template <typename T> inline T dummy3() {}
++template <typename T> inline T dummy4() {} // { dg-warning "end of non-void|no return statement" }
++
++int main()
++{
++  dummy1<void>();
++  dummy2<int>(); // { dg-warning "instantiated from here" }
++  dummy3<void>();
++  dummy4<int>(); // { dg-warning "instantiated from here" }
++}

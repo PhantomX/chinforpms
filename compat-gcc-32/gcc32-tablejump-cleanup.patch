@@ -1,0 +1,222 @@
+2005-01-03  Jakub Jelinek  <jakub@redhat.com>
+
+	* cfgrtl.c (try_redirect_by_replacing_jump): Add 2 arguments to
+	tablejump_p.
+
+	* gcc.c-torture/compile/20050103-1.c: New test.
+
+2003-07-20  Josef Zlomek  <zlomekj@suse.cz>
+
+	* cfgcleanup.c (merge_blocks_move_successor_nojumps): Use tablejump_p.
+	* ifcvt.c (find_if_block): Added 2 arguments to tablejump_p.
+	* jump.c (tablejump_p): Added 2 arguments.
+	* rtl.h (tablejump_p): Likewise.
+
+--- gcc/rtl.h.jj	2003-06-11 14:58:17.000000000 +0200
++++ gcc/rtl.h	2005-01-03 17:32:46.113937897 +0100
+@@ -1793,7 +1793,7 @@ extern rtx pc_set			PARAMS ((rtx));
+ extern rtx condjump_label		PARAMS ((rtx));
+ extern int simplejump_p			PARAMS ((rtx));
+ extern int returnjump_p			PARAMS ((rtx));
+-extern int tablejump_p			PARAMS ((rtx));
++extern int tablejump_p			PARAMS ((rtx, rtx *, rtx *));
+ extern int onlyjump_p			PARAMS ((rtx));
+ extern int only_sets_cc0_p		PARAMS ((rtx));
+ extern int sets_cc0_p			PARAMS ((rtx));
+--- gcc/cfgrtl.c.jj	2003-04-08 15:50:58.000000000 +0200
++++ gcc/cfgrtl.c	2005-01-03 17:37:59.150837447 +0100
+@@ -674,7 +674,7 @@ try_redirect_by_replacing_jump (e, targe
+   if (tmp || !onlyjump_p (insn))
+     return false;
+ 
+-  if ((!optimize || flow2_completed) && tablejump_p (insn))
++  if ((!optimize || flow2_completed) && tablejump_p (insn, NULL, NULL))
+     return false;
+ 
+   /* Avoid removing branch with side effects.  */
+--- gcc/cfgcleanup.c.jj	2003-08-02 01:18:22.000000000 +0200
++++ gcc/cfgcleanup.c	2005-01-03 17:32:10.010407336 +0100
+@@ -691,25 +691,20 @@ merge_blocks_move_successor_nojumps (a, 
+      basic_block a, b;
+ {
+   rtx barrier, real_b_end;
++  rtx label, table;
+ 
+   real_b_end = b->end;
+-  barrier = NEXT_INSN (b->end);
+ 
+-  /* Recognize a jump table following block B.  */
+-  if (barrier
+-      && GET_CODE (barrier) == CODE_LABEL
+-      && NEXT_INSN (barrier)
+-      && GET_CODE (NEXT_INSN (barrier)) == JUMP_INSN
+-      && (GET_CODE (PATTERN (NEXT_INSN (barrier))) == ADDR_VEC
+-	  || GET_CODE (PATTERN (NEXT_INSN (barrier))) == ADDR_DIFF_VEC))
++  /* If there is a jump table following block B temporarily add the jump table
++     to block B so that it will also be moved to the correct location.  */
++  if (tablejump_p (b->end, &label, &table)
++      && prev_active_insn (label) == b->end)
+     {
+-      /* Temporarily add the table jump insn to b, so that it will also
+-	 be moved to the correct location.  */
+-      b->end = NEXT_INSN (barrier);
+-      barrier = NEXT_INSN (b->end);
++      b->end = table;
+     }
+ 
+   /* There had better have been a barrier there.  Delete it.  */
++  barrier = NEXT_INSN (b->end);
+   if (barrier && GET_CODE (barrier) == BARRIER)
+     delete_insn (barrier);
+ 
+--- gcc/jump.c.jj	2003-08-01 22:38:45.000000000 +0200
++++ gcc/jump.c	2005-01-03 17:36:59.744484787 +0100
+@@ -1099,20 +1099,32 @@ simplejump_p (insn)
+ 	  && GET_CODE (SET_DEST (PATTERN (insn))) == PC
+ 	  && GET_CODE (SET_SRC (PATTERN (insn))) == LABEL_REF);
+ }
+-/* Return 1 if INSN is an tablejump.  */
++
++/* If INSN is a tablejump return 1 and store the label (before jump table) to
++   *LABELP and the jump table to *TABLEP.  LABELP and TABLEP may be NULL.  */
+ 
+ int
+-tablejump_p (insn)
++tablejump_p (insn, labelp, tablep)
+      rtx insn;
++     rtx *labelp;
++     rtx *tablep;
+ {
+-  rtx table;
+-  return (GET_CODE (insn) == JUMP_INSN
+-	  && JUMP_LABEL (insn)
+-	  && NEXT_INSN (JUMP_LABEL (insn))
+-	  && (table = next_active_insn (JUMP_LABEL (insn)))
+-	  && GET_CODE (table) == JUMP_INSN
+-	  && (GET_CODE (PATTERN (table)) == ADDR_VEC
+-	      || GET_CODE (PATTERN (table)) == ADDR_DIFF_VEC));
++  rtx label, table;
++  
++  if (GET_CODE (insn) == JUMP_INSN
++      && (label = JUMP_LABEL (insn)) != NULL_RTX
++      && (table = next_active_insn (label)) != NULL_RTX
++      && GET_CODE (table) == JUMP_INSN
++      && (GET_CODE (PATTERN (table)) == ADDR_VEC
++	  || GET_CODE (PATTERN (table)) == ADDR_DIFF_VEC))
++    {
++      if (labelp)
++	*labelp = label;
++      if (tablep)
++	*tablep = table;
++      return 1;
++    }
++  return 0;
+ }
+ 
+ /* Return nonzero if INSN is a (possibly) conditional jump
+--- gcc/ifcvt.c.jj	2003-03-25 17:42:24.000000000 +0100
++++ gcc/ifcvt.c	2005-01-03 17:32:10.012406978 +0100
+@@ -2046,7 +2046,7 @@ find_if_block (test_bb, then_edge, else_
+   if (then_succ != NULL_EDGE
+       && (then_succ->succ_next != NULL_EDGE
+           || (then_succ->flags & EDGE_COMPLEX)
+-	  || (flow2_completed && tablejump_p (then_bb->end))))
++	  || (flow2_completed && tablejump_p (then_bb->end, NULL, NULL))))
+     return FALSE;
+ 
+   /* If the THEN block has no successors, conditional execution can still
+@@ -2094,7 +2094,7 @@ find_if_block (test_bb, then_edge, else_
+ 	   && else_bb->pred->pred_next == NULL_EDGE
+ 	   && else_succ->succ_next == NULL_EDGE
+ 	   && ! (else_succ->flags & EDGE_COMPLEX)
+-	   && ! (flow2_completed && tablejump_p (else_bb->end)))
++	   && ! (flow2_completed && tablejump_p (else_bb->end, NULL, NULL)))
+     join_bb = else_succ->dest;
+ 
+   /* Otherwise it is not an IF-THEN or IF-THEN-ELSE combination.  */
+--- gcc/testsuite/gcc.c-torture/compile/20050103-1.c.jj	2004-12-09 13:34:01.422415552 +0100
++++ gcc/testsuite/gcc.c-torture/compile/20050103-1.c	2005-01-03 15:21:18.146431991 +0100
+@@ -0,0 +1,83 @@
++extern void abort (void);
++
++struct S
++{
++  char *s1;
++  int s2;
++};
++struct T
++{
++  int t1;
++  struct S *t2;
++} *s1;
++
++extern int bar (const struct T *, unsigned int, unsigned int,
++		const struct T *, unsigned int, unsigned int);
++
++extern inline void *
++baz (void *x, const void *y, unsigned int z)
++{
++  unsigned char *s1 = x;
++  const unsigned char *s2 = y;
++
++  if (z > 4 || __builtin_constant_p (z))
++    __builtin_memcpy (x, y, z);
++  else
++    switch (z)
++      {
++      case 4:
++	s1[3] = s2[3];
++      case 3:
++	s1[2] = s2[2];
++      case 2:
++	s1[1] = s2[1];
++      case 1:
++	s1[0] = s2[0];
++      case 0:
++	break;
++      }
++
++  return x;
++}
++
++extern inline int
++foo (struct T *b, unsigned int x, const void *y, unsigned int z)
++{
++  if (!b || !z)
++    return 0;
++  if (x == b->t1)
++    {
++      struct S *r = b->t2;
++      baz (r->s1 + r->s2, y, z);
++      return 1;
++    }
++
++  return 0;
++}
++
++int
++test (struct T *a, struct T *b, struct T *c, struct T *d)
++{
++  if (!a)
++    abort ();
++  if (!b)
++    abort ();
++
++  if (bar (a, 1, a->t1, b, 1, b->t1) > 0)
++    abort ();
++  if (bar (a, 41, a->t1 - 40, b, 1, b->t1) > 0)
++    abort ();
++
++  if (!c)
++    abort ();
++  if (!d)
++    abort ();
++
++  if (bar (c, 1, c->t1, d, 1, d->t1) < 0)
++    abort ();
++  if (bar (c, 41, c->t1 - 40, d, 1, d->t1) < 0)
++    abort ();
++
++  foo (s1, 0, "abcd", 4);
++  return 0;
++}

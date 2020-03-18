@@ -1,0 +1,78 @@
+2005-02-13  Jason Merrill  <jason@redhat.com>
+
+	* cp-demangle.c (__cxa_demangle): Change resolution of ambiguous
+	arguments.
+
+2005-02-15  Jakub Jelinek  <jakub@redhat.com>
+
+	PR libstdc++/19946
+	* testsuite/demangle/abi_examples/01.cc (main): Adjust for 2005-02-13
+	demangler change.
+	* testsuite/demangle/abi_examples/02.cc (main): Likewise.
+
+--- libiberty/cp-demangle.c	24 Nov 2004 02:19:09 -0000	1.75
++++ libiberty/cp-demangle.c	13 Feb 2005 06:58:20 -0000	1.76
+@@ -4047,21 +4047,6 @@ __cxa_demangle (mangled_name, output_buf
+       return NULL;
+     }
+ 
+-  /* The specification for __cxa_demangle() is that if the mangled
+-     name could be either an extern "C" identifier, or an internal
+-     built-in type name, then we resolve it as the identifier.  All
+-     internal built-in type names are a single lower case character.
+-     Frankly, this simplistic disambiguation doesn't make sense to me,
+-     but it is documented, so we implement it here.  */
+-  if (IS_LOWER (mangled_name[0])
+-      && mangled_name[1] == '\0'
+-      && cplus_demangle_builtin_types[mangled_name[0] - 'a'].name != NULL)
+-    {
+-      if (status != NULL)
+-	*status = -2;
+-      return NULL;
+-    }
+-
+   demangled = d_demangle (mangled_name, DMGL_PARAMS | DMGL_TYPES, &alc);
+ 
+   if (demangled == NULL)
+--- libstdc++-v3/testsuite/demangle/abi_examples/01.cc.jj	2004-03-09 16:09:24.000000000 +0100
++++ libstdc++-v3/testsuite/demangle/abi_examples/01.cc	2005-02-14 09:05:09.383834357 +0100
+@@ -1,6 +1,6 @@
+ // 2003-02-26 Benjamin Kosnik <bkoz@redhat.com>
+ 
+-// Copyright (C) 2003 Free Software Foundation, Inc.
++// Copyright (C) 2003, 2005 Free Software Foundation, Inc.
+ //
+ // This file is part of the GNU ISO C++ Library.  This library is free
+ // software; you can redistribute it and/or modify it under the
+@@ -31,7 +31,9 @@ int main()
+   // extern "C" function 
+   // extern "C" float f(void) { };
+   // T f
+-  verify_demangle("f", "error code = -2: invalid mangled name");
++  // f is ambiguous between "C" external name and internal built-in type
++  // name.  The ambiguity is resolved to the built-in type name.
++  verify_demangle("f", "float");
+ 
+   return 0;
+ }
+--- libstdc++-v3/testsuite/demangle/abi_examples/02.cc.jj	2004-03-09 16:09:24.000000000 +0100
++++ libstdc++-v3/testsuite/demangle/abi_examples/02.cc	2005-02-14 09:05:59.661857808 +0100
+@@ -1,6 +1,6 @@
+ // 2003-02-26 Benjamin Kosnik <bkoz@redhat.com>
+ 
+-// Copyright (C) 2003 Free Software Foundation, Inc.
++// Copyright (C) 2003, 2005 Free Software Foundation, Inc.
+ //
+ // This file is part of the GNU ISO C++ Library.  This library is free
+ // software; you can redistribute it and/or modify it under the
+@@ -31,7 +31,9 @@ int main()
+   // or variable "f" 
+   // int f;
+   // B f
+-  verify_demangle("f", "error code = -2: invalid mangled name");
++  // f is ambiguous between variable external name and internal built-in type
++  // name.  The ambiguity is resolved to the built-in type name.
++  verify_demangle("f", "float");
+ 
+   return 0;
+ }

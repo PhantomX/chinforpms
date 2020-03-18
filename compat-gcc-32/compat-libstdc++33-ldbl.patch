@@ -1,0 +1,45 @@
+--- libstdc++33-v3/libmath/stubs.c.jj	2003-06-03 08:48:02.000000000 -0400
++++ libstdc++33-v3/libmath/stubs.c	2006-08-21 09:18:10.000000000 -0400
+@@ -27,9 +27,29 @@
+    invalidate any other reasons why the executable file might be covered by
+    the GNU General Public License.  */
+ 
++#if defined __s390__ || defined __powerpc__
++/* Lie.  */
++#define __LONG_DOUBLE_128__ 1
++#endif
++
+ #include <math.h>
+ #include "config.h"
+ 
++#if defined __s390__ || defined __powerpc__
++#undef HAVE_ATAN2L
++#undef HAVE_COSHL
++#undef HAVE_COSL
++#undef HAVE_EXPL
++#undef HAVE_LOG10L
++#undef HAVE_LOGL
++#undef HAVE_POWL
++#undef HAVE_SINHL
++#undef HAVE_SINL
++#undef HAVE_SQRTL
++#undef HAVE_TANHL
++#undef HAVE_TANL
++#endif
++
+ /* For targets which do not have support for long double versions,
+    we use the crude approximation.  We'll do better later.  */
+ 
+@@ -137,6 +157,12 @@ hypotl(long double x, long double y)
+   x /= s; y /= s;
+   return s * sqrtl(x * x + y * y);
+ }
++#elif (defined __s390__ || defined __powerpc__) && defined HAVE_HYPOT
++long double
++hypotl(long double x, long double y)
++{
++  return hypot((double) x, (double) y);
++}
+ #endif
+ 
+ 

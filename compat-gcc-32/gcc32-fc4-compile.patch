@@ -1,0 +1,30 @@
+--- gcc/tradcif.y.jj	2005-03-08 15:22:54.000000000 -0500
++++ gcc/tradcif.y	2005-03-08 15:30:11.000000000 -0500
+@@ -29,6 +29,7 @@ Foundation, 59 Temple Place - Suite 330,
+ #include <setjmp.h>
+ #ifdef __GNUC__
+ #define YYMALLOC nonexistent
++#define YYSTACK_USE_ALLOCA 1
+ #endif
+ 
+   static int yylex PARAMS ((void));
+--- gcc/cp/parse.y.jj	2005-03-08 15:53:07.821036000 -0500
++++ gcc/cp/parse.y	2005-03-08 15:57:31.895819332 -0500
+@@ -46,6 +46,7 @@ Boston, MA 02111-1307, USA.  */
+ #include "ggc.h"
+ #ifdef __GNUC__
+ #define YYMALLOC nonexistent
++#define YYSTACK_USE_ALLOCA 1
+ #endif
+ 
+ extern struct obstack permanent_obstack;
+--- gcc/c-parse.in.jj	2005-03-08 15:53:07.828035000 -0500
++++ gcc/c-parse.in	2005-03-08 15:57:07.787221389 -0500
+@@ -49,6 +49,7 @@ end ifc
+ #include "ggc.h"
+ #ifdef __GNUC__
+ #define YYMALLOC nonexistent
++#define YYSTACK_USE_ALLOCA 1
+ #endif
+   
+ #ifdef MULTIBYTE_CHARS

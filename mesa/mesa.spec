@@ -59,7 +59,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        20.0.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -376,6 +376,9 @@ an overlay.
 %autosetup -n %{name}-%{ver} -p1
 cp %{SOURCE1} docs/
 
+# Make sure the build uses gnu++14 as llvm 10 headers require that
+sed -i -e 's/cpp_std=gnu++11/cpp_std=gnu++14/g' meson.build
+
 %if 0%{?with_vulkan_overlay}
   pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
     src/vulkan/overlay-layer/mesa-overlay-control.py
@@ -676,6 +679,9 @@ popd
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.1-101
+- f32 sync
+
 * Fri Mar 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.1-100
 - 20.0.1
 

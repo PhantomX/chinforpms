@@ -1,0 +1,36 @@
+2005-05-13  Jakub Jelinek  <jakub@redhat.com>
+
+	* src/globals.cc (_GLIBCPP_ASM_SYMVER): For non-PIC, redefine to a
+	hidden alias.
+	* src/locale.cc (_GLIBCPP_ASM_SYMVER): Likewise.
+
+--- libstdc++33-v3/src/globals.cc.jj	2002-10-23 01:24:11.000000000 +0200
++++ libstdc++33-v3/src/globals.cc	2005-05-13 12:30:26.000000000 +0200
+@@ -33,6 +33,12 @@
+ #include <locale>
+ #include <ext/stdio_filebuf.h>
+ 
++#ifndef PIC
++# undef _GLIBCPP_ASM_SYMVER
++# define _GLIBCPP_ASM_SYMVER(cur, old, version) \
++  asm (".globl " #old "\n\t.hidden " #old "\n\t.set " #old "," #cur);
++#endif
++
+ // On AIX, and perhaps other systems, library initialization order is
+ // not guaranteed.  For example, the static initializers for the main
+ // program might run before the static initializers for this library.
+--- libstdc++33-v3/src/locale.cc.jj	2003-01-17 18:44:45.000000000 +0100
++++ libstdc++33-v3/src/locale.cc	2005-05-13 13:02:36.000000000 +0200
+@@ -34,6 +34,12 @@
+ #include <locale>
+ #include <bits/atomicity.h>
+ 
++#ifndef PIC
++# undef _GLIBCPP_ASM_SYMVER
++# define _GLIBCPP_ASM_SYMVER(cur, old, version) \
++  asm (".globl " #old "\n\t.hidden " #old "\n\t.set " #old "," #cur);
++#endif
++
+ namespace __gnu_cxx
+ {
+   // Defined in globals.cc.

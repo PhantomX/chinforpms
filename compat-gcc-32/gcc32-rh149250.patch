@@ -1,0 +1,59 @@
+2002-09-08  Jan Hubicka  <jh@suse.cz>
+
+	* loop.c (loop_givs_reduce):  Emit addition after.
+
+2005-07-19  Jakub Jelinek  <jakub@redhat.com>
+
+	* g77.dg/20050719-1.f: New test.
+
+--- gcc/loop.c.jj	2003-10-06 12:15:37.000000000 +0200
++++ gcc/loop.c	2005-07-19 11:49:08.000000000 +0200
+@@ -4684,7 +4684,7 @@ loop_givs_reduce (loop, bl)
+ 	      rtx insert_before;
+ 
+ 	      if (! auto_inc_opt)
+-		insert_before = tv->insn;
++		insert_before = NEXT_INSN (tv->insn);
+ 	      else if (auto_inc_opt == 1)
+ 		insert_before = NEXT_INSN (v->insn);
+ 	      else
+--- gcc/testsuite/g77.dg/20050719-1.f.jj	2005-07-19 12:00:18.000000000 +0200
++++ gcc/testsuite/g77.dg/20050719-1.f	2005-07-19 12:01:31.000000000 +0200
+@@ -0,0 +1,37 @@
++C Test for a strength reduction bug.
++C { dg-do run }
++C { dg-options "-O2 -fno-automatic" }
++	SUBROUTINE FOO(D)
++	INTEGER A,B,C,D,E,I,J,K
++	DIMENSION A(5,5),B(5,5),C(5,5),D(5,5)
++	DO I=1,5
++	  DO J=1,5
++	    A(I,J)=J
++	    B(I,J)=1
++	  ENDDO
++	ENDDO
++	DO I=1,5
++	  DO J=1,5
++	    E=0
++	    DO K=1,5
++	      E=E+B(I,K)*A(K,J)
++	    ENDDO
++	    C(I,J)=E
++	  ENDDO
++	ENDDO
++	DO I=1,5
++	  DO J=1,5
++	    D(I,J)=C(I,J)
++	  ENDDO
++	ENDDO
++	END
++
++	INTEGER D,I,J
++	DIMENSION D(5,5)
++	CALL FOO(D)
++	DO I=1,5
++	  DO J=1,5
++	    IF (D(I,J).NE.5*J) CALL ABORT
++	  ENDDO
++	ENDDO
++	END

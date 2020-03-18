@@ -25,7 +25,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        1.9.20
+Version:        1.9.21
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -42,9 +42,6 @@ ExclusiveArch:  x86_64
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}%{tarsuffix}.tar.gz
 
 Source20:       thunar-sendto-%{name}.desktop
-
-Patch10:       %{url}/commit/99a8c93ac1e3f90868ef3d419fc3ccfd0a1cc2ee.patch#/%{name}-gh-99a8c93.patch
-Patch11:       %{url}/commit/0b5eb47b373ee1784989ef67fbb39eb8d1ba819e.patch#/%{name}-gh-0b5eb47.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -246,6 +243,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Tue Mar 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.21-100
+- 1.9.21
+
 * Mon Mar 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.20-100
 - 1.9.20
 

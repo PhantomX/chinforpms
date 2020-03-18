@@ -1,0 +1,52 @@
+2003-07-22  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+	PR optimization/11631
+	* gcc.c-torture/execute/20030722-1.c: New test.
+	
+--- gcc-3.3.1/gcc/testsuite/gcc.c-torture/execute/20030722-1.c.pr11631	2003-07-24 19:51:45.000000000 +0200
++++ gcc-3.3.1/gcc/testsuite/gcc.c-torture/execute/20030722-1.c	2003-07-24 19:51:30.000000000 +0200
+@@ -0,0 +1,44 @@
++/* Extracted from zsh sources.  */
++/* Contributed by Gwenole Beauchesne <gbeauchesne@mandrakesoft.com>  */
++
++extern void abort(void);
++extern void exit(int);
++
++static void f(const char *name);
++static void g(const char *name);
++
++static char *p;
++
++int main(void)
++{
++  p = "foo";
++  do {
++      char *arg0 = p;
++      if (!(p = strrchr(arg0, '/')))
++	  p = arg0;
++      else
++	  p++;
++      if (strcmp(p, "bar") != 0)
++		break;
++  } while (p);
++  
++  f(p);
++  g(p);
++
++  for (;;) {
++  }
++
++  return 0;
++}
++
++static void f(const char *name)
++{
++}
++
++static void g(const char *name)
++{
++  if (name)
++	exit(0);
++  else
++	abort();
++}

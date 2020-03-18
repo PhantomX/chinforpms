@@ -1,0 +1,33 @@
+--- libstdc++33-v3/aclocal.m4.jj	2004-06-24 12:06:53.000000000 -0400
++++ libstdc++33-v3/aclocal.m4	2004-10-14 12:58:50.000000000 -0400
+@@ -1956,7 +1956,7 @@ AC_MSG_RESULT($version_specific_libs)
+ 
+ # Default case for install directory for include files.
+ if test $version_specific_libs = no && test $gxx_include_dir = no; then
+-  gxx_include_dir='$(prefix)'/include/c++/${gcc_version}
++  gxx_include_dir='$(prefix)'/include/c++/3.3.4
+ fi
+ 
+ # Version-specific runtime libs processing.
+--- libstdc++33-v3/acinclude.m4.jj	2004-06-24 12:06:53.000000000 -0400
++++ libstdc++33-v3/acinclude.m4	2004-10-14 12:59:32.000000000 -0400
+@@ -1944,7 +1944,7 @@ AC_MSG_RESULT($version_specific_libs)
+ 
+ # Default case for install directory for include files.
+ if test $version_specific_libs = no && test $gxx_include_dir = no; then
+-  gxx_include_dir='$(prefix)'/include/c++/${gcc_version}
++  gxx_include_dir='$(prefix)'/include/c++/3.3.4
+ fi
+ 
+ # Version-specific runtime libs processing.
+--- libstdc++33-v3/configure.jj	2004-10-14 12:35:55.000000000 -0400
++++ libstdc++33-v3/configure	2004-10-14 13:00:05.000000000 -0400
+@@ -24109,7 +24109,7 @@ echo "$ac_t""$version_specific_libs" 1>&
+ 
+ # Default case for install directory for include files.
+ if test $version_specific_libs = no && test $gxx_include_dir = no; then
+-  gxx_include_dir='$(prefix)'/include/c++/${gcc_version}
++  gxx_include_dir='$(prefix)'/include/c++/3.3.4
+ fi
+ 
+ # Version-specific runtime libs processing.

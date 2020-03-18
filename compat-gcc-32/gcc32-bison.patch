@@ -1,0 +1,148 @@
+--- gcc/c-parse.in.jj	2009-03-09 14:27:38.000000000 +0100
++++ gcc/c-parse.in	2014-07-07 18:18:24.000000000 +0200
+@@ -619,7 +619,7 @@ primary:
+ 	IDENTIFIER
+ 		{
+ 		  if (yychar == YYEMPTY)
+-		    yychar = YYLEX;
++		    yychar = yylex ();
+ 		  $$ = build_external_ref ($1, yychar == '(');
+ 		}
+ 	| CONSTANT
+@@ -1713,7 +1713,7 @@ enum_head:
+ 
+ structsp_attr:
+ 	  struct_head identifier '{'
+-		{ $$ = start_struct (RECORD_TYPE, $2);
++		{ $<ttype>$ = start_struct (RECORD_TYPE, $2);
+ 		  /* Start scope of tag before parsing components.  */
+ 		}
+ 	  component_decl_list '}' maybe_attribute 
+@@ -1723,7 +1723,7 @@ structsp_attr:
+ 				      $3, chainon ($1, $5));
+ 		}
+ 	| union_head identifier '{'
+-		{ $$ = start_struct (UNION_TYPE, $2); }
++		{ $<ttype>$ = start_struct (UNION_TYPE, $2); }
+ 	  component_decl_list '}' maybe_attribute
+ 		{ $$ = finish_struct ($<ttype>4, $5, chainon ($1, $7)); }
+ 	| union_head '{' component_decl_list '}' maybe_attribute
+@@ -1731,12 +1731,12 @@ structsp_attr:
+ 				      $3, chainon ($1, $5));
+ 		}
+ 	| enum_head identifier '{'
+-		{ $$ = start_enum ($2); }
++		{ $<ttype>$ = start_enum ($2); }
+ 	  enumlist maybecomma_warn '}' maybe_attribute
+ 		{ $$ = finish_enum ($<ttype>4, nreverse ($5),
+ 				    chainon ($1, $8)); }
+ 	| enum_head '{'
+-		{ $$ = start_enum (NULL_TREE); }
++		{ $<ttype>$ = start_enum (NULL_TREE); }
+ 	  enumlist maybecomma_warn '}' maybe_attribute
+ 		{ $$ = finish_enum ($<ttype>3, nreverse ($4),
+ 				    chainon ($1, $7)); }
+@@ -2238,13 +2238,13 @@ do_stmt_start:
+    first token on the next line.  */
+ save_filename:
+ 		{ if (yychar == YYEMPTY)
+-		    yychar = YYLEX;
++		    yychar = yylex ();
+ 		  $$ = input_filename; }
+ 	;
+ 
+ save_lineno:
+ 		{ if (yychar == YYEMPTY)
+-		    yychar = YYLEX;
++		    yychar = yylex ();
+ 		  $$ = lineno; }
+ 	;
+ 
+--- gcc/cp/parse.y.jj	2009-03-09 14:39:01.000000000 +0100
++++ gcc/cp/parse.y	2014-07-07 18:18:24.000000000 +0200
+@@ -804,7 +804,7 @@ fndef:
+ 
+ constructor_declarator:
+ 	  nested_name_specifier SELFNAME '(' 
+-                { $$ = begin_constructor_declarator ($1, $2); }
++                { $<ttype>$ = begin_constructor_declarator ($1, $2); }
+ 	  parmlist ')' cv_qualifiers exception_specification_opt
+ 		{ $$ = make_call_declarator ($<ttype>4, $5, $7, $8); }
+ 	| nested_name_specifier SELFNAME LEFT_RIGHT cv_qualifiers exception_specification_opt
+@@ -812,7 +812,7 @@ constructor_declarator:
+ 		  $$ = make_call_declarator ($$, empty_parms (), $4, $5);
+ 		}
+ 	| global_scope nested_name_specifier SELFNAME '(' 
+-                { $$ = begin_constructor_declarator ($2, $3); }
++                { $<ttype>$ = begin_constructor_declarator ($2, $3); }
+ 	 parmlist ')' cv_qualifiers exception_specification_opt
+ 		{ $$ = make_call_declarator ($<ttype>5, $6, $8, $9); }
+ 	| global_scope nested_name_specifier SELFNAME LEFT_RIGHT cv_qualifiers exception_specification_opt
+@@ -820,7 +820,7 @@ constructor_declarator:
+ 		  $$ = make_call_declarator ($$, empty_parms (), $5, $6);
+ 		}
+ 	| nested_name_specifier self_template_type '(' 
+-                { $$ = begin_constructor_declarator ($1, $2); }
++                { $<ttype>$ = begin_constructor_declarator ($1, $2); }
+ 	  parmlist ')' cv_qualifiers exception_specification_opt
+ 		{ $$ = make_call_declarator ($<ttype>4, $5, $7, $8); }
+ 	| nested_name_specifier self_template_type LEFT_RIGHT cv_qualifiers exception_specification_opt
+@@ -828,7 +828,7 @@ constructor_declarator:
+ 		  $$ = make_call_declarator ($$, empty_parms (), $4, $5);
+ 		}
+ 	| global_scope nested_name_specifier self_template_type '(' 
+-                { $$ = begin_constructor_declarator ($2, $3); }
++                { $<ttype>$ = begin_constructor_declarator ($2, $3); }
+ 	 parmlist ')' cv_qualifiers exception_specification_opt
+ 		{ $$ = make_call_declarator ($<ttype>5, $6, $8, $9); }
+ 	| global_scope nested_name_specifier self_template_type LEFT_RIGHT cv_qualifiers exception_specification_opt
+@@ -879,7 +879,7 @@ fn.def2:
+ 		  if (! $$)
+ 		    YYERROR1;
+ 		  if (yychar == YYEMPTY)
+-		    yychar = YYLEX;
++		    yychar = yylex ();
+ 		  snarf_method ($$); }
+ 	| component_constructor_declarator
+ 		{ $$ = parse_method ($1, NULL_TREE, NULL_TREE); 
+@@ -1086,7 +1086,7 @@ self_template_type:
+ .finish_template_type:
+                 { 
+ 		  if (yychar == YYEMPTY)
+-		    yychar = YYLEX;
++		    yychar = yylex ();
+ 
+ 		  $$ = finish_template_type ($<ttype>-3, $<ttype>-1, 
+ 					     yychar == SCOPE);
+@@ -1308,11 +1308,11 @@ unary_expr:
+ 	| delete '[' ']' cast_expr  %prec UNARY
+ 		{ $$ = delete_sanity ($4, NULL_TREE, 1, $1);
+ 		  if (yychar == YYEMPTY)
+-		    yychar = YYLEX; }
++		    yychar = yylex (); }
+ 	| delete '[' expr ']' cast_expr  %prec UNARY
+ 		{ $$ = delete_sanity ($5, $3, 2, $1);
+ 		  if (yychar == YYEMPTY)
+-		    yychar = YYLEX; }
++		    yychar = yylex (); }
+ 	| REALPART cast_expr %prec UNARY
+ 		{ $$ = build_x_unary_op (REALPART_EXPR, $2); }
+ 	| IMAGPART cast_expr %prec UNARY
+@@ -2345,7 +2345,7 @@ structsp:
+ 		  tree t;
+ 
+ 		  if (yychar == YYEMPTY)
+-		    yychar = YYLEX;
++		    yychar = yylex ();
+ 		  semi = yychar == ';';
+ 
+ 		  t = finish_class_definition ($1.t, $7, semi, $1.new_type_flag);
+@@ -3993,7 +3993,7 @@ operator_name:
+    on the next line.  */
+ save_lineno:
+ 		{ if (yychar == YYEMPTY)
+-		    yychar = YYLEX;
++		    yychar = yylex ();
+ 		  $$ = lineno; }
+ 	;
+ %%

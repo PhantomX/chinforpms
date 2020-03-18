@@ -1,0 +1,60 @@
+2004-10-28  Paolo Carlini  <pcarlini@suse.de>
+
+	PR libstdc++/16612
+	* include/bits/basic_string.h (basic_string()): When
+	_GLIBCXX_FULLY_DYNAMIC_STRING is defined, don't deal with _S_empty_rep.
+	* include/bits/basic_string.tcc (_S_construct): Likewise.
+
+--- libstdc++33-v3/include/bits/basic_string.tcc.jj	2002-11-09 18:42:55.000000000 +0100
++++ libstdc++33-v3/include/bits/basic_string.tcc	2004-11-12 14:17:19.946131774 +0100
+@@ -77,8 +77,10 @@ namespace std
+       _S_construct(_InIter __beg, _InIter __end, const _Alloc& __a,
+ 		   input_iterator_tag)
+       {
++#ifndef _GLIBCXX_FULLY_DYNAMIC_STRING
+ 	if (__beg == __end && __a == _Alloc())
+ 	  return _S_empty_rep()._M_refcopy();
++#endif
+ 	// Avoid reallocation for common case.
+ 	_CharT __buf[100];
+ 	size_type __i = 0;
+@@ -137,11 +139,13 @@ namespace std
+       _S_construct(_InIter __beg, _InIter __end, const _Alloc& __a, 
+ 		   forward_iterator_tag)
+       {
++#ifndef _GLIBCXX_FULLY_DYNAMIC_STRING
+ 	if (__beg == __end && __a == _Alloc())
+ 	  return _S_empty_rep()._M_refcopy();
++#endif
+ 
+ 	// NB: Not required, but considered best practice.
+-	if (__builtin_expect(__beg == _InIter(), 0))
++	if (__builtin_expect(__beg == _InIter() && __beg != __end, 0))
+ 	  __throw_logic_error("attempt to create string with null pointer");
+ 
+ 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+@@ -166,8 +170,10 @@ namespace std
+     basic_string<_CharT, _Traits, _Alloc>::
+     _S_construct(size_type __n, _CharT __c, const _Alloc& __a)
+     {
++#ifndef _GLIBCXX_FULLY_DYNAMIC_STRING
+       if (__n == 0 && __a == _Alloc())
+ 	return _S_empty_rep()._M_refcopy();
++#endif
+ 
+       // Check for out_of_range and length_error exceptions.
+       _Rep* __r = _Rep::_S_create(__n, __a);
+--- libstdc++33-v3/include/bits/basic_string.h.jj	2002-05-22 15:39:29.000000000 +0200
++++ libstdc++33-v3/include/bits/basic_string.h	2004-11-12 14:14:42.831975711 +0100
+@@ -923,7 +923,11 @@ namespace std
+   template<typename _CharT, typename _Traits, typename _Alloc>
+     inline basic_string<_CharT, _Traits, _Alloc>::
+     basic_string()
++#ifndef _GLIBCXX_FULLY_DYNAMIC_STRING
+     : _M_dataplus(_S_empty_rep()._M_refcopy(), _Alloc()) { }
++#else
++    : _M_dataplus(_S_construct(size_type(), _CharT(), _Alloc()), _Alloc()) { }
++#endif
+ 
+   // operator+
+   template<typename _CharT, typename _Traits, typename _Alloc>

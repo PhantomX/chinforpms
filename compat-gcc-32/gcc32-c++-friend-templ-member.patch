@@ -1,0 +1,60 @@
+2004-08-06  Alexandre Oliva  <aoliva@redhat.com>
+
+	* parse.y (structsp): Skip typename_type obtained from a
+	class_head_decl, use the actual type.
+
+2004-08-09  Alexandre Oliva  <aoliva@redhat.com>
+
+	* g++.old-deja/g++.pt/crash43.C: Don't require error for legal
+	construct.
+	* g++.dg/template/friend0.C: New test.
+
+--- gcc/cp/parse.y.jj
++++ gcc/cp/parse.y
+@@ -2371,6 +2374,13 @@ structsp:
+ 	| class_head_decl
+ 		{
+ 		  $$.t = TREE_TYPE ($1.t);
++		  /* class_head_decl always starts with an aggr, so
++		     get rid of any implicit typename warnings we
++		     might get from it.  We can't remove it before
++		     this point because this is where we get from the
++		     decl to the type.  */
++		  if (IMPLICIT_TYPENAME_P ($$.t))
++		    $$.t = TREE_TYPE ($$.t);
+ 		  $$.new_type_flag = $1.new_type_flag;
+ 		  check_class_key (current_aggr, $$.t);
+ 		}
+--- gcc/testsuite/g++.old-deja/g++.pt/crash43.C 27 Nov 2002 01:03:42 -0000 1.1
++++ gcc/testsuite/g++.old-deja/g++.pt/crash43.C 9 Aug 2004 17:20:46 -0000
+@@ -7,7 +7,7 @@ struct S {
+   struct Y {};
+ 
+   template <int U>
+-  friend struct S<U>::X; // ERROR - typename as friend
++  friend struct S<U>::X; // gets bogus error - XFAIL *-*-*
+ 
+   template <int U>
+   friend typename S<U>::Y; // ERROR - typename as friend
+@@ -15,7 +15,7 @@ struct S {
+ 
+ struct T {
+   template <int T>
+-  friend struct S<T>::X; // ERROR - typename as friend
++  friend struct S<T>::X;
+ };
+ 
+ struct U {
+--- gcc/testsuite/g++.dg/template/friend0.C.jj	2004-08-12 14:03:21.001079817 +0200
++++ gcc/testsuite/g++.dg/template/friend0.C	2004-08-12 14:03:15.734996391 +0200
+@@ -0,0 +1,10 @@
++// http://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=129350
++// { dg-do compile }
++
++template<class T> struct A {
++        struct B { };
++};
++
++class C {
++        template<class T> friend struct A<T>::B;
++};

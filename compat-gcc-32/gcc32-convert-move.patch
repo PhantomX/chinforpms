@@ -1,0 +1,18 @@
+2003-05-22  Jeff Law  <law@redhat.com>
+
+	* expr.c (convert_move): Avoid making silly copies.
+
+--- gcc/expr.c.jj	2004-05-25 17:05:45.000000000 +0200
++++ gcc/expr.c	2004-08-03 17:40:55.114899943 +0200
+@@ -531,6 +531,11 @@ convert_move (to, from, unsignedp)
+   if (to_real != from_real)
+     abort ();
+ 
++  /* If the source and destination are already the same, then there's
++     nothing to do.  */
++  if (to == from)
++    return;
++
+   /* If FROM is a SUBREG that indicates that we have already done at least
+      the required extension, strip it.  We don't handle such SUBREGs as
+      TO here.  */

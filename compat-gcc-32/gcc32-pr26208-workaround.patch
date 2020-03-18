@@ -1,0 +1,249 @@
+--- gcc/unwind-dw2.c.jj	2006-05-22 13:39:48.000000000 -0400
++++ gcc/unwind-dw2.c	2006-05-22 13:48:20.000000000 -0400
+@@ -61,8 +61,8 @@ struct _Unwind_Context
+   void *ra;
+   void *lsda;
+   struct dwarf_eh_bases bases;
++#define SIGNAL_FRAME_BIT ((~(_Unwind_Word) 0 >> 1) + 1)
+   _Unwind_Word args_size;
+-  char signal_frame;
+ };
+ 
+ /* Byte size of every register managed by these routines.  */
+@@ -201,7 +201,7 @@ _Unwind_GetIP (struct _Unwind_Context *c
+ inline _Unwind_Ptr
+ _Unwind_GetIPInfo (struct _Unwind_Context *context, int *ip_before_insn)
+ {
+-  *ip_before_insn = context->signal_frame != 0;
++  *ip_before_insn = (context->args_size & SIGNAL_FRAME_BIT) != 0;
+   return (_Unwind_Ptr) context->ra;
+ }
+ 
+@@ -758,7 +758,8 @@ execute_cfa_program (const unsigned char
+      reflected at the point immediately before the call insn.
+      In signal frames, return address is after last completed instruction,
+      so we add 1 to return address to make the comparison <=.  */
+-  while (insn_ptr < insn_end && fs->pc < context->ra + context->signal_frame)
++  while (insn_ptr < insn_end
++	 && fs->pc < context->ra + ((context->args_size & SIGNAL_FRAME_BIT) != 0))
+     {
+       unsigned char insn = *insn_ptr++;
+       _Unwind_Word reg, utmp;
+@@ -918,7 +919,14 @@ execute_cfa_program (const unsigned char
+ 	  break;
+ 
+ 	case DW_CFA_GNU_args_size:
+-	  insn_ptr = read_uleb128 (insn_ptr, &context->args_size);
++	  {
++	    _Unwind_Word args_size;
++	    insn_ptr = read_uleb128 (insn_ptr, &args_size);
++	    if (args_size & SIGNAL_FRAME_BIT)
++	      abort ();
++	    context->args_size
++	      = (context->args_size & SIGNAL_FRAME_BIT) | args_size;
++	  }
+ 	  break;
+ 
+ 	case DW_CFA_GNU_negative_offset_extended:
+@@ -945,10 +953,10 @@ uw_frame_state_for (struct _Unwind_Conte
+   const unsigned char *aug, *insn, *end;
+ 
+   memset (fs, 0, sizeof (*fs));
+-  context->args_size = 0;
++  context->args_size &= SIGNAL_FRAME_BIT;
+   context->lsda = 0;
+ 
+-  fde = _Unwind_Find_FDE (context->ra + context->signal_frame - 1,
++  fde = _Unwind_Find_FDE (context->ra + ((context->args_size & SIGNAL_FRAME_BIT) != 0) - 1,
+ 			  &context->bases);
+   if (fde == NULL)
+     {
+@@ -1092,7 +1100,7 @@ __frame_state_for (void *pc_target, stru
+   state_in->cfa_offset = fs.cfa_offset;
+   state_in->cfa_reg = fs.cfa_reg;
+   state_in->retaddr_column = fs.retaddr_column;
+-  state_in->args_size = context.args_size;
++  state_in->args_size = context.args_size & ~SIGNAL_FRAME_BIT;
+   state_in->eh_ptr = fs.eh_ptr;
+ 
+ #ifdef __linux__
+@@ -1287,7 +1295,10 @@ uw_update_context_1 (struct _Unwind_Cont
+ 	break;
+       }
+ 
+-  context->signal_frame = fs->signal_frame;
++  if (fs->signal_frame)
++    context->args_size |= SIGNAL_FRAME_BIT;
++  else
++    context->args_size &= ~SIGNAL_FRAME_BIT;
+ 
+   MD_FROB_UPDATE_CONTEXT (context, fs);
+ }
+@@ -1403,9 +1414,9 @@ uw_install_context_1 (struct _Unwind_Con
+ 
+     /* We adjust SP by the difference between CURRENT and TARGET's CFA.  */
+     if (STACK_GROWS_DOWNWARD)
+-      return target_cfa - current->cfa + target->args_size;
++      return target_cfa - current->cfa + (target->args_size & ~SIGNAL_FRAME_BIT);
+     else
+-      return current->cfa - target_cfa - target->args_size;
++      return current->cfa - target_cfa - (target->args_size & ~SIGNAL_FRAME_BIT);
+   }
+ #else
+   return 0;
+--- libjava/exception.cc.jj	2006-05-22 13:39:48.000000000 -0400
++++ libjava/exception.cc	2006-05-22 14:48:30.000000000 -0400
+@@ -31,6 +31,153 @@ namespace std
+ }
+ #include "unwind.h"
+ 
++#if defined PIC && !defined __ia64__
++
++#include <dlfcn.h>
++
++extern "C" {
++
++static void *libgcc_s_handle;
++
++_Unwind_Reason_Code __attribute__((visibility ("hidden")))
++_Unwind_RaiseException (struct _Unwind_Exception *exc)
++{
++  static _Unwind_Reason_Code (*RaiseException) (struct _Unwind_Exception *);
++
++  if (RaiseException == NULL)
++    {
++      if (libgcc_s_handle == NULL)
++	libgcc_s_handle = dlopen ("libgcc_s.so.1", RTLD_LAZY);
++      RaiseException = (__typeof (RaiseException))
++	dlsym (libgcc_s_handle, "_Unwind_RaiseException");
++    }
++  return RaiseException (exc);
++}
++
++void __attribute__((visibility ("hidden")))
++_Unwind_Resume (struct _Unwind_Exception *exc)
++{
++  static void (*Resume) (struct _Unwind_Exception *);
++
++  if (Resume == NULL)
++    {
++      if (libgcc_s_handle == NULL)
++	libgcc_s_handle = dlopen ("libgcc_s.so.1", RTLD_LAZY);
++      Resume = (__typeof (Resume))
++	dlsym (libgcc_s_handle, "_Unwind_Resume");
++    }
++  Resume (exc);
++}
++
++__attribute__((visibility ("hidden"))) void * 
++_Unwind_GetLanguageSpecificData (struct _Unwind_Context *ctx)
++{
++  static void * (*GetLanguageSpecificData) (struct _Unwind_Context *);
++
++  if (GetLanguageSpecificData == NULL)
++    {
++      if (libgcc_s_handle == NULL)
++	libgcc_s_handle = dlopen ("libgcc_s.so.1", RTLD_LAZY);
++      GetLanguageSpecificData = (__typeof (GetLanguageSpecificData))
++	dlsym (libgcc_s_handle, "_Unwind_GetLanguageSpecificData");
++    }
++  return GetLanguageSpecificData (ctx);
++}
++
++_Unwind_Ptr __attribute__((visibility ("hidden")))
++_Unwind_GetRegionStart (struct _Unwind_Context *ctx)
++{
++  static _Unwind_Ptr (*GetRegionStart) (struct _Unwind_Context *);
++
++  if (GetRegionStart == NULL)
++    {
++      if (libgcc_s_handle == NULL)
++	libgcc_s_handle = dlopen ("libgcc_s.so.1", RTLD_LAZY);
++      GetRegionStart = (__typeof (GetRegionStart))
++	dlsym (libgcc_s_handle, "_Unwind_GetRegionStart");
++    }
++  return GetRegionStart (ctx);
++}
++
++_Unwind_Ptr __attribute__((visibility ("hidden")))
++_Unwind_GetDataRelBase (struct _Unwind_Context *ctx)
++{
++  static _Unwind_Ptr (*GetDataRelBase) (struct _Unwind_Context *);
++
++  if (GetDataRelBase == NULL)
++    {
++      if (libgcc_s_handle == NULL)
++	libgcc_s_handle = dlopen ("libgcc_s.so.1", RTLD_LAZY);
++      GetDataRelBase = (__typeof (GetDataRelBase))
++	dlsym (libgcc_s_handle, "_Unwind_GetDataRelBase");
++    }
++  return GetDataRelBase (ctx);
++}
++
++_Unwind_Ptr __attribute__((visibility ("hidden")))
++_Unwind_GetTextRelBase (struct _Unwind_Context *ctx)
++{
++  static _Unwind_Ptr (*GetTextRelBase) (struct _Unwind_Context *);
++
++  if (GetTextRelBase == NULL)
++    {
++      if (libgcc_s_handle == NULL)
++	libgcc_s_handle = dlopen ("libgcc_s.so.1", RTLD_LAZY);
++      GetTextRelBase = (__typeof (GetTextRelBase))
++	dlsym (libgcc_s_handle, "_Unwind_GetTextRelBase");
++    }
++  return GetTextRelBase (ctx);
++}
++
++_Unwind_Ptr __attribute__((visibility ("hidden")))
++_Unwind_GetIPInfo (struct _Unwind_Context *ctx, int *ip)
++{
++  static _Unwind_Ptr (*GetIPInfo) (struct _Unwind_Context *, int *ip);
++
++  if (GetIPInfo == NULL)
++    {
++      if (libgcc_s_handle == NULL)
++	libgcc_s_handle = dlopen ("libgcc_s.so.1", RTLD_LAZY);
++      GetIPInfo = (__typeof (GetIPInfo))
++	dlsym (libgcc_s_handle, "_Unwind_GetIPInfo");
++    }
++  return GetIPInfo (ctx, ip);
++}
++
++void __attribute__((visibility ("hidden")))
++_Unwind_SetIP (struct _Unwind_Context *ctx, _Unwind_Ptr ip)
++{
++  static void (*SetIP) (struct _Unwind_Context *, _Unwind_Ptr ip);
++
++  if (SetIP == NULL)
++    {
++      if (libgcc_s_handle == NULL)
++	libgcc_s_handle = dlopen ("libgcc_s.so.1", RTLD_LAZY);
++      SetIP = (__typeof (SetIP))
++	dlsym (libgcc_s_handle, "_Unwind_SetIP");
++    }
++  SetIP (ctx, ip);
++}
++
++void __attribute__((visibility ("hidden")))
++_Unwind_SetGR (struct _Unwind_Context *ctx, int num, _Unwind_Ptr gr)
++{
++  static void (*SetGR) (struct _Unwind_Context *, int num, _Unwind_Ptr gr);
++
++  if (SetGR == NULL)
++    {
++      if (libgcc_s_handle == NULL)
++	libgcc_s_handle = dlopen ("libgcc_s.so.1", RTLD_LAZY);
++      SetGR = (__typeof (SetGR))
++	dlsym (libgcc_s_handle, "_Unwind_SetGR");
++    }
++  SetGR (ctx, num, gr);
++}
++
++}
++
++#endif
++
+ struct alignment_test_struct
+ {
+   char space;

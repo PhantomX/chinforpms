@@ -1,0 +1,72 @@
+2005-11-10  Alexandre Oliva  <aoliva@redhat.com>
+
+	* gcc.c (cpp_unique_options): Add %vR.
+	(do_spec_1): Use it to define __GNUC_RH_RELEASE__.
+
+--- gcc/gcc.c	2005-11-10 14:59:39.000000000 -0200
++++ gcc/gcc.c	2005-11-10 15:47:01.000000000 -0200
+@@ -696,7 +696,7 @@
+  %{MMD:-MMD %{!o:%b.d}%{o*:%.d%*}}\
+  %{M} %{MM} %{MF*} %{MG} %{MP} %{MQ*} %{MT*}\
+  %{!E:%{!M:%{!MM:%{MD|MMD:%{o*:-MQ %*}}}}}\
+- %{!no-gcc:-D__GNUC__=%v1 -D__GNUC_MINOR__=%v2 -D__GNUC_PATCHLEVEL__=%v3 -D__GXX_ABI_VERSION=102}\
++ %{!no-gcc:-D__GNUC__=%v1 -D__GNUC_MINOR__=%v2 -D__GNUC_PATCHLEVEL__=%v3 %vR -D__GXX_ABI_VERSION=102}\
+  %{!undef:%{!ansi:%{!std=*:%p}%{std=gnu*:%p}} %P} %{trigraphs}\
+  %{Os:-D__OPTIMIZE_SIZE__} %{O*:%{!O0:-D__OPTIMIZE__}}\
+  %{fno-inline|O0|!O*:-D__NO_INLINE__} %{ffast-math:-D__FAST_MATH__}\
+@@ -5226,7 +5226,7 @@
+ 
+ 	      /* If desired, advance to third version number.
+                  But don't complain if it's not present */
+-	      if (c1 == '3')
++	      if (c1 >= '3')
+ 		{
+ 		  /* Set V after the second period.  */
+ 		  while (ISDIGIT (*v))
+@@ -5237,11 +5237,45 @@
+ 		    v++;
+ 		}
+ 
++	      if (c1 == 'R')
++		{
++		  /* Move q to the end of compiler_version, so that we
++		     can compare the beginning of compiler_version
++		     with the beginning of version_string below.  */
++		  q = v + strlen (v);
++
++		  v = strchr (version_string, '(');
++		  if (v != NULL && strncmp (v + 1, "Red Hat ", 8) == 0)
++		    {
++		      v += 9;
++		      if (strncmp (v, "Linux ", 6) == 0)
++			v += 6;
++
++		      /* If compiler_version changed, don't define
++			 __GNUC_RH_RELEASE__.  */
++		      if (strncmp (v, compiler_version, q - compiler_version)
++			  != 0)
++			break;
++
++		      if (strncmp (v, version_string, q - compiler_version)
++			  != 0 || v[q - compiler_version] != '-')
++			abort ();
++
++		      /* Skip the version and the dash.  */
++		      v += q - compiler_version + 1;
++		      obstack_grow (&obstack, "-D__GNUC_RH_RELEASE__=",
++				    sizeof ("-D__GNUC_RH_RELEASE__=") - 1);
++		    }
++		  else
++		    break;
++		}
++
+ 	      /* Set Q at the next period or at the end.  */
+ 	      q = v;
+ 	      while (ISDIGIT (*q))
+ 		q++;
+-	      if (*q != 0 && q > v && *q != ' ' && *q != '.' && *q != '-')
++	      if (*q != 0 && q > v && *q != ' ' && *q != '.' && *q != '-'
++		  && *q != ')')
+ 		abort ();
+ 
+ 	      if (q > v)

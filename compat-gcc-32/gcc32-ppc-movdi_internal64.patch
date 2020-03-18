@@ -1,0 +1,149 @@
+2004-07-25  David Edelsohn  <edelsohn@gnu.org>
+
+	PR target/16239
+	* config/rs6000/rs6000.md (movdi_internal64): Further disparage
+	f->f.
+
+2002-11-06  David Edelsohn  <edelsohn@gnu.org>
+
+	PR target/8480, optimization/8328
+	* config/rs6000/rs6000.md (movdi_internal64): Discourage
+	FPR to FPR moves.
+
+2004-12-22  Ben Elliston  <bje@au.ibm.com>
+
+	PR optimization/8328
+	* gcc.dg/pr8328.c: New test.
+
+--- gcc/config/rs6000/rs6000.md	16 Jul 2003 11:40:06 -0000
++++ gcc/config/rs6000/rs6000.md	22 Dec 2004 08:31:18 -0000
+@@ -8749,7 +8749,7 @@
+ }")
+ 
+ (define_insn "*movdi_internal64"
+-  [(set (match_operand:DI 0 "nonimmediate_operand" "=r,r,m,r,r,r,r,f,f,m,r,*h,*h")
++  [(set (match_operand:DI 0 "nonimmediate_operand" "=r,r,m,r,r,r,r,??f,f,m,r,*h,*h")
+ 	(match_operand:DI 1 "input_operand" "r,m,r,I,L,nF,R,f,m,f,*h,r,0"))]
+   "TARGET_POWERPC64
+    && (gpc_reg_operand (operands[0], DImode)
+
+--- gcc/testsuite/gcc.dg/pr8328.c	1 Jan 1970 00:00:00 -0000
++++ gcc/testsuite/gcc.dg/pr8328.c	22 Dec 2004 08:31:18 -0000
+@@ -0,0 +1,117 @@
++/* { dg-do compile { target powerpc64-*-linux* } } */
++/* { dg-options "-O3" } */
++
++/* This test case comes from the original PR.  */
++
++struct list
++{
++  unsigned short type;
++  unsigned int len;
++  void *data;
++  short *ind;
++};
++
++extern int foo (int *);
++extern int bar (void);
++extern int qwe (struct list *);
++extern long check (int *);
++extern void display (int *);
++extern void trace (int *);
++
++int
++myfunc (int *opts, char *str)
++{
++  short num;
++  int loc;
++  int start;
++  int len;
++  int code;
++  int rc = 0;
++
++  if (code && (rc = check (opts)))
++    goto exit;
++
++  foo (&code);
++  {
++    struct list mylist[1];
++    mylist[0].type = 960;
++    mylist[0].len = 4;
++    mylist[0].data = (void *) &loc;
++    mylist[0].ind = 0L;
++    qwe (mylist);
++  }
++  bar ();
++
++  if (code && (rc = check (opts)))
++    goto exit;
++
++  foo (&code);
++  bar ();
++
++  if (code && (rc = check (opts)))
++    goto exit;
++
++  if (opts)
++    trace (opts);
++
++  display (opts);
++
++  while (code >= 0)
++    {
++      foo (&code);
++      {
++        struct list mylist[1];
++        mylist[0].type = 500;
++        mylist[0].len = 2;
++        mylist[0].data = (void *) &num;
++        mylist[0].ind = 0L;
++        qwe (mylist);
++      }
++      bar ();
++      {
++        struct list mylist[3];
++        mylist[0].type = 960;
++        mylist[0].len = 4;
++        mylist[0].data = (void *) &loc;
++        mylist[0].ind = 0L;
++        mylist[1].type = 496;
++        mylist[1].len = 4;
++        mylist[1].data = (void *) &start;
++        mylist[1].ind = 0L;
++        mylist[2].type = 496;
++        mylist[2].len = 4;
++        mylist[2].data = (void *) &len;
++        mylist[2].ind = 0L;
++        qwe (mylist);
++      }
++      {
++        struct list mylist[4];
++        mylist[0].type = 460;
++        mylist[0].len = 129;
++        mylist[0].data = (void *) str;
++        mylist[0].ind = 0L;
++        mylist[1].type = 460;
++        mylist[1].len = 129;
++        mylist[1].data = (void *) str;
++        mylist[1].ind = 0L;
++        mylist[2].type = 460;
++        mylist[2].len = 9;
++        mylist[2].data = (void *) str;
++        mylist[2].ind = 0L;
++        mylist[3].type = 500;
++        mylist[3].len = 2;
++        mylist[3].data = (void *) str;
++        mylist[3].ind = 0L;
++        qwe (mylist);
++      }
++    }
++
++ exit:
++  {
++    struct list mylist[1];
++    mylist[0].data = (void *) &loc;
++    mylist[0].ind = 0L;
++    qwe (mylist);
++  }
++  return (rc);
++}

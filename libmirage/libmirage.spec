@@ -1,6 +1,8 @@
+%global _legacy_common_support 1
+
 Name:           libmirage
 Version:        3.2.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A CD/DVD-ROM image access library
 
 Epoch:          1
@@ -79,6 +81,9 @@ popd
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.2.4-101
+- Fix build with gcc 10
+
 * Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.2.4-100
 - 3.2.4
 

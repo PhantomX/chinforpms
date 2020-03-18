@@ -1,0 +1,51 @@
+2005-09-26  Alexandre Oliva  <aoliva@redhat.com>
+
+	2002-08-13  Mark Mitchell  <mark@codesourcery.com>
+	* decl.c (pushdecl_class_level): Honor requests to bind names to
+	OVERLOADs.
+
+2005-09-26  Alexandre Oliva  <aoliva@redhat.com>
+
+	* g++.dg/lookup/overload1.C: New.
+
+--- gcc/cp/decl.c.orig
++++ gcc/cp/decl.c
+@@ -4369,8 +4369,9 @@ pushdecl_class_level (x)
+   register tree name;
+ 
+   if (TREE_CODE (x) == OVERLOAD)
+-    x = OVL_CURRENT (x);
+-  name = DECL_NAME (x);
++    name = DECL_NAME (OVL_CURRENT (x));
++  else
++    name = DECL_NAME (x);
+ 
+   if (name)
+     {
+--- gcc/testsuite/g++.dg/lookup/overload1.C
++++ gcc/testsuite/g++.dg/lookup/overload1.C
+@@ -0,0 +1,24 @@
++// { dg-do compile }
++
++// This used to crash expanding the initializer, because instead of
++// pushing the OVERLOAD containing template and function decls, we'd
++// push only the first member of the overload list.  The code below is
++// from the bug report at
++// https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=156185
++
++struct C {
++  template< class N >
++  static C *newInstance() { return new N; };
++};
++
++typedef C*( *CreateFunc)();
++
++struct B {
++  B( CreateFunc _createf ){}
++};
++
++struct A : C {
++  static B b;
++};
++
++B A::b( newInstance<A> );

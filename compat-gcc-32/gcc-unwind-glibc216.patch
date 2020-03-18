@@ -1,0 +1,52 @@
+This is a partial backport of the following change to libgcc:
+
+2012-04-20  Thomas Schwinge  <thomas@codesourcery.com>
+
+        struct siginfo vs. siginfo_t
+
+        * config/alpha/linux-unwind.h (alpha_fallback_frame_state): Use
+        siginfo_t instead of struct siginfo.
+        * config/bfin/linux-unwind.h (bfin_fallback_frame_state): Likewise.
+        * config/i386/linux-unwind.h (x86_fallback_frame_state): Likewise.
+        * config/ia64/linux-unwind.h (ia64_fallback_frame_state)
+        (ia64_handle_unwabi): Likewise.
+        * config/mips/linux-unwind.h (mips_fallback_frame_state): Likewise.
+        * config/pa/linux-unwind.h (pa32_fallback_frame_state): Likewise.
+        * config/sh/linux-unwind.h (shmedia_fallback_frame_state)
+        (sh_fallback_frame_state): Likewise.
+        * config/tilepro/linux-unwind.h (tile_fallback_frame_state): Likewise.
+        * config/xtensa/linux-unwind.h (xtensa_fallback_frame_state): Likewise.
+
+
+Index: gcc-3.3.3/gcc/config/i386/linux.h
+===================================================================
+--- gcc-3.3.3.orig/gcc/config/i386/linux.h
++++ gcc-3.3.3/gcc/config/i386/linux.h
+@@ -257,9 +257,9 @@ Boston, MA 02111-1307, USA.  */
+       {									\
+ 	struct rt_sigframe {						\
+ 	  int sig;							\
+-	  struct siginfo *pinfo;					\
++	  siginfo_t *pinfo;					\
+ 	  void *puc;							\
+-	  struct siginfo info;						\
++	  siginfo_t info;						\
+ 	  struct ucontext uc;						\
+ 	} *rt_ = (CONTEXT)->cfa;					\
+ 	sc_ = (struct sigcontext *) &rt_->uc.uc_mcontext;		\
+Index: gcc-3.3.3/gcc/config/i386/linux64.h
+===================================================================
+--- gcc-3.3.3.orig/gcc/config/i386/linux64.h
++++ gcc-3.3.3/gcc/config/i386/linux64.h
+@@ -179,9 +179,9 @@ Boston, MA 02111-1307, USA.  */
+       {									\
+ 	struct rt_sigframe {						\
+ 	  int sig;							\
+-	  struct siginfo *pinfo;					\
++	  siginfo_t *pinfo;					\
+ 	  void *puc;							\
+-	  struct siginfo info;						\
++	  siginfo_t info;						\
+ 	  struct ucontext uc;						\
+ 	} *rt_ = (CONTEXT)->cfa;					\
+ 	sc_ = (struct sigcontext *) &rt_->uc.uc_mcontext;		\

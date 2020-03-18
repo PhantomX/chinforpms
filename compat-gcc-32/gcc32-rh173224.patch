@@ -1,0 +1,58 @@
+2005-01-09  Alexandre Oliva  <aoliva@redhat.com>
+
+	* config/i386/i386.md: Adjust sse conditional move patterns to
+	match both nonimm&reg and reg&nonimm in compare operands.
+
+2006-04-25  Jakub Jelinek  <jakub@redhat.com>
+
+	* gcc.dg/20060425-1.c: New test.
+
+--- gcc/config/i386/i386.md	2005-10-24 18:18:40.000000000 -0200
++++ gcc/config/i386/i386.md	2006-01-09 16:16:06.000000000 -0200
+@@ -16815,25 +16815,30 @@
+ (define_split
+   [(set (match_operand 0 "register_operand" "")
+ 	(if_then_else (match_operator 1 "comparison_operator"
+-			[(match_operand 4 "register_operand" "")
++			[(match_operand 4 "nonimmediate_operand" "")
+ 			 (match_operand 5 "nonimmediate_operand" "")])
+ 		      (match_operand 2 "nonmemory_operand" "")
+ 		      (match_operand 3 "nonmemory_operand" "")))]
+   "SSE_REG_P (operands[0]) && reload_completed
++   && ((REG_P (operands[4]) && REGNO (operands[4]) == REGNO (operands[0]))
++       || (REG_P (operands[5]) && REGNO (operands[5]) == REGNO (operands[0])))
+    && (const0_operand (operands[2], GET_MODE (operands[0]))
+        || const0_operand (operands[3], GET_MODE (operands[0])))"
+-  [(set (match_dup 0) (match_op_dup 1 [(match_dup 0) (match_dup 5)]))
++  [(set (match_dup 0) (match_op_dup 1 [(match_dup 4) (match_dup 5)]))
+    (set (subreg:TI (match_dup 0) 0) (and:TI (match_dup 6)
+ 					    (subreg:TI (match_dup 7) 0)))]
+ {
+   PUT_MODE (operands[1], GET_MODE (operands[0]));
+-  if (!sse_comparison_operator (operands[1], VOIDmode))
++  if (REGNO (operands[4]) != REGNO (operands[0])
++      || !sse_comparison_operator (operands[1], VOIDmode))
+     {
+       rtx tmp = operands[5];
+       operands[5] = operands[4];
+       operands[4] = tmp;
+       PUT_CODE (operands[1], swap_condition (GET_CODE (operands[1])));
+     }
++  if (!sse_comparison_operator (operands[1], VOIDmode))
++    abort ();
+   if (const0_operand (operands[2], GET_MODE (operands[0])))
+     {
+       operands[7] = operands[3];
+--- gcc/testsuite/gcc.dg/20060425-1.c	2004-06-24 14:04:38.000000000 -0400
++++ gcc/testsuite/gcc.dg/20060425-1.c	2006-04-25 09:15:04.000000000 -0400
+@@ -0,0 +1,10 @@
++/* { dg-do compile } */
++/* { dg-options "-O2" } */
++
++double
++crashme (double v, double *p)
++{
++  if (v < 0. && *p == 1.)
++    v = 0.;
++  return v;
++}

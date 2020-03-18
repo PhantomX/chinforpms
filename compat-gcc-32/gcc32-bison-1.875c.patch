@@ -1,0 +1,61 @@
+--- gcc/cp/parse.y.jj	2003-01-17 12:33:10.000000000 -0500
++++ gcc/cp/parse.y	2004-07-01 09:03:23.000000000 -0400
+@@ -44,6 +44,9 @@ Boston, MA 02111-1307, USA.  */
+ #include "except.h"
+ #include "toplev.h"
+ #include "ggc.h"
++#ifdef __GNUC__
++#define YYMALLOC nonexistent
++#endif
+ 
+ extern struct obstack permanent_obstack;
+ 
+--- gcc/java/parse.y.jj	2004-01-27 10:16:49.000000000 -0500
++++ gcc/java/parse.y	2004-07-01 09:03:53.000000000 -0400
+@@ -65,6 +65,9 @@ definitions and other extensions.  */
+ #include "function.h"
+ #include "except.h"
+ #include "ggc.h"
++#ifdef __GNUC__
++#define YYMALLOC nonexistent
++#endif
+ 
+ #ifndef DIR_SEPARATOR
+ #define DIR_SEPARATOR '/'
+--- gcc/java/parse-scan.y.jj	2001-04-04 18:12:39.000000000 -0400
++++ gcc/java/parse-scan.y	2004-07-01 09:07:17.000000000 -0400
+@@ -43,6 +43,10 @@ definitions and other extensions.  */
+ #include "obstack.h"
+ #include "toplev.h"
+ 
++#ifdef __GNUC__
++#define YYMALLOC nonexistent
++#endif
++
+ extern char *input_filename;
+ extern FILE *finput, *out;
+ 
+--- gcc/tradcif.y.jj	2002-02-04 05:41:44.000000000 -0500
++++ gcc/tradcif.y	2004-07-01 08:55:51.000000000 -0400
+@@ -27,6 +27,9 @@ Foundation, 59 Temple Place - Suite 330,
+ #include "intl.h"
+ #include "tradcpp.h"
+ #include <setjmp.h>
++#ifdef __GNUC__
++#define YYMALLOC nonexistent
++#endif
+ 
+   static int yylex PARAMS ((void));
+   static void yyerror PARAMS ((const char *msgid)) ATTRIBUTE_NORETURN;
+--- gcc/c-parse.in.jj	2003-08-01 19:21:40.000000000 -0400
++++ gcc/c-parse.in	2004-07-01 08:56:33.000000000 -0400
+@@ -47,6 +47,9 @@ end ifc
+ #include "output.h"
+ #include "toplev.h"
+ #include "ggc.h"
++#ifdef __GNUC__
++#define YYMALLOC nonexistent
++#endif
+   
+ #ifdef MULTIBYTE_CHARS
+ #include <locale.h>

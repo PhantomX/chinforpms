@@ -1,0 +1,78 @@
+2004-08-12  Jakub Jelinek  <jakub@redhat.com>
+
+	* Makefile.am (libgcj-@gcc_version@.jar): Set timestamp of all files
+	and directories in the jar file to the youngest of gcc/ChangeLog,
+	gcc/java/ChangeLog and libjava/ChangeLog.  Sort the file/directory
+	list before passing it to fastjar.
+	* Makefile.in: Rebuilt.
+
+--- libjava/Makefile.am	2003-02-03 23:58:32.000000000 +0100
++++ libjava/Makefile.am	2004-08-12 13:21:35.928177346 +0200
+@@ -170,9 +170,29 @@ all_java_class_files = $(all_java_source
+ libgcj-@gcc_version@.jar: $(all_java_class_files)
+ 	-@rm -f libgcj-@gcc_version@.jar
+ ## Note that we explicitly want to include directory information.
+-	find java gnu javax org -type d -o -type f -name '*.class' | \
+-	  sed -e '/\/\./d' -e '/\/xlib/d' | \
+-	  $(ZIP) cfM0E@ $@
++	# The following is an attempt to have libgcj-*.jar files
++	# from the same GCC version identical accross the architectures.
++	JARDIR=`mktemp -d ../$@.XXXXXX` || exit 1; \
++	for d in `find java gnu javax org -type d \
++		  | sed -e '/\/\./d' -e '/\/xlib/d'`; do \
++	  mkdir -p $$JARDIR/$$d; \
++	done; \
++	touch -r $(srcdir)/../gcc/ChangeLog $$JARDIR.stamp; \
++	[ $(srcdir)/../gcc/java/ChangeLog -nt $$JARDIR.stamp ] \
++	  && touch -r $(srcdir)/../gcc/java/ChangeLog $$JARDIR.stamp; \
++	[ $(srcdir)/ChangeLog -nt $$JARDIR.stamp ] \
++	  && touch -r $(srcdir)/ChangeLog $$JARDIR.stamp; \
++	for f in `find java gnu javax org -type f -name '*.class' \
++		  | sed -e '/\/\./d' -e '/\/xlib/d'`; do \
++	  cp $$f $$JARDIR/$$f; \
++	  touch -r $$JARDIR.stamp $$JARDIR/$$f; \
++	done; \
++	touch -r $$JARDIR.stamp `find $$JARDIR -type d`; \
++	cd $$JARDIR; \
++	find java gnu javax org -type d -o -type f | \
++	  LC_ALL=C sort | $(ZIP) cfM0E@ ../libjava/$@ || exit 1; \
++	cd -; \
++	rm -rf $$JARDIR $$JARDIR.stamp
+ 
+ MOSTLYCLEANFILES = $(javao_files) $(nat_files) $(nat_headers) $(c_files) $(x_javao_files) $(x_nat_files) $(x_nat_headers)
+ CLEANFILES = libgcj-@gcc_version@.jar
+--- libjava/Makefile.in	2003-02-03 23:58:32.000000000 +0100
++++ libjava/Makefile.in	2004-08-12 13:21:22.928440630 +0200
+@@ -3280,9 +3280,29 @@ install-exec-hook:
+ 
+ libgcj-@gcc_version@.jar: $(all_java_class_files)
+ 	-@rm -f libgcj-@gcc_version@.jar
+-	find java gnu javax org -type d -o -type f -name '*.class' | \
+-	  sed -e '/\/\./d' -e '/\/xlib/d' | \
+-	  $(ZIP) cfM0E@ $@
++	# The following is an attempt to have libgcj-*.jar files
++	# from the same GCC version identical accross the architectures.
++	JARDIR=`mktemp -d ../$@.XXXXXX` || exit 1; \
++	for d in `find java gnu javax org -type d \
++		  | sed -e '/\/\./d' -e '/\/xlib/d'`; do \
++	  mkdir -p $$JARDIR/$$d; \
++	done; \
++	touch -r $(srcdir)/../gcc/ChangeLog $$JARDIR.stamp; \
++	[ $(srcdir)/../gcc/java/ChangeLog -nt $$JARDIR.stamp ] \
++	  && touch -r $(srcdir)/../gcc/java/ChangeLog $$JARDIR.stamp; \
++	[ $(srcdir)/ChangeLog -nt $$JARDIR.stamp ] \
++	  && touch -r $(srcdir)/ChangeLog $$JARDIR.stamp; \
++	for f in `find java gnu javax org -type f -name '*.class' \
++		  | sed -e '/\/\./d' -e '/\/xlib/d'`; do \
++	  cp $$f $$JARDIR/$$f; \
++	  touch -r $$JARDIR.stamp $$JARDIR/$$f; \
++	done; \
++	touch -r $$JARDIR.stamp `find $$JARDIR -type d`; \
++	cd $$JARDIR; \
++	find java gnu javax org -type d -o -type f | \
++	  LC_ALL=C sort | $(ZIP) cfM0E@ ../libjava/$@ || exit 1; \
++	cd -; \
++	rm -rf $$JARDIR $$JARDIR.stamp
+ 
+ clean-local:
+ 	find . -name '*.class' -print | xargs rm -f

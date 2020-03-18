@@ -1,0 +1,23 @@
+2004-08-14  Jakub Jelinek  <jakub@redhat.com>
+
+	* fold-const.c (fold): If flag_syntax_only, don't depend on
+	BITS_PER_WORD.
+
+--- gcc/fold-const.c.jj	2004-08-14 12:17:15.000000000 +0200
++++ gcc/fold-const.c	2004-08-14 13:00:37.814514205 +0200
+@@ -5204,10 +5204,11 @@ fold (expr)
+ 	      && TREE_CODE (TREE_OPERAND (t, 2)) == code
+ 	      && (TREE_TYPE (TREE_OPERAND (TREE_OPERAND (t, 1), 0))
+ 		  == TREE_TYPE (TREE_OPERAND (TREE_OPERAND (t, 2), 0)))
+-	      && ! (INTEGRAL_TYPE_P (TREE_TYPE (t))
+-		    && (INTEGRAL_TYPE_P
+-			(TREE_TYPE (TREE_OPERAND (TREE_OPERAND (t, 1), 0))))
+-		    && TYPE_PRECISION (TREE_TYPE (t)) <= BITS_PER_WORD))
++	      && (! (INTEGRAL_TYPE_P (TREE_TYPE (t))
++		     && (INTEGRAL_TYPE_P
++			 (TREE_TYPE (TREE_OPERAND (TREE_OPERAND (t, 1), 0))))
++		     && TYPE_PRECISION (TREE_TYPE (t)) <= BITS_PER_WORD)
++		  || flag_syntax_only))
+ 	    t = build1 (code, type,
+ 			build (COND_EXPR,
+ 			       TREE_TYPE (TREE_OPERAND

@@ -1,5 +1,5 @@
 Name:           smooth
-Version:        0.9.2
+Version:        0.9.3
 Release:        1%{?dist}
 Summary:        An object oriented C++ class library
 
@@ -67,6 +67,9 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.9.3-1
+- 0.9.3
+
 * Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.9.2-1
 - 0.9.2
 

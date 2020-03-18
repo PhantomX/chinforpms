@@ -1,0 +1,24 @@
+2004-10-26  Jakub Jelinek  <jakub@redhat.com>
+
+	* config/rs6000/linux64.h (SUBSUBTARGET_OVERRIDE_OPTIONS): Disallow
+	-m32 -mpowerpc64 and -m64 -mno-powerpc64.
+
+--- gcc/config/rs6000/linux64.h.jj	2004-02-28 12:27:45.000000000 +0100
++++ gcc/config/rs6000/linux64.h	2004-10-26 12:45:20.399107248 +0200
+@@ -142,6 +142,16 @@ Boston, MA 02111-1307, USA.  */
+ 	  flag_pic = 0;						\
+ 	  error ("-m32 and -maddr32 are incompatible");		\
+ 	}							\
++      if (TARGET_32BIT && TARGET_POWERPC64)			\
++        {							\
++          error ("-mpowerpc64 can't be used for 32-bit compilation"); \
++          target_flags &= ~MASK_POWERPC64;			\
++        }							\
++      else if (TARGET_64BIT && !TARGET_POWERPC64)		\
++        {							\
++          error ("-mno-powerpc64 can't be used for 64-bit compilation"); \
++          target_flags |= MASK_POWERPC64 | MASK_POWERPC;	\
++        }							\
+     }								\
+   while (0)
+ 

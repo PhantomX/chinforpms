@@ -1,0 +1,59 @@
+2003-03-11  Jason Merrill  <jason@redhat.com>
+
+	PR c++/8660
+	* testsuite/g++.dg/template/member2.C: New test.
+
+2003-03-29  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+	PR c++/10265
+	* testsuite/g++.dg/template/member4.C: New test.
+
+--- gcc-3.2.2/gcc/testsuite/g++.dg/template/member2.C.c++-classfn-member-template	2003-04-02 11:14:29.000000000 +0200
++++ gcc-3.2.2/gcc/testsuite/g++.dg/template/member2.C	2003-04-02 11:14:29.000000000 +0200
+@@ -0,0 +1,15 @@
++// PR c++/8660
++// Bug: we were treating the definition of the non-template as a definition
++// of the template, which broke.
++
++/* { dg-do compile } */
++
++struct BadgerBuf
++{
++  void ReadPod();
++  template<class B>
++  void ReadPod();
++};
++
++void BadgerBuf::ReadPod ()
++  { ReadPod<int> (); }
+--- gcc-3.2.2/gcc/testsuite/g++.dg/template/member4.C.c++-classfn-member-template	2003-04-02 11:14:29.000000000 +0200
++++ gcc-3.2.2/gcc/testsuite/g++.dg/template/member4.C	2003-04-02 11:14:29.000000000 +0200
+@@ -0,0 +1,28 @@
++// PR c++/10265
++// Bug: we were treating the definition of the non-template as a definition
++// of the template, which broke.
++
++/* { dg-do compile } */
++
++struct A {
++  template<class T> void f();
++  void f();
++};
++
++template<class T> void A::f() { }
++void A::f() { }
++
++struct B {
++  template<class T> void f() { }
++  void f() { }
++};
++
++int main()
++{
++  A a;
++  a.f();
++  a.f<int>();
++  B b;
++  b.f();
++  b.f<int>();
++}

@@ -1,0 +1,859 @@
+2005-11-16  Alexandre Oliva  <aoliva@redhat.com>
+
+	* attribs.c (handle_weakref_attribute): New.
+	(c_common_attribute_table): Add weakref.
+	* defaults.h (ASM_OUTPUT_WEAKREF): Define.
+	* doc/extend.texi: Document weakref attribute.
+	* varasm.c (do_assemble_alias): Handle weakrefs.
+	(finish_aliases_1): Do not reject weakrefs to external symbols.
+	* gthr-posix.h: Define __gthrw.  For all identifiers that
+	might be weak, introduce weakrefs or non-weak aliases with
+	__gthrw, and prefix all uses with __ghtrw.
+	* config/rs6000/rs6000.h (ASM_OUTPUT_WEAKREF): Define.
+
+	* g++.old-deja/g++.ext/weakref1.C: New test.
+	* g++.old-deja/g++.ext/weakref1a.cc: New helper file.
+
+--- gcc/defaults.h.orig	2005-11-15 19:55:42.000000000 -0200
++++ gcc/defaults.h	2005-11-16 13:38:28.000000000 -0200
+@@ -156,6 +156,25 @@
+ #endif
+ #endif
+ 
++/* This is how we tell the assembler that a symbol is a weak alias to
++   another symbol that doesn't require the other symbol to be defined.
++   Uses of the former will turn into weak uses of the latter, i.e.,
++   uses that, in case the latter is undefined, will not cause errors,
++   and will add it to the symbol table as weak undefined.  However, if
++   the latter is referenced directly, a strong reference prevails.  */
++#ifndef ASM_OUTPUT_WEAKREF
++#define ASM_OUTPUT_WEAKREF(FILE, DECL, NAME, VALUE)			\
++  do									\
++    {									\
++      fprintf ((FILE), "\t.weakref\t");					\
++      assemble_name ((FILE), (NAME));					\
++      fprintf ((FILE), ",");						\
++      assemble_name ((FILE), (VALUE));					\
++      fprintf ((FILE), "\n");						\
++    }									\
++  while (0)
++#endif
++
+ /* This determines whether or not we support weak symbols.  */
+ #ifndef SUPPORTS_WEAK
+ #if defined (ASM_WEAKEN_LABEL) || defined (ASM_WEAKEN_DECL)
+--- gcc/doc/extend.texi.orig	2005-11-15 19:55:42.000000000 -0200
++++ gcc/doc/extend.texi	2005-11-15 19:55:48.000000000 -0200
+@@ -2217,6 +2217,38 @@
+ for ELF targets, and also for a.out targets when using the GNU assembler
+ and linker.
+ 
++@item weakref
++@itemx weakref ("@var{target}")
++@cindex @code{weakref} attribute
++The @code{weakref} attribute marks a declaration as a weak reference.
++Without arguments, it should be accompanied by an @code{alias} attribute
++naming the target symbol.  Optionally, the @var{target} may be given as
++an argument to @code{weakref} itself.  In either case, @code{weakref}
++implicitly marks the declaration as @code{weak}.  Without a
++@var{target}, given as an argument to @code{weakref} or to @code{alias},
++@code{weakref} is equivalent to @code{weak}.
++
++@smallexample
++extern int x() __attribute__ ((weakref ("y")));
++/* is equivalent to... */
++extern int x() __attribute__ ((weak, weakref, alias ("y")));
++/* and to... */
++extern int x() __attribute__ ((weakref));
++extern int x() __attribute__ ((alias ("y")));
++@end smallexample
++
++A weak reference is an alias that does not by itself require a
++definition to be given for the target symbol.  If the target symbol is
++only referenced through weak references, then the becomes a @code{weak}
++undefined symbol.  If it is directly referenced, however, then such
++strong references prevail, and a definition will be required for the
++symbol, not necessarily in the same translation unit.
++
++The effect is equivalent to moving all references to the alias to a
++separate translation unit, renaming the alias to the aliased symbol,
++declaring it as weak, compiling the two separate translation units and
++performing a reloadable link on them.
++
+ @item malloc
+ @cindex @code{malloc} attribute
+ The @code{malloc} attribute is used to tell the compiler that a function
+--- gcc/gthr-posix.h.orig	2005-11-15 19:55:42.000000000 -0200
++++ gcc/gthr-posix.h	2005-11-15 19:55:48.000000000 -0200
+@@ -43,6 +43,42 @@
+ #define __GTHREAD_MUTEX_INIT PTHREAD_MUTEX_INITIALIZER
+ #define __GTHREAD_ONCE_INIT PTHREAD_ONCE_INIT
+ 
++#if SUPPORTS_WEAK && GTHREAD_USE_WEAK && defined __GNUC_RH_RELEASE__ && __GNUC__ == 3 && __GNUC_MINOR__ == 2 && __GNUC_PATCHLEVEL__ == 3 && __GNUC_RH_RELEASE__ > 53 && !defined __attribute__
++# define __gthrw(name) \
++  extern __typeof(name) __gthrw_ ## name __attribute__ ((__weakref__(#name)))
++
++__gthrw(pthread_once);
++__gthrw(pthread_key_create);
++__gthrw(pthread_key_delete);
++__gthrw(pthread_getspecific);
++__gthrw(pthread_setspecific);
++__gthrw(pthread_create);
++
++__gthrw(pthread_mutex_lock );
++__gthrw(pthread_mutex_trylock );
++__gthrw(pthread_mutex_unlock );
++
++#ifdef _LIBOBJC
++/* Objective C.  */
++__gthrw(pthread_cond_broadcast);
++__gthrw(pthread_cond_destroy);
++__gthrw(pthread_cond_init);
++__gthrw(pthread_cond_signal);
++__gthrw(pthread_cond_wait);
++__gthrw(pthread_exit);
++__gthrw(pthread_mutex_init);
++__gthrw(pthread_mutex_destroy);
++__gthrw(pthread_self);
++__gthrw(sched_get_priority_max);
++__gthrw(sched_get_priority_min);
++__gthrw(sched_yield);
++__gthrw(pthread_attr_destroy);
++__gthrw(pthread_attr_init);
++__gthrw(pthread_attr_setdetachstate);
++__gthrw(pthread_getschedparam);
++__gthrw(pthread_setschedparam);
++#endif
++#else
+ #if SUPPORTS_WEAK && GTHREAD_USE_WEAK
+ 
+ #pragma weak pthread_once
+@@ -76,11 +112,47 @@
+ #pragma weak pthread_getschedparam
+ #pragma weak pthread_setschedparam
+ #endif
++#endif
++
++#define __gthrw_pthread_once pthread_once
++#define __gthrw_pthread_key_create pthread_key_create
++#define __gthrw_pthread_key_delete pthread_key_delete
++#define __gthrw_pthread_getspecific pthread_getspecific
++#define __gthrw_pthread_setspecific pthread_setspecific
++#define __gthrw_pthread_create pthread_create
++
++#define __gthrw_pthread_mutex_lock  pthread_mutex_lock
++#define __gthrw_pthread_mutex_trylock  pthread_mutex_trylock
++#define __gthrw_pthread_mutex_unlock  pthread_mutex_unlock
++
++#ifdef _LIBOBJC
++/* Objective C.  */
++#define __gthrw_pthread_cond_broadcast pthread_cond_broadcast
++#define __gthrw_pthread_cond_destroy pthread_cond_destroy
++#define __gthrw_pthread_cond_init pthread_cond_init
++#define __gthrw_pthread_cond_signal pthread_cond_signal
++#define __gthrw_pthread_cond_wait pthread_cond_wait
++#define __gthrw_pthread_exit pthread_exit
++#define __gthrw_pthread_mutex_init pthread_mutex_init
++#define __gthrw_pthread_mutex_destroy pthread_mutex_destroy
++#define __gthrw_pthread_self pthread_self
++#define __gthrw_sched_get_priority_max sched_get_priority_max
++#define __gthrw_sched_get_priority_min sched_get_priority_min
++#define __gthrw_sched_yield sched_yield
++#define __gthrw_pthread_attr_destroy pthread_attr_destroy
++#define __gthrw_pthread_attr_init pthread_attr_init
++#define __gthrw_pthread_attr_setdetachstate pthread_attr_setdetachstate
++#define __gthrw_pthread_getschedparam pthread_getschedparam
++#define __gthrw_pthread_setschedparam pthread_setschedparam
++#endif
++#endif
++
++#if SUPPORTS_WEAK && GTHREAD_USE_WEAK
+ 
+ static inline int
+ __gthread_active_p (void)
+ {
+-  static void *const __gthread_active_ptr = (void *) &pthread_create;
++  static void *const __gthread_active_ptr = (void *) &__gthrw_pthread_create;
+   return __gthread_active_ptr != 0;
+ }
+ 
+@@ -119,13 +191,13 @@
+   if (__gthread_active_p ())
+     {
+       /* Initialize the thread storage key */
+-      if (pthread_key_create(&_objc_thread_storage, NULL) == 0)
++      if (__gthrw_pthread_key_create(&_objc_thread_storage, NULL) == 0)
+         {
+           /* The normal default detach state for threads is
+            * PTHREAD_CREATE_JOINABLE which causes threads to not die
+            * when you think they should.  */
+-          if (pthread_attr_init(&_objc_thread_attribs) == 0
+-              && pthread_attr_setdetachstate(&_objc_thread_attribs, 
++          if (__gthrw_pthread_attr_init(&_objc_thread_attribs) == 0
++              && __gthrw_pthread_attr_setdetachstate(&_objc_thread_attribs,
+                                              PTHREAD_CREATE_DETACHED) == 0)
+             return 0;
+         }
+@@ -139,8 +211,8 @@
+ __gthread_objc_close_thread_system(void)
+ {
+   if (__gthread_active_p ()
+-      && pthread_key_delete(_objc_thread_storage) == 0
+-      && pthread_attr_destroy(&_objc_thread_attribs) == 0)
++      && __gthrw_pthread_key_delete(_objc_thread_storage) == 0
++      && __gthrw_pthread_attr_destroy(&_objc_thread_attribs) == 0)
+     return 0;
+ 
+   return -1;
+@@ -158,7 +230,7 @@
+   if (!__gthread_active_p ())
+     return NULL;
+  
+-  if ( !(pthread_create(&new_thread_handle, NULL, (void *)func, arg)) )
++  if ( !(__gthrw_pthread_create(&new_thread_handle, NULL, (void *)func, arg)) )
+     thread_id = (objc_thread_t) new_thread_handle;
+   else
+     thread_id = NULL;
+@@ -173,17 +245,17 @@
+   if (!__gthread_active_p())
+     return -1;
+   else {
+-    pthread_t thread_id = pthread_self();
++    pthread_t thread_id = __gthrw_pthread_self();
+     int policy;
+     struct sched_param params;
+     int priority_min, priority_max;
+ 
+-    if (pthread_getschedparam(thread_id, &policy, &params) == 0)
++    if (__gthrw_pthread_getschedparam(thread_id, &policy, &params) == 0)
+       {
+-        if ((priority_max = sched_get_priority_max(policy)) != 0)
++        if ((priority_max = __gthrw_sched_get_priority_max(policy)) != 0)
+           return -1;
+ 
+-        if ((priority_min = sched_get_priority_min(policy)) != 0)
++        if ((priority_min = __gthrw_sched_get_priority_min(policy)) != 0)
+           return -1;
+ 
+         if (priority > priority_max)
+@@ -197,7 +269,7 @@
+          * this should be a pointer to policy but pthread.h is universally
+          * at odds with this.
+          */
+-        if (pthread_setschedparam(thread_id, policy, &params) == 0)
++        if (__gthrw_pthread_setschedparam(thread_id, policy, &params) == 0)
+           return 0;
+       }
+     return -1;
+@@ -213,7 +285,7 @@
+       int policy;
+       struct sched_param params;
+ 
+-      if (pthread_getschedparam(pthread_self(), &policy, &params) == 0)
++      if (__gthrw_pthread_getschedparam(__gthrw_pthread_self(), &policy, &params) == 0)
+         return params.sched_priority;
+       else
+         return -1;
+@@ -227,7 +299,7 @@
+ __gthread_objc_thread_yield(void)
+ {
+   if (__gthread_active_p ())
+-    sched_yield();
++    __gthrw_sched_yield();
+ }
+ 
+ /* Terminate the current thread.  */
+@@ -236,7 +308,7 @@
+ {
+   if (__gthread_active_p ())
+     /* exit the thread */
+-    pthread_exit(&__objc_thread_exit_status);
++    __gthrw_pthread_exit(&__objc_thread_exit_status);
+ 
+   /* Failed if we reached here */
+   return -1;
+@@ -247,7 +319,7 @@
+ __gthread_objc_thread_id(void)
+ {
+   if (__gthread_active_p ())
+-    return (objc_thread_t) pthread_self();
++    return (objc_thread_t) __gthrw_pthread_self();
+   else
+     return (objc_thread_t) 1;
+ }
+@@ -257,7 +329,7 @@
+ __gthread_objc_thread_set_data(void *value)
+ {
+   if (__gthread_active_p ())
+-    return pthread_setspecific(_objc_thread_storage, value);
++    return __gthrw_pthread_setspecific(_objc_thread_storage, value);
+   else
+     {
+       thread_local_storage = value;
+@@ -270,7 +342,7 @@
+ __gthread_objc_thread_get_data(void)
+ {
+   if (__gthread_active_p ())
+-    return pthread_getspecific(_objc_thread_storage);
++    return __gthrw_pthread_getspecific(_objc_thread_storage);
+   else
+     return thread_local_storage;
+ }
+@@ -285,7 +357,7 @@
+     {
+       mutex->backend = objc_malloc(sizeof(pthread_mutex_t));
+ 
+-      if (pthread_mutex_init((pthread_mutex_t *)mutex->backend, NULL))
++      if (__gthrw_pthread_mutex_init((pthread_mutex_t *)mutex->backend, NULL))
+ 	{
+ 	  objc_free(mutex->backend);
+ 	  mutex->backend = NULL;
+@@ -306,18 +378,18 @@
+ 
+       /*
+        * Posix Threads specifically require that the thread be unlocked
+-       * for pthread_mutex_destroy to work.
++       * for __gthrw_pthread_mutex_destroy to work.
+        */
+ 
+       do
+ 	{
+-	  count = pthread_mutex_unlock((pthread_mutex_t *)mutex->backend);
++	  count = __gthrw_pthread_mutex_unlock((pthread_mutex_t *)mutex->backend);
+ 	  if (count < 0)
+ 	    return -1;
+ 	}
+       while (count);
+ 
+-      if (pthread_mutex_destroy((pthread_mutex_t *)mutex->backend))
++      if (__gthrw_pthread_mutex_destroy((pthread_mutex_t *)mutex->backend))
+ 	return -1;
+ 
+       objc_free(mutex->backend);
+@@ -331,7 +403,7 @@
+ __gthread_objc_mutex_lock(objc_mutex_t mutex)
+ {
+   if (__gthread_active_p () 
+-      && pthread_mutex_lock((pthread_mutex_t *)mutex->backend) != 0)
++      && __gthrw_pthread_mutex_lock((pthread_mutex_t *)mutex->backend) != 0)
+     {
+       return -1;
+     }
+@@ -344,7 +416,7 @@
+ __gthread_objc_mutex_trylock(objc_mutex_t mutex)
+ {
+   if (__gthread_active_p () 
+-      && pthread_mutex_trylock((pthread_mutex_t *)mutex->backend) != 0)
++      && __gthrw_pthread_mutex_trylock((pthread_mutex_t *)mutex->backend) != 0)
+     {
+       return -1;
+     }
+@@ -357,7 +429,7 @@
+ __gthread_objc_mutex_unlock(objc_mutex_t mutex)
+ {
+   if (__gthread_active_p () 
+-      && pthread_mutex_unlock((pthread_mutex_t *)mutex->backend) != 0)
++      && __gthrw_pthread_mutex_unlock((pthread_mutex_t *)mutex->backend) != 0)
+     {
+       return -1;
+     }
+@@ -375,7 +447,7 @@
+     {
+       condition->backend = objc_malloc(sizeof(pthread_cond_t));
+ 
+-      if (pthread_cond_init((pthread_cond_t *)condition->backend, NULL))
++      if (__gthrw_pthread_cond_init((pthread_cond_t *)condition->backend, NULL))
+ 	{
+ 	  objc_free(condition->backend);
+ 	  condition->backend = NULL;
+@@ -392,7 +464,7 @@
+ {
+   if (__gthread_active_p ())
+     {
+-      if (pthread_cond_destroy((pthread_cond_t *)condition->backend))
++      if (__gthrw_pthread_cond_destroy((pthread_cond_t *)condition->backend))
+ 	return -1;
+ 
+       objc_free(condition->backend);
+@@ -406,7 +478,7 @@
+ __gthread_objc_condition_wait(objc_condition_t condition, objc_mutex_t mutex)
+ {
+   if (__gthread_active_p ())
+-    return pthread_cond_wait((pthread_cond_t *)condition->backend,
++    return __gthrw_pthread_cond_wait((pthread_cond_t *)condition->backend,
+ 			   (pthread_mutex_t *)mutex->backend);
+   else
+     return 0;
+@@ -417,7 +489,7 @@
+ __gthread_objc_condition_broadcast(objc_condition_t condition)
+ {
+   if (__gthread_active_p ())
+-    return pthread_cond_broadcast((pthread_cond_t *)condition->backend);
++    return __gthrw_pthread_cond_broadcast((pthread_cond_t *)condition->backend);
+   else
+     return 0;
+ }
+@@ -427,7 +499,7 @@
+ __gthread_objc_condition_signal(objc_condition_t condition)
+ {
+   if (__gthread_active_p ())
+-    return pthread_cond_signal((pthread_cond_t *)condition->backend);
++    return __gthrw_pthread_cond_signal((pthread_cond_t *)condition->backend);
+   else
+     return 0;
+ }
+@@ -438,7 +510,7 @@
+ __gthread_once (__gthread_once_t *once, void (*func) (void))
+ {
+   if (__gthread_active_p ())
+-    return pthread_once (once, func);
++    return __gthrw_pthread_once (once, func);
+   else
+     return -1;
+ }
+@@ -446,7 +518,7 @@
+ static inline int
+ __gthread_key_create (__gthread_key_t *key, void (*dtor) (void *))
+ {
+-  return pthread_key_create (key, dtor);
++  return __gthrw_pthread_key_create (key, dtor);
+ }
+ 
+ static inline int
+@@ -454,7 +526,7 @@
+ {
+   /* Just reset the key value to zero.  */
+   if (ptr)
+-    return pthread_setspecific (key, 0);
++    return __gthrw_pthread_setspecific (key, 0);
+   else
+     return 0;
+ }
+@@ -462,26 +534,26 @@
+ static inline int
+ __gthread_key_delete (__gthread_key_t key)
+ {
+-  return pthread_key_delete (key);
++  return __gthrw_pthread_key_delete (key);
+ }
+ 
+ static inline void *
+ __gthread_getspecific (__gthread_key_t key)
+ {
+-  return pthread_getspecific (key);
++  return __gthrw_pthread_getspecific (key);
+ }
+ 
+ static inline int
+ __gthread_setspecific (__gthread_key_t key, const void *ptr)
+ {
+-  return pthread_setspecific (key, ptr);
++  return __gthrw_pthread_setspecific (key, ptr);
+ }
+ 
+ static inline int
+ __gthread_mutex_lock (__gthread_mutex_t *mutex)
+ {
+   if (__gthread_active_p ())
+-    return pthread_mutex_lock (mutex);
++    return __gthrw_pthread_mutex_lock (mutex);
+   else
+     return 0;
+ }
+@@ -490,7 +562,7 @@
+ __gthread_mutex_trylock (__gthread_mutex_t *mutex)
+ {
+   if (__gthread_active_p ())
+-    return pthread_mutex_trylock (mutex);
++    return __gthrw_pthread_mutex_trylock (mutex);
+   else
+     return 0;
+ }
+@@ -499,7 +571,7 @@
+ __gthread_mutex_unlock (__gthread_mutex_t *mutex)
+ {
+   if (__gthread_active_p ())
+-    return pthread_mutex_unlock (mutex);
++    return __gthrw_pthread_mutex_unlock (mutex);
+   else
+     return 0;
+ }
+--- gcc/varasm.c.orig	2005-11-15 19:55:42.000000000 -0200
++++ gcc/varasm.c	2005-11-16 13:38:44.000000000 -0200
+@@ -5130,6 +5130,9 @@
+       if (! TREE_USED (decl))
+ 	continue;
+ 
++      if (lookup_attribute ("weakref", DECL_ATTRIBUTES (decl)))
++	continue;
++
+ #ifdef ASM_WEAKEN_DECL
+       ASM_WEAKEN_DECL (asm_out_file, decl, name, NULL);
+ #else
+@@ -5195,6 +5198,18 @@
+ 
+   name = IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl));
+ 
++  if (lookup_attribute ("weakref", DECL_ATTRIBUTES (decl)))
++    {
++#ifdef ASM_OUTPUT_WEAKREF
++      ASM_OUTPUT_WEAKREF (asm_out_file, decl,
++			  IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl)),
++			  IDENTIFIER_POINTER (target));
++#else
++      error ("%Jweakref is not supported in this configuration", decl);
++#endif
++      return;
++    }
++
+ #ifdef ASM_OUTPUT_DEF
+   /* Make name accessible from other files, if appropriate.  */
+   if (TREE_PUBLIC (decl))
+--- gcc/attribs.c.orig	2005-11-15 19:55:42.000000000 -0200
++++ gcc/attribs.c	2005-11-15 19:55:48.000000000 -0200
+@@ -75,6 +75,8 @@
+ 						 bool *));
+ static tree handle_alias_attribute	PARAMS ((tree *, tree, tree, int,
+ 						 bool *));
++static tree handle_weakref_attribute	PARAMS ((tree *, tree, tree, int,
++						 bool *));
+ static tree handle_visibility_attribute	PARAMS ((tree *, tree, tree, int,
+ 						 bool *));
+ static tree handle_tls_model_attribute	PARAMS ((tree *, tree, tree, int,
+@@ -140,6 +142,8 @@
+ 			      handle_weak_attribute },
+   { "alias",                  1, 1, true,  false, false,
+ 			      handle_alias_attribute },
++  { "weakref",                0, 1, true,  false, false,
++			      handle_weakref_attribute },
+   { "no_instrument_function", 0, 0, true,  false, false,
+ 			      handle_no_instrument_function_attribute },
+   { "malloc",                 0, 0, true,  false, false,
+@@ -1060,7 +1064,12 @@
+       if (TREE_CODE (decl) == FUNCTION_DECL)
+ 	DECL_INITIAL (decl) = error_mark_node;
+       else
+-	DECL_EXTERNAL (decl) = 0;
++	{
++	  if (lookup_attribute ("weakref", DECL_ATTRIBUTES (decl)))
++	    DECL_EXTERNAL (decl) = 1;
++	  else
++	    DECL_EXTERNAL (decl) = 0;
++	}
+     }
+   else
+     {
+@@ -1071,6 +1080,44 @@
+   return NULL_TREE;
+ }
+ 
++/* Handle a "weakref" attribute; arguments as in struct
++   attribute_spec.handler.  */
++
++static tree
++handle_weakref_attribute (node, name, args, flags, no_add_attrs)
++     tree *node;
++     tree name ATTRIBUTE_UNUSED;
++     tree args;
++     int flags;
++     bool *no_add_attrs;
++{
++  tree attr = NULL_TREE;
++
++  /* The idea here is that `weakref("name")' mutates into `weakref,
++     alias("name")', and weakref without arguments, in turn,
++     implicitly adds weak. */
++
++  if (args)
++    {
++      attr = tree_cons (get_identifier ("alias"), args, attr);
++      attr = tree_cons (get_identifier ("weakref"), NULL_TREE, attr);
++
++      *no_add_attrs = true;
++    }
++  else
++    {
++      if (lookup_attribute ("alias", DECL_ATTRIBUTES (*node)))
++	error ("%Jweakref attribute must appear before alias attribute",
++	       *node);
++
++      attr = tree_cons (get_identifier ("weak"), NULL_TREE, attr);
++    }
++
++  decl_attributes (node, attr, flags);
++
++  return NULL_TREE;
++}
++
+ /* Handle an "visibility" attribute; arguments as in
+    struct attribute_spec.handler.  */
+ 
+--- gcc/testsuite/g++.old-deja/g++.ext/weakref1.C	1970-01-01 00:00:00.000000000 +0000
++++ gcc/testsuite/g++.old-deja/g++.ext/weakref1.C	2005-11-15 19:55:48.000000000 -0200
+@@ -0,0 +1,226 @@
++// execution test
++// Additional sources: weakref1a.cc
++
++// Copyright 2005 Free Software Foundation, Inc.
++// Contributed by Alexandre Oliva <aoliva@redhat.com>
++
++// Torture test for weakrefs.  The first letter of an identifier
++// indicates whether/how it is defined; the second letter indicates
++// whether it is part of a variable or function test; the number that
++// follows is a test counter, and a letter that may follow enables
++// multiple identifiers within the same test (e.g., multiple weakrefs
++// or pointers to the same identifier).
++
++// Identifiers starting with W are weakrefs; those with p are
++// pointers; those with g are global definitions; those with l are
++// local definitions; those with w are expected to be weak undefined
++// in the symbol table; those with u are expected to be marked as
++// non-weak undefined in the symbol table.
++
++#include <stdlib.h>
++
++#define USED __attribute__((used))
++
++extern "C" {
++typedef int vtype;
++
++extern vtype wv1;
++extern vtype Wv1a __attribute__((weakref ("wv1")));
++static vtype *pv1a USED = &Wv1a;
++extern vtype Wv1b __attribute__((weak, weakref, alias ("wv1")));
++static vtype *pv1b USED = &Wv1b;
++extern vtype Wv1c __attribute__((weakref));
++extern vtype Wv1c __attribute__((alias ("wv1")));
++static vtype *pv1c USED = &Wv1c;
++
++vtype gv2;
++extern vtype Wv2a __attribute__((weakref ("gv2")));
++static vtype *pv2a USED = &Wv2a;
++
++static vtype lv3;
++extern vtype Wv3a __attribute__((weakref ("lv3")));
++static vtype *pv3a USED = &Wv3a;
++
++extern vtype uv4;
++extern vtype Wv4a __attribute__((weakref ("uv4")));
++static vtype *pv4a USED = &Wv4a;
++static vtype *pv4 USED = &uv4;
++
++extern vtype Wv5a __attribute__((weakref ("uv5")));
++static vtype *pv5a USED = &Wv5a;
++extern vtype uv5;
++static vtype *pv5 USED = &uv5;
++
++extern vtype Wv6a __attribute__((weakref ("wv6")));
++static vtype *pv6a USED = &Wv6a;
++extern vtype wv6;
++
++extern vtype Wv7a __attribute__((weakref ("uv7")));
++static vtype* USED fv7 (void) {
++  return &Wv7a;
++}
++extern vtype uv7;
++static vtype* USED fv7a (void) {
++  return &uv7;
++}
++
++extern vtype uv8;
++static vtype* USED fv8a (void) {
++  return &uv8;
++}
++extern vtype Wv8a __attribute__((weakref ("uv8")));
++static vtype* USED fv8 (void) {
++  return &Wv8a;
++}
++
++extern vtype wv9 __attribute__((weak));
++extern vtype Wv9a __attribute__((weakref ("wv9")));
++static vtype *pv9a USED = &Wv9a;
++
++extern vtype Wv10a __attribute__((weakref ("Wv10b")));
++extern vtype Wv10b __attribute__((weakref ("Wv10c")));
++extern vtype Wv10c __attribute__((weakref ("Wv10d")));
++extern vtype Wv10d __attribute__((weakref ("wv10")));
++extern vtype wv10;
++
++extern vtype wv11;
++extern vtype Wv11d __attribute__((weakref ("wv11")));
++extern vtype Wv11c __attribute__((weakref ("Wv11d")));
++extern vtype Wv11b __attribute__((weakref ("Wv11c")));
++extern vtype Wv11a __attribute__((weakref ("Wv11b")));
++
++extern vtype Wv12 __attribute__((weakref ("wv12")));
++extern vtype wv12 __attribute__((weak));
++
++extern vtype Wv13 __attribute__((weakref ("wv13")));
++extern vtype wv13 __attribute__((weak));
++
++extern vtype Wv14a __attribute__((weakref ("wv14")));
++extern vtype Wv14b __attribute__((weakref ("wv14")));
++extern vtype wv14 __attribute__((weak));
++
++typedef void ftype(void);
++
++extern ftype wf1;
++extern ftype Wf1a __attribute__((weakref ("wf1")));
++static ftype *pf1a USED = &Wf1a;
++extern ftype Wf1b __attribute__((weak, weakref, alias ("wf1")));
++static ftype *pf1b USED = &Wf1b;
++extern ftype Wf1c __attribute__((weakref));
++extern ftype Wf1c __attribute__((alias ("wf1")));
++static ftype *pf1c USED = &Wf1c;
++
++void gf2(void) {}
++extern ftype Wf2a __attribute__((weakref ("gf2")));
++static ftype *pf2a USED = &Wf2a;
++
++static void lf3(void) {}
++extern ftype Wf3a __attribute__((weakref ("lf3")));
++static ftype *pf3a USED = &Wf3a;
++
++extern ftype uf4;
++extern ftype Wf4a __attribute__((weakref ("uf4")));
++static ftype *pf4a USED = &Wf4a;
++static ftype *pf4 USED = &uf4;
++
++extern ftype Wf5a __attribute__((weakref ("uf5")));
++static ftype *pf5a USED = &Wf5a;
++extern ftype uf5;
++static ftype *pf5 USED = &uf5;
++
++extern ftype Wf6a __attribute__((weakref ("wf6")));
++static ftype *pf6a USED = &Wf6a;
++extern ftype wf6;
++
++extern ftype Wf7a __attribute__((weakref ("uf7")));
++static ftype* USED ff7 (void) {
++  return &Wf7a;
++}
++extern ftype uf7;
++static ftype* USED ff7a (void) {
++  return &uf7;
++}
++
++extern ftype uf8;
++static ftype* USED ff8a (void) {
++  return &uf8;
++}
++extern ftype Wf8a __attribute__((weakref ("uf8")));
++static ftype* USED ff8 (void) {
++  return &Wf8a;
++}
++
++extern ftype wf9 __attribute__((weak));
++extern ftype Wf9a __attribute__((weakref ("wf9")));
++static ftype *pf9a USED = &Wf9a;
++
++extern ftype Wf10a __attribute__((weakref ("Wf10b")));
++extern ftype Wf10b __attribute__((weakref ("Wf10c")));
++extern ftype Wf10c __attribute__((weakref ("Wf10d")));
++extern ftype Wf10d __attribute__((weakref ("wf10")));
++extern ftype wf10;
++
++extern ftype wf11;
++extern ftype Wf11d __attribute__((weakref ("wf11")));
++extern ftype Wf11c __attribute__((weakref ("Wf11d")));
++extern ftype Wf11b __attribute__((weakref ("Wf11c")));
++extern ftype Wf11a __attribute__((weakref ("Wf11b")));
++
++extern ftype Wf12 __attribute__((weakref ("wf12")));
++extern ftype wf12 __attribute__((weak));
++
++extern ftype Wf13 __attribute__((weakref ("wf13")));
++extern ftype wf13 __attribute__((weak));
++
++extern ftype Wf14a __attribute__((weakref ("wf14")));
++extern ftype Wf14b __attribute__((weakref ("wf14")));
++extern ftype wf14 __attribute__((weak));
++}
++
++#define chk(p) do { if (!p) abort (); } while (0)
++
++int main () {
++  chk (!pv1a);
++  chk (!pv1b);
++  chk (!pv1c);
++  chk (pv2a);
++  chk (pv3a);
++  chk (pv4a);
++  chk (pv4);
++  chk (pv5a);
++  chk (pv5);
++  chk (!pv6a);
++  chk (fv7 ());
++  chk (fv7a ());
++  chk (fv8 ());
++  chk (fv8a ());
++  chk (!pv9a);
++  chk (!&Wv10a);
++  chk (!&Wv11a);
++  chk (!&Wv12);
++  chk (!&wv12);
++  chk (!&wv13);
++  chk (!&Wv14a);
++
++  chk (!pf1a);
++  chk (!pf1b);
++  chk (!pf1c);
++  chk (pf2a);
++  chk (pf3a);
++  chk (pf4a);
++  chk (pf4);
++  chk (pf5a);
++  chk (pf5);
++  chk (!pf6a);
++  chk (ff7 ());
++  chk (ff7a ());
++  chk (ff8 ());
++  chk (ff8a ());
++  chk (!pf9a);
++  chk (!&Wf10a);
++  chk (!&Wf11a);
++  chk (!&Wf12);
++  chk (!&wf12);
++  chk (!&wf13);
++  chk (!&Wf14a);
++}
+--- gcc/testsuite/g++.old-deja/g++.ext/weakref1a.cc	1970-01-01 00:00:00.000000000 +0000
++++ gcc/testsuite/g++.old-deja/g++.ext/weakref1a.cc	2005-11-15 19:55:48.000000000 -0200
+@@ -0,0 +1,10 @@
++extern "C" {
++int uv4;
++int uv5;
++int uv7;
++int uv8;
++void uf4 (void) {}
++void uf5 (void) {}
++void uf7 (void) {}
++void uf8 (void) {}
++}
+--- gcc/config/rs6000/rs6000.h.orig	2005-11-16 13:37:46.000000000 -0200
++++ gcc/config/rs6000/rs6000.h	2005-11-16 14:10:01.000000000 -0200
+@@ -2487,6 +2487,24 @@
+   while (0)
+ #endif
+ 
++#define ASM_OUTPUT_WEAKREF(FILE, DECL, NAME, VALUE)			\
++  do									\
++    {									\
++      fputs ("\t.weakref\t", (FILE));					\
++      RS6000_OUTPUT_BASENAME ((FILE), (NAME)); 				\
++      fputs (", ", (FILE));						\
++      RS6000_OUTPUT_BASENAME ((FILE), (VALUE));				\
++      if ((DECL) && TREE_CODE (DECL) == FUNCTION_DECL			\
++	  && DEFAULT_ABI == ABI_AIX)					\
++	{								\
++	  fputs ("\n\t.weakref\t.", (FILE));				\
++	  RS6000_OUTPUT_BASENAME ((FILE), (NAME)); 			\
++	  fputs (", .", (FILE));					\
++	  RS6000_OUTPUT_BASENAME ((FILE), (VALUE));			\
++	}								\
++      fputc ('\n', (FILE));						\
++    } while (0)
++
+ /* This implements the `alias' attribute.  */
+ #undef	ASM_OUTPUT_DEF_FROM_DECLS
+ #define	ASM_OUTPUT_DEF_FROM_DECLS(FILE, DECL, TARGET)			\

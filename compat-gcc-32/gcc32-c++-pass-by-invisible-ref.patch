@@ -1,0 +1,67 @@
+2004-12-01  Alexandre Oliva  <aoliva@redhat.com>
+
+	* calls.c (initialize_argument_information): Treat NOP_EXPR
+	of TARGET_EXPR the same as TARGET_EXPR itself.
+
+2005-01-03  Jakub Jelinek  <jakub@redhat.com>
+
+	* g++.dg/other/destruct1.C: New test.
+
+--- gcc/calls.c.jj	2003-09-16 16:57:44.000000000 +0200
++++ gcc/calls.c	2005-01-03 11:00:11.604022891 +0100
+@@ -1239,7 +1239,10 @@ initialize_argument_information (num_act
+ 					   args[i].tree_value);
+ 	      type = build_pointer_type (type);
+ 	    }
+-	  else if (TREE_CODE (args[i].tree_value) == TARGET_EXPR)
++	  else if (TREE_CODE (args[i].tree_value) == TARGET_EXPR
++		   || (TREE_CODE (args[i].tree_value) == NOP_EXPR
++		       && (TREE_CODE (TREE_OPERAND (args[i].tree_value, 0))
++			   == TARGET_EXPR)))
+ 	    {
+ 	      /* In the V3 C++ ABI, parameters are destroyed in the caller.
+ 		 We implement this by passing the address of the temporary
+--- gcc/testsuite/g++.dg/other/destruct1.C.jj	2005-01-03 11:02:26.440730539 +0100
++++ gcc/testsuite/g++.dg/other/destruct1.C	2005-01-03 11:02:44.971392180 +0100
+@@ -0,0 +1,41 @@
++// { dg-do run }
++
++int i, j, k;
++extern "C" void abort ();
++
++struct S
++{
++  S () { ++i; }
++  S (const S &x) { ++k; }
++  S &operator= (const S &x) { abort (); return *this; }
++  ~S () { ++j; }
++};
++
++const S foo ()
++{
++  S s;
++  return s;
++}
++
++S bar (S x)
++{
++  return S ();
++}
++
++S baz (S x)
++{
++  return x;
++}
++
++void test ()
++{
++  S a = bar (foo ());
++  S b = baz (foo ());
++}
++
++int main ()
++{
++  test ();
++  if (i != 3 || j != 4 || k != 1)
++    abort ();
++}

@@ -1,0 +1,37 @@
+2004-03-30  Hartmut Penner  <hpenner@de.ibm.com>
+
+	PR 11591
+	* config/rs6000/rs6000.c (rs6000_legitimate_address):
+	Allow any offset to argument pointer in no-strict case.
+
+2002-04-16  Jakub Jelinek  <jakub@redhat.com>
+
+	* gcc.dg/altivec-5.c: New test.
+
+--- gcc/config/rs6000/rs6000.c	25 Mar 2004 17:43:19 -0000	1.616
++++ gcc/config/rs6000/rs6000.c	30 Mar 2004 08:25:30 -0000	1.617
+@@ -3267,7 +3267,8 @@ rs6000_legitimate_address (enum machine_
+   if (! reg_ok_strict
+       && GET_CODE (x) == PLUS
+       && GET_CODE (XEXP (x, 0)) == REG
+-      && XEXP (x, 0) == virtual_stack_vars_rtx
++      && (XEXP (x, 0) == virtual_stack_vars_rtx
++         || XEXP (x, 0) == arg_pointer_rtx)
+       && GET_CODE (XEXP (x, 1)) == CONST_INT)
+     return 1;
+   if (legitimate_offset_address_p (mode, x, reg_ok_strict))
+--- gcc/testsuite/gcc.dg/altivec-5.c.jj	2004-10-25 23:16:31.270583520 +0200
++++ gcc/testsuite/gcc.dg/altivec-5.c	2004-10-25 23:16:40.327975169 +0200
+@@ -0,0 +1,12 @@
++/* { dg-do compile { target powerpc*-*-* } } */
++/* { dg-options "-maltivec -O2 -m32" } */
++
++#define vector __attribute__((vector_size(16)))
++
++void foo (const unsigned long x,
++	  vector signed int a, vector signed int b)
++{
++  unsigned char d[64];
++
++  __builtin_altivec_stvewx (b, 0, d);
++}

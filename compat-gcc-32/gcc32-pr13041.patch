@@ -1,0 +1,37 @@
+2003-11-27  Eric Botcazou  <ebotcazou@libertysurf.fr>
+ 
+	PR optimization/13041
+	* final.c (frame_pointer_needed): Fix comment.
+	* reload1.c (reload): Decrease alignment of the frame
+	pointer if it was used for register allocation.
+
+--- gcc/final.c	1 Nov 2003 00:48:50 -0000	1.294
++++ gcc/final.c	27 Nov 2003 06:45:24 -0000	1.295
+@@ -171,8 +171,8 @@ CC_STATUS cc_prev_status;
+ char regs_ever_live[FIRST_PSEUDO_REGISTER];
+ 
+ /* Nonzero means current function must be given a frame pointer.
+-   Set in stmt.c if anything is allocated on the stack there.
+-   Set in reload1.c if anything is allocated on the stack there.  */
++   Initialized in function.c to 0.  Set only in reload1.c as per
++   the needs of the function.  */
+ 
+ int frame_pointer_needed;
+ 
+--- gcc/reload1.c	21 Nov 2003 05:49:05 -0000	1.413
++++ gcc/reload1.c	27 Nov 2003 06:45:25 -0000	1.414
+@@ -1241,6 +1241,14 @@ reload (rtx first, int global)
+      by this, so unshare everything here.  */
+   unshare_all_rtl_again (first);
+ 
++#ifdef STACK_BOUNDARY
++  /* init_emit has set the alignment of the hard frame pointer
++     to STACK_BOUNDARY.  It is very likely no longer valid if
++     the hard frame pointer was used for register allocation.  */
++  if (!frame_pointer_needed)
++    REGNO_POINTER_ALIGN (HARD_FRAME_POINTER_REGNUM) = BITS_PER_UNIT;
++#endif
++
+   return failure;
+ }
+ 

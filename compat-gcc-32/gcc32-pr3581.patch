@@ -1,0 +1,755 @@
+2002-04-26  Richard Henderson  <rth@redhat.com>
+
+	PR c/3581
+	* c-common.c (fix_string_type): Split out of ...
+	(combine_strings): ... here.  Take a varray, not a tree list.
+	(c_expand_builtin_printf): Use fix_string_type.
+	* c-common.h: Update decls.
+	* c-parse.in (string): Remove.  Update all uses to use STRING
+	instead, and not call combine_strings.
+	(yylexstring): New.
+	(_yylex): Use it.
+	* c-typeck.c (simple_asm_stmt): Don't call combine_strings.
+	(build_asm_stmt): Likewise.
+	* objc/objc-act.c (my_build_string): Use fix_string_type.
+	(build_objc_string_object): Build varray for combine_strings.
+cp/
+	* parse.y (string): Remove.  Update all uses to use STRING
+	instead, and not call combine_strings.
+	* rtti.c (tinfo_name): Use fix_string_type.
+	* semantics.c (finish_asm_stmt): Don't call combine_strings.
+	* spew.c (yylexstring): New.
+	(read_token): Use it.
+testsuite/
+	* g++.dg/parse/concat1.C: New test.
+	* gcc.dg/concat2.c: New test.
+
+--- gcc/objc/objc-act.c.jj	2002-09-24 15:08:15.000000000 +0200
++++ gcc/objc/objc-act.c	2004-10-05 16:08:18.744519118 +0200
+@@ -1207,21 +1207,7 @@ my_build_string (len, str)
+      int len;
+      const char *str;
+ {
+-  int wide_flag = 0;
+-  tree a_string = build_string (len, str);
+-
+-  /* Some code from combine_strings, which is local to c-parse.y.  */
+-  if (TREE_TYPE (a_string) == int_array_type_node)
+-    wide_flag = 1;
+-
+-  TREE_TYPE (a_string)
+-    = build_array_type (wide_flag ? integer_type_node : char_type_node,
+-			build_index_type (build_int_2 (len - 1, 0)));
+-
+-  TREE_CONSTANT (a_string) = 1;	/* Puts string in the readonly segment */
+-  TREE_STATIC (a_string) = 1;
+-
+-  return a_string;
++  return fix_string_type (build_string (len, str));
+ }
+ 
+ /* Given a chain of STRING_CST's, build a static instance of
+@@ -1247,7 +1233,23 @@ build_objc_string_object (strings)
+ 
+   add_class_reference (constant_string_id);
+ 
+-  string = combine_strings (strings);
++  if (TREE_CHAIN (strings))
++    {
++      varray_type vstrings;
++      VARRAY_TREE_INIT (vstrings, 32, "strings");
++
++      for (; strings ; strings = TREE_CHAIN (strings))
++	VARRAY_PUSH_TREE (vstrings, strings);
++
++      string = combine_strings (vstrings);
++
++      VARRAY_FREE (vstrings);
++    }
++  else
++    string = strings;
++
++  string = fix_string_type (string);
++
+   TREE_SET_CODE (string, STRING_CST);
+   length = TREE_STRING_LENGTH (string) - 1;
+ 
+--- gcc/c-common.h.jj	2003-09-16 16:57:44.000000000 +0200
++++ gcc/c-common.h	2004-10-05 16:08:18.669532451 +0200
+@@ -524,8 +524,9 @@ extern void c_finish_else               
+ extern void c_expand_end_cond			PARAMS ((void));
+ /* Validate the expression after `case' and apply default promotions.  */
+ extern tree check_case_value			PARAMS ((tree));
+-/* Concatenate a list of STRING_CST nodes into one STRING_CST.  */
+-extern tree combine_strings			PARAMS ((tree));
++extern tree fix_string_type			PARAMS ((tree));
++struct varray_head_tag;
++extern tree combine_strings		PARAMS ((struct varray_head_tag *));
+ extern void constant_expression_warning		PARAMS ((tree));
+ extern tree convert_and_check			PARAMS ((tree, tree));
+ extern void overflow_warning			PARAMS ((tree));
+--- gcc/cp/rtti.c.jj	2002-12-08 21:43:27.000000000 +0100
++++ gcc/cp/rtti.c	2004-10-05 16:08:18.721523207 +0200
+@@ -298,7 +298,7 @@ tinfo_name (type)
+   tree name_string;
+ 
+   name = mangle_type_string (type);
+-  name_string = combine_strings (build_string (strlen (name) + 1, name));
++  name_string = fix_string_type (build_string (strlen (name) + 1, name));
+   return name_string;
+ }
+ 
+--- gcc/cp/semantics.c.jj	2003-03-28 22:03:02.000000000 +0100
++++ gcc/cp/semantics.c	2004-10-05 16:08:18.723522851 +0200
+@@ -879,9 +879,6 @@ finish_asm_stmt (cv_qualifier, string, o
+   tree r;
+   tree t;
+ 
+-  if (TREE_CHAIN (string))
+-    string = combine_strings (string);
+-
+   if (cv_qualifier != NULL_TREE
+       && cv_qualifier != ridpointers[(int) RID_VOLATILE])
+     {
+--- gcc/cp/parse.y.jj	2003-01-17 18:33:10.000000000 +0100
++++ gcc/cp/parse.y	2004-10-05 16:08:18.717523918 +0200
+@@ -349,7 +349,7 @@ cp_parse_init ()
+ %type <ttype> PFUNCNAME maybe_identifier
+ %type <ttype> paren_expr_or_null nontrivial_exprlist SELFNAME
+ %type <ttype> expr_no_commas expr_no_comma_rangle
+-%type <ttype> cast_expr unary_expr primary string STRING
++%type <ttype> cast_expr unary_expr primary STRING
+ %type <ttype> reserved_declspecs boolean.literal
+ %type <ttype> reserved_typespecquals
+ %type <ttype> SCSPEC TYPESPEC CV_QUALIFIER maybe_cv_qualifier
+@@ -514,9 +514,8 @@ extdef:
+ 		{ do_pending_inlines (); }
+ 	| template_def
+ 		{ do_pending_inlines (); }
+-	| asm_keyword '(' string ')' ';'
+-		{ if (TREE_CHAIN ($3)) $3 = combine_strings ($3);
+-		  assemble_asm ($3); }
++	| asm_keyword '(' STRING ')' ';'
++		{ assemble_asm ($3); }
+ 	| extern_lang_string '{' extdefs_opt '}'
+ 		{ pop_lang_context (); }
+ 	| extern_lang_string .hush_warning fndef .warning_ok eat_saved_input
+@@ -1587,10 +1586,10 @@ primary:
+ 		}		
+ 	| CONSTANT
+ 	| boolean.literal
+-	| string
++	| STRING
+ 		{
+-		  $$ = combine_strings ($$);
+-		  /* combine_strings doesn't set up TYPE_MAIN_VARIANT of
++		  $$ = fix_string_type ($$);
++		  /* fix_string_type doesn't set up TYPE_MAIN_VARIANT of
+ 		     a const array the way we want, so fix it.  */
+ 		  if (flag_const_strings)
+ 		    TREE_TYPE ($$) = build_cplus_array_type
+@@ -1791,13 +1790,6 @@ boolean.literal:
+ 		{ $$ = boolean_false_node; }
+ 	;
+ 
+-/* Produces a STRING_CST with perhaps more STRING_CSTs chained onto it.  */
+-string:
+-	  STRING
+-	| string STRING
+-		{ $$ = chainon ($$, $2); }
+-	;
+-
+ nodecls:
+ 	  /* empty */
+ 		{
+@@ -2091,8 +2083,8 @@ nomods_initdecls:
+ maybeasm:
+ 	  /* empty */
+ 		{ $$ = NULL_TREE; }
+-	| asm_keyword '(' string ')'
+-		{ if (TREE_CHAIN ($3)) $3 = combine_strings ($3); $$ = $3; }
++	| asm_keyword '(' STRING ')'
++		{ $$ = $3; }
+ 	;
+ 
+ initdcl:
+@@ -3489,27 +3481,27 @@ simple_stmt:
+                 { $$ = finish_return_stmt (NULL_TREE); }
+ 	| RETURN_KEYWORD expr ';'
+                 { $$ = finish_return_stmt ($2); }
+-	| asm_keyword maybe_cv_qualifier '(' string ')' ';'
++	| asm_keyword maybe_cv_qualifier '(' STRING ')' ';'
+ 		{ $$ = finish_asm_stmt ($2, $4, NULL_TREE, NULL_TREE,
+ 					NULL_TREE);
+ 		  ASM_INPUT_P ($$) = 1; }
+ 	/* This is the case with just output operands.  */
+-	| asm_keyword maybe_cv_qualifier '(' string ':' asm_operands ')' ';'
++	| asm_keyword maybe_cv_qualifier '(' STRING ':' asm_operands ')' ';'
+ 		{ $$ = finish_asm_stmt ($2, $4, $6, NULL_TREE, NULL_TREE); }
+ 	/* This is the case with input operands as well.  */
+-	| asm_keyword maybe_cv_qualifier '(' string ':' asm_operands ':'
++	| asm_keyword maybe_cv_qualifier '(' STRING ':' asm_operands ':'
+ 	  asm_operands ')' ';'
+ 		{ $$ = finish_asm_stmt ($2, $4, $6, $8, NULL_TREE); }
+-	| asm_keyword maybe_cv_qualifier '(' string SCOPE asm_operands ')' ';'
++	| asm_keyword maybe_cv_qualifier '(' STRING SCOPE asm_operands ')' ';'
+ 		{ $$ = finish_asm_stmt ($2, $4, NULL_TREE, $6, NULL_TREE); }
+ 	/* This is the case with clobbered registers as well.  */
+-	| asm_keyword maybe_cv_qualifier '(' string ':' asm_operands ':'
++	| asm_keyword maybe_cv_qualifier '(' STRING ':' asm_operands ':'
+ 	  asm_operands ':' asm_clobbers ')' ';'
+ 		{ $$ = finish_asm_stmt ($2, $4, $6, $8, $10); }
+-	| asm_keyword maybe_cv_qualifier '(' string SCOPE asm_operands ':'
++	| asm_keyword maybe_cv_qualifier '(' STRING SCOPE asm_operands ':'
+ 	  asm_clobbers ')' ';'
+ 		{ $$ = finish_asm_stmt ($2, $4, NULL_TREE, $6, $8); }
+-	| asm_keyword maybe_cv_qualifier '(' string ':' asm_operands SCOPE
++	| asm_keyword maybe_cv_qualifier '(' STRING ':' asm_operands SCOPE
+ 	  asm_clobbers ')' ';'
+ 		{ $$ = finish_asm_stmt ($2, $4, $6, NULL_TREE, $8); }
+ 	| GOTO '*' expr ';'
+@@ -3670,10 +3662,10 @@ asm_operand:
+ 	;
+ 
+ asm_clobbers:
+-	  string
+-		{ $$ = tree_cons (NULL_TREE, combine_strings ($1), NULL_TREE);}
+-	| asm_clobbers ',' string
+-		{ $$ = tree_cons (NULL_TREE, combine_strings ($3), $1); }
++	  STRING
++		{ $$ = tree_cons (NULL_TREE, $1, NULL_TREE);}
++	| asm_clobbers ',' STRING
++		{ $$ = tree_cons (NULL_TREE, $3, $1); }
+ 	;
+ 
+ /* This is what appears inside the parens in a function declarator.
+--- gcc/cp/spew.c.jj	2002-11-09 18:39:59.000000000 +0100
++++ gcc/cp/spew.c	2004-10-05 16:08:18.725522496 +0200
+@@ -102,6 +102,7 @@ static SPEW_INLINE int identifier_type P
+ static void scan_tokens PARAMS ((int));
+ static void feed_defarg PARAMS ((tree));
+ static void finish_defarg PARAMS ((void));
++static void yylexstring PARAMS ((struct token *));
+ static int read_token PARAMS ((struct token *));
+ 
+ static SPEW_INLINE int num_tokens PARAMS ((void));
+@@ -244,6 +245,43 @@ read_process_identifier (pyylval)
+   return IDENTIFIER;
+ }
+ 
++/* Concatenate strings before returning them to the parser.  This isn't quite
++   as good as having it done in the lexer, but it's better than nothing.  */
++
++static void
++yylexstring (t)
++     struct token *t;
++{
++  enum cpp_ttype next_type;
++  tree next;
++
++  next_type = c_lex (&next);
++  if (next_type == CPP_STRING || next_type == CPP_WSTRING)
++    {
++      varray_type strings;
++
++      VARRAY_TREE_INIT (strings, 32, "strings");
++      VARRAY_PUSH_TREE (strings, t->yylval.ttype);
++
++      do
++	{
++	  VARRAY_PUSH_TREE (strings, next);
++	  next_type = c_lex (&next);
++	}
++      while (next_type == CPP_STRING || next_type == CPP_WSTRING);
++
++      t->yylval.ttype = combine_strings (strings);
++      last_token_id = t->yylval.ttype;
++
++      VARRAY_FREE (strings);
++    }
++
++  /* We will have always read one token too many.  */
++  _cpp_backup_tokens (parse_in, 1);
++
++  t->yychar = STRING;
++}
++
+ /* Read the next token from the input file.  The token is written into
+    T, and its type number is returned.  */
+ static int
+@@ -338,7 +376,7 @@ read_token (t)
+ 
+     case CPP_STRING:
+     case CPP_WSTRING:
+-      t->yychar = STRING;
++      yylexstring (t);
+       break;
+ 
+     default:
+--- gcc/c-common.c.jj	2004-10-05 16:07:28.426465214 +0200
++++ gcc/c-common.c	2004-10-05 16:08:18.646536539 +0200
+@@ -554,106 +554,17 @@ fname_decl (rid, id)
+   return decl;
+ }
+ 
+-/* Given a chain of STRING_CST nodes,
+-   concatenate them into one STRING_CST
+-   and give it a suitable array-of-chars data type.  */
++/* Given a STRING_CST, give it a suitable array-of-chars data type.  */
+ 
+ tree
+-combine_strings (strings)
+-     tree strings;
++fix_string_type (value)
++     tree value;
+ {
+-  tree value, t;
+-  int length = 1;
+-  int wide_length = 0;
+-  int wide_flag = 0;
+-  int wchar_bytes = TYPE_PRECISION (wchar_type_node) / BITS_PER_UNIT;
+-  int nchars;
++  const int wchar_bytes = TYPE_PRECISION (wchar_type_node) / BITS_PER_UNIT;
++  const int wide_flag = TREE_TYPE (value) == wchar_array_type_node;
+   const int nchars_max = flag_isoc99 ? 4095 : 509;
+-
+-  if (TREE_CHAIN (strings))
+-    {
+-      /* More than one in the chain, so concatenate.  */
+-      char *p, *q;
+-
+-      /* Don't include the \0 at the end of each substring,
+-	 except for the last one.
+-	 Count wide strings and ordinary strings separately.  */
+-      for (t = strings; t; t = TREE_CHAIN (t))
+-	{
+-	  if (TREE_TYPE (t) == wchar_array_type_node)
+-	    {
+-	      wide_length += (TREE_STRING_LENGTH (t) - wchar_bytes);
+-	      wide_flag = 1;
+-	    }
+-	  else
+-	    {
+-	      length += (TREE_STRING_LENGTH (t) - 1);
+-	      if (C_ARTIFICIAL_STRING_P (t) && !in_system_header)
+-		warning ("concatenation of string literals with __FUNCTION__ is deprecated"); 
+-	    }
+-	}
+-
+-      /* If anything is wide, the non-wides will be converted,
+-	 which makes them take more space.  */
+-      if (wide_flag)
+-	length = length * wchar_bytes + wide_length;
+-
+-      p = xmalloc (length);
+-
+-      /* Copy the individual strings into the new combined string.
+-	 If the combined string is wide, convert the chars to ints
+-	 for any individual strings that are not wide.  */
+-
+-      q = p;
+-      for (t = strings; t; t = TREE_CHAIN (t))
+-	{
+-	  int len = (TREE_STRING_LENGTH (t)
+-		     - ((TREE_TYPE (t) == wchar_array_type_node)
+-			? wchar_bytes : 1));
+-	  if ((TREE_TYPE (t) == wchar_array_type_node) == wide_flag)
+-	    {
+-	      memcpy (q, TREE_STRING_POINTER (t), len);
+-	      q += len;
+-	    }
+-	  else
+-	    {
+-	      int i, j;
+-	      for (i = 0; i < len; i++)
+-		{
+-		  if (BYTES_BIG_ENDIAN)
+-		    {
+-		      for (j=0; j<(WCHAR_TYPE_SIZE / BITS_PER_UNIT)-1; j++)
+-			*q++ = 0;
+-		      *q++ = TREE_STRING_POINTER (t)[i];
+-		    }
+-		  else
+-		    {
+-		      *q++ = TREE_STRING_POINTER (t)[i];
+-		      for (j=0; j<(WCHAR_TYPE_SIZE / BITS_PER_UNIT)-1; j++)
+-			*q++ = 0;
+-		    }
+-		}
+-	    }
+-	}
+-      if (wide_flag)
+-	{
+-	  int i;
+-	  for (i = 0; i < wchar_bytes; i++)
+-	    *q++ = 0;
+-	}
+-      else
+-	*q = 0;
+-
+-      value = build_string (length, p);
+-      free (p);
+-    }
+-  else
+-    {
+-      value = strings;
+-      length = TREE_STRING_LENGTH (value);
+-      if (TREE_TYPE (value) == wchar_array_type_node)
+-	wide_flag = 1;
+-    }
++  int length = TREE_STRING_LENGTH (value);
++  int nchars;
+ 
+   /* Compute the number of elements, for the array type.  */
+   nchars = wide_flag ? length / wchar_bytes : length;
+@@ -686,6 +597,111 @@ combine_strings (strings)
+   TREE_STATIC (value) = 1;
+   return value;
+ }
++
++/* Given a VARRAY of STRING_CST nodes, concatenate them into one
++   STRING_CST.  */
++
++tree
++combine_strings (strings)
++     varray_type strings;
++{
++  const int wchar_bytes = TYPE_PRECISION (wchar_type_node) / BITS_PER_UNIT;
++  const int nstrings = VARRAY_ACTIVE_SIZE (strings);
++  tree value, t;
++  int length = 1;
++  int wide_length = 0;
++  int wide_flag = 0;
++  int i;
++  char *p, *q;
++
++  /* Don't include the \0 at the end of each substring.  Count wide
++     strings and ordinary strings separately.  */
++  for (i = 0; i < nstrings; ++i)
++    {
++      t = VARRAY_TREE (strings, i);
++
++      if (TREE_TYPE (t) == wchar_array_type_node)
++	{
++	  wide_length += TREE_STRING_LENGTH (t) - wchar_bytes;
++	  wide_flag = 1;
++	}
++      else
++	{
++	  length += (TREE_STRING_LENGTH (t) - 1);
++	  if (C_ARTIFICIAL_STRING_P (t) && !in_system_header)
++	    warning ("concatenation of string literals with __FUNCTION__ is deprecated"); 
++	}
++    }
++
++  /* If anything is wide, the non-wides will be converted,
++     which makes them take more space.  */
++  if (wide_flag)
++    length = length * wchar_bytes + wide_length;
++
++  p = xmalloc (length);
++
++  /* Copy the individual strings into the new combined string.
++     If the combined string is wide, convert the chars to ints
++     for any individual strings that are not wide.  */
++
++  q = p;
++  for (i = 0; i < nstrings; ++i)
++    {
++      int len, this_wide;
++
++      t = VARRAY_TREE (strings, i);
++      this_wide = TREE_TYPE (t) == wchar_array_type_node;
++      len = TREE_STRING_LENGTH (t) - (this_wide ? wchar_bytes : 1);
++      if (this_wide == wide_flag)
++	{
++	  memcpy (q, TREE_STRING_POINTER (t), len);
++	  q += len;
++	}
++      else
++	{
++	  const int nzeros = (WCHAR_TYPE_SIZE / BITS_PER_UNIT) - 1;
++	  int j, k;
++
++	  if (BYTES_BIG_ENDIAN)
++	    {
++	      for (k = 0; k < len; k++)
++		{
++		  for (j = 0; j < nzeros; j++)
++		    *q++ = 0;
++		  *q++ = TREE_STRING_POINTER (t)[k];
++		}
++	    }
++	  else
++	    {
++	      for (k = 0; k < len; k++)
++		{
++		  *q++ = TREE_STRING_POINTER (t)[k];
++		  for (j = 0; j < nzeros; j++)
++		    *q++ = 0;
++		}
++	    }
++	}
++    }
++
++  /* Nul terminate the string.  */
++  if (wide_flag)
++    {
++      for (i = 0; i < wchar_bytes; i++)
++	*q++ = 0;
++    }
++  else
++    *q = 0;
++
++  value = build_string (length, p);
++  free (p);
++
++  if (wide_flag)
++    TREE_TYPE (value) = wchar_array_type_node;
++  else
++    TREE_TYPE (value) = char_array_type_node;
++
++  return value;
++}
+ 
+ static int is_valid_printf_arglist PARAMS ((tree));
+ static rtx c_expand_builtin PARAMS ((tree, rtx, enum machine_mode, enum expand_modifier));
+@@ -4062,7 +4078,7 @@ c_expand_builtin_printf (arglist, target
+ 	  memcpy (newstr, TREE_STRING_POINTER (stripped_string), newlen - 1);
+ 	  newstr[newlen - 1] = 0;
+ 	  
+-	  arglist = combine_strings (build_string (newlen, newstr));
++	  arglist = fix_string_type (build_string (newlen, newstr));
+ 	  arglist = build_tree_list (NULL_TREE, arglist);
+ 	  fn = fn_puts;
+ 	}
+--- gcc/testsuite/gcc.dg/concat2.c.jj	2004-10-05 16:08:18.746518763 +0200
++++ gcc/testsuite/gcc.dg/concat2.c	2004-10-05 16:08:18.746518763 +0200
+@@ -0,0 +1,16 @@
++/* PR c/3581 */
++/* { dg-do compile } */
++/* { dg-options "" } */
++
++/* Intended as a compile-time test for string literal concatenation.
++   The fact that the string isn't actually used in the resulting program
++   should allow this to compile for any target.  */
++
++#define e0	"a"
++#define e1	e0 e0 e0 e0 e0 e0 e0 e0 e0 e0
++#define e2	e1 e1 e1 e1 e1 e1 e1 e1 e1 e1
++#define e3	e2 e2 e2 e2 e2 e2 e2 e2 e2 e2
++#define e4	e3 e3 e3 e3 e3 e3 e3 e3 e3 e3
++#define e5	e4 e4 e4 e4 e4 e4 e4 e4 e4 e4
++
++void foo() { (void)(e5); }
+--- gcc/testsuite/g++.dg/parse/concat1.C.jj	2004-10-05 16:08:18.745518941 +0200
++++ gcc/testsuite/g++.dg/parse/concat1.C	2004-10-05 16:08:18.745518941 +0200
+@@ -0,0 +1,15 @@
++/* PR c/3581 */
++/* { dg-do compile } */
++
++/* Intended as a compile-time test for string literal concatenation.
++   The fact that the string isn't actually used in the resulting program
++   should allow this to compile for any target.  */
++
++#define e0	"a"
++#define e1	e0 e0 e0 e0 e0 e0 e0 e0 e0 e0
++#define e2	e1 e1 e1 e1 e1 e1 e1 e1 e1 e1
++#define e3	e2 e2 e2 e2 e2 e2 e2 e2 e2 e2
++#define e4	e3 e3 e3 e3 e3 e3 e3 e3 e3 e3
++#define e5	e4 e4 e4 e4 e4 e4 e4 e4 e4 e4
++
++void foo() { (void)(e5); }
+--- gcc/c-parse.in.jj	2003-08-02 01:21:40.000000000 +0200
++++ gcc/c-parse.in	2004-10-05 16:08:18.682530140 +0200
+@@ -148,7 +148,7 @@ end ifobjc
+ %type <ttype> BREAK CONTINUE RETURN GOTO ASM_KEYWORD SIZEOF TYPEOF ALIGNOF
+ 
+ %type <ttype> identifier IDENTIFIER TYPENAME CONSTANT expr nonnull_exprlist exprlist
+-%type <ttype> expr_no_commas cast_expr unary_expr primary string STRING
++%type <ttype> expr_no_commas cast_expr unary_expr primary STRING
+ %type <ttype> declspecs_nosc_nots_nosa_noea declspecs_nosc_nots_nosa_ea
+ %type <ttype> declspecs_nosc_nots_sa_noea declspecs_nosc_nots_sa_ea
+ %type <ttype> declspecs_nosc_ts_nosa_noea declspecs_nosc_ts_nosa_ea
+@@ -296,6 +296,7 @@ end ifc
+ static void yyprint	  PARAMS ((FILE *, int, YYSTYPE));
+ static void yyerror	  PARAMS ((const char *));
+ static int yylexname	  PARAMS ((void));
++static int yylexstring	  PARAMS ((void));
+ static inline int _yylex  PARAMS ((void));
+ static int  yylex	  PARAMS ((void));
+ static void init_reswords PARAMS ((void));
+@@ -623,8 +624,8 @@ primary:
+ 		  $$ = build_external_ref ($1, yychar == '(');
+ 		}
+ 	| CONSTANT
+-	| string
+-		{ $$ = combine_strings ($1); }
++	| STRING
++		{ $$ = fix_string_type ($$); }
+ 	| VAR_FUNC_NAME
+ 		{ $$ = fname_decl (C_RID_CODE ($$), $$); }
+ 	| '(' typename ')' '{' 
+@@ -735,29 +736,6 @@ ifobjc
+ end ifobjc
+ 	;
+ 
+-/* Produces a STRING_CST with perhaps more STRING_CSTs chained onto it.  */
+-string:
+-	  STRING
+-	| string STRING
+-		{
+-ifc
+-                  static int last_lineno = 0;
+-                  static const char *last_input_filename = 0;
+-end ifc
+-                  $$ = chainon ($1, $2);
+-ifc
+-		  if (warn_traditional && !in_system_header
+-		      && (lineno != last_lineno || !last_input_filename ||
+-			  strcmp (last_input_filename, input_filename)))
+-		    {
+-		      warning ("traditional C rejects string concatenation");
+-		      last_lineno = lineno;
+-		      last_input_filename = input_filename;
+-		    }
+-end ifc
+-		}
+-	;
+-
+ ifobjc
+ /* Produces an STRING_CST with perhaps more STRING_CSTs chained
+    onto it, which is to be read as an ObjC string object.  */
+@@ -1398,10 +1376,8 @@ notype_initdecls:
+ maybeasm:
+ 	  /* empty */
+ 		{ $$ = NULL_TREE; }
+-	| ASM_KEYWORD '(' string ')'
+-		{ if (TREE_CHAIN ($3)) $3 = combine_strings ($3);
+-		  $$ = $3;
+-		}
++	| ASM_KEYWORD '(' STRING ')'
++		{ $$ = $3; }
+ 	;
+ 
+ initdcl:
+@@ -2482,10 +2458,10 @@ asm_operand:
+ 	;
+ 
+ asm_clobbers:
+-	  string
+-		{ $$ = tree_cons (NULL_TREE, combine_strings ($1), NULL_TREE); }
+-	| asm_clobbers ',' string
+-		{ $$ = tree_cons (NULL_TREE, combine_strings ($3), $1); }
++	  STRING
++		{ $$ = tree_cons (NULL_TREE, $1, NULL_TREE); }
++	| asm_clobbers ',' STRING
++		{ $$ = tree_cons (NULL_TREE, $3, $1); }
+ 	;
+ 
+ /* This is what appears inside the parens in a function declarator.
+@@ -3683,6 +3659,59 @@ end ifobjc
+   return IDENTIFIER;
+ }
+ 
++/* Concatenate strings before returning them to the parser.  This isn't quite
++   as good as having it done in the lexer, but it's better than nothing.  */
++
++static int
++yylexstring ()
++{
++  enum cpp_ttype next_type;
++  tree orig = yylval.ttype;
++
++  next_type = c_lex (&yylval.ttype);
++  if (next_type == CPP_STRING
++      || next_type == CPP_WSTRING
++      || (next_type == CPP_NAME && yylexname () == STRING))
++    {
++      varray_type strings;
++
++ifc
++      static int last_lineno = 0;
++      static const char *last_input_filename = 0;
++      if (warn_traditional && !in_system_header
++	  && (lineno != last_lineno || !last_input_filename ||
++	      strcmp (last_input_filename, input_filename)))
++	{
++	  warning ("traditional C rejects string concatenation");
++	  last_lineno = lineno;
++	  last_input_filename = input_filename;
++	}
++end ifc
++
++      VARRAY_TREE_INIT (strings, 32, "strings");
++      VARRAY_PUSH_TREE (strings, orig);
++
++      do
++	{
++	  VARRAY_PUSH_TREE (strings, yylval.ttype);
++	  next_type = c_lex (&yylval.ttype);
++	}
++      while (next_type == CPP_STRING
++	     || next_type == CPP_WSTRING
++	     || (next_type == CPP_NAME && yylexname () == STRING));
++
++      yylval.ttype = combine_strings (strings);
++
++      VARRAY_FREE (strings);
++    }
++  else
++    yylval.ttype = orig;
++
++  /* We will have always read one token too many.  */
++  _cpp_backup_tokens (parse_in, 1);
++
++  return STRING;
++}
+ 
+ static inline int
+ _yylex ()
+@@ -3749,7 +3778,13 @@ _yylex ()
+       return 0;
+ 
+     case CPP_NAME:
+-      return yylexname ();
++      {
++	int ret = yylexname ();
++	if (ret == STRING)
++	  return yylexstring ();
++	else
++	  return ret;
++      }
+ 
+     case CPP_NUMBER:
+     case CPP_CHAR:
+@@ -3758,7 +3793,7 @@ _yylex ()
+ 
+     case CPP_STRING:
+     case CPP_WSTRING:
+-      return STRING;
++      return yylexstring ();
+       
+       /* This token is Objective-C specific.  It gives the next token
+ 	 special significance.  */
+--- gcc/c-typeck.c.jj	2003-03-10 17:42:06.000000000 +0100
++++ gcc/c-typeck.c	2004-10-05 16:08:48.926153031 +0200
+@@ -6890,9 +6890,6 @@ simple_asm_stmt (expr)
+     {
+       tree stmt;
+ 
+-      if (TREE_CHAIN (expr))
+-	expr = combine_strings (expr);
+-
+       /* Simple asm statements are treated as volatile.  */
+       stmt = add_stmt (build_stmt (ASM_STMT, ridpointers[(int) RID_VOLATILE],
+       				   expr, NULL_TREE, NULL_TREE, NULL_TREE));
+@@ -6917,8 +6914,6 @@ build_asm_stmt (cv_qualifier, string, ou
+ {
+   tree tail;
+ 
+-  if (TREE_CHAIN (string))
+-    string = combine_strings (string);
+   if (TREE_CODE (string) != STRING_CST)
+     {
+       error ("asm template is not a string constant");

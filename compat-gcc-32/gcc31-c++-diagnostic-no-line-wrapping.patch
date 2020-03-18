@@ -1,0 +1,19 @@
+2002-05-10  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+	* cp/lex.c (cxx_init_options): By default, don't wrap lines since
+	the C front-end operates that way already.
+	
+--- gcc-3.1/gcc/cp/lex.c.c++-diagnostic-no-line-wrapping	2002-04-04 21:55:06.000000000 +0200
++++ gcc-3.1/gcc/cp/lex.c	2002-05-10 14:02:25.000000000 +0200
+@@ -252,9 +252,8 @@ cxx_init_options ()
+ 
+   /* Default exceptions on.  */
+   flag_exceptions = 1;
+-  /* By default wrap lines at 80 characters.  Is getenv ("COLUMNS")
+-     preferable?  */
+-  diagnostic_line_cutoff (global_dc) = 80;
++  /* By default don't wrap lines, like in the C front-end.  */
++  diagnostic_line_cutoff (global_dc) = 0;
+   /* By default, emit location information once for every
+      diagnostic message.  */
+   diagnostic_prefixing_rule (global_dc) = DIAGNOSTICS_SHOW_PREFIX_ONCE;

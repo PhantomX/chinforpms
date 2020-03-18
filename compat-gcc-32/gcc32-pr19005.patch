@@ -1,0 +1,61 @@
+2005-05-13  Jakub Jelinek  <jakub@redhat.com>
+
+	PR target/19005
+	* config/i386/i386.md (swapqi): Use +q instead of +r constraints.
+
+	* gcc.c-torture/execute/pr19005.c: New test.
+
+--- gcc/config/i386/i386.md.jj	2004-07-01 12:40:54.000000000 +0200
++++ gcc/config/i386/i386.md	2005-05-13 13:56:14.000000000 +0200
+@@ -2107,8 +2107,8 @@
+ })
+ 
+ (define_insn "*swapqi"
+-  [(set (match_operand:QI 0 "register_operand" "+r")
+-	(match_operand:QI 1 "register_operand" "+r"))
++  [(set (match_operand:QI 0 "register_operand" "+q")
++	(match_operand:QI 1 "register_operand" "+q"))
+    (set (match_dup 1)
+ 	(match_dup 0))]
+   ""
+--- gcc/testsuite/gcc.c-torture/execute/pr19005.c.jj	2005-04-07 15:51:53.775361896 +0200
++++ gcc/testsuite/gcc.c-torture/execute/pr19005.c	2005-05-13 13:33:21.000000000 +0200
+@@ -0,0 +1,38 @@
++/* PR target/19005 */
++extern void abort (void);
++
++int v, s;
++
++void
++bar (int a, int b)
++{
++  unsigned char x = v;
++
++  if (!s)
++    {
++      if (a != x || b != (unsigned char) (x + 1))
++        abort ();
++    }
++  else if (a != (unsigned char) (x + 1) || b != x)
++    abort ();
++  s ^= 1;
++}
++
++int
++foo (int x)
++{
++  unsigned char a = x, b = x + 1;
++
++  bar (a, b);
++  a ^= b; b ^= a; a ^= b;
++  bar (a, b);
++  return 0;
++}
++
++int
++main (void)
++{
++  for (v = -10; v < 266; v++)
++    foo (v);
++  return 0;
++}

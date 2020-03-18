@@ -1,0 +1,116 @@
+2005-08-31  Richard Henderson  <rth@redhat.com>
+
+	* expr.c (expand_expr_real_1) <VIEW_CONVERT_EXPR>: Force subregs
+	into a pseudo before applying gen_lowpart.
+
+2005-08-30  Richard Henderson  <rth@redhat.com>
+
+	PR target/23630
+	* expr.c (expand_expr_real_1) <VIEW_CONVERT_EXPR>: Use gen_lowpart
+	whenever the mode sizes match.
+
+2002-08-19  Geoffrey Keating  <geoffk@redhat.com>
+	    Steve Ellcey  <sje@cup.hp.com>
+
+	* machmode.h (SCALAR_INT_MODE_P): New macro to test for
+	scaler integer mode (MODE_INT or MODE_PARTIAL_INT).
+
+2006-02-22  Alexandre Oliva  <aoliva@redhat.com>
+
+	* gcc.dg/i386-mmx-3.c: New test.
+
+--- gcc/convert.c.orig	2003-08-01 20:24:42.000000000 -0300
++++ gcc/convert.c	2006-02-24 03:51:35.000000000 -0300
+@@ -398,7 +398,7 @@ convert_to_integer (type, expr)
+ 	  error ("can't convert between vector values of different size");
+ 	  return error_mark_node;
+ 	}
+-      return build1 (NOP_EXPR, type, expr);
++      return build1 (VIEW_CONVERT_EXPR, type, expr);
+ 
+     default:
+       error ("aggregate value used where an integer was expected");
+@@ -478,7 +478,7 @@ convert_to_vector (type, expr)
+ 	  error ("can't convert between vector values of different size");
+ 	  return error_mark_node;
+ 	}
+-      return build1 (NOP_EXPR, type, expr);
++      return build1 (VIEW_CONVERT_EXPR, type, expr);
+ 
+     default:
+       error ("can't convert value to a vector");
+--- gcc/expr.c.orig	2006-02-22 15:50:38.000000000 -0300
++++ gcc/expr.c	2006-02-24 04:49:59.000000000 -0300
+@@ -7641,16 +7641,28 @@ expand_expr (exp, target, tmode, modifie
+     case VIEW_CONVERT_EXPR:
+       op0 = expand_expr (TREE_OPERAND (exp, 0), NULL_RTX, mode, modifier);
+ 
+-      /* If the input and output modes are both the same, we are done.
+-	 Otherwise, if neither mode is BLKmode and both are within a word, we
+-	 can use gen_lowpart.  If neither is true, make sure the operand is
+-	 in memory and convert the MEM to the new mode.  */
++      /* If the input and output modes are both the same, we are done.  */
+       if (TYPE_MODE (type) == GET_MODE (op0))
+ 	;
++      /* If neither mode is BLKmode, and both modes are the same size
++	 then we can use gen_lowpart.  */
+       else if (TYPE_MODE (type) != BLKmode && GET_MODE (op0) != BLKmode
+-	       && GET_MODE_SIZE (TYPE_MODE (type)) <= UNITS_PER_WORD
+-	       && GET_MODE_SIZE (GET_MODE (op0)) <= UNITS_PER_WORD)
+-	op0 = gen_lowpart (TYPE_MODE (type), op0);
++	       && GET_MODE_SIZE (TYPE_MODE (type))
++	          == GET_MODE_SIZE (GET_MODE (op0)))
++	{
++	  if (GET_CODE (op0) == SUBREG)
++	    op0 = force_reg (GET_MODE (op0), op0);
++	  op0 = gen_lowpart (TYPE_MODE (type), op0);
++	}
++      /* If both modes are integral, then we can convert from one to the
++	 other.  */
++      else if (SCALAR_INT_MODE_P (GET_MODE (op0))
++	       && SCALAR_INT_MODE_P (TYPE_MODE (type)))
++	op0 = convert_modes (TYPE_MODE (type), GET_MODE (op0), op0,
++			     TREE_UNSIGNED (TREE_TYPE (TREE_OPERAND (exp,
++								     0))));
++      /* As a last resort, spill op0 to memory, and reload it in a
++	 different mode.  */
+       else if (GET_CODE (op0) != MEM)
+ 	{
+ 	  /* If the operand is not a MEM, force it into memory.  Since we
+--- gcc/machmode.h.orig	2002-02-19 07:13:31.000000000 -0300
++++ gcc/machmode.h	2006-02-24 04:20:47.000000000 -0300
+@@ -75,6 +75,11 @@ extern const enum mode_class mode_class[
+   (GET_MODE_CLASS (MODE) == MODE_VECTOR_INT	\
+    || GET_MODE_CLASS (MODE) == MODE_VECTOR_FLOAT)
+ 
++/* Nonzero if MODE is a scalar integral mode.  */
++#define SCALAR_INT_MODE_P(MODE)			\
++  (GET_MODE_CLASS (MODE) == MODE_INT		\
++   || GET_MODE_CLASS (MODE) == MODE_PARTIAL_INT)
++
+ /* Get the size in bytes of an object of mode MODE.  */
+ 
+ extern const unsigned char mode_size[NUM_MACHINE_MODES];
+--- gcc/testsuite/gcc.dg/i386-mmx-3.c	1970-01-01 00:00:00.000000000 +0000
++++ gcc/testsuite/gcc.dg/i386-mmx-3.c	2006-02-23 02:06:15.000000000 -0300
+@@ -0,0 +1,20 @@
++/* { dg-do compile { target i?86-*-* x86_64-*-* } } */
++/* { dg-options "-O -mmmx" } */
++
++#include <stdint.h>
++#include <mmintrin.h>
++
++void x(uint64_t *p_buffer)
++{
++    __m64 mm0, mm1;
++
++    mm0 = (__m64)(uint64_t)0;
++
++    /* This makes no sense whatsoever, it's just the result of
++       minimization of a large testcase.  */
++    mm1 = _mm_srli_pi16(mm0, 0);
++    mm1 = _mm_slli_pi16(mm1, 1);
++    mm0 = _mm_adds_pi16(mm0, mm1);
++
++    *p_buffer = (uint64_t)mm0;
++}

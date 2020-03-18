@@ -1,0 +1,433 @@
+2006-02-27  Jakub Jelinek  <jakub@redhat.com>
+
+	PR other/26208
+	* unwind-dw2.c (struct _Unwind_Context): Add signal_frame field.
+	(_Unwind_FrameState): Add signal_frame field.
+	(extract_cie_info): Handle S flag in augmentation string.
+	(execute_cfa_program): If context->signal_frame, execute also
+	fs->pc == context->ra instructions.
+	(uw_frame_state_for): If context->signal_frame, don't subtract one
+	from context->ra to find FDE.
+	(uw_update_context_1): Set context->signal_frame to
+	fs->signal_frame.
+	(_Unwind_GetIPInfo): New function.
+	* unwind-c.c (PERSONALITY_FUNCTION): Use _Unwind_GetIPInfo instead
+	of _Unwind_GetIP.
+	* unwind-sjlj.c (_Unwind_GetIPInfo): New function.
+	* unwind.h (_Unwind_GetIPInfo): New prototype.
+	* libgcc-std.ver (_Unwind_GetIPInfo): Export @@GCC_4.2.0.
+	* config/ia64/unwind-ia64.c (_Unwind_GetIPInfo): New function.
+	* config/i386/linux.h (MD_FALLBACK_FRAME_STATE_FOR): Set
+	(FS)->signal_frame.
+	* config/i386/linux64.h (MD_FALLBACK_FRAME_STATE_FOR): Likewise.
+	* config/rs6000/linux.h (MD_FALLBACK_FRAME_STATE_FOR): Likewise.
+	* config/rs6000/linux64.h (MD_FALLBACK_FRAME_STATE_FOR): Likewise.
+	* config/s390/linux.h (MD_FALLBACK_FRAME_STATE_FOR): Likewise.
+
+	* libsupc++/eh_personality.cc (PERSONALITY_FUNCTION): Use
+	_Unwind_GetIPInfo instead of _Unwind_GetIP.
+
+	* exception.cc (PERSONALITY_FUNCTION): Use _Unwind_GetIPInfo instead
+	of _Unwind_GetIP.
+	* include/i386-signal.h (MAKE_THROW_FRAME): Change into empty macro.
+	(HANDLE_DIVIDE_OVERFLOW): Don't adjust _res->eip if falling through
+	to throw.
+	* include/x86_64-signal.h (MAKE_THROW_FRAME): Change into empty
+	macro.
+	* include/powerpc-signal.h (MAKE_THROW_FRAME): Change into empty
+	macro.
+
+--- libjava/exception.cc.jj	2002-04-09 16:20:32.000000000 +0200
++++ libjava/exception.cc	2006-04-25 15:33:37.000000000 +0200
+@@ -196,6 +196,7 @@ PERSONALITY_FUNCTION (int version,
+   int handler_switch_value;
+   bool saw_cleanup;
+   bool saw_handler;
++  int ip_before_insn = 0;
+ 
+ 
+   // Interface version check.
+@@ -211,10 +212,10 @@ PERSONALITY_FUNCTION (int version,
+       goto install_context;
+     }
+ 
+-  // FIXME: In Phase 1, record _Unwind_GetIP in xh->obj as a part of
++  // FIXME: In Phase 1, record _Unwind_GetIPInfo in xh->obj as a part of
+   // the stack trace for this exception.  This will only collect Java
+   // frames, but perhaps that is acceptable.
+-  // FIXME2: _Unwind_GetIP is nonsensical for SJLJ, being a call-site
++  // FIXME2: _Unwind_GetIPInfo is nonsensical for SJLJ, being a call-site
+   // index instead of a PC value.  We could perhaps arrange for
+   // _Unwind_GetRegionStart to return context->fc->jbuf[1], which
+   // is the address of the handler label for __builtin_longjmp, but
+@@ -229,7 +230,9 @@ PERSONALITY_FUNCTION (int version,
+ 
+   // Parse the LSDA header.
+   p = parse_lsda_header (context, language_specific_data, &info);
+-  ip = _Unwind_GetIP (context) - 1;
++  ip = _Unwind_GetIPInfo (context, &ip_before_insn);
++  if (! ip_before_insn)
++    --ip;
+   landing_pad = 0;
+   action_record = 0;
+   handler_switch_value = 0;
+--- libjava/include/i386-signal.h.jj	2002-03-18 23:27:01.000000000 +0100
++++ libjava/include/i386-signal.h	2006-04-25 15:33:37.000000000 +0200
+@@ -22,19 +22,7 @@ details.  */
+ #define SIGNAL_HANDLER(_name)	\
+ static void _name (int _dummy)
+ 
+-#define MAKE_THROW_FRAME(_exception)					\
+-do									\
+-{									\
+-  void **_p = (void **)&_dummy;						\
+-  struct sigcontext_struct *_regs = (struct sigcontext_struct *)++_p;	\
+-									\
+-  /* Advance the program counter so that it is after the start of the	\
+-     instruction:  the x86 exception handler expects			\
+-     the PC to point to the instruction after a call. */		\
+-  _regs->eip += 2;							\
+-									\
+-}									\
+-while (0)
++#define MAKE_THROW_FRAME(_exception)
+ 
+ #define HANDLE_DIVIDE_OVERFLOW						\
+ do									\
+@@ -84,14 +72,6 @@ do									\
+ 	  _regs->eip = (unsigned long)_eip;				\
+ 	  return;							\
+ 	}								\
+-      else								\
+-	{								\
+-	  /* Advance the program counter so that it is after the start	\
+-	     of the instruction: this is because the x86 exception	\
+-	     handler expects the PC to point to the instruction after a	\
+-	     call. */							\
+-	  _regs->eip += 2;						\
+-	}								\
+     }									\
+ }									\
+ while (0)
+--- libjava/include/x86_64-signal.h.jj	2003-01-24 23:41:38.000000000 +0100
++++ libjava/include/x86_64-signal.h	2006-04-25 15:34:23.000000000 +0200
+@@ -34,17 +34,7 @@ extern "C" 
+   };
+ }
+ 
+-#define MAKE_THROW_FRAME(_exception)					\
+-do									\
+-{									\
+-  /* Advance the program counter so that it is after the start of the	\
+-     instruction:  the x86_64 exception handler expects			\
+-     the PC to point to the instruction after a call. */		\
+-  struct ucontext *_uc = (struct ucontext *)_p;				\
+-  struct sigcontext *_sc = (struct sigcontext *) &_uc->uc_mcontext;	\
+-  _sc->rip += 2;							\
+-}									\
+-while (0)
++#define MAKE_THROW_FRAME(_exception)
+ 
+ #define RESTORE(name, syscall) RESTORE2 (name, syscall)
+ #define RESTORE2(name, syscall)			\
+--- libjava/include/powerpc-signal.h.jj	2004-02-28 12:27:44.000000000 +0100
++++ libjava/include/powerpc-signal.h	2006-04-25 15:33:37.000000000 +0200
+@@ -22,18 +22,12 @@ details.  */
+ #define SIGNAL_HANDLER(_name)						\
+   static void _name (int /* _signal */, struct sigcontext *_sc)
+ 
+-/* PPC either leaves PC pointing at a faulting instruction or the
+-   following instruction, depending on the signal.  SEGV always does
+-   the former, so we adjust the saved PC to point to the following
+-   instruction. This is what the handler in libgcc expects.  */
++/* MD_FALBACK_FRAME_STATE_FOR takes care of special casing PC
++   before the faulting instruction, so we don't need to do anything
++   here.  */
++
++#define MAKE_THROW_FRAME(_exception)
+ 
+-#define MAKE_THROW_FRAME(_exception)					\
+-do									\
+-  {									\
+-    _sc->regs->nip += 4;						\
+-  }									\
+-while (0)
+-  
+ /* For an explanation why we cannot simply use sigaction to
+    install the handlers, see i386-signal.h.  */
+ 
+--- libstdc++-v3/libsupc++/eh_personality.cc.jj	2003-06-11 15:08:13.000000000 +0200
++++ libstdc++-v3/libsupc++/eh_personality.cc	2006-04-25 15:33:37.000000000 +0200
+@@ -201,6 +201,7 @@ PERSONALITY_FUNCTION (int version,
+   _Unwind_Ptr landing_pad, ip;
+   int handler_switch_value;
+   void *thrown_ptr = xh + 1;
++  int ip_before_insn = 0;
+ 
+   // Interface version check.
+   if (version != 1)
+@@ -227,7 +228,9 @@ PERSONALITY_FUNCTION (int version,
+   // Parse the LSDA header.
+   p = parse_lsda_header (context, language_specific_data, &info);
+   info.ttype_base = base_of_encoded_value (info.ttype_encoding, context);
+-  ip = _Unwind_GetIP (context) - 1;
++  ip = _Unwind_GetIPInfo (context, &ip_before_insn);
++  if (! ip_before_insn)
++    --ip;
+   landing_pad = 0;
+   action_record = 0;
+   handler_switch_value = 0;
+--- gcc/libgcc-std.ver.jj	2004-02-28 12:16:53.000000000 +0100
++++ gcc/libgcc-std.ver	2006-04-25 15:33:37.000000000 +0200
+@@ -210,3 +210,8 @@ GCC_3.4 {
+   __paritydi2
+   __parityti2
+ }
++
++%inherit GCC_4.2.0 GCC_3.4
++GCC_4.2.0 {
++  _Unwind_GetIPInfo
++}
+--- gcc/unwind-c.c.jj	2003-06-11 15:08:12.000000000 +0200
++++ gcc/unwind-c.c	2006-04-25 15:33:37.000000000 +0200
+@@ -93,6 +93,7 @@ PERSONALITY_FUNCTION (int version,
+   lsda_header_info info;
+   const unsigned char *language_specific_data, *p, *action_record;
+   _Unwind_Ptr landing_pad, ip;
++  int ip_before_insn = 0;
+ 
+   if (version != 1)
+     return _URC_FATAL_PHASE1_ERROR;
+@@ -110,7 +111,9 @@ PERSONALITY_FUNCTION (int version,
+ 
+   /* Parse the LSDA header.  */
+   p = parse_lsda_header (context, language_specific_data, &info);
+-  ip = _Unwind_GetIP (context) - 1;
++  ip = _Unwind_GetIPInfo (context, &ip_before_insn);
++  if (! ip_before_insn)
++    --ip;
+   landing_pad = 0;
+ 
+ #ifdef __USING_SJLJ_EXCEPTIONS__
+--- gcc/config/rs6000/linux.h.jj	2004-02-28 12:27:45.000000000 +0100
++++ gcc/config/rs6000/linux.h	2006-04-25 15:36:47.000000000 +0200
+@@ -171,6 +171,7 @@ enum { SIGNAL_FRAMESIZE = 64 };
+     (FS)->regs.reg[CR0_REGNO].loc.offset 				\
+       = (long)&(sc_->regs->nip) - new_cfa_;				\
+     (FS)->retaddr_column = CR0_REGNO;					\
++    (FS)->signal_frame = 1;						\
+     goto SUCCESS;							\
+   } while (0)
+ 
+--- gcc/config/rs6000/linux64.h.jj	2004-10-29 09:35:44.000000000 +0200
++++ gcc/config/rs6000/linux64.h	2006-04-25 15:37:14.000000000 +0200
+@@ -656,6 +656,7 @@ enum { SIGNAL_FRAMESIZE = 64 };
+     (FS)->regs.reg[ARG_POINTER_REGNUM].loc.offset 			\
+       = (long)&(sc_->regs->nip) - new_cfa_;				\
+     (FS)->retaddr_column = ARG_POINTER_REGNUM;				\
++    (FS)->signal_frame = 1;						\
+     goto SUCCESS;							\
+   } while (0)
+ 
+@@ -720,6 +721,7 @@ enum { SIGNAL_FRAMESIZE = 64 };
+     (FS)->regs.reg[CR0_REGNO].loc.offset 				\
+       = (long)&(sc_->regs->nip) - new_cfa_;				\
+     (FS)->retaddr_column = CR0_REGNO;					\
++    (FS)->signal_frame = 1;						\
+     goto SUCCESS;							\
+   } while (0)
+ 
+--- gcc/config/s390/linux.h.jj	2003-10-31 11:36:50.000000000 +0100
++++ gcc/config/s390/linux.h	2006-04-25 15:33:41.000000000 +0200
+@@ -339,6 +339,7 @@ do {                                    
+       } __attribute__ ((__aligned__ (8))) sigregs_;			\
+ 									\
+     sigregs_ *regs_;							\
++    int *signo_ = NULL;							\
+ 									\
+     /* svc $__NR_sigreturn or svc $__NR_rt_sigreturn  */		\
+     if (pc_[0] != 0x0a || (pc_[1] != 119 && pc_[1] != 173))		\
+@@ -359,6 +360,7 @@ do {                                    
+ 	  } *uc_ = (CONTEXT)->cfa + 8 + 128;				\
+ 									\
+ 	regs_ = &uc_->uc_mcontext;					\
++	signo_ = (CONTEXT)->cfa + sizeof(long);				\
+       }									\
+ 									\
+     /* Old-style RT frame and all non-RT frames:			\
+@@ -367,6 +369,11 @@ do {                                    
+     else								\
+       {									\
+ 	regs_ = *(sigregs_ **)((CONTEXT)->cfa + 8);			\
++	/* Recent kernels store the signal number immediately after	\
++	   the sigregs; old kernels have the return trampoline at	\
++	   this location.  */						\
++	if ((void *)(regs_ + 1) != (CONTEXT)->ra)			\
++	  signo_ = (int *)(regs_ + 1);					\
+       }									\
+       									\
+     new_cfa_ = regs_->gprs[15] + 16*sizeof(long) + 32;			\
+@@ -393,6 +400,12 @@ do {                                    
+     (FS)->regs.reg[32].loc.offset = (long)&regs_->psw_addr - new_cfa_;	\
+     (FS)->retaddr_column = 32;						\
+ 									\
++    /* SIGILL, SIGFPE and SIGTRAP are delivered with psw_addr		\
++       after the faulting instruction rather than before it.		\
++       Don't set FS->signal_frame in that case.  */			\
++    if (!signo_ || (*signo_ != 4 && *signo_ != 5 && *signo_ != 8))	\
++      (FS)->signal_frame = 1;						\
++									\
+     goto SUCCESS;							\
+   } while (0)
+ 
+--- gcc/config/i386/linux.h.jj	2003-06-11 14:56:49.000000000 +0200
++++ gcc/config/i386/linux.h	2006-04-25 15:33:41.000000000 +0200
+@@ -280,6 +280,7 @@ Boston, MA 02111-1307, USA.  */
+     (FS)->regs.reg[8].how = REG_SAVED_OFFSET;				\
+     (FS)->regs.reg[8].loc.offset = (long)&sc_->eip - new_cfa_;		\
+     (FS)->retaddr_column = 8;						\
++    (FS)->signal_frame = 1;						\
+     goto SUCCESS;							\
+   } while (0)
+ #endif /* ifndef inhibit_libc  */
+--- gcc/config/i386/linux64.h.jj	2003-06-11 14:56:49.000000000 +0200
++++ gcc/config/i386/linux64.h	2006-04-25 15:33:41.000000000 +0200
+@@ -135,6 +135,7 @@ Boston, MA 02111-1307, USA.  */
+     (FS)->regs.reg[16].how = REG_SAVED_OFFSET;				\
+     (FS)->regs.reg[16].loc.offset = (long)&sc_->rip - new_cfa_;		\
+     (FS)->retaddr_column = 16;						\
++    (FS)->signal_frame = 1;						\
+     goto SUCCESS;							\
+   } while (0)
+ #else /* ifdef __x86_64__  */
+@@ -189,6 +190,7 @@ Boston, MA 02111-1307, USA.  */
+     (FS)->regs.reg[8].how = REG_SAVED_OFFSET;				\
+     (FS)->regs.reg[8].loc.offset = (long)&sc_->eip - new_cfa_;		\
+     (FS)->retaddr_column = 8;						\
++    (FS)->signal_frame = 1;						\
+     goto SUCCESS;							\
+   } while (0)
+ #endif /* ifdef __x86_64__  */
+--- gcc/config/ia64/unwind-ia64.c.jj	2004-07-01 12:49:33.000000000 +0200
++++ gcc/config/ia64/unwind-ia64.c	2006-04-25 15:33:41.000000000 +0200
+@@ -1700,6 +1700,13 @@ _Unwind_GetIP (struct _Unwind_Context *c
+   return context->rp;
+ }
+ 
++inline _Unwind_Ptr
++_Unwind_GetIPInfo (struct _Unwind_Context *context, int *ip_before_insn)
++{
++  *ip_before_insn = 0;
++  return context->rp;
++}
++
+ /* Overwrite the return address for CONTEXT with VAL.  */
+ 
+ inline void
+--- gcc/unwind-sjlj.c.jj	2003-06-11 15:12:42.000000000 +0200
++++ gcc/unwind-sjlj.c	2006-04-25 15:33:44.000000000 +0200
+@@ -197,6 +197,13 @@ _Unwind_GetIP (struct _Unwind_Context *c
+   return context->fc->call_site + 1;
+ }
+ 
++_Unwind_Ptr
++_Unwind_GetIPInfo (struct _Unwind_Context *context, int *ip_before_insn)
++{
++  *ip_before_insn = 0;
++  return context->fc->call_site + 1;
++}
++
+ /* Set the return landing pad index in CONTEXT.  */
+ 
+ void
+--- gcc/unwind.h.jj	2003-09-04 11:16:10.000000000 +0200
++++ gcc/unwind.h	2006-04-25 15:33:44.000000000 +0200
+@@ -136,6 +136,7 @@ extern _Unwind_Word _Unwind_GetGR (struc
+ extern void _Unwind_SetGR (struct _Unwind_Context *, int, _Unwind_Word);
+ 
+ extern _Unwind_Ptr _Unwind_GetIP (struct _Unwind_Context *);
++extern _Unwind_Ptr _Unwind_GetIPInfo (struct _Unwind_Context *, int *);
+ extern void _Unwind_SetIP (struct _Unwind_Context *, _Unwind_Ptr);
+ 
+ /* @@@ Retrieve the CFA of the given context.  */
+--- gcc/unwind-dw2.c.jj	2003-07-16 13:38:32.000000000 +0200
++++ gcc/unwind-dw2.c	2006-04-25 15:33:44.000000000 +0200
+@@ -62,6 +62,7 @@ struct _Unwind_Context
+   void *lsda;
+   struct dwarf_eh_bases bases;
+   _Unwind_Word args_size;
++  char signal_frame;
+ };
+ 
+ /* Byte size of every register managed by these routines.  */
+@@ -117,6 +118,7 @@ typedef struct
+   unsigned char fde_encoding;
+   unsigned char lsda_encoding;
+   unsigned char saw_z;
++  unsigned char signal_frame;
+   void *eh_ptr;
+ } _Unwind_FrameState;
+ 
+@@ -193,6 +195,16 @@ _Unwind_GetIP (struct _Unwind_Context *c
+   return (_Unwind_Ptr) context->ra;
+ }
+ 
++/* Retrieve the return address and flag whether that IP is before
++   or after first not yet fully executed instruction.  */
++
++inline _Unwind_Ptr
++_Unwind_GetIPInfo (struct _Unwind_Context *context, int *ip_before_insn)
++{
++  *ip_before_insn = context->signal_frame != 0;
++  return (_Unwind_Ptr) context->ra;
++}
++
+ /* Overwrite the return address for CONTEXT with VAL.  */
+ 
+ inline void
+@@ -304,6 +316,13 @@ extract_cie_info (struct dwarf_cie *cie,
+ 	  aug += 1;
+ 	}
+ 
++      /* "S" indicates a signal frame.  */
++      else if (aug[0] == 'S')
++	{
++	  fs->signal_frame = 1;
++	  aug += 1;
++	}
++
+       /* Otherwise we have an unknown augmentation string.
+ 	 Bail unless we saw a 'z' prefix.  */
+       else
+@@ -736,8 +755,10 @@ execute_cfa_program (const unsigned char
+      a different stack configuration that we are not interested in.  We
+      assume that the call itself is unwind info-neutral; if not, or if
+      there are delay instructions that adjust the stack, these must be
+-     reflected at the point immediately before the call insn.  */
+-  while (insn_ptr < insn_end && fs->pc < context->ra)
++     reflected at the point immediately before the call insn.
++     In signal frames, return address is after last completed instruction,
++     so we add 1 to return address to make the comparison <=.  */
++  while (insn_ptr < insn_end && fs->pc < context->ra + context->signal_frame)
+     {
+       unsigned char insn = *insn_ptr++;
+       _Unwind_Word reg, utmp;
+@@ -927,7 +948,8 @@ uw_frame_state_for (struct _Unwind_Conte
+   context->args_size = 0;
+   context->lsda = 0;
+ 
+-  fde = _Unwind_Find_FDE (context->ra - 1, &context->bases);
++  fde = _Unwind_Find_FDE (context->ra + context->signal_frame - 1,
++			  &context->bases);
+   if (fde == NULL)
+     {
+       /* Couldn't find frame unwind info for this function.  Try a
+@@ -1265,6 +1287,8 @@ uw_update_context_1 (struct _Unwind_Cont
+ 	break;
+       }
+ 
++  context->signal_frame = fs->signal_frame;
++
+   MD_FROB_UPDATE_CONTEXT (context, fs);
+ }
+ 

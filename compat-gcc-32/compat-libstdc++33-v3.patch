@@ -1,0 +1,204 @@
+--- Makefile.in	2003-02-03 23:58:12.000000000 +0100
++++ Makefile.in	2004-10-14 17:42:45.175884656 +0200
+@@ -785,6 +785,7 @@ INSTALL_X11_MODULES = \
+ # using $(TARGET_FLAGS_TO_PASS).
+ ALL_TARGET_MODULES = \
+ 	all-target-libstdc++-v3 \
++	all-target-libstdc++33-v3 \
+ 	all-target-librx \
+ 	all-target-newlib \
+ 	all-target-libf2c \
+@@ -808,6 +809,7 @@ ALL_TARGET_MODULES = \
+ # are compiled using the target tools.
+ CONFIGURE_TARGET_MODULES = \
+ 	configure-target-libstdc++-v3 \
++	configure-target-libstdc++33-v3 \
+ 	configure-target-librx \
+ 	configure-target-newlib \
+ 	configure-target-libf2c \
+@@ -831,6 +833,7 @@ CONFIGURE_TARGET_MODULES = \
+ # compiled using $(TARGET_FLAGS_TO_PASS).
+ CHECK_TARGET_MODULES = \
+ 	check-target-libstdc++-v3 \
++	check-target-libstdc++33-v3 \
+ 	check-target-newlib \
+ 	check-target-libf2c \
+ 	check-target-libobjc \
+@@ -847,6 +850,7 @@ CHECK_TARGET_MODULES = \
+ # compiled using $(TARGET_FLAGS_TO_PASS).
+ INSTALL_TARGET_MODULES = \
+ 	install-target-libstdc++-v3 \
++	install-target-libstdc++33-v3 \
+ 	install-target-newlib \
+ 	install-target-libf2c \
+ 	install-target-libobjc \
+@@ -934,6 +938,7 @@ CLEAN_MODULES = \
+ # All of the target modules that can be cleaned
+ CLEAN_TARGET_MODULES = \
+ 	clean-target-libstdc++-v3 \
++	clean-target-libstdc++33-v3 \
+ 	clean-target-librx \
+ 	clean-target-newlib \
+ 	clean-target-libf2c \
+@@ -1659,6 +1664,7 @@ check-c++:
+ 	  $(SET_LIB_PATH) \
+ 	  (cd gcc; $(MAKE) $(GCC_FLAGS_TO_PASS) check-c++); \
+ 	  $(MAKE) check-target-libstdc++-v3; \
++	  $(MAKE) check-target-libstdc++33-v3; \
+ 	else \
+ 	  true; \
+ 	fi 
+@@ -1703,7 +1709,7 @@ install-dosrel-fake:
+ 
+ ALL_GCC = all-gcc
+ ALL_GCC_C = $(ALL_GCC) all-target-newlib all-target-libgloss
+-ALL_GCC_CXX = $(ALL_GCC_C) all-target-libstdc++-v3
++ALL_GCC_CXX = $(ALL_GCC_C) all-target-libstdc++-v3 all-target-libstdc++33-v3
+ 
+ # This is a list of inter-dependencies among modules.
+ all-apache:
+@@ -1747,7 +1753,7 @@ all-gdb: all-libiberty all-opcodes all-b
+ all-gettext:
+ all-gnuserv:
+ configure-target-gperf: $(ALL_GCC_CXX)
+-all-target-gperf: configure-target-gperf all-target-libiberty all-target-libstdc++-v3
++all-target-gperf: configure-target-gperf all-target-libiberty all-target-libstdc++-v3 all-target-libstdc++33-v3
+ all-gprof: all-libiberty all-bfd all-opcodes all-intl
+ all-grep: all-libiberty
+ all-grez: all-libiberty all-bfd all-opcodes
+@@ -1776,6 +1782,8 @@ configure-target-librx: $(ALL_GCC_C)
+ all-target-librx: configure-target-librx
+ configure-target-libstdc++-v3: $(ALL_GCC_C)
+ all-target-libstdc++-v3: configure-target-libstdc++-v3 all-target-libiberty
++configure-target-libstdc++33-v3: $(ALL_GCC_C)
++all-target-libstdc++33-v3: configure-target-libstdc++33-v3 all-target-libiberty
+ configure-target-libstub: $(ALL_GCC_C)
+ all-target-libstub: configure-target-libstub
+ all-libtool:
+--- configure.in.jj	2002-09-24 09:06:53.000000000 -0400
++++ configure.in	2004-10-14 17:53:05.746097559 -0400
+@@ -50,7 +50,7 @@ fi
+ 
+ libstdcxx_version="target-libstdc++-v3"
+ # Don't use libstdc++-v3's flags to configure/build itself.
+-libstdcxx_flags='`case $$dir in libstdc++-v3 | libjava) ;; *) test ! -f $$r/$(TARGET_SUBDIR)/libstdc++-v3/testsuite_flags || $(SHELL) $$r/$(TARGET_SUBDIR)/libstdc++-v3/testsuite_flags --build-includes;; esac` -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src/.libs'
++libstdcxx_flags='`case $$dir in libstdc++-v3 | libstdc++33-v3 | libjava) ;; *) test ! -f $$r/$(TARGET_SUBDIR)/libstdc++-v3/testsuite_flags || $(SHELL) $$r/$(TARGET_SUBDIR)/libstdc++-v3/testsuite_flags --build-includes;; esac` `test x"$$dir" = xlibstdc++33-v3 && echo "-L$$r/$(TARGET_SUBDIR)/libstdc++33-v3/src -L$$r/$(TARGET_SUBDIR)/libstdc++33-v3/src/.libs" || echo "-L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src/.libs"`'
+ 
+ # these tools are built for the host environment
+ # Note, the powerpc-eabi build depends on sim occurring before gdb in order to
+@@ -72,6 +72,7 @@ target_libs="target-libiberty \
+ 		target-newlib \
+ 		target-librx \
+ 		${libstdcxx_version} \
++		target-libstdc++33-v3 \
+ 		target-libf2c \
+ 		${libgcj}
+ 		target-libobjc"
+@@ -884,7 +885,7 @@ case "${target}" in
+   mcore-*-pe*)
+   # The EPOC C++ environment does not support exceptions or rtti,
+   # and so building libstdc++-v3 tends not to always work.
+-    noconfigdirs="$noconfigdirs target-libstdc++-v3"
++    noconfigdirs="$noconfigdirs target-libstdc++-v3 target-libstdc++33-v3"
+     ;;
+   mmix-*-*)
+     noconfigdirs="$noconfigdirs ${libgcj}"
+@@ -1557,7 +1558,7 @@ elif test -d ${topsrcdir}/gcc; then
+   # We add -shared-libgcc to CXX_FOR_TARGET whenever we use xgcc instead
+   # of g++ for linking C++ or Java, because g++ has -shared-libgcc by
+   # default whereas gcc does not.
+-  CXX_FOR_TARGET='$$r/gcc/`case $$dir in libstdc++-v3 | libjava) echo xgcc -shared-libgcc ;; *) echo g++ ;; esac` -B$$r/gcc/ -nostdinc++ '$libstdcxx_flags
++  CXX_FOR_TARGET='$$r/gcc/`case $$dir in libstdc++-v3 | libstdc++33-v3 | libjava) echo xgcc -shared-libgcc ;; *) echo g++ ;; esac` -B$$r/gcc/ -nostdinc++ '$libstdcxx_flags
+ elif test "$host" = "$target"; then
+   CXX_FOR_TARGET='$(CXX)'
+ else
+--- libstdc++33-v3/acinclude.m4.jj	2004-10-14 17:08:50.000000000 -0400
++++ libstdc++33-v3/acinclude.m4	2004-10-14 17:08:50.000000000 -0400
+@@ -72,7 +72,7 @@ AC_DEFUN(GLIBCPP_CONFIGURE, [
+   AC_ARG_WITH(cross-host,
+   [  --with-cross-host=HOST  configuring with a cross compiler])
+ 
+-  glibcpp_basedir=$srcdir/$toprel/$1/libstdc++-v3
++  glibcpp_basedir=$srcdir/$toprel/$1/libstdc++33-v3
+   AC_SUBST(glibcpp_basedir)
+ 
+   # Never versions of autoconf add an underscore to these functions.
+--- libstdc++33-v3/aclocal.m4.jj	2004-10-14 17:09:05.000000000 -0400
++++ libstdc++33-v3/aclocal.m4	2004-10-14 17:09:05.000000000 -0400
+@@ -84,7 +84,7 @@ AC_DEFUN(GLIBCPP_CONFIGURE, [
+   AC_ARG_WITH(cross-host,
+   [  --with-cross-host=HOST  configuring with a cross compiler])
+ 
+-  glibcpp_basedir=$srcdir/$toprel/$1/libstdc++-v3
++  glibcpp_basedir=$srcdir/$toprel/$1/libstdc++33-v3
+   AC_SUBST(glibcpp_basedir)
+ 
+   # Never versions of autoconf add an underscore to these functions.
+--- libstdc++33-v3/configure.jj	2004-10-14 17:09:31.000000000 -0400
++++ libstdc++33-v3/configure	2004-10-14 17:09:31.000000000 -0400
+@@ -922,7 +922,7 @@ if test "${with_cross_host+set}" = set; 
+ fi
+ 
+ 
+-  glibcpp_basedir=$srcdir/$toprel/./libstdc++-v3
++  glibcpp_basedir=$srcdir/$toprel/./libstdc++33-v3
+   
+ 
+   # Never versions of autoconf add an underscore to these functions.
+--- libstdc++33-v3/testsuite/18_support/numeric_limits.cc.jj	2002-12-19 06:44:30.000000000 -0500
++++ libstdc++33-v3/testsuite/18_support/numeric_limits.cc	2004-10-15 05:12:43.000000000 -0400
+@@ -260,6 +260,10 @@ bool test03()
+ {
+   bool test = true;
+ 
++#ifndef __CHAR_BIT__
++ #define __CHAR_BIT__ 8
++#endif
++
+   VERIFY( std::numeric_limits<bool>::digits10 == 0 );
+   if (__CHAR_BIT__ == 8)
+     {
+--- libstdc++33-v3/testsuite/lib/libstdc++-v3-dg.exp.jj	2003-12-19 04:18:43.000000000 -0500
++++ libstdc++33-v3/testsuite/lib/libstdc++-v3-dg.exp	2004-10-15 05:04:58.000000000 -0400
+@@ -49,7 +49,7 @@ proc libstdc++-v3-init { args } {
+     global original_ld_library_path
+     global tool_root_dir
+ 
+-    set blddir [lookfor_file [get_multilibs] libstdc++-v3]
++    set blddir [lookfor_file [get_multilibs] libstdc++33-v3]
+ 
+     # By default, we assume we want to run program images.
+     global dg-do-what-default
+--- libstdc++33-v3/testsuite_flags.in.jj	2003-05-15 18:08:03.000000000 -0400
++++ libstdc++33-v3/testsuite_flags.in	2004-10-15 04:56:36.000000000 -0400
+@@ -43,7 +43,7 @@ case ${query} in
+       echo ${CXX}
+       ;;
+     --build-cxx)
+-      CXX_build="@glibcpp_CXX@ ${PCHFLAGS}"
++      CXX_build=`echo "@glibcpp_CXX@ ${PCHFLAGS}" | sed 's,libstdc++-v3,libstdc++33-v3,g'`
+       CXX=`echo "$CXX_build" | sed 's,gcc/xgcc ,gcc/g++ ,'`
+       echo ${CXX}
+       ;;
+--- libstdc++33-v3/Makefile.am.jj	2003-07-09 05:08:57.000000000 -0400
++++ libstdc++33-v3/Makefile.am	2004-10-15 09:20:31.000000000 -0400
+@@ -136,7 +136,7 @@ AM_MAKEFLAGS = \
+ 	"includedir=$(includedir)" \
+ 	"prefix=$(prefix)" \
+ 	"tooldir=$(tooldir)" \
+-	"gxx_include_dir=$(gxx_include_dir)" \
++	"gxx_include_dir=@gxx_include_dir@" \
+ 	"AR=$(AR)" \
+ 	"AS=$(AS)" \
+ 	"LD=$(LD)" \
+--- libstdc++33-v3/Makefile.in.jj	2004-10-14 12:28:01.000000000 -0400
++++ libstdc++33-v3/Makefile.in	2004-10-15 09:20:55.000000000 -0400
+@@ -195,7 +195,7 @@ AM_MAKEFLAGS = \
+ 	"includedir=$(includedir)" \
+ 	"prefix=$(prefix)" \
+ 	"tooldir=$(tooldir)" \
+-	"gxx_include_dir=$(gxx_include_dir)" \
++	"gxx_include_dir=@gxx_include_dir@" \
+ 	"AR=$(AR)" \
+ 	"AS=$(AS)" \
+ 	"LD=$(LD)" \

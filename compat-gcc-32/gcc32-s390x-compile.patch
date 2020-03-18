@@ -1,0 +1,10 @@
+--- gcc/builtins.c.jj	2004-02-28 06:14:54.000000000 -0500
++++ gcc/builtins.c	2006-08-10 06:35:16.000000000 -0400
+@@ -41,6 +41,7 @@ Software Foundation, 59 Temple Place - S
+ #include "predict.h"
+ #include "tm_p.h"
+ #include "target.h"
++#include "integrate.h"
+ 
+ #define CALLED_AS_BUILT_IN(NODE) \
+    (!strncmp (IDENTIFIER_POINTER (DECL_NAME (NODE)), "__builtin_", 10))

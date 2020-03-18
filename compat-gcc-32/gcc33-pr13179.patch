@@ -1,0 +1,14 @@
+2003-12-03  Mark Mitchell  <mark@codesourcery.com>
+
+	PR c++/13179
+	* g++.dg/template/eh1.C: New test.
+
+--- gcc-3.3.2/gcc/testsuite/g++.dg/template/eh1.C.pr13179	2004-02-13 10:39:24.185911502 +0100
++++ gcc-3.3.2/gcc/testsuite/g++.dg/template/eh1.C	2004-02-13 10:39:24.185911502 +0100
+@@ -0,0 +1,6 @@
++template <class T>
++void foo()
++{
++  try {}
++  catch(T e) {}
++}

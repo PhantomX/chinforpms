@@ -16,7 +16,7 @@ BuildRequires:  python3-setuptools
 BuildArch:      noarch
 
 %global _description\
-This module provides a Python 2 extension adds math formulas support to
+This module provides a Python 2 extension adds math formulas support to\
 Python-Markdown.
 
 %description %_description

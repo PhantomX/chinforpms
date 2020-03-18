@@ -1,0 +1,166 @@
+2005-09-07  Jakub Jelinek  <jakub@redhat.com>
+
+	PR target/18300
+	* config/i386/i386.c (classify_argument): Only use different
+	iterators for nested loops if nested loops sharing the same
+	iterator would hang.
+
+2004-11-13  Zak Kipling  <zak@transversal.com>
+
+	PR target/18300
+	* config/i386/i386.c (classify_argument): Fix infinite loop when
+	passing object with 3 or more base classes by value.
+
+--- gcc/config/i386/i386.c.jj	2005-07-21 11:01:36.000000000 +0200
++++ gcc/config/i386/i386.c	2005-09-07 14:22:19.000000000 +0200
+@@ -1784,8 +1784,17 @@ classify_argument (mode, type, classes, 
+ 	    {
+ 	      tree bases = TYPE_BINFO_BASETYPES (type);
+ 	      int n_bases = TREE_VEC_LENGTH (bases);
+-	      int i;
+-
++	      int i, basenum;
++	      enum x86_64_reg_class saveclasses[MAX_CLASSES];
++	      bool seen[MAX_CLASSES];
++
++	      /* PR target/18300: The following code mistakenly uses the same
++		 iterator variable in both nested for loops.  But to preserve
++		 binary compatibility, do whatever this code used to do before
++		 unless old GCC would hang in an infinite loop.  In that case
++		 use whatever GCC 4.0+ does.  */
++	      memset (seen, 0, sizeof (seen));
++	      memcpy (saveclasses, classes, sizeof (saveclasses));
+ 	      for (i = 0; i < n_bases; ++i)
+ 		{
+ 		   tree binfo = TREE_VEC_ELT (bases, i);
+@@ -1793,6 +1802,12 @@ classify_argument (mode, type, classes, 
+ 		   int offset = tree_low_cst (BINFO_OFFSET (binfo), 0) * 8;
+ 		   tree type = BINFO_TYPE (binfo);
+ 
++		   if (i < MAX_CLASSES)
++		     {
++		       if (seen[i])
++			 break;
++		       seen[i] = true;
++		     }
+ 		   num = classify_argument (TYPE_MODE (type),
+ 					    type, subclasses,
+ 					    (offset + bit_offset) % 256);
+@@ -1805,6 +1820,32 @@ classify_argument (mode, type, classes, 
+ 			 merge_classes (subclasses[i], classes[i + pos]);
+ 		     }
+ 		}
++	      if (i < n_bases)
++		{
++		  /* Older GCC 3.[0-4].x would hang in the above loop, so
++		     don't worry about backwards compatibility and
++		     just DTRT.  */
++		  memcpy (classes, saveclasses, sizeof (saveclasses));
++		  for (basenum = 0; basenum < n_bases; ++basenum)
++		    {
++		      tree binfo = TREE_VEC_ELT (bases, basenum);
++		      int num;
++		      int offset = tree_low_cst (BINFO_OFFSET (binfo), 0) * 8;
++		      tree type = BINFO_TYPE (binfo);
++
++		      num = classify_argument (TYPE_MODE (type),
++					       type, subclasses,
++					       (offset + bit_offset) % 256);
++		      if (!num)
++			return 0;
++		      for (i = 0; i < num; i++)
++			{
++			  int pos = (offset + (bit_offset % 64)) / 8 / 8;
++			  classes[i + pos] =
++			    merge_classes (subclasses[i], classes[i + pos]);
++			}
++		    }
++		}
+ 	    }
+ 	  /* And now merge the fields of structure.   */
+ 	  for (field = TYPE_FIELDS (type); field; field = TREE_CHAIN (field))
+@@ -1872,8 +1913,17 @@ classify_argument (mode, type, classes, 
+ 	    {
+ 	      tree bases = TYPE_BINFO_BASETYPES (type);
+ 	      int n_bases = TREE_VEC_LENGTH (bases);
+-	      int i;
+-
++	      int i, basenum;
++	      enum x86_64_reg_class saveclasses[MAX_CLASSES];
++	      bool seen[MAX_CLASSES];
++
++	      /* PR target/18300: The following code mistakenly uses the same
++		 iterator variable in both nested for loops.  But to preserve
++		 binary compatibility, do whatever this code used to do before
++		 unless old GCC would hang in an infinite loop.  In that case
++		 use whatever GCC 4.0+ does.  */
++	      memset (seen, 0, sizeof (seen));
++	      memcpy (saveclasses, classes, sizeof (saveclasses));
+ 	      for (i = 0; i < n_bases; ++i)
+ 		{
+ 		   tree binfo = TREE_VEC_ELT (bases, i);
+@@ -1881,6 +1931,12 @@ classify_argument (mode, type, classes, 
+ 		   int offset = tree_low_cst (BINFO_OFFSET (binfo), 0) * 8;
+ 		   tree type = BINFO_TYPE (binfo);
+ 
++		   if (i < MAX_CLASSES)
++		     {
++		       if (seen[i])
++			 break;
++		       seen[i] = true;
++		     }
+ 		   num = classify_argument (TYPE_MODE (type),
+ 					    type, subclasses,
+ 					    (offset + (bit_offset % 64)) % 256);
+@@ -1893,6 +1949,32 @@ classify_argument (mode, type, classes, 
+ 			 merge_classes (subclasses[i], classes[i + pos]);
+ 		     }
+ 		}
++	      if (i < n_bases)
++		{
++		  /* Older GCC 3.[0-4].x would hang in the above loop, so
++		     don't worry about backwards compatibility and
++		     just DTRT.  */
++		  memcpy (classes, saveclasses, sizeof (saveclasses));
++		  for (basenum = 0; basenum < n_bases; ++basenum)
++		    {
++		      tree binfo = TREE_VEC_ELT (bases, basenum);
++		      int num;
++		      int offset = tree_low_cst (BINFO_OFFSET (binfo), 0) * 8;
++		      tree type = BINFO_TYPE (binfo);
++
++		      num = classify_argument (TYPE_MODE (type),
++					       type, subclasses,
++					       (offset + (bit_offset % 64)) % 256);
++		      if (!num)
++			return 0;
++		      for (i = 0; i < num; i++)
++			{
++			  int pos = (offset + (bit_offset % 64)) / 8 / 8;
++			  classes[i + pos] =
++			    merge_classes (subclasses[i], classes[i + pos]);
++			}
++		    }
++		}
+ 	    }
+ 	  for (field = TYPE_FIELDS (type); field; field = TREE_CHAIN (field))
+ 	    {
+--- gcc/testsuite/g++.dg/other/infloop-1.C 1 Jan 1970 00:00:00 -0000
++++ gcc/testsuite/g++.dg/other/infloop-1.C	13 Nov 2004 23:09:08 -0000	1.1
+@@ -0,0 +1,16 @@
++// PR 18300: This sends old compilers into an infinite loop on x86_64
++// Testcase and patch contributed by Zak Kipling <zak@transversal.com>
++
++struct base1 { };
++struct base2 { };
++struct base3 { };
++
++struct derived : base1, base2, base3 { };
++
++void foo(derived);
++
++int main()
++{
++  foo(derived());
++}
++

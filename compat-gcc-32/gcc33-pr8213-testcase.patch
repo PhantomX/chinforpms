@@ -1,0 +1,33 @@
+2002-11-04  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+	* testsuite/gcc.c-torture/execute/20021104.c: New test.
+
+--- gcc-3.3/gcc/testsuite/gcc.c-torture/execute/20021104.c.pr8213	2003-02-02 13:05:05.000000000 +0100
++++ gcc-3.3/gcc/testsuite/gcc.c-torture/execute/20021104.c	2003-02-02 13:05:05.000000000 +0100
+@@ -0,0 +1,26 @@
++/* PR target/8213
++   This testcase, distilled from GNU gmp 4.1, was miscompiled on x86-64
++   because of RTL sharing problems.  */
++
++int f(long x, long y)
++{
++  if ((x < 0) == (y < 0))
++    {
++      if (x == 0)
++        return -(y != 0);
++      if (y == 0)
++        return x != 0;
++    }
++  else
++    {
++      return x >= 0 ? 1 : -1;
++    }
++}
++
++int main(void)
++{
++  if (f(-1, 1) != -1)
++    abort();
++
++  return 0;
++}

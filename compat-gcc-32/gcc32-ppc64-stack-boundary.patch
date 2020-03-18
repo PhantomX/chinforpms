@@ -1,0 +1,30 @@
+2005-09-23  Alexandre Oliva  <aoliva@redhat.com>
+
+	* config/rs6000/sysv4.h (PREFERRED_STACK_BOUNDARY): New,
+	same as STACK_BOUNDARY as in rs6000.h.
+
+--- gcc/config/rs6000/sysv4.h.orig
++++ gcc/config/rs6000/sysv4.h
+@@ -395,6 +395,22 @@ do {									\
+ #undef	STACK_BOUNDARY
+ #define	STACK_BOUNDARY	(TARGET_ALTIVEC_ABI ? 128 : 64)
+ 
++/* The definition above is actually wrong, since it doesn't use
++   128-bit alignment on ppc64 like the ABI mandates.  It was removed
++   in newer versions of GCC.  The correct definition would be the one
++   below, from rs6000.h.  Unfortunately, changing it would increase
++   the stack alignment expectations of newly-compiled functions, that
++   might be called by functions compiled with the old compiler.  If
++   the latter didn't keep the stack sufficiently aligned.  This may
++   happen if the latter uses alloca() or dynamically-sized arrays.  We
++   compensate for the error here, getting the compiler to keep the
++   stack aligned to the correct boundary, but not assuming it is
++   sufficiently aligned.  Code that still assumes proper alignment
++   will fail and require recompilation with this patch or a newer
++   compiler, but most of the code will work without change.  */
++#define PREFERRED_STACK_BOUNDARY \
++  ((TARGET_32BIT && !TARGET_ALTIVEC_ABI) ? 64 : 128)
++
+ /* Real stack boundary as mandated by the appropriate ABI.  */
+ #define ABI_STACK_BOUNDARY ((TARGET_EABI && !TARGET_ALTIVEC_ABI) ? 64 : 128)
+ 

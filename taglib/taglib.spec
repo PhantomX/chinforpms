@@ -4,9 +4,9 @@
 #bcond_without doc
 %global apidocdir __api-doc_fedora
 
-%global commit ebd3373d6d230f45cfb616b5af29b441126c4bb1
+%global commit 54508df30bc888c4d2359576ceb0cc8f2fa8dbdf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190912
+%global date 20190920
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 Name:           taglib
 Summary:        Audio Meta-Data Library
 Version:        1.11.1
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 
 Epoch:          1
 
@@ -64,7 +64,7 @@ This is API documentation generated from the TagLib source code.
 Summary: Development files for %{name} 
 Requires: %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if ! %{with doc}
-Obsoletes: %{name}-doc
+Obsoletes: %{name}-doc < %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 %description devel
 Files needed when building software with %{name}.
@@ -140,6 +140,9 @@ make check -C %{_target_platform}
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.11.1-103.20190920git54508df
+- Bump
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.11.1-102.20190912gitebd3373
 - New snapshot
 

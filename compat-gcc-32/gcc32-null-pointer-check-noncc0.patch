@@ -1,0 +1,67 @@
+2004-02-26  Alan Modra  <amodra@bigpond.net.au>
+
+	PR rtl-optimization/14279
+	* gcse.c (delete_null_pointer_checks_1): Do not delete CC setter
+	unless HAVE_cc0.
+
+2004-12-22  Jakub Jelinek  <jakub@redhat.com>
+
+	* gcc.c-torture/execute/20041222-1.c: New test.
+
+--- gcc/gcse.c.jj	2003-03-10 17:42:09.000000000 +0100
++++ gcc/gcse.c	2004-12-22 12:03:32.272762070 +0100
+@@ -5428,8 +5428,10 @@ delete_null_pointer_checks_1 (block_reg,
+ 	}
+ 
+       delete_insn (last_insn);
++#ifdef HAVE_cc0
+       if (compare_and_branch == 2)
+         delete_insn (earliest);
++#endif
+       purge_dead_edges (BASIC_BLOCK (bb));
+ 
+       /* Don't check this block again.  (Note that BLOCK_END is
+--- gcc/testsuite/gcc.c-torture/execute/20041222-1.c.jj	2004-12-22 12:07:50.446611220 +0100
++++ gcc/testsuite/gcc.c-torture/execute/20041222-1.c	2004-12-22 11:34:45.000000000 +0100
+@@ -0,0 +1,41 @@
++extern void abort (void);
++extern void exit (int);
++
++struct S
++{
++  void *a;
++  unsigned int b;
++};
++
++void
++__attribute__((noinline))
++bar (struct S *x)
++{
++  if (x->b != 2)
++    abort ();
++}
++
++void
++__attribute__((noinline))
++foo (struct S *x)
++{
++  if (! x->a)
++    {
++      struct S *y, *z;
++      y = x;
++      if (y)
++	++y->b;
++      z = x;
++      if (z)
++	++z->b;
++      bar (x);
++    }
++}
++
++int
++main (void)
++{
++  struct S s = { 0, 0 };
++  foo (&s);
++  exit (0);
++}

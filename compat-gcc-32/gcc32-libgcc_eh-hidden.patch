@@ -1,0 +1,29 @@
+--- gcc/mklibgcc.in.jj	2006-05-22 14:03:31.000000000 -0400
++++ gcc/mklibgcc.in	2006-05-22 14:03:31.000000000 -0400
+@@ -310,10 +310,24 @@ for ml in $MULTILIBS; do
+ 
+   if [ "$SHLIB_LINK" ]; then
+ 
++    if [ "@libgcc_visibility@" = yes ]; then
++      libgcc_eh_objS=
++      echo ""
++      for o in $libgcc_eh_objs; do
++	# .oS objects will have all non-local symbol definitions .hidden
++	oS=`echo ${o} | sed s~${objext}'$~.oS~g'`
++	echo "${oS}: stmp-dirs libgcc/${dir}/stacknote.s ${o}"
++	echo '	@( $(NM_FOR_TARGET) '${SHLIB_NM_FLAGS} ${o}' | $(AWK) '\''NF == 3 { print "\t.hidden", $$3 }'\''; cat libgcc/${dir}/stacknote.s ) | $(GCC_FOR_TARGET) $(LIBGCC2_CFLAGS) '${flags}' -r -nostdinc -nostdlib -o $@ '${o}' -xassembler -'
++	libgcc_eh_objS="${libgcc_eh_objS} ${oS}"
++      done
++    else
++      libgcc_eh_objS="$libgcc_eh_objs"
++    fi
++
+     echo ""
+-    echo "${dir}/libgcc_eh.a: $libgcc_eh_objs"
++    echo "${dir}/libgcc_eh.a: $libgcc_eh_objS"
+     echo "	-rm -rf ${dir}/libgcc_eh.a"
+-    echo '	$(AR_CREATE_FOR_TARGET)' ${dir}/libgcc_eh.a $libgcc_eh_objs
++    echo '	$(AR_CREATE_FOR_TARGET)' ${dir}/libgcc_eh.a $libgcc_eh_objS
+     echo '	if $(RANLIB_TEST_FOR_TARGET) ; then' \\
+     echo '	  $(RANLIB_FOR_TARGET)' ${dir}/libgcc_eh.a ';' \\
+     echo '	else true; fi;'

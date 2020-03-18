@@ -1,6 +1,6 @@
-%global commit edb6aa7921dc4af97ff772812bdf123fed27d650
+%global commit d9e9a3632330a3a2b48fbe917cde79110fbd1fd5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191013
+%global date 20200305
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           xarchiver
 Version:        0.5.4.14
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        Desktop Environment independent archive manager
 
 Epoch:          1
@@ -116,6 +116,9 @@ rm -f _docs/{AUTHORS,COPYING,ChangeLog,NEWS,README,TODO}
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.4.14-102.20200305gitd9e9a36
+- Bump
+
 * Tue Nov 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.4.14-101.20191013gitedb6aa7
 - Snapshot
 

@@ -1,0 +1,29 @@
+2005-09-29  Alexandre Oliva  <aoliva@redhat.com>
+
+	* error.c (dump_type) <UNKNOWN_TYPE>: Print reworded message.
+
+	* g++.dg/overload/unknown1.C: New.
+
+--- gcc/cp/error.c.orig	2005-09-29 16:02:59.000000000 -0300
++++ gcc/cp/error.c	2005-09-29 16:03:13.000000000 -0300
+@@ -339,7 +339,7 @@
+   switch (TREE_CODE (t))
+     {
+     case UNKNOWN_TYPE:
+-      print_identifier (scratch_buffer, "<unknown type>");
++      print_identifier (scratch_buffer, "<unresolved overloaded function type>");
+       break;
+ 
+     case TREE_LIST:
+--- gcc/testsuite/g++.dg/overload/unknown1.C	1970-01-01 00:00:00.000000000 +0000
++++ gcc/testsuite/g++.dg/overload/unknown1.C	2005-09-29 16:03:13.000000000 -0300
+@@ -0,0 +1,9 @@
++// { dg-do compile }
++
++void foo(void);
++int foo(int);
++template <typename T> void bar(T f);
++
++void baz() {
++  bar(foo); // { dg-error "<unresolved overloaded function type>" }
++}

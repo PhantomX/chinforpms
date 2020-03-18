@@ -1,6 +1,6 @@
-%global commit 8fd6845c9e0473073d52f1d3a79b8af55f44c64c
+%global commit 6e7e7659d39bfb4e3b62c073b686f910178f1754
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200212
+%global date 20200228
 %global with_snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        10%{?gver}%{?dist}
+Release:        11%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -106,6 +106,9 @@ pushd %{_target_platform}
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.2-11.20200228git6e7e765
+- New snapshot
+
 * Wed Feb 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.2-10.20200212git8fd6845
 - Bump
 

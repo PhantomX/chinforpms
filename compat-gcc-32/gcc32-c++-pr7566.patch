@@ -1,0 +1,44 @@
+2002-08-14  Gabriel Dos Reis  <gdr@nerim.net>
+
+	Fix PR/7566
+	* c-semantics.c (genrtl_case_label): Don't (mis)use
+	warning_with_decl.
+
+2005-01-03  Jakub Jelinek  <jakub@redhat.com>
+
+	* g++.dg/parse/jumptocaselab1.C: New test.
+
+--- gcc/c-semantics.c.jj	2003-01-17 18:31:04.000000000 +0100
++++ gcc/c-semantics.c	2005-01-03 10:19:51.912155689 +0100
+@@ -673,8 +673,7 @@ genrtl_case_label (case_label)
+   if (cleanup)
+     {
+       static int explained = 0;
+-      warning_with_decl (TREE_PURPOSE (cleanup), 
+-			 "destructor needed for `%#D'");
++      warning ("destructor needed for `%#D'", TREE_PURPOSE (cleanup));
+       warning ("where case label appears here");
+       if (!explained)
+ 	{
+--- gcc/testsuite/g++.dg/parse/jumptocaselab1.C.jj	2005-01-03 10:23:45.286072690 +0100
++++ gcc/testsuite/g++.dg/parse/jumptocaselab1.C	2005-01-03 10:26:29.216516818 +0100
+@@ -0,0 +1,19 @@
++// PR c++/7566
++// { dg-do compile }
++
++struct bar { bar (); ~bar ();};
++
++void foo (int c)
++{
++  switch (c)
++    {
++    case 0:
++    case 1:
++      bar x;	// { dg-error "crosses initialization" }
++      break;
++    default:	// { dg-error "jump to case label" }
++      break;
++    }
++}
++
++// { dg-warning "destructor needed|where case label|enclose actions" "" { target *-*-* } 14 }

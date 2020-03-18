@@ -1,0 +1,28 @@
+2004-08-13  Alexandre Oliva  <aoliva@redhat.com>
+
+	* dwarf2out.c (prune_unused_types_walk): Mark the specification if
+	the declaration is marked.
+
+--- gcc/dwarf2out.c	2004-08-13 04:46:06.000000000 -0300
++++ gcc/dwarf2out.c	2004-08-13 04:47:21.904025637 -0300
+@@ -12364,6 +12364,12 @@ prune_unused_types_walk (die)
+     return;
+ 
+   switch (die->die_tag) {
++  case DW_TAG_structure_type:
++    /* If the declaration is marked, mark the specification as well.  */
++    if ((c = get_AT_ref (die, DW_AT_specification)) != NULL
++	&& c->die_mark)
++      break;
++
+   case DW_TAG_const_type:
+   case DW_TAG_packed_type:
+   case DW_TAG_pointer_type:
+@@ -12371,7 +12377,6 @@ prune_unused_types_walk (die)
+   case DW_TAG_volatile_type:
+   case DW_TAG_typedef:
+   case DW_TAG_array_type:
+-  case DW_TAG_structure_type:
+   case DW_TAG_union_type:
+   case DW_TAG_class_type:
+   case DW_TAG_friend:

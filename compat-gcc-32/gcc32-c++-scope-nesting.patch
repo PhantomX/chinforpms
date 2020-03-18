@@ -1,0 +1,113 @@
+2004-08-13  Alexandre Oliva  <aoliva@redhat.com>
+
+	Revert:
+	2003-03-17  Jason Merrill  <jason@redhat.com>
+	* decl.c (finish_function): Don't skip a block.
+
+2004-08-12  Alexandre Oliva  <aoliva@redhat.com>
+
+	2002-12-16  Jason Merrill  <jason@redhat.com>
+	* c-semantics.c (add_scope_stmt): Abort if the end SCOPE_STMT
+	doesn't match the begin SCOPE_STMT in partialness.
+
+2004-08-12  Alexandre Oliva  <aoliva@redhat.com>
+
+	2002-12-16  Jason Merrill  <jason@redhat.com>
+	* semantics.c (do_pushlevel): Call pushlevel after adding the
+	SCOPE_STMT.
+	(do_poplevel): Call poplevel before adding the SCOPE_STMT.
+	* parse.y (function_body): Go back to using compstmt.
+	* decl.c (pushdecl): Skip another level to get to the parms level.
+
+--- gcc/c-semantics.c 17 Jan 2003 17:49:35 -0000 1.40.2.2.8.2
++++ gcc/c-semantics.c 12 Aug 2004 09:16:00 -0000
+@@ -143,6 +143,8 @@ add_scope_stmt (begin_p, partial_p)
+     }
+   else
+     {
++      if (partial_p != SCOPE_PARTIAL_P (TREE_PURPOSE (top)))
++	abort ();
+       TREE_VALUE (top) = ss;
+       *stack_ptr = TREE_CHAIN (top);
+     }
+--- gcc/cp/decl.c 25 Mar 2003 20:01:38 -0000 1.866.2.36.4.15
++++ gcc/cp/decl.c 12 Aug 2004 09:16:20 -0000
+@@ -4218,6 +4218,9 @@ pushdecl (x)
+ 		     them there.  */
+ 		  struct binding_level *b = current_binding_level->level_chain;
+ 
++		  /* Skip the ctor/dtor cleanup level.  */
++		  b = b->level_chain;
++
+ 		  /* ARM $8.3 */
+ 		  if (b->parm_flag == 1)
+ 		    {
+--- gcc/cp/decl.c	2004-08-13 01:32:01.000000000 -0300
++++ gcc/cp/decl.c	2004-08-12 21:55:06.000000000 -0300
+@@ -14375,7 +14375,8 @@
+ 	     the function so we know that their lifetime always ends with a
+ 	     return; see g++.dg/opt/nrv6.C.  We could be more flexible if
+ 	     we were to do this optimization in tree-ssa.  */
+-	  && (outer = BLOCK_SUBBLOCKS (DECL_INITIAL (fndecl)),
++	  /* Skip the artificial function body block.  */
++	  && (outer = BLOCK_SUBBLOCKS (BLOCK_SUBBLOCKS (DECL_INITIAL (fndecl))),
+ 	      chain_member (r, BLOCK_VARS (outer))))
+ 	{
+ 	  
+--- gcc/cp/parse.y 17 Jan 2003 17:49:55 -0000 1.248.2.5.4.1.2.3
++++ gcc/cp/parse.y 12 Aug 2004 09:16:22 -0000
+@@ -775,15 +775,10 @@ eat_saved_input:
+ 	;
+ 
+ /* The outermost block of a function really begins before the
+-   mem-initializer-list, so we open one there and suppress the one that
+-   actually corresponds to the curly braces.  */
++   mem-initializer-list, so we open one there, too.  */
+ function_body:
+-	  .begin_function_body ctor_initializer_opt save_lineno '{'
+-		{ $<ttype>$ = begin_compound_stmt (/*has_no_scope=*/1); }
+-	  compstmtend 
++	  .begin_function_body ctor_initializer_opt compstmt
+                 {
+-		  STMT_LINENO ($<ttype>5) = $3;
+-		  finish_compound_stmt (/*has_no_scope=*/1, $<ttype>5);
+ 		  finish_function_body ($1);
+ 		}
+ 	;
+--- gcc/cp/semantics.c 25 Mar 2003 20:01:39 -0000 1.252.2.6.8.3
++++ gcc/cp/semantics.c 12 Aug 2004 09:16:23 -0000
+@@ -125,14 +125,17 @@ do_poplevel ()
+     {
+       tree scope_stmts = NULL_TREE;
+ 
+-      if (!processing_template_decl)
+-	scope_stmts = add_scope_stmt (/*begin_p=*/0, /*partial_p=*/0);
+-
+       block = poplevel (kept_level_p (), 1, 0);
+-      if (block && !processing_template_decl)
++      if (!processing_template_decl)
+ 	{
+-	  SCOPE_STMT_BLOCK (TREE_PURPOSE (scope_stmts)) = block;
+-	  SCOPE_STMT_BLOCK (TREE_VALUE (scope_stmts)) = block;
++	  /* This needs to come after the poplevel so that partial scopes
++	     are properly nested.  */
++	  scope_stmts = add_scope_stmt (/*begin_p=*/0, /*partial_p=*/0);
++	  if (block)
++	    {
++	      SCOPE_STMT_BLOCK (TREE_PURPOSE (scope_stmts)) = block;
++	      SCOPE_STMT_BLOCK (TREE_VALUE (scope_stmts)) = block;
++	    }
+ 	}
+     }
+ 
+@@ -146,9 +149,9 @@ do_pushlevel ()
+ {
+   if (stmts_are_full_exprs_p ())
+     {
+-      pushlevel (0);
+       if (!processing_template_decl)
+ 	add_scope_stmt (/*begin_p=*/1, /*partial_p=*/0);
++      pushlevel (0);
+     }
+ }
+ 

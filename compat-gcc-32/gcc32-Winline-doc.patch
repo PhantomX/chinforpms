@@ -1,0 +1,35 @@
+2005-01-03  Jakub Jelinek  <jakub@redhat.com>
+
+	* doc/invoke.texi (-Winline): Document that GCC 3.2.x only
+	uses this warning for frontends using RTL inliner.
+	* doc/extend.texi (Inline): Don't mention -Winline option.
+
+--- gcc/doc/extend.texi.jj	2003-09-16 16:57:45.000000000 +0200
++++ gcc/doc/extend.texi	2005-01-03 12:26:25.917145090 +0100
+@@ -3396,14 +3396,11 @@ inc (int *a)
+ You can also make all ``simple enough'' functions inline with the option
+ @option{-finline-functions}.
+ 
+-@opindex Winline
+ Note that certain usages in a function definition can make it unsuitable
+ for inline substitution.  Among these usages are: use of varargs, use of
+ alloca, use of variable sized data types (@pxref{Variable Length}),
+ use of computed goto (@pxref{Labels as Values}), use of nonlocal goto,
+-and nested functions (@pxref{Nested Functions}).  Using @option{-Winline}
+-will warn when a function marked @code{inline} could not be substituted,
+-and will give the reason for the failure.
++and nested functions (@pxref{Nested Functions}).
+ 
+ Note that in C and Objective-C, unlike C++, the @code{inline} keyword
+ does not affect the linkage of the function.
+--- gcc/doc/invoke.texi.jj	2004-07-01 12:34:04.000000000 +0200
++++ gcc/doc/invoke.texi	2005-01-03 12:28:05.928165120 +0100
+@@ -2732,6 +2732,8 @@ code is to provide behavior which is sel
+ @item -Winline
+ @opindex Winline
+ Warn if a function can not be inlined and it was declared as inline.
++In GCC 3.2.x, this only works for languages using the RTL inliner,
++such as Java, for C, C++ and Objective-C this option has no effect.
+ 
+ @item -Wlong-long
+ @opindex Wlong-long

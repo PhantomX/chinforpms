@@ -1,0 +1,87 @@
+#!/usr/bin/sh
+#     Name:  snxrun
+#  Purpose:  Perform appropriate startup/stop of snx executable.
+#
+#  Modified from GParted startup script
+#
+# Copyright (C) 2008, 2009, 2010, 2013, 2015 Curtis Gedak
+# Copyright (C) 2020 Phantom X
+#
+#  This file is part of snx rpm package.
+#
+#  snxrun is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  snxrun is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this script.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#
+#  Define base command for executing/stopping SNX
+#
+main(){
+  if pgrep 'snx$' 2>/dev/null 1>&2; then
+    if pkill 'snx$' 2>/dev/null 1>&2; then
+      if test "x$DISPLAY" != "x"; then
+        /usr/bin/xterm -e 'echo "The process snx is stopped."; sleep 3'
+      else
+        echo "The process snx is stopped."
+      fi
+      exit
+    fi
+  else
+    if test "x$DISPLAY" != "x"; then
+      /usr/bin/xterm -e '/usr/sbin/snx -f /etc/snx/snxrc ; sleep 5'
+    else
+      /usr/sbin/snx -f /etc/snx/snxrc
+    fi
+  fi
+}
+
+#
+#  For non-root users try to get authorisation to run SNX as root.
+#
+if test "x`id -u`" != "x0"; then
+	#
+	#  If there is no configured SU program run snx as
+	#  non-root to display the graphical error about needing root
+	#  privileges.
+	#
+	if test "xpkexec --disable-internal-agent" = "x"; then
+		echo "Root privileges are required for running snx."
+		run
+		exit 1
+	fi
+
+	ENABLE_XHOST_ROOT=yes
+	GRANTED_XHOST_ROOT=no
+	if test "x$ENABLE_XHOST_ROOT" = 'xyes' && xhost 1> /dev/null 2>&1; then
+		if ! xhost | grep -qi 'SI:localuser:root$'; then
+			xhost +SI:localuser:root
+			GRANTED_XHOST_ROOT=yes
+		fi
+	fi
+
+	#
+	# Run snx as root.
+	#
+	pkexec --disable-internal-agent '/usr/bin/snxrun'
+	status=$?
+
+	#
+	# Revoke root access to the X11 display, only if we granted it.
+	#
+	if test "x$GRANTED_XHOST_ROOT" = 'xyes'; then
+		xhost -SI:localuser:root
+	fi
+	exit $status
+fi
+
+main

@@ -1,0 +1,24 @@
+2003-02-11  Scott Snyder  <snyder@fnal.gov>
+
+	PR libstdc++/9659
+	* include/bits/fstream.tcc (seekoff): Avoid operator+
+	for pos_type.
+
+--- libstdc++-v3/include/bits/fstream.tcc	4 Feb 2003 22:42:32 -0000	1.47
++++ libstdc++-v3/include/bits/fstream.tcc	13 Feb 2003 21:39:02 -0000	1.48
+@@ -450,9 +450,12 @@ namespace std
+  	      pos_type __tmp =
+  		_M_file.seekoff(__off, ios_base::cur, __mode);
+  	      if (__tmp >= 0)
+- 		// Seek successful.
+- 		__ret = __tmp +
+- 		  std::max(this->_M_out_cur, this->_M_in_cur) - _M_filepos;
++		{
++		  // Seek successful.
++		  __ret = __tmp;
++		  __ret +=
++		    std::max(this->_M_out_cur, this->_M_in_cur) - _M_filepos;
++		}
+ 	    }
+ 	}
+       _M_last_overflowed = false;	

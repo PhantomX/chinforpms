@@ -1,0 +1,133 @@
+2006-08-09  Alexandre Oliva  <aoliva@redhat.com>
+
+	* function.c (do_warn_unused_parameter): Do not issue warnings
+	for declarations in system headers.
+
+2006-02-22  Alexandre Oliva  <aoliva@redhat.com>
+
+	Backport and tweak:
+	2004-05-06  Jan Hubicka  <jh@suse.cz>
+	PR c/15004
+	* function.c (do_warn_unused_parameter): Break out form ...
+	(expand_function_end): ... here.
+	* function.h (do_warn_unused_parameter): Declare.
+
+2006-02-22  Alexandre Oliva  <aoliva@redhat.com>
+
+	* decl2.c (finish_file): Issue warnings for unused parameters
+	of functions not expanded.
+
+	* g++.dg/Wunused-parm-1.C: New.
+
+--- gcc/cp/decl2.c.orig	2003-08-12 11:12:25.000000000 -0300
++++ gcc/cp/decl2.c	2006-08-09 16:59:09.000000000 -0300
+@@ -3551,6 +3551,17 @@ finish_file ()
+     } 
+   while (reconsider);
+ 
++  if (warn_unused_parameter)
++    for (i = 0; i < deferred_fns_used; ++i)
++      {
++	tree decl = VARRAY_TREE (deferred_fns, i);
++
++	/* Warn about unused parameters in functions we refrained from
++	   synthesizing.  */
++	if (!TREE_ASM_WRITTEN (decl))
++	  do_warn_unused_parameter (decl);
++      }
++
+   /* We give C linkage to static constructors and destructors.  */
+   push_lang_context (lang_name_c);
+ 
+--- gcc/function.c.orig	2003-10-31 08:42:15.000000000 -0200
++++ gcc/function.c	2006-08-10 00:28:06.000000000 -0300
+@@ -6808,6 +6808,27 @@ use_return_register ()
+   diddle_return_value (do_use_return_reg, NULL);
+ }
+ 
++/* Warn about unused parms if extra warnings were specified.  */
++/* Either ``-W -Wunused'' or ``-Wunused-parameter'' enables this
++   warning.  WARN_UNUSED_PARAMETER is negative when set by
++   -Wunused.  */
++void
++do_warn_unused_parameter (tree fn)
++{
++  if (warn_unused_parameter > 0
++      || (warn_unused_parameter < 0 && extra_warnings))
++    {
++      tree decl;
++
++      for (decl = DECL_ARGUMENTS (fn);
++	   decl; decl = TREE_CHAIN (decl))
++	if (! TREE_USED (decl) && TREE_CODE (decl) == PARM_DECL
++	    && DECL_NAME (decl) && ! DECL_ARTIFICIAL (decl)
++	    && ! DECL_IN_SYSTEM_HEADER (decl))
++	  warning_with_decl (decl, "unused parameter `%s'");
++    }
++}
++
+ /* Generate RTL for the end of the current function.
+    FILENAME and LINE are the current position in the source file.
+ 
+@@ -6907,21 +6928,8 @@ expand_function_end (filename, line, end
+ 	  }
+     }
+ 
+-  /* Warn about unused parms if extra warnings were specified.  */
+-  /* Either ``-W -Wunused'' or ``-Wunused-parameter'' enables this
+-     warning.  WARN_UNUSED_PARAMETER is negative when set by
+-     -Wunused.  */
+-  if (warn_unused_parameter > 0
+-      || (warn_unused_parameter < 0 && extra_warnings))
+-    {
+-      tree decl;
+-
+-      for (decl = DECL_ARGUMENTS (current_function_decl);
+-	   decl; decl = TREE_CHAIN (decl))
+-	if (! TREE_USED (decl) && TREE_CODE (decl) == PARM_DECL
+-	    && DECL_NAME (decl) && ! DECL_ARTIFICIAL (decl))
+-	  warning_with_decl (decl, "unused parameter `%s'");
+-    }
++  if (warn_unused_parameter)
++    do_warn_unused_parameter (current_function_decl);
+ 
+   /* Delete handlers for nonlocal gotos if nothing uses them.  */
+   if (nonlocal_goto_handler_slots != 0
+--- gcc/function.h.orig	2003-06-11 09:56:49.000000000 -0300
++++ gcc/function.h	2006-08-09 16:59:09.000000000 -0300
+@@ -614,3 +614,5 @@ extern void init_virtual_regs		PARAMS ((
+ 
+ /* Called once, at initialization, to initialize function.c.  */
+ extern void init_function_once          PARAMS ((void));
++
++extern void do_warn_unused_parameter    PARAMS ((tree));
+--- gcc/testsuite/g++.dg/warn/Wunused-parm-1.C	1970-01-01 00:00:00.000000000 +0000
++++ gcc/testsuite/g++.dg/warn/Wunused-parm-1.C	2006-08-09 16:59:09.000000000 -0300
+@@ -0,0 +1,27 @@
++// Test whether we issue warnings for unused parameters, even for
++// inline functions that are not emitted (without optimization, we
++// always emit them).
++// { dg-do compile }
++// { dg-options "-Wunused-parameter -O" }
++
++static inline int foo(int var) { // { dg-warning "unused parameter" }
++  return 0;
++}
++
++static inline int foo2(int var) { // { dg-warning "unused parameter" }
++  return 0;
++}
++
++static inline int bar(int var) {
++  return var;
++}
++
++static inline int bar2(int var) {
++  return var;
++}
++
++int main() {
++  foo (1);
++  bar (2);
++  return 0;
++}

@@ -1,0 +1,22 @@
+2002-07-29  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+	PR target/7434
+	* testsuite/gcc.dg/20020729-2.c: New test.
+
+--- gcc-3.2/gcc/testsuite/gcc.dg/20020729-2.c.x86_64-split-long-moves	2002-08-13 11:19:27.000000000 +0200
++++ gcc-3.2/gcc/testsuite/gcc.dg/20020729-2.c	2002-08-13 11:19:08.000000000 +0200
+@@ -0,0 +1,14 @@
++/* PR target/7434
++   This testcase ICE'd gcc on x86-64, because of confusion of modes in
++   64-bit splitting.  */
++/* { dg-do compile } */
++
++int main (void)
++{
++  static const int align_g[] = { 1, 2, 4, 8, 16 };
++  char * buf;
++  int i = 0;
++  volatile long double val = 0;
++  val = *((long double *)(buf + align_g[i]));
++  return 0;
++}

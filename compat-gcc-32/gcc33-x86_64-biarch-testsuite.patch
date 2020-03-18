@@ -1,0 +1,81 @@
+2003-01-24  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+	* lib/multilib.exp: New.
+	* gcc.c-torture/execute/ieee/ieee.exp: Add -ffloat-store for
+	x86-64 if [ismultilib "-m32"].
+	* gcc.c-torture/execute/loop-2e.x: Let the testcase XFAIL for
+	x86-64 in -m32 mode.
+	
+--- gcc-3.3/gcc/testsuite/gcc.c-torture/execute/ieee/ieee.exp.x86_64-biarch-testsuite	2001-10-19 19:45:51.000000000 +0200
++++ gcc-3.3/gcc/testsuite/gcc.c-torture/execute/ieee/ieee.exp	2003-02-02 13:09:22.000000000 +0100
+@@ -33,11 +33,17 @@ if $tracelevel then {
+ 
+ set additional_flags "";
+ 
++# load multilib testers
++load_lib multilib.exp
++
+ # We must use -ffloat-store/-mieee to ensure that excess precision on some
+ # machines does not cause problems
+ if [istarget "i\[34567\]86-*-*"] then {
+   lappend additional_flags "-ffloat-store"
+ }
++if { [istarget "x86_64-*-*"] && [ismultilib "-m32"] } then {
++  lappend additional_flags "-ffloat-store"
++}
+ if [istarget "m68k-*-*"] then {
+   lappend additional_flags "-ffloat-store"
+ }
+--- gcc-3.3/gcc/testsuite/gcc.c-torture/execute/loop-2e.x.x86_64-biarch-testsuite	2002-07-17 19:55:23.000000000 +0200
++++ gcc-3.3/gcc/testsuite/gcc.c-torture/execute/loop-2e.x	2003-02-02 13:09:22.000000000 +0100
+@@ -1,17 +1,21 @@
+ # This doesn't work on m68k-motorola-sysv
+ # It also doesn't work on m88k-motorola-sysv3
+ 
++# load multilib testers
++load_lib multilib.exp
++
+ global target_triplet
+ if { [istarget "m68k-motorola-sysv"] || [istarget "m88k-motorola-sysv3"] } {
+       set torture_compile_xfail "$target_triplet"
+ }
+ 
+-if { [istarget "i?86-*"] } {
++if { [istarget "i?86-*"]
++     || [istarget "x86_64-*"] && [ismultilib "-m32"] } {
+     set torture_eval_before_execute {
+ 	global compiler_conditional_xfail_data
+ 	set compiler_conditional_xfail_data {
+ 	    "Loop optimiser bug" \
+-		    "i?86-*" \
++		    { "i?86-*" "x86_64-*" } \
+ 		    { "-Os" } \
+ 		    { "" }
+ 	}
+--- gcc-3.3/gcc/testsuite/lib/multilib.exp.x86_64-biarch-testsuite	2003-02-02 13:09:41.000000000 +0100
++++ gcc-3.3/gcc/testsuite/lib/multilib.exp	2003-02-02 13:09:41.000000000 +0100
+@@ -0,0 +1,24 @@
++# Look for a specific switch in the multilib options and return 1 if
++# it is found. If no argument is provided, the string to look for
++# defaults to "-m32".
++
++proc ismultilib { args } {
++  if [string match "" $args] then {
++    set option "-m32"
++  } else {
++    set option [lindex $args 0]
++  }
++
++  if [board_info [target_info name] exists multilib_flags] then {
++    set tmp_flags " [board_info [target_info name] multilib_flags]"
++    
++    foreach x $tmp_flags {
++      if [string match $option $x] {
++        return 1
++      }
++    }
++  }
++
++  return 0
++}
++

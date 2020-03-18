@@ -1,5 +1,5 @@
 Name:           pysdl2
-Version:        0.9.6
+Version:        0.9.7
 Release:        1%{?dist}
 Summary:        Python wrapper around the SDL2 library
 
@@ -47,11 +47,14 @@ restrictions, nor does it rely on C code, but uses ctypes instead.
 
 %files -n python3-sdl2
 %license COPYING.txt
-%doc AUTHORS.txt README.rst
+%doc AUTHORS.txt README.md
 %{python3_sitelib}/sdl2
 %{python3_sitelib}/*-*.egg-info
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.9.7-1
+- 0.9.7
+
 * Mon Apr 16 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.6-1
 - 0.9.6
 
