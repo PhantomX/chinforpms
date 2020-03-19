@@ -17,7 +17,7 @@ BuildArch:      noarch
 BuildRequires:  desktop-file-utils
 BuildRequires:  unzip
 BuildRequires:  ImageMagick
-Requires:       java
+Requires:       jre-1.8.0
 Requires:       hicolor-icon-theme
 Requires:       xdg-utils
 

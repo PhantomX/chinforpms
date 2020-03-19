@@ -2,9 +2,12 @@
 %global perms_cdrecord %caps(cap_sys_resource,cap_dac_override,cap_sys_admin,cap_sys_nice,cap_net_bind_service,cap_ipc_lock,cap_sys_rawio+ep)
 %global perms_readcd %caps(cap_dac_override,cap_sys_admin,cap_net_bind_service,cap_sys_rawio+ep)
 
+# Build can fail if more than one job
+%global _smp_build_ncpus 1
+
 Name:           cdrtools
 Version:        3.02~a09
-Release:        1%{?dist}
+Release:        2%{?dist}
 Epoch:          11
 Summary:        CD/DVD/BluRay command line recording software
 
@@ -85,7 +88,7 @@ for i in \
 done
 
 %build
-make %{_smp_mflags} GMAKE_NOWARN=true LINKMODE="dynamic" RUNPATH= \
+%make_build GMAKE_NOWARN=true LINKMODE="dynamic" RUNPATH= \
     CPPOPTX="%{optflags}" COPTX="%{optflags} -DTRY_EXT2_FS" \
     LDOPTX="%{build_ldflags}"
 
@@ -269,6 +272,9 @@ fi
 
 
 %changelog
+* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 11:3.02~a09-2
+- Fix build
+
 * Fri Nov 30 2018 Phantom X <megaphantomx at bol dot com dot br> - 11:3.02~a09-1
 - chinforpms with altenatives support
 

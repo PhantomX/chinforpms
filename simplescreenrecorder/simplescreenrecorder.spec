@@ -8,7 +8,7 @@
 %define shortname ssr
 Name:           simplescreenrecorder
 Version:        0.3.11
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Simple Screen Recorder is a screen recorder for Linux
 
 License:        GPLv3
@@ -105,6 +105,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.appdata.
 
 
 %changelog
+* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.3.11-9
+- Rebuilt
+
 * Wed Oct 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.3.11-8
 - Fixes for multilib, do not bump
 

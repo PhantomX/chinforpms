@@ -1,0 +1,24 @@
+From 215d74b39b40418c894bdec64f36c1ad7386976f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 19 Mar 2020 08:08:10 -0300
+Subject: [PATCH] Add missing include
+
+---
+ Telegram/ThirdParty/emoji_suggestions/emoji_suggestions.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Telegram/ThirdParty/emoji_suggestions/emoji_suggestions.h b/Telegram/ThirdParty/emoji_suggestions/emoji_suggestions.h
+index 20ebaa4..500aa7e 100644
+--- a/Telegram/ThirdParty/emoji_suggestions/emoji_suggestions.h
++++ b/Telegram/ThirdParty/emoji_suggestions/emoji_suggestions.h
+@@ -22,6 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
+ 
+ #include <vector>
+ #include <string.h>
++#include <stdint.h>
+ 
+ namespace Ui {
+ namespace Emoji {
+-- 
+2.25.1
+

@@ -1,6 +1,6 @@
-%global commit 8d44d9387b057200d2ab39359895bf3a5a81b492
+%global commit cfd355bf4dfce8561962be330985276c0c6d8b0c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200301
+%global date 20200315
 
 %undefine _hardened_build
 
@@ -13,7 +13,7 @@
 
 Name:           vvvvvv
 Version:        2.2
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -30,6 +30,7 @@ Patch11:        0001-System-data-file.patch
 
 
 BuildRequires:  cmake
+BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
@@ -135,6 +136,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-7.20200315gitcfd355b
+- New snapshot
+
 * Sun Mar 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-6.20200301git8d44d93
 - Bump
 

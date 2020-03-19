@@ -1,5 +1,5 @@
 aacgain
-alac_decoder
+-alac_decoder
 amdgpu-pro-vulkan-driver
 bh-fonts
 binkplayer
@@ -7,13 +7,13 @@ boca-freeworld
 bsnes
 cdrtools
 citra
-cowsrevenge
+-cowsrevenge
 desmume
 discord
-dropboxd
+-dropboxd
 FAudio-freeworld
 flycast
-freac-superfast-codecs-freeworld
+-freac-superfast-codecs-freeworld
 gens-gs
 gflash-player
 hakuneko-desktop

@@ -1,6 +1,6 @@
-%global commit 69ae598b7eed4dccb2cacdd5081e4b961194839c
+%global commit c43b5114e2667b19bfbd87b2d1a7a0c098e00c4b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200131
+%global date 20200229
 %global with_snapshot 1
 
 %global sanitize 0
@@ -10,8 +10,8 @@
 %endif
 
 Name:           pcsx2
-Version:        1.5.0
-Release:        108%{?gver}%{?dist}
+Version:        1.6.0
+Release:        100%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -105,7 +105,8 @@ this emulator anyway.
 %endif
 
 # To remove executable bits from man, doc and icon files
-chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/readme-Docs.txt pcsx2/Docs/PCSX2_FAQ.doc pcsx2/Docs/PCSX2_Readme.doc bin/docs/PCSX2.1 linux_various/PCSX2.xpm
+chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
+  pcsx2/Docs/Configuration_Guide/Configuration_Guide.md bin/docs/PCSX2.1 linux_various/PCSX2.xpm
 
 # Remove DOS encoding errors in txt files
 sed -i 's/\r//' pcsx2/Docs/GPL.txt
@@ -203,7 +204,7 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %files -f pcsx2_Iconized.lang -f pcsx2_Main.lang
-%doc bin/docs/PCSX2_Readme.pdf bin/docs/PCSX2_FAQ.pdf
+%doc bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
 %{_bindir}/PCSX2
 %{_bindir}/PCSX2.bin
 %{_libdir}/pcsx2/
@@ -214,6 +215,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.6.0-100.20200229gitc43b511
+- New snapshot
+
 * Sat Feb 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-108.20200131git69ae598
 - New snapshot
 

@@ -39,10 +39,10 @@ Source100:      README.roms
 Source101:      %{romlink}/alienar/alienar.zip
 Source102:      %{romlink}/carpolo/carpolo.zip
 Source103:      %{romlink}/crash/crash.zip
-Source104:      %{romlink}/circus/circus.zip
+Source104:      %{romlink}/circus/circus.zip#/circus-rom.zip
 Source105:      %{romlink}/fax/fax.zip
 Source106:      %{romlink}/fireone/fireone.zip
-Source107:      %{romlink}/gridlee/gridlee.zip
+Source107:      %{romlink}/gridlee/gridlee.zip#/gridlee-rom.zip
 Source108:      %{romlink}/hardhat/hardhat.zip
 Source109:      %{romlink}/looping/looping.zip
 Source110:      %{romlink}/ripcord/ripcord.zip
@@ -52,7 +52,7 @@ Source113:      %{romlink}/sidetrac/sidetrac.zip
 Source114:      %{romlink}/spectar/spectar.zip
 Source115:      %{romlink}/starfire/starfire.zip
 Source116:      %{romlink}/supertnk/supertnk.zip
-Source117:      %{romlink}/targ/targ.zip
+Source117:      %{romlink}/targ/targ.zip#/targ-rom.zip
 Source118:      %{romlink}/teetert/teetert.zip
 Source119:      %{romlink}/topgunnr/topgunnr.zip
 Source120:      %{romlink}/victory/victory.zip
@@ -195,6 +195,7 @@ mkdir -p %{buildroot}%{_datadir}/mame
 mkdir -p %{buildroot}%{_datadir}/mame/roms
 install -pm0644 %{romfiles} \
   %{buildroot}%{_datadir}/mame/roms/
+rename -- '-rom' ''  %{buildroot}%{_datadir}/mame/roms/*.zip
 %endif
 
 # Install DAT files

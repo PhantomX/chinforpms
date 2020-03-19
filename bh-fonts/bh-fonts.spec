@@ -1,142 +1,117 @@
-%global fontname bh
-%global priority 42
-%global fontconf %{priority}-%{fontname}
-
-%global archivename font-bh-ttf-%{version}
-
-%global common_desc \
-X.Org Bigelow & Holmes TrueType fonts.
-
 Name:           bh-fonts
 Version:        1.0.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        X.Org BH TTF fonts
 
 License:        BH-Luxi
 URL:            http://www.x.org
-Source0:        http://xorg.freedesktop.org/releases/individual/font/%{archivename}.tar.bz2
-Source1:        %{name}-mono.conf
-Source2:        %{name}-sans.conf
-Source3:        %{name}-serif.conf
-Source4:        %{fontname}.metainfo.xml
-Source5:        %{fontname}-mono.metainfo.xml
-Source6:        %{fontname}-sans.metainfo.xml
-Source7:        %{fontname}-serif.metainfo.xml
 
 BuildArch:      noarch
-BuildRequires:  gcc
-BuildRequires:  fontpackages-devel
-BuildRequires:  xorg-x11-font-utils
 
-%description
-%common_desc
+%global priority 42
 
-%package common
-Summary:  Common files for the BH font set
-Requires: fontpackages-filesystem
+%global foundry           bh
+%global fontlicenses      COPYING
+%global fontdocs          ChangeLog README
+%global fontdocsex        %{fontlicenses}
 
-Obsoletes: %{name} < %{version}
-Obsoletes: %{fontname}-ttf < %{version}
+%global archivename font-%{foundry}-ttf-%{version}
 
-%description common
-%common_desc
+%global common_description %{expand:
+X.Org Bigelow & Holmes TrueType fonts.}
 
-This package consists of files used by other BH packages.
 
-%package -n %{fontname}-sans-fonts
-Summary:  BH variable-width sans-serif font faces
-Requires: %{?epoch:%{epoch}:}%{name}-common = %{version}-%{release}
-
-%description -n %{fontname}-sans-fonts
-%common_desc
+%global fontfamily1       Luxi Sans
+%global fontsummary1      BH variable-width sans-serif font faces
+%global fontpkgheader1    %{expand:
+Obsoletes: bh-fonts-common < %{version}-%{release}
+Obsoletes: bh-sans-fonts < %{version}-%{release}
+}
+%global fonts1            luxis*.ttf
+%global fontconfs1        %{S:11}
+%global fontappstreams1   %{S:31}
+%global fontdescription1  %{expand:
+%{common_description}
 
 This package consists of the BH Luxi sans-serif variable-width font faces.
+}
 
-%_font_pkg -n sans -f *-%{fontname}-sans.conf luxis*.ttf
-%{_metainfodir}/%{fontname}-sans.metainfo.xml
+%global fontfamily2       Luxi Serif
+%global fontsummary2      BH variable-width serif font faces
+%global fontpkgheader2    %{expand:
+Obsoletes: bh-fonts-common < %{version}-%{release}
+Obsoletes: bh-serif-fonts < %{version}-%{release}
+}
+%global fonts2            luxir*.ttf
+%global fontconfs2        %{S:12}
+%global fontappstreams2   %{S:32}
+%global fontdescription2  %{expand:
+%{common_description}
 
-%package -n %{fontname}-serif-fonts
-Summary:  BH variable-width serif font faces
-Requires: %{?epoch:%{epoch}:}%{name}-common = %{version}-%{release}
+This package consists of the BH Luxi serif variable-width font faces.
+}
 
-%description -n %{fontname}-serif-fonts
-%common_desc
-
-This package consists of the BH serif variable-width font faces.
-
-%_font_pkg -n serif -f *-%{fontname}-serif.conf luxir*.ttf
-%{_metainfodir}/%{fontname}-serif.metainfo.xml
-
-
-%package -n %{fontname}-mono-fonts
-Summary:  Monospace font faces
-Requires: %{?epoch:%{epoch}:}%{name}-common = %{version}-%{release}
-
-%description -n %{fontname}-mono-fonts
-%common_desc
+%global fontfamily3       Luxi Mono
+%global fontsummary3      BH monospace font faces
+%global fontpkgheader3    %{expand:
+Obsoletes: bh-fonts-common < %{version}-%{release}
+Obsoletes: bh-mono-fonts < %{version}-%{release}
+}
+%global fonts3            luxim*.ttf
+%global fontconfs3        %{S:13}
+%global fontappstreams3   %{S:33}
+%global fontdescription3  %{expand:
+%{common_description}
 
 This package consists of the BH sans-serif monospace font faces.
+}
 
-%_font_pkg -n mono -f *-%{fontname}-mono.conf luxim*.ttf
-%{_metainfodir}/%{fontname}-mono.metainfo.xml
+Source0:        http://xorg.freedesktop.org/releases/individual/font/%{archivename}.tar.bz2
+Source11:       %{priority}-%{fontpkgname1}.conf
+Source12:       %{priority}-%{fontpkgname2}.conf
+Source13:       %{priority}-%{fontpkgname3}.conf
+Source31:       %{fontpkgname1}.metainfo.xml
+Source32:       %{fontpkgname2}.metainfo.xml
+Source33:       %{fontpkgname3}.metainfo.xml
 
+%description
+%wordwrap -v common_description
+
+%fontpkg -a
+
+%fontmetapkg
+
+%package   doc
+Summary:   Optional documentation files of %{name}
+BuildArch: noarch
+%description doc
+This package provides optional documentation files shipped with
+%{name}.
 
 %prep
 %autosetup -n %{archivename}
 
+
 %build
-%configure \
-  --with-fontdir=%{_fontdir} \
-  --with-fc-confdir=%{_datadir}/fontconfig
-%make_build
+%fontbuild -a
 
 %install
-%make_install
+%fontinstall -a
 
-install -m 0755 -d %{buildroot}%{_fontdir}
-install -m 0644 -p *.ttf %{buildroot}%{_fontdir}
+%check
+%fontcheck -a
 
-install -m 0755 -d %{buildroot}%{_fontconfig_templatedir} \
-  %{buildroot}%{_fontconfig_confdir}
+%fontfiles -a
 
-rm -fv  %{buildroot}%{_fontdir}/fonts.*
-rm -rfv %{buildroot}%{_datadir}/fontconfig/conf.d
-rm -fv %{buildroot}%{_fontconfig_templatedir}/*.conf
-
-install -m 0644 -p %{SOURCE1} \
-  %{buildroot}%{_fontconfig_templatedir}/%{fontconf}-mono.conf
-install -m 0644 -p %{SOURCE2} \
-  %{buildroot}%{_fontconfig_templatedir}/%{fontconf}-sans.conf
-install -m 0644 -p %{SOURCE3} \
-  %{buildroot}%{_fontconfig_templatedir}/%{fontconf}-serif.conf
-
-# Add AppStream metadata
-install -Dm 0644 -p %{SOURCE4} \
-  %{buildroot}%{_metainfodir}/%{fontname}.metainfo.xml
-install -Dm 0644 -p %{SOURCE5} \
-  %{buildroot}%{_metainfodir}/%{fontname}-mono.metainfo.xml
-install -Dm 0644 -p %{SOURCE6} \
-  %{buildroot}%{_metainfodir}/%{fontname}-sans.metainfo.xml
-install -Dm 0644 -p %{SOURCE7} \
-  %{buildroot}%{_metainfodir}/%{fontname}-serif.metainfo.xml
-
-for fconf in \
-  %{fontconf}-mono.conf \
-  %{fontconf}-sans.conf \
-  %{fontconf}-serif.conf
-do
-  ln -s %{_fontconfig_templatedir}/${fconf} \
-    %{buildroot}%{_fontconfig_confdir}/${fconf}
-done
-
-
-%files common
-%defattr(0644,root,root,0755)
-%license COPYING
-%doc ChangeLog README
-%{_metainfodir}/%{fontname}.metainfo.xml
+%files doc
+%defattr(644, root, root, 0755)
+%license %{fontlicense}
+%doc %{fontdocs}
 
 %changelog
+* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-5
+- Convert to new fonts template
+
 * Tue Oct 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-4
 - BR: gcc
 

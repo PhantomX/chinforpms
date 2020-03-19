@@ -28,7 +28,9 @@
 #
 main(){
   if pgrep 'snx$' 2>/dev/null 1>&2; then
-    if pkill 'snx$' 2>/dev/null 1>&2; then
+    /usr/sbin/snx -d 2>/dev/null 1>&2
+    sleep 1
+    if ! pgrep 'snx$' 2>/dev/null 1>&2; then
       if test "x$DISPLAY" != "x"; then
         /usr/bin/xterm -e 'echo "The process snx is stopped."; sleep 3'
       else

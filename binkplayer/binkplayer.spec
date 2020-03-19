@@ -9,7 +9,7 @@
 
 Name:           binkplayer
 Version:        2.7i
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Bink Video Player
 
 License:        Free for no-commercial use, no modification permitted
@@ -23,6 +23,7 @@ ExclusiveArch:  %{ix86} x86_64
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
+BuildRequires:  p7zip
 Requires:       hicolor-icon-theme
 
 
@@ -107,5 +108,8 @@ EOF
 
 
 %changelog
+* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.7i-2
+- BR: p7zip
+
 * Tue Sep  4 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.7d-1
 - Initial spec

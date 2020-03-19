@@ -13,7 +13,7 @@
 
 # Do no blame SpiderOak devs if setting 1 in these
 # Set to 1 to use system libs
-%global with_curl 1
+%global with_curl 0
 %global with_dbusmenuqt 0
 %global with_ffi 1
 %global with_python 0
@@ -22,7 +22,7 @@
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -290,6 +290,9 @@ done
 
 
 %changelog
+* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-6
+- with_curl 0
+
 * Tue Oct 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-5
 - with_dbusmenuqt 0
 

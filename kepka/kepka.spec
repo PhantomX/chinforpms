@@ -19,7 +19,7 @@
 Name:           kepka
 # If rc, use "~" instead "-", as ~rc1
 Version:        2.0.0~rc2
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        Unofficial Telegram desktop messaging app
 
 License:        GPLv3+
@@ -38,6 +38,8 @@ Patch1:         %{name}-system-fonts.patch
 Patch2:         0001-Do-not-show-unread-counter-on-muted-chats.patch
 Patch3:         0001-Always-display-scrollbars.patch
 Patch4:         0001-Fix-API-ENV.patch
+Patch5:         0001-Add-missing-include.patch
+Patch6:         0001-Remove-deprecated-compiler-flag.patch
 
 ExclusiveArch:  i686 x86_64
 
@@ -156,6 +158,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0~rc2-7.20190807gitf1fb375
+- Fix missing include file
+
 * Sun Dec 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.0.0~rc2-6.20190807gitf1fb375
 - Rebuild (qt5)
 

@@ -71,6 +71,7 @@ pushd arch/Linux/
 ln -s Fedora.cfg Fedora_release_30.cfg
 ln -s Fedora.cfg Fedora_release_31.cfg
 ln -s Fedora.cfg Fedora_release_32.cfg
+ln -s Fedora.cfg Fedora_release_33.cfg
 popd
 #ensure system minizip and zlib are used
 rm -rf minizip

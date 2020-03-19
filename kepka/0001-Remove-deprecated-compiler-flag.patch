@@ -1,0 +1,28 @@
+From 6c6e14ff44be644cdd3ca4d7783dbcb6b28e7093 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 19 Mar 2020 08:19:28 -0300
+Subject: [PATCH] Remove deprecated compiler flag
+
+---
+ Telegram/CMakeLists.txt | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/Telegram/CMakeLists.txt b/Telegram/CMakeLists.txt
+index 3afb27d..e49be76 100644
+--- a/Telegram/CMakeLists.txt
++++ b/Telegram/CMakeLists.txt
+@@ -619,11 +619,6 @@ if (APPLE)
+     endforeach(langpack)
+ endif()
+ 
+-# Disable a single annoying warning about c++17
+-if(NOT WIN32)
+-    set_flag_if_supported(Kepka WNCE -Wno-c++1z-extensions)
+-endif()
+-
+ target_compile_definitions(Kepka PRIVATE
+     TDESKTOP_DISABLE_CRASH_REPORTS
+     ${FFMPEG_DEFINITIONS})
+-- 
+2.25.1
+
