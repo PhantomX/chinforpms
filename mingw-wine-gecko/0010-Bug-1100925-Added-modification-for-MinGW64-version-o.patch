@@ -1,0 +1,37 @@
+From ded5e9669d5906e8e474201e70eca9973fa8b9ba Mon Sep 17 00:00:00 2001
+From: Nathan Hakkakzadeh <nhakkakzadeh@mozilla.com>
+Date: Wed, 6 Jul 2016 14:16:50 -0700
+Subject: [PATCH 10/12] Bug 1100925 - Added modification for MinGW64 version of
+ Python so it will have system modules. r=gps
+
+Added a quick for MinGW64 then adds the default location of system modules to
+sys.path.
+
+MozReview-Commit-ID: IubUhpB3rOf
+
+--HG--
+extra : rebase_source : 95f2245fb254473fb9977b37b60f087c05a7eedc
+
+(cherry picked from commit 9775d4ad15c428897c33191fe68886b7d2476a1d)
+Signed-off-by: Jacek Caban <jacek@codeweavers.com>
+---
+ python/virtualenv/site.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/python/virtualenv/site.py b/python/virtualenv/site.py
+index 197f15bf1be1..4e426cdb663d 100644
+--- a/python/virtualenv/site.py
++++ b/python/virtualenv/site.py
+@@ -579,7 +579,8 @@ def virtual_install_main_packages():
+             plat_path = os.path.join(path, 'plat-%s' % sys.platform)
+             if os.path.exists(plat_path):
+                 paths.append(plat_path)
+-    elif sys.platform == 'win32':
++    # MOZ: The MSYS2 and MinGW versions of Python have their main packages in the UNIX directory this checks specifically for the native win32 python
++    elif sys.platform == 'win32' and os.sep == '\\':
+         paths = [os.path.join(sys.real_prefix, 'Lib'), os.path.join(sys.real_prefix, 'DLLs')]
+     else:
+         paths = [os.path.join(sys.real_prefix, 'lib', 'python'+sys.version[:3])]
+-- 
+2.24.1
+

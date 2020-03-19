@@ -1,0 +1,35 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:24 +0000
+Subject: [PATCH] virtiofsd: prevent ".." escape in lo_do_lookup()
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Sergio Lopez <slp@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 854684bc0b3d63eb90b3abdfe471c2e4271ef176)
+---
+ tools/virtiofsd/passthrough_ll.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index e375406160..79d5966eea 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -624,12 +624,17 @@ static int lo_do_lookup(fuse_req_t req, fuse_ino_t parent, const char *name,
+     int res;
+     int saverr;
+     struct lo_data *lo = lo_data(req);
+-    struct lo_inode *inode;
++    struct lo_inode *inode, *dir = lo_inode(req, parent);
+ 
+     memset(e, 0, sizeof(*e));
+     e->attr_timeout = lo->timeout;
+     e->entry_timeout = lo->timeout;
+ 
++    /* Do not allow escaping root directory */
++    if (dir == &lo->root && strcmp(name, "..") == 0) {
++        name = ".";
++    }
++
+     newfd = openat(lo_fd(req, parent), name, O_PATH | O_NOFOLLOW);
+     if (newfd == -1) {
+         goto out_err;

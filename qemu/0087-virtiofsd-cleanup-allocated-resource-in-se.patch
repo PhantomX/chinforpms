@@ -1,0 +1,66 @@
+From: Liu Bo <bo.liu@linux.alibaba.com>
+Date: Mon, 27 Jan 2020 19:01:56 +0000
+Subject: [PATCH] virtiofsd: cleanup allocated resource in se
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This cleans up unfreed resources in se on quiting, including
+se->virtio_dev, se->vu_socket_path, se->vu_socketfd.
+
+Signed-off-by: Liu Bo <bo.liu@linux.alibaba.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 61cfc44982e566c33b9d5df17858e4d5ae373873)
+---
+ tools/virtiofsd/fuse_lowlevel.c | 7 +++++++
+ tools/virtiofsd/fuse_virtio.c   | 7 +++++++
+ tools/virtiofsd/fuse_virtio.h   | 2 +-
+ 3 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index 65f91dabae..440508a6ec 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -2532,6 +2532,13 @@ void fuse_session_destroy(struct fuse_session *se)
+     if (se->fd != -1) {
+         close(se->fd);
+     }
++
++    if (se->vu_socket_path) {
++        virtio_session_close(se);
++        free(se->vu_socket_path);
++        se->vu_socket_path = NULL;
++    }
++
+     free(se);
+ }
+ 
+diff --git a/tools/virtiofsd/fuse_virtio.c b/tools/virtiofsd/fuse_virtio.c
+index 7a8774a3ee..e7bd772805 100644
+--- a/tools/virtiofsd/fuse_virtio.c
++++ b/tools/virtiofsd/fuse_virtio.c
+@@ -833,3 +833,10 @@ int virtio_session_mount(struct fuse_session *se)
+ 
+     return 0;
+ }
++
++void virtio_session_close(struct fuse_session *se)
++{
++    close(se->vu_socketfd);
++    free(se->virtio_dev);
++    se->virtio_dev = NULL;
++}
+diff --git a/tools/virtiofsd/fuse_virtio.h b/tools/virtiofsd/fuse_virtio.h
+index cc676b9193..111684032c 100644
+--- a/tools/virtiofsd/fuse_virtio.h
++++ b/tools/virtiofsd/fuse_virtio.h
+@@ -19,7 +19,7 @@
+ struct fuse_session;
+ 
+ int virtio_session_mount(struct fuse_session *se);
+-
++void virtio_session_close(struct fuse_session *se);
+ int virtio_loop(struct fuse_session *se);
+ 
+ 

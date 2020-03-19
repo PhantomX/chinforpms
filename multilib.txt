@@ -16,18 +16,18 @@ libmirage
 libogg
 libvorbis
 libstrangle
-linux-steam-integration
+-linux-steam-integration
 mangohud
-mingw-crt
-mingw-headers
-mingw-winpthreads
+-mingw-crt
+-mingw-headers
+-mingw-winpthreads
 qt5ct
 sdlcl
 taglib
-webp-pixbuf-loader
+-webp-pixbuf-loader
 wine
-wine-d9vk - no mingw
+-wine-d9vk - no mingw
 wine-dxvk - no mingw
-wine-freeworld
+-wine-freeworld
 wine-nine
 vkd3d

@@ -1,0 +1,37 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:40 +0000
+Subject: [PATCH] virtiofsd: Handle reinit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Allow init->destroy->init  for mount->umount->mount
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit c806d6435fe95fd54b379920aca2f4e3ea1f3258)
+---
+ tools/virtiofsd/fuse_lowlevel.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index a7a19685b5..7d742b5a72 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -2028,6 +2028,7 @@ static void do_init(fuse_req_t req, fuse_ino_t nodeid,
+     }
+ 
+     se->got_init = 1;
++    se->got_destroy = 0;
+     if (se->op.init) {
+         se->op.init(se->userdata, &se->conn);
+     }
+@@ -2130,6 +2131,7 @@ static void do_destroy(fuse_req_t req, fuse_ino_t nodeid,
+     (void)iter;
+ 
+     se->got_destroy = 1;
++    se->got_init = 0;
+     if (se->op.destroy) {
+         se->op.destroy(se->userdata);
+     }

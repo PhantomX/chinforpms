@@ -1,5 +1,5 @@
 Name:           protontricks
-Version:        1.4
+Version:        1.4.1
 Release:        1%{?dist}
 Summary:        A simple wrapper that does winetricks things for Proton enabled games
 
@@ -7,7 +7,6 @@ License:        GPLv3
 URL:            https://github.com/Matoking/protontricks
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
-Patch0:         %{url}/commit/ca4ce8f4a70192332791d33f98b70c9442ed91df.patch#/%{name}-gh-ca4ce8f.patch
 Patch10:        0001-Disable-setuptools_scm-version-check.patch
 
 BuildArch:      noarch
@@ -49,6 +48,9 @@ echo "version = '%{version}'" > src/protontricks/_version.py
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.4.1-2
+- 1.4.1
+
 * Wed Feb 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1
 - 1.4
 - Remove git BR

@@ -1,0 +1,451 @@
+From: Eryu Guan <eguan@linux.alibaba.com>
+Date: Mon, 27 Jan 2020 19:01:37 +0000
+Subject: [PATCH] virtiofsd: print log only when priority is high enough
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Introduce "-o log_level=" command line option to specify current log
+level (priority), valid values are "debug info warn err", e.g.
+
+    ./virtiofsd -o log_level=debug ...
+
+So only log priority higher than "debug" will be printed to
+stderr/syslog. And the default level is info.
+
+The "-o debug"/"-d" options are kept, and imply debug log level.
+
+Signed-off-by: Eryu Guan <eguan@linux.alibaba.com>
+dgilbert: Reworked for libfuse's log_func
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+with fix by:
+Signed-off-by: Xiao Yang <yangx.jy@cn.fujitsu.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit d240314a1a18a1d914af1b5763fe8c9a572e6409)
+---
+ tools/virtiofsd/fuse_lowlevel.c  |  75 ++++++++------------
+ tools/virtiofsd/fuse_lowlevel.h  |   1 +
+ tools/virtiofsd/helper.c         |   8 ++-
+ tools/virtiofsd/passthrough_ll.c | 118 +++++++++++++------------------
+ 4 files changed, 87 insertions(+), 115 deletions(-)
+
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index 6ceb33d913..a7a19685b5 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -158,19 +158,17 @@ static int fuse_send_msg(struct fuse_session *se, struct fuse_chan *ch,
+     struct fuse_out_header *out = iov[0].iov_base;
+ 
+     out->len = iov_length(iov, count);
+-    if (se->debug) {
+-        if (out->unique == 0) {
+-            fuse_log(FUSE_LOG_DEBUG, "NOTIFY: code=%d length=%u\n", out->error,
+-                     out->len);
+-        } else if (out->error) {
+-            fuse_log(FUSE_LOG_DEBUG,
+-                     "   unique: %llu, error: %i (%s), outsize: %i\n",
+-                     (unsigned long long)out->unique, out->error,
+-                     strerror(-out->error), out->len);
+-        } else {
+-            fuse_log(FUSE_LOG_DEBUG, "   unique: %llu, success, outsize: %i\n",
+-                     (unsigned long long)out->unique, out->len);
+-        }
++    if (out->unique == 0) {
++        fuse_log(FUSE_LOG_DEBUG, "NOTIFY: code=%d length=%u\n", out->error,
++                 out->len);
++    } else if (out->error) {
++        fuse_log(FUSE_LOG_DEBUG,
++                 "   unique: %llu, error: %i (%s), outsize: %i\n",
++                 (unsigned long long)out->unique, out->error,
++                 strerror(-out->error), out->len);
++    } else {
++        fuse_log(FUSE_LOG_DEBUG, "   unique: %llu, success, outsize: %i\n",
++                 (unsigned long long)out->unique, out->len);
+     }
+ 
+     if (fuse_lowlevel_is_virtio(se)) {
+@@ -1662,10 +1660,8 @@ static void do_interrupt(fuse_req_t req, fuse_ino_t nodeid,
+         return;
+     }
+ 
+-    if (se->debug) {
+-        fuse_log(FUSE_LOG_DEBUG, "INTERRUPT: %llu\n",
+-                 (unsigned long long)arg->unique);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "INTERRUPT: %llu\n",
++             (unsigned long long)arg->unique);
+ 
+     req->u.i.unique = arg->unique;
+ 
+@@ -1901,13 +1897,10 @@ static void do_init(fuse_req_t req, fuse_ino_t nodeid,
+         }
+     }
+ 
+-    if (se->debug) {
+-        fuse_log(FUSE_LOG_DEBUG, "INIT: %u.%u\n", arg->major, arg->minor);
+-        if (arg->major == 7 && arg->minor >= 6) {
+-            fuse_log(FUSE_LOG_DEBUG, "flags=0x%08x\n", arg->flags);
+-            fuse_log(FUSE_LOG_DEBUG, "max_readahead=0x%08x\n",
+-                     arg->max_readahead);
+-        }
++    fuse_log(FUSE_LOG_DEBUG, "INIT: %u.%u\n", arg->major, arg->minor);
++    if (arg->major == 7 && arg->minor >= 6) {
++        fuse_log(FUSE_LOG_DEBUG, "flags=0x%08x\n", arg->flags);
++        fuse_log(FUSE_LOG_DEBUG, "max_readahead=0x%08x\n", arg->max_readahead);
+     }
+     se->conn.proto_major = arg->major;
+     se->conn.proto_minor = arg->minor;
+@@ -2116,19 +2109,14 @@ static void do_init(fuse_req_t req, fuse_ino_t nodeid,
+     outarg.congestion_threshold = se->conn.congestion_threshold;
+     outarg.time_gran = se->conn.time_gran;
+ 
+-    if (se->debug) {
+-        fuse_log(FUSE_LOG_DEBUG, "   INIT: %u.%u\n", outarg.major,
+-                 outarg.minor);
+-        fuse_log(FUSE_LOG_DEBUG, "   flags=0x%08x\n", outarg.flags);
+-        fuse_log(FUSE_LOG_DEBUG, "   max_readahead=0x%08x\n",
+-                 outarg.max_readahead);
+-        fuse_log(FUSE_LOG_DEBUG, "   max_write=0x%08x\n", outarg.max_write);
+-        fuse_log(FUSE_LOG_DEBUG, "   max_background=%i\n",
+-                 outarg.max_background);
+-        fuse_log(FUSE_LOG_DEBUG, "   congestion_threshold=%i\n",
+-                 outarg.congestion_threshold);
+-        fuse_log(FUSE_LOG_DEBUG, "   time_gran=%u\n", outarg.time_gran);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "   INIT: %u.%u\n", outarg.major, outarg.minor);
++    fuse_log(FUSE_LOG_DEBUG, "   flags=0x%08x\n", outarg.flags);
++    fuse_log(FUSE_LOG_DEBUG, "   max_readahead=0x%08x\n", outarg.max_readahead);
++    fuse_log(FUSE_LOG_DEBUG, "   max_write=0x%08x\n", outarg.max_write);
++    fuse_log(FUSE_LOG_DEBUG, "   max_background=%i\n", outarg.max_background);
++    fuse_log(FUSE_LOG_DEBUG, "   congestion_threshold=%i\n",
++             outarg.congestion_threshold);
++    fuse_log(FUSE_LOG_DEBUG, "   time_gran=%u\n", outarg.time_gran);
+ 
+     send_reply_ok(req, &outarg, outargsize);
+ }
+@@ -2407,14 +2395,11 @@ void fuse_session_process_buf_int(struct fuse_session *se,
+     in = fuse_mbuf_iter_advance(&iter, sizeof(*in));
+     assert(in); /* caller guarantees the input buffer is large enough */
+ 
+-    if (se->debug) {
+-        fuse_log(FUSE_LOG_DEBUG,
+-                 "unique: %llu, opcode: %s (%i), nodeid: %llu, insize: %zu, "
+-                 "pid: %u\n",
+-                 (unsigned long long)in->unique,
+-                 opname((enum fuse_opcode)in->opcode), in->opcode,
+-                 (unsigned long long)in->nodeid, buf->size, in->pid);
+-    }
++    fuse_log(
++        FUSE_LOG_DEBUG,
++        "unique: %llu, opcode: %s (%i), nodeid: %llu, insize: %zu, pid: %u\n",
++        (unsigned long long)in->unique, opname((enum fuse_opcode)in->opcode),
++        in->opcode, (unsigned long long)in->nodeid, buf->size, in->pid);
+ 
+     req = fuse_ll_alloc_req(se);
+     if (req == NULL) {
+diff --git a/tools/virtiofsd/fuse_lowlevel.h b/tools/virtiofsd/fuse_lowlevel.h
+index f2750bc189..138041e5f1 100644
+--- a/tools/virtiofsd/fuse_lowlevel.h
++++ b/tools/virtiofsd/fuse_lowlevel.h
+@@ -1796,6 +1796,7 @@ struct fuse_cmdline_opts {
+     int show_help;
+     int print_capabilities;
+     int syslog;
++    int log_level;
+     unsigned int max_idle_threads;
+ };
+ 
+diff --git a/tools/virtiofsd/helper.c b/tools/virtiofsd/helper.c
+index 9692ef9f1f..6d50a46a7e 100644
+--- a/tools/virtiofsd/helper.c
++++ b/tools/virtiofsd/helper.c
+@@ -34,7 +34,6 @@
+         t, offsetof(struct fuse_cmdline_opts, p), v \
+     }
+ 
+-
+ static const struct fuse_opt fuse_helper_opts[] = {
+     FUSE_HELPER_OPT("-h", show_help),
+     FUSE_HELPER_OPT("--help", show_help),
+@@ -55,6 +54,10 @@ static const struct fuse_opt fuse_helper_opts[] = {
+     FUSE_OPT_KEY("subtype=", FUSE_OPT_KEY_KEEP),
+     FUSE_HELPER_OPT("max_idle_threads=%u", max_idle_threads),
+     FUSE_HELPER_OPT("--syslog", syslog),
++    FUSE_HELPER_OPT_VALUE("log_level=debug", log_level, FUSE_LOG_DEBUG),
++    FUSE_HELPER_OPT_VALUE("log_level=info", log_level, FUSE_LOG_INFO),
++    FUSE_HELPER_OPT_VALUE("log_level=warn", log_level, FUSE_LOG_WARNING),
++    FUSE_HELPER_OPT_VALUE("log_level=err", log_level, FUSE_LOG_ERR),
+     FUSE_OPT_END
+ };
+ 
+@@ -142,6 +145,9 @@ void fuse_cmdline_help(void)
+            "    --syslog                   log to syslog (default stderr)\n"
+            "    -f                         foreground operation\n"
+            "    --daemonize                run in background\n"
++           "    -o log_level=<level>       log level, default to \"info\"\n"
++           "                               level could be one of \"debug, "
++           "info, warn, err\"\n"
+            "    -o max_idle_threads        the maximum number of idle worker "
+            "threads\n"
+            "                               allowed (default: 10)\n"
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 0372aca143..ff6910fd73 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -37,6 +37,7 @@
+ 
+ #include "qemu/osdep.h"
+ #include "fuse_virtio.h"
++#include "fuse_log.h"
+ #include "fuse_lowlevel.h"
+ #include <assert.h>
+ #include <cap-ng.h>
+@@ -140,6 +141,7 @@ static const struct fuse_opt lo_opts[] = {
+     FUSE_OPT_END
+ };
+ static bool use_syslog = false;
++static int current_log_level;
+ 
+ static void unref_inode(struct lo_data *lo, struct lo_inode *inode, uint64_t n);
+ 
+@@ -458,11 +460,6 @@ static int lo_fd(fuse_req_t req, fuse_ino_t ino)
+     return inode ? inode->fd : -1;
+ }
+ 
+-static bool lo_debug(fuse_req_t req)
+-{
+-    return lo_data(req)->debug != 0;
+-}
+-
+ static void lo_init(void *userdata, struct fuse_conn_info *conn)
+ {
+     struct lo_data *lo = (struct lo_data *)userdata;
+@@ -472,15 +469,11 @@ static void lo_init(void *userdata, struct fuse_conn_info *conn)
+     }
+ 
+     if (lo->writeback && conn->capable & FUSE_CAP_WRITEBACK_CACHE) {
+-        if (lo->debug) {
+-            fuse_log(FUSE_LOG_DEBUG, "lo_init: activating writeback\n");
+-        }
++        fuse_log(FUSE_LOG_DEBUG, "lo_init: activating writeback\n");
+         conn->want |= FUSE_CAP_WRITEBACK_CACHE;
+     }
+     if (lo->flock && conn->capable & FUSE_CAP_FLOCK_LOCKS) {
+-        if (lo->debug) {
+-            fuse_log(FUSE_LOG_DEBUG, "lo_init: activating flock locks\n");
+-        }
++        fuse_log(FUSE_LOG_DEBUG, "lo_init: activating flock locks\n");
+         conn->want |= FUSE_CAP_FLOCK_LOCKS;
+     }
+ }
+@@ -823,10 +816,8 @@ static int lo_do_lookup(fuse_req_t req, fuse_ino_t parent, const char *name,
+     }
+     e->ino = inode->fuse_ino;
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG, "  %lli/%s -> %lli\n",
+-                 (unsigned long long)parent, name, (unsigned long long)e->ino);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "  %lli/%s -> %lli\n", (unsigned long long)parent,
++             name, (unsigned long long)e->ino);
+ 
+     return 0;
+ 
+@@ -843,10 +834,8 @@ static void lo_lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
+     struct fuse_entry_param e;
+     int err;
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG, "lo_lookup(parent=%" PRIu64 ", name=%s)\n",
+-                 parent, name);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "lo_lookup(parent=%" PRIu64 ", name=%s)\n", parent,
++             name);
+ 
+     /*
+      * Don't use is_safe_path_component(), allow "." and ".." for NFS export
+@@ -971,10 +960,8 @@ static void lo_mknod_symlink(fuse_req_t req, fuse_ino_t parent,
+         goto out;
+     }
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG, "  %lli/%s -> %lli\n",
+-                 (unsigned long long)parent, name, (unsigned long long)e.ino);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "  %lli/%s -> %lli\n", (unsigned long long)parent,
++             name, (unsigned long long)e.ino);
+ 
+     fuse_reply_entry(req, &e);
+     return;
+@@ -1074,10 +1061,8 @@ static void lo_link(fuse_req_t req, fuse_ino_t ino, fuse_ino_t parent,
+     pthread_mutex_unlock(&lo->mutex);
+     e.ino = inode->fuse_ino;
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG, "  %lli/%s -> %lli\n",
+-                 (unsigned long long)parent, name, (unsigned long long)e.ino);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "  %lli/%s -> %lli\n", (unsigned long long)parent,
++             name, (unsigned long long)e.ino);
+ 
+     fuse_reply_entry(req, &e);
+     return;
+@@ -1171,11 +1156,9 @@ static void lo_forget_one(fuse_req_t req, fuse_ino_t ino, uint64_t nlookup)
+         return;
+     }
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG, "  forget %lli %lli -%lli\n",
+-                 (unsigned long long)ino, (unsigned long long)inode->refcount,
+-                 (unsigned long long)nlookup);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "  forget %lli %lli -%lli\n",
++             (unsigned long long)ino, (unsigned long long)inode->refcount,
++             (unsigned long long)nlookup);
+ 
+     unref_inode(lo, inode, nlookup);
+ }
+@@ -1445,10 +1428,8 @@ static void lo_create(fuse_req_t req, fuse_ino_t parent, const char *name,
+     int err;
+     struct lo_cred old = {};
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG, "lo_create(parent=%" PRIu64 ", name=%s)\n",
+-                 parent, name);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "lo_create(parent=%" PRIu64 ", name=%s)\n", parent,
++             name);
+ 
+     if (!is_safe_path_component(name)) {
+         fuse_reply_err(req, EINVAL);
+@@ -1525,10 +1506,8 @@ static void lo_open(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi)
+     char buf[64];
+     struct lo_data *lo = lo_data(req);
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG, "lo_open(ino=%" PRIu64 ", flags=%d)\n", ino,
+-                 fi->flags);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "lo_open(ino=%" PRIu64 ", flags=%d)\n", ino,
++             fi->flags);
+ 
+     /*
+      * With writeback cache, kernel may send read requests even
+@@ -1644,12 +1623,10 @@ static void lo_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t offset,
+ {
+     struct fuse_bufvec buf = FUSE_BUFVEC_INIT(size);
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG,
+-                 "lo_read(ino=%" PRIu64 ", size=%zd, "
+-                 "off=%lu)\n",
+-                 ino, size, (unsigned long)offset);
+-    }
++    fuse_log(FUSE_LOG_DEBUG,
++             "lo_read(ino=%" PRIu64 ", size=%zd, "
++             "off=%lu)\n",
++             ino, size, (unsigned long)offset);
+ 
+     buf.buf[0].flags = FUSE_BUF_IS_FD | FUSE_BUF_FD_SEEK;
+     buf.buf[0].fd = lo_fi_fd(req, fi);
+@@ -1671,11 +1648,9 @@ static void lo_write_buf(fuse_req_t req, fuse_ino_t ino,
+     out_buf.buf[0].fd = lo_fi_fd(req, fi);
+     out_buf.buf[0].pos = off;
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG,
+-                 "lo_write(ino=%" PRIu64 ", size=%zd, off=%lu)\n", ino,
+-                 out_buf.buf[0].size, (unsigned long)off);
+-    }
++    fuse_log(FUSE_LOG_DEBUG,
++             "lo_write_buf(ino=%" PRIu64 ", size=%zd, off=%lu)\n", ino,
++             out_buf.buf[0].size, (unsigned long)off);
+ 
+     /*
+      * If kill_priv is set, drop CAP_FSETID which should lead to kernel
+@@ -1774,11 +1749,8 @@ static void lo_getxattr(fuse_req_t req, fuse_ino_t ino, const char *name,
+         goto out;
+     }
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG,
+-                 "lo_getxattr(ino=%" PRIu64 ", name=%s size=%zd)\n", ino, name,
+-                 size);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "lo_getxattr(ino=%" PRIu64 ", name=%s size=%zd)\n",
++             ino, name, size);
+ 
+     if (inode->is_symlink) {
+         /* Sorry, no race free way to getxattr on symlink. */
+@@ -1852,10 +1824,8 @@ static void lo_listxattr(fuse_req_t req, fuse_ino_t ino, size_t size)
+         goto out;
+     }
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG, "lo_listxattr(ino=%" PRIu64 ", size=%zd)\n",
+-                 ino, size);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "lo_listxattr(ino=%" PRIu64 ", size=%zd)\n", ino,
++             size);
+ 
+     if (inode->is_symlink) {
+         /* Sorry, no race free way to listxattr on symlink. */
+@@ -1929,11 +1899,8 @@ static void lo_setxattr(fuse_req_t req, fuse_ino_t ino, const char *name,
+         goto out;
+     }
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG,
+-                 "lo_setxattr(ino=%" PRIu64 ", name=%s value=%s size=%zd)\n",
+-                 ino, name, value, size);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "lo_setxattr(ino=%" PRIu64
++             ", name=%s value=%s size=%zd)\n", ino, name, value, size);
+ 
+     if (inode->is_symlink) {
+         /* Sorry, no race free way to setxattr on symlink. */
+@@ -1978,10 +1945,8 @@ static void lo_removexattr(fuse_req_t req, fuse_ino_t ino, const char *name)
+         goto out;
+     }
+ 
+-    if (lo_debug(req)) {
+-        fuse_log(FUSE_LOG_DEBUG, "lo_removexattr(ino=%" PRIu64 ", name=%s)\n",
+-                 ino, name);
+-    }
++    fuse_log(FUSE_LOG_DEBUG, "lo_removexattr(ino=%" PRIu64 ", name=%s)\n", ino,
++             name);
+ 
+     if (inode->is_symlink) {
+         /* Sorry, no race free way to setxattr on symlink. */
+@@ -2303,6 +2268,10 @@ static void setup_nofile_rlimit(void)
+ 
+ static void log_func(enum fuse_log_level level, const char *fmt, va_list ap)
+ {
++    if (current_log_level < level) {
++        return;
++    }
++
+     if (use_syslog) {
+         int priority = LOG_ERR;
+         switch (level) {
+@@ -2401,8 +2370,19 @@ int main(int argc, char *argv[])
+         return 1;
+     }
+ 
++    /*
++     * log_level is 0 if not configured via cmd options (0 is LOG_EMERG,
++     * and we don't use this log level).
++     */
++    if (opts.log_level != 0) {
++        current_log_level = opts.log_level;
++    }
+     lo.debug = opts.debug;
++    if (lo.debug) {
++        current_log_level = FUSE_LOG_DEBUG;
++    }
+     lo.root.refcount = 2;
++
+     if (lo.source) {
+         struct stat stat;
+         int res;

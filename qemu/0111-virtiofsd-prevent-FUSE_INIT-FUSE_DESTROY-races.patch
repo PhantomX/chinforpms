@@ -1,0 +1,84 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:02:20 +0000
+Subject: [PATCH] virtiofsd: prevent FUSE_INIT/FUSE_DESTROY races
+
+When running with multiple threads it can be tricky to handle
+FUSE_INIT/FUSE_DESTROY in parallel with other request types or in
+parallel with themselves.  Serialize FUSE_INIT and FUSE_DESTROY so that
+malicious clients cannot trigger race conditions.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit cdc497c6925be745bc895355bd4674a17a4b2a8b)
+---
+ tools/virtiofsd/fuse_i.h        |  1 +
+ tools/virtiofsd/fuse_lowlevel.c | 18 ++++++++++++++++++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/tools/virtiofsd/fuse_i.h b/tools/virtiofsd/fuse_i.h
+index a20854f1c4..1447d86866 100644
+--- a/tools/virtiofsd/fuse_i.h
++++ b/tools/virtiofsd/fuse_i.h
+@@ -61,6 +61,7 @@ struct fuse_session {
+     struct fuse_req list;
+     struct fuse_req interrupts;
+     pthread_mutex_t lock;
++    pthread_rwlock_t init_rwlock;
+     int got_destroy;
+     int broken_splice_nonblock;
+     uint64_t notify_ctr;
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index dab6a31e08..79a4031266 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -2428,6 +2428,19 @@ void fuse_session_process_buf_int(struct fuse_session *se,
+     req->ctx.pid = in->pid;
+     req->ch = ch;
+ 
++    /*
++     * INIT and DESTROY requests are serialized, all other request types
++     * run in parallel.  This prevents races between FUSE_INIT and ordinary
++     * requests, FUSE_INIT and FUSE_INIT, FUSE_INIT and FUSE_DESTROY, and
++     * FUSE_DESTROY and FUSE_DESTROY.
++     */
++    if (in->opcode == FUSE_INIT || in->opcode == CUSE_INIT ||
++        in->opcode == FUSE_DESTROY) {
++        pthread_rwlock_wrlock(&se->init_rwlock);
++    } else {
++        pthread_rwlock_rdlock(&se->init_rwlock);
++    }
++
+     err = EIO;
+     if (!se->got_init) {
+         enum fuse_opcode expected;
+@@ -2485,10 +2498,13 @@ void fuse_session_process_buf_int(struct fuse_session *se,
+     } else {
+         fuse_ll_ops[in->opcode].func(req, in->nodeid, &iter);
+     }
++
++    pthread_rwlock_unlock(&se->init_rwlock);
+     return;
+ 
+ reply_err:
+     fuse_reply_err(req, err);
++    pthread_rwlock_unlock(&se->init_rwlock);
+ }
+ 
+ #define LL_OPTION(n, o, v)                     \
+@@ -2531,6 +2547,7 @@ void fuse_session_destroy(struct fuse_session *se)
+             se->op.destroy(se->userdata);
+         }
+     }
++    pthread_rwlock_destroy(&se->init_rwlock);
+     pthread_mutex_destroy(&se->lock);
+     free(se->cuse_data);
+     if (se->fd != -1) {
+@@ -2610,6 +2627,7 @@ struct fuse_session *fuse_session_new(struct fuse_args *args,
+     list_init_req(&se->list);
+     list_init_req(&se->interrupts);
+     fuse_mutex_init(&se->lock);
++    pthread_rwlock_init(&se->init_rwlock, NULL);
+ 
+     memcpy(&se->op, op, op_size);
+     se->owner = getuid();

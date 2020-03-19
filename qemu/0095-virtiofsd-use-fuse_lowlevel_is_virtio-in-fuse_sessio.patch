@@ -1,0 +1,40 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:02:04 +0000
+Subject: [PATCH] virtiofsd: use fuse_lowlevel_is_virtio() in
+ fuse_session_destroy()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+vu_socket_path is NULL when --fd=FDNUM was used.  Use
+fuse_lowlevel_is_virtio() instead.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 620e9d8d9cee6df7fe71168dea950dba0cc21a4a)
+---
+ tools/virtiofsd/fuse_lowlevel.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index 70568d22a4..dab6a31e08 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -2537,12 +2537,13 @@ void fuse_session_destroy(struct fuse_session *se)
+         close(se->fd);
+     }
+ 
+-    if (se->vu_socket_path) {
++    if (fuse_lowlevel_is_virtio(se)) {
+         virtio_session_close(se);
+-        free(se->vu_socket_path);
+-        se->vu_socket_path = NULL;
+     }
+ 
++    free(se->vu_socket_path);
++    se->vu_socket_path = NULL;
++
+     free(se);
+ }
+ 

@@ -1,0 +1,118 @@
+From: Paolo Bonzini <pbonzini@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:38 +0000
+Subject: [PATCH] build: rename CONFIG_LIBCAP to CONFIG_LIBCAP_NG
+
+Since we are actually testing for the newer capng library, rename the
+symbol to match.
+
+Reviewed-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+(cherry picked from commit a358bca24026a377e0804e137a4499e4e041918d)
+---
+ configure             |  2 +-
+ qemu-bridge-helper.c  |  6 +++---
+ scsi/qemu-pr-helper.c | 12 ++++++------
+ 3 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/configure b/configure
+index 6099be1d84..afe9393f04 100755
+--- a/configure
++++ b/configure
+@@ -6759,7 +6759,7 @@ if test "$l2tpv3" = "yes" ; then
+   echo "CONFIG_L2TPV3=y" >> $config_host_mak
+ fi
+ if test "$cap_ng" = "yes" ; then
+-  echo "CONFIG_LIBCAP=y" >> $config_host_mak
++  echo "CONFIG_LIBCAP_NG=y" >> $config_host_mak
+ fi
+ echo "CONFIG_AUDIO_DRIVERS=$audio_drv_list" >> $config_host_mak
+ for drv in $audio_drv_list; do
+diff --git a/qemu-bridge-helper.c b/qemu-bridge-helper.c
+index 3d50ec094c..88b26747fc 100644
+--- a/qemu-bridge-helper.c
++++ b/qemu-bridge-helper.c
+@@ -43,7 +43,7 @@
+ 
+ #include "net/tap-linux.h"
+ 
+-#ifdef CONFIG_LIBCAP
++#ifdef CONFIG_LIBCAP_NG
+ #include <cap-ng.h>
+ #endif
+ 
+@@ -207,7 +207,7 @@ static int send_fd(int c, int fd)
+     return sendmsg(c, &msg, 0);
+ }
+ 
+-#ifdef CONFIG_LIBCAP
++#ifdef CONFIG_LIBCAP_NG
+ static int drop_privileges(void)
+ {
+     /* clear all capabilities */
+@@ -246,7 +246,7 @@ int main(int argc, char **argv)
+     int access_allowed, access_denied;
+     int ret = EXIT_SUCCESS;
+ 
+-#ifdef CONFIG_LIBCAP
++#ifdef CONFIG_LIBCAP_NG
+     /* if we're run from an suid binary, immediately drop privileges preserving
+      * cap_net_admin */
+     if (geteuid() == 0 && getuid() != geteuid()) {
+diff --git a/scsi/qemu-pr-helper.c b/scsi/qemu-pr-helper.c
+index debb18f4aa..0659ceef09 100644
+--- a/scsi/qemu-pr-helper.c
++++ b/scsi/qemu-pr-helper.c
+@@ -24,7 +24,7 @@
+ #include <linux/dm-ioctl.h>
+ #include <scsi/sg.h>
+ 
+-#ifdef CONFIG_LIBCAP
++#ifdef CONFIG_LIBCAP_NG
+ #include <cap-ng.h>
+ #endif
+ #include <pwd.h>
+@@ -70,7 +70,7 @@ static int num_active_sockets = 1;
+ static int noisy;
+ static int verbose;
+ 
+-#ifdef CONFIG_LIBCAP
++#ifdef CONFIG_LIBCAP_NG
+ static int uid = -1;
+ static int gid = -1;
+ #endif
+@@ -97,7 +97,7 @@ static void usage(const char *name)
+ "                            (default '%s')\n"
+ "  -T, --trace [[enable=]<pattern>][,events=<file>][,file=<file>]\n"
+ "                            specify tracing options\n"
+-#ifdef CONFIG_LIBCAP
++#ifdef CONFIG_LIBCAP_NG
+ "  -u, --user=USER           user to drop privileges to\n"
+ "  -g, --group=GROUP         group to drop privileges to\n"
+ #endif
+@@ -827,7 +827,7 @@ static void close_server_socket(void)
+     num_active_sockets--;
+ }
+ 
+-#ifdef CONFIG_LIBCAP
++#ifdef CONFIG_LIBCAP_NG
+ static int drop_privileges(void)
+ {
+     /* clear all capabilities */
+@@ -920,7 +920,7 @@ int main(int argc, char **argv)
+             pidfile = g_strdup(optarg);
+             pidfile_specified = true;
+             break;
+-#ifdef CONFIG_LIBCAP
++#ifdef CONFIG_LIBCAP_NG
+         case 'u': {
+             unsigned long res;
+             struct passwd *userinfo = getpwnam(optarg);
+@@ -1056,7 +1056,7 @@ int main(int argc, char **argv)
+         exit(EXIT_FAILURE);
+     }
+ 
+-#ifdef CONFIG_LIBCAP
++#ifdef CONFIG_LIBCAP_NG
+     if (drop_privileges() < 0) {
+         error_report("Failed to drop privileges: %s", strerror(errno));
+         exit(EXIT_FAILURE);

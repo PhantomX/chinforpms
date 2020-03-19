@@ -1,8 +1,9 @@
 #undefine _hardened_build
+%global _legacy_common_support 1
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -120,6 +121,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.9-102
+- gcc 10 fix
+
 * Sun Apr 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.9-101
 - Fedora 30 minizip devel mess
 

@@ -1,0 +1,81 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:01 +0000
+Subject: [PATCH] virtiofsd: Poll kick_fd for queue
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+In the queue thread poll the kick_fd we're passed.
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 5dcd1f56141378226d33dc3df68ec57913e0aa04)
+---
+ tools/virtiofsd/fuse_virtio.c | 40 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 39 insertions(+), 1 deletion(-)
+
+diff --git a/tools/virtiofsd/fuse_virtio.c b/tools/virtiofsd/fuse_virtio.c
+index 2a94bb3cca..05e7258712 100644
+--- a/tools/virtiofsd/fuse_virtio.c
++++ b/tools/virtiofsd/fuse_virtio.c
+@@ -24,6 +24,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <sys/eventfd.h>
+ #include <sys/socket.h>
+ #include <sys/types.h>
+ #include <sys/un.h>
+@@ -100,13 +101,50 @@ static void fv_panic(VuDev *dev, const char *err)
+     exit(EXIT_FAILURE);
+ }
+ 
++/* Thread function for individual queues, created when a queue is 'started' */
+ static void *fv_queue_thread(void *opaque)
+ {
+     struct fv_QueueInfo *qi = opaque;
+     fuse_log(FUSE_LOG_INFO, "%s: Start for queue %d kick_fd %d\n", __func__,
+              qi->qidx, qi->kick_fd);
+     while (1) {
+-        /* TODO */
++        struct pollfd pf[1];
++        pf[0].fd = qi->kick_fd;
++        pf[0].events = POLLIN;
++        pf[0].revents = 0;
++
++        fuse_log(FUSE_LOG_DEBUG, "%s: Waiting for Queue %d event\n", __func__,
++                 qi->qidx);
++        int poll_res = ppoll(pf, 1, NULL, NULL);
++
++        if (poll_res == -1) {
++            if (errno == EINTR) {
++                fuse_log(FUSE_LOG_INFO, "%s: ppoll interrupted, going around\n",
++                         __func__);
++                continue;
++            }
++            fuse_log(FUSE_LOG_ERR, "fv_queue_thread ppoll: %m\n");
++            break;
++        }
++        assert(poll_res == 1);
++        if (pf[0].revents & (POLLERR | POLLHUP | POLLNVAL)) {
++            fuse_log(FUSE_LOG_ERR, "%s: Unexpected poll revents %x Queue %d\n",
++                     __func__, pf[0].revents, qi->qidx);
++            break;
++        }
++        assert(pf[0].revents & POLLIN);
++        fuse_log(FUSE_LOG_DEBUG, "%s: Got queue event on Queue %d\n", __func__,
++                 qi->qidx);
++
++        eventfd_t evalue;
++        if (eventfd_read(qi->kick_fd, &evalue)) {
++            fuse_log(FUSE_LOG_ERR, "Eventfd_read for queue: %m\n");
++            break;
++        }
++        if (qi->virtio_dev->se->debug) {
++            fprintf(stderr, "%s: Queue %d gave evalue: %zx\n", __func__,
++                    qi->qidx, (size_t)evalue);
++        }
+     }
+ 
+     return NULL;

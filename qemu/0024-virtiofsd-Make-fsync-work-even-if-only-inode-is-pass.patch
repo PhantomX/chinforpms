@@ -1,0 +1,79 @@
+From: Vivek Goyal <vgoyal@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:53 +0000
+Subject: [PATCH] virtiofsd: Make fsync work even if only inode is passed in
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+If caller has not sent file handle in request, then using inode, retrieve
+the fd opened using O_PATH and use that to open file again and issue
+fsync. This will be needed when dax_flush() calls fsync. At that time
+we only have inode information (and not file).
+
+Signed-off-by: Vivek Goyal <vgoyal@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 1b209805f8159c3f4d89ddb9390a5f64887cebff)
+---
+ tools/virtiofsd/fuse_lowlevel.c  |  6 +++++-
+ tools/virtiofsd/passthrough_ll.c | 28 ++++++++++++++++++++++++++--
+ 2 files changed, 31 insertions(+), 3 deletions(-)
+
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index 514d79cb24..8552cfb8af 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -1075,7 +1075,11 @@ static void do_fsync(fuse_req_t req, fuse_ino_t nodeid, const void *inarg)
+     fi.fh = arg->fh;
+ 
+     if (req->se->op.fsync) {
+-        req->se->op.fsync(req, nodeid, datasync, &fi);
++        if (fi.fh == (uint64_t)-1) {
++            req->se->op.fsync(req, nodeid, datasync, NULL);
++        } else {
++            req->se->op.fsync(req, nodeid, datasync, &fi);
++        }
+     } else {
+         fuse_reply_err(req, ENOSYS);
+     }
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 6c4da18075..26ac87013b 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -903,10 +903,34 @@ static void lo_fsync(fuse_req_t req, fuse_ino_t ino, int datasync,
+ {
+     int res;
+     (void)ino;
++    int fd;
++    char *buf;
++
++    fuse_log(FUSE_LOG_DEBUG, "lo_fsync(ino=%" PRIu64 ", fi=0x%p)\n", ino,
++             (void *)fi);
++
++    if (!fi) {
++        res = asprintf(&buf, "/proc/self/fd/%i", lo_fd(req, ino));
++        if (res == -1) {
++            return (void)fuse_reply_err(req, errno);
++        }
++
++        fd = open(buf, O_RDWR);
++        free(buf);
++        if (fd == -1) {
++            return (void)fuse_reply_err(req, errno);
++        }
++    } else {
++        fd = fi->fh;
++    }
++
+     if (datasync) {
+-        res = fdatasync(fi->fh);
++        res = fdatasync(fd);
+     } else {
+-        res = fsync(fi->fh);
++        res = fsync(fd);
++    }
++    if (!fi) {
++        close(fd);
+     }
+     fuse_reply_err(req, res == -1 ? errno : 0);
+ }

@@ -1,0 +1,32 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:43 +0000
+Subject: [PATCH] vhost-user: Print unexpected slave message types
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When we receive an unexpected message type on the slave fd, print
+the type.
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 0fdc465d7d5aafeae127eba488f247ac6f58df4c)
+---
+ hw/virtio/vhost-user.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/hw/virtio/vhost-user.c b/hw/virtio/vhost-user.c
+index 02a9b25199..e4f46ecf88 100644
+--- a/hw/virtio/vhost-user.c
++++ b/hw/virtio/vhost-user.c
+@@ -1055,7 +1055,7 @@ static void slave_read(void *opaque)
+                                                           fd[0]);
+         break;
+     default:
+-        error_report("Received unexpected msg type.");
++        error_report("Received unexpected msg type: %d.", hdr.request);
+         ret = -EINVAL;
+     }
+ 

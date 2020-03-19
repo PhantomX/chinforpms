@@ -1,0 +1,38 @@
+From: Peng Tao <tao.peng@linux.alibaba.com>
+Date: Mon, 27 Jan 2020 19:02:12 +0000
+Subject: [PATCH] virtiofsd: do not always set FUSE_FLOCK_LOCKS
+
+Right now we always enable it regardless of given commandlines.
+Fix it by setting the flag relying on the lo->flock bit.
+
+Signed-off-by: Peng Tao <tao.peng@linux.alibaba.com>
+Reviewed-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Reviewed-by: Sergio Lopez <slp@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit e468d4af5f5192ab33283464a9f6933044ce47f7)
+---
+ tools/virtiofsd/passthrough_ll.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index ab1613586e..ccbbec18b0 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -546,9 +546,14 @@ static void lo_init(void *userdata, struct fuse_conn_info *conn)
+         fuse_log(FUSE_LOG_DEBUG, "lo_init: activating writeback\n");
+         conn->want |= FUSE_CAP_WRITEBACK_CACHE;
+     }
+-    if (lo->flock && conn->capable & FUSE_CAP_FLOCK_LOCKS) {
+-        fuse_log(FUSE_LOG_DEBUG, "lo_init: activating flock locks\n");
+-        conn->want |= FUSE_CAP_FLOCK_LOCKS;
++    if (conn->capable & FUSE_CAP_FLOCK_LOCKS) {
++        if (lo->flock) {
++            fuse_log(FUSE_LOG_DEBUG, "lo_init: activating flock locks\n");
++            conn->want |= FUSE_CAP_FLOCK_LOCKS;
++        } else {
++            fuse_log(FUSE_LOG_DEBUG, "lo_init: disabling flock locks\n");
++            conn->want &= ~FUSE_CAP_FLOCK_LOCKS;
++        }
+     }
+ 
+     if (conn->capable & FUSE_CAP_POSIX_LOCKS) {

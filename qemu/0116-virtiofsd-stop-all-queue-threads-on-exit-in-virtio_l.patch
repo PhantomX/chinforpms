@@ -1,0 +1,52 @@
+From: Eryu Guan <eguan@linux.alibaba.com>
+Date: Mon, 27 Jan 2020 19:02:25 +0000
+Subject: [PATCH] virtiofsd: stop all queue threads on exit in virtio_loop()
+
+On guest graceful shutdown, virtiofsd receives VHOST_USER_GET_VRING_BASE
+request from VMM and shuts down virtqueues by calling fv_set_started(),
+which joins fv_queue_thread() threads. So when virtio_loop() returns,
+there should be no thread is still accessing data in fuse session and/or
+virtio dev.
+
+But on abnormal exit, e.g. guest got killed for whatever reason,
+vhost-user socket is closed and virtio_loop() breaks out the main loop
+and returns to main(). But it's possible fv_queue_worker()s are still
+working and accessing fuse session and virtio dev, which results in
+crash or use-after-free.
+
+Fix it by stopping fv_queue_thread()s before virtio_loop() returns,
+to make sure there's no-one could access fuse session and virtio dev.
+
+Reported-by: Qingming Su <qingming.su@linux.alibaba.com>
+Signed-off-by: Eryu Guan <eguan@linux.alibaba.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 9883df8ccae6d744a0c8d9cbf9d62b1797d70ebd)
+---
+ tools/virtiofsd/fuse_virtio.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/tools/virtiofsd/fuse_virtio.c b/tools/virtiofsd/fuse_virtio.c
+index 9f6582343c..80a6e929df 100644
+--- a/tools/virtiofsd/fuse_virtio.c
++++ b/tools/virtiofsd/fuse_virtio.c
+@@ -815,6 +815,19 @@ int virtio_loop(struct fuse_session *se)
+         }
+     }
+ 
++    /*
++     * Make sure all fv_queue_thread()s quit on exit, as we're about to
++     * free virtio dev and fuse session, no one should access them anymore.
++     */
++    for (int i = 0; i < se->virtio_dev->nqueues; i++) {
++        if (!se->virtio_dev->qi[i]) {
++            continue;
++        }
++
++        fuse_log(FUSE_LOG_INFO, "%s: Stopping queue %d thread\n", __func__, i);
++        fv_queue_cleanup_thread(se->virtio_dev, i);
++    }
++
+     fuse_log(FUSE_LOG_INFO, "%s: Exit\n", __func__);
+ 
+     return 0;

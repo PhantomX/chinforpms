@@ -1,0 +1,31 @@
+From: Liu Bo <bo.liu@linux.alibaba.com>
+Date: Mon, 27 Jan 2020 19:02:00 +0000
+Subject: [PATCH] virtiofsd: enable PARALLEL_DIROPS during INIT
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+lookup is a RO operations, PARALLEL_DIROPS can be enabled.
+
+Signed-off-by: Liu Bo <bo.liu@linux.alibaba.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit b7ed733a3841c4d489d3bd6ca7ed23c84db119c2)
+---
+ tools/virtiofsd/fuse_lowlevel.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index aac282f278..70568d22a4 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -2062,6 +2062,9 @@ static void do_init(fuse_req_t req, fuse_ino_t nodeid,
+     if (se->conn.want & FUSE_CAP_ASYNC_READ) {
+         outarg.flags |= FUSE_ASYNC_READ;
+     }
++    if (se->conn.want & FUSE_CAP_PARALLEL_DIROPS) {
++        outarg.flags |= FUSE_PARALLEL_DIROPS;
++    }
+     if (se->conn.want & FUSE_CAP_POSIX_LOCKS) {
+         outarg.flags |= FUSE_POSIX_LOCKS;
+     }

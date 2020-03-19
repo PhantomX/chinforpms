@@ -1,0 +1,90 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:05 +0000
+Subject: [PATCH] virtiofsd: Add Makefile wiring for virtiofsd contrib
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Wire up the building of the virtiofsd in tools.
+
+virtiofsd relies on Linux-specific system calls and seccomp.  Anyone
+wishing to port it to other host operating systems should do so
+carefully and without reducing security.
+
+Only allow building on Linux hosts.
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 81bfc42dcf473bc8d3790622633410da72d8e622)
+---
+ Makefile                      | 10 ++++++++++
+ Makefile.objs                 |  1 +
+ tools/virtiofsd/Makefile.objs |  9 +++++++++
+ 3 files changed, 20 insertions(+)
+ create mode 100644 tools/virtiofsd/Makefile.objs
+
+diff --git a/Makefile b/Makefile
+index b437a346d7..10fd31e705 100644
+--- a/Makefile
++++ b/Makefile
+@@ -330,6 +330,10 @@ endif
+ endif
+ endif
+ 
++ifdef CONFIG_LINUX
++HELPERS-y += virtiofsd$(EXESUF)
++endif
++
+ # Sphinx does not allow building manuals into the same directory as
+ # the source files, so if we're doing an in-tree QEMU build we must
+ # build the manuals into a subdirectory (and then install them from
+@@ -430,6 +434,7 @@ dummy := $(call unnest-vars,, \
+                 elf2dmp-obj-y \
+                 ivshmem-client-obj-y \
+                 ivshmem-server-obj-y \
++                virtiofsd-obj-y \
+                 rdmacm-mux-obj-y \
+                 libvhost-user-obj-y \
+                 vhost-user-scsi-obj-y \
+@@ -674,6 +679,11 @@ rdmacm-mux$(EXESUF): LIBS += "-libumad"
+ rdmacm-mux$(EXESUF): $(rdmacm-mux-obj-y) $(COMMON_LDADDS)
+ 	$(call LINK, $^)
+ 
++ifdef CONFIG_LINUX # relies on Linux-specific syscalls
++virtiofsd$(EXESUF): $(virtiofsd-obj-y) libvhost-user.a $(COMMON_LDADDS)
++	$(call LINK, $^)
++endif
++
+ vhost-user-gpu$(EXESUF): $(vhost-user-gpu-obj-y) $(libvhost-user-obj-y) libqemuutil.a libqemustub.a
+ 	$(call LINK, $^)
+ 
+diff --git a/Makefile.objs b/Makefile.objs
+index 11ba1a36bd..b5f667a4ba 100644
+--- a/Makefile.objs
++++ b/Makefile.objs
+@@ -125,6 +125,7 @@ vhost-user-blk-obj-y = contrib/vhost-user-blk/
+ rdmacm-mux-obj-y = contrib/rdmacm-mux/
+ vhost-user-input-obj-y = contrib/vhost-user-input/
+ vhost-user-gpu-obj-y = contrib/vhost-user-gpu/
++virtiofsd-obj-y = tools/virtiofsd/
+ 
+ ######################################################################
+ trace-events-subdirs =
+diff --git a/tools/virtiofsd/Makefile.objs b/tools/virtiofsd/Makefile.objs
+new file mode 100644
+index 0000000000..45a807500d
+--- /dev/null
++++ b/tools/virtiofsd/Makefile.objs
+@@ -0,0 +1,9 @@
++virtiofsd-obj-y = buffer.o \
++                  fuse_opt.o \
++                  fuse_log.o \
++                  fuse_lowlevel.o \
++                  fuse_signals.o \
++                  fuse_virtio.o \
++                  helper.o \
++                  passthrough_ll.o
++

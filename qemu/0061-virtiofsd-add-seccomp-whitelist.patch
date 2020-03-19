@@ -1,0 +1,265 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:30 +0000
+Subject: [PATCH] virtiofsd: add seccomp whitelist
+
+Only allow system calls that are needed by virtiofsd.  All other system
+calls cause SIGSYS to be directed at the thread and the process will
+coredump.
+
+Restricting system calls reduces the kernel attack surface and limits
+what the process can do when compromised.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+with additional entries by:
+Signed-off-by: Ganesh Maharaj Mahalingam <ganesh.mahalingam@intel.com>
+Signed-off-by: Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>
+Signed-off-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Signed-off-by: piaojun <piaojun@huawei.com>
+Signed-off-by: Vivek Goyal <vgoyal@redhat.com>
+Signed-off-by: Eric Ren <renzhen@linux.alibaba.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 4f8bde99c175ffd86b5125098a4707d43f5e80c6)
+---
+ Makefile                         |   5 +-
+ tools/virtiofsd/Makefile.objs    |   5 +-
+ tools/virtiofsd/passthrough_ll.c |   2 +
+ tools/virtiofsd/seccomp.c        | 151 +++++++++++++++++++++++++++++++
+ tools/virtiofsd/seccomp.h        |  14 +++
+ 5 files changed, 174 insertions(+), 3 deletions(-)
+ create mode 100644 tools/virtiofsd/seccomp.c
+ create mode 100644 tools/virtiofsd/seccomp.h
+
+diff --git a/Makefile b/Makefile
+index aebb57aed8..9a17e34603 100644
+--- a/Makefile
++++ b/Makefile
+@@ -330,7 +330,7 @@ endif
+ endif
+ endif
+ 
+-ifdef CONFIG_LINUX
++ifeq ($(CONFIG_LINUX)$(CONFIG_SECCOMP),yy)
+ HELPERS-y += virtiofsd$(EXESUF)
+ vhost-user-json-y += tools/virtiofsd/50-qemu-virtiofsd.json
+ endif
+@@ -680,7 +680,8 @@ rdmacm-mux$(EXESUF): LIBS += "-libumad"
+ rdmacm-mux$(EXESUF): $(rdmacm-mux-obj-y) $(COMMON_LDADDS)
+ 	$(call LINK, $^)
+ 
+-ifdef CONFIG_LINUX # relies on Linux-specific syscalls
++# relies on Linux-specific syscalls
++ifeq ($(CONFIG_LINUX)$(CONFIG_SECCOMP),yy)
+ virtiofsd$(EXESUF): $(virtiofsd-obj-y) libvhost-user.a $(COMMON_LDADDS)
+ 	$(call LINK, $^)
+ endif
+diff --git a/tools/virtiofsd/Makefile.objs b/tools/virtiofsd/Makefile.objs
+index 45a807500d..076f667e46 100644
+--- a/tools/virtiofsd/Makefile.objs
++++ b/tools/virtiofsd/Makefile.objs
+@@ -5,5 +5,8 @@ virtiofsd-obj-y = buffer.o \
+                   fuse_signals.o \
+                   fuse_virtio.o \
+                   helper.o \
+-                  passthrough_ll.o
++                  passthrough_ll.o \
++                  seccomp.o
+ 
++seccomp.o-cflags := $(SECCOMP_CFLAGS)
++seccomp.o-libs := $(SECCOMP_LIBS)
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 0947d14e5b..bd8925bd83 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -59,6 +59,7 @@
+ #include <unistd.h>
+ 
+ #include "passthrough_helpers.h"
++#include "seccomp.h"
+ 
+ struct lo_map_elem {
+     union {
+@@ -2091,6 +2092,7 @@ static void setup_sandbox(struct lo_data *lo, struct fuse_session *se)
+ {
+     setup_namespaces(lo, se);
+     setup_mounts(lo->source);
++    setup_seccomp();
+ }
+ 
+ int main(int argc, char *argv[])
+diff --git a/tools/virtiofsd/seccomp.c b/tools/virtiofsd/seccomp.c
+new file mode 100644
+index 0000000000..691fb63dea
+--- /dev/null
++++ b/tools/virtiofsd/seccomp.c
+@@ -0,0 +1,151 @@
++/*
++ * Seccomp sandboxing for virtiofsd
++ *
++ * Copyright (C) 2019 Red Hat, Inc.
++ *
++ * SPDX-License-Identifier: GPL-2.0-or-later
++ */
++
++#include "qemu/osdep.h"
++#include "seccomp.h"
++#include "fuse_i.h"
++#include "fuse_log.h"
++#include <errno.h>
++#include <glib.h>
++#include <seccomp.h>
++#include <stdlib.h>
++
++/* Bodge for libseccomp 2.4.2 which broke ppoll */
++#if !defined(__SNR_ppoll) && defined(__SNR_brk)
++#ifdef __NR_ppoll
++#define __SNR_ppoll __NR_ppoll
++#else
++#define __SNR_ppoll __PNR_ppoll
++#endif
++#endif
++
++static const int syscall_whitelist[] = {
++    /* TODO ireg sem*() syscalls */
++    SCMP_SYS(brk),
++    SCMP_SYS(capget), /* For CAP_FSETID */
++    SCMP_SYS(capset),
++    SCMP_SYS(clock_gettime),
++    SCMP_SYS(clone),
++#ifdef __NR_clone3
++    SCMP_SYS(clone3),
++#endif
++    SCMP_SYS(close),
++    SCMP_SYS(copy_file_range),
++    SCMP_SYS(dup),
++    SCMP_SYS(eventfd2),
++    SCMP_SYS(exit),
++    SCMP_SYS(exit_group),
++    SCMP_SYS(fallocate),
++    SCMP_SYS(fchmodat),
++    SCMP_SYS(fchownat),
++    SCMP_SYS(fcntl),
++    SCMP_SYS(fdatasync),
++    SCMP_SYS(fgetxattr),
++    SCMP_SYS(flistxattr),
++    SCMP_SYS(flock),
++    SCMP_SYS(fremovexattr),
++    SCMP_SYS(fsetxattr),
++    SCMP_SYS(fstat),
++    SCMP_SYS(fstatfs),
++    SCMP_SYS(fsync),
++    SCMP_SYS(ftruncate),
++    SCMP_SYS(futex),
++    SCMP_SYS(getdents),
++    SCMP_SYS(getdents64),
++    SCMP_SYS(getegid),
++    SCMP_SYS(geteuid),
++    SCMP_SYS(getpid),
++    SCMP_SYS(gettid),
++    SCMP_SYS(gettimeofday),
++    SCMP_SYS(linkat),
++    SCMP_SYS(lseek),
++    SCMP_SYS(madvise),
++    SCMP_SYS(mkdirat),
++    SCMP_SYS(mknodat),
++    SCMP_SYS(mmap),
++    SCMP_SYS(mprotect),
++    SCMP_SYS(mremap),
++    SCMP_SYS(munmap),
++    SCMP_SYS(newfstatat),
++    SCMP_SYS(open),
++    SCMP_SYS(openat),
++    SCMP_SYS(ppoll),
++    SCMP_SYS(prctl), /* TODO restrict to just PR_SET_NAME? */
++    SCMP_SYS(preadv),
++    SCMP_SYS(pread64),
++    SCMP_SYS(pwritev),
++    SCMP_SYS(pwrite64),
++    SCMP_SYS(read),
++    SCMP_SYS(readlinkat),
++    SCMP_SYS(recvmsg),
++    SCMP_SYS(renameat),
++    SCMP_SYS(renameat2),
++    SCMP_SYS(rt_sigaction),
++    SCMP_SYS(rt_sigprocmask),
++    SCMP_SYS(rt_sigreturn),
++    SCMP_SYS(sendmsg),
++    SCMP_SYS(setresgid),
++    SCMP_SYS(setresuid),
++#ifdef __NR_setresgid32
++    SCMP_SYS(setresgid32),
++#endif
++#ifdef __NR_setresuid32
++    SCMP_SYS(setresuid32),
++#endif
++    SCMP_SYS(set_robust_list),
++    SCMP_SYS(symlinkat),
++    SCMP_SYS(time), /* Rarely needed, except on static builds */
++    SCMP_SYS(tgkill),
++    SCMP_SYS(unlinkat),
++    SCMP_SYS(utimensat),
++    SCMP_SYS(write),
++    SCMP_SYS(writev),
++};
++
++void setup_seccomp(void)
++{
++    scmp_filter_ctx ctx;
++    size_t i;
++
++#ifdef SCMP_ACT_KILL_PROCESS
++    ctx = seccomp_init(SCMP_ACT_KILL_PROCESS);
++    /* Handle a newer libseccomp but an older kernel */
++    if (!ctx && errno == EOPNOTSUPP) {
++        ctx = seccomp_init(SCMP_ACT_TRAP);
++    }
++#else
++    ctx = seccomp_init(SCMP_ACT_TRAP);
++#endif
++    if (!ctx) {
++        fuse_log(FUSE_LOG_ERR, "seccomp_init() failed\n");
++        exit(1);
++    }
++
++    for (i = 0; i < G_N_ELEMENTS(syscall_whitelist); i++) {
++        if (seccomp_rule_add(ctx, SCMP_ACT_ALLOW,
++                             syscall_whitelist[i], 0) != 0) {
++            fuse_log(FUSE_LOG_ERR, "seccomp_rule_add syscall %d",
++                     syscall_whitelist[i]);
++            exit(1);
++        }
++    }
++
++    /* libvhost-user calls this for post-copy migration, we don't need it */
++    if (seccomp_rule_add(ctx, SCMP_ACT_ERRNO(ENOSYS),
++                         SCMP_SYS(userfaultfd), 0) != 0) {
++        fuse_log(FUSE_LOG_ERR, "seccomp_rule_add userfaultfd failed\n");
++        exit(1);
++    }
++
++    if (seccomp_load(ctx) < 0) {
++        fuse_log(FUSE_LOG_ERR, "seccomp_load() failed\n");
++        exit(1);
++    }
++
++    seccomp_release(ctx);
++}
+diff --git a/tools/virtiofsd/seccomp.h b/tools/virtiofsd/seccomp.h
+new file mode 100644
+index 0000000000..86bce72652
+--- /dev/null
++++ b/tools/virtiofsd/seccomp.h
+@@ -0,0 +1,14 @@
++/*
++ * Seccomp sandboxing for virtiofsd
++ *
++ * Copyright (C) 2019 Red Hat, Inc.
++ *
++ * SPDX-License-Identifier: GPL-2.0-or-later
++ */
++
++#ifndef VIRTIOFSD_SECCOMP_H
++#define VIRTIOFSD_SECCOMP_H
++
++void setup_seccomp(void);
++
++#endif /* VIRTIOFSD_SECCOMP_H */

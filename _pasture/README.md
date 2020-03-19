@@ -3,6 +3,7 @@ are deprecated or not working and I do not want mantain them anymore. There are
 some seasonal packages too, these can return when needed
 
  * **aegisub** - Personal modifications unneeded
+ * **aisleriot** - Unneeded
  * **alac_decoder** - Unneeded
  * **axel** - Unneeded
  * **bcg729** - linphoneqt
@@ -17,6 +18,7 @@ some seasonal packages too, these can return when needed
  * **decaf-emu** - needs SSE4.1
  * **cowsrevenge** - Do not have interest anymore
  * **dropboxd** - Do not have interest anymore, upstream bad decisions
+ * **emojione-picker** - python2
  * **faad2** - For i686 mock build
  * **ffmpeg** - For i686 mock build
  * **firefox** - Old 56 release
@@ -26,6 +28,7 @@ some seasonal packages too, these can return when needed
  * **godot2** - cowsrevenge
  * **hakuneko** - Unmantained by upstream
  * **kBuild** - VirtualBox, Fedora included
+ * **ladspa-bs2b-plugins** - Do not have interest anymore
  * **libdca** - For i686 mock build
  * **libmms** - For i686 mock build
  * **libogg** - Updated release for Waterfox, Fedora included, seasonal package
@@ -38,10 +41,12 @@ some seasonal packages too, these can return when needed
  * **mingw-headers** - Seasonal package, only for dxvk
  * **mingw-winpthreads** - Seasonal package, only for dxvk
  * **mingw-wine-vk9** - Seasonal package
- * **mupen64plus-extraplugins** - 
+ * **mps-youtube** - Do not have interest anymore
+ * **mupen64plus-extraplugins** - Unneeded
  * **nautilus-dropbox** - Unneeded
  * **opencore-amr** - For i686 mock build
  * **ortp** - linphoneqt
+ * **python-pafy** - mps-youtube
  * **psi** - Seasonal package
  * **qemu** - Seasonal package
  * **rust** - Pinned version for Waterfox build

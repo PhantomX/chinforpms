@@ -4,7 +4,7 @@
 
 Name:           snx
 Version:        800007075
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Check Point SSL Network Extender (vpn client)
 
 License:        Proprietary
@@ -16,8 +16,9 @@ Source1:        LICENSE
 Source2:        snxrun
 Source3:        com.checkpoint.snxrun.policy
 
-
 ExclusiveArch:  %{ix86}
+
+BuildRequires: systemd
 
 
 %description
@@ -60,14 +61,28 @@ cp -p %{S:1} .
 
 
 %install
-rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_sbindir}
 install -pm0755 %{name} %{buildroot}%{_sbindir}/
 
-mkdir -p %{buildroot}%{_sysconfdir}/%{name}/tmp/
+mkdir -p %{buildroot}%{_sysconfdir}
+install -pm0600 snxrc %{buildroot}%{_sysconfdir}/
 
-install -pm0600 snxrc %{buildroot}%{_sysconfdir}/%{name}/
+mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}
+chmod 0700 %{buildroot}%{_localstatedir}/lib/%{name}
+
+ln -sf ..%{_localstatedir}/lib/snx %{buildroot}%{_sysconfdir}/%{name}
+
+mkdir -p %{buildroot}%{_sysconfdir}
+ln -sf ../../../run/%{name} %{buildroot}%{_localstatedir}/lib/%{name}/tmp
+
+mkdir -p %{buildroot}/run/%{name}/
+chmod 0700 %{buildroot}/run/%{name}/
+
+mkdir -p %{buildroot}%{_tmpfilesdir}
+cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf <<EOF
+d /run/snx 0700 root root -
+EOF
 
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{S:2} %{buildroot}%{_bindir}/
@@ -91,12 +106,14 @@ EOF
 
 %files
 %license LICENSE
-%dir %{_sysconfdir}/%{name}/
-%dir %{_sysconfdir}/%{name}/tmp/
-%config(noreplace) %{_sysconfdir}/%{name}/snxrc
+%{_sysconfdir}/%{name}
+%config(noreplace) %{_sysconfdir}/snxrc
 %{_bindir}/snxrun
 %{_sbindir}/%{name}
-
+%dir /run/%{name}/
+%{_tmpfilesdir}/%{name}.conf
+%dir %{_localstatedir}/lib/%{name}/
+%{_localstatedir}/lib/%{name}/tmp
 
 %files desktop
 %{_datadir}/applications/snxrun.desktop
@@ -104,5 +121,8 @@ EOF
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 800007075-2
+- Move transient files to /run and /var/lib
+
 * Tue Mar 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 800007075-1
 - Initial spec

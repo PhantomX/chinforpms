@@ -1,11 +1,13 @@
 Name:           firetools
-Version:        0.9.52
+Version:        0.9.62
 Release:        1%{?dist}
 Summary:        GUI tools for firejail
 
 License:        GPLv2
 URL:            https://firejail.wordpress.com/
 Source0:        https://downloads.sourceforge.net/firejail/%{name}-%{version}.tar.xz
+
+Patch0:         0001-fstats-replace-link-flags-to-fix-linking.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
@@ -19,13 +21,16 @@ Requires:       hicolor-icon-theme
 Firetools is the graphical user interface of Firejail security sandbox.
 
 %prep
-%autosetup
+%autosetup -p1
 
 sed \
   -e '/strip \*;/d' \
   -e '/$(DOCDIR)/d' \
   -e 's|/$(PREFIX)/lib/|@libdir@/|g' \
   -i Makefile.in
+
+sed -e 's|-lrt|-pthread \0|g' -i src/fstats/fstats.pro
+
 
 %build
 %configure \
@@ -67,6 +72,9 @@ done
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.9.62-1
+- 0.9.62
+
 * Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.9.52-1
 - 0.9.52
 

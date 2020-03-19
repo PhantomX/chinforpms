@@ -1,0 +1,143 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:46 +0000
+Subject: [PATCH] virtiofsd: remove mountpoint dummy argument
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Classic FUSE file system daemons take a mountpoint argument but
+virtiofsd exposes a vhost-user UNIX domain socket instead.  The
+mountpoint argument is not used by virtiofsd but the user is still
+required to pass a dummy argument on the command-line.
+
+Remove the mountpoint argument to clean up the command-line.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 67aab02272f6cb47c56420f60b370c184961b5ca)
+---
+ tools/virtiofsd/fuse_lowlevel.c  |  2 +-
+ tools/virtiofsd/fuse_lowlevel.h  |  4 +---
+ tools/virtiofsd/helper.c         | 20 +++-----------------
+ tools/virtiofsd/passthrough_ll.c | 12 ++----------
+ 4 files changed, 7 insertions(+), 31 deletions(-)
+
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index 5c9cb52f2a..2f32c68161 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -2455,7 +2455,7 @@ out1:
+     return NULL;
+ }
+ 
+-int fuse_session_mount(struct fuse_session *se, const char *mountpoint)
++int fuse_session_mount(struct fuse_session *se)
+ {
+     int fd;
+ 
+diff --git a/tools/virtiofsd/fuse_lowlevel.h b/tools/virtiofsd/fuse_lowlevel.h
+index adb9054bb1..8d8909b35d 100644
+--- a/tools/virtiofsd/fuse_lowlevel.h
++++ b/tools/virtiofsd/fuse_lowlevel.h
+@@ -1863,7 +1863,6 @@ struct fuse_cmdline_opts {
+     int foreground;
+     int debug;
+     int nodefault_subtype;
+-    char *mountpoint;
+     int show_version;
+     int show_help;
+     unsigned int max_idle_threads;
+@@ -1924,12 +1923,11 @@ struct fuse_session *fuse_session_new(struct fuse_args *args,
+ /**
+  * Mount a FUSE file system.
+  *
+- * @param mountpoint the mount point path
+  * @param se session object
+  *
+  * @return 0 on success, -1 on failure.
+  **/
+-int fuse_session_mount(struct fuse_session *se, const char *mountpoint);
++int fuse_session_mount(struct fuse_session *se);
+ 
+ /**
+  * Enter a single threaded, blocking event loop.
+diff --git a/tools/virtiofsd/helper.c b/tools/virtiofsd/helper.c
+index 5711dd2660..5e6f2051a7 100644
+--- a/tools/virtiofsd/helper.c
++++ b/tools/virtiofsd/helper.c
+@@ -140,27 +140,13 @@ void fuse_cmdline_help(void)
+ static int fuse_helper_opt_proc(void *data, const char *arg, int key,
+                                 struct fuse_args *outargs)
+ {
++    (void)data;
+     (void)outargs;
+-    struct fuse_cmdline_opts *opts = data;
+ 
+     switch (key) {
+     case FUSE_OPT_KEY_NONOPT:
+-        if (!opts->mountpoint) {
+-            if (fuse_mnt_parse_fuse_fd(arg) != -1) {
+-                return fuse_opt_add_opt(&opts->mountpoint, arg);
+-            }
+-
+-            char mountpoint[PATH_MAX] = "";
+-            if (realpath(arg, mountpoint) == NULL) {
+-                fuse_log(FUSE_LOG_ERR, "fuse: bad mount point `%s': %s\n", arg,
+-                         strerror(errno));
+-                return -1;
+-            }
+-            return fuse_opt_add_opt(&opts->mountpoint, mountpoint);
+-        } else {
+-            fuse_log(FUSE_LOG_ERR, "fuse: invalid argument `%s'\n", arg);
+-            return -1;
+-        }
++        fuse_log(FUSE_LOG_ERR, "fuse: invalid argument `%s'\n", arg);
++        return -1;
+ 
+     default:
+         /* Pass through unknown options */
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index c5850ef803..9377718d9d 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -1297,7 +1297,7 @@ int main(int argc, char *argv[])
+         return 1;
+     }
+     if (opts.show_help) {
+-        printf("usage: %s [options] <mountpoint>\n\n", argv[0]);
++        printf("usage: %s [options]\n\n", argv[0]);
+         fuse_cmdline_help();
+         fuse_lowlevel_help();
+         ret = 0;
+@@ -1308,13 +1308,6 @@ int main(int argc, char *argv[])
+         goto err_out1;
+     }
+ 
+-    if (opts.mountpoint == NULL) {
+-        printf("usage: %s [options] <mountpoint>\n", argv[0]);
+-        printf("       %s --help\n", argv[0]);
+-        ret = 1;
+-        goto err_out1;
+-    }
+-
+     if (fuse_opt_parse(&args, &lo, lo_opts, NULL) == -1) {
+         return 1;
+     }
+@@ -1374,7 +1367,7 @@ int main(int argc, char *argv[])
+         goto err_out2;
+     }
+ 
+-    if (fuse_session_mount(se, opts.mountpoint) != 0) {
++    if (fuse_session_mount(se) != 0) {
+         goto err_out3;
+     }
+ 
+@@ -1393,7 +1386,6 @@ err_out3:
+ err_out2:
+     fuse_session_destroy(se);
+ err_out1:
+-    free(opts.mountpoint);
+     fuse_opt_free_args(&args);
+ 
+     if (lo.root.fd >= 0) {

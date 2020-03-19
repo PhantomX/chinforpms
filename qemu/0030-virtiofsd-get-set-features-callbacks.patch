@@ -1,0 +1,50 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:59 +0000
+Subject: [PATCH] virtiofsd: get/set features callbacks
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add the get/set features callbacks.
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit f2cef5fb9ae20136ca18d16328787b69b3abfa18)
+---
+ tools/virtiofsd/fuse_virtio.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/tools/virtiofsd/fuse_virtio.c b/tools/virtiofsd/fuse_virtio.c
+index 1928a2025c..4819e56568 100644
+--- a/tools/virtiofsd/fuse_virtio.c
++++ b/tools/virtiofsd/fuse_virtio.c
+@@ -46,6 +46,17 @@ struct virtio_fs_config {
+     uint32_t num_queues;
+ };
+ 
++/* Callback from libvhost-user */
++static uint64_t fv_get_features(VuDev *dev)
++{
++    return 1ULL << VIRTIO_F_VERSION_1;
++}
++
++/* Callback from libvhost-user */
++static void fv_set_features(VuDev *dev, uint64_t features)
++{
++}
++
+ /*
+  * Callback from libvhost-user if there's a new fd we're supposed to listen
+  * to, typically a queue kick?
+@@ -78,7 +89,9 @@ static bool fv_queue_order(VuDev *dev, int qidx)
+ }
+ 
+ static const VuDevIface fv_iface = {
+-    /* TODO: Add other callbacks */
++    .get_features = fv_get_features,
++    .set_features = fv_set_features,
++
+     .queue_is_processed_in_order = fv_queue_order,
+ };
+ 

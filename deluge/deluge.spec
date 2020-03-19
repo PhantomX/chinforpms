@@ -9,7 +9,7 @@
 
 Name:           deluge
 Version:        2.0.3
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -27,6 +27,7 @@ Source1:        %{name}-daemon-sysusers.conf
 
 Patch0:         0001-Disable-GConf2-magnet-registering.patch
 Patch1:         0001-Disable-new-release-check-by-default.patch
+Patch3:         https://git.archlinux.org/svntogit/packages.git/plain/trunk/fix-ngettext.diff?h=packages/%{name}#/%{name}-git-arch-fix-ngettext.patch
 
 %global vc_url  https://git.deluge-torrent.org/deluge/patch
 
@@ -268,6 +269,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.3-104.20191128git2f1c008
+- Arch fix for ngettext with python 3.8
+
 * Fri Jan 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.3-103.20191128git2f1c008
 - New snapshot
 - sysusersdir support

@@ -1,0 +1,89 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:25 +0000
+Subject: [PATCH] virtiofsd: prevent ".." escape in lo_do_readdir()
+
+Construct a fake dirent for the root directory's ".." entry.  This hides
+the parent directory from the FUSE client.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Sergio Lopez <slp@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 752272da2b68a2312f0e11fc5303015a6c3ee1ac)
+---
+ tools/virtiofsd/passthrough_ll.c | 36 +++++++++++++++++++-------------
+ 1 file changed, 22 insertions(+), 14 deletions(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 79d5966eea..e3d65c3676 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -1149,19 +1149,25 @@ out_err:
+ static void lo_do_readdir(fuse_req_t req, fuse_ino_t ino, size_t size,
+                           off_t offset, struct fuse_file_info *fi, int plus)
+ {
++    struct lo_data *lo = lo_data(req);
+     struct lo_dirp *d;
++    struct lo_inode *dinode;
+     char *buf = NULL;
+     char *p;
+     size_t rem = size;
+-    int err = ENOMEM;
++    int err = EBADF;
+ 
+-    (void)ino;
++    dinode = lo_inode(req, ino);
++    if (!dinode) {
++        goto error;
++    }
+ 
+     d = lo_dirp(req, fi);
+     if (!d) {
+         goto error;
+     }
+ 
++    err = ENOMEM;
+     buf = calloc(1, size);
+     if (!buf) {
+         goto error;
+@@ -1192,15 +1198,21 @@ static void lo_do_readdir(fuse_req_t req, fuse_ino_t ino, size_t size,
+         }
+         nextoff = d->entry->d_off;
+         name = d->entry->d_name;
++
+         fuse_ino_t entry_ino = 0;
++        struct fuse_entry_param e = (struct fuse_entry_param){
++            .attr.st_ino = d->entry->d_ino,
++            .attr.st_mode = d->entry->d_type << 12,
++        };
++
++        /* Hide root's parent directory */
++        if (dinode == &lo->root && strcmp(name, "..") == 0) {
++            e.attr.st_ino = lo->root.ino;
++            e.attr.st_mode = DT_DIR << 12;
++        }
++
+         if (plus) {
+-            struct fuse_entry_param e;
+-            if (is_dot_or_dotdot(name)) {
+-                e = (struct fuse_entry_param){
+-                    .attr.st_ino = d->entry->d_ino,
+-                    .attr.st_mode = d->entry->d_type << 12,
+-                };
+-            } else {
++            if (!is_dot_or_dotdot(name)) {
+                 err = lo_do_lookup(req, ino, name, &e);
+                 if (err) {
+                     goto error;
+@@ -1210,11 +1222,7 @@ static void lo_do_readdir(fuse_req_t req, fuse_ino_t ino, size_t size,
+ 
+             entsize = fuse_add_direntry_plus(req, p, rem, name, &e, nextoff);
+         } else {
+-            struct stat st = {
+-                .st_ino = d->entry->d_ino,
+-                .st_mode = d->entry->d_type << 12,
+-            };
+-            entsize = fuse_add_direntry(req, p, rem, name, &st, nextoff);
++            entsize = fuse_add_direntry(req, p, rem, name, &e.attr, nextoff);
+         }
+         if (entsize > rem) {
+             if (entry_ino != 0) {

@@ -20,7 +20,6 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
 ## Differences from Fedora and RPM Fusion
 
  * **adwaita-qt** - Remove some paddings
- * **aisleriot** - No Gconf support
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **claws-mail** - Can't wait Fedora releases. Tests
  * **deluge** - Updated, no GConf support

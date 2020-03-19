@@ -1,0 +1,147 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:50 +0000
+Subject: [PATCH] virtiofsd: Fix common header and define for QEMU builds
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+All of the fuse files include config.h and define GNU_SOURCE
+where we don't have either under our build - remove them.
+Fixup path to the kernel's fuse.h in the QEMUs world.
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Tested-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 09863ebc7e32a107235b3c815ad54d26cc64f07a)
+---
+ tools/virtiofsd/buffer.c         | 4 +---
+ tools/virtiofsd/fuse_i.h         | 3 +++
+ tools/virtiofsd/fuse_log.c       | 1 +
+ tools/virtiofsd/fuse_lowlevel.c  | 6 ++----
+ tools/virtiofsd/fuse_opt.c       | 2 +-
+ tools/virtiofsd/fuse_signals.c   | 2 +-
+ tools/virtiofsd/helper.c         | 1 +
+ tools/virtiofsd/passthrough_ll.c | 8 ++------
+ 8 files changed, 12 insertions(+), 15 deletions(-)
+
+diff --git a/tools/virtiofsd/buffer.c b/tools/virtiofsd/buffer.c
+index 4d507f3302..772efa922d 100644
+--- a/tools/virtiofsd/buffer.c
++++ b/tools/virtiofsd/buffer.c
+@@ -9,9 +9,7 @@
+  * See the file COPYING.LIB
+  */
+ 
+-#define _GNU_SOURCE
+-
+-#include "config.h"
++#include "qemu/osdep.h"
+ #include "fuse_i.h"
+ #include "fuse_lowlevel.h"
+ #include <assert.h>
+diff --git a/tools/virtiofsd/fuse_i.h b/tools/virtiofsd/fuse_i.h
+index e63cb58388..bae06992e0 100644
+--- a/tools/virtiofsd/fuse_i.h
++++ b/tools/virtiofsd/fuse_i.h
+@@ -6,6 +6,9 @@
+  * See the file COPYING.LIB
+  */
+ 
++#define FUSE_USE_VERSION 31
++
++
+ #include "fuse.h"
+ #include "fuse_lowlevel.h"
+ 
+diff --git a/tools/virtiofsd/fuse_log.c b/tools/virtiofsd/fuse_log.c
+index 11345f9ec8..c301ff6da1 100644
+--- a/tools/virtiofsd/fuse_log.c
++++ b/tools/virtiofsd/fuse_log.c
+@@ -8,6 +8,7 @@
+  * See the file COPYING.LIB
+  */
+ 
++#include "qemu/osdep.h"
+ #include "fuse_log.h"
+ 
+ #include <stdarg.h>
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index 3da80de233..07fb8a6095 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -9,11 +9,9 @@
+  * See the file COPYING.LIB
+  */
+ 
+-#define _GNU_SOURCE
+-
+-#include "config.h"
++#include "qemu/osdep.h"
+ #include "fuse_i.h"
+-#include "fuse_kernel.h"
++#include "standard-headers/linux/fuse.h"
+ #include "fuse_misc.h"
+ #include "fuse_opt.h"
+ 
+diff --git a/tools/virtiofsd/fuse_opt.c b/tools/virtiofsd/fuse_opt.c
+index edd36f4a3b..28922361a2 100644
+--- a/tools/virtiofsd/fuse_opt.c
++++ b/tools/virtiofsd/fuse_opt.c
+@@ -9,8 +9,8 @@
+  * See the file COPYING.LIB
+  */
+ 
++#include "qemu/osdep.h"
+ #include "fuse_opt.h"
+-#include "config.h"
+ #include "fuse_i.h"
+ #include "fuse_misc.h"
+ 
+diff --git a/tools/virtiofsd/fuse_signals.c b/tools/virtiofsd/fuse_signals.c
+index 19d6791cb9..dc7c8ac025 100644
+--- a/tools/virtiofsd/fuse_signals.c
++++ b/tools/virtiofsd/fuse_signals.c
+@@ -8,7 +8,7 @@
+  * See the file COPYING.LIB
+  */
+ 
+-#include "config.h"
++#include "qemu/osdep.h"
+ #include "fuse_i.h"
+ #include "fuse_lowlevel.h"
+ 
+diff --git a/tools/virtiofsd/helper.c b/tools/virtiofsd/helper.c
+index d9227d7367..9333691525 100644
+--- a/tools/virtiofsd/helper.c
++++ b/tools/virtiofsd/helper.c
+@@ -10,6 +10,7 @@
+  * See the file COPYING.LIB.
+  */
+ 
++#include "qemu/osdep.h"
+ #include "fuse_i.h"
+ #include "fuse_lowlevel.h"
+ #include "fuse_misc.h"
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 126a56ccbd..322a889cdf 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -35,15 +35,11 @@
+  * \include passthrough_ll.c
+  */
+ 
+-#define _GNU_SOURCE
+-#define FUSE_USE_VERSION 31
+-
+-#include "config.h"
+-
++#include "qemu/osdep.h"
++#include "fuse_lowlevel.h"
+ #include <assert.h>
+ #include <dirent.h>
+ #include <errno.h>
+-#include <fuse_lowlevel.h>
+ #include <inttypes.h>
+ #include <limits.h>
+ #include <pthread.h>

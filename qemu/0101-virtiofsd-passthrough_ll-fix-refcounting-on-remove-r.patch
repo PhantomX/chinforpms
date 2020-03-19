@@ -1,0 +1,123 @@
+From: Miklos Szeredi <mszeredi@redhat.com>
+Date: Mon, 27 Jan 2020 19:02:10 +0000
+Subject: [PATCH] virtiofsd: passthrough_ll: fix refcounting on remove/rename
+
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Reviewed-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 9257e514d861afa759c36704e1904d43ca3fec88)
+---
+ tools/virtiofsd/passthrough_ll.c | 50 +++++++++++++++++++++++++++++++-
+ 1 file changed, 49 insertions(+), 1 deletion(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index c819b5f782..e3a6d6b611 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -1140,17 +1140,42 @@ out_err:
+     fuse_reply_err(req, saverr);
+ }
+ 
++static struct lo_inode *lookup_name(fuse_req_t req, fuse_ino_t parent,
++                                    const char *name)
++{
++    int res;
++    struct stat attr;
++
++    res = fstatat(lo_fd(req, parent), name, &attr,
++                  AT_EMPTY_PATH | AT_SYMLINK_NOFOLLOW);
++    if (res == -1) {
++        return NULL;
++    }
++
++    return lo_find(lo_data(req), &attr);
++}
++
+ static void lo_rmdir(fuse_req_t req, fuse_ino_t parent, const char *name)
+ {
+     int res;
++    struct lo_inode *inode;
++    struct lo_data *lo = lo_data(req);
++
+     if (!is_safe_path_component(name)) {
+         fuse_reply_err(req, EINVAL);
+         return;
+     }
+ 
++    inode = lookup_name(req, parent, name);
++    if (!inode) {
++        fuse_reply_err(req, EIO);
++        return;
++    }
++
+     res = unlinkat(lo_fd(req, parent), name, AT_REMOVEDIR);
+ 
+     fuse_reply_err(req, res == -1 ? errno : 0);
++    unref_inode_lolocked(lo, inode, 1);
+ }
+ 
+ static void lo_rename(fuse_req_t req, fuse_ino_t parent, const char *name,
+@@ -1158,12 +1183,23 @@ static void lo_rename(fuse_req_t req, fuse_ino_t parent, const char *name,
+                       unsigned int flags)
+ {
+     int res;
++    struct lo_inode *oldinode;
++    struct lo_inode *newinode;
++    struct lo_data *lo = lo_data(req);
+ 
+     if (!is_safe_path_component(name) || !is_safe_path_component(newname)) {
+         fuse_reply_err(req, EINVAL);
+         return;
+     }
+ 
++    oldinode = lookup_name(req, parent, name);
++    newinode = lookup_name(req, newparent, newname);
++
++    if (!oldinode) {
++        fuse_reply_err(req, EIO);
++        goto out;
++    }
++
+     if (flags) {
+ #ifndef SYS_renameat2
+         fuse_reply_err(req, EINVAL);
+@@ -1176,26 +1212,38 @@ static void lo_rename(fuse_req_t req, fuse_ino_t parent, const char *name,
+             fuse_reply_err(req, res == -1 ? errno : 0);
+         }
+ #endif
+-        return;
++        goto out;
+     }
+ 
+     res = renameat(lo_fd(req, parent), name, lo_fd(req, newparent), newname);
+ 
+     fuse_reply_err(req, res == -1 ? errno : 0);
++out:
++    unref_inode_lolocked(lo, oldinode, 1);
++    unref_inode_lolocked(lo, newinode, 1);
+ }
+ 
+ static void lo_unlink(fuse_req_t req, fuse_ino_t parent, const char *name)
+ {
+     int res;
++    struct lo_inode *inode;
++    struct lo_data *lo = lo_data(req);
+ 
+     if (!is_safe_path_component(name)) {
+         fuse_reply_err(req, EINVAL);
+         return;
+     }
+ 
++    inode = lookup_name(req, parent, name);
++    if (!inode) {
++        fuse_reply_err(req, EIO);
++        return;
++    }
++
+     res = unlinkat(lo_fd(req, parent), name, 0);
+ 
+     fuse_reply_err(req, res == -1 ? errno : 0);
++    unref_inode_lolocked(lo, inode, 1);
+ }
+ 
+ static void unref_inode_lolocked(struct lo_data *lo, struct lo_inode *inode,

@@ -1,0 +1,56 @@
+From: Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>
+Date: Mon, 27 Jan 2020 19:01:39 +0000
+Subject: [PATCH] virtiofsd: Add timestamp to the log with FUSE_LOG_DEBUG level
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+virtiofsd has some threads, so we see a lot of logs with debug option.
+It would be useful for debugging if we can see the timestamp.
+
+Add nano second timestamp, which got by get_clock(), to the log with
+FUSE_LOG_DEBUG level if the syslog option isn't set.
+
+The log is like as:
+
+  # ./virtiofsd -d -o vhost_user_socket=/tmp/vhostqemu0 -o source=/tmp/share0 -o cache=auto
+  ...
+  [5365943125463727] [ID: 00000002] fv_queue_thread: Start for queue 0 kick_fd 9
+  [5365943125568644] [ID: 00000002] fv_queue_thread: Waiting for Queue 0 event
+  [5365943125573561] [ID: 00000002] fv_queue_thread: Got queue event on Queue 0
+
+Signed-off-by: Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 50fb955aa0e6ede929422146936cf68bf1ca876f)
+---
+ tools/virtiofsd/passthrough_ll.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index f08324f000..98114a3f4a 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -36,6 +36,7 @@
+  */
+ 
+ #include "qemu/osdep.h"
++#include "qemu/timer.h"
+ #include "fuse_virtio.h"
+ #include "fuse_log.h"
+ #include "fuse_lowlevel.h"
+@@ -2276,7 +2277,13 @@ static void log_func(enum fuse_log_level level, const char *fmt, va_list ap)
+     }
+ 
+     if (current_log_level == FUSE_LOG_DEBUG) {
+-        localfmt = g_strdup_printf("[ID: %08ld] %s", syscall(__NR_gettid), fmt);
++        if (!use_syslog) {
++            localfmt = g_strdup_printf("[%" PRId64 "] [ID: %08ld] %s",
++                                       get_clock(), syscall(__NR_gettid), fmt);
++        } else {
++            localfmt = g_strdup_printf("[ID: %08ld] %s", syscall(__NR_gettid),
++                                       fmt);
++        }
+         fmt = localfmt;
+     }
+ 

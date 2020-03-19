@@ -1,0 +1,78 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:02:21 +0000
+Subject: [PATCH] virtiofsd: fix lo_destroy() resource leaks
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Now that lo_destroy() is serialized we can call unref_inode() so that
+all inode resources are freed.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 28f7a3b026f231bfe8de5fed6a18a8d27b1dfcee)
+---
+ tools/virtiofsd/passthrough_ll.c | 41 ++++++++++++++++----------------
+ 1 file changed, 20 insertions(+), 21 deletions(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 79b8b71a4f..eb001b9d1e 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -1371,26 +1371,6 @@ static void unref_inode_lolocked(struct lo_data *lo, struct lo_inode *inode,
+     }
+ }
+ 
+-static int unref_all_inodes_cb(gpointer key, gpointer value, gpointer user_data)
+-{
+-    struct lo_inode *inode = value;
+-    struct lo_data *lo = user_data;
+-
+-    inode->nlookup = 0;
+-    lo_map_remove(&lo->ino_map, inode->fuse_ino);
+-    close(inode->fd);
+-    lo_inode_put(lo, &inode); /* Drop our refcount from lo_do_lookup() */
+-
+-    return TRUE;
+-}
+-
+-static void unref_all_inodes(struct lo_data *lo)
+-{
+-    pthread_mutex_lock(&lo->mutex);
+-    g_hash_table_foreach_remove(lo->inodes, unref_all_inodes_cb, lo);
+-    pthread_mutex_unlock(&lo->mutex);
+-}
+-
+ static void lo_forget_one(fuse_req_t req, fuse_ino_t ino, uint64_t nlookup)
+ {
+     struct lo_data *lo = lo_data(req);
+@@ -2477,7 +2457,26 @@ static void lo_lseek(fuse_req_t req, fuse_ino_t ino, off_t off, int whence,
+ static void lo_destroy(void *userdata)
+ {
+     struct lo_data *lo = (struct lo_data *)userdata;
+-    unref_all_inodes(lo);
++
++    /*
++     * Normally lo->mutex must be taken when traversing lo->inodes but
++     * lo_destroy() is a serialized request so no races are possible here.
++     *
++     * In addition, we cannot acquire lo->mutex since unref_inode() takes it
++     * too and this would result in a recursive lock.
++     */
++    while (true) {
++        GHashTableIter iter;
++        gpointer key, value;
++
++        g_hash_table_iter_init(&iter, lo->inodes);
++        if (!g_hash_table_iter_next(&iter, &key, &value)) {
++            break;
++        }
++
++        struct lo_inode *inode = value;
++        unref_inode_lolocked(lo, inode, inode->nlookup);
++    }
+ }
+ 
+ static struct fuse_lowlevel_ops lo_oper = {

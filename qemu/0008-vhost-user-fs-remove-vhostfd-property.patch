@@ -1,0 +1,43 @@
+From: =?UTF-8?q?Marc-Andr=C3=A9=20Lureau?= <marcandre.lureau@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:37 +0000
+Subject: [PATCH] vhost-user-fs: remove "vhostfd" property
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The property doesn't make much sense for a vhost-user device.
+
+Signed-off-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+Message-Id: <20191116112016.14872-1-marcandre.lureau@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 703857348724319735d9be7b5b996e6445c6e6b9)
+---
+ hw/virtio/vhost-user-fs.c         | 1 -
+ include/hw/virtio/vhost-user-fs.h | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/hw/virtio/vhost-user-fs.c b/hw/virtio/vhost-user-fs.c
+index f0df7f4746..ca0b7fc9de 100644
+--- a/hw/virtio/vhost-user-fs.c
++++ b/hw/virtio/vhost-user-fs.c
+@@ -263,7 +263,6 @@ static Property vuf_properties[] = {
+     DEFINE_PROP_UINT16("num-request-queues", VHostUserFS,
+                        conf.num_request_queues, 1),
+     DEFINE_PROP_UINT16("queue-size", VHostUserFS, conf.queue_size, 128),
+-    DEFINE_PROP_STRING("vhostfd", VHostUserFS, conf.vhostfd),
+     DEFINE_PROP_END_OF_LIST(),
+ };
+ 
+diff --git a/include/hw/virtio/vhost-user-fs.h b/include/hw/virtio/vhost-user-fs.h
+index 539885b458..9ff1bdb7cf 100644
+--- a/include/hw/virtio/vhost-user-fs.h
++++ b/include/hw/virtio/vhost-user-fs.h
+@@ -28,7 +28,6 @@ typedef struct {
+     char *tag;
+     uint16_t num_request_queues;
+     uint16_t queue_size;
+-    char *vhostfd;
+ } VHostUserFSConf;
+ 
+ typedef struct {

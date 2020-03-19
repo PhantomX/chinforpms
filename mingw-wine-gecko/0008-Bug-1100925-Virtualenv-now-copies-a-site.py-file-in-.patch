@@ -1,0 +1,42 @@
+From 5d3c226db2f2166a4155d622694e124a5dfd7d33 Mon Sep 17 00:00:00 2001
+From: Nathan Hakkakzadeh <nhakkakzadeh@mozilla.com>
+Date: Mon, 6 Jun 2016 10:27:05 -0700
+Subject: [PATCH 08/12] Bug 1100925 - Virtualenv now copies a site.py file in
+ its folder (if it exists) instead of using the hex string for site.py that is
+ in its source code. r=gps
+
+We need this to avoid weird site.py hacks to get msys2 to play nicely with virtualenv.
+
+MozReview-Commit-ID: 9lJSo6MistO
+
+--HG--
+extra : rebase_source : 598f25a207dc4307ed531f4e4e5dcfb951ae8283
+
+(cherry picked from commit 6a16b60f89ef5b38e33efabf63f7e30c1672b616)
+Signed-off-by: Jacek Caban <jacek@codeweavers.com>
+---
+ python/virtualenv/virtualenv.py | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/python/virtualenv/virtualenv.py b/python/virtualenv/virtualenv.py
+index bfa9407715b1..e363021cc13b 100755
+--- a/python/virtualenv/virtualenv.py
++++ b/python/virtualenv/virtualenv.py
+@@ -1130,7 +1130,13 @@ def install_python(home_dir, lib_dir, inc_dir, bin_dir, site_packages, clear, sy
+         site_filename = site_filename.replace('$py.class', '.py')
+     site_filename_dst = change_prefix(site_filename, home_dir)
+     site_dir = os.path.dirname(site_filename_dst)
+-    writefile(site_filename_dst, SITE_PY)
++    # MOZ: Copies a site.py if it exists instead of using the one hex encoded in
++    # this file. Necessary for some site.py fixes for MinGW64 version of python
++    site_py_src_path = os.path.join(os.path.dirname(__file__), 'site.py')
++    if os.path.isfile(site_py_src_path):
++        shutil.copy(site_py_src_path, site_filename_dst)
++    else:
++        writefile(site_filename_dst, SITE_PY)
+     writefile(join(site_dir, 'orig-prefix.txt'), prefix)
+     site_packages_filename = join(site_dir, 'no-global-site-packages.txt')
+     if not site_packages:
+-- 
+2.24.1
+

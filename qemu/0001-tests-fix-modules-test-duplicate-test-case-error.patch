@@ -1,5 +1,3 @@
-From d64c9aa098cc6e5c0b638438c4959eddfa7e24e2 Mon Sep 17 00:00:00 2001
-Message-Id: <d64c9aa098cc6e5c0b638438c4959eddfa7e24e2.1573679311.git.crobinso@redhat.com>
 From: Cole Robinson <crobinso@redhat.com>
 Date: Wed, 13 Nov 2019 16:05:11 -0500
 Subject: [PATCH] tests: fix modules-test 'duplicate test case' error
@@ -35,6 +33,3 @@ index d1a6ace218..88217686e1 100644
          qtest_add_data_func(testname, modules + i, test_modules_load);
          g_free(testname);
      }
--- 
-2.23.0
-

@@ -1,0 +1,148 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:18 +0000
+Subject: [PATCH] virtiofsd: validate path components
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Several FUSE requests contain single path components.  A correct FUSE
+client sends well-formed path components but there is currently no input
+validation in case something went wrong or the client is malicious.
+
+Refuse ".", "..", and paths containing '/' when we expect a path
+component.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 25dae28c58d7e706b5d5db99042c9db3cef2e657)
+---
+ tools/virtiofsd/passthrough_ll.c | 59 ++++++++++++++++++++++++++++----
+ 1 file changed, 53 insertions(+), 6 deletions(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index ac380efcb1..e375406160 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -133,6 +133,21 @@ static void unref_inode(struct lo_data *lo, struct lo_inode *inode, uint64_t n);
+ 
+ static struct lo_inode *lo_find(struct lo_data *lo, struct stat *st);
+ 
++static int is_dot_or_dotdot(const char *name)
++{
++    return name[0] == '.' &&
++           (name[1] == '\0' || (name[1] == '.' && name[2] == '\0'));
++}
++
++/* Is `path` a single path component that is not "." or ".."? */
++static int is_safe_path_component(const char *path)
++{
++    if (strchr(path, '/')) {
++        return 0;
++    }
++
++    return !is_dot_or_dotdot(path);
++}
+ 
+ static struct lo_data *lo_data(fuse_req_t req)
+ {
+@@ -681,6 +696,15 @@ static void lo_lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
+                  parent, name);
+     }
+ 
++    /*
++     * Don't use is_safe_path_component(), allow "." and ".." for NFS export
++     * support.
++     */
++    if (strchr(name, '/')) {
++        fuse_reply_err(req, EINVAL);
++        return;
++    }
++
+     err = lo_do_lookup(req, parent, name, &e);
+     if (err) {
+         fuse_reply_err(req, err);
+@@ -762,6 +786,11 @@ static void lo_mknod_symlink(fuse_req_t req, fuse_ino_t parent,
+     struct fuse_entry_param e;
+     struct lo_cred old = {};
+ 
++    if (!is_safe_path_component(name)) {
++        fuse_reply_err(req, EINVAL);
++        return;
++    }
++
+     dir = lo_inode(req, parent);
+     if (!dir) {
+         fuse_reply_err(req, EBADF);
+@@ -863,6 +892,11 @@ static void lo_link(fuse_req_t req, fuse_ino_t ino, fuse_ino_t parent,
+     struct fuse_entry_param e;
+     int saverr;
+ 
++    if (!is_safe_path_component(name)) {
++        fuse_reply_err(req, EINVAL);
++        return;
++    }
++
+     inode = lo_inode(req, ino);
+     if (!inode) {
+         fuse_reply_err(req, EBADF);
+@@ -904,6 +938,10 @@ out_err:
+ static void lo_rmdir(fuse_req_t req, fuse_ino_t parent, const char *name)
+ {
+     int res;
++    if (!is_safe_path_component(name)) {
++        fuse_reply_err(req, EINVAL);
++        return;
++    }
+ 
+     res = unlinkat(lo_fd(req, parent), name, AT_REMOVEDIR);
+ 
+@@ -916,6 +954,11 @@ static void lo_rename(fuse_req_t req, fuse_ino_t parent, const char *name,
+ {
+     int res;
+ 
++    if (!is_safe_path_component(name) || !is_safe_path_component(newname)) {
++        fuse_reply_err(req, EINVAL);
++        return;
++    }
++
+     if (flags) {
+         fuse_reply_err(req, EINVAL);
+         return;
+@@ -930,6 +973,11 @@ static void lo_unlink(fuse_req_t req, fuse_ino_t parent, const char *name)
+ {
+     int res;
+ 
++    if (!is_safe_path_component(name)) {
++        fuse_reply_err(req, EINVAL);
++        return;
++    }
++
+     res = unlinkat(lo_fd(req, parent), name, 0);
+ 
+     fuse_reply_err(req, res == -1 ? errno : 0);
+@@ -1093,12 +1141,6 @@ out_err:
+     fuse_reply_err(req, error);
+ }
+ 
+-static int is_dot_or_dotdot(const char *name)
+-{
+-    return name[0] == '.' &&
+-           (name[1] == '\0' || (name[1] == '.' && name[2] == '\0'));
+-}
+-
+ static void lo_do_readdir(fuse_req_t req, fuse_ino_t ino, size_t size,
+                           off_t offset, struct fuse_file_info *fi, int plus)
+ {
+@@ -1248,6 +1290,11 @@ static void lo_create(fuse_req_t req, fuse_ino_t parent, const char *name,
+                  parent, name);
+     }
+ 
++    if (!is_safe_path_component(name)) {
++        fuse_reply_err(req, EINVAL);
++        return;
++    }
++
+     err = lo_change_cred(req, &old);
+     if (err) {
+         goto out;

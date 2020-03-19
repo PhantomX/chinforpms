@@ -1,0 +1,44 @@
+From: ShihPo Hung <shihpo.hung@sifive.com>
+Date: Tue, 14 Jan 2020 22:17:31 -0800
+Subject: [PATCH] target/riscv: Fix tb->flags FS status
+
+It was found that running libquantum on riscv-linux qemu produced an
+incorrect result. After investigation, FP registers are not saved
+during context switch due to incorrect mstatus.FS.
+
+In current implementation tb->flags merges all non-disabled state to
+dirty. This means the code in mark_fs_dirty in translate.c that
+handles initial and clean states is unreachable.
+
+This patch fixes it and is successfully tested with:
+  libquantum
+
+Thanks to Richard for pointing out the actual bug.
+
+v3: remove the redundant condition
+v2: root cause FS problem
+
+Suggested-by: Richard Henderson <richard.henderson@linaro.org>
+Signed-off-by: ShihPo Hung <shihpo.hung@sifive.com>
+Reviewed-by: Richard Henderson <richard.henderson@linaro.org>
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+---
+ target/riscv/cpu.h | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/target/riscv/cpu.h b/target/riscv/cpu.h
+index e59343e13c..de0a8d893a 100644
+--- a/target/riscv/cpu.h
++++ b/target/riscv/cpu.h
+@@ -293,10 +293,7 @@ static inline void cpu_get_tb_cpu_state(CPURISCVState *env, target_ulong *pc,
+ #ifdef CONFIG_USER_ONLY
+     *flags = TB_FLAGS_MSTATUS_FS;
+ #else
+-    *flags = cpu_mmu_index(env, 0);
+-    if (riscv_cpu_fp_enabled(env)) {
+-        *flags |= TB_FLAGS_MSTATUS_FS;
+-    }
++    *flags = cpu_mmu_index(env, 0) | (env->mstatus & MSTATUS_FS);
+ #endif
+ }
+ 

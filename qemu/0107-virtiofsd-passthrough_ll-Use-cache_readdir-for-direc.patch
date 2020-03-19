@@ -1,0 +1,29 @@
+From: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Date: Mon, 27 Jan 2020 19:02:16 +0000
+Subject: [PATCH] virtiofsd: passthrough_ll: Use cache_readdir for directory
+ open
+
+Since keep_cache(FOPEN_KEEP_CACHE) has no effect for directory as
+described in fuse_common.h, use cache_readdir(FOPNE_CACHE_DIR) for
+diretory open when cache=always mode.
+
+Signed-off-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 9b610b09b49b1aada256097b338d49da805da6ae)
+---
+ tools/virtiofsd/passthrough_ll.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 4c61ac5065..79b8b71a4f 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -1523,7 +1523,7 @@ static void lo_opendir(fuse_req_t req, fuse_ino_t ino,
+ 
+     fi->fh = fh;
+     if (lo->cache == CACHE_ALWAYS) {
+-        fi->keep_cache = 1;
++        fi->cache_readdir = 1;
+     }
+     fuse_reply_open(req, fi);
+     return;

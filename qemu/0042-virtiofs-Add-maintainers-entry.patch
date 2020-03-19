@@ -1,0 +1,36 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:11 +0000
+Subject: [PATCH] virtiofs: Add maintainers entry
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Tested-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit bad7d2c3ad1af9344df035aedaf8e0967a543070)
+---
+ MAINTAINERS | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 5e5e3e52d6..d1b3e262d2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1575,6 +1575,14 @@ T: git https://github.com/cohuck/qemu.git s390-next
+ T: git https://github.com/borntraeger/qemu.git s390-next
+ L: qemu-s390x@nongnu.org
+ 
++virtiofs
++M: Dr. David Alan Gilbert <dgilbert@redhat.com>
++M: Stefan Hajnoczi <stefanha@redhat.com>
++S: Supported
++F: tools/virtiofsd/*
++F: hw/virtio/vhost-user-fs*
++F: include/hw/virtio/vhost-user-fs.h
++
+ virtio-input
+ M: Gerd Hoffmann <kraxel@redhat.com>
+ S: Maintained

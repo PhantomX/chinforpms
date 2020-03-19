@@ -1,9 +1,10 @@
 %undefine _hardened_build
+%global _legacy_common_support 1
 
-%global commit 5a9da8f6b02230948a0ab45393afaa4caa84cd93
+%global commit 6eda08e029d0001eb356100d92cc9bfd5b550349
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190420
-%global with_snapshot 0
+%global date 20191210
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -14,8 +15,8 @@
 %global pkgname wine-nine-standalone
 
 Name:           wine-nine
-Version:        0.5
-Release:        1%{?gver}%{?dist}
+Version:        0.6
+Release:        0.1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -36,6 +37,7 @@ Source100:      wine-ninecfg.desktop
 ExclusiveArch:  %{ix86} x86_64
 
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  meson
 BuildRequires:  desktop-file-utils
 BuildRequires:  pkgconfig(d3d)
@@ -152,6 +154,9 @@ desktop-file-install \
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:0.6-0.1.20191210git6eda08e
+- New snapshot
+
 * Wed Sep 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:0.5-1
 - 0.5
 

@@ -1,0 +1,4895 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:39 +0000
+Subject: [PATCH] virtiofsd: Pull in upstream headers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Pull in headers fromlibfuse's upstream fuse-3.8.0
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit ee46c78901eb7fa78e328e04c0494ad6d207238b)
+---
+ tools/virtiofsd/fuse.h                | 1275 +++++++++++++++
+ tools/virtiofsd/fuse_common.h         |  823 ++++++++++
+ tools/virtiofsd/fuse_i.h              |  139 ++
+ tools/virtiofsd/fuse_log.h            |   82 +
+ tools/virtiofsd/fuse_lowlevel.h       | 2089 +++++++++++++++++++++++++
+ tools/virtiofsd/fuse_misc.h           |   59 +
+ tools/virtiofsd/fuse_opt.h            |  271 ++++
+ tools/virtiofsd/passthrough_helpers.h |   76 +
+ 8 files changed, 4814 insertions(+)
+ create mode 100644 tools/virtiofsd/fuse.h
+ create mode 100644 tools/virtiofsd/fuse_common.h
+ create mode 100644 tools/virtiofsd/fuse_i.h
+ create mode 100644 tools/virtiofsd/fuse_log.h
+ create mode 100644 tools/virtiofsd/fuse_lowlevel.h
+ create mode 100644 tools/virtiofsd/fuse_misc.h
+ create mode 100644 tools/virtiofsd/fuse_opt.h
+ create mode 100644 tools/virtiofsd/passthrough_helpers.h
+
+diff --git a/tools/virtiofsd/fuse.h b/tools/virtiofsd/fuse.h
+new file mode 100644
+index 0000000000..883f6e59fb
+--- /dev/null
++++ b/tools/virtiofsd/fuse.h
+@@ -0,0 +1,1275 @@
++/*
++  FUSE: Filesystem in Userspace
++  Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
++
++  This program can be distributed under the terms of the GNU LGPLv2.
++  See the file COPYING.LIB.
++*/
++
++#ifndef FUSE_H_
++#define FUSE_H_
++
++/** @file
++ *
++ * This file defines the library interface of FUSE
++ *
++ * IMPORTANT: you should define FUSE_USE_VERSION before including this header.
++ */
++
++#include "fuse_common.h"
++
++#include <fcntl.h>
++#include <time.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <sys/statvfs.h>
++#include <sys/uio.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/* ----------------------------------------------------------- *
++ * Basic FUSE API					       *
++ * ----------------------------------------------------------- */
++
++/** Handle for a FUSE filesystem */
++struct fuse;
++
++/**
++ * Readdir flags, passed to ->readdir()
++ */
++enum fuse_readdir_flags {
++	/**
++	 * "Plus" mode.
++	 *
++	 * The kernel wants to prefill the inode cache during readdir.  The
++	 * filesystem may honour this by filling in the attributes and setting
++	 * FUSE_FILL_DIR_FLAGS for the filler function.  The filesystem may also
++	 * just ignore this flag completely.
++	 */
++	FUSE_READDIR_PLUS = (1 << 0),
++};
++
++enum fuse_fill_dir_flags {
++	/**
++	 * "Plus" mode: all file attributes are valid
++	 *
++	 * The attributes are used by the kernel to prefill the inode cache
++	 * during a readdir.
++	 *
++	 * It is okay to set FUSE_FILL_DIR_PLUS if FUSE_READDIR_PLUS is not set
++	 * and vice versa.
++	 */
++	FUSE_FILL_DIR_PLUS = (1 << 1),
++};
++
++/** Function to add an entry in a readdir() operation
++ *
++ * The *off* parameter can be any non-zero value that enables the
++ * filesystem to identify the current point in the directory
++ * stream. It does not need to be the actual physical position. A
++ * value of zero is reserved to indicate that seeking in directories
++ * is not supported.
++ * 
++ * @param buf the buffer passed to the readdir() operation
++ * @param name the file name of the directory entry
++ * @param stat file attributes, can be NULL
++ * @param off offset of the next entry or zero
++ * @param flags fill flags
++ * @return 1 if buffer is full, zero otherwise
++ */
++typedef int (*fuse_fill_dir_t) (void *buf, const char *name,
++				const struct stat *stbuf, off_t off,
++				enum fuse_fill_dir_flags flags);
++/**
++ * Configuration of the high-level API
++ *
++ * This structure is initialized from the arguments passed to
++ * fuse_new(), and then passed to the file system's init() handler
++ * which should ensure that the configuration is compatible with the
++ * file system implementation.
++ */
++struct fuse_config {
++	/**
++	 * If `set_gid` is non-zero, the st_gid attribute of each file
++	 * is overwritten with the value of `gid`.
++	 */
++	int set_gid;
++	unsigned int gid;
++
++	/**
++	 * If `set_uid` is non-zero, the st_uid attribute of each file
++	 * is overwritten with the value of `uid`.
++	 */
++	int set_uid;
++	unsigned int uid;
++
++	/**
++	 * If `set_mode` is non-zero, the any permissions bits set in
++	 * `umask` are unset in the st_mode attribute of each file.
++	 */
++	int set_mode;
++	unsigned int umask;
++
++	/**
++	 * The timeout in seconds for which name lookups will be
++	 * cached.
++	 */
++	double entry_timeout;
++
++	/**
++	 * The timeout in seconds for which a negative lookup will be
++	 * cached. This means, that if file did not exist (lookup
++	 * retuned ENOENT), the lookup will only be redone after the
++	 * timeout, and the file/directory will be assumed to not
++	 * exist until then. A value of zero means that negative
++	 * lookups are not cached.
++	 */
++	double negative_timeout;
++
++	/**
++	 * The timeout in seconds for which file/directory attributes
++	 * (as returned by e.g. the `getattr` handler) are cached.
++	 */
++	double attr_timeout;
++
++	/**
++	 * Allow requests to be interrupted
++	 */
++	int intr;
++
++	/**
++	 * Specify which signal number to send to the filesystem when
++	 * a request is interrupted.  The default is hardcoded to
++	 * USR1.
++	 */
++	int intr_signal;
++
++	/**
++	 * Normally, FUSE assigns inodes to paths only for as long as
++	 * the kernel is aware of them. With this option inodes are
++	 * instead remembered for at least this many seconds.  This
++	 * will require more memory, but may be necessary when using
++	 * applications that make use of inode numbers.
++	 *
++	 * A number of -1 means that inodes will be remembered for the
++	 * entire life-time of the file-system process.
++	 */
++	int remember;
++
++	/**
++	 * The default behavior is that if an open file is deleted,
++	 * the file is renamed to a hidden file (.fuse_hiddenXXX), and
++	 * only removed when the file is finally released.  This
++	 * relieves the filesystem implementation of having to deal
++	 * with this problem. This option disables the hiding
++	 * behavior, and files are removed immediately in an unlink
++	 * operation (or in a rename operation which overwrites an
++	 * existing file).
++	 *
++	 * It is recommended that you not use the hard_remove
++	 * option. When hard_remove is set, the following libc
++	 * functions fail on unlinked files (returning errno of
++	 * ENOENT): read(2), write(2), fsync(2), close(2), f*xattr(2),
++	 * ftruncate(2), fstat(2), fchmod(2), fchown(2)
++	 */
++	int hard_remove;
++
++	/**
++	 * Honor the st_ino field in the functions getattr() and
++	 * fill_dir(). This value is used to fill in the st_ino field
++	 * in the stat(2), lstat(2), fstat(2) functions and the d_ino
++	 * field in the readdir(2) function. The filesystem does not
++	 * have to guarantee uniqueness, however some applications
++	 * rely on this value being unique for the whole filesystem.
++	 *
++	 * Note that this does *not* affect the inode that libfuse 
++	 * and the kernel use internally (also called the "nodeid").
++	 */
++	int use_ino;
++
++	/**
++	 * If use_ino option is not given, still try to fill in the
++	 * d_ino field in readdir(2). If the name was previously
++	 * looked up, and is still in the cache, the inode number
++	 * found there will be used.  Otherwise it will be set to -1.
++	 * If use_ino option is given, this option is ignored.
++	 */
++	int readdir_ino;
++
++	/**
++	 * This option disables the use of page cache (file content cache)
++	 * in the kernel for this filesystem. This has several affects:
++	 *
++	 * 1. Each read(2) or write(2) system call will initiate one
++	 *    or more read or write operations, data will not be
++	 *    cached in the kernel.
++	 *
++	 * 2. The return value of the read() and write() system calls
++	 *    will correspond to the return values of the read and
++	 *    write operations. This is useful for example if the
++	 *    file size is not known in advance (before reading it).
++	 *
++	 * Internally, enabling this option causes fuse to set the
++	 * `direct_io` field of `struct fuse_file_info` - overwriting
++	 * any value that was put there by the file system.
++	 */
++	int direct_io;
++
++	/**
++	 * This option disables flushing the cache of the file
++	 * contents on every open(2).  This should only be enabled on
++	 * filesystems where the file data is never changed
++	 * externally (not through the mounted FUSE filesystem).  Thus
++	 * it is not suitable for network filesystems and other
++	 * intermediate filesystems.
++	 *
++	 * NOTE: if this option is not specified (and neither
++	 * direct_io) data is still cached after the open(2), so a
++	 * read(2) system call will not always initiate a read
++	 * operation.
++	 *
++	 * Internally, enabling this option causes fuse to set the
++	 * `keep_cache` field of `struct fuse_file_info` - overwriting
++	 * any value that was put there by the file system.
++	 */
++	int kernel_cache;
++
++	/**
++	 * This option is an alternative to `kernel_cache`. Instead of
++	 * unconditionally keeping cached data, the cached data is
++	 * invalidated on open(2) if if the modification time or the
++	 * size of the file has changed since it was last opened.
++	 */
++	int auto_cache;
++
++	/**
++	 * The timeout in seconds for which file attributes are cached
++	 * for the purpose of checking if auto_cache should flush the
++	 * file data on open.
++	 */
++	int ac_attr_timeout_set;
++	double ac_attr_timeout;
++
++	/**
++	 * If this option is given the file-system handlers for the
++	 * following operations will not receive path information:
++	 * read, write, flush, release, fsync, readdir, releasedir,
++	 * fsyncdir, lock, ioctl and poll.
++	 *
++	 * For the truncate, getattr, chmod, chown and utimens
++	 * operations the path will be provided only if the struct
++	 * fuse_file_info argument is NULL.
++	 */
++	int nullpath_ok;
++
++	/**
++	 * The remaining options are used by libfuse internally and
++	 * should not be touched.
++	 */
++	int show_help;
++	char *modules;
++	int debug;
++};
++
++
++/**
++ * The file system operations:
++ *
++ * Most of these should work very similarly to the well known UNIX
++ * file system operations.  A major exception is that instead of
++ * returning an error in 'errno', the operation should return the
++ * negated error value (-errno) directly.
++ *
++ * All methods are optional, but some are essential for a useful
++ * filesystem (e.g. getattr).  Open, flush, release, fsync, opendir,
++ * releasedir, fsyncdir, access, create, truncate, lock, init and
++ * destroy are special purpose methods, without which a full featured
++ * filesystem can still be implemented.
++ *
++ * In general, all methods are expected to perform any necessary
++ * permission checking. However, a filesystem may delegate this task
++ * to the kernel by passing the `default_permissions` mount option to
++ * `fuse_new()`. In this case, methods will only be called if
++ * the kernel's permission check has succeeded.
++ *
++ * Almost all operations take a path which can be of any length.
++ */
++struct fuse_operations {
++	/** Get file attributes.
++	 *
++	 * Similar to stat().  The 'st_dev' and 'st_blksize' fields are
++	 * ignored. The 'st_ino' field is ignored except if the 'use_ino'
++	 * mount option is given. In that case it is passed to userspace,
++	 * but libfuse and the kernel will still assign a different
++	 * inode for internal use (called the "nodeid").
++	 *
++	 * `fi` will always be NULL if the file is not currently open, but
++	 * may also be NULL if the file is open.
++	 */
++	int (*getattr) (const char *, struct stat *, struct fuse_file_info *fi);
++
++	/** Read the target of a symbolic link
++	 *
++	 * The buffer should be filled with a null terminated string.  The
++	 * buffer size argument includes the space for the terminating
++	 * null character.	If the linkname is too long to fit in the
++	 * buffer, it should be truncated.	The return value should be 0
++	 * for success.
++	 */
++	int (*readlink) (const char *, char *, size_t);
++
++	/** Create a file node
++	 *
++	 * This is called for creation of all non-directory, non-symlink
++	 * nodes.  If the filesystem defines a create() method, then for
++	 * regular files that will be called instead.
++	 */
++	int (*mknod) (const char *, mode_t, dev_t);
++
++	/** Create a directory
++	 *
++	 * Note that the mode argument may not have the type specification
++	 * bits set, i.e. S_ISDIR(mode) can be false.  To obtain the
++	 * correct directory type bits use  mode|S_IFDIR
++	 * */
++	int (*mkdir) (const char *, mode_t);
++
++	/** Remove a file */
++	int (*unlink) (const char *);
++
++	/** Remove a directory */
++	int (*rmdir) (const char *);
++
++	/** Create a symbolic link */
++	int (*symlink) (const char *, const char *);
++
++	/** Rename a file
++	 *
++	 * *flags* may be `RENAME_EXCHANGE` or `RENAME_NOREPLACE`. If
++	 * RENAME_NOREPLACE is specified, the filesystem must not
++	 * overwrite *newname* if it exists and return an error
++	 * instead. If `RENAME_EXCHANGE` is specified, the filesystem
++	 * must atomically exchange the two files, i.e. both must
++	 * exist and neither may be deleted.
++	 */
++	int (*rename) (const char *, const char *, unsigned int flags);
++
++	/** Create a hard link to a file */
++	int (*link) (const char *, const char *);
++
++	/** Change the permission bits of a file
++	 *
++	 * `fi` will always be NULL if the file is not currenlty open, but
++	 * may also be NULL if the file is open.
++	 */
++	int (*chmod) (const char *, mode_t, struct fuse_file_info *fi);
++
++	/** Change the owner and group of a file
++	 *
++	 * `fi` will always be NULL if the file is not currenlty open, but
++	 * may also be NULL if the file is open.
++	 *
++	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
++	 * expected to reset the setuid and setgid bits.
++	 */
++	int (*chown) (const char *, uid_t, gid_t, struct fuse_file_info *fi);
++
++	/** Change the size of a file
++	 *
++	 * `fi` will always be NULL if the file is not currenlty open, but
++	 * may also be NULL if the file is open.
++	 *
++	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
++	 * expected to reset the setuid and setgid bits.
++	 */
++	int (*truncate) (const char *, off_t, struct fuse_file_info *fi);
++
++	/** Open a file
++	 *
++	 * Open flags are available in fi->flags. The following rules
++	 * apply.
++	 *
++	 *  - Creation (O_CREAT, O_EXCL, O_NOCTTY) flags will be
++	 *    filtered out / handled by the kernel.
++	 *
++	 *  - Access modes (O_RDONLY, O_WRONLY, O_RDWR, O_EXEC, O_SEARCH)
++	 *    should be used by the filesystem to check if the operation is
++	 *    permitted.  If the ``-o default_permissions`` mount option is
++	 *    given, this check is already done by the kernel before calling
++	 *    open() and may thus be omitted by the filesystem.
++	 *
++	 *  - When writeback caching is enabled, the kernel may send
++	 *    read requests even for files opened with O_WRONLY. The
++	 *    filesystem should be prepared to handle this.
++	 *
++	 *  - When writeback caching is disabled, the filesystem is
++	 *    expected to properly handle the O_APPEND flag and ensure
++	 *    that each write is appending to the end of the file.
++	 * 
++         *  - When writeback caching is enabled, the kernel will
++	 *    handle O_APPEND. However, unless all changes to the file
++	 *    come through the kernel this will not work reliably. The
++	 *    filesystem should thus either ignore the O_APPEND flag
++	 *    (and let the kernel handle it), or return an error
++	 *    (indicating that reliably O_APPEND is not available).
++	 *
++	 * Filesystem may store an arbitrary file handle (pointer,
++	 * index, etc) in fi->fh, and use this in other all other file
++	 * operations (read, write, flush, release, fsync).
++	 *
++	 * Filesystem may also implement stateless file I/O and not store
++	 * anything in fi->fh.
++	 *
++	 * There are also some flags (direct_io, keep_cache) which the
++	 * filesystem may set in fi, to change the way the file is opened.
++	 * See fuse_file_info structure in <fuse_common.h> for more details.
++	 *
++	 * If this request is answered with an error code of ENOSYS
++	 * and FUSE_CAP_NO_OPEN_SUPPORT is set in
++	 * `fuse_conn_info.capable`, this is treated as success and
++	 * future calls to open will also succeed without being send
++	 * to the filesystem process.
++	 *
++	 */
++	int (*open) (const char *, struct fuse_file_info *);
++
++	/** Read data from an open file
++	 *
++	 * Read should return exactly the number of bytes requested except
++	 * on EOF or error, otherwise the rest of the data will be
++	 * substituted with zeroes.	 An exception to this is when the
++	 * 'direct_io' mount option is specified, in which case the return
++	 * value of the read system call will reflect the return value of
++	 * this operation.
++	 */
++	int (*read) (const char *, char *, size_t, off_t,
++		     struct fuse_file_info *);
++
++	/** Write data to an open file
++	 *
++	 * Write should return exactly the number of bytes requested
++	 * except on error.	 An exception to this is when the 'direct_io'
++	 * mount option is specified (see read operation).
++	 *
++	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
++	 * expected to reset the setuid and setgid bits.
++	 */
++	int (*write) (const char *, const char *, size_t, off_t,
++		      struct fuse_file_info *);
++
++	/** Get file system statistics
++	 *
++	 * The 'f_favail', 'f_fsid' and 'f_flag' fields are ignored
++	 */
++	int (*statfs) (const char *, struct statvfs *);
++
++	/** Possibly flush cached data
++	 *
++	 * BIG NOTE: This is not equivalent to fsync().  It's not a
++	 * request to sync dirty data.
++	 *
++	 * Flush is called on each close() of a file descriptor, as opposed to
++	 * release which is called on the close of the last file descriptor for
++	 * a file.  Under Linux, errors returned by flush() will be passed to 
++	 * userspace as errors from close(), so flush() is a good place to write
++	 * back any cached dirty data. However, many applications ignore errors 
++	 * on close(), and on non-Linux systems, close() may succeed even if flush()
++	 * returns an error. For these reasons, filesystems should not assume
++	 * that errors returned by flush will ever be noticed or even
++	 * delivered.
++	 *
++	 * NOTE: The flush() method may be called more than once for each
++	 * open().  This happens if more than one file descriptor refers to an
++	 * open file handle, e.g. due to dup(), dup2() or fork() calls.  It is
++	 * not possible to determine if a flush is final, so each flush should
++	 * be treated equally.  Multiple write-flush sequences are relatively
++	 * rare, so this shouldn't be a problem.
++	 *
++	 * Filesystems shouldn't assume that flush will be called at any
++	 * particular point.  It may be called more times than expected, or not
++	 * at all.
++	 *
++	 * [close]: http://pubs.opengroup.org/onlinepubs/9699919799/functions/close.html
++	 */
++	int (*flush) (const char *, struct fuse_file_info *);
++
++	/** Release an open file
++	 *
++	 * Release is called when there are no more references to an open
++	 * file: all file descriptors are closed and all memory mappings
++	 * are unmapped.
++	 *
++	 * For every open() call there will be exactly one release() call
++	 * with the same flags and file handle.  It is possible to
++	 * have a file opened more than once, in which case only the last
++	 * release will mean, that no more reads/writes will happen on the
++	 * file.  The return value of release is ignored.
++	 */
++	int (*release) (const char *, struct fuse_file_info *);
++
++	/** Synchronize file contents
++	 *
++	 * If the datasync parameter is non-zero, then only the user data
++	 * should be flushed, not the meta data.
++	 */
++	int (*fsync) (const char *, int, struct fuse_file_info *);
++
++	/** Set extended attributes */
++	int (*setxattr) (const char *, const char *, const char *, size_t, int);
++
++	/** Get extended attributes */
++	int (*getxattr) (const char *, const char *, char *, size_t);
++
++	/** List extended attributes */
++	int (*listxattr) (const char *, char *, size_t);
++
++	/** Remove extended attributes */
++	int (*removexattr) (const char *, const char *);
++
++	/** Open directory
++	 *
++	 * Unless the 'default_permissions' mount option is given,
++	 * this method should check if opendir is permitted for this
++	 * directory. Optionally opendir may also return an arbitrary
++	 * filehandle in the fuse_file_info structure, which will be
++	 * passed to readdir, releasedir and fsyncdir.
++	 */
++	int (*opendir) (const char *, struct fuse_file_info *);
++
++	/** Read directory
++	 *
++	 * The filesystem may choose between two modes of operation:
++	 *
++	 * 1) The readdir implementation ignores the offset parameter, and
++	 * passes zero to the filler function's offset.  The filler
++	 * function will not return '1' (unless an error happens), so the
++	 * whole directory is read in a single readdir operation.
++	 *
++	 * 2) The readdir implementation keeps track of the offsets of the
++	 * directory entries.  It uses the offset parameter and always
++	 * passes non-zero offset to the filler function.  When the buffer
++	 * is full (or an error happens) the filler function will return
++	 * '1'.
++	 */
++	int (*readdir) (const char *, void *, fuse_fill_dir_t, off_t,
++			struct fuse_file_info *, enum fuse_readdir_flags);
++
++	/** Release directory
++	 */
++	int (*releasedir) (const char *, struct fuse_file_info *);
++
++	/** Synchronize directory contents
++	 *
++	 * If the datasync parameter is non-zero, then only the user data
++	 * should be flushed, not the meta data
++	 */
++	int (*fsyncdir) (const char *, int, struct fuse_file_info *);
++
++	/**
++	 * Initialize filesystem
++	 *
++	 * The return value will passed in the `private_data` field of
++	 * `struct fuse_context` to all file operations, and as a
++	 * parameter to the destroy() method. It overrides the initial
++	 * value provided to fuse_main() / fuse_new().
++	 */
++	void *(*init) (struct fuse_conn_info *conn,
++		       struct fuse_config *cfg);
++
++	/**
++	 * Clean up filesystem
++	 *
++	 * Called on filesystem exit.
++	 */
++	void (*destroy) (void *private_data);
++
++	/**
++	 * Check file access permissions
++	 *
++	 * This will be called for the access() system call.  If the
++	 * 'default_permissions' mount option is given, this method is not
++	 * called.
++	 *
++	 * This method is not called under Linux kernel versions 2.4.x
++	 */
++	int (*access) (const char *, int);
++
++	/**
++	 * Create and open a file
++	 *
++	 * If the file does not exist, first create it with the specified
++	 * mode, and then open it.
++	 *
++	 * If this method is not implemented or under Linux kernel
++	 * versions earlier than 2.6.15, the mknod() and open() methods
++	 * will be called instead.
++	 */
++	int (*create) (const char *, mode_t, struct fuse_file_info *);
++
++	/**
++	 * Perform POSIX file locking operation
++	 *
++	 * The cmd argument will be either F_GETLK, F_SETLK or F_SETLKW.
++	 *
++	 * For the meaning of fields in 'struct flock' see the man page
++	 * for fcntl(2).  The l_whence field will always be set to
++	 * SEEK_SET.
++	 *
++	 * For checking lock ownership, the 'fuse_file_info->owner'
++	 * argument must be used.
++	 *
++	 * For F_GETLK operation, the library will first check currently
++	 * held locks, and if a conflicting lock is found it will return
++	 * information without calling this method.	 This ensures, that
++	 * for local locks the l_pid field is correctly filled in.	The
++	 * results may not be accurate in case of race conditions and in
++	 * the presence of hard links, but it's unlikely that an
++	 * application would rely on accurate GETLK results in these
++	 * cases.  If a conflicting lock is not found, this method will be
++	 * called, and the filesystem may fill out l_pid by a meaningful
++	 * value, or it may leave this field zero.
++	 *
++	 * For F_SETLK and F_SETLKW the l_pid field will be set to the pid
++	 * of the process performing the locking operation.
++	 *
++	 * Note: if this method is not implemented, the kernel will still
++	 * allow file locking to work locally.  Hence it is only
++	 * interesting for network filesystems and similar.
++	 */
++	int (*lock) (const char *, struct fuse_file_info *, int cmd,
++		     struct flock *);
++
++	/**
++	 * Change the access and modification times of a file with
++	 * nanosecond resolution
++	 *
++	 * This supersedes the old utime() interface.  New applications
++	 * should use this.
++	 *
++	 * `fi` will always be NULL if the file is not currenlty open, but
++	 * may also be NULL if the file is open.
++	 *
++	 * See the utimensat(2) man page for details.
++	 */
++	 int (*utimens) (const char *, const struct timespec tv[2],
++			 struct fuse_file_info *fi);
++
++	/**
++	 * Map block index within file to block index within device
++	 *
++	 * Note: This makes sense only for block device backed filesystems
++	 * mounted with the 'blkdev' option
++	 */
++	int (*bmap) (const char *, size_t blocksize, uint64_t *idx);
++
++	/**
++	 * Ioctl
++	 *
++	 * flags will have FUSE_IOCTL_COMPAT set for 32bit ioctls in
++	 * 64bit environment.  The size and direction of data is
++	 * determined by _IOC_*() decoding of cmd.  For _IOC_NONE,
++	 * data will be NULL, for _IOC_WRITE data is out area, for
++	 * _IOC_READ in area and if both are set in/out area.  In all
++	 * non-NULL cases, the area is of _IOC_SIZE(cmd) bytes.
++	 *
++	 * If flags has FUSE_IOCTL_DIR then the fuse_file_info refers to a
++	 * directory file handle.
++	 *
++	 * Note : the unsigned long request submitted by the application
++	 * is truncated to 32 bits.
++	 */
++	int (*ioctl) (const char *, unsigned int cmd, void *arg,
++		      struct fuse_file_info *, unsigned int flags, void *data);
++
++	/**
++	 * Poll for IO readiness events
++	 *
++	 * Note: If ph is non-NULL, the client should notify
++	 * when IO readiness events occur by calling
++	 * fuse_notify_poll() with the specified ph.
++	 *
++	 * Regardless of the number of times poll with a non-NULL ph
++	 * is received, single notification is enough to clear all.
++	 * Notifying more times incurs overhead but doesn't harm
++	 * correctness.
++	 *
++	 * The callee is responsible for destroying ph with
++	 * fuse_pollhandle_destroy() when no longer in use.
++	 */
++	int (*poll) (const char *, struct fuse_file_info *,
++		     struct fuse_pollhandle *ph, unsigned *reventsp);
++
++	/** Write contents of buffer to an open file
++	 *
++	 * Similar to the write() method, but data is supplied in a
++	 * generic buffer.  Use fuse_buf_copy() to transfer data to
++	 * the destination.
++	 *
++	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
++	 * expected to reset the setuid and setgid bits.
++	 */
++	int (*write_buf) (const char *, struct fuse_bufvec *buf, off_t off,
++			  struct fuse_file_info *);
++
++	/** Store data from an open file in a buffer
++	 *
++	 * Similar to the read() method, but data is stored and
++	 * returned in a generic buffer.
++	 *
++	 * No actual copying of data has to take place, the source
++	 * file descriptor may simply be stored in the buffer for
++	 * later data transfer.
++	 *
++	 * The buffer must be allocated dynamically and stored at the
++	 * location pointed to by bufp.  If the buffer contains memory
++	 * regions, they too must be allocated using malloc().  The
++	 * allocated memory will be freed by the caller.
++	 */
++	int (*read_buf) (const char *, struct fuse_bufvec **bufp,
++			 size_t size, off_t off, struct fuse_file_info *);
++	/**
++	 * Perform BSD file locking operation
++	 *
++	 * The op argument will be either LOCK_SH, LOCK_EX or LOCK_UN
++	 *
++	 * Nonblocking requests will be indicated by ORing LOCK_NB to
++	 * the above operations
++	 *
++	 * For more information see the flock(2) manual page.
++	 *
++	 * Additionally fi->owner will be set to a value unique to
++	 * this open file.  This same value will be supplied to
++	 * ->release() when the file is released.
++	 *
++	 * Note: if this method is not implemented, the kernel will still
++	 * allow file locking to work locally.  Hence it is only
++	 * interesting for network filesystems and similar.
++	 */
++	int (*flock) (const char *, struct fuse_file_info *, int op);
++
++	/**
++	 * Allocates space for an open file
++	 *
++	 * This function ensures that required space is allocated for specified
++	 * file.  If this function returns success then any subsequent write
++	 * request to specified range is guaranteed not to fail because of lack
++	 * of space on the file system media.
++	 */
++	int (*fallocate) (const char *, int, off_t, off_t,
++			  struct fuse_file_info *);
++
++	/**
++	 * Copy a range of data from one file to another
++	 *
++	 * Performs an optimized copy between two file descriptors without the
++	 * additional cost of transferring data through the FUSE kernel module
++	 * to user space (glibc) and then back into the FUSE filesystem again.
++	 *
++	 * In case this method is not implemented, glibc falls back to reading
++	 * data from the source and writing to the destination. Effectively
++	 * doing an inefficient copy of the data.
++	 */
++	ssize_t (*copy_file_range) (const char *path_in,
++				    struct fuse_file_info *fi_in,
++				    off_t offset_in, const char *path_out,
++				    struct fuse_file_info *fi_out,
++				    off_t offset_out, size_t size, int flags);
++
++	/**
++	 * Find next data or hole after the specified offset
++	 */
++	off_t (*lseek) (const char *, off_t off, int whence, struct fuse_file_info *);
++};
++
++/** Extra context that may be needed by some filesystems
++ *
++ * The uid, gid and pid fields are not filled in case of a writepage
++ * operation.
++ */
++struct fuse_context {
++	/** Pointer to the fuse object */
++	struct fuse *fuse;
++
++	/** User ID of the calling process */
++	uid_t uid;
++
++	/** Group ID of the calling process */
++	gid_t gid;
++
++	/** Process ID of the calling thread */
++	pid_t pid;
++
++	/** Private filesystem data */
++	void *private_data;
++
++	/** Umask of the calling process */
++	mode_t umask;
++};
++
++/**
++ * Main function of FUSE.
++ *
++ * This is for the lazy.  This is all that has to be called from the
++ * main() function.
++ *
++ * This function does the following:
++ *   - parses command line options, and handles --help and
++ *     --version
++ *   - installs signal handlers for INT, HUP, TERM and PIPE
++ *   - registers an exit handler to unmount the filesystem on program exit
++ *   - creates a fuse handle
++ *   - registers the operations
++ *   - calls either the single-threaded or the multi-threaded event loop
++ *
++ * Most file systems will have to parse some file-system specific
++ * arguments before calling this function. It is recommended to do
++ * this with fuse_opt_parse() and a processing function that passes
++ * through any unknown options (this can also be achieved by just
++ * passing NULL as the processing function). That way, the remaining
++ * options can be passed directly to fuse_main().
++ *
++ * fuse_main() accepts all options that can be passed to
++ * fuse_parse_cmdline(), fuse_new(), or fuse_session_new().
++ *
++ * Option parsing skips argv[0], which is assumed to contain the
++ * program name. This element must always be present and is used to
++ * construct a basic ``usage: `` message for the --help
++ * output. argv[0] may also be set to the empty string. In this case
++ * the usage message is suppressed. This can be used by file systems
++ * to print their own usage line first. See hello.c for an example of
++ * how to do this.
++ *
++ * Note: this is currently implemented as a macro.
++ *
++ * The following error codes may be returned from fuse_main():
++ *   1: Invalid option arguments
++ *   2: No mount point specified
++ *   3: FUSE setup failed
++ *   4: Mounting failed
++ *   5: Failed to daemonize (detach from session)
++ *   6: Failed to set up signal handlers
++ *   7: An error occured during the life of the file system
++ *
++ * @param argc the argument counter passed to the main() function
++ * @param argv the argument vector passed to the main() function
++ * @param op the file system operation
++ * @param private_data Initial value for the `private_data`
++ *            field of `struct fuse_context`. May be overridden by the
++ *            `struct fuse_operations.init` handler.
++ * @return 0 on success, nonzero on failure
++ *
++ * Example usage, see hello.c
++ */
++/*
++  int fuse_main(int argc, char *argv[], const struct fuse_operations *op,
++  void *private_data);
++*/
++#define fuse_main(argc, argv, op, private_data)				\
++	fuse_main_real(argc, argv, op, sizeof(*(op)), private_data)
++
++/* ----------------------------------------------------------- *
++ * More detailed API					       *
++ * ----------------------------------------------------------- */
++
++/**
++ * Print available options (high- and low-level) to stdout.  This is
++ * not an exhaustive list, but includes only those options that may be
++ * of interest to an end-user of a file system.
++ *
++ * The function looks at the argument vector only to determine if
++ * there are additional modules to be loaded (module=foo option),
++ * and attempts to call their help functions as well.
++ *
++ * @param args the argument vector.
++ */
++void fuse_lib_help(struct fuse_args *args);
++
++/**
++ * Create a new FUSE filesystem.
++ *
++ * This function accepts most file-system independent mount options
++ * (like context, nodev, ro - see mount(8)), as well as the
++ * FUSE-specific mount options from mount.fuse(8).
++ *
++ * If the --help option is specified, the function writes a help text
++ * to stdout and returns NULL.
++ *
++ * Option parsing skips argv[0], which is assumed to contain the
++ * program name. This element must always be present and is used to
++ * construct a basic ``usage: `` message for the --help output. If
++ * argv[0] is set to the empty string, no usage message is included in
++ * the --help output.
++ *
++ * If an unknown option is passed in, an error message is written to
++ * stderr and the function returns NULL.
++ *
++ * @param args argument vector
++ * @param op the filesystem operations
++ * @param op_size the size of the fuse_operations structure
++ * @param private_data Initial value for the `private_data`
++ *            field of `struct fuse_context`. May be overridden by the
++ *            `struct fuse_operations.init` handler.
++ * @return the created FUSE handle
++ */
++#if FUSE_USE_VERSION == 30
++struct fuse *fuse_new_30(struct fuse_args *args, const struct fuse_operations *op,
++			 size_t op_size, void *private_data);
++#define fuse_new(args, op, size, data) fuse_new_30(args, op, size, data)
++#else
++struct fuse *fuse_new(struct fuse_args *args, const struct fuse_operations *op,
++		      size_t op_size, void *private_data);
++#endif
++
++/**
++ * Mount a FUSE file system.
++ *
++ * @param mountpoint the mount point path
++ * @param f the FUSE handle
++ *
++ * @return 0 on success, -1 on failure.
++ **/
++int fuse_mount(struct fuse *f, const char *mountpoint);
++
++/**
++ * Unmount a FUSE file system.
++ *
++ * See fuse_session_unmount() for additional information.
++ *
++ * @param f the FUSE handle
++ **/
++void fuse_unmount(struct fuse *f);
++
++/**
++ * Destroy the FUSE handle.
++ *
++ * NOTE: This function does not unmount the filesystem.	 If this is
++ * needed, call fuse_unmount() before calling this function.
++ *
++ * @param f the FUSE handle
++ */
++void fuse_destroy(struct fuse *f);
++
++/**
++ * FUSE event loop.
++ *
++ * Requests from the kernel are processed, and the appropriate
++ * operations are called.
++ *
++ * For a description of the return value and the conditions when the
++ * event loop exits, refer to the documentation of
++ * fuse_session_loop().
++ *
++ * @param f the FUSE handle
++ * @return see fuse_session_loop()
++ *
++ * See also: fuse_loop_mt()
++ */
++int fuse_loop(struct fuse *f);
++
++/**
++ * Flag session as terminated
++ *
++ * This function will cause any running event loops to exit on
++ * the next opportunity.
++ *
++ * @param f the FUSE handle
++ */
++void fuse_exit(struct fuse *f);
++
++/**
++ * FUSE event loop with multiple threads
++ *
++ * Requests from the kernel are processed, and the appropriate
++ * operations are called.  Request are processed in parallel by
++ * distributing them between multiple threads.
++ *
++ * For a description of the return value and the conditions when the
++ * event loop exits, refer to the documentation of
++ * fuse_session_loop().
++ *
++ * Note: using fuse_loop() instead of fuse_loop_mt() means you are running in
++ * single-threaded mode, and that you will not have to worry about reentrancy,
++ * though you will have to worry about recursive lookups. In single-threaded
++ * mode, FUSE will wait for one callback to return before calling another.
++ *
++ * Enabling multiple threads, by using fuse_loop_mt(), will cause FUSE to make
++ * multiple simultaneous calls into the various callback functions given by your
++ * fuse_operations record.
++ *
++ * If you are using multiple threads, you can enjoy all the parallel execution
++ * and interactive response benefits of threads, and you get to enjoy all the
++ * benefits of race conditions and locking bugs, too. Ensure that any code used
++ * in the callback function of fuse_operations is also thread-safe.
++ *
++ * @param f the FUSE handle
++ * @param config loop configuration
++ * @return see fuse_session_loop()
++ *
++ * See also: fuse_loop()
++ */
++#if FUSE_USE_VERSION < 32
++int fuse_loop_mt_31(struct fuse *f, int clone_fd);
++#define fuse_loop_mt(f, clone_fd) fuse_loop_mt_31(f, clone_fd)
++#else
++int fuse_loop_mt(struct fuse *f, struct fuse_loop_config *config);
++#endif
++
++/**
++ * Get the current context
++ *
++ * The context is only valid for the duration of a filesystem
++ * operation, and thus must not be stored and used later.
++ *
++ * @return the context
++ */
++struct fuse_context *fuse_get_context(void);
++
++/**
++ * Get the current supplementary group IDs for the current request
++ *
++ * Similar to the getgroups(2) system call, except the return value is
++ * always the total number of group IDs, even if it is larger than the
++ * specified size.
++ *
++ * The current fuse kernel module in linux (as of 2.6.30) doesn't pass
++ * the group list to userspace, hence this function needs to parse
++ * "/proc/$TID/task/$TID/status" to get the group IDs.
++ *
++ * This feature may not be supported on all operating systems.  In
++ * such a case this function will return -ENOSYS.
++ *
++ * @param size size of given array
++ * @param list array of group IDs to be filled in
++ * @return the total number of supplementary group IDs or -errno on failure
++ */
++int fuse_getgroups(int size, gid_t list[]);
++
++/**
++ * Check if the current request has already been interrupted
++ *
++ * @return 1 if the request has been interrupted, 0 otherwise
++ */
++int fuse_interrupted(void);
++
++/**
++ * Invalidates cache for the given path.
++ *
++ * This calls fuse_lowlevel_notify_inval_inode internally.
++ *
++ * @return 0 on successful invalidation, negative error value otherwise.
++ *         This routine may return -ENOENT to indicate that there was
++ *         no entry to be invalidated, e.g., because the path has not
++ *         been seen before or has been forgotten; this should not be
++ *         considered to be an error.
++ */
++int fuse_invalidate_path(struct fuse *f, const char *path);
++
++/**
++ * The real main function
++ *
++ * Do not call this directly, use fuse_main()
++ */
++int fuse_main_real(int argc, char *argv[], const struct fuse_operations *op,
++		   size_t op_size, void *private_data);
++
++/**
++ * Start the cleanup thread when using option "remember".
++ *
++ * This is done automatically by fuse_loop_mt()
++ * @param fuse struct fuse pointer for fuse instance
++ * @return 0 on success and -1 on error
++ */
++int fuse_start_cleanup_thread(struct fuse *fuse);
++
++/**
++ * Stop the cleanup thread when using option "remember".
++ *
++ * This is done automatically by fuse_loop_mt()
++ * @param fuse struct fuse pointer for fuse instance
++ */
++void fuse_stop_cleanup_thread(struct fuse *fuse);
++
++/**
++ * Iterate over cache removing stale entries
++ * use in conjunction with "-oremember"
++ *
++ * NOTE: This is already done for the standard sessions
++ *
++ * @param fuse struct fuse pointer for fuse instance
++ * @return the number of seconds until the next cleanup
++ */
++int fuse_clean_cache(struct fuse *fuse);
++
++/*
++ * Stacking API
++ */
++
++/**
++ * Fuse filesystem object
++ *
++ * This is opaque object represents a filesystem layer
++ */
++struct fuse_fs;
++
++/*
++ * These functions call the relevant filesystem operation, and return
++ * the result.
++ *
++ * If the operation is not defined, they return -ENOSYS, with the
++ * exception of fuse_fs_open, fuse_fs_release, fuse_fs_opendir,
++ * fuse_fs_releasedir and fuse_fs_statfs, which return 0.
++ */
++
++int fuse_fs_getattr(struct fuse_fs *fs, const char *path, struct stat *buf,
++		    struct fuse_file_info *fi);
++int fuse_fs_rename(struct fuse_fs *fs, const char *oldpath,
++		   const char *newpath, unsigned int flags);
++int fuse_fs_unlink(struct fuse_fs *fs, const char *path);
++int fuse_fs_rmdir(struct fuse_fs *fs, const char *path);
++int fuse_fs_symlink(struct fuse_fs *fs, const char *linkname,
++		    const char *path);
++int fuse_fs_link(struct fuse_fs *fs, const char *oldpath, const char *newpath);
++int fuse_fs_release(struct fuse_fs *fs,	 const char *path,
++		    struct fuse_file_info *fi);
++int fuse_fs_open(struct fuse_fs *fs, const char *path,
++		 struct fuse_file_info *fi);
++int fuse_fs_read(struct fuse_fs *fs, const char *path, char *buf, size_t size,
++		 off_t off, struct fuse_file_info *fi);
++int fuse_fs_read_buf(struct fuse_fs *fs, const char *path,
++		     struct fuse_bufvec **bufp, size_t size, off_t off,
++		     struct fuse_file_info *fi);
++int fuse_fs_write(struct fuse_fs *fs, const char *path, const char *buf,
++		  size_t size, off_t off, struct fuse_file_info *fi);
++int fuse_fs_write_buf(struct fuse_fs *fs, const char *path,
++		      struct fuse_bufvec *buf, off_t off,
++		      struct fuse_file_info *fi);
++int fuse_fs_fsync(struct fuse_fs *fs, const char *path, int datasync,
++		  struct fuse_file_info *fi);
++int fuse_fs_flush(struct fuse_fs *fs, const char *path,
++		  struct fuse_file_info *fi);
++int fuse_fs_statfs(struct fuse_fs *fs, const char *path, struct statvfs *buf);
++int fuse_fs_opendir(struct fuse_fs *fs, const char *path,
++		    struct fuse_file_info *fi);
++int fuse_fs_readdir(struct fuse_fs *fs, const char *path, void *buf,
++		    fuse_fill_dir_t filler, off_t off,
++		    struct fuse_file_info *fi, enum fuse_readdir_flags flags);
++int fuse_fs_fsyncdir(struct fuse_fs *fs, const char *path, int datasync,
++		     struct fuse_file_info *fi);
++int fuse_fs_releasedir(struct fuse_fs *fs, const char *path,
++		       struct fuse_file_info *fi);
++int fuse_fs_create(struct fuse_fs *fs, const char *path, mode_t mode,
++		   struct fuse_file_info *fi);
++int fuse_fs_lock(struct fuse_fs *fs, const char *path,
++		 struct fuse_file_info *fi, int cmd, struct flock *lock);
++int fuse_fs_flock(struct fuse_fs *fs, const char *path,
++		  struct fuse_file_info *fi, int op);
++int fuse_fs_chmod(struct fuse_fs *fs, const char *path, mode_t mode,
++		  struct fuse_file_info *fi);
++int fuse_fs_chown(struct fuse_fs *fs, const char *path, uid_t uid, gid_t gid,
++		  struct fuse_file_info *fi);
++int fuse_fs_truncate(struct fuse_fs *fs, const char *path, off_t size,
++		     struct fuse_file_info *fi);
++int fuse_fs_utimens(struct fuse_fs *fs, const char *path,
++		    const struct timespec tv[2], struct fuse_file_info *fi);
++int fuse_fs_access(struct fuse_fs *fs, const char *path, int mask);
++int fuse_fs_readlink(struct fuse_fs *fs, const char *path, char *buf,
++		     size_t len);
++int fuse_fs_mknod(struct fuse_fs *fs, const char *path, mode_t mode,
++		  dev_t rdev);
++int fuse_fs_mkdir(struct fuse_fs *fs, const char *path, mode_t mode);
++int fuse_fs_setxattr(struct fuse_fs *fs, const char *path, const char *name,
++		     const char *value, size_t size, int flags);
++int fuse_fs_getxattr(struct fuse_fs *fs, const char *path, const char *name,
++		     char *value, size_t size);
++int fuse_fs_listxattr(struct fuse_fs *fs, const char *path, char *list,
++		      size_t size);
++int fuse_fs_removexattr(struct fuse_fs *fs, const char *path,
++			const char *name);
++int fuse_fs_bmap(struct fuse_fs *fs, const char *path, size_t blocksize,
++		 uint64_t *idx);
++int fuse_fs_ioctl(struct fuse_fs *fs, const char *path, unsigned int cmd,
++		  void *arg, struct fuse_file_info *fi, unsigned int flags,
++		  void *data);
++int fuse_fs_poll(struct fuse_fs *fs, const char *path,
++		 struct fuse_file_info *fi, struct fuse_pollhandle *ph,
++		 unsigned *reventsp);
++int fuse_fs_fallocate(struct fuse_fs *fs, const char *path, int mode,
++		 off_t offset, off_t length, struct fuse_file_info *fi);
++ssize_t fuse_fs_copy_file_range(struct fuse_fs *fs, const char *path_in,
++				struct fuse_file_info *fi_in, off_t off_in,
++				const char *path_out,
++				struct fuse_file_info *fi_out, off_t off_out,
++				size_t len, int flags);
++off_t fuse_fs_lseek(struct fuse_fs *fs, const char *path, off_t off, int whence,
++		    struct fuse_file_info *fi);
++void fuse_fs_init(struct fuse_fs *fs, struct fuse_conn_info *conn,
++		struct fuse_config *cfg);
++void fuse_fs_destroy(struct fuse_fs *fs);
++
++int fuse_notify_poll(struct fuse_pollhandle *ph);
++
++/**
++ * Create a new fuse filesystem object
++ *
++ * This is usually called from the factory of a fuse module to create
++ * a new instance of a filesystem.
++ *
++ * @param op the filesystem operations
++ * @param op_size the size of the fuse_operations structure
++ * @param private_data Initial value for the `private_data`
++ *            field of `struct fuse_context`. May be overridden by the
++ *            `struct fuse_operations.init` handler.
++ * @return a new filesystem object
++ */
++struct fuse_fs *fuse_fs_new(const struct fuse_operations *op, size_t op_size,
++			    void *private_data);
++
++/**
++ * Factory for creating filesystem objects
++ *
++ * The function may use and remove options from 'args' that belong
++ * to this module.
++ *
++ * For now the 'fs' vector always contains exactly one filesystem.
++ * This is the filesystem which will be below the newly created
++ * filesystem in the stack.
++ *
++ * @param args the command line arguments
++ * @param fs NULL terminated filesystem object vector
++ * @return the new filesystem object
++ */
++typedef struct fuse_fs *(*fuse_module_factory_t)(struct fuse_args *args,
++						 struct fuse_fs *fs[]);
++/**
++ * Register filesystem module
++ *
++ * If the "-omodules=*name*_:..." option is present, filesystem
++ * objects are created and pushed onto the stack with the *factory_*
++ * function.
++ *
++ * @param name_ the name of this filesystem module
++ * @param factory_ the factory function for this filesystem module
++ */
++#define FUSE_REGISTER_MODULE(name_, factory_) \
++	fuse_module_factory_t fuse_module_ ## name_ ## _factory = factory_
++
++/** Get session from fuse object */
++struct fuse_session *fuse_get_session(struct fuse *f);
++
++/**
++ * Open a FUSE file descriptor and set up the mount for the given
++ * mountpoint and flags.
++ *
++ * @param mountpoint reference to the mount in the file system
++ * @param options mount options
++ * @return the FUSE file descriptor or -1 upon error
++ */
++int fuse_open_channel(const char *mountpoint, const char *options);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* FUSE_H_ */
+diff --git a/tools/virtiofsd/fuse_common.h b/tools/virtiofsd/fuse_common.h
+new file mode 100644
+index 0000000000..2d686b2ac4
+--- /dev/null
++++ b/tools/virtiofsd/fuse_common.h
+@@ -0,0 +1,823 @@
++/*  FUSE: Filesystem in Userspace
++  Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
++
++  This program can be distributed under the terms of the GNU LGPLv2.
++  See the file COPYING.LIB.
++*/
++
++/** @file */
++
++#if !defined(FUSE_H_) && !defined(FUSE_LOWLEVEL_H_)
++#error "Never include <fuse_common.h> directly; use <fuse.h> or <fuse_lowlevel.h> instead."
++#endif
++
++#ifndef FUSE_COMMON_H_
++#define FUSE_COMMON_H_
++
++#include "fuse_opt.h"
++#include "fuse_log.h"
++#include <stdint.h>
++#include <sys/types.h>
++
++/** Major version of FUSE library interface */
++#define FUSE_MAJOR_VERSION 3
++
++/** Minor version of FUSE library interface */
++#define FUSE_MINOR_VERSION 2
++
++#define FUSE_MAKE_VERSION(maj, min)  ((maj) * 10 + (min))
++#define FUSE_VERSION FUSE_MAKE_VERSION(FUSE_MAJOR_VERSION, FUSE_MINOR_VERSION)
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/**
++ * Information about an open file.
++ *
++ * File Handles are created by the open, opendir, and create methods and closed
++ * by the release and releasedir methods.  Multiple file handles may be
++ * concurrently open for the same file.  Generally, a client will create one
++ * file handle per file descriptor, though in some cases multiple file
++ * descriptors can share a single file handle.
++ */
++struct fuse_file_info {
++	/** Open flags.	 Available in open() and release() */
++	int flags;
++
++	/** In case of a write operation indicates if this was caused
++	    by a delayed write from the page cache. If so, then the
++	    context's pid, uid, and gid fields will not be valid, and
++	    the *fh* value may not match the *fh* value that would
++	    have been sent with the corresponding individual write
++	    requests if write caching had been disabled. */
++	unsigned int writepage : 1;
++
++	/** Can be filled in by open, to use direct I/O on this file. */
++	unsigned int direct_io : 1;
++
++	/** Can be filled in by open. It signals the kernel that any
++	    currently cached file data (ie., data that the filesystem
++	    provided the last time the file was open) need not be
++	    invalidated. Has no effect when set in other contexts (in
++	    particular it does nothing when set by opendir()). */
++	unsigned int keep_cache : 1;
++
++	/** Indicates a flush operation.  Set in flush operation, also
++	    maybe set in highlevel lock operation and lowlevel release
++	    operation. */
++	unsigned int flush : 1;
++
++	/** Can be filled in by open, to indicate that the file is not
++	    seekable. */
++	unsigned int nonseekable : 1;
++
++	/* Indicates that flock locks for this file should be
++	   released.  If set, lock_owner shall contain a valid value.
++	   May only be set in ->release(). */
++	unsigned int flock_release : 1;
++
++	/** Can be filled in by opendir. It signals the kernel to
++	    enable caching of entries returned by readdir().  Has no
++	    effect when set in other contexts (in particular it does
++	    nothing when set by open()). */
++	unsigned int cache_readdir : 1;
++
++	/** Padding.  Reserved for future use*/
++	unsigned int padding : 25;
++	unsigned int padding2 : 32;
++
++	/** File handle id.  May be filled in by filesystem in create,
++	 * open, and opendir().  Available in most other file operations on the
++	 * same file handle. */
++	uint64_t fh;
++
++	/** Lock owner id.  Available in locking operations and flush */
++	uint64_t lock_owner;
++
++	/** Requested poll events.  Available in ->poll.  Only set on kernels
++	    which support it.  If unsupported, this field is set to zero. */
++	uint32_t poll_events;
++};
++
++/**
++ * Configuration parameters passed to fuse_session_loop_mt() and
++ * fuse_loop_mt().
++ */
++struct fuse_loop_config {
++	/**
++	 * whether to use separate device fds for each thread
++	 * (may increase performance)
++	 */
++	int clone_fd;
++
++	/**
++	 * The maximum number of available worker threads before they
++	 * start to get deleted when they become idle. If not
++	 * specified, the default is 10.
++	 *
++	 * Adjusting this has performance implications; a very small number
++	 * of threads in the pool will cause a lot of thread creation and
++	 * deletion overhead and performance may suffer. When set to 0, a new
++	 * thread will be created to service every operation.
++	 */
++	unsigned int max_idle_threads;
++};
++
++/**************************************************************************
++ * Capability bits for 'fuse_conn_info.capable' and 'fuse_conn_info.want' *
++ **************************************************************************/
++
++/**
++ * Indicates that the filesystem supports asynchronous read requests.
++ *
++ * If this capability is not requested/available, the kernel will
++ * ensure that there is at most one pending read request per
++ * file-handle at any time, and will attempt to order read requests by
++ * increasing offset.
++ *
++ * This feature is enabled by default when supported by the kernel.
++ */
++#define FUSE_CAP_ASYNC_READ		(1 << 0)
++
++/**
++ * Indicates that the filesystem supports "remote" locking.
++ *
++ * This feature is enabled by default when supported by the kernel,
++ * and if getlk() and setlk() handlers are implemented.
++ */
++#define FUSE_CAP_POSIX_LOCKS		(1 << 1)
++
++/**
++ * Indicates that the filesystem supports the O_TRUNC open flag.  If
++ * disabled, and an application specifies O_TRUNC, fuse first calls
++ * truncate() and then open() with O_TRUNC filtered out.
++ *
++ * This feature is enabled by default when supported by the kernel.
++ */
++#define FUSE_CAP_ATOMIC_O_TRUNC		(1 << 3)
++
++/**
++ * Indicates that the filesystem supports lookups of "." and "..".
++ *
++ * This feature is disabled by default.
++ */
++#define FUSE_CAP_EXPORT_SUPPORT		(1 << 4)
++
++/**
++ * Indicates that the kernel should not apply the umask to the
++ * file mode on create operations.
++ *
++ * This feature is disabled by default.
++ */
++#define FUSE_CAP_DONT_MASK		(1 << 6)
++
++/**
++ * Indicates that libfuse should try to use splice() when writing to
++ * the fuse device. This may improve performance.
++ *
++ * This feature is disabled by default.
++ */
++#define FUSE_CAP_SPLICE_WRITE		(1 << 7)
++
++/**
++ * Indicates that libfuse should try to move pages instead of copying when
++ * writing to / reading from the fuse device. This may improve performance.
++ *
++ * This feature is disabled by default.
++ */
++#define FUSE_CAP_SPLICE_MOVE		(1 << 8)
++
++/**
++ * Indicates that libfuse should try to use splice() when reading from
++ * the fuse device. This may improve performance.
++ *
++ * This feature is enabled by default when supported by the kernel and
++ * if the filesystem implements a write_buf() handler.
++ */
++#define FUSE_CAP_SPLICE_READ		(1 << 9)
++
++/**
++ * If set, the calls to flock(2) will be emulated using POSIX locks and must
++ * then be handled by the filesystem's setlock() handler.
++ *
++ * If not set, flock(2) calls will be handled by the FUSE kernel module
++ * internally (so any access that does not go through the kernel cannot be taken
++ * into account).
++ *
++ * This feature is enabled by default when supported by the kernel and
++ * if the filesystem implements a flock() handler.
++ */
++#define FUSE_CAP_FLOCK_LOCKS		(1 << 10)
++
++/**
++ * Indicates that the filesystem supports ioctl's on directories.
++ *
++ * This feature is enabled by default when supported by the kernel.
++ */
++#define FUSE_CAP_IOCTL_DIR		(1 << 11)
++
++/**
++ * Traditionally, while a file is open the FUSE kernel module only
++ * asks the filesystem for an update of the file's attributes when a
++ * client attempts to read beyond EOF. This is unsuitable for
++ * e.g. network filesystems, where the file contents may change
++ * without the kernel knowing about it.
++ *
++ * If this flag is set, FUSE will check the validity of the attributes
++ * on every read. If the attributes are no longer valid (i.e., if the
++ * *attr_timeout* passed to fuse_reply_attr() or set in `struct
++ * fuse_entry_param` has passed), it will first issue a `getattr`
++ * request. If the new mtime differs from the previous value, any
++ * cached file *contents* will be invalidated as well.
++ *
++ * This flag should always be set when available. If all file changes
++ * go through the kernel, *attr_timeout* should be set to a very large
++ * number to avoid unnecessary getattr() calls.
++ *
++ * This feature is enabled by default when supported by the kernel.
++ */
++#define FUSE_CAP_AUTO_INVAL_DATA	(1 << 12)
++
++/**
++ * Indicates that the filesystem supports readdirplus.
++ *
++ * This feature is enabled by default when supported by the kernel and if the
++ * filesystem implements a readdirplus() handler.
++ */
++#define FUSE_CAP_READDIRPLUS		(1 << 13)
++
++/**
++ * Indicates that the filesystem supports adaptive readdirplus.
++ *
++ * If FUSE_CAP_READDIRPLUS is not set, this flag has no effect.
++ *
++ * If FUSE_CAP_READDIRPLUS is set and this flag is not set, the kernel
++ * will always issue readdirplus() requests to retrieve directory
++ * contents.
++ *
++ * If FUSE_CAP_READDIRPLUS is set and this flag is set, the kernel
++ * will issue both readdir() and readdirplus() requests, depending on
++ * how much information is expected to be required.
++ *
++ * As of Linux 4.20, the algorithm is as follows: when userspace
++ * starts to read directory entries, issue a READDIRPLUS request to
++ * the filesystem. If any entry attributes have been looked up by the
++ * time userspace requests the next batch of entries continue with
++ * READDIRPLUS, otherwise switch to plain READDIR.  This will reasult
++ * in eg plain "ls" triggering READDIRPLUS first then READDIR after
++ * that because it doesn't do lookups.  "ls -l" should result in all
++ * READDIRPLUS, except if dentries are already cached.
++ *
++ * This feature is enabled by default when supported by the kernel and
++ * if the filesystem implements both a readdirplus() and a readdir()
++ * handler.
++ */
++#define FUSE_CAP_READDIRPLUS_AUTO	(1 << 14)
++
++/**
++ * Indicates that the filesystem supports asynchronous direct I/O submission.
++ *
++ * If this capability is not requested/available, the kernel will ensure that
++ * there is at most one pending read and one pending write request per direct
++ * I/O file-handle at any time.
++ *
++ * This feature is enabled by default when supported by the kernel.
++ */
++#define FUSE_CAP_ASYNC_DIO		(1 << 15)
++
++/**
++ * Indicates that writeback caching should be enabled. This means that
++ * individual write request may be buffered and merged in the kernel
++ * before they are send to the filesystem.
++ *
++ * This feature is disabled by default.
++ */
++#define FUSE_CAP_WRITEBACK_CACHE	(1 << 16)
++
++/**
++ * Indicates support for zero-message opens. If this flag is set in
++ * the `capable` field of the `fuse_conn_info` structure, then the
++ * filesystem may return `ENOSYS` from the open() handler to indicate
++ * success. Further attempts to open files will be handled in the
++ * kernel. (If this flag is not set, returning ENOSYS will be treated
++ * as an error and signaled to the caller).
++ *
++ * Setting (or unsetting) this flag in the `want` field has *no
++ * effect*.
++ */
++#define FUSE_CAP_NO_OPEN_SUPPORT	(1 << 17)
++
++/**
++ * Indicates support for parallel directory operations. If this flag
++ * is unset, the FUSE kernel module will ensure that lookup() and
++ * readdir() requests are never issued concurrently for the same
++ * directory.
++ *
++ * This feature is enabled by default when supported by the kernel.
++ */
++#define FUSE_CAP_PARALLEL_DIROPS        (1 << 18)
++
++/**
++ * Indicates support for POSIX ACLs.
++ *
++ * If this feature is enabled, the kernel will cache and have
++ * responsibility for enforcing ACLs. ACL will be stored as xattrs and
++ * passed to userspace, which is responsible for updating the ACLs in
++ * the filesystem, keeping the file mode in sync with the ACL, and
++ * ensuring inheritance of default ACLs when new filesystem nodes are
++ * created. Note that this requires that the file system is able to
++ * parse and interpret the xattr representation of ACLs.
++ *
++ * Enabling this feature implicitly turns on the
++ * ``default_permissions`` mount option (even if it was not passed to
++ * mount(2)).
++ *
++ * This feature is disabled by default.
++ */
++#define FUSE_CAP_POSIX_ACL              (1 << 19)
++
++/**
++ * Indicates that the filesystem is responsible for unsetting
++ * setuid and setgid bits when a file is written, truncated, or
++ * its owner is changed.
++ *
++ * This feature is enabled by default when supported by the kernel.
++ */
++#define FUSE_CAP_HANDLE_KILLPRIV         (1 << 20)
++
++/**
++ * Indicates support for zero-message opendirs. If this flag is set in
++ * the `capable` field of the `fuse_conn_info` structure, then the filesystem
++ * may return `ENOSYS` from the opendir() handler to indicate success. Further
++ * opendir and releasedir messages will be handled in the kernel. (If this
++ * flag is not set, returning ENOSYS will be treated as an error and signalled
++ * to the caller.)
++ *
++ * Setting (or unsetting) this flag in the `want` field has *no effect*.
++ */
++#define FUSE_CAP_NO_OPENDIR_SUPPORT    (1 << 24)
++
++/**
++ * Ioctl flags
++ *
++ * FUSE_IOCTL_COMPAT: 32bit compat ioctl on 64bit machine
++ * FUSE_IOCTL_UNRESTRICTED: not restricted to well-formed ioctls, retry allowed
++ * FUSE_IOCTL_RETRY: retry with new iovecs
++ * FUSE_IOCTL_DIR: is a directory
++ *
++ * FUSE_IOCTL_MAX_IOV: maximum of in_iovecs + out_iovecs
++ */
++#define FUSE_IOCTL_COMPAT	(1 << 0)
++#define FUSE_IOCTL_UNRESTRICTED	(1 << 1)
++#define FUSE_IOCTL_RETRY	(1 << 2)
++#define FUSE_IOCTL_DIR		(1 << 4)
++
++#define FUSE_IOCTL_MAX_IOV	256
++
++/**
++ * Connection information, passed to the ->init() method
++ *
++ * Some of the elements are read-write, these can be changed to
++ * indicate the value requested by the filesystem.  The requested
++ * value must usually be smaller than the indicated value.
++ */
++struct fuse_conn_info {
++	/**
++	 * Major version of the protocol (read-only)
++	 */
++	unsigned proto_major;
++
++	/**
++	 * Minor version of the protocol (read-only)
++	 */
++	unsigned proto_minor;
++
++	/**
++	 * Maximum size of the write buffer
++	 */
++	unsigned max_write;
++
++	/**
++	 * Maximum size of read requests. A value of zero indicates no
++	 * limit. However, even if the filesystem does not specify a
++	 * limit, the maximum size of read requests will still be
++	 * limited by the kernel.
++	 *
++	 * NOTE: For the time being, the maximum size of read requests
++	 * must be set both here *and* passed to fuse_session_new()
++	 * using the ``-o max_read=<n>`` mount option. At some point
++	 * in the future, specifying the mount option will no longer
++	 * be necessary.
++	 */
++	unsigned max_read;
++
++	/**
++	 * Maximum readahead
++	 */
++	unsigned max_readahead;
++
++	/**
++	 * Capability flags that the kernel supports (read-only)
++	 */
++	unsigned capable;
++
++	/**
++	 * Capability flags that the filesystem wants to enable.
++	 *
++	 * libfuse attempts to initialize this field with
++	 * reasonable default values before calling the init() handler.
++	 */
++	unsigned want;
++
++	/**
++	 * Maximum number of pending "background" requests. A
++	 * background request is any type of request for which the
++	 * total number is not limited by other means. As of kernel
++	 * 4.8, only two types of requests fall into this category:
++	 *
++	 *   1. Read-ahead requests
++	 *   2. Asynchronous direct I/O requests
++	 *
++	 * Read-ahead requests are generated (if max_readahead is
++	 * non-zero) by the kernel to preemptively fill its caches
++	 * when it anticipates that userspace will soon read more
++	 * data.
++	 *
++	 * Asynchronous direct I/O requests are generated if
++	 * FUSE_CAP_ASYNC_DIO is enabled and userspace submits a large
++	 * direct I/O request. In this case the kernel will internally
++	 * split it up into multiple smaller requests and submit them
++	 * to the filesystem concurrently.
++	 *
++	 * Note that the following requests are *not* background
++	 * requests: writeback requests (limited by the kernel's
++	 * flusher algorithm), regular (i.e., synchronous and
++	 * buffered) userspace read/write requests (limited to one per
++	 * thread), asynchronous read requests (Linux's io_submit(2)
++	 * call actually blocks, so these are also limited to one per
++	 * thread).
++	 */
++	unsigned max_background;
++
++	/**
++	 * Kernel congestion threshold parameter. If the number of pending
++	 * background requests exceeds this number, the FUSE kernel module will
++	 * mark the filesystem as "congested". This instructs the kernel to
++	 * expect that queued requests will take some time to complete, and to
++	 * adjust its algorithms accordingly (e.g. by putting a waiting thread
++	 * to sleep instead of using a busy-loop).
++	 */
++	unsigned congestion_threshold;
++
++	/**
++	 * When FUSE_CAP_WRITEBACK_CACHE is enabled, the kernel is responsible
++	 * for updating mtime and ctime when write requests are received. The
++	 * updated values are passed to the filesystem with setattr() requests.
++	 * However, if the filesystem does not support the full resolution of
++	 * the kernel timestamps (nanoseconds), the mtime and ctime values used
++	 * by kernel and filesystem will differ (and result in an apparent
++	 * change of times after a cache flush).
++	 *
++	 * To prevent this problem, this variable can be used to inform the
++	 * kernel about the timestamp granularity supported by the file-system.
++	 * The value should be power of 10.  The default is 1, i.e. full
++	 * nano-second resolution. Filesystems supporting only second resolution
++	 * should set this to 1000000000.
++	 */
++	unsigned time_gran;
++
++	/**
++	 * For future use.
++	 */
++	unsigned reserved[22];
++};
++
++struct fuse_session;
++struct fuse_pollhandle;
++struct fuse_conn_info_opts;
++
++/**
++ * This function parses several command-line options that can be used
++ * to override elements of struct fuse_conn_info. The pointer returned
++ * by this function should be passed to the
++ * fuse_apply_conn_info_opts() method by the file system's init()
++ * handler.
++ *
++ * Before using this function, think twice if you really want these
++ * parameters to be adjustable from the command line. In most cases,
++ * they should be determined by the file system internally.
++ *
++ * The following options are recognized:
++ *
++ *   -o max_write=N         sets conn->max_write
++ *   -o max_readahead=N     sets conn->max_readahead
++ *   -o max_background=N    sets conn->max_background
++ *   -o congestion_threshold=N  sets conn->congestion_threshold
++ *   -o async_read          sets FUSE_CAP_ASYNC_READ in conn->want
++ *   -o sync_read           unsets FUSE_CAP_ASYNC_READ in conn->want
++ *   -o atomic_o_trunc      sets FUSE_CAP_ATOMIC_O_TRUNC in conn->want
++ *   -o no_remote_lock      Equivalent to -o no_remote_flock,no_remote_posix_lock
++ *   -o no_remote_flock     Unsets FUSE_CAP_FLOCK_LOCKS in conn->want
++ *   -o no_remote_posix_lock  Unsets FUSE_CAP_POSIX_LOCKS in conn->want
++ *   -o [no_]splice_write     (un-)sets FUSE_CAP_SPLICE_WRITE in conn->want
++ *   -o [no_]splice_move      (un-)sets FUSE_CAP_SPLICE_MOVE in conn->want
++ *   -o [no_]splice_read      (un-)sets FUSE_CAP_SPLICE_READ in conn->want
++ *   -o [no_]auto_inval_data  (un-)sets FUSE_CAP_AUTO_INVAL_DATA in conn->want
++ *   -o readdirplus=no        unsets FUSE_CAP_READDIRPLUS in conn->want
++ *   -o readdirplus=yes       sets FUSE_CAP_READDIRPLUS and unsets
++ *                            FUSE_CAP_READDIRPLUS_AUTO in conn->want
++ *   -o readdirplus=auto      sets FUSE_CAP_READDIRPLUS and
++ *                            FUSE_CAP_READDIRPLUS_AUTO in conn->want
++ *   -o [no_]async_dio        (un-)sets FUSE_CAP_ASYNC_DIO in conn->want
++ *   -o [no_]writeback_cache  (un-)sets FUSE_CAP_WRITEBACK_CACHE in conn->want
++ *   -o time_gran=N           sets conn->time_gran
++ *
++ * Known options will be removed from *args*, unknown options will be
++ * passed through unchanged.
++ *
++ * @param args argument vector (input+output)
++ * @return parsed options
++ **/
++struct fuse_conn_info_opts* fuse_parse_conn_info_opts(struct fuse_args *args);
++
++/**
++ * This function applies the (parsed) parameters in *opts* to the
++ * *conn* pointer. It may modify the following fields: wants,
++ * max_write, max_readahead, congestion_threshold, max_background,
++ * time_gran. A field is only set (or unset) if the corresponding
++ * option has been explicitly set.
++ */
++void fuse_apply_conn_info_opts(struct fuse_conn_info_opts *opts,
++			  struct fuse_conn_info *conn);
++
++/**
++ * Go into the background
++ *
++ * @param foreground if true, stay in the foreground
++ * @return 0 on success, -1 on failure
++ */
++int fuse_daemonize(int foreground);
++
++/**
++ * Get the version of the library
++ *
++ * @return the version
++ */
++int fuse_version(void);
++
++/**
++ * Get the full package version string of the library
++ *
++ * @return the package version
++ */
++const char *fuse_pkgversion(void);
++
++/**
++ * Destroy poll handle
++ *
++ * @param ph the poll handle
++ */
++void fuse_pollhandle_destroy(struct fuse_pollhandle *ph);
++
++/* ----------------------------------------------------------- *
++ * Data buffer						       *
++ * ----------------------------------------------------------- */
++
++/**
++ * Buffer flags
++ */
++enum fuse_buf_flags {
++	/**
++	 * Buffer contains a file descriptor
++	 *
++	 * If this flag is set, the .fd field is valid, otherwise the
++	 * .mem fields is valid.
++	 */
++	FUSE_BUF_IS_FD		= (1 << 1),
++
++	/**
++	 * Seek on the file descriptor
++	 *
++	 * If this flag is set then the .pos field is valid and is
++	 * used to seek to the given offset before performing
++	 * operation on file descriptor.
++	 */
++	FUSE_BUF_FD_SEEK	= (1 << 2),
++
++	/**
++	 * Retry operation on file descriptor
++	 *
++	 * If this flag is set then retry operation on file descriptor
++	 * until .size bytes have been copied or an error or EOF is
++	 * detected.
++	 */
++	FUSE_BUF_FD_RETRY	= (1 << 3),
++};
++
++/**
++ * Buffer copy flags
++ */
++enum fuse_buf_copy_flags {
++	/**
++	 * Don't use splice(2)
++	 *
++	 * Always fall back to using read and write instead of
++	 * splice(2) to copy data from one file descriptor to another.
++	 *
++	 * If this flag is not set, then only fall back if splice is
++	 * unavailable.
++	 */
++	FUSE_BUF_NO_SPLICE	= (1 << 1),
++
++	/**
++	 * Force splice
++	 *
++	 * Always use splice(2) to copy data from one file descriptor
++	 * to another.  If splice is not available, return -EINVAL.
++	 */
++	FUSE_BUF_FORCE_SPLICE	= (1 << 2),
++
++	/**
++	 * Try to move data with splice.
++	 *
++	 * If splice is used, try to move pages from the source to the
++	 * destination instead of copying.  See documentation of
++	 * SPLICE_F_MOVE in splice(2) man page.
++	 */
++	FUSE_BUF_SPLICE_MOVE	= (1 << 3),
++
++	/**
++	 * Don't block on the pipe when copying data with splice
++	 *
++	 * Makes the operations on the pipe non-blocking (if the pipe
++	 * is full or empty).  See SPLICE_F_NONBLOCK in the splice(2)
++	 * man page.
++	 */
++	FUSE_BUF_SPLICE_NONBLOCK= (1 << 4),
++};
++
++/**
++ * Single data buffer
++ *
++ * Generic data buffer for I/O, extended attributes, etc...  Data may
++ * be supplied as a memory pointer or as a file descriptor
++ */
++struct fuse_buf {
++	/**
++	 * Size of data in bytes
++	 */
++	size_t size;
++
++	/**
++	 * Buffer flags
++	 */
++	enum fuse_buf_flags flags;
++
++	/**
++	 * Memory pointer
++	 *
++	 * Used unless FUSE_BUF_IS_FD flag is set.
++	 */
++	void *mem;
++
++	/**
++	 * File descriptor
++	 *
++	 * Used if FUSE_BUF_IS_FD flag is set.
++	 */
++	int fd;
++
++	/**
++	 * File position
++	 *
++	 * Used if FUSE_BUF_FD_SEEK flag is set.
++	 */
++	off_t pos;
++};
++
++/**
++ * Data buffer vector
++ *
++ * An array of data buffers, each containing a memory pointer or a
++ * file descriptor.
++ *
++ * Allocate dynamically to add more than one buffer.
++ */
++struct fuse_bufvec {
++	/**
++	 * Number of buffers in the array
++	 */
++	size_t count;
++
++	/**
++	 * Index of current buffer within the array
++	 */
++	size_t idx;
++
++	/**
++	 * Current offset within the current buffer
++	 */
++	size_t off;
++
++	/**
++	 * Array of buffers
++	 */
++	struct fuse_buf buf[1];
++};
++
++/* Initialize bufvec with a single buffer of given size */
++#define FUSE_BUFVEC_INIT(size__)				\
++	((struct fuse_bufvec) {					\
++		/* .count= */ 1,				\
++		/* .idx =  */ 0,				\
++		/* .off =  */ 0,				\
++		/* .buf =  */ { /* [0] = */ {			\
++			/* .size =  */ (size__),		\
++			/* .flags = */ (enum fuse_buf_flags) 0,	\
++			/* .mem =   */ NULL,			\
++			/* .fd =    */ -1,			\
++			/* .pos =   */ 0,			\
++		} }						\
++	} )
++
++/**
++ * Get total size of data in a fuse buffer vector
++ *
++ * @param bufv buffer vector
++ * @return size of data
++ */
++size_t fuse_buf_size(const struct fuse_bufvec *bufv);
++
++/**
++ * Copy data from one buffer vector to another
++ *
++ * @param dst destination buffer vector
++ * @param src source buffer vector
++ * @param flags flags controlling the copy
++ * @return actual number of bytes copied or -errno on error
++ */
++ssize_t fuse_buf_copy(struct fuse_bufvec *dst, struct fuse_bufvec *src,
++		      enum fuse_buf_copy_flags flags);
++
++/* ----------------------------------------------------------- *
++ * Signal handling					       *
++ * ----------------------------------------------------------- */
++
++/**
++ * Exit session on HUP, TERM and INT signals and ignore PIPE signal
++ *
++ * Stores session in a global variable.	 May only be called once per
++ * process until fuse_remove_signal_handlers() is called.
++ *
++ * Once either of the POSIX signals arrives, the signal handler calls
++ * fuse_session_exit().
++ *
++ * @param se the session to exit
++ * @return 0 on success, -1 on failure
++ *
++ * See also:
++ * fuse_remove_signal_handlers()
++ */
++int fuse_set_signal_handlers(struct fuse_session *se);
++
++/**
++ * Restore default signal handlers
++ *
++ * Resets global session.  After this fuse_set_signal_handlers() may
++ * be called again.
++ *
++ * @param se the same session as given in fuse_set_signal_handlers()
++ *
++ * See also:
++ * fuse_set_signal_handlers()
++ */
++void fuse_remove_signal_handlers(struct fuse_session *se);
++
++/* ----------------------------------------------------------- *
++ * Compatibility stuff					       *
++ * ----------------------------------------------------------- */
++
++#if !defined(FUSE_USE_VERSION) || FUSE_USE_VERSION < 30
++#  error only API version 30 or greater is supported
++#endif
++
++#ifdef __cplusplus
++}
++#endif
++
++
++/*
++ * This interface uses 64 bit off_t.
++ *
++ * On 32bit systems please add -D_FILE_OFFSET_BITS=64 to your compile flags!
++ */
++
++#if defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 6) && !defined __cplusplus
++_Static_assert(sizeof(off_t) == 8, "fuse: off_t must be 64bit");
++#else
++struct _fuse_off_t_must_be_64bit_dummy_struct \
++	{ unsigned _fuse_off_t_must_be_64bit:((sizeof(off_t) == 8) ? 1 : -1); };
++#endif
++
++#endif /* FUSE_COMMON_H_ */
+diff --git a/tools/virtiofsd/fuse_i.h b/tools/virtiofsd/fuse_i.h
+new file mode 100644
+index 0000000000..d38b630ac5
+--- /dev/null
++++ b/tools/virtiofsd/fuse_i.h
+@@ -0,0 +1,139 @@
++/*
++  FUSE: Filesystem in Userspace
++  Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
++
++  This program can be distributed under the terms of the GNU LGPLv2.
++  See the file COPYING.LIB
++*/
++
++#include "fuse.h"
++#include "fuse_lowlevel.h"
++
++struct mount_opts;
++
++struct fuse_req {
++	struct fuse_session *se;
++	uint64_t unique;
++	int ctr;
++	pthread_mutex_t lock;
++	struct fuse_ctx ctx;
++	struct fuse_chan *ch;
++	int interrupted;
++	unsigned int ioctl_64bit : 1;
++	union {
++		struct {
++			uint64_t unique;
++		} i;
++		struct {
++			fuse_interrupt_func_t func;
++			void *data;
++		} ni;
++	} u;
++	struct fuse_req *next;
++	struct fuse_req *prev;
++};
++
++struct fuse_notify_req {
++	uint64_t unique;
++	void (*reply)(struct fuse_notify_req *, fuse_req_t, fuse_ino_t,
++		      const void *, const struct fuse_buf *);
++	struct fuse_notify_req *next;
++	struct fuse_notify_req *prev;
++};
++
++struct fuse_session {
++	char *mountpoint;
++	volatile int exited;
++	int fd;
++	struct mount_opts *mo;
++	int debug;
++	int deny_others;
++	struct fuse_lowlevel_ops op;
++	int got_init;
++	struct cuse_data *cuse_data;
++	void *userdata;
++	uid_t owner;
++	struct fuse_conn_info conn;
++	struct fuse_req list;
++	struct fuse_req interrupts;
++	pthread_mutex_t lock;
++	int got_destroy;
++	pthread_key_t pipe_key;
++	int broken_splice_nonblock;
++	uint64_t notify_ctr;
++	struct fuse_notify_req notify_list;
++	size_t bufsize;
++	int error;
++};
++
++struct fuse_chan {
++	pthread_mutex_t lock;
++	int ctr;
++	int fd;
++};
++
++/**
++ * Filesystem module
++ *
++ * Filesystem modules are registered with the FUSE_REGISTER_MODULE()
++ * macro.
++ *
++ */
++struct fuse_module {
++	char *name;
++	fuse_module_factory_t factory;
++	struct fuse_module *next;
++	struct fusemod_so *so;
++	int ctr;
++};
++
++/* ----------------------------------------------------------- *
++ * Channel interface (when using -o clone_fd)		       *
++ * ----------------------------------------------------------- */
++
++/**
++ * Obtain counted reference to the channel
++ *
++ * @param ch the channel
++ * @return the channel
++ */
++struct fuse_chan *fuse_chan_get(struct fuse_chan *ch);
++
++/**
++ * Drop counted reference to a channel
++ *
++ * @param ch the channel
++ */
++void fuse_chan_put(struct fuse_chan *ch);
++
++struct mount_opts *parse_mount_opts(struct fuse_args *args);
++void destroy_mount_opts(struct mount_opts *mo);
++void fuse_mount_version(void);
++unsigned get_max_read(struct mount_opts *o);
++void fuse_kern_unmount(const char *mountpoint, int fd);
++int fuse_kern_mount(const char *mountpoint, struct mount_opts *mo);
++
++int fuse_send_reply_iov_nofree(fuse_req_t req, int error, struct iovec *iov,
++			       int count);
++void fuse_free_req(fuse_req_t req);
++
++void cuse_lowlevel_init(fuse_req_t req, fuse_ino_t nodeide, const void *inarg);
++
++int fuse_start_thread(pthread_t *thread_id, void *(*func)(void *), void *arg);
++
++int fuse_session_receive_buf_int(struct fuse_session *se, struct fuse_buf *buf,
++				 struct fuse_chan *ch);
++void fuse_session_process_buf_int(struct fuse_session *se,
++				  const struct fuse_buf *buf, struct fuse_chan *ch);
++
++struct fuse *fuse_new_31(struct fuse_args *args, const struct fuse_operations *op,
++		      size_t op_size, void *private_data);
++int fuse_loop_mt_32(struct fuse *f, struct fuse_loop_config *config);
++int fuse_session_loop_mt_32(struct fuse_session *se, struct fuse_loop_config *config);
++
++#define FUSE_MAX_MAX_PAGES 256
++#define FUSE_DEFAULT_MAX_PAGES_PER_REQ 32
++
++/* room needed in buffer to accommodate header */
++#define FUSE_BUFFER_HEADER_SIZE 0x1000
++
+diff --git a/tools/virtiofsd/fuse_log.h b/tools/virtiofsd/fuse_log.h
+new file mode 100644
+index 0000000000..5e112e0f53
+--- /dev/null
++++ b/tools/virtiofsd/fuse_log.h
+@@ -0,0 +1,82 @@
++/*
++  FUSE: Filesystem in Userspace
++  Copyright (C) 2019  Red Hat, Inc.
++
++  This program can be distributed under the terms of the GNU LGPLv2.
++  See the file COPYING.LIB.
++*/
++
++#ifndef FUSE_LOG_H_
++#define FUSE_LOG_H_
++
++/** @file
++ *
++ * This file defines the logging interface of FUSE
++ */
++
++#include <stdarg.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/**
++ * Log severity level
++ *
++ * These levels correspond to syslog(2) log levels since they are widely used.
++ */
++enum fuse_log_level {
++	FUSE_LOG_EMERG,
++	FUSE_LOG_ALERT,
++	FUSE_LOG_CRIT,
++	FUSE_LOG_ERR,
++	FUSE_LOG_WARNING,
++	FUSE_LOG_NOTICE,
++	FUSE_LOG_INFO,
++	FUSE_LOG_DEBUG
++};
++
++/**
++ * Log message handler function.
++ *
++ * This function must be thread-safe.  It may be called from any libfuse
++ * function, including fuse_parse_cmdline() and other functions invoked before
++ * a FUSE filesystem is created.
++ *
++ * Install a custom log message handler function using fuse_set_log_func().
++ *
++ * @param level log severity level
++ * @param fmt sprintf-style format string including newline
++ * @param ap format string arguments
++ */
++typedef void (*fuse_log_func_t)(enum fuse_log_level level,
++				const char *fmt, va_list ap);
++
++/**
++ * Install a custom log handler function.
++ *
++ * Log messages are emitted by libfuse functions to report errors and debug
++ * information.  Messages are printed to stderr by default but this can be
++ * overridden by installing a custom log message handler function.
++ *
++ * The log message handler function is global and affects all FUSE filesystems
++ * created within this process.
++ *
++ * @param func a custom log message handler function or NULL to revert to
++ *             the default
++ */
++void fuse_set_log_func(fuse_log_func_t func);
++
++/**
++ * Emit a log message
++ *
++ * @param level severity level (FUSE_LOG_ERR, FUSE_LOG_DEBUG, etc)
++ * @param fmt sprintf-style format string including newline
++ */
++void fuse_log(enum fuse_log_level level, const char *fmt, ...);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* FUSE_LOG_H_ */
+diff --git a/tools/virtiofsd/fuse_lowlevel.h b/tools/virtiofsd/fuse_lowlevel.h
+new file mode 100644
+index 0000000000..18c6363f07
+--- /dev/null
++++ b/tools/virtiofsd/fuse_lowlevel.h
+@@ -0,0 +1,2089 @@
++/*
++  FUSE: Filesystem in Userspace
++  Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
++
++  This program can be distributed under the terms of the GNU LGPLv2.
++  See the file COPYING.LIB.
++*/
++
++#ifndef FUSE_LOWLEVEL_H_
++#define FUSE_LOWLEVEL_H_
++
++/** @file
++ *
++ * Low level API
++ *
++ * IMPORTANT: you should define FUSE_USE_VERSION before including this
++ * header.  To use the newest API define it to 31 (recommended for any
++ * new application).
++ */
++
++#ifndef FUSE_USE_VERSION
++#error FUSE_USE_VERSION not defined
++#endif
++
++#include "fuse_common.h"
++
++#include <utime.h>
++#include <fcntl.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <sys/statvfs.h>
++#include <sys/uio.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/* ----------------------------------------------------------- *
++ * Miscellaneous definitions				       *
++ * ----------------------------------------------------------- */
++
++/** The node ID of the root inode */
++#define FUSE_ROOT_ID 1
++
++/** Inode number type */
++typedef uint64_t fuse_ino_t;
++
++/** Request pointer type */
++typedef struct fuse_req *fuse_req_t;
++
++/**
++ * Session
++ *
++ * This provides hooks for processing requests, and exiting
++ */
++struct fuse_session;
++
++/** Directory entry parameters supplied to fuse_reply_entry() */
++struct fuse_entry_param {
++	/** Unique inode number
++	 *
++	 * In lookup, zero means negative entry (from version 2.5)
++	 * Returning ENOENT also means negative entry, but by setting zero
++	 * ino the kernel may cache negative entries for entry_timeout
++	 * seconds.
++	 */
++	fuse_ino_t ino;
++
++	/** Generation number for this entry.
++	 *
++	 * If the file system will be exported over NFS, the
++	 * ino/generation pairs need to be unique over the file
++	 * system's lifetime (rather than just the mount time). So if
++	 * the file system reuses an inode after it has been deleted,
++	 * it must assign a new, previously unused generation number
++	 * to the inode at the same time.
++	 *
++	 */
++	uint64_t generation;
++
++	/** Inode attributes.
++	 *
++	 * Even if attr_timeout == 0, attr must be correct. For example,
++	 * for open(), FUSE uses attr.st_size from lookup() to determine
++	 * how many bytes to request. If this value is not correct,
++	 * incorrect data will be returned.
++	 */
++	struct stat attr;
++
++	/** Validity timeout (in seconds) for inode attributes. If
++	    attributes only change as a result of requests that come
++	    through the kernel, this should be set to a very large
++	    value. */
++	double attr_timeout;
++
++	/** Validity timeout (in seconds) for the name. If directory
++	    entries are changed/deleted only as a result of requests
++	    that come through the kernel, this should be set to a very
++	    large value. */
++	double entry_timeout;
++};
++
++/**
++ * Additional context associated with requests.
++ *
++ * Note that the reported client uid, gid and pid may be zero in some
++ * situations. For example, if the FUSE file system is running in a
++ * PID or user namespace but then accessed from outside the namespace,
++ * there is no valid uid/pid/gid that could be reported.
++ */
++struct fuse_ctx {
++	/** User ID of the calling process */
++	uid_t uid;
++
++	/** Group ID of the calling process */
++	gid_t gid;
++
++	/** Thread ID of the calling process */
++	pid_t pid;
++
++	/** Umask of the calling process */
++	mode_t umask;
++};
++
++struct fuse_forget_data {
++	fuse_ino_t ino;
++	uint64_t nlookup;
++};
++
++/* 'to_set' flags in setattr */
++#define FUSE_SET_ATTR_MODE	(1 << 0)
++#define FUSE_SET_ATTR_UID	(1 << 1)
++#define FUSE_SET_ATTR_GID	(1 << 2)
++#define FUSE_SET_ATTR_SIZE	(1 << 3)
++#define FUSE_SET_ATTR_ATIME	(1 << 4)
++#define FUSE_SET_ATTR_MTIME	(1 << 5)
++#define FUSE_SET_ATTR_ATIME_NOW	(1 << 7)
++#define FUSE_SET_ATTR_MTIME_NOW	(1 << 8)
++#define FUSE_SET_ATTR_CTIME	(1 << 10)
++
++/* ----------------------------------------------------------- *
++ * Request methods and replies				       *
++ * ----------------------------------------------------------- */
++
++/**
++ * Low level filesystem operations
++ *
++ * Most of the methods (with the exception of init and destroy)
++ * receive a request handle (fuse_req_t) as their first argument.
++ * This handle must be passed to one of the specified reply functions.
++ *
++ * This may be done inside the method invocation, or after the call
++ * has returned.  The request handle is valid until one of the reply
++ * functions is called.
++ *
++ * Other pointer arguments (name, fuse_file_info, etc) are not valid
++ * after the call has returned, so if they are needed later, their
++ * contents have to be copied.
++ *
++ * In general, all methods are expected to perform any necessary
++ * permission checking. However, a filesystem may delegate this task
++ * to the kernel by passing the `default_permissions` mount option to
++ * `fuse_session_new()`. In this case, methods will only be called if
++ * the kernel's permission check has succeeded.
++ *
++ * The filesystem sometimes needs to handle a return value of -ENOENT
++ * from the reply function, which means, that the request was
++ * interrupted, and the reply discarded.  For example if
++ * fuse_reply_open() return -ENOENT means, that the release method for
++ * this file will not be called.
++ */
++struct fuse_lowlevel_ops {
++	/**
++	 * Initialize filesystem
++	 *
++	 * This function is called when libfuse establishes
++	 * communication with the FUSE kernel module. The file system
++	 * should use this module to inspect and/or modify the
++	 * connection parameters provided in the `conn` structure.
++	 *
++	 * Note that some parameters may be overwritten by options
++	 * passed to fuse_session_new() which take precedence over the
++	 * values set in this handler.
++	 *
++	 * There's no reply to this function
++	 *
++	 * @param userdata the user data passed to fuse_session_new()
++	 */
++	void (*init) (void *userdata, struct fuse_conn_info *conn);
++
++	/**
++	 * Clean up filesystem.
++	 *
++	 * Called on filesystem exit. When this method is called, the
++	 * connection to the kernel may be gone already, so that eg. calls
++	 * to fuse_lowlevel_notify_* will fail.
++	 *
++	 * There's no reply to this function
++	 *
++	 * @param userdata the user data passed to fuse_session_new()
++	 */
++	void (*destroy) (void *userdata);
++
++	/**
++	 * Look up a directory entry by name and get its attributes.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_entry
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param parent inode number of the parent directory
++	 * @param name the name to look up
++	 */
++	void (*lookup) (fuse_req_t req, fuse_ino_t parent, const char *name);
++
++	/**
++	 * Forget about an inode
++	 *
++	 * This function is called when the kernel removes an inode
++	 * from its internal caches.
++	 *
++	 * The inode's lookup count increases by one for every call to
++	 * fuse_reply_entry and fuse_reply_create. The nlookup parameter
++	 * indicates by how much the lookup count should be decreased.
++	 *
++	 * Inodes with a non-zero lookup count may receive request from
++	 * the kernel even after calls to unlink, rmdir or (when
++	 * overwriting an existing file) rename. Filesystems must handle
++	 * such requests properly and it is recommended to defer removal
++	 * of the inode until the lookup count reaches zero. Calls to
++	 * unlink, rmdir or rename will be followed closely by forget
++	 * unless the file or directory is open, in which case the
++	 * kernel issues forget only after the release or releasedir
++	 * calls.
++	 *
++	 * Note that if a file system will be exported over NFS the
++	 * inodes lifetime must extend even beyond forget. See the
++	 * generation field in struct fuse_entry_param above.
++	 *
++	 * On unmount the lookup count for all inodes implicitly drops
++	 * to zero. It is not guaranteed that the file system will
++	 * receive corresponding forget messages for the affected
++	 * inodes.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_none
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param nlookup the number of lookups to forget
++	 */
++	void (*forget) (fuse_req_t req, fuse_ino_t ino, uint64_t nlookup);
++
++	/**
++	 * Get file attributes.
++	 *
++	 * If writeback caching is enabled, the kernel may have a
++	 * better idea of a file's length than the FUSE file system
++	 * (eg if there has been a write that extended the file size,
++	 * but that has not yet been passed to the filesystem.n
++	 *
++	 * In this case, the st_size value provided by the file system
++	 * will be ignored.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_attr
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param fi for future use, currently always NULL
++	 */
++	void (*getattr) (fuse_req_t req, fuse_ino_t ino,
++			 struct fuse_file_info *fi);
++
++	/**
++	 * Set file attributes
++	 *
++	 * In the 'attr' argument only members indicated by the 'to_set'
++	 * bitmask contain valid values.  Other members contain undefined
++	 * values.
++	 *
++	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
++	 * expected to reset the setuid and setgid bits if the file
++	 * size or owner is being changed.
++	 *
++	 * If the setattr was invoked from the ftruncate() system call
++	 * under Linux kernel versions 2.6.15 or later, the fi->fh will
++	 * contain the value set by the open method or will be undefined
++	 * if the open method didn't set any value.  Otherwise (not
++	 * ftruncate call, or kernel version earlier than 2.6.15) the fi
++	 * parameter will be NULL.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_attr
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param attr the attributes
++	 * @param to_set bit mask of attributes which should be set
++	 * @param fi file information, or NULL
++	 */
++	void (*setattr) (fuse_req_t req, fuse_ino_t ino, struct stat *attr,
++			 int to_set, struct fuse_file_info *fi);
++
++	/**
++	 * Read symbolic link
++	 *
++	 * Valid replies:
++	 *   fuse_reply_readlink
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 */
++	void (*readlink) (fuse_req_t req, fuse_ino_t ino);
++
++	/**
++	 * Create file node
++	 *
++	 * Create a regular file, character device, block device, fifo or
++	 * socket node.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_entry
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param parent inode number of the parent directory
++	 * @param name to create
++	 * @param mode file type and mode with which to create the new file
++	 * @param rdev the device number (only valid if created file is a device)
++	 */
++	void (*mknod) (fuse_req_t req, fuse_ino_t parent, const char *name,
++		       mode_t mode, dev_t rdev);
++
++	/**
++	 * Create a directory
++	 *
++	 * Valid replies:
++	 *   fuse_reply_entry
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param parent inode number of the parent directory
++	 * @param name to create
++	 * @param mode with which to create the new file
++	 */
++	void (*mkdir) (fuse_req_t req, fuse_ino_t parent, const char *name,
++		       mode_t mode);
++
++	/**
++	 * Remove a file
++	 *
++	 * If the file's inode's lookup count is non-zero, the file
++	 * system is expected to postpone any removal of the inode
++	 * until the lookup count reaches zero (see description of the
++	 * forget function).
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param parent inode number of the parent directory
++	 * @param name to remove
++	 */
++	void (*unlink) (fuse_req_t req, fuse_ino_t parent, const char *name);
++
++	/**
++	 * Remove a directory
++	 *
++	 * If the directory's inode's lookup count is non-zero, the
++	 * file system is expected to postpone any removal of the
++	 * inode until the lookup count reaches zero (see description
++	 * of the forget function).
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param parent inode number of the parent directory
++	 * @param name to remove
++	 */
++	void (*rmdir) (fuse_req_t req, fuse_ino_t parent, const char *name);
++
++	/**
++	 * Create a symbolic link
++	 *
++	 * Valid replies:
++	 *   fuse_reply_entry
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param link the contents of the symbolic link
++	 * @param parent inode number of the parent directory
++	 * @param name to create
++	 */
++	void (*symlink) (fuse_req_t req, const char *link, fuse_ino_t parent,
++			 const char *name);
++
++	/** Rename a file
++	 *
++	 * If the target exists it should be atomically replaced. If
++	 * the target's inode's lookup count is non-zero, the file
++	 * system is expected to postpone any removal of the inode
++	 * until the lookup count reaches zero (see description of the
++	 * forget function).
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as a permanent failure with error code EINVAL, i.e. all
++	 * future bmap requests will fail with EINVAL without being
++	 * send to the filesystem process.
++	 *
++	 * *flags* may be `RENAME_EXCHANGE` or `RENAME_NOREPLACE`. If
++	 * RENAME_NOREPLACE is specified, the filesystem must not
++	 * overwrite *newname* if it exists and return an error
++	 * instead. If `RENAME_EXCHANGE` is specified, the filesystem
++	 * must atomically exchange the two files, i.e. both must
++	 * exist and neither may be deleted.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param parent inode number of the old parent directory
++	 * @param name old name
++	 * @param newparent inode number of the new parent directory
++	 * @param newname new name
++	 */
++	void (*rename) (fuse_req_t req, fuse_ino_t parent, const char *name,
++			fuse_ino_t newparent, const char *newname,
++			unsigned int flags);
++
++	/**
++	 * Create a hard link
++	 *
++	 * Valid replies:
++	 *   fuse_reply_entry
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the old inode number
++	 * @param newparent inode number of the new parent directory
++	 * @param newname new name to create
++	 */
++	void (*link) (fuse_req_t req, fuse_ino_t ino, fuse_ino_t newparent,
++		      const char *newname);
++
++	/**
++	 * Open a file
++	 *
++	 * Open flags are available in fi->flags. The following rules
++	 * apply.
++	 *
++	 *  - Creation (O_CREAT, O_EXCL, O_NOCTTY) flags will be
++	 *    filtered out / handled by the kernel.
++	 *
++	 *  - Access modes (O_RDONLY, O_WRONLY, O_RDWR) should be used
++	 *    by the filesystem to check if the operation is
++	 *    permitted.  If the ``-o default_permissions`` mount
++	 *    option is given, this check is already done by the
++	 *    kernel before calling open() and may thus be omitted by
++	 *    the filesystem.
++	 *
++	 *  - When writeback caching is enabled, the kernel may send
++	 *    read requests even for files opened with O_WRONLY. The
++	 *    filesystem should be prepared to handle this.
++	 *
++	 *  - When writeback caching is disabled, the filesystem is
++	 *    expected to properly handle the O_APPEND flag and ensure
++	 *    that each write is appending to the end of the file.
++	 * 
++         *  - When writeback caching is enabled, the kernel will
++	 *    handle O_APPEND. However, unless all changes to the file
++	 *    come through the kernel this will not work reliably. The
++	 *    filesystem should thus either ignore the O_APPEND flag
++	 *    (and let the kernel handle it), or return an error
++	 *    (indicating that reliably O_APPEND is not available).
++	 *
++	 * Filesystem may store an arbitrary file handle (pointer,
++	 * index, etc) in fi->fh, and use this in other all other file
++	 * operations (read, write, flush, release, fsync).
++	 *
++	 * Filesystem may also implement stateless file I/O and not store
++	 * anything in fi->fh.
++	 *
++	 * There are also some flags (direct_io, keep_cache) which the
++	 * filesystem may set in fi, to change the way the file is opened.
++	 * See fuse_file_info structure in <fuse_common.h> for more details.
++	 *
++	 * If this request is answered with an error code of ENOSYS
++	 * and FUSE_CAP_NO_OPEN_SUPPORT is set in
++	 * `fuse_conn_info.capable`, this is treated as success and
++	 * future calls to open and release will also succeed without being
++	 * sent to the filesystem process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_open
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param fi file information
++	 */
++	void (*open) (fuse_req_t req, fuse_ino_t ino,
++		      struct fuse_file_info *fi);
++
++	/**
++	 * Read data
++	 *
++	 * Read should send exactly the number of bytes requested except
++	 * on EOF or error, otherwise the rest of the data will be
++	 * substituted with zeroes.  An exception to this is when the file
++	 * has been opened in 'direct_io' mode, in which case the return
++	 * value of the read system call will reflect the return value of
++	 * this operation.
++	 *
++	 * fi->fh will contain the value set by the open method, or will
++	 * be undefined if the open method didn't set any value.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_buf
++	 *   fuse_reply_iov
++	 *   fuse_reply_data
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param size number of bytes to read
++	 * @param off offset to read from
++	 * @param fi file information
++	 */
++	void (*read) (fuse_req_t req, fuse_ino_t ino, size_t size, off_t off,
++		      struct fuse_file_info *fi);
++
++	/**
++	 * Write data
++	 *
++	 * Write should return exactly the number of bytes requested
++	 * except on error.  An exception to this is when the file has
++	 * been opened in 'direct_io' mode, in which case the return value
++	 * of the write system call will reflect the return value of this
++	 * operation.
++	 *
++	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
++	 * expected to reset the setuid and setgid bits.
++	 *
++	 * fi->fh will contain the value set by the open method, or will
++	 * be undefined if the open method didn't set any value.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_write
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param buf data to write
++	 * @param size number of bytes to write
++	 * @param off offset to write to
++	 * @param fi file information
++	 */
++	void (*write) (fuse_req_t req, fuse_ino_t ino, const char *buf,
++		       size_t size, off_t off, struct fuse_file_info *fi);
++
++	/**
++	 * Flush method
++	 *
++	 * This is called on each close() of the opened file.
++	 *
++	 * Since file descriptors can be duplicated (dup, dup2, fork), for
++	 * one open call there may be many flush calls.
++	 *
++	 * Filesystems shouldn't assume that flush will always be called
++	 * after some writes, or that if will be called at all.
++	 *
++	 * fi->fh will contain the value set by the open method, or will
++	 * be undefined if the open method didn't set any value.
++	 *
++	 * NOTE: the name of the method is misleading, since (unlike
++	 * fsync) the filesystem is not forced to flush pending writes.
++	 * One reason to flush data is if the filesystem wants to return
++	 * write errors during close.  However, such use is non-portable
++	 * because POSIX does not require [close] to wait for delayed I/O to
++	 * complete.
++	 *
++	 * If the filesystem supports file locking operations (setlk,
++	 * getlk) it should remove all locks belonging to 'fi->owner'.
++	 *
++	 * If this request is answered with an error code of ENOSYS,
++	 * this is treated as success and future calls to flush() will
++	 * succeed automatically without being send to the filesystem
++	 * process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param fi file information
++	 *
++	 * [close]: http://pubs.opengroup.org/onlinepubs/9699919799/functions/close.html
++	 */
++	void (*flush) (fuse_req_t req, fuse_ino_t ino,
++		       struct fuse_file_info *fi);
++
++	/**
++	 * Release an open file
++	 *
++	 * Release is called when there are no more references to an open
++	 * file: all file descriptors are closed and all memory mappings
++	 * are unmapped.
++	 *
++	 * For every open call there will be exactly one release call (unless
++	 * the filesystem is force-unmounted).
++	 *
++	 * The filesystem may reply with an error, but error values are
++	 * not returned to close() or munmap() which triggered the
++	 * release.
++	 *
++	 * fi->fh will contain the value set by the open method, or will
++	 * be undefined if the open method didn't set any value.
++	 * fi->flags will contain the same flags as for open.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param fi file information
++	 */
++	void (*release) (fuse_req_t req, fuse_ino_t ino,
++			 struct fuse_file_info *fi);
++
++	/**
++	 * Synchronize file contents
++	 *
++	 * If the datasync parameter is non-zero, then only the user data
++	 * should be flushed, not the meta data.
++	 *
++	 * If this request is answered with an error code of ENOSYS,
++	 * this is treated as success and future calls to fsync() will
++	 * succeed automatically without being send to the filesystem
++	 * process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param datasync flag indicating if only data should be flushed
++	 * @param fi file information
++	 */
++	void (*fsync) (fuse_req_t req, fuse_ino_t ino, int datasync,
++		       struct fuse_file_info *fi);
++
++	/**
++	 * Open a directory
++	 *
++	 * Filesystem may store an arbitrary file handle (pointer, index,
++	 * etc) in fi->fh, and use this in other all other directory
++	 * stream operations (readdir, releasedir, fsyncdir).
++	 *
++	 * If this request is answered with an error code of ENOSYS and
++	 * FUSE_CAP_NO_OPENDIR_SUPPORT is set in `fuse_conn_info.capable`,
++	 * this is treated as success and future calls to opendir and
++	 * releasedir will also succeed without being sent to the filesystem
++	 * process. In addition, the kernel will cache readdir results
++	 * as if opendir returned FOPEN_KEEP_CACHE | FOPEN_CACHE_DIR.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_open
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param fi file information
++	 */
++	void (*opendir) (fuse_req_t req, fuse_ino_t ino,
++			 struct fuse_file_info *fi);
++
++	/**
++	 * Read directory
++	 *
++	 * Send a buffer filled using fuse_add_direntry(), with size not
++	 * exceeding the requested size.  Send an empty buffer on end of
++	 * stream.
++	 *
++	 * fi->fh will contain the value set by the opendir method, or
++	 * will be undefined if the opendir method didn't set any value.
++	 *
++	 * Returning a directory entry from readdir() does not affect
++	 * its lookup count.
++	 *
++         * If off_t is non-zero, then it will correspond to one of the off_t
++	 * values that was previously returned by readdir() for the same
++	 * directory handle. In this case, readdir() should skip over entries
++	 * coming before the position defined by the off_t value. If entries
++	 * are added or removed while the directory handle is open, they filesystem
++	 * may still include the entries that have been removed, and may not
++	 * report the entries that have been created. However, addition or
++	 * removal of entries must never cause readdir() to skip over unrelated
++	 * entries or to report them more than once. This means
++	 * that off_t can not be a simple index that enumerates the entries
++	 * that have been returned but must contain sufficient information to
++	 * uniquely determine the next directory entry to return even when the
++	 * set of entries is changing.
++	 *
++	 * The function does not have to report the '.' and '..'
++	 * entries, but is allowed to do so. Note that, if readdir does
++	 * not return '.' or '..', they will not be implicitly returned,
++	 * and this behavior is observable by the caller.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_buf
++	 *   fuse_reply_data
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param size maximum number of bytes to send
++	 * @param off offset to continue reading the directory stream
++	 * @param fi file information
++	 */
++	void (*readdir) (fuse_req_t req, fuse_ino_t ino, size_t size, off_t off,
++			 struct fuse_file_info *fi);
++
++	/**
++	 * Release an open directory
++	 *
++	 * For every opendir call there will be exactly one releasedir
++	 * call (unless the filesystem is force-unmounted).
++	 *
++	 * fi->fh will contain the value set by the opendir method, or
++	 * will be undefined if the opendir method didn't set any value.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param fi file information
++	 */
++	void (*releasedir) (fuse_req_t req, fuse_ino_t ino,
++			    struct fuse_file_info *fi);
++
++	/**
++	 * Synchronize directory contents
++	 *
++	 * If the datasync parameter is non-zero, then only the directory
++	 * contents should be flushed, not the meta data.
++	 *
++	 * fi->fh will contain the value set by the opendir method, or
++	 * will be undefined if the opendir method didn't set any value.
++	 *
++	 * If this request is answered with an error code of ENOSYS,
++	 * this is treated as success and future calls to fsyncdir() will
++	 * succeed automatically without being send to the filesystem
++	 * process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param datasync flag indicating if only data should be flushed
++	 * @param fi file information
++	 */
++	void (*fsyncdir) (fuse_req_t req, fuse_ino_t ino, int datasync,
++			  struct fuse_file_info *fi);
++
++	/**
++	 * Get file system statistics
++	 *
++	 * Valid replies:
++	 *   fuse_reply_statfs
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number, zero means "undefined"
++	 */
++	void (*statfs) (fuse_req_t req, fuse_ino_t ino);
++
++	/**
++	 * Set an extended attribute
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as a permanent failure with error code EOPNOTSUPP, i.e. all
++	 * future setxattr() requests will fail with EOPNOTSUPP without being
++	 * send to the filesystem process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 */
++	void (*setxattr) (fuse_req_t req, fuse_ino_t ino, const char *name,
++			  const char *value, size_t size, int flags);
++
++	/**
++	 * Get an extended attribute
++	 *
++	 * If size is zero, the size of the value should be sent with
++	 * fuse_reply_xattr.
++	 *
++	 * If the size is non-zero, and the value fits in the buffer, the
++	 * value should be sent with fuse_reply_buf.
++	 *
++	 * If the size is too small for the value, the ERANGE error should
++	 * be sent.
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as a permanent failure with error code EOPNOTSUPP, i.e. all
++	 * future getxattr() requests will fail with EOPNOTSUPP without being
++	 * send to the filesystem process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_buf
++	 *   fuse_reply_data
++	 *   fuse_reply_xattr
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param name of the extended attribute
++	 * @param size maximum size of the value to send
++	 */
++	void (*getxattr) (fuse_req_t req, fuse_ino_t ino, const char *name,
++			  size_t size);
++
++	/**
++	 * List extended attribute names
++	 *
++	 * If size is zero, the total size of the attribute list should be
++	 * sent with fuse_reply_xattr.
++	 *
++	 * If the size is non-zero, and the null character separated
++	 * attribute list fits in the buffer, the list should be sent with
++	 * fuse_reply_buf.
++	 *
++	 * If the size is too small for the list, the ERANGE error should
++	 * be sent.
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as a permanent failure with error code EOPNOTSUPP, i.e. all
++	 * future listxattr() requests will fail with EOPNOTSUPP without being
++	 * send to the filesystem process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_buf
++	 *   fuse_reply_data
++	 *   fuse_reply_xattr
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param size maximum size of the list to send
++	 */
++	void (*listxattr) (fuse_req_t req, fuse_ino_t ino, size_t size);
++
++	/**
++	 * Remove an extended attribute
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as a permanent failure with error code EOPNOTSUPP, i.e. all
++	 * future removexattr() requests will fail with EOPNOTSUPP without being
++	 * send to the filesystem process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param name of the extended attribute
++	 */
++	void (*removexattr) (fuse_req_t req, fuse_ino_t ino, const char *name);
++
++	/**
++	 * Check file access permissions
++	 *
++	 * This will be called for the access() and chdir() system
++	 * calls.  If the 'default_permissions' mount option is given,
++	 * this method is not called.
++	 *
++	 * This method is not called under Linux kernel versions 2.4.x
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as a permanent success, i.e. this and all future access()
++	 * requests will succeed without being send to the filesystem process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param mask requested access mode
++	 */
++	void (*access) (fuse_req_t req, fuse_ino_t ino, int mask);
++
++	/**
++	 * Create and open a file
++	 *
++	 * If the file does not exist, first create it with the specified
++	 * mode, and then open it.
++	 *
++	 * See the description of the open handler for more
++	 * information.
++	 *
++	 * If this method is not implemented or under Linux kernel
++	 * versions earlier than 2.6.15, the mknod() and open() methods
++	 * will be called instead.
++	 *
++	 * If this request is answered with an error code of ENOSYS, the handler
++	 * is treated as not implemented (i.e., for this and future requests the
++	 * mknod() and open() handlers will be called instead).
++	 *
++	 * Valid replies:
++	 *   fuse_reply_create
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param parent inode number of the parent directory
++	 * @param name to create
++	 * @param mode file type and mode with which to create the new file
++	 * @param fi file information
++	 */
++	void (*create) (fuse_req_t req, fuse_ino_t parent, const char *name,
++			mode_t mode, struct fuse_file_info *fi);
++
++	/**
++	 * Test for a POSIX file lock
++	 *
++	 * Valid replies:
++	 *   fuse_reply_lock
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param fi file information
++	 * @param lock the region/type to test
++	 */
++	void (*getlk) (fuse_req_t req, fuse_ino_t ino,
++		       struct fuse_file_info *fi, struct flock *lock);
++
++	/**
++	 * Acquire, modify or release a POSIX file lock
++	 *
++	 * For POSIX threads (NPTL) there's a 1-1 relation between pid and
++	 * owner, but otherwise this is not always the case.  For checking
++	 * lock ownership, 'fi->owner' must be used.  The l_pid field in
++	 * 'struct flock' should only be used to fill in this field in
++	 * getlk().
++	 *
++	 * Note: if the locking methods are not implemented, the kernel
++	 * will still allow file locking to work locally.  Hence these are
++	 * only interesting for network filesystems and similar.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param fi file information
++	 * @param lock the region/type to set
++	 * @param sleep locking operation may sleep
++	 */
++	void (*setlk) (fuse_req_t req, fuse_ino_t ino,
++		       struct fuse_file_info *fi,
++		       struct flock *lock, int sleep);
++
++	/**
++	 * Map block index within file to block index within device
++	 *
++	 * Note: This makes sense only for block device backed filesystems
++	 * mounted with the 'blkdev' option
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as a permanent failure, i.e. all future bmap() requests will
++	 * fail with the same error code without being send to the filesystem
++	 * process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_bmap
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param blocksize unit of block index
++	 * @param idx block index within file
++	 */
++	void (*bmap) (fuse_req_t req, fuse_ino_t ino, size_t blocksize,
++		      uint64_t idx);
++
++	/**
++	 * Ioctl
++	 *
++	 * Note: For unrestricted ioctls (not allowed for FUSE
++	 * servers), data in and out areas can be discovered by giving
++	 * iovs and setting FUSE_IOCTL_RETRY in *flags*.  For
++	 * restricted ioctls, kernel prepares in/out data area
++	 * according to the information encoded in cmd.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_ioctl_retry
++	 *   fuse_reply_ioctl
++	 *   fuse_reply_ioctl_iov
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param cmd ioctl command
++	 * @param arg ioctl argument
++	 * @param fi file information
++	 * @param flags for FUSE_IOCTL_* flags
++	 * @param in_buf data fetched from the caller
++	 * @param in_bufsz number of fetched bytes
++	 * @param out_bufsz maximum size of output data
++	 *
++	 * Note : the unsigned long request submitted by the application
++	 * is truncated to 32 bits.
++	 */
++	void (*ioctl) (fuse_req_t req, fuse_ino_t ino, unsigned int cmd,
++		       void *arg, struct fuse_file_info *fi, unsigned flags,
++		       const void *in_buf, size_t in_bufsz, size_t out_bufsz);
++
++	/**
++	 * Poll for IO readiness
++	 *
++	 * Note: If ph is non-NULL, the client should notify
++	 * when IO readiness events occur by calling
++	 * fuse_lowlevel_notify_poll() with the specified ph.
++	 *
++	 * Regardless of the number of times poll with a non-NULL ph
++	 * is received, single notification is enough to clear all.
++	 * Notifying more times incurs overhead but doesn't harm
++	 * correctness.
++	 *
++	 * The callee is responsible for destroying ph with
++	 * fuse_pollhandle_destroy() when no longer in use.
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as success (with a kernel-defined default poll-mask) and
++	 * future calls to pull() will succeed the same way without being send
++	 * to the filesystem process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_poll
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param fi file information
++	 * @param ph poll handle to be used for notification
++	 */
++	void (*poll) (fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi,
++		      struct fuse_pollhandle *ph);
++
++	/**
++	 * Write data made available in a buffer
++	 *
++	 * This is a more generic version of the ->write() method.  If
++	 * FUSE_CAP_SPLICE_READ is set in fuse_conn_info.want and the
++	 * kernel supports splicing from the fuse device, then the
++	 * data will be made available in pipe for supporting zero
++	 * copy data transfer.
++	 *
++	 * buf->count is guaranteed to be one (and thus buf->idx is
++	 * always zero). The write_buf handler must ensure that
++	 * bufv->off is correctly updated (reflecting the number of
++	 * bytes read from bufv->buf[0]).
++	 *
++	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
++	 * expected to reset the setuid and setgid bits.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_write
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param bufv buffer containing the data
++	 * @param off offset to write to
++	 * @param fi file information
++	 */
++	void (*write_buf) (fuse_req_t req, fuse_ino_t ino,
++			   struct fuse_bufvec *bufv, off_t off,
++			   struct fuse_file_info *fi);
++
++	/**
++	 * Callback function for the retrieve request
++	 *
++	 * Valid replies:
++	 *	fuse_reply_none
++	 *
++	 * @param req request handle
++	 * @param cookie user data supplied to fuse_lowlevel_notify_retrieve()
++	 * @param ino the inode number supplied to fuse_lowlevel_notify_retrieve()
++	 * @param offset the offset supplied to fuse_lowlevel_notify_retrieve()
++	 * @param bufv the buffer containing the returned data
++	 */
++	void (*retrieve_reply) (fuse_req_t req, void *cookie, fuse_ino_t ino,
++				off_t offset, struct fuse_bufvec *bufv);
++
++	/**
++	 * Forget about multiple inodes
++	 *
++	 * See description of the forget function for more
++	 * information.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_none
++	 *
++	 * @param req request handle
++	 */
++	void (*forget_multi) (fuse_req_t req, size_t count,
++			      struct fuse_forget_data *forgets);
++
++	/**
++	 * Acquire, modify or release a BSD file lock
++	 *
++	 * Note: if the locking methods are not implemented, the kernel
++	 * will still allow file locking to work locally.  Hence these are
++	 * only interesting for network filesystems and similar.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param fi file information
++	 * @param op the locking operation, see flock(2)
++	 */
++	void (*flock) (fuse_req_t req, fuse_ino_t ino,
++		       struct fuse_file_info *fi, int op);
++
++	/**
++	 * Allocate requested space. If this function returns success then
++	 * subsequent writes to the specified range shall not fail due to the lack
++	 * of free space on the file system storage media.
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as a permanent failure with error code EOPNOTSUPP, i.e. all
++	 * future fallocate() requests will fail with EOPNOTSUPP without being
++	 * send to the filesystem process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param offset starting point for allocated region
++	 * @param length size of allocated region
++	 * @param mode determines the operation to be performed on the given range,
++	 *             see fallocate(2)
++	 */
++	void (*fallocate) (fuse_req_t req, fuse_ino_t ino, int mode,
++		       off_t offset, off_t length, struct fuse_file_info *fi);
++
++	/**
++	 * Read directory with attributes
++	 *
++	 * Send a buffer filled using fuse_add_direntry_plus(), with size not
++	 * exceeding the requested size.  Send an empty buffer on end of
++	 * stream.
++	 *
++	 * fi->fh will contain the value set by the opendir method, or
++	 * will be undefined if the opendir method didn't set any value.
++	 *
++	 * In contrast to readdir() (which does not affect the lookup counts),
++	 * the lookup count of every entry returned by readdirplus(), except "."
++	 * and "..", is incremented by one.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_buf
++	 *   fuse_reply_data
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param size maximum number of bytes to send
++	 * @param off offset to continue reading the directory stream
++	 * @param fi file information
++	 */
++	void (*readdirplus) (fuse_req_t req, fuse_ino_t ino, size_t size, off_t off,
++			 struct fuse_file_info *fi);
++
++	/**
++	 * Copy a range of data from one file to another
++	 *
++	 * Performs an optimized copy between two file descriptors without the
++	 * additional cost of transferring data through the FUSE kernel module
++	 * to user space (glibc) and then back into the FUSE filesystem again.
++	 *
++	 * In case this method is not implemented, glibc falls back to reading
++	 * data from the source and writing to the destination. Effectively
++	 * doing an inefficient copy of the data.
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as a permanent failure with error code EOPNOTSUPP, i.e. all
++	 * future copy_file_range() requests will fail with EOPNOTSUPP without
++	 * being send to the filesystem process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_write
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino_in the inode number or the source file
++	 * @param off_in starting point from were the data should be read
++	 * @param fi_in file information of the source file
++	 * @param ino_out the inode number or the destination file
++	 * @param off_out starting point where the data should be written
++	 * @param fi_out file information of the destination file
++	 * @param len maximum size of the data to copy
++	 * @param flags passed along with the copy_file_range() syscall
++	 */
++	void (*copy_file_range) (fuse_req_t req, fuse_ino_t ino_in,
++				 off_t off_in, struct fuse_file_info *fi_in,
++				 fuse_ino_t ino_out, off_t off_out,
++				 struct fuse_file_info *fi_out, size_t len,
++				 int flags);
++
++	/**
++	 * Find next data or hole after the specified offset
++	 *
++	 * If this request is answered with an error code of ENOSYS, this is
++	 * treated as a permanent failure, i.e. all future lseek() requests will
++	 * fail with the same error code without being send to the filesystem
++	 * process.
++	 *
++	 * Valid replies:
++	 *   fuse_reply_lseek
++	 *   fuse_reply_err
++	 *
++	 * @param req request handle
++	 * @param ino the inode number
++	 * @param off offset to start search from
++	 * @param whence either SEEK_DATA or SEEK_HOLE
++	 * @param fi file information
++	 */
++	void (*lseek) (fuse_req_t req, fuse_ino_t ino, off_t off, int whence,
++		       struct fuse_file_info *fi);
++};
++
++/**
++ * Reply with an error code or success.
++ *
++ * Possible requests:
++ *   all except forget
++ *
++ * Whereever possible, error codes should be chosen from the list of
++ * documented error conditions in the corresponding system calls
++ * manpage.
++ *
++ * An error code of ENOSYS is sometimes treated specially. This is
++ * indicated in the documentation of the affected handler functions.
++ *
++ * The following requests may be answered with a zero error code:
++ * unlink, rmdir, rename, flush, release, fsync, fsyncdir, setxattr,
++ * removexattr, setlk.
++ *
++ * @param req request handle
++ * @param err the positive error value, or zero for success
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_err(fuse_req_t req, int err);
++
++/**
++ * Don't send reply
++ *
++ * Possible requests:
++ *   forget
++ *   forget_multi
++ *   retrieve_reply
++ *
++ * @param req request handle
++ */
++void fuse_reply_none(fuse_req_t req);
++
++/**
++ * Reply with a directory entry
++ *
++ * Possible requests:
++ *   lookup, mknod, mkdir, symlink, link
++ *
++ * Side effects:
++ *   increments the lookup count on success
++ *
++ * @param req request handle
++ * @param e the entry parameters
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_entry(fuse_req_t req, const struct fuse_entry_param *e);
++
++/**
++ * Reply with a directory entry and open parameters
++ *
++ * currently the following members of 'fi' are used:
++ *   fh, direct_io, keep_cache
++ *
++ * Possible requests:
++ *   create
++ *
++ * Side effects:
++ *   increments the lookup count on success
++ *
++ * @param req request handle
++ * @param e the entry parameters
++ * @param fi file information
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_create(fuse_req_t req, const struct fuse_entry_param *e,
++		      const struct fuse_file_info *fi);
++
++/**
++ * Reply with attributes
++ *
++ * Possible requests:
++ *   getattr, setattr
++ *
++ * @param req request handle
++ * @param attr the attributes
++ * @param attr_timeout	validity timeout (in seconds) for the attributes
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_attr(fuse_req_t req, const struct stat *attr,
++		    double attr_timeout);
++
++/**
++ * Reply with the contents of a symbolic link
++ *
++ * Possible requests:
++ *   readlink
++ *
++ * @param req request handle
++ * @param link symbolic link contents
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_readlink(fuse_req_t req, const char *link);
++
++/**
++ * Reply with open parameters
++ *
++ * currently the following members of 'fi' are used:
++ *   fh, direct_io, keep_cache
++ *
++ * Possible requests:
++ *   open, opendir
++ *
++ * @param req request handle
++ * @param fi file information
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_open(fuse_req_t req, const struct fuse_file_info *fi);
++
++/**
++ * Reply with number of bytes written
++ *
++ * Possible requests:
++ *   write
++ *
++ * @param req request handle
++ * @param count the number of bytes written
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_write(fuse_req_t req, size_t count);
++
++/**
++ * Reply with data
++ *
++ * Possible requests:
++ *   read, readdir, getxattr, listxattr
++ *
++ * @param req request handle
++ * @param buf buffer containing data
++ * @param size the size of data in bytes
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_buf(fuse_req_t req, const char *buf, size_t size);
++
++/**
++ * Reply with data copied/moved from buffer(s)
++ *
++ * Zero copy data transfer ("splicing") will be used under
++ * the following circumstances:
++ *
++ * 1. FUSE_CAP_SPLICE_WRITE is set in fuse_conn_info.want, and
++ * 2. the kernel supports splicing from the fuse device
++ *    (FUSE_CAP_SPLICE_WRITE is set in fuse_conn_info.capable), and
++ * 3. *flags* does not contain FUSE_BUF_NO_SPLICE
++ * 4. The amount of data that is provided in file-descriptor backed
++ *    buffers (i.e., buffers for which bufv[n].flags == FUSE_BUF_FD)
++ *    is at least twice the page size.
++ *
++ * In order for SPLICE_F_MOVE to be used, the following additional
++ * conditions have to be fulfilled:
++ *
++ * 1. FUSE_CAP_SPLICE_MOVE is set in fuse_conn_info.want, and
++ * 2. the kernel supports it (i.e, FUSE_CAP_SPLICE_MOVE is set in
++      fuse_conn_info.capable), and
++ * 3. *flags* contains FUSE_BUF_SPLICE_MOVE
++ *
++ * Note that, if splice is used, the data is actually spliced twice:
++ * once into a temporary pipe (to prepend header data), and then again
++ * into the kernel. If some of the provided buffers are memory-backed,
++ * the data in them is copied in step one and spliced in step two.
++ *
++ * The FUSE_BUF_SPLICE_FORCE_SPLICE and FUSE_BUF_SPLICE_NONBLOCK flags
++ * are silently ignored.
++ *
++ * Possible requests:
++ *   read, readdir, getxattr, listxattr
++ *
++ * Side effects:
++ *   when used to return data from a readdirplus() (but not readdir())
++ *   call, increments the lookup count of each returned entry by one
++ *   on success.
++ *
++ * @param req request handle
++ * @param bufv buffer vector
++ * @param flags flags controlling the copy
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_data(fuse_req_t req, struct fuse_bufvec *bufv,
++		    enum fuse_buf_copy_flags flags);
++
++/**
++ * Reply with data vector
++ *
++ * Possible requests:
++ *   read, readdir, getxattr, listxattr
++ *
++ * @param req request handle
++ * @param iov the vector containing the data
++ * @param count the size of vector
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_iov(fuse_req_t req, const struct iovec *iov, int count);
++
++/**
++ * Reply with filesystem statistics
++ *
++ * Possible requests:
++ *   statfs
++ *
++ * @param req request handle
++ * @param stbuf filesystem statistics
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_statfs(fuse_req_t req, const struct statvfs *stbuf);
++
++/**
++ * Reply with needed buffer size
++ *
++ * Possible requests:
++ *   getxattr, listxattr
++ *
++ * @param req request handle
++ * @param count the buffer size needed in bytes
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_xattr(fuse_req_t req, size_t count);
++
++/**
++ * Reply with file lock information
++ *
++ * Possible requests:
++ *   getlk
++ *
++ * @param req request handle
++ * @param lock the lock information
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_lock(fuse_req_t req, const struct flock *lock);
++
++/**
++ * Reply with block index
++ *
++ * Possible requests:
++ *   bmap
++ *
++ * @param req request handle
++ * @param idx block index within device
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_bmap(fuse_req_t req, uint64_t idx);
++
++/* ----------------------------------------------------------- *
++ * Filling a buffer in readdir				       *
++ * ----------------------------------------------------------- */
++
++/**
++ * Add a directory entry to the buffer
++ *
++ * Buffer needs to be large enough to hold the entry.  If it's not,
++ * then the entry is not filled in but the size of the entry is still
++ * returned.  The caller can check this by comparing the bufsize
++ * parameter with the returned entry size.  If the entry size is
++ * larger than the buffer size, the operation failed.
++ *
++ * From the 'stbuf' argument the st_ino field and bits 12-15 of the
++ * st_mode field are used.  The other fields are ignored.
++ *
++ * *off* should be any non-zero value that the filesystem can use to
++ * identify the current point in the directory stream. It does not
++ * need to be the actual physical position. A value of zero is
++ * reserved to mean "from the beginning", and should therefore never
++ * be used (the first call to fuse_add_direntry should be passed the
++ * offset of the second directory entry).
++ *
++ * @param req request handle
++ * @param buf the point where the new entry will be added to the buffer
++ * @param bufsize remaining size of the buffer
++ * @param name the name of the entry
++ * @param stbuf the file attributes
++ * @param off the offset of the next entry
++ * @return the space needed for the entry
++ */
++size_t fuse_add_direntry(fuse_req_t req, char *buf, size_t bufsize,
++			 const char *name, const struct stat *stbuf,
++			 off_t off);
++
++/**
++ * Add a directory entry to the buffer with the attributes
++ *
++ * See documentation of `fuse_add_direntry()` for more details.
++ *
++ * @param req request handle
++ * @param buf the point where the new entry will be added to the buffer
++ * @param bufsize remaining size of the buffer
++ * @param name the name of the entry
++ * @param e the directory entry
++ * @param off the offset of the next entry
++ * @return the space needed for the entry
++ */
++size_t fuse_add_direntry_plus(fuse_req_t req, char *buf, size_t bufsize,
++			      const char *name,
++			      const struct fuse_entry_param *e, off_t off);
++
++/**
++ * Reply to ask for data fetch and output buffer preparation.  ioctl
++ * will be retried with the specified input data fetched and output
++ * buffer prepared.
++ *
++ * Possible requests:
++ *   ioctl
++ *
++ * @param req request handle
++ * @param in_iov iovec specifying data to fetch from the caller
++ * @param in_count number of entries in in_iov
++ * @param out_iov iovec specifying addresses to write output to
++ * @param out_count number of entries in out_iov
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_ioctl_retry(fuse_req_t req,
++			   const struct iovec *in_iov, size_t in_count,
++			   const struct iovec *out_iov, size_t out_count);
++
++/**
++ * Reply to finish ioctl
++ *
++ * Possible requests:
++ *   ioctl
++ *
++ * @param req request handle
++ * @param result result to be passed to the caller
++ * @param buf buffer containing output data
++ * @param size length of output data
++ */
++int fuse_reply_ioctl(fuse_req_t req, int result, const void *buf, size_t size);
++
++/**
++ * Reply to finish ioctl with iov buffer
++ *
++ * Possible requests:
++ *   ioctl
++ *
++ * @param req request handle
++ * @param result result to be passed to the caller
++ * @param iov the vector containing the data
++ * @param count the size of vector
++ */
++int fuse_reply_ioctl_iov(fuse_req_t req, int result, const struct iovec *iov,
++			 int count);
++
++/**
++ * Reply with poll result event mask
++ *
++ * @param req request handle
++ * @param revents poll result event mask
++ */
++int fuse_reply_poll(fuse_req_t req, unsigned revents);
++
++/**
++ * Reply with offset
++ *
++ * Possible requests:
++ *   lseek
++ *
++ * @param req request handle
++ * @param off offset of next data or hole
++ * @return zero for success, -errno for failure to send reply
++ */
++int fuse_reply_lseek(fuse_req_t req, off_t off);
++
++/* ----------------------------------------------------------- *
++ * Notification						       *
++ * ----------------------------------------------------------- */
++
++/**
++ * Notify IO readiness event
++ *
++ * For more information, please read comment for poll operation.
++ *
++ * @param ph poll handle to notify IO readiness event for
++ */
++int fuse_lowlevel_notify_poll(struct fuse_pollhandle *ph);
++
++/**
++ * Notify to invalidate cache for an inode.
++ *
++ * Added in FUSE protocol version 7.12. If the kernel does not support
++ * this (or a newer) version, the function will return -ENOSYS and do
++ * nothing.
++ *
++ * If the filesystem has writeback caching enabled, invalidating an
++ * inode will first trigger a writeback of all dirty pages. The call
++ * will block until all writeback requests have completed and the
++ * inode has been invalidated. It will, however, not wait for
++ * completion of pending writeback requests that have been issued
++ * before.
++ *
++ * If there are no dirty pages, this function will never block.
++ *
++ * @param se the session object
++ * @param ino the inode number
++ * @param off the offset in the inode where to start invalidating
++ *            or negative to invalidate attributes only
++ * @param len the amount of cache to invalidate or 0 for all
++ * @return zero for success, -errno for failure
++ */
++int fuse_lowlevel_notify_inval_inode(struct fuse_session *se, fuse_ino_t ino,
++				     off_t off, off_t len);
++
++/**
++ * Notify to invalidate parent attributes and the dentry matching
++ * parent/name
++ *
++ * To avoid a deadlock this function must not be called in the
++ * execution path of a related filesytem operation or within any code
++ * that could hold a lock that could be needed to execute such an
++ * operation. As of kernel 4.18, a "related operation" is a lookup(),
++ * symlink(), mknod(), mkdir(), unlink(), rename(), link() or create()
++ * request for the parent, and a setattr(), unlink(), rmdir(),
++ * rename(), setxattr(), removexattr(), readdir() or readdirplus()
++ * request for the inode itself.
++ *
++ * When called correctly, this function will never block.
++ *
++ * Added in FUSE protocol version 7.12. If the kernel does not support
++ * this (or a newer) version, the function will return -ENOSYS and do
++ * nothing.
++ *
++ * @param se the session object
++ * @param parent inode number
++ * @param name file name
++ * @param namelen strlen() of file name
++ * @return zero for success, -errno for failure
++ */
++int fuse_lowlevel_notify_inval_entry(struct fuse_session *se, fuse_ino_t parent,
++				     const char *name, size_t namelen);
++
++/**
++ * This function behaves like fuse_lowlevel_notify_inval_entry() with
++ * the following additional effect (at least as of Linux kernel 4.8):
++ *
++ * If the provided *child* inode matches the inode that is currently
++ * associated with the cached dentry, and if there are any inotify
++ * watches registered for the dentry, then the watchers are informed
++ * that the dentry has been deleted.
++ *
++ * To avoid a deadlock this function must not be called while
++ * executing a related filesytem operation or while holding a lock
++ * that could be needed to execute such an operation (see the
++ * description of fuse_lowlevel_notify_inval_entry() for more
++ * details).
++ *
++ * When called correctly, this function will never block.
++ *
++ * Added in FUSE protocol version 7.18. If the kernel does not support
++ * this (or a newer) version, the function will return -ENOSYS and do
++ * nothing.
++ *
++ * @param se the session object
++ * @param parent inode number
++ * @param child inode number
++ * @param name file name
++ * @param namelen strlen() of file name
++ * @return zero for success, -errno for failure
++ */
++int fuse_lowlevel_notify_delete(struct fuse_session *se,
++				fuse_ino_t parent, fuse_ino_t child,
++				const char *name, size_t namelen);
++
++/**
++ * Store data to the kernel buffers
++ *
++ * Synchronously store data in the kernel buffers belonging to the
++ * given inode.  The stored data is marked up-to-date (no read will be
++ * performed against it, unless it's invalidated or evicted from the
++ * cache).
++ *
++ * If the stored data overflows the current file size, then the size
++ * is extended, similarly to a write(2) on the filesystem.
++ *
++ * If this function returns an error, then the store wasn't fully
++ * completed, but it may have been partially completed.
++ *
++ * Added in FUSE protocol version 7.15. If the kernel does not support
++ * this (or a newer) version, the function will return -ENOSYS and do
++ * nothing.
++ *
++ * @param se the session object
++ * @param ino the inode number
++ * @param offset the starting offset into the file to store to
++ * @param bufv buffer vector
++ * @param flags flags controlling the copy
++ * @return zero for success, -errno for failure
++ */
++int fuse_lowlevel_notify_store(struct fuse_session *se, fuse_ino_t ino,
++			       off_t offset, struct fuse_bufvec *bufv,
++			       enum fuse_buf_copy_flags flags);
++/**
++ * Retrieve data from the kernel buffers
++ *
++ * Retrieve data in the kernel buffers belonging to the given inode.
++ * If successful then the retrieve_reply() method will be called with
++ * the returned data.
++ *
++ * Only present pages are returned in the retrieve reply.  Retrieving
++ * stops when it finds a non-present page and only data prior to that
++ * is returned.
++ *
++ * If this function returns an error, then the retrieve will not be
++ * completed and no reply will be sent.
++ *
++ * This function doesn't change the dirty state of pages in the kernel
++ * buffer.  For dirty pages the write() method will be called
++ * regardless of having been retrieved previously.
++ *
++ * Added in FUSE protocol version 7.15. If the kernel does not support
++ * this (or a newer) version, the function will return -ENOSYS and do
++ * nothing.
++ *
++ * @param se the session object
++ * @param ino the inode number
++ * @param size the number of bytes to retrieve
++ * @param offset the starting offset into the file to retrieve from
++ * @param cookie user data to supply to the reply callback
++ * @return zero for success, -errno for failure
++ */
++int fuse_lowlevel_notify_retrieve(struct fuse_session *se, fuse_ino_t ino,
++				  size_t size, off_t offset, void *cookie);
++
++
++/* ----------------------------------------------------------- *
++ * Utility functions					       *
++ * ----------------------------------------------------------- */
++
++/**
++ * Get the userdata from the request
++ *
++ * @param req request handle
++ * @return the user data passed to fuse_session_new()
++ */
++void *fuse_req_userdata(fuse_req_t req);
++
++/**
++ * Get the context from the request
++ *
++ * The pointer returned by this function will only be valid for the
++ * request's lifetime
++ *
++ * @param req request handle
++ * @return the context structure
++ */
++const struct fuse_ctx *fuse_req_ctx(fuse_req_t req);
++
++/**
++ * Get the current supplementary group IDs for the specified request
++ *
++ * Similar to the getgroups(2) system call, except the return value is
++ * always the total number of group IDs, even if it is larger than the
++ * specified size.
++ *
++ * The current fuse kernel module in linux (as of 2.6.30) doesn't pass
++ * the group list to userspace, hence this function needs to parse
++ * "/proc/$TID/task/$TID/status" to get the group IDs.
++ *
++ * This feature may not be supported on all operating systems.  In
++ * such a case this function will return -ENOSYS.
++ *
++ * @param req request handle
++ * @param size size of given array
++ * @param list array of group IDs to be filled in
++ * @return the total number of supplementary group IDs or -errno on failure
++ */
++int fuse_req_getgroups(fuse_req_t req, int size, gid_t list[]);
++
++/**
++ * Callback function for an interrupt
++ *
++ * @param req interrupted request
++ * @param data user data
++ */
++typedef void (*fuse_interrupt_func_t)(fuse_req_t req, void *data);
++
++/**
++ * Register/unregister callback for an interrupt
++ *
++ * If an interrupt has already happened, then the callback function is
++ * called from within this function, hence it's not possible for
++ * interrupts to be lost.
++ *
++ * @param req request handle
++ * @param func the callback function or NULL for unregister
++ * @param data user data passed to the callback function
++ */
++void fuse_req_interrupt_func(fuse_req_t req, fuse_interrupt_func_t func,
++			     void *data);
++
++/**
++ * Check if a request has already been interrupted
++ *
++ * @param req request handle
++ * @return 1 if the request has been interrupted, 0 otherwise
++ */
++int fuse_req_interrupted(fuse_req_t req);
++
++
++/* ----------------------------------------------------------- *
++ * Inquiry functions                                           *
++ * ----------------------------------------------------------- */
++
++/**
++ * Print low-level version information to stdout.
++ */
++void fuse_lowlevel_version(void);
++
++/**
++ * Print available low-level options to stdout. This is not an
++ * exhaustive list, but includes only those options that may be of
++ * interest to an end-user of a file system.
++ */
++void fuse_lowlevel_help(void);
++
++/**
++ * Print available options for `fuse_parse_cmdline()`.
++ */
++void fuse_cmdline_help(void);
++
++/* ----------------------------------------------------------- *
++ * Filesystem setup & teardown                                 *
++ * ----------------------------------------------------------- */
++
++struct fuse_cmdline_opts {
++	int singlethread;
++	int foreground;
++	int debug;
++	int nodefault_subtype;
++	char *mountpoint;
++	int show_version;
++	int show_help;
++	int clone_fd;
++	unsigned int max_idle_threads;
++};
++
++/**
++ * Utility function to parse common options for simple file systems
++ * using the low-level API. A help text that describes the available
++ * options can be printed with `fuse_cmdline_help`. A single
++ * non-option argument is treated as the mountpoint. Multiple
++ * non-option arguments will result in an error.
++ *
++ * If neither -o subtype= or -o fsname= options are given, a new
++ * subtype option will be added and set to the basename of the program
++ * (the fsname will remain unset, and then defaults to "fuse").
++ *
++ * Known options will be removed from *args*, unknown options will
++ * remain.
++ *
++ * @param args argument vector (input+output)
++ * @param opts output argument for parsed options
++ * @return 0 on success, -1 on failure
++ */
++int fuse_parse_cmdline(struct fuse_args *args,
++		       struct fuse_cmdline_opts *opts);
++
++/**
++ * Create a low level session.
++ *
++ * Returns a session structure suitable for passing to
++ * fuse_session_mount() and fuse_session_loop().
++ *
++ * This function accepts most file-system independent mount options
++ * (like context, nodev, ro - see mount(8)), as well as the general
++ * fuse mount options listed in mount.fuse(8) (e.g. -o allow_root and
++ * -o default_permissions, but not ``-o use_ino``).  Instead of `-o
++ * debug`, debugging may also enabled with `-d` or `--debug`.
++ *
++ * If not all options are known, an error message is written to stderr
++ * and the function returns NULL.
++ *
++ * Option parsing skips argv[0], which is assumed to contain the
++ * program name. To prevent accidentally passing an option in
++ * argv[0], this element must always be present (even if no options
++ * are specified). It may be set to the empty string ('\0') if no
++ * reasonable value can be provided.
++ *
++ * @param args argument vector
++ * @param op the (low-level) filesystem operations
++ * @param op_size sizeof(struct fuse_lowlevel_ops)
++ * @param userdata user data
++ *
++ * @return the fuse session on success, NULL on failure
++ **/
++struct fuse_session *fuse_session_new(struct fuse_args *args,
++				      const struct fuse_lowlevel_ops *op,
++				      size_t op_size, void *userdata);
++
++/**
++ * Mount a FUSE file system.
++ *
++ * @param mountpoint the mount point path
++ * @param se session object
++ *
++ * @return 0 on success, -1 on failure.
++ **/
++int fuse_session_mount(struct fuse_session *se, const char *mountpoint);
++
++/**
++ * Enter a single threaded, blocking event loop.
++ *
++ * When the event loop terminates because the connection to the FUSE
++ * kernel module has been closed, this function returns zero. This
++ * happens when the filesystem is unmounted regularly (by the
++ * filesystem owner or root running the umount(8) or fusermount(1)
++ * command), or if connection is explicitly severed by writing ``1``
++ * to the``abort`` file in ``/sys/fs/fuse/connections/NNN``. The only
++ * way to distinguish between these two conditions is to check if the
++ * filesystem is still mounted after the session loop returns.
++ *
++ * When some error occurs during request processing, the function
++ * returns a negated errno(3) value.
++ *
++ * If the loop has been terminated because of a signal handler
++ * installed by fuse_set_signal_handlers(), this function returns the
++ * (positive) signal value that triggered the exit.
++ *
++ * @param se the session
++ * @return 0, -errno, or a signal value
++ */
++int fuse_session_loop(struct fuse_session *se);
++
++/**
++ * Enter a multi-threaded event loop.
++ *
++ * For a description of the return value and the conditions when the
++ * event loop exits, refer to the documentation of
++ * fuse_session_loop().
++ *
++ * @param se the session
++ * @param config session loop configuration 
++ * @return see fuse_session_loop()
++ */
++#if FUSE_USE_VERSION < 32
++int fuse_session_loop_mt_31(struct fuse_session *se, int clone_fd);
++#define fuse_session_loop_mt(se, clone_fd) fuse_session_loop_mt_31(se, clone_fd)
++#else
++int fuse_session_loop_mt(struct fuse_session *se, struct fuse_loop_config *config);
++#endif
++
++/**
++ * Flag a session as terminated.
++ *
++ * This function is invoked by the POSIX signal handlers, when
++ * registered using fuse_set_signal_handlers(). It will cause any
++ * running event loops to terminate on the next opportunity.
++ *
++ * @param se the session
++ */
++void fuse_session_exit(struct fuse_session *se);
++
++/**
++ * Reset the terminated flag of a session
++ *
++ * @param se the session
++ */
++void fuse_session_reset(struct fuse_session *se);
++
++/**
++ * Query the terminated flag of a session
++ *
++ * @param se the session
++ * @return 1 if exited, 0 if not exited
++ */
++int fuse_session_exited(struct fuse_session *se);
++
++/**
++ * Ensure that file system is unmounted.
++ *
++ * In regular operation, the file system is typically unmounted by the
++ * user calling umount(8) or fusermount(1), which then terminates the
++ * FUSE session loop. However, the session loop may also terminate as
++ * a result of an explicit call to fuse_session_exit() (e.g. by a
++ * signal handler installed by fuse_set_signal_handler()). In this
++ * case the filesystem remains mounted, but any attempt to access it
++ * will block (while the filesystem process is still running) or give
++ * an ESHUTDOWN error (after the filesystem process has terminated).
++ *
++ * If the communication channel with the FUSE kernel module is still
++ * open (i.e., if the session loop was terminated by an explicit call
++ * to fuse_session_exit()), this function will close it and unmount
++ * the filesystem. If the communication channel has been closed by the
++ * kernel, this method will do (almost) nothing.
++ *
++ * NOTE: The above semantics mean that if the connection to the kernel
++ * is terminated via the ``/sys/fs/fuse/connections/NNN/abort`` file,
++ * this method will *not* unmount the filesystem.
++ *
++ * @param se the session
++ */
++void fuse_session_unmount(struct fuse_session *se);
++
++/**
++ * Destroy a session
++ *
++ * @param se the session
++ */
++void fuse_session_destroy(struct fuse_session *se);
++
++/* ----------------------------------------------------------- *
++ * Custom event loop support                                   *
++ * ----------------------------------------------------------- */
++
++/**
++ * Return file descriptor for communication with kernel.
++ *
++ * The file selector can be used to integrate FUSE with a custom event
++ * loop. Whenever data is available for reading on the provided fd,
++ * the event loop should call `fuse_session_receive_buf` followed by
++ * `fuse_session_process_buf` to process the request.
++ *
++ * The returned file descriptor is valid until `fuse_session_unmount`
++ * is called.
++ *
++ * @param se the session
++ * @return a file descriptor
++ */
++int fuse_session_fd(struct fuse_session *se);
++
++/**
++ * Process a raw request supplied in a generic buffer
++ *
++ * The fuse_buf may contain a memory buffer or a pipe file descriptor.
++ *
++ * @param se the session
++ * @param buf the fuse_buf containing the request
++ */
++void fuse_session_process_buf(struct fuse_session *se,
++			      const struct fuse_buf *buf);
++
++/**
++ * Read a raw request from the kernel into the supplied buffer.
++ *
++ * Depending on file system options, system capabilities, and request
++ * size the request is either read into a memory buffer or spliced
++ * into a temporary pipe.
++ *
++ * @param se the session
++ * @param buf the fuse_buf to store the request in
++ * @return the actual size of the raw request, or -errno on error
++ */
++int fuse_session_receive_buf(struct fuse_session *se, struct fuse_buf *buf);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* FUSE_LOWLEVEL_H_ */
+diff --git a/tools/virtiofsd/fuse_misc.h b/tools/virtiofsd/fuse_misc.h
+new file mode 100644
+index 0000000000..2f6663ed7d
+--- /dev/null
++++ b/tools/virtiofsd/fuse_misc.h
+@@ -0,0 +1,59 @@
++/*
++  FUSE: Filesystem in Userspace
++  Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
++
++  This program can be distributed under the terms of the GNU LGPLv2.
++  See the file COPYING.LIB
++*/
++
++#include <pthread.h>
++
++/*
++  Versioned symbols cannot be used in some cases because it
++    - confuse the dynamic linker in uClibc
++    - not supported on MacOSX (in MachO binary format)
++*/
++#if (!defined(__UCLIBC__) && !defined(__APPLE__))
++#define FUSE_SYMVER(x) __asm__(x)
++#else
++#define FUSE_SYMVER(x)
++#endif
++
++#ifndef USE_UCLIBC
++#define fuse_mutex_init(mut) pthread_mutex_init(mut, NULL)
++#else
++/* Is this hack still needed? */
++static inline void fuse_mutex_init(pthread_mutex_t *mut)
++{
++	pthread_mutexattr_t attr;
++	pthread_mutexattr_init(&attr);
++	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ADAPTIVE_NP);
++	pthread_mutex_init(mut, &attr);
++	pthread_mutexattr_destroy(&attr);
++}
++#endif
++
++#ifdef HAVE_STRUCT_STAT_ST_ATIM
++/* Linux */
++#define ST_ATIM_NSEC(stbuf) ((stbuf)->st_atim.tv_nsec)
++#define ST_CTIM_NSEC(stbuf) ((stbuf)->st_ctim.tv_nsec)
++#define ST_MTIM_NSEC(stbuf) ((stbuf)->st_mtim.tv_nsec)
++#define ST_ATIM_NSEC_SET(stbuf, val) (stbuf)->st_atim.tv_nsec = (val)
++#define ST_CTIM_NSEC_SET(stbuf, val) (stbuf)->st_ctim.tv_nsec = (val)
++#define ST_MTIM_NSEC_SET(stbuf, val) (stbuf)->st_mtim.tv_nsec = (val)
++#elif defined(HAVE_STRUCT_STAT_ST_ATIMESPEC)
++/* FreeBSD */
++#define ST_ATIM_NSEC(stbuf) ((stbuf)->st_atimespec.tv_nsec)
++#define ST_CTIM_NSEC(stbuf) ((stbuf)->st_ctimespec.tv_nsec)
++#define ST_MTIM_NSEC(stbuf) ((stbuf)->st_mtimespec.tv_nsec)
++#define ST_ATIM_NSEC_SET(stbuf, val) (stbuf)->st_atimespec.tv_nsec = (val)
++#define ST_CTIM_NSEC_SET(stbuf, val) (stbuf)->st_ctimespec.tv_nsec = (val)
++#define ST_MTIM_NSEC_SET(stbuf, val) (stbuf)->st_mtimespec.tv_nsec = (val)
++#else
++#define ST_ATIM_NSEC(stbuf) 0
++#define ST_CTIM_NSEC(stbuf) 0
++#define ST_MTIM_NSEC(stbuf) 0
++#define ST_ATIM_NSEC_SET(stbuf, val) do { } while (0)
++#define ST_CTIM_NSEC_SET(stbuf, val) do { } while (0)
++#define ST_MTIM_NSEC_SET(stbuf, val) do { } while (0)
++#endif
+diff --git a/tools/virtiofsd/fuse_opt.h b/tools/virtiofsd/fuse_opt.h
+new file mode 100644
+index 0000000000..d8573e74fd
+--- /dev/null
++++ b/tools/virtiofsd/fuse_opt.h
+@@ -0,0 +1,271 @@
++/*
++  FUSE: Filesystem in Userspace
++  Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
++
++  This program can be distributed under the terms of the GNU LGPLv2.
++  See the file COPYING.LIB.
++*/
++
++#ifndef FUSE_OPT_H_
++#define FUSE_OPT_H_
++
++/** @file
++ *
++ * This file defines the option parsing interface of FUSE
++ */
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/**
++ * Option description
++ *
++ * This structure describes a single option, and action associated
++ * with it, in case it matches.
++ *
++ * More than one such match may occur, in which case the action for
++ * each match is executed.
++ *
++ * There are three possible actions in case of a match:
++ *
++ * i) An integer (int or unsigned) variable determined by 'offset' is
++ *    set to 'value'
++ *
++ * ii) The processing function is called, with 'value' as the key
++ *
++ * iii) An integer (any) or string (char *) variable determined by
++ *    'offset' is set to the value of an option parameter
++ *
++ * 'offset' should normally be either set to
++ *
++ *  - 'offsetof(struct foo, member)'  actions i) and iii)
++ *
++ *  - -1			      action ii)
++ *
++ * The 'offsetof()' macro is defined in the <stddef.h> header.
++ *
++ * The template determines which options match, and also have an
++ * effect on the action.  Normally the action is either i) or ii), but
++ * if a format is present in the template, then action iii) is
++ * performed.
++ *
++ * The types of templates are:
++ *
++ * 1) "-x", "-foo", "--foo", "--foo-bar", etc.	These match only
++ *   themselves.  Invalid values are "--" and anything beginning
++ *   with "-o"
++ *
++ * 2) "foo", "foo-bar", etc.  These match "-ofoo", "-ofoo-bar" or
++ *    the relevant option in a comma separated option list
++ *
++ * 3) "bar=", "--foo=", etc.  These are variations of 1) and 2)
++ *    which have a parameter
++ *
++ * 4) "bar=%s", "--foo=%lu", etc.  Same matching as above but perform
++ *    action iii).
++ *
++ * 5) "-x ", etc.  Matches either "-xparam" or "-x param" as
++ *    two separate arguments
++ *
++ * 6) "-x %s", etc.  Combination of 4) and 5)
++ *
++ * If the format is "%s", memory is allocated for the string unlike with
++ * scanf().  The previous value (if non-NULL) stored at the this location is
++ * freed.
++ */
++struct fuse_opt {
++	/** Matching template and optional parameter formatting */
++	const char *templ;
++
++	/**
++	 * Offset of variable within 'data' parameter of fuse_opt_parse()
++	 * or -1
++	 */
++	unsigned long offset;
++
++	/**
++	 * Value to set the variable to, or to be passed as 'key' to the
++	 * processing function.	 Ignored if template has a format
++	 */
++	int value;
++};
++
++/**
++ * Key option.	In case of a match, the processing function will be
++ * called with the specified key.
++ */
++#define FUSE_OPT_KEY(templ, key) { templ, -1U, key }
++
++/**
++ * Last option.	 An array of 'struct fuse_opt' must end with a NULL
++ * template value
++ */
++#define FUSE_OPT_END { NULL, 0, 0 }
++
++/**
++ * Argument list
++ */
++struct fuse_args {
++	/** Argument count */
++	int argc;
++
++	/** Argument vector.  NULL terminated */
++	char **argv;
++
++	/** Is 'argv' allocated? */
++	int allocated;
++};
++
++/**
++ * Initializer for 'struct fuse_args'
++ */
++#define FUSE_ARGS_INIT(argc, argv) { argc, argv, 0 }
++
++/**
++ * Key value passed to the processing function if an option did not
++ * match any template
++ */
++#define FUSE_OPT_KEY_OPT     -1
++
++/**
++ * Key value passed to the processing function for all non-options
++ *
++ * Non-options are the arguments beginning with a character other than
++ * '-' or all arguments after the special '--' option
++ */
++#define FUSE_OPT_KEY_NONOPT  -2
++
++/**
++ * Special key value for options to keep
++ *
++ * Argument is not passed to processing function, but behave as if the
++ * processing function returned 1
++ */
++#define FUSE_OPT_KEY_KEEP -3
++
++/**
++ * Special key value for options to discard
++ *
++ * Argument is not passed to processing function, but behave as if the
++ * processing function returned zero
++ */
++#define FUSE_OPT_KEY_DISCARD -4
++
++/**
++ * Processing function
++ *
++ * This function is called if
++ *    - option did not match any 'struct fuse_opt'
++ *    - argument is a non-option
++ *    - option did match and offset was set to -1
++ *
++ * The 'arg' parameter will always contain the whole argument or
++ * option including the parameter if exists.  A two-argument option
++ * ("-x foo") is always converted to single argument option of the
++ * form "-xfoo" before this function is called.
++ *
++ * Options of the form '-ofoo' are passed to this function without the
++ * '-o' prefix.
++ *
++ * The return value of this function determines whether this argument
++ * is to be inserted into the output argument vector, or discarded.
++ *
++ * @param data is the user data passed to the fuse_opt_parse() function
++ * @param arg is the whole argument or option
++ * @param key determines why the processing function was called
++ * @param outargs the current output argument list
++ * @return -1 on error, 0 if arg is to be discarded, 1 if arg should be kept
++ */
++typedef int (*fuse_opt_proc_t)(void *data, const char *arg, int key,
++			       struct fuse_args *outargs);
++
++/**
++ * Option parsing function
++ *
++ * If 'args' was returned from a previous call to fuse_opt_parse() or
++ * it was constructed from
++ *
++ * A NULL 'args' is equivalent to an empty argument vector
++ *
++ * A NULL 'opts' is equivalent to an 'opts' array containing a single
++ * end marker
++ *
++ * A NULL 'proc' is equivalent to a processing function always
++ * returning '1'
++ *
++ * @param args is the input and output argument list
++ * @param data is the user data
++ * @param opts is the option description array
++ * @param proc is the processing function
++ * @return -1 on error, 0 on success
++ */
++int fuse_opt_parse(struct fuse_args *args, void *data,
++		   const struct fuse_opt opts[], fuse_opt_proc_t proc);
++
++/**
++ * Add an option to a comma separated option list
++ *
++ * @param opts is a pointer to an option list, may point to a NULL value
++ * @param opt is the option to add
++ * @return -1 on allocation error, 0 on success
++ */
++int fuse_opt_add_opt(char **opts, const char *opt);
++
++/**
++ * Add an option, escaping commas, to a comma separated option list
++ *
++ * @param opts is a pointer to an option list, may point to a NULL value
++ * @param opt is the option to add
++ * @return -1 on allocation error, 0 on success
++ */
++int fuse_opt_add_opt_escaped(char **opts, const char *opt);
++
++/**
++ * Add an argument to a NULL terminated argument vector
++ *
++ * @param args is the structure containing the current argument list
++ * @param arg is the new argument to add
++ * @return -1 on allocation error, 0 on success
++ */
++int fuse_opt_add_arg(struct fuse_args *args, const char *arg);
++
++/**
++ * Add an argument at the specified position in a NULL terminated
++ * argument vector
++ *
++ * Adds the argument to the N-th position.  This is useful for adding
++ * options at the beginning of the array which must not come after the
++ * special '--' option.
++ *
++ * @param args is the structure containing the current argument list
++ * @param pos is the position at which to add the argument
++ * @param arg is the new argument to add
++ * @return -1 on allocation error, 0 on success
++ */
++int fuse_opt_insert_arg(struct fuse_args *args, int pos, const char *arg);
++
++/**
++ * Free the contents of argument list
++ *
++ * The structure itself is not freed
++ *
++ * @param args is the structure containing the argument list
++ */
++void fuse_opt_free_args(struct fuse_args *args);
++
++
++/**
++ * Check if an option matches
++ *
++ * @param opts is the option description array
++ * @param opt is the option to match
++ * @return 1 if a match is found, 0 if not
++ */
++int fuse_opt_match(const struct fuse_opt opts[], const char *opt);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* FUSE_OPT_H_ */
+diff --git a/tools/virtiofsd/passthrough_helpers.h b/tools/virtiofsd/passthrough_helpers.h
+new file mode 100644
+index 0000000000..6b77c33600
+--- /dev/null
++++ b/tools/virtiofsd/passthrough_helpers.h
+@@ -0,0 +1,76 @@
++/*
++ * FUSE: Filesystem in Userspace
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
++ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
++ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
++ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
++ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE
++ */
++
++/*
++ * Creates files on the underlying file system in response to a FUSE_MKNOD
++ * operation
++ */
++static int mknod_wrapper(int dirfd, const char *path, const char *link,
++	int mode, dev_t rdev)
++{
++	int res;
++
++	if (S_ISREG(mode)) {
++		res = openat(dirfd, path, O_CREAT | O_EXCL | O_WRONLY, mode);
++		if (res >= 0)
++			res = close(res);
++	} else if (S_ISDIR(mode)) {
++		res = mkdirat(dirfd, path, mode);
++	} else if (S_ISLNK(mode) && link != NULL) {
++		res = symlinkat(link, dirfd, path);
++	} else if (S_ISFIFO(mode)) {
++		res = mkfifoat(dirfd, path, mode);
++#ifdef __FreeBSD__
++	} else if (S_ISSOCK(mode)) {
++		struct sockaddr_un su;
++		int fd;
++
++		if (strlen(path) >= sizeof(su.sun_path)) {
++			errno = ENAMETOOLONG;
++			return -1;
++		}
++		fd = socket(AF_UNIX, SOCK_STREAM, 0);
++		if (fd >= 0) {
++			/*
++			 * We must bind the socket to the underlying file
++			 * system to create the socket file, even though
++			 * we'll never listen on this socket.
++			 */
++			su.sun_family = AF_UNIX;
++			strncpy(su.sun_path, path, sizeof(su.sun_path));
++			res = bindat(dirfd, fd, (struct sockaddr*)&su,
++				sizeof(su));
++			if (res == 0)
++				close(fd);
++		} else {
++			res = -1;
++		}
++#endif
++	} else {
++		res = mknodat(dirfd, path, mode, rdev);
++	}
++
++	return res;
++}

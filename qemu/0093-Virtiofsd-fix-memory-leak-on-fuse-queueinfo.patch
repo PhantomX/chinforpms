@@ -1,0 +1,44 @@
+From: Liu Bo <bo.liu@linux.alibaba.com>
+Date: Mon, 27 Jan 2020 19:02:02 +0000
+Subject: [PATCH] Virtiofsd: fix memory leak on fuse queueinfo
+
+For fuse's queueinfo, both queueinfo array and queueinfos are allocated in
+fv_queue_set_started() but not cleaned up when the daemon process quits.
+
+This fixes the leak in proper places.
+
+Signed-off-by: Liu Bo <bo.liu@linux.alibaba.com>
+Signed-off-by: Eric Ren <renzhen@linux.alibaba.com>
+Reviewed-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 740b0b700a6338a1cf60c26229651ac5f6724944)
+---
+ tools/virtiofsd/fuse_virtio.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/tools/virtiofsd/fuse_virtio.c b/tools/virtiofsd/fuse_virtio.c
+index b7948def27..fb8d6d1379 100644
+--- a/tools/virtiofsd/fuse_virtio.c
++++ b/tools/virtiofsd/fuse_virtio.c
+@@ -625,6 +625,8 @@ static void fv_queue_cleanup_thread(struct fv_VuDev *vud, int qidx)
+     }
+     close(ourqi->kill_fd);
+     ourqi->kick_fd = -1;
++    free(vud->qi[qidx]);
++    vud->qi[qidx] = NULL;
+ }
+ 
+ /* Callback from libvhost-user on start or stop of a queue */
+@@ -884,6 +886,12 @@ int virtio_session_mount(struct fuse_session *se)
+ void virtio_session_close(struct fuse_session *se)
+ {
+     close(se->vu_socketfd);
++
++    if (!se->virtio_dev) {
++        return;
++    }
++
++    free(se->virtio_dev->qi);
+     free(se->virtio_dev);
+     se->virtio_dev = NULL;
+ }

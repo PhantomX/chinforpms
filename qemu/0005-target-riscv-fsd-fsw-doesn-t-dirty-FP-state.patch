@@ -1,0 +1,37 @@
+From: ShihPo Hung <shihpo.hung@sifive.com>
+Date: Tue, 14 Jan 2020 22:17:32 -0800
+Subject: [PATCH] target/riscv: fsd/fsw doesn't dirty FP state
+
+Signed-off-by: ShihPo Hung <shihpo.hung@sifive.com>
+Reviewed-by: Richard Henderson <richard.henderson@linaro.org>
+Reviewed-by: Alistair Francis <alistair.francis@wdc.com>
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+---
+ target/riscv/insn_trans/trans_rvd.inc.c | 1 -
+ target/riscv/insn_trans/trans_rvf.inc.c | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/target/riscv/insn_trans/trans_rvd.inc.c b/target/riscv/insn_trans/trans_rvd.inc.c
+index 393fa0248c..ea1044f13b 100644
+--- a/target/riscv/insn_trans/trans_rvd.inc.c
++++ b/target/riscv/insn_trans/trans_rvd.inc.c
+@@ -43,7 +43,6 @@ static bool trans_fsd(DisasContext *ctx, arg_fsd *a)
+ 
+     tcg_gen_qemu_st_i64(cpu_fpr[a->rs2], t0, ctx->mem_idx, MO_TEQ);
+ 
+-    mark_fs_dirty(ctx);
+     tcg_temp_free(t0);
+     return true;
+ }
+diff --git a/target/riscv/insn_trans/trans_rvf.inc.c b/target/riscv/insn_trans/trans_rvf.inc.c
+index 172dbfa919..e23cd639a6 100644
+--- a/target/riscv/insn_trans/trans_rvf.inc.c
++++ b/target/riscv/insn_trans/trans_rvf.inc.c
+@@ -52,7 +52,6 @@ static bool trans_fsw(DisasContext *ctx, arg_fsw *a)
+     tcg_gen_qemu_st_i64(cpu_fpr[a->rs2], t0, ctx->mem_idx, MO_TEUL);
+ 
+     tcg_temp_free(t0);
+-    mark_fs_dirty(ctx);
+     return true;
+ }
+ 

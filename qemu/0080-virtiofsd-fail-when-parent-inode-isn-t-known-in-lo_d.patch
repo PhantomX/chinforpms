@@ -1,0 +1,66 @@
+From: Miklos Szeredi <mszeredi@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:49 +0000
+Subject: [PATCH] virtiofsd: fail when parent inode isn't known in
+ lo_do_lookup()
+
+The Linux file handle APIs (struct export_operations) can access inodes
+that are not attached to parents because path name traversal is not
+performed.  Refuse if there is no parent in lo_do_lookup().
+
+Also clean up lo_do_lookup() while we're here.
+
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 9de4fab5995d115f8ebfb41d8d94a866d80a1708)
+---
+ tools/virtiofsd/passthrough_ll.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index de12e75a9e..33bfb4d1f4 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -777,6 +777,15 @@ static int lo_do_lookup(fuse_req_t req, fuse_ino_t parent, const char *name,
+     struct lo_data *lo = lo_data(req);
+     struct lo_inode *inode, *dir = lo_inode(req, parent);
+ 
++    /*
++     * name_to_handle_at() and open_by_handle_at() can reach here with fuse
++     * mount point in guest, but we don't have its inode info in the
++     * ino_map.
++     */
++    if (!dir) {
++        return ENOENT;
++    }
++
+     memset(e, 0, sizeof(*e));
+     e->attr_timeout = lo->timeout;
+     e->entry_timeout = lo->timeout;
+@@ -786,7 +795,7 @@ static int lo_do_lookup(fuse_req_t req, fuse_ino_t parent, const char *name,
+         name = ".";
+     }
+ 
+-    newfd = openat(lo_fd(req, parent), name, O_PATH | O_NOFOLLOW);
++    newfd = openat(dir->fd, name, O_PATH | O_NOFOLLOW);
+     if (newfd == -1) {
+         goto out_err;
+     }
+@@ -796,7 +805,7 @@ static int lo_do_lookup(fuse_req_t req, fuse_ino_t parent, const char *name,
+         goto out_err;
+     }
+ 
+-    inode = lo_find(lo_data(req), &e->attr);
++    inode = lo_find(lo, &e->attr);
+     if (inode) {
+         close(newfd);
+         newfd = -1;
+@@ -812,6 +821,7 @@ static int lo_do_lookup(fuse_req_t req, fuse_ino_t parent, const char *name,
+         inode->is_symlink = S_ISLNK(e->attr.st_mode);
+         inode->refcount = 1;
+         inode->fd = newfd;
++        newfd = -1;
+         inode->ino = e->attr.st_ino;
+         inode->dev = e->attr.st_dev;
+ 

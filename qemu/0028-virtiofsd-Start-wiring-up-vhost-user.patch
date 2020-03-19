@@ -1,0 +1,231 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:57 +0000
+Subject: [PATCH] virtiofsd: Start wiring up vhost-user
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Listen on our unix socket for the connection from QEMU, when we get it
+initialise vhost-user and dive into our own loop variant (currently
+dummy).
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit f6f3573c6f271af5ded63ce28589a113f7205c72)
+---
+ tools/virtiofsd/fuse_i.h         |  4 ++
+ tools/virtiofsd/fuse_lowlevel.c  |  5 ++
+ tools/virtiofsd/fuse_lowlevel.h  |  7 +++
+ tools/virtiofsd/fuse_virtio.c    | 87 +++++++++++++++++++++++++++++++-
+ tools/virtiofsd/fuse_virtio.h    |  2 +
+ tools/virtiofsd/passthrough_ll.c |  7 +--
+ 6 files changed, 106 insertions(+), 6 deletions(-)
+
+diff --git a/tools/virtiofsd/fuse_i.h b/tools/virtiofsd/fuse_i.h
+index 82d6ac7115..ec04449069 100644
+--- a/tools/virtiofsd/fuse_i.h
++++ b/tools/virtiofsd/fuse_i.h
+@@ -13,6 +13,8 @@
+ #include "fuse.h"
+ #include "fuse_lowlevel.h"
+ 
++struct fv_VuDev;
++
+ struct fuse_req {
+     struct fuse_session *se;
+     uint64_t unique;
+@@ -65,6 +67,8 @@ struct fuse_session {
+     size_t bufsize;
+     int error;
+     char *vu_socket_path;
++    int   vu_socketfd;
++    struct fv_VuDev *virtio_dev;
+ };
+ 
+ struct fuse_chan {
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index 5df124e64b..af09fa2b94 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -2242,6 +2242,11 @@ void fuse_session_unmount(struct fuse_session *se)
+ {
+ }
+ 
++int fuse_lowlevel_is_virtio(struct fuse_session *se)
++{
++    return se->vu_socket_path != NULL;
++}
++
+ #ifdef linux
+ int fuse_req_getgroups(fuse_req_t req, int size, gid_t list[])
+ {
+diff --git a/tools/virtiofsd/fuse_lowlevel.h b/tools/virtiofsd/fuse_lowlevel.h
+index 2fa225d40b..f6b34700af 100644
+--- a/tools/virtiofsd/fuse_lowlevel.h
++++ b/tools/virtiofsd/fuse_lowlevel.h
+@@ -1755,6 +1755,13 @@ void fuse_req_interrupt_func(fuse_req_t req, fuse_interrupt_func_t func,
+  */
+ int fuse_req_interrupted(fuse_req_t req);
+ 
++/**
++ * Check if the session is connected via virtio
++ *
++ * @param se session object
++ * @return 1 if the session is a virtio session
++ */
++int fuse_lowlevel_is_virtio(struct fuse_session *se);
+ 
+ /*
+  * Inquiry functions
+diff --git a/tools/virtiofsd/fuse_virtio.c b/tools/virtiofsd/fuse_virtio.c
+index cbef6ffdda..2ae3c764dd 100644
+--- a/tools/virtiofsd/fuse_virtio.c
++++ b/tools/virtiofsd/fuse_virtio.c
+@@ -19,18 +19,78 @@
+ 
+ #include <stdint.h>
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <string.h>
+ #include <sys/socket.h>
+ #include <sys/types.h>
+ #include <sys/un.h>
+ #include <unistd.h>
+ 
++#include "contrib/libvhost-user/libvhost-user.h"
++
++/*
++ * We pass the dev element into libvhost-user
++ * and then use it to get back to the outer
++ * container for other data.
++ */
++struct fv_VuDev {
++    VuDev dev;
++    struct fuse_session *se;
++};
++
+ /* From spec */
+ struct virtio_fs_config {
+     char tag[36];
+     uint32_t num_queues;
+ };
+ 
++/*
++ * Callback from libvhost-user if there's a new fd we're supposed to listen
++ * to, typically a queue kick?
++ */
++static void fv_set_watch(VuDev *dev, int fd, int condition, vu_watch_cb cb,
++                         void *data)
++{
++    fuse_log(FUSE_LOG_WARNING, "%s: TODO! fd=%d\n", __func__, fd);
++}
++
++/*
++ * Callback from libvhost-user if we're no longer supposed to listen on an fd
++ */
++static void fv_remove_watch(VuDev *dev, int fd)
++{
++    fuse_log(FUSE_LOG_WARNING, "%s: TODO! fd=%d\n", __func__, fd);
++}
++
++/* Callback from libvhost-user to panic */
++static void fv_panic(VuDev *dev, const char *err)
++{
++    fuse_log(FUSE_LOG_ERR, "%s: libvhost-user: %s\n", __func__, err);
++    /* TODO: Allow reconnects?? */
++    exit(EXIT_FAILURE);
++}
++
++static bool fv_queue_order(VuDev *dev, int qidx)
++{
++    return false;
++}
++
++static const VuDevIface fv_iface = {
++    /* TODO: Add other callbacks */
++    .queue_is_processed_in_order = fv_queue_order,
++};
++
++int virtio_loop(struct fuse_session *se)
++{
++    fuse_log(FUSE_LOG_INFO, "%s: Entry\n", __func__);
++
++    while (1) {
++        /* TODO: Add stuffing */
++    }
++
++    fuse_log(FUSE_LOG_INFO, "%s: Exit\n", __func__);
++}
++
+ int virtio_session_mount(struct fuse_session *se)
+ {
+     struct sockaddr_un un;
+@@ -75,5 +135,30 @@ int virtio_session_mount(struct fuse_session *se)
+         return -1;
+     }
+ 
+-    return -1;
++    fuse_log(FUSE_LOG_INFO, "%s: Waiting for vhost-user socket connection...\n",
++             __func__);
++    int data_sock = accept(listen_sock, NULL, NULL);
++    if (data_sock == -1) {
++        fuse_log(FUSE_LOG_ERR, "vhost socket accept: %m\n");
++        close(listen_sock);
++        return -1;
++    }
++    close(listen_sock);
++    fuse_log(FUSE_LOG_INFO, "%s: Received vhost-user socket connection\n",
++             __func__);
++
++    /* TODO: Some cleanup/deallocation! */
++    se->virtio_dev = calloc(sizeof(struct fv_VuDev), 1);
++    if (!se->virtio_dev) {
++        fuse_log(FUSE_LOG_ERR, "%s: virtio_dev calloc failed\n", __func__);
++        close(data_sock);
++        return -1;
++    }
++
++    se->vu_socketfd = data_sock;
++    se->virtio_dev->se = se;
++    vu_init(&se->virtio_dev->dev, 2, se->vu_socketfd, fv_panic, fv_set_watch,
++            fv_remove_watch, &fv_iface);
++
++    return 0;
+ }
+diff --git a/tools/virtiofsd/fuse_virtio.h b/tools/virtiofsd/fuse_virtio.h
+index 8f2edb69ca..23026d6e4c 100644
+--- a/tools/virtiofsd/fuse_virtio.h
++++ b/tools/virtiofsd/fuse_virtio.h
+@@ -20,4 +20,6 @@ struct fuse_session;
+ 
+ int virtio_session_mount(struct fuse_session *se);
+ 
++int virtio_loop(struct fuse_session *se);
++
+ #endif
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index fc9b264d56..037c5d7b26 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -36,6 +36,7 @@
+  */
+ 
+ #include "qemu/osdep.h"
++#include "fuse_virtio.h"
+ #include "fuse_lowlevel.h"
+ #include <assert.h>
+ #include <dirent.h>
+@@ -1395,11 +1396,7 @@ int main(int argc, char *argv[])
+     fuse_daemonize(opts.foreground);
+ 
+     /* Block until ctrl+c or fusermount -u */
+-    if (opts.singlethread) {
+-        ret = fuse_session_loop(se);
+-    } else {
+-        ret = fuse_session_loop_mt(se, opts.clone_fd);
+-    }
++    ret = virtio_loop(se);
+ 
+     fuse_session_unmount(se);
+ err_out3:

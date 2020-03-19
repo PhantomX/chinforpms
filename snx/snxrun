@@ -38,9 +38,9 @@ main(){
     fi
   else
     if test "x$DISPLAY" != "x"; then
-      /usr/bin/xterm -e '/usr/sbin/snx -f /etc/snx/snxrc ; sleep 5'
+      /usr/bin/xterm -e '/usr/sbin/snx -f /etc/snxrc ; sleep 5'
     else
-      /usr/sbin/snx -f /etc/snx/snxrc
+      /usr/sbin/snx -f /etc/snxrc
     fi
   fi
 }

@@ -1,3 +1,5 @@
+%global _legacy_common_support 1
+
 %global revision 7606
 %global date 20180923
 %global with_snapshot 0
@@ -8,7 +10,7 @@
 
 Name:           wiimms-iso-tools
 Version:        3.02a
-Release:        2%{?svnver}%{?dist}
+Release:        3%{?svnver}%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
 License:        GPLv2+
@@ -102,6 +104,9 @@ done
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.02a-3
+- gcc 10 fix
+
 * Fri Jan 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.02a-2
 - Fix GC image conversion crash
 

@@ -1,3 +1,5 @@
+%global _legacy_common_support 1
+
 %global commit f6fe91ce29333271a5ef97ba148294404d28ab3f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200313
@@ -131,7 +133,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox Web browser
 Name:           waterfox
 Version:        2020.03.1
-Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
+Release:        2%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -1031,6 +1033,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.03.1-2.classic.20200313gitf6fe91c
+- gcc 10 fix
+
 * Fri Mar 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.03.1-2.classic.20200313gitf6fe91c
 - 2020.03.1
 

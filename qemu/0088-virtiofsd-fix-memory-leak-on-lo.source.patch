@@ -1,0 +1,47 @@
+From: Liu Bo <bo.liu@linux.alibaba.com>
+Date: Mon, 27 Jan 2020 19:01:57 +0000
+Subject: [PATCH] virtiofsd: fix memory leak on lo.source
+
+valgrind reported that lo.source is leaked on quiting, but it was defined
+as (const char*) as it may point to a const string "/".
+
+Signed-off-by: Liu Bo <bo.liu@linux.alibaba.com>
+Reviewed-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit eb68a33b5fc5dde87bd9b99b94e7c33a5d8ea82e)
+---
+ tools/virtiofsd/passthrough_ll.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index af050c6d97..056ebe8556 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -115,7 +115,7 @@ struct lo_data {
+     int writeback;
+     int flock;
+     int xattr;
+-    const char *source;
++    char *source;
+     double timeout;
+     int cache;
+     int timeout_set;
+@@ -2497,9 +2497,8 @@ int main(int argc, char *argv[])
+             fuse_log(FUSE_LOG_ERR, "source is not a directory\n");
+             exit(1);
+         }
+-
+     } else {
+-        lo.source = "/";
++        lo.source = strdup("/");
+     }
+     if (!lo.timeout_set) {
+         switch (lo.cache) {
+@@ -2570,5 +2569,7 @@ err_out1:
+         close(lo.root.fd);
+     }
+ 
++    free(lo.source);
++
+     return ret ? 1 : 0;
+ }

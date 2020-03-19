@@ -1,0 +1,27 @@
+From e880d871ac808add42c39b45eede600de87f6a7b Mon Sep 17 00:00:00 2001
+From: Jacek Caban <jacek@codeweavers.com>
+Date: Tue, 31 Dec 2019 00:09:29 +0100
+Subject: [PATCH 02/12] mozinfo: Fallback to unknown disro if
+ platform.linux_distribution is not available.
+
+Signed-off-by: Jacek Caban <jacek@codeweavers.com>
+---
+ testing/mozbase/mozinfo/mozinfo/mozinfo.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/testing/mozbase/mozinfo/mozinfo/mozinfo.py b/testing/mozbase/mozinfo/mozinfo/mozinfo.py
+index 952c8080f7c8..28885e73952d 100755
+--- a/testing/mozbase/mozinfo/mozinfo/mozinfo.py
++++ b/testing/mozbase/mozinfo/mozinfo/mozinfo.py
+@@ -90,7 +90,7 @@ elif system == "Linux":
+     if hasattr(platform, "linux_distribution"):
+         (distro, os_version, codename) = platform.linux_distribution()
+     else:
+-        (distro, os_version, codename) = platform.dist()
++        (distro, os_version, codename) = ('', '', '')
+     if not processor:
+         processor = machine
+     version = "%s %s" % (distro, os_version)
+-- 
+2.24.1
+

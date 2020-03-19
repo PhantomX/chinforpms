@@ -1,3 +1,5 @@
+%global _legacy_common_support 1
+
 %global commit 24df4a4651f74731a61414b5bd9a3c120633fb39
 %global shortcommit %(c=%{commit}; echo ${c:0:12})
 %global date 20180303
@@ -9,7 +11,7 @@
 
 Name:           opentyrian
 Version:        2.1
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        An arcade-style vertical scrolling shooter
 
 License:        GPLv2
@@ -100,6 +102,9 @@ done
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.1-5.20180303git24df4a4651f7
+- gcc 10 fix
+
 * Thu Apr 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.1-4.20180303git24df4a4651f7
 - Add some upstream and pull requests from default branch
 - Disable mouse grabbing from start

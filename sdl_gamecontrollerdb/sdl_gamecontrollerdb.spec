@@ -1,21 +1,21 @@
-%global commit b01222fe1a622310c7504d591c23541140cfb84e
+%global commit ca01c9414348cc6c5b1d3cea699b256491ab6062
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200219
+%global date 20200315
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global pkgname SDL_GameControllerDB
+%global pkgname gamecontrollerdb
 
 Name:           sdl_gamecontrollerdb
 Version:        0
-Release:        14%{?gver}%{?dist}
+Release:        15%{?gver}%{?dist}
 Summary:        A database of game controller mappings
 
 License:        zlib and MIT
-URL:            https://github.com/gabomdq/SDL_GameControllerDB
+URL:            https://github.com/gabomdq/%{pkgname}
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
@@ -51,17 +51,19 @@ install -pm0755 check.py %{buildroot}%{_bindir}/gamecontrollerdb-check
 
 mkdir -p %{buildroot}%{_datadir}/%{pkgname}
 install -pm0644 gamecontrollerdb.txt %{buildroot}%{_datadir}/%{pkgname}/
-install -pm0644 data/mapping_guide.png %{buildroot}%{_datadir}/%{pkgname}/
+
 
 %files
 %license LICENSE
 %doc README.md
 %{_bindir}/gamecontrollerdb-check
 %{_datadir}/%{pkgname}/gamecontrollerdb.txt
-%{_datadir}/%{pkgname}/mapping_guide.png
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-15.20200315gitca01c94
+- New snapshot from new clone
+
 * Wed Feb 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-14.20200219gitb01222f
 - Bump
 

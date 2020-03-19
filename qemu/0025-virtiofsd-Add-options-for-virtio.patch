@@ -1,0 +1,84 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:54 +0000
+Subject: [PATCH] virtiofsd: Add options for virtio
+
+Add options to specify parameters for virtio-fs paths, i.e.
+
+   ./virtiofsd -o vhost_user_socket=/tmp/vhostqemu
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 205de006aab8dcbe546a7e3a51d295c2d05e654b)
+---
+ tools/virtiofsd/fuse_i.h        |  1 +
+ tools/virtiofsd/fuse_lowlevel.c | 11 ++++++++---
+ tools/virtiofsd/helper.c        | 14 +++++++-------
+ 3 files changed, 16 insertions(+), 10 deletions(-)
+
+diff --git a/tools/virtiofsd/fuse_i.h b/tools/virtiofsd/fuse_i.h
+index bae06992e0..26b1a7da88 100644
+--- a/tools/virtiofsd/fuse_i.h
++++ b/tools/virtiofsd/fuse_i.h
+@@ -63,6 +63,7 @@ struct fuse_session {
+     struct fuse_notify_req notify_list;
+     size_t bufsize;
+     int error;
++    char *vu_socket_path;
+ };
+ 
+ struct fuse_chan {
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index 8552cfb8af..17e8718283 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -2115,8 +2115,11 @@ reply_err:
+     }
+ 
+ static const struct fuse_opt fuse_ll_opts[] = {
+-    LL_OPTION("debug", debug, 1), LL_OPTION("-d", debug, 1),
+-    LL_OPTION("--debug", debug, 1), LL_OPTION("allow_root", deny_others, 1),
++    LL_OPTION("debug", debug, 1),
++    LL_OPTION("-d", debug, 1),
++    LL_OPTION("--debug", debug, 1),
++    LL_OPTION("allow_root", deny_others, 1),
++    LL_OPTION("--socket-path=%s", vu_socket_path, 0),
+     FUSE_OPT_END
+ };
+ 
+@@ -2132,7 +2135,9 @@ void fuse_lowlevel_help(void)
+      * These are not all options, but the ones that are
+      * potentially of interest to an end-user
+      */
+-    printf("    -o allow_root          allow access by root\n");
++    printf(
++        "    -o allow_root              allow access by root\n"
++        "    --socket-path=PATH         path for the vhost-user socket\n");
+ }
+ 
+ void fuse_session_destroy(struct fuse_session *se)
+diff --git a/tools/virtiofsd/helper.c b/tools/virtiofsd/helper.c
+index 9333691525..676032e71f 100644
+--- a/tools/virtiofsd/helper.c
++++ b/tools/virtiofsd/helper.c
+@@ -127,13 +127,13 @@ static const struct fuse_opt conn_info_opt_spec[] = {
+ 
+ void fuse_cmdline_help(void)
+ {
+-    printf(
+-        "    -h   --help            print help\n"
+-        "    -V   --version         print version\n"
+-        "    -d   -o debug          enable debug output (implies -f)\n"
+-        "    -f                     foreground operation\n"
+-        "    -o max_idle_threads    the maximum number of idle worker threads\n"
+-        "                           allowed (default: 10)\n");
++    printf("    -h   --help                print help\n"
++           "    -V   --version             print version\n"
++           "    -d   -o debug              enable debug output (implies -f)\n"
++           "    -f                         foreground operation\n"
++           "    -o max_idle_threads        the maximum number of idle worker "
++           "threads\n"
++           "                               allowed (default: 10)\n");
+ }
+ 
+ static int fuse_helper_opt_proc(void *data, const char *arg, int key,

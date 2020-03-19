@@ -1,4 +1,4 @@
-%global smoothver 0.9.2
+%global smoothver 0.9.3
 
 %global sanitize 0
 

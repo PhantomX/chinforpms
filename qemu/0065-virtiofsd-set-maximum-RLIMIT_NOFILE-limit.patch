@@ -1,0 +1,77 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:34 +0000
+Subject: [PATCH] virtiofsd: set maximum RLIMIT_NOFILE limit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+virtiofsd can exceed the default open file descriptor limit easily on
+most systems.  Take advantage of the fact that it runs as root to raise
+the limit.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 01a6dc95ec7f71eeff9963fe3cb03d85225fba3e)
+---
+ tools/virtiofsd/passthrough_ll.c | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index d53cb1e005..c281d817af 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -53,6 +53,7 @@
+ #include <sys/file.h>
+ #include <sys/mount.h>
+ #include <sys/prctl.h>
++#include <sys/resource.h>
+ #include <sys/syscall.h>
+ #include <sys/types.h>
+ #include <sys/wait.h>
+@@ -2268,6 +2269,35 @@ static void setup_sandbox(struct lo_data *lo, struct fuse_session *se)
+     setup_seccomp();
+ }
+ 
++/* Raise the maximum number of open file descriptors */
++static void setup_nofile_rlimit(void)
++{
++    const rlim_t max_fds = 1000000;
++    struct rlimit rlim;
++
++    if (getrlimit(RLIMIT_NOFILE, &rlim) < 0) {
++        fuse_log(FUSE_LOG_ERR, "getrlimit(RLIMIT_NOFILE): %m\n");
++        exit(1);
++    }
++
++    if (rlim.rlim_cur >= max_fds) {
++        return; /* nothing to do */
++    }
++
++    rlim.rlim_cur = max_fds;
++    rlim.rlim_max = max_fds;
++
++    if (setrlimit(RLIMIT_NOFILE, &rlim) < 0) {
++        /* Ignore SELinux denials */
++        if (errno == EPERM) {
++            return;
++        }
++
++        fuse_log(FUSE_LOG_ERR, "setrlimit(RLIMIT_NOFILE): %m\n");
++        exit(1);
++    }
++}
++
+ int main(int argc, char *argv[])
+ {
+     struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
+@@ -2389,6 +2419,8 @@ int main(int argc, char *argv[])
+ 
+     fuse_daemonize(opts.foreground);
+ 
++    setup_nofile_rlimit();
++
+     /* Must be before sandbox since it wants /proc */
+     setup_capng();
+ 

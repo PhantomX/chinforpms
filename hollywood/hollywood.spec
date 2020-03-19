@@ -1,5 +1,5 @@
 Name:           hollywood
-Version:        1.18
+Version:        1.21
 Release:        1%{?dist}
 Summary:        Fill your console with Hollywood melodrama technobabble
 
@@ -96,6 +96,9 @@ install -pm0644 share/man/man1/%{name}.1 %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.21-1
+- 1.21
+
 * Sat Jun 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.18-1
 - 1.18
 - Disable speedometer requires, no python3

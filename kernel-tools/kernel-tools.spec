@@ -1,6 +1,9 @@
 # Much of this is borrowed from the original kernel.spec
 # It needs a bunch of the macros for rawhide vs. not-rawhide builds.
 
+# this should go away soon
+%global _legacy_common_support 1
+
 # For a stable, released kernel, released_kernel should be 1. For rawhide
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
@@ -10,7 +13,7 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 70a6377ed050d17b4beb7ba661a0e6694624e597
+%global opensuse_id 3925fb5ba1c3f9b8eaa60a1e87826c1adefa53b5
 
 %define major_ver 5
 
@@ -23,7 +26,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 9
+%global stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -103,6 +106,9 @@ Patch0: 0001-iio-Use-event-header-from-kernel-tree.patch
 
 # rpmlint cleanup
 Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
+
+Patch10: perf-5.4.20-binutil-libs-2.34.patch
+
 
 # Extra
 
@@ -237,6 +243,7 @@ cd linux-%{kversion}
 
 %patch0 -p1
 %patch6 -p1
+%patch10 -p1
 
 %patch1000 -p1
 
@@ -507,6 +514,9 @@ popd
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.10-500.chinfo
+- 5.5.10
+
 * Thu Mar 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.9-500.chinfo
 - 5.5.9
 

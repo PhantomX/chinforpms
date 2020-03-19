@@ -1,0 +1,55 @@
+From: Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>
+Date: Mon, 27 Jan 2020 19:02:26 +0000
+Subject: [PATCH] virtiofsd: add some options to the help message
+
+Add following options to the help message:
+- cache
+- flock|no_flock
+- norace
+- posix_lock|no_posix_lock
+- readdirplus|no_readdirplus
+- timeout
+- writeback|no_writeback
+- xattr|no_xattr
+
+Signed-off-by: Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>
+
+dgilbert: Split cache, norace, posix_lock, readdirplus off
+  into our own earlier patches that added the options
+
+Reviewed-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 1d59b1b210d7c3b0bdf4b10ebe0bb1fccfcb8b95)
+---
+ tools/virtiofsd/helper.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/tools/virtiofsd/helper.c b/tools/virtiofsd/helper.c
+index f98d8f2eb2..0801cf752c 100644
+--- a/tools/virtiofsd/helper.c
++++ b/tools/virtiofsd/helper.c
+@@ -148,6 +148,8 @@ void fuse_cmdline_help(void)
+            "    -o cache=<mode>            cache mode. could be one of \"auto, "
+            "always, none\"\n"
+            "                               default: auto\n"
++           "    -o flock|no_flock          enable/disable flock\n"
++           "                               default: no_flock\n"
+            "    -o log_level=<level>       log level, default to \"info\"\n"
+            "                               level could be one of \"debug, "
+            "info, warn, err\"\n"
+@@ -163,7 +165,13 @@ void fuse_cmdline_help(void)
+            "                               enable/disable readirplus\n"
+            "                               default: readdirplus except with "
+            "cache=none\n"
+-          );
++           "    -o timeout=<number>        I/O timeout (second)\n"
++           "                               default: depends on cache= option.\n"
++           "    -o writeback|no_writeback  enable/disable writeback cache\n"
++           "                               default: no_writeback\n"
++           "    -o xattr|no_xattr          enable/disable xattr\n"
++           "                               default: no_xattr\n"
++           );
+ }
+ 
+ static int fuse_helper_opt_proc(void *data, const char *arg, int key,

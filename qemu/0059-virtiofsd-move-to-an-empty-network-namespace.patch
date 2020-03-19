@@ -1,0 +1,50 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:28 +0000
+Subject: [PATCH] virtiofsd: move to an empty network namespace
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+If the process is compromised there should be no network access.  Use an
+empty network namespace to sandbox networking.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit d74830d12ae233186ff74ddf64c552d26bb39e50)
+---
+ tools/virtiofsd/passthrough_ll.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 0570453eef..27ab328722 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -1944,6 +1944,19 @@ static void print_capabilities(void)
+     printf("}\n");
+ }
+ 
++/*
++ * Called after our UNIX domain sockets have been created, now we can move to
++ * an empty network namespace to prevent TCP/IP and other network activity in
++ * case this process is compromised.
++ */
++static void setup_net_namespace(void)
++{
++    if (unshare(CLONE_NEWNET) != 0) {
++        fuse_log(FUSE_LOG_ERR, "unshare(CLONE_NEWNET): %m\n");
++        exit(1);
++    }
++}
++
+ /* This magic is based on lxc's lxc_pivot_root() */
+ static void setup_pivot_root(const char *source)
+ {
+@@ -2035,6 +2048,7 @@ static void setup_mount_namespace(const char *source)
+  */
+ static void setup_sandbox(struct lo_data *lo)
+ {
++    setup_net_namespace();
+     setup_mount_namespace(lo->source);
+ }
+ 

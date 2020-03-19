@@ -1,0 +1,56 @@
+From: Vivek Goyal <vgoyal@redhat.com>
+Date: Mon, 27 Jan 2020 19:02:14 +0000
+Subject: [PATCH] virtiofsd: Reset O_DIRECT flag during file open
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+If an application wants to do direct IO and opens a file with O_DIRECT
+in guest, that does not necessarily mean that we need to bypass page
+cache on host as well. So reset this flag on host.
+
+If somebody needs to bypass page cache on host as well (and it is safe to
+do so), we can add a knob in daemon later to control this behavior.
+
+I check virtio-9p and they do reset O_DIRECT flag.
+
+Signed-off-by: Vivek Goyal <vgoyal@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 65da4539803373ec4eec97ffc49ee90083e56efd)
+---
+ tools/virtiofsd/passthrough_ll.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index ccbbec18b0..948cb19c77 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -1721,6 +1721,13 @@ static void lo_create(fuse_req_t req, fuse_ino_t parent, const char *name,
+         goto out;
+     }
+ 
++    /*
++     * O_DIRECT in guest should not necessarily mean bypassing page
++     * cache on host as well. If somebody needs that behavior, it
++     * probably should be a configuration knob in daemon.
++     */
++    fi->flags &= ~O_DIRECT;
++
+     fd = openat(parent_inode->fd, name, (fi->flags | O_CREAT) & ~O_NOFOLLOW,
+                 mode);
+     err = fd == -1 ? errno : 0;
+@@ -1950,6 +1957,13 @@ static void lo_open(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi)
+         fi->flags &= ~O_APPEND;
+     }
+ 
++    /*
++     * O_DIRECT in guest should not necessarily mean bypassing page
++     * cache on host as well. If somebody needs that behavior, it
++     * probably should be a configuration knob in daemon.
++     */
++    fi->flags &= ~O_DIRECT;
++
+     sprintf(buf, "%i", lo_fd(req, ino));
+     fd = openat(lo->proc_self_fd, buf, fi->flags & ~O_NOFOLLOW);
+     if (fd == -1) {

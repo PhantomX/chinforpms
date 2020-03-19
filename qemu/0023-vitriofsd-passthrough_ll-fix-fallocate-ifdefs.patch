@@ -1,0 +1,36 @@
+From: Xiao Yang <yangx.jy@cn.fujitsu.com>
+Date: Mon, 27 Jan 2020 19:00:52 +0000
+Subject: [PATCH] vitriofsd/passthrough_ll: fix fallocate() ifdefs
+
+1) Use correct CONFIG_FALLOCATE macro to check if fallocate() is supported.(i.e configure
+   script sets CONFIG_FALLOCATE intead of HAVE_FALLOCATE if fallocate() is supported)
+2) Replace HAVE_POSIX_FALLOCATE with CONFIG_POSIX_FALLOCATE.
+
+Signed-off-by: Xiao Yang <yangx.jy@cn.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+  Merged from two of Xiao Yang's patches
+(cherry picked from commit 9776457ca6f05d5900e27decb1dba2ffddf95a22)
+---
+ tools/virtiofsd/passthrough_ll.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 322a889cdf..6c4da18075 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -975,13 +975,13 @@ static void lo_fallocate(fuse_req_t req, fuse_ino_t ino, int mode, off_t offset,
+     int err = EOPNOTSUPP;
+     (void)ino;
+ 
+-#ifdef HAVE_FALLOCATE
++#ifdef CONFIG_FALLOCATE
+     err = fallocate(fi->fh, mode, offset, length);
+     if (err < 0) {
+         err = errno;
+     }
+ 
+-#elif defined(HAVE_POSIX_FALLOCATE)
++#elif defined(CONFIG_POSIX_FALLOCATE)
+     if (mode) {
+         fuse_reply_err(req, EOPNOTSUPP);
+         return;

@@ -1,0 +1,66 @@
+From: Jiufei Xue <jiufei.xue@linux.alibaba.com>
+Date: Mon, 27 Jan 2020 19:01:54 +0000
+Subject: [PATCH] virtiofsd: support nanosecond resolution for file timestamp
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Define HAVE_STRUCT_STAT_ST_ATIM to 1 if `st_atim' is member of `struct
+stat' which means support nanosecond resolution for the file timestamp
+fields.
+
+Signed-off-by: Jiufei Xue <jiufei.xue@linux.alibaba.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 8a792b034d4b315251fd842bb4c73a133aa1368f)
+---
+ configure                   | 16 ++++++++++++++++
+ tools/virtiofsd/fuse_misc.h |  1 +
+ 2 files changed, 17 insertions(+)
+
+diff --git a/configure b/configure
+index afe9393f04..dd50b03b01 100755
+--- a/configure
++++ b/configure
+@@ -5217,6 +5217,19 @@ if compile_prog "" "" ; then
+     strchrnul=yes
+ fi
+ 
++#########################################
++# check if we have st_atim
++
++st_atim=no
++cat > $TMPC << EOF
++#include <sys/stat.h>
++#include <stddef.h>
++int main(void) { return offsetof(struct stat, st_atim); }
++EOF
++if compile_prog "" "" ; then
++    st_atim=yes
++fi
++
+ ##########################################
+ # check if trace backend exists
+ 
+@@ -6918,6 +6931,9 @@ fi
+ if test "$strchrnul" = "yes" ; then
+   echo "HAVE_STRCHRNUL=y" >> $config_host_mak
+ fi
++if test "$st_atim" = "yes" ; then
++  echo "HAVE_STRUCT_STAT_ST_ATIM=y" >> $config_host_mak
++fi
+ if test "$byteswap_h" = "yes" ; then
+   echo "CONFIG_BYTESWAP_H=y" >> $config_host_mak
+ fi
+diff --git a/tools/virtiofsd/fuse_misc.h b/tools/virtiofsd/fuse_misc.h
+index f252baa752..5c618ce21f 100644
+--- a/tools/virtiofsd/fuse_misc.h
++++ b/tools/virtiofsd/fuse_misc.h
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include <pthread.h>
++#include "config-host.h"
+ 
+ /*
+  * Versioned symbols cannot be used in some cases because it

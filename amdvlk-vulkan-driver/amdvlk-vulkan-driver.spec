@@ -13,23 +13,23 @@
 
 %global pkgname amdvlk
 
-%global commit1 a163b38723cbc05f3014d4eaa1936c82bbfbf3ea
+%global commit1 e404e4b2db325184dbc2d14f31ef891d938f3835
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 f5268c3f6f906a3ae430a1aada7f54f70df091e8
+%global commit2 fc21c950b629753f9cc7d0941937c57262ceadcf
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 8024f27f9457e3235bf4fcde0d2879bbaae7b0f2
+%global commit3 80e5a4b11ad2058097e77746772ddc9ab2118e07
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 45f531beaf2c2b0bc2272e63a2da0022f1b07ccf
+%global commit4 e642f608a62887d40d1f25509d2951a4a3576985
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
-%global commit5 e9b2bc3a889ed6ac4f5a47b6c4c58460988e352e
+%global commit5 843c6b95f731589bf497fad29dadf7fda4934aad
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{pkgname}-spvgen
 
@@ -62,7 +62,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.1.2
+Version:        2020.1.3
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -233,6 +233,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.1.3-1
+- 2020.Q1.3
+
 * Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.1.2-1
 - 2020.Q1.2
 

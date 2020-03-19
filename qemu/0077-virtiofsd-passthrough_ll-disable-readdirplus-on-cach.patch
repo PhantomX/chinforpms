@@ -1,0 +1,33 @@
+From: Miklos Szeredi <mszeredi@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:46 +0000
+Subject: [PATCH] virtiofsd: passthrough_ll: disable readdirplus on cache=never
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+...because the attributes sent in the READDIRPLUS reply would be discarded
+anyway.
+
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit ddcbabcb0ea177be3ec3500726b699c7c26ffd93)
+---
+ tools/virtiofsd/passthrough_ll.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 18d69abcbc..6480c517dc 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -478,6 +478,10 @@ static void lo_init(void *userdata, struct fuse_conn_info *conn)
+         fuse_log(FUSE_LOG_DEBUG, "lo_init: activating flock locks\n");
+         conn->want |= FUSE_CAP_FLOCK_LOCKS;
+     }
++    if (lo->cache == CACHE_NEVER) {
++        fuse_log(FUSE_LOG_DEBUG, "lo_init: disabling readdirplus\n");
++        conn->want &= ~FUSE_CAP_READDIRPLUS;
++    }
+ }
+ 
+ static void lo_getattr(fuse_req_t req, fuse_ino_t ino,

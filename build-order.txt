@@ -36,7 +36,7 @@ perl-Gtk3
 # 3
 adriconf
 adwaita-qt
-aisleriot
+-aisleriot
 amdvlk-vulkan-driver
 ario
 asbru-cm
@@ -62,7 +62,7 @@ devedeng
 disk-indicator
 dolphin-emu
 easytag
-emojione-picker
+-emojione-picker
 FAudio
 firefox-chinfo-prefs
 firejail
@@ -89,11 +89,11 @@ joy2key
 keepassxc
 kernel-tools
 krename
-ladspa-bs2b-plugins
-linux-steam-integration
+-ladspa-bs2b-plugins
+-linux-steam-integration
 lutris
 lunzip
-lzip
+-lzip
 m64py
 manaplus
 mangohud
@@ -102,7 +102,7 @@ mednaffe
 mozilla-gnotifier
 mp3val
 mpdnotify
-mps-youtube
+-mps-youtube
 mupen64plus
 openjazz
 opentyrian
@@ -114,7 +114,7 @@ protontricks
 pspshrink
 pulsemixer
 purple-rocketchat
-python-pafy
+-python-pafy
 qemu
 qmc2
 qmp3gain
@@ -146,42 +146,42 @@ waterfox-useragent-switcher
 waterfox-noscript
 wiibafu
 wiimms-iso-tools
-wimlib
+-wimlib
 wxmp3gain
 wxmp3val
 uksmd
 xboxdrv
 xdgmenumaker
 xinput-gui
-xorg-x11-server
+-xorg-x11-server
 zram-init
 
 # 4
-belle-sip
-belr
-bzrtp
+-belle-sip
+-belr
+-bzrtp
 FAudio-freeworld
 freac
-freac-cdk-freeworld
-freac-superfast-codecs
-freac-superfast-codecs-freeworld
-ortp
+boca-freeworld
+-freac-superfast-codecs
+-freac-superfast-codecs-freeworld
+-ortp
 whdd
 wine
 
 # 5
-belcard
-wine-d9vk
+-belcard
+mingw-wine-gecko
 wine-dxvk
 wine-mono
 wine-nine
 
 
 # 6
-mediastreamer
+-mediastreamer
 
 # 7
-linphone
+-linphone
 
 # 8
-linphoneqt
+-linphoneqt

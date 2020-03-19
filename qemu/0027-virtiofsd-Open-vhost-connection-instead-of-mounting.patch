@@ -1,0 +1,241 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:56 +0000
+Subject: [PATCH] virtiofsd: Open vhost connection instead of mounting
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When run with vhost-user options we conect to the QEMU instead
+via a socket.  Start this off by creating the socket.
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Reviewed-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit d14bf584dd965821e80d14c16d9292a464b1ab85)
+---
+ tools/virtiofsd/fuse_i.h        |  7 ++-
+ tools/virtiofsd/fuse_lowlevel.c | 55 +++--------------------
+ tools/virtiofsd/fuse_virtio.c   | 79 +++++++++++++++++++++++++++++++++
+ tools/virtiofsd/fuse_virtio.h   | 23 ++++++++++
+ 4 files changed, 114 insertions(+), 50 deletions(-)
+ create mode 100644 tools/virtiofsd/fuse_virtio.c
+ create mode 100644 tools/virtiofsd/fuse_virtio.h
+
+diff --git a/tools/virtiofsd/fuse_i.h b/tools/virtiofsd/fuse_i.h
+index 26b1a7da88..82d6ac7115 100644
+--- a/tools/virtiofsd/fuse_i.h
++++ b/tools/virtiofsd/fuse_i.h
+@@ -6,9 +6,10 @@
+  * See the file COPYING.LIB
+  */
+ 
+-#define FUSE_USE_VERSION 31
+-
++#ifndef FUSE_I_H
++#define FUSE_I_H
+ 
++#define FUSE_USE_VERSION 31
+ #include "fuse.h"
+ #include "fuse_lowlevel.h"
+ 
+@@ -101,3 +102,5 @@ void fuse_session_process_buf_int(struct fuse_session *se,
+ 
+ /* room needed in buffer to accommodate header */
+ #define FUSE_BUFFER_HEADER_SIZE 0x1000
++
++#endif
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index 17e8718283..5df124e64b 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -14,6 +14,7 @@
+ #include "standard-headers/linux/fuse.h"
+ #include "fuse_misc.h"
+ #include "fuse_opt.h"
++#include "fuse_virtio.h"
+ 
+ #include <assert.h>
+ #include <errno.h>
+@@ -2202,6 +2203,11 @@ struct fuse_session *fuse_session_new(struct fuse_args *args,
+         goto out4;
+     }
+ 
++    if (!se->vu_socket_path) {
++        fprintf(stderr, "fuse: missing -o vhost_user_socket option\n");
++        goto out4;
++    }
++
+     se->bufsize = FUSE_MAX_MAX_PAGES * getpagesize() + FUSE_BUFFER_HEADER_SIZE;
+ 
+     list_init_req(&se->list);
+@@ -2224,54 +2230,7 @@ out1:
+ 
+ int fuse_session_mount(struct fuse_session *se)
+ {
+-    int fd;
+-
+-    /*
+-     * Make sure file descriptors 0, 1 and 2 are open, otherwise chaos
+-     * would ensue.
+-     */
+-    do {
+-        fd = open("/dev/null", O_RDWR);
+-        if (fd > 2) {
+-            close(fd);
+-        }
+-    } while (fd >= 0 && fd <= 2);
+-
+-    /*
+-     * To allow FUSE daemons to run without privileges, the caller may open
+-     * /dev/fuse before launching the file system and pass on the file
+-     * descriptor by specifying /dev/fd/N as the mount point. Note that the
+-     * parent process takes care of performing the mount in this case.
+-     */
+-    fd = fuse_mnt_parse_fuse_fd(mountpoint);
+-    if (fd != -1) {
+-        if (fcntl(fd, F_GETFD) == -1) {
+-            fuse_log(FUSE_LOG_ERR, "fuse: Invalid file descriptor /dev/fd/%u\n",
+-                     fd);
+-            return -1;
+-        }
+-        se->fd = fd;
+-        return 0;
+-    }
+-
+-    /* Open channel */
+-    fd = fuse_kern_mount(mountpoint, se->mo);
+-    if (fd == -1) {
+-        return -1;
+-    }
+-    se->fd = fd;
+-
+-    /* Save mountpoint */
+-    se->mountpoint = strdup(mountpoint);
+-    if (se->mountpoint == NULL) {
+-        goto error_out;
+-    }
+-
+-    return 0;
+-
+-error_out:
+-    fuse_kern_unmount(mountpoint, fd);
+-    return -1;
++    return virtio_session_mount(se);
+ }
+ 
+ int fuse_session_fd(struct fuse_session *se)
+diff --git a/tools/virtiofsd/fuse_virtio.c b/tools/virtiofsd/fuse_virtio.c
+new file mode 100644
+index 0000000000..cbef6ffdda
+--- /dev/null
++++ b/tools/virtiofsd/fuse_virtio.c
+@@ -0,0 +1,79 @@
++/*
++ * virtio-fs glue for FUSE
++ * Copyright (C) 2018 Red Hat, Inc. and/or its affiliates
++ *
++ * Authors:
++ *   Dave Gilbert  <dgilbert@redhat.com>
++ *
++ * Implements the glue between libfuse and libvhost-user
++ *
++ * This program can be distributed under the terms of the GNU LGPLv2.
++ * See the file COPYING.LIB
++ */
++
++#include "fuse_i.h"
++#include "standard-headers/linux/fuse.h"
++#include "fuse_misc.h"
++#include "fuse_opt.h"
++#include "fuse_virtio.h"
++
++#include <stdint.h>
++#include <stdio.h>
++#include <string.h>
++#include <sys/socket.h>
++#include <sys/types.h>
++#include <sys/un.h>
++#include <unistd.h>
++
++/* From spec */
++struct virtio_fs_config {
++    char tag[36];
++    uint32_t num_queues;
++};
++
++int virtio_session_mount(struct fuse_session *se)
++{
++    struct sockaddr_un un;
++    mode_t old_umask;
++
++    if (strlen(se->vu_socket_path) >= sizeof(un.sun_path)) {
++        fuse_log(FUSE_LOG_ERR, "Socket path too long\n");
++        return -1;
++    }
++
++    se->fd = -1;
++
++    /*
++     * Create the Unix socket to communicate with qemu
++     * based on QEMU's vhost-user-bridge
++     */
++    unlink(se->vu_socket_path);
++    strcpy(un.sun_path, se->vu_socket_path);
++    size_t addr_len = sizeof(un);
++
++    int listen_sock = socket(AF_UNIX, SOCK_STREAM, 0);
++    if (listen_sock == -1) {
++        fuse_log(FUSE_LOG_ERR, "vhost socket creation: %m\n");
++        return -1;
++    }
++    un.sun_family = AF_UNIX;
++
++    /*
++     * Unfortunately bind doesn't let you set the mask on the socket,
++     * so set umask to 077 and restore it later.
++     */
++    old_umask = umask(0077);
++    if (bind(listen_sock, (struct sockaddr *)&un, addr_len) == -1) {
++        fuse_log(FUSE_LOG_ERR, "vhost socket bind: %m\n");
++        umask(old_umask);
++        return -1;
++    }
++    umask(old_umask);
++
++    if (listen(listen_sock, 1) == -1) {
++        fuse_log(FUSE_LOG_ERR, "vhost socket listen: %m\n");
++        return -1;
++    }
++
++    return -1;
++}
+diff --git a/tools/virtiofsd/fuse_virtio.h b/tools/virtiofsd/fuse_virtio.h
+new file mode 100644
+index 0000000000..8f2edb69ca
+--- /dev/null
++++ b/tools/virtiofsd/fuse_virtio.h
+@@ -0,0 +1,23 @@
++/*
++ * virtio-fs glue for FUSE
++ * Copyright (C) 2018 Red Hat, Inc. and/or its affiliates
++ *
++ * Authors:
++ *   Dave Gilbert  <dgilbert@redhat.com>
++ *
++ * Implements the glue between libfuse and libvhost-user
++ *
++ * This program can be distributed under the terms of the GNU LGPLv2.
++ *  See the file COPYING.LIB
++ */
++
++#ifndef FUSE_VIRTIO_H
++#define FUSE_VIRTIO_H
++
++#include "fuse_i.h"
++
++struct fuse_session;
++
++int virtio_session_mount(struct fuse_session *se);
++
++#endif

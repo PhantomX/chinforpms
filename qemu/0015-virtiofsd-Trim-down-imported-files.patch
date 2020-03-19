@@ -1,0 +1,1565 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:44 +0000
+Subject: [PATCH] virtiofsd: Trim down imported files
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+There's a lot of the original fuse code we don't need; trim them down.
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+with additional trimming by:
+Signed-off-by: Misono Tomohiro <misono.tomohiro@jp.fujitsu.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Reviewed-by: Xiao Yang <yangx.jy@cn.fujitsu.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit a3e23f325439a290c504d6bbc48c2e742149ecab)
+---
+ tools/virtiofsd/buffer.c              |  71 +--
+ tools/virtiofsd/fuse.h                |  46 --
+ tools/virtiofsd/fuse_common.h         |  32 --
+ tools/virtiofsd/fuse_i.h              |  41 --
+ tools/virtiofsd/fuse_log.h            |   8 -
+ tools/virtiofsd/fuse_lowlevel.c       | 675 +-------------------------
+ tools/virtiofsd/fuse_lowlevel.h       |  28 --
+ tools/virtiofsd/fuse_opt.h            |   8 -
+ tools/virtiofsd/helper.c              | 143 ------
+ tools/virtiofsd/passthrough_helpers.h |  26 -
+ tools/virtiofsd/passthrough_ll.c      |   1 -
+ 11 files changed, 8 insertions(+), 1071 deletions(-)
+
+diff --git a/tools/virtiofsd/buffer.c b/tools/virtiofsd/buffer.c
+index 5ab9b87455..aefb7dbf15 100644
+--- a/tools/virtiofsd/buffer.c
++++ b/tools/virtiofsd/buffer.c
+@@ -157,73 +157,6 @@ static ssize_t fuse_buf_fd_to_fd(const struct fuse_buf *dst, size_t dst_off,
+ 	return copied;
+ }
+ 
+-#ifdef HAVE_SPLICE
+-static ssize_t fuse_buf_splice(const struct fuse_buf *dst, size_t dst_off,
+-			       const struct fuse_buf *src, size_t src_off,
+-			       size_t len, enum fuse_buf_copy_flags flags)
+-{
+-	int splice_flags = 0;
+-	off_t *srcpos = NULL;
+-	off_t *dstpos = NULL;
+-	off_t srcpos_val;
+-	off_t dstpos_val;
+-	ssize_t res;
+-	size_t copied = 0;
+-
+-	if (flags & FUSE_BUF_SPLICE_MOVE)
+-		splice_flags |= SPLICE_F_MOVE;
+-	if (flags & FUSE_BUF_SPLICE_NONBLOCK)
+-		splice_flags |= SPLICE_F_NONBLOCK;
+-
+-	if (src->flags & FUSE_BUF_FD_SEEK) {
+-		srcpos_val = src->pos + src_off;
+-		srcpos = &srcpos_val;
+-	}
+-	if (dst->flags & FUSE_BUF_FD_SEEK) {
+-		dstpos_val = dst->pos + dst_off;
+-		dstpos = &dstpos_val;
+-	}
+-
+-	while (len) {
+-		res = splice(src->fd, srcpos, dst->fd, dstpos, len,
+-			     splice_flags);
+-		if (res == -1) {
+-			if (copied)
+-				break;
+-
+-			if (errno != EINVAL || (flags & FUSE_BUF_FORCE_SPLICE))
+-				return -errno;
+-
+-			/* Maybe splice is not supported for this combination */
+-			return fuse_buf_fd_to_fd(dst, dst_off, src, src_off,
+-						 len);
+-		}
+-		if (res == 0)
+-			break;
+-
+-		copied += res;
+-		if (!(src->flags & FUSE_BUF_FD_RETRY) &&
+-		    !(dst->flags & FUSE_BUF_FD_RETRY)) {
+-			break;
+-		}
+-
+-		len -= res;
+-	}
+-
+-	return copied;
+-}
+-#else
+-static ssize_t fuse_buf_splice(const struct fuse_buf *dst, size_t dst_off,
+-			       const struct fuse_buf *src, size_t src_off,
+-			       size_t len, enum fuse_buf_copy_flags flags)
+-{
+-	(void) flags;
+-
+-	return fuse_buf_fd_to_fd(dst, dst_off, src, src_off, len);
+-}
+-#endif
+-
+-
+ static ssize_t fuse_buf_copy_one(const struct fuse_buf *dst, size_t dst_off,
+ 				 const struct fuse_buf *src, size_t src_off,
+ 				 size_t len, enum fuse_buf_copy_flags flags)
+@@ -247,10 +180,8 @@ static ssize_t fuse_buf_copy_one(const struct fuse_buf *dst, size_t dst_off,
+ 		return fuse_buf_write(dst, dst_off, src, src_off, len);
+ 	} else if (!dst_is_fd) {
+ 		return fuse_buf_read(dst, dst_off, src, src_off, len);
+-	} else if (flags & FUSE_BUF_NO_SPLICE) {
+-		return fuse_buf_fd_to_fd(dst, dst_off, src, src_off, len);
+ 	} else {
+-		return fuse_buf_splice(dst, dst_off, src, src_off, len, flags);
++		return fuse_buf_fd_to_fd(dst, dst_off, src, src_off, len);
+ 	}
+ }
+ 
+diff --git a/tools/virtiofsd/fuse.h b/tools/virtiofsd/fuse.h
+index 883f6e59fb..3202fba6bb 100644
+--- a/tools/virtiofsd/fuse.h
++++ b/tools/virtiofsd/fuse.h
+@@ -25,10 +25,6 @@
+ #include <sys/statvfs.h>
+ #include <sys/uio.h>
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ /* ----------------------------------------------------------- *
+  * Basic FUSE API					       *
+  * ----------------------------------------------------------- */
+@@ -978,44 +974,6 @@ int fuse_loop(struct fuse *f);
+  */
+ void fuse_exit(struct fuse *f);
+ 
+-/**
+- * FUSE event loop with multiple threads
+- *
+- * Requests from the kernel are processed, and the appropriate
+- * operations are called.  Request are processed in parallel by
+- * distributing them between multiple threads.
+- *
+- * For a description of the return value and the conditions when the
+- * event loop exits, refer to the documentation of
+- * fuse_session_loop().
+- *
+- * Note: using fuse_loop() instead of fuse_loop_mt() means you are running in
+- * single-threaded mode, and that you will not have to worry about reentrancy,
+- * though you will have to worry about recursive lookups. In single-threaded
+- * mode, FUSE will wait for one callback to return before calling another.
+- *
+- * Enabling multiple threads, by using fuse_loop_mt(), will cause FUSE to make
+- * multiple simultaneous calls into the various callback functions given by your
+- * fuse_operations record.
+- *
+- * If you are using multiple threads, you can enjoy all the parallel execution
+- * and interactive response benefits of threads, and you get to enjoy all the
+- * benefits of race conditions and locking bugs, too. Ensure that any code used
+- * in the callback function of fuse_operations is also thread-safe.
+- *
+- * @param f the FUSE handle
+- * @param config loop configuration
+- * @return see fuse_session_loop()
+- *
+- * See also: fuse_loop()
+- */
+-#if FUSE_USE_VERSION < 32
+-int fuse_loop_mt_31(struct fuse *f, int clone_fd);
+-#define fuse_loop_mt(f, clone_fd) fuse_loop_mt_31(f, clone_fd)
+-#else
+-int fuse_loop_mt(struct fuse *f, struct fuse_loop_config *config);
+-#endif
+-
+ /**
+  * Get the current context
+  *
+@@ -1268,8 +1226,4 @@ struct fuse_session *fuse_get_session(struct fuse *f);
+  */
+ int fuse_open_channel(const char *mountpoint, const char *options);
+ 
+-#ifdef __cplusplus
+-}
+-#endif
+-
+ #endif /* FUSE_H_ */
+diff --git a/tools/virtiofsd/fuse_common.h b/tools/virtiofsd/fuse_common.h
+index 2d686b2ac4..bf8f8cc865 100644
+--- a/tools/virtiofsd/fuse_common.h
++++ b/tools/virtiofsd/fuse_common.h
+@@ -28,10 +28,6 @@
+ #define FUSE_MAKE_VERSION(maj, min)  ((maj) * 10 + (min))
+ #define FUSE_VERSION FUSE_MAKE_VERSION(FUSE_MAJOR_VERSION, FUSE_MINOR_VERSION)
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ /**
+  * Information about an open file.
+  *
+@@ -100,30 +96,6 @@ struct fuse_file_info {
+ 	uint32_t poll_events;
+ };
+ 
+-/**
+- * Configuration parameters passed to fuse_session_loop_mt() and
+- * fuse_loop_mt().
+- */
+-struct fuse_loop_config {
+-	/**
+-	 * whether to use separate device fds for each thread
+-	 * (may increase performance)
+-	 */
+-	int clone_fd;
+-
+-	/**
+-	 * The maximum number of available worker threads before they
+-	 * start to get deleted when they become idle. If not
+-	 * specified, the default is 10.
+-	 *
+-	 * Adjusting this has performance implications; a very small number
+-	 * of threads in the pool will cause a lot of thread creation and
+-	 * deletion overhead and performance may suffer. When set to 0, a new
+-	 * thread will be created to service every operation.
+-	 */
+-	unsigned int max_idle_threads;
+-};
+-
+ /**************************************************************************
+  * Capability bits for 'fuse_conn_info.capable' and 'fuse_conn_info.want' *
+  **************************************************************************/
+@@ -802,10 +774,6 @@ void fuse_remove_signal_handlers(struct fuse_session *se);
+ #  error only API version 30 or greater is supported
+ #endif
+ 
+-#ifdef __cplusplus
+-}
+-#endif
+-
+ 
+ /*
+  * This interface uses 64 bit off_t.
+diff --git a/tools/virtiofsd/fuse_i.h b/tools/virtiofsd/fuse_i.h
+index d38b630ac5..b39522e3ca 100644
+--- a/tools/virtiofsd/fuse_i.h
++++ b/tools/virtiofsd/fuse_i.h
+@@ -9,8 +9,6 @@
+ #include "fuse.h"
+ #include "fuse_lowlevel.h"
+ 
+-struct mount_opts;
+-
+ struct fuse_req {
+ 	struct fuse_session *se;
+ 	uint64_t unique;
+@@ -45,7 +43,6 @@ struct fuse_session {
+ 	char *mountpoint;
+ 	volatile int exited;
+ 	int fd;
+-	struct mount_opts *mo;
+ 	int debug;
+ 	int deny_others;
+ 	struct fuse_lowlevel_ops op;
+@@ -58,7 +55,6 @@ struct fuse_session {
+ 	struct fuse_req interrupts;
+ 	pthread_mutex_t lock;
+ 	int got_destroy;
+-	pthread_key_t pipe_key;
+ 	int broken_splice_nonblock;
+ 	uint64_t notify_ctr;
+ 	struct fuse_notify_req notify_list;
+@@ -87,53 +83,16 @@ struct fuse_module {
+ 	int ctr;
+ };
+ 
+-/* ----------------------------------------------------------- *
+- * Channel interface (when using -o clone_fd)		       *
+- * ----------------------------------------------------------- */
+-
+-/**
+- * Obtain counted reference to the channel
+- *
+- * @param ch the channel
+- * @return the channel
+- */
+-struct fuse_chan *fuse_chan_get(struct fuse_chan *ch);
+-
+-/**
+- * Drop counted reference to a channel
+- *
+- * @param ch the channel
+- */
+-void fuse_chan_put(struct fuse_chan *ch);
+-
+-struct mount_opts *parse_mount_opts(struct fuse_args *args);
+-void destroy_mount_opts(struct mount_opts *mo);
+-void fuse_mount_version(void);
+-unsigned get_max_read(struct mount_opts *o);
+-void fuse_kern_unmount(const char *mountpoint, int fd);
+-int fuse_kern_mount(const char *mountpoint, struct mount_opts *mo);
+-
+ int fuse_send_reply_iov_nofree(fuse_req_t req, int error, struct iovec *iov,
+ 			       int count);
+ void fuse_free_req(fuse_req_t req);
+ 
+-void cuse_lowlevel_init(fuse_req_t req, fuse_ino_t nodeide, const void *inarg);
+-
+-int fuse_start_thread(pthread_t *thread_id, void *(*func)(void *), void *arg);
+-
+-int fuse_session_receive_buf_int(struct fuse_session *se, struct fuse_buf *buf,
+-				 struct fuse_chan *ch);
+ void fuse_session_process_buf_int(struct fuse_session *se,
+ 				  const struct fuse_buf *buf, struct fuse_chan *ch);
+ 
+-struct fuse *fuse_new_31(struct fuse_args *args, const struct fuse_operations *op,
+-		      size_t op_size, void *private_data);
+-int fuse_loop_mt_32(struct fuse *f, struct fuse_loop_config *config);
+-int fuse_session_loop_mt_32(struct fuse_session *se, struct fuse_loop_config *config);
+ 
+ #define FUSE_MAX_MAX_PAGES 256
+ #define FUSE_DEFAULT_MAX_PAGES_PER_REQ 32
+ 
+ /* room needed in buffer to accommodate header */
+ #define FUSE_BUFFER_HEADER_SIZE 0x1000
+-
+diff --git a/tools/virtiofsd/fuse_log.h b/tools/virtiofsd/fuse_log.h
+index 5e112e0f53..0af700da6b 100644
+--- a/tools/virtiofsd/fuse_log.h
++++ b/tools/virtiofsd/fuse_log.h
+@@ -16,10 +16,6 @@
+ 
+ #include <stdarg.h>
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ /**
+  * Log severity level
+  *
+@@ -75,8 +71,4 @@ void fuse_set_log_func(fuse_log_func_t func);
+  */
+ void fuse_log(enum fuse_log_level level, const char *fmt, ...);
+ 
+-#ifdef __cplusplus
+-}
+-#endif
+-
+ #endif /* FUSE_LOG_H_ */
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index f2d7038e34..e6fa247924 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -16,7 +16,6 @@
+ #include "fuse_kernel.h"
+ #include "fuse_opt.h"
+ #include "fuse_misc.h"
+-#include "mount_util.h"
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -28,12 +27,6 @@
+ #include <assert.h>
+ #include <sys/file.h>
+ 
+-#ifndef F_LINUX_SPECIFIC_BASE
+-#define F_LINUX_SPECIFIC_BASE       1024
+-#endif
+-#ifndef F_SETPIPE_SZ
+-#define F_SETPIPE_SZ	(F_LINUX_SPECIFIC_BASE + 7)
+-#endif
+ 
+ 
+ #define PARAM(inarg) (((char *)(inarg)) + sizeof(*(inarg)))
+@@ -137,7 +130,6 @@ void fuse_free_req(fuse_req_t req)
+ 	req->u.ni.data = NULL;
+ 	list_del_req(req);
+ 	ctr = --req->ctr;
+-	fuse_chan_put(req->ch);
+ 	req->ch = NULL;
+ 	pthread_mutex_unlock(&se->lock);
+ 	if (!ctr)
+@@ -184,19 +176,7 @@ static int fuse_send_msg(struct fuse_session *se, struct fuse_chan *ch,
+ 		}
+ 	}
+ 
+-	ssize_t res = writev(ch ? ch->fd : se->fd,
+-			     iov, count);
+-	int err = errno;
+-
+-	if (res == -1) {
+-		assert(se != NULL);
+-
+-		/* ENOENT means the operation was interrupted */
+-		if (!fuse_session_exited(se) && err != ENOENT)
+-			perror("fuse: writing device");
+-		return -err;
+-	}
+-
++	abort(); /* virtio should have taken it before here */
+ 	return 0;
+ }
+ 
+@@ -480,10 +460,6 @@ static int fuse_send_data_iov_fallback(struct fuse_session *se,
+ 				       struct fuse_bufvec *buf,
+ 				       size_t len)
+ {
+-	struct fuse_bufvec mem_buf = FUSE_BUFVEC_INIT(len);
+-	void *mbuf;
+-	int res;
+-
+ 	/* Optimize common case */
+ 	if (buf->count == 1 && buf->idx == 0 && buf->off == 0 &&
+ 	    !(buf->buf[0].flags & FUSE_BUF_IS_FD)) {
+@@ -496,350 +472,10 @@ static int fuse_send_data_iov_fallback(struct fuse_session *se,
+ 		return fuse_send_msg(se, ch, iov, iov_count);
+ 	}
+ 
+-	res = posix_memalign(&mbuf, pagesize, len);
+-	if (res != 0)
+-		return res;
+-
+-	mem_buf.buf[0].mem = mbuf;
+-	res = fuse_buf_copy(&mem_buf, buf, 0);
+-	if (res < 0) {
+-		free(mbuf);
+-		return -res;
+-	}
+-	len = res;
+-
+-	iov[iov_count].iov_base = mbuf;
+-	iov[iov_count].iov_len = len;
+-	iov_count++;
+-	res = fuse_send_msg(se, ch, iov, iov_count);
+-	free(mbuf);
+-
+-	return res;
+-}
+-
+-struct fuse_ll_pipe {
+-	size_t size;
+-	int can_grow;
+-	int pipe[2];
+-};
+-
+-static void fuse_ll_pipe_free(struct fuse_ll_pipe *llp)
+-{
+-	close(llp->pipe[0]);
+-	close(llp->pipe[1]);
+-	free(llp);
+-}
+-
+-#ifdef HAVE_SPLICE
+-#if !defined(HAVE_PIPE2) || !defined(O_CLOEXEC)
+-static int fuse_pipe(int fds[2])
+-{
+-	int rv = pipe(fds);
+-
+-	if (rv == -1)
+-		return rv;
+-
+-	if (fcntl(fds[0], F_SETFL, O_NONBLOCK) == -1 ||
+-	    fcntl(fds[1], F_SETFL, O_NONBLOCK) == -1 ||
+-	    fcntl(fds[0], F_SETFD, FD_CLOEXEC) == -1 ||
+-	    fcntl(fds[1], F_SETFD, FD_CLOEXEC) == -1) {
+-		close(fds[0]);
+-		close(fds[1]);
+-		rv = -1;
+-	}
+-	return rv;
+-}
+-#else
+-static int fuse_pipe(int fds[2])
+-{
+-	return pipe2(fds, O_CLOEXEC | O_NONBLOCK);
+-}
+-#endif
+-
+-static struct fuse_ll_pipe *fuse_ll_get_pipe(struct fuse_session *se)
+-{
+-	struct fuse_ll_pipe *llp = pthread_getspecific(se->pipe_key);
+-	if (llp == NULL) {
+-		int res;
+-
+-		llp = malloc(sizeof(struct fuse_ll_pipe));
+-		if (llp == NULL)
+-			return NULL;
+-
+-		res = fuse_pipe(llp->pipe);
+-		if (res == -1) {
+-			free(llp);
+-			return NULL;
+-		}
+-
+-		/*
+-		 *the default size is 16 pages on linux
+-		 */
+-		llp->size = pagesize * 16;
+-		llp->can_grow = 1;
+-
+-		pthread_setspecific(se->pipe_key, llp);
+-	}
+-
+-	return llp;
+-}
+-#endif
+-
+-static void fuse_ll_clear_pipe(struct fuse_session *se)
+-{
+-	struct fuse_ll_pipe *llp = pthread_getspecific(se->pipe_key);
+-	if (llp) {
+-		pthread_setspecific(se->pipe_key, NULL);
+-		fuse_ll_pipe_free(llp);
+-	}
+-}
+-
+-#if defined(HAVE_SPLICE) && defined(HAVE_VMSPLICE)
+-static int read_back(int fd, char *buf, size_t len)
+-{
+-	int res;
+-
+-	res = read(fd, buf, len);
+-	if (res == -1) {
+-		fuse_log(FUSE_LOG_ERR, "fuse: internal error: failed to read back from pipe: %s\n", strerror(errno));
+-		return -EIO;
+-	}
+-	if (res != len) {
+-		fuse_log(FUSE_LOG_ERR, "fuse: internal error: short read back from pipe: %i from %zi\n", res, len);
+-		return -EIO;
+-	}
++	abort(); /* Will have taken vhost path */
+ 	return 0;
+ }
+ 
+-static int grow_pipe_to_max(int pipefd)
+-{
+-	int max;
+-	int res;
+-	int maxfd;
+-	char buf[32];
+-
+-	maxfd = open("/proc/sys/fs/pipe-max-size", O_RDONLY);
+-	if (maxfd < 0)
+-		return -errno;
+-
+-	res = read(maxfd, buf, sizeof(buf) - 1);
+-	if (res < 0) {
+-		int saved_errno;
+-
+-		saved_errno = errno;
+-		close(maxfd);
+-		return -saved_errno;
+-	}
+-	close(maxfd);
+-	buf[res] = '\0';
+-
+-	max = atoi(buf);
+-	res = fcntl(pipefd, F_SETPIPE_SZ, max);
+-	if (res < 0)
+-		return -errno;
+-	return max;
+-}
+-
+-static int fuse_send_data_iov(struct fuse_session *se, struct fuse_chan *ch,
+-			       struct iovec *iov, int iov_count,
+-			       struct fuse_bufvec *buf, unsigned int flags)
+-{
+-	int res;
+-	size_t len = fuse_buf_size(buf);
+-	struct fuse_out_header *out = iov[0].iov_base;
+-	struct fuse_ll_pipe *llp;
+-	int splice_flags;
+-	size_t pipesize;
+-	size_t total_fd_size;
+-	size_t idx;
+-	size_t headerlen;
+-	struct fuse_bufvec pipe_buf = FUSE_BUFVEC_INIT(len);
+-
+-	if (se->broken_splice_nonblock)
+-		goto fallback;
+-
+-	if (flags & FUSE_BUF_NO_SPLICE)
+-		goto fallback;
+-
+-	total_fd_size = 0;
+-	for (idx = buf->idx; idx < buf->count; idx++) {
+-		if (buf->buf[idx].flags & FUSE_BUF_IS_FD) {
+-			total_fd_size = buf->buf[idx].size;
+-			if (idx == buf->idx)
+-				total_fd_size -= buf->off;
+-		}
+-	}
+-	if (total_fd_size < 2 * pagesize)
+-		goto fallback;
+-
+-	if (se->conn.proto_minor < 14 ||
+-	    !(se->conn.want & FUSE_CAP_SPLICE_WRITE))
+-		goto fallback;
+-
+-	llp = fuse_ll_get_pipe(se);
+-	if (llp == NULL)
+-		goto fallback;
+-
+-
+-	headerlen = iov_length(iov, iov_count);
+-
+-	out->len = headerlen + len;
+-
+-	/*
+-	 * Heuristic for the required pipe size, does not work if the
+-	 * source contains less than page size fragments
+-	 */
+-	pipesize = pagesize * (iov_count + buf->count + 1) + out->len;
+-
+-	if (llp->size < pipesize) {
+-		if (llp->can_grow) {
+-			res = fcntl(llp->pipe[0], F_SETPIPE_SZ, pipesize);
+-			if (res == -1) {
+-				res = grow_pipe_to_max(llp->pipe[0]);
+-				if (res > 0)
+-					llp->size = res;
+-				llp->can_grow = 0;
+-				goto fallback;
+-			}
+-			llp->size = res;
+-		}
+-		if (llp->size < pipesize)
+-			goto fallback;
+-	}
+-
+-
+-	res = vmsplice(llp->pipe[1], iov, iov_count, SPLICE_F_NONBLOCK);
+-	if (res == -1)
+-		goto fallback;
+-
+-	if (res != headerlen) {
+-		res = -EIO;
+-		fuse_log(FUSE_LOG_ERR, "fuse: short vmsplice to pipe: %u/%zu\n", res,
+-			headerlen);
+-		goto clear_pipe;
+-	}
+-
+-	pipe_buf.buf[0].flags = FUSE_BUF_IS_FD;
+-	pipe_buf.buf[0].fd = llp->pipe[1];
+-
+-	res = fuse_buf_copy(&pipe_buf, buf,
+-			    FUSE_BUF_FORCE_SPLICE | FUSE_BUF_SPLICE_NONBLOCK);
+-	if (res < 0) {
+-		if (res == -EAGAIN || res == -EINVAL) {
+-			/*
+-			 * Should only get EAGAIN on kernels with
+-			 * broken SPLICE_F_NONBLOCK support (<=
+-			 * 2.6.35) where this error or a short read is
+-			 * returned even if the pipe itself is not
+-			 * full
+-			 *
+-			 * EINVAL might mean that splice can't handle
+-			 * this combination of input and output.
+-			 */
+-			if (res == -EAGAIN)
+-				se->broken_splice_nonblock = 1;
+-
+-			pthread_setspecific(se->pipe_key, NULL);
+-			fuse_ll_pipe_free(llp);
+-			goto fallback;
+-		}
+-		res = -res;
+-		goto clear_pipe;
+-	}
+-
+-	if (res != 0 && res < len) {
+-		struct fuse_bufvec mem_buf = FUSE_BUFVEC_INIT(len);
+-		void *mbuf;
+-		size_t now_len = res;
+-		/*
+-		 * For regular files a short count is either
+-		 *  1) due to EOF, or
+-		 *  2) because of broken SPLICE_F_NONBLOCK (see above)
+-		 *
+-		 * For other inputs it's possible that we overflowed
+-		 * the pipe because of small buffer fragments.
+-		 */
+-
+-		res = posix_memalign(&mbuf, pagesize, len);
+-		if (res != 0)
+-			goto clear_pipe;
+-
+-		mem_buf.buf[0].mem = mbuf;
+-		mem_buf.off = now_len;
+-		res = fuse_buf_copy(&mem_buf, buf, 0);
+-		if (res > 0) {
+-			char *tmpbuf;
+-			size_t extra_len = res;
+-			/*
+-			 * Trickiest case: got more data.  Need to get
+-			 * back the data from the pipe and then fall
+-			 * back to regular write.
+-			 */
+-			tmpbuf = malloc(headerlen);
+-			if (tmpbuf == NULL) {
+-				free(mbuf);
+-				res = ENOMEM;
+-				goto clear_pipe;
+-			}
+-			res = read_back(llp->pipe[0], tmpbuf, headerlen);
+-			free(tmpbuf);
+-			if (res != 0) {
+-				free(mbuf);
+-				goto clear_pipe;
+-			}
+-			res = read_back(llp->pipe[0], mbuf, now_len);
+-			if (res != 0) {
+-				free(mbuf);
+-				goto clear_pipe;
+-			}
+-			len = now_len + extra_len;
+-			iov[iov_count].iov_base = mbuf;
+-			iov[iov_count].iov_len = len;
+-			iov_count++;
+-			res = fuse_send_msg(se, ch, iov, iov_count);
+-			free(mbuf);
+-			return res;
+-		}
+-		free(mbuf);
+-		res = now_len;
+-	}
+-	len = res;
+-	out->len = headerlen + len;
+-
+-	if (se->debug) {
+-		fuse_log(FUSE_LOG_DEBUG,
+-			"   unique: %llu, success, outsize: %i (splice)\n",
+-			(unsigned long long) out->unique, out->len);
+-	}
+-
+-	splice_flags = 0;
+-	if ((flags & FUSE_BUF_SPLICE_MOVE) &&
+-	    (se->conn.want & FUSE_CAP_SPLICE_MOVE))
+-		splice_flags |= SPLICE_F_MOVE;
+-
+-	res = splice(llp->pipe[0], NULL, ch ? ch->fd : se->fd,
+-		     NULL, out->len, splice_flags);
+-	if (res == -1) {
+-		res = -errno;
+-		perror("fuse: splice from pipe");
+-		goto clear_pipe;
+-	}
+-	if (res != out->len) {
+-		res = -EIO;
+-		fuse_log(FUSE_LOG_ERR, "fuse: short splice from pipe: %u/%u\n",
+-			res, out->len);
+-		goto clear_pipe;
+-	}
+-	return 0;
+-
+-clear_pipe:
+-	fuse_ll_clear_pipe(se);
+-	return res;
+-
+-fallback:
+-	return fuse_send_data_iov_fallback(se, ch, iov, iov_count, buf, len);
+-}
+-#else
+ static int fuse_send_data_iov(struct fuse_session *se, struct fuse_chan *ch,
+ 			       struct iovec *iov, int iov_count,
+ 			       struct fuse_bufvec *buf, unsigned int flags)
+@@ -849,7 +485,6 @@ static int fuse_send_data_iov(struct fuse_session *se, struct fuse_chan *ch,
+ 
+ 	return fuse_send_data_iov_fallback(se, ch, iov, iov_count, buf, len);
+ }
+-#endif
+ 
+ int fuse_reply_data(fuse_req_t req, struct fuse_bufvec *bufv,
+ 		    enum fuse_buf_copy_flags flags)
+@@ -1408,16 +1043,11 @@ static void do_write_buf(fuse_req_t req, fuse_ino_t nodeid, const void *inarg,
+ 	if (bufv.buf[0].size < arg->size) {
+ 		fuse_log(FUSE_LOG_ERR, "fuse: do_write_buf: buffer size too small\n");
+ 		fuse_reply_err(req, EIO);
+-		goto out;
++		return;
+ 	}
+ 	bufv.buf[0].size = arg->size;
+ 
+ 	se->op.write_buf(req, nodeid, &bufv, arg->offset, &fi);
+-
+-out:
+-	/* Need to reset the pipe if ->write_buf() didn't consume all data */
+-	if ((ibuf->flags & FUSE_BUF_IS_FD) && bufv.idx < bufv.count)
+-		fuse_ll_clear_pipe(se);
+ }
+ 
+ static void do_flush(fuse_req_t req, fuse_ino_t nodeid, const void *inarg)
+@@ -2038,17 +1668,6 @@ static void do_init(fuse_req_t req, fuse_ino_t nodeid, const void *inarg)
+ 		return;
+ 	}
+ 
+-	unsigned max_read_mo = get_max_read(se->mo);
+-	if (se->conn.max_read != max_read_mo) {
+-		fuse_log(FUSE_LOG_ERR, "fuse: error: init() and fuse_session_new() "
+-			"requested different maximum read size (%u vs %u)\n",
+-			se->conn.max_read, max_read_mo);
+-		fuse_reply_err(req, EPROTO);
+-		se->error = -EPROTO;
+-		fuse_session_exit(se);
+-		return;
+-	}
+-
+ 	if (se->conn.max_write < bufsize - FUSE_BUFFER_HEADER_SIZE) {
+ 		se->bufsize = se->conn.max_write + FUSE_BUFFER_HEADER_SIZE;
+ 	}
+@@ -2364,8 +1983,6 @@ static void fuse_ll_retrieve_reply(struct fuse_notify_req *nreq,
+ 	}
+ out:
+ 	free(rreq);
+-	if ((ibuf->flags & FUSE_BUF_IS_FD) && bufv.idx < bufv.count)
+-		fuse_ll_clear_pipe(se);
+ }
+ 
+ int fuse_lowlevel_notify_retrieve(struct fuse_session *se, fuse_ino_t ino,
+@@ -2496,7 +2113,6 @@ static struct {
+ 	[FUSE_RENAME2]     = { do_rename2,      "RENAME2"    },
+ 	[FUSE_COPY_FILE_RANGE] = { do_copy_file_range, "COPY_FILE_RANGE" },
+ 	[FUSE_LSEEK]	   = { do_lseek,       "LSEEK"	     },
+-	[CUSE_INIT]	   = { cuse_lowlevel_init, "CUSE_INIT"   },
+ };
+ 
+ #define FUSE_MAXOP (sizeof(fuse_ll_ops) / sizeof(fuse_ll_ops[0]))
+@@ -2509,21 +2125,6 @@ static const char *opname(enum fuse_opcode opcode)
+ 		return fuse_ll_ops[opcode].name;
+ }
+ 
+-static int fuse_ll_copy_from_pipe(struct fuse_bufvec *dst,
+-				  struct fuse_bufvec *src)
+-{
+-	ssize_t res = fuse_buf_copy(dst, src, 0);
+-	if (res < 0) {
+-		fuse_log(FUSE_LOG_ERR, "fuse: copy from pipe: %s\n", strerror(-res));
+-		return res;
+-	}
+-	if ((size_t)res < fuse_buf_size(dst)) {
+-		fuse_log(FUSE_LOG_ERR, "fuse: copy from pipe: short read\n");
+-		return -1;
+-	}
+-	return 0;
+-}
+-
+ void fuse_session_process_buf(struct fuse_session *se,
+ 			      const struct fuse_buf *buf)
+ {
+@@ -2533,36 +2134,12 @@ void fuse_session_process_buf(struct fuse_session *se,
+ void fuse_session_process_buf_int(struct fuse_session *se,
+ 				  const struct fuse_buf *buf, struct fuse_chan *ch)
+ {
+-	const size_t write_header_size = sizeof(struct fuse_in_header) +
+-		sizeof(struct fuse_write_in);
+-	struct fuse_bufvec bufv = { .buf[0] = *buf, .count = 1 };
+-	struct fuse_bufvec tmpbuf = FUSE_BUFVEC_INIT(write_header_size);
+ 	struct fuse_in_header *in;
+ 	const void *inarg;
+ 	struct fuse_req *req;
+-	void *mbuf = NULL;
+ 	int err;
+-	int res;
+-
+-	if (buf->flags & FUSE_BUF_IS_FD) {
+-		if (buf->size < tmpbuf.buf[0].size)
+-			tmpbuf.buf[0].size = buf->size;
+ 
+-		mbuf = malloc(tmpbuf.buf[0].size);
+-		if (mbuf == NULL) {
+-			fuse_log(FUSE_LOG_ERR, "fuse: failed to allocate header\n");
+-			goto clear_pipe;
+-		}
+-		tmpbuf.buf[0].mem = mbuf;
+-
+-		res = fuse_ll_copy_from_pipe(&tmpbuf, &bufv);
+-		if (res < 0)
+-			goto clear_pipe;
+-
+-		in = mbuf;
+-	} else {
+-		in = buf->mem;
+-	}
++	in = buf->mem;
+ 
+ 	if (se->debug) {
+ 		fuse_log(FUSE_LOG_DEBUG,
+@@ -2584,14 +2161,14 @@ void fuse_session_process_buf_int(struct fuse_session *se,
+ 		};
+ 
+ 		fuse_send_msg(se, ch, &iov, 1);
+-		goto clear_pipe;
++		return;
+ 	}
+ 
+ 	req->unique = in->unique;
+ 	req->ctx.uid = in->uid;
+ 	req->ctx.gid = in->gid;
+ 	req->ctx.pid = in->pid;
+-	req->ch = ch ? fuse_chan_get(ch) : NULL;
++	req->ch = ch;
+ 
+ 	err = EIO;
+ 	if (!se->got_init) {
+@@ -2627,28 +2204,6 @@ void fuse_session_process_buf_int(struct fuse_session *se,
+ 			fuse_reply_err(intr, EAGAIN);
+ 	}
+ 
+-	if ((buf->flags & FUSE_BUF_IS_FD) && write_header_size < buf->size &&
+-	    (in->opcode != FUSE_WRITE || !se->op.write_buf) &&
+-	    in->opcode != FUSE_NOTIFY_REPLY) {
+-		void *newmbuf;
+-
+-		err = ENOMEM;
+-		newmbuf = realloc(mbuf, buf->size);
+-		if (newmbuf == NULL)
+-			goto reply_err;
+-		mbuf = newmbuf;
+-
+-		tmpbuf = FUSE_BUFVEC_INIT(buf->size - write_header_size);
+-		tmpbuf.buf[0].mem = (char *)mbuf + write_header_size;
+-
+-		res = fuse_ll_copy_from_pipe(&tmpbuf, &bufv);
+-		err = -res;
+-		if (res < 0)
+-			goto reply_err;
+-
+-		in = mbuf;
+-	}
+-
+ 	inarg = (void *) &in[1];
+ 	if (in->opcode == FUSE_WRITE && se->op.write_buf)
+ 		do_write_buf(req, in->nodeid, inarg, buf);
+@@ -2657,16 +2212,10 @@ void fuse_session_process_buf_int(struct fuse_session *se,
+ 	else
+ 		fuse_ll_ops[in->opcode].func(req, in->nodeid, inarg);
+ 
+-out_free:
+-	free(mbuf);
+ 	return;
+ 
+ reply_err:
+ 	fuse_reply_err(req, err);
+-clear_pipe:
+-	if (buf->flags & FUSE_BUF_IS_FD)
+-		fuse_ll_clear_pipe(se);
+-	goto out_free;
+ }
+ 
+ #define LL_OPTION(n,o,v) \
+@@ -2684,7 +2233,6 @@ void fuse_lowlevel_version(void)
+ {
+ 	printf("using FUSE kernel interface version %i.%i\n",
+ 	       FUSE_KERNEL_VERSION, FUSE_KERNEL_MINOR_VERSION);
+-	fuse_mount_version();
+ }
+ 
+ void fuse_lowlevel_help(void)
+@@ -2692,204 +2240,29 @@ void fuse_lowlevel_help(void)
+ 	/* These are not all options, but the ones that are
+ 	   potentially of interest to an end-user */
+ 	printf(
+-"    -o allow_other         allow access by all users\n"
+ "    -o allow_root          allow access by root\n"
+-"    -o auto_unmount        auto unmount on process termination\n");
++);
+ }
+ 
+ void fuse_session_destroy(struct fuse_session *se)
+ {
+-	struct fuse_ll_pipe *llp;
+-
+ 	if (se->got_init && !se->got_destroy) {
+ 		if (se->op.destroy)
+ 			se->op.destroy(se->userdata);
+ 	}
+-	llp = pthread_getspecific(se->pipe_key);
+-	if (llp != NULL)
+-		fuse_ll_pipe_free(llp);
+-	pthread_key_delete(se->pipe_key);
+ 	pthread_mutex_destroy(&se->lock);
+ 	free(se->cuse_data);
+ 	if (se->fd != -1)
+ 		close(se->fd);
+-	destroy_mount_opts(se->mo);
+ 	free(se);
+ }
+ 
+ 
+-static void fuse_ll_pipe_destructor(void *data)
+-{
+-	struct fuse_ll_pipe *llp = data;
+-	fuse_ll_pipe_free(llp);
+-}
+-
+-int fuse_session_receive_buf(struct fuse_session *se, struct fuse_buf *buf)
+-{
+-	return fuse_session_receive_buf_int(se, buf, NULL);
+-}
+-
+-int fuse_session_receive_buf_int(struct fuse_session *se, struct fuse_buf *buf,
+-				 struct fuse_chan *ch)
+-{
+-	int err;
+-	ssize_t res;
+-#ifdef HAVE_SPLICE
+-	size_t bufsize = se->bufsize;
+-	struct fuse_ll_pipe *llp;
+-	struct fuse_buf tmpbuf;
+-
+-	if (se->conn.proto_minor < 14 || !(se->conn.want & FUSE_CAP_SPLICE_READ))
+-		goto fallback;
+-
+-	llp = fuse_ll_get_pipe(se);
+-	if (llp == NULL)
+-		goto fallback;
+-
+-	if (llp->size < bufsize) {
+-		if (llp->can_grow) {
+-			res = fcntl(llp->pipe[0], F_SETPIPE_SZ, bufsize);
+-			if (res == -1) {
+-				llp->can_grow = 0;
+-				res = grow_pipe_to_max(llp->pipe[0]);
+-				if (res > 0)
+-					llp->size = res;
+-				goto fallback;
+-			}
+-			llp->size = res;
+-		}
+-		if (llp->size < bufsize)
+-			goto fallback;
+-	}
+-
+-	res = splice(ch ? ch->fd : se->fd,
+-		     NULL, llp->pipe[1], NULL, bufsize, 0);
+-	err = errno;
+-
+-	if (fuse_session_exited(se))
+-		return 0;
+-
+-	if (res == -1) {
+-		if (err == ENODEV) {
+-			/* Filesystem was unmounted, or connection was aborted
+-			   via /sys/fs/fuse/connections */
+-			fuse_session_exit(se);
+-			return 0;
+-		}
+-		if (err != EINTR && err != EAGAIN)
+-			perror("fuse: splice from device");
+-		return -err;
+-	}
+-
+-	if (res < sizeof(struct fuse_in_header)) {
+-		fuse_log(FUSE_LOG_ERR, "short splice from fuse device\n");
+-		return -EIO;
+-	}
+-
+-	tmpbuf = (struct fuse_buf) {
+-		.size = res,
+-		.flags = FUSE_BUF_IS_FD,
+-		.fd = llp->pipe[0],
+-	};
+-
+-	/*
+-	 * Don't bother with zero copy for small requests.
+-	 * fuse_loop_mt() needs to check for FORGET so this more than
+-	 * just an optimization.
+-	 */
+-	if (res < sizeof(struct fuse_in_header) +
+-	    sizeof(struct fuse_write_in) + pagesize) {
+-		struct fuse_bufvec src = { .buf[0] = tmpbuf, .count = 1 };
+-		struct fuse_bufvec dst = { .count = 1 };
+-
+-		if (!buf->mem) {
+-			buf->mem = malloc(se->bufsize);
+-			if (!buf->mem) {
+-				fuse_log(FUSE_LOG_ERR,
+-					"fuse: failed to allocate read buffer\n");
+-				return -ENOMEM;
+-			}
+-		}
+-		buf->size = se->bufsize;
+-		buf->flags = 0;
+-		dst.buf[0] = *buf;
+-
+-		res = fuse_buf_copy(&dst, &src, 0);
+-		if (res < 0) {
+-			fuse_log(FUSE_LOG_ERR, "fuse: copy from pipe: %s\n",
+-				strerror(-res));
+-			fuse_ll_clear_pipe(se);
+-			return res;
+-		}
+-		if (res < tmpbuf.size) {
+-			fuse_log(FUSE_LOG_ERR, "fuse: copy from pipe: short read\n");
+-			fuse_ll_clear_pipe(se);
+-			return -EIO;
+-		}
+-		assert(res == tmpbuf.size);
+-
+-	} else {
+-		/* Don't overwrite buf->mem, as that would cause a leak */
+-		buf->fd = tmpbuf.fd;
+-		buf->flags = tmpbuf.flags;
+-	}
+-	buf->size = tmpbuf.size;
+-
+-	return res;
+-
+-fallback:
+-#endif
+-	if (!buf->mem) {
+-		buf->mem = malloc(se->bufsize);
+-		if (!buf->mem) {
+-			fuse_log(FUSE_LOG_ERR,
+-				"fuse: failed to allocate read buffer\n");
+-			return -ENOMEM;
+-		}
+-	}
+-
+-restart:
+-	res = read(ch ? ch->fd : se->fd, buf->mem, se->bufsize);
+-	err = errno;
+-
+-	if (fuse_session_exited(se))
+-		return 0;
+-	if (res == -1) {
+-		/* ENOENT means the operation was interrupted, it's safe
+-		   to restart */
+-		if (err == ENOENT)
+-			goto restart;
+-
+-		if (err == ENODEV) {
+-			/* Filesystem was unmounted, or connection was aborted
+-			   via /sys/fs/fuse/connections */
+-			fuse_session_exit(se);
+-			return 0;
+-		}
+-		/* Errors occurring during normal operation: EINTR (read
+-		   interrupted), EAGAIN (nonblocking I/O), ENODEV (filesystem
+-		   umounted) */
+-		if (err != EINTR && err != EAGAIN)
+-			perror("fuse: reading device");
+-		return -err;
+-	}
+-	if ((size_t) res < sizeof(struct fuse_in_header)) {
+-		fuse_log(FUSE_LOG_ERR, "short read on fuse device\n");
+-		return -EIO;
+-	}
+-
+-	buf->size = res;
+-
+-	return res;
+-}
+-
+ struct fuse_session *fuse_session_new(struct fuse_args *args,
+ 				      const struct fuse_lowlevel_ops *op,
+ 				      size_t op_size, void *userdata)
+ {
+-	int err;
+ 	struct fuse_session *se;
+-	struct mount_opts *mo;
+ 
+ 	if (sizeof(struct fuse_lowlevel_ops) < op_size) {
+ 		fuse_log(FUSE_LOG_ERR, "fuse: warning: library too old, some operations may not work\n");
+@@ -2913,20 +2286,6 @@ struct fuse_session *fuse_session_new(struct fuse_args *args,
+ 	/* Parse options */
+ 	if(fuse_opt_parse(args, se, fuse_ll_opts, NULL) == -1)
+ 		goto out2;
+-	if(se->deny_others) {
+-		/* Allowing access only by root is done by instructing
+-		 * kernel to allow access by everyone, and then restricting
+-		 * access to root and mountpoint owner in libfuse.
+-		 */
+-		// We may be adding the option a second time, but
+-		// that doesn't hurt.
+-		if(fuse_opt_add_arg(args, "-oallow_other") == -1)
+-			goto out2;
+-	}
+-	mo = parse_mount_opts(args);
+-	if (mo == NULL)
+-		goto out3;
+-
+ 	if(args->argc == 1 &&
+ 	   args->argv[0][0] == '-') {
+ 		fuse_log(FUSE_LOG_ERR, "fuse: warning: argv[0] looks like an option, but "
+@@ -2940,9 +2299,6 @@ struct fuse_session *fuse_session_new(struct fuse_args *args,
+ 		goto out4;
+ 	}
+ 
+-	if (se->debug)
+-		fuse_log(FUSE_LOG_DEBUG, "FUSE library version: %s\n", PACKAGE_VERSION);
+-
+ 	se->bufsize = FUSE_MAX_MAX_PAGES * getpagesize() +
+ 		FUSE_BUFFER_HEADER_SIZE;
+ 
+@@ -2952,26 +2308,14 @@ struct fuse_session *fuse_session_new(struct fuse_args *args,
+ 	se->notify_ctr = 1;
+ 	fuse_mutex_init(&se->lock);
+ 
+-	err = pthread_key_create(&se->pipe_key, fuse_ll_pipe_destructor);
+-	if (err) {
+-		fuse_log(FUSE_LOG_ERR, "fuse: failed to create thread specific key: %s\n",
+-			strerror(err));
+-		goto out5;
+-	}
+-
+ 	memcpy(&se->op, op, op_size);
+ 	se->owner = getuid();
+ 	se->userdata = userdata;
+ 
+-	se->mo = mo;
+ 	return se;
+ 
+-out5:
+-	pthread_mutex_destroy(&se->lock);
+ out4:
+ 	fuse_opt_free_args(args);
+-out3:
+-	free(mo);
+ out2:
+ 	free(se);
+ out1:
+@@ -3035,11 +2379,6 @@ int fuse_session_fd(struct fuse_session *se)
+ 
+ void fuse_session_unmount(struct fuse_session *se)
+ {
+-	if (se->mountpoint != NULL) {
+-		fuse_kern_unmount(se->mountpoint, se->fd);
+-		free(se->mountpoint);
+-		se->mountpoint = NULL;
+-	}
+ }
+ 
+ #ifdef linux
+diff --git a/tools/virtiofsd/fuse_lowlevel.h b/tools/virtiofsd/fuse_lowlevel.h
+index 18c6363f07..6b1adfcfd1 100644
+--- a/tools/virtiofsd/fuse_lowlevel.h
++++ b/tools/virtiofsd/fuse_lowlevel.h
+@@ -31,10 +31,6 @@
+ #include <sys/statvfs.h>
+ #include <sys/uio.h>
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ /* ----------------------------------------------------------- *
+  * Miscellaneous definitions				       *
+  * ----------------------------------------------------------- */
+@@ -1863,14 +1859,12 @@ void fuse_cmdline_help(void);
+  * ----------------------------------------------------------- */
+ 
+ struct fuse_cmdline_opts {
+-	int singlethread;
+ 	int foreground;
+ 	int debug;
+ 	int nodefault_subtype;
+ 	char *mountpoint;
+ 	int show_version;
+ 	int show_help;
+-	int clone_fd;
+ 	unsigned int max_idle_threads;
+ };
+ 
+@@ -1961,24 +1955,6 @@ int fuse_session_mount(struct fuse_session *se, const char *mountpoint);
+  */
+ int fuse_session_loop(struct fuse_session *se);
+ 
+-/**
+- * Enter a multi-threaded event loop.
+- *
+- * For a description of the return value and the conditions when the
+- * event loop exits, refer to the documentation of
+- * fuse_session_loop().
+- *
+- * @param se the session
+- * @param config session loop configuration 
+- * @return see fuse_session_loop()
+- */
+-#if FUSE_USE_VERSION < 32
+-int fuse_session_loop_mt_31(struct fuse_session *se, int clone_fd);
+-#define fuse_session_loop_mt(se, clone_fd) fuse_session_loop_mt_31(se, clone_fd)
+-#else
+-int fuse_session_loop_mt(struct fuse_session *se, struct fuse_loop_config *config);
+-#endif
+-
+ /**
+  * Flag a session as terminated.
+  *
+@@ -2082,8 +2058,4 @@ void fuse_session_process_buf(struct fuse_session *se,
+  */
+ int fuse_session_receive_buf(struct fuse_session *se, struct fuse_buf *buf);
+ 
+-#ifdef __cplusplus
+-}
+-#endif
+-
+ #endif /* FUSE_LOWLEVEL_H_ */
+diff --git a/tools/virtiofsd/fuse_opt.h b/tools/virtiofsd/fuse_opt.h
+index d8573e74fd..69102555be 100644
+--- a/tools/virtiofsd/fuse_opt.h
++++ b/tools/virtiofsd/fuse_opt.h
+@@ -14,10 +14,6 @@
+  * This file defines the option parsing interface of FUSE
+  */
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ /**
+  * Option description
+  *
+@@ -264,8 +260,4 @@ void fuse_opt_free_args(struct fuse_args *args);
+  */
+ int fuse_opt_match(const struct fuse_opt opts[], const char *opt);
+ 
+-#ifdef __cplusplus
+-}
+-#endif
+-
+ #endif /* FUSE_OPT_H_ */
+diff --git a/tools/virtiofsd/helper.c b/tools/virtiofsd/helper.c
+index 64ff7ad6d5..5a2e64c6d0 100644
+--- a/tools/virtiofsd/helper.c
++++ b/tools/virtiofsd/helper.c
+@@ -41,14 +41,10 @@ static const struct fuse_opt fuse_helper_opts[] = {
+ 	FUSE_OPT_KEY("-d",		FUSE_OPT_KEY_KEEP),
+ 	FUSE_OPT_KEY("debug",		FUSE_OPT_KEY_KEEP),
+ 	FUSE_HELPER_OPT("-f",		foreground),
+-	FUSE_HELPER_OPT("-s",		singlethread),
+ 	FUSE_HELPER_OPT("fsname=",	nodefault_subtype),
+ 	FUSE_OPT_KEY("fsname=",		FUSE_OPT_KEY_KEEP),
+-#ifndef __FreeBSD__
+ 	FUSE_HELPER_OPT("subtype=",	nodefault_subtype),
+ 	FUSE_OPT_KEY("subtype=",	FUSE_OPT_KEY_KEEP),
+-#endif
+-	FUSE_HELPER_OPT("clone_fd",	clone_fd),
+ 	FUSE_HELPER_OPT("max_idle_threads=%u", max_idle_threads),
+ 	FUSE_OPT_END
+ };
+@@ -132,9 +128,6 @@ void fuse_cmdline_help(void)
+ 	       "    -V   --version         print version\n"
+ 	       "    -d   -o debug          enable debug output (implies -f)\n"
+ 	       "    -f                     foreground operation\n"
+-	       "    -s                     disable multi-threaded operation\n"
+-	       "    -o clone_fd            use separate fuse device fd for each thread\n"
+-	       "                           (may improve performance)\n"
+ 	       "    -o max_idle_threads    the maximum number of idle worker threads\n"
+ 	       "                           allowed (default: 10)\n");
+ }
+@@ -171,34 +164,6 @@ static int fuse_helper_opt_proc(void *data, const char *arg, int key,
+ 	}
+ }
+ 
+-/* Under FreeBSD, there is no subtype option so this
+-   function actually sets the fsname */
+-static int add_default_subtype(const char *progname, struct fuse_args *args)
+-{
+-	int res;
+-	char *subtype_opt;
+-
+-	const char *basename = strrchr(progname, '/');
+-	if (basename == NULL)
+-		basename = progname;
+-	else if (basename[1] != '\0')
+-		basename++;
+-
+-	subtype_opt = (char *) malloc(strlen(basename) + 64);
+-	if (subtype_opt == NULL) {
+-		fuse_log(FUSE_LOG_ERR, "fuse: memory allocation failed\n");
+-		return -1;
+-	}
+-#ifdef __FreeBSD__
+-	sprintf(subtype_opt, "-ofsname=%s", basename);
+-#else
+-	sprintf(subtype_opt, "-osubtype=%s", basename);
+-#endif
+-	res = fuse_opt_add_arg(args, subtype_opt);
+-	free(subtype_opt);
+-	return res;
+-}
+-
+ int fuse_parse_cmdline(struct fuse_args *args,
+ 		       struct fuse_cmdline_opts *opts)
+ {
+@@ -210,14 +175,6 @@ int fuse_parse_cmdline(struct fuse_args *args,
+ 			   fuse_helper_opt_proc) == -1)
+ 		return -1;
+ 
+-	/* *Linux*: if neither -o subtype nor -o fsname are specified,
+-	   set subtype to program's basename.
+-	   *FreeBSD*: if fsname is not specified, set to program's
+-	   basename. */
+-	if (!opts->nodefault_subtype)
+-		if (add_default_subtype(args->argv[0], args) == -1)
+-			return -1;
+-
+ 	return 0;
+ }
+ 
+@@ -276,88 +233,6 @@ int fuse_daemonize(int foreground)
+ 	return 0;
+ }
+ 
+-int fuse_main_real(int argc, char *argv[], const struct fuse_operations *op,
+-		   size_t op_size, void *user_data)
+-{
+-	struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
+-	struct fuse *fuse;
+-	struct fuse_cmdline_opts opts;
+-	int res;
+-
+-	if (fuse_parse_cmdline(&args, &opts) != 0)
+-		return 1;
+-
+-	if (opts.show_version) {
+-		printf("FUSE library version %s\n", PACKAGE_VERSION);
+-		fuse_lowlevel_version();
+-		res = 0;
+-		goto out1;
+-	}
+-
+-	if (opts.show_help) {
+-		if(args.argv[0][0] != '\0')
+-			printf("usage: %s [options] <mountpoint>\n\n",
+-			       args.argv[0]);
+-		printf("FUSE options:\n");
+-		fuse_cmdline_help();
+-		fuse_lib_help(&args);
+-		res = 0;
+-		goto out1;
+-	}
+-
+-	if (!opts.show_help &&
+-	    !opts.mountpoint) {
+-		fuse_log(FUSE_LOG_ERR, "error: no mountpoint specified\n");
+-		res = 2;
+-		goto out1;
+-	}
+-
+-
+-	fuse = fuse_new_31(&args, op, op_size, user_data);
+-	if (fuse == NULL) {
+-		res = 3;
+-		goto out1;
+-	}
+-
+-	if (fuse_mount(fuse,opts.mountpoint) != 0) {
+-		res = 4;
+-		goto out2;
+-	}
+-
+-	if (fuse_daemonize(opts.foreground) != 0) {
+-		res = 5;
+-		goto out3;
+-	}
+-
+-	struct fuse_session *se = fuse_get_session(fuse);
+-	if (fuse_set_signal_handlers(se) != 0) {
+-		res = 6;
+-		goto out3;
+-	}
+-
+-	if (opts.singlethread)
+-		res = fuse_loop(fuse);
+-	else {
+-		struct fuse_loop_config loop_config;
+-		loop_config.clone_fd = opts.clone_fd;
+-		loop_config.max_idle_threads = opts.max_idle_threads;
+-		res = fuse_loop_mt_32(fuse, &loop_config);
+-	}
+-	if (res)
+-		res = 7;
+-
+-	fuse_remove_signal_handlers(se);
+-out3:
+-	fuse_unmount(fuse);
+-out2:
+-	fuse_destroy(fuse);
+-out1:
+-	free(opts.mountpoint);
+-	fuse_opt_free_args(&args);
+-	return res;
+-}
+-
+-
+ void fuse_apply_conn_info_opts(struct fuse_conn_info_opts *opts,
+ 			       struct fuse_conn_info *conn)
+ {
+@@ -420,21 +295,3 @@ struct fuse_conn_info_opts* fuse_parse_conn_info_opts(struct fuse_args *args)
+ 	}
+ 	return opts;
+ }
+-
+-int fuse_open_channel(const char *mountpoint, const char* options)
+-{
+-	struct mount_opts *opts = NULL;
+-	int fd = -1;
+-	const char *argv[] = { "", "-o", options };
+-	int argc = sizeof(argv) / sizeof(argv[0]);
+-	struct fuse_args args = FUSE_ARGS_INIT(argc, (char**) argv);
+-
+-	opts = parse_mount_opts(&args);
+-	if (opts == NULL)
+-		return -1;
+-
+-	fd = fuse_kern_mount(mountpoint, opts);
+-	destroy_mount_opts(opts);
+-
+-	return fd;
+-}
+diff --git a/tools/virtiofsd/passthrough_helpers.h b/tools/virtiofsd/passthrough_helpers.h
+index 6b77c33600..7c5f561fbc 100644
+--- a/tools/virtiofsd/passthrough_helpers.h
++++ b/tools/virtiofsd/passthrough_helpers.h
+@@ -42,32 +42,6 @@ static int mknod_wrapper(int dirfd, const char *path, const char *link,
+ 		res = symlinkat(link, dirfd, path);
+ 	} else if (S_ISFIFO(mode)) {
+ 		res = mkfifoat(dirfd, path, mode);
+-#ifdef __FreeBSD__
+-	} else if (S_ISSOCK(mode)) {
+-		struct sockaddr_un su;
+-		int fd;
+-
+-		if (strlen(path) >= sizeof(su.sun_path)) {
+-			errno = ENAMETOOLONG;
+-			return -1;
+-		}
+-		fd = socket(AF_UNIX, SOCK_STREAM, 0);
+-		if (fd >= 0) {
+-			/*
+-			 * We must bind the socket to the underlying file
+-			 * system to create the socket file, even though
+-			 * we'll never listen on this socket.
+-			 */
+-			su.sun_family = AF_UNIX;
+-			strncpy(su.sun_path, path, sizeof(su.sun_path));
+-			res = bindat(dirfd, fd, (struct sockaddr*)&su,
+-				sizeof(su));
+-			if (res == 0)
+-				close(fd);
+-		} else {
+-			res = -1;
+-		}
+-#endif
+ 	} else {
+ 		res = mknodat(dirfd, path, mode, rdev);
+ 	}
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index e1a605691a..e5f7115bc1 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -1240,7 +1240,6 @@ int main(int argc, char *argv[])
+ 		ret = 0;
+ 		goto err_out1;
+ 	} else if (opts.show_version) {
+-		printf("FUSE library version %s\n", fuse_pkgversion());
+ 		fuse_lowlevel_version();
+ 		ret = 0;
+ 		goto err_out1;

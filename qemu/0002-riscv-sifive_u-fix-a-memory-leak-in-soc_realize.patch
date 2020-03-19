@@ -1,0 +1,30 @@
+From: Pan Nengyuan <pannengyuan@huawei.com>
+Date: Tue, 10 Dec 2019 15:14:37 +0800
+Subject: [PATCH] riscv/sifive_u: fix a memory leak in soc_realize()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fix a minor memory leak in riscv_sifive_u_soc_realize()
+
+Reported-by: Euler Robot <euler.robot@huawei.com>
+Signed-off-by: Pan Nengyuan <pannengyuan@huawei.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Reviewed-by: Alistair Francis <alistair.francis@wdc.com>
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+---
+ hw/riscv/sifive_u.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/hw/riscv/sifive_u.c b/hw/riscv/sifive_u.c
+index 0140e95732..0e12b3ccef 100644
+--- a/hw/riscv/sifive_u.c
++++ b/hw/riscv/sifive_u.c
+@@ -542,6 +542,7 @@ static void riscv_sifive_u_soc_realize(DeviceState *dev, Error **errp)
+         SIFIVE_U_PLIC_CONTEXT_BASE,
+         SIFIVE_U_PLIC_CONTEXT_STRIDE,
+         memmap[SIFIVE_U_PLIC].size);
++    g_free(plic_hart_config);
+     sifive_uart_create(system_memory, memmap[SIFIVE_U_UART0].base,
+         serial_hd(0), qdev_get_gpio_in(DEVICE(s->plic), SIFIVE_U_UART0_IRQ));
+     sifive_uart_create(system_memory, memmap[SIFIVE_U_UART1].base,

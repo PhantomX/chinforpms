@@ -7,7 +7,7 @@
 
 Name:           mingw-wine-gecko
 Version:        2.47.1
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Gecko library required for Wine
 
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -24,6 +24,20 @@ Source4:        %{vc_url}/ci/master/tree/README.txt?format=raw#/README.txt
 
 
 Patch0:         %{name}-mozconfig.patch
+
+# Python 3.8 support
+Patch1:         0001-mozbuild-Use-time.process_time-instead-of-time.clock.patch
+Patch2:         0002-mozinfo-Fallback-to-unknown-disro-if-platform.linux_.patch
+Patch3:         0003-Bug-1259551-Upgrade-vendored-virtualenv-to-15.0.1-r-.patch
+Patch4:         0004-Bug-1295439-Upgrade-pip-to-8.1.2-r-glandium.patch
+Patch5:         0005-Bug-1100925-Added-flags-in-virtualenv-to-differencia.patch
+Patch6:         0006-Bug-1100925-For-whatever-reason-MinGW-Python-cannot-.patch
+Patch7:         0007-Bug-1100925-Virtualenv-no-longer-attempts-to-use-sym.patch
+Patch8:         0008-Bug-1100925-Virtualenv-now-copies-a-site.py-file-in-.patch
+Patch9:         0009-Bug-1100925-Added-site.py-from-virtualenv-upstream.-.patch
+Patch10:        0010-Bug-1100925-Added-modification-for-MinGW64-version-o.patch
+Patch11:        0011-Bug-1295439-Upgrade-setuptools-to-25.2.0-r-glandium.patch
+Patch12:        0012-Bug-1437593-Vendor-virtualenv-15.2.0-r-gps.patch
 
 BuildArch:      noarch
 
@@ -56,8 +70,9 @@ BuildRequires:  mingw32-winpthreads-static
 BuildRequires:  autoconf213
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+BuildRequires:  git
 BuildRequires:  pkgconfig
-BuildRequires:  python2
+BuildRequires:  python3
 BuildRequires:  perl-Getopt-Long
 BuildRequires:  yasm
 BuildRequires:  zip
@@ -100,6 +115,22 @@ cp -p %{S:2} %{S:3} %{S:4} %{msiname}-%{version}/
 cd %{msiname}-%{version}
 
 %patch0 -p1 -b.mozconfig
+%patch1 -p1 -b.python38.1
+%patch2 -p1 -b.python38.2
+echo %{PATCH3}
+git apply %{PATCH3}
+echo %{PATCH4}
+git apply %{PATCH4}
+%patch5 -p1 -b.python38.5
+%patch6 -p1 -b.python38.6
+%patch7 -p1 -b.python38.7
+%patch8 -p1 -b.python38.8
+%patch9 -p1 -b.python38.9
+%patch10 -p1 -b.python38.10
+echo %{PATCH11}
+git apply %{PATCH11}
+echo %{PATCH12}
+git apply %{PATCH12}
 
 # fix nsprpub cross compile detection
 sed -i 's,cross_compiling=.*$,cross_compiling=yes,' nsprpub/configure
@@ -151,6 +182,9 @@ cp -rp %{msiname}-%{version}-x86_64/dist/%{msiname}-%{version}-x86_64 \
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.47.1-102
+- f33 sync (python 3.8)
+
 * Sat Dec 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.47.1-101
 - Global location
 

@@ -1,0 +1,41 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:36 +0000
+Subject: [PATCH] virtio-fs: fix MSI-X nvectors calculation
+
+The following MSI-X vectors are required:
+ * VIRTIO Configuration Change
+ * hiprio virtqueue
+ * requests virtqueues
+
+Fix the calculation to reserve enough MSI-X vectors.  Otherwise guest
+drivers fall back to a sub-optional configuration where all virtqueues
+share a single vector.
+
+This change does not break live migration compatibility since
+vhost-user-fs-pci devices are not migratable yet.
+
+Reported-by: Vivek Goyal <vgoyal@redhat.com>
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Message-Id: <20191209110759.35227-1-stefanha@redhat.com>
+Reviewed-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 366844f3d1329c6423dd752891a28ccb3ee8fddd)
+---
+ hw/virtio/vhost-user-fs-pci.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/hw/virtio/vhost-user-fs-pci.c b/hw/virtio/vhost-user-fs-pci.c
+index 933a3f265b..e3a649d4a6 100644
+--- a/hw/virtio/vhost-user-fs-pci.c
++++ b/hw/virtio/vhost-user-fs-pci.c
+@@ -40,7 +40,8 @@ static void vhost_user_fs_pci_realize(VirtIOPCIProxy *vpci_dev, Error **errp)
+     DeviceState *vdev = DEVICE(&dev->vdev);
+ 
+     if (vpci_dev->nvectors == DEV_NVECTORS_UNSPECIFIED) {
+-        vpci_dev->nvectors = dev->vdev.conf.num_request_queues + 1;
++        /* Also reserve config change and hiprio queue vectors */
++        vpci_dev->nvectors = dev->vdev.conf.num_request_queues + 2;
+     }
+ 
+     qdev_set_parent_bus(vdev, BUS(&vpci_dev->bus));

@@ -1,0 +1,43 @@
+From: ShihPo Hung <shihpo.hung@sifive.com>
+Date: Tue, 14 Jan 2020 22:17:33 -0800
+Subject: [PATCH] target/riscv: update mstatus.SD when FS is set dirty
+
+remove the check becuase SD bit should summarize FS and XS fields
+unconditionally.
+
+Signed-off-by: ShihPo Hung <shihpo.hung@sifive.com>
+Reviewed-by: Richard Henderson <richard.henderson@linaro.org>
+Reviewed-by: Alistair Francis <alistair.francis@wdc.com>
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+---
+ target/riscv/csr.c       | 3 +--
+ target/riscv/translate.c | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/target/riscv/csr.c b/target/riscv/csr.c
+index da02f9f0b1..0e34c292c5 100644
+--- a/target/riscv/csr.c
++++ b/target/riscv/csr.c
+@@ -341,8 +341,7 @@ static int write_mstatus(CPURISCVState *env, int csrno, target_ulong val)
+ 
+     mstatus = (mstatus & ~mask) | (val & mask);
+ 
+-    dirty = (riscv_cpu_fp_enabled(env) &&
+-             ((mstatus & MSTATUS_FS) == MSTATUS_FS)) |
++    dirty = ((mstatus & MSTATUS_FS) == MSTATUS_FS) |
+             ((mstatus & MSTATUS_XS) == MSTATUS_XS);
+     mstatus = set_field(mstatus, MSTATUS_SD, dirty);
+     env->mstatus = mstatus;
+diff --git a/target/riscv/translate.c b/target/riscv/translate.c
+index ab6a891dc3..8e40ed3ac4 100644
+--- a/target/riscv/translate.c
++++ b/target/riscv/translate.c
+@@ -394,7 +394,7 @@ static void mark_fs_dirty(DisasContext *ctx)
+ 
+     tmp = tcg_temp_new();
+     tcg_gen_ld_tl(tmp, cpu_env, offsetof(CPURISCVState, mstatus));
+-    tcg_gen_ori_tl(tmp, tmp, MSTATUS_FS);
++    tcg_gen_ori_tl(tmp, tmp, MSTATUS_FS | MSTATUS_SD);
+     tcg_gen_st_tl(tmp, cpu_env, offsetof(CPURISCVState, mstatus));
+     tcg_temp_free(tmp);
+ }

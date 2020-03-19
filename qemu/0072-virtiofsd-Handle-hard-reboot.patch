@@ -1,0 +1,49 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:41 +0000
+Subject: [PATCH] virtiofsd: Handle hard reboot
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Handle a
+  mount
+  hard reboot (without unmount)
+  mount
+
+we get another 'init' which FUSE doesn't normally expect.
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit e8556f49098b5d95634e592d79a97f761b76c96e)
+---
+ tools/virtiofsd/fuse_lowlevel.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/tools/virtiofsd/fuse_lowlevel.c b/tools/virtiofsd/fuse_lowlevel.c
+index 7d742b5a72..65f91dabae 100644
+--- a/tools/virtiofsd/fuse_lowlevel.c
++++ b/tools/virtiofsd/fuse_lowlevel.c
+@@ -2433,7 +2433,21 @@ void fuse_session_process_buf_int(struct fuse_session *se,
+             goto reply_err;
+         }
+     } else if (in->opcode == FUSE_INIT || in->opcode == CUSE_INIT) {
+-        goto reply_err;
++        if (fuse_lowlevel_is_virtio(se)) {
++            /*
++             * TODO: This is after a hard reboot typically, we need to do
++             * a destroy, but we can't reply to this request yet so
++             * we can't use do_destroy
++             */
++            fuse_log(FUSE_LOG_DEBUG, "%s: reinit\n", __func__);
++            se->got_destroy = 1;
++            se->got_init = 0;
++            if (se->op.destroy) {
++                se->op.destroy(se->userdata);
++            }
++        } else {
++            goto reply_err;
++        }
+     }
+ 
+     err = EACCES;

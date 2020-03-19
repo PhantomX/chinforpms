@@ -1,0 +1,30 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:55 +0000
+Subject: [PATCH] virtiofsd: add -o source=PATH to help output
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The -o source=PATH option will be used by most command-line invocations.
+Let's document it!
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 4ff075f72be2f489c8998ae492ec5cdbbbd73e07)
+---
+ tools/virtiofsd/passthrough_ll.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 26ac87013b..fc9b264d56 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -1319,6 +1319,7 @@ int main(int argc, char *argv[])
+     if (opts.show_help) {
+         printf("usage: %s [options]\n\n", argv[0]);
+         fuse_cmdline_help();
++        printf("    -o source=PATH             shared directory tree\n");
+         fuse_lowlevel_help();
+         ret = 0;
+         goto err_out1;

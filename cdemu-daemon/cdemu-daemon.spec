@@ -1,6 +1,8 @@
+%global _legacy_common_support 1
+
 Name:           cdemu-daemon
 Version:        3.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        CDEmu daemon
 
 License:        GPLv2
@@ -54,6 +56,9 @@ popd
 %{_datadir}/dbus-1/services/*
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.2.4-2
+- gcc 10 fix
+
 * Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.2.4-1
 - 3.2.4
 

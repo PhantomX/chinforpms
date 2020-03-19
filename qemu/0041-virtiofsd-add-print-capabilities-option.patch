@@ -1,0 +1,105 @@
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon, 27 Jan 2020 19:01:10 +0000
+Subject: [PATCH] virtiofsd: add --print-capabilities option
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add the --print-capabilities option as per vhost-user.rst "Backend
+programs conventions".  Currently there are no advertised features.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 45018fbb0a73ce66fd3dd87ecd2872b45658add4)
+---
+ docs/interop/vhost-user.json     |  4 +++-
+ tools/virtiofsd/fuse_lowlevel.h  |  1 +
+ tools/virtiofsd/helper.c         |  2 ++
+ tools/virtiofsd/passthrough_ll.c | 12 ++++++++++++
+ 4 files changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/docs/interop/vhost-user.json b/docs/interop/vhost-user.json
+index da6aaf51c8..d4ea1f7ac5 100644
+--- a/docs/interop/vhost-user.json
++++ b/docs/interop/vhost-user.json
+@@ -31,6 +31,7 @@
+ # @rproc-serial: virtio remoteproc serial link
+ # @scsi: virtio scsi
+ # @vsock: virtio vsock transport
++# @fs: virtio fs (since 4.2)
+ #
+ # Since: 4.0
+ ##
+@@ -50,7 +51,8 @@
+       'rpmsg',
+       'rproc-serial',
+       'scsi',
+-      'vsock'
++      'vsock',
++      'fs'
+   ]
+ }
+ 
+diff --git a/tools/virtiofsd/fuse_lowlevel.h b/tools/virtiofsd/fuse_lowlevel.h
+index f6b34700af..0d61df8110 100644
+--- a/tools/virtiofsd/fuse_lowlevel.h
++++ b/tools/virtiofsd/fuse_lowlevel.h
+@@ -1794,6 +1794,7 @@ struct fuse_cmdline_opts {
+     int nodefault_subtype;
+     int show_version;
+     int show_help;
++    int print_capabilities;
+     unsigned int max_idle_threads;
+ };
+ 
+diff --git a/tools/virtiofsd/helper.c b/tools/virtiofsd/helper.c
+index a3645fc807..b8ec5ac8dc 100644
+--- a/tools/virtiofsd/helper.c
++++ b/tools/virtiofsd/helper.c
+@@ -40,6 +40,7 @@ static const struct fuse_opt fuse_helper_opts[] = {
+     FUSE_HELPER_OPT("--help", show_help),
+     FUSE_HELPER_OPT("-V", show_version),
+     FUSE_HELPER_OPT("--version", show_version),
++    FUSE_HELPER_OPT("--print-capabilities", print_capabilities),
+     FUSE_HELPER_OPT("-d", debug),
+     FUSE_HELPER_OPT("debug", debug),
+     FUSE_HELPER_OPT("-d", foreground),
+@@ -135,6 +136,7 @@ void fuse_cmdline_help(void)
+ {
+     printf("    -h   --help                print help\n"
+            "    -V   --version             print version\n"
++           "    --print-capabilities       print vhost-user.json\n"
+            "    -d   -o debug              enable debug output (implies -f)\n"
+            "    -f                         foreground operation\n"
+            "    --daemonize                run in background\n"
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index 037c5d7b26..cd27c09f59 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -1298,6 +1298,14 @@ static struct fuse_lowlevel_ops lo_oper = {
+     .lseek = lo_lseek,
+ };
+ 
++/* Print vhost-user.json backend program capabilities */
++static void print_capabilities(void)
++{
++    printf("{\n");
++    printf("  \"type\": \"fs\"\n");
++    printf("}\n");
++}
++
+ int main(int argc, char *argv[])
+ {
+     struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
+@@ -1328,6 +1336,10 @@ int main(int argc, char *argv[])
+         fuse_lowlevel_version();
+         ret = 0;
+         goto err_out1;
++    } else if (opts.print_capabilities) {
++        print_capabilities();
++        ret = 0;
++        goto err_out1;
+     }
+ 
+     if (fuse_opt_parse(&args, &lo, lo_opts, NULL) == -1) {

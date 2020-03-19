@@ -1,4 +1,4 @@
-%global smoothver 0.9.2
+%global smoothver 0.9.3
 
 %global systemlibs systemlibexpat,systemliburiparser,systemlibxspf,systemzlib
 
@@ -8,7 +8,7 @@
 %global pkgname boca
 
 Name:           %{pkgname}-freeworld
-Version:        1.0~beta3
+Version:        1.0~rc1
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac - freeworld codecs
 
@@ -91,6 +91,9 @@ rm -f %{buildroot}%{_libdir}/*.so
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0~rc1-1
+- 1.0-rc1
+
 * Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0~beta3-1
 - Initial spec
 - Replaces freac-cdk-freeworld

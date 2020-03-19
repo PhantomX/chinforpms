@@ -1,0 +1,27 @@
+From: Eric Ren <renzhen@linux.alibaba.com>
+Date: Mon, 27 Jan 2020 19:02:01 +0000
+Subject: [PATCH] virtiofsd: fix incorrect error handling in lo_do_lookup
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Eric Ren <renzhen@linux.alibaba.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit fc3f0041b43b6c64aa97b3558a6abe1a10028354)
+---
+ tools/virtiofsd/passthrough_ll.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index e8dc5c7320..05b5f898db 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -814,7 +814,6 @@ static int lo_do_lookup(fuse_req_t req, fuse_ino_t parent, const char *name,
+         close(newfd);
+         newfd = -1;
+     } else {
+-        saverr = ENOMEM;
+         inode = calloc(1, sizeof(struct lo_inode));
+         if (!inode) {
+             goto out_err;

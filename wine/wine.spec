@@ -239,7 +239,7 @@ BuildRequires:  cups-devel
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(faudio)
 BuildRequires:  pkgconfig(fontconfig)
-BuildRequires:  pkgconfig(freeglut)
+BuildRequires:  pkgconfig(glut)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  fontpackages-devel
 BuildRequires:  gettext-devel

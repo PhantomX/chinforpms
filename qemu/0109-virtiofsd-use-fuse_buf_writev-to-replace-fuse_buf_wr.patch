@@ -1,0 +1,66 @@
+From: piaojun <piaojun@huawei.com>
+Date: Mon, 27 Jan 2020 19:02:18 +0000
+Subject: [PATCH] virtiofsd: use fuse_buf_writev to replace fuse_buf_write for
+ better performance
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+fuse_buf_writev() only handles the normal write in which src is buffer
+and dest is fd. Specially if src buffer represents guest physical
+address that can't be mapped by the daemon process, IO must be bounced
+back to the VMM to do it by fuse_buf_copy().
+
+Signed-off-by: Jun Piao <piaojun@huawei.com>
+Suggested-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Suggested-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit c465bba2c90a810f6e71e4f2646b1b4ee4b478de)
+---
+ tools/virtiofsd/buffer.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/tools/virtiofsd/buffer.c b/tools/virtiofsd/buffer.c
+index 37befebac2..27c1377f22 100644
+--- a/tools/virtiofsd/buffer.c
++++ b/tools/virtiofsd/buffer.c
+@@ -34,7 +34,6 @@ size_t fuse_buf_size(const struct fuse_bufvec *bufv)
+     return size;
+ }
+ 
+-__attribute__((unused))
+ static ssize_t fuse_buf_writev(struct fuse_buf *out_buf,
+                                struct fuse_bufvec *in_buf)
+ {
+@@ -262,12 +261,29 @@ static int fuse_bufvec_advance(struct fuse_bufvec *bufv, size_t len)
+ 
+ ssize_t fuse_buf_copy(struct fuse_bufvec *dstv, struct fuse_bufvec *srcv)
+ {
+-    size_t copied = 0;
++    size_t copied = 0, i;
+ 
+     if (dstv == srcv) {
+         return fuse_buf_size(dstv);
+     }
+ 
++    /*
++     * use writev to improve bandwidth when all the
++     * src buffers already mapped by the daemon
++     * process
++     */
++    for (i = 0; i < srcv->count; i++) {
++        if (srcv->buf[i].flags & FUSE_BUF_IS_FD) {
++            break;
++        }
++    }
++    if ((i == srcv->count) && (dstv->count == 1) &&
++        (dstv->idx == 0) &&
++        (dstv->buf[0].flags & FUSE_BUF_IS_FD)) {
++        dstv->buf[0].pos += dstv->off;
++        return fuse_buf_writev(&dstv->buf[0], srcv);
++    }
++
+     for (;;) {
+         const struct fuse_buf *src = fuse_bufvec_current(srcv);
+         const struct fuse_buf *dst = fuse_bufvec_current(dstv);

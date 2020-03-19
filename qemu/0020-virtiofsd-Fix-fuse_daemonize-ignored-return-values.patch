@@ -1,0 +1,104 @@
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Date: Mon, 27 Jan 2020 19:00:49 +0000
+Subject: [PATCH] virtiofsd: Fix fuse_daemonize ignored return values
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+QEMU's compiler enables warnings/errors for ignored values
+and the (void) trick used in the fuse code isn't enough.
+Turn all the return values into a return value on the function.
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Tested-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 30d8e49760712d65697ea517c53671bd1d214fc7)
+---
+ tools/virtiofsd/helper.c | 33 ++++++++++++++++++++++-----------
+ 1 file changed, 22 insertions(+), 11 deletions(-)
+
+diff --git a/tools/virtiofsd/helper.c b/tools/virtiofsd/helper.c
+index 5e6f2051a7..d9227d7367 100644
+--- a/tools/virtiofsd/helper.c
++++ b/tools/virtiofsd/helper.c
+@@ -10,12 +10,10 @@
+  * See the file COPYING.LIB.
+  */
+ 
+-#include "config.h"
+ #include "fuse_i.h"
+ #include "fuse_lowlevel.h"
+ #include "fuse_misc.h"
+ #include "fuse_opt.h"
+-#include "mount_util.h"
+ 
+ #include <errno.h>
+ #include <limits.h>
+@@ -171,6 +169,7 @@ int fuse_parse_cmdline(struct fuse_args *args, struct fuse_cmdline_opts *opts)
+ 
+ int fuse_daemonize(int foreground)
+ {
++    int ret = 0, rett;
+     if (!foreground) {
+         int nullfd;
+         int waiter[2];
+@@ -192,8 +191,8 @@ int fuse_daemonize(int foreground)
+         case 0:
+             break;
+         default:
+-            (void)read(waiter[0], &completed, sizeof(completed));
+-            _exit(0);
++            _exit(read(waiter[0], &completed,
++                       sizeof(completed) != sizeof(completed)));
+         }
+ 
+         if (setsid() == -1) {
+@@ -201,13 +200,22 @@ int fuse_daemonize(int foreground)
+             return -1;
+         }
+ 
+-        (void)chdir("/");
++        ret = chdir("/");
+ 
+         nullfd = open("/dev/null", O_RDWR, 0);
+         if (nullfd != -1) {
+-            (void)dup2(nullfd, 0);
+-            (void)dup2(nullfd, 1);
+-            (void)dup2(nullfd, 2);
++            rett = dup2(nullfd, 0);
++            if (!ret) {
++                ret = rett;
++            }
++            rett = dup2(nullfd, 1);
++            if (!ret) {
++                ret = rett;
++            }
++            rett = dup2(nullfd, 2);
++            if (!ret) {
++                ret = rett;
++            }
+             if (nullfd > 2) {
+                 close(nullfd);
+             }
+@@ -215,13 +223,16 @@ int fuse_daemonize(int foreground)
+ 
+         /* Propagate completion of daemon initialization */
+         completed = 1;
+-        (void)write(waiter[1], &completed, sizeof(completed));
++        rett = write(waiter[1], &completed, sizeof(completed));
++        if (!ret) {
++            ret = rett;
++        }
+         close(waiter[0]);
+         close(waiter[1]);
+     } else {
+-        (void)chdir("/");
++        ret = chdir("/");
+     }
+-    return 0;
++    return ret;
+ }
+ 
+ void fuse_apply_conn_info_opts(struct fuse_conn_info_opts *opts,

@@ -1,0 +1,68 @@
+From: Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>
+Date: Mon, 27 Jan 2020 19:01:38 +0000
+Subject: [PATCH] virtiofsd: Add ID to the log with FUSE_LOG_DEBUG level
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+virtiofsd has some threads, so we see a lot of logs with debug option.
+It would be useful for debugging if we can identify the specific thread
+from the log.
+
+Add ID, which is got by gettid(), to the log with FUSE_LOG_DEBUG level
+so that we can grep the specific thread.
+
+The log is like as:
+
+  ]# ./virtiofsd -d -o vhost_user_socket=/tmp/vhostqemu0 -o source=/tmp/share0 -o cache=auto
+  ...
+  [ID: 00000097]    unique: 12696, success, outsize: 120
+  [ID: 00000097] virtio_send_msg: elem 18: with 2 in desc of length 120
+  [ID: 00000003] fv_queue_thread: Got queue event on Queue 1
+  [ID: 00000003] fv_queue_thread: Queue 1 gave evalue: 1 available: in: 65552 out: 80
+  [ID: 00000003] fv_queue_thread: Waiting for Queue 1 event
+  [ID: 00000071] fv_queue_worker: elem 33: with 2 out desc of length 80 bad_in_num=0 bad_out_num=0
+  [ID: 00000071] unique: 12694, opcode: READ (15), nodeid: 2, insize: 80, pid: 2014
+  [ID: 00000071] lo_read(ino=2, size=65536, off=131072)
+
+Signed-off-by: Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>
+
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+  added rework as suggested by Daniel P. Berrangé during review
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+(cherry picked from commit 36f3846902bd41413f6c0bf797dee509028c29f4)
+---
+ tools/virtiofsd/passthrough_ll.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/tools/virtiofsd/passthrough_ll.c b/tools/virtiofsd/passthrough_ll.c
+index ff6910fd73..f08324f000 100644
+--- a/tools/virtiofsd/passthrough_ll.c
++++ b/tools/virtiofsd/passthrough_ll.c
+@@ -43,6 +43,7 @@
+ #include <cap-ng.h>
+ #include <dirent.h>
+ #include <errno.h>
++#include <glib.h>
+ #include <inttypes.h>
+ #include <limits.h>
+ #include <pthread.h>
+@@ -2268,10 +2269,17 @@ static void setup_nofile_rlimit(void)
+ 
+ static void log_func(enum fuse_log_level level, const char *fmt, va_list ap)
+ {
++    g_autofree char *localfmt = NULL;
++
+     if (current_log_level < level) {
+         return;
+     }
+ 
++    if (current_log_level == FUSE_LOG_DEBUG) {
++        localfmt = g_strdup_printf("[ID: %08ld] %s", syscall(__NR_gettid), fmt);
++        fmt = localfmt;
++    }
++
+     if (use_syslog) {
+         int priority = LOG_ERR;
+         switch (level) {

@@ -1,6 +1,9 @@
 # We have to override the new %%install behavior because, well... the kernel is special.
 %global __spec_install_pre %{___build_pre}
 
+# this should go away soon
+%global _legacy_common_support 1
+
 # At the time of this writing (2019-03), RHEL8 packages use w2.xzdio
 # compression for rpms (xz, level 2).
 # Kernel has several large (hundreds of mbytes) rpms, they take ~5 mins
@@ -91,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +105,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 5ce05da6eeb7e3bcfe2dd2d5abb7dd4678f003e8
+%global pfcommit 9939214fac58067dc010f7b1b78f097c9ee7f04d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 666974e5694019a0b180a3c3b7a6862c87bd1eb0
+%global opensuse_id 3925fb5ba1c3f9b8eaa60a1e87826c1adefa53b5
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -868,9 +871,8 @@ Patch506: alsa-5.6.patch
 # Backport vboxsf from 5.6, can be dropped when we move to 5.6
 Patch509: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 
-# Fix backtraces triggered by warnings about buggy BIOS (rhbz 1564895, 1808874)
-# Submitted upstream
-Patch512: iommu-WARN_TAINT-fixes.patch 
+# Fix UCSI oopses, (rhbz 1785972) (in gkh's usb-linus, heading towards mainline)
+Patch514: ucsi-oops-fixes.patch 
 
 ### Extra
 
@@ -2606,6 +2608,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.10-500.chinfo
+- 5.5.10 - pf7
+
 * Thu Mar 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.9-500.chinfo
 - 5.5.9 - pf7
 

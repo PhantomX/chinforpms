@@ -1,6 +1,6 @@
 Name:           easytag
 Version:        2.4.3
-Release:        103%{?dist}
+Release:        104%{?dist}
 Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
 Epoch:          1
@@ -60,7 +60,11 @@ easier access to EasyTAG when opening directories and audio files.
 %patch3 -p1
 
 %build
-%configure --disable-silent-rules
+%configure \
+  --disable-silent-rules \
+  --disable-appdata-validate \
+%{nil}
+
 %make_build
 
 
@@ -100,6 +104,9 @@ make check
 
 
 %changelog
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.3-104
+- Disable appdata validation
+
 * Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.4.3-103.chinfo
 - BR: gcc-c++
 
