@@ -29,12 +29,7 @@ ExcludeArch: armv7hl
 %global system_ffi        1
 %global system_cairo      0
 %global system_harfbuzz   1
-# libvpx is too new for Waterfox 56
-%if 0%{?fedora} < 30
-%global system_libvpx     1
-%else
 %global system_libvpx     0
-%endif
 %global system_webp       1
 %global system_libicu     0
 %global system_jpeg       1
@@ -640,7 +635,7 @@ echo "Generate big endian version of config/external/icu/data/icud58l.dat"
 # Update the various config.guess to upstream release for aarch64 support
 find ./ -name config.guess -exec cp /usr/lib/rpm/config.guess {} ';'
 
-RPM_SMP_MFLAGS_NCPUS=%{_smp_build_ncpus}
+RPM_SMP_MFLAGS_NCPUS="%{?_smp_build_ncpus}%{!?_smp_build_ncpus:2}"
 
 RPM_NCPUS=1
 # On x86 architectures, Mozilla can build up to 4 jobs at once in parallel,
