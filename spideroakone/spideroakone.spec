@@ -17,12 +17,12 @@
 %global with_dbusmenuqt 0
 %global with_ffi 1
 %global with_python 0
-%global with_pillow 1
+%global with_pillow 0
 %global with_pyqt 0
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -58,10 +58,6 @@ Requires:       python2%{?_isa}
 %if 0%{?with_pillow}
 BuildRequires:  python2-pillow%{?_isa}
 Requires:       python2-pillow%{?_isa}
-%endif
-%if 0%{?with_pyopenssl}
-BuildRequires:  pyOpenSSL
-Requires:       pyOpenSSL
 %endif
 %if 0%{?with_pyqt}
 BuildRequires:  qt4%{?_isa}
@@ -290,6 +286,9 @@ done
 
 
 %changelog
+* Fri Mar 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-7
+- with_pillow 0
+
 * Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-6
 - with_curl 0
 

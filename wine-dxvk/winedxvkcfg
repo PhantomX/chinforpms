@@ -5,7 +5,7 @@
 # Script by Phantom X <megaphantomx at bol.com.b>
 # Suggested usage: $ winedxvkcfg --help
 #
-# Copyright 2018-2019 Phantom X, Goiania, Brazil.
+# Copyright 2018-2020 Phantom X, Goiania, Brazil.
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -26,13 +26,13 @@
 
 set -e
 
-ver=20191216
+ver=20200320
 
 name="DXVK"
 pkgname="wine-dxvk"
 dllsuffix="_dxvk"
-dlls="dxgi d3d9 d3d11 d3d10 d3d10_1 d3d10core"
-nodlls=""
+dlls="dxgi d3d9 d3d11 d3d10core"
+nodlls="d3d10 d3d10_1"
 
 wineext=dll.so
 

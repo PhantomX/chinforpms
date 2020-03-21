@@ -1,0 +1,40 @@
+From f08749c377dae6095d01a712fd58a32b51fad6b7 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 20 Mar 2020 14:27:39 -0300
+Subject: [PATCH] Change settings to ${HOME}/.config
+
+---
+ snxconnect.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/snxconnect.py b/snxconnect.py
+index 10e6278..dfcfb21 100644
+--- a/snxconnect.py
++++ b/snxconnect.py
+@@ -418,12 +418,12 @@ class PW_Encode (object) :
+ # end class PW_Encode
+ 
+ def main () :
+-    # First try to parse config-file ~/.snxvpnrc:
++    # First try to parse config-file ~/.config/snxvpnrc:
+     home = os.environ.get ('HOME')
+     cfgf = None
+     if home :
+         try :
+-            cfgf = open (os.path.join (home, '.snxvpnrc'), 'rb')
++            cfgf = open (os.path.join (home, '.config/snxvpnrc'), 'rb')
+         except (OSError, IOError) :
+             pass
+     cfg = {}
+@@ -442,7 +442,7 @@ def main () :
+             cfg [k] = v
+ 
+     host       = cfg.get ('host', '')
+-    cookiefile = cfg.get ('cookiefile', '%s/.snxcookies' % home)
++    cookiefile = cfg.get ('cookiefile', '%s/.config/snxcookies' % home)
+     cmd = ArgumentParser ()
+     cmd.add_argument \
+         ( '-c', '--cookiefile'
+-- 
+2.25.2
+

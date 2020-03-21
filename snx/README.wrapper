@@ -1,0 +1,3 @@
+snxrun wrapper
+
+Create a ~/.config/snxrc file before running it, see _DOCDIR_/snxrc example

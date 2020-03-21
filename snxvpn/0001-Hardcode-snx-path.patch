@@ -1,0 +1,33 @@
+From 8754bc353780bf72273709889a05c387d32f8439 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 20 Mar 2020 14:32:31 -0300
+Subject: [PATCH] Hardcode snx path
+
+---
+ snxconnect.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/snxconnect.py b/snxconnect.py
+index dfcfb21..2be139b 100644
+--- a/snxconnect.py
++++ b/snxconnect.py
+@@ -443,6 +443,7 @@ def main () :
+ 
+     host       = cfg.get ('host', '')
+     cookiefile = cfg.get ('cookiefile', '%s/.config/snxcookies' % home)
++    snxpath = cfg.get ('snxpath', '/usr/sbin/snx')
+     cmd = ArgumentParser ()
+     cmd.add_argument \
+         ( '-c', '--cookiefile'
+@@ -508,7 +509,7 @@ def main () :
+         ( '-S', '--snxpath'
+         , help    = 'snx binary to call, default="%(default)s", you might'
+                     ' want a full path here'
+-        , default = cfg.get ('snxpath', 'snx')
++        , default = snxpath
+         )
+     cmd.add_argument \
+         ( '-U', '--username'
+-- 
+2.25.2
+

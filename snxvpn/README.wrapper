@@ -1,0 +1,3 @@
+snxvpn wrapper
+
+Create a ~/.config/snxvpnrc file before running it, see _DOCDIR_/snxvpnrc example

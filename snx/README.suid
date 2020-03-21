@@ -1,0 +1,10 @@
+SNX SUID
+===================
+
+SNX is a VPN client designed to run as unprivileged user, but require root
+privileges, so it needs the setuid bit of binary to be set.
+
+To allow users to run snx, add them to snx group.
+
+Example:
+ usermod -a -G snx <user>

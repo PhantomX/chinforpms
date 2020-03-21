@@ -33,7 +33,7 @@
 
 %global dxvk_async 1
 
-%global winecommonver 4.6
+%global winecommonver 5.3
 
 %global pkgname dxvk
 
@@ -42,7 +42,7 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.5.5
+Version:        1.6
 Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
@@ -268,7 +268,7 @@ done
 %if !0%{?with_mingw}
   mkdir -p %{buildroot}%{_libdir}/wine/fakedlls
   for fake in dxgi d3d9 d3d11 d3d10 d3d10_1 d3d10core ;do
-    install -pm0755 %{_target_platform}/${fake}_%{pkgname}.dll.fake \
+    install -pm0755 %{_target_platform}${i}/${fake}_%{pkgname}.dll.fake \
       %{buildroot}%{_libdir}/wine/fakedlls/${fake}_%{pkgname}.dll
   done
 %endif
@@ -298,6 +298,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Mar 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6-100
+- 1.6
+
 * Sun Mar 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.5-100
 - 1.5.5
 
