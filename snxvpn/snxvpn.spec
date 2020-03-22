@@ -9,7 +9,7 @@
 
 Name:           snxvpn
 Version:        1.2
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Command-line utility to connect to a Checkpoint SSL VPN 
 
 License:        BSD
@@ -98,11 +98,14 @@ EOF
 %{_bindir}/%{name}
 %{python3_sitelib}/snxconnect.py
 %{python3_sitelib}/snxvpnversion.py
-%{python3_sitelib}/__pycache__/
+%{python3_sitelib}/__pycache__/*
 %{python3_sitelib}/*-*.egg-info
 %{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.2-2.20180501gitb17198e
+- Fix %%{python3_sitelib}/__pycache__/ owning
+
 * Fri Mar 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.2-1.20180501gitb17198e
 - Initial spec

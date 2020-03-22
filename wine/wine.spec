@@ -1,7 +1,7 @@
-%global commit 4dfd5f22f4032efdc283adf861d82e43c3b08d42
+%global commit 3ddf3a720f2a342141550c973f10854b573d80ed
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200310
-%global with_snapshot 0
+%global date 20200320
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.4
+%global wine_stagingver 7c7868f4bb3bc29b5e2196593cd3d890072b3a8f
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 5758edc55898ea49ac574ce557d83156cfe5b19f
+%global tkg_id 33442b12afc6971da22157be2f3cccb8829844ea
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_curl https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/community-patches/wine-tkg-git
 
@@ -84,7 +84,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.4
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -205,6 +205,8 @@ Patch1000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
+# Fix vulkan crash with x86
+Patch5001:      wine-fix-i686-gcc10.patch
 
 %endif
 
@@ -791,6 +793,9 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch805 -p1
 
 %patch5000 -p1
+%ifarch %{ix86}
+%patch5001 -p1
+%endif
 
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
@@ -885,22 +890,24 @@ export CFLAGS="$CFLAGS -ftree-vectorize -mno-avx"
 export CC="/usr/bin/clang"
 # Fedora's default compiler flags now conflict with what clang supports
 # https://bugzilla.redhat.com/show_bug.cgi?id=1658311
-export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`" 
+export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`"
 %endif
 
-export CXXFLAGS="$CFLAGS -std=c++17 -fno-gnu-unique"
+# Remove this flags by upstream recommendation (see configure.ac)
+export CFLAGS="`echo $CFLAGS | sed \
+  -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//' \
+  -e 's/-fstack-protector-strong//' \
+  -e 's/-fstack-clash-protection//' \
+  -e 's/-fcf-protection//' \
+  `"
 
 %if 0%{?wine_mingw}
 # mingw compiler do not support plugins and some flags are crashing it
 export CROSSCFLAGS="`echo $CFLAGS | sed \
-  -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//' \
-  -e 's/-fstack-protector-strong//' \
   -e 's/-grecord-gcc-switches//' \
   -e 's,-specs=/usr/lib/rpm/redhat/redhat-hardened-cc1,,' \
   -e 's,-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1,,' \
   -e 's/-fasynchronous-unwind-tables//' \
-  -e 's/-fstack-clash-protection//' \
-  -e 's/-fcf-protection//' \
   ` --param=ssp-buffer-size=4"
 # mingw linker do not support -z,relro and now
 export LDFLAGS=" "
@@ -1522,6 +1529,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-realtime-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-registry-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-registry-l2-1-0.%{winedll}
+%{_libdir}/wine/api-ms-win-core-registry-l2-2-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-registryuserspecific-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-rtlsupport-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-rtlsupport-l1-2-0.%{winedll}
@@ -2379,6 +2387,7 @@ fi
 %{_datadir}/wine/nls/normnfd.nls
 %{_datadir}/wine/nls/normnfkc.nls
 %{_datadir}/wine/nls/normnfkd.nls
+%{_datadir}/wine/nls/sortdefault.nls
 
 %files common
 %{_bindir}/notepad
@@ -2581,6 +2590,10 @@ fi
 
 
 %changelog
+* Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.4-101.20200320git3ddf3a7
+- Snapshot
+- Disable some compilation flags
+
 * Sat Mar 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.4-100
 - 5.4
 

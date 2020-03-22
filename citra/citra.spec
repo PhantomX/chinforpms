@@ -1,6 +1,6 @@
-%global commit ad3c464e2d91f08d0a60355d444f2dcf28d609ff
+%global commit 8722b970c52f2c0d8e82561477edb62a53ae9dbb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200312
+%global date 20200321
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -58,7 +58,7 @@
 
 Name:           citra
 Version:        0
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -154,6 +154,9 @@ sed \
   -e '/-pedantic-errors/d' \
   -i externals/teakra/CMakeLists.txt externals/dynarmic/CMakeLists.txt
 
+sed -e '/^#include <exception>/a#include <system_error>' \
+  -i externals/teakra/src/interpreter.h
+
 %if 0%{?with_snapshot}
   sed \
     -e 's|@GIT_REV@|%{commit}|g' \
@@ -224,6 +227,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-7.20200321git8722b97
+- New snapshot
+
 * Sun Mar 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-6.20200312gitad3c464
 - Bump
 

@@ -1,7 +1,7 @@
 %global commit d2efef771ef0420170a3be38c120894eb930ba15
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20191209
-%global with_snapshot 1
+%global with_snapshot 0
 
 %ifarch x86_64
 %global build_with_lto    1
@@ -22,7 +22,7 @@
 %endif
 
 Name:           higan
-Version:        106.233
+Version:        110
 Release:        1%{?gver}%{?dist}
 Summary:        Multi-system emulator
 
@@ -146,7 +146,7 @@ done
 
 %files
 %license LICENSE.txt
-%doc README.md docs/*
+%doc README.md
 %{_bindir}/%{name}
 %{_bindir}/icarus
 %{_datadir}/%{name}
@@ -156,6 +156,9 @@ done
 
 
 %changelog
+* Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 110-1
+- 110
+
 * Wed Dec 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 106.233-1.20191209gitd2efef7
 - 106.233
 

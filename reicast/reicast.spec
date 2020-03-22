@@ -1,6 +1,6 @@
-%global commit 1e5a875bcfb4e800760351130166a5165afe0e3d
+%global commit 3f07c32aea825202e0b4de44ff02786b9aeb1515
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200312
+%global date 20200320
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 
 Name:           reicast
 Version:        20.02
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -125,6 +125,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.02-2.20200320git3f07c32
+- Bump
+
 * Sun Mar 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.02-1.20200312git1e5a875
 - New snapshot
 

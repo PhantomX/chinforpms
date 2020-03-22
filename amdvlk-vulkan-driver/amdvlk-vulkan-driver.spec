@@ -11,6 +11,12 @@
 %global __strip /bin/true
 %endif
 
+%ifarch %{ix86}
+%global icd_arch i686
+%else
+%global icd_arch %{_arch}
+%endif
+
 %global pkgname amdvlk
 
 %global commit1 e404e4b2db325184dbc2d14f31ef891d938f3835
@@ -63,7 +69,7 @@
 
 Name:           amdvlk-vulkan-driver
 Version:        2020.1.3
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
 URL:            %{vc_url}/AMDVLK
@@ -198,25 +204,19 @@ popd
 mkdir -p %{buildroot}%{_libdir}
 mkdir -p %{buildroot}%{_datadir}/vulkan/icd.d
 
-%if %{?__isa_bits} == 64
 mkdir _temp_install
 %if 0%{?with_bin}
   mv usr/lib/x86_64-linux-gnu/*.so _temp_install/
-  mv etc/vulkan/icd.d/amd_icd64.json _temp_install/
+  mv etc/vulkan/icd.d/amd_icd%{?__isa_bits}.json _temp_install/
 %else
-  mv xgl/%{_target_platform}/icd/amdvlk64.so _temp_install/
+  mv xgl/%{_target_platform}/icd/amdvlk%{?__isa_bits}.so _temp_install/
   mv xgl/%{_target_platform}/spvgen/spvgen.so _temp_install/
-  mv AMDVLK/json/Redhat/amd_icd64.json _temp_install/
+  mv AMDVLK/json/Redhat/amd_icd%{?__isa_bits}.json _temp_install/
 %endif
-  install -pm0644 _temp_install/amd_icd64.json \
-    %{buildroot}%{_datadir}/vulkan/icd.d/amd_icd.%{_arch}.json
-  install -pm0755 _temp_install/*.so %{buildroot}%{_libdir}/
-%else
-  install -pm0644 AMDVLK/json/Redhat/amd_icd32.json \
-    %{buildroot}%{_datadir}/vulkan/icd.d/amd_icd.%{_arch}.json
-  install -pm0755 xgl/%{_target_platform}/icd/amdvlk32.so %{buildroot}%{_libdir}/
-  install -pm0755 xgl/%{_target_platform}/spvgen/spvgen.so %{buildroot}%{_libdir}/
-%endif
+install -pm0644 _temp_install/amd_icd%{?__isa_bits}.json \
+  %{buildroot}%{_datadir}/vulkan/icd.d/amd_icd.%{icd_arch}.json
+install -pm0755 _temp_install/*.so %{buildroot}%{_libdir}/
+
 
 mkdir -p %{buildroot}%{_sysconfdir}/amd
 cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
@@ -227,12 +227,15 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 %doc README.md
 %dir %{_sysconfdir}/amd
 %config %{_sysconfdir}/amd/amdPalSettings.cfg
-%{_datadir}/vulkan/icd.d/amd_icd.%{_arch}.json
-%{_libdir}/amdvlk*.so
-%{_libdir}/spvgen*.so
+%{_datadir}/vulkan/icd.d/amd_icd.%{icd_arch}.json
+%{_libdir}/amdvlk%{?__isa_bits}.so
+%{_libdir}/spvgen.so
 
 
 %changelog
+* Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.1.3-2
+- Fix icd loading order
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.1.3-1
 - 2020.Q1.3
 
