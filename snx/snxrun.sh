@@ -20,6 +20,8 @@
 #  along with this script.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# 20200323
+
 exec="/usr/sbin/snx"
 prog="$(basename ${exec})"
 config="${HOME}/.config/${prog}rc"
@@ -40,14 +42,16 @@ pid="$(/usr/sbin/pidof -o %PPID ${exec})"
 retval=0
 
 start(){
-  if ! [ -r "${config}" ] ;then
+  if ! [[ -r "${config}" ]] ;then
+    echo "${conf_msg}"
     if [[ -n "${DISPLAY}" ]] ; then
       ${notifycom} "${conf_msg}"
-    else
-      echo "${conf_msg}"
     fi
     retval=5
     return
+  fi
+  if [[ -w "${config}" ]] ;then
+    chmod 0600 "${config}" 2>/dev/null 1>&2
   fi
   if [[ -z "${pid}" ]] ;then
     if [[ -n "${DISPLAY}" ]] ; then
@@ -58,17 +62,15 @@ start(){
     sleep 2
   fi
   if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
+    echo "${run_msg}"
     if [[ -n "${DISPLAY}" ]] ; then
       ${notifycom} "${run_msg}"
-    else
-      echo "${run_msg}"
     fi
     retval=0
   else
+    echo "${runfail_msg}"
     if [[ -n "${DISPLAY}" ]] ; then
       ${notifycom} "${runfail_msg}"
-    else
-      echo "${runfail_msg}"
     fi
     retval=1
   fi
@@ -79,17 +81,15 @@ stop(){
     "${exec}" -d 2>/dev/null 1>&2
     sleep 2
     if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
+      echo "${stopfail_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
         ${notifycom} "${stopfail_msg}"
-      else
-        echo "${stopfail_msg}"
       fi
       retval=1
     else
+      echo "${stop_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
         ${notifycom} "${stop_msg}"
-      else
-        echo "${stop_msg}"
       fi
       retval=0
     fi

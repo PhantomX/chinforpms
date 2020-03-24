@@ -1,0 +1,4 @@
+# The plugins are dl-opened by audacious, they don't link against libc directly
+addFilter("library-not-linked-against-libc")
+# The docs are part of the main audacious package
+addFilter("no-documentation")

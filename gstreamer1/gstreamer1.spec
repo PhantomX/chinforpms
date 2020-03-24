@@ -108,7 +108,7 @@ NOCONFIGURE=1 \
 
 %build
 %configure \
-  --with-package-name='Fedora GStreamer package' \
+  --with-package-name='chinforpms GStreamer package' \
   --with-package-origin='http://download.fedoraproject.org' \
   --enable-gtk-doc \
   --enable-debug \

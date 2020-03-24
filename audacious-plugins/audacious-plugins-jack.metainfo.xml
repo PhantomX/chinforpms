@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2014-2015 Fedora Project -->
+<component type="addon">
+<id>audacious-plugins-jack</id>
+<extends>audacious.desktop</extends>
+<name>Jack Audio Connection Kit output</name>
+<summary>Output plugin for Jack Audio Connection Kit (JACK) sound service</summary>
+<metadata_license>CC0-1.0</metadata_license>
+<project_license>LGPL-2.1+</project_license>
+<kudos>
+    <kudo>ModernToolkit</kudo>
+</kudos>
+<updatecontact>audacious-plugins-owner_at_fedoraproject.org</updatecontact>
+</component>

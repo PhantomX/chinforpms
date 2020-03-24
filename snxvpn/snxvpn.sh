@@ -20,11 +20,14 @@
 #  along with this script.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# 20200323
+
 exec="/usr/sbin/snx"
 prog="$(basename ${exec})"
 vpnexec="/usr/bin/snxconnect"
 vpnprog="$(basename ${vpnexec})"
-config="${HOME}/.config/snxrc"
+config="${HOME}/.config/snxvpnrc"
+cookies="${HOME}/.config/snxcookies"
 
 urgency=normal
 timeout=5000
@@ -43,14 +46,19 @@ pid="$(/usr/sbin/pidof -o %PPID ${exec})"
 retval=0
 
 start(){
-  if ! [ -r "${config}" ] ;then
+  if ! [[ -r "${config}" ]] ;then
+    echo "${conf_msg}"
     if [[ -n "${DISPLAY}" ]] ; then
       ${notifycom} "${conf_msg}"
-    else
-      echo "${conf_msg}"
     fi
     retval=5
     return
+  fi
+  if [[ -w "${config}" ]] ;then
+    chmod 0600 "${config}" 2>/dev/null 1>&2
+  fi
+  if [[ -w "${cookies}" ]] ;then
+    chmod 0600 "${cookies}" 2>/dev/null 1>&2
   fi
   if [[ -z "${DISPLAY}" ]] ; then
     echo "${display_msg}"
@@ -62,9 +70,11 @@ start(){
     sleep 5
   fi
   if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
+    echo "${run_msg}"
     ${notifycom} "${run_msg}"
     retval=0
   else
+    echo "${runfail_msg}"
     ${notifycom} "${runfail_msg}"
     retval=1
   fi
@@ -75,17 +85,15 @@ stop(){
     "${exec}" -d 2>/dev/null 1>&2
     sleep 2
     if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
+      echo "${stopfail_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
         ${notifycom} "${stopfail_msg}"
-      else
-        echo "${stopfail_msg}"
       fi
       retval=1
     else
+      echo "${stop_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
         ${notifycom} "${stop_msg}"
-      else
-        echo "${stop_msg}"
       fi
       retval=0
     fi

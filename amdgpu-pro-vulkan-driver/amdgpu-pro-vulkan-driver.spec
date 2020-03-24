@@ -2,10 +2,12 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%ifarch x86_64
-%global parch amd64
-%else
+%ifarch %{ix86}
 %global parch i386
+%global icd_arch i686
+%else
+%global parch amd64
+%global icd_arch %{_arch}
 %endif
 
 %global pkgname amdgpu-pro
@@ -65,7 +67,7 @@ install -pm0755 %{_target_platform}/opt/amdgpu-pro/lib/*-linux-gnu/amdvlk%{__isa
 
 mkdir -p %{buildroot}%{_datadir}/vulkan/icd.d
 install -pm0644 %{_target_platform}/opt/amdgpu-pro/etc/vulkan/icd.d/amd_icd*.json \
-  %{buildroot}%{_datadir}/vulkan/icd.d/amdpro_icd.%{_arch}.json
+  %{buildroot}%{_datadir}/vulkan/icd.d/amdpro_icd.%{icd_arch}.json
 
 mkdir -p %{buildroot}%{_sysconfdir}/amd
 
@@ -74,7 +76,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/amd
 %license copyright
 %doc README-chinforpms
 %dir %{_sysconfdir}/amd
-%{_datadir}/vulkan/icd.d/amdpro_icd.%{_arch}.json
+%{_datadir}/vulkan/icd.d/amdpro_icd.%{icd_arch}.json
 %{_libdir}/amdvlkpro*.so
 
 

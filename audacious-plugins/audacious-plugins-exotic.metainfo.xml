@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2014-2015 Fedora Project -->
+<component type="addon">
+<id>audacious-plugins-exotic</id>
+<extends>audacious.desktop</extends>
+<name>Exotic plugins</name>
+<summary>Optional niche market plugins</summary>
+<metadata_license>CC0-1.0</metadata_license>
+<kudos>
+    <kudo>ModernToolkit</kudo>
+</kudos>
+<updatecontact>audacious-plugins-owner_at_fedoraproject.org</updatecontact>
+</component>

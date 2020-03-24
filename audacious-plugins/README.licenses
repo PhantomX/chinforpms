@@ -1,0 +1,68 @@
+aac
+adplug                        LGPLv2+
+alarm                         GPLv2+
+albumart                      BSD
+alsa                          BSD
+amidi-plug                    GPLv2+
+aosd                          GPLv2+
+asx                           GPLv2+
+asx3                          BSD
+audpl                         BSD
+blur_scope                    GPLv2+
+bs2b                          GPLv2+
+cairo-spectrum                MIT
+cdaudio-ng                    GPLv3
+cd-menu-items                 BSD
+compressor                    BSD
+console                       LGPLv2+
+crossfade                     BSD
+crystalizer                   MIT
+cue                           BSD
+delete-files                  BSD
+echo_plugin
+ffaudio                       BSD
+filewriter                    GPLv2+
+flacng                        GPLv3+
+gio                           BSD
+gl-spectrum                   GPLv2+
+gnomeshortcuts                GPLv2+
+gtkui                         BSD
+hotkey                        GPLv2+
+jack                          LGPLv2+
+ladspa                        BSD
+lirc                          GPLv2+
+lyricwiki                     MIT
+m3u                           GPLv2+
+metronom                      GPLv2+
+mixer                         BSD
+mms                           BSD
+modplug                       Public Domain
+mpg123                        MIT
+mpris2                        BSD
+neon                          GPLv2+
+notify                        GPLv3+
+oss4
+pls                           GPLv3
+psf                           BSD
+pulse_audio                   GPLv2+
+resample                      BSD
+scrobbler
+scrobbler2                    GPLv3
+sdlout                        BSD
+search-tool                   BSD
+sid                           GPLv2+
+skins                         GPLv3
+sndfile                       GPLv2+
+sndio
+song_change
+sox-resampler                 BSD
+speed-pitch                   BSD
+statusicon                    GPLv2+
+stereo_plugin
+tonegen                       GPLv2+
+voice_removal                 MIT
+vorbis                        LGPLv2+
+vtx                           GPLv2+
+wavpack
+xsf                           BSD and GPLv2+
+xspf                          GPLv2+
