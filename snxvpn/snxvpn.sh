@@ -20,7 +20,7 @@
 #  along with this script.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# 20200323
+# 20200324
 
 exec="/usr/sbin/snx"
 prog="$(basename ${exec})"
@@ -29,17 +29,17 @@ vpnprog="$(basename ${vpnexec})"
 config="${HOME}/.config/snxvpnrc"
 cookies="${HOME}/.config/snxcookies"
 
-urgency=normal
 timeout=5000
 notify_title=SNX
 conf_msg="No ${config} file!"
 display_msg='This needs to run in a graphical environment!'
 stop_msg="The process ${prog} was stopped!"
 stopfail_msg="The process ${prog} was not stopped!"
+start_msg="The process ${vpnprog} is starting...\nIf no message appears after some time, the connection is good."
 run_msg="The process ${prog} is running, VPN is working!"
 runfail_msg="The process ${prog} is not running!"
 
-notifycom="notify-send -u ${urgency} -t ${timeout} -i applications-internet --hint=int:transient:1 ${notify_title}"
+notifycom="notify-send -t ${timeout} -i applications-internet --hint=int:transient:1 ${notify_title}"
 
 pid="$(/usr/sbin/pidof -o %PPID ${exec})"
 
@@ -49,7 +49,7 @@ start(){
   if ! [[ -r "${config}" ]] ;then
     echo "${conf_msg}"
     if [[ -n "${DISPLAY}" ]] ; then
-      ${notifycom} "${conf_msg}"
+      ${notifycom} -u critical "${conf_msg}"
     fi
     retval=5
     return
@@ -66,16 +66,18 @@ start(){
     return
   fi
   if [[ -z "${pid}" ]] ;then
-    "${vpnexec}" &
-    sleep 5
+    echo "${start_msg}"
+    ${notifycom} -u normal "${start_msg}"
+    "${vpnexec}"
+    sleep 3
   fi
   if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
     echo "${run_msg}"
-    ${notifycom} "${run_msg}"
+    ${notifycom} -u normal "${run_msg}"
     retval=0
   else
     echo "${runfail_msg}"
-    ${notifycom} "${runfail_msg}"
+    ${notifycom} -u critical "${runfail_msg}"
     retval=1
   fi
 }
@@ -87,13 +89,13 @@ stop(){
     if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
       echo "${stopfail_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
-        ${notifycom} "${stopfail_msg}"
+        ${notifycom} -u critical "${stopfail_msg}"
       fi
       retval=1
     else
       echo "${stop_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
-        ${notifycom} "${stop_msg}"
+        ${notifycom} -u normal "${stop_msg}"
       fi
       retval=0
     fi

@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 13
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -105,7 +105,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 2aa821705828d9f05a05a649d22958d1f7af62b0
+%global pfcommit c312f5c0e49bedf80fa4cf1eed4cd358b4e62d94
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -871,9 +871,6 @@ Patch506: alsa-5.6.patch
 # Backport vboxsf from 5.6, can be dropped when we move to 5.6
 Patch509: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 
-# Fix UCSI oopses, (rhbz 1785972) (in gkh's usb-linus, heading towards mainline)
-Patch514: ucsi-oops-fixes.patch 
-
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -889,7 +886,6 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/Revert-drm-fbdev-Fallback-to-non-tiled-mode-if-all-t.patch#/openSUSE-Revert-drm-fbdev-Fallback-to-non-tiled-mode-if-all-t.patch
 
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -2608,6 +2604,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 25 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.13-500.chinfo
+- 5.5.13 - pf8
+
 * Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.11-500.chinfo
 - 5.5.11 - pf8
 

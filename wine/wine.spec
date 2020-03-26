@@ -1,6 +1,6 @@
-%global commit 3ddf3a720f2a342141550c973f10854b573d80ed
+%global commit 9c190f8118faa2f4708e86340e3e0440f668835b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200320
+%global date 20200324
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -39,14 +39,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7c7868f4bb3bc29b5e2196593cd3d890072b3a8f
+%global wine_stagingver e5da84dc3637dc6235c24ce80860e3c23641c5b0
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 33442b12afc6971da22157be2f3cccb8829844ea
+%global tkg_id 20163971bd0f2c355fdfe0baa955709396dad062
 %global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_curl https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/community-patches/wine-tkg-git
 
@@ -84,7 +84,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.4
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -185,9 +185,8 @@ Patch730:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.pat
 Patch731:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch732:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch733:       %{tkg_url}/proton/msvcrt_nativebuiltin.patch#/%{name}-tkg-msvcrt_nativebuiltin.patch
-
-Patch750:       %{tkg_curl}/winevulkan_fshack_opts.mypatch#/%{name}-tkg-winevulkan_fshack_opts.patch
-Patch751:       %{tkg_curl}/winevulkan_nofshack_opts.mypatch#/%{name}-tkg-winevulkan_nofshack_opts.patch
+Patch734:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
+Patch735:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 
 Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 
@@ -828,9 +827,9 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 %patch732 -p1
 #patch733 -p1
 %if 0%{?fshack}
-%patch750 -p1
+%patch734 -p1
 %else
-%patch751 -p1
+%patch735 -p1
 %endif
 
 %if 0%{?fsync_spincounts}
@@ -2590,6 +2589,9 @@ fi
 
 
 %changelog
+* Wed Mar 25 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.4-102.20200324git9c190f8
+- Bump
+
 * Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.4-101.20200320git3ddf3a7
 - Snapshot
 - Disable some compilation flags

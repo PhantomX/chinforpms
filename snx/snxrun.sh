@@ -26,7 +26,6 @@ exec="/usr/sbin/snx"
 prog="$(basename ${exec})"
 config="${HOME}/.config/${prog}rc"
 
-urgency=normal
 timeout=5000
 notify_title=SNX
 conf_msg="No ${config} file!"
@@ -35,7 +34,7 @@ stopfail_msg="The process ${prog} was not stopped!"
 run_msg="The process ${prog} is running, VPN is working!"
 runfail_msg="The process ${prog} is not running!"
 
-notifycom="notify-send -u ${urgency} -t ${timeout} -i applications-internet --hint=int:transient:1 ${notify_title}"
+notifycom="notify-send -t ${timeout} -i applications-internet --hint=int:transient:1 ${notify_title}"
 
 pid="$(/usr/sbin/pidof -o %PPID ${exec})"
 
@@ -45,7 +44,7 @@ start(){
   if ! [[ -r "${config}" ]] ;then
     echo "${conf_msg}"
     if [[ -n "${DISPLAY}" ]] ; then
-      ${notifycom} "${conf_msg}"
+      ${notifycom} -u critical "${conf_msg}"
     fi
     retval=5
     return
@@ -64,13 +63,13 @@ start(){
   if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
     echo "${run_msg}"
     if [[ -n "${DISPLAY}" ]] ; then
-      ${notifycom} "${run_msg}"
+      ${notifycom} -u normal "${run_msg}"
     fi
     retval=0
   else
     echo "${runfail_msg}"
     if [[ -n "${DISPLAY}" ]] ; then
-      ${notifycom} "${runfail_msg}"
+      ${notifycom} -u critical "${runfail_msg}"
     fi
     retval=1
   fi
@@ -83,13 +82,13 @@ stop(){
     if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
       echo "${stopfail_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
-        ${notifycom} "${stopfail_msg}"
+        ${notifycom} -u critical "${stopfail_msg}"
       fi
       retval=1
     else
       echo "${stop_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
-        ${notifycom} "${stop_msg}"
+        ${notifycom} -u normal "${stop_msg}"
       fi
       retval=0
     fi
