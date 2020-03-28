@@ -79,30 +79,30 @@ Provides:       SpiderOak = %{version}-%{release}
 
 %global __provides_exclude_from ^%{progdir}/.*
 
-%global __requires_exclude ^libssl.so.1.0.0
-%global __requires_exclude %__requires_exclude|^libcrypto.so.1.0.0
-%global __requires_exclude %__requires_exclude|^libgmp.so.3
-%global __requires_exclude %__requires_exclude|^libpng12.so.0
+%global __requires_exclude ^libssl.so.*
+%global __requires_exclude %__requires_exclude|^libcrypto.so.*
+%global __requires_exclude %__requires_exclude|^libgmp.so.*
+%global __requires_exclude %__requires_exclude|^libpng12.so.*
 %if !0%{?with_dbusmenuqt}
 %global __requires_exclude %__requires_exclude|^libdbusmenu-qt.so.2
 %endif
 %if !0%{?with_pyqt}
-%global __requires_exclude %__requires_exclude|^libQtCore.so.4
-%global __requires_exclude %__requires_exclude|^libQtCore.so.4
-%global __requires_exclude %__requires_exclude|^libQtDBus.so.4
-%global __requires_exclude %__requires_exclude|^libQtDeclarative.so.4
-%global __requires_exclude %__requires_exclude|^libQtGui.so.4
-%global __requires_exclude %__requires_exclude|^libQtNetwork.so.4
-%global __requires_exclude %__requires_exclude|^libQtScript.so.4
-%global __requires_exclude %__requires_exclude|^libQtSql.so.4
-%global __requires_exclude %__requires_exclude|^libQtSvg.so.4
-%global __requires_exclude %__requires_exclude|^libQtXmlPatterns.so.4
-%global __requires_exclude %__requires_exclude|^libQtXml.so.4
-%global __requires_exclude %__requires_exclude|^PyQt4.QtCore.so
-%global __requires_exclude %__requires_exclude|^PyQt4.QtDeclarative.so
-%global __requires_exclude %__requires_exclude|^PyQt4.QtGui.so
-%global __requires_exclude %__requires_exclude|^PyQt4.QtNetwork.so
-%global __requires_exclude %__requires_exclude|^PyQt4.QtSvg.so
+%global __requires_exclude %__requires_exclude|^libQtCore.so.*
+%global __requires_exclude %__requires_exclude|^libQtCore.so.*
+%global __requires_exclude %__requires_exclude|^libQtDBus.so.*
+%global __requires_exclude %__requires_exclude|^libQtDeclarative.so.*
+%global __requires_exclude %__requires_exclude|^libQtGui.so.*
+%global __requires_exclude %__requires_exclude|^libQtNetwork.so.*
+%global __requires_exclude %__requires_exclude|^libQtScript.so.*
+%global __requires_exclude %__requires_exclude|^libQtSql.so.*
+%global __requires_exclude %__requires_exclude|^libQtSvg.so.*
+%global __requires_exclude %__requires_exclude|^libQtXmlPatterns.so.*
+%global __requires_exclude %__requires_exclude|^libQtXml.so.*
+%global __requires_exclude %__requires_exclude|^PyQt4.QtCore.so.*
+%global __requires_exclude %__requires_exclude|^PyQt4.QtDeclarative.so.*
+%global __requires_exclude %__requires_exclude|^PyQt4.QtGui.so.*
+%global __requires_exclude %__requires_exclude|^PyQt4.QtNetwork.so.*
+%global __requires_exclude %__requires_exclude|^PyQt4.QtSvg.so.*
 %endif
 
 %description

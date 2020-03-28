@@ -32,8 +32,8 @@
 %global vc_url https://gitlab.gnome.org/GNOME/gtk/commit
 
 Name:           gtk3
-Version:        3.24.14
-Release:        101%{?dist}
+Version:        3.24.16
+Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -372,9 +372,11 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_bindir}/gtk3-demo-application
 %{_bindir}/gtk3-widget-factory
 %{_datadir}/gettext/
-%{_datadir}/gtk-3.0/gtkbuilder.rng
 %{_datadir}/gir-1.0
 %{_datadir}/glib-2.0/schemas/org.gtk.Demo.gschema.xml
+%dir %{_datadir}/gtk-3.0
+%{_datadir}/gtk-3.0/gtkbuilder.rng
+%{_datadir}/gtk-3.0/valgrind/ 
 %{_mandir}/man1/gtk3-demo.1*
 %{_mandir}/man1/gtk3-demo-application.1*
 %{_mandir}/man1/gtk3-icon-browser.1*
@@ -392,6 +394,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Sat Mar 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.16-100
+- 3.24.16
+
 * Wed Feb 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.24.14-101
 - Remove new_with_model revert, is a perl-Gtk3 issue
 

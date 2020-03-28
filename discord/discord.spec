@@ -33,6 +33,7 @@ Requires:       alsa-lib%{_isa}
 Requires:       libappindicator%{_isa}
 Requires:       libatomic%{?_isa}
 Requires:       libcxx%{?_isa}
+Requires:       libdbusmenu%{?_isa}
 Requires:       libglvnd-egl%{?_isa}
 Requires:       libglvnd-gles%{?_isa}
 Requires:       libnotify%{?_isa}
@@ -54,7 +55,7 @@ Conflicts:      %{name} < %{version}
 %global __requires_exclude %__requires_exclude|^libnode.so
 
 %description
-All-in-one voice and text chat for gamers that’s free, secure, and works on
+All-in-one voice and text chat for gamers that's free, secure, and works on
 both your desktop and phone.
 
 %prep

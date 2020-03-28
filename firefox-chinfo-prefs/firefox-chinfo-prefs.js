@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20191216
+// 20200326
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -30,7 +30,7 @@ pref("browser.tabs.loadBookmarksInTabs", true);
 pref("browser.tabs.opentabfor.middleclick", false);
 //pref("browser.tabs.remote.allowLinkedWebInFileUriProcess", false);
 pref("browser.urlbar.clickSelectsAll", false);
-pref("browser.urlbar.doubleClickSelectsAll", true);
+pref("browser.urlbar.doubleClickSelectsAll", false);
 pref("browser.urlbar.megabar", false);
 pref("browser.urlbar.openintab", true);
 pref("browser.urlbar.trimURLs", false);
@@ -320,6 +320,9 @@ pref("dom.gamepad.enabled", false);
 // Disable geolocation
 //pref("geo.enabled", false);
 pref("geo.wifi.logging.enabled", false);
+
+// Use Mozilla instead Google one
+pref("geo.provider.network.url", "https://location.services.mozilla.com/v1/geolocate?key=%MOZILLA_API_KEY%");
 
 // Disable WebGL
 //pref("webgl.disabled", false);

@@ -5,7 +5,7 @@
 %global app_name Bitwarden
 
 Name:           bitwarden
-Version:        1.16.6
+Version:        1.17.2
 Release:        1%{?dist}
 Summary:        A secure and free password manager for all of your devices
 
@@ -91,5 +91,8 @@ done
 
 
 %changelog
+* Thu Mar 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.17.2-1
+- 1.17.2
+
 * Thu Oct 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.16.6-1
 - Initial spec

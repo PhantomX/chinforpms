@@ -12,7 +12,7 @@
 %endif
 
 Name:           signal-desktop
-Version:        1.31.0
+Version:        1.32.2
 Release:        1%{?beta:.%{beta}}%{?dist}
 Summary:        Private messaging from your desktop
 
@@ -25,15 +25,54 @@ ExclusiveArch:  x86_64
 
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
-Requires:       libappindicator-gtk3%{?_isa}
+Requires:       cairo%{?_isa}
+Requires:       glib2%{?_isa}
+Requires:       pango%{?_isa}
+Requires:       libdbusmenu%{?_isa}
 Requires:       libglvnd-egl%{?_isa}
 Requires:       libglvnd-gles%{?_isa}
 Requires:       hicolor-icon-theme
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
+%global __provides_exclude_from %__provides_exclude_from|^%{_libdir}/%{name}/.*
 
 %global __requires_exclude ^libffmpeg.so
 %global __requires_exclude %__requires_exclude|^libVkICD_mock_icd.so
+%global __requires_exclude %__requires_exclude|^libcairo.so.*
+%global __requires_exclude %__requires_exclude|^libcairo-gobject.so.*
+%global __requires_exclude %__requires_exclude|^libcroco-0.6.so.*
+%global __requires_exclude %__requires_exclude|^libexif.so.*
+%global __requires_exclude %__requires_exclude|^libexpat.so.*
+%global __requires_exclude %__requires_exclude|^libffi.so.*
+%global __requires_exclude %__requires_exclude|^libfontconfig.so.*
+%global __requires_exclude %__requires_exclude|^libfreetype.so.*
+%global __requires_exclude %__requires_exclude|^libfribidi.so.*
+%global __requires_exclude %__requires_exclude|^libgdk_pixbuf-2.0.so.*
+%global __requires_exclude %__requires_exclude|^libgif.so.*
+%global __requires_exclude %__requires_exclude|^libgio-2.0.so.*
+%global __requires_exclude %__requires_exclude|^libglib-2.0.so.*
+%global __requires_exclude %__requires_exclude|^libgmodule-2.0.so.*
+%global __requires_exclude %__requires_exclude|^libgobject-2.0.so.*
+%global __requires_exclude %__requires_exclude|^libgsf-1.so.*
+%global __requires_exclude %__requires_exclude|^libgthread-2.0.so.*
+%global __requires_exclude %__requires_exclude|^libharfbuzz.so.*
+%global __requires_exclude %__requires_exclude|^libjpeg.so.*
+%global __requires_exclude %__requires_exclude|^liblcms2.so.*
+%global __requires_exclude %__requires_exclude|^liborc-0.4.so.*
+%global __requires_exclude %__requires_exclude|^libpango-1.0.so.*
+%global __requires_exclude %__requires_exclude|^libpangocairo-1.0.so.*
+%global __requires_exclude %__requires_exclude|^libpangoft2-1.0.so.*
+%global __requires_exclude %__requires_exclude|^libpixman-1.so.*
+%global __requires_exclude %__requires_exclude|^libpng16.so.*
+%global __requires_exclude %__requires_exclude|^librsvg-2.so.*
+%global __requires_exclude %__requires_exclude|^libtiff.so.*
+%global __requires_exclude %__requires_exclude|^libvips.so.*
+%global __requires_exclude %__requires_exclude|^libvips-cpp.so.*
+%global __requires_exclude %__requires_exclude|^libwebp.so.*
+%global __requires_exclude %__requires_exclude|^libwebpdemux.so.*
+%global __requires_exclude %__requires_exclude|^libwebpmux.so.*
+%global __requires_exclude %__requires_exclude|^libxml2.so.*
+%global __requires_exclude %__requires_exclude|^libz.so.*
 
 
 %description
@@ -74,6 +113,10 @@ cp -rp opt/%{name}/{%{name},locales,resources,*.{bin,dat,pak,so}} \
 rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
 rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
 
+rm -rf %{buildroot}%{_libdir}/%{name}/resources/app.asar.unpacked/node_modules/sharp/src
+rm -rf %{buildroot}%{_libdir}/%{name}/resources/app.asar.unpacked/node_modules/sharp/vendor/include
+rm -rf %{buildroot}%{_libdir}/%{name}/resources/app.asar.unpacked/node_modules/sharp/vendor/lib/{cmake,*.so}
+
 chmod 0755 %{buildroot}%{_libdir}/%{name}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -105,5 +148,8 @@ done
 
 
 %changelog
+* Thu Mar 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.32.2-1
+- 1.32.2
+
 * Sun Feb 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.31.0-1
 - Initial spec

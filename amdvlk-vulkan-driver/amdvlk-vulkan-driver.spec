@@ -19,23 +19,23 @@
 
 %global pkgname amdvlk
 
-%global commit1 e404e4b2db325184dbc2d14f31ef891d938f3835
+%global commit1 5c958c70bc6366298296dc778e903f65528c3b0f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 fc21c950b629753f9cc7d0941937c57262ceadcf
+%global commit2 7686a2ddba683f7a361460f3806b0d45e615ca76
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 80e5a4b11ad2058097e77746772ddc9ab2118e07
+%global commit3 2db4177e78133c868e2c6b4dcc46aeb2f512163a
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 e642f608a62887d40d1f25509d2951a4a3576985
+%global commit4 bb7398b1c7509a30ba4f7d947b5ad5549a4d58db
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
-%global commit5 843c6b95f731589bf497fad29dadf7fda4934aad
+%global commit5 d16fddddf22a1eb3a3f4ce05cbcb95a337f708b1
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{pkgname}-spvgen
 
@@ -47,15 +47,15 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 c316fb15fb0ffdcb23b93e824604d31eed46b136
+%global commit8 fd773eb50d628c1981338addc093df879757c2cf
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
-%global commit9 5dbc1c32182e17b8ab8e8158a802ecabaf35aad3
+%global commit9 f8bf11a0253a32375c32cad92c841237b96696c0
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 c12493ff69e21800fb08b6d6e92eb0b9c5cb5efb
+%global commit10 99508c1ce389e678a79b00159fe0c0d13f08f213
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
@@ -68,8 +68,8 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.1.3
-Release:        2%{?gver}%{?dist}
+Version:        2020.1.4
+Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
 URL:            %{vc_url}/AMDVLK
@@ -233,6 +233,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Fri Mar 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.1.4-1
+- 2020.Q1.4
+
 * Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.1.3-2
 - Fix icd loading order
 

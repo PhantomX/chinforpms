@@ -20,7 +20,7 @@
 #  along with this script.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# 20200324
+# 20200327
 
 exec="/usr/sbin/snx"
 prog="$(basename ${exec})"
@@ -36,7 +36,7 @@ display_msg='This needs to run in a graphical environment!'
 stop_msg="The process ${prog} was stopped!"
 stopfail_msg="The process ${prog} was not stopped!"
 start_msg="The process ${vpnprog} is starting...\nIf no message appears after some time, the connection is good."
-run_msg="The process ${prog} is running, VPN is working!"
+run_msg="The process ${prog} finished after successful connection.\nIf this is not intended, restart it, please."
 runfail_msg="The process ${prog} is not running!"
 
 notifycom="notify-send -t ${timeout} -i applications-internet --hint=int:transient:1 ${notify_title}"
@@ -68,16 +68,16 @@ start(){
   if [[ -z "${pid}" ]] ;then
     echo "${start_msg}"
     ${notifycom} -u normal "${start_msg}"
-    "${vpnexec}"
+    connection="$("${vpnexec}" 2>/dev/null)"
     sleep 3
   fi
-  if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
+  if echo "${connection}" | grep -q 'SNX connected' ;then
     echo "${run_msg}"
     ${notifycom} -u normal "${run_msg}"
     retval=0
   else
     echo "${runfail_msg}"
-    ${notifycom} -u critical "${runfail_msg}"
+    ${notifycom} -u critical "${runfail_msg}\n${connection}"
     retval=1
   fi
 }

@@ -24,6 +24,7 @@ ExclusiveArch:  %{ix86} x86_64
 
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
+Requires:       libdbusmenu%{?_isa}
 Requires:       libglvnd-egl%{?_isa}
 Requires:       libglvnd-gles%{?_isa}
 Requires:       hicolor-icon-theme
