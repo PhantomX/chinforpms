@@ -1,16 +1,14 @@
 %global use_x11_tests 1
 
 Name:           perl-Gtk3
-Version:        0.036
-Release:        3%{?dist}
+Version:        0.037
+Release:        1%{?dist}
 Summary:        Perl interface to the 3.x series of the GTK+ toolkit
 
 License:        LGPLv2+
 URL:            https://metacpan.org/release/Gtk3
 
 Source0:        https://cpan.metacpan.org/authors/id/X/XA/XAOC/Gtk3-%{version}.tar.gz
-
-Patch0:         0001-Remove-unneeded-new_with_model-fix.patch
 
 BuildArch:      noarch
 
@@ -87,6 +85,9 @@ make pure_install DESTDIR=$RPM_BUILD_ROOT
 %{_mandir}/man3/*
 
 %changelog
+* Sun Mar 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.037-1
+- 0.037
+
 * Wed Feb 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.036-3
 - Remove fix for https://gitlab.gnome.org/GNOME/gtk/issues/1077, gnomebz#634823
 

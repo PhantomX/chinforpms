@@ -26,8 +26,8 @@
 
 %global winedll dll%{?libext}
 
-%global tkg_id e3d5a83aae06c5c63003bd1da2b7f6ed40db5a8e
-%global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/dxvk-tools/DXVKBUILD/patches
+%global tkg_id 96dcfca35216a82066000293ff9f9a5fbdae607c
+%global tkg_url https://github.com/Frogging-Family/dxvk-tools/raw/%{tkg_id}/DXVKBUILD/patches
 
 %global valve_url https://github.com/ValveSoftware/dxvk
 

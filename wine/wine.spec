@@ -1,7 +1,7 @@
 %global commit 9c190f8118faa2f4708e86340e3e0440f668835b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200324
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -39,16 +39,16 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver e5da84dc3637dc6235c24ce80860e3c23641c5b0
+%global wine_stagingver 5.5
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 20163971bd0f2c355fdfe0baa955709396dad062
-%global tkg_url https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_curl https://github.com/Tk-Glitch/PKGBUILDS/raw/%{tkg_id}/community-patches/wine-tkg-git
+%global tkg_id 876ad0ea80002a5cd5481646110cf60974459794
+%global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
+%global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_id}/wine-tkg-git
 
 %global gtk3 0
 # proton FS hack (wine virtual desktop with DXVK is not working well)
@@ -83,8 +83,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.4
-Release:        102%{?gver}%{?dist}
+Version:        5.5
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -185,16 +185,16 @@ Patch730:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.pat
 Patch731:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch732:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch733:       %{tkg_url}/proton/msvcrt_nativebuiltin.patch#/%{name}-tkg-msvcrt_nativebuiltin.patch
-Patch734:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
-Patch735:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
+Patch734:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging-rpc.patch#/%{name}-tkg-proton-tkg-staging-rpc.patch
+Patch735:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
+Patch736:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
+Patch737:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 
 Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch802:       %{valve_url}/commit/7778c1cbd59dd676943aa1df7e76d32b3eee8567.patch#/%{name}-valve-7778c1c.patch
-Patch803:       %{valve_url}/commit/4aa052e0c8ae276fc07afcd93d6e290a88214837.patch#/%{name}-valve-4aa052e.patch
-Patch804:       %{valve_url}/commit/a4310c0cf1e27f0a90f737c2e7cfe9cdbde07522.patch#/%{name}-valve-a4310c0.patch
-Patch805:       wine-xaudio2-pulseaudio-app-name.patch
+Patch803:       wine-xaudio2-pulseaudio-app-name.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -788,8 +788,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch705 -p1
 
 %patch803 -p1
-%patch804 -p1
-%patch805 -p1
 
 %patch5000 -p1
 %ifarch %{ix86}
@@ -811,6 +809,9 @@ cp -p %{S:1001} README-pba-pkg
 
 %patch720 -p1
 %patch721 -p1
+%if 0%{?fsync_spincounts}
+%patch790 -p1
+%endif
 %if 0%{?fshack}
 %patch722 -p1
 %patch723 -p1
@@ -826,20 +827,18 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 #patch731 -p1
 %patch732 -p1
 #patch733 -p1
-%if 0%{?fshack}
 %patch734 -p1
-%else
 %patch735 -p1
-%endif
-
-%if 0%{?fsync_spincounts}
-%patch790 -p1
+%if 0%{?fshack}
+%patch736 -p1
+%else
+%patch737 -p1
 %endif
 
 %if 0%{?fshack}
 %patch800 -p1 -R
 %endif
-%patch802 -p1
+#patch802 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -870,6 +869,7 @@ sed -i \
   -e 's|OpenCL/opencl.h|CL/opencl.h|g' \
   configure
 
+./dlls/winevulkan/make_vulkan
 ./tools/make_requests
 autoreconf -f
 
@@ -2055,6 +2055,9 @@ fi
 %{_libdir}/wine/serialui.%{winedll}
 %{_libdir}/wine/setupapi.%{winedll}
 %{_libdir}/wine/sfc_os.%{winedll}
+%if 0%{?wine_staging}
+%{_libdir}/wine/sechost.dll.so
+%endif
 %{_libdir}/wine/shcore.%{winedll}
 %{_libdir}/wine/shdoclc.%{winedll}
 %{_libdir}/wine/shdocvw.%{winedll}
@@ -2589,6 +2592,10 @@ fi
 
 
 %changelog
+* Sun Mar 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.5-100
+- 5.5
+- New tkg links
+
 * Wed Mar 25 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.4-102.20200324git9c190f8
 - Bump
 
