@@ -1,0 +1,320 @@
+From patchwork Wed Mar 25 20:16:03 2020
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Thierry Reding <thierry.reding@gmail.com>
+X-Patchwork-Id: 1261638
+Return-Path: <linux-tegra-owner@vger.kernel.org>
+X-Original-To: incoming@patchwork.ozlabs.org
+Delivered-To: patchwork-incoming@bilbo.ozlabs.org
+Authentication-Results: ozlabs.org; spf=none (no SPF record)
+ smtp.mailfrom=vger.kernel.org (client-ip=209.132.180.67;
+ helo=vger.kernel.org;
+ envelope-from=linux-tegra-owner@vger.kernel.org;
+ receiver=<UNKNOWN>)
+Authentication-Results: ozlabs.org;
+ dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: ozlabs.org; dkim=pass (2048-bit key;
+ unprotected) header.d=gmail.com header.i=@gmail.com
+ header.a=rsa-sha256 header.s=20161025 header.b=sj7XVrax; 
+ dkim-atps=neutral
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+ by ozlabs.org (Postfix) with ESMTP id 48nfWs1X7mz9sRf
+ for <incoming@patchwork.ozlabs.org>;
+ Thu, 26 Mar 2020 07:16:09 +1100 (AEDT)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+ id S1727374AbgCYUQI (ORCPT <rfc822;incoming@patchwork.ozlabs.org>);
+ Wed, 25 Mar 2020 16:16:08 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:50585 "EHLO
+ mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+ with ESMTP id S1727328AbgCYUQI (ORCPT
+ <rfc822;linux-tegra@vger.kernel.org>);
+ Wed, 25 Mar 2020 16:16:08 -0400
+Received: by mail-wm1-f68.google.com with SMTP id d198so4073496wmd.0
+ for <linux-tegra@vger.kernel.org>;
+ Wed, 25 Mar 2020 13:16:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=yPLnagV0XBnTWT+nGjtRaD+LnSq2BqmeAJnp8U+CWPw=;
+ b=sj7XVraxdwiyRAeepEQ0wy1nLUUH6vcloNotxoFwaAZmvU2GILePtp+OM8VZxzmSg1
+ qVjos+BzgdtxI0QGYvlsRwZJmw1PdwfTDzM8kMKmP2AfXDgnFG7LZsGZnzTmdPqErqG6
+ RfQwpZiPunHplEvI/epnPHACQlV9HoX+teAIWP9gyJkMYwBCVOirkfv4yGqGZWyEciZ2
+ yM5mGeUZ/OprHtVVEEuF5yb50CJm8cBEHBMr2ooS+0jm+avVEG8DKe9QM2nWgJB7+TXH
+ 7+iryK1A4PDr9L6syw0p6sAbkFd2+P/p44d/rqsKPWTQG0lkd0cgRHx9fVPls/P4Snyr
+ JwCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=yPLnagV0XBnTWT+nGjtRaD+LnSq2BqmeAJnp8U+CWPw=;
+ b=HWu2t1YnW/GoMLlkfp6ZQha8CvUnfMi/OK1zsN3hDtTtMLwVQL9YBFPvXYfAASIGzA
+ qXmgdbIdQmwOXRxlDmgcXk8KcOJmvnJTSoE+GPeLrKGVq9h2c6XLINshs7RDWqY7//GM
+ /NMVkESX/sVh5qVQYVzsQOBWAsLkwpVAmt3lJ81XrCGdA/L5aN2FWOftTWJWoStgtHuB
+ 9N27ffBkV8/72gDCcGxM/lJlfxMBcfPIEMDGWlErsl2U/EPtF+e5AH1kF9/a+lImxa1h
+ vBlXvgfPKazfOLm1jA809U0QJrCy5bmTOJsaLqnkLPNJRyvlY6JZqk8a1Wc4u6l44uoI
+ 4l3g==
+X-Gm-Message-State: ANhLgQ0GzmzHn/uC4G4GzXRW/D8i6fcQ7Y04Wxx+yBOvoeixp0lD9PYD
+ 9Q7E3Ezt7uCnfh5D41Ym8jY=
+X-Google-Smtp-Source: ADFU+vvV+Qjqcd+wksczhsC9MSisSEM36LfhftNulFkmYxqwCfpDcq22YDEoWHYpgjaXwwZC4lgCyg==
+X-Received: by 2002:a7b:c842:: with SMTP id c2mr5416219wml.154.1585167366416; 
+ Wed, 25 Mar 2020 13:16:06 -0700 (PDT)
+Received: from localhost
+ (p200300E41F4A9B0076D02BFFFE273F51.dip0.t-ipconnect.de.
+ [2003:e4:1f4a:9b00:76d0:2bff:fe27:3f51])
+ by smtp.gmail.com with ESMTPSA id
+ i4sm132568wrm.32.2020.03.25.13.16.05
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 25 Mar 2020 13:16:05 -0700 (PDT)
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
+Subject: [PATCH 1/2] drm/tegra: Fix SMMU support on Tegra124 and Tegra210
+Date: Wed, 25 Mar 2020 21:16:03 +0100
+Message-Id: <20200325201604.833898-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Sender: linux-tegra-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-tegra.vger.kernel.org>
+X-Mailing-List: linux-tegra@vger.kernel.org
+
+From: Thierry Reding <treding@nvidia.com>
+
+When testing whether or not to enable the use of the SMMU, consult the
+supported DMA mask rather than the actually configured DMA mask, since
+the latter might already have been restricted.
+
+Fixes: 2d9384ff9177 ("drm/tegra: Relax IOMMU usage criteria on old Tegra")
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+---
+ drivers/gpu/drm/tegra/drm.c |  3 ++-
+ drivers/gpu/host1x/dev.c    | 13 +++++++++++++
+ include/linux/host1x.h      |  3 +++
+ 3 files changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm.c
+index bd268028fb3d..583cd6e0ae27 100644
+--- a/drivers/gpu/drm/tegra/drm.c
++++ b/drivers/gpu/drm/tegra/drm.c
+@@ -1039,6 +1039,7 @@ void tegra_drm_free(struct tegra_drm *tegra, size_t size, void *virt,
+ 
+ static bool host1x_drm_wants_iommu(struct host1x_device *dev)
+ {
++	struct host1x *host1x = dev_get_drvdata(dev->dev.parent);
+ 	struct iommu_domain *domain;
+ 
+ 	/*
+@@ -1076,7 +1077,7 @@ static bool host1x_drm_wants_iommu(struct host1x_device *dev)
+ 	 * sufficient and whether or not the host1x is attached to an IOMMU
+ 	 * doesn't matter.
+ 	 */
+-	if (!domain && dma_get_mask(dev->dev.parent) <= DMA_BIT_MASK(32))
++	if (!domain && host1x_get_dma_mask(host1x) <= DMA_BIT_MASK(32))
+ 		return true;
+ 
+ 	return domain != NULL;
+diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
+index 388bcc2889aa..40a4b9f8b861 100644
+--- a/drivers/gpu/host1x/dev.c
++++ b/drivers/gpu/host1x/dev.c
+@@ -502,6 +502,19 @@ static void __exit tegra_host1x_exit(void)
+ }
+ module_exit(tegra_host1x_exit);
+ 
++/**
++ * host1x_get_dma_mask() - query the supported DMA mask for host1x
++ * @host1x: host1x instance
++ *
++ * Note that this returns the supported DMA mask for host1x, which can be
++ * different from the applicable DMA mask under certain circumstances.
++ */
++u64 host1x_get_dma_mask(struct host1x *host1x)
++{
++	return host1x->info->dma_mask;
++}
++EXPORT_SYMBOL(host1x_get_dma_mask);
++
+ MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
+ MODULE_AUTHOR("Terje Bergstrom <tbergstrom@nvidia.com>");
+ MODULE_DESCRIPTION("Host1x driver for Tegra products");
+diff --git a/include/linux/host1x.h b/include/linux/host1x.h
+index 62d216ff1097..c230b4e70d75 100644
+--- a/include/linux/host1x.h
++++ b/include/linux/host1x.h
+@@ -17,9 +17,12 @@ enum host1x_class {
+ 	HOST1X_CLASS_GR3D = 0x60,
+ };
+ 
++struct host1x;
+ struct host1x_client;
+ struct iommu_group;
+ 
++u64 host1x_get_dma_mask(struct host1x *host1x);
++
+ /**
+  * struct host1x_client_ops - host1x client operations
+  * @init: host1x client initialization code
+
+From patchwork Wed Mar 25 20:16:04 2020
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Thierry Reding <thierry.reding@gmail.com>
+X-Patchwork-Id: 1261639
+Return-Path: <linux-tegra-owner@vger.kernel.org>
+X-Original-To: incoming@patchwork.ozlabs.org
+Delivered-To: patchwork-incoming@bilbo.ozlabs.org
+Authentication-Results: ozlabs.org; spf=none (no SPF record)
+ smtp.mailfrom=vger.kernel.org (client-ip=209.132.180.67;
+ helo=vger.kernel.org;
+ envelope-from=linux-tegra-owner@vger.kernel.org;
+ receiver=<UNKNOWN>)
+Authentication-Results: ozlabs.org;
+ dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: ozlabs.org; dkim=pass (2048-bit key;
+ unprotected) header.d=gmail.com header.i=@gmail.com
+ header.a=rsa-sha256 header.s=20161025 header.b=XXUz449u; 
+ dkim-atps=neutral
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+ by ozlabs.org (Postfix) with ESMTP id 48nfWw6NvSz9sPk
+ for <incoming@patchwork.ozlabs.org>;
+ Thu, 26 Mar 2020 07:16:12 +1100 (AEDT)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+ id S1727316AbgCYUQM (ORCPT <rfc822;incoming@patchwork.ozlabs.org>);
+ Wed, 25 Mar 2020 16:16:12 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:33914 "EHLO
+ mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+ with ESMTP id S1727328AbgCYUQM (ORCPT
+ <rfc822;linux-tegra@vger.kernel.org>);
+ Wed, 25 Mar 2020 16:16:12 -0400
+Received: by mail-wr1-f65.google.com with SMTP id 65so4990084wrl.1
+ for <linux-tegra@vger.kernel.org>;
+ Wed, 25 Mar 2020 13:16:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=aW1zxIHiei+l8kDSE2lVXf/aMBDE/GtIkGFrQXvKkrY=;
+ b=XXUz449uJivXz+1lH6pKa9IvT3vUx61/skXaEyQxpkslFR268FwckKE0ryQDUx701N
+ hFN9ocSGCuE6bKpdgya8YmthXDASOYWZzKV0R5jms1rqgazVMF6jARv+kE4Jaj9Ek4tl
+ 4eTpmnHinx0xIrgGWCQbfltjb+zAE5XOGX8UCX1526r3yQQpu+OQlKZ70Tvq3pdw0zfT
+ URkTU8sfdTa9DCxUSsUukPcK9vKOk6XHkFleL6FisODDvXphdzzLa1TCv9UTGLrUsHSd
+ XDrukLto5efrUE03q5jP6ZN4xbnLDbhY6IkB7PAW1qwSPG/Eg0p0ivpJ58+QwwmBH6zF
+ ByDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=aW1zxIHiei+l8kDSE2lVXf/aMBDE/GtIkGFrQXvKkrY=;
+ b=DIWKPWCoYx1rnX34DSkRPm2K6lR1SurVvq+IIY5Nrc9uq+E3pmXQcActG0DDAHHK8a
+ SgnziEvuWTeROgrlwONYq+FUZRQ6s1TRR1+qDXqAlRtdebU/cEep+LRvdzJe/qJBpPqd
+ SnSTR3Xntgo7EcyLRj9YqSodasylPt3OzrhuDudfTSQtKZghElLfyJV/tzgwG+OC3TD4
+ RJAykZ0tgWHy7Bc1UB+z6LovuT/sgcPUSLfNqDehQWqwQeqHqXgFAomUN0CCEr2YdjkT
+ sCpBZPqKtb22FdDWlDiNnEkEmMPA+K4MIWbZL9VuvArjFaaBn6fBxvnX4tAKEcOiKeUy
+ EZXw==
+X-Gm-Message-State: ANhLgQ1Vj1gSFYKgV/7jV1T3UIwTE5jasGmLOhuuGuWvjBs2xXUgieyz
+ VhNVgYIYU/8R/0Vx9Hv44rw=
+X-Google-Smtp-Source: ADFU+vtTfrVHW69I+ZhOz8qw8xUje/j42rKoNxAP2wTt+E5WQ5s6QhBcgeHzC4Bw5Q5NdWxjLUtZ/g==
+X-Received: by 2002:adf:800e:: with SMTP id 14mr5104354wrk.369.1585167368929; 
+ Wed, 25 Mar 2020 13:16:08 -0700 (PDT)
+Received: from localhost
+ (p200300E41F4A9B0076D02BFFFE273F51.dip0.t-ipconnect.de.
+ [2003:e4:1f4a:9b00:76d0:2bff:fe27:3f51])
+ by smtp.gmail.com with ESMTPSA id
+ e9sm151985wrw.30.2020.03.25.13.16.07
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 25 Mar 2020 13:16:07 -0700 (PDT)
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
+Subject: [PATCH 2/2] gpu: host1x: Use SMMU on Tegra124 and Tegra210
+Date: Wed, 25 Mar 2020 21:16:04 +0100
+Message-Id: <20200325201604.833898-2-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200325201604.833898-1-thierry.reding@gmail.com>
+References: <20200325201604.833898-1-thierry.reding@gmail.com>
+MIME-Version: 1.0
+Sender: linux-tegra-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-tegra.vger.kernel.org>
+X-Mailing-List: linux-tegra@vger.kernel.org
+
+From: Thierry Reding <treding@nvidia.com>
+
+Tegra124 and Tegra210 support addressing more than 32 bits of physical
+memory. However, since their host1x does not support the wide GATHER
+opcode, they should use the SMMU if at all possible to ensure that all
+the system memory can be used for command buffers, irrespective of
+whether or not the host1x firewall is enabled.
+
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+---
+ drivers/gpu/host1x/dev.c | 46 ++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 42 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
+index 40a4b9f8b861..d24344e91922 100644
+--- a/drivers/gpu/host1x/dev.c
++++ b/drivers/gpu/host1x/dev.c
+@@ -192,17 +192,55 @@ static void host1x_setup_sid_table(struct host1x *host)
+ 	}
+ }
+ 
++static bool host1x_wants_iommu(struct host1x *host1x)
++{
++	/*
++	 * If we support addressing a maximum of 32 bits of physical memory
++	 * and if the host1x firewall is enabled, there's no need to enable
++	 * IOMMU support. This can happen for example on Tegra20, Tegra30
++	 * and Tegra114.
++	 *
++	 * Tegra124 and later can address up to 34 bits of physical memory and
++	 * many platforms come equipped with more than 2 GiB of system memory,
++	 * which requires crossing the 4 GiB boundary. But there's a catch: on
++	 * SoCs before Tegra186 (i.e. Tegra124 and Tegra210), the host1x can
++	 * only address up to 32 bits of memory in GATHER opcodes, which means
++	 * that command buffers need to either be in the first 2 GiB of system
++	 * memory (which could quickly lead to memory exhaustion), or command
++	 * buffers need to be treated differently from other buffers (which is
++	 * not possible with the current ABI).
++	 *
++	 * A third option is to use the IOMMU in these cases to make sure all
++	 * buffers will be mapped into a 32-bit IOVA space that host1x can
++	 * address. This allows all of the system memory to be used and works
++	 * within the limitations of the host1x on these SoCs.
++	 *
++	 * In summary, default to enable IOMMU on Tegra124 and later. For any
++	 * of the earlier SoCs, only use the IOMMU for additional safety when
++	 * the host1x firewall is disabled.
++	 */
++	if (host1x->info->dma_mask <= DMA_BIT_MASK(32)) {
++		if (IS_ENABLED(CONFIG_TEGRA_HOST1X_FIREWALL))
++			return false;
++	}
++
++	return true;
++}
++
+ static struct iommu_domain *host1x_iommu_attach(struct host1x *host)
+ {
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(host->dev);
+ 	int err;
+ 
+ 	/*
+-	 * If the host1x firewall is enabled, there's no need to enable IOMMU
+-	 * support. Similarly, if host1x is already attached to an IOMMU (via
+-	 * the DMA API), don't try to attach again.
++	 * We may not always want to enable IOMMU support (for example if the
++	 * host1x firewall is already enabled and we don't support addressing
++	 * more than 32 bits of physical memory), so check for that first.
++	 *
++	 * Similarly, if host1x is already attached to an IOMMU (via the DMA
++	 * API), don't try to attach again.
+ 	 */
+-	if (IS_ENABLED(CONFIG_TEGRA_HOST1X_FIREWALL) || domain)
++	if (!host1x_wants_iommu(host) || domain)
+ 		return domain;
+ 
+ 	host->group = iommu_group_get(host->dev);

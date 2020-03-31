@@ -3,7 +3,7 @@ From: Jeremy Cline <jcline@redhat.com>
 Date: Wed, 30 Oct 2019 14:37:49 +0000
 Subject: [PATCH] s390: Lock down the kernel when the IPL secure flag is set
 
-Automatically lock down the kernel to LOCKDOWN_CONFIDENTIALITY_MAX if
+Automatically lock down the kernel to LOCKDOWN_INTEGRITY_MAX if
 the IPL secure flag is set.
 
 Suggested-by: Philipp Rudo <prudo@redhat.com>
@@ -56,7 +56,7 @@ index 9cbf490fd162..0510ecdfc3f6 100644
  	log_component_list();
  
 +	if (ipl_get_secureboot())
-+		security_lock_kernel_down("Secure IPL mode", LOCKDOWN_CONFIDENTIALITY_MAX);
++		security_lock_kernel_down("Secure IPL mode", LOCKDOWN_INTEGRITY_MAX);
 +
  	/* Have one command line that is parsed and saved in /proc/cmdline */
  	/* boot_command_line has been already set up in early.c */

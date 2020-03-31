@@ -88,24 +88,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 5
+%define base_sublevel 6
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 8
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit c312f5c0e49bedf80fa4cf1eed4cd358b4e62d94
+%global pfcommit 7d7a4a7516f3b401ddf64de4469536d1a42ad151
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 3925fb5ba1c3f9b8eaa60a1e87826c1adefa53b5
+%global opensuse_id 4de111142ddf0e3ba42e23d5c7fe663483c91f92
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -374,7 +374,6 @@ Summary: The Linux kernel
 %if %{with_dbgonly}
 %if %{debugbuildsenabled}
 %define with_up 0
-%define with_pae 0
 %endif
 %define with_pae 0
 %endif
@@ -666,6 +665,7 @@ Source15: secureboot_ppc.cer
 %define pesign_name redhatsecureboot303
 %endif
 
+# released_kernel
 %else
 
 Source12: redhatsecurebootca2.cer
@@ -675,6 +675,7 @@ Source13: redhatsecureboot003.cer
 %define secureboot_key %{SOURCE13}
 %define pesign_name redhatsecureboot003
 
+# released_kernel
 %endif
 
 Source22: mod-extra.list.rhel
@@ -796,6 +797,8 @@ Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
 %endif
 %endif
 
+## Patches needed for building this package
+
 ## compile fixes
 
 %if !%{nopatches}
@@ -806,6 +809,10 @@ Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
 # 100 - Generic long running patches
 
 # 200 - x86 / secureboot
+
+# bz 1497559 - Make kernel MODSIGN code not error on missing variables
+Patch201: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
+Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 
 Patch204: efi-secureboot.patch
 
@@ -825,23 +832,46 @@ Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 Patch304: ARM-tegra-usb-no-reset.patch
 
 # Raspberry Pi
-# https://patchwork.kernel.org/cover/11271017/
-Patch310: Raspberry-Pi-4-PCIe-support.patch
-# https://patchwork.kernel.org/patch/11223139/
-Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
-# https://patchwork.kernel.org/patch/11299997/
-Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
 # https://patchwork.kernel.org/cover/11353083/
-Patch313: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
-# https://github.com/raspberrypi/linux/commit/c74b1b53254016fd83b580b8d49bb02d72ce4836
-Patch314: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
+Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
+# v5 https://patchwork.kernel.org/cover/11429245/
+Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
 # https://patchwork.kernel.org/patch/11372935/
-Patch315: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch 
+Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
+# https://patchwork.kernel.org/patch/11420129/
+Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
 
 # Tegra bits
-Patch320: arm64-tegra-jetson-tx1-fixes.patch
-# https://www.spinics.net/lists/linux-tegra/msg43110.html
-Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
+# https://www.spinics.net/lists/linux-tegra/msg48152.html
+Patch320: ARM64-Tegra-fixes.patch
+# http://patchwork.ozlabs.org/patch/1230891/
+Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
+# https://lkml.org/lkml/2020/2/14/401
+Patch323: arm64-tegra-fix-pcie.patch
+# http://patchwork.ozlabs.org/patch/1243162/
+Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
+# http://patchwork.ozlabs.org/patch/1243112/
+Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
+# https://patchwork.ozlabs.org/patch/1261638/
+Patch326: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
+
+# Coral
+Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
+
+# Pine64 bits
+# 340-345 queued for 5.7
+Patch340: arm64-pinebook-fixes.patch
+Patch341: arm64-a64-mbus.patch
+# v4 https://patchwork.kernel.org/cover/11420797/
+Patch342: Add-support-for-the-pine64-Pinebook-Pro.patch
+# https://patchwork.kernel.org/cover/11405517/
+Patch343: Add-LCD-support-for-Pine64-Pinebook-1080p.patch
+# https://lkml.org/lkml/2020/1/15/1320
+Patch344: arm64-pine64-pinetab.patch
+# https://www.spinics.net/lists/arm-kernel/msg789135.html
+Patch345: arm64-pine64-pinephone.patch
+# https://patchwork.kernel.org/cover/11440399/
+Patch346: Add-support-for-PinePhone-LCD-panel.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -865,11 +895,11 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
-Patch506: alsa-5.6.patch
+# More DP-MST fixes, pending for 5.7
+Patch507: drm-dp-mst-error-handling-improvements.patch
 
-# Backport vboxsf from 5.6, can be dropped when we move to 5.6
-Patch509: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1811850
+Patch509: drm-i915-backports.patch
 
 ### Extra
 
@@ -886,6 +916,7 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
+Patch1019: %{opensuse_url}/media-go7007-Fix-URB-type-for-interrupt-handling.patch#/openSUSE-media-go7007-Fix-URB-type-for-interrupt-handling.patch
 
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -907,6 +938,9 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 %global graysky2_id b9aeee77b2c3e76c1faeca297e4e4a448babaaee
 Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v9.1+_kernel_v5.5+.patch
 %endif
+
+%else
+Patch3600: 0001-postfactum-fix-build-without-BMQ.patch
 
 %endif
 
@@ -1008,6 +1042,8 @@ Kernel sample programs and selftests.
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libexecdir}/(ksamples|kselftests)/.*|XXX' -o selftests-debuginfo.list}
+
+# with_selftests
 %endif
 
 %if %{with_gcov}
@@ -1205,6 +1241,7 @@ Cortex-A15 devices with LPAE and HW virtualisation support
 %description zfcpdump-core
 The kernel package contains the Linux kernel (vmlinuz) for use by the
 zfcpdump infrastructure.
+# with_zfcpdump
 %endif
 
 %define variant_summary The Linux kernel compiled with extra debugging enabled
@@ -1441,7 +1478,7 @@ $patch_command -i %{SOURCE4000}
 
 chmod +x scripts/checkpatch.pl
 chmod +x tools/objtool/sync-check.sh
-mv COPYING COPYING-%{version}
+mv COPYING COPYING-%{version}-%{release}
 
 # This Prevents scripts/setlocalversion from mucking with our version numbers.
 touch .scmversion
@@ -1723,6 +1760,7 @@ BuildKernel() {
     if [ "$KernelExtension" == "gz" ]; then
         gzip -f9 $SignImage
     fi
+    # signkernel
     %endif
     $CopyKernel $KernelImage \
                 $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
@@ -1738,7 +1776,7 @@ BuildKernel() {
     if [ $DoModules -eq 1 ]; then
     # Override $(mod-fw) because we don't want it to install any firmware
     # we'll get it from the linux-firmware package and we don't want conflicts
-    %{make} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT %{?_smp_mflags} modules_install KERNELRELEASE=$KernelVer mod-fw=
+    %{make} %{?_smp_mflags} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
     fi
 
 %if %{with_gcov}
@@ -1777,6 +1815,9 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/extra
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/internal
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/updates
+%if 0%{!?fedora:1}
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/weak-updates
+%endif
     # CONFIG_KERNEL_HEADER_TEST generates some extra files in the process of
     # testing so just delete
     find . -name *.h.s -delete 
@@ -1803,7 +1844,8 @@ BuildKernel() {
     if [ -e $RPM_SOURCE_DIR/Module.kabi_%{_target_cpu}$Flavour ]; then
         cp $RPM_SOURCE_DIR/Module.kabi_%{_target_cpu}$Flavour $RPM_BUILD_ROOT/Module.kabi
         $RPM_SOURCE_DIR/check-kabi -k $RPM_BUILD_ROOT/Module.kabi -s Module.symvers || exit 1
-        rm $RPM_BUILD_ROOT/Module.kabi # for now, don't keep it around.
+        # for now, don't keep it around.
+        rm $RPM_BUILD_ROOT/Module.kabi
     else
         echo "**** NOTE: Cannot find reference Module.kabi file. ****"
     fi
@@ -1814,7 +1856,8 @@ BuildKernel() {
     if [ -e $RPM_SOURCE_DIR/Module.kabi_dup_%{_target_cpu}$Flavour ]; then
         cp $RPM_SOURCE_DIR/Module.kabi_dup_%{_target_cpu}$Flavour $RPM_BUILD_ROOT/Module.kabi
         $RPM_SOURCE_DIR/check-kabi -k $RPM_BUILD_ROOT/Module.kabi -s Module.symvers || exit 1
-        rm $RPM_BUILD_ROOT/Module.kabi # for now, don't keep it around.
+        # for now, don't keep it around.
+        rm $RPM_BUILD_ROOT/Module.kabi
     else
         echo "**** NOTE: Cannot find DUP reference Module.kabi file. ****"
     fi
@@ -1869,6 +1912,7 @@ BuildKernel() {
 %endif
 
     # then drop all but the needed Makefiles/Kconfig files
+    rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Documentation
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
     cp .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -2005,7 +2049,7 @@ BuildKernel() {
     mkdir restore
     cp -r lib/modules/$KernelVer/* restore/.
 
-    # don't include anything going into k-m-e in the file lists
+    # don't include anything going into k-m-e and k-m-i in the file lists
     rm -rf lib/modules/$KernelVer/{extra,internal}
 
 
@@ -2155,7 +2199,7 @@ popd
 
 %if %{with_doc}
 # Make the HTML pages.
-make LD=ld.bfd htmldocs || %{doc_build_fail}
+make LD=ld.bfd PYTHON=/usr/bin/python3 htmldocs || %{doc_build_fail}
 
 # sometimes non-world-readable files sneak into the kernel source tree
 chmod -R a=rX Documentation
@@ -2247,6 +2291,7 @@ docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{rpmversion}
 mkdir -p $docdir
 tar -h -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
 
+# with_doc
 %endif
 
 # We have to do the headers install before the tools install because the
@@ -2264,7 +2309,11 @@ find $RPM_BUILD_ROOT/usr/include \
 %endif
 
 %if %{with_cross_headers}
+%if 0%{?fedora}
 HDR_ARCH_LIST='arm arm64 powerpc s390 x86'
+%else
+HDR_ARCH_LIST='arm64 powerpc s390 x86'
+%endif
 mkdir -p $RPM_BUILD_ROOT/usr/tmp-headers
 
 for arch in $HDR_ARCH_LIST; do
@@ -2291,6 +2340,7 @@ INSTALL_KABI_PATH=$RPM_BUILD_ROOT/lib/modules/
 mkdir -p $INSTALL_KABI_PATH
 # install kabi releases directories
 tar xjvf %{SOURCE300} -C $INSTALL_KABI_PATH
+# with_kernel_abi_whitelists
 %endif
 
 %if %{with_selftests}
@@ -2337,6 +2387,18 @@ find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/livepatch/{}
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 popd
+%endif
+
+# We have to do the headers checksum calculation after the tools install because
+# these might end up installing their own set of headers on top of kernel's
+%if %{with_headers}
+# compute a content hash to export as Provides: kernel-headers-checksum
+HEADERS_CHKSUM=$(export LC_ALL=C; find $RPM_BUILD_ROOT/usr/include -type f -name "*.h" \
+			! -path $RPM_BUILD_ROOT/usr/include/linux/version.h | \
+		 sort | xargs cat | sha1sum - | cut -f 1 -d ' ');
+# export the checksum via usr/include/linux/version.h, so the dynamic
+# find-provides can grab the hash to update it accordingly
+echo "#define KERNEL_HEADERS_CHECKSUM \"$HEADERS_CHKSUM\"" >> $RPM_BUILD_ROOT/usr/include/linux/version.h
 %endif
 
 ###
@@ -2414,6 +2476,12 @@ fi\
 #
 %define kernel_variant_posttrans() \
 %{expand:%%posttrans %{?1:%{1}-}core}\
+%if 0%{!?fedora:1}\
+if [ -x %{_sbindir}/weak-modules ]\
+then\
+    %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
+fi\
+%endif\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
@@ -2443,6 +2511,12 @@ fi}\
 %define kernel_variant_preun() \
 %{expand:%%preun %{?1:%{1}-}core}\
 /bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+%if 0%{!?fedora:1}\
+if [ -x %{_sbindir}/weak-modules ]\
+then\
+    %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
+fi\
+%endif\
 %{nil}
 
 %kernel_variant_preun
@@ -2533,7 +2607,7 @@ fi
 %if %{2}\
 %{expand:%%files -f kernel-%{?3:%{3}-}core.list %{?1:-f kernel-%{?3:%{3}-}ldsoconf.list} %{?3:%{3}-}core}\
 %{!?_licensedir:%global license %%doc}\
-%license linux-%{KVERREL}/COPYING-%{version}\
+%license linux-%{KVERREL}/COPYING-%{version}-%{release}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}\
 %ghost /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/.vmlinuz.hmac \
@@ -2556,7 +2630,15 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
+%if 0%{!?fedora:1}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
+%endif\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca.cer\
+%ifarch s390x ppc64le\
+%if 0%{!?4:1}\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/%{signing_key_filename} \
+%endif\
+%endif\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
 %endif\
@@ -2604,6 +2686,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.0-500.chinfo
+- 5.6.0 - pf0
+
 * Wed Mar 25 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.13-500.chinfo
 - 5.5.13 - pf8
 
@@ -2919,50 +3004,6 @@ fi
 * Mon Mar 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-500.chinfo
 - 5.0.0 - pf1
 - Rawhide sync
-
-* Wed Feb 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.13-500.chinfo
-- 4.20.13
-
-* Sun Feb 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.12-500.chinfo
-- 4.20.12
-
-* Wed Feb 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.11-500.chinfo
-- 4.20.11 - pf6
-- f29 sync
-
-* Fri Feb 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.10-500.chinfo
-- 4.20.10
-
-* Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.8-500.chinfo
-- 4.20.8
-
-* Wed Feb 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.7-500.chinfo
-- 4.20.7
-
-* Thu Jan 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.6-500.chinfo
-- 4.20.6
-
-* Sat Jan 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.5-500.chinfo
-- 4.20.5
-- pf5
-
-* Thu Jan 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.4-500.chinfo
-- 4.20.4
-- f29 sync
-
-* Thu Jan 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.3-500.chinfo
-- 4.20.3
-- stabilization sync
-
-* Sun Jan 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.2-500.chinfo
-- 4.20.2
-
-* Wed Jan 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.1-500.chinfo
-- 4.20.1
-
-* Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.20.0-500.chinfo
-- 4.20.0
-
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

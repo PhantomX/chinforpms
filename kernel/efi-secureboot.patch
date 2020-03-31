@@ -131,10 +131,10 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  create mode 100644 drivers/firmware/efi/secureboot.c
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index bbe35bf879f5..7e528b6af86b 100644
+index 2441b64d061f..1797623b0c3a 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -1179,19 +1179,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1126,19 +1126,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -156,10 +156,10 @@ index bbe35bf879f5..7e528b6af86b 100644
  	reserve_initrd();
  
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index 4ac2de4dfa72..195b078a423c 100644
+index 554d795270d9..d2e17e26ac55 100644
 --- a/drivers/firmware/efi/Makefile
 +++ b/drivers/firmware/efi/Makefile
-@@ -24,6 +24,7 @@ obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_mem.o
+@@ -24,6 +24,7 @@ obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_map.o
  obj-$(CONFIG_EFI_BOOTLOADER_CONTROL)	+= efibc.o
  obj-$(CONFIG_EFI_TEST)			+= test/
  obj-$(CONFIG_EFI_DEV_PATH_PARSER)	+= dev-path-parser.o
@@ -169,7 +169,7 @@ index 4ac2de4dfa72..195b078a423c 100644
  
 diff --git a/drivers/firmware/efi/secureboot.c b/drivers/firmware/efi/secureboot.c
 new file mode 100644
-index 000000000000..9070055de0a1
+index 000000000000..de0a3714a5d4
 --- /dev/null
 +++ b/drivers/firmware/efi/secureboot.c
 @@ -0,0 +1,38 @@
@@ -212,10 +212,10 @@ index 000000000000..9070055de0a1
 +	}
 +}
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 21d81021c1f4..758ec061d03b 100644
+index 5062683d4d08..6ae0e02f461e 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -1204,6 +1204,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -1126,6 +1126,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_NX_PE_DATA		9	/* Can runtime data regions be mapped non-executable? */
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
@@ -230,25 +230,25 @@ index 21d81021c1f4..758ec061d03b 100644
  
  #ifdef CONFIG_EFI
  /*
-@@ -1214,6 +1222,8 @@ static inline bool efi_enabled(int feature)
- 	return test_bit(feature, &efi.flags) != 0;
+@@ -1137,6 +1145,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
-+
-+extern void __init efi_set_secure_boot(enum efi_secureboot_mode mode);
  
++extern void __init efi_set_secure_boot(enum efi_secureboot_mode mode);
++
  bool __pure __efi_soft_reserve_enabled(void);
  
-@@ -1227,6 +1237,8 @@ efi_capsule_pending(int *reset_type)
- {
+ static inline bool __pure efi_soft_reserve_enabled(void)
+@@ -1158,6 +1168,8 @@ efi_capsule_pending(int *reset_type)
  	return false;
  }
-+
-+static inline void efi_set_secure_boot(enum efi_secureboot_mode mode) {}
  
++static inline void efi_set_secure_boot(enum efi_secureboot_mode mode) {}
++
  static inline bool efi_soft_reserve_enabled(void)
  {
-@@ -1619,12 +1631,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+ 	return false;
+@@ -1541,12 +1553,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
  
@@ -258,11 +258,11 @@ index 21d81021c1f4..758ec061d03b 100644
 -	efi_secureboot_mode_disabled,
 -	efi_secureboot_mode_enabled,
 -};
- enum efi_secureboot_mode efi_get_secureboot(efi_system_table_t *sys_table);
+ enum efi_secureboot_mode efi_get_secureboot(void);
  
  #ifdef CONFIG_RESET_ATTACK_MITIGATION
 -- 
-2.21.0
+2.24.1
 
 
 From 15368f76d4997912318d35c52bfeb9041d85098e Mon Sep 17 00:00:00 2001
@@ -284,18 +284,18 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  2 files changed, 21 insertions(+)
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 77ea96b794bd..a119e1bc9623 100644
+index 1797623b0c3a..fa8ac411bf6e 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -73,6 +73,7 @@
- #include <linux/jiffies.h>
- #include <linux/mem_encrypt.h>
- #include <linux/sizes.h>
+@@ -17,6 +17,7 @@
+ #include <linux/root_dev.h>
+ #include <linux/sfi.h>
+ #include <linux/tboot.h>
 +#include <linux/security.h>
- 
  #include <linux/usb/xhci-dbgp.h>
- #include <video/edid.h>
-@@ -1027,6 +1028,13 @@ void __init setup_arch(char **cmdline_p)
+ 
+ #include <uapi/linux/mount.h>
+@@ -975,6 +976,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -303,7 +303,7 @@ index 77ea96b794bd..a119e1bc9623 100644
 +
 +#ifdef CONFIG_LOCK_DOWN_IN_EFI_SECURE_BOOT
 +	if (efi_enabled(EFI_SECURE_BOOT))
-+		security_lock_kernel_down("EFI Secure Boot mode", LOCKDOWN_CONFIDENTIALITY_MAX);
++		security_lock_kernel_down("EFI Secure Boot mode", LOCKDOWN_INTEGRITY_MAX);
 +#endif
 +
  	dmi_setup();
@@ -334,4 +334,4 @@ index e84ddf484010..d0501353a4b9 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 -- 
-2.21.0
+2.24.1

@@ -1,1 +1,1 @@
-# CONFIG_CLK_QORIQ is not set
+CONFIG_CLK_QORIQ=y

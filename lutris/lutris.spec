@@ -3,9 +3,9 @@
 %global vc_url https://github.com/%{name}/%{name}
 
 Name:           lutris
-Version:        0.5.4
+Version:        0.5.5
 Epoch:          1
-Release:        101%{?dist}
+Release:        100%{?dist}
 Summary:        Install and play any video game easily
 
 License:        GPLv3
@@ -15,8 +15,6 @@ Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 Patch0:         %{name}-no-gtk-update-icon-cache.patch
 Patch1:         %{name}-gamemodelib.patch
-Patch10:        %{vc_url}/commit/a99b17f00dfc4cdab80c237752cc3167d64194eb.patch#/%{name}-gh-a99b17f.patch
-Patch11:        %{vc_url}/commit/12a458db3c590c3f1972594e091a24cb4d65b610.patch#/%{name}-gh-12a458d.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gtk3
@@ -99,13 +97,15 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.des
 %{_datadir}/%{name}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
-%{_datadir}/polkit-1/actions/*.policy
 %{python3_sitelib}/%{name}-*.egg-info
 %{python3_sitelib}/%{name}/
 %{_metainfodir}/*.metainfo.xml
 
 
 %changelog
+* Mon Mar 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.5-100
+- 0.5.5
+
 * Fri Feb 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.4-101
 - GTK+ 3.2.14 fixes
 

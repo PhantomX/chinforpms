@@ -1,1 +1,1 @@
-CONFIG_CAN_UCAN=m
+# CONFIG_CAN_UCAN is not set

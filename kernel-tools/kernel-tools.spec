@@ -13,20 +13,20 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 3925fb5ba1c3f9b8eaa60a1e87826c1adefa53b5
+%global opensuse_id 4de111142ddf0e3ba42e23d5c7fe663483c91f92
 
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 5
+%global base_sublevel 6
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 12
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -107,8 +107,6 @@ Patch0: 0001-iio-Use-event-header-from-kernel-tree.patch
 # rpmlint cleanup
 Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
 
-Patch10: perf-5.4.20-binutil-libs-2.34.patch
-
 
 # Extra
 
@@ -128,19 +126,19 @@ Obsoletes:      cpufrequtils < 1:009-0.6.p1
 Obsoletes:      cpuspeed < 1:1.5-16
 Requires:       kernel-tools-libs = %{version}-%{release}
 
-BuildRequires: kmod, patch, bash, tar, git
+BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl(Carp), perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
-BuildRequires: audit-libs-devel glibc-devel glibc-static python3-devel java-devel
+BuildRequires: audit-libs-devel glibc-devel glibc-headers glibc-static python3-devel java-devel
 BuildRequires: asciidoc xmlto
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: /usr/bin/pathfix.py
 %ifnarch s390x %{arm}
 BuildRequires: numactl-devel
 %endif
-BuildRequires: pciutils-devel gettext ncurses-devel
+BuildRequires: libcap-devel pciutils-devel gettext ncurses-devel
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 BuildRequires: rpm-build, elfutils
 %{?systemd_requires}
@@ -243,7 +241,6 @@ cd linux-%{kversion}
 
 %patch0 -p1
 %patch6 -p1
-%patch10 -p1
 
 %patch1000 -p1
 
@@ -483,6 +480,7 @@ popd
 %{_sysconfdir}/bash_completion.d/bpftool
 %{_mandir}/man8/bpftool-btf.8.gz
 %{_mandir}/man8/bpftool-cgroup.8.gz
+%{_mandir}/man8/bpftool-gen.8.gz
 %{_mandir}/man8/bpftool-map.8.gz
 %{_mandir}/man8/bpftool-net.8.gz
 %{_mandir}/man8/bpftool-prog.8.gz
@@ -493,7 +491,7 @@ popd
 
 %files -n libbpf
 %{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.0.6
+%{_libdir}/libbpf.so.0.0.7
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf-devel
@@ -508,12 +506,16 @@ popd
 %{_includedir}/bpf/bpf_tracing.h
 %{_includedir}/bpf/btf.h
 %{_includedir}/bpf/libbpf.h
+%{_includedir}/bpf/libbpf_common.h
 %{_includedir}/bpf/libbpf_util.h
 %{_includedir}/bpf/xsk.h
 %license linux-%{kversion}/COPYING
 
 
 %changelog
+* Mon Mar 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.0-500.chinfo
+- 5.6.0
+
 * Wed Mar 25 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.12-500.chinfo
 - 5.5.12
 

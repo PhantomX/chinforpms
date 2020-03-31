@@ -5,6 +5,7 @@
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
+%undefine _annotated_build
 
 %ifarch %{ix86} x86_64
 %global wine_mingw 1
@@ -39,14 +40,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.5
+%global wine_stagingver 7fe7d87f095f9f0d1469f2a7b1860d1b082ec12d
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 876ad0ea80002a5cd5481646110cf60974459794
+%global tkg_id 0f35bf21cbf2d6edd1a4e3b08a7e4f9da0203759
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_id}/wine-tkg-git
 
@@ -84,7 +85,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.5
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -189,6 +190,7 @@ Patch734:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging-rpc.patch#/%{n
 Patch735:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
 Patch736:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch737:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
+Patch738:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.patch#/%{name}-valve-a09b820.patch
 
 Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 
@@ -834,6 +836,7 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 %else
 %patch737 -p1
 %endif
+%patch738 -p1 -R
 
 %if 0%{?fshack}
 %patch800 -p1 -R
@@ -2592,6 +2595,10 @@ fi
 
 
 %changelog
+* Mon Mar 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.5-101
+- Staging fixes
+- Revert server timeout disabled by proton-tkg-staging patch
+
 * Sun Mar 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.5-100
 - 5.5
 - New tkg links
