@@ -1,7 +1,7 @@
-%global smoothver 0.9.3
+%global smoothver 0.9.4
 
 Name:           freac
-Version:        1.1~rc1
+Version:        1.1
 Release:        1%{?dist}
 Summary:        A free audio converter and CD ripper
 
@@ -87,6 +87,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.%{
 
 
 %changelog
+* Tue Mar 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.1-1
+- 1.1
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.1~rc1-2
 - 1.1-rc1
 
