@@ -90,7 +90,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.%{
 * Tue Mar 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.1-1
 - 1.1
 
-* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.1~rc1-2
+* Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.1~rc1-1
 - 1.1-rc1
 
 * Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.1~beta3-1

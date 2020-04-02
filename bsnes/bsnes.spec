@@ -4,7 +4,7 @@
 %global with_snapshot 0
 
 %ifarch x86_64
-%global build_with_lto    0
+%global build_with_lto    1
 %endif
 
 %global with_gtk2 1
@@ -23,7 +23,7 @@
 
 Name:           bsnes
 Version:        115
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Nintendo SNES emulator
 
 License:        GPLv3 and BSD
@@ -74,6 +74,8 @@ October 14th, 2004. It focuses on performance, features, and ease of use.
 %else
 %autosetup %{name}-%{version} -p1
 %endif
+
+find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec chmod -x {} ';'
 
 sed -i -e 's|-L/usr/local/lib ||g' -i hiro/GNUmakefile
 
@@ -139,6 +141,9 @@ done
 
 
 %changelog
+* Wed Apr 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 115-2
+- LTO build
+
 * Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 115-1
 - 115
 
