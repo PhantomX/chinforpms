@@ -1,0 +1,33 @@
+From 606ed18ded73718a7614988e0968801d65f4df9a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 2 Apr 2020 10:30:26 -0300
+Subject: [PATCH] Search gettext files in system-wide directory
+
+---
+ mcomix/mcomix/i18n.py | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/mcomix/mcomix/i18n.py b/mcomix/mcomix/i18n.py
+index 96a209c..08e29fc 100644
+--- a/mcomix/mcomix/i18n.py
++++ b/mcomix/mcomix/i18n.py
+@@ -5,6 +5,7 @@ import locale
+ import os
+ import sys
+ import threading
++import sysconfig
+ 
+ try:
+     import chardet
+@@ -108,6 +109,8 @@ def install_gettext():
+     for lang in lang_identifiers:
+         resource_path = tools.pkg_path('messages', lang,
+                                        'LC_MESSAGES', '%s.mo' % domain)
++        resource_path = os.path.join(sysconfig.get_config_var('datarootdir'),
++                                     'locale', lang, 'LC_MESSAGES', '%s.mo' % domain)
+         try:
+             with open(resource_path, mode = 'rb') as fp:
+                 translation = gettext.GNUTranslations(fp)
+-- 
+2.26.0
+

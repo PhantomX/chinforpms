@@ -1,0 +1,39 @@
+From 28d7db0bbced2ceae6bf79bdd95e6d94b11e2006 Mon Sep 17 00:00:00 2001
+From: mcomix3 Fedora maintainer <mcomix3-owner@fedoraproject.org>
+Date: Mon, 4 Nov 2019 14:42:04 +0900
+Subject: [PATCH] Change domain name for gettext
+
+Change domain name for gettext for now.
+---
+ mcomix/mcomix/constants.py | 1 +
+ mcomix/mcomix/i18n.py      | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/mcomix/mcomix/constants.py b/mcomix/mcomix/constants.py
+index a71588e..19c3eff 100644
+--- a/mcomix/mcomix/constants.py
++++ b/mcomix/mcomix/constants.py
+@@ -8,6 +8,7 @@ import operator
+ from mcomix import tools
+ 
+ APPNAME = 'MComix'
++APPNAME_DOMAIN = 'mcomix3'
+ VERSION = '1.3.0.dev0'
+ 
+ REQUIRED_PIL_VERSION = '5.1.0'
+diff --git a/mcomix/mcomix/i18n.py b/mcomix/mcomix/i18n.py
+index 5d067db..96a209c 100644
+--- a/mcomix/mcomix/i18n.py
++++ b/mcomix/mcomix/i18n.py
+@@ -103,7 +103,7 @@ def install_gettext():
+     # Make sure GTK uses the correct language.
+     os.environ['LANGUAGE'] = lang
+ 
+-    domain = constants.APPNAME.lower()
++    domain = constants.APPNAME_DOMAIN.lower()
+ 
+     for lang in lang_identifiers:
+         resource_path = tools.pkg_path('messages', lang,
+-- 
+2.23.0
+

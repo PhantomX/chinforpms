@@ -16,7 +16,7 @@
 %global with_curl 0
 %global with_dbusmenuqt 0
 %global with_ffi 1
-%global with_python 0
+%global with_python 1
 %global with_pillow 0
 %global with_pyqt 0
 
@@ -34,7 +34,6 @@ ExclusiveArch:  x86_64
 
 BuildRequires:  binutils
 BuildRequires:  patchelf
-BuildRequires:  perl
 BuildRequires:  python2-rpm-macros
 BuildRequires:  systemd
 BuildRequires:  ImageMagick
@@ -144,7 +143,7 @@ rm -fv %{buildroot}%{progdir}/libsqlite3.so.*
 rm -fv %{buildroot}%{progdir}/*/*/*.exe
 
 abs2rel(){
-  perl -e 'use File::Spec; print File::Spec->abs2rel($ARGV[0], $ARGV[1])' "$1" "$2"
+  realpath --relative-to="$2" "$1"
 }
 
 missing(){

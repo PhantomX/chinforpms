@@ -121,7 +121,11 @@
 %define requires_ui_curses Requires: %{name}-ui-curses = %{evr}
 %define requires_ui_gtk Requires: %{name}-ui-gtk = %{evr}
 %define requires_ui_sdl Requires: %{name}-ui-sdl = %{evr}
+%if %{have_spice}
 %define requires_ui_spice_app Requires: %{name}-ui-spice-app = %{evr}
+%else
+%define requires_ui_spice_app %{nil}
+%endif
 
 %global requires_all_modules \
 %{requires_block_curl} \
@@ -151,8 +155,8 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 4.2.0
-Release: 101%{?dist}
+Version: 5.0.0~rc1
+Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -178,129 +182,6 @@ Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
 
-# Fix a test suite error
-Patch1: 0001-tests-fix-modules-test-duplicate-test-case-error.patch
-# Miscellaneous fixes for RISC-V
-Patch0002: 0002-riscv-sifive_u-fix-a-memory-leak-in-soc_realize.patch
-Patch0003: 0003-riscv-Set-xPIE-to-1-after-xRET.patch
-Patch0004: 0004-target-riscv-Fix-tb-flags-FS-status.patch
-Patch0005: 0005-target-riscv-fsd-fsw-doesn-t-dirty-FP-state.patch
-Patch0006: 0006-target-riscv-update-mstatus.SD-when-FS-is-set-dirty.patch
-# virtio-fs support
-Patch0007: 0007-virtio-fs-fix-MSI-X-nvectors-calculation.patch
-Patch0008: 0008-vhost-user-fs-remove-vhostfd-property.patch
-Patch0009: 0009-build-rename-CONFIG_LIBCAP-to-CONFIG_LIBCAP_NG.patch
-Patch0010: 0010-virtiofsd-Pull-in-upstream-headers.patch
-Patch0011: 0011-virtiofsd-Pull-in-kernel-s-fuse.h.patch
-Patch0012: 0012-virtiofsd-Add-auxiliary-.c-s.patch
-Patch0013: 0013-virtiofsd-Add-fuse_lowlevel.c.patch
-Patch0014: 0014-virtiofsd-Add-passthrough_ll.patch
-Patch0015: 0015-virtiofsd-Trim-down-imported-files.patch
-Patch0016: 0016-virtiofsd-Format-imported-files-to-qemu-style.patch
-Patch0017: 0017-virtiofsd-remove-mountpoint-dummy-argument.patch
-Patch0018: 0018-virtiofsd-remove-unused-notify-reply-support.patch
-Patch0019: 0019-virtiofsd-Remove-unused-enum-fuse_buf_copy_flags.patch
-Patch0020: 0020-virtiofsd-Fix-fuse_daemonize-ignored-return-values.patch
-Patch0021: 0021-virtiofsd-Fix-common-header-and-define-for-QEMU-buil.patch
-Patch0022: 0022-virtiofsd-Trim-out-compatibility-code.patch
-Patch0023: 0023-vitriofsd-passthrough_ll-fix-fallocate-ifdefs.patch
-Patch0024: 0024-virtiofsd-Make-fsync-work-even-if-only-inode-is-pass.patch
-Patch0025: 0025-virtiofsd-Add-options-for-virtio.patch
-Patch0026: 0026-virtiofsd-add-o-source-PATH-to-help-output.patch
-Patch0027: 0027-virtiofsd-Open-vhost-connection-instead-of-mounting.patch
-Patch0028: 0028-virtiofsd-Start-wiring-up-vhost-user.patch
-Patch0029: 0029-virtiofsd-Add-main-virtio-loop.patch
-Patch0030: 0030-virtiofsd-get-set-features-callbacks.patch
-Patch0031: 0031-virtiofsd-Start-queue-threads.patch
-Patch0032: 0032-virtiofsd-Poll-kick_fd-for-queue.patch
-Patch0033: 0033-virtiofsd-Start-reading-commands-from-queue.patch
-Patch0034: 0034-virtiofsd-Send-replies-to-messages.patch
-Patch0035: 0035-virtiofsd-Keep-track-of-replies.patch
-Patch0036: 0036-virtiofsd-Add-Makefile-wiring-for-virtiofsd-contrib.patch
-Patch0037: 0037-virtiofsd-Fast-path-for-virtio-read.patch
-Patch0038: 0038-virtiofsd-add-fd-FDNUM-fd-passing-option.patch
-Patch0039: 0039-virtiofsd-make-f-foreground-the-default.patch
-Patch0040: 0040-virtiofsd-add-vhost-user.json-file.patch
-Patch0041: 0041-virtiofsd-add-print-capabilities-option.patch
-Patch0042: 0042-virtiofs-Add-maintainers-entry.patch
-Patch0043: 0043-virtiofsd-passthrough_ll-create-new-files-in-caller-.patch
-Patch0044: 0044-virtiofsd-passthrough_ll-add-lo_map-for-ino-fh-indir.patch
-Patch0045: 0045-virtiofsd-passthrough_ll-add-ino_map-to-hide-lo_inod.patch
-Patch0046: 0046-virtiofsd-passthrough_ll-add-dirp_map-to-hide-lo_dir.patch
-Patch0047: 0047-virtiofsd-passthrough_ll-add-fd_map-to-hide-file-des.patch
-Patch0048: 0048-virtiofsd-passthrough_ll-add-fallback-for-racy-ops.patch
-Patch0049: 0049-virtiofsd-validate-path-components.patch
-Patch0050: 0050-virtiofsd-Plumb-fuse_bufvec-through-to-do_write_buf.patch
-Patch0051: 0051-virtiofsd-Pass-write-iov-s-all-the-way-through.patch
-Patch0052: 0052-virtiofsd-add-fuse_mbuf_iter-API.patch
-Patch0053: 0053-virtiofsd-validate-input-buffer-sizes-in-do_write_bu.patch
-Patch0054: 0054-virtiofsd-check-input-buffer-size-in-fuse_lowlevel.c.patch
-Patch0055: 0055-virtiofsd-prevent-.-escape-in-lo_do_lookup.patch
-Patch0056: 0056-virtiofsd-prevent-.-escape-in-lo_do_readdir.patch
-Patch0057: 0057-virtiofsd-use-proc-self-fd-O_PATH-file-descriptor.patch
-Patch0058: 0058-virtiofsd-sandbox-mount-namespace.patch
-Patch0059: 0059-virtiofsd-move-to-an-empty-network-namespace.patch
-Patch0060: 0060-virtiofsd-move-to-a-new-pid-namespace.patch
-Patch0061: 0061-virtiofsd-add-seccomp-whitelist.patch
-Patch0062: 0062-virtiofsd-Parse-flag-FUSE_WRITE_KILL_PRIV.patch
-Patch0063: 0063-virtiofsd-cap-ng-helpers.patch
-Patch0064: 0064-virtiofsd-Drop-CAP_FSETID-if-client-asked-for-it.patch
-Patch0065: 0065-virtiofsd-set-maximum-RLIMIT_NOFILE-limit.patch
-Patch0066: 0066-virtiofsd-fix-libfuse-information-leaks.patch
-Patch0067: 0067-virtiofsd-add-syslog-command-line-option.patch
-Patch0068: 0068-virtiofsd-print-log-only-when-priority-is-high-enoug.patch
-Patch0069: 0069-virtiofsd-Add-ID-to-the-log-with-FUSE_LOG_DEBUG-leve.patch
-Patch0070: 0070-virtiofsd-Add-timestamp-to-the-log-with-FUSE_LOG_DEB.patch
-Patch0071: 0071-virtiofsd-Handle-reinit.patch
-Patch0072: 0072-virtiofsd-Handle-hard-reboot.patch
-Patch0073: 0073-virtiofsd-Kill-threads-when-queues-are-stopped.patch
-Patch0074: 0074-vhost-user-Print-unexpected-slave-message-types.patch
-Patch0075: 0075-contrib-libvhost-user-Protect-slave-fd-with-mutex.patch
-Patch0076: 0076-virtiofsd-passthrough_ll-add-renameat2-support.patch
-Patch0077: 0077-virtiofsd-passthrough_ll-disable-readdirplus-on-cach.patch
-Patch0078: 0078-virtiofsd-passthrough_ll-control-readdirplus.patch
-Patch0079: 0079-virtiofsd-rename-unref_inode-to-unref_inode_lolocked.patch
-Patch0080: 0080-virtiofsd-fail-when-parent-inode-isn-t-known-in-lo_d.patch
-Patch0081: 0081-virtiofsd-extract-root-inode-init-into-setup_root.patch
-Patch0082: 0082-virtiofsd-passthrough_ll-clean-up-cache-related-opti.patch
-Patch0083: 0083-virtiofsd-passthrough_ll-use-hashtable.patch
-Patch0084: 0084-virtiofsd-Clean-up-inodes-on-destroy.patch
-Patch0085: 0085-virtiofsd-support-nanosecond-resolution-for-file-tim.patch
-Patch0086: 0086-virtiofsd-fix-error-handling-in-main.patch
-Patch0087: 0087-virtiofsd-cleanup-allocated-resource-in-se.patch
-Patch0088: 0088-virtiofsd-fix-memory-leak-on-lo.source.patch
-Patch0089: 0089-virtiofsd-add-helper-for-lo_data-cleanup.patch
-Patch0090: 0090-virtiofsd-Prevent-multiply-running-with-same-vhost_u.patch
-Patch0091: 0091-virtiofsd-enable-PARALLEL_DIROPS-during-INIT.patch
-Patch0092: 0092-virtiofsd-fix-incorrect-error-handling-in-lo_do_look.patch
-Patch0093: 0093-Virtiofsd-fix-memory-leak-on-fuse-queueinfo.patch
-Patch0094: 0094-virtiofsd-Support-remote-posix-locks.patch
-Patch0095: 0095-virtiofsd-use-fuse_lowlevel_is_virtio-in-fuse_sessio.patch
-Patch0096: 0096-virtiofsd-prevent-fv_queue_thread-vs-virtio_loop-rac.patch
-Patch0097: 0097-virtiofsd-make-lo_release-atomic.patch
-Patch0098: 0098-virtiofsd-prevent-races-with-lo_dirp_put.patch
-Patch0099: 0099-virtiofsd-rename-inode-refcount-to-inode-nlookup.patch
-Patch0100: 0100-libvhost-user-Fix-some-memtable-remap-cases.patch
-Patch0101: 0101-virtiofsd-passthrough_ll-fix-refcounting-on-remove-r.patch
-Patch0102: 0102-virtiofsd-introduce-inode-refcount-to-prevent-use-af.patch
-Patch0103: 0103-virtiofsd-do-not-always-set-FUSE_FLOCK_LOCKS.patch
-Patch0104: 0104-virtiofsd-convert-more-fprintf-and-perror-to-use-fus.patch
-Patch0105: 0105-virtiofsd-Reset-O_DIRECT-flag-during-file-open.patch
-Patch0106: 0106-virtiofsd-Fix-data-corruption-with-O_APPEND-write-in.patch
-Patch0107: 0107-virtiofsd-passthrough_ll-Use-cache_readdir-for-direc.patch
-Patch0108: 0108-virtiofsd-add-definition-of-fuse_buf_writev.patch
-Patch0109: 0109-virtiofsd-use-fuse_buf_writev-to-replace-fuse_buf_wr.patch
-Patch0110: 0110-virtiofsd-process-requests-in-a-thread-pool.patch
-Patch0111: 0111-virtiofsd-prevent-FUSE_INIT-FUSE_DESTROY-races.patch
-Patch0112: 0112-virtiofsd-fix-lo_destroy-resource-leaks.patch
-Patch0113: 0113-virtiofsd-add-thread-pool-size-NUM-option.patch
-Patch0114: 0114-virtiofsd-Convert-lo_destroy-to-take-the-lo-mutex-lo.patch
-Patch0115: 0115-virtiofsd-passthrough_ll-Pass-errno-to-fuse_reply_er.patch
-Patch0116: 0116-virtiofsd-stop-all-queue-threads-on-exit-in-virtio_l.patch
-Patch0117: 0117-virtiofsd-add-some-options-to-the-help-message.patch
-
-# Fix ppc shutdown issue (bz #1784961)
-Patch0201: 0201-spapr-Don-t-trigger-a-CAS-reboot-for-XICS-XIVE-mode-.patch
 
 BuildRequires: gcc
 # documentation deps
@@ -348,7 +229,6 @@ BuildRequires: lzo-devel
 BuildRequires: ncurses-devel
 # used by 9pfs
 BuildRequires: libattr-devel
-BuildRequires: libcap-devel
 # used by qemu-bridge-helper and qemu-pr-helper
 BuildRequires: libcap-ng-devel
 # spice usb redirection support
@@ -374,8 +254,6 @@ BuildRequires: systemtap-sdt-devel
 BuildRequires: libjpeg-devel
 # For VNC PNG support
 BuildRequires: libpng-devel
-# For BlueZ device support
-BuildRequires: bluez-libs-devel
 # For Braille device support
 BuildRequires: brlapi-devel
 # For FDT device tree support
@@ -447,6 +325,12 @@ BuildRequires: perl-Test-Harness
 # Required for making python shebangs versioned
 BuildRequires: /usr/bin/pathfix.py
 BuildRequires: python3-devel
+%ifnarch %{arm}
+# qemu 5.0 liburing support. Library isn't built for arm
+BuildRequires: liburing-devel
+%endif
+# qemu 5.0 zstd compression support
+BuildRequires: libzstd-devel
 
 BuildRequires: glibc-static pcre-static glib2-static zlib-static
 
@@ -473,6 +357,7 @@ Requires: %{name}-system-nios2 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-or1k = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-ppc = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-riscv = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-rx = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-s390x = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-sh4 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-sparc = %{epoch}:%{version}-%{release}
@@ -648,11 +533,13 @@ Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description ui-sdl
 This package provides the additional SDL UI for QEMU.
 
+%if %{have_spice}
 %package  ui-spice-app
 Summary: QEMU spice-app UI driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description ui-spice-app
-This package provides the additional spice-app UI for QEMU. 
+This package provides the additional spice-app UI for QEMU.
+%endif
 
 %if %{have_kvm}
 %package kvm
@@ -914,6 +801,20 @@ Requires: %{name}-common = %{epoch}:%{version}-%{release}
 This package provides the QEMU system emulator for RISC-V systems.
 
 
+%package system-rx
+Summary: QEMU system emulator for RX
+Requires: %{name}-system-rx-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-rx
+This package provides the QEMU system emulator for RX systems.
+
+%package system-rx-core
+Summary: QEMU system emulator for RX
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-rx-core
+This package provides the QEMU system emulator for RX systems.
+
+
 %package system-s390x
 Summary: QEMU system emulator for S390
 Requires: %{name}-system-s390x-core = %{epoch}:%{version}-%{release}
@@ -1091,8 +992,8 @@ run_configure_disable_everything() {
         --disable-attr \
         --disable-auth-pam \
         --disable-avx2 \
+        --disable-avx512f \
         --disable-blobs \
-        --disable-bluez \
         --disable-bochs \
         --disable-brlapi \
         --disable-bsd-user \
@@ -1129,6 +1030,7 @@ run_configure_disable_everything() {
         --disable-libusb \
         --disable-libxml2 \
         --disable-linux-aio \
+        --disable-linux-io-uring \
         --disable-linux-user \
         --disable-live-block-migration \
         --disable-lzfse \
@@ -1186,6 +1088,7 @@ run_configure_disable_everything() {
         --disable-xen \
         --disable-xen-pci-passthrough \
         --disable-xfsctl \
+        --disable-zstd \
         --without-default-devices \
         "$@"
 }
@@ -1231,6 +1134,10 @@ run_configure \
 %if 0%{?fedora} > 30
     --enable-slirp=system \
 %endif
+    --disable-linux-io-uring
+
+# uring temporarily disabled, it's breaking the test suite:
+# https://lists.gnu.org/archive/html/qemu-block/2020-03/msg01395.html
 
 echo "config-host.mak contents:"
 echo "==="
@@ -1490,15 +1397,17 @@ popd
 %files common -f %{name}.lang
 %dir %{qemudocdir}
 %doc %{qemudocdir}/Changelog
-%doc %{qemudocdir}/qemu-doc.html
-%doc %{qemudocdir}/qemu-doc.txt
 %doc %{qemudocdir}/qemu-ga-ref.html
 %doc %{qemudocdir}/qemu-ga-ref.txt
 %doc %{qemudocdir}/qemu-qmp-ref.html
 %doc %{qemudocdir}/qemu-qmp-ref.txt
 %doc %{qemudocdir}/README.rst
+%doc %{qemudocdir}/index.html
 %doc %{qemudocdir}/interop
 %doc %{qemudocdir}/specs
+%doc %{qemudocdir}/system
+%doc %{qemudocdir}/tools
+%doc %{qemudocdir}/user
 %license %{qemudocdir}/COPYING
 %license %{qemudocdir}/COPYING.LIB
 %license %{qemudocdir}/LICENSE
@@ -1538,6 +1447,7 @@ popd
 %{_mandir}/man1/qemu.1*
 %{_mandir}/man1/qemu-trace-stap.1*
 %{_mandir}/man1/virtfs-proxy-helper.1*
+%{_mandir}/man1/virtiofsd.1*
 %{_mandir}/man7/qemu-block-drivers.7*
 %{_mandir}/man7/qemu-cpu-models.7*
 %{_mandir}/man7/qemu-ga-ref.7*
@@ -1546,6 +1456,7 @@ popd
 %{_bindir}/qemu-edid
 %{_bindir}/qemu-keymap
 %{_bindir}/qemu-pr-helper
+%{_bindir}/qemu-storage-daemon
 %{_bindir}/qemu-trace-stap
 %{_bindir}/virtfs-proxy-helper
 %{_sysusersdir}/%{name}.conf
@@ -1615,7 +1526,10 @@ popd
 %{_libdir}/qemu/ui-gtk.so
 %files ui-sdl
 %{_libdir}/qemu/ui-sdl.so
+%if %{have_spice}
 %files ui-spice-app
+%{_libdir}/qemu/ui-spice-app.so
+%endif
 %{_libdir}/qemu/ui-spice-app.so
 
 %files -n ivshmem-tools
@@ -1669,111 +1583,25 @@ popd
 %{_bindir}/qemu-xtensa
 %{_bindir}/qemu-xtensaeb
 
-%{_datadir}/systemtap/tapset/qemu-i386.stp
-%{_datadir}/systemtap/tapset/qemu-i386-log.stp
-%{_datadir}/systemtap/tapset/qemu-i386-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-x86_64.stp
-%{_datadir}/systemtap/tapset/qemu-x86_64-log.stp
-%{_datadir}/systemtap/tapset/qemu-x86_64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64-log.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64_be.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64_be-log.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64_be-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-alpha.stp
-%{_datadir}/systemtap/tapset/qemu-alpha-log.stp
-%{_datadir}/systemtap/tapset/qemu-alpha-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-arm.stp
-%{_datadir}/systemtap/tapset/qemu-arm-log.stp
-%{_datadir}/systemtap/tapset/qemu-arm-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-armeb.stp
-%{_datadir}/systemtap/tapset/qemu-armeb-log.stp
-%{_datadir}/systemtap/tapset/qemu-armeb-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-cris.stp
-%{_datadir}/systemtap/tapset/qemu-cris-log.stp
-%{_datadir}/systemtap/tapset/qemu-cris-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-hppa.stp
-%{_datadir}/systemtap/tapset/qemu-hppa-log.stp
-%{_datadir}/systemtap/tapset/qemu-hppa-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-m68k.stp
-%{_datadir}/systemtap/tapset/qemu-m68k-log.stp
-%{_datadir}/systemtap/tapset/qemu-m68k-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-microblaze.stp
-%{_datadir}/systemtap/tapset/qemu-microblaze-log.stp
-%{_datadir}/systemtap/tapset/qemu-microblaze-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-microblazeel.stp
-%{_datadir}/systemtap/tapset/qemu-microblazeel-log.stp
-%{_datadir}/systemtap/tapset/qemu-microblazeel-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-mips.stp
-%{_datadir}/systemtap/tapset/qemu-mips-log.stp
-%{_datadir}/systemtap/tapset/qemu-mips-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-mipsel.stp
-%{_datadir}/systemtap/tapset/qemu-mipsel-log.stp
-%{_datadir}/systemtap/tapset/qemu-mipsel-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-mips64.stp
-%{_datadir}/systemtap/tapset/qemu-mips64-log.stp
-%{_datadir}/systemtap/tapset/qemu-mips64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-mips64el.stp
-%{_datadir}/systemtap/tapset/qemu-mips64el-log.stp
-%{_datadir}/systemtap/tapset/qemu-mips64el-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32-log.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32el.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32el-log.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32el-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-nios2.stp
-%{_datadir}/systemtap/tapset/qemu-nios2-log.stp
-%{_datadir}/systemtap/tapset/qemu-nios2-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-or1k.stp
-%{_datadir}/systemtap/tapset/qemu-or1k-log.stp
-%{_datadir}/systemtap/tapset/qemu-or1k-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-ppc.stp
-%{_datadir}/systemtap/tapset/qemu-ppc-log.stp
-%{_datadir}/systemtap/tapset/qemu-ppc-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64-log.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64abi32.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64abi32-log.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64abi32-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64le.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64le-log.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64le-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-riscv32.stp
-%{_datadir}/systemtap/tapset/qemu-riscv32-log.stp
-%{_datadir}/systemtap/tapset/qemu-riscv32-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-riscv64.stp
-%{_datadir}/systemtap/tapset/qemu-riscv64-log.stp
-%{_datadir}/systemtap/tapset/qemu-riscv64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-s390x.stp
-%{_datadir}/systemtap/tapset/qemu-s390x-log.stp
-%{_datadir}/systemtap/tapset/qemu-s390x-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-sh4.stp
-%{_datadir}/systemtap/tapset/qemu-sh4-log.stp
-%{_datadir}/systemtap/tapset/qemu-sh4-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-sh4eb.stp
-%{_datadir}/systemtap/tapset/qemu-sh4eb-log.stp
-%{_datadir}/systemtap/tapset/qemu-sh4eb-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-sparc.stp
-%{_datadir}/systemtap/tapset/qemu-sparc-log.stp
-%{_datadir}/systemtap/tapset/qemu-sparc-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-sparc32plus.stp
-%{_datadir}/systemtap/tapset/qemu-sparc32plus-log.stp
-%{_datadir}/systemtap/tapset/qemu-sparc32plus-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-sparc64.stp
-%{_datadir}/systemtap/tapset/qemu-sparc64-log.stp
-%{_datadir}/systemtap/tapset/qemu-sparc64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-tilegx.stp
-%{_datadir}/systemtap/tapset/qemu-tilegx-log.stp
-%{_datadir}/systemtap/tapset/qemu-tilegx-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-xtensa.stp
-%{_datadir}/systemtap/tapset/qemu-xtensa-log.stp
-%{_datadir}/systemtap/tapset/qemu-xtensa-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-xtensaeb.stp
-%{_datadir}/systemtap/tapset/qemu-xtensaeb-log.stp
-%{_datadir}/systemtap/tapset/qemu-xtensaeb-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-i386*.stp
+%{_datadir}/systemtap/tapset/qemu-x86_64*.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64*.stp
+%{_datadir}/systemtap/tapset/qemu-alpha*.stp
+%{_datadir}/systemtap/tapset/qemu-arm*.stp
+%{_datadir}/systemtap/tapset/qemu-cris*.stp
+%{_datadir}/systemtap/tapset/qemu-hppa*.stp
+%{_datadir}/systemtap/tapset/qemu-m68k*.stp
+%{_datadir}/systemtap/tapset/qemu-microblaze*.stp
+%{_datadir}/systemtap/tapset/qemu-mips*.stp
+%{_datadir}/systemtap/tapset/qemu-nios2*.stp
+%{_datadir}/systemtap/tapset/qemu-or1k*.stp
+%{_datadir}/systemtap/tapset/qemu-ppc*.stp
+%{_datadir}/systemtap/tapset/qemu-riscv*.stp
+%{_datadir}/systemtap/tapset/qemu-s390x*.stp
+%{_datadir}/systemtap/tapset/qemu-sh4*.stp
+%{_datadir}/systemtap/tapset/qemu-sparc*.stp
+%{_datadir}/systemtap/tapset/qemu-tilegx*.stp
+%{_datadir}/systemtap/tapset/qemu-xtensa*.stp
 
 %files user-binfmt
 %{_exec_prefix}/lib/binfmt.d/qemu-*-dynamic.conf
@@ -1892,7 +1720,6 @@ popd
 %{_mandir}/man1/qemu-system-ppc64.1*
 %{_datadir}/%{name}/bamboo.dtb
 %{_datadir}/%{name}/canyonlands.dtb
-%{_datadir}/%{name}/ppc_rom.bin
 %{_datadir}/%{name}/qemu_vga.ndrv
 %{_datadir}/%{name}/skiboot.lid
 %{_datadir}/%{name}/u-boot.e500
@@ -1909,6 +1736,13 @@ popd
 %{_datadir}/%{name}/opensbi-riscv*.bin
 %{_datadir}/systemtap/tapset/qemu-system-riscv*.stp
 %{_mandir}/man1/qemu-system-riscv*.1*
+
+
+%files system-rx
+%files system-rx-core
+%{_bindir}/qemu-system-rx
+%{_datadir}/systemtap/tapset/qemu-system-rx*.stp
+%{_mandir}/man1/qemu-system-rx.1*
 
 
 %files system-s390x
@@ -1988,6 +1822,10 @@ popd
 
 
 %changelog
+* Thu Apr 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 2: 5.0.0~rc1-100
+- 5.0.0-rc1
+- f33 sync
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0-101
 - f33 sync
 

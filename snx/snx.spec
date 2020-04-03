@@ -4,7 +4,7 @@
 
 Name:           snx
 Version:        800007075
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Check Point SSL Network Extender (vpn client)
 
 License:        Proprietary
@@ -20,6 +20,7 @@ Source5:        README.wrapper
 
 ExclusiveArch:  %{ix86}
 
+BuildRequires:  execstack
 BuildRequires:  systemd
 
 
@@ -61,6 +62,9 @@ cp -p %{S:1} .
 cp -p %{S:4} .
 cp -p %{S:5} .
 sed -e 's|_DOCDIR_|%{_docdir}/%{name}|g' -i README.wrapper
+
+execstack -c %{name}
+
 
 %build
 
@@ -125,6 +129,9 @@ EOF
 
 
 %changelog
+* Thu Apr 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 800007075-4
+- Remove exectack from binary
+
 * Fri Mar 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 800007075-3
 - suid and group
 

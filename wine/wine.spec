@@ -1202,8 +1202,9 @@ install -m 0755 -d %{buildroot}%{_fontconfig_templatedir} \
                    %{buildroot}%{_fontconfig_confdir}
 install -p -m 0644 %{SOURCE501} %{buildroot}%{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf
 
-ln -s %{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf \
-      %{buildroot}%{_fontconfig_confdir}/20-wine-tahoma-nobitmaps.conf
+ln -s \
+  $(realpath --relative-to=%{_fontconfig_confdir} %{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf) \
+  %{buildroot}%{_fontconfig_confdir}/20-wine-tahoma-nobitmaps.conf
 
 %if 0%{?wine_staging}
 # install Times New Roman font for system package
