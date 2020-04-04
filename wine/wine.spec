@@ -1,7 +1,7 @@
-%global commit 9c190f8118faa2f4708e86340e3e0440f668835b
+%global commit 3047385437c7ef36996d0418ac378677f3e9d67c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200324
-%global with_snapshot 0
+%global date 20200402
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -40,14 +40,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7fe7d87f095f9f0d1469f2a7b1860d1b082ec12d
+%global wine_stagingver 90109a5fc5a8bbd0d7b65348a8286768e893583d
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 0f35bf21cbf2d6edd1a4e3b08a7e4f9da0203759
+%global tkg_id 843896c6a320ac4bf047fe09e03895d32fb4e04f
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_id}/wine-tkg-git
 
@@ -85,7 +85,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.5
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2272,7 +2272,7 @@ fi
 %{_libdir}/wine/display.%{winedrv16}
 %{_libdir}/wine/gdi.%{wineexe16}
 %{_libdir}/wine/imm.%{winedll16}
-%{_libdir}/wine/krnl386.exe16.so
+%{_libdir}/wine/krnl386.%{wineexe16}
 %{_libdir}/wine/keyboard.%{winedrv16}
 %{_libdir}/wine/lzexpand.%{winedll16}
 %{_libdir}/wine/mmsystem.%{winedll16}
@@ -2596,6 +2596,9 @@ fi
 
 
 %changelog
+* Fri Apr 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.5-102.20200402git3047385
+- Snapshot
+
 * Mon Mar 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.5-101
 - Staging fixes
 - Revert server timeout disabled by proton-tkg-staging patch

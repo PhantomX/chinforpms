@@ -1,11 +1,24 @@
-diff -up wine-3ddf3a720f2a342141550c973f10854b573d80ed/dlls/winevulkan/Makefile.in.orig wine-3ddf3a720f2a342141550c973f10854b573d80ed/dlls/winevulkan/Makefile.in
---- wine-3ddf3a720f2a342141550c973f10854b573d80ed/dlls/winevulkan/Makefile.in.orig	2020-03-20 18:37:58.000000000 -0300
-+++ wine-3ddf3a720f2a342141550c973f10854b573d80ed/dlls/winevulkan/Makefile.in	2020-03-21 18:04:35.986212785 -0300
+From 3096c667f754d501e87da919674f67a028f2c9be Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 3 Apr 2020 10:07:20 -0300
+Subject: [PATCH] Fix gcc 10 i686 miscompilation
+
+---
+ dlls/winevulkan/Makefile.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/dlls/winevulkan/Makefile.in b/dlls/winevulkan/Makefile.in
+index 251de5c..d2ace62 100644
+--- a/dlls/winevulkan/Makefile.in
++++ b/dlls/winevulkan/Makefile.in
 @@ -1,6 +1,7 @@
  MODULE    = winevulkan.dll
  IMPORTLIB = winevulkan
- IMPORTS   = user32 gdi32
+ IMPORTS   = user32 gdi32 advapi32
 +CFLAGS   += -fno-tree-dce
  
  C_SRCS = \
  	vulkan.c \
+-- 
+2.26.0
+
