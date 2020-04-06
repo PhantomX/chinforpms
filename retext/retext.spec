@@ -1,7 +1,7 @@
 %global with_tests 0
 
 Name:           retext
-Version:        7.0.4
+Version:        7.1.0
 Release:        1%{?dist}
 License:        GPLv3+
 Summary:        Text editor for Markdown and reStructuredText
@@ -15,8 +15,6 @@ Source1:        %{name}.1
 BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
-# For autosetup -S git
-BuildRequires:  git
 BuildRequires:  libappstream-glib
 BuildRequires:  librsvg2-tools
 BuildRequires:  python3-devel
@@ -41,7 +39,7 @@ Requires:       python3-markdown
 Requires:       python3-markups >= 2.0.0
 Requires:       python3-pygments
 Requires:       python3-qt5
-Requires:       python3-qt5-webkit
+Requires:       (python3-qt5-webkit or python3-qt5-webengine)
 Requires:       qt5-qtlocation
 
 
@@ -54,7 +52,7 @@ für Markdown und reStructuredText.
 
 
 %prep
-%autosetup -S git
+%autosetup -p1
 
 sed -e "s|'lrelease'|'lrelease-qt5'|" -i setup.py
 
@@ -77,10 +75,6 @@ done
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 install -p -m 0644 icons/retext.svg %{buildroot}/%{_datadir}/icons/hicolor/scalable/apps/
-
-#desktop-file-install \
-#--dir=%{buildroot}%{_datadir}/applications \
-#%{_builddir}/%{name}-%{version}/data/*.desktop
 
 
 %check
@@ -106,6 +100,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/me.mitya57.ReText.des
 
 
 %changelog
+* Sun Apr 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 7.1.0-1
+- 7.1.0
+
 * Mon Jun 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 7.0.4-1
 - 7.0.4
 - Requirements update

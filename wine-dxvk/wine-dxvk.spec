@@ -1,10 +1,10 @@
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 
-%global commit 0e353895fdd1a811209e02221cfd293b4b824ea7
+%global commit 00d371d78da753af3ec1854e698c449e38e4b79e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200221
-%global with_snapshot 0
+%global date 20200403
+%global with_snapshot 1
 
 %ifarch %{ix86} x86_64
 %global with_mingw 1
@@ -26,7 +26,7 @@
 
 %global winedll dll%{?libext}
 
-%global tkg_id 96dcfca35216a82066000293ff9f9a5fbdae607c
+%global tkg_id 626f9276996f42f9792c6e1babc1ed3c64fbf985
 %global tkg_url https://github.com/Frogging-Family/dxvk-tools/raw/%{tkg_id}/DXVKBUILD/patches
 
 %global valve_url https://github.com/ValveSoftware/dxvk
@@ -43,7 +43,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.6
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -298,6 +298,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Apr 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6-101.20200403git00d371d
+- Snapshot
+
 * Fri Mar 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6-100
 - 1.6
 
