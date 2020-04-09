@@ -1,36 +1,34 @@
-From e9ca60a75a4f192548b205b8da26f0f17fc1b58a Mon Sep 17 00:00:00 2001
+From d285eb1c21eca399ac23ee7e33d98b98d56707ff Mon Sep 17 00:00:00 2001
 From: Fedora Kernel Team <kernel-team@fedoraproject.org>
-Date: Mon, 30 Mar 2020 16:55:58 -0300
+Date: Wed, 8 Apr 2020 16:46:49 -0300
 Subject: [PATCH] postfactum: fix build without BMQ
 
 ---
- kernel/sched/sched.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ kernel/sched/sched.h | 13 -------------
+ 1 file changed, 13 deletions(-)
 
 diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 911b305..f38d134 100644
+index 6a56ebd..db3bcde 100644
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -2484,6 +2484,19 @@ static inline void membarrier_switch_mm(struct rq *rq,
- }
- #endif
- 
-+#ifdef CONFIG_SMP
-+static inline bool is_per_cpu_kthread(struct task_struct *p)
-+{
-+	if (!(p->flags & PF_KTHREAD))
-+		return false;
-+
-+	if (p->nr_cpus_allowed != 1)
-+		return false;
-+
-+	return true;
-+}
-+#endif
-+
- static inline int task_running_nice(struct task_struct *p)
- {
+@@ -2502,17 +2502,4 @@ static inline int task_running_nice(struct task_struct *p)
  	return (task_nice(p) > 0);
+ }
+ 
+-#ifdef CONFIG_SMP
+-static inline bool is_per_cpu_kthread(struct task_struct *p)
+-{
+-	if (!(p->flags & PF_KTHREAD))
+-		return false;
+-
+-	if (p->nr_cpus_allowed != 1)
+-		return false;
+-
+-	return true;
+-}
+-#endif
+-
+ #endif /* !CONFIG_SCHED_BMQ */
 -- 
 2.26.0
 

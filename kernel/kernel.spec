@@ -94,18 +94,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 1cc89f899d7b65287d9acec57ae548800f656f44
+%global pfcommit 6b91fd491f147706467ab12787a854516cb6d184
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id c8170d6b0e04b950b01f8c3967b1c82a401ebc88
+%global opensuse_id e840c7bc15213495d51b74389cb2a55e4483fc85
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -840,6 +840,12 @@ Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
 Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
 # https://patchwork.kernel.org/patch/11420129/
 Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
+# Upstream commit f87391eec2c5 thread: https://www.spinics.net/lists/linux-mmc/msg58036.html
+Patch314: arm-bcm2711-mmc-sdhci-iproc-Add-custom-set_power-callback.patch
+# https://patchwork.freedesktop.org/patch/358980/
+Patch315: drm-vc4-Fix-HDMI-mode-validation.patch
+# Upstream commit 57b76faf1d78
+Patch316: arm-bcm2835-serial-8250_early-support-aux-uart.patch
 
 # Tegra bits
 # https://www.spinics.net/lists/linux-tegra/msg48152.html
@@ -854,6 +860,8 @@ Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
 Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
 # https://patchwork.ozlabs.org/patch/1261638/
 Patch326: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
+# http://patchwork.ozlabs.org/patch/1221384/
+Patch327: PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 
 # Coral
 Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
@@ -900,6 +908,19 @@ Patch507: drm-dp-mst-error-handling-improvements.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1811850
 Patch509: drm-i915-backports.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1816621
+# https://patchwork.ozlabs.org/patch/1260523/
+Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1820196
+Patch512: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
+
+# nouveau runpm and secboot fixes
+# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/f5755e7069d4acbcce1a93692421f358241ead7b
+Patch513: 0001-drm-nouveau-workaround-runpm-fail-by-disabling-PCI-p.patch
+# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/41c6a13e8143af71928749ea9895d2ebc2fb4ffd
+Patch514: 0002-drm-nouveau-gr-gp107-gp108-implement-workaround-for-.patch
 
 ### Extra
 
@@ -2686,6 +2707,10 @@ fi
 #
 #
 %changelog
+* Wed Apr 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.3-500.chinfo
+- 5.6.3 - pf3
+- f32 sync
+
 * Thu Apr 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.2-500.chinfo
 - 5.6.2 - pf2
 
@@ -2694,6 +2719,7 @@ fi
 
 * Mon Mar 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.0-500.chinfo
 - 5.6.0 - pf0
+- Rawhide sync
 
 * Wed Mar 25 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.13-500.chinfo
 - 5.5.13 - pf8

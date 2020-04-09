@@ -1,6 +1,6 @@
-From 2e6e2067151a073d61fffa634fe2a0d58869606b Mon Sep 17 00:00:00 2001
+From c95818ec25a9e739cb5151b5db71f8c746bbf677 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 21 Mar 2020 09:33:23 -0300
+Date: Wed, 8 Apr 2020 11:30:39 -0300
 Subject: [PATCH] Build fixes
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] Build fixes
  1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index 262838f..ffa2462 100644
+index de332b8..254c572 100644
 --- a/shell/linux/Makefile
 +++ b/shell/linux/Makefile
 @@ -3,8 +3,8 @@ LOCAL_PATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
@@ -33,15 +33,15 @@ index 262838f..ffa2462 100644
  
  ifneq (, $(filter $(shell uname -s), FreeBSD OpenBSD NetBSD DragonFly))
      CFLAGS += -DTARGET_BSD
-@@ -291,13 +291,13 @@ endif
+@@ -292,13 +292,13 @@ endif
  RZDCY_SRC_DIR = $(LOCAL_PATH)/../../core
  include $(RZDCY_SRC_DIR)/core.mk
  
 -LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,-O3 -Wl,--sort-common -fopenmp
 +LDFLAGS += -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,--sort-common -fopenmp
  
--CFLAGS += $(RZDCY_CFLAGS) -g -O3 -D RELEASE -c -D USES_HOMEDIR -fopenmp #-D NO_REND
-+CFLAGS += $(RZDCY_CFLAGS) -D RELEASE -c -D USES_HOMEDIR -fopenmp #-D NO_REND
+-CFLAGS += $(RZDCY_CFLAGS) -g -O3 -D NDEBUG -c -D USES_HOMEDIR -fopenmp #-D NO_REND
++CFLAGS += $(RZDCY_CFLAGS) -D NDEBUG -c -D USES_HOMEDIR -fopenmp #-D NO_REND
  CFLAGS += -frename-registers -fno-strict-aliasing
  CFLAGS += -ffast-math -ftree-vectorize  -Wno-unused-result
  
@@ -50,7 +50,7 @@ index 262838f..ffa2462 100644
  
  INCS += -I$(RZDCY_SRC_DIR) -I$(RZDCY_SRC_DIR)/deps -I$(RZDCY_SRC_DIR)/khronos
  
-@@ -491,7 +491,7 @@ $(BUILDDIR)/%.build_obj : $(RZDCY_SRC_DIR)/%.S $(VERSION_HEADER)
+@@ -498,7 +498,7 @@ $(BUILDDIR)/%.build_obj : $(RZDCY_SRC_DIR)/%.S $(VERSION_HEADER)
  	mkdir -p $(dir $@)
  	$(AS) $(ASFLAGS) $(INCS) $< -o $@
  
@@ -60,5 +60,5 @@ index 262838f..ffa2462 100644
  	mkdir -p $(DESTDIR)$(PREFIX)/share/reicast/mappings 2>/dev/null || true
  	mkdir -p $(DESTDIR)$(MAN_DIR) 2>/dev/null || true
 -- 
-2.26.0.rc2
+2.26.0
 

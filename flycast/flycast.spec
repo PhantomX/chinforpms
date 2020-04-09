@@ -1,6 +1,6 @@
-%global commit 0c2e95185ca48b4f60d6652dea1758d5fe21103c
+%global commit 786c8e7744f52df31313d164bd02349eda32af05
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200320
+%global date 20200408
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 
 Name:           flycast
 Version:        7
-Release:        7%{?gver}%{?dist}
+Release:        8%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -26,9 +26,10 @@ Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        %{name}.appdata.xml
 
-Patch0:         %{name}-build-fixes.patch
-Patch1:         %{name}-use-system-libs.patch
-Patch2:         %{name}-change-configdir-name.patch
+Patch0:         0001-Build-fixes.patch
+Patch1:         0001-Use-system-libs.patch
+Patch2:         0001-Change-configdir-name.patch
+Patch3:         0001-Save-logfile-to-writable_data_path.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
@@ -37,7 +38,6 @@ BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(gl)
-BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libzip)
@@ -60,7 +60,9 @@ Requires:       vulkan-loader%{?_isa}
 %autosetup %{name}-r%{version} -p1
 %endif
 
-rm -rf core/deps/{flac,libpng,libzip,xxhash,zlib}
+rm -rf core/deps/{flac,libzip,xxhash,zlib}
+
+find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
 
 pushd shell/linux
 
@@ -135,6 +137,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Apr 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 7-8.20200408git786c8e7
+- New snapshot
+- Remove libpng BR
+
 * Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 7-7.20200320git0c2e951
 - Bump
 

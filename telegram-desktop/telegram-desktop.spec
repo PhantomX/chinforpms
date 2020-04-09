@@ -4,28 +4,48 @@
 %global tarsuffix -full
 
 # Telegram API tokens...
-%global apiid 208164
-%global apihash dfbe1bc42dc9d20507e17d1814cc2f0a
+# https://github.com/telegramdesktop/tdesktop/blob/dev/snap/snapcraft.yaml
+%global apiid 611335
+%global apihash d524b414d21f4d37f08684c1df41ac9c
 
 %global da_url https://github.com/desktop-app
 
 # Enable or disable build with GTK support...
 %bcond_with gtk3
-%bcond_with spellcheck
+%bcond_without spellcheck
 %bcond_without fonts
-%bcond_without ipo
 %bcond_without mindbg
+%if 0%{?fedora} && 0%{?fedora} >= 32
+%bcond_with ipo
+%bcond_without clang
+%bcond_without rlottie
+%else
+%bcond_with clang
+%bcond_with rlottie
+%ifarch x86_64
+%bcond_without ipo
+%else
+%bcond_with ipo
+%endif
+%endif
 
-%global with_sysrlottie 0
-%global with_systgvoip 1
+%bcond_without tgvoip
+
+%if %{with clang}
+%global optflags %(echo %{optflags} | sed -e 's/-mcet//g' -e 's/-fcf-protection//g' -e 's/-fstack-clash-protection//g' -e 's/$/-Qunused-arguments -Wno-unknown-warning-option/')
+%endif
 
 # Decrease debuginfo verbosity to reduce memory consumption...
 %if %{with mindbg}
+%ifarch x86_64
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
+%else
+%global optflags %(echo %{optflags} | sed 's/-g /-g2 /')
+%endif
 %endif
 
 Name:           telegram-desktop
-Version:        1.9.21
+Version:        2.0.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -43,6 +63,9 @@ Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}%{tars
 
 Source20:       thunar-sendto-%{name}.desktop
 
+# https://github.com/desktop-app/lib_base/commit/eedb8afcf5f1709f3e02db9b06b977bb57aca182
+Patch100:       lib_base-eedb8af.patch
+
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
 Patch200:       %{name}-no-text-replace.patch
@@ -50,7 +73,6 @@ Patch200:       %{name}-no-text-replace.patch
 Patch201:       %{name}-realmute.patch
 # Always display scrollbars
 Patch202:       %{name}-disable-overlay.patch
-Patch203:       %{name}-disable-animated-stickers.patch
 Patch204:       %{name}-build-fixes.patch
 
 Requires:       qt5-qtimageformats%{?_isa}
@@ -71,7 +93,6 @@ BuildRequires:  ninja-build
 # Development packages for Telegram Desktop...
 BuildRequires:  guidelines-support-library-devel >= 1.0.0
 BuildRequires:  mapbox-variant-devel >= 0.3.6
-BuildRequires:  libtgvoip-devel >= 2.4.4
 BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  ffmpeg-devel >= 3.1
 BuildRequires:  openal-soft-devel
@@ -104,22 +125,30 @@ Requires:      enchant2%{?_isa}
 Requires:      hunspell%{?_isa}
 %endif
 
-%if 0%{with_sysrlottie}
-BuildRequires:  rlottie-devel
-%else
+%if %{with clang}
+BuildRequires: compiler-rt
+BuildRequires: clang
+BuildRequires: llvm
+%endif
+
 # Telegram Desktop require patched version of rlottie since 1.8.0.
 # Pull Request pending: https://github.com/Samsung/rlottie/pull/252
+%if %{with rlottie}
+BuildRequires:  rlottie-devel
+%else
 Provides:       bundled(rlottie) = 0~git
 %endif
 
-%if !0%{with_systgvoip}
+%if %{with tgvoip}
+BuildRequires:  libtgvoip-devel >= 2.4.4
+%else
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  alsa-lib-devel
 BuildRequires:  openssl-devel
 BuildRequires:  json11-devel
 BuildRequires:  opus-devel
 
-Provides:       bundled(libtgvoip) = 0~git%{shortcommit16}
+Provides:       bundled(libtgvoip) = 0~git
 %endif
 Provides: bundled(lxqt-qtplugin) = 0.14.0~git
 
@@ -146,10 +175,10 @@ cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 # Unbundling libraries...
 rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,hunspell,libdbusmenu-qt,lz4,minizip,variant,xxHash}
 
-%if 0%{with_sysrlottie}
+%if %{with rlottie}
   rm -rf Telegram/ThirdParty/rlottie
 %endif
-%if 0%{with_systgvoip}
+%if %{with tgvoip}
   rm -rf Telegram/ThirdParty/libtgvoip
 %endif
 
@@ -159,7 +188,7 @@ sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
 
 %build
-%if %{with ipo} && %{with mindbg}
+%if %{with ipo} && %{with mindbg} && %{without clang}
 export CC=gcc
 export CXX=g++
 
@@ -172,40 +201,52 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 # Building Telegram Desktop using cmake...
 mkdir -p %{_target_platform}
 pushd %{_target_platform}
-    %cmake .. -G Ninja \
-       -DCMAKE_BUILD_TYPE:STRING="Release" \
-%if %{with ipo} && %{with mindbg}
-       -DCMAKE_AR:FILEPATH=%{_bindir}/gcc-ar \
-       -DCMAKE_NM:FILEPATH=%{_bindir}/gcc-nm \
-       -DCMAKE_RANLIB:FILEPATH=%{_bindir}/gcc-ranlib \
+  %cmake .. -G Ninja \
+    -DCMAKE_BUILD_TYPE:STRING="Release" \
+%if %{with clang}
+    -DCMAKE_C_COMPILER=%{_bindir}/clang \
+    -DCMAKE_CXX_COMPILER=%{_bindir}/clang++ \
+    -DCMAKE_AR=%{_bindir}/llvm-ar \
+    -DCMAKE_RANLIB=%{_bindir}/llvm-ranlib \
+    -DCMAKE_LINKER=%{_bindir}/llvm-ld \
+    -DCMAKE_OBJDUMP=%{_bindir}/llvm-objdump \
+    -DCMAKE_NM=%{_bindir}/llvm-nm \
+%else
+    -DCMAKE_AR=%{_bindir}/gcc-ar \
+    -DCMAKE_RANLIB=%{_bindir}/gcc-ranlib \
+    -DCMAKE_NM=%{_bindir}/gcc-nm \
 %endif
 %if %{without gtk3}
-       -DTDESKTOP_DISABLE_GTK_INTEGRATION:BOOL=ON \
+    -DTDESKTOP_DISABLE_GTK_INTEGRATION:BOOL=ON \
 %endif
 %if %{without spellcheck}
-       -DDESKTOP_APP_DISABLE_SPELLCHECK:BOOL=ON \
+    -DDESKTOP_APP_DISABLE_SPELLCHECK:BOOL=ON \
 %endif
-       -DTDESKTOP_API_ID=%{apiid} \
-       -DTDESKTOP_API_HASH=%{apihash} \
-       -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
-       -DDESKTOP_APP_USE_PACKAGED_GSL:BOOL=ON \
-       -DDESKTOP_APP_USE_PACKAGED_EXPECTED:BOOL=ON \
-       -DDESKTOP_APP_USE_PACKAGED_VARIANT:BOOL=ON \
-       -DDESKTOP_APP_USE_PACKAGED_QRCODE:BOOL=ON \
+    -DTDESKTOP_API_ID=%{apiid} \
+    -DTDESKTOP_API_HASH=%{apihash} \
+    -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
+    -DDESKTOP_APP_USE_PACKAGED_GSL:BOOL=ON \
+    -DDESKTOP_APP_USE_PACKAGED_EXPECTED:BOOL=ON \
+    -DDESKTOP_APP_USE_PACKAGED_VARIANT:BOOL=ON \
+    -DDESKTOP_APP_USE_PACKAGED_QRCODE:BOOL=ON \
 %if %{without fonts}
-       -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=OFF \
+    -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=OFF \
 %endif
-%if !0%{with_sysrlottie}
-       -DDESKTOP_APP_USE_PACKAGED_RLOTTIE:BOOL=OFF \
+%if %{with rlottie}
+    -DDESKTOP_APP_USE_PACKAGED_RLOTTIE:BOOL=ON \
+    -DDESKTOP_APP_LOTTIE_USE_CACHE:BOOL=OFF \
+%else
+    -DDESKTOP_APP_USE_PACKAGED_RLOTTIE:BOOL=OFF \
 %endif
-%if 0%{with_systgvoip}
-       -DTDESKTOP_USE_PACKAGED_TGVOIP:BOOL=ON \
+%if %{with tgvoip}
+    -DTDESKTOP_USE_PACKAGED_TGVOIP:BOOL=ON \
 %endif
-       -DDESKTOP_APP_USE_GLIBC_WRAPS:BOOL=OFF \
-       -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
-       -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
-       -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
-       -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
+    -DDESKTOP_APP_USE_GLIBC_WRAPS:BOOL=OFF \
+    -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
+    -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
+    -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
+    -DTDESKTOP_USE_FONTCONFIG_FALLBACK:BOOL=OFF \
+    -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
 %{nil}
 popd
 
@@ -243,6 +284,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Wed Apr 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.1-100
+- 2.0.1
+- RPMFusion sync
+
 * Tue Mar 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.21-100
 - 1.9.21
 

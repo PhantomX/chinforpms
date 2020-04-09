@@ -1,6 +1,6 @@
-From 3441b1466e5f915cffb9fa41f03408165cd1ecc5 Mon Sep 17 00:00:00 2001
+From 66d226015a74a3afe1d5b474202052eca6471b06 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 14 Mar 2020 22:40:55 -0300
+Date: Wed, 8 Apr 2020 16:30:56 -0300
 Subject: [PATCH] Use system libs
 
 ---
@@ -10,14 +10,13 @@ Subject: [PATCH] Use system libs
  libswirl/deps/chdr/flac.h            |  4 +++
  libswirl/hw/maple/maple_devs.cpp     |  8 ++++++
  libswirl/hw/pvr/ta_ctx.cpp           |  4 +++
- libswirl/reios/reios_elf.cpp         |  2 +-
  libswirl/rend/TexCache.cpp           |  4 +++
  libswirl/rend/gles/CustomTexture.cpp |  4 +++
  libswirl/rend/gles/glesrend.cpp      |  5 +++-
  libswirl/rend/gles/glestex.cpp       |  8 ++++++
  libswirl/scripting/lua_bindings.h    |  4 +++
  reicast/linux/Makefile               | 39 ++++++++++++++++++++++++++++
- 13 files changed, 111 insertions(+), 5 deletions(-)
+ 12 files changed, 110 insertions(+), 4 deletions(-)
 
 diff --git a/libswirl/archive/ZipArchive.h b/libswirl/archive/ZipArchive.h
 index d111873..482eec0 100644
@@ -89,21 +88,21 @@ index ce04013..69c487b 100644
  # 7-Zip/LZMA settings (CHDv5)
  ifdef CHD5_LZMA
 diff --git a/libswirl/deps/chdr/chd.c b/libswirl/deps/chdr/chd.c
-index 4461bdf..05a64aa 100644
+index 6dac3bc..6b5de00 100644
 --- a/libswirl/deps/chdr/chd.c
 +++ b/libswirl/deps/chdr/chd.c
-@@ -54,7 +54,11 @@
- #endif // CHD5_LZMA
- #include "deps/crypto/md5.h"
- #include "deps/crypto/sha1.h"
+@@ -59,7 +59,11 @@
+ #pragma clang diagnostic ignored "-Wtypedef-redefinition"
+ #endif
+ // Both the LZMA lib and zlib define Byte, which will compile fine, so ignore the warning
 +#ifdef SYSTEM_ZLIB
 +#include <zlib.h>
 +#else
  #include "deps/zlib/zlib.h"
 +#endif
- 
- #define TRUE 1
- #define FALSE 0
+ #if BUILD_COMPILER==COMPILER_CLANG
+ #pragma clang diagnostic pop
+ #endif
 diff --git a/libswirl/deps/chdr/flac.h b/libswirl/deps/chdr/flac.h
 index 3de00eb..6f51ffa 100644
 --- a/libswirl/deps/chdr/flac.h
@@ -121,7 +120,7 @@ index 3de00eb..6f51ffa 100644
  /***************************************************************************
   *  TYPE DEFINITIONS
 diff --git a/libswirl/hw/maple/maple_devs.cpp b/libswirl/hw/maple/maple_devs.cpp
-index bff59c4..f3258ad 100644
+index 8f8ac28..c7a6d5d 100644
 --- a/libswirl/hw/maple/maple_devs.cpp
 +++ b/libswirl/hw/maple/maple_devs.cpp
 @@ -16,8 +16,16 @@
@@ -142,7 +141,7 @@ index bff59c4..f3258ad 100644
  #if _ANDROID
  #include <android/log.h>
 diff --git a/libswirl/hw/pvr/ta_ctx.cpp b/libswirl/hw/pvr/ta_ctx.cpp
-index c697c41..30f477e 100644
+index e6c16b8..18a10a9 100644
 --- a/libswirl/hw/pvr/ta_ctx.cpp
 +++ b/libswirl/hw/pvr/ta_ctx.cpp
 @@ -319,7 +319,11 @@ void tactx_Term()
@@ -157,17 +156,6 @@ index c697c41..30f477e 100644
  #include "hw/pvr/pvr_mem.h"
  
  void tactx_write_frame(const char* file, TA_context* ctx, u8* vram, u8* vram_ref) {
-diff --git a/libswirl/reios/reios_elf.cpp b/libswirl/reios/reios_elf.cpp
-index e6be934..6ec67d4 100644
---- a/libswirl/reios/reios_elf.cpp
-+++ b/libswirl/reios/reios_elf.cpp
-@@ -60,4 +60,4 @@ bool reios_loadElf(const string& elf) {
- 	}
- 
- 	return true;
--}
-\ No newline at end of file
-+}
 diff --git a/libswirl/rend/TexCache.cpp b/libswirl/rend/TexCache.cpp
 index aee9054..134b5dc 100644
 --- a/libswirl/rend/TexCache.cpp
@@ -201,7 +189,7 @@ index ae0afc3..d4b6d5f 100644
  
  #include "scripting/lua_bindings.h"
 diff --git a/libswirl/rend/gles/glesrend.cpp b/libswirl/rend/gles/glesrend.cpp
-index 1603f49..b0540e2 100644
+index fd56fd6..c0f3463 100644
 --- a/libswirl/rend/gles/glesrend.cpp
 +++ b/libswirl/rend/gles/glesrend.cpp
 @@ -1256,8 +1256,11 @@ struct glesrend final : Renderer
@@ -218,7 +206,7 @@ index 1603f49..b0540e2 100644
  FILE* pngfile;
  
 diff --git a/libswirl/rend/gles/glestex.cpp b/libswirl/rend/gles/glestex.cpp
-index d9fa675..2e0fbb5 100644
+index e656e23..5a57ff4 100644
 --- a/libswirl/rend/gles/glestex.cpp
 +++ b/libswirl/rend/gles/glestex.cpp
 @@ -9,8 +9,16 @@
@@ -255,7 +243,7 @@ index ad1e4e3..edc96e4 100644
  
  void emulib_expose(lua_State* L);
 diff --git a/reicast/linux/Makefile b/reicast/linux/Makefile
-index c660006..0889c3f 100644
+index 45826a9..e05e2cb 100644
 --- a/reicast/linux/Makefile
 +++ b/reicast/linux/Makefile
 @@ -12,6 +12,13 @@ USE_MODEM := 1
@@ -312,5 +300,5 @@ index c660006..0889c3f 100644
  EXECUTABLE_STRIPPED=nosym-reicast.$(PLATFORM_EXT)
  ifdef NAOMI
 -- 
-2.24.1
+2.26.0
 

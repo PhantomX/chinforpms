@@ -1,70 +1,78 @@
-From 1016fcab97ee63e8e78c0c8f2526da63a5469809 Mon Sep 17 00:00:00 2001
+From bd93b1c29c8d754370095df7dd6a79278437e041 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 14 Mar 2020 22:21:15 -0300
+Date: Wed, 8 Apr 2020 11:39:01 -0300
 Subject: [PATCH] Change configdir name
 
 ---
- core/linux-dist/main.cpp | 34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+ core/linux-dist/main.cpp | 38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
 diff --git a/core/linux-dist/main.cpp b/core/linux-dist/main.cpp
-index e1a37f4..a10b3a2 100644
+index 521e28f..51652b6 100644
 --- a/core/linux-dist/main.cpp
 +++ b/core/linux-dist/main.cpp
-@@ -175,8 +175,8 @@ string find_user_config_dir()
- 		string home = "";
+@@ -165,11 +165,11 @@ std::string find_user_config_dir()
+ 		std::string home = "";
  		if(getenv("HOME") != NULL)
  		{
 -			// Support for the legacy config dir at "$HOME/.reicast"
--			string legacy_home = (string)getenv("HOME") + "/.reicast";
+-			std::string legacy_home = (std::string)getenv("HOME") + "/.reicast";
 +			// Support for the legacy config dir at "$HOME/.flycast"
-+			string legacy_home = (string)getenv("HOME") + "/.flycast";
++			std::string legacy_home = (std::string)getenv("HOME") + "/.flycast";
  			if((stat(legacy_home.c_str(), &info) == 0) && (info.st_mode & S_IFDIR))
  			{
- 				// "$HOME/.reicast" already exists, let's use it!
-@@ -187,12 +187,12 @@ string find_user_config_dir()
+-				// "$HOME/.reicast" already exists, let's use it!
++				// "$HOME/.flycast" already exists, let's use it!
+ 				return legacy_home;
+ 			}
+ 
+@@ -177,12 +177,12 @@ std::string find_user_config_dir()
  			 * Consult the XDG Base Directory Specification for details:
  			 *   http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html#variables
  			 */
--			home = (string)getenv("HOME") + "/.config/reicast";
-+			home = (string)getenv("HOME") + "/.config/flycast";
+-			home = (std::string)getenv("HOME") + "/.config/reicast";
++			home = (std::string)getenv("HOME") + "/.config/flycast";
  		}
  		if(getenv("XDG_CONFIG_HOME") != NULL)
  		{
  			// If XDG_CONFIG_HOME is set explicitly, we'll use that instead of $HOME/.config
--			home = (string)getenv("XDG_CONFIG_HOME") + "/reicast";
-+			home = (string)getenv("XDG_CONFIG_HOME") + "/flycast";
+-			home = (std::string)getenv("XDG_CONFIG_HOME") + "/reicast";
++			home = (std::string)getenv("XDG_CONFIG_HOME") + "/flycast";
  		}
  
  		if(!home.empty())
-@@ -217,8 +217,8 @@ string find_user_data_dir()
- 		string data = "";
+@@ -207,11 +207,11 @@ std::string find_user_data_dir()
+ 		std::string data = "";
  		if(getenv("HOME") != NULL)
  		{
 -			// Support for the legacy config dir at "$HOME/.reicast"
--			string legacy_data = (string)getenv("HOME") + "/.reicast";
+-			std::string legacy_data = (std::string)getenv("HOME") + "/.reicast";
 +			// Support for the legacy config dir at "$HOME/.flycast"
-+			string legacy_data = (string)getenv("HOME") + "/.flycast";
++			std::string legacy_data = (std::string)getenv("HOME") + "/.flycast";
  			if((stat(legacy_data.c_str(), &info) == 0) && (info.st_mode & S_IFDIR))
  			{
- 				// "$HOME/.reicast" already exists, let's use it!
-@@ -229,12 +229,12 @@ string find_user_data_dir()
+-				// "$HOME/.reicast" already exists, let's use it!
++				// "$HOME/.flycast" already exists, let's use it!
+ 				return legacy_data;
+ 			}
+ 
+@@ -219,12 +219,12 @@ std::string find_user_data_dir()
  			 * Consult the XDG Base Directory Specification for details:
  			 *   http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html#variables
  			 */
--			data = (string)getenv("HOME") + "/.local/share/reicast";
-+			data = (string)getenv("HOME") + "/.local/share/flycast";
+-			data = (std::string)getenv("HOME") + "/.local/share/reicast";
++			data = (std::string)getenv("HOME") + "/.local/share/flycast";
  		}
  		if(getenv("XDG_DATA_HOME") != NULL)
  		{
  			// If XDG_DATA_HOME is set explicitly, we'll use that instead of $HOME/.config
--			data = (string)getenv("XDG_DATA_HOME") + "/reicast";
-+			data = (string)getenv("XDG_DATA_HOME") + "/flycast";
+-			data = (std::string)getenv("XDG_DATA_HOME") + "/reicast";
++			data = (std::string)getenv("XDG_DATA_HOME") + "/flycast";
  		}
  
  		if(!data.empty())
-@@ -263,17 +263,17 @@ std::vector<string> find_system_config_dirs()
- 		string::size_type n = s.find(':', pos);
+@@ -253,17 +253,17 @@ std::vector<std::string> find_system_config_dirs()
+ 		std::string::size_type n = s.find(':', pos);
  		while(n != std::string::npos)
  		{
 -			dirs.push_back(s.substr(pos, n-pos) + "/reicast");
@@ -85,8 +93,8 @@ index e1a37f4..a10b3a2 100644
  	}
  	return dirs;
  }
-@@ -289,17 +289,17 @@ std::vector<string> find_system_data_dirs()
- 		string::size_type n = s.find(':', pos);
+@@ -279,17 +279,17 @@ std::vector<std::string> find_system_data_dirs()
+ 		std::string::size_type n = s.find(':', pos);
  		while(n != std::string::npos)
  		{
 -			dirs.push_back(s.substr(pos, n-pos) + "/reicast");
@@ -107,7 +115,7 @@ index e1a37f4..a10b3a2 100644
  	}
  	return dirs;
  }
-@@ -341,7 +341,7 @@ int main(int argc, char* argv[])
+@@ -331,7 +331,7 @@ int main(int argc, char* argv[])
  	settings.profile.run_counts=0;
  
  	if (reicast_init(argc, argv))
@@ -117,5 +125,5 @@ index e1a37f4..a10b3a2 100644
  	#if FEAT_HAS_NIXPROF
  	install_prof_handler(1);
 -- 
-2.24.1
+2.26.0
 
