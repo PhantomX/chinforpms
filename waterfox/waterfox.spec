@@ -1,9 +1,9 @@
 %global _legacy_common_support 1
 
-%global commit f6fe91ce29333271a5ef97ba148294404d28ab3f
+%global commit d5de4ec99d1d61a309d7fcd96da12488c9afe550
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200313
-%global with_snapshot 1
+%global date 20200408
+%global with_snapshot 0
 
 %global branch classic
 
@@ -127,8 +127,8 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2020.03.1
-Release:        2%{?branch:.%{branch}}%{?gver}%{?dist}
+Version:        2020.04
+Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -144,6 +144,8 @@ Source0:        %{vc_url}/archive/%{version}-%{branch}/%{name}-%{version}-%{bran
 # rev=revision ./waterfox-FreeBSD-patches-snapshot.sh
 # https://github.com/MrAlex94/Waterfox/issues/1220
 Source600:      https://dl.bintray.com/phantomx/tarballs/%{freebsd_root}.tar.xz
+Source601:      patch-bug1321069
+Source602:      patch-bug1381815
 
 Source10:       waterfox-mozconfig
 Source12:       waterfox-chinfo-default-prefs.js
@@ -177,7 +179,6 @@ Patch224:        mozilla-1170092.patch
 Patch225:        mozilla-1005640-accept-lang.patch
 #ARM run-time patch
 Patch226:        rhbz-1354671.patch
-Patch230:        rhbz-1497932.patch
 
 # Firefox upstream patches
 Patch402:        mozilla-1196777.patch
@@ -384,7 +385,6 @@ This package contains results of tests executed during build.
 %ifarch aarch64
 %patch226 -p1 -b .1354671
 %endif
-%patch230 -p1 -b .1497932
 
 %patch402 -p1 -b .1196777
 %patch406 -p1 -b .256180
@@ -410,6 +410,7 @@ This package contains results of tests executed during build.
 # Prepare FreeBSD patches
 mkdir _patches
 cp -p %{freebsd_root}/patch-{bug,z-bug,revert-bug}* _patches/
+cp -pf %{S:601} %{S:602} _patches/
 
 filterdiff -x dom/svg/crashtests/crashtests.list %{freebsd_root}/patch-bug1343147 \
   > _patches/patch-bug1343147
@@ -428,13 +429,15 @@ done
 # 3: no apply
 # 4: uncertain
 for i in \
-  702179 991253 1021761 1144632 1288587 1379148 1393235 1393283 1393627 \
-  1395486 1427126 1430508 1433747 1452576 1453127 1454285 1466606 1469257 \
-  1384121 1388744 1413143 1415883 1437450 \
+  702179 991253 1021761 1144632 1288587 1379148 1393235 1393283 1393627 1395486 1396722 \
+  1401909 1427126 1430508 1433747 1452576 1453127 1454285 1455235 1466606 1469257 \
+  1384121 1384701 1388744 1401063 1413143 1415883 1437450 \
   1447519
 do
   rm -f _patches/patch-bug${i}
 done
+
+rm -f _patches/patch-z-bug1355143
 
 patchcommand='patch -p0 -s -i'
 
@@ -1028,6 +1031,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Thu Apr 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.04-1.classic
+- 2020.04
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.03.1-2.classic.20200313gitf6fe91c
 - gcc 10 fix
 
