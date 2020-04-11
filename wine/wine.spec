@@ -1,7 +1,7 @@
 %global commit 3047385437c7ef36996d0418ac378677f3e9d67c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200402
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -40,14 +40,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 90109a5fc5a8bbd0d7b65348a8286768e893583d
+%global wine_stagingver 5.6
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 843896c6a320ac4bf047fe09e03895d32fb4e04f
+%global tkg_id b670269b4919d141279dd56c9e14a684d0f94b83
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_id}/wine-tkg-git
 
@@ -84,8 +84,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.5
-Release:        102%{?gver}%{?dist}
+Version:        5.6
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -196,7 +196,6 @@ Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spin
 
 Patch800:       revert-grab-fullscreen.patch
 Patch802:       %{valve_url}/commit/7778c1cbd59dd676943aa1df7e76d32b3eee8567.patch#/%{name}-valve-7778c1c.patch
-Patch803:       wine-xaudio2-pulseaudio-app-name.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -789,8 +788,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch704 -p1
 %patch705 -p1
 
-%patch803 -p1
-
 %patch5000 -p1
 %ifarch %{ix86}
 %patch5001 -p1
@@ -1337,9 +1334,9 @@ fi
 %{_libdir}/wine/winefile.%{wineexe}
 %{_libdir}/wine/winemine.%{wineexe}
 %{_libdir}/wine/winemsibuilder.%{wineexe}
-%{_libdir}/wine/winepath.exe.so
+%{_libdir}/wine/winepath.%{wineexe}
 %{_libdir}/wine/winmgmt.%{wineexe}
-%{_libdir}/wine/winver.exe.so
+%{_libdir}/wine/winver.%{wineexe}
 %{_libdir}/wine/wordpad.%{wineexe}
 %{_libdir}/wine/write.%{wineexe}
 %{_libdir}/wine/wusa.%{wineexe}
@@ -1717,7 +1714,7 @@ fi
 %{_libdir}/wine/d3dxof.%{winedll}
 %{_libdir}/wine/davclnt.%{winedll}
 %{_libdir}/wine/dbgeng.%{winedll}
-%{_libdir}/wine/dbghelp.dll.so
+%{_libdir}/wine/dbghelp.%{winedll}
 %{_libdir}/wine/dciman32.%{winedll}
 %{_libdir}/wine/ddraw.%{winedll}
 %{_libdir}/wine/ddrawex.%{winedll}
@@ -2596,6 +2593,9 @@ fi
 
 
 %changelog
+* Sat Apr 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.6-100
+- 5.6
+
 * Fri Apr 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.5-102.20200402git3047385
 - Snapshot
 
