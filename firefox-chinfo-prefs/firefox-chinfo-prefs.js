@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20200326
+// 20200411
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -35,6 +35,7 @@ pref("browser.urlbar.megabar", false);
 pref("browser.urlbar.openintab", true);
 pref("browser.urlbar.trimURLs", false);
 pref("browser.urlbar.speculativeConnect.enabled", false);
+pref("browser.urlbar.update1", false);
 pref("browser.urlbar.usepreloadedtopurls.enabled", false);
 pref("browser.xul.error_pages.expert_bad_cert", true);
 pref("dom.allow_cut_copy", false);

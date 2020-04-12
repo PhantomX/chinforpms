@@ -16,7 +16,7 @@
 
 Name:           wine-nine
 Version:        0.6
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -154,6 +154,9 @@ desktop-file-install \
 
 
 %changelog
+* Sat Apr 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:0.6-0.2.20191210git6eda08e
+- Fix winepath EOL on script
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:0.6-0.1.20191210git6eda08e
 - New snapshot
 

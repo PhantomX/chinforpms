@@ -40,14 +40,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.6
+%global wine_stagingver 5.6.1
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id b670269b4919d141279dd56c9e14a684d0f94b83
+%global tkg_id 9207e49732062fe17c6bec284e72e18ee7ff0e12
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_id}/wine-tkg-git
 
@@ -1751,6 +1751,7 @@ fi
 %{_libdir}/wine/dsquery.%{winedll}
 %{_libdir}/wine/dssenh.%{winedll}
 %{_libdir}/wine/dswave.%{winedll}
+%{_libdir}/wine/dsuiext.%{winedll}
 %{_libdir}/wine/dwmapi.%{winedll}
 %{_libdir}/wine/dwrite.dll.so
 %{_libdir}/wine/dx8vb.%{winedll}
