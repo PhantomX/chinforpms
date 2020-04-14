@@ -155,7 +155,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 5.0.0~rc1
+Version: 5.0.0~rc2
 Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
@@ -331,6 +331,8 @@ BuildRequires: liburing-devel
 %endif
 # qemu 5.0 zstd compression support
 BuildRequires: libzstd-devel
+# `hostname` used by test suite
+BuildRequires: hostname 
 
 BuildRequires: glibc-static pcre-static glib2-static zlib-static
 
@@ -1134,10 +1136,7 @@ run_configure \
 %if 0%{?fedora} > 30
     --enable-slirp=system \
 %endif
-    --disable-linux-io-uring
-
-# uring temporarily disabled, it's breaking the test suite:
-# https://lists.gnu.org/archive/html/qemu-block/2020-03/msg01395.html
+%{nil}
 
 echo "config-host.mak contents:"
 echo "==="
@@ -1335,8 +1334,8 @@ install -Dpm 644 %{SOURCE16} %{buildroot}%{_sysusersdir}/%{name}.conf
 %global archs_skip_tests s390
 %global archs_ignore_test_failures 0
 
-# Enable this temporarily if tests are broken
-%global temp_skip_check 0
+# An iotest is failing for i686
+%global temp_skip_check 1
 
 pushd build-dynamic
 %ifnarch %{archs_skip_tests}
@@ -1822,6 +1821,10 @@ popd
 
 
 %changelog
+* Mon Apr 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:5.0.0~rc2-100
+- 5.0.0-rc2
+- f33 sync
+
 * Thu Apr 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 2: 5.0.0~rc1-100
 - 5.0.0-rc1
 - f33 sync

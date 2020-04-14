@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -105,7 +105,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 6b91fd491f147706467ab12787a854516cb6d184
+%global pfcommit f805c6cf2339c51706c8444f60317f811f823b2d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id e840c7bc15213495d51b74389cb2a55e4483fc85
+%global opensuse_id 5b340fd464ee2da87a8bcacba0920e43d777f687
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -938,6 +938,9 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/media-go7007-Fix-URB-type-for-interrupt-handling.patch#/openSUSE-media-go7007-Fix-URB-type-for-interrupt-handling.patch
+Patch1020: %{opensuse_url}/net-bpfilter-remove-superfluous-testing-message.patch#/openSUSE-net-bpfilter-remove-superfluous-testing-message.patch
+Patch1021: %{opensuse_url}/efi-x86-Don-t-remap-text-rodata-gap-read-only-for-mi.patch#/openSUSE-efi-x86-Don-t-remap-text-rodata-gap-read-only-for-mi.patch
+Patch1022: %{opensuse_url}/efi-x86-Fix-the-deletion-of-variables-in-mixed-mode.patch#/openSUSE-efi-x86-Fix-the-deletion-of-variables-in-mixed-mode.patch
 
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -2707,6 +2710,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.4-500.chinfo
+- 5.6.4 - pf3
+
 * Wed Apr 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.3-500.chinfo
 - 5.6.3 - pf3
 - f32 sync
