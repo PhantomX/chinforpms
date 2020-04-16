@@ -1,7 +1,7 @@
-%global commit 3047385437c7ef36996d0418ac378677f3e9d67c
+%global commit f6c131f5f3937daf7dd562a0ff6a6f1c0b6fb2b3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200402
-%global with_snapshot 0
+%global date 20200415
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -40,14 +40,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.6.1
+%global wine_stagingver a23c0760550a39ff98d4ca58486e1abc7330c41c
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 9207e49732062fe17c6bec284e72e18ee7ff0e12
+%global tkg_id cd858e27e7de0d766c51bb2b351a2af747aeb580
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_id}/wine-tkg-git
 
@@ -85,7 +85,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.6
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2025,6 +2025,7 @@ fi
 %{_libdir}/wine/qasf.%{winedll}
 %{_libdir}/wine/qcap.dll.so
 %{_libdir}/wine/qedit.%{winedll}
+%{_libdir}/wine/qdvd.%{winedll}
 %{_libdir}/wine/qmgr.%{winedll}
 %{_libdir}/wine/qmgrprxy.%{winedll}
 %{_libdir}/wine/quartz.%{winedll}
@@ -2594,6 +2595,9 @@ fi
 
 
 %changelog
+* Wed Apr 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.6-101.20200415gitf6c131f
+- Snapshot
+
 * Sat Apr 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.6-100
 - 5.6
 

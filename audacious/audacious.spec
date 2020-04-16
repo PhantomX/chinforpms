@@ -2,7 +2,7 @@
 %bcond_without gtk
 
 Name:            audacious
-Version:         4.0
+Version:         4.0.2
 Release:         100%{?dist}
 
 %global tar_ver %{version}
@@ -84,7 +84,9 @@ Library files for the Audacious audio player.
 Summary: Development files for the Audacious audio player
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: glib2-devel%{?_isa}
+%if %{with gtk}
 Requires: gtk2-devel%{?_isa}
+%endif
 
 %description devel
 Files needed when building software for the Audacious audio player.
@@ -163,6 +165,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/%{name}.ap
 
 
 %changelog
+* Wed Apr 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 4.0.2-100
+- 4.0.2
+
 * Mon Mar 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 4.0-101
 - 4.0
 - Qt is the default now

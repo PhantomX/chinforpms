@@ -1,9 +1,9 @@
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 
-%global commit 7f03f453012e8d68e0926ba2a67852c3b710bbf6
+%global commit ce3d0ab4b4a0c66a894acec1951a530ff3fef584
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200410
+%global date 20200414
 %global with_snapshot 1
 
 %ifarch %{ix86} x86_64
@@ -43,7 +43,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.6
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -298,6 +298,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Apr 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6-103.20200414gitce3d0ab
+- New snapshot
+- Remove winepath fix
+
 * Sat Apr 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6-102.20200410git7f03f45
 - Bump
 - Fix winepath EOL on script

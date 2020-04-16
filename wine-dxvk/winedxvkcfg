@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20200411
+ver=20200415
 
 name="DXVK"
 pkgname="wine-dxvk"
@@ -64,7 +64,7 @@ checkcfg(){
     else
       lib=''
     fi
-    native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null | tr -d '\r')"
+    native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
     lib_path="/usr/lib${lib}/wine"
     for dll in ${dlls} ;do
       if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" ;then

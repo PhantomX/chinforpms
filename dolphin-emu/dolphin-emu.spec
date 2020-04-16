@@ -4,9 +4,9 @@
 %global with_egl 1
 %global with_llvm 0
 
-%global commit 0b91ea28c12dd1ce6c984f89545f360374de261f
+%global commit 744abab4787e26282a8c9cf70d513f3d84425a32
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200316
+%global date 20200413
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -83,6 +83,7 @@ BuildRequires:  llvm-devel
 %endif
 BuildRequires:  lzo-devel
 BuildRequires:  mbedtls-devel
+BuildRequires:  minizip-compat-devel
 BuildRequires:  pugixml-devel
 BuildRequires:  xxhash-devel
 %if %{with ffmpeg}
@@ -151,7 +152,7 @@ sed 's| this directory | %{name}/Sys/GC |g' \
 pushd Externals
 rm -rf \
   cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi libiconv-* \
-  libpng libusb LZO mbedtls miniupnpc OpenAL pugixml Qt SFML MoltenVK \
+  libpng libusb LZO mbedtls miniupnpc minizip OpenAL pugixml Qt SFML MoltenVK \
   XAudio2_7 xxhash zlib
 
 #Remove Bundled Bochs source and replace with links:
@@ -255,6 +256,7 @@ appstream-util validate-relax --nonet \
 %changelog
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-110.20200316git0b91ea2
 - New snapshot
+- BR: minizip-compat-devel
 
 * Wed Feb 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-109.20200225git459b472
 - Bump

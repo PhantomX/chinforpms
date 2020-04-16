@@ -8,7 +8,7 @@
 %{?aud_plugin_dep}
 
 Name:           audacious-plugins
-Version:        4.0
+Version:        4.0.2
 Release:        100%{?dist}
 
 %global tar_ver %{version}
@@ -284,6 +284,9 @@ install -p -m0644 %{SOURCE102} ${RPM_BUILD_ROOT}%{_datadir}/appdata
 
 
 %changelog
+* Wed Apr 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 4.0.2-100
+- 4.0.2
+
 * Mon Mar 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 4.0-100
 - 4.0
 - Qt is the default now
