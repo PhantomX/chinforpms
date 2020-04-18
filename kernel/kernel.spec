@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -105,7 +105,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit f805c6cf2339c51706c8444f60317f811f823b2d
+%global pfcommit adb2c8cfa16fc63d1f9bc46e9db1e48c2fd36d9d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 5b340fd464ee2da87a8bcacba0920e43d777f687
+%global opensuse_id 902100b50e2f3fe58fdd6d0dbb5f699c6359d451
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -913,14 +913,12 @@ Patch509: drm-i915-backports.patch
 # https://patchwork.ozlabs.org/patch/1260523/
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
-# https://bugzilla.redhat.com/show_bug.cgi?id=1820196
-Patch512: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
-
 # nouveau runpm and secboot fixes
 # Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/f5755e7069d4acbcce1a93692421f358241ead7b
 Patch513: 0001-drm-nouveau-workaround-runpm-fail-by-disabling-PCI-p.patch
 # Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/41c6a13e8143af71928749ea9895d2ebc2fb4ffd
 Patch514: 0002-drm-nouveau-gr-gp107-gp108-implement-workaround-for-.patch
+Patch515: nouveau-add-missing-MODULE_FIRMWARE.patch
 
 ### Extra
 
@@ -940,7 +938,6 @@ Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE
 Patch1019: %{opensuse_url}/media-go7007-Fix-URB-type-for-interrupt-handling.patch#/openSUSE-media-go7007-Fix-URB-type-for-interrupt-handling.patch
 Patch1020: %{opensuse_url}/net-bpfilter-remove-superfluous-testing-message.patch#/openSUSE-net-bpfilter-remove-superfluous-testing-message.patch
 Patch1021: %{opensuse_url}/efi-x86-Don-t-remap-text-rodata-gap-read-only-for-mi.patch#/openSUSE-efi-x86-Don-t-remap-text-rodata-gap-read-only-for-mi.patch
-Patch1022: %{opensuse_url}/efi-x86-Fix-the-deletion-of-variables-in-mixed-mode.patch#/openSUSE-efi-x86-Fix-the-deletion-of-variables-in-mixed-mode.patch
 
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -2710,6 +2707,10 @@ fi
 #
 #
 %changelog
+* Fri Apr 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.4-500.chinfo
+- 5.6.5 - pf3
+- f32 sync
+
 * Mon Apr 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.4-500.chinfo
 - 5.6.4 - pf3
 
