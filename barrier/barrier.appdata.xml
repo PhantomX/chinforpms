@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2020 Phantom X <megaphantomx at bol.com.br> -->
+<component type="desktop-application">
+  <id>barrier</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0</project_license>
+  <name>barrier</name>
+  <summary>Share mouse and keyboard between multiple computers over the network</summary>
+
+  <description>
+    <p>
+    Barrier is software that mimics the functionality of a KVM switch, which
+    historically would allow you to use a single keyboard and mouse to control
+    multiple computers by physically turning a dial on the box to switch the machine
+    you're controlling at any given moment. Barrier does this in software, allowing
+    you to tell it which machine to control by moving your mouse to the edge of the
+    screen, or by using a keypress to switch focus to a different system.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">barrier.desktop</launchable>
+
+  <url type="homepage">https://github.com/debauchee/barrier</url>
+
+  <provides>
+    <binary>barrier</binary>
+    <binary>barrierc</binary>
+    <binary>barriers</binary>
+  </provides>
+
+  <releases>
+    <release version="_VERSION_"/>
+  </releases>
+</component>
