@@ -1,6 +1,6 @@
-%global commit f6c131f5f3937daf7dd562a0ff6a6f1c0b6fb2b3
+%global commit f31a29b8d1ea478af28f14cdaf3db1515a932853
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200415
+%global date 20200420
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -14,7 +14,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.1
-%global winemono  4.9.4
+%global winemono  5.0.0
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -40,16 +40,17 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver a23c0760550a39ff98d4ca58486e1abc7330c41c
+%global wine_stagingver 0d8d1f0447d8cce87617d32bcc23d588f4c85e86
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id cd858e27e7de0d766c51bb2b351a2af747aeb580
+%global tkg_id db5cdee5bcf9c0b98dd8f6e58c1b5468130a7882
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_id}/wine-tkg-git
+%global tkg_cid 0f5756a6119ae57aaa263f73cb5efead6c623836
+%global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0
 # proton FS hack (wine virtual desktop with DXVK is not working well)
@@ -85,7 +86,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.6
-Release:        101%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -135,12 +136,14 @@ Source150:      wine.appdata.xml
 
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-%if 0%{?wine_staging}
-Patch100:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
 
+# Fix dxvk window issues with fshack enabled
+Patch100:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
+# https://bugs.winehq.org/show_bug.cgi?id=48971 / 48961
+Patch101:       0001-Fix-for-fd79929-revert.patch
+Patch102:       %{tkg_url}/hotfixes/fd7992972b252ed262d33ef604e9e1235d2108c5.myrevert#/%{name}-tkg-fd79929.patch
 # https://bugs.winehq.org/show_bug.cgi?id=48032
-Patch120:       %{name}-bug48032.patch
-%endif
+Patch120:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -191,6 +194,7 @@ Patch735:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}
 Patch736:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch737:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch738:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.patch#/%{name}-valve-a09b820.patch
+Patch739:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
 
 Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 
@@ -770,8 +774,8 @@ This package adds the opencl driver for wine.
 %if 0%{?fshack}
 %patch100 -p1 -R
 %endif
-%patch120 -p1
 %endif
+%patch120 -p1
 
 %patch511 -p1 -b.cjk
 %patch599 -p1
@@ -780,6 +784,9 @@ This package adds the opencl driver for wine.
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
+
+%patch101 -p1
+%patch102 -p1 -R
 
 %patch700 -p1
 %patch701 -p1
@@ -834,6 +841,7 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 %patch737 -p1
 %endif
 %patch738 -p1 -R
+%patch739 -p1
 
 %if 0%{?fshack}
 %patch800 -p1 -R
@@ -2145,6 +2153,7 @@ fi
 %{_libdir}/wine/winejoystick.drv.so
 %{_libdir}/wine/winemapi.%{winedll}
 %{_libdir}/wine/winevulkan.dll.so
+%{_libdir}/wine/wineusb.sys.so
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing32.%{winedll}
 %{_libdir}/wine/winhttp.%{winedll}
@@ -2321,6 +2330,7 @@ fi
 %{_datadir}/wine/wine.inf
 %{_datadir}/wine/winebus.inf
 %{_datadir}/wine/winehid.inf
+%{_datadir}/wine/wineusb.inf
 %{_datadir}/wine/nls/c_037.nls
 %{_datadir}/wine/nls/c_10000.nls
 %{_datadir}/wine/nls/c_10001.nls
@@ -2595,6 +2605,13 @@ fi
 
 
 %changelog
+* Tue Apr 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.6-103.20200420gitf31a29b
+- New snapshot
+- winemono 5.0.0
+
+* Sun Apr 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.6-102.20200417git59987bc
+- Bump
+
 * Wed Apr 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.6-101.20200415gitf6c131f
 - Snapshot
 

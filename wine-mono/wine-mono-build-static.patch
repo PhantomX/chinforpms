@@ -1,19 +1,18 @@
---- wine-mono-4.9.0/Makefile.orig	2015-04-20 10:34:32.150114394 -0500
-+++ wine-mono-4.9.0/Makefile	2015-04-20 10:33:13.699274928 -0500
-@@ -106,6 +106,7 @@
+--- wine-mono-5.0.0/GNUmakefile.orig	2020-04-10 13:06:24.000000000 -0300
++++ wine-mono-5.0.0/GNUmakefile	2020-04-20 18:56:18.746915522 -0300
+@@ -129,6 +129,7 @@ endif
  $$(BUILDDIR)/mono-$(1)/Makefile: $$(SRCDIR)/mono/configure $$(BUILDDIR)/.dir
  	mkdir -p $$(@D)
- 	cd $$(BUILDDIR)/mono-$(1); CPPFLAGS="-gdwarf-2 -gstrict-dwarf" $$(SRCDIR_ABS)/mono/configure --prefix="$$(BUILDDIR_ABS)/build-cross-$(1)-install" --build=$$(shell $$(SRCDIR)/mono/config.guess) --target=$$(MINGW_$(1)) --host=$$(MINGW_$(1)) --with-tls=none --disable-mcs-build --enable-win32-dllmain=yes --with-libgc-threads=win32 PKG_CONFIG=false mono_cv_clang=no
+ 	cd $$(BUILDDIR)/mono-$(1); $$(MINGW_ENV) CPPFLAGS="-gdwarf-2 -gstrict-dwarf" $$(SRCDIR_ABS)/mono/configure --prefix="$$(BUILDDIR_ABS)/build-cross-$(1)-install" --build=$$(shell $$(SRCDIR)/mono/config.guess) --target=$$(MINGW_$(1)) --host=$$(MINGW_$(1)) --with-tls=none --disable-mcs-build --enable-win32-dllmain=yes --with-libgc-threads=win32 PKG_CONFIG=false mono_cv_clang=no --disable-boehm
 +	sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i $$(BUILDDIR)/mono-$(1)/libtool
  	sed -e 's/-lgcc_s//' -i $$(BUILDDIR)/mono-$(1)/libtool
  
  $$(BUILDDIR)/mono-$(1)/.built: $$(BUILDDIR)/mono-$(1)/Makefile $$(MONO_MONO_SRCS)
-@@ -260,6 +261,7 @@
+@@ -416,6 +417,7 @@ clean-build: clean-build-set32only
  $(BUILDDIR)/mono-unix/Makefile: $(SRCDIR)/mono/configure $(BUILDDIR)/.dir
  	mkdir -p $(@D)
- 	cd $(@D) && $(SRCDIR_ABS)/mono/configure --prefix="$(BUILDDIR_ABS)/mono-unix-install" --with-mcs-docs=no --disable-system-aot
+ 	cd $(@D) && $(SRCDIR_ABS)/mono/configure --prefix="$(BUILDDIR_ABS)/mono-unix-install" --with-mcs-docs=no --disable-system-aot --without-compiler-server
 +	sed -e 's+compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"+compiler_flags="-static"+' -i $(@D)/libtool
  
  $(BUILDDIR)/mono-unix/mono/lib/libSystem.Native.so: $(BUILDDIR)/mono-unix/Makefile $(MONO_LIBNATIVE_SRCS)
  	mkdir -p $(@D)
-

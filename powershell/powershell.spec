@@ -29,7 +29,7 @@
 
 Name:           powershell
 Version:        %{version}
-Release:        1%{?pretag:.%{prestring}}%{?dist}
+Release:        1%{?prerev:.%{prestring}}%{?dist}
 Summary:        Automation and configuration management platform
 
 License:        MIT

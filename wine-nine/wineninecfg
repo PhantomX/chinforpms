@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20200415
+ver=20200420
 
 name="Gallium Nine"
 pkgname="wine-nine"
@@ -70,12 +70,12 @@ checkcfg(){
       else
         disabled=1
       fi
+      if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll.so")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+        enabledlnk=1
+      else
+        disabledlnk=1
+      fi
     done
-    if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll.so")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
-      enabledlnk=1
-    else
-      disabledlnk=1
-    fi
   done
 
   if [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 0 ] && [ "${enabledlnk}" -eq 1 ] && [ "${disabledlnk}" -eq 0 ] ;then
@@ -98,7 +98,7 @@ setcfg(){
       lib=''
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
-      native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null | tr -d '\r')"
+      native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       lib_path="/usr/lib${lib}/wine"
       for dll in ${dlls} ;do
         if ! [ -f "${lib_path}/${dll}${dllsuffix}.dll.so" ];then

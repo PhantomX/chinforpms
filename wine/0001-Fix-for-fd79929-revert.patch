@@ -1,0 +1,25 @@
+From 3bd7586226332804a9687d35a8369391c074e216 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 19 Apr 2020 16:43:18 -0300
+Subject: [PATCH] Fix for fd79929 revert
+
+---
+ .../0001-ntdll-Initialize-mod_name-to-zero.patch                | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/patches/ntdll-Zero_mod_name/0001-ntdll-Initialize-mod_name-to-zero.patch b/patches/ntdll-Zero_mod_name/0001-ntdll-Initialize-mod_name-to-zero.patch
+index 80c23f5..23528dc 100644
+--- a/patches/ntdll-Zero_mod_name/0001-ntdll-Initialize-mod_name-to-zero.patch
++++ b/patches/ntdll-Zero_mod_name/0001-ntdll-Initialize-mod_name-to-zero.patch
+@@ -13,7 +13,7 @@ index 0568be63ad8..98472b060e1 100644
+ +++ b/dlls/ntdll/loader.c
+ @@ -1363,6 +1363,8 @@ static NTSTATUS MODULE_InitDLL( WINE_MODREF *wm, UINT reason, LPVOID lpReserved
+      if (wm->so_handle && reason == DLL_PROCESS_ATTACH) call_constructors( wm );
+-     if (!entry) return STATUS_SUCCESS;
++     if (!entry || !(wm->ldr.Flags & LDR_IMAGE_IS_DLL)) return STATUS_SUCCESS;
+  
+ +    memset( mod_name, 0, sizeof(mod_name) );
+ +
+-- 
+2.26.1
+

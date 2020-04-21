@@ -13,10 +13,10 @@
 %global pkgname amdgpu-pro
 %global pkgdistro ubuntu-18.04
 
-%global minsdkver 1.2.121.1
+%global minsdkver 1.1.121.1
 
 Name:           amdgpu-pro-vulkan-driver
-Version:        19.50.1011208
+Version:        20.10.1048554
 Release:        1%{?dist}
 Summary:        AMDGPU Pro Driver For Vulkan
 License:        AMD GPU PRO
@@ -81,6 +81,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/amd
 
 
 %changelog
+* Sun Apr 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.10.1048554-1
+- 20.10-1048554
+
 * Wed Mar 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 19.50.1011208-1
 - 19.50.1011208
 

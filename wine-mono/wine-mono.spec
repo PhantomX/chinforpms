@@ -1,12 +1,20 @@
 %undefine _hardened_build
-%{?mingw_package_header}
 
-%global with_bin 0
+%global with_bin 1
+
+%if 0%{?with_bin}
+%global debug_package %{nil}
+%global _build_id_links none
+%global __strip /bin/true
+%else
+%{?mingw_package_header}
+%endif
+
 
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        4.9.4
+Version:        5.0.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -14,9 +22,9 @@ License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
 URL:            http://wiki.winehq.org/Mono
 
 %if 0%{?with_bin}
-Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-bin-%{version}.tar.gz
+Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}-x86.tar.xz
 %else
-Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}.tar.gz
+Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}-src.tar.xz
 %endif
 Source1:        %{vc_url}/%{name}/raw/master/COPYING
 Source2:        %{vc_url}/%{name}/raw/master/README
@@ -71,7 +79,7 @@ Requires: wine-filesystem
 %description
 Windows Mono library required for Wine.
 
-
+%if !0%{?with_bin}
 %package mingw-debuginfo
 Summary:        Debug information for package %{name}
 AutoReq:        0
@@ -81,7 +89,7 @@ BuildArch:      noarch
 This package provides debug information for package %{name}.
 Debug information is useful when developing applications that use this
 package or when debugging this package.
-
+%endif
 
 %prep
 %setup -q
@@ -95,10 +103,12 @@ chmod -R g-w %{name}-%{version}
 
 %patch0 -p1 -b.static
 
+sed -e 's|^ENABLE_DEBUG_SYMBOLS=0|ENABLE_DEBUG_SYMBOLS=1|g' -i GNUmakefile
+
 # Fix all Python shebangs
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" .
 sed -i 's/GENMDESC_PRG=python/GENMDESC_PRG=python3/' mono/mono/mini/Makefile.am.in
-sed -i 's/CP_R=python /CP_R=python3 /' Makefile
+sed -i 's/CP_R=python /CP_R=python3 /' GNUmakefile
 sed -i 's/python /python3 /' \
   tools/git-updated-files mono/netcore/Makefile \
   mono/mono/tests/Makefile.am mono/scripts/submodules/versions.mk \
@@ -153,13 +163,18 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 %exclude %{_datadir}/wine/mono/%{name}-%{version}/lib/*.debug
 %exclude %{_datadir}/wine/mono/%{name}-%{version}/support/*.debug
 
+%if !0%{?with_bin}
 %files mingw-debuginfo
 %{_datadir}/wine/mono/%{name}-%{version}/bin/*.debug
 %{_datadir}/wine/mono/%{name}-%{version}/lib/*.debug
 %{_datadir}/wine/mono/%{name}-%{version}/support/*.debug
+%endif
 
 
 %changelog
+* Mon Apr 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-100
+- 5.0.0
+
 * Wed Nov 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.9.4-100
 - 4.9.4
 
