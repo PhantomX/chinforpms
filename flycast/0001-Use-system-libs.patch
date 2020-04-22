@@ -1,15 +1,15 @@
-From d611aaf75e592d666831676fd8d49d86a3debad6 Mon Sep 17 00:00:00 2001
+From 2eed0c08e5ec0d490b3d0e0addf1d8c75ef2af07 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 8 Apr 2020 11:36:13 -0300
+Date: Tue, 21 Apr 2020 23:10:40 -0300
 Subject: [PATCH] Use system libs
 
 ---
- core/core.mk         | 28 ++++++++++++++++++++++++----
+ core/core.mk         | 23 ++++++++++++++++++++---
  shell/linux/Makefile | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 57 insertions(+), 4 deletions(-)
+ 2 files changed, 53 insertions(+), 3 deletions(-)
 
 diff --git a/core/core.mk b/core/core.mk
-index c244d4b..dde8a8b 100755
+index 2cfa6d0..3cdecb1 100755
 --- a/core/core.mk
 +++ b/core/core.mk
 @@ -10,9 +10,17 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
@@ -19,8 +19,8 @@ index c244d4b..dde8a8b 100755
 - hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/zlib/ deps/chdr/ deps/crypto/ \
 + hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/chdr/ deps/crypto/ \
   deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
-- deps/libzip/ deps/imgui/ archive/ input/ log/ wsi/
-+ deps/imgui/ archive/ input/ log/ wsi/
+- deps/libzip/ deps/imgui/ archive/ input/ log/ wsi/ network/
++ deps/imgui/ archive/ input/ log/ wsi/ network/
 +
 +ifndef SYSTEM_LIBZIP
 +RZDCY_MODULES +=  deps/libzip/
@@ -43,29 +43,26 @@ index c244d4b..dde8a8b 100755
  
  # 7-Zip/LZMA settings (CHDv5)
  ifdef CHD5_LZMA
-@@ -168,8 +178,18 @@ ifdef CHD5_LZMA
+@@ -168,9 +178,16 @@ ifdef CHD5_LZMA
  	RZDCY_CFLAGS += -D_7ZIP_ST -DCHD5_LZMA
  endif
  
--RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/libzip -I$(RZDCY_SRC_DIR)/deps/zlib
--RZDCY_CFLAGS += -DXXH_INLINE_ALL -I$(RZDCY_SRC_DIR)/deps/xxHash -I$(RZDCY_SRC_DIR)/deps/stb
-+RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/stb
-+
 +ifndef SYSTEM_LIBZIP
-+RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/libzip
+ RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/libzip
 +endif
 +ifndef SYSTEM_ZLIB
-+RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/zlib
+ RZDCY_CFLAGS += -DZ_HAVE_UNISTD_H -I$(RZDCY_SRC_DIR)/deps/zlib
+-RZDCY_CFLAGS += -DXXH_INLINE_ALL -I$(RZDCY_SRC_DIR)/deps/xxHash -I$(RZDCY_SRC_DIR)/deps/stb
 +endif
-+
 +ifndef SYSTEM_XXHASH
-+RZDCY_CFLAGS +=  -DXXH_INLINE_ALL -I$(RZDCY_SRC_DIR)/deps/xxhash
++RZDCY_CFLAGS += -DXXH_INLINE_ALL -I$(RZDCY_SRC_DIR)/deps/xxHash
 +endif
++RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/stb
  
  RZDCY_CXXFLAGS := $(RZDCY_CFLAGS) -fno-exceptions -fno-rtti -std=gnu++11
  
 diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index 254c572..9c7111d 100644
+index 287609e..26b88ae 100644
 --- a/shell/linux/Makefile
 +++ b/shell/linux/Makefile
 @@ -14,6 +14,12 @@ endif
@@ -116,5 +113,5 @@ index 254c572..9c7111d 100644
      CFLAGS += -DUNIT_TESTS
  endif
 -- 
-2.26.0
+2.26.1
 

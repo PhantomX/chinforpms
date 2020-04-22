@@ -80,7 +80,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -105,7 +105,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 2c9b369b19300d7aacc755b9105b078847aa902f
+%global pfcommit b507c917fe380087467a3b213c8c417da897c0a2
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -918,7 +918,6 @@ Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 Patch513: 0001-drm-nouveau-workaround-runpm-fail-by-disabling-PCI-p.patch
 # Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/41c6a13e8143af71928749ea9895d2ebc2fb4ffd
 Patch514: 0002-drm-nouveau-gr-gp107-gp108-implement-workaround-for-.patch
-Patch515: nouveau-add-missing-MODULE_FIRMWARE.patch
 
 ### Extra
 
@@ -936,7 +935,6 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/media-go7007-Fix-URB-type-for-interrupt-handling.patch#/openSUSE-media-go7007-Fix-URB-type-for-interrupt-handling.patch
-Patch1020: %{opensuse_url}/net-bpfilter-remove-superfluous-testing-message.patch#/openSUSE-net-bpfilter-remove-superfluous-testing-message.patch
 Patch1021: %{opensuse_url}/efi-x86-Don-t-remap-text-rodata-gap-read-only-for-mi.patch#/openSUSE-efi-x86-Don-t-remap-text-rodata-gap-read-only-for-mi.patch
 
 
@@ -2704,6 +2702,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.6-500.chinfo
+- 5.6.6 - pf4
+
 * Mon Apr 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.5-501.chinfo
 - 5.6.5 - pf4
 
