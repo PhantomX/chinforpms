@@ -60,7 +60,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        20.0.4
+Version:        20.0.5
 Release:        100%{?dist}
 
 License:        MIT
@@ -74,8 +74,6 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch3:         0003-evergreen-big-endian.patch
-# https://fedoraproject.org/wiki/Changes/Stop-Shipping-Individual-Component-Libraries-In-clang-lib-Package
-Patch4:         0001-Link-with-libclang-cpp.patch
 
 # Not upstreamed updates from iXit
 Patch50:        %{ixit_url}/fcf28c3314fbad1f236067de316016f92a9683de.patch#/%{name}-ixit-fcf28c3.patch
@@ -681,6 +679,9 @@ popd
 
 
 %changelog
+* Wed Apr 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.5-100
+- 20.0.5
+
 * Fri Apr 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.0.4-100
 - 20.0.4
 

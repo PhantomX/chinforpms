@@ -1,6 +1,6 @@
-%global commit f31a29b8d1ea478af28f14cdaf3db1515a932853
+%global commit f52b33c63064aa59f48a9c10d624e3508da55b88
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200420
+%global date 20200422
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -40,14 +40,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 0d8d1f0447d8cce87617d32bcc23d588f4c85e86
+%global wine_stagingver 2c2eabb5c0abf5260752543a649d6f882fc63634
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id db5cdee5bcf9c0b98dd8f6e58c1b5468130a7882
+%global tkg_id e21048914ebb1cc080354ae11550a869cb0c568d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 0f5756a6119ae57aaa263f73cb5efead6c623836
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -86,7 +86,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.6
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -139,9 +139,6 @@ Source150:      wine.appdata.xml
 
 # Fix dxvk window issues with fshack enabled
 Patch100:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
-# https://bugs.winehq.org/show_bug.cgi?id=48971 / 48961
-Patch101:       0001-Fix-for-fd79929-revert.patch
-Patch102:       %{tkg_url}/hotfixes/fd7992972b252ed262d33ef604e9e1235d2108c5.myrevert#/%{name}-tkg-fd79929.patch
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch120:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
 
@@ -784,9 +781,6 @@ This package adds the opencl driver for wine.
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
-
-%patch101 -p1
-%patch102 -p1 -R
 
 %patch700 -p1
 %patch701 -p1
@@ -2605,6 +2599,9 @@ fi
 
 
 %changelog
+* Thu Apr 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.6-104.20200422gitf52b33c
+- Bump
+
 * Tue Apr 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.6-103.20200420gitf31a29b
 - New snapshot
 - winemono 5.0.0
