@@ -40,16 +40,16 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 2c2eabb5c0abf5260752543a649d6f882fc63634
+%global wine_stagingver abc772e286fab8b71e3c1d5b99766cd8835525f6
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id e21048914ebb1cc080354ae11550a869cb0c568d
+%global tkg_id 0bec629e1a6f742c6c781be784ea3e44706c0098
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 0f5756a6119ae57aaa263f73cb5efead6c623836
+%global tkg_cid c73295de4ab90194213fe5539416da61c18fda64
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0

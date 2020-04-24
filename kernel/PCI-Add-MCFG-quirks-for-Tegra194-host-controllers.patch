@@ -177,7 +177,7 @@ index ccac43be12ac..5d790ec5bdef 100644
 +			  0x81000000 0x00 0x00000000 0x1f 0xffff0000 0x0 0x00010000>; /* downstream I/O (64KB) */
  	};
  
- 	sysram@40000000 {
+ 	pcie_ep@14160000 {
 
 From patchwork Fri Jan 10 19:15:00 2020
 Content-Type: text/plain; charset="utf-8"
