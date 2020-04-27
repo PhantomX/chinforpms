@@ -1,7 +1,7 @@
 %global commit f52b33c63064aa59f48a9c10d624e3508da55b88
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200422
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -40,14 +40,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver abc772e286fab8b71e3c1d5b99766cd8835525f6
+%global wine_stagingver 5.7
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 0bec629e1a6f742c6c781be784ea3e44706c0098
+%global tkg_id d79d3a9e563407df884244a5ada3542884cbb668
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid c73295de4ab90194213fe5539416da61c18fda64
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -85,8 +85,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.6
-Release:        104%{?gver}%{?dist}
+Version:        5.7
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -139,6 +139,8 @@ Source150:      wine.appdata.xml
 
 # Fix dxvk window issues with fshack enabled
 Patch100:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
+Patch101:       https://source.winehq.org/patches/data/184252#/%{name}-whq-184252.patch
+Patch102:       0001-Fix-for-bug49011.patch
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch120:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
 
@@ -772,6 +774,7 @@ This package adds the opencl driver for wine.
 %patch100 -p1 -R
 %endif
 %endif
+%patch101 -p1
 %patch120 -p1
 
 %patch511 -p1 -b.cjk
@@ -781,6 +784,8 @@ This package adds the opencl driver for wine.
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
+
+%patch102 -p1
 
 %patch700 -p1
 %patch701 -p1
@@ -2599,6 +2604,12 @@ fi
 
 
 %changelog
+* Sun Apr 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-101
+- Bug 49011 fix
+
+* Sat Apr 25 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-100
+- 5.7
+
 * Thu Apr 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.6-104.20200422gitf52b33c
 - Bump
 

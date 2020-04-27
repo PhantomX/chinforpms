@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 # -- winedxvkcfg --
-# Sets wine DXVK dll redirection.
+# Sets wine DXVK dlls.
 #
 # Script by Phantom X <megaphantomx at bol.com.b>
 # Suggested usage: $ winedxvkcfg --help
@@ -30,11 +30,11 @@ ver=20200415
 
 name="DXVK"
 pkgname="wine-dxvk"
-dllsuffix="_dxvk"
+dllsuffix=""
 dlls="dxgi d3d9 d3d11 d3d10core"
 nodlls="d3d10 d3d10_1"
 
-wineext=dll.so
+wineext=dll
 
 unset winebits
 enabled=0
@@ -49,9 +49,9 @@ txt() {
 cat <<EOF
 $(basename "$0")
 Uso : $0 <option>
--c|--check        Check ${name} dll redirection settings.
--s|1|--set        Enable ${name} dll redirection.
--u|0|--unset      Disable ${name} dll redirection.
+-c|--check        Check ${name} dlls settings.
+-s|1|--set        Enable ${name} dlls.
+-u|0|--unset      Disable ${name} dlls.
 -V|--version      Show version.
 -h|--help         Show this message.
 EOF
@@ -62,10 +62,10 @@ checkcfg(){
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
     else
-      lib=''
+      lib=32
     fi
     native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
-    lib_path="/usr/lib${lib}/wine"
+    lib_path="/usr/share/wine/dxvk/${lib}"
     for dll in ${dlls} ;do
       if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" ;then
         enabled=1
@@ -97,14 +97,14 @@ setcfg(){
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
     else
-      lib=''
+      lib=32
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
-      lib_path="/usr/lib${lib}/wine"
+      lib_path="/usr/share/wine/dxvk/${lib}"
       for dll in ${dlls} ;do
         if ! [ -f "${lib_path}/${dll}${dllsuffix}.${wineext}" ];then
-          echo "Missing ${dll}${dllsuffix}.dll in /usr/lib${lib}/wine/."
+          echo "Missing ${dll}${dllsuffix}.dll in /usr/share/wine/dxvk/${lib}/."
           dllmissing=1
         fi
       done
@@ -158,11 +158,11 @@ unsetcfg(){
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
     else
-      lib=''
+      lib=32
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
-      lib_path="/usr/lib${lib}/wine"
+      lib_path="/usr/share/wine/dxvk/${lib}"
       for dll in ${dlls} ;do
         if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" &>/dev/null ;then
           wine${winebits} reg delete "${overrideskey}" /v "${dll}" /f &>/dev/null

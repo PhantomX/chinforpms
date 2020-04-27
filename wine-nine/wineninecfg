@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 # -- winedxvkcfg --
-# Sets wine Gallium Nine dll redirection.
+# Sets wine Gallium Nine dll.
 #
 # Script by Phantom X <megaphantomx at bol.com.b>
 # Suggested usage: $ wineninecfg --help
@@ -47,9 +47,9 @@ txt() {
 cat <<EOF
 $(basename "$0")
 Uso : $0 <option>
--c|--check        Check ${name} dll redirection settings.
--s|1|--set        Enable ${name} dll redirection.
--u|0|--unset      Disable ${name} dll redirection.
+-c|--check        Check ${name} dll settings.
+-s|1|--set        Enable ${name} dll.
+-u|0|--unset      Disable ${name} dll.
 -V|--version      Show version.
 -h|--help         Show this message.
 EOF

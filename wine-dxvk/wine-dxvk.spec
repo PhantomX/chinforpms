@@ -6,23 +6,12 @@
 %global date 20200419
 %global with_snapshot 0
 
-%ifarch %{ix86} x86_64
-%global with_mingw 1
-%endif
-
-%global libext .so
-%global cfname wine
-%global targetbits %{__isa_bits}
-%global instmode 0755
-
-%if 0%{?with_mingw}
 %{?mingw_package_header}
 
 %global libext %{nil}
 %global cfname win
 %global targetbits 64 32
 %global instmode 0644
-%endif
 
 %global winedll dll%{?libext}
 
@@ -55,10 +44,9 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
-Source1:        README.%{pkgname}
-Source2:        README.%{pkgname}-mingw
-Source3:        wine%{pkgname}cfg
-Source4:        README.async
+Source1:        README.%{pkgname}-mingw
+Source2:        wine%{pkgname}cfg
+Source3:        README.async
 
 %if 0%{?dxvk_async}
 Patch100:       %{valve_url}/commit/5388a8db837f7dd61e331eebf7ffa24c554c75e9.patch#/%{name}-valve-5388a8d.patch
@@ -68,7 +56,6 @@ Patch103:       0001-dxvk.conf-async-option.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
-%if 0%{?with_mingw}
 BuildArch:      noarch
 
 BuildRequires:  mingw64-gcc
@@ -79,7 +66,6 @@ BuildRequires:  mingw32-gcc
 BuildRequires:  mingw32-gcc-c++
 BuildRequires:  mingw32-headers >= 6.0
 BuildRequires:  mingw32-winpthreads-static >= 6.0
-%endif
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 
@@ -103,23 +89,12 @@ Provides:       wine-d9vk = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       wine-dxvk-d3d9 = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       wine-dxvk-dxgi = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%if !0%{?with_mingw}
-Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      mingw%{__isa_bits}-%{name} < %{?epoch:%{epoch}:}%{version}-%{release}
-
-%ifarch x86_64
-Requires:       %{name}(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
-
-%endif
-
 
 %description
 Provides a Vulkan-based implementation of DXGI, D3D9, D3D10 and D3D11
 in order to run 3D applications on Linux using Wine.
 
 
-%if 0%{?with_mingw}
 %package mingw-debuginfo
 Summary:        Debug information for package %{name}
 AutoReq:        0
@@ -129,7 +104,6 @@ BuildArch:      noarch
 This package provides debug information for package %{name}.
 Debug information is useful when developing applications that use this
 package or when debugging this package.
-%endif
 
 
 %prep
@@ -143,7 +117,7 @@ package or when debugging this package.
 %patch101 -p1
 %patch103 -p1
 
-cp %{S:4} .
+cp %{S:3} .
 %else
 %if 0%{?with_snapshot}
 %autosetup -n %{pkgname}-%{commit} -p1
@@ -152,21 +126,9 @@ cp %{S:4} .
 %endif
 %endif
 
+cp %{S:1} README.%{pkgname}
 
-%if 0%{?with_mingw}
-cp %{S:2} README.%{pkgname}
-
-sed \
-  -e '/^dllsuffix=/s|=.*|=""|g' \
-  -e '/^wineext=/s|=.*|=%{winedll}|g' \
-  -e "s|lib=''|lib=32|g" \
-  -e 's|/usr/lib${lib}/wine|%{_datadir}/wine/%{pkgname}/${lib}|g' \
-  %{S:3} > wine%{pkgname}cfg
-
-%else
-cp %{S:1} .
-cp %{S:3} .
-%endif
+cp %{S:2} .
 
 sed -e "/strip =/s|=.*|= 'true'|g" -i build-win*.txt
 
@@ -182,7 +144,6 @@ TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wn
 
 TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-O2\b/-O3/'`"
 
-%if 0%{?with_mingw}
 export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-m64//' \
   -e 's/-m32//' \
@@ -196,19 +157,11 @@ export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-fcf-protection//' \
   ` --param=ssp-buffer-size=4"
 
-%else
-TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"
-%endif
-
 TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
 
 sed \
   -e "/^c_args/s|]|, '$TEMP_CFLAGS'\0|g" \
   -e "/^cpp_args/s|]|, '$TEMP_CFLAGS'\0|g" \
-%if !0%{?with_mingw}
-  -e "/^c_link_args/s|]|, '$TEMP_LDFLAGS'\0|g" \
-  -e "/^cpp_link_args/s|]|, '$TEMP_LDFLAGS'\0|g" \
-%endif
   -i build-win*.txt
 
 sed -e "/^c_link_args =/acpp_args = ['$TEMP_CFLAGS']" -i build-win64.txt
@@ -227,14 +180,6 @@ meson \
 pushd %{_target_platform}${i}
 %ninja_build
 
-%if !0%{?with_mingw}
-  for spec in dxgi d3d9 d3d11 ;do
-    winebuild --dll --fake-module -E ../src/${spec}/${spec}.spec -F ${spec}_%{pkgname}.dll -o ${spec}_%{pkgname}.dll.fake
-  done
-  for spec in d3d10 d3d10core d3d10_1 ;do
-    winebuild --dll --fake-module -E ../src/d3d10/${spec}.spec -F ${spec}_%{pkgname}.dll -o ${spec}_%{pkgname}.dll.fake
-  done
-%endif
 popd
 done
 
@@ -252,26 +197,13 @@ for dll in dxgi d3d9 d3d11 d3d10 d3d10_1 d3d10core ;do
   esac
 
   for i in %{targetbits} ;do
-%if 0%{?with_mingw}
     instdir=%{buildroot}%{_datadir}/wine/%{pkgname}/${i}
     dllname=${dll}
-%else
-    instdir=%{buildroot}/%{_libdir}/wine
-    dllname=${dll}_%{pkgname}
-%endif
     mkdir -p ${instdir}
     install -pm%{instmode} %{_target_platform}${i}/src/${dlldir}/${dll}.%{winedll} \
       ${instdir}/${dllname}.%{winedll}
   done
 done
-
-%if !0%{?with_mingw}
-  mkdir -p %{buildroot}%{_libdir}/wine/fakedlls
-  for fake in dxgi d3d9 d3d11 d3d10 d3d10_1 d3d10core ;do
-    install -pm0755 %{_target_platform}${i}/${fake}_%{pkgname}.dll.fake \
-      %{buildroot}%{_libdir}/wine/fakedlls/${fake}_%{pkgname}.dll
-  done
-%endif
 
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
@@ -284,17 +216,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 %doc README.async
 %endif
 %{_bindir}/wine%{pkgname}cfg
-%if 0%{?with_mingw}
 %{_datadir}/wine/%{pkgname}/*/*.dll
-%else
-%{_libdir}/wine/*.%{winedll}
-%{_libdir}/wine/fakedlls/*.dll
-%endif
 
-%if 0%{?with_mingw}
 %files mingw-debuginfo
 %{_datadir}/wine/%{pkgname}/*/*.debug
-%endif
 
 
 %changelog
