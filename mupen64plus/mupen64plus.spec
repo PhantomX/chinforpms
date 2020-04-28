@@ -1,16 +1,67 @@
+%global commit 4edc53c2d5aee33605b3a151d405882030ba94f3
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20200422
+%global with_snapshot 1
+
+%global commit1 5c431df0638885044bc45d2976ffec16c24fa087
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 %{name}-audio-sdl
+
+%global commit2 73f00a0a6e27e3d44151f41d48f35a8279d36449
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 %{name}-input-sdl
+
+%global commit3 abd5b15498eb86101c2a56eb49460a264365b3ba
+%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
+%global srcname3 %{name}-rom
+
+%global commit4 2df8038d5f8fb722326c98d717b2d571a6d716ed
+%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
+%global srcname4 %{name}-rsp-hle
+
+%global commit5 77a2adea93ffe4d6630bbe2e815650819a1cf260
+%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%global srcname5 %{name}-ui-console
+
+%global commit6 b4d4503dd0a3733815d62eab04d2c1c7c466e157
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
+%global srcname6 %{name}-video-glide64mk2
+
+%global commit7 e409d749a53bd6fbb764ef4012614d21779a20fb
+%global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
+%global srcname7 %{name}-video-rice
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 #undefine _hardened_build
 %global _legacy_common_support 1
 
+%global vc_url  https://github.com/%{name}
+
 Name:           mupen64plus
 Version:        2.5.9
-Release:        102%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
 
 License:        GPLv2 and LGPLv2
 URL:            http://www.mupen64plus.org/
-Source0:        https://github.com/%{name}/%{name}-core/releases/download/%{version}/%{name}-bundle-src-%{version}.tar.gz
+
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/%{name}-core/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source1:        %{vc_url}/%{name}-audio-sdl/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        %{vc_url}/%{name}-input-sdl/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        %{vc_url}/%{name}-rom/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source4:        %{vc_url}/%{name}-rsp-hle/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+Source5:        %{vc_url}/%{name}-ui-console/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+Source6:        %{vc_url}/%{name}-video-glide64mk2/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+Source7:        %{vc_url}/%{name}-video-rice/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+%else
+Source0:        %{vc_url}/%{name}-core/releases/download/%{version}/%{name}-bundle-src-%{version}.tar.gz
+%endif
 
 BuildRequires:  boost-devel
 BuildRequires:  gcc
@@ -66,7 +117,28 @@ The %{name}-devel package contains the development files libraries needed for
 plugins building.
 
 %prep
+%if 0%{?with_snapshot}
+%setup -q -c -T -n %{name}-%{commit}
+
+for i in core rom ui-console audio-sdl input-sdl rsp-hle video-rice video-glide64mk2 ;do
+  mkdir -p source/%{name}-$i
+done
+
+tar -xf %{S:0} -C source/%{name}-core --strip-components 1
+tar -xf %{S:1} -C source/%{name}-audio-sdl --strip-components 1
+tar -xf %{S:2} -C source/%{name}-input-sdl --strip-components 1
+tar -xf %{S:3} -C source/%{name}-rom --strip-components 1
+tar -xf %{S:4} -C source/%{name}-rsp-hle --strip-components 1
+tar -xf %{S:5} -C source/%{name}-ui-console --strip-components 1
+tar -xf %{S:6} -C source/%{name}-video-glide64mk2 --strip-components 1
+tar -xf %{S:7} -C source/%{name}-video-rice --strip-components 1
+
+tar xf source/%{name}-core/tools/m64p_helper_scripts.tar.gz
+
+%else
 %autosetup -n %{name}-bundle-src-%{version}
+%endif
+
 
 chmod 0755 ./m64p_build.sh ./m64p_install.sh
 
@@ -83,6 +155,7 @@ export INCDIR=%{_includedir}/%{name}
 export SHAREDIR=%{_datadir}/%{name}
 export MANDIR=%{_mandir}
 export LIRC=1
+export PIE=1
 EOF
 
 %build
@@ -121,6 +194,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Apr 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.9-103.20200422git4edc53c
+- Snapshot
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.9-102
 - gcc 10 fix
 

@@ -1,6 +1,6 @@
-%global commit 30e05dd9a357bf6e56fc2b23cf64f5d0ada03192
+%global commit 9681d460d3744846ae5bd6ae2c21f3de31e59281
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190122
+%global date 20200414
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           m64py
 Version:        0.2.5
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A frontend for Mupen64Plus 2.0
 
 License:        GPLv3
@@ -53,6 +53,9 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" bin/%{name}
 
 find -name '*.py' -print0 | xargs -0 \
   pathfix.py -pni "%{__python3} %{py3_shbang_opts}"
+
+
+sed -e 's|_DATADIR_|%{_datadir}|g' -i bin/%{name}
 
 
 %build
@@ -104,6 +107,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Mon Apr 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.2.5-4.20200414git9681d46
+- Bump
+
 * Thu Mar 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.2.5-3.20190122git30e05dd
 - New snapshot
 

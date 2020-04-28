@@ -1,7 +1,7 @@
-%global commit f52b33c63064aa59f48a9c10d624e3508da55b88
+%global commit 28ec2795186c7db83637b3b17e4fa95095ebb77d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200422
-%global with_snapshot 0
+%global date 20200427
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -40,14 +40,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.7
+%global wine_stagingver 69a4e4baa2679972b1170a95cb9b86d08a493b54
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id d79d3a9e563407df884244a5ada3542884cbb668
+%global tkg_id 631e43d5aa1310d8a0b4074230fe001a439182fc
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid c73295de4ab90194213fe5539416da61c18fda64
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -86,7 +86,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.7
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -139,8 +139,6 @@ Source150:      wine.appdata.xml
 
 # Fix dxvk window issues with fshack enabled
 Patch100:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
-Patch101:       https://source.winehq.org/patches/data/184252#/%{name}-whq-184252.patch
-Patch102:       0001-Fix-for-bug49011.patch
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch120:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
 
@@ -188,7 +186,6 @@ Patch730:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.pat
 Patch731:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch732:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch733:       %{tkg_url}/proton/msvcrt_nativebuiltin.patch#/%{name}-tkg-msvcrt_nativebuiltin.patch
-Patch734:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging-rpc.patch#/%{name}-tkg-proton-tkg-staging-rpc.patch
 Patch735:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
 Patch736:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch737:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
@@ -774,7 +771,6 @@ This package adds the opencl driver for wine.
 %patch100 -p1 -R
 %endif
 %endif
-%patch101 -p1
 %patch120 -p1
 
 %patch511 -p1 -b.cjk
@@ -784,8 +780,6 @@ This package adds the opencl driver for wine.
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
-
-%patch102 -p1
 
 %patch700 -p1
 %patch701 -p1
@@ -832,7 +826,6 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 #patch731 -p1
 %patch732 -p1
 #patch733 -p1
-%patch734 -p1
 %patch735 -p1
 %if 0%{?fshack}
 %patch736 -p1
@@ -2060,14 +2053,12 @@ fi
 %{_libdir}/wine/scrobj.%{winedll}
 %{_libdir}/wine/scrrun.%{winedll}
 %{_libdir}/wine/scsiport.%{winesys}
+%{_libdir}/wine/sechost.%{winedll}
 %{_libdir}/wine/secur32.dll.so
 %{_libdir}/wine/sensapi.%{winedll}
 %{_libdir}/wine/serialui.%{winedll}
 %{_libdir}/wine/setupapi.%{winedll}
 %{_libdir}/wine/sfc_os.%{winedll}
-%if 0%{?wine_staging}
-%{_libdir}/wine/sechost.dll.so
-%endif
 %{_libdir}/wine/shcore.%{winedll}
 %{_libdir}/wine/shdoclc.%{winedll}
 %{_libdir}/wine/shdocvw.%{winedll}
@@ -2604,6 +2595,9 @@ fi
 
 
 %changelog
+* Tue Apr 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-102.20200427git28ec279
+- Snapshot
+
 * Sun Apr 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-101
 - Bug 49011 fix
 

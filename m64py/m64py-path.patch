@@ -1,13 +1,27 @@
---- m64py-0.2.3/bin/m64py.orig	2014-06-01 12:45:48.350886886 -0300
-+++ m64py-0.2.3/bin/m64py	2014-06-01 12:46:48.280111293 -0300
+From 5472ce9407dfb338932edcc3bbc27927600a9f72 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 27 Apr 2020 18:04:52 -0300
+Subject: [PATCH] Set datadir path
+
+---
+ bin/m64py | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/bin/m64py b/bin/m64py
+index bdd5911..3b170d3 100755
+--- a/bin/m64py
++++ b/bin/m64py
 @@ -20,9 +20,7 @@ import os
  import sys
  import signal
  
--if os.path.isdir(os.path.join(".", "src")) and os.path.isfile(
--        os.path.join(".", "setup.py")):
--    sys.path.insert(0, os.path.realpath("src"))
+-if os.path.isdir(os.path.join("..", "src")) and os.path.isfile(
+-        os.path.join("..", "setup.py")):
+-    sys.path.insert(0, os.path.realpath(os.path.join("..", "src")))
 +sys.path.append(os.path.realpath("/usr/share"))
  
- try:
-     from PyQt5.QtWidgets import QApplication
+ os.environ["DBUS_FATAL_WARNINGS"] = "0"
+ 
+-- 
+2.26.2
+

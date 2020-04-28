@@ -1,13 +1,12 @@
 %undefine _hardened_build
+%{?mingw_package_header}
 
-%global with_bin 1
+%global with_bin 0
 
 %if 0%{?with_bin}
 %global debug_package %{nil}
 %global _build_id_links none
 %global __strip /bin/true
-%else
-%{?mingw_package_header}
 %endif
 
 
@@ -15,16 +14,16 @@
 
 Name:           wine-mono
 Version:        5.0.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Mono library required for Wine
 
 License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
 URL:            http://wiki.winehq.org/Mono
 
 %if 0%{?with_bin}
-Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}-x86.tar.xz
+Source0:        https://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}-x86.tar.xz
 %else
-Source0:        http://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}-src.tar.xz
+Source0:        https://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}-src.tar.xz
 %endif
 Source1:        %{vc_url}/%{name}/raw/master/COPYING
 Source2:        %{vc_url}/%{name}/raw/master/README
@@ -60,13 +59,12 @@ BuildRequires:  autoconf automake
 BuildRequires:  bc
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  git
 BuildRequires:  libtool
 BuildRequires:  pkgconfig
 BuildRequires:  gettext
+BuildRequires:  libgdiplus
 BuildRequires:  zip
 BuildRequires:  wine-core
-BuildRequires:  wine-devel
 BuildRequires:  mono-core
 BuildRequires:  /usr/bin/pathfix.py
 %endif
@@ -79,17 +77,8 @@ Requires: wine-filesystem
 %description
 Windows Mono library required for Wine.
 
-%if !0%{?with_bin}
-%package mingw-debuginfo
-Summary:        Debug information for package %{name}
-AutoReq:        0
-AutoProv:       1
-BuildArch:      noarch
-%description mingw-debuginfo
-This package provides debug information for package %{name}.
-Debug information is useful when developing applications that use this
-package or when debugging this package.
-%endif
+%global mingw_build_win32 0
+%{?mingw_debug_package}
 
 %prep
 %setup -q
@@ -103,22 +92,19 @@ chmod -R g-w %{name}-%{version}
 
 %patch0 -p1 -b.static
 
-sed -e 's|^ENABLE_DEBUG_SYMBOLS=0|ENABLE_DEBUG_SYMBOLS=1|g' -i GNUmakefile
 
 # Fix all Python shebangs
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" .
 sed -i 's/GENMDESC_PRG=python/GENMDESC_PRG=python3/' mono/mono/mini/Makefile.am.in
 sed -i 's/CP_R=python /CP_R=python3 /' GNUmakefile
-sed -i 's/python /python3 /' \
-  tools/git-updated-files mono/netcore/Makefile \
-  mono/mono/tests/Makefile.am mono/scripts/submodules/versions.mk \
-  mono/sdks/builds/runtime.mk mono/sdks/wasm/Makefile
+
 %endif
 
 
 %build
 %if !0%{?with_bin}
-export WINEPREFIX="$(pwd)/wine-build"
+export BTLS_CFLAGS="-fPIC"
+export CPPFLAGS_FOR_BTLS="-fPIC"
 %make_build image
 %endif
 
@@ -163,15 +149,11 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 %exclude %{_datadir}/wine/mono/%{name}-%{version}/lib/*.debug
 %exclude %{_datadir}/wine/mono/%{name}-%{version}/support/*.debug
 
-%if !0%{?with_bin}
-%files mingw-debuginfo
-%{_datadir}/wine/mono/%{name}-%{version}/bin/*.debug
-%{_datadir}/wine/mono/%{name}-%{version}/lib/*.debug
-%{_datadir}/wine/mono/%{name}-%{version}/support/*.debug
-%endif
-
 
 %changelog
+* Tue Apr 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-101
+- Fedora sync
+
 * Mon Apr 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-100
 - 5.0.0
 
