@@ -1,8 +1,8 @@
 %undefine _hardened_build
 %global _legacy_common_support 1
 
-%global commit 1ec6931d0a49
-%global date 20200226
+%global commit 357878be8be6
+%global date 20200426
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           blastem
 Version:        0.6.2
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPLv3
@@ -25,6 +25,7 @@ BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(zlib)
 Requires:       sdl_gamecontrollerdb
+Requires:       dejavu-sans-fonts
 Requires:       hicolor-icon-theme
 
 
@@ -53,14 +54,18 @@ icotool -x icons/windows.ico
 
 
 %build
-%make_build CC=gcc DATA_PATH=%{_datadir}/%{name} HOST_ZLIB=1
+%make_build \
+  CC=gcc \
+  DATA_PATH=%{_datadir}/%{name} \
+  FONT_PATH=%{_datadir}/fonts/dejavu-sans-fonts/DejaVuSans.ttf \
+  HOST_ZLIB=1
 
 
 %install
 mkdir -p %{buildroot}%{_bindir}
 install -m0755 %{name} %{buildroot}%{_bindir}/
 
-for i in dis zdis stateview vgmplay termhelper ;do
+for i in dis zdis vgmplay termhelper ;do
   install -pm0755 $i %{buildroot}%{_bindir}/%{name}-$i
 done
 
@@ -102,6 +107,10 @@ done
 
 
 %changelog
+* Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.6.2-6.20200426git357878be8be6
+- New snapshot
+- R: dejavu-sans-fonts
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.6.2-5.20200226git1ec6931d0a49
 - gcc 10 fix
 

@@ -9,7 +9,6 @@
 %global __strip /bin/true
 %endif
 
-
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono

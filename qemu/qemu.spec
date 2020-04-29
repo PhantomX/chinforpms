@@ -155,7 +155,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 5.0.0~rc2
+Version: 5.0.0
 Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
@@ -1821,6 +1821,9 @@ popd
 
 
 %changelog
+* Tue Apr 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:5.0.0-100
+- 5.0.0
+
 * Mon Apr 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:5.0.0~rc2-100
 - 5.0.0-rc2
 - f33 sync

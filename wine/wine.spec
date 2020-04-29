@@ -40,14 +40,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 69a4e4baa2679972b1170a95cb9b86d08a493b54
+%global wine_stagingver d33cdb84fd8fed24e3a9ce89954ad43213b86426
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 631e43d5aa1310d8a0b4074230fe001a439182fc
+%global tkg_id f220714eeef363b36133af744cf2c8dfad7b9889
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid c73295de4ab90194213fe5539416da61c18fda64
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -86,7 +86,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.7
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -162,6 +162,8 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
+
+Patch600:       https://bugs.winehq.org/attachment.cgi?id=67020#/%{name}-whq-bug49007-at67020.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch700:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
@@ -806,6 +808,7 @@ cp -p %{S:1001} README-pba-pkg
 %patch1000 -p1
 %endif
 
+%patch600 -p1
 %patch720 -p1
 %patch721 -p1
 %if 0%{?fsync_spincounts}
@@ -2595,6 +2598,9 @@ fi
 
 
 %changelog
+* Tue Apr 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-103.20200427git28ec279
+- Again
+
 * Tue Apr 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-102.20200427git28ec279
 - Snapshot
 

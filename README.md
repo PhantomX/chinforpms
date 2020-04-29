@@ -54,6 +54,7 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **manaplus** - Updated, SDL2
  * **mednafen** - No Haswell optimizations
  * **mesa** - Can't wait Fedora releases
+ * **mupen64plus** - Build options and packaging structure
  * **ppsspp** - Build options, no Qt frontend
  * **qmc2** - Qt5, no game-menus
  * **quiterss** - Updated, Qt5
