@@ -5,7 +5,7 @@
 %{?aud_plugin_dep}
 
 Name:           audacious-plugins-freeworld
-Version:        4.0.2
+Version:        4.0.3
 Release:        100%{?dist}
 Summary:        Additional plugins for the Audacious media player
 License:        GPLv3
@@ -121,6 +121,9 @@ find %buildroot -type f -name "*.la" -exec rm -f {} ';'
 
 
 %changelog
+* Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 4.0.3-100
+- 4.0.3
+
 * Wed Apr 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 4.0.2-100
 - 4.0.2
 

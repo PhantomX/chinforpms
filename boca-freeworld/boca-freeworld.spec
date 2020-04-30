@@ -8,7 +8,7 @@
 %global pkgname boca
 
 Name:           %{pkgname}-freeworld
-Version:        1.0
+Version:        1.0.1
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac - freeworld codecs
 
@@ -91,6 +91,9 @@ rm -f %{buildroot}%{_libdir}/*.so
 
 
 %changelog
+* Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0.1-1
+- 1.0.1
+
 * Tue Mar 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0-1
 - 1.0
 

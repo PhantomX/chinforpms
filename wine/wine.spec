@@ -1,6 +1,6 @@
-%global commit 28ec2795186c7db83637b3b17e4fa95095ebb77d
+%global commit 7ccc45f754a39a425ecc2358a4cfc5675ff11ffb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200427
+%global date 20200428
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -23,6 +23,7 @@
 %endif
 
 %global wineacm acm%{?libext}
+%global wineax ax%{?libext}
 %global winecom com%{?libext}
 %global winecpl cpl%{?libext}
 %global winedll dll%{?libext}
@@ -40,14 +41,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver d33cdb84fd8fed24e3a9ce89954ad43213b86426
+%global wine_stagingver 1785a5693497cbe43f4dae11252386d8d324872b
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id f220714eeef363b36133af744cf2c8dfad7b9889
+%global tkg_id d2a6fb394ffc7ec7bdf6fd3bfdc90b9eda075d5c
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid c73295de4ab90194213fe5539416da61c18fda64
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -86,7 +87,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.7
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -163,8 +164,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine staging patches for wine-staging
 Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
-Patch600:       https://bugs.winehq.org/attachment.cgi?id=67020#/%{name}-whq-bug49007-at67020.patch
-
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch700:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
 Patch701:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
@@ -188,13 +187,14 @@ Patch730:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.pat
 Patch731:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch732:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
 Patch733:       %{tkg_url}/proton/msvcrt_nativebuiltin.patch#/%{name}-tkg-msvcrt_nativebuiltin.patch
-Patch735:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
+Patch734:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
+Patch735:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
 Patch736:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch737:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch738:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.patch#/%{name}-valve-a09b820.patch
-Patch739:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
 
 Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
+Patch791:       %{tkg_url}/hotfixes/fd7992972b252ed262d33ef604e9e1235d2108c5-5.myrevert#/%{name}-tkg-fd799297_revert-5.patch
 
 Patch800:       revert-grab-fullscreen.patch
 Patch802:       %{valve_url}/commit/7778c1cbd59dd676943aa1df7e76d32b3eee8567.patch#/%{name}-valve-7778c1c.patch
@@ -808,7 +808,6 @@ cp -p %{S:1001} README-pba-pkg
 %patch1000 -p1
 %endif
 
-%patch600 -p1
 %patch720 -p1
 %patch721 -p1
 %if 0%{?fsync_spincounts}
@@ -829,6 +828,7 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 #patch731 -p1
 %patch732 -p1
 #patch733 -p1
+%patch734 -p1
 %patch735 -p1
 %if 0%{?fshack}
 %patch736 -p1
@@ -836,12 +836,13 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 %patch737 -p1
 %endif
 %patch738 -p1 -R
-%patch739 -p1
 
 %if 0%{?fshack}
 %patch800 -p1 -R
 %endif
 #patch802 -p1
+
+%patch791 -p1 -R
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -1878,6 +1879,7 @@ fi
 %{_libdir}/wine/kernel32.dll.so
 %{_libdir}/wine/kernelbase.%{winedll}
 %{_libdir}/wine/ksecdd.%{winesys}
+%{_libdir}/wine/ksproxy.%{wineax}
 %{_libdir}/wine/ksuser.%{winedll}
 %{_libdir}/wine/ktmw32.%{winedll}
 %{_libdir}/wine/l3codeca.acm.so
@@ -2598,6 +2600,9 @@ fi
 
 
 %changelog
+* Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-104.20200428git7ccc45f
+- Bump and tkg reverts
+
 * Tue Apr 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-103.20200427git28ec279
 - Again
 

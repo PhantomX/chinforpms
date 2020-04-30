@@ -5,7 +5,7 @@
 %global systemlibs systemlibexpat,systemliburiparser,systemlibxspf,systemzlib
 
 Name:           boca
-Version:        1.0
+Version:        1.0.1
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac
 
@@ -114,6 +114,9 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 
 %changelog
+* Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0.1-1
+- 1.0.1
+
 * Tue Mar 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0-1
 - 1.0
 
