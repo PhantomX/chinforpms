@@ -444,6 +444,7 @@ export RANLIB="gcc-ranlib"
 %endif
   %{nil}
 
+%meson_build xmlpool-pot xmlpool-update-po xmlpool-gmo
 %meson_build
 
 
