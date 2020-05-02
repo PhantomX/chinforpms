@@ -1,10 +1,10 @@
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 
-%global commit b0503b54ce9f3c8afc65bcc93e9fc80c697164eb
+%global commit c9dde917601a935875c184adf986eca9876e5938
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200419
-%global with_snapshot 0
+%global date 20200501
+%global with_snapshot 1
 
 %{?mingw_package_header}
 
@@ -32,7 +32,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.6.1
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -223,6 +223,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat May 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.1-101.20200501gitc9dde91
+- Snapshot
+- Only mingw supported now
+
 * Mon Apr 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.1-100
 - 1.6.1
 

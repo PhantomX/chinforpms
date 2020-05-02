@@ -1,6 +1,6 @@
-%global commit 7ccc45f754a39a425ecc2358a4cfc5675ff11ffb
+%global commit d1f858e03da732c621504f90e349d5170ca3336e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200428
+%global date 20200501
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,14 +41,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 1785a5693497cbe43f4dae11252386d8d324872b
+%global wine_stagingver 240004227cb8afb160900e55bb4d9fe496732cc4
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id d2a6fb394ffc7ec7bdf6fd3bfdc90b9eda075d5c
+%global tkg_id 09c10a89ab4348ac57260c4cdf3b36c9bfc9d95a
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid c73295de4ab90194213fe5539416da61c18fda64
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -59,7 +59,7 @@
 # Broken
 %global pba 0
 
-%global fsync_spincounts 0
+%global fsync_spincounts 1
 
 %if 0%{?fshack}
 %global wine_staging_opts -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
@@ -87,7 +87,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.7
-Release:        104%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -168,36 +168,33 @@ Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{
 Patch700:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
 Patch701:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
 Patch702:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
-Patch703:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
-Patch704:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
-Patch705:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
+Source703:      %{tkg_url}/misc/staging-44d1a45-localreverts.patch#/%{name}-tkg-staging-44d1a45-localreverts.patch
+Patch704:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
+Patch705:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
+Patch706:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 
 # fsync
 Patch720:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
 Patch721:       %{tkg_url}/proton/fsync-staging-no_alloc_handle.patch#/%{name}-tkg-fsync-staging-no_alloc_handle.patch
+Patch722:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 # FS Hack
-Patch722:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch723:       %{tkg_url}/proton/proton-rawinput.patch#/%{name}-tkg-proton-rawinput.patch
-Patch724:       %{tkg_url}/proton-tkg-specific/proton-vk-bits-4.5.patch#/%{name}-tkg-proton-vk-bits-4.5.patch
-Patch725:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-tkg-proton_fs_hack_integer_scaling.patch
-Patch726:       %{tkg_url}/proton-tkg-specific/proton-staging_winex11-MWM_Decorations.patch#/%{name}-tkg-proton-staging_winex11-MWM_Decorations.patch
-Patch727:       %{valve_url}/commit/a1e5640b60439f0df83fc24c8a69629cef2c6c67.patch#/%{name}-valve-a1e5640.patch
+Patch723:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
+Patch724:       %{tkg_url}/proton/proton-rawinput.patch#/%{name}-tkg-proton-rawinput.patch
+Patch725:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
+Patch726:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
+Patch727:       %{tkg_url}/proton-tkg-specific/proton-staging_winex11-MWM_Decorations.patch#/%{name}-tkg-proton-staging_winex11-MWM_Decorations.patch
+Patch728:       %{valve_url}/commit/a1e5640b60439f0df83fc24c8a69629cef2c6c67.patch#/%{name}-valve-a1e5640.patch
+Patch729:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
+Patch730:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
+Patch731:       %{tkg_url}/proton-tkg-specific/proton-vk-bits-4.5.patch#/%{name}-tkg-proton-vk-bits-4.5.patch
+Patch732:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-tkg-proton_fs_hack_integer_scaling.patch
+Patch733:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
+Patch734:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 
-Patch730:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
-Patch731:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
-Patch732:       %{tkg_url}/misc/enable_stg_shared_mem_def.patch#/%{name}-tkg-enable_stg_shared_mem_def.patch
-Patch733:       %{tkg_url}/proton/msvcrt_nativebuiltin.patch#/%{name}-tkg-msvcrt_nativebuiltin.patch
-Patch734:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
-Patch735:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
-Patch736:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
-Patch737:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
-Patch738:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.patch#/%{name}-valve-a09b820.patch
-
-Patch790:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
-Patch791:       %{tkg_url}/hotfixes/fd7992972b252ed262d33ef604e9e1235d2108c5-5.myrevert#/%{name}-tkg-fd799297_revert-5.patch
-
-Patch800:       revert-grab-fullscreen.patch
-Patch802:       %{valve_url}/commit/7778c1cbd59dd676943aa1df7e76d32b3eee8567.patch#/%{name}-valve-7778c1c.patch
+Patch790:       revert-grab-fullscreen.patch
+Patch791:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.patch#/%{name}-valve-a09b820.patch
+Patch792:       %{valve_url}/commit/35ff7c5c657d143a96c419346ef516e50815cdfb.patch#/%{name}-valve-35ff7c5.patch
+Patch793:       %{tkg_url}/hotfixes/fd7992972b252ed262d33ef604e9e1235d2108c5-5.myrevert#/%{name}-tkg-fd799297_revert-5.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -786,9 +783,15 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch700 -p1
 %patch701 -p1
 %patch702 -p1
-%patch703 -p1
+%if 0%{?fshack}
+cp -p %{S:703} .
+sed 's/-@@ -3383,3 +3393,14 @@ DECL_HANDLER(get_rawinput_devices)/-@@ -3432,3 +3442,14 @@ DECL_HANDLER(get_rawinput_devices)/g' \
+  -i wine-tkg-staging-44d1a45-localreverts.patch
+patch -p1 -i wine-tkg-staging-44d1a45-localreverts.patch
+%endif
 %patch704 -p1
 %patch705 -p1
+%patch706 -p1
 
 %patch5000 -p1
 %ifarch %{ix86}
@@ -811,38 +814,35 @@ cp -p %{S:1001} README-pba-pkg
 %patch720 -p1
 %patch721 -p1
 %if 0%{?fsync_spincounts}
-%patch790 -p1
+%patch722 -p1
+%patch792 -p1
 %endif
 %if 0%{?fshack}
-%patch722 -p1
 %patch723 -p1
+%patch724 -p1
 patch -p1 -i patches/winex11-key_translation/0001-winex11-Match-keyboard-in-Unicode.patch
 patch -p1 -i patches/winex11-key_translation/0002-winex11-Fix-more-key-translation.patch
 patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-keyboard-layout.patch
-%patch724 -p1
+%endif
 %patch725 -p1
 %patch726 -p1
-%patch727 -p1 -R
+%if 0%{?fshack}
+%patch727 -p1
+%patch728 -p1 -R
 %endif
+%patch729 -p1
 %patch730 -p1
-#patch731 -p1
+%if 0%{?fshack}
+%patch731 -p1
 %patch732 -p1
-#patch733 -p1
-%patch734 -p1
-%patch735 -p1
-%if 0%{?fshack}
-%patch736 -p1
+%patch733 -p1
+%patch790 -p1 -R
 %else
-%patch737 -p1
+%patch734 -p1
 %endif
-%patch738 -p1 -R
-
-%if 0%{?fshack}
-%patch800 -p1 -R
-%endif
-#patch802 -p1
-
 %patch791 -p1 -R
+
+%patch793 -p1 -R
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -2600,6 +2600,15 @@ fi
 
 
 %changelog
+* Sat May 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-106.20200501gitd1f858e
+- Disable fshack again, not good yet
+- Bump
+
+* Fri May 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-105.20200430git0c27d24
+- New snapshot
+- Patchsets review
+- Reenable fshack
+
 * Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-104.20200428git7ccc45f
 - Bump and tkg reverts
 

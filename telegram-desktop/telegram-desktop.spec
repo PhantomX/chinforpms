@@ -12,21 +12,21 @@
 
 # Enable or disable build with GTK support...
 %bcond_with gtk3
+%bcond_without rlottie
 %bcond_without spellcheck
 %bcond_without fonts
 %bcond_without mindbg
+
 %if 0%{?fedora} && 0%{?fedora} >= 32
-%bcond_with ipo
 %bcond_without clang
-%bcond_without rlottie
 %else
 %bcond_with clang
-%bcond_with rlottie
+%endif
+
 %ifarch x86_64
 %bcond_without ipo
 %else
 %bcond_with ipo
-%endif
 %endif
 
 %bcond_without tgvoip
@@ -45,7 +45,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.1.0
+Version:        2.1.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -88,7 +88,7 @@ BuildRequires:  gcc
 BuildRequires:  ninja-build
 
 # Development packages for Telegram Desktop...
-BuildRequires:  guidelines-support-library-devel >= 1.0.0
+BuildRequires:  guidelines-support-library-devel >= 3.0.1
 BuildRequires:  mapbox-variant-devel >= 0.3.6
 BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  ffmpeg-devel >= 3.1
@@ -281,6 +281,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri May 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.1.1-100
+- 2.1.1
+
 * Fri Apr 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.1.0-100
 - 2.1.0
 
