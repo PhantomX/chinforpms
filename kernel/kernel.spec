@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -105,7 +105,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 4b0e409d59224019a5cd653b40ce7932769298f7
+%global pfcommit 869682f7482c89480e8b3b00165321dc42301716
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 902100b50e2f3fe58fdd6d0dbb5f699c6359d451
+%global opensuse_id 63116abfd4836bbf5ecebc628f11cf3bfa02309f
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -932,7 +932,7 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/media-go7007-Fix-URB-type-for-interrupt-handling.patch#/openSUSE-media-go7007-Fix-URB-type-for-interrupt-handling.patch
-Patch1021: %{opensuse_url}/efi-x86-Don-t-remap-text-rodata-gap-read-only-for-mi.patch#/openSUSE-efi-x86-Don-t-remap-text-rodata-gap-read-only-for-mi.patch
+Patch1021: %{opensuse_url}/Revert-ext4-make-dioread_nolock-the-default.patch#/openSUSE-Revert-ext4-make-dioread_nolock-the-default.patch
 
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -2700,6 +2700,9 @@ fi
 #
 #
 %changelog
+* Sat May 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.10-500.chinfo
+- 5.6.10 - pf8
+
 * Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.8-500.chinfo
 - 5.6.8 - pf8
 - f32 sync
