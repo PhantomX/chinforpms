@@ -1,9 +1,10 @@
+%undefine _annotated_build
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 
-%global commit c9dde917601a935875c184adf986eca9876e5938
+%global commit 68be040f4aec52d39f0f3b77236215e2385424e7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200501
+%global date 20200505
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -15,8 +16,8 @@
 
 %global winedll dll%{?libext}
 
-%global tkg_id 626f9276996f42f9792c6e1babc1ed3c64fbf985
-%global tkg_url https://github.com/Frogging-Family/dxvk-tools/raw/%{tkg_id}/DXVKBUILD/patches
+%global sporif_id 2273b0ed138b170ea39c5ae20d76c156d2caa3da
+%global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
 
 %global valve_url https://github.com/ValveSoftware/dxvk
 
@@ -32,7 +33,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.6.1
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -46,12 +47,12 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
-Source3:        README.async
 
 %if 0%{?dxvk_async}
 Patch100:       %{valve_url}/commit/5388a8db837f7dd61e331eebf7ffa24c554c75e9.patch#/%{name}-valve-5388a8d.patch
-Patch101:       %{tkg_url}/dxvk-async.dxvkpatchb#/%{name}-tkg-dxvk-async.patch
-Patch103:       0001-dxvk.conf-async-option.patch
+Patch101:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
+Patch103:       0001-dxvk.conf-async-options.patch
+Source3:        %{sporif_url}/dxvk-async.patch#/README.async
 %endif
 
 ExclusiveArch:  %{ix86} x86_64
@@ -117,7 +118,7 @@ package or when debugging this package.
 %patch101 -p1
 %patch103 -p1
 
-cp %{S:3} .
+cp %{S:3} README.async
 %else
 %if 0%{?with_snapshot}
 %autosetup -n %{pkgname}-%{commit} -p1
@@ -129,6 +130,8 @@ cp %{S:3} .
 cp %{S:1} README.%{pkgname}
 
 cp %{S:2} .
+
+rm -rf .git*
 
 sed -e "/strip =/s|=.*|= 'true'|g" -i build-win*.txt
 
@@ -223,6 +226,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue May 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.1-102.20200505git68be040
+- Bump
+- Change to Sporif async patch, as tkg
+
 * Sat May 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.1-101.20200501gitc9dde91
 - Snapshot
 - Only mingw supported now

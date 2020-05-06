@@ -1,11 +1,10 @@
-%global commit d1f858e03da732c621504f90e349d5170ca3336e
+%global commit 4e2ad334b5881af7661be4d6df3c51aae92ca4a2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200501
+%global date 20200504
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
-%undefine _annotated_build
 
 %ifarch %{ix86} x86_64
 %global wine_mingw 1
@@ -19,6 +18,7 @@
 
 %global libext .so
 %if 0%{?wine_mingw}
+%undefine _annotated_build
 %global libext %{nil}
 %endif
 
@@ -41,16 +41,16 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 240004227cb8afb160900e55bb4d9fe496732cc4
+%global wine_stagingver 3e39e3132b778184bf8e6ed9d3031d0842f0db1f
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 09c10a89ab4348ac57260c4cdf3b36c9bfc9d95a
+%global tkg_id 17d0c282d8f16c98cb99b1fc61abba08cea3c460
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid c73295de4ab90194213fe5539416da61c18fda64
+%global tkg_cid 686c33187084ba911b6551b0af7fb417769b8d22
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0
@@ -87,7 +87,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.7
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2600,6 +2600,9 @@ fi
 
 
 %changelog
+* Tue May 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-107.20200504git4e2ad33
+- New snapshot
+
 * Sat May 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-106.20200501gitd1f858e
 - Disable fshack again, not good yet
 - Bump

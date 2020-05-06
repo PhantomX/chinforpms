@@ -20,7 +20,7 @@
 #  along with this script.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# 20200323
+# 20200505
 
 exec="/usr/sbin/snx"
 prog="$(basename ${exec})"
@@ -61,15 +61,15 @@ start(){
     sleep 2
   fi
   if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
-    echo "${run_msg}"
+    echo "$(date +%T) | ${run_msg}"
     if [[ -n "${DISPLAY}" ]] ; then
-      ${notifycom} -u normal "${run_msg}"
+      ${notifycom} -u normal "$(date +%T)\n${run_msg}"
     fi
     retval=0
   else
-    echo "${runfail_msg}"
+    echo "$(date +%T) | ${runfail_msg}"
     if [[ -n "${DISPLAY}" ]] ; then
-      ${notifycom} -u critical "${runfail_msg}"
+      ${notifycom} -u critical "$(date +%T)\n${runfail_msg}"
     fi
     retval=1
   fi
@@ -80,15 +80,15 @@ stop(){
     "${exec}" -d 2>/dev/null 1>&2
     sleep 2
     if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
-      echo "${stopfail_msg}"
+      echo "$(date +%T) | ${stopfail_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
-        ${notifycom} -u critical "${stopfail_msg}"
+        ${notifycom} -u critical "$(date +%T)\n${stopfail_msg}"
       fi
       retval=1
     else
-      echo "${stop_msg}"
+      echo "$(date +%T) | ${stop_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
-        ${notifycom} -u normal "${stop_msg}"
+        ${notifycom} -u normal "$(date +%T)\n${stop_msg}"
       fi
       retval=0
     fi

@@ -18,7 +18,7 @@
 %bcond_without mindbg
 
 %if 0%{?fedora} && 0%{?fedora} >= 32
-%bcond_without clang
+%bcond_with clang
 %else
 %bcond_with clang
 %endif
@@ -46,7 +46,7 @@
 
 Name:           telegram-desktop
 Version:        2.1.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -281,6 +281,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon May 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.1.1-101
+- Build with gcc again
+
 * Fri May 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.1.1-100
 - 2.1.1
 

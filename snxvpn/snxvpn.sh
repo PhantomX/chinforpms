@@ -20,7 +20,7 @@
 #  along with this script.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# 20200327
+# 20200505
 
 exec="/usr/sbin/snx"
 prog="$(basename ${exec})"
@@ -66,18 +66,18 @@ start(){
     return
   fi
   if [[ -z "${pid}" ]] ;then
-    echo "${start_msg}"
-    ${notifycom} -u normal "${start_msg}"
+    echo "$(date +%T) | ${start_msg}"
+    ${notifycom} -u normal "$(date +%T)\n${start_msg}"
     connection="$("${vpnexec}" 2>/dev/null)"
     sleep 3
   fi
   if echo "${connection}" | grep -q 'SNX connected' ;then
-    echo "${run_msg}"
-    ${notifycom} -u normal "${run_msg}"
+    echo "$(date +%T) | ${run_msg}"
+    ${notifycom} -u normal "$(date +%T)\n${run_msg}"
     retval=0
   else
-    echo "${runfail_msg}"
-    ${notifycom} -u critical "${runfail_msg}\n${connection}"
+    echo "$(date +%T) | ${runfail_msg}"
+    ${notifycom} -u critical "$(date +%T)\n${runfail_msg}\n${connection}"
     retval=1
   fi
 }
@@ -87,15 +87,15 @@ stop(){
     "${exec}" -d 2>/dev/null 1>&2
     sleep 2
     if /usr/sbin/pidof -o %PPID "${exec}" 2>/dev/null 1>&2; then
-      echo "${stopfail_msg}"
+      echo "$(date +%T) | ${stopfail_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
-        ${notifycom} -u critical "${stopfail_msg}"
+        ${notifycom} -u critical "$(date +%T)\n${stopfail_msg}"
       fi
       retval=1
     else
-      echo "${stop_msg}"
+      echo "$(date +%T) | ${stop_msg}"
       if [[ -n "${DISPLAY}" ]] ; then
-        ${notifycom} -u normal "${stop_msg}"
+        ${notifycom} -u normal "$(date +%T)\n${stop_msg}"
       fi
       retval=0
     fi

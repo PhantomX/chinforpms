@@ -1,4 +1,0 @@
-DXVK_ASYNC=1 override
-=================================
-Enable with DXVK_ASYNC=1 environment variable
-DXVK_STATE_CACHE=0 may be required

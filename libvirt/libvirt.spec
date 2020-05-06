@@ -211,7 +211,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 6.2.0
+Version: 6.3.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -1503,7 +1503,7 @@ exit 0
 %files
 
 %files docs
-%doc AUTHORS ChangeLog.gz NEWS README README.md
+%doc AUTHORS ChangeLog.gz NEWS README
 %doc libvirt-docs/*
 
 
@@ -1532,6 +1532,7 @@ exit 0
 %{_unitdir}/virtlockd.socket
 %{_unitdir}/virtlockd-admin.socket
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
+%config(noreplace) %{_sysconfdir}/sysconfig/virtproxyd
 %config(noreplace) %{_sysconfdir}/sysconfig/virtlogd
 %config(noreplace) %{_sysconfdir}/sysconfig/virtlockd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
@@ -1600,6 +1601,7 @@ exit 0
 %ghost %{_sysconfdir}/libvirt/nwfilter/*.xml
 
 %files daemon-driver-interface
+%config(noreplace) %{_sysconfdir}/sysconfig/virtinterfaced
 %config(noreplace) %{_sysconfdir}/libvirt/virtinterfaced.conf
 %{_datadir}/augeas/lenses/virtinterfaced.aug
 %{_datadir}/augeas/lenses/tests/test_virtinterfaced.aug
@@ -1611,6 +1613,7 @@ exit 0
 %{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
 
 %files daemon-driver-network
+%config(noreplace) %{_sysconfdir}/sysconfig/virtnetworkd
 %config(noreplace) %{_sysconfdir}/libvirt/virtnetworkd.conf
 %{_datadir}/augeas/lenses/virtnetworkd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnetworkd.aug
@@ -1633,6 +1636,7 @@ exit 0
 %endif
 
 %files daemon-driver-nodedev
+%config(noreplace) %{_sysconfdir}/sysconfig/virtnodedevd
 %config(noreplace) %{_sysconfdir}/libvirt/virtnodedevd.conf
 %{_datadir}/augeas/lenses/virtnodedevd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnodedevd.aug
@@ -1644,6 +1648,7 @@ exit 0
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
 
 %files daemon-driver-nwfilter
+%config(noreplace) %{_sysconfdir}/sysconfig/virtnwfilterd
 %config(noreplace) %{_sysconfdir}/libvirt/virtnwfilterd.conf
 %{_datadir}/augeas/lenses/virtnwfilterd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnwfilterd.aug
@@ -1657,6 +1662,7 @@ exit 0
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so
 
 %files daemon-driver-secret
+%config(noreplace) %{_sysconfdir}/sysconfig/virtsecretd
 %config(noreplace) %{_sysconfdir}/libvirt/virtsecretd.conf
 %{_datadir}/augeas/lenses/virtsecretd.aug
 %{_datadir}/augeas/lenses/tests/test_virtsecretd.aug
@@ -1670,6 +1676,7 @@ exit 0
 %files daemon-driver-storage
 
 %files daemon-driver-storage-core
+%config(noreplace) %{_sysconfdir}/sysconfig/virtstoraged
 %config(noreplace) %{_sysconfdir}/libvirt/virtstoraged.conf
 %{_datadir}/augeas/lenses/virtstoraged.aug
 %{_datadir}/augeas/lenses/tests/test_virtstoraged.aug
@@ -1726,6 +1733,7 @@ exit 0
 
 %if %{with_qemu}
 %files daemon-driver-qemu
+%config(noreplace) %{_sysconfdir}/sysconfig/virtqemud
 %config(noreplace) %{_sysconfdir}/libvirt/virtqemud.conf
 %{_datadir}/augeas/lenses/virtqemud.aug
 %{_datadir}/augeas/lenses/tests/test_virtqemud.aug
@@ -1755,6 +1763,7 @@ exit 0
 
 %if %{with_lxc}
 %files daemon-driver-lxc
+%config(noreplace) %{_sysconfdir}/sysconfig/virtlxcd
 %config(noreplace) %{_sysconfdir}/libvirt/virtlxcd.conf
 %{_datadir}/augeas/lenses/virtlxcd.aug
 %{_datadir}/augeas/lenses/tests/test_virtlxcd.aug
@@ -1776,6 +1785,7 @@ exit 0
 
 %if %{with_libxl}
 %files daemon-driver-libxl
+%config(noreplace) %{_sysconfdir}/sysconfig/virtxend
 %config(noreplace) %{_sysconfdir}/libvirt/virtxend.conf
 %{_datadir}/augeas/lenses/virtxend.aug
 %{_datadir}/augeas/lenses/tests/test_virtxend.aug
@@ -1797,6 +1807,7 @@ exit 0
 
 %if %{with_vbox}
 %files daemon-driver-vbox
+%config(noreplace) %{_sysconfdir}/sysconfig/virtvboxd
 %config(noreplace) %{_sysconfdir}/libvirt/virtvboxd.conf
 %{_datadir}/augeas/lenses/virtvboxd.aug
 %{_datadir}/augeas/lenses/tests/test_virtvboxd.aug
@@ -1975,6 +1986,9 @@ exit 0
 
 
 %changelog
+* Tue May 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.3.0-100
+- 6.3.0
+
 * Thu Apr 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.2.0-100
 - 6.2.0
 
