@@ -65,6 +65,7 @@
 
 %global optflags %(echo %{optflags} | sed -e 's/ -g\\b/ -g1/')
 
+%global kg_url  https://github.com/KhronosGroup
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
@@ -94,9 +95,9 @@ Source4:        %{vc_url}/pal/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar
 Source5:        %{vc_url}/spvgen/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        %{vc_url}/MetroHash/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        %{vc_url}/CWPack/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
-Source8:        https://github.com/KhronosGroup/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
-Source9:        https://github.com/KhronosGroup/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
-Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+Source8:        %{kg_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+Source9:        %{kg_url}/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
+Source10:       %{kg_url}/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 %endif
 Source20:       %{url}/raw/master/README.md
 Source21:       amdPalSettings.cfg

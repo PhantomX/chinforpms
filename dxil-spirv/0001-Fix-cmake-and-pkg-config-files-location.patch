@@ -1,0 +1,34 @@
+From bd44ef41b31a40bf89ea86cc6068880f443385f4 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 6 May 2020 16:03:40 -0300
+Subject: [PATCH] Fix cmake and pkg-config files location
+
+---
+ CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ae36730..e74bc5a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -125,7 +125,7 @@ set(DXIL_SPV_INSTALL_LIB_DIR ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+ set(DXIL_SPV_INSTALL_INC_DIR ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/dxil-spirv)
+ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/pkg-config/dxil-spirv-c-shared.pc.in
+                ${CMAKE_CURRENT_BINARY_DIR}/dxil-spirv-c-shared.pc @ONLY)
+-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dxil-spirv-c-shared.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dxil-spirv-c-shared.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ 
+ if (DXIL_SPIRV_CLI)
+     install(TARGETS dxil-spirv RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+@@ -138,7 +138,7 @@ install(TARGETS dxil-spirv-c-shared
+         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dxil-spirv)
+-install(EXPORT dxil_spirv_c_sharedConfig DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/dxil_spirv_c_shared/cmake)
++install(EXPORT dxil_spirv_c_sharedConfig DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dxil_spirv_c_shared)
+ 
+ #add_executable(structurize-test structurize_test.cpp)
+ #target_link_libraries(structurize-test PRIVATE dxil-converter SPIRV-Tools spirv-cross-glsl dxil-debug)
+-- 
+2.26.2
+

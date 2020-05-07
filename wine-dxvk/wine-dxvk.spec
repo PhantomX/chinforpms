@@ -131,7 +131,9 @@ cp %{S:1} README.%{pkgname}
 
 cp %{S:2} .
 
-rm -rf .git*
+sed -e '/command:/s|git|false|g' -i meson.build
+
+sed -e 's|@VCS_TAG@|v%{version}-%{release}|g' -i version.h.in
 
 sed -e "/strip =/s|=.*|= 'true'|g" -i build-win*.txt
 

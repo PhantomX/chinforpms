@@ -1,6 +1,6 @@
-%global commit 4e2ad334b5881af7661be4d6df3c51aae92ca4a2
+%global commit 148fc1adb53aa1d78a67b2a0ee5ea8058d92589a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200504
+%global date 20200506
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,14 +41,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 3e39e3132b778184bf8e6ed9d3031d0842f0db1f
+%global wine_stagingver 813de5d6f836214edc0c79ccf13821b67744cca3
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 17d0c282d8f16c98cb99b1fc61abba08cea3c460
+%global tkg_id 02651f1ffaf211208b983bc8f67f362edc5c7642
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 686c33187084ba911b6551b0af7fb417769b8d22
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -87,7 +87,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.7
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -140,6 +140,12 @@ Source150:      wine.appdata.xml
 
 # Fix dxvk window issues with fshack enabled
 Patch100:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
+
+# https://bugs.winehq.org/show_bug.cgi?id=49109
+Patch101:       %{whq_url}/8b6c86eb824d1f529dab7bbbbd09907f41c182d3#/%{name}-whq-8b6c86e.patch
+Patch102:       %{whq_url}/550d96b0bf0928ac4dc573f49d2ec2e0c0444fc5#/%{name}-whq-550d96b.patch
+Patch103:       %{whq_url}/78e9b02cebf4b107aba69aa9a845ab661a7daf10#/%{name}-whq-78e9b02.patch
+
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch120:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
 
@@ -770,6 +776,9 @@ This package adds the opencl driver for wine.
 %patch100 -p1 -R
 %endif
 %endif
+%patch101 -p1 -R
+%patch102 -p1 -R
+%patch103 -p1 -R
 %patch120 -p1
 
 %patch511 -p1 -b.cjk
@@ -794,9 +803,7 @@ patch -p1 -i wine-tkg-staging-44d1a45-localreverts.patch
 %patch706 -p1
 
 %patch5000 -p1
-%ifarch %{ix86}
 %patch5001 -p1
-%endif
 
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
@@ -2600,6 +2607,10 @@ fi
 
 
 %changelog
+* Thu May 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-108.20200506git148fc1a
+- Bump
+- Revert some upstream patches to fix 64 bit Unity3D games
+
 * Tue May 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-107.20200504git4e2ad33
 - New snapshot
 

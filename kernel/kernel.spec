@@ -94,18 +94,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 7
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 869682f7482c89480e8b3b00165321dc42301716
+%global pfcommit f3e665055df364625139da860c43cda61e97c2b1
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 63116abfd4836bbf5ecebc628f11cf3bfa02309f
+%global opensuse_id 2fe85ca304b458b010a5cd133a2ecee8aea5e10a
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -914,7 +914,6 @@ Patch509: drm-i915-backports.patch
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
-Patch513: 0001-drm-i915-gem-Hold-obj-vma.lock-over-for_each_ggtt_vm.patch 
 
 ### Extra
 
@@ -932,6 +931,7 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/media-go7007-Fix-URB-type-for-interrupt-handling.patch#/openSUSE-media-go7007-Fix-URB-type-for-interrupt-handling.patch
+Patch1020: %{opensuse_url}/ipc-util.c-sysvipc_find_ipc-incorrectly-updates-posi.patch#/openSUSE-ipc-util.c-sysvipc_find_ipc-incorrectly-updates-posi.patch
 Patch1021: %{opensuse_url}/Revert-ext4-make-dioread_nolock-the-default.patch#/openSUSE-Revert-ext4-make-dioread_nolock-the-default.patch
 
 
@@ -2700,11 +2700,14 @@ fi
 #
 #
 %changelog
+* Wed May 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.11-500.chinfo
+- 5.6.11 - pf7
+
 * Sat May 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.10-500.chinfo
-- 5.6.10 - pf8
+- 5.6.10 - pf6
 
 * Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.8-500.chinfo
-- 5.6.8 - pf8
+- 5.6.8 - pf6
 - f32 sync
 
 * Thu Apr 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.7-500.chinfo

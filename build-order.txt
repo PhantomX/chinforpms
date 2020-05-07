@@ -5,7 +5,9 @@ chinforpms-rpm-config
 buildsys-build-rpmfusion
 c-vtapi
 chinforpms-fake-packages
+compat-gcc-32
 cubeb
+dxil-spirv
 gstreamer1
 gtk3
 libeatmydata
@@ -16,22 +18,24 @@ libstrangle
 libtgvoip
 libxspf
 lzlib
-mesa
 pysdl2
 python-markdown-math
 python-vdf
 smooth
 taglib
-vkd3d
+vulkan-headers
 -webp-pixbuf-loader
 xarchiver
 xwit
 -ytnef
 
 # 2
+dxil-spirv
 libvorbis
+mesa
 python-markups
 perl-Gtk3
+vulkan-loader
 
 # 3
 adriconf
@@ -40,6 +44,8 @@ adwaita-qt
 amdvlk-vulkan-driver
 ario
 asbru-cm
+audacious
+barrier
 bashdb
 -bcg729
 -bcmatroska2
@@ -89,6 +95,7 @@ joy2key
 keepassxc
 kernel-tools
 krename
+kse
 -ladspa-bs2b-plugins
 -linux-steam-integration
 lutris
@@ -97,6 +104,7 @@ lunzip
 m64py
 manaplus
 mangohud
+mcomix3
 mednafen
 mednaffe
 mozilla-gnotifier
@@ -130,11 +138,14 @@ sdl-jstest
 sdlcl
 skrooge
 smtube
+snx
+snxvpn
 thrash-protect
 tyrian-data
 unbound-update-roothints
 vhba
 vhba-kmod
+vkd3d
 waterfox
 waterfox-filesystem
 waterfox-classic-theme-restorer
@@ -157,6 +168,8 @@ xinput-gui
 zram-init
 
 # 4
+audacious-plugins
+audacious-plugins-freeworld
 -belle-sip
 -belr
 -bzrtp

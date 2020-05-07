@@ -2,7 +2,9 @@ adwaita-qt
 amdgpu-pro-vulkan-driver
 amdvlk-vulkan-driver
 chinforpms-rpm-config
+compat-gcc-32
 cubeb
+dxil-spirv
 FAudio
 FAudio-freeworld
 gamemode
@@ -24,10 +26,12 @@ mangohud
 qt5ct
 sdlcl
 taglib
+vkd3d
+vulkan-headers
+vulkan-loader
 -webp-pixbuf-loader
 wine
 -wine-d9vk - no mingw
 wine-dxvk - no mingw
 -wine-freeworld
 wine-nine
-vkd3d
