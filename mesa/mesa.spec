@@ -14,6 +14,7 @@
 %global platform_drivers ,i915,i965
 %global with_iris   1
 %global with_vmware 1
+%global with_vulkan_device_select 1
 %global with_vulkan_overlay 1
 %global with_xa     1
 %global with_zink   1
@@ -50,7 +51,7 @@
 %bcond_with valgrind
 %endif
 
-%global with_lto 0
+%global with_lto 1
 
 %global dri_drivers %{?base_drivers}%{?platform_drivers}
 
@@ -60,7 +61,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        20.1.0~rc1
+Version:        20.1.0~rc2
 Release:        100%{?dist}
 
 License:        MIT
@@ -442,6 +443,9 @@ export RANLIB="gcc-ranlib"
 %if 0%{?with_vulkan_overlay}
   -Dvulkan-overlay-layer=true \
 %endif
+%if 0%{?with_vulkan_device_select}
+  -Dvulkan-device-select-layer=true \
+%endif
   %{nil}
 
 %meson_build xmlpool-pot xmlpool-update-po xmlpool-gmo
@@ -662,6 +666,10 @@ popd
 %{_libdir}/libvulkan_radeon.so
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %endif
+%if 0%{?with_vulkan_device_select}
+%{_libdir}/libVkLayer_MESA_device_select.so
+%{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
+%endif
 
 %files vulkan-devel
 %if 0%{?with_hardware}
@@ -680,6 +688,11 @@ popd
 
 
 %changelog
+* Thu May 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.1.0~rc2-100
+- 20.1.0-rc2
+- Reenable LTO
+- vulkan-device-select
+
 * Thu Apr 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.1.0~rc1-100
 - 20.1.0-rc1
 

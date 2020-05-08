@@ -1,3 +1,4 @@
 /51-these-are-not-joysticks-rm.rules
+/60-steam*.rules
 /alsa_sdl_audiodriver.patch
 /steam-gh-*.patch

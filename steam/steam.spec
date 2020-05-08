@@ -3,16 +3,19 @@
 %global _build_id_links none
 %global __strip /bin/true
 
+%global udev_id 47261809a52f3b53fbdcf7070cd5ab422c616dfa
+
 # If firewalld macro is not defined, define it here:
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.61
+Version:        1.0.0.62
 Epoch:          1
-Release:        103%{?dist}
+Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
-# Redistribution and repackaging for Linux is allowed, see license file
-License:        Steam License Agreement
+
+# Redistribution and repackaging for Linux is allowed, see license file. udev rules are MIT.
+License:        Steam License Agreement and MIT
 URL:            http://www.steampowered.com/
 ExclusiveArch:  i686
 
@@ -20,6 +23,7 @@ Source0:        http://repo.steampowered.com/%{name}/pool/%{name}/s/%{name}/%{na
 Source1:        %{name}.sh
 Source2:        %{name}.csh
 Source4:        %{name}.appdata.xml
+Source5:        README.Fedora
 
 # Ghost touches in Big Picture mode:
 # https://github.com/ValveSoftware/steam-for-linux/issues/3384
@@ -27,22 +31,16 @@ Source4:        %{name}.appdata.xml
 # https://github.com/denilsonsa/udev-joystick-blacklist
 
 # Input devices seen as joysticks:
-Source6:        https://raw.githubusercontent.com/denilsonsa/udev-joystick-blacklist/master/after_kernel_4_9/51-these-are-not-joysticks-rm.rules
+Source6:        https://github.com/denilsonsa/udev-joystick-blacklist/raw/4c23cd2044ce4ac562ede5aac500bbc9f7a0e9ca/after_kernel_4_9/51-these-are-not-joysticks-rm.rules
 
-Source10:       README.Fedora
+# Newer UDEV rules
+Source10:       https://github.com/ValveSoftware/steam-devices/raw/%{udev_id}/60-steam-input.rules
+Source11:       https://github.com/ValveSoftware/steam-devices/raw/%{udev_id}/60-steam-vr.rules
 
-# Updated UDEV rules
-Patch0:         %{name}-udev-rules-update.patch
-
-# Remove libstdc++ from runtime:
-# https://github.com/ValveSoftware/steam-for-linux/issues/3273
-Patch1: %{name}-3273.patch
-
-# Disable desktop files installation on desktop and create logs on user directory
-Patch3:         %{name}-launcher.patch
-
-# From Arch: Set alsa SDL audiodriver if pulseaudio is not installed
-Patch4:         https://git.archlinux.org/svntogit/community.git/plain/trunk/alsa_sdl_audiodriver.patch?h=packages/%{name}#/alsa_sdl_audiodriver.patch
+# Do not install desktop file in lib/steam, do not install apt sources
+Patch0:         %{name}-makefile.patch
+# Do not try to copy steam.desktop to the user's desktop from lib/steam
+Patch1:         %{name}-no-icon-on-desktop.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  systemd
@@ -122,16 +120,9 @@ installation, automatic updates, achievements, SteamCloud synchronized savegame
 and screenshot functionality, and many social features.
 
 %prep
-%setup -q -n %{name}
-%patch0 -p1
-%patch1 -p1
-%patch3 -p1
-%patch4 -p1
+%autosetup -n %{name}-launcher -p1
 
-sed -i 's/\r$//' %{name}.desktop
-sed -i 's/\r$//' steam_subscriber_agreement.txt
-
-cp %{SOURCE10} .
+cp %{SOURCE5} .
 
 %build
 # Nothing to build
@@ -143,8 +134,8 @@ rm -fr %{buildroot}%{_docdir}/%{name}/ \
     %{buildroot}%{_bindir}/%{name}deps
 
 mkdir -p %{buildroot}%{_udevrulesdir}/
-install -m 644 -p lib/udev/rules.d/* \
-    %{SOURCE6} %{buildroot}%{_udevrulesdir}/
+install -m 644 -p %{SOURCE10} %{SOURCE11} %{SOURCE6} \
+    %{buildroot}%{_udevrulesdir}/
 
 desktop-file-edit \
   --remove-category="Network" \
@@ -163,10 +154,14 @@ mkdir -p %{buildroot}%{_metainfodir}
 install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 
 
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+
 %files
 %{!?_licensedir:%global license %%doc}
 %license COPYING steam_subscriber_agreement.txt
-%doc README debian/changelog README.Fedora
+%doc debian/changelog README.Fedora
 %{_bindir}/%{name}
 %{_metainfodir}/%{name}.appdata.xml
 %{_datadir}/applications/%{name}.desktop
@@ -180,6 +175,10 @@ install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 
 
 %changelog
+* Thu May 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.62-100
+- 1.0.0.62
+- RPMFusion sync
+
 * Sun Feb 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.61-103
 - RPMFusion sync
 

@@ -1,7 +1,6 @@
 # Telegram Desktop's constants...
 %global appname tdesktop
 %global launcher telegramdesktop
-%global tarsuffix -full
 
 # Telegram API tokens...
 # https://github.com/telegramdesktop/tdesktop/blob/dev/snap/snapcraft.yaml
@@ -11,11 +10,9 @@
 %global da_url https://github.com/desktop-app
 
 # Enable or disable build with GTK support...
-%bcond_with gtk3
 %bcond_without rlottie
 %bcond_without spellcheck
-%bcond_without fonts
-%bcond_without mindbg
+%bcond_without ipo
 
 %if 0%{?fedora} && 0%{?fedora} >= 32
 %bcond_with clang
@@ -32,21 +29,19 @@
 %bcond_without tgvoip
 
 %if %{with clang}
-%global optflags %(echo %{optflags} | sed -e 's/-mcet//g' -e 's/-fcf-protection//g' -e 's/-fstack-clash-protection//g' -e 's/$/-Qunused-arguments -Wno-unknown-warning-option/')
+%global optflags %(echo %{optflags} | sed -e 's/-mcet//g' -e 's/-fcf-protection//g' -e 's/-fstack-clash-protection//g' -e 's/$/-Qunused-arguments -Wno-unknown-warning-option -Wno-deprecated-declarations/')
 %endif
 
 # Decrease debuginfo verbosity to reduce memory consumption...
-%if %{with mindbg}
 %ifarch x86_64
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 %else
 %global optflags %(echo %{optflags} | sed 's/-g /-g2 /')
 %endif
-%endif
 
 Name:           telegram-desktop
-Version:        2.1.1
-Release:        101%{?dist}
+Version:        2.1.2
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -59,7 +54,7 @@ URL:            https://github.com/telegramdesktop/%{appname}
 
 ExclusiveArch:  x86_64
 
-Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}%{tarsuffix}.tar.gz
+Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
 
 Source20:       thunar-sendto-%{name}.desktop
 
@@ -74,10 +69,7 @@ Patch204:       %{name}-build-fixes.patch
 
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
-
-%if %{with fonts}
-Requires: open-sans-fonts
-%endif
+Requires:       open-sans-fonts
 
 # Compilers and tools...
 BuildRequires:  desktop-file-utils
@@ -106,19 +98,9 @@ BuildRequires:  xz-devel
 BuildRequires:  python3
 BuildRequires:  minizip-compat-devel
 
-%if %{with gtk3}
-Recommends:     libappindicator-gtk3%{?_isa}
-BuildRequires:  libappindicator-gtk3-devel
-BuildRequires:  glib2-devel
-BuildRequires:  gtk3-devel
-Requires:       gtk3%{?_isa}
-%endif
-
 %if %{with spellcheck}
-BuildRequires: enchant2-devel
 BuildRequires: glib2-devel
 BuildRequires: hunspell-devel
-Requires:      enchant2%{?_isa}
 Requires:      hunspell%{?_isa}
 %endif
 
@@ -147,7 +129,10 @@ BuildRequires:  opus-devel
 
 Provides:       bundled(libtgvoip) = 0~git
 %endif
-Provides: bundled(lxqt-qtplugin) = 0.14.0~git
+Provides:       bundled(lxqt-qtplugin) = 0.14.0~git
+
+# Short alias for the main package...
+Provides: telegram%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
@@ -165,12 +150,12 @@ business messaging needs.
 
 %prep
 # Unpacking Telegram Desktop source archive...
-%autosetup -n %{appname}-%{version}%{tarsuffix} -p1
+%autosetup -n %{appname}-%{version}-full -p1
 
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,hunspell,libdbusmenu-qt,lz4,minizip,variant,xxHash}
+rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,libdbusmenu-qt,libqtxdg,libtgvoip,lxqt-qtplugin,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,variant,xxHash}
 
 %if %{with rlottie}
   rm -rf Telegram/ThirdParty/rlottie
@@ -185,7 +170,7 @@ sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
 
 %build
-%if %{with ipo} && %{with mindbg} && %{without clang}
+%if %{with ipo} && %{without clang}
 export CC=gcc
 export CXX=g++
 
@@ -213,9 +198,6 @@ pushd %{_target_platform}
     -DCMAKE_RANLIB=%{_bindir}/gcc-ranlib \
     -DCMAKE_NM=%{_bindir}/gcc-nm \
 %endif
-%if %{without gtk3}
-    -DTDESKTOP_DISABLE_GTK_INTEGRATION:BOOL=ON \
-%endif
 %if %{without spellcheck}
     -DDESKTOP_APP_DISABLE_SPELLCHECK:BOOL=ON \
 %endif
@@ -226,9 +208,7 @@ pushd %{_target_platform}
     -DDESKTOP_APP_USE_PACKAGED_EXPECTED:BOOL=ON \
     -DDESKTOP_APP_USE_PACKAGED_VARIANT:BOOL=ON \
     -DDESKTOP_APP_USE_PACKAGED_QRCODE:BOOL=ON \
-%if %{without fonts}
-    -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=OFF \
-%endif
+    -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=ON \
 %if %{with rlottie}
     -DDESKTOP_APP_USE_PACKAGED_RLOTTIE:BOOL=ON \
     -DDESKTOP_APP_LOTTIE_USE_CACHE:BOOL=OFF \
@@ -240,6 +220,7 @@ pushd %{_target_platform}
 %endif
     -DDESKTOP_APP_USE_GLIBC_WRAPS:BOOL=OFF \
     -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
+    -DTDESKTOP_DISABLE_GTK_INTEGRATION:BOOL=ON \
     -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
     -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
     -DTDESKTOP_USE_FONTCONFIG_FALLBACK:BOOL=OFF \
@@ -281,6 +262,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Thu May 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.1.2-100
+- 2.1.2
+- RPMFusion sync
+
 * Mon May 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.1.1-101
 - Build with gcc again
 
