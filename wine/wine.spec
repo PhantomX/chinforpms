@@ -1,7 +1,7 @@
 %global commit 148fc1adb53aa1d78a67b2a0ee5ea8058d92589a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200506
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 813de5d6f836214edc0c79ccf13821b67744cca3
+%global wine_stagingver 5.8
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -86,8 +86,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.7
-Release:        108%{?gver}%{?dist}
+Version:        5.8
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2607,6 +2607,9 @@ fi
 
 
 %changelog
+* Sat May 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.8-100
+- 5.8
+
 * Thu May 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.7-108.20200506git148fc1a
 - Bump
 - Revert some upstream patches to fix 64 bit Unity3D games
