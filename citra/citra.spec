@@ -1,6 +1,6 @@
-%global commit 8722b970c52f2c0d8e82561477edb62a53ae9dbb
+%global commit 8d27b0714dc6dfcfb8fda3fa482b391fd9fa4c2d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200321
+%global date 20200509
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -16,7 +16,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 4e6848d1c9e8dadc70595c15b5589f8b14aad478
+%global commit3 8d1699ba2db216e569e998ea318d5cde47720e97
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
@@ -36,7 +36,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 ext-soundtouch
 
-%global commit8 e6ea0eae656c022d7878ffabc4e016b3e6f0c536
+%global commit8 57bb1d241735702cec36a3a9f4a85e5f1a541db6
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 teakra
 
@@ -48,6 +48,10 @@
 %global shortcommit10 %(c=%{commit9}; echo ${c:0:7})
 %global srcname10 lodepng
 
+%global commit11 36603a1e665e849d29b1735a12c0a51284a10dd0
+%global shortcommit11 %(c=%{commit9}; echo ${c:0:7})
+%global srcname11 ext-boost
+
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
@@ -58,7 +62,7 @@
 
 Name:           citra
 Version:        0
-Release:        7%{?gver}%{?dist}
+Release:        8%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -79,6 +83,7 @@ Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcomm
 Source8:        https://github.com/wwylele/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source9:        https://github.com/herumi/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/lvandeve/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
@@ -89,7 +94,6 @@ BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
-BuildRequires:  boost-devel
 BuildRequires:  cmake(cubeb)
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
@@ -144,13 +148,14 @@ tar -xf %{S:7} -C externals/soundtouch --strip-components 1
 tar -xf %{S:8} -C externals/teakra --strip-components 1
 tar -xf %{S:9} -C externals/xbyak --strip-components 1
 tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
+tar -xf %{S:11} -C externals/boost --strip-components 1
 
 sed -e '/ENABLE_WEB_SERVICE/s|ON|OFF|g' -i CMakeLists.txt
 
 sed -e 's|-pedantic-errors||g' -i externals/fmt/CMakeLists.txt
 
 sed \
-  -e '/-Wfatal-errors/d' \
+  -e 's/-Wfatal-errors\b//g' \
   -e '/-pedantic-errors/d' \
   -i externals/teakra/CMakeLists.txt externals/dynarmic/CMakeLists.txt
 
@@ -227,6 +232,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun May 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-8.20200509git8d27b07
+- Bump
+- ext-boost
+
 * Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-7.20200321git8722b97
 - New snapshot
 

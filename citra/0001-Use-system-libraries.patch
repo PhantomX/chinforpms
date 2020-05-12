@@ -1,6 +1,6 @@
-From 6ad04584150925c73dd834542571a725720b84c4 Mon Sep 17 00:00:00 2001
+From ac58af3f7c41c131534aea1e04e187c2af68b7aa Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 1 Feb 2020 23:05:59 -0300
+Date: Sat, 9 May 2020 23:13:13 -0300
 Subject: [PATCH] Use system libraries
 
 FindCubeb.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
@@ -23,18 +23,18 @@ https://salsa.debian.org/tbm/apt/raw/master/CMake/FindZstd.cmake
  create mode 100644 externals/cmake-modules/FindZstd.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 41d55f3..470085d 100644
+index 6180e82..81d5241 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2,7 +2,6 @@
- cmake_minimum_required(VERSION 3.8)
+@@ -6,7 +6,6 @@ if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.15)
+ endif ()
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modules")
 -include(DownloadExternals)
  include(CMakeDependentOption)
  
  project(citra)
-@@ -55,7 +54,6 @@ function(check_submodules_present)
+@@ -63,7 +62,6 @@ function(check_submodules_present)
          endif()
      endforeach()
  endfunction()
@@ -43,19 +43,19 @@ index 41d55f3..470085d 100644
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
                 ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 63159a5..41a3a4f 100644
+index c329757..76832a5 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -1,7 +1,7 @@
- # Definitions for all external bundled libraries
+@@ -6,7 +6,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+ endif()
  
  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
 -include(DownloadExternals)
 +include(CheckLib)
  include(ExternalProject)
  
- # Catch
-@@ -63,17 +63,24 @@ if (ARCHITECTURE_x86_64)
+ # Boost
+@@ -83,17 +83,24 @@ if (ARCHITECTURE_x86_64)
  endif()
  
  # Zstandard
@@ -86,7 +86,7 @@ index 63159a5..41a3a4f 100644
  endif()
  
  # DiscordRPC
-@@ -106,4 +113,4 @@ if (ENABLE_WEB_SERVICE)
+@@ -131,4 +138,4 @@ if (ENABLE_WEB_SERVICE)
  endif()
  
  # lodepng
@@ -158,7 +158,7 @@ index 0000000..e6408a4
 +endmacro()
 diff --git a/externals/cmake-modules/FindCubeb.cmake b/externals/cmake-modules/FindCubeb.cmake
 new file mode 100644
-index 0000000..c0a730c
+index 0000000..5999cc0
 --- /dev/null
 +++ b/externals/cmake-modules/FindCubeb.cmake
 @@ -0,0 +1,15 @@
@@ -167,7 +167,7 @@ index 0000000..c0a730c
 +mark_as_advanced(CUBEB_INCLUDE_DIR CUBEB_LIBRARY)
 +
 +include(FindPackageHandleStandardArgs)
-+find_package_handle_standard_args(CUBEB DEFAULT_MSG
++find_package_handle_standard_args(Cubeb DEFAULT_MSG
 +	CUBEB_INCLUDE_DIR CUBEB_LIBRARY)
 +
 +if(CUBEB_FOUND AND NOT TARGET CUBEB)
@@ -179,7 +179,7 @@ index 0000000..c0a730c
 +endif()
 diff --git a/externals/cmake-modules/FindZstd.cmake b/externals/cmake-modules/FindZstd.cmake
 new file mode 100644
-index 0000000..6811804
+index 0000000..d61a7a9
 --- /dev/null
 +++ b/externals/cmake-modules/FindZstd.cmake
 @@ -0,0 +1,25 @@
@@ -205,22 +205,22 @@ index 0000000..6811804
 +)
 +
 +include(FindPackageHandleStandardArgs)
-+find_package_handle_standard_args(ZSTD DEFAULT_MSG ZSTD_INCLUDE_DIRS ZSTD_LIBRARIES)
++find_package_handle_standard_args(Zstd DEFAULT_MSG ZSTD_INCLUDE_DIRS ZSTD_LIBRARIES)
 +
 +mark_as_advanced(ZSTD_INCLUDE_DIRS ZSTD_LIBRARIES)
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index af07ac2..4e63d26 100644
+index 5d65965..e3457d8 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -122,7 +122,7 @@ endif()
+@@ -130,7 +130,7 @@ endif()
  create_target_directory_groups(common)
  
- target_link_libraries(common PUBLIC fmt microprofile)
+ target_link_libraries(common PUBLIC fmt microprofile Boost::boost Boost::serialization)
 -target_link_libraries(common PRIVATE libzstd_static)
 +target_link_libraries(common PRIVATE zstd)
  if (ARCHITECTURE_x86_64)
      target_link_libraries(common PRIVATE xbyak)
  endif()
 -- 
-2.24.1
+2.26.2
 

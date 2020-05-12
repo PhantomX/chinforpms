@@ -48,9 +48,9 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 02651f1ffaf211208b983bc8f67f362edc5c7642
+%global tkg_id aeb575bec9f366a6d47c900d3d602f29427f919c
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 686c33187084ba911b6551b0af7fb417769b8d22
+%global tkg_cid 90e4f08f33c622dec1324b9616f8b3f4480bc14e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0
@@ -87,7 +87,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.8
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -141,10 +141,8 @@ Source150:      wine.appdata.xml
 # Fix dxvk window issues with fshack enabled
 Patch100:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
 
-# https://bugs.winehq.org/show_bug.cgi?id=49109
-Patch101:       %{whq_url}/8b6c86eb824d1f529dab7bbbbd09907f41c182d3#/%{name}-whq-8b6c86e.patch
-Patch102:       %{whq_url}/550d96b0bf0928ac4dc573f49d2ec2e0c0444fc5#/%{name}-whq-550d96b.patch
-Patch103:       %{whq_url}/78e9b02cebf4b107aba69aa9a845ab661a7daf10#/%{name}-whq-78e9b02.patch
+# https://bugs.winehq.org/show_bug.cgi?id=49109/49128
+Patch101:       https://source.winehq.org/patches/data/185073#/%{name}-whq-bug49128.patch
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch120:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
@@ -776,9 +774,7 @@ This package adds the opencl driver for wine.
 %patch100 -p1 -R
 %endif
 %endif
-%patch101 -p1 -R
-%patch102 -p1 -R
-%patch103 -p1 -R
+%patch101 -p1
 %patch120 -p1
 
 %patch511 -p1 -b.cjk
@@ -2607,6 +2603,9 @@ fi
 
 
 %changelog
+* Mon May 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.8-101
+- Bug#49109/49128 better fix
+
 * Sat May 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.8-100
 - 5.8
 

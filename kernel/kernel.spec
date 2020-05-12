@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -105,7 +105,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit f3e665055df364625139da860c43cda61e97c2b1
+%global pfcommit 36ac38d579ba12f68f7e88266daf120de246ca82
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 2fe85ca304b458b010a5cd133a2ecee8aea5e10a
+%global opensuse_id 85c1d1e0e8e18deb3737c079dc43b29a3734a7d5
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -830,6 +830,9 @@ Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
 Patch304: ARM-tegra-usb-no-reset.patch
+
+# https://patchwork.kernel.org/patch/11527525/
+Patch305: usb-usbfs-correct-kernel-user-page-attribute-mismatch.patch
 
 # Raspberry Pi
 # https://patchwork.kernel.org/cover/11353083/
@@ -2700,6 +2703,9 @@ fi
 #
 #
 %changelog
+* Mon May 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.12-500.chinfo
+- 5.6.12 - pf7
+
 * Wed May 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.11-500.chinfo
 - 5.6.11 - pf7
 
