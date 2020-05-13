@@ -30,6 +30,7 @@ xwit
 -ytnef
 
 # 2
+aom
 dxil-spirv
 libvorbis
 mesa

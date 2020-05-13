@@ -113,7 +113,7 @@ ExcludeArch: armv7hl
 %global sqlite_build_version %(pkg-config --silence-errors --modversion sqlite3 2>/dev/null || echo 65536)
 %endif
 
-%if %{branch} == "classic"
+%if "%{branch}" == "classic"
 %global channel Classic
 %else
 %global channel Current

@@ -1,0 +1,7 @@
+wine-dxvk-chinforpms
+===============
+This wine-dxvk package is modified with a bunch of experimental patches (see spec file).
+
+* DO NOT REPORT BUGS TO DXVK UPSTREAM OR FEDORA BUGZILLA
+
+If a bug happens, revert to dxvk or Fedora official and try to reproduce it again.

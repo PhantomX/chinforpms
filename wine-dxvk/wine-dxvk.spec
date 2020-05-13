@@ -2,9 +2,9 @@
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 
-%global commit 68be040f4aec52d39f0f3b77236215e2385424e7
+%global commit 6643c75f374fd02a2169b5e17c6cb9f8693de296
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200505
+%global date 20200511
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -16,7 +16,7 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id 2273b0ed138b170ea39c5ae20d76c156d2caa3da
+%global sporif_id 77cbd702e73256c012e6eaf6400cbbe895508f31
 %global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
 
 %global valve_url https://github.com/ValveSoftware/dxvk
@@ -33,7 +33,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.6.1
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -47,12 +47,13 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
+Source3:        %{name}-README-chinforpms
 
 %if 0%{?dxvk_async}
 Patch100:       %{valve_url}/commit/5388a8db837f7dd61e331eebf7ffa24c554c75e9.patch#/%{name}-valve-5388a8d.patch
 Patch101:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
 Patch103:       0001-dxvk.conf-async-options.patch
-Source3:        %{sporif_url}/dxvk-async.patch#/README.async
+Source4:        %{sporif_url}/dxvk-async.patch#/README.async
 %endif
 
 ExclusiveArch:  %{ix86} x86_64
@@ -118,7 +119,7 @@ package or when debugging this package.
 %patch101 -p1
 %patch103 -p1
 
-cp %{S:3} README.async
+cp %{S:4} README.async
 %else
 %if 0%{?with_snapshot}
 %autosetup -n %{pkgname}-%{commit} -p1
@@ -130,6 +131,8 @@ cp %{S:3} README.async
 cp %{S:1} README.%{pkgname}
 
 cp %{S:2} .
+cp %{S:3} README-chinforpms
+
 
 sed -e '/command:/s|git|false|g' -i meson.build
 
@@ -216,7 +219,7 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 %files
 %license LICENSE
-%doc README.md README.dxvk dxvk.conf
+%doc README-chinforpms README.md README.dxvk dxvk.conf
 %if 0%{?dxvk_async}
 %doc README.async
 %endif
@@ -228,6 +231,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue May 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.1-103.20200511git6643c75
+- New snapshot
+- Use RPM release in version.h to dismiss upstream bug reports
+
 * Tue May 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.6.1-102.20200505git68be040
 - Bump
 - Change to Sporif async patch, as tkg

@@ -1,6 +1,7 @@
 adwaita-qt
 amdgpu-pro-vulkan-driver
 amdvlk-vulkan-driver
+aom
 chinforpms-rpm-config
 compat-gcc-32
 cubeb
