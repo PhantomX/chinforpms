@@ -67,7 +67,7 @@ pushd %{_target_platform}
 
 %cmake .. \
   -DBUILD_SDL_JSTEST:BOOL=OFF \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+%{nil}
 
 %make_build
 

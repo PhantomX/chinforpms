@@ -1,17 +1,17 @@
-From 05c880652229e072c497e81e3bc8535a1f7af2e1 Mon Sep 17 00:00:00 2001
+From 699e3c2a8c5c282986cd63b5d1d8a399932fb047 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 14 May 2020 11:23:49 -0300
+Date: Tue, 19 Nov 2019 09:51:03 -0300
 Subject: [PATCH] Remove some ugly paddings
 
 ---
- style/adwaita.h | 43 ++++++++++++++++++++++---------------------
- 1 file changed, 22 insertions(+), 21 deletions(-)
+ style/adwaita.h | 41 +++++++++++++++++++++--------------------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
 
 diff --git a/style/adwaita.h b/style/adwaita.h
-index 5ca32a1..8374e34 100644
+index 09b970a..3a396f7 100644
 --- a/style/adwaita.h
 +++ b/style/adwaita.h
-@@ -137,51 +137,52 @@ namespace Adwaita
+@@ -137,49 +137,50 @@ namespace Adwaita
          // line editors
          LineEdit_FrameWidth = 3,
          LineEdit_MarginHeight = 2,
@@ -59,7 +59,7 @@ index 5ca32a1..8374e34 100644
          // buttons
 -        Button_MinHeight = 36,
 +        Button_FrameWidth = 3,
-+        Button_MinHeight = 20,
++        Button_MinHeight = 30,
          Button_MinWidth = 80,
 -        Button_MarginHeight = 4,
 -        Button_MarginWidth = 8,
@@ -68,20 +68,17 @@ index 5ca32a1..8374e34 100644
          Button_ItemSpacing = 4,
  
          // tool buttons
--        ToolButton_MarginWidth = 6,
-+        ToolButton_MarginWidth = 3,
-         ToolButton_ItemSpacing = 4,
+         ToolButton_MarginWidth = 6,
+-        ToolButton_ItemSpacing = 4,
++        ToolButton_ItemSpacing = 5,
          ToolButton_InlineIndicatorWidth = 12,
  
          // checkboxes and radio buttons
--        CheckBox_Size = 22,
-+        CheckBox_Size = 20,
+-        CheckBox_Size = 20,
++        CheckBox_Size = 16,
          CheckBox_FocusMarginWidth = 3,
--        CheckBox_ItemSpacing = 8,
-+        CheckBox_ItemSpacing = 4,
+         CheckBox_ItemSpacing = 4,
  
-         // menubar items
-         MenuBarItem_MarginWidth = 8,
 @@ -196,7 +197,7 @@ namespace Adwaita
          ScrollBar_DoubleButtonHeight = 0,
  
@@ -105,5 +102,5 @@ index 5ca32a1..8374e34 100644
          TabBar_TabOverlap = 1,
          TabBar_BaseOverlap = 0,
 -- 
-2.26.2
+2.23.0
 

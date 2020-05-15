@@ -51,8 +51,8 @@ mkdir %{_target_platform}
 pushd %{_target_platform}
 
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-  -DPOST_INSTALL_HOOKS:BOOL=OFF
+  -DPOST_INSTALL_HOOKS:BOOL=OFF \
+%{nil}
 
 %make_build
 

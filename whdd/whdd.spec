@@ -33,8 +33,8 @@ mkdir %{_target_platform}
 pushd %{_target_platform}
 
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-  -DDIALOG_INCLUDE_DIR:PATH=/usr/include/dialog
+  -DDIALOG_INCLUDE_DIR:PATH=/usr/include/dialog \
+%{nil}
 
 %make_build
 

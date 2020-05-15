@@ -28,6 +28,7 @@ some seasonal packages too, these can return when needed
  * **godot2** - cowsrevenge
  * **hakuneko** - Unmantained by upstream
  * **kBuild** - VirtualBox, Fedora included
+ * **kepka** - Do not have interest anymore
  * **ladspa-bs2b-plugins** - Do not have interest anymore
  * **libdca** - For i686 mock build
  * **libmms** - For i686 mock build

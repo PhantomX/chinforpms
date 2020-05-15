@@ -1,32 +1,43 @@
-From 4e1ec724dbb4d2aef3657fe08b88a054bf4849d2 Mon Sep 17 00:00:00 2001
+From 2da70ade963fc70e60989e3b31b0e5f1f816ee45 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 19 Mar 2020 20:33:35 -0300
+Date: Thu, 14 May 2020 18:09:22 -0300
 Subject: [PATCH] preload: fix for multilib
 
 ---
- bin/mangohud.in | 5 ++---
- src/meson.build | 4 ++--
- 2 files changed, 4 insertions(+), 5 deletions(-)
+ bin/mangohud.in | 9 ++++-----
+ src/meson.build | 2 +-
+ 2 files changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/bin/mangohud.in b/bin/mangohud.in
-index 0d4f5cd..3ab6df5 100755
+index 4ea9c18..34754fa 100755
 --- a/bin/mangohud.in
 +++ b/bin/mangohud.in
+@@ -1,8 +1,8 @@
+ #!/bin/sh
+ 
+-MANGOHUD_LIB_NAME="libMangoHud.so"
++MANGOHUD_LIB_NAME="/usr/\$LIB/mangohud/libMangoHud.so"
+ if [ "$MANGOHUD_DLSYM" = "1" ]; then
+-	MANGOHUD_LIB_NAME="libMangoHud_dlsym.so:${MANGOHUD_LIB_NAME}"
++	MANGOHUD_LIB_NAME="/usr/\$LIB/mangohud/libMangoHud_dlsym.so:${MANGOHUD_LIB_NAME}"
+ fi
+ 
+ if [ "$#" -eq 0 ]; then
 @@ -15,7 +15,6 @@ fi
  
  # Execute the program under a clean environment
  # pass through the overriden LD_PRELOAD environment variables
 -LD_PRELOAD="${LD_PRELOAD}:${MANGOHUD_LIB_NAME}"
 -LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:@libdir_mangohud@"
-+LD_PRELOAD="${LD_PRELOAD}:/usr/\$LIB/mangohud/${MANGOHUD_LIB_NAME}"
++LD_PRELOAD="${LD_PRELOAD:+${LD_PRELOAD}:}${MANGOHUD_LIB_NAME}"
  
 -exec env MANGOHUD=1 LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" LD_PRELOAD="${LD_PRELOAD}" "$@"
 +exec env MANGOHUD=1 LD_PRELOAD="${LD_PRELOAD}" "$@"
 diff --git a/src/meson.build b/src/meson.build
-index 157a7dc..f6db339 100644
+index 3327d04..3924905 100644
 --- a/src/meson.build
 +++ b/src/meson.build
-@@ -112,7 +112,7 @@ else
+@@ -159,7 +159,7 @@ else
  endif
  
  configure_file(input : '../bin/mangohud.in',
@@ -36,5 +47,5 @@ index 157a7dc..f6db339 100644
    install_dir : get_option('bindir'),
  )
 -- 
-2.25.2
+2.26.2
 

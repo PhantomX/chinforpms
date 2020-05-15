@@ -117,7 +117,6 @@ export API_ID=%{apiid}
 export API_HASH=%{apihash}
 
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DPACKAGED_BUILD:BOOL=TRUE \
 %if 0%{?build_with_lto}

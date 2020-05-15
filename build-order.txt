@@ -51,6 +51,7 @@ bashdb
 -bcg729
 -bcmatroska2
 -bctoolbox
+blackchocobo
 blastem
 bluecurve-icon-theme
 boca
@@ -91,6 +92,7 @@ gpa
 gtk3-nocsd
 hollywood
 image-analyzer
+ipager
 jdupes
 joy2key
 keepassxc
@@ -105,6 +107,7 @@ lunzip
 m64py
 manaplus
 mangohud
+maxcso
 mcomix3
 mednafen
 mednaffe

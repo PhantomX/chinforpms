@@ -34,9 +34,9 @@ mkdir %{_target_platform}
 pushd %{_target_platform}
 
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DSESSION_BUS_SERVICE:BOOL=ON \
-  -DSYSTEM_BUS_SERVICE:BOOL=OFF
+  -DSYSTEM_BUS_SERVICE:BOOL=OFF \
+%{nil}
 
 %make_build
 

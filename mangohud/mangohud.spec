@@ -1,9 +1,9 @@
-%global commit 420c26a08aa5043a533ccf5d275173d73388d60c
+%global commit 943c3459dad73e3bf2eb1c28352d38aada1497cb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200205
-%global with_snapshot 0
+%global date 20200511
+%global with_snapshot 1
 
-%global commit1 96a2c4619b0c8009f684556683b2e1b6408bb0dc
+%global commit1 1f02d240b38f445abb0381ade0867752d5d2bc7b
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 flightlessmango-ImGui
 
@@ -15,7 +15,7 @@
 %global vc_url https://github.com/flightlessmango
 
 Name:           mangohud
-Version:        0.3.1
+Version:        0.3.5
 Release:        1%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -38,6 +38,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  meson
 BuildRequires:  glslang
 BuildRequires:  libXNVCtrl-devel
+BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(dri)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(x11)
@@ -46,6 +47,7 @@ BuildRequires:  python3-mako
 BuildRequires:  vulkan-headers
 Requires:       libglvnd%{?_isa}
 Requires:       libglvnd-glx%{?_isa}
+Requires:       libXNVCtrl%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
 %description
@@ -94,10 +96,15 @@ sed -e "/-D__STDC_CONSTANT_MACROS/i\  '${TEMP_CFLAGS}'," -i meson.build
 %doc README.md bin/%{pkgname}.conf
 %{_bindir}/%{name}
 %{_libdir}/%{name}/lib%{pkgname}.so
+%{_libdir}/%{name}/lib%{pkgname}_dlsym.so
 %{_datadir}/vulkan/implicit_layer.d/%{pkgname}.*.json
 
 
 %changelog
+* Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.3.5-1.20200511git943c345
+- 0.3.5
+- BR: dbus-1
+
 * Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.3.1-1
 - 0.3.1
 - Remove now unneeded __filter_GLIBC_PRIVATE

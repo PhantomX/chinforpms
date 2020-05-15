@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -105,7 +105,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 36ac38d579ba12f68f7e88266daf120de246ca82
+%global pfcommit bfdc7a211286c29bdeb9e51de641d47536ce88fc
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 85c1d1e0e8e18deb3737c079dc43b29a3734a7d5
+%global opensuse_id 9b0432d9d26113129127f5827983a61029857b7d
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -861,6 +861,8 @@ Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
 Patch326: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
 # http://patchwork.ozlabs.org/patch/1221384/
 Patch327: PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+# https://patchwork.ozlabs.org/patch/1281134/
+Patch328: arm64-tegra-Fix-ethernet-phy-mode-for-Jetson-Xavier.patch 
 
 # Coral
 Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
@@ -918,6 +920,9 @@ Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
 
+# CVE-2020-10711 rhbz 1825116 1834778
+Patch513: net-netlabel-cope-with-NULL-catmap.patch 
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -935,7 +940,6 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/media-go7007-Fix-URB-type-for-interrupt-handling.patch#/openSUSE-media-go7007-Fix-URB-type-for-interrupt-handling.patch
 Patch1020: %{opensuse_url}/ipc-util.c-sysvipc_find_ipc-incorrectly-updates-posi.patch#/openSUSE-ipc-util.c-sysvipc_find_ipc-incorrectly-updates-posi.patch
-Patch1021: %{opensuse_url}/Revert-ext4-make-dioread_nolock-the-default.patch#/openSUSE-Revert-ext4-make-dioread_nolock-the-default.patch
 
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -2703,6 +2707,10 @@ fi
 #
 #
 %changelog
+* Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.13-500.chinfo
+- 5.6.13 - pf7
+- f32 sync
+
 * Mon May 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.12-500.chinfo
 - 5.6.12 - pf7
 

@@ -1,6 +1,6 @@
-%global commit 593d94861586454621d0d5f4984b493696f16f55
+%global commit 94e16358826bc61890bc3ecd261ac1e3d8d2ff9f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200511
+%global date 20200513
 %global with_snapshot 1
 
 %global sanitize 0
@@ -9,9 +9,11 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%undefine _hardened_build
+
 Name:           pcsx2
-Version:        1.6.0
-Release:        101%{?gver}%{?dist}
+Version:        1.7.0
+Release:        100%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -129,8 +131,9 @@ sed -i \
 # have no much impact on speed 2/ some gcc flags (used to) crash PCSX2"
 # Extensive testing will is therefore needed. See rpmfusion bug #2455
 
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+
 %cmake . \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DUSER_CMAKE_LD_FLAGS="-Wl,-z,noexecstack" \
   -DDISABLE_BUILD_DATE:BOOL=TRUE \
   -DPACKAGE_MODE:BOOL=TRUE \
@@ -214,6 +217,11 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Wed May 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.7.0-100.20200513git94e1635
+- New snapshot
+- Disable hardening
+- Remove execstack
+
 * Tue May 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.6.0-101.20200511git593d948
 - Bump
 

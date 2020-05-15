@@ -14,11 +14,7 @@
 %bcond_without spellcheck
 %bcond_without ipo
 
-%if 0%{?fedora} && 0%{?fedora} >= 32
 %bcond_with clang
-%else
-%bcond_with clang
-%endif
 
 %ifarch x86_64
 %bcond_without ipo
@@ -40,7 +36,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.1.4
+Version:        2.1.6
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -262,6 +258,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.1.6-100
+- 2.1.6
+
 * Sat May 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.1.4-100
 - 2.1.4
 

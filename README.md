@@ -29,7 +29,6 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **FAudio** - Tests
  * **fdk-aac** - For i686 mock build
  * **firejail** - suid bit enabled and "firejail" group to use it
- * **firewalld** - Tests
  * **gamemode** - System inih and launch script
  * **gnome-themes-extra** - Remove some paddings from Adwaita
  * **gstreamer1** - Added suffix -32/-64 to gst-plugin-scanner, so it can build
@@ -53,7 +52,7 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **lzip** - Updated, build flags
  * **manaplus** - Updated, SDL2
  * **mednafen** - No Haswell optimizations
- * **mesa** - Can't wait Fedora releases
+ * **mesa** - Can't wait Fedora releases. iXit patches
  * **mupen64plus** - Build options and packaging structure
  * **ppsspp** - Build options, no Qt frontend
  * **qmc2** - Qt5, no game-menus
@@ -65,9 +64,8 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **taglib** - Tests
  * **telegram-desktop** - Personal fixes
  * **vkd3d** - Can't wait Fedora releases
- * **vulkan-headers** - Can't wait Fedora releases. Not sdk releases too
- * **vulkan-loader** - Can't wait Fedora releases. Not sdk releases too
- * **xboxdrv** - Tests
+ * **vulkan-headers, vulkan-loader, vulkan-tools** - Can't wait Fedora releases. Not sdk releases too
+ * **xboxdrv** - Experimental fork and personal changes
  * **wine** - Personal fixes and extra patches, like [_PBA_](https://github.com/acomminos/wine-pba) and
               more gathered from [_TK-Glitch_](https://github.com/Tk-Glitch/PKGBUILDS/tree/master/wine-tkg-git), some of them not always enabled.
               No alternatives support

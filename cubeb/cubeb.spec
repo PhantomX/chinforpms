@@ -74,7 +74,6 @@ mkdir -p %{_target_platform}
 pushd %{_target_platform}
 
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DBUILD_TESTS:BOOL=OFF \
   -DUSE_PULSE:BOOL=ON \
   -DUSE_ALSA:BOOL=ON \

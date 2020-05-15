@@ -102,12 +102,12 @@ BuildRequires:  pkgconfig(libenet)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(sdl2)
 %if %{with qt}
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(Qt5Gui)
-BuildRequires:  pkgconfig(Qt5Multimedia)
-BuildRequires:  pkgconfig(Qt5OpenGL)
-BuildRequires:  pkgconfig(Qt5Widgets)
-BuildRequires:  qt5-linguist
+BuildRequires:  cmake(Qt5Core)
+BuildRequires:  cmake(Qt5Gui)
+BuildRequires:  cmake(Qt5LinguistTools)
+BuildRequires:  cmake(Qt5Multimedia)
+BuildRequires:  cmake(Qt5OpenGL)
+BuildRequires:  cmake(Qt5Widgets)
 %endif
 
 BuildRequires:  hicolor-icon-theme

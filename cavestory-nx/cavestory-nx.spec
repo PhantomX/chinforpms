@@ -48,7 +48,6 @@ mkdir %{_target_platform}
 pushd %{_target_platform}
 
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
 %{nil}
 
 %make_build

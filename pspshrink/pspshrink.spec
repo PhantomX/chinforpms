@@ -1,6 +1,6 @@
 Name:           pspshrink
 Version:        1.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Iso compressor for PSP games
 
 License:        GPLv2
@@ -11,12 +11,24 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  librsvg2-tools
 BuildRequires:  pkgconfig(gtkmm-2.4)
-Requires:       gtkmm24
-Requires:       hicolor-icon-theme
+
 
 %description
 PSP shrink is a tool that allows you compress your psp iso files to the cso
 format compatible with devhook.
+
+
+%package ui
+Summary:        Iso compressor for PSP games (GTK+ frontend)
+Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       hicolor-icon-theme
+
+%description ui
+PSP shrink is a tool that allows you compress your psp iso files to the cso
+format compatible with devhook.
+
+This packages provides the GTK+ frontend.
+
 
 %prep
 %autosetup
@@ -26,6 +38,7 @@ head -n 1000 ChangeLog.orig > ChangeLog
 touch -r ChangeLog.orig ChangeLog
 
 %build
+CXXFLAGS="%{build_cxxflags} -std=c++11" \
 %configure \
   --disable-silent-rules
 %make_build
@@ -56,6 +69,10 @@ done
 %license COPYING
 %doc AUTHORS ChangeLog README
 %{_bindir}/%{name}
+
+
+%files ui
+%license COPYING
 %{_bindir}/%{name}ui
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/*/%{name}.*
@@ -63,6 +80,9 @@ done
 
 
 %changelog
+* Wed May 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.1.2-3
+- Split ui package
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.1.2-2
 - BR: desktop-file-utils
 

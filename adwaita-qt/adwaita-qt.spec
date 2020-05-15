@@ -1,14 +1,14 @@
 %global commit d1e76197e5db24b6d1d286c6e73439d4b1a0500a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20191211
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           adwaita-qt
-Version:        1.1.1
+Version:        1.1.2
 Release:        100%{?gver}%{?dist}
 
 License:        LGPLv2+
@@ -100,6 +100,10 @@ make install/fast DESTDIR=%{buildroot} -C "%{_target_platform}-qt5"
 
 
 %changelog
+* Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1.2-100
+- 1.1.2
+- Update patch
+
 * Mon Dec 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1.1-100.20191211gitd1e7619
 - 1.1.1
 

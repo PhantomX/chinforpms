@@ -89,7 +89,6 @@ pushd %{_target_platform}
 
 %cmake .. \
   -DBUILD_SHARED_LIBS:BOOL=ON \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   -GNinja \
 %{nil}

@@ -24,7 +24,6 @@ This package contains extra unusual mimetypes for DEs.
 mkdir %{_target_platform}
 pushd %{_target_platform}
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DCHINFO_LEGACY:BOOL=OFF \
 %{nil}
 

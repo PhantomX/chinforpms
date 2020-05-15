@@ -232,7 +232,6 @@ pushd %{_target_platform}
 
 %cmake .. \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \

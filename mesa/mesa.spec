@@ -61,7 +61,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        20.1.0~rc2
+Version:        20.1.0~rc3
 Release:        100%{?dist}
 
 License:        MIT
@@ -77,22 +77,31 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 Patch3:         0003-evergreen-big-endian.patch
 
 # Not upstreamed updates from iXit
-Patch50:        %{ixit_url}/fcf28c3314fbad1f236067de316016f92a9683de.patch#/%{name}-ixit-fcf28c3.patch
-Patch51:        %{ixit_url}/5ddf82c5745b93b4b530b824f32943d670643310.patch#/%{name}-ixit-5ddf82c.patch
-Patch52:        %{ixit_url}/6f4e3dec20c088d8c1efa2947c56b058a48cc6c6.patch#/%{name}-ixit-6f4e3de.patch
-Patch53:        %{ixit_url}/c602d89c9ca07b767cd87d469a7d5a14ab891bc3.patch#/%{name}-ixit-c602d89.patch
-Patch54:        %{ixit_url}/3cca9b245c9078ce863405de7f2aec4eda6dd14f.patch#/%{name}-ixit-3cca9b2.patch
-Patch55:        %{ixit_url}/0d709461c000c5c01a92fbfdaef1386391fbb514.patch#/%{name}-ixit-0d70946.patch
-Patch56:        %{ixit_url}/c1c3069bd4a28ef5fd7fa4de10c85f5a4583aba4.patch#/%{name}-ixit-c1c3069.patch
-Patch57:        %{ixit_url}/e8fcb43dc1b59645e1df95ee9d77f5220f1488fe.patch#/%{name}-ixit-e8fcb43.patch
-Patch58:        %{ixit_url}/0224efdf863a2dfd907b3d5214dccc4bbe447dd4.patch#/%{name}-ixit-0224efd.patch
-Patch59:        %{ixit_url}/1e72b4976437b872dc5ee2ef1e5a0469ded74006.patch#/%{name}-ixit-1e72b49.patch
-Patch60:        %{ixit_url}/07fabea3318a7672a320db1022b46a31ecb4351b.patch#/%{name}-ixit-07fabea.patch
-Patch61:        %{ixit_url}/53ac6e7f2af59df279952407b1b5931706129721.patch#/%{name}-ixit-53ac6e7.patch
-Patch62:        %{ixit_url}/977936b2917dc28ee9ed08e73323d385444f7806.patch#/%{name}-ixit-977936b.patch
-Patch63:        %{ixit_url}/8324653c079a68932cea6e08f01b5fd7035219b6.patch#/%{name}-ixit-8324653.patch
-Patch64:        %{ixit_url}/4cdba4c41ed6f56a373fb51d8aa3a552503fccb6.patch#/%{name}-ixit-4cdba4c.patch
-Patch65:        %{ixit_url}/56db608d111bc810d00a6d82dda333eb387bd331.patch#/%{name}-ixit-56db608.patch
+Patch50:        %{ixit_url}/bceb7997fe457d778961abaaaafe227221e5a317.patch#/%{name}-ixit-bceb799.patch
+Patch51:        %{ixit_url}/a1b7a66545b8772211a6b5f12c2939829feaee5a.patch#/%{name}-ixit-a1b7a66.patch
+Patch52:        %{ixit_url}/1c3628030f6f5a7c8fa6bbd94e63709528bf8cc6.patch#/%{name}-ixit-1c36280.patch
+Patch53:        %{ixit_url}/77a8f8f6845a310ac289394b30044d28fc8defa7.patch#/%{name}-ixit-77a8f8f.patch
+Patch54:        %{ixit_url}/62d2e049f5e053597534e1e8b56759458ddf7fd4.patch#/%{name}-ixit-62d2e04.patch
+Patch55:        %{ixit_url}/ad8e11efcb30f0d2484b2e2e05517924d0151046.patch#/%{name}-ixit-ad8e11e.patch
+Patch56:        %{ixit_url}/7eff7b8eab14093666cade1eba447b7ce8634480.patch#/%{name}-ixit-7eff7b8.patch
+Patch57:        %{ixit_url}/8f3d8f4347190d4cacf70b97234577f4a2a46716.patch#/%{name}-ixit-8f3d8f4.patch
+Patch58:        %{ixit_url}/5a5c2e9e733908a1810e0e32262131570c516081.patch#/%{name}-ixit-5a5c2e9.patch
+Patch59:        %{ixit_url}/292dd3176437c6579600a147fab9a5e109abe30a.patch#/%{name}-ixit-292dd31.patch
+Patch60:        %{ixit_url}/c756226e1682537a9f1d772934eebb347c78a8aa.patch#/%{name}-ixit-c756226.patch
+Patch61:        %{ixit_url}/d1108db66c179c77dc66004f703c1a89fe6a0d8b.patch#/%{name}-ixit-d1108db.patch
+Patch62:        %{ixit_url}/1ee34aec6bc6d1fd12050ab887aeb3e377dc7b6b.patch#/%{name}-ixit-1ee34ae.patch
+Patch63:        %{ixit_url}/531908f251ec0a5bb15dffe9c114684649dd263b.patch#/%{name}-ixit-531908f.patch
+Patch64:        %{ixit_url}/b2162e1ce91b7683db1fa4c9e7f2089fbf0c7295.patch#/%{name}-ixit-b2162e1.patch
+Patch65:        %{ixit_url}/d115fcc5b7dc6116b4b1ecff9cca8ae0175557c2.patch#/%{name}-ixit-d115fcc.patch
+Patch66:        %{ixit_url}/5e01858ba5b42432caa01cf0d64294c30dc130d4.patch#/%{name}-ixit-5e01858.patch
+Patch67:        %{ixit_url}/03fd819b80d4554b2540edd47c15d3df3885d169.patch#/%{name}-ixit-03fd819.patch
+Patch68:        %{ixit_url}/ff985cbea91425252890e405ece3d81750526026.patch#/%{name}-ixit-ff985cb.patch
+Patch69:        %{ixit_url}/fd36967da3d046b5517600862fa06011d0914697.patch#/%{name}-ixit-fd36967.patch
+Patch70:        %{ixit_url}/5e63e5fbb5fca414f357d65fa0467c8df93633a9.patch#/%{name}-ixit-5e63e5f.patch
+Patch71:        %{ixit_url}/b9c842d5cbd6fa307f00c3842338b95a12943d95.patch#/%{name}-ixit-b9c842d.patch
+Patch72:        %{ixit_url}/ce88e7179c32e0dc2c6a94500d778de44506e699.patch#/%{name}-ixit-ce88e71.patch
+Patch73:        %{ixit_url}/389efebb0e4d18f819997d130010762c9776517c.patch#/%{name}-ixit-389efeb.patch
+Patch74:        %{ixit_url}/658e3f3cae79a67692f3ca30a8e1cd52732f3e0a.patch#/%{name}-ixit-658e3f3.patch
 
 
 BuildRequires:  meson >= 0.45
@@ -361,6 +370,16 @@ Requires:       vulkan-devel
 
 %description vulkan-devel
 Headers for development with the Vulkan API.
+
+%if 0%{?with_vulkan_device_select}
+%package vulkan-device-select
+Summary:        Mesa Vulkan device select layer
+Requires:       %{name}-vulkan-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description vulkan-device-select
+A Vulkan device selection layer.
+%endif
+
 
 %if 0%{?with_vulkan_overlay}
 %package vulkan-overlay
@@ -666,16 +685,18 @@ popd
 %{_libdir}/libvulkan_radeon.so
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %endif
-%if 0%{?with_vulkan_device_select}
-%{_libdir}/libVkLayer_MESA_device_select.so
-%{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
-%endif
 
 %files vulkan-devel
 %if 0%{?with_hardware}
 %ifarch %{ix86} x86_64
 %{_includedir}/vulkan/vulkan_intel.h
 %endif
+%endif
+
+%if 0%{?with_vulkan_device_select}
+%files vulkan-device-select
+%{_libdir}/libVkLayer_MESA_device_select.so
+%{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %endif
 
 %if 0%{?with_vulkan_overlay}
@@ -688,6 +709,10 @@ popd
 
 
 %changelog
+* Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.1.0~rc3-100
+- 20.1.0-rc3
+- Update iXit patchset
+
 * Thu May 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.1.0~rc2-100
 - 20.1.0-rc2
 - Reenable LTO

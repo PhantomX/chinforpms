@@ -19,19 +19,19 @@
 
 %global pkgname amdvlk
 
-%global commit1 a1299ba9c8e2337f00bdec73e2031144d9811ed7
+%global commit1 53692d985a53a336e07907c2d4b86bf2deb66908
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 3864fc733e437a6e6ae729c6858b92b39194eada
+%global commit2 61b5d58e8891dc37e473064d429f0496d5254e52
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 d8c926b86b1245badc67e5d55b0eaa45d4a910a0
+%global commit3 877b773000248dffa025c42d9c4074d1a07b9e47
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 e1b2dde021a2efd34da6593994f87317a803b065
+%global commit4 a83f67db9f0d2f16bbc698aeefa9c5e9476c993a
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -47,7 +47,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 49ca250b44c633ba7cb8897002e62781a451421c
+%global commit8 a6b0e132ecc751e65cede733e54c49df149a0fd4
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
@@ -55,7 +55,7 @@
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 97ee5c88deac4f48bd88525e678abc188663c9b2
+%global commit10 4fa68edd68197a8c77779942b5d973f89c621752
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
@@ -69,7 +69,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.2.2
+Version:        2020.2.3
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -182,7 +182,6 @@ export CFLAGS="%{build_cflags} -fno-plt -mno-avx"
 export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
 
 %cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE=ON \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DBUILD_WAYLAND_SUPPORT:BOOL=ON \
   -DXGL_METROHASH_PATH:PATH=${extdir}/MetroHash \
@@ -234,6 +233,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.2.3-1
+- 2020.Q2.3
+
 * Thu Apr 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.2.2-1
 - 2020.Q2.2
 

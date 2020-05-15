@@ -42,8 +42,8 @@ Requires:       xorg-x11-apps
 mkdir _build
 pushd _build
 
-%cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+%cmake ..
+
 %make_build
 
 popd
