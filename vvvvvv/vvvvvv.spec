@@ -1,6 +1,6 @@
-%global commit d4034661e260ee3eda610a21db75b9695cd4a0ad
+%global commit f617b6d695cd41d95a1a4f4048553d82223c5883
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200409
+%global date 20200514
 
 %undefine _hardened_build
 
@@ -12,13 +12,13 @@
 %global pkgname VVVVVV
 
 Name:           vvvvvv
-Version:        2.2
-Release:        8%{?gver}%{?dist}
+Version:        2.3
+Release:        1%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
 # * S1 (lodepng) - zlib -- static dependency;
-# * S2 (physfs) - zlib -- static dependency;
+# * S2 (utf8cpp) - Boost -- static dependency;
 License:        VVVVVV
 
 URL:            https://github.com/TerryCavanagh/%{pkgname}
@@ -136,6 +136,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Fri May 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.3-1.20200514gitf617b6d
+- 2.3
+
 * Sun Apr 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-8.20200409gitd403466
 - Bump
 
