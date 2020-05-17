@@ -1,6 +1,6 @@
-%global commit debe646aa70f88b4c4aa0dc4f380d6db939e573e
+%global commit 9e26bc811656ad8eb901bffa5528b9ce25d44bc3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200513
+%global date 20200515
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,16 +41,16 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver e30e2251253d1b856d62202c06314e4b530748ae
+%global wine_stagingver 68f3e40ff7841d239f91921920f769327c78ce62
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id e8dfdfbb3f0640e37ca07822ef9a293aef856f4e
+%global tkg_id ee5e71e16916573bb3324310d313ce3f9619ed66
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 90e4f08f33c622dec1324b9616f8b3f4480bc14e
+%global tkg_cid 65d93b8bfcb56bfd1c736cf8adf666f6b423aa90
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0
@@ -87,7 +87,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.8
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -197,7 +197,7 @@ Patch734:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-
 Patch790:       revert-grab-fullscreen.patch
 Patch791:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.patch#/%{name}-valve-a09b820.patch
 Patch792:       %{valve_url}/commit/35ff7c5c657d143a96c419346ef516e50815cdfb.patch#/%{name}-valve-35ff7c5.patch
-Patch793:       %{tkg_url}/hotfixes/fd7992972b252ed262d33ef604e9e1235d2108c5-5.myrevert#/%{name}-tkg-fd799297_revert-5.patch
+Patch793:       %{tkg_url}/hotfixes/fd7992972b252ed262d33ef604e9e1235d2108c5-6.myrevert#/%{name}-tkg-fd799297_revert-6.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -1997,6 +1997,7 @@ fi
 %{_libdir}/wine/normaliz.%{winedll}
 %{_libdir}/wine/npmshtml.%{winedll}
 %{_libdir}/wine/npptools.%{winedll}
+%{_libdir}/wine/ntdll.so
 %{_libdir}/wine/ntdll.dll.so
 %{_libdir}/wine/ntdsapi.%{winedll}
 %{_libdir}/wine/ntprint.%{winedll}
@@ -2603,6 +2604,9 @@ fi
 
 
 %changelog
+* Sat May 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.8-103.20200515git9e26bc8
+- Bump
+
 * Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.8-102.20200513gitdebe646
 - Snapshot
 
