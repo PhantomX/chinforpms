@@ -1,6 +1,6 @@
-%global commit 134c9cfcb232dde32856509efc0858855f2225da
+%global commit fdd0b372adb6afac596e305800ef8db1df615183
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200421
+%global date 20200517
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -52,7 +52,7 @@
 
 Name:           ppsspp
 Version:        1.9.4
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -333,6 +333,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun May 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.4-108.20200517gitfdd0b37
+- New snapshot
+
 * Wed Apr 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.4-107.20200421git134c9cf
 - Bump
 

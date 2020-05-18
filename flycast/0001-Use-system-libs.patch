@@ -1,6 +1,6 @@
-From 2eed0c08e5ec0d490b3d0e0addf1d8c75ef2af07 Mon Sep 17 00:00:00 2001
+From 8e250d6a5c85e3c0fd11919fcf92763b7ad468eb Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 21 Apr 2020 23:10:40 -0300
+Date: Sun, 17 May 2020 11:30:34 -0300
 Subject: [PATCH] Use system libs
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH] Use system libs
  2 files changed, 53 insertions(+), 3 deletions(-)
 
 diff --git a/core/core.mk b/core/core.mk
-index 2cfa6d0..3cdecb1 100755
+index 7d82416..37b3627 100755
 --- a/core/core.mk
 +++ b/core/core.mk
 @@ -10,9 +10,17 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
@@ -59,10 +59,10 @@ index 2cfa6d0..3cdecb1 100755
 +endif
 +RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/stb
  
- RZDCY_CXXFLAGS := $(RZDCY_CFLAGS) -fno-exceptions -fno-rtti -std=gnu++11
+ RZDCY_CXXFLAGS := $(RZDCY_CFLAGS) -fno-rtti -std=c++11
  
 diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index 287609e..26b88ae 100644
+index 1b05841..7ba2e36 100644
 --- a/shell/linux/Makefile
 +++ b/shell/linux/Makefile
 @@ -14,6 +14,12 @@ endif
@@ -78,7 +78,7 @@ index 287609e..26b88ae 100644
  CXX ?= ${CC_PREFIX}g++
  CC ?= ${CC_PREFIX}gcc
  AS ?= ${CC_PREFIX}as
-@@ -413,6 +419,33 @@ ifdef DEBUGFAST
+@@ -417,6 +423,33 @@ ifdef DEBUGFAST
      CFLAGS += -DDEBUGFAST
  endif
  
@@ -113,5 +113,5 @@ index 287609e..26b88ae 100644
      CFLAGS += -DUNIT_TESTS
  endif
 -- 
-2.26.1
+2.26.2
 
