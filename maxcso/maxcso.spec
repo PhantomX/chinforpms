@@ -1,14 +1,14 @@
 %global commit 26a4b1f4963dcf7fa885994f44bd632309701a68
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200504
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           maxcso
-Version:        1.11.0
+Version:        1.12.0
 Release:        1%{?gver}%{?dist}
 Summary:        Fast cso compressor
 
@@ -65,5 +65,8 @@ sed -e 's|-luv -llz4 -lz|$(LDFLAGS) \0|' -i Makefile
 
 
 %changelog
+* Mon May 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.12.0-1
+- 1.12.0
+
 * Wed May 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.11.0-1.20200504git26a4b1f
 - Initial spec

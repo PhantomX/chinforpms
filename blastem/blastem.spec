@@ -1,8 +1,8 @@
 %undefine _hardened_build
 %global _legacy_common_support 1
 
-%global commit 357878be8be6
-%global date 20200426
+%global commit a042e046f7f2
+%global date 20200516
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           blastem
 Version:        0.6.2
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPLv3
@@ -39,7 +39,7 @@ runs on modest hardware.
 
 rm -rf zlib
 
-sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c png.c zip.c
+sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c event_log.{c,h} png.c zip.c
 
 sed -e 's|./termhelper|%{_bindir}/%{name}-termhelper|g' -i terminal.c
 
@@ -107,6 +107,9 @@ done
 
 
 %changelog
+* Mon May 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.6.2-7.20200516gita042e046f7f2
+- Bump
+
 * Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.6.2-6.20200426git357878be8be6
 - New snapshot
 - R: dejavu-sans-fonts
