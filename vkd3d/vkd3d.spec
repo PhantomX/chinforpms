@@ -1,6 +1,6 @@
-%global commit 0d74a13bc4471608e5ddd4a0affcbfb4a2585779
+%global commit 71034acc761d4095778d2734717957a54fcf82ee
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200506
+%global date 20200514
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           vkd3d
 Version:        1.1
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 Epoch:          1
@@ -139,6 +139,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Tue May 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1-102.20200514git71034ac
+- Bump
+
 * Wed May 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1-101.20200506git0d74a13
 - HansKristian snapshot
 - dxil-spirv support

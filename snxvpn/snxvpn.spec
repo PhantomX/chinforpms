@@ -9,7 +9,7 @@
 
 Name:           snxvpn
 Version:        1.2
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        Command-line utility to connect to a Checkpoint SSL VPN 
 
 License:        BSD
@@ -25,6 +25,8 @@ Source2:        README.wrapper
 
 Patch0:         0001-Change-settings-to-HOME-.config.patch
 Patch1:         0001-Hardcode-snx-path.patch
+
+Patch10:        %{url}/pull/2.patch#/%{name}-gh-pull2.patch
 
 BuildArch:      noarch
 
@@ -104,6 +106,10 @@ EOF
 
 
 %changelog
+* Tue May 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.2-7.20180501gitb17198e
+- PR fixing new beautifulsoup4 support
+- Wrapper update
+
 * Fri Mar 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.2-6.20180501gitb17198e
 - One more time
 

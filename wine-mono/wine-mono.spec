@@ -2,6 +2,8 @@
 %{?mingw_package_header}
 
 %global with_bin 0
+#Set to 1 to download sources from github
+%global with_gh 1
 
 %if 0%{?with_bin}
 %global debug_package %{nil}
@@ -12,17 +14,22 @@
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        5.0.0
-Release:        101%{?dist}
+Version:        5.0.1
+Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
 License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
 URL:            http://wiki.winehq.org/Mono
 
-%if 0%{?with_bin}
-Source0:        https://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}-x86.tar.xz
+%if 0%{?with_gh}
+%global dl_url  %{vc_url}/releases/download/%{name}-%{version}
 %else
-Source0:        https://dl.winehq.org/wine/%{name}/%{version}/%{name}-%{version}-src.tar.xz
+%global dl_url  https://dl.winehq.org/wine/%{name}/%{version}
+%endif
+%if 0%{?with_bin}
+Source0:        %{dl_url}/%{name}-%{version}-x86.tar.xz
+%else
+Source0:        %{dl_url}/%{name}-%{version}-src.tar.xz
 %endif
 Source1:        %{vc_url}/%{name}/raw/master/COPYING
 Source2:        %{vc_url}/%{name}/raw/master/README
@@ -150,6 +157,9 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 
 
 %changelog
+* Tue May 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.0.1-100
+- 5.0.1
+
 * Tue Apr 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-101
 - Fedora sync
 

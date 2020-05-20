@@ -1,4 +1,4 @@
-%global commit 9e26bc811656ad8eb901bffa5528b9ce25d44bc3
+%global commit 4358ddc75fbfabdc4a4f31b4e3cc9aa1e0811d4c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200515
 %global with_snapshot 1
@@ -13,7 +13,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.1
-%global winemono  5.0.0
+%global winemono  5.0.1
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -41,16 +41,16 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 68f3e40ff7841d239f91921920f769327c78ce62
+%global wine_stagingver fbe1ba5578fb7380e2b09a5aebf5aa488744a823
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id ee5e71e16916573bb3324310d313ce3f9619ed66
+%global tkg_id 6f52ec07dbc28474ad7a02d4c1f8263804fd01b5
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 65d93b8bfcb56bfd1c736cf8adf666f6b423aa90
+%global tkg_cid 3765d5281af0b172237d62cd74a6370c840411fa
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0
@@ -87,7 +87,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.8
-Release:        103%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -175,6 +175,7 @@ Source703:      %{tkg_url}/misc/staging-44d1a45-localreverts.patch#/%{name}-tkg-
 Patch704:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch705:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch706:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
+Patch707:       %{tkg_url}/misc/d3d12-fixes.patch#/%{name}-tkg-d3d12-fixes.patch
 
 # fsync
 Patch720:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
@@ -209,6 +210,7 @@ Patch1000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 Patch5000:      0001-chinforpms-message.patch
 # Fix vulkan crash with x86
 Patch5001:      wine-fix-i686-gcc10.patch
+Patch5002:      0001-mscoree-Update-Wine-Mono-to-5.0.1.patch
 
 %endif
 
@@ -797,9 +799,11 @@ patch -p1 -i wine-tkg-staging-44d1a45-localreverts.patch
 %patch704 -p1
 %patch705 -p1
 %patch706 -p1
+%patch707 -p1
 
 %patch5000 -p1
 %patch5001 -p1
+%patch5002 -p1
 
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
@@ -2604,6 +2608,13 @@ fi
 
 
 %changelog
+* Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.8-105.20200515git4358ddc
+- Fix wine-mono patch
+
+* Tue May 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.8-104.20200515git3bb824f
+- New snapshot
+- wine-mono 5.0.1
+
 * Sat May 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.8-103.20200515git9e26bc8
 - Bump
 

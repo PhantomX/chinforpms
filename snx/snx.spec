@@ -4,7 +4,7 @@
 
 Name:           snx
 Version:        800007075
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Check Point SSL Network Extender (vpn client)
 
 License:        Proprietary
@@ -129,6 +129,9 @@ EOF
 
 
 %changelog
+* Tue May 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 800007075-5
+- Wrapper update
+
 * Thu Apr 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 800007075-4
 - Remove exectack from binary
 
