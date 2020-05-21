@@ -1,7 +1,7 @@
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
 Name:           asbru-cm
-Version:        6.1.3
+Version:        6.2.0
 Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
@@ -76,15 +76,17 @@ remote terminal sessions and automating repetitive tasks.
 %prep
 %autosetup -n %{name}-%{ver} -p1
 
-sed -r -e "s|\\\$RealBin[ ]*\.[ ]*'|'%{_datadir}/%{name}/lib|g" -i lib/pac_conn
-sed -r -e "s|\\\$RealBin,|'%{_datadir}/%{name}/lib',|g" -i lib/pac_conn
-sed -r -e "s|\\\$RealBin/\.\./|%{_datadir}/%{name}/|g" -i lib/pac_conn
-sed -r -e "s|\\\$RealBin/|%{_datadir}/%{name}/lib/|g" -i lib/pac_conn
+sed -r -e "s|\\\$RealBin[ ]*\.[ ]*'|'%{_datadir}/%{name}/lib|g" -i lib/asbru_conn
+sed -r -e "s|\\\$RealBin,|'%{_datadir}/%{name}/lib',|g" -i lib/asbru_conn
+sed -r -e "s|\\\$RealBin/\.\./|%{_datadir}/%{name}/|g" -i lib/asbru_conn
+sed -r -e "s|\\\$RealBin/|%{_datadir}/%{name}/lib/|g" -i lib/asbru_conn
 find . -type f -exec sed -i \
   -e "s|\$RealBin[ ]*\.[ ]*'|'%{_datadir}/%{name}|g" \
   -e 's|"\$RealBin/|"%{_datadir}/%{name}/|g' \
   -e 's|/\.\.\(/\)|\1|' \
   '{}' \+
+
+sed -e 's|$PATH/asbru_confirm|$PATH/utils/asbru_confirm|g' -i utils/*2*.pl
 
 sed -r \
   -e 's|(^Categories=).*|\1GTK;Network;|' \
@@ -100,7 +102,7 @@ desktop-file-validate res/%{name}.desktop
 
 %install
 mkdir -p %{buildroot}/{%{_mandir}/man1,%{_bindir}}
-mkdir -p %{buildroot}/%{_datadir}/{%{name}/{lib,res},applications}
+mkdir -p %{buildroot}/%{_datadir}/{%{name}/{lib,res,utils},applications}
 mkdir -p %{buildroot}/%{_bashcompletiondir}
 mkdir -p %{buildroot}/%{_datadir}/icons/hicolor/{24x24,64x64,256x256,scalable}/apps
 
@@ -119,8 +121,12 @@ cp -a res/asbru-logo-256.png %{buildroot}/%{_datadir}/icons/hicolor/256x256/apps
 cp -a res/asbru-logo.svg %{buildroot}/%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
 # Copy the remaining resources and libraries
-cp -a res/*.{png,jpg,pl,glade,css,svg} %{buildroot}/%{_datadir}/%{name}/res/
+cp -a res/*.{png,pl,glade,svg} %{buildroot}%{_datadir}/%{name}/res/
+cp -ar res/themes/ %{buildroot}%{_datadir}/%{name}/res/
 cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
+cp -a utils/asbru_confirm.pl %{buildroot}%{_datadir}/%{name}/utils/
+cp -a utils/asbru2pac.pl %{buildroot}%{_datadir}/%{name}/utils/
+cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %files
@@ -135,6 +141,9 @@ cp -a lib/* %{buildroot}/%{_datadir}/%{name}/lib/
 
 
 %changelog
+* Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.2.0-1
+- 6.2.0
+
 * Tue May 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.1.3-1
 - 6.1.4
 

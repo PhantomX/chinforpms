@@ -1,9 +1,6 @@
 # Much of this is borrowed from the original kernel.spec
 # It needs a bunch of the macros for rawhide vs. not-rawhide builds.
 
-# this should go away soon
-%global _legacy_common_support 1
-
 # For a stable, released kernel, released_kernel should be 1. For rawhide
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
@@ -13,7 +10,7 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 9b0432d9d26113129127f5827983a61029857b7d
+%global opensuse_id 3c26bf79259d20fb84f7e44b5b2b2decaa590dc1
 
 %define major_ver 5
 
@@ -26,7 +23,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 13
+%global stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -513,6 +510,10 @@ popd
 
 
 %changelog
+* Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.14-500.chinfo
+- 5.6.14
+- Disable gcc 10 workaround
+
 * Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.13-500.chinfo
 - 5.6.13
 

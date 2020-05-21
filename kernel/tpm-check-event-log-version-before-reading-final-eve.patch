@@ -1,0 +1,81 @@
+From MAILER-DAEMON Thu May 14 17:38:32 2020
+From: Loïc Yhuel <loic.yhuel@gmail.com>
+To: linux-integrity@vger.kernel.org
+Cc: matthewgarrett@google.com, ardb@kernel.org, jarkko.sakkinen@linux.intel.com, javierm@redhat.com, Loïc Yhuel <loic.yhuel@gmail.com>
+Subject: [PATCH] tpm: check event log version before reading final events
+Date: Tue, 12 May 2020 06:01:13 +0200
+Message-Id: <20200512040113.277768-1-loic.yhuel@gmail.com>
+Sender: linux-integrity-owner@vger.kernel.org
+List-ID: <linux-integrity.vger.kernel.org>
+X-Mailing-List: linux-integrity@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+This fixes the boot issues since 5.3 on several Dell models when the TPM
+is enabled. Depending on the exact grub binary, booting the kernel would
+freeze early, or just report an error parsing the final events log.
+
+We get an event log in the SHA-1 format, which doesn't have a
+tcg_efi_specid_event_head in the first event, and there is a final events
+table which doesn't match the crypto agile format.
+__calc_tpm2_event_size reads bad "count" and "efispecid->num_algs", and
+either fails, or loops long enough for the machine to be appear frozen.
+
+So we now only parse the final events table, which is per the spec always
+supposed to be in the crypto agile format, when we got a event log in this
+format.
+
+Fixes: 166a2809d65b2 ("tpm: Don't duplicate events from the final event log in the TCG2 log")
+Fixes: c46f3405692de ("tpm: Reserve the TPM final events table")
+Signed-off-by: Loïc Yhuel <loic.yhuel@gmail.com>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+Reviewed-by: Matthew Garrett <mjg59@google.com>
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1779611
+---
+ drivers/firmware/efi/libstub/tpm.c | 5 +++--
+ drivers/firmware/efi/tpm.c         | 3 ++-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/firmware/efi/libstub/tpm.c b/drivers/firmware/efi/libstub/tpm.c
+index 1d59e103a2e3..e9a684637b70 100644
+--- a/drivers/firmware/efi/libstub/tpm.c
++++ b/drivers/firmware/efi/libstub/tpm.c
+@@ -54,7 +54,7 @@ void efi_retrieve_tpm2_eventlog(void)
+ 	efi_status_t status;
+ 	efi_physical_addr_t log_location = 0, log_last_entry = 0;
+ 	struct linux_efi_tpm_eventlog *log_tbl = NULL;
+-	struct efi_tcg2_final_events_table *final_events_table;
++	struct efi_tcg2_final_events_table *final_events_table = NULL;
+ 	unsigned long first_entry_addr, last_entry_addr;
+ 	size_t log_size, last_entry_size;
+ 	efi_bool_t truncated;
+@@ -127,7 +127,8 @@ void efi_retrieve_tpm2_eventlog(void)
+ 	 * Figure out whether any events have already been logged to the
+ 	 * final events structure, and if so how much space they take up
+ 	 */
+-	final_events_table = get_efi_config_table(LINUX_EFI_TPM_FINAL_LOG_GUID);
++	if (version == EFI_TCG2_EVENT_LOG_FORMAT_TCG_2)
++		final_events_table = get_efi_config_table(LINUX_EFI_TPM_FINAL_LOG_GUID);
+ 	if (final_events_table && final_events_table->nr_events) {
+ 		struct tcg_pcr_event2_head *header;
+ 		int offset;
+diff --git a/drivers/firmware/efi/tpm.c b/drivers/firmware/efi/tpm.c
+index 55b031d2c989..77e101a395e7 100644
+--- a/drivers/firmware/efi/tpm.c
++++ b/drivers/firmware/efi/tpm.c
+@@ -62,7 +62,8 @@ int __init efi_tpm_eventlog_init(void)
+ 	tbl_size = sizeof(*log_tbl) + log_tbl->size;
+ 	memblock_reserve(efi.tpm_log, tbl_size);
+ 
+-	if (efi.tpm_final_log == EFI_INVALID_TABLE_ADDR)
++	if (efi.tpm_final_log == EFI_INVALID_TABLE_ADDR ||
++	    log_tbl->version != EFI_TCG2_EVENT_LOG_FORMAT_TCG_2)
+ 		goto out;
+ 
+ 	final_tbl = early_memremap(efi.tpm_final_log, sizeof(*final_tbl));
+-- 
+2.26.2
+
+

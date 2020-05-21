@@ -1,9 +1,6 @@
 # We have to override the new %%install behavior because, well... the kernel is special.
 %global __spec_install_pre %{___build_pre}
 
-# this should go away soon
-%global _legacy_common_support 1
-
 # At the time of this writing (2019-03), RHEL8 packages use w2.xzdio
 # compression for rpms (xz, level 2).
 # Kernel has several large (hundreds of mbytes) rpms, they take ~5 mins
@@ -94,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 7
+%global post_factum 8
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit bfdc7a211286c29bdeb9e51de641d47536ce88fc
+%global pfcommit 9446dc1739621bc0bb7b755de6a8e06f0acc57b7
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 9b0432d9d26113129127f5827983a61029857b7d
+%global opensuse_id 3c26bf79259d20fb84f7e44b5b2b2decaa590dc1
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -831,9 +828,6 @@ Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
 Patch304: ARM-tegra-usb-no-reset.patch
 
-# https://patchwork.kernel.org/patch/11527525/
-Patch305: usb-usbfs-correct-kernel-user-page-attribute-mismatch.patch
-
 # Raspberry Pi
 # https://patchwork.kernel.org/cover/11353083/
 Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
@@ -857,8 +851,6 @@ Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
 Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
 # http://patchwork.ozlabs.org/patch/1243112/
 Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
-# https://patchwork.ozlabs.org/patch/1261638/
-Patch326: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
 # http://patchwork.ozlabs.org/patch/1221384/
 Patch327: PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 # https://patchwork.ozlabs.org/patch/1281134/
@@ -920,8 +912,17 @@ Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
 
-# CVE-2020-10711 rhbz 1825116 1834778
-Patch513: net-netlabel-cope-with-NULL-catmap.patch 
+#rhbz 1779611
+Patch514: tpm-check-event-log-version-before-reading-final-eve.patch
+
+# CVE-2020-12655 rhbz 1832543 1832545
+Patch515: 0001-xfs-add-agf-freeblocks-verify-in-xfs_agf_verify.patch
+
+# rhbz 1828927 No backlight control on CHT devices, patch posted upstream
+Patch516: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
+
+# kernel.org bz 206217
+Patch517: RFC-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch 
 
 ### Extra
 
@@ -939,7 +940,6 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/media-go7007-Fix-URB-type-for-interrupt-handling.patch#/openSUSE-media-go7007-Fix-URB-type-for-interrupt-handling.patch
-Patch1020: %{opensuse_url}/ipc-util.c-sysvipc_find_ipc-incorrectly-updates-posi.patch#/openSUSE-ipc-util.c-sysvipc_find_ipc-incorrectly-updates-posi.patch
 
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -2707,6 +2707,11 @@ fi
 #
 #
 %changelog
+* Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.14-500.chinfo
+- 5.6.14 - pf8
+- f32 sync
+- Disable gcc 10 workaround
+
 * Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.13-500.chinfo
 - 5.6.13 - pf7
 - f32 sync

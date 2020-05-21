@@ -1,0 +1,144 @@
+From patchwork Mon Apr 20 16:43:04 2020
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Nicolas Chauvet <kwizart@gmail.com>
+X-Patchwork-Id: 1273561
+Return-Path: <linux-tegra-owner@vger.kernel.org>
+X-Original-To: incoming@patchwork.ozlabs.org
+Delivered-To: patchwork-incoming@bilbo.ozlabs.org
+Authentication-Results: ozlabs.org;
+ spf=pass (sender SPF authorized) smtp.mailfrom=vger.kernel.org
+ (client-ip=23.128.96.18; helo=vger.kernel.org;
+ envelope-from=linux-tegra-owner@vger.kernel.org; receiver=<UNKNOWN>)
+Authentication-Results: ozlabs.org;
+ dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: ozlabs.org; dkim=pass (2048-bit key;
+ unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256
+ header.s=20161025 header.b=TzeKBoiR; dkim-atps=neutral
+Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
+ by ozlabs.org (Postfix) with ESMTP id 495XZC49yWz9sP7
+ for <incoming@patchwork.ozlabs.org>; Tue, 21 Apr 2020 02:43:15 +1000 (AEST)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+ id S1726731AbgDTQnK (ORCPT <rfc822;incoming@patchwork.ozlabs.org>);
+ Mon, 20 Apr 2020 12:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42314 "EHLO
+ lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+ by vger.kernel.org with ESMTP id S1726693AbgDTQnI (ORCPT
+ <rfc822;linux-tegra@vger.kernel.org>);
+ Mon, 20 Apr 2020 12:43:08 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com
+ [IPv6:2a00:1450:4864:20::342])
+ by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED4CC061A0C;
+ Mon, 20 Apr 2020 09:43:08 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id x25so280061wmc.0;
+ Mon, 20 Apr 2020 09:43:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=IHuj1FiuJPknu8Z7Uq/JeXw8aSg2xFkcoVYT3QRT6dA=;
+ b=TzeKBoiR2hu1L+OGuVzAMrvuOnCDM+J1nsGD1QbB9tkwdgx5rUc3jCkTzkFKQpJZ+g
+ jx96zAcsJH7FSzAMjcpWTgiixmPWJj0xuWXML6IW4oVt5Npm6F2D8UyjZyfgnUKcGU/k
+ Ye+bmwRUMi6cBC1Jpn93V5znfun/KPJFuOi1qLjh4g9rRAQWp4o4mZYTnxBkkMhi63gU
+ V7L+RQlj4buS+IXOZ/xi5chAd/gFJkADDOm8HVDAcIG6pEUCkXciuRiNL3f81ss3nwjq
+ uQQg7uRc8wXqOP1IqZ+W8kYP25Bty+uiykVyhv6XfOg0vWk4GK+wnM0wcP7boPe8Y8sS
+ dTLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=IHuj1FiuJPknu8Z7Uq/JeXw8aSg2xFkcoVYT3QRT6dA=;
+ b=YcZCjbicKhCKe1SzKhwIcD9gZI/8J/QS/LQk4lcoLCwcSjlg9p0O/m5t80TGXT4lcn
+ wFh0VyY+SsMR6uXCPrN8QXYbEY6fFVxEY2+btKzt+ft0v4jQUljopKGOV6n85FRs89U4
+ DrjNPXoL7izbuheb/tW9ZBrrMTLQ1btIJ/MiAZ2gKtlrachezXQjW1Gtn66/hEpIQybL
+ 9ctDGvygIAju/Yd9fx+cakfzPUGzKTc/yOhjKjbMfxF6YxTbdqPc08+0a3cOYoSoRKLE
+ i/drXsQpQhJHOhzZWXinld37vEHc/1pa/HYv3QR+UAproGfZq4eGqBh6cIYY87fW7nHk
+ lsmg==
+X-Gm-Message-State: AGi0PuYqEn+eRXnjHmfYwoSYQUy0ZK+SX7Vpbgu/XErfwPhXok1ZAmWe
+ N87IAyxXhJOQCMJxw6TgfSo=
+X-Google-Smtp-Source: APiQypLsj3XpHj4CyxtmOjlqdZs3DB8oJEEo2ghhT6QywH/SywA9LShfe1OCbQ3t6MmEGWRd+WIiVw==
+X-Received: by 2002:a1c:41d7:: with SMTP id o206mr194590wma.89.1587400987185; 
+ Mon, 20 Apr 2020 09:43:07 -0700 (PDT)
+Received: from arrakis.kwizart.net (lfbn-nic-1-185-211.w2-15.abo.wanadoo.fr.
+ [2.15.34.211])
+ by smtp.gmail.com with ESMTPSA id l4sm47922wrv.60.2020.04.20.09.43.05
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 20 Apr 2020 09:43:06 -0700 (PDT)
+From: Nicolas Chauvet <kwizart@gmail.com>
+To: Manikanta Maddireddy <mmaddireddy@nvidia.com>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+ linux-tegra@vger.kernel.org, linux-pci@vger.kernel.org,
+ Nicolas Chauvet <kwizart@gmail.com>
+Subject: [RFC] PCI: tegra: Revert raw_violation_fixup for tegra124
+Date: Mon, 20 Apr 2020 18:43:04 +0200
+Message-Id: <20200420164304.28810-1-kwizart@gmail.com>
+X-Mailer: git-send-email 2.25.2
+MIME-Version: 1.0
+Sender: linux-tegra-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-tegra.vger.kernel.org>
+X-Mailing-List: linux-tegra@vger.kernel.org
+
+As reported in https://bugzilla.kernel.org/206217 , raw_violation_fixup
+is causing more harm than good in some common use-cases.
+
+This patch as RFC is a partial revert of the 191cd6fb5 commit:
+ "PCI: tegra: Add SW fixup for RAW violations" 
+that was first introduced in 5.3 kernel.
+This fix the following regression since then.
+
+
+When using both the network NIC and I/O on MMC this can lead to the
+following message on jetson-tk1:
+
+ NETDEV WATCHDOG: enp1s0 (r8169): transmit queue 0 timed out
+
+and
+
+ pcieport 0000:00:02.0: AER: Uncorrected (Non-Fatal) error received: 0000:01:00.0
+ r8169 0000:01:00.0: AER: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
+ r8169 0000:01:00.0: AER:   device [10ec:8168] error status/mask=00004000/00400000
+ r8169 0000:01:00.0: AER:    [14] CmpltTO                (First)
+ r8169 0000:01:00.0: AER: can't recover (no error_detected callback)
+ pcieport 0000:00:02.0: AER: device recovery failed
+
+
+After that, the ethernet NIC isn't functional anymore even after reloading
+the module.
+After a reboot, this is reproducible by copying a large file over the
+ethernet NIC to the MMC.
+For some reasons this cannot be reproduced when the same file is copied
+to a tmpfs.
+
+
+This patch is RFC because it requires more understanding from Nvidia.
+ - Is the fixup (available in l4t downstrem) still needed for upstream ?
+ - Is there a need to update the fixup values for upstream ?
+ - If the fixup is reverted, does the hw bug can still be seen with
+   upstream ?
+
+Others can also provides more understanding:
+ - Conditions to reproduce the bug (or not)...
+
+
+Signed-off-by: Nicolas Chauvet <kwizart@gmail.com>
+Reviewed-by: Manikanta Maddireddy <mmaddireddy@nvidia.com>
+---
+ drivers/pci/controller/pci-tegra.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pci/controller/pci-tegra.c b/drivers/pci/controller/pci-tegra.c
+index 3e64ba6a36a8..4027e074094a 100644
+--- a/drivers/pci/controller/pci-tegra.c
++++ b/drivers/pci/controller/pci-tegra.c
+@@ -2470,7 +2470,7 @@ static const struct tegra_pcie_soc tegra124_pcie = {
+ 	.program_uphy = true,
+ 	.update_clamp_threshold = true,
+ 	.program_deskew_time = false,
+-	.raw_violation_fixup = true,
++	.raw_violation_fixup = false,
+ 	.update_fc_timer = false,
+ 	.has_cache_bars = false,
+ 	.ectl.enable = false,

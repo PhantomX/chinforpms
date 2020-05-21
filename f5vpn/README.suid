@@ -1,0 +1,10 @@
+SNX SUID
+===================
+
+f5vpn is a VPN client designed to run as unprivileged user, but require root
+privileges, so it needs the setuid bit of binary to be set.
+
+To allow users to run f5vpn, add them to f5vpn group.
+
+Example:
+ usermod -a -G f5vpn <user>

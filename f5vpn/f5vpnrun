@@ -1,0 +1,18 @@
+#!/usr/bin/bash
+
+if ! [[ "$(type -P zenity)" ]] ;then
+  echo 'zenity is not installed or in path!'
+  exit 5
+fi
+
+# zenity needs full path
+icon='/usr/share/icons/hicolor/64x64/apps/f5vpn.png'
+
+url="$(zenity --entry --window-icon="${icon}" --width=800 --title='Run f5vpn' --text='Cut this JavaScrip and run it with browser Developer Tools in your VPN page\nPaste f5-vpn URL here:' --entry-text="snaGetLaunchLink('network_access', dcl.getBins[0].res.reduce((result, bin) => bin.type === 'network_access' ? bin.id : result, {}))['link']")" 
+
+if [[ -n "${url}" ]] ;then
+  exec f5vpn "${url}"
+else
+  echo "Cancelled"
+  exit 1
+fi

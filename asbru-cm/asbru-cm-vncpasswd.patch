@@ -4,17 +4,17 @@ Date: Mon, 2 Mar 2020 11:42:22 -0300
 Subject: [PATCH] VNC: Fix passwords with TigerVNC
 
 ---
- lib/pac_conn | 2 +-
+ lib/asbru_conn | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/pac_conn b/lib/pac_conn
+diff --git a/lib/asbru_conn b/lib/asbru_conn
 index 0c3c371..4dc32ff 100755
---- a/lib/pac_conn
-+++ b/lib/pac_conn
+--- a/lib/asbru_conn
++++ b/lib/asbru_conn
 @@ -1211,7 +1211,7 @@ if (defined $METHOD) {
          _setProxy($method);
          if ($method eq 'TigerVNC') {
-             my $pfile = "$CFG_DIR/tmp/pac_conn_{$$}_$UUID";
+             my $pfile = "$CFG_DIR/tmp/asbru_conn_{$$}_$UUID";
 -            system("echo \"$PASS\" | vncpasswd -f > $pfile");
 +            system("echo \'$PASS\' | vncpasswd -f > $pfile");
              if (defined $$CFG{'tmp'}{'xid'}) {
