@@ -2,8 +2,8 @@
 %global __strip /bin/true
 
 %global cheatver 0206
-%global historyver 220
-%global infover 0220
+%global historyver 221
+%global infover 0221
 
 # Build non redistributable package with free roms
 %bcond_with roms
@@ -11,7 +11,7 @@
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.220
+Version:        0.221
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -249,6 +249,10 @@ done
 
 
 %changelog
+* Thu May 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.221-1
+- Mameinfo 0.221
+- History 221
+
 * Sun Apr 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.220-1
 - Mameinfo 0.220
 - History 220

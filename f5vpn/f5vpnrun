@@ -1,4 +1,24 @@
 #!/usr/bin/bash
+#  Name:  f5vpnrun
+#  Purpose:  Use zenity text entry dialog to input f5-vpn URL to run f5vpn.
+#
+# Copyright (C) 2020 Phantom X
+#
+#  This file is part of snx rpm package.
+#
+#  snxrun is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  snxrun is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this script.  If not, see <http://www.gnu.org/licenses/>.
+
 
 if ! [[ "$(type -P zenity)" ]] ;then
   echo 'zenity is not installed or in path!'
@@ -8,7 +28,7 @@ fi
 # zenity needs full path
 icon='/usr/share/icons/hicolor/64x64/apps/f5vpn.png'
 
-url="$(zenity --entry --window-icon="${icon}" --width=800 --title='Run f5vpn' --text='Cut this JavaScrip and run it with browser Developer Tools in your VPN page\nPaste f5-vpn URL here:' --entry-text="snaGetLaunchLink('network_access', dcl.getBins[0].res.reduce((result, bin) => bin.type === 'network_access' ? bin.id : result, {}))['link']")" 
+url="$(zenity --entry --window-icon="${icon}" --width=800 --title='Run f5vpn' --text='Cut this JavaScript and run it with browser Developer Tools in your VPN page\nPaste f5-vpn URL here:' --entry-text="snaGetLaunchLink('network_access', dcl.getBins[0].res.reduce((result, bin) => bin.type === 'network_access' ? bin.id : result, {}))['link']")" 
 
 if [[ -n "${url}" ]] ;then
   exec f5vpn "${url}"
