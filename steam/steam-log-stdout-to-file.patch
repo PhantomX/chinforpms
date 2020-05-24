@@ -1,0 +1,8 @@
+--- steam-launcher/bin_steam.sh.orig	2020-05-23 09:20:22.152991125 -0300
++++ steam-launcher/bin_steam.sh	2020-05-23 09:25:36.049735861 -0300
+@@ -183,4 +183,4 @@ fi
+ cp "$LAUNCHSTEAMBOOTSTRAPFILE" "$LAUNCHSTEAMDIR/bootstrap.tar.xz"
+ cd "$LAUNCHSTEAMDIR"
+ 
+-exec "$LAUNCHSTEAMDIR/$STEAMBOOTSTRAP" "$@"
++exec "$LAUNCHSTEAMDIR/$STEAMBOOTSTRAP" "$@" 2>&1 | tee "$DEFAULTSTEAMDIR/logs/stdout.log"

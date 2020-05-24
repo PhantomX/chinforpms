@@ -20,7 +20,7 @@ WINEFSYNC_SPINCOUNT=value
 
 WINE_LARGE_ADDRESS_AWARE override
 =================================
-Disable with WINE_LARGE_ADDRESS_AWARE=0 environment variable
+Enable with WINE_LARGE_ADDRESS_AWARE=1 environment variable
 
 WINE_FULLSCREEN_INTEGER_SCALING override (nearest neighbour upscaling)
 =================================

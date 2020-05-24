@@ -11,7 +11,7 @@
 Name:           steam
 Version:        1.0.0.62
 Epoch:          1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Installer for the Steam software distribution service
 
 # Redistribution and repackaging for Linux is allowed, see license file. udev rules are MIT.
@@ -41,6 +41,9 @@ Source11:       https://github.com/ValveSoftware/steam-devices/raw/%{udev_id}/60
 Patch0:         %{name}-makefile.patch
 # Do not try to copy steam.desktop to the user's desktop from lib/steam
 Patch1:         %{name}-no-icon-on-desktop.patch
+
+# Create stdout logs on user directory
+Patch10:         %{name}-log-stdout-to-file.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  systemd
@@ -175,6 +178,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat May 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.62-101
+- Add forgotten stdout log patch
+
 * Thu May 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.62-100
 - 1.0.0.62
 - RPMFusion sync

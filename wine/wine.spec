@@ -1,7 +1,7 @@
-%global commit 4358ddc75fbfabdc4a4f31b4e3cc9aa1e0811d4c
+%global commit b65ca133052ed9053e48c571155a764d4d711277
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200515
-%global with_snapshot 1
+%global date 20200521
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,14 +41,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver fbe1ba5578fb7380e2b09a5aebf5aa488744a823
+%global wine_stagingver 5.9
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 6f52ec07dbc28474ad7a02d4c1f8263804fd01b5
+%global tkg_id 6813ab4f282e376f4910f868de462e9cf2d7896b
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 3765d5281af0b172237d62cd74a6370c840411fa
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -56,6 +56,7 @@
 %global gtk3 0
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
+%global vulkanup 0
 # Broken
 %global pba 0
 
@@ -86,8 +87,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.8
-Release:        105%{?gver}%{?dist}
+Version:        5.9
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -169,7 +170,6 @@ Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch700:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
-Patch701:       %{tkg_url}/proton/use_clock_monotonic-2.patch#/%{name}-tkg-use_clock_monotonic-2.patch
 Patch702:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 Source703:      %{tkg_url}/misc/staging-44d1a45-localreverts.patch#/%{name}-tkg-staging-44d1a45-localreverts.patch
 Patch704:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
@@ -788,7 +788,6 @@ This package adds the opencl driver for wine.
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch700 -p1
-%patch701 -p1
 %patch702 -p1
 %if 0%{?fshack}
 cp -p %{S:703} .
@@ -842,10 +841,14 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 %if 0%{?fshack}
 %patch731 -p1
 %patch732 -p1
+%if 0%{?vulkanup}
 %patch733 -p1
+%endif
 %patch790 -p1 -R
 %else
+%if 0%{?vulkanup}
 %patch734 -p1
+%endif
 %endif
 %patch791 -p1 -R
 
@@ -2608,6 +2611,9 @@ fi
 
 
 %changelog
+* Sat May 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.9-100
+- 5.9
+
 * Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.8-105.20200515git4358ddc
 - Fix wine-mono patch
 
