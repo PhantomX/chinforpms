@@ -75,6 +75,7 @@ FAudio
 firefox-chinfo-prefs
 firejail
 firetools
+flips
 fluxbox-chinfo-menu
 fss-parallel-tools
 engrampa
