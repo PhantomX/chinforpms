@@ -156,7 +156,7 @@ Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
 Version: 5.0.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -181,6 +181,11 @@ Source16: %{name}-sysusers.conf
 Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
+
+# Fix iouring hang (bz #1823751)
+# https://lists.gnu.org/archive/html/qemu-devel/2020-05/msg02728.html
+Patch0001: 0001-aio-posix-don-t-duplicate-fd-handler-deletion-in-fdm.patch
+Patch0002: 0002-aio-posix-disable-fdmon-io_uring-when-GSource-is-use.patch 
 
 
 BuildRequires: gcc
@@ -1821,6 +1826,9 @@ popd
 
 
 %changelog
+* Wed May 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:5.0.0-101
+- f33 sync
+
 * Tue Apr 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:5.0.0-100
 - 5.0.0
 

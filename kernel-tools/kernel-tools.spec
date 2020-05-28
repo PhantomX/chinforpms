@@ -10,7 +10,7 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 3c26bf79259d20fb84f7e44b5b2b2decaa590dc1
+%global opensuse_id 1553fa9569774eced1b5e49dc0b948c93bcc2c7e
 
 %define major_ver 5
 
@@ -23,7 +23,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 14
+%global stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -510,6 +510,9 @@ popd
 
 
 %changelog
+* Wed May 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.15-500.chinfo
+- 5.6.15
+
 * Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.14-500.chinfo
 - 5.6.14
 - Disable gcc 10 workaround

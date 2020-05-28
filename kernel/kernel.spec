@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 9446dc1739621bc0bb7b755de6a8e06f0acc57b7
+%global pfcommit 83da834f47841f0c52dca2c9b492846977b3f2e3
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 3c26bf79259d20fb84f7e44b5b2b2decaa590dc1
+%global opensuse_id 1553fa9569774eced1b5e49dc0b948c93bcc2c7e
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -912,9 +912,6 @@ Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
 
-#rhbz 1779611
-Patch514: tpm-check-event-log-version-before-reading-final-eve.patch
-
 # CVE-2020-12655 rhbz 1832543 1832545
 Patch515: 0001-xfs-add-agf-freeblocks-verify-in-xfs_agf_verify.patch
 
@@ -923,6 +920,14 @@ Patch516: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 
 # kernel.org bz 206217
 Patch517: RFC-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch 
+
+# CVE-2020-12888 rhbz 1836245 1836244
+Patch518: vfio-pci-block-user-access-to-disabled-device-MMIO.patch
+
+Patch519: vboxguest-fixes.patch
+
+# rhbz 1830150
+Patch520: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
 
 ### Extra
 
@@ -2707,6 +2712,10 @@ fi
 #
 #
 %changelog
+* Wed May 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.15-500.chinfo
+- 5.6.15 - pf8
+- f32 sync
+
 * Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.14-500.chinfo
 - 5.6.14 - pf8
 - f32 sync
