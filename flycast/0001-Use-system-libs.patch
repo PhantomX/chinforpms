@@ -1,15 +1,15 @@
-From 8e250d6a5c85e3c0fd11919fcf92763b7ad468eb Mon Sep 17 00:00:00 2001
+From f1f7d4e8f529efc1ad76b6f109719ec1226e0509 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 17 May 2020 11:30:34 -0300
+Date: Sat, 30 May 2020 17:50:26 -0300
 Subject: [PATCH] Use system libs
 
 ---
- core/core.mk         | 23 ++++++++++++++++++++---
+ core/core.mk         | 25 ++++++++++++++++++++++---
  shell/linux/Makefile | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 53 insertions(+), 3 deletions(-)
+ 2 files changed, 55 insertions(+), 3 deletions(-)
 
 diff --git a/core/core.mk b/core/core.mk
-index 7d82416..37b3627 100755
+index 7d82416..e0e1434 100755
 --- a/core/core.mk
 +++ b/core/core.mk
 @@ -10,9 +10,17 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
@@ -32,18 +32,22 @@ index 7d82416..37b3627 100755
  
  ifndef NOT_ARM
      RZDCY_MODULES += rec-ARM/
-@@ -159,8 +167,10 @@ endif
+@@ -157,10 +165,14 @@ ifdef USE_GLES
+ endif
+ 
  ifdef CHD5_FLAC
++ifdef SYSTEM_FLAC
++	RZDCY_CFLAGS += -DCHD5_FLAC -DHAVE_CONFIG_H
++else
  	RZDCY_CFLAGS += -DCHD5_FLAC -I$(RZDCY_SRC_DIR)/deps/flac/src/libFLAC/include/ -I$(RZDCY_SRC_DIR)/deps/flac/include
  	RZDCY_CFLAGS += -DHAVE_CONFIG_H
-+ifndef SYSTEM_FLAC
  	RZDCY_MODULES += deps/flac/src/libFLAC/
  endif
 +endif
  
  # 7-Zip/LZMA settings (CHDv5)
  ifdef CHD5_LZMA
-@@ -168,9 +178,16 @@ ifdef CHD5_LZMA
+@@ -168,9 +180,16 @@ ifdef CHD5_LZMA
  	RZDCY_CFLAGS += -D_7ZIP_ST -DCHD5_LZMA
  endif
  

@@ -4,9 +4,9 @@
 %global with_egl 1
 %global with_llvm 0
 
-%global commit 744abab4787e26282a8c9cf70d513f3d84425a32
+%global commit b3c705fa968b8d9a0ea18da044c6de8841019790
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200413
+%global date 20200528
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,7 +19,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        110%{?gver}%{?dist}
+Release:        111%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -46,6 +46,7 @@ Source0:        %{pkgname}-%{shortcommit}.tar.xz
 Source0:        %{pkgname}-%{version}.tar.xz
 %endif
 Source1:        %{name}.appdata.xml
+Source2:        Findzstd.cmake
 
 
 BuildRequires:  gcc
@@ -55,6 +56,7 @@ BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(ao)
 BuildRequires:  pkgconfig(bluez)
+BuildRequires:  pkgconfig(bzip2)
 %if 0%{?with_egl}
 BuildRequires:  pkgconfig(egl)
 %endif
@@ -66,6 +68,7 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  pkgconfig(libusb)
+BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(miniupnpc)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  pkgconfig(Qt5Core)
@@ -83,7 +86,7 @@ BuildRequires:  llvm-devel
 %endif
 BuildRequires:  lzo-devel
 BuildRequires:  mbedtls-devel
-BuildRequires:  minizip-compat-devel
+BuildRequires:  minizip-devel
 BuildRequires:  pugixml-devel
 BuildRequires:  xxhash-devel
 %if %{with ffmpeg}
@@ -141,6 +144,8 @@ This package provides the data files for dolphin-emu.
 %autosetup -n %{pkgname}-%{version} -p1
 %endif
 
+cp %{S:2} CMake/
+
 #Allow building with cmake macro
 sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
 
@@ -151,9 +156,9 @@ sed 's| this directory | %{name}/Sys/GC |g' \
 ###Remove Bundled:
 pushd Externals
 rm -rf \
-  cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi libiconv-* \
+  bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi libiconv-* \
   libpng libusb LZO mbedtls miniupnpc minizip OpenAL pugixml Qt SFML MoltenVK \
-  XAudio2_7 xxhash zlib
+  XAudio2_7 xxhash zlib zstd
 
 #Remove Bundled Bochs source and replace with links:
 #cd Bochs_disasm
@@ -161,6 +166,12 @@ rm -rf \
 #ln -s %{_includedir}/bochs/* ./
 #ln -s %{_includedir}/bochs/disasm/* ./
 popd
+
+sed \
+  -e 's|<unzip.h>|<minizip/unzip.h>|g' \
+  -i Source/Core/DiscIO/VolumeVerifier.cpp \
+     Source/Core/UICommon/ResourcePack/ResourcePack.cpp \
+     Source/Core/Common/MinizipUtil.h
 
 sed \
   -e "/LTO/s|-flto|-flto=%{_smp_build_ncpus}|g" \
@@ -254,6 +265,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat May 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-111.20200528gitb3c705f
+- Bump
+- BR: minizip-devel
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-110.20200316git0b91ea2
 - New snapshot
 - BR: minizip-compat-devel

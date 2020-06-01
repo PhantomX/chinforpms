@@ -1,11 +1,11 @@
-From 66d226015a74a3afe1d5b474202052eca6471b06 Mon Sep 17 00:00:00 2001
+From 37f54efa65451d028f8d3a018be229bb86a80528 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 8 Apr 2020 16:30:56 -0300
+Date: Sat, 30 May 2020 17:40:06 -0300
 Subject: [PATCH] Use system libs
 
 ---
  libswirl/archive/ZipArchive.h        |  4 +++
- libswirl/core.mk                     | 26 ++++++++++++++++---
+ libswirl/core.mk                     | 28 +++++++++++++++++---
  libswirl/deps/chdr/chd.c             |  4 +++
  libswirl/deps/chdr/flac.h            |  4 +++
  libswirl/hw/maple/maple_devs.cpp     |  8 ++++++
@@ -16,7 +16,7 @@ Subject: [PATCH] Use system libs
  libswirl/rend/gles/glestex.cpp       |  8 ++++++
  libswirl/scripting/lua_bindings.h    |  4 +++
  reicast/linux/Makefile               | 39 ++++++++++++++++++++++++++++
- 12 files changed, 110 insertions(+), 4 deletions(-)
+ 12 files changed, 112 insertions(+), 4 deletions(-)
 
 diff --git a/libswirl/archive/ZipArchive.h b/libswirl/archive/ZipArchive.h
 index d111873..482eec0 100644
@@ -35,7 +35,7 @@ index d111873..482eec0 100644
  class ZipArchive : public Archive
  {
 diff --git a/libswirl/core.mk b/libswirl/core.mk
-index ce04013..69c487b 100644
+index ce04013..eea3e5c 100644
 --- a/libswirl/core.mk
 +++ b/libswirl/core.mk
 @@ -9,14 +9,32 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
@@ -74,11 +74,13 @@ index ce04013..69c487b 100644
  
  ifdef _NO_WEBUI
  	RZDCY_MODULES += webui/
-@@ -128,10 +146,12 @@ else
+@@ -128,10 +146,14 @@ else
  endif
  
  ifdef CHD5_FLAC
-+ifndef SYSTEM_FLAC
++ifdef SYSTEM_FLAC
++	RZDCY_CFLAGS += -DCHD5_FLAC
++else
  	RZDCY_CFLAGS += -DCHD5_FLAC -I$(RZDCY_SRC_DIR)/deps/flac/src/libFLAC/include/ -I$(RZDCY_SRC_DIR)/deps/flac/include
  	RZDCY_CFLAGS += -DPACKAGE_VERSION=\"1.3.2\" -DFLAC__HAS_OGG=0 -DFLAC__NO_DLL -DHAVE_LROUND -DHAVE_STDINT_H -DHAVE_STDLIB_H -DHAVE_SYS_PARAM_H
  	RZDCY_MODULES += deps/flac/src/libFLAC/
@@ -243,7 +245,7 @@ index ad1e4e3..edc96e4 100644
  
  void emulib_expose(lua_State* L);
 diff --git a/reicast/linux/Makefile b/reicast/linux/Makefile
-index 45826a9..e05e2cb 100644
+index 45826a9..6553e0d 100644
 --- a/reicast/linux/Makefile
 +++ b/reicast/linux/Makefile
 @@ -12,6 +12,13 @@ USE_MODEM := 1
@@ -265,7 +267,7 @@ index 45826a9..e05e2cb 100644
  endif
  
 +ifdef SYSTEM_FLAC
-+    CFLAGS += `pkg-config --cflags flac` -D SYSTEM_FLAC
++    CFLAGS += `pkg-config --cflags flac` -D SYSTEM_FLAC -DCHD5_FLAC
 +    CXXFLAGS += `pkg-config --cflags flac` -D SYSTEM_FLAC
 +    LIBS += `pkg-config --libs flac`
 +endif
@@ -300,5 +302,5 @@ index 45826a9..e05e2cb 100644
  EXECUTABLE_STRIPPED=nosym-reicast.$(PLATFORM_EXT)
  ifdef NAOMI
 -- 
-2.26.0
+2.26.2
 

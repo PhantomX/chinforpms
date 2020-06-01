@@ -1,6 +1,6 @@
-%global commit 1ea1689d7854827e75480537e52bd201bc981feb
+%global commit fbda9608ca3653b28b908729249c1093443f152f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200513
+%global date 20200517
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 
 Name:           reicast
 Version:        20.04
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -29,8 +29,6 @@ Source1:        %{name}.appdata.xml
 
 Patch0:         0001-Build-fixes.patch
 Patch1:         0001-Use-system-libs.patch
-
-Patch100:       %{vc_url}/pull/1908.patch#/%{name}-gh-1908.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
@@ -126,6 +124,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat May 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.04-2.20200517gitfbda960
+- New snapshot
+- Fix CHD5_FLAC definition
+
 * Sun May 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.04-1.20200513git1ea1689
 - 20.04 snapshot
 
