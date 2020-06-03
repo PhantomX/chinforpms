@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jeremy Cline <jcline@redhat.com>
+Date: Tue, 1 Oct 2019 15:51:23 +0000
+Subject: [PATCH] arm: aarch64: Drop the EXPERT setting from ARM64_FORCE_52BIT
+
+Message-id: <20191001181256.22935-1-jcline@redhat.com>
+Patchwork-id: 275498
+O-Subject: [ARK INTERNAL PATCH] [ARK INTERNAL PATCH] [redhat] Add patch
+    to drop the EXPERT setting from ARM64_FORCE_52BIT
+Bugzilla:
+RH-Acked-by: Laura Abbott <labbott@redhat.com>
+
+We don't turn on EXPERT as there are few settings we actually want to
+mess with. Remove the dependency for ARM64_FORCE_52BIT as we do want
+that on in debug builds to help find 52-bit bugs.
+
+Upstream Status: RHEL only
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
+---
+ arch/arm64/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 5d513f461957..7f37a6d0658a 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -858,7 +858,7 @@ endchoice
+
+ config ARM64_FORCE_52BIT
+ 	bool "Force 52-bit virtual addresses for userspace"
+-	depends on ARM64_VA_BITS_52 && EXPERT
++	depends on ARM64_VA_BITS_52
+ 	help
+ 	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
+ 	  to maintain compatibility with older software by providing 48-bit VAs
+-- 
+2.26.2
+

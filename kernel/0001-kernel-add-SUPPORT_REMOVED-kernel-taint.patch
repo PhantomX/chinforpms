@@ -1,0 +1,53 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Tomas Henzl <thenzl@redhat.com>
+Date: Thu, 9 Aug 2018 13:44:15 -0400
+Subject: [PATCH] kernel: add SUPPORT_REMOVED kernel taint
+
+Message-id: <e9a9812a-6a4c-a205-e66a-1d47de58306a@redhat.com>
+Patchwork-id: 226423
+O-Subject: [RHEL-8.0 V4 01/10] kernel: add SUPPORT_REMOVED kernel taint
+Bugzilla: 1602033
+RH-Acked-by: Maurizio Lombardi <mlombard@redhat.com>
+RH-Acked-by: Jiri Benc <jbenc@redhat.com>
+RH-Acked-by: Rob Evers <revers@redhat.com>
+
+Upstream Status: RHEL only
+
+rh_taint, pci : add information about removed hardware
+
+Upstream Status: RHEL only
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ include/linux/kernel.h | 2 +-
+ kernel/panic.c         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index b372b2daae7f..8c1ace147540 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -605,7 +605,7 @@ extern enum system_states {
+ #define TAINT_24			24
+ #define TAINT_25			25
+ #define TAINT_26			26
+-#define TAINT_27			27
++#define TAINT_SUPPORT_REMOVED		27
+ /* Bits 28 - 31 are reserved for Red Hat use only */
+ #define TAINT_RESERVED28		28
+ #define TAINT_RESERVED29		29
+diff --git a/kernel/panic.c b/kernel/panic.c
+index fa06b8cbc457..4f08e4f4a6b0 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -385,7 +385,7 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+ 	[ TAINT_24 ]			= { '?', '-', false },
+ 	[ TAINT_25 ]			= { '?', '-', false },
+ 	[ TAINT_26 ]			= { '?', '-', false },
+-	[ TAINT_27 ]			= { '?', '-', false },
++	[ TAINT_SUPPORT_REMOVED ]	= { 'h', ' ', false },
+ 	[ TAINT_RESERVED28 ]		= { '?', '-', false },
+ 	[ TAINT_RESERVED29 ]		= { '?', '-', false },
+ 	[ TAINT_RESERVED30 ]		= { '?', '-', false },
+-- 
+2.26.2
+

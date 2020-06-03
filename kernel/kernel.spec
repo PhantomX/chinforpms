@@ -85,24 +85,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 6
+%define base_sublevel 7
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 8
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 83da834f47841f0c52dca2c9b492846977b3f2e3
+%global pfcommit e680db3fc7e5367d8fcd761f021523960ae4135a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -129,7 +129,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 1553fa9569774eced1b5e49dc0b948c93bcc2c7e
+%global opensuse_id 501bc044fe1b475d9a44c2ea354eab9323dd43f0
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -369,10 +369,7 @@ Summary: The Linux kernel
 
 # if requested, only build debug kernel
 %if %{with_dbgonly}
-%if %{debugbuildsenabled}
 %define with_up 0
-%endif
-%define with_pae 0
 %endif
 
 # turn off kABI DUP check and DWARF-based check if kABI check is disabled
@@ -505,15 +502,21 @@ Summary: The Linux kernel
 %if 0%{?fedora}
 %define nobuildarches i386
 %else
-%define nobuildarches i386 i686
+%define nobuildarches i386 i686 %{arm}
 %endif
 
 %ifarch %nobuildarches
+# disable BuildKernel commands
 %define with_up 0
 %define with_debug 0
-%define with_debuginfo 0
-%define with_selftests 0
 %define with_pae 0
+%define with_zfcpdump 0
+
+%define with_debuginfo 0
+%define with_perf 0
+%define with_tools 0
+%define with_bpftool 0
+%define with_selftests 0
 %define _enable_debug_packages 0
 %endif
 
@@ -569,7 +572,6 @@ BuildRequires: dwarves
 %if 0%{?pf_stable_extra}
 BuildRequires: patchutils
 %endif
-# Used to mangle unversioned shebangs to be Python 3
 BuildRequires: python3-devel
 %if %{with_headers}
 BuildRequires: rsync
@@ -631,6 +633,8 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 
 Source0: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/linux-%{kversion}.tar.xz
 
+Source1: Makefile.rhelver
+
 # Name of the packaged file containing signing key
 %ifarch ppc64le
 %define signing_key_filename kernel-signing-ppc.cer
@@ -677,9 +681,8 @@ Source13: redhatsecureboot003.cer
 
 Source22: mod-extra.list.rhel
 Source16: mod-extra.list.fedora
-Source17: mod-extra.sh
+Source17: mod-blacklist.sh
 Source18: mod-sign.sh
-Source19: mod-extra-blacklist.sh
 Source79: parallel_xz.sh
 
 Source80: filter-x86_64.sh.fedora
@@ -731,7 +734,6 @@ Source53: generate_bls_conf.sh
 Source56: update_scripts.sh
 
 Source54: mod-internal.list
-Source55: merge.pl
 
 Source200: check-kabi
 
@@ -745,14 +747,22 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
+# Some people enjoy building customized kernels from the dist-git in Fedora and
+# use this to override configuration options. One day they may all use the
+# source tree, but in the mean time we carry this to support the legacy workflow
+Source3000: merge.pl
+Source3001: kernel-local
+Source3002: Patchlist
+
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
-Source1000: kernel-local
-Source1001: kernel-local-cpu
-Source1002: kernel-local-native
-Source1003: kernel-local-pf
-Source1004: kernel-local-zen
-Source1005: kernel-local-generic
+Source3011: kernel-local-cpu
+Source3012: kernel-local-native
+Source3013: kernel-local-pf
+Source3014: kernel-local-zen
+Source3015: kernel-local-generic
+
+Source4000: README.rst
 
 ## Patches needed for building this package
 
@@ -800,134 +810,111 @@ Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
 
 %if !%{nopatches}
 
-# Git trees.
-
-# Standalone patches
-# 100 - Generic long running patches
-
-# 200 - x86 / secureboot
-
-# bz 1497559 - Make kernel MODSIGN code not error on missing variables
-Patch201: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
-Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
-
-Patch204: efi-secureboot.patch
-
-Patch206: s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
-
-# 300 - ARM patches
-Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-
-# RHBZ Bug 1576593 - work around while vendor investigates
-Patch301: arm-make-highpte-not-expert.patch
-
-# https://patchwork.kernel.org/patch/10351797/
-Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
-# rhbz 1574718
-Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
-
-Patch304: ARM-tegra-usb-no-reset.patch
-
-# Raspberry Pi
-# https://patchwork.kernel.org/cover/11353083/
-Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
-# v5 https://patchwork.kernel.org/cover/11429245/
-Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-# https://patchwork.kernel.org/patch/11372935/
-Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
-# https://patchwork.kernel.org/patch/11420129/
-Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
-# Upstream commit f87391eec2c5 thread: https://www.spinics.net/lists/linux-mmc/msg58036.html
-Patch314: arm-bcm2711-mmc-sdhci-iproc-Add-custom-set_power-callback.patch
-# Upstream commit 57b76faf1d78
-Patch316: arm-bcm2835-serial-8250_early-support-aux-uart.patch
-
-# Tegra bits
-# https://www.spinics.net/lists/linux-tegra/msg48152.html
-Patch320: ARM64-Tegra-fixes.patch
-# http://patchwork.ozlabs.org/patch/1230891/
-Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
-# http://patchwork.ozlabs.org/patch/1243162/
-Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
-# http://patchwork.ozlabs.org/patch/1243112/
-Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
-# http://patchwork.ozlabs.org/patch/1221384/
-Patch327: PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
-# https://patchwork.ozlabs.org/patch/1281134/
-Patch328: arm64-tegra-Fix-ethernet-phy-mode-for-Jetson-Xavier.patch 
-
-# Coral
-Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
-
-# Pine64 bits
-# 340-345 queued for 5.7
-Patch340: arm64-pinebook-fixes.patch
-Patch341: arm64-a64-mbus.patch
-# v4 https://patchwork.kernel.org/cover/11420797/
-Patch342: Add-support-for-the-pine64-Pinebook-Pro.patch
-# https://patchwork.kernel.org/cover/11405517/
-Patch343: Add-LCD-support-for-Pine64-Pinebook-1080p.patch
-# https://lkml.org/lkml/2020/1/15/1320
-Patch344: arm64-pine64-pinetab.patch
-# https://www.spinics.net/lists/arm-kernel/msg789135.html
-Patch345: arm64-pine64-pinephone.patch
-# https://patchwork.kernel.org/cover/11440399/
-Patch346: Add-support-for-PinePhone-LCD-panel.patch
-# https://www.spinics.net/lists/devicetree/msg346446.html
-Patch347: arm64-Fix-some-GPIO-setup-on-Pinebook-Pro.patch
-# https://www.spinics.net/lists/devicetree/msg347052.html
-Patch348: usb-fusb302-Convert-to-use-GPIO-descriptors.patch 
-
-# 400 - IBM (ppc/s390x) patches
-
-# 500 - Temp fixes/CVEs etc
-# rhbz 1431375
-Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# gcc9 fixes
-Patch502: 0001-Drop-that-for-now.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1701096
-# Submitted upstream at https://lkml.org/lkml/2019/4/23/89
-Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
-
-# Fixes a boot hang on debug kernels
-# https://bugzilla.redhat.com/show_bug.cgi?id=1756655
-Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-
-# it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
-# https://lore.kernel.org/patchwork/patch/1132459/
-# https://lkml.org/lkml/2019/8/29/1772
-Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# More DP-MST fixes, pending for 5.7
-Patch507: drm-dp-mst-error-handling-improvements.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1811850
-Patch509: drm-i915-backports.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1816621
-# https://patchwork.ozlabs.org/patch/1260523/
-Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
-
-Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
-
-# CVE-2020-12655 rhbz 1832543 1832545
-Patch515: 0001-xfs-add-agf-freeblocks-verify-in-xfs_agf_verify.patch
-
-# rhbz 1828927 No backlight control on CHT devices, patch posted upstream
-Patch516: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
-
-# kernel.org bz 206217
-Patch517: RFC-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch 
-
-# CVE-2020-12888 rhbz 1836245 1836244
-Patch518: vfio-pci-block-user-access-to-disabled-device-MMIO.patch
-
-Patch519: vboxguest-fixes.patch
-
-# rhbz 1830150
-Patch520: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
+Patch2: 0001-initial-commit-Add-Red-Hat-variables-in-the-top-leve.patch
+Patch3: 0001-Pull-the-RHEL-version-defines-out-of-the-Makefile.patch
+Patch4: 0001-Introduce-CONFIG_RH_DISABLE_DEPRECATED.patch
+Patch5: 0001-Add-Red-Hat-tainting.patch
+Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
+Patch7: 0001-modules-add-rhelversion-MODULE_INFO-tag.patch
+Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
+Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
+Patch10: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
+Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
+Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
+Patch13: 0001-put-RHEL-info-into-generated-headers.patch
+Patch14: 0001-tags.sh-Ignore-redhat-rpm.patch
+Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
+Patch16: 0001-add-Red-Hat-specific-taint-flags.patch
+Patch17: 0001-bpf-set-unprivileged_bpf_disabled-to-1-by-default-ad.patch
+Patch18: 0001-bpf-Add-tech-preview-taint-for-syscall.patch
+Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
+Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
+Patch21: 0001-add-pci_hw_vendor_status.patch
+Patch22: 0001-kABI-Add-generic-kABI-macros-to-use-for-kABI-workaro.patch
+Patch23: 0001-ice-mark-driver-as-tech-preview.patch
+Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
+Patch25: 0001-IB-rxe-Mark-Soft-RoCE-Transport-driver-as-tech-previ.patch
+Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
+Patch27: 0001-rh_kabi-introduce-RH_KABI_EXCLUDE.patch
+Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
+Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
+Patch30: 0001-Add-support-for-deprecating-processors.patch
+Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
+Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
+Patch33: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
+Patch34: 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
+Patch35: 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
+Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
+Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch38: 0001-Rename-RH_DISABLE_DEPRECATED-to-RHEL_DIFFERENCES.patch
+Patch39: 0001-kernel-add-SUPPORT_REMOVED-kernel-taint.patch
+Patch40: 0001-mpt-remove-certain-deprecated-pci-ids.patch
+Patch41: 0001-megaraid_sas-remove-deprecated-pci-ids.patch
+Patch42: 0001-aacraid-Remove-depreciated-device-and-vendor-PCI-id-.patch
+Patch43: 0001-qla4xxx-Remove-deprecated-PCI-IDs-from-RHEL-8.patch
+Patch44: 0001-hpsa-remove-old-cciss-based-smartarray-pci-ids.patch
+Patch45: 0001-mptspi-Taint-kernel-if-mptspi-is-loaded.patch
+Patch46: 0001-be2iscsi-remove-unsupported-device-IDs.patch
+Patch47: 0001-qla2xxx-Remove-PCI-IDs-of-deprecated-adapter.patch
+Patch48: 0001-mptspi-pci-id-table-changes.patch
+Patch49: 0001-mptsas-Taint-kernel-if-mptsas-is-loaded.patch
+Patch50: 0001-mptsas-pci-id-table-changes.patch
+Patch51: 0001-Removing-Obsolete-hba-pci-ids-from-rhel8.patch
+Patch52: 0001-redhat-rh_kabi-Add-macros-to-size-and-extend-structs.patch
+Patch53: 0001-redhat-rh_kabi-Fix-RH_KABI_SET_SIZE-to-use-dereferen.patch
+Patch54: 0001-redhat-rh_kabi-Indirect-EXTEND-macros-so-nesting-of-.patch
+Patch55: 0001-redhat-rh_kabi-introduce-RH_KABI_EXTEND_WITH_SIZE.patch
+Patch56: 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.patch
+Patch57: 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
+Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
+Patch59: 0001-ARM-tegra-usb-no-reset.patch
+Patch60: 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
+Patch61: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
+Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch63: 0001-Drop-that-for-now.patch
+Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch65: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch66: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
+Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
+Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
+Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
+Patch71: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch72: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
+Patch77: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
+Patch78: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
+Patch79: 0001-disp-gv100-expose-capabilities-class.patch
+Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
+Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
+Patch82: 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
+Patch83: 0001-mmu-Remove-unneeded-semicolon.patch
+Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
+Patch85: 0001-device-detect-if-changing-endianness-failed.patch
+Patch86: 0001-device-detect-vGPUs.patch
+Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
+Patch88: 0001-kms-Fix-regression-by-audio-component-transition.patch
+Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
+Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
+Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
+Patch92: 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
+Patch93: 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
+Patch94: 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
+Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
+Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
+Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
+Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
+Patch99: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
+Patch100: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
+Patch101: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch106: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
 
 ### Extra
 
@@ -944,8 +931,7 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/media-go7007-Fix-URB-type-for-interrupt-handling.patch#/openSUSE-media-go7007-Fix-URB-type-for-interrupt-handling.patch
-
+Patch1019: %{opensuse_url}/jbd2-avoid-leaking-transaction-credits-when-unreserv.patch#/openSUSE-jbd2-avoid-leaking-transaction-credits-when-unreserv.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1461,6 +1447,8 @@ fi
 cp -al vanilla-%{vanillaversion} linux-%{KVERREL}
 
 cd linux-%{KVERREL}
+cp -a %{SOURCE1} .
+
 if [ ! -d .git ]; then
     git init
     git config user.email "kernel-team@fedoraproject.org"
@@ -1526,6 +1514,7 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
     tools/perf/tests/attr.py \
     tools/perf/scripts/python/stat-cpi.py \
     tools/perf/scripts/python/sched-migration.py \
+    tools/testing/selftests/drivers/net/mlxsw/sharedbuffer_configuration.py \
     Documentation \
     scripts/gen_compile_commands.py
 
@@ -1541,25 +1530,26 @@ cd configs
 
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/kernel-*.config .
-cp %{SOURCE1000} .
+cp %{SOURCE3001} .
 %if %{with_native}
-cat %{SOURCE1002} >> kernel-local
+cat %{SOURCE3012} >> kernel-local
 %else
 %if %{with_generic}
-cat %{SOURCE1005} >> kernel-local
+cat %{SOURCE3015} >> kernel-local
 %else
-cat %{SOURCE1001} >> kernel-local
+cat %{SOURCE3011} >> kernel-local
 %endif
 %endif
 
 %if 0%{?post_factum}
-cat %{SOURCE1003} >> kernel-local
+cat %{SOURCE3013} >> kernel-local
 %endif
 %if 0%{?zen}
-cat %{SOURCE1004} >> kernel-local
+cat %{SOURCE3014} >> kernel-local
 %endif
-cp %{SOURCE55} .
 cp %{SOURCE51} .
+# merge.pl
+cp %{SOURCE3000} .
 VERSION=%{version} ./generate_all_configs.sh %{primary_target} %{debugbuildsenabled}
 
 
@@ -1623,19 +1613,6 @@ cp_vmlinux()
   eu-strip --remove-comment -o "$2" "$1"
 }
 
-# These are for host programs that get built as part of the kernel and
-# are required to be packaged in kernel-devel for building external modules.
-# Since they are userspace binaries, they are required to pickup the hardening
-# flags defined in the macros. The --build-id=uuid is a trick to get around
-# debuginfo limitations: Typically, find-debuginfo.sh will update the build
-# id of all binaries to allow for parllel debuginfo installs. The kernel
-# can't use this because it breaks debuginfo for the vDSO so we have to
-# use a special mechanism for kernel and modules to be unique. Unfortunately,
-# we still have userspace binaries which need unique debuginfo and because
-# they come from the kernel package, we can't just use find-debuginfo.sh to
-# rewrite only those binaries. The easiest option right now is just to have
-# the build id be a uuid for the host programs.
-#
 # Note we need to disable these flags for cross builds because the flags
 # from redhat-rpm-config assume that host == target so target arch
 # flags cause issues with the host compiler.
@@ -1644,7 +1621,7 @@ cp_vmlinux()
 %define build_hostldflags %{?build_ldflags}
 %endif
 
-%define make make %{?cross_opts} %{?make_opts} LD=ld.bfd HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
+%define make %{__make} %{?cross_opts} %{?make_opts} LD=ld.bfd HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
 
 BuildKernel() {
     MakeTarget=$1
@@ -1838,12 +1815,8 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     (cd $RPM_BUILD_ROOT/lib/modules/$KernelVer ; ln -s build source)
     # dirs for additional modules per module-init-tools, kbuild/modules.txt
-    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/extra
-    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/internal
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/updates
-%if 0%{!?fedora:1}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/weak-updates
-%endif
     # CONFIG_KERNEL_HEADER_TEST generates some extra files in the process of
     # testing so just delete
     find . -name *.h.s -delete 
@@ -1945,6 +1918,15 @@ BuildKernel() {
     cp -a scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/tracing
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/spdxcheck.py
+
+    # Files for 'make scripts' to succeed with kernel-devel.
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/security/selinux/include
+    cp -a --parents security/selinux/include/classmap.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents security/selinux/include/initial_sid_to_string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/include/tools
+    cp -a --parents tools/include/tools/be_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/tools/le_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
     if [ -f tools/objtool/objtool ]; then
       cp -a tools/objtool/objtool $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
     fi
@@ -2057,12 +2039,10 @@ BuildKernel() {
         rm -f modules.{alias*,builtin.bin,dep*,*map,symbols*,devname,softdep}
     popd
 
-    # Call the modules-extra script to move things around
-    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
-    # Blacklist net autoloadable modules in modules-extra
-    %{SOURCE19} $RPM_BUILD_ROOT lib/modules/$KernelVer
-    # Call the modules-extra script for internal modules
-    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer %{SOURCE54} internal
+    # Identify modules in the kernel-modules-extras package
+    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
+    # Identify modules in the kernel-modules-extras package
+    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE54} internal
 
     #
     # Generate the kernel-core and kernel-modules files lists
@@ -2075,8 +2055,10 @@ BuildKernel() {
     mkdir restore
     cp -r lib/modules/$KernelVer/* restore/.
 
-    # don't include anything going into k-m-e and k-m-i in the file lists
-    rm -rf lib/modules/$KernelVer/{extra,internal}
+    # don't include anything going into kernel-modules-extra in the file lists
+    xargs rm -rf < mod-extra.list
+    # don't include anything going int kernel-modules-internal in the file lists
+    xargs rm -rf < mod-internal.list
 
 
     if [ $DoModules -eq 1 ]; then
@@ -2128,11 +2110,15 @@ BuildKernel() {
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/k-d.list > ../kernel${Flavour:+-${Flavour}}-modules.list
     sed -e 's/^lib*/%dir \/lib/' %{?zipsed} $RPM_BUILD_ROOT/module-dirs.list > ../kernel${Flavour:+-${Flavour}}-core.list
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/modules.list >> ../kernel${Flavour:+-${Flavour}}-core.list
+    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-extra.list >> ../kernel${Flavour:+-${Flavour}}-modules-extra.list
+    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-internal.list >> ../kernel${Flavour:+-${Flavour}}-modules-internal.list
 
     # Cleanup
     rm -f $RPM_BUILD_ROOT/k-d.list
     rm -f $RPM_BUILD_ROOT/modules.list
     rm -f $RPM_BUILD_ROOT/module-dirs.list
+    rm -f $RPM_BUILD_ROOT/mod-extra.list
+    rm -f $RPM_BUILD_ROOT/mod-internal.list
 
 %if %{signmodules}
     if [ $DoModules -eq 1 ]; then
@@ -2281,7 +2267,7 @@ find Documentation -type d | xargs chmod u+w
 # We don't want to package debuginfo for self-tests and samples but
 # we have to delete them to avoid an error messages about unpackaged
 # files.
-# Delete the debuginfo for for kernel-devel files
+# Delete the debuginfo for kernel-devel files
 %define __remove_unwanted_dbginfo_install_post \
   if [ "%{with_selftests}" -ne "0" ]; then \
     rm -rf $RPM_BUILD_ROOT/usr/lib/debug/usr/libexec/ksamples; \
@@ -2326,7 +2312,7 @@ tar -h -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
 
 %if %{with_headers}
 # Install kernel headers
-make ARCH=%{hdrarch} LD=ld.bfd INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr headers_install
+%{__make} ARCH=%{hdrarch} LD=ld.bfd INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr headers_install
 
 find $RPM_BUILD_ROOT/usr/include \
      \( -name .install -o -name .check -o \
@@ -2344,7 +2330,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/tmp-headers
 
 for arch in $HDR_ARCH_LIST; do
     mkdir $RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch}
-    make ARCH=${arch} LD=ld.bfd INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch} headers_install
+    %{__make} ARCH=${arch} LD=ld.bfd INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch} headers_install
 done
 
 find $RPM_BUILD_ROOT/usr/tmp-headers \
@@ -2502,12 +2488,10 @@ fi\
 #
 %define kernel_variant_posttrans() \
 %{expand:%%posttrans %{?1:%{1}-}core}\
-%if 0%{!?fedora:1}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
     %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
-%endif\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
@@ -2537,12 +2521,10 @@ fi}\
 %define kernel_variant_preun() \
 %{expand:%%preun %{?1:%{1}-}core}\
 /bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
-%if 0%{!?fedora:1}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
     %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
-%endif\
 %{nil}
 
 %kernel_variant_preun
@@ -2656,9 +2638,7 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
-%if 0%{!?fedora:1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
-%endif\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca.cer\
 %ifarch s390x ppc64le\
 %if 0%{!?4:1}\
@@ -2673,11 +2653,9 @@ fi
 %{expand:%%files %{?3:%{3}-}devel}\
 %defverify(not mtime)\
 /usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
-%{expand:%%files %{?3:%{3}-}modules-extra}\
+%{expand:%%files -f kernel-%{?3:%{3}-}modules-extra.list %{?3:%{3}-}modules-extra}\
 %config(noreplace) /etc/modprobe.d/*-blacklist.conf\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/extra\
-%{expand:%%files %{?3:%{3}-}modules-internal}\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/internal\
+%{expand:%%files -f kernel-%{?3:%{3}-}modules-internal.list %{?3:%{3}-}modules-internal}\
 %if %{with_debuginfo}\
 %ifnarch noarch\
 %{expand:%%files -f debuginfo%{?3}.list %{?3:%{3}-}debuginfo}\
@@ -2712,6 +2690,10 @@ fi
 #
 #
 %changelog
+* Tue Jun 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-500.chinfo
+- 5.7.0 - pf1
+- Rawhide sync
+
 * Wed May 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.15-500.chinfo
 - 5.6.15 - pf8
 - f32 sync
@@ -3031,58 +3013,6 @@ fi
 
 * Mon May 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-500.chinfo
 - 5.1.0 - pf1
-- Rawhide sync
-
-* Sun May 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.13-500.chinfo
-- 5.0.13 - pf8
-
-* Thu May 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.11-500.chinfo
-- 5.0.11
-
-* Sun Apr 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.10-500.chinfo
-- 5.0.10 - pf7
-- f30 sync
-
-* Sat Apr 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.9-500.chinfo
-- 5.0.9
-
-* Wed Apr 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.8-500.chinfo
-- 5.0.8
-- f30 sync
-
-* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-501.chinfo
-- pf6
-- f29 sync
-
-* Sat Apr 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-500.chinfo
-- 5.0.7
-
-* Wed Apr 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.6-500.chinfo
-- 5.0.6 - pf5
-- f29 sync
-
-* Tue Apr 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.5-500.chinfo
-- 5.0.5 - pf4
-- f29 sync
-
-* Tue Mar 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.3-500.chinfo
-- 5.0.3
-- stabilization sync
-
-* Fri Mar 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.2-500.chinfo
-- 5.0.2
-
-* Sun Mar 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.1-500.chinfo
-- 5.0.1 - pf3
-
-* Fri Mar 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-502.chinfo
-- BFQ fixes
-
-* Wed Mar 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-501.chinfo
-- Revert patch to fix Intel drm bug
-
-* Mon Mar 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-500.chinfo
-- 5.0.0 - pf1
 - Rawhide sync
 
 ###

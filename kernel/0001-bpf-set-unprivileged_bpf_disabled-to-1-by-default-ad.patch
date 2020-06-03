@@ -1,0 +1,122 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Eugene Syromiatnikov <esyr@redhat.com>
+Date: Thu, 14 Jun 2018 16:36:02 -0400
+Subject: [PATCH] bpf: set unprivileged_bpf_disabled to 1 by default, add a
+ boot parameter
+
+Message-id: <133022c6c389ca16060bd20ef69199de0800200b.1528991396.git.esyr@redhat.com>
+Patchwork-id: 8250
+O-Subject: [kernel team] [RHEL8 PATCH v4 2/5] [bpf] bpf: set unprivileged_bpf_disabled to 1 by default, add a boot parameter
+Bugzilla: 1561171
+RH-Acked-by: Jiri Benc <jbenc@redhat.com>
+RH-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+This patch sets kernel.unprivileged_bpf_disabled sysctl knob to 1
+by default, and provides an ability (in a form of a boot-time parameter)
+to reset it to 0, as it is impossible to do so in runtime.  Since
+unprivileged BPF is considered unsupported, it also taints the kernel.
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1561171
+Brew: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=16716594
+Upstream: RHEL only.  The patch (in a more generic form) has been
+          proposed upstream[1] and subsequently rejected.
+
+[1] https://lkml.org/lkml/2018/5/21/344
+
+Upstream Status: RHEL only
+Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ .../admin-guide/kernel-parameters.txt         |  8 +++++++
+ include/linux/kernel.h                        |  2 +-
+ kernel/bpf/syscall.c                          | 21 ++++++++++++++++++-
+ kernel/panic.c                                |  2 +-
+ 4 files changed, 30 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 7bc83f3d9bdf..6fbbef16ab95 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5162,6 +5162,14 @@
+ 	unknown_nmi_panic
+ 			[X86] Cause panic on unknown NMI.
+
++	unprivileged_bpf_disabled=
++			Format: { "0" | "1" }
++			Sets the initial value of
++			kernel.unprivileged_bpf_disabled sysctl knob.
++			0 - unprivileged bpf() syscall access is enabled.
++			1 - unprivileged bpf() syscall access is disabled.
++			Default value is 1.
++
+ 	usbcore.authorized_default=
+ 			[USB] Default USB device authorization:
+ 			(default -1 = authorized except for wireless USB,
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index c041d4e950f4..8588bb62e74c 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -610,7 +610,7 @@ extern enum system_states {
+ #define TAINT_RESERVED28		28
+ #define TAINT_RESERVED29		29
+ #define TAINT_RESERVED30		30
+-#define TAINT_RESERVED31		31
++#define TAINT_UNPRIVILEGED_BPF		31
+ /* End of Red Hat-specific taint flags */
+ #define TAINT_FLAGS_COUNT		32
+
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 4e6dee19a668..77ecd8b47d70 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -24,6 +24,7 @@
+ #include <linux/ctype.h>
+ #include <linux/nospec.h>
+ #include <linux/audit.h>
++#include <linux/init.h>
+ #include <uapi/linux/btf.h>
+ #include <linux/bpf_lsm.h>
+
+@@ -43,7 +44,25 @@ static DEFINE_SPINLOCK(prog_idr_lock);
+ static DEFINE_IDR(map_idr);
+ static DEFINE_SPINLOCK(map_idr_lock);
+
+-int sysctl_unprivileged_bpf_disabled __read_mostly;
++/* RHEL-only: default to 1 */
++int sysctl_unprivileged_bpf_disabled __read_mostly = 1;
++
++static int __init unprivileged_bpf_setup(char *str)
++{
++	unsigned long disabled;
++	if (!kstrtoul(str, 0, &disabled))
++		sysctl_unprivileged_bpf_disabled = !!disabled;
++
++	if (!sysctl_unprivileged_bpf_disabled) {
++		pr_warn("Unprivileged BPF has been enabled "
++			"(unprivileged_bpf_disabled=0 has been supplied "
++			"in boot parameters), tainting the kernel");
++		add_taint(TAINT_UNPRIVILEGED_BPF, LOCKDEP_STILL_OK);
++	}
++
++	return 1;
++}
++__setup("unprivileged_bpf_disabled=", unprivileged_bpf_setup);
+
+ static const struct bpf_map_ops * const bpf_map_types[] = {
+ #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
+diff --git a/kernel/panic.c b/kernel/panic.c
+index 02f9b2c36cc1..fa06b8cbc457 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -389,7 +389,7 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+ 	[ TAINT_RESERVED28 ]		= { '?', '-', false },
+ 	[ TAINT_RESERVED29 ]		= { '?', '-', false },
+ 	[ TAINT_RESERVED30 ]		= { '?', '-', false },
+-	[ TAINT_RESERVED31 ]		= { '?', '-', false },
++	[ TAINT_UNPRIVILEGED_BPF ]	= { 'u', ' ', false },
+ };
+
+ /**
+-- 
+2.26.2
+

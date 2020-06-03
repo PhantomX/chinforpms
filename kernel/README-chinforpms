@@ -7,7 +7,6 @@ experimental patches, mostly from https://gitlab.com/post-factum/pf-kernel.
 
 If a bug happens, revert to Fedora official and try to reproduce it again.
 
-- Debug info is reduced and debug packages are disabled
 - NUMA is disabled (can be reverted by removing itens from kernel-local)
 - Patched to set BFQ as default blk-mq scheduler
 

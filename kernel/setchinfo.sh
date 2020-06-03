@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20200408
+# 20200602
 
 set -e
 
@@ -43,7 +43,6 @@ pf="
 CC_OPTIMIZE_HARDER
 CC_OPTIMIZE_FOR_PERFORMANCE_O3
 KERNEL_ZSTD
-SENSORS_DRIVETEMP
 INITRAMFS_COMPRESSION_ZSTD
 "
 

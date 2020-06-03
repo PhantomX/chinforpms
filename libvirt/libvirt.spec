@@ -211,7 +211,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 6.3.0
+Version: 6.4.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -1986,6 +1986,9 @@ exit 0
 
 
 %changelog
+* Tue Jun 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.4.0-100
+- 6.4.0
+
 * Tue May 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.3.0-100
 - 6.3.0
 

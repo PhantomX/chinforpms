@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Raghava Aditya Renukunta <rrenukun@redhat.com>
+Date: Thu, 2 Jan 2020 14:24:38 -0500
+Subject: [PATCH] aacraid: Remove depreciated device and vendor PCI id's
+
+Message-id: <20180315040041.9449.8525.stgit@dhcp187-32.khw.lab.eng.bos.redhat.com>
+Patchwork-id: 206793
+O-Subject: [RHEL8 e-stor PATCH] scsi: aacraid: Remove depreciated device and vendor PCI id's
+Bugzilla: 1495307
+RH-Acked-by: Maurizio Lombardi <mlombard@redhat.com>
+RH-Acked-by: Tomas Henzl <thenzl@redhat.com>
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id95307
+Brew Info: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID552286
+Upstream Status: N/A (RHEL 8 internal)
+Tested: Code Review
+
+Remove Vendor PCI ID and Device PCI ID of depreciated devices from
+aacraid pci table, preventing these device from attaching to the aacraid
+driver.
+
+Upstream Status: RHEL only
+Signed-off-by: Raghava Aditya Renukunta <rrenukun@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ drivers/scsi/aacraid/linit.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/scsi/aacraid/linit.c b/drivers/scsi/aacraid/linit.c
+index 83a60b0a8cd8..9efb63c83234 100644
+--- a/drivers/scsi/aacraid/linit.c
++++ b/drivers/scsi/aacraid/linit.c
+@@ -78,6 +78,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
+  * Note: The last field is used to index into aac_drivers below.
+  */
+ static const struct pci_device_id aac_pci_tbl[] = {
++#ifndef CONFIG_RHEL_DIFFERENCES
+ 	{ 0x1028, 0x0001, 0x1028, 0x0001, 0, 0, 0 }, /* PERC 2/Si (Iguana/PERC2Si) */
+ 	{ 0x1028, 0x0002, 0x1028, 0x0002, 0, 0, 1 }, /* PERC 3/Di (Opal/PERC3Di) */
+ 	{ 0x1028, 0x0003, 0x1028, 0x0003, 0, 0, 2 }, /* PERC 3/Si (SlimFast/PERC3Si */
+@@ -145,6 +146,7 @@ static const struct pci_device_id aac_pci_tbl[] = {
+ 	{ 0x9005, 0x0285, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 59 }, /* Adaptec Catch All */
+ 	{ 0x9005, 0x0286, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 60 }, /* Adaptec Rocket Catch All */
+ 	{ 0x9005, 0x0288, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 61 }, /* Adaptec NEMER/ARK Catch All */
++#endif
+ 	{ 0x9005, 0x028b, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 62 }, /* Adaptec PMC Series 6 (Tupelo) */
+ 	{ 0x9005, 0x028c, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 63 }, /* Adaptec PMC Series 7 (Denali) */
+ 	{ 0x9005, 0x028d, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 64 }, /* Adaptec PMC Series 8 */
+-- 
+2.26.2
+

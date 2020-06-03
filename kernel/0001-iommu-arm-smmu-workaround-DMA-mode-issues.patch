@@ -1,0 +1,98 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Laura Abbott <labbott@redhat.com>
+Date: Mon, 20 May 2019 22:21:02 -0400
+Subject: [PATCH] iommu/arm-smmu: workaround DMA mode issues
+
+Message-id: <20190520222102.19488-1-labbott@redhat.com>
+Patchwork-id: 259215
+O-Subject: [ARK INTERNAL PATCH] iommu/arm-smmu: workaround DMA mode issues
+Bugzilla:
+RH-Acked-by: Mark Langsdorf <mlangsdo@redhat.com>
+RH-Acked-by: Mark Salter <msalter@redhat.com>
+
+From: Mark Salter <msalter@redhat.com>
+
+Rebased for v5.2-rc1
+
+	Bugzilla: 1652259
+	Brew: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=19244562
+	Upstream status: RHEL only.
+
+	rhel8 commit 65feb1ed0ec9a088a63a90d46c0f7563ac96ad0f
+	Author: Mark Salter <msalter@redhat.com>
+	Date:   Wed Nov 21 17:15:59 2018 +0100
+
+	    [iommu] iommu/arm-smmu: workaround DMA mode issues
+
+	    Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1624077
+	    Brew: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=18112820
+	    Testing: Verified iommu.passthrough=1 no longer needed on gigabyte platforms.
+	    Upstream Status: RHEL-only
+
+	    In RHEL_ALT 7.5 we carried a RHEL-only patch which forced the arm smmuv2
+	    into bypass mode due to performance issues on CN88xx. This was intended
+	    to be a temporary hack until the issues were resolved. Another vendor
+	    had issues with the iommu in bypass mode so we reverted the RHEL-only
+	    patch so that iommu is in DMA mode by default (upstream default).
+
+	    It turns on that there are remaining SMMU DMA mode issues on Gigabyte
+	    platformws with CN88xx cpus. The problem manifests itself by pcie
+	    card drivers failing to initialize the cards when SMMU is in DMA mode.
+	    The root cause has not been determined yet, but looks likely to be
+	    a hw or firmware issue. This patch forces bypass mode for Gigabyte
+	    platforms. CN88xx isn't officially supported in RHEL but we have a
+	    lot of them being used internally for testing, so I think we want
+	    this to support that use case in RHEL8.
+
+	    Signed-off-by: Mark Salter <msalter@redhat.com>
+	    Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+
+	Acked-by: Mark Salter <msalter@redhat.com>
+	Acked-by: Donald Dutile <ddutile@redhat.com>
+
+Upstream Status: RHEL only
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+---
+ drivers/iommu/iommu.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 03d6a26687bc..86981f228c90 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -7,6 +7,7 @@
+ #define pr_fmt(fmt)    "iommu: " fmt
+
+ #include <linux/device.h>
++#include <linux/dmi.h>
+ #include <linux/kernel.h>
+ #include <linux/bug.h>
+ #include <linux/types.h>
+@@ -2664,3 +2665,24 @@ int iommu_sva_get_pasid(struct iommu_sva *handle)
+ 	return ops->sva_get_pasid(handle);
+ }
+ EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
++
++#ifdef CONFIG_ARM64
++static int __init iommu_quirks(void)
++{
++	const char *vendor, *name;
++
++	vendor = dmi_get_system_info(DMI_SYS_VENDOR);
++	name = dmi_get_system_info(DMI_PRODUCT_NAME);
++
++	if (vendor &&
++	    (strncmp(vendor, "GIGABYTE", 8) == 0 && name &&
++	     (strncmp(name, "R120", 4) == 0 ||
++	      strncmp(name, "R270", 4) == 0))) {
++		pr_warn("Gigabyte %s detected, force iommu passthrough mode", name);
++		iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
++	}
++
++	return 0;
++}
++arch_initcall(iommu_quirks);
++#endif
+-- 
+2.26.2
+

@@ -1,4 +1,4 @@
-From 14d329da03ea1145efce866b127b10ea6390b5e1 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Murphy Zhou <jencce.kernel@gmail.com>
 Date: Sun, 29 Sep 2019 17:56:59 +0800
 Subject: [PATCH] mm/kmemleak: skip late_init if not skip disable
@@ -51,10 +51,10 @@ Signed-off-by: Murphy Zhou <jencce.kernel@gmail.com>
  1 file changed, 5 insertions(+)
 
 diff --git a/mm/kmemleak.c b/mm/kmemleak.c
-index 03a8d84badad..b9baf617fe35 100644
+index e362dc3d2028..0c3dfb8eef67 100644
 --- a/mm/kmemleak.c
 +++ b/mm/kmemleak.c
-@@ -1946,6 +1946,11 @@ void __init kmemleak_init(void)
+@@ -1958,6 +1958,11 @@ void __init kmemleak_init(void)
   */
  static int __init kmemleak_late_init(void)
  {
@@ -64,8 +64,8 @@ index 03a8d84badad..b9baf617fe35 100644
 +	}
 +
  	kmemleak_initialized = 1;
- 
+
  	debugfs_create_file("kmemleak", 0644, NULL, NULL, &kmemleak_fops);
 -- 
-2.21.0
+2.26.2
 

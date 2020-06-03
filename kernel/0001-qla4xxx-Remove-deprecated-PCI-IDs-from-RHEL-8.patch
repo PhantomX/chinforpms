@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Chad Dupuis <cdupuis@redhat.com>
+Date: Thu, 2 Jan 2020 14:24:39 -0500
+Subject: [PATCH] qla4xxx: Remove deprecated PCI IDs from RHEL 8
+
+Message-id: <1524063895-23086-1-git-send-email-cdupuis@redhat.com>
+Patchwork-id: 209742
+O-Subject: [RHEL 8 e-stor PATCH] qla4xxx: Remove depricated PCI IDs from RHEL 8.
+Bugzilla: 1518874
+RH-Acked-by: Tomas Henzl <thenzl@redhat.com>
+RH-Acked-by: Jarod Wilson <jarod@redhat.com>
+
+Bugzilla: 1518874
+
+RHEL 8 specific
+
+Brew build: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID822250
+
+Three PCI device IDs are marked as deprecated in RHEL 7:
+
+PCI_DEVICE_ID_QLOGIC_ISP8022
+PCI_DEVICE_ID_QLOGIC_ISP8324
+PCI_DEVICE_ID_QLOGIC_ISP8042
+
+This patch removes them from the PCI table in RHEL 8 so the
+qla4xxx driver will not bind to the hardware.
+
+Upstream Status: RHEL only
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ drivers/scsi/qla4xxx/ql4_os.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
+index 5504ab11decc..e83771818767 100644
+--- a/drivers/scsi/qla4xxx/ql4_os.c
++++ b/drivers/scsi/qla4xxx/ql4_os.c
+@@ -9842,6 +9842,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 	},
++#ifndef CONFIG_RHEL_DIFFERENCES
+ 	{
+ 		.vendor         = PCI_VENDOR_ID_QLOGIC,
+ 		.device         = PCI_DEVICE_ID_QLOGIC_ISP8022,
+@@ -9860,6 +9861,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 	},
++#endif
+ 	{0, 0},
+ };
+ MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
+-- 
+2.26.2
+

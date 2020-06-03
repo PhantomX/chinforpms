@@ -1,0 +1,72 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date: Tue, 10 Mar 2020 13:52:42 +0100
+Subject: [PATCH] USB: pci-quirks: Add Raspberry Pi 4 quirk
+
+On the Raspberry Pi 4, after a PCI reset, VL805's firmware may either be
+loaded directly from an EEPROM or, if not present, by the SoC's
+VideCore. Inform VideCore that VL805 was just reset.
+
+Also, as this creates a dependency between XHCI_PCI and VideoCore's
+firmware interface, reflect that on the firmware interface Kconfg.
+
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+---
+ drivers/firmware/Kconfig      |  1 +
+ drivers/usb/host/pci-quirks.c | 16 ++++++++++++++++
+ 2 files changed, 17 insertions(+)
+
+diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
+index 8007d4aa76dc..7ca346d3d337 100644
+--- a/drivers/firmware/Kconfig
++++ b/drivers/firmware/Kconfig
+@@ -180,6 +180,7 @@ config ISCSI_IBFT
+ config RASPBERRYPI_FIRMWARE
+ 	tristate "Raspberry Pi Firmware Driver"
+ 	depends on BCM2835_MBOX
++	default XHCI_PCI
+ 	help
+ 	  This option enables support for communicating with the firmware on the
+ 	  Raspberry Pi.
+diff --git a/drivers/usb/host/pci-quirks.c b/drivers/usb/host/pci-quirks.c
+index beb2efa71341..0dc34668bb2a 100644
+--- a/drivers/usb/host/pci-quirks.c
++++ b/drivers/usb/host/pci-quirks.c
+@@ -16,6 +16,9 @@
+ #include <linux/export.h>
+ #include <linux/acpi.h>
+ #include <linux/dmi.h>
++
++#include <soc/bcm2835/raspberrypi-firmware.h>
++
+ #include "pci-quirks.h"
+ #include "xhci-ext-caps.h"
+
+@@ -1243,11 +1246,24 @@ static void quirk_usb_handoff_xhci(struct pci_dev *pdev)
+
+ static void quirk_usb_early_handoff(struct pci_dev *pdev)
+ {
++	int ret;
++
+ 	/* Skip Netlogic mips SoC's internal PCI USB controller.
+ 	 * This device does not need/support EHCI/OHCI handoff
+ 	 */
+ 	if (pdev->vendor == 0x184e)	/* vendor Netlogic */
+ 		return;
++
++	if (pdev->vendor == PCI_VENDOR_ID_VIA && pdev->device == 0x3483) {
++		ret = rpi_firmware_init_vl805(pdev);
++		if (ret) {
++			/* Firmware might be outdated, or something failed */
++			dev_warn(&pdev->dev,
++				 "Failed to load VL805's firmware: %d. Will continue to attempt to work, but bad things might happen. You should fix this...\n",
++				 ret);
++		}
++	}
++
+ 	if (pdev->class != PCI_CLASS_SERIAL_USB_UHCI &&
+ 			pdev->class != PCI_CLASS_SERIAL_USB_OHCI &&
+ 			pdev->class != PCI_CLASS_SERIAL_USB_EHCI &&
+-- 
+2.26.2
+

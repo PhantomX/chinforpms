@@ -1,0 +1,53 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Eugene Syromiatnikov <esyr@redhat.com>
+Date: Thu, 14 Jun 2018 16:36:08 -0400
+Subject: [PATCH] bpf: Add tech preview taint for syscall
+
+Message-id: <394af3a9985d1ad9ea6741cb95ff145312d106b9.1528991396.git.esyr@redhat.com>
+Patchwork-id: 8251
+O-Subject: [kernel team] [RHEL8 PATCH v4 3/5] [bpf] bpf: Add tech preview taint for syscall
+Bugzilla: 1559877
+RH-Acked-by: Jiri Benc <jbenc@redhat.com>
+RH-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Adding tech preview taint for using the eBPF syscall.
+
+Based on a RHEL 7 commit "bpf: Add tech preview taint for syscall" by
+Jiri Olsa.
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1559877
+Brew: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=16716594
+
+Upstream Status: RHEL only
+Signed-off-by: Jiri Olsa <jolsa@redhat.com>
+Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ kernel/bpf/syscall.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 77ecd8b47d70..759670262445 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -3698,11 +3698,17 @@ static int link_update(union bpf_attr *attr)
+ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
+ {
+ 	union bpf_attr attr;
++	static int marked;
+ 	int err;
+
+ 	if (sysctl_unprivileged_bpf_disabled && !capable(CAP_SYS_ADMIN))
+ 		return -EPERM;
+
++	if (!marked) {
++		mark_tech_preview("eBPF syscall", NULL);
++		marked = true;
++	}
++
+ 	err = bpf_check_uarg_tail_zero(uattr, sizeof(attr), size);
+ 	if (err)
+ 		return err;
+-- 
+2.26.2
+

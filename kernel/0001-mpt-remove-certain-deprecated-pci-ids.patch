@@ -1,0 +1,71 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jeremy Cline <jcline@redhat.com>
+Date: Thu, 2 Jan 2020 14:24:36 -0500
+Subject: [PATCH] mpt*: remove certain deprecated pci-ids
+
+Message-id: <20190708192032.20922-1-jcline@redhat.com>
+Patchwork-id: 266421
+O-Subject: [ARK INTERNAL PATCH] mpt*: remove certain deprecated pci-ids
+Bugzilla:
+RH-Acked-by: Don Zickus <dzickus@redhat.com>
+RH-Acked-by: Jarod Wilson <jarod@redhat.com>
+
+Commit 8f8384503e40 ("scsi: mpt3sas: Add support for NVMe Switch
+Adapter") introduced a new PCI device ID which broke the patch context.
+
+    Message-id: <20180403143030.4971-1-thenzl@redhat.com>
+    Patchwork-id: 7431
+    O-Subject: [kernel team] [RHEL8 e-stor PATCH] mpt*: remove certain deprecated pci-ids
+    Bugzilla: 1511953
+    RH-Acked-by: Maurizio Lombardi <mlombard@redhat.com>
+    RH-Acked-by: Chris Leech <cleech@redhat.com>
+
+    bz#1511953
+    brew - task_15594743
+
+    RH specific - remove EOL devices from the pci-id table
+    (devices to remove were selected by Broadcom)
+
+    Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+
+Upstream Status: RHEL only
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
+---
+ drivers/scsi/mpt3sas/mpt3sas_scsih.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
+index 04a40afe60e3..cec7799dc23f 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
+@@ -11031,6 +11031,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
+  * The pci device ids are defined in mpi/mpi2_cnfg.h.
+  */
+ static const struct pci_device_id mpt3sas_pci_table[] = {
++#ifndef CONFIG_RHEL_DIFFERENCES
+ 	/* Spitfire ~ 2004 */
+ 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2004,
+ 		PCI_ANY_ID, PCI_ANY_ID },
+@@ -11049,6 +11050,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+ 		PCI_ANY_ID, PCI_ANY_ID },
+ 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2116_2,
+ 		PCI_ANY_ID, PCI_ANY_ID },
++#endif
+ 	/* Thunderbolt ~ 2208 */
+ 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2208_1,
+ 		PCI_ANY_ID, PCI_ANY_ID },
+@@ -11073,9 +11075,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+ 		PCI_ANY_ID, PCI_ANY_ID },
+ 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SWITCH_MPI_EP_1,
+ 		PCI_ANY_ID, PCI_ANY_ID },
++#ifndef CONFIG_RHEL_DIFFERENCES
+ 	/* SSS6200 */
+ 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SSS6200,
+ 		PCI_ANY_ID, PCI_ANY_ID },
++#endif
+ 	/* Fury ~ 3004 and 3008 */
+ 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
+ 		PCI_ANY_ID, PCI_ANY_ID },
+-- 
+2.26.2
+

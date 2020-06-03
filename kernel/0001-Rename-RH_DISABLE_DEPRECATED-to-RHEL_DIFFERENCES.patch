@@ -1,0 +1,81 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Don Zickus <dzickus@redhat.com>
+Date: Tue, 3 Mar 2020 09:35:28 -0500
+Subject: [PATCH] Rename RH_DISABLE_DEPRECATED to RHEL_DIFFERENCES
+
+The intent of RH_DISABLE_DEPRECATED was to provide Red Hat a
+simple way to disable drivers it did not want to support in RHEL.
+
+As the config option was applied to more drivers and infra, it became
+clear the option was being used for not only deprecating drivers (which
+implied limited support) to disabling drivers (implying no support).
+
+Using the word 'deprecated' seemed confusing in the second scenario.
+Rename the option to be more generic and useable across more parts
+of the kernel tree.
+
+The new wording is RHEL_DIFFERENCES.
+
+Upstream Status: RHEL only
+---
+ Kconfig.redhat          | 2 +-
+ arch/x86/kernel/setup.c | 2 +-
+ include/linux/kernel.h  | 2 +-
+ kernel/Makefile         | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/Kconfig.redhat b/Kconfig.redhat
+index 733a26bd887a..effb81d04bfd 100644
+--- a/Kconfig.redhat
++++ b/Kconfig.redhat
+@@ -5,7 +5,7 @@
+
+ menu "Red Hat options"
+
+-config RH_DISABLE_DEPRECATED
++config RHEL_DIFFERENCES
+ 	bool "Remove support for deprecated features"
+ 	help
+ 	  Red Hat may choose to deprecate certain features in its kernels.
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index b6f5510f3d91..0fd824c4162d 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -1366,7 +1366,7 @@ void __init setup_arch(char **cmdline_p)
+ 		efi_apply_memmap_quirks();
+ #endif
+
+-#ifdef CONFIG_RH_DISABLE_DEPRECATED
++#ifdef CONFIG_RHEL_DIFFERENCES
+ 	rh_check_supported();
+ #endif
+
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 8588bb62e74c..b372b2daae7f 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -1049,7 +1049,7 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+
+ struct module;
+
+-#ifdef CONFIG_RH_DISABLE_DEPRECATED
++#ifdef CONFIG_RHEL_DIFFERENCES
+ void mark_hardware_unsupported(const char *msg);
+ void mark_hardware_deprecated(const char *msg);
+ void mark_tech_preview(const char *msg, struct module *mod);
+diff --git a/kernel/Makefile b/kernel/Makefile
+index e62be9e51064..b1010f42dd18 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -12,7 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
+ 	    notifier.o ksysfs.o cred.o reboot.o \
+ 	    async.o range.o smpboot.o ucount.o
+
+-obj-$(CONFIG_RH_DISABLE_DEPRECATED) += rh_taint.o
++obj-$(CONFIG_RHEL_DIFFERENCES) += rh_taint.o
+
+ obj-$(CONFIG_MODULES) += kmod.o
+ obj-$(CONFIG_MULTIUSER) += groups.o
+-- 
+2.26.2
+

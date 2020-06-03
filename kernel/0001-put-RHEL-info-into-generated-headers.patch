@@ -1,0 +1,82 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Laura Abbott <labbott@redhat.com>
+Date: Mon, 7 Jan 2019 20:55:21 +0000
+Subject: [PATCH] put RHEL info into generated headers
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1663728
+
+Commit 43fee2b23895 ("kbuild: do not redirect the first prerequisite for
+filechk") upstream introduced some context diff. This just fixes that up.
+
+    Bugzilla: http://bugzilla.redhat.com/1544999
+
+    kernel-alt commit b3bbf3db12b8a48491eb4175eae25eb907f092ac
+    Author: Prarit Bhargava <prarit@redhat.com>
+    Date:   Fri Feb 9 18:09:25 2018 -0500
+
+        [kernel] put RHEL info into generated headers
+
+         Message-id: <20180209180926.5955-2-prarit@redhat.com>
+         Patchwork-id: 205585
+         O-Subject: [RHEL-ALT-7.5 BZ 1542796 1/2] put RHEL info into generated headers
+        Bugzilla: 1542796
+        RH-Acked-by: David Arcari <darcari@redhat.com>
+        RH-Acked-by: Tony Camuso <tcamuso@redhat.com>
+        RH-Acked-by: Steve Best <sbest@redhat.com>
+
+        Bugzilla: http://bugzilla.redhat.com/1542796
+
+        rhel7 commit 6199c642a685fba61a298901190659dbedb7c3c3
+        Author: Jarod Wilson <jarod@redhat.com>
+        Date:   Thu Oct 10 20:14:33 2013 -0400
+
+             [redhat] put RHEL info into generated headers
+
+             Message-id: <1381436073-8850-1-git-send-email-jarod@redhat.com>
+             Patchwork-id: 69475
+             O-Subject: [RHEL7 PATCH] [redhat] put RHEL info into generated headers
+            Bugzilla:
+            RH-Acked-by: Neil Horman <nhorman@redhat.com>
+            RH-Acked-by: Rafael Aquini <aquini@redhat.com>
+            RH-Acked-by: Kyle McMartin <kmcmarti@redhat.com>
+
+            While glancing at the differences between RHEL6 and RHEL7's modifications to the
+            top-level Makefile, some discrepancies popped up... This brings RHEL7 in line
+            with all of the customizations we make in RHEL6 to get distro info propagated.
+
+            Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+        Cc: Herton R. Krzesinski <herton@redhat.com>
+        Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+
+    Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+
+Upstream Status: RHEL only
+Acked-by: Don Zickus <dzickus@redhat.com>
+Acked-by: Prarit Bhargava <prarit@redhat.com>
+---
+ Makefile | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index b668725a2a62..3d65d1153aac 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1190,7 +1190,13 @@ endef
+ define filechk_version.h
+ 	echo \#define LINUX_VERSION_CODE $(shell                         \
+ 	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL)); \
+-	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))'
++	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))'; \
++	echo '#define RHEL_MAJOR $(RHEL_MAJOR)'; \
++	echo '#define RHEL_MINOR $(RHEL_MINOR)'; \
++	echo '#define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))'; \
++	echo '#define RHEL_RELEASE_CODE \
++		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
++	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
+ endef
+
+ $(version_h): FORCE
+-- 
+2.26.2
+

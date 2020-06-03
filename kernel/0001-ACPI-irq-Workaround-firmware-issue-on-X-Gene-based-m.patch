@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mark Salter <msalter@redhat.com>
+Date: Thu, 10 May 2018 17:38:43 -0400
+Subject: [PATCH] ACPI / irq: Workaround firmware issue on X-Gene based m400
+
+Message-id: <20180510173844.29580-3-msalter@redhat.com>
+Patchwork-id: 214383
+O-Subject: [RHEL-8 BZ1519554 2/3] ACPI / irq: Workaround firmware issue on X-Gene based m400
+Bugzilla: 1519554
+RH-Acked-by: Al Stone <astone@redhat.com>
+RH-Acked-by: Tony Camuso <tcamuso@redhat.com>
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1519554
+Brew: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=16144520
+
+The ACPI firmware on the xgene-based m400 platorms erroneously
+describes its UART interrupt as ACPI_PRODUCER rather than
+ACPI_CONSUMER. This leads to the UART driver being unable to
+find its interrupt and the kernel unable find a console.
+Work around this by avoiding the producer/consumer check
+for X-Gene UARTs.
+
+Upstream Status: RHEL only
+Signed-off-by: Mark Salter <msalter@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ drivers/acpi/irq.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
+index e209081d644b..7484bcf59a1b 100644
+--- a/drivers/acpi/irq.c
++++ b/drivers/acpi/irq.c
+@@ -126,6 +126,7 @@ struct acpi_irq_parse_one_ctx {
+ 	unsigned int index;
+ 	unsigned long *res_flags;
+ 	struct irq_fwspec *fwspec;
++	bool skip_producer_check;
+ };
+
+ /**
+@@ -197,7 +198,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+ 		return AE_CTRL_TERMINATE;
+ 	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
+ 		eirq = &ares->data.extended_irq;
+-		if (eirq->producer_consumer == ACPI_PRODUCER)
++		if (!ctx->skip_producer_check &&
++		    eirq->producer_consumer == ACPI_PRODUCER)
+ 			return AE_OK;
+ 		if (ctx->index >= eirq->interrupt_count) {
+ 			ctx->index -= eirq->interrupt_count;
+@@ -232,8 +234,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+ static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
+ 			      struct irq_fwspec *fwspec, unsigned long *flags)
+ {
+-	struct acpi_irq_parse_one_ctx ctx = { -EINVAL, index, flags, fwspec };
++	struct acpi_irq_parse_one_ctx ctx = { -EINVAL, index, flags, fwspec, false };
+
++	/*
++	 * Firmware on arm64-based HPE m400 platform incorrectly marks
++	 * its UART interrupt as ACPI_PRODUCER rather than ACPI_CONSUMER.
++	 * Don't do the producer/consumer check for that device.
++	 */
++	if (IS_ENABLED(CONFIG_ARM64)) {
++		struct acpi_device *adev = acpi_bus_get_acpi_device(handle);
++
++		if (adev && !strcmp(acpi_device_hid(adev), "APMC0D08"))
++			ctx.skip_producer_check = true;
++	}
+ 	acpi_walk_resources(handle, METHOD_NAME__CRS, acpi_irq_parse_one_cb, &ctx);
+ 	return ctx.rc;
+ }
+-- 
+2.26.2
+

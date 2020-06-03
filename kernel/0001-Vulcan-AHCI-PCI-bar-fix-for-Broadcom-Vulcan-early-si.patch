@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Robert Richter <rrichter@redhat.com>
+Date: Thu, 7 Jun 2018 22:59:32 -0400
+Subject: [PATCH] Vulcan: AHCI PCI bar fix for Broadcom Vulcan early silicon
+
+Message-id: <1528412373-19128-2-git-send-email-rrichter@redhat.com>
+Patchwork-id: 220950
+O-Subject: [RHEL-8.0 BZ 1563590 v2 1/2] PCI: Vulcan: AHCI PCI bar fix for Broadcom Vulcan early silicon
+Bugzilla: 1563590
+RH-Acked-by: Dean Nelson <dnelson@redhat.com>
+RH-Acked-by: Mark Langsdorf <mlangsdo@redhat.com>
+RH-Acked-by: Mark Salter <msalter@redhat.com>
+
+From: Ashok Kumar Sekar <asekar@redhat.com>
+
+PCI BAR 5 is not setup correctly for the on-board AHCI
+controller on Broadcom's Vulcan processor. Added a quirk to fix BAR 5
+by using BAR 4's resources which are populated correctly but NOT used
+by the AHCI controller actually.
+
+RHEL-only:
+
+Both patches are in RHEL-7.6 also. Inclusion of the patches into RHEL-8
+was discussed. Since there are partners with Ax system configurations it
+was decided to carry them in RHEL8 too. See:
+
+ https://bugzilla.redhat.com/show_bug.cgi?id=1563590#c1
+
+Upstream Status: RHEL only
+Signed-off-by: Ashok Kumar Sekar <asekar@redhat.com>
+Signed-off-by: Jayachandran C <jchandra@broadcom.com>
+Signed-off-by: Robert Richter <rrichter@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ drivers/pci/quirks.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index ca9ed5774eb1..bd0cee4236b0 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4183,6 +4183,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
+ 				quirk_bridge_cavm_thrx2_pcie_root);
+
++/*
++ * PCI BAR 5 is not setup correctly for the on-board AHCI controller
++ * on Broadcom's Vulcan processor. Added a quirk to fix BAR 5 by
++ * using BAR 4's resources which are populated correctly and NOT
++ * actually used by the AHCI controller.
++ */
++static void quirk_fix_vulcan_ahci_bars(struct pci_dev *dev)
++{
++	struct resource *r =  &dev->resource[4];
++
++	if (!(r->flags & IORESOURCE_MEM) || (r->start == 0))
++		return;
++
++	/* Set BAR5 resource to BAR4 */
++	dev->resource[5] = *r;
++
++	/* Update BAR5 in pci config space */
++	pci_write_config_dword(dev, PCI_BASE_ADDRESS_5, r->start);
++
++	/* Clear BAR4's resource */
++	memset(r, 0, sizeof(*r));
++}
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9027, quirk_fix_vulcan_ahci_bars);
++
+ /*
+  * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
+  * class code.  Fix it.
+-- 
+2.26.2
+

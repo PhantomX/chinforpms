@@ -1,0 +1,83 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Eugene Syromiatnikov <esyr@redhat.com>
+Date: Thu, 14 Jun 2018 16:35:59 -0400
+Subject: [PATCH] add Red Hat-specific taint flags
+
+Message-id: <56f71e5f8cf63afd0cdb1c4550c625cc90d59a75.1528991395.git.esyr@redhat.com>
+Patchwork-id: 8249
+O-Subject: [kernel team] [RHEL8 PATCH v4 1/5] kernel: add Red Hat-specific taint flags
+Bugzilla: 1559877
+RH-Acked-by: Jiri Benc <jbenc@redhat.com>
+RH-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Based on RHEL 7 commit "Backport RH specific TAINT flags" by Prarit
+Bhargava.
+
+Upstream Status: RHEL only
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1559877
+Brew: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=16716594
+Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ include/linux/kernel.h | 19 ++++++++++++++++++-
+ kernel/panic.c         | 14 ++++++++++++++
+ 2 files changed, 32 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 2cb1c4fea0c9..c041d4e950f4 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -595,7 +595,24 @@ extern enum system_states {
+ #define TAINT_LIVEPATCH			15
+ #define TAINT_AUX			16
+ #define TAINT_RANDSTRUCT		17
+-#define TAINT_FLAGS_COUNT		18
++/* Start of Red Hat-specific taint flags */
++#define TAINT_18			18
++#define TAINT_19			19
++#define TAINT_20			20
++#define TAINT_21			21
++#define TAINT_22			22
++#define TAINT_23			23
++#define TAINT_24			24
++#define TAINT_25			25
++#define TAINT_26			26
++#define TAINT_27			27
++/* Bits 28 - 31 are reserved for Red Hat use only */
++#define TAINT_RESERVED28		28
++#define TAINT_RESERVED29		29
++#define TAINT_RESERVED30		30
++#define TAINT_RESERVED31		31
++/* End of Red Hat-specific taint flags */
++#define TAINT_FLAGS_COUNT		32
+
+ struct taint_flag {
+ 	char c_true;	/* character printed when tainted */
+diff --git a/kernel/panic.c b/kernel/panic.c
+index b69ee9e76cb2..02f9b2c36cc1 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -376,6 +376,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+ 	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
+ 	[ TAINT_AUX ]			= { 'X', ' ', true },
+ 	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
++	[ TAINT_18 ]			= { '?', '-', false },
++	[ TAINT_19 ]			= { '?', '-', false },
++	[ TAINT_20 ]			= { '?', '-', false },
++	[ TAINT_21 ]			= { '?', '-', false },
++	[ TAINT_22 ]			= { '?', '-', false },
++	[ TAINT_23 ]			= { '?', '-', false },
++	[ TAINT_24 ]			= { '?', '-', false },
++	[ TAINT_25 ]			= { '?', '-', false },
++	[ TAINT_26 ]			= { '?', '-', false },
++	[ TAINT_27 ]			= { '?', '-', false },
++	[ TAINT_RESERVED28 ]		= { '?', '-', false },
++	[ TAINT_RESERVED29 ]		= { '?', '-', false },
++	[ TAINT_RESERVED30 ]		= { '?', '-', false },
++	[ TAINT_RESERVED31 ]		= { '?', '-', false },
+ };
+
+ /**
+-- 
+2.26.2
+

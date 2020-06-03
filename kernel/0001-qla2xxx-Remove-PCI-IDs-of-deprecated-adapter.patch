@@ -1,0 +1,79 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jeremy Cline <jcline@redhat.com>
+Date: Thu, 2 Jan 2020 14:24:44 -0500
+Subject: [PATCH] qla2xxx: Remove PCI IDs of deprecated adapter
+
+Message-id: <20190708192223.21890-1-jcline@redhat.com>
+Patchwork-id: 266422
+O-Subject: [ARK INTERNAL PATCH] qla2xxx: Remove PCI IDs of deprecated adapter
+Bugzilla:
+RH-Acked-by: Don Zickus <dzickus@redhat.com>
+RH-Acked-by: Jarod Wilson <jarod@redhat.com>
+
+Commit ecc89f25e225 ("scsi: qla2xxx: Add Device ID for ISP28XX")
+introduced addition device IDs which broke the patch context.
+
+    Message-id: <20180503234750.33648-1-hmadhani@redhat.com>
+    Patchwork-id: 212501
+    O-Subject: [RHEL 8 e-stor PATCH v2] qla2xxx: Remove PCI IDs of deprecated adapter
+    Bugzilla: 1572233
+    RH-Acked-by: Tomas Henzl <thenzl@redhat.com>
+    RH-Acked-by: Chris Leech <cleech@redhat.com>
+    RH-Acked-by: Tom Coughlan <coughlan@redhat.com>
+
+    Bugzilla:
+    ========    https://bugzilla.redhat.com/show_bug.cgi?id72233
+
+    commit none
+
+    Brewbuild:
+    ==========    https://brewweb.engineering.redhat.com/brew/taskinfo?taskID977226
+
+    Tetsing:
+    =======    N/A. PCI IDs are removed as part of this patch
+
+    Signed-off-by: Himanshu Madhani <hmadhani@redhat.com>
+    Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+
+Upstream Status: RHEL only
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
+
+Note: Simplified backport to just pci-ids
+---
+ drivers/scsi/qla2xxx/qla_os.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
+index 1d9a4866f9a7..e988251d6eef 100644
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -7758,6 +7758,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+ };
+
+ static struct pci_device_id qla2xxx_pci_tbl[] = {
++#ifndef CONFIG_RHEL_DIFFERENCES
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
+@@ -7770,13 +7771,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
++#endif
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2532) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2031) },
++#ifndef CONFIG_RHEL_DIFFERENCES
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8001) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8021) },
++#endif
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8031) },
++#ifndef CONFIG_RHEL_DIFFERENCES
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISPF001) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8044) },
++#endif
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2071) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
+-- 
+2.26.2
+

@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Robert Holmes <robeholmes@gmail.com>
+Date: Tue, 23 Apr 2019 07:39:29 +0000
+Subject: [PATCH] KEYS: Make use of platform keyring for module signature
+ verify
+
+This patch completes commit 278311e417be ("kexec, KEYS: Make use of
+platform keyring for signature verify") which, while adding the
+platform keyring for bzImage verification, neglected to also add
+this keyring for module verification.
+
+As such, kernel modules signed with keys from the MokList variable
+were not successfully verified.
+
+Signed-off-by: Robert Holmes <robeholmes@gmail.com>
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
+---
+ kernel/module_signing.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/module_signing.c b/kernel/module_signing.c
+index 9d9fc678c91d..84ad75a53c83 100644
+--- a/kernel/module_signing.c
++++ b/kernel/module_signing.c
+@@ -38,8 +38,15 @@ int mod_verify_sig(const void *mod, struct load_info *info)
+ 	modlen -= sig_len + sizeof(ms);
+ 	info->len = modlen;
+
+-	return verify_pkcs7_signature(mod, modlen, mod + modlen, sig_len,
++	ret = verify_pkcs7_signature(mod, modlen, mod + modlen, sig_len,
+ 				      VERIFY_USE_SECONDARY_KEYRING,
+ 				      VERIFYING_MODULE_SIGNATURE,
+ 				      NULL, NULL);
++	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING)) {
++		ret = verify_pkcs7_signature(mod, modlen, mod + modlen, sig_len,
++				VERIFY_USE_PLATFORM_KEYRING,
++				VERIFYING_MODULE_SIGNATURE,
++				NULL, NULL);
++	}
++	return ret;
+ }
+-- 
+2.26.2
+

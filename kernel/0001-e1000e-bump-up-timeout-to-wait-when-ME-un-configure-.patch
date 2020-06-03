@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aaron Ma <aaron.ma@canonical.com>
+Date: Tue, 24 Mar 2020 03:16:39 +0800
+Subject: [PATCH] e1000e: bump up timeout to wait when ME un-configure ULP mode
+
+ME takes 2+ seconds to un-configure ULP mode done after resume
+from s2idle on some ThinkPad laptops.
+Without enough wait, reset and re-init will fail with error.
+
+Fixes: f15bb6dde738cc8fa0 ("e1000e: Add support for S0ix")
+BugLink: https://bugs.launchpad.net/bugs/1865570
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+---
+ drivers/net/ethernet/intel/e1000e/ich8lan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+index 735bf25952fc..15f6c0a4dc63 100644
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+@@ -1243,9 +1243,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
+ 			ew32(H2ME, mac_reg);
+ 		}
+
+-		/* Poll up to 300msec for ME to clear ULP_CFG_DONE. */
++		/* Poll up to 2.5sec for ME to clear ULP_CFG_DONE. */
+ 		while (er32(FWSM) & E1000_FWSM_ULP_CFG_DONE) {
+-			if (i++ == 30) {
++			if (i++ == 250) {
+ 				ret_val = -E1000_ERR_PHY;
+ 				goto out;
+ 			}
+-- 
+2.26.2
+

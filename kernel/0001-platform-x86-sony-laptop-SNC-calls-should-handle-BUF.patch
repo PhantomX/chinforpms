@@ -1,4 +1,4 @@
-From 47828d22539f76c8c9dcf2a55f18ea3a8039d8ef Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Mattia Dongili <malattia@linux.it>
 Date: Fri, 8 May 2020 09:14:04 +0900
 Subject: [PATCH] platform/x86: sony-laptop: SNC calls should handle BUFFER
@@ -19,6 +19,8 @@ Reported-by: William Bader <williambader@hotmail.com>
 Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1830150
 Signed-off-by: Mattia Dongili <malattia@linux.it>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Upstream Status: linux-platform-drivers-x86/for-next
+(cherry picked from commit 47828d22539f76c8c9dcf2a55f18ea3a8039d8ef)
 ---
  drivers/platform/x86/sony-laptop.c | 53 +++++++++++++-----------------
  1 file changed, 23 insertions(+), 30 deletions(-)
@@ -30,7 +32,7 @@ index 51309f7ceede..6932cd11e660 100644
 @@ -757,33 +757,6 @@ static union acpi_object *__call_snc_method(acpi_handle handle, char *method,
  	return result;
  }
- 
+
 -static int sony_nc_int_call(acpi_handle handle, char *name, int *value,
 -		int *result)
 -{
@@ -64,7 +66,7 @@ index 51309f7ceede..6932cd11e660 100644
 @@ -795,17 +768,20 @@ static int sony_nc_buffer_call(acpi_handle handle, char *name, u64 *value,
  	if (!object)
  		return -EINVAL;
- 
+
 -	if (object->type == ACPI_TYPE_BUFFER) {
 +	if (!buffer) {
 +		/* do nothing */
@@ -72,23 +74,23 @@ index 51309f7ceede..6932cd11e660 100644
  		len = MIN(buflen, object->buffer.length);
 +		memset(buffer, 0, buflen);
  		memcpy(buffer, object->buffer.pointer, len);
- 
+
  	} else if (object->type == ACPI_TYPE_INTEGER) {
  		len = MIN(buflen, sizeof(object->integer.value));
 +		memset(buffer, 0, buflen);
  		memcpy(buffer, &object->integer.value, len);
- 
+
  	} else {
 -		pr_warn("Invalid acpi_object: expected 0x%x got 0x%x\n",
 -				ACPI_TYPE_BUFFER, object->type);
 +		pr_warn("Unexpected acpi_object: 0x%x\n", object->type);
  		ret = -EINVAL;
  	}
- 
+
 @@ -813,6 +789,23 @@ static int sony_nc_buffer_call(acpi_handle handle, char *name, u64 *value,
  	return ret;
  }
- 
+
 +static int sony_nc_int_call(acpi_handle handle, char *name, int *value, int
 +		*result)
 +{

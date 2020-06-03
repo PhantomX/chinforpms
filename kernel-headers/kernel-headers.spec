@@ -23,13 +23,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 6
+%define base_sublevel 7
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -121,7 +121,7 @@ cross-glibc package.
 
 %install
 # List of architectures we support and want to copy their headers
-ARCH_LIST="arm arm64 powerpc s390 x86"
+ARCH_LIST="arm arm64 powerpc riscv s390 x86"
 
 ARCH=%_target_cpu
 case $ARCH in
@@ -133,6 +133,9 @@ case $ARCH in
 		;;
 	ppc64*)
 		ARCH=powerpc
+		;;
+	riscv64)
+		ARCH=riscv
 		;;
 	s390x)
 		ARCH=s390
@@ -170,6 +173,10 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Tue Jun 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-500.chinfo
+- 5.7.0
+- Rawhide sync
+
 * Wed May 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.15-500.chinfo
 - 5.6.15
 

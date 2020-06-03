@@ -1,0 +1,93 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dave Young <dyoung@redhat.com>
+Date: Mon, 4 Jun 2018 01:38:25 -0400
+Subject: [PATCH] kdump: round up the total memory size to 128M for crashkernel
+ reservation
+
+Message-id: <20180604013831.523644967@redhat.com>
+Patchwork-id: 8165
+O-Subject: [kernel team] [PATCH RHEL8.0 V2 1/2] kdump: round up the total memory size to 128M for crashkernel reservation
+Bugzilla: 1507353
+RH-Acked-by: Don Zickus <dzickus@redhat.com>
+RH-Acked-by: Baoquan He <bhe@redhat.com>
+RH-Acked-by: Pingfan Liu <piliu@redhat.com>
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1507353
+Build: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=16534135
+Tested: ppc64le, x86_64 with several memory sizes.
+
+The total memory size we get in kernel is usually slightly less than 2G with
+2G memory module machine. The main reason is bios/firmware reserve some area
+it will not export all memory as usable to Linux.
+
+2G memory X86 kvm guest test result of the total_mem value:
+UEFI boot with ovmf: 0x7ef10000
+Legacy boot kvm guest: 0x7ff7cc00
+This is also a problem on arm64 UEFI booted system according to my test.
+
+Thus for example crashkernel=1G-2G:128M,  if we have a 1G memory
+machine, we get total size 1023M from firmware then it will not fall
+into 1G-2G thus no memory reserved.  User will never know that, it is
+hard to let user to know the exact total value we get in kernel
+
+An option is to use dmi/smbios to get physical memory size, but it's not
+reliable as well. According to Prarit hardware vendors sometimes screw this up.
+Thus round up total size to 128M to workaround this problem.
+
+Posted below patch in upstream, but no response yet:
+http://lists.infradead.org/pipermail/kexec/2018-April/020568.html
+
+Upstream Status: RHEL only
+Signed-off-by: Dave Young <dyoung@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ kernel/crash_core.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+index 9f1557b98468..d631d22089ba 100644
+--- a/kernel/crash_core.c
++++ b/kernel/crash_core.c
+@@ -7,6 +7,7 @@
+ #include <linux/crash_core.h>
+ #include <linux/utsname.h>
+ #include <linux/vmalloc.h>
++#include <linux/sizes.h>
+
+ #include <asm/page.h>
+ #include <asm/sections.h>
+@@ -39,6 +40,15 @@ static int __init parse_crashkernel_mem(char *cmdline,
+ 					unsigned long long *crash_base)
+ {
+ 	char *cur = cmdline, *tmp;
++	unsigned long long total_mem = system_ram;
++
++	/*
++	 * Firmware sometimes reserves some memory regions for it's own use.
++	 * so we get less than actual system memory size.
++	 * Workaround this by round up the total size to 128M which is
++	 * enough for most test cases.
++	 */
++	total_mem = roundup(total_mem, SZ_128M);
+
+ 	/* for each entry of the comma-separated list */
+ 	do {
+@@ -83,13 +93,13 @@ static int __init parse_crashkernel_mem(char *cmdline,
+ 			return -EINVAL;
+ 		}
+ 		cur = tmp;
+-		if (size >= system_ram) {
++		if (size >= total_mem) {
+ 			pr_warn("crashkernel: invalid size\n");
+ 			return -EINVAL;
+ 		}
+
+ 		/* match ? */
+-		if (system_ram >= start && system_ram < end) {
++		if (total_mem >= start && total_mem < end) {
+ 			*crash_size = size;
+ 			break;
+ 		}
+-- 
+2.26.2
+

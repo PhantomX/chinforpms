@@ -1,1 +1,2 @@
-# CONFIG_HIGHPTE is not set
+# TODO fix due to hardware errata
+CONFIG_HIGHPTE=y

@@ -1,0 +1,58 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Don Dutile <ddutile@redhat.com>
+Date: Tue, 24 Jul 2018 22:29:16 -0400
+Subject: [PATCH] IB/rxe: Mark Soft-RoCE Transport driver as tech-preview
+
+Message-id: <20180724222916.19362-1-ddutile@redhat.com>
+Patchwork-id: 225418
+O-Subject: [PATCH RHEL-8.0] IB/rxe: Mark Soft-RoCE Transport driver as tech-preview.
+Bugzilla: 1605216
+RH-Acked-by: Jarod Wilson <jarod@redhat.com>
+RH-Acked-by: Jonathan Toppins <jtoppins@redhat.com>
+RH-Acked-by: Tony Camuso <tcamuso@redhat.com>
+RH-Acked-by: Honggang Li <honli@redhat.com>
+
+The Soft-RoCE driver implements the InfiniBand RDMA transport
+over the Linux network stack. It enables a system with a
+standard Ethernet adapter to interoperate with a RoCE
+adapter or with another system running the RXE driver.
+
+Unfortunately, a wide range of tests and/or use-cases have shown
+that the driver is not ready for enterprise use, and upstream bug
+fixing may not be complete for RHEL-8.0.
+Thus, recommendation from driver maintainer is to mark it as
+tech-preview.  It is expected that future bug fixes will enable it
+to be upgraded to fully supported.  In the mean time, it works
+in a number of use cases, and can be used to demonstrate upstream
+fixes on failing cases.
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1605216
+Brew: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=17344161
+
+Testing:
+Simple boot test, and loading of rxe driver to show tech-preview
+msg is generated in dmesg log.
+
+Upstream Status: RHEL only
+Signed-off-by: Donald Dutile <ddutile@redhat.com
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ drivers/infiniband/sw/rxe/rxe.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
+index 4afdd2e20883..05e637aa0e3d 100644
+--- a/drivers/infiniband/sw/rxe/rxe.c
++++ b/drivers/infiniband/sw/rxe/rxe.c
+@@ -335,6 +335,8 @@ static int __init rxe_module_init(void)
+ {
+ 	int err;
+
++	mark_tech_preview("Soft-RoCE Transport Driver", THIS_MODULE);
++
+ 	/* initialize slab caches for managed objects */
+ 	err = rxe_cache_init();
+ 	if (err) {
+-- 
+2.26.2
+

@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 19 May 2020 11:24:43 +0200
+Subject: [PATCH] virt: vbox: Log unknown ioctl requests as error
+
+Every now and then upstream adds new ioctls without notifying us,
+log unknown ioctl requests as an error to catch these.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Upstream Status: https://lore.kernel.org/lkml/20200520195440.38759-1-hdegoede@redhat.com/
+---
+ drivers/virt/vboxguest/vboxguest_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/virt/vboxguest/vboxguest_core.c b/drivers/virt/vboxguest/vboxguest_core.c
+index ffd76b949276..e0e343d0ba93 100644
+--- a/drivers/virt/vboxguest/vboxguest_core.c
++++ b/drivers/virt/vboxguest/vboxguest_core.c
+@@ -1739,7 +1739,7 @@ int vbg_core_ioctl(struct vbg_session *session, unsigned int req, void *data)
+ 		return vbg_ioctl_log(data);
+ 	}
+
+-	vbg_debug("VGDrvCommonIoCtl: Unknown req %#08x\n", req);
++	vbg_err("Userspace made an unknown ioctl req %#08x\n", req);
+ 	return -ENOTTY;
+ }
+
+-- 
+2.26.2
+

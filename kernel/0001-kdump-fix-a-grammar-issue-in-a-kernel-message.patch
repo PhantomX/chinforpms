@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dave Young <dyoung@redhat.com>
+Date: Tue, 12 Jun 2018 00:54:22 -0400
+Subject: [PATCH] kdump: fix a grammar issue in a kernel message
+
+Message-id: <20180612005422.GA2568@dhcp-128-65.nay.redhat.com>
+Patchwork-id: 8201
+O-Subject: [kernel team] [RHEL8.0 PATCH V2] kdump: fix a grammar issue in a kernel message
+Bugzilla: 1507353
+RH-Acked-by: Myron Stowe <mstowe@redhat.com>
+RH-Acked-by: Laszlo Ersek <lersek@redhat.com>
+RH-Acked-by: Jiri Benc <jbenc@redhat.com>
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1507353
+Upstream Status: RHEL-only as crashkernel=auto is not accepted in upstream
+Build: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=16661950
+Test: verified on a kvm guest
+
+s/choosed/chosen
+
+Upstream Status: RHEL only
+Signed-off-by: Dave Young <dyoung@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ kernel/crash_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+index c252221b2f4b..df551fc9034c 100644
+--- a/kernel/crash_core.c
++++ b/kernel/crash_core.c
+@@ -269,7 +269,7 @@ static int __init __parse_crashkernel(char *cmdline,
+ #elif defined(CONFIG_PPC64)
+ 		ck_cmdline = "2G-4G:384M,4G-16G:512M,16G-64G:1G,64G-128G:2G,128G-:4G";
+ #endif
+-		pr_info("Using crashkernel=auto, the size choosed is a best effort estimation.\n");
++		pr_info("Using crashkernel=auto, the size chosen is a best effort estimation.\n");
+ 	}
+
+ 	/*
+-- 
+2.26.2
+

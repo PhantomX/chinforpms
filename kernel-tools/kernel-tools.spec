@@ -10,20 +10,20 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 1553fa9569774eced1b5e49dc0b948c93bcc2c7e
+%global opensuse_id 501bc044fe1b475d9a44c2ea354eab9323dd43f0
 
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 6
+%global base_sublevel 7
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 15
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -63,10 +63,6 @@
 # The kernel tarball/base version
 %global kversion %{major_ver}.%{base_sublevel}
 %global KVERREL %{version}-%{release}.%{_target_cpu}
-
-%global _debuginfo_subpackages 1
-%undefine _include_gdb_index
-%undefine _include_minidebuginfo
 
 # perf needs this
 %undefine _strict_symbol_defs_build
@@ -158,20 +154,6 @@ of the Linux kernel.
 written in the Python programming language to use the interface \
 to manipulate perf events.
 
-%package -n perf-debuginfo
-Summary:        Debug information for package perf
-Requires:       %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
-AutoReqProv:    no
-%description -n perf-debuginfo
-This package provides debug information for the perf package.
-
-# Note that this pattern only works right to match the .build-id
-# symlinks because of the trailing nonmatching alternation and
-# the leading .*, because of find-debuginfo.sh's buggy handling
-# of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/perf(\.debug)?|.*%%{_libexecdir}/perf-core/.*|.*%%{_libdir}/traceevent/plugins/.*|.*%%{_libdir}/libperf-jvmti.so(\.debug)?|XXX' -o perf-debuginfo.list}
-
-
 %package -n python3-perf
 Summary: %{python_perf_sum}
 %{?python_provide:%python_provide python3-perf}
@@ -221,6 +203,19 @@ License: GPLv2
 This package includes libraries and header files needed for development
 of applications which use bpf library from kernel source.
 
+%package -n libperf
+Summary: The perf library from kernel source
+License: GPLv2
+%description -n libperf
+This package contains the kernel source perf library.
+
+%package -n libperf-devel
+Summary: Developement files for the perf library from kernel source
+License: GPLv2
+%description -n libperf-devel
+This package includes libraries and header files needed for development
+of applications which use perf library from kernel source.
+
 
 %prep
 %setup -q -n kernel-%{kversion}%{?dist} -c
@@ -266,10 +261,10 @@ cd linux-%{kversion}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
-%{perf_make} %{perf_python3} all
+%{perf_make} JOBS=%{_smp_build_ncpus} %{perf_python3} all
 
 %global tools_make \
-  make CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}" HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" V=1
+  make CFLAGS="%{build_cflags} -Iinclude" LDFLAGS="%{build_ldflags}" HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" V=1
 
 # cpupower
 # make sure version-gen.sh is executable.
@@ -311,6 +306,9 @@ pushd tools/bpf/bpftool
 popd
 pushd tools/lib/bpf
 %{tools_make} V=1
+popd
+pushd tools/lib/perf
+make V=1
 popd
 
 # Build the docs
@@ -401,6 +399,9 @@ popd
 pushd tools/lib/bpf
 %{tools_make} DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} V=1 install install_headers
 popd
+pushd tools/lib/perf
+make DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} V=1 install install_headers
+popd
 
 ###
 ### scripts
@@ -433,8 +434,6 @@ popd
 %license linux-%{kversion}/COPYING
 %{python3_sitearch}/*
 
-%files -f perf-debuginfo.list -n perf-debuginfo
-
 %files -f cpupower.lang
 %{_bindir}/cpupower
 %{_datadir}/bash-completion/completions/cpupower
@@ -458,6 +457,7 @@ popd
 %{_bindir}/lsgpio
 %{_bindir}/gpio-hammer
 %{_bindir}/gpio-event-mon
+%{_bindir}/gpio-watch
 %{_mandir}/man1/kvm_stat*
 %{_bindir}/kvm_stat
 %license linux-%{kversion}/COPYING
@@ -482,13 +482,14 @@ popd
 %{_mandir}/man8/bpftool-net.8.gz
 %{_mandir}/man8/bpftool-prog.8.gz
 %{_mandir}/man8/bpftool-perf.8.gz
+%{_mandir}/man8/bpftool-struct_ops.8.gz
 %{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool.8.gz
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf
 %{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.0.7
+%{_libdir}/libbpf.so.0.0.8
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf-devel
@@ -508,8 +509,37 @@ popd
 %{_includedir}/bpf/xsk.h
 %license linux-%{kversion}/COPYING
 
+%files -n libperf
+%{_libdir}/libperf.so.0
+%{_libdir}/libperf.so.0.0.1
+%license linux-%{kversion}/COPYING
+
+%files -n libperf-devel
+%{_libdir}/libperf.a
+%{_libdir}/libperf.so
+%{_libdir}/pkgconfig/libperf.pc
+%{_includedir}/perf/core.h
+%{_includedir}/perf/cpumap.h
+%{_includedir}/perf/event.h
+%{_includedir}/perf/evlist.h
+%{_includedir}/perf/evsel.h
+%{_includedir}/perf/mmap.h
+%{_includedir}/perf/threadmap.h
+%{_mandir}/man3/libperf.3.gz
+%{_mandir}/man7/libperf-counting.7.gz
+%{_mandir}/man7/libperf-sampling.7.gz
+%{_docdir}/libperf/examples/sampling.c
+%{_docdir}/libperf/examples/counting.c
+%{_docdir}/libperf/html/libperf.html
+%{_docdir}/libperf/html/libperf-counting.html
+%{_docdir}/libperf/html/libperf-sampling.html
+%license linux-%{kversion}/COPYING
+
 
 %changelog
+* Tue Jun 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-500.chinfo
+- 5.7.0
+
 * Wed May 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.15-500.chinfo
 - 5.6.15
 
@@ -759,79 +789,3 @@ popd
 * Mon May 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-500.chinfo
 - 5.1.0
 - Rawhide sync
-
-* Sun May 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.13-500.chinfo
-- 5.0.13
-
-* Thu May 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.11-500.chinfo
-- 5.0.11
-
-* Sun Apr 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.10-500.chinfo
-- 5.0.10
-
-* Sat Apr 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.9-500.chinfo
-- 5.0.9
-
-* Wed Apr 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.8-500.chinfo
-- 5.0.8
-
-* Fri Apr 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-500.chinfo
-- 5.0.7
-
-* Wed Apr 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.6-500.chinfo
-- 5.0.6
-
-* Tue Apr 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.5-500.chinfo
-- 5.0.5
-
-* Tue Mar 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.3-500.chinfo
-- 5.0.3
-
-* Fri Mar 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.2-500.chinfo
-- 5.0.2
-
-* Sun Mar 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.1-500.chinfo
-- 5.0.1
-
-* Mon Mar 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-500.chinfo
-- 5.0.0
-- Rawhide sync
-
-* Wed Feb 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.13-500.chinfo
-- 4.20.13
-
-* Sat Feb 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.12-500.chinfo
-- 4.20.12
-
-* Wed Feb 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.11-500.chinfo
-- 4.20.11
-
-* Fri Feb 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.9-500.chinfo
-- 4.20.9
-
-* Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.8-500.chinfo
-- 4.20.8
-
-* Wed Feb 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.7-500.chinfo
-- 4.20.7
-
-* Thu Jan 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.6-500.chinfo
-- 4.20.6
-
-* Sat Jan 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.5-500.chinfo
-- 4.20.5
-
-* Tue Jan 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.4-500.chinfo
-- 4.20.4
-
-* Thu Jan 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.3-500.chinfo
-- 4.20.3
-
-* Sun Jan 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.2-500.chinfo
-- 4.20.2
-
-* Wed Jan 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.1-500.chinfo
-- 4.20.1
-
-* Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.20.0-500.chinfo
-- 4.20.0

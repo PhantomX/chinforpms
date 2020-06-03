@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jonathan Toppins <jtoppins@redhat.com>
+Date: Tue, 24 Jul 2018 19:17:40 -0400
+Subject: [PATCH] ice: mark driver as tech-preview
+
+Message-id: <f087de8dbe4e8eac9f0992cc34def0a07aba206d.1532459145.git.jtoppins@redhat.com>
+Patchwork-id: 8526
+O-Subject: [kernel team] [PATCH RHEL8 1/3] [redhat] ice: mark driver as tech-preview
+Bugzilla: 1495347
+RH-Acked-by: Steve Best <sbest@redhat.com>
+RH-Acked-by: Don Dutile <ddutile@redhat.com>
+RH-Acked-by: David S. Miller <davem@redhat.com>
+RH-Acked-by: Jarod Wilson <jarod@redhat.com>
+RH-Acked-by: Neil Horman <nhorman@redhat.com>
+RH-Acked-by: Prarit Bhargava <prarit@redhat.com>
+
+Upstream Status: RHEL-only
+Bugzilla: 1495347
+Build Info: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=17334539
+Tested: booted and verified taint flags were set when the driver was loaded.
+
+Upstream Status: RHEL only
+Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ drivers/net/ethernet/intel/ice/ice_main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 5b190c257124..d88fa9c54b16 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3638,6 +3638,7 @@ static int __init ice_module_init(void)
+
+ 	pr_info("%s - version %s\n", ice_driver_string, ice_drv_ver);
+ 	pr_info("%s\n", ice_copyright);
++	mark_tech_preview(DRV_SUMMARY, THIS_MODULE);
+
+ 	ice_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, KBUILD_MODNAME);
+ 	if (!ice_wq) {
+-- 
+2.26.2
+

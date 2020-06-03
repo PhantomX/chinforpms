@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Tomas Henzl <thenzl@redhat.com>
+Date: Thu, 2 Jan 2020 14:24:37 -0500
+Subject: [PATCH] megaraid_sas: remove deprecated pci-ids
+
+Message-id: <20180403143030.4971-2-thenzl@redhat.com>
+Patchwork-id: 7432
+O-Subject: [kernel team] [RHEL8 e-stor PATCH] megaraid_sas: remove deprecated pci-ids
+Bugzilla: 1509329
+RH-Acked-by: Maurizio Lombardi <mlombard@redhat.com>
+RH-Acked-by: Chris Leech <cleech@redhat.com>
+
+bz#1509329
+brew - task_15594743
+
+RH specific - remove EOL devices from the pci-id table
+(devices to remove were selected by Broadcom)
+
+Upstream Status: RHEL only
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ drivers/scsi/megaraid/megaraid_sas_base.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
+index babe85d7b537..9b4df28defd2 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_base.c
++++ b/drivers/scsi/megaraid/megaraid_sas_base.c
+@@ -133,6 +133,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
+  */
+ static struct pci_device_id megasas_pci_table[] = {
+
++#ifndef CONFIG_RHEL_DIFFERENCES
+ 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1064R)},
+ 	/* xscale IOP */
+ 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1078R)},
+@@ -151,6 +152,7 @@ static struct pci_device_id megasas_pci_table[] = {
+ 	/* xscale IOP, vega */
+ 	{PCI_DEVICE(PCI_VENDOR_ID_DELL, PCI_DEVICE_ID_DELL_PERC5)},
+ 	/* xscale IOP */
++#endif
+ 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_FUSION)},
+ 	/* Fusion */
+ 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
+-- 
+2.26.2
+

@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mark Salter <msalter@redhat.com>
+Date: Thu, 10 May 2018 17:38:44 -0400
+Subject: [PATCH] aarch64: acpi scan: Fix regression related to X-Gene UARTs
+
+Message-id: <20180510173844.29580-4-msalter@redhat.com>
+Patchwork-id: 214381
+O-Subject: [RHEL-8 BZ1519554 3/3] aarch64: acpi scan: Fix regression related to X-Gene UARTs
+Bugzilla: 1519554
+RH-Acked-by: Al Stone <astone@redhat.com>
+RH-Acked-by: Tony Camuso <tcamuso@redhat.com>
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1519554
+Brew: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=16144520
+
+Commit e361d1f85855 ("ACPI / scan: Fix enumeration for special UART
+devices") caused a regression with some X-Gene based platforms (Mustang
+and M400) with invalid DSDT. The DSDT makes it appear that the UART
+device is also a slave device attached to itself. With the above commit
+the UART won't be enumerated by ACPI scan (slave serial devices shouldn't
+be). So check for X-Gene UART device and skip slace device check on it.
+
+Upstream Status: RHEL only
+Signed-off-by: Mark Salter <msalter@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ drivers/acpi/scan.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 6d3448895382..221255007dc8 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1563,6 +1563,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
+ 		return false;
+
++	/*
++	 * Firmware on some arm64 X-Gene platforms will make the UART
++	 * device appear as both a UART and a slave of that UART. Just
++	 * bail out here for X-Gene UARTs.
++	 */
++	if (IS_ENABLED(CONFIG_ARM64) &&
++	    !strcmp(acpi_device_hid(device), "APMC0D08"))
++		return false;
++
+ 	INIT_LIST_HEAD(&resource_list);
+ 	acpi_dev_get_resources(device, &resource_list,
+ 			       acpi_check_serial_bus_slave,
+-- 
+2.26.2
+

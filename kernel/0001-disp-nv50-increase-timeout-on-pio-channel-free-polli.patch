@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ben Skeggs <bskeggs@redhat.com>
+Date: Wed, 6 May 2020 14:40:45 +1000
+Subject: [PATCH] disp/nv50-: increase timeout on pio channel free() polling
+
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+---
+ drivers/gpu/drm/nouveau/dispnv50/curs507a.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/nouveau/dispnv50/curs507a.c b/drivers/gpu/drm/nouveau/dispnv50/curs507a.c
+index 8c5cf096f69b..658a200ab616 100644
+--- a/drivers/gpu/drm/nouveau/dispnv50/curs507a.c
++++ b/drivers/gpu/drm/nouveau/dispnv50/curs507a.c
+@@ -32,7 +32,7 @@
+ bool
+ curs507a_space(struct nv50_wndw *wndw)
+ {
+-	nvif_msec(&nouveau_drm(wndw->plane.dev)->client.device, 2,
++	nvif_msec(&nouveau_drm(wndw->plane.dev)->client.device, 100,
+ 		if (nvif_rd32(&wndw->wimm.base.user, 0x0008) >= 4)
+ 			return true;
+ 	);
+-- 
+2.26.2
+

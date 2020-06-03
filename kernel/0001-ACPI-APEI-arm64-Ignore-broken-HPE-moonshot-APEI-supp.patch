@@ -1,0 +1,71 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Al Stone <ahs3@redhat.com>
+Date: Tue, 27 Feb 2018 00:21:23 -0500
+Subject: [PATCH] ACPI: APEI: arm64: Ignore broken HPE moonshot APEI support
+
+Message-id: <20180227002123.21608-1-ahs3@redhat.com>
+Patchwork-id: 206052
+O-Subject: [RHEL8 BZ1518076 PATCH] ACPI: APEI: arm64: Ignore broken HPE moonshot APEI support
+Bugzilla: 1518076
+RH-Acked-by: Mark Salter <msalter@redhat.com>
+RH-Acked-by: Jeremy McNicoll <jmcnicol@redhat.com>
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1518076
+Brew: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=15417197
+Tested: compile-only; several other patches are required for full booting
+        QE has tested limited boot (see comment#12 of BZ)
+
+This is a re-post of a RHEL-ALT-7.5 patch specific to aarch64 moonshots
+that we use in beaker.  It is required for these machines to boot.
+
+    commit 8a663a264863efedf8bb4a9d76ac603920fdd739
+    Author: Robert Richter <rrichter@redhat.com>
+    Date:   Wed Aug 16 19:49:30 2017 -0400
+
+    [acpi] APEI: arm64: Ignore broken HPE moonshot APEI support
+
+    From: Mark Salter <msalter@redhat.com>
+    Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1344237
+    Brew: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=13768971
+    Tested: Booted on moonshot with patched 4.11.0-20 kernel
+    Upstream: RHEL-only
+
+    The aarch64 HP moonshot platforms we have in beaker and elsewhere have
+    a firmware bug which causes a spurious fatal memory error via APEI at
+    boot time. This platform is no longer supported and no further firmware
+    updates are expected. This is a downstream-only hack to avoid the problem
+    by bailing out of HEST table probing if we detect a moonshot HEST table.
+
+    Signed-off-by: Mark Salter <msalter@redhat.com>
+    Signed-off-by: Robert Richter <rrichter@redhat.com>
+    Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+
+Upstream Status: RHEL only
+Signed-off-by: Al Stone <ahs3@redhat.com>
+Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+---
+ drivers/acpi/apei/hest.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
+index 822402480f7d..3f87d8602560 100644
+--- a/drivers/acpi/apei/hest.c
++++ b/drivers/acpi/apei/hest.c
+@@ -88,6 +88,14 @@ int apei_hest_parse(apei_hest_func_t func, void *data)
+ 	if (hest_disable || !hest_tab)
+ 		return -EINVAL;
+
++#ifdef CONFIG_ARM64
++	/* Ignore broken firmware */
++	if (!strncmp(hest_tab->header.oem_id, "HPE   ", 6) &&
++	    !strncmp(hest_tab->header.oem_table_id, "ProLiant", 8) &&
++	    MIDR_IMPLEMENTOR(read_cpuid_id()) == ARM_CPU_IMP_APM)
++		return -EINVAL;
++#endif
++
+ 	hest_hdr = (struct acpi_hest_header *)(hest_tab + 1);
+ 	for (i = 0; i < hest_tab->error_source_count; i++) {
+ 		len = hest_esrc_len(hest_hdr);
+-- 
+2.26.2
+

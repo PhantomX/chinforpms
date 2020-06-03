@@ -1,0 +1,55 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Joseph Szczypek <jszczype@redhat.com>
+Date: Thu, 2 Jan 2020 14:24:40 -0500
+Subject: [PATCH] hpsa: remove old cciss-based smartarray pci ids
+
+Message-id: <1524750809-43700-2-git-send-email-jszczype@redhat.com>
+Patchwork-id: 211573
+O-Subject: [RHEL8 e-stor PATCH 1/2] hpsa: remove old cciss-based smartarray pci ids
+Bugzilla: 1471185
+RH-Acked-by: Maurizio Lombardi <mlombard@redhat.com>
+RH-Acked-by: Tomas Henzl <thenzl@redhat.com>
+
+Per discussion with Microsemi, the old PCI IDs for smartarrays
+originally used with the old cciss driver are not being
+supported with RHEL8. They are also not supported with RHEL7.
+Therefore the PCI IDs and the catch-all are being removed.
+
+    Acked-by: Don Brace <don.brace@microsemi.com>
+    Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
+
+Upstream Status: RHEL only
+---
+ drivers/scsi/hpsa.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
+index 1e9302e99d05..b903580d626f 100644
+--- a/drivers/scsi/hpsa.c
++++ b/drivers/scsi/hpsa.c
+@@ -82,7 +82,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
+ MODULE_SUPPORTED_DEVICE("HP Smart Array Controllers");
+ MODULE_VERSION(HPSA_DRIVER_VERSION);
+ MODULE_LICENSE("GPL");
++#ifndef CONFIG_RHEL_DIFFERENCES
+ MODULE_ALIAS("cciss");
++#endif
+
+ static int hpsa_simple_mode;
+ module_param(hpsa_simple_mode, int, S_IRUGO|S_IWUSR);
+@@ -144,10 +146,12 @@ static const struct pci_device_id hpsa_pci_device_id[] = {
+ 	{PCI_VENDOR_ID_HP_3PAR, 0x0075, 0x1590, 0x007D},
+ 	{PCI_VENDOR_ID_HP_3PAR, 0x0075, 0x1590, 0x0088},
+ 	{PCI_VENDOR_ID_HP, 0x333f, 0x103c, 0x333f},
++#ifndef CONFIG_RHEL_DIFFERENCES
+ 	{PCI_VENDOR_ID_HP,     PCI_ANY_ID,	PCI_ANY_ID, PCI_ANY_ID,
+ 		PCI_CLASS_STORAGE_RAID << 8, 0xffff << 8, 0},
+ 	{PCI_VENDOR_ID_COMPAQ,     PCI_ANY_ID,	PCI_ANY_ID, PCI_ANY_ID,
+ 		PCI_CLASS_STORAGE_RAID << 8, 0xffff << 8, 0},
++#endif
+ 	{0,}
+ };
+
+-- 
+2.26.2
+

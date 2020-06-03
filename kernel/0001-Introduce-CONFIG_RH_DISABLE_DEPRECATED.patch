@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Laura Abbott <labbott@redhat.com>
+Date: Wed, 13 Nov 2019 14:44:28 -0500
+Subject: [PATCH] Introduce CONFIG_RH_DISABLE_DEPRECATED
+
+Message-id: <20191113144431.9403-2-labbott@redhat.com>
+Patchwork-id: 286080
+O-Subject: [ARK INTERNAL PATCHv2 1/4] [redhat] Introduce CONFIG_RH_DISABLE_DEPRECATED
+Bugzilla:
+RH-Acked-by: Don Zickus <dzickus@redhat.com>
+RH-Acked-by: Prarit Bhargava <prarit@redhat.com>
+RH-Acked-by: Jiri Benc <jbenc@redhat.com>
+
+For many drivers that RHEL doesn't want to support, we've typically deleted
+PCI ids from the tree. This precludes those drivers from being used at all
+which is fine for RHEL but a problem if we want to use a similar source base
+for Fedora. Instead of just deleting IDs, introduce a config
+CONFIG_RH_DISABLE_DEPRECATED. This way RHEL can remove IDs while still allowing
+kernels to be built with the option off from the same source.
+
+Upstream Status: RHEL only
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+---
+ Kconfig        |  2 ++
+ Kconfig.redhat | 17 +++++++++++++++++
+ 2 files changed, 19 insertions(+)
+ create mode 100644 Kconfig.redhat
+
+diff --git a/Kconfig b/Kconfig
+index e10b3ee084d4..01c0df787518 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -32,3 +32,5 @@ source "lib/Kconfig"
+ source "lib/Kconfig.debug"
+
+ source "Documentation/Kconfig"
++
++source "Kconfig.redhat"
+diff --git a/Kconfig.redhat b/Kconfig.redhat
+new file mode 100644
+index 000000000000..733a26bd887a
+--- /dev/null
++++ b/Kconfig.redhat
+@@ -0,0 +1,17 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Red Hat specific options
++#
++
++menu "Red Hat options"
++
++config RH_DISABLE_DEPRECATED
++	bool "Remove support for deprecated features"
++	help
++	  Red Hat may choose to deprecate certain features in its kernels.
++	  Enable this option to remove support for hardware that is no
++	  longer supported.
++
++	  Unless you want a restricted kernel, say N here.
++
++endmenu
+-- 
+2.26.2
+

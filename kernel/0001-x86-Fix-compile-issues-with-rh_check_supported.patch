@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Don Zickus <dzickus@redhat.com>
+Date: Thu, 14 May 2020 10:30:51 -0400
+Subject: [PATCH] x86: Fix compile issues with rh_check_supported()
+
+Upstream status: RHEL only
+
+The function rh_check_supported is a RHEL function to limit the
+platforms RHEL does not want to support.
+
+To avoid imposing this requirement on Fedora, the function was
+wrapped with CONFIG_RHEL_DIFFERENCES so Fedora can disable this.
+
+However, this has a few compile warnings that need to be cleaned up
+when disabled.
+
+Move CONFIG_RHEL_DIFFERENCES to include the functions themselves
+instead of the call.  As the unused functions created warnings.
+
+V2: modified stub definition
+
+Signed-off-by: Don Zickus <dzickus@redhat.com>
+---
+ arch/x86/kernel/setup.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 0fd824c4162d..a7bf9730a2ca 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -750,6 +750,7 @@ static void __init trim_low_memory_range(void)
+ 	memblock_reserve(0, ALIGN(reserve_low, PAGE_SIZE));
+ }
+
++#ifdef CONFIG_RHEL_DIFFERENCES
+ static bool valid_amd_processor(__u8 family, const char *model_id)
+ {
+ 	bool valid;
+@@ -874,6 +875,9 @@ static void rh_check_supported(void)
+ 	if (acpi_disabled && !guest)
+ 		pr_crit("ACPI has been disabled or is not available on this hardware.  This may result in a single cpu boot, incorrect PCI IRQ routing, or boot failure.\n");
+ }
++#else
++#define rh_check_supported()
++#endif
+
+ /*
+  * Dump out kernel offset information on panic.
+@@ -1366,9 +1370,7 @@ void __init setup_arch(char **cmdline_p)
+ 		efi_apply_memmap_quirks();
+ #endif
+
+-#ifdef CONFIG_RHEL_DIFFERENCES
+ 	rh_check_supported();
+-#endif
+
+ 	unwind_init();
+ }
+-- 
+2.26.2
+
