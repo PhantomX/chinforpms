@@ -127,7 +127,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2020.05
+Version:        2020.06
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -430,8 +430,8 @@ done
 # 4: uncertain
 for i in \
   702179 991253 1021761 1144632 1288587 1379148 1393235 1393283 1393627 1395486 1396722 \
-  1401909 1427126 1430508 1433747 1452576 1453127 1454285 1455235 1466606 1469257 \
-  1384121 1384701 1388744 1401063 1413143 1415883 1437450 \
+  1401909 1419762 1427126 1430508 1433747 1452576 1453127 1454285 1455235 1466606 1469257 \
+  1384121 1384701 1388744 1401063 1413143 1415883 1402442 1437450 \
   1447519
 do
   rm -f _patches/patch-bug${i}
@@ -1031,6 +1031,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Thu Jun 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.06-1.classic
+- 2020.06
+
 * Sat May 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.05-1.classic
 - 2020.05
 

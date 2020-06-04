@@ -1,0 +1,7 @@
+The glibc-langpack-pt_BR_iso8601 package includes the basic information required
+to support the Brazilian Portuguese language with iso8601 dates in your
+applications.
+
+This is an addition to the original language, only LC_TIME must be set:
+
+localectl set-locale LC_TIME="pt_BR.UTF-8@iso8601"

@@ -1,7 +1,7 @@
-%global commit b65ca133052ed9053e48c571155a764d4d711277
+%global commit 48020f4846cca1a02f4e1dc037e2cc2068df5e9c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200521
-%global with_snapshot 0
+%global date 20200602
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,14 +41,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.9
+%global wine_stagingver 0db92c336fcea4c383a150560f1034cd9cf76366
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 6813ab4f282e376f4910f868de462e9cf2d7896b
+%global tkg_id f2bf86743a13f3fe9be13317544374e5c9b28c85
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 3765d5281af0b172237d62cd74a6370c840411fa
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -56,7 +56,7 @@
 %global gtk3 0
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
-%global vulkanup 0
+%global vulkanup 1
 # Broken
 %global pba 0
 
@@ -88,7 +88,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.9
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -134,19 +134,6 @@ Source113:      wine-taskmgr.desktop
 # AppData files
 Source150:      wine.appdata.xml
 
-# build fixes
-
-# wine bugs/upstream/reverts
-#Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-
-# Fix dxvk window issues with fshack enabled
-Patch100:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
-Patch101:       %{whq_url}/fd6f50c0d3e96947846ca82ed0c9bd79fd8e5b80#/%{name}-whq-fd6f50c.patch
-Patch102:       %{whq_url}/26b26a2e0efcb776e7b0115f15580d2507b10400#/%{name}-whq-26b26a2.patch
-
-# https://bugs.winehq.org/show_bug.cgi?id=48032
-Patch120:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-
 # desktop dir
 Source200:      wine.menu
 Source201:      wine.directory
@@ -163,6 +150,37 @@ Source502:      wine-README-tahoma
 
 Patch511:       wine-cjk.patch
 Patch599:       0003-winemenubuilder-silence-an-err.patch
+
+# build fixes
+
+# wine bugs/upstream/reverts
+#Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
+
+# Fix dxvk window issues with fshack enabled
+Patch600:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
+Patch601:       %{whq_url}/fd6f50c0d3e96947846ca82ed0c9bd79fd8e5b80#/%{name}-whq-fd6f50c.patch
+Patch602:       %{whq_url}/26b26a2e0efcb776e7b0115f15580d2507b10400#/%{name}-whq-26b26a2.patch
+# 603-617/621 - Reverts to unbreak esync/fsync
+Patch603:       %{whq_url}/e854ea34cc481658ec61f4603d0438e075608c98#/%{name}-whq-e854ea3.patch
+Patch604:       %{whq_url}/e6e2f2325a0a4eb14f10dd6df319b068761e9600#/%{name}-whq-e6e2f23.patch
+Patch605:       %{whq_url}/8a63b688ac49f19c259066fd100407edf3747f95#/%{name}-whq-8a63b68.patch
+Patch606:       %{whq_url}/1a743c9af39d0224b65ae504ae7e24d9fad56c2b#/%{name}-whq-1a743c9.patch
+Patch607:       %{whq_url}/01150d7f8d27ad5efdb824da938c4a9fa562a036#/%{name}-whq-01150d7.patch
+Patch608:       %{whq_url}/04f41e87a369828a698f62c32cabad34ed34a3e7#/%{name}-whq-04f41e8.patch
+Patch609:       %{whq_url}/704975f58d7947721f530d202022721c16df466a#/%{name}-whq-704975f.patch
+Source610:       %{whq_url}/3e9f8c87e5a2acaa80f8bbb1d50fa82147942143#/%{name}-whq-3e9f8c8.patch
+Patch611:       %{whq_url}/b925dd78b813decf386139a15aa7bc6863ee7ae5#/%{name}-whq-b925dd7.patch
+Patch612:       %{whq_url}/c0319e0eabbad87a3e153c23f2461c881153b984#/%{name}-whq-c0319e0.patch
+Patch613:       %{whq_url}/87fa906a84621295a76035d73dd6305c9cd2ea4a#/%{name}-whq-87fa906.patch
+Patch614:       %{whq_url}/ac90898f72b02bbc226a95deb40555c1fb8ac3a3#/%{name}-whq-ac90898.patch
+Patch615:       %{whq_url}/7c32b2dd9368137eca3cf0202360bbe0db62efbf#/%{name}-whq-7c32b2d.patch
+Patch616:       %{whq_url}/c96ef78b6d6d9184d8ec4cd18924a3049d388583#/%{name}-whq-c96ef78.patch
+Patch617:       %{whq_url}/9fe61171e515e7c77720675ecbe69731219b549c#/%{name}-whq-9fe6117.patch
+
+# https://bugs.winehq.org/show_bug.cgi?id=48032
+Patch620:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
+Patch621:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-5.mystagingrevert#/%{name}-tkg-06877e5_revert-5.patch
+Patch622:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -194,11 +212,12 @@ Patch731:       %{tkg_url}/proton-tkg-specific/proton-vk-bits-4.5.patch#/%{name}
 Patch732:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-tkg-proton_fs_hack_integer_scaling.patch
 Patch733:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch734:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
+Patch735:       %{tkg_url}/proton/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
 
 Patch790:       revert-grab-fullscreen.patch
 Patch791:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.patch#/%{name}-valve-a09b820.patch
 Patch792:       %{valve_url}/commit/35ff7c5c657d143a96c419346ef516e50815cdfb.patch#/%{name}-valve-35ff7c5.patch
-Patch793:       %{tkg_url}/hotfixes/fd7992972b252ed262d33ef604e9e1235d2108c5-6.myrevert#/%{name}-tkg-fd799297_revert-6.patch
+Patch793:       %{tkg_url}/hotfixes/fd799297/fd7992972b252ed262d33ef604e9e1235d2108c5-6.myrevert#/%{name}-tkg-fd79929_revert-6.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -239,6 +258,7 @@ BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  fontforge
 BuildRequires:  icoutils
+BuildRequires:  patchutils
 BuildRequires:  perl-generators
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  cups-devel
@@ -770,23 +790,44 @@ This package adds the opencl driver for wine.
 %setup -q -n %{name}-%{ver}
 %endif
 
-%if 0%{?wine_staging}
-%if 0%{?fshack}
-%patch102 -p1 -R
-%patch101 -p1 -R
-%patch100 -p1 -R
-%endif
-%endif
-%patch120 -p1
-
 %patch511 -p1 -b.cjk
 %patch599 -p1
+
+%if 0%{?wine_staging}
+%if 0%{?fshack}
+%patch602 -p1 -R
+%patch601 -p1 -R
+%patch600 -p1 -R
+%endif
+%patch617 -p1 -R
+%patch616 -p1 -R
+%patch615 -p1 -R
+%patch614 -p1 -R
+%patch613 -p1 -R
+%patch612 -p1 -R
+%patch611 -p1 -R
+filterdiff -p1 --clean \
+  -x 'dlls/ntdll/unix/signal_arm.c' -x 'dlls/ntdll/unix/signal_arm64.c' \
+  %{S:610} > %{name}-whq-3e9f8c8.patch
+patch -p1 -R -i %{name}-whq-3e9f8c8.patch
+rm -f dlls/ntdll/unix/signal_arm{,64}.c
+%patch609 -p1 -R
+%patch608 -p1 -R
+%patch607 -p1 -R
+%patch606 -p1 -R
+%patch605 -p1 -R
+%patch604 -p1 -R
+%patch603 -p1 -R
+%endif
+%patch620 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
+%patch621 -p1 -R
+%patch622 -p1
 %patch700 -p1
 %patch702 -p1
 %if 0%{?fshack}
@@ -850,6 +891,7 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 %patch734 -p1
 %endif
 %endif
+%patch735 -p1
 %patch791 -p1 -R
 
 %patch793 -p1 -R
@@ -1609,6 +1651,7 @@ fi
 %{_libdir}/wine/api-ms-win-devices-query-l1-1-1.%{winedll}
 %{_libdir}/wine/api-ms-win-downlevel-advapi32-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-downlevel-advapi32-l2-1-0.%{winedll}
+%{_libdir}/wine/api-ms-win-downlevel-kernel32-l2-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-downlevel-normaliz-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-downlevel-ole32-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-downlevel-shell32-l1-1-0.%{winedll}
@@ -2611,6 +2654,9 @@ fi
 
 
 %changelog
+* Wed Jun 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.9-101.20200602git48020f4
+- Snapshot and tkg reverts
+
 * Sat May 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.9-100
 - 5.9
 

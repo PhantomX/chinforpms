@@ -1,0 +1,43 @@
+From 90a27f6de575387cf74101cee3cc92783832cdaf Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 3 Jun 2020 10:56:32 -0300
+Subject: [PATCH] pt_BR: use iso8601 date format
+
+---
+ pt_BR | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/pt_BR b/pt_BR
+index b48e7e0..a4ae96e 100644
+--- a/pt_BR
++++ b/pt_BR
+@@ -8,7 +8,7 @@ escape_char /
+ % exempt you from the conditions of the license if your use would
+ % otherwise be governed by that license.
+ 
+-% Portuguese Language Locale for Brasil
++% Portuguese Language Locale for Brasil with iso-8601 date
+ % Source: RAP
+ % Address: Sankt Jo//rgens Alle 8
+ %    DK-1615 Ko//benhavn V, Danmark
+@@ -23,7 +23,7 @@ escape_char /
+ % Users: general
+ 
+ LC_IDENTIFICATION
+-title      "Portuguese locale for Brasil"
++title      "Portuguese locale for Brasil with iso-8601 date"
+ source     "RAP"
+ address    "Sankt J<U00F8>rgens Alle 8, DK-1615 K<U00F8>benhavn V, Danmark"
+ contact    ""
+@@ -120,7 +120,7 @@ mon     "janeiro";/
+ 	"dezembro"
+ d_t_fmt  "%a %d %b %Y %T"
+ date_fmt "%a %d %b %Y %T %Z"
+-d_fmt   "%d//%m//%Y"
++d_fmt   "%Y-%m-%d"
+ t_fmt   "%T"
+ am_pm   "";""
+ t_fmt_ampm ""
+-- 
+2.26.2
+

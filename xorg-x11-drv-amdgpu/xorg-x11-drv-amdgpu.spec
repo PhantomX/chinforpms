@@ -2,10 +2,10 @@
 %global moduledir %(pkg-config xorg-server --variable=moduledir )
 %global driverdir %{moduledir}/drivers
 
-%global commit a1b7263277c033e109629829c370c0e95978e061
+%global commit 442efe73dd579dc36445a3b232937abbed9d2fbb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190926
-%global with_snapshot 0
+%global date 20200527
+%global with_snapshot 1
 
 # Xorg cannot load hardened build
 %undefine _hardened_build
@@ -16,7 +16,7 @@
 
 Name:           xorg-x11-drv-amdgpu
 Version:        19.1.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 Summary:        AMD GPU video driver
 License:        MIT
@@ -30,7 +30,6 @@ Source0:        https://www.x.org/pub/individual/driver/%{pkgname}-%{version}.ta
 
 ExcludeArch:    s390 s390x
 
-BuildRequires:  python2
 BuildRequires:  xorg-x11-server-devel
 BuildRequires:  pkgconfig(gbm) >= 10.6
 BuildRequires:  libdrm-devel
@@ -72,6 +71,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Thu Jun 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 19.1.0-101.20200527git442efe7
+- Snapshot
+
 * Fri Oct 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.1.0-100
 - 19.1.0
 

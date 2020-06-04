@@ -8,6 +8,7 @@ chinforpms-fake-packages
 compat-gcc-32
 cubeb
 dxil-spirv
+glibc-langpack-pt_BR_iso8601
 gstreamer1
 gtk3
 libeatmydata
