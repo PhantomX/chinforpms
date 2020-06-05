@@ -8,7 +8,7 @@
 %endif
 
 Name:           pulsemixer
-Version:        1.5.0
+Version:        1.5.1
 Release:        1%{?gver}%{?dist}
 Summary:        CLI and curses mixer for pulseaudio
 
@@ -57,6 +57,9 @@ Requires:       pulseaudio
 
 
 %changelog
+* Fri Jun 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-1
+- rebuilt
+
 * Sun Jun 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.0-1
 - 1.5.0
 

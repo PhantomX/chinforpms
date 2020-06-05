@@ -1,12 +1,16 @@
 wine-chinforpms
 ===============
 This wine package is modified from Fedora with a bunch of other
-experimental patches, mostly from https://github.com/Tk-Glitch.
+experimental patches, mostly from https://github.com/Frogging-Family.
 
 * DO NOT REPORT BUGS TO WINEHQ OR FEDORA BUGZILLA
 
 If a bug happens, revert to Fedora official and try to reproduce it again.
 
+
+WINE_DISABLE_WRITE_WATCH override
+=================================
+Enable with WINE_DISABLE_WRITE_WATCH=1 environment variable
 
 WINEESYNC override
 =================================

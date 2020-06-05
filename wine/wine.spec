@@ -1,6 +1,6 @@
-%global commit 48020f4846cca1a02f4e1dc037e2cc2068df5e9c
+%global commit aba27fd5a3241635adb15fa7ef40aa43bf3978a1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200602
+%global date 20200603
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,14 +41,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 0db92c336fcea4c383a150560f1034cd9cf76366
+%global wine_stagingver 7b78338b078a7a55c5851a91064ef70836f4c996
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id f2bf86743a13f3fe9be13317544374e5c9b28c85
+%global tkg_id eeb9034115265b0a303c2be532eda69379f3d7f2
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 3765d5281af0b172237d62cd74a6370c840411fa
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -62,8 +62,9 @@
 
 %global fsync_spincounts 1
 
+%global wine_staging_opts -W ntdll-ForceBottomUpAlloc
 %if 0%{?fshack}
-%global wine_staging_opts -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
+%global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
 %global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput-mouse -W user32-rawinput-nolegacy -W user32-rawinput-mouse-experimental -W user32-rawinput-hid -W winex11-key_translation
 %endif
@@ -88,7 +89,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.9
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -168,7 +169,7 @@ Patch606:       %{whq_url}/1a743c9af39d0224b65ae504ae7e24d9fad56c2b#/%{name}-whq
 Patch607:       %{whq_url}/01150d7f8d27ad5efdb824da938c4a9fa562a036#/%{name}-whq-01150d7.patch
 Patch608:       %{whq_url}/04f41e87a369828a698f62c32cabad34ed34a3e7#/%{name}-whq-04f41e8.patch
 Patch609:       %{whq_url}/704975f58d7947721f530d202022721c16df466a#/%{name}-whq-704975f.patch
-Source610:       %{whq_url}/3e9f8c87e5a2acaa80f8bbb1d50fa82147942143#/%{name}-whq-3e9f8c8.patch
+Source610:      %{whq_url}/3e9f8c87e5a2acaa80f8bbb1d50fa82147942143#/%{name}-whq-3e9f8c8.patch
 Patch611:       %{whq_url}/b925dd78b813decf386139a15aa7bc6863ee7ae5#/%{name}-whq-b925dd7.patch
 Patch612:       %{whq_url}/c0319e0eabbad87a3e153c23f2461c881153b984#/%{name}-whq-c0319e0.patch
 Patch613:       %{whq_url}/87fa906a84621295a76035d73dd6305c9cd2ea4a#/%{name}-whq-87fa906.patch
@@ -176,11 +177,14 @@ Patch614:       %{whq_url}/ac90898f72b02bbc226a95deb40555c1fb8ac3a3#/%{name}-whq
 Patch615:       %{whq_url}/7c32b2dd9368137eca3cf0202360bbe0db62efbf#/%{name}-whq-7c32b2d.patch
 Patch616:       %{whq_url}/c96ef78b6d6d9184d8ec4cd18924a3049d388583#/%{name}-whq-c96ef78.patch
 Patch617:       %{whq_url}/9fe61171e515e7c77720675ecbe69731219b549c#/%{name}-whq-9fe6117.patch
+Patch618:       %{whq_url}/be0eb9c92eb7a4fcd9d0d48568c8ed5e8326ef0b#/%{name}-whq-be0eb9c.patch
+Patch619:       %{whq_url}/35b063a404457fdf956d1913738a3c8a66266cb4#/%{name}-whq-35b063a.patch
+Patch620:       %{whq_url}/f1d40d4824b568389cbc328cebb5734430b52e44#/%{name}-whq-f1d40d4.patch
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
-Patch620:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch621:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-5.mystagingrevert#/%{name}-tkg-06877e5_revert-5.patch
-Patch622:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
+Patch650:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
+Patch651:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-6.mystagingrevert#/%{name}-tkg-06877e5_revert-6.patch
+Patch652:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -213,6 +217,7 @@ Patch732:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-
 Patch733:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch734:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch735:       %{tkg_url}/proton/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
+Patch736:       %{tkg_url}/proton/server_Abort_waiting_on_a_completion_port_when_closing_it-no_alloc_handle.patch#/%{name}-tkg-server_Abort_waiting_on_a_completion_port_when_closing_it-no_alloc_handle.patch
 
 Patch790:       revert-grab-fullscreen.patch
 Patch791:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.patch#/%{name}-valve-a09b820.patch
@@ -799,6 +804,9 @@ This package adds the opencl driver for wine.
 %patch601 -p1 -R
 %patch600 -p1 -R
 %endif
+%patch620 -p1 -R
+%patch619 -p1 -R
+%patch618 -p1 -R
 %patch617 -p1 -R
 %patch616 -p1 -R
 %patch615 -p1 -R
@@ -819,15 +827,15 @@ rm -f dlls/ntdll/unix/signal_arm{,64}.c
 %patch604 -p1 -R
 %patch603 -p1 -R
 %endif
-%patch620 -p1
+%patch650 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
-%patch621 -p1 -R
-%patch622 -p1
+%patch651 -p1 -R
+%patch652 -p1
 %patch700 -p1
 %patch702 -p1
 %if 0%{?fshack}
@@ -860,6 +868,7 @@ cp -p %{S:1001} README-pba-pkg
 
 %patch720 -p1
 %patch721 -p1
+%patch736 -p1
 %if 0%{?fsync_spincounts}
 %patch722 -p1
 %patch792 -p1
@@ -2040,6 +2049,7 @@ fi
 %{_libdir}/wine/ndis.%{winesys}
 %{_libdir}/wine/netapi32.dll.so
 %{_libdir}/wine/netcfgx.%{winedll}
+%{_libdir}/wine/netio.%{winesys}
 %{_libdir}/wine/netprofm.%{winedll}
 %{_libdir}/wine/netsh.%{wineexe}
 %{_libdir}/wine/newdev.%{winedll}
@@ -2654,6 +2664,9 @@ fi
 
 
 %changelog
+* Thu Jun 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.9-102.20200603gitaba27fd
+- Bump
+
 * Wed Jun 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.9-101.20200602git48020f4
 - Snapshot and tkg reverts
 
