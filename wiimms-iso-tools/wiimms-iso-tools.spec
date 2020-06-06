@@ -10,7 +10,7 @@
 
 Name:           wiimms-iso-tools
 Version:        3.02a
-Release:        3%{?svnver}%{?dist}
+Release:        4%{?svnver}%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
 License:        GPLv2+
@@ -91,7 +91,7 @@ mkdir -p %{buildroot}%{_mandir}/man1
 install -pm0644 %{S:2} %{buildroot}%{_mandir}/man1/wit.1
 
 for i in wdf  wdf-cat  wdf-dump  wfuse  wwt ;do
-  echo '.so man1/wit.1' > $i.1
+  echo '.so man1/wit.1' > %{buildroot}%{_mandir}/man1/$i.1
 done
 
 
@@ -104,6 +104,9 @@ done
 
 
 %changelog
+* Fri Jun 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.02a-4
+- Fix missing manpages redirects
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.02a-3
 - gcc 10 fix
 

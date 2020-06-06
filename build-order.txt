@@ -52,6 +52,7 @@ bashdb
 -bcg729
 -bcmatroska2
 -bctoolbox
+binmerge
 blackchocobo
 blastem
 bluecurve-icon-theme
@@ -64,6 +65,7 @@ cdemu-daemon
 chinfo-extramimetypes
 claws-mail
 claws-mail-themes
+cmdpack
 cropgui
 curlew
 deluge

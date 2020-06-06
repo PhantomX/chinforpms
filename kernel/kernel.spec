@@ -123,6 +123,7 @@ Summary: The Linux kernel
 %endif
 
 # Apply zen patches? (zen release number to enable, 0 to disable)
+# This is not very tested
 %global zen 0
 %if 0%{?zen}
 # Disable post_factum if zen is requested
