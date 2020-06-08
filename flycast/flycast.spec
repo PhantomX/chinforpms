@@ -1,6 +1,6 @@
-%global commit 002a05f8663191afa7461a8844b6bf4382c1d408
+%global commit 18790901b1241c1fab9e69aaa180fcc27c4bc866
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200530
+%global date 20200606
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 
 Name:           flycast
 Version:        7
-Release:        11%{?gver}%{?dist}
+Release:        12%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -137,6 +137,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Jun 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 7-12.20200606git1879090
+- New snapshot
+
 * Sat May 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 7-11.20200530git002a05f
 - Bump
 

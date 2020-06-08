@@ -1,0 +1,4 @@
+
+WINE_FULLSCREEN_INTEGER_SCALING override (nearest neighbour upscaling)
+=================================
+Enable with WINE_FULLSCREEN_INTEGER_SCALING=1 environment variable

@@ -1,7 +1,7 @@
-%global commit aba27fd5a3241635adb15fa7ef40aa43bf3978a1
+%global commit 3c72034b72014a087eae8d181252c67cb0782e28
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200603
-%global with_snapshot 1
+%global date 20200604
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,14 +41,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7b78338b078a7a55c5851a91064ef70836f4c996
+%global wine_stagingver 5.10
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id eeb9034115265b0a303c2be532eda69379f3d7f2
+%global tkg_id 7aed582827ec2f9d346a1f6c4b2b90efec03d89e
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 3765d5281af0b172237d62cd74a6370c840411fa
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -62,6 +62,7 @@
 
 %global fsync_spincounts 1
 
+# For unbreak esync/fsync below
 %global wine_staging_opts -W ntdll-ForceBottomUpAlloc
 %if 0%{?fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
@@ -88,8 +89,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.9
-Release:        102%{?gver}%{?dist}
+Version:        5.10
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -115,6 +116,7 @@ Source3:        wine-README-Fedora
 Source4:        wine-32.conf
 Source5:        wine-64.conf
 Source6:        wine-README-chinforpms
+Source7:        wine-README-chinforpms-fshack
 
 # desktop files
 Source100:      wine-notepad.desktop
@@ -161,7 +163,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 Patch600:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
 Patch601:       %{whq_url}/fd6f50c0d3e96947846ca82ed0c9bd79fd8e5b80#/%{name}-whq-fd6f50c.patch
 Patch602:       %{whq_url}/26b26a2e0efcb776e7b0115f15580d2507b10400#/%{name}-whq-26b26a2.patch
-# 603-617/621 - Reverts to unbreak esync/fsync
+# 603-634/651/652 - Reverts to unbreak esync/fsync
 Patch603:       %{whq_url}/e854ea34cc481658ec61f4603d0438e075608c98#/%{name}-whq-e854ea3.patch
 Patch604:       %{whq_url}/e6e2f2325a0a4eb14f10dd6df319b068761e9600#/%{name}-whq-e6e2f23.patch
 Patch605:       %{whq_url}/8a63b688ac49f19c259066fd100407edf3747f95#/%{name}-whq-8a63b68.patch
@@ -180,10 +182,24 @@ Patch617:       %{whq_url}/9fe61171e515e7c77720675ecbe69731219b549c#/%{name}-whq
 Patch618:       %{whq_url}/be0eb9c92eb7a4fcd9d0d48568c8ed5e8326ef0b#/%{name}-whq-be0eb9c.patch
 Patch619:       %{whq_url}/35b063a404457fdf956d1913738a3c8a66266cb4#/%{name}-whq-35b063a.patch
 Patch620:       %{whq_url}/f1d40d4824b568389cbc328cebb5734430b52e44#/%{name}-whq-f1d40d4.patch
+Patch621:       %{whq_url}/cd0c5988020acc92ff98260e3304967bf31e4e87#/%{name}-whq-cd0c598.patch
+Patch622:       %{whq_url}/4ffe39573b537d638e4b39c9b5990c6566d62b09#/%{name}-whq-4ffe395.patch
+Patch623:       %{whq_url}/a18444984171ee86503d1250094965fb50a198ee#/%{name}-whq-a184449.patch
+Patch624:       %{whq_url}/39915c9bc42f17619b1d2c46e6b3aea485c471a0#/%{name}-whq-39915c9.patch
+Patch625:       %{whq_url}/efd59e378c2ba8cae98fa664ae98521027e96b81#/%{name}-whq-efd59e3.patch
+Patch626:       %{whq_url}/8b87d6b81408e5d6fe34f9e9fda1df2f4f2e5cd0#/%{name}-whq-8b87d6b.patch
+Patch627:       %{whq_url}/65edacf93484faf1dc3d11e555081d69556ccbc3#/%{name}-whq-65edacf.patch
+Patch628:       %{whq_url}/f1276b25ae72e81cf044134bae92db6ef73be3a1#/%{name}-whq-f1276b2.patch
+Patch629:       %{whq_url}/cdfc45859c299aa629482ee06614c9819346b444#/%{name}-whq-cdfc458.patch
+Patch630:       %{whq_url}/ca3ca7b046ae94a152b1367ca982774345887e55#/%{name}-whq-ca3ca7b.patch
+Patch631:       %{whq_url}/39e7f25e0918d23e5b9ef5fc5049948b6f56525e#/%{name}-whq-39e7f25.patch
+Patch632:       %{whq_url}/33c750f50ff8b6f1eae63140e8287c49a5130a60#/%{name}-whq-33c750f.patch
+Patch633:       %{whq_url}/245efd04e1456a71a6962acbb8ebc279481e9ffa#/%{name}-whq-245efd0.patch
+Patch634:       %{whq_url}/8e5d3042786917c04d3065755d81e7f8a751e529#/%{name}-whq-8e5d304.patch
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch650:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch651:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-6.mystagingrevert#/%{name}-tkg-06877e5_revert-6.patch
+Patch651:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-9.mystagingrevert#/%{name}-tkg-06877e5_revert-9.patch
 Patch652:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 
 %if 0%{?wine_staging}
@@ -804,6 +820,20 @@ This package adds the opencl driver for wine.
 %patch601 -p1 -R
 %patch600 -p1 -R
 %endif
+%patch634 -p1 -R
+%patch633 -p1 -R
+%patch632 -p1 -R
+%patch631 -p1 -R
+%patch630 -p1 -R
+%patch629 -p1 -R
+%patch628 -p1 -R
+%patch627 -p1 -R
+%patch626 -p1 -R
+%patch625 -p1 -R
+%patch624 -p1 -R
+%patch623 -p1 -R
+%patch622 -p1 -R
+%patch621 -p1 -R
 %patch620 -p1 -R
 %patch619 -p1 -R
 %patch618 -p1 -R
@@ -925,6 +955,14 @@ if [ "${MONO_VER}" != "%{winemono}" ] ;then
   echo "winemono version mismatch. Edit %%global winemono to ${MONO_VER}."
   exit 1
 fi
+
+cp -p %{SOURCE3} README-FEDORA
+cp -p %{SOURCE6} README-chinforpms
+%if 0%{?fshack}
+cat %{SOURCE7} >> README-chinforpms
+%endif
+
+cp -p %{SOURCE502} README-tahoma
 
 sed -e '/winemenubuilder\.exe/s|-a ||g' -i loader/wine.inf.in
 
@@ -1235,11 +1273,6 @@ desktop-file-install \
 desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE300}
-
-cp -p %{SOURCE3} README-FEDORA
-cp -p %{SOURCE6} README-chinforpms
-
-cp -p %{SOURCE502} README-tahoma
 
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 
@@ -1560,9 +1593,11 @@ fi
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-2-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-2-1.%{winedll}
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-2-2.%{winedll}
+%{_libdir}/wine/api-ms-win-core-libraryloader-l2-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-localization-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-localization-l1-2-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-localization-l1-2-1.%{winedll}
+%{_libdir}/wine/api-ms-win-core-localization-l1-2-2.%{winedll}
 %{_libdir}/wine/api-ms-win-core-localization-l2-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-localization-obsolete-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-localization-obsolete-l1-2-0.%{winedll}
@@ -1572,6 +1607,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-memory-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-memory-l1-1-1.%{winedll}
 %{_libdir}/wine/api-ms-win-core-memory-l1-1-2.%{winedll}
+%{_libdir}/wine/api-ms-win-core-memory-l1-1-4.%{winedll}
 %{_libdir}/wine/api-ms-win-core-misc-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-namedpipe-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-namedpipe-l1-2-0.%{winedll}
@@ -2664,6 +2700,9 @@ fi
 
 
 %changelog
+* Sat Jun 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.10-100
+- 5.10
+
 * Thu Jun 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.9-102.20200603gitaba27fd
 - Bump
 
@@ -3358,244 +3397,3 @@ fi
 
 * Mon Dec 28 2015 Michael Cronenworth <mike@cchtml.com> 1.9.0-1
 - version upgrade
-
-* Wed Dec 23 2015 Michael Cronenworth <mike@cchtml.com> 1.8-1
-- version upgrade
-
-* Tue Dec 15 2015 Michael Cronenworth <mike@cchtml.com> 1.8-0.2
-- version upgrade, 1.8-rc4
-- enabling compiler optimizations again (-O2), thanks to gcc 5.3
-
-* Sun Dec 06 2015 Michael Cronenworth <mike@cchtml.com> 1.8-0.1
-- version upgrade, 1.8-rc3
-
-* Sun Nov 15 2015 Michael Cronenworth <mike@cchtml.com> 1.7.55-1
-- version upgrade
-
-* Wed Nov 04 2015 Michael Cronenworth <mike@cchtml.com> 1.7.54-1
-- version upgrade
-
-* Wed Oct 21 2015 Michael Cronenworth <mike@cchtml.com> 1.7.53-1
-- version upgrade
-
-* Sat Oct 03 2015 Michael Cronenworth <mike@cchtml.com> 1.7.52-1
-- version upgrade
-
-* Tue Sep 08 2015 Michael Cronenworth <mike@cchtml.com> 1.7.51-1
-- version upgrade
-
-* Mon Aug 24 2015 Michael Cronenworth <mike@cchtml.com> 1.7.50-1
-- version upgrade
-
-* Fri Aug 14 2015 Michael Cronenworth <mike@cchtml.com> 1.7.49-2
-- backport gecko 2.40 patch
-
-* Fri Aug 14 2015 Michael Cronenworth <mike@cchtml.com> 1.7.49-1
-- version upgrade
-
-* Mon Aug 10 2015 Björn Esser <bjoern.esser@gmail.com> - 1.7.48-2
-- rebuilt for mingw-wine-gecko-2.40
-
-* Fri Jul 31 2015 Michael Cronenworth <mike@cchtml.com> 1.7.48-1
-- version upgrade
-
-* Sun Jul 12 2015 Michael Cronenworth <mike@cchtml.com> 1.7.47-1
-- version upgrade
-
-* Mon Jun 29 2015 Michael Cronenworth <mike@cchtml.com> 1.7.46-1
-- version upgrade
-
-* Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.7.45-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
-
-* Sun Jun 14 2015 Michael Cronenworth <mike@cchtml.com> 1.7.45-1
-- version upgrade
-
-* Sun May 31 2015 Michael Cronenworth <mike@cchtml.com> 1.7.44-1
-- version upgrade
-
-* Mon May 18 2015 Michael Cronenworth <mike@cchtml.com> 1.7.43-1
-- version upgrade
-
-* Mon May 04 2015 Michael Cronenworth <mike@cchtml.com> 1.7.42-1
-- version upgrade
-
-* Sat Apr 18 2015 Michael Cronenworth <mike@cchtml.com> 1.7.41-1
-- version upgrade
-- Disable gstreamer support (rhbz#1204185)
-
-* Mon Apr 06 2015 Michael Cronenworth <mike@cchtml.com> 1.7.40-1
-- version upgrade
-
-* Sun Mar 22 2015 Michael Cronenworth <mike@cchtml.com> 1.7.39-1
-- version upgrade
-- Enable some optimizations and workarounds for GCC5 regressions
-
-* Tue Mar 10 2015 Adam Jackson <ajax@redhat.com> 1.7.38-3
-- Drop sysvinit subpackage on F23+
-
-* Sat Mar 07 2015 Michael Cronenworth <mike@cchtml.com> - 1.7.38-2
-- Fix wine-gecko and wine-mono versions
-
-* Sat Mar 07 2015 Michael Cronenworth <mike@cchtml.com> - 1.7.38-1
-- version upgrade
-
-* Sun Feb 22 2015 Andreas Bierfert <andreas.bierfert@lowlatency.de>
-- 1.7.37-1
-- version upgrade
-
-* Mon Feb 16 2015 Michael Cronenworth <mike@cchtml.com> - 1.7.36-2
-- Patch for RtlUnwindEx fix (staging bz #68)
-- Use new systemd macros for binfmt handling
-
-* Sun Feb 08 2015 Michael Cronenworth <mike@cchtml.com> - 1.7.36-1
-- version upgrade
-
-* Wed Feb 04 2015 Orion Poplawski <orion@cora.nwra.com> - 1.7.35-3
-- Add patch to fix stack smashing (bug #1110419)
-
-* Mon Jan 26 2015 Michael Cronenworth <mike@cchtml.com> - 1.7.35-2
-- Rebuild (libgphoto2)
-
-* Sun Jan 25 2015 Michael Cronenworth <mike@cchtml.com> - 1.7.35-1
-- version upgrade
-- use alternatives system, remove wow sub-package
-
-* Tue Jan 20 2015 Peter Robinson <pbrobinson@fedoraproject.org> 1.7.34-2
-- Rebuild (libgphoto2)
-
-* Sat Jan 10 2015 Michael Cronenworth <mike@cchtml.com>
-- 1.7.34-1
-- version upgrade
-- enable OpenCL support (rhbz#1176605)
-
-* Sun Dec 14 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.33-1
-- version upgrade
-
-* Sun Nov 30 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.32-1
-- version upgrade
-- wine-mono upgrade
-
-* Fri Nov 14 2014 Andreas Bierfert <andreas.bierfert@lowlatency.de>
-- 1.7.31-1
-- version upgrade
-- wine-gecko upgrade
-- add some missing arch requires
-
-* Sun Nov 02 2014 Andreas Bierfert <andreas.bierfert@lowlatency.de>
-- 1.7.30-1
-- version upgrade (rhbz#1159548)
-- use winepulse patch from compholio patchset when build w/o
-  compholio (rhbz#1151862)
-
-* Fri Oct 24 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.29-1
-- version upgrade
-
-* Sun Oct 05 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.28-1
-- version upgrade
-- New sub-package for wingdings font system integration
-
-* Wed Sep 24 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.27-1
-- version upgrade
-
-* Mon Sep 08 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.26-1
-- version upgrade
-
-* Sun Aug 24 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.25-1
-- version upgrade
-
-* Mon Aug 18 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.7.24-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
-
-* Fri Aug 15 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.24-1
-- version upgrade
-- No longer install Wine fonts into system directory (rhbz#1039763)
-
-* Thu Jul 17 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-4
-- prevent accidential build with compholio-patchset on EPEL
-- rebuild for pulseaudio (bug #1117683)
-
-* Mon Jul 14 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-3
-- dropped virtual Provides: %%{name}(compholio)
-
-* Sat Jul 12 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-2
-- added conditionalized option to build with compholio-patchset for pipelight
-  Source900 -- compholio-patchset, wine-arial-fonts sub-package,
-  BR: libattr-devel and configure --with-xattr for Silverlight DRM-stuff
-
-* Fri Jul 11 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.22-1
-- version upgrade
-
-* Wed Jul 09 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.21-2
-- Fixes for EPEL7 (rhbz#1117422)
-
-* Tue Jul 01 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.21-1
-- version upgrade
-
-* Thu Jun 19 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.20-1
-- version upgrade
-
-* Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.7.19-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
-
-* Sun May 18 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.19-1
-- version upgrade
-
-* Sat May 10 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.18-1
-- version upgrade
-
-* Fri Apr 25 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.17-2
-- fix systemd binfmt location (rhbz#1090170)
-
-* Tue Apr 22 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.17-1
-- version upgrade
-
-* Mon Apr 07 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.16-2
-- explicitly require libpng (fixes rhbz#1085075)
-
-* Mon Apr 07 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.16-1
-- version upgrade
-
-* Mon Mar 24 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.15-1
-- version upgrade
-
-* Sat Mar 08 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.14-1
-- version upgrade
-
-* Sun Feb 23 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.13-1
-- version upgrade
-- upgraded winepulse
-
-* Sat Feb 08 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.12-1
-- version upgrade
-
-* Sun Jan 26 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.11-1
-- version upgrade
-
-* Thu Jan 09 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.7.10-1
-- version upgrade
-- upgraded winepulse
