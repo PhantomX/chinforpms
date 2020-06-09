@@ -1,7 +1,7 @@
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
 Name:           asbru-cm
-Version:        6.2.0
+Version:        6.2.1
 Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
@@ -11,8 +11,6 @@ URL:            https://asbru-cm.net
 %global vc_url  https://github.com/%{name}/%{name}
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
 Source0:        %{vc_url}/archive/%{ver}/%{name}-%{ver}.tar.gz
-
-Patch1:         %{name}-vncpasswd.patch
 
 BuildArch:      noarch
 
@@ -141,6 +139,9 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
+* Mon Jun 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.2.1-1
+- 6.2.1
+
 * Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.2.0-1
 - 6.2.0
 
