@@ -1,7 +1,7 @@
-%global commit 3c72034b72014a087eae8d181252c67cb0782e28
+%global commit bf454cc39428fc5299e5c26d9c0ddc6a9277c7ae
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200604
-%global with_snapshot 0
+%global date 20200609
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.1
-%global winemono  5.0.1
+%global winemono  5.1.0
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -41,16 +41,19 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.10
+%global wine_stagingver cb2a6551bc686820bda7efb21da45663128d0b2c
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global tkg_id 7aed582827ec2f9d346a1f6c4b2b90efec03d89e
+%global ge_id a6afbe3bc510c78fb57a4151cf2637829e8ece26
+%global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
+
+%global tkg_id 806a583c74ec2fc39c7ee3fc41ff86bd8873dcc6
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 3765d5281af0b172237d62cd74a6370c840411fa
+%global tkg_cid f520cb0bfd4c559e377b9910372614bb16f9a64d
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0
@@ -62,8 +65,6 @@
 
 %global fsync_spincounts 1
 
-# For unbreak esync/fsync below
-%global wine_staging_opts -W ntdll-ForceBottomUpAlloc
 %if 0%{?fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
@@ -90,7 +91,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.10
-Release:        100%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -163,7 +164,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 Patch600:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
 Patch601:       %{whq_url}/fd6f50c0d3e96947846ca82ed0c9bd79fd8e5b80#/%{name}-whq-fd6f50c.patch
 Patch602:       %{whq_url}/26b26a2e0efcb776e7b0115f15580d2507b10400#/%{name}-whq-26b26a2.patch
-# 603-634/651/652 - Reverts to unbreak esync/fsync
+# 603-647/681-683 - Reverts to unbreak esync/fsync
 Patch603:       %{whq_url}/e854ea34cc481658ec61f4603d0438e075608c98#/%{name}-whq-e854ea3.patch
 Patch604:       %{whq_url}/e6e2f2325a0a4eb14f10dd6df319b068761e9600#/%{name}-whq-e6e2f23.patch
 Patch605:       %{whq_url}/8a63b688ac49f19c259066fd100407edf3747f95#/%{name}-whq-8a63b68.patch
@@ -196,11 +197,25 @@ Patch631:       %{whq_url}/39e7f25e0918d23e5b9ef5fc5049948b6f56525e#/%{name}-whq
 Patch632:       %{whq_url}/33c750f50ff8b6f1eae63140e8287c49a5130a60#/%{name}-whq-33c750f.patch
 Patch633:       %{whq_url}/245efd04e1456a71a6962acbb8ebc279481e9ffa#/%{name}-whq-245efd0.patch
 Patch634:       %{whq_url}/8e5d3042786917c04d3065755d81e7f8a751e529#/%{name}-whq-8e5d304.patch
+Patch635:       %{whq_url}/e561ce4b9259071f79d219dddf62f05cdd8dd07b#/%{name}-whq-e561ce4.patch
+Patch636:       %{whq_url}/95e2d05e5d6b92a2f6b28e00f36064b7bf6b249a#/%{name}-whq-95e2d05.patch
+Patch637:       %{whq_url}/7f28a1c521341399da1f3559358f2abf876d34be#/%{name}-whq-7f28a1c.patch
+Patch638:       %{whq_url}/20c91c5e803090bd40fe3045a0d9fea0a68913e4#/%{name}-whq-20c91c5.patch
+Patch639:       %{whq_url}/683583faf2f4b00874f702429393b127aca8eef4#/%{name}-whq-683583f.patch
+Patch640:       %{whq_url}/0c14b1a962573ee125940f2008c646befe597226#/%{name}-whq-0c14b1a.patch
+Patch641:       %{whq_url}/2333099c52566c6cf3d3f981588a26d4ff408155#/%{name}-whq-2333099.patch
+Patch642:       %{whq_url}/4d70266274c1102c385dd00303d312d94453d19b#/%{name}-whq-4d70266.patch
+Patch643:       %{whq_url}/246dedaa091308f140a3cac41845f5e978492e37#/%{name}-whq-246deda.patch
+Patch644:       %{whq_url}/509ad75adbca85d606a3bd8bba727abf0751cebc#/%{name}-whq-509ad75.patch
+Patch645:       %{whq_url}/552bc8aa4703b674747df36c591038da17c0c858#/%{name}-whq-552bc8a.patch
+Patch646:       %{whq_url}/ff19f21913c508f5827df0e7e4c3a351c36711a0#/%{name}-whq-ff19f21.patch
+Patch647:       %{whq_url}/d8d6a6b2e639d2e29e166a3faf988b81388ae191#/%{name}-whq-d8d6a6b.patch
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
-Patch650:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch651:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-9.mystagingrevert#/%{name}-tkg-06877e5_revert-9.patch
-Patch652:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
+Patch680:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
+Patch681:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-12.mystagingrevert#/%{name}-tkg-06877e5_revert-12.patch
+Patch682:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
+Patch683:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-044cb93.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-044cb93.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -239,6 +254,10 @@ Patch790:       revert-grab-fullscreen.patch
 Patch791:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.patch#/%{name}-valve-a09b820.patch
 Patch792:       %{valve_url}/commit/35ff7c5c657d143a96c419346ef516e50815cdfb.patch#/%{name}-valve-35ff7c5.patch
 Patch793:       %{tkg_url}/hotfixes/fd799297/fd7992972b252ed262d33ef604e9e1235d2108c5-6.myrevert#/%{name}-tkg-fd79929_revert-6.patch
+Patch794:       %{tkg_url}/hotfixes/01150d7f/d8d6a6b2e639d2e29e166a3faf988b81388ae191.mypatch#/%{name}-tkg-d8d6a6b.patch
+
+Patch800:       %{ge_url}/game-patches/winex11_limit_resources-nmode.patch#/%{name}-ge-winex11_limit_resources-nmode.patch
+Patch801:       %{ge_url}/game-patches/winex11_limit_resources-nofshack.patch#/%{name}-ge-winex11_limit_resources-nofshack.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -250,7 +269,6 @@ Patch1000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 Patch5000:      0001-chinforpms-message.patch
 # Fix vulkan crash with x86
 Patch5001:      wine-fix-i686-gcc10.patch
-Patch5002:      0001-mscoree-Update-Wine-Mono-to-5.0.1.patch
 
 %endif
 
@@ -820,6 +838,19 @@ This package adds the opencl driver for wine.
 %patch601 -p1 -R
 %patch600 -p1 -R
 %endif
+%patch647 -p1 -R
+%patch646 -p1 -R
+%patch645 -p1 -R
+%patch644 -p1 -R
+%patch643 -p1 -R
+%patch642 -p1 -R
+%patch641 -p1 -R
+%patch640 -p1 -R
+%patch639 -p1 -R
+%patch638 -p1 -R
+%patch637 -p1 -R
+%patch636 -p1 -R
+%patch635 -p1 -R
 %patch634 -p1 -R
 %patch633 -p1 -R
 %patch632 -p1 -R
@@ -857,15 +888,16 @@ rm -f dlls/ntdll/unix/signal_arm{,64}.c
 %patch604 -p1 -R
 %patch603 -p1 -R
 %endif
-%patch650 -p1
+%patch680 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
-%patch651 -p1 -R
-%patch652 -p1
+%patch681 -p1 -R
+%patch682 -p1
+%patch683 -p1
 %patch700 -p1
 %patch702 -p1
 %if 0%{?fshack}
@@ -881,7 +913,6 @@ patch -p1 -i wine-tkg-staging-44d1a45-localreverts.patch
 
 %patch5000 -p1
 %patch5001 -p1
-%patch5002 -p1
 
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
@@ -934,6 +965,12 @@ patch -p1 -i patches/winex11-key_translation/0003-winex11.drv-Fix-main-Russian-k
 %patch791 -p1 -R
 
 %patch793 -p1 -R
+%patch794 -p1
+%if 0%{?fshack}
+%patch800 -p1
+%else
+%patch801 -p1
+%endif
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -946,12 +983,14 @@ rm -rf patches/
 
 # Verify gecko and mono versions
 GECKO_VER="$(grep '^#define' dlls/appwiz.cpl/addons.c | grep ' GECKO_VERSION ' | awk '{print $3}' | tr -d \")"
-if [ "${GECKO_VER}" != "%{winegecko}" ] ;then
+GECKO_VER2="$(grep '#define' dlls/mshtml/nsiface.idl | grep ' GECKO_VERSION ' | awk '{print $3}' | sed -e 's,\\",,g' -e 's,"),,')"
+if [ "${GECKO_VER}" != "%{winegecko}" ] || [ "${GECKO_VER2}" != "%{winegecko}" ] ;then
   echo "winegecko version mismatch. Edit %%global winegecko to ${GECKO_VER}."
   exit 1
 fi
 MONO_VER="$(grep '^#define' dlls/appwiz.cpl/addons.c | grep ' MONO_VERSION ' | awk '{print $3}' | tr -d \")"
-if [ "${MONO_VER}" != "%{winemono}" ] ;then
+MONO_VER2="$(grep '^#define' dlls/mscoree/mscoree_private.h | grep ' WINE_MONO_VERSION ' | awk '{print $3}' | tr -d \")"
+if [ "${MONO_VER}" != "%{winemono}" ] || [ "${MONO_VER2}" != "%{winemono}" ];then
   echo "winemono version mismatch. Edit %%global winemono to ${MONO_VER}."
   exit 1
 fi
@@ -2700,6 +2739,16 @@ fi
 
 
 %changelog
+* Wed Jun 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.10-103.20200609gitbf454cc
+- Bump
+
+* Tue Jun 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.10-102.20200608git1752958
+- Snapshot
+- wine-mono 5.1.0
+
+* Mon Jun 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.10-101
+- Staging update
+
 * Sat Jun 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.10-100
 - 5.10
 

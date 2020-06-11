@@ -1,4 +1,5 @@
 !/wine.init
+/wine-ge-*.patch
 /wine-laino-*.patch
 /wine-staging-*.patch
 /wine-tkg-*.patch

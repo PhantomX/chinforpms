@@ -1,9 +1,9 @@
 %undefine _hardened_build
 %{?mingw_package_header}
 
-%global with_bin 0
+%global with_bin 1
 #Set to 1 to download sources from github
-%global with_gh 1
+%global with_gh 0
 
 %if 0%{?with_bin}
 %global debug_package %{nil}
@@ -14,7 +14,7 @@
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        5.0.1
+Version:        5.1.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -50,6 +50,7 @@ BuildRequires:  mingw64-headers
 BuildRequires:  mingw64-cpp
 BuildRequires:  mingw64-gcc
 BuildRequires:  mingw64-gcc-c++
+BuildRequires:  mingw64-llvm
 BuildRequires:  mingw64-crt
 BuildRequires:  mingw64-winpthreads-static
 # 32
@@ -58,6 +59,7 @@ BuildRequires:  mingw32-headers
 BuildRequires:  mingw32-cpp
 BuildRequires:  mingw32-gcc
 BuildRequires:  mingw32-gcc-c++
+BuildRequires:  mingw32-llvm
 BuildRequires:  mingw32-crt
 BuildRequires:  mingw32-winpthreads-static
 
@@ -106,6 +108,7 @@ sed -i 's/CP_R=python /CP_R=python3 /' GNUmakefile
 
 %endif
 
+echo 'AUTO_LLVM_MINGW=0' >> user-config.make
 
 %build
 %if !0%{?with_bin}
@@ -157,6 +160,9 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 
 
 %changelog
+* Tue Jun 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-100
+- 5.1.0 bin
+
 * Tue May 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.0.1-100
 - 5.0.1
 

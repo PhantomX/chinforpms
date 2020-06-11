@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e0d757a395d1967ca5d8d16d6117cc91b2f994de
+%global pfcommit c58edd0e4a395f44c84a55ebb5ef0598a9fcf4ed
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id ad96a075c1c980dd0f33efc56c1c6cd1253331ab
+%global opensuse_id 6a549f6dd07f682dbe4308ce21c26c40dca1ffa2
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2703,6 +2703,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.2-500.chinfo
+- 5.7.2
+
 * Sun Jun 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-500.chinfo
 - 5.7.0 - pf1
 

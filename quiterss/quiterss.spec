@@ -1,5 +1,5 @@
 Name:           quiterss
-Version:        0.19.3
+Version:        0.19.4
 Release:        100%{?dist}
 Summary:        RSS/Atom aggregator
 License:        GPLv3
@@ -62,6 +62,9 @@ install -pm 0644 %{name}.appdata.xml \
 
 
 %changelog
+* Wed Jun 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.19.4-100
+- 0.19.4
+
 * Fri Feb 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.19.3-100.chinfo
 - 0.19.3
 
