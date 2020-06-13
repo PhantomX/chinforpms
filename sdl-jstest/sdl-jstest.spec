@@ -61,17 +61,12 @@ sed \
 
 
 %build
-
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DBUILD_SDL_JSTEST:BOOL=OFF \
 %{nil}
 
-%make_build
+%make_build -C %{_target_platform}
 
-popd
 
 %install
 %make_install -C %{_target_platform}

@@ -30,17 +30,13 @@ devices.
 %autosetup
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DSESSION_BUS_SERVICE:BOOL=ON \
   -DSYSTEM_BUS_SERVICE:BOOL=OFF \
 %{nil}
 
-%make_build
+%make_build -C %{_target_platform}
 
-popd
 
 %install
 %make_install -C %{_target_platform}

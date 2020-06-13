@@ -21,15 +21,12 @@ This package contains extra unusual mimetypes for DEs.
 
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DCHINFO_LEGACY:BOOL=OFF \
 %{nil}
 
-%make_build
+%make_build -C %{_target_platform}
 
-popd
 
 %install
 

@@ -1,6 +1,6 @@
-%global commit f617b6d695cd41d95a1a4f4048553d82223c5883
+%global commit 628eb7b7bf88861efc0c191acc0a842106073764
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200514
+%global date 20200612
 
 %undefine _hardened_build
 
@@ -13,7 +13,7 @@
 
 Name:           vvvvvv
 Version:        2.3
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -82,17 +82,12 @@ export CFLAGS="$(echo %{optflags} | sed \
 )"
 export CXXFLAGS="$CFLAGS"
 
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-
-%cmake ../desktop_version \
+%cmake desktop_version -B %{_target_platform} \
   -DUSE_SYSTEM_PHYSFS:BOOL=ON \
   -DUSE_SYSTEM_TINYXML:BOOL=ON \
 %{nil}
 
-%make_build
-
-popd
+%make_build -C %{_target_platform}
 
 
 %install
@@ -136,6 +131,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Fri Jun 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.3-2.20200612git628eb7b
+- Bump
+
 * Fri May 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.3-1.20200514gitf617b6d
 - 2.3
 

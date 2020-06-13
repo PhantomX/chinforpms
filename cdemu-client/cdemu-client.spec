@@ -32,16 +32,12 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/cdemu
 
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DPOST_INSTALL_HOOKS:BOOL=OFF \
 %{nil}
 
-%make_build
+%make_build -C %{_target_platform}
 
-popd
 
 %install
 %make_install -C %{_target_platform}

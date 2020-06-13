@@ -34,15 +34,10 @@ sed \
 
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
 %{nil}
 
-%make_build
-
-popd
+%make_build -C %{_target_platform}
 
 
 %install

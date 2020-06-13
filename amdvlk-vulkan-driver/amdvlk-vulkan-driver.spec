@@ -175,13 +175,10 @@ sed -e '/soname=/s|so.1|so|g' -i xgl/icd/CMakeLists.txt
 
 extdir=$(pwd)
 
-mkdir -p xgl/%{_target_platform}
-pushd xgl/%{_target_platform}
-
 export CFLAGS="%{build_cflags} -fno-plt -mno-avx"
 export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
 
-%cmake .. \
+%cmake xgl -B %{_target_platform} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DBUILD_WAYLAND_SUPPORT:BOOL=ON \
   -DXGL_METROHASH_PATH:PATH=${extdir}/MetroHash \
@@ -193,10 +190,9 @@ export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
   -G Ninja \
 %{nil}
 
-%ninja_build
-%ninja_build spvgen
+%ninja_build -C %{_target_platform}
+%ninja_build spvgen -C %{_target_platform}
 
-popd
 %endif
 
 

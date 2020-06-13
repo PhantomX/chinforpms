@@ -74,10 +74,7 @@ video format.
 sed -i 's@set(aom_version "")@set(aom_version "%{aom_version}")@' build/cmake/version.cmake
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
-
-%cmake3 .. \
+%cmake3 . -B %{_target_platform} \
   -DENABLE_CCACHE=1 \
   -DCMAKE_SKIP_RPATH=1 \
   -DCMAKE_BUILD_TYPE=Release \
@@ -93,9 +90,7 @@ pushd %{_target_platform}
 %endif
 %{nil}
 
-%make_build
-
-popd
+%make_build -C %{_target_platform}
 
 
 %install

@@ -186,11 +186,8 @@ sed -i \
 
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-
 #Script to find xxhash is not implemented, just tell cmake it was found
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \
@@ -214,9 +211,8 @@ pushd %{_target_platform}
 %endif
 %{nil}
 
-%make_build
+%make_build -C %{_target_platform}
 
-popd
 
 %install
 %make_install -C %{_target_platform}

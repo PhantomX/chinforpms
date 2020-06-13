@@ -29,16 +29,11 @@ Requires:       smartmontools
 
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DDIALOG_INCLUDE_DIR:PATH=/usr/include/dialog \
 %{nil}
 
-%make_build
-
-popd
+%make_build -C %{_target_platform}
 
 
 %install

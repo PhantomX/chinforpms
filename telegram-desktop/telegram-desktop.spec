@@ -179,9 +179,7 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 %endif
 
 # Building Telegram Desktop using cmake...
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-  %cmake .. -G Ninja \
+%cmake . -B %{_target_platform} -G Ninja \
     -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{with clang}
     -DCMAKE_C_COMPILER=%{_bindir}/clang \
@@ -224,7 +222,6 @@ pushd %{_target_platform}
     -DTDESKTOP_USE_FONTCONFIG_FALLBACK:BOOL=OFF \
     -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
 %{nil}
-popd
 
 %ninja_build -C %{_target_platform}
 

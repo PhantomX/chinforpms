@@ -47,14 +47,11 @@ This package contains files needed to develop with libMirage.
 %autosetup
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DPOST_INSTALL_HOOKS:BOOL=OFF \
 %{nil}
 
-%make_build
+%make_build -C %{_target_platform}
 
 popd
 

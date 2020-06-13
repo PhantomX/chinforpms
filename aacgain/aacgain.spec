@@ -75,16 +75,11 @@ cp -p mp3gain/lgpl.txt COPYING.mp3gain
 
 
 %build
-
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
 %{nil}
 
-%make_build
+%make_build -C %{_target_platform}
 
-popd
 
 %install
 %make_install -C %{_target_platform}

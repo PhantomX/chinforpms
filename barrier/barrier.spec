@@ -1,7 +1,15 @@
-%global commit 2d2e92989c3493e54096c4e68c3139911ef40ce9
+%global commit 965cd70ba272e765bfa77c4dcce84ab7bfd011ce
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200507
+%global date 20200611
 %global with_snapshot 1
+
+%global commit1 7d33fee11ec480beae4c28ad09ca56d974140a72
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 gmock
+
+%global commit2 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 gtest
 
 %bcond_without qt
 
@@ -11,7 +19,7 @@
 
 Name:           barrier
 Version:        2.3.2
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Share mouse and keyboard between multiple computers over the network
 
 License:        GPLv2
@@ -21,8 +29,9 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        %{name}.appdata.xml
-
+Source1:        https://github.com/google/googlemock/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        https://github.com/google/googletest/archive/%{commit2less}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        %{name}.appdata.xml
 
 BuildRequires:  cmake3
 BuildRequires:  gcc-c++
@@ -64,7 +73,10 @@ screen, or by using a keypress to switch focus to a different system.
 %autosetup -n %{name}-%{version} -p1
 %endif
 
-cp -p %{S:1} %{name}.appdata.xml
+tar -xf %{S:1} -C ext/gmock --strip-components 1
+tar -xf %{S:2} -C ext/gtest --strip-components 1
+
+cp -p %{S:3} %{name}.appdata.xml
 sed -e 's|_VERSION_|%{?epoch:%{epoch}:}%{version}|g' -i %{name}.appdata.xml
 
 sed \
@@ -75,9 +87,7 @@ sed \
 
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-%{cmake3} .. \
+%{cmake3} . -B %{_target_platform} \
 %if %{without qt}
   -DBARRIER_BUILD_GUI:BOOL=OFF \
 %endif
@@ -90,9 +100,8 @@ pushd %{_target_platform}
 %endif
 %{nil}
 
-%make_build
+%make_build -C %{_target_platform}
 
-popd
 
 %install
 %make_install -C %{_target_platform}
@@ -104,7 +113,11 @@ install -pm0644 doc/%{name}{c,s}.1 %{buildroot}%{_mandir}/man1/
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm0644 %{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-edit \
+  --remove-category=DesktopUtility \
+  %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %endif
 
@@ -124,6 +137,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Fri Jun 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.3.2-3.20200611git965cd70
+- Bump
+
 * Sat May 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.3.2-2.20200507git2d2e929
 - New snapshot
 

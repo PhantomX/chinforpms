@@ -69,15 +69,12 @@ This version is compiled with ffmpeg support.
 
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DCMAKE_INSTALL_INCLUDEDIR:PATH=include/%{pkgname} \
   -DFFMPEG:BOOL=ON \
 %{nil}
 
-%make_build
-popd
+%make_build -C %{_target_platform}
 
 
 %install

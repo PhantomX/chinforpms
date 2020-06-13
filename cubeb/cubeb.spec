@@ -70,10 +70,7 @@ tar -xf %{S:1} -C %{srcname1} --strip-components 1
 tar -xf %{S:2} -C cmake/%{srcname2} --strip-components 1
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DBUILD_TESTS:BOOL=OFF \
   -DUSE_PULSE:BOOL=ON \
   -DUSE_ALSA:BOOL=ON \
@@ -83,7 +80,7 @@ pushd %{_target_platform}
   -DUSE_KAI:BOOL=OFF \
 %{nil}
 
-%make_build
+%make_build -C %{_target_platform}
 
 
 %install

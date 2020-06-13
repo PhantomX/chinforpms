@@ -2704,7 +2704,7 @@ fi
 #
 %changelog
 * Thu Jun 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.2-500.chinfo
-- 5.7.2
+- 5.7.2 - pf1
 
 * Sun Jun 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-500.chinfo
 - 5.7.0 - pf1

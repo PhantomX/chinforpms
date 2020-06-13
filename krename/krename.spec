@@ -68,10 +68,7 @@ image.
 %endif
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-%{cmake_kf5} ..
-popd
+%{cmake_kf5} . -B %{_target_platform}
 
 %make_build -C %{_target_platform}
 

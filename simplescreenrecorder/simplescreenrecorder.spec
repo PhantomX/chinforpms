@@ -53,23 +53,21 @@ sed -i 's|lrelease|lrelease-qt5|' src/translations/CMakeLists.txt
 
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-    %cmake3 .. \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DWITH_QT5=TRUE \
+%cmake3 . -B %{_target_platform} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_QT5=TRUE \
 %ifnarch %{ix86} x86_64
-        -DENABLE_X86_ASM=FALSE \
+    -DENABLE_X86_ASM=FALSE \
 %endif
 %ifarch %{arm} aarch64
-        -DWITH_GLINJECT=FALSE \
+    -DWITH_GLINJECT=FALSE \
 %endif
 %if 0%{?with_glinject_only}
-        -DWITH_SIMPLESCREENRECORDER:BOOL=FALSE \
+    -DWITH_SIMPLESCREENRECORDER:BOOL=FALSE \
 %endif
 %{nil}
-    %make_build
-popd
+
+%make_build -C %{_target_platform}
 
 
 %install

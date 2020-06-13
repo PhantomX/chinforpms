@@ -53,16 +53,11 @@ Converting Save Formats to PC or PSX. With it you can even export your ps3 saves
 
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DQt5_LRELEASE_EXECUTABLE=lrelease-qt5 \
 %{nil}
 
-%make_build
-
-popd
+%make_build -C %{_target_platform}
 
 
 %install

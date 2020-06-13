@@ -174,9 +174,6 @@ sed -e '/^#include <exception>/a#include <system_error>' \
 %build
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-
 mkdir -p dist/compatibility_list/
 cp %{S:20} dist/compatibility_list/
 
@@ -187,7 +184,7 @@ export TRAVIS_REPO_SLUG=%{name}/%{name}-nightly
 export TRAVIS_TAG="%{version}-%{release}"
 %endif
 
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
 %if %{with qt}
   -DENABLE_QT_TRANSLATION:BOOL=ON \
@@ -201,9 +198,7 @@ export TRAVIS_TAG="%{version}-%{release}"
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=ON \
 %{nil}
 
-%make_build
-
-popd
+%make_build -C %{_target_platform}
 
 
 %install

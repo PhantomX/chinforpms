@@ -62,9 +62,7 @@ cross-platform and modern open-source password manager.
 
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DCMAKE_BUILD_TYPE=release \
   -DKEEPASSXC_BUILD_TYPE:STRING=Release \
   -DWITH_TESTS:BOOL=OFF \
@@ -81,9 +79,8 @@ pushd %{_target_platform}
   -DWITH_XC_UPDATECHECK:BOOL=OFF \
 %{nil}
 
-%make_build
+%make_build -C %{_target_platform}
 
-popd
 
 %install
 

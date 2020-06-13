@@ -1,6 +1,6 @@
-From 70f7b83ec2cc184b1aee289ea0d4817e080a0652 Mon Sep 17 00:00:00 2001
+From e4cb4c8411f8d5eb3537383cc7afa1d110b5f22c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 1 Mar 2020 22:15:30 -0300
+Date: Fri, 12 Jun 2020 03:27:38 -0300
 Subject: [PATCH] System libraries
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] System libraries
  1 file changed, 29 insertions(+), 4 deletions(-)
 
 diff --git a/desktop_version/CMakeLists.txt b/desktop_version/CMakeLists.txt
-index 052d9a7..ed9cd5f 100644
+index e50cf04..aba5688 100644
 --- a/desktop_version/CMakeLists.txt
 +++ b/desktop_version/CMakeLists.txt
 @@ -3,9 +3,13 @@
@@ -25,7 +25,7 @@ index 052d9a7..ed9cd5f 100644
  
  SET(CUSTOM_LEVEL_SUPPORT ENABLED CACHE STRING "Optionally disable playing and/or editing of custom levels")
  SET_PROPERTY(CACHE CUSTOM_LEVEL_SUPPORT PROPERTY STRINGS ENABLED NO_EDITOR DISABLED)
-@@ -56,12 +60,17 @@ ENDIF()
+@@ -68,12 +72,17 @@ ENDIF()
  # Include Directories
  INCLUDE_DIRECTORIES(
  	src
@@ -45,8 +45,8 @@ index 052d9a7..ed9cd5f 100644
  # Source Lists
  SET(VVV_SRC
  	src/BinaryBlob.cpp
-@@ -151,8 +160,24 @@ ELSEIF(CUSTOM_LEVEL_SUPPORT STREQUAL "DISABLED")
- ENDIF()
+@@ -189,8 +198,24 @@ SET_PROPERTY(TARGET VVVVVV PROPERTY CXX_STANDARD 98)
+ SET_PROPERTY(TARGET VVVVVV PROPERTY CXX_EXTENSIONS FALSE)
  
  # Library information
 -ADD_LIBRARY(tinyxml-static STATIC ${XML_SRC})
@@ -73,5 +73,5 @@ index 052d9a7..ed9cd5f 100644
  
  # Static Dependencies
 -- 
-2.24.1
+2.26.2
 

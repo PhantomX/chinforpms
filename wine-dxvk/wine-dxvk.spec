@@ -185,11 +185,10 @@ meson \
   --buildtype "release" \
   %{_target_platform}${i}
 
-pushd %{_target_platform}${i}
-%ninja_build
+%ninja_build -C %{_target_platform}${i}
 
-popd
 done
+
 
 %install
 

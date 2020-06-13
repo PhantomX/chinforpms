@@ -227,10 +227,7 @@ popd
 %endif
 %endif
 
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \
@@ -268,9 +265,7 @@ pushd %{_target_platform}
 %endif
 %{nil}
 
-%make_build
-
-popd
+%make_build -C %{_target_platform}
 
 
 %install

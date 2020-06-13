@@ -92,12 +92,9 @@ Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
-%{cmake_kf5} .. \
+%{cmake_kf5} . -B %{_target_platform} \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
 %{nil}
-popd
 
 %make_build -C %{_target_platform}
 

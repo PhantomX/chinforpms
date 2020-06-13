@@ -83,18 +83,13 @@ sed -e 's| -L${sharedlibdir}||' -i pkg-config/dxil-spirv-c-shared.pc.in
 
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-
-%cmake .. \
+%cmake . -B %{_target_platform} \
   -DBUILD_SHARED_LIBS:BOOL=ON \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   -GNinja \
 %{nil}
 
-%ninja_build
-
-popd
+%ninja_build -C %{_target_platform}
 
 
 %install

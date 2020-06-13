@@ -82,15 +82,13 @@ Files needed when building software with %{name}.
 
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
 CXXFLAGS="%{build_cxxflags} -std=c++11" \
-%{cmake} .. \
+%{cmake} . -B %{_target_platform} \
 %if %{with tests}
   -DBUILD_TESTS:BOOL=ON \
 %endif
-  -DCMAKE_BUILD_TYPE:STRING="Release"
-popd
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
+%{nil}
 
 %make_build -C %{_target_platform}
 

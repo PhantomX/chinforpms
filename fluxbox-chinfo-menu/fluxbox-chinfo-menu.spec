@@ -39,17 +39,13 @@ Requires:       xorg-x11-apps
 %endif
 
 %build
-mkdir _build
-pushd _build
+%cmake . -B %{_target_platform}
 
-%cmake ..
+%make_build -C %{_target_platform}
 
-%make_build
-
-popd
 
 %install
-%make_install -C _build
+%make_install -C %{_target_platform}
 
 %find_lang %{name}
 
