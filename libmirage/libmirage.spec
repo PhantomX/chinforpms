@@ -1,5 +1,7 @@
 %global _legacy_common_support 1
 
+%global vermm %%(echo %{version} | cut -d. -f-2)
+
 Name:           libmirage
 Version:        3.2.4
 Release:        101%{?dist}
@@ -65,7 +67,8 @@ popd
 %license COPYING
 %doc AUTHORS README ChangeLog
 %{_libdir}/libmirage.so.*
-%{_libdir}/libmirage-*/*.so
+%dir %{_libdir}/libmirage-%{vermm}
+%{_libdir}/libmirage-%{vermm}/*.so
 %{_datadir}/mime/packages/*
 %{_libdir}/girepository-1.0/*
 %{_datadir}/gir-1.0/*

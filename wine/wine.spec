@@ -1,6 +1,6 @@
-%global commit 343043153b44fa46a2081fa8a2c171eac7c8dab6
+%global commit 948a6a47b8dbd0ddd86cad04de03f0e4ba81b65d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200610
+%global date 20200612
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7934e14fc04a4dbcc19f9a3ada72cf6822cc4098
+%global wine_stagingver b6595d9e28a60b48030a3b74c31afd73b1fe4065
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,9 +51,9 @@
 %global ge_id a6afbe3bc510c78fb57a4151cf2637829e8ece26
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 0bd5d4ed4164050c7e8d03a92674d56d2e9ccd75
+%global tkg_id 521f3a53f82179de3887e65402770d3c63f5740a
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid f520cb0bfd4c559e377b9910372614bb16f9a64d
+%global tkg_cid 451728b0d211a8c5aedf43ff17767aa82bb06573
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0
@@ -88,10 +88,16 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
+%global vermajor %(echo %{ver} | cut -d. -f1)
+%if "%(echo %{ver} | cut -d. -f2 | cut -d- -f1 )" == "0"
+%global verx 1
+%endif
+
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.10
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -99,11 +105,6 @@ Epoch:          1
 License:        LGPLv2+
 URL:            http://www.winehq.org/
 
-%global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
-%global vermajor %(echo %{ver} | cut -d. -f1)
-%if "%(echo %{ver} | cut -d. -f2 | cut -d- -f1 )" == "0"
-%global verx 1
-%endif
 %if 0%{?with_snapshot}
 Source0:        https://github.com/wine-mirror/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
@@ -164,7 +165,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 Patch600:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
 Patch601:       %{whq_url}/fd6f50c0d3e96947846ca82ed0c9bd79fd8e5b80#/%{name}-whq-fd6f50c.patch
 Patch602:       %{whq_url}/26b26a2e0efcb776e7b0115f15580d2507b10400#/%{name}-whq-26b26a2.patch
-# 603-649/681-683 - Reverts to unbreak esync/fsync
+# 603-657/681-683 - Reverts to unbreak esync/fsync
 Patch603:       %{whq_url}/e854ea34cc481658ec61f4603d0438e075608c98#/%{name}-whq-e854ea3.patch
 Patch604:       %{whq_url}/e6e2f2325a0a4eb14f10dd6df319b068761e9600#/%{name}-whq-e6e2f23.patch
 Patch605:       %{whq_url}/8a63b688ac49f19c259066fd100407edf3747f95#/%{name}-whq-8a63b68.patch
@@ -212,10 +213,18 @@ Patch646:       %{whq_url}/ff19f21913c508f5827df0e7e4c3a351c36711a0#/%{name}-whq
 Patch647:       %{whq_url}/d8d6a6b2e639d2e29e166a3faf988b81388ae191#/%{name}-whq-d8d6a6b.patch
 Patch648:       %{whq_url}/df513b95ec24d279a10fbe358973662ce2c9c385#/%{name}-whq-df513b9.patch
 Patch649:       %{whq_url}/84d25135b3b2f9a30619f741d166fa1daa8298e5#/%{name}-whq-84d2513.patch
+Patch650:       %{whq_url}/a4ce2f652d76d033a79434416ff585cd15356a87#/%{name}-whq-a4ce2f6.patch
+Patch651:       %{whq_url}/ee5c842e5303c70e88a1c68390c46db1f1689f19#/%{name}-whq-ee5c842.patch
+Patch652:       %{whq_url}/b86dc3926bfe5cd92400aa96c89b0255eba1d447#/%{name}-whq-b86dc39.patch
+Patch653:       %{whq_url}/d4c2b61c48cdd35275684e75427d2cf0d8d928de#/%{name}-whq-d4c2b61.patch
+Patch654:       %{whq_url}/412555e0cdcd16439db56f6bd6ea56cedcda0883#/%{name}-whq-412555e.patch
+Patch655:       %{whq_url}/573be7e6023e73d736c341bdca1ee49594f56ee4#/%{name}-whq-573be7e.patch
+Patch656:       %{whq_url}/e0fca9451146908402a8fbc770ff189aba636213#/%{name}-whq-e0fca94.patch
+Patch657:       %{whq_url}/9ed951266244ad75454cfdb63ee0e872ca9ac43b#/%{name}-whq-9ed9512.patch
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch680:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch681:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-15.mystagingrevert#/%{name}-tkg-06877e5_revert-15.patch
+Patch681:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-18.mystagingrevert#/%{name}-tkg-06877e5_revert-18.patch
 Patch682:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch683:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-044cb93.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-044cb93.patch
 
@@ -840,6 +849,14 @@ This package adds the opencl driver for wine.
 %patch601 -p1 -R
 %patch600 -p1 -R
 %endif
+%patch657 -p1 -R
+%patch656 -p1 -R
+%patch655 -p1 -R
+%patch654 -p1 -R
+%patch653 -p1 -R
+%patch652 -p1 -R
+%patch651 -p1 -R
+%patch650 -p1 -R
 %patch649 -p1 -R
 %patch648 -p1 -R
 %patch647 -p1 -R
@@ -2170,6 +2187,7 @@ fi
 %{_libdir}/wine/propsys.%{winedll}
 %{_libdir}/wine/psapi.%{winedll}
 %{_libdir}/wine/pstorec.%{winedll}
+%{_libdir}/wine/pwrshplugin.%{winedll}
 %{_libdir}/wine/qasf.%{winedll}
 %{_libdir}/wine/qcap.dll.so
 %{_libdir}/wine/qedit.%{winedll}
@@ -2743,6 +2761,9 @@ fi
 
 
 %changelog
+* Sun Jun 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.10-105.20200612git948a6a4
+- Bump
+
 * Thu Jun 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.10-104.20200610git3430431
 - New snapshot
 

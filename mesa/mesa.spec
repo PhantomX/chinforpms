@@ -58,6 +58,8 @@
 %global vc_url  https://gitlab.freedesktop.org/mesa/mesa
 %global ixit_url  https://github.com/iXit/Mesa-3D/commit
 
+%global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
+
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
@@ -67,7 +69,6 @@ Release:        100%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 
-%global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # src/gallium/auxiliary/postprocess/pp_mlaa* have an ... interestingly worded license.
 # Source1 contains email correspondence clarifying the license terms.

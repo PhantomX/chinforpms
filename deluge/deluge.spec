@@ -7,6 +7,8 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global vermm %%(echo %{version} | cut -d. -f-2)
+
 Name:           deluge
 Version:        2.0.3
 Release:        106%{?gver}%{?dist}
@@ -20,7 +22,6 @@ URL:            http://deluge-torrent.org/
 %if 0%{?with_snapshot}
 Source0:        https://git.deluge-torrent.org/deluge/snapshot/deluge-%{commit}.tar.bz2#/deluge-%{shortcommit}.tar.bz2
 %else
-%global vermm %(echo %{version} | cut -d. -f-2)
 Source0:        http://download.deluge-torrent.org/source/%{vermm}/%{name}-%{version}.tar.xz
 %endif
 Source1:        %{name}-daemon-sysusers.conf

@@ -11,18 +11,19 @@
 %endif
 
 %global pkgname amdgpu-pro
-%global pkgdistro ubuntu-18.04
+%global pkgdistro ubuntu-20.04
 
 %global minsdkver 1.1.121.1
+%global ver     %%(echo %{version} | sed 's/\\./-/2')
 
 Name:           amdgpu-pro-vulkan-driver
-Version:        20.10.1048554
+Version:        20.20.1089974
 Release:        1%{?dist}
 Summary:        AMDGPU Pro Driver For Vulkan
+
 License:        AMD GPU PRO
 URL:            http://www.amd.com
 
-%global ver     %(echo %{version} | sed 's/\\./-/2')
 # Use Makefile do download
 Source0:        %{pkgname}-%{ver}-%{pkgdistro}.tar.xz
 Source1:        README-chinforpms
@@ -81,6 +82,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/amd
 
 
 %changelog
+* Sat Jun 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.20.1089974-1
+- 20.20-1089974
+
 * Sun Apr 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.10.1048554-1
 - 20.10-1048554
 

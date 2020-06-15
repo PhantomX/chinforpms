@@ -60,7 +60,7 @@ Requires:       vulkan-loader%{?_isa}
 %autosetup %{name}-r%{version} -p1
 %endif
 
-rm -rf core/deps/{flac,libzip,xxhash,zlib}
+rm -rf core/deps/{flac,libzip,SDL2-*,xxHash,zlib}
 
 find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
 
