@@ -1,6 +1,6 @@
-%global commit f0c9627db9c757b9d338019918de9917a99e602f
+%global commit bfd712728413ca3790e5360cefb5a5566e762d92
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200603
+%global date 20200616
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           vkd3d
 Version:        1.1
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 Epoch:          1
@@ -120,6 +120,7 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/vkd3d/vkd3d_dxgiformat.h
 %{_includedir}/vkd3d/vkd3d.h
 %{_includedir}/vkd3d/vkd3d_shader.h
+%{_includedir}/vkd3d/vkd3d_sonames.h
 %{_includedir}/vkd3d/vkd3d_types.h
 %{_includedir}/vkd3d/vkd3d_windows.h
 %{_libdir}/libvkd3d.so
@@ -139,6 +140,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Tue Jun 16 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-104.20200616gitbfd7127
+- Bump
+
 * Sat Jun 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1-103.20200603gitf0c9627
 - New snapshot
 

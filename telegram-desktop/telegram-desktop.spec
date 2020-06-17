@@ -37,7 +37,7 @@
 
 Name:           telegram-desktop
 Version:        2.1.11
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -257,6 +257,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Jun 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.11-101
+- Rebuild (qt5)
+
 * Mon Jun 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.1.11-100
 - 2.1.11
 

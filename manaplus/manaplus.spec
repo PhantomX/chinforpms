@@ -1,7 +1,7 @@
 Name:           manaplus
 Version:        1.9.3.23
 Epoch:          1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        OpenSource 2D MMORPG client for Evol Online and The Mana World
 
 License:        GPLv2+
@@ -66,16 +66,16 @@ TMW uses 2D graphics and aims to create a large and diverse interactive world.
 
 # Use system fonts
 rm -f %{buildroot}%{_datadir}/%{name}/data/fonts/*.ttf
-ln -s ../../../fonts/dejavu/DejaVuSans-Bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavusans-bold.ttf
-ln -s ../../../fonts/dejavu/DejaVuSansMono-Bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavusansmono-bold.ttf
-ln -s ../../../fonts/dejavu/DejaVuSansMono.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavusansmono.ttf
-ln -s ../../../fonts/dejavu/DejaVuSans.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavusans.ttf
-ln -s ../../../fonts/dejavu/DejaVuSerifCondensed-Bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavuserifcondensed-bold.ttf
-ln -s ../../../fonts/dejavu/DejaVuSerifCondensed.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavuserifcondensed.ttf
-ln -s ../../../fonts/liberation/LiberationSans-Bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/liberationsans-bold.ttf
-ln -s ../../../fonts/liberation/LiberationMono-Bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/liberationsansmono-bold.ttf
-ln -s ../../../fonts/liberation/LiberationMono-Regular.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/liberationsansmono.ttf
-ln -s ../../../fonts/liberation/LiberationSans-Regular.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/liberationsans.ttf
+ln -s ../../../fonts/dejavu-sans-fonts/DejaVuSans-Bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavusans-bold.ttf
+ln -s ../../../fonts/dejavu-sans-fonts/DejaVuSans.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavusans.ttf
+ln -s ../../../fonts/dejavu-sans-mono-fonts/DejaVuSansMono-Bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavusansmono-bold.ttf
+ln -s ../../../fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavusansmono.ttf
+ln -s ../../../fonts/dejavu-serif-fonts/DejaVuSerifCondensed-Bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavuserifcondensed-bold.ttf
+ln -s ../../../fonts/dejavu-serif-fonts/DejaVuSerifCondensed.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/dejavuserifcondensed.ttf
+ln -s ../../../fonts/liberation-sans/LiberationSans-Bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/liberationsans-bold.ttf
+ln -s ../../../fonts/liberation-sans/LiberationSans-Regular.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/liberationsans.ttf
+ln -s ../../../fonts/liberation-mono/LiberationMono-Bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/liberationsansmono-bold.ttf
+ln -s ../../../fonts/liberation-mono/LiberationMono-Regular.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/liberationsansmono.ttf
 ln -s ../../../fonts/mplus/mplus-1p-bold.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/mplus-1p-bold.ttf
 ln -s ../../../fonts/mplus/mplus-1p-regular.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/mplus-1p-regular.ttf
 install -pm0644 data/fonts/wqy-microhei.ttf %{buildroot}%{_datadir}/%{name}/data/fonts/
@@ -114,6 +114,9 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 
 
 %changelog
+* Mon Jun 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.3.23-101
+- Fix font paths
+
 * Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:1.9.3.23-100
 - 1.9.3.23
 

@@ -1,6 +1,6 @@
-%global commit 948a6a47b8dbd0ddd86cad04de03f0e4ba81b65d
+%global commit 634cb775c27b61ad6ce1fbe3e9972b0edfa31dcb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200612
+%global date 20200615
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,17 +41,17 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver b6595d9e28a60b48030a3b74c31afd73b1fe4065
+%global wine_stagingver 32fcc0d75b74642e0f5675e9e3ffcf081ec3f9b2
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id a6afbe3bc510c78fb57a4151cf2637829e8ece26
+%global ge_id 3d066b3ab5d1460846c9d928c567926ac05499c2
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 521f3a53f82179de3887e65402770d3c63f5740a
+%global tkg_id 748cf41a28e7f2001355fa1a98628d7e2a7853e6
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 451728b0d211a8c5aedf43ff17767aa82bb06573
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -97,7 +97,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.10
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -165,7 +165,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 Patch600:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
 Patch601:       %{whq_url}/fd6f50c0d3e96947846ca82ed0c9bd79fd8e5b80#/%{name}-whq-fd6f50c.patch
 Patch602:       %{whq_url}/26b26a2e0efcb776e7b0115f15580d2507b10400#/%{name}-whq-26b26a2.patch
-# 603-657/681-683 - Reverts to unbreak esync/fsync
+# 603-662/681-683 - Reverts to unbreak esync/fsync
 Patch603:       %{whq_url}/e854ea34cc481658ec61f4603d0438e075608c98#/%{name}-whq-e854ea3.patch
 Patch604:       %{whq_url}/e6e2f2325a0a4eb14f10dd6df319b068761e9600#/%{name}-whq-e6e2f23.patch
 Patch605:       %{whq_url}/8a63b688ac49f19c259066fd100407edf3747f95#/%{name}-whq-8a63b68.patch
@@ -221,10 +221,15 @@ Patch654:       %{whq_url}/412555e0cdcd16439db56f6bd6ea56cedcda0883#/%{name}-whq
 Patch655:       %{whq_url}/573be7e6023e73d736c341bdca1ee49594f56ee4#/%{name}-whq-573be7e.patch
 Patch656:       %{whq_url}/e0fca9451146908402a8fbc770ff189aba636213#/%{name}-whq-e0fca94.patch
 Patch657:       %{whq_url}/9ed951266244ad75454cfdb63ee0e872ca9ac43b#/%{name}-whq-9ed9512.patch
+Patch658:       %{whq_url}/06fa3d32a73d59c7fec59a8682e3750150f84554#/%{name}-whq-06fa3d3.patch
+Patch659:       %{whq_url}/07248fc5002fb109de8fc8e51e9d05329e0cd8cc#/%{name}-whq-07248fc.patch
+Patch660:       %{whq_url}/c3e2013b615dd449113fe8fce0700319aa082020#/%{name}-whq-c3e2013.patch
+Patch661:       %{whq_url}/98eab245d3c3377af0c3da6880bb8ede80cb0925#/%{name}-whq-98eab24.patch
+Patch662:       %{whq_url}/a20b997b3430bd7dc94ffd587cd299efa467420e#/%{name}-whq-a20b997.patch
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch680:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch681:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-18.mystagingrevert#/%{name}-tkg-06877e5_revert-18.patch
+Patch681:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-19.mystagingrevert#/%{name}-tkg-06877e5_revert-19.patch
 Patch682:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch683:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-044cb93.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-044cb93.patch
 
@@ -849,6 +854,11 @@ This package adds the opencl driver for wine.
 %patch601 -p1 -R
 %patch600 -p1 -R
 %endif
+%patch662 -p1 -R
+%patch661 -p1 -R
+%patch660 -p1 -R
+%patch659 -p1 -R
+%patch658 -p1 -R
 %patch657 -p1 -R
 %patch656 -p1 -R
 %patch655 -p1 -R
@@ -2761,6 +2771,9 @@ fi
 
 
 %changelog
+* Tue Jun 16 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.10-106.20200615git634cb77
+- New snapshot
+
 * Sun Jun 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.10-105.20200612git948a6a4
 - Bump
 

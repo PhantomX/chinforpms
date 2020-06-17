@@ -9,7 +9,7 @@
 
 Name:           adwaita-qt
 Version:        1.1.2
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 License:        LGPLv2+
 Summary:        Adwaita theme for Qt-based applications
@@ -100,6 +100,9 @@ make install/fast DESTDIR=%{buildroot} -C "%{_target_platform}-qt5"
 
 
 %changelog
+* Mon Jun 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1.2-101
+- Rebuild (qt5)
+
 * Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.1.2-100
 - 1.1.2
 - Update patch

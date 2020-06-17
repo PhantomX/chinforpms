@@ -9,9 +9,9 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.62
+Version:        1.0.0.63
 Epoch:          1
-Release:        101%{?dist}
+Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
 
 # Redistribution and repackaging for Linux is allowed, see license file. udev rules are MIT.
@@ -110,8 +110,9 @@ Requires:       libatomic%{?_isa}
 # Required by Shank
 Requires:       alsa-plugins-pulseaudio%{?_isa}
 
-Requires:       gamemode
-Requires:       gamemode%{?_isa}
+Recommends:     gamemode
+Recommends:     gamemode%{?_isa}
+Recommends:     (gnome-shell-extension-gamemode if gnome-shell)
 
 Provides:       steam-noruntime = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      steam-noruntime < %{?epoch:%{epoch}:}%{version}-%{release}
@@ -178,6 +179,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Jun 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.63-100
+- 1.0.0.63
+- RPMFusion sync
+
 * Sat May 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.0.0.62-101
 - Add forgotten stdout log patch
 
