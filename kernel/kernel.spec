@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit c58edd0e4a395f44c84a55ebb5ef0598a9fcf4ed
+%global pfcommit ab1ad1289e1a1e0d761df28a55ec2d9f92aab3ef
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 6a549f6dd07f682dbe4308ce21c26c40dca1ffa2
+%global opensuse_id fb5dacfe05044659019123230f3d520f60e73878
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -918,7 +918,6 @@ Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
 Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
 Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-Patch106: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
 
 ### Extra
 
@@ -936,7 +935,7 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/jbd2-avoid-leaking-transaction-credits-when-unreserv.patch#/openSUSE-jbd2-avoid-leaking-transaction-credits-when-unreserv.patch
-Patch1020: %{opensuse_url}/usercopy-mark-dma-kmalloc-caches-as-usercopy-caches.patch#/openSUSE-usercopy-mark-dma-kmalloc-caches-as-usercopy-caches.patch
+Patch1020: %{opensuse_url}/efi-tpm-Verify-event-log-header-before-parsing.patch#/openSUSE-efi-tpm-Verify-event-log-header-before-parsing.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2703,6 +2702,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.2-500.chinfo
+- 5.7.3 - pf3
+
 * Thu Jun 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.2-500.chinfo
 - 5.7.2 - pf1
 

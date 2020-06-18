@@ -102,4 +102,3 @@
 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch

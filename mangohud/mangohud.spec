@@ -46,6 +46,7 @@ BuildRequires:  glslang
 BuildRequires:  libXNVCtrl-devel
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(dri)
+BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  python3
