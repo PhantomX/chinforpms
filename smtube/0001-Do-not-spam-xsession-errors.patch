@@ -1,0 +1,33 @@
+From 840b3c85a2d57a9d37850f98dfad19923e3a74bc Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 18 Jun 2020 19:08:29 -0300
+Subject: [PATCH] Do not spam .xsession-errors
+
+---
+ src/players.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/players.cpp b/src/players.cpp
+index 21afed2..a333557 100644
+--- a/src/players.cpp
++++ b/src/players.cpp
+@@ -108,13 +108,13 @@ Players::Players() {
+ 	list << Player("SMPlayer", "smplayer", "%u", true, true, Player::Video)
+ 		 << Player("SMPlayer (audio)", "smplayer", "%u -media-title %t", true, false, Player::Audio)
+ 		 << Player("SMPlayer (add to playlist)", "smplayer", "-add-to-playlist %u", true, true, Player::VideoAudio)
+-		 << Player("MPlayer", "mplayer", "%u -title %t", false, false, Player::Video)
++		 << Player("MPlayer", "mplayer", "%u -title %t -really-quiet", false, false, Player::Video)
+ 		 << Player("VLC", "vlc", "%u --meta-title=%t", false, true, Player::VideoAudio)
+ 		 << Player("Dragon Player", "dragon", "%u", false, false, Player::VideoAudio)
+ 		 << Player("Totem", "totem", "%u", false, false, Player::VideoAudio)
+ 		 << Player("GNOME-MPlayer", "gnome-mplayer", "%u", false, false, Player::VideoAudio)
+-		 << Player("mpv", "mpv", "%u --title=%t", false, true, Player::Video)
+-		 << Player("mpv + youtube-dl", "mpv", "--ytdl --ytdl-format=best %u", true, true, Player::Video);
++		 << Player("mpv", "mpv", "%u --title=%t --really-quiet", false, true, Player::Video)
++		 << Player("mpv + youtube-dl", "mpv", "--ytdl --ytdl-format=best %u --really-quiet", true, true, Player::Video);
+ 	#ifdef D_PLAYERS
+ 	list << Player("uget", "uget-gtk", "--quiet --folder=/tmp --filename=%f %u", false, false, Player::VideoAudio);
+ 	#endif
+-- 
+2.26.2
+

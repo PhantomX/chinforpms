@@ -1,5 +1,5 @@
 Name:           smtube
-Version:        20.1.0
+Version:        20.6.0
 Release:        100%{?dist}
 Summary:        YouTube browser for SMPlayer
 Epoch:          1
@@ -8,25 +8,20 @@ License:        GPLv2+
 URL:            http://www.smtube.org
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
 
-Patch0:         %{name}-18.11.0-system-qtsingleapplication.patch
 # Do not spam .xsession-errors
-Patch1:         %{name}-18.1.0-quiet.patch
+Patch1:         0001-Do-not-spam-xsession-errors.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(Qt5)
-BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Gui)
-BuildRequires:  pkgconfig(Qt5Script)
+BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5WebKitWidgets)
 BuildRequires:  pkgconfig(Qt5Widgets)
-BuildRequires:  pkgconfig(Qt5Xml)
 BuildRequires:  qt5-linguist
-# for unbundle sources
-BuildRequires:  qtsingleapplication-qt5-devel
-BuildRequires:  pkgconfig(zlib)
+Requires:       (smplayer or mplayer or mpv or vlc or dragon or totem)
+Requires:       youtube-dl
 Requires:       hicolor-icon-theme
-Recommends:     smplayer
 
 %{?_qt5_version:Requires: qt5-qtbase%{?_isa} >= %{_qt5_version}}
 
@@ -36,8 +31,6 @@ and play YouTube videos.
 
 %prep
 %autosetup -p1
-
-rm -rf src/qtsingleapplication/
 
 sed -i 's/\r//' *.txt
 
@@ -66,6 +59,11 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Jun 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:20.6.0-100
+- 20.6.0
+- R: youtube-dl
+- Cleanup BRs
+
 * Sat Feb 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:20.1.0-100
 - 20.1.0
 

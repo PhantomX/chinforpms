@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ab1ad1289e1a1e0d761df28a55ec2d9f92aab3ef
+%global pfcommit ca71d4839b9044e74faf8e64848ff6801c4431c8
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id fb5dacfe05044659019123230f3d520f60e73878
+%global opensuse_id 23bad630797eb706eb2485c9e8de096456ba7631
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -814,35 +814,19 @@ Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
 
 %if !%{nopatches}
 
-Patch2: 0001-initial-commit-Add-Red-Hat-variables-in-the-top-leve.patch
-Patch3: 0001-Pull-the-RHEL-version-defines-out-of-the-Makefile.patch
-Patch4: 0001-Introduce-CONFIG_RH_DISABLE_DEPRECATED.patch
-Patch5: 0001-Add-Red-Hat-tainting.patch
 Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
-Patch7: 0001-modules-add-rhelversion-MODULE_INFO-tag.patch
 Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
 Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
 Patch10: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
 Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
 Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
-Patch13: 0001-put-RHEL-info-into-generated-headers.patch
-Patch14: 0001-tags.sh-Ignore-redhat-rpm.patch
 Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
-Patch16: 0001-add-Red-Hat-specific-taint-flags.patch
-Patch17: 0001-bpf-set-unprivileged_bpf_disabled-to-1-by-default-ad.patch
-Patch18: 0001-bpf-Add-tech-preview-taint-for-syscall.patch
 Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
 Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
-Patch21: 0001-add-pci_hw_vendor_status.patch
-Patch22: 0001-kABI-Add-generic-kABI-macros-to-use-for-kABI-workaro.patch
-Patch23: 0001-ice-mark-driver-as-tech-preview.patch
 Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
-Patch25: 0001-IB-rxe-Mark-Soft-RoCE-Transport-driver-as-tech-previ.patch
 Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
-Patch27: 0001-rh_kabi-introduce-RH_KABI_EXCLUDE.patch
 Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
 Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
-Patch30: 0001-Add-support-for-deprecating-processors.patch
 Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
 Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 Patch33: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
@@ -850,26 +834,6 @@ Patch34: 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
 Patch35: 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
 Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-Patch38: 0001-Rename-RH_DISABLE_DEPRECATED-to-RHEL_DIFFERENCES.patch
-Patch39: 0001-kernel-add-SUPPORT_REMOVED-kernel-taint.patch
-Patch40: 0001-mpt-remove-certain-deprecated-pci-ids.patch
-Patch41: 0001-megaraid_sas-remove-deprecated-pci-ids.patch
-Patch42: 0001-aacraid-Remove-depreciated-device-and-vendor-PCI-id-.patch
-Patch43: 0001-qla4xxx-Remove-deprecated-PCI-IDs-from-RHEL-8.patch
-Patch44: 0001-hpsa-remove-old-cciss-based-smartarray-pci-ids.patch
-Patch45: 0001-mptspi-Taint-kernel-if-mptspi-is-loaded.patch
-Patch46: 0001-be2iscsi-remove-unsupported-device-IDs.patch
-Patch47: 0001-qla2xxx-Remove-PCI-IDs-of-deprecated-adapter.patch
-Patch48: 0001-mptspi-pci-id-table-changes.patch
-Patch49: 0001-mptsas-Taint-kernel-if-mptsas-is-loaded.patch
-Patch50: 0001-mptsas-pci-id-table-changes.patch
-Patch51: 0001-Removing-Obsolete-hba-pci-ids-from-rhel8.patch
-Patch52: 0001-redhat-rh_kabi-Add-macros-to-size-and-extend-structs.patch
-Patch53: 0001-redhat-rh_kabi-Fix-RH_KABI_SET_SIZE-to-use-dereferen.patch
-Patch54: 0001-redhat-rh_kabi-Indirect-EXTEND-macros-so-nesting-of-.patch
-Patch55: 0001-redhat-rh_kabi-introduce-RH_KABI_EXTEND_WITH_SIZE.patch
-Patch56: 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.patch
-Patch57: 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
 Patch60: 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
@@ -890,7 +854,6 @@ Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
 Patch77: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
-Patch78: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
 Patch79: 0001-disp-gv100-expose-capabilities-class.patch
 Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
 Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
@@ -918,6 +881,7 @@ Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
 Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
 Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
 
 ### Extra
 
@@ -936,6 +900,8 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/jbd2-avoid-leaking-transaction-credits-when-unreserv.patch#/openSUSE-jbd2-avoid-leaking-transaction-credits-when-unreserv.patch
 Patch1020: %{opensuse_url}/efi-tpm-Verify-event-log-header-before-parsing.patch#/openSUSE-efi-tpm-Verify-event-log-header-before-parsing.patch
+Patch1021: %{opensuse_url}/ACPI-GED-use-correct-trigger-type-field-in-_Exx-_Lxx.patch#/openSUSE-ACPI-GED-use-correct-trigger-type-field-in-_Exx-_Lxx.patch
+Patch1022: %{opensuse_url}/genetlink-clean-up-family-attributes-allocations.patch#/openSUSE-enetlink-clean-up-family-attributes-allocations.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2702,7 +2668,11 @@ fi
 #
 #
 %changelog
-* Wed Jun 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.2-500.chinfo
+* Thu Jun 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.4-500.chinfo
+- 5.7.4 - pf3
+- stabilization sync
+
+* Wed Jun 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.3-500.chinfo
 - 5.7.3 - pf3
 
 * Thu Jun 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.2-500.chinfo
