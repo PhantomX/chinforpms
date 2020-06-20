@@ -1,0 +1,71 @@
+From ae27148b2e233a7e4b023e8ae6df092cfef4b785 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 19 Jun 2020 16:02:51 -0300
+Subject: [PATCH] New Aspect ratio mode for RESHDP - Force fitting 4:3
+
+From https://github.com/MoArtis/dolphin, MoArtis <mathieuphilippe.dev@gmail.com>
+---
+ Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp | 2 +-
+ Source/Core/DolphinQt/HotkeyScheduler.cpp               | 3 +++
+ Source/Core/VideoCommon/RenderBase.cpp                  | 5 +++++
+ Source/Core/VideoCommon/VideoConfig.h                   | 1 +
+ 4 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp b/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp
+index eeefbf7..97d6e4d 100644
+--- a/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp
++++ b/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp
+@@ -56,7 +56,7 @@ void GeneralWidget::CreateWidgets()
+ 
+   m_backend_combo = new QComboBox();
+   m_aspect_combo =
+-      new GraphicsChoice({tr("Auto"), tr("Force 16:9"), tr("Force 4:3"), tr("Stretch to Window")},
++      new GraphicsChoice({tr("Auto"), tr("Force 16:9"), tr("Force 4:3"), tr("Stretch to Window"), tr("Fit 4:3 (RESHDP)")},
+                          Config::GFX_ASPECT_RATIO);
+   m_adapter_combo = new QComboBox;
+   m_enable_vsync = new GraphicsBool(tr("V-Sync"), Config::GFX_VSYNC);
+diff --git a/Source/Core/DolphinQt/HotkeyScheduler.cpp b/Source/Core/DolphinQt/HotkeyScheduler.cpp
+index e24929f..455893d 100644
+--- a/Source/Core/DolphinQt/HotkeyScheduler.cpp
++++ b/Source/Core/DolphinQt/HotkeyScheduler.cpp
+@@ -383,6 +383,9 @@ void HotkeyScheduler::Run()
+         case AspectMode::AnalogWide:
+           OSD::AddMessage("Force 16:9");
+           break;
++        case AspectMode::AnalogFit:
++          OSD::AddMessage("Fit 4:3 (RESHDP)");
++          break;
+         case AspectMode::Auto:
+         default:
+           OSD::AddMessage("Auto");
+diff --git a/Source/Core/VideoCommon/RenderBase.cpp b/Source/Core/VideoCommon/RenderBase.cpp
+index f3aa366..39209b9 100644
+--- a/Source/Core/VideoCommon/RenderBase.cpp
++++ b/Source/Core/VideoCommon/RenderBase.cpp
+@@ -563,6 +563,11 @@ float Renderer::CalculateDrawAspectRatio() const
+ {
+   const auto aspect_mode = g_ActiveConfig.aspect_mode;
+ 
++  if (g_ActiveConfig.aspect_mode == AspectMode::AnalogFit)
++  {
++    return 4.0f / 3.0f;
++  }
++
+   // If stretch is enabled, we prefer the aspect ratio of the window.
+   if (aspect_mode == AspectMode::Stretch)
+     return (static_cast<float>(m_backbuffer_width) / static_cast<float>(m_backbuffer_height));
+diff --git a/Source/Core/VideoCommon/VideoConfig.h b/Source/Core/VideoCommon/VideoConfig.h
+index ee09511..ae72bee 100644
+--- a/Source/Core/VideoCommon/VideoConfig.h
++++ b/Source/Core/VideoCommon/VideoConfig.h
+@@ -31,6 +31,7 @@ enum class AspectMode : int
+   AnalogWide,
+   Analog,
+   Stretch,
++  AnalogFit,
+ };
+ 
+ enum class StereoMode : int
+-- 
+2.26.2
+

@@ -3,10 +3,11 @@
 %bcond_with ffmpeg
 %global with_egl 1
 %global with_llvm 0
+%global with_dsphack 1
 
-%global commit b3c705fa968b8d9a0ea18da044c6de8841019790
+%global commit 03e0d2c820a8aed809799e86321024244aa6791a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200528
+%global date 20200619
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,7 +20,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        111%{?gver}%{?dist}
+Release:        112%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -46,7 +47,9 @@ Source0:        %{pkgname}-%{shortcommit}.tar.xz
 Source0:        %{pkgname}-%{version}.tar.xz
 %endif
 Source1:        %{name}.appdata.xml
-Source2:        Findzstd.cmake
+
+Patch100:       0001-DSP-interrupt-hack-for-RE-2-and-3.patch
+Patch101:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
 
 
 BuildRequires:  gcc
@@ -144,8 +147,6 @@ This package provides the data files for dolphin-emu.
 %autosetup -n %{pkgname}-%{version} -p1
 %endif
 
-cp %{S:2} CMake/
-
 #Allow building with cmake macro
 sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
 
@@ -211,11 +212,29 @@ sed -i \
 %endif
 %{nil}
 
+%if 0%{?with_dsphack}
+%make_build -C %{_target_platform}
+mv %{_target_platform}/Binaries/%{name} %{name}-dsphack
+mv %{_target_platform}/Binaries/%{name}-nogui %{name}-nogui-dsphack
+%endif
+
+patch -p1 -R -i %{P:100}
 %make_build -C %{_target_platform}
 
 
 %install
 %make_install -C %{_target_platform}
+
+%if 0%{?with_dsphack}
+install -pm0755 %{name}-dsphack %{buildroot}%{_bindir}/
+install -pm0755 %{name}-nogui-dsphack %{buildroot}%{_bindir}/
+
+cp -p %{buildroot}%{_datadir}/applications/%{name}{,-dsphack}.desktop
+sed \
+  -e '/^Exec=/s|%{name}|\0-dsphack|' \
+  -e '/Name.*=/s|$| (DSP Hack)|g' \
+ -i %{buildroot}%{_datadir}/applications/%{name}-dsphack.desktop
+%endif
 
 mkdir -p %{buildroot}%{_udevrulesdir}/
 install -pm0644 Data/51-usb-device.rules %{buildroot}%{_udevrulesdir}/
@@ -235,8 +254,14 @@ appstream-util validate-relax --nonet \
 %doc Readme.md
 %license license.txt
 %{_bindir}/%{name}
+%if 0%{?with_dsphack}
+%{_bindir}/%{name}-dsphack
+%endif
 %{_mandir}/man6/%{name}.*
 %{_datadir}/applications/%{name}.desktop
+%if 0%{?with_dsphack}
+%{_datadir}/applications/%{name}-dsphack.desktop
+%endif
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/%{name}/sys/Resources/
 %{_datadir}/%{name}/sys/Themes/
@@ -246,6 +271,9 @@ appstream-util validate-relax --nonet \
 %doc Readme.md
 %license license.txt
 %{_bindir}/%{name}-nogui
+%if 0%{?with_dsphack}
+%{_bindir}/%{name}-nogui-dsphack
+%endif
 %{_mandir}/man6/%{name}-nogui.*
 
 %files data
@@ -261,6 +289,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Jun 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-112.20200619git03e0d2c
+- New snapshot
+- Added DSP hack binary
+
 * Sat May 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:5.0-111.20200528gitb3c705f
 - Bump
 - BR: minizip-devel
