@@ -1,6 +1,6 @@
-%global commit 8d27b0714dc6dfcfb8fda3fa482b391fd9fa4c2d
+%global commit 372c653ec33a770fb4fda0969c3a87b12e54e63c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200509
+%global date 20200620
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -36,7 +36,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 ext-soundtouch
 
-%global commit8 57bb1d241735702cec36a3a9f4a85e5f1a541db6
+%global commit8 3e032a73d7e97eb434a053391d95029eebd7e189
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 teakra
 
@@ -62,7 +62,7 @@
 
 Name:           citra
 Version:        0
-Release:        8%{?gver}%{?dist}
+Release:        9%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -227,6 +227,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Jun 21 2020 Phantom X <megaphantomx at hotmail dot com> - 0-9.20200620git372c653
+- New snapshot
+
 * Sun May 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-8.20200509git8d27b07
 - Bump
 - ext-boost

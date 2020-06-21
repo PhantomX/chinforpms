@@ -48,6 +48,7 @@ some seasonal packages too, these can return when needed
  * **opencore-amr** - For i686 mock build
  * **ortp** - linphoneqt
  * **perl-Gtk3** - Unneeded
+ * **pspshrink** - Unmaintained
  * **python-pafy** - mps-youtube
  * **psi** - Seasonal package
  * **qemu** - Seasonal package

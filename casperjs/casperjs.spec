@@ -1,6 +1,6 @@
 Name:           casperjs
 Version:        1.1.4_2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Open source navigation scripting & testing utility
 
 License:        MIT
@@ -12,8 +12,9 @@ Patch0:         %{name}-path.patch
 
 BuildArch:      noarch
 
-BuildRequires:  python2-devel
-Requires:       python2
+BuildRequires:  python3-devel
+Requires:       python3
+BuildRequires:  /usr/bin/pathfix.py
 Requires:       phantomjs
 
 
@@ -26,8 +27,9 @@ full navigation scenario and provides useful high-level functions, methods
 %prep
 %autosetup -n %{name}-%{rversion} -p1
 
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" bin/%{name}
+
 sed \
-  -e 's|/usr/bin/env python|%{__python2}|' \
   -e 's|_RPM_DATADIR_|%{_datadir}|g' \
   -i bin/%{name}
 
@@ -55,6 +57,9 @@ cp -pr tests/* %{buildroot}%{_datadir}/%{name}/tests/
 
 
 %changelog
+* Sun Jun 21 2020 Phantom X <megaphantomx at hotmail dot com> - 1.1.4_2-3
+- Python3 fixes
+
 * Mon Jan 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.1.4_2-2
 - Fix usage.txt path
 

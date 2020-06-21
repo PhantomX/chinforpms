@@ -14,7 +14,7 @@ index 251de5c..d2ace62 100644
 @@ -1,6 +1,7 @@
  MODULE    = winevulkan.dll
  IMPORTLIB = winevulkan
- IMPORTS   = user32 gdi32 advapi32
+ IMPORTS   = user32 gdi32 advapi32 setupapi
 +CFLAGS   += -fno-tree-dce
  
  C_SRCS = \

@@ -1,6 +1,6 @@
-%global commit 812edfde25d75c70ffb25827ecaac14ac7ae8c59
+%global commit 16ba29571bddb6f71824c057ee9f16d15da9297b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200510
+%global date 20200527
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           blackchocobo
 Version:        1.10.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
 License:        GPLv3
@@ -66,8 +66,6 @@ Converting Save Formats to PC or PSX. With it you can even export your ps3 saves
 rm -rf %{buildroot}%{_datadir}/menu
 
 desktop-file-edit \
-  --remove-category="Application" \
-  --remove-key="Encoding" \
   --set-key=Exec \
   --set-value="%{name}" \
   %{buildroot}%{_datadir}/applications/Black_Chocobo.desktop
@@ -102,5 +100,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sat Jun 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1.10.0-2.20200527git16ba295
+- New snapshot
+
 * Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.10.0-1.20200510git812edfd
 - Initial spec

@@ -116,6 +116,7 @@ mcomix3
 mednafen
 mednaffe
 mozilla-gnotifier
+mozilla-keepassxc-browser
 mp3val
 mpdnotify
 -mps-youtube
