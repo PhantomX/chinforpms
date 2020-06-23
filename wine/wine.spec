@@ -48,10 +48,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id 3d066b3ab5d1460846c9d928c567926ac05499c2
+%global ge_id bea62e2363b2069f66f1ab254bfe8eaa8ec29d2e
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id d276bed858965ec4a68a49e8cbab3b2294d01cd2
+%global tkg_id 1f0625e36cd05447c48ca4331291a390bc66bf8c
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 451728b0d211a8c5aedf43ff17767aa82bb06573
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -97,7 +97,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.11
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -288,8 +288,8 @@ Patch792:       %{valve_url}/commit/35ff7c5c657d143a96c419346ef516e50815cdfb.pat
 Patch793:       %{tkg_url}/hotfixes/fd799297/fd7992972b252ed262d33ef604e9e1235d2108c5-6.myrevert#/%{name}-tkg-fd79929_revert-6.patch
 Patch794:       %{tkg_url}/hotfixes/01150d7f/d8d6a6b2e639d2e29e166a3faf988b81388ae191.mypatch#/%{name}-tkg-d8d6a6b.patch
 
-Patch800:       %{ge_url}/game-patches/winex11_limit_resources-nmode.patch#/%{name}-ge-winex11_limit_resources-nmode.patch
-Patch801:       %{ge_url}/game-patches/winex11_limit_resources-nofshack.patch#/%{name}-ge-winex11_limit_resources-nofshack.patch
+Patch800:       %{ge_url}/game-patches/nier.patch#/%{name}-ge-nier.patch
+Patch801:       %{ge_url}/game-patches/nier-nofshack.patch#/%{name}-ge-nier-nofshack.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -2803,6 +2803,9 @@ fi
 
 
 %changelog
+* Mon Jun 22 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.11-101
+- tkg and ge minor updates
+
 * Sat Jun 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.11-100
 - 5.11
 

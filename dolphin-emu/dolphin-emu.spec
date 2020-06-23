@@ -215,7 +215,7 @@ sed -i \
 %if 0%{?with_dsphack}
 %make_build -C %{_target_platform}
 mv %{_target_platform}/Binaries/%{name} %{name}-dsphack
-mv %{_target_platform}/Binaries/%{name}-nogui %{name}-nogui-dsphack
+mv %{_target_platform}/Binaries/%{name}-nogui %{name}-dsphack-nogui
 %endif
 
 patch -p1 -R -i %{P:100}
@@ -272,7 +272,7 @@ appstream-util validate-relax --nonet \
 %license license.txt
 %{_bindir}/%{name}-nogui
 %if 0%{?with_dsphack}
-%{_bindir}/%{name}-nogui-dsphack
+%{_bindir}/%{name}-dsphack-nogui
 %endif
 %{_mandir}/man6/%{name}-nogui.*
 

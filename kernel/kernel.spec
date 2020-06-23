@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ca71d4839b9044e74faf8e64848ff6801c4431c8
+%global pfcommit 7c2cba4bfeb92e9559e88f9dd069dfffd99e9c6a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -853,7 +853,6 @@ Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
-Patch77: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 Patch79: 0001-disp-gv100-expose-capabilities-class.patch
 Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
 Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
@@ -898,10 +897,8 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/jbd2-avoid-leaking-transaction-credits-when-unreserv.patch#/openSUSE-jbd2-avoid-leaking-transaction-credits-when-unreserv.patch
 Patch1020: %{opensuse_url}/efi-tpm-Verify-event-log-header-before-parsing.patch#/openSUSE-efi-tpm-Verify-event-log-header-before-parsing.patch
-Patch1021: %{opensuse_url}/ACPI-GED-use-correct-trigger-type-field-in-_Exx-_Lxx.patch#/openSUSE-ACPI-GED-use-correct-trigger-type-field-in-_Exx-_Lxx.patch
-Patch1022: %{opensuse_url}/genetlink-clean-up-family-attributes-allocations.patch#/openSUSE-enetlink-clean-up-family-attributes-allocations.patch
+Patch1022: %{opensuse_url}/genetlink-clean-up-family-attributes-allocations.patch#/openSUSE-genetlink-clean-up-family-attributes-allocations.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2668,6 +2665,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.5-500.chinfo
+- 5.7.5 - pf3
+
 * Thu Jun 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.4-500.chinfo
 - 5.7.4 - pf3
 - stabilization sync

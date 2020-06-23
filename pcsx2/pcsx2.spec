@@ -1,6 +1,6 @@
-%global commit 94e16358826bc61890bc3ecd261ac1e3d8d2ff9f
+%global commit 297f91ae7dcc77b432500c14c323e8836846641c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200513
+%global date 20200620
 %global with_snapshot 1
 
 %global sanitize 0
@@ -13,7 +13,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -217,6 +217,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Mon Jun 22 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-101.20200620git297f91a
+- Bump
+
 * Wed May 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.7.0-100.20200513git94e1635
 - New snapshot
 - Disable hardening

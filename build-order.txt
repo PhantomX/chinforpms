@@ -84,7 +84,7 @@ fss-parallel-tools
 engrampa
 gamemode
 gcdemu
-gespeaker
+-gespeaker
 gflash-player
 gkrellm-cpupower
 gkrellm-leds

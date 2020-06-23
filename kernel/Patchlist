@@ -37,7 +37,6 @@
 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
-0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 0001-disp-gv100-expose-capabilities-class.patch
 0001-core-memory-remove-redundant-assignments-to-variable.patch
 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
