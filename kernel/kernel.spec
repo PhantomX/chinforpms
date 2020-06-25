@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7c2cba4bfeb92e9559e88f9dd069dfffd99e9c6a
+%global pfcommit 1ff7394870bb9e483b99fe4272987e04d8d49ea2
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -824,7 +824,6 @@ Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
 Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
 Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
 Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
-Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
 Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
 Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
 Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
@@ -836,7 +835,6 @@ Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch60: 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
 Patch61: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
 Patch63: 0001-Drop-that-for-now.patch
@@ -862,7 +860,6 @@ Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
 Patch85: 0001-device-detect-if-changing-endianness-failed.patch
 Patch86: 0001-device-detect-vGPUs.patch
 Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
-Patch88: 0001-kms-Fix-regression-by-audio-component-transition.patch
 Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
 Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
 Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
@@ -2665,6 +2662,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.6-500.chinfo
+- 5.7.6 - pf3
+
 * Mon Jun 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.5-500.chinfo
 - 5.7.5 - pf3
 

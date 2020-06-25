@@ -8,7 +8,6 @@
 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
-0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
@@ -20,7 +19,6 @@
 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 0001-ARM-tegra-usb-no-reset.patch
-0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
 0001-Drop-that-for-now.patch
@@ -46,7 +44,6 @@
 0001-device-detect-if-changing-endianness-failed.patch
 0001-device-detect-vGPUs.patch
 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
-0001-kms-Fix-regression-by-audio-component-transition.patch
 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch

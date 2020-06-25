@@ -19,23 +19,23 @@
 
 %global pkgname amdvlk
 
-%global commit1 c57487b76215ee74b1038039f47b210a28cad65e
+%global commit1 da64bde85194f895002dbca05ec66e016f1a5a5d
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 9b4d0a4c3e146ea898d4bb3e86fb4170f75c3daa
+%global commit2 48fff0a75bb413b55a5e89647cdb37e109aa9eb8
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 116d28a446eba3a9f8e6f577bab34fc07e090993
+%global commit3 6e79dcb897452121463e79d8c4e21c6fc668a6fe
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 13b6271de2f72f62adf098e681c5000f47db2a6c
+%global commit4 b687ca1828258076ac79f08738f6fce3fa688d4a
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
-%global commit5 2f679769a8491f423f5cf2f06adfa2870a82935d
+%global commit5 0179fdb99e3d4b51e50d1a4c6ef65f065b0df967
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{pkgname}-spvgen
 
@@ -47,15 +47,15 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 8dfdbeff84f3e058ca33a08755ab47bc572a1c50
+%global commit8 7a1af5878594cec2992a1bb00565b4c712490239
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
-%global commit9 ac638f1815425403e946d0ab78bac71d2bdbf3be
+%global commit9 11d7637e7a43cd88cfd4e42c99581dcb682936aa
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 d39b8afc47a1f700b5670463c0d1068878acee6f
+%global commit10 fbb9dc2cf1afbc1ca301c66bd3ec7e745dfed0e4
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
@@ -69,7 +69,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.2.4
+Version:        2020.2.5
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -205,8 +205,8 @@ mkdir _temp_install
   mv usr/lib/x86_64-linux-gnu/*.so _temp_install/
   mv etc/vulkan/icd.d/amd_icd%{?__isa_bits}.json _temp_install/
 %else
-  mv xgl/%{_target_platform}/icd/amdvlk%{?__isa_bits}.so _temp_install/
-  mv xgl/%{_target_platform}/spvgen/spvgen.so _temp_install/
+  mv %{_target_platform}/icd/amdvlk%{?__isa_bits}.so _temp_install/
+  mv %{_target_platform}/spvgen/spvgen.so _temp_install/
   mv AMDVLK/json/Redhat/amd_icd%{?__isa_bits}.json _temp_install/
 %endif
 install -pm0644 _temp_install/amd_icd%{?__isa_bits}.json \
@@ -229,6 +229,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Wed Jun 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.2.5-1
+- 2020.Q2.5
+
 * Thu May 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.2.4-1
 - 2020.Q2.4
 

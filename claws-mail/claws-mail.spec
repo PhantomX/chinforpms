@@ -1,7 +1,7 @@
-%global commit 5f1063a0c8ee9b782504cf93c967c4541355cd1e
+%global commit 4ed9411f4dc2801d7f983734ae4003102b8f361d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191125
-%global with_snapshot 0
+%global date 20200621
+%global with_snapshot 1
 
 %global with_gtk3  0
 %global with_python  0
@@ -26,7 +26,7 @@
 
 Name:           claws-mail
 Version:        3.17.5
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -114,7 +114,11 @@ BuildRequires:  libsoup-devel
 # fix #496149
 BuildRequires:  libnotify-devel
 %if 0%{?with_python}
+%if 0%{?with_gtk3}
+BuildRequires:  python3 python3-devel python3-gobject-devel
+%else
 BuildRequires:  python2 python2-devel pygtk2-devel
+%endif
 %endif
 BuildRequires:  libcanberra-devel
 # this is an optional subpackage not pulled in by libcanberra-devel
@@ -470,6 +474,7 @@ grep DEFAULT_INC_PATH src/common/defs.h || exit -1
 grep 'PERL_LDFLAGS *=' configure || exit -1
 sed -i 's!\(PERL_LDFLAGS *=\).*$!\1-lperl!g' configure
 
+%if 0%{?with_python}
 # a really ugly hack to have the Python plug-in dlopen the versioned
 # run-time lib, with grep guards so we don't need a patch
 #
@@ -481,7 +486,7 @@ sed -i 's!\(PYTHON_SHARED_LIB=.*\.so\)\"$!\1.1.0\"!' configure
 grep 'PYTHON_SHARED_LIB=.*\.so\"$' configure && exit -1
 # ensure that the code that uses it is still there
 grep 'dlopen.*PYTHON_SHARED_LIB' src/plugins/python/* -R || exit -1
-
+%endif
 
 %if 0%{?fedora}
 cat << EOF > README.Fedora
@@ -736,6 +741,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Tue Jun 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.17.5-101.20200621git4ed9411
+- Snapshot
+
 * Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.17.5-100
 - 3.17.5
 
