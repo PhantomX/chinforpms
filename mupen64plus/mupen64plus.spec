@@ -1,13 +1,13 @@
-%global commit 4edc53c2d5aee33605b3a151d405882030ba94f3
+%global commit b7b56fea513e8734b982347d5b965c4a8e6f2074
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200422
+%global date 20200525
 %global with_snapshot 1
 
 %global commit1 5c431df0638885044bc45d2976ffec16c24fa087
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-audio-sdl
 
-%global commit2 73f00a0a6e27e3d44151f41d48f35a8279d36449
+%global commit2 954a5dc74267d67ef065f41472eaaf6970fb1c85
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-input-sdl
 
@@ -42,7 +42,7 @@
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -155,6 +155,7 @@ export INCDIR=%{_includedir}/%{name}
 export SHAREDIR=%{_datadir}/%{name}
 export MANDIR=%{_mandir}
 export LIRC=1
+export PIC=1
 export PIE=1
 EOF
 
@@ -194,6 +195,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Jun 25 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-104.20200525gitb7b56fe
+- New snapshot
+
 * Mon Apr 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.9-103.20200422git4edc53c
 - Snapshot
 

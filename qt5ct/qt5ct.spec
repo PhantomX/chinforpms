@@ -83,8 +83,9 @@ install -D -pm 644 %{name}-%{version}/src/%{name}/translations/*.qm \
 %doc AUTHORS ChangeLog README README.gtk3
 %{_bindir}/%{name}*
 %{_datadir}/applications/%{name}*.desktop
-%{_datadir}/%{name}/*
-%dir %{_datadir}/%{name}/translations/
+%dir %{_datadir}/%{name}/
+%{_datadir}/%{name}/colors/
+%{_datadir}/%{name}/qss/
 %{_qt5_plugindir}/platformthemes/libqt5ct.so
 %{_qt5_plugindir}/styles/libqt5ct-style.so
 

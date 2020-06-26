@@ -71,13 +71,17 @@ desktop-file-edit \
   --add-mime-type="audio/mpeg" \
   %{buildroot}%{_datadir}/applications/%{name}.desktop
 
+%find_lang %{name} --with-qt
 
-%files
+
+%files -f %{name}.lang
 %license COPYING
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/*/*.png
-%{_datadir}/%{name}/
+%dir %{_datadir}/%{name}/
+%{_datadir}/%{name}/help/
+%{_datadir}/%{name}/resources/
 
 
 %changelog

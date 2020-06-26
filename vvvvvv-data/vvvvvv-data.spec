@@ -32,7 +32,6 @@ install -pm 0644 data.zip %{buildroot}%{_datadir}/VVVVVV/
 
 
 %files
-%dir %{_datadir}/VVVVVV
 %{_datadir}/VVVVVV/data.zip
 
 

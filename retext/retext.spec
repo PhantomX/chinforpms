@@ -76,6 +76,8 @@ done
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 install -p -m 0644 icons/retext.svg %{buildroot}/%{_datadir}/icons/hicolor/scalable/apps/
 
+%find_lang %{name} --with-qt
+
 
 %check
 appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata.xml || :
@@ -86,14 +88,15 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/me.mitya57.ReText.des
 %endif
 
 
-%files
+%files -f %{name}.lang
 %doc changelog.md configuration.md README.md
 %license  LICENSE_GPL
 %{_bindir}/%{name}
 %{_datadir}/metainfo/*.appdata.xml
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
-%{_datadir}/%{name}/
+%dir %{_datadir}/%{name}/
+%{_datadir}/%{name}/icons
 %{_mandir}/man1/*.1.*
 %{python3_sitelib}/ReText/
 %{python3_sitelib}/*egg-info

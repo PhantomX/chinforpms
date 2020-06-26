@@ -29,7 +29,6 @@ rm -f setup.*
 install -m0644 * %{buildroot}%{_datadir}/tyrian/
 
 %files
-%dir %{_datadir}/tyrian
 %{_datadir}/tyrian/*
 
 

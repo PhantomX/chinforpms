@@ -48,14 +48,16 @@ rm -rf %{buildroot}%{_docdir}
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
+%find_lang %{name} --with-qt
 
-%files
+
+%files -f %{name}.lang
 %license Copying.txt
 %doc Changelog Readme.txt Release_notes.txt
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-%{_datadir}/%{name}/
+%dir %{_datadir}/%{name}/
 
 
 %changelog

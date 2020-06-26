@@ -1,23 +1,25 @@
-%global commit 9681d460d3744846ae5bd6ae2c21f3de31e59281
+%global commit 0a08a32481f3de8bb91d5f3e2c653ed9114e5347
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200414
+%global date 20200602
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global pkgname mupen64plus-ui-python
+
 Name:           m64py
 Version:        0.2.5
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        A frontend for Mupen64Plus 2.0
 
 License:        GPLv3
 URL:            http://m64py.sourceforge.net
 %if 0%{?with_snapshot}
-Source0:        https://github.com/mupen64plus/mupen64plus-ui-python/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        https://github.com/mupen64plus/%{pkgname}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/mupen64plus/mupen64plus-ui-python/releases/download/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/mupen64plus/%{pkgname}/releases/download/%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        %{name}.appdata.xml
 
@@ -29,12 +31,15 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  python3-devel
 BuildRequires:  python3-sdl2
 BuildRequires:  python3-qt5-devel
+BuildRequires:  qt5-linguist
 BuildRequires:  ImageMagick
 Requires:       mupen64plus
 Requires:       python3-qt5
 Requires:       python3-sdl2
 Requires:       SDL2
 Requires:       hicolor-icon-theme
+
+Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
@@ -44,7 +49,7 @@ plugin-based Nintendo 64 emulator.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n mupen64plus-ui-python-%{commit} -p1
+%autosetup -n %{pkgname}-%{commit} -p1
 %else
 %autosetup -p1
 %endif
@@ -54,8 +59,9 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" bin/%{name}
 find -name '*.py' -print0 | xargs -0 \
   pathfix.py -pni "%{__python3} %{py3_shbang_opts}"
 
-
 sed -e 's|_DATADIR_|%{_datadir}|g' -i bin/%{name}
+
+sed -e 's|"lrelease"|"lrelease-qt5"|' -i setup.py
 
 
 %build
@@ -94,19 +100,27 @@ done
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
+%find_lang %{name} --with-qt
 
-%files
+
+%files -f %{name}.lang
 %license COPYING LICENSES
 %doc AUTHORS README.rst
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/*
+%dir %{_datadir}/%{name}/ui/i18n/
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_metainfodir}/*.xml
 
 
 %changelog
+* Thu Jun 25 2020 Phantom X <megaphantomx at hotmail dot com> - 0.2.5-5.20200602git0a08a32
+- New snapshot
+- BR: qt5-linguist
+- Provides: mupen64plus-ui-python
+
 * Mon Apr 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.2.5-4.20200414git9681d46
 - Bump
 

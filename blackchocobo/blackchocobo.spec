@@ -86,12 +86,14 @@ install -pm0644 %{name}.appdata.xml %{buildroot}%{_metainfodir}/
 
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
+%find_lang %{name} --with-qt
 
-%files
+
+%files -f %{name}.lang
 %license COPYING.txt
 %doc README.md
 %{_bindir}/%{name}
-%{_datadir}/%{name}
+%dir %{_datadir}/%{name}
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/*/*.png
 %{_metainfodir}/*.appdata.xml
