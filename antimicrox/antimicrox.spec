@@ -1,17 +1,19 @@
-%global commit df90f07678b57ca7ca2647510928e7621381730b
+%global commit dcf23b7e7f392c2b296bec6ea86477a790823283
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200612
-%global with_snapshot 0
+%global date 20200625
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 %global pkgname antimicroX
+%global appname com.github.juliagoda.%{pkgname}
+%global libname libantilib
 
 Name:           antimicrox
 Version:        3.0
-Release:        2%{?gver}%{?dist}
+Release:        100%{?gver}%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
 License:        GPLv3+
@@ -23,12 +25,11 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
-Patch0:         0001-antilib-add-versioned-soname.patch
+ExcludeArch:    %{arm}
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 BuildRequires:  extra-cmake-modules
-BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake(Qt5Concurrent)
 BuildRequires:  cmake(Qt5Core)
@@ -46,13 +47,26 @@ BuildRequires:  itstool
 BuildRequires:  libappstream-glib
 Requires:       hicolor-icon-theme
 
-Provides:       %{pkgname} = %{version}-%{release}
+Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
 antimicroX is a graphical program used to map keyboard keys and mouse controls
 to a gamepad. This program is useful for playing PC games using a gamepad that
 do not have any form of built-in gamepad support.
+
+
+%package %{libname}
+Summary:        %{name} libraries
+%description %{libname}
+Contains library files required for running %{name}.
+
+%package %{libname}-devel
+Summary:        Development files for %{libname}
+Requires:       %{name}-%{libname}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description %{libname}-devel
+The %{libname}-devel package contains libraries and header files for %{libname}.
 
 
 %prep
@@ -71,6 +85,12 @@ sed \
 
 ln -sf %{pkgname}.png src/images/%{pkgname}_trayicon.png
 
+# FIXME: ugly hack to display proper icons
+sed \
+  -e 's|QIcon(":/icons|QIcon("%{_datadir}/%{pkgname}/icons|g' \
+  -i src/joytabwidget.cpp src/mainwindow.cpp src/mainsettingsdialog.cpp src/stickpushbuttongroup.cpp \
+     src/keyboard/virtualkeyboardmousewidget.cpp src/dpadpushbuttongroup.cpp
+
 
 %build
 %cmake . -B %{_target_platform} \
@@ -86,36 +106,46 @@ ln -sf %{pkgname}.png src/images/%{pkgname}_trayicon.png
 %install
 %make_install -C %{_target_platform}
 
-rm -f %{buildroot}%{_libdir}/lib*.so
-
-rm -rf %{buildroot}%{_includedir}
-rm -rf %{buildroot}%{_datadir}/%{pkgname}/icons
+rm -f %{buildroot}%{_datadir}/%{pkgname}/icons/hicolor/index.theme
 rm -f %{buildroot}%{_datadir}/%{pkgname}/Changelog
 
 %find_lang %{pkgname} --with-qt
 
 %check
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.github.juliagoda.%{pkgname}.appdata.xml
-desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/com.github.juliagoda.%{pkgname}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
+desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.desktop
 
 
 %files -f %{pkgname}.lang
 %license LICENSE
 %doc Changelog README.md
 %{_bindir}/%{pkgname}
-%{_libdir}/lib*.so.*
 %dir %{_datadir}/%{pkgname}
 %dir %{_datadir}/%{pkgname}/translations
+%{_datadir}/%{pkgname}/icons
 %{_datadir}/%{pkgname}/images
 %{_datadir}/%{pkgname}/translations/%{pkgname}.qm
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*
-%{_datadir}/mime/packages/*%{pkgname}.xml
+%{_datadir}/mime/packages/%{appname}.xml
 %{_mandir}/man1/*.1*
-%{_metainfodir}/*%{pkgname}.appdata.xml
+%{_metainfodir}/%{appname}.appdata.xml
+
+%files %{libname}
+%license LICENSE
+%{_libdir}/%{libname}.so.1
+
+%files %{libname}-devel
+%{_includedir}/%{pkgname}
+%{_libdir}/%{libname}.so
 
 
 %changelog
+* Sun Jun 28 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0-100.20200625gitdcf23b7
+- Snapshot
+- Rawhide sync
+- Fix icons display on interface
+
 * Fri Jun 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.0-2
 - Fix to use a better colorful tray icon
 

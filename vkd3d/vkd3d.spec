@@ -1,6 +1,6 @@
-%global commit bfd712728413ca3790e5360cefb5a5566e762d92
+%global commit 12b71b9f5a32f89e2547f67de73818e3c69ed0a1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200616
+%global date 20200626
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           vkd3d
 Version:        1.1
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 Epoch:          1
@@ -29,7 +29,6 @@ BuildRequires:  pkgconfig(vulkan) >= 1.2.140
 BuildRequires:  pkgconfig(xcb-event)
 BuildRequires:  pkgconfig(xcb-icccm)
 BuildRequires:  pkgconfig(xcb-keysyms)
-BuildRequires:  pkgconfig(SPIRV-Tools-shared)
 BuildRequires:  spirv-headers-devel
 BuildRequires:  pkgconfig(dxil-spirv-c-shared)
 %if 0%{?with_snapshot}
@@ -94,7 +93,8 @@ autoreconf -ivf
 %configure \
   --disable-static \
   --disable-silent-rules \
-  --with-spirv-tools
+%{nil}
+
 %make_build
 
 
@@ -140,6 +140,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Fri Jun 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-105.20200626git12b71b9
+- New snapshot
+
 * Tue Jun 16 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-104.20200616gitbfd7127
 - Bump
 
