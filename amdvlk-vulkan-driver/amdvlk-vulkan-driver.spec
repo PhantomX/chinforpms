@@ -19,23 +19,23 @@
 
 %global pkgname amdvlk
 
-%global commit1 da64bde85194f895002dbca05ec66e016f1a5a5d
+%global commit1 a458b2991a6fb6d345b088380f6a9a570a8031a5
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 48fff0a75bb413b55a5e89647cdb37e109aa9eb8
+%global commit2 6c94115883d99ce6f4c2edb16b0f7cd513289188
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 6e79dcb897452121463e79d8c4e21c6fc668a6fe
+%global commit3 cc812115fd720dd47c9f0d603c5da3ac2fea6e53
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 b687ca1828258076ac79f08738f6fce3fa688d4a
+%global commit4 f632b07d42e9dc46f73e1d31c157130cb1647155
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
-%global commit5 0179fdb99e3d4b51e50d1a4c6ef65f065b0df967
+%global commit5 3f41158716709d96b5748a9ff0458ba9d2880576
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{pkgname}-spvgen
 
@@ -47,7 +47,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 7a1af5878594cec2992a1bb00565b4c712490239
+%global commit8 fc0dc3a9c734f798f85a8433cbd99306dbe82825
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
@@ -55,7 +55,7 @@
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 fbb9dc2cf1afbc1ca301c66bd3ec7e745dfed0e4
+%global commit10 90f1d6ab58653c2b5ad327567e7a2841385894c6
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
@@ -69,7 +69,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.2.5
+Version:        2020.2.6
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -229,6 +229,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Tue Jun 30 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.2.6-1
+- 2020.Q2.6
+
 * Wed Jun 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.2.5-1
 - 2020.Q2.5
 

@@ -127,7 +127,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2020.06
+Version:        2020.07
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -1031,6 +1031,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.07-1.classic
+- 2020.07
+
 * Thu Jun 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 2020.06-1.classic
 - 2020.06
 
