@@ -1,6 +1,6 @@
-%global commit 13b2587d4f55d64a1381c60ac34acf4abe6bb1e8
+%global commit 10b17932fa829fac10a5e6717d96ed5d56de80fe
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200626
+%global date 20200701
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver b6c2818755badca80ead487e156f48a53775bdb2
+%global wine_stagingver cbdc68f558627cd09404c9ab4768d1c38353f383
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,9 +51,9 @@
 %global ge_id cde7c02d92d27e4031216e37e60461cc5801e6c7
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2a0586daacc83830ce16a98eb0d5a6621d9e90f7
+%global tkg_id 4ac322f66c8abf878e6aefd77963c871ccc46ab0
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid ed5d758e3d5755f53b72f9eb24762f1411cc9f18
+%global tkg_cid 9dad5957e2e88d6484c6ac3c020b59f395fd646d
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0
@@ -69,6 +69,7 @@
 %if 0%{?fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
+%global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput-mouse -W user32-rawinput-mouse-experimental -W user32-rawinput-hid
 %endif
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
@@ -97,7 +98,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.11
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -161,7 +162,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
-# 603-703/801-803 - Reverts to unbreak esync/fsync
+# 603-735/801-804 - Reverts to unbreak esync/fsync
 Patch603:       %{whq_url}/e854ea34cc481658ec61f4603d0438e075608c98#/%{name}-whq-e854ea3.patch
 Patch604:       %{whq_url}/e6e2f2325a0a4eb14f10dd6df319b068761e9600#/%{name}-whq-e6e2f23.patch
 Patch605:       %{whq_url}/8a63b688ac49f19c259066fd100407edf3747f95#/%{name}-whq-8a63b68.patch
@@ -263,6 +264,38 @@ Patch700:       %{whq_url}/6898bdca94cde73bd8d8b88d99153a731f6a7a6b#/%{name}-whq
 Patch701:       %{whq_url}/bededeccc51cc766ed48ce861a2a411ad8d22a87#/%{name}-whq-bededec.patch
 Patch702:       %{whq_url}/52c04e1e390e0008580eca7343f5c04aed3d1323#/%{name}-whq-52c04e1.patch
 Patch703:       %{whq_url}/18f83c12a04f934eda74fed77055073075bc4275#/%{name}-whq-18f83c1.patch
+Patch704:       %{whq_url}/847b93c7400f82225057e8b71938eb8ccd5d23be#/wine-whq-847b93c.patch
+Patch705:       %{whq_url}/69e9651c1ae0542e52f5ea924b9e286584446607#/wine-whq-69e9651.patch
+Patch706:       %{whq_url}/ed566a87232fddde73481efe2dfcefceca5e49e4#/wine-whq-ed566a8.patch
+Patch707:       %{whq_url}/b9f531a0e81ebf7a0dfeac00d557632546b12f56#/wine-whq-b9f531a.patch
+Patch708:       %{whq_url}/38c78a968259963d29559096dda575237039c561#/wine-whq-38c78a9.patch
+Patch709:       %{whq_url}/716cf7d342466235d3117db5da788704cbf2853d#/wine-whq-716cf7d.patch
+Patch710:       %{whq_url}/bc8745851e3005fd98c45fe06fc9d4d92c68fa53#/wine-whq-bc87458.patch
+Patch711:       %{whq_url}/067648cd2bdc4776cb69c6554ee9d799e0b201c7#/wine-whq-067648c.patch
+Patch712:       %{whq_url}/2334f4e64582a518e4d5a7627472a0d817b147ef#/wine-whq-2334f4e.patch
+Patch713:       %{whq_url}/f1ff598e2aca810c3a0540d6a764787d31890741#/wine-whq-f1ff598.patch
+Patch714:       %{whq_url}/15c3eaafbb3a376998e9c5eb36cb24816dad5447#/wine-whq-15c3eaa.patch
+Patch715:       %{whq_url}/83a4549e9baa252d0fb92d14e5a39119b8583813#/wine-whq-83a4549.patch
+Patch716:       %{whq_url}/43be3507c04b56938e985047f2ab55147ed8ddd2#/wine-whq-43be350.patch
+Patch717:       %{whq_url}/eef527723f02abcdb301b02cae059b123f277d26#/wine-whq-eef5277.patch
+Patch718:       %{whq_url}/e1e34cdc375baf2d1d5a2266ae0faa885987ab37#/wine-whq-e1e34cd.patch
+Patch719:       %{whq_url}/64731a8e9fce07a7c34374dc0a6bb6ed8b5f6183#/wine-whq-64731a8.patch
+Patch720:       %{whq_url}/4fcf20d1d120985a6056ef8e1861738c2e903660#/wine-whq-4fcf20d.patch
+Patch721:       %{whq_url}/f89f7a54c25eb202e70225713ed39687be048e26#/wine-whq-f89f7a5.patch
+Patch722:       %{whq_url}/8a169390c9ef4d8a43b604558c4194a052473c0c#/wine-whq-8a16939.patch
+Patch723:       %{whq_url}/4478ba258e45559ac97353ab27951e84dd9865c1#/wine-whq-4478ba2.patch
+Patch724:       %{whq_url}/cfc9da22f58659e57d20d76c1c45b91da9dca789#/wine-whq-cfc9da2.patch
+Patch725:       %{whq_url}/70fceaa2fe581ed41408faa368ff3f6833fd463c#/wine-whq-70fceaa.patch
+Patch726:       %{whq_url}/3df16c0b70f734f5260bfde0f68239976d6a5842#/wine-whq-3df16c0.patch
+Patch727:       %{whq_url}/d324014d42bc759b6a6faa594bdecce054e294c1#/wine-whq-d324014.patch
+Patch728:       %{whq_url}/b6722aa7527abc71cb46ab75e4b875c288408d52#/wine-whq-b6722aa.patch
+Patch729:       %{whq_url}/3a9edf9aad43c3e8ba724571da5381f821f1dc56#/wine-whq-3a9edf9.patch
+Patch730:       %{whq_url}/acc52bc90ef1d3cdfc3eef97bb3ac84bfc96cb4c#/wine-whq-acc52bc.patch
+Patch731:       %{whq_url}/2d5bd21f31e2a608120ba262ba2af245526905d3#/wine-whq-2d5bd21.patch
+Patch732:       %{whq_url}/8885a51347a768d8a9125d573963d12ac67d4715#/wine-whq-8885a51.patch
+Patch733:       %{whq_url}/520040dc4a287fd62d7d5161c083cee990c3d6e6#/wine-whq-520040d.patch
+Patch734:       %{whq_url}/21f1fa82a8c7bd1b077f0289141972ed619c5a5f#/wine-whq-21f1fa8.patch
+Patch735:       %{whq_url}/887332f9c7bf0d75f53f88a9739b77b12463d636#/wine-whq-887332f.patch
 
 # Reverts to unbreak fshack
 Patch750:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -276,9 +309,10 @@ Patch757:       %{whq_url}/6f9d20806e821ab07c8adf81ae6630fae94b00ef#/%{name}-whq
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch800:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-30.mystagingrevert#/%{name}-tkg-06877e5_revert-30.patch
+Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-35.mystagingrevert#/%{name}-tkg-06877e5_revert-35.patch
 Patch802:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch803:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-97fbe3f.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-97fbe3f.patch
+Patch804:       %{tkg_url}/hotfixes/01150d7f/staging-rawinput-esync-nofshack-fix.mystagingpatch#/%{name}-tkg-staging-rawinput-esync-nofshack-fix.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -298,6 +332,7 @@ Patch1021:       %{tkg_url}/proton/fsync-staging-no_alloc_handle.patch#/%{name}-
 Patch1022:       %{tkg_url}/proton/fsync-spincounts.patch#/%{name}-tkg-fsync-spincounts.patch
 # FS Hack
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
+Patch1024:       %{tkg_url}/proton/proton-rawinput.patch#/%{name}-tkg-proton-rawinput.patch
 Patch1025:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch1026:       %{tkg_url}/proton/LAA-staging.patch#/%{name}-tkg-LAA-staging.patch
 Patch1027:       %{tkg_url}/proton-tkg-specific/proton-staging_winex11-MWM_Decorations.patch#/%{name}-tkg-proton-staging_winex11-MWM_Decorations.patch
@@ -896,6 +931,42 @@ This package adds the opencl driver for wine.
 %patch599 -p1
 
 %if 0%{?wine_staging}
+%patch735 -p1 -R
+%patch734 -p1 -R
+%patch733 -p1 -R
+%patch732 -p1 -R
+%patch731 -p1 -R
+%patch730 -p1 -R
+%if 0%{?fshack}
+%patch729 -p1 -R
+%else
+sed -e 's|#define SERVER_PROTOCOL_VERSION.*|#define SERVER_PROTOCOL_VERSION 612|g' -i include/wine/server_protocol.h
+%endif
+%patch728 -p1 -R
+%patch727 -p1 -R
+%patch726 -p1 -R
+%patch725 -p1 -R
+%patch724 -p1 -R
+%patch723 -p1 -R
+%patch722 -p1 -R
+%patch721 -p1 -R
+%patch720 -p1 -R
+%patch719 -p1 -R
+%patch718 -p1 -R
+%patch717 -p1 -R
+%patch716 -p1 -R
+%patch715 -p1 -R
+%patch714 -p1 -R
+%patch713 -p1 -R
+%patch712 -p1 -R
+%patch711 -p1 -R
+%patch710 -p1 -R
+%patch709 -p1 -R
+%patch708 -p1 -R
+%patch707 -p1 -R
+%patch706 -p1 -R
+%patch705 -p1 -R
+%patch704 -p1 -R
 %patch703 -p1 -R
 %patch702 -p1 -R
 %patch701 -p1 -R
@@ -1022,6 +1093,9 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch801 -p1 -R
 %patch802 -p1
 %patch803 -p1
+%if !0%{?fshack}
+%patch804 -p1
+%endif
 %patch1000 -p1
 %patch1002 -p1
 %patch1003 -p1
@@ -1054,6 +1128,7 @@ cp -p %{S:3001} README-pba-pkg
 %endif
 %if 0%{?fshack}
 %patch1023 -p1
+%patch1024 -p1
 %endif
 %patch1025 -p1
 %patch1026 -p1
@@ -2391,6 +2466,7 @@ fi
 %{_libdir}/wine/webservices.%{winedll}
 %{_libdir}/wine/wer.%{winedll}
 %{_libdir}/wine/wevtapi.%{winedll}
+%{_libdir}/wine/where.%{wineexe}
 %{_libdir}/wine/whoami.%{wineexe}
 %{_libdir}/wine/wiaservc.%{winedll}
 %{_libdir}/wine/wimgapi.%{winedll}
@@ -2857,6 +2933,9 @@ fi
 
 
 %changelog
+* Thu Jul 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.11-103.20200701git10b1793
+- Bump
+
 * Sat Jun 27 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.11-102.20200626git13b2587
 - New snapshot and more fsync reverts
 

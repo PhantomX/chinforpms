@@ -10,13 +10,13 @@
 %global pkgname ublock-origin
 
 Name:           waterfox-%{pkgname}
-Version:        1.16.4.17
+Version:        1.16.4.21
 Release:        1%{?dist}
 Summary:        An efficient blocker for Waterfox
 
 License:        GPLv3+ and LGPLv3 and MIT and OFL
 URL:            https://github.com/gorhill/uBlock-for-firefox-legacy
-Source0:        %{url}/releases/download/firefox-legacy-%{version}/uBlock0.firefox-legacy.xpi#/%{pkgname}-%{version}.xpi
+Source0:        %{url}/releases/download/firefox-legacy-%{version}/uBlock0_%{version}.firefox-legacy.xpi
 Source1:        %{name}.metainfo.xml
 
 BuildArch:      noarch
@@ -78,6 +78,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1.16.4.21-1
+- 1.16.4.21
+
 * Mon Feb 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.16.4.17-1
 - 1.16.4.17
 

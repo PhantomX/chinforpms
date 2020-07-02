@@ -10,7 +10,7 @@
 %global pkgname FAudio
 
 Name:           %{pkgname}-freeworld
-Version:        20.06
+Version:        20.07
 Release:        1%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - freeworld
 Epoch:          1
@@ -28,7 +28,6 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc
-BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
@@ -100,6 +99,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.07-100
+- 20.07
+
 * Tue Jun 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:20.06-1
 - 20.06
 

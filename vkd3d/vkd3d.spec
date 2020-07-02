@@ -1,6 +1,6 @@
-%global commit 12b71b9f5a32f89e2547f67de73818e3c69ed0a1
+%global commit 211b9c37b0475b0fc7539920ce154a7c3674c070
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200626
+%global date 20200701
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           vkd3d
 Version:        1.1
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 Epoch:          1
@@ -37,6 +37,7 @@ BuildRequires:  automake
 BuildRequires:  libtool
 BuildRequires:  wine-devel
 %endif
+
 
 %description
 The vkd3d project includes libraries, shaders, utilities, and demos for
@@ -106,7 +107,7 @@ find %{buildroot} -name '*.la' -delete
 
 %files -n libvkd3d
 %license COPYING LICENSE
-%doc AUTHORS README
+%doc AUTHORS README.md
 %{_libdir}/libvkd3d.so.*
 %{_libdir}/libvkd3d-shader.so.*
 
@@ -140,6 +141,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-106.20200701git211b9c3
+- Bump
+
 * Fri Jun 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-105.20200626git12b71b9
 - New snapshot
 

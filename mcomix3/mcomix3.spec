@@ -1,6 +1,6 @@
-%global commit 2f9a4b9bdf403b3436628c10a6ac42a1838f9c0d
+%global commit b029d085837d8227118b7dc217ea26e98a4b9aac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200401
+%global date 20200510
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,7 +10,7 @@
 Name:           mcomix3
 # For now, choose version 0
 Version:        0
-Release:        0.6%{?gver}%{?dist}
+Release:        0.7%{?gver}%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
 # GPL version info is from mcomix/mcomixstarter.py
@@ -141,9 +141,12 @@ desktop-file-install \
 # Do not own %%{_datadir}/icons/hicolor explicitly
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_datadir}/applications/%{name}.desktop
-# TODO: appdata file, not availale yet (should item)
+# TODO: appdata file, not available yet (should item)
 
 %changelog
+* Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 0-0.7.20200510gitb029d08
+- New snapshot
+
 * Thu Apr 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-0.6.20200401git2f9a4b9
 - Bump
 - autosetup instead git

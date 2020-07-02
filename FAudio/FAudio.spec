@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        20.06
+Version:        20.07
 Release:        100%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -25,9 +25,13 @@ Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        %{name}.pc
 
+Patch0:         %{vc_url}/pull/192.patch#/%{name}-gh-pr192.patch
+
 BuildRequires:  cmake
 BuildRequires:  gcc
-BuildRequires:  gcc-c++
+BuildRequires:  pkgconfig(gstreamer-1.0)
+BuildRequires:  pkgconfig(gstreamer-audio-1.0)
+BuildRequires:  pkgconfig(gstreamer-app-1.0)
 BuildRequires:  pkgconfig(sdl2)
 
 
@@ -76,7 +80,7 @@ sed \
 %build
 %cmake . -B %{_target_platform} \
   -DCMAKE_INSTALL_INCLUDEDIR:PATH=include/%{name} \
-  -DFFMPEG:BOOL=OFF \
+  -DGSTREAMER:BOOL=ON \
 %{nil}
 
 %make_build -C %{_target_platform}
@@ -92,7 +96,7 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 %files -n lib%{name}
 %license LICENSE
-%doc README
+%doc README README.gstreamer
 %{_libdir}/*.so.*
 
 %files -n lib%{name}-devel
@@ -103,6 +107,10 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.07-100
+- 20.07
+- Enable experimental GStreamer support
+
 * Tue Jun 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:20.06-100
 - 20.06
 
