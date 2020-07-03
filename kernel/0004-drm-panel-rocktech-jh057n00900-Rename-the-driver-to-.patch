@@ -1,0 +1,91 @@
+From e82044df3332199c63904d86b4b1ad0963a6f8e0 Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman <megous@megous.com>
+Date: Fri, 26 Jun 2020 02:55:52 +0200
+Subject: [PATCH 04/13] drm/panel: rocktech-jh057n00900: Rename the driver to
+ st7703
+
+This rename is done so that the driver matches the name of the
+display controller and in preparation for adding support for more
+panels to the driver.
+
+This is just a basic file rename, with no code changes.
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+---
+ drivers/gpu/drm/panel/Kconfig                 | 26 +++++++++----------
+ drivers/gpu/drm/panel/Makefile                |  2 +-
+ ...-jh057n00900.c => panel-sitronix-st7703.c} |  0
+ 3 files changed, 14 insertions(+), 14 deletions(-)
+ rename drivers/gpu/drm/panel/{panel-rocktech-jh057n00900.c => panel-sitronix-st7703.c} (100%)
+
+diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
+index a1723c1b5fbf8..7cf1f160fdd51 100644
+--- a/drivers/gpu/drm/panel/Kconfig
++++ b/drivers/gpu/drm/panel/Kconfig
+@@ -262,19 +262,6 @@ config DRM_PANEL_RAYDIUM_RM68200
+ 	  Say Y here if you want to enable support for Raydium RM68200
+ 	  720x1280 DSI video mode panel.
+ 
+-config DRM_PANEL_ROCKTECH_JH057N00900
+-	tristate "Rocktech JH057N00900 MIPI touchscreen panel"
+-	depends on OF
+-	depends on DRM_MIPI_DSI
+-	depends on BACKLIGHT_CLASS_DEVICE
+-	help
+-	  Say Y here if you want to enable support for Rocktech JH057N00900
+-	  MIPI DSI panel as e.g. used in the Librem 5 devkit. It has a
+-	  resolution of 720x1440 pixels, a built in backlight and touch
+-	  controller.
+-	  Touch input support is provided by the goodix driver and needs to be
+-	  selected separately.
+-
+ config DRM_PANEL_RONBO_RB070D30
+ 	tristate "Ronbo Electronics RB070D30 panel"
+ 	depends on OF
+@@ -374,6 +361,19 @@ config DRM_PANEL_SITRONIX_ST7701
+ 	  ST7701 controller for 480X864 LCD panels with MIPI/RGB/SPI
+ 	  system interfaces.
+ 
++config DRM_PANEL_SITRONIX_ST7703
++	tristate "Sitronix ST7703 based MIPI touchscreen panels"
++	depends on OF
++	depends on DRM_MIPI_DSI
++	depends on BACKLIGHT_CLASS_DEVICE
++	help
++	  Say Y here if you want to enable support for Sitronix ST7703 based
++	  panels, souch as Rocktech JH057N00900 MIPI DSI panel as e.g. used in
++	  the Librem 5 devkit. It has a resolution of 720x1440 pixels, a built
++	  in backlight and touch controller.
++	  Touch input support is provided by the goodix driver and needs to be
++	  selected separately.
++
+ config DRM_PANEL_SITRONIX_ST7789V
+ 	tristate "Sitronix ST7789V panel"
+ 	depends on OF && SPI
+diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
+index 96a883cd66305..0519fdf0710d5 100644
+--- a/drivers/gpu/drm/panel/Makefile
++++ b/drivers/gpu/drm/panel/Makefile
+@@ -25,7 +25,6 @@ obj-$(CONFIG_DRM_PANEL_PANASONIC_VVX10F034N00) += panel-panasonic-vvx10f034n00.o
+ obj-$(CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN) += panel-raspberrypi-touchscreen.o
+ obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM67191) += panel-raydium-rm67191.o
+ obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM68200) += panel-raydium-rm68200.o
+-obj-$(CONFIG_DRM_PANEL_ROCKTECH_JH057N00900) += panel-rocktech-jh057n00900.o
+ obj-$(CONFIG_DRM_PANEL_RONBO_RB070D30) += panel-ronbo-rb070d30.o
+ obj-$(CONFIG_DRM_PANEL_SAMSUNG_LD9040) += panel-samsung-ld9040.o
+ obj-$(CONFIG_DRM_PANEL_SAMSUNG_S6D16D0) += panel-samsung-s6d16d0.o
+@@ -39,6 +38,7 @@ obj-$(CONFIG_DRM_PANEL_SHARP_LQ101R1SX01) += panel-sharp-lq101r1sx01.o
+ obj-$(CONFIG_DRM_PANEL_SHARP_LS037V7DW01) += panel-sharp-ls037v7dw01.o
+ obj-$(CONFIG_DRM_PANEL_SHARP_LS043T1LE01) += panel-sharp-ls043t1le01.o
+ obj-$(CONFIG_DRM_PANEL_SITRONIX_ST7701) += panel-sitronix-st7701.o
++obj-$(CONFIG_DRM_PANEL_SITRONIX_ST7703) += panel-sitronix-st7703.o
+ obj-$(CONFIG_DRM_PANEL_SITRONIX_ST7789V) += panel-sitronix-st7789v.o
+ obj-$(CONFIG_DRM_PANEL_SONY_ACX424AKP) += panel-sony-acx424akp.o
+ obj-$(CONFIG_DRM_PANEL_SONY_ACX565AKM) += panel-sony-acx565akm.o
+diff --git a/drivers/gpu/drm/panel/panel-rocktech-jh057n00900.c b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
+similarity index 100%
+rename from drivers/gpu/drm/panel/panel-rocktech-jh057n00900.c
+rename to drivers/gpu/drm/panel/panel-sitronix-st7703.c
+-- 
+2.26.2
+

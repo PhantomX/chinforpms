@@ -10,7 +10,7 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 23bad630797eb706eb2485c9e8de096456ba7631
+%global opensuse_id cba119b9d536c22bb0a3705ec58f0411fee53b7e
 
 %define major_ver 5
 
@@ -23,7 +23,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 6
+%global stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -537,6 +537,9 @@ popd
 
 
 %changelog
+* Thu Jul 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.7-500.chinfo
+- 5.7.7
+
 * Wed Jun 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.6-500.chinfo
 - 5.7.6
 

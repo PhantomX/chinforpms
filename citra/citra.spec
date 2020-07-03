@@ -3,6 +3,8 @@
 %global date 20200620
 %global with_snapshot 1
 
+# Enable system boost
+%bcond_with boost
 # Enable ffmpeg support
 %bcond_with ffmpeg
 # Disable Qt build
@@ -83,7 +85,9 @@ Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcomm
 Source8:        https://github.com/wwylele/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source9:        https://github.com/herumi/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/lvandeve/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+%if !%{with boost}
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+%endif
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
@@ -94,6 +98,9 @@ BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
+%if %{with boost}
+BuildRequires:  boost-devel >= 1.70.0
+%endif
 BuildRequires:  cmake(cubeb)
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
@@ -190,6 +197,9 @@ export TRAVIS_TAG="%{version}-%{release}"
   -DENABLE_QT_TRANSLATION:BOOL=ON \
 %else
   ENABLE_QT:BOOL=OFF \
+%endif
+%if %{with boost}
+  -DUSE_SYSTEM_BOOST:BOOL=ON \
 %endif
 %if %{with ffmpeg}
   -DENABLE_FFMPEG:BOOL=ON \

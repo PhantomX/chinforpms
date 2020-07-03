@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 1ff7394870bb9e483b99fe4272987e04d8d49ea2
+%global pfcommit 184838c960f2332b35af7927aa3d114be1d68f4e
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 23bad630797eb706eb2485c9e8de096456ba7631
+%global opensuse_id cba119b9d536c22bb0a3705ec58f0411fee53b7e
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -756,7 +756,6 @@ Source213: Module.kabi_dup_x86_64
 # source tree, but in the mean time we carry this to support the legacy workflow
 Source3000: merge.pl
 Source3001: kernel-local
-Source3002: Patchlist
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -835,7 +834,6 @@ Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch61: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
 Patch63: 0001-Drop-that-for-now.patch
 Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
@@ -845,10 +843,6 @@ Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
 Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
 Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
 Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-Patch71: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
-Patch72: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
 Patch79: 0001-disp-gv100-expose-capabilities-class.patch
@@ -879,6 +873,26 @@ Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
 
+# Latest upstream screen driver - https://patchwork.kernel.org/patch/11627069/
+Patch110: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+Patch111: 0002-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+Patch112: 0003-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+Patch113: 0004-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+Patch114: 0005-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+Patch115: 0006-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+Patch116: 0007-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+Patch117: 0008-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+Patch118: 0009-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+Patch119: 0010-drm-panel-st7703-Enter-sleep-after-display-off.patch
+Patch120: 0011-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+Patch121: 0012-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
+# Back port from 5.8
+Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
+
+# Tegra194 ACPI PCI quirk - http://patchwork.ozlabs.org/patch/1221384/
+Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -894,13 +908,10 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1020: %{opensuse_url}/efi-tpm-Verify-event-log-header-before-parsing.patch#/openSUSE-efi-tpm-Verify-event-log-header-before-parsing.patch
-Patch1022: %{opensuse_url}/genetlink-clean-up-family-attributes-allocations.patch#/openSUSE-genetlink-clean-up-family-attributes-allocations.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-
 %if !0%{?post_factum}
 
 #Patch3000: postfactum-merge-fixes.patch
@@ -2662,6 +2673,9 @@ fi
 #
 #
 %changelog
+* Thu Jul 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.7-500.chinfo
+- 5.7.7 - pf4
+
 * Wed Jun 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.6-500.chinfo
 - 5.7.6 - pf3
 
