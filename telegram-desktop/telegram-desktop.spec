@@ -36,7 +36,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.1.16
+Version:        2.1.17
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -54,8 +54,7 @@ Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.
 
 Source20:       thunar-sendto-%{name}.desktop
 
-Patch10:        %{url}/commit/eb1845e33bf8fd6afd64ee9afc34a22c4ee55acc.patch#/%{name}-gh-eb1845e.patch
-Patch11:        %{url}/commit/432ce4caa44e131e25285f2af4cb1ce120024517.patch#/%{name}-gh-432ce4c.patch
+Patch10:        %{url}/commit/326574ab7e8e492160710e3560b66574d63d3923.patch#/%{name}-gh-326574a.patch
 
 Patch100:       %{name}-pr8009.patch
 
@@ -260,6 +259,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Jul 03 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.17-100
+- 2.1.17
+
 * Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.16-100
 - 2.1.16
 

@@ -4,7 +4,7 @@
 # that's still supported by the vendor. It may work on other distros
 # or versions, but no effort will be made to ensure that going forward.
 %define min_rhel 7
-%define min_fedora 30
+%define min_fedora 31
 
 %if (0%{?fedora} && 0%{?fedora} >= %{min_fedora}) || (0%{?rhel} && 0%{?rhel} >= %{min_rhel})
     %define supported_platform 1
@@ -211,7 +211,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 6.4.0
+Version: 6.5.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -267,6 +267,7 @@ BuildRequires: python36-docutils
 BuildRequires: python3-docutils
 %endif
 BuildRequires: gcc
+BuildRequires: make
 BuildRequires: git
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires: perl-interpreter
@@ -522,6 +523,8 @@ Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 # needed for device enumeration
 Requires: systemd >= 185
+# For managing persistent mediated devices
+Requires: mdevctl
 
 %description daemon-driver-nodedev
 The nodedev driver plugin for the libvirtd daemon, providing
@@ -1208,7 +1211,7 @@ pushd %{_target_platform}
 %make_build
 
 popd
-gzip -9 ChangeLog
+
 
 %install
 export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
@@ -1503,7 +1506,7 @@ exit 0
 %files
 
 %files docs
-%doc AUTHORS ChangeLog.gz NEWS README
+%doc AUTHORS ChangeLog NEWS.rst README.rst
 %doc libvirt-docs/*
 
 
@@ -1986,6 +1989,9 @@ exit 0
 
 
 %changelog
+* Fri Jul 03 2020 Phantom X <megaphantomx at hotmail dot com> - 6.5.0-100
+- 6.5.0
+
 * Tue Jun 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.4.0-100
 - 6.4.0
 
