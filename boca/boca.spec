@@ -1,11 +1,11 @@
-%global smoothver 0.9.4
+%global smoothver 0.9.5
 
 %global sanitize 0
 
 %global systemlibs systemlibexpat,systemliburiparser,systemlibxspf,systemzlib
 
 Name:           boca
-Version:        1.0.1
+Version:        1.0.2
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac
 
@@ -114,6 +114,9 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 
 %changelog
+* Sat Jul 04 2020 Phantom X <megaphantomx at hotmail dot com> - 1.0.2-1
+- 1.0.2
+
 * Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0.1-1
 - 1.0.1
 

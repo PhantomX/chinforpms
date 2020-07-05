@@ -1,7 +1,7 @@
-%global commit 10b17932fa829fac10a5e6717d96ed5d56de80fe
+%global commit 51dd1ba02e4a96a3e0c9381a434bfd1fd4347d83
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200701
-%global with_snapshot 1
+%global date 20200703
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver cbdc68f558627cd09404c9ab4768d1c38353f383
+%global wine_stagingver 3f3a05f91c85cb5ccdc4c8185bcc862c6e96cd52
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cde7c02d92d27e4031216e37e60461cc5801e6c7
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 4ac322f66c8abf878e6aefd77963c871ccc46ab0
+%global tkg_id 9b26bf42633cacd790ea50468ee0249756def34a
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 9dad5957e2e88d6484c6ac3c020b59f395fd646d
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -97,8 +97,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.11
-Release:        103%{?gver}%{?dist}
+Version:        5.12
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -162,7 +162,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
-# 603-735/801-804 - Reverts to unbreak esync/fsync
+# 603-742/801-804 - Reverts to unbreak esync/fsync
 Patch603:       %{whq_url}/e854ea34cc481658ec61f4603d0438e075608c98#/%{name}-whq-e854ea3.patch
 Patch604:       %{whq_url}/e6e2f2325a0a4eb14f10dd6df319b068761e9600#/%{name}-whq-e6e2f23.patch
 Patch605:       %{whq_url}/8a63b688ac49f19c259066fd100407edf3747f95#/%{name}-whq-8a63b68.patch
@@ -296,6 +296,13 @@ Patch732:       %{whq_url}/8885a51347a768d8a9125d573963d12ac67d4715#/wine-whq-88
 Patch733:       %{whq_url}/520040dc4a287fd62d7d5161c083cee990c3d6e6#/wine-whq-520040d.patch
 Patch734:       %{whq_url}/21f1fa82a8c7bd1b077f0289141972ed619c5a5f#/wine-whq-21f1fa8.patch
 Patch735:       %{whq_url}/887332f9c7bf0d75f53f88a9739b77b12463d636#/wine-whq-887332f.patch
+Patch736:       %{whq_url}/25d6abb951e111fd4da1130fef16749ae6981540#/wine-whq-25d6abb.patch
+Patch737:       %{whq_url}/69b6572338396134a3e20189cb35445d68757ebb#/wine-whq-69b6572.patch
+Patch738:       %{whq_url}/c02b63fb60458ec750e5991a7491235861c40061#/wine-whq-c02b63f.patch
+Patch739:       %{whq_url}/72fc2ceaa6ae472a809b4d5c02be98c44388c1b7#/wine-whq-72fc2ce.patch
+Patch740:       %{whq_url}/a07cff77d3bd452c3c4b99bf93503f727bf768cb#/wine-whq-a07cff7.patch
+Patch741:       %{whq_url}/e9951dbe37c9fb018e677d872df9f563a0861295#/wine-whq-e9951db.patch
+Patch742:       %{whq_url}/b64208df0d8e94259783081084c5a731e0839542#/wine-whq-b64208d.patch
 
 # Reverts to unbreak fshack
 Patch750:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -309,14 +316,14 @@ Patch757:       %{whq_url}/6f9d20806e821ab07c8adf81ae6630fae94b00ef#/%{name}-whq
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch800:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-35.mystagingrevert#/%{name}-tkg-06877e5_revert-35.patch
+Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-38.mystagingrevert#/%{name}-tkg-06877e5_revert-38.patch
 Patch802:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch803:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-97fbe3f.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-97fbe3f.patch
 Patch804:       %{tkg_url}/hotfixes/01150d7f/staging-rawinput-esync-nofshack-fix.mystagingpatch#/%{name}-tkg-staging-rawinput-esync-nofshack-fix.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
-Source900:      https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
+Source900:       https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
@@ -350,9 +357,7 @@ Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.patch#/%{name}-valve-a09b820.patch
 Patch1092:       %{valve_url}/commit/35ff7c5c657d143a96c419346ef516e50815cdfb.patch#/%{name}-valve-35ff7c5.patch
 Patch1093:       %{tkg_url}/hotfixes/01150d7f/d8d6a6b2e639d2e29e166a3faf988b81388ae191.mypatch#/%{name}-tkg-d8d6a6b.patch
-Patch1094:       %{tkg_url}/hotfixes/01150d7f/001-ntdll_537bb7a8.mypatch#/%{name}-tkg-001-ntdll_537bb7a8.patch
-Patch1095:       %{tkg_url}/hotfixes/01150d7f/002-ntdll_b7ccb9d0.mypatch#/%{name}-tkg-002-ntdll_b7ccb9d0.patch
-Patch1096:       %{tkg_url}/hotfixes/01150d7f/origin_3078f10d_fix.mypatch#/%{name}-tkg-origin_3078f10d_fix.patch
+Patch1094:       %{tkg_url}/hotfixes/01150d7f/origin_3078f10d_fix.mypatch#/%{name}-tkg-origin_3078f10d_fix.patch
 
 Patch1200:       %{ge_url}/game-patches/nier.patch#/%{name}-ge-nier.patch
 Patch1201:       %{ge_url}/game-patches/nier-nofshack.patch#/%{name}-ge-nier-nofshack.patch
@@ -931,6 +936,13 @@ This package adds the opencl driver for wine.
 %patch599 -p1
 
 %if 0%{?wine_staging}
+%patch742 -p1 -R
+%patch741 -p1 -R
+%patch740 -p1 -R
+%patch739 -p1 -R
+%patch738 -p1 -R
+%patch737 -p1 -R
+%patch736 -p1 -R
 %patch735 -p1 -R
 %patch734 -p1 -R
 %patch733 -p1 -R
@@ -1155,8 +1167,6 @@ cp -p %{S:3001} README-pba-pkg
 
 %patch1093 -p1
 %patch1094 -p1
-%patch1095 -p1
-%patch1096 -p1
 %if 0%{?fshack}
 %patch1200 -p1
 %else
@@ -2933,6 +2943,9 @@ fi
 
 
 %changelog
+* Sat Jul 04 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.12-100
+- 5.12
+
 * Thu Jul 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.11-103.20200701git10b1793
 - Bump
 
