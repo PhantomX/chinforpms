@@ -1,7 +1,7 @@
 NAME = dolphin
-VERSION ?= 03e0d2c820a8aed809799e86321024244aa6791a
+VERSION ?= 0dbe8fb2eaa608a6540df3d269648a596c29cf4b
 SNAPSHOT ?= 1
-EXTERNALS = bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi libiconv-1.14 libpng libusb LZO mbedtls miniupnpc minizip OpenAL pugixml Qt SFML MoltenVK XAudio2_7 xxhash zlib zstd
+EXTERNALS = bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi libiconv-1.14 liblzma libpng libusb LZO mbedtls miniupnpc minizip OpenAL pugixml Qt SFML MoltenVK XAudio2_7 xxhash zlib zstd
 
 ifeq ($(SNAPSHOT),1)
 	TARBALLVER = $(shell echo ${VERSION} | cut -c-7 )

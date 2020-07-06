@@ -5,9 +5,9 @@
 %global with_llvm 0
 %global with_dsphack 1
 
-%global commit 03e0d2c820a8aed809799e86321024244aa6791a
+%global commit 0dbe8fb2eaa608a6540df3d269648a596c29cf4b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200619
+%global date 20200705
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -20,7 +20,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        112%{?gver}%{?dist}
+Release:        113%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -67,6 +67,7 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libenet)
 BuildRequires:  pkgconfig(libevdev)
+BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libsystemd)
@@ -158,7 +159,7 @@ sed 's| this directory | %{name}/Sys/GC |g' \
 pushd Externals
 rm -rf \
   bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi libiconv-* \
-  libpng libusb LZO mbedtls miniupnpc minizip OpenAL pugixml Qt SFML MoltenVK \
+  liblzma libpng libusb LZO mbedtls miniupnpc minizip OpenAL pugixml Qt SFML MoltenVK \
   XAudio2_7 xxhash zlib zstd
 
 #Remove Bundled Bochs source and replace with links:
@@ -227,7 +228,7 @@ patch -p1 -R -i %{P:100}
 
 %if 0%{?with_dsphack}
 install -pm0755 %{name}-dsphack %{buildroot}%{_bindir}/
-install -pm0755 %{name}-nogui-dsphack %{buildroot}%{_bindir}/
+install -pm0755 %{name}-dsphack-nogui %{buildroot}%{_bindir}/
 
 cp -p %{buildroot}%{_datadir}/applications/%{name}{,-dsphack}.desktop
 sed \
@@ -289,6 +290,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Jul 05 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-113.20200705git0dbe8fb
+- Bump
+- BR: lzma
+
 * Fri Jun 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-112.20200619git03e0d2c
 - New snapshot
 - Added DSP hack binary
