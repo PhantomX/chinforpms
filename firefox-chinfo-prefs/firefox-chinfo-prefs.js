@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20200411
+// 20200706
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -40,7 +40,7 @@ pref("browser.urlbar.usepreloadedtopurls.enabled", false);
 pref("browser.xul.error_pages.expert_bad_cert", true);
 pref("dom.allow_cut_copy", false);
 pref("dom.disable_open_during_load", true);
-pref("dom.IntersectionObserver.enabled", false);
+//pref("dom.IntersectionObserver.enabled", false);
 // "change click dblclick mouseup pointerup notificationclick reset submit touchend"
 pref("dom.popup_allowed_events", "click dblclick");
 pref("dom.popup_maximum", 3);

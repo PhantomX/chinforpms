@@ -1,7 +1,15 @@
-%global commit 211b9c37b0475b0fc7539920ce154a7c3674c070
+%global commit cb1da02af9b967e86d451fe8f2281a8518c277a8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200701
+%global date 20200706
 %global with_snapshot 1
+
+# Set to use proton fork
+%global proton 1
+%if 0%{?proton}
+%global pkgname vkd3d-proton
+%else
+%global pkgname vkd3d
+%endif
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -9,7 +17,7 @@
 
 Name:           vkd3d
 Version:        1.1
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 Epoch:          1
@@ -18,7 +26,7 @@ License:        LGPLv2+
 URL:            http://www.winehq.org/
 
 %if 0%{?with_snapshot}
-Source0:        https://github.com/HansKristian-Work/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        https://github.com/HansKristian-Work/%{pkgname}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz
 Source10:       https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz.sign
@@ -83,7 +91,7 @@ Development files for libvkd3d-utils.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
+%autosetup -n %{pkgname}-%{commit} -p1
 autoreconf -ivf
 %else
 %autosetup -n %{name}-%{version} -p1
@@ -141,6 +149,10 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Mon Jul 06 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-107.20200706gitcb1da02
+- New snapshot
+- Proton fork switch
+
 * Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-106.20200701git211b9c3
 - Bump
 

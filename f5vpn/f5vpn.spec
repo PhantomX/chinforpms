@@ -9,26 +9,25 @@
 
 Name:           f5vpn
 Version:        7190.2020.0221.1
-Release:        1%{?dist}
-Summary:        Check Point SSL Network Extender (vpn client)
+Release:        2%{?dist}
+Summary:        F5 SSL VPN (vpn client)
 
 # See LICENSE
 License:        Proprietary
-URL:            https://www.checkpoint.com/
+URL:            https://www.f5.com/
 
 Source0:        https://connect.healthsystem.virginia.edu/public/download/linux_f5vpn.x86_64.rpm#/%{name}-%{version}.x86_64.rpm
 
 Source1:        %{vc_url}/LICENSE
 Source2:        %{vc_url}/README.rst
 Source3:        %{name}run
-Source4:        %{name}-sysusers.conf
 Source5:        README.suid
 
 ExclusiveArch:  x86_64
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  execstack
-BuildRequires:  systemd
+Requires:       f5vpn-filesystem
 Requires:       zenity
 Requires:       hicolor-icon-theme
 
@@ -43,7 +42,7 @@ Provides:       bundled(libssl) = 1.0.0
 
 
 %description
-%{summary}.
+F5 VPN can establish SSL VPN network access connection with F5 BIG-IP APM.
 
 
 %prep
@@ -66,6 +65,15 @@ find opt/f5 -name '*.so*' | xargs chmod 0755
 
 execstack -c %{optdir}/svpn
 execstack -c %{optdir}/tunnelserver
+
+# Ugly hack to make it respect FHS (a little)
+sed \
+  -e 's,/usr/local/lib/F5Networks/SSLVPN/var/run/svpn.pid,%{_rundir}/f5vpn/svpn.pid\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00,g' \
+  -i %{optdir}/f5vpn %{optdir}/svpn
+
+sed \
+  -e 's,/usr/local/ssl/certs,%{_sysconfdir}/ssl/certs\x00\x00\x00\x00\x00\x00,g' \
+  -i %{optdir}/tunnelserver
 
 cp -p %{optdir}/com.f5.f5vpn.desktop %{optdir}/com.f5.f5vpnrun.desktop
 
@@ -106,19 +114,6 @@ mkdir -p %{buildroot}%{_datadir}/dbus-1/services
 install -pm0644 %{optdir}/com.f5.f5vpn.service \
   %{buildroot}%{_datadir}/dbus-1/services/
 
-mkdir -p %{buildroot}/run/%{name}/
-chmod 0700 %{buildroot}/run/%{name}/
-
-mkdir -p %{buildroot}%{_tmpfilesdir}
-cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf <<EOF
-d /run/f5vpn 0700 root root -
-EOF
-
-mkdir -p %{buildroot}%{_prefix}/local/lib/F5Networks/SSLVPN/var
-ln -sf ../../../../../../run/%{name} %{buildroot}%{_prefix}/local/lib/F5Networks/SSLVPN/var/run
-
-install -Dpm 644 %{S:4} %{buildroot}%{_sysusersdir}/%{name}.conf
-
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{S:3} %{buildroot}%{_bindir}/%{name}run
 
@@ -149,13 +144,9 @@ for res in 16 24 32 48 64 96 128 256 512 ;do
 done
 
 
-%pre
-%sysusers_create_package %{name} %{S:4}
-
-
 %files
 %license LICENSE
-%doc README.rst
+%doc README.rst README.suid
 %{_bindir}/%{name}
 %{_bindir}/%{name}run
 %caps(cap_kill+ep) /%{optdir}/%{name}
@@ -163,15 +154,14 @@ done
 /%{optdir}/tunnelserver
 /%{optdir}/lib/*.so*
 /%{optdir}/platforms/*.so*
-%dir /run/%{name}/
-%{_tmpfilesdir}/%{name}.conf
-%{_sysusersdir}/%{name}.conf
 %{_datadir}/applications/*.desktop
 %{_datadir}/dbus-1/services/*.service
 %{_datadir}/icons/hicolor/*x*/apps/%{name}.png
-%{_prefix}/local/lib/F5Networks/SSLVPN/var/run
 
 
 %changelog
+* Mon Jul 06 2020 Phantom X <megaphantomx at hotmail dot com> - 7190.2020.0221.1-2
+- R: f5vpn-filesystem
+
 * Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 7190.2020.0221.1-1
 - Initial spec

@@ -11,6 +11,9 @@ citra
 desmume
 discord
 -dropboxd
+f5cli
+f5vpn
+f5vpn-filesystem
 FAudio-freeworld
 flycast
 -freac-superfast-codecs-freeworld
