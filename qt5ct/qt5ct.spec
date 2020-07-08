@@ -1,6 +1,6 @@
 Name:           qt5ct
 Version:        1.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
@@ -9,6 +9,7 @@ Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.
 Source1:        README.gtk3
 
 Patch0:         %{name}-gtk3-dialogs.patch
+Patch1:         0001-Disable-QIcon-setThemeName.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
@@ -31,6 +32,8 @@ DE/WM without Qt integration.
 
 %prep
 %setup -q -c
+
+%patch1 -p1 -d %{name}-%{version}
 
 cp -a %{name}-%{version} %{name}-%{version}-gtk3
 
@@ -91,6 +94,9 @@ install -D -pm 644 %{name}-%{version}/src/%{name}/translations/*.qm \
 
 
 %changelog
+* Tue Jul 07 2020 Phantom X <megaphantomx at hotmail dot com> - 1.0-101
+- Patch to fix icon themes with applications with internal iconsets
+
 * Wed Jun 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0-100
 - 1.0
 

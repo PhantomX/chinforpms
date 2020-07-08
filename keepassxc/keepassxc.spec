@@ -2,7 +2,7 @@
 %bcond_with yubikey
 
 Name:           keepassxc
-Version:        2.5.4
+Version:        2.6.0
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -13,8 +13,6 @@ License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv
 URL:            https://keepassxc.org/
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 
-Patch0:        %{vc_url}/commit/b34a8f9d94fff78950f70d7d941acaac0a0480ca.patch#/%{name}-gh-b34a8f9.patch
-Patch1:        %{vc_url}/commit/796b5ceacb9f87f812c3ec9e3beed370e24edff0.patch#/%{name}-gh-796b5ce.patch
 
 Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
 
@@ -23,6 +21,7 @@ BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
+BuildRequires:  asciidoctor
 BuildRequires:  pkgconfig(gpg-error)
 BuildRequires:  pkgconfig(libargon2)
 BuildRequires:  pkgconfig(libcurl)
@@ -42,6 +41,7 @@ BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xtst)
 BuildRequires:  pkgconfig(zlib) >= 1.2.0
 BuildRequires:  qt5-linguist
+BuildRequires:  readline-devel
 %if %{with keeshare}
 BuildRequires:  quazip-qt5-devel
 %endif
@@ -62,6 +62,8 @@ cross-platform and modern open-source password manager.
 
 
 %build
+%define _lto_cflags %{nil}
+
 %cmake . -B %{_target_platform} \
   -DCMAKE_BUILD_TYPE=release \
   -DKEEPASSXC_BUILD_TYPE:STRING=Release \
@@ -107,7 +109,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/docs
 %{_datadir}/%{name}/icons
-%{_datadir}/%{name}/wizard
 %{_datadir}/%{name}/wordlists
 %{_datadir}/applications/*.desktop
 %{_datadir}/man/man1/*.1*
@@ -117,6 +118,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Tue Jul 07 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.0-100
+- 2.6.0
+
 * Fri Apr 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.4-100
 - 2.5.4
 

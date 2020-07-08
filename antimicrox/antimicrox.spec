@@ -1,6 +1,6 @@
-%global commit dcf23b7e7f392c2b296bec6ea86477a790823283
+%global commit 80f6198cde4868b214e1309f1c6a83c4b293d07e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200625
+%global date 20200707
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -13,7 +13,7 @@
 
 Name:           antimicrox
 Version:        3.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
 License:        GPLv3+
@@ -85,13 +85,6 @@ sed \
 
 ln -sf %{pkgname}.png src/images/%{pkgname}_trayicon.png
 
-# FIXME: ugly hack to display proper icons
-sed \
-  -e 's|QIcon(":/icons|QIcon("%{_datadir}/%{pkgname}/icons|g' \
-  -i src/joytabwidget.cpp src/mainwindow.cpp src/mainsettingsdialog.cpp src/stickpushbuttongroup.cpp \
-     src/keyboard/virtualkeyboardmousewidget.cpp src/dpadpushbuttongroup.cpp
-
-
 %build
 %cmake . -B %{_target_platform} \
   -DWITH_X11:BOOL=ON \
@@ -106,7 +99,6 @@ sed \
 %install
 %make_install -C %{_target_platform}
 
-rm -f %{buildroot}%{_datadir}/%{pkgname}/icons/hicolor/index.theme
 rm -f %{buildroot}%{_datadir}/%{pkgname}/Changelog
 
 %find_lang %{pkgname} --with-qt
@@ -141,6 +133,10 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 
 
 %changelog
+* Tue Jul 07 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0-101.20200707git80f6198
+- New snapshot
+- Remove icons hack
+
 * Sun Jun 28 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0-100.20200625gitdcf23b7
 - Snapshot
 - Rawhide sync
