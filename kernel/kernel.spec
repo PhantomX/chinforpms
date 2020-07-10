@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 184838c960f2332b35af7927aa3d114be1d68f4e
+%global pfcommit dd896fbe193406396666b6c5967c4739a82459f6
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -816,7 +816,6 @@ Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
 Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
 Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
 Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
-Patch10: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
 Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
 Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
 Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
@@ -2673,6 +2672,9 @@ fi
 #
 #
 %changelog
+* Thu Jul 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.8-500.chinfo
+- 5.7.8 - pf4
+
 * Thu Jul 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.7-500.chinfo
 - 5.7.7 - pf4
 
