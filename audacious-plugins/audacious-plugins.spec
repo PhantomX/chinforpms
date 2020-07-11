@@ -8,7 +8,7 @@
 %{?aud_plugin_dep}
 
 Name:           audacious-plugins
-Version:        4.0.4
+Version:        4.0.5
 Release:        100%{?dist}
 
 %global tar_ver %{version}
@@ -284,6 +284,9 @@ install -p -m0644 %{SOURCE102} ${RPM_BUILD_ROOT}%{_datadir}/appdata
 
 
 %changelog
+* Sat Jul 11 2020 Phantom X <megaphantomx at hotmail dot com> - 4.0.5-100
+- 4.0.5
+
 * Fri Jun 19 2020 Phantom X <megaphantomx at hotmail dot com> - 4.0.4-100
 - 4.0.4
 

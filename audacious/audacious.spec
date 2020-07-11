@@ -2,7 +2,7 @@
 %bcond_without gtk
 
 Name:            audacious
-Version:         4.0.4
+Version:         4.0.5
 Release:         100%{?dist}
 
 %global tar_ver %{version}
@@ -165,6 +165,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/%{name}.ap
 
 
 %changelog
+* Sat Jul 11 2020 Phantom X <megaphantomx at hotmail dot com> - 4.0.5-100
+- 4.0.5
+
 * Fri Jun 19 2020 Phantom X <megaphantomx at hotmail dot com> - 4.0.4-100
 - 4.0.4
 
