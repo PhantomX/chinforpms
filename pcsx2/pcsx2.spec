@@ -1,6 +1,6 @@
-%global commit 297f91ae7dcc77b432500c14c323e8836846641c
+%global commit 257f8b1142aa84ecda2588ecee4dea02b07e0fe3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200620
+%global date 20200711
 %global with_snapshot 1
 
 %global sanitize 0
@@ -13,7 +13,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -34,6 +34,8 @@ Source0:        %{name}-%{version}.tar.xz
 %endif
 %endif
 Source1:        Makefile
+
+Patch0:         0001-Fix-build-without-portaudio.patch
 
 # PCSX2 does not support running as a 64 bit application.
 # http://code.google.com/p/pcsx2/wiki/ChrootAnd64bStatusLinux
@@ -70,6 +72,7 @@ BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  libpcap-devel
 BuildRequires:  perl-interpreter
+BuildRequires:  sdl_gamecontrollerdb >= 0-19
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -120,6 +123,9 @@ sed -i \
   -e '/PCSX2_GIT_REV/s| ""| "%{shortcommit}"|g' \
   cmake/Pcsx2Utils.cmake
 %endif
+
+cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
+  plugins/onepad/res/game_controller_db.txt
 
 
 %build
@@ -217,6 +223,10 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Sun Jul 12 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-102.20200711git257f8b1
+- New snapshot
+- Copy game_controller_db.txt from sdl_gamecontrollerdb
+
 * Mon Jun 22 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-101.20200620git297f91a
 - Bump
 

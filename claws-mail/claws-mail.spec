@@ -1,7 +1,7 @@
 %global commit 4ed9411f4dc2801d7f983734ae4003102b8f361d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200621
-%global with_snapshot 1
+%global with_snapshot 0
 
 %global with_gtk3  0
 %global with_python  0
@@ -25,8 +25,8 @@
 %global build_manual 1
 
 Name:           claws-mail
-Version:        3.17.5
-Release:        101%{?gver}%{?dist}
+Version:        3.17.6
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -741,6 +741,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Mon Jul 13 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.17.6-100
+- 3.17.6
+
 * Tue Jun 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.17.5-101.20200621git4ed9411
 - Snapshot
 

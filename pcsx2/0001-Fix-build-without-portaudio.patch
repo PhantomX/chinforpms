@@ -1,0 +1,43 @@
+From 87fcfe63d63715eed7c993c9776811d346fcb2c9 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 11 Jul 2020 23:04:37 -0300
+Subject: [PATCH] Fix build without portaudio
+
+---
+ plugins/spu2-x/src/wx/wxConfig.cpp | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/plugins/spu2-x/src/wx/wxConfig.cpp b/plugins/spu2-x/src/wx/wxConfig.cpp
+index 61c5217..c7d0046 100644
+--- a/plugins/spu2-x/src/wx/wxConfig.cpp
++++ b/plugins/spu2-x/src/wx/wxConfig.cpp
+@@ -217,7 +217,9 @@ void Dialog::ResetToValues()
+ {
+     m_inter_select->SetSelection(Interpolation);
+     m_module_select->SetSelection(OutputModule);
++#ifdef SPU2X_PORTAUDIO
+     m_portaudio_select->SetSelection(OutputAPI);
++#endif
+     m_sdl_select->SetSelection(SdlOutputAPI);
+     m_sync_select->SetSelection(SynchMode);
+     m_audio_select->SetSelection(numSpeakers);
+@@ -236,7 +238,9 @@ void Dialog::SaveValues()
+ {
+     Interpolation = m_inter_select->GetSelection();
+     OutputModule = m_module_select->GetSelection();
++#ifdef SPU2X_PORTAUDIO
+     OutputAPI = m_portaudio_select->GetSelection();
++#endif
+     SdlOutputAPI = m_sdl_select->GetSelection();
+     SynchMode = m_sync_select->GetSelection();
+     numSpeakers = m_audio_select->GetSelection();
+@@ -466,4 +470,4 @@ void AdvDialog::Display()
+     ShowModal();
+     SaveValues();
+ }
+-}; // namespace SoundtouchCfg
+\ No newline at end of file
++}; // namespace SoundtouchCfg
+-- 
+2.26.2
+
