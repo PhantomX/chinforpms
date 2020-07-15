@@ -1,6 +1,6 @@
 Name:           libvorbis
 Summary:        The Vorbis General Audio Compression Codec
-Version:        1.3.6
+Version:        1.3.7
 Release:        100%{?dist}
 
 Epoch:          2
@@ -13,25 +13,11 @@ Source:         https://downloads.xiph.org/releases/vorbis/%{name}-%{version}.ta
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(ogg) >= 1.0
 
-# sync with git as of
-#
-# commit 46e70fa6573e206c2555cd99a53204ffd6bf58fd
-# Author: Minmin Gong <gongminmin@msn.com>
-# Date:   Wed Jul 4 21:37:54 2018 -0700
-#
-#     Fix the compiling errors on msvc ARM64 configuration.
-#
-# Fixes:
-# CVE-2017-14160
-# CVE-2018-10392
-# CVE-2018-10393
-Patch0:   %{name}-1.3.6-git.patch
-
 # https://ao-yumi.github.io/aotuv_web/index.html
 # https://freac.org
-Patch10:  https://freac.org/patches/%{name}-1.3.6-aotuv-b6.03.patch
-Patch11:  https://freac.org/patches/%{name}-1.3.6-aotuv-b6.03-lancer.patch
-
+Patch10:        https://freac.org/patches/%{name}-1.3.7-aotuv-b6.03.patch
+Patch11:        https://freac.org/patches/%%{name}-1.3.7-aotuv-b6.03-lancer.patch
+Patch12:        0001-sharedbook-Revert-memory-leak-fix-to-please-Lancer-o.patch
 
 %description
 Ogg Vorbis is a fully open, non-proprietary, patent- and royalty-free,
@@ -82,7 +68,6 @@ sed -i "s/-mcpu=750//" configure
 # remove unpackaged files from the buildroot
 rm -f %{buildroot}%{_libdir}/*.la
 
-
 %check
 make check
 
@@ -108,6 +93,9 @@ make check
 
 
 %changelog
+* Tue Jul 14 2020 Phantom X <megaphantomx at hotmail dot com> - 2:1.3.7-100
+- 1.3.7
+
 * Wed Jan 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:1.3.6-100
 - aoTuV and Lancer optimizations
 - chinforpms updates

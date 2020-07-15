@@ -1,0 +1,26 @@
+From 88feda8eafcdf9910044acbd2c70818524205d4e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 14 Jul 2020 08:33:19 -0300
+Subject: [PATCH] sharedbook: Revert memory leak fix to please Lancer
+ optimizations update
+
+This reverts commit 9eadeccdc4247127d91ac70555074239f5ce3529
+---
+ lib/sharedbook.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/lib/sharedbook.c b/lib/sharedbook.c
+index b44a58b..6bf7bf2 100644
+--- a/lib/sharedbook.c
++++ b/lib/sharedbook.c
+@@ -587,7 +587,6 @@ void run_test(static_codebook *b,float *comp){
+       exit(1);
+     }
+   }
+-  free(out);
+ }
+ 
+ int main(){
+-- 
+2.26.2
+

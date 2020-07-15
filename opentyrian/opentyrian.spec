@@ -1,8 +1,6 @@
-%global _legacy_common_support 1
-
-%global commit 24df4a4651f74731a61414b5bd9a3c120633fb39
-%global shortcommit %(c=%{commit}; echo ${c:0:12})
-%global date 20180303
+%global commit 8d40433a0c91f70e682d20156044ff94f40c3e61
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20200703
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,21 +9,19 @@
 
 Name:           opentyrian
 Version:        2.1
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        An arcade-style vertical scrolling shooter
 
 License:        GPLv2
-URL:            https://bitbucket.org/opentyrian/opentyrian
+URL:            https://github.com/%{name}/%{name}
 %if 0%{?with_snapshot}
-Source0:        %{url}/get/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        http://www.camanis.net/opentyrian/releases/%{name}-%{version}-src.tar.gz
 %endif
 
 Patch0:         %{name}-wild.patch
-Patch1:         %{name}-fallthrough.patch
-Patch2:         %{name}-grabmouse.patch
-Patch3:         %{name}-fix-memory-corruption.patch
+Patch1:         0001-Add-Makefile-option-to-disable-initial-mouse-grab.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
@@ -42,31 +38,27 @@ employed to fight Microsol and save the galaxy.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{name}-%{name}-%{shortcommit} -p1
+%autosetup -n %{name}-%{commit} -p1
 %else
 %autosetup -p1
 %endif
 
 chmod -x CREDITS
 
-%if 0%{?with_snapshot}
 sed \
-  -e "/^HG_REV/s|:=.*|:= %{version}.%{shortcommit}|g" \
-  -e '/touch src\/hg_revision.h/d' \
-  -i Makefile
-%endif
-
-sed \
-  -e 's|$(gamesdir)|%{_datadir}|g' \
   -e "s|-O2|%{build_cflags}|g" \
   -i Makefile
 
 
 %build
 %make_build \
+  prefix="%{_prefix}" \
+  gamesdir="%{_datadir}" \
+  VCS_IDREV="(echo %{version}-%{release})" \
   WITH_GRAB_MOUSE=false \
   STRIP=/bin/true \
-  LDFLAGS="%{build_ldflags}"
+  LDFLAGS="%{build_ldflags}" \
+%{nil}
 
 %install
 mkdir -p %{buildroot}%{_datadir}/tyrian
@@ -102,6 +94,10 @@ done
 
 
 %changelog
+* Tue Jul 14 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1-6.20200703git8d40433
+- New snapshot from github
+- Update patchset
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.1-5.20180303git24df4a4651f7
 - gcc 10 fix
 
