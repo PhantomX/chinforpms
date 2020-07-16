@@ -1,6 +1,6 @@
 %global commit b029d085837d8227118b7dc217ea26e98a4b9aac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200510
+%global date 20200610
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -144,7 +144,7 @@ desktop-file-install \
 # TODO: appdata file, not available yet (should item)
 
 %changelog
-* Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 0-0.7.20200510gitb029d08
+* Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 0-0.7.20200610gitb029d08
 - New snapshot
 
 * Thu Apr 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 0-0.6.20200401git2f9a4b9

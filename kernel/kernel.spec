@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -871,6 +871,7 @@ Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
 Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
+Patch108: selinux_allow_reading_labels_before_policy_is_loaded.patch 
 
 # Latest upstream screen driver - https://patchwork.kernel.org/patch/11627069/
 Patch110: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
@@ -931,6 +932,10 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 
 %if !0%{?zen}
 Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
+# https://bugzilla.kernel.org/show_bug.cgi?id=207383
+Patch4011: 0001-Revert-mm-slub-fix-incorrect-interpretation-of-s-off.patch
+Patch4012: 0002-Revert-slub-avoid-redzone-when-choosing-freepointer-.patch
+Patch4013: 0003-Revert-slub-relocate-freelist-pointer-to-middle-of-o.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2672,6 +2677,10 @@ fi
 #
 #
 %changelog
+* Wed Jul 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.8-501.chinfo
+- Revert some patches to try to fix kernelbz#207383
+- f32 sync
+
 * Thu Jul 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.8-500.chinfo
 - 5.7.8 - pf4
 

@@ -1,7 +1,7 @@
 %global with_sdk 0
 
 Name:           vulkan-tools
-Version:        1.2.146
+Version:        1.2.147
 Release:        1%{?dist}
 Summary:        Vulkan tools
 
@@ -78,6 +78,9 @@ done
 %{_bindir}/*
 
 %changelog
+* Wed Jul 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.147-1
+- 1.2.147
+
 * Thu Jul 09 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.146-1
 - 1.2.146
 
