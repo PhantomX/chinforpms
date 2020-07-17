@@ -64,7 +64,7 @@ cross-platform and modern open-source password manager.
 %build
 %define _lto_cflags %{nil}
 
-%cmake . -B %{_target_platform} \
+%cmake \
   -DCMAKE_BUILD_TYPE=release \
   -DKEEPASSXC_BUILD_TYPE:STRING=Release \
   -DWITH_TESTS:BOOL=OFF \
@@ -81,12 +81,12 @@ cross-platform and modern open-source password manager.
   -DWITH_XC_UPDATECHECK:BOOL=OFF \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
 
-%make_install -C %{_target_platform}
+%cmake_install
 
 desktop-file-edit \
   --add-mime-type="application/x-keepass" \

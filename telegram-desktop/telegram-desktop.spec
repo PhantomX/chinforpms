@@ -36,7 +36,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.1.18
+Version:        2.1.19
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -85,6 +85,9 @@ BuildRequires:  ffmpeg-devel >= 3.1
 BuildRequires:  openal-soft-devel
 BuildRequires:  qt5-qtbase-private-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
+BuildRequires:  qt5-qtwayland-devel
+BuildRequires:  libxkbcommon-devel
+BuildRequires:  wayland-devel
 BuildRequires:  dbusmenu-qt5-devel
 BuildRequires:  libstdc++-devel
 BuildRequires:  expected-devel
@@ -166,6 +169,11 @@ rm -f Telegram/lib_ui/qt_conf/linux.qrc
 
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
+# Fix private qt5 issues
+cp -rs \
+  %{_qt5_includedir}/QtXkbCommonSupport/%{_qt5_version}/QtXkbCommonSupport \
+  Telegram/SourceFiles/
+
 
 %build
 %if %{with ipo} && %{without clang}
@@ -179,7 +187,7 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 %endif
 
 # Building Telegram Desktop using cmake...
-%cmake . -B %{_target_platform} -G Ninja \
+%cmake -G Ninja \
     -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{with clang}
     -DCMAKE_C_COMPILER=%{_bindir}/clang \
@@ -223,11 +231,11 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
     -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
 %{nil}
 
-%ninja_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%ninja_install -C %{_target_platform}
+%cmake_install
 
 desktop-file-edit \
   --set-key=Exec \
@@ -257,6 +265,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Thu Jul 16 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.19-100
+- 2.1.19
+- BR: qt5-qtwayland
+
 * Wed Jul 08 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.18-100
 - 2.1.18
 

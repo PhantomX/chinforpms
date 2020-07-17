@@ -1,5 +1,5 @@
 Name:           chinforpms-rpm-config
-Version:        3
+Version:        4
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
@@ -40,6 +40,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Fri Jul 17 2020 Phantom X <megaphantomx at hotmail dot com> - 4-1
+- Enable out of source cmake
+
 * Mon Mar 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 3-1
 - Remove -fno-diagnostics-color
 

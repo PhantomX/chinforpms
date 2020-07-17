@@ -68,13 +68,13 @@ image.
 %endif
 
 %build
-%{cmake_kf5} . -B %{_target_platform}
+%{cmake_kf5}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-make install/fast -C %{_target_platform} DESTDIR=%{buildroot}
+%cmake_install
 
 %if !0%{?with_snapshot}
 %find_lang %{name}

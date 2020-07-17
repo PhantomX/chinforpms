@@ -228,7 +228,7 @@ popd
 %endif
 %endif
 
-%cmake . -B %{_target_platform} \
+%cmake \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \
@@ -266,20 +266,20 @@ popd
 %endif
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
 
 mkdir -p %{buildroot}%{_bindir}
 %if %{with qt}
-  install -pm0755 %{_target_platform}/PPSSPPQt %{buildroot}%{_bindir}/%{name}
+  install -pm0755 %{_vpath_builddir}/PPSSPPQt %{buildroot}%{_bindir}/%{name}
 %else
-  install -pm0755 %{_target_platform}/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
+  install -pm0755 %{_vpath_builddir}/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
 %endif
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -r %{_target_platform}/assets %{buildroot}%{_datadir}/%{name}/
+cp -r %{_vpath_builddir}/assets %{buildroot}%{_datadir}/%{name}/
 rm -f %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
 ln -sf ../../fonts/google-roboto/RobotoCondensed-Regular.ttf \
   %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf

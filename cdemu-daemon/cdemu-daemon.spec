@@ -30,16 +30,16 @@ devices.
 %autosetup
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
   -DSESSION_BUS_SERVICE:BOOL=ON \
   -DSYSTEM_BUS_SERVICE:BOOL=OFF \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 %find_lang %{name}
 

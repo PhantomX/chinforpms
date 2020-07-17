@@ -5,9 +5,9 @@
 %global with_llvm 0
 %global with_dsphack 1
 
-%global commit 5286fb26575d2153089ba54f1765dd39d8a4b6d2
+%global commit c59648337a8e65178d03687ec7bf7349e9bc9ccd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200711
+%global date 20200716
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        114%{?gver}%{?dist}
+Release:        115%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -190,7 +190,7 @@ sed -i \
 
 %build
 #Script to find xxhash is not implemented, just tell cmake it was found
-%cmake . -B %{_target_platform} \
+%cmake \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \
@@ -215,17 +215,17 @@ sed -i \
 %{nil}
 
 %if 0%{?with_dsphack}
-%make_build -C %{_target_platform}
-mv %{_target_platform}/Binaries/%{name} %{name}-dsphack
-mv %{_target_platform}/Binaries/%{name}-nogui %{name}-dsphack-nogui
+%cmake_build
+mv %{__cmake_builddir}/Binaries/%{name} %{name}-dsphack
+mv %{__cmake_builddir}/Binaries/%{name}-nogui %{name}-dsphack-nogui
 %endif
 
 patch -p1 -R -i %{P:100}
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 %if 0%{?with_dsphack}
 install -pm0755 %{name}-dsphack %{buildroot}%{_bindir}/
@@ -291,6 +291,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Jul 16 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-115.20200716gitc596483
+- Bump
+
 * Fri Jul 10 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-114.20200709git5281efe
 - New snapshot
 

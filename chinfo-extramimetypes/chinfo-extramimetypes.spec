@@ -21,16 +21,16 @@ This package contains extra unusual mimetypes for DEs.
 
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
   -DCHINFO_LEGACY:BOOL=OFF \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
 
-%make_install -C %{_target_platform}
+%cmake_install
 
 rm -f %{buildroot}%{_datadir}/mime/packages/%{name}-cdimage.xml
 

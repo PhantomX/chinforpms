@@ -78,16 +78,16 @@ sed \
 
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
   -DCMAKE_INSTALL_INCLUDEDIR:PATH=include/%{name} \
   -DGSTREAMER:BOOL=ON \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/

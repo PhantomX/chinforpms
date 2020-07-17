@@ -178,7 +178,7 @@ extdir=$(pwd)
 export CFLAGS="%{build_cflags} -fno-plt -mno-avx"
 export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
 
-%cmake xgl -B %{_target_platform} \
+%cmake xgl \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DBUILD_WAYLAND_SUPPORT:BOOL=ON \
   -DXGL_METROHASH_PATH:PATH=${extdir}/MetroHash \
@@ -190,8 +190,8 @@ export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
   -G Ninja \
 %{nil}
 
-%ninja_build -C %{_target_platform}
-%ninja_build spvgen -C %{_target_platform}
+%ninja_build spvgen -C %{__cmake_builddir}
+%cmake_build
 
 %endif
 
@@ -205,8 +205,8 @@ mkdir _temp_install
   mv usr/lib/x86_64-linux-gnu/*.so _temp_install/
   mv etc/vulkan/icd.d/amd_icd%{?__isa_bits}.json _temp_install/
 %else
-  mv %{_target_platform}/icd/amdvlk%{?__isa_bits}.so _temp_install/
-  mv %{_target_platform}/spvgen/spvgen.so _temp_install/
+  mv %{__cmake_builddir}/icd/amdvlk%{?__isa_bits}.so _temp_install/
+  mv %{__cmake_builddir}/spvgen/spvgen.so _temp_install/
   mv AMDVLK/json/Redhat/amd_icd%{?__isa_bits}.json _temp_install/
 %endif
 install -pm0644 _temp_install/amd_icd%{?__isa_bits}.json \

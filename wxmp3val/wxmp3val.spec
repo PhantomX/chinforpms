@@ -34,14 +34,14 @@ sed \
 
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 

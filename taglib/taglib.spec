@@ -83,26 +83,26 @@ Files needed when building software with %{name}.
 
 %build
 CXXFLAGS="%{build_cxxflags} -std=c++11" \
-%{cmake} . -B %{_target_platform} \
+%{cmake} \
 %if %{with tests}
   -DBUILD_TESTS:BOOL=ON \
 %endif
   -DCMAKE_BUILD_TYPE:STRING="Release" \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 %if %{with doc}
-make docs -C %{_target_platform}
+make docs -C %{__cmake_builddir}
 %endif
 
 
 %install
-make install/fast DESTDIR=%{buildroot} -C %{_target_platform}
+%cmake_install
 
 %if %{with doc}
 rm -fr %{apidocdir} ; mkdir %{apidocdir}
-cp -a %{_target_platform}/doc/html/ %{apidocdir}/
+cp -a %{__cmake_builddir}/doc/html/ %{apidocdir}/
 ln -s html/index.html %{apidocdir}
 find %{apidocdir} -name '*.md5' | xargs rm -fv
 %endif
@@ -113,9 +113,9 @@ export PKG_CONFIG_PATH=%{buildroot}%{_libdir}/pkgconfig
 test "$(pkg-config --modversion taglib)" = "%{version}"
 test "$(pkg-config --modversion taglib_c)" = "%{version}"
 %if %{with tests}
-#ln -s ../../tests/data %{_target_platform}/tests/
+#ln -s ../../tests/data %{__cmake_builddir}/tests/
 #LD_LIBRARY_PATH=%{buildroot}%{_libdir}:$LD_LIBRARY_PATH \
-make check -C %{_target_platform}
+make check -C %{__cmake_builddir}
 %endif
 
 

@@ -70,7 +70,7 @@ tar -xf %{S:1} -C %{srcname1} --strip-components 1
 tar -xf %{S:2} -C cmake/%{srcname2} --strip-components 1
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
   -DBUILD_TESTS:BOOL=OFF \
   -DUSE_PULSE:BOOL=ON \
   -DUSE_ALSA:BOOL=ON \
@@ -80,11 +80,11 @@ tar -xf %{S:2} -C cmake/%{srcname2} --strip-components 1
   -DUSE_KAI:BOOL=OFF \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 
 %files
@@ -95,7 +95,7 @@ tar -xf %{S:2} -C cmake/%{srcname2} --strip-components 1
 
 %files devel
 %license LICENSE
-%doc %{_target_platform}/docs/html/
+%doc %{__cmake_builddir}/docs/html/
 %{_includedir}/%{name}/
 %{_libdir}/*.so
 %{_libdir}/cmake/%{name}/

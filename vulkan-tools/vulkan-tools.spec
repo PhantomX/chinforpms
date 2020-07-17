@@ -45,12 +45,17 @@ Vulkan tools
 
 
 %build
-%cmake3 -GNinja -DCMAKE_BUILD_TYPE=Release -DGLSLANG_INSTALL_DIR=%{_prefix} .
-%ninja_build
+%cmake3 \
+  -GNinja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DGLSLANG_INSTALL_DIR=%{_prefix} \
+%{nil}
+
+%cmake3_build
 
 
 %install
-%ninja_install
+%cmake3_install
 
 for bin in vkcube vkcubepp vulkaninfo ;do
   mv %{buildroot}%{_bindir}/${bin}{,%{__isa_bits}}

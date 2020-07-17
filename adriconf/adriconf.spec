@@ -39,15 +39,15 @@ them to the standard drirc file used by the Mesa drivers.
 
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
   -DENABLE_UNIT_TESTS:BOOL=OFF \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \

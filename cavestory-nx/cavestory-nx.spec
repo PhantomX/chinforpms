@@ -44,10 +44,10 @@ sed -e 's|/usr/share/games/cavestory-nx/data/|%{_datadir}/%{name}/|g' \
   -i src/ResourceManager.cpp
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install

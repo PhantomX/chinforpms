@@ -121,6 +121,7 @@ mp3val
 mpdnotify
 -mps-youtube
 mupen64plus
+nicotine-plus
 openjazz
 opentyrian
 perl-rename

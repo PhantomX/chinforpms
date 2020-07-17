@@ -82,17 +82,17 @@ export CFLAGS="$(echo %{optflags} | sed \
 )"
 export CXXFLAGS="$CFLAGS"
 
-%cmake desktop_version -B %{_target_platform} \
+%cmake desktop_version \
   -DUSE_SYSTEM_PHYSFS:BOOL=ON \
   -DUSE_SYSTEM_TINYXML:BOOL=ON \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{_target_platform}/%{pkgname} %{buildroot}%{_bindir}/%{pkgname}
+install -pm0755 %{__cmake_builddir}/%{pkgname} %{buildroot}%{_bindir}/%{pkgname}
 
 mkdir -p %{buildroot}%{_datadir}/%{pkgname}
 

@@ -53,7 +53,7 @@ sed -i 's|lrelease|lrelease-qt5|' src/translations/CMakeLists.txt
 
 
 %build
-%cmake3 . -B %{_target_platform} \
+%cmake3 \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_QT5=TRUE \
 %ifnarch %{ix86} x86_64
@@ -67,11 +67,11 @@ sed -i 's|lrelease|lrelease-qt5|' src/translations/CMakeLists.txt
 %endif
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 rm -f %{buildroot}%{_libdir}/*.la
 mkdir -p %{buildroot}%{_libdir}/%{name}

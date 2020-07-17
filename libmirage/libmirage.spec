@@ -49,16 +49,16 @@ This package contains files needed to develop with libMirage.
 %autosetup
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
   -DPOST_INSTALL_HOOKS:BOOL=OFF \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 popd
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 %find_lang %{name}
 

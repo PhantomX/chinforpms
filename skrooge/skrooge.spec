@@ -92,15 +92,15 @@ Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %build
-%{cmake_kf5} . -B %{_target_platform} \
+%{cmake_kf5} \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-make install/fast -C %{_target_platform} DESTDIR=%{buildroot}
+%cmake_install
 
 %find_lang %{name} --with-html
 

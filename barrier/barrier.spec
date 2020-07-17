@@ -87,7 +87,7 @@ sed \
 
 
 %build
-%{cmake3} . -B %{_target_platform} \
+%{cmake3} \
 %if %{without qt}
   -DBARRIER_BUILD_GUI:BOOL=OFF \
 %endif
@@ -100,11 +100,11 @@ sed \
 %endif
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 mkdir -p %{buildroot}%{_mandir}/man1
 install -pm0644 doc/%{name}{c,s}.1 %{buildroot}%{_mandir}/man1/

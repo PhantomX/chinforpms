@@ -11,3 +11,6 @@
 
 %_native_flags_x86_64 %(grep '^optflags: x86_64' /usr/lib/rpm/redhat/rpmrc \\
  | cut -d' ' -f4- %{?_native_flags:| sed -e 's/-mtune=generic/-march=native -mtune=native/'})
+
+# Enable out of source cmake
+%__cmake_builddir %{_vpath_builddir}

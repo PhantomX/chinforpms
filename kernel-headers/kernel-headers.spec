@@ -15,7 +15,7 @@
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -29,7 +29,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -173,6 +173,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Thu Jul 16 2020 Phantom X <megaphantomx at hotmail dot com> - 5.7.9-500.chinfo
+- 5.7.9
+
 * Wed Jul 15 2020 Phantom X <megaphantomx at hotmail dot com> - 5.7.8-501.chinfo
 - 5.7.8
 

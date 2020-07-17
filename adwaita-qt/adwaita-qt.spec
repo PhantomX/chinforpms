@@ -29,7 +29,7 @@ Patch10:        %{name}-chinforpms.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  qt4-devel
+#BuildRequires:  qt4-devel
 BuildRequires:  qt5-qtbase-devel
 
 Requires:       adwaita-qt4
@@ -67,24 +67,30 @@ Summary:        Adwaita Qt common files
 
 
 %build
-mkdir -p "%{_target_platform}-qt4"
-pushd "%{_target_platform}-qt4"
+mkdir -p qt4
+pushd qt4
 %{cmake} -DUSE_QT4=true ..
 popd
 
-mkdir -p "%{_target_platform}-qt5"
-pushd "%{_target_platform}-qt5"
+mkdir -p qt5
+pushd qt5
 %{cmake} ..
 popd
 
-%make_build -C "%{_target_platform}-qt4"
-%make_build -C "%{_target_platform}-qt5"
-
+pushd qt4
+%cmake_build
+popd
+pushd qt5
+%cmake_build
+popd
 
 %install
-make install/fast DESTDIR=%{buildroot} -C "%{_target_platform}-qt4"
-make install/fast DESTDIR=%{buildroot} -C "%{_target_platform}-qt5"
-
+pushd qt4
+%cmake_install
+popd
+pushd qt5
+%cmake_install
+popd
 
 %files -n adwaita-qt4
 %doc LICENSE.LGPL2 README.md

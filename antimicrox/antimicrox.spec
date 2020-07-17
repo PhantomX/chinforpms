@@ -86,18 +86,18 @@ sed \
 ln -sf %{pkgname}.png src/images/%{pkgname}_trayicon.png
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
   -DWITH_X11:BOOL=ON \
   -DWITH_XTEST:BOOL=ON \
   -DWITH_UINPUT:BOOL=ON \
   -DAPPDATA:BOOL=ON \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 rm -f %{buildroot}%{_datadir}/%{pkgname}/Changelog
 

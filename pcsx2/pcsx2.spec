@@ -139,7 +139,7 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
 
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 
-%cmake . \
+%cmake \
   -DUSER_CMAKE_LD_FLAGS="-Wl,-z,noexecstack" \
   -DDISABLE_BUILD_DATE:BOOL=TRUE \
   -DPACKAGE_MODE:BOOL=TRUE \
@@ -159,11 +159,11 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
   -DCMAKE_BUILD_TYPE=Release \
 %{nil}
 
-%make_build
+%cmake_build
 
 
 %install
-%make_install
+%cmake_install
 
 mv %{buildroot}%{_bindir}/PCSX2 %{buildroot}%{_bindir}/PCSX2.bin
 

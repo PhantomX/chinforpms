@@ -191,7 +191,7 @@ export TRAVIS_REPO_SLUG=%{name}/%{name}-nightly
 export TRAVIS_TAG="%{version}-%{release}"
 %endif
 
-%cmake . -B %{_target_platform} \
+%cmake \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
 %if %{with qt}
   -DENABLE_QT_TRANSLATION:BOOL=ON \
@@ -208,11 +208,11 @@ export TRAVIS_TAG="%{version}-%{release}"
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=ON \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 

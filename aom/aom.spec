@@ -74,7 +74,7 @@ video format.
 sed -i 's@set(aom_version "")@set(aom_version "%{aom_version}")@' build/cmake/version.cmake
 
 %build
-%cmake3 . -B %{_target_platform} \
+%cmake3 \
   -DENABLE_CCACHE=1 \
   -DCMAKE_SKIP_RPATH=1 \
   -DCMAKE_BUILD_TYPE=Release \
@@ -90,11 +90,11 @@ sed -i 's@set(aom_version "")@set(aom_version "%{aom_version}")@' build/cmake/ve
 %endif
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 rm -f %{buildroot}%{_libdir}/*.a
 
@@ -112,7 +112,7 @@ rm -f %{buildroot}%{_libdir}/*.a
 
 %files -n libaom-devel
 %if %{with docs}
-%doc %{_target_platform}/docs/html/
+%doc %{__cmake_builddir}/docs/html/
 %endif
 %{_includedir}/%{name}
 %{_libdir}/libaom.so

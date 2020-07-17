@@ -61,15 +61,15 @@ sed \
 
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
   -DBUILD_SDL_JSTEST:BOOL=OFF \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 
 %files

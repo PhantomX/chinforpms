@@ -32,15 +32,15 @@ CD/DVD-ROM image analyzer, based on libMirage library.
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/%{name}
 
 %build
-%cmake . -B %{_target_platform} \
+%cmake \
   -DPOST_INSTALL_HOOKS:BOOL=OFF \
 %{nil}
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-%make_install -C %{_target_platform}
+%cmake_install
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 ln -sf ../../../../pixmaps/%{name}.svg \
