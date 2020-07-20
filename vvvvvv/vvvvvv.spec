@@ -1,6 +1,6 @@
-%global commit 628eb7b7bf88861efc0c191acc0a842106073764
+%global commit af89c52813074f27e20ba04276a7f1fc6d809303
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200612
+%global date 20200717
 
 %undefine _hardened_build
 
@@ -13,7 +13,7 @@
 
 Name:           vvvvvv
 Version:        2.3
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -37,7 +37,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(SDL2_mixer)
 BuildRequires:  pkgconfig(physfs)
-BuildRequires:  pkgconfig(tinyxml)
+BuildRequires:  pkgconfig(tinyxml2)
 Requires:       vvvvvv-data >= 2.1
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
@@ -131,6 +131,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Sat Jul 18 2020 Phantom X <megaphantomx at hotmail dot com> - 2.3-3.20200717gitaf89c52
+- New snapshot
+
 * Fri Jun 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.3-2.20200612git628eb7b
 - Bump
 

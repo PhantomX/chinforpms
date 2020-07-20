@@ -1,17 +1,17 @@
-From baa3cf9ab1bfbc7fd6ee0d6c1dfda2f0e36b749a Mon Sep 17 00:00:00 2001
+From 46d11efb344dc0aac541119220c8bb9030aca460 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 12 Jun 2020 03:29:31 -0300
+Date: Sat, 18 Jul 2020 17:10:24 -0300
 Subject: [PATCH] System data file
 
 ---
- desktop_version/src/FileSystemUtils.cpp | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ desktop_version/src/FileSystemUtils.cpp | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/desktop_version/src/FileSystemUtils.cpp b/desktop_version/src/FileSystemUtils.cpp
-index 8ee2350..65984e0 100644
+index d65ec44..abf4939 100644
 --- a/desktop_version/src/FileSystemUtils.cpp
 +++ b/desktop_version/src/FileSystemUtils.cpp
-@@ -109,8 +109,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
+@@ -107,8 +107,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
  	}
  	else
  	{
@@ -21,13 +21,12 @@ index 8ee2350..65984e0 100644
  	}
  	if (!PHYSFS_mount(output, NULL, 1))
  	{
-@@ -130,8 +129,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
+@@ -128,7 +127,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
  		return 0;
  	}
  
--	strcpy(output, PHYSFS_getBaseDir());
--	strcpy(output, "gamecontrollerdb.txt");
-+	strcpy(output, "_RPM_DATA_DIR_/SDL_GameControllerDB/gamecontrollerdb.txt");
+-	SDL_snprintf(output, sizeof(output), "%s%s", PHYSFS_getBaseDir(), "gamecontrollerdb.txt");
++	SDL_snprintf(output, sizeof(output), "%s%s", "_RPM_DATA_DIR_/SDL_GameControllerDB/gamecontrollerdb.txt");
  	if (SDL_GameControllerAddMappingsFromFile(output) < 0)
  	{
  		printf("gamecontrollerdb.txt not found!\n");

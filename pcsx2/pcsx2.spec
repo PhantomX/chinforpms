@@ -1,6 +1,6 @@
-%global commit 257f8b1142aa84ecda2588ecee4dea02b07e0fe3
+%global commit 30e6a7a62a21155513d61d692e18e53316006df2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200711
+%global date 20200717
 %global with_snapshot 1
 
 %global sanitize 0
@@ -13,7 +13,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -223,6 +223,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Fri Jul 17 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-103.20200717git30e6a7a
+- Bump and test new cmake out of source macros
+
 * Sun Jul 12 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-102.20200711git257f8b1
 - New snapshot
 - Copy game_controller_db.txt from sdl_gamecontrollerdb

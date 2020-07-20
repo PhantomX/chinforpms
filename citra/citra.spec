@@ -1,6 +1,6 @@
-%global commit 372c653ec33a770fb4fda0969c3a87b12e54e63c
+%global commit d88d22080da40fcfcbc88fb3aa3e4cbc7d1e791f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200620
+%global date 20200714
 %global with_snapshot 1
 
 # Enable system boost
@@ -22,7 +22,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
-%global commit4 4b8f8fac96a7819f28f4be523ca10a2d5d8aaaf2
+%global commit4 f19b1a521ee8b606dedcadfda69fd10ddf882753
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
@@ -64,7 +64,7 @@
 
 Name:           citra
 Version:        0
-Release:        9%{?gver}%{?dist}
+Release:        10%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -113,7 +113,6 @@ BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5LinguistTools)
 BuildRequires:  cmake(Qt5Multimedia)
-BuildRequires:  cmake(Qt5OpenGL)
 BuildRequires:  cmake(Qt5Widgets)
 %endif
 
@@ -237,6 +236,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Jul 19 2020 Phantom X <megaphantomx at hotmail dot com> - 0-10.20200714gitd88d220
+- Bump
+
 * Sun Jun 21 2020 Phantom X <megaphantomx at hotmail dot com> - 0-9.20200620git372c653
 - New snapshot
 

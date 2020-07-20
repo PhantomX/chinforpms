@@ -190,8 +190,8 @@ export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
   -G Ninja \
 %{nil}
 
-%ninja_build spvgen -C %{__cmake_builddir}
 %cmake_build
+%ninja_build spvgen -C %{__cmake_builddir}
 
 %endif
 

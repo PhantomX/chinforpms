@@ -31,9 +31,9 @@ index 658a5ef..ca2fc08 100644
 +    EXTRA_CPPFLAGS += -DWITH_GRAB_MOUSE
 +endif
 +
- CPPFLAGS := -DNDEBUG
- CFLAGS := -pedantic
- CFLAGS += -MMD
+ CPPFLAGS ?= -MMD
+ CPPFLAGS += -DNDEBUG
+ CFLAGS ?= -pedantic \
 @@ -99,7 +104,7 @@ ALL_LDLIBS = -lm \
  all : $(TARGET)
  

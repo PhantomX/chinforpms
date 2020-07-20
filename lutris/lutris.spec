@@ -3,7 +3,7 @@
 %global vc_url https://github.com/%{name}/%{name}
 
 Name:           lutris
-Version:        0.5.6
+Version:        0.5.7.1
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -17,7 +17,9 @@ Patch0:         %{name}-no-gtk-update-icon-cache.patch
 Patch1:         %{name}-gamemodelib.patch
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  gettext
 BuildRequires:  gtk3
+BuildRequires:  meson
 BuildRequires:  python3-devel
 BuildRequires:  python3-evdev
 BuildRequires:  python3-gobject
@@ -77,11 +79,13 @@ on Linux.
 
 
 %build
-%py3_build
+%meson
+
+%meson_build
 
 
 %install
-%py3_install
+%meson_install
 
 rm -f %{buildroot}%{_datadir}/polkit-1/actions/net.lutris.xboxdrv*
 
@@ -89,20 +93,27 @@ rm -f %{buildroot}%{_datadir}/polkit-1/actions/net.lutris.xboxdrv*
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.desktop
 
+%find_lang %{name}
 
-%files
+
+%files -f %{name}.lang
 %license LICENSE
 %doc AUTHORS README.rst
 %{_bindir}/%{name}*
 %{_datadir}/%{name}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
-%{python3_sitelib}/%{name}-*.egg-info
+#%%{python3_sitelib}/%%{name}-*.egg-info
 %{python3_sitelib}/%{name}/
+%{_mandir}/man1/%{name}.1*
 %{_metainfodir}/*.metainfo.xml
 
 
 %changelog
+* Sun Jul 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.7.1-100
+- 0.5.7.1
+- Use meson to build
+
 * Wed Apr 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.6-100
 - 0.5.6
 

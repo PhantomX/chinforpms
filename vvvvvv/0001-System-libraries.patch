@@ -1,6 +1,6 @@
-From e4cb4c8411f8d5eb3537383cc7afa1d110b5f22c Mon Sep 17 00:00:00 2001
+From b357fc4c94b8bb63cf5a711544c8be06232f1f0e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 12 Jun 2020 03:27:38 -0300
+Date: Sat, 18 Jul 2020 17:07:26 -0300
 Subject: [PATCH] System libraries
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] System libraries
  1 file changed, 29 insertions(+), 4 deletions(-)
 
 diff --git a/desktop_version/CMakeLists.txt b/desktop_version/CMakeLists.txt
-index e50cf04..aba5688 100644
+index 01dd28b..e122c32 100644
 --- a/desktop_version/CMakeLists.txt
 +++ b/desktop_version/CMakeLists.txt
 @@ -3,9 +3,13 @@
@@ -29,14 +29,14 @@ index e50cf04..aba5688 100644
  # Include Directories
  INCLUDE_DIRECTORIES(
  	src
--	../third_party/tinyxml
+-	../third_party/tinyxml2
 -	../third_party/physfs
  	../third_party/lodepng
  	../third_party/utfcpp/source
  )
  
 +IF(NOT USE_SYSTEM_TINYXML)
-+  INCLUDE_DIRECTORIES(../third_party/tinyxml)
++  INCLUDE_DIRECTORIES(../third_party/tinyxml2)
 +ENDIF()
 +IF(NOT USE_SYSTEM_PHYSFS)
 +  INCLUDE_DIRECTORIES(../third_party/physfs)
@@ -45,19 +45,19 @@ index e50cf04..aba5688 100644
  # Source Lists
  SET(VVV_SRC
  	src/BinaryBlob.cpp
-@@ -189,8 +198,24 @@ SET_PROPERTY(TARGET VVVVVV PROPERTY CXX_STANDARD 98)
+@@ -186,8 +195,24 @@ SET_PROPERTY(TARGET VVVVVV PROPERTY CXX_STANDARD 98)
  SET_PROPERTY(TARGET VVVVVV PROPERTY CXX_EXTENSIONS FALSE)
  
  # Library information
--ADD_LIBRARY(tinyxml-static STATIC ${XML_SRC})
+-ADD_LIBRARY(tinyxml2-static STATIC ${XML2_SRC})
 -ADD_LIBRARY(physfs-static STATIC ${PFS_SRC} ${PFSP_SRC})
 +IF(USE_SYSTEM_TINYXML)
-+  ADD_LIBRARY(tinyxml-static INTERFACE IMPORTED GLOBAL)
-+  pkg_check_modules(TINYXML REQUIRED tinyxml)
-+  target_include_directories(tinyxml-static INTERFACE ${TINYXML_INCLUDE_DIRS})
-+  target_link_libraries(tinyxml-static INTERFACE ${TINYXML_LIBRARIES})
++  ADD_LIBRARY(tinyxml2-static INTERFACE IMPORTED GLOBAL)
++  pkg_check_modules(TINYXML2 REQUIRED tinyxml2)
++  target_include_directories(tinyxml2-static INTERFACE ${TINYXML2_INCLUDE_DIRS})
++  target_link_libraries(tinyxml2-static INTERFACE ${TINYXML2_LIBRARIES})
 +ELSE()
-+  ADD_LIBRARY(tinyxml-static STATIC ${XML_SRC})
++  ADD_LIBRARY(tinyxml2-static STATIC ${XML_SRC})
 +ENDIF()
 +
 +IF(USE_SYSTEM_PHYSFS)
