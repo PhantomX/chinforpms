@@ -1,6 +1,6 @@
 %global __python %{__python3}
 Name:           vulkan-headers
-Version:        1.2.147
+Version:        1.2.148
 Release:        1%{?dist}
 Summary:        Vulkan Header files and API registry
 
@@ -32,6 +32,7 @@ Vulkan Header files and API registry
 
 %build
 %cmake3 \
+  -B %{__cmake_builddir} \
   -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
 %{nil}
 
@@ -51,6 +52,9 @@ Vulkan Header files and API registry
 
 
 %changelog
+* Mon Jul 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.148-1
+- 1.2.148
+
 * Wed Jul 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.147-1
 - 1.2.147
 

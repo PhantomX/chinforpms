@@ -84,6 +84,7 @@ sed -e 's| -L${sharedlibdir}||' -i pkg-config/dxil-spirv-c-shared.pc.in
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
   -DBUILD_SHARED_LIBS:BOOL=ON \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   -GNinja \

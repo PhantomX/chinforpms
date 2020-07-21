@@ -1,0 +1,124 @@
+From c132d602cd93c17a54977004a87e8056e8fb930e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 20 Jul 2020 11:07:48 -0300
+Subject: [PATCH] Specify GL context as Core 3.3 in Qt targets.
+
+Fixes blank screen with Software Renderer on OS X and maybe other platforms.
+
+Changes:
+* Specify 3.3 Core GL Context for Qt.
+* Fixes obselete usage of glGetString(GL_EXTENSIONS) in HW renderer which is not supported in 3.3.
+
+Updated from Kevin Hartman <kevin@hart.mn> original
+https://github.com/Yabause/yabause/pull/369
+---
+ yabause/src/qt/CMakeLists.txt | 17 +++++++++++++----
+ yabause/src/qt/YabauseGL.cpp  |  8 ++++++++
+ yabause/src/ygles.c           | 24 ++++++++++++++++++++----
+ 3 files changed, 41 insertions(+), 8 deletions(-)
+
+diff --git a/yabause/src/qt/CMakeLists.txt b/yabause/src/qt/CMakeLists.txt
+index e299ec2..1c1a442 100644
+--- a/yabause/src/qt/CMakeLists.txt
++++ b/yabause/src/qt/CMakeLists.txt
+@@ -43,12 +43,21 @@ else()
+ 		set( QT_USE_QTMAIN TRUE )
+ 	endif()
+ 	
+-	find_package(Qt4)
++	# Qt Version >=4.8 is required to use the GL Core profile
++	if (OPENGL_FOUND)
++		find_package(Qt4 4.8)
+ 
+ 	if (NOT QT4_FOUND)
+-		message(STATUS "NO QT4_FOUND OR Qt5_FOUND")
+-		return ()
+-	endif ()
++		message(STATUS "NO QT4_FOUND (V4.8 required) OR Qt5_FOUND")
++			return ()
++		endif ()
++	else()
++		find_package(Qt4)
++		if (NOT QT4_FOUND)
++			message(STATUS "NO QT4_FOUND OR Qt5_FOUND")
++			return ()
++		endif ()
++	endif()
+ 
+ 	message (WARNING "Qt4 is deprecated. Support will be removed in the future.")
+ 
+diff --git a/yabause/src/qt/YabauseGL.cpp b/yabause/src/qt/YabauseGL.cpp
+index 3d3cb75..9bde68b 100644
+--- a/yabause/src/qt/YabauseGL.cpp
++++ b/yabause/src/qt/YabauseGL.cpp
+@@ -30,6 +30,18 @@ YabauseGL::YabauseGL( QWidget* p )
+ 		p->setFocusPolicy( Qt::StrongFocus );
+ 		setFocusProxy( p );
+ 	}
++
++	// Configure GL context version to 3.3
++	QGLFormat glFormat;
++	glFormat.setVersion( 3, 3 );
++	glFormat.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
++	glFormat.setSampleBuffers( true );
++	glFormat.setDefaultFormat(glFormat);
++	QGLWidget widget(glFormat);
++	widget.makeCurrent();
++
++	const QGLContext *context = widget.context();
++	//this->setFormat(glFormat);
+ }
+ 
+ void YabauseGL::showEvent( QShowEvent* e )
+diff --git a/yabause/src/ygles.c b/yabause/src/ygles.c
+index ac0af2d..c1bccf7 100755
+--- a/yabause/src/ygles.c
++++ b/yabause/src/ygles.c
+@@ -630,6 +630,24 @@ void VIDOGLVdp1ReadFrameBuffer(u32 type, u32 addr, void * out) {
+ 
+ }
+ 
++//////////////////////////////////////////////////////////////////////////////
++int IsExtensionPresent(const char* name_substr)
++{
++    int i;
++    GLint num_ext = 0;
++    glGetIntegerv(GL_NUM_EXTENSIONS, &num_ext);
++
++
++    for (i = 0; i < num_ext; i++)
++    {
++        if (strstr((const char*)glGetStringi(GL_EXTENSIONS, i), name_substr) != NULL)
++        {
++            return 1;
++        }
++    }
++
++    return 0;
++}
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ 
+@@ -715,8 +733,7 @@ int YglGLInit(int width, int height) {
+ 
+    _Ygl->pFrameBuffer = NULL;
+ 
+-   extensions = (const char*)glGetString(GL_EXTENSIONS);
+-   if( extensions != NULL && strstr(extensions, "packed_depth_stencil") != NULL )
++   if(IsExtensionPresent("packed_depth_stencil"))
+    {
+       if( _Ygl->rboid_depth != 0 ) glDeleteRenderbuffers(1,&_Ygl->rboid_depth);
+       glGenRenderbuffers(1, &_Ygl->rboid_depth);
+@@ -859,8 +876,7 @@ int YglInit(int width, int height, unsigned int depth) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ 
+-   extensions = (const char*)glGetString(GL_EXTENSIONS);
+-   if( extensions != NULL && strstr(extensions, "packed_depth_stencil") != NULL )
++   if(IsExtensionPresent("packed_depth_stencil"))
+    {
+       if( _Ygl->rboid_depth != 0 ) glDeleteRenderbuffers(1,&_Ygl->rboid_depth);
+       glGenRenderbuffers(1, &_Ygl->rboid_depth);
+-- 
+2.26.2
+

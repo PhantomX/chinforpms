@@ -46,7 +46,7 @@ sed -e 's|./termhelper|%{_bindir}/%{name}-termhelper|g' -i terminal.c
 BLASTEM_OPTFLAGS="%(echo %{build_cflags} | sed -e 's/-O2\b/-O3/') -flto=%{_smp_build_ncpus} -fuse-linker-plugin"
 sed \
   -e "/^OPT:=/s|-O2 -flto|$BLASTEM_OPTFLAGS|g" \
-  -e 's|$(OPT) $(LDFLAGS)|\0 %{build_ldflags}|g' \
+  -e 's|$(OPT) $(LDFLAGS)|\0 %{build_ldflags} -Wl,-z,relro -Wl,-z,now|g' \
   -e 's|$(CC)|\0 $(CFLAGS)|g' \
   -i Makefile
 

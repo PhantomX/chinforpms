@@ -101,7 +101,7 @@ sed \
 %build
 export PREFIX=%{_prefix}
 %set_build_flags
-export LDFLAGS="$LDFLAGS -Wl,--as-needed"
+export LDFLAGS="$LDFLAGS -Wl,--as-needed -Wl,-z,relro -Wl,-z,now"
 
 %make_build -C shell/linux
 

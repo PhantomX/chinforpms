@@ -45,6 +45,7 @@ sed -e 's|/usr/share/games/cavestory-nx/data/|%{_datadir}/%{name}/|g' \
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
 %{nil}
 
 %cmake_build

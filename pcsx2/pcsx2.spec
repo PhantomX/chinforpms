@@ -140,6 +140,7 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 
 %cmake \
+  -B %{__cmake_builddir} \
   -DUSER_CMAKE_LD_FLAGS="-Wl,-z,noexecstack" \
   -DDISABLE_BUILD_DATE:BOOL=TRUE \
   -DPACKAGE_MODE:BOOL=TRUE \

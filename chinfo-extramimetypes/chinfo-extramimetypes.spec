@@ -22,6 +22,7 @@ This package contains extra unusual mimetypes for DEs.
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
   -DCHINFO_LEGACY:BOOL=OFF \
 %{nil}
 

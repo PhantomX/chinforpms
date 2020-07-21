@@ -178,7 +178,9 @@ extdir=$(pwd)
 export CFLAGS="%{build_cflags} -fno-plt -mno-avx"
 export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
 
-%cmake xgl \
+%cmake \
+  -S xgl \
+  -B %{__cmake_builddir} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DBUILD_WAYLAND_SUPPORT:BOOL=ON \
   -DXGL_METROHASH_PATH:PATH=${extdir}/MetroHash \

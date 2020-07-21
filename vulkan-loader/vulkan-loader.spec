@@ -72,7 +72,9 @@ developing applications that use %{name}.
 
 %build
 %cmake3 \
-  -GNinja -DCMAKE_BUILD_TYPE=Release \
+  -B %{__cmake_builddir} \
+  -GNinja \
+  -DCMAKE_BUILD_TYPE=Release \
 %{nil}
 
 %cmake3_build

@@ -50,6 +50,7 @@ This package contains files needed to develop with libMirage.
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
   -DPOST_INSTALL_HOOKS:BOOL=OFF \
 %{nil}
 

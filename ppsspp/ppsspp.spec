@@ -206,6 +206,7 @@ popd
 
 
 %build
+export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
@@ -229,6 +230,7 @@ popd
 %endif
 
 %cmake \
+  -B %{__cmake_builddir} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \

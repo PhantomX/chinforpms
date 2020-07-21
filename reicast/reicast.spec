@@ -88,7 +88,7 @@ sed \
 export PREFIX=%{_prefix}
 %set_build_flags
 export CXXFLAGS="$CXXFLAGS -DGLES"
-export LDFLAGS="$LDFLAGS -Wl,--as-needed"
+export LDFLAGS="$LDFLAGS -Wl,--as-needed -Wl,-z,relro -Wl,-z,now"
 
 %make_build -C %{name}/linux SUPPORT_EGL=1
 

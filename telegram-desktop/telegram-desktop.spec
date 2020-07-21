@@ -36,7 +36,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.1.19
+Version:        2.1.20
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -187,7 +187,9 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 %endif
 
 # Building Telegram Desktop using cmake...
-%cmake -G Ninja \
+%cmake \
+    -B %{__cmake_builddir} \
+    -G Ninja \
     -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{with clang}
     -DCMAKE_C_COMPILER=%{_bindir}/clang \
@@ -265,6 +267,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Jul 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.20-100
+- 2.1.20
+
 * Thu Jul 16 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.19-100
 - 2.1.19
 - BR: qt5-qtwayland

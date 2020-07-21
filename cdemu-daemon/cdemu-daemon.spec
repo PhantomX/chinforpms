@@ -31,6 +31,7 @@ devices.
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
   -DSESSION_BUS_SERVICE:BOOL=ON \
   -DSYSTEM_BUS_SERVICE:BOOL=OFF \
 %{nil}

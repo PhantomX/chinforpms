@@ -40,6 +40,7 @@ them to the standard drirc file used by the Mesa drivers.
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
   -DENABLE_UNIT_TESTS:BOOL=OFF \
 %{nil}
 

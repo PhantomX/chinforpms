@@ -65,6 +65,7 @@ cross-platform and modern open-source password manager.
 %define _lto_cflags %{nil}
 
 %cmake \
+  -B %{__cmake_builddir} \
   -DCMAKE_BUILD_TYPE=release \
   -DKEEPASSXC_BUILD_TYPE:STRING=Release \
   -DWITH_TESTS:BOOL=OFF \

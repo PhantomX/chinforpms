@@ -14,7 +14,7 @@ discord
 f5cli
 f5vpn
 f5vpn-filesystem
-FAudio-freeworld
+-FAudio-freeworld
 flycast
 -freac-superfast-codecs-freeworld
 gens-gs
@@ -43,3 +43,4 @@ vvvvvv
 vvvvvv-data
 -wine-freeworld
 wps-office
+yabause

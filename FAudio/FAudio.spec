@@ -79,6 +79,7 @@ sed \
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
   -DCMAKE_INSTALL_INCLUDEDIR:PATH=include/%{name} \
   -DGSTREAMER:BOOL=ON \
 %{nil}

@@ -87,6 +87,7 @@ ln -sf %{pkgname}.png src/images/%{pkgname}_trayicon.png
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
   -DWITH_X11:BOOL=ON \
   -DWITH_XTEST:BOOL=ON \
   -DWITH_UINPUT:BOOL=ON \

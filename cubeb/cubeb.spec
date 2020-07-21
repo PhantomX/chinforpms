@@ -71,6 +71,7 @@ tar -xf %{S:2} -C cmake/%{srcname2} --strip-components 1
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
   -DBUILD_TESTS:BOOL=OFF \
   -DUSE_PULSE:BOOL=ON \
   -DUSE_ALSA:BOOL=ON \

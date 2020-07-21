@@ -54,6 +54,7 @@ Converting Save Formats to PC or PSX. With it you can even export your ps3 saves
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
   -DQt5_LRELEASE_EXECUTABLE=lrelease-qt5 \
 %{nil}
 

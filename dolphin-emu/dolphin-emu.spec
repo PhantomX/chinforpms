@@ -189,8 +189,11 @@ sed -i \
 
 
 %build
+export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
+
 #Script to find xxhash is not implemented, just tell cmake it was found
 %cmake \
+  -B %{__cmake_builddir} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \

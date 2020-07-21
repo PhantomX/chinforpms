@@ -85,7 +85,6 @@ engrampa
 gamemode
 gcdemu
 -gespeaker
-gflash-player
 gkrellm-cpupower
 gkrellm-leds
 gkrellmpc
@@ -183,11 +182,8 @@ audacious-plugins-freeworld
 -belle-sip
 -belr
 -bzrtp
-FAudio-freeworld
 freac
-boca-freeworld
 -freac-superfast-codecs
--freac-superfast-codecs-freeworld
 -ortp
 whdd
 wine

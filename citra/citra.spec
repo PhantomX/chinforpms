@@ -183,6 +183,8 @@ sed -e '/^#include <exception>/a#include <system_error>' \
 mkdir -p dist/compatibility_list/
 cp %{S:20} dist/compatibility_list/
 
+export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
+
 %if 0%{?with_snapshot}
 export CI=true
 export TRAVIS=true
@@ -191,6 +193,7 @@ export TRAVIS_TAG="%{version}-%{release}"
 %endif
 
 %cmake \
+  -B %{__cmake_builddir} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
 %if %{with qt}
   -DENABLE_QT_TRANSLATION:BOOL=ON \

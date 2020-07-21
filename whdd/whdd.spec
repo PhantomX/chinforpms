@@ -30,6 +30,7 @@ Requires:       smartmontools
 
 %build
 %cmake \
+  -B %{__cmake_builddir} \
   -DDIALOG_INCLUDE_DIR:PATH=/usr/include/dialog \
 %{nil}
 

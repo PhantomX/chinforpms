@@ -146,7 +146,7 @@ sed -i -e '/projects\/unix install/g' ./m64p_build.sh
 
 cat > %{name}-env <<'EOF'
 export OPTFLAGS="$(echo %{optflags} | sed -e 's/-O2\b/-O3/') -flto=%{_smp_build_ncpus} -fuse-linker-plugin"
-export LDFLAGS="$OPTFLAGS %{build_ldflags}"
+export LDFLAGS="$OPTFLAGS %{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 export V=1
 export LDCONFIG=/bin/true
 export PREFIX=/usr
