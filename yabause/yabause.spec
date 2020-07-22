@@ -16,7 +16,7 @@
 
 Name:           yabause
 Version:        0.9.15
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -30,6 +30,7 @@ Source0:        https://download.tuxfamily.org/%{name}/releases/%{version}/%{nam
 
 Patch0:         %{name}-pr369.patch
 Patch1:         yabause-0.9.15-RWX.patch
+Patch2:         0001-Add-CHD-support.patch
 
 BuildRequires:  cmake3
 BuildRequires:  gcc
@@ -38,6 +39,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(glut)
+BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xi)
@@ -56,6 +58,7 @@ BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(libavutil)
 %endif
+Requires:       hicolor-icon-theme
 
 %description
 Yabause is a Sega Saturn emulator. A popular console of the early 1990s. It
@@ -138,6 +141,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Jul 21 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.15-101.20180707git7e38821
+- CHD support
+
 * Mon Jul 20 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.15-100.20180707git7e38821
 - Snapshot
 

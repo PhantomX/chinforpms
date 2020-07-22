@@ -179,11 +179,10 @@ sed -e '/^#include <exception>/a#include <system_error>' \
 
 %build
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 mkdir -p dist/compatibility_list/
 cp %{S:20} dist/compatibility_list/
-
-export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 %if 0%{?with_snapshot}
 export CI=true

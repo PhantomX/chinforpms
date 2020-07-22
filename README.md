@@ -70,6 +70,7 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
               more gathered from [_TK-Glitch_](https://github.com/Tk-Glitch/PKGBUILDS/tree/master/wine-tkg-git), some of them not always enabled.
               No alternatives support
  * **wine-dxvk** - mingw build and no alternatives support, enabled by script
+ * **yabause** - CHD support
  * More not listed here
 
 ## Credits (Patches, install procedures and other files)

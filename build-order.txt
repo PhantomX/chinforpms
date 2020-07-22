@@ -33,6 +33,7 @@ xwit
 # 2
 aom
 dxil-spirv
+libchdr
 libvorbis
 mesa
 python-markups

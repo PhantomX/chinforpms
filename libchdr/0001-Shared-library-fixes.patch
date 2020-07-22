@@ -1,0 +1,48 @@
+From 50fd50fda63e8284bca8c97e05599e33238c299e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 21 Jul 2020 15:13:28 -0300
+Subject: [PATCH] Shared library fixes
+
+---
+ CMakeLists.txt   | 4 ++--
+ pkg-config.pc.in | 3 ++-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4d715d3..4061602 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -95,7 +95,7 @@ set(LZMA_SOURCES
+ )
+ 
+ add_library(lzma-static STATIC ${LZMA_SOURCES})
+-target_compile_options(lzma-static PRIVATE -D_7ZIP_ST)
++target_compile_options(lzma-static PRIVATE -D_7ZIP_ST -fPIC)
+ list(APPEND CHDR_INCLUDES deps/lzma-16.04/C)
+ list(APPEND CHDR_LIBS lzma-static)
+ 
+@@ -146,7 +146,7 @@ if (BUILD_SHARED_LIBS)
+   target_link_libraries(chdr ${CHDR_LIBS} ${PLATFORM_LIBS})
+ 
+   set_target_properties(chdr PROPERTIES PUBLIC_HEADER "src/cdrom.h;src/chd.h;src/coretypes.h")
+-  set_target_properties(chdr PROPERTIES VERSION "${CHDR_VERSION_MAJOR}.${CHDR_VERSION_MINOR}")
++  set_target_properties(chdr PROPERTIES SOVERSION "${CHDR_VERSION_MAJOR}" VERSION "${CHDR_VERSION_MAJOR}.${CHDR_VERSION_MINOR}")
+   install(TARGETS chdr
+     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+diff --git a/pkg-config.pc.in b/pkg-config.pc.in
+index 0289632..3d7f2cd 100644
+--- a/pkg-config.pc.in
++++ b/pkg-config.pc.in
+@@ -5,6 +5,7 @@ includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@/libchdr
+ Name: libchdr
+ Description: Standalone library for reading MAME's CHDv1-v5 formats
+ Version: @CHDR_VERSION_MAJOR@.@CHDR_VERSION_MINOR@
+-Libs: -L${libdir} -lchdr @LIBS@
++Libs: -L${libdir} -lchdr
++Libs.private: @LIBS@
+ Cflags: -I${includedir}
+ 
+-- 
+2.26.2
+

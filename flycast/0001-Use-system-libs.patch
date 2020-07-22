@@ -1,26 +1,31 @@
-From f1f7d4e8f529efc1ad76b6f109719ec1226e0509 Mon Sep 17 00:00:00 2001
+From 77d7c0dcee9d62d2714ed04bc2e2ebd2092dcf0c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 30 May 2020 17:50:26 -0300
+Date: Tue, 21 Jul 2020 15:48:27 -0300
 Subject: [PATCH] Use system libs
 
 ---
- core/core.mk         | 25 ++++++++++++++++++++++---
- shell/linux/Makefile | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 55 insertions(+), 3 deletions(-)
+ core/core.mk         | 37 ++++++++++++++++++++++++++++++++-----
+ core/imgread/chd.cpp |  4 ++++
+ shell/linux/Makefile | 40 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 76 insertions(+), 5 deletions(-)
 
 diff --git a/core/core.mk b/core/core.mk
-index 7d82416..e0e1434 100755
+index 7d82416..66725ca 100755
 --- a/core/core.mk
 +++ b/core/core.mk
-@@ -10,9 +10,17 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
+@@ -10,9 +10,21 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
  
  RZDCY_MODULES	:=	cfg/ hw/arm7/ hw/aica/ hw/holly/ hw/ hw/gdrom/ hw/maple/ \
   hw/mem/ hw/pvr/ hw/sh4/ hw/sh4/interpr/ hw/sh4/modules/ plugins/ profiler/ oslib/ \
 - hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/zlib/ deps/chdr/ deps/crypto/ \
-+ hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/chdr/ deps/crypto/ \
++ hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ \
   deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
 - deps/libzip/ deps/imgui/ archive/ input/ log/ wsi/ network/
 + deps/imgui/ archive/ input/ log/ wsi/ network/
++
++ifndef SYSTEM_CHDR
++RZDCY_MODULES +=   deps/chdr/ deps/crypto/
++endif
 +
 +ifndef SYSTEM_LIBZIP
 +RZDCY_MODULES +=  deps/libzip/
@@ -32,9 +37,14 @@ index 7d82416..e0e1434 100755
  
  ifndef NOT_ARM
      RZDCY_MODULES += rec-ARM/
-@@ -157,10 +165,14 @@ ifdef USE_GLES
+@@ -156,21 +168,36 @@ ifdef USE_GLES
+   RZDCY_CFLAGS += -DGLES -fPIC
  endif
  
++RZDCY_MODULES += deps/lzma/
++RZDCY_CFLAGS += -D_7ZIP_ST
++
++ifndef SYSTEM_CHDR
  ifdef CHD5_FLAC
 +ifdef SYSTEM_FLAC
 +	RZDCY_CFLAGS += -DCHD5_FLAC -DHAVE_CONFIG_H
@@ -47,8 +57,10 @@ index 7d82416..e0e1434 100755
  
  # 7-Zip/LZMA settings (CHDv5)
  ifdef CHD5_LZMA
-@@ -168,9 +180,16 @@ ifdef CHD5_LZMA
- 	RZDCY_CFLAGS += -D_7ZIP_ST -DCHD5_LZMA
+-	RZDCY_MODULES += deps/lzma/
+-	RZDCY_CFLAGS += -D_7ZIP_ST -DCHD5_LZMA
++	RZDCY_CFLAGS += -DCHD5_LZMA
++endif
  endif
  
 +ifndef SYSTEM_LIBZIP
@@ -65,14 +77,30 @@ index 7d82416..e0e1434 100755
  
  RZDCY_CXXFLAGS := $(RZDCY_CFLAGS) -fno-rtti -std=c++11
  
+diff --git a/core/imgread/chd.cpp b/core/imgread/chd.cpp
+index 3a55f80..79fabda 100644
+--- a/core/imgread/chd.cpp
++++ b/core/imgread/chd.cpp
+@@ -1,6 +1,10 @@
+ #include "common.h"
+ 
++#ifdef SYSTEM_CHDR
++#include <chd.h>
++#else
+ #include "deps/chdr/chd.h"
++#endif
+ 
+ /* tracks are padded to a multiple of this many frames */
+ const uint32_t CD_TRACK_PADDING = 4;
 diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index 1b05841..7ba2e36 100644
+index 1b05841..5605cdc 100644
 --- a/shell/linux/Makefile
 +++ b/shell/linux/Makefile
-@@ -14,6 +14,12 @@ endif
+@@ -14,6 +14,13 @@ endif
  USE_MODEM := 1
  PLATFORM_EXT := elf
  
++#SYSTEM_CHDR := 1
 +SYSTEM_FLAC := 1
 +SYSTEM_LIBPNG := 1
 +SYSTEM_LIBZIP := 1
@@ -82,14 +110,20 @@ index 1b05841..7ba2e36 100644
  CXX ?= ${CC_PREFIX}g++
  CC ?= ${CC_PREFIX}gcc
  AS ?= ${CC_PREFIX}as
-@@ -417,6 +423,33 @@ ifdef DEBUGFAST
+@@ -417,6 +424,39 @@ ifdef DEBUGFAST
      CFLAGS += -DDEBUGFAST
  endif
  
++ifdef SYSTEM_CHDR
++    CFLAGS += `pkg-config --cflags libchdr` -D SYSTEM_CHDR
++    CXXFLAGS += `pkg-config --cflags libchdr` -D SYSTEM_CHDR
++    LIBS += `pkg-config --libs libchdr`
++else
 +ifdef SYSTEM_FLAC
 +    CFLAGS += `pkg-config --cflags flac`
 +    CXXFLAGS += `pkg-config --cflags flac`
 +    LIBS += `pkg-config --libs flac`
++endif
 +endif
 +
 +ifdef SYSTEM_LIBPNG

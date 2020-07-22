@@ -1,4 +1,4 @@
-%global commit 1713124711259502263bb86aa5ccb4c3f05d65c1
+%global commit 860425b3cc3248785a402f07b71e2a9843cc0684
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200710
 %global with_snapshot 1
@@ -6,6 +6,8 @@
 %undefine _hardened_build
 
 %bcond_with     native
+# Enable system libchdr (broken)
+%global with_libchdr 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -13,7 +15,7 @@
 
 Name:           flycast
 Version:        7
-Release:        15%{?gver}%{?dist}
+Release:        16%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -36,7 +38,9 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)
+%if !0%{?with_libchdr}
 BuildRequires:  pkgconfig(flac)
+%endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(libudev)
@@ -61,6 +65,10 @@ Requires:       vulkan-loader%{?_isa}
 %endif
 
 rm -rf core/deps/{flac,libzip,SDL2-*,xxHash,zlib}
+%if 0%{?with_libchdr}
+sed -e '/^#SYSTEM_CHDR/s|^#||g' -i shell/linux/Makefile
+rm -rf core/deps/{chdr,crypto}
+%endif
 
 find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
 
@@ -137,6 +145,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Jul 21 2020 Phantom X <megaphantomx at hotmail dot com> - 7-16.20200710git860425b
+- New snapshot
+
 * Sat Jul 11 2020 Phantom X <megaphantomx at hotmail dot com> - 7-15.20200710git1713124
 - Bump
 
