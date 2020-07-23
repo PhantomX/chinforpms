@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 512422ca86f5c3f192f63c11d4926174dba5fe97
+%global pfcommit 7b6e2c0366d7a6eb901f0138128a285b5e3d7c47
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id cba119b9d536c22bb0a3705ec58f0411fee53b7e
+%global opensuse_id a010166ebb50275ce822855b1f8891ce1fd75291
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -651,41 +651,51 @@ Source10: x509.genkey.rhel
 Source11: x509.genkey.fedora
 %if %{?released_kernel}
 
-Source12: securebootca.cer
-Source13: secureboot.cer
-Source14: secureboot_s390.cer
-Source15: secureboot_ppc.cer
+Source12: redhatsecurebootca5.cer
+Source13: redhatsecurebootca1.cer
+Source14: redhatsecureboot501.cer
+Source15: redhatsecureboot301.cer
+Source16: secureboot_s390.cer
+Source17: secureboot_ppc.cer
 
-%define secureboot_ca %{SOURCE12}
+%define secureboot_ca_1 %{SOURCE12}
+%define secureboot_ca_0 %{SOURCE13}
 %ifarch x86_64 aarch64
-%define secureboot_key %{SOURCE13}
-%define pesign_name redhatsecureboot301
+%define secureboot_key_1 %{SOURCE14}
+%define pesign_name_1 redhatsecureboot501
+%define secureboot_key_0 %{SOURCE15}
+%define pesign_name_0 redhatsecureboot301 
 %endif
 %ifarch s390x
-%define secureboot_key %{SOURCE14}
-%define pesign_name redhatsecureboot302
+%define secureboot_key_0 %{SOURCE16}
+%define pesign_name_0 redhatsecureboot302 
 %endif
 %ifarch ppc64le
-%define secureboot_key %{SOURCE15}
-%define pesign_name redhatsecureboot303
+%define secureboot_key_0 %{SOURCE17}
+%define pesign_name_0 redhatsecureboot303 
 %endif
 
 # released_kernel
 %else
 
-Source12: redhatsecurebootca2.cer
-Source13: redhatsecureboot003.cer
+Source12: redhatsecurebootca4.cer
+Source13: redhatsecurebootca2.cer
+Source14: redhatsecureboot401.cer
+Source15: redhatsecureboot003.cer 
 
-%define secureboot_ca %{SOURCE12}
-%define secureboot_key %{SOURCE13}
-%define pesign_name redhatsecureboot003
+%define secureboot_ca_1 %{SOURCE12}
+%define secureboot_ca_0 %{SOURCE13}
+%define secureboot_key_1 %{SOURCE14}
+%define pesign_name_1 redhatsecureboot401
+%define secureboot_key_0 %{SOURCE15}
+%define pesign_name_0 redhatsecureboot003 
 
 # released_kernel
 %endif
 
 Source22: mod-extra.list.rhel
-Source16: mod-extra.list.fedora
-Source17: mod-blacklist.sh
+Source23: mod-extra.list.fedora
+Source24: mod-blacklist.sh
 Source18: mod-sign.sh
 Source79: parallel_xz.sh
 
@@ -863,13 +873,6 @@ Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
 Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
 Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
 Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
-Patch99: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
-Patch100: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
-Patch101: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
 Patch108: selinux_allow_reading_labels_before_policy_is_loaded.patch 
 
@@ -889,9 +892,6 @@ Patch121: 0012-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
 Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 # Back port from 5.8
 Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
-
-# Tegra194 ACPI PCI quirk - http://patchwork.ozlabs.org/patch/1221384/
-Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 
 ### Extra
 
@@ -1721,11 +1721,13 @@ BuildKernel() {
     fi
 
     %ifarch x86_64 aarch64
-    %pesign -s -i $SignImage -o vmlinuz.signed -a %{secureboot_ca} -c %{secureboot_key} -n %{pesign_name}
+     %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+     %pesign -s -i vmlinuz.tmp -o vmlinuz.signed -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
+     rm vmlinuz.tmp 
     %endif
     %ifarch s390x ppc64le
     if [ -x /usr/bin/rpm-sign ]; then
-    rpm-sign --key "%{pesign_name}" --lkmsign $SignImage --output vmlinuz.signed
+    rpm-sign --key "%{pesign_name_0}" --lkmsign $SignImage --output vmlinuz.signed
     elif [ $DoModules -eq 1 ]; then
     chmod +x scripts/sign-file
     ./scripts/sign-file -p sha256 certs/signing_key.pem certs/signing_key.x509 $SignImage vmlinuz.signed
@@ -2021,9 +2023,9 @@ BuildKernel() {
     popd
 
     # Identify modules in the kernel-modules-extras package
-    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
+    %{SOURCE24} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
     # Identify modules in the kernel-modules-extras package
-    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE54} internal
+    %{SOURCE24} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE54} internal
 
     #
     # Generate the kernel-core and kernel-modules files lists
@@ -2127,11 +2129,17 @@ BuildKernel() {
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
-    install -m 0644 %{secureboot_ca} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+    %ifarch x86_64 aarch64
+        install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca-20200609.cer
+        install -m 0644 %{secureboot_ca_1} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca-20140212.cer
+        ln -s kernel-signing-ca-20200609.cer $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+    %else
+        install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+    %endif
     %ifarch s390x ppc64le
     if [ $DoModules -eq 1 ]; then
     if [ -x /usr/bin/rpm-sign ]; then
-        install -m 0644 %{secureboot_key} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
+        install -m 0644 %{secureboot_key_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
     else
         install -m 0644 certs/signing_key.x509.sign${Flav} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
         openssl x509 -in certs/signing_key.pem.sign${Flav} -outform der -out $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
@@ -2626,7 +2634,7 @@ fi
 %if 0%{!?fedora:1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
 %endif\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca.cer\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca*.cer\
 %ifarch s390x ppc64le\
 %if 0%{!?4:1}\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/%{signing_key_filename} \
@@ -2677,6 +2685,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.10-500.chinfo
+- 5.7.10 - pf5
+
 * Thu Jul 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.9-500.chinfo
 - 5.7.9 - pf5
 

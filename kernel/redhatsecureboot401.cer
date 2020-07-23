@@ -15,11 +15,11 @@
     <link href="/theme/static/theme.css?version=5.10.0"
         type="text/css" rel="stylesheet" />
 
-    <link type="text/css" rel="stylesheet" nonce="vPfXcA69bCw2FRETP7w1V5d4F" href="/static/vendor/font-awesome/font-awesome.css?version=5.10.0"/>
-    <link type="text/css" rel="stylesheet" nonce="vPfXcA69bCw2FRETP7w1V5d4F" href="/static/pagure.css?version=5.10.0"/>
-<link nonce="vPfXcA69bCw2FRETP7w1V5d4F" rel="stylesheet" href="/static/vendor/highlight.js/styles/github.css?version=5.10.0"/>
-<link nonce="vPfXcA69bCw2FRETP7w1V5d4F" rel="stylesheet" href="/static/vendor/highlightjs-line-numbers/highlightjs-line-numbers.min.css?version=5.10.0"/>
-<style nonce="vPfXcA69bCw2FRETP7w1V5d4F">
+    <link type="text/css" rel="stylesheet" nonce="LHSykVaPieROxFuUeAVYtWW4U" href="/static/vendor/font-awesome/font-awesome.css?version=5.10.0"/>
+    <link type="text/css" rel="stylesheet" nonce="LHSykVaPieROxFuUeAVYtWW4U" href="/static/pagure.css?version=5.10.0"/>
+<link nonce="LHSykVaPieROxFuUeAVYtWW4U" rel="stylesheet" href="/static/vendor/highlight.js/styles/github.css?version=5.10.0"/>
+<link nonce="LHSykVaPieROxFuUeAVYtWW4U" rel="stylesheet" href="/static/vendor/highlightjs-line-numbers/highlightjs-line-numbers.min.css?version=5.10.0"/>
+<style nonce="LHSykVaPieROxFuUeAVYtWW4U">
   .hljs {
     background: #fff;
   }
@@ -36,7 +36,7 @@
         </a>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a class="btn btn-primary" href="/login/?next=https://src.fedoraproject.org/rpms/kernel/blob/f32/f/redhatsecureboot003.cer">Log In</a>
+            <a class="btn btn-primary" href="/login/?next=https://src.fedoraproject.org/rpms/kernel/blob/f32/f/redhatsecureboot401.cer">Log In</a>
           </li>
         </ul>
       </div>
@@ -236,7 +236,7 @@
     </div>
   </div>
 
-  <script type="text/javascript" nonce="vPfXcA69bCw2FRETP7w1V5d4F">
+  <script type="text/javascript" nonce="LHSykVaPieROxFuUeAVYtWW4U">
     window.addEventListener('load', function() {
       set_up_monitoring = function(status){
         var _label = "Disabled"
@@ -511,7 +511,7 @@
           </li>
           <li class="active breadcrumb-item">
             <span class="fa fa-file" data-glyph="">
-            </span>&nbsp; redhatsecureboot003.cer
+            </span>&nbsp; redhatsecureboot401.cer
           </li>
         </ol>
       </div>
@@ -519,19 +519,19 @@
   <div class="card-body p-0">
             <div class="bg-light border text-right pr-2">
 
-                <a class="btn btn-secondary btn-sm" href="/rpms/kernel/blob/f32/f/redhatsecureboot003.cer" title="View as blob">Blob</a>
+                <a class="btn btn-secondary btn-sm" href="/rpms/kernel/blob/f32/f/redhatsecureboot401.cer" title="View as blob">Blob</a>
 
-                <a class="btn btn-secondary btn-sm" href="/rpms/kernel/blame/redhatsecureboot003.cer?identifier=f32" title="View git blame">Blame</a>
+                <a class="btn btn-secondary btn-sm" href="/rpms/kernel/blame/redhatsecureboot401.cer?identifier=f32" title="View git blame">Blame</a>
 
-                <a class="btn btn-secondary btn-sm" href="/rpms/kernel/history/redhatsecureboot003.cer?identifier=f32" title="View git log for this file">History</a>
+                <a class="btn btn-secondary btn-sm" href="/rpms/kernel/history/redhatsecureboot401.cer?identifier=f32" title="View git log for this file">History</a>
 
-                <a class="btn btn-secondary btn-sm" href="/rpms/kernel/raw/f32/f/redhatsecureboot003.cer" title="View as raw">Raw</a>
+                <a class="btn btn-secondary btn-sm" href="/rpms/kernel/raw/f32/f/redhatsecureboot401.cer" title="View as raw">Raw</a>
             </div>
 
         <p class="noresult">
           Binary files cannot be rendered.<br/>
           Please
-          <a href="/rpms/kernel/raw/f32/f/redhatsecureboot003.cer">view the raw version
+          <a href="/rpms/kernel/raw/f32/f/redhatsecureboot401.cer">view the raw version
           </a>
         </p>
   </div>
@@ -562,26 +562,26 @@
     </div>
 
 
-    <script type="text/javascript" nonce="vPfXcA69bCw2FRETP7w1V5d4F" src="/static/vendor/jquery/jquery.min.js?version=5.10.0"></script>
+    <script type="text/javascript" nonce="LHSykVaPieROxFuUeAVYtWW4U" src="/static/vendor/jquery/jquery.min.js?version=5.10.0"></script>
 
     <script src="/static/vendor/bootstrap/bootstrap.bundle.min.js?version=5.10.0"></script>
 
-    <script type="text/javascript" nonce="vPfXcA69bCw2FRETP7w1V5d4F">
+    <script type="text/javascript" nonce="LHSykVaPieROxFuUeAVYtWW4U">
       $('[data-toggle="tooltip"]').tooltip({placement : 'bottom'});
       $(".cancel_btn").click(function() {
         history.back();
       });
     </script>
 
-<script type="text/javascript"  nonce="vPfXcA69bCw2FRETP7w1V5d4F" src="/static/vendor/lazyload/lazyload.min.js?version=5.10.0"></script>
+<script type="text/javascript"  nonce="LHSykVaPieROxFuUeAVYtWW4U" src="/static/vendor/lazyload/lazyload.min.js?version=5.10.0"></script>
 
-<script type="text/javascript" nonce="vPfXcA69bCw2FRETP7w1V5d4F">
+<script type="text/javascript" nonce="LHSykVaPieROxFuUeAVYtWW4U">
 window.addEventListener("load", function(event) {
     lazyload();
 });
 </script>
 
-<script type="text/javascript" nonce="vPfXcA69bCw2FRETP7w1V5d4F">
+<script type="text/javascript" nonce="LHSykVaPieROxFuUeAVYtWW4U">
 $("#giturl-toggle").on('click', function(event){
   event.stopPropagation();
   $("#giturl-more").toggle();
@@ -598,11 +598,11 @@ $(".select-on-focus").on("focus", function() {
 
 </script>
 
-<script type="text/javascript" nonce="vPfXcA69bCw2FRETP7w1V5d4F" src="/static/vendor/highlight.js/highlight.pack.js?version=5.10.0"></script>
-<script type="text/javascript" nonce="vPfXcA69bCw2FRETP7w1V5d4F" src="/static/vendor/highlightjs-line-numbers/highlightjs-line-numbers.min.js?version=5.10.0"></script>
-<script type="text/javascript" nonce="vPfXcA69bCw2FRETP7w1V5d4F" src="/static/vendor/highlight.js/spec.js?version=5.10.0"></script>
+<script type="text/javascript" nonce="LHSykVaPieROxFuUeAVYtWW4U" src="/static/vendor/highlight.js/highlight.pack.js?version=5.10.0"></script>
+<script type="text/javascript" nonce="LHSykVaPieROxFuUeAVYtWW4U" src="/static/vendor/highlightjs-line-numbers/highlightjs-line-numbers.min.js?version=5.10.0"></script>
+<script type="text/javascript" nonce="LHSykVaPieROxFuUeAVYtWW4U" src="/static/vendor/highlight.js/spec.js?version=5.10.0"></script>
 
-<script type="text/javascript" nonce="vPfXcA69bCw2FRETP7w1V5d4F">
+<script type="text/javascript" nonce="LHSykVaPieROxFuUeAVYtWW4U">
   $(document).ready(function() {
   $('.fork_project_btn').click($("[name=fork_project]").submit);
 
@@ -625,7 +625,7 @@ $(".select-on-focus").on("focus", function() {
 });
 </script>
 
-<script type="text/javascript" nonce="vPfXcA69bCw2FRETP7w1V5d4F">
+<script type="text/javascript" nonce="LHSykVaPieROxFuUeAVYtWW4U">
 
   function updateHighlight() {
     var cls = "highlighted-line";
