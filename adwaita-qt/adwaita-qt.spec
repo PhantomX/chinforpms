@@ -67,22 +67,15 @@ Summary:        Adwaita Qt common files
 
 
 %build
-mkdir -p qt4
-pushd qt4
+%undefine __cmake_in_source_build
 %{cmake} \
-  -S .. \
-  -B %{__cmake_builddir} \
+  -B qt4/%{__cmake_builddir} \
   -DUSE_QT4=true \
 %{nil}
-popd
 
-mkdir -p qt5
-pushd qt5
 %{cmake} \
-  -S .. \
-  -B %{__cmake_builddir} \
+  -B qt5/%{__cmake_builddir} \
 %{nil}
-popd
 
 pushd qt4
 %cmake_build

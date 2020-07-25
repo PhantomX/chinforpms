@@ -94,7 +94,7 @@ CXXFLAGS="%{build_cxxflags} -std=c++11" \
 %cmake_build
 
 %if %{with doc}
-make docs -C %{__cmake_builddir}
+%cmake_build -- docs
 %endif
 
 
@@ -116,7 +116,7 @@ test "$(pkg-config --modversion taglib_c)" = "%{version}"
 %if %{with tests}
 #ln -s ../../tests/data %{__cmake_builddir}/tests/
 #LD_LIBRARY_PATH=%{buildroot}%{_libdir}:$LD_LIBRARY_PATH \
-make check -C %{__cmake_builddir}
+%cmake_build -- check
 %endif
 
 

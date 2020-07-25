@@ -36,7 +36,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.1.20
+Version:        2.1.22
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -75,6 +75,7 @@ BuildRequires:  libappstream-glib
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  libatomic-static
 BuildRequires:  ninja-build
 
 # Development packages for Telegram Desktop...
@@ -84,6 +85,8 @@ BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  ffmpeg-devel >= 3.1
 BuildRequires:  openal-soft-devel
 BuildRequires:  qt5-qtbase-private-devel
+BuildRequires:  qt5-qtbase-static
+BuildRequires:  qt5-qtsvg-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 BuildRequires:  qt5-qtwayland-devel
 BuildRequires:  libxkbcommon-devel
@@ -267,6 +270,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Jul 24 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.22-100
+- 2.1.22
+
 * Mon Jul 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.20-100
 - 2.1.20
 

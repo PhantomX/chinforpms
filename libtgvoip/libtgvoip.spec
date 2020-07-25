@@ -1,6 +1,6 @@
-%global commit d2e63429ec94ee178a62b55be01f1cca98e9de83
+%global commit b98a01ea44916444cb1b9192f80b46f974d296a6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200521
+%global date 20200707
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           libtgvoip
 Version:        2.4.4
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        VoIP library for Telegram clients
 
 # Libtgvoip shared library - Public Domain.
@@ -90,6 +90,9 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 
 
 %changelog
+* Fri Jul 24 2020 Phantom X <megaphantomx at hotmail dot com> - 2.4.4-106.20200707gitb98a01e
+- Bump
+
 * Wed Jun 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.4.4-105.20200521gitd2e6342
 - New snapshot
 - Add missing %%make_build
