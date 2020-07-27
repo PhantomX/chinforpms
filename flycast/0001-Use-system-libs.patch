@@ -1,82 +1,112 @@
-From 77d7c0dcee9d62d2714ed04bc2e2ebd2092dcf0c Mon Sep 17 00:00:00 2001
+From d92cadce75c822410aba0728b2450f52a70ef172 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 21 Jul 2020 15:48:27 -0300
+Date: Sun, 26 Jul 2020 05:02:21 -0300
 Subject: [PATCH] Use system libs
 
 ---
- core/core.mk         | 37 ++++++++++++++++++++++++++++++++-----
- core/imgread/chd.cpp |  4 ++++
- shell/linux/Makefile | 40 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 76 insertions(+), 5 deletions(-)
+ CMakeLists.txt                | 37 +++++++++++++++++++++++++++++++++--
+ core/imgread/chd.cpp          |  4 ++++
+ core/rend/vulkan/compiler.cpp |  4 ++++
+ core/rend/vulkan/shaders.h    |  4 ++++
+ 4 files changed, 47 insertions(+), 2 deletions(-)
 
-diff --git a/core/core.mk b/core/core.mk
-index 7d82416..66725ca 100755
---- a/core/core.mk
-+++ b/core/core.mk
-@@ -10,9 +10,21 @@ VERSION_HEADER := $(RZDCY_SRC_DIR)/version.h
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bbbee4c..986443d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -11,6 +11,8 @@ option(ENABLE_OPROFILE "Enable OProfile" OFF)
+ option(TEST_AUTOMATION "Enable test automation" OFF)
+ option(ENABLE_LOG "Enable full logging" OFF)
+ option(ASAN "Enable address sanitizer" OFF)
++OPTION(USE_SYSTEM_CHDR "Dynamically link against system libchdr" OFF)
++OPTION(USE_SYSTEM_SPIRV "Dynamically link against system glslang/spirv" OFF)
  
- RZDCY_MODULES	:=	cfg/ hw/arm7/ hw/aica/ hw/holly/ hw/ hw/gdrom/ hw/maple/ \
-  hw/mem/ hw/pvr/ hw/sh4/ hw/sh4/interpr/ hw/sh4/modules/ plugins/ profiler/ oslib/ \
-- hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ deps/zlib/ deps/chdr/ deps/crypto/ \
-+ hw/extdev/ hw/arm/ hw/naomi/ imgread/ ./ deps/coreio/ \
-  deps/libelf/ deps/chdpsr/ arm_emitter/ rend/ reios/ deps/xbrz/ \
-- deps/libzip/ deps/imgui/ archive/ input/ log/ wsi/ network/
-+ deps/imgui/ archive/ input/ log/ wsi/ network/
+ project(flycast)
+ 
+@@ -89,17 +91,38 @@ else()
+     target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_NO_OPENMP)
+ endif()
+ 
++find_package(PkgConfig QUIET)
 +
-+ifndef SYSTEM_CHDR
-+RZDCY_MODULES +=   deps/chdr/ deps/crypto/
-+endif
++pkg_search_module(XXHASH REQUIRED libxxhash)
++if(XXHASH_FOUND)
++    message(STATUS "Using system xxhash")
++    target_include_directories(${PROJECT_NAME} PRIVATE ${XXHASH_INCLUDE_DIRS})
++    target_link_libraries(${PROJECT_NAME} PRIVATE ${XXHASH_LIBRARIES})
++else()
+ option(BUILD_SHARED_LIBS "Build shared library" OFF)
+ set(XXHASH_BUILD_XXHSUM OFF CACHE BOOL "Build the xxhsum binary")
+ add_subdirectory(core/deps/xxHash/cmake_unofficial)
+ target_link_libraries(${PROJECT_NAME} PRIVATE xxHash::xxhash)
++endif()
+ 
++find_package(glm)
++if(NOT glm_FOUND)
+ option(BUILD_SHARED_LIBS "Build shared library" OFF)
+ add_subdirectory(core/deps/glm)
+ target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
++endif()
+ 
++if(USE_SYSTEM_SPIRV)
++    pkg_search_module(GLSLANG REQUIRED glslang)
++    pkg_search_module(SPIRV REQUIRED spirv)
++    message(STATUS "Using system glslang/spirv")
++    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_SYSTEM_SPIRV)
++    target_include_directories(${PROJECT_NAME} PRIVATE ${GLSLANG_INCLUDE_DIRS} ${SPIRV_INCLUDE_DIRS})
++    target_link_libraries(${PROJECT_NAME} PRIVATE ${GLSLANG_LIBRARIES} ${SPIRV_LIBRARIES})
++else()
+ add_subdirectory(core/deps/glslang)
+ target_link_libraries(${PROJECT_NAME} PRIVATE SPIRV)
++endif()
+ 
+ find_package(ALSA QUIET)
+ if(ALSA_FOUND)
+@@ -159,7 +182,6 @@ else()
+     target_link_libraries(${PROJECT_NAME} PRIVATE zlibstatic)
+ endif()
+ 
+-find_package(PkgConfig QUIET)
+ if(PKG_CONFIG_FOUND)
+     pkg_search_module(AO ao)
+     if(AO_FOUND)
+@@ -168,11 +190,13 @@ if(PKG_CONFIG_FOUND)
+         target_link_libraries(${PROJECT_NAME} PRIVATE ${AO_LIBRARIES})
+     endif()
+ 
++    if(NOT USE_SYSTEM_CHDR)
+     pkg_search_module(FLAC flac)
+     if(FLAC_FOUND)
+         target_include_directories(${PROJECT_NAME} PRIVATE ${FLAC_INCLUDE_DIRS})
+         target_link_libraries(${PROJECT_NAME} PRIVATE ${FLAC_LIBRARIES})
+     endif()
++    endif()
+ 
+     pkg_search_module(LIBEVDEV libevdev)
+     if(LIBEVDEV_FOUND)
+@@ -243,6 +267,14 @@ target_sources(${PROJECT_NAME} PRIVATE
+         core/deps/chdpsr/cdipsr.h)
+ 
+ target_compile_definitions(${PROJECT_NAME} PRIVATE CHD5_FLAC CHD5_LZMA)
 +
-+ifndef SYSTEM_LIBZIP
-+RZDCY_MODULES +=  deps/libzip/
-+endif
-+
-+ifndef SYSTEM_ZLIB
-+RZDCY_MODULES +=  deps/zlib/
-+endif
++if(USE_SYSTEM_CHDR)
++    pkg_search_module(CHDR REQUIRED libchdr)
++    message(STATUS "Using shared libchdr")
++    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_SYSTEM_CHDR)
++    target_include_directories(${PROJECT_NAME} PRIVATE ${CHDR_INCLUDE_DIRS})
++    target_link_libraries(${PROJECT_NAME} PRIVATE ${CHDR_LIBRARIES})
++else()
+ target_sources(${PROJECT_NAME} PRIVATE
+         core/deps/chdr/bitstream.c
+         core/deps/chdr/bitstream.h
+@@ -255,6 +287,7 @@ target_sources(${PROJECT_NAME} PRIVATE
+         core/deps/chdr/flac.h
+         core/deps/chdr/huffman.c
+         core/deps/chdr/huffman.h)
++endif()
  
- ifndef NOT_ARM
-     RZDCY_MODULES += rec-ARM/
-@@ -156,21 +168,36 @@ ifdef USE_GLES
-   RZDCY_CFLAGS += -DGLES -fPIC
- endif
- 
-+RZDCY_MODULES += deps/lzma/
-+RZDCY_CFLAGS += -D_7ZIP_ST
-+
-+ifndef SYSTEM_CHDR
- ifdef CHD5_FLAC
-+ifdef SYSTEM_FLAC
-+	RZDCY_CFLAGS += -DCHD5_FLAC -DHAVE_CONFIG_H
-+else
- 	RZDCY_CFLAGS += -DCHD5_FLAC -I$(RZDCY_SRC_DIR)/deps/flac/src/libFLAC/include/ -I$(RZDCY_SRC_DIR)/deps/flac/include
- 	RZDCY_CFLAGS += -DHAVE_CONFIG_H
- 	RZDCY_MODULES += deps/flac/src/libFLAC/
- endif
-+endif
- 
- # 7-Zip/LZMA settings (CHDv5)
- ifdef CHD5_LZMA
--	RZDCY_MODULES += deps/lzma/
--	RZDCY_CFLAGS += -D_7ZIP_ST -DCHD5_LZMA
-+	RZDCY_CFLAGS += -DCHD5_LZMA
-+endif
- endif
- 
-+ifndef SYSTEM_LIBZIP
- RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/libzip
-+endif
-+ifndef SYSTEM_ZLIB
- RZDCY_CFLAGS += -DZ_HAVE_UNISTD_H -I$(RZDCY_SRC_DIR)/deps/zlib
--RZDCY_CFLAGS += -DXXH_INLINE_ALL -I$(RZDCY_SRC_DIR)/deps/xxHash -I$(RZDCY_SRC_DIR)/deps/stb
-+endif
-+ifndef SYSTEM_XXHASH
-+RZDCY_CFLAGS += -DXXH_INLINE_ALL -I$(RZDCY_SRC_DIR)/deps/xxHash
-+endif
-+RZDCY_CFLAGS += -I$(RZDCY_SRC_DIR)/deps/stb
- 
- RZDCY_CXXFLAGS := $(RZDCY_CFLAGS) -fno-rtti -std=c++11
- 
+ target_sources(${PROJECT_NAME} PRIVATE
+         core/deps/coreio/coreio.cpp
 diff --git a/core/imgread/chd.cpp b/core/imgread/chd.cpp
 index 3a55f80..79fabda 100644
 --- a/core/imgread/chd.cpp
@@ -92,64 +122,38 @@ index 3a55f80..79fabda 100644
  
  /* tracks are padded to a multiple of this many frames */
  const uint32_t CD_TRACK_PADDING = 4;
-diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index 1b05841..5605cdc 100644
---- a/shell/linux/Makefile
-+++ b/shell/linux/Makefile
-@@ -14,6 +14,13 @@ endif
- USE_MODEM := 1
- PLATFORM_EXT := elf
+diff --git a/core/rend/vulkan/compiler.cpp b/core/rend/vulkan/compiler.cpp
+index ea644b4..485ecd3 100644
+--- a/core/rend/vulkan/compiler.cpp
++++ b/core/rend/vulkan/compiler.cpp
+@@ -19,7 +19,11 @@
+     along with Flycast.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ #include "compiler.h"
++#ifdef USE_SYSTEM_SPIRV
++#include <glslang/SPIRV/GlslangToSpv.h>
++#else
+ #include "SPIRV/GlslangToSpv.h"
++#endif
+ #include "vulkan_context.h"
  
-+#SYSTEM_CHDR := 1
-+SYSTEM_FLAC := 1
-+SYSTEM_LIBPNG := 1
-+SYSTEM_LIBZIP := 1
-+SYSTEM_XXHASH := 1
-+SYSTEM_ZLIB := 1
-+
- CXX ?= ${CC_PREFIX}g++
- CC ?= ${CC_PREFIX}gcc
- AS ?= ${CC_PREFIX}as
-@@ -417,6 +424,39 @@ ifdef DEBUGFAST
-     CFLAGS += -DDEBUGFAST
- endif
+ static const TBuiltInResource DefaultTBuiltInResource = {
+diff --git a/core/rend/vulkan/shaders.h b/core/rend/vulkan/shaders.h
+index ddb7b78..92b184f 100644
+--- a/core/rend/vulkan/shaders.h
++++ b/core/rend/vulkan/shaders.h
+@@ -20,7 +20,11 @@
+ */
+ #pragma once
+ #include "vulkan.h"
++#ifdef USE_SYSTEM_SPIRV
++#include <glslang/SPIRV/GlslangToSpv.h>
++#else
+ #include "SPIRV/GlslangToSpv.h"
++#endif
  
-+ifdef SYSTEM_CHDR
-+    CFLAGS += `pkg-config --cflags libchdr` -D SYSTEM_CHDR
-+    CXXFLAGS += `pkg-config --cflags libchdr` -D SYSTEM_CHDR
-+    LIBS += `pkg-config --libs libchdr`
-+else
-+ifdef SYSTEM_FLAC
-+    CFLAGS += `pkg-config --cflags flac`
-+    CXXFLAGS += `pkg-config --cflags flac`
-+    LIBS += `pkg-config --libs flac`
-+endif
-+endif
-+
-+ifdef SYSTEM_LIBPNG
-+    CXXFLAGS += `pkg-config --cflags libpng`
-+    LIBS += `pkg-config --libs libpng`
-+endif
-+
-+ifdef SYSTEM_LIBZIP
-+    CXXFLAGS += `pkg-config --cflags libzip` -D SYSTEM_LIBZIP
-+    LIBS += `pkg-config --libs libzip`
-+endif
-+
-+ifdef SYSTEM_XXHASH
-+    CXXFLAGS += -D SYSTEM_XXHASH
-+    LIBS += -lxxhash
-+endif
-+
-+ifdef SYSTEM_ZLIB
-+    CFLAGS += `pkg-config --cflags zlib` -D SYSTEM_ZLIB
-+    CXXFLAGS += `pkg-config --cflags zlib` -D SYSTEM_ZLIB
-+    LIBS += `pkg-config --libs zlib`
-+endif
-+
- ifdef UNIT_TESTS
-     CFLAGS += -DUNIT_TESTS
- endif
+ #include <glm/glm.hpp>
+ #include <map>
 -- 
 2.26.2
 

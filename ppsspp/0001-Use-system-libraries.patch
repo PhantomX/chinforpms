@@ -1,0 +1,392 @@
+From ba6b0f72aa3d7464f1e639908d64b5481ee884bc Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 26 Jul 2020 18:17:43 -0300
+Subject: [PATCH] Use system libraries
+
+FindMiniupnpc.cmake borrowed from dolphin-emu
+https://github.com/dolphin-emu/dolphin
+---
+ CMakeLists.txt                       | 29 ++++++++++++++++++++++++++++
+ Common/Hashmaps.h                    |  4 ++++
+ Core/Debugger/DisassemblyManager.cpp |  4 ++++
+ Core/HLE/sceJpeg.cpp                 |  4 ++++
+ Core/MIPS/IR/IRJit.cpp               |  4 ++++
+ Core/MIPS/MIPSAnalyst.cpp            |  4 ++++
+ Core/TextureReplacer.cpp             |  4 ++++
+ Core/Util/PortManager.h              |  8 ++++++--
+ GPU/Common/TextureDecoder.cpp        |  4 ++++
+ GPU/Common/TextureDecoder.h          |  8 ++++++++
+ GPU/Common/TextureDecoderNEON.cpp    |  4 ++++
+ GPU/D3D11/TextureCacheD3D11.cpp      |  4 ++++
+ GPU/Directx9/TextureCacheDX9.cpp     |  4 ++++
+ GPU/GLES/TextureCacheGLES.cpp        |  4 ++++
+ GPU/Vulkan/TextureCacheVulkan.cpp    |  4 ++++
+ Windows/Debugger/CtrlDisAsmView.cpp  |  4 ++++
+ cmake/Modules/FindMiniupnpc.cmake    | 27 ++++++++++++++++++++++++++
+ 17 files changed, 122 insertions(+), 2 deletions(-)
+ create mode 100644 cmake/Modules/FindMiniupnpc.cmake
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8d41570..9e102e1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -123,6 +123,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
+ option(USE_SYSTEM_SNAPPY "Dynamically link against system snappy" ${USE_SYSTEM_SNAPPY})
+ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_FFMPEG})
+ option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
++option(USE_SYSTEM_MINIUPNPC "Dynamically link against system miniupnpc" ${USE_SYSTEM_MINIUPNPC})
++option(USE_SYSTEM_XXHASH "Dynamically link against system miniupnpc" ${USE_SYSTEM_XXHASH})
+ option(USE_ADDRESS_SANITIZER "Use Clang memory sanitizer" ${USE_ADDRESS_SANITIZER})
+ 
+ if(UNIX AND NOT (APPLE OR ANDROID) AND VULKAN)
+@@ -1130,11 +1132,31 @@ add_library(xbrz STATIC
+ )
+ include_directories(ext/xbrz)
+ 
++if(USE_SYSTEM_XXHASH)
++	find_path(XXHASH_INCLUDE_DIR xxhash.h)
++	find_library(XXHASH_LIBRARY xxhash)
++	mark_as_advanced(XXHASH_INCLUDE_DIR XXHASH_LIBRARY)
++	
++	include(FindPackageHandleStandardArgs)
++	find_package_handle_standard_args(XXHASH DEFAULT_MSG
++	  XXHASH_INCLUDE_DIR XXHASH_LIBRARY)
++	
++	if(XXHASH_FOUND AND NOT TARGET XXHASH)
++	  message(STATUS "Using shared xxhash")
++	  add_library(xxhash UNKNOWN IMPORTED)
++	  add_definitions(-DSHARED_XXHASH)
++	  set_target_properties(xxhash PROPERTIES
++	    IMPORTED_LOCATION "${XXHASH_LIBRARY}"
++	    INTERFACE_INCLUDE_DIRECTORIES "${XXHASH_INCLUDE_DIR}"
++	  )
++	endif()
++else()
+ add_library(xxhash STATIC
+ 	ext/xxhash.c
+ 	ext/xxhash.h
+ )
+ include_directories(ext/xxhash)
++endif()
+ 
+ set(CoreExtra)
+ set(CoreExtraLibs)
+@@ -1827,6 +1849,12 @@ endif()
+ 
+ # miniUPnPc integration (MiniUPnPc supposed to works on any POSIX system, not sure if some of these are redundant/not needed tho)
+ if(USE_MINIUPNPC)
++	find_package(Miniupnpc)
++	if(MINIUPNPC_FOUND AND USE_SYSTEM_MINIUPNPC)
++	  message(STATUS "Using shared miniupnpc")
++	  add_definitions(-DSHARED_MINIUPNPC)
++	  target_link_libraries(${CoreLibName} Miniupnpc::miniupnpc)
++	else()
+ 	set (MINIUPNPC_VERSION 2.1) # used by miniupnpcstrings.h.cmake
+ 	set (MINIUPNPC_API_VERSION 17)
+ 	option(UPNPC_BUILD_STATIC "Build static library" TRUE)
+@@ -1898,6 +1926,7 @@ if(USE_MINIUPNPC)
+ 		set(UPNPC_LIBRARY miniupnpc)
+ 	endif()
+ endif()
++endif()
+ 
+ setup_target_project(${CoreLibName} Core)
+ 
+diff --git a/Common/Hashmaps.h b/Common/Hashmaps.h
+index 04d8806..5a2a423 100644
+--- a/Common/Hashmaps.h
++++ b/Common/Hashmaps.h
+@@ -4,7 +4,11 @@
+ #include <cstring>
+ #include <vector>
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "Common/CommonFuncs.h"
+ #include "Common/Log.h"
+ 
+diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
+index b04c40c..58861f4 100644
+--- a/Core/Debugger/DisassemblyManager.cpp
++++ b/Core/Debugger/DisassemblyManager.cpp
+@@ -19,7 +19,11 @@
+ #include <algorithm>
+ #include <map>
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ 
+ #include "Common/CommonTypes.h"
+ #include "Core/MemMap.h"
+diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
+index f532233..d0d717e 100644
+--- a/Core/HLE/sceJpeg.cpp
++++ b/Core/HLE/sceJpeg.cpp
+@@ -30,8 +30,12 @@
+ //Uncomment if you want to dump JPEGs loaded through sceJpeg to a file
+ //#define JPEG_DEBUG
+ #ifdef JPEG_DEBUG
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
+ #endif
++#endif
+ 
+ #include <algorithm>
+ 
+diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
+index 5063911..1f2d600 100644
+--- a/Core/MIPS/IR/IRJit.cpp
++++ b/Core/MIPS/IR/IRJit.cpp
+@@ -16,7 +16,11 @@
+ // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
+ 
+ #include "base/logging.h"
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "profiler/profiler.h"
+ #include "Common/ChunkFile.h"
+ #include "Common/StringUtils.h"
+diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
+index d52c2ff..b814542 100644
+--- a/Core/MIPS/MIPSAnalyst.cpp
++++ b/Core/MIPS/MIPSAnalyst.cpp
+@@ -35,7 +35,11 @@
+ #include "Core/Debugger/SymbolMap.h"
+ #include "Core/Debugger/DebugInterface.h"
+ #include "Core/HLE/ReplaceTables.h"
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ 
+ using namespace MIPSCodeUtils;
+ 
+diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
+index 41edb29..9aa87cb 100644
+--- a/Core/TextureReplacer.cpp
++++ b/Core/TextureReplacer.cpp
+@@ -23,7 +23,11 @@
+ 
+ #include <algorithm>
+ #include "i18n/i18n.h"
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "file/ini_file.h"
+ #include "Common/ColorConv.h"
+ #include "Common/FileUtil.h"
+diff --git a/Core/Util/PortManager.h b/Core/Util/PortManager.h
+index a4c7df6..0204d9e 100644
+--- a/Core/Util/PortManager.h
++++ b/Core/Util/PortManager.h
+@@ -21,14 +21,18 @@
+ 
+ #pragma once
+ 
+-
++#ifdef SHARED_MINIUPNPC
++#include <miniupnpc/miniwget.h>
++#include <miniupnpc/miniupnpc.h>
++#include <miniupnpc/upnpcommands.h>
++#else
+ #ifndef MINIUPNP_STATICLIB
+ #define MINIUPNP_STATICLIB
+ #endif
+-
+ #include "ext/miniupnp/miniupnpc/miniwget.h"
+ #include "ext/miniupnp/miniupnpc/miniupnpc.h"
+ #include "ext/miniupnp/miniupnpc/upnpcommands.h"
++#endif
+ 
+ #include <string>
+ #include <deque>
+diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
+index 0aca26e..cca37d8 100644
+--- a/GPU/Common/TextureDecoder.cpp
++++ b/GPU/Common/TextureDecoder.cpp
+@@ -15,7 +15,11 @@
+ // Official git repository and contact information can be found at
+ // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "Common/CPUDetect.h"
+ #include "Common/ColorConv.h"
+ 
+diff --git a/GPU/Common/TextureDecoder.h b/GPU/Common/TextureDecoder.h
+index 35ffa84..f10e82f 100644
+--- a/GPU/Common/TextureDecoder.h
++++ b/GPU/Common/TextureDecoder.h
+@@ -45,7 +45,11 @@ u32 QuickTexHashSSE2(const void *checkp, u32 size);
+ void DoUnswizzleTex16Basic(const u8 *texptr, u32 *ydestp, int bxc, int byc, u32 pitch);
+ #define DoUnswizzleTex16 DoUnswizzleTex16Basic
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #define DoReliableHash32 XXH32
+ #define DoReliableHash64 XXH64
+ 
+@@ -64,7 +68,11 @@ typedef u32 ReliableHashType;
+ #define DoUnswizzleTex16 DoUnswizzleTex16NEON
+ #define DoReliableHash32 ReliableHash32NEON
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #define DoReliableHash64 XXH64
+ 
+ #define DoReliableHash XXH64
+diff --git a/GPU/Common/TextureDecoderNEON.cpp b/GPU/Common/TextureDecoderNEON.cpp
+index af56567..5f38a5b 100644
+--- a/GPU/Common/TextureDecoderNEON.cpp
++++ b/GPU/Common/TextureDecoderNEON.cpp
+@@ -19,7 +19,11 @@
+ 
+ #if PPSSPP_ARCH(ARM_NEON)
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ 
+ #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
+ #include <arm64_neon.h>
+diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
+index 4b342eb..471878f 100644
+--- a/GPU/D3D11/TextureCacheD3D11.cpp
++++ b/GPU/D3D11/TextureCacheD3D11.cpp
+@@ -37,7 +37,11 @@
+ #include "Core/Config.h"
+ #include "Core/Host.h"
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "math/math_util.h"
+ 
+ 
+diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
+index e10aff8..b4bdb1a 100644
+--- a/GPU/Directx9/TextureCacheDX9.cpp
++++ b/GPU/Directx9/TextureCacheDX9.cpp
+@@ -35,7 +35,11 @@
+ #include "Core/Config.h"
+ #include "Core/Host.h"
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "math/math_util.h"
+ 
+ 
+diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
+index 48c4a3e..18722e5 100644
+--- a/GPU/GLES/TextureCacheGLES.cpp
++++ b/GPU/GLES/TextureCacheGLES.cpp
+@@ -18,7 +18,11 @@
+ #include <algorithm>
+ #include <cstring>
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "gfx/gl_debug_log.h"
+ #include "i18n/i18n.h"
+ #include "math/math_util.h"
+diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
+index 8e1adac..c96f673 100644
+--- a/GPU/Vulkan/TextureCacheVulkan.cpp
++++ b/GPU/Vulkan/TextureCacheVulkan.cpp
+@@ -18,7 +18,11 @@
+ #include <algorithm>
+ #include <cstring>
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "i18n/i18n.h"
+ #include "math/math_util.h"
+ #include "profiler/profiler.h"
+diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
+index 7717503..a06dc09 100644
+--- a/Windows/Debugger/CtrlDisAsmView.cpp
++++ b/Windows/Debugger/CtrlDisAsmView.cpp
+@@ -21,7 +21,11 @@
+ 
+ #include "Common/CommonWindows.h"
+ #include "util/text/utf8.h"
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "base/display.h"
+ 
+ #include <CommDlg.h>
+diff --git a/cmake/Modules/FindMiniupnpc.cmake b/cmake/Modules/FindMiniupnpc.cmake
+new file mode 100644
+index 0000000..f9a14e2
+--- /dev/null
++++ b/cmake/Modules/FindMiniupnpc.cmake
+@@ -0,0 +1,27 @@
++# This file only works for MiniUPnPc 1.7 or later (it requires MINIUPNPC_API_VERSION).
++# TODO Find out if any distribution still ships with /usr/include/miniupnpc.h (i.e. not in a separate directory).
++
++find_path(MINIUPNPC_INCLUDE_DIR miniupnpc.h PATH_SUFFIXES miniupnpc)
++find_library(MINIUPNPC_LIBRARY miniupnpc)
++
++if(MINIUPNPC_INCLUDE_DIR)
++	file(STRINGS "${MINIUPNPC_INCLUDE_DIR}/miniupnpc.h" MINIUPNPC_API_VERSION_STR REGEX "^#define[\t ]+MINIUPNPC_API_VERSION[\t ]+[0-9]+")
++	if(MINIUPNPC_API_VERSION_STR)
++		string(REGEX REPLACE "^#define[\t ]+MINIUPNPC_API_VERSION[\t ]+([0-9]+)" "\\1" MINIUPNPC_API_VERSION ${MINIUPNPC_API_VERSION_STR})
++	endif()
++endif()
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(MINIUPNPC DEFAULT_MSG MINIUPNPC_INCLUDE_DIR MINIUPNPC_LIBRARY MINIUPNPC_API_VERSION)
++
++set(MINIUPNPC_LIBRARIES ${MINIUPNPC_LIBRARY})
++set(MINIUPNPC_INCLUDE_DIRS ${MINIUPNPC_INCLUDE_DIR})
++mark_as_advanced(MINIUPNPC_INCLUDE_DIR MINIUPNPC_LIBRARY MINIUPNPC_API_VERSION_STR)
++
++if (MINIUPNPC_FOUND AND NOT TARGET miniupnpc)
++  add_library(Miniupnpc::miniupnpc UNKNOWN IMPORTED)
++  set_target_properties(Miniupnpc::miniupnpc PROPERTIES
++    IMPORTED_LOCATION ${MINIUPNPC_LIBRARIES}
++    INTERFACE_INCLUDE_DIRECTORIES ${MINIUPNPC_INCLUDE_DIRS}
++  )
++endif()
+-- 
+2.26.2
+

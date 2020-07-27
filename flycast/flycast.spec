@@ -1,13 +1,16 @@
-%global commit 860425b3cc3248785a402f07b71e2a9843cc0684
+%global commit dd102c806cf40b75859fd3c8cf161a9bd2991f08
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200710
+%global date 20200723
 %global with_snapshot 1
 
 %undefine _hardened_build
 
-%bcond_with     native
 # Enable system libchdr (broken)
 %global with_libchdr 0
+# Enable system spirv (broken)
+%global with_spirv 0
+# Build with x11 instead SDL
+%global with_x11 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -15,7 +18,7 @@
 
 Name:           flycast
 Version:        7
-Release:        16%{?gver}%{?dist}
+Release:        17%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -28,27 +31,37 @@ Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        %{name}.appdata.xml
 
-Patch0:         0001-Build-fixes.patch
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Change-configdir-name.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
+BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(alsa)
 %if !0%{?with_libchdr}
 BuildRequires:  pkgconfig(flac)
 %endif
 BuildRequires:  pkgconfig(gl)
-BuildRequires:  pkgconfig(libpulse-simple)
+BuildRequires:  pkgconfig(glm)
+%if 0%{?with_spirv}
+BuildRequires:  pkgconfig(glslang)
+%endif
+BuildRequires:  pkgconfig(libpulse)
+BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libudev)
+BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip)
+%if 0%{?with_x11}
 BuildRequires:  pkgconfig(x11)
+%else
+BuildRequires:  pkgconfig(sdl2)
+%endif
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  python3-devel
-BuildRequires:  xxhash-devel
 Requires:       hicolor-icon-theme
 Requires:       vulkan-loader%{?_isa}
 
@@ -64,10 +77,13 @@ Requires:       vulkan-loader%{?_isa}
 %autosetup %{name}-r%{version} -p1
 %endif
 
-rm -rf core/deps/{flac,libzip,SDL2-*,xxHash,zlib}
+rm -rf core/deps/{flac,glm,libzip,SDL2-*,xxHash,zlib}
+
 %if 0%{?with_libchdr}
-sed -e '/^#SYSTEM_CHDR/s|^#||g' -i shell/linux/Makefile
 rm -rf core/deps/{chdr,crypto}
+%endif
+%if 0%{?with_spirv}
+rm -rf core/deps/glslang
 %endif
 
 find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
@@ -83,10 +99,6 @@ sed -e 's|reicast|%{name}|g' \
 sed -e 's|REICAST|FLYCAST|g' -i man/*.1
 sed -e 's|Reicast|Flycast|g' -i *.desktop tools/*.py
 
-%if ! %{with native}
-sed -e 's|grep flags /proc/cpuinfo|/bin/true|g' -i Makefile
-%endif
-
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" tools/%{name}-joyconfig.py
 
 popd
@@ -96,29 +108,59 @@ sed \
   -i core/version.h*
 
 sed \
-  -e 's|`git describe --tags --always`|%{version}-%{release}|g' \
-  -i core/core.mk
+  -e 's|AO_FOUND|AO_FOUND_DISABLED|g' \
+  -e 's|${GIT_EXECUTABLE} describe --tags --always|echo "%{version}-%{release}"|g' \
+  -i CMakeLists.txt
 
 %if 0%{?with_snapshot}
   sed \
-    -e 's|`git rev-parse --short HEAD`|%{shortcommit}|g' \
-    -i core/core.mk
+    -e 's|${GIT_EXECUTABLE} rev-parse --short HEAD|echo "%{shortcommit}"|g' \
+    -i CMakeLists.txt
+  sed -e 's|@GIT_HASH@|%{shortcommit}|g' -i core/version.h.in
 %endif
 
 
 %build
-export PREFIX=%{_prefix}
-%set_build_flags
-export LDFLAGS="$LDFLAGS -Wl,--as-needed -Wl,-z,relro -Wl,-z,now"
+export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now -Wl,--sort-common"
+export CXXFLAGS="%{build_cxxflags} -D NDEBUG"
 
-%make_build -C shell/linux
+%cmake \
+  -B %{__cmake_builddir} \
+  -GNinja \
+  -DBUILD_SHARED_LIBS:BOOL=OFF \
+%if 0%{?with_libchdr}
+  -DUSE_SYSTEM_CHDR:BOOL=ON \
+%endif
+%if 0%{?with_spirv}
+  -DUSE_SYSTEM_SPIRV:BOOL=ON \
+%endif \
+  -DCMAKE_BUILD_TYPE:STRING=Release \
+%{nil}
+
+%cmake_build
 
 
 %install
-export PREFIX=%{_prefix}
-%make_install -C shell/linux
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 %{__cmake_builddir}/%{name} %{buildroot}%{_bindir}/
+install -pm755 shell/linux/tools/%{name}-joyconfig.py %{buildroot}%{_bindir}/%{name}-joyconfig
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+mkdir -p %{buildroot}%{_datadir}/%{name}/mappings
+for mapping in gcwz generic pandora xboxdrv xpad ;do
+  install -pm0644 shell/linux/mappings/controller_$mapping.cfg %{buildroot}%{_datadir}/%{name}/mappings/
+done
+install -pm0644 shell/linux/mappings/keyboard.cfg %{buildroot}%{_datadir}/%{name}/mappings/
+
+mkdir -p %{buildroot}%{_mandir}/man1
+install -m644 shell/linux/man/%{name}*.1 %{buildroot}%{_mandir}/man1/
+
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  shell/linux/%{name}.desktop
+
+mkdir -p %{buildroot}%{_datadir}/pixmaps
+install -pm0644 shell/linux/%{name}.png %{buildroot}%{_datadir}/pixmaps/
 
 for res in 16 22 24 32 36 48 64 72 96 128 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
@@ -145,6 +187,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Jul 26 2020 Phantom X <megaphantomx at hotmail dot com> - 7-17.20200723gitdd102c8
+- cmake and SDL2
+
 * Tue Jul 21 2020 Phantom X <megaphantomx at hotmail dot com> - 7-16.20200710git860425b
 - New snapshot
 

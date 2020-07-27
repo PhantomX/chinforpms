@@ -1,0 +1,9 @@
+diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/StandAlone/CMakeLists.txt.dma glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/StandAlone/CMakeLists.txt
+--- glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/StandAlone/CMakeLists.txt.dma	2020-04-22 11:00:58.685198803 +1000
++++ glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/StandAlone/CMakeLists.txt	2020-04-22 11:01:12.559574492 +1000
+@@ -1,4 +1,4 @@
+-add_library(glslang-default-resource-limits
++add_library(glslang-default-resource-limits STATIC
+             ${CMAKE_CURRENT_SOURCE_DIR}/ResourceLimits.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/resource_limits_c.cpp)
+ set_property(TARGET glslang-default-resource-limits PROPERTY FOLDER glslang)

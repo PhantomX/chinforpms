@@ -1,6 +1,6 @@
-From 698cc0b8f7dd7445bf99cc93b999ff3e09738b38 Mon Sep 17 00:00:00 2001
+From 1404d56242f6c860cbaff3a4861988dce653070b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 24 Aug 2019 13:44:44 -0300
+Date: Sun, 26 Jul 2020 11:59:13 -0300
 Subject: [PATCH] Disable Discord support
 
 ---
@@ -11,10 +11,10 @@ Subject: [PATCH] Disable Discord support
  4 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/Core/Config.cpp b/Core/Config.cpp
-index b33d78c..f0f4279 100644
+index 9f0cd03..9d8c6d3 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
-@@ -431,7 +431,6 @@ static ConfigSetting generalSettings[] = {
+@@ -432,7 +432,6 @@ static ConfigSetting generalSettings[] = {
  	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false),
  	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion),
  	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, true, true),
@@ -23,10 +23,10 @@ index b33d78c..f0f4279 100644
  	ReportedConfigSetting("NumWorkerThreads", &g_Config.iNumWorkerThreads, &DefaultNumWorkers, true, true),
  	ConfigSetting("AutoLoadSaveState", &g_Config.iAutoLoadSaveState, 0, true, true),
 diff --git a/Core/Config.h b/Core/Config.h
-index 2b04bf2..d8c5b2d 100644
+index 03e3b34..c10b468 100644
 --- a/Core/Config.h
 +++ b/Core/Config.h
-@@ -119,8 +119,6 @@ struct Config {
+@@ -131,8 +131,6 @@ struct Config {
  	std::vector<std::string> vPinnedPaths;
  	std::string sLanguageIni;
  
@@ -36,10 +36,10 @@ index 2b04bf2..d8c5b2d 100644
  	int iGPUBackend;
  	std::string sFailedGPUBackends;
 diff --git a/UI/DiscordIntegration.cpp b/UI/DiscordIntegration.cpp
-index 41784ab..5d0bde9 100644
+index b872b21..e38db51 100644
 --- a/UI/DiscordIntegration.cpp
 +++ b/UI/DiscordIntegration.cpp
-@@ -43,7 +43,11 @@ Discord::~Discord() {
+@@ -46,7 +46,11 @@ Discord::~Discord() {
  }
  
  bool Discord::IsEnabled() const {
@@ -52,17 +52,17 @@ index 41784ab..5d0bde9 100644
  
  void Discord::Init() {
 diff --git a/UI/GameSettingsScreen.cpp b/UI/GameSettingsScreen.cpp
-index b1bf46f..40b5335 100644
+index 97d0bd2..dd20b05 100644
 --- a/UI/GameSettingsScreen.cpp
 +++ b/UI/GameSettingsScreen.cpp
-@@ -624,7 +624,6 @@ void GameSettingsScreen::CreateViews() {
+@@ -686,7 +686,6 @@ void GameSettingsScreen::CreateViews() {
  	networkingSettings->Add(new Choice(n->T("Adhoc Multiplayer forum")))->OnClick.Handle(this, &GameSettingsScreen::OnAdhocGuides);
  
  	networkingSettings->Add(new CheckBox(&g_Config.bEnableWlan, n->T("Enable networking", "Enable networking/wlan (beta)")));
 -	networkingSettings->Add(new CheckBox(&g_Config.bDiscordPresence, n->T("Send Discord Presence information")));
  
- 	networkingSettings->Add(new ChoiceWithValueDisplay(&g_Config.proAdhocServer, n->T("Change proAdhocServer Address"), (const char *)nullptr))->OnClick.Handle(this, &GameSettingsScreen::OnChangeproAdhocServerAddress);
+ 	networkingSettings->Add(new ChoiceWithValueDisplay(&g_Config.proAdhocServer, n->T("Change proAdhocServer Address (localhost = multiple instance)"), (const char *)nullptr))->OnClick.Handle(this, &GameSettingsScreen::OnChangeproAdhocServerAddress);
  	networkingSettings->Add(new CheckBox(&g_Config.bEnableAdhocServer, n->T("Enable built-in PRO Adhoc Server", "Enable built-in PRO Adhoc Server")));
 -- 
-2.21.0
+2.26.2
 

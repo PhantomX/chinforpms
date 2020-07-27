@@ -1,6 +1,6 @@
-%global commit 16ba29571bddb6f71824c057ee9f16d15da9297b
+%global commit 1822ab95f124e3a40b715f86d29395c6b886aeb2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200527
+%global date 20200712
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,8 +10,8 @@
 %global vc_url  https://github.com/sithlord48/%{name}
 
 Name:           blackchocobo
-Version:        1.10.0
-Release:        2%{?gver}%{?dist}
+Version:        1.10.3
+Release:        1%{?gver}%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
 License:        GPLv3
@@ -87,10 +87,10 @@ install -pm0644 %{name}.appdata.xml %{buildroot}%{_metainfodir}/
 
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
-%find_lang %{name} --with-qt
+%find_lang bchoco --with-qt
 
 
-%files -f %{name}.lang
+%files -f bchoco.lang
 %license COPYING.txt
 %doc README.md
 %{_bindir}/%{name}
@@ -103,6 +103,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Mon Jul 27 2020 Phantom X <megaphantomx at hotmail dot com> - 1.10.3-1.20200712git1822ab9
+- 1.10.3
+
 * Sat Jun 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1.10.0-2.20200527git16ba295
 - New snapshot
 

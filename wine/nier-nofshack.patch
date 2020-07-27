@@ -1,0 +1,64 @@
+From b48441239d99d4f0ee8561daa011841a8344c20a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 26 Jul 2020 19:09:04 -0300
+Subject: [PATCH] HACK:winex11: limits resources->nmode
+
+fix https://github.com/ValveSoftware/Proton/issues/2929
+Updated from yuiiio <atbjyk@protonmail.com> patch
+---
+ dlls/winex11.drv/xrandr.c | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
+
+diff --git a/dlls/winex11.drv/xrandr.c b/dlls/winex11.drv/xrandr.c
+index d111b96..f441a00 100644
+--- a/dlls/winex11.drv/xrandr.c
++++ b/dlls/winex11.drv/xrandr.c
+@@ -347,11 +347,22 @@ static BOOL is_broken_driver(void)
+             continue;
+         }
+ 
++    int limit = 53; // required by nier_automata (55), sekiro (53), dark_souls3 (53)
++    int capped_screen_resources_nmode = screen_resources->nmode;
++    const char *sgi = getenv("SteamGameId");
++
++    if (sgi && (!strcmp(sgi, "374320") | !strcmp(sgi, "524220") | !strcmp(sgi, "814380")))
++    {
++        if (screen_resources->nmode > limit) {
++            capped_screen_resources_nmode = limit;
++        }
++    }
++
+         first_mode = NULL;
+         only_one_mode = TRUE;
+         for (i = 0; i < output_info->nmode; ++i)
+         {
+-            for (j = 0; j < screen_resources->nmode; ++j)
++            for (j = 0; j < capped_screen_resources_nmode; ++j)
+             {
+                 if (output_info->modes[i] != screen_resources->modes[j].id)
+                     continue;
+@@ -1163,9 +1174,20 @@ static BOOL xrandr14_get_modes( ULONG_PTR id, DWORD flags, DEVMODEW **new_modes,
+     if (!modes)
+         goto done;
+ 
++    int limit = 53; // required by nier_automata (55), sekiro (53), dark_souls3 (53)
++    int capped_screen_resources_nmode = screen_resources->nmode;
++    const char *sgi = getenv("SteamGameId");
++
++    if (sgi && (!strcmp(sgi, "374320") | !strcmp(sgi, "524220") | !strcmp(sgi, "814380")))
++    {
++        if (screen_resources->nmode > limit) {
++            capped_screen_resources_nmode = limit;
++        }
++    }
++
+     for (i = 0; i < output_info->nmode; ++i)
+     {
+-        for (j = 0; j < screen_resources->nmode; ++j)
++        for (j = 0; j < capped_screen_resources_nmode; ++j)
+         {
+             if (output_info->modes[i] != screen_resources->modes[j].id)
+                 continue;
+-- 
+2.26.2
+

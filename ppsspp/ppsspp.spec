@@ -1,6 +1,6 @@
-%global commit e66742153d361c7154b128dae500c227de62041e
+%global commit 2af805dbc2edf9725ebe517ba91bb9b49fc27c38
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200710
+%global date 20200726
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -16,7 +16,7 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 942934a3d55f600622fb3f3ad60ecc1f3da23b6b
+%global commit1 1c64b8fbd3cb6bd87935eb53f302f7de6f86e209
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -36,7 +36,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 6575e451f5bffded6e308988362224dd076b0f2b
+%global commit7 0376576d2dc0721edfb2c5a0257fdc275f6f39dc
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -51,7 +51,7 @@
 %global vc_url  https://github.com/hrydgard
 
 Name:           ppsspp
-Version:        1.10.2
+Version:        1.10.3
 Release:        100%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -77,6 +77,7 @@ Source10:       %{name}.appdata.xml
 
 Patch0:         %{name}-noupdate.patch
 Patch1:         %{name}-nodiscord.patch
+Patch3:         0001-Use-system-libraries.patch
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -109,8 +110,9 @@ BuildRequires:  pkgconfig(libglvnd)
 %endif
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libzip)
+BuildRequires:  pkgconfig(miniupnpc) >= 2.1
 BuildRequires:  pkgconfig(sdl2)
-BuildRequires:  snappy-devel
+BuildRequires:  pkgconfig(snappy)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(wayland-egl)
@@ -125,6 +127,8 @@ Requires:       hicolor-icon-theme
 Requires:       google-roboto-condensed-fonts
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
+Provides:       %{name}-libs = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}-libs < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description
 PPSSPP is a PSP emulator written in C++. It translates PSP CPU instructions
@@ -157,6 +161,9 @@ tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
+
+rm -rf ext/{glew,rapidjson,miniupnp,snappy,zlib}/*.{c,cpp,h}
+rm -f ext/xxhash.*
 
 find ext Core -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" -o -name "*.y" \) -exec chmod -x {} ';'
 
@@ -245,6 +252,9 @@ popd
   -DUSE_FFMPEG:BOOL=OFF \
 %endif
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \
+  -DUSE_SYSTEM_MINIUPNPC:BOOL=ON \
+  -DUSE_SYSTEM_SNAPPY:BOOL=ON \
+  -DUSE_SYSTEM_XXHASH:BOOL=ON \
   -DUSE_DISCORD:BOOL=OFF \
   -DUSE_WAYLAND_WSI:BOOL=ON \
   -DUSING_X11_VULKAN:BOOL=ON \
@@ -331,6 +341,11 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Jul 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-100.20200726git2af805d
+- 1.10.3
+- BR: miniupnc
+- Enable system snappy for real
+
 * Sun Jul 12 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.2-100.20200710gite667421
 - 1.10.2
 
