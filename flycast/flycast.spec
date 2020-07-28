@@ -18,7 +18,7 @@
 
 Name:           flycast
 Version:        7
-Release:        17%{?gver}%{?dist}
+Release:        18%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -122,12 +122,17 @@ sed \
 
 %build
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now -Wl,--sort-common"
-export CXXFLAGS="%{build_cxxflags} -D NDEBUG"
+EXTRA_CFLAGS="-D NDEBUG -frename-registers -ftree-vectorize"
+export CFLAGS="%{build_cflags} ${EXTRA_CFLAGS}"
+export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
 
 %cmake \
   -B %{__cmake_builddir} \
   -GNinja \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
+%if 0%{?with_x11}
+  -DSDL2_FOUND:BOOL=OFF \
+%endif
 %if 0%{?with_libchdr}
   -DUSE_SYSTEM_CHDR:BOOL=ON \
 %endif
@@ -187,6 +192,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Jul 28 2020 Phantom X <megaphantomx at hotmail dot com> - 7-18.20200723gitdd102c8
+- Add CFLAGS from old linux Makefile, this fix some crashes
+
 * Sun Jul 26 2020 Phantom X <megaphantomx at hotmail dot com> - 7-17.20200723gitdd102c8
 - cmake and SDL2
 
