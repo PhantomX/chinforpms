@@ -1,0 +1,29 @@
+From efeb799df7a287e23a68d6e7b664dd63cbd7f315 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 29 Jul 2020 18:56:56 -0300
+Subject: [PATCH] settings: disable keymap reload when key changes is detected
+
+This is causing annoying screen lags with multimedia keys or antimicroX.
+Possible regressions haven't been tested.
+---
+ src/settings.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/settings.c b/src/settings.c
+index 5567618..18b14ce 100644
+--- a/src/settings.c
++++ b/src/settings.c
+@@ -1060,8 +1060,8 @@ initSettings (ScreenInfo *screen_info)
+                       G_CALLBACK (cb_xfwm4_channel_property_changed), screen_info);
+ 
+     keymap = myDisplayGetKeymap (display_info);
+-    g_signal_connect (keymap, "keys-changed",
+-                      G_CALLBACK (cb_keys_changed), screen_info);
++    //g_signal_connect (keymap, "keys-changed",
++    //                  G_CALLBACK (cb_keys_changed), screen_info);
+ 
+     screen_info->shortcuts_provider = xfce_shortcuts_provider_new ("xfwm4");
+     g_signal_connect (screen_info->shortcuts_provider, "shortcut-added",
+-- 
+2.26.2
+

@@ -1,8 +1,8 @@
-%global xfceversion 4.12
+%global xfceversion 4.14
 
 Name:           xfwm4
-Version:        4.12.5
-Release:        100.chinfo%{?dist}
+Version:        4.14.3
+Release:        100%{?dist}
 Summary:        Next generation window manager for Xfce
 
 License:        GPLv2+
@@ -10,47 +10,49 @@ URL:            http://www.xfce.org/
 #VCS git:git://git.xfce.org/xfce/xfwm4
 Source0:        http://archive.xfce.org/src/xfce/%{name}/%{xfceversion}/%{name}-%{version}.tar.bz2
 
+Patch10:        0001-settings-disable-keymap-reload-when-key-changes-is-d.patch
+
+BuildRequires:  gcc-c++
 BuildRequires:  libxfce4ui-devel >= %{xfceversion}
 BuildRequires:  libXext-devel
-BuildRequires:  gettext 
+%if 0%{?fedora}
+BuildRequires:  libXpresent-devel
+%endif
+BuildRequires:  gettext
 BuildRequires:  intltool
 BuildRequires:  libXcomposite-devel
 BuildRequires:  libXdamage-devel
 BuildRequires:  startup-notification-devel >= 0.5
-BuildRequires:  libglade2-devel
-BuildRequires:  libwnck-devel >= 2.22
+BuildRequires:  libwnck3-devel >= 3.14
 BuildRequires:  xfconf-devel >= %{xfceversion}
 BuildRequires:  desktop-file-utils
+
 Provides:       firstboot(windowmanager) = xfwm4
 
 %description
 xfwm4 is a window manager compatible with GNOME, GNOME2, KDE2, KDE3 and Xfce.
 
 %prep
-%autosetup
+%autosetup -p1
 
 
 %build
-export CPPFLAGS='-DMONITOR_ROOT_PIXMAP'
-%configure \
-  --disable-static \
-  --disable-silent-rules
+%configure  --disable-static
 
 %make_build
 
-
 %install
-%make_install INSTALL='install -p'
+%make_install
 
 %find_lang %{name}
 
-for file in $RPM_BUILD_ROOT/%{_datadir}/applications/*.desktop; do
+for file in %{buildroot}/%{_datadir}/applications/*.desktop; do
     desktop-file-validate $file
 done
 
-
 %files -f %{name}.lang
-%doc example.gtkrc-2.0 README TODO COPYING AUTHORS COMPOSITOR
+%license COPYING
+%doc example.gtkrc-2.0 README TODO AUTHORS COMPOSITOR
 %{_bindir}/xfwm4
 %{_bindir}/xfwm4-settings
 %{_bindir}/xfwm4-tweaks-settings
@@ -64,11 +66,75 @@ done
 
 
 %changelog
-* Sun Jul 29 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.12.5-100.chinfo
-- 4.12.5
+* Wed Jul 29 2020 Phantom X <megaphantomx at hotmail dot com> - 4.14.3-100
+- Disable keymap reload when key changes is detected
 
-* Thu May 10 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.12.4-100.chinfo
-- Enable MONITOR_ROOT_PIXMAP
+* Wed Jul 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 4.14.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Sun Jul 26 2020 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.14.3-1
+- Update to 4.14.3
+- Drop merged patch
+
+* Wed Jul 15 2020 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.14.2-2
+- Add patch to fix crashes with glib 2.65.x
+
+* Fri May 01 2020 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.14.2-1
+- Update to 4.14.2
+
+* Mon Apr 13 2020 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.14.1-1
+- Update to 4.14.1
+
+* Fri Jan 31 2020 Fedora Release Engineering <releng@fedoraproject.org> - 4.14.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Mon Aug 12 2019 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.14.0-1
+- Update to 4.14.0
+
+* Mon Jul 29 2019 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.13.4-1
+- Update to 4.13.4
+
+* Sat Jul 27 2019 Fedora Release Engineering <releng@fedoraproject.org> - 4.13.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
+* Mon Jul 01 2019 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.13.3-1
+- Update to 4.13.3
+
+* Sat May 18 2019 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.13.2-1
+- Update to 4.13.2
+- Drop patches no longer needed
+
+* Wed Apr 24 2019 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.13.1-8
+- Add patch to fix crash during window cycling (Fixes #1700111)
+
+* Mon Apr 22 2019 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.13.1-7
+- Add patch to fix screen size issues (Fixes #1666735)
+
+* Sun Feb 03 2019 Fedora Release Engineering <releng@fedoraproject.org> - 4.13.1-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Wed Jan 16 2019 Dan Horák <dan[at]danny.cz> - 4.13.1-5
+- Update BR
+
+* Thu Dec 20 2018 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.13.1-4
+- Add patch to fix bug #1652801
+
+* Mon Sep 03 2018 Miro Hrončok <mhroncok@redhat.com> - 4.13.1-3
+- Enable compositor
+- Fix GLX flickering (#1624353)
+- Build with libXpresent
+
+* Sat Aug 18 2018 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.13.1-2
+- Disable compositor temporarily
+
+* Sat Aug 11 2018 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.13.1-1
+- Update to 4.13.1
+
+* Thu Aug 02 2018 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 4.12.5-1
+- Updated to 4.12.5
+
+* Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 4.12.4-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 4.12.4-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild

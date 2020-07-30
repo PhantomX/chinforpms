@@ -1,7 +1,7 @@
-%global commit 68b13c1ff04784e31ffffd51d147cb890fe88803
+%global commit f51d5dfd02f40b91ae44fa5002c163f8750d9949
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190609
-%global with_snapshot 0
+%global date 20200729
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -11,7 +11,7 @@
 
 Name:           %{pkgname}-freeworld
 Version:        20.07
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - freeworld
 Epoch:          1
 
@@ -100,6 +100,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Wed Jul 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.07-2.20200729gitf51d5df
+- Last snapshot with ffmpeg support
+
 * Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.07-100
 - 20.07
 

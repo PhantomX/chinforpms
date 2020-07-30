@@ -1,7 +1,7 @@
-%global commit 68b13c1ff04784e31ffffd51d147cb890fe88803
+%global commit 7f52bfb66b73cca2522537f45977886958a06324
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190609
-%global with_snapshot 0
+%global date 20200729
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -9,7 +9,7 @@
 
 Name:           FAudio
 Version:        20.07
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
 Epoch:          1
@@ -24,8 +24,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        %{name}.pc
-
-Patch0:         %{vc_url}/pull/192.patch#/%{name}-gh-pr192.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -108,6 +106,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Wed Jul 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.07-101.20200729git7f52bfb
+- Snapshot
+
 * Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.07-100
 - 20.07
 - Enable experimental GStreamer support

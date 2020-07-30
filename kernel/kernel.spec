@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit f43696fb5c4481ba4627d4640a5ae085e5c80e86
+%global pfcommit 62a6be503ef80325c479291814e378d665e66d9e
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 6a1b5cfcea3fa0b1bcbffba17a585f9ed9e8c874
+%global opensuse_id 501599469bceacc25b7494a8c45b87fefd7ea51a
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -933,9 +933,11 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 %if !0%{?zen}
 Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 # https://bugzilla.kernel.org/show_bug.cgi?id=207383
-Patch4011: 0001-Revert-mm-slub-fix-incorrect-interpretation-of-s-off.patch
-Patch4012: 0002-Revert-slub-avoid-redzone-when-choosing-freepointer-.patch
-Patch4013: 0003-Revert-slub-relocate-freelist-pointer-to-middle-of-o.patch
+Patch4011: https://bugzilla.kernel.org/attachment.cgi?id=290591#/zzz-drm-amd-display-Clear-dm_state-for-fast-updates.patch
+# 
+
+
+
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2685,6 +2687,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.11-500.chinfo
+- 5.7.11 - pf8
+
 * Sun Jul 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.10-501.chinfo
 - 5.7.10 - pf6
 
