@@ -127,7 +127,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2020.07
+Version:        2020.07.1
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -182,7 +182,6 @@ Patch226:        rhbz-1354671.patch
 
 # Firefox upstream patches
 Patch402:        mozilla-1196777.patch
-Patch406:        mozilla-256180.patch
 Patch413:        mozilla-1353817.patch
 Patch415:        Bug-1238661---fix-mozillaSignalTrampoline-to-work-.patch
 Patch417:        mozilla-1436242.patch
@@ -387,7 +386,6 @@ This package contains results of tests executed during build.
 %endif
 
 %patch402 -p1 -b .1196777
-%patch406 -p1 -b .256180
 %patch413 -p1 -b .1353817
 %ifarch %{arm}
 %patch415 -p1 -b .mozilla-1238661
@@ -1031,6 +1029,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Thu Jul 30 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.07.1-1.classic
+- 2020.07.1
+
 * Wed Jul 01 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.07-1.classic
 - 2020.07
 

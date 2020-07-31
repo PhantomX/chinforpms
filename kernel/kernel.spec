@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 62a6be503ef80325c479291814e378d665e66d9e
+%global pfcommit a1208f4b7921eeebb67ca8ddd0e1580c534ea2f6
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -932,12 +932,6 @@ Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enab
 
 %if !0%{?zen}
 Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
-# https://bugzilla.kernel.org/show_bug.cgi?id=207383
-Patch4011: https://bugzilla.kernel.org/attachment.cgi?id=290591#/zzz-drm-amd-display-Clear-dm_state-for-fast-updates.patch
-# 
-
-
-
 %endif
 
 # END OF PATCH DEFINITIONS
