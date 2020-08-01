@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit a1208f4b7921eeebb67ca8ddd0e1580c534ea2f6
+%global pfcommit 36ca7676257fe57d3963dca94285365fc5dc4a6e
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -892,6 +892,9 @@ Patch121: 0012-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
 Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 # Back port from 5.8
 Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
+
+# rhbz 1857101
+Patch125: 0001-ALSA-hda-Workaround-for-spurious-wakeups-on-some-Int.patch 
 
 ### Extra
 
@@ -2681,6 +2684,9 @@ fi
 #
 #
 %changelog
+* Fri Jul 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.12-500.chinfo
+- 5.7.12 - pf8
+
 * Wed Jul 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.11-500.chinfo
 - 5.7.11 - pf8
 
