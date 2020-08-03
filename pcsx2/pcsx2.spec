@@ -1,6 +1,6 @@
-%global commit 30e6a7a62a21155513d61d692e18e53316006df2
+%global commit 95b5ab5f1fb2dbdbbb302d17c988493cea244acd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200717
+%global date 20200729
 %global with_snapshot 1
 
 %global sanitize 0
@@ -13,7 +13,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -34,8 +34,6 @@ Source0:        %{name}-%{version}.tar.xz
 %endif
 %endif
 Source1:        Makefile
-
-Patch0:         0001-Fix-build-without-portaudio.patch
 
 # PCSX2 does not support running as a 64 bit application.
 # http://code.google.com/p/pcsx2/wiki/ChrootAnd64bStatusLinux
@@ -224,6 +222,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Sun Aug 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-104.20200729git95b5ab5
+- New snapshot
+
 * Fri Jul 17 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-103.20200717git30e6a7a
 - Bump and test new cmake out of source macros
 

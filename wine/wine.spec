@@ -1,7 +1,7 @@
 %global commit 0d42388095e4fd5c7702a61824b01ce0f9fc4d74
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200724
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver f7013bb1b4a6623868bdf9429973dcf1aced1239
+%global wine_stagingver 5.14
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id ae15b580525714b76de074c2aee30f535e15a349
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 8bb571c1b1ef90729f8f4ea37d44cc8013a88af4
+%global tkg_id ad0810c1ff6369fa8e7c0af269a9596b51d65136
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 4444f69429652a6845fcf372e8ef864723cea1a1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -98,8 +98,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.13
-Release:        102%{?gver}%{?dist}
+Version:        5.14
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -542,6 +542,45 @@ Patch7374:      %{whq_url}/e3b059b5bad4b7ff23459a6384c866e3da1bdee1#/%{name}-whq
 Patch7375:      %{whq_url}/a865a4f61d413d85d6ae4e57d3c14c0657d3a598#/%{name}-whq-a865a4f.patch
 Patch7376:      %{whq_url}/d18b5669952bf1639be78fd699310231d4de0259#/%{name}-whq-d18b566.patch
 Patch7377:      %{whq_url}/b37371bf20be58ee7bd0b63dbac15b474873bc86#/%{name}-whq-b37371b.patch
+Patch7378:      %{whq_url}/928fffee8dac4a9555bbbc141d9f29483422eee1#/%{name}-whq-928fffe.patch
+Patch7379:      %{whq_url}/29d5c6c476faa00529fe765150d014607da48f27#/%{name}-whq-29d5c6c.patch
+Patch7380:      %{whq_url}/8e3b5183cc79b99ac74e2cb3f665f8e46a076495#/%{name}-whq-8e3b518.patch
+Patch7381:      %{whq_url}/9a7c56d9e7f8e49dc98dace53b10d0753f0e27a7#/%{name}-whq-9a7c56d.patch
+Patch7382:      %{whq_url}/28e443d9e2a3bfea936b4f6f97bf78f6ccf6a91a#/%{name}-whq-28e443d.patch
+Patch7383:      %{whq_url}/15b3584603205b93e6e6a0bace6159438ce22ffb#/%{name}-whq-15b3584.patch
+Patch7384:      %{whq_url}/57f419993eb8088ef210e8a56b07acf63509b159#/%{name}-whq-57f4199.patch
+Patch7385:      %{whq_url}/d775b9fd93ecfbbd12945f1e167e4bb381612c69#/%{name}-whq-d775b9f.patch
+Patch7386:      %{whq_url}/94ca95a6d444e8cd1592bd41f09cba2e1ae49902#/%{name}-whq-94ca95a.patch
+Patch7387:      %{whq_url}/8e5c11b964e844696c7f5882d3b8dd7ff70a7869#/%{name}-whq-8e5c11b.patch
+Patch7388:      %{whq_url}/06c09fca3127fce9d3a3d1b4714173404ee58629#/%{name}-whq-06c09fc.patch
+Patch7389:      %{whq_url}/eee92591bcf4eb7e1f0d91e24c47b5021a9c81fe#/%{name}-whq-eee9259.patch
+Patch7390:      %{whq_url}/7a31d401391c9c66173a599cadbbb6946f607927#/%{name}-whq-7a31d40.patch
+Patch7391:      %{whq_url}/44052219aa0e6412a0f595f830c0cdf6e82ea70c#/%{name}-whq-4405221.patch
+Patch7392:      %{whq_url}/300a01f467e84bb69bf6387e52545ddbc9c456dc#/%{name}-whq-300a01f.patch
+Patch7393:      %{whq_url}/5f6bb63800c14a46a4124c5a5e42094cae3a38fc#/%{name}-whq-5f6bb63.patch
+Patch7394:      %{whq_url}/f8fa6fd68608b53def2c34a489b5af2416f47cd7#/%{name}-whq-f8fa6fd.patch
+Patch7395:      %{whq_url}/f6fb372a045256d84d6e18d4757b9f59e209cf0e#/%{name}-whq-f6fb372.patch
+Patch7396:      %{whq_url}/1e5cd8fadcb80b68391de6589304d9f2654dbdd8#/%{name}-whq-1e5cd8f.patch
+Patch7397:      %{whq_url}/7ae370a5491b58eeec03961b09dcf5ae5e53e411#/%{name}-whq-7ae370a.patch
+Patch7398:      %{whq_url}/3609406308110f93f11c6045da5734f038ef727c#/%{name}-whq-3609406.patch
+Patch7399:      %{whq_url}/b6b2667482a14e4cd76da48940ead142ce207b2e#/%{name}-whq-b6b2667.patch
+Patch7400:      %{whq_url}/e7c9a0e1511641961a69babe2ab7aca75c636672#/%{name}-whq-e7c9a0e.patch
+Patch7401:      %{whq_url}/fef78c4e10422319736f290e44493838e4257a04#/%{name}-whq-fef78c4.patch
+Patch7402:      %{whq_url}/ad1f09d57424b26bcf463dd45b5b0acb5bd97029#/%{name}-whq-ad1f09d.patch
+Patch7403:      %{whq_url}/1f5a45e63ecff2f83eb927e253007bd75fb36c05#/%{name}-whq-1f5a45e.patch
+Patch7404:      %{whq_url}/c37c9bf65a6f6dfd9708f6654227a953504dc158#/%{name}-whq-c37c9bf.patch
+Patch7405:      %{whq_url}/305da71c7d8098bf2d2a07584a25be2e5fcc2b91#/%{name}-whq-305da71.patch
+Patch7406:      %{whq_url}/3f8d60e2ac5997766f19107aef23e351c7d68a03#/%{name}-whq-3f8d60e.patch
+Patch7407:      %{whq_url}/b7e51a1653320d06a9c04f53d0d9e7eda577c31b#/%{name}-whq-b7e51a1.patch
+Patch7408:      %{whq_url}/78831ae9d044ffb824e72cb8952f3eb25140c7c9#/%{name}-whq-78831ae.patch
+Patch7409:      %{whq_url}/504d6eaa9a0642e6c71aa320cb5ac1e88dc44a01#/%{name}-whq-504d6ea.patch
+Patch7410:      %{whq_url}/fa2b372ec02d3755ce892612750238f41b39ad85#/%{name}-whq-fa2b372.patch
+Patch7411:      %{whq_url}/e7550069ded02c1f8503a15e155127e1e2c26f6a#/%{name}-whq-e755006.patch
+Patch7412:      %{whq_url}/bd54f39766e53f92909bc208e5746497c0dc5d69#/%{name}-whq-bd54f39.patch
+Patch7413:      %{whq_url}/53f17314aa97d4aba8d37d76ae878cbae20818bf#/%{name}-whq-53f1731.patch
+Patch7414:      %{whq_url}/a09a268faeb29fb6cffd6e422843659793f09ced#/%{name}-whq-a09a268.patch
+Patch7415:      %{whq_url}/ed8358393413d52096c56e96b44ee73f15053f91#/%{name}-whq-ed83583.patch
+Patch7416:      %{whq_url}/f4e55565470938d31e21f4a35aa14e5a950f81c8#/%{name}-whq-f4e5556.patch
 
 # Reverts to unbreak fshack
 Patch8000:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -563,17 +602,21 @@ Patch8015:       %{whq_url}/45d991d54138523e5278db5618eb458100982294#/%{name}-wh
 Patch8016:       %{whq_url}/9905a5a81d6baf59e992c5b2a8ea92ee4054e5d6#/%{name}-whq-9905a5a.patch
 Patch8017:       %{whq_url}/7dd52f6d24f372f08ab71f0acbb0a2b028d390ba#/%{name}-whq-7dd52f6.patch
 Patch8018:       %{whq_url}/0d42388095e4fd5c7702a61824b01ce0f9fc4d74#/%{name}-whq-0d42388.patch
-
+Patch8019:       %{whq_url}/4a2481631331e2743476ea4e1b0005f8f5024242#/%{name}-whq-4a24816.patch
+Patch8020:       %{whq_url}/d13b61b7385a6a380fb91720c511b194926fa0ca#/%{name}-whq-d13b61b.patch
+Patch8021:       %{whq_url}/5491e939bc22f0ab479aec6b8a525be9c5ff5e35#/%{name}-whq-5491e93.patch
+Patch8022:       %{whq_url}/2116b49717f26802b51e2904de8d74651da33545#/%{name}-whq-2116b49.patch
+Patch8023:       %{whq_url}/9c99d9bceba34559a32f1e5906a6fcbcf91b0004#/%{name}-whq-9c99d9b.patch
+Patch8024:       %{whq_url}/b45c04f4c352ef81df5312684008839f4eeee03d#/%{name}-whq-b45c04f.patch
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch800:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-62.mystagingrevert#/%{name}-tkg-06877e5_revert-62.patch
+Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-64.mystagingrevert#/%{name}-tkg-06877e5_revert-64.patch
 Patch802:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch803:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-97fbe3f.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-97fbe3f.patch
 Patch804:       %{tkg_url}/hotfixes/01150d7f/staging-rawinput-esync-nofshack-fix.mystagingpatch#/%{name}-tkg-staging-rawinput-esync-nofshack-fix.patch
 Patch805:       %{tkg_url}/hotfixes/01150d7f/001-3a9edf9aad43c3e8ba724571da5381f821f1dc56.myearlypatch#/%{name}-tkg-001-3a9edf9_early.patch
 Patch806:       %{tkg_url}/hotfixes/01150d7f/002-e0e3b6bc91f7db956e3a66f2938eea45d4055a39.myearlypatch#/%{name}-tkg-002-e0e3b6b_early.patch
-Patch807:       %{tkg_url}/hotfixes/01150d7f/x11drv1.mystagingrevert#/%{name}-tkg-x11drv1.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -966,6 +1009,7 @@ Requires:      wine-times-new-roman-fonts = %{?epoch:%{epoch}:}%{version}-%{rele
 Obsoletes:     wine-times-new-roman-fonts <= %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 Requires:      wine-symbol-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:      wine-webdings-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:      wine-wingdings-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 # intermediate fix for #593140
 Requires:      liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts
@@ -1084,6 +1128,25 @@ Requires:      fontpackages-filesystem
 %description symbol-fonts
 %{summary}
 
+%package webdings-fonts
+Summary:       Wine Webdings font family
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+
+%description webdings-fonts
+%{summary}
+Please note: If you want system integration for wine wingdings fonts install the
+wine-webdings-fonts-system package.
+
+%package webdings-fonts-system
+Summary:       Wine Webdings font family system integration
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+Requires:      wine-webdings-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description webdings-fonts-system
+%{summary}
+
 %package wingdings-fonts
 Summary:       Wine Wingdings font family
 BuildArch:     noarch
@@ -1190,6 +1253,45 @@ This package adds the opencl driver for wine.
 %patch599 -p1
 
 %if 0%{?wine_staging}
+%patch7416 -p1 -R
+%patch7415 -p1 -R
+%patch7414 -p1 -R
+%patch7413 -p1 -R
+%patch7412 -p1 -R
+%patch7411 -p1 -R
+%patch7410 -p1 -R
+%patch7409 -p1 -R
+%patch7408 -p1 -R
+%patch7407 -p1 -R
+%patch7406 -p1 -R
+%patch7405 -p1 -R
+%patch7404 -p1 -R
+%patch7403 -p1 -R
+%patch7402 -p1 -R
+%patch7401 -p1 -R
+%patch7400 -p1 -R
+%patch7399 -p1 -R
+%patch7398 -p1 -R
+%patch7397 -p1 -R
+%patch7396 -p1 -R
+%patch7395 -p1 -R
+%patch7394 -p1 -R
+%patch7393 -p1 -R
+%patch7392 -p1 -R
+%patch7391 -p1 -R
+%patch7390 -p1 -R
+%patch7389 -p1 -R
+%patch7388 -p1 -R
+%patch7387 -p1 -R
+%patch7386 -p1 -R
+%patch7385 -p1 -R
+%patch7384 -p1 -R
+%patch7383 -p1 -R
+%patch7382 -p1 -R
+%patch7381 -p1 -R
+%patch7380 -p1 -R
+%patch7379 -p1 -R
+%patch7378 -p1 -R
 %patch7377 -p1 -R
 %patch7376 -p1 -R
 %patch7375 -p1 -R
@@ -1574,6 +1676,12 @@ rm -f dlls/ntdll/unix/signal_arm{,64}.c
 %patch7000 -p1 -R
 
 %if 0%{?fshack}
+%patch8024 -p1 -R
+%patch8023 -p1 -R
+%patch8022 -p1 -R
+%patch8021 -p1 -R
+%patch8020 -p1 -R
+%patch8019 -p1 -R
 %patch8018 -p1 -R
 %patch8017 -p1 -R
 %patch8016 -p1 -R
@@ -1609,8 +1717,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch804 -p1
 %patch805 -p1
 %patch806 -p1
-%else
-%patch807 -p1 -R
 %endif
 %patch1000 -p1
 %patch1002 -p1
@@ -2058,6 +2164,12 @@ pushd %{buildroot}/%{_datadir}/fonts/wine-times-new-roman-fonts
 ln -s ../../wine/fonts/times.ttf times.ttf
 popd
 %endif
+
+# install Webdings font for system package
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-webdings-fonts
+pushd %{buildroot}/%{_datadir}/fonts/wine-webdings-fonts
+ln -s ../../wine/fonts/webdings.ttf webdings.ttf
+popd
 
 # install Wingdings font for system package
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-wingdings-fonts
@@ -2811,6 +2923,7 @@ fi
 %{_libdir}/wine/msvcp120.%{winedll}
 %{_libdir}/wine/msvcp120_app.%{winedll}
 %{_libdir}/wine/msvcp140.%{winedll}
+%{_libdir}/wine/msvcp140_1.%{winedll}
 %{_libdir}/wine/msvcr70.dll.so
 %{_libdir}/wine/msvcr71.dll.so
 %{_libdir}/wine/msvcr80.dll.so
@@ -3357,6 +3470,13 @@ fi
 %doc COPYING.LIB
 %{_datadir}/wine/fonts/symbol.ttf
 
+%files webdings-fonts
+%doc COPYING.LIB
+%{_datadir}/wine/fonts/webdings.ttf
+
+%files webdings-fonts-system
+%{_datadir}/fonts/wine-webdings-fonts
+
 %files wingdings-fonts
 %doc COPYING.LIB
 %{_datadir}/wine/fonts/wingding.ttf
@@ -3455,6 +3575,10 @@ fi
 
 
 %changelog
+* Sun Aug 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.14-100
+- 5.14
+- New Webdings font
+
 * Sun Jul 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.13-102.20200724git0d42388
 - nofshack fixes
 

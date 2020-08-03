@@ -1,7 +1,7 @@
 %global xfceversion 4.14
 
 Name:           xfwm4
-Version:        4.14.3
+Version:        4.14.4
 Release:        100%{?dist}
 Summary:        Next generation window manager for Xfce
 
@@ -66,6 +66,9 @@ done
 
 
 %changelog
+* Sat Aug 01 2020 Phantom X <megaphantomx at hotmail dot com> - 4.14.4-100
+- 4.14.4
+
 * Wed Jul 29 2020 Phantom X <megaphantomx at hotmail dot com> - 4.14.3-100
 - Disable keymap reload when key changes is detected
 

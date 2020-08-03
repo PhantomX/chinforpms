@@ -1,6 +1,6 @@
-%global commit dd102c806cf40b75859fd3c8cf161a9bd2991f08
+%global commit 125c1ff37d005809a18086cf60f5418e23caa9d4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200723
+%global date 20200731
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -18,7 +18,7 @@
 
 Name:           flycast
 Version:        7
-Release:        18%{?gver}%{?dist}
+Release:        19%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -192,6 +192,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Aug 02 2020 Phantom X <megaphantomx at hotmail dot com> - 7-19.20200731git125c1ff
+- Last snapshot
+
 * Tue Jul 28 2020 Phantom X <megaphantomx at hotmail dot com> - 7-18.20200723gitdd102c8
 - Add CFLAGS from old linux Makefile, this fix some crashes
 
