@@ -1,0 +1,103 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 19 May 2020 14:33:13 +0200
+Subject: [PATCH] virt: vbox: Rename guest_caps struct members to
+ set_guest_caps
+
+Rename guest_caps[_tracker] struct members to set_guest_caps[_tracker]
+this is a preparation patch for adding support for the
+VBGL_IOCTL_GUEST_CAPS_ACQUIRE ioctl.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Upstream Status: https://lore.kernel.org/lkml/20200520195440.38759-1-hdegoede@redhat.com/
+---
+ drivers/virt/vboxguest/vboxguest_core.c | 20 ++++++++++----------
+ drivers/virt/vboxguest/vboxguest_core.h |  9 +++++----
+ 2 files changed, 15 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/virt/vboxguest/vboxguest_core.c b/drivers/virt/vboxguest/vboxguest_core.c
+index 18ebd7a6af98..aee5eff229f2 100644
+--- a/drivers/virt/vboxguest/vboxguest_core.c
++++ b/drivers/virt/vboxguest/vboxguest_core.c
+@@ -699,17 +699,17 @@ static int vbg_set_session_capabilities(struct vbg_dev *gdev,
+ 	mutex_lock(&gdev->session_mutex);
+
+ 	/* Apply the changes to the session mask. */
+-	previous = session->guest_caps;
+-	session->guest_caps |= or_mask;
+-	session->guest_caps &= ~not_mask;
++	previous = session->set_guest_caps;
++	session->set_guest_caps |= or_mask;
++	session->set_guest_caps &= ~not_mask;
+
+ 	/* If anything actually changed, update the global usage counters. */
+-	changed = previous ^ session->guest_caps;
++	changed = previous ^ session->set_guest_caps;
+ 	if (!changed)
+ 		goto out;
+
+-	vbg_track_bit_usage(&gdev->guest_caps_tracker, changed, previous);
+-	or_mask = gdev->guest_caps_tracker.mask;
++	vbg_track_bit_usage(&gdev->set_guest_caps_tracker, changed, previous);
++	or_mask = gdev->set_guest_caps_tracker.mask;
+
+ 	if (gdev->guest_caps_host == or_mask || !req)
+ 		goto out;
+@@ -726,9 +726,9 @@ static int vbg_set_session_capabilities(struct vbg_dev *gdev,
+ 		if (session_termination)
+ 			goto out;
+
+-		vbg_track_bit_usage(&gdev->guest_caps_tracker, changed,
+-				    session->guest_caps);
+-		session->guest_caps = previous;
++		vbg_track_bit_usage(&gdev->set_guest_caps_tracker, changed,
++				    session->set_guest_caps);
++		session->set_guest_caps = previous;
+ 	}
+
+ out:
+@@ -1452,7 +1452,7 @@ static int vbg_ioctl_change_guest_capabilities(struct vbg_dev *gdev,
+ 	if (ret)
+ 		return ret;
+
+-	caps->u.out.session_caps = session->guest_caps;
++	caps->u.out.session_caps = session->set_guest_caps;
+ 	caps->u.out.global_caps = gdev->guest_caps_host;
+
+ 	return 0;
+diff --git a/drivers/virt/vboxguest/vboxguest_core.h b/drivers/virt/vboxguest/vboxguest_core.h
+index 77c3a9c8255d..dc745a033164 100644
+--- a/drivers/virt/vboxguest/vboxguest_core.h
++++ b/drivers/virt/vboxguest/vboxguest_core.h
+@@ -118,11 +118,12 @@ struct vbg_dev {
+ 	u32 event_filter_host;
+
+ 	/**
+-	 * Usage counters for guest capabilities. Indexed by capability bit
++	 * Usage counters for guest capabilities requested through
++	 * vbg_set_session_capabilities(). Indexed by capability bit
+ 	 * number, one count per session using a capability.
+ 	 * Protected by session_mutex.
+ 	 */
+-	struct vbg_bit_usage_tracker guest_caps_tracker;
++	struct vbg_bit_usage_tracker set_guest_caps_tracker;
+ 	/**
+ 	 * The guest capabilities last reported to the host (or UINT32_MAX).
+ 	 * Protected by session_mutex.
+@@ -164,11 +165,11 @@ struct vbg_session {
+ 	 */
+ 	u32 event_filter;
+ 	/**
+-	 * Guest capabilities for this session.
++	 * Guest capabilities set through vbg_set_session_capabilities().
+ 	 * A capability claimed by any guest session will be reported to the
+ 	 * host. Protected by vbg_gdev.session_mutex.
+ 	 */
+-	u32 guest_caps;
++	u32 set_guest_caps;
+ 	/** VMMDEV_REQUESTOR_* flags */
+ 	u32 requestor;
+ 	/** Set on CANCEL_ALL_WAITEVENTS, protected by vbg_devevent_spinlock. */
+-- 
+2.26.2
+

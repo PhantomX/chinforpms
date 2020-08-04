@@ -138,7 +138,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  2 files changed, 25 insertions(+)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
-index ac7e131d2935..3b3bf30e537d 100644
+index 2da65fef2a1c..d53a524f80f0 100644
 --- a/Documentation/admin-guide/kdump/kdump.rst
 +++ b/Documentation/admin-guide/kdump/kdump.rst
 @@ -285,6 +285,17 @@ This would mean:

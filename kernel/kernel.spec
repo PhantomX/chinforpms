@@ -85,24 +85,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 7
+%define base_sublevel 8
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 36ca7676257fe57d3963dca94285365fc5dc4a6e
+%global pfcommit 3b2cd3855ebd0954a85d83fd19acac40bd299fae
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 501599469bceacc25b7494a8c45b87fefd7ea51a
+%global opensuse_id d3bf2d63081cc9289d0d2faca50b0be94cf24da8
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -664,15 +664,15 @@ Source17: secureboot_ppc.cer
 %define secureboot_key_1 %{SOURCE14}
 %define pesign_name_1 redhatsecureboot501
 %define secureboot_key_0 %{SOURCE15}
-%define pesign_name_0 redhatsecureboot301 
+%define pesign_name_0 redhatsecureboot301
 %endif
 %ifarch s390x
 %define secureboot_key_0 %{SOURCE16}
-%define pesign_name_0 redhatsecureboot302 
+%define pesign_name_0 redhatsecureboot302
 %endif
 %ifarch ppc64le
 %define secureboot_key_0 %{SOURCE17}
-%define pesign_name_0 redhatsecureboot303 
+%define pesign_name_0 redhatsecureboot303
 %endif
 
 # released_kernel
@@ -681,14 +681,14 @@ Source17: secureboot_ppc.cer
 Source12: redhatsecurebootca4.cer
 Source13: redhatsecurebootca2.cer
 Source14: redhatsecureboot401.cer
-Source15: redhatsecureboot003.cer 
+Source15: redhatsecureboot003.cer
 
 %define secureboot_ca_1 %{SOURCE12}
 %define secureboot_ca_0 %{SOURCE13}
 %define secureboot_key_1 %{SOURCE14}
 %define pesign_name_1 redhatsecureboot401
 %define secureboot_key_0 %{SOURCE15}
-%define pesign_name_0 redhatsecureboot003 
+%define pesign_name_0 redhatsecureboot003
 
 # released_kernel
 %endif
@@ -843,58 +843,42 @@ Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
-Patch63: 0001-Drop-that-for-now.patch
-Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
-Patch65: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-Patch66: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
-Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
-Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
-Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
-Patch79: 0001-disp-gv100-expose-capabilities-class.patch
-Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
-Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
-Patch82: 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
-Patch83: 0001-mmu-Remove-unneeded-semicolon.patch
-Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
-Patch85: 0001-device-detect-if-changing-endianness-failed.patch
-Patch86: 0001-device-detect-vGPUs.patch
-Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
-Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
-Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
-Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
-Patch92: 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
-Patch93: 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
-Patch94: 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
-Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
-Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
-Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
-Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
-Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
-Patch108: selinux_allow_reading_labels_before_policy_is_loaded.patch 
-
-# Latest upstream screen driver - https://patchwork.kernel.org/patch/11627069/
-Patch110: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
-Patch111: 0002-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
-Patch112: 0003-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
-Patch113: 0004-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
-Patch114: 0005-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
-Patch115: 0006-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
-Patch116: 0007-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
-Patch117: 0008-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
-Patch118: 0009-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
-Patch119: 0010-drm-panel-st7703-Enter-sleep-after-display-off.patch
-Patch120: 0011-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
-Patch121: 0012-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
-Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
-# Back port from 5.8
-Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
-
-# rhbz 1857101
-Patch125: 0001-ALSA-hda-Workaround-for-spurious-wakeups-on-some-Int.patch 
+Patch60: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
+Patch61: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch62: 0001-Drop-that-for-now.patch
+Patch63: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch64: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch72: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch73: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch74: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch75: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch76: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch77: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
+Patch81: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
+Patch82: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
+Patch83: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch84: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
+Patch85: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
+Patch86: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+Patch87: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+Patch88: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+Patch89: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+Patch90: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+Patch91: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+Patch92: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+Patch93: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+Patch94: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+Patch95: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
+Patch96: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+Patch97: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
+Patch99: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
 ### Extra
 
@@ -1582,6 +1566,8 @@ cd ..
 ###
 %build
 
+%define _lto_cflags %{nil}
+
 %if %{with_sparse}
 %define sparse_mflags    C=1
 %endif
@@ -1635,7 +1621,9 @@ BuildKernel() {
     %endif
 
     # make sure EXTRAVERSION says what we want it to say
-    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -%{release}.%{_target_cpu}${Flav}/" Makefile
+    # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
+    ShortRel=$(perl -e "print \"%{release}\" =~ s/\.pr\.[0-9A-Fa-f]{32}//r")
+    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Flav}/" Makefile
 
     # if pre-rc1 devel kernel, must fix up PATCHLEVEL for our versioning scheme
     %if !0%{?rcrev}
@@ -1801,8 +1789,11 @@ BuildKernel() {
 %endif
     # CONFIG_KERNEL_HEADER_TEST generates some extra files in the process of
     # testing so just delete
-    find . -name *.h.s -delete 
+    find . -name *.h.s -delete
     # first copy everything
+    if [ ! -e Module.symvers ]; then
+        touch Module.symvers
+    fi
     cp --parents `find  -type f -name "Makefile*" -o -name "Kconfig*"` $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp Module.symvers $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp System.map $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -1819,6 +1810,7 @@ BuildKernel() {
     echo "**** GENERATING kernel ABI metadata ****"
     gzip -c9 < Module.symvers > $RPM_BUILD_ROOT/boot/symvers-$KernelVer.gz
     cp $RPM_BUILD_ROOT/boot/symvers-$KernelVer.gz $RPM_BUILD_ROOT/lib/modules/$KernelVer/symvers.gz
+
 %if %{with_kabichk}
     echo "**** kABI checking is enabled in kernel SPEC file. ****"
     chmod 0755 $RPM_SOURCE_DIR/check-kabi
@@ -2684,6 +2676,10 @@ fi
 #
 #
 %changelog
+* Mon Aug 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.0-500.chinfo
+- 5.8.0 - pf1
+- Rawhide sync
+
 * Fri Jul 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.12-500.chinfo
 - 5.7.12 - pf8
 
@@ -2975,83 +2971,6 @@ fi
 
 * Mon Jul 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.4-500.chinfo
 - 5.2.4
-
-* Sun Jul 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.21-500.chinfo
-- 5.1.21
-
-* Fri Jul 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.20-500.chinfo
-- 5.1.20
-
-* Sun Jul 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.19-500.chinfo
-- 5.1.19
-
-* Sun Jul 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.18-500.chinfo
-- 5.1.18
-
-* Wed Jul 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.17-500.chinfo
-- 5.1.17
-- Option to apply stable patches over pf
-
-- f30 sync
-* Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.16-500.chinfo
-- 5.1.16 - pf8
-- f30 sync
-
-* Tue Jun 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.15-500.chinfo
-- 5.1.15
-
-* Sat Jun 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.14-500.chinfo
-- 5.1.14
-
-* Wed Jun 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.12-500.chinfo
-- 5.1.12
-
-* Mon Jun 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.11-500.chinfo
-- 5.1.11
-
-* Sun Jun 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.10-500.chinfo
-- 5.1.10
-
-* Tue Jun 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.9-500.chinfo
-- 5.1.9
-- f30 sync
-
-* Sun Jun 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.8-500.chinfo
-- 5.1.8 - pf6
-- f30 sync
-
-* Tue Jun 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.7-500.chinfo
-- 5.1.7
-- f30 sync
-
-* Fri May 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.6-500.chinfo
-- 5.1.6
-- f30 sync
-
-* Sat May 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.5-500.chinfo
-- 5.1.5
-
-* Fri May 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.4-501.chinfo
-- pf4
-
-* Wed May 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.4-500.chinfo
-- 5.1.4
-
-* Thu May 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.3-500.chinfo
-- 5.1.3 - pf3
-
-* Tue May 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.2-500.chinfo
-- 5.1.2
-
-* Sat May 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.1-500.chinfo
-- 5.1.1 -pf2
-
-* Wed May 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-501.chinfo
-- Disable UKSM
-
-* Mon May 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-500.chinfo
-- 5.1.0 - pf1
-- Rawhide sync
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

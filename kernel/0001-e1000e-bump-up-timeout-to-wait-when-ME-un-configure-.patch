@@ -15,10 +15,10 @@ Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index 735bf25952fc..15f6c0a4dc63 100644
+index f999cca37a8a..9cbd2d6c7da4 100644
 --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
 +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -1243,9 +1243,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
+@@ -1247,9 +1247,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
  			ew32(H2ME, mac_reg);
  		}
 

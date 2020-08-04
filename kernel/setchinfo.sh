@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20200618
+# 20200803
 
 set -e
 
@@ -58,7 +58,6 @@ SCHED_TIMESLICE=4
 pfy="
 RD_ZSTD
 SCHED_BMQ
-STACKPROTECTOR_STRONG
 USER_NS_UNPRIVILEGED
 "
 

@@ -15,7 +15,7 @@ Signed-off-by: Peter Jones <pjones@redhat.com>
  2 files changed, 96 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 4e3055238f31..36ca9e2943ce 100644
+index fdd1db025dbf..8ef7d1df09dd 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -26,7 +26,7 @@ index 4e3055238f31..36ca9e2943ce 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -828,40 +829,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -831,40 +832,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -160,10 +160,10 @@ index 4e3055238f31..36ca9e2943ce 100644
 
  static DEFINE_SPINLOCK(efi_mem_reserve_persistent_lock);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 9430d01c0c3d..51503bf118ab 100644
+index 05c47f857383..2e2f9f608f68 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -42,6 +42,8 @@
+@@ -43,6 +43,8 @@
  #define EFI_ABORTED		(21 | (1UL << (BITS_PER_LONG-1)))
  #define EFI_SECURITY_VIOLATION	(26 | (1UL << (BITS_PER_LONG-1)))
 
@@ -172,7 +172,7 @@ index 9430d01c0c3d..51503bf118ab 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -825,6 +827,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -828,6 +830,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);

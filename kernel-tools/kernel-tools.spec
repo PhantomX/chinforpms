@@ -10,20 +10,20 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 6157a8d7a2ad2fb8715e1eaf0b4fb717016c0369
+%global opensuse_id d3bf2d63081cc9289d0d2faca50b0be94cf24da8
 
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 7
+%global base_sublevel 8
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 12
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -126,6 +126,7 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel glibc-devel glibc-headers glibc-static python3-devel java-devel
 BuildRequires: asciidoc xmlto
+BuildRequires: opencsd-devel
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: /usr/bin/pathfix.py
 %ifnarch s390x %{arm}
@@ -253,10 +254,16 @@ sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.conf
 
 export LD=ld.bfd
 
+# The kernel tools build with -ggdb3 which seems to interact badly with LTO
+# causing various errors with references to discarded sections and symbol
+# type errors from the LTO plugin.  Until those issues are addressed
+# disable LTO
+%define _lto_cflags %{nil}
+
 cd linux-%{kversion}
 
 %global perf_make \
-  make EXTRA_CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix}
+  make EXTRA_CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 CORESIGHT=1 prefix=%{_prefix}
 %global perf_python3 -C tools/perf PYTHON=%{__python3}
 # perf
 # make sure check-headers.sh is executable
@@ -313,10 +320,10 @@ popd
 
 # Build the docs
 pushd tools/kvm/kvm_stat/
-make %{?_smp_mflags} man
+%make_build man
 popd
 pushd tools/perf/Documentation/
-make %{?_smp_mflags} man
+%make_build man
 popd
 
 ###
@@ -478,6 +485,8 @@ popd
 %{_mandir}/man8/bpftool-btf.8.gz
 %{_mandir}/man8/bpftool-cgroup.8.gz
 %{_mandir}/man8/bpftool-gen.8.gz
+%{_mandir}/man8/bpftool-iter.8.gz
+%{_mandir}/man8/bpftool-link.8.gz
 %{_mandir}/man8/bpftool-map.8.gz
 %{_mandir}/man8/bpftool-net.8.gz
 %{_mandir}/man8/bpftool-prog.8.gz
@@ -489,7 +498,7 @@ popd
 
 %files -n libbpf
 %{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.0.8
+%{_libdir}/libbpf.so.0.0.9
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf-devel
@@ -537,6 +546,10 @@ popd
 
 
 %changelog
+* Mon Aug 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.0-500.chinfo
+- 5.8.0
+- Rawhide sync
+
 * Fri Jul 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.12-500.chinfo
 - 5.7.12
 

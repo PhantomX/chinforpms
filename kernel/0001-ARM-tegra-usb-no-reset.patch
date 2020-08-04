@@ -10,7 +10,7 @@ Patch for disconnect issues with storage attached to a
  1 file changed, 7 insertions(+)
 
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index fc748c731832..7d35e12de70f 100644
+index b1e14beaac5f..b28779779058 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
 @@ -5517,6 +5517,13 @@ static void hub_event(struct work_struct *work)

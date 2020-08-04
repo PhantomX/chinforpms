@@ -1,0 +1,29 @@
+From 90750a5b1205a7dcc002224738585b861779cdae Mon Sep 17 00:00:00 2001
+From: "Justin M. Forbes" <jforbes@fedoraproject.org>
+Date: Thu, 30 Jul 2020 10:26:11 -0500
+Subject: [PATCH] Work around for gcc bug
+ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
+
+Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
+---
+ crypto/aegis128-neon-inner.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/crypto/aegis128-neon-inner.c b/crypto/aegis128-neon-inner.c
+index 2a660ac1bc3a..fa87ff6a2a71 100644
+--- a/crypto/aegis128-neon-inner.c
++++ b/crypto/aegis128-neon-inner.c
+@@ -148,8 +148,8 @@ void crypto_aegis128_init_neon(void *state, const void *key, const void *iv)
+ 		kiv,
+ 		vld1q_u8(const1),
+ 		vld1q_u8(const0),
+-		k ^ vld1q_u8(const0),
+-		k ^ vld1q_u8(const1),
++		(uint8x16_t) (k ^ vld1q_u8(const0)),
++		(uint8x16_t) (k ^ vld1q_u8(const1)),
+ 	}};
+ 	int i;
+
+-- 
+2.26.2
+

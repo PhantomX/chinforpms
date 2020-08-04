@@ -1,0 +1,76 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Sun, 12 Jul 2020 13:42:14 +0100
+Subject: [PATCH] Revert "arm64: allwinner: dts: a64: add LCD-related device
+ nodes for PinePhone"
+
+This reverts commit 6b9deda8c30064a254bc66e3f6763281c96db7db.
+---
+ .../dts/allwinner/sun50i-a64-pinephone.dtsi   | 37 -------------------
+ 1 file changed, 37 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
+index 96d9150423e0..cefda145c3c9 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
+@@ -16,15 +16,6 @@ aliases {
+ 		serial0 = &uart0;
+ 	};
+
+-	backlight: backlight {
+-		compatible = "pwm-backlight";
+-		pwms = <&r_pwm 0 50000 PWM_POLARITY_INVERTED>;
+-		brightness-levels = <0 16 18 20 22 24 26 29 32 35 38 42 46 51 56 62 68 75 83 91 100>;
+-		default-brightness-level = <15>;
+-		enable-gpios = <&pio 7 10 GPIO_ACTIVE_HIGH>; /* PH10 */
+-		power-supply = <&reg_ldo_io0>;
+-	};
+-
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+@@ -93,30 +84,6 @@ &dai {
+ 	status = "okay";
+ };
+
+-&de {
+-	status = "okay";
+-};
+-
+-&dphy {
+-	status = "okay";
+-};
+-
+-&dsi {
+-	vcc-dsi-supply = <&reg_dldo1>;
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	status = "okay";
+-
+-	panel@0 {
+-		compatible = "xingbangda,xbd599";
+-		reg = <0>;
+-		reset-gpios = <&pio 3 23 GPIO_ACTIVE_LOW>; /* PD23 */
+-		iovcc-supply = <&reg_dldo2>;
+-		vcc-supply = <&reg_ldo_io0>;
+-		backlight = <&backlight>;
+-	};
+-};
+-
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -221,10 +188,6 @@ &r_pio {
+ 	 */
+ };
+
+-&r_pwm {
+-	status = "okay";
+-};
+-
+ &r_rsb {
+ 	status = "okay";
+
+-- 
+2.26.2
+

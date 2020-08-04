@@ -36,7 +36,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 24 insertions(+)
 
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index ca9ed5774eb1..bd0cee4236b0 100644
+index 812bfc32ecb8..e09fec76c320 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4183,6 +4183,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,

@@ -57,7 +57,7 @@ Signed-off-by: Laura Abbott <labbott@redhat.com>
  1 file changed, 22 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 03d6a26687bc..86981f228c90 100644
+index b6858adc4f17..4c2da9f17514 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -68,7 +68,7 @@ index 03d6a26687bc..86981f228c90 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -2664,3 +2665,24 @@ int iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -2838,3 +2839,24 @@ int iommu_sva_get_pasid(struct iommu_sva *handle)
  	return ops->sva_get_pasid(handle);
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);

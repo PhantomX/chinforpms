@@ -1,7 +1,7 @@
-From 025eb2eb927d2c3020882ea0ed3af28d65321763 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Icenowy Zheng <icenowy@aosc.io>
 Date: Fri, 26 Jun 2020 02:55:49 +0200
-Subject: [PATCH 01/13] dt-bindings: vendor-prefixes: Add Xingbangda
+Subject: [PATCH] dt-bindings: vendor-prefixes: Add Xingbangda
 
 Shenzhen Xingbangda Display Technology Co., Ltd is a company which
 produces LCD modules. It supplies the LCD panels for the PinePhone.
@@ -16,10 +16,10 @@ Acked-by: Rob Herring <robh@kernel.org>
  1 file changed, 2 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index d3891386d6710..a558ef87ee5b0 100644
+index 9aeab66be85f..740b116b179f 100644
 --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
 +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -1121,6 +1121,8 @@ patternProperties:
+@@ -1157,6 +1157,8 @@ patternProperties:
      description: Xiaomi Technology Co., Ltd.
    "^xillybus,.*":
      description: Xillybus Ltd.

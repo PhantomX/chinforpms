@@ -26,10 +26,10 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  create mode 100644 drivers/firmware/efi/secureboot.c
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index e39ec0f88d28..08e9f5fc26a8 100644
+index a1b8cb9a2579..28d43754aeb6 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -1250,19 +1250,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1256,19 +1256,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -107,10 +107,10 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 51503bf118ab..b35e693f20f3 100644
+index 2e2f9f608f68..6f5b3b019d3e 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -778,6 +778,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -781,6 +781,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -125,7 +125,7 @@ index 51503bf118ab..b35e693f20f3 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -789,6 +797,8 @@ static inline bool efi_enabled(int feature)
+@@ -792,6 +800,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -134,7 +134,7 @@ index 51503bf118ab..b35e693f20f3 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -815,6 +825,8 @@ efi_capsule_pending(int *reset_type)
+@@ -818,6 +828,8 @@ efi_capsule_pending(int *reset_type)
  	return false;
  }
 
@@ -143,7 +143,7 @@ index 51503bf118ab..b35e693f20f3 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -1086,12 +1098,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1090,12 +1102,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 

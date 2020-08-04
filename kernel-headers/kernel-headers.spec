@@ -23,13 +23,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 7
+%define base_sublevel 8
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -173,6 +173,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Mon Aug 03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.0-500.chinfo
+- 5.8.0
+
 * Fri Jul 31 2020 Phantom X <megaphantomx at hotmail dot com> - 5.7.12-500.chinfo
 - 5.7.12
 
@@ -434,153 +437,3 @@ done
 
 * Wed Jul 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.5-500.chinfo
 - 5.2.5
-
-* Sun Jul 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.21-500.chinfo
-- 5.1.21
-
-* Fri Jul 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.20-500.chinfo
-- 5.1.20
-
-* Sun Jul 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.19-500.chinfo
-- 5.1.19
-
-* Sun Jul 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.18-500.chinfo
-- 5.1.18
-
-* Wed Jul 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.17-500.chinfo
-- 5.1.17
-
-* Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.16-500.chinfo
-- 5.1.16
-
-* Tue Jun 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.15-500.chinfo
-- 5.1.15
-
-* Sat Jun 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.14-500.chinfo
-- 5.1.14
-
-* Thu Jun 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.12-500.chinfo
-- 5.1.12
-
-* Mon Jun 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.11-500.chinfo
-- 5.1.11
-
-* Sun Jun 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.10-500.chinfo
-- 5.1.10
-
-* Tue Jun 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.9-500.chinfo
-- 5.1.9
-
-* Mon Jun 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.8-500.chinfo
-- 5.1.8
-
-* Tue Jun 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.7-500.chinfo
-- 5.1.7
-
-* Fri May 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.6-500.chinfo
-- 5.1.6
-
-* Sat May 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.5-500.chinfo
-- 5.1.5
-
-* Fri May 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.4-501.chinfo
-- Rebuild
-
-* Wed May 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.4-500.chinfo
-- 5.1.4
-
-* Thu May 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.3-500.chinfo
-- 5.1.3
-
-* Tue May 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.2-500.chinfo
-- 5.1.2
-
-* Sat May 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.1-500.chinfo
-- 5.1.1
-
-* Wed May 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-501.chinfo
-- Rebuild
-
-* Mon May 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-500.chinfo
-- 5.1.0
-
-* Sun May 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.13-500.chinfo
-- 5.0.13
-
-* Thu May 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.11-500.chinfo
-- 5.0.11
-
-* Mon Apr 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.10-500.chinfo
-- 5.0.10
-
-* Sat Apr 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.9-500.chinfo
-- 5.0.9
-
-* Wed Apr 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.8-500.chinfo
-- 5.0.8
-
-* Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-501.chinfo
-- 5.0.7
-
-* Sat Apr 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.7-500.chinfo
-- 5.0.7
-
-* Wed Apr 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.6-500.chinfo
-- 5.0.6
-
-* Tue Apr 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.5-500.chinfo
-- 5.0.5
-
-* Tue Mar 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.3-500.chinfo
-- 5.0.3
-
-* Fri Mar 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.2-500.chinfo
-- 5.0.2
-
-* Sun Mar 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.1-500.chinfo
-- 5.0.1
-
-* Fri Mar 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-502.chinfo
-- Rebuild
-
-* Mon Mar 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.0.0-500.chinfo
-- 5.0.0
-
-* Wed Feb 27 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.13-500.chinfo
-- 4.20.13
-
-* Sun Feb 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.12-500.chinfo
-- 4.20.12
-
-* Wed Feb 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.11-500.chinfo
-- 4.20.11
-
-* Fri Feb 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.10-500.chinfo
-- 4.20.10
-
-* Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.8-500.chinfo
-- 4.20.8
-
-* Wed Feb 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.7-500.chinfo
-- 4.20.7
-
-* Thu Jan 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.6-500.chinfo
-- 4.20.6
-
-* Sat Jan 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.5-500.chinfo
-- 4.20.5
-
-* Thu Jan 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.4-500.chinfo
-- 4.20.4
-
-* Thu Jan 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.3-500.chinfo
-- 4.20.3
-
-* Sun Jan 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.2-500.chinfo
-- 4.20.2
-
-* Wed Jan 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 4.20.1-500.chinfo
-- 4.20.1
-
-* Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 4.20.0-500.chinfo
-- 4.20.0
