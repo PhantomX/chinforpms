@@ -1,0 +1,146 @@
+From f20109218f1cae512a40d8e4c47225bb723b850b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 5 Aug 2020 17:03:49 -0300
+Subject: [PATCH] xactengine3: updates
+
+Based on patches from Alistair Leslie-Hughes
+---
+ configure                      | 3 +++
+ configure.ac                   | 2 ++
+ dlls/xactengine3_6/Makefile.in | 1 +
+ dlls/xactengine3_6/main.c      | 4 ++--
+ dlls/xactengine3_7/Makefile.in | 1 +
+ dlls/xactengine3_7/main.c      | 4 ++--
+ dlls/xactengine3_7/xact_dll.c  | 1 -
+ 7 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/configure b/configure
+index 13c2078..fd67234 100755
+--- a/configure
++++ b/configure
+@@ -1707,6 +1707,7 @@ enable_x3daudio1_4
+ enable_x3daudio1_5
+ enable_x3daudio1_6
+ enable_x3daudio1_7
++enable_xactengine3_6
+ enable_xactengine3_7
+ enable_xapofx1_1
+ enable_xapofx1_2
+@@ -16633,6 +16634,7 @@ then
+     enable_x3daudio1_5=${enable_x3daudio1_5:-no}
+     enable_x3daudio1_6=${enable_x3daudio1_6:-no}
+     enable_x3daudio1_7=${enable_x3daudio1_7:-no}
++    enable_xactengine3_6=${enable_xactengine3_6:-no}
+     enable_xactengine3_7=${enable_xactengine3_7:-no}
+     enable_xapofx1_1=${enable_xapofx1_1:-no}
+     enable_xapofx1_2=${enable_xapofx1_2:-no}
+@@ -21363,6 +21365,7 @@ wine_fn_config_makefile dlls/x3daudio1_4 enable_x3daudio1_4
+ wine_fn_config_makefile dlls/x3daudio1_5 enable_x3daudio1_5
+ wine_fn_config_makefile dlls/x3daudio1_6 enable_x3daudio1_6
+ wine_fn_config_makefile dlls/x3daudio1_7 enable_x3daudio1_7
++wine_fn_config_makefile dlls/xactengine3_6 enable_xactengine3_6
+ wine_fn_config_makefile dlls/xactengine3_7 enable_xactengine3_7
+ wine_fn_config_makefile dlls/xapofx1_1 enable_xapofx1_1
+ wine_fn_config_makefile dlls/xapofx1_2 enable_xapofx1_2
+diff --git a/configure.ac b/configure.ac
+index d548571..9c481d2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1958,6 +1958,7 @@ then
+     enable_x3daudio1_5=${enable_x3daudio1_5:-no}
+     enable_x3daudio1_6=${enable_x3daudio1_6:-no}
+     enable_x3daudio1_7=${enable_x3daudio1_7:-no}
++    enable_xactengine3_6=${enable_xactengine3_6:-no}
+     enable_xactengine3_7=${enable_xactengine3_7:-no}
+     enable_xapofx1_1=${enable_xapofx1_1:-no}
+     enable_xapofx1_2=${enable_xapofx1_2:-no}
+@@ -3905,6 +3906,7 @@ WINE_CONFIG_MAKEFILE(dlls/x3daudio1_4)
+ WINE_CONFIG_MAKEFILE(dlls/x3daudio1_5)
+ WINE_CONFIG_MAKEFILE(dlls/x3daudio1_6)
+ WINE_CONFIG_MAKEFILE(dlls/x3daudio1_7)
++WINE_CONFIG_MAKEFILE(dlls/xactengine3_6)
+ WINE_CONFIG_MAKEFILE(dlls/xactengine3_7)
+ WINE_CONFIG_MAKEFILE(dlls/xapofx1_1)
+ WINE_CONFIG_MAKEFILE(dlls/xapofx1_2)
+diff --git a/dlls/xactengine3_6/Makefile.in b/dlls/xactengine3_6/Makefile.in
+index ffd7020..8d861c5 100644
+--- a/dlls/xactengine3_6/Makefile.in
++++ b/dlls/xactengine3_6/Makefile.in
+@@ -1,6 +1,7 @@
+ MODULE    = xactengine3_6.dll
+ IMPORTS   = ole32 uuid
+ PARENTSRC = ../xactengine3_7
++EXTRADEFS = -DXACT3_VER=0x0306
+ EXTRALIBS = $(FAUDIO_LIBS)
+ EXTRAINCL = $(FAUDIO_CFLAGS)
+ 
+diff --git a/dlls/xactengine3_6/main.c b/dlls/xactengine3_6/main.c
+index 53a7502..20bfd99 100644
+--- a/dlls/xactengine3_6/main.c
++++ b/dlls/xactengine3_6/main.c
+@@ -22,7 +22,7 @@
+ 
+ #define COBJMACROS
+ 
+-#include "xact_classes.h"
++#include "xact3.h"
+ #include "wine/debug.h"
+ 
+ WINE_DEFAULT_DEBUG_CHANNEL(xact3);
+@@ -31,7 +31,7 @@ extern IClassFactory XACTFactory;
+ 
+ HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void **ppv)
+ {
+-    if (IsEqualGUID(rclsid, &CLSID_XACTEngine36))
++    if (IsEqualGUID(rclsid, &CLSID_XACTEngine))
+     {
+         TRACE("(%s, %s, %p)\n", debugstr_guid(rclsid), debugstr_guid(riid), ppv);
+         return IClassFactory_QueryInterface(&XACTFactory, riid, ppv);
+diff --git a/dlls/xactengine3_7/Makefile.in b/dlls/xactengine3_7/Makefile.in
+index bbbf239..6959b06 100644
+--- a/dlls/xactengine3_7/Makefile.in
++++ b/dlls/xactengine3_7/Makefile.in
+@@ -1,5 +1,6 @@
+ MODULE    = xactengine3_7.dll
+ IMPORTS   = ole32 uuid
++EXTRADEFS = -DXACT3_VER=0x0307
+ EXTRALIBS = $(FAUDIO_LIBS)
+ EXTRAINCL = $(FAUDIO_CFLAGS)
+ 
+diff --git a/dlls/xactengine3_7/main.c b/dlls/xactengine3_7/main.c
+index 659cbee..20bfd99 100644
+--- a/dlls/xactengine3_7/main.c
++++ b/dlls/xactengine3_7/main.c
+@@ -22,7 +22,7 @@
+ 
+ #define COBJMACROS
+ 
+-#include "xact_classes.h"
++#include "xact3.h"
+ #include "wine/debug.h"
+ 
+ WINE_DEFAULT_DEBUG_CHANNEL(xact3);
+@@ -31,7 +31,7 @@ extern IClassFactory XACTFactory;
+ 
+ HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void **ppv)
+ {
+-    if (IsEqualGUID(rclsid, &CLSID_XACTEngine37))
++    if (IsEqualGUID(rclsid, &CLSID_XACTEngine))
+     {
+         TRACE("(%s, %s, %p)\n", debugstr_guid(rclsid), debugstr_guid(riid), ppv);
+         return IClassFactory_QueryInterface(&XACTFactory, riid, ppv);
+diff --git a/dlls/xactengine3_7/xact_dll.c b/dlls/xactengine3_7/xact_dll.c
+index 7af1972..a104c5c 100644
+--- a/dlls/xactengine3_7/xact_dll.c
++++ b/dlls/xactengine3_7/xact_dll.c
+@@ -27,7 +27,6 @@
+ #include "initguid.h"
+ #include "xact3.h"
+ #include "rpcproxy.h"
+-#include "xact_classes.h"
+ #include "wine/debug.h"
+ 
+ WINE_DEFAULT_DEBUG_CHANNEL(xact3);
+-- 
+2.26.2
+

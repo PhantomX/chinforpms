@@ -1,7 +1,7 @@
-%global commit 0d42388095e4fd5c7702a61824b01ce0f9fc4d74
+%global commit 2b76b9f234eb5d4753337d8b080f2c050daae3ff
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200724
-%global with_snapshot 0
+%global date 20200804
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.14
+%global wine_stagingver eb32fd78aeae9fa23f2ccb3b13e180a8b9413678
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id ae15b580525714b76de074c2aee30f535e15a349
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ad0810c1ff6369fa8e7c0af269a9596b51d65136
+%global tkg_id c811bc8baae1f53fb25bc217cdfd5d8591bd4aa4
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 4444f69429652a6845fcf372e8ef864723cea1a1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -74,6 +74,7 @@
 %endif
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
+%global whqs_url  https://source.winehq.org/patches/data
 %global valve_url https://github.com/ValveSoftware/wine
 
 %global staging_banner Chinforpms Staging
@@ -99,7 +100,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.14
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -162,6 +163,19 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
+Patch100:       %{whqs_url}/190139#/%{name}-whq-190139.patch
+Patch101:       %{whqs_url}/190140#/%{name}-whq-190140.patch
+Patch102:       %{whqs_url}/189685#/%{name}-whq-189685.patch
+Patch103:       %{whqs_url}/189686#/%{name}-whq-189686.patch
+Patch104:       %{whqs_url}/189687#/%{name}-whq-189687.patch
+Patch105:       %{whqs_url}/189688#/%{name}-whq-189688.patch
+Patch106:       %{whqs_url}/189689#/%{name}-whq-189689.patch
+Patch107:       %{whqs_url}/189690#/%{name}-whq-189690.patch
+Patch108:       %{whqs_url}/190115#/%{name}-whq-190115.patch
+Patch109:       %{whqs_url}/190116#/%{name}-whq-190116.patch
+Patch110:       %{whqs_url}/190189#/%{name}-whq-190189.patch
+Patch111:       0001-xactengine3-updates.patch
+Patch112:       %{whqs_url}/190201#/%{name}-whq-190201.patch
 
 # 7000-/8000-/801-806 - Reverts to unbreak esync/fsync
 Patch7000:      %{whq_url}/e854ea34cc481658ec61f4603d0438e075608c98#/%{name}-whq-e854ea3.patch
@@ -581,6 +595,12 @@ Patch7413:      %{whq_url}/53f17314aa97d4aba8d37d76ae878cbae20818bf#/%{name}-whq
 Patch7414:      %{whq_url}/a09a268faeb29fb6cffd6e422843659793f09ced#/%{name}-whq-a09a268.patch
 Patch7415:      %{whq_url}/ed8358393413d52096c56e96b44ee73f15053f91#/%{name}-whq-ed83583.patch
 Patch7416:      %{whq_url}/f4e55565470938d31e21f4a35aa14e5a950f81c8#/%{name}-whq-f4e5556.patch
+Patch7417:      %{whq_url}/31800a1414a33995eba7c89d65a93d69beee47b3#/%{name}-whq-31800a1.patch
+Patch7418:      %{whq_url}/647c54e539c6dcc76c6289bad0fc387274d999eb#/%{name}-whq-647c54e.patch
+Patch7419:      %{whq_url}/2c903e9e9bb1254a9fbed60767b56668e675f64e#/%{name}-whq-2c903e9.patch
+Patch7420:      %{whq_url}/69f1b12a30bbf28e750206f0ec1ab2c6320abcbd#/%{name}-whq-69f1b12.patch
+Patch7421:      %{whq_url}/0720c6cfd0b8c863fd22053c2ca750fd982d49d2#/%{name}-whq-0720c6c.patch
+Patch7422:      %{whq_url}/2b76b9f234eb5d4753337d8b080f2c050daae3ff#/%{name}-whq-2b76b9f.patch
 
 # Reverts to unbreak fshack
 Patch8000:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -611,7 +631,7 @@ Patch8024:       %{whq_url}/b45c04f4c352ef81df5312684008839f4eeee03d#/%{name}-wh
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch800:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-64.mystagingrevert#/%{name}-tkg-06877e5_revert-64.patch
+Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-65.mystagingrevert#/%{name}-tkg-06877e5_revert-65.patch
 Patch802:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch803:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-97fbe3f.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-97fbe3f.patch
 Patch804:       %{tkg_url}/hotfixes/01150d7f/staging-rawinput-esync-nofshack-fix.mystagingpatch#/%{name}-tkg-staging-rawinput-esync-nofshack-fix.patch
@@ -655,6 +675,7 @@ Patch1091:       %{valve_url}/commit/a09b82021c8d5b167a7c9773a6b488d708232b6c.pa
 Patch1092:       %{valve_url}/commit/35ff7c5c657d143a96c419346ef516e50815cdfb.patch#/%{name}-valve-35ff7c5.patch
 Patch1093:       %{tkg_url}/hotfixes/01150d7f/d8d6a6b2e639d2e29e166a3faf988b81388ae191.mypatch#/%{name}-tkg-d8d6a6b.patch
 Patch1094:       %{tkg_url}/hotfixes/01150d7f/origin_3078f10d_fix.mypatch#/%{name}-tkg-origin_3078f10d_fix.patch
+Patch1095:       %{tkg_url}/hotfixes/01150d7f/SMBIOS-0720c6cf.mypatch#/%{name}-tkg-SMBIOS-0720c6c.patch
 
 Patch1200:       %{ge_url}/game-patches/nier.patch#/%{name}-ge-nier.patch
 Patch1201:       nier-nofshack.patch
@@ -1252,7 +1273,27 @@ This package adds the opencl driver for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%patch104 -p1
+%patch105 -p1
+%patch106 -p1
+%patch107 -p1
+%patch108 -p1
+%patch109 -p1
+%patch110 -p1
+%patch111 -p1
+%patch112 -p1
+
 %if 0%{?wine_staging}
+%patch7422 -p1 -R
+%patch7421 -p1 -R
+%patch7420 -p1 -R
+%patch7419 -p1 -R
+%patch7418 -p1 -R
+%patch7417 -p1 -R
 %patch7416 -p1 -R
 %patch7415 -p1 -R
 %patch7414 -p1 -R
@@ -1777,6 +1818,7 @@ cp -p %{S:3001} README-pba-pkg
 
 %patch1093 -p1
 %patch1094 -p1
+%patch1095 -p1
 %if 0%{?fshack}
 %patch1200 -p1
 %else
@@ -1828,6 +1870,14 @@ autoreconf -f
 
 
 %build
+
+# This package uses top level ASM constructs which are incompatible with LTO.
+# Top level ASMs are often used to implement symbol versioning.  gcc-10
+# introduces a new mechanism for symbol versioning which works with LTO.
+# Converting packages to use that mechanism instead of toplevel ASMs is
+# recommended.
+# Disable LTO
+%define _lto_cflags %{nil}
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -2428,6 +2478,8 @@ fi
 %{_libdir}/wine/api-ms-win-core-errorhandling-l1-1-3.%{winedll}
 %{_libdir}/wine/api-ms-win-core-fibers-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-fibers-l1-1-1.%{winedll}
+%{_libdir}/wine/api-ms-win-core-file-ansi-l2-1-0.%{winedll}
+%{_libdir}/wine/api-ms-win-core-file-fromapp-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-file-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-file-l1-2-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-file-l1-2-1.%{winedll}
@@ -2469,6 +2521,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-memory-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-memory-l1-1-1.%{winedll}
 %{_libdir}/wine/api-ms-win-core-memory-l1-1-2.%{winedll}
+%{_libdir}/wine/api-ms-win-core-memory-l1-1-3.%{winedll}
 %{_libdir}/wine/api-ms-win-core-memory-l1-1-4.%{winedll}
 %{_libdir}/wine/api-ms-win-core-misc-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-namedpipe-ansi-l1-1-0.%{winedll}
@@ -3165,12 +3218,12 @@ fi
 %{_libdir}/wine/wined3d.dll.so
 %{_libdir}/wine/dnsapi.dll.so
 %{_libdir}/wine/iexplore.%{wineexe}
-%{_libdir}/wine/xactengine3_0.dll.so
-%{_libdir}/wine/xactengine3_1.dll.so
-%{_libdir}/wine/xactengine3_2.dll.so
-%{_libdir}/wine/xactengine3_3.dll.so
-%{_libdir}/wine/xactengine3_4.dll.so
-%{_libdir}/wine/xactengine3_5.dll.so
+#{_libdir}/wine/xactengine3_0.dll.so
+#{_libdir}/wine/xactengine3_1.dll.so
+#{_libdir}/wine/xactengine3_2.dll.so
+#{_libdir}/wine/xactengine3_3.dll.so
+#{_libdir}/wine/xactengine3_4.dll.so
+#{_libdir}/wine/xactengine3_5.dll.so
 %{_libdir}/wine/xactengine3_6.dll.so
 %{_libdir}/wine/xactengine3_7.dll.so
 %{_libdir}/wine/x3daudio1_0.dll.so
@@ -3575,6 +3628,9 @@ fi
 
 
 %changelog
+* Wed Aug 05 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.14-101.20200804git2b76b9f
+- Snapshot
+
 * Sun Aug 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.14-100
 - 5.14
 - New Webdings font

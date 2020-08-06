@@ -1,6 +1,6 @@
-%global commit 2af805dbc2edf9725ebe517ba91bb9b49fc27c38
+%global commit 937042b3db9aee50671358e4a919fbbef79ffdfa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200726
+%global date 20200805
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -36,7 +36,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 0376576d2dc0721edfb2c5a0257fdc275f6f39dc
+%global commit7 82d1c43e408510793a73a0886b5998283ee84d7b
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -52,7 +52,7 @@
 
 Name:           ppsspp
 Version:        1.10.3
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -78,6 +78,7 @@ Source10:       %{name}.appdata.xml
 Patch0:         %{name}-noupdate.patch
 Patch1:         %{name}-nodiscord.patch
 Patch3:         0001-Use-system-libraries.patch
+Patch4:         0001-Use-system-vulkan-headers.patch
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -118,11 +119,14 @@ BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(zlib)
+BuildRequires:  vulkan-headers >= 1.2.141
 %if %{with qt}
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5OpenGL)
 %endif
+
+Requires:       vulkan-loader%{?_isa}
 Requires:       hicolor-icon-theme
 Requires:       google-roboto-condensed-fonts
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -163,6 +167,7 @@ tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 
 rm -rf ext/{glew,rapidjson,miniupnp,snappy,zlib}/*.{c,cpp,h}
+rm -rf ext/vulkan
 rm -f ext/xxhash.*
 
 find ext Core -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" -o -name "*.y" \) -exec chmod -x {} ';'
@@ -173,6 +178,12 @@ sed -i \
   -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --always|echo \"%{version}-%{release}\"|g" \
   git-version.cmake
 %endif
+
+sed \
+  -e 's|"unknown"|"%{shortcommit7}"|' \
+  -e 's| unknown | %{shortcommit7} |' \
+  -e 's|GIT_FOUND|GIT_FOUND_DISABLED|g' \
+  -i ext/SPIRV-Cross/CMakeLists.txt
 
 cp Qt/PPSSPP.desktop %{name}.desktop
 
@@ -341,6 +352,10 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Aug 06 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-101.20200805git937042b
+- Bump
+- BR: vulkan-headers
+
 * Sun Jul 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-100.20200726git2af805d
 - 1.10.3
 - BR: miniupnc

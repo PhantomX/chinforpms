@@ -1,40 +1,44 @@
-From 1404d56242f6c860cbaff3a4861988dce653070b Mon Sep 17 00:00:00 2001
+From 59997061463ee5ddf032e48440822451911a0cf5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 26 Jul 2020 11:59:13 -0300
+Date: Wed, 5 Aug 2020 23:16:45 -0300
 Subject: [PATCH] Disable Discord support
 
 ---
- Core/Config.cpp           | 1 -
- Core/Config.h             | 2 --
+ Core/Config.cpp           | 2 ++
+ Core/Config.h             | 4 +++-
  UI/DiscordIntegration.cpp | 4 ++++
- UI/GameSettingsScreen.cpp | 1 -
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ UI/GameSettingsScreen.cpp | 2 ++
+ 4 files changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/Core/Config.cpp b/Core/Config.cpp
-index 9f0cd03..9d8c6d3 100644
+index e5d490b..5b0c0b7 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
-@@ -432,7 +432,6 @@ static ConfigSetting generalSettings[] = {
+@@ -432,7 +432,9 @@ static ConfigSetting generalSettings[] = {
  	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false),
  	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion),
  	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, true, true),
--	ConfigSetting("DiscordPresence", &g_Config.bDiscordPresence, true, true, false),  // Or maybe it makes sense to have it per-game? Race conditions abound...
++#ifdef ENABLE_DISCORD
+ 	ConfigSetting("DiscordPresence", &g_Config.bDiscordPresence, true, true, false),  // Or maybe it makes sense to have it per-game? Race conditions abound...
++#endif
+ 	ConfigSetting("UISound", &g_Config.bUISound, false, true, false),
  
  	ReportedConfigSetting("NumWorkerThreads", &g_Config.iNumWorkerThreads, &DefaultNumWorkers, true, true),
- 	ConfigSetting("AutoLoadSaveState", &g_Config.iAutoLoadSaveState, 0, true, true),
 diff --git a/Core/Config.h b/Core/Config.h
-index 03e3b34..c10b468 100644
+index 71fa93e..3069601 100644
 --- a/Core/Config.h
 +++ b/Core/Config.h
-@@ -131,8 +131,6 @@ struct Config {
+@@ -131,7 +131,9 @@ struct Config {
  	std::vector<std::string> vPinnedPaths;
  	std::string sLanguageIni;
  
 -	bool bDiscordPresence;  // Enables setting the Discord presence to the current game (or menu)
--
++#ifdef ENABLE_DISCORD
++	bool bDiscordPresence;  // Enables setting the Discord presence to the current game (or men
++#endif
+ 
  	// GFX
  	int iGPUBackend;
- 	std::string sFailedGPUBackends;
 diff --git a/UI/DiscordIntegration.cpp b/UI/DiscordIntegration.cpp
 index b872b21..e38db51 100644
 --- a/UI/DiscordIntegration.cpp
@@ -52,16 +56,18 @@ index b872b21..e38db51 100644
  
  void Discord::Init() {
 diff --git a/UI/GameSettingsScreen.cpp b/UI/GameSettingsScreen.cpp
-index 97d0bd2..dd20b05 100644
+index 5594e2e..8385977 100644
 --- a/UI/GameSettingsScreen.cpp
 +++ b/UI/GameSettingsScreen.cpp
-@@ -686,7 +686,6 @@ void GameSettingsScreen::CreateViews() {
- 	networkingSettings->Add(new Choice(n->T("Adhoc Multiplayer forum")))->OnClick.Handle(this, &GameSettingsScreen::OnAdhocGuides);
+@@ -726,7 +726,9 @@ void GameSettingsScreen::CreateViews() {
+ 		wlanChannelChoice->HideChoice(i + 2);
+ 		wlanChannelChoice->HideChoice(i + 7);
+ 	}
++#ifdef ENABLE_DISCORD
+ 	networkingSettings->Add(new CheckBox(&g_Config.bDiscordPresence, n->T("Send Discord Presence information")));
++#endif
  
- 	networkingSettings->Add(new CheckBox(&g_Config.bEnableWlan, n->T("Enable networking", "Enable networking/wlan (beta)")));
--	networkingSettings->Add(new CheckBox(&g_Config.bDiscordPresence, n->T("Send Discord Presence information")));
- 
- 	networkingSettings->Add(new ChoiceWithValueDisplay(&g_Config.proAdhocServer, n->T("Change proAdhocServer Address (localhost = multiple instance)"), (const char *)nullptr))->OnClick.Handle(this, &GameSettingsScreen::OnChangeproAdhocServerAddress);
+ 	networkingSettings->Add(new ItemHeader(n->T("AdHoc Server")));
  	networkingSettings->Add(new CheckBox(&g_Config.bEnableAdhocServer, n->T("Enable built-in PRO Adhoc Server", "Enable built-in PRO Adhoc Server")));
 -- 
 2.26.2

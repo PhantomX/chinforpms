@@ -1,6 +1,6 @@
-From ba6b0f72aa3d7464f1e639908d64b5481ee884bc Mon Sep 17 00:00:00 2001
+From 1ca6f37f6f9ba607827064124190c67f9b71249c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 26 Jul 2020 18:17:43 -0300
+Date: Wed, 5 Aug 2020 23:26:24 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake borrowed from dolphin-emu
@@ -27,7 +27,7 @@ https://github.com/dolphin-emu/dolphin
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8d41570..9e102e1 100644
+index a2a6987..c870aa4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -123,6 +123,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
@@ -71,7 +71,7 @@ index 8d41570..9e102e1 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -1827,6 +1849,12 @@ endif()
+@@ -1829,6 +1851,12 @@ endif()
  
  # miniUPnPc integration (MiniUPnPc supposed to works on any POSIX system, not sure if some of these are redundant/not needed tho)
  if(USE_MINIUPNPC)
@@ -84,7 +84,7 @@ index 8d41570..9e102e1 100644
  	set (MINIUPNPC_VERSION 2.1) # used by miniupnpcstrings.h.cmake
  	set (MINIUPNPC_API_VERSION 17)
  	option(UPNPC_BUILD_STATIC "Build static library" TRUE)
-@@ -1898,6 +1926,7 @@ if(USE_MINIUPNPC)
+@@ -1900,6 +1928,7 @@ if(USE_MINIUPNPC)
  		set(UPNPC_LIBRARY miniupnpc)
  	endif()
  endif()
@@ -275,7 +275,7 @@ index af56567..5f38a5b 100644
  #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
  #include <arm64_neon.h>
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 4b342eb..471878f 100644
+index 70fee76..8ff888e 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -37,7 +37,11 @@
@@ -291,7 +291,7 @@ index 4b342eb..471878f 100644
  
  
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index e10aff8..b4bdb1a 100644
+index fcafb02..100f0ab 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
 @@ -35,7 +35,11 @@
@@ -307,7 +307,7 @@ index e10aff8..b4bdb1a 100644
  
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 48c4a3e..18722e5 100644
+index 9428cdf..bec4bc7 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,11 @@
@@ -323,7 +323,7 @@ index 48c4a3e..18722e5 100644
  #include "i18n/i18n.h"
  #include "math/math_util.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 8e1adac..c96f673 100644
+index 8631e4c..364bac2 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@
@@ -335,9 +335,9 @@ index 8e1adac..c96f673 100644
 +#else
  #include "ext/xxhash.h"
 +#endif
+ #include "file/vfs.h"
  #include "i18n/i18n.h"
  #include "math/math_util.h"
- #include "profiler/profiler.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
 index 7717503..a06dc09 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp

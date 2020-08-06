@@ -1,22 +1,21 @@
 %undefine _hardened_build
-%global _legacy_common_support 1
 
-%global commit 6eda08e029d0001eb356100d92cc9bfd5b550349
+%global commit bf71ae00220265749cc6af1e1e81f5b287891e0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191210
+%global date 20200520
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global winecommonver 4.6
+%global winecommonver 5.14
 
 %global pkgname wine-nine-standalone
 
 Name:           wine-nine
 Version:        0.6
-Release:        0.2%{?gver}%{?dist}
+Release:        0.3%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -33,6 +32,9 @@ Source1:        ninewinecfg
 Source2:        wineninecfg
 
 Source100:      wine-ninecfg.desktop
+
+# https://github.com/iXit/wine-nine-standalone/issues/83#issuecomment-668313130
+Patch0:         https://github.com/iXit/wine-nine-standalone/files/5019484/fix.txt#/%{name}-gh-bug83.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -63,8 +65,6 @@ Requires:       libglvnd-glx%{?_isa}
 Requires:       mesa-dri-drivers%{?_isa}
 Requires:       mesa-libd3d%{?_isa}
 Provides:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
-
 
 %ifarch x86_64
 Requires:       %{name}(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -154,6 +154,10 @@ desktop-file-install \
 
 
 %changelog
+* Wed Aug 05 2020 Phantom X <megaphantomx at hotmail dot com> - 2:0.6-0.3.20200520gitbf71ae0
+- New snapshot
+- Experimental fix to work with wine 5.14
+
 * Sat Apr 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:0.6-0.2.20191210git6eda08e
 - Fix winepath EOL on script
 
