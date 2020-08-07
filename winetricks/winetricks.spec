@@ -1,6 +1,6 @@
-%global commit 24faee0049359811c6595aa8bbe6f97228f667cb
+%global commit fdd6b466db7f4e97be6519d0392bcf9540833520
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200523
+%global date 20200804
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,14 +9,14 @@
 
 Name:           winetricks
 Version:        20200412
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 Summary:        Work around common problems in Wine
 
 License:        LGPLv2+
 URL:            https://github.com/Winetricks/%{name}
 
-%if 0%{?snapshot}
+%if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -47,7 +47,7 @@ or tweak various Wine settings individually.
 
 
 %prep
-%if 0%{?snapshot}
+%if 0%{?with_snapshot}
 %autosetup -n%{name}-%{commit}
 %else
 %autosetup
@@ -79,6 +79,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Aug 06 2020 Phantom X <megaphantomx at hotmail dot com> - 20200412-101.20200804gitfdd6b46
+- Bump
+
 * Sat May 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 20200412-100.20200523git24faee0
 - Snapshot
 

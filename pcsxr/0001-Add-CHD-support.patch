@@ -1,0 +1,265 @@
+From 2803bdb6957784fb0bf07822f26f8d70f5313154 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 6 Aug 2020 16:05:32 -0300
+Subject: [PATCH] Add CHD support
+
+Borrowed from pcsx_rearmed fork: https://github.com/libretro/pcsx_rearmed
+
+Link to system libchdr
+---
+ CMakeLists.txt             |   6 ++
+ gui/GtkGui.c               |   5 ++
+ libpcsxcore/CMakeLists.txt |   9 ++-
+ libpcsxcore/cdriso.c       | 136 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 155 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c7f61cc3..d264913b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -46,6 +46,12 @@ if (BUILD_SIO1)
+   add_definitions(-DENABLE_SIO1API)
+ endif()
+ 
++option(ENABLE_CHD "Enables CHD support." OFF)
++
++if (ENABLE_CHD)
++  add_definitions(-DENABLE_CHD)
++endif()
++
+ #components
+ add_subdirectory(libpcsxcore)
+ add_subdirectory(gui)
+diff --git a/gui/GtkGui.c b/gui/GtkGui.c
+index 9ac46749..2f700fa5 100644
+--- a/gui/GtkGui.c
++++ b/gui/GtkGui.c
+@@ -749,7 +749,12 @@ static gchar *Open_Iso_Proc() {
+ 	gtk_file_filter_add_pattern(psxfilter, "*.PBP");
+ 	gtk_file_filter_add_pattern(psxfilter, "*.CBN");
+ 	gtk_file_filter_add_pattern(psxfilter, "*.ecm");
++#ifdef ENABLE_CHD
++	gtk_file_filter_add_pattern(psxfilter, "*.chd");
++	gtk_file_filter_set_name(psxfilter, _("PSX Image Files (*.bin, *.img, *.mdf, *.iso, *.ecm, *.cue, *.pbp, *.cbn, *.chd)"));
++#else
+ 	gtk_file_filter_set_name(psxfilter, _("PSX Image Files (*.bin, *.img, *.mdf, *.iso, *.ecm, *.cue, *.pbp, *.cbn)"));
++#endif
+ 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER (chooser), psxfilter);
+ 
+ 	allfilter = gtk_file_filter_new();
+diff --git a/libpcsxcore/CMakeLists.txt b/libpcsxcore/CMakeLists.txt
+index b8caef4c..c4025d54 100644
+--- a/libpcsxcore/CMakeLists.txt
++++ b/libpcsxcore/CMakeLists.txt
+@@ -18,6 +18,13 @@ if (USE_LIBARCHIVE)
+   add_definitions(-DHAVE_LIBARCHIVE)
+ endif()
+ 
++if (ENABLE_CHD)
++  find_package(PkgConfig REQUIRED)
++  add_library(chdr-shared INTERFACE IMPORTED GLOBAL)
++  pkg_check_modules(CHDR REQUIRED libchdr)
++  include_directories(${CHDR_INCLUDE_DIRS})
++endif()
++
+ # Architecture detection and arch specific settings
+ message(STATUS "Building PCSXr on arch " ${CMAKE_SYSTEM_PROCESSOR})
+ include(TargetArch)
+@@ -114,4 +121,4 @@ endif()
+ set(SRCS ${SRCS} ${DYNAREC_SRC})
+ 
+ add_library(pcsxcore STATIC ${SRCS})
+-target_link_libraries(pcsxcore ${FFMPEG_LIBRARIES} ${LibArchive_LIBRARIES} ${LIBS})
++target_link_libraries(pcsxcore ${FFMPEG_LIBRARIES} ${LibArchive_LIBRARIES} ${CHDR_LIBRARIES} ${LIBS})
+diff --git a/libpcsxcore/cdriso.c b/libpcsxcore/cdriso.c
+index 4d6c3370..9c2e5f0a 100644
+--- a/libpcsxcore/cdriso.c
++++ b/libpcsxcore/cdriso.c
+@@ -36,6 +36,9 @@
+ #include <limits.h>
+ #endif
+ #include <zlib.h>
++#ifdef ENABLE_CHD
++#include <chd.h>
++#endif
+ 
+ #ifdef ENABLE_CCDDA
+ #include "libavcodec/avcodec.h"
+@@ -84,6 +87,17 @@ static struct {
+ 	unsigned int sector_in_blk;
+ } *compr_img;
+ 
++#ifdef ENABLE_CHD
++static struct {
++	unsigned char (*buffer)[CD_FRAMESIZE_RAW + SUB_FRAMESIZE];
++	chd_file* chd;
++	const chd_header* header;
++	unsigned int sectors_per_hunk;
++	unsigned int current_hunk;
++	unsigned int sector_in_hunk;
++} *chd_img;
++#endif
++
+ int (*cdimg_read_func)(FILE *f, unsigned int base, void *dest, int sector);
+ 
+ char* CALLBACK CDR__getDriveLetter(void);
+@@ -1156,6 +1170,80 @@ fail_io:
+ 	return -1;
+ }
+ 
++#ifdef ENABLE_CHD
++static int handlechd(const char *isofile) {
++	chd_img = calloc(1, sizeof(*chd_img));
++	if (chd_img == NULL)
++		goto fail_io;
++
++	if(chd_open(isofile, CHD_OPEN_READ, NULL, &chd_img->chd) != CHDERR_NONE)
++      goto fail_io;
++
++   chd_img->header = chd_get_header(chd_img->chd);
++
++   chd_img->buffer = malloc(chd_img->header->hunkbytes);
++   if (chd_img->buffer == NULL)
++		goto fail_io;
++
++   chd_img->sectors_per_hunk = chd_img->header->hunkbytes / (CD_FRAMESIZE_RAW + SUB_FRAMESIZE);
++   chd_img->current_hunk = (unsigned int)-1;
++
++   cddaBigEndian = TRUE;
++
++	numtracks = 0;
++	int frame_offset = 150;
++	memset(ti, 0, sizeof(ti));
++
++   while (1)
++   {
++      struct {
++         char type[64];
++         char subtype[32];
++         char pgtype[32];
++         char pgsub[32];
++         uint32_t track;
++         uint32_t frames;
++         uint32_t pregap;
++         uint32_t postgap;
++      } md = {};
++      char meta[256];
++      uint32_t meta_size = 0;
++
++      if (chd_get_metadata(chd_img->chd, CDROM_TRACK_METADATA2_TAG, numtracks, meta, sizeof(meta), &meta_size, NULL, NULL) == CHDERR_NONE)
++         sscanf(meta, CDROM_TRACK_METADATA2_FORMAT, &md.track, md.type, md.subtype, &md.frames, &md.pregap, md.pgtype, md.pgsub, &md.postgap);
++      else if (chd_get_metadata(chd_img->chd, CDROM_TRACK_METADATA_TAG, numtracks, meta, sizeof(meta), &meta_size, NULL, NULL) == CHDERR_NONE)
++         sscanf(meta, CDROM_TRACK_METADATA_FORMAT, &md.track, md.type, md.subtype, &md.frames);
++      else
++         break;
++
++		ti[md.track].type = !strncmp(md.type, "AUDIO", 5) ? CDDA : DATA;
++
++      sec2msf(frame_offset + md.pregap, ti[md.track].start);
++      sec2msf(md.frames - md.pregap, ti[md.track].length);
++
++      if (!strcmp(md.type, md.pgtype))
++         frame_offset += md.pregap;
++
++      ti[md.track].start_offset = frame_offset * CD_FRAMESIZE_RAW;
++
++		frame_offset += md.frames;
++		frame_offset += md.postgap;
++		numtracks++;
++	}
++
++	if (numtracks)
++		return 0;
++
++fail_io:
++	if (chd_img != NULL) {
++		free(chd_img->buffer);
++		free(chd_img);
++		chd_img = NULL;
++	}
++	return -1;
++}
++#endif
++
+ // this function tries to get the .sub file of the given .img
+ static int opensubfile(const char *isoname) {
+ 	char		subname[MAXPATHLEN];
+@@ -1319,6 +1407,32 @@ finish:
+ 	return CD_FRAMESIZE_RAW;
+ }
+ 
++#ifdef ENABLE_CHD
++static int cdread_chd(FILE *f, unsigned int base, void *dest, int sector)
++{
++	int hunk;
++
++	if (base)
++		sector += base / CD_FRAMESIZE_RAW;
++
++	hunk = sector / chd_img->sectors_per_hunk;
++	chd_img->sector_in_hunk = sector % chd_img->sectors_per_hunk;
++
++	if (hunk == chd_img->current_hunk)
++		goto finish;
++
++	chd_read(chd_img->chd, hunk, chd_img->buffer);
++
++	chd_img->current_hunk = hunk;
++
++finish:
++	if (dest != cdbuffer) // copy avoid HACK
++		memcpy(dest, chd_img->buffer[chd_img->sector_in_hunk],
++			CD_FRAMESIZE_RAW);
++	return CD_FRAMESIZE_RAW;
++}
++#endif
++
+ static int cdread_2048(FILE *f, unsigned int base, void *dest, int sector)
+ {
+ 	int ret;
+@@ -1717,6 +1831,12 @@ static unsigned char * CALLBACK ISOgetBuffer_compr(void) {
+ 	return compr_img->buff_raw[compr_img->sector_in_blk] + 12;
+ }
+ 
++#ifdef ENABLE_CHD
++static unsigned char * CALLBACK ISOgetBuffer_chd(void) {
++	return chd_img->buffer[chd_img->sector_in_hunk] + 12;
++}
++#endif
++
+ static unsigned char * CALLBACK ISOgetBuffer(void) {
+ 	return cdbuffer + 12;
+ }
+@@ -1782,6 +1902,13 @@ static long CALLBACK ISOopen(void) {
+ 	else if ((handleecm(GetIsoFile(), cdHandle, NULL) == 0)) {
+ 		SysPrintf("[+ecm]");
+ 	}
++#ifdef ENABLE_CHD
++	else if ((handlechd(GetIsoFile()) == 0)) {
++		SysPrintf("[+chd]");
++		CDR_getBuffer = ISOgetBuffer_chd;
++		cdimg_read_func = cdread_chd;
++	}
++#endif
+ 	else if (handlearchive(GetIsoFile(), NULL) == 0) {
+ 	}
+ 
+@@ -1845,6 +1972,15 @@ static long CALLBACK ISOclose(void) {
+ 		compr_img = NULL;
+ 	}
+ 
++#ifdef ENABLE_CHD
++	if (chd_img != NULL) {
++		chd_close(chd_img->chd);
++		free(chd_img->buffer);
++		free(chd_img);
++		chd_img = NULL;
++	}
++#endif
++
+ 	for (i = 1; i <= numtracks; i++) {
+ 		if (ti[i].handle != NULL) {
+ 			fclose(ti[i].handle);
+-- 
+2.26.2
+

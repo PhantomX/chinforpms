@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2016 Jeremy Newton -->
+<component type="desktop">
+ <id>pcsxr.desktop</id>
+ <metadata_license>CC-BY-SA-3.0</metadata_license>
+ <project_license>GPL-2.0</project_license>
+ <name>PCSXR</name>
+ <summary>A plugin based PlayStation (PSX) emulator with high compatibility</summary>
+ <description>
+  <p>
+   PCSX-Reloaded is an advanced PlayStation (PSX) emulator, which uses a plugin
+   architecture to provide full support for all components of the PSX. It has full
+   emulation support for game pads, videos, sound, memory cards, and other
+   important PSX components, and is able to play many games without problems.
+  </p>
+ </description>
+ <url type="homepage">http://pcsxr.codeplex.com/</url>
+ <url type="bugtracker">http://pcsxr.codeplex.com/workitem/list/basic</url>
+ <update_contact>alexjnewt_at_hotmail.com</update_contact>
+</component>

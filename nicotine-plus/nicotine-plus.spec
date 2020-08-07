@@ -1,7 +1,7 @@
-%global commit 5391714b45d3a27991aa080fb0fe138a9d9eedd4
+%global commit 69d4c8dde6c752009c6c8093732dca482cc3ab37
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 202004716
-%global with_snapshot 0
+%global date 20200806
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -11,8 +11,8 @@
 %global vc_url  https://github.com/%{name}/%{name}
 
 Name:           nicotine-plus
-Version:        2.0.1
-Release:        1%{?gver}%{?dist}
+Version:        2.1.0
+Release:        0.1%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
 # * nicotine+ - GPLv3 and LGPLv3  -- main tarball;
@@ -39,10 +39,9 @@ Requires:       libnotify
 Requires:       python3-dbus
 Requires:       python3-gobject
 Requires:       python3-miniupnpc
-Requires:       python3-mutagen
+Requires:       python3-pytaglib
 Requires:       hicolor-icon-theme
 Recommends:     gspell
-Recommends:     gsound
 
 Provides:       %{cname}+ = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{cname} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -81,11 +80,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 
 %files -f %{cname}.lang
 %license COPYING
-%doc AUTHORS.md NEWS README.md doc/TRANSLATORS.md
+%doc AUTHORS.md NEWS.md README.md TRANSLATORS.md img/CREDITS.md
 %{_bindir}/%{cname}
 %{python3_sitelib}/%{cname}-*.egg-info
 %{python3_sitelib}/py%{cname}/
-%{_datadir}/%{cname}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.*
 %{_metainfodir}/*.appdata.xml
@@ -93,5 +91,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 
 
 %changelog
+* Fri Aug 07 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.0-0.1.20200806git69d4c8d
+- Snapshot
+- BR: python3-mutagen -> python3-pytaglib
+
 * Fri Jul 17 2020 Phantom X <megaphantomx at hotmail dot com> - 2.0.1-1
 - Initial spec

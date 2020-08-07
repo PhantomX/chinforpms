@@ -1,0 +1,26 @@
+From 10f449b6def7a39ec014acdf8ff9ececf818ad5e Mon Sep 17 00:00:00 2001
+From: Mystro256 <alexjnewt@hotmail.com>
+Date: Fri, 6 Mar 2020 10:24:51 -0500
+Subject: [PATCH] Fix Pango includedirs
+
+---
+ cmake/FindPango.cmake | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/cmake/FindPango.cmake b/cmake/FindPango.cmake
+index 2a7da99d..8852cff7 100644
+--- a/cmake/FindPango.cmake
++++ b/cmake/FindPango.cmake
+@@ -46,6 +46,9 @@ if(Pango_LIBRARY AND NOT Pango_FOUND)
+ 
+   find_path(Pango_INCLUDE_DIR "pango/pango.h"
+     HINTS ${Pango_PKG_INCLUDE_DIRS})
++  find_path(harfbuzz_INCLUDE_DIR "harfbuzz/hb.h"
++    HINTS ${harfbuzz_PKG_INCLUDE_DIRS})
++  include_directories(${harfbuzz_INCLUDE_DIR}/harfbuzz)
+ 
+   if(Pango_INCLUDE_DIR)
+     file(STRINGS "${Pango_INCLUDE_DIR}/pango/pango-features.h" Pango_MAJOR_VERSION REGEX "^#define PANGO_VERSION_MAJOR +\\(?([0-9]+)\\)?$")
+-- 
+2.21.1
+

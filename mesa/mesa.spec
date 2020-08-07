@@ -1,5 +1,3 @@
-%global _legacy_common_support 1
-
 %ifnarch s390x
 %global with_hardware 1
 %global with_vdpau 1
@@ -63,7 +61,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        20.1.4
+Version:        20.1.5
 Release:        100%{?dist}
 
 License:        MIT
@@ -710,6 +708,9 @@ popd
 
 
 %changelog
+* Thu Aug 06 2020 Phantom X <megaphantomx at hotmail dot com> - 20.1.5-100
+- 20.1.5
+
 * Wed Jul 22 2020 Phantom X <megaphantomx at hotmail dot com> - 20.1.4-100
 - 20.1.4
 

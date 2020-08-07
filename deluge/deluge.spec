@@ -288,7 +288,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 * Mon Aug 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.3-101
 - Some upstream fixes
 
-* Wed Jun 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.2-100
+* Wed Jun 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.3-100
 - 2.0.3
 
 * Sat Jun 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.2-100
