@@ -1,6 +1,6 @@
-%global commit 8cbbb4f394678411fdb57237553f5d974527877f
+%global commit 1ec8bf9b739f1528b742169670eac2350b33a7d4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200806
+%global date 20200807
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7c1249e5c05edf5acc9419d55642990540a32e54
+%global wine_stagingver 32082f4d6f9f6c787e6976d6fb73b07eeb9e1d54
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id ae15b580525714b76de074c2aee30f535e15a349
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9b286c5ba16681c85145f663147d7f2df1f409cb
+%global tkg_id 46c859627cb60d57274a27ace73cd8a506b140d9
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 4444f69429652a6845fcf372e8ef864723cea1a1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -66,7 +66,6 @@
 %global fsync_spincounts 1
 
 %global wine_staging_opts %{?wine_staging_opts} -W ntdll-SystemRoot_Symlink
-%global wine_staging_opts %{?wine_staging_opts} -W winevulkan-vkGetPhysicalDeviceSurfaceCapabilitiesKHR
 %if 0%{?fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
@@ -100,7 +99,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.14
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -164,6 +163,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 Patch100:       %{whqs_url}/190201#/%{name}-whq-patch190201.patch
+Patch101:       %{whqs_url}/190297#/%{name}-whq-patch190297.patch
 
 # 7000-/8000-/801-806 - Reverts to unbreak esync/fsync
 Patch7000:      %{whq_url}/e854ea34cc481658ec61f4603d0438e075608c98#/%{name}-whq-e854ea3.patch
@@ -1271,6 +1271,7 @@ This package adds the opencl driver for wine.
 %patch599 -p1
 
 %patch100 -p1
+%patch101 -p1
 
 %if 0%{?wine_staging}
 %patch7430 -p1 -R
@@ -3622,6 +3623,9 @@ fi
 
 
 %changelog
+* Sat Aug 08 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.14-103.20200807git1ec8bf9
+- New snapshot
+
 * Thu Aug 06 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.14-102.20200806git8cbbb4f
 - Bump
 

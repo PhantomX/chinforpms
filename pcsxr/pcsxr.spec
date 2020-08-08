@@ -89,7 +89,7 @@ sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
 #Remove cmake rule to install license, the license macro install it instead
 sed -i '/COPYING/d' doc/CMakeLists.txt
 #Add snapshot info into about dialog
-sed -i 's/"git"/"%{fgittag}"/' gui/AboutDlg.c
+sed -i 's/"git"/"%{version}-%{release}"/' gui/AboutDlg.c
 
 %build
 %cmake \

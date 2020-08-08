@@ -5,8 +5,8 @@
 
 %undefine _hardened_build
 
-# Enable system libchdr (broken)
-%global with_libchdr 0
+# Enable system libchdr (disables 7z archive loading, to fix symbol crashes with libchdr lzma static code)
+%global with_libchdr 1
 # Enable system spirv (broken)
 %global with_spirv 0
 # Build with x11 instead SDL
@@ -18,7 +18,7 @@
 
 Name:           flycast
 Version:        7
-Release:        19%{?gver}%{?dist}
+Release:        20%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -80,7 +80,8 @@ Requires:       vulkan-loader%{?_isa}
 rm -rf core/deps/{flac,glm,libzip,SDL2-*,xxHash,zlib}
 
 %if 0%{?with_libchdr}
-rm -rf core/deps/{chdr,crypto}
+rm -rf core/deps/{chdr,crypto,lzma}
+rm -f core/archive/7zArchive.*
 %endif
 %if 0%{?with_spirv}
 rm -rf core/deps/glslang
@@ -192,6 +193,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Fri Aug 07 2020 Phantom X <megaphantomx at hotmail dot com> - 7-20.20200731git125c1ff
+- Rebuilt with system libchdr
+
 * Sun Aug 02 2020 Phantom X <megaphantomx at hotmail dot com> - 7-19.20200731git125c1ff
 - Last snapshot
 

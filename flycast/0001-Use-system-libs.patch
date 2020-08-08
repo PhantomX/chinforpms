@@ -1,17 +1,18 @@
-From d92cadce75c822410aba0728b2450f52a70ef172 Mon Sep 17 00:00:00 2001
+From 9ad6addb403dcc14c2b790e8a137038da5c15bbe Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 26 Jul 2020 05:02:21 -0300
+Date: Fri, 7 Aug 2020 09:01:42 -0300
 Subject: [PATCH] Use system libs
 
 ---
- CMakeLists.txt                | 37 +++++++++++++++++++++++++++++++++--
- core/imgread/chd.cpp          |  4 ++++
- core/rend/vulkan/compiler.cpp |  4 ++++
- core/rend/vulkan/shaders.h    |  4 ++++
- 4 files changed, 47 insertions(+), 2 deletions(-)
+ CMakeLists.txt                | 47 ++++++++++++++++++++++++++++++++---
+ core/archive/archive.cpp      |  4 +++
+ core/imgread/chd.cpp          |  4 +++
+ core/rend/vulkan/compiler.cpp |  4 +++
+ core/rend/vulkan/shaders.h    |  4 +++
+ 5 files changed, 60 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bbbee4c..986443d 100644
+index bbbee4c..f9be505 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -11,6 +11,8 @@ option(ENABLE_OPROFILE "Enable OProfile" OFF)
@@ -99,7 +100,7 @@ index bbbee4c..986443d 100644
  target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdr/bitstream.c
          core/deps/chdr/bitstream.h
-@@ -255,6 +287,7 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -255,11 +287,13 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdr/flac.h
          core/deps/chdr/huffman.c
          core/deps/chdr/huffman.h)
@@ -107,14 +108,79 @@ index bbbee4c..986443d 100644
  
  target_sources(${PROJECT_NAME} PRIVATE
          core/deps/coreio/coreio.cpp
+         core/deps/coreio/coreio.h)
+ 
++if(NOT USE_SYSTEM_CHDR)
+ target_sources(${PROJECT_NAME} PRIVATE
+         core/deps/crypto/md5.cpp
+         core/deps/crypto/md5.h
+@@ -294,6 +328,7 @@ if(NOT FLAC_FOUND)
+             core/deps/flac/src/libFLAC/window.c
+             core/deps/flac/src/libFLAC/windows_unicode_filenames.c)
+ endif()
++endif()
+ 
+ if(MSVC)
+     target_include_directories(${PROJECT_NAME} PRIVATE core/deps/dirent)
+@@ -416,15 +451,21 @@ else()
+     endif()
+ endif()
+ 
++if(NOT USE_SYSTEM_CHDR)
+ target_compile_definitions(${PROJECT_NAME} PRIVATE _7ZIP_ST)
+ target_sources(${PROJECT_NAME} PRIVATE core/deps/lzma/7zArcIn.c core/deps/lzma/7zBuf.c core/deps/lzma/7zCrc.c core/deps/lzma/7zCrcOpt.c core/deps/lzma/7zDec.c core/deps/lzma/7zFile.c core/deps/lzma/7zStream.c core/deps/lzma/Alloc.c core/deps/lzma/Bcj2.c core/deps/lzma/Bra86.c core/deps/lzma/Bra.c core/deps/lzma/BraIA64.c core/deps/lzma/CpuArch.c core/deps/lzma/Delta.c core/deps/lzma/LzFind.c core/deps/lzma/Lzma2Dec.c core/deps/lzma/Lzma86Dec.c core/deps/lzma/Lzma86Enc.c core/deps/lzma/LzmaDec.c core/deps/lzma/LzmaEnc.c core/deps/lzma/LzmaLib.c core/deps/lzma/Sort.c)
++endif()
+ target_sources(${PROJECT_NAME} PRIVATE core/deps/libelf/elf32.cpp core/deps/libelf/elf64.cpp core/deps/libelf/elf.cpp)
+ target_sources(${PROJECT_NAME} PRIVATE core/deps/imgui/imgui.cpp core/deps/imgui/imgui_demo.cpp core/deps/imgui/imgui_draw.cpp core/deps/imgui/imgui_widgets.cpp)
+ target_sources(${PROJECT_NAME} PRIVATE core/deps/xbrz/xbrz.cpp)
+ 
+-target_sources(${PROJECT_NAME} PRIVATE
++if(NOT USE_SYSTEM_CHDR)
++  target_sources(${PROJECT_NAME} PRIVATE
+         core/archive/7zArchive.cpp
+-        core/archive/7zArchive.h
++        core/archive/7zArchive.h)
++endif()
++
++target_sources(${PROJECT_NAME} PRIVATE
+         core/archive/archive.cpp
+         core/archive/archive.h)
+ if(NOT MSVC)
+diff --git a/core/archive/archive.cpp b/core/archive/archive.cpp
+index 973e320..185d014 100644
+--- a/core/archive/archive.cpp
++++ b/core/archive/archive.cpp
+@@ -20,7 +20,9 @@
+  */
+ 
+ #include "archive.h"
++#ifndef USE_SYSTEM_CHDR
+ #include "7zArchive.h"
++#endif
+ #ifndef _MSC_VER
+ #include "ZipArchive.h"
+ #endif
+@@ -29,10 +31,12 @@ Archive *OpenArchive(const char *path)
+ {
+ 	std::string base_path(path);
+ 
++#ifndef USE_SYSTEM_CHDR
+ 	Archive *sz_archive = new SzArchive();
+ 	if (sz_archive->Open(base_path.c_str()) || sz_archive->Open((base_path + ".7z").c_str()) || sz_archive->Open((base_path + ".7Z").c_str()))
+ 		return sz_archive;
+ 	delete sz_archive;
++#endif
+ 
+ #ifndef _MSC_VER
+ 	Archive *zip_archive = new ZipArchive();
 diff --git a/core/imgread/chd.cpp b/core/imgread/chd.cpp
-index 3a55f80..79fabda 100644
+index 3a55f80..7405cf2 100644
 --- a/core/imgread/chd.cpp
 +++ b/core/imgread/chd.cpp
 @@ -1,6 +1,10 @@
  #include "common.h"
  
-+#ifdef SYSTEM_CHDR
++#ifdef USE_SYSTEM_CHDR
 +#include <chd.h>
 +#else
  #include "deps/chdr/chd.h"

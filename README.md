@@ -1,6 +1,6 @@
 # chinforpms
 
-Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMFusion and existent packages updated with extra changes, or only backports from Rawhide.
+Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMFusion and existent packages updated with extra changes, or snapshots, or only backports from Rawhide.
 
 > Most packages can be found in this [COPR repository](https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms), except for those not allowed.
 

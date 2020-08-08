@@ -1,20 +1,31 @@
+%global commit 510a0a6ae255e622e13c14d3a3268d690dd155d3
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20200717
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 Name:           gamemode
 Version:        1.5.1
-Release:        100%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
 
 License:        BSD
 URL:            https://github.com/FeralInteractive/%{name}
-Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
 
-# Use system inih
-Patch0:         %{name}-system-inih.patch
+%if 0%{?with_snapshot}
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
+Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
+%endif
 
 BuildRequires:  meson
 BuildRequires:  gcc
-BuildRequires:  inih-devel
 BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  pkgconfig(inih)
 BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  pkgconfig(systemd)
 Requires:       polkit
@@ -34,9 +45,15 @@ The %{name}-devel package contains the development files libraries needed for
 application integration with %{name}.
 
 %prep
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+%else
 %autosetup -p1
+%endif
 
 rm -rf subprojects/inih
+
+sed -e '/^GAMEMODEAUTO_NAME/s|lib|/usr/\\$LIB/lib|' -i data/%{name}run
 
 
 %build
@@ -47,7 +64,11 @@ rm -rf subprojects/inih
 %install
 %meson_install
 
-mkdir -p %{buildroot}%{_datadir}/%{name}
+rm -f %{buildroot}%{_libdir}/*.a
+
+mkdir -p %{buildroot}%{_mandir}/man{1,8}
+mv %{buildroot}%{_mandir}/*.1 %{buildroot}%{_mandir}/man1/
+mv %{buildroot}%{_mandir}/*.8 %{buildroot}%{_mandir}/man8/
 
 
 %files
@@ -57,10 +78,12 @@ mkdir -p %{buildroot}%{_datadir}/%{name}
 %{_libdir}/lib*.so.*
 %{_libexecdir}/%{name}
 %{_userunitdir}/*.service
+%{_mandir}/man1/*.1.*
 %{_mandir}/man8/*.8.*
 %{_datadir}/dbus-1/services/*.service
 %{_datadir}/polkit-1/actions/*.policy
-%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/
+%{_metainfodir}/*.metainfo.xml
 
 %files devel
 %license LICENSE.txt
@@ -70,6 +93,9 @@ mkdir -p %{buildroot}%{_datadir}/%{name}
 
 
 %changelog
+* Fri Aug 07 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.5.1-101.20200717git510a0a6
+- Snapshot
+
 * Thu Mar 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.5.1-100
 - 1.5.1
 
