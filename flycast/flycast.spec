@@ -5,8 +5,10 @@
 
 %undefine _hardened_build
 
-# Enable system libchdr (disables 7z archive loading, to fix symbol crashes with libchdr lzma static code)
+# Enable system libchdr (disables 7z archive loading when lzmasdk is disabled)
 %global with_libchdr 1
+# Enable system lzma-sdk
+%global with_lzmasdk 1
 # Enable system spirv (broken)
 %global with_spirv 0
 # Build with x11 instead SDL
@@ -18,7 +20,7 @@
 
 Name:           flycast
 Version:        7
-Release:        20%{?gver}%{?dist}
+Release:        21%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -55,6 +57,9 @@ BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip)
+%if 0%{?with_lzmasdk}
+BuildRequires:  pkgconfig(lzmasdk-c)
+%endif
 %if 0%{?with_x11}
 BuildRequires:  pkgconfig(x11)
 %else
@@ -80,8 +85,10 @@ Requires:       vulkan-loader%{?_isa}
 rm -rf core/deps/{flac,glm,libzip,SDL2-*,xxHash,zlib}
 
 %if 0%{?with_libchdr}
-rm -rf core/deps/{chdr,crypto,lzma}
-rm -f core/archive/7zArchive.*
+rm -rf core/deps/{chdr,crypto}
+%endif
+%if 0%{?with_lzmasdk}
+rm -rf core/deps/lzma
 %endif
 %if 0%{?with_spirv}
 rm -rf core/deps/glslang
@@ -136,6 +143,9 @@ export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
 %endif
 %if 0%{?with_libchdr}
   -DUSE_SYSTEM_CHDR:BOOL=ON \
+%endif
+%if 0%{?with_lzmasdk}
+  -DUSE_SYSTEM_LZMA:BOOL=ON \
 %endif
 %if 0%{?with_spirv}
   -DUSE_SYSTEM_SPIRV:BOOL=ON \
@@ -193,6 +203,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Aug 08 2020 Phantom X <megaphantomx at hotmail dot com> - 7-21.20200731git125c1ff
+- Rebuild with system lzmasdk
+
 * Fri Aug 07 2020 Phantom X <megaphantomx at hotmail dot com> - 7-20.20200731git125c1ff
 - Rebuilt with system libchdr
 

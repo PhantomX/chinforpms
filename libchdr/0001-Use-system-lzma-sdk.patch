@@ -1,0 +1,44 @@
+From ca7a04180ee2b90658bbb9ea8caf9d0da5b32227 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 8 Aug 2020 15:10:34 -0300
+Subject: [PATCH] Use system lzma-sdk
+
+---
+ CMakeLists.txt | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4061602..a3299de 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -9,6 +9,7 @@ option(BUILD_STATIC_LIBS "Build libchdr also as a static library" ON)
+ option(BUILD_SHARED_LIBS "Build libchdr also as a shared library" ON)
+ option(WITH_SYSTEM_FLAC "Use system provided FLAC library" OFF)
+ option(WITH_SYSTEM_ZLIB "Use system provided zlib library" OFF)
++option(WITH_SYSTEM_LZMA "Use system provided lzma-sdk library" OFF)
+ 
+ include(FindPkgConfig)
+ 
+@@ -49,6 +50,11 @@ list(APPEND CHDR_INCLUDES deps/crypto)
+ list(APPEND CHDR_LIBS crypto-static)
+ 
+ # lzma
++if (WITH_SYSTEM_LZMA)
++  pkg_check_modules(LZMA REQUIRED lzmasdk-c)
++  list(APPEND PLATFORM_INCLUDES ${LZMA_INCLUDE_DIRS})
++  list(APPEND PLATFORM_LIBS ${LZMA_LIBRARIES})
++else()
+ set(LZMA_SOURCES
+   #deps/lzma-16.04/C/7zAlloc.c
+   #deps/lzma-16.04/C/7zArcIn.c
+@@ -98,6 +104,7 @@ add_library(lzma-static STATIC ${LZMA_SOURCES})
+ target_compile_options(lzma-static PRIVATE -D_7ZIP_ST -fPIC)
+ list(APPEND CHDR_INCLUDES deps/lzma-16.04/C)
+ list(APPEND CHDR_LIBS lzma-static)
++endif()
+ 
+ # zlib
+ if (WITH_SYSTEM_ZLIB)
+-- 
+2.26.2
+

@@ -1,0 +1,23 @@
+error_recalc(1)
+===============
+:doctype: manpage
+
+NAME
+----
+error_recalc - PS1 2352 image EDC/ECC recalculator
+
+SYNOPSIS
+--------
+*error_recalc* 'imagefile' ['zerofill']
+
+DESCRIPTION
+-----------
+Recalculates the EDC/ECC fields of a Playstation game image that is in
+2352 byte (RAW) sector format. Should work for almost all images that
+include audio tracks, but will always notify such a case with a warning.
+
+imagefile will be modified accordingly.
+
+The optional second argument can be set to 0 in order to zerofill
+mode2form2 sector EDCs, as they may be optional. If omitted, it is
+treated as 1.

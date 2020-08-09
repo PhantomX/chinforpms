@@ -9,7 +9,7 @@
 
 Name:           libchdr
 Version:        0.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -23,10 +23,12 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 Patch0:         0001-Optinal-static-library.patch
 Patch1:         0001-Shared-library-fixes.patch
+Patch3:         0001-Use-system-lzma-sdk.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(flac)
+BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(zlib)
 
 %description
@@ -48,7 +50,7 @@ developing applications that use %{name}.
 %autosetup -n %{name}-%{version} -p1
 %endif
 
-rm -rf deps/{flac,zlib}*
+rm -rf deps/{flac,lzma,zlib}*
 
 
 %build
@@ -57,6 +59,7 @@ rm -rf deps/{flac,zlib}*
   -DCMAKE_INSTALL_LIBDIR:PATH="%{_lib}" \
   -DBUILD_STATIC_LIBS:BOOL=OFF \
   -DWITH_SYSTEM_FLAC:BOOL=ON \
+  -DWITH_SYSTEM_LZMA:BOOL=ON \
   -DWITH_SYSTEM_ZLIB:BOOL=ON \
 %{nil}
 
@@ -80,5 +83,8 @@ rm -rf deps/{flac,zlib}*
 
 
 %changelog
+* Sat Aug 08 2020 Phantom X <megaphantomx at hotmail dot com> - 0.0-2.20200605git057deda
+- System lzma-sdk
+
 * Tue Jul 21 2020 Phantom X <megaphantomx at hotmail dot com> - 0.0-1.20200605git057deda
 - Initial spec

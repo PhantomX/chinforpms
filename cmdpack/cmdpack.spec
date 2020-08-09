@@ -9,7 +9,7 @@
 
 Name:           cmdpack
 Version:        1.06
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Collection of command line utilities, most for emulation or disk images
 
 License:        GPLv3
@@ -20,6 +20,9 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
+# https://www.romhacking.net/utilities/1264/
+Source1:        error_recalc.c
+Source2:        error_recalc.txt
 
 BuildRequires:  asciidoc
 BuildRequires:  gcc
@@ -36,9 +39,13 @@ images.
 %autosetup -n %{name}-%{version} -p1
 %endif
 
+cp -p %{S:1} %{S:2} .
+
 sed \
   -e '/^VERSION =/s|=.*$|= %{version}|' \
   -e '/^target=/s|$(prefix)||' \
+  -e '/^PROGS/s|=|\0 error_recalc|g' \
+  -e '/^install:/s|:|\0 install-error_recalc|' \
   -i Makefile
 
 %build
@@ -61,5 +68,8 @@ echo '.so man1/bin2ecm.1' > %{buildroot}%{_mandir}/man1/ecm2bin.1
 
 
 %changelog
+* Sun Aug 09 2020 Phantom X <megaphantomx at hotmail dot com> - 1.06-2.20180519gite178184
+- Add error_recalc utility
+
 * Fri Jun 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.06-1.20180519gite178184
 - Initial spec

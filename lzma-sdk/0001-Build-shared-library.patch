@@ -1,0 +1,555 @@
+From c133abc096ad7f4711255da8db746d90d5356188 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 8 Aug 2020 16:22:56 -0300
+Subject: [PATCH] Build shared library
+
+---
+ C/LzmaDec.c              | 199 --------------------------------------
+ C/LzmaDec.h              | 201 +++++++++++++++++++++++++++++++++++++++
+ C/Util/Lzma/makefile.gcc |  78 ++++++++++++---
+ 3 files changed, 266 insertions(+), 212 deletions(-)
+
+diff --git a/C/LzmaDec.c b/C/LzmaDec.c
+index 4d15764..6052d81 100644
+--- a/C/LzmaDec.c
++++ b/C/LzmaDec.c
+@@ -8,205 +8,6 @@
+ /* #include "CpuArch.h" */
+ #include "LzmaDec.h"
+ 
+-#define kNumTopBits 24
+-#define kTopValue ((UInt32)1 << kNumTopBits)
+-
+-#define kNumBitModelTotalBits 11
+-#define kBitModelTotal (1 << kNumBitModelTotalBits)
+-#define kNumMoveBits 5
+-
+-#define RC_INIT_SIZE 5
+-
+-#define NORMALIZE if (range < kTopValue) { range <<= 8; code = (code << 8) | (*buf++); }
+-
+-#define IF_BIT_0(p) ttt = *(p); NORMALIZE; bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
+-#define UPDATE_0(p) range = bound; *(p) = (CLzmaProb)(ttt + ((kBitModelTotal - ttt) >> kNumMoveBits));
+-#define UPDATE_1(p) range -= bound; code -= bound; *(p) = (CLzmaProb)(ttt - (ttt >> kNumMoveBits));
+-#define GET_BIT2(p, i, A0, A1) IF_BIT_0(p) \
+-  { UPDATE_0(p); i = (i + i); A0; } else \
+-  { UPDATE_1(p); i = (i + i) + 1; A1; }
+-
+-#define TREE_GET_BIT(probs, i) { GET_BIT2(probs + i, i, ;, ;); }
+-
+-#define REV_BIT(p, i, A0, A1) IF_BIT_0(p + i) \
+-  { UPDATE_0(p + i); A0; } else \
+-  { UPDATE_1(p + i); A1; }
+-#define REV_BIT_VAR(  p, i, m) REV_BIT(p, i, i += m; m += m, m += m; i += m; )
+-#define REV_BIT_CONST(p, i, m) REV_BIT(p, i, i += m;       , i += m * 2; )
+-#define REV_BIT_LAST( p, i, m) REV_BIT(p, i, i -= m        , ; )
+-
+-#define TREE_DECODE(probs, limit, i) \
+-  { i = 1; do { TREE_GET_BIT(probs, i); } while (i < limit); i -= limit; }
+-
+-/* #define _LZMA_SIZE_OPT */
+-
+-#ifdef _LZMA_SIZE_OPT
+-#define TREE_6_DECODE(probs, i) TREE_DECODE(probs, (1 << 6), i)
+-#else
+-#define TREE_6_DECODE(probs, i) \
+-  { i = 1; \
+-  TREE_GET_BIT(probs, i); \
+-  TREE_GET_BIT(probs, i); \
+-  TREE_GET_BIT(probs, i); \
+-  TREE_GET_BIT(probs, i); \
+-  TREE_GET_BIT(probs, i); \
+-  TREE_GET_BIT(probs, i); \
+-  i -= 0x40; }
+-#endif
+-
+-#define NORMAL_LITER_DEC TREE_GET_BIT(prob, symbol)
+-#define MATCHED_LITER_DEC \
+-  matchByte += matchByte; \
+-  bit = offs; \
+-  offs &= matchByte; \
+-  probLit = prob + (offs + bit + symbol); \
+-  GET_BIT2(probLit, symbol, offs ^= bit; , ;)
+-
+-
+-
+-#define NORMALIZE_CHECK if (range < kTopValue) { if (buf >= bufLimit) return DUMMY_ERROR; range <<= 8; code = (code << 8) | (*buf++); }
+-
+-#define IF_BIT_0_CHECK(p) ttt = *(p); NORMALIZE_CHECK; bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
+-#define UPDATE_0_CHECK range = bound;
+-#define UPDATE_1_CHECK range -= bound; code -= bound;
+-#define GET_BIT2_CHECK(p, i, A0, A1) IF_BIT_0_CHECK(p) \
+-  { UPDATE_0_CHECK; i = (i + i); A0; } else \
+-  { UPDATE_1_CHECK; i = (i + i) + 1; A1; }
+-#define GET_BIT_CHECK(p, i) GET_BIT2_CHECK(p, i, ; , ;)
+-#define TREE_DECODE_CHECK(probs, limit, i) \
+-  { i = 1; do { GET_BIT_CHECK(probs + i, i) } while (i < limit); i -= limit; }
+-
+-
+-#define REV_BIT_CHECK(p, i, m) IF_BIT_0_CHECK(p + i) \
+-  { UPDATE_0_CHECK; i += m; m += m; } else \
+-  { UPDATE_1_CHECK; m += m; i += m; }
+-
+-
+-#define kNumPosBitsMax 4
+-#define kNumPosStatesMax (1 << kNumPosBitsMax)
+-
+-#define kLenNumLowBits 3
+-#define kLenNumLowSymbols (1 << kLenNumLowBits)
+-#define kLenNumHighBits 8
+-#define kLenNumHighSymbols (1 << kLenNumHighBits)
+-
+-#define LenLow 0
+-#define LenHigh (LenLow + 2 * (kNumPosStatesMax << kLenNumLowBits))
+-#define kNumLenProbs (LenHigh + kLenNumHighSymbols)
+-
+-#define LenChoice LenLow
+-#define LenChoice2 (LenLow + (1 << kLenNumLowBits))
+-
+-#define kNumStates 12
+-#define kNumStates2 16
+-#define kNumLitStates 7
+-
+-#define kStartPosModelIndex 4
+-#define kEndPosModelIndex 14
+-#define kNumFullDistances (1 << (kEndPosModelIndex >> 1))
+-
+-#define kNumPosSlotBits 6
+-#define kNumLenToPosStates 4
+-
+-#define kNumAlignBits 4
+-#define kAlignTableSize (1 << kNumAlignBits)
+-
+-#define kMatchMinLen 2
+-#define kMatchSpecLenStart (kMatchMinLen + kLenNumLowSymbols * 2 + kLenNumHighSymbols)
+-
+-/* External ASM code needs same CLzmaProb array layout. So don't change it. */
+-
+-/* (probs_1664) is faster and better for code size at some platforms */
+-/*
+-#ifdef MY_CPU_X86_OR_AMD64
+-*/
+-#define kStartOffset 1664
+-#define GET_PROBS p->probs_1664
+-/*
+-#define GET_PROBS p->probs + kStartOffset
+-#else
+-#define kStartOffset 0
+-#define GET_PROBS p->probs
+-#endif
+-*/
+-
+-#define SpecPos (-kStartOffset)
+-#define IsRep0Long (SpecPos + kNumFullDistances)
+-#define RepLenCoder (IsRep0Long + (kNumStates2 << kNumPosBitsMax))
+-#define LenCoder (RepLenCoder + kNumLenProbs)
+-#define IsMatch (LenCoder + kNumLenProbs)
+-#define Align (IsMatch + (kNumStates2 << kNumPosBitsMax))
+-#define IsRep (Align + kAlignTableSize)
+-#define IsRepG0 (IsRep + kNumStates)
+-#define IsRepG1 (IsRepG0 + kNumStates)
+-#define IsRepG2 (IsRepG1 + kNumStates)
+-#define PosSlot (IsRepG2 + kNumStates)
+-#define Literal (PosSlot + (kNumLenToPosStates << kNumPosSlotBits))
+-#define NUM_BASE_PROBS (Literal + kStartOffset)
+-
+-#if Align != 0 && kStartOffset != 0
+-  #error Stop_Compiling_Bad_LZMA_kAlign
+-#endif
+-
+-#if NUM_BASE_PROBS != 1984
+-  #error Stop_Compiling_Bad_LZMA_PROBS
+-#endif
+-
+-
+-#define LZMA_LIT_SIZE 0x300
+-
+-#define LzmaProps_GetNumProbs(p) (NUM_BASE_PROBS + ((UInt32)LZMA_LIT_SIZE << ((p)->lc + (p)->lp)))
+-
+-
+-#define CALC_POS_STATE(processedPos, pbMask) (((processedPos) & (pbMask)) << 4)
+-#define COMBINED_PS_STATE (posState + state)
+-#define GET_LEN_STATE (posState)
+-
+-#define LZMA_DIC_MIN (1 << 12)
+-
+-/*
+-p->remainLen : shows status of LZMA decoder:
+-    < kMatchSpecLenStart : normal remain
+-    = kMatchSpecLenStart : finished
+-    = kMatchSpecLenStart + 1 : need init range coder
+-    = kMatchSpecLenStart + 2 : need init range coder and state
+-*/
+-
+-/* ---------- LZMA_DECODE_REAL ---------- */
+-/*
+-LzmaDec_DecodeReal_3() can be implemented in external ASM file.
+-3 - is the code compatibility version of that function for check at link time.
+-*/
+-
+-#define LZMA_DECODE_REAL LzmaDec_DecodeReal_3
+-
+-/*
+-LZMA_DECODE_REAL()
+-In:
+-  RangeCoder is normalized
+-  if (p->dicPos == limit)
+-  {
+-    LzmaDec_TryDummy() was called before to exclude LITERAL and MATCH-REP cases.
+-    So first symbol can be only MATCH-NON-REP. And if that MATCH-NON-REP symbol
+-    is not END_OF_PAYALOAD_MARKER, then function returns error code.
+-  }
+-
+-Processing:
+-  first LZMA symbol will be decoded in any case
+-  All checks for limits are at the end of main loop,
+-  It will decode new LZMA-symbols while (p->buf < bufLimit && dicPos < limit),
+-  RangeCoder is still without last normalization when (p->buf < bufLimit) is being checked.
+-
+-Out:
+-  RangeCoder is normalized
+-  Result:
+-    SZ_OK - OK
+-    SZ_ERROR_DATA - Error
+-  p->remainLen:
+-    < kMatchSpecLenStart : normal remain
+-    = kMatchSpecLenStart : finished
+-*/
+-
+ 
+ #ifdef _LZMA_DEC_OPT
+ 
+diff --git a/C/LzmaDec.h b/C/LzmaDec.h
+index 28ce60c..ae71b02 100644
+--- a/C/LzmaDec.h
++++ b/C/LzmaDec.h
+@@ -6,6 +6,8 @@
+ 
+ #include "7zTypes.h"
+ 
++#include "LzmaLib.h"
++
+ EXTERN_C_BEGIN
+ 
+ /* #define _LZMA_PROB32 */
+@@ -20,6 +22,205 @@ typedef
+ #endif
+   CLzmaProb;
+ 
++#define kNumTopBits 24
++#define kTopValue ((UInt32)1 << kNumTopBits)
++
++#define kNumBitModelTotalBits 11
++#define kBitModelTotal (1 << kNumBitModelTotalBits)
++#define kNumMoveBits 5
++
++#define RC_INIT_SIZE 5
++
++#define NORMALIZE if (range < kTopValue) { range <<= 8; code = (code << 8) | (*buf++); }
++
++#define IF_BIT_0(p) ttt = *(p); NORMALIZE; bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
++#define UPDATE_0(p) range = bound; *(p) = (CLzmaProb)(ttt + ((kBitModelTotal - ttt) >> kNumMoveBits));
++#define UPDATE_1(p) range -= bound; code -= bound; *(p) = (CLzmaProb)(ttt - (ttt >> kNumMoveBits));
++#define GET_BIT2(p, i, A0, A1) IF_BIT_0(p) \
++  { UPDATE_0(p); i = (i + i); A0; } else \
++  { UPDATE_1(p); i = (i + i) + 1; A1; }
++
++#define TREE_GET_BIT(probs, i) { GET_BIT2(probs + i, i, ;, ;); }
++
++#define REV_BIT(p, i, A0, A1) IF_BIT_0(p + i) \
++  { UPDATE_0(p + i); A0; } else \
++  { UPDATE_1(p + i); A1; }
++#define REV_BIT_VAR(  p, i, m) REV_BIT(p, i, i += m; m += m, m += m; i += m; )
++#define REV_BIT_CONST(p, i, m) REV_BIT(p, i, i += m;       , i += m * 2; )
++#define REV_BIT_LAST( p, i, m) REV_BIT(p, i, i -= m        , ; )
++
++#define TREE_DECODE(probs, limit, i) \
++  { i = 1; do { TREE_GET_BIT(probs, i); } while (i < limit); i -= limit; }
++
++/* #define _LZMA_SIZE_OPT */
++
++#ifdef _LZMA_SIZE_OPT
++#define TREE_6_DECODE(probs, i) TREE_DECODE(probs, (1 << 6), i)
++#else
++#define TREE_6_DECODE(probs, i) \
++  { i = 1; \
++  TREE_GET_BIT(probs, i); \
++  TREE_GET_BIT(probs, i); \
++  TREE_GET_BIT(probs, i); \
++  TREE_GET_BIT(probs, i); \
++  TREE_GET_BIT(probs, i); \
++  TREE_GET_BIT(probs, i); \
++  i -= 0x40; }
++#endif
++
++#define NORMAL_LITER_DEC TREE_GET_BIT(prob, symbol)
++#define MATCHED_LITER_DEC \
++  matchByte += matchByte; \
++  bit = offs; \
++  offs &= matchByte; \
++  probLit = prob + (offs + bit + symbol); \
++  GET_BIT2(probLit, symbol, offs ^= bit; , ;)
++
++
++
++#define NORMALIZE_CHECK if (range < kTopValue) { if (buf >= bufLimit) return DUMMY_ERROR; range <<= 8; code = (code << 8) | (*buf++); }
++
++#define IF_BIT_0_CHECK(p) ttt = *(p); NORMALIZE_CHECK; bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
++#define UPDATE_0_CHECK range = bound;
++#define UPDATE_1_CHECK range -= bound; code -= bound;
++#define GET_BIT2_CHECK(p, i, A0, A1) IF_BIT_0_CHECK(p) \
++  { UPDATE_0_CHECK; i = (i + i); A0; } else \
++  { UPDATE_1_CHECK; i = (i + i) + 1; A1; }
++#define GET_BIT_CHECK(p, i) GET_BIT2_CHECK(p, i, ; , ;)
++#define TREE_DECODE_CHECK(probs, limit, i) \
++  { i = 1; do { GET_BIT_CHECK(probs + i, i) } while (i < limit); i -= limit; }
++
++
++#define REV_BIT_CHECK(p, i, m) IF_BIT_0_CHECK(p + i) \
++  { UPDATE_0_CHECK; i += m; m += m; } else \
++  { UPDATE_1_CHECK; m += m; i += m; }
++
++
++#define kNumPosBitsMax 4
++#define kNumPosStatesMax (1 << kNumPosBitsMax)
++
++#define kLenNumLowBits 3
++#define kLenNumLowSymbols (1 << kLenNumLowBits)
++#define kLenNumHighBits 8
++#define kLenNumHighSymbols (1 << kLenNumHighBits)
++
++#define LenLow 0
++#define LenHigh (LenLow + 2 * (kNumPosStatesMax << kLenNumLowBits))
++#define kNumLenProbs (LenHigh + kLenNumHighSymbols)
++
++#define LenChoice LenLow
++#define LenChoice2 (LenLow + (1 << kLenNumLowBits))
++
++#define kNumStates 12
++#define kNumStates2 16
++#define kNumLitStates 7
++
++#define kStartPosModelIndex 4
++#define kEndPosModelIndex 14
++#define kNumFullDistances (1 << (kEndPosModelIndex >> 1))
++
++#define kNumPosSlotBits 6
++#define kNumLenToPosStates 4
++
++#define kNumAlignBits 4
++#define kAlignTableSize (1 << kNumAlignBits)
++
++#define kMatchMinLen 2
++#define kMatchSpecLenStart (kMatchMinLen + kLenNumLowSymbols * 2 + kLenNumHighSymbols)
++
++/* External ASM code needs same CLzmaProb array layout. So don't change it. */
++
++/* (probs_1664) is faster and better for code size at some platforms */
++/*
++#ifdef MY_CPU_X86_OR_AMD64
++*/
++#define kStartOffset 1664
++#define GET_PROBS p->probs_1664
++/*
++#define GET_PROBS p->probs + kStartOffset
++#else
++#define kStartOffset 0
++#define GET_PROBS p->probs
++#endif
++*/
++
++#define SpecPos (-kStartOffset)
++#define IsRep0Long (SpecPos + kNumFullDistances)
++#define RepLenCoder (IsRep0Long + (kNumStates2 << kNumPosBitsMax))
++#define LenCoder (RepLenCoder + kNumLenProbs)
++#define IsMatch (LenCoder + kNumLenProbs)
++#define Align (IsMatch + (kNumStates2 << kNumPosBitsMax))
++#define IsRep (Align + kAlignTableSize)
++#define IsRepG0 (IsRep + kNumStates)
++#define IsRepG1 (IsRepG0 + kNumStates)
++#define IsRepG2 (IsRepG1 + kNumStates)
++#define PosSlot (IsRepG2 + kNumStates)
++#define Literal (PosSlot + (kNumLenToPosStates << kNumPosSlotBits))
++#define NUM_BASE_PROBS (Literal + kStartOffset)
++
++#if Align != 0 && kStartOffset != 0
++  #error Stop_Compiling_Bad_LZMA_kAlign
++#endif
++
++#if NUM_BASE_PROBS != 1984
++  #error Stop_Compiling_Bad_LZMA_PROBS
++#endif
++
++
++#define LZMA_LIT_SIZE 0x300
++
++#define LzmaProps_GetNumProbs(p) (NUM_BASE_PROBS + ((UInt32)LZMA_LIT_SIZE << ((p)->lc + (p)->lp)))
++
++
++#define CALC_POS_STATE(processedPos, pbMask) (((processedPos) & (pbMask)) << 4)
++#define COMBINED_PS_STATE (posState + state)
++#define GET_LEN_STATE (posState)
++
++#define LZMA_DIC_MIN (1 << 12)
++
++/*
++p->remainLen : shows status of LZMA decoder:
++    < kMatchSpecLenStart : normal remain
++    = kMatchSpecLenStart : finished
++    = kMatchSpecLenStart + 1 : need init range coder
++    = kMatchSpecLenStart + 2 : need init range coder and state
++*/
++
++/* ---------- LZMA_DECODE_REAL ---------- */
++/*
++LzmaDec_DecodeReal_3() can be implemented in external ASM file.
++3 - is the code compatibility version of that function for check at link time.
++*/
++
++#define LZMA_DECODE_REAL LzmaDec_DecodeReal_3
++
++/*
++LZMA_DECODE_REAL()
++In:
++  RangeCoder is normalized
++  if (p->dicPos == limit)
++  {
++    LzmaDec_TryDummy() was called before to exclude LITERAL and MATCH-REP cases.
++    So first symbol can be only MATCH-NON-REP. And if that MATCH-NON-REP symbol
++    is not END_OF_PAYALOAD_MARKER, then function returns error code.
++  }
++
++Processing:
++  first LZMA symbol will be decoded in any case
++  All checks for limits are at the end of main loop,
++  It will decode new LZMA-symbols while (p->buf < bufLimit && dicPos < limit),
++  RangeCoder is still without last normalization when (p->buf < bufLimit) is being checked.
++
++Out:
++  RangeCoder is normalized
++  Result:
++    SZ_OK - OK
++    SZ_ERROR_DATA - Error
++  p->remainLen:
++    < kMatchSpecLenStart : normal remain
++    = kMatchSpecLenStart : finished
++*/
++
+ 
+ /* ---------- LZMA Properties ---------- */
+ 
+diff --git a/C/Util/Lzma/makefile.gcc b/C/Util/Lzma/makefile.gcc
+index 12a72bb..b381049 100644
+--- a/C/Util/Lzma/makefile.gcc
++++ b/C/Util/Lzma/makefile.gcc
+@@ -1,8 +1,11 @@
+-PROG = lzma
++LIBRARY = liblzmasdk_RPM_PACKVER_.so
++LIBRARYMINOR = $(LIBRARY)._RPM_MINOR_
++LIBRARYMAJOR = $(LIBRARYMINOR)._RPM_MAJOR_
+ CXX = g++
++CXXFLAGS ?= -O2 -Wall
++DEFINES = -fPIC -D_7ZIP_ST
+ LIB =
+ RM = rm -f
+-CFLAGS = -c -O2 -Wall -D_7ZIP_ST
+ 
+ OBJS = \
+   LzmaUtil.o \
+@@ -12,33 +15,82 @@ OBJS = \
+   LzmaEnc.o \
+   7zFile.o \
+   7zStream.o \
++  Bcj2.o \
++  Bra.o \
++  Bra86.o \
++  BraIA64.o \
++  CpuArch.o \
++  Delta.o \
++  7zArcIn.o \
++  7zBuf.o \
++  7zCrcOpt.o \
++  7zCrc.o \
++  7zDec.o \
++  Lzma2Dec.o \
+ 
+ 
+-all: $(PROG)
++all: $(LIBRARYMAJOR)
+ 
+-$(PROG): $(OBJS)
+-	$(CXX) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIB) $(LIB2)
++$(LIBRARYMAJOR): $(OBJS)
++	$(CXX) -o $(LIBRARYMAJOR) -shared -Wl,-soname=$(LIBRARYMINOR) $(LDFLAGS) -Wl,-z,defs $(OBJS) $(LIB) $(LIB2)
+ 
+ LzmaUtil.o: LzmaUtil.c
+-	$(CXX) $(CFLAGS) LzmaUtil.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) LzmaUtil.c
+ 
+ Alloc.o: ../../Alloc.c
+-	$(CXX) $(CFLAGS) ../../Alloc.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Alloc.c
+ 
+ LzFind.o: ../../LzFind.c
+-	$(CXX) $(CFLAGS) ../../LzFind.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../LzFind.c
+ 
+ LzmaDec.o: ../../LzmaDec.c
+-	$(CXX) $(CFLAGS) ../../LzmaDec.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../LzmaDec.c
+ 
+ LzmaEnc.o: ../../LzmaEnc.c
+-	$(CXX) $(CFLAGS) ../../LzmaEnc.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../LzmaEnc.c
+ 
+ 7zFile.o: ../../7zFile.c
+-	$(CXX) $(CFLAGS) ../../7zFile.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zFile.c
+ 
+ 7zStream.o: ../../7zStream.c
+-	$(CXX) $(CFLAGS) ../../7zStream.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zStream.c
++
++Bra86.o: ../../Bra.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Bra86.c
++
++Bra.o: ../../Bra.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Bra.c
++
++BraIA64.o: ../../BraIA64.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../BraIA64.c
++
++Bcj2.o: ../../Bcj2.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Bcj2.c
++
++CpuArch.o: ../../CpuArch.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../CpuArch.c
++
++Delta.o: ../../Delta.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Delta.c
++
++7zArcIn.o: ../../7zArcIn.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zArcIn.c
++
++7zBuf.o: ../../7zBuf.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zBuf.c
++
++7zCrc.o: ../../7zCrc.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zCrc.c
++
++7zCrcOpt.o: ../../7zCrc.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zCrcOpt.c
++
++7zDec.o: ../../7zDec.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zDec.c
++
++Lzma2Dec.o: ../../7zDec.c
++	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Lzma2Dec.c
+ 
+ clean:
+-	-$(RM) $(PROG) $(OBJS)
++	-$(RM) $(LIBRARYMAJOR) $(OBJS)
++
+-- 
+2.26.2
+

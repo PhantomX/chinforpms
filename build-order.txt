@@ -19,6 +19,7 @@ libstrangle
 libtgvoip
 libxspf
 lzlib
+lzma-sdk
 pysdl2
 python-markdown-math
 python-vdf
