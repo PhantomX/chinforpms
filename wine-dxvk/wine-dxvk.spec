@@ -2,9 +2,9 @@
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 
-%global commit 98c7da805b8236404c667fd4e81e06357f5da892
+%global commit b28a7353bb559432e079d311838488ae63801465
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200807
+%global date 20200809
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -33,7 +33,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.7
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -230,6 +230,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Aug 10 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7-107.20200809gitb28a735
+- New snapshot
+
 * Sat Aug 08 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7-106.20200807git98c7da8
 - Bump
 
