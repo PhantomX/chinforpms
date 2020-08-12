@@ -72,6 +72,7 @@ cropgui
 curlew
 deluge
 devedeng
+discimagecreator
 disk-indicator
 dolphin-emu
 easytag
@@ -83,6 +84,7 @@ firetools
 flips
 fluxbox-chinfo-menu
 fss-parallel-tools
+eccedc
 engrampa
 gamemode
 gcdemu

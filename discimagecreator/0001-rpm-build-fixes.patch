@@ -1,0 +1,119 @@
+From 23c170473e9d37d3ff054c35bf51e1afac1b9f65 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 11 Aug 2020 11:00:25 -0300
+Subject: [PATCH] rpm build fixes
+
+---
+ DiscImageCreator/get.cpp  | 8 ++++----
+ DiscImageCreator/makefile | 8 ++++----
+ DiscImageCreator/xml.cpp  | 7 ++-----
+ DiscImageCreator/xml.h    | 2 +-
+ 4 files changed, 11 insertions(+), 14 deletions(-)
+
+diff --git a/DiscImageCreator/get.cpp b/DiscImageCreator/get.cpp
+index 7008a3a..345897d 100644
+--- a/DiscImageCreator/get.cpp
++++ b/DiscImageCreator/get.cpp
+@@ -80,7 +80,7 @@ BOOL GetDriveOffsetAuto(
+ 	LPINT lpDriveOffset
+ ) {
+ 	BOOL bGetOffset = FALSE;
+-	FILE* fpDrive = OpenProgrammabledFile(_T("driveOffset.txt"), _T("r"));
++	FILE* fpDrive = OpenProgrammabledFile(_T("_RPM_DATA_DIR_/driveOffset.txt"), _T("r"));
+ 	if (!fpDrive) {
+ 		OutputLastErrorNumAndString(_T(__FUNCTION__), __LINE__);
+ 		return FALSE;
+@@ -155,7 +155,7 @@ INT GetReadErrorFileIdx(
+ BOOL GetFilenameToSkipError(
+ 	CHAR szFilename[][MAX_FNAME_FOR_VOLUME]
+ ) {
+-	FILE* fp = OpenProgrammabledFile(_T("ReadErrorProtect.txt"), _T("r"));
++	FILE* fp = OpenProgrammabledFile(_T("_RPM_DATA_DIR_/ReadErrorProtect.txt"), _T("r"));
+ 	if (!fp) {
+ 		OutputLastErrorNumAndString(_T(__FUNCTION__), __LINE__);
+ 		OutputErrorString(" => ReadErrorProtect.txt");
+@@ -210,7 +210,7 @@ INT GetC2ErrorFileIdx(
+ BOOL GetFilenameToFixError(
+ 	CHAR szFilename[][MAX_FNAME_FOR_VOLUME]
+ ) {
+-	FILE* fp = OpenProgrammabledFile(_T("C2ErrorProtect.txt"), _T("r"));
++	FILE* fp = OpenProgrammabledFile(_T("_RPM_DATA_DIR_/C2ErrorProtect.txt"), _T("r"));
+ 	if (!fp) {
+ 		OutputLastErrorNumAndString(_T(__FUNCTION__), __LINE__);
+ 		return FALSE;
+@@ -410,7 +410,7 @@ BOOL GetEccEdcCmd(
+ #ifdef _WIN32
+ 	BOOL bRet = GetCmd(szPathForEcc, _T("EccEdc"), _T("exe"));
+ #else
+-	BOOL bRet = GetCmd(szPathForEcc, _T("./EccEdc_linux"), _T(".out"));
++	BOOL bRet = GetCmd(szPathForEcc, _T("_RPM_BIN_DIR_/EccEdc"), _T("r"));
+ #endif
+ 	if (bRet && PathFileExists(szPathForEcc)) {
+ 		if (!_tcscmp(pszCmd, _T("check"))) {
+diff --git a/DiscImageCreator/makefile b/DiscImageCreator/makefile
+index e2ef8e5..9df588e 100644
+--- a/DiscImageCreator/makefile
++++ b/DiscImageCreator/makefile
+@@ -1,7 +1,8 @@
+ TARGET := DiscImageCreator
+ INCFLAGS := -I. -I_external -I_linux
+-CFLAGS := -include _linux/defineForLinux.h
++CFLAGS += -include _linux/defineForLinux.h
+ CXXFLAGS := $(CFLAGS) -std=c++11
++LIBS := -ltinyxml2
+ 
+ ifneq ($(SANITIZER),)
+    CFLAGS   := -fsanitize=$(SANITIZER) $(CFLAGS)
+@@ -13,8 +14,8 @@ ifeq ($(DEBUG), 1)
+ 	CFLAGS += -O0 -g
+ 	CXXFLAGS += -O0 -g
+ else
+-	CFLAGS += -O2 -Wall -Wextra -Wno-unknown-pragmas
+-	CXXFLAGS += -O2 -Wall -Wextra -Wno-unknown-pragmas -Waggregate-return -Wcast-align -Wcast-qual -Wconditionally-supported -Wdisabled-optimization -Wdouble-promotion -Wfloat-equal -Wformat=2 -Wformat-signedness -Winit-self -Winline -Winvalid-pch -Wlogical-op -Wmissing-include-dirs -Wmultichar -Wnoexcept -Woverlength-strings -Wpacked -Wpointer-arith -Wredundant-decls -Wshadow -Wstack-protector -Wstrict-aliasing=2 -Wstrict-null-sentinel -Wswitch-default -Wswitch-enum -Wtrampolines -Wvariadic-macros -Wvector-operation-performance -Wwrite-strings -Wunused-macros
++	CFLAGS += -O2 -fPIC -Wall -Wextra -Wno-unknown-pragmas
++	CXXFLAGS += -O2 -fPIC -Wall -Wextra -Wno-unknown-pragmas -Waggregate-return -Wcast-align -Wcast-qual -Wconditionally-supported -Wdisabled-optimization -Wdouble-promotion -Wfloat-equal -Wformat=2 -Wformat-signedness -Winit-self -Winline -Winvalid-pch -Wlogical-op -Wmissing-include-dirs -Wmultichar -Wnoexcept -Woverlength-strings -Wpacked -Wpointer-arith -Wredundant-decls -Wshadow -Wstack-protector -Wstrict-aliasing=2 -Wstrict-null-sentinel -Wswitch-default -Wswitch-enum -Wtrampolines -Wvariadic-macros -Wvector-operation-performance -Wwrite-strings -Wunused-macros
+ endif
+ 
+ SOURCES_CXX := \
+@@ -50,7 +51,6 @@ SOURCES_CXX := \
+   _external/platform_util.o \
+   _external/prngcd.o \
+   _external/rijndael-alg-fst.o \
+-  _external/tinyxml2.o \
+   _external/sha1.o \
+   _linux/defineForLinux.o
+ 
+diff --git a/DiscImageCreator/xml.cpp b/DiscImageCreator/xml.cpp
+index 300e0b1..e62a26f 100644
+--- a/DiscImageCreator/xml.cpp
++++ b/DiscImageCreator/xml.cpp
+@@ -390,11 +390,8 @@ BOOL ReadWriteDat(
+ 	}
+ #else
+ 	CHAR szDefaultDat[_MAX_PATH] = {};
+-	if (PathFileExists("/usr/local/share/DiscImageCreator/default.dat")) {
+-		PathSet(szDefaultDat, "/usr/local/share/DiscImageCreator/default.dat");
+-	}
+-	else if (PathFileExists("/usr/share/DiscImageCreator/default.dat")) {
+-		PathSet(szDefaultDat, "/usr/share/DiscImageCreator/default.dat");
++	if (PathFileExists("_RPM_DATA_DIR_/default.dat")) {
++		PathSet(szDefaultDat, "_RPM_DATA_DIR_/default.dat");
+ 	}
+ 	else {
+ 		if (!GetModuleFileName(NULL, szDefaultDat, sizeof(szDefaultDat) / sizeof(szDefaultDat[0]))) {
+diff --git a/DiscImageCreator/xml.h b/DiscImageCreator/xml.h
+index c050ba0..57be3a7 100644
+--- a/DiscImageCreator/xml.h
++++ b/DiscImageCreator/xml.h
+@@ -15,7 +15,7 @@
+  */
+ #pragma once
+ #ifndef _WIN32
+-#include "_external/tinyxml2.h"
++#include <tinyxml2.h>
+ using namespace tinyxml2;
+ #endif
+ 
+-- 
+2.26.2
+

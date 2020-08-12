@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 2
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 72a7f4c7ca1bbac72f808b806a085d9d031ae900
+%global pfcommit 62a268fecc1937f61b806dc747eddd8a2d9dda21
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -854,7 +854,6 @@ Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch77: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 Patch80: 0001-Revert-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
 Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
@@ -874,7 +873,11 @@ Patch96: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
 Patch97: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
 Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
 Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
-Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch 
+
+Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+Patch102: 0002-arm64-tegra-Re-order-PCIe-aperture-mappings-to-suppo.patch
+Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
 
 ### Extra
 
@@ -891,7 +894,6 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/vgacon-fix-out-of-bounds-write-to-the-scrollback-buf.patch#/openSUSE-vgacon-fix-out-of-bounds-write-to-the-scrollback-buf.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2673,6 +2675,9 @@ fi
 #
 #
 %changelog
+* Tue Aug 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.1-500.chinfo
+- 5.8.1 - pf2
+
 * Thu Aug 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.0-501.chinfo
 - pf sync
 

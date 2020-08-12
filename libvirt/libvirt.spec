@@ -141,7 +141,7 @@
 
 %define with_firewalld 1
 
-%if 0%{?fedora} >= 31 || 0%{?rhel} > 7
+%if 0%{?fedora} || 0%{?rhel} > 7
     %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
 %endif
 
@@ -211,7 +211,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 6.5.0
+Version: 6.6.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -286,7 +286,6 @@ BuildRequires: readline-devel
 %if %{with_bash_completion}
 BuildRequires: bash-completion >= 2.0
 %endif
-BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: libtasn1-devel
 BuildRequires: gnutls-devel
@@ -406,8 +405,9 @@ BuildRequires: libssh-devel >= 0.7.0
 
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires: rpcgen
-BuildRequires: libtirpc-devel
 %endif
+
+BuildRequires: libtirpc-devel
 
 %if %{with_firewalld_zone}
 BuildRequires: firewalld-filesystem
@@ -524,7 +524,9 @@ Requires: libvirt-libs = %{version}-%{release}
 # needed for device enumeration
 Requires: systemd >= 185
 # For managing persistent mediated devices
+%if 0%{?fedora} || 0%{?rhel} > 7
 Requires: mdevctl
+%endif 
 
 %description daemon-driver-nodedev
 The nodedev driver plugin for the libvirtd daemon, providing
@@ -899,7 +901,6 @@ capabilities of VirtualBox
 Summary: Client side utilities of the libvirt library
 Requires: %{name}-libs = %{version}-%{release}
 Requires: readline
-Requires: ncurses
 # Needed by /usr/libexec/libvirt-guests.sh script.
 Requires: gettext
 # Needed by virt-pki-validate script.
@@ -998,6 +999,9 @@ Libvirt plugin for NSS for translating domain names into IP addresses.
 %autosetup -S git_am
 
 %build
+# Disable LTO since it caused test failures by breaking LD_PRELOAD usage.
+%define _lto_cflags %{nil} 
+
 %if ! %{supported_platform}
 echo "This RPM requires either Fedora >= %{min_fedora} or RHEL >= %{min_rhel}"
 exit 1
@@ -1989,6 +1993,9 @@ exit 0
 
 
 %changelog
+* Tue Aug 11 2020 Phantom X <megaphantomx at hotmail dot com> - 6.6.0-100
+- 6.6.0
+
 * Fri Jul 03 2020 Phantom X <megaphantomx at hotmail dot com> - 6.5.0-100
 - 6.5.0
 

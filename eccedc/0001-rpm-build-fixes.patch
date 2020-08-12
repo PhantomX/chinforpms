@@ -1,0 +1,35 @@
+From 20a9edc02b2a57f995ecbd3b671481bd44c58874 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 11 Aug 2020 10:57:49 -0300
+Subject: [PATCH] rpm build fixes
+
+---
+ EccEdc/makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/EccEdc/makefile b/EccEdc/makefile
+index 3fc894e..a6ac92e 100644
+--- a/EccEdc/makefile
++++ b/EccEdc/makefile
+@@ -1,6 +1,6 @@
+ TARGET := EccEdc_linux.out
+ INCFLAGS := -I. -I_external -I_linux
+-CFLAGS := -include _linux/defineForLinux.h
++CFLAGS += -include _linux/defineForLinux.h
+ CXXFLAGS := $(CFLAGS) -std=c++11
+ 
+ ifneq ($(SANITIZER),)
+@@ -13,8 +13,8 @@ ifeq ($(DEBUG), 1)
+ 	CFLAGS += -O0 -g
+ 	CXXFLAGS += -O0 -g
+ else
+-	CFLAGS += -O2 -Wall -Wextra -Wno-unknown-pragmas
+-	CXXFLAGS += -O2 -Wall -Wextra -Wno-unknown-pragmas
++	CFLAGS += -O2 -fPIC -Wall -Wextra -Wno-unknown-pragmas
++	CXXFLAGS += -O2 -fPIC -Wall -Wextra -Wno-unknown-pragmas
+ endif
+ 
+ SOURCES_CXX := \
+-- 
+2.26.2
+
