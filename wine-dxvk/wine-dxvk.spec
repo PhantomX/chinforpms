@@ -5,7 +5,7 @@
 %global commit b28a7353bb559432e079d311838488ae63801465
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200809
-%global with_snapshot 1
+%global with_snapshot 0
 
 %{?mingw_package_header}
 
@@ -32,8 +32,8 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.7
-Release:        107%{?gver}%{?dist}
+Version:        1.7.1
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -230,6 +230,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Aug 13 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.1-100
+- 1.7.1
+
 * Mon Aug 10 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7-107.20200809gitb28a735
 - New snapshot
 
