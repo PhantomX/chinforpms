@@ -1,11 +1,7 @@
-%global commit 8ed5fe6553d024ac2589297d98a627198996e424
+%global commit 5f51f3f1ed357c2887bb7e2c05aea6a091f01840
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200611
+%global date 20200802
 %global with_snapshot 1
-
-%global commit1 1f02d240b38f445abb0381ade0867752d5d2bc7b
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global srcname1 flightlessmango-ImGui
 
 %global sanitize 0
 
@@ -18,7 +14,7 @@
 
 Name:           mangohud
 Version:        0.4.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -30,14 +26,12 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{pkgname}-%{shortcommit}.tar.xz
 %endif
-Source1:        %{vc_url}/ImGui/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %else
 Source0:        %{url}/releases/download/v%{version}/%{pkgname}-v%{version}-Source-DFSG.tar.gz
 %endif
 Source2:        Makefile
 
 Patch0:         0001-preload-fix-for-multilib.patch
-Patch10:        %{url}/pull/208.patch#/%{name}-gh-pr208.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -65,7 +59,6 @@ improvements, temperature reporting, and logging capabilities.
 %prep
 %if 0%{?with_snapshot}
 %autosetup -n %{pkgname}-%{commit} -p1
-tar -xf %{S:1} -C modules/ImGui/src --strip-components 1
 %else
 %autosetup -c -n %{pkgname}-%{version} -p1
 %endif
@@ -110,9 +103,14 @@ sed -e "/-D__STDC_CONSTANT_MACROS/i\  '${TEMP_CFLAGS}'," -i meson.build
 %{_libdir}/%{name}/lib%{pkgname}.so
 %{_libdir}/%{name}/lib%{pkgname}_dlsym.so
 %{_datadir}/vulkan/implicit_layer.d/%{pkgname}.*.json
+%{_mandir}/man1/%{name}.1*
 
 
 %changelog
+* Sat Aug 15 2020 Phantom X <megaphantomx at hotmail dot com> - 0.4.1-2.20200802git5f51f3f
+- Snapshot
+- Manpage
+
 * Thu Jun 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.4.1-1.20200611git8ed5fe6
 - 0.4.1
 - sanitized sources, without nvml support

@@ -1,6 +1,6 @@
-%global commit 965cd70ba272e765bfa77c4dcce84ab7bfd011ce
+%global commit d186548a539a5767a3d3127ee56f114da1ea3a10
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200611
+%global date 20200807
 %global with_snapshot 1
 
 %global commit1 7d33fee11ec480beae4c28ad09ca56d974140a72
@@ -18,8 +18,8 @@
 %endif
 
 Name:           barrier
-Version:        2.3.2
-Release:        3%{?gver}%{?dist}
+Version:        2.3.3
+Release:        1%{?gver}%{?dist}
 Summary:        Share mouse and keyboard between multiple computers over the network
 
 License:        GPLv2
@@ -138,6 +138,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sat Aug 15 2020 Phantom X <megaphantomx at hotmail dot com> - 2.3.3-1.20200807gitd186548
+- 2.3.3
+
 * Fri Jun 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.3.2-3.20200611git965cd70
 - Bump
 

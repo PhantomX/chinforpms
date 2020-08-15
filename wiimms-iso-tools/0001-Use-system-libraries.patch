@@ -1,0 +1,226 @@
+From e69f8cb8d77a2fbd2c2d49f34d0d892ef2cfe350 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 14 Aug 2020 15:11:21 -0300
+Subject: [PATCH] Use system libraries
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Updated changes from Debian.
+Original message:
+  Description: Use libbz2 and mhash
+   The upstream tarball comes with a bundled version of libbz2 and uses OpenSSL
+   for SHA1. In accordance with Debian policy (“Convenience copies of code”),
+   the Debian tarball ships without libbz2. Also, due to licensing, we use mhash
+   instead of OpenSSL.
+  Author: Michael Stapelberg <stapelberg@debian.org>
+  Last-Update: 2013-07-11
+---
+ project/Makefile            | 15 +++++++-------
+ project/src/crypt.h         |  3 ++-
+ project/src/iso-interface.c | 12 ++++++-----
+ project/src/lib-bzip2.c     |  3 +--
+ project/src/lib-lzma.c      |  8 ++++----
+ project/src/wit-sha1.c      | 41 +++++++++++++++++++++++++++++++++++++
+ 6 files changed, 62 insertions(+), 20 deletions(-)
+ create mode 100644 project/src/wit-sha1.c
+
+diff --git a/project/Makefile b/project/Makefile
+index b9b2ba4..3fda535 100644
+--- a/project/Makefile
++++ b/project/Makefile
+@@ -171,7 +171,7 @@ endif
+ TOPT_wit	:= $(OPT_STATIC)
+ TOPT_wwt	:= $(OPT_STATIC)
+ TOPT_wdf	:= $(OPT_STATIC)
+-TOPT_wfuse	:= -lfuse -lpthread -ldl
++TOPT_wfuse	:= -lfuse -lpthread
+ 
+ #TOPT_ALL	:= $(TOPT_wit) $(TOPT_wwt) $(TOPT_wdf) $(TOPT_wfuse)
+ 
+@@ -206,8 +206,8 @@ else
+ endif
+ 
+ # lib summary
+-LIB_LIST	+= libbz2 lzma
+-LIB_OBJECTS	+= $(LIBBZ2_OBJ) $(LZMA_OBJ)
++LIB_LIST	+= lzma
++LIB_OBJECTS	+= $(LZMA_OBJ)
+ RM_FILES	+= $(foreach l,$(LIB_LIST),src/$(l)/*.{d,o})
+ 
+ 
+@@ -251,7 +251,7 @@ WIT_O		:= lib-std.o lib-file.o lib-sf.o \
+ 		   lib-wdf.o lib-wia.o lib-ciso.o lib-gcz.o \
+ 		   iso-interface.o wbfs-interface.o patch.o \
+ 		   titles.o match-pattern.o dclib-utf8.o \
+-		   sha1dgst.o sha1_one.o \
++		   wit-sha1.o \
+ 		   $(DCLIB_O)
+ 
+ LIBWBFS_O	:= tools.o file-formats.o libwbfs.o wiidisc.o cert.o rijndael.o
+@@ -264,7 +264,7 @@ endif
+ UI_OBJECTS	:= $(sort $(MAIN_TOOLS_OBJ))
+ #C_OBJECTS	:= $(sort $(OTHER_TOOLS_OBJ) $(WIT_O) $(LIBWBFS_O) $(LZMA_O) $(TOBJ_ALL))
+ C_OBJECTS	:= $(sort $(OTHER_TOOLS_OBJ) $(WIT_O) $(LIBWBFS_O) $(TOBJ_ALL))
+-ASM_OBJECTS	:= ssl-asm.o
++ASM_OBJECTS	:=
+ 
+ # all objects + sources
+ #ALL_OBJECTS	= $(sort $(WIT_O) $(LIBWBFS_O) $(LZMA_O) $(ASM_OBJECTS) $(LIB_OBJECTS))
+@@ -303,8 +303,7 @@ CFLAGS		+= -Wall -Wno-parentheses -Wno-unused-function
+ CFLAGS		+= -O3 -Isrc/libwbfs -Isrc -I$(UI) -I. -Iwork
+ 
+ ifeq ($(SYSTEM_LINUX),1)
+-  LIBS		+= -ltinfo
+-  CFLAGS	+= -Wno-format-truncation
++  CFLAGS	+= $(shell pkg-config --cflags bzip2) -Wno-format-truncation
+ endif
+ 
+ ifeq ($(SYSTEM),cygwin)
+@@ -327,7 +326,7 @@ LDFLAGS		:= $(strip $(LDFLAGS))
+ ifeq ($(HAVE_ZLIB),1)
+  LIBS		+= -lz
+ endif
+-LIBS		+= -lm -lncurses $(XLIBS)
++LIBS		+= -lm $(shell pkg-config --libs bzip2 ncurses) -lmhash
+ 
+ DISTRIB_RM	= ./wit-v$(VERSION)-r
+ DISTRIB_BASE	= wit-v$(VERSION)-r$(REVISION_NEXT)
+diff --git a/project/src/crypt.h b/project/src/crypt.h
+index d529805..8e639bc 100644
+--- a/project/src/crypt.h
++++ b/project/src/crypt.h
+@@ -38,7 +38,8 @@
+ #ifndef WIIMM_CRYPT_H
+ #define WIIMM_CRYPT_H 1
+ 
+-#include "crypto/wiimm-sha.h"
++//#include "crypto/wiimm-sha.h"
++unsigned char *WIIMM_SHA1(const unsigned char *d, size_t n, unsigned char *md);
+ #define SHA1 WIIMM_SHA1
+ 
+ // random functions
+diff --git a/project/src/iso-interface.c b/project/src/iso-interface.c
+index f808b63..3b68597 100644
+--- a/project/src/iso-interface.c
++++ b/project/src/iso-interface.c
+@@ -52,6 +52,8 @@
+ #include "dirent.h"
+ #include "crypt.h"
+ 
++#include <mutils/mhash.h>
++
+ //
+ ///////////////////////////////////////////////////////////////////////////////
+ ///////////////			 dump helpers			///////////////
+@@ -5811,11 +5813,11 @@ enumError Skeletonize
+     const enumOFT oft = CalcOFT(output_file_type,0,0,OFT__WDF_DEF);
+ 
+     {
+-	WIIMM_SHA_CTX ctx;
+-	if (!WIIMM_SHA1_Init(&ctx))
++	MHASH td;
++	if ((td = mhash_init(MHASH_SHA1)) == MHASH_FAILED)
+ 	{
+ 	    ASSERT(0);
+-	    exit(0);
++	    exit(1);
+ 	}
+ 
+ 	int i;
+@@ -5823,10 +5825,10 @@ enumError Skeletonize
+ 	{
+ 	    wd_memmap_item_t * mi = mm.item + i;
+ 	    noPRINT("### %p %9llx %6llx\n",mi->data,mi->offset,mi->size);
+-	    WIIMM_SHA1_Update(&ctx,mi->data,mi->size);
++	    mhash(td, mi->data, mi->size);
+ 	}
+ 	u8 h[WII_HASH_SIZE];
+-	WIIMM_SHA1_Final(h,&ctx);
++	mhash_deinit(td, h);
+ 
+ 	snprintf(fname,sizeof(fname),
+ 		"%s/%.6s-%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
+diff --git a/project/src/lib-bzip2.c b/project/src/lib-bzip2.c
+index d22cc41..d700e2b 100644
+--- a/project/src/lib-bzip2.c
++++ b/project/src/lib-bzip2.c
+@@ -40,8 +40,7 @@
+   #ifndef NO_BZIP2
+ /******************/
+ 
+-//#include <bzlib.h>
+-#include "libbz2/bzlib.h"
++#include <bzlib.h>
+ #include "lib-bzip2.h"
+ 
+ /************************************************************************
+diff --git a/project/src/lib-lzma.c b/project/src/lib-lzma.c
+index e314d58..065cc68 100644
+--- a/project/src/lib-lzma.c
++++ b/project/src/lib-lzma.c
+@@ -37,10 +37,10 @@
+ #define _GNU_SOURCE 1
+ 
+ #include "lib-lzma.h"
+-#include "lzma/LzmaEnc.h"
+-#include "lzma/LzmaDec.h"
+-#include "lzma/Lzma2Enc.h"
+-#include "lzma/Lzma2Dec.h"
++#include <lzma/LzmaEnc.h>
++#include <lzma/LzmaDec.h>
++#include <lzma/Lzma2Enc.h>
++#include <lzma/Lzma2Dec.h>
+ 
+ /***********************************************
+  **  LZMA SDK: http://www.7-zip.org/sdk.html  **
+diff --git a/project/src/wit-sha1.c b/project/src/wit-sha1.c
+new file mode 100644
+index 0000000..3de374e
+--- /dev/null
++++ b/project/src/wit-sha1.c
+@@ -0,0 +1,41 @@
++#include <stdio.h>
++#include <string.h>
++#include <mhash.h>
++
++#if 0
++#include <openssl/sha.h>
++unsigned char *WIIMM_SHA1(const unsigned char *d, size_t n, unsigned char *md)
++{
++	WIIMM_SHA_CTX c;
++	static unsigned char m[SHA_DIGEST_LENGTH];
++
++	if (md == NULL) md=m;
++	if (!WIIMM_SHA1_Init(&c))
++		return NULL;
++	WIIMM_SHA1_Update(&c,d,n);
++	WIIMM_SHA1_Final(md,&c);
++	return(md);
++}
++#endif
++
++unsigned char *WIIMM_SHA1(const unsigned char *d, size_t n, unsigned char *md)
++{
++	MHASH td;
++	if ((td = mhash_init(MHASH_SHA1)) == MHASH_FAILED)
++		return NULL;
++	mhash(td, d, n);
++	mhash_deinit(td, md);
++	return(md);
++}
++
++#if 0
++int main() {
++	char *bleh = "22:40 → fritz09 [~Adium@port-5452.pppoe.wtnet.de] has joined #29c3";
++	char md[1024] = { 0 };
++	WIIMM_SHA1(bleh, strlen(bleh), md);
++	printf("md = %s\n", md);
++	memset(md, '\0', sizeof(md));
++	WIIMM_SHA1_ssl(bleh, strlen(bleh), md);
++	printf("md = %s\n", md);
++}
++#endif
+-- 
+2.26.2
+

@@ -1,35 +1,35 @@
 %global _legacy_common_support 1
 
-%global revision 7606
-%global date 20180923
-%global with_snapshot 0
+%global commit fb217fb75b4f449dd00ecbeeae7a35082e87218c
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20200803
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
-%global svnver .%{date}svn%{revision}
+%global gver .%{date}git%{shortcommit}
 %endif
 
+%global vc_url https://github.com/Wiimm/%{name}
+
 Name:           wiimms-iso-tools
-Version:        3.02a
-Release:        4%{?svnver}%{?dist}
+Version:        3.03a
+Release:        1%{?gver}%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
 License:        GPLv2+
 URL:            http://wit.wiimm.de/
 
 %if 0%{?with_snapshot}
-# Get with snap=date|rev=revision ./wiimms-iso-tools-snapshot.sh
-Source0:        %{name}-r%{revision}.tar.xz
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:       https://download.wiimm.de/source/%{name}/%{name}.source-%{version}.txz
+Source0:        https://download.wiimm.de/source/%{name}/%{name}.source-%{version}.txz
 %endif
-Source1:        wiimms-iso-tools-snapshot.sh
 Source2:        wit.1
 
 # Patches from Debian, fixes license issues too
-Patch0:         use-libbz2-and-mhash.patch
+Patch0:         0001-Use-system-libraries.patch
 Patch1:         fix-usr-local.patch
-Patch2:         0003-Don-t-link-wfuse-against-libdl.patch
-Patch3:         0001-Disable-SUPPORT_USER_BIN-support.patch
+Patch2:         0001-Disable-SUPPORT_USER_BIN-support.patch
 
 BuildRequires:  gcc
 BuildRequires:  mhash-devel
@@ -37,7 +37,9 @@ BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(fuse)
 BuildRequires:  pkgconfig(ncurses)
 BuildRequires:  pkgconfig(zlib)
+Requires:       coreutils
 Requires:       fuse
+Requires:       wget
 
 Provides:       wit = %{version}-%{release}
 
@@ -49,19 +51,23 @@ ISO images and WBFS containers.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{name}-r%{revision}
+%autosetup -n %{name}-%{commit} -p1
 %else
 %autosetup -n %{name}.source-%{version} -p1
 %endif
 
-rm -rf src/{libbz2,crypto} setup/*.exe
+rm -rf project/src/{libbz2,crypto} setup/*.exe
 
-sed -e 's/\r//' -i templates/*.txt
+sed -e 's/\r//' -i project/templates/*.txt
 
-sed -e 's,^#!/usr/bin/env bash,#!/usr/bin/bash,' -i setup/load-titles.sh
+sed \
+  -e 's,^#!/usr/bin/env bash,#!/usr/bin/bash,' \
+  -e '/^BASE_PATH=/d' \
+  -e 's|@@SHARE-PATH@@|%{_datadir}/wit|g' \
+  -e '/^SHARE_DIR=/s|\./share|"/tmp"|' \
+  -i project/setup/load-titles.sh
 
-
-sed -e 's|/usr/local|/usr|g' -i setup.sh
+sed -e 's|/usr/local|/usr|g' -i project/setup.sh
 
 sed -i \
   -e 's|$(PRE)strip|/bin/true|g' \
@@ -69,23 +75,28 @@ sed -i \
   -e "/CFLAGS/s|-O3|%{build_cflags}|g" \
   -e 's|^doc: $(MAIN_TOOLS)|doc:|g' \
   -e 's|@$(CC)|$(CC)|g' \
-  Makefile
+  -e 's|@if|if|g' \
+  -e 's|@mkdir|mkdir|g' \
+  -e '/Makefile\.local\./d' \
+  project/Makefile
 
 %build
-%make_build INSTALL_PATH=%{_prefix} HAVE_ZLIB=1
-%make_build doc
+%make_build -C project INSTALL_PATH=%{_prefix} HAVE_ZLIB=1
+%make_build -C project doc
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 wit wwt wdf wfuse %{buildroot}%{_bindir}/
+for i in wit wwt wdf wfuse ;do
+  install -pm0755 project/${i} %{buildroot}%{_bindir}/
+done
 
 for i in wdf-cat wdf-dump ;do
   ln -sf wdf %{buildroot}%{_bindir}/${i}
 done
 
 mkdir -p %{buildroot}%{_datadir}/wit
-install -pm0644 share/*.txt %{buildroot}%{_datadir}/wit/
-install -pm0755 load-titles.sh %{buildroot}%{_datadir}/wit/
+install -pm0644 project/share/*.txt %{buildroot}%{_datadir}/wit/
+install -pm0755 project/load-titles.sh %{buildroot}%{_datadir}/wit/
 
 mkdir -p %{buildroot}%{_mandir}/man1
 install -pm0644 %{S:2} %{buildroot}%{_mandir}/man1/wit.1
@@ -96,14 +107,17 @@ done
 
 
 %files
-%license gpl-2.0.txt
-%doc doc/*.txt
+%license project/gpl-2.0.txt
+%doc project/doc/*.txt
 %{_bindir}/*
 %{_datadir}/wit
 %{_mandir}/man1/*.1*
 
 
 %changelog
+* Fri Aug 14 2020 Phantom X <megaphantomx at hotmail dot com> - 3.03a-1.20200803gitfb217fb
+- 3.03a
+
 * Fri Jun 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.02a-4
 - Fix missing manpages redirects
 

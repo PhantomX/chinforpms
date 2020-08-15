@@ -7,8 +7,8 @@ Last-Update: 2013-07-11
 
 Index: wit/src/lib-std.c
 ===================================================================
---- wit.orig/src/lib-std.c
-+++ wit/src/lib-std.c
+--- wit.orig/project/src/lib-std.c
++++ wit/project/src/lib-std.c
 @@ -547,7 +547,7 @@ void SetupLib ( int argc, char ** argv,
      TRACE("PROC-PATH: %s\n",proc_path);
  

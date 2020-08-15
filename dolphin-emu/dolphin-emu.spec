@@ -5,9 +5,9 @@
 %global with_llvm 0
 %global with_dsphack 1
 
-%global commit dc8dd5a0efd746b1f29007a13c44ff2f5f322e5d
+%global commit 07a0d44b36c487967cbd957ed9bd20384bf3e33a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200802
+%global date 20200811
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        116%{?gver}%{?dist}
+Release:        117%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -189,6 +189,8 @@ sed -i \
 
 
 %build
+%define _lto_cflags %{nil}
+
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 #Script to find xxhash is not implemented, just tell cmake it was found
@@ -294,6 +296,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Aug 14 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-117.20200811git07a0d44
+- Bump
+
 * Sun Aug 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-116.20200802gitdc8dd5a
 - New snapshot
 

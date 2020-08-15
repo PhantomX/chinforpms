@@ -1,6 +1,6 @@
-%global commit d9e9a3632330a3a2b48fbe917cde79110fbd1fd5
+%global commit 9b1e07f6421294e44b98b89cd05da22176b6544d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200305
+%global date 20200802
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,8 +8,8 @@
 %endif
 
 Name:           xarchiver
-Version:        0.5.4.14
-Release:        102%{?gver}%{?dist}
+Version:        0.5.4.15
+Release:        100%{?gver}%{?dist}
 Summary:        Desktop Environment independent archive manager
 
 Epoch:          1
@@ -25,7 +25,6 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 # Metainfo from Arch
 Source1:        %{name}.appdata.xml
 
-Patch0:         %{name}-tap-ensure-directory.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  docbook-style-xsl
@@ -116,6 +115,9 @@ rm -f _docs/{AUTHORS,COPYING,ChangeLog,NEWS,README,TODO}
 
 
 %changelog
+* Sat Aug 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.4.15-100.20200802git9b1e07f
+- 0.5.4.15
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:0.5.4.14-102.20200305gitd9e9a36
 - Bump
 

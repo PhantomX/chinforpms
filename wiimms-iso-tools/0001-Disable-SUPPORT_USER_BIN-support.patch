@@ -5,13 +5,13 @@ Subject: [PATCH] Disable SUPPORT_USER_BIN support
 
 This is crashing GC conversion/copying
 ---
- src/libwbfs/wiidisc.h | 2 +-
+ project/src/libwbfs/wiidisc.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/libwbfs/wiidisc.h b/src/libwbfs/wiidisc.h
 index de7d9fe..b50e16e 100644
---- a/src/libwbfs/wiidisc.h
-+++ b/src/libwbfs/wiidisc.h
+--- a/project/src/libwbfs/wiidisc.h
++++ b/project/src/libwbfs/wiidisc.h
 @@ -61,7 +61,7 @@
  ///////////////////////////////////////////////////////////////////////////////
  
