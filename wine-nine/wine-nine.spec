@@ -3,7 +3,7 @@
 %global commit bf71ae00220265749cc6af1e1e81f5b287891e0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200520
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -15,7 +15,7 @@
 
 Name:           wine-nine
 Version:        0.6
-Release:        0.3%{?gver}%{?dist}
+Release:        1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -32,9 +32,6 @@ Source1:        ninewinecfg
 Source2:        wineninecfg
 
 Source100:      wine-ninecfg.desktop
-
-# https://github.com/iXit/wine-nine-standalone/issues/83#issuecomment-668313130
-Patch0:         https://github.com/iXit/wine-nine-standalone/files/5019484/fix.txt#/%{name}-gh-bug83.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -154,6 +151,9 @@ desktop-file-install \
 
 
 %changelog
+* Sat Aug 15 2020 Phantom X <megaphantomx at hotmail dot com> - 2:0.6-1
+- 0.6
+
 * Wed Aug 05 2020 Phantom X <megaphantomx at hotmail dot com> - 2:0.6-0.3.20200520gitbf71ae0
 - New snapshot
 - Experimental fix to work with wine 5.14
