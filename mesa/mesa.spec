@@ -404,6 +404,8 @@ sed -i -e 's/cpp_std=gnu++11/cpp_std=gnu++14/g' meson.build
 %endif
 
 %build
+# Disable this. Local lto flags in use.
+%define _lto_cflags %{nil}
 
 %if 0%{?with_lto}
 MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -ffat-lto-objects -flto-odr-type-merging"

@@ -144,6 +144,11 @@ chmod 0755 ./m64p_build.sh ./m64p_install.sh
 
 sed -i -e '/projects\/unix install/g' ./m64p_build.sh
 
+
+%build
+# Disable this. Local lto flags in use.
+%define _lto_cflags %{nil}
+
 cat > %{name}-env <<'EOF'
 export OPTFLAGS="$(echo %{optflags} | sed -e 's/-O2\b/-O3/') -flto=%{_smp_build_ncpus} -fuse-linker-plugin"
 export LDFLAGS="$OPTFLAGS %{build_ldflags} -Wl,-z,relro -Wl,-z,now"
@@ -159,7 +164,6 @@ export PIC=1
 export PIE=1
 EOF
 
-%build
 source ./%{name}-env
 
 ./m64p_build.sh %{?_smp_mflags}

@@ -189,6 +189,7 @@ sed -i \
 
 
 %build
+# Disable this. Local lto flags in use.
 %define _lto_cflags %{nil}
 
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"

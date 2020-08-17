@@ -615,6 +615,9 @@ chmod -x third_party/rust/itertools/src/lib.rs
 #---------------------------------------------------------------------
 
 %build
+# Disable this. Local lto flags in use.
+%define _lto_cflags %{nil}
+
 %if 0%{?system_sqlite}
 # Do not proceed with build if the sqlite require would be broken:
 # make sure the minimum requirement is non-empty, ...
