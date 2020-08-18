@@ -1,7 +1,7 @@
 %global commit 5f51f3f1ed357c2887bb7e2c05aea6a091f01840
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200802
-%global with_snapshot 1
+%global with_snapshot 0
 
 %global sanitize 0
 
@@ -13,8 +13,8 @@
 %global vc_url https://github.com/flightlessmango
 
 Name:           mangohud
-Version:        0.4.1
-Release:        2%{?gver}%{?dist}
+Version:        0.5.1
+Release:        1%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -27,11 +27,15 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{pkgname}-%{shortcommit}.tar.xz
 %endif
 %else
-Source0:        %{url}/releases/download/v%{version}/%{pkgname}-v%{version}-Source-DFSG.tar.gz
+%if 0%{sanitize}
+Source0:        %{url}/archive/v%{version}/%{pkgname}-v%{version}.tar.gz
+%else
+Source0:        %{pkgname}-%{version}.tar.xz
+%endif
 %endif
 Source2:        Makefile
+Source3:        %{name}.in
 
-Patch0:         0001-preload-fix-for-multilib.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -60,12 +64,14 @@ improvements, temperature reporting, and logging capabilities.
 %if 0%{?with_snapshot}
 %autosetup -n %{pkgname}-%{commit} -p1
 %else
-%autosetup -c -n %{pkgname}-%{version} -p1
+%autosetup -n %{pkgname}-%{version} -p1
 %endif
 
 %if 0%{sanitize}
   rm -f include/nvml.h
 %endif
+
+cp -f -p %{S:3} bin/%{name}.in
 
 mesonarray(){
   echo -n "$1" | sed -e "s|\s\s\s\s\s| |g" -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
@@ -102,11 +108,14 @@ sed -e "/-D__STDC_CONSTANT_MACROS/i\  '${TEMP_CFLAGS}'," -i meson.build
 %{_bindir}/%{name}
 %{_libdir}/%{name}/lib%{pkgname}.so
 %{_libdir}/%{name}/lib%{pkgname}_dlsym.so
-%{_datadir}/vulkan/implicit_layer.d/%{pkgname}.*.json
+%{_datadir}/vulkan/implicit_layer.d/%{pkgname}.json
 %{_mandir}/man1/%{name}.1*
 
 
 %changelog
+* Mon Aug 17 2020 Phantom X <megaphantomx at hotmail dot com> - 0.5.1-1
+- 0.5.1
+
 * Sat Aug 15 2020 Phantom X <megaphantomx at hotmail dot com> - 0.4.1-2.20200802git5f51f3f
 - Snapshot
 - Manpage

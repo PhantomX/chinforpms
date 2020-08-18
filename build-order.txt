@@ -16,7 +16,7 @@ libmirage
 libogg
 libvirt
 libstrangle
-libtgvoip
+-libtgvoip
 libxspf
 lzlib
 lzma-sdk

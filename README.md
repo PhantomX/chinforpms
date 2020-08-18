@@ -45,7 +45,6 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
                 (kernel-local must be edited to modify gcc optimizations)
  * **krename** - Updated, KF5
  * **libmirage** - Can't wait Fedora releases and better matching with cdemu builds from here
- * **libtgvoip** - No unresolved symbols
  * **libvirt, qemu, virt-manager** - Updated
  * **libvorbis** - aoTuV patches
  * **lutris** - Personal changes

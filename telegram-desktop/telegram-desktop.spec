@@ -9,10 +9,11 @@
 
 %global da_url https://github.com/desktop-app
 
-# Enable or disable build with GTK support...
-%bcond_without rlottie
+# Enable or disable build with support...
+%bcond_with rlottie
 %bcond_without spellcheck
 %bcond_without ipo
+%bcond_with tgvoip
 
 %bcond_with clang
 
@@ -22,10 +23,12 @@
 %bcond_with ipo
 %endif
 
-%bcond_without tgvoip
-
 %if %{with clang}
+%if 0%{?fedora} && 0%{?fedora} >= 33
+%global toolchain clang
+%else
 %global optflags %(echo %{optflags} | sed -e 's/-mcet//g' -e 's/-fcf-protection//g' -e 's/-fstack-clash-protection//g' -e 's/$/-Qunused-arguments -Wno-unknown-warning-option -Wno-deprecated-declarations/')
+%endif
 %endif
 
 # Decrease debuginfo verbosity to reduce memory consumption...
@@ -36,7 +39,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.2.0
+Version:        2.3.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -64,6 +67,7 @@ Patch201:       %{name}-realmute.patch
 # Always display scrollbars
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
+Patch205:       0001-tgvoip-system-json11.patch
 
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
@@ -75,7 +79,7 @@ BuildRequires:  libappstream-glib
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  gcc
-BuildRequires:  libatomic-static
+BuildRequires:  libatomic
 BuildRequires:  ninja-build
 
 # Development packages for Telegram Desktop...
@@ -159,13 +163,21 @@ business messaging needs.
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,libdbusmenu-qt,libqtxdg,libtgvoip,lxqt-qtplugin,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,variant,xxHash}
+rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,libdbusmenu-qt,libqtxdg,lxqt-qtplugin,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,variant,xxHash}
 
 %if %{with rlottie}
   rm -rf Telegram/ThirdParty/rlottie
+%else
+  sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
+    -i cmake/external/rlottie/CMakeLists.txt
 %endif
+
 %if %{with tgvoip}
   rm -rf Telegram/ThirdParty/libtgvoip
+%else
+  rm -f Telegram/ThirdParty/libtgvoip/json11.*
+  sed -e 's|TDESKTOP_USE_PACKAGED_TGVOIP|\0_DISABLED|g' \
+    -i Telegram/cmake/lib_tgvoip.cmake
 %endif
 
 rm -f Telegram/lib_ui/qt_conf/linux.qrc
@@ -179,6 +191,9 @@ cp -rs \
 
 
 %build
+# Disable this. Local lto flags in use.
+%define _lto_cflags %{nil}
+
 %if %{with ipo} && %{without clang}
 export CC=gcc
 export CXX=g++
@@ -213,22 +228,16 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
     -DTDESKTOP_API_ID=%{apiid} \
     -DTDESKTOP_API_HASH=%{apihash} \
     -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
-    -DDESKTOP_APP_USE_PACKAGED_GSL:BOOL=ON \
-    -DDESKTOP_APP_USE_PACKAGED_EXPECTED:BOOL=ON \
-    -DDESKTOP_APP_USE_PACKAGED_VARIANT:BOOL=ON \
-    -DDESKTOP_APP_USE_PACKAGED_QRCODE:BOOL=ON \
     -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=ON \
 %if %{with rlottie}
-    -DDESKTOP_APP_USE_PACKAGED_RLOTTIE:BOOL=ON \
     -DDESKTOP_APP_LOTTIE_USE_CACHE:BOOL=OFF \
-%else
-    -DDESKTOP_APP_USE_PACKAGED_RLOTTIE:BOOL=OFF \
 %endif
 %if %{with tgvoip}
     -DTDESKTOP_USE_PACKAGED_TGVOIP:BOOL=ON \
 %endif
     -DDESKTOP_APP_USE_GLIBC_WRAPS:BOOL=OFF \
     -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
+    -DDESKTOP_APP_DISABLE_WEBRTC_INTEGRATION:BOOL=ON \
     -DTDESKTOP_DISABLE_GTK_INTEGRATION:BOOL=ON \
     -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
     -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
@@ -270,6 +279,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Aug 17 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.3.0-100
+- 2.3.0
+- Build with bundled rlottie and tgvoip for the time
+
 * Sun Jul 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.2.0-100
 - 2.2.0
 

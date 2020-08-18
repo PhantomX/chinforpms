@@ -1,6 +1,6 @@
 NAME = MangoHud
-VERSION ?= 5f51f3f1ed357c2887bb7e2c05aea6a091f01840
-SNAPSHOT ?= 1
+VERSION ?= 0.5.1
+SNAPSHOT ?= 0
 DFSG = include/nvml.h
 
 ifeq ($(SNAPSHOT),1)
