@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 62a268fecc1937f61b806dc747eddd8a2d9dda21
+%global pfcommit 22e56010fc653f897d11489fa4aff57b48fa4cb7
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 9bc0044f23a1ebc1496c9ed8967e0aa5d0a5685e
+%global opensuse_id 71b519a05d3da3124d5976f579be3903d0cd81a7
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -894,6 +894,9 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
+Patch1019: %{opensuse_url}/vdpa_sim-init-iommu-lock.patch#/openSUSE-vdpa_sim-init-iommu-lock.patch
+Patch1020: %{opensuse_url}/ALSA-hda-realtek-Fix-unused-variable-warning.patch#/openSUSE-ALSA-hda-realtek-Fix-unused-variable-warning.patch
+Patch1021: %{opensuse_url}/recordmcount-Fix-build-failure-on-non-arm64.patch#/openSUSE-recordmcount-Fix-build-failure-on-non-arm64.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2675,6 +2678,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.2-500.chinfo
+- 5.8.2 - pf2
+
 * Tue Aug 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.1-500.chinfo
 - 5.8.1 - pf2
 

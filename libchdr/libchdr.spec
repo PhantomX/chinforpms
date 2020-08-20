@@ -21,7 +21,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
-Patch0:         0001-Optinal-static-library.patch
+Patch0:         0001-Optional-static-library.patch
 Patch1:         0001-Shared-library-fixes.patch
 Patch3:         0001-Use-system-lzma-sdk.patch
 

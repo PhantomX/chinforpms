@@ -14,7 +14,7 @@
 %global pkgname wine-nine-standalone
 
 Name:           wine-nine
-Version:        0.6
+Version:        0.7
 Release:        1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
@@ -151,6 +151,9 @@ desktop-file-install \
 
 
 %changelog
+* Wed Aug 19 2020 Phantom X <megaphantomx at hotmail dot com> - 2:0.7-1
+- 0.7
+
 * Sat Aug 15 2020 Phantom X <megaphantomx at hotmail dot com> - 2:0.6-1
 - 0.6
 

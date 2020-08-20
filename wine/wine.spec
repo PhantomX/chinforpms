@@ -1,7 +1,7 @@
-%global commit 1ec8bf9b739f1528b742169670eac2350b33a7d4
+%global commit 8f3bd63b52f03ff05e9d2a00a2e129a0b0092969
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200807
-%global with_snapshot 0
+%global date 20200818
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 28fad42582d0e4c8e4e47d914b9a0f6e83671202
+%global wine_stagingver 7d08bb86e1b72a9bb081cffb938205d7c49823cb
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id ae15b580525714b76de074c2aee30f535e15a349
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id d02b0dae95ed8fe1dc4f052d80bb7c80c9649f65
+%global tkg_id d140e3c217799ae0b8d352c9cc2c15d911e2baf9
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 4444f69429652a6845fcf372e8ef864723cea1a1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -99,7 +99,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.15
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -632,6 +632,15 @@ Patch7463:      %{whq_url}/36fc962f5c0f2fd33cfd09c816017655104c4201#/%{name}-whq
 Patch7464:      %{whq_url}/f54c7205b6ac387ee394c8877245f0d0f3a3cc7a#/%{name}-whq-f54c720.patch
 Patch7465:      %{whq_url}/2306efc3fae152586348a618fce3d8398a883924#/%{name}-whq-2306efc.patch
 Patch7466:      %{whq_url}/e8f2c2464a3ce47e84be7786691ba35d25c7e6a8#/%{name}-whq-e8f2c24.patch
+Patch7467:      %{whq_url}/c6e0cb6c720c56541ebb45a6b4821d46f0300f36#/%{name}-whq-c6e0cb6.patch
+Patch7468:      %{whq_url}/32eb41de8caaa9462406c859c8242df5a6ebf343#/%{name}-whq-32eb41d.patch
+Patch7469:      %{whq_url}/6cff65900dd299f596636ca5449b0f99e825cf97#/%{name}-whq-6cff659.patch
+Patch7470:      %{whq_url}/2a62242747aa17a1a4ad7443b0ace900f72682c9#/%{name}-whq-2a62242.patch
+Patch7471:      %{whq_url}/30596feb03098b392bd5078a1a2d390567681b3c#/%{name}-whq-30596fe.patch
+Patch7472:      %{whq_url}/849d08b0aed1b256ac459347cb488ef3db5ce3f9#/%{name}-whq-849d08b.patch
+Patch7473:      %{whq_url}/cffd06ea67f34a8f6379c78330c40d55ba83223f#/%{name}-whq-cffd06e.patch
+Patch7474:      %{whq_url}/7f8224411c39242fe751524816b1349002066c72#/%{name}-whq-7f82244.patch
+Patch7475:      %{whq_url}/8f3bd63b52f03ff05e9d2a00a2e129a0b0092969#/%{name}-whq-8f3bd63.patch
 
 # Reverts to unbreak fshack
 Patch8000:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -663,7 +672,7 @@ Patch8025:       %{whq_url}/440fab3870b3c9ea778031ec51db69f8c3a687f5#/%{name}-wh
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch800:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-70.mystagingpatch#/%{name}-tkg-06877e5_revert-70.patch
+Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-71.mystagingpatch#/%{name}-tkg-06877e5_revert-71.patch
 Patch802:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch803:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-97fbe3f.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-97fbe3f.patch
 Patch804:       %{tkg_url}/hotfixes/01150d7f/staging-rawinput-esync-nofshack-fix-2.mystagingpatch#/%{name}-tkg-staging-rawinput-esync-nofshack-fix-2.patch
@@ -1310,6 +1319,15 @@ This package adds the opencl driver for wine.
 %patch101 -p1
 
 %if 0%{?wine_staging}
+%patch7475 -p1 -R
+%patch7474 -p1 -R
+%patch7473 -p1 -R
+%patch7472 -p1 -R
+%patch7471 -p1 -R
+%patch7470 -p1 -R
+%patch7469 -p1 -R
+%patch7468 -p1 -R
+%patch7467 -p1 -R
 %patch7466 -p1 -R
 %patch7465 -p1 -R
 %patch7464 -p1 -R
@@ -3698,6 +3716,9 @@ fi
 
 
 %changelog
+* Wed Aug 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.15-102.20200818git8f3bd63
+- Snapshot
+
 * Mon Aug 17 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.15-101
 - Staging update
 
@@ -4408,61 +4429,3 @@ fi
 
 * Tue Aug 09 2016 Michael Cronenworth <mike@cchtml.com> 1.9.16-1
 - version update
-
-* Fri Jul 29 2016 Michael Cronenworth <mike@cchtml.com> 1.9.15-1
-- version update
-
-* Mon Jul 11 2016 Michael Cronenworth <mike@cchtml.com> 1.9.14-1
-- version update
-
-* Fri Jul 01 2016 Michael Cronenworth <mike@cchtml.com> 1.9.13-1
-- version update
-
-* Wed Jun 15 2016 Michael Cronenworth <mike@cchtml.com> 1.9.12-1
-- version update
-
-* Tue Jun 07 2016 Michael Cronenworth <mike@cchtml.com> 1.9.11-1
-- version update
-
-* Tue May 24 2016 Michael Cronenworth <mike@cchtml.com> 1.9.10-2
-- gecko update
-
-* Tue May 17 2016 Michael Cronenworth <mike@cchtml.com> 1.9.10-1
-- version upgrade
-
-* Sun May 01 2016 Michael Cronenworth <mike@cchtml.com> 1.9.9-1
-- version upgrade
-
-* Sun Apr 17 2016 Michael Cronenworth <mike@cchtml.com> 1.9.8-1
-- version upgrade
-
-* Sun Apr 03 2016 Michael Cronenworth <mike@cchtml.com> 1.9.7-1
-- version upgrade
-
-* Mon Mar 21 2016 Michael Cronenworth <mike@cchtml.com> 1.9.6-1
-- version upgrade
-
-* Tue Mar 08 2016 Michael Cronenworth <mike@cchtml.com> 1.9.5-2
-- update mono requirement
-
-* Tue Mar 08 2016 Michael Cronenworth <mike@cchtml.com> 1.9.5-1
-- version upgrade
-
-* Mon Feb 22 2016 Michael Cronenworth <mike@cchtml.com> 1.9.4-1
-- version upgrade
-
-* Mon Feb 08 2016 Michael Cronenworth <mike@cchtml.com> 1.9.3-1
-- version upgrade
-
-* Fri Feb 05 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1.9.2-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
-
-* Sun Jan 24 2016 Michael Cronenworth <mike@cchtml.com> 1.9.2-1
-- version upgrade
-- enable gstreamer support
-
-* Sun Jan 10 2016 Michael Cronenworth <mike@cchtml.com> 1.9.1-1
-- version upgrade
-
-* Mon Dec 28 2015 Michael Cronenworth <mike@cchtml.com> 1.9.0-1
-- version upgrade

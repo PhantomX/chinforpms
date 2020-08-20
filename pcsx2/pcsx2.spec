@@ -1,6 +1,6 @@
-%global commit 95b5ab5f1fb2dbdbbb302d17c988493cea244acd
+%global commit 61f3258b96ab4b3d05e9072277124e1c67b24636
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200729
+%global date 20200813
 %global with_snapshot 1
 
 %global sanitize 0
@@ -13,7 +13,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -48,10 +48,10 @@ BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
+BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(glesv2)
-BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(glu)
-BuildRequires:  pkgconfig(gtk+-2.0)
+BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(ice)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libsparsehash)
@@ -65,7 +65,7 @@ BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 # use SDL that depends wxGTK
-BuildRequires:  compat-wxGTK3-gtk2-devel
+BuildRequires:  wxGTK3-devel
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  libpcap-devel
@@ -135,6 +135,7 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
 # have no much impact on speed 2/ some gcc flags (used to) crash PCSX2"
 # Extensive testing will is therefore needed. See rpmfusion bug #2455
 
+%define _lto_cflags %{nil}
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 
 %cmake \
@@ -144,15 +145,18 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
   -DPACKAGE_MODE:BOOL=TRUE \
   -DBUILD_REPLAY_LOADERS:BOOL=FALSE \
   -DXDG_STD:BOOL=TRUE \
+  -DEGL_API:BOOL=TRUE \
   -DGLSL_API:BOOL=TRUE \
   -DPLUGIN_DIR:PATH=%{_libdir}/pcsx2 \
   -DGAMEINDEX_DIR:PATH=%{_datadir}/pcsx2 \
   -DCMAKE_BUILD_STRIP:BOOL=FALSE \
-  -DGTK3_API:BOOL=FALSE \
+  -DGTK3_API:BOOL=TRUE \
   -DPORTAUDIO_API:BOOL=FALSE \
   -DSDL2_API:BOOL=TRUE \
   -DEXTRA_PLUGINS:BOOL=FALSE \
   -DDISABLE_ADVANCE_SIMD:BOOL=TRUE \
+  -DUSE_LTO:BOOL=FALSE \
+  -DUSE_VTUNE:BOOL=FALSE \
   -DDISABLE_PCSX2_WRAPPER:BOOL=TRUE \
   -DOpenGL_GL_PREFERENCE=GLVND \
   -DCMAKE_BUILD_TYPE=Release \
@@ -222,6 +226,11 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Tue Aug 18 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-105.20200813git61f3258
+- Bump
+- EGL
+- GTK3
+
 * Sun Aug 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-104.20200729git95b5ab5
 - New snapshot
 

@@ -1,6 +1,6 @@
-%global commit 3ec927de75a49fa93e23195622a49054367d0cb6
+%global commit e654d1e7e9457bdf48e125f48498efc60c55d27a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200510
+%global date 20200816
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           desmume
 Version:        0.9.12
-Release:        0.15%{?gver}%{?dist}
+Release:        0.16%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 Epoch:          1
@@ -31,6 +31,7 @@ Patch1:         %{name}-tinyxml.patch
 Patch2:         %{name}-format-security.patch
 
 Patch100:       %{vc_url}/pull/294.patch#/%{name}-gh-294.patch
+Patch101:       %{vc_url}/pull/347.patch#/%{name}-gh-347.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -44,9 +45,9 @@ BuildRequires:  pkgconfig(lua)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  pkgconfig(sdl)
 BuildRequires:  pkgconfig(soundtouch) >= 1.5.0
+BuildRequires:  pkgconfig(tinyxml)
 BuildRequires:  pkgconfig(zziplib)
 BuildRequires:  libpcap-devel
-BuildRequires:  tinyxml-devel
 BuildRequires:  gettext
 BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
@@ -198,6 +199,9 @@ done
 
 
 %changelog
+* Tue Aug 18 2020 Phantom X <megaphantomx at hotmail dot com> - 1:0.9.12-0.16.20200816gite654d1e
+- New snapshot
+
 * Sun May 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:0.9.12-0.15.20200510git3ec927d
 - Bump
 

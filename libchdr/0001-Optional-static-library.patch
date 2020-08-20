@@ -1,7 +1,7 @@
 From 6f0ac88ea9c7e7f7ea22040d9733229957591ee8 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 21 Jul 2020 10:28:00 -0300
-Subject: [PATCH] Optinal static library
+Subject: [PATCH] Optional static library
 
 ---
  CMakeLists.txt | 3 +++
