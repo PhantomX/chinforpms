@@ -19,23 +19,23 @@
 
 %global pkgname amdvlk
 
-%global commit1 319fe935a7a607e83d2885c881ae5aeff9b08b22
+%global commit1 30cb97a1d0efebb4317f9abeec8d90a5a83d4837
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 897de5981ede47587bf4bd0205b860338eb45fa7
+%global commit2 9b5cb15acc8ff789420ed9ed593e35c81303d10c
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 f4a992dd7e556ed5e7e2ffa2c830f1cd79bd4596
+%global commit3 598c6832a4983f5b75b38a589fca5be80a2f3bb0
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 477c8e78bc4f8c7f8b4cd312e708935b0e04b1cc
+%global commit4 609b2b8ad982f4f2028cf4411cc2e55fc5e6fcf3
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
-%global commit5 8dc855026f2502ab3f45dadaf0bb802a57d6ad60
+%global commit5 4865b574184e261d87e77277282e90e3be14c53a
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{pkgname}-spvgen
 
@@ -47,7 +47,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 7b2dd11dda7a44ecf0d3ef2a2e2205fba3f0f949
+%global commit8 4dd122392f3ad757e70951a1198479bf233d4cd8
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
@@ -55,9 +55,14 @@
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 90f1d6ab58653c2b5ad327567e7a2841385894c6
+%global commit10 f0fe4442e32a900f49140f8597d54fefb4ba32d0
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
-%global srcname10 glslang
+%global srcname10 SPIRV-Cross
+
+%global commit11 f257e0ea6b9aeab2dc7af3207ac6d29d2bbc01d0
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 glslang
+
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -69,7 +74,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.3.3
+Version:        2020.3.4
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -98,6 +103,7 @@ Source7:        %{vc_url}/CWPack/archive/%{commit7}/%{srcname7}-%{shortcommit7}.
 Source8:        %{kg_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source9:        %{kg_url}/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       %{kg_url}/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %endif
 Source20:       %{url}/raw/master/README.md
 Source21:       amdPalSettings.cfg
@@ -141,7 +147,7 @@ mv usr/share/doc/amdvlk/copyright LICENSE.txt
 sed -e 's|/usr/lib/x86_64-linux-gnu|%{_libdir}|g' -i etc/vulkan/icd.d/*.json
 
 %else
-%setup -q -c -n %{name}-%{version} -a 0 -a 1 -a 2 -a 3 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9 -a 10
+%setup -q -c -n %{name}-%{version} -a 0 -a 1 -a 2 -a 3 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9 -a 10 -a 11
 
 %if 0%{?with_snapshot}
 ln -sf AMDVLK-%{commit} AMDVLK
@@ -157,7 +163,8 @@ mv MetroHash-%{commit6} MetroHash
 mv CWPack-%{commit7} CWPack
 mv SPIRV-Tools-%{commit8} spvgen/external/SPIRV-tools
 mv SPIRV-Headers-%{commit9} spvgen/external/SPIRV-tools/external/SPIRV-Headers
-mv glslang-%{commit10} spvgen/external/glslang
+mv SPIRV-Cross-%{commit10} spvgen/external/SPIRV-cross
+mv glslang-%{commit11} spvgen/external/glslang
 
 cp -p AMDVLK/LICENSE.txt .
 cp -p AMDVLK/README.md .
@@ -170,7 +177,15 @@ sed -e '/CMAKE_SHARED_LINKER_FLAGS_RELEASE/s| -s\b| |g' -i xgl/CMakeLists.txt
 sed -e '/soname=/s|so.1|so|g' -i xgl/icd/CMakeLists.txt
 %endif
 
+sed \
+  -e '/spirv-compiler-options/s|-Wno-deprecated-declarations|\0 -fPIC|g' \
+  -i spvgen/external/SPIRV-cross/CMakeLists.txt
+
+
 %build
+# Disable this. Local lto flags in use.
+%define _lto_cflags %{nil}
+
 %if !0%{?with_bin}
 
 extdir=$(pwd)
@@ -183,6 +198,7 @@ export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
   -B %{__cmake_builddir} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DBUILD_WAYLAND_SUPPORT:BOOL=ON \
+  -DSPIRV_CROSS_FORCE_PIC:BOOL=ON \
   -DXGL_METROHASH_PATH:PATH=${extdir}/MetroHash \
   -DXGL_CWPACK_PATH:PATH=${extdir}/CWPack \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
@@ -231,6 +247,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Fri Aug 21 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.3.4-1
+- 2020.Q3.4
+
 * Fri Aug 07 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.3.3-1
 - 2020.Q3.3
 
