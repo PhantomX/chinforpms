@@ -1,6 +1,6 @@
-%global commit 8f3bd63b52f03ff05e9d2a00a2e129a0b0092969
+%global commit ab94abb14f74fe863ae40dafc7a8301db22792fc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200818
+%global date 20200821
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7d08bb86e1b72a9bb081cffb938205d7c49823cb
+%global wine_stagingver 663c3ba4976dd60b3da62637ed408f2c53198151
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id ae15b580525714b76de074c2aee30f535e15a349
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id d140e3c217799ae0b8d352c9cc2c15d911e2baf9
+%global tkg_id 5fb3807d8ca3f240f59158fca89dc5b3f644253c
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 4444f69429652a6845fcf372e8ef864723cea1a1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -99,7 +99,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.15
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -324,7 +324,6 @@ Patch7155:      %{whq_url}/c198390c78acefdfd95ef3474f192a44f8e80b2c#/%{name}-whq
 Patch7156:      %{whq_url}/af3aee8a5a2852951b1fbc6e355e674fed9d4c5c#/%{name}-whq-af3aee8.patch
 Patch7157:      %{whq_url}/ec3cdaba4f018a87ef2fdfdb2e47a8b7811402f1#/%{name}-whq-ec3cdab.patch
 Patch7158:      %{whq_url}/8622eb326fb8120fc038e27947e61677d4124f15#/%{name}-whq-8622eb3.patch
-Patch7159:      %{whq_url}/747573f1e4f4195772b055f5c4af227a58964f55#/%{name}-whq-747573f.patch
 Patch7160:      %{whq_url}/1ff8fe20bf87f0b60e2b1a185fd3f9ee383fe31c#/%{name}-whq-1ff8fe2.patch
 Patch7161:      %{whq_url}/434871fd1b6d1fef8c68e8d35689caec49367e20#/%{name}-whq-434871f.patch
 Patch7162:      %{whq_url}/1a43c5de71eea457855f7dcfb7e5811f1c74ebf8#/%{name}-whq-1a43c5d.patch
@@ -531,7 +530,6 @@ Patch7362:      %{whq_url}/d41b1c28c378c531cc9c66639bfa16778972281d#/%{name}-whq
 Patch7363:      %{whq_url}/1372d8fc2cac3466d759500063a50d86f03dc94a#/%{name}-whq-1372d8f.patch
 Patch7364:      %{whq_url}/131e53a1fc2cd7156b56402c97d53af8da72399e#/%{name}-whq-131e53a.patch
 Patch7365:      %{whq_url}/9018a377355fb2906d06b50008d04761491bbfd9#/%{name}-whq-9018a37.patch
-Patch7366:      %{whq_url}/3feaca754613df248bc576b801d885baa8637050#/%{name}-whq-3feaca7.patch
 Patch7367:      %{whq_url}/5b795b658d14bd85ba6783131c6f42a37cfcce27#/%{name}-whq-5b795b6.patch
 Patch7368:      %{whq_url}/09ab7e8a0c9c96624e4597b6e91cb202a8086ef9#/%{name}-whq-09ab7e8.patch
 Patch7369:      %{whq_url}/30453f0acf8bdca4dec5de38d08a776b933256c8#/%{name}-whq-30453f0.patch
@@ -641,6 +639,38 @@ Patch7472:      %{whq_url}/849d08b0aed1b256ac459347cb488ef3db5ce3f9#/%{name}-whq
 Patch7473:      %{whq_url}/cffd06ea67f34a8f6379c78330c40d55ba83223f#/%{name}-whq-cffd06e.patch
 Patch7474:      %{whq_url}/7f8224411c39242fe751524816b1349002066c72#/%{name}-whq-7f82244.patch
 Patch7475:      %{whq_url}/8f3bd63b52f03ff05e9d2a00a2e129a0b0092969#/%{name}-whq-8f3bd63.patch
+Patch7476:      %{whq_url}/525e7078a83f568d10183327ab3fa6b82d08d41b#/%{name}-whq-525e707.patch
+Patch7477:      %{whq_url}/f332f2e4e28e9618e7b4a65e9352915cf9772e93#/%{name}-whq-f332f2e.patch
+Patch7478:      %{whq_url}/4a7cd0f492affbc0eb347b97426b8c23f9a4f976#/%{name}-whq-4a7cd0f.patch
+Patch7479:      %{whq_url}/53e0bf2f9f0f9876ca89e4c9133d9d5265b3e9dd#/%{name}-whq-53e0bf2.patch
+Patch7480:      %{whq_url}/a686759f1d7aee67b5786b72e81a4e4fcf3f3c02#/%{name}-whq-a686759.patch
+Patch7481:      %{whq_url}/77fbf3a9fde517ecb4d23e0bc121668206fec2f3#/%{name}-whq-77fbf3a.patch
+Patch7482:      %{whq_url}/1721f0ff2759a0dfce166f20653058248f188521#/%{name}-whq-1721f0f.patch
+Patch7483:      %{whq_url}/25d4c50db3b2cd5113709b98adfd3de86b6e19ec#/%{name}-whq-25d4c50.patch
+Patch7484:      %{whq_url}/de1cb029f6e9bd6b8959695f5d0ae55188d9b723#/%{name}-whq-de1cb02.patch
+Patch7485:      %{whq_url}/22f4b6fcf5014b6d98188253636c116e50446c44#/%{name}-whq-22f4b6f.patch
+Patch7486:      %{whq_url}/97b5ad7597bf2add39251d7379fc607bf1578478#/%{name}-whq-97b5ad7.patch
+Patch7487:      %{whq_url}/a4af2b2b70db96309172b226dc6163e90d565420#/%{name}-whq-a4af2b2.patch
+Patch7488:      %{whq_url}/13ea90d80f7275e1ad4f3fc3c1c75b68bdbefbb4#/%{name}-whq-13ea90d.patch
+Patch7489:      %{whq_url}/5b3842451ba6c7a37a24e0f16707d8a19020287d#/%{name}-whq-5b38424.patch
+Patch7490:      %{whq_url}/7531091f33dcd0dc849cfb5df918e9a331f7a6b8#/%{name}-whq-7531091.patch
+Patch7491:      %{whq_url}/0267a04547770fe75147aa025e11045aca5c4ed9#/%{name}-whq-0267a04.patch
+Patch7492:      %{whq_url}/5f0d268fffc741171fcf9006012c310128846de5#/%{name}-whq-5f0d268.patch
+Patch7493:      %{whq_url}/7ea9f9edeed417a241d607bac282d68bdf5abd36#/%{name}-whq-7ea9f9e.patch
+Patch7494:      %{whq_url}/0ec191eb0fd161e3bbd9e92270282d3d81e2cf11#/%{name}-whq-0ec191e.patch
+Patch7495:      %{whq_url}/36663d9abd0fc085c1197429a78dfbe86c1dc56a#/%{name}-whq-36663d9.patch
+Patch7496:      %{whq_url}/76037ffbeefc7b15b764b4d6079bb6c939176523#/%{name}-whq-76037ff.patch
+Patch7497:      %{whq_url}/e24ba09f8f35b146de178e492c8071d1923bfa88#/%{name}-whq-e24ba09.patch
+Patch7498:      %{whq_url}/d902c333066e57ba3587ffd72e6a2bf08f9319ca#/%{name}-whq-d902c33.patch
+Patch7499:      %{whq_url}/898e121b2e1628e91ebe9dee1c1cf8f959f7cd4c#/%{name}-whq-898e121.patch
+Patch7500:      %{whq_url}/8231dbf04961356a74bf026cfd3e359605ddc81e#/%{name}-whq-8231dbf.patch
+Patch7501:      %{whq_url}/3c9d10d756746ea21ec83f78de42ede871a0222a#/%{name}-whq-3c9d10d.patch
+Patch7502:      %{whq_url}/3f562e0b919083bbb988474d50f70b9c5370e29d#/%{name}-whq-3f562e0.patch
+Patch7503:      %{whq_url}/16ed88a95234d844fee9fc19053c5c7f618f92ba#/%{name}-whq-16ed88a.patch
+Patch7504:      %{whq_url}/2c3719c7a9b370461d18c4422dd965dda80cb859#/%{name}-whq-2c3719c.patch
+Patch7505:      %{whq_url}/9aa885bf37c01df1e8f00852681806ec4c21b040#/%{name}-whq-9aa885b.patch
+Patch7506:      %{whq_url}/601175822e9c61ce02e21f20c76daf1b760d6924#/%{name}-whq-6011758.patch
+
 
 # Reverts to unbreak fshack
 Patch8000:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -672,7 +702,7 @@ Patch8025:       %{whq_url}/440fab3870b3c9ea778031ec51db69f8c3a687f5#/%{name}-wh
 
 # https://bugs.winehq.org/show_bug.cgi?id=48032
 Patch800:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-71.mystagingpatch#/%{name}-tkg-06877e5_revert-71.patch
+Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-73.mystagingpatch#/%{name}-tkg-06877e5_revert-73.patch
 Patch802:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch803:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-97fbe3f.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-97fbe3f.patch
 Patch804:       %{tkg_url}/hotfixes/01150d7f/staging-rawinput-esync-nofshack-fix-2.mystagingpatch#/%{name}-tkg-staging-rawinput-esync-nofshack-fix-2.patch
@@ -719,6 +749,7 @@ Patch1093:       %{tkg_url}/hotfixes/01150d7f/d8d6a6b2e639d2e29e166a3faf988b8138
 Patch1094:       %{tkg_url}/hotfixes/01150d7f/origin_3078f10d_fix.mypatch#/%{name}-tkg-origin_3078f10d_fix.patch
 Patch1095:       %{tkg_url}/hotfixes/01150d7f/001-SMBIOS-0720c6cf.mypatch#/%{name}-tkg-001-SMBIOS-0720c6c.patch
 Patch1096:       %{tkg_url}/hotfixes/01150d7f/002-SMBIOS-d29c33a3.mypatch#/%{name}-tkg-002-SMBIOS-d29c33a3.patch
+Patch1097:       %{tkg_url}/hotfixes/01150d7f/001-8622eb326fb8120fc038e27947e61677d4124f15-staging.mypatch#/%{name}-tkg-001-8622eb3-staging.patch
 
 Patch1200:       %{ge_url}/game-patches/nier.patch#/%{name}-ge-nier.patch
 Patch1201:       nier-nofshack.patch
@@ -787,7 +818,7 @@ BuildRequires:  pkgconfig(libgphoto2)
 BuildRequires:  libieee1284-devel
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libmpg123)
-BuildRequires:  libpcap-devel
+BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(librsvg-2.0)
@@ -811,7 +842,7 @@ BuildRequires:  pkgconfig(osmesa)
 BuildRequires:  pkgconfig(sane-backends)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(systemd)
-BuildRequires:  vulkan-devel
+BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xcursor)
@@ -931,8 +962,10 @@ Requires:       libXinerama(x86-32)
 Requires:       libXrandr(x86-32)
 Requires:       libXrender(x86-32)
 #dlopen in windowscodesc (fixes rhbz#1085075)
+Requires:       libjpeg(x86-32)
 Requires:       libpng(x86-32)
 Requires:       libpcap(x86-32)
+Requires:       libtiff(x86-32)
 Requires:       mesa-libOSMesa(x86-32)
 Requires:       libv4l(x86-32)
 Requires:       samba-libs(x86-32)
@@ -962,8 +995,10 @@ Requires:       libXinerama(x86-64)
 Requires:       libXrandr(x86-64)
 Requires:       libXrender(x86-64)
 #dlopen in windowscodesc (fixes rhbz#1085075)
+Requires:       libjpeg(x86-64)
 Requires:       libpng(x86-64)
 Requires:       libpcap(x86-64)
+Requires:       libtiff(x86-64)
 Requires:       mesa-libOSMesa(x86-64)
 Requires:       libv4l(x86-64)
 Requires:       samba-libs(x86-64)
@@ -989,13 +1024,15 @@ Requires:       libgcrypt
 Requires:       libXrender
 Requires:       libXcursor
 #dlopen in windowscodesc (fixes rhbz#1085075)
+Requires:       libjpeg
 Requires:       libpng
 Requires:       libpcap
+Requires:       libtiff
 Requires:       mesa-libOSMesa
 Requires:       libv4l
 Requires:       unixODBC
 Requires:       SDL2
-Requires:       vulkan
+Requires:       vulkan-loader
 %if 0%{?wine_staging}
 %if 0%{?gtk3}
 Requires:       gtk3
@@ -1319,6 +1356,37 @@ This package adds the opencl driver for wine.
 %patch101 -p1
 
 %if 0%{?wine_staging}
+%patch7506 -p1 -R
+%patch7505 -p1 -R
+%patch7504 -p1 -R
+%patch7503 -p1 -R
+%patch7502 -p1 -R
+%patch7501 -p1 -R
+%patch7500 -p1 -R
+%patch7499 -p1 -R
+%patch7498 -p1 -R
+%patch7497 -p1 -R
+%patch7496 -p1 -R
+%patch7495 -p1 -R
+%patch7494 -p1 -R
+%patch7493 -p1 -R
+%patch7492 -p1 -R
+%patch7491 -p1 -R
+%patch7490 -p1 -R
+%patch7489 -p1 -R
+%patch7488 -p1 -R
+%patch7487 -p1 -R
+%patch7486 -p1 -R
+%patch7485 -p1 -R
+%patch7484 -p1 -R
+%patch7483 -p1 -R
+%patch7482 -p1 -R
+%patch7481 -p1 -R
+%patch7480 -p1 -R
+%patch7479 -p1 -R
+%patch7478 -p1 -R
+%patch7477 -p1 -R
+%patch7476 -p1 -R
 %patch7475 -p1 -R
 %patch7474 -p1 -R
 %patch7473 -p1 -R
@@ -1428,7 +1496,6 @@ This package adds the opencl driver for wine.
 %patch7369 -p1 -R
 %patch7368 -p1 -R
 %patch7367 -p1 -R
-%patch7366 -p1 -R
 %patch7365 -p1 -R
 %patch7364 -p1 -R
 %patch7363 -p1 -R
@@ -1635,7 +1702,6 @@ This package adds the opencl driver for wine.
 %patch7162 -p1 -R
 %patch7161 -p1 -R
 %patch7160 -p1 -R
-%patch7159 -p1 -R
 %patch7158 -p1 -R
 %patch7157 -p1 -R
 %patch7156 -p1 -R
@@ -1906,6 +1972,7 @@ cp -p %{S:3001} README-pba-pkg
 %patch1094 -p1
 %patch1095 -p1
 %patch1096 -p1
+%patch1097 -p1
 %if 0%{?fshack}
 %patch1200 -p1
 %else
@@ -2061,6 +2128,8 @@ export PATH="$(pwd)/bin:$PATH"
  --disable-tests \
 %{nil}
 
+%make_build TARGETFLAGS="" depend
+%make_build TARGETFLAGS="" __builddeps__
 %make_build TARGETFLAGS=""
 
 %install
@@ -3716,6 +3785,9 @@ fi
 
 
 %changelog
+* Sat Aug 22 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.15-103.20200821gitab94abb
+- Bump
+
 * Wed Aug 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.15-102.20200818git8f3bd63
 - Snapshot
 

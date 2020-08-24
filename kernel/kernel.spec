@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 22e56010fc653f897d11489fa4aff57b48fa4cb7
+%global pfcommit 02c46650a94d236ee4db81053d437e6651a14aec
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 71b519a05d3da3124d5976f579be3903d0cd81a7
+%global opensuse_id bad027a612b3bac1972a05bf00c96bd694fc241e
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -888,15 +888,13 @@ Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
-Patch1013: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
+#Patch1013: %%{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/vdpa_sim-init-iommu-lock.patch#/openSUSE-vdpa_sim-init-iommu-lock.patch
-Patch1020: %{opensuse_url}/ALSA-hda-realtek-Fix-unused-variable-warning.patch#/openSUSE-ALSA-hda-realtek-Fix-unused-variable-warning.patch
-Patch1021: %{opensuse_url}/recordmcount-Fix-build-failure-on-non-arm64.patch#/openSUSE-recordmcount-Fix-build-failure-on-non-arm64.patch
+Patch1019: %{opensuse_url}/bonding-fix-active-backup-failover-for-current-ARP-s.patch#/openSUSE-bonding-fix-active-backup-failover-for-current-ARP-s.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2678,6 +2676,9 @@ fi
 #
 #
 %changelog
+* Sat Aug 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.3-500.chinfo
+- 5.8.3 - pf2
+
 * Wed Aug 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.2-500.chinfo
 - 5.8.2 - pf2
 
