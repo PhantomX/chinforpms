@@ -78,6 +78,7 @@ dolphin-emu
 easytag
 -emojione-picker
 FAudio
+fcrackzip
 firefox-chinfo-prefs
 firejail
 firetools

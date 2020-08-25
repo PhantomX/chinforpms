@@ -1,6 +1,6 @@
-%global commit 937042b3db9aee50671358e4a919fbbef79ffdfa
+%global commit 3574a352dff074a3685f34be1d337b35c96f8b86
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200805
+%global date 20200825
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -16,7 +16,7 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 1c64b8fbd3cb6bd87935eb53f302f7de6f86e209
+%global commit1 d5a2a51942377820764604d9bb424fa9a879c4bd
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -36,7 +36,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 82d1c43e408510793a73a0886b5998283ee84d7b
+%global commit7 685f86471e9d26b3eb7676695a2e2cefb4551ae9
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -52,7 +52,7 @@
 
 Name:           ppsspp
 Version:        1.10.3
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -224,6 +224,9 @@ popd
 
 
 %build
+# https://github.com/hrydgard/ppsspp/issues/13312
+%define _lto_cflags %{nil}
+
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 %if %{with ffmpeg}
@@ -352,6 +355,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Aug 25 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-102.20200825git3574a35
+- New snapshot
+
 * Thu Aug 06 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-101.20200805git937042b
 - Bump
 - BR: vulkan-headers

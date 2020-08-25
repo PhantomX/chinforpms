@@ -1,6 +1,6 @@
-From 1ca6f37f6f9ba607827064124190c67f9b71249c Mon Sep 17 00:00:00 2001
+From ce745ee9aadf89a65fc05f6eb643331b639cf0d6 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 5 Aug 2020 23:26:24 -0300
+Date: Mon, 17 Aug 2020 20:46:11 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake borrowed from dolphin-emu
@@ -27,7 +27,7 @@ https://github.com/dolphin-emu/dolphin
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a2a6987..c870aa4 100644
+index 58ae638..da9a8a0 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -123,6 +123,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
@@ -39,7 +39,7 @@ index a2a6987..c870aa4 100644
  option(USE_ADDRESS_SANITIZER "Use Clang memory sanitizer" ${USE_ADDRESS_SANITIZER})
  
  if(UNIX AND NOT (APPLE OR ANDROID) AND VULKAN)
-@@ -1130,11 +1132,31 @@ add_library(xbrz STATIC
+@@ -1148,11 +1150,31 @@ add_library(xbrz STATIC
  )
  include_directories(ext/xbrz)
  
@@ -71,7 +71,7 @@ index a2a6987..c870aa4 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -1829,6 +1851,12 @@ endif()
+@@ -1849,6 +1871,12 @@ endif()
  
  # miniUPnPc integration (MiniUPnPc supposed to works on any POSIX system, not sure if some of these are redundant/not needed tho)
  if(USE_MINIUPNPC)
@@ -84,8 +84,8 @@ index a2a6987..c870aa4 100644
  	set (MINIUPNPC_VERSION 2.1) # used by miniupnpcstrings.h.cmake
  	set (MINIUPNPC_API_VERSION 17)
  	option(UPNPC_BUILD_STATIC "Build static library" TRUE)
-@@ -1900,6 +1928,7 @@ if(USE_MINIUPNPC)
- 		set(UPNPC_LIBRARY miniupnpc)
+@@ -1918,6 +1946,7 @@ if(USE_MINIUPNPC)
+ 		endif()
  	endif()
  endif()
 +endif()
@@ -125,10 +125,10 @@ index b04c40c..58861f4 100644
  #include "Common/CommonTypes.h"
  #include "Core/MemMap.h"
 diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
-index f532233..d0d717e 100644
+index aa6d554..9988cd4 100644
 --- a/Core/HLE/sceJpeg.cpp
 +++ b/Core/HLE/sceJpeg.cpp
-@@ -30,8 +30,12 @@
+@@ -32,8 +32,12 @@
  //Uncomment if you want to dump JPEGs loaded through sceJpeg to a file
  //#define JPEG_DEBUG
  #ifdef JPEG_DEBUG
@@ -139,26 +139,26 @@ index f532233..d0d717e 100644
  #endif
 +#endif
  
- #include <algorithm>
+ static int mjpegWidth, mjpegHeight;
  
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index 5063911..1f2d600 100644
+index ec27977..b6a92fb 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
-@@ -16,7 +16,11 @@
- // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
+@@ -17,7 +17,11 @@
  
- #include "base/logging.h"
+ #include <set>
+ 
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
 +#else
  #include "ext/xxhash.h"
 +#endif
  #include "profiler/profiler.h"
- #include "Common/ChunkFile.h"
- #include "Common/StringUtils.h"
+ 
+ #include "Common/Log.h"
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index d52c2ff..b814542 100644
+index 10b9720..bee57b0 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
 @@ -35,7 +35,11 @@
@@ -174,12 +174,12 @@ index d52c2ff..b814542 100644
  using namespace MIPSCodeUtils;
  
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index 41edb29..9aa87cb 100644
+index 16f0374..c2cdd9c 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
-@@ -23,7 +23,11 @@
- 
+@@ -24,7 +24,11 @@
  #include <algorithm>
+ #include "base/stringutil.h"
  #include "i18n/i18n.h"
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
@@ -187,8 +187,8 @@ index 41edb29..9aa87cb 100644
  #include "ext/xxhash.h"
 +#endif
  #include "file/ini_file.h"
+ #include "util/text/parsers.h"
  #include "Common/ColorConv.h"
- #include "Common/FileUtil.h"
 diff --git a/Core/Util/PortManager.h b/Core/Util/PortManager.h
 index a4c7df6..0204d9e 100644
 --- a/Core/Util/PortManager.h
@@ -275,10 +275,10 @@ index af56567..5f38a5b 100644
  #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
  #include <arm64_neon.h>
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 70fee76..8ff888e 100644
+index 17cc434..47a2554 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
-@@ -37,7 +37,11 @@
+@@ -36,7 +36,11 @@
  #include "Core/Config.h"
  #include "Core/Host.h"
  
@@ -291,10 +291,10 @@ index 70fee76..8ff888e 100644
  
  
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index fcafb02..100f0ab 100644
+index 6fd3cad..079756e 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
-@@ -35,7 +35,11 @@
+@@ -34,7 +34,11 @@
  #include "Core/Config.h"
  #include "Core/Host.h"
  
@@ -323,7 +323,7 @@ index 9428cdf..bec4bc7 100644
  #include "i18n/i18n.h"
  #include "math/math_util.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 8631e4c..364bac2 100644
+index d0fc324..feea019 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@
