@@ -1,0 +1,128 @@
+From 35f88748e3b2ad5d4839fb26dd84a956370c38db Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 24 Aug 2020 08:38:34 -0300
+Subject: [PATCH] IWYU fix missing uint32_t size_t definitions
+
+---
+ src/call/rtx_receive_stream.h                                    | 1 +
+ src/common_video/h264/pps_parser.h                               | 1 +
+ src/common_video/h264/prefix_parser.h                            | 1 +
+ src/common_video/h264/sps_parser.h                               | 1 +
+ src/common_video/h265/h265_common.h                              | 1 +
+ src/common_video/h265/h265_pps_parser.h                          | 1 +
+ src/modules/audio_processing/aec3/clockdrift_detector.h          | 1 +
+ .../congestion_controller/rtp/transport_feedback_demuxer.h       | 1 +
+ src/modules/rtp_rtcp/source/receive_statistics_impl.h            | 1 +
+ 9 files changed, 9 insertions(+)
+
+diff --git a/src/call/rtx_receive_stream.h b/src/call/rtx_receive_stream.h
+index 8ffa440..66cc46d 100644
+--- a/src/call/rtx_receive_stream.h
++++ b/src/call/rtx_receive_stream.h
+@@ -12,6 +12,7 @@
+ #define CALL_RTX_RECEIVE_STREAM_H_
+ 
+ #include <map>
++#include <stdint.h>
+ 
+ #include "call/rtp_packet_sink_interface.h"
+ 
+diff --git a/src/common_video/h264/pps_parser.h b/src/common_video/h264/pps_parser.h
+index d6c31b0..43acb66 100644
+--- a/src/common_video/h264/pps_parser.h
++++ b/src/common_video/h264/pps_parser.h
+@@ -10,6 +10,7 @@
+ 
+ #ifndef COMMON_VIDEO_H264_PPS_PARSER_H_
+ #define COMMON_VIDEO_H264_PPS_PARSER_H_
++#include <stdint.h>
+ 
+ #include "absl/types/optional.h"
+ 
+diff --git a/src/common_video/h264/prefix_parser.h b/src/common_video/h264/prefix_parser.h
+index 9298eb4..486a591 100644
+--- a/src/common_video/h264/prefix_parser.h
++++ b/src/common_video/h264/prefix_parser.h
+@@ -10,6 +10,7 @@
+ 
+ #ifndef COMMON_VIDEO_H264_PREFIX_PARSER_H_
+ #define COMMON_VIDEO_H264_PREFIX_PARSER_H_
++#include <stdint.h>
+ 
+ #include "absl/types/optional.h"
+ 
+diff --git a/src/common_video/h264/sps_parser.h b/src/common_video/h264/sps_parser.h
+index 76e627d..376b528 100644
+--- a/src/common_video/h264/sps_parser.h
++++ b/src/common_video/h264/sps_parser.h
+@@ -10,6 +10,7 @@
+ 
+ #ifndef COMMON_VIDEO_H264_SPS_PARSER_H_
+ #define COMMON_VIDEO_H264_SPS_PARSER_H_
++#include <stdint.h>
+ 
+ #include "absl/types/optional.h"
+ 
+diff --git a/src/common_video/h265/h265_common.h b/src/common_video/h265/h265_common.h
+index a829195..d2d93fb 100644
+--- a/src/common_video/h265/h265_common.h
++++ b/src/common_video/h265/h265_common.h
+@@ -14,6 +14,7 @@
+ #include <memory>
+ #include <vector>
+ 
++#include <stdint.h>
+ #include "rtc_base/buffer.h"
+ 
+ namespace webrtc {
+diff --git a/src/common_video/h265/h265_pps_parser.h b/src/common_video/h265/h265_pps_parser.h
+index 28c95ea..a923b2b 100644
+--- a/src/common_video/h265/h265_pps_parser.h
++++ b/src/common_video/h265/h265_pps_parser.h
+@@ -10,6 +10,7 @@
+ 
+ #ifndef COMMON_VIDEO_H265_PPS_PARSER_H_
+ #define COMMON_VIDEO_H265_PPS_PARSER_H_
++#include <stdint.h>
+ 
+ #include "absl/types/optional.h"
+ 
+diff --git a/src/modules/audio_processing/aec3/clockdrift_detector.h b/src/modules/audio_processing/aec3/clockdrift_detector.h
+index 22528c9..69e624e 100644
+--- a/src/modules/audio_processing/aec3/clockdrift_detector.h
++++ b/src/modules/audio_processing/aec3/clockdrift_detector.h
+@@ -12,6 +12,7 @@
+ #define MODULES_AUDIO_PROCESSING_AEC3_CLOCKDRIFT_DETECTOR_H_
+ 
+ #include <array>
++#include <cstddef>
+ 
+ namespace webrtc {
+ 
+diff --git a/src/modules/congestion_controller/rtp/transport_feedback_demuxer.h b/src/modules/congestion_controller/rtp/transport_feedback_demuxer.h
+index bcd25d5..c7cede7 100644
+--- a/src/modules/congestion_controller/rtp/transport_feedback_demuxer.h
++++ b/src/modules/congestion_controller/rtp/transport_feedback_demuxer.h
+@@ -10,6 +10,7 @@
+ #ifndef MODULES_CONGESTION_CONTROLLER_RTP_TRANSPORT_FEEDBACK_DEMUXER_H_
+ #define MODULES_CONGESTION_CONTROLLER_RTP_TRANSPORT_FEEDBACK_DEMUXER_H_
+ 
++#include <stdint.h>
+ #include <map>
+ #include <utility>
+ #include <vector>
+diff --git a/src/modules/rtp_rtcp/source/receive_statistics_impl.h b/src/modules/rtp_rtcp/source/receive_statistics_impl.h
+index e352ae8..363dd92 100644
+--- a/src/modules/rtp_rtcp/source/receive_statistics_impl.h
++++ b/src/modules/rtp_rtcp/source/receive_statistics_impl.h
+@@ -14,6 +14,7 @@
+ #include <algorithm>
+ #include <map>
+ #include <vector>
++#include <stdint.h>
+ 
+ #include "absl/types/optional.h"
+ #include "modules/include/module_common_types_public.h"
+-- 
+2.26.2
+

@@ -2,6 +2,10 @@
 %global appname tdesktop
 %global launcher telegramdesktop
 
+%global commit1 102b5e7eb15af02531f6ae07eb6ba935a8e0a348
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 tg_owt
+
 # Telegram API tokens...
 # https://github.com/telegramdesktop/tdesktop/blob/dev/snap/snapcraft.yaml
 %global apiid 611335
@@ -39,7 +43,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.3.0
+Version:        2.3.2
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -48,12 +52,15 @@ Epoch:          1
 # * Telegram Desktop - GPLv3+ with OpenSSL exception -- main tarball;
 # * rlottie - LGPLv2+ -- static dependency;
 # * qt_functions.cpp - LGPLv3 -- build-time dependency.
-License:        GPLv3+ and LGPLv2+ and LGPLv3
+# * tg_owt - BSD
+License:        GPLv3+ and LGPLv2+ and LGPLv3 and BSD
 URL:            https://github.com/telegramdesktop/%{appname}
 
 ExclusiveArch:  x86_64
 
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
+Source1:        https://github.com/desktop-app/tg_owt/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        0001-IWYU-fix-missing-uint32_t-size_t-definitions.patch
 
 Source20:       thunar-sendto-%{name}.desktop
 
@@ -68,6 +75,7 @@ Patch201:       %{name}-realmute.patch
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
+Patch206:       0001-cmake-tg_owt-fixes.patch
 
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
@@ -106,6 +114,11 @@ BuildRequires:  xz-devel
 BuildRequires:  python3
 BuildRequires:  minizip-compat-devel
 
+# tg_owt
+BuildRequires:  libjpeg-turbo-devel
+BuildRequires:  opus-devel
+BuildRequires:  yasm
+
 %if %{with spellcheck}
 BuildRequires: glib2-devel
 BuildRequires: hunspell-devel
@@ -131,13 +144,12 @@ BuildRequires:  libtgvoip-devel >= 2.4.4
 %else
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  alsa-lib-devel
-BuildRequires:  openssl-devel
 BuildRequires:  json11-devel
-BuildRequires:  opus-devel
 
 Provides:       bundled(libtgvoip) = 0~git
 %endif
 Provides:       bundled(lxqt-qtplugin) = 0.14.0~git
+Provides:       bundled(tg_owt) = 0~git
 
 # Short alias for the main package...
 Provides: telegram%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -158,7 +170,20 @@ business messaging needs.
 
 %prep
 # Unpacking Telegram Desktop source archive...
-%autosetup -n %{appname}-%{version}-full -p1
+%autosetup -n %{appname}-%{version}-full -p1 -a 1
+
+mkdir -p Libraries
+mv %{srcname1}-%{commit1} Libraries/%{srcname1}
+patch -p1 -d Libraries/%{srcname1} -i %{S:2}
+
+sed \
+  -e 's|cxx_std_20|cxx_std_17|g' \
+  -e 's|Wno-return-type|\0 -fPIC|g' \
+  -i Libraries/%{srcname1}/cmake/init_target.cmake
+
+sed \
+  -e 's|out/$<CONFIG>|%{__cmake_builddir}|' \
+  -i cmake/external/webrtc/CMakeLists.txt
 
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
@@ -176,7 +201,7 @@ rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,h
   rm -rf Telegram/ThirdParty/libtgvoip
 %else
   rm -f Telegram/ThirdParty/libtgvoip/json11.*
-  sed -e 's|TDESKTOP_USE_PACKAGED_TGVOIP|\0_DISABLED|g' \
+  sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
     -i Telegram/cmake/lib_tgvoip.cmake
 %endif
 
@@ -203,6 +228,31 @@ export CFLAGS="$(echo %{optflags} | sed -e 's/-O2\b/-O3/') $RPM_FLTO_FLAGS"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 %endif
+
+( cd Libraries/tg_owt
+%cmake \
+  -B %{__cmake_builddir} \
+  -G Ninja \
+%if %{with clang}
+  -DCMAKE_C_COMPILER=%{_bindir}/clang \
+  -DCMAKE_CXX_COMPILER=%{_bindir}/clang++ \
+  -DCMAKE_AR=%{_bindir}/llvm-ar \
+  -DCMAKE_RANLIB=%{_bindir}/llvm-ranlib \
+  -DCMAKE_LINKER=%{_bindir}/llvm-ld \
+  -DCMAKE_OBJDUMP=%{_bindir}/llvm-objdump \
+  -DCMAKE_NM=%{_bindir}/llvm-nm \
+%else
+  -DCMAKE_AR=%{_bindir}/gcc-ar \
+  -DCMAKE_RANLIB=%{_bindir}/gcc-ranlib \
+  -DCMAKE_NM=%{_bindir}/gcc-nm \
+%endif
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
+  -DTG_OWT_PACKAGED_BUILD:BOOL=ON \
+%{nil}
+
+%cmake_build
+
+)
 
 # Building Telegram Desktop using cmake...
 %cmake \
@@ -232,12 +282,8 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 %if %{with rlottie}
     -DDESKTOP_APP_LOTTIE_USE_CACHE:BOOL=OFF \
 %endif
-%if %{with tgvoip}
-    -DTDESKTOP_USE_PACKAGED_TGVOIP:BOOL=ON \
-%endif
     -DDESKTOP_APP_USE_GLIBC_WRAPS:BOOL=OFF \
     -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
-    -DDESKTOP_APP_DISABLE_WEBRTC_INTEGRATION:BOOL=ON \
     -DTDESKTOP_DISABLE_GTK_INTEGRATION:BOOL=ON \
     -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
     -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
@@ -279,6 +325,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Aug 24 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.3.2-100
+- 2.3.2
+- Added tg_owt bundle
+
 * Mon Aug 17 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.3.0-100
 - 2.3.0
 - Build with bundled rlottie and tgvoip for the time

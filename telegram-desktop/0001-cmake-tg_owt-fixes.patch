@@ -1,0 +1,36 @@
+From a5bf68c890d57c773e486c293835f713b0613d68 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 24 Aug 2020 11:35:03 -0300
+Subject: [PATCH] cmake: tg_owt fixes
+
+---
+ cmake/external/webrtc/CMakeLists.txt | 1 +
+ cmake/variables.cmake                | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/cmake/external/webrtc/CMakeLists.txt b/cmake/external/webrtc/CMakeLists.txt
+index 1273291e..1dd8ae69 100644
+--- a/cmake/external/webrtc/CMakeLists.txt
++++ b/cmake/external/webrtc/CMakeLists.txt
+@@ -99,4 +99,5 @@ target_link_libraries(external_webrtc
+ INTERFACE
+     ${webrtc_libs_list}
+     desktop-app::external_openssl
++    jpeg
+ )
+diff --git a/cmake/variables.cmake b/cmake/variables.cmake
+index 92141bc7..72b8abba 100644
+--- a/cmake/variables.cmake
++++ b/cmake/variables.cmake
+@@ -97,7 +97,7 @@ else()
+ endif()
+ 
+ if (NOT APPLE OR build_osx)
+-    get_filename_component(libs_loc "../Libraries" REALPATH)
++    get_filename_component(libs_loc "Libraries" REALPATH)
+ else()
+     get_filename_component(libs_loc "../Libraries/macos" REALPATH)
+ endif()
+-- 
+2.26.2
+

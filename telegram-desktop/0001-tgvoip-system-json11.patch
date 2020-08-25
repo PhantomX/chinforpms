@@ -27,14 +27,14 @@ index 328ec03..3ef880f 100644
 +        pkg_check_modules(JSON11 REQUIRED json11)
          pkg_check_modules(PULSE REQUIRED libpulse)
  
-         target_include_directories(lib_tgvoip
+         target_include_directories(lib_tgvoip_bundled
          PRIVATE
              ${ALSA_INCLUDE_DIRS}
 +            ${JSON11_INCLUDE_DIRS}
              ${PULSE_INCLUDE_DIRS}
          )
  
-         target_link_libraries(lib_tgvoip
+         target_link_libraries(lib_tgvoip_bundled
          PRIVATE
              ${CMAKE_DL_LIBS}
 +            ${JSON11_LIBRARIES}
