@@ -106,14 +106,21 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" .
 sed -i 's/GENMDESC_PRG=python/GENMDESC_PRG=python3/' mono/mono/mini/Makefile.am.in
 sed -i 's/CP_R=python /CP_R=python3 /' GNUmakefile
 
+# remove shipped compiler
+rm -rf llvm-mingw-20200325-ubuntu-18.04/*
+sed -i 's/$CPPFLAGS_FOR_BTLS $btls_cflags/$CPPFLAGS_FOR_BTLS -fPIC $btls_cflags/' mono/configure.ac
+
 %endif
 
-echo 'AUTO_LLVM_MINGW=0' >> user-config.make
 
 %build
 %if !0%{?with_bin}
 export BTLS_CFLAGS="-fPIC"
 export CPPFLAGS_FOR_BTLS="-fPIC"
+# Disable LLVM compiler as we do not ship a full, updated MinGW environment. Use GCC instead.
+echo 'AUTO_LLVM_MINGW=0' >> user-config.make
+# Disable WpfGfx as it requires LLVM to compile
+echo "ENABLE_DOTNET_CORE_WPFGFX=0" >> user-config.make
 %make_build image
 %endif
 

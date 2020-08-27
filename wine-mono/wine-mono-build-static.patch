@@ -1,6 +1,6 @@
---- wine-mono-5.1.0/mono.make.orig	2020-06-01 13:47:42.000000000 -0300
-+++ wine-mono-5.1.0/mono.make	2020-06-08 21:45:55.302447865 -0300
-@@ -15,7 +15,8 @@ define MINGW_TEMPLATE +=
+--- wine-mono-5.0.0/mono.make.orig	2020-06-01 11:47:42.000000000 -0500
++++ wine-mono-5.0.0/mono.make	2020-06-24 14:47:01.905533172 -0500
+@@ -15,7 +15,8 @@
  # libmono dll's
  $$(BUILDDIR)/mono-$(1)/Makefile: $$(SRCDIR)/mono/configure $$(SRCDIR)/mono.make $$(BUILDDIR)/.dir $$(MINGW_DEPS)
  	mkdir -p $$(@D)
@@ -10,7 +10,7 @@
  	sed -e 's/-lgcc_s//' -i $$(BUILDDIR)/mono-$(1)/libtool
  
  $$(BUILDDIR)/mono-$(1)/.built: $$(BUILDDIR)/mono-$(1)/Makefile $$(MONO_MONO_SRCS) $$(MINGW_DEPS)
-@@ -51,7 +52,7 @@ $$(BUILDDIR)/btls-$(1)/Makefile: $$(SRCD
+@@ -51,7 +52,7 @@
  	$(RM_F) $$(@D)/CMakeCache.txt
  	mkdir -p $$(@D)
  	# wincrypt.h interferes with boringssl definitions, so we prevent its inclusion
@@ -19,7 +19,7 @@
  
  $$(BUILDDIR)/btls-$(1)/.built: $$(BUILDDIR)/btls-$(1)/Makefile $$(MONO_BTLS_SRCS) $$(MINGW_DEPS)
  	+WINEPREFIX=/dev/null $$(MINGW_ENV) $$(MAKE) -C $$(BUILDDIR)/btls-$(1)
-@@ -105,7 +106,8 @@ endef
+@@ -105,7 +106,8 @@
  # mono native/classlib build
  $(BUILDDIR)/mono-unix/Makefile: $(SRCDIR)/mono/configure $(SRCDIR)/mono.make $(BUILDDIR)/.dir
  	mkdir -p $(@D)

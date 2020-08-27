@@ -13,11 +13,11 @@
 %global pkgname amdgpu-pro
 %global pkgdistro ubuntu-20.04
 
-%global minsdkver 1.1.121.1
+%global minsdkver 1.2.135.0
 %global ver     %%(echo %{version} | sed 's/\\./-/2')
 
 Name:           amdgpu-pro-vulkan-driver
-Version:        20.20.1089974
+Version:        20.30.1109583
 Release:        1%{?dist}
 Summary:        AMDGPU Pro Driver For Vulkan
 
@@ -82,6 +82,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/amd
 
 
 %changelog
+* Wed Aug 26 2020 Phantom X <megaphantomx at hotmail dot com> - 20.30.1109583-1
+- 20.30-1109583
+
 * Sat Jun 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.20.1089974-1
 - 20.20-1089974
 
