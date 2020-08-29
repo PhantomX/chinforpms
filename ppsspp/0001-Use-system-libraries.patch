@@ -1,6 +1,6 @@
-From ce745ee9aadf89a65fc05f6eb643331b639cf0d6 Mon Sep 17 00:00:00 2001
+From 788a232e45f198810c17a42518b313c47ef11c60 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 17 Aug 2020 20:46:11 -0300
+Date: Sat, 29 Aug 2020 01:13:25 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake borrowed from dolphin-emu
@@ -15,15 +15,15 @@ https://github.com/dolphin-emu/dolphin
  Core/TextureReplacer.cpp             |  4 ++++
  Core/Util/PortManager.h              |  8 ++++++--
  GPU/Common/TextureDecoder.cpp        |  4 ++++
- GPU/Common/TextureDecoder.h          |  8 ++++++++
  GPU/Common/TextureDecoderNEON.cpp    |  4 ++++
  GPU/D3D11/TextureCacheD3D11.cpp      |  4 ++++
  GPU/Directx9/TextureCacheDX9.cpp     |  4 ++++
  GPU/GLES/TextureCacheGLES.cpp        |  4 ++++
  GPU/Vulkan/TextureCacheVulkan.cpp    |  4 ++++
+ UI/CwCheatScreen.cpp                 |  4 ++++
  Windows/Debugger/CtrlDisAsmView.cpp  |  4 ++++
  cmake/Modules/FindMiniupnpc.cmake    | 27 ++++++++++++++++++++++++++
- 17 files changed, 122 insertions(+), 2 deletions(-)
+ 17 files changed, 118 insertions(+), 2 deletions(-)
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
@@ -93,7 +93,7 @@ index 58ae638..da9a8a0 100644
  setup_target_project(${CoreLibName} Core)
  
 diff --git a/Common/Hashmaps.h b/Common/Hashmaps.h
-index 04d8806..5a2a423 100644
+index 4c66642..4f3eca0 100644
 --- a/Common/Hashmaps.h
 +++ b/Common/Hashmaps.h
 @@ -4,7 +4,11 @@
@@ -109,7 +109,7 @@ index 04d8806..5a2a423 100644
  #include "Common/Log.h"
  
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index b04c40c..58861f4 100644
+index d05a098..9366801 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
 @@ -19,7 +19,11 @@
@@ -142,7 +142,7 @@ index aa6d554..9988cd4 100644
  static int mjpegWidth, mjpegHeight;
  
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index ec27977..b6a92fb 100644
+index 4324d3b..d70cad5 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
 @@ -17,7 +17,11 @@
@@ -174,7 +174,7 @@ index 10b9720..bee57b0 100644
  using namespace MIPSCodeUtils;
  
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index 16f0374..c2cdd9c 100644
+index 7cdb34c..36ccac9 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
 @@ -24,7 +24,11 @@
@@ -215,7 +215,7 @@ index a4c7df6..0204d9e 100644
  #include <string>
  #include <deque>
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index 0aca26e..cca37d8 100644
+index f02094b..a01b24d 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
 @@ -15,7 +15,11 @@
@@ -230,36 +230,8 @@ index 0aca26e..cca37d8 100644
  #include "Common/CPUDetect.h"
  #include "Common/ColorConv.h"
  
-diff --git a/GPU/Common/TextureDecoder.h b/GPU/Common/TextureDecoder.h
-index 35ffa84..f10e82f 100644
---- a/GPU/Common/TextureDecoder.h
-+++ b/GPU/Common/TextureDecoder.h
-@@ -45,7 +45,11 @@ u32 QuickTexHashSSE2(const void *checkp, u32 size);
- void DoUnswizzleTex16Basic(const u8 *texptr, u32 *ydestp, int bxc, int byc, u32 pitch);
- #define DoUnswizzleTex16 DoUnswizzleTex16Basic
- 
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
- #define DoReliableHash32 XXH32
- #define DoReliableHash64 XXH64
- 
-@@ -64,7 +68,11 @@ typedef u32 ReliableHashType;
- #define DoUnswizzleTex16 DoUnswizzleTex16NEON
- #define DoReliableHash32 ReliableHash32NEON
- 
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
- #define DoReliableHash64 XXH64
- 
- #define DoReliableHash XXH64
 diff --git a/GPU/Common/TextureDecoderNEON.cpp b/GPU/Common/TextureDecoderNEON.cpp
-index af56567..5f38a5b 100644
+index 36f40b3..f0f8bb7 100644
 --- a/GPU/Common/TextureDecoderNEON.cpp
 +++ b/GPU/Common/TextureDecoderNEON.cpp
 @@ -19,7 +19,11 @@
@@ -275,7 +247,7 @@ index af56567..5f38a5b 100644
  #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
  #include <arm64_neon.h>
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 17cc434..47a2554 100644
+index 9b6ad9b..a3b1453 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -36,7 +36,11 @@
@@ -291,7 +263,7 @@ index 17cc434..47a2554 100644
  
  
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index 6fd3cad..079756e 100644
+index c5e7049..75ace76 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
 @@ -34,7 +34,11 @@
@@ -307,7 +279,7 @@ index 6fd3cad..079756e 100644
  
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 9428cdf..bec4bc7 100644
+index 6ecfd51..e4afbd7 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,11 @@
@@ -323,7 +295,7 @@ index 9428cdf..bec4bc7 100644
  #include "i18n/i18n.h"
  #include "math/math_util.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index d0fc324..feea019 100644
+index bf51e1f..748152b 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@
@@ -338,6 +310,22 @@ index d0fc324..feea019 100644
  #include "file/vfs.h"
  #include "i18n/i18n.h"
  #include "math/math_util.h"
+diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
+index a5c040d..b53c136 100644
+--- a/UI/CwCheatScreen.cpp
++++ b/UI/CwCheatScreen.cpp
+@@ -16,7 +16,11 @@
+ // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
+ 
+ #include "base/stringutil.h"
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "i18n/i18n.h"
+ #include "ui/ui.h"
+ #include "util/text/utf8.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
 index 7717503..a06dc09 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp

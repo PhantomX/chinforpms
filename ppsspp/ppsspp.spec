@@ -1,6 +1,6 @@
-%global commit 3574a352dff074a3685f34be1d337b35c96f8b86
+%global commit cb3ed8f4a1d25a8781e92d19e7925f39814f3117
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200825
+%global date 20200828
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -52,7 +52,7 @@
 
 Name:           ppsspp
 Version:        1.10.3
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -110,6 +110,7 @@ BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(libglvnd)
 %endif
 BuildRequires:  pkgconfig(libpng)
+BuildRequires:  pkgconfig(libxxhash) >= 0.8.0
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(miniupnpc) >= 2.1
 BuildRequires:  pkgconfig(sdl2)
@@ -133,6 +134,15 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       %{name}-libs = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-libs < %{?epoch:%{epoch}:}%{version}-%{release}
+
+%if %{with qt}
+Provides:       %{name}-qt = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}-qt < %{?epoch:%{epoch}:}%{version}-%{release}
+%else
+Provides:       %{name}-sdl = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}-sdl < %{?epoch:%{epoch}:}%{version}-%{release}
+%endif
+
 
 %description
 PPSSPP is a PSP emulator written in C++. It translates PSP CPU instructions
@@ -190,6 +200,7 @@ cp Qt/PPSSPP.desktop %{name}.desktop
 sed \
   -e '/_FLAGS_/s| -O3 | -O2 |g' \
   -e '/Wno-deprecated-register/d' \
+  -e '/Wno-tautological-pointer-compare/d' \
   -i CMakeLists.txt
 
 rm -rf ext/native/ext/libpng*
@@ -253,6 +264,7 @@ popd
 %cmake \
   -B %{__cmake_builddir} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
+  -DARMIPS_REGEXP:BOOL=OFF \
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \
@@ -355,6 +367,10 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Aug 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-103.20200828gitcb3ed8f
+- Bump
+- BR: libxxhash
+
 * Tue Aug 25 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-102.20200825git3574a35
 - New snapshot
 
