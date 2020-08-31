@@ -2,8 +2,8 @@
 %global __strip /bin/true
 
 %global cheatver 0221
-%global historyver 223
-%global infover 0223
+%global historyver 224
+%global infover 0224
 
 # Build non redistributable package with free roms
 %bcond_with roms
@@ -11,7 +11,7 @@
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.223
+Version:        0.224
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -155,18 +155,18 @@ Requires:       %{name}
 %endif
 
 # extract DAT files
-unzip %{SOURCE0}
+unzip -q %{SOURCE0}
 7z x %{SOURCE1}
 unzip -qa %{SOURCE2} -d .
 7z x Mameinfo%{infover}.7z
 mv docs mameinfo
 
 mkdir effects
-unzip %{SOURCE10} -d effects/
-unzip %{SOURCE11} -d effects/
+unzip -q %{SOURCE10} -d effects/
+unzip -q %{SOURCE11} -d effects/
 
 mkdir -p icons/png
-unzip %{SOURCE20} -d icons
+unzip -q %{SOURCE20} -d icons
 
 # fix permissions and line endings
 chmod -R u+w,go+r-w,a-s .
@@ -249,6 +249,10 @@ done
 
 
 %changelog
+* Sun Aug 30 2020 Phantom X <megaphantomx at hotmail dot com> - 0.224-1
+- Mameinfo 0.224
+- History 224
+
 * Fri Aug 14 2020 Phantom X <megaphantomx at hotmail dot com> - 0.223-1
 - Mameinfo 0.223
 - History 223

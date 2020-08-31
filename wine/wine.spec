@@ -1,7 +1,7 @@
 %global commit 666f614f3f09211614024f87a238aa49c79f574a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200826
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 2b119ef030ec1dfbeebfffa5375d91aafabdf5e1
+%global wine_stagingver f6495b290f67d1936c853f3e17b9e094324a9160
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id ae15b580525714b76de074c2aee30f535e15a349
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 48aedddcb057ff68f7d4995eec60d1d8e1b137fe
+%global tkg_id fe39d6f5b7b2723492195a0574c270a6d0d61b79
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 703f0c84130101f450d6fbc0345c89f7f71ee1bd
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -59,6 +59,7 @@
 %global gtk3 0
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
+%global mfplatwip 0
 %global vulkanup 1
 # Broken
 %global pba 0
@@ -70,6 +71,9 @@
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
 %global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput-mouse -W user32-rawinput-mouse-experimental -W user32-rawinput-hid
+%endif
+%if 0%{?mfplatwip}
+%global wine_staging_opts %{?wine_staging_opts} -W mfplat-streaming-support
 %endif
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
@@ -98,8 +102,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.15
-Release:        104%{?gver}%{?dist}
+Version:        5.16
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -704,6 +708,21 @@ Patch7537:      %{whq_url}/4225ec994e64f365b0b093609a3343c0ae1987f0#/%{name}-whq
 Patch7538:      %{whq_url}/b75ae8c31eba2a59e2b32bf8d456ca5756ac6e0d#/%{name}-whq-b75ae8c.patch
 Patch7539:      %{whq_url}/e703e2da39a411e1f0aaf6d5ff7a1fa36edb87cd#/%{name}-whq-e703e2d.patch
 Patch7540:      %{whq_url}/aef321ec0f9b54cc07071e0757c57b73210f304c#/%{name}-whq-aef321e.patch
+Patch7541:      %{whq_url}/75e616d52b452d37cc93f492d47eba641f9741c1#/%{name}-whq-75e616d.patch
+Patch7542:      %{whq_url}/3863b243fe5ef4e223a809e93a85e858952dd754#/%{name}-whq-3863b24.patch
+Patch7543:      %{whq_url}/8b5e0bdf8b9db3ab19bbabdb2ce591f5fc876ac7#/%{name}-whq-8b5e0bd.patch
+Patch7544:      %{whq_url}/15684bd5aa557562072a749ab4782489fcd27546#/%{name}-whq-15684bd.patch
+Patch7545:      %{whq_url}/029843176b11404a77384b40ca3e9a99226477fe#/%{name}-whq-0298431.patch
+Patch7546:      %{whq_url}/eb293d7645eddbac8e94086a58d460b4407f4b58#/%{name}-whq-eb293d7.patch
+Patch7547:      %{whq_url}/e5bd1ba4ad4802c3f589fc91b8953205af52a978#/%{name}-whq-e5bd1ba.patch
+Patch7548:      %{whq_url}/21c99970f3c423e2b8b1f92b2b44c5dce7cc28bf#/%{name}-whq-21c9997.patch
+Patch7549:      %{whq_url}/7ca68a86313e39d21cc92eac84a00841318143ae#/%{name}-whq-7ca68a8.patch
+Patch7550:      %{whq_url}/df8578da8ef4f6e9e480e1c49cd82ebdf8281d38#/%{name}-whq-df8578d.patch
+Patch7551:      %{whq_url}/151b42953b49bc0417c53656b0040ef765a8cbef#/%{name}-whq-151b429.patch
+Patch7552:      %{whq_url}/01c05387ce56ad99bd0b629a41317d7058a82462#/%{name}-whq-01c0538.patch
+Patch7553:      %{whq_url}/f4661f1b38c479bd08baee93d9ddb1f9e93c173d#/%{name}-whq-f4661f1.patch
+Patch7554:      %{whq_url}/2b9a0550bcda166afdf852370397e1041c096f5f#/%{name}-whq-2b9a055.patch
+Patch7555:      %{whq_url}/58f2326410dd5574e52ab3362b67ab345674c3b1#/%{name}-whq-58f2326.patch
 
 # Reverts to unbreak fshack
 Patch8000:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -733,9 +752,7 @@ Patch8023:       %{whq_url}/9c99d9bceba34559a32f1e5906a6fcbcf91b0004#/%{name}-wh
 Patch8024:       %{whq_url}/b45c04f4c352ef81df5312684008839f4eeee03d#/%{name}-whq-b45c04f.patch
 Patch8025:       %{whq_url}/440fab3870b3c9ea778031ec51db69f8c3a687f5#/%{name}-whq-440fab3.patch
 
-# https://bugs.winehq.org/show_bug.cgi?id=48032
-Patch800:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
-Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-76.mystagingpatch#/%{name}-tkg-06877e5_revert-76.patch
+Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-78.mystagingpatch#/%{name}-tkg-06877e5_revert-78.patch
 Patch802:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch803:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-97fbe3f.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-97fbe3f.patch
 Patch804:       %{tkg_url}/hotfixes/01150d7f/staging-rawinput-esync-nofshack-fix-2.mystagingpatch#/%{name}-tkg-staging-rawinput-esync-nofshack-fix-2.patch
@@ -784,8 +801,12 @@ Patch1095:       %{tkg_url}/hotfixes/01150d7f/001-SMBIOS-0720c6cf.mypatch#/%{nam
 Patch1096:       %{tkg_url}/hotfixes/01150d7f/002-SMBIOS-d29c33a3.mypatch#/%{name}-tkg-002-SMBIOS-d29c33a3.patch
 Patch1097:       %{tkg_url}/hotfixes/01150d7f/001-8622eb326fb8120fc038e27947e61677d4124f15-staging.mypatch#/%{name}-tkg-001-8622eb3-staging.patch
 
-Patch1200:       %{ge_url}/game-patches/nier.patch#/%{name}-ge-nier.patch
-Patch1201:       nier-nofshack.patch
+# https://bugs.winehq.org/show_bug.cgi?id=48032
+Patch1200:       %{tkg_curl}/origin_downloads_e4ca5dbe_revert.mypatch#/%{name}-tkg-origin_downloads_e4ca5dbe_revert.patch
+Patch1201:       %{tkg_curl}/guy1524_mfplat_WIP.mypatch#/%{name}-tkg-guy1524_mfplat_WIP.patch
+
+Patch1300:       %{ge_url}/game-patches/nier.patch#/%{name}-ge-nier.patch
+Patch1301:       nier-nofshack.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -827,6 +848,7 @@ BuildRequires:  fontforge
 BuildRequires:  icoutils
 BuildRequires:  patchutils
 BuildRequires:  perl-generators
+BuildRequires:  python3
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  cups-devel
 BuildRequires:  pkgconfig(dbus-1)
@@ -1389,6 +1411,21 @@ This package adds the opencl driver for wine.
 %patch101 -p1
 
 %if 0%{?wine_staging}
+%patch7555 -p1 -R
+%patch7554 -p1 -R
+%patch7553 -p1 -R
+%patch7552 -p1 -R
+%patch7551 -p1 -R
+%patch7550 -p1 -R
+%patch7549 -p1 -R
+%patch7548 -p1 -R
+%patch7547 -p1 -R
+%patch7546 -p1 -R
+%patch7545 -p1 -R
+%patch7544 -p1 -R
+%patch7543 -p1 -R
+%patch7542 -p1 -R
+%patch7541 -p1 -R
 %patch7540 -p1 -R
 %patch7539 -p1 -R
 %patch7538 -p1 -R
@@ -1962,7 +1999,6 @@ rm -f dlls/ntdll/unix/signal_arm{,64}.c
 %patch8000 -p1 -R
 %endif
 %endif
-%patch800 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2012,7 +2048,9 @@ cp -p %{S:3001} README-pba-pkg
 %patch1023 -p1
 %patch1024 -p1
 %endif
+%if !0%{?mfplatwip}
 %patch1025 -p1
+%endif
 %patch1026 -p1
 %if 0%{?fshack}
 %patch1027 -p1
@@ -2040,10 +2078,14 @@ cp -p %{S:3001} README-pba-pkg
 %patch1095 -p1
 %patch1096 -p1
 %patch1097 -p1
-%if 0%{?fshack}
 %patch1200 -p1
-%else
+%if 0%{?mfplatwip}
 %patch1201 -p1
+%endif
+%if 0%{?fshack}
+%patch1300 -p1
+%else
+%patch1301 -p1
 %endif
 
 # fix parallelized build
@@ -3858,6 +3900,9 @@ fi
 
 
 %changelog
+* Sun Aug 30 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.16-100
+- 5.16
+
 * Thu Aug 27 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.15-104.20200826git666f614
 - New snapshot
 
