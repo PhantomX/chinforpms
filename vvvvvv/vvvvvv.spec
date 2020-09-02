@@ -1,6 +1,6 @@
-%global commit af89c52813074f27e20ba04276a7f1fc6d809303
+%global commit c29d7c7d149ccc3d5d297f2679b5a8b89e7ac910
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200717
+%global date 20200825
 
 %undefine _hardened_build
 
@@ -13,7 +13,7 @@
 
 Name:           vvvvvv
 Version:        2.3
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -56,7 +56,7 @@ Provides:       bundled(lodepng) = %{bundlelodepngver}
 
 # Make sure that we are using system ones
 rm -rf third_party/physfs/
-rm -rf third_party/tinyxml/
+rm -rf third_party/tinyxml2/
 
 cp -p desktop_version/README.md README_desktop.md
 
@@ -134,6 +134,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Mon Aug 31 2020 Phantom X <megaphantomx at hotmail dot com> - 2.3-4.20200825gitc29d7c7
+- Bump
+
 * Sat Jul 18 2020 Phantom X <megaphantomx at hotmail dot com> - 2.3-3.20200717gitaf89c52
 - New snapshot
 

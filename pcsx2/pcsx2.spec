@@ -1,9 +1,12 @@
-%global commit 61f3258b96ab4b3d05e9072277124e1c67b24636
+%global commit 6f0011ac9c2058e317cbd357e337239311d1e8ce
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200813
+%global date 20200830
 %global with_snapshot 1
 
 %global sanitize 0
+%bcond_with     native
+
+%global perms_pcsx2 %caps(cap_net_admin,cap_net_raw+eip)
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -13,7 +16,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -35,9 +38,10 @@ Source0:        %{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
-# PCSX2 does not support running as a 64 bit application.
-# http://code.google.com/p/pcsx2/wiki/ChrootAnd64bStatusLinux
-ExclusiveArch:  i686
+Patch0:         %{url}/pull/3650.patch#/%{name}-gh-pr3650.patch
+Patch1:         %{url}/pull/3651.patch#/%{name}-gh-pr3651.patch
+Patch10:        0001-Disable-setcap-on-installation.patch
+
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -54,6 +58,7 @@ BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(ice)
 BuildRequires:  pkgconfig(liblzma)
+BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libsparsehash)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
@@ -68,9 +73,8 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  wxGTK3-devel
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
-BuildRequires:  libpcap-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-19
+BuildRequires:  sdl_gamecontrollerdb >= 0-20
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -154,7 +158,11 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
   -DPORTAUDIO_API:BOOL=FALSE \
   -DSDL2_API:BOOL=TRUE \
   -DEXTRA_PLUGINS:BOOL=FALSE \
+%if 0%{with native}
+  -DDISABLE_ADVANCE_SIMD:BOOL=FALSE \
+%else
   -DDISABLE_ADVANCE_SIMD:BOOL=TRUE \
+%endif
   -DUSE_LTO:BOOL=FALSE \
   -DUSE_VTUNE:BOOL=FALSE \
   -DDISABLE_PCSX2_WRAPPER:BOOL=TRUE \
@@ -217,7 +225,7 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 %files -f pcsx2_Iconized.lang -f pcsx2_Main.lang
 %doc bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
 %{_bindir}/PCSX2
-%{_bindir}/PCSX2.bin
+%{perms_pcsx2} %{_bindir}/PCSX2.bin
 %{_libdir}/pcsx2/
 %{_datadir}/applications/PCSX2.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
@@ -226,6 +234,11 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Mon Aug 31 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-106.20200830git6f0011a
+- New snapshot
+- x86_64 support
+- native switch
+
 * Tue Aug 18 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-105.20200813git61f3258
 - Bump
 - EGL

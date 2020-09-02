@@ -25,12 +25,13 @@ irpf2016
 irpf2017
 irpf2018
 irpf2019
+irpf2020
 -kepka
 -mupen64plus-extraplugins
 pcsx2
 ppsspp
 psximager
-reicast
+-reicast
 -odrive
 rocketchat-desktop
 soulseekqt

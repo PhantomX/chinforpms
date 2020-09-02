@@ -1,32 +1,31 @@
-From 46d11efb344dc0aac541119220c8bb9030aca460 Mon Sep 17 00:00:00 2001
+From 1943507b7960020535d4fc0caf4e883bcb81a522 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 18 Jul 2020 17:10:24 -0300
+Date: Mon, 31 Aug 2020 11:11:16 -0300
 Subject: [PATCH] System data file
 
 ---
- desktop_version/src/FileSystemUtils.cpp | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ desktop_version/src/FileSystemUtils.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/desktop_version/src/FileSystemUtils.cpp b/desktop_version/src/FileSystemUtils.cpp
-index d65ec44..abf4939 100644
+index d40e7e9..2b9b2a1 100644
 --- a/desktop_version/src/FileSystemUtils.cpp
 +++ b/desktop_version/src/FileSystemUtils.cpp
-@@ -107,8 +107,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
- 	}
+@@ -102,7 +102,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
  	else
  	{
--		strcpy(output, PHYSFS_getBaseDir());
--		strcat(output, "data.zip");
-+		strcpy(output, "_RPM_DATA_DIR_/VVVVVV/data.zip");
+ 		SDL_snprintf(output, sizeof(output), "%s%s",
+-			PHYSFS_getBaseDir(),
++			"_RPM_DATA_DIR_/VVVVVV/",
+ 			"data.zip"
+ 		);
  	}
- 	if (!PHYSFS_mount(output, NULL, 1))
- 	{
-@@ -128,7 +127,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
+@@ -124,7 +124,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
  		return 0;
  	}
  
 -	SDL_snprintf(output, sizeof(output), "%s%s", PHYSFS_getBaseDir(), "gamecontrollerdb.txt");
-+	SDL_snprintf(output, sizeof(output), "%s%s", "_RPM_DATA_DIR_/SDL_GameControllerDB/gamecontrollerdb.txt");
++	SDL_snprintf(output, sizeof(output), "%s%s", "_RPM_DATA_DIR_/SDL_GameControllerDB/", "gamecontrollerdb.txt");
  	if (SDL_GameControllerAddMappingsFromFile(output) < 0)
  	{
  		printf("gamecontrollerdb.txt not found!\n");

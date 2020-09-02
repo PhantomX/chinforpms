@@ -1,15 +1,15 @@
 %global commit f710ff552869c8a47b05db9522eb3806f8fee020
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200812
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           FAudio
-Version:        20.08
-Release:        102%{?gver}%{?dist}
+Version:        20.09
+Release:        100%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
 Epoch:          1
@@ -106,6 +106,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Tue Sep 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.09-100
+- 20.09
+
 * Thu Aug 13 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.08-102.20200812gitf710ff5
 - Bump
 
