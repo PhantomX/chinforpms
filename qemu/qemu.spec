@@ -1371,32 +1371,28 @@ install -Dpm 644 %{SOURCE16} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %check
+%global tests_skip 0
+# Enable this temporarily if tests are broken
+%global tests_nofail 0
 
 # Tests are hanging on s390 as of 2.3.0
 #   https://bugzilla.redhat.com/show_bug.cgi?id=1206057
-# Tests seem to be a recurring problem on s390, so I'd suggest just leaving
-# it disabled.
-%global archs_skip_tests s390
-%global archs_ignore_test_failures 0
+# Tests seem to be a recurring problem on s390, leave them disabled.
+%ifarch s390
+%global tests_skip 1
+%endif
 
-# 2020-08-11: iotests failing due to missing qxl symbol
-%global temp_skip_check 1 
+# 2020-08-31: tests passing, but s390x fails due to
+# spurious warning breaking an iotest case
+# https://lists.gnu.org/archive/html/qemu-devel/2020-08/msg03279.html
+%global tests_nofail 1
 
 pushd build-dynamic
-%ifnarch %{archs_skip_tests}
-
-# Check the binary runs (see eg RHBZ#998722).
-b="./x86_64-softmmu/qemu-system-x86_64"
-if [ -x "$b" ]; then "$b" -help; fi
-
-%ifarch %{archs_ignore_test_failures}
-make check V=1 || :
-%else
- %if %{temp_skip_check}
+%if !%{tests_skip}
+%if %{tests_nofail}
  make check V=1 || :
- %else
+%else
  make check V=1
- %endif
 %endif
 
 %if 0%{?hostqemu:1}
@@ -1404,6 +1400,10 @@ make check V=1 || :
 # The results are advisory only.
 qemu-sanity-check --qemu=%{?hostqemu} ||:
 %endif
+
+# Check the binary runs (see eg RHBZ#998722).
+b="./x86_64-softmmu/qemu-system-x86_64"
+if [ -x "$b" ]; then "$b" -help; fi
 
 %endif
 popd

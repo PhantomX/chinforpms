@@ -50,16 +50,16 @@ index ae57b3e..7d0d83a 100755
 +    set(KRONOS_LIBRARIES ${KRONOS_LIBRARIES} flac-static)
 +  endif()
 +
-+  find_package(ZLIB)
-+  if(ZLIB_FOUND)
-+    message(STATUS "Using shared zlib")
-+    set(KRONOS_LIBRARIES ${KRONOS_LIBRARIES} ZLIB::ZLIB)
-+  else()
-+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tools/libchdr/deps/zlib-1.2.11)
-+    set(KRONOS_LIBRARIES ${KRONOS_LIBRARIES} zlibstatic)
-+  endif()
-+
 +endif(USE_SYSTEM_CHDR)
++
++find_package(ZLIB)
++if(ZLIB_FOUND)
++  message(STATUS "Using shared zlib")
++  set(KRONOS_LIBRARIES ${KRONOS_LIBRARIES} ZLIB::ZLIB)
++else()
++  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tools/libchdr/deps/zlib-1.2.11)
++  set(KRONOS_LIBRARIES ${KRONOS_LIBRARIES} zlibstatic)
++endif()
  
  include_directories(tools/nanovg)
  set(kronos_SOURCES ${kronos_SOURCES} tools/nanovg/nanovg.c)
