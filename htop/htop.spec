@@ -1,7 +1,7 @@
 %global vc_url  https://github.com/%{name}-dev/%{name}
 
 Name:           htop
-Version:        3.0.0
+Version:        3.0.1
 Release:        100%{?dist}
 Summary:        Interactive process viewer
 
@@ -9,9 +9,6 @@ License:        GPLv2+
 URL:            https://htop.dev/
 
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
-
-Patch0:         %{vc_url}/commit/f97fbd668a7606453d29dba9410f98bdd6f85edd.patch#/%{name}-gh-f97fbd6.patch
-Patch1:         %{vc_url}/commit/b992d52bcf8ff8c51c847cd4bbf33a7db441dbe9.patch#/%{name}-gh-b992d52.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  pkgconfig(libnl-3.0)
@@ -70,6 +67,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Sep 03 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.1-100
+- 3.0.1
+
 * Fri Aug 28 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.0-100
 - 3.0.0
 

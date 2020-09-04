@@ -23,7 +23,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 5
+%global stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -546,6 +546,9 @@ popd
 
 
 %changelog
+* Thu Sep 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.6-500.chinfo
+- 5.8.6
+
 * Thu Aug 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.5-500.chinfo
 - 5.8.5
 
