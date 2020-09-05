@@ -32,7 +32,7 @@
 %global vc_url https://gitlab.gnome.org/GNOME/gtk/commit
 
 Name:           gtk3
-Version:        3.24.22
+Version:        3.24.23
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -47,11 +47,11 @@ Source3:        gtk3-mushrooms-gtk-3.2.12-fix.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
-Patch101:       gtk+3-3.22.0-gtk-toolbar-icon-size.patch
+Patch101:       0001-Restore-gtk-toolbar-icon-size.patch
 Patch102:       gtk+3-3.22.0-gtk-toolbar-style.patch
 
 # Disable this @#$& by default
-Patch103:       gtk+3-disable-overlay.patch
+Patch103:       0001-Disable-overlay-scrolling.patch
 
 Patch104:       gtk+3-startup-mode-cwd.patch
 Patch105:       gtk+3-dateformat-with_time.patch
@@ -394,6 +394,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Fri Sep 04 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.23-100
+- 3.24.23
+
 * Mon Aug 10 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.22-100
 - 3.24.22
 

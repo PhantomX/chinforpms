@@ -1,18 +1,34 @@
-diff -up gtk+-3.22.7/gdk/wayland/gdkscreen-wayland.c.iconsize gtk+-3.22.7/gdk/wayland/gdkscreen-wayland.c
---- gtk+-3.22.7/gdk/wayland/gdkscreen-wayland.c.iconsize	2017-02-08 16:46:40.746545348 -0200
-+++ gtk+-3.22.7/gdk/wayland/gdkscreen-wayland.c	2017-02-08 16:48:26.197677014 -0200
-@@ -403,6 +403,7 @@ static TranslationEntry translations[] =
+From ba7a3441925d567b7c709879b52755aed1f7853b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 4 Sep 2020 11:01:33 -0300
+Subject: [PATCH] Restore gtk-toolbar-icon-size
+
+---
+ gdk/wayland/gdkscreen-wayland.c |  1 +
+ gdk/win32/gdkproperty-win32.c   |  1 +
+ gdk/x11/gdksettings.c           |  1 +
+ gtk/gtksettings.c               |  4 +-
+ gtk/gtktoolbar.c                | 29 ++++++++++-
+ gtk/gtktoolpalette.c            | 89 +++++++++++++++++++++++++++++++--
+ 6 files changed, 115 insertions(+), 10 deletions(-)
+
+diff --git a/gdk/wayland/gdkscreen-wayland.c b/gdk/wayland/gdkscreen-wayland.c
+index 01e420c..c295f71 100644
+--- a/gdk/wayland/gdkscreen-wayland.c
++++ b/gdk/wayland/gdkscreen-wayland.c
+@@ -533,6 +533,7 @@ static TranslationEntry translations[] = {
    { FALSE, "org.gnome.desktop.interface", "cursor-blink-timeout", "gtk-cursor-blink-timeout", G_TYPE_INT, { .i = 3600 } },
    { FALSE, "org.gnome.desktop.interface", "gtk-im-module", "gtk-im-module", G_TYPE_STRING, { .s = "simple" } },
    { FALSE, "org.gnome.desktop.interface", "enable-animations", "gtk-enable-animations", G_TYPE_BOOLEAN, { .b = TRUE } },
 +  { FALSE, "org.gnome.desktop.interface", "toolbar-icons-size", "gtk-toolbar-icon-size", G_TYPE_STRING, { .s = "large"} },
    { FALSE, "org.gnome.desktop.interface", "gtk-enable-primary-paste", "gtk-enable-primary-paste", G_TYPE_BOOLEAN, { .b = TRUE } },
    { FALSE, "org.gnome.desktop.interface", "overlay-scrolling", "gtk-overlay-scrolling", G_TYPE_BOOLEAN, { .b = TRUE } },
-   { FALSE, "org.gnome.settings-daemon.peripherals.mouse", "double-click", "gtk-double-click-time", G_TYPE_INT, { .i = 400 } },
-diff -up gtk+-3.22.7/gdk/win32/gdkproperty-win32.c.iconsize gtk+-3.22.7/gdk/win32/gdkproperty-win32.c
---- gtk+-3.22.7/gdk/win32/gdkproperty-win32.c.iconsize	2017-02-08 16:46:40.746545348 -0200
-+++ gtk+-3.22.7/gdk/win32/gdkproperty-win32.c	2017-02-08 16:48:58.870407971 -0200
-@@ -322,6 +322,7 @@ _gdk_win32_window_delete_property (GdkWi
+   { FALSE, "org.gnome.desktop.peripherals.mouse", "double-click", "gtk-double-click-time", G_TYPE_INT, { .i = 400 } },
+diff --git a/gdk/win32/gdkproperty-win32.c b/gdk/win32/gdkproperty-win32.c
+index 80a2d5f..322bbef 100644
+--- a/gdk/win32/gdkproperty-win32.c
++++ b/gdk/win32/gdkproperty-win32.c
+@@ -280,6 +280,7 @@ _get_system_font_name (HDC hdc)
    "Gtk/ColorPalette\0"        "gtk-color-palette\0"
    "Gtk/FontName\0"            "gtk-font-name\0"
    "Gtk/KeyThemeName\0"        "gtk-key-theme-name\0"
@@ -20,9 +36,10 @@ diff -up gtk+-3.22.7/gdk/win32/gdkproperty-win32.c.iconsize gtk+-3.22.7/gdk/win3
    "Gtk/Modules\0"             "gtk-modules\0"
    "Gtk/CursorBlinkTimeout\0"  "gtk-cursor-blink-timeout\0"
    "Gtk/CursorThemeName\0"     "gtk-cursor-theme-name\0"
-diff -up gtk+-3.22.7/gdk/x11/gdksettings.c.iconsize gtk+-3.22.7/gdk/x11/gdksettings.c
---- gtk+-3.22.7/gdk/x11/gdksettings.c.iconsize	2017-02-08 16:46:40.747545340 -0200
-+++ gtk+-3.22.7/gdk/x11/gdksettings.c	2017-02-08 16:49:23.965201329 -0200
+diff --git a/gdk/x11/gdksettings.c b/gdk/x11/gdksettings.c
+index 869c239..39a2479 100644
+--- a/gdk/x11/gdksettings.c
++++ b/gdk/x11/gdksettings.c
 @@ -35,6 +35,7 @@ static const struct {
    {"Gtk/ColorPalette",        "gtk-color-palette"},
    {"Gtk/FontName",            "gtk-font-name"},
@@ -31,10 +48,11 @@ diff -up gtk+-3.22.7/gdk/x11/gdksettings.c.iconsize gtk+-3.22.7/gdk/x11/gdksetti
    {"Gtk/Modules",             "gtk-modules"},
    {"Gtk/ButtonImages",        "gtk-button-images"},
    {"Gtk/MenuImages",          "gtk-menu-images"},
-diff -up gtk+-3.22.7/gtk/gtksettings.c.iconsize gtk+-3.22.7/gtk/gtksettings.c
---- gtk+-3.22.7/gtk/gtksettings.c.iconsize	2017-02-08 16:46:40.745545357 -0200
-+++ gtk+-3.22.7/gtk/gtksettings.c	2017-02-08 16:46:40.747545340 -0200
-@@ -1236,8 +1236,6 @@ gtk_settings_class_init (GtkSettingsClas
+diff --git a/gtk/gtksettings.c b/gtk/gtksettings.c
+index 627aa08..a983fff 100644
+--- a/gtk/gtksettings.c
++++ b/gtk/gtksettings.c
+@@ -1247,8 +1247,6 @@ gtk_settings_class_init (GtkSettingsClass *class)
     * GtkSettings:gtk-toolbar-icon-size:
     *
     * The size of icons in default toolbars.
@@ -43,7 +61,7 @@ diff -up gtk+-3.22.7/gtk/gtksettings.c.iconsize gtk+-3.22.7/gtk/gtksettings.c
     */
    result = settings_install_property_parser (class,
                                               g_param_spec_enum ("gtk-toolbar-icon-size",
-@@ -1245,7 +1243,7 @@ gtk_settings_class_init (GtkSettingsClas
+@@ -1256,7 +1254,7 @@ gtk_settings_class_init (GtkSettingsClass *class)
                                                                     P_("The size of icons in default toolbars."),
                                                                     GTK_TYPE_ICON_SIZE,
                                                                     GTK_ICON_SIZE_LARGE_TOOLBAR,
@@ -52,13 +70,15 @@ diff -up gtk+-3.22.7/gtk/gtksettings.c.iconsize gtk+-3.22.7/gtk/gtksettings.c
                                               gtk_rc_property_parse_enum);
    g_assert (result == PROP_TOOLBAR_ICON_SIZE);
  
-diff -up gtk+-3.22.7/gtk/gtktoolbar.c.iconsize gtk+-3.22.7/gtk/gtktoolbar.c
---- gtk+-3.22.7/gtk/gtktoolbar.c.iconsize	2016-12-30 12:55:56.000000000 -0200
-+++ gtk+-3.22.7/gtk/gtktoolbar.c	2017-02-08 16:46:40.748545332 -0200
-@@ -2064,6 +2064,19 @@ toolbar_get_settings (GtkToolbar *toolba
+diff --git a/gtk/gtktoolbar.c b/gtk/gtktoolbar.c
+index 79164f3..023bd23 100644
+--- a/gtk/gtktoolbar.c
++++ b/gtk/gtktoolbar.c
+@@ -2068,6 +2068,19 @@ toolbar_get_settings (GtkToolbar *toolbar)
+   return toolbar->priv->settings;
  }
  
- static void
++static void
 +icon_size_change_notify (GtkToolbar *toolbar)
 +{
 +  GtkToolbarPrivate *priv = toolbar->priv;
@@ -71,11 +91,10 @@ diff -up gtk+-3.22.7/gtk/gtktoolbar.c.iconsize gtk+-3.22.7/gtk/gtktoolbar.c
 +    }
 +}
 +
-+static void
+ static void
  animation_change_notify (GtkToolbar *toolbar)
  {
-   GtkToolbarPrivate *priv = toolbar->priv;
-@@ -2085,7 +2098,9 @@ settings_change_notify (GtkSettings
+@@ -2090,7 +2103,9 @@ settings_change_notify (GtkSettings      *settings,
                          const GParamSpec *pspec,
                          GtkToolbar       *toolbar)
  {
@@ -86,7 +105,7 @@ diff -up gtk+-3.22.7/gtk/gtktoolbar.c.iconsize gtk+-3.22.7/gtk/gtktoolbar.c
      animation_change_notify (toolbar);
  }
  
-@@ -2125,6 +2140,7 @@ gtk_toolbar_screen_changed (GtkWidget *w
+@@ -2130,6 +2145,7 @@ gtk_toolbar_screen_changed (GtkWidget *widget,
    else
      priv->settings = NULL;
  
@@ -94,7 +113,7 @@ diff -up gtk+-3.22.7/gtk/gtktoolbar.c.iconsize gtk+-3.22.7/gtk/gtktoolbar.c
    animation_change_notify (toolbar);
  }
  
-@@ -3167,7 +3183,16 @@ gtk_toolbar_unset_icon_size (GtkToolbar
+@@ -3174,7 +3190,16 @@ gtk_toolbar_unset_icon_size (GtkToolbar *toolbar)
  
    if (priv->icon_size_set)
      {
@@ -112,9 +131,10 @@ diff -up gtk+-3.22.7/gtk/gtktoolbar.c.iconsize gtk+-3.22.7/gtk/gtktoolbar.c
  
        if (size != priv->icon_size)
  	{
-diff -up gtk+-3.22.7/gtk/gtktoolpalette.c.iconsize gtk+-3.22.7/gtk/gtktoolpalette.c
---- gtk+-3.22.7/gtk/gtktoolpalette.c.iconsize	2016-12-30 12:55:56.000000000 -0200
-+++ gtk+-3.22.7/gtk/gtktoolpalette.c	2017-02-08 16:46:40.749545324 -0200
+diff --git a/gtk/gtktoolpalette.c b/gtk/gtktoolpalette.c
+index e43e5b9..f9b1184 100644
+--- a/gtk/gtktoolpalette.c
++++ b/gtk/gtktoolpalette.c
 @@ -166,6 +166,9 @@ struct _GtkToolPalettePrivate
  
    GtkSizeGroup         *text_size_group;
@@ -125,7 +145,7 @@ diff -up gtk+-3.22.7/gtk/gtktoolpalette.c.iconsize gtk+-3.22.7/gtk/gtktoolpalett
    guint                 drag_source : 2;
  
    /* GtkScrollablePolicy needs to be checked when
-@@ -401,6 +404,14 @@ gtk_tool_palette_dispose (GObject *objec
+@@ -401,6 +404,14 @@ gtk_tool_palette_dispose (GObject *object)
        palette->priv->text_size_group = NULL;
      }
  
@@ -140,10 +160,11 @@ diff -up gtk+-3.22.7/gtk/gtktoolpalette.c.iconsize gtk+-3.22.7/gtk/gtktoolpalett
    G_OBJECT_CLASS (gtk_tool_palette_parent_class)->dispose (object);
  }
  
-@@ -902,10 +913,61 @@ gtk_tool_palette_get_child_property (Gtk
+@@ -901,11 +912,62 @@ gtk_tool_palette_get_child_property (GtkContainer *container,
+     }
  }
  
- static void
++static void
 +icon_size_change_notify (GtkToolPalette *palette)
 +{
 +  GtkToolPalettePrivate* priv = palette->priv;
@@ -165,7 +186,7 @@ diff -up gtk+-3.22.7/gtk/gtktoolpalette.c.iconsize gtk+-3.22.7/gtk/gtktoolpalett
 +    icon_size_change_notify (palette);
 +}
 +
-+static void
+ static void
  gtk_tool_palette_screen_changed (GtkWidget *widget,
                                   GdkScreen *previous_screen)
  {
@@ -202,7 +223,7 @@ diff -up gtk+-3.22.7/gtk/gtktoolpalette.c.iconsize gtk+-3.22.7/gtk/gtktoolpalett
  
    gtk_tool_palette_reconfigured (palette);
  }
-@@ -936,7 +998,7 @@ gtk_tool_palette_class_init (GtkToolPale
+@@ -936,7 +998,7 @@ gtk_tool_palette_class_init (GtkToolPaletteClass *cls)
    cclass->set_child_property  = gtk_tool_palette_set_child_property;
    cclass->get_child_property  = gtk_tool_palette_get_child_property;
  
@@ -211,7 +232,7 @@ diff -up gtk+-3.22.7/gtk/gtktoolpalette.c.iconsize gtk+-3.22.7/gtk/gtktoolpalett
     */
    wclass->screen_changed      = gtk_tool_palette_screen_changed;
  
-@@ -950,8 +1012,9 @@ gtk_tool_palette_class_init (GtkToolPale
+@@ -950,8 +1012,9 @@ gtk_tool_palette_class_init (GtkToolPaletteClass *cls)
    /**
     * GtkToolPalette:icon-size:
     *
@@ -223,7 +244,7 @@ diff -up gtk+-3.22.7/gtk/gtktoolpalette.c.iconsize gtk+-3.22.7/gtk/gtktoolpalett
     *
     * This should only be used for special-purpose tool palettes, normal
     * application tool palettes should respect the user preferences for the
-@@ -1085,6 +1148,13 @@ gtk_tool_palette_set_icon_size (GtkToolP
+@@ -1085,6 +1148,13 @@ gtk_tool_palette_set_icon_size (GtkToolPalette *palette,
    gtk_widget_queue_resize (GTK_WIDGET (palette));
  }
  
@@ -237,7 +258,7 @@ diff -up gtk+-3.22.7/gtk/gtktoolpalette.c.iconsize gtk+-3.22.7/gtk/gtktoolpalett
  /**
   * gtk_tool_palette_unset_icon_size:
   * @palette: a #GtkToolPalette
-@@ -1104,13 +1174,22 @@ gtk_tool_palette_unset_icon_size (GtkToo
+@@ -1104,13 +1174,22 @@ gtk_tool_palette_unset_icon_size (GtkToolPalette *palette)
  
    if (palette->priv->icon_size_set)
      {
@@ -262,3 +283,6 @@ diff -up gtk+-3.22.7/gtk/gtktoolpalette.c.iconsize gtk+-3.22.7/gtk/gtktoolpalett
  
        priv->icon_size_set = FALSE;
        g_object_notify (G_OBJECT (palette), "icon-size-set");
+-- 
+2.26.2
+
