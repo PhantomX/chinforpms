@@ -1,7 +1,7 @@
-%global commit 666f614f3f09211614024f87a238aa49c79f574a
+%global commit 432858b285d2b63eca6f99a162c9a13dd6e6ac71
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200826
-%global with_snapshot 0
+%global date 20200904
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver f6495b290f67d1936c853f3e17b9e094324a9160
+%global wine_stagingver 0505562a30238b36a85b3236b4abbdb42fea8dd4
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,9 +51,9 @@
 %global ge_id ae15b580525714b76de074c2aee30f535e15a349
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id fe39d6f5b7b2723492195a0574c270a6d0d61b79
+%global tkg_id a4e7388240c909f77e5b7d005f1fd33e29674bf0
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 703f0c84130101f450d6fbc0345c89f7f71ee1bd
+%global tkg_cid 253417450e507f49790cbea17f077d497c1e45a0
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0
@@ -103,7 +103,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.16
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -723,6 +723,58 @@ Patch7552:      %{whq_url}/01c05387ce56ad99bd0b629a41317d7058a82462#/%{name}-whq
 Patch7553:      %{whq_url}/f4661f1b38c479bd08baee93d9ddb1f9e93c173d#/%{name}-whq-f4661f1.patch
 Patch7554:      %{whq_url}/2b9a0550bcda166afdf852370397e1041c096f5f#/%{name}-whq-2b9a055.patch
 Patch7555:      %{whq_url}/58f2326410dd5574e52ab3362b67ab345674c3b1#/%{name}-whq-58f2326.patch
+Patch7556:      %{whq_url}/2b40969c58a099f958c58909b666915991a42979#/%{name}-whq-2b40969.patch
+Patch7557:      %{whq_url}/2de4f12b33724af2f90607a0626d75e8fbf8e4da#/%{name}-whq-2de4f12.patch
+Patch7558:      %{whq_url}/2d544ff8a038ac20c278d0e8f2de4c5478ff6d95#/%{name}-whq-2d544ff.patch
+Patch7559:      %{whq_url}/ff88ed8b0652e8fc202893c65258a012e650ebbe#/%{name}-whq-ff88ed8.patch
+Patch7560:      %{whq_url}/3803997349efdd2860263d08bd9d71bc0702cd2c#/%{name}-whq-3803997.patch
+Patch7561:      %{whq_url}/8aa370e9919f179feeece8dac9782f90f2e2b09c#/%{name}-whq-8aa370e.patch
+Patch7562:      %{whq_url}/13e81421b7f1c9cfe1d6a5a7738ac728c662788c#/%{name}-whq-13e8142.patch
+Patch7563:      %{whq_url}/c1c61bf2559509b33fc8bdd297032bc57e474229#/%{name}-whq-c1c61bf.patch
+Patch7564:      %{whq_url}/2dbf14ee80583e7fa8da74cfaa85700cb82f4f70#/%{name}-whq-2dbf14e.patch
+Patch7565:      %{whq_url}/af47236499235349187c00a9be981a713fa5041c#/%{name}-whq-af47236.patch
+Patch7566:      %{whq_url}/26e04d52fe466e44eb5ca383c94c2920c5e294ec#/%{name}-whq-26e04d5.patch
+Patch7567:      %{whq_url}/518d06404ad70aa9812a77d019a18fe79c16f831#/%{name}-whq-518d064.patch
+Patch7568:      %{whq_url}/c0ab7af1b0553e6177fad872d95e4195582e4d94#/%{name}-whq-c0ab7af.patch
+Patch7569:      %{whq_url}/541b06747ae4a64d0e39ed010b256b9326490701#/%{name}-whq-541b067.patch
+Patch7570:      %{whq_url}/85a33ff731bf82e229a2c6aa386d36fa4a90da65#/%{name}-whq-85a33ff.patch
+Patch7571:      %{whq_url}/81a08cea79afccdf4daddda5936c05a30849f83a#/%{name}-whq-81a08ce.patch
+Patch7572:      %{whq_url}/1a9558cf9bda654950e389532b400023ecbd81c0#/%{name}-whq-1a9558c.patch
+Patch7573:      %{whq_url}/c2c330532e96cc0cf5ba30f784d195fea90a4366#/%{name}-whq-c2c3305.patch
+Patch7574:      %{whq_url}/f7e4fd0cf8f5237614474a6e5dcdad24a6a1dcdd#/%{name}-whq-f7e4fd0.patch
+Patch7575:      %{whq_url}/9e973954fdfd2f9e22545bb6311053c835861193#/%{name}-whq-9e97395.patch
+Patch7576:      %{whq_url}/7d3503d83ece320ed023297e12d766e487383462#/%{name}-whq-7d3503d.patch
+Patch7577:      %{whq_url}/f9c89932595c874cf9eb6fc8d3244d89ff55bbf8#/%{name}-whq-f9c8993.patch
+Patch7578:      %{whq_url}/82e8fd97f6996a13ecdd0c827336e0681e2216a3#/%{name}-whq-82e8fd9.patch
+Patch7579:      %{whq_url}/b23ef1d836bada90df71ce9730f68088e0124226#/%{name}-whq-b23ef1d.patch
+Patch7580:      %{whq_url}/9864f9c024ad6e45d2e4369dca7418bc9121d727#/%{name}-whq-9864f9c.patch
+Patch7581:      %{whq_url}/00a0e2cd8c4df240371ddd22516e4e3544a142ce#/%{name}-whq-00a0e2c.patch
+Patch7582:      %{whq_url}/74dc9aa33502ba89333ab4be3c7c1458015c1d56#/%{name}-whq-74dc9aa.patch
+Patch7583:      %{whq_url}/52e9baddbce3f6d8aa768379ec6d7e82b47545c6#/%{name}-whq-52e9bad.patch
+Patch7584:      %{whq_url}/f51cd0a1b5383506c5b1a535f702acab42898d08#/%{name}-whq-f51cd0a.patch
+Patch7585:      %{whq_url}/4c45348f7808c3a1ea635e196402951f0008ab90#/%{name}-whq-4c45348.patch
+Patch7586:      %{whq_url}/7b96e82fd569bc3b261be147abe49a822f14d4e0#/%{name}-whq-7b96e82.patch
+Patch7587:      %{whq_url}/5b4b8774888b58ed424c46383d709c8e39345112#/%{name}-whq-5b4b877.patch
+Patch7588:      %{whq_url}/1c2b14a5240cdf18576552b1a81c6b7e17ff3a91#/%{name}-whq-1c2b14a.patch
+Patch7589:      %{whq_url}/30e5250622f40037a58dd87517267dbab88c5df3#/%{name}-whq-30e5250.patch
+Patch7590:      %{whq_url}/61f3b3dcdf759537fe83b86837e2ef341a2c8b66#/%{name}-whq-61f3b3d.patch
+Patch7591:      %{whq_url}/74deee7df0abd7e05b433f875e86e26d7e2f447f#/%{name}-whq-74deee7.patch
+Patch7592:      %{whq_url}/72b97eeba0d934ed2c8607f45429664130dd8f5f#/%{name}-whq-72b97ee.patch
+Patch7593:      %{whq_url}/4e80f2ea5e350168933599ab7ad633254717e93c#/%{name}-whq-4e80f2e.patch
+Patch7594:      %{whq_url}/2d91f7def15cb0df65fdb87c19e24a5a6c99839e#/%{name}-whq-2d91f7d.patch
+Patch7595:      %{whq_url}/d99a454a6bead9aaa5c55705d4807b416d2855a3#/%{name}-whq-d99a454.patch
+Patch7596:      %{whq_url}/5bbd8130adf9f4b0e6b45c5309484c2aaffcd8cd#/%{name}-whq-5bbd813.patch
+Patch7597:      %{whq_url}/7fe03dbf21196d40ad533f6acf2e216fb48540d6#/%{name}-whq-7fe03db.patch
+Patch7598:      %{whq_url}/4ba7c42370e6a1de17f3a5eb72c87950f9319425#/%{name}-whq-4ba7c42.patch
+Patch7599:      %{whq_url}/787df87badf606fe6589d17b9728dfe58cb524b5#/%{name}-whq-787df87.patch
+Patch7600:      %{whq_url}/298fa4a7f0fb8f97923a2a86c6e42b6e060e062b#/%{name}-whq-298fa4a.patch
+Patch7601:      %{whq_url}/3038674eefd67681c187521d10a28f0460a2fd96#/%{name}-whq-3038674.patch
+Patch7602:      %{whq_url}/4100c43576af4953f32b646fddb7987cd019d869#/%{name}-whq-4100c43.patch
+Patch7603:      %{whq_url}/cd193e44a58f542a919e3c59a82c64e6d2393b76#/%{name}-whq-cd193e4.patch
+Patch7604:      %{whq_url}/f3322891420d4d7c5a1c506a25ef4f99d21b2f8e#/%{name}-whq-f332289.patch
+Patch7605:      %{whq_url}/3885b32bc8995bbb171ffdc7af7d402df1b0534e#/%{name}-whq-3885b32.patch
+Patch7606:      %{whq_url}/36ebdfc6b647aaaac1298a03269420fab5de5880#/%{name}-whq-36ebdfc.patch
+Patch7607:      %{whq_url}/cc9d69b20bda583142288b0cfb0ab472348a2b51#/%{name}-whq-cc9d69b.patch
 
 # Reverts to unbreak fshack
 Patch8000:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -752,7 +804,7 @@ Patch8023:       %{whq_url}/9c99d9bceba34559a32f1e5906a6fcbcf91b0004#/%{name}-wh
 Patch8024:       %{whq_url}/b45c04f4c352ef81df5312684008839f4eeee03d#/%{name}-whq-b45c04f.patch
 Patch8025:       %{whq_url}/440fab3870b3c9ea778031ec51db69f8c3a687f5#/%{name}-whq-440fab3.patch
 
-Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-78.mystagingpatch#/%{name}-tkg-06877e5_revert-78.patch
+Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-84.mystagingpatch#/%{name}-tkg-06877e5_revert-84.patch
 Patch802:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch803:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-97fbe3f.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-97fbe3f.patch
 Patch804:       %{tkg_url}/hotfixes/01150d7f/staging-rawinput-esync-nofshack-fix-2.mystagingpatch#/%{name}-tkg-staging-rawinput-esync-nofshack-fix-2.patch
@@ -1411,6 +1463,58 @@ This package adds the opencl driver for wine.
 %patch101 -p1
 
 %if 0%{?wine_staging}
+%patch7607 -p1 -R
+%patch7606 -p1 -R
+%patch7605 -p1 -R
+%patch7604 -p1 -R
+%patch7603 -p1 -R
+%patch7602 -p1 -R
+%patch7601 -p1 -R
+%patch7600 -p1 -R
+%patch7599 -p1 -R
+%patch7598 -p1 -R
+%patch7597 -p1 -R
+%patch7596 -p1 -R
+%patch7595 -p1 -R
+%patch7594 -p1 -R
+%patch7593 -p1 -R
+%patch7592 -p1 -R
+%patch7591 -p1 -R
+%patch7590 -p1 -R
+%patch7589 -p1 -R
+%patch7588 -p1 -R
+%patch7587 -p1 -R
+%patch7586 -p1 -R
+%patch7585 -p1 -R
+%patch7584 -p1 -R
+%patch7583 -p1 -R
+%patch7582 -p1 -R
+%patch7581 -p1 -R
+%patch7580 -p1 -R
+%patch7579 -p1 -R
+%patch7578 -p1 -R
+%patch7577 -p1 -R
+%patch7576 -p1 -R
+%patch7575 -p1 -R
+%patch7574 -p1 -R
+%patch7573 -p1 -R
+%patch7572 -p1 -R
+%patch7571 -p1 -R
+%patch7570 -p1 -R
+%patch7569 -p1 -R
+%patch7568 -p1 -R
+%patch7567 -p1 -R
+%patch7566 -p1 -R
+%patch7565 -p1 -R
+%patch7564 -p1 -R
+%patch7563 -p1 -R
+%patch7562 -p1 -R
+%patch7561 -p1 -R
+%patch7560 -p1 -R
+%patch7559 -p1 -R
+%patch7558 -p1 -R
+%patch7557 -p1 -R
+%patch7556 -p1 -R
 %patch7555 -p1 -R
 %patch7554 -p1 -R
 %patch7553 -p1 -R
@@ -3900,6 +4004,9 @@ fi
 
 
 %changelog
+* Sat Sep 05 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.16-101.20200904git432858b
+- Snapshot
+
 * Sun Aug 30 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.16-100
 - 5.16
 

@@ -1,0 +1,25 @@
+From 3558c24dff9dd27ab7434909af9b9ff4d7922344 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 30 Aug 2020 13:01:25 -0300
+Subject: [PATCH] Set pulseaudio application name
+
+---
+ SDL/SDLMain.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/SDL/SDLMain.cpp b/SDL/SDLMain.cpp
+index 119ea74..f0d3c95 100644
+--- a/SDL/SDLMain.cpp
++++ b/SDL/SDLMain.cpp
+@@ -526,6 +526,8 @@ int main(int argc, char *argv[]) {
+ 	bool landscape;
+ 	NativeGetAppInfo(&app_name, &app_name_nice, &landscape, &version);
+ 
++	setenv("PULSE_PROP_application.name", app_name_nice.c_str(), 1);
++
+ 	bool joystick_enabled = true;
+ 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) < 0) {
+ 		fprintf(stderr, "Failed to initialize SDL with joystick support. Retrying without.\n");
+-- 
+2.26.2
+

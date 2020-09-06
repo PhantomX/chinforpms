@@ -66,13 +66,13 @@ index bbbee4c..38e8bb0 100644
 +endif()
  
  find_package(ALSA QUIET)
- if(ALSA_FOUND)
+ if(ALSA_FOUND AND NOT ANDROID)
 @@ -159,7 +183,6 @@ else()
      target_link_libraries(${PROJECT_NAME} PRIVATE zlibstatic)
  endif()
  
 -find_package(PkgConfig QUIET)
- if(PKG_CONFIG_FOUND)
+ if(PKG_CONFIG_FOUND AND NOT ANDROID)
      pkg_search_module(AO ao)
      if(AO_FOUND)
 @@ -168,11 +191,13 @@ if(PKG_CONFIG_FOUND)

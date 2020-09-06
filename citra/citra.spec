@@ -1,6 +1,6 @@
-%global commit d88d22080da40fcfcbc88fb3aa3e4cbc7d1e791f
+%global commit 316a64961c3809e0feaa9fb362c49467a22c58ab
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200714
+%global date 20200905
 %global with_snapshot 1
 
 # Enable system boost
@@ -22,7 +22,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
-%global commit4 f19b1a521ee8b606dedcadfda69fd10ddf882753
+%global commit4 cd4af11efc9c622896a3e4cb599fa28668ca3d05
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
@@ -42,7 +42,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 teakra
 
-%global commit9 1de435ed04c8e74775804da944d176baf0ce56e2
+%global commit9 18c9caaa0a3ed5706c39f5aa86cce0db6e65b174
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 xbyak
 
@@ -64,7 +64,7 @@
 
 Name:           citra
 Version:        0
-Release:        10%{?gver}%{?dist}
+Release:        11%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -238,6 +238,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Sep 06 2020 Phantom X <megaphantomx at hotmail dot com> - 0-11.20200905git316a649
+- New snapshot
+
 * Sun Jul 19 2020 Phantom X <megaphantomx at hotmail dot com> - 0-10.20200714gitd88d220
 - Bump
 

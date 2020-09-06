@@ -1,6 +1,6 @@
-%global commit cb3ed8f4a1d25a8781e92d19e7925f39814f3117
+%global commit 5f1e3b295039ce60872c4d44e420f777c23621a1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200828
+%global date 20200905
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -52,7 +52,7 @@
 
 Name:           ppsspp
 Version:        1.10.3
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -77,6 +77,7 @@ Source10:       %{name}.appdata.xml
 
 Patch0:         %{name}-noupdate.patch
 Patch1:         %{name}-nodiscord.patch
+Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 
@@ -198,10 +199,13 @@ sed \
 cp Qt/PPSSPP.desktop %{name}.desktop
 
 sed \
-  -e '/_FLAGS_/s| -O3 | -O2 |g' \
   -e '/Wno-deprecated-register/d' \
   -e '/Wno-tautological-pointer-compare/d' \
   -i CMakeLists.txt
+
+sed \
+  -e 's| -O3 | -O2 |g' \
+  -i CMakeLists.txt ext/armips/ext/tinyformat/Makefile
 
 rm -rf ext/native/ext/libpng*
 sed -e 's|png17|%{pngver}|g' \
@@ -264,7 +268,6 @@ popd
 %cmake \
   -B %{__cmake_builddir} \
   -DBUILD_SHARED_LIBS:BOOL=OFF \
-  -DARMIPS_REGEXP:BOOL=OFF \
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \
@@ -299,6 +302,7 @@ popd
   -DX86_64:BOOL=ON \
 %endif
   -DBUILD_TESTING:BOOL=OFF \
+  -DHEADLESS:BOOL=OFF \
 %if %{with qt}
   -DUSING_QT_UI:BOOL=ON \
 %endif
@@ -367,6 +371,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Sep 05 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-104.20200905git5f1e3b2
+- New snapshot
+
 * Sat Aug 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-103.20200828gitcb3ed8f
 - Bump
 - BR: libxxhash
