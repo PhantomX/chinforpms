@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ba1ca6b87d21e96a0ca93dba752cf901e7b895c5
+%global pfcommit 1680472a0d1dc89d776a00b7952349d69b022d88
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 34111a4d58e41d742247fcdfbc75c119245dfdba
+%global opensuse_id f904a5feb25366b3b531d7256a524b2060e10362
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2676,6 +2676,9 @@ fi
 #
 #
 %changelog
+* Wed Sep 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.8-500.chinfo
+- 5.8.8 - pf4
+
 * Sat Sep 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.7-500.chinfo
 - 5.8.7 - pf4
 
