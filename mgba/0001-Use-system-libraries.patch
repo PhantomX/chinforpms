@@ -1,0 +1,136 @@
+From f14995cbb34f287e24b134ca351a494525ab37b4 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 10 Sep 2020 22:43:21 -0300
+Subject: [PATCH] Use system libraries
+
+---
+ CMakeLists.txt           | 31 +++++++++++++++++++++++++++----
+ src/util/configuration.c |  2 +-
+ src/util/vfs/vfs-lzma.c  | 12 ++++++------
+ 3 files changed, 34 insertions(+), 11 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ac44bd2..a671ee7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -45,6 +45,7 @@ if(NOT LIBMGBA_ONLY)
+ 	set(M_CORE_GBA ON CACHE BOOL "Build Game Boy Advance core")
+ 	set(M_CORE_GB ON CACHE BOOL "Build Game Boy core")
+ 	set(USE_LZMA ON CACHE BOOL "Whether or not to enable 7-Zip support")
++	set(USE_INIH ON CACHE BOOL "Whether or not to enable inih support")
+ 	set(USE_DISCORD_RPC ON CACHE BOOL "Whether or not to enable Discord RPC support")
+ 	set(ENABLE_SCRIPTING ON CACHE BOOL "Whether or not to enable scripting support")
+ 	set(BUILD_QT ON CACHE BOOL "Build Qt frontend")
+@@ -84,7 +85,6 @@ else()
+ 	endif()
+ endif()
+ 
+-file(GLOB THIRD_PARTY_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/inih/*.c)
+ set(CORE_VFS_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/util/vfs/vfs-mem.c ${CMAKE_CURRENT_SOURCE_DIR}/src/util/vfs/vfs-fifo.c)
+ set(VFS_SRC)
+ include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/include)
+@@ -465,6 +465,8 @@ set(WANT_ZLIB ${USE_ZLIB})
+ set(WANT_PNG ${USE_PNG})
+ set(WANT_SQLITE3 ${USE_SQLITE3})
+ set(USE_CMOCKA ${BUILD_SUITE})
++set(WANT_LZMA ${USE_LZMA})
++set(WANT_INIH ${USE_INIH})
+ 
+ find_feature(USE_FFMPEG "libavcodec;libavfilter;libavformat;libavutil;libswscale")
+ find_feature(USE_ZLIB "ZLIB")
+@@ -476,6 +478,14 @@ find_feature(USE_CMOCKA "cmocka")
+ find_feature(USE_SQLITE3 "sqlite3")
+ find_feature(USE_ELF "libelf")
+ find_feature(ENABLE_PYTHON "PythonLibs")
++find_feature(USE_LZMA "lzmasdk-c")
++find_feature(USE_INIH "inih")
++
++if(WANT_INIH AND NOT USE_INIH)
++	file(GLOB THIRD_PARTY_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/inih/*.c)
++	include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/inih/)
++	set(USE_INIH ON)
++endif()
+ 
+ if(USE_FFMPEG)
+ 	set(USE_LIBAVRESAMPLE ON)
+@@ -649,10 +659,9 @@ elseif(USE_ZLIB)
+ 	endif()
+ endif()
+ 
+-if (USE_LZMA)
++if (WANT_LZMA AND NOT USE_LZMA)
+ 	include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma)
+ 	add_definitions(-D_7ZIP_PPMD_SUPPPORT)
+-	list(APPEND VFS_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/util/vfs/vfs-lzma.c)
+ 	set(LZMA_SRC
+ 		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zAlloc.c
+ 		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zArcIn.c
+@@ -674,7 +683,7 @@ if (USE_LZMA)
+ 		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zFile.c
+ 		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zStream.c)
+ 	list(APPEND VFS_SRC ${LZMA_SRC})
+-	list(APPEND FEATURES LZMA)
++	set(USE_LZMA ON)
+ endif()
+ 
+ if(USE_EPOXY)
+@@ -719,6 +728,20 @@ if (USE_DISCORD_RPC)
+ 	include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/discord-rpc/include)
+ endif()
+ 
++if (USE_LZMA)
++	list(APPEND VFS_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/util/vfs/vfs-lzma.c)
++	include_directories(AFTER ${lzmasdk-c_INCLUDE_DIRS})
++	link_directories(${lzmasdk-c_LIBRARY_DIRS})
++	list(APPEND DEPENDENCY_LIB ${lzmasdk-c_LIBRARIES})
++	list(APPEND FEATURES LZMA)
++endif()
++
++if (USE_INIH)
++	include_directories(AFTER ${inih_INCLUDE_DIRS})
++	link_directories(${inih_LIBRARIES_DIRS})
++	list(APPEND DEPENDENCY_LIB ${inih_LIBRARIES})
++endif()
++
+ if(ENABLE_SCRIPTING)
+ 	list(APPEND ENABLES SCRIPTING)
+ 
+diff --git a/src/util/configuration.c b/src/util/configuration.c
+index 1cf2610..c382dee 100644
+--- a/src/util/configuration.c
++++ b/src/util/configuration.c
+@@ -9,7 +9,7 @@
+ #include <mgba-util/string.h>
+ #include <mgba-util/vfs.h>
+ 
+-#include "third-party/inih/ini.h"
++#include <ini.h>
+ 
+ #include <float.h>
+ 
+diff --git a/src/util/vfs/vfs-lzma.c b/src/util/vfs/vfs-lzma.c
+index a1c259e..6a7ea19 100644
+--- a/src/util/vfs/vfs-lzma.c
++++ b/src/util/vfs/vfs-lzma.c
+@@ -9,12 +9,12 @@
+ 
+ #include <mgba-util/string.h>
+ 
+-#include "third-party/lzma/7z.h"
+-#include "third-party/lzma/7zAlloc.h"
+-#include "third-party/lzma/7zBuf.h"
+-#include "third-party/lzma/7zCrc.h"
+-#include "third-party/lzma/7zFile.h"
+-#include "third-party/lzma/7zVersion.h"
++#include <7z.h>
++#include <7zAlloc.h>
++#include <7zBuf.h>
++#include <7zCrc.h>
++#include <7zFile.h>
++#include <7zVersion.h>
+ 
+ #define BUFFER_SIZE 0x2000
+ 
+-- 
+2.26.2
+

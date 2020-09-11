@@ -6,7 +6,7 @@
 
 Name:           lzma-sdk%{?packver}
 Version:        19.00
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPLv2
@@ -117,6 +117,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Fri Sep 11 2020 Phantom X <megaphantomx at hotmail dot com> - 19.00-101
+- Add missing symbols to library
+
 * Sat Aug 08 2020 Phantom X <megaphantomx at hotmail dot com> - 19.00-100
 - 19.00
 - Add pkgconfig files

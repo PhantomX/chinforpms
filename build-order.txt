@@ -119,6 +119,7 @@ maxcso
 mcomix3
 mednafen
 mednaffe
+mgba
 mozilla-gnotifier
 mozilla-keepassxc-browser
 mp3val
