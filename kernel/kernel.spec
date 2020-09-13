@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 5
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 1680472a0d1dc89d776a00b7952349d69b022d88
+%global pfcommit 4920d2a74785f2b138921ec38c910d1617b2bf56
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id f904a5feb25366b3b531d7256a524b2060e10362
+%global opensuse_id 8b2a0ec7b3af61627c3c9157750fc9f11abcbd10
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -878,6 +878,15 @@ Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 Patch102: 0002-arm64-tegra-Re-order-PCIe-aperture-mappings-to-suppo.patch
 Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
+
+# Goes away with 5.9
+Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1874117
+Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
+Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
+
+# CVE-2020-25211 rhbz 1877571 1877572
+Patch111: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
 
 ### Extra
 
@@ -2676,6 +2685,10 @@ fi
 #
 #
 %changelog
+* Sat Sep 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.9-500.chinfo
+- 5.8.9 - pf5
+- f32 sync
+
 * Wed Sep 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.8-500.chinfo
 - 5.8.8 - pf4
 

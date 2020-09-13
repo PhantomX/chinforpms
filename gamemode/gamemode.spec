@@ -1,15 +1,15 @@
 %global commit 5163c01d24684a1ab535f2b4c9f8df02718a15ab
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200901
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           gamemode
-Version:        1.5.1
-Release:        102%{?gver}%{?dist}
+Version:        1.6
+Release:        100%{?gver}%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
 
@@ -93,6 +93,9 @@ mv %{buildroot}%{_mandir}/*.8 %{buildroot}%{_mandir}/man8/
 
 
 %changelog
+* Fri Sep 11 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.6-100
+- 1.6
+
 * Fri Sep 04 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.5.1-102.20200901git5163c01
 - Bump
 

@@ -1,17 +1,17 @@
-%global commit 598df2bd5e173f9bcd762ab937e8a04918940c04
+%global commit e32bfb03a3234279fdfdc7fa9213265825d2e732
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200820
+%global date 20200904
 %global with_snapshot 1
 
-%global commit1 3fdabd0da2932c276b25b9b4a988ba134eba1aa6
+%global commit1 060627f0b0d2fa8581b5acb939f46e3b9e500593
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 SPIRV-Headers
 
-%global commit2 4dd122392f3ad757e70951a1198479bf233d4cd8
+%global commit2 726af6f78f80988271c8b558ae9cc84fa5a65016
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
-%global commit3 f0fe4442e32a900f49140f8597d54fefb4ba32d0
+%global commit3 bdbef7b1f3982fe99a62d076043036abe6dd6d80
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
@@ -23,7 +23,7 @@
 
 Name:           dxil-spirv
 Version:        0.0.0
-Release:        8%{?gver}%{?dist}
+Release:        9%{?gver}%{?dist}
 Summary:        DXIL conversion to SPIR-V for D3D12 translation libraries
 
 License:        LGPLv2+
@@ -120,6 +120,9 @@ sed \
 
 
 %changelog
+* Sat Sep 12 2020 Phantom X <megaphantomx at hotmail dot com> - 0.0.0-9.20200904gite32bfb0
+- New snapshot
+
 * Sat Aug 22 2020 Phantom X <megaphantomx at hotmail dot com> - 0.0.0-8.20200820git598df2b
 - Bump
 

@@ -1,6 +1,6 @@
-%global commit e9aab2b8b82e3beec1ac26f94c7f0aa7286b9b57
+%global commit 1ce14c2ef3b40507f1d2427f5469becfaf642587
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200821
+%global date 20200911
 %global with_snapshot 1
 
 # Set to use proton fork
@@ -17,7 +17,7 @@
 
 Name:           vkd3d
 Version:        1.1
-Release:        112%{?gver}%{?dist}
+Release:        113%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 Epoch:          1
@@ -149,6 +149,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Sat Sep 12 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-113.20200911git1ce14c2
+- New snapshot
+
 * Sat Aug 22 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-112.20200821gite9aab2b
 - Bump
 

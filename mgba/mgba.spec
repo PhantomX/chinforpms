@@ -1,7 +1,7 @@
-%global commit f636b88f275aeb76a44a204c2e95c8d948eac799
+%global commit 06a3770daa90023e2a4fb85ed17559e99ce248f9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200910
-%global with_snapshot 0
+%global date 20200911
+%global with_snapshot 1
 
 # Enable ffmpeg support
 %bcond_with ffmpeg
@@ -13,8 +13,8 @@
 %global vc_url https://github.com/mgba-emu/mgba/
 
 Name:           mgba
-Version:        0.8.3
-Release:        1%{?gver}%{?dist}
+Version:        0.9.0
+Release:        0.1%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPLv2.0
@@ -27,6 +27,7 @@ Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
+Patch1:         0001-Bug-1875.patch
 
 
 BuildRequires:  cmake
@@ -178,5 +179,8 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Fri Sep 11 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.0-0.1.20200911git06a3770
+- Snapshot
+
 * Fri Sep 11 2020 Phantom X <megaphantomx at hotmail dot com> - 0.8.3-1
 - Initial spec

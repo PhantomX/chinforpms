@@ -1,6 +1,6 @@
-%global commit 6f0011ac9c2058e317cbd357e337239311d1e8ce
+%global commit 6229b204fa3e6dd1d9566e56ddffb4702f388640
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200830
+%global date 20200912
 %global with_snapshot 1
 
 %global sanitize 0
@@ -16,7 +16,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -38,8 +38,6 @@ Source0:        %{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
-Patch0:         %{url}/pull/3650.patch#/%{name}-gh-pr3650.patch
-Patch1:         %{url}/pull/3651.patch#/%{name}-gh-pr3651.patch
 Patch10:        0001-Disable-setcap-on-installation.patch
 
 
@@ -71,6 +69,7 @@ BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 # use SDL that depends wxGTK
 BuildRequires:  wxGTK3-devel
+BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
@@ -119,6 +118,10 @@ sed -i 's/\r//' pcsx2/Docs/License.txt
 
 #Remove fedora incompatible values
 sed -i 's/@PCSX2_MENU_CATEGORIES@/Game;Emulator;GTK;/g' linux_various/PCSX2.desktop.in
+
+sed \
+  -e 's|/usr/share/fonts/truetype/my_favorite_font_e_g_DejaVu Sans.ttf|%{_fontbasedir}/google-roboto/Roboto-Regular.ttf|' \
+  -i plugins/GSdx/GSdx.cpp
 
 %if 0%{?with_snapshot}
 sed -i \
@@ -234,6 +237,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Sat Sep 12 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-107.20200912git6229b20
+- New snapshot
+
 * Mon Aug 31 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-106.20200830git6f0011a
 - New snapshot
 - x86_64 support

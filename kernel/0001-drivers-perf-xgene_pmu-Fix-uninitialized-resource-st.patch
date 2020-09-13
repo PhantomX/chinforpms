@@ -1,0 +1,109 @@
+From 68912566d659046b12b02e5a316af3760e08eab8 Mon Sep 17 00:00:00 2001
+From: Fedora Kernel Team <kernel-team@fedoraproject.org>
+Date: Tue, 1 Sep 2020 18:44:00 -0400
+Subject: [PATCH] drivers/perf: xgene_pmu: Fix uninitialized resource struct
+
+This splat was reported on newer Fedora kernels booting on certain
+Ampere machines:
+
+ xgene-pmu APMC0D83:00: X-Gene PMU version 3
+ Unable to handle kernel read from unreadable memory at virtual address 0000000000004006
+ Mem abort info:
+   ESR = 0x96000004
+   EC = 0x25: DABT (current EL), IL = 32 bits
+   SET = 0, FnV = 0
+   EA = 0, S1PTW = 0
+ Data abort info:
+   ISV = 0, ISS = 0x00000004
+   CM = 0, WnR = 0
+ [0000000000004006] user address but active_mm is swapper
+ Internal error: Oops: 96000004 [#1] SMP
+ Modules linked in:
+ CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.8.3-300.fc33.aarch64 #1
+ Hardware name: Lenovo HR350A            7X35CTO1WW    /HR350A     , BIOS HVE104N-1.12 11/29/2019
+ pstate: 00400005 (nzcv daif +PAN -UAO BTYPE=--)
+ pc : string+0x50/0x100
+ lr : vsnprintf+0x160/0x750
+ sp : ffff800012b4b760
+ x29: ffff800012b4b760 x28: 000000000000000c
+ x27: ffff8000113610d5 x26: ffff8000113610d5
+ x25: 0000000000000020 x24: 0000000000000000
+ x23: 00000000ffffffe8 x22: ffff800010f8e628
+ x21: ffff800012b4b8f0 x20: 0000000000000000
+ x19: 0000000000000000 x18: 00000000fffffffc
+ x17: 000000000000002d x16: 0000000000000001
+ x15: 0000000000000020 x14: 0000000000000000
+ x13: 0000000000000000 x12: 071c71c71c71c71c
+ x11: 00000000ffffff76 x10: ffff800012b4b8f0
+ x9 : ffff8000109e97d8 x8 : 00000000ffffffff
+ x7 : 000000000000000b x6 : 0000000000000000
+ x5 : 0000000000000000 x4 : 0000000000000000
+ x3 : ffff0a00ffffff04 x2 : 0000000000004006
+ x1 : ffffffffffffffff x0 : 000000000000000c
+ Call trace:
+  string+0x50/0x100
+  vsnprintf+0x160/0x750
+  devm_kvasprintf+0x5c/0xb4
+  devm_kasprintf+0x54/0x60
+  __devm_ioremap_resource+0xdc/0x1a0
+  devm_ioremap_resource+0x14/0x20
+  acpi_get_pmu_hw_inf.isra.0+0x84/0x15c
+  acpi_pmu_dev_add+0xbc/0x21c
+  acpi_ns_walk_namespace+0x16c/0x1e4
+  acpi_walk_namespace+0xb4/0xfc
+  xgene_pmu_probe_pmu_dev+0x7c/0xe0
+  xgene_pmu_probe.part.0+0x2c0/0x310
+  xgene_pmu_probe+0x54/0x64
+  platform_drv_probe+0x60/0xb4
+  really_probe+0xe8/0x4a0
+  driver_probe_device+0xe4/0x100
+  device_driver_attach+0xcc/0xd4
+  __driver_attach+0xb0/0x17c
+  bus_for_each_dev+0x6c/0xb0
+  driver_attach+0x30/0x40
+  bus_add_driver+0x154/0x250
+  driver_register+0x84/0x140
+  __platform_driver_register+0x54/0x60
+  xgene_pmu_driver_init+0x28/0x34
+  do_one_initcall+0x40/0x204
+  do_initcalls+0x104/0x144
+  kernel_init_freeable+0x198/0x210
+  kernel_init+0x20/0x12c
+  ret_from_fork+0x10/0x18
+ Code: 91000400 110004e1 eb08009f 540000c0 (38646846)
+ ---[ end trace f08c10566496a703 ]---
+ Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+ SMP: stopping secondary CPUs
+ Kernel Offset: 0x40000 from 0xffff800010000000
+ PHYS_OFFSET: 0x80000000
+ CPU features: 0x240002,20802008
+ Memory Limit: none
+
+This was due to a local struct resource variable in acpi_get_pmu_hw_inf().
+A pointer to that struct makes it's way to __devm_ioremap_resource()
+where the name field is passed to devm_kasprintf() and dereferenced.
+The struct was never initialized, so the name pointer is whatever
+happened to be on the stack. This has been the case since the original
+checkin of xgene_pmu.c, but it was a recent change to which added the
+use of the name field.
+
+Signed-off-by: Mark Salter <msalter@redhat.com>
+---
+ drivers/perf/xgene_pmu.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/perf/xgene_pmu.c b/drivers/perf/xgene_pmu.c
+index edac28c..fdbbd08 100644
+--- a/drivers/perf/xgene_pmu.c
++++ b/drivers/perf/xgene_pmu.c
+@@ -1483,6 +1483,7 @@ xgene_pmu_dev_ctx *acpi_get_pmu_hw_inf(struct xgene_pmu *xgene_pmu,
+ 		return NULL;
+ 
+ 	INIT_LIST_HEAD(&resource_list);
++	memset(&res, 0, sizeof(res));
+ 	rc = acpi_dev_get_resources(adev, &resource_list,
+ 				    acpi_pmu_dev_add_resource, &res);
+ 	acpi_dev_free_resource_list(&resource_list);
+-- 
+2.26.0
+
