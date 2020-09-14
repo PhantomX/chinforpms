@@ -1,3 +1,5 @@
+%undefine _cmake_shared_libs
+
 %global commit e32bfb03a3234279fdfdc7fa9213265825d2e732
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200904
@@ -91,7 +93,6 @@ sed \
 %build
 %cmake \
   -B %{__cmake_builddir} \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   -GNinja \
 %{nil}

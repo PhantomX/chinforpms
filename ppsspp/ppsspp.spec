@@ -47,6 +47,7 @@
 %global pngver %(pkg-config --variable=includedir libpng |sed 's|/usr/include/lib||g')
 
 %undefine _hardened_build
+%undefine _cmake_shared_libs
 
 %global vc_url  https://github.com/hrydgard
 
@@ -267,7 +268,6 @@ popd
 
 %cmake \
   -B %{__cmake_builddir} \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \

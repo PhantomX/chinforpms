@@ -1,9 +1,9 @@
-diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/CMakeLists.txt.dma glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/CMakeLists.txt
---- glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/CMakeLists.txt.dma	2020-04-21 23:06:12.000000000 +1000
-+++ glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/CMakeLists.txt	2020-04-22 12:26:12.717875341 +1000
-@@ -87,6 +87,13 @@ endmacro(glslang_pch)
- 
- project(glslang)
+diff -up glslang-5743eed4d16757402517a1068137f4bc1645ee87/CMakeLists.txt.dma glslang-5743eed4d16757402517a1068137f4bc1645ee87/CMakeLists.txt
+--- glslang-5743eed4d16757402517a1068137f4bc1645ee87/CMakeLists.txt.dma	2020-08-03 17:28:52.000000000 +1000
++++ glslang-5743eed4d16757402517a1068137f4bc1645ee87/CMakeLists.txt	2020-08-05 10:39:28.284711476 +1000
+@@ -118,6 +118,13 @@ if(USE_CCACHE)
+     endif(CCACHE_FOUND)
+ endif()
  
 +# using pkg-config to configure include paths and link libraries
 +include(FindPkgConfig)
@@ -15,8 +15,8 @@ diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/CMakeLists.txt.dma gls
  if(ENABLE_CTEST)
      include(CTest)
  endif()
-@@ -178,11 +185,7 @@ if(BUILD_EXTERNAL AND IS_DIRECTORY ${CMA
- 	add_subdirectory(External)
+@@ -312,11 +319,7 @@ if(BUILD_EXTERNAL AND IS_DIRECTORY ${CMA
+     add_subdirectory(External)
  endif()
  
 -if(NOT TARGET SPIRV-Tools-opt)
@@ -28,10 +28,10 @@ diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/CMakeLists.txt.dma gls
      message(STATUS "optimizer enabled")
      add_definitions(-DENABLE_OPT=1)
  else()
-diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/External/CMakeLists.txt.dma glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/External/CMakeLists.txt
---- glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/External/CMakeLists.txt.dma	2020-04-21 23:06:12.000000000 +1000
-+++ glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/External/CMakeLists.txt	2020-04-22 12:26:12.718875368 +1000
-@@ -35,10 +35,3 @@ if(BUILD_TESTING)
+diff -up glslang-5743eed4d16757402517a1068137f4bc1645ee87/External/CMakeLists.txt.dma glslang-5743eed4d16757402517a1068137f4bc1645ee87/External/CMakeLists.txt
+--- glslang-5743eed4d16757402517a1068137f4bc1645ee87/External/CMakeLists.txt.dma	2020-08-03 17:28:52.000000000 +1000
++++ glslang-5743eed4d16757402517a1068137f4bc1645ee87/External/CMakeLists.txt	2020-08-05 10:39:28.284711476 +1000
+@@ -68,10 +68,3 @@ if(BUILD_TESTING)
      endif()
  endif()
  
@@ -42,33 +42,25 @@ diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/External/CMakeLists.tx
 -    endif()
 -endif()
 -
-diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/glslang/CMakeLists.txt.dma glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/glslang/CMakeLists.txt
---- glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/glslang/CMakeLists.txt.dma	2020-04-21 23:06:12.000000000 +1000
-+++ glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/glslang/CMakeLists.txt	2020-04-22 12:26:38.647579382 +1000
-@@ -80,6 +80,7 @@ set(HEADERS
-     MachineIndependent/preprocessor/PpContext.h
-     MachineIndependent/preprocessor/PpTokens.h)
- 
-+set(VERSION 7.11.3113)
- glslang_pch(SOURCES MachineIndependent/pch.cpp)
- 
- if(ENABLE_HLSL)
-@@ -116,6 +117,8 @@ if(ENABLE_GLSLANG_INSTALL)
-         install(TARGETS glslang EXPORT glslangTargets
+diff -up glslang-5743eed4d16757402517a1068137f4bc1645ee87/glslang/CMakeLists.txt.dma glslang-5743eed4d16757402517a1068137f4bc1645ee87/glslang/CMakeLists.txt
+--- glslang-5743eed4d16757402517a1068137f4bc1645ee87/glslang/CMakeLists.txt.dma	2020-08-05 10:39:28.285711502 +1000
++++ glslang-5743eed4d16757402517a1068137f4bc1645ee87/glslang/CMakeLists.txt	2020-08-05 10:40:17.199007448 +1000
+@@ -209,6 +209,8 @@ if(ENABLE_GLSLANG_INSTALL)
+                 EXPORT  glslangTargets
                  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
      endif()
 +    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/glslang.pc.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/glslang.pc @ONLY)
 +    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/glslang.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-     install(EXPORT glslangTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
- endif(ENABLE_GLSLANG_INSTALL)
  
-diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/glslang/glslang.pc.cmake.in.dma glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/glslang/glslang.pc.cmake.in
---- glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/glslang/glslang.pc.cmake.in.dma	2020-04-22 12:26:12.718875368 +1000
-+++ glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/glslang/glslang.pc.cmake.in	2020-04-22 12:26:12.718875368 +1000
+     install(EXPORT glslangTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
+ 
+diff -up glslang-5743eed4d16757402517a1068137f4bc1645ee87/glslang/glslang.pc.cmake.in.dma glslang-5743eed4d16757402517a1068137f4bc1645ee87/glslang/glslang.pc.cmake.in
+--- glslang-5743eed4d16757402517a1068137f4bc1645ee87/glslang/glslang.pc.cmake.in.dma	2020-08-05 10:39:28.286711529 +1000
++++ glslang-5743eed4d16757402517a1068137f4bc1645ee87/glslang/glslang.pc.cmake.in	2020-08-05 10:39:28.286711529 +1000
 @@ -0,0 +1,11 @@
 +prefix=@CMAKE_INSTALL_PREFIX@
 +exec_prefix=@CMAKE_INSTALL_PREFIX@
-+libdir=@CMAKE_INSTALL_LIBDIR@
++libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
 +includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 +
 +Name: @PROJECT_NAME@
@@ -78,12 +70,12 @@ diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/glslang/glslang.pc.cma
 +Libs: -L${libdir} -lglslang -lOSDependent -lHLSL -lOGLCompiler -lSPVRemapper
 +Cflags: -I${includedir}
 \ No newline at end of file
-diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/CMakeLists.txt.dma glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/CMakeLists.txt
---- glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/CMakeLists.txt.dma	2020-04-21 23:06:12.000000000 +1000
-+++ glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/CMakeLists.txt	2020-04-22 12:26:12.719875396 +1000
-@@ -41,6 +41,10 @@ target_include_directories(SPIRV PUBLIC
- 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
- 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+diff -up glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/CMakeLists.txt.dma glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/CMakeLists.txt
+--- glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/CMakeLists.txt.dma	2020-08-03 17:28:52.000000000 +1000
++++ glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/CMakeLists.txt	2020-08-05 10:41:36.596111056 +1000
+@@ -77,6 +77,10 @@ target_include_directories(SPIRV PUBLIC
+ 
+ glslang_add_build_info_dependency(SPIRV)
  
 +
 +set(SPIRV_NAME spirv)
@@ -92,7 +84,7 @@ diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/CMakeLists.txt.d
  if (ENABLE_SPVREMAPPER)
      add_library(SPVRemapper ${LIB_TYPE} ${SPVREMAP_SOURCES} ${SPVREMAP_HEADERS})
      set_property(TARGET SPVRemapper PROPERTY FOLDER glslang)
-@@ -54,15 +58,21 @@ if(WIN32 AND BUILD_SHARED_LIBS)
+@@ -90,15 +94,21 @@ if(WIN32 AND BUILD_SHARED_LIBS)
      endif()
  endif()
  
@@ -104,36 +96,37 @@ diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/CMakeLists.txt.d
 +    target_compile_options(SPIRV PUBLIC ${SPIRV_TOOLS_SHARED_CFLAGS_OTHER})
 +    target_link_libraries(SPIRV ${SPIRV_TOOLS_SHARED_LIBRARIES})
 +endif(BUILD_SHARED_LIBS)
-+  
++ 
  if(ENABLE_OPT)
      target_include_directories(SPIRV
          PRIVATE ${spirv-tools_SOURCE_DIR}/include
          PRIVATE ${spirv-tools_SOURCE_DIR}/source
      )
--    target_link_libraries(SPIRV glslang SPIRV-Tools-opt)
+-    target_link_libraries(SPIRV PRIVATE MachineIndependent SPIRV-Tools-opt)
 -    target_include_directories(SPIRV PUBLIC
--		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../External>
--		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/External>)
+-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../External>
+-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/External>)
 +    target_link_libraries(SPIRV glslang)
  else()
-     target_link_libraries(SPIRV glslang)
+     target_link_libraries(SPIRV PRIVATE MachineIndependent)
  endif(ENABLE_OPT)
-@@ -98,5 +108,8 @@ if(ENABLE_GLSLANG_INSTALL)
+@@ -133,6 +143,9 @@ if(ENABLE_GLSLANG_INSTALL)
+     endif()
  
      install(EXPORT SPIRVTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
- 
 +    # spirv.pc Configuration
 +    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/spirv.pc.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/spirv.pc @ONLY)
 +    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/spirv.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ 
      install(FILES ${HEADERS} ${SPVREMAP_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/glslang/SPIRV/)
  endif(ENABLE_GLSLANG_INSTALL)
-diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/spirv.pc.cmake.in.dma glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/spirv.pc.cmake.in
---- glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/spirv.pc.cmake.in.dma	2020-04-22 12:26:12.719875396 +1000
-+++ glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/spirv.pc.cmake.in	2020-04-22 12:26:12.719875396 +1000
+diff -up glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/spirv.pc.cmake.in.dma glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/spirv.pc.cmake.in
+--- glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/spirv.pc.cmake.in.dma	2020-08-05 10:39:29.766750741 +1000
++++ glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/spirv.pc.cmake.in	2020-08-05 10:39:29.766750741 +1000
 @@ -0,0 +1,11 @@
 +prefix=@CMAKE_INSTALL_PREFIX@
 +exec_prefix=@CMAKE_INSTALL_PREFIX@
-+libdir=@CMAKE_INSTALL_LIBDIR@
++libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
 +includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 +
 +Name: @SPIRV_NAME@
@@ -143,9 +136,9 @@ diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/spirv.pc.cmake.i
 +Libs: -L${libdir} -lSPIRV
 +Cflags: -I${includedir}
 \ No newline at end of file
-diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/SpvTools.cpp.dma glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/SpvTools.cpp
---- glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/SpvTools.cpp.dma	2020-04-21 23:06:12.000000000 +1000
-+++ glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/SpvTools.cpp	2020-04-22 12:26:12.719875396 +1000
+diff -up glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/SpvTools.cpp.dma glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/SpvTools.cpp
+--- glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/SpvTools.cpp.dma	2020-08-03 17:28:52.000000000 +1000
++++ glslang-5743eed4d16757402517a1068137f4bc1645ee87/SPIRV/SpvTools.cpp	2020-08-05 10:39:29.767750768 +1000
 @@ -43,8 +43,8 @@
  #include <iostream>
  
@@ -157,10 +150,10 @@ diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/SPIRV/SpvTools.cpp.dma
  
  namespace glslang {
  
-diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/StandAlone/CMakeLists.txt.dma glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/StandAlone/CMakeLists.txt
---- glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/StandAlone/CMakeLists.txt.dma	2020-04-22 12:26:04.596654834 +1000
-+++ glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/StandAlone/CMakeLists.txt	2020-04-22 12:26:12.719875396 +1000
-@@ -24,6 +24,14 @@ if(ENABLE_SPVREMAPPER)
+diff -up glslang-5743eed4d16757402517a1068137f4bc1645ee87/StandAlone/CMakeLists.txt.dma glslang-5743eed4d16757402517a1068137f4bc1645ee87/StandAlone/CMakeLists.txt
+--- glslang-5743eed4d16757402517a1068137f4bc1645ee87/StandAlone/CMakeLists.txt.dma	2020-08-05 10:39:20.063493655 +1000
++++ glslang-5743eed4d16757402517a1068137f4bc1645ee87/StandAlone/CMakeLists.txt	2020-08-05 10:39:29.767750768 +1000
+@@ -57,6 +57,14 @@ if(ENABLE_SPVREMAPPER)
      set(LIBRARIES ${LIBRARIES} SPVRemapper)
  endif()
  
@@ -175,7 +168,7 @@ diff -up glslang-c9b28b9f3388c607ea5506f5e6197b7150238ad3/StandAlone/CMakeLists.
  if(WIN32)
      set(LIBRARIES ${LIBRARIES} psapi)
  elseif(UNIX)
-@@ -33,9 +41,6 @@ elseif(UNIX)
+@@ -66,9 +74,6 @@ elseif(UNIX)
  endif(WIN32)
  
  target_link_libraries(glslangValidator ${LIBRARIES})

@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.17
+%global wine_stagingver 5.17.2
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id ae15b580525714b76de074c2aee30f535e15a349
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2e2d1ad4c821ca63f6eaea7e6dfa6a51d71bac6b
+%global tkg_id af8fcfc61c48ff8a1ddd79271160895af955bbd2
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 253417450e507f49790cbea17f077d497c1e45a0
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -846,7 +846,7 @@ Patch8030:       %{whq_url}/715a04daabdab616b530ef5a937827df7c2523c3#/%{name}-wh
 Patch8031:       %{whq_url}/d9625e5a01a52496d1fb7f1a9a691fd3ec8332db#/%{name}-whq-d9625e5.patch
 Patch8032:       %{whq_url}/586f68f414924b1e41fec10a72b1aacced068885#/%{name}-whq-586f68f.patch
 
-Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-92.mystagingpatch#/%{name}-tkg-06877e5_revert-92.patch
+Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-93.mystagingpatch#/%{name}-tkg-06877e5_revert-93.patch
 Patch802:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch803:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-97fbe3f.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-97fbe3f.patch
 Patch804:       %{tkg_url}/hotfixes/01150d7f/staging-rawinput-esync-nofshack-fix-2.mystagingpatch#/%{name}-tkg-staging-rawinput-esync-nofshack-fix-2.patch

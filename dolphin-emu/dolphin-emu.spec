@@ -1,13 +1,16 @@
 %undefine _hardened_build
+%undefine _cmake_shared_libs
 
 %bcond_with ffmpeg
 %global with_egl 1
 %global with_llvm 0
 %global with_dsphack 1
+%global with_sysvulkan 0
+%global with_unittests 0
 
-%global commit db067104ed42debf28e60f31c31131ae2a7c8441
+%global commit eae68194b30610c60f224c676f573de024ed3a78
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200901
+%global date 20200913
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +24,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        118%{?gver}%{?dist}
+Release:        119%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -41,13 +44,24 @@ Url:            https://dolphin-emu.org/
 ##Any code in Externals has a license break down in Externals/licenses.md
 License:        GPLv2+ and LGPLv2+ and BSD and MIT and zlib
 
-# Use Makefile do download
 %if 0%{?with_snapshot}
-Source0:        %{pkgname}-%{shortcommit}.tar.xz
+Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{pkgname}-%{version}.tar.xz
+Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        %{name}.appdata.xml
+
+%if 0%{?with_sysvulkan}
+#Can't be upstreamed as-is, needs rework:
+Patch1:         0001-Use-system-headers-for-Vulkan.patch
+%endif
+#Update soundtouch:
+#https://github.com/dolphin-emu/dolphin/pull/8725
+Patch2:         0002-soundtounch-update-to-2.1.2.patch
+Patch3:         0003-soundtouch-Use-shorts-instead-of-floats-for-samples.patch
+Patch4:         0004-soundtounch-disable-exceptions.patch
+#This needs to be fixed, I've reverted the patch that breaks minizip
+Patch5:         0005-Revert-Externals-Update-minizip-search-path.patch
 
 Patch100:       0001-DSP-interrupt-hack-for-RE-2-and-3.patch
 Patch101:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
@@ -64,7 +78,9 @@ BuildRequires:  pkgconfig(bzip2)
 %if 0%{?with_egl}
 BuildRequires:  pkgconfig(egl)
 %endif
+BuildRequires:  pkgconfig(fmt) >= 6.0.0
 BuildRequires:  pkgconfig(gl)
+BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libenet)
 BuildRequires:  pkgconfig(libevdev)
@@ -84,14 +100,16 @@ BuildRequires:  pkgconfig(sfml-system)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
-#BuildRequires:  bochs-devel
-BuildRequires:  hidapi-devel
+%ifarch x86_64
+BuildRequires:  bochs-devel
+%endif
 %if 0%{?with_llvm}
 BuildRequires:  llvm-devel
 %endif
 BuildRequires:  lzo-devel
 BuildRequires:  mbedtls-devel
 BuildRequires:  minizip-devel
+BuildRequires:  picojson-devel
 BuildRequires:  pugixml-devel
 BuildRequires:  xxhash-devel
 %if %{with ffmpeg}
@@ -99,6 +117,13 @@ BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
+%endif
+%if 0%{?with_sysvulkan}
+BuildRequires:  pkgconfig(glslang)
+BuildRequires:  spirv-headers-devel
+BuildRequires:  spirv-tools
+BuildRequires:  pkgconfig(SPIRV-Tools)
+BuildRequires:  vulkan-headers
 %endif
 
 BuildRequires:  gettext
@@ -112,8 +137,15 @@ ExclusiveArch:  x86_64 armv7l aarch64
 Requires:       hicolor-icon-theme
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
-Provides:       bundled(soundtouch) = 1.9.2
-Provides:       bundled(fmt) = 5.3.0
+##Bundled code ahoy
+#The following isn't in Fedora yet:
+Provides:       bundled(FreeSurround)
+Provides:       bundled(imgui) = 1.70
+Provides:       bundled(cpp-argparse)
+#soundtouch cannot be unbundled easily, as it requires compile time changes:
+Provides:       bundled(soundtouch) = 2.1.2
+#dolphin uses tests not included in upstream gtest (possibly unbundle later):
+Provides:       bundled(gtest) = 1.9.0
 
 
 #Most of below is taken bundled spec file in source#
@@ -159,32 +191,44 @@ sed 's| this directory | %{name}/Sys/GC |g' \
 ###Remove Bundled:
 pushd Externals
 rm -rf \
-  bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi libiconv-* \
-  liblzma libpng libusb LZO mbedtls miniupnpc minizip OpenAL pugixml Qt SFML MoltenVK \
-  XAudio2_7 xxhash zlib zstd
+  bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg fmt gettext hidapi \
+  libiconv-* liblzma libpng libusb LZO mbedtls miniupnpc minizip OpenAL \
+  pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib zstd
 
-#Remove Bundled Bochs source and replace with links:
-#cd Bochs_disasm
-#rm -rf `ls | grep -v 'stdafx' | grep -v 'CMakeLists.txt'`
-#ln -s %{_includedir}/bochs/* ./
-#ln -s %{_includedir}/bochs/disasm/* ./
+%if 0%{?with_sysvulkan}
+  rm -rf glslang Vulkan
+%endif
+
+#Remove Bundled Bochs source and replace with links (for x86 only):
+%ifarch x86_64
+pushd Bochs_disasm
+rm -rf `ls | grep -v 'stdafx' | grep -v 'CMakeLists.txt'`
+ln -s %{_includedir}/bochs/* ./
+ln -s %{_includedir}/bochs/disasm/* ./
+popd
+#FIXME: This test fails because we unbundle bochs
+sed -i "/x64EmitterTest/d" ../Source/UnitTests/Common/CMakeLists.txt
+%else
+rm -rf Bochs_disasm
+%endif
+
+#Replace bundled picojson with a modified system copy (remove use of throw)
+pushd picojson
+rm picojson.h
+#In master, picojson has build option "PICOJSON_NOEXCEPT", but for now:
+sed "s/throw std::.*;/std::abort();/g" %{_includedir}/picojson.h > picojson.h
+popd
+
 popd
 
 sed \
-  -e 's|<unzip.h>|<minizip/unzip.h>|g' \
-  -i Source/Core/DiscIO/VolumeVerifier.cpp \
-     Source/Core/UICommon/ResourcePack/ResourcePack.cpp \
-     Source/Core/Common/MinizipUtil.h
-
-sed \
   -e "/LTO/s|-flto|-flto=%{_smp_build_ncpus}|g" \
-  -e '/-flto=4/a\  check_and_add_flag(LTO)' \
   -i CMakeLists.txt
 
 %if 0%{?with_snapshot}
-sed -i \
+sed \
   -e 's|GIT_FOUND|GIT_DISABLED|g' \
-  CMakeLists.txt
+  -i CMakeLists.txt
 %endif
 
 
@@ -197,10 +241,10 @@ export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 #Script to find xxhash is not implemented, just tell cmake it was found
 %cmake \
   -B %{__cmake_builddir} \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \
   -DUSE_SHARED_ENET:BOOL=ON \
+  -DENABLE_ANALYTICS:BOOL=OFF \
 %if !%{with ffmpeg}
   -DENCODE_FRAMEDUMPS:BOOL=OFF \
 %endif
@@ -210,7 +254,9 @@ export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 %if !0%{?with_llvm}
   -DENABLE_LLVM:BOOL=OFF \
 %endif
+%if !0%{?with_unittests}
   -DENABLE_TESTS:BOOL=OFF \
+%endif
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DDISTRIBUTOR='%{distributor}' \
   -DDOLPHIN_WC_REVISION:STRING=%{release} \
@@ -233,15 +279,40 @@ patch -p1 -R -i %{P:100}
 %install
 %cmake_install
 
+mv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_bindir}/%{name}-x11
+cat > %{buildroot}%{_bindir}/%{name} <<EOF
+#!/usr/bin/bash
+export QT_QPA_PLATFORM=xcb
+exec %{_bindir}/%{name}-x11
+EOF
+chmod 755 %{buildroot}%{_bindir}/%{name}
+
+sed -e '/^Exec=/s|=.*$|=%{name}|' \
+  -i %{buildroot}/%{_datadir}/applications/%{name}.desktop
+
+echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-x11.6
+
 %if 0%{?with_dsphack}
-install -pm0755 %{name}-dsphack %{buildroot}%{_bindir}/
+install -pm0755 %{name}-dsphack %{buildroot}%{_bindir}/%{name}-dsphack-x11
 install -pm0755 %{name}-dsphack-nogui %{buildroot}%{_bindir}/
+
+cat > %{buildroot}%{_bindir}/%{name}-dsphack <<EOF
+#!/usr/bin/bash
+export QT_QPA_PLATFORM=xcb
+exec %{_bindir}/%{name}-dsphack-x11
+EOF
+chmod 755 %{buildroot}%{_bindir}/%{name}-dsphack
 
 cp -p %{buildroot}%{_datadir}/applications/%{name}{,-dsphack}.desktop
 sed \
-  -e '/^Exec=/s|%{name}|\0-dsphack|' \
+  -e '/^Exec=/s|=.*$|=%{name}-dsphack|' \
   -e '/Name.*=/s|$| (DSP Hack)|g' \
  -i %{buildroot}%{_datadir}/applications/%{name}-dsphack.desktop
+
+echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-dsphack.6
+echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-dsphack-x11.6
+echo '.so man6/%{name}-nogui.6' > %{buildroot}%{_mandir}/man6/%{name}-dsphack-nogui.6
+
 %endif
 
 mkdir -p %{buildroot}%{_udevrulesdir}/
@@ -253,6 +324,9 @@ install -p -D -m 0644 %{SOURCE1} \
 %find_lang %{name}
 
 %check
+%if 0%{?with_unittests}
+%cmake_build --target unittests
+%endif
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 appstream-util validate-relax --nonet \
   %{buildroot}/%{_datadir}/appdata/*.appdata.xml
@@ -260,29 +334,33 @@ appstream-util validate-relax --nonet \
 
 %files -f %{name}.lang
 %doc Readme.md
-%license license.txt
+%license license.txt Externals/licenses.md
 %{_bindir}/%{name}
-%if 0%{?with_dsphack}
-%{_bindir}/%{name}-dsphack
-%endif
+%{_bindir}/%{name}-x11
 %{_mandir}/man6/%{name}.*
+%{_mandir}/man6/%{name}-x11.*
 %{_datadir}/applications/%{name}.desktop
-%if 0%{?with_dsphack}
-%{_datadir}/applications/%{name}-dsphack.desktop
-%endif
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/%{name}/sys/Resources/
 %{_datadir}/%{name}/sys/Themes/
 %{_datadir}/appdata/*.appdata.xml
+%if 0%{?with_dsphack}
+%{_bindir}/%{name}-dsphack
+%{_bindir}/%{name}-dsphack-x11
+%{_datadir}/applications/%{name}-dsphack.desktop
+%{_mandir}/man6/%{name}-dsphack.*
+%{_mandir}/man6/%{name}-dsphack-x11.*
+%endif
 
 %files nogui
 %doc Readme.md
-%license license.txt
+%license license.txt Externals/licenses.md
 %{_bindir}/%{name}-nogui
+%{_mandir}/man6/%{name}-nogui.*
 %if 0%{?with_dsphack}
 %{_bindir}/%{name}-dsphack-nogui
+%{_mandir}/man6/%{name}-dsphack-nogui.*
 %endif
-%{_mandir}/man6/%{name}-nogui.*
 
 %files data
 %doc Readme.md docs/gc-font-tool.cpp
@@ -297,6 +375,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Sep 14 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-119.20200913giteae6819
+- Bump
+- Rawhide sync
+
 * Sat Sep 05 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-118.20200901gitdb06710
 - New snapshot
 

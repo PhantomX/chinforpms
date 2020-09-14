@@ -14,6 +14,7 @@
 %global with_libchdr 1
 
 %undefine _hardened_build
+%undefine _cmake_shared_libs
 
 %global pkgname Kronos
 %global vc_url https://github.com/FCare/%{pkgname}
@@ -112,7 +113,6 @@ pushd mini18n
 minii18n="$(pwd)"
 %cmake3 \
   -B %{__cmake_builddir} \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
 %{nil}
 %cmake_build
 popd
@@ -120,7 +120,6 @@ popd
 %cmake3 \
   -S yabause \
   -B %{__cmake_builddir} \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DYAB_PORTS=qt \
 %if 0%{?with_egl}
   -DYAB_FORCE_GLES31:BOOL=ON \

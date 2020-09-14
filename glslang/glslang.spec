@@ -1,10 +1,12 @@
-%global commit 8f4251a708018cb484ded3011ce4aa75e9881f87
+%undefine _cmake_shared_libs
+
+%global commit 759ae5aec02bd6fe5f58a9c7cd6c98cc1968c7b5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200630
+%global date 20200913
 %global gver .%{date}git%{shortcommit}
 
 Name:           glslang
-Version:        8.13.3802
+Version:        11.0.0
 Release:        100%{?gver}%{?dist}
 Summary:        OpenGL and OpenGL ES shader front end and validator
 
@@ -44,10 +46,6 @@ find . -name '*.h' -or -name '*.cpp' -or -name '*.hpp'| xargs chmod a-x
 %build
 %cmake3 \
   -B %{__cmake_builddir} \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-  -DCMAKE_SKIP_RPATH:BOOL=yes \
-  -DBUILD_SHARED_LIBS=OFF \
   -GNinja \
 %{nil}
 
@@ -82,13 +80,15 @@ install -pm 0644 %{__cmake_builddir}/StandAlone/libglslang-default-resource-limi
 %{_libdir}/libSPIRV.a
 %{_libdir}/libSPVRemapper.a
 %{_libdir}/libglslang.a
+%{_libdir}/libGenericCodeGen.a
+%{_libdir}/libMachineIndependent.a
 %{_libdir}/libglslang-default-resource-limits.a
 %{_libdir}/pkgconfig/glslang.pc
 %{_libdir}/pkgconfig/spirv.pc
 %{_libdir}/cmake/*
 
 %changelog
-* Sun Jul 26 2020 Phantom X <megaphantomx at hotmail dot com> - 8.13.3802-100.20200630git8f4251a
+* Sun Jul 26 2020 Phantom X <megaphantomx at hotmail dot com> - 11.0.0-100.20200913git8f4251a
 - New snapshot
 - Fix pkgconfig files
 

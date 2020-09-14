@@ -24,6 +24,7 @@ pysdl2
 python-markdown-math
 python-vdf
 smooth
+spirv-headers
 taglib
 vulkan-headers
 -webp-pixbuf-loader
@@ -39,6 +40,7 @@ libvorbis
 mesa
 python-markups
 perl-Gtk3
+spirv-tools
 vulkan-loader
 
 # 3
@@ -74,7 +76,6 @@ deluge
 devedeng
 discimagecreator
 disk-indicator
-dolphin-emu
 easytag
 -emojione-picker
 FAudio
@@ -94,6 +95,7 @@ gkrellm-cpupower
 gkrellm-leds
 gkrellmpc
 gkrellm-themes
+glslang
 gmysqlcc
 gnome-themes-extra
 gpa
@@ -188,6 +190,7 @@ audacious-plugins-freeworld
 -belle-sip
 -belr
 -bzrtp
+dolphin-emu
 freac
 -freac-superfast-codecs
 -ortp

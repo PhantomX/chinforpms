@@ -9,6 +9,7 @@ dxil-spirv
 FAudio
 FAudio-freeworld
 gamemode
+glslang
 gnome-theme-extras
 gstreamer1
 gtk3
@@ -26,6 +27,8 @@ mangohud
 -mingw-winpthreads
 qt5ct
 sdlcl
+spirv-headers
+spirv-tools
 taglib
 vkd3d
 vulkan-headers

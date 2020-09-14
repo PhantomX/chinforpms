@@ -11,6 +11,7 @@
 %endif
 
 #undefine _hardened_build
+%undefine _cmake_shared_libs
 
 %global vc_url https://github.com/Yabause/%{name}
 
@@ -92,7 +93,6 @@ pushd mini18n
 minii18n="$(pwd)"
 %cmake3 \
   -B %{__cmake_builddir} \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
 %{nil}
 %cmake_build
 popd
@@ -100,7 +100,6 @@ popd
 %cmake3 \
   -S %{name} \
   -B %{__cmake_builddir} \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DYAB_PORTS=qt \
   -DYAB_OPTIMIZATION=-O2 \
   -DYAB_USE_CXX:BOOL=ON \

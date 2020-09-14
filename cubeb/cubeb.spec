@@ -1,6 +1,6 @@
-%global commit 98253b293c4c283e9946f964d023e058ead7f8b4
+%global commit f39ce8a726448d6dd4b08949b49ed6937bc080d7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200826
+%global date 20200913
 %global with_snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        16%{?gver}%{?dist}
+Release:        17%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -69,6 +69,11 @@ development against %{name} libraries.
 tar -xf %{S:1} -C %{srcname1} --strip-components 1
 tar -xf %{S:2} -C cmake/%{srcname2} --strip-components 1
 
+rm -rf src/android
+
+sed -i -e "/^\[!/d" -e "/INSTALL.md/d" README.md
+
+
 %build
 %cmake \
   -B %{__cmake_builddir} \
@@ -91,18 +96,21 @@ tar -xf %{S:2} -C cmake/%{srcname2} --strip-components 1
 %files
 %license LICENSE
 %doc AUTHORS README.md
-%{_bindir}/%{name}-test
 %{_libdir}/*.so.*
 
 %files devel
 %license LICENSE
 %doc %{__cmake_builddir}/docs/html/
+%{_bindir}/%{name}-test
 %{_includedir}/%{name}/
 %{_libdir}/*.so
 %{_libdir}/cmake/%{name}/
 
 
 %changelog
+* Sun Sep 13 2020 Phantom X <megaphantomx at hotmail dot com> - 0.2-17.20200913gitf39ce8a
+- New snapshot
+
 * Sat Sep 05 2020 Phantom X <megaphantomx at hotmail dot com> - 0.2-16.20200826git98253b2
 - Bump
 

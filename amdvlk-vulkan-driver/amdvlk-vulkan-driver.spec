@@ -1,3 +1,5 @@
+%undefine _cmake_shared_libs
+
 %global commit 046d3913a35700239a994626602a0506de73c2ea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20190823
@@ -196,7 +198,6 @@ export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
 %cmake \
   -S xgl \
   -B %{__cmake_builddir} \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DBUILD_WAYLAND_SUPPORT:BOOL=ON \
   -DSPIRV_CROSS_FORCE_PIC:BOOL=ON \
   -DXGL_METROHASH_PATH:PATH=${extdir}/MetroHash \

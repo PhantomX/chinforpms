@@ -4,6 +4,7 @@
 %global with_snapshot 1
 
 %undefine _hardened_build
+%undefine _cmake_shared_libs
 
 # Enable system libchdr (disables 7z archive loading when lzmasdk is disabled)
 %global with_libchdr 1
@@ -137,7 +138,6 @@ export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
 %cmake \
   -B %{__cmake_builddir} \
   -GNinja \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
 %if 0%{?with_x11}
   -DSDL2_FOUND:BOOL=OFF \
 %endif

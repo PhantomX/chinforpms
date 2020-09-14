@@ -1,3 +1,5 @@
+%undefine _cmake_shared_libs
+
 %global commit 316a64961c3809e0feaa9fb362c49467a22c58ab
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200905
@@ -193,7 +195,6 @@ export TRAVIS_TAG="%{version}-%{release}"
 
 %cmake \
   -B %{__cmake_builddir} \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
 %if %{with qt}
   -DENABLE_QT_TRANSLATION:BOOL=ON \
 %else

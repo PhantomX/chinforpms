@@ -1,0 +1,185 @@
+From 0974371aae2bda84862ea4a9a187d4af84b498c8 Mon Sep 17 00:00:00 2001
+From: Mystro256 <alexjnewt@hotmail.com>
+Date: Thu, 12 Mar 2020 13:41:58 -0400
+Subject: [PATCH 1/5] Use system headers for Vulkan
+
+This can't be upstreamed, as it should be reworked to allow these bundled
+libraries if detected. This will work in the meantime for Fedora though.
+---
+ CMakeLists.txt                                |   1 -
+ .../Core/VideoBackends/Vulkan/CMakeLists.txt  |  22 ++--
+ .../VideoBackends/Vulkan/ShaderCompiler.cpp   | 109 +++++++++++++++++-
+ 3 files changed, 118 insertions(+), 14 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 26484938a3..c27b9cd80f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -543,7 +543,6 @@ else()
+   message(STATUS "Using static fmt from Externals")
+   add_subdirectory(Externals/fmt EXCLUDE_FROM_ALL)
+ endif()
+-add_subdirectory(Externals/glslang)
+ add_subdirectory(Externals/imgui)
+ 
+ find_package(pugixml)
+diff --git a/Source/Core/VideoBackends/Vulkan/CMakeLists.txt b/Source/Core/VideoBackends/Vulkan/CMakeLists.txt
+index 40966f191d..f20c1ee632 100644
+--- a/Source/Core/VideoBackends/Vulkan/CMakeLists.txt
++++ b/Source/Core/VideoBackends/Vulkan/CMakeLists.txt
+@@ -43,22 +43,20 @@ PUBLIC
+   videocommon
+ 
+ PRIVATE
+-  # Link against glslang, the other necessary libraries are referenced by the executable.
+   glslang
++  OSDependent
++  OGLCompiler
++  glslang
++  HLSL
++  SPIRV
++  SPIRV-Tools-opt
++  SPIRV-Tools
+   xxhash
+ )
+ 
+-# Only include the Vulkan headers when building the Vulkan backend
+-target_include_directories(videovulkan
+-PRIVATE
+-  ${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
+-)
+-
+-# Silence warnings on glslang by flagging it as a system include
+ target_include_directories(videovulkan
+ SYSTEM PRIVATE
+-  ${CMAKE_SOURCE_DIR}/Externals/glslang/StandAlone
+-  ${CMAKE_SOURCE_DIR}/Externals/glslang/glslang/Public
+-  ${CMAKE_SOURCE_DIR}/Externals/glslang/SPIRV
+-  ${CMAKE_SOURCE_DIR}/Externals/glslang
++  /usr/include/glslang/Public
++  /usr/include/glslang/SPIRV
++  /usr/include/glslang/Include
+ )
+diff --git a/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp b/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
+index 8d6a4653e2..3f125a6661 100644
+--- a/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
++++ b/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
+@@ -262,7 +262,114 @@ bool InitializeGlslang()
+ 
+ const TBuiltInResource* GetCompilerResourceLimits()
+ {
+-  return &glslang::DefaultTBuiltInResource;
++  //return &glslang::DefaultTBuiltInResource;
++  static const TBuiltInResource limits = {
++    /* .MaxLights = */ 32,
++    /* .MaxClipPlanes = */ 6,
++    /* .MaxTextureUnits = */ 32,
++    /* .MaxTextureCoords = */ 32,
++    /* .MaxVertexAttribs = */ 64,
++    /* .MaxVertexUniformComponents = */ 4096,
++    /* .MaxVaryingFloats = */ 64,
++    /* .MaxVertexTextureImageUnits = */ 32,
++    /* .MaxCombinedTextureImageUnits = */ 80,
++    /* .MaxTextureImageUnits = */ 32,
++    /* .MaxFragmentUniformComponents = */ 4096,
++    /* .MaxDrawBuffers = */ 32,
++    /* .MaxVertexUniformVectors = */ 128,
++    /* .MaxVaryingVectors = */ 8,
++    /* .MaxFragmentUniformVectors = */ 16,
++    /* .MaxVertexOutputVectors = */ 16,
++    /* .MaxFragmentInputVectors = */ 15,
++    /* .MinProgramTexelOffset = */ -8,
++    /* .MaxProgramTexelOffset = */ 7,
++    /* .MaxClipDistances = */ 8,
++    /* .MaxComputeWorkGroupCountX = */ 65535,
++    /* .MaxComputeWorkGroupCountY = */ 65535,
++    /* .MaxComputeWorkGroupCountZ = */ 65535,
++    /* .MaxComputeWorkGroupSizeX = */ 1024,
++    /* .MaxComputeWorkGroupSizeY = */ 1024,
++    /* .MaxComputeWorkGroupSizeZ = */ 64,
++    /* .MaxComputeUniformComponents = */ 1024,
++    /* .MaxComputeTextureImageUnits = */ 16,
++    /* .MaxComputeImageUniforms = */ 8,
++    /* .MaxComputeAtomicCounters = */ 8,
++    /* .MaxComputeAtomicCounterBuffers = */ 1,
++    /* .MaxVaryingComponents = */ 60,
++    /* .MaxVertexOutputComponents = */ 64,
++    /* .MaxGeometryInputComponents = */ 64,
++    /* .MaxGeometryOutputComponents = */ 128,
++    /* .MaxFragmentInputComponents = */ 128,
++    /* .MaxImageUnits = */ 8,
++    /* .MaxCombinedImageUnitsAndFragmentOutputs = */ 8,
++    /* .MaxCombinedShaderOutputResources = */ 8,
++    /* .MaxImageSamples = */ 0,
++    /* .MaxVertexImageUniforms = */ 0,
++    /* .MaxTessControlImageUniforms = */ 0,
++    /* .MaxTessEvaluationImageUniforms = */ 0,
++    /* .MaxGeometryImageUniforms = */ 0,
++    /* .MaxFragmentImageUniforms = */ 8,
++    /* .MaxCombinedImageUniforms = */ 8,
++    /* .MaxGeometryTextureImageUnits = */ 16,
++    /* .MaxGeometryOutputVertices = */ 256,
++    /* .MaxGeometryTotalOutputComponents = */ 1024,
++    /* .MaxGeometryUniformComponents = */ 1024,
++    /* .MaxGeometryVaryingComponents = */ 64,
++    /* .MaxTessControlInputComponents = */ 128,
++    /* .MaxTessControlOutputComponents = */ 128,
++    /* .MaxTessControlTextureImageUnits = */ 16,
++    /* .MaxTessControlUniformComponents = */ 1024,
++    /* .MaxTessControlTotalOutputComponents = */ 4096,
++    /* .MaxTessEvaluationInputComponents = */ 128,
++    /* .MaxTessEvaluationOutputComponents = */ 128,
++    /* .MaxTessEvaluationTextureImageUnits = */ 16,
++    /* .MaxTessEvaluationUniformComponents = */ 1024,
++    /* .MaxTessPatchComponents = */ 120,
++    /* .MaxPatchVertices = */ 32,
++    /* .MaxTessGenLevel = */ 64,
++    /* .MaxViewports = */ 16,
++    /* .MaxVertexAtomicCounters = */ 0,
++    /* .MaxTessControlAtomicCounters = */ 0,
++    /* .MaxTessEvaluationAtomicCounters = */ 0,
++    /* .MaxGeometryAtomicCounters = */ 0,
++    /* .MaxFragmentAtomicCounters = */ 8,
++    /* .MaxCombinedAtomicCounters = */ 8,
++    /* .MaxAtomicCounterBindings = */ 1,
++    /* .MaxVertexAtomicCounterBuffers = */ 0,
++    /* .MaxTessControlAtomicCounterBuffers = */ 0,
++    /* .MaxTessEvaluationAtomicCounterBuffers = */ 0,
++    /* .MaxGeometryAtomicCounterBuffers = */ 0,
++    /* .MaxFragmentAtomicCounterBuffers = */ 1,
++    /* .MaxCombinedAtomicCounterBuffers = */ 1,
++    /* .MaxAtomicCounterBufferSize = */ 16384,
++    /* .MaxTransformFeedbackBuffers = */ 4,
++    /* .MaxTransformFeedbackInterleavedComponents = */ 64,
++    /* .MaxCullDistances = */ 8,
++    /* .MaxCombinedClipAndCullDistances = */ 8,
++    /* .MaxSamples = */ 4,
++    /* .maxMeshOutputVerticesNV = */ 256,
++    /* .maxMeshOutputPrimitivesNV = */ 512,
++    /* .maxMeshWorkGroupSizeX_NV = */ 32,
++    /* .maxMeshWorkGroupSizeY_NV = */ 1,
++    /* .maxMeshWorkGroupSizeZ_NV = */ 1,
++    /* .maxTaskWorkGroupSizeX_NV = */ 32,
++    /* .maxTaskWorkGroupSizeY_NV = */ 1,
++    /* .maxTaskWorkGroupSizeZ_NV = */ 1,
++    /* .maxMeshViewCountNV = */ 4,
++
++    /* .limits = */ {
++        /* .nonInductiveForLoops = */ 1,
++        /* .whileLoops = */ 1,
++        /* .doWhileLoops = */ 1,
++        /* .generalUniformIndexing = */ 1,
++        /* .generalAttributeMatrixVectorIndexing = */ 1,
++        /* .generalVaryingIndexing = */ 1,
++        /* .generalSamplerIndexing = */ 1,
++        /* .generalVariableIndexing = */ 1,
++        /* .generalConstantMatrixVectorIndexing = */ 1,
++  }};
++
++  return &limits;
+ }
+ 
+ std::optional<SPIRVCodeVector> CompileVertexShader(std::string_view source_code)
+-- 
+2.26.2
+
