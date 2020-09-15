@@ -21,23 +21,23 @@
 
 %global pkgname amdvlk
 
-%global commit1 30cb97a1d0efebb4317f9abeec8d90a5a83d4837
+%global commit1 baf9929eed02f75d0a429fc72ba76b9286ba1996
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 9b5cb15acc8ff789420ed9ed593e35c81303d10c
+%global commit2 a3ac9d29e78d11a6cdc1bc1dd0be082e35dbfc0d
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 598c6832a4983f5b75b38a589fca5be80a2f3bb0
+%global commit3 6e4aaa87a128f91cc62d337642949ee8cfcaeec8
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 609b2b8ad982f4f2028cf4411cc2e55fc5e6fcf3
+%global commit4 a52f7c12f9ce5aca5c0c7f799f72b1b3362121bc
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
-%global commit5 4865b574184e261d87e77277282e90e3be14c53a
+%global commit5 2557aaa0e96695c51de0d66903e24194a1af054e
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{pkgname}-spvgen
 
@@ -49,19 +49,19 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 4dd122392f3ad757e70951a1198479bf233d4cd8
+%global commit8 286b3095dd187da747f85baf9ce3120580565df0
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
-%global commit9 3fdabd0da2932c276b25b9b4a988ba134eba1aa6
+%global commit9 060627f0b0d2fa8581b5acb939f46e3b9e500593
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 f0fe4442e32a900f49140f8597d54fefb4ba32d0
+%global commit10 16d9fea77c376cb5d7d6e06d33bf054fe24734a7
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 f257e0ea6b9aeab2dc7af3207ac6d29d2bbc01d0
+%global commit11 f8a5602c55606f8e97f5576c85cbc2a58026a999
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -76,7 +76,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.3.4
+Version:        2020.3.5
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -248,6 +248,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Mon Sep 14 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.3.5-1
+- 2020.Q3.5
+
 * Fri Aug 21 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.3.4-1
 - 2020.Q3.4
 
