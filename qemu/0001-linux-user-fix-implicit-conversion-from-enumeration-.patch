@@ -1,0 +1,35 @@
+From 44716867275c9a5cdead2d70e6187b5af4087f07 Mon Sep 17 00:00:00 2001
+From: Laurent Vivier <laurent@vivier.eu>
+Date: Thu, 3 Sep 2020 01:26:53 +0200
+Subject: [PATCH 1/9] linux-user: fix implicit conversion from enumeration type
+ error
+
+MK_ARRAY(type,size) is used to fill the field_types buffer, and if the
+"size" parameter is an enum type, clang [-Werror,-Wenum-conversion] reports
+an error when it is assigned to field_types which is also an enum, argtypes.
+
+To avoid that, convert "size" to "int" in MK_ARRAY(). "int" is the type
+used for the size evaluation in thunk_type_size().
+
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+Message-Id: <20200902125752.1033524-1-laurent@vivier.eu>
+---
+ include/exec/user/thunk.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/exec/user/thunk.h b/include/exec/user/thunk.h
+index 7992475c9f..2099482cff 100644
+--- a/include/exec/user/thunk.h
++++ b/include/exec/user/thunk.h
+@@ -42,7 +42,7 @@ typedef enum argtype {
+ } argtype;
+ 
+ #define MK_PTR(type) TYPE_PTR, type
+-#define MK_ARRAY(type, size) TYPE_ARRAY, size, type
++#define MK_ARRAY(type, size) TYPE_ARRAY, (int)(size), type
+ #define MK_STRUCT(id) TYPE_STRUCT, id
+ 
+ #define THUNK_TARGET 0
+-- 
+2.26.2
+

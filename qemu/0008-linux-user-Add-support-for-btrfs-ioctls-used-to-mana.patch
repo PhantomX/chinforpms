@@ -1,0 +1,235 @@
+From d62c16ff35a17743c2a0f8ebfb39f84064afcb3c Mon Sep 17 00:00:00 2001
+From: Filip Bozuta <Filip.Bozuta@syrmia.com>
+Date: Thu, 3 Sep 2020 01:27:00 +0200
+Subject: [PATCH 8/9] linux-user: Add support for btrfs ioctls used to manage
+ quota
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This patch implements functionality for following ioctls:
+
+BTRFS_IOC_QUOTA_CTL - Enabling/Disabling quota support
+
+    Enable or disable quota support for a btrfs filesystem. Quota
+    support is enabled or disabled using the ioctls third argument
+    which represents a pointer to a following type:
+
+    struct btrfs_ioctl_quota_ctl_args {
+	__u64 cmd;
+	__u64 status;
+    };
+
+    Before calling this ioctl, the 'cmd' field should be filled
+    with one of the values 'BTRFS_QUOTA_CTL_ENABLE' (enabling quota)
+    'BTRFS_QUOTA_CTL_DISABLE' (disabling quota).
+
+BTRFS_IOC_QGROUP_CREATE - Creating/Removing a subvolume quota group
+
+    Create or remove a subvolume quota group. The subvolume quota
+    group is created or removed using the ioctl's third argument which
+    represents a pointer to a following type:
+
+    struct btrfs_ioctl_qgroup_create_args {
+	__u64 create;
+	__u64 qgroupid;
+    };
+
+    Before calling this ioctl, the 'create' field should be filled
+    with the aproppriate value depending on if the user wants to
+    create or remove a quota group (0 for removing, everything else
+    for creating). Also, the 'qgroupid' field should be filled with
+    the value for the quota group id that is to be created.
+
+BTRFS_IOC_QGROUP_ASSIGN - Asigning or removing a quota group as child group
+
+    Asign or remove a quota group as child quota group of another
+    group in the btrfs filesystem. The asignment is done using the
+    ioctl's third argument which represents a pointert to a following type:
+
+    struct btrfs_ioctl_qgroup_assign_args {
+	__u64 assign;
+	__u64 src;
+	__u64 dst;
+    };
+
+    Before calling this ioctl, the 'assign' field should be filled with
+    the aproppriate value depending on if the user wants to asign or remove
+    a quota group as a child quota group of another group (0 for removing,
+    everythin else for asigning). Also, the 'src' and 'dst' fields should
+    be filled with the aproppriate quota group id values depending on which
+    quota group needs to asigned or removed as child quota group of another
+    group ('src' gets asigned or removed as child group of 'dst').
+
+BTRFS_IOC_QGROUP_LIMIT - Limiting the size of a quota group
+
+    Limit the size of a quota group. The size of the quota group is limited
+    with the ioctls third argument which represents a pointer to a following
+    type:
+
+    struct btrfs_ioctl_qgroup_limit_args {
+	__u64	qgroupid;
+	struct btrfs_qgroup_limit lim;
+    };
+
+    Before calling this ioctl, the 'qgroup' id field should be filled with
+    aproppriate value of the quota group id for which the size is to be
+    limited. The second field is of following type:
+
+    struct btrfs_qgroup_limit {
+	__u64	flags;
+	__u64	max_rfer;
+	__u64	max_excl;
+	__u64	rsv_rfer;
+	__u64	rsv_excl;
+    };
+
+    The 'max_rfer' field should be filled with the size to which the quota
+    group should be limited. The 'flags' field can be used for passing
+    additional options and can have values which can be found on:
+    https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/btrfs.h#L67
+
+BTRFS_IOC_QUOTA_RESCAN_STATUS - Checking status of running rescan operation
+
+    Check status of a running rescan operation. The status is checked using
+    the ioctl's third argument which represents a pointer to a following type:
+
+    struct btrfs_ioctl_quota_rescan_args {
+        __u64   flags;
+        __u64   progress;
+        __u64   reserved[6];
+    };
+
+    If there is a rescan operation running, 'flags' field is set to 1, and
+    'progress' field is set to aproppriate value which represents the progress
+    of the operation.
+
+BTRFS_IOC_QUOTA_RESCAN - Starting a rescan operation
+
+    Start ar rescan operation to Trash all quota groups and scan the metadata
+    again with the current config. Before calling this ioctl,
+    BTRFS_IOC_QUOTA_RESCAN_STATUS sould be run to check if there is already a
+    rescan operation runing. After that ioctl call, the received
+    'struct btrfs_ioctl_quota_rescan_args' should be than passed as this ioctls
+    third argument.
+
+BTRFS_IOC_QUOTA_RESCAN_WAIT - Waiting for a rescan operation to finish
+
+    Wait until a rescan operation is finished (if there is a rescan operation
+    running). The third ioctls argument is ignored.
+
+Implementation notes:
+
+    Almost all of the ioctls in this patch use structure types as third arguments.
+    That is the reason why aproppriate thunk definitions were added in file
+    'syscall_types.h'.
+
+Signed-off-by: Filip Bozuta <Filip.Bozuta@syrmia.com>
+Tested-by: Daniel P. Berrangé <berrange@redhat.com>
+Message-Id: <20200823195014.116226-8-Filip.Bozuta@syrmia.com>
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+---
+ linux-user/ioctls.h        | 27 +++++++++++++++++++++++++++
+ linux-user/syscall_defs.h  |  7 +++++++
+ linux-user/syscall_types.h | 29 +++++++++++++++++++++++++++++
+ 3 files changed, 63 insertions(+)
+
+diff --git a/linux-user/ioctls.h b/linux-user/ioctls.h
+index 728880b9f3..882bfb3e88 100644
+--- a/linux-user/ioctls.h
++++ b/linux-user/ioctls.h
+@@ -227,6 +227,33 @@
+      IOCTL(BTRFS_IOC_LOGICAL_INO, IOC_RW,
+            MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_logical_ino_args)))
+ #endif
++#ifdef BTRFS_IOC_QUOTA_CTL
++     IOCTL(BTRFS_IOC_QUOTA_CTL, IOC_RW,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_quota_ctl_args)))
++#endif
++#ifdef BTRFS_IOC_QGROUP_ASSIGN
++     IOCTL(BTRFS_IOC_QGROUP_ASSIGN, IOC_W,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_qgroup_assign_args)))
++#endif
++#ifdef BTRFS_IOC_QGROUP_CREATE
++     IOCTL(BTRFS_IOC_QGROUP_CREATE, IOC_W,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_qgroup_create_args)))
++#endif
++#ifdef BTRFS_IOC_QGROUP_LIMIT
++     IOCTL(BTRFS_IOC_QGROUP_LIMIT, IOC_R,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_qgroup_limit_args)))
++#endif
++#ifdef BTRFS_IOC_QUOTA_RESCAN
++     IOCTL(BTRFS_IOC_QUOTA_RESCAN, IOC_W,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_quota_rescan_args)))
++#endif
++#ifdef BTRFS_IOC_QUOTA_RESCAN_STATUS
++     IOCTL(BTRFS_IOC_QUOTA_RESCAN_STATUS, IOC_R,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_quota_rescan_args)))
++#endif
++#ifdef BTRFS_IOC_QUOTA_RESCAN_WAIT
++     IOCTL(BTRFS_IOC_QUOTA_RESCAN_WAIT, 0, TYPE_NULL)
++#endif
+ #ifdef BTRFS_IOC_GET_DEV_STATS
+      IOCTL(BTRFS_IOC_GET_DEV_STATS, IOC_RW,
+            MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_get_dev_stats)))
+diff --git a/linux-user/syscall_defs.h b/linux-user/syscall_defs.h
+index 1d0bfb5479..10a7f91016 100644
+--- a/linux-user/syscall_defs.h
++++ b/linux-user/syscall_defs.h
+@@ -985,6 +985,13 @@ struct target_rtc_pll_info {
+ #define TARGET_BTRFS_IOC_DEV_INFO               TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 30)
+ #define TARGET_BTRFS_IOC_INO_PATHS              TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 35)
+ #define TARGET_BTRFS_IOC_LOGICAL_INO            TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 36)
++#define TARGET_BTRFS_IOC_QUOTA_CTL              TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 40)
++#define TARGET_BTRFS_IOC_QGROUP_ASSIGN          TARGET_IOWU(BTRFS_IOCTL_MAGIC, 41)
++#define TARGET_BTRFS_IOC_QGROUP_CREATE          TARGET_IOWU(BTRFS_IOCTL_MAGIC, 42)
++#define TARGET_BTRFS_IOC_QGROUP_LIMIT           TARGET_IORU(BTRFS_IOCTL_MAGIC, 43)
++#define TARGET_BTRFS_IOC_QUOTA_RESCAN           TARGET_IOWU(BTRFS_IOCTL_MAGIC, 44)
++#define TARGET_BTRFS_IOC_QUOTA_RESCAN_STATUS    TARGET_IORU(BTRFS_IOCTL_MAGIC, 45)
++#define TARGET_BTRFS_IOC_QUOTA_RESCAN_WAIT      TARGET_IO(BTRFS_IOCTL_MAGIC, 46)
+ #define TARGET_BTRFS_IOC_GET_DEV_STATS          TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 52)
+ #define TARGET_BTRFS_IOC_GET_FEATURES           TARGET_IORU(BTRFS_IOCTL_MAGIC, 57)
+ #define TARGET_BTRFS_IOC_SET_FEATURES           TARGET_IOWU(BTRFS_IOCTL_MAGIC, 57)
+diff --git a/linux-user/syscall_types.h b/linux-user/syscall_types.h
+index 5566d101c2..d9b7106a69 100644
+--- a/linux-user/syscall_types.h
++++ b/linux-user/syscall_types.h
+@@ -454,6 +454,35 @@ STRUCT(btrfs_ioctl_get_dev_stats,
+                 128 - 2 - BTRFS_DEV_STAT_VALUES_MAX)) /* unused */
+ #endif
+ 
++STRUCT(btrfs_ioctl_quota_ctl_args,
++       TYPE_ULONGLONG, /* cmd */
++       TYPE_ULONGLONG) /* status */
++
++STRUCT(btrfs_ioctl_quota_rescan_args,
++       TYPE_ULONGLONG, /* flags */
++       TYPE_ULONGLONG, /* progress */
++       MK_ARRAY(TYPE_ULONGLONG, 6)) /* reserved */
++
++STRUCT(btrfs_ioctl_qgroup_assign_args,
++       TYPE_ULONGLONG, /* assign */
++       TYPE_ULONGLONG, /* src */
++       TYPE_ULONGLONG) /* dst */
++
++STRUCT(btrfs_ioctl_qgroup_create_args,
++       TYPE_ULONGLONG, /* create */
++       TYPE_ULONGLONG) /* qgroupid */
++
++STRUCT(btrfs_qgroup_limit,
++       TYPE_ULONGLONG, /* flags */
++       TYPE_ULONGLONG, /* max_rfer */
++       TYPE_ULONGLONG, /* max_excl */
++       TYPE_ULONGLONG, /* rsv_rfer */
++       TYPE_ULONGLONG) /* rsv_excl */
++
++STRUCT(btrfs_ioctl_qgroup_limit_args,
++       TYPE_ULONGLONG, /* qgroupid */
++       MK_STRUCT(STRUCT_btrfs_qgroup_limit)) /* lim */
++
+ STRUCT(btrfs_ioctl_feature_flags,
+        TYPE_ULONGLONG, /* compat_flags */
+        TYPE_ULONGLONG, /* compat_ro_flags */
+-- 
+2.26.2
+

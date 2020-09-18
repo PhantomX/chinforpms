@@ -1,0 +1,222 @@
+From ead1cdc1e4bb9fa4d09ca4d8af94c2687e7f5d36 Mon Sep 17 00:00:00 2001
+From: Filip Bozuta <Filip.Bozuta@syrmia.com>
+Date: Thu, 3 Sep 2020 01:26:56 +0200
+Subject: [PATCH 4/9] linux-user: Add support for btrfs ioctls used to
+ manipulate with devices
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This patch implements functionality for following ioctls:
+
+BTRFS_IOC_SCAN_DEV - Scanning device for a btrfs filesystem
+
+    Scan a device for a btrfs filesystem. The device that is to
+    be scanned is passed in the ioctl's third argument which
+    represents a pointer to a 'struct ioc_vol_args' (which was
+    mentioned in a previous patch). Before calling this ioctl,
+    the name field of this structure should be filled with the
+    aproppriate name value which represents a path for the device.
+    If the device contains a btrfs filesystem, the ioctl returns 0,
+    otherwise a negative value is returned.
+
+BTRFS_IOC_ADD_DEV - Adding a device to a btrfs filesystem
+
+    Add a device to a btrfs filesystem. The device that is to be
+    added is passed in the ioctl's third argument which represents
+    a pointer to a 'struct ioc_vol_args' (which was mentioned in
+    a previous patch). Before calling this ioctl, the name field of
+    this structure should be filled with the aproppriate name value
+    which represents a path for the device.
+
+BTRFS_IOC_RM_DEV - Removing a device from a btrfs filesystem
+
+    Remove a device from a btrfs filesystem. The device that is to be
+    removed is passed in the ioctl's third argument which represents
+    a pointer to a 'struct ioc_vol_args' (which was mentioned in
+    a previous patch). Before calling this ioctl, the name field of
+    this structure should be filled with the aproppriate name value
+    which represents a path for the device.
+
+BTRFS_IOC_DEV_INFO - Getting information about a device
+
+    Obtain information for device in a btrfs filesystem. The information
+    is gathered in the ioctl's third argument which represents a pointer
+    to a following structure type:
+
+    struct btrfs_ioctl_dev_info_args {
+	__u64 devid;				/* in/out */
+	__u8 uuid[BTRFS_UUID_SIZE];		/* in/out */
+	__u64 bytes_used;			/* out */
+	__u64 total_bytes;			/* out */
+	__u64 unused[379];			/* pad to 4k */
+	__u8 path[BTRFS_DEVICE_PATH_NAME_MAX];	/* out */
+    };
+
+    Before calling this ioctl, field "devid" should be set with the id value
+    for the device for which the information is to be obtained. If this field
+    is not aproppriately set, the errno ENODEV ("No such device") is returned.
+
+BTRFS_IOC_GET_DEV_STATS - Getting device statistics
+
+    Obtain stats informatin for device in a btrfs filesystem. The information
+    is gathered in the ioctl's third argument which represents a pointer to
+    a following structure type:
+
+    struct btrfs_ioctl_get_dev_stats {
+	__u64 devid;				/* in */
+	__u64 nr_items;				/* in/out */
+	__u64 flags;				/* in/out */
+
+	/* out values: */
+	__u64 values[BTRFS_DEV_STAT_VALUES_MAX];
+
+	/*
+	 * This pads the struct to 1032 bytes. It was originally meant to pad to
+	 * 1024 bytes, but when adding the flags field, the padding calculation
+	 * was not adjusted.
+	 */
+	__u64 unused[128 - 2 - BTRFS_DEV_STAT_VALUES_MAX];
+    };
+
+    Before calling this ioctl, field "devid" should be set with the id value
+    for the device for which the information is to be obtained. If this field
+    is not aproppriately set, the errno ENODEV ("No such device") is returned.
+
+BTRFS_IOC_FORGET_DEV - Remove unmounted devices
+
+    Search and remove all stale devices (devices which are not mounted).
+    The third ioctl argument is a pointer to a 'struct btrfs_ioctl_vol_args'.
+    The ioctl call will release all unmounted devices which match the path
+    which is specified in the "name" field of the structure. If an empty
+    path ("") is specified, all unmounted devices will be released.
+
+Implementation notes:
+
+    Ioctls BTRFS_IOC_DEV_INFO and BTRFS_IOC_GET_DEV_STATS use types
+    'struct btrfs_ioctl_dev_info_args' and ' struct btrfs_ioctl_get_dev_stats'
+    as third argument types. That is the reason why corresponding structure
+    definitions were added in file 'linux-user/syscall_types.h'.
+    Since the thunk type for 'struct ioc_vol_args' was already added in a
+    previous patch, the rest of the implementation was straightforward.
+
+Signed-off-by: Filip Bozuta <Filip.Bozuta@syrmia.com>
+Tested-by: Daniel P. Berrangé <berrange@redhat.com>
+Message-Id: <20200823195014.116226-4-Filip.Bozuta@syrmia.com>
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+---
+ linux-user/ioctls.h        | 24 ++++++++++++++++++++++++
+ linux-user/syscall_defs.h  |  6 ++++++
+ linux-user/syscall_types.h | 24 +++++++++++++++++++++++-
+ 3 files changed, 53 insertions(+), 1 deletion(-)
+
+diff --git a/linux-user/ioctls.h b/linux-user/ioctls.h
+index f33a99f8b6..55a6cbeca5 100644
+--- a/linux-user/ioctls.h
++++ b/linux-user/ioctls.h
+@@ -178,6 +178,22 @@
+      IOCTL(BTRFS_IOC_SNAP_CREATE, IOC_W,
+            MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_vol_args)))
+ #endif
++#ifdef BTRFS_IOC_SCAN_DEV
++     IOCTL(BTRFS_IOC_SCAN_DEV, IOC_W,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_vol_args)))
++#endif
++#ifdef BTRFS_IOC_FORGET_DEV
++     IOCTL(BTRFS_IOC_FORGET_DEV, IOC_W,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_vol_args)))
++#endif
++#ifdef BTRFS_IOC_ADD_DEV
++     IOCTL(BTRFS_IOC_ADD_DEV, IOC_W,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_vol_args)))
++#endif
++#ifdef BTRFS_IOC_RM_DEV
++     IOCTL(BTRFS_IOC_RM_DEV, IOC_W,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_vol_args)))
++#endif
+ #ifdef BTRFS_IOC_SUBVOL_CREATE
+      IOCTL(BTRFS_IOC_SUBVOL_CREATE, IOC_W,
+            MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_vol_args)))
+@@ -192,6 +208,14 @@
+ #ifdef BTRFS_IOC_SUBVOL_SETFLAGS
+      IOCTL(BTRFS_IOC_SUBVOL_SETFLAGS, IOC_W, MK_PTR(TYPE_ULONGLONG))
+ #endif
++#ifdef BTRFS_IOC_DEV_INFO
++     IOCTL(BTRFS_IOC_DEV_INFO, IOC_RW,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_dev_info_args)))
++#endif
++#ifdef BTRFS_IOC_GET_DEV_STATS
++     IOCTL(BTRFS_IOC_GET_DEV_STATS, IOC_RW,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_get_dev_stats)))
++#endif
+ #ifdef BTRFS_IOC_GET_SUBVOL_INFO
+      IOCTL(BTRFS_IOC_GET_SUBVOL_INFO, IOC_R,
+            MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_get_subvol_info_args)))
+diff --git a/linux-user/syscall_defs.h b/linux-user/syscall_defs.h
+index a945e12547..4c7bfa0391 100644
+--- a/linux-user/syscall_defs.h
++++ b/linux-user/syscall_defs.h
+@@ -969,12 +969,18 @@ struct target_rtc_pll_info {
+ 
+ /* btrfs ioctls */
+ #define TARGET_BTRFS_IOC_SNAP_CREATE            TARGET_IOWU(BTRFS_IOCTL_MAGIC, 1)
++#define TARGET_BTRFS_IOC_SCAN_DEV               TARGET_IOWU(BTRFS_IOCTL_MAGIC, 4)
++#define TARGET_BTRFS_IOC_FORGET_DEV             TARGET_IOWU(BTRFS_IOCTL_MAGIC, 5)
++#define TARGET_BTRFS_IOC_ADD_DEV                TARGET_IOWU(BTRFS_IOCTL_MAGIC, 10)
++#define TARGET_BTRFS_IOC_RM_DEV                 TARGET_IOWU(BTRFS_IOCTL_MAGIC, 11)
+ #define TARGET_BTRFS_IOC_SUBVOL_CREATE          TARGET_IOWU(BTRFS_IOCTL_MAGIC, 14)
+ #define TARGET_BTRFS_IOC_SNAP_DESTROY           TARGET_IOWU(BTRFS_IOCTL_MAGIC, 15)
+ #define TARGET_BTRFS_IOC_SUBVOL_GETFLAGS        TARGET_IOR(BTRFS_IOCTL_MAGIC, 25,\
+                                                            abi_ullong)
+ #define TARGET_BTRFS_IOC_SUBVOL_SETFLAGS        TARGET_IOW(BTRFS_IOCTL_MAGIC, 26,\
+                                                            abi_ullong)
++#define TARGET_BTRFS_IOC_DEV_INFO               TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 30)
++#define TARGET_BTRFS_IOC_GET_DEV_STATS          TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 52)
+ #define TARGET_BTRFS_IOC_GET_SUBVOL_INFO        TARGET_IORU(BTRFS_IOCTL_MAGIC, 60)
+ 
+ /* usb ioctls */
+diff --git a/linux-user/syscall_types.h b/linux-user/syscall_types.h
+index 038cd7869b..ea6898979b 100644
+--- a/linux-user/syscall_types.h
++++ b/linux-user/syscall_types.h
+@@ -355,7 +355,9 @@ STRUCT(blkpg_partition,
+        MK_ARRAY(TYPE_CHAR, BLKPG_VOLNAMELTH)) /* volname */
+ 
+ #if defined(BTRFS_IOC_SUBVOL_CREATE) || defined(BTRFS_IOC_SNAP_CREATE) || \
+-    defined(BTRFS_IOC_SNAP_DESTROY)
++    defined(BTRFS_IOC_SNAP_DESTROY)  || defined(BTRFS_IOC_SCAN_DEV)  || \
++    defined(BTRFS_IOC_FORGET_DEV)    || defined(BTRFS_IOC_ADD_DEV) || \
++    defined(BTRFS_IOC_RM_DEV)        || defined(BTRFS_IOC_DEV_INFO)
+ STRUCT(btrfs_ioctl_vol_args,
+        TYPE_LONGLONG, /* fd */
+        MK_ARRAY(TYPE_CHAR, BTRFS_PATH_NAME_MAX + 1)) /* name */
+@@ -387,6 +389,26 @@ STRUCT(btrfs_ioctl_get_subvol_info_args,
+        MK_ARRAY(TYPE_ULONGLONG, 8)) /* reserved */
+ #endif
+ 
++#ifdef BTRFS_IOC_DEV_INFO
++STRUCT(btrfs_ioctl_dev_info_args,
++       TYPE_ULONGLONG, /* devid */
++       MK_ARRAY(TYPE_CHAR, BTRFS_UUID_SIZE), /* uuid */
++       TYPE_ULONGLONG, /* bytes_used */
++       TYPE_ULONGLONG, /* total_bytes */
++       MK_ARRAY(TYPE_ULONGLONG, 379), /* unused */
++       MK_ARRAY(TYPE_CHAR, BTRFS_DEVICE_PATH_NAME_MAX)) /* path */
++#endif
++
++#ifdef BTRFS_IOC_GET_DEV_STATS
++STRUCT(btrfs_ioctl_get_dev_stats,
++       TYPE_ULONGLONG, /* devid */
++       TYPE_ULONGLONG, /* nr_items */
++       TYPE_ULONGLONG, /* flags */
++       MK_ARRAY(TYPE_ULONGLONG, BTRFS_DEV_STAT_VALUES_MAX), /* values */
++       MK_ARRAY(TYPE_ULONGLONG,
++                128 - 2 - BTRFS_DEV_STAT_VALUES_MAX)) /* unused */
++#endif
++
+ STRUCT(rtc_time,
+        TYPE_INT, /* tm_sec */
+        TYPE_INT, /* tm_min */
+-- 
+2.26.2
+

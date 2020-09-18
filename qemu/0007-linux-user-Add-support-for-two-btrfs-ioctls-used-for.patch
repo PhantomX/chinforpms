@@ -1,0 +1,132 @@
+From 58252f756d7fb2a8516c0815034c0bded4697852 Mon Sep 17 00:00:00 2001
+From: Filip Bozuta <Filip.Bozuta@syrmia.com>
+Date: Thu, 3 Sep 2020 01:26:59 +0200
+Subject: [PATCH 7/9] linux-user: Add support for two btrfs ioctls used for
+ subvolume
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This patch implements functionality for following ioctl:
+
+BTRFS_IOC_DEFAULT_SUBVOL - Setting a default subvolume
+
+    Set a default subvolume for a btrfs filesystem. The third
+    ioctl's argument is a '__u64' (unsigned long long) which
+    represents the id of a subvolume that is to be set as
+    the default.
+
+BTRFS_IOC_GET_SUBVOL_ROOTREF - Getting tree and directory id of subvolumes
+
+    Read tree and directory id of subvolumes from a btrfs
+    filesystem. The tree and directory id's are returned in the
+    ioctl's third argument which represents a pointer to a
+    following type:
+
+    struct btrfs_ioctl_get_subvol_rootref_args {
+		/* in/out, minimum id of rootref's treeid to be searched */
+		__u64 min_treeid;
+
+		/* out */
+		struct {
+			__u64 treeid;
+			__u64 dirid;
+		} rootref[BTRFS_MAX_ROOTREF_BUFFER_NUM];
+
+		/* out, number of found items */
+		__u8 num_items;
+		__u8 align[7];
+     };
+
+     Before calling this ioctl, 'min_treeid' field should be filled
+     with value that represent the minimum value for the tree id.
+
+Implementation notes:
+
+    Ioctl BTRFS_IOC_GET_SUBVOL_ROOTREF uses the above mentioned structure
+    type as third argument. That is the reason why a aproppriate thunk
+    structure definition is added in file 'syscall_types.h'.
+
+Signed-off-by: Filip Bozuta <Filip.Bozuta@syrmia.com>
+Tested-by: Daniel P. Berrangé <berrange@redhat.com>
+Message-Id: <20200823195014.116226-7-Filip.Bozuta@syrmia.com>
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+---
+ linux-user/ioctls.h        |  7 +++++++
+ linux-user/syscall_defs.h  |  3 +++
+ linux-user/syscall_types.h | 13 +++++++++++++
+ 3 files changed, 23 insertions(+)
+
+diff --git a/linux-user/ioctls.h b/linux-user/ioctls.h
+index 169f98f7a3..728880b9f3 100644
+--- a/linux-user/ioctls.h
++++ b/linux-user/ioctls.h
+@@ -206,6 +206,9 @@
+      IOCTL(BTRFS_IOC_INO_LOOKUP, IOC_RW,
+            MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_ino_lookup_args)))
+ #endif
++#ifdef BTRFS_IOC_DEFAULT_SUBVOL
++     IOCTL(BTRFS_IOC_DEFAULT_SUBVOL, IOC_W, MK_PTR(TYPE_ULONGLONG))
++#endif
+ #ifdef BTRFS_IOC_SUBVOL_GETFLAGS
+      IOCTL(BTRFS_IOC_SUBVOL_GETFLAGS, IOC_R, MK_PTR(TYPE_ULONGLONG))
+ #endif
+@@ -248,6 +251,10 @@
+      IOCTL(BTRFS_IOC_GET_SUBVOL_INFO, IOC_R,
+            MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_get_subvol_info_args)))
+ #endif
++#ifdef BTRFS_IOC_GET_SUBVOL_ROOTREF
++     IOCTL(BTRFS_IOC_GET_SUBVOL_ROOTREF, IOC_RW,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_get_subvol_rootref_args)))
++#endif
+ #ifdef BTRFS_IOC_INO_LOOKUP_USER
+      IOCTL(BTRFS_IOC_INO_LOOKUP_USER, IOC_RW,
+            MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_ino_lookup_user_args)))
+diff --git a/linux-user/syscall_defs.h b/linux-user/syscall_defs.h
+index a6a9454b85..1d0bfb5479 100644
+--- a/linux-user/syscall_defs.h
++++ b/linux-user/syscall_defs.h
+@@ -976,6 +976,8 @@ struct target_rtc_pll_info {
+ #define TARGET_BTRFS_IOC_SUBVOL_CREATE          TARGET_IOWU(BTRFS_IOCTL_MAGIC, 14)
+ #define TARGET_BTRFS_IOC_SNAP_DESTROY           TARGET_IOWU(BTRFS_IOCTL_MAGIC, 15)
+ #define TARGET_BTRFS_IOC_INO_LOOKUP             TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 18)
++#define TARGET_BTRFS_IOC_DEFAULT_SUBVOL         TARGET_IOW(BTRFS_IOCTL_MAGIC, 19,\
++                                                           abi_ullong)
+ #define TARGET_BTRFS_IOC_SUBVOL_GETFLAGS        TARGET_IOR(BTRFS_IOCTL_MAGIC, 25,\
+                                                            abi_ullong)
+ #define TARGET_BTRFS_IOC_SUBVOL_SETFLAGS        TARGET_IOW(BTRFS_IOCTL_MAGIC, 26,\
+@@ -989,6 +991,7 @@ struct target_rtc_pll_info {
+ #define TARGET_BTRFS_IOC_GET_SUPPORTED_FEATURES TARGET_IORU(BTRFS_IOCTL_MAGIC, 57)
+ #define TARGET_BTRFS_IOC_LOGICAL_INO_V2         TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 59)
+ #define TARGET_BTRFS_IOC_GET_SUBVOL_INFO        TARGET_IORU(BTRFS_IOCTL_MAGIC, 60)
++#define TARGET_BTRFS_IOC_GET_SUBVOL_ROOTREF     TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 61)
+ #define TARGET_BTRFS_IOC_INO_LOOKUP_USER        TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 62)
+ 
+ /* usb ioctls */
+diff --git a/linux-user/syscall_types.h b/linux-user/syscall_types.h
+index b84e14235f..5566d101c2 100644
+--- a/linux-user/syscall_types.h
++++ b/linux-user/syscall_types.h
+@@ -431,6 +431,19 @@ STRUCT(btrfs_ioctl_dev_info_args,
+        MK_ARRAY(TYPE_CHAR, BTRFS_DEVICE_PATH_NAME_MAX)) /* path */
+ #endif
+ 
++#ifdef BTRFS_IOC_GET_SUBVOL_ROOTREF
++STRUCT(rootref,
++       TYPE_ULONGLONG, /* treeid */
++       TYPE_ULONGLONG) /* dirid */
++
++STRUCT(btrfs_ioctl_get_subvol_rootref_args,
++       TYPE_ULONGLONG, /* min_treeid */
++       MK_ARRAY(MK_STRUCT(STRUCT_rootref),
++                BTRFS_MAX_ROOTREF_BUFFER_NUM), /* rootref */
++       TYPE_CHAR, /* num_items */
++       MK_ARRAY(TYPE_CHAR, 7)) /* align */
++#endif
++
+ #ifdef BTRFS_IOC_GET_DEV_STATS
+ STRUCT(btrfs_ioctl_get_dev_stats,
+        TYPE_ULONGLONG, /* devid */
+-- 
+2.26.2
+

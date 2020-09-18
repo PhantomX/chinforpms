@@ -5,7 +5,7 @@
 %global progdir %{_libdir}/%{name}
 
 Name:           zoom
-Version:        5.0.413237.0524
+Version:        5.2.458699.0906
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -127,5 +127,8 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Thu Sep 17 2020 Phantom X <megaphantomx at hotmail dot com> - 5.2.458699.0906-1
+- 5.2.458699.0906
+
 * Mon Jun 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.0.413237.0524-1
 - Initial spec

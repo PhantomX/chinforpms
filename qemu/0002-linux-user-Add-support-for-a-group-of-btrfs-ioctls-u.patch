@@ -1,0 +1,264 @@
+From e0eab99255d34c9dbaac7b73a1a2a79f823a7da9 Mon Sep 17 00:00:00 2001
+From: Filip Bozuta <Filip.Bozuta@syrmia.com>
+Date: Thu, 3 Sep 2020 01:26:54 +0200
+Subject: [PATCH 2/9] linux-user: Add support for a group of btrfs ioctls used
+ for subvolumes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This patch implements functionality of following ioctls:
+
+BTRFS_IOC_SUBVOL_CREATE - Creating a btrfs subvolume
+
+    Create a btrfs subvolume. The subvolume is created using the ioctl's
+    third argument which represents a pointer to a following structure
+    type:
+
+    struct btrfs_ioctl_vol_args {
+	__s64 fd;
+	char name[BTRFS_PATH_NAME_MAX + 1];
+    };
+
+    Before calling this ioctl, the fields of this structure should be filled
+    with aproppriate values. The fd field represents the file descriptor
+    value of the subvolume and the name field represents the subvolume
+    path.
+
+BTRFS_IOC_SUBVOL_GETFLAGS - Getting subvolume flags
+
+    Read the flags of the btrfs subvolume. The flags are read using
+    the ioctl's third argument that is a pointer of __u64 (unsigned long).
+    The third argument represents a bit mask that can be composed of following
+    values:
+    BTRFS_SUBVOL_RDONLY           (1ULL << 1)
+    BTRFS_SUBVOL_QGROUP_INHERIT   (1ULL << 2)
+    BTRFS_DEVICE_SPEC_BY_ID       (1ULL << 3)
+    BTRFS_SUBVOL_SPEC_BY_ID       (1ULL << 4)
+
+BTRFS_IOC_SUBVOL_SETFLAGS - Setting subvolume flags
+
+    Set the flags of the btrfs subvolume. The flags are set using the
+    ioctl's third argument that is a pointer of __u64 (unsigned long).
+    The third argument represents a bit mask that can be composed of same
+    values as in the case of previous ioctl (BTRFS_IOC_SUBVOL_GETFLAGS).
+
+BTRFS_IOC_SUBVOL_GETINFO - Getting subvolume information
+
+    Read information about the subvolume. The subvolume information is
+    returned in the ioctl's third argument which represents a pointer to
+    a following structure type:
+
+    struct btrfs_ioctl_get_subvol_info_args {
+	/* Id of this subvolume */
+	__u64 treeid;
+
+	/* Name of this subvolume, used to get the real name at mount point */
+	char name[BTRFS_VOL_NAME_MAX + 1];
+
+	/*
+	 * Id of the subvolume which contains this subvolume.
+	 * Zero for top-level subvolume or a deleted subvolume.
+	 */
+	__u64 parent_id;
+
+	/*
+	 * Inode number of the directory which contains this subvolume.
+	 * Zero for top-level subvolume or a deleted subvolume
+	 */
+	__u64 dirid;
+
+	/* Latest transaction id of this subvolume */
+	__u64 generation;
+
+	/* Flags of this subvolume */
+	__u64 flags;
+
+	/* UUID of this subvolume */
+	__u8 uuid[BTRFS_UUID_SIZE];
+
+	/*
+	 * UUID of the subvolume of which this subvolume is a snapshot.
+	 * All zero for a non-snapshot subvolume.
+	 */
+	__u8 parent_uuid[BTRFS_UUID_SIZE];
+
+	/*
+	 * UUID of the subvolume from which this subvolume was received.
+	 * All zero for non-received subvolume.
+	 */
+	__u8 received_uuid[BTRFS_UUID_SIZE];
+
+	/* Transaction id indicating when change/create/send/receive happened */
+	__u64 ctransid;
+	__u64 otransid;
+	__u64 stransid;
+	__u64 rtransid;
+	/* Time corresponding to c/o/s/rtransid */
+	struct btrfs_ioctl_timespec ctime;
+	struct btrfs_ioctl_timespec otime;
+	struct btrfs_ioctl_timespec stime;
+	struct btrfs_ioctl_timespec rtime;
+
+	/* Must be zero */
+	__u64 reserved[8];
+     };
+
+     All of the fields of this structure are filled after the ioctl call.
+
+Implementation notes:
+
+    Ioctls BTRFS_IOC_SUBVOL_CREATE and BTRFS_IOC_SUBVOL_GETINFO have structure
+    types as third arguments. That is the reason why a corresponding definition
+    are added in file 'linux-user/syscall_types.h'.
+
+    The line '#include <linux/btrfs.h>' is added in file 'linux-user/syscall.c' to
+    recognise preprocessor definitions for these ioctls. Since the file "linux/btrfs.h"
+    was added in the kernel version 3.9, it is enwrapped in an #ifdef statement
+    with parameter CONFIG_BTRFS which is defined in 'configure' if the
+    header file is present.
+
+Signed-off-by: Filip Bozuta <Filip.Bozuta@syrmia.com>
+Tested-by: Daniel P. Berrangé <berrange@redhat.com>
+Message-Id: <20200823195014.116226-2-Filip.Bozuta@syrmia.com>
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+---
+ configure                  |  9 +++++++++
+ linux-user/ioctls.h        | 15 +++++++++++++++
+ linux-user/syscall.c       |  3 +++
+ linux-user/syscall_defs.h  |  8 ++++++++
+ linux-user/syscall_types.h | 32 ++++++++++++++++++++++++++++++++
+ 5 files changed, 67 insertions(+)
+
+diff --git a/configure b/configure
+index 2acc4d1465..1cba4e0b80 100755
+--- a/configure
++++ b/configure
+@@ -5079,6 +5079,12 @@ if check_include sys/kcov.h ; then
+     kcov=yes
+ fi
+ 
++# check for btrfs filesystem support (kernel must be 3.9+)
++btrfs=no
++if check_include linux/btrfs.h ; then
++    btrfs=yes
++fi
++
+ # If we're making warnings fatal, apply this to Sphinx runs as well
+ sphinx_werror=""
+ if test "$werror" = "yes"; then
+@@ -7330,6 +7336,9 @@ fi
+ if test "$kcov" = "yes" ; then
+   echo "CONFIG_KCOV=y" >> $config_host_mak
+ fi
++if test "$btrfs" = "yes" ; then
++  echo "CONFIG_BTRFS=y" >> $config_host_mak
++fi
+ if test "$inotify" = "yes" ; then
+   echo "CONFIG_INOTIFY=y" >> $config_host_mak
+ fi
+diff --git a/linux-user/ioctls.h b/linux-user/ioctls.h
+index 0713ae1311..12d1444224 100644
+--- a/linux-user/ioctls.h
++++ b/linux-user/ioctls.h
+@@ -174,6 +174,21 @@
+      IOCTL(FS_IOC32_GETVERSION, IOC_R, MK_PTR(TYPE_INT))
+      IOCTL(FS_IOC32_SETVERSION, IOC_W, MK_PTR(TYPE_INT))
+ 
++#ifdef BTRFS_IOC_SUBVOL_CREATE
++     IOCTL(BTRFS_IOC_SUBVOL_CREATE, IOC_W,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_vol_args)))
++#endif
++#ifdef BTRFS_IOC_SUBVOL_GETFLAGS
++     IOCTL(BTRFS_IOC_SUBVOL_GETFLAGS, IOC_R, MK_PTR(TYPE_ULONGLONG))
++#endif
++#ifdef BTRFS_IOC_SUBVOL_SETFLAGS
++     IOCTL(BTRFS_IOC_SUBVOL_SETFLAGS, IOC_W, MK_PTR(TYPE_ULONGLONG))
++#endif
++#ifdef BTRFS_IOC_GET_SUBVOL_INFO
++     IOCTL(BTRFS_IOC_GET_SUBVOL_INFO, IOC_R,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_get_subvol_info_args)))
++#endif
++
+ #ifdef CONFIG_USBFS
+   /* USB ioctls */
+   IOCTL(USBDEVFS_CONTROL, IOC_RW,
+diff --git a/linux-user/syscall.c b/linux-user/syscall.c
+index 945fc25279..36777c91b0 100644
+--- a/linux-user/syscall.c
++++ b/linux-user/syscall.c
+@@ -112,6 +112,9 @@
+ #include <linux/if_alg.h>
+ #include <linux/rtc.h>
+ #include <sound/asound.h>
++#ifdef CONFIG_BTRFS
++#include <linux/btrfs.h>
++#endif
+ #ifdef HAVE_DRM_H
+ #include <libdrm/drm.h>
+ #endif
+diff --git a/linux-user/syscall_defs.h b/linux-user/syscall_defs.h
+index 3c261cff0e..2757956dfa 100644
+--- a/linux-user/syscall_defs.h
++++ b/linux-user/syscall_defs.h
+@@ -967,6 +967,14 @@ struct target_rtc_pll_info {
+ #define TARGET_FS_IOC32_GETVERSION TARGET_IOR('v', 1, int)
+ #define TARGET_FS_IOC32_SETVERSION TARGET_IOW('v', 2, int)
+ 
++/* btrfs ioctls */
++#define TARGET_BTRFS_IOC_SUBVOL_CREATE          TARGET_IOWU(BTRFS_IOCTL_MAGIC, 14)
++#define TARGET_BTRFS_IOC_SUBVOL_GETFLAGS        TARGET_IOR(BTRFS_IOCTL_MAGIC, 25,\
++                                                           abi_ullong)
++#define TARGET_BTRFS_IOC_SUBVOL_SETFLAGS        TARGET_IOW(BTRFS_IOCTL_MAGIC, 26,\
++                                                           abi_ullong)
++#define TARGET_BTRFS_IOC_GET_SUBVOL_INFO        TARGET_IORU(BTRFS_IOCTL_MAGIC, 60)
++
+ /* usb ioctls */
+ #define TARGET_USBDEVFS_CONTROL TARGET_IOWRU('U', 0)
+ #define TARGET_USBDEVFS_BULK TARGET_IOWRU('U', 2)
+diff --git a/linux-user/syscall_types.h b/linux-user/syscall_types.h
+index 3f1f033464..db61dbc1b3 100644
+--- a/linux-user/syscall_types.h
++++ b/linux-user/syscall_types.h
+@@ -354,6 +354,38 @@ STRUCT(blkpg_partition,
+        MK_ARRAY(TYPE_CHAR, BLKPG_DEVNAMELTH), /* devname */
+        MK_ARRAY(TYPE_CHAR, BLKPG_VOLNAMELTH)) /* volname */
+ 
++#ifdef BTRFS_IOC_SUBVOL_CREATE
++STRUCT(btrfs_ioctl_vol_args,
++       TYPE_LONGLONG, /* fd */
++       MK_ARRAY(TYPE_CHAR, BTRFS_PATH_NAME_MAX + 1)) /* name */
++#endif
++
++#ifdef BTRFS_IOC_GET_SUBVOL_INFO
++STRUCT(btrfs_ioctl_timespec,
++       TYPE_ULONGLONG, /* sec */
++       TYPE_INT) /* nsec */
++
++STRUCT(btrfs_ioctl_get_subvol_info_args,
++       TYPE_ULONGLONG, /* treeid */
++       MK_ARRAY(TYPE_CHAR, BTRFS_VOL_NAME_MAX + 1),
++       TYPE_ULONGLONG, /* parentid */
++       TYPE_ULONGLONG, /* dirid */
++       TYPE_ULONGLONG, /* generation */
++       TYPE_ULONGLONG, /* flags */
++       MK_ARRAY(TYPE_CHAR, BTRFS_UUID_SIZE), /* uuid */
++       MK_ARRAY(TYPE_CHAR, BTRFS_UUID_SIZE), /* parent_uuid */
++       MK_ARRAY(TYPE_CHAR, BTRFS_UUID_SIZE), /* received_uuid */
++       TYPE_ULONGLONG, /* ctransid */
++       TYPE_ULONGLONG, /* otransid */
++       TYPE_ULONGLONG, /* stransid */
++       TYPE_ULONGLONG, /* rtransid */
++       MK_STRUCT(STRUCT_btrfs_ioctl_timespec), /* ctime */
++       MK_STRUCT(STRUCT_btrfs_ioctl_timespec), /* otime */
++       MK_STRUCT(STRUCT_btrfs_ioctl_timespec), /* stime */
++       MK_STRUCT(STRUCT_btrfs_ioctl_timespec), /* rtime */
++       MK_ARRAY(TYPE_ULONGLONG, 8)) /* reserved */
++#endif
++
+ STRUCT(rtc_time,
+        TYPE_INT, /* tm_sec */
+        TYPE_INT, /* tm_min */
+-- 
+2.26.2
+

@@ -1,0 +1,120 @@
+From 5793eb73d4d6d37293c6ca95ed85414fcccb9662 Mon Sep 17 00:00:00 2001
+From: Filip Bozuta <Filip.Bozuta@syrmia.com>
+Date: Thu, 3 Sep 2020 01:26:57 +0200
+Subject: [PATCH 5/9] linux-user: Add support for btrfs ioctls used to get/set
+ features
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This patch implements functionality for following ioctls:
+
+BTRFS_IOC_GET_FEATURES - Getting feature flags
+
+    Read feature flags for a btrfs filesystem. The feature flags
+    are returned inside the ioctl's third argument which represents
+    a pointer to a following structure type:
+
+    struct btrfs_ioctl_feature_flags {
+	__u64 compat_flags;
+	__u64 compat_ro_flags;
+	__u64 incompat_flags;
+    };
+
+    All of the structure field represent bit masks that can be composed
+    of values which can be found on:
+    https://elixir.bootlin.com/linux/latest/source/fs/btrfs/ctree.h#L282
+
+BTRFS_IOC_SET_FEATURES - Setting feature flags
+
+    Set and clear feature flags for a btrfs filesystem. The feature flags
+    are set using the ioctl's third argument which represents a
+    'struct btrfs_ioctl_feature_flags[2]' array. The first element of the
+    array represent flags which are to be cleared and the second element of
+    the array represent flags which are to be set. The second element has the
+    priority over the first, which means that if there are matching flags
+    in the elements, they will be set in the filesystem. If the flag values
+    in the third argument aren't correctly set to be composed of the available
+    predefined flag values, errno ENOPERM ("Operation not permitted") is returned.
+
+BTRFS_IOC_GET_SUPPORTED_FEATURES - Getting supported feature flags
+
+    Read supported feature flags for a btrfs filesystem. The supported
+    feature flags are read using the ioctl's third argument which represents
+    a 'struct btrfs_ioctl_feature_flags[3]' array. The first element of this
+    array represents all of the supported flags in the btrfs filesystem.
+    The second element represents flags that can be safely set and third element
+    represent flags that can be safely clearead.
+
+Implementation notes:
+
+    All of the implemented ioctls use 'struct btrfs_ioctl_feature_flags' as
+    third argument. That is the reason why a corresponding defintion was added
+    in file 'linux-user/syscall_types.h'.
+
+Signed-off-by: Filip Bozuta <Filip.Bozuta@syrmia.com>
+Tested-by: Daniel P. Berrangé <berrange@redhat.com>
+Message-Id: <20200823195014.116226-5-Filip.Bozuta@syrmia.com>
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+---
+ linux-user/ioctls.h        | 12 ++++++++++++
+ linux-user/syscall_defs.h  |  3 +++
+ linux-user/syscall_types.h |  5 +++++
+ 3 files changed, 20 insertions(+)
+
+diff --git a/linux-user/ioctls.h b/linux-user/ioctls.h
+index 55a6cbeca5..50fae1e33b 100644
+--- a/linux-user/ioctls.h
++++ b/linux-user/ioctls.h
+@@ -216,6 +216,18 @@
+      IOCTL(BTRFS_IOC_GET_DEV_STATS, IOC_RW,
+            MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_get_dev_stats)))
+ #endif
++#ifdef BTRFS_IOC_GET_FEATURES
++     IOCTL(BTRFS_IOC_GET_FEATURES, IOC_R,
++           MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_feature_flags)))
++#endif
++#ifdef BTRFS_IOC_SET_FEATURES
++     IOCTL(BTRFS_IOC_SET_FEATURES, IOC_W,
++           MK_PTR(MK_ARRAY(MK_STRUCT(STRUCT_btrfs_ioctl_feature_flags), 2)))
++#endif
++#ifdef BTRFS_IOC_GET_SUPPORTED_FEATURES
++     IOCTL(BTRFS_IOC_GET_SUPPORTED_FEATURES, IOC_R,
++           MK_PTR(MK_ARRAY(MK_STRUCT(STRUCT_btrfs_ioctl_feature_flags), 3)))
++#endif
+ #ifdef BTRFS_IOC_GET_SUBVOL_INFO
+      IOCTL(BTRFS_IOC_GET_SUBVOL_INFO, IOC_R,
+            MK_PTR(MK_STRUCT(STRUCT_btrfs_ioctl_get_subvol_info_args)))
+diff --git a/linux-user/syscall_defs.h b/linux-user/syscall_defs.h
+index 4c7bfa0391..44811fdcbb 100644
+--- a/linux-user/syscall_defs.h
++++ b/linux-user/syscall_defs.h
+@@ -981,6 +981,9 @@ struct target_rtc_pll_info {
+                                                            abi_ullong)
+ #define TARGET_BTRFS_IOC_DEV_INFO               TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 30)
+ #define TARGET_BTRFS_IOC_GET_DEV_STATS          TARGET_IOWRU(BTRFS_IOCTL_MAGIC, 52)
++#define TARGET_BTRFS_IOC_GET_FEATURES           TARGET_IORU(BTRFS_IOCTL_MAGIC, 57)
++#define TARGET_BTRFS_IOC_SET_FEATURES           TARGET_IOWU(BTRFS_IOCTL_MAGIC, 57)
++#define TARGET_BTRFS_IOC_GET_SUPPORTED_FEATURES TARGET_IORU(BTRFS_IOCTL_MAGIC, 57)
+ #define TARGET_BTRFS_IOC_GET_SUBVOL_INFO        TARGET_IORU(BTRFS_IOCTL_MAGIC, 60)
+ 
+ /* usb ioctls */
+diff --git a/linux-user/syscall_types.h b/linux-user/syscall_types.h
+index ea6898979b..925054cfd4 100644
+--- a/linux-user/syscall_types.h
++++ b/linux-user/syscall_types.h
+@@ -409,6 +409,11 @@ STRUCT(btrfs_ioctl_get_dev_stats,
+                 128 - 2 - BTRFS_DEV_STAT_VALUES_MAX)) /* unused */
+ #endif
+ 
++STRUCT(btrfs_ioctl_feature_flags,
++       TYPE_ULONGLONG, /* compat_flags */
++       TYPE_ULONGLONG, /* compat_ro_flags */
++       TYPE_ULONGLONG) /* incompat_flags */
++
+ STRUCT(rtc_time,
+        TYPE_INT, /* tm_sec */
+        TYPE_INT, /* tm_min */
+-- 
+2.26.2
+

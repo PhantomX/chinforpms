@@ -33,7 +33,7 @@
 
 # Matches numactl ExcludeArch
 %global have_numactl 1
-%ifarch s390 %{arm}
+%ifarch %{arm}
 %global have_numactl 0
 %endif
 
@@ -43,7 +43,7 @@
 #
 # https://bugzilla.redhat.com/show_bug.cgi?id=1332449
 %global have_iasl 1
-%ifnarch s390 s390x ppc ppc64
+%ifnarch s390x
 %global have_iasl 0
 %endif
 
@@ -70,13 +70,27 @@
 %global hostqemu arm-softmmu/qemu-system-arm
 %endif
 %ifarch aarch64
-%global hostqemu arm-softmmu/qemu-system-aarch64
+%global hostqemu aarch64-softmmu/qemu-system-aarch64
 %endif
 %ifarch %{ix86}
 %global hostqemu i386-softmmu/qemu-system-i386
 %endif
 %ifarch x86_64
 %global hostqemu x86_64-softmmu/qemu-system-x86_64
+%endif
+
+%global qemu_sanity_check 0
+%ifnarch %{ix86}
+%if 0%{?hostqemu:1}
+%global qemu_sanity_check 1
+%endif
+%endif
+
+# QEMU sanity check doesn't know how to pick machine type
+# which is needed on ARM as there is no defualt
+# https://bugzilla.redhat.com/show_bug.cgi?id=1875763
+%ifarch %{arm} aarch64
+%global qemu_sanity_check 0
 %endif
 
 # All modules should be listed here.
@@ -166,13 +180,23 @@ Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
 Version: 5.1.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
 
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 Source0: http://wiki.qemu-project.org/download/%{name}-%{ver}.tar.xz
+
+Patch1: 0001-linux-user-fix-implicit-conversion-from-enumeration-.patch
+Patch2: 0002-linux-user-Add-support-for-a-group-of-btrfs-ioctls-u.patch
+Patch3: 0003-linux-user-Add-support-for-a-group-of-btrfs-ioctls-u.patch
+Patch4: 0004-linux-user-Add-support-for-btrfs-ioctls-used-to-mani.patch
+Patch5: 0005-linux-user-Add-support-for-btrfs-ioctls-used-to-get-.patch
+Patch6: 0006-linux-user-Add-support-for-a-group-of-btrfs-inode-io.patch
+Patch7: 0007-linux-user-Add-support-for-two-btrfs-ioctls-used-for.patch
+Patch8: 0008-linux-user-Add-support-for-btrfs-ioctls-used-to-mana.patch
+Patch9: 0009-linux-user-Add-support-for-btrfs-ioctls-used-to-scru.patch
 
 # guest agent service
 Source10: qemu-guest-agent.service
@@ -198,8 +222,7 @@ BuildRequires: gcc
 BuildRequires: texinfo
 # For /usr/bin/pod2man
 BuildRequires: perl-podlators
-%ifnarch %{ix86}
-# For sanity test
+%if %{qemu_sanity_check}
 BuildRequires: qemu-sanity-check-nodeps
 BuildRequires: kernel
 %endif
@@ -305,7 +328,9 @@ BuildRequires: libtasn1-devel
 # qemu 2.5: libcacard is it's own project now
 BuildRequires: libcacard-devel >= 2.5.0
 # qemu 2.5: virgl 3d support
+%if 0%{?fedora}
 BuildRequires: virglrenderer-devel
+%endif
 # qemu 2.6: Needed for gtk GL support, vhost-user-gpu
 BuildRequires: mesa-libgbm-devel
 # qemu 2.11: preferred disassembler for TCG
@@ -985,14 +1010,8 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/qemu-trace-stap
 # Disable LTO since it caused lots of strange assert failures.
 %define _lto_cflags %{nil}
 
-# drop -g flag to prevent memory exhaustion by linker
-%ifarch s390
-%global optflags %(echo %{optflags} | sed 's/-g//')
-sed -i.debug 's/"-g $CFLAGS"/"$CFLAGS"/g' configure
-%endif
-
 # OOM killer breaks builds with parallel make on s390(x)
-%ifarch s390 s390x
+%ifarch s390x
 %global _smp_mflags %{nil}
 %endif
 
@@ -1177,9 +1196,6 @@ run_configure \
     --enable-modules \
     --enable-mpath \
     %{spiceflag} \
-%ifarch s390 %{mips64}
-    --enable-tcg-interpreter \
-%endif
     --enable-slirp=system \
 %{nil}
 
@@ -1375,13 +1391,6 @@ install -Dpm 644 %{SOURCE16} %{buildroot}%{_sysusersdir}/%{name}.conf
 # Enable this temporarily if tests are broken
 %global tests_nofail 0
 
-# Tests are hanging on s390 as of 2.3.0
-#   https://bugzilla.redhat.com/show_bug.cgi?id=1206057
-# Tests seem to be a recurring problem on s390, leave them disabled.
-%ifarch s390
-%global tests_skip 1
-%endif
-
 # 2020-08-31: tests passing, but s390x fails due to
 # spurious warning breaking an iotest case
 # https://lists.gnu.org/archive/html/qemu-devel/2020-08/msg03279.html
@@ -1395,15 +1404,17 @@ pushd build-dynamic
  make check V=1
 %endif
 
-%if 0%{?hostqemu:1}
-# Sanity-check current kernel can boot on this qemu.
-# The results are advisory only.
-qemu-sanity-check --qemu=%{?hostqemu} ||:
-%endif
-
 # Check the binary runs (see eg RHBZ#998722).
 b="./x86_64-softmmu/qemu-system-x86_64"
 if [ -x "$b" ]; then "$b" -help; fi
+
+%if %{qemu_sanity_check}
+# Sanity-check current kernel can boot on this qemu.
+# The results are advisory only.
+KERNEL=`find /lib/modules -name vmlinuz | head -1`
+echo "Trying to boot kernel $KERNEL with %{?hostqemu}"
+qemu-sanity-check --qemu=%{?hostqemu} --kernel=$KERNEL
+%endif
 
 %endif
 popd
@@ -1882,6 +1893,9 @@ popd
 
 
 %changelog
+* Thu Sep 17 2020 Phantom X <megaphantomx at hotmail dot com> - 2:5.1.0-101
+- Rawhide sync
+
 * Tue Aug 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:5.1.0-100
 - 5.1.0
 - Rawhide sync
