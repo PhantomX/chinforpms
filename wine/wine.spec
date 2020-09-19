@@ -1,6 +1,6 @@
-%global commit 26eedec78e50a5f264ea045a37558c41eceba653
+%global commit 2cf69bb5a5b43951abb251f415ccb81e809bd32e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200915
+%global date 20200917
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,14 +41,14 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 151728b04d502c07063eeda8c4794cc1d8e331eb
+%global wine_stagingver 003d5833c2fc0bd15ad9d3753dfb4d654f71088c
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id ae15b580525714b76de074c2aee30f535e15a349
+%global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
 %global tkg_id 09eb525ddd7c4b7dab180b989be8a504c486ad19
@@ -826,6 +826,14 @@ Patch7655:      %{whq_url}/6f5872cbc58d5a6e26f651baa27412b010943de7#/%{name}-whq
 Patch7656:      %{whq_url}/d36a1792259440ea88ab0a67271aa7c4e98da28a#/%{name}-whq-d36a179.patch
 Patch7657:      %{whq_url}/cc6c5f7823df717da2eeba4351348325ee91ba5e#/%{name}-whq-cc6c5f7.patch
 Patch7658:      %{whq_url}/67324a4284bbbea67510365a835dbc0a45409533#/%{name}-whq-67324a4.patch
+Patch7659:      %{whq_url}/7364a4b07536c10331e6049bc098ca9dba9554e6#/%{name}-whq-7364a4b.patch
+Patch7660:      %{whq_url}/74192f7a56c319c1a9cadb67a3dd3305c965292d#/%{name}-whq-74192f7.patch
+Patch7661:      %{whq_url}/3217abd7a57e2b6bc3d7eb6c3de3d570cd5b86f8#/%{name}-whq-3217abd.patch
+Patch7662:      %{whq_url}/3e115d244ed2e2018bfe4a7fa5a9ea7a37b2c8ea#/%{name}-whq-3e115d2.patch
+Patch7663:      %{whq_url}/d6565b083251427e0b64efa279c314316aa20dee#/%{name}-whq-d6565b0.patch
+Patch7664:      %{whq_url}/ca95afd37f6416b1972ef33a811939b37b405320#/%{name}-whq-ca95afd.patch
+Patch7665:      %{whq_url}/3d31e52fe7bbfbfe28af6dd224bb7594bbcd9521#/%{name}-whq-3d31e52.patch
+Patch7666:      %{whq_url}/2693e6662d73bd774edc5d018092b0318e49b1b1#/%{name}-whq-2693e66.patch
 
 # Reverts to unbreak fshack
 Patch8000:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -1520,6 +1528,14 @@ This package adds the opencl driver for wine.
 %patch101 -p1
 
 %if 0%{?wine_staging}
+%patch7666 -p1 -R
+%patch7665 -p1 -R
+%patch7664 -p1 -R
+%patch7663 -p1 -R
+%patch7662 -p1 -R
+%patch7661 -p1 -R
+%patch7660 -p1 -R
+%patch7659 -p1 -R
 %patch7658 -p1 -R
 %patch7657 -p1 -R
 %patch7656 -p1 -R
@@ -3650,6 +3666,7 @@ fi
 %if 0%{?wine_staging}
 %{_libdir}/wine/win32k.%{winesys}
 %{_libdir}/wine/windows.gaming.input.%{winedll}
+%{_libdir}/wine/windows.globalization.%{winedll}
 %{_libdir}/wine/windows.media.speech.%{winedll}
 %endif
 %{_libdir}/wine/windowscodecs.dll.so

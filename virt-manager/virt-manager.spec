@@ -1,14 +1,4 @@
-# This package depends on automagic byte compilation
-# https://fedoraproject.org/wiki/Changes/No_more_automagic_Python_bytecompilation_phase_2
-%global _python_bytecompile_extra 1
-
 # -*- rpm-spec -*-
-
-# RPM doesn't detect that code in /usr/share is python3, this forces it
-# https://fedoraproject.org/wiki/Changes/Avoid_usr_bin_python_in_RPM_Build#Python_bytecompilation
-%global __python %{__python3}
-
-%bcond_with virtconvert
 
 %global with_guestfs               0
 %global default_hvs                "qemu,xen,lxc"
@@ -17,7 +7,7 @@
 # End local config
 
 Name: virt-manager
-Version: 2.2.1
+Version: 3.0.0
 Release: 100%{?dist}
 %global verrel %{version}-%{release}
 
@@ -60,9 +50,10 @@ Recommends: libvirt-daemon-config-network
 # Optional inspection of guests
 Suggests: python3-libguestfs
 
-BuildRequires: intltool
+BuildRequires: gettext
 BuildRequires: /usr/bin/pod2man
 BuildRequires: python3-devel
+BuildRequires: python3-docutils
 
 
 %description
@@ -101,9 +92,6 @@ Requires: libvirt-client
 Provides: virt-install
 Provides: virt-clone
 Provides: virt-xml
-%if %{with virtconvert}
-Provides: virt-convert
-%endif
 
 %description -n virt-install
 Package includes several command line utilities, including virt-install
@@ -130,9 +118,9 @@ machine).
     install -O1 --root=%{buildroot}
 %find_lang %{name}
 
-%if %{without virtconvert}
-find %{buildroot} -name virt-convert\* -delete
-rm -rf %{buildroot}/%{_datadir}/%{name}/virtconv
+%if 0%{?py_byte_compile:1}
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/Python_Appendix/#manual-bytecompilation
+%py_byte_compile %{python3} %{buildroot}%{_datadir}/virt-manager/
 %endif
 
 # Replace '#!/usr/bin/env python3' with '#!/usr/bin/python3'
@@ -150,23 +138,19 @@ done
 %{_mandir}/man1/%{name}.1*
 
 %{_datadir}/%{name}/ui/*.ui
-%{_datadir}/%{name}/virt-manager
 %{_datadir}/%{name}/virtManager
 
 %{_datadir}/%{name}/icons
 %{_datadir}/icons/hicolor/*/apps/*
 
-%{_datadir}/appdata/%{name}.appdata.xml
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/glib-2.0/schemas/org.virt-manager.virt-manager.gschema.xml
+%{_datadir}/metainfo/%{name}.appdata.xml
 
 
 %files common -f %{name}.lang
 %dir %{_datadir}/%{name}
 
-%if %{with virtconvert}
-%{_datadir}/%{name}/virtconv
-%endif
 %{_datadir}/%{name}/virtinst
 
 
@@ -174,10 +158,6 @@ done
 %{_mandir}/man1/virt-install.1*
 %{_mandir}/man1/virt-clone.1*
 %{_mandir}/man1/virt-xml.1*
-
-%{_datadir}/%{name}/virt-install
-%{_datadir}/%{name}/virt-clone
-%{_datadir}/%{name}/virt-xml
 
 %{_datadir}/bash-completion/completions/virt-install
 %{_datadir}/bash-completion/completions/virt-clone
@@ -187,15 +167,12 @@ done
 %{_bindir}/virt-clone
 %{_bindir}/virt-xml
 
-%if %{with virtconvert}
-%{_bindir}/virt-convert
-%{_datadir}/bash-completion/completions/virt-convert
-%{_datadir}/%{name}/virt-convert
-%{_mandir}/man1/virt-convert.1*
-%endif
-
 
 %changelog
+* Fri Sep 18 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.0-100
+- 3.0.0
+- Rawhide sync
+
 * Mon Aug 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.2.1-100
 - 2.2.1
 - Rawhide sync

@@ -22,7 +22,7 @@ Python-Markdown.
 %description %_description
 
 %package -n python3-markdown-math
-Summary:        A wrapper around various text markups
+Summary:        A math extension for Python-Markdown
 
 Requires:       python3-docutils
 Requires:       python3-markdown

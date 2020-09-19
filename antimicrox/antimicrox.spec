@@ -1,28 +1,27 @@
-%global commit 80f6198cde4868b214e1309f1c6a83c4b293d07e
+%global commit 61ce55fe34932f2b761105da6dbd5c11b1f4f61c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200707
+%global date 20200917
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global pkgname antimicroX
-%global appname com.github.juliagoda.%{pkgname}
+%global appname io.github.%{name}.%{name}
 %global libname libantilib
 
 Name:           antimicrox
-Version:        3.0
-Release:        101%{?gver}%{?dist}
+Version:        3.1.1
+Release:        100%{?gver}%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
 License:        GPLv3+
-URL:            https://github.com/juliagoda/%{pkgname}
+URL:            https://github.com/AntiMicroX/%{name}
 
 %if 0%{?with_snapshot}
-Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
 ExcludeArch:    %{arm}
@@ -47,7 +46,8 @@ BuildRequires:  itstool
 BuildRequires:  libappstream-glib
 Requires:       hicolor-icon-theme
 
-Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       antimicroX = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       AntiMicroX = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
@@ -71,19 +71,19 @@ The %{libname}-devel package contains libraries and header files for %{libname}.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{commit} -p1
+%autosetup -n %{name}-%{commit} -p1
 %else
-%autosetup -n %{pkgname}-%{version} -p1
+%autosetup -n %{name}-%{version} -p1
 %endif
 
 find src -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
 
 sed \
   -e '/APPEND LIBS/s|${X11_X11_LIB}|\0 xcb|' \
-  -e '/\/doc\/%{pkgname}/d' \
+  -e '/\/doc\/%{name}/d' \
   -i CMakeLists.txt
 
-ln -sf %{pkgname}.png src/images/%{pkgname}_trayicon.png
+ln -sf %{name}.png src/images/%{name}_trayicon.png
 
 %build
 %cmake \
@@ -100,24 +100,24 @@ ln -sf %{pkgname}.png src/images/%{pkgname}_trayicon.png
 %install
 %cmake_install
 
-rm -f %{buildroot}%{_datadir}/%{pkgname}/Changelog
+rm -f %{buildroot}%{_datadir}/%{name}/Changelog
 
-%find_lang %{pkgname} --with-qt
+%find_lang %{name} --with-qt
 
 %check
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
 desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.desktop
 
 
-%files -f %{pkgname}.lang
+%files -f %{name}.lang
 %license LICENSE
 %doc Changelog README.md
-%{_bindir}/%{pkgname}
-%dir %{_datadir}/%{pkgname}
-%dir %{_datadir}/%{pkgname}/translations
-%{_datadir}/%{pkgname}/icons
-%{_datadir}/%{pkgname}/images
-%{_datadir}/%{pkgname}/translations/%{pkgname}.qm
+%{_bindir}/%{name}
+%dir %{_datadir}/%{name}
+%dir %{_datadir}/%{name}/translations
+%{_datadir}/%{name}/icons
+%{_datadir}/%{name}/images
+%{_datadir}/%{name}/translations/%{name}.qm
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/mime/packages/%{appname}.xml
@@ -129,11 +129,15 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 %{_libdir}/%{libname}.so.1
 
 %files %{libname}-devel
-%{_includedir}/%{pkgname}
+%{_includedir}/%{name}
 %{_libdir}/%{libname}.so
 
 
 %changelog
+* Fri Sep 18 2020 Phantom X <megaphantomx at hotmail dot com> - 3.1.1-100.20200917git61ce55f
+- 3.1.1
+- New project and files renaming
+
 * Tue Jul 07 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0-101.20200707git80f6198
 - New snapshot
 - Remove icons hack
