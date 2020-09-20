@@ -1,6 +1,6 @@
-%global commit 868f9d5caf09deed532f8521d0499d86523f2d63
+%global commit 30e63946dad9f0de00598f8f1830a5d247fb84e1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200825
+%global date 20200916
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -12,7 +12,7 @@
 
 Name:           nicotine-plus
 Version:        2.1.0
-Release:        0.3%{?gver}%{?dist}
+Release:        1%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
 # * nicotine+ - GPLv3 and LGPLv3  -- main tarball;
@@ -91,6 +91,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 
 
 %changelog
+* Sat Sep 19 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.0-1.20200916git30e6394
+- 2.1.0
+
 * Tue Aug 25 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.0-0.3.20200825git868f9d5
 - New snapshot
 
