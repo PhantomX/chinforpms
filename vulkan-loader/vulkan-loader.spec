@@ -1,7 +1,7 @@
 %global with_sdk 0
 
 Name:           vulkan-loader
-Version:        1.2.153
+Version:        1.2.154
 Release:        1%{?dist}
 Summary:        Vulkan ICD desktop loader
 
@@ -17,6 +17,7 @@ Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Loader-sdk-%{versio
 %else
 Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Loader-%{version}.tar.gz
 %endif
+
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -64,9 +65,9 @@ developing applications that use %{name}.
 
 %prep
 %if 0%{?with_sdk}
-%autosetup -n Vulkan-Loader-sdk-%{version}
+%autosetup -p1 -n Vulkan-Loader-sdk-%{version}
 %else
-%autosetup -n Vulkan-Loader-%{version}
+%autosetup -p1 -n Vulkan-Loader-%{version}
 %endif
 
 
@@ -108,6 +109,12 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
 
 
 %changelog
+* Tue Sep 22 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.154-1
+- 1.2.154
+
+* Sun Sep 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.153-2
+- Upstream fixes
+
 * Tue Sep 08 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.153-1
 - 1.2.153
 
