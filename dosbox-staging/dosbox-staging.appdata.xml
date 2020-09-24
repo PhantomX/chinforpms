@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>dosbox-staging.desktop</id>
+  <project_license>GPL-2.0</project_license>
+  <metadata_license>CC0-1.0</metadata_license>
+  <name>dosbox-staging</name>
+  <summary>x86/DOS emulator with sound and graphics</summary>
+  <description>
+    <p>
+    dosbox-staging is a DOS-emulator using SDL for easy portability to different platforms.
+    </p>
+    <p>
+    dosbox-staging emulates a 286/386 realmode CPU, Directory FileSystem/XMS/EMS, a SoundBlaster card
+    for excellent sound compatibility with older games... You can "re-live" the good old days
+    with the help of DOSBox, it can run plenty of the old classics that don't run on your
+    new computer!
+    </p>
+  </description>
+  <url type="homepage">https://dosbox-staging.github.io/</url>
+</component>

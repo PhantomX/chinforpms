@@ -82,6 +82,7 @@ deluge
 devedeng
 discimagecreator
 disk-indicator
+dosbox-staging
 easytag
 -emojione-picker
 FAudio

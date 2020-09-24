@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 6d112431d09f10ee81b5d799395581e63b772529
+%global pfcommit c382d0f145ee6cd0aba616a0a5cf5f937c80b368
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 52f63c25e1ad28ef2929941a22aa630fe22d7a05
+%global opensuse_id 4ea78e81d7e2e33e2a9ae58577f989be87938a7e
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -887,6 +887,12 @@ Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 
 # CVE-2020-25211 rhbz 1877571 1877572
 Patch111: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
+
+# rhbz 1873720
+Patch112: v2-nfs-Fix-security-label-length-not-being-reset.patch
+
+# rhbz 1875339 1875828 1876997
+Patch113: pdx86-SW_TABLET_MODE-fixes.patch 
 
 ### Extra
 
@@ -2685,6 +2691,9 @@ fi
 #
 #
 %changelog
+* Wed Sep 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.11-500.chinfo
+- 5.8.11 - pf5
+
 * Thu Sep 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.10-500.chinfo
 - 5.8.10 - pf5
 
