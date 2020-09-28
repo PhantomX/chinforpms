@@ -40,7 +40,7 @@ rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
 %install
 
 mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/%{name} <<EOF
+cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/sh
 exec java -jar %{_datadir}/%{name}/%{name}.jar "${@}"
 EOF

@@ -1,14 +1,16 @@
-%global commit 1ce14c2ef3b40507f1d2427f5469becfaf642587
+%global commit 7238802806688ea4ec21f4ef0f0414e7c6c03991
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200911
+%global date 20200922
 %global with_snapshot 1
 
 # Set to use proton fork
 %global proton 1
 %if 0%{?proton}
 %global pkgname vkd3d-proton
+%global vkheaders 1.2.140
 %else
 %global pkgname vkd3d
+%global vkheaders 1.1.113
 %endif
 
 %if 0%{?with_snapshot}
@@ -17,7 +19,7 @@
 
 Name:           vkd3d
 Version:        1.1
-Release:        113%{?gver}%{?dist}
+Release:        114%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 Epoch:          1
@@ -25,7 +27,7 @@ Epoch:          1
 License:        LGPLv2+
 URL:            http://www.winehq.org/
 
-%if 0%{?with_snapshot}
+%if 0%{?proton}
 Source0:        https://github.com/HansKristian-Work/%{pkgname}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz
@@ -33,17 +35,25 @@ Source10:       https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz.s
 %endif
 
 BuildRequires:  gcc
-BuildRequires:  pkgconfig(vulkan) >= 1.2.140
+BuildRequires:  pkgconfig(vulkan) >= %{vkheaders}
 BuildRequires:  pkgconfig(xcb-event)
 BuildRequires:  pkgconfig(xcb-icccm)
 BuildRequires:  pkgconfig(xcb-keysyms)
 BuildRequires:  spirv-headers-devel
+BuildRequires:  wine-devel
+%if 0%{?proton}
 BuildRequires:  pkgconfig(dxil-spirv-c-shared)
-%if 0%{?with_snapshot}
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
-BuildRequires:  wine-devel
+%endif
+
+# Wine does not build on aarch64 due to clang requires
+# vulkan is not available in RHEL 7+ for aarch64 either
+%if 0%{?rhel} >= 7
+ExclusiveArch:  %{ix86} x86_64 %{arm}
+%else
+ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
 %endif
 
 
@@ -70,6 +80,14 @@ Requires:       libvkd3d%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Development files for vkd3d.
 
 
+%package -n vkd3d-compiler
+Summary:	Compiler tool for vkd3d
+
+
+%description -n vkd3d-compiler
+Compiler tool for vkd3d
+
+
 %package -n libvkd3d-utils
 Summary:        Utility library for vkd3d
 
@@ -77,6 +95,24 @@ Summary:        Utility library for vkd3d
 %description -n libvkd3d-utils
 libvkd3d-utils contains simple implementations of various functions which
 might be useful for source ports of Direct3D 12 applications.
+
+
+%package -n libvkd3d-shader
+Summary:        Shader library for vkd3d
+
+
+%description -n libvkd3d-shader
+Shader library for vkd3d
+
+
+%package -n libvkd3d-shader-devel
+Summary:        Development files for libvkd3d-shader
+Requires:       libvkd3d-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       libvkd3d-shader%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+
+%description -n libvkd3d-shader-devel
+Development files for libvkd3d-shader
 
 
 %package -n libvkd3d-utils-devel
@@ -90,7 +126,7 @@ Development files for libvkd3d-utils.
 
 
 %prep
-%if 0%{?with_snapshot}
+%if 0%{?proton}
 %autosetup -n %{pkgname}-%{commit} -p1
 autoreconf -ivf
 %else
@@ -102,6 +138,11 @@ autoreconf -ivf
 %configure \
   --disable-static \
   --disable-silent-rules \
+%if 0%{?proton}
+  --with-dxil-spirv \
+%else
+  --with-spirv-tools \
+%endif
 %{nil}
 
 %make_build
@@ -110,6 +151,12 @@ autoreconf -ivf
 %install
 %make_install
 
+
+%if 0%{?proton}
+mkdir -p %{buildroot}%{_bindir}/
+install -pm0755 .libs/vkd3d-compiler %{buildroot}%{_bindir}/
+%endif
+
 find %{buildroot} -name '*.la' -delete
 
 
@@ -117,7 +164,6 @@ find %{buildroot} -name '*.la' -delete
 %license COPYING LICENSE
 %doc AUTHORS README.md
 %{_libdir}/libvkd3d.so.*
-%{_libdir}/libvkd3d-shader.so.*
 
 
 %files -n libvkd3d-devel
@@ -128,13 +174,25 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/vkd3d/vkd3d_dxgibase.h
 %{_includedir}/vkd3d/vkd3d_dxgiformat.h
 %{_includedir}/vkd3d/vkd3d.h
-%{_includedir}/vkd3d/vkd3d_shader.h
 %{_includedir}/vkd3d/vkd3d_sonames.h
 %{_includedir}/vkd3d/vkd3d_types.h
 %{_includedir}/vkd3d/vkd3d_windows.h
 %{_libdir}/libvkd3d.so
-%{_libdir}/libvkd3d-shader.so
 %{_libdir}/pkgconfig/libvkd3d.pc
+
+
+%files -n vkd3d-compiler
+%{_bindir}/vkd3d-compiler
+
+
+%files -n libvkd3d-shader
+%license COPYING LICENSE
+%{_libdir}/libvkd3d-shader.so.*
+
+
+%files -n libvkd3d-shader-devel
+%{_includedir}/vkd3d/vkd3d_shader.h
+%{_libdir}/libvkd3d-shader.so
 %{_libdir}/pkgconfig/libvkd3d-shader.pc
 
 
@@ -149,6 +207,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Sat Sep 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-114.20200922git7238802
+- Bump
+
 * Sat Sep 12 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-113.20200911git1ce14c2
 - New snapshot
 

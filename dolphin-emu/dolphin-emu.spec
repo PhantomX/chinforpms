@@ -5,12 +5,12 @@
 %global with_egl 1
 %global with_llvm 0
 %global with_dsphack 1
-%global with_sysvulkan 0
+%global with_sysvulkan 1
 %global with_unittests 0
 
-%global commit eae68194b30610c60f224c676f573de024ed3a78
+%global commit 57f14b260bf043b6c261ca284b6c45fa3a7932de
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200913
+%global date 20200924
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -24,7 +24,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        119%{?gver}%{?dist}
+Release:        120%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -92,6 +92,7 @@ BuildRequires:  pkgconfig(libusb)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(miniupnpc)
 BuildRequires:  pkgconfig(openal)
+BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Widgets)
@@ -119,7 +120,7 @@ BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 %endif
 %if 0%{?with_sysvulkan}
-BuildRequires:  pkgconfig(glslang)
+BuildRequires:  pkgconfig(glslang) >= 11.0.0
 BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools
 BuildRequires:  pkgconfig(SPIRV-Tools)
@@ -188,6 +189,20 @@ sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
 sed 's| this directory | %{name}/Sys/GC |g' \
     Data/Sys/GC/font-licenses.txt > font-licenses.txt
 
+%if 0%{?with_sysvulkan}
+  # Fix for newer vulkan/glslang
+  sed "s/VK_PRESENT_MODE_RANGE_SIZE_KHR/(VkPresentModeKHR)("`
+    `"VK_PRESENT_MODE_FIFO_RELAXED_KHR - VK_PRESENT_MODE_IMMEDIATE_KHR + 1)/" \
+    -i.orig Source/Core/VideoBackends/Vulkan/SwapChain.h
+  sed "/maxMeshViewCountNV/ a /* .maxDualSourceDrawBuffersEXT = */ 1," \
+    -i.orig Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
+  sed \
+    -e "/OSDependent/ a MachineIndependent" \
+    -e "/OSDependent/ a GenericCodeGen" -e "/HLSL/d" \
+    -i.orig Source/Core/VideoBackends/Vulkan/CMakeLists.txt
+%endif
+
+
 ###Remove Bundled:
 pushd Externals
 rm -rf \
@@ -241,6 +256,7 @@ export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 #Script to find xxhash is not implemented, just tell cmake it was found
 %cmake \
   -B %{__cmake_builddir} \
+  -DAPPROVED_VENDORED_DEPENDENCIES=";" \
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \
   -DUSE_SHARED_ENET:BOOL=ON \
@@ -375,6 +391,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Sep 24 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-120.20200924git57f14b2
+- New snapshot
+- System vulkan support fixes from Rawhide
+
 * Mon Sep 14 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-119.20200913giteae6819
 - Bump
 - Rawhide sync

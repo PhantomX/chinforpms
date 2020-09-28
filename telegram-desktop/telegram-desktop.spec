@@ -2,7 +2,7 @@
 %global appname tdesktop
 %global launcher telegramdesktop
 
-%global commit1 102b5e7eb15af02531f6ae07eb6ba935a8e0a348
+%global commit1 c668c179fe2ea1d70c624a7c2afbacfdfc04d6b0
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 tg_owt
 
@@ -16,15 +16,22 @@
 # Enable or disable build with support...
 %bcond_with rlottie
 %bcond_without spellcheck
-%bcond_without ipo
+%bcond_without webrtc
 %bcond_with tgvoip
 
 %bcond_with clang
 
-%ifarch x86_64
-%bcond_without ipo
+%if 0%{?fedora} && 0%{?fedora} >= 33
+%bcond_with mapbox
 %else
+%bcond_without mapbox
+%endif
+
+# F33+ has some issues with LTO: https://bugzilla.redhat.com/show_bug.cgi?id=1880290
+%if 0%{?fedora} && 0%{?fedora} >= 33
 %bcond_with ipo
+%else
+%bcond_without ipo
 %endif
 
 %if %{with clang}
@@ -44,7 +51,7 @@
 
 Name:           telegram-desktop
 Version:        2.3.2
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -52,19 +59,21 @@ Epoch:          1
 # * Telegram Desktop - GPLv3+ with OpenSSL exception -- main tarball;
 # * rlottie - LGPLv2+ -- static dependency;
 # * qt_functions.cpp - LGPLv3 -- build-time dependency.
-# * tg_owt - BSD
+# * tg_owt - BSD -- static dependency;
 License:        GPLv3+ and LGPLv2+ and LGPLv3 and BSD
 URL:            https://github.com/telegramdesktop/%{appname}
 
 ExclusiveArch:  x86_64
 
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
-Source1:        https://github.com/desktop-app/tg_owt/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        0001-IWYU-fix-missing-uint32_t-size_t-definitions.patch
+Source1:        %{da_url}/tg_owt/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-pr8009.patch
+Source101:       %{da_url}/cmake_helpers/commit/d955882cb4d4c94f61a9b1df62b7f93d3c5bff7d.patch#/%{name}-gh-da-d955882.patch
+# https://github.com/desktop-app/tg_owt/pull/25
+Source102:       %{da_url}/tg_owt/pull/25.patch#/%{name}-gh-da-pr25.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -75,7 +84,6 @@ Patch201:       %{name}-realmute.patch
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
-Patch206:       0001-cmake-tg_owt-fixes.patch
 
 Requires:       qt5-qtimageformats%{?_isa}
 Requires:       hicolor-icon-theme
@@ -92,7 +100,6 @@ BuildRequires:  ninja-build
 
 # Development packages for Telegram Desktop...
 BuildRequires:  guidelines-support-library-devel >= 3.0.1
-BuildRequires:  mapbox-variant-devel >= 0.3.6
 BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  ffmpeg-devel >= 3.1
 BuildRequires:  openal-soft-devel
@@ -148,8 +155,24 @@ BuildRequires:  json11-devel
 
 Provides:       bundled(libtgvoip) = 0~git
 %endif
+
+# Breaking API changes in version 1.2.0.
+%if %{with mapbox}
+BuildRequires: mapbox-variant-devel < 1.2.0
+%else
+Provides: bundled(mapbox-variant) = 1.1.6
+%endif
+
 Provides:       bundled(lxqt-qtplugin) = 0.14.0~git
 Provides:       bundled(tg_owt) = 0~git
+Provides:       bundled(openh264) = 0~git
+Provides:       bundled(abseil-cpp) = 0~git
+Provides:       bundled(libsrtp) = 0~git
+Provides:       bundled(libvpx) = 0~git
+Provides:       bundled(libyuv) = 0~git
+Provides:       bundled(pffft) = 0~git
+Provides:       bundled(rnnoise) = 0~git
+Provides:       bundled(usrsctp) = 0~git
 
 # Short alias for the main package...
 Provides: telegram%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -172,29 +195,33 @@ business messaging needs.
 # Unpacking Telegram Desktop source archive...
 %autosetup -n %{appname}-%{version}-full -p1 -a 1
 
-mkdir -p Libraries
-mv %{srcname1}-%{commit1} Libraries/%{srcname1}
-patch -p1 -d Libraries/%{srcname1} -i %{S:2}
+patch -p1 -d cmake -i %{S:101}
+
+mv %{srcname1}-%{commit1} %{srcname1}
+patch -p1 -d %{srcname1} -i %{S:102}
 
 sed \
   -e 's|cxx_std_20|cxx_std_17|g' \
   -e 's|Wno-return-type|\0 -fPIC|g' \
-  -i Libraries/%{srcname1}/cmake/init_target.cmake
+  -i %{srcname1}/cmake/init_target.cmake
 
-sed \
-  -e 's|out/$<CONFIG>|%{__cmake_builddir}|' \
-  -i cmake/external/webrtc/CMakeLists.txt
+sed -e 's|${webrtc_libs_list}|\0 jpeg|' -i cmake/external/webrtc/CMakeLists.txt
 
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,libdbusmenu-qt,libqtxdg,lxqt-qtplugin,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,variant,xxHash}
+rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,libdbusmenu-qt,libqtxdg,lxqt-qtplugin,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,xxHash}
 
 %if %{with rlottie}
   rm -rf Telegram/ThirdParty/rlottie
 %else
   sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
     -i cmake/external/rlottie/CMakeLists.txt
+%endif
+
+# Unbundling mapbox-variant if build against packaged version...
+%if %{with mapbox}
+rm -rf Telegram/ThirdParty/variant
 %endif
 
 %if %{with tgvoip}
@@ -229,7 +256,11 @@ export CXXFLAGS="$CFLAGS"
 export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 %endif
 
-( cd Libraries/tg_owt
+%if %{with webrtc}
+pushd tg_owt
+
+tg_owt_dir="$(pwd)/%{__cmake_builddir}"
+
 %cmake \
   -B %{__cmake_builddir} \
   -G Ninja \
@@ -252,7 +283,9 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 
 %cmake_build
 
-)
+popd
+%endif
+
 
 # Building Telegram Desktop using cmake...
 %cmake \
@@ -282,12 +315,17 @@ export LDFLAGS="%{build_ldflags} $RPM_FLTO_FLAGS"
 %if %{with rlottie}
     -DDESKTOP_APP_LOTTIE_USE_CACHE:BOOL=OFF \
 %endif
+%if %{with webrtc}
+    -DDESKTOP_APP_DISABLE_WEBRTC_INTEGRATION:BOOL=OFF \
+    -Dtg_owt_DIR:PATH="${tg_owt_dir}" \
+%else
+    -DDESKTOP_APP_DISABLE_WEBRTC_INTEGRATION:BOOL=ON \
+%endif
     -DDESKTOP_APP_USE_GLIBC_WRAPS:BOOL=OFF \
     -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
     -DTDESKTOP_DISABLE_GTK_INTEGRATION:BOOL=ON \
     -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
     -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
-    -DTDESKTOP_USE_FONTCONFIG_FALLBACK:BOOL=OFF \
     -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
 %{nil}
 
@@ -325,6 +363,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Sep 25 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.3.2-101
+- RPMFusion sync
+
 * Mon Aug 24 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.3.2-100
 - 2.3.2
 - Added tg_owt bundle
