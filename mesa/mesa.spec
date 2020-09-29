@@ -49,7 +49,7 @@
 %bcond_with valgrind
 %endif
 
-%global with_lto 1
+%global with_lto 0
 
 %global dri_drivers %{?base_drivers}%{?platform_drivers}
 
@@ -61,7 +61,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        20.1.8
+Version:        20.2.0
 Release:        100%{?dist}
 
 License:        MIT
@@ -74,33 +74,6 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch3:         0003-evergreen-big-endian.patch
-
-# Not upstreamed updates from iXit
-Patch50:        %{ixit_url}/bceb7997fe457d778961abaaaafe227221e5a317.patch#/%{name}-ixit-bceb799.patch
-Patch51:        %{ixit_url}/a1b7a66545b8772211a6b5f12c2939829feaee5a.patch#/%{name}-ixit-a1b7a66.patch
-Patch52:        %{ixit_url}/1c3628030f6f5a7c8fa6bbd94e63709528bf8cc6.patch#/%{name}-ixit-1c36280.patch
-Patch53:        %{ixit_url}/77a8f8f6845a310ac289394b30044d28fc8defa7.patch#/%{name}-ixit-77a8f8f.patch
-Patch54:        %{ixit_url}/62d2e049f5e053597534e1e8b56759458ddf7fd4.patch#/%{name}-ixit-62d2e04.patch
-Patch55:        %{ixit_url}/ad8e11efcb30f0d2484b2e2e05517924d0151046.patch#/%{name}-ixit-ad8e11e.patch
-Patch56:        %{ixit_url}/7eff7b8eab14093666cade1eba447b7ce8634480.patch#/%{name}-ixit-7eff7b8.patch
-Patch57:        %{ixit_url}/8f3d8f4347190d4cacf70b97234577f4a2a46716.patch#/%{name}-ixit-8f3d8f4.patch
-Patch58:        %{ixit_url}/5a5c2e9e733908a1810e0e32262131570c516081.patch#/%{name}-ixit-5a5c2e9.patch
-Patch59:        %{ixit_url}/292dd3176437c6579600a147fab9a5e109abe30a.patch#/%{name}-ixit-292dd31.patch
-Patch60:        %{ixit_url}/c756226e1682537a9f1d772934eebb347c78a8aa.patch#/%{name}-ixit-c756226.patch
-Patch61:        %{ixit_url}/d1108db66c179c77dc66004f703c1a89fe6a0d8b.patch#/%{name}-ixit-d1108db.patch
-Patch62:        %{ixit_url}/1ee34aec6bc6d1fd12050ab887aeb3e377dc7b6b.patch#/%{name}-ixit-1ee34ae.patch
-Patch63:        %{ixit_url}/531908f251ec0a5bb15dffe9c114684649dd263b.patch#/%{name}-ixit-531908f.patch
-Patch64:        %{ixit_url}/b2162e1ce91b7683db1fa4c9e7f2089fbf0c7295.patch#/%{name}-ixit-b2162e1.patch
-Patch65:        %{ixit_url}/d115fcc5b7dc6116b4b1ecff9cca8ae0175557c2.patch#/%{name}-ixit-d115fcc.patch
-Patch66:        %{ixit_url}/5e01858ba5b42432caa01cf0d64294c30dc130d4.patch#/%{name}-ixit-5e01858.patch
-Patch67:        %{ixit_url}/03fd819b80d4554b2540edd47c15d3df3885d169.patch#/%{name}-ixit-03fd819.patch
-Patch68:        %{ixit_url}/ff985cbea91425252890e405ece3d81750526026.patch#/%{name}-ixit-ff985cb.patch
-Patch69:        %{ixit_url}/fd36967da3d046b5517600862fa06011d0914697.patch#/%{name}-ixit-fd36967.patch
-Patch70:        %{ixit_url}/5e63e5fbb5fca414f357d65fa0467c8df93633a9.patch#/%{name}-ixit-5e63e5f.patch
-Patch71:        %{ixit_url}/b9c842d5cbd6fa307f00c3842338b95a12943d95.patch#/%{name}-ixit-b9c842d.patch
-Patch72:        %{ixit_url}/ce88e7179c32e0dc2c6a94500d778de44506e699.patch#/%{name}-ixit-ce88e71.patch
-Patch73:        %{ixit_url}/389efebb0e4d18f819997d130010762c9776517c.patch#/%{name}-ixit-389efeb.patch
-Patch74:        %{ixit_url}/658e3f3cae79a67692f3ca30a8e1cd52732f3e0a.patch#/%{name}-ixit-658e3f3.patch
 
 
 BuildRequires:  meson >= 0.45
@@ -214,6 +187,7 @@ Requires:       %{name}-libGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-devel%{?_isa}
 Provides:       libGL-devel
 Provides:       libGL-devel%{?_isa}
+Recommends:     gl-manpages
 
 %description libGL-devel
 %{summary}.
@@ -395,9 +369,6 @@ an overlay.
 %autosetup -n %{name}-%{ver} -p1
 cp %{SOURCE1} docs/
 
-# Make sure the build uses gnu++14 as llvm 10 headers require that
-sed -i -e 's/cpp_std=gnu++11/cpp_std=gnu++14/g' meson.build
-
 %if 0%{?with_vulkan_overlay}
   pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
     src/vulkan/overlay-layer/mesa-overlay-control.py
@@ -427,7 +398,7 @@ export NM="gcc-nm"
 export RANLIB="gcc-ranlib"
 %endif
 
-%meson -Dcpp_std=gnu++14 \
+%meson \
   -Dplatforms=x11,wayland,drm,surfaceless \
   -Ddri3=true \
   -Ddri-drivers=%{?dri_drivers} \
@@ -468,7 +439,6 @@ export RANLIB="gcc-ranlib"
 %endif
   %{nil}
 
-%meson_build xmlpool-pot xmlpool-update-po xmlpool-gmo
 %meson_build
 
 
@@ -710,6 +680,9 @@ popd
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 20.2.0-100
+- 20.2.0
+
 * Wed Sep 16 2020 Phantom X <megaphantomx at hotmail dot com> - 20.1.8-100
 - 20.1.8
 

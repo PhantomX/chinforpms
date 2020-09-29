@@ -25,7 +25,7 @@
 %global build_manual 1
 
 Name:           claws-mail
-Version:        3.17.6
+Version:        3.17.7
 Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
@@ -741,6 +741,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Mon Sep 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.17.7-100
+- 3.17.7
+
 * Mon Jul 13 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.17.6-100
 - 3.17.6
 
