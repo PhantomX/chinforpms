@@ -400,32 +400,32 @@ export RANLIB="gcc-ranlib"
 
 %meson \
   -Dplatforms=x11,wayland,drm,surfaceless \
-  -Ddri3=true \
+  -Ddri3=enabled \
   -Ddri-drivers=%{?dri_drivers} \
 %if 0%{?with_hardware}
   -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_zink:,zink} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
-  -Dgallium-vdpau=%{?with_vdpau:true}%{!?with_vdpau:false} \
-  -Dgallium-xvmc=false \
+  -Dgallium-vdpau=%{?with_vdpau:enabled}%{!?with_vdpau:disabled} \
+  -Dgallium-xvmc=disabled \
   -Dgallium-omx=%{?with_omx:bellagio}%{!?with_omx:disabled} \
-  -Dgallium-va=%{?with_vaapi:true}%{!?with_vaapi:false} \
-  -Dgallium-xa=%{?with_xa:true}%{!?with_xa:false} \
+  -Dgallium-va=%{?with_vaapi:enabled}%{!?with_vaapi:disabled} \
+  -Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
   -Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
   -Dvulkan-drivers=%{?vulkan_drivers} \
-  -Dshared-glapi=true \
-  -Dgles1=false \
-  -Dgles2=true \
-  -Dopengl=true \
-  -Dgbm=true \
+  -Dshared-glapi=enabled \
+  -Dgles1=disabled \
+  -Dgles2=enabled \
+  -Dopengl=enabled \
+  -Dgbm=enabled \
   -Dglx=dri \
   -Degl=true \
   -Dglvnd=true \
   -Dasm=%{?with_asm:true}%{!?with_asm:false} \
-  -Dllvm=true \
-  -Dshared-llvm=true \
+  -Dllvm=enabled \
+  -Dshared-llvm=enabled \
   -Dvalgrind=%{?with_valgrind:true}%{!?with_valgrind:false} \
   -Db_ndebug=true \
   -Dbuild-tests=false \

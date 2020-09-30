@@ -1,4 +1,6 @@
 %undefine _cmake_shared_libs
+# Disable this. Local lto flags in use.
+%define _lto_cflags %{nil}
 
 %global commit 046d3913a35700239a994626602a0506de73c2ea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
@@ -185,8 +187,6 @@ sed \
 
 
 %build
-# Disable this. Local lto flags in use.
-%define _lto_cflags %{nil}
 
 %if !0%{?with_bin}
 

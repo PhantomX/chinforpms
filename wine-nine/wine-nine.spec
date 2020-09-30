@@ -1,4 +1,6 @@
 %undefine _hardened_build
+# Disable LTO
+%define _lto_cflags %{nil}
 
 %global commit bf71ae00220265749cc6af1e1e81f5b287891e0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})

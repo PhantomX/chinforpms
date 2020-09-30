@@ -11,7 +11,7 @@
 
 Name:           deluge
 Version:        2.0.3
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -35,7 +35,6 @@ BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
-BuildRequires:  closure-compiler
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  intltool
@@ -269,6 +268,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.3-107.20200430git23a48dd
+- Remove closure-compiler BR
+
 * Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.0.3-106.20200430git23a48dd
 - New snapshot
 

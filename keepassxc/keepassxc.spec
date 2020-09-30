@@ -3,7 +3,7 @@
 
 Name:           keepassxc
 Version:        2.6.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
@@ -31,6 +31,7 @@ BuildRequires:  pkgconfig(libsodium)
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core) >= 5.2
 BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2
+BuildRequires:  pkgconfig(Qt5Gui) >= 5.2
 BuildRequires:  pkgconfig(Qt5Network) >= 5.2
 BuildRequires:  pkgconfig(Qt5Svg) >= 5.2
 BuildRequires:  pkgconfig(Qt5Test) >= 5.2
@@ -41,6 +42,7 @@ BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xtst)
 BuildRequires:  pkgconfig(zlib) >= 1.2.0
 BuildRequires:  qt5-linguist
+BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  readline-devel
 %if %{with keeshare}
 BuildRequires:  quazip-qt5-devel
@@ -119,6 +121,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.1-101
+- Add missing BR
+
 * Thu Aug 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.1-100
 - 2.6.1
 

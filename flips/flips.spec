@@ -1,14 +1,10 @@
-%global commit 3489a85fbf86e9d4ef5e42a6cdf9ec5dd649e50b
+%global commit 5d52e635e477503c4927cab418a104d30401707e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200614
+%global date 20200923
 %global with_snapshot 1
 
 %ifnarch %{ix86} ppc64 s390x
 %global build_with_pgo    1
-%endif
-
-%ifarch x86_64
-%global build_with_lto    1
 %endif
 
 %if 0%{?with_snapshot}
@@ -19,7 +15,7 @@
 
 Name:           flips
 Version:        1.40
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A patcher for IPS and BPS files
 
 License:        GPLv3+
@@ -77,11 +73,6 @@ RPM_CXX_FLAGS="%{build_cxxflags}"
 RPM_CXX_FLAGS+=" -fomit-frame-pointer -fmerge-all-constants -fvisibility=hidden"
 RPM_CXX_FLAGS+=" -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables"
 RPM_CXX_FLAGS+=" -ffunction-sections -fdata-sections -Wl,--gc-sections"
-
-%if 0%{?build_with_lto}
-RPM_CXX_FLAGS="$(echo ${RPM_CXX_FLAGS} | sed -e 's/-O2\b/-O3/')"
-RPM_CXX_FLAGS+=" -flto=%{_smp_build_ncpus} -fuse-linker-plugin"
-%endif
 
 %if 0%{?build_with_pgo}
 RPM_PGOGEN_FLAGS="-fprofile-generate -lgcov"
@@ -147,6 +138,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.github.Alc
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1.40-3.20200923git5d52e63
+- Bump
+- Use Fedora lto macros
+
 * Sat Aug 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1.40-2.20200614git3489a85
 - New snapshot
 

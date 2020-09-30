@@ -42,7 +42,6 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/%{name}
 
 %cmake_build
 
-popd
 
 %install
 %cmake_install

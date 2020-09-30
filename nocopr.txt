@@ -1,6 +1,7 @@
 aacgain
 -alac_decoder
 amdgpu-pro-vulkan-driver
+authy
 bh-fonts
 binkplayer
 boca-freeworld
@@ -27,6 +28,7 @@ irpf2018
 irpf2019
 irpf2020
 -kepka
+ms-teams
 -mupen64plus-extraplugins
 pcsx2
 ppsspp
@@ -45,3 +47,4 @@ vvvvvv-data
 -wine-freeworld
 wps-office
 yabause
+zoom

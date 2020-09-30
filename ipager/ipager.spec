@@ -18,6 +18,8 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  scons
 BuildRequires:  pkgconfig(imlib2)
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xinerama)
 BuildRequires:  pkgconfig(xmu)
 

@@ -1,14 +1,14 @@
-%global commit d1e76197e5db24b6d1d286c6e73439d4b1a0500a
+%global commit ab902e8a4967e592676229e602d21e7be7950b28
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191211
-%global with_snapshot 0
+%global date 20200925
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           adwaita-qt
-Version:        1.1.4
+Version:        1.1.90
 Release:        100%{?gver}%{?dist}
 
 License:        LGPLv2+
@@ -29,20 +29,15 @@ Patch10:        %{name}-chinforpms.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-#BuildRequires:  qt4-devel
-BuildRequires:  qt5-qtbase-devel
+BuildRequires:  cmake(Qt5Core)
+BuildRequires:  cmake(Qt5DBus)
+BuildRequires:  cmake(Qt5Gui)
+BuildRequires:  cmake(Qt5Widgets)
+BuildRequires:  cmake(Qt5X11Extras)
 
-Requires:       adwaita-qt4
 
 %description
 Theme to let Qt applications fit nicely into Fedora Workstation
-
-
-%package -n adwaita-qt4
-Summary:        Adwaita Qt4 theme
-
-%description -n adwaita-qt4
-Adwaita theme variant for applications utilizing Qt4
 
 
 %package -n adwaita-qt5
@@ -52,10 +47,21 @@ Summary:        Adwaita Qt5 theme
 Adwaita theme variant for applications utilizing Qt5
 
 
-%package -n adwaita-qt-common
-Summary:        Adwaita Qt common files
+%package libs
+Summary:        Adwaita Qt common libraries
+Obsoletes:      adwaita-qt4 < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}-common < %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n adwaita-qt-common
+%description libs
+Adwaita Qt common libraries.
+
+
+%package libs-devel
+Summary:        Development files for libvkd3d-utils
+Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description libs-devel
+Development files for %{name}.
 
 
 %prep
@@ -67,45 +73,46 @@ Summary:        Adwaita Qt common files
 
 
 %build
-%undefine __cmake_in_source_build
-%{cmake} \
-  -B qt4/%{__cmake_builddir} \
-  -DUSE_QT4=true \
-%{nil}
 
 %{cmake} \
-  -B qt5/%{__cmake_builddir} \
+  -B %{__cmake_builddir} \
 %{nil}
 
-pushd qt4
 %cmake_build
-popd
-pushd qt5
-%cmake_build
-popd
+
 
 %install
-pushd qt4
 %cmake_install
-popd
-pushd qt5
-%cmake_install
-popd
 
-%files -n adwaita-qt4
-%doc LICENSE.LGPL2 README.md
-%{_qt4_plugindir}/styles/adwaita.so
 
 %files -n adwaita-qt5
-%doc LICENSE.LGPL2 README.md
+%license LICENSE.LGPL2
+%doc README.md
 %{_qt5_plugindir}/styles/adwaita.so
 
-%files -n adwaita-qt-common
 
-%files
+%files libs
+%license LICENSE.LGPL2
+%doc README.md
+%{_libdir}/libadwaitaqt.so.*
+%{_libdir}/libadwaitaqtpriv.so.*
+
+
+%files libs-devel
+%license LICENSE.LGPL2
+%{_includedir}/AdwaitaQt/*.h
+%{_libdir}/libadwaitaqt.so
+%{_libdir}/libadwaitaqtpriv.so
+%{_libdir}/cmake/AdwaitaQt/
+%{_libdir}/pkgconfig/%{name}.pc
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1.90-100.20200925gitab902e8
+- 1.1.90
+- libs package
+- No more qt4 support
+
 * Fri Jun 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1.4-100
 - 1.1.4
 

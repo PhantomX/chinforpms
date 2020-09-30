@@ -1,13 +1,13 @@
 %?mingw_package_header
 
-%global with_bin 0
+%global with_bin 1
 
 %global msiname wine-gecko
 %global vc_url  https://sourceforge.net/p/wine/wine-gecko
 
 Name:           mingw-wine-gecko
 Version:        2.47.1
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        Gecko library required for Wine
 
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -145,6 +145,9 @@ sed -i 's,$WINE cabarc.exe -r -m mszip N $cabfile msi/files,$WINE cabarc.exe -r 
 
 
 %build
+# Disable LTO
+%define _lto_cflags %{nil}
+
 %if !0%{?with_bin}
 cd %{msiname}-%{version}
 # setup build options...
@@ -182,6 +185,9 @@ cp -rp %{msiname}-%{version}-x86_64/dist/%{msiname}-%{version}-x86_64 \
 
 
 %changelog
+* Wed Sep 30 2020 Phantom X <megaphantomx at hotmail dot com> - 2.47.1-103
+- bin, a source is failing to build on Fedora 33
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.47.1-102
 - f33 sync (python 3.8)
 

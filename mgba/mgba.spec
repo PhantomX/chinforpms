@@ -1,6 +1,6 @@
-%global commit ca67e63abb787756cac5b4692ef7a0b072e03d6e
+%global commit a3d5e3481fe96d0cc3f6d42297a48d11c37b6457
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200914
+%global date 20200927
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -14,7 +14,7 @@
 
 Name:           mgba
 Version:        0.9.0
-Release:        0.2%{?gver}%{?dist}
+Release:        0.3%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPLv2.0
@@ -42,6 +42,7 @@ BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libzip)
+BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Multimedia)
@@ -178,6 +179,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.0-0.3.20200927gita3d5e34
+- New snapshot
+
 * Mon Sep 14 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.0-0.2.20200914gitca67e63
 - Bump to better #1875 fix
 

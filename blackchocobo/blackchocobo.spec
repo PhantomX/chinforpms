@@ -1,6 +1,6 @@
-%global commit 1822ab95f124e3a40b715f86d29395c6b886aeb2
+%global commit c47ec67716f70b3e1ea8dfcca8c3192c78195b20
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200712
+%global date 20200827
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           blackchocobo
 Version:        1.10.3
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
 License:        GPLv3
@@ -51,6 +51,11 @@ Converting Save Formats to PC or PSX. With it you can even export your ps3 saves
 %autosetup -n %{name}-%{version} -p1
 %endif
 
+sed \
+  -e 's|share/metadata/|share/metainfo/|' \
+  -e '/licenses\/blackchocobo\//d' \
+  -i CMakeLists.txt
+
 
 %build
 %cmake \
@@ -82,10 +87,7 @@ for res in 16 24 32 48 64 96 128 192 256 ;do
     ${dir}/Black_Chocobo.png
 done
 
-mkdir -p %{buildroot}%{_metainfodir}
-install -pm0644 %{name}.appdata.xml %{buildroot}%{_metainfodir}/
-
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/Black_Chocobo.appdata.xml
 
 %find_lang bchoco --with-qt
 
@@ -103,6 +105,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1.10.3-2.20200827gitc47ec67
+- Bump
+
 * Mon Jul 27 2020 Phantom X <megaphantomx at hotmail dot com> - 1.10.3-1.20200712git1822ab9
 - 1.10.3
 

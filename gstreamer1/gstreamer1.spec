@@ -9,7 +9,7 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.16.2
+Version:        1.18.0
 Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
@@ -27,38 +27,21 @@ Patch0:         gstreamer-inspect-rpm-format.patch
 Source1:        gstreamer1.prov
 Source2:        gstreamer1.attr
 
+BuildRequires:  meson >= 0.48.0
+BuildRequires:  gcc
 BuildRequires:  glib2-devel >= %{_glib2}
 BuildRequires:  libxml2-devel >= %{_libxml2}
 BuildRequires:  gobject-introspection-devel >= %{_gobject_introspection}
 BuildRequires:  bison
 BuildRequires:  flex
-BuildRequires:  gcc
-BuildRequires:  m4
 BuildRequires:  check-devel
-BuildRequires:  gtk-doc >= 1.3
 BuildRequires:  gettext
 BuildRequires:  pkgconfig
 BuildRequires:  libcap-devel
+BuildRequires:  libunwind-devel
+BuildRequires:  elfutils-devel
+BuildRequires:  bash-completion
 
-# ./autogen.sh deps
-BuildRequires:  automake gettext-devel libtool
-BuildRequires:  chrpath
-
-### documentation requirements
-BuildRequires:  python3
-BuildRequires:  openjade
-BuildRequires:  texlive-jadetex
-BuildRequires:  libxslt
-BuildRequires:  docbook-style-dsssl
-BuildRequires:  docbook-style-xsl
-BuildRequires:  docbook-utils
-BuildRequires:  transfig
-BuildRequires:  netpbm-progs
-BuildRequires:  texlive-dvips
-BuildRequires:  ghostscript
-%if 0%{?fedora} || 0%{?rhel} > 7
-BuildRequires:  xfig
-%endif
 
 %description
 GStreamer is a streaming media framework, based on graphs of filters which
@@ -83,6 +66,7 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 
+%if 0
 %package devel-docs
 Summary:         Developer documentation for GStreamer streaming media framework
 Requires:        %{name} = %{version}-%{release}
@@ -92,36 +76,30 @@ BuildArch:       noarch
 %description devel-docs
 This %{name}-devel-docs contains developer documentation for the
 GStreamer streaming media framework.
-
+%endif
 
 %prep
 %autosetup -p1 -n gstreamer-%{version}
 
 # Dirty multilib fix
-sed -e 's|$GST_API_VERSION/gst-plugin-scanner|\0-%{__isa_bits}|g' \
-  -i configure.ac
-sed -e 's|$(GST_API_VERSION)/gst-plugin-scanner|\0-%{__isa_bits}|g' \
-  -i gst/Makefile.am
+sed -e "/GST_PLUGIN_SCANNER_INSTALLED/s|, 'gst-plugin-scanner|\0-%{__isa_bits}|g" \
+  -i meson.build
 
-NOCONFIGURE=1 \
-./autogen.sh
 
 %build
-%configure \
-  --with-package-name='chinforpms GStreamer package' \
-  --with-package-origin='http://download.fedoraproject.org' \
-  --enable-gtk-doc \
-  --enable-debug \
-  --disable-fatal-warnings \
-  --disable-silent-rules \
-  --disable-tests --disable-examples \
-  --with-ptp-helper-permissions=capabilities
-
-%make_build V=1
+%meson \
+  -D package-name='chinforpms GStreamer package' \
+  -D package-origin='https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms' \
+  -D gtk_doc=disabled \
+  -D tests=disabled -D examples=disabled \
+  -D ptp-helper-permissions=capabilities \
+  -D dbghelp=disabled \
+  -D doc=disabled
+%meson_build
 
 
 %install
-%make_install
+%meson_install
 
 # Dirty multilib fix
 mv %{buildroot}%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner{,-%{__isa_bits}}
@@ -149,9 +127,7 @@ echo ".so man1/$bin.1" > %{buildroot}%{_mandir}/man1/$bin-%{__isa_bits}.1
 done
 
 %find_lang gstreamer-%{majorminor}
-# Clean out files that should not be part of the rpm.
-find %{buildroot} -name '*.la' -delete
-find %{buildroot} -name '*.a' -delete
+
 # Add the provides script
 install -m0755 -D %{SOURCE1} %{buildroot}%{_rpmconfigdir}/gstreamer1.prov
 # Add the gstreamer plugin file attribute entry (rpm >= 4.9.0)
@@ -233,13 +209,19 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 %{_libdir}/pkgconfig/gstreamer-check-%{majorminor}.pc
 %{_libdir}/pkgconfig/gstreamer-net-%{majorminor}.pc
 
+%if 0
 %files devel-docs
 %doc %{_datadir}/gtk-doc/html/gstreamer-%{majorminor}/
 %doc %{_datadir}/gtk-doc/html/gstreamer-libs-%{majorminor}/
 %doc %{_datadir}/gtk-doc/html/gstreamer-plugins-%{majorminor}/
+%endif
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1.18.0-100
+- 1.18.0
+- f33 sync
+
 * Wed Dec 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.16.2-100
 - 1.16.2
 

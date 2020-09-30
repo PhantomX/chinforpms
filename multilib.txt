@@ -10,14 +10,14 @@ FAudio
 FAudio-freeworld
 gamemode
 glslang
-gnome-theme-extras
+gnome-theme-extra
 gstreamer1
 gtk3
 gtk3-nocsd
 kernel-tools
 libeatmydata
 libmirage
-libogg
+-libogg
 libvorbis
 libstrangle
 -linux-steam-integration

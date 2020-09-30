@@ -299,6 +299,9 @@ cp -a libstdc++33-v3/config/cpu/i{4,3}86/atomicity.h
 
 %build
 
+# Disable this. No time to test
+%define _lto_cflags %{nil}
+
 rm -fr obj-%{gcc_target_platform}
 mkdir obj-%{gcc_target_platform}
 cd obj-%{gcc_target_platform}

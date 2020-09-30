@@ -42,7 +42,7 @@
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -146,11 +146,9 @@ sed -i -e '/projects\/unix install/g' ./m64p_build.sh
 
 
 %build
-# Disable this. Local lto flags in use.
-%define _lto_cflags %{nil}
 
 cat > %{name}-env <<'EOF'
-export OPTFLAGS="$(echo %{optflags} | sed -e 's/-O2\b/-O3/') -flto=%{_smp_build_ncpus} -fuse-linker-plugin"
+export OPTFLAGS="%{optflags}"
 export LDFLAGS="$OPTFLAGS %{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 export V=1
 export LDCONFIG=/bin/true
@@ -199,6 +197,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-105.20200525gitb7b56fe
+- Use Fedora lto flags
+
 * Thu Jun 25 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-104.20200525gitb7b56fe
 - New snapshot
 

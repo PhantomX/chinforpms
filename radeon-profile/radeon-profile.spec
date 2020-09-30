@@ -1,5 +1,5 @@
 Name:           radeon-profile
-Version:        20190903
+Version:        20200824
 Release:        1%{?dist}
 Summary:        Simple application to read current clocks of ATi Radeon cards
 
@@ -67,5 +67,8 @@ desktop-file-edit \
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 20200824-1
+- 20200824
+
 * Mon Sep 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 20190903-1
 - Initial spec

@@ -5,7 +5,7 @@
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
 %global released_kernel 1
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %global buildid .chinfo
@@ -96,6 +96,7 @@ Source5000: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}.xz
 
 # ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch0: 0001-iio-Use-event-header-from-kernel-tree.patch
+Patch1: 0001-Filter-lto-options-from-the-perl-ccopts.patch
 
 # rpmlint cleanup
 Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
@@ -233,6 +234,7 @@ cd linux-%{kversion}
 %endif
 
 %patch0 -p1
+%patch1 -p1
 %patch6 -p1
 
 %patch1000 -p1
@@ -546,6 +548,9 @@ popd
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.12-501.chinfo
+- f33 sync, lto fixes
+
 * Sat Sep 26 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.12-500.chinfo
 - 5.8.12
 

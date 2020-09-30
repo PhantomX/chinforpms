@@ -70,6 +70,14 @@ find \( -name \*.c\* -or -name \*.h\* -or -name \*.inc \) -exec chmod -x {} \;
 
 
 %build
+# This package has a configure test which uses ASMs, but does not link the
+# resultant .o files.  As such the ASM test is always successful in pure
+# LTO mode.  We can use -ffat-lto-objects to force code generation.
+#
+# -ffat-lto-objects is the default for F33, but is expected to be removed
+# in F34.  So we list it explicitly here.
+%define _lto_cflags -flto=auto -ffat-lto-objects
+
 CFLAGS="%{build_cflags} -Wl,-z,relro -Wl,-z,now"
 CXXFLAGS="%{build_cxxflags} -Wl,-z,relro -Wl,-z,now"
 

@@ -1,6 +1,6 @@
 Name:           qmc2
 Version:        0.195
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        M.A.M.E. Catalog / Launcher II
 
 #PDF.js is ASL 2.0
@@ -13,10 +13,14 @@ Source0:        http://downloads.sourceforge.net/qmc2/%{name}-%{version}.tar.bz2
 Patch0:         %{name}-minizip.patch
 #Fedora-specific configuration
 Patch1:         %{name}-ini.patch
+Patch2:         %{name}-listxml-softlist-fix.patch
 
 # Patches from FreeBSD
 Patch10:        qmc2-htmleditor_htmleditor.ui.patch
 Patch11:        qmc2-imagechecker.cpp.patch
+# Patches from Arch
+Patch12:        qmc2-qt5.15.patch
+Patch13:        qmc2-types.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  minizip-devel
@@ -72,6 +76,7 @@ ln -s Fedora.cfg Fedora_release_30.cfg
 ln -s Fedora.cfg Fedora_release_31.cfg
 ln -s Fedora.cfg Fedora_release_32.cfg
 ln -s Fedora.cfg Fedora_release_33.cfg
+ln -s Fedora.cfg Fedora_release_34.cfg
 popd
 #ensure system minizip and zlib are used
 rm -rf minizip
@@ -143,6 +148,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/qchdman.desktop
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 0.195-101
+- Fedora sync
+- Fix qt 5.15 build
+
 * Tue Oct 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.195-100
 - Qt5
 - Remove game-menus requirements

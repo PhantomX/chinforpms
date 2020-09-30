@@ -1,7 +1,7 @@
 %global pkgname pymarkups
 
 Name:           python-markdown-math
-Version:        0.6
+Version:        0.7
 Release:        1%{?dist}
 License:        BSD
 Summary:        A math extension for Python-Markdown
@@ -54,5 +54,8 @@ Python-Markdown.
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 0.7-1
+- 0.7
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.6-1
 - Initial spec

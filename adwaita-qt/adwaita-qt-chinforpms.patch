@@ -1,109 +1,106 @@
-From 05c880652229e072c497e81e3bc8535a1f7af2e1 Mon Sep 17 00:00:00 2001
+From dde7aacd88bd5405756797a514322582d1d9d5be Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 14 May 2020 11:23:49 -0300
+Date: Tue, 29 Sep 2020 18:10:16 -0300
 Subject: [PATCH] Remove some ugly paddings
 
 ---
- style/adwaita.h | 43 ++++++++++++++++++++++---------------------
- 1 file changed, 22 insertions(+), 21 deletions(-)
+ src/lib/adwaita.h | 41 +++++++++++++++++++++--------------------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
 
-diff --git a/style/adwaita.h b/style/adwaita.h
-index 5ca32a1..8374e34 100644
---- a/style/adwaita.h
-+++ b/style/adwaita.h
-@@ -137,51 +137,52 @@ namespace Adwaita
-         // line editors
-         LineEdit_FrameWidth = 3,
-         LineEdit_MarginHeight = 2,
--        LineEdit_MarginWidth = 8,
--        LineEdit_MinHeight = 36,
-+        LineEdit_MarginWidth = 6,
-+        LineEdit_MinHeight = 30,
-         LineEdit_MinWidth = 80,
+diff --git a/src/lib/adwaita.h b/src/lib/adwaita.h
+index ba8306d..f54c4ed 100644
+--- a/src/lib/adwaita.h
++++ b/src/lib/adwaita.h
+@@ -124,49 +124,50 @@ enum Metrics {
+     // line editors
+     LineEdit_FrameWidth = 3,
+     LineEdit_MarginHeight = 2,
+-    LineEdit_MarginWidth = 8,
+-    LineEdit_MinHeight = 36,
++    LineEdit_MarginWidth = 6,
++    LineEdit_MinHeight = 30,
+     LineEdit_MinWidth = 80,
  
-         // menu items
-         Menu_FrameWidth = 0,
--        MenuItem_MarginWidth = 4,
--        MenuItem_ItemSpacing = 6,
-+        MenuItem_MarginWidth = 3,
-+        MenuItem_ItemSpacing = 3,
-         MenuItem_AcceleratorSpace = 16,
-         MenuButton_IndicatorWidth = 20,
+     // menu items
+     Menu_FrameWidth = 0,
+-    MenuItem_MarginWidth = 4,
+-    MenuItem_ItemSpacing = 6,
++    MenuItem_MarginWidth = 3,
++    MenuItem_ItemSpacing = 3,
+     MenuItem_AcceleratorSpace = 16,
+     MenuButton_IndicatorWidth = 20,
  
-         // combobox
--        ComboBox_FrameWidth = 4,
--        ComboBox_MarginHeight = 4,
--        ComboBox_MarginWidth = 8,
--        ComboBox_MinHeight = 36,
-+        ComboBox_FrameWidth = 3,
-+        ComboBox_MarginHeight = 3,
-+        ComboBox_MarginWidth = 6,
-+        ComboBox_MinHeight = 30,
-         ComboBox_MinWidth = 80,
+     // combobox
+-    ComboBox_FrameWidth = 4,
+-    ComboBox_MarginHeight = 4,
+-    ComboBox_MarginWidth = 8,
+-    ComboBox_MinHeight = 36,
++    ComboBox_FrameWidth = 3,
++    ComboBox_MarginHeight = 3,
++    ComboBox_MarginWidth = 6,
++    ComboBox_MinHeight = 30,
+     ComboBox_MinWidth = 80,
  
-         // spinbox
-         SpinBox_FrameWidth = LineEdit_FrameWidth,
--        SpinBox_ArrowButtonWidth = 20,
--        SpinBox_MinHeight = 36,
-+        SpinBox_ArrowButtonWidth = 16,
-+        SpinBox_MinHeight = 30,
-         SpinBox_MinWidth = 80,
--        SpinBox_MarginHeight = 4,
--        SpinBox_MarginWidth = 8,
-+        SpinBox_MarginHeight = 3,
-+        SpinBox_MarginWidth = 6,
+     // spinbox
+     SpinBox_FrameWidth = LineEdit_FrameWidth,
+-    SpinBox_ArrowButtonWidth = 20,
+-    SpinBox_MinHeight = 36,
++    SpinBox_ArrowButtonWidth = 16,
++    SpinBox_MinHeight = 30,
+     SpinBox_MinWidth = 80,
+-    SpinBox_MarginHeight = 4,
+-    SpinBox_MarginWidth = 8,
++    SpinBox_MarginHeight = 3,
++    SpinBox_MarginWidth = 6,
  
-         // groupbox title margin
-         GroupBox_TitleMarginWidth = 4,
+     // groupbox title margin
+     GroupBox_TitleMarginWidth = 4,
  
-         // buttons
--        Button_MinHeight = 36,
-+        Button_FrameWidth = 3,
-+        Button_MinHeight = 20,
-         Button_MinWidth = 80,
--        Button_MarginHeight = 4,
--        Button_MarginWidth = 8,
-+        Button_MarginHeight = 3,
-+        Button_MarginWidth = 6,
-         Button_ItemSpacing = 4,
+     // buttons
+-    Button_MinHeight = 36,
++    Button_FrameWidth = 3,
++    Button_MinHeight = 20,
+     Button_MinWidth = 80,
+-    Button_MarginHeight = 4,
+-    Button_MarginWidth = 8,
++    Button_MarginHeight = 3,
++    Button_MarginWidth = 6,
+     Button_ItemSpacing = 4,
  
-         // tool buttons
--        ToolButton_MarginWidth = 6,
-+        ToolButton_MarginWidth = 3,
-         ToolButton_ItemSpacing = 4,
-         ToolButton_InlineIndicatorWidth = 12,
+     // tool buttons
+-    ToolButton_MarginWidth = 6,
++    ToolButton_MarginWidth = 3,
+     ToolButton_ItemSpacing = 4,
+     ToolButton_InlineIndicatorWidth = 12,
  
-         // checkboxes and radio buttons
--        CheckBox_Size = 22,
-+        CheckBox_Size = 20,
-         CheckBox_FocusMarginWidth = 3,
--        CheckBox_ItemSpacing = 8,
-+        CheckBox_ItemSpacing = 4,
+     // checkboxes and radio buttons
+-    CheckBox_Size = 22,
++    CheckBox_Size = 20,
+     CheckBox_FocusMarginWidth = 3,
+     CheckBox_ItemSpacing = 4,
  
-         // menubar items
-         MenuBarItem_MarginWidth = 8,
-@@ -196,7 +197,7 @@ namespace Adwaita
-         ScrollBar_DoubleButtonHeight = 0,
+@@ -183,7 +184,7 @@ enum Metrics {
+     ScrollBar_DoubleButtonHeight = 0,
  
-         // toolbars
--        ToolBar_FrameWidth = 2,
-+        ToolBar_FrameWidth = 0,
-         ToolBar_HandleExtent = 10,
-         ToolBar_HandleWidth = 6,
-         ToolBar_SeparatorWidth = 8,
-@@ -218,10 +219,10 @@ namespace Adwaita
-         Slider_ControlThickness = 24,
+     // toolbars
+-    ToolBar_FrameWidth = 2,
++    ToolBar_FrameWidth = 0,
+     ToolBar_HandleExtent = 10,
+     ToolBar_HandleWidth = 6,
+     ToolBar_SeparatorWidth = 8,
+@@ -205,10 +206,10 @@ enum Metrics {
+     Slider_ControlThickness = 24,
  
-         // tabbar
--        TabBar_TabMarginHeight = 9,
-+        TabBar_TabMarginHeight = 6,
-         TabBar_TabMarginWidth = 8,
-         TabBar_TabMinWidth = 80,
--        TabBar_TabMinHeight = 36,
-+        TabBar_TabMinHeight = 32,
-         TabBar_TabItemSpacing = 8,
-         TabBar_TabOverlap = 1,
-         TabBar_BaseOverlap = 0,
+     // tabbar
+-    TabBar_TabMarginHeight = 9,
++    TabBar_TabMarginHeight = 6,
+     TabBar_TabMarginWidth = 8,
+     TabBar_TabMinWidth = 80,
+-    TabBar_TabMinHeight = 36,
++    TabBar_TabMinHeight = 32,
+     TabBar_TabItemSpacing = 8,
+     TabBar_TabOverlap = 1,
+     TabBar_BaseOverlap = 0,
 -- 
 2.26.2
 

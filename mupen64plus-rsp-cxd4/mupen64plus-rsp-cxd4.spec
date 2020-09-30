@@ -11,7 +11,7 @@
 
 Name:           mupen64plus-rsp-cxd4
 Version:        2.5.9
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        MSP communications simulator plugin for Mupen64Plus
 
 License:        CC0
@@ -41,7 +41,7 @@ This is a RSP plugin for Mupen64Plus emulator.
 %endif
 
 cat > %{name}-env <<'EOF'
-export OPTFLAGS="$(echo %{optflags} | sed -e 's/-O2\b/-O3/') -flto=%{_smp_build_ncpus} -fuse-linker-plugin"
+export OPTFLAGS="%{optflags}"
 export LDFLAGS="$OPTFLAGS %{build_ldflags}"
 export V=1
 export LDCONFIG=/bin/true
@@ -79,5 +79,8 @@ chmod +x %{buildroot}%{_libdir}/*/%{name}*.so
 
 
 %changelog
+* Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 2.5.9-2.20200528gita961c71
+- Use Fedora lto flags
+
 * Thu Jun 25 2020 Phantom X <megaphantomx at hotmail dot com> - 2.5.9-1.20200528gita961c71
 - Initial spec

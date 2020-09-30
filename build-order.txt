@@ -13,7 +13,7 @@ gstreamer1
 gtk3
 libeatmydata
 libmirage
-libogg
+-libogg
 libvirt
 libstrangle
 -libtgvoip
@@ -37,14 +37,14 @@ xwit
 -ytnef
 
 # 2
-aom
+-aom
 dxil-spirv
 libchdr
 libvorbis
 mesa
 python-markups
 python-yoyo-migrations
-perl-Gtk3
+-perl-Gtk3
 spirv-tools
 vulkan-loader
 
@@ -55,7 +55,7 @@ adwaita-qt
 amdvlk-vulkan-driver
 ario
 asbru-cm
-audacious
+-audacious
 authenticator
 barrier
 bashdb
@@ -67,7 +67,7 @@ blackchocobo
 blastem
 bluecurve-icon-theme
 boca
-browsh
+-browsh
 casperjs
 cavestory-nx
 cdemu-client
@@ -143,7 +143,7 @@ pev
 phantomjs
 plzip
 protontricks
-pspshrink
+-pspshrink
 pulsemixer
 purple-rocketchat
 -python-pafy
@@ -152,7 +152,7 @@ qmc2
 qmp3gain
 qt-virustotal-uploader
 qt5ct
-quiterss
+-quiterss
 radeon-profile
 radeon-profile-daemon
 retext
@@ -160,7 +160,7 @@ sdl2-controllermap
 sdl_gamecontrollerdb
 sdl-jstest
 sdlcl
-skrooge
+-skrooge
 smtube
 snx
 snxvpn
@@ -185,6 +185,7 @@ wiimms-iso-tools
 wxmp3gain
 wxmp3val
 uksmd
+winetricks
 xboxdrv
 xdgmenumaker
 xinput-gui
@@ -192,8 +193,8 @@ xinput-gui
 zram-init
 
 # 4
-audacious-plugins
-audacious-plugins-freeworld
+-audacious-plugins
+-audacious-plugins-freeworld
 -belle-sip
 -belr
 -bzrtp

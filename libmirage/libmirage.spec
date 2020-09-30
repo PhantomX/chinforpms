@@ -56,7 +56,6 @@ This package contains files needed to develop with libMirage.
 
 %cmake_build
 
-popd
 
 %install
 %cmake_install

@@ -1,27 +1,37 @@
-From 90eb703a9d390324eb260712e655ea758ca8da6e Mon Sep 17 00:00:00 2001
+From 1324cda3f3f821b0643db826d37d6c0ff345f19b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 14 Jan 2020 14:45:08 -0300
+Date: Tue, 29 Sep 2020 19:39:43 -0300
 Subject: [PATCH] Use system xxhash
 
 ---
- Makefile | 3 +--
+ Makefile | 7 +++----
  jdupes.c | 2 +-
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ jdupes.h | 2 +-
+ 3 files changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 3296b77..2d54b88 100644
+index 631df16..822fc90 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -138,7 +138,6 @@ INSTALL_DATA    = $(INSTALL) -m 0644
- OBJS += jdupes.o jody_paths.o jody_sort.o jody_win_unicode.o string_malloc.o
+ OBJS += jdupes.o jody_paths.o jody_sort.o jody_win_unicode.o jody_strtoepoch.o string_malloc.o
  OBJS += jody_cacheinfo.o
  OBJS += act_deletefiles.o act_linkfiles.o act_printmatches.o act_summarize.o act_printjson.o
 -OBJS += xxhash.o
  OBJS += $(ADDITIONAL_OBJECTS)
  
  OBJS_CLEAN += jdupes-standalone
-@@ -146,7 +145,7 @@ OBJS_CLEAN += jdupes-standalone
+@@ -146,14 +145,14 @@ OBJS_CLEAN += jdupes-standalone
  all: $(PROGRAM_NAME)
+ 
+ static: $(PROGRAM_NAME)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -o $(PROGRAM_NAME) $(OBJS) -static
++	$(CC) $(CFLAGS) -lxxhash $(LDFLAGS) -o $(PROGRAM_NAME) $(OBJS) -static
+ 
+ static_stripped: $(PROGRAM_NAME)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -o $(PROGRAM_NAME) $(OBJS) -static
++	$(CC) $(CFLAGS) -lxxhash $(LDFLAGS) -o $(PROGRAM_NAME) $(OBJS) -static
+ 	strip $(PROGRAM_NAME)
  
  $(PROGRAM_NAME): $(OBJS)
 -	$(CC) $(CFLAGS) $(LDFLAGS) -o $(PROGRAM_NAME) $(OBJS)
@@ -30,18 +40,31 @@ index 3296b77..2d54b88 100644
  winres.o : winres.rc winres.manifest.xml
  	./tune_winres.sh
 diff --git a/jdupes.c b/jdupes.c
-index 0292f04..3426cb8 100644
+index 439ed8e..ef3fc60 100644
 --- a/jdupes.c
 +++ b/jdupes.c
-@@ -41,7 +41,7 @@
+@@ -42,7 +42,7 @@
+ #include <time.h>
  #include <sys/time.h>
  #include "jdupes.h"
- #include "string_malloc.h"
 -#include "xxhash.h"
 +#include <xxhash.h>
+ #ifdef ENABLE_DEDUPE
+ #include <sys/utsname.h>
+ #endif
+diff --git a/jdupes.h b/jdupes.h
+index 4359517..c5737b8 100644
+--- a/jdupes.h
++++ b/jdupes.h
+@@ -32,7 +32,7 @@ extern "C" {
  #include "jody_sort.h"
- #include "jody_win_unicode.h"
- #include "jody_cacheinfo.h"
+ #include "version.h"
+ 
+-#include "xxhash.h"
++#include <xxhash.h>
+ 
+ /* Set hash type (change this if swapping in a different hash function) */
+  typedef XXH64_hash_t jdupes_hash_t;
 -- 
-2.24.1
+2.26.2
 
