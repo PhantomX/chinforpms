@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 7
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ae55e2e46591deea47c72ac98a41d1bcf2a0ae7c
+%global pfcommit a0d1594ee52f971847893b3b5c9a9902cdb2c6aa
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id f4bb27aa43762a8fabb5e574bcf54a61ca7708ce
+%global opensuse_id 4178df398b6729b87fb74f5f151a146d579e45ba
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -884,9 +884,6 @@ Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1874117
 Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
 Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
-
-# CVE-2020-25211 rhbz 1877571 1877572
-Patch111: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
 
 # rhbz 1873720
 Patch112: v2-nfs-Fix-security-label-length-not-being-reset.patch
@@ -2691,6 +2688,9 @@ fi
 #
 #
 %changelog
+* Thu Oct 01 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.13-500.chinfo
+- 5.8.13 -pf7
+
 * Sat Sep 26 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.12-500.chinfo
 - 5.8.12 - pf6
 

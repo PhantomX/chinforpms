@@ -1,3 +1,5 @@
+%define _binary_payload w2T.xzdio
+
 %global orgname gens
 
 Name:           %{orgname}-gs
@@ -89,7 +91,7 @@ autoreconf -ivf
 
 %configure \
   --without-7z --enable-mp3=no --with-pic \
-  --disable-static --build=i686-redhat-linux-gnu \
+  --disable-static --build=i686-redhat-linux \
   --docdir='%{_defaultdocdir}/%{name}-%{version}' \
   LIBS="-ldl -lX11 -lminizip" \
 %{nil}

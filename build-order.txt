@@ -45,6 +45,7 @@ mesa
 python-markups
 python-yoyo-migrations
 -perl-Gtk3
+perl-X11-GUITest
 spirv-tools
 vulkan-loader
 
@@ -53,6 +54,8 @@ adriconf
 adwaita-qt
 -aisleriot
 amdvlk-vulkan-driver
+antimicrox
+applyppf
 ario
 asbru-cm
 -audacious
@@ -108,6 +111,7 @@ gnome-themes-extra
 gpa
 gtk3-nocsd
 hollywood
+htop
 image-analyzer
 ipager
 jdupes
@@ -138,6 +142,7 @@ mupen64plus
 nicotine-plus
 openjazz
 opentyrian
+pcsxr
 perl-rename
 pev
 phantomjs
@@ -155,6 +160,7 @@ qt5ct
 -quiterss
 radeon-profile
 radeon-profile-daemon
+rclone
 retext
 sdl2-controllermap
 sdl_gamecontrollerdb
@@ -188,6 +194,7 @@ uksmd
 winetricks
 xboxdrv
 xdgmenumaker
+xfwm4
 xinput-gui
 -xorg-x11-server
 zram-init

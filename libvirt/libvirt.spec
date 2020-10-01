@@ -209,7 +209,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 6.7.0
+Version: 6.8.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -376,9 +376,6 @@ BuildRequires: systemtap-sdt-devel
 BuildRequires: util-linux
 # For showmount in FS driver (netfs discovery)
 BuildRequires: nfs-utils
-
-# Communication with the firewall and polkit daemons use DBus
-BuildRequires: dbus-devel
 
 # Fedora build root suckage
 BuildRequires: gawk
@@ -1172,7 +1169,6 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            %{?arg_selinux_mount} \
            -Dapparmor=disabled \
            -Dsecdriver_apparmor=disabled \
-           -Dhal=disabled \
            -Dudev=enabled \
            -Dyajl=enabled \
            %{?arg_sanlock} \
@@ -1486,7 +1482,7 @@ exit 0
 %files
 
 %files docs
-%doc AUTHORS NEWS.rst README.rst
+%doc AUTHORS.rst NEWS.rst README.rst
 %doc libvirt-docs/*
 
 
@@ -1561,6 +1557,8 @@ exit 0
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/
 
 %attr(0755, root, root) %{_libexecdir}/libvirt_iohelper
+
+%attr(0755, root, root) %{_bindir}/virt-ssh-helper
 
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %attr(0755, root, root) %{_sbindir}/virtproxyd
@@ -1969,6 +1967,9 @@ exit 0
 
 
 %changelog
+* Thu Oct 01 2020 Phantom X <megaphantomx at hotmail dot com> - 6.8.0-100
+- 6.8.0
+
 * Tue Sep 01 2020 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-100
 - 6.7.0
 - Upstream sync, meson

@@ -5,12 +5,12 @@
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
 %global released_kernel 1
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %global buildid .chinfo
 
-%global opensuse_id f4bb27aa43762a8fabb5e574bcf54a61ca7708ce
+%global opensuse_id 4178df398b6729b87fb74f5f151a146d579e45ba
 
 %define major_ver 5
 
@@ -23,7 +23,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 12
+%global stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -548,6 +548,9 @@ popd
 
 
 %changelog
+* Thu Oct 01 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.13-500.chinfo
+- 5.8.13
+
 * Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.12-501.chinfo
 - f33 sync, lto fixes
 

@@ -22,7 +22,7 @@
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -51,8 +51,8 @@ BuildRequires:  dbusmenu-qt%{?_isa}
 BuildRequires:  libffi%{?_isa}
 %endif
 %if 0%{?with_python}
-BuildRequires:  python2%{?_isa}
-Requires:       python2%{?_isa}
+BuildRequires:  python2.7%{?_isa}
+Requires:       python2.7%{?_isa}
 %endif
 %if 0%{?with_pillow}
 BuildRequires:  python2-pillow%{?_isa}
@@ -285,6 +285,9 @@ done
 
 
 %changelog
+* Wed Sep 30 2020 Phantom X <megaphantomx at hotmail dot com> - 3:7.5.0-8
+- python2.7
+
 * Fri Mar 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-7
 - with_pillow 0
 

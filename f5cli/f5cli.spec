@@ -17,7 +17,6 @@ URL:            https://www.f5.com/
 Source0:        https://connect.healthsystem.virginia.edu/public/download/linux_f5cli.x86_64.rpm#/%{name}-%{version}.x86_64.rpm
 
 Source1:        %{vc_url}/LICENSE
-Source2:        %{name}-sysusers.conf
 Source3:        README.suid
 
 ExclusiveArch:  x86_64

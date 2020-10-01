@@ -22,7 +22,6 @@ gens-gs
 gflash-player
 hakuneko-desktop
 higan
-irpf2016
 irpf2017
 irpf2018
 irpf2019

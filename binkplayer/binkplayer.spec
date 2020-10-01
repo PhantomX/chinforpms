@@ -8,8 +8,8 @@
 %endif
 
 Name:           binkplayer
-Version:        2.7i
-Release:        2%{?dist}
+Version:        2020.09
+Release:        1%{?dist}
 Summary:        Bink Video Player
 
 License:        Free for no-commercial use, no modification permitted
@@ -108,6 +108,9 @@ EOF
 
 
 %changelog
+* Wed Sep 30 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.09-1
+- 2020.09
+
 * Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.7i-2
 - BR: p7zip
 

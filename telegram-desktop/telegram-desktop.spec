@@ -1,3 +1,6 @@
+# Disable this. Local lto flags in use.
+%define _lto_cflags %{nil}
+
 # Telegram Desktop's constants...
 %global appname tdesktop
 %global launcher telegramdesktop
@@ -243,9 +246,6 @@ cp -rs \
 
 
 %build
-# Disable this. Local lto flags in use.
-%define _lto_cflags %{nil}
-
 %if %{with ipo} && %{without clang}
 export CC=gcc
 export CXX=g++

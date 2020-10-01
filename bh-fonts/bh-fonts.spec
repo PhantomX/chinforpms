@@ -1,6 +1,6 @@
 Name:           bh-fonts
 Version:        1.0.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        X.Org BH TTF fonts
 
 License:        BH-Luxi
@@ -109,6 +109,9 @@ This package provides optional documentation files shipped with
 %doc %{fontdocs}
 
 %changelog
+* Wed Sep 30 2020 Phantom X <megaphantomx at hotmail dot com> - 1.0.3-6
+- Update conf files
+
 * Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-5
 - Convert to new fonts template
 
