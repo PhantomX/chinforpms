@@ -76,7 +76,6 @@ cp -p mp3gain/lgpl.txt COPYING.mp3gain
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
 %{nil}
 
 %cmake_build

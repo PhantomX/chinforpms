@@ -129,7 +129,6 @@ sed -i \
 %define _lto_cflags %{nil}
 
 %cmake \
-  -B %{__cmake_builddir} \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
   -DSKIP_GIT:BOOL=ON \
   -DUSE_DISCORD_RPC:BOOL=OFF \

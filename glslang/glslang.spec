@@ -45,7 +45,6 @@ find . -name '*.h' -or -name '*.cpp' -or -name '*.hpp'| xargs chmod a-x
 
 %build
 %cmake3 \
-  -B %{__cmake_builddir} \
   -GNinja \
 %{nil}
 

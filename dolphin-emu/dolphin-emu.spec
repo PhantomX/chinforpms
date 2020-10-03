@@ -255,7 +255,6 @@ export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 #Script to find xxhash is not implemented, just tell cmake it was found
 %cmake \
-  -B %{__cmake_builddir} \
   -DAPPROVED_VENDORED_DEPENDENCIES=";" \
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \

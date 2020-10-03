@@ -101,9 +101,9 @@ index b2234b6918..501c8f049b 100644
 -, _dropdown(this, st::mediaviewDropdownMenu)
 -, _dropdownShowTimer(this) {
 +, _dropdown(this, st::mediaviewDropdownMenu) {
- 	subscribe(Lang::Current().updated(), [this] { refreshLang(); });
- 
- 	_lastPositiveVolume = (Core::App().settings().videoVolume() > 0.)
+ 	Lang::Updated(
+ 	) | rpl::start_with_next([=] {
+ 		refreshLang();
 @@ -388,8 +387,6 @@ OverlayWidget::OverlayWidget()
  	_docCancel->addClickHandler([=] { onSaveCancel(); });
  

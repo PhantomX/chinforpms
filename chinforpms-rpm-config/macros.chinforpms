@@ -1,3 +1,6 @@
+# Set fixed cpu jobs instead auto
+%_gcc_lto_cflags -flto=%{_smp_build_ncpus} -ffat-lto-objects
+
 # Set down debug level to speed up buildings
 %_glevel 1
 %__global_compiler_flags_glevel %(echo %{__global_compiler_flags} | sed -e 's/ -g\\b/ -g%{?_glevel}/')
@@ -11,6 +14,3 @@
 
 %_native_flags_x86_64 %(grep '^optflags: x86_64' /usr/lib/rpm/redhat/rpmrc \\
  | cut -d' ' -f4- %{?_native_flags:| sed -e 's/-mtune=generic/-march=native -mtune=native/'})
-
-# Enable out of source cmake
-%__cmake_builddir %{_vpath_builddir}

@@ -88,7 +88,6 @@ sed \
 
 %build
 %{cmake3} \
-  -B %{__cmake_builddir} \
 %if %{without qt}
   -DBARRIER_BUILD_GUI:BOOL=OFF \
 %endif

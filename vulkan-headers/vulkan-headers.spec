@@ -32,7 +32,6 @@ Vulkan Header files and API registry
 
 %build
 %cmake3 \
-  -B %{__cmake_builddir} \
   -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
 %{nil}
 

@@ -40,7 +40,6 @@ Requires:       xorg-x11-apps
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
 %{nil}
 
 %cmake_build

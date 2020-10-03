@@ -84,7 +84,6 @@ Files needed when building software with %{name}.
 %build
 CXXFLAGS="%{build_cxxflags} -std=c++11" \
 %{cmake} \
-  -B %{__cmake_builddir} \
 %if %{with tests}
   -DBUILD_TESTS:BOOL=ON \
 %endif

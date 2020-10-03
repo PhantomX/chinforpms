@@ -75,7 +75,6 @@ Development files for %{name}.
 %build
 
 %{cmake} \
-  -B %{__cmake_builddir} \
 %{nil}
 
 %cmake_build

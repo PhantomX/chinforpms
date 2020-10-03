@@ -4,7 +4,7 @@
 %global pkgname IRPF%{pkgyear}
 
 Name:           irpf%{pkgyear}
-Version:        1.4
+Version:        2.0
 Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
@@ -55,7 +55,7 @@ mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/sh
 
-exec java -jar %{_datadir}/ProgramasRFB/%{name}/irpf.jar "${@}"
+exec /usr/lib/jvm/jre-1.8.0/bin/java -jar %{_datadir}/ProgramasRFB/%{name}/irpf.jar "${@}"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
@@ -98,6 +98,9 @@ rm -f %{buildroot}%{_datadir}/ProgramasRFB/%{name}/IRPF-Licenses.txt
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 2.0-1
+- 2.0
+
 * Thu Mar 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1
 - 1.4
 

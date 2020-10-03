@@ -2,7 +2,7 @@
 
 Name:           python-%{pkgname}
 Version:        0.1.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A ctypes-based wrapper around the zbar barcode reader
 
 License:        MIT
@@ -17,8 +17,6 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-numpy
 BuildRequires:  python3-pillow
 BuildRequires:  zbar
-Requires:       python3-pillow
-Requires:       zbar
 
 
 %global _description\
@@ -28,6 +26,8 @@ Requires:       zbar
 
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
+Requires:       python3-pillow
+Requires:       zbar
 
 %description -n python3-%{pkgname}
 %_description
@@ -59,5 +59,8 @@ Summary:        %{summary}
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 0.1.8-2
+- Fix zbar requires
+
 * Fri Sep 18 2020 Phantom X <megaphantomx at hotmail dot com> - 0.1.8-1
 - Initial spec

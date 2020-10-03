@@ -87,23 +87,25 @@ sed -e 's|share/pixmaps|share/icons/hicolor/32x32/apps|g' \
 
 
 %build
+# Disable LTO. Segfaults
+%define _lto_cflags %{nil}
+
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 pushd mini18n
 minii18n="$(pwd)"
 %cmake3 \
-  -B %{__cmake_builddir} \
 %{nil}
 %cmake_build
 popd
 
 %cmake3 \
   -S %{name} \
-  -B %{__cmake_builddir} \
   -DYAB_PORTS=qt \
   -DYAB_OPTIMIZATION=-O2 \
   -DYAB_USE_CXX:BOOL=ON \
   -DYAB_NETWORK:BOOL=ON \
+  -DYAB_OPTIMIZED_DMA:BOOL=ON \
   -DYAB_USE_SCSP2:BOOL=OFF \
   -DYAB_USE_SCSPMIDI:BOOL=ON \
   -DYAB_USE_SSF:BOOL=ON \

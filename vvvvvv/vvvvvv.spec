@@ -85,7 +85,6 @@ export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 %cmake \
   -S desktop_version \
-  -B %{__cmake_builddir} \
   -DUSE_SYSTEM_PHYSFS:BOOL=ON \
   -DUSE_SYSTEM_TINYXML:BOOL=ON \
 %{nil}

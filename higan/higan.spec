@@ -1,7 +1,7 @@
-%global commit d2efef771ef0420170a3be38c120894eb930ba15
+%global commit 2a110b44631f01c0c5d64fab6a782320d8fb0ec6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20191209
-%global with_snapshot 0
+%global date 20200725
+%global with_snapshot 1
 
 %ifarch x86_64
 %global build_with_lto    1
@@ -23,7 +23,7 @@
 
 Name:           higan
 Version:        110
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Multi-system emulator
 
 License:        GPLv3 and BSD
@@ -73,6 +73,9 @@ accuracy and code readability.
 %else
 %autosetup %{name}-%{version} -p1
 %endif
+
+find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec chmod -x {} ';'
+
 
 sed -i -e 's|-L/usr/local/lib ||g' -i hiro/GNUmakefile
 
@@ -159,6 +162,9 @@ done
 
 
 %changelog
+* Fri Oct  2 2020 Phantom X <megaphantomx at hotmail dot com> - 110-2.20200725git2a110b4
+- Snapshot
+
 * Sat Mar 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 110-1
 - 110
 

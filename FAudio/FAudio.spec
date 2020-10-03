@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        20.09
+Version:        20.10
 Release:        100%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -77,7 +77,6 @@ sed \
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
   -DCMAKE_INSTALL_INCLUDEDIR:PATH=include/%{name} \
   -DGSTREAMER:BOOL=ON \
 %{nil}
@@ -106,6 +105,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.10-100
+- 20.10
+
 * Tue Sep 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.09-100
 - 20.09
 

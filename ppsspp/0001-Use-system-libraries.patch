@@ -1,6 +1,6 @@
-From 788a232e45f198810c17a42518b313c47ef11c60 Mon Sep 17 00:00:00 2001
+From 7c530824dbb8df7e46794f34672a864b4e42ce40 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 29 Aug 2020 01:13:25 -0300
+Date: Fri, 2 Oct 2020 11:57:27 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake borrowed from dolphin-emu
@@ -27,10 +27,10 @@ https://github.com/dolphin-emu/dolphin
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 58ae638..da9a8a0 100644
+index 29d2a45..7aa2023 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -123,6 +123,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
+@@ -122,6 +122,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
  option(USE_SYSTEM_SNAPPY "Dynamically link against system snappy" ${USE_SYSTEM_SNAPPY})
  option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_FFMPEG})
  option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
@@ -39,7 +39,7 @@ index 58ae638..da9a8a0 100644
  option(USE_ADDRESS_SANITIZER "Use Clang memory sanitizer" ${USE_ADDRESS_SANITIZER})
  
  if(UNIX AND NOT (APPLE OR ANDROID) AND VULKAN)
-@@ -1148,11 +1150,31 @@ add_library(xbrz STATIC
+@@ -1139,11 +1141,31 @@ add_library(xbrz STATIC
  )
  include_directories(ext/xbrz)
  
@@ -71,7 +71,7 @@ index 58ae638..da9a8a0 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -1849,6 +1871,12 @@ endif()
+@@ -1842,6 +1864,12 @@ endif()
  
  # miniUPnPc integration (MiniUPnPc supposed to works on any POSIX system, not sure if some of these are redundant/not needed tho)
  if(USE_MINIUPNPC)
@@ -84,7 +84,7 @@ index 58ae638..da9a8a0 100644
  	set (MINIUPNPC_VERSION 2.1) # used by miniupnpcstrings.h.cmake
  	set (MINIUPNPC_API_VERSION 17)
  	option(UPNPC_BUILD_STATIC "Build static library" TRUE)
-@@ -1918,6 +1946,7 @@ if(USE_MINIUPNPC)
+@@ -1911,6 +1939,7 @@ if(USE_MINIUPNPC)
  		endif()
  	endif()
  endif()
@@ -158,7 +158,7 @@ index 4324d3b..d70cad5 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 10b9720..bee57b0 100644
+index 6bb213e..3696ac3 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
 @@ -35,7 +35,11 @@
@@ -174,12 +174,12 @@ index 10b9720..bee57b0 100644
  using namespace MIPSCodeUtils;
  
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index 7cdb34c..36ccac9 100644
+index 32e49b0..7868dda 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
 @@ -24,7 +24,11 @@
  #include <algorithm>
- #include "base/stringutil.h"
+ 
  #include "i18n/i18n.h"
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
@@ -231,7 +231,7 @@ index f02094b..a01b24d 100644
  #include "Common/ColorConv.h"
  
 diff --git a/GPU/Common/TextureDecoderNEON.cpp b/GPU/Common/TextureDecoderNEON.cpp
-index 36f40b3..f0f8bb7 100644
+index 8e96223..2b618ee 100644
 --- a/GPU/Common/TextureDecoderNEON.cpp
 +++ b/GPU/Common/TextureDecoderNEON.cpp
 @@ -19,7 +19,11 @@
@@ -247,10 +247,10 @@ index 36f40b3..f0f8bb7 100644
  #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
  #include <arm64_neon.h>
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 9b6ad9b..a3b1453 100644
+index ffbf31b..4d8d96f 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
-@@ -36,7 +36,11 @@
+@@ -35,7 +35,11 @@
  #include "Core/Config.h"
  #include "Core/Host.h"
  
@@ -263,10 +263,10 @@ index 9b6ad9b..a3b1453 100644
  
  
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index c5e7049..75ace76 100644
+index 49b8791..3d9494a 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
-@@ -34,7 +34,11 @@
+@@ -33,7 +33,11 @@
  #include "Core/Config.h"
  #include "Core/Host.h"
  
@@ -279,7 +279,7 @@ index c5e7049..75ace76 100644
  
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 6ecfd51..e4afbd7 100644
+index e3bb890..c8b050d 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,11 @@
@@ -295,7 +295,7 @@ index 6ecfd51..e4afbd7 100644
  #include "i18n/i18n.h"
  #include "math/math_util.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index bf51e1f..748152b 100644
+index d84827b..4c4ba04 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@
@@ -311,13 +311,13 @@ index bf51e1f..748152b 100644
  #include "i18n/i18n.h"
  #include "math/math_util.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index a5c040d..b53c136 100644
+index b0d2bfc..2897e97 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
-@@ -16,7 +16,11 @@
+@@ -15,7 +15,11 @@
+ // Official git repository and contact information can be found at
  // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
  
- #include "base/stringutil.h"
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
 +#else
@@ -376,5 +376,5 @@ index 0000000..f9a14e2
 +  )
 +endif()
 -- 
-2.26.2
+2.28.0
 

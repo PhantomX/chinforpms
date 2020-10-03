@@ -1,6 +1,6 @@
-%global commit 7e7251c10a799c649c14175aafa996a5aa2e6a08
+%global commit 0b0a32b48aedcb84ec9d9cdd8e6c07ce61127286
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200902
+%global date 20200927
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           kronos
 Version:        2.1.4
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -106,20 +106,21 @@ sed -e 's|share/yabause|share/%{name}|g' -i yabause/l10n/CMakeLists.txt
 
 
 %build
+# Disable LTO. Build fails
+%define _lto_cflags %{nil}
+
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 pushd mini18n
 minii18n="$(pwd)"
 %cmake3 \
-  -B %{__cmake_builddir} \
 %{nil}
 %cmake_build
 popd
 
 %cmake3 \
   -S yabause \
-  -B %{__cmake_builddir} \
   -DYAB_PORTS=qt \
 %if 0%{?with_egl}
   -DYAB_FORCE_GLES31:BOOL=ON \
@@ -157,6 +158,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.4-2.20200927git0b0a32b
+- Bump
+
 * Thu Sep 03 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.4-1.20200902git7e7251c
 - 2.1.4
 

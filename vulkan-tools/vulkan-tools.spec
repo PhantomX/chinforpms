@@ -46,7 +46,6 @@ Vulkan tools
 
 %build
 %cmake3 \
-  -B %{__cmake_builddir} \
   -GNinja \
   -DCMAKE_BUILD_TYPE=Release \
   -DGLSLANG_INSTALL_DIR=%{_prefix} \

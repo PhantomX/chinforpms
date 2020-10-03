@@ -11,8 +11,8 @@ ExecStart=/usr/bin/xboxdrv -c /etc/xboxdrv/xboxdrv.conf --daemon --dbus system
 ProtectSystem=strict
 TemporaryFileSystem=/etc:ro
 BindReadOnlyPaths=-/etc/xboxdrv/xboxdrv.conf
-BindReadOnlyPaths=-/etc/ld.so.preload
-BindReadOnlyPaths=-/etc/ld.so.cache
+#BindReadOnlyPaths=-/etc/ld.so.preload
+#BindReadOnlyPaths=-/etc/ld.so.cache
 BindReadOnlyPaths=-/etc/system-fips
 BindReadOnlyPaths=-/etc/selinux/config
 

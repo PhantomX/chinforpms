@@ -62,7 +62,6 @@ sed \
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
   -DBUILD_SDL_JSTEST:BOOL=OFF \
 %{nil}
 

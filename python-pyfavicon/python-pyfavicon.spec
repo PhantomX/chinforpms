@@ -2,7 +2,7 @@
 
 Name:           python-%{pkgname}
 Version:        0.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Async favicon fetcher
 
 License:        MIT
@@ -20,9 +20,6 @@ BuildRequires:  python3-coveralls
 BuildRequires:  python3-pillow
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pytest-cov
-Requires:       python3-aiohttp
-Requires:       python3-beautifulsoup4
-Requires:       python3-pillow
 
 
 %global _description\
@@ -32,6 +29,9 @@ pyfavicon is an async favicon fetcher.
 
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
+Requires:       python3-aiohttp
+Requires:       python3-beautifulsoup4
+Requires:       python3-pillow
 
 %description -n python3-%{pkgname}
 %_description
@@ -62,5 +62,8 @@ Summary:        %{summary}
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-2
+- Fix requires
+
 * Fri Sep 18 2020 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-1
 - Initial spec

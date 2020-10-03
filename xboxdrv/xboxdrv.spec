@@ -13,7 +13,7 @@
 
 Name:           xboxdrv
 Version:        0.8.8
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPLv3+
@@ -142,6 +142,9 @@ install -pm0644 %{S:5} %{S:6} %{buildroot}%{_datadir}/polkit-1/actions/
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 0.8.8-106.20200226git7f2251b
+- Fix systemd unit
+
 * Thu Feb 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.8.8-105.20200226git7f2251b
 - Cebtenzzre fork
 - Hardened systemd unit

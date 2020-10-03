@@ -76,7 +76,6 @@ sed -i -e "/^\[!/d" -e "/INSTALL.md/d" README.md
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
   -DBUILD_TESTS:BOOL=OFF \
   -DUSE_PULSE:BOOL=ON \
   -DUSE_ALSA:BOOL=ON \

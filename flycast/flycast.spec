@@ -130,13 +130,15 @@ sed \
 
 
 %build
+# Disable LTO. Crash.
+%define _lto_cflags %{nil}
+
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now -Wl,--sort-common"
 EXTRA_CFLAGS="-D NDEBUG -frename-registers -ftree-vectorize"
 export CFLAGS="%{build_cflags} ${EXTRA_CFLAGS}"
 export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
 
 %cmake \
-  -B %{__cmake_builddir} \
   -GNinja \
 %if 0%{?with_x11}
   -DSDL2_FOUND:BOOL=OFF \

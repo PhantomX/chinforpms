@@ -1,6 +1,6 @@
-%global commit 7ed1ade56b1d2d82f6828d236d01f59ee736ae12
+%global commit 5c9b7bb859c3694badb2f73852f3262dcac0f0aa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200919
+%global date 20201002
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -16,11 +16,14 @@
 %global bundleffmpegver 3.0.2
 %endif
 
-%global commit1 1c64b8fbd3cb6bd87935eb53f302f7de6f86e209
+# https://github.com/hrydgard/ppsspp/issues/13312
+%define _lto_cflags %{nil}
+
+%global commit1 d5a2a51942377820764604d9bb424fa9a879c4bd
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
-%global commit2 55147e5f33f5ae4904f75ec082af809267122b94
+%global commit2 d3e695286cce346274192c214c00f021c00cd575
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -36,7 +39,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 8891bd35120ca91c252a66ccfdc3f9a9d03c70cd
+%global commit7 5cc2e4f6348e3f70953f93fc5fcd0c6e8208c5b4
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -53,7 +56,7 @@
 
 Name:           ppsspp
 Version:        1.10.3
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -92,6 +95,7 @@ BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
+BuildRequires:  make
 %if %{with ffmpeg}
 %if 0%{?with_sysffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
@@ -240,9 +244,6 @@ popd
 
 
 %build
-# https://github.com/hrydgard/ppsspp/issues/13312
-%define _lto_cflags %{nil}
-
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 %if %{with ffmpeg}
@@ -267,7 +268,6 @@ popd
 %endif
 
 %cmake \
-  -B %{__cmake_builddir} \
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \
@@ -371,6 +371,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Fri Oct  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-108.20201002git5c9b7bb
+- New snapshot
+
 * Sat Sep 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-107.20200919git7ed1ade
 - Bump
 

@@ -197,7 +197,6 @@ export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
 
 %cmake \
   -S xgl \
-  -B %{__cmake_builddir} \
   -DBUILD_WAYLAND_SUPPORT:BOOL=ON \
   -DSPIRV_CROSS_FORCE_PIC:BOOL=ON \
   -DXGL_METROHASH_PATH:PATH=${extdir}/MetroHash \

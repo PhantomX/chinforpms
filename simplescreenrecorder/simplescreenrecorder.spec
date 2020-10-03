@@ -54,7 +54,6 @@ sed -i 's|lrelease|lrelease-qt5|' src/translations/CMakeLists.txt
 
 %build
 %cmake3 \
-  -B %{__cmake_builddir} \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_QT5=TRUE \
 %ifnarch %{ix86} x86_64

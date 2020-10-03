@@ -2,7 +2,7 @@
 
 Name:           python-%{pkgname}
 Version:        6.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Database migrations with SQL
 
 License:        ASL 2.0
@@ -15,8 +15,6 @@ BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-iniherit
 BuildRequires:  python3-text-unidecode
-Requires:       python3-iniherit
-Requires:       python3-text-unidecode
 
 
 %global _description\
@@ -27,6 +25,8 @@ or Python scripts that define a list of migration steps.
 
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
+Requires:       python3-iniherit
+Requires:       python3-text-unidecode
 
 %description -n python3-%{pkgname}
 %_description
@@ -59,5 +59,8 @@ chmod -x *.rst *.txt
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 6.1.0-2
+- Fix requires
+
 * Fri Sep 18 2020 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-1
 - Initial spec

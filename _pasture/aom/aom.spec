@@ -75,7 +75,6 @@ sed -i 's@set(aom_version "")@set(aom_version "%{aom_version}")@' build/cmake/ve
 
 %build
 %cmake3 \
-  -B %{__cmake_builddir} \
   -DENABLE_CCACHE=1 \
   -DCMAKE_SKIP_RPATH=1 \
   -DCMAKE_BUILD_TYPE=Release \

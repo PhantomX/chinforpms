@@ -59,7 +59,6 @@ sed \
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
   -DQt5_LRELEASE_EXECUTABLE=lrelease-qt5 \
 %{nil}
 

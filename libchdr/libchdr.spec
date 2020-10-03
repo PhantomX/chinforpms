@@ -55,7 +55,6 @@ rm -rf deps/{flac,lzma,zlib}*
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
   -DCMAKE_INSTALL_LIBDIR:PATH="%{_lib}" \
   -DBUILD_STATIC_LIBS:BOOL=OFF \
   -DWITH_SYSTEM_FLAC:BOOL=ON \

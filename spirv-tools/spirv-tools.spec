@@ -51,7 +51,6 @@ Development files for %{name}
 
 %build
 %cmake3 \
-  -B %{__cmake_builddir} \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_LIBDIR=%{_lib} \
   -DSPIRV-Headers_SOURCE_DIR=%{_prefix} \

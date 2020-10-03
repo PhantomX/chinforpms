@@ -33,7 +33,6 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/%{name}
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
   -DPOST_INSTALL_HOOKS:BOOL=OFF \
 %{nil}
 

@@ -93,7 +93,6 @@ sed -i 's/"git"/"%{version}-%{release}"/' gui/AboutDlg.c
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
   -DUSE_LIBCDIO:BOOL=ON \
   -DUSE_LIBARCHIVE:BOOL=ON \
   -DENABLE_CHD:BOOL=ON \

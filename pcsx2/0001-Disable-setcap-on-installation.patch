@@ -1,6 +1,6 @@
-From 5f053a90983510aecc2209cd53f16b8aaa4b4b79 Mon Sep 17 00:00:00 2001
+From 48c78e81eca7ed69264e47494eecd9aca5b69336 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 31 Aug 2020 09:41:53 -0300
+Date: Fri, 2 Oct 2020 15:51:59 -0300
 Subject: [PATCH] Disable setcap on installation
 
 ---
@@ -8,10 +8,10 @@ Subject: [PATCH] Disable setcap on installation
  1 file changed, 8 deletions(-)
 
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 5026ba9..5415b49 100644
+index bca3c21..c08b65c 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -748,11 +748,3 @@ if (APPLE)
+@@ -808,11 +808,3 @@ if (APPLE)
  	)
  	add_dependencies(pcsx2-postprocess-bundle ${Output})
  endif()
@@ -23,6 +23,7 @@ index 5026ba9..5415b49 100644
 -        install(CODE "execute_process(COMMAND /bin/bash -c \"echo 'Enabling networking capability on Linux...';set -x; [ -f ${CMAKE_SOURCE_DIR}/bin/${Output} ] && sudo setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' ${CMAKE_SOURCE_DIR}/bin/${Output}; set +x\")")
 -    endif()
 -endif()
+\ No newline at end of file
 -- 
-2.26.2
+2.28.0
 

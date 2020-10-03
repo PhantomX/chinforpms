@@ -35,7 +35,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.7.1
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -135,7 +135,6 @@ cp %{S:1} README.%{pkgname}
 cp %{S:2} .
 cp %{S:3} README-chinforpms
 
-
 sed -e '/command:/s|git|false|g' -i meson.build
 
 sed -e 's|@VCS_TAG@|v%{version}-%{release}|g' -i version.h.in
@@ -150,7 +149,10 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error -mno-avx"
+TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'`"
+
+# -fno-tree-dce: fix x86 gcc 10 crashes
+TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error -mno-avx -fno-tree-dce"
 
 TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-O2\b/-O3/'`"
 
@@ -184,7 +186,7 @@ for i in %{targetbits}
 do
 meson \
   --cross-file build-%{cfname}${i}.txt \
-  --buildtype "release" \
+  --buildtype "plain" \
   %{_target_platform}${i}
 
 %ninja_build -C %{_target_platform}${i}
@@ -232,6 +234,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.1-102.20200926gitccb7822
+- Add -fno-tree-dce to fix crash with x86
+
 * Mon Sep 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.1-101.20200926gitccb7822
 - New snapshot
 

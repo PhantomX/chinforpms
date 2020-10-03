@@ -92,7 +92,6 @@ sed \
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   -GNinja \
 %{nil}

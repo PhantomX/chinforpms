@@ -5,7 +5,7 @@
 %global appname tdesktop
 %global launcher telegramdesktop
 
-%global commit1 c668c179fe2ea1d70c624a7c2afbacfdfc04d6b0
+%global commit1 7a9d4bd6d9a147d15e3c8fa818a716c31f65606a
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 tg_owt
 
@@ -23,12 +23,6 @@
 %bcond_with tgvoip
 
 %bcond_with clang
-
-%if 0%{?fedora} && 0%{?fedora} >= 33
-%bcond_with mapbox
-%else
-%bcond_without mapbox
-%endif
 
 # F33+ has some issues with LTO: https://bugzilla.redhat.com/show_bug.cgi?id=1880290
 %if 0%{?fedora} && 0%{?fedora} >= 33
@@ -53,8 +47,8 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.3.2
-Release:        101%{?dist}
+Version:        2.4.2
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -74,9 +68,6 @@ Source1:        %{da_url}/tg_owt/archive/%{commit1}/%{srcname1}-%{shortcommit1}.
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-pr8009.patch
-Source101:       %{da_url}/cmake_helpers/commit/d955882cb4d4c94f61a9b1df62b7f93d3c5bff7d.patch#/%{name}-gh-da-d955882.patch
-# https://github.com/desktop-app/tg_owt/pull/25
-Source102:       %{da_url}/tg_owt/pull/25.patch#/%{name}-gh-da-pr25.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -159,15 +150,8 @@ BuildRequires:  json11-devel
 Provides:       bundled(libtgvoip) = 0~git
 %endif
 
-# Breaking API changes in version 1.2.0.
-%if %{with mapbox}
-BuildRequires: mapbox-variant-devel < 1.2.0
-%else
-Provides: bundled(mapbox-variant) = 1.1.6
-%endif
-
 Provides:       bundled(lxqt-qtplugin) = 0.14.0~git
-Provides:       bundled(tg_owt) = 0~git
+Provides:       bundled(tg_owt) = 0~git%{shortcommit1}
 Provides:       bundled(openh264) = 0~git
 Provides:       bundled(abseil-cpp) = 0~git
 Provides:       bundled(libsrtp) = 0~git
@@ -198,10 +182,7 @@ business messaging needs.
 # Unpacking Telegram Desktop source archive...
 %autosetup -n %{appname}-%{version}-full -p1 -a 1
 
-patch -p1 -d cmake -i %{S:101}
-
 mv %{srcname1}-%{commit1} %{srcname1}
-patch -p1 -d %{srcname1} -i %{S:102}
 
 sed \
   -e 's|cxx_std_20|cxx_std_17|g' \
@@ -222,11 +203,6 @@ rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,h
     -i cmake/external/rlottie/CMakeLists.txt
 %endif
 
-# Unbundling mapbox-variant if build against packaged version...
-%if %{with mapbox}
-rm -rf Telegram/ThirdParty/variant
-%endif
-
 %if %{with tgvoip}
   rm -rf Telegram/ThirdParty/libtgvoip
 %else
@@ -238,11 +214,6 @@ rm -rf Telegram/ThirdParty/variant
 rm -f Telegram/lib_ui/qt_conf/linux.qrc
 
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
-
-# Fix private qt5 issues
-cp -rs \
-  %{_qt5_includedir}/QtXkbCommonSupport/%{_qt5_version}/QtXkbCommonSupport \
-  Telegram/SourceFiles/
 
 
 %build
@@ -262,7 +233,6 @@ pushd tg_owt
 tg_owt_dir="$(pwd)/%{__cmake_builddir}"
 
 %cmake \
-  -B %{__cmake_builddir} \
   -G Ninja \
 %if %{with clang}
   -DCMAKE_C_COMPILER=%{_bindir}/clang \
@@ -289,7 +259,6 @@ popd
 
 # Building Telegram Desktop using cmake...
 %cmake \
-    -B %{__cmake_builddir} \
     -G Ninja \
     -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{with clang}
@@ -363,6 +332,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.2-100
+- 2.4.2
+- RPMFusion sync
+
 * Fri Sep 25 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.3.2-101
 - RPMFusion sync
 

@@ -35,7 +35,6 @@ sed \
 
 %build
 %cmake \
-  -B %{__cmake_builddir} \
 %{nil}
 
 %cmake_build

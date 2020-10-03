@@ -2,7 +2,7 @@
 
 Name:           python-%{pkgname}
 Version:        0.3.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A ConfigParser subclass with file-specified inheritance
 
 License:        MIT
@@ -16,7 +16,6 @@ BuildRequires:  python3-devel
 #BuildRequires:  python3-coverage
 #BuildRequires:  python3-nose
 BuildRequires:  python3-six
-Requires:       python3-six
 
 
 %global _description\
@@ -26,6 +25,7 @@ Requires:       python3-six
 
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
+Requires:       python3-six
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description -n python3-%{pkgname}
@@ -58,5 +58,8 @@ Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 0.3.9-2
+- Fix requires
+
 * Fri Sep 18 2020 Phantom X <megaphantomx at hotmail dot com> - 0.3.9-1
 - Initial spec

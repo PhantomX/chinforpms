@@ -1,6 +1,6 @@
-%global commit e1ff498a8e1a39781fcce9e808878264f0b2f028
+%global commit 85c1aca70e46c30f9c0b44d8b020af1cbaf6f331
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200919
+%global date 20201002
 %global with_snapshot 1
 
 %global sanitize 0
@@ -16,7 +16,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        108%{?gver}%{?dist}
+Release:        109%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -143,10 +143,9 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
 # Extensive testing will is therefore needed. See rpmfusion bug #2455
 
 %define _lto_cflags %{nil}
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%global optflags "%(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//') -fuse-ld=bfd"
 
 %cmake \
-  -B %{__cmake_builddir} \
   -DUSER_CMAKE_LD_FLAGS="-Wl,-z,noexecstack" \
   -DDISABLE_BUILD_DATE:BOOL=TRUE \
   -DPACKAGE_MODE:BOOL=TRUE \
@@ -237,6 +236,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Fri Oct  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-109.20201002git85c1aca
+- New snapshot
+
 * Sat Sep 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-108.20200919gite1ff498
 - Bump
 

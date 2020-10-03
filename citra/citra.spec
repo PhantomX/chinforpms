@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit 316a64961c3809e0feaa9fb362c49467a22c58ab
+%global commit aced133a3d80de3b58bf3c9c8ef555ede79b6c1c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200905
+%global date 20201001
 %global with_snapshot 1
 
 # Enable system boost
@@ -66,7 +66,7 @@
 
 Name:           citra
 Version:        0
-Release:        11%{?gver}%{?dist}
+Release:        12%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -101,7 +101,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 %if %{with boost}
-BuildRequires:  boost-devel >= 1.70.0
+BuildRequires:  boost-devel >= 1.71.0
 %endif
 BuildRequires:  cmake(cubeb)
 %if %{with ffmpeg}
@@ -156,7 +156,9 @@ tar -xf %{S:7} -C externals/soundtouch --strip-components 1
 tar -xf %{S:8} -C externals/teakra --strip-components 1
 tar -xf %{S:9} -C externals/xbyak --strip-components 1
 tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
+%if !%{with boost}
 tar -xf %{S:11} -C externals/boost --strip-components 1
+%endif
 
 sed -e '/ENABLE_WEB_SERVICE/s|ON|OFF|g' -i CMakeLists.txt
 
@@ -180,6 +182,9 @@ sed -e '/^#include <exception>/a#include <system_error>' \
 %endif
 
 %build
+# Disable LTO. Crash.
+%define _lto_cflags %{nil}
+
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
@@ -194,7 +199,6 @@ export TRAVIS_TAG="%{version}-%{release}"
 %endif
 
 %cmake \
-  -B %{__cmake_builddir} \
 %if %{with qt}
   -DENABLE_QT_TRANSLATION:BOOL=ON \
 %else
@@ -239,6 +243,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 0-12.20201001gitaced133
+- Bump
+
 * Sun Sep 06 2020 Phantom X <megaphantomx at hotmail dot com> - 0-11.20200905git316a649
 - New snapshot
 
