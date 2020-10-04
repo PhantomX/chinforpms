@@ -1,0 +1,52 @@
+From a8e8bf253c230875706dc1c9a0b13c4e0d1f26c0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 3 Oct 2020 20:38:04 -0300
+Subject: [PATCH] Install shader library and add sonames
+
+---
+ libs/vkd3d-shader/meson.build | 8 +++++---
+ libs/vkd3d-utils/meson.build  | 3 ++-
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/libs/vkd3d-shader/meson.build b/libs/vkd3d-shader/meson.build
+index d66ac2e..fd47467 100644
+--- a/libs/vkd3d-shader/meson.build
++++ b/libs/vkd3d-shader/meson.build
+@@ -7,11 +7,13 @@ vkd3d_shader_src = [
+   'vkd3d_shader_main.c',
+ ]
+ 
+-vkd3d_shader_lib = static_library('vkd3d-shader', vkd3d_shader_src, vkd3d_headers,
+-  dependencies        : [ vkd3d_common_dep, dxil_spirv_dep ],
++vkd3d_shader_lib = shared_library('vkd3d-shader', vkd3d_shader_src, vkd3d_headers,
++  dependencies        : [ vkd3d_common_dep, dxil_spirv_dep, threads_dep ],
+   include_directories : vkd3d_private_includes,
++  install             : true,
++  version             : '1.1.0',
+   override_options    : [ 'c_std='+vkd3d_c_std ])
+ 
+ vkd3d_shader_dep = declare_dependency(
+   link_with           : vkd3d_shader_lib,
+-  include_directories : vkd3d_public_includes)
+\ No newline at end of file
++  include_directories : vkd3d_public_includes)
+diff --git a/libs/vkd3d-utils/meson.build b/libs/vkd3d-utils/meson.build
+index 6d0f96a..4638a28 100644
+--- a/libs/vkd3d-utils/meson.build
++++ b/libs/vkd3d-utils/meson.build
+@@ -6,9 +6,10 @@ vkd3d_utils_lib = shared_library('vkd3d-utils', vkd3d_utils_src, vkd3d_headers,
+   dependencies        : vkd3d_dep,
+   include_directories : vkd3d_private_includes,
+   install             : true,
++  version             : '1.1.0',
+   vs_module_defs      : 'vkd3d_utils.def',
+   override_options    : [ 'c_std='+vkd3d_c_std ])
+ 
+ vkd3d_utils_dep = declare_dependency(
+   link_with           : vkd3d_utils_lib,
+-  include_directories : vkd3d_public_includes)
+\ No newline at end of file
++  include_directories : vkd3d_public_includes)
+-- 
+2.28.0
+

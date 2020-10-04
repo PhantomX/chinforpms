@@ -3,7 +3,7 @@
 
 Name:           ipager
 Version:        1.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A themable desktop pager for fluxbox and other WMs
 
 License:        MIT
@@ -39,6 +39,8 @@ sed \
 
 %build
 %set_build_flags
+unset CC
+unset CXX
 scons %{?_smp_mflags} \
   --cache-disable \
   PREFIX="%{_prefix}" \
@@ -46,6 +48,8 @@ scons %{?_smp_mflags} \
 
 %install
 %set_build_flags
+unset CC
+unset CXX
 scons \
   --cache-disable \
   PREFIX="%{_prefix}" \
@@ -61,5 +65,8 @@ scons \
 
 
 %changelog
+* Sat Oct 03 2020 Phantom X <megaphantomx at hotmail dot com> - 1.1.0-2
+- Unset compiler variables to please scons bullshit
+
 * Wed May 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.1.0-1
 - Initial spec

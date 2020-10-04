@@ -8,9 +8,9 @@
 %global with_sysvulkan 1
 %global with_unittests 0
 
-%global commit 57f14b260bf043b6c261ca284b6c45fa3a7932de
+%global commit 0fe60816801d0c17946f73327c898555813a8e70
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200924
+%global date 20201003
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -24,7 +24,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        120%{?gver}%{?dist}
+Release:        121%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -248,7 +248,7 @@ sed \
 
 
 %build
-# Disable this. Local lto flags in use.
+# Disable LTO. Segfaults.
 %define _lto_cflags %{nil}
 
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
@@ -390,6 +390,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Oct 04 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-121.20201003git0fe6081
+- Bump
+
 * Thu Sep 24 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-120.20200924git57f14b2
 - New snapshot
 - System vulkan support fixes from Rawhide

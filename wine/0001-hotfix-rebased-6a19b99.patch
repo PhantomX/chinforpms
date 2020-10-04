@@ -1,0 +1,88 @@
+From 566ece85d0022f1a8b76e32d344b96bfe4e95ef9 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 3 Oct 2020 18:41:58 -0300
+Subject: [PATCH] hotfix-rebased 6a19b99
+
+---
+ programs/wineboot/Makefile.in |  2 +-
+ programs/wineboot/wineboot.c  | 38 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 39 insertions(+), 1 deletion(-)
+
+diff --git a/programs/wineboot/Makefile.in b/programs/wineboot/Makefile.in
+index 3921fa9..2552f69 100644
+--- a/programs/wineboot/Makefile.in
++++ b/programs/wineboot/Makefile.in
+@@ -1,6 +1,6 @@
+ MODULE    = wineboot.exe
+ APPMODE   = -mconsole
+-IMPORTS   = uuid advapi32
++IMPORTS   = uuid advapi32 ws2_32
+ DELAYIMPORTS = shell32 shlwapi version user32 setupapi newdev
+ 
+ EXTRADLLFLAGS = -mno-cygwin
+diff --git a/programs/wineboot/wineboot.c b/programs/wineboot/wineboot.c
+index 09925bf..127004e 100644
+--- a/programs/wineboot/wineboot.c
++++ b/programs/wineboot/wineboot.c
+@@ -61,6 +61,7 @@
+ #include <sys/stat.h>
+ #include <unistd.h>
+ #include <windows.h>
++#include <ws2tcpip.h>
+ #include <winternl.h>
+ #include <sddl.h>
+ #include <wine/svcctl.h>
+@@ -664,6 +665,42 @@ static void create_environment_registry_keys( void )
+     RegCloseKey( env_key );
+ }
+ 
++/* create the ComputerName registry keys */
++static void create_computer_name_keys(void)
++{
++    struct addrinfo hints = {0}, *res;
++    char *dot, buffer[256];
++    HKEY key, subkey;
++
++    if (gethostname( buffer, sizeof(buffer) )) return;
++    hints.ai_flags = AI_CANONNAME;
++    if (getaddrinfo( buffer, NULL, &hints, &res )) return;
++    dot = strchr( res->ai_canonname, '.' );
++    if (dot) *dot++ = 0;
++    else dot = res->ai_canonname + strlen(res->ai_canonname);
++    SetComputerNameExA( ComputerNamePhysicalDnsDomain, dot );
++    SetComputerNameExA( ComputerNamePhysicalDnsHostname, res->ai_canonname );
++    freeaddrinfo( res );
++
++    if (RegOpenKeyW( HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\ComputerName", &key ))
++        return;
++
++    if (!RegOpenKeyW( key, L"ComputerName", &subkey ))
++    {
++        DWORD type, size = sizeof(buffer);
++
++        if (RegQueryValueExW( subkey, L"ComputerName", NULL, &type, (BYTE *)buffer, &size )) size = 0;
++        RegCloseKey( subkey );
++        if (size && !RegCreateKeyExW( key, L"ActiveComputerName", 0, NULL, REG_OPTION_VOLATILE,
++                                      KEY_ALL_ACCESS, NULL, &subkey, NULL ))
++        {
++            RegSetValueExW( subkey, L"ComputerName", 0, type, (const BYTE *)buffer, size );
++            RegCloseKey( subkey );
++        }
++    }
++    RegCloseKey( key );
++}
++
+ static void create_volatile_environment_registry_key(void)
+ {
+     WCHAR path[MAX_PATH];
+@@ -1505,6 +1542,7 @@ int __cdecl main( int argc, char *argv[] )
+     create_hardware_registry_keys();
+     create_dynamic_registry_keys();
+     create_environment_registry_keys();
++    create_computer_name_keys();
+     wininit();
+     pendingRename();
+ 
+-- 
+2.28.0
+
