@@ -3,7 +3,7 @@
 %global pkgrel 1
 
 Name:           kse
-Version:        5.4.3
+Version:        5.4.4
 Release:        1%{?dist}
 Summary:        Multipurpose keystore and certificate tool
 
@@ -11,7 +11,7 @@ License:        GPLv3+
 
 URL:            https://keystore-explorer.org
 
-Source0:        https://github.com/kaikramer/keystore-explorer/releases/download/v%{version}/%{name}-%{version}.rpm
+Source0:        https://github.com/kaikramer/keystore-explorer/releases/download/v%{version}/%{name}-%{version}-%{pkgrel}.noarch.rpm
 
 BuildArch:      noarch
 
@@ -76,6 +76,9 @@ done
 
 
 %changelog
+* Mon Oct  5 2020 Phantom X <megaphantomx at hotmail dot com> - 5.4.4-1
+- 5.4.4
+
 * Sat Apr 25 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.3-1
 - 5.4.3
 
