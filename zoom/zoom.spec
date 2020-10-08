@@ -1,3 +1,5 @@
+# DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
+
 %global debug_package %{nil}
 %global _build_id_links none
 %global __strip /bin/true
@@ -47,7 +49,6 @@ if [ "${RVER}" != "%{version}" ] ;then
   exit 1
 fi
 
-%setup -c -T
 rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
 
 cp %{S:1} .

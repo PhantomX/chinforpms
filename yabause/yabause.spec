@@ -82,9 +82,14 @@ find \( -name \*.c\* -or -name \*.h\* -or -name AUTHORS \) -exec sed -i 's/\r$//
 #fix permissions
 find \( -name \*.c\* -or -name \*.h\* \) -exec chmod -x {} \;
 
+#rm -f %{name}/src/glext.h
+#rm -rf %{name}/src/gllibs
+
 sed -e 's|share/pixmaps|share/icons/hicolor/32x32/apps|g' \
   -i %{name}/src/qt/CMakeLists.txt
 
+sed -e '/GDKGLEXT_CONFIG_INCLUDE_DIR/s| lib/| %{_lib}/|' \
+  -i %{name}/src/gtk/CMakeLists.txt
 
 %build
 # Disable LTO. Segfaults

@@ -1,3 +1,5 @@
+# DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
+
 Name:           bh-fonts
 Version:        1.0.3
 Release:        6%{?dist}

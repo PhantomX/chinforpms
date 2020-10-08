@@ -1,3 +1,5 @@
+# DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
+
 Name:           vvvvvv-data
 Version:        20161020
 Release:        1%{?dist}

@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit a0d1594ee52f971847893b3b5c9a9902cdb2c6aa
+%global pfcommit cc1694f476d677b462b6b760ae98790cbc50b0d0
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 4178df398b6729b87fb74f5f151a146d579e45ba
+%global opensuse_id cea47bbdbcc737161b624f5c96605ac282ec8fed
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -875,7 +875,6 @@ Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
 Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch 
 
-Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 Patch102: 0002-arm64-tegra-Re-order-PCIe-aperture-mappings-to-suppo.patch
 Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
 
@@ -884,9 +883,6 @@ Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1874117
 Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
 Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
-
-# rhbz 1873720
-Patch112: v2-nfs-Fix-security-label-length-not-being-reset.patch
 
 # rhbz 1875339 1875828 1876997
 Patch113: pdx86-SW_TABLET_MODE-fixes.patch 
@@ -2688,6 +2684,9 @@ fi
 #
 #
 %changelog
+* Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.14-500.chinfo
+- 5.8.14 -pf7
+
 * Thu Oct 01 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.13-500.chinfo
 - 5.8.13 -pf7
 

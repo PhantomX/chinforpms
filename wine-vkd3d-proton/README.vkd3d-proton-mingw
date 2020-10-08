@@ -1,0 +1,8 @@
+Enable with winevkd3dcfg.
+
+or
+
+The needed dll files are in /usr/share/wine/vkd3d-proton/ARCH, ARCH must match to
+the architecture from executable, 32 or 64.
+ln -s /usr/share/wine/dxvk/ARCH/d3d12.dll executable_directory/d3d11.dll
+WINEDLLOVERRIDES="dxgi=b,d3d12=n" executable

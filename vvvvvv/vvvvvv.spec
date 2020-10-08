@@ -1,3 +1,5 @@
+# DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
+
 %global commit c29d7c7d149ccc3d5d297f2679b5a8b89e7ac910
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200825

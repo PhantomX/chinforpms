@@ -7,7 +7,7 @@
 %global commit ccb782219c93d7665927ec1b0af7c7c4fdfc067d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200926
-%global with_snapshot 1
+%global with_snapshot 0
 
 %{?mingw_package_header}
 
@@ -34,8 +34,8 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.7.1
-Release:        102%{?gver}%{?dist}
+Version:        1.7.2
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -234,6 +234,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.2-100
+- 1.7.2
+
 * Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.1-102.20200926gitccb7822
 - Add -fno-tree-dce to fix crash with x86
 

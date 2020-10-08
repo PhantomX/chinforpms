@@ -1,81 +1,64 @@
+%{?mingw_package_header}
+
 #%%global snapshot_date 20160723
 #%%global snapshot_rev 65a0c3298db7cc5cbded63259663cb29e4780a56
-#%%global snapshot_rev_short %%(echo %snapshot_rev | cut -c1-6)
+#%%global snapshot_rev_short %%(echo %%snapshot_rev | cut -c1-6)
 #%%global branch v5.x
 
 #%%global pre rc2
 
-# The mingw-w64-headers provide the headers pthread_time.h
-# and pthread_unistd.h by default and are dummy headers.
-# The real implementation for these headers is in a separate
-# library called winpthreads. As long as winpthreads isn't
-# available (and the old pthreads-w32 implementation is used)
-# the flag below needs to be set to 1. When winpthreads is
-# available then this flag needs to be set to 0 to avoid
-# a file conflict with the winpthreads headers
-# Winpthreads is available as of Fedora 20
-%if 0%{?fedora} >= 20 || 0%{?rhel} >= 7
-%global bundle_dummy_pthread_headers 0
-%else
-%global bundle_dummy_pthread_headers 1
-%endif
-
-Name:           mingw-headers
-Version:        6.0.0
+Name:           mingw-crt
+Version:        8.0.0
 Release:        100%{?dist}
-Summary:        Win32/Win64 header files
+Summary:        MinGW Windows cross-compiler runtime
 
-License:        Public Domain and LGPLv2+ and ZPLv2.1
+License:        Public Domain and ZPLv2.1
 URL:            http://mingw-w64.sourceforge.net/
 %if 0%{?snapshot_date}
 # To regenerate a snapshot:
 # Use your regular webbrowser to open https://sourceforge.net/p/mingw-w64/mingw-w64/ci/%{snapshot_rev}/tarball
 # This triggers the SourceForge instructure to generate a snapshot
 # After that you can pull in the archive with:
-# spectool -g mingw-headers.spec
+# spectool -g mingw-crt.spec
 Source0:        http://sourceforge.net/code-snapshots/git/m/mi/mingw-w64/mingw-w64.git/mingw-w64-mingw-w64-%{snapshot_rev}.zip
 %else
 Source0:        http://downloads.sourceforge.net/mingw-w64/mingw-w64-v%{version}%{?pre:-%{pre}}.tar.bz2
 %endif
 
-# Our RPM macros automatically set the environment variable WIDL
-# This confuses the mingw-headers configure scripts and causes various
-# headers to be regenerated from their .idl source. Prevent this from
-# happening as the .idl files shouldn't be used by default
-Patch0:         mingw-headers-no-widl.patch
-
 BuildArch:      noarch
 
 BuildRequires:  mingw32-filesystem >= 95
+BuildRequires:  mingw32-binutils
+BuildRequires:  mingw32-headers
+BuildRequires:  mingw32-gcc
+
 BuildRequires:  mingw64-filesystem >= 95
+BuildRequires:  mingw64-binutils
+BuildRequires:  mingw64-headers
+BuildRequires:  mingw64-gcc
 
 
 %description
-MinGW Windows cross-compiler Win32 and Win64 header files.
+MinGW Windows cross-compiler runtime, base libraries.
 
 
-%package -n mingw32-headers
-Summary:        MinGW Windows cross-compiler Win32 header files
+%package -n mingw32-crt
+Summary:        MinGW Windows cross-compiler runtime for the win32 target
+Obsoletes:      mingw32-runtime < 3.18-7%{?dist}
+Provides:       mingw32-runtime = 3.18-7%{?dist}
 Requires:       mingw32-filesystem >= 95
-%if 0%{bundle_dummy_pthread_headers} == 0
-Requires:       mingw32-winpthreads
-%endif
 
-Obsoletes:      mingw32-w32api < 3.17-3%{?dist}
-Provides:       mingw32-w32api = 3.17-3%{?dist}
+%description -n mingw32-crt
+MinGW Windows cross-compiler runtime, base libraries for the win32 target.
 
-%description -n mingw32-headers
-MinGW Windows cross-compiler Win32 header files.
-
-%package -n mingw64-headers
-Summary:        MinGW Windows cross-compiler Win64 header files
+%package -n mingw64-crt
+Summary:        MinGW Windows cross-compiler runtime for the win64 target
+Obsoletes:      mingw64-runtime < 1.0-0.3.20100914%{?dist}
+Provides:       mingw64-runtime = 1.0-0.3.20100914%{?dist}
 Requires:       mingw64-filesystem >= 95
-%if 0%{bundle_dummy_pthread_headers} == 0
-Requires:       mingw64-winpthreads
-%endif
 
-%description -n mingw64-headers
-MinGW Windows cross-compiler Win64 header files.
+%description -n mingw64-crt
+MinGW Windows cross-compiler runtime, base libraries for the win64 target.
 
 
 %prep
@@ -91,39 +74,50 @@ unzip %{S:0}
 
 
 %build
-pushd mingw-w64-headers
-    %mingw_configure --enable-sdk=all --enable-secure-api
+pushd mingw-w64-crt
+    MINGW64_CONFIGURE_ARGS="--disable-lib32"
+    %mingw_configure
+    %mingw_make %{?_smp_mflags}
 popd
 
 
 %install
-pushd mingw-w64-headers
+pushd mingw-w64-crt
     %mingw_make_install DESTDIR=%{buildroot}
 popd
 
-# Drop the dummy pthread headers if necessary
-%if 0%{?bundle_dummy_pthread_headers} == 0
-rm -f %{buildroot}%{mingw32_includedir}/pthread_signal.h
-rm -f %{buildroot}%{mingw32_includedir}/pthread_time.h
-rm -f %{buildroot}%{mingw32_includedir}/pthread_unistd.h
-rm -f %{buildroot}%{mingw64_includedir}/pthread_signal.h
-rm -f %{buildroot}%{mingw64_includedir}/pthread_time.h
-rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
-%endif
+# Dunno what to do with these files
+rm -rf %{buildroot}%{mingw32_includedir}/*.c
+rm -rf %{buildroot}%{mingw64_includedir}/*.c
 
 
-%files -n mingw32-headers
-%license COPYING DISCLAIMER DISCLAIMER.PD mingw-w64-headers/direct-x/COPYING.LIB
-%{mingw32_includedir}/*
+%files -n mingw32-crt
+%license COPYING DISCLAIMER DISCLAIMER.PD
+%{mingw32_libdir}/*
 
-%files -n mingw64-headers
-%license COPYING DISCLAIMER DISCLAIMER.PD mingw-w64-headers/direct-x/COPYING.LIB
-%{mingw64_includedir}/*
+%files -n mingw64-crt
+%license COPYING DISCLAIMER DISCLAIMER.PD
+%{mingw64_libdir}/*
 
 
 %changelog
-* Mon Jul 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 6.0.0-100
-- Fedora 30 build
+* Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-100
+- 8.0.0
+
+* Tue Jul 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 7.0.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Sat Jun 20 2020 Sandro Mani <manisandro@gmail.com> - 7.0.0-1
+- Update to 7.0.0
+
+* Wed Jan 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 6.0.0-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Tue Oct 08 2019 Sandro Mani <manisandro@gmail.com> - 6.0.0-3
+- Rebuild (Changes/Mingw32GccDwarf2)
+
+* Thu Jul 25 2019 Fedora Release Engineering <releng@fedoraproject.org> - 6.0.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
 * Tue May 07 2019 Sandro Mani <manisandro@gmail.com> - 6.0.0-1
 - Update to 6.0.0
@@ -137,8 +131,12 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 * Mon Jul 09 2018 Kalev Lember <klember@redhat.com> - 5.0.4-1
 - Update to 5.0.4
 
-* Thu Jun 14 2018 Sandro Mani <manisandro@gmail.com> - 5.0.3-1
+* Thu Jun 14 2018 Sandro Mani <manisandro@gmail.com> - 5.0.3-2
+- Rebuild (mingw-headers)
+
+* Wed May 30 2018 Sandro Mani <manisandro@gmail.com> - 5.0.3-1
 - Update to 5.0.3
+- Backport patch for incomplete dwmapi.a
 
 * Thu Feb 08 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
@@ -162,7 +160,6 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 
 * Sat Jul 23 2016 Erik van Pienbroek <epienbro@fedoraproject.org> - 5.0-0.2.rc2.v5.x.git65a0c3.20160723
 - Update to 20160204 snapshot of the v5.x branch (git rev 65a0c3)
-- Backported patch to build failure of latest wine-gecko
 
 * Sun Mar 27 2016 Erik van Pienbroek <epienbro@fedoraproject.org> - 5.0-0.1.rc2
 - Update to 5.0rc2
@@ -176,23 +173,14 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 * Thu Dec 24 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.9.999-0.1.trunk.git.5e2e73.20151224
 - Update to 20151224 snapshot (git rev 5e2e73)
 
-* Fri Aug 14 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.0.4-3
-- Backport more commits which are required to build wine-gecko 2.40
-
-* Fri Aug  7 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.0.4-2
-- Backport commit 5f5e2c (duplicate defines in activscp.h)
-  as it is required by mingw-qt5-qtactiveqt 5.5.0
-
 * Wed Aug  5 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.0.4-1
 - Update to 4.0.4
-- Backport various commits which are required by wine-gecko 2.40-beta1
 
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.0.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
 * Fri Apr 24 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.0.2-1
 - Update to 4.0.2
-- Backport fix for shlobj.h regression (RHBZ #1213843)
 
 * Sun Mar 29 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.0.1-1
 - Update to 4.0.1
@@ -200,11 +188,8 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 * Sat Mar 21 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.0.0-1
 - Update to 4.0.0
 
-* Sat Mar  7 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.0-0.3.rc3
+* Sat Mar  7 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.0-0.2.rc3
 - Update to 4.0rc3
-
-* Wed Jan 28 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.0-0.2.rc1
-- Fix localtime_s and asctime_s compatibility issue
 
 * Mon Jan 26 2015 Erik van Pienbroek <epienbro@fedoraproject.org> - 4.0-0.1.rc1
 - Update to 4.0rc1
@@ -215,9 +200,6 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 * Tue Dec  9 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.9.999-0.4.trunk.git.dadc8f.20141209
 - Update to 20141209 snapshot (git rev dadc8f)
 
-* Fri Dec  5 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.9.999-0.3.trunk.git.63dba2.20141205
-- Update to 20141205 snapshot (git rev 63dba2)
-
 * Wed Dec  3 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.9.999-0.2.trunk.git.a5c151.20141203
 - Update to 20141203 snapshot (git rev a5c151)
 
@@ -227,13 +209,14 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 
 * Wed Jul 30 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.12.trunk.gitec1ff7.20140730
 - Update to 20140730 snapshot (git rev ec1ff7)
+- Fixes invalid value of the global variable in6addr_loopback (RHBZ #1124368)
+- Fixes missing memmove_s symbol on Windows XP/Server 2003
 
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.1.999-0.11.trunk.gitb8e816.20140530
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
 * Fri May 30 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.10.trunk.gitb8e8160.20140530
 - Update to 20140530 snapshot (git rev b8e8160)
-- Fixes initializer issue in IN6ADDR macros (RHBZ #1067426)
 
 * Sat May 24 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.9.trunk.git502c72.20140524
 - Update to 20140524 snapshot (git rev 502c72)
@@ -241,29 +224,28 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 
 * Sun Mar 30 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.8.trunk.r6559.20140330
 - Update to r6559 (20140330 snapshot)
-- Prevent headers to be regenerated from IDL
-  Fixes build failure when the environment variable WIDL is set
-  (which happens automatically when mingw-w64-tools is installed)
+- Fixes Windows XP compatibility issue in mingw-glib-networking
+  and mingw-sigar (missing strerror_s symbol)
 
 * Mon Feb 24 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.7.trunk.r6497.20140224
 - Update to r6497 (20140224 snapshot)
 
 * Tue Feb 11 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.6.trunk.r6479.20140211
 - Update to r6479 (20140211 snapshot)
-- Fixes another math.h issue
 
 * Mon Feb 10 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.5.trunk.r6477.20140210
 - Update to r6477 (20140210 snapshot)
-- Fixes broken math.h when using C++ (RHBZ #1061443)
 
 * Sat Feb  8 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.4.trunk.r6475.20140208
 - Update to r6475 (20140208 snapshot)
 
 * Sun Jan 26 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.3.trunk.r6469.20140126
 - Update to r6469 (20140126 snapshot)
+- Fixes missing sprintf_s issue on Windows XP/Server 2003 (RHBZ #1054481)
 
 * Fri Jan 24 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.2.trunk.r6460.20140124
 - Update to r6460 (20140124 snapshot)
+- Fixes missing vsprintf_s issue on Windows XP/Server 2003 (RHBZ #1054481)
 
 * Thu Jan  9 2014 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.1.999-0.1.trunk.r6432.20140104
 - Bump version to keep working upgrade path
@@ -273,43 +255,33 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 
 * Fri Nov 29 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.0.999-0.2.trunk.r6388.20131129
 - Update to r6388 (20131129 snapshot)
-- Fixes compile failure in mingw-qt5-qtserialport (regarding setupapi.h header)
 
 * Wed Nov 20 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.0.999-0.1.trunk.r6379.20131120
 - Update to r6379 (20131120 snapshot)
 
 * Fri Sep 20 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 3.0.0-1
 - Update to 3.0.0
-- Enable support for winpthreads (F20+)
 
 * Sat Sep 14 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.38.trunk.r6284.20130914
 - Update to r6284 (20130914 snapshot)
-- Fixes 'VARIANT' has no member named 'bstrVal' errors (mingw-tk)
-- Fixes 'VARIANT' has no member named 'vt' errors (mingw-tk)
 
 * Wed Sep 11 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.37.trunk.r6277.20130911
 - Update to r6277 (20130911 snapshot)
-- Fixes multiple definition of IDListContainerIsConsistent failures
-- Fixes unknown type name 'EXCEPTION_REGISTRATION' failures
+- Fixes undefined reference to `IID_ICustomDestinationList'
+- Fixes undefined reference to `IID_IFileOpenDialog'
+- Fixes undefined reference to `IID_IFileSaveDialog'
 
 * Mon Sep  9 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.36.trunk.r6258.20130909
 - Update to r6258 (20130909 snapshot)
-- Fixes various UOW related build failures
-- Fixed multiple definition of FreeIDListArray failures
 
 * Sat Sep  7 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.35.trunk.r6233.20130907
 - Update to r6233 (20130907 snapshot)
-- Fix compatibility with latest mingw-winpthreads
 
 * Tue Aug 27 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.34.trunk.r6155.20130827
 - Update to r6155 (20130827 snapshot)
-- Fixes duplicate declaration of PRINTEROP_FLAGS (mingw-nsis)
-- Fixes duplicate declaration of THREAD_INFORMATION_CLASS (mingw-wine-gecko)
-- Fixes "unknown type name 'LPINITIALIZESPY'" failure in objbase.h
 
 * Mon Aug 19 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.33.trunk.r6106.20130819
 - Update to r6106 (20130819 snapshot)
-- Resolves mingw-gettext build failure (invalid EnumResourceLanguages declaration)
 
 * Sat Aug 10 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.32.trunk.r6069.20130810
 - Update to r6069 (20130810 snapshot)
@@ -320,10 +292,11 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 
 * Sun Jul 21 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.30.trunk.r5969.20130721
 - Update to r5969 (20130721 snapshot)
-- Resolves mingw-boost failure for the i686 target (regarding Interlocked* symbols)
+- Fixes strnlen issue on Windows XP
 
 * Sat Jul 13 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.29.trunk.r5949.20130713
 - Update to r5949 (20130713 snapshot)
+- Dropped InterlockedCompareExchange workaround, issue is resolved upstream (with r5949)
 
 * Fri Jun 28 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.28.trunk.r5915.20130628
 - Update to r5915 (20130628 snapshot)
@@ -335,6 +308,9 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 - Update to r5894 (20130614 snapshot)
 - Updated instructions to regenerate snapshots
   (SourceForge has changed their SVN infrastructure)
+- Workaround regression introduced by r5713 where
+  the symbol InterlockedCompareExchange could get
+  exported in shared libraries by accident
 
 * Thu May 30 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.25.trunk.20130530
 - Update to 20130530 snapshot
@@ -344,20 +320,21 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 
 * Thu May  9 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.23.trunk.20130509
 - Regenerated 20130509 snapshot
-- Contains patch from RHBZ #917400
+- Dropped upstreamed vsprintf_s patch
 
 * Thu May  9 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.22.trunk.20130509
 - Update to 20130509 snapshot
 
 * Sun Apr 28 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.21.trunk.20130428
 - Update to 20130428 snapshot
-- Fixes build regression in gettext regarding asprinf
+- Fixes build regression in wxWidgets and tcl regarding the timezone function
 
 * Thu Apr 25 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.20.trunk.20130425
 - Update to 20130425 snapshot
 
 * Wed Apr  3 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.19.trunk.20130403
 - Update to 20130403 snapshot
+- Added Windows XP compatibility wrapper for the vsprintf_s function (RHBZ #917323)
 
 * Sat Feb 16 2013 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.18.trunk.20130216
 - Update to 20130216 snapshot
@@ -371,7 +348,6 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 
 * Sat Nov 10 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.15.trunk.20121110
 - Update to 20121110 snapshot
-- Fixes build issue with DirectWrite support in mingw-qt5-qtbase
 
 * Fri Nov  9 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.14.trunk.20121109
 - Update to 20121109 snapshot
@@ -391,35 +367,39 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 - Update to 20120718 snapshot
 
 * Fri Jul 13 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.9.trunk.20120713
-- Update to 20120713 snapshot
+- Update to 20120703 snapshot
+- Fixes testsuite failure in the qt_qmake_test_static_mingw32 testcase
 
-* Mon Jul 09 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.8.trunk.20120709
+* Mon Jul  9 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.8.trunk.20120709
 - Update to 20120709 snapshot (contains full Cygwin support)
 - Eliminated various manual kludges as upstream now installs their
   files to the correct folders by default
 
-* Thu Jul 05 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.7.trunk.20120705
+* Thu Jul  5 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.7.trunk.20120705
 - Update to 20120705 snapshot (contains various Cygwin changes)
 
-* Sat Jun 02 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.6.trunk.20120601
+* Sat Jun  2 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.6.trunk.20120601
 - Update to 20120601 snapshot
 
-* Sat Mar 03 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.5.trunk.20120224
-- Bump EVR to fix upgrade path when upgrading from the testing repository
+* Tue Mar  6 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.5.trunk.20120224
+- Enable support for the win64 target
 
-* Fri Feb 24 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.4.trunk.20120224
-- Update to 20120224 snapshot
+* Sat Feb 25 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.4.trunk.20120224
+- Update to mingw-w64 trunk 20120224 snapshot
+- Made the win64 pieces optional for now (pending approval of the mingw-gcc/mingw-binutils package reviews)
+- Dropped the use of the mingw_pkg_name macro
 - Eliminated some conditionals related to snapshot builds
-- Added DISCLAIMER, DISCLAIMER.PD and COPYING.LIB files
-- Added ZPLv2.1 to the license tag
-- Added a conditional which is needed to prevent a file conflict with winpthreads
-- Bumped BR: mingw{32,64}-filesystem to >= 95
-
-* Fri Feb 24 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.3.trunk.20120120
 - Use smaller SourceForge source URLs
-- Dropped the mingw_pkg_name global
-- Dropped the quotes in the mingw_configure and mingw_make_install calls
 - Improved summary of the various packages
+- Simplified the configure, make and make install calls
+- Dropped upstreamed patch
+- Added DISCLAIMER and DISCLAIMER.PD files
+- Added ZPLv2.1 to the license tag
+- Bumped obsoletes/provides version for mingw32-runtime
+
+* Tue Jan 24 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.3.trunk.20120124
+- Update to mingw-w64 trunk 20120124 snapshot
+- Apply upstream r4758 to fix vsnprintf and vscanf failures
 
 * Fri Jan 20 2012 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0.999-0.2.trunk.20120120
 - Update to mingw-w64 trunk 20120120 snapshot (fixes various errno related compile failures)
@@ -434,7 +414,8 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 - Update to mingw-w64 v2.0
 
 * Sun Sep 25 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0-0.3.rc1
-- Bumped obsoletes for mingw32-w32api
+- Replaced the boilerplate code with the mingw_package_header macro
+- Bumped the obsoletes mingw32-runtime
 - Dropped unneeded RPM tags
 
 * Sat Aug 13 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0-0.2.rc1
@@ -443,93 +424,80 @@ rm -f %{buildroot}%{mingw64_includedir}/pthread_unistd.h
 * Mon Aug  8 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 2.0-0.1.rc1
 - Update to 2.0-rc1
 
-* Tue Jul 12 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.12.20110711.trunk
-- Backported a patch for a regression which causes CLSID_ShellLink to be defined twice
-  This fixes compilation of gtk3
-
-* Tue Jul 12 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.11.20110711.trunk
+* Tue Jul 12 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.7.20110711.trunk
 - Update to 20110711 snapshot of the trunk branch
 
-* Sat Jun 25 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.10.20110625.trunk
+* Sat Jun 25 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.6.20110625.trunk
 - Update to 20110625 snapshot of the trunk branch (fixes gstreamer d3d issue)
+- Replaced the patch with one which doesn't require the autotools
 
-* Thu Jun  9 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.9.20110609.trunk
+* Thu Jun  9 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.5.20110609.trunk
 - Update to 20110609 snapshot of the trunk branch
 
-* Thu Apr 14 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.8.20110413.trunk
+* Thu Apr 14 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.4.20110413.trunk
 - Update to 20110413 snapshot of the trunk branch
 - Made the package compliant with the new packaging guidelines
-- Enable the secure API (required for wine-gecko)
 
-* Wed Jan 12 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.7.20101003
+* Wed Jan 12 2011 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.3.20101003
 - Update to 20101003 snapshot
 - Generate per-target RPMs
 - Bundle the COPYING file
 
-* Fri Dec 24 2010 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.6.20100914
-- Replaced my patch by an upstreamed one
-
-* Fri Oct  8 2010 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.5.20100914
-- Bundle the DDK and DirectX headers as well
-
-* Wed Sep 29 2010 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.4.20100914
-- Update to 20100914 snapshot
-- Renamed the package to mingw-headers
-- Obsoletes/provides the mingw32-w32api package
-
-* Sat May 15 2010 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.3.20100513
-- The 20100513 snapshot contains a bug where #include <malloc.h>
-  doesn't result in declaring the symbols _aligned_malloc and _aligned_free
-  Added a patch to fix this
-
-* Fri May 14 2010 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.2.20100513
-- Rebuild for new mingw64-filesystem
+* Wed Sep 29 2010 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.2.20100914
+- Update to snapshot 20100915 (v1.0 branch)
+- Renamed the package to mingw-crt
+- Added support for both i686-w64-mingw32 and x86_64-w64-mingw32
+- Obsoletes/provides the mingw32-runtime package
 
 * Fri May 14 2010 Erik van Pienbroek <epienbro@fedoraproject.org> - 1.0-0.1.20100513
-- Update to 20100513 snapshot of the 1.0 branch
-- Updated Source: URL
-- Rewritten the %%build and %%install phases
+- Updated to snapshot 20100513 (v1.0 branch)
+- Updated Source0 tag
 - Fixed %%defattr tag
-- Use the default path which GCC expects for the headers
 
-* Wed Feb 11 2009 Richard W.M. Jones <rjones@redhat.com> - 0.1-0.svn607.10
+* Wed Feb 11 2009 Richard W.M. Jones <rjones@redhat.com> - 0.1-0.svn607.3
 - Started mingw64 development.
 
-* Mon Dec 15 2008 Richard W.M. Jones <rjones@redhat.com> - 3.13-1
-- New upstream version 3.13.
+* Tue Feb 10 2009 Richard W.M. Jones <rjones@redhat.com> - 3.15.2-1
+- New upstream release 3.15.2.
 
-* Tue Dec  9 2008 Richard W.M. Jones <rjones@redhat.com> - 3.12-8
+* Tue Dec  9 2008 Richard W.M. Jones <rjones@redhat.com> - 3.15.1-10
 - Force rebuild to get rid of the binary bootstrap package and replace
   with package built from source.
 
-* Wed Nov 26 2008 Richard W.M. Jones <rjones@redhat.com> - 3.12-7
+* Wed Nov 26 2008 Richard W.M. Jones <rjones@redhat.com> - 3.15.1-9
 - No runtime dependency on binutils or gcc.
+- But it DOES BR w32api.
 
-* Mon Nov 24 2008 Richard W.M. Jones <rjones@redhat.com> - 3.12-6
+* Mon Nov 24 2008 Richard W.M. Jones <rjones@redhat.com> - 3.15.1-8
 - Rebuild against latest filesystem package.
+- MINGW_CFLAGS -> MINGW32_CFLAGS.
 - Rewrite the summary for accuracy and brevity.
 
-* Fri Nov 21 2008 Richard W.M. Jones <rjones@redhat.com> - 3.12-4
+* Fri Nov 21 2008 Richard W.M. Jones <rjones@redhat.com> - 3.15.1-6
 - Remove obsoletes for a long dead package.
-- Enable _mingw32_configure (Levente Farkas).
+- Reenable (and fix) _mingw32_configure (Levente Farkas).
 
-* Wed Nov 19 2008 Richard W.M. Jones <rjones@redhat.com> - 3.12-3
+* Thu Nov 20 2008 Richard W.M. Jones <rjones@redhat.com> - 3.15.1-5
+- Don't use _mingw32_configure macro - doesn't work here.
+
+* Wed Nov 19 2008 Richard W.M. Jones <rjones@redhat.com> - 3.15.1-4
 - Rebuild against mingw32-filesystem 37
 
-* Wed Nov 19 2008 Richard W.M. Jones <rjones@redhat.com> - 3.12-2
+* Wed Nov 19 2008 Richard W.M. Jones <rjones@redhat.com> - 3.15.1-3
+- Remove the useconds patch, which is no longer needed (Levente Farkas).
+- Use _mingw32_configure macro.
+
+* Wed Nov 19 2008 Richard W.M. Jones <rjones@redhat.com> - 3.15.1-2
 - Rebuild against mingw32-filesystem 36
 
-* Thu Oct 16 2008 Richard W.M. Jones <rjones@redhat.com> - 3.12-1
-- New upstream version 3.12.
+* Thu Oct 16 2008 Richard W.M. Jones <rjones@redhat.com> - 3.15.1-1
+- New upstream version 3.15.1.
 
-* Wed Sep 24 2008 Richard W.M. Jones <rjones@redhat.com> - 3.11-7
+* Wed Sep 24 2008 Richard W.M. Jones <rjones@redhat.com> - 3.14-6
 - Rename mingw -> mingw32.
 
-* Wed Sep 10 2008 Richard W.M. Jones <rjones@redhat.com> - 3.11-6
-- Moved ole provides to mingw-filesystem package.
+* Thu Sep  4 2008 Richard W.M. Jones <rjones@redhat.com> - 3.14-4
+- Use RPM macros from mingw-filesystem.
 
-* Thu Sep  4 2008 Richard W.M. Jones <rjones@redhat.com> - 3.11-3
-- Use the RPM macros from mingw-filesystem.
-
-* Mon Jul  7 2008 Richard W.M. Jones <rjones@redhat.com> - 3.11-2
+* Mon Jul  7 2008 Richard W.M. Jones <rjones@redhat.com> - 3.14-2
 - Initial RPM release, largely based on earlier work from several sources.

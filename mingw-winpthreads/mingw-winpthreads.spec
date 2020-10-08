@@ -1,6 +1,8 @@
+%?mingw_package_header
+
 #%%global snapshot_date 20160204
 #%%global snapshot_rev 38410ad06264949efcb331f7a63575c6be31c5e4
-#%%global snapshot_rev_short %%(echo %snapshot_rev | cut -c1-6)
+#%%global snapshot_rev_short %%(echo %%snapshot_rev | cut -c1-6)
 #%%global branch trunk
 
 #%%global pre rc2
@@ -9,7 +11,7 @@
 %global enable_tests 0
 
 Name:           mingw-winpthreads
-Version:        6.0.0
+Version:        8.0.0
 Release:        100%{?dist}
 Summary:        MinGW pthread library
 
@@ -116,8 +118,7 @@ Provides:       mingw64-pthreads-static = 2.8.0-25.20110511cvs
 Static version of the MinGW Windows pthreads library.
 
 
-%{?mingw_package_header}
-%{?mingw_debug_package}
+%?mingw_debug_package
 
 
 %prep
@@ -145,7 +146,7 @@ popd
 # Prepare a wine prefix
 export WINEPREFIX=/tmp/wine-winpthreads
 mkdir $WINEPREFIX
-wineboot || :
+winecfg || :
 
 # Run the tests
 pushd mingw-w64-libraries/winpthreads
@@ -206,8 +207,20 @@ find $RPM_BUILD_ROOT -name "*.la" -delete
 
 
 %changelog
-* Mon Jul 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 6.0.0-100
-- Fedora 30 build
+* Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-100
+- 8.0.0
+
+* Tue Jul 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 7.0.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Sat Jun 20 2020 Sandro Mani <manisandro@gmail.com> - 7.0.0-1
+- Update to 7.0.0
+
+* Wed Jan 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 6.0.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Thu Jul 25 2019 Fedora Release Engineering <releng@fedoraproject.org> - 6.0.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
 * Tue May 07 2019 Sandro Mani <manisandro@gmail.com> - 6.0.0-1
 - Update to 6.0.0

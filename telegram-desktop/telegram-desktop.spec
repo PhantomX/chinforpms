@@ -5,7 +5,7 @@
 %global appname tdesktop
 %global launcher telegramdesktop
 
-%global commit1 7a9d4bd6d9a147d15e3c8fa818a716c31f65606a
+%global commit1 c73a4718cbff7048373a63db32068482e5fd11ef
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 tg_owt
 
@@ -47,7 +47,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.4.2
+Version:        2.4.3
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -332,6 +332,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.3-100
+- 2.4.3
+
 * Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.2-100
 - 2.4.2
 - RPMFusion sync

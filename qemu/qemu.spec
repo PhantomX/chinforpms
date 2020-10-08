@@ -37,16 +37,6 @@
 %global have_numactl 0
 %endif
 
-# Upstream disables iasl for big endian and QEMU checks
-# for this. Fedora has re-enabled it on BE circumventing
-# the QEMU checks, but it fails none the less:
-#
-# https://bugzilla.redhat.com/show_bug.cgi?id=1332449
-%global have_iasl 1
-%ifnarch s390x
-%global have_iasl 0
-%endif
-
 # Matches spice ExclusiveArch
 %global have_spice 0
 %ifarch %{ix86} x86_64 %{arm} aarch64
@@ -55,9 +45,29 @@
 
 # Matches xen ExclusiveArch
 %global have_xen 0
+%if 0%{?fedora}
 %ifarch %{ix86} x86_64 armv7hl aarch64
 %global have_xen 1
 %endif
+%endif
+
+%global have_liburing 0
+%if 0%{?fedora}
+%ifnarch %{arm}
+%global have_liburing 1
+%endif
+%endif
+
+%global have_virgl 0
+%if 0%{?fedora}
+%global have_virgl 1
+%endif
+
+%global have_pmem 0
+%ifarch x86_64 %{power64}
+%global have_pmem 1
+%endif
+
 
 # Matches edk2.spec ExclusiveArch
 %global have_edk2 0
@@ -80,7 +90,7 @@
 %endif
 
 %global qemu_sanity_check 0
-%ifnarch %{ix86}
+%ifarch x %{?kernel_arches}
 %if 0%{?hostqemu:1}
 %global qemu_sanity_check 1
 %endif
@@ -180,7 +190,7 @@ Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
 Version: 5.1.0
-Release: 101%{?dist}
+Release: 102%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -225,10 +235,6 @@ BuildRequires: perl-podlators
 %if %{qemu_sanity_check}
 BuildRequires: qemu-sanity-check-nodeps
 BuildRequires: kernel
-%endif
-%if %{have_iasl}
-# For acpi compilation
-BuildRequires: iasl
 %endif
 # For chrpath calls in specfile
 BuildRequires: chrpath
@@ -327,8 +333,8 @@ BuildRequires: libepoxy-devel
 BuildRequires: libtasn1-devel
 # qemu 2.5: libcacard is it's own project now
 BuildRequires: libcacard-devel >= 2.5.0
+%if %{have_virgl}
 # qemu 2.5: virgl 3d support
-%if 0%{?fedora}
 BuildRequires: virglrenderer-devel
 %endif
 # qemu 2.6: Needed for gtk GL support, vhost-user-gpu
@@ -337,7 +343,7 @@ BuildRequires: mesa-libgbm-devel
 BuildRequires: capstone-devel
 # qemu 2.12: parallels disk images require libxml2 now
 BuildRequires: libxml2-devel
-%ifarch x86_64
+%if %{have_pmem}
 # qemu 3.1: Used for nvdimm
 BuildRequires: libpmem-devel
 %endif
@@ -354,7 +360,7 @@ BuildRequires: perl-Test-Harness
 # Required for making python shebangs versioned
 BuildRequires: /usr/bin/pathfix.py
 BuildRequires: python3-devel
-%ifnarch %{arm}
+%if %{have_liburing}
 # qemu 5.0 liburing support. Library isn't built for arm
 BuildRequires: liburing-devel
 %endif
@@ -1023,6 +1029,10 @@ buildldflags="VL_LDFLAGS=-Wl,--build-id"
 # but there's a performance impact for non-dtrace so we don't use them
 tracebackends="dtrace"
 
+# 2020-08-17: tracing disabled, breaks modules on f33+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1869339
+tracebackends="log"
+
 %if %{have_spice}
     %global spiceflag --enable-spice
 %else
@@ -1261,8 +1271,8 @@ done
 for src in %{buildroot}%{_datadir}/systemtap/tapset/qemu-*.stp
 do
   dst=`echo $src | sed -e 's/.stp/-static.stp/'`
-  mv $src $dst
-  perl -i -p -e 's/(qemu-\w+)/$1-static/g; s/(qemu\.user\.\w+)/$1.static/g' $dst
+  #mv $src $dst
+  #perl -i -p -e 's/(qemu-\w+)/$1-static/g; s/(qemu\.user\.\w+)/$1.static/g' $dst
 done
 
 popd
@@ -1410,7 +1420,6 @@ if [ -x "$b" ]; then "$b" -help; fi
 
 %if %{qemu_sanity_check}
 # Sanity-check current kernel can boot on this qemu.
-# The results are advisory only.
 KERNEL=`find /lib/modules -name vmlinuz | head -1`
 echo "Trying to boot kernel $KERNEL with %{?hostqemu}"
 qemu-sanity-check --qemu=%{?hostqemu} --kernel=$KERNEL
@@ -1493,10 +1502,9 @@ popd
 %{_datadir}/%{name}/efi-virtio.rom
 %{_datadir}/%{name}/pxe-vmxnet3.rom
 %{_datadir}/%{name}/efi-vmxnet3.rom
-%{_datadir}/%{name}/vhost-user/50-qemu-gpu.json
 %{_datadir}/%{name}/vhost-user/50-qemu-virtiofsd.json
 %{_mandir}/man1/qemu.1*
-%{_mandir}/man1/qemu-trace-stap.1*
+#{_mandir}/man1/qemu-trace-stap.1*
 %{_mandir}/man1/virtfs-proxy-helper.1*
 %{_mandir}/man1/virtiofsd.1*
 %{_mandir}/man7/qemu-block-drivers.7*
@@ -1507,13 +1515,12 @@ popd
 %{_bindir}/qemu-edid
 %{_bindir}/qemu-keymap
 %{_bindir}/qemu-storage-daemon
-%{_bindir}/qemu-trace-stap
+#{_bindir}/qemu-trace-stap
 %{_sysusersdir}/%{name}.conf
 %{_unitdir}/qemu-pr-helper.service
 %{_unitdir}/qemu-pr-helper.socket
 %attr(4755, root, root) %{_libexecdir}/qemu-bridge-helper
 %{_libexecdir}/qemu-pr-helper
-%{_libexecdir}/vhost-user-gpu
 %{_libexecdir}/virtfs-proxy-helper
 %{_libexecdir}/virtiofsd
 %config(noreplace) %{_sysconfdir}/sasl2/qemu.conf
@@ -1521,6 +1528,10 @@ popd
 %config(noreplace) %{_sysconfdir}/qemu/bridge.conf
 %dir %{_libdir}/qemu
 %dir %attr(0751, qemu, qemu) %{_localstatedir}/lib/qemu/
+%if %{have_virgl}
+%{_datadir}/%{name}/vhost-user/50-qemu-gpu.json
+%{_libexecdir}/vhost-user-gpu
+%endif
 
 
 %files guest-agent
@@ -1647,25 +1658,25 @@ popd
 %{_bindir}/qemu-xtensa
 %{_bindir}/qemu-xtensaeb
 
-%{_datadir}/systemtap/tapset/qemu-i386*.stp
-%{_datadir}/systemtap/tapset/qemu-x86_64*.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64*.stp
-%{_datadir}/systemtap/tapset/qemu-alpha*.stp
-%{_datadir}/systemtap/tapset/qemu-arm*.stp
-%{_datadir}/systemtap/tapset/qemu-cris*.stp
-%{_datadir}/systemtap/tapset/qemu-hppa*.stp
-%{_datadir}/systemtap/tapset/qemu-m68k*.stp
-%{_datadir}/systemtap/tapset/qemu-microblaze*.stp
-%{_datadir}/systemtap/tapset/qemu-mips*.stp
-%{_datadir}/systemtap/tapset/qemu-nios2*.stp
-%{_datadir}/systemtap/tapset/qemu-or1k*.stp
-%{_datadir}/systemtap/tapset/qemu-ppc*.stp
-%{_datadir}/systemtap/tapset/qemu-riscv*.stp
-%{_datadir}/systemtap/tapset/qemu-s390x*.stp
-%{_datadir}/systemtap/tapset/qemu-sh4*.stp
-%{_datadir}/systemtap/tapset/qemu-sparc*.stp
-%{_datadir}/systemtap/tapset/qemu-tilegx*.stp
-%{_datadir}/systemtap/tapset/qemu-xtensa*.stp
+#{_datadir}/systemtap/tapset/qemu-i386*.stp
+#{_datadir}/systemtap/tapset/qemu-x86_64*.stp
+#{_datadir}/systemtap/tapset/qemu-aarch64*.stp
+#{_datadir}/systemtap/tapset/qemu-alpha*.stp
+#{_datadir}/systemtap/tapset/qemu-arm*.stp
+#{_datadir}/systemtap/tapset/qemu-cris*.stp
+#{_datadir}/systemtap/tapset/qemu-hppa*.stp
+#{_datadir}/systemtap/tapset/qemu-m68k*.stp
+#{_datadir}/systemtap/tapset/qemu-microblaze*.stp
+#{_datadir}/systemtap/tapset/qemu-mips*.stp
+#{_datadir}/systemtap/tapset/qemu-nios2*.stp
+#{_datadir}/systemtap/tapset/qemu-or1k*.stp
+#{_datadir}/systemtap/tapset/qemu-ppc*.stp
+#{_datadir}/systemtap/tapset/qemu-riscv*.stp
+#{_datadir}/systemtap/tapset/qemu-s390x*.stp
+#{_datadir}/systemtap/tapset/qemu-sh4*.stp
+#{_datadir}/systemtap/tapset/qemu-sparc*.stp
+#{_datadir}/systemtap/tapset/qemu-tilegx*.stp
+#{_datadir}/systemtap/tapset/qemu-xtensa*.stp
 
 %files user-binfmt
 %{_exec_prefix}/lib/binfmt.d/qemu-*-dynamic.conf
@@ -1676,21 +1687,21 @@ popd
 # in the qemu-user filelists
 %{_exec_prefix}/lib/binfmt.d/qemu-*-static.conf
 %{_bindir}/qemu-*-static
-%{_datadir}/systemtap/tapset/qemu-*-static.stp
+#{_datadir}/systemtap/tapset/qemu-*-static.stp
 %endif
 
 
 %files system-aarch64
 %files system-aarch64-core
 %{_bindir}/qemu-system-aarch64
-%{_datadir}/systemtap/tapset/qemu-system-aarch64*.stp
+#{_datadir}/systemtap/tapset/qemu-system-aarch64*.stp
 %{_mandir}/man1/qemu-system-aarch64.1*
 
 
 %files system-alpha
 %files system-alpha-core
 %{_bindir}/qemu-system-alpha
-%{_datadir}/systemtap/tapset/qemu-system-alpha*.stp
+#{_datadir}/systemtap/tapset/qemu-system-alpha*.stp
 %{_mandir}/man1/qemu-system-alpha.1*
 %{_datadir}/%{name}/palcode-clipper
 
@@ -1698,28 +1709,28 @@ popd
 %files system-arm
 %files system-arm-core
 %{_bindir}/qemu-system-arm
-%{_datadir}/systemtap/tapset/qemu-system-arm*.stp
+#{_datadir}/systemtap/tapset/qemu-system-arm*.stp
 %{_mandir}/man1/qemu-system-arm.1*
 
 
 %files system-avr
 %files system-avr-core
 %{_bindir}/qemu-system-avr
-%{_datadir}/systemtap/tapset/qemu-system-avr*.stp
+#{_datadir}/systemtap/tapset/qemu-system-avr*.stp
 %{_mandir}/man1/qemu-system-avr.1* 
 
 
 %files system-cris
 %files system-cris-core
 %{_bindir}/qemu-system-cris
-%{_datadir}/systemtap/tapset/qemu-system-cris*.stp
+#{_datadir}/systemtap/tapset/qemu-system-cris*.stp
 %{_mandir}/man1/qemu-system-cris.1*
 
 
 %files system-hppa
 %files system-hppa-core
 %{_bindir}/qemu-system-hppa
-%{_datadir}/systemtap/tapset/qemu-system-hppa*.stp
+#{_datadir}/systemtap/tapset/qemu-system-hppa*.stp
 %{_mandir}/man1/qemu-system-hppa.1*
 %{_datadir}/%{name}/hppa-firmware.img
 
@@ -1727,14 +1738,14 @@ popd
 %files system-lm32
 %files system-lm32-core
 %{_bindir}/qemu-system-lm32
-%{_datadir}/systemtap/tapset/qemu-system-lm32*.stp
+#{_datadir}/systemtap/tapset/qemu-system-lm32*.stp
 %{_mandir}/man1/qemu-system-lm32.1*
 
 
 %files system-m68k
 %files system-m68k-core
 %{_bindir}/qemu-system-m68k
-%{_datadir}/systemtap/tapset/qemu-system-m68k*.stp
+#{_datadir}/systemtap/tapset/qemu-system-m68k*.stp
 %{_mandir}/man1/qemu-system-m68k.1*
 
 
@@ -1742,7 +1753,7 @@ popd
 %files system-microblaze-core
 %{_bindir}/qemu-system-microblaze
 %{_bindir}/qemu-system-microblazeel
-%{_datadir}/systemtap/tapset/qemu-system-microblaze*.stp
+#{_datadir}/systemtap/tapset/qemu-system-microblaze*.stp
 %{_mandir}/man1/qemu-system-microblaze.1*
 %{_mandir}/man1/qemu-system-microblazeel.1*
 %{_datadir}/%{name}/petalogix*.dtb
@@ -1754,7 +1765,7 @@ popd
 %{_bindir}/qemu-system-mipsel
 %{_bindir}/qemu-system-mips64
 %{_bindir}/qemu-system-mips64el
-%{_datadir}/systemtap/tapset/qemu-system-mips*.stp
+#{_datadir}/systemtap/tapset/qemu-system-mips*.stp
 %{_mandir}/man1/qemu-system-mips.1*
 %{_mandir}/man1/qemu-system-mipsel.1*
 %{_mandir}/man1/qemu-system-mips64el.1*
@@ -1764,21 +1775,21 @@ popd
 %files system-moxie
 %files system-moxie-core
 %{_bindir}/qemu-system-moxie
-%{_datadir}/systemtap/tapset/qemu-system-moxie*.stp
+#{_datadir}/systemtap/tapset/qemu-system-moxie*.stp
 %{_mandir}/man1/qemu-system-moxie.1*
 
 
 %files system-nios2
 %files system-nios2-core
 %{_bindir}/qemu-system-nios2
-%{_datadir}/systemtap/tapset/qemu-system-nios2*.stp
+#{_datadir}/systemtap/tapset/qemu-system-nios2*.stp
 %{_mandir}/man1/qemu-system-nios2.1*
 
 
 %files system-or1k
 %files system-or1k-core
 %{_bindir}/qemu-system-or1k
-%{_datadir}/systemtap/tapset/qemu-system-or1k*.stp
+#{_datadir}/systemtap/tapset/qemu-system-or1k*.stp
 %{_mandir}/man1/qemu-system-or1k.1*
 
 
@@ -1786,7 +1797,7 @@ popd
 %files system-ppc-core
 %{_bindir}/qemu-system-ppc
 %{_bindir}/qemu-system-ppc64
-%{_datadir}/systemtap/tapset/qemu-system-ppc*.stp
+#{_datadir}/systemtap/tapset/qemu-system-ppc*.stp
 %{_mandir}/man1/qemu-system-ppc.1*
 %{_mandir}/man1/qemu-system-ppc64.1*
 %{_datadir}/%{name}/bamboo.dtb
@@ -1805,21 +1816,21 @@ popd
 %{_bindir}/qemu-system-riscv32
 %{_bindir}/qemu-system-riscv64
 %{_datadir}/%{name}/opensbi-riscv*.bin
-%{_datadir}/systemtap/tapset/qemu-system-riscv*.stp
+#{_datadir}/systemtap/tapset/qemu-system-riscv*.stp
 %{_mandir}/man1/qemu-system-riscv*.1*
 
 
 %files system-rx
 %files system-rx-core
 %{_bindir}/qemu-system-rx
-%{_datadir}/systemtap/tapset/qemu-system-rx*.stp
+#{_datadir}/systemtap/tapset/qemu-system-rx*.stp
 %{_mandir}/man1/qemu-system-rx.1*
 
 
 %files system-s390x
 %files system-s390x-core
 %{_bindir}/qemu-system-s390x
-%{_datadir}/systemtap/tapset/qemu-system-s390x*.stp
+#{_datadir}/systemtap/tapset/qemu-system-s390x*.stp
 %{_mandir}/man1/qemu-system-s390x.1*
 %{_datadir}/%{name}/s390-ccw.img
 %{_datadir}/%{name}/s390-netboot.img
@@ -1829,7 +1840,7 @@ popd
 %files system-sh4-core
 %{_bindir}/qemu-system-sh4
 %{_bindir}/qemu-system-sh4eb
-%{_datadir}/systemtap/tapset/qemu-system-sh4*.stp
+#{_datadir}/systemtap/tapset/qemu-system-sh4*.stp
 %{_mandir}/man1/qemu-system-sh4.1*
 %{_mandir}/man1/qemu-system-sh4eb.1*
 
@@ -1838,7 +1849,7 @@ popd
 %files system-sparc-core
 %{_bindir}/qemu-system-sparc
 %{_bindir}/qemu-system-sparc64
-%{_datadir}/systemtap/tapset/qemu-system-sparc*.stp
+#{_datadir}/systemtap/tapset/qemu-system-sparc*.stp
 %{_mandir}/man1/qemu-system-sparc.1*
 %{_mandir}/man1/qemu-system-sparc64.1*
 %{_datadir}/%{name}/QEMU,tcx.bin
@@ -1848,14 +1859,14 @@ popd
 %files system-tricore
 %files system-tricore-core
 %{_bindir}/qemu-system-tricore
-%{_datadir}/systemtap/tapset/qemu-system-tricore*.stp
+#{_datadir}/systemtap/tapset/qemu-system-tricore*.stp
 %{_mandir}/man1/qemu-system-tricore.1*
 
 
 %files system-unicore32
 %files system-unicore32-core
 %{_bindir}/qemu-system-unicore32
-%{_datadir}/systemtap/tapset/qemu-system-unicore32*.stp
+#{_datadir}/systemtap/tapset/qemu-system-unicore32*.stp
 %{_mandir}/man1/qemu-system-unicore32.1*
 
 
@@ -1863,8 +1874,8 @@ popd
 %files system-x86-core
 %{_bindir}/qemu-system-i386
 %{_bindir}/qemu-system-x86_64
-%{_datadir}/systemtap/tapset/qemu-system-i386*.stp
-%{_datadir}/systemtap/tapset/qemu-system-x86_64*.stp
+#{_datadir}/systemtap/tapset/qemu-system-i386*.stp
+#{_datadir}/systemtap/tapset/qemu-system-x86_64*.stp
 %{_mandir}/man1/qemu-system-i386.1*
 %{_mandir}/man1/qemu-system-x86_64.1*
 %{_datadir}/%{name}/bios.bin
@@ -1887,12 +1898,15 @@ popd
 %files system-xtensa-core
 %{_bindir}/qemu-system-xtensa
 %{_bindir}/qemu-system-xtensaeb
-%{_datadir}/systemtap/tapset/qemu-system-xtensa*.stp
+#{_datadir}/systemtap/tapset/qemu-system-xtensa*.stp
 %{_mandir}/man1/qemu-system-xtensa.1*
 %{_mandir}/man1/qemu-system-xtensaeb.1*
 
 
 %changelog
+* Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 2:5.1.0-102
+- Rawhide sync
+
 * Thu Sep 17 2020 Phantom X <megaphantomx at hotmail dot com> - 2:5.1.0-101
 - Rawhide sync
 

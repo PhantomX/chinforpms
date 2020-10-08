@@ -1,0 +1,14 @@
+
+function InitProfile()
+{
+  SetupEnv          || return 1
+
+  echo "ok (profile)"
+}
+
+function SetupEnv()
+{
+  make_path "$TV_CFG_DIR" 0700	|| die 'SetupEnv failed (cfg)'
+  make_path "$TV_LOG_DIR" 0700	|| die 'SetupEnv failed (log)'
+
+}

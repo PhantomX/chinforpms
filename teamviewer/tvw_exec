@@ -1,0 +1,68 @@
+
+function LockStartup()
+{
+  InitDirs			|| return 0 # only try locking
+  cmdExists "flock" || return 0 # if dir and cmd exist
+
+  exec 300>> "$TV_STARTLOG" || die "LockStartup: internal error $?"
+  flock -n 300 || die "LockStartup: TeamViewer already running $?"
+}
+
+function UnlockStartup()
+{
+  flock -u -n 300
+  exec 300<&-
+}
+
+function RequireNetwork()
+{
+  IsDaemonRunning && return
+
+  echo "Starting network process (no daemon)"
+
+  RunNetworkProcess
+}
+
+function IsDaemonRunning()
+{
+  (
+    #; Check if daemon is running - ignore for non-installed (TAR / TAR_QS)
+    isInstalledTV || return 1
+
+    exec &> /dev/null
+    ps --no-heading -p $(cat "$TV_PIDFILE") | grep teamviewerd
+  )
+}
+
+function RunNetworkProcess()
+{
+  local subs
+  local subPID
+  local repeat=20
+
+  # Start a network process
+  trap Network_Signal SIGUSR1
+
+  "$TV_BIN_DIR/teamviewerd" -n -f &
+  subPID=$!
+
+  # wait works, but could be entered too late
+  until [ $repeat = 0 ]; do
+    subs=$(jobs -r | wc -l)		# or: while subPID running
+
+    if [ $subs = 0 ]; then		# network process quit (error or already running)
+      echo "Network process already started (or error)"; break
+    fi
+    if [ -n "$TV_NET_STATE" ]; then	# signalled
+      echo "Network process started ($subPID)"; break
+    fi
+
+    sleep 0.5
+    let repeat-=1
+  done
+}
+
+function Network_Signal()
+{
+  TV_NET_STATE='is_up'
+}

@@ -22,9 +22,10 @@ libvorbis
 libstrangle
 -linux-steam-integration
 mangohud
--mingw-crt
--mingw-headers
--mingw-winpthreads
+mingw-crt
+mingw-headers
+mingw-w64-tools
+mingw-winpthreads
 qt5ct
 sdlcl
 spirv-headers

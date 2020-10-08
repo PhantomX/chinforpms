@@ -1,0 +1,12 @@
+diff -rupN --no-dereference mingw-w64-v7.0.0/mingw-w64-tools/widl/include/windef.h mingw-w64-v7.0.0-new/mingw-w64-tools/widl/include/windef.h
+--- mingw-w64-v7.0.0/mingw-w64-tools/widl/include/windef.h	2019-11-09 06:33:24.000000000 +0100
++++ mingw-w64-v7.0.0-new/mingw-w64-tools/widl/include/windef.h	2020-06-20 01:18:23.248691595 +0200
+@@ -111,7 +111,7 @@ extern "C" {
+ #endif
+ 
+ #ifndef __ms_va_list
+-# if (defined(__x86_64__) || defined(__aarch64__)) && defined (__GNUC__)
++# if (defined(__x86_64__)) && defined (__GNUC__)
+ #  define __ms_va_list __builtin_ms_va_list
+ #  define __ms_va_start(list,arg) __builtin_ms_va_start(list,arg)
+ #  define __ms_va_end(list) __builtin_ms_va_end(list)

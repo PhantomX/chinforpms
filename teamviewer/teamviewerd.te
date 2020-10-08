@@ -1,0 +1,21 @@
+
+module teamviewerd 1.0;
+
+require {
+	type init_t;
+	type framebuf_device_t;
+	type http_port_t;
+	type vnc_port_t;
+	class chr_file { ioctl open read write };
+	class tcp_socket name_connect;
+}
+
+#============= init_t ==============
+allow init_t framebuf_device_t:chr_file ioctl;
+
+#!!!! This avc is allowed in the current policy
+allow init_t framebuf_device_t:chr_file { open read write };
+
+#!!!! This avc can be allowed using the boolean 'nis_enabled'
+allow init_t http_port_t:tcp_socket name_connect;
+allow init_t vnc_port_t:tcp_socket name_connect;

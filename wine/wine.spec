@@ -1,6 +1,6 @@
-%global commit cce4f36e214125173a8df84d27ba5b33df8d1434
+%global commit c29f9e6ee7656aa028bb1630284e7d4873bd5b0f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201002
+%global date 20201006
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 194669052e1bce63659f1fbb0880da3dcb03058e
+%global wine_stagingver 8c5be4c9e71f8ba32a93ea3960535b7afdf859f7
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 5d21b2d5747bfb71122ee3b2c812e3302292827b
+%global tkg_id 7023a89d3cc7d4575ec6b8930e671d6eb26ea7e8
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid fa3b2bf2963c2bf8a399f8ff2fdc60b4f1db4d9c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -59,7 +59,6 @@
 %global gtk3 0
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
-%global vkd3d_proton 1
 %global vulkanup 1
 # Broken
 %global pba 0
@@ -101,7 +100,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.18
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -958,6 +957,23 @@ Patch7789:      %{whq_url}/cb1594cf4ff9eef0a5b5d80dc7c47da9e27a5821#/%{name}-whq
 Patch7790:      %{whq_url}/ea038894a6aa4b034e151e4f2af42da36710e180#/%{name}-whq-ea03889.patch
 Patch7791:      %{whq_url}/2600ccf27f9dfb6eadbb21c92b75618ccbd26e01#/%{name}-whq-2600ccf.patch
 Patch7792:      %{whq_url}/e3ea5278357698e75b6cd51627c30e84e16845ca#/%{name}-whq-e3ea527.patch
+Patch7793:      %{whq_url}/df794f342500f1b4bfd988f292302afa890354c1#/%{name}-whq-df794f3.patch
+Patch7794:      %{whq_url}/dcf3874e005f864a87205bb7da7ac4bda24a81b7#/%{name}-whq-dcf3874.patch
+Patch7795:      %{whq_url}/973b0e1dfcfb20fe5ac2713721a4844e3e3c0671#/%{name}-whq-973b0e1.patch
+Patch7796:      %{whq_url}/8bfdc84a1994274e5d7ee44c4ee3892666f4cdc7#/%{name}-whq-8bfdc84.patch
+Patch7797:      %{whq_url}/f65340704f72d44ba64a6c7b430ca73076456086#/%{name}-whq-f653407.patch
+Patch7798:      %{whq_url}/ee38e167d1280777c92c757f60d1609bca9e105a#/%{name}-whq-ee38e16.patch
+Patch7799:      %{whq_url}/94ea4252cf3fd3613c8fe78b9af3f36609a3d8c2#/%{name}-whq-94ea425.patch
+Patch7800:      %{whq_url}/ecc790ad479958d0c9a5af105463cfc3da3c3126#/%{name}-whq-ecc790a.patch
+Patch7801:      %{whq_url}/b09acd526d0093962131ff900445cc2dae1f33c4#/%{name}-whq-b09acd5.patch
+Patch7802:      %{whq_url}/0a6e46e4367e10caa0b13156d89807c45a5bc3ca#/%{name}-whq-0a6e46e.patch
+Patch7803:      %{whq_url}/ab0a7d2a1b31160134d9205236fade162f0bc1dc#/%{name}-whq-ab0a7d2.patch
+Patch7804:      %{whq_url}/7d54f9a87f337276fb5c328872951e485cdc37af#/%{name}-whq-7d54f9a.patch
+Patch7805:      %{whq_url}/a729efb964bf193783d4090dcfe9864f877bb424#/%{name}-whq-a729efb.patch
+Patch7806:      %{whq_url}/2a91b0bead7e5c6d08e3a6b79a6feda242e66652#/%{name}-whq-2a91b0b.patch
+Patch7807:      %{whq_url}/f79ca651aeff14a7f4e3443410a89441569ea080#/%{name}-whq-f79ca65.patch
+Patch7808:      %{whq_url}/886acfad379b653e4370e8172c5f7fae257b627c#/%{name}-whq-886acfa.patch
+Patch7809:      %{whq_url}/a692d49039a584e28fa72689411f1ba71033abb9#/%{name}-whq-a692d49.patch
 
 # Reverts to unbreak fshack
 Patch8000:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -993,9 +1009,13 @@ Patch8029:       %{whq_url}/f04360cfbec574dc37675df141ef8fc14e1302ba#/%{name}-wh
 Patch8030:       %{whq_url}/715a04daabdab616b530ef5a937827df7c2523c3#/%{name}-whq-715a04d.patch
 Patch8031:       %{whq_url}/d9625e5a01a52496d1fb7f1a9a691fd3ec8332db#/%{name}-whq-d9625e5.patch
 Patch8032:       %{whq_url}/586f68f414924b1e41fec10a72b1aacced068885#/%{name}-whq-586f68f.patch
+Patch8033:       %{whq_url}/ec245c7e300f7cb779cf404079872f68c812585e#/%{name}-whq-ec245c7.patch
+Patch8034:       %{whq_url}/bbae35f0fb04ea7efb8e1d6e5535e42715ae7766#/%{name}-whq-bbae35f.patch
+Patch8035:       %{whq_url}/4a330b29212402b9700828be82939112bd11a786#/%{name}-whq-4a330b2.patch
+Patch8036:       %{whq_url}/0120a1aa40936fc6d57d83eb12709b951c7b88d6#/%{name}-whq-0120a1a.patch
+Patch8037:       %{whq_url}/16984895f0191dad12d55dee422214645b51aece#/%{name}-whq-1698489.patch
 
-Patch800:       %{whq_url}/2558f5f218d623772f6d8609a951ea70b3f6f823#/%{name}-whq-2558f5f.patch
-Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-104.mystagingpatch#/%{name}-tkg-06877e5_revert-104.patch
+Patch801:       %{tkg_url}/hotfixes/01150d7f/06877e55b1100cc49d3726e9a70f31c4dfbe66f8-106.mystagingpatch#/%{name}-tkg-06877e5_revert-106.patch
 Patch802:       %{tkg_url}/hotfixes/01150d7f/934a09585a15e8491e422b43624ffe632b02bd3c-3.mystagingpatch#/%{name}-tkg-934a095_revert-3.patch
 Patch803:       %{tkg_url}/hotfixes/01150d7f/ntdll-ForceBottomUpAlloc-97fbe3f.mystagingpatch#/%{name}-tkg-ntdll-ForceBottomUpAlloc-97fbe3f.patch
 Patch804:       %{tkg_url}/hotfixes/01150d7f/staging-rawinput-esync-nofshack-fix-2.mystagingpatch#/%{name}-tkg-staging-rawinput-esync-nofshack-fix-2.patch
@@ -1015,7 +1035,6 @@ Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_by
 Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
-Patch1006:       %{tkg_url}/misc/d3d12-fixes.patch#/%{name}-tkg-d3d12-fixes.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-staging.patch#/%{name}-tkg-fsync-staging.patch
@@ -1129,7 +1148,8 @@ BuildRequires:  libstdc++-devel
 BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(libusb)
 BuildRequires:  pkgconfig(libv4l2)
-BuildRequires:  pkgconfig(libvkd3d)
+BuildRequires:  pkgconfig(libvkd3d) >= 1.2
+BuildRequires:  pkgconfig(libvkd3d-shader) >= 1.2
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(libxslt)
 BuildRequires:  pkgconfig(ncurses)
@@ -1657,6 +1677,23 @@ This package adds the opencl driver for wine.
 %patch101 -p1
 
 %if 0%{?wine_staging}
+%patch7809 -p1 -R
+%patch7808 -p1 -R
+%patch7807 -p1 -R
+%patch7806 -p1 -R
+%patch7805 -p1 -R
+%patch7804 -p1 -R
+%patch7803 -p1 -R
+%patch7802 -p1 -R
+%patch7801 -p1 -R
+%patch7800 -p1 -R
+%patch7799 -p1 -R
+%patch7798 -p1 -R
+%patch7797 -p1 -R
+%patch7796 -p1 -R
+%patch7795 -p1 -R
+%patch7794 -p1 -R
+%patch7793 -p1 -R
 %patch7792 -p1 -R
 %patch7791 -p1 -R
 %patch7790 -p1 -R
@@ -2454,6 +2491,11 @@ rm -f dlls/ntdll/unix/signal_arm{,64}.c
 %patch7000 -p1 -R
 
 %if 0%{?fshack}
+%patch8037 -p1 -R
+%patch8036 -p1 -R
+%patch8035 -p1 -R
+%patch8034 -p1 -R
+%patch8033 -p1 -R
 %patch8032 -p1 -R
 %patch8031 -p1 -R
 %patch8030 -p1 -R
@@ -2490,12 +2532,6 @@ rm -f dlls/ntdll/unix/signal_arm{,64}.c
 %endif
 %endif
 
-%if 0%{?vkd3d_proton} 
-%if "%(pkg-config --modversion "libvkd3d < 1.2" 2>/dev/null)"
-%patch800 -p1 -R
-%endif
-%endif
-
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
@@ -2517,7 +2553,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch1003 -p1
 %patch1004 -p1
 %patch1005 -p1
-%patch1006 -p1
 
 %patch5000 -p1
 %patch5001 -p1
@@ -4426,6 +4461,9 @@ fi
 
 
 %changelog
+* Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.18-103.20201006gitc29f9e6
+- Bump
+
 * Sun Oct 04 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.18-102.20201002gitcce4f36
 - Snapshot
 

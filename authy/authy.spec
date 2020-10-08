@@ -1,3 +1,5 @@
+# DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
+
 %global debug_package %{nil}
 %global _build_id_links none
 %global __strip /bin/true

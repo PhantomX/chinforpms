@@ -20,6 +20,7 @@ libstrangle
 libxspf
 lzlib
 lzma-sdk
+mingw-headers
 pysdl2
 python-iniherit
 python-markdown-math
@@ -133,6 +134,9 @@ mcomix3
 mednafen
 mednaffe
 mgba
+mingw-crt
+mingw-w64-tools
+mingw-winpthreads
 mozilla-gnotifier
 mozilla-keepassxc-browser
 mp3val
@@ -216,6 +220,7 @@ wine
 -belcard
 mingw-wine-gecko
 wine-dxvk
+wine-vkd3d-proton
 wine-mono
 wine-nine
 

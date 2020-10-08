@@ -1,3 +1,5 @@
+# DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
+
 %undefine _debugsource_packages
 
 %global pkgname SoulseekQt

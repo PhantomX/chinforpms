@@ -1,0 +1,25 @@
+TVD_SYSD_FILE='teamviewerd.service'
+
+function stopTeamViewer()
+{
+  killall -q teamviewerd TeamViewer TeamViewer_Desktop teamviewer-config # Kill all running TV instances, if any
+}
+
+function cmdDaemon()
+{  
+  local opt="$1"  
+  local cmd="$(daemonCtl $opt)"
+  
+  echo "$cmd"
+  eval "$cmd" && return
+
+  echo "fail"
+  false
+}
+
+function daemonCtl()
+{  
+  local opt="$1"  
+  cmd="systemctl $opt $TVD_SYSD_FILE"
+  echo "$cmd"
+}

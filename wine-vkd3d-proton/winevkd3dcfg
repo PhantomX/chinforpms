@@ -28,12 +28,12 @@ set -e
 
 ver=20201007
 
-name="DXVK"
-pkgname="wine-dxvk"
-datadir="/usr/share/wine/dxvk"
+name="VKD3D-Proton"
+pkgname="wine-vkd3d-proton"
+datadir="/usr/share/wine/vkd3d-proton"
 dllsuffix=""
-dlls="dxgi d3d9 d3d11 d3d10core"
-nodlls="d3d10 d3d10_1"
+dlls="d3d12 libvkd3d-utils"
+nodlls="dxgi"
 
 wineext=dll
 

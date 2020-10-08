@@ -1,6 +1,6 @@
-From 5c96287a98f6258fab98a928ae55868e5cb31e3c Mon Sep 17 00:00:00 2001
+From 48fa8f43d2d88ec480c00360e0df2bbc0d454575 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 17 Aug 2020 08:22:21 -0300
+Date: Wed, 7 Oct 2020 18:38:16 -0300
 Subject: [PATCH] tgvoip: system json11
 
 ---
@@ -8,10 +8,10 @@ Subject: [PATCH] tgvoip: system json11
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/Telegram/cmake/lib_tgvoip.cmake b/Telegram/cmake/lib_tgvoip.cmake
-index 328ec03..3ef880f 100644
+index 684f927b..7eb33336 100644
 --- a/Telegram/cmake/lib_tgvoip.cmake
 +++ b/Telegram/cmake/lib_tgvoip.cmake
-@@ -72,8 +72,6 @@ else()
+@@ -76,8 +76,6 @@ if (NOT TGVOIP_FOUND)
          video/VideoSource.h
          video/VideoRenderer.cpp
          video/VideoRenderer.h
@@ -20,18 +20,17 @@ index 328ec03..3ef880f 100644
  
          # Windows
          os/windows/NetworkSocketWinsock.cpp
-@@ -824,17 +822,20 @@ else()
-     if (LINUX)
+@@ -829,16 +827,19 @@ if (NOT TGVOIP_FOUND)
          find_package(PkgConfig REQUIRED)
-         pkg_check_modules(ALSA REQUIRED alsa)
-+        pkg_check_modules(JSON11 REQUIRED json11)
+         find_package(ALSA REQUIRED)
          pkg_check_modules(PULSE REQUIRED libpulse)
++        pkg_check_modules(JSON11 REQUIRED json11)
  
          target_include_directories(lib_tgvoip_bundled
          PRIVATE
              ${ALSA_INCLUDE_DIRS}
-+            ${JSON11_INCLUDE_DIRS}
              ${PULSE_INCLUDE_DIRS}
++            ${JSON11_INCLUDE_DIRS}
          )
  
          target_link_libraries(lib_tgvoip_bundled
@@ -42,5 +41,5 @@ index 328ec03..3ef880f 100644
          )
      endif()
 -- 
-2.26.2
+2.28.0
 

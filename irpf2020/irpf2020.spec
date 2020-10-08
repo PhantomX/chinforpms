@@ -1,3 +1,5 @@
+# DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
+
 %global __jar_repack %{nil}
 
 %global pkgyear 2020
