@@ -1,3 +1,5 @@
+%global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
+
 Name:           smooth
 Version:        0.9.5
 Release:        1%{?dist}
@@ -6,7 +8,6 @@ Summary:        An object oriented C++ class library
 License:        Artistic 2.0
 URL:            http://www.smooth-project.org/
 
-%global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{ver}.tar.gz
 
 BuildRequires:  gcc-c++

@@ -1,5 +1,7 @@
 %global smoothver 0.9.5
 
+%global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
+
 Name:           freac
 Version:        1.1.2
 Release:        1%{?dist}
@@ -8,7 +10,6 @@ Summary:        A free audio converter and CD ripper
 License:        GPLv2
 URL:            http://www.freac.org/
 
-%global ver     %(echo %{version} | tr '~' '-' | tr '_' '-')
 Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{ver}.tar.gz
 
 BuildRequires:  desktop-file-utils

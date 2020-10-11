@@ -5,6 +5,9 @@
 # Build can fail if more than one job
 %global _smp_build_ncpus 1
 
+%global ver %%(echo %{version} | tr -d '~')
+%global mver %%(echo %{version} | cut -d'~' -f1)
+
 Name:           cdrtools
 Version:        3.02~a09
 Release:        2%{?dist}
@@ -14,8 +17,6 @@ Summary:        CD/DVD/BluRay command line recording software
 License:        CDDL and GPLv2 and BSD
 URL:            http://cdrtools.sourceforge.net/private/cdrecord.html
 
-%global ver %(echo %{version} | tr -d '~')
-%global mver %(echo %{version} | cut -d'~' -f1)
 %if 0%(echo %{version} | grep -q '~a' ; echo $?) == 0
 %global alpha_url /alpha
 %endif

@@ -72,7 +72,7 @@ index bbbee4c..38e8bb0 100644
  endif()
  
 -find_package(PkgConfig QUIET)
- if(PKG_CONFIG_FOUND AND NOT ANDROID)
+ if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
      pkg_search_module(AO ao)
      if(AO_FOUND)
 @@ -168,11 +191,13 @@ if(PKG_CONFIG_FOUND)

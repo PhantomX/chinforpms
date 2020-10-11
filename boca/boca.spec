@@ -4,6 +4,8 @@
 
 %global systemlibs systemlibexpat,systemliburiparser,systemlibxspf,systemzlib
 
+%global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
+
 Name:           boca
 Version:        1.0.2
 Release:        1%{?dist}
@@ -12,7 +14,6 @@ Summary:        Component development kit for fre:ac
 License:        GPLv2
 URL:            http://www.freac.org/
 
-%global ver     %(echo %{version} | tr '~' '-' | tr '_' '-')
 %if 0%{sanitize}
 Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{ver}.tar.gz
 %else

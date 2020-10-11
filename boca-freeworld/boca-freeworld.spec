@@ -7,6 +7,8 @@
 
 %global pkgname boca
 
+%global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
+
 Name:           %{pkgname}-freeworld
 Version:        1.0.2
 Release:        1%{?dist}
@@ -15,7 +17,6 @@ Summary:        Component development kit for fre:ac - freeworld codecs
 License:        GPLv2
 URL:            http://www.freac.org/
 
-%global ver     %(echo %{version} | tr '~' '-' | tr '_' '-')
 Source0:        https://downloads.sourceforge.net/bonkenc/%{pkgname}-%{ver}.tar.gz
 
 BuildRequires:  gcc-c++

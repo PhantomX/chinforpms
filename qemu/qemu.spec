@@ -185,6 +185,7 @@
 
 %global vc_url https://git.qemu.org/?p=qemu.git;a=patch
 
+%global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
@@ -195,7 +196,6 @@ Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
 
-%global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 Source0: http://wiki.qemu-project.org/download/%{name}-%{ver}.tar.xz
 
 Patch1: 0001-linux-user-fix-implicit-conversion-from-enumeration-.patch
