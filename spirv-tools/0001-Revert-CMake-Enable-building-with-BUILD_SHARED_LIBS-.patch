@@ -136,8 +136,8 @@ index e1cc925..93387be 100644
 -        PUBLIC ${SPIRV_TOOLS}-static
 +        PUBLIC ${SPIRV_TOOLS}
          PUBLIC SPIRV-Tools-opt
+         PUBLIC SPIRV-Tools-reduce
          PUBLIC protobuf::libprotobuf)
- 
 diff --git a/source/link/CMakeLists.txt b/source/link/CMakeLists.txt
 index bb058ea..d308319 100644
 --- a/source/link/CMakeLists.txt

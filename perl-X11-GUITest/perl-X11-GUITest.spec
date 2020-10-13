@@ -1,7 +1,7 @@
 %global use_x11_tests 1
 Name:           perl-X11-GUITest
 Version:        0.28
-Release:        19%{?dist}
+Release:        21%{?dist}
 Summary:        Provides GUI testing/interaction routines
 License:        GPLv2+
 URL:            https://metacpan.org/release/X11-GUITest
@@ -67,6 +67,9 @@ find $RPM_BUILD_ROOT -type f -name '*.bs' -size 0 -exec rm -f {} \;
 %{_mandir}/man3/*
 
 %changelog
+* Mon Oct 12 2020 Phantom X <megaphantomx at hotmail dot com> - 0.28-21
+- Bump
+
 * Thu Jan 30 2020 Fedora Release Engineering <releng@fedoraproject.org> - 0.28-19
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 

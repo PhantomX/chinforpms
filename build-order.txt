@@ -108,6 +108,7 @@ gkrellmpc
 gkrellm-themes
 glslang
 gmysqlcc
+gnome-themes
 gnome-themes-extra
 gpa
 gtk3-nocsd

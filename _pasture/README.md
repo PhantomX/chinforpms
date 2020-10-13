@@ -27,6 +27,7 @@ some seasonal packages too, these can return when needed
  * **gnome-colors-icon-theme** - Do not have interest anymore
  * **godot2** - cowsrevenge
  * **hakuneko** - Unmantained by upstream
+ * **hollywood** - Do not have interest anymore
  * **kBuild** - VirtualBox, Fedora included
  * **kepka** - Do not have interest anymore
  * **ladspa-bs2b-plugins** - Do not have interest anymore

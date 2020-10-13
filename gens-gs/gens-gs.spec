@@ -1,5 +1,8 @@
 %define _binary_payload w2T.xzdio
 
+# Eanble 7z support with bundled lzmasdk
+%global with_7z 0
+
 %global orgname gens
 
 Name:           %{orgname}-gs
@@ -19,6 +22,7 @@ Source0:        https://retrocdn.net/images/6/6d/Gens-gs-r7.tar.gz
 #Replaces deprecated gtk functions with working ones
 #Cannot be sumbitted upstream, as upcomming version no longers uses GTK
 Patch0:         %{name}-gtk.patch
+Patch1:         0001-lzma-extlib.patch
 
 ExclusiveArch:  i686
 
@@ -44,6 +48,10 @@ BuildRequires:  minizip-compat-devel
 BuildRequires:  minizip-devel
 %endif
 
+%if 0%{?with_7z}
+Provides:       bundled(lzma-sdk) = 4.65
+%endif
+
 
 %package        doc
 Summary:        Documentation Manual for Gens/GS
@@ -61,16 +69,19 @@ This package contains the documentation manual for Gens/GS
 %prep
 %autosetup -n %{name}-r7 -p1
 
-#Erase all use of external libs:
-sed -i '/extlib/d' configure.ac
-sed -i 's/extlib//' src/Makefile.am
-
 #Use shared minizip:
 sed -i '/minizip/d' src/%{orgname}/Makefile.am
 sed -i 's/"minizip\/unzip.h"/<minizip\/unzip.h>/' src/%{orgname}/util/file/decompressor/md_zip.c
 
+%if 0%{?with_7z}
+rm -rf src/extlib/{libpng,minizip,mp3_dec,zlib}
+%else
 #Remove all bundled code
-rm -f -r src/extlib
+rm -rf src/extlib/*
+#Erase all use of external libs:
+sed -i 's/extlib//' src/Makefile.am
+sed -i '/extlib/d' configure.ac
+%endif
 
 #Rename to gens-gs to avoid conflicts:
 sed -i 's/INIT(gens,/INIT(gens-gs,/' configure.ac
@@ -90,8 +101,13 @@ autoreconf -ivf
 %build
 
 %configure \
-  --without-7z --enable-mp3=no --with-pic \
-  --disable-static --build=i686-redhat-linux \
+%if !0%{?with_7z}
+  --without-7z \
+%endif
+  --enable-mp3=no \
+  --with-pic \
+  --disable-static \
+  --build=i686-redhat-linux \
   --docdir='%{_defaultdocdir}/%{name}-%{version}' \
   LIBS="-ldl -lX11 -lminizip" \
 %{nil}

@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 61777742b3e1ae15008d3753f8220c5a1907719c
+%global tkg_id 3923a76e35c6869270524a08c9426b8f1c023223
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid fa3b2bf2963c2bf8a399f8ff2fdc60b4f1db4d9c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -98,7 +98,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.19
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -960,45 +960,46 @@ Patch7791:      %{whq_url}/ea038894a6aa4b034e151e4f2af42da36710e180#/%{name}-whq
 Patch7792:      %{whq_url}/2600ccf27f9dfb6eadbb21c92b75618ccbd26e01#/%{name}-whq-2600ccf.patch
 Patch7793:      %{whq_url}/e3ea5278357698e75b6cd51627c30e84e16845ca#/%{name}-whq-e3ea527.patch
 Patch7794:      %{whq_url}/df794f342500f1b4bfd988f292302afa890354c1#/%{name}-whq-df794f3.patch
-Patch7795:      %{whq_url}/dcf3874e005f864a87205bb7da7ac4bda24a81b7#/%{name}-whq-dcf3874.patch
-Patch7796:      %{whq_url}/973b0e1dfcfb20fe5ac2713721a4844e3e3c0671#/%{name}-whq-973b0e1.patch
-Patch7797:      %{whq_url}/8bfdc84a1994274e5d7ee44c4ee3892666f4cdc7#/%{name}-whq-8bfdc84.patch
-Patch7798:      %{whq_url}/f65340704f72d44ba64a6c7b430ca73076456086#/%{name}-whq-f653407.patch
-Patch7799:      %{whq_url}/ee38e167d1280777c92c757f60d1609bca9e105a#/%{name}-whq-ee38e16.patch
-Patch7800:      %{whq_url}/94ea4252cf3fd3613c8fe78b9af3f36609a3d8c2#/%{name}-whq-94ea425.patch
-Patch7801:      %{whq_url}/ecc790ad479958d0c9a5af105463cfc3da3c3126#/%{name}-whq-ecc790a.patch
-Patch7802:      %{whq_url}/b09acd526d0093962131ff900445cc2dae1f33c4#/%{name}-whq-b09acd5.patch
-Patch7803:      %{whq_url}/0a6e46e4367e10caa0b13156d89807c45a5bc3ca#/%{name}-whq-0a6e46e.patch
-Patch7804:      %{whq_url}/ab0a7d2a1b31160134d9205236fade162f0bc1dc#/%{name}-whq-ab0a7d2.patch
-Patch7805:      %{whq_url}/7d54f9a87f337276fb5c328872951e485cdc37af#/%{name}-whq-7d54f9a.patch
-Patch7806:      %{whq_url}/a729efb964bf193783d4090dcfe9864f877bb424#/%{name}-whq-a729efb.patch
-Patch7807:      %{whq_url}/2a91b0bead7e5c6d08e3a6b79a6feda242e66652#/%{name}-whq-2a91b0b.patch
-Patch7808:      %{whq_url}/f79ca651aeff14a7f4e3443410a89441569ea080#/%{name}-whq-f79ca65.patch
-Patch7809:      %{whq_url}/886acfad379b653e4370e8172c5f7fae257b627c#/%{name}-whq-886acfa.patch
-Patch7810:      %{whq_url}/a692d49039a584e28fa72689411f1ba71033abb9#/%{name}-whq-a692d49.patch
-Patch7811:      %{whq_url}/a90017845d2f65ecd8c1bd32c3019bcd2b13ecd1#/%{name}-whq-a900178.patch
-Patch7812:      %{whq_url}/1d2c29dfb0bac8915b8e2ea07ecf20a33ca89527#/%{name}-whq-1d2c29d.patch
-Patch7813:      %{whq_url}/f377ac1f2d0751c9d2d79e061b4e9c378a856bbe#/%{name}-whq-f377ac1.patch
-Patch7814:      %{whq_url}/0c25f5ee466b181e9caa6b15257be1db8a66b602#/%{name}-whq-0c25f5e.patch
-Patch7815:      %{whq_url}/06cbf1992313f4a9ef090a4d01aaab42f74e8549#/%{name}-whq-06cbf19.patch
-Patch7816:      %{whq_url}/36981ad03356caf01eb7e446765e1e9c023c0195#/%{name}-whq-36981ad.patch
-Patch7817:      %{whq_url}/905deff5da48c085bb4213d3c67ecf1cfae45564#/%{name}-whq-905deff.patch
-Patch7818:      %{whq_url}/767fa07092cde0bbf3f08a8c728dced8cb28c748#/%{name}-whq-767fa07.patch
-Patch7819:      %{whq_url}/87ea7698ab8c859f0b7e4f363339b0b15c31abd5#/%{name}-whq-87ea769.patch
-Patch7820:      %{whq_url}/4039c5ad47a999a771120091ca57d087b01ee382#/%{name}-whq-4039c5a.patch
-Patch7821:      %{whq_url}/bbd4196814e9aa262112b338bfa976a575e64e65#/%{name}-whq-bbd4196.patch
-Patch7822:      %{whq_url}/3d51714ce4d40506f9935e17e635f6d35be3057e#/%{name}-whq-3d51714.patch
-Patch7823:      %{whq_url}/5c45ec90ffa8ee2f9472a9149258dd174309e203#/%{name}-whq-5c45ec9.patch
-Patch7824:      %{whq_url}/7d48e0c564ef9a65608c01cc55657734f7d5004e#/%{name}-whq-7d48e0c.patch
-Patch7825:      %{whq_url}/632676d071a936199d6d91d804f2e62321c870f7#/%{name}-whq-632676d.patch
-Patch7826:      %{whq_url}/c2ffbe5d364d07971e0c893c6d52e5606dfbaef7#/%{name}-whq-c2ffbe5.patch
-Patch7827:      %{whq_url}/3a6da8defa65e6615e9f29e5c600e62cea0a9bd4#/%{name}-whq-3a6da8d.patch
-Patch7828:      %{whq_url}/d2aa17dceeee847541f210ce8e68f1724f0316d8#/%{name}-whq-d2aa17d.patch
-Patch7829:      %{whq_murl}/commit/6323e36f0f1b85180314027f84cb3c37140bcb70.patch#/%{name}-whq-6323e36.patch
-Patch7830:      %{whq_url}/7148521305b161129c43b806d83c9a46aa42cbca#/%{name}-whq-7148521.patch
-Patch7831:      %{whq_url}/91be31b28ad5ae4852d2cc3cc3bcfc3e2ee01895#/%{name}-whq-91be31b.patch
-Patch7832:      %{whq_murl}/commit/627ae12d2de39695d244aead531a91d1a5fbf79d.patch#/%{name}-whq-627ae12.patch
-Patch7833:      %{whq_url}/83b52b19b5324adf8782cb3b1fd23c9bbe86c8aa#/%{name}-whq-83b52b1.patch
+Patch7795:      %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
+Patch7796:      %{whq_url}/dcf3874e005f864a87205bb7da7ac4bda24a81b7#/%{name}-whq-dcf3874.patch
+Patch7797:      %{whq_url}/973b0e1dfcfb20fe5ac2713721a4844e3e3c0671#/%{name}-whq-973b0e1.patch
+Patch7798:      %{whq_url}/8bfdc84a1994274e5d7ee44c4ee3892666f4cdc7#/%{name}-whq-8bfdc84.patch
+Patch7799:      %{whq_url}/f65340704f72d44ba64a6c7b430ca73076456086#/%{name}-whq-f653407.patch
+Patch7800:      %{whq_url}/ee38e167d1280777c92c757f60d1609bca9e105a#/%{name}-whq-ee38e16.patch
+Patch7801:      %{whq_url}/94ea4252cf3fd3613c8fe78b9af3f36609a3d8c2#/%{name}-whq-94ea425.patch
+Patch7802:      %{whq_url}/ecc790ad479958d0c9a5af105463cfc3da3c3126#/%{name}-whq-ecc790a.patch
+Patch7803:      %{whq_url}/b09acd526d0093962131ff900445cc2dae1f33c4#/%{name}-whq-b09acd5.patch
+Patch7804:      %{whq_url}/0a6e46e4367e10caa0b13156d89807c45a5bc3ca#/%{name}-whq-0a6e46e.patch
+Patch7805:      %{whq_url}/ab0a7d2a1b31160134d9205236fade162f0bc1dc#/%{name}-whq-ab0a7d2.patch
+Patch7806:      %{whq_url}/7d54f9a87f337276fb5c328872951e485cdc37af#/%{name}-whq-7d54f9a.patch
+Patch7807:      %{whq_url}/a729efb964bf193783d4090dcfe9864f877bb424#/%{name}-whq-a729efb.patch
+Patch7808:      %{whq_url}/2a91b0bead7e5c6d08e3a6b79a6feda242e66652#/%{name}-whq-2a91b0b.patch
+Patch7809:      %{whq_url}/f79ca651aeff14a7f4e3443410a89441569ea080#/%{name}-whq-f79ca65.patch
+Patch7810:      %{whq_url}/886acfad379b653e4370e8172c5f7fae257b627c#/%{name}-whq-886acfa.patch
+Patch7811:      %{whq_url}/a692d49039a584e28fa72689411f1ba71033abb9#/%{name}-whq-a692d49.patch
+Patch7812:      %{whq_url}/a90017845d2f65ecd8c1bd32c3019bcd2b13ecd1#/%{name}-whq-a900178.patch
+Patch7813:      %{whq_url}/1d2c29dfb0bac8915b8e2ea07ecf20a33ca89527#/%{name}-whq-1d2c29d.patch
+Patch7814:      %{whq_url}/f377ac1f2d0751c9d2d79e061b4e9c378a856bbe#/%{name}-whq-f377ac1.patch
+Patch7815:      %{whq_url}/0c25f5ee466b181e9caa6b15257be1db8a66b602#/%{name}-whq-0c25f5e.patch
+Patch7816:      %{whq_url}/06cbf1992313f4a9ef090a4d01aaab42f74e8549#/%{name}-whq-06cbf19.patch
+Patch7817:      %{whq_url}/36981ad03356caf01eb7e446765e1e9c023c0195#/%{name}-whq-36981ad.patch
+Patch7818:      %{whq_url}/905deff5da48c085bb4213d3c67ecf1cfae45564#/%{name}-whq-905deff.patch
+Patch7819:      %{whq_url}/767fa07092cde0bbf3f08a8c728dced8cb28c748#/%{name}-whq-767fa07.patch
+Patch7820:      %{whq_url}/87ea7698ab8c859f0b7e4f363339b0b15c31abd5#/%{name}-whq-87ea769.patch
+Patch7821:      %{whq_url}/4039c5ad47a999a771120091ca57d087b01ee382#/%{name}-whq-4039c5a.patch
+Patch7822:      %{whq_url}/bbd4196814e9aa262112b338bfa976a575e64e65#/%{name}-whq-bbd4196.patch
+Patch7823:      %{whq_url}/3d51714ce4d40506f9935e17e635f6d35be3057e#/%{name}-whq-3d51714.patch
+Patch7824:      %{whq_url}/5c45ec90ffa8ee2f9472a9149258dd174309e203#/%{name}-whq-5c45ec9.patch
+Patch7825:      %{whq_url}/7d48e0c564ef9a65608c01cc55657734f7d5004e#/%{name}-whq-7d48e0c.patch
+Patch7826:      %{whq_url}/632676d071a936199d6d91d804f2e62321c870f7#/%{name}-whq-632676d.patch
+Patch7827:      %{whq_url}/c2ffbe5d364d07971e0c893c6d52e5606dfbaef7#/%{name}-whq-c2ffbe5.patch
+Patch7828:      %{whq_url}/3a6da8defa65e6615e9f29e5c600e62cea0a9bd4#/%{name}-whq-3a6da8d.patch
+Patch7829:      %{whq_url}/d2aa17dceeee847541f210ce8e68f1724f0316d8#/%{name}-whq-d2aa17d.patch
+Patch7830:      %{whq_murl}/commit/6323e36f0f1b85180314027f84cb3c37140bcb70.patch#/%{name}-whq-6323e36.patch
+Patch7831:      %{whq_url}/7148521305b161129c43b806d83c9a46aa42cbca#/%{name}-whq-7148521.patch
+Patch7832:      %{whq_url}/91be31b28ad5ae4852d2cc3cc3bcfc3e2ee01895#/%{name}-whq-91be31b.patch
+Patch7833:      %{whq_murl}/commit/627ae12d2de39695d244aead531a91d1a5fbf79d.patch#/%{name}-whq-627ae12.patch
+Patch7834:      %{whq_url}/83b52b19b5324adf8782cb3b1fd23c9bbe86c8aa#/%{name}-whq-83b52b1.patch
 
 # Reverts to unbreak fshack
 Patch8000:       %{whq_url}/2538b0100fbbe1223e7c18a52bade5cfe5f8d3e3#/%{name}-whq-2538b01.patch
@@ -1701,6 +1702,7 @@ This package adds the opencl driver for wine.
 %patch101 -p1
 
 %if 0%{?wine_staging}
+%patch7834 -p1 -R
 %patch7833 -p1 -R
 %patch7832 -p1 -R
 %patch7831 -p1 -R
@@ -4506,6 +4508,9 @@ fi
 
 
 %changelog
+* Mon Oct 12 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.19-101
+- tkg sync
+
 * Sat Oct 10 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.19-100
 - 5.19
 

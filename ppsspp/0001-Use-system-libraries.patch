@@ -1,13 +1,13 @@
-From 7c530824dbb8df7e46794f34672a864b4e42ce40 Mon Sep 17 00:00:00 2001
+From 9d0ba1d58f5d30264d84bb3b1947767ddaeb3ef2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 2 Oct 2020 11:57:27 -0300
+Date: Sun, 11 Oct 2020 23:29:51 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake borrowed from dolphin-emu
 https://github.com/dolphin-emu/dolphin
 ---
  CMakeLists.txt                       | 29 ++++++++++++++++++++++++++++
- Common/Hashmaps.h                    |  4 ++++
+ Common/Data/Collections/Hashmaps.h   |  4 ++++
  Core/Debugger/DisassemblyManager.cpp |  4 ++++
  Core/HLE/sceJpeg.cpp                 |  4 ++++
  Core/MIPS/IR/IRJit.cpp               |  4 ++++
@@ -27,7 +27,7 @@ https://github.com/dolphin-emu/dolphin
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 29d2a45..7aa2023 100644
+index ce647f7..cf3bac7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -122,6 +122,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
@@ -39,7 +39,7 @@ index 29d2a45..7aa2023 100644
  option(USE_ADDRESS_SANITIZER "Use Clang memory sanitizer" ${USE_ADDRESS_SANITIZER})
  
  if(UNIX AND NOT (APPLE OR ANDROID) AND VULKAN)
-@@ -1139,11 +1141,31 @@ add_library(xbrz STATIC
+@@ -1128,11 +1130,31 @@ add_library(xbrz STATIC
  )
  include_directories(ext/xbrz)
  
@@ -71,7 +71,7 @@ index 29d2a45..7aa2023 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -1842,6 +1864,12 @@ endif()
+@@ -1834,6 +1856,12 @@ endif()
  
  # miniUPnPc integration (MiniUPnPc supposed to works on any POSIX system, not sure if some of these are redundant/not needed tho)
  if(USE_MINIUPNPC)
@@ -84,7 +84,7 @@ index 29d2a45..7aa2023 100644
  	set (MINIUPNPC_VERSION 2.1) # used by miniupnpcstrings.h.cmake
  	set (MINIUPNPC_API_VERSION 17)
  	option(UPNPC_BUILD_STATIC "Build static library" TRUE)
-@@ -1911,6 +1939,7 @@ if(USE_MINIUPNPC)
+@@ -1903,6 +1931,7 @@ if(USE_MINIUPNPC)
  		endif()
  	endif()
  endif()
@@ -92,10 +92,10 @@ index 29d2a45..7aa2023 100644
  
  setup_target_project(${CoreLibName} Core)
  
-diff --git a/Common/Hashmaps.h b/Common/Hashmaps.h
+diff --git a/Common/Data/Collections/Hashmaps.h b/Common/Data/Collections/Hashmaps.h
 index 4c66642..4f3eca0 100644
---- a/Common/Hashmaps.h
-+++ b/Common/Hashmaps.h
+--- a/Common/Data/Collections/Hashmaps.h
++++ b/Common/Data/Collections/Hashmaps.h
 @@ -4,7 +4,11 @@
  #include <cstring>
  #include <vector>
@@ -125,12 +125,12 @@ index d05a098..9366801 100644
  #include "Common/CommonTypes.h"
  #include "Core/MemMap.h"
 diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
-index aa6d554..9988cd4 100644
+index 4230675..ce02af2 100644
 --- a/Core/HLE/sceJpeg.cpp
 +++ b/Core/HLE/sceJpeg.cpp
 @@ -32,8 +32,12 @@
- //Uncomment if you want to dump JPEGs loaded through sceJpeg to a file
- //#define JPEG_DEBUG
+ // Uncomment if you want to dump JPEGs loaded through sceJpeg to a file
+ // #define JPEG_DEBUG
  #ifdef JPEG_DEBUG
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
@@ -139,10 +139,10 @@ index aa6d554..9988cd4 100644
  #endif
 +#endif
  
- static int mjpegWidth, mjpegHeight;
- 
+ struct u24_be {
+ 	unsigned char value[3];
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index 4324d3b..d70cad5 100644
+index 77d988d..ff001cd 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
 @@ -17,7 +17,11 @@
@@ -154,41 +154,41 @@ index 4324d3b..d70cad5 100644
 +#else
  #include "ext/xxhash.h"
 +#endif
- #include "profiler/profiler.h"
+ #include "Common/Profiler/Profiler.h"
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 6bb213e..3696ac3 100644
+index 1a39988..ba21cc4 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
-@@ -35,7 +35,11 @@
- #include "Core/Debugger/SymbolMap.h"
- #include "Core/Debugger/DebugInterface.h"
- #include "Core/HLE/ReplaceTables.h"
+@@ -22,7 +22,11 @@
+ #include <mutex>
+ 
+ #include "ext/cityhash/city.h"
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
 +#else
  #include "ext/xxhash.h"
 +#endif
  
- using namespace MIPSCodeUtils;
- 
+ #include "Common/File/FileUtil.h"
+ #include "Common/Log.h"
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index 32e49b0..7868dda 100644
+index 3b9aeb9..5a657f5 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
-@@ -24,7 +24,11 @@
+@@ -19,7 +19,11 @@
+ 
  #include <algorithm>
  
- #include "i18n/i18n.h"
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
 +#else
  #include "ext/xxhash.h"
 +#endif
- #include "file/ini_file.h"
- #include "util/text/parsers.h"
- #include "Common/ColorConv.h"
+ 
+ #include "Common/Data/Text/I18n.h"
+ #include "Common/Data/Format/IniFile.h"
 diff --git a/Core/Util/PortManager.h b/Core/Util/PortManager.h
 index a4c7df6..0204d9e 100644
 --- a/Core/Util/PortManager.h
@@ -247,7 +247,7 @@ index 8e96223..2b618ee 100644
  #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
  #include <arm64_neon.h>
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index ffbf31b..4d8d96f 100644
+index 5dd5e50..e16dab1 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -35,7 +35,11 @@
@@ -259,11 +259,11 @@ index ffbf31b..4d8d96f 100644
 +#else
  #include "ext/xxhash.h"
 +#endif
- #include "math/math_util.h"
+ #include "Common/Math/math_util.h"
  
  
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index 49b8791..3d9494a 100644
+index c867418..4ff046c 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
 @@ -33,7 +33,11 @@
@@ -275,11 +275,11 @@ index 49b8791..3d9494a 100644
 +#else
  #include "ext/xxhash.h"
 +#endif
- #include "math/math_util.h"
+ #include "Common/Math/math_util.h"
  
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index e3bb890..c8b050d 100644
+index 822143f..4a478d7 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,11 @@
@@ -291,11 +291,11 @@ index e3bb890..c8b050d 100644
 +#else
  #include "ext/xxhash.h"
 +#endif
- #include "gfx/gl_debug_log.h"
- #include "i18n/i18n.h"
- #include "math/math_util.h"
+ #include "Common/Data/Text/I18n.h"
+ #include "Common/Math/math_util.h"
+ #include "Common/Profiler/Profiler.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index d84827b..4c4ba04 100644
+index 7acd871..896c7e4 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@
@@ -307,11 +307,11 @@ index d84827b..4c4ba04 100644
 +#else
  #include "ext/xxhash.h"
 +#endif
- #include "file/vfs.h"
- #include "i18n/i18n.h"
- #include "math/math_util.h"
+ #include "Common/File/VFS/VFS.h"
+ #include "Common/Data/Text/I18n.h"
+ #include "Common/Math/math_util.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index b0d2bfc..2897e97 100644
+index a13ef05..d4b84d6 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -15,7 +15,11 @@
@@ -323,23 +323,23 @@ index b0d2bfc..2897e97 100644
 +#else
  #include "ext/xxhash.h"
 +#endif
- #include "i18n/i18n.h"
- #include "ui/ui.h"
- #include "util/text/utf8.h"
+ #include "Common/UI/UI.h"
+ 
+ #include "Common/Data/Text/I18n.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index 7717503..a06dc09 100644
+index e26f964..502ecab 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp
 +++ b/Windows/Debugger/CtrlDisAsmView.cpp
 @@ -21,7 +21,11 @@
  
  #include "Common/CommonWindows.h"
- #include "util/text/utf8.h"
+ #include "Common/Data/Encoding/Utf8.h"
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
 +#else
  #include "ext/xxhash.h"
 +#endif
- #include "base/display.h"
+ #include "Common/System/Display.h"
  
  #include <CommDlg.h>
 diff --git a/cmake/Modules/FindMiniupnpc.cmake b/cmake/Modules/FindMiniupnpc.cmake

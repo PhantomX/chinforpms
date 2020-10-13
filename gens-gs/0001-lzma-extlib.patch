@@ -1,0 +1,57 @@
+From ec7c497f0f9cf2bc4a4478bfa8aec12f51aca0d6 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 11 Oct 2020 16:36:27 -0300
+Subject: [PATCH] lzma extlib
+
+---
+ configure.ac           |  4 ----
+ src/extlib/Makefile.am | 17 -----------------
+ 2 files changed, 21 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 7a5bac4..96a00e2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -850,11 +850,7 @@ AC_CONFIG_FILES([
+ 	xdg/Makefile
+ 	src/Makefile
+ 	src/extlib/Makefile
+-	src/extlib/libpng/Makefile
+ 	src/extlib/lzma/Makefile
+-	src/extlib/minizip/Makefile
+-	src/extlib/mp3_dec/Makefile
+-	src/extlib/zlib/Makefile
+ 	src/starscream/Makefile
+ 	src/mdZ80/Makefile
+ 	src/libgsft/Makefile
+diff --git a/src/extlib/Makefile.am b/src/extlib/Makefile.am
+index 94c9098..93aa1e8 100644
+--- a/src/extlib/Makefile.am
++++ b/src/extlib/Makefile.am
+@@ -5,23 +5,6 @@ AUTOMAKE_OPTIONS = foreign
+ 
+ SUBDIRS =
+ 
+-if GENS_ZLIB
+-if GENS_ZLIB_INTERNAL
+-SUBDIRS += zlib
+-endif # GENS_ZLIB_INTERNAL
+-SUBDIRS += minizip
+-endif # GENS_ZLIB
+-
+-if GENS_PNG
+-if GENS_PNG_INTERNAL
+-SUBDIRS += libpng
+-endif # GENS_PNG_INTERNAL
+-endif # GENS_PNG
+-
+-if GENS_MP3
+-SUBDIRS += mp3_dec
+-endif # GENS_MP3
+-
+ if GENS_LZMA
+ SUBDIRS += lzma
+ endif # GENS_LZMA
+-- 
+2.28.0
+

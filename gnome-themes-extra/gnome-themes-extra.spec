@@ -1,3 +1,5 @@
+%global majorminor %%(echo %{version} | cut -d. -f1-2)
+
 Name:           gnome-themes-extra
 Version:        3.28
 Release:        100%{?dist}
@@ -7,7 +9,7 @@ Epoch:          1
 
 License:        LGPLv2+
 URL:            https://gitlab.gnome.org/GNOME/gnome-themes-extra
-Source0:        https://download.gnome.org/sources/%{name}/3.28/%{name}-%{version}.tar.xz
+Source0:        https://download.gnome.org/sources/%{name}/%{majorminor}/%{name}-%{version}.tar.xz
 Source1:        gtkrc
 
 # Remove some ugly paddings
@@ -60,6 +62,8 @@ with a GNOME look and feel.
 %prep
 %autosetup -p1
 
+cp -a %{S:1} .
+
 %build
 %configure
 %make_build
@@ -72,7 +76,7 @@ rm -f %{buildroot}%{_datadir}/icons/HighContrast/icon-theme.cache
 touch %{buildroot}%{_datadir}/icons/HighContrast/icon-theme.cache
 
 mkdir -p %{buildroot}%{_datadir}/gtk-2.0
-cp -a $RPM_SOURCE_DIR/gtkrc %{buildroot}%{_datadir}/gtk-2.0/gtkrc
+cp -a gtkrc %{buildroot}%{_datadir}/gtk-2.0/gtkrc
 
 %transfiletriggerin -- %{_datadir}/icons/HighContrast
 gtk-update-icon-cache --force %{_datadir}/icons/HighContrast &>/dev/null || :

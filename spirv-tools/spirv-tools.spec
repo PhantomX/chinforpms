@@ -1,18 +1,18 @@
-%global commit 726af6f78f80988271c8b558ae9cc84fa5a65016
+%global commit c2553a315f5c78d73a808526782596d4e3870082
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200911
+%global date 20201009
 %global gver .%{date}git%{shortcommit}
 
 %global pkgname SPIRV-Tools
 
 Name:           spirv-tools
-Version:        2020.5
+Version:        2020.6
 Release:        100%{?gver}%{?dist}
 Summary:        API and commands for processing SPIR-V modules
 
 License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/SPIRV-Tools
-Source0:        %{url}/%{name}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 
 Patch0:         0001-Revert-CMake-Enable-building-with-BUILD_SHARED_LIBS-.patch
 
@@ -90,10 +90,13 @@ Development files for %{name}
 %{_libdir}/pkgconfig/SPIRV-Tools.pc
 
 %changelog
+* Mon Oct 12 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.6-100.20201009gitc2553a3
+- 2020.6
+
 * Mon Sep 14 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.5-100.20200911git726af6f
 - New snapshot
 
-* Tue Aug 04 2020 Dave Airlie <airlied@redhat.com> - 2029.5-1.20200803.git92a71657
+* Tue Aug 04 2020 Dave Airlie <airlied@redhat.com> - 2020.5-1.20200803.git92a71657
 - update to latest spirv-tools
 
 * Wed Jul 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2019.5-3.20200421.git67f4838

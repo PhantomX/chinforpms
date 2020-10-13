@@ -1,6 +1,6 @@
-%global commit 5c9b7bb859c3694badb2f73852f3262dcac0f0aa
+%global commit 615e07ffcc9aff9d940d8fa69942befd7f3649c9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201002
+%global date 20201011
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -19,7 +19,7 @@
 # https://github.com/hrydgard/ppsspp/issues/13312
 %define _lto_cflags %{nil}
 
-%global commit1 d5a2a51942377820764604d9bb424fa9a879c4bd
+%global commit1 fd6f5bc01afb419eacca538b425c01eb2a055393
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -39,7 +39,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 5cc2e4f6348e3f70953f93fc5fcd0c6e8208c5b4
+%global commit7 401af493263d5b45f2bf993f0d6ddc7dc850cd52
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -56,7 +56,7 @@
 
 Name:           ppsspp
 Version:        1.10.3
-Release:        108%{?gver}%{?dist}
+Release:        109%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -182,8 +182,9 @@ tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 
-rm -rf ext/{glew,rapidjson,miniupnp,snappy,zlib}/*.{c,cpp,h}
-rm -rf ext/vulkan
+rm -rf ext/glew/GL
+rm -rf ext/{glew,rapidjson,miniupnp,snappy}/*.{c,cpp,h}
+rm -rf ext/{libpng,libzip,vulkan,zlib}*
 rm -f ext/xxhash.*
 
 find ext Core -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" -o -name "*.y" \) -exec chmod -x {} ';'
@@ -211,18 +212,6 @@ sed \
 sed \
   -e 's| -O3 | -O2 |g' \
   -i CMakeLists.txt ext/armips/ext/tinyformat/Makefile
-
-rm -rf ext/native/ext/libpng*
-sed -e 's|png17|%{pngver}|g' \
-  -i CMakeLists.txt Core/Screenshot.cpp \
-     Core/Debugger/WebSocket/GPUBufferSubscriber.cpp \
-     Core/TextureReplacer.cpp ext/native/image/png_load.cpp \
-     ext/native/tools/CMakeLists.txt
-sed -e "/PNG_PNG_INCLUDE_DIR/s|libpng/|lib%{pngver}/|" \
-  -i CMakeLists.txt
-
-rm -rf ext/glew/{GL,*.c}
-rm -rf ext/native/ext/libzip
 
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
@@ -371,7 +360,10 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
-* Fri Oct  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-108.20201002git5c9b7bb
+* Mon Oct 12 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-109.20201011git615e07f
+- Bump
+
+* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-108.20201002git5c9b7bb
 - New snapshot
 
 * Sat Sep 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-107.20200919git7ed1ade
