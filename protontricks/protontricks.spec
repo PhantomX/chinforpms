@@ -12,8 +12,9 @@ Patch10:        0001-Disable-setuptools_scm-version-check.patch
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-vdf
+BuildRequires:  %{py3_dist setuptools}
+BuildRequires:  %{py3_dist vdf}
+Requires:       %{py3_dist vdf}
 Requires:       winetricks
 Suggests:       zenity
 

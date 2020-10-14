@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From ce12884c009ec3bed11100c9d19f6d97628cf8ae Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Tue, 23 Jul 2019 15:24:30 +0000
 Subject: [PATCH] kdump: add support for crashkernel=auto
@@ -144,7 +144,7 @@ index 2da65fef2a1c..d53a524f80f0 100644
 @@ -285,6 +285,17 @@ This would mean:
      2) if the RAM size is between 512M and 2G (exclusive), then reserve 64M
      3) if the RAM size is larger than 2G, then reserve 128M
-
+ 
 +Or you can use crashkernel=auto if you have enough memory.  The threshold
 +is 2G on x86_64, arm64, ppc64 and ppc64le. The threshold is 4G for s390x.
 +If your system memory is less than the threshold crashkernel=auto will not
@@ -156,11 +156,11 @@ index 2da65fef2a1c..d53a524f80f0 100644
 +    s390x:  4G-64G:160M,64G-1T:256M,1T-:512M
 +    arm64:  2G-:512M
 +    ppc64:  2G-4G:384M,4G-16G:512M,16G-64G:1G,64G-128G:2G,128G-:4G
-
-
+ 
+ 
  Boot into System Kernel
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index d631d22089ba..c252221b2f4b 100644
+index e4dfe2a05a31..8c6f59932247 100644
 --- a/kernel/crash_core.c
 +++ b/kernel/crash_core.c
 @@ -258,6 +258,20 @@ static int __init __parse_crashkernel(char *cmdline,
@@ -185,5 +185,5 @@ index d631d22089ba..c252221b2f4b 100644
  	 * if the commandline contains a ':', then that's the extended
  	 * syntax -- if not, it must be the classic syntax
 -- 
-2.26.2
+2.28.0
 

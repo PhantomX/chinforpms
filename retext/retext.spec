@@ -18,26 +18,26 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  librsvg2-tools
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
+BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  qt5-linguist
 
 %if 0%{?with_tests}
-BuildRequires:  python3-chardet
-BuildRequires:  python3-docutils
-BuildRequires:  python3-markdown
-BuildRequires:  python3-markups
-BuildRequires:  python3-pygments
+BuildRequires:  %{py3_dist chardet}
+BuildRequires:  %{py3_dist docutils}
+BuildRequires:  %{py3_dist markdown}
+BuildRequires:  %{py3_dist markups}
+BuildRequires:  %{py3_dist pygments}
 BuildRequires:  python3-qt5
 BuildRequires:  qt5-qtbase-gui
 %endif
 
 Requires:       hicolor-icon-theme
-Requires:       python3-chardet
-Requires:       python3-docutils
-Requires:       python3-enchant
-Requires:       python3-markdown
-Requires:       python3-markups >= 2.0.0
-Requires:       python3-pygments
+Requires:       %{py3_dist chardet}
+Requires:       %{py3_dist docutils}
+Requires:       %{py3_dist pyenchant}
+Requires:       %{py3_dist markdown}
+Requires:       %{py3_dist markups} >= 2
+Requires:       %{py3_dist pygments}
 Requires:       python3-qt5
 Requires:       (python3-qt5-webkit or python3-qt5-webengine)
 Requires:       qt5-qtlocation

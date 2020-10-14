@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From 41a259999969bbdfe9f556ce71f2c3c07d7454f4 Mon Sep 17 00:00:00 2001
 From: Robert Richter <rrichter@redhat.com>
 Date: Thu, 7 Jun 2018 22:59:33 -0400
 Subject: [PATCH] ahci: thunderx2: Fix for errata that affects stop engine
@@ -62,7 +62,7 @@ index ea5bf5f4cbed..71c55cae27ac 100644
 @@ -666,6 +666,24 @@ int ahci_stop_engine(struct ata_port *ap)
  	tmp &= ~PORT_CMD_START;
  	writel(tmp, port_mmio + PORT_CMD);
-
+ 
 +#ifdef CONFIG_ARM64
 +	/* Rev Ax of Cavium CN99XX needs a hack for port stop */
 +	if (dev_is_pci(ap->host->dev) &&
@@ -85,5 +85,5 @@ index ea5bf5f4cbed..71c55cae27ac 100644
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
 -- 
-2.26.2
+2.28.0
 

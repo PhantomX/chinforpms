@@ -23,13 +23,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 8
+%define base_sublevel 9
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -173,6 +173,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Tue Oct 13 19:46:33 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.0-500.chinfo
+- 5.9.0
+
 * Wed Oct  7 14:59:04 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.14-500.chinfo
 - 5.8.14
 

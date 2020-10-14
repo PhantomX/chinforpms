@@ -13,9 +13,9 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-numpy
-BuildRequires:  python3-pillow
+BuildRequires:  %{py3_dist setuptools}
+BuildRequires:  %{py3_dist numpy}
+BuildRequires:  %{py3_dist pillow}
 BuildRequires:  zbar
 
 
@@ -26,7 +26,7 @@ BuildRequires:  zbar
 
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
-Requires:       python3-pillow
+Requires:       %{py3_dist pillow}
 Requires:       zbar
 
 %description -n python3-%{pkgname}

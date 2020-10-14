@@ -10,8 +10,8 @@ URL:            https://pypi.org/project/python-markdown-math
 Source0:        https://github.com/mitya57/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-markdown
-BuildRequires:  python3-setuptools
+BuildRequires:  %{py3_dist markdown}
+BuildRequires:  %{py3_dist setuptools}
 
 BuildArch:      noarch
 
@@ -24,8 +24,8 @@ Python-Markdown.
 %package -n python3-markdown-math
 Summary:        A math extension for Python-Markdown
 
-Requires:       python3-docutils
-Requires:       python3-markdown
+Requires:       %{py3_dist docutils}
+Requires:       %{py3_dist markdown}
 
 %{?python_provide:%python_provide python3-markdown-math}
 

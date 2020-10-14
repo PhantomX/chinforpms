@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From 45f64c1a24e73af7987cffec3ea941e29364f87f Mon Sep 17 00:00:00 2001
 From: Aaron Ma <aaron.ma@canonical.com>
 Date: Tue, 24 Mar 2020 03:16:39 +0800
 Subject: [PATCH] e1000e: bump up timeout to wait when ME un-configure ULP mode
@@ -15,13 +15,13 @@ Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index f999cca37a8a..9cbd2d6c7da4 100644
+index b2f2fcfdf732..a9e4c059d402 100644
 --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
 +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -1247,9 +1247,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
+@@ -1245,9 +1245,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
  			ew32(H2ME, mac_reg);
  		}
-
+ 
 -		/* Poll up to 300msec for ME to clear ULP_CFG_DONE. */
 +		/* Poll up to 2.5sec for ME to clear ULP_CFG_DONE. */
  		while (er32(FWSM) & E1000_FWSM_ULP_CFG_DONE) {
@@ -31,5 +31,5 @@ index f999cca37a8a..9cbd2d6c7da4 100644
  				goto out;
  			}
 -- 
-2.26.2
+2.28.0
 

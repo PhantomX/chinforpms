@@ -14,7 +14,7 @@ Source0:        %{vc_url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
+BuildRequires:  %{py3_dist setuptools}
 
 %global _description\
 PyOTP is a Python 3 library for generating and verifying one-time passwords. It\

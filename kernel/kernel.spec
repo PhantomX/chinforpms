@@ -85,24 +85,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 8
+%define base_sublevel 9
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 7
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit cc1694f476d677b462b6b760ae98790cbc50b0d0
+%global pfcommit de501cb0c6a0a71a302ee64233130e2e51fa43eb
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id cea47bbdbcc737161b624f5c96605ac282ec8fed
+%global opensuse_id 11733e177d6b61a0770714250b39236f85716b38
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -567,7 +567,7 @@ Requires: kernel-modules-uname-r = %{KVERREL}
 # List the packages used during the kernel build
 #
 BuildRequires: kmod, patch, bash, tar, git-core
-BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
+BuildRequires: bzip2, xz, zstd, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 %if 0%{?fedora}
@@ -823,6 +823,7 @@ Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
 
 %if !%{nopatches}
 
+Patch2: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
 Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
 Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
@@ -843,7 +844,6 @@ Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch60: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 Patch61: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
 Patch62: 0001-Drop-that-for-now.patch
 Patch63: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
@@ -852,40 +852,8 @@ Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
 Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
 Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch80: 0001-Revert-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
-Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
-Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
-Patch84: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch85: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
-Patch86: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
-Patch87: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
-Patch88: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
-Patch89: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
-Patch90: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
-Patch91: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
-Patch92: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
-Patch93: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
-Patch94: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
-Patch95: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
-Patch96: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
-Patch97: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
-Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
-Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
-Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch 
-
-Patch102: 0002-arm64-tegra-Re-order-PCIe-aperture-mappings-to-suppo.patch
-Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
-
-# Goes away with 5.9
-Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=1874117
-Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
-Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
-
-# rhbz 1875339 1875828 1876997
-Patch113: pdx86-SW_TABLET_MODE-fixes.patch 
+Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
 ### Extra
 
@@ -1017,7 +985,7 @@ Requires: binutils, bpftool, iproute-tc, nmap-ncat
 Requires: kernel-modules-internal = %{version}-%{release}
 %description selftests-internal
 Kernel sample programs and selftests.
-%{nil}
+
 # Note that this pattern only works right to match the .build-id
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
@@ -1799,10 +1767,10 @@ BuildKernel() {
     # testing so just delete
     find . -name *.h.s -delete
     # first copy everything
+    cp --parents `find  -type f -name "Makefile*" -o -name "Kconfig*"` $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     if [ ! -e Module.symvers ]; then
         touch Module.symvers
     fi
-    cp --parents `find  -type f -name "Makefile*" -o -name "Kconfig*"` $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp Module.symvers $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp System.map $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     if [ -s Module.markers ]; then
@@ -2684,6 +2652,9 @@ fi
 #
 #
 %changelog
+* Tue Oct 13 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.0-500.chinfo
+- 5.9.0 -pf1
+
 * Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.14-500.chinfo
 - 5.8.14 -pf7
 

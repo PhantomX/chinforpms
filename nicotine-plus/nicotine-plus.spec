@@ -1,6 +1,6 @@
-%global commit 8631190bbfcdda44da345aa327c5bfa98dca1b46
+%global commit c4ff58305ff3b8dc4b94dcc2cc0a7f89a026336b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200927
+%global date 20201013
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,13 +11,13 @@
 %global vc_url  https://github.com/%{name}/%{name}
 
 Name:           nicotine-plus
-Version:        2.1.1
-Release:        1%{?gver}%{?dist}
+Version:        2.1.2
+Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
-# * nicotine+ - GPLv3 and LGPLv3  -- main tarball;
-# * sounds/default/*.wav - CC0
-License:        GPLv3 and LGPLv3 and CC0
+#   (see pynicotine/geoip/README.md)
+# - some icons are LPGPLv3+, GPLv3+ and MIT (see img/CREDITS.md) 
+License:        GPLv3+ and CC-BY-SA and LGPLv3+ and MIT
 URL:            https://www.nicotine-plus.org/
 
 %if 0%{?with_snapshot}
@@ -31,15 +31,17 @@ BuildArch:      noarch
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
 BuildRequires:  libappstream-glib
-BuildRequires:  python3-gobject
+BuildRequires:  %{py3_dist pygobject}
+BuildRequires:  %{py3_dist pytaglib}
+BuildRequires:  %{py3_dist pytest}
 BuildRequires:  python3-devel
+Requires:       gobject-introspection
 Requires:       gtk3
 Requires:       libappindicator-gtk3
-Requires:       libnotify
-Requires:       python3-dbus
-Requires:       python3-gobject
-Requires:       python3-miniupnpc
-Requires:       python3-pytaglib
+Requires:       %{py3_dist dbus-python}
+Requires:       %{py3_dist miniupnpc}
+Requires:       %{py3_dist pygobject}
+Requires:       %{py3_dist pytaglib}
 Requires:       hicolor-icon-theme
 Recommends:     gspell
 
@@ -68,12 +70,17 @@ that users want and/or need.
 %install
 %py3_install
 
+rm -rf %{buildroot}%{python3_sitelib}/pynicotine/plugins/examplars/
+
 rm -rf %{buildroot}%{_datadir}/doc
 
 %find_lang %{cname}
 
 
 %check
+# Tests requiring an Internet connection are disabled
+%pytest --deselect=test/unit/test_version.py
+
 desktop-file-validate %{buildroot}%{_datadir}/applications/org.nicotine_plus.Nicotine.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_plus.Nicotine.appdata.xml
 
@@ -91,6 +98,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 
 
 %changelog
+* Tue Oct 13 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.2-100.20201013gitc4ff583
+- 2.1.2
+- Rawhide sync
+
 * Sun Sep 27 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.1-1.20200927git8631190
 - 2.1.1
 

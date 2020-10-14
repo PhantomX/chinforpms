@@ -29,13 +29,13 @@ Patch1:         %{name}-libdir.patch
 BuildArch:      noarch
 BuildRequires:  desktop-file-utils
 BuildRequires:  python3-devel
-BuildRequires:  python3-sdl2
+BuildRequires:  %{py3_dist sdl2}
 BuildRequires:  python3-qt5-devel
 BuildRequires:  qt5-linguist
 BuildRequires:  ImageMagick
 Requires:       mupen64plus
 Requires:       python3-qt5
-Requires:       python3-sdl2
+Requires:       %{py3_dist sdl2}
 Requires:       SDL2
 Requires:       hicolor-icon-theme
 

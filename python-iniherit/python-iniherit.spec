@@ -13,9 +13,9 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-#BuildRequires:  python3-coverage
-#BuildRequires:  python3-nose
-BuildRequires:  python3-six
+#BuildRequires:  %%{py3_dist coverage}
+#BuildRequires:  %%{py3_dist nose}
+BuildRequires:  %{py3_dist six}
 
 
 %global _description\
@@ -25,7 +25,7 @@ BuildRequires:  python3-six
 
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
-Requires:       python3-six
+Requires:       %{py3_dist six}
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description -n python3-%{pkgname}

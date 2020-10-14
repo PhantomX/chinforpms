@@ -13,13 +13,13 @@ Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-aiohttp
-BuildRequires:  python3-beautifulsoup4
-BuildRequires:  python3-coveralls
-BuildRequires:  python3-pillow
-BuildRequires:  python3-pytest
-BuildRequires:  python3-pytest-cov
+BuildRequires:  %{py3_dist setuptools}
+BuildRequires:  %{py3_dist aiohttp}
+BuildRequires:  %{py3_dist beautifulsoup4}
+BuildRequires:  %{py3_dist coveralls}
+BuildRequires:  %{py3_dist pillow}
+BuildRequires:  %{py3_dist pytest}
+BuildRequires:  %{py3_dist pytest-cov}
 
 
 %global _description\
@@ -29,9 +29,9 @@ pyfavicon is an async favicon fetcher.
 
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
-Requires:       python3-aiohttp
-Requires:       python3-beautifulsoup4
-Requires:       python3-pillow
+Requires:       %{py3_dist aiohttp}
+Requires:       %{py3_dist beautifulsoup4}
+Requires:       %{py3_dist pillow}
 
 %description -n python3-%{pkgname}
 %_description

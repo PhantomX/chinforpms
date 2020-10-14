@@ -10,12 +10,12 @@ URL:            https://pypi.python.org/pypi/Markups
 Source0:        https://github.com/retext-project/pymarkups/archive/%{version}/%{pkgname}-%{version}.tar.gz
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-docutils
-BuildRequires:  python3-markdown
-BuildRequires:  python3-markdown-math
-BuildRequires:  python3-pygments
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-textile
+BuildRequires:  %{py3_dist docutils}
+BuildRequires:  %{py3_dist markdown}
+BuildRequires:  %{py3_dist markdown-math}
+BuildRequires:  %{py3_dist pygments}
+BuildRequires:  %{py3_dist setuptools}
+BuildRequires:  %{py3_dist textile}
 
 BuildArch:      noarch
 
@@ -29,10 +29,10 @@ by default).
 %package -n python3-markups
 Summary:        A wrapper around various text markups
 
-Requires:       python3-docutils
-Requires:       python3-markdown
-Requires:       python3-pygments
-Requires:       python3-textile
+Requires:       %{py3_dist docutils}
+Requires:       %{py3_dist markdown}
+Requires:       %{py3_dist pygments}
+Requires:       %{py3_dist textile}
 
 %{?python_provide:%python_provide python3-markups}
 

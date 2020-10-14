@@ -1,4 +1,4 @@
-From 90750a5b1205a7dcc002224738585b861779cdae Mon Sep 17 00:00:00 2001
+From 187c2541d22a64db262d5415441fb8e4a6014282 Mon Sep 17 00:00:00 2001
 From: "Justin M. Forbes" <jforbes@fedoraproject.org>
 Date: Thu, 30 Jul 2020 10:26:11 -0500
 Subject: [PATCH] Work around for gcc bug
@@ -23,7 +23,7 @@ index 2a660ac1bc3a..fa87ff6a2a71 100644
 +		(uint8x16_t) (k ^ vld1q_u8(const1)),
  	}};
  	int i;
-
+ 
 -- 
-2.26.2
+2.28.0
 

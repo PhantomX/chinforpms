@@ -10,20 +10,20 @@
 
 %global buildid .chinfo
 
-%global opensuse_id cea47bbdbcc737161b624f5c96605ac282ec8fed
+%global opensuse_id 11733e177d6b61a0770714250b39236f85716b38
 
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 8
+%global base_sublevel 9
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 14
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -97,6 +97,9 @@ Source5000: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}.xz
 # ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch0: 0001-iio-Use-event-header-from-kernel-tree.patch
 Patch1: 0001-Filter-lto-options-from-the-perl-ccopts.patch
+
+#Revert this
+Patch2: 0001-tools-libbpf-Avoid-counting-local-symbols-in-ABI-che.patch
 
 # rpmlint cleanup
 Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
@@ -500,7 +503,7 @@ popd
 
 %files -n libbpf
 %{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.0.9
+%{_libdir}/libbpf.so.0.1.0
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf-devel
@@ -548,6 +551,9 @@ popd
 
 
 %changelog
+* Tue Oct 13 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.0-500.chinfo
+- 5.9.0
+
 * Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.14-500.chinfo
 - 5.8.14
 

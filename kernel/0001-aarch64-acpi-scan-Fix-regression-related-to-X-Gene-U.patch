@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From 0cf21a40db6fca5d89cf3d65808117c8c14e524e Mon Sep 17 00:00:00 2001
 From: Mark Salter <msalter@redhat.com>
 Date: Thu, 10 May 2018 17:38:44 -0400
 Subject: [PATCH] aarch64: acpi scan: Fix regression related to X-Gene UARTs
@@ -28,13 +28,13 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 9 insertions(+)
 
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 8777faced51a..2e60d792005f 100644
+index 2142f1554761..f5fdf6f3650c 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1572,6 +1572,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1574,6 +1574,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
-
+ 
 +	/*
 +	 * Firmware on some arm64 X-Gene platforms will make the UART
 +	 * device appear as both a UART and a slave of that UART. Just
@@ -48,5 +48,5 @@ index 8777faced51a..2e60d792005f 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 -- 
-2.26.2
+2.28.0
 

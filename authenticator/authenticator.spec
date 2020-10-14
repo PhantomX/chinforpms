@@ -38,12 +38,12 @@ BuildRequires:  pkgconfig(zbar)
 Requires:       glib2
 Requires:       gtk3
 Requires:       libsecret
-Requires:       python3-beautifulsoup4
-Requires:       python3-pillow
-Requires:       python3-pyfavicon
-Requires:       python3-pyotp
-Requires:       python3-pyzbar
-Requires:       python3-yoyo-migrations
+Requires:       %{py3_dist beautifulsoup4}
+Requires:       %{py3_dist pillow}
+Requires:       %{py3_dist pyfavicon}
+Requires:       %{py3_dist pyotp}
+Requires:       %{py3_dist pyzbar}
+Requires:       %{py3_dist yoyo-migrations}
 #Recommends:     gnome-shell
 
 

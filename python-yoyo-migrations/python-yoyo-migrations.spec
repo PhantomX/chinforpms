@@ -13,8 +13,8 @@ Source0:        https://files.pythonhosted.org/packages/source/y/%{pkgname}/%{pk
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-iniherit
-BuildRequires:  python3-text-unidecode
+BuildRequires:  %{py3_dist iniherit}
+BuildRequires:  %{py3_dist text-unidecode}
 
 
 %global _description\
@@ -25,8 +25,8 @@ or Python scripts that define a list of migration steps.
 
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
-Requires:       python3-iniherit
-Requires:       python3-text-unidecode
+Requires:       %{py3_dist iniherit}
+Requires:       %{py3_dist text-unidecode}
 
 %description -n python3-%{pkgname}
 %_description

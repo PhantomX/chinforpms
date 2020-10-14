@@ -36,9 +36,9 @@ BuildArch:      noarch
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
+BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  intltool
-BuildRequires:  rb_libtorrent-python3
+BuildRequires:  %{py3_dist python-libtorrent}
 
 ## add Requires to make into Meta package
 Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -60,20 +60,20 @@ even from behind a router with virtually zero configuration of port-forwarding.
 %package common
 Summary:        Files common to Deluge sub packages
 License:        GPLv3 with exceptions
-Requires:       python3-pyOpenSSL
-Requires:       python3-chardet
-Requires:       python3-dbus
-Requires:       python3-pillow
-Requires:       python3-pygame
-Requires:       python3-pyxdg
+Requires:       %{py3_dist pyopenssl}
+Requires:       %{py3_dist chardet}
+Requires:       %{py3_dist dbus}
+Requires:       %{py3_dist pillow}
+Requires:       %{py3_dist pygame}
+Requires:       %{py3_dist pyxdg}
 # FIXME: this must be in Fedora python3-twisted Requires, remove when it is fixed
-Requires:       python3-service-identity
-Requires:       python3-setproctitle
-Requires:       python3-six
-Requires:       python3-twisted
-Requires:       python3-rencode
-Requires:       python3-zope-interface
-Requires:       rb_libtorrent-python3
+Requires:       %{py3_dist service-identity}
+Requires:       %{py3_dist setproctitle}
+Requires:       %{py3_dist six}
+Requires:       %{py3_dist twisted}
+Requires:       %{py3_dist rencode}
+Requires:       %{py3_dist zope-interface}
+Requires:       %{py3_dist python-libtorrent}
 Requires:       xdg-utils
 
 
@@ -89,10 +89,10 @@ Requires:       %{name}-daemon = %{?epoch:%{epoch}:}%{version}-%{release}
 ## Required for the proper ownership of icon dirs.
 Requires:       hicolor-icon-theme
 Requires:       gtk3
-Requires:       python3-cairo
-Requires:       python3-gobject-base
+Requires:       %{py3_dist cairo}
+Requires:       %{py3_dist pygobject}
 Requires:       python3-gobject
-Requires:       python3-GeoIP
+Requires:       %{py3_dist geoip}
 
 %description gtk
 Deluge bittorent client GTK graphical user interface

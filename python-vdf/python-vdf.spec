@@ -14,9 +14,9 @@ Patch0:         %{url}/commit/ffbec10ae6bd6514398f67bbe2170a7e9a189349.patch#/%{
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
-BuildRequires:  python3-mock
-BuildRequires:  python3-pytest
-BuildRequires:  python3-pytest-cov
+BuildRequires:  %{py3_dist mock}
+BuildRequires:  %{py3_dist pytest}
+BuildRequires:  %{py3_dist pytest-cov}
 
 
 %description
