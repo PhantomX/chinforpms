@@ -39,10 +39,6 @@
 %global with_radeonsi 1
 %endif
 
-%ifnarch %{x86}
-%global with_asm 1
-%endif
-
 %ifarch %{valgrind_arches}
 %bcond_without valgrind
 %else
@@ -61,7 +57,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        20.2.0
+Version:        20.2.1
 Release:        100%{?dist}
 
 License:        MIT
@@ -399,7 +395,7 @@ export RANLIB="gcc-ranlib"
 %endif
 
 %meson \
-  -Dplatforms=x11,wayland,drm,surfaceless \
+  -Dplatforms=x11,wayland \
   -Ddri3=enabled \
   -Ddri-drivers=%{?dri_drivers} \
 %if 0%{?with_hardware}
@@ -418,15 +414,14 @@ export RANLIB="gcc-ranlib"
   -Dshared-glapi=enabled \
   -Dgles1=disabled \
   -Dgles2=enabled \
-  -Dopengl=enabled \
+  -Dopengl=true \
   -Dgbm=enabled \
   -Dglx=dri \
-  -Degl=true \
+  -Degl=enabled \
   -Dglvnd=true \
-  -Dasm=%{?with_asm:true}%{!?with_asm:false} \
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
-  -Dvalgrind=%{?with_valgrind:true}%{!?with_valgrind:false} \
+  -Dvalgrind=%{?with_valgrind:enabled}%{!?with_valgrind:disabled} \
   -Db_ndebug=true \
   -Dbuild-tests=false \
   -Dselinux=true \
@@ -680,6 +675,9 @@ popd
 
 
 %changelog
+* Wed Oct 14 2020 Phantom X <megaphantomx at hotmail dot com> - 20.2.1-100
+- 20.2.1
+
 * Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 20.2.0-100
 - 20.2.0
 

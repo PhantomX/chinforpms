@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        2.17.11
+Version:        3.0.3
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -29,13 +29,13 @@ Requires:       libappindicator-gtk3%{?_isa}
 Requires:       libdbusmenu%{?_isa}
 Requires:       libglvnd-egl%{?_isa}
 Requires:       libglvnd-gles%{?_isa}
+Requires:       vulkan-loader%{?_isa}
 Requires:       hicolor-icon-theme
-Recommends:     hunspell
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 
 %global __requires_exclude ^libffmpeg.so
-%global __requires_exclude %__requires_exclude|^libVkICD_mock_icd.so
+%global __requires_exclude %__requires_exclude|^libvk_swiftshader.so
 
 
 %description
@@ -66,16 +66,14 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp opt/%{app_name}/{%{name},locales,resources,*.{bin,dat,pak,so}} \
+cp -rp opt/%{app_name}/{%{name},locales,resources,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
 rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
+rm -fv %{buildroot}%{_libdir}/%{name}/libvulkan.so*
 
 chmod 0755 %{buildroot}%{_libdir}/%{name}/%{name}
-
-rm -rf %{buildroot}%{_libdir}/%{name}/resources/dictionaries
-ln -sf ../../../share/myspell %{buildroot}%{_libdir}/%{name}/resources/dictionaries
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -104,6 +102,9 @@ done
 
 
 %changelog
+* Wed Oct 14 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.3-1
+- 3.0.3
+
 * Mon Jul 27 2020 Phantom X <megaphantomx at hotmail dot com> - 2.17.11-1
 - 2.17.11
 

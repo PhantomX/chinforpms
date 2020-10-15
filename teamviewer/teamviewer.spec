@@ -57,7 +57,7 @@ For details, see %{_licensedir}/%{_name}/license_foss.txt
 %setup -c -T
 echo %{vermajor}
 
-RVER="$(rpm -qp --qf %{version} %{S:0} 2> /dev/null)"
+RVER="$(rpm -qp --qf %%{version} %{S:0} 2> /dev/null)"
 if [ "${RVER}" != "%{version}" ] ;then
   echo "Version mismatch"
   echo "You have ${RVER} in %{SOURCE0} instead %{version} "

@@ -7,7 +7,7 @@
 %global progdir %{_libdir}/%{name}
 
 Name:           zoom
-Version:        5.2.458699.0906
+Version:        5.3.472687.1012
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -41,7 +41,7 @@ meetings, and group messaging into one easy-to-use platform.
 %prep
 %setup -c -T
 
-RVER="$(rpm -qp --qf %{version} %{SOURCE0} 2> /dev/null)"
+RVER="$(rpm -qp --qf %%{version} %{SOURCE0} 2> /dev/null)"
 if [ "${RVER}" != "%{version}" ] ;then
   echo "Version mismatch"
   echo "You have ${RVER} in %{SOURCE0} instead %{version} "
@@ -58,6 +58,10 @@ mv usr/share/applications/Zoom.desktop usr/share/applications/us.zoom.Zoom.deskt
 
 find opt/%{name}/ -name '*.so*' | xargs chmod +x
 find opt/%{name}/ -type l -name '*.so' -delete
+
+chmod -x opt/%{name}/zcacert.pem
+chmod -x opt/%{name}/timezones/ko/timezones.txt
+sed '1 i\#!/usr/bin/sh' -i opt/%{name}/getbssid.sh
 
 rm -f opt/%{name}/zoomlinux
 rm -f opt/%{name}/libquazip*
@@ -128,6 +132,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Wed Oct 14 2020 Phantom X <megaphantomx at hotmail dot com> - 5.3.472687.1012-1
+- 5.3.472687.1012
+
 * Thu Sep 17 2020 Phantom X <megaphantomx at hotmail dot com> - 5.2.458699.0906-1
 - 5.2.458699.0906
 

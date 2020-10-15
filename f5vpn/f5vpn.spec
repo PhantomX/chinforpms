@@ -8,17 +8,19 @@
 
 %global vc_id  9ea8593c72570211488943b1286317b239222def
 %global vc_url  https://github.com/zrhoffman/f5vpn-arch/raw/%{vc_id}
+#global dl_url  https://connect.healthsystem.virginia.edu/public/download
+%global dl_url  https://vpn.brown.edu/public/download
 
 Name:           f5vpn
-Version:        7190.2020.0221.1
-Release:        2%{?dist}
+Version:        7210.2020.0826.1
+Release:        1%{?dist}
 Summary:        F5 SSL VPN (vpn client)
 
 # See LICENSE
 License:        Proprietary
 URL:            https://www.f5.com/
 
-Source0:        https://connect.healthsystem.virginia.edu/public/download/linux_f5vpn.x86_64.rpm#/%{name}-%{version}.x86_64.rpm
+Source0:        %{dl_url}/linux_f5vpn.x86_64.rpm#/%{name}-%{version}.x86_64.rpm
 
 Source1:        %{vc_url}/LICENSE
 Source2:        %{vc_url}/README.rst
@@ -50,7 +52,7 @@ F5 VPN can establish SSL VPN network access connection with F5 BIG-IP APM.
 %prep
 %setup -c -T
 
-RVER="$(rpm -qp --qf %{version} %{SOURCE0} 2> /dev/null)"
+RVER="$(rpm -qp --qf %%{version} %{SOURCE0} 2> /dev/null)"
 if [ "${RVER}" != "%{version}" ] ;then
   echo "Version mismatch"
   echo "You have ${RVER} in %{SOURCE0} instead %{version} "
@@ -162,6 +164,9 @@ done
 
 
 %changelog
+* Wed Oct 14 2020 Phantom X <megaphantomx at hotmail dot com> - 7210.2020.0826.1-1
+- 7210.2020.0826.1
+
 * Mon Jul 06 2020 Phantom X <megaphantomx at hotmail dot com> - 7190.2020.0221.1-2
 - R: f5vpn-filesystem
 

@@ -112,7 +112,7 @@ access, sharing & tool.
 
 %prep
 
-RVER="$(rpm -qp --qf %{version} %{SOURCE0} 2> /dev/null)"
+RVER="$(rpm -qp --qf %%{version} %{SOURCE0} 2> /dev/null)"
 if [ "${RVER}" != "%{version}" ] ;then
   echo "Version mismatch"
   echo "You have ${RVER} in %{SOURCE0} instead %{version} "
