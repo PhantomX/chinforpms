@@ -2,7 +2,7 @@
 # added for those wanting to do custom rebuilds with altered config opts.
 
 # CONFIG_KERNEL_GZIP is not set
-# CONFIG_KERNEL_XZ  is not set
+# CONFIG_KERNEL_XZ is not set
 
 # CONFIG_NUMA is not set
 # CONFIG_AMD_NUMA is not set

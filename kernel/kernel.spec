@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 2
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit de501cb0c6a0a71a302ee64233130e2e51fa43eb
+%global pfcommit 07df7e8d4d5849abb8bc89139645f24e00d37ba5
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 11733e177d6b61a0770714250b39236f85716b38
+%global opensuse_id b1f22f77c28b9400598ddc94b5cdd7475e861cd0
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -637,8 +637,6 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 
 Source0: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/linux-%{kversion}.tar.xz
 
-Source1: Makefile.rhelver
-
 # Name of the packaged file containing signing key
 %ifarch ppc64le
 %define signing_key_filename kernel-signing-ppc.cer
@@ -871,10 +869,12 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch#/openSUSE-fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch
+Patch1020: %{opensuse_url}/x86-unwind-orc-Fix-inactive-tasks-with-stack-pointer.patch#/openSUSE-x86-unwind-orc-Fix-inactive-tasks-with-stack-pointer.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
+Patch2001: https://github.com/Frogging-Family/linux-tkg/raw/5c57ad3792f6fb08b4a7f7e9b50225fa3ea61f02/linux59-tkg/linux59-tkg-patches/0007-v5.9-fsync.patch#/tkg-0007-v5.9-fsync.patch
 %if !0%{?post_factum}
 
 #Patch3000: postfactum-merge-fixes.patch
@@ -1385,7 +1385,6 @@ fi
 cp -al vanilla-%{vanillaversion} linux-%{KVERREL}
 
 cd linux-%{KVERREL}
-cp -a %{SOURCE1} .
 
 if [ ! -d .git ]; then
     git init
@@ -2652,6 +2651,10 @@ fi
 #
 #
 %changelog
+* Sat Oct 17 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.1-500.chinfo
+- 5.9.1 - pf2
+- Added fsync patch from tkg until it is merged in pf
+
 * Tue Oct 13 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.0-500.chinfo
 - 5.9.0 -pf1
 
