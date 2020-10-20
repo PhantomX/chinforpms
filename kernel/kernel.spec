@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 07df7e8d4d5849abb8bc89139645f24e00d37ba5
+%global pfcommit 953f4aa2026dd864374208c3b3f56f4e56da70e0
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id b1f22f77c28b9400598ddc94b5cdd7475e861cd0
+%global opensuse_id 8abc535a742572dbe3eda3fa29ac20c4c5c83a4f
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -874,7 +874,10 @@ Patch1020: %{opensuse_url}/x86-unwind-orc-Fix-inactive-tasks-with-stack-pointer.
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: https://github.com/Frogging-Family/linux-tkg/raw/5c57ad3792f6fb08b4a7f7e9b50225fa3ea61f02/linux59-tkg/linux59-tkg-patches/0007-v5.9-fsync.patch#/tkg-0007-v5.9-fsync.patch
+# Revert pf ones to apply tkg
+Patch2001: 0001-Revert-futex-Add-Proton-compatibility-code.patch
+Patch2002: 0002-Revert-futex-Implement-mechanism-to-wait-on-any-of-s.patch
+Patch2003: https://github.com/Frogging-Family/linux-tkg/raw/5c57ad3792f6fb08b4a7f7e9b50225fa3ea61f02/linux59-tkg/linux59-tkg-patches/0007-v5.9-fsync.patch#/tkg-0007-v5.9-fsync.patch
 %if !0%{?post_factum}
 
 #Patch3000: postfactum-merge-fixes.patch

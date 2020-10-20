@@ -7,7 +7,7 @@
 %endif
 
 Name:           fluxbox-chinfo-menu
-Version:        5.0.2
+Version:        5.1.0
 Release:        1%{?gver}%{?dist}
 Summary:        Menu generator for Fluxbox based on XDG
 
@@ -59,6 +59,9 @@ Requires:       xorg-x11-apps
 
 
 %changelog
+* Mon Oct 19 2020 Phantom X <megaphantomx at hotmail dot com> - 5.1.0-1
+- 5.1.0
+
 * Fri Oct 05 2018 Phantom X <megaphantomx at bol dot com dot br> - 5.0.2-1
 - 5.0.2
 
