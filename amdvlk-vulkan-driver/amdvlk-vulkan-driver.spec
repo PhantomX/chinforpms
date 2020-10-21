@@ -23,19 +23,19 @@
 
 %global pkgname amdvlk
 
-%global commit1 1a8b53e02a92dbc7d40087c483d03c45c6c63f2e
+%global commit1 61625276e878ae29f79a052e2d4b495616d8180c
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 6ff17fa6136e4bba8b6ae496e90e40c6e7750820
+%global commit2 1d2d77c7533f41707ccf89b66db2e0feac3dea83
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 07bb2eb097cd90983902118388cabd49f3530e8b
+%global commit3 99aaaa0cd14293edf100b986bc004c886e6b2ef6
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 6fa4f8ac88b95688241d266ff9d8f02da6ec3c22
+%global commit4 3c0809b87958d3751bf2892e04579b6b1d03c7ad
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -51,19 +51,19 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 4b07d50cd9a0a537ccb28252227f87d36273cf53
+%global commit8 ebe0ea09f0afd0853305e8182bca19c7b2cf63a8
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
-%global commit9 d4e76fb323745e81677ee4181986c983bf5e4d88
+%global commit9 05836bdba63e7debce9fa9feaed42f20cd43af9d
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 ea3cd744266a28c1fa3b977b9b22df679c97b344
+%global commit10 7b80307a7d02b7d6aec352a6bc4c50d6c0e7d5be
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 f05c076e26b04cbcc9bf2df815bbdc9c620d89ad
+%global commit11 3ead01191215942f7e8d6f3ada712db37805215a
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -78,7 +78,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.3.6
+Version:        2020.4.1
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -133,6 +133,9 @@ BuildRequires:  pkgconfig(wayland-client)
 %endif
 
 Requires:       vulkan-loader%{?_isa}
+
+Provides:       bundled(llvm) = 0~git%{shortcommit1}
+Provides:       bundled(spirv-tools) = 0~git%{shortcommit8}
 
 
 %description
@@ -247,6 +250,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Tue Oct 20 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.4.1-1
+- 2020.Q4.1
+
 * Mon Sep 28 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.3.6-1
 - 2020.Q3.6
 

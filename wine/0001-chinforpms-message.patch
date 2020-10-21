@@ -1,6 +1,6 @@
-From c320abd7937799d8b56d46437879077d9d9cb230 Mon Sep 17 00:00:00 2001
+From ca989e7afb6b6620197a9c2f730ea2452d55769d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 14 May 2019 16:09:31 -0300
+Date: Tue, 20 Oct 2020 20:20:50 -0300
 Subject: [PATCH] chinforpms message
 
 ---
@@ -8,24 +8,24 @@ Subject: [PATCH] chinforpms message
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/patches/Staging/0001-kernel32-Add-winediag-message-to-show-warning-that-t.patch b/patches/Staging/0001-kernel32-Add-winediag-message-to-show-warning-that-t.patch
-index 610748f..2a7512b 100644
+index d120deb..627c326 100644
 --- a/patches/Staging/0001-kernel32-Add-winediag-message-to-show-warning-that-t.patch
 +++ b/patches/Staging/0001-kernel32-Add-winediag-message-to-show-warning-that-t.patch
-@@ -26,11 +26,11 @@ index 0a3fd70..206224f 100644
-      {
- +        if (CreateEventA(0, 0, 0, "__winestaging_warn_event") && GetLastError() != ERROR_ALREADY_EXISTS)
- +        {
--+            FIXME_(winediag)("Wine Staging %s is a testing version containing experimental patches.\n", wine_get_version());
--+            FIXME_(winediag)("Please mention your exact version when filing bug reports on winehq.org.\n");
-++            FIXME_(winediag)("Wine chinforpms %s is a testing version containing experimental patches.\n", wine_get_version());
-++            FIXME_(winediag)("Please don't report bugs about it on winehq.org or Red Hat Bugzilla.\n");
- +        }
- +        else
--+            WARN_(winediag)("Wine Staging %s is a testing version containing experimental patches.\n", wine_get_version());
-++            WARN_(winediag)("Wine chinforpms %s is a testing version containing experimental patches.\n", wine_get_version());
+@@ -46,11 +46,11 @@ index 20bc3f977d1..c2187a19397 100644
+ +    InitializeObjectAttributes( &staging_event_attr, &staging_event_string, OBJ_OPENIF, NULL, NULL );
+ +    if (NtCreateEvent( &staging_event, EVENT_ALL_ACCESS, &staging_event_attr, NotificationEvent, FALSE ) == STATUS_SUCCESS)
+ +    {
+-+        FIXME_(winediag)("wine-staging %s is a testing version containing experimental patches.\n", wine_get_version());
+-+        FIXME_(winediag)("Please mention your exact version when filing bug reports on winehq.org.\n");
+++        FIXME_(winediag)("wine-chinforpms %s is a testing version containing experimental patches.\n", wine_get_version());
+++        FIXME_(winediag)("Please don't report bugs about it on winehq.org or Red Hat Bugzilla.\n");
+ +    }
+ +    else
+-+        WARN_(winediag)("wine-staging %s is a testing version containing experimental patches.\n", wine_get_version());
+++        WARN_(winediag)("wine-chinforpms %s is a testing version containing experimental patches.\n", wine_get_version());
  +
- +
-          if (!CheckRemoteDebuggerPresent( GetCurrentProcess(), &being_debugged ))
+      if (process_detaching) NtTerminateThread( GetCurrentThread(), 0 );
+  
 -- 
-2.21.0
+2.28.0
 

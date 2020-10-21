@@ -68,9 +68,6 @@ might be useful for source ports of Direct3D 12 applications.
 
 %package -n libvkd3d-shader
 Summary:        Shader library for vkd3d
-%if 0%{?proton}
-Provides:       bundled(dxil-spirv) = 0~git%{shortcommit1}
-%endif
 
 %description -n libvkd3d-shader
 Shader library for vkd3d

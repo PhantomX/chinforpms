@@ -12,14 +12,14 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.0.3
+Version:        3.0.4
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
 License:        MIT
 URL:            https://rocket.chat
 Source0:        https://github.com/RocketChat/Rocket.Chat.Electron/releases/download/%{version}/%{real_name}-%{version}.%{parch}.rpm
-Source1:        https://github.com/RocketChat/Rocket.Chat.Electron/raw/develop/LICENSE
+Source1:        https://github.com/RocketChat/Rocket.Chat.Electron/raw/%{version}/LICENSE
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -102,6 +102,9 @@ done
 
 
 %changelog
+* Tue Oct 20 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.4-1
+- 3.0.4
+
 * Wed Oct 14 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.3-1
 - 3.0.3
 
