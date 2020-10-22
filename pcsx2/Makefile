@@ -1,5 +1,5 @@
 NAME = pcsx2
-VERSION ?= 85c1aca70e46c30f9c0b44d8b020af1cbaf6f331
+VERSION ?= 418974a28a75a2d3114b3de2b3d9faf42b65336d
 SNAPSHOT ?= 1
 SANITIZE ?= 1
 PLUGINS = CDVDiso CDVDisoEFP CDVDlinuz CDVDolio CDVDpeops dev9ghzdrk PeopsSPU2 SSSPSXPAD USBqemu xpad zerogs zerospu2

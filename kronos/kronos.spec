@@ -1,6 +1,6 @@
-%global commit 0b0a32b48aedcb84ec9d9cdd8e6c07ce61127286
+%global commit d92383b15138b750b431c906c8fd880558847099
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200927
+%global date 20201021
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           kronos
 Version:        2.1.4
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -75,6 +75,9 @@ Kronos is a Sega Saturn emulator forked from uoYabause.
 %else
 %autosetup -n %{pkgname}-%{version} -p1
 %endif
+
+rm -rf win_template
+rm -rf yabause/.vs
 
 %if 0%{?with_libchdr}
 rm -rf yabause/src/tools/libchdr/*
@@ -158,6 +161,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Oct 22 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.4-3.20201021gitd92383b
+- New snapshot
+
 * Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.4-2.20200927git0b0a32b
 - Bump
 

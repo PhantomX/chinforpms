@@ -1,13 +1,13 @@
-%global commit b7b56fea513e8734b982347d5b965c4a8e6f2074
+%global commit 872751df5d7bf3e5e8b50f2c90b7ebaf3fc5b391
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200525
+%global date 20201016
 %global with_snapshot 1
 
-%global commit1 5c431df0638885044bc45d2976ffec16c24fa087
+%global commit1 1acd163aecf4706ce2fc5304da6617ef57d0bcc1
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-audio-sdl
 
-%global commit2 954a5dc74267d67ef065f41472eaaf6970fb1c85
+%global commit2 0d7820e35a93574dc24d9313065ebc76a41eba04
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-input-sdl
 
@@ -15,19 +15,19 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{name}-rom
 
-%global commit4 2df8038d5f8fb722326c98d717b2d571a6d716ed
+%global commit4 bb5698577052f6b8913d77ee591e4a2b0a921b4c
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{name}-rsp-hle
 
-%global commit5 77a2adea93ffe4d6630bbe2e815650819a1cf260
+%global commit5 96834d5a1844d0ac51449e1160efbeb895190539
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{name}-ui-console
 
-%global commit6 b4d4503dd0a3733815d62eab04d2c1c7c466e157
+%global commit6 aecf15ec2044c593b0505bd052270bd662902e08
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-video-glide64mk2
 
-%global commit7 e409d749a53bd6fbb764ef4012614d21779a20fb
+%global commit7 7ce0bf039ecf0534e633db46fc4904fcfde0c2ce
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{name}-video-rice
 
@@ -42,7 +42,7 @@
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -197,6 +197,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Oct 21 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-106.20201016git872751d
+- Bump
+
 * Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-105.20200525gitb7b56fe
 - Use Fedora lto flags
 

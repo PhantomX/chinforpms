@@ -214,6 +214,7 @@ dolphin-emu
 freac
 -freac-superfast-codecs
 -ortp
+vkbasalt
 whdd
 wine
 

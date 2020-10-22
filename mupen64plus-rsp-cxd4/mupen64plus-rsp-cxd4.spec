@@ -1,6 +1,6 @@
-%global commit a961c711bfca2568a70591e69951f9af05564a00
+%global commit 094c6642d0571b683571a27f3118749d03f37b13
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200528
+%global date 20200917
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           mupen64plus-rsp-cxd4
 Version:        2.5.9
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        MSP communications simulator plugin for Mupen64Plus
 
 License:        CC0
@@ -79,6 +79,9 @@ chmod +x %{buildroot}%{_libdir}/*/%{name}*.so
 
 
 %changelog
+* Wed Oct 21 2020 Phantom X <megaphantomx at hotmail dot com> - 2.5.9-3.20200917git094c664
+- New snapshot
+
 * Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 2.5.9-2.20200528gita961c71
 - Use Fedora lto flags
 

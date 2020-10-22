@@ -1,6 +1,6 @@
-%global commit 85c1aca70e46c30f9c0b44d8b020af1cbaf6f331
+%global commit 418974a28a75a2d3114b3de2b3d9faf42b65336d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201002
+%global date 20201021
 %global with_snapshot 1
 
 %global sanitize 0
@@ -16,7 +16,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        109%{?gver}%{?dist}
+Release:        110%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -39,6 +39,7 @@ Source0:        %{name}-%{version}.tar.xz
 Source1:        Makefile
 
 Patch10:        0001-Disable-setcap-on-installation.patch
+Patch11:        0001-Use-shared-fmt.patch
 
 
 BuildRequires:  gcc
@@ -51,6 +52,7 @@ BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(egl)
+BuildRequires:  pkgconfig(fmt) >= 7.0.3
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(gtk+-3.0)
@@ -73,7 +75,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-20
+BuildRequires:  sdl_gamecontrollerdb >= 0-22
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -143,7 +145,7 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
 # Extensive testing will is therefore needed. See rpmfusion bug #2455
 
 %define _lto_cflags %{nil}
-%global optflags "%(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//') -fuse-ld=bfd"
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//') -fuse-ld=bfd
 
 %cmake \
   -DUSER_CMAKE_LD_FLAGS="-Wl,-z,noexecstack" \
@@ -168,6 +170,7 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
   -DUSE_LTO:BOOL=FALSE \
   -DUSE_VTUNE:BOOL=FALSE \
   -DDISABLE_PCSX2_WRAPPER:BOOL=TRUE \
+  -DENABLE_TESTS:BOOL=FALSE \
   -DOpenGL_GL_PREFERENCE=GLVND \
   -DCMAKE_BUILD_TYPE=Release \
 %{nil}
@@ -236,6 +239,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Wed Oct 21 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-110.20201021git418974a
+- Bump
+
 * Fri Oct  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-109.20201002git85c1aca
 - New snapshot
 
