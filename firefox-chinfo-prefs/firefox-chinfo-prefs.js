@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20200706
+// 20201022
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -35,6 +35,7 @@ pref("browser.urlbar.megabar", false);
 pref("browser.urlbar.openintab", true);
 pref("browser.urlbar.trimURLs", false);
 pref("browser.urlbar.speculativeConnect.enabled", false);
+pref("browser.urlbar.dnsResolveSingleWordsAfterSearch", 0);
 pref("browser.urlbar.update1", false);
 pref("browser.urlbar.usepreloadedtopurls.enabled", false);
 pref("browser.xul.error_pages.expert_bad_cert", true);
@@ -101,7 +102,7 @@ pref("browser.onboarding.enabled", false);
 
 // Activity Stream
 pref("browser.library.activity-stream.enabled", false);
-pref("browser.newtabpage.activity-stream.asrouter.providers.snippets", "");
+pref("browser.newtabpage.activity-stream.asrouter.providers.snippets", "{}");
 pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons", false);
 pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", false);
 pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr", false);
@@ -144,6 +145,10 @@ pref("extensions.pocket.enabled", false);
 pref("browser.eme.ui.enabled", false);
 pref("media.eme.enabled", false);
 pref("media.eme.apiVisible", false);
+
+// No region updates
+pref("browser.region.network.url", "");
+pref("browser.region.update.enabled", false);
 
 // Developer tools
 pref("devtools.chrome.enabled", false);

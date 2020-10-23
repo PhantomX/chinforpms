@@ -20,7 +20,7 @@ Requires:       xorg-x11-utils
 # xrandr
 Requires:       xorg-x11-server-utils
 Requires:       unzip
-Requires:       yad
+Requires:       yad >= 7.0
 Recommends:     zenity
 Recommends:     boxtron
 Recommends:     cabextract

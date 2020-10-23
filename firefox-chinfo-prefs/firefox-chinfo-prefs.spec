@@ -1,5 +1,5 @@
 Name:           firefox-chinfo-prefs
-Version:        20200706
+Version:        20201022
 Release:        1%{?dist}
 Summary:        Chinforinfula default preferences for Firefox
 
@@ -36,6 +36,9 @@ install -pm0644 %{SOURCE0} %{buildroot}%{_sysconfdir}/waterfox/pref/chinfo.js
 
 
 %changelog
+* Thu Oct 22 2020 Phantom X <megaphantomx at hotmail dot com> - 20201022-1
+- 20201022
+
 * Mon Jul 06 2020 Phantom X <megaphantomx at hotmail dot com> - 20200706-1
 - 20200706
 

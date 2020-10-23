@@ -1,7 +1,7 @@
 %global commit ca921c88f17c154d27583edc0240c172a66da445
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20201001
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -20,7 +20,7 @@ URL:            https://github.com/DadSchoorse/vkBasalt
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/releases/download/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 BuildRequires:  gcc

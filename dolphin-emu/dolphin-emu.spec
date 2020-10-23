@@ -8,9 +8,9 @@
 %global with_sysvulkan 1
 %global with_unittests 0
 
-%global commit 0fe60816801d0c17946f73327c898555813a8e70
+%global commit 89b01cd6d352f8894eddccb36a13e8b873db5e61
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201003
+%global date 20201021
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -24,7 +24,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        121%{?gver}%{?dist}
+Release:        122%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -89,7 +89,7 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  pkgconfig(libusb)
-BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  pkgconfig(libzstd) >= 1.4.0
 BuildRequires:  pkgconfig(miniupnpc)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  qt5-qtbase-private-devel
@@ -143,6 +143,9 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(FreeSurround)
 Provides:       bundled(imgui) = 1.70
 Provides:       bundled(cpp-argparse)
+#Is this technically bundled code? Adding this just in case:            
+#https://github.com/AdmiralCurtiss/rangeset
+Provides:       bundled(rangeset)
 #soundtouch cannot be unbundled easily, as it requires compile time changes:
 Provides:       bundled(soundtouch) = 2.1.2
 #dolphin uses tests not included in upstream gtest (possibly unbundle later):
@@ -390,6 +393,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Oct 22 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-122.20201021git89b01cd
+- Update
+
 * Sun Oct 04 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-121.20201003git0fe6081
 - Bump
 

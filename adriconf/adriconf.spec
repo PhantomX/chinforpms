@@ -1,12 +1,12 @@
 Name:           adriconf
-Version:        1.6.1
+Version:        2.4
 Release:        1%{?dist}
 Summary:        Advanced DRI Configurator
 
 License:        GPLv3+
-URL:            https://github.com/jlHertel/%{name}
+URL:            https://gitlab.freedesktop.org/mesa/%{name}
 
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/-/archive/v%{version}/%{name}-v%{version}.tar.bz2
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -35,11 +35,12 @@ them to the standard drirc file used by the Mesa drivers.
 
 
 %prep
-%autosetup -p1
+%autosetup -n %{name}-v%{version} -p1
 
 
 %build
 %cmake \
+  -DDATADIR:PATH=%{_datadir}/drirc.d \
   -DENABLE_UNIT_TESTS:BOOL=OFF \
 %{nil}
 
@@ -55,23 +56,23 @@ desktop-file-install \
   --remove-key Version \
   --remove-category GNOME \
   --remove-category GTK \
-  flatpak/br.com.jeanhertel.%{name}.desktop
+  flatpak/org.freedesktop.%{name}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
-install -pm0644 flatpak/br.com.jeanhertel.%{name}.png \
+install -pm0644 flatpak/org.freedesktop.%{name}.png \
   %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/
 
 for res in 16 22 24 32 48 64 72 96 128 192 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert flatpak/br.com.jeanhertel.%{name}.png -filter Lanczos -resize ${res}x${res}  \
-    ${dir}/br.com.jeanhertel.%{name}.png
+  convert flatpak/org.freedesktop.%{name}.png -filter Lanczos -resize ${res}x${res}  \
+    ${dir}/org.freedesktop.%{name}.png
 done
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm0644 flatpak/br.com.jeanhertel.%{name}.appdata.xml \
+install -pm0644 flatpak/org.freedesktop.%{name}.metainfo.xml \
   %{buildroot}%{_metainfodir}/
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/br.com.jeanhertel.%{name}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.freedesktop.%{name}.metainfo.xml
 
 %find_lang %{name}
 
@@ -82,10 +83,13 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/br.com.jeanher
 %{_bindir}/%{name}
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
-%{_metainfodir}/*.appdata.xml
+%{_metainfodir}/*.metainfo.xml
 
 
 %changelog
+* Fri Oct 23 2020 Phantom X <megaphantomx at hotmail dot com> - 2.4-1
+- 2.4
+
 * Tue Jan 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.6.1-1
 - 1.6.1
 

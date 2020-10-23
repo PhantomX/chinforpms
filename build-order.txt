@@ -175,6 +175,8 @@ sdlcl
 smtube
 snx
 snxvpn
+speedtest-cli
+steamtinkerlaunch
 thrash-protect
 tyrian-data
 unbound-update-roothints
@@ -202,6 +204,7 @@ xdgmenumaker
 xfwm4
 xinput-gui
 -xorg-x11-server
+yad
 zram-init
 
 # 4
