@@ -1,7 +1,7 @@
-%global commit 0c249e6125fc9dc6ee86b4ef6ae0d9fa2fc6291b
+%global commit e533a26dcff611f312e5bfce47061d2155476c42
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201016
-%global with_snapshot 1
+%global date 20201022
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver be9c96813add8c39fb80f47e85cc25fb1cc88c35
+%global wine_stagingver 5.20
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 084b167613491cbb7c26505f1f4ff88f55fd31b4
+%global tkg_id c7d103caaa50659a6e1320730ec07467c9235456
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 38b7545daf34bb20b3365e7b3d2757176fc42a5e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -94,8 +94,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.19
-Release:        103%{?gver}%{?dist}
+Version:        5.20
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -1798,6 +1798,7 @@ fi
 %{_libdir}/wine/dmusic.%{winedll}
 %{_libdir}/wine/dmusic32.%{winedll}
 %{_libdir}/wine/dplay.%{winedll}
+%{_libdir}/wine/dplaysvr.%{wineexe}
 %{_libdir}/wine/dplayx.%{winedll}
 %{_libdir}/wine/dpnaddr.%{winedll}
 %{_libdir}/wine/dpnet.%{winedll}
@@ -1814,6 +1815,7 @@ fi
 %{_libdir}/wine/dssenh.%{winedll}
 %{_libdir}/wine/dswave.%{winedll}
 %{_libdir}/wine/dsuiext.%{winedll}
+%{_libdir}/wine/dpvsetup.%{wineexe}
 %{_libdir}/wine/dwmapi.%{winedll}
 %{_libdir}/wine/dwrite.dll.so
 %{_libdir}/wine/dx8vb.%{winedll}
@@ -2181,7 +2183,7 @@ fi
 %{_libdir}/wine/user32.%{winedll}
 %{_libdir}/wine/usp10.%{winedll}
 %{_libdir}/wine/utildll.%{winedll}
-%{_libdir}/wine/uxtheme.dll.so
+%{_libdir}/wine/uxtheme.%{winedll}
 %{_libdir}/wine/userenv.%{winedll}
 %{_libdir}/wine/vbscript.%{winedll}
 %{_libdir}/wine/vcomp.%{winedll}
@@ -2216,6 +2218,7 @@ fi
 %{_libdir}/wine/windows.media.speech.%{winedll}
 %{_libdir}/wine/windows.networking.connectivity.%{winedll}
 %endif
+%{_libdir}/wine/windowscodecs.so
 %{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/windowscodecsext.%{winedll}
 %{_libdir}/wine/winebus.sys.so
@@ -2697,6 +2700,9 @@ fi
 
 
 %changelog
+* Sat Oct 24 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.20-100
+- 5.20
+
 * Tue Oct 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.19-103.20201016git0c249e6
 - tkg updates. fsync reverts unneeded
 

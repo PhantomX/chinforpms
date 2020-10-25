@@ -5,7 +5,7 @@ amdvlk-vulkan-driver
 chinforpms-rpm-config
 compat-gcc-32
 cubeb
-dxil-spirv
+-dxil-spirv
 FAudio
 FAudio-freeworld
 gamemode

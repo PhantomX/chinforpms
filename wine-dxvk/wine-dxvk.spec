@@ -4,10 +4,10 @@
 # Disable LTO
 %define _lto_cflags %{nil}
 
-%global commit ccb782219c93d7665927ec1b0af7c7c4fdfc067d
+%global commit cbba1472dbe6f2e206a570a69fd94c6b308503a5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200926
-%global with_snapshot 0
+%global date 20201023
+%global with_snapshot 1
 
 %{?mingw_package_header}
 
@@ -18,7 +18,7 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id 8a026804bbe794b5a691392249cf597b6a52aa3f
+%global sporif_id cd8a3bd244c17f5eaed9373980d27241fb22015d
 %global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
 
 %global valve_url https://github.com/ValveSoftware/dxvk
@@ -55,7 +55,7 @@ Source3:        %{name}-README-chinforpms
 Patch100:       %{valve_url}/commit/5388a8db837f7dd61e331eebf7ffa24c554c75e9.patch#/%{name}-valve-5388a8d.patch
 Patch101:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
 Patch103:       0001-dxvk.conf-async-options.patch
-Source4:        %{sporif_url}/dxvk-async.patch#/README.async
+Source4:        %{sporif_url}/README.md#/README.async.md
 %endif
 
 ExclusiveArch:  %{ix86} x86_64
@@ -64,12 +64,12 @@ BuildArch:      noarch
 
 BuildRequires:  mingw64-gcc
 BuildRequires:  mingw64-gcc-c++
-BuildRequires:  mingw64-headers >= 6.0
-BuildRequires:  mingw64-winpthreads-static >= 6.0
+BuildRequires:  mingw64-headers >= 8.0
+BuildRequires:  mingw64-winpthreads-static >= 8.0
 BuildRequires:  mingw32-gcc
 BuildRequires:  mingw32-gcc-c++
-BuildRequires:  mingw32-headers >= 6.0
-BuildRequires:  mingw32-winpthreads-static >= 6.0
+BuildRequires:  mingw32-headers >= 8.0
+BuildRequires:  mingw32-winpthreads-static >= 8.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 
@@ -121,7 +121,7 @@ package or when debugging this package.
 %patch101 -p1
 %patch103 -p1
 
-cp %{S:4} README.async
+cp %{S:4} README.async.md
 %else
 %if 0%{?with_snapshot}
 %autosetup -n %{pkgname}-%{commit} -p1
@@ -224,7 +224,7 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 %license LICENSE
 %doc README-chinforpms README.md README.dxvk dxvk.conf
 %if 0%{?dxvk_async}
-%doc README.async
+%doc README.async.md
 %endif
 %{_bindir}/wine%{pkgname}cfg
 %{_datadir}/wine/%{pkgname}/*/*.dll

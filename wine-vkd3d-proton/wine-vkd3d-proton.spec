@@ -4,20 +4,20 @@
 # Disable LTO
 %define _lto_cflags %{nil}
 
-%global commit 9c04f357573d05cbf7c20c47d3b7854287c31b2a
+%global commit c3e396579788ded2661501c4b0dac05c96893a41
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201007
+%global date 20201023
 %global with_snapshot 1
 
-%global commit1 8b37114bbfeb3d1647b5d756e08040c26f9d1e46
+%global commit1 4fbbf081ff8107733e728a78d2b2a36e82ecf79b
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 f15133788010b25b859a87fd82c60a4d6448fefc
+%global commit2 abe2eff36f3cefa15eec98d9f08e12e05493966e
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
-%global commit3 5cc2e4f6348e3f70953f93fc5fcd0c6e8208c5b4
+%global commit3 a57b4b1b2ef6f7b31b27588f0e7288c630d68c08
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
@@ -46,7 +46,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
@@ -74,7 +74,7 @@ BuildRequires:  mingw32-headers >= 7.0
 BuildRequires:  mingw32-winpthreads-static >= 7.0
 BuildRequires:  mingw-w64-tools >= 7.0
 BuildRequires:  pkgconfig(vulkan) >= 1.2.140
-BuildRequires:  spirv-headers-devel >= 1.5.1
+BuildRequires:  spirv-headers-devel >= 1.5.4
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 
@@ -236,5 +236,8 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Oct 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1.1-2.20201023gitc3e3965
+- Bump
+
 * Wed Oct  7 2020 Phantom X <megaphantomx at hotmail dot com> - 1.1-1.20201007git9c04f35
 - Initial spec

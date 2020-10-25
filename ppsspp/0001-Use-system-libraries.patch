@@ -1,6 +1,6 @@
-From 9d0ba1d58f5d30264d84bb3b1947767ddaeb3ef2 Mon Sep 17 00:00:00 2001
+From 0fd5c8bdb611475ba75ab730ad345289aa2a15d2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 11 Oct 2020 23:29:51 -0300
+Date: Sat, 24 Oct 2020 11:15:54 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake borrowed from dolphin-emu
@@ -27,7 +27,7 @@ https://github.com/dolphin-emu/dolphin
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ce647f7..cf3bac7 100644
+index bd958b7..3a5270a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -122,6 +122,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
@@ -71,7 +71,7 @@ index ce647f7..cf3bac7 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -1834,6 +1856,12 @@ endif()
+@@ -1828,6 +1850,12 @@ endif()
  
  # miniUPnPc integration (MiniUPnPc supposed to works on any POSIX system, not sure if some of these are redundant/not needed tho)
  if(USE_MINIUPNPC)
@@ -84,7 +84,7 @@ index ce647f7..cf3bac7 100644
  	set (MINIUPNPC_VERSION 2.1) # used by miniupnpcstrings.h.cmake
  	set (MINIUPNPC_API_VERSION 17)
  	option(UPNPC_BUILD_STATIC "Build static library" TRUE)
-@@ -1903,6 +1931,7 @@ if(USE_MINIUPNPC)
+@@ -1897,6 +1925,7 @@ if(USE_MINIUPNPC)
  		endif()
  	endif()
  endif()
@@ -247,10 +247,10 @@ index 8e96223..2b618ee 100644
  #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
  #include <arm64_neon.h>
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 5dd5e50..e16dab1 100644
+index a989cf3..7e5a3b7 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
-@@ -35,7 +35,11 @@
+@@ -36,7 +36,11 @@
  #include "Core/Config.h"
  #include "Core/Host.h"
  
@@ -261,9 +261,9 @@ index 5dd5e50..e16dab1 100644
 +#endif
  #include "Common/Math/math_util.h"
  
- 
+ // For depth depal
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index c867418..4ff046c 100644
+index f2373e0..a068f0d 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
 @@ -33,7 +33,11 @@
@@ -279,7 +279,7 @@ index c867418..4ff046c 100644
  
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 822143f..4a478d7 100644
+index 6389431..ffa130d 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,11 @@
@@ -295,7 +295,7 @@ index 822143f..4a478d7 100644
  #include "Common/Math/math_util.h"
  #include "Common/Profiler/Profiler.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 7acd871..896c7e4 100644
+index 018f761..ae0b2b3 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@

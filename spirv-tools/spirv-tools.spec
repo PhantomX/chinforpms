@@ -1,13 +1,13 @@
-%global commit c2553a315f5c78d73a808526782596d4e3870082
+%global commit abe2eff36f3cefa15eec98d9f08e12e05493966e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201009
+%global date 20201023
 %global gver .%{date}git%{shortcommit}
 
 %global pkgname SPIRV-Tools
 
 Name:           spirv-tools
 Version:        2020.6
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        API and commands for processing SPIR-V modules
 
 License:        ASL 2.0
@@ -25,7 +25,7 @@ BuildRequires:  python36-devel
 BuildRequires:  python3-devel
 %endif
 BuildRequires:  python3-rpm-macros
-BuildRequires:  spirv-headers-devel
+BuildRequires:  spirv-headers-devel >= 1.5.4
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 
 %description
@@ -90,6 +90,9 @@ Development files for %{name}
 %{_libdir}/pkgconfig/SPIRV-Tools.pc
 
 %changelog
+* Fri Oct 23 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.6-101.20201023gitabe2eff
+- Bump
+
 * Mon Oct 12 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.6-100.20201009gitc2553a3
 - 2020.6
 
