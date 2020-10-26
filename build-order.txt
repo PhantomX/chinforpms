@@ -42,6 +42,7 @@ xwit
 libchdr
 libvorbis
 mesa
+pygtk2
 python-markups
 python-yoyo-migrations
 -perl-Gtk3
@@ -95,6 +96,7 @@ firejail
 firetools
 flips
 fluxbox-chinfo-menu
+fslint
 fss-parallel-tools
 eccedc
 engrampa

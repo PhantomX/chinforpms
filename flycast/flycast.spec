@@ -131,7 +131,7 @@ sed \
 
 %build
 # Disable LTO. Crash.
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now -Wl,--sort-common"
 EXTRA_CFLAGS="-D NDEBUG -frename-registers -ftree-vectorize"

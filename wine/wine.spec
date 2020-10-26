@@ -912,7 +912,7 @@ autoreconf -f
 # Converting packages to use that mechanism instead of toplevel ASMs is
 # recommended.
 # Disable LTO
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606

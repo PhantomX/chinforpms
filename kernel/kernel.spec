@@ -1544,7 +1544,7 @@ cd ..
 ###
 %build
 
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 %if %{with_sparse}
 %define sparse_mflags    C=1

@@ -1,5 +1,5 @@
 # Disable this. Local lto flags in use.
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 # Telegram Desktop's constants...
 %global appname tdesktop
@@ -47,7 +47,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.4.3
+Version:        2.4.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -150,7 +150,6 @@ BuildRequires:  json11-devel
 Provides:       bundled(libtgvoip) = 0~git
 %endif
 
-Provides:       bundled(lxqt-qtplugin) = 0.14.0~git
 Provides:       bundled(tg_owt) = 0~git%{shortcommit1}
 Provides:       bundled(openh264) = 0~git
 Provides:       bundled(abseil-cpp) = 0~git
@@ -194,7 +193,7 @@ sed -e 's|${webrtc_libs_list}|\0 jpeg|' -i cmake/external/webrtc/CMakeLists.txt
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,libdbusmenu-qt,libqtxdg,lxqt-qtplugin,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,xxHash}
+rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,libdbusmenu-qt,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,xxHash}
 
 %if %{with rlottie}
   rm -rf Telegram/ThirdParty/rlottie
@@ -332,6 +331,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Sun Oct 25 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.4-100
+- 2.4.4
+
 * Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.3-100
 - 2.4.3
 

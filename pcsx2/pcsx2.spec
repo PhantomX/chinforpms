@@ -144,7 +144,7 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
 # have no much impact on speed 2/ some gcc flags (used to) crash PCSX2"
 # Extensive testing will is therefore needed. See rpmfusion bug #2455
 
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//') -fuse-ld=bfd
 
 %cmake \

@@ -2,7 +2,7 @@
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 # Disable LTO
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 %global commit cbba1472dbe6f2e206a570a69fd94c6b308503a5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})

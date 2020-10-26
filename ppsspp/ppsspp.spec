@@ -17,7 +17,7 @@
 %endif
 
 # https://github.com/hrydgard/ppsspp/issues/13312
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 %global commit1 fd6f5bc01afb419eacca538b425c01eb2a055393
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})

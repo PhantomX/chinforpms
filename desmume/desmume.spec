@@ -126,7 +126,7 @@ popd
 
 %build
 # Disable LTO
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 pushd %{name}/src/frontend/posix
 CXXFLAGS="%{build_cxxflags} -DGLIB_DISABLE_DEPRECATION_WARNINGS" \

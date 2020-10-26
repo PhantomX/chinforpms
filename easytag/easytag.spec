@@ -1,3 +1,5 @@
+%global majorminor %%(echo %{version} | cut -d. -f1-2)
+
 Name:           easytag
 Version:        2.4.3
 Release:        104%{?dist}
@@ -7,7 +9,7 @@ Epoch:          1
 
 License:        GPLv2+
 URL:            https://wiki.gnome.org/Apps/EasyTAG
-Source:         https://download.gnome.org/sources/%{name}/2.4/%{name}-%{version}.tar.xz
+Source:         https://download.gnome.org/sources/%{name}/%{majorminor}/%{name}-%{version}.tar.xz
 
 # Revert ogg patch
 # https://bugzilla.gnome.org/show_bug.cgi?id=776110

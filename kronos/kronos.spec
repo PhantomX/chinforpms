@@ -110,7 +110,7 @@ sed -e 's|share/yabause|share/%{name}|g' -i yabause/l10n/CMakeLists.txt
 
 %build
 # Disable LTO. Build fails
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"

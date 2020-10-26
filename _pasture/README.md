@@ -5,6 +5,7 @@ some seasonal packages too, these can return when needed
  * **aegisub** - Personal modifications unneeded
  * **aisleriot** - Unneeded
  * **alac_decoder** - Unneeded
+ * **aom** - Unneeded
  * **axel** - Unneeded
  * **bcg729** - linphoneqt
  * **bcmatroska2** - linphoneqt
@@ -15,9 +16,10 @@ some seasonal packages too, these can return when needed
  * **bitlbee-facebook** - Updated release, Fedora included
  * **bzrtp** - Unneeded
  * **compat-libva1** - linux-steam-integration
- * **decaf-emu** - needs SSE4.1
  * **cowsrevenge** - Do not have interest anymore
+ * **decaf-emu** - needs SSE4.1
  * **dropboxd** - Do not have interest anymore, upstream bad decisions
+ * **dxil-spirv** - Bundled with wine-vkd3d-proton
  * **emojione-picker** - python2
  * **faad2** - For i686 mock build
  * **ffmpeg** - For i686 mock build
@@ -39,10 +41,11 @@ some seasonal packages too, these can return when needed
  * **linux-steam-integration** - Missing dependencies
  * **mangastream-downloader** - Unneeded
  * **mediastreamer** - linphoneqt
- * **mingw-crt** - Seasonal package, only for dxvk
- * **mingw-headers** - Seasonal package, only for dxvk
- * **mingw-winpthreads** - Seasonal package, only for dxvk
- * **mingw-wine-vk9** - Seasonal package
+ * **mingw-crt** - Seasonal package, updated
+ * **mingw-headers** - Seasonal package, updated
+ * **mingw-w64-tools** - Seasonal package, updated
+ * **mingw-winpthreads** - Seasonal package, updated
+ * **mingw-wine-vk9** - Seasonal package, dead
  * **mps-youtube** - Do not have interest anymore
  * **mupen64plus-extraplugins** - Unneeded
  * **nautilus-dropbox** - Unneeded

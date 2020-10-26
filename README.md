@@ -64,7 +64,7 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **taglib** - Tests
  * **telegram-desktop** - Personal fixes
  * **vkd3d** - Can't wait Fedora releases
- * **vulkan-headers, vulkan-loader, vulkan-tools** - Can't wait Fedora releases. Not sdk releases too
+ * **vulkan-headers, vulkan-loader, vulkan-tools** - Can't wait Fedora releases. No sdk releases too
  * **xboxdrv** - Experimental fork and personal changes
  * **wine** - Personal fixes and extra patches, like [_PBA_](https://github.com/acomminos/wine-pba) and
               more gathered from [_TK-Glitch_](https://github.com/Tk-Glitch/PKGBUILDS/tree/master/wine-tkg-git), some of them not always enabled.

@@ -252,7 +252,7 @@ sed \
 
 %build
 # Disable LTO. Segfaults.
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 

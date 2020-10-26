@@ -1,5 +1,5 @@
 Name:           firejail
-Version:        0.9.62.4
+Version:        0.9.64
 Release:        1%{?dist}
 Summary:        GUI tools for firejail
 
@@ -75,6 +75,9 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %changelog
+* Mon Oct 26 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.64-1
+- 0.9.64
+
 * Tue Aug 18 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.62.4-1
 - 0.9.62.4
 

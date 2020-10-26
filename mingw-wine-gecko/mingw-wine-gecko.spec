@@ -146,7 +146,7 @@ sed -i 's,$WINE cabarc.exe -r -m mszip N $cabfile msi/files,$WINE cabarc.exe -r 
 
 %build
 # Disable LTO
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 %if !0%{?with_bin}
 cd %{msiname}-%{version}

@@ -115,7 +115,7 @@ sed -i 's/$CPPFLAGS_FOR_BTLS $btls_cflags/$CPPFLAGS_FOR_BTLS -fPIC $btls_cflags/
 
 %build
 # Disable LTO
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 %if !0%{?with_bin}
 export BTLS_CFLAGS="-fPIC"

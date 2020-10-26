@@ -183,7 +183,7 @@ sed -e '/^#include <exception>/a#include <system_error>' \
 
 %build
 # Disable LTO. Crash.
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"

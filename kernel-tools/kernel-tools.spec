@@ -263,7 +263,7 @@ export LD=ld.bfd
 # causing various errors with references to discarded sections and symbol
 # type errors from the LTO plugin.  Until those issues are addressed
 # disable LTO
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 cd linux-%{kversion}
 

@@ -1,6 +1,6 @@
 # workaround for GUILE exceptions bz#1801144
 %global __brp_strip_lto %{nil}
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 Name:           v4l-utils
 Version:        1.20.0

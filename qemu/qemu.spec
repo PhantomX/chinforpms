@@ -1014,7 +1014,7 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/qemu-trace-stap
 
 %build
 # Disable LTO since it caused lots of strange assert failures.
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 # OOM killer breaks builds with parallel make on s390(x)
 %ifarch s390x

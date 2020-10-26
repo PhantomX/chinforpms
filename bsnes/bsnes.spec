@@ -91,7 +91,7 @@ sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
 
 %build
 # Disable this. Local lto flags in use.
-%define _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 export flags="%(echo %{build_cxxflags} | sed -e 's/-O2\b/-O3/')"
 export options="%{build_ldflags}"

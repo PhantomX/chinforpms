@@ -76,7 +76,7 @@ find \( -name \*.c\* -or -name \*.h\* -or -name \*.inc \) -exec chmod -x {} \;
 #
 # -ffat-lto-objects is the default for F33, but is expected to be removed
 # in F34.  So we list it explicitly here.
-%define _lto_cflags -flto=auto -ffat-lto-objects
+%global _lto_cflags -flto=auto -ffat-lto-objects
 
 CFLAGS="%{build_cflags} -Wl,-z,relro -Wl,-z,now"
 CXXFLAGS="%{build_cxxflags} -Wl,-z,relro -Wl,-z,now"
