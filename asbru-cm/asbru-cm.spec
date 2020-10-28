@@ -2,7 +2,7 @@
 
 Name:           asbru-cm
 Version:        6.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
@@ -11,6 +11,8 @@ URL:            https://asbru-cm.net
 %global vc_url  https://github.com/%{name}/%{name}
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
 Source0:        %{vc_url}/archive/%{ver}/%{name}-%{ver}.tar.gz
+
+Patch0:         0001-Temporarily-set-feedVersion-check-to-0.patch
 
 BuildArch:      noarch
 
@@ -49,6 +51,7 @@ Requires:       perl(Socket6)
 Requires:       perl(Storable)
 Requires:       perl(Sys::Hostname)
 Requires:       perl(Time::HiRes)
+Requires:       perl(X11::GUITest
 Requires:       perl(XML::Parser)
 Requires:       perl(YAML)
 Requires:       perl(constant)
@@ -57,10 +60,9 @@ Requires:       perl(strict)
 Requires:       perl(utf8)
 Requires:       perl(vars)
 Requires:       perl(warnings)
-Requires:       perl-X11-GUITest
 Requires:       dbus-x11
 Requires:       libwnck3
-Requires:       vte291
+Requires:       vte291 >= 0.62
 Requires:       ftp
 Requires:       telnet
 Requires:       bash
@@ -139,6 +141,9 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
+* Tue Oct 27 2020 Phantom X <megaphantomx at hotmail dot com> - 6.2.1-2
+- Patch to fix vte291 0.62 issues
+
 * Mon Jun 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 6.2.1-1
 - 6.2.1
 
