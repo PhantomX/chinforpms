@@ -12,7 +12,7 @@
 %endif
 
 Name:           signal-desktop
-Version:        1.35.1
+Version:        1.37.2
 Release:        1%{?beta:.%{beta}}%{?dist}
 Summary:        Private messaging from your desktop
 
@@ -107,7 +107,7 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp opt/%{name}/{%{name},locales,resources,*.{bin,dat,pak,so}} \
+cp -rp opt/%{name}/{%{name},locales,resources,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
@@ -148,6 +148,9 @@ done
 
 
 %changelog
+* Wed Oct 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1.37.2-1
+- 1.37.2
+
 * Thu Sep 03 2020 Phantom X <megaphantomx at hotmail dot com> - 1.35.1-1
 - 1.35.1
 

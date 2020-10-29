@@ -6,16 +6,16 @@
 
 %global progdir %{_libdir}/%{name}
 %global fontname mtextra
+%global minver %%(echo %{version} | cut -d. -f4)
 
 Name:           wps-office
-Version:        11.1.0.9126
+Version:        11.1.0.9719
 Release:        1%{?dist}
 Summary:        WPS Office Suite
 
 License:        Proprietary
 URL:            http://wps-community.org/
 
-%global minver  %(echo %{version} | cut -d. -f4)
 Source0:        http://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/%{minver}/%{name}-%{version}.XA-1.x86_64.rpm
 
 ExclusiveArch:  x86_64
@@ -28,8 +28,6 @@ Requires:       dejavu-sans-mono-fonts
 Requires:       liberation-sans-fonts
 Requires:       liberation-serif-fonts
 Requires:       liberation-mono-fonts
-Requires:       dejavu-math-tex-gyre-fonts
-Requires:       %{name}-%{fontname}-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       hicolor-icon-theme
 
 Provides:       bundled(qt) = 4.7.4
@@ -42,9 +40,10 @@ Provides:       bundled(libssl) = 1.0.0
 %global __requires_exclude ^libssl.so.1.0.0
 %global __requires_exclude %__requires_exclude|^libcrypto.so.1.0.0
 %global __requires_exclude %__requires_exclude|^libpng12.so.0
-%global __requires_exclude %__requires_exclude|^libavcodec.so.57
-%global __requires_exclude %__requires_exclude|^libavformat.so.57
-%global __requires_exclude %__requires_exclude|^libavutil.so.55
+%global __requires_exclude %__requires_exclude|^libavcodec.so.58
+%global __requires_exclude %__requires_exclude|^libavdevice.so.58
+%global __requires_exclude %__requires_exclude|^libavformat.so.58
+%global __requires_exclude %__requires_exclude|^libavutil.so.58
 %global __requires_exclude %__requires_exclude|^libjpeg.so.8
 %global __requires_exclude %__requires_exclude|^libKMailLib.so.80
 %global __requires_exclude %__requires_exclude|^libQtCore.so.4
@@ -55,8 +54,8 @@ Provides:       bundled(libssl) = 1.0.0
 %global __requires_exclude %__requires_exclude|^libQtWebKit.so.4
 %global __requires_exclude %__requires_exclude|^libQtXml.so.4
 %global __requires_exclude %__requires_exclude|^libssl.so.1.0.0
-%global __requires_exclude %__requires_exclude|^libswresample.so.2
-%global __requires_exclude %__requires_exclude|^libswscale.so.4
+%global __requires_exclude %__requires_exclude|^libswresample.so.3
+%global __requires_exclude %__requires_exclude|^libswscale.so.5
 %global __requires_exclude %__requires_exclude|^libaeocenter.so
 %global __requires_exclude %__requires_exclude|^libauth.so
 %global __requires_exclude %__requires_exclude|^libdatasourcereader.so
@@ -74,6 +73,7 @@ Provides:       bundled(libssl) = 1.0.0
 %global __requires_exclude %__requires_exclude|^libhtml2.so
 %global __requires_exclude %__requires_exclude|^libhtmlpub.so
 %global __requires_exclude %__requires_exclude|^libinkdata.so
+%global __requires_exclude %__requires_exclude|^libjsapiservice.so
 %global __requires_exclude %__requires_exclude|^libjscefservice.so
 %global __requires_exclude %__requires_exclude|^libkdcsdk_linux.so
 %global __requires_exclude %__requires_exclude|^libkdownload.so
@@ -101,15 +101,20 @@ Provides:       bundled(libssl) = 1.0.0
 %global __requires_exclude %__requires_exclude|^libqpdfpaint.so
 %global __requires_exclude %__requires_exclude|^librpcetapi.so
 %global __requires_exclude %__requires_exclude|^librpcetapi_sysqt5.so
+%global __requires_exclude %__requires_exclude|^librpcetapi_wpsqt.so
 %global __requires_exclude %__requires_exclude|^librpcserver.so
 %global __requires_exclude %__requires_exclude|^librpcwppapi.so
 %global __requires_exclude %__requires_exclude|^librpcwppapi_sysqt5.so
+%global __requires_exclude %__requires_exclude|^librpcwppapi_wpsqt.so
 %global __requires_exclude %__requires_exclude|^librpcwpsapi.so
 %global __requires_exclude %__requires_exclude|^librpcwpsapi_sysqt5.so
+%global __requires_exclude %__requires_exclude|^librpcwpsapi_wpsqt.so
 %global __requires_exclude %__requires_exclude|^librtfreader.so
+%global __requires_exclude %__requires_exclude|^libsearchcore.so
 %global __requires_exclude %__requires_exclude|^libspelldllv3.so
 %global __requires_exclude %__requires_exclude|^libswfplayer.so
 %global __requires_exclude %__requires_exclude|^libtxtrw.so
+%global __requires_exclude %__requires_exclude|^libuof.so
 %global __requires_exclude %__requires_exclude|^libvbeapi.so
 %global __requires_exclude %__requires_exclude|^libwordconvert.so
 %global __requires_exclude %__requires_exclude|^libwordml12w.so
@@ -141,14 +146,6 @@ WPS Office including Writer, Presentation and Spreadsheets, is a powerful
 office suite, which is able to process word file, produce wonderful
 slides, and analyze data as well.
 
-%package %{fontname}-fonts
-Summary:        WPS Office MT Extra font
-Requires:       fontpackages-filesystem
-BuildArch:      noarch
-
-%description %{fontname}-fonts
-MT Extra font distributed with WPS Office.
-
 
 %prep
 %setup -c -T
@@ -156,7 +153,9 @@ rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
 
 find opt/ -name '*.so*' | xargs chmod +x
 
-cp -p opt/kingsoft/%{name}/office6/mui/default/EULA_linux.txt .
+chmod -x opt/kingsoft/%{name}/office6/cfgs/domain_qing.cfg
+
+cp -p opt/kingsoft/%{name}/office6/mui/default/EULA_linux.html .
 
 sed -e '/^gBinPath=/s|=.*|=%{_libdir}/%{name}|g' -i usr/bin/*
 
@@ -187,6 +186,8 @@ rm -fv %{buildroot}%{progdir}/office6/libsmime3.so*
 rm -fv %{buildroot}%{progdir}/office6/libsoftokn3.so*
 rm -fv %{buildroot}%{progdir}/office6/libSDL2*.so*
 rm -fv %{buildroot}%{progdir}/office6/libtcmalloc.so*
+rm -fv %{buildroot}%{progdir}/office6//addons/cef/libcairo.so*
+rm -fv %{buildroot}%{progdir}/office6//addons/cef/libpng.so*
 
 for i in \
   libtcmalloc libswscale libswresample libssl libpng12 libjpeg \
@@ -199,9 +200,6 @@ done
 
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 usr/bin/* %{buildroot}%{_bindir}/
-
-mkdir -p %{buildroot}%{_fontdir}
-install -pm0644 usr/share/fonts/%{name}/mtextra.ttf %{buildroot}%{_fontdir}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
 for desktop in usr/share/applications/*.desktop ;do
@@ -233,7 +231,7 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %files
-%license EULA_linux.txt
+%license EULA_linux.html
 %{_bindir}/*
 %{progdir}/office6
 %{progdir}/templates
@@ -242,11 +240,11 @@ install -pm0644 usr/share/templates/*.desktop \
 %{_datadir}/mime/packages/*.xml
 %{_datadir}/templates/*.desktop
 
-%_font_pkg -n %{fontname} mtextra.ttf
-%doc EULA_linux.txt
-
 
 %changelog
+* Wed Oct 28 2020 Phantom X <megaphantomx at hotmail dot com> - 11.1.0.9719-1
+- 11.1.0.9719
+
 * Fri Feb 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 11.1.0.9126-1
 - 11.1.0.9126
 
