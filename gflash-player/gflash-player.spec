@@ -95,33 +95,33 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
 %changelog
-* Wed Sep 30 2020 Phantom X <megaphantomx at hotmail dot com> - 32.0.0.433-1
+* Wed Sep 30 2020 - 32.0.0.433-1
 - 32.0.0.433
 
-* Tue Jul 14 2020 Phantom X <megaphantomx at hotmail dot com> - 32.0.0.403-1
+* Tue Jul 14 2020 - 32.0.0.403-1
 - 32.0.0.403
 
-* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 32.0.0.344-1
+* Thu Mar 19 2020 - 32.0.0.344-1
 - 32.0.0.344
 
-* Thu Nov 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 32.0.0.293-1
+* Thu Nov 21 2019 - 32.0.0.293-1
 - 32.0.0.293
 
-* Mon Aug 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 32.0.0.238-1
+* Mon Aug 19 2019 - 32.0.0.238-1
 - 32.0.0.238
 
-* Fri Feb 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 32.0.0.142-1
+* Fri Feb 15 2019 - 32.0.0.142-1
 - 32.0.0.142
 
-* Wed Nov 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 31.0.0.108-1
+* Wed Nov 21 2018 - 31.0.0.108-1
 - 31.0.0.153
 - Document explicit Requires
 
-* Fri Sep 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 31.0.0.108-1
+* Fri Sep 14 2018 - 31.0.0.108-1
 - 31.0.0.108
 
-* Fri Jun 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 30.0.0.113-1
+* Fri Jun 08 2018 - 30.0.0.113-1
 - 30.0.0.113
 
-* Sat May 19 2018 Phantom X <megaphantomx at bol dot com dot br> - 29.0.0.171-1
+* Sat May 19 2018 - 29.0.0.171-1
 - Initial spec

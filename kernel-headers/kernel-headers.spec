@@ -29,7 +29,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -173,6 +173,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Thu Oct 29 14:34:00 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.2-500.chinfo
+- 5.9.2
+
 * Sat Oct 17 17:27:38 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.1-500.chinfo
 - 5.9.1
 

@@ -1,4 +1,4 @@
-From 1d69b30b98b60aff639351f5788d20a3b17f6e27 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Mon, 20 May 2019 22:21:02 -0400
 Subject: [PATCH] iommu/arm-smmu: workaround DMA mode issues
@@ -62,7 +62,7 @@ index 609bd25bf154..c701912b13ab 100644
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
  #define pr_fmt(fmt)    "iommu: " fmt
- 
+
  #include <linux/device.h>
 +#include <linux/dmi.h>
  #include <linux/kernel.h>

@@ -1,0 +1,145 @@
+From patchwork Wed Oct 28 11:58:17 2020
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Nenad Peric <nperic@gmail.com>
+X-Patchwork-Id: 11862711
+Return-Path: 
+ <SRS0=AM15=ED=lists.infradead.org=linux-arm-kernel-bounces+linux-arm-kernel=archiver.kernel.org@kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_SIGNED,DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F41EBC4363A
+	for <linux-arm-kernel@archiver.kernel.org>;
+ Wed, 28 Oct 2020 12:00:20 +0000 (UTC)
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPS id 595FD246DD
+	for <linux-arm-kernel@archiver.kernel.org>;
+ Wed, 28 Oct 2020 12:00:20 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=lists.infradead.org
+ header.i=@lists.infradead.org header.b="DqpmXmwL";
+	dkim=fail reason="signature verification failed" (2048-bit key)
+ header.d=gmail.com header.i=@gmail.com header.b="uWoqSVv7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 595FD246DD
+Authentication-Results: mail.kernel.org;
+ dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: mail.kernel.org;
+ spf=none
+ smtp.mailfrom=linux-arm-kernel-bounces+linux-arm-kernel=archiver.kernel.org@lists.infradead.org
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+	Content-Type:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:To:From:
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=iM3IMk6QdBKQv1Dkn6VfsoTDd+paWW6N4SwFo4W/pT4=; b=DqpmXmwLqnlvs85L9x+K5eSfiz
+	GN+E05H0DMF5+zVOP8gpXahEpMhg887f5sEvbNMLlYIh1BouAijiz8nS1noh/UC2rU7ozned7uJr0
+	mpD/7Of1OZL6brTPOJhrBPDGlUqchkrOdGTf0VxbGUDhCtvw5FdvoWWuzquj79JyvSZa/H++CkbcR
+	74W9DixoNvOZfs1v73N2NSlegmqLDWzTRd66zMqeroN+xYHDOUxHT+Us2GyVh+NALSdRi5j5k5/p0
+	OPrQ1NhT566jHS2BIEusfdUO1EwskEuqpvuTzQ+n5rLr+bb+YrOMoUGwJD3hW3XrOjmvOp0QRYT4y
+	PpA6tS3Q==;
+Received: from localhost ([::1] helo=merlin.infradead.org)
+	by merlin.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
+	id 1kXk6L-0004MI-Ms; Wed, 28 Oct 2020 11:58:49 +0000
+Received: from mail-ej1-x643.google.com ([2a00:1450:4864:20::643])
+ by merlin.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kXk6I-0004Ky-6g
+ for linux-arm-kernel@lists.infradead.org; Wed, 28 Oct 2020 11:58:47 +0000
+Received: by mail-ej1-x643.google.com with SMTP id s15so6783728ejf.8
+ for <linux-arm-kernel@lists.infradead.org>;
+ Wed, 28 Oct 2020 04:58:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=blRKpHWKYllsC3fZsoBdHMYqC0YSHlFEixMlCc4fF1w=;
+ b=uWoqSVv7/sXCFBs4uRVc7ZJnrRrLnXRL/+OZi80QKKTgvbfwumMUj5KjiHEfCDwRTT
+ 4l77Y7QqHNGwxkvw+86NlgbOJIbEGK4exb73CcG7bxXiIhUe0N903Cdh3FQo3A0tl3q2
+ VVSy51o6KCEFVvO6WPGI4jxOMAYccyYb5zEX6DU9nVjW78QVsyJC3woh3PIjNjhr0gi7
+ zA6Fm+EE9Jqof6qEe3uaZElg1mUFZEfpLNHtDSERMYtGr66mYG8lcT8onl0aY8Ew4dz/
+ 2ChThQ8iNbHXpa+VJlmskDf+WUndSWm2VHt4ifMPz4XZVW8mfQK3LdkpOO3eHP+1+v9D
+ bUgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=blRKpHWKYllsC3fZsoBdHMYqC0YSHlFEixMlCc4fF1w=;
+ b=hcuII+cyYhy8NEgTGUVf1GusA61FKRDd5S51ziFO8yqmI5ZdmGcKRcE4XkA6MARqT/
+ p6/yBHuLVLBQPsG/E2eFHnOxgHwmJJmnuDcEXyDibj5CH8vVabKPmQV8g9u2OEv74Ufj
+ kSq2G5ZusReaIPfB/Jvku/zM7npReCYZRfoY+b1WbfTbIkKX7hKqBJfRH6oHfFfsUYCx
+ jmtUyxX/iQ+zxA7QyGtpPNFQ01FngfkP8RiQOn9j8HlniGdHePpx38xZVwIk2Xw7cZTt
+ WMlSTduDbqferQ4kvVHhS45swesUf0j17cl8/ulI2gsIypm+BXpMVT1EbNo1cLX6938G
+ BZ4g==
+X-Gm-Message-State: AOAM533DIdRxZEJdUOkrAMKw6EuWX0vUxXnqmbiqmy7O/RXzqjgvJ39e
+ PumNgB/8sggQCFj5Ra/GWBk=
+X-Google-Smtp-Source: 
+ ABdhPJz86BOoINx8fEi+KX53QXqf+HoCczR0skh70fOJrBPW6LQi7RmJY8byNi8zXcJRJpwKsL5dUw==
+X-Received: by 2002:a17:906:3689:: with SMTP id
+ a9mr7090398ejc.403.1603886320892;
+ Wed, 28 Oct 2020 04:58:40 -0700 (PDT)
+Received: from localhost.localdomain ([87.116.178.171])
+ by smtp.googlemail.com with ESMTPSA id f13sm2817210ejf.42.2020.10.28.04.58.39
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 28 Oct 2020 04:58:40 -0700 (PDT)
+From: Nenad Peric <nperic@gmail.com>
+To: mripard@kernel.org,
+	wens@csie.org,
+	jernej.skrabec@siol.net
+Subject: [PATCH] arm64: dts: allwinner: h5: OrangePi Prime: Fix ethernet node
+Date: Wed, 28 Oct 2020 12:58:17 +0100
+Message-Id: <20201028115817.68113-1-nperic@gmail.com>
+X-Mailer: git-send-email 2.29.1
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20201028_075846_256245_4AB671AE 
+X-CRM114-Status: GOOD (  13.60  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-sunxi@googlegroups.com, robh+dt@kernel.org,
+ Nenad Peric <nperic@gmail.com>, linux-arm-kernel@lists.infradead.org
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+linux-arm-kernel=archiver.kernel.org@lists.infradead.org
+
+RX and TX delay are provided by ethernet PHY. Reflect that in ethernet
+node.
+
+Fixes: 44a94c7ef989 ("arm64: dts: allwinner: H5: Restore EMAC changes")
+Signed-off-by: Nenad Peric <nperic@gmail.com>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-prime.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-prime.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-prime.dts
+index cb44bfa5981f..33ab44072e6d 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-prime.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-prime.dts
+@@ -124,7 +124,7 @@ &emac {
+ 	pinctrl-0 = <&emac_rgmii_pins>;
+ 	phy-supply = <&reg_gmac_3v3>;
+ 	phy-handle = <&ext_rgmii_phy>;
+-	phy-mode = "rgmii";
++	phy-mode = "rgmii-id";
+ 	status = "okay";
+ };
+ 

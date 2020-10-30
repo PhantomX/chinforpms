@@ -1,4 +1,4 @@
-From 18fb1389afccdc5535977a10669b49a37829b55a Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Dave Young <dyoung@redhat.com>
 Date: Mon, 4 Jun 2018 01:38:25 -0400
 Subject: [PATCH] kdump: round up the total memory size to 128M for crashkernel
@@ -53,7 +53,7 @@ index 18175687133a..e4dfe2a05a31 100644
  #include <linux/utsname.h>
  #include <linux/vmalloc.h>
 +#include <linux/sizes.h>
- 
+
  #include <asm/page.h>
  #include <asm/sections.h>
 @@ -39,6 +40,15 @@ static int __init parse_crashkernel_mem(char *cmdline,
@@ -69,7 +69,7 @@ index 18175687133a..e4dfe2a05a31 100644
 +	 * enough for most test cases.
 +	 */
 +	total_mem = roundup(total_mem, SZ_128M);
- 
+
  	/* for each entry of the comma-separated list */
  	do {
 @@ -83,13 +93,13 @@ static int __init parse_crashkernel_mem(char *cmdline,
@@ -81,7 +81,7 @@ index 18175687133a..e4dfe2a05a31 100644
  			pr_warn("crashkernel: invalid size\n");
  			return -EINVAL;
  		}
- 
+
  		/* match ? */
 -		if (system_ram >= start && system_ram < end) {
 +		if (total_mem >= start && total_mem < end) {

@@ -1,4 +1,4 @@
-From 7ba28f03674fa9346610c3fea7fc93bc58f06d2a Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Mon, 2 Oct 2017 18:18:30 -0400
 Subject: [PATCH] Make get_cert_list() use efi_status_to_str() to print error
@@ -17,14 +17,14 @@ index 253fb9a7fc98..8c95b68d86d4 100644
 +++ b/security/integrity/platform_certs/load_uefi.c
 @@ -46,7 +46,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
  		return NULL;
- 
+
  	if (*status != EFI_BUFFER_TOO_SMALL) {
 -		pr_err("Couldn't get size: 0x%lx\n", *status);
 +		pr_err("Couldn't get size: %s (0x%lx)\n",
 +		       efi_status_to_str(*status), *status);
  		return NULL;
  	}
- 
+
 @@ -57,7 +58,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
  	*status = efi.get_variable(name, guid, NULL, &lsize, db);
  	if (*status != EFI_SUCCESS) {
@@ -34,7 +34,7 @@ index 253fb9a7fc98..8c95b68d86d4 100644
 +		       efi_status_to_str(*status), *status);
  		return NULL;
  	}
- 
+
 -- 
 2.28.0
 

@@ -197,6 +197,6 @@ done
 
 
 %changelog
-* Tue Oct 06 2020 Phantom X <megaphantomx at hotmail dot com> - 15.10.5-1
+* Tue Oct 06 2020 - 15.10.5-1
 - Initial spec
 

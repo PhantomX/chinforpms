@@ -287,77 +287,77 @@ done
 
 
 %changelog
-* Wed Sep 30 2020 Phantom X <megaphantomx at hotmail dot com> - 3:7.5.0-8
+* Wed Sep 30 2020 - 3:7.5.0-8
 - python2.7
 
-* Fri Mar 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-7
+* Fri Mar 20 2020 - 3:7.5.0-7
 - with_pillow 0
 
-* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-6
+* Thu Mar 19 2020 - 3:7.5.0-6
 - with_curl 0
 
-* Tue Oct 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-5
+* Tue Oct 08 2019 - 3:7.5.0-5
 - with_dbusmenuqt 0
 
-* Tue Sep 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-4
+* Tue Sep 24 2019 - 3:7.5.0-4
 - with_python 0
 
-* Thu Sep 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-4
+* Thu Sep 19 2019 - 3:7.5.0-4
 - Update python2 requirements for Fedora 31 for real
 
-* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-3
+* Wed Sep 18 2019 - 3:7.5.0-3
 - Update python2 requirements for Fedora 31
 
-* Mon Aug 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-2
+* Mon Aug 26 2019 - 3:7.5.0-2
 - Fix requires
 
-* Tue Mar 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 3:7.5.0-1
+* Tue Mar 05 2019 - 3:7.5.0-1
 - 7.5.0
 
-* Tue Dec 25 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.4.0-1
+* Tue Dec 25 2018 - 3:7.4.0-1
 - 7.4.0
 
-* Fri Sep 14 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.3.0-1
+* Fri Sep 14 2018 - 3:7.3.0-1
 - 7.3.0
 - Only x86_64 now
 
-* Sat Jun 23 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.2.0-1
+* Sat Jun 23 2018 - 3:7.2.0-1
 - 7.2.0
 
-* Sat Apr 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.1.0-1
+* Sat Apr 28 2018 - 3:7.1.0-1
 - 7.1.0
 
-* Thu Feb 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.0.1-1
+* Thu Feb 08 2018 - 3:7.0.1-1
 - 7.0.1
 
-* Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 3:7.0.0-1
+* Sun Jan 21 2018 - 3:7.0.0-1
 - 7.0.0
 
-* Sun Oct 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.4.0-2
+* Sun Oct 15 2017 - 3:6.4.0-2
 - Exclude libpng12 provides
 
-* Fri Oct 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.4.0-1
+* Fri Oct 13 2017 - 3:6.4.0-1
 - 6.4.0
 
-* Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.3.1-2
+* Thu Sep 14 2017 - 3:6.3.1-2
 - Exclude provides
 - Remove sqlite bundled library
 
-* Sat Aug 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.3.1-1
+* Sat Aug 05 2017 - 3:6.3.1-1
 - 6.3.1
 - R: libffi
 
-* Tue Jun 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.3.0-1
+* Tue Jun 06 2017 - 3:6.3.0-1
 - 6.3.0
 
-* Tue May 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.2.0-1
+* Tue May 09 2017 - 3:6.2.0-1
 - 6.2.0
 
-* Wed Apr 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.1.9-1
+* Wed Apr 05 2017 - 3:6.1.9-1
 - 6.1.9
 
-* Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 3:6.1.5-2
+* Thu Jan 26 2017 - 3:6.1.5-2
 - Added %%{_isa} to requires
 
-* Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 3:6.1.5-1
+* Wed Dec 28 2016 - 3:6.1.5-1
 - Initial spec

@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit c29d7c7d149ccc3d5d297f2679b5a8b89e7ac910
+%global commit 70e82dfe12c22fdb271d60a37456eb307b4a41c0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200825
+%global date 20201014
 
 %undefine _hardened_build
 
@@ -15,7 +15,7 @@
 
 Name:           vvvvvv
 Version:        2.3
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -135,39 +135,42 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
-* Mon Aug 31 2020 Phantom X <megaphantomx at hotmail dot com> - 2.3-4.20200825gitc29d7c7
+* Thu Oct 29 2020 - 2.3-5.20201014git70e82df
+- Update
+
+* Mon Aug 31 2020 - 2.3-4.20200825gitc29d7c7
 - Bump
 
-* Sat Jul 18 2020 Phantom X <megaphantomx at hotmail dot com> - 2.3-3.20200717gitaf89c52
+* Sat Jul 18 2020 - 2.3-3.20200717gitaf89c52
 - New snapshot
 
-* Fri Jun 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.3-2.20200612git628eb7b
+* Fri Jun 12 2020 - 2.3-2.20200612git628eb7b
 - Bump
 
-* Fri May 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.3-1.20200514gitf617b6d
+* Fri May 15 2020 - 2.3-1.20200514gitf617b6d
 - 2.3
 
-* Sun Apr 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-8.20200409gitd403466
+* Sun Apr 12 2020 - 2.2-8.20200409gitd403466
 - Bump
 
-* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-7.20200315gitcfd355b
+* Thu Mar 19 2020 - 2.2-7.20200315gitcfd355b
 - New snapshot
 
-* Sun Mar 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-6.20200301git8d44d93
+* Sun Mar 01 2020 - 2.2-6.20200301git8d44d93
 - Bump
 
-* Mon Feb 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-5.20200202gitcefc95d
+* Mon Feb 03 2020 - 2.2-5.20200202gitcefc95d
 - Update data files patch
 
-* Sun Feb 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-4.20200202git8260bb2
+* Sun Feb 02 2020 - 2.2-4.20200202git8260bb2
 - Bump
 
-* Wed Jan 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-3.20200115git6f8d2dc
+* Wed Jan 15 2020 - 2.2-3.20200115git6f8d2dc
 - Bump
 - Patch cmake to use system libraries
 
-* Sat Jan 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-2.20200111git901de41
+* Sat Jan 11 2020 - 2.2-2.20200111git901de41
 - Bump
 
-* Fri Jan 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.2-1
+* Fri Jan 10 2020 - 2.2-1
 - Initial spec

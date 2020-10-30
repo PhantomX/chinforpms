@@ -106,7 +106,6 @@ BuildRequires:  libytnef-devel
 BuildRequires:  ghostscript
 BuildRequires:  gumbo-parser-devel
 BuildRequires:  poppler-glib-devel
-# webkit removed since Fedora 27 due to unfixed security issues
 %if 0%{with_fancy}
 BuildRequires:  webkit2gtk3-devel
 BuildRequires:  libsoup-devel

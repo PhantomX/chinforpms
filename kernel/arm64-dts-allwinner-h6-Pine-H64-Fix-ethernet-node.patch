@@ -1,0 +1,125 @@
+From patchwork Fri Oct 23 19:49:02 2020
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: =?utf-8?q?Jernej_=C5=A0krabec?=
+ <jernej.skrabec@siol.net>
+X-Patchwork-Id: 11854475
+Return-Path: 
+ <SRS0=LoId=D6=lists.infradead.org=linux-arm-kernel-bounces+linux-arm-kernel=archiver.kernel.org@kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63302C388F9
+	for <linux-arm-kernel@archiver.kernel.org>;
+ Fri, 23 Oct 2020 19:46:07 +0000 (UTC)
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPS id CEC072192A
+	for <linux-arm-kernel@archiver.kernel.org>;
+ Fri, 23 Oct 2020 19:46:06 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=lists.infradead.org
+ header.i=@lists.infradead.org header.b="RmcUbgOY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEC072192A
+Authentication-Results: mail.kernel.org;
+ dmarc=fail (p=none dis=none) header.from=siol.net
+Authentication-Results: mail.kernel.org;
+ spf=none
+ smtp.mailfrom=linux-arm-kernel-bounces+linux-arm-kernel=archiver.kernel.org@lists.infradead.org
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+	Content-Type:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:To:From:
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=hLIZ2EP9nRbAti/wOrMDo1OIucNmHPYmeTz9hC5PCnA=; b=RmcUbgOYDKWjn2s7pGDpTPSI3x
+	NuaDIYVWecJeYRkyIuo17CVfM2stKi4Z2NgNQifJYES97ZiPYblSPwx8eg5L8R896LrleIrASB1tG
+	fqNpALWJk2GUtdXzkVIf1KlBlEuNBalgVfd7eIKKmXDbJI8cV3i37nnYQ/1rlYiMU3U6jtVqNd847
+	0D3CMcyW2AKeG2+xCXrf+KeIytwkQDz51Wq/SkpZUJIEicBzg++3/yzKB9ZAf1v4le8V5SndXYoOL
+	MN5fti8tO6Ox0KBvfzl7IfPOM4whPwduDXDUYhnWvBw4q7UHqsaIylAT18U1u7i+j127WKNb3oChK
+	g1kLDIng==;
+Received: from localhost ([::1] helo=merlin.infradead.org)
+	by merlin.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
+	id 1kW2yv-000840-7O; Fri, 23 Oct 2020 19:44:09 +0000
+Received: from mailoutvs25.siol.net ([185.57.226.216] helo=mail.siol.net)
+ by merlin.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kW2yT-0007t0-4y
+ for linux-arm-kernel@lists.infradead.org; Fri, 23 Oct 2020 19:43:42 +0000
+Received: from localhost (localhost [127.0.0.1])
+ by mail.siol.net (Postfix) with ESMTP id 126DA528120;
+ Fri, 23 Oct 2020 21:43:36 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at psrvmta11.zcs-production.pri
+Received: from mail.siol.net ([127.0.0.1])
+ by localhost (psrvmta11.zcs-production.pri [127.0.0.1]) (amavisd-new,
+ port 10032)
+ with ESMTP id rEXZf2IX2IaY; Fri, 23 Oct 2020 21:43:35 +0200 (CEST)
+Received: from mail.siol.net (localhost [127.0.0.1])
+ by mail.siol.net (Postfix) with ESMTPS id C4F7052818E;
+ Fri, 23 Oct 2020 21:43:35 +0200 (CEST)
+Received: from kista.localdomain (cpe1-5-97.cable.triera.net [213.161.5.97])
+ (Authenticated sender: 031275009)
+ by mail.siol.net (Postfix) with ESMTPSA id 52CA9528176;
+ Fri, 23 Oct 2020 21:43:35 +0200 (CEST)
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+To: mripard@kernel.org,
+	wens@csie.org
+Subject: [PATCH] arm64: dts: allwinner: h6: Pine H64: Fix ethernet node
+Date: Fri, 23 Oct 2020 21:49:02 +0200
+Message-Id: <20201023194902.368239-1-jernej.skrabec@siol.net>
+X-Mailer: git-send-email 2.29.0
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20201023_154341_497396_834DE64F 
+X-CRM114-Status: GOOD (  11.24  )
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: devicetree@vger.kernel.org, linux-sunxi@googlegroups.com,
+ robh+dt@kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+linux-arm-kernel=archiver.kernel.org@lists.infradead.org
+
+Ethernet PHY provides RX and TX delay on both models, A and B. Although
+schematic for model A suggests only TX delay, network never worked with
+such configuration.
+
+Fix ethernet node to reflect PHY delays.
+
+Fixes: 729e1ffcf47e ("arm64: allwinner: h6: add support for the Ethernet on Pine H64")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts
+index af85b2074867..961732c52aa0 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts
+@@ -100,7 +100,7 @@ &ehci3 {
+ &emac {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&ext_rgmii_pins>;
+-	phy-mode = "rgmii";
++	phy-mode = "rgmii-id";
+ 	phy-handle = <&ext_rgmii_phy>;
+ 	phy-supply = <&reg_gmac_3v3>;
+ 	allwinner,rx-delay-ps = <200>;

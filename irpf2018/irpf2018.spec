@@ -96,14 +96,14 @@ rm -f %{buildroot}%{_datadir}/ProgramasRFB/%{name}/IRPF-Licenses.txt
 %{_datadir}/ProgramasRFB/%{name}/
 
 %changelog
-* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1.6-2
+* Fri Oct 02 2020 - 1.6-2
 - Update wrapper
 
-* Thu Feb 28 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.6-1
+* Thu Feb 28 2019 - 1.6-1
 - 1.6
 
-* Tue Apr 17 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.4-1
+* Tue Apr 17 2018 - 1.4-1
 - 1.4
 
-* Tue Feb 27 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0-1
+* Tue Feb 27 2018 - 1.0-1
 - Initial spec

@@ -136,14 +136,14 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
-* Wed Oct 28 2020 Phantom X <megaphantomx at hotmail dot com> - 5.4.53350.1027-1
+* Wed Oct 28 2020 - 5.4.53350.1027-1
 - 5.4.53350.1027
 
-* Wed Oct 14 2020 Phantom X <megaphantomx at hotmail dot com> - 5.3.472687.1012-1
+* Wed Oct 14 2020 - 5.3.472687.1012-1
 - 5.3.472687.1012
 
-* Thu Sep 17 2020 Phantom X <megaphantomx at hotmail dot com> - 5.2.458699.0906-1
+* Thu Sep 17 2020 - 5.2.458699.0906-1
 - 5.2.458699.0906
 
-* Mon Jun 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.0.413237.0524-1
+* Mon Jun 01 2020 - 5.0.413237.0524-1
 - Initial spec

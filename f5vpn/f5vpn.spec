@@ -164,11 +164,11 @@ done
 
 
 %changelog
-* Wed Oct 14 2020 Phantom X <megaphantomx at hotmail dot com> - 7210.2020.0826.1-1
+* Wed Oct 14 2020 - 7210.2020.0826.1-1
 - 7210.2020.0826.1
 
-* Mon Jul 06 2020 Phantom X <megaphantomx at hotmail dot com> - 7190.2020.0221.1-2
+* Mon Jul 06 2020 - 7190.2020.0221.1-2
 - R: f5vpn-filesystem
 
-* Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 7190.2020.0221.1-1
+* Wed May 20 2020 - 7190.2020.0221.1-1
 - Initial spec

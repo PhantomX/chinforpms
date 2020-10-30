@@ -74,5 +74,5 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
-* Sun Jul 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 2018.1.30-1
+* Sun Jul 08 2018 - 2018.1.30-1
 - First spec

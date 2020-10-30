@@ -38,5 +38,5 @@ install -pm 0644 data.zip %{buildroot}%{_datadir}/VVVVVV/
 
 
 %changelog
-* Fri Jan 10 2020 Phantom X <megaphantomx at bol dot com dot br> - 20161020-1
+* Fri Jan 10 2020 - 20161020-1
 - Initial spec

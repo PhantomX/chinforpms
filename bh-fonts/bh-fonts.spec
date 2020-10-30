@@ -111,20 +111,20 @@ This package provides optional documentation files shipped with
 %doc %{fontdocs}
 
 %changelog
-* Wed Sep 30 2020 Phantom X <megaphantomx at hotmail dot com> - 1.0.3-6
+* Wed Sep 30 2020 - 1.0.3-6
 - Update conf files
 
-* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-5
+* Thu Mar 19 2020 - 1.0.3-5
 - Convert to new fonts template
 
-* Tue Oct 09 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-4
+* Tue Oct 09 2018 - 1.0.3-4
 - BR: gcc
 
-* Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-3
+* Thu Jun 15 2017 - 1.0.3-3
 - BR: xorg-x11-font-utils
 
-* Sun Feb 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-2
+* Sun Feb 05 2017 - 1.0.3-2
 - Try to follow Fedora font packaging guidelines
 
-* Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.0.3-1
+* Wed Dec 28 2016 - 1.0.3-1
 - Initial spec

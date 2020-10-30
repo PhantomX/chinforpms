@@ -96,14 +96,14 @@ rm -f %{buildroot}%{_datadir}/ProgramasRFB/%{name}/IRPF-Licenses.txt
 %{_datadir}/ProgramasRFB/%{name}/
 
 %changelog
-* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1.3-1
+* Fri Oct 02 2020 - 1.3-1
 - 1.3
 
-* Fri Mar 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.1-1
+* Fri Mar 10 2017 - 1.1-1
 - 1.1
 
-* Thu Mar 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0-2
+* Thu Mar 02 2017 - 1.0-2
 - Disable jar repack
 
-* Wed Mar 01 2017 Phantom X <megaphantomx at bol dot com dot br> - 1.0-1
+* Wed Mar 01 2017 - 1.0-1
 - Initial spec

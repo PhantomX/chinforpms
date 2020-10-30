@@ -84,23 +84,23 @@ mkdir -p %{buildroot}%{_sysconfdir}/amd
 
 
 %changelog
-* Wed Aug 26 2020 Phantom X <megaphantomx at hotmail dot com> - 20.30.1109583-1
+* Wed Aug 26 2020 - 20.30.1109583-1
 - 20.30-1109583
 
-* Sat Jun 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.20.1089974-1
+* Sat Jun 13 2020 - 20.20.1089974-1
 - 20.20-1089974
 
-* Sun Apr 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 20.10.1048554-1
+* Sun Apr 19 2020 - 20.10.1048554-1
 - 20.10-1048554
 
-* Wed Mar 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 19.50.1011208-1
+* Wed Mar 11 2020 - 19.50.1011208-1
 - 19.50.1011208
 
-* Sat Feb 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 19.50.967956-1
+* Sat Feb 22 2020 - 19.50.967956-1
 - 19.50.967956
 
-* Sat Nov 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.30.855429-1
+* Sat Nov 09 2019 - 19.30.855429-1
 - 19.30.934563
 
-* Thu Aug 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 19.30.934563-1
+* Thu Aug 29 2019 - 19.30.934563-1
 - Initial spec

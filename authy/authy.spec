@@ -97,5 +97,5 @@ done
 
 
 %changelog
-* Fri Sep 18 2020 Phantom X <megaphantomx at hotmail dot com> - 1.8.3-1
+* Fri Sep 18 2020 - 1.8.3-1
 - Initial spec

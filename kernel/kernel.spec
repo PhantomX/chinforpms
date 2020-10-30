@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 953f4aa2026dd864374208c3b3f56f4e56da70e0
+%global pfcommit dc20ec231b7d309abea2df39daed3429fd9cc88d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 8abc535a742572dbe3eda3fa29ac20c4c5c83a4f
+%global opensuse_id 4133ad17e891253f3359573f404084dc553d1bcb
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -821,7 +821,6 @@ Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
 
 %if !%{nopatches}
 
-Patch2: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
 Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
 Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
@@ -831,6 +830,7 @@ Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
 Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
 Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
 Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
+Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
 Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
 Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
 Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
@@ -851,7 +851,24 @@ Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
 Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+Patch72: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+
+# A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
+Patch124: 0001-update-phy-on-pine64-a64-devices.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201024162515.30032-2-wens@kernel.org/
+Patch125: arm-sun8i-realtek-phy-fixes.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201025140144.28693-1-ats@offog.org/
+Patch126: ARM-dts-sun7i-pcduino3-nano-enable-RGMII-RX-TX-delay-on-PHY.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201025081949.783443-1-jernej.skrabec@siol.net/
+Patch127: ARM-dts-sun8i-r40-bananapi-m2-ultra-Fix-ethernet-node.patch 
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201022185839.2779245-1-jernej.skrabec@siol.net/
+Patch128: arm64-dts-allwinner-a64-OrangePi-Win-Fix-ethernet-node.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201028115817.68113-1-nperic@gmail.com/
+Patch129: arm64-dts-allwinner-h5-OrangePi-Prime-Fix-ethernet-node.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023184858.3272918-1-jernej.skrabec@siol.net/
+Patch130: arm64-dts-allwinner-h5-OrangePi-PC2-Fix-ethernet-node.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023194902.368239-1-jernej.skrabec@siol.net/
+Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
 
 ### Extra
 
@@ -870,6 +887,8 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch#/openSUSE-fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch
 Patch1020: %{opensuse_url}/x86-unwind-orc-Fix-inactive-tasks-with-stack-pointer.patch#/openSUSE-x86-unwind-orc-Fix-inactive-tasks-with-stack-pointer.patch
+Patch1021: %{opensuse_url}/vt_ioctl-fix-GIO_UNIMAP-regression.patch#/openSUSE-vt_ioctl-fix-GIO_UNIMAP-regression.patch
+Patch1022: %{opensuse_url}/tracing-synthetic-events-Replace-buggy-strcat-with-s.patch#/openSUSE-tracing-synthetic-events-Replace-buggy-strcat-with-s.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -877,7 +896,8 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 # Revert pf ones to apply tkg
 Patch2001: 0001-Revert-futex-Add-Proton-compatibility-code.patch
 Patch2002: 0002-Revert-futex-Implement-mechanism-to-wait-on-any-of-s.patch
-Patch2003: https://github.com/Frogging-Family/linux-tkg/raw/5c57ad3792f6fb08b4a7f7e9b50225fa3ea61f02/linux59-tkg/linux59-tkg-patches/0007-v5.9-fsync.patch#/tkg-0007-v5.9-fsync.patch
+Patch2003: https://github.com/Frogging-Family/linux-tkg/raw/c0c7381c613ad7c743e0e72e4abab982d40f2168/linux-tkg-patches/5.9/0007-v5.9-fsync.patch#/tkg-0007-v5.9-fsync.patch
+
 %if !0%{?post_factum}
 
 #Patch3000: postfactum-merge-fixes.patch
@@ -2654,6 +2674,10 @@ fi
 #
 #
 %changelog
+* Thu Oct 29 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.2-500.chinfo
+- 5.9.2 - pf2
+- stabilization sync
+
 * Sat Oct 17 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.1-500.chinfo
 - 5.9.1 - pf2
 - Added fsync patch from tkg until it is merged in pf

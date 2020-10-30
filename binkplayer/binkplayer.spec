@@ -110,11 +110,11 @@ EOF
 
 
 %changelog
-* Wed Sep 30 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.09-1
+* Wed Sep 30 2020 - 2020.09-1
 - 2020.09
 
-* Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.7i-2
+* Thu Mar 19 2020 - 2.7i-2
 - BR: p7zip
 
-* Tue Sep  4 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.7d-1
+* Tue Sep  4 2018 - 2.7d-1
 - Initial spec

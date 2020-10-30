@@ -101,8 +101,8 @@ done
 
 
 %changelog
-* Wed Oct 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1.3.00.25560-1
+* Wed Oct 28 2020 - 1.3.00.25560-1
 - 1.3.00.25560
 
-* Wed Jun 17 2020 Phantom X <megaphantomx at hotmail dot com> - 1.3.00.5153-1
+* Wed Jun 17 2020 - 1.3.00.5153-1
 - Initial spec

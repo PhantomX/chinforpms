@@ -80,8 +80,8 @@ install -pm0755 usr/local/lib/F5Networks/SSLVPN/svpn_x86_64 \
 
 
 %changelog
-* Wed Oct 14 2020 Phantom X <megaphantomx at hotmail dot com> - 7210.2020.0826-1
+* Wed Oct 14 2020 - 7210.2020.0826-1
 - 7210.2020.0826
 
-* Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 7190.2020.0221.1-1
+* Wed May 20 2020 - 7190.2020.0221.1-1
 - Initial spec

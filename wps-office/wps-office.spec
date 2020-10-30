@@ -242,11 +242,11 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
-* Wed Oct 28 2020 Phantom X <megaphantomx at hotmail dot com> - 11.1.0.9719-1
+* Wed Oct 28 2020 - 11.1.0.9719-1
 - 11.1.0.9719
 
-* Fri Feb 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 11.1.0.9126-1
+* Fri Feb 28 2020 - 11.1.0.9126-1
 - 11.1.0.9126
 
-* Fri Feb 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 11.1.0.9080-1
+* Fri Feb 21 2020 - 11.1.0.9080-1
 - Initial spec

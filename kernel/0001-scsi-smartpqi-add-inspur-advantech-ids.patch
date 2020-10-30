@@ -1,4 +1,4 @@
-From b94117795261f9c074a7addca2252238871b5081 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Don Brace <dbrace@redhat.com>
 Date: Mon, 16 Jul 2018 19:20:41 -0400
 Subject: [PATCH] scsi: smartpqi: add inspur advantech ids

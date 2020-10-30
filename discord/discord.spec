@@ -131,44 +131,44 @@ done
 
 
 %changelog
-* Fri Sep 11 2020 Phantom X <megaphantomx at hotmail dot com> - 1:0.0.12-100
+* Fri Sep 11 2020 - 1:0.0.12-100
 - 0.0.12
 
-* Thu Aug 06 2020 Phantom X <megaphantomx at hotmail dot com> - 1:0.0.11-100
+* Thu Aug 06 2020 - 1:0.0.11-100
 - 0.0.11
 
-* Wed Feb 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.10-100
+* Wed Feb 26 2020 - 1:0.0.10-100
 - 0.0.10
 
-* Sun Mar 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.9-100
+* Sun Mar 31 2019 - 1:0.0.9-100
 - 0.0.9
 
-* Thu Jan 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.8-1
+* Thu Jan 24 2019 - 1:0.0.8-1
 - 0.0.8
 
-* Sat Jul 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.5-2
+* Sat Jul 07 2018 - 1:0.0.5-2
 - Ugly fix to xdg-mime CPU spikes
 
-* Wed May 02 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.5-1
+* Wed May 02 2018 - 1:0.0.5-1
 - 0.0.5
 
-* Sat Apr 28 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.4-2
+* Sat Apr 28 2018 - 1:0.0.4-2
 - Add more required libraries.
 
-* Sun Jan 21 2018 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.4-1
+* Sun Jan 21 2018 - 1:0.0.4-1
 - 0.0.4
 
-* Thu Sep 14 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.2-2
+* Thu Sep 14 2017 - 1:0.0.2-2
 - Exclude provides
 
-* Thu Aug 24 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.2-1
+* Thu Aug 24 2017 - 1:0.0.2-1
 - 0.0.2
 
-* Tue Feb 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 1:0.0.1-1
+* Tue Feb 07 2017 - 1:0.0.1-1
 - 0.0.1, not canary
 
-* Thu Jan 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.0.15-1
+* Thu Jan 26 2017 - 0.0.15-1
 - 0.0.15
 
-* Sun Jan  8 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.1.13-1
+* Sun Jan  8 2017 - 0.1.13-1
 - Initial spec
