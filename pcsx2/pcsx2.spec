@@ -1,6 +1,6 @@
-%global commit 418974a28a75a2d3114b3de2b3d9faf42b65336d
+%global commit 7a2c94f6e1497a254484ae2ccbb9258903c75fa7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201021
+%global date 20201030
 %global with_snapshot 1
 
 %global sanitize 0
@@ -16,7 +16,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        110%{?gver}%{?dist}
+Release:        111%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -38,7 +38,6 @@ Source0:        %{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
-Patch10:        0001-Disable-setcap-on-installation.patch
 Patch11:        0001-Use-shared-fmt.patch
 
 
@@ -75,7 +74,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-22
+BuildRequires:  sdl_gamecontrollerdb >= 0-23
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -158,7 +157,6 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
   -DPLUGIN_DIR:PATH=%{_libdir}/pcsx2 \
   -DGAMEINDEX_DIR:PATH=%{_datadir}/pcsx2 \
   -DCMAKE_BUILD_STRIP:BOOL=FALSE \
-  -DGTK3_API:BOOL=TRUE \
   -DPORTAUDIO_API:BOOL=FALSE \
   -DSDL2_API:BOOL=TRUE \
   -DEXTRA_PLUGINS:BOOL=FALSE \
@@ -170,6 +168,7 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
   -DUSE_LTO:BOOL=FALSE \
   -DUSE_VTUNE:BOOL=FALSE \
   -DDISABLE_PCSX2_WRAPPER:BOOL=TRUE \
+  -DDISABLE_SETCAP:BOOL=TRUE \
   -DENABLE_TESTS:BOOL=FALSE \
   -DOpenGL_GL_PREFERENCE=GLVND \
   -DCMAKE_BUILD_TYPE=Release \
@@ -239,6 +238,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Sat Oct 31 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-111.20201030git7a2c94f
+- Bump
+
 * Wed Oct 21 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-110.20201021git418974a
 - Bump
 
