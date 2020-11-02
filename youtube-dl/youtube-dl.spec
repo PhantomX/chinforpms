@@ -11,14 +11,17 @@
 %{!?__python2: %global __python2 /usr/bin/python2}
 %endif
 
+%global dl_url https://yt-dl.org/downloads/latest
+#global dl_url https://github.com/rg3/youtube-dl/releases/download/%%{version}
+
 Name:           youtube-dl
-Version:        2020.09.20
+Version:        2020.11.01.1
 Release:        1%{?dist}
 Summary:        A small command-line program to download online videos
 License:        Unlicense
 URL:            https://yt-dl.org
-Source0:        https://github.com/rg3/youtube-dl/releases/download/%{version}/youtube-dl-%{version}.tar.gz
-Source1:        https://github.com/rg3/youtube-dl/releases/download/%{version}/youtube-dl-%{version}.tar.gz.sig
+Source0:        %{dl_url}/youtube-dl-%{version}.tar.gz
+Source1:        %{dl_url}/youtube-dl-%{version}.tar.gz.sig
 # 2016-06-09:
 # Merged GPG keys from https://rg3.github.io/youtube-dl/download.html in one file
 # gpg --export  --export-options export-minimal "428D F5D6 3EF0 7494 BB45 5AC0 EBF0 1804 BCF0 5F6B" \
@@ -121,6 +124,9 @@ install -pm644 youtube-dl.fish %{buildroot}%{_datadir}/fish/vendor_functions.d/y
 %{_datadir}/fish/vendor_functions.d/youtube-dl.fish
 
 %changelog
+* Sun Nov  1 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.11.01.1-1
+- 2020.11.01.1
+
 * Sun Sep 20 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.09.20-1
 - 2020.09.20
 

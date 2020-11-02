@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit dc20ec231b7d309abea2df39daed3429fd9cc88d
+%global pfcommit 9587b25da7f6e75af41e996fab92051ba4cd575e
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 4133ad17e891253f3359573f404084dc553d1bcb
+%global opensuse_id d3f0dc891d01517b49f4ee04109c7dcbb5124b1e
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -870,6 +870,9 @@ Patch130: arm64-dts-allwinner-h5-OrangePi-PC2-Fix-ethernet-node.patch
 # https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023194902.368239-1-jernej.skrabec@siol.net/
 Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
 
+# CVE-2020-27675 rhbz 1891114 1891115
+Patch132: 0001-xen-events-avoid-removing-an-event-channel-while-han.patch 
+
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -889,6 +892,7 @@ Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.
 Patch1020: %{opensuse_url}/x86-unwind-orc-Fix-inactive-tasks-with-stack-pointer.patch#/openSUSE-x86-unwind-orc-Fix-inactive-tasks-with-stack-pointer.patch
 Patch1021: %{opensuse_url}/vt_ioctl-fix-GIO_UNIMAP-regression.patch#/openSUSE-vt_ioctl-fix-GIO_UNIMAP-regression.patch
 Patch1022: %{opensuse_url}/tracing-synthetic-events-Replace-buggy-strcat-with-s.patch#/openSUSE-tracing-synthetic-events-Replace-buggy-strcat-with-s.patch
+Patch1023: %{opensuse_url}/x86-mce-Allow-for-copy_mc_fragile-symbol-checksum-to.patch#/openSUSE-x86-mce-Allow-for-copy_mc_fragile-symbol-checksum-to.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2674,6 +2678,9 @@ fi
 #
 #
 %changelog
+* Sun Nov 01 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.3-500.chinfo
+- 5.9.3 - pf2
+
 * Thu Oct 29 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.2-500.chinfo
 - 5.9.2 - pf2
 - stabilization sync

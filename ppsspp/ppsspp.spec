@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.10.3
-Release:        110%{?gver}%{?dist}
+Release:        111%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -358,6 +358,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Oct 31 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-111.20201030gitf3c05cb
+- New snapshot
+
 * Sat Oct 24 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-110.20201023git254c316
 - Update
 

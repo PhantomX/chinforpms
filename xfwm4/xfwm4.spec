@@ -1,7 +1,7 @@
 %global xfceversion 4.14
 
 Name:           xfwm4
-Version:        4.14.5
+Version:        4.14.6
 Release:        100%{?dist}
 Summary:        Next generation window manager for Xfce
 
@@ -66,6 +66,9 @@ done
 
 
 %changelog
+* Sun Nov  1 2020 Phantom X <megaphantomx at hotmail dot com> - 4.14.6-100
+- 4.14.6
+
 * Sun Aug 09 2020 Phantom X <megaphantomx at hotmail dot com> - 4.14.5-100
 - 4.14.5
 

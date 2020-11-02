@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2020 Phantom X <megaphantomx at hotmail at com> -->
+<component type="desktop">
+  <id>lbreakouthd</id>
+  <name>lbreakouthd</name>
+  <metadata_license>CC0-1.0</metadata_license>
+  <summary>Breakout-style arcade game</summary>
+  <description>
+      <p>
+          LBreakoutHD is an HD remake of LBreakout2, a breakout-style arcade game, with a
+          brand new fully scalable 16:9 view.
+      </p>
+  </description>
+  <launchable type="desktop-id">lbreakout.desktop</launchable>
+  <url type="homepage">http://lgames.sourceforge.net/</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>http://lgames.sourceforge.net/LBreakoutHD/ss0.jpg</image>
+    </screenshot>
+    <screenshot>
+      <image>http://lgames.sourceforge.net/LBreakoutHD/ss1.jpg</image>
+    </screenshot>
+    <screenshot>
+      <image>http://lgames.sourceforge.net/LBreakoutHD/ss2.jpg</image>
+    </screenshot>
+  </screenshots>
+  <updatecontact>megaphantomx at hotmail at com</updatecontact>
+    <releases>
+       <release version="_VERSION_"/>
+  </releases>
+</component>
+

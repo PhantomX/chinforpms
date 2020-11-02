@@ -27,6 +27,7 @@ irpf2018
 irpf2019
 irpf2020
 -kepka
+lbreakouthd
 ms-teams
 -mupen64plus-extraplugins
 pcsx2

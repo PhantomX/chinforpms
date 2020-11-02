@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2020 Phantom X <megaphantomx at hotmail at com> -->
 <component type="desktop">
   <id>wiibafu.desktop</id>
   <name>Wii Backup Fusion</name>
@@ -14,5 +15,5 @@
   <url type="bugtracker">https://sourceforge.net/p/wiibafu/tickets</url>
   <url type="faq">https://sourceforge.net/p/wiibafu/wiki/FAQ</url>
   <url type="homepage">https://wiibafu.sourceforge.io</url>
-  <updatecontact>megaphantomx at bol.com.br</updatecontact>
+  <updatecontact>megaphantomx at hotmail at com</updatecontact>
 </component>

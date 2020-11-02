@@ -47,7 +47,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.4.4
+Version:        2.4.5
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -93,6 +93,8 @@ BuildRequires:  libatomic
 BuildRequires:  ninja-build
 
 # Development packages for Telegram Desktop...
+BuildRequires:  glib2-devel
+BuildRequires:  libxcb-devel
 BuildRequires:  guidelines-support-library-devel >= 3.0.1
 BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  ffmpeg-devel >= 3.1
@@ -121,7 +123,6 @@ BuildRequires:  opus-devel
 BuildRequires:  yasm
 
 %if %{with spellcheck}
-BuildRequires: glib2-devel
 BuildRequires: hunspell-devel
 Requires:      hunspell%{?_isa}
 %endif
@@ -331,6 +332,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Nov  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.5-100
+- 2.4.5
+
 * Sun Oct 25 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.4-100
 - 2.4.4
 
