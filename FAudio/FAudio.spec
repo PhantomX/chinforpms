@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        20.10
+Version:        20.11
 Release:        100%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -105,6 +105,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Mon Nov  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.11-100
+- 20.11
+
 * Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.10-100
 - 20.10
 

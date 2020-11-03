@@ -40,6 +40,7 @@ xwit
 -aom
 -dxil-spirv
 libchdr
+libliftoff
 libvorbis
 mesa
 pygtk2
@@ -101,6 +102,7 @@ fss-parallel-tools
 eccedc
 engrampa
 gamemode
+gamescope
 gcdemu
 -gespeaker
 gkrellm-cpupower

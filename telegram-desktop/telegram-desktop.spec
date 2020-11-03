@@ -67,6 +67,8 @@ Source1:        %{da_url}/tg_owt/archive/%{commit1}/%{srcname1}-%{shortcommit1}.
 
 Source20:       thunar-sendto-%{name}.desktop
 
+Patch0:         %{url}/commit/6ab31219edf4a65610a9bf2ea46420c0fac453ec.patch#/%{name}-gh-6ab3121.patch
+
 Patch100:       %{name}-pr8009.patch
 
 # Do not mess input text

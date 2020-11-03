@@ -12,34 +12,45 @@
     %define supported_platform 0
 %endif
 
+# On RHEL 7 and older macro _vpath_builddir is not defined.
+%if 0%{?rhel} && 0%{?rhel} <= 7
+    %define _vpath_builddir %{_target_platform}
+%endif
+
+%define arches_qemu_kvm         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x
+%if 0%{?rhel}
+    %define arches_qemu_kvm     x86_64 %{power64} aarch64 s390x
+%endif
+
+%define arches_64bit            x86_64 %{power64} aarch64 s390x riscv64
+%define arches_x86              %{ix86} x86_64
+
+%define arches_systemtap_64bit  %{arches_64bit}
+%define arches_dmidecode        %{arches_x86}
+%define arches_xen              %{arches_x86} aarch64
+%define arches_vbox             %{arches_x86}
+%define arches_ceph             %{arches_64bit}
+%define arches_zfs              %{arches_x86} %{power64} %{arm}
+%define arches_numactl          %{arches_x86} %{power64} aarch64
+%define arches_numad            %{arches_x86} %{power64} aarch64
+
 # The hypervisor drivers that run in libvirtd
 %define with_qemu          0%{!?_without_qemu:1}
 %define with_lxc           0%{!?_without_lxc:1}
 %define with_libxl         0%{!?_without_libxl:1}
 %define with_vbox          0%{!?_without_vbox:1}
 
-%define with_qemu_tcg      %{with_qemu}
-
-%define qemu_kvm_arches %{ix86} x86_64
-
-%if 0%{?fedora}
-    %define qemu_kvm_arches %{ix86} x86_64 %{power64} s390x %{arm} aarch64
-%endif
-
-%if 0%{?rhel}
-    %define with_qemu_tcg 0
-    %define qemu_kvm_arches x86_64 %{power64} aarch64 s390x
-%endif
-
-# On RHEL 7 and older macro _vpath_builddir is not defined.
-%if 0%{?rhel} <= 7
-    %define _vpath_builddir %{_target_platform}
-%endif
-
-%ifarch %{qemu_kvm_arches}
+%ifarch %{arches_qemu_kvm}
     %define with_qemu_kvm      %{with_qemu}
 %else
     %define with_qemu_kvm      0
+%endif
+
+%define with_qemu_tcg      %{with_qemu}
+
+# RHEL disables TCG on all architectures
+%if 0%{?rhel}
+    %define with_qemu_tcg 0
 %endif
 
 %if ! %{with_qemu_tcg} && ! %{with_qemu_kvm}
@@ -59,15 +70,14 @@
 %else
     %define with_storage_sheepdog 0
 %endif
+
 %define with_storage_gluster 0%{!?_without_storage_gluster:1}
-%ifnarch %{qemu_kvm_arches}
+%ifnarch %{arches_qemu_kvm}
     # gluster is only built where qemu driver is enabled on RHEL 8
     %if 0%{?rhel} >= 8
         %define with_storage_gluster 0
     %endif
 %endif
-
-%define with_numactl          0%{!?_without_numactl:1}
 
 # F25+ has zfs-fuse
 %if 0%{?fedora}
@@ -83,41 +93,35 @@
     %define with_storage_iscsi_direct 0
 %endif
 
+# Other optional features
+%define with_numactl          0%{!?_without_numactl:1}
+
 # A few optional bits off by default, we enable later
-%define with_fuse          0%{!?_without_fuse:0}
-%define with_sanlock       0%{!?_without_sanlock:0}
-%define with_numad         0%{!?_without_numad:0}
-%define with_firewalld     0%{!?_without_firewalld:0}
-%define with_firewalld_zone 0%{!?_without_firewalld_zone:0}
-%define with_libssh2       0%{!?_without_libssh2:0}
-%define with_wireshark     0%{!?_without_wireshark:0}
-%define with_libssh        0%{!?_without_libssh:0}
-%define with_bash_completion  0%{!?_without_bash_completion:0}
+%define with_fuse             0%{!?_without_fuse:0}
+%define with_sanlock          0%{!?_without_sanlock:0}
+%define with_numad            0%{!?_without_numad:0}
+%define with_firewalld_zone   0%{!?_without_firewalld:0}
+%define with_libssh2          0%{!?_without_libssh2:0}
+%define with_wireshark        0%{!?_without_wireshark:0}
+%define with_libssh           0%{!?_without_libssh:0}
+%define with_dmidecode        0%{!?_without_dmidecode:0}
 
 # Finally set the OS / architecture specific special cases
 
-# Xen is available only on i386 x86_64 ia64
-%ifnarch %{ix86} x86_64 ia64
+# Architecture-dependent features
+%ifnarch %{arches_xen}
     %define with_libxl 0
 %endif
-
-# vbox is available only on i386 x86_64
-%ifnarch %{ix86} x86_64
+%ifnarch %{arches_vbox}
     %define with_vbox 0
 %endif
-
-# Numactl is not available on many non-x86 archs
-%ifarch s390 s390x %{arm} riscv64
+%ifnarch %{arches_numactl}
     %define with_numactl 0
 %endif
-
-# zfs-fuse is not available on some architectures
-%ifarch s390 s390x aarch64 riscv64
+%ifnarch %{arches_zfs}
     %define with_storage_zfs 0
 %endif
-
-# Ceph dropped support for 32-bit hosts
-%ifarch %{arm} %{ix86}
+%ifnarch %{arches_ceph}
     %define with_storage_rbd 0
 %endif
 
@@ -137,8 +141,6 @@
     %endif
 %endif
 
-%define with_firewalld 1
-
 %if 0%{?fedora} || 0%{?rhel} > 7
     %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
 %endif
@@ -155,7 +157,7 @@
     %define with_sanlock 0%{!?_without_sanlock:1}
 %endif
 %if 0%{?rhel}
-    %ifarch %{qemu_kvm_arches}
+    %ifarch %{arches_qemu_kvm}
         %define with_sanlock 0%{!?_without_sanlock:1}
     %endif
 %endif
@@ -176,14 +178,16 @@
     %define with_libssh 0%{!?_without_libssh:1}
 %endif
 
-%define with_bash_completion  0%{!?_without_bash_completion:1}
-
 %if %{with_qemu} || %{with_lxc}
 # numad is used to manage the CPU and memory placement dynamically,
 # it's not available on many non-x86 architectures.
-    %ifnarch s390 s390x %{arm} riscv64
+    %ifarch %{arches_numad}
         %define with_numad    0%{!?_without_numad:1}
     %endif
+%endif
+
+%ifarch %{arches_dmidecode}
+    %define with_dmidecode 0%{!?_without_dmidecode:1}
 %endif
 
 # Force QEMU to run as non-root
@@ -209,7 +213,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 6.8.0
+Version: 6.9.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -253,7 +257,6 @@ Requires: libvirt-libs = %{version}-%{release}
 # All build-time requirements. Run-time requirements are
 # listed against each sub-RPM
 BuildRequires: gettext-devel
-BuildRequires: /usr/bin/pod2man
 %if 0%{?rhel} == 7
 BuildRequires: python36-docutils
 %else
@@ -278,9 +281,7 @@ BuildRequires: glib2-devel >= 2.48
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
 BuildRequires: readline-devel
-%if %{with_bash_completion}
 BuildRequires: bash-completion >= 2.0
-%endif
 BuildRequires: gettext
 BuildRequires: libtasn1-devel
 BuildRequires: gnutls-devel
@@ -295,7 +296,7 @@ BuildRequires: yajl-devel
 %if %{with_sanlock}
 BuildRequires: sanlock-devel >= 2.4
 %endif
-BuildRequires: libpcap-devel
+BuildRequires: libpcap-devel >= 1.5.0
 BuildRequires: libnl3-devel
 BuildRequires: libselinux-devel
 BuildRequires: dnsmasq >= 2.41
@@ -366,7 +367,7 @@ BuildRequires: netcf-devel >= 0.2.2
 BuildRequires: libcurl-devel
 %endif
 %if %{with_hyperv}
-BuildRequires: libwsman-devel >= 2.2.3
+BuildRequires: libwsman-devel >= 2.6.3
 %endif
 BuildRequires: audit-libs-devel
 # we need /usr/sbin/dtrace
@@ -395,17 +396,17 @@ BuildRequires: wireshark-devel >= 2.4.0
 BuildRequires: libssh-devel >= 0.7.0
 %endif
 
+# On RHEL-7 rpcgen is still part of glibc-common package
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires: rpcgen
 %endif
 
 BuildRequires: libtirpc-devel
 
+# Needed for the firewalld_reload macro
 %if %{with_firewalld_zone}
 BuildRequires: firewalld-filesystem
 %endif
-
-Provides: bundled(gnulib)
 
 %description
 Libvirt is a C toolkit to interact with the virtualization capabilities
@@ -442,7 +443,7 @@ Requires: iproute-tc
 %endif
 
 Requires: polkit >= 0.112
-%ifarch %{ix86} x86_64 ia64
+%if %{with_dmidecode}
 # For virConnectGetSysinfo
 Requires: dmidecode
 %endif
@@ -518,7 +519,7 @@ Requires: systemd >= 185
 # For managing persistent mediated devices
 %if 0%{?fedora} || 0%{?rhel} > 7
 Requires: mdevctl
-%endif 
+%endif
 
 %description daemon-driver-nodedev
 The nodedev driver plugin for the libvirtd daemon, providing
@@ -892,14 +893,11 @@ capabilities of VirtualBox
 %package client
 Summary: Client side utilities of the libvirt library
 Requires: %{name}-libs = %{version}-%{release}
-Requires: readline
 # Needed by /usr/libexec/libvirt-guests.sh script.
 Requires: gettext
 # Needed by virt-pki-validate script.
 Requires: gnutls-utils
-%if %{with_bash_completion}
 Requires: %{name}-bash-completion = %{version}-%{release}
-%endif
 
 %description client
 The client binaries needed to access the virtualization
@@ -919,21 +917,16 @@ Shared libraries for accessing the libvirt daemon.
 %package admin
 Summary: Set of tools to control libvirt daemon
 Requires: %{name}-libs = %{version}-%{release}
-Requires: readline
-%if %{with_bash_completion}
 Requires: %{name}-bash-completion = %{version}-%{release}
-%endif
 
 %description admin
 The client side utilities to control the libvirt daemon.
 
-%if %{with_bash_completion}
 %package bash-completion
 Summary: Bash completion script
 
 %description bash-completion
 Bash completion script stub.
-%endif
 
 %if %{with_wireshark}
 %package wireshark
@@ -1029,15 +1022,15 @@ exit 1
 %endif
 
 %if %{with_esx}
-    %define arg_esx -Ddriver_esx=enabled
+    %define arg_esx -Ddriver_esx=enabled -Dcurl=enabled
 %else
-    %define arg_esx -Ddriver_esx=disabled
+    %define arg_esx -Ddriver_esx=disabled -Dcurl=disabled
 %endif
 
 %if %{with_hyperv}
-    %define arg_hyperv -Ddriver_hyperv=enabled
+    %define arg_hyperv -Ddriver_hyperv=enabled -Dopenwsman=enabled
 %else
-    %define arg_hyperv -Ddriver_hyperv=disabled
+    %define arg_hyperv -Ddriver_hyperv=disabled -Dopenwsman=disabled
 %endif
 
 %if %{with_vmware}
@@ -1059,9 +1052,9 @@ exit 1
 %endif
 
 %if %{with_storage_gluster}
-    %define arg_storage_gluster -Dstorage_gluster=enabled
+    %define arg_storage_gluster -Dstorage_gluster=enabled -Dglusterfs=enabled
 %else
-    %define arg_storage_gluster -Dstorage_gluster=disabled
+    %define arg_storage_gluster -Dstorage_gluster=disabled -Dglusterfs=disabled
 %endif
 
 %if %{with_storage_zfs}
@@ -1094,12 +1087,6 @@ exit 1
     %define arg_sanlock -Dsanlock=disabled
 %endif
 
-%if %{with_firewalld}
-    %define arg_firewalld -Dfirewalld=enabled
-%else
-    %define arg_firewalld -Dfirewalld=disabled
-%endif
-
 %if %{with_firewalld_zone}
     %define arg_firewalld_zone -Dfirewalld_zone=enabled
 %else
@@ -1113,9 +1100,21 @@ exit 1
 %endif
 
 %if %{with_storage_iscsi_direct}
-    %define arg_storage_iscsi_direct -Dstorage_iscsi_direct=enabled
+    %define arg_storage_iscsi_direct -Dstorage_iscsi_direct=enabled -Dlibiscsi=enabled
 %else
-    %define arg_storage_iscsi_direct -Dstorage_iscsi_direct=disabled
+    %define arg_storage_iscsi_direct -Dstorage_iscsi_direct=disabled -Dlibiscsi=disabled
+%endif
+
+%if %{with_libssh}
+    %define arg_libssh -Dlibssh=enabled
+%else
+    %define arg_libssh -Dlibssh=disabled
+%endif
+
+%if %{with_libssh2}
+    %define arg_libssh2 -Dlibssh2=enabled
+%else
+    %define arg_libssh2 -Dlibssh2=disabled
 %endif
 
 %define when  %(date +"%%F-%%T")
@@ -1173,12 +1172,14 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dyajl=enabled \
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
-           -Dmacvtap=enabled \
+           -Dlibnl=enabled \
            -Daudit=enabled \
            -Ddtrace=enabled \
-           %{?arg_firewalld} \
+           -Dfirewalld=enabled \
            %{?arg_firewalld_zone} \
            %{?arg_wireshark} \
+           %{?arg_libssh} \
+           %{?arg_libssh2} \
            -Dpm_utils=disabled \
            -Dnss=enabled \
            %{arg_packager} \
@@ -1189,6 +1190,9 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            %{?enable_werror} \
            -Dexpensive_tests=enabled \
            -Dinit_script=systemd \
+           -Ddocs=enabled \
+           -Dtests=enabled \
+           -Drpath=disabled \
            %{?arg_login_shell}
 
 %meson_build
@@ -1267,7 +1271,7 @@ rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
 # Copied into libvirt-docs subpackage eventually
 mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt libvirt-docs
 
-%ifarch %{power64} s390x x86_64 ia64 alpha sparc64
+%ifarch %{arches_systemtap_64bit}
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes.stp \
    $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes-64.stp
 
@@ -1852,10 +1856,7 @@ exit 0
 %if %{with_qemu}
 %{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
 %endif
-
-%if %{with_bash_completion}
 %{_datadir}/bash-completion/completions/virsh
-%endif
 
 
 %{_unitdir}/libvirt-guests.service
@@ -1874,28 +1875,7 @@ exit 0
 %dir %{_datadir}/libvirt/schemas/
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/
 
-%{_datadir}/libvirt/schemas/basictypes.rng
-%{_datadir}/libvirt/schemas/capability.rng
-%{_datadir}/libvirt/schemas/cputypes.rng
-%{_datadir}/libvirt/schemas/domain.rng
-%{_datadir}/libvirt/schemas/domainbackup.rng
-%{_datadir}/libvirt/schemas/domaincaps.rng
-%{_datadir}/libvirt/schemas/domaincheckpoint.rng
-%{_datadir}/libvirt/schemas/domaincommon.rng
-%{_datadir}/libvirt/schemas/domainsnapshot.rng
-%{_datadir}/libvirt/schemas/interface.rng
-%{_datadir}/libvirt/schemas/network.rng
-%{_datadir}/libvirt/schemas/networkcommon.rng
-%{_datadir}/libvirt/schemas/networkport.rng
-%{_datadir}/libvirt/schemas/nodedev.rng
-%{_datadir}/libvirt/schemas/nwfilter.rng
-%{_datadir}/libvirt/schemas/nwfilter_params.rng
-%{_datadir}/libvirt/schemas/nwfilterbinding.rng
-%{_datadir}/libvirt/schemas/secret.rng
-%{_datadir}/libvirt/schemas/storagecommon.rng
-%{_datadir}/libvirt/schemas/storagepool.rng
-%{_datadir}/libvirt/schemas/storagepoolcaps.rng
-%{_datadir}/libvirt/schemas/storagevol.rng
+%{_datadir}/libvirt/schemas/*.rng
 
 %{_datadir}/libvirt/cpu_map/*.xml
 
@@ -1904,14 +1884,10 @@ exit 0
 %files admin
 %{_mandir}/man1/virt-admin.1*
 %{_bindir}/virt-admin
-%if %{with_bash_completion}
 %{_datadir}/bash-completion/completions/virt-admin
-%endif
 
-%if %{with_bash_completion}
 %files bash-completion
 %{_datadir}/bash-completion/completions/vsh
-%endif
 
 %if %{with_wireshark}
 %files wireshark
@@ -1967,6 +1943,10 @@ exit 0
 
 
 %changelog
+* Mon Nov 02 2020 Phantom X <megaphantomx at hotmail dot com> - 6.9.0-100
+- 6.9.0
+- Upstream sync
+
 * Thu Oct 01 2020 Phantom X <megaphantomx at hotmail dot com> - 6.8.0-100
 - 6.8.0
 
