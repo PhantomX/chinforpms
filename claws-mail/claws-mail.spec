@@ -1,9 +1,9 @@
-%global commit 4ed9411f4dc2801d7f983734ae4003102b8f361d
+%global commit 6ed06b5919ddf1d1549d281e7dd1c1ea02cf62c0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200621
-%global with_snapshot 0
+%global date 20201103
+%global with_snapshot 1
 
-%global with_gtk3  0
+%global with_gtk3  1
 %global with_python  0
 
 %if 0%{?with_gtk3}
@@ -25,7 +25,7 @@
 %global build_manual 1
 
 Name:           claws-mail
-Version:        3.17.8
+Version:        3.99.0
 Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
@@ -127,7 +127,6 @@ BuildRequires:  libcanberra-gtk3
 BuildRequires:  libcanberra-gtk2
 %endif
 BuildRequires:  libgdata-devel >= 0.6.4
-BuildRequires:  libgnome-devel
 BuildRequires:  libical-devel
 BuildRequires:  librsvg2-devel
 
@@ -740,6 +739,11 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Wed Nov  4 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.99.0-100.20201103git6ed06b5
+- 3.99.0 gtk3 snapshot
+- Reenable fancy plugin
+- Remove unneeded libgnome-devel BR
+
 * Mon Oct 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.17.8-100
 - 3.17.8
 

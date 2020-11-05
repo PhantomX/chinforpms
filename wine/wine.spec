@@ -2054,9 +2054,7 @@ fi
 %{_libdir}/wine/netio.%{winesys}
 %{_libdir}/wine/netprofm.%{winedll}
 %{_libdir}/wine/netsh.%{wineexe}
-%if 0%{?wine_staging}
 %{_libdir}/wine/netutils.%{winedll}
-%endif
 %{_libdir}/wine/newdev.%{winedll}
 %{_libdir}/wine/ninput.%{winedll}
 %{_libdir}/wine/normaliz.%{winedll}
@@ -2149,9 +2147,7 @@ fi
 %{_libdir}/wine/softpub.%{winedll}
 %{_libdir}/wine/spoolsv.%{wineexe}
 %{_libdir}/wine/srclient.%{winedll}
-%if 0%{?wine_staging}
 %{_libdir}/wine/srvcli.%{winedll}
-%endif
 %{_libdir}/wine/sspicli.%{winedll}
 %{_libdir}/wine/stdole2.%{winetlb}
 %{_libdir}/wine/stdole32.%{winetlb}

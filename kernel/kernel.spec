@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 9587b25da7f6e75af41e996fab92051ba4cd575e
+%global pfcommit d6749f759ed0009d7c3e4241dcaacfc316a58458
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id d3f0dc891d01517b49f4ee04109c7dcbb5124b1e
+%global opensuse_id 639997d12c76189568c6d29bb72e3aa04576014f
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -893,6 +893,9 @@ Patch1020: %{opensuse_url}/x86-unwind-orc-Fix-inactive-tasks-with-stack-pointer.
 Patch1021: %{opensuse_url}/vt_ioctl-fix-GIO_UNIMAP-regression.patch#/openSUSE-vt_ioctl-fix-GIO_UNIMAP-regression.patch
 Patch1022: %{opensuse_url}/tracing-synthetic-events-Replace-buggy-strcat-with-s.patch#/openSUSE-tracing-synthetic-events-Replace-buggy-strcat-with-s.patch
 Patch1023: %{opensuse_url}/x86-mce-Allow-for-copy_mc_fragile-symbol-checksum-to.patch#/openSUSE-x86-mce-Allow-for-copy_mc_fragile-symbol-checksum-to.patch
+Patch1024: %{opensuse_url}/vt-keyboard-simplify-vt_kdgkbsent.patch#/openSUSE-vt-keyboard-simplify-vt_kdgkbsent.patch
+Patch1025: %{opensuse_url}/vt-keyboard-extend-func_buf_lock-to-readers.patch#/openSUSE-vt-keyboard-extend-func_buf_lock-to-readers.patch
+Patch1026: %{opensuse_url}/tty-make-FONTX-ioctl-use-the-tty-pointer-they-were-a.patch#/openSUSE-tty-make-FONTX-ioctl-use-the-tty-pointer-they-were-a.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2678,6 +2681,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 04 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.4-500.chinfo
+- 5.9.4 - pf3
+
 * Sun Nov 01 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.3-500.chinfo
 - 5.9.3 - pf2
 
