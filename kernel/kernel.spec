@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d6749f759ed0009d7c3e4241dcaacfc316a58458
+%global pfcommit f796cfc9923e29ed1661bd24a70c17ba76445aee
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 639997d12c76189568c6d29bb72e3aa04576014f
+%global opensuse_id fc52788baa214acdc9726f6c92fdeb55a7ad5c5b
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -870,9 +870,6 @@ Patch130: arm64-dts-allwinner-h5-OrangePi-PC2-Fix-ethernet-node.patch
 # https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023194902.368239-1-jernej.skrabec@siol.net/
 Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
 
-# CVE-2020-27675 rhbz 1891114 1891115
-Patch132: 0001-xen-events-avoid-removing-an-event-channel-while-han.patch 
-
 ### Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -889,21 +886,10 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch#/openSUSE-fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch
-Patch1020: %{opensuse_url}/x86-unwind-orc-Fix-inactive-tasks-with-stack-pointer.patch#/openSUSE-x86-unwind-orc-Fix-inactive-tasks-with-stack-pointer.patch
-Patch1021: %{opensuse_url}/vt_ioctl-fix-GIO_UNIMAP-regression.patch#/openSUSE-vt_ioctl-fix-GIO_UNIMAP-regression.patch
-Patch1022: %{opensuse_url}/tracing-synthetic-events-Replace-buggy-strcat-with-s.patch#/openSUSE-tracing-synthetic-events-Replace-buggy-strcat-with-s.patch
-Patch1023: %{opensuse_url}/x86-mce-Allow-for-copy_mc_fragile-symbol-checksum-to.patch#/openSUSE-x86-mce-Allow-for-copy_mc_fragile-symbol-checksum-to.patch
-Patch1024: %{opensuse_url}/vt-keyboard-simplify-vt_kdgkbsent.patch#/openSUSE-vt-keyboard-simplify-vt_kdgkbsent.patch
-Patch1025: %{opensuse_url}/vt-keyboard-extend-func_buf_lock-to-readers.patch#/openSUSE-vt-keyboard-extend-func_buf_lock-to-readers.patch
-Patch1026: %{opensuse_url}/tty-make-FONTX-ioctl-use-the-tty-pointer-they-were-a.patch#/openSUSE-tty-make-FONTX-ioctl-use-the-tty-pointer-they-were-a.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-# Revert pf ones to apply tkg
-Patch2001: 0001-Revert-futex-Add-Proton-compatibility-code.patch
-Patch2002: 0002-Revert-futex-Implement-mechanism-to-wait-on-any-of-s.patch
-Patch2003: https://github.com/Frogging-Family/linux-tkg/raw/c0c7381c613ad7c743e0e72e4abab982d40f2168/linux-tkg-patches/5.9/0007-v5.9-fsync.patch#/tkg-0007-v5.9-fsync.patch
 
 %if !0%{?post_factum}
 
@@ -2681,6 +2667,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 05 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.6-500.chinfo
+- 5.9.6 - pf3
+
 * Wed Nov 04 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.4-500.chinfo
 - 5.9.4 - pf3
 
