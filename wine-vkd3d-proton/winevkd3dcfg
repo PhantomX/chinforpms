@@ -26,13 +26,13 @@
 
 set -e
 
-ver=20201007
+ver=20201106
 
 name="VKD3D-Proton"
 pkgname="wine-vkd3d-proton"
 datadir="/usr/share/wine/vkd3d-proton"
 dllsuffix=""
-dlls="d3d12 libvkd3d-utils"
+dlls="d3d12 libvkd3d-proton-utils-2"
 nodlls="dxgi"
 
 wineext=dll

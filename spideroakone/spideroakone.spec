@@ -18,13 +18,13 @@
 %global with_curl 0
 %global with_dbusmenuqt 0
 %global with_ffi 1
-%global with_python 1
+%global with_python 0
 %global with_pillow 0
 %global with_pyqt 0
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -287,6 +287,9 @@ done
 
 
 %changelog
+* Fri Nov  6 2020 Phantom X <megaphantomx at hotmail dot com> - 3:7.5.0-9
+- with_python 0
+
 * Wed Sep 30 2020 - 3:7.5.0-8
 - python2.7
 

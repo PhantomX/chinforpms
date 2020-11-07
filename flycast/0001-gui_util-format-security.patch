@@ -1,0 +1,25 @@
+From 81e4b45adb707c5a1e30aa1b3466a62124dba5db Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 6 Nov 2020 19:15:24 -0300
+Subject: [PATCH] gui_util: format-security
+
+---
+ core/rend/gui_util.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/rend/gui_util.cpp b/core/rend/gui_util.cpp
+index e0351cd..4cbb2f9 100644
+--- a/core/rend/gui_util.cpp
++++ b/core/rend/gui_util.cpp
+@@ -262,7 +262,7 @@ void select_directory_popup(const char *prompt, float scaling, StringCallback ca
+         ImGui::PushStyleColor(ImGuiCol_Text, { 1, 1, 1, 0.3});
+         for (auto& name : display_files)
+         {
+-            ImGui::Text(name.c_str());
++            ImGui::Text("%s", name.c_str());
+         }
+         ImGui::PopStyleColor();
+         
+-- 
+2.28.0
+

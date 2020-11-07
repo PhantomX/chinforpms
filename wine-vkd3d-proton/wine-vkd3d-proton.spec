@@ -4,20 +4,23 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit c3e396579788ded2661501c4b0dac05c96893a41
+# Need be set for release builds too
+%global commit 60ac9b4d515cd8647ccb97591016f3f4058c7db1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201023
-%global with_snapshot 1
+%global date 20201106
+%global with_snapshot 0
 
-%global commit1 4fbbf081ff8107733e728a78d2b2a36e82ecf79b
+%global buildcommit %(c=%{commit}; echo ${c:0:15})
+
+%global commit1 3086c82a9b3f75a3506ed82d3d2780039948bdd5
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 abe2eff36f3cefa15eec98d9f08e12e05493966e
+%global commit2 a61d07a72763c1eb200de0a2c316703643a0d1d9
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
-%global commit3 a57b4b1b2ef6f7b31b27588f0e7288c630d68c08
+%global commit3 a20c768698836d93a86d0fe742081012b66c6afd
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
@@ -45,14 +48,18 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        1.1
-Release:        2%{?gver}%{?dist}
+Version:        2.0
+Release:        1%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
 URL:            https://github.com/HansKristian-Work/%{pkgname}
 
-Source0:        https://github.com/HansKristian-Work/%{pkgname}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+%if 0%{?with_snapshot}
+Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+%else
+Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+%endif
 Source1:        https://github.com/HansKristian-Work/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        %{kg_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        %{kg_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
@@ -88,7 +95,7 @@ Requires:       wine-common >= %{winecommonver}
 Requires:       wine-desktop >= %{winecommonver}
 Enhances:       wine
 
-Provides:       wine-dxvk-d3d12 = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       wine-vkd3d-d3d12 = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
@@ -109,7 +116,11 @@ package or when debugging this package.
 
 
 %prep
+%if 0%{?with_snapshot}
 %autosetup -n %{pkgname}-%{commit} -p1
+%else
+%autosetup -n %{pkgname}-%{version} -p1
+%endif
 
 tar -xf %{S:1} -C subprojects/dxil-spirv --strip-components 1
 tar -xf %{S:2} -C subprojects/dxil-spirv/third_party/SPIRV-Tools --strip-components 1
@@ -140,7 +151,8 @@ sed \
   -e '/command/s|git|true|g' \
   -i meson.build
 
-sed -e 's|@VCS_TAG@|%{shortcommit}|g' -i vkd3d_version.c.in
+sed -e 's|@VCS_TAG@|%{buildcommit}|g' -i vkd3d_build.h.in
+sed -e 's|@VCS_TAG@|v%{version}|g' -i vkd3d_version.h.in
 
 cp %{S:4} README.%{pkgname}
 
@@ -201,13 +213,13 @@ done
 
 %install
 
-for dll in d3d12 libvkd3d-utils ;do
+for dll in d3d12 libvkd3d-proton-utils-2 ;do
 
   case ${dll} in
     d3d12)
       dlldir=${dll}
       ;;
-    libvkd3d-utils)
+    libvkd3d-proton-utils*)
       dlldir=vkd3d-utils
       ;;
   esac
@@ -236,6 +248,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Nov 06 2020 Phantom X <megaphantomx at hotmail dot com> - 2.0-1
+- 2.0
+
 * Fri Oct 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1.1-2.20201023gitc3e3965
 - Bump
 

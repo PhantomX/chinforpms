@@ -88,6 +88,7 @@ devedeng
 discimagecreator
 disk-indicator
 dosbox-staging
+dosbox-x
 easytag
 -emojione-picker
 FAudio

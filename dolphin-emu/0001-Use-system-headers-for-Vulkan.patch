@@ -15,14 +15,14 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 26484938a3..c27b9cd80f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -543,7 +543,6 @@ else()
-   message(STATUS "Using static fmt from Externals")
+@@ -554,7 +554,6 @@ else()
    add_subdirectory(Externals/fmt EXCLUDE_FROM_ALL)
  endif()
--add_subdirectory(Externals/glslang)
  add_subdirectory(Externals/imgui)
+-add_subdirectory(Externals/glslang)
  
- find_package(pugixml)
+ if(ENABLE_VULKAN)
+   add_definitions(-DHAS_VULKAN)
 diff --git a/Source/Core/VideoBackends/Vulkan/CMakeLists.txt b/Source/Core/VideoBackends/Vulkan/CMakeLists.txt
 index 40966f191d..f20c1ee632 100644
 --- a/Source/Core/VideoBackends/Vulkan/CMakeLists.txt

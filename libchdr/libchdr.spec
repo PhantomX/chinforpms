@@ -1,6 +1,6 @@
-%global commit d21ac2f069203cc8e8d4c0ae7b2d305a0f28e36a
+%global commit 82670d549da93f49fe3788aece318ed18be20a91
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200913
+%global date 20201103
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,8 +8,8 @@
 %endif
 
 Name:           libchdr
-Version:        0.0
-Release:        3%{?gver}%{?dist}
+Version:        0.1
+Release:        1%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -82,6 +82,9 @@ rm -rf deps/{flac,lzma,zlib}*
 
 
 %changelog
+* Fri Nov 06 2020 Phantom X <megaphantomx at hotmail dot com> - 0.1-1.20201103git82670d5
+- 0.1
+
 * Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 0.0-3.20200913gitd21ac2f
 - Bump
 

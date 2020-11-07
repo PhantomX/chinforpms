@@ -1,6 +1,6 @@
-From 6f0ac88ea9c7e7f7ea22040d9733229957591ee8 Mon Sep 17 00:00:00 2001
+From 019d963dd21bd1e81517dff83ab6caafff3fd3ac Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 21 Jul 2020 10:28:00 -0300
+Date: Fri, 6 Nov 2020 19:37:51 -0300
 Subject: [PATCH] Optional static library
 
 ---
@@ -8,20 +8,20 @@ Subject: [PATCH] Optional static library
  1 file changed, 3 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 38c297b..4d715d3 100644
+index 725a2b5..92a8f99 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -5,6 +5,7 @@ project(chdr C)
  set(CHDR_VERSION_MAJOR 0)
- set(CHDR_VERSION_MINOR 0)
+ set(CHDR_VERSION_MINOR 1)
  
 +option(BUILD_STATIC_LIBS "Build libchdr also as a static library" ON)
  option(BUILD_SHARED_LIBS "Build libchdr also as a shared library" ON)
  option(WITH_SYSTEM_FLAC "Use system provided FLAC library" OFF)
  option(WITH_SYSTEM_ZLIB "Use system provided zlib library" OFF)
-@@ -127,10 +128,12 @@ set(CHDR_SOURCES
-   src/huffman.h
- )
+@@ -92,10 +93,12 @@ set(CHDR_SOURCES
+ 
+ list(APPEND CHDR_INCLUDES include ${CMAKE_CURRENT_BINARY_DIR}/include)
  
 +if (BUILD_STATIC_LIBS)
  add_library(chdr-static STATIC ${CHDR_SOURCES})
@@ -33,5 +33,5 @@ index 38c297b..4d715d3 100644
  if (BUILD_SHARED_LIBS)
    set(LIBS ${PLATFORM_LIBS})
 -- 
-2.26.2
+2.28.0
 

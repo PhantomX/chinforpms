@@ -1,5 +1,5 @@
 Name:           dosbox-staging
-Version:        0.75.1
+Version:        0.75.2
 Release:        1%{?dist}
 
 Summary:        x86/DOS emulator with sound and graphics
@@ -94,6 +94,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Fri Nov 06 2020 Phantom X <megaphantomx at hotmail dot com> - 0.75.2-1
+- 0.75.2
+
 * Wed Sep 23 2020 Phantom X <megaphantomx at hotmail dot com> - 0.75.1-1
 - Initial spec
 
