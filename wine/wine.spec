@@ -1,7 +1,7 @@
 %global commit 03eaa2cc93e5e2ea4c36495870c268797aea3ca8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20201030
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver f7739e70521c199291389a56cdbd7903782f4894
+%global wine_stagingver 5.21
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ccc441b31bf2aba6ec74d4442d774689d025a793
+%global tkg_id f8e03a558bbc53945f2df6a10c2a3e4b3622d7a3
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 38b7545daf34bb20b3365e7b3d2757176fc42a5e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -94,8 +94,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.20
-Release:        101%{?gver}%{?dist}
+Version:        5.21
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -816,8 +816,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch5000 -p1
 %patch5001 -p1
-
-sed '/0034-mfplat-Add-I420-format-information.patch/d' -i ./patches/patchinstall.sh
 
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
@@ -1897,7 +1895,8 @@ fi
 %{_libdir}/wine/fusion.%{winedll}
 %{_libdir}/wine/fwpuclnt.%{winedll}
 %{_libdir}/wine/gameux.%{winedll}
-%{_libdir}/wine/gdi32.dll.so
+%{_libdir}/wine/gdi32.so
+%{_libdir}/wine/gdi32.%{winedll}
 %{_libdir}/wine/gdiplus.%{winedll}
 %{_libdir}/wine/glu32.dll.so
 %{_libdir}/wine/gphoto2.ds.so
@@ -2700,6 +2699,9 @@ fi
 
 
 %changelog
+* Sat Nov 07 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.21-100
+- 5.21
+
 * Sat Oct 31 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.20-101.20201030git03eaa2c
 - Snapshot
 
