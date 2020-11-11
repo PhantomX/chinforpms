@@ -60,6 +60,7 @@ antimicrox
 applyppf
 ario
 asbru-cm
+atool
 -audacious
 authenticator
 barrier

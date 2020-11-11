@@ -1,8 +1,8 @@
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
 Name:           asbru-cm
-Version:        6.2.1
-Release:        2%{?dist}
+Version:        6.2.2
+Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
@@ -51,7 +51,6 @@ Requires:       perl(Socket6)
 Requires:       perl(Storable)
 Requires:       perl(Sys::Hostname)
 Requires:       perl(Time::HiRes)
-Requires:       perl(X11::GUITest
 Requires:       perl(XML::Parser)
 Requires:       perl(YAML)
 Requires:       perl(constant)
@@ -66,6 +65,7 @@ Requires:       vte291 >= 0.62
 Requires:       ftp
 Requires:       telnet
 Requires:       bash
+Suggests:       perl(X11::GUITest)
 
 
 %description
@@ -141,6 +141,9 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
+* Tue Nov 10 2020 Phantom X <megaphantomx at hotmail dot com> - 6.2.2-1
+- 6.2.2
+
 * Tue Oct 27 2020 Phantom X <megaphantomx at hotmail dot com> - 6.2.1-2
 - Patch to fix vte291 0.62 issues
 

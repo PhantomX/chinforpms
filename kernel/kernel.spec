@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit f796cfc9923e29ed1661bd24a70c17ba76445aee
+%global pfcommit 85667011b4edee573109212f90253bb23bfe63e5
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -2667,6 +2667,12 @@ fi
 #
 #
 %changelog
+* Tue Nov 10 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.8-500.chinfo
+- 5.9.8 - pf4
+
+* Tue Nov 10 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.7-500.chinfo
+- 5.9.7 - pf3
+
 * Thu Nov 05 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.6-500.chinfo
 - 5.9.6 - pf3
 
