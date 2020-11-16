@@ -1,51 +1,49 @@
-From 35480ad2bc8606559a5315df6b01dd19aaa309fd Mon Sep 17 00:00:00 2001
+From b722c6a9519ee6ae235fcb8199fdfd1d81e15bee Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 19 Jul 2020 17:58:02 -0300
+Date: Sun, 15 Nov 2020 18:10:11 -0300
 Subject: [PATCH] Disable gtk-update-icon-cache execution
 
 ---
  lutris/gui/config/common.py | 3 ---
- lutris/gui/views/store.py   | 4 +---
+ lutris/gui/lutriswindow.py  | 2 --
  lutris/util/linux.py        | 1 -
- lutris/util/resources.py    | 4 ++--
- 4 files changed, 3 insertions(+), 9 deletions(-)
+ lutris/util/system.py       | 9 ---------
+ 4 files changed, 15 deletions(-)
 
 diff --git a/lutris/gui/config/common.py b/lutris/gui/config/common.py
-index 6bf2cb5..ce61398 100644
+index a38f7f4..4910d1c 100644
 --- a/lutris/gui/config/common.py
 +++ b/lutris/gui/config/common.py
-@@ -573,9 +573,6 @@ class GameDialogCommon:
+@@ -554,9 +554,6 @@ class GameDialogCommon:
              pixbuf.savev(dest_path, file_format, [], [])
              self._set_image(image_type)
  
 -            if image_type == "icon":
--                resources.update_desktop_icons()
+-                system.update_desktop_icons()
 -
          dialog.destroy()
  
      def on_custom_image_reset_clicked(self, _widget, image_type):
-diff --git a/lutris/gui/views/store.py b/lutris/gui/views/store.py
-index c501eb3..aa482f0 100644
---- a/lutris/gui/views/store.py
-+++ b/lutris/gui/views/store.py
-@@ -14,7 +14,7 @@ from lutris.gui.widgets.utils import get_pixbuf_for_game
- from lutris.util import system
+diff --git a/lutris/gui/lutriswindow.py b/lutris/gui/lutriswindow.py
+index ef1a1ca..2aa420e 100644
+--- a/lutris/gui/lutriswindow.py
++++ b/lutris/gui/lutriswindow.py
+@@ -31,7 +31,6 @@ from lutris.services.lutris import LutrisBanner, LutrisIcon, LutrisService
+ from lutris.util import datapath
  from lutris.util.jobs import AsyncCall
  from lutris.util.log import logger
--from lutris.util.resources import download_media, get_icon_path, update_desktop_icons
-+from lutris.util.resources import download_media, get_icon_path
+-from lutris.util.system import update_desktop_icons
  
- from . import (
-     COL_ICON, COL_ID, COL_INSTALLED, COL_INSTALLED_AT, COL_INSTALLED_AT_TEXT, COL_LASTPLAYED, COL_LASTPLAYED_TEXT,
-@@ -386,8 +386,6 @@ class GameStore(GObject.Object):
-                     logger.exception('%r failed: %s', slug, ex)
-                 else:
-                     self.emit("icon-loaded", slug, media_type)
--        if media_type == "icon":
--            update_desktop_icons()
  
-     def add_games_by_ids(self, game_ids):
-         self.add_games(pga.get_games_by_ids(game_ids))
+ @GtkTemplate(ui=os.path.join(datapath.get(), "ui", "lutris-window.ui"))
+@@ -70,7 +69,6 @@ class LutrisWindow(Gtk.ApplicationWindow):  # pylint: disable=too-many-public-me
+             application=application,
+             **kwargs
+         )
+-        update_desktop_icons()
+         load_icon_theme()
+         self.application = application
+         self.runtime_updater = RuntimeUpdater()
 diff --git a/lutris/util/linux.py b/lutris/util/linux.py
 index d7c5b69..f361cf4 100644
 --- a/lutris/util/linux.py
@@ -58,22 +56,26 @@ index d7c5b69..f361cf4 100644
          "lspci",
          "xgamma",
          "ldconfig",
-diff --git a/lutris/util/resources.py b/lutris/util/resources.py
-index 498890d..3c4f468 100644
---- a/lutris/util/resources.py
-+++ b/lutris/util/resources.py
-@@ -29,9 +29,9 @@ def update_desktop_icons():
-     """Update Icon for GTK+ desktop manager
-     Other desktop manager icon cache commands must be added here if needed
-     """
--    gtk_update_icon_cache = system.find_executable("gtk-update-icon-cache")
-+    gtk_update_icon_cache = system.find_executable("true")
-     if gtk_update_icon_cache:
--        os.system("gtk-update-icon-cache -tf %s" % os.path.join(GLib.get_user_data_dir(), "icons", "hicolor"))
-+        os.system("true %s" % os.path.join(GLib.get_user_data_dir(), "icons", "hicolor"))
+diff --git a/lutris/util/system.py b/lutris/util/system.py
+index 9785c5d..373e910 100644
+--- a/lutris/util/system.py
++++ b/lutris/util/system.py
+@@ -376,15 +376,6 @@ def get_existing_parent(path):
+     return get_existing_parent(os.path.dirname(path))
  
  
- def download_media(url, dest, overwrite=False):
+-def update_desktop_icons():
+-    """Update Icon for GTK+ desktop manager
+-    Other desktop manager icon cache commands must be added here if needed
+-    """
+-    if find_executable("gtk-update-icon-cache"):
+-        execute(["gtk-update-icon-cache", "-tf", os.path.join(GLib.get_user_data_dir(), "icons/hicolor")], quiet=True)
+-        execute(["gtk-update-icon-cache", "-tf", os.path.join(settings.RUNTIME_DIR, "icons/hicolor")], quiet=True)
+-
+-
+ def get_disk_size(path):
+     """Return the disk size in bytes of a folder"""
+     total_size = 0
 -- 
-2.26.2
+2.28.0
 

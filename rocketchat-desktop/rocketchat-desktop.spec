@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.0.5
+Version:        3.0.7
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -102,6 +102,9 @@ done
 
 
 %changelog
+* Fri Nov 13 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.7-1
+- 3.0.7
+
 * Wed Oct 28 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.5-1
 - 3.0.5
 

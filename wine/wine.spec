@@ -1,7 +1,7 @@
-%global commit 03eaa2cc93e5e2ea4c36495870c268797aea3ca8
+%global commit cf49617c1a378dd4a37ab7226187708c501b046f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201030
-%global with_snapshot 0
+%global date 20201113
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.21
+%global wine_stagingver 7bdc1d6bacaba02b914ca3b66ee239103201617d
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f8e03a558bbc53945f2df6a10c2a3e4b3622d7a3
+%global tkg_id b7c9667b878be281ad18fd623bef7b8ffb233b91
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 38b7545daf34bb20b3365e7b3d2757176fc42a5e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -95,7 +95,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.21
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -254,7 +254,6 @@ BuildRequires:  gettext-devel
 BuildRequires:  giflib-devel
 BuildRequires:  gsm-devel
 BuildRequires:  pkgconfig(gl)
-BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(gnutls)
 BuildRequires:  pkgconfig(gstreamer-1.0)
 BuildRequires:  pkgconfig(gstreamer-audio-1.0)
@@ -1752,7 +1751,8 @@ fi
 %{_libdir}/wine/connect.%{winedll}
 %{_libdir}/wine/credui.%{winedll}
 %{_libdir}/wine/crtdll.dll.so
-%{_libdir}/wine/crypt32.dll.so
+%{_libdir}/wine/crypt32.so
+%{_libdir}/wine/crypt32.%{winedll}
 %{_libdir}/wine/cryptdlg.%{winedll}
 %{_libdir}/wine/cryptdll.%{winedll}
 %{_libdir}/wine/cryptext.%{winedll}
@@ -1898,7 +1898,7 @@ fi
 %{_libdir}/wine/gdi32.so
 %{_libdir}/wine/gdi32.%{winedll}
 %{_libdir}/wine/gdiplus.%{winedll}
-%{_libdir}/wine/glu32.dll.so
+%{_libdir}/wine/glu32.%{winedll}
 %{_libdir}/wine/gphoto2.ds.so
 %{_libdir}/wine/gpkcsp.%{winedll}
 %{_libdir}/wine/hal.%{winedll}
@@ -2414,9 +2414,6 @@ fi
 %dir %{_datadir}/wine/mono
 %dir %{_datadir}/wine/fonts
 %{_datadir}/wine/wine.inf
-%{_datadir}/wine/winebus.inf
-%{_datadir}/wine/winehid.inf
-%{_datadir}/wine/wineusb.inf
 %{_datadir}/wine/nls/c_037.nls
 %{_datadir}/wine/nls/c_10000.nls
 %{_datadir}/wine/nls/c_10001.nls
@@ -2645,7 +2642,8 @@ fi
 
 # cms subpackage
 %files cms
-%{_libdir}/wine/mscms.dll.so
+%{_libdir}/wine/mscms.so
+%{_libdir}/wine/mscms.%{winedll}
 
 # twain subpackage
 %files twain
@@ -2699,6 +2697,10 @@ fi
 
 
 %changelog
+* Sun Nov 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.21-101.20201113gitcf49617
+- Snapshot
+- Remove glu BR
+
 * Sat Nov 07 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.21-100
 - 5.21
 

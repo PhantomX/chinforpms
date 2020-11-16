@@ -1,6 +1,6 @@
-%global commit 7a2c94f6e1497a254484ae2ccbb9258903c75fa7
+%global commit 319287dbe552c8405720b25dfdf5fa518deeee0b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201030
+%global date 20201113
 %global with_snapshot 1
 
 %global sanitize 0
@@ -16,7 +16,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        111%{?gver}%{?dist}
+Release:        112%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -37,8 +37,6 @@ Source0:        %{name}-%{version}.tar.xz
 %endif
 %endif
 Source1:        Makefile
-
-Patch11:        0001-Use-shared-fmt.patch
 
 
 BuildRequires:  gcc
@@ -63,6 +61,7 @@ BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(harfbuzz)
 #BuildRequires:  pkgconfig(portaudio-2.0)
+BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(x11)
@@ -238,6 +237,10 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Fri Nov 13 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-112.20201113git319287d
+- Update
+- BR: samplerate
+
 * Sat Oct 31 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-111.20201030git7a2c94f
 - Bump
 
