@@ -9,7 +9,7 @@
 
 Name:           libchdr
 Version:        0.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -52,14 +52,18 @@ developing applications that use %{name}.
 
 rm -rf deps/{flac,lzma,zlib}*
 
+sed -e 's| -O3 -flto||g' -i CMakeLists.txt
+
 
 %build
+CFLAGS="%{build_cflags} -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE" \
 %cmake \
   -DCMAKE_INSTALL_LIBDIR:PATH="%{_lib}" \
   -DBUILD_STATIC_LIBS:BOOL=OFF \
   -DWITH_SYSTEM_FLAC:BOOL=ON \
   -DWITH_SYSTEM_LZMA:BOOL=ON \
   -DWITH_SYSTEM_ZLIB:BOOL=ON \
+  -DCMAKE_BUILD_TYPE=Release \
 %{nil}
 
 %cmake_build
@@ -68,6 +72,8 @@ rm -rf deps/{flac,lzma,zlib}*
 %install
 
 %cmake_install
+
+install -pm0644 include/libchdr/chdconfig.h %{buildroot}%{_includedir}/%{name}/
 
 
 %files
@@ -82,6 +88,9 @@ rm -rf deps/{flac,lzma,zlib}*
 
 
 %changelog
+* Wed Nov 18 2020 Phantom X <megaphantomx at hotmail dot com> - 0.1-2.20201103git82670d5
+- Install missing header
+
 * Fri Nov 06 2020 Phantom X <megaphantomx at hotmail dot com> - 0.1-1.20201103git82670d5
 - 0.1
 

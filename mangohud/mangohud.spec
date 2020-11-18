@@ -14,7 +14,7 @@
 
 Name:           mangohud
 Version:        0.5.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -101,6 +101,8 @@ sed -e "/-D__STDC_CONSTANT_MACROS/i\  '${TEMP_CFLAGS}'," -i meson.build
 %install
 %meson_install
 
+chmod 0755 %{buildroot}%{_bindir}/%{name}
+
 
 %files
 %license LICENSE
@@ -113,6 +115,9 @@ sed -e "/-D__STDC_CONSTANT_MACROS/i\  '${TEMP_CFLAGS}'," -i meson.build
 
 
 %changelog
+* Tue Nov 17 2020 Phantom X <megaphantomx at hotmail dot com> - 0.5.1-2
+- Fix wrapper again
+
 * Mon Aug 17 2020 Phantom X <megaphantomx at hotmail dot com> - 0.5.1-1
 - 0.5.1
 
