@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 5
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 85667011b4edee573109212f90253bb23bfe63e5
+%global pfcommit 38df3a1cfc13340eebef5298bb1c7a8763ff3314
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id fc52788baa214acdc9726f6c92fdeb55a7ad5c5b
+%global opensuse_id 60a737eb07e515d5b90bafaae089b6fb00d5416b
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -869,6 +869,8 @@ Patch129: arm64-dts-allwinner-h5-OrangePi-Prime-Fix-ethernet-node.patch
 Patch130: arm64-dts-allwinner-h5-OrangePi-PC2-Fix-ethernet-node.patch
 # https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023194902.368239-1-jernej.skrabec@siol.net/
 Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
+# rhbz 1897038
+Patch132: bluetooth-fix-LL-privacy-BLE-device-fails-to-connect.patch
 
 ### Extra
 
@@ -886,6 +888,7 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch#/openSUSE-fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch
+Patch1020: %{opensuse_url}/btrfs-qgroup-don-t-commit-transaction-when-we-have-a.patch#/openSUSE-btrfs-qgroup-don-t-commit-transaction-when-we-have-a.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2667,6 +2670,10 @@ fi
 #
 #
 %changelog
+* Wed Nov 18 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.9-500.chinfo
+- 5.9.9 - pf5
+- f33 sync
+
 * Tue Nov 10 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.8-500.chinfo
 - 5.9.8 - pf4
 

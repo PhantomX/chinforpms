@@ -7,7 +7,7 @@ Subject: [PATCH] Do not pop up emoji tabbed panel and media menu on mouse over
  Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp     |  8 +-------
  Telegram/SourceFiles/chat_helpers/tabbed_panel.h       |  1 -
  Telegram/SourceFiles/history/history_widget.cpp        |  9 +++++++--
- .../history/view/history_view_compose_controls.cpp     |  9 +++++++--
+ .../history/view/controls/history_view_compose_controls.cpp     |  9 +++++++--
  .../media/view/media_view_overlay_widget.cpp           | 10 +---------
  .../SourceFiles/media/view/media_view_overlay_widget.h |  1 -
  6 files changed, 16 insertions(+), 22 deletions(-)
@@ -72,8 +72,8 @@ index 2574bfb697..8d892f21ff 100644
  	const auto selector = controller()->tabbedSelector();
 diff --git a/Telegram/SourceFiles/history/view/history_view_compose_controls.cpp b/Telegram/SourceFiles/history/view/history_view_compose_controls.cpp
 index 04daa403fd..1105c8b266 100644
---- a/Telegram/SourceFiles/history/view/history_view_compose_controls.cpp
-+++ b/Telegram/SourceFiles/history/view/history_view_compose_controls.cpp
+--- a/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
++++ b/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
 @@ -227,8 +227,13 @@ void ComposeControls::initTabbedSelector() {
  		setTabbedPanel(nullptr);
  	}

@@ -58,6 +58,7 @@ some seasonal packages too, these can return when needed
  * **qemu** - Seasonal package
  * **rust** - Pinned version for Waterfox build
  * **shaderc** - Fedora included
+ * **simplescreenrecorder** - Do not have interest anymore
  * **steamwm** - Broken
  * **telegram** - Unneeded
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**

@@ -19,7 +19,7 @@
 %global ver     %%(echo %{version} | sed 's/\\./-/2')
 
 Name:           amdgpu-pro-vulkan-driver
-Version:        20.30.1109583
+Version:        20.45.1164792
 Release:        1%{?dist}
 Summary:        AMDGPU Pro Driver For Vulkan
 
@@ -84,6 +84,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/amd
 
 
 %changelog
+* Wed Nov 18 2020 Phantom X <megaphantomx at hotmail dot com> - 20.45.1164792-1
+- 20.45.1164792
+
 * Wed Aug 26 2020 - 20.30.1109583-1
 - 20.30-1109583
 

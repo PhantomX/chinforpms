@@ -78,7 +78,7 @@ BuildRequires:  pkgconfig(bzip2)
 %if 0%{?with_egl}
 BuildRequires:  pkgconfig(egl)
 %endif
-BuildRequires:  pkgconfig(fmt) >= 6.0.0
+BuildRequires:  pkgconfig(fmt) >= 7.1.0
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libcurl)

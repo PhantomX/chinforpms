@@ -35,7 +35,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.4.9
+Version:        2.4.10
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -131,7 +131,7 @@ BuildRequires:  alsa-lib-devel
 BuildRequires:  json11-devel
 BuildRequires:  opus-devel
 
-Provides:       bundled(libtgvoip) = 0~git
+Provides:       bundled(libtgvoip) = 2.4.4
 %endif
 
 # Short alias for the main package...
@@ -251,6 +251,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Wed Nov 18 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.10-100
+- 2.4.10
+
 * Fri Nov 06 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.9-100
 - 2.4.9
 

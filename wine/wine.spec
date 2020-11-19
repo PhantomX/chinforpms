@@ -198,9 +198,6 @@ Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/565a4f3820b370f9715e0147031edb189d5a183f.patch#/%{name}-valve-565a4f3.patch
 Patch1092:       %{tkg_url}/hotfixes/370a538e/xact-revert-179.myrevert#/%{name}-tkg-xact-revert-179.patch
 
-Patch1300:       %{ge_url}/game-patches/nier.patch#/%{name}-ge-nier.patch
-Patch1301:       nier-nofshack.patch
-
 %if 0%{?pba}
 # acomminos PBA patches
 Source3001:     wine-README-pba
@@ -858,11 +855,6 @@ cp -p %{S:3001} README-pba-pkg
 %patch1035 -p1
 %patch1091 -p1 -R
 %patch1092 -p1 -R
-%if 0%{?fshack}
-%patch1300 -p1
-%else
-%patch1301 -p1
-%endif
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in

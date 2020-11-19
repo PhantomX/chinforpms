@@ -58,7 +58,6 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **qmc2** - Qt5, no game-menus
  * **quiterss** - Updated, Qt5
  * **skrooge** - Can't wait Fedora releases
- * **simplescreenrecorder** - Updated to build only glinject library when i686 for multilib
  * **smtube** - Patched to silence players output
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **taglib** - Tests
