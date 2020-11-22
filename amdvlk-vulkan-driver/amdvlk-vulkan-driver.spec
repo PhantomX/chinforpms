@@ -27,15 +27,15 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 d2180485db6cde18b2ead1eda0925be409507b78
+%global commit2 38dcb76aadf729b67cabe15c2cc07a784020f704
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 f623fc7ca78c3cec2123a16700a8819f3ccf0656
+%global commit3 fc11e79aab63337702d8efc05e5433dec9efdf06
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 29117a3431d163a2e9e7bfe87e63d0d8d3c28b11
+%global commit4 b1e752d402592628f61eb7e1aa2a802a205de798
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -51,7 +51,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 1f2fcddd3963b9c29bf360daf7656c5977c2aadd
+%global commit8 671914c28e8249f0a555726a0f3f38691fe5c1df
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
@@ -78,7 +78,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.4.4
+Version:        2020.4.5
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -250,6 +250,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Thu Nov 19 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.4.5-1
+- 2020.Q4.5
+
 * Tue Nov 17 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.4.4-1
 - 2020.Q4.4
 

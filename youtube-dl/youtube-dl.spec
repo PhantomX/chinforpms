@@ -15,7 +15,7 @@
 %global dl_url https://github.com/rg3/youtube-dl/releases/download/%%{version}
 
 Name:           youtube-dl
-Version:        2020.11.18
+Version:        2020.11.21.1
 Release:        1%{?dist}
 Summary:        A small command-line program to download online videos
 License:        Unlicense
@@ -124,6 +124,9 @@ install -pm644 youtube-dl.fish %{buildroot}%{_datadir}/fish/vendor_functions.d/y
 %{_datadir}/fish/vendor_functions.d/youtube-dl.fish
 
 %changelog
+* Sat Nov 21 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.11.21.1-1
+- 2020.11.21.1
+
 * Wed Nov 18 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.11.18-1
 - 2020.11.18
 

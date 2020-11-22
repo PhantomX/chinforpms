@@ -1,7 +1,7 @@
-%global commit cf49617c1a378dd4a37ab7226187708c501b046f
+%global commit dc72519cd234055ac79b5a7e51b8fbcc4cda1e85
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201113
-%global with_snapshot 1
+%global date 20201119
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7bdc1d6bacaba02b914ca3b66ee239103201617d
+%global wine_stagingver 5.22
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id b7c9667b878be281ad18fd623bef7b8ffb233b91
+%global tkg_id 1cc5491da33b2aa887055cee149cd7a2f81978a3
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 38b7545daf34bb20b3365e7b3d2757176fc42a5e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -64,7 +64,6 @@
 %global pba 0
 
 %if 0%{?fshack}
-%global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
 %global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput-mouse -W user32-rawinput-mouse-experimental -W user32-rawinput-hid
 %endif
@@ -94,8 +93,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        5.21
-Release:        101%{?gver}%{?dist}
+Version:        5.22
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -162,6 +161,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
+# Revert to fix many game launchers displaying empty windows
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 
@@ -196,7 +196,6 @@ Patch1035:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-t
 
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/565a4f3820b370f9715e0147031edb189d5a183f.patch#/%{name}-valve-565a4f3.patch
-Patch1092:       %{tkg_url}/hotfixes/370a538e/xact-revert-179.myrevert#/%{name}-tkg-xact-revert-179.patch
 
 %if 0%{?pba}
 # acomminos PBA patches
@@ -832,7 +831,7 @@ cp -p %{S:3001} README-pba-pkg
 %patch1023 -p1
 %patch1024 -p1
 %endif
-%patch1025 -p1
+#patch1025 -p1
 %patch1026 -p1
 %if 0%{?fshack}
 %patch1027 -p1
@@ -854,7 +853,6 @@ cp -p %{S:3001} README-pba-pkg
 %endif
 %patch1035 -p1
 %patch1091 -p1 -R
-%patch1092 -p1 -R
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -1742,7 +1740,8 @@ fi
 %{_libdir}/wine/concrt140.%{winedll}
 %{_libdir}/wine/connect.%{winedll}
 %{_libdir}/wine/credui.%{winedll}
-%{_libdir}/wine/crtdll.dll.so
+%{_libdir}/wine/crtdll.so
+%{_libdir}/wine/crtdll.%{winedll}
 %{_libdir}/wine/crypt32.so
 %{_libdir}/wine/crypt32.%{winedll}
 %{_libdir}/wine/cryptdlg.%{winedll}
@@ -1790,6 +1789,7 @@ fi
 %{_libdir}/wine/dmsynth.%{winedll}
 %{_libdir}/wine/dmusic.%{winedll}
 %{_libdir}/wine/dmusic32.%{winedll}
+%{_libdir}/wine/dotnetfx35.%{wineexe}
 %{_libdir}/wine/dplay.%{winedll}
 %{_libdir}/wine/dplaysvr.%{wineexe}
 %{_libdir}/wine/dplayx.%{winedll}
@@ -1800,9 +1800,7 @@ fi
 %{_libdir}/wine/dpvoice.%{winedll}
 %{_libdir}/wine/dpwsockx.%{winedll}
 %{_libdir}/wine/drmclien.%{winedll}
-%if 0%{?wine_staging}
 %{_libdir}/wine/dsdmo.%{winedll}
-%endif
 %{_libdir}/wine/dsound.%{winedll}
 %{_libdir}/wine/dsquery.%{winedll}
 %{_libdir}/wine/dssenh.%{winedll}
@@ -2016,18 +2014,27 @@ fi
 %{_libdir}/wine/msvcp120_app.%{winedll}
 %{_libdir}/wine/msvcp140.%{winedll}
 %{_libdir}/wine/msvcp140_1.%{winedll}
-%{_libdir}/wine/msvcr70.dll.so
-%{_libdir}/wine/msvcr71.dll.so
-%{_libdir}/wine/msvcr80.dll.so
-%{_libdir}/wine/msvcr90.dll.so
-%{_libdir}/wine/msvcr100.dll.so
-%{_libdir}/wine/msvcr110.dll.so
-%{_libdir}/wine/msvcr120.dll.so
+%{_libdir}/wine/msvcr70.so
+%{_libdir}/wine/msvcr70.%{winedll}
+%{_libdir}/wine/msvcr71.so
+%{_libdir}/wine/msvcr71.%{winedll}
+%{_libdir}/wine/msvcr80.so
+%{_libdir}/wine/msvcr80.%{winedll}
+%{_libdir}/wine/msvcr90.so
+%{_libdir}/wine/msvcr90.%{winedll}
+%{_libdir}/wine/msvcr100.so
+%{_libdir}/wine/msvcr100.%{winedll}
+%{_libdir}/wine/msvcr110.so
+%{_libdir}/wine/msvcr110.%{winedll}
+%{_libdir}/wine/msvcr120.so
+%{_libdir}/wine/msvcr120.%{winedll}
 %{_libdir}/wine/msvcr120_app.%{winedll}
-%{_libdir}/wine/msvcrt.dll.so
+%{_libdir}/wine/msvcrt.so
+%{_libdir}/wine/msvcrt.%{winedll}
 %{_libdir}/wine/msvcrt20.%{winedll}
 %{_libdir}/wine/msvcrt40.%{winedll}
-%{_libdir}/wine/msvcrtd.dll.so
+%{_libdir}/wine/msvcrtd.so
+%{_libdir}/wine/msvcrtd.%{winedll}
 %{_libdir}/wine/msvfw32.%{winedll}
 %{_libdir}/wine/msvidc32.%{winedll}
 %{_libdir}/wine/mswsock.%{winedll}
@@ -2157,10 +2164,9 @@ fi
 %{_libdir}/wine/tdi.%{winesys}
 %{_libdir}/wine/traffic.%{winedll}
 %{_libdir}/wine/tzres.%{winedll}
-%{_libdir}/wine/ucrtbase.dll.so
-%if 0%{?wine_staging}
+%{_libdir}/wine/ucrtbase.so
+%{_libdir}/wine/ucrtbase.%{winedll}
 %{_libdir}/wine/uianimation.%{winedll}
-%endif
 %{_libdir}/wine/uiautomationcore.%{winedll}
 %{_libdir}/wine/uiribbon.%{winedll}
 %{_libdir}/wine/unicows.%{winedll}
@@ -2203,10 +2209,10 @@ fi
 %{_libdir}/wine/wimgapi.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/win32k.%{winesys}
-%{_libdir}/wine/windows.gaming.input.%{winedll}
-%{_libdir}/wine/windows.globalization.%{winedll}
-%{_libdir}/wine/windows.media.speech.%{winedll}
-%{_libdir}/wine/windows.networking.connectivity.%{winedll}
+#{_libdir}/wine/windows.gaming.input.%%{winedll}
+#{_libdir}/wine/windows.globalization.%%{{winedll}
+#{_libdir}/wine/windows.media.speech.%%{{winedll}
+#{_libdir}/wine/windows.networking.connectivity.%%{{winedll}
 %endif
 %{_libdir}/wine/windowscodecs.so
 %{_libdir}/wine/windowscodecs.dll.so
@@ -2254,9 +2260,7 @@ fi
 %{_libdir}/wine/wtsapi32.%{winedll}
 %{_libdir}/wine/wuapi.%{winedll}
 %{_libdir}/wine/wuaueng.%{winedll}
-%if 0%{?wine_staging}
 %{_libdir}/wine/wuauserv.%{wineexe}
-%endif
 %{_libdir}/wine/security.%{winedll}
 %{_libdir}/wine/sfc.%{winedll}
 %{_libdir}/wine/wineps.%{winedrv}
@@ -2689,6 +2693,9 @@ fi
 
 
 %changelog
+* Sat Nov 21 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.22-100
+- 5.22
+
 * Sun Nov 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.21-101.20201113gitcf49617
 - Snapshot
 - Remove glu BR

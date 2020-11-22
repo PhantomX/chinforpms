@@ -2,7 +2,7 @@
 
 Name:           xfwm4
 Version:        4.14.6
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Next generation window manager for Xfce
 
 License:        GPLv2+
@@ -11,6 +11,7 @@ URL:            http://www.xfce.org/
 Source0:        http://archive.xfce.org/src/xfce/%{name}/%{xfceversion}/%{name}-%{version}.tar.bz2
 
 Patch10:        0001-settings-disable-keymap-reload-when-key-changes-is-d.patch
+Patch11:        https://gitlab.xfce.org/xfce/xfwm4/-/commit/e2fbfac304beace0297d071f7de0aceba4f0016a.patch#/%{name}-gl-e2fbfac.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  libxfce4ui-devel >= %{xfceversion}
@@ -66,6 +67,9 @@ done
 
 
 %changelog
+* Fri Nov 20 2020 Phantom X <megaphantomx at hotmail dot com> - 4.14.6-101
+- Upstream fix
+
 * Sun Nov  1 2020 Phantom X <megaphantomx at hotmail dot com> - 4.14.6-100
 - 4.14.6
 

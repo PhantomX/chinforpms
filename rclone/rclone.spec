@@ -11,7 +11,7 @@
 %global vc_url  https://github.com/%{name}/%{name}
 
 Name:           rclone
-Version:        1.53.2
+Version:        1.53.3
 Release:        1%{?dist}
 Summary:        Rsync for cloud storage
 
@@ -55,6 +55,9 @@ install -pm0644 %{name}.1 %{buildroot}%{_mandir}/man1/
 
 
 %changelog
+* Thu Nov 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1.53.3-1
+- 1.53.3
+
 * Wed Nov 04 2020 Phantom X <megaphantomx at hotmail dot com> - 1.53.2-1
 - 1.53.2
 
