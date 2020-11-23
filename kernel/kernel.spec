@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 38df3a1cfc13340eebef5298bb1c7a8763ff3314
+%global pfcommit dc556fef332ae0ea3b6870f7eac9f485ad282613
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 60a737eb07e515d5b90bafaae089b6fb00d5416b
+%global opensuse_id f76e598b0987217c1f512251f066bccd73a422d0
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -889,6 +889,7 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch#/openSUSE-fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch
 Patch1020: %{opensuse_url}/btrfs-qgroup-don-t-commit-transaction-when-we-have-a.patch#/openSUSE-btrfs-qgroup-don-t-commit-transaction-when-we-have-a.patch
+Patch1021: %{opensuse_url}/RDMA-srpt-Fix-typo-in-srpt_unregister_mad_agent-docs.patch#/openSUSE-RDMA-srpt-Fix-typo-in-srpt_unregister_mad_agent-docs.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2670,6 +2671,9 @@ fi
 #
 #
 %changelog
+* Sun Nov 22 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.10-500.chinfo
+- 5.9.10 - pf5
+
 * Wed Nov 18 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.9-500.chinfo
 - 5.9.9 - pf5
 - f33 sync

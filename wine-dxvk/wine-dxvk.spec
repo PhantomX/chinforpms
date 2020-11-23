@@ -62,12 +62,12 @@ ExclusiveArch:  %{ix86} x86_64
 
 BuildArch:      noarch
 
-BuildRequires:  mingw64-gcc
-BuildRequires:  mingw64-gcc-c++
+BuildRequires:  mingw64-gcc >= 10.0
+BuildRequires:  mingw64-gcc-c++ >= 10.0
 BuildRequires:  mingw64-headers >= 8.0
 BuildRequires:  mingw64-winpthreads-static >= 8.0
-BuildRequires:  mingw32-gcc
-BuildRequires:  mingw32-gcc-c++
+BuildRequires:  mingw32-gcc >= 10.0
+BuildRequires:  mingw32-gcc-c++ >= 10.0
 BuildRequires:  mingw32-headers >= 8.0
 BuildRequires:  mingw32-winpthreads-static >= 8.0
 BuildRequires:  gcc

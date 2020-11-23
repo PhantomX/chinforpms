@@ -1,6 +1,6 @@
-%global commit 03e598839799f26de9ac941fc2d5da63e49ce3b8
+%global commit a7979d46957c212ad462bd3786b1dcd15126eb53
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201117
+%global date 20201121
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        25%{?gver}%{?dist}
+Release:        26%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -68,7 +68,6 @@ BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(sdl2)
 %endif
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  python3-devel
 Requires:       hicolor-icon-theme
 Requires:       vulkan-loader%{?_isa}
 
@@ -100,16 +99,9 @@ find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
 
 pushd shell/linux
 
-rename reicast %{name} * man/* tools/*
-
 # Rebranding
 sed -e 's|reicast|%{name}|g' \
-  -i Makefile *.desktop man/*.1 tools/*.py
-
-sed -e 's|REICAST|FLYCAST|g' -i man/*.1
-sed -e 's|Reicast|Flycast|g' -i *.desktop tools/*.py
-
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" tools/%{name}-joyconfig.py
+  -i man/*.1
 
 popd
 
@@ -162,7 +154,6 @@ export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
 %install
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{__cmake_builddir}/%{name} %{buildroot}%{_bindir}/
-install -pm755 shell/linux/tools/%{name}-joyconfig.py %{buildroot}%{_bindir}/%{name}-joyconfig
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/mappings
 for mapping in gcwz generic pandora xboxdrv xpad ;do
@@ -196,7 +187,6 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %license LICENSE
 %doc README.md
 %{_bindir}/%{name}
-%{_bindir}/%{name}-joyconfig
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/pixmaps/%{name}.png
@@ -206,6 +196,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Nov 22 2020 Phantom X <megaphantomx at hotmail dot com> - 7-26.20201121gita7979d4
+- New snapshot
+
 * Wed Nov 18 2020 Phantom X <megaphantomx at hotmail dot com> - 7-25.20201117git03e5988
 - Bump
 
