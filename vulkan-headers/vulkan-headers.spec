@@ -1,6 +1,6 @@
 %global __python %{__python3}
 Name:           vulkan-headers
-Version:        1.2.161
+Version:        1.2.162
 Release:        1%{?dist}
 Summary:        Vulkan Header files and API registry
 
@@ -51,6 +51,9 @@ Vulkan Header files and API registry
 
 
 %changelog
+* Mon Nov 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.162-1
+- 1.2.162
+
 * Tue Nov 17 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.161-1
 - 1.2.161
 
