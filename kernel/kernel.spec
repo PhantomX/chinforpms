@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 6
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit dc556fef332ae0ea3b6870f7eac9f485ad282613
+%global pfcommit f726efd2d8ad3bdd4d7a344fdbb27b8442bdee9a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id f76e598b0987217c1f512251f066bccd73a422d0
+%global opensuse_id cc720a590511417d6a54815a58f6bf387a2aa27c
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -695,7 +695,6 @@ Source22: mod-extra.list.rhel
 Source23: mod-extra.list.fedora
 Source24: mod-blacklist.sh
 Source18: mod-sign.sh
-Source79: parallel_xz.sh
 
 Source80: filter-x86_64.sh.fedora
 Source81: filter-armv7hl.sh.fedora
@@ -853,24 +852,8 @@ Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch72: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
-# A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
-Patch124: 0001-update-phy-on-pine64-a64-devices.patch
-# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201024162515.30032-2-wens@kernel.org/
-Patch125: arm-sun8i-realtek-phy-fixes.patch
 # https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201025140144.28693-1-ats@offog.org/
 Patch126: ARM-dts-sun7i-pcduino3-nano-enable-RGMII-RX-TX-delay-on-PHY.patch
-# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201025081949.783443-1-jernej.skrabec@siol.net/
-Patch127: ARM-dts-sun8i-r40-bananapi-m2-ultra-Fix-ethernet-node.patch 
-# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201022185839.2779245-1-jernej.skrabec@siol.net/
-Patch128: arm64-dts-allwinner-a64-OrangePi-Win-Fix-ethernet-node.patch
-# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201028115817.68113-1-nperic@gmail.com/
-Patch129: arm64-dts-allwinner-h5-OrangePi-Prime-Fix-ethernet-node.patch
-# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023184858.3272918-1-jernej.skrabec@siol.net/
-Patch130: arm64-dts-allwinner-h5-OrangePi-PC2-Fix-ethernet-node.patch
-# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023194902.368239-1-jernej.skrabec@siol.net/
-Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
-# rhbz 1897038
-Patch132: bluetooth-fix-LL-privacy-BLE-device-fails-to-connect.patch
 
 ### Extra
 
@@ -2219,7 +2202,7 @@ find Documentation -type d | xargs chmod u+w
     fi \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
-    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | %{SOURCE79} %{?_smp_mflags}; \
+    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -P%{?_smp_build_ncpus} xz; \
   fi \
 %{nil}
 
@@ -2671,6 +2654,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 24 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.11-500.chinfo
+- 5.9.11 - pf6
+
 * Sun Nov 22 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.10-500.chinfo
 - 5.9.10 - pf5
 
