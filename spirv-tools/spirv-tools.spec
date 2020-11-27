@@ -1,20 +1,18 @@
-%global commit abe2eff36f3cefa15eec98d9f08e12e05493966e
+%global commit 2c458414c0851b9a0d1b0493857b56a1089847ac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201023
+%global date 20201125
 %global gver .%{date}git%{shortcommit}
 
 %global pkgname SPIRV-Tools
 
 Name:           spirv-tools
 Version:        2020.6
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        API and commands for processing SPIR-V modules
 
 License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/SPIRV-Tools
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
-
-Patch0:         0001-Revert-CMake-Enable-building-with-BUILD_SHARED_LIBS-.patch
 
 BuildRequires:  cmake3
 BuildRequires:  gcc-c++
@@ -55,6 +53,7 @@ Development files for %{name}
   -DCMAKE_INSTALL_LIBDIR=%{_lib} \
   -DSPIRV-Headers_SOURCE_DIR=%{_prefix} \
   -DPYTHON_EXECUTABLE=%{__python3} \
+  -DSPIRV_TOOLS_BUILD_STATIC=OFF \
   -GNinja \
 %{nil}
 
@@ -90,6 +89,9 @@ Development files for %{name}
 %{_libdir}/pkgconfig/SPIRV-Tools.pc
 
 %changelog
+* Thu Nov 26 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.6-102.20201125git2c45841
+- Bump
+
 * Fri Oct 23 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.6-101.20201023gitabe2eff
 - Bump
 
