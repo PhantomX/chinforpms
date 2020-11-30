@@ -43,6 +43,7 @@ telegram-desktop
 tg_owt
 -VirtualBox-extpack-oracle
 -VirtualBox-guest-additions-iso
+vivaldi
 vvvvvv
 vvvvvv-data
 -wine-freeworld

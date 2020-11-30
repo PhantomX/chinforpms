@@ -1,4 +1,4 @@
-%global smoothver 0.9.5
+%global smoothver 0.9.6
 
 %global sanitize 0
 
@@ -7,7 +7,7 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           boca
-Version:        1.0.2
+Version:        1.0.3
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac
 
@@ -23,6 +23,7 @@ Source0:        %{name}-%{ver}.tar.xz
 Source1:        Makefile
 
 Patch0:         %{name}-clean.patch
+Patch1:         https://github.com/enzo1982/BoCA/commit/4fb9fa91bf8ab3dbeac7ac9349d05cc9c29dd1ff.patch#/%{name}-gh-4fb9fa9.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(expat)
@@ -115,6 +116,9 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 
 %changelog
+* Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 1.0.3-1
+- 1.0.3
+
 * Sat Jul 04 2020 Phantom X <megaphantomx at hotmail dot com> - 1.0.2-1
 - 1.0.2
 

@@ -1,5 +1,7 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
+# Disable LTO. Segfaults.
+%global _lto_cflags -fno-lto
 
 %bcond_with ffmpeg
 %global with_egl 1
@@ -8,9 +10,9 @@
 %global with_sysvulkan 1
 %global with_unittests 0
 
-%global commit 2acd3abe359de3ebba49d9caa0552272d159d29c
+%global commit cf32c4d47970c2ac10e3b99d80a38966e681d597
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201106
+%global date 20201128
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -24,7 +26,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        123%{?gver}%{?dist}
+Release:        124%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -62,6 +64,7 @@ Patch3:         0003-soundtouch-Use-shorts-instead-of-floats-for-samples.patch
 Patch4:         0004-soundtounch-disable-exceptions.patch
 #This needs to be fixed, I've reverted the patch that breaks minizip
 Patch5:         0005-Revert-Externals-Update-minizip-search-path.patch
+Patch6:         %{name}-gcc11.patch
 
 Patch100:       0001-DSP-interrupt-hack-for-RE-2-and-3.patch
 Patch101:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
@@ -251,9 +254,6 @@ sed \
 
 
 %build
-# Disable LTO. Segfaults.
-%global _lto_cflags %{nil}
-
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 #Script to find xxhash is not implemented, just tell cmake it was found
@@ -393,6 +393,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Nov 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-124.20201128gitcf32c4d
+- Bump
+- fmt >= 7.1.0
+
 * Fri Nov 06 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-123.20201106git2acd3ab
 - New snapshot
 

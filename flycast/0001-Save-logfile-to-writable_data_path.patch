@@ -13,10 +13,10 @@ index 50bbde5..a14d89f 100644
 +++ b/core/log/LogManager.cpp
 @@ -132,7 +132,7 @@ LogManager::LogManager()
  #ifdef __ANDROID__
- 		std::string logPath = get_writable_data_path("/flycast.log");
+ 		std::string logPath = get_writable_data_path("flycast.log");
  #else
 -		std::string logPath = "flycast.log";
-+		std::string logPath = get_writable_data_path("/flycast.log");
++		std::string logPath = get_writable_data_path("flycast.log");
  #endif
  		RegisterListener(LogListener::FILE_LISTENER, new FileLogListener(logPath));
  		EnableListener(LogListener::FILE_LISTENER, true);

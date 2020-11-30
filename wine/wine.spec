@@ -1,7 +1,7 @@
-%global commit dc72519cd234055ac79b5a7e51b8fbcc4cda1e85
+%global commit cbca9f847f60773b4e7e5408f6a079f4896c5c1e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201119
-%global with_snapshot 0
+%global date 20201127
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5.22
+%global wine_stagingver 2a073f334b4cece46f9df1b0c2def5c7306eae39
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 1cc5491da33b2aa887055cee149cd7a2f81978a3
+%global tkg_id 9727420af1396e78bfaa5d086b0345a74adee080
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 38b7545daf34bb20b3365e7b3d2757176fc42a5e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -94,7 +94,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.22
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2095,7 +2095,8 @@ fi
 %{_libdir}/wine/pstorec.%{winedll}
 %{_libdir}/wine/pwrshplugin.%{winedll}
 %{_libdir}/wine/qasf.%{winedll}
-%{_libdir}/wine/qcap.dll.so
+%{_libdir}/wine/qcap.so
+%{_libdir}/wine/qcap.%{winedll}
 %{_libdir}/wine/qedit.%{winedll}
 %{_libdir}/wine/qdvd.%{winedll}
 %{_libdir}/wine/qmgr.%{winedll}
@@ -2209,10 +2210,10 @@ fi
 %{_libdir}/wine/wimgapi.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/win32k.%{winesys}
-#{_libdir}/wine/windows.gaming.input.%%{winedll}
-#{_libdir}/wine/windows.globalization.%%{{winedll}
-#{_libdir}/wine/windows.media.speech.%%{{winedll}
-#{_libdir}/wine/windows.networking.connectivity.%%{{winedll}
+%{_libdir}/wine/windows.gaming.input.%{winedll}
+%{_libdir}/wine/windows.globalization.%{winedll}
+%{_libdir}/wine/windows.media.speech.%{winedll}
+%{_libdir}/wine/windows.networking.connectivity.%{winedll}
 %endif
 %{_libdir}/wine/windowscodecs.so
 %{_libdir}/wine/windowscodecs.dll.so
@@ -2693,6 +2694,9 @@ fi
 
 
 %changelog
+* Sat Nov 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.22-101.20201127gitcbca9f8
+- Snapshot
+
 * Sat Nov 21 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.22-100
 - 5.22
 

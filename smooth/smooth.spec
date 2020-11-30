@@ -1,7 +1,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           smooth
-Version:        0.9.5
+Version:        0.9.6
 Release:        1%{?dist}
 Summary:        An object oriented C++ class library
 
@@ -68,6 +68,9 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 
 %changelog
+* Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.6-1
+- 0.9.6
+
 * Sat Jul 04 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.5-1
 - 0.9.5
 
