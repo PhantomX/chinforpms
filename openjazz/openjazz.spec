@@ -1,6 +1,6 @@
-%global commit 030119c57fc5e90017538e3679d526d642d2499f
+%global commit b8bb91495631078fb795ec627bb6286b1041158c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190505
+%global date 20200422
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           openjazz
 Version:        20171024
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A re-implemetantion of a known platform game engine
 
 License:        GPLv2+
@@ -91,6 +91,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
 %changelog
+* Tue Dec 01 2020 Phantom X <megaphantomx at hotmail dot com> - 20171024-4.20200422gitb8bb914
+- Bump
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 20171024-3.20190505git030119c
 - Bump
 

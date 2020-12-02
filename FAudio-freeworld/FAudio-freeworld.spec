@@ -11,7 +11,7 @@
 
 Name:           %{pkgname}-freeworld
 Version:        20.07
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - freeworld
 Epoch:          1
 
@@ -25,6 +25,8 @@ Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
+# https://bugs.winehq.org/show_bug.cgi?id=48791
+Patch0:         https://bugs.winehq.org/attachment.cgi?id=67944#/%{pkgname}-whqbug48791.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -99,6 +101,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.07-3.20200729gitf51d5df
+- Winehq bug 48791 fix try
+
 * Wed Jul 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.07-2.20200729gitf51d5df
 - Last snapshot with ffmpeg support
 

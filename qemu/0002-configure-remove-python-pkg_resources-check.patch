@@ -1,0 +1,32 @@
+From 8e84bf984a9870f1bb769ead56846b3385aafb64 Mon Sep 17 00:00:00 2001
+From: Olaf Hering <olaf@aepfle.de>
+Date: Tue, 24 Nov 2020 22:19:25 +0100
+Subject: [PATCH 2/2] configure: remove python pkg_resources check
+
+Since meson.git#0240d760c7699a059cc89e584363c6431cdd2b61 setuptools is not required anymore.
+
+Signed-off-by: Olaf Hering <olaf@aepfle.de>
+Reviewed-by: Thomas Huth <thuth@redhat.com>
+Message-Id: <20201124211925.4194-1-olaf@aepfle.de>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ configure | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/configure b/configure
+index 796cec1..18c26e0 100755
+--- a/configure
++++ b/configure
+@@ -1912,9 +1912,6 @@ fi
+ 
+ case "$meson" in
+     git | internal)
+-        if ! $python -c 'import pkg_resources' > /dev/null 2>&1; then
+-            error_exit "Python setuptools not found"
+-        fi
+         meson="$python ${source_path}/meson/meson.py"
+         ;;
+     *) meson=$(command -v "$meson") ;;
+-- 
+2.28.0
+

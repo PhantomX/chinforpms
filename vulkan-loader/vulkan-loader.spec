@@ -2,7 +2,7 @@
 
 Name:           vulkan-loader
 Version:        1.2.162
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan ICD desktop loader
 
 License:        ASL 2.0
@@ -70,6 +70,8 @@ developing applications that use %{name}.
 %autosetup -p1 -n Vulkan-Loader-%{version}
 %endif
 
+sed -e '/^Libs:/s|@LIB_SUFFIX@||g' -i loader/vulkan.pc.in
+
 
 %build
 %cmake3 \
@@ -108,6 +110,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
 
 
 %changelog
+* Tue Dec 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.162-2
+- Remove @LIB_SUFFIX@ from library
+
 * Thu Nov 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1.2.162-1
 - 1.2.162
 

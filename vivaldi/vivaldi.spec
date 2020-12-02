@@ -4,6 +4,14 @@
 %global _build_id_links none
 %global __strip /bin/true
 
+%global with_snapshot 0
+%if 0%{?with_snapshot}
+%global channel snapshot
+%else
+%global channel stable
+%endif
+%endif
+
 %global pkgrel 1
 
 Name:           vivaldi
@@ -13,7 +21,7 @@ Summary:        Web browser
 
 License:        Proprietary and others, see https://www.vivaldi.com/
 URL:            https://vivaldi.com/
-Source0:        https://downloads.vivaldi.com/stable/vivaldi-stable-%{version}-%{pkgrel}.x86_64.rpm
+Source0:        https://downloads.vivaldi.com/%{channel}/vivaldi-%{channel}-%{version}-%{pkgrel}.x86_64.rpm
 Source1:        eula.txt
 
 BuildRequires:  chrpath
@@ -50,8 +58,8 @@ find opt/%{name}/ -name '*.so*' | xargs chmod +x
 
 chrpath --delete opt/%{name}/%{name}-bin
 
-mv usr/share/applications/%{name}{-stable,}.desktop
-sed -e 's|%{name}-stable|%{name}|g' -i usr/share/applications/%{name}.desktop
+mv usr/share/applications/%{name}{-%{channel},}.desktop
+sed -e 's|%{name}-%{channel}|%{name}|g' -i usr/share/applications/%{name}.desktop
 
 
 %build

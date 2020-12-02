@@ -25,6 +25,9 @@
 %endif
 
 %global user_static 1
+%if 0%{?rhel}
+%global user_static 0
+%endif
 
 %global have_kvm 0
 %if 0%{?kvm_package:1}
@@ -117,6 +120,8 @@
 %define with_rdma 1
 %endif
 
+%define with_systemtap 1
+
 %define evr %{epoch}:%{version}-%{release}
 
 %define requires_block_curl Requires: %{name}-block-curl = %{evr}
@@ -144,17 +149,28 @@
 %define requires_audio_sdl Requires: %{name}-audio-sdl = %{evr}
 %define requires_char_baum Requires: %{name}-char-baum = %{evr}
 %define requires_device_usb_redirect Requires: %{name}-device-usb-redirect = %{evr}
-%define requires_device_usb_smartcard Requires: %{name}-device-usb-smartcard = %{evr} 
+%define requires_device_usb_smartcard Requires: %{name}-device-usb-smartcard = %{evr}
 %define requires_ui_curses Requires: %{name}-ui-curses = %{evr}
 %define requires_ui_gtk Requires: %{name}-ui-gtk = %{evr}
 %define requires_ui_sdl Requires: %{name}-ui-sdl = %{evr}
+%define requires_ui_egl_headless Requires: %{name}-ui-egl-headless = %{evr}
+%define requires_ui_opengl Requires: %{name}-ui-opengl = %{evr}
+%define requires_device_display_virtio_gpu Requires: %{name}-device-display-virtio-gpu = %{evr}
+%define requires_device_display_virtio_gpu_pci Requires: %{name}-device-display-virtio-gpu-pci = %{evr}
+%define requires_device_display_virtio_vga Requires: %{name}-device-display-virtio-vga = %{evr}
 
 %if %{have_spice}
 %define requires_ui_spice_app Requires: %{name}-ui-spice-app = %{evr}
+%define requires_ui_spice_core Requires: %{name}-ui-spice-core = %{evr}
 %define requires_device_display_qxl Requires: %{name}-device-display-qxl = %{evr}
+%define requires_audio_spice Requires: %{name}-audio-spice = %{evr}
+%define requires_char_spice Requires: %{name}-char-spice = %{evr}
 %else
 %define requires_ui_spice_app %{nil}
+%define requires_ui_spice_core %{nil}
 %define requires_device_display_qxl %{nil}
+%define requires_audio_spice %{nil}
+%define requires_char_spice %{nil}
 %endif
 
 %global requires_all_modules \
@@ -169,12 +185,20 @@
 %{requires_audio_oss} \
 %{requires_audio_pa} \
 %{requires_audio_sdl} \
+%{requires_audio_spice} \
 %{requires_ui_curses} \
 %{requires_ui_gtk} \
 %{requires_ui_sdl} \
+%{requires_ui_egl_headless} \
+%{requires_ui_opengl} \
 %{requires_ui_spice_app} \
+%{requires_ui_spice_core} \
 %{requires_char_baum} \
+%{requires_char_spice} \
 %{requires_device_display_qxl} \
+%{requires_device_display_virtio_gpu} \
+%{requires_device_display_virtio_gpu_pci} \
+%{requires_device_display_virtio_vga} \
 %{requires_device_usb_redirect} \
 %{requires_device_usb_smartcard} \
 
@@ -190,23 +214,13 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 5.1.0
-Release: 102%{?dist}
+Version: 5.2.0~rc3
+Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
 
 Source0: http://wiki.qemu-project.org/download/%{name}-%{ver}.tar.xz
-
-Patch1: 0001-linux-user-fix-implicit-conversion-from-enumeration-.patch
-Patch2: 0002-linux-user-Add-support-for-a-group-of-btrfs-ioctls-u.patch
-Patch3: 0003-linux-user-Add-support-for-a-group-of-btrfs-ioctls-u.patch
-Patch4: 0004-linux-user-Add-support-for-btrfs-ioctls-used-to-mani.patch
-Patch5: 0005-linux-user-Add-support-for-btrfs-ioctls-used-to-get-.patch
-Patch6: 0006-linux-user-Add-support-for-a-group-of-btrfs-inode-io.patch
-Patch7: 0007-linux-user-Add-support-for-two-btrfs-ioctls-used-for.patch
-Patch8: 0008-linux-user-Add-support-for-btrfs-ioctls-used-to-mana.patch
-Patch9: 0009-linux-user-Add-support-for-btrfs-ioctls-used-to-scru.patch
 
 # guest agent service
 Source10: qemu-guest-agent.service
@@ -217,26 +231,24 @@ Source11: 99-qemu-guest-agent.rules
 Source12: bridge.conf
 # qemu-kvm back compat wrapper installed as /usr/bin/qemu-kvm
 Source13: qemu-kvm.sh
-# PR manager service
-Source14: qemu-pr-helper.service
-Source15: qemu-pr-helper.socket
 Source16: %{name}-sysusers.conf
 # /etc/modprobe.d/kvm.conf, for x86
 Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
 
+Patch0001: 0001-meson-use-dependency-to-find-libjpeg.patch
+Patch0002: 0002-configure-remove-python-pkg_resources-check.patch
 
+BuildRequires: meson
 BuildRequires: gcc
 # documentation deps
 BuildRequires: texinfo
-# For /usr/bin/pod2man
-BuildRequires: perl-podlators
 %if %{qemu_sanity_check}
 BuildRequires: qemu-sanity-check-nodeps
 BuildRequires: kernel
 %endif
-# For chrpath calls in specfile
+# chrpath calls in specfile
 BuildRequires: chrpath
 
 # -display sdl support
@@ -264,47 +276,45 @@ BuildRequires: libnfs-devel
 BuildRequires: snappy-devel
 # lzo compression for memory dump
 BuildRequires: lzo-devel
-# needed for -display curses
+# curses display backend
 BuildRequires: ncurses-devel
-# used by 9pfs
+# 9pfs filesystem
 BuildRequires: libattr-devel
-# used by qemu-bridge-helper and qemu-pr-helper
+# qemu-bridge-helper, qemu-pr-helper and more
 BuildRequires: libcap-ng-devel
 # spice usb redirection support
-BuildRequires: usbredir-devel >= 0.5.2
+BuildRequires: usbredir-devel
 %if %{have_spice}
 # spice graphics support
-BuildRequires: spice-protocol >= 0.12.2
-BuildRequires: spice-server-devel >= 0.12.0
+BuildRequires: spice-protocol
+BuildRequires: spice-server-devel
 %endif
 # seccomp containment support
 BuildRequires: libseccomp-devel >= 2.3.0
 # For network block driver
 BuildRequires: libcurl-devel
 %if %{with_block_rbd}
-# For rbd block driver
-BuildRequires: librados2-devel
-BuildRequires: librbd1-devel
+# RBD block driver
+BuildRequires: librbd-devel
 %endif
 # We need both because the 'stap' binary is probed for by configure
 BuildRequires: systemtap
 BuildRequires: systemtap-sdt-devel
-# For VNC JPEG support
+# VNC JPEG support
 BuildRequires: libjpeg-devel
-# For VNC PNG support
+# VNC PNG support
 BuildRequires: libpng-devel
-# For Braille device support
+# Braille device support
 BuildRequires: brlapi-devel
-# For FDT device tree support
+# FDT device tree support
 BuildRequires: libfdt-devel
-# Hard requirement for version >= 1.3
+# QEMU display pixel manipulation
 BuildRequires: pixman-devel
 %if %{with_block_gluster}
-# For gluster support
-BuildRequires: glusterfs-devel >= 3.4.0
-BuildRequires: glusterfs-api-devel >= 3.4.0
+# gluster block driver
+BuildRequires: glusterfs-api-devel
 %endif
-# Needed for usb passthrough for qemu >= 1.5
+# USB passthrough
 BuildRequires: libusbx-devel
 # SSH block driver
 BuildRequires: libssh-devel
@@ -322,56 +332,60 @@ BuildRequires: rdma-core-devel
 BuildRequires: xen-devel
 %endif
 %if %{have_numactl}
-# qemu 2.1: needed for memdev hostmem backend
+# memdev hostmem backend
 BuildRequires: numactl-devel
 %endif
-# qemu 2.3: reading bzip2 compressed dmg images
+# reading bzip2 compressed dmg images
 BuildRequires: bzip2-devel
-# qemu 2.4: needed for opengl bits
+# opengl bits
 BuildRequires: libepoxy-devel
-# qemu 2.5: needed for TLS test suite
+# TLS test suite
 BuildRequires: libtasn1-devel
-# qemu 2.5: libcacard is it's own project now
-BuildRequires: libcacard-devel >= 2.5.0
+# smartcard device
+BuildRequires: libcacard-devel
 %if %{have_virgl}
-# qemu 2.5: virgl 3d support
+# virgl 3d support
 BuildRequires: virglrenderer-devel
 %endif
-# qemu 2.6: Needed for gtk GL support, vhost-user-gpu
+# gtk GL support, vhost-user-gpu
 BuildRequires: mesa-libgbm-devel
-# qemu 2.11: preferred disassembler for TCG
+# preferred disassembler for TCG
 BuildRequires: capstone-devel
 # qemu 2.12: parallels disk images require libxml2 now
 BuildRequires: libxml2-devel
 %if %{have_pmem}
-# qemu 3.1: Used for nvdimm
+# nvdimm
 BuildRequires: libpmem-devel
 %endif
-# qemu 3.1: Used for qemu-ga
+# qemu-ga
 BuildRequires: libudev-devel
-# qemu 4.0: Use for qauth infrastructure
+# qauth infrastructure
 BuildRequires: pam-devel
-# qemu 4.0: user-mode networking
+# user-mode networking
 BuildRequires: libslirp-devel
-# qemu 4.0: sphinx-build used for some docs
+# Documentation build
 BuildRequires: python3-sphinx
-# qemu 4.0: Used by test suite ./scripts/tap-driver.pl
+# Test suite ./scripts/tap-driver.pl
 BuildRequires: perl-Test-Harness
-# Required for making python shebangs versioned
+# For making python shebangs versioned
 BuildRequires: /usr/bin/pathfix.py
 BuildRequires: python3-devel
 %if %{have_liburing}
-# qemu 5.0 liburing support. Library isn't built for arm
+# liburing support. Library isn't built for arm
 BuildRequires: liburing-devel
 %endif
-# qemu 5.0 zstd compression support
+# zstd compression support
 BuildRequires: libzstd-devel
 # `hostname` used by test suite
-BuildRequires: hostname 
-# Used for nvdimm dax
-BuildRequires: daxctl-devel 
+BuildRequires: hostname
+# nvdimm dax
+BuildRequires: daxctl-devel
+# used by some linux user impls
+BuildRequires: libdrm-devel
 
+%if %{user_static}
 BuildRequires: glibc-static pcre-static glib2-static zlib-static
+%endif
 
 
 Requires: %{name}-user = %{epoch}:%{version}-%{release}
@@ -380,11 +394,9 @@ Requires: %{name}-system-alpha = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-arm = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-avr = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-cris = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-lm32 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-m68k = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-microblaze = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-mips = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-moxie = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-nios2 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-or1k = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-ppc = %{epoch}:%{version}-%{release}
@@ -394,7 +406,6 @@ Requires: %{name}-system-s390x = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-sh4 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-sparc = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-tricore = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-unicore32 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-x86 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-xtensa = %{epoch}:%{version}-%{release}
 Requires: %{name}-img = %{epoch}:%{version}-%{release}
@@ -423,6 +434,12 @@ Requires(post): /usr/sbin/useradd
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
+Obsoletes: %{name}-system-lm32 <= %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-system-lm32-core <= %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-system-moxie <= %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-system-moxie-core <= %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-system-unicore32 <= %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-system-unicore32-core <= %{epoch}:%{version}-%{release}
 %{obsoletes_some_modules}
 %description common
 This package provides the common files needed by all QEMU targets
@@ -444,12 +461,6 @@ This package does not need to be installed on the host OS.
 Summary: QEMU command line tool for manipulating disk images
 %description img
 This package provides a command line tool for manipulating disk images
-
-
-%package -n ivshmem-tools
-Summary: Client and server for QEMU ivshmem device
-%description -n ivshmem-tools
-This package provides client and server tools for QEMU's ivshmem device.
 
 
 %package  block-curl
@@ -565,13 +576,17 @@ Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description ui-sdl
 This package provides the additional SDL UI for QEMU.
 
-%if %{have_spice}
-%package  ui-spice-app
-Summary: QEMU spice-app UI driver
+%package  ui-egl-headless
+Summary: QEMU EGL headless driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-%description ui-spice-app
-This package provides the additional spice-app UI for QEMU.
-%endif
+%description ui-egl-headless
+This package provides the additional egl-headless UI for QEMU.
+
+%package  ui-opengl
+Summary: QEMU OpenGL driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description ui-opengl
+This package provides the additional opengl UI for QEMU.
 
 
 %package  char-baum
@@ -581,13 +596,21 @@ Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 This package provides the Baum chardev driver for QEMU.
 
 
-%if %{have_spice}
-%package device-display-qxl
-Summary: QEMU QXL display device
+%package device-display-virtio-gpu
+Summary: QEMU virtio-gpu display device
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-%description device-display-qxl
-This package provides the QXL display device for QEMU.
-%endif
+%description device-display-virtio-gpu
+This package provides the virtio-gpu display device for QEMU.
+%package device-display-virtio-gpu-pci
+Summary: QEMU virtio-gpu-pci display device
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description device-display-virtio-gpu-pci
+This package provides the virtio-gpu-pci display device for QEMU.
+%package device-display-virtio-vga
+Summary: QEMU virtio-vga display device
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description device-display-virtio-vga
+This package provides the virtio-vga display device for QEMU.
 
 %package device-usb-redirect
 Summary: QEMU usbredir device
@@ -599,7 +622,40 @@ This package provides the usbredir device for QEMU.
 Summary: QEMU USB smartcard device
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description device-usb-smartcard
-This package provides the USB smartcard device for QEMU. 
+This package provides the USB smartcard device for QEMU.
+
+
+%if %{have_spice}
+%package  ui-spice-core
+Summary: QEMU spice-core UI driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description ui-spice-core
+This package provides the additional spice-core UI for QEMU.
+
+%package  ui-spice-app
+Summary: QEMU spice-app UI driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description ui-spice-app
+This package provides the additional spice-app UI for QEMU.
+
+%package device-display-qxl
+Summary: QEMU QXL display device
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description device-display-qxl
+This package provides the QXL display device for QEMU.
+
+%package  char-spice
+Summary: QEMU spice chardev driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description char-spice
+This package provides the spice chardev driver for QEMU.
+
+%package  audio-spice
+Summary: QEMU spice audio driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description audio-spice
+This package provides the spice audio driver for QEMU.
+%endif
 
 
 %if %{have_kvm}
@@ -714,7 +770,7 @@ This package provides the QEMU system emulator for AVR systems.
 Summary: QEMU system emulator for AVR
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-avr-core
-This package provides the QEMU system emulator for AVR systems. 
+This package provides the QEMU system emulator for AVR systems.
 
 
 %package system-cris
@@ -743,20 +799,6 @@ Summary: QEMU system emulator for hppa
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-hppa-core
 This package provides the QEMU system emulator for HPPA.
-
-
-%package system-lm32
-Summary: QEMU system emulator for LatticeMico32
-Requires: %{name}-system-lm32-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-lm32
-This package provides the QEMU system emulator for LatticeMico32 boards.
-
-%package system-lm32-core
-Summary: QEMU system emulator for LatticsMico32
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-lm32-core
-This package provides the QEMU system emulator for LatticeMico32 boards.
 
 
 %package system-m68k
@@ -799,20 +841,6 @@ Summary: QEMU system emulator for MIPS
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-mips-core
 This package provides the QEMU system emulator for MIPS systems.
-
-
-%package system-moxie
-Summary: QEMU system emulator for Moxie
-Requires: %{name}-system-moxie-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-moxie
-This package provides the QEMU system emulator for Moxie boards.
-
-%package system-moxie-core
-Summary: QEMU system emulator for Moxie
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-moxie-core
-This package provides the QEMU system emulator for Moxie boards.
 
 
 %package system-nios2
@@ -947,20 +975,6 @@ Requires: %{name}-common = %{epoch}:%{version}-%{release}
 This package provides the QEMU system emulator for Tricore.
 
 
-%package system-unicore32
-Summary: QEMU system emulator for Unicore32
-Requires: %{name}-system-unicore32-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-unicore32
-This package provides the QEMU system emulator for Unicore32 boards.
-
-%package system-unicore32-core
-Summary: QEMU system emulator for Unicore32
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-unicore32-core
-This package provides the QEMU system emulator for Unicore32 boards.
-
-
 %package system-x86
 Summary: QEMU system emulator for x86
 Requires: %{name}-system-x86-core = %{epoch}:%{version}-%{release}
@@ -1029,10 +1043,6 @@ buildldflags="VL_LDFLAGS=-Wl,--build-id"
 # but there's a performance impact for non-dtrace so we don't use them
 tracebackends="dtrace"
 
-# 2020-08-17: tracing disabled, breaks modules on f33+
-# https://bugzilla.redhat.com/show_bug.cgi?id=1869339
-tracebackends="log"
-
 %if %{have_spice}
     %global spiceflag --enable-spice
 %else
@@ -1052,7 +1062,6 @@ run_configure() {
         --with-pkgversion=%{name}-%{version}-%{release} \
         --extra-ldflags="$extraldflags -Wl,-z,relro -Wl,-z,now" \
         --extra-cflags="%{optflags}" \
-        --python=%{__python3} \
         --disable-strip \
         --disable-werror \
         --tls-priority=@QEMU,SYSTEM \
@@ -1200,6 +1209,7 @@ run_configure \
     --audio-drv-list=pa,sdl,alsa,oss \
     --enable-kvm \
     --enable-system \
+    --target-list-exclude=moxie-softmmu \
     --enable-tcg \
     --enable-linux-user \
     --enable-pie \
@@ -1244,8 +1254,8 @@ touch %{buildroot}%{_localstatedir}/log/qga-fsfreeze-hook.log
 
 
 # Install qemu-pr-helper service
-install -m 0644 %{_sourcedir}/qemu-pr-helper.service %{buildroot}%{_unitdir}
-install -m 0644 %{_sourcedir}/qemu-pr-helper.socket %{buildroot}%{_unitdir}
+install -m 0644 ./contrib/systemd/qemu-pr-helper.service %{buildroot}%{_unitdir}
+install -m 0644 ./contrib/systemd/qemu-pr-helper.socket %{buildroot}%{_unitdir}
 
 
 # Install ppc64 memlock
@@ -1271,8 +1281,10 @@ done
 for src in %{buildroot}%{_datadir}/systemtap/tapset/qemu-*.stp
 do
   dst=`echo $src | sed -e 's/.stp/-static.stp/'`
-  #mv $src $dst
-  #perl -i -p -e 's/(qemu-\w+)/$1-static/g; s/(qemu\.user\.\w+)/$1.static/g' $dst
+%if %{with_systemtap}
+  mv $src $dst
+  perl -i -p -e 's/(qemu-\w+)/$1-static/g; s/(qemu\.user\.\w+)/$1.static/g' $dst
+%endif
 done
 
 popd
@@ -1284,8 +1296,9 @@ make DESTDIR=%{buildroot} install
 popd
 %find_lang %{name}
 
+
 # Copy some static data into place
-install -D -p -m 0644 -t %{buildroot}%{qemudocdir} Changelog README.rst COPYING COPYING.LIB LICENSE
+install -D -p -m 0644 -t %{buildroot}%{qemudocdir} README.rst COPYING COPYING.LIB LICENSE
 install -D -p -m 0644 qemu.sasl %{buildroot}%{_sysconfdir}/sasl2/qemu.conf
 
 # Generate qemu-system-* man pages
@@ -1397,22 +1410,15 @@ install -Dpm 644 %{SOURCE16} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %check
-%global tests_skip 0
-# Enable this temporarily if tests are broken
-%global tests_nofail 0
-
 # 2020-08-31: tests passing, but s390x fails due to
 # spurious warning breaking an iotest case
 # https://lists.gnu.org/archive/html/qemu-devel/2020-08/msg03279.html
-%global tests_nofail 1
+%ifarch s390x
+perl -i -p -e 's/^(127|267)/# $1/' tests/qemu-iotests/group
+%endif
 
 pushd build-dynamic
-%if !%{tests_skip}
-%if %{tests_nofail}
- make check V=1 || :
-%else
- make check V=1
-%endif
+make check V=1
 
 # Check the binary runs (see eg RHBZ#998722).
 b="./x86_64-softmmu/qemu-system-x86_64"
@@ -1425,7 +1431,6 @@ echo "Trying to boot kernel $KERNEL with %{?hostqemu}"
 qemu-sanity-check --qemu=%{?hostqemu} --kernel=$KERNEL
 %endif
 
-%endif
 popd
 
 
@@ -1460,7 +1465,6 @@ popd
 
 %files common -f %{name}.lang
 %dir %{qemudocdir}
-%doc %{qemudocdir}/Changelog
 %doc %{qemudocdir}/README.rst
 %doc %{qemudocdir}/index.html
 %doc %{qemudocdir}/interop
@@ -1504,23 +1508,28 @@ popd
 %{_datadir}/%{name}/efi-vmxnet3.rom
 %{_datadir}/%{name}/vhost-user/50-qemu-virtiofsd.json
 %{_mandir}/man1/qemu.1*
-#{_mandir}/man1/qemu-trace-stap.1*
+%if %{with_systemtap}
+%{_mandir}/man1/qemu-trace-stap.1*
+%endif
 %{_mandir}/man1/virtfs-proxy-helper.1*
 %{_mandir}/man1/virtiofsd.1*
 %{_mandir}/man7/qemu-block-drivers.7*
 %{_mandir}/man7/qemu-cpu-models.7*
 %{_mandir}/man7/qemu-qmp-ref.7*
 %{_mandir}/man7/qemu-ga-ref.7*
+%{_mandir}/man8/qemu-pr-helper.8*
 %{_bindir}/elf2dmp
 %{_bindir}/qemu-edid
 %{_bindir}/qemu-keymap
+%{_bindir}/qemu-pr-helper
 %{_bindir}/qemu-storage-daemon
-#{_bindir}/qemu-trace-stap
+%if %{with_systemtap}
+%{_bindir}/qemu-trace-stap
+%endif
 %{_sysusersdir}/%{name}.conf
 %{_unitdir}/qemu-pr-helper.service
 %{_unitdir}/qemu-pr-helper.socket
 %attr(4755, root, root) %{_libexecdir}/qemu-bridge-helper
-%{_libexecdir}/qemu-pr-helper
 %{_libexecdir}/virtfs-proxy-helper
 %{_libexecdir}/virtiofsd
 %config(noreplace) %{_sysconfdir}/sasl2/qemu.conf
@@ -1588,28 +1597,40 @@ popd
 %{_libdir}/qemu/ui-gtk.so
 %files ui-sdl
 %{_libdir}/qemu/ui-sdl.so
-%if %{have_spice}
-%files ui-spice-app
-%{_libdir}/qemu/ui-spice-app.so
-%endif
+
+%files ui-egl-headless
+%{_libdir}/qemu/ui-egl-headless.so
+%files ui-opengl
+%{_libdir}/qemu/ui-opengl.so
 
 %files char-baum
 %{_libdir}/qemu/chardev-baum.so
 
-%if %{have_spice}
-%files device-display-qxl
-%{_libdir}/qemu/hw-display-qxl.so
-%endif
+%files device-display-virtio-gpu
+%{_libdir}/qemu/hw-display-virtio-gpu.so
+%files device-display-virtio-gpu-pci
+%{_libdir}/qemu/hw-display-virtio-gpu-pci.so
+%files device-display-virtio-vga
+%{_libdir}/qemu/hw-display-virtio-vga.so
 
 %files device-usb-redirect
 %{_libdir}/qemu/hw-usb-redirect.so
 %files device-usb-smartcard
-%{_libdir}/qemu/hw-usb-smartcard.so 
+%{_libdir}/qemu/hw-usb-smartcard.so
 
 
-%files -n ivshmem-tools
-%{_bindir}/ivshmem-client
-%{_bindir}/ivshmem-server
+%if %{have_spice}
+%files audio-spice
+%{_libdir}/qemu/audio-spice.so
+%files char-spice
+%{_libdir}/qemu/chardev-spice.so
+%files device-display-qxl
+%{_libdir}/qemu/hw-display-qxl.so
+%files ui-spice-core
+%{_libdir}/qemu/ui-spice-core.so
+%files ui-spice-app
+%{_libdir}/qemu/ui-spice-app.so
+%endif
 
 
 %if %{have_kvm}
@@ -1644,7 +1665,6 @@ popd
 %{_bindir}/qemu-or1k
 %{_bindir}/qemu-ppc
 %{_bindir}/qemu-ppc64
-%{_bindir}/qemu-ppc64abi32
 %{_bindir}/qemu-ppc64le
 %{_bindir}/qemu-riscv32
 %{_bindir}/qemu-riscv64
@@ -1654,29 +1674,29 @@ popd
 %{_bindir}/qemu-sparc
 %{_bindir}/qemu-sparc32plus
 %{_bindir}/qemu-sparc64
-%{_bindir}/qemu-tilegx
 %{_bindir}/qemu-xtensa
 %{_bindir}/qemu-xtensaeb
 
-#{_datadir}/systemtap/tapset/qemu-i386*.stp
-#{_datadir}/systemtap/tapset/qemu-x86_64*.stp
-#{_datadir}/systemtap/tapset/qemu-aarch64*.stp
-#{_datadir}/systemtap/tapset/qemu-alpha*.stp
-#{_datadir}/systemtap/tapset/qemu-arm*.stp
-#{_datadir}/systemtap/tapset/qemu-cris*.stp
-#{_datadir}/systemtap/tapset/qemu-hppa*.stp
-#{_datadir}/systemtap/tapset/qemu-m68k*.stp
-#{_datadir}/systemtap/tapset/qemu-microblaze*.stp
-#{_datadir}/systemtap/tapset/qemu-mips*.stp
-#{_datadir}/systemtap/tapset/qemu-nios2*.stp
-#{_datadir}/systemtap/tapset/qemu-or1k*.stp
-#{_datadir}/systemtap/tapset/qemu-ppc*.stp
-#{_datadir}/systemtap/tapset/qemu-riscv*.stp
-#{_datadir}/systemtap/tapset/qemu-s390x*.stp
-#{_datadir}/systemtap/tapset/qemu-sh4*.stp
-#{_datadir}/systemtap/tapset/qemu-sparc*.stp
-#{_datadir}/systemtap/tapset/qemu-tilegx*.stp
-#{_datadir}/systemtap/tapset/qemu-xtensa*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-i386*.stp
+%{_datadir}/systemtap/tapset/qemu-x86_64*.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64*.stp
+%{_datadir}/systemtap/tapset/qemu-alpha*.stp
+%{_datadir}/systemtap/tapset/qemu-arm*.stp
+%{_datadir}/systemtap/tapset/qemu-cris*.stp
+%{_datadir}/systemtap/tapset/qemu-hppa*.stp
+%{_datadir}/systemtap/tapset/qemu-m68k*.stp
+%{_datadir}/systemtap/tapset/qemu-microblaze*.stp
+%{_datadir}/systemtap/tapset/qemu-mips*.stp
+%{_datadir}/systemtap/tapset/qemu-nios2*.stp
+%{_datadir}/systemtap/tapset/qemu-or1k*.stp
+%{_datadir}/systemtap/tapset/qemu-ppc*.stp
+%{_datadir}/systemtap/tapset/qemu-riscv*.stp
+%{_datadir}/systemtap/tapset/qemu-s390x*.stp
+%{_datadir}/systemtap/tapset/qemu-sh4*.stp
+%{_datadir}/systemtap/tapset/qemu-sparc*.stp
+%{_datadir}/systemtap/tapset/qemu-xtensa*.stp
+%endif
 
 %files user-binfmt
 %{_exec_prefix}/lib/binfmt.d/qemu-*-dynamic.conf
@@ -1687,21 +1707,27 @@ popd
 # in the qemu-user filelists
 %{_exec_prefix}/lib/binfmt.d/qemu-*-static.conf
 %{_bindir}/qemu-*-static
-#{_datadir}/systemtap/tapset/qemu-*-static.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-*-static.stp
+%endif
 %endif
 
 
 %files system-aarch64
 %files system-aarch64-core
 %{_bindir}/qemu-system-aarch64
-#{_datadir}/systemtap/tapset/qemu-system-aarch64*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-aarch64*.stp
+%endif
 %{_mandir}/man1/qemu-system-aarch64.1*
 
 
 %files system-alpha
 %files system-alpha-core
 %{_bindir}/qemu-system-alpha
-#{_datadir}/systemtap/tapset/qemu-system-alpha*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-alpha*.stp
+%endif
 %{_mandir}/man1/qemu-system-alpha.1*
 %{_datadir}/%{name}/palcode-clipper
 
@@ -1709,43 +1735,47 @@ popd
 %files system-arm
 %files system-arm-core
 %{_bindir}/qemu-system-arm
-#{_datadir}/systemtap/tapset/qemu-system-arm*.stp
+%{_datadir}/%{name}/npcm7xx_bootrom.bin
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-arm*.stp
+%endif
 %{_mandir}/man1/qemu-system-arm.1*
 
 
 %files system-avr
 %files system-avr-core
 %{_bindir}/qemu-system-avr
-#{_datadir}/systemtap/tapset/qemu-system-avr*.stp
-%{_mandir}/man1/qemu-system-avr.1* 
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-avr*.stp
+%endif
+%{_mandir}/man1/qemu-system-avr.1*
 
 
 %files system-cris
 %files system-cris-core
 %{_bindir}/qemu-system-cris
-#{_datadir}/systemtap/tapset/qemu-system-cris*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-cris*.stp
+%endif
 %{_mandir}/man1/qemu-system-cris.1*
 
 
 %files system-hppa
 %files system-hppa-core
 %{_bindir}/qemu-system-hppa
-#{_datadir}/systemtap/tapset/qemu-system-hppa*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-hppa*.stp
+%endif
 %{_mandir}/man1/qemu-system-hppa.1*
 %{_datadir}/%{name}/hppa-firmware.img
-
-
-%files system-lm32
-%files system-lm32-core
-%{_bindir}/qemu-system-lm32
-#{_datadir}/systemtap/tapset/qemu-system-lm32*.stp
-%{_mandir}/man1/qemu-system-lm32.1*
 
 
 %files system-m68k
 %files system-m68k-core
 %{_bindir}/qemu-system-m68k
-#{_datadir}/systemtap/tapset/qemu-system-m68k*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-m68k*.stp
+%endif
 %{_mandir}/man1/qemu-system-m68k.1*
 
 
@@ -1753,7 +1783,9 @@ popd
 %files system-microblaze-core
 %{_bindir}/qemu-system-microblaze
 %{_bindir}/qemu-system-microblazeel
-#{_datadir}/systemtap/tapset/qemu-system-microblaze*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-microblaze*.stp
+%endif
 %{_mandir}/man1/qemu-system-microblaze.1*
 %{_mandir}/man1/qemu-system-microblazeel.1*
 %{_datadir}/%{name}/petalogix*.dtb
@@ -1765,31 +1797,30 @@ popd
 %{_bindir}/qemu-system-mipsel
 %{_bindir}/qemu-system-mips64
 %{_bindir}/qemu-system-mips64el
-#{_datadir}/systemtap/tapset/qemu-system-mips*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-mips*.stp
+%endif
 %{_mandir}/man1/qemu-system-mips.1*
 %{_mandir}/man1/qemu-system-mipsel.1*
 %{_mandir}/man1/qemu-system-mips64el.1*
 %{_mandir}/man1/qemu-system-mips64.1*
 
 
-%files system-moxie
-%files system-moxie-core
-%{_bindir}/qemu-system-moxie
-#{_datadir}/systemtap/tapset/qemu-system-moxie*.stp
-%{_mandir}/man1/qemu-system-moxie.1*
-
-
 %files system-nios2
 %files system-nios2-core
 %{_bindir}/qemu-system-nios2
-#{_datadir}/systemtap/tapset/qemu-system-nios2*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-nios2*.stp
+%endif
 %{_mandir}/man1/qemu-system-nios2.1*
 
 
 %files system-or1k
 %files system-or1k-core
 %{_bindir}/qemu-system-or1k
-#{_datadir}/systemtap/tapset/qemu-system-or1k*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-or1k*.stp
+%endif
 %{_mandir}/man1/qemu-system-or1k.1*
 
 
@@ -1797,7 +1828,9 @@ popd
 %files system-ppc-core
 %{_bindir}/qemu-system-ppc
 %{_bindir}/qemu-system-ppc64
-#{_datadir}/systemtap/tapset/qemu-system-ppc*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-ppc*.stp
+%endif
 %{_mandir}/man1/qemu-system-ppc.1*
 %{_mandir}/man1/qemu-system-ppc64.1*
 %{_datadir}/%{name}/bamboo.dtb
@@ -1816,21 +1849,28 @@ popd
 %{_bindir}/qemu-system-riscv32
 %{_bindir}/qemu-system-riscv64
 %{_datadir}/%{name}/opensbi-riscv*.bin
-#{_datadir}/systemtap/tapset/qemu-system-riscv*.stp
+%{_datadir}/%{name}/opensbi-riscv*.elf
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-riscv*.stp
+%endif
 %{_mandir}/man1/qemu-system-riscv*.1*
 
 
 %files system-rx
 %files system-rx-core
 %{_bindir}/qemu-system-rx
-#{_datadir}/systemtap/tapset/qemu-system-rx*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-rx*.stp
+%endif
 %{_mandir}/man1/qemu-system-rx.1*
 
 
 %files system-s390x
 %files system-s390x-core
 %{_bindir}/qemu-system-s390x
-#{_datadir}/systemtap/tapset/qemu-system-s390x*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-s390x*.stp
+%endif
 %{_mandir}/man1/qemu-system-s390x.1*
 %{_datadir}/%{name}/s390-ccw.img
 %{_datadir}/%{name}/s390-netboot.img
@@ -1840,7 +1880,9 @@ popd
 %files system-sh4-core
 %{_bindir}/qemu-system-sh4
 %{_bindir}/qemu-system-sh4eb
-#{_datadir}/systemtap/tapset/qemu-system-sh4*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-sh4*.stp
+%endif
 %{_mandir}/man1/qemu-system-sh4.1*
 %{_mandir}/man1/qemu-system-sh4eb.1*
 
@@ -1849,7 +1891,9 @@ popd
 %files system-sparc-core
 %{_bindir}/qemu-system-sparc
 %{_bindir}/qemu-system-sparc64
-#{_datadir}/systemtap/tapset/qemu-system-sparc*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-sparc*.stp
+%endif
 %{_mandir}/man1/qemu-system-sparc.1*
 %{_mandir}/man1/qemu-system-sparc64.1*
 %{_datadir}/%{name}/QEMU,tcx.bin
@@ -1859,23 +1903,20 @@ popd
 %files system-tricore
 %files system-tricore-core
 %{_bindir}/qemu-system-tricore
-#{_datadir}/systemtap/tapset/qemu-system-tricore*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-tricore*.stp
+%endif
 %{_mandir}/man1/qemu-system-tricore.1*
-
-
-%files system-unicore32
-%files system-unicore32-core
-%{_bindir}/qemu-system-unicore32
-#{_datadir}/systemtap/tapset/qemu-system-unicore32*.stp
-%{_mandir}/man1/qemu-system-unicore32.1*
 
 
 %files system-x86
 %files system-x86-core
 %{_bindir}/qemu-system-i386
 %{_bindir}/qemu-system-x86_64
-#{_datadir}/systemtap/tapset/qemu-system-i386*.stp
-#{_datadir}/systemtap/tapset/qemu-system-x86_64*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-i386*.stp
+%{_datadir}/systemtap/tapset/qemu-system-x86_64*.stp
+%endif
 %{_mandir}/man1/qemu-system-i386.1*
 %{_mandir}/man1/qemu-system-x86_64.1*
 %{_datadir}/%{name}/bios.bin
@@ -1886,6 +1927,7 @@ popd
 %{_datadir}/%{name}/linuxboot_dma.bin
 %{_datadir}/%{name}/multiboot.bin
 %{_datadir}/%{name}/pvh.bin
+%{_datadir}/%{name}/qboot.rom
 %{_datadir}/%{name}/sgabios.bin
 %if 0%{?need_qemu_kvm}
 %{_bindir}/qemu-kvm
@@ -1898,12 +1940,18 @@ popd
 %files system-xtensa-core
 %{_bindir}/qemu-system-xtensa
 %{_bindir}/qemu-system-xtensaeb
-#{_datadir}/systemtap/tapset/qemu-system-xtensa*.stp
+%if %{with_systemtap}
+%{_datadir}/systemtap/tapset/qemu-system-xtensa*.stp
+%endif
 %{_mandir}/man1/qemu-system-xtensa.1*
 %{_mandir}/man1/qemu-system-xtensaeb.1*
 
 
 %changelog
+* Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 2:5.2.0~rc3-100
+- 5.2.0-rc3
+- Rawhide sync
+
 * Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 2:5.1.0-102
 - Rawhide sync
 
@@ -2006,219 +2054,3 @@ popd
 * Fri Jan 11 2019 Richard W.M. Jones <rjones@redhat.com> - 2:3.1.0-3
 - Rebuild for unannounced libcapstone soname bump from 3 to 4.
 - Add a temporary patch to fix capstone header location.
-
-* Tue Dec 18 2018 Adam Williamson <awilliam@redhat.com> - 2:3.1.0-1.1
-- Restore patch to drop phantom 86 key from en-us keymap (bz #1658676)
-
-* Tue Dec 11 2018 Cole Robinson <crobinso@redhat.com> - 2:3.1.0-1
-- Rebase to qemu-3.1.0 GA
-
-* Mon Dec 10 2018 Daniel P. Berrangé <berrange@redhat.com> - 2:3.1.0-0.2.rc1
-- Disable RBD on 32-bit arches
-
-* Thu Nov 15 2018 Cole Robinson <crobinso@redhat.com> - 2:3.1.0-0.1.rc1
-- Rebase to qemu-3.1.0-rc1
-
-* Wed Aug 15 2018 Cole Robinson <crobinso@redhat.com> - 2:3.0.0-1
-- Rebase to qemu-3.0.0 GA
-
-* Mon Aug 13 2018 Cole Robinson <crobinso@redhat.com> - 2:3.0.0-0.2.rc3
-- Drop ksm package, moved to ksmtuned srpm
-
-* Tue Jul 31 2018 Cole Robinson <crobinso@redhat.com> - 2:3.0.0-0.1.rc3
-- Rebase to qemu-3.0.0-rc3
-- Drop now unneeded s390x conf (bz #1609706)
-- Only install modprobe kvm.conf on x86 (bz #1517989)
-
-* Fri Jul 13 2018 Peter Robinson <pbrobinson@fedoraproject.org> 2:2.12.0-4
-- Rebuild for Xen 4.11
-
-* Mon Jun 18 2018 Daniel P. Berrangé <berrange@redhat.com> - 2:2.12.0-3
-- New CPU features for speculative store bypass (CVE-2018-3639)
-
-* Tue Jun 05 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-2
-- Fix qxl memslot_get_virt crashes (bz #1565354)
-
-* Mon Apr 30 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-1
-- Update to qemu-2.12.0 GA
-
-* Mon Apr 16 2018 Richard W.M. Jones <rjones@redhat.com> - 2:2.12.0-0.7.rc3
-- Update to qemu-2.12.0-rc3
-- Remove upstream patch.
-- Fixes issues with partition / LV minimum alignment (RHBZ#1565714).
-
-* Thu Apr 05 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.6.rc2
-- Update to qemu-2.12.0-rc2
-
-* Wed Mar 28 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.5.rc1
-- Update to qemu-2.12.0-rc1
-
-* Mon Mar 26 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.4.rc0
-- Enable missing tilegx, xtensa* qemu-user targets
-
-* Sun Mar 25 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.3.rc0
-- Generate binfmt configs with qemu-binfmt-conf.sh
-
-* Fri Mar 23 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.2.rc0
-- Fix audio and ui module RPM deps
-- Drop some arch restrictions for rdma, spice, xen, numactl
-- Fix hppa firmware packaging
-
-* Thu Mar 22 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.1.rc0
-- Rebase to qemu-2.12.0-rc0
-- Add hppa and riscv32/64 targets
-- Add audio and ui modules
-
-* Mon Mar 19 2018 Daniel P. Berrangé <berrange@redhat.com> - 2:2.11.1-2
-- Re-enable normal hardened build macros to fix ksmctl.c hardening
-- Don't strip _FORTIFY_SOURCE from compiler flags
-- Don't pass -pie as an extra ldflags when we use --enable-pie
-
-* Wed Feb 28 2018 Cole Robinson <crobinso@redhat.com> - 2:2.11.1-1
-- Rebase to qemu 2.11.1 bugfix release
-
-* Tue Feb 27 2018 Daniel P. Berrange <berrange@redhat.com> - 2:2.11.0-5
-- Improve License tag
-- Honour CC/LD flags for ksmctl
-- Fix non-deterministic test failure
-- Use explicit "python2" binary to avoid "python" brokeness (rhbz#1550010)
-- Avoid breakage in TLS tests due to stricter crypto policies
-
-* Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.11.0-4.1
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
-
-* Thu Dec 21 2017 Daniel P. Berrange <berrange@redhat.com> - 2:2.11.0-4
-- Re-enable RBD on arm/ppc (rhbz #1528378)
-
-* Wed Dec 20 2017 Adam Williamson <awilliam@redhat.com> - 2:2.11.0-3
-- Fix problem with typing some characters via VNC (LP#1738283)
-
-* Wed Dec 20 2017 Cole Robinson <crobinso@redhat.com> - 2:2.11.0-2
-- Rebuild for xen 4.10
-
-* Mon Dec 18 2017 Cole Robinson <crobinso@redhat.com> - 2:2.11.0-1
-- Rebase to 2.11.0 GA
-
-* Mon Dec 04 2017 Cole Robinson <crobinso@redhat.com> - 2:2.11.0-0.3-rc3
-- Rebase to 2.11.0-rc3
-
-* Tue Nov 28 2017 Paolo Bonzini <pbonzini@redhat.com> - 2:2.11.0-0.2.rc2
-- Fix compilation
-- Upgrade qemu-ga packaging based on RHEL 7
-
-* Mon Nov 20 2017 Cole Robinson <crobinso@redhat.com> - 2:2.11.0-0.1.rc1
-- Rebase to 2.11.0-rc1
-
-* Thu Oct 19 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.1-1
-- Fix ppc64 KVM failure (bz #1501936)
-- CVE-2017-15038: 9p: information disclosure when reading extended
-  attributes (bz #1499111)
-- CVE-2017-15268: potential memory exhaustion via websock connection to VNC
-  (bz #1496882)
-
-* Tue Oct 17 2017 Paolo Bonzini <pbonzini@redhat.com> - 2:2.10.0-7
-- Update patch 1014 for new libmultipath/libmpathpersist API
-- Force build to fail if multipath is not available
-- Tighten permissions on the qemu-pr-helper socket
-
-* Mon Oct  9 2017 Daniel P. Berrange <berrange@redhat.com> - 2:2.10.0-6
-- Rebuild for libiscsi changed soname again
-
-* Tue Oct 03 2017 Paolo Bonzini <pbonzini@redhat.com> - 2:2.10.0-5
-- Rebuild with new libiscsi for iSER support
-
-* Thu Sep 28 2017 Paolo Bonzini <pbonzini@redhat.com> - 2:2.10.0-4
-- Stop using tcmalloc, glibc got faster
-
-* Fri Sep 22 2017 Paolo Bonzini <pbonzini@redhat.com> - 2:2.10.0-3
-- Backport persistent reservation manager in preparation for SELinux work
-- Fix previous patch
-
-* Mon Sep 18 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.10.0-2
-- Fix endianness of e_type in the ppc64le binfmt
-
-* Thu Sep 07 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-1
-- Rebase to 2.10.0 GA
-
-* Tue Aug 29 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.10.0-0.5.rc4
-- Fix incorrect byte order in e_machine field in ppc64le binfmt (#1486379)
-
-* Fri Aug 25 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.4.rc4
-- Rebase to 2.10.0-rc4
-
-* Tue Aug 22 2017 Adam Williamson <awilliam@redhat.com> - 2:2.10.0-0.3.rc3
-- Don't build against rdma on 32-bit ARM (#1484155)
-
-* Wed Aug 16 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.2.rc3
-- Rebase to 2.10.0-rc3
-
-* Thu Aug 03 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.1.rc1
-- Rebase to 2.10.0-rc1
-
-* Sun Jul 30 2017 Florian Weimer <fweimer@redhat.com> - 2:2.9.0-9
-- Rebuild with binutils fix for ppc64le (#1475636)
-
-* Tue Jul 25 2017 Daniel Berrange <berrange@redhat.com> - 2:2.9.0-8
-- Disabled RBD on arm & ppc64 (rhbz #1474743)
-
-* Thu Jul 20 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.9.0-7
-- Fix binfmt dependencies and post scriptlets
-- Add binfmt for ppc64le
-
-* Wed Jul 19 2017 Daniel Berrange <berrange@redhat.com> - 2:2.9.0-6
-- Fixes for compat with Xen 4.9
-
-* Tue Jul 18 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.9.0-5
-- Fix ucontext_t references
-
-* Tue Jul 18 2017 Daniel P. Berrange <berrange@redhat.com> - 2:2.9.0-4
-- Rebuild for changed Xen sonames
-
-* Wed Jul 12 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-3
-- CVE-2017-8112: vmw_pvscsi: infinite loop in pvscsi_log2 (bz #1445622)
-- CVE-2017-8309: audio: host memory lekage via capture buffer (bz #1446520)
-- CVE-2017-8379: input: host memory lekage via keyboard events (bz #1446560)
-- CVE-2017-8380: scsi: megasas: out-of-bounds read in megasas_mmio_write (bz
-  #1446578)
-- CVE-2017-7493: 9pfs: guest privilege escalation in virtfs mapped-file mode
-  (bz #1451711)
-- CVE-2017-9503: megasas: null pointer dereference while processing megasas
-  command (bz #1459478)
-- CVE-2017-10806: usb-redirect: stack buffer overflow in debug logging (bz
-  #1468497)
-- CVE-2017-9524: nbd: segfault due to client non-negotiation (bz #1460172)
-- CVE-2017-10664: qemu-nbd: server breaks with SIGPIPE upon client abort (bz
-  #1466192)
-
-* Mon May 22 2017 Richard W.M. Jones <rjones@redhat.com> - 2:2.9.0-2
-- Bump release and rebuild to try to fix _ZdlPvm symbol (see RHBZ#1452813).
-
-* Tue Apr 25 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-1
-- Rebase to qemu-2.9.0 GA
-
-* Thu Apr 13 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.2-rc4
-- Rebase to qemu-2.9.0-rc4
-- Fix ipxe rom links for aarch64
-
-* Sat Apr 08 2017 Richard W.M. Jones <rjones@redhat.com> - 2:2.9.0-0.2-rc3
-- Backport upstream fix for assertion when copy-on-read=true (RHBZ#1439922).
-
-* Tue Apr 04 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.1-rc3
-- Rebase to qemu-2.9.0-rc3
-
-* Wed Mar 29 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.1-rc2
-- Rebase to qemu-2.9.0-rc2
-- Add Obsoletes for or32-or1k rename (bz 1435016)
-- spec: Pull in vga and pxe roms for ppc64 (bz 1431403)
-
-* Tue Mar 21 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.1-rc1
-- Rebase to qemu-2.9.0-rc1
-
-* Wed Mar 15 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.1-rc0
-* Rebase to qemu-2.9.0-rc0
-
-* Mon Feb 20 2017 Daniel Berrange <berrange@redhat.com> - 2:2.8.0-2
-- Drop texi2html BR, since QEMU switched to using makeinfo back in 2010
-
-* Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.8.0-1.1
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild

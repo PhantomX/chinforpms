@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        20.11
+Version:        20.12
 Release:        100%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -23,7 +23,9 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        %{name}.pc
+
+# https://bugs.winehq.org/show_bug.cgi?id=48791
+Patch0:         https://bugs.winehq.org/attachment.cgi?id=67944#/%{name}-whqbug48791.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -68,12 +70,6 @@ Development files for the FAudio library.
 %autosetup -p1
 %endif
 
-cp -p %{S:1} .
-sed \
-  -e 's|_LIB_|%{_lib}|g' \
-  -e 's|_VERSION_|%{version}|g' \
-  -i %{name}.pc
-
 
 %build
 %cmake \
@@ -87,8 +83,6 @@ sed \
 %install
 %cmake_install
 
-mkdir -p %{buildroot}%{_libdir}/pkgconfig
-install -pm0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
@@ -105,6 +99,10 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Tue Dec 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.12-100
+- 20.12
+- Upstream pkgconfig file
+
 * Mon Nov  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.11-100
 - 20.11
 

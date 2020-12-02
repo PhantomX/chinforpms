@@ -1,5 +1,5 @@
 NAME = MangoHud
-VERSION ?= 0.5.1
+VERSION ?= 0.6.1
 SNAPSHOT ?= 0
 DFSG = include/nvml.h
 

@@ -4,9 +4,9 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%global use_canary 0
+%global with_snapshot 0
 
-%if 0%{?use_canary}
+%if 0%{?with_snapshot}
 %global execname DiscordCanary
 %else
 %global execname Discord
@@ -20,7 +20,7 @@ Summary:        Voice and text chat messenger
 
 License:        Proprietary
 URL:            https://discordapp.com/
-%if 0%{?use_canary}
+%if 0%{?with_snapshot}
 Source0:        https://discordapp.com/api/download/canary?platform=linux&format=tar.gz#/%{name}-canary-%{version}.tar.gz
 %else
 Source0:        https://dl.discordapp.net/apps/linux/%{version}/%{name}-%{version}.tar.gz
@@ -44,7 +44,7 @@ Requires:       libXi%{?_isa}
 Requires:       libXScrnSaver%{?_isa}
 Requires:       hicolor-icon-theme
 
-%if 0%{?use_canary}
+%if 0%{?with_snapshot}
 Provides:       %{name}-canary = %{version}-%{release}
 Conflicts:      %{name}-canary < %{version}
 Conflicts:      %{name} < %{version}
