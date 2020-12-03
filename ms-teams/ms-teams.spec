@@ -8,7 +8,7 @@
 %global pkgrel 1
 
 Name:           ms-%{pkgname}
-Version:        1.3.00.25560
+Version:        1.3.00.30857
 Release:        1%{?dist}
 Summary:        Chat-centered workspace in Office 365
 
@@ -24,13 +24,13 @@ BuildRequires:  ImageMagick
 BuildRequires:  desktop-file-utils
 Requires:       libappindicator-gtk3%{?_isa}
 Requires:       libdbusmenu%{?_isa}
-Requires:       libglvnd-egl%{?_isa}
-Requires:       libglvnd-gles%{?_isa}
 Requires:       hicolor-icon-theme
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 
 %global __requires_exclude ^libffmpeg.so
+%global __requires_exclude %__requires_exclude|^libEGL.so
+%global __requires_exclude %__requires_exclude|^libGLESv2.so
 %global __requires_exclude %__requires_exclude|^libVkICD_mock_icd.so
 
 
@@ -68,9 +68,6 @@ mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -rp usr/share/%{pkgname}/{%{pkgname},locales,resources,*.{bin,dat,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
-rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
-rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
-
 chmod 0755 %{buildroot}%{_libdir}/%{name}/%{pkgname}
 
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -101,6 +98,9 @@ done
 
 
 %changelog
+* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1.3.00.30857-1
+- 1.3.00.30857
+
 * Wed Oct 28 2020 - 1.3.00.25560-1
 - 1.3.00.25560
 

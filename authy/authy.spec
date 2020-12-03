@@ -12,7 +12,7 @@
 Name:           authy
 # Version from application info
 Version:        1.8.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Two factor authentication desktop application
 
 License:        Unknown
@@ -28,13 +28,13 @@ BuildRequires:  ImageMagick
 BuildRequires:  squashfs-tools
 Requires:       libappindicator-gtk3%{?_isa}
 Requires:       libdbusmenu%{?_isa}
-Requires:       libglvnd-egl%{?_isa}
-Requires:       libglvnd-gles%{?_isa}
 Requires:       hicolor-icon-theme
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 
 %global __requires_exclude ^libffmpeg.so
+%global __requires_exclude %__requires_exclude|^libEGL.so
+%global __requires_exclude %__requires_exclude|^libGLESv2.so
 %global __requires_exclude %__requires_exclude|^libVkICD_mock_icd.so
 
 
@@ -69,9 +69,6 @@ mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -rp %{name}/{%{name},locales,resources,*.{bin,dat,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
-rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
-rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
-
 chmod 0755 %{buildroot}%{_libdir}/%{name}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -97,5 +94,8 @@ done
 
 
 %changelog
+* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1.8.3-2
+- Fix gpu acceleration
+
 * Fri Sep 18 2020 - 1.8.3-1
 - Initial spec

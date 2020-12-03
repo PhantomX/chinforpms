@@ -10,13 +10,12 @@
 %else
 %global channel stable
 %endif
-%endif
 
 %global pkgrel 1
 
 Name:           vivaldi
 Version:        3.4.2066.106
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Web browser
 
 License:        Proprietary and others, see https://www.vivaldi.com/
@@ -28,8 +27,6 @@ BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 Requires:       ca-certificates
-Requires:       libglvnd-egl%{?_isa}
-Requires:       libglvnd-gles%{?_isa}
 Requires:       libnotify%{?_isa}
 Requires:       libXScrnSaver%{?_isa}
 Requires:       font(dejavusans)
@@ -40,6 +37,8 @@ Requires:       hicolor-icon-theme
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 
 %global __requires_exclude ^libffmpeg.so
+%global __requires_exclude %__requires_exclude|^libEGL.so
+%global __requires_exclude %__requires_exclude|^libGLESv2.so
 %global __requires_exclude %__requires_exclude|^libvk_swiftshader.so
 
 
@@ -70,12 +69,12 @@ cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/sh
 LD_LIBRARY_PATH="%{_libdir}/%{name}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec %{_libdir}/%{name}/%{name} "$@"
+exec %{_libdir}/%{name}/%{name} --password-store=basic "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp opt/%{name}/{%{name}*,crashpad_handler,locales,MEIPreload,resources,update-*,*.{bin,dat,json,pak}} \
+cp -rp opt/%{name}/{%{name}*,crashpad_handler,locales,MEIPreload,resources,update-*,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 mv opt/%{name}/lib/*.so %{buildroot}%{_libdir}/%{name}/
@@ -93,6 +92,8 @@ install -pm0644 usr/share/xfce4/helpers/%{name}.desktop \
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
+  --set-key="Exec" \
+  --set-value="%{name} %%U" \
   usr/share/applications/%{name}.desktop
 
 for res in 16 22 24 32 48 64 128 256 ;do
@@ -129,5 +130,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 3.4.2066.106-2
+- Add --password-store=basic parameter to wrapper
+- with_snapshot switch to change channels
+- Fix gpu acceleration
+
 * Fri Nov 27 2020 Phantom X <megaphantomx at hotmail dot com> - 3.4.2066.106-1
 - Initial spec

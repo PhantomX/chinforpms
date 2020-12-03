@@ -12,7 +12,7 @@
 %endif
 
 Name:           signal-desktop
-Version:        1.37.2
+Version:        1.38.1
 Release:        1%{?beta:.%{beta}}%{?dist}
 Summary:        Private messaging from your desktop
 
@@ -29,14 +29,14 @@ Requires:       cairo%{?_isa}
 Requires:       glib2%{?_isa}
 Requires:       pango%{?_isa}
 Requires:       libdbusmenu%{?_isa}
-Requires:       libglvnd-egl%{?_isa}
-Requires:       libglvnd-gles%{?_isa}
 Requires:       hicolor-icon-theme
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __provides_exclude_from %__provides_exclude_from|^%{_libdir}/%{name}/.*
 
 %global __requires_exclude ^libffmpeg.so
+%global __requires_exclude %__requires_exclude|^libEGL.so
+%global __requires_exclude %__requires_exclude|^libGLESv2.so
 %global __requires_exclude %__requires_exclude|^libVkICD_mock_icd.so
 %global __requires_exclude %__requires_exclude|^libcairo.so.*
 %global __requires_exclude %__requires_exclude|^libcairo-gobject.so.*
@@ -110,9 +110,6 @@ mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -rp opt/%{name}/{%{name},locales,resources,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
-rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
-rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
-
 rm -rf %{buildroot}%{_libdir}/%{name}/resources/app.asar.unpacked/node_modules/sharp/src
 rm -rf %{buildroot}%{_libdir}/%{name}/resources/app.asar.unpacked/node_modules/sharp/vendor/include
 rm -rf %{buildroot}%{_libdir}/%{name}/resources/app.asar.unpacked/node_modules/sharp/vendor/lib/{cmake,*.so}
@@ -146,8 +143,10 @@ done
 %{_datadir}/icons/hicolor/*/apps/*.png
 
 
-
 %changelog
+* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1.38.1-1
+- 1.38.1
+
 * Wed Oct 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1.37.2-1
 - 1.37.2
 

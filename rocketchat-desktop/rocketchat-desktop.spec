@@ -13,7 +13,7 @@
 
 Name:           %{real_name}-desktop
 Version:        3.0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Rocket.Chat desktop application
 
 License:        MIT
@@ -27,14 +27,14 @@ BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 Requires:       libappindicator-gtk3%{?_isa}
 Requires:       libdbusmenu%{?_isa}
-Requires:       libglvnd-egl%{?_isa}
-Requires:       libglvnd-gles%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 Requires:       hicolor-icon-theme
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 
 %global __requires_exclude ^libffmpeg.so
+%global __requires_exclude %__requires_exclude|^libEGL.so
+%global __requires_exclude %__requires_exclude|^libGLESv2.so
 %global __requires_exclude %__requires_exclude|^libvk_swiftshader.so
 
 
@@ -69,8 +69,6 @@ mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -rp opt/%{app_name}/{%{name},locales,resources,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
-rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
-rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
 rm -fv %{buildroot}%{_libdir}/%{name}/libvulkan.so*
 
 chmod 0755 %{buildroot}%{_libdir}/%{name}/%{name}
@@ -102,6 +100,9 @@ done
 
 
 %changelog
+* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.7-2
+- Fix gpu acceleration
+
 * Fri Nov 13 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.7-1
 - 3.0.7
 

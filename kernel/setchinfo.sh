@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20201012
+# 20201202
 
 set -e
 
@@ -49,6 +49,10 @@ INITRAMFS_COMPRESSION_ZSTD
 "
 
 pfd="
+"
+
+pfm="
+V4L2_LOOPBACK
 "
 
 pfv="
@@ -108,7 +112,7 @@ DEBUG_DIR="${CONFIG_DIR}/debug"
 cd "${SCRIPT_DIR}"
 
 del(){
-  for i in ${default} ${pf} ${pfv} ${pfy} ${zen} ${zenv} ${zeny}
+  for i in ${default} ${pf} ${pfm} ${pfv} ${pfy} ${zen} ${zenv} ${zeny}
   do
     if [ -e "${OUTPUT_DIR}/CONFIG_${i%%=*}" ] ;then
       rm -fv "${OUTPUT_DIR}/CONFIG_${i%%=*}"
@@ -131,6 +135,10 @@ main(){
   for i in ${pfy} ${zeny}
   do
     echo "CONFIG_${i}=y" > "${OUTPUT_DIR}/CONFIG_${i}"
+  done
+  for i in ${pfm}
+  do
+    echo "CONFIG_${i}=m" > "${OUTPUT_DIR}/CONFIG_${i}"
   done
   for i in ${pfd}
   do
@@ -155,6 +163,8 @@ if [ -w "${OUTPUT_DIR}" ] ;then
       ;;
     zen)
       pf=
+      pfd=
+      pfm=
       pfv=
       pfy=
       main
@@ -164,6 +174,8 @@ if [ -w "${OUTPUT_DIR}" ] ;then
       zeny=
       zenv=
       pf=
+      pfd=
+      pfm=
       pfv=
       pfy=
       main

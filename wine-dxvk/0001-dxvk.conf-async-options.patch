@@ -15,8 +15,8 @@ index 99f0d30..e024413 100644
  # Supported values:
  # - True/False
  
--# d3d9.longMad = False
-+# d3d9.longMad = False
+-# d3d9.alphaTestWiggleRoom = False
++# d3d9.alphaTestWiggleRoom = False
 +
 +
 +# Sets the async pipeline compiler

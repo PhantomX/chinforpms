@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit f726efd2d8ad3bdd4d7a344fdbb27b8442bdee9a
+%global pfcommit edaeee0e3d64780969d69a26b72505173905e8dd
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id cc720a590511417d6a54815a58f6bf387a2aa27c
+%global opensuse_id 99e4d1ff9574b11daafba271e8a25e02e9345761
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -243,6 +243,9 @@ Summary: The Linux kernel
 
 # Use kernel-local-generic (CONFIG_GENERIC_CPU=y)
 %global with_generic %{?_with_generic:     1} %{?!_with_generic:     0}
+
+# Disables numa (--with numa to enable)
+%define with_numa    %{?_with_numa:        1} %{?!_with_numa:        0}
 
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
@@ -771,6 +774,7 @@ Source3012: kernel-local-native
 Source3013: kernel-local-pf
 Source3014: kernel-local-zen
 Source3015: kernel-local-generic
+Source3016: kernel-local-numa
 
 Source4000: README.rst
 
@@ -871,7 +875,6 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch#/openSUSE-fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch
-Patch1020: %{opensuse_url}/btrfs-qgroup-don-t-commit-transaction-when-we-have-a.patch#/openSUSE-btrfs-qgroup-don-t-commit-transaction-when-we-have-a.patch
 Patch1021: %{opensuse_url}/RDMA-srpt-Fix-typo-in-srpt_unregister_mad_agent-docs.patch#/openSUSE-RDMA-srpt-Fix-typo-in-srpt_unregister_mad_agent-docs.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -1479,6 +1482,10 @@ cat %{SOURCE3015} >> kernel-local
 %else
 cat %{SOURCE3011} >> kernel-local
 %endif
+%endif
+
+%if !%{with_numa}
+cat %{SOURCE3016} >> kernel-local
 %endif
 
 %if 0%{?post_factum}
@@ -2654,6 +2661,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 02 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.12-500.chinfo
+- 5.9.12 - pf6
+
 * Tue Nov 24 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.11-500.chinfo
 - 5.9.11 - pf6
 

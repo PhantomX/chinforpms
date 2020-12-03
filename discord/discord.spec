@@ -14,7 +14,7 @@
 
 Name:           discord
 Version:        0.0.12
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
 
@@ -36,8 +36,6 @@ Requires:       libappindicator%{_isa}
 Requires:       libatomic%{?_isa}
 Requires:       libcxx%{?_isa}
 Requires:       libdbusmenu%{?_isa}
-Requires:       libglvnd-egl%{?_isa}
-Requires:       libglvnd-gles%{?_isa}
 Requires:       libnotify%{?_isa}
 Requires:       libX11%{?_isa}
 Requires:       libXi%{?_isa}
@@ -54,6 +52,8 @@ Conflicts:      %{name} < %{version}
 
 
 %global __requires_exclude ^libffmpeg.so
+%global __requires_exclude %__requires_exclude|^libEGL.so
+%global __requires_exclude %__requires_exclude|^libGLESv2.so
 %global __requires_exclude %__requires_exclude|^libnode.so
 
 %description
@@ -98,9 +98,6 @@ mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -rp %{execname} *.bin *.dat *.pak *.so locales resources \
   %{buildroot}%{_libdir}/%{name}/
 
-rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
-rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
-
 chmod 0755 %{buildroot}%{_libdir}/%{name}/%{execname}
 
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -131,6 +128,9 @@ done
 
 
 %changelog
+* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1:0.0.12-101
+- Fix gpu acceleration
+
 * Fri Sep 11 2020 - 1:0.0.12-100
 - 0.0.12
 

@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit f74071ac0aa7daf67d8f43abf0b61bf0ebbdf93a
+%global commit 0b4e167fc93f1f8e983fce3872564371cd8f4788
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201121
+%global date 20201202
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -18,7 +18,7 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id cd8a3bd244c17f5eaed9373980d27241fb22015d
+%global sporif_id 3d0d74a49d8af3f421b6b495dab4bc880f47e41c
 %global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
 
 %global valve_url https://github.com/ValveSoftware/dxvk
@@ -34,8 +34,8 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.7.2
-Release:        101%{?gver}%{?dist}
+Version:        1.7.3
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -234,6 +234,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.3-100.20201202git0b4e167
+- 1.7.3
+
 * Sat Nov 21 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.2-101.20201121gitf74071a
 - Snapshot
 
