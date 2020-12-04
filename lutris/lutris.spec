@@ -3,7 +3,7 @@
 %global vc_url https://github.com/%{name}/%{name}
 
 Name:           lutris
-Version:        0.5.8
+Version:        0.5.8.1
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -11,7 +11,7 @@ Summary:        Install and play any video game easily
 License:        GPLv3
 URL:            https://lutris.net
 
-Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 Patch0:         %{name}-no-gtk-update-icon-cache.patch
 Patch1:         %{name}-gamemodelib.patch
@@ -110,6 +110,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.des
 
 
 %changelog
+* Fri Dec  4 2020 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.8.1-100
+- 0.5.8.1
+
 * Sun Nov 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.8-100
 - 0.5.8
 

@@ -1,6 +1,6 @@
-From b722c6a9519ee6ae235fcb8199fdfd1d81e15bee Mon Sep 17 00:00:00 2001
+From 3b64e59288cf92fe6d95e0f45fe658bfd5ef8b85 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 15 Nov 2020 18:10:11 -0300
+Date: Thu, 3 Dec 2020 21:04:29 -0300
 Subject: [PATCH] Disable gtk-update-icon-cache execution
 
 ---
@@ -25,10 +25,10 @@ index a38f7f4..4910d1c 100644
  
      def on_custom_image_reset_clicked(self, _widget, image_type):
 diff --git a/lutris/gui/lutriswindow.py b/lutris/gui/lutriswindow.py
-index ef1a1ca..2aa420e 100644
+index e9dfc29..25d7304 100644
 --- a/lutris/gui/lutriswindow.py
 +++ b/lutris/gui/lutriswindow.py
-@@ -31,7 +31,6 @@ from lutris.services.lutris import LutrisBanner, LutrisIcon, LutrisService
+@@ -30,7 +30,6 @@ from lutris.services.lutris import LutrisBanner, LutrisIcon, LutrisService
  from lutris.util import datapath
  from lutris.util.jobs import AsyncCall
  from lutris.util.log import logger
@@ -43,7 +43,7 @@ index ef1a1ca..2aa420e 100644
 -        update_desktop_icons()
          load_icon_theme()
          self.application = application
-         self.runtime_updater = RuntimeUpdater()
+ 
 diff --git a/lutris/util/linux.py b/lutris/util/linux.py
 index d7c5b69..f361cf4 100644
 --- a/lutris/util/linux.py
@@ -77,5 +77,5 @@ index 9785c5d..373e910 100644
      """Return the disk size in bytes of a folder"""
      total_size = 0
 -- 
-2.28.0
+2.29.2
 

@@ -1,26 +1,21 @@
 %ifnarch s390x
 %global with_hardware 1
+%global with_vulkan_hw 1
 %global with_vdpau 1
 %global with_vaapi 1
 %global with_nine 1
 %global with_omx 1
 %global with_opencl 1
-%global base_drivers nouveau,r100,r200
+%global base_dri nouveau,r100,r200
+%global base_vulkan ,amd
 %endif
 
 %ifarch %{ix86} x86_64
-%global platform_drivers ,i915,i965
 %global with_iris   1
 %global with_vmware 1
-%global with_vulkan_device_select 1
-%global with_vulkan_overlay 1
 %global with_xa     1
-%global with_zink   1
-%global vulkan_drivers intel,amd
-%else
-%ifnarch s390x
-%global vulkan_drivers amd
-%endif
+%global platform_dri ,i915,i965
+%global platform_vulkan ,intel
 %endif
 
 %ifarch %{arm} aarch64
@@ -33,10 +28,15 @@
 %global with_vc4       1
 %global with_v3d       1
 %global with_xa        1
+%global platform_vulkan ,broadcom,freedreno
 %endif
 
 %ifnarch %{arm} s390x
 %global with_radeonsi 1
+%endif
+
+%ifnarch %{x86}
+%global with_asm 1
 %endif
 
 %ifarch %{valgrind_arches}
@@ -47,7 +47,9 @@
 
 %global with_lto 0
 
-%global dri_drivers %{?base_drivers}%{?platform_drivers}
+%global dri_drivers %{?base_dri}%{?platform_dri}
+
+%global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 
 %global vc_url  https://gitlab.freedesktop.org/mesa/mesa
 %global ixit_url  https://github.com/iXit/Mesa-3D/commit
@@ -57,7 +59,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        20.2.3
+Version:        20.3.0
 Release:        100%{?dist}
 
 License:        MIT
@@ -69,8 +71,6 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
-Patch3:         0003-evergreen-big-endian.patch
-
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -81,22 +81,11 @@ BuildRequires:  gettext
 %if 0%{?with_hardware}
 BuildRequires:  kernel-headers
 %endif
-%ifarch %{ix86} x86_64
-BuildRequires:  pkgconfig(libdrm_intel) >= 2.4.75
-%endif
-%if 0%{?with_radeonsi}
-BuildRequires:  pkgconfig(libdrm_amdgpu) >= 2.4.97
-%endif
-BuildRequires:  pkgconfig(libdrm_radeon) >= 2.4.71
-BuildRequires:  pkgconfig(libdrm_nouveau) >= 2.4.66
-%if 0%{?with_etnaviv}
-BuildRequires:  pkgconfig(libdrm_etnaviv) >= 2.4.89
-%endif
-%if 0%{?with_vc4}
-BuildRequires:  pkgconfig(libdrm) >= 2.4.89
-%endif
+# We only check for the minimum version of pkgconfig(libdrm) needed so that the
+# SRPMs for each arch still have the same build dependencies. See:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1859515
+BuildRequires:  pkgconfig(libdrm) >= 2.4.97
 BuildRequires:  pkgconfig(expat)
-BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libselinux)
 BuildRequires:  pkgconfig(wayland-scanner)
@@ -145,17 +134,16 @@ BuildRequires:  pkgconfig(valgrind)
 %endif
 BuildRequires:  python3-devel
 BuildRequires:  python3-mako
-%if 0%{?with_hardware}
 BuildRequires:  vulkan-headers
-%if 0%{?with_vulkan_overlay}
+%if 0%{?with_vulkan_hw}
+BuildRequires:  pkgconfig(vulkan)
+%endif
+BuildRequires:  pkgconfig(libzstd)
+
+# vulkan-overlay
 BuildRequires:  glslang
 BuildRequires:  lm_sensors-devel
 BuildRequires:  /usr/bin/pathfix.py
-%endif
-%if 0%{?with_zink}
-BuildRequires:  pkgconfig(vulkan)
-%endif
-%endif
 
 
 %description
@@ -190,7 +178,7 @@ Recommends:     gl-manpages
 
 %package libEGL
 Summary:        Mesa libEGL runtime libraries
-Requires:       libglvnd-egl%{?_isa}
+Requires:       libglvnd-egl%{?_isa} >= 1:1.3.2
 
 %description libEGL
 %{summary}.
@@ -340,17 +328,15 @@ Requires:       vulkan-devel
 %description vulkan-devel
 Headers for development with the Vulkan API.
 
-%if 0%{?with_vulkan_device_select}
-%package vulkan-device-select
-Summary:        Mesa Vulkan device select layer
+%package vulkan-lavapipe-layer
+Summary:        Mesa Vulkan lavapipe layer
 Requires:       %{name}-vulkan-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description vulkan-device-select
-A Vulkan device selection layer.
-%endif
+%description vulkan-lavapipe-layer
+The lavapipe layer is a gallium frontend. It takes the Vulkan API and roughly
+translates it into the gallium API.
 
 
-%if 0%{?with_vulkan_overlay}
 %package vulkan-overlay
 Summary:        Mesa Vulkan overlay layer
 Requires:       %{name}-vulkan-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -358,17 +344,14 @@ Requires:       %{name}-vulkan-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%
 %description vulkan-overlay
 A Vulkan layer to display information about the running application using
 an overlay.
-%endif
 
 
 %prep
 %autosetup -n %{name}-%{ver} -p1
 cp %{SOURCE1} docs/
 
-%if 0%{?with_vulkan_overlay}
-  pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
-    src/vulkan/overlay-layer/mesa-overlay-control.py
-%endif
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
+  src/vulkan/overlay-layer/mesa-overlay-control.py
 
 %build
 # Disable this. Local lto flags in use.
@@ -377,14 +360,12 @@ cp %{SOURCE1} docs/
 %if 0%{?with_lto}
 MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -ffat-lto-objects -flto-odr-type-merging"
 MESA_COMMON_FLAGS="-falign-functions=32 -fno-semantic-interposition $MESA_LTO_FLAGS"
-MESA_CFLAGS="%(echo %{build_cflags} | sed -e 's/-O2\b/-O3/' -e 's/ -g\b/ -g1/')"
-MESA_CXXFLAGS="%(echo %{build_cxxflags} | sed -e 's/-O2\b/-O3/' -e 's/ -g\b/ -g1/')"
 
 export CFLAGS="$MESA_CFLAGS $MESA_COMMON_FLAGS"
 export FCFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
-export CFLAGS="$MESA_CFLAGS $MESA_COMMON_FLAGS"
-export CXXFLAGS="$MESA_CXXFLAGS $MESA_COMMON_FLAGS"
+export CFLAGS="%{build_cflags} $MESA_COMMON_FLAGS"
+export CXXFLAGS="%{build_cxxflags} $MESA_COMMON_FLAGS"
 export LDFLAGS="%{build_ldflags} $MESA_LTO_FLAGS"
 
 export CC=gcc
@@ -398,8 +379,9 @@ export RANLIB="gcc-ranlib"
   -Dplatforms=x11,wayland \
   -Ddri3=enabled \
   -Ddri-drivers=%{?dri_drivers} \
+  -Dosmesa=gallium \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_zink:,zink} \
+  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -411,6 +393,8 @@ export RANLIB="gcc-ranlib"
   -Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
   -Dvulkan-drivers=%{?vulkan_drivers} \
+  -Dvulkan-device-select-layer=true \
+  -Dvulkan-overlay-layer=true \
   -Dshared-glapi=enabled \
   -Dgles1=disabled \
   -Dgles2=enabled \
@@ -425,13 +409,6 @@ export RANLIB="gcc-ranlib"
   -Db_ndebug=true \
   -Dbuild-tests=false \
   -Dselinux=true \
-  -Dosmesa=gallium \
-%if 0%{?with_vulkan_overlay}
-  -Dvulkan-overlay-layer=true \
-%endif
-%if 0%{?with_vulkan_device_select}
-  -Dvulkan-device-select-layer=true \
-%endif
   %{nil}
 
 %meson_build
@@ -545,6 +522,10 @@ popd
 %files dri-drivers
 %dir %{_datadir}/drirc.d
 %{_datadir}/drirc.d/00-mesa-defaults.conf
+%{_libdir}/dri/kms_swrast_dri.so
+%{_libdir}/dri/swrast_dri.so
+%{_libdir}/dri/virtio_gpu_dri.so
+
 %if 0%{?with_hardware}
 %{_libdir}/dri/radeon_dri.so
 %{_libdir}/dri/r200_dri.so
@@ -557,16 +538,11 @@ popd
 %ifarch %{ix86} x86_64
 %{_libdir}/dri/i915_dri.so
 %{_libdir}/dri/i965_dri.so
-%if 0%{?with_iris}
 %{_libdir}/dri/iris_dri.so
-%endif
-%if 0%{?with_zink}
-%{_libdir}/dri/zink_dri.so
-%endif
 %endif
 %ifarch %{arm} aarch64
 %{_libdir}/dri/ingenic-drm_dri.so
-%{_libdir}/dri/mcde_dri.so 
+%{_libdir}/dri/mcde_dri.so
 %{_libdir}/dri/mxsfb-drm_dri.so
 %{_libdir}/dri/stm_dri.so
 %endif
@@ -613,6 +589,8 @@ popd
 %{_libdir}/dri/hx8357d_dri.so
 %{_libdir}/dri/ili9225_dri.so
 %{_libdir}/dri/ili9341_dri.so
+%{_libdir}/dri/imx-dcss_dri.so
+%{_libdir}/dri/mediatek_dri.so
 %{_libdir}/dri/meson_dri.so
 %{_libdir}/dri/mi0283qt_dri.so
 %{_libdir}/dri/pl111_dri.so
@@ -622,9 +600,9 @@ popd
 %{_libdir}/dri/st7735r_dri.so
 %{_libdir}/dri/sun4i-drm_dri.so
 %endif
-%{_libdir}/dri/kms_swrast_dri.so
-%{_libdir}/dri/swrast_dri.so
-%{_libdir}/dri/virtio_gpu_dri.so
+%if 0%{?with_vulkan_hw}
+%{_libdir}/dri/zink_dri.so
+%endif
 
 %if 0%{?with_hardware}
 %if 0%{?with_omx}
@@ -643,38 +621,44 @@ popd
 %endif
 
 %files vulkan-drivers
-%if 0%{?with_hardware}
+%{_libdir}/libVkLayer_MESA_device_select.so
+%{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
+%if 0%{?with_vulkan_hw}
+%{_libdir}/libvulkan_radeon.so
+%{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %ifarch %{ix86} x86_64
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
 %endif
-%{_libdir}/libvulkan_radeon.so
-%{_datadir}/vulkan/icd.d/radeon_icd.*.json
+%ifarch %{arm} aarch64
+%{_libdir}/libvulkan_broadcom.so
+%{_datadir}/vulkan/icd.d/broadcom_icd.*.json
+%{_libdir}/libvulkan_freedreno.so
+%{_datadir}/vulkan/icd.d/freedreno_icd.*.json
+%endif
 %endif
 
 %files vulkan-devel
-%if 0%{?with_hardware}
 %ifarch %{ix86} x86_64
 %{_includedir}/vulkan/vulkan_intel.h
 %endif
-%endif
 
-%if 0%{?with_vulkan_device_select}
-%files vulkan-device-select
-%{_libdir}/libVkLayer_MESA_device_select.so
-%{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
-%endif
+%files vulkan-lavapipe-layer
+%{_libdir}/libvulkan_lvp.so
+%{_datadir}/vulkan/icd.d/lvp_icd.*.json
 
-%if 0%{?with_vulkan_overlay}
 %files vulkan-overlay
 %doc src/vulkan/overlay-layer/README
 %{_bindir}/mesa-overlay-control.py
 %{_libdir}/libVkLayer_MESA_overlay.so
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_MESA_overlay.json
-%endif
 
 
 %changelog
+* Thu Dec 03 2020 Phantom X <megaphantomx at hotmail dot com> - 20.3.0-100
+- 20.3.0
+- Rawhide sync
+
 * Tue Nov 24 2020 Phantom X <megaphantomx at hotmail dot com> - 20.2.3-100
 - 20.2.3
 

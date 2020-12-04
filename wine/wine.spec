@@ -1,6 +1,6 @@
-%global commit cbca9f847f60773b4e7e5408f6a079f4896c5c1e
+%global commit e4fbae832c868e9fcf5a91c58255fe3f4ea1cb30
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201127
+%global date 20201202
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -12,7 +12,7 @@
 %global with_debug 0
 %endif
 %global no64bit   0
-%global winegecko 2.47.1
+%global winegecko 2.47.2
 %global winemono  5.1.1
 %global _default_patch_fuzz 2
 
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 2a073f334b4cece46f9df1b0c2def5c7306eae39
+%global wine_stagingver 5eb920dd8366d360e56513317ea4e42478aae99a
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9727420af1396e78bfaa5d086b0345a74adee080
+%global tkg_id 77d845b5f2f728cc52f71f16364e9f52b25a2955
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 38b7545daf34bb20b3365e7b3d2757176fc42a5e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -94,7 +94,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        5.22
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -1770,6 +1770,7 @@ fi
 %{_libdir}/wine/dbgeng.%{winedll}
 %{_libdir}/wine/dbghelp.%{winedll}
 %{_libdir}/wine/dciman32.%{winedll}
+%{_libdir}/wine/dcomp.%{winedll}
 %{_libdir}/wine/ddraw.%{winedll}
 %{_libdir}/wine/ddrawex.%{winedll}
 %{_libdir}/wine/devenum.%{winedll}
@@ -2216,7 +2217,7 @@ fi
 %{_libdir}/wine/windows.networking.connectivity.%{winedll}
 %endif
 %{_libdir}/wine/windowscodecs.so
-%{_libdir}/wine/windowscodecs.dll.so
+%{_libdir}/wine/windowscodecs.%{winedll}
 %{_libdir}/wine/windowscodecsext.%{winedll}
 %{_libdir}/wine/winebus.sys.so
 %{_libdir}/wine/winegstreamer.dll.so
@@ -2694,6 +2695,9 @@ fi
 
 
 %changelog
+* Thu Dec 03 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.22-102.20201202gite4fbae8
+- New snapshot
+
 * Sat Nov 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.22-101.20201127gitcbca9f8
 - Snapshot
 
