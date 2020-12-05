@@ -1,6 +1,6 @@
-%global commit 8f77a5482a1a7f5bd88eff541f65cd94cc135405
+%global commit 579db85b3bc41712f57c4a615031245341da26e2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201126
+%global date 20201204
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        28%{?gver}%{?dist}
+Release:        29%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -194,6 +194,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Dec  5 2020 Phantom X <megaphantomx at hotmail dot com> - 7-29.20201204git579db85
+- New snapshot
+
 * Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 7-28.20201126git8f77a54
 - Bump to remove 0001-Change-configdir-name.patch
 

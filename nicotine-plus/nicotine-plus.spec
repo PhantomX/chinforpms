@@ -1,7 +1,7 @@
 %global commit c4ff58305ff3b8dc4b94dcc2cc0a7f89a026336b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20201013
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -11,7 +11,7 @@
 %global vc_url  https://github.com/%{name}/%{name}
 
 Name:           nicotine-plus
-Version:        2.1.2
+Version:        2.2.0
 Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -32,16 +32,12 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
 BuildRequires:  libappstream-glib
 BuildRequires:  %{py3_dist pygobject}
-BuildRequires:  %{py3_dist pytaglib}
 BuildRequires:  %{py3_dist pytest}
 BuildRequires:  python3-devel
 Requires:       gobject-introspection
 Requires:       gtk3
 Requires:       libappindicator-gtk3
-Requires:       %{py3_dist dbus-python}
-Requires:       %{py3_dist miniupnpc}
 Requires:       %{py3_dist pygobject}
-Requires:       %{py3_dist pytaglib}
 Requires:       hicolor-icon-theme
 Recommends:     gspell
 
@@ -82,22 +78,26 @@ rm -rf %{buildroot}%{_datadir}/doc
 %pytest --deselect=test/unit/test_version.py
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/org.nicotine_plus.Nicotine.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_plus.Nicotine.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_plus.Nicotine.metainfo.xml
 
 
 %files -f %{cname}.lang
 %license COPYING
-%doc AUTHORS.md NEWS.md README.md TRANSLATORS.md img/CREDITS.md
+%doc AUTHORS.md NEWS.md README.md TRANSLATORS.md files/icons/CREDITS.md
 %{_bindir}/%{cname}
 %{python3_sitelib}/%{cname}-*.egg-info
 %{python3_sitelib}/py%{cname}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.*
-%{_metainfodir}/*.appdata.xml
+%{_metainfodir}/*.metainfo.xml
 %{_mandir}/man1/*.1*
 
 
 %changelog
+* Fri Dec 04 2020 Phantom X <megaphantomx at hotmail dot com> - 2.2.0-100
+- 2.2.0
+- Remove unneeded dependencies
+
 * Tue Oct 13 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.2-100.20201013gitc4ff583
 - 2.1.2
 - Rawhide sync

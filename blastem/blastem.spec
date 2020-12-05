@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
-%global commit 8a64d86cc362
-%global date 20201104
+%global commit ba5d206dcfea
+%global date 20201203
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,7 +10,7 @@
 
 Name:           blastem
 Version:        0.6.2
-Release:        10%{?gver}%{?dist}
+Release:        11%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPLv3
@@ -106,6 +106,9 @@ done
 
 
 %changelog
+* Sat Dec  5 2020 Phantom X <megaphantomx at hotmail dot com> - 0.6.2-11.20201203gitba5d206dcfea
+- Bump
+
 * Fri Nov 06 2020 Phantom X <megaphantomx at hotmail dot com> - 0.6.2-10.20201104git8a64d86cc362
 - Update
 
