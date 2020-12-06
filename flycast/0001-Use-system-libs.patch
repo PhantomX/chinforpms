@@ -22,9 +22,9 @@ index bbbee4c..38e8bb0 100644
  option(TEST_AUTOMATION "Enable test automation" OFF)
  option(ENABLE_LOG "Enable full logging" OFF)
  option(ASAN "Enable address sanitizer" OFF)
-+OPTION(USE_SYSTEM_CHDR "Dynamically link against system libchdr" OFF)
++option(USE_SYSTEM_CHDR "Dynamically link against system libchdr" OFF)
 +option(USE_SYSTEM_LZMA "Dynamically link against system lzma-sdk" OFF)
-+OPTION(USE_SYSTEM_SPIRV "Dynamically link against system glslang/spirv" OFF)
++option(USE_SYSTEM_SPIRV "Dynamically link against system glslang/spirv" OFF)
  
  project(flycast)
  

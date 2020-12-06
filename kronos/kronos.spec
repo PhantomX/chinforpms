@@ -1,6 +1,6 @@
-%global commit d92383b15138b750b431c906c8fd880558847099
+%global commit df8cb2516eb1d94d613c1dd0993bdcbb355f2538
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201021
+%global date 20201102
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           kronos
 Version:        2.1.4
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -53,6 +53,7 @@ BuildRequires:  pkgconfig(xmu)
 BuildRequires:  pkgconfig(libchdr)
 %else
 BuildRequires:  pkgconfig(flac)
+BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(zlib)
 %endif
 BuildRequires:  pkgconfig(x11)
@@ -82,7 +83,7 @@ rm -rf yabause/.vs
 %if 0%{?with_libchdr}
 rm -rf yabause/src/tools/libchdr/*
 %else
-rm -rf yabause/src/tools/libchdr/deps/{flac,zlib}*
+rm -rf yabause/src/tools/libchdr/deps/{flac,lzma,zlib}*
 %endif
 
 cp -p yabause/{COPYING,AUTHORS,README} .
@@ -105,7 +106,10 @@ sed \
 sed -e 's|share/pixmaps|share/icons/hicolor/32x32/apps|g' \
   -i yabause/src/port/qt/CMakeLists.txt
 
-sed -e 's|share/yabause|share/%{name}|g' -i yabause/l10n/CMakeLists.txt
+sed \
+  -e '/^install(/d' \
+  -e '/mini18n-shared/d' \
+  -i yabause/src/tools/mini18n/src/CMakeLists.txt
 
 
 %build
@@ -114,13 +118,6 @@ sed -e 's|share/yabause|share/%{name}|g' -i yabause/l10n/CMakeLists.txt
 
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
-
-pushd mini18n
-minii18n="$(pwd)"
-%cmake3 \
-%{nil}
-%cmake_build
-popd
 
 %cmake3 \
   -S yabause \
@@ -136,8 +133,6 @@ popd
   -DYAB_USE_SCSPMIDI:BOOL=ON \
   -DYAB_WANT_OPENAL:BOOL=OFF \
   -DYAB_WANT_SOFT_RENDERING:BOOL=ON \
-  -DMINI18N_INCLUDE_DIR:PATH=${minii18n}/src \
-  -DMINI18N_LIBRARY:FILEPATH=${minii18n}/%{__cmake_builddir}/src/libmini18n.a \
   -DOpenGL_GL_PREFERENCE=GLVND \
 %{nil}
 
@@ -161,6 +156,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Dec 05 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.4-4.20201102gitdf8cb25
+- Update
+- mini18n static build is merged now
+
 * Thu Oct 22 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.4-3.20201021gitd92383b
 - New snapshot
 

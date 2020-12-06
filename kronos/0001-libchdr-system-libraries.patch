@@ -1,29 +1,30 @@
-From e508559113c2b551fbc73ee48bb8ba6d675f7c49 Mon Sep 17 00:00:00 2001
+From 8584547f580e91aa0d9e3fa1dd2f3812f7ac5906 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 21 Jul 2020 11:18:03 -0300
+Date: Sat, 5 Dec 2020 20:31:23 -0300
 Subject: [PATCH] libchdr: system libraries
 
-Use system libchdr or system flac and zlib, if using internal
+Use system libchdr or system flac, lzma and zlib, if using internal
 ---
- yabause/src/CMakeLists.txt               | 37 ++++++++++++++++++++----
- yabause/src/tools/libchdr/CMakeLists.txt | 23 +++++++++++++--
- 2 files changed, 51 insertions(+), 9 deletions(-)
+ yabause/src/CMakeLists.txt               | 40 ++++++++++++++++++++----
+ yabause/src/tools/libchdr/CMakeLists.txt | 31 ++++++++++++++++--
+ 2 files changed, 62 insertions(+), 9 deletions(-)
 
 diff --git a/yabause/src/CMakeLists.txt b/yabause/src/CMakeLists.txt
-index ae57b3e..7d0d83a 100755
+index a5676fa..1ac449c 100755
 --- a/yabause/src/CMakeLists.txt
 +++ b/yabause/src/CMakeLists.txt
-@@ -1,5 +1,9 @@
+@@ -1,5 +1,10 @@
  project(kronos)
  
 +find_package(PkgConfig REQUIRED)
 +OPTION(USE_SYSTEM_CHDR "Dynamically link against system libchdr" ON)
 +OPTION(USE_SYSTEM_FLAC "Dynamically link against system flac" ON)
++OPTION(USE_SYSTEM_LZMA "Dynamically link against system lzma-sdk" ON)
 +
  #to compile sdl port, use "cmake -DYAB_PORTS=sdl -DYAB_ASYNC_RENDERING ../kronos"
  
  include (CheckCSourceCompiles)
-@@ -140,12 +144,33 @@ set(kronos_SOURCES
+@@ -140,12 +145,35 @@ set(kronos_SOURCES
  	)
  add_definitions(-DIMPROVED_SAVESTATES)
  
@@ -46,8 +47,10 @@ index ae57b3e..7d0d83a 100755
 +  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tools/libchdr/src)
 +  set(KRONOS_LIBRARIES ${KRONOS_LIBRARIES} chdr-static)
 +  if(USE_SYSTEM_FLAC)
-+    message(STATUS "Using shared flac")
-+    set(KRONOS_LIBRARIES ${KRONOS_LIBRARIES} flac-static)
++    set(KRONOS_LIBRARIES ${KRONOS_LIBRARIES} flac-shared)
++  endif()
++  if(USE_SYSTEM_LZMA)
++    set(KRONOS_LIBRARIES ${KRONOS_LIBRARIES} lzma-shared)
 +  endif()
 +
 +endif(USE_SYSTEM_CHDR)
@@ -61,19 +64,20 @@ index ae57b3e..7d0d83a 100755
 +  set(KRONOS_LIBRARIES ${KRONOS_LIBRARIES} zlibstatic)
 +endif()
  
- include_directories(tools/nanovg)
+ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tools/nanovg)
  set(kronos_SOURCES ${kronos_SOURCES} tools/nanovg/nanovg.c)
 diff --git a/yabause/src/tools/libchdr/CMakeLists.txt b/yabause/src/tools/libchdr/CMakeLists.txt
-index 34df19c..c33e07c 100644
+index 34df19c..19e4fce 100644
 --- a/yabause/src/tools/libchdr/CMakeLists.txt
 +++ b/yabause/src/tools/libchdr/CMakeLists.txt
-@@ -1,5 +1,7 @@
- cmake_minimum_required(VERSION 3.1)
+@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.1)
+ 
+ project(chdr C)
  
 +find_package(PkgConfig REQUIRED)
 +
- project(chdr C)
- 
+ #--------------------------------------------------
+ # static libs
  #--------------------------------------------------
 @@ -16,6 +18,7 @@ list(APPEND CHDR_INCLUDES deps/crypto)
  list(APPEND CHDR_LIBS crypto-static)
@@ -83,22 +87,34 @@ index 34df19c..c33e07c 100644
  set(FLAC_SOURCES
    deps/flac-1.3.2/src/libFLAC/bitmath.c
    deps/flac-1.3.2/src/libFLAC/bitreader.c
-@@ -61,6 +64,13 @@ target_compile_definitions(flac-static PRIVATE PACKAGE_VERSION="1.3.2" FLAC__HAS
+@@ -61,7 +64,15 @@ target_compile_definitions(flac-static PRIVATE PACKAGE_VERSION="1.3.2" FLAC__HAS
  list(APPEND CHDR_INCLUDES deps/flac-1.3.2/src/libFLAC/include)
  list(APPEND CHDR_DEFS FLAC__NO_DLL)
  list(APPEND CHDR_LIBS flac-static)
 +else()
 +  message(STATUS "libchdr - Using shared flac")
-+  add_library(flac-static INTERFACE IMPORTED GLOBAL)
++  add_library(flac-shared INTERFACE IMPORTED GLOBAL)
 +  pkg_check_modules(FLAC REQUIRED flac)
 +  list(APPEND CHDR_INCLUDES ${FLAC_INCLUDE_DIRS})
 +  list(APPEND CHDR_LIBS ${FLAC_LIBRARIES})
 +endif()
  
++if (NOT USE_SYSTEM_LZMA)
  # lzma
  set(LZMA_SOURCES
-@@ -114,9 +124,16 @@ list(APPEND CHDR_INCLUDES deps/lzma-16.04/C)
+   #deps/lzma-16.04/C/7zAlloc.c
+@@ -112,11 +123,25 @@ add_library(lzma-static STATIC ${LZMA_SOURCES})
+ target_compile_options(lzma-static PRIVATE -D_7ZIP_ST)
+ list(APPEND CHDR_INCLUDES deps/lzma-16.04/C)
  list(APPEND CHDR_LIBS lzma-static)
++else()
++  message(STATUS "libchdr - Using shared lzma-sdk")
++  add_library(lzma-shared INTERFACE IMPORTED GLOBAL)
++  pkg_check_modules(LZMA REQUIRED lzmasdk-c)
++  list(APPEND CHDR_INCLUDES ${LZMA_INCLUDE_DIRS})
++  list(APPEND CHDR_LIBS ${LZMA_LIBRARIES})
++endif()
++
  
  # zlib
 -add_subdirectory(deps/zlib-1.2.11 EXCLUDE_FROM_ALL)
@@ -113,10 +129,9 @@ index 34df19c..c33e07c 100644
 +  list(APPEND CHDR_INCLUDES deps/zlib-1.2.11 ${CMAKE_CURRENT_BINARY_DIR}/deps/zlib-1.2.11)
 +  list(APPEND CHDR_LIBS zlibstatic)
 +endif()
-+
  
  #--------------------------------------------------
  # chdr
 -- 
-2.26.2
+2.29.2
 

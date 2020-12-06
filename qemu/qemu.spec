@@ -214,7 +214,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 5.2.0~rc3
+Version: 5.2.0~rc4
 Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
@@ -236,9 +236,6 @@ Source16: %{name}-sysusers.conf
 Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
-
-Patch0001: 0001-meson-use-dependency-to-find-libjpeg.patch
-Patch0002: 0002-configure-remove-python-pkg_resources-check.patch
 
 BuildRequires: meson
 BuildRequires: gcc
@@ -1948,6 +1945,9 @@ popd
 
 
 %changelog
+* Sat Dec 05 2020 Phantom X <megaphantomx at hotmail dot com> - 2:5.2.0~rc4-100
+- 5.2.0-rc4
+
 * Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 2:5.2.0~rc3-100
 - 5.2.0-rc3
 - Rawhide sync

@@ -1,6 +1,6 @@
 Name:           qt5ct
 Version:        1.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
@@ -91,6 +91,9 @@ install -D -pm 644 %{name}-%{version}/src/%{name}/translations/*.qm \
 
 
 %changelog
+* Sat Dec 05 2020 Phantom X <megaphantomx at hotmail dot com> - 1.1-101
+- Rebuild (qt5)
+
 * Thu Aug 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1.1-100
 - 1.1, internal icon loading proper fix
 

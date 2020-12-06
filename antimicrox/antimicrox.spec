@@ -1,6 +1,6 @@
-%global commit 61ce55fe34932f2b761105da6dbd5c11b1f4f61c
+%global commit 4006ea97161254026c22c345d03c264bdce87f30
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200917
+%global date 20201105
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,10 +8,9 @@
 %endif
 
 %global appname io.github.%{name}.%{name}
-%global libname libantilib
 
 Name:           antimicrox
-Version:        3.1.1
+Version:        3.1.3
 Release:        100%{?gver}%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
@@ -24,6 +23,8 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
+Patch0:         %{url}/pull/118.patch#/%{name}-gh-pr118.patch
+
 ExcludeArch:    %{arm}
 
 BuildRequires:  cmake
@@ -31,12 +32,12 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc-c++
 BuildRequires:  cmake(Qt5Concurrent)
-BuildRequires:  cmake(Qt5Core)
+BuildRequires:  cmake(Qt5Core) >= 5.8
 BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5Network)
 BuildRequires:  cmake(Qt5Widgets)
 BuildRequires:  cmake(Qt5X11Extras)
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(sdl2) >= 2.0.6
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xi)
@@ -48,25 +49,13 @@ Requires:       hicolor-icon-theme
 
 Provides:       antimicroX = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       AntiMicroX = %{?epoch:%{epoch}:}%{version}-%{release}
-
+Obsoletes:      %{name}-libs < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}-libs-devel < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description
 antimicroX is a graphical program used to map keyboard keys and mouse controls
 to a gamepad. This program is useful for playing PC games using a gamepad that
 do not have any form of built-in gamepad support.
-
-
-%package %{libname}
-Summary:        %{name} libraries
-%description %{libname}
-Contains library files required for running %{name}.
-
-%package %{libname}-devel
-Summary:        Development files for %{libname}
-Requires:       %{name}-%{libname}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description %{libname}-devel
-The %{libname}-devel package contains libraries and header files for %{libname}.
 
 
 %prep
@@ -79,11 +68,11 @@ The %{libname}-devel package contains libraries and header files for %{libname}.
 find src -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
 
 sed \
-  -e '/APPEND LIBS/s|${X11_X11_LIB}|\0 xcb|' \
   -e '/\/doc\/%{name}/d' \
   -i CMakeLists.txt
 
-ln -sf %{name}.png src/images/%{name}_trayicon.png
+cp -f src/images/48x48/%{appname}.png src/images/48-apps-%{name}_trayicon.png
+cp -f src/images/48x48/%{appname}.png src/images/breeze_themed/48-apps-%{name}_trayicon.png
 
 %build
 %cmake \
@@ -99,7 +88,9 @@ ln -sf %{name}.png src/images/%{name}_trayicon.png
 %install
 %cmake_install
 
-rm -f %{buildroot}%{_datadir}/%{name}/Changelog
+rm -f %{buildroot}%{_datadir}/%{name}/CHANGELOG.md
+
+rm -rf %{buildroot}%{_includedir}
 
 %find_lang %{name} --with-qt
 
@@ -110,29 +101,22 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 
 %files -f %{name}.lang
 %license LICENSE
-%doc Changelog README.md
+%doc CHANGELOG.md README.md
 %{_bindir}/%{name}
 %dir %{_datadir}/%{name}
-%dir %{_datadir}/%{name}/translations
-%{_datadir}/%{name}/icons
-%{_datadir}/%{name}/images
 %{_datadir}/%{name}/translations/%{name}.qm
 %{_datadir}/applications/*.desktop
-%{_datadir}/icons/hicolor/*/apps/*
+%{_datadir}/icons/*/*/apps/*
 %{_datadir}/mime/packages/%{appname}.xml
 %{_mandir}/man1/*.1*
 %{_metainfodir}/%{appname}.appdata.xml
 
-%files %{libname}
-%license LICENSE
-%{_libdir}/%{libname}.so.1
-
-%files %{libname}-devel
-%{_includedir}/%{name}
-%{_libdir}/%{libname}.so
-
 
 %changelog
+* Sat Dec 05 2020 Phantom X <megaphantomx at hotmail dot com> - 3.1.3-100.20201105git4006ea9
+- New snapshot
+- libantilib removed
+
 * Fri Sep 18 2020 Phantom X <megaphantomx at hotmail dot com> - 3.1.1-100.20200917git61ce55f
 - 3.1.1
 - New project and files renaming

@@ -3,13 +3,13 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%global udev_id 47261809a52f3b53fbdcf7070cd5ab422c616dfa
+%global udev_id 3f9f151f8bb3caed0bee9e68d421562166605fd9
 
 # If firewalld macro is not defined, define it here:
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.67
+Version:        1.0.0.68
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
@@ -32,6 +32,9 @@ Source5:        README.Fedora
 
 # Input devices seen as joysticks:
 Source6:        https://github.com/denilsonsa/udev-joystick-blacklist/raw/4c23cd2044ce4ac562ede5aac500bbc9f7a0e9ca/after_kernel_4_9/51-these-are-not-joysticks-rm.rules
+
+# Configure limits in systemd
+Source7:        01-steam.conf
 
 # Newer UDEV rules
 Source10:       https://github.com/ValveSoftware/steam-devices/raw/%{udev_id}/60-steam-input.rules
@@ -69,6 +72,7 @@ Requires:       vulkan-loader
 Requires:       alsa-lib%{?_isa}
 Requires:       gtk2%{?_isa}
 Requires:       libnsl%{?_isa}
+Requires:       libxcrypt-compat%{?_isa}
 Requires:       libpng12%{?_isa}
 Requires:       libXext%{?_isa}
 Requires:       libXinerama%{?_isa}
@@ -114,6 +118,11 @@ Recommends:     gamemode
 Recommends:     gamemode%{?_isa}
 Recommends:     (gnome-shell-extension-gamemode if gnome-shell)
 
+# Proton uses xdg-desktop-portal to open URLs from inside a container
+Requires:       xdg-desktop-portal
+Recommends:     (xdg-desktop-portal-gtk if gnome-shell)
+Recommends:     (xdg-desktop-portal-kde if kwin)
+
 Provides:       steam-noruntime = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      steam-noruntime < %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -157,6 +166,12 @@ install -pm 644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d
 mkdir -p %{buildroot}%{_metainfodir}
 install -p -m 0644 %{SOURCE4} %{buildroot}%{_metainfodir}/
 
+# Raise file descriptor limit
+mkdir -p %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
+mkdir -p %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
+install -m 644 -p %{SOURCE7} %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
+install -m 644 -p %{SOURCE7} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
+
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
@@ -176,9 +191,17 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_mandir}/man6/%{name}.*
 %config(noreplace) %{_sysconfdir}/profile.d/%{name}.*sh
 %{_udevrulesdir}/*
+%dir %{_prefix}/lib/systemd/system.conf.d/
+%{_prefix}/lib/systemd/system.conf.d/01-steam.conf
+%dir %{_prefix}/lib/systemd/user.conf.d/
+%{_prefix}/lib/systemd/user.conf.d/01-steam.conf
 
 
 %changelog
+* Sat Dec 05 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.68-100
+- 1.0.0.68
+- RPMFusion sync
+
 * Mon Nov 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.67-100
 - 1.0.0.67
 
