@@ -23,6 +23,9 @@
 %ifarch %{mips}
 %global kvm_package   system-mips
 %endif
+%ifarch riscv64
+%global kvm_package   system-riscv
+%endif
 
 %global user_static 1
 %if 0%{?rhel}
@@ -214,7 +217,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 5.2.0~rc4
+Version: 5.2.0
 Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
@@ -1945,6 +1948,9 @@ popd
 
 
 %changelog
+* Wed Dec 09 2020 Phantom X <megaphantomx at hotmail dot com> - 2:5.2.0-100
+- 5.2.0
+
 * Sat Dec 05 2020 Phantom X <megaphantomx at hotmail dot com> - 2:5.2.0~rc4-100
 - 5.2.0-rc4
 

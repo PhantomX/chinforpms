@@ -127,7 +127,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2020.10
+Version:        2020.12
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -193,6 +193,7 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
 Patch450:       %{vc_url}/commit/26459c47f867dc1882fa7b87e32a9e8fc5e125e5.patch#/%{name}-gh-26459c4.patch
+Patch451:       %{vc_url}/pull/1861.patch#/%{name}-gh-pr1861.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -397,6 +398,7 @@ This package contains results of tests executed during build.
 %patch420 -p1 -b .mozilla-1389436
 
 %patch450 -p1 -b .gh26459c4 -R
+%patch451 -p1 -b .pr1861
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -1035,6 +1037,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Dec 09 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.12-1.classic
+- 2020.12
+
 * Tue Oct 20 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.10-1.classic
 - 2020.10
 
