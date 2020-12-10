@@ -14,8 +14,8 @@
 %global pkgrel 1
 
 Name:           vivaldi
-Version:        3.4.2066.106
-Release:        2%{?dist}
+Version:        3.5.2115.73
+Release:        1%{?dist}
 Summary:        Web browser
 
 License:        Proprietary and others, see https://www.vivaldi.com/
@@ -130,6 +130,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Dec 09 2020 Phantom X <megaphantomx at hotmail dot com> - 3.5.2115.73-1
+- 3.5.2115.73
+
 * Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 3.4.2066.106-2
 - Add --password-store=basic parameter to wrapper
 - with_snapshot switch to change channels

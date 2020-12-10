@@ -1,7 +1,7 @@
-%global commit e4fbae832c868e9fcf5a91c58255fe3f4ea1cb30
+%global commit 310019789f7bde12ae3f25f723957c975fb2f804
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201202
-%global with_snapshot 0
+%global date 20201209
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.0rc1
+%global wine_stagingver dc77e28b0f7d6fdb11dafacb73b9889545359572
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9d52fb4dc7b8de50b101079b7bf906d67f81ad7e
+%global tkg_id 98b4d88cc669b671e561458d449d0c39f4f5039b
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b5edce86550ab24625bc75c25e3905528645e48b
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -94,7 +94,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.0~rc1
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -170,6 +170,7 @@ Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq
 Source900:       https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
+Patch900:        0001-Fix-broken-esync-on-staging-dc77e28.patch
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
 Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
@@ -804,8 +805,9 @@ This package adds the opencl driver for wine.
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
-gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
+gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
+%patch900 -p1
 %patch1000 -p1
 %patch1002 -p1
 %patch1003 -p1
@@ -2702,6 +2704,9 @@ fi
 
 
 %changelog
+* Wed Dec 09 2020 Phantom X <megaphantomx at hotmail dot com> - 1:6.0~rc1-101.20201209git3100197
+- Snapshot
+
 * Sat Dec 05 2020 Phantom X <megaphantomx at hotmail dot com> - 1:6.0~rc1-100
 - 6.0-rc1
 

@@ -1,0 +1,61 @@
+From 9f9348d0fe16f1dd59e5a714c7743a40d434e968 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 9 Dec 2020 16:27:50 -0300
+Subject: [PATCH] Fix broken esync on staging dc77e28
+
+Some hunks are getting unordered due to similar contexts.
+
+3fdd1fd97c71a4a8663df62fe436691d69896b19 commit from
+https://github.com/Frogging-Family/wine-tkg-git
+---
+ .../0008-ntdll-Implement-NtSetEvent.patch                     | 4 +++-
+ .../0009-ntdll-Implement-NtResetEvent.patch                   | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/patches/eventfd_synchronization/0008-ntdll-Implement-NtSetEvent.patch b/patches/eventfd_synchronization/0008-ntdll-Implement-NtSetEvent.patch
+index c73b035..c045925 100644
+--- a/patches/eventfd_synchronization/0008-ntdll-Implement-NtSetEvent.patch
++++ b/patches/eventfd_synchronization/0008-ntdll-Implement-NtSetEvent.patch
+@@ -51,7 +51,8 @@ diff --git a/dlls/ntdll/unix/sync.c b/dlls/ntdll/unix/sync.c
+ index 51f77b1015f..60be9a0885a 100644
+ --- a/dlls/ntdll/unix/sync.c
+ +++ b/dlls/ntdll/unix/sync.c
+-@@ -486,6 +486,9 @@ NTSTATUS WINAPI NtSetEvent( HANDLE handle, LONG *prev_state )
++@@ -458,8 +458,11 @@ NTSTATUS WINAPI NtSetEvent( HANDLE handle, LONG *prev_state )
++ NTSTATUS WINAPI NtSetEvent( HANDLE handle, LONG *prev_state )
+  {
+      NTSTATUS ret;
+  
+@@ -61,6 +62,7 @@ index 51f77b1015f..60be9a0885a 100644
+      SERVER_START_REQ( event_op )
+      {
+          req->handle = wine_server_obj_handle( handle );
++         req->op     = SET_EVENT;
+ -- 
+ 2.28.0
+ 
+diff --git a/patches/eventfd_synchronization/0009-ntdll-Implement-NtResetEvent.patch b/patches/eventfd_synchronization/0009-ntdll-Implement-NtResetEvent.patch
+index 3c5b8c8..bc5c160 100644
+--- a/patches/eventfd_synchronization/0009-ntdll-Implement-NtResetEvent.patch
++++ b/patches/eventfd_synchronization/0009-ntdll-Implement-NtResetEvent.patch
+@@ -51,7 +51,8 @@ diff --git a/dlls/ntdll/unix/sync.c b/dlls/ntdll/unix/sync.c
+ index 60be9a0885a..1d2e831964f 100644
+ --- a/dlls/ntdll/unix/sync.c
+ +++ b/dlls/ntdll/unix/sync.c
+-@@ -508,6 +508,9 @@ NTSTATUS WINAPI NtResetEvent( HANDLE handle, LONG *prev_state )
++@@ -508,8 +508,11 @@ NTSTATUS WINAPI NtResetEvent( HANDLE handle, LONG *prev_state )
++ NTSTATUS WINAPI NtResetEvent( HANDLE handle, LONG *prev_state )
+  {
+      NTSTATUS ret;
+  
+@@ -61,6 +62,7 @@ index 60be9a0885a..1d2e831964f 100644
+      SERVER_START_REQ( event_op )
+      {
+          req->handle = wine_server_obj_handle( handle );
++         req->op     = RESET_EVENT;
+ -- 
+ 2.28.0
+ 
+-- 
+2.29.2
+
