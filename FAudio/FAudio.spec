@@ -9,7 +9,7 @@
 
 Name:           FAudio
 Version:        20.12
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
 Epoch:          1
@@ -23,9 +23,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-
-# https://bugs.winehq.org/show_bug.cgi?id=48791
-Patch0:         https://bugs.winehq.org/attachment.cgi?id=67944#/%{name}-whqbug48791.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -99,6 +96,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Thu Dec 10 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.12-101
+- Remove unneeded patch
+
 * Tue Dec 01 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.12-100
 - 20.12
 - Upstream pkgconfig file

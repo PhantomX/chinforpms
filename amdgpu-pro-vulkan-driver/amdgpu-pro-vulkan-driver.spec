@@ -84,7 +84,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/amd
 
 
 %changelog
-* Wed Nov 18 2020 Phantom X <megaphantomx at hotmail dot com> - 20.45.1164792-1
+* Wed Nov 18 2020 - 20.45.1164792-1
 - 20.45.1164792
 
 * Wed Aug 26 2020 - 20.30.1109583-1

@@ -3,6 +3,9 @@
 %global date 20200729
 %global with_snapshot 1
 
+# Disable reverb for slow systems
+%global without_reverb 1
+
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
@@ -11,7 +14,7 @@
 
 Name:           %{pkgname}-freeworld
 Version:        20.07
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - freeworld
 Epoch:          1
 
@@ -25,8 +28,9 @@ Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
-# https://bugs.winehq.org/show_bug.cgi?id=48791
-Patch0:         https://bugs.winehq.org/attachment.cgi?id=67944#/%{pkgname}-whqbug48791.patch
+%if 0%{?without_reverb}
+Patch0:         0001-Disable-reverb.patch
+%endif
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -101,6 +105,10 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Thu Dec 10 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.07-4.20200729gitf51d5df
+- Switch to disable reverb
+- Remove unneeded patch
+
 * Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.07-3.20200729gitf51d5df
 - Winehq bug 48791 fix try
 

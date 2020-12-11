@@ -94,7 +94,7 @@ done
 
 
 %changelog
-* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1.8.3-2
+* Wed Dec 02 2020 - 1.8.3-2
 - Fix gpu acceleration
 
 * Fri Sep 18 2020 - 1.8.3-1

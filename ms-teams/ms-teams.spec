@@ -98,7 +98,7 @@ done
 
 
 %changelog
-* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1.3.00.30857-1
+* Wed Dec 02 2020 - 1.3.00.30857-1
 - 1.3.00.30857
 
 * Wed Oct 28 2020 - 1.3.00.25560-1

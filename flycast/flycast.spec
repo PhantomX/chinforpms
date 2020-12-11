@@ -1,6 +1,6 @@
-%global commit 579db85b3bc41712f57c4a615031245341da26e2
+%global commit d960f8e9f5c527a62d14089cb467337ccb47219f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201204
+%global date 20201209
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        29%{?gver}%{?dist}
+Release:        30%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -35,6 +35,7 @@ Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 Source1:        %{name}.appdata.xml
 
 Patch1:         0001-Use-system-libs.patch
+Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
 
 BuildRequires:  desktop-file-utils
@@ -67,6 +68,7 @@ BuildRequires:  pkgconfig(sdl2)
 %endif
 BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
+Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 
 
@@ -118,6 +120,8 @@ sed \
     -i CMakeLists.txt
   sed -e 's|@GIT_HASH@|%{shortcommit}|g' -i core/version.h.in
 %endif
+
+sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
 
 
 %build
@@ -194,6 +198,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Fri Dec 11 2020 Phantom X <megaphantomx at hotmail dot com> - 7-30.20201209gitd960f8e
+- New snapshot
+- R: sdl_gamecontrollerdb
+
 * Sat Dec  5 2020 Phantom X <megaphantomx at hotmail dot com> - 7-29.20201204git579db85
 - New snapshot
 

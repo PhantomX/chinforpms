@@ -118,7 +118,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_libdir}/%{name}/*.json
 %{_libdir}/%{name}/*.pak
 %{_libdir}/%{name}/*.so
-%attr(4755,root,root) %{_libdir}/%{name}/%{name}-sandbox
+%attr(4711,root,root) %{_libdir}/%{name}/%{name}-sandbox
 %dir %{_libdir}/%{name}/extensions
 %{_libdir}/%{name}/locales
 %{_libdir}/%{name}/MEIPreload
@@ -130,13 +130,13 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
-* Wed Dec 09 2020 Phantom X <megaphantomx at hotmail dot com> - 3.5.2115.73-1
+* Wed Dec 09 2020 - 3.5.2115.73-1
 - 3.5.2115.73
 
-* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 3.4.2066.106-2
+* Wed Dec 02 2020 - 3.4.2066.106-2
 - Add --password-store=basic parameter to wrapper
 - with_snapshot switch to change channels
 - Fix gpu acceleration
 
-* Fri Nov 27 2020 Phantom X <megaphantomx at hotmail dot com> - 3.4.2066.106-1
+* Fri Nov 27 2020 - 3.4.2066.106-1
 - Initial spec

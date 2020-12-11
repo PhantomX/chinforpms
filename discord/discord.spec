@@ -128,7 +128,7 @@ done
 
 
 %changelog
-* Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 1:0.0.12-101
+* Wed Dec 02 2020 - 1:0.0.12-101
 - Fix gpu acceleration
 
 * Fri Sep 11 2020 - 1:0.0.12-100

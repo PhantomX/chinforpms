@@ -287,7 +287,7 @@ done
 
 
 %changelog
-* Fri Nov  6 2020 Phantom X <megaphantomx at hotmail dot com> - 3:7.5.0-9
+* Fri Nov 06 2020 - 3:7.5.0-9
 - with_python 0
 
 * Wed Sep 30 2020 - 3:7.5.0-8
