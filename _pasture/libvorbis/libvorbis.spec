@@ -16,7 +16,7 @@ BuildRequires:  pkgconfig(ogg) >= 1.0
 # https://ao-yumi.github.io/aotuv_web/index.html
 # https://freac.org
 Patch10:        https://freac.org/patches/%{name}-1.3.7-aotuv-b6.03.patch
-Patch11:        https://freac.org/patches/%%{name}-1.3.7-aotuv-b6.03-lancer.patch
+Patch11:        https://freac.org/patches/%{name}-1.3.7-aotuv-b6.03-lancer.patch
 Patch12:        0001-sharedbook-Revert-memory-leak-fix-to-please-Lancer-o.patch
 
 %description

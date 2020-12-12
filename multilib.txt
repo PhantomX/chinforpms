@@ -8,6 +8,7 @@ cubeb
 -dxil-spirv
 FAudio
 FAudio-freeworld
+FAudio-noreverb
 gamemode
 glslang
 gnome-theme-extra
@@ -18,7 +19,8 @@ kernel-tools
 libeatmydata
 libmirage
 -libogg
-libvorbis
+-libvorbis
+libvorbis-aotuv
 libstrangle
 -linux-steam-integration
 mangohud

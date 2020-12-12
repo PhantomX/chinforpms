@@ -13,8 +13,8 @@
 %endif
 
 Name:           discord
-Version:        0.0.12
-Release:        101%{?dist}
+Version:        0.0.13
+Release:        100%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
 
@@ -119,6 +119,9 @@ for res in 16 22 24 32 48 64 72 96 128 192 ;do
     ${dir}/%{name}.png
 done
 
+ln -sf "$(realpath --relative-to="%{_libdir}/%{name}" "%{_datadir}/icons/hicolor/256x256/apps")"/%{name}.png \
+  %{buildroot}%{_libdir}/%{name}/
+
 
 %files
 %{_bindir}/%{name}
@@ -128,6 +131,9 @@ done
 
 
 %changelog
+* Sat Dec 12 2020 - 1:0.0.13-100
+- 0.0.13
+
 * Wed Dec 02 2020 - 1:0.0.12-101
 - Fix gpu acceleration
 

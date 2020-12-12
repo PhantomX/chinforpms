@@ -41,7 +41,8 @@ xwit
 -dxil-spirv
 libchdr
 libliftoff
-libvorbis
+-libvorbis
+libvorbis-aotuv
 mesa
 pygtk2
 python-markups
@@ -93,6 +94,7 @@ dosbox-x
 easytag
 -emojione-picker
 FAudio
+FAudio-noreverb
 fcrackzip
 firefox-chinfo-prefs
 firejail

@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 2e5a29573b3f923c8c31fc60474082388f26bfcd
+%global pfcommit 3946e58835b2a0f5beb6dee085a4ee412298f1bf
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 9455f8b0e8b83836454a8a720749d4284378779e
+%global opensuse_id 1329f77d109ab20ea83c135894342346e64fccad
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -876,9 +876,7 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch#/openSUSE-fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch
 Patch1021: %{opensuse_url}/RDMA-srpt-Fix-typo-in-srpt_unregister_mad_agent-docs.patch#/openSUSE-RDMA-srpt-Fix-typo-in-srpt_unregister_mad_agent-docs.patch
-Patch1022: %{opensuse_url}/tty-Fix-pgrp-locking-in-tiocspgrp.patch#/openSUSE-tty-Fix-pgrp-locking-in-tiocspgrp.patch
-Patch1023: %{opensuse_url}/tty-Fix-session-locking.patch#/openSUSE-tty-Fix-session-locking.patch
-    
+
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -2663,6 +2661,9 @@ fi
 #
 #
 %changelog
+* Fri Dec 11 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.14-500.chinfo
+- 5.9.14 - pf7
+
 * Tue Dec 08 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.13-500.chinfo
 - 5.9.13 - pf7
 
