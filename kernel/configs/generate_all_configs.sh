@@ -9,28 +9,28 @@
 PRIMARY=$1
 DEBUGBUILDSENABLED=$2
 
-if [ -z $2 ]; then
+if [ -z "$2" ]; then
 	exit 1
 fi
 
-if [ $PRIMARY == "fedora" ]; then
+if [ "$PRIMARY" = "fedora" ]; then
 	SECONDARY=rhel
 else
 	SECONDARY=fedora
 fi
 
-for i in kernel-*-$PRIMARY.config; do
-	NEW=kernel-$VERSION-`echo $i | cut -d - -f2- | sed s/-$PRIMARY//`
+for i in kernel-*-"$PRIMARY".config; do
+	NEW=kernel-"$VERSION"-`echo $i | cut -d - -f2- | sed s/-"$PRIMARY"//`
 	#echo $NEW
-	mv $i $NEW
+	mv "$i" "$NEW"
 done
 
-rm kernel-*-$SECONDARY.config
+rm kernel-*-"$SECONDARY".config
 
-if [ $DEBUGBUILDSENABLED -eq 0 ]; then
+if [ "$DEBUGBUILDSENABLED" -eq 0 ]; then
 	for i in kernel-*debug*.config; do
-		base=`echo $i | sed -r s/-?debug//g`
-		NEW=kernel-`echo $base | cut -d - -f2-`
-		mv $i $NEW
+		base=$(echo "$i" | sed -r s/-?debug//g)
+		NEW=kernel-$(echo "$base" | cut -d - -f2-)
+		mv "$i" "$NEW"
 	done
 fi

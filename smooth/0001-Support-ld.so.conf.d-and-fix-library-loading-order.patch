@@ -1,0 +1,79 @@
+From 67edf2eb70f664addadfcf456557be2e67e3719f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 12 Dec 2020 13:16:28 -0300
+Subject: [PATCH] Support ld.so.conf.d and fix library loading order
+
+---
+ classes/system/dynamicloader.cpp | 42 ++++++++++++++++++++++++++------
+ 1 file changed, 34 insertions(+), 8 deletions(-)
+
+diff --git a/classes/system/dynamicloader.cpp b/classes/system/dynamicloader.cpp
+index a2e7306..1876411 100644
+--- a/classes/system/dynamicloader.cpp
++++ b/classes/system/dynamicloader.cpp
+@@ -25,6 +25,14 @@
+ #	include <dlfcn.h>
+ #endif
+ 
++#include <sys/types.h>
++#include <string>
++#include <vector>
++#include <dirent.h>
++
++using std::string;
++using std::vector;
++
+ const S::Short	 S::System::DynamicLoader::classID = S::Object::RequestClassID();
+ 
+ S::System::DynamicLoader::DynamicLoader(const String &module) : handle(NIL)
+@@ -150,6 +158,32 @@ const S::Array<S::String> &S::System::DynamicLoader::GetLibraryDirectories()
+ #ifndef __WIN32__
+ 	if (directories.Length() == 0)
+ 	{
++
++		/* Parse LD_LIBRARY_PATH environment variable.
++		 */
++		const Array<String>	&paths = String(getenv("LD_LIBRARY_PATH")).Explode(":");
++
++		/* Parse /etc/ld.so.conf if it exists.
++		 */
++		if (File("/etc/ld.so.conf").Exists())	    ParseDirectoryList("/etc/ld.so.conf", directories);
++
++		if (Directory("/etc/ld.so.conf.d").Exists())
++		{
++				const String confdpath = "/etc/ld.so.conf.d/";
++				DIR* dirp = opendir("/etc/ld.so.conf.d");
++				struct dirent * dp;
++				vector<char *> files;
++				while ((dp = readdir(dirp)) != NULL) {
++						files.push_back(dp->d_name);
++        }
++    		closedir(dirp);
++    		for (const char* file : files)
++    		{
++					const String fullfilepath = confdpath.Append(file);
++					if (File(fullfilepath).Exists())	    ParseDirectoryList(fullfilepath, directories);
++				}
++    }
++
+ 		/* Look for /usr/lib and /usr/local/lib on all systems.
+ 		 */
+ 		if (Directory("/usr/lib").Exists())	    directories.Add("/usr/lib");
+@@ -189,14 +223,6 @@ const S::Array<S::String> &S::System::DynamicLoader::GetLibraryDirectories()
+ 		if (Directory("/usr/pkg/lib").Exists())	    directories.Add("/usr/pkg/lib");
+ #endif
+ 
+-		/* Parse /etc/ld.so.conf if it exists.
+-		 */
+-		if (File("/etc/ld.so.conf").Exists())	    ParseDirectoryList("/etc/ld.so.conf", directories);
+-
+-		/* Parse LD_LIBRARY_PATH environment variable.
+-		 */
+-		const Array<String>	&paths = String(getenv("LD_LIBRARY_PATH")).Explode(":");
+-
+ 		foreach (const String &path, paths) if (Directory(path).Exists()) directories.Add(path);
+ 	}
+ #endif
+-- 
+2.29.2
+

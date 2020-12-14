@@ -2,13 +2,15 @@
 
 Name:           smooth
 Version:        0.9.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An object oriented C++ class library
 
 License:        Artistic 2.0
 URL:            http://www.smooth-project.org/
 
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{ver}.tar.gz
+
+Patch0:         0001-Support-ld.so.conf.d-and-fix-library-loading-order.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(bzip2)
@@ -38,9 +40,15 @@ development with %{name} library.
 
 
 %prep
-%autosetup -n %{name}-%{ver}
+%autosetup -n %{name}-%{ver} -p1
 
 sed -e 's/\r//' -i Readme.md Copying doc/reference/dtds/*.dtd
+
+sed \
+  -e 's|"/usr/lib"|"%{_libdir}"|g' \
+  -e 's|"/usr/local/lib"|"/usr/local/%{_lib}"|g' \
+  -i classes/system/dynamicloader.cpp
+
 
 %build
 %set_build_flags
@@ -68,6 +76,9 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 
 %changelog
+* Sat Dec 12 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.6-2
+- Patch to fix library loading issues
+
 * Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.6-1
 - 0.9.6
 
