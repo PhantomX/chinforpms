@@ -5,22 +5,22 @@
 %global _lto_cflags %{nil}
 
 # Need be set for release builds too
-%global commit 60ac9b4d515cd8647ccb97591016f3f4058c7db1
+%global commit d003424bc826afd005c68f8a8f0d42e4dae00fd0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201106
+%global date 20201214
 %global with_snapshot 0
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 3086c82a9b3f75a3506ed82d3d2780039948bdd5
+%global commit1 590bde01a6a341c75a86243cba01793b594b0410
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 a61d07a72763c1eb200de0a2c316703643a0d1d9
+%global commit2 a0370efd589be33d5d9a85cfde2f85841b3755af
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
-%global commit3 a20c768698836d93a86d0fe742081012b66c6afd
+%global commit3 e50f7d1ce8e162d0c826e84168cfa234e4de4ec9
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
@@ -48,7 +48,7 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.0
+Version:        2.1
 Release:        1%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
@@ -248,6 +248,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1-1
+- 2.1
+
 * Fri Nov 06 2020 Phantom X <megaphantomx at hotmail dot com> - 2.0-1
 - 2.0
 

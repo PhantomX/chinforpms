@@ -10,20 +10,20 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 1329f77d109ab20ea83c135894342346e64fccad
+%global opensuse_id 1bdd4f9b1c087edbcbdcfcf220c5b0c1cb7584f0
 
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 9
+%global base_sublevel 10
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 14
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -96,10 +96,6 @@ Source5000: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}.xz
 
 # ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch0: 0001-iio-Use-event-header-from-kernel-tree.patch
-Patch1: 0001-Filter-lto-options-from-the-perl-ccopts.patch
-
-#Revert this
-Patch2: 0001-tools-libbpf-Avoid-counting-local-symbols-in-ABI-che.patch
 
 # rpmlint cleanup
 Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
@@ -130,7 +126,7 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel glibc-devel glibc-headers glibc-static python3-devel java-devel
 BuildRequires: asciidoc xmlto
-BuildRequires: opencsd-devel
+BuildRequires: opencsd-devel openssl-devel libbabeltrace-devel
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: /usr/bin/pathfix.py
 %ifnarch s390x %{arm}
@@ -237,7 +233,6 @@ cd linux-%{kversion}
 %endif
 
 %patch0 -p1
-%patch1 -p1
 %patch6 -p1
 
 %patch1000 -p1
@@ -248,7 +243,7 @@ cd linux-%{kversion}
 # -p preserves timestamps
 # -n prevents creating ~backup files
 # -i specifies the interpreter for the shebang
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" tools/ tools/perf/scripts/python/*.py scripts/gen_compile_commands.py
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" tools/ tools/perf/scripts/python/*.py scripts/clang-tools
 
 sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.config
 
@@ -503,7 +498,7 @@ popd
 
 %files -n libbpf
 %{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.1.0
+%{_libdir}/libbpf.so.0.2.0
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf-devel

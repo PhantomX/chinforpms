@@ -1,6 +1,6 @@
-%global commit 6e2447d80aacfd30a8166bf943dcd5f83cd7310d
+%global commit afaff2e2996b276282a14d66ee0dea6fbaffdf46
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201125
+%global date 20201214
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -23,7 +23,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
-%global commit2 d3e695286cce346274192c214c00f021c00cd575
+%global commit2 0b28335acea4f429ae798c5e75232e54881bf164
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -39,7 +39,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 be527632a6c80291ab012a79758e0e41224ad5e2
+%global commit7 e50f7d1ce8e162d0c826e84168cfa234e4de4ec9
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 

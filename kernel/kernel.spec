@@ -85,24 +85,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 9
+%define base_sublevel 10
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 2
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 3946e58835b2a0f5beb6dee085a4ee412298f1bf
+%global pfcommit 60fabf08b8544030179698268ca815c4e4df0991
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 1329f77d109ab20ea83c135894342346e64fccad
+%global opensuse_id 1bdd4f9b1c087edbcbdcfcf220c5b0c1cb7584f0
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -584,7 +584,7 @@ BuildRequires: python3-devel
 BuildRequires: rsync
 %endif
 %if %{with_doc}
-BuildRequires: xmlto, asciidoc, python3-sphinx
+BuildRequires: xmlto, asciidoc, python3-sphinx, python3-sphinx_rtd_theme
 %endif
 %if %{with_sparse}
 BuildRequires: sparse
@@ -833,7 +833,6 @@ Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
 Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
 Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
 Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
-Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
 Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
 Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
 Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
@@ -854,10 +853,6 @@ Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
 Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch72: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
-
-# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201025140144.28693-1-ats@offog.org/
-Patch126: ARM-dts-sun7i-pcduino3-nano-enable-RGMII-RX-TX-delay-on-PHY.patch
 
 ### Extra
 
@@ -875,11 +870,13 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch#/openSUSE-fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch
-Patch1021: %{opensuse_url}/RDMA-srpt-Fix-typo-in-srpt_unregister_mad_agent-docs.patch#/openSUSE-RDMA-srpt-Fix-typo-in-srpt_unregister_mad_agent-docs.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
-%global patchwork_xdg_url https://patchwork.freedesktop.org/patch
+%global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
+Patch2001: %{patchwork_xdg_url}/api/1.0/series/82741/revisions/1/mbox/#/patchwork-Various-Polaris-fixes-and-optimizations.patch
+Patch2002: %{patchwork_xdg_url}/patch/397827/mbox/#/patchwork-drm_amdgpu-apply-dm_pp_notify_wm_clock_changes-for-Polaris-only.patch
+Patch2003: 0001-fsync.patch
 
 %if !0%{?post_factum}
 
@@ -1454,12 +1451,9 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
     scripts/diffconfig \
     scripts/bloat-o-meter \
     scripts/jobserver-exec \
-    tools/perf/tests/attr.py \
-    tools/perf/scripts/python/stat-cpi.py \
-    tools/perf/scripts/python/sched-migration.py \
-    tools/testing/selftests/drivers/net/mlxsw/sharedbuffer_configuration.py \
+    tools \
     Documentation \
-    scripts/gen_compile_commands.py
+    scripts/clang-tools
 
 # only deal with configs if we are going to build for the arch
 %ifnarch %nobuildarches
@@ -1886,8 +1880,37 @@ BuildKernel() {
     cp -a --parents tools/include/tools/be_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp -a --parents tools/include/tools/le_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
+    # Files for 'make prepare' to succeed with kernel-devel.
+    cp -a --parents tools/include/linux/compiler* $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/linux/types.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/build/Build.include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/build/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/build/fixdep.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/objtool/sync-check.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/bpf/resolve_btfids $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
+    cp --parents security/selinux/include/policycap_names.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents security/selinux/include/policycap.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
+    cp -a --parents tools/include/asm-generic $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/linux $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/uapi/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/uapi/asm-generic $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/uapi/linux $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/vdso $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/scripts/utilities.mak $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/lib/subcmd $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/lib/*.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/objtool/*.[ch] $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/objtool/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/lib/bpf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/lib/bpf/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
     if [ -f tools/objtool/objtool ]; then
       cp -a tools/objtool/objtool $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
+    fi
+    if [ -f tools/objtool/fixdep ]; then
+      cp -a tools/objtool/fixdep $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
     fi
     if [ -d arch/$Arch/scripts ]; then
       cp -a arch/$Arch/scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/arch/%{_arch} || :
@@ -1934,7 +1957,6 @@ BuildKernel() {
     cp -a --parents arch/x86/tools/relocs.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs_common.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents tools/include/tools/le_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/purgatory.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/stack.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/setup-x86_64.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
@@ -1942,7 +1964,18 @@ BuildKernel() {
     cp -a --parents arch/x86/boot/string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/ctype.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+
+    cp -a --parents tools/arch/x86/include/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/arch/x86/include/uapi/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/objtool/arch/x86/lib $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/arch/x86/lib/ $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/arch/x86/tools/gen-insn-attr-x86.awk $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/objtool/arch/x86/ $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
 %endif
+    # Clean up intermediate tools files
+    find $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools \( -iname "*.o" -o -iname "*.cmd" \) -exec rm -f {} +
+
     # Make sure the Makefile and version.h have a matching timestamp so that
     # external modules can be built
     touch -r $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Makefile $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/generated/uapi/linux/version.h
@@ -2661,6 +2694,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.1-500.chinfo
+- 5.10.1 - pf2
+
 * Fri Dec 11 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.14-500.chinfo
 - 5.9.14 - pf7
 
@@ -3009,44 +3045,6 @@ fi
 * Mon Sep 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.0-500.chinfo
 - 5.3.0 - pf1
 - Rawhide sync
-
-* Thu Sep 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-501.chinfo
-- Try some amdgpu patches
-
-* Tue Sep 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.14-500.chinfo
-- 5.2.14
-
-* Fri Sep 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.13-500.chinfo
-- 5.2.13 - pf8
-
-* Thu Aug 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.11-500.chinfo
-- 5.2.11
-
-* Mon Aug 26 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.10-500.chinfo
-- 5.2.10 - pf7
-
-* Fri Aug 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.9-500.chinfo
-- 5.2.9 - pf6
-
-* Fri Aug 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.8-500.chinfo
-- 5.2.8
-- Experimental fsync patch
-
-* Wed Aug 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.7-501.chinfo
-- BFQ updates
-
-* Tue Aug 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.7-500.chinfo
-- 5.2.7
-
-* Sun Aug 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.6-500.chinfo
-- 5.2.6
-
-* Wed Jul 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.5-500.chinfo
-- 5.2.5
-- f30 sync
-
-* Mon Jul 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.4-500.chinfo
-- 5.2.4
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

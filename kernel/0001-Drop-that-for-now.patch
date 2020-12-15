@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From 081d2185e22479b449586c4e9843602ca0d49806 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Wed, 23 Jan 2019 14:36:37 +0100
 Subject: [PATCH] Drop that for now
@@ -15,11 +15,11 @@ index b70997f7ddf9..680d906eee35 100644
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
--		   -Wno-format-security \
-+		   -Wno-format-security -Wno-address-of-packed-member \
+-		   -Werror=return-type -Wno-format-security \
++		   -Werror=return-type -Wno-format-security -Wno-address-of-packed-member \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
  KBUILD_AFLAGS_KERNEL :=
 -- 
-2.28.0
+2.29.2
 

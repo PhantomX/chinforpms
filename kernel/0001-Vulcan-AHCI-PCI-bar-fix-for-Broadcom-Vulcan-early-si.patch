@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From 2a107343529ce648c11bff62e9f72bbeec738f3f Mon Sep 17 00:00:00 2001
 From: Robert Richter <rrichter@redhat.com>
 Date: Thu, 7 Jun 2018 22:59:32 -0400
 Subject: [PATCH] Vulcan: AHCI PCI bar fix for Broadcom Vulcan early silicon
@@ -42,7 +42,7 @@ index bdf9b52567e0..1e98e20b7cc2 100644
 @@ -4196,6 +4196,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
-
+ 
 +/*
 + * PCI BAR 5 is not setup correctly for the on-board AHCI controller
 + * on Broadcom's Vulcan processor. Added a quirk to fix BAR 5 by
@@ -71,5 +71,5 @@ index bdf9b52567e0..1e98e20b7cc2 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 -- 
-2.28.0
+2.29.2
 

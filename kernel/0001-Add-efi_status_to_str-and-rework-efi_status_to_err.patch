@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From 2ae9082db0b54d831a9b3782c049d9917e37d89f Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Mon, 2 Oct 2017 18:22:13 -0400
 Subject: [PATCH] Add efi_status_to_str() and rework efi_status_to_err().
@@ -23,13 +23,13 @@ index fdd1db025dbf..8ef7d1df09dd 100644
  #include <linux/memblock.h>
  #include <linux/security.h>
 +#include <linux/bsearch.h>
-
+ 
  #include <asm/early_ioremap.h>
-
+ 
 @@ -831,40 +832,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
-
+ 
 +struct efi_error_code {
 +	efi_status_t status;
 +	int errno;
@@ -134,7 +134,7 @@ index fdd1db025dbf..8ef7d1df09dd 100644
 -	}
 +	struct efi_error_code *found;
 +	size_t num = sizeof(efi_error_codes) / sizeof(struct efi_error_code);
-
+ 
 -	return err;
 +	found = bsearch((void *)(uintptr_t)status, efi_error_codes,
 +			sizeof(struct efi_error_code), num,
@@ -157,7 +157,7 @@ index fdd1db025dbf..8ef7d1df09dd 100644
 +		return "Unknown error code";
 +	return found->description;
  }
-
+ 
  static DEFINE_SPINLOCK(efi_mem_reserve_persistent_lock);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 73db1ae04cef..92aa4697f558 100644
@@ -166,7 +166,7 @@ index 73db1ae04cef..92aa4697f558 100644
 @@ -43,6 +43,8 @@
  #define EFI_ABORTED		(21 | (1UL << (BITS_PER_LONG-1)))
  #define EFI_SECURITY_VIOLATION	(26 | (1UL << (BITS_PER_LONG-1)))
-
+ 
 +#define EFI_IS_ERROR(x)		((x) & (1UL << (BITS_PER_LONG-1)))
 +
  typedef unsigned long efi_status_t;
@@ -174,12 +174,12 @@ index 73db1ae04cef..92aa4697f558 100644
  typedef u16 efi_char16_t;		/* UNICODE character */
 @@ -832,6 +834,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
-
+ 
  extern int efi_status_to_err(efi_status_t status);
 +extern const char *efi_status_to_str(efi_status_t status);
-
+ 
  /*
   * Variable Attributes
 -- 
-2.28.0
+2.29.2
 

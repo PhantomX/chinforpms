@@ -10,9 +10,9 @@
 %global with_sysvulkan 1
 %global with_unittests 0
 
-%global commit cf32c4d47970c2ac10e3b99d80a38966e681d597
+%global commit 214ea8ff181300e5f130bafc1eca72ff345c481d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201128
+%global date 20201214
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -26,7 +26,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        124%{?gver}%{?dist}
+Release:        125%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -64,7 +64,6 @@ Patch3:         0003-soundtouch-Use-shorts-instead-of-floats-for-samples.patch
 Patch4:         0004-soundtounch-disable-exceptions.patch
 #This needs to be fixed, I've reverted the patch that breaks minizip
 Patch5:         0005-Revert-Externals-Update-minizip-search-path.patch
-Patch6:         %{name}-gcc11.patch
 
 Patch100:       0001-DSP-interrupt-hack-for-RE-2-and-3.patch
 Patch101:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
@@ -393,6 +392,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-125.20201214git214ea8f
+- Update
+
 * Sat Nov 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-124.20201128gitcf32c4d
 - Bump
 - fmt >= 7.1.0

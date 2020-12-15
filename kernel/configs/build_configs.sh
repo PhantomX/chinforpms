@@ -12,6 +12,13 @@ SCRIPT_DIR="$(dirname $SCRIPT)"
 
 LANG=en_US.UTF-8
 
+if [ -z "$3" ]; then
+	cat "$OUTPUT_DIR"/flavors > "$OUTPUT_DIR"/.flavors
+else
+	echo "$3" > "$OUTPUT_DIR"/.flavors
+fi
+
+
 # to handle this script being a symlink
 cd $SCRIPT_DIR
 
@@ -21,6 +28,7 @@ set nounset
 cleanup()
 {
 	rm -f config-*
+	rm -f "$OUTPUT_DIR"/.flavors
 }
 
 die()
@@ -142,6 +150,6 @@ function build_flavor()
 while read line
 do
 	build_flavor $line
-done < flavors
+done < "$OUTPUT_DIR"/.flavors
 
 cleanup

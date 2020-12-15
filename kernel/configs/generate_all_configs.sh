@@ -13,6 +13,10 @@ if [ -z "$2" ]; then
 	exit 1
 fi
 
+if [ -z "$PRIMARY" ]; then
+	PRIMARY=rhel
+fi
+
 if [ "$PRIMARY" = "fedora" ]; then
 	SECONDARY=rhel
 else
@@ -20,12 +24,12 @@ else
 fi
 
 for i in kernel-*-"$PRIMARY".config; do
-	NEW=kernel-"$VERSION"-`echo $i | cut -d - -f2- | sed s/-"$PRIMARY"//`
+	NEW=kernel-"$VERSION"-$(echo "$i" | cut -d - -f2- | sed s/-"$PRIMARY"//)
 	#echo $NEW
 	mv "$i" "$NEW"
 done
 
-rm kernel-*-"$SECONDARY".config
+rm -f kernel-*-"$SECONDARY".config
 
 if [ "$DEBUGBUILDSENABLED" -eq 0 ]; then
 	for i in kernel-*debug*.config; do

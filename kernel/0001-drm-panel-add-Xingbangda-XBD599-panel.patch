@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From 67a19b16012b12cffba0b515c6503e5f8cdbb798 Mon Sep 17 00:00:00 2001
 From: Icenowy Zheng <icenowy@aosc.io>
 Date: Mon, 16 Mar 2020 21:35:01 +0800
 Subject: [PATCH] drm: panel: add Xingbangda XBD599 panel
@@ -23,7 +23,7 @@ index de2f2a452be5..3ce658de416b 100644
 @@ -462,6 +462,15 @@ config DRM_PANEL_VISIONOX_RM69299
  	  Say Y here if you want to enable support for Visionox
  	  RM69299  DSI Video Mode panel.
-
+ 
 +config DRM_PANEL_XINGBANGDA_XBD599
 +	tristate "Xingbangda XBD599 panel"
 +	depends on OF
@@ -419,5 +419,5 @@ index 000000000000..b483f96ee1db
 +MODULE_DESCRIPTION("DRM driver for Xingbangda XBD599 MIPI DSI panel");
 +MODULE_LICENSE("GPL v2");
 -- 
-2.28.0
+2.29.2
 

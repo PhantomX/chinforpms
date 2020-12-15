@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From c1788012ebf8de46e9dc80d18051ed0c77c811b6 Mon Sep 17 00:00:00 2001
 From: Peter Robinson <pbrobinson@gmail.com>
 Date: Thu, 3 May 2012 20:27:11 +0100
 Subject: [PATCH] ARM: tegra: usb no reset
@@ -16,7 +16,7 @@ index 052d5accfe9b..fac58cf619da 100644
 @@ -5517,6 +5517,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
-
+ 
 +	/* Don't disconnect USB-SATA on TrimSlice */
 +	if (strcmp(dev_name(hdev->bus->controller), "tegra-ehci.0") == 0) {
 +		if ((hdev->state == 7) && (hub->change_bits[0] == 0) &&
@@ -28,5 +28,5 @@ index 052d5accfe9b..fac58cf619da 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 -- 
-2.28.0
+2.29.2
 

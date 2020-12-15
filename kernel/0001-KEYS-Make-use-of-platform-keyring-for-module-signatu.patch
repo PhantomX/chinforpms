@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From b697ff5e26974fee8fcd31a1e221e9dd41515efc Mon Sep 17 00:00:00 2001
 From: Robert Holmes <robeholmes@gmail.com>
 Date: Tue, 23 Apr 2019 07:39:29 +0000
 Subject: [PATCH] KEYS: Make use of platform keyring for module signature
@@ -25,7 +25,7 @@ index 9d9fc678c91d..84ad75a53c83 100644
 @@ -38,8 +38,15 @@ int mod_verify_sig(const void *mod, struct load_info *info)
  	modlen -= sig_len + sizeof(ms);
  	info->len = modlen;
-
+ 
 -	return verify_pkcs7_signature(mod, modlen, mod + modlen, sig_len,
 +	ret = verify_pkcs7_signature(mod, modlen, mod + modlen, sig_len,
  				      VERIFY_USE_SECONDARY_KEYRING,
@@ -40,5 +40,5 @@ index 9d9fc678c91d..84ad75a53c83 100644
 +	return ret;
  }
 -- 
-2.28.0
+2.29.2
 

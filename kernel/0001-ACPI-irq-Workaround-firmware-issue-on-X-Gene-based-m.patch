@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From de13e14cc2388478d9a2c68c5d90affd92098f11 Mon Sep 17 00:00:00 2001
 From: Mark Salter <msalter@redhat.com>
 Date: Thu, 10 May 2018 17:38:43 -0400
 Subject: [PATCH] ACPI / irq: Workaround firmware issue on X-Gene based m400
@@ -37,7 +37,7 @@ index e209081d644b..7484bcf59a1b 100644
  	struct irq_fwspec *fwspec;
 +	bool skip_producer_check;
  };
-
+ 
  /**
 @@ -197,7 +198,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  		return AE_CTRL_TERMINATE;
@@ -55,7 +55,7 @@ index e209081d644b..7484bcf59a1b 100644
  {
 -	struct acpi_irq_parse_one_ctx ctx = { -EINVAL, index, flags, fwspec };
 +	struct acpi_irq_parse_one_ctx ctx = { -EINVAL, index, flags, fwspec, false };
-
+ 
 +	/*
 +	 * Firmware on arm64-based HPE m400 platform incorrectly marks
 +	 * its UART interrupt as ACPI_PRODUCER rather than ACPI_CONSUMER.
@@ -71,5 +71,5 @@ index e209081d644b..7484bcf59a1b 100644
  	return ctx.rc;
  }
 -- 
-2.28.0
+2.29.2
 

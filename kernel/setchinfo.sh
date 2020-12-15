@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20201202
+# 20201214
 
 set -e
 
@@ -46,12 +46,14 @@ CC_OPTIMIZE_HARDER
 CC_OPTIMIZE_FOR_PERFORMANCE_O3
 KERNEL_ZSTD
 INITRAMFS_COMPRESSION_ZSTD
+NTFS3_64BIT_CLUSTER
 "
 
 pfd="
 "
 
 pfm="
+NTFS3_FS
 V4L2_LOOPBACK
 "
 
@@ -60,6 +62,7 @@ SCHED_TIMESLICE=4
 "
 
 pfy="
+NTFS3_LZX_XPRESS
 SCHED_BMQ
 USER_NS_UNPRIVILEGED
 "
