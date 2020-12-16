@@ -1,7 +1,7 @@
 %global vc_url  https://github.com/%{name}-dev/%{name}
 
 Name:           htop
-Version:        3.0.2
+Version:        3.0.3
 Release:        100%{?dist}
 Summary:        Interactive process viewer
 
@@ -10,14 +10,13 @@ URL:            https://htop.dev/
 
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 
-Patch0:         %{vc_url}/commit/a2fef38be74d4022ef4510e749e4b136d4ac2c33.patch#/%{name}-gh-a2fef38.patch
-
 BuildRequires:  desktop-file-utils
 BuildRequires:  pkgconfig(libnl-3.0)
 BuildRequires:  pkgconfig(ncursesw)
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
+BuildRequires:  make
 Requires:       lsof
 Requires:       strace
 
@@ -53,12 +52,16 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %doc AUTHORS ChangeLog README
 %license COPYING
 %{_bindir}/htop
+%{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/pixmaps/htop.png
 %{_datadir}/applications/%{name}.desktop
 %{_mandir}/man1/htop.1*
 
 
 %changelog
+* Wed Dec 16 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.3-100
+- 3.0.3
+
 * Wed Sep 16 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.2-100
 - 3.0.2
 - Remove python BR.

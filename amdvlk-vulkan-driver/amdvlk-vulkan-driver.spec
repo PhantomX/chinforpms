@@ -23,19 +23,19 @@
 
 %global pkgname amdvlk
 
-%global commit1 7ff363c8283c1d41ecbdcdc45c8b724b52312d67
+%global commit1 a0777f49050191c9e215a4880c855395ba805508
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 38dcb76aadf729b67cabe15c2cc07a784020f704
+%global commit2 e2d38b0c8042efbc435e51696aba5c1abd256c88
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 fc11e79aab63337702d8efc05e5433dec9efdf06
+%global commit3 86f61a31988a626371131a1633547b0d0ebfcfcb
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 b1e752d402592628f61eb7e1aa2a802a205de798
+%global commit4 f92844ecbba39be3d2663717ad69c3dffc282211
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -51,15 +51,15 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 671914c28e8249f0a555726a0f3f38691fe5c1df
+%global commit8 305caff2ebb135b688a476233ce1873efee032bb
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
-%global commit9 5ab5c96198f30804a6a29961b8905f292a8ae600
+%global commit9 f027d53ded7e230e008d37c8b47ede7cd308e19d
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 58291963c6a3f3322fa652595777f4e1e84a2874
+%global commit10 e50f7d1ce8e162d0c826e84168cfa234e4de4ec9
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
@@ -78,7 +78,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.4.5
+Version:        2020.4.6
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -250,6 +250,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Tue Dec 15 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.4.6-1
+- 2020.Q4.6
+
 * Thu Nov 19 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.4.5-1
 - 2020.Q4.5
 

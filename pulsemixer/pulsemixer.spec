@@ -9,7 +9,7 @@
 
 Name:           pulsemixer
 Version:        1.5.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        CLI and curses mixer for pulseaudio
 
 License:        MIT
@@ -27,7 +27,7 @@ BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-Requires:       pulseaudio
+Requires:       pulseaudio-daemon
 
 
 %description
@@ -57,6 +57,9 @@ Requires:       pulseaudio
 
 
 %changelog
+* Tue Dec 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-2
+- Requires pulseaudio-daemon
+
 * Fri Jun 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-1
 - rebuilt
 

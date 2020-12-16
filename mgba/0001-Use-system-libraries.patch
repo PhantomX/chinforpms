@@ -1,6 +1,6 @@
-From a221a7e03c758b9ed803f7cc054875783e08953c Mon Sep 17 00:00:00 2001
+From 8d5003e3489e05adaf6d99f2694e711ad9a408a9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 11 Sep 2020 16:45:28 -0300
+Date: Tue, 15 Dec 2020 20:16:49 -0300
 Subject: [PATCH] Use system libraries
 
 ---
@@ -10,10 +10,10 @@ Subject: [PATCH] Use system libraries
  3 files changed, 34 insertions(+), 11 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9517e22..60f0b00 100644
+index 6176a8c..bdb16d7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -51,6 +51,7 @@ if(NOT LIBMGBA_ONLY)
+@@ -52,6 +52,7 @@ if(NOT LIBMGBA_ONLY)
  	set(M_CORE_GBA ON CACHE BOOL "Build Game Boy Advance core")
  	set(M_CORE_GB ON CACHE BOOL "Build Game Boy core")
  	set(USE_LZMA ON CACHE BOOL "Whether or not to enable 7-Zip support")
@@ -21,7 +21,7 @@ index 9517e22..60f0b00 100644
  	set(USE_DISCORD_RPC ON CACHE BOOL "Whether or not to enable Discord RPC support")
  	set(ENABLE_SCRIPTING ON CACHE BOOL "Whether or not to enable scripting support")
  	set(BUILD_QT ON CACHE BOOL "Build Qt frontend")
-@@ -91,7 +92,6 @@ else()
+@@ -92,7 +93,6 @@ else()
  	endif()
  endif()
  
@@ -29,7 +29,7 @@ index 9517e22..60f0b00 100644
  set(CORE_VFS_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/util/vfs/vfs-mem.c ${CMAKE_CURRENT_SOURCE_DIR}/src/util/vfs/vfs-fifo.c)
  set(VFS_SRC)
  include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/include)
-@@ -480,6 +480,8 @@ set(WANT_ZLIB ${USE_ZLIB})
+@@ -488,6 +488,8 @@ set(WANT_ZLIB ${USE_ZLIB})
  set(WANT_PNG ${USE_PNG})
  set(WANT_SQLITE3 ${USE_SQLITE3})
  set(USE_CMOCKA ${BUILD_SUITE})
@@ -38,8 +38,8 @@ index 9517e22..60f0b00 100644
  
  if(DEFINED VCPKG_TARGET_TRIPLET)
  	find_feature(USE_FFMPEG "FFMPEG")
-@@ -499,6 +501,14 @@ find_feature(USE_CMOCKA "cmocka")
- find_feature(USE_SQLITE3 "sqlite3")
+@@ -507,6 +509,14 @@ find_feature(USE_CMOCKA "cmocka")
+ find_feature(USE_SQLITE3 "SQLite3|sqlite3")
  find_feature(USE_ELF "libelf")
  find_feature(ENABLE_PYTHON "PythonLibs")
 +find_feature(USE_LZMA "lzmasdk-c")
@@ -51,9 +51,9 @@ index 9517e22..60f0b00 100644
 +	set(USE_INIH ON)
 +endif()
  
- if(USE_FFMPEG AND NOT DEFINED VCPKG_TARGET_TRIPLET)
- 	set(USE_LIBAVRESAMPLE ON)
-@@ -676,10 +686,9 @@ elseif(USE_ZLIB)
+ # Features
+ add_subdirectory(src/debugger)
+@@ -684,10 +694,9 @@ elseif(USE_ZLIB)
  	endif()
  endif()
  
@@ -65,7 +65,7 @@ index 9517e22..60f0b00 100644
  	set(LZMA_SRC
  		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zAlloc.c
  		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zArcIn.c
-@@ -701,7 +710,7 @@ if (USE_LZMA)
+@@ -709,7 +718,7 @@ if (USE_LZMA)
  		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zFile.c
  		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zStream.c)
  	list(APPEND VFS_SRC ${LZMA_SRC})
@@ -74,7 +74,7 @@ index 9517e22..60f0b00 100644
  endif()
  
  if(USE_EPOXY)
-@@ -746,6 +755,20 @@ if (USE_DISCORD_RPC)
+@@ -754,6 +763,20 @@ if (USE_DISCORD_RPC)
  	include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/discord-rpc/include)
  endif()
  
@@ -96,7 +96,7 @@ index 9517e22..60f0b00 100644
  	list(APPEND ENABLES SCRIPTING)
  
 diff --git a/src/util/configuration.c b/src/util/configuration.c
-index 1cf2610..c382dee 100644
+index e0dada0..19ed83d 100644
 --- a/src/util/configuration.c
 +++ b/src/util/configuration.c
 @@ -9,7 +9,7 @@
@@ -132,5 +132,5 @@ index a094c18..caa7f34 100644
  #define BUFFER_SIZE 0x2000
  
 -- 
-2.26.2
+2.29.2
 
