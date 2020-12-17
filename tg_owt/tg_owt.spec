@@ -1,12 +1,22 @@
-%global commit0 e8fcae73947445db3d418fb7c20b964b59e14706
+%global commit0 d93d10b0e8a8ce9eb765c90390e684123825e77f
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20201102
+%global date 20201215
+
+%global commit1 dfaf7534e0e536f7e5ef8ddd7326797bd09b8622
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 libyuv
+
+%global commit2 2392fe53ab3033fe5c679514dce448f55843fd51
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 libvpx
+
+%global cvc_url https://chromium.googlesource.com
 
 %global gver .%{date}git%{shortcommit0}
 
 Name:           tg_owt
 Version:        0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -22,6 +32,9 @@ License:        BSD and ASL 2.0
 URL:            https://github.com/desktop-app/%{name}
 
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
+Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        %{cvc_url}/webm/libvpx/+archive/%{shortcommit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
+
 
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(libavcodec)
@@ -49,9 +62,9 @@ Provides:       bundled(g711) = 0~git
 Provides:       bundled(g722) = 0~git
 Provides:       bundled(libevent) = 1.4.15
 Provides:       bundled(libsrtp) = 2.2.0~git94ac00d
-Provides:       bundled(libvpx) = 1.8.2~git667138e
+Provides:       bundled(libvpx) = 1.8.2~git%{shortcommit2}
 Provides:       bundled(libwebm) = 0~git
-Provides:       bundled(libyuv) = 0~svn1741
+Provides:       bundled(libyuv) = 0~git%{shortcommit1}
 Provides:       bundled(openh264) = 1.10.0~git6f26bce
 Provides:       bundled(pffft) = 0~git483453d
 Provides:       bundled(portaudio) = 0~git
@@ -83,6 +96,10 @@ Requires:       pkgconfig(opus)
 
 %prep
 %autosetup -n %{name}-%{commit0} -p1
+
+tar -xf %{S:1} -C src/third_party/libyuv
+tar -xf %{S:2} -C src/third_party/libvpx/source/libvpx
+
 sed -e 's/STATIC/SHARED/g' -i CMakeLists.txt
 echo 'set_target_properties(tg_owt PROPERTIES SOVERSION 0 VERSION 0.0.0)' >> CMakeLists.txt
 
@@ -154,6 +171,9 @@ cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
 %{_libdir}/lib%{name}.so
 
 %changelog
+* Wed Dec 16 2020 Phantom X <megaphantomx at hotmail dot com> - 0-101.20201215gitd93d10b
+- Update tto latest snapshot
+
 * Tue Nov 03 2020 Phantom X <megaphantomx at hotmail dot com> - 0-100.20201102gite8fcae7
 - Fix raw_logging missing symbols
 

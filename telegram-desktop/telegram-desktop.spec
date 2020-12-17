@@ -35,8 +35,8 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.4.11
-Release:        101%{?dist}
+Version:        2.4.14
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -52,6 +52,8 @@ ExclusiveArch:  x86_64
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
 
 Source20:       thunar-sendto-%{name}.desktop
+
+Patch10:        %{url}/commit/b68d5f854de9f1b52c395ffd1a5dbab8314beee0.patch#/%{name}-gh-b68d5f8.patch
 
 Patch100:       %{name}-pr8009.patch
 
@@ -81,6 +83,7 @@ BuildRequires:  ninja-build
 # Development packages for Telegram Desktop...
 BuildRequires:  glib2-devel
 BuildRequires:  libxcb-devel
+BuildRequires:  xcb-util-keysyms-devel
 BuildRequires:  guidelines-support-library-devel >= 3.0.1
 BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  ffmpeg-devel >= 3.1
@@ -217,6 +220,8 @@ sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
     -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
 %{nil}
 
+cp -p changelog.txt %{__cmake_builddir}/
+
 %cmake_build
 
 
@@ -251,6 +256,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Wed Dec 16 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.14-100
+- 2.4.14
+
 * Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.11-101
 - Rebuild (qt5)
 
