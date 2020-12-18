@@ -242,6 +242,7 @@ Source21: 95-kvm-ppc64-memlock.conf
 
 BuildRequires: meson
 BuildRequires: gcc
+BuildRequires: make
 # documentation deps
 BuildRequires: texinfo
 %if %{qemu_sanity_check}
@@ -567,18 +568,21 @@ This package provides the additional curses UI for QEMU.
 %package  ui-gtk
 Summary: QEMU GTK UI driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-ui-opengl%{?_isa} = %{epoch}:%{version}-%{release}
 %description ui-gtk
 This package provides the additional GTK UI for QEMU.
 
 %package  ui-sdl
 Summary: QEMU SDL UI driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-ui-opengl%{?_isa} = %{epoch}:%{version}-%{release}
 %description ui-sdl
 This package provides the additional SDL UI for QEMU.
 
 %package  ui-egl-headless
 Summary: QEMU EGL headless driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-ui-opengl%{?_isa} = %{epoch}:%{version}-%{release}
 %description ui-egl-headless
 This package provides the additional egl-headless UI for QEMU.
 
@@ -629,30 +633,36 @@ This package provides the USB smartcard device for QEMU.
 %package  ui-spice-core
 Summary: QEMU spice-core UI driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-ui-opengl%{?_isa} = %{epoch}:%{version}-%{release}
 %description ui-spice-core
 This package provides the additional spice-core UI for QEMU.
 
 %package  ui-spice-app
 Summary: QEMU spice-app UI driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-ui-spice-core%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-char-spice%{?_isa} = %{epoch}:%{version}-%{release}
 %description ui-spice-app
 This package provides the additional spice-app UI for QEMU.
 
 %package device-display-qxl
 Summary: QEMU QXL display device
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-ui-spice-core%{?_isa} = %{epoch}:%{version}-%{release}
 %description device-display-qxl
 This package provides the QXL display device for QEMU.
 
 %package  char-spice
 Summary: QEMU spice chardev driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-ui-spice-core%{?_isa} = %{epoch}:%{version}-%{release}
 %description char-spice
 This package provides the spice chardev driver for QEMU.
 
 %package  audio-spice
 Summary: QEMU spice audio driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-ui-spice-core%{?_isa} = %{epoch}:%{version}-%{release}
 %description audio-spice
 This package provides the spice audio driver for QEMU.
 %endif

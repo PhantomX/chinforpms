@@ -1,24 +1,22 @@
 Name:           ario
-Version:        1.5.1
-Release:        3%{?dist}
+Version:        1.6
+Release:        1%{?dist}
 Summary:        Ario MPD Client
 
 License:        GPLv2+
 URL:            http://ario-player.sourceforge.net/index.php
 Source0:        https://downloads.sourceforge.net/ario-player/%{name}-%{version}.tar.gz
 
+BuildRequires:  pkgconfig(avahi-client)
 BuildRequires:  pkgconfig(avahi-glib)
-BuildRequires:  pkgconfig(gnutls)
+BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(libcurl)
-BuildRequires:  pkgconfig(libgcrypt)
 BuildRequires:  pkgconfig(libmpdclient)
-BuildRequires:  pkgconfig(libnotify)
-BuildRequires:  pkgconfig(libsoup-2.4)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(taglib)
-BuildRequires:  pkgconfig(unique-1.0)
 BuildRequires:  gcc
 BuildRequires:  intltool
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 #BuildRequires: gettext
 #BuildRequires: perl(XML::Parser)
@@ -71,6 +69,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop
 
 
 %changelog
+* Thu Dec 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.6-1
+- 1.6
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-3
 - Disable python plugin support, needs python 2
 

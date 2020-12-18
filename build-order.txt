@@ -168,6 +168,7 @@ purple-rocketchat
 qemu
 qmc2
 qmp3gain
+qmpdclient
 qt-virustotal-uploader
 qt5ct
 -quiterss

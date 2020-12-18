@@ -16,6 +16,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
+BuildRequires:  make
 BuildRequires:  cmake(Grantlee5)
 BuildRequires:  cmake(KF5Activities)
 BuildRequires:  cmake(KF5Archive)

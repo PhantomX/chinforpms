@@ -1,7 +1,7 @@
-%global commit 310019789f7bde12ae3f25f723957c975fb2f804
+%global commit ef876fc54e207344b5809f40a59e3d5d610a6fda
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201209
-%global with_snapshot 0
+%global date 20201217
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.0-rc2
+%global wine_stagingver 5cd622f66709850f168d71b4ae8ea40d59527bdc
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9d2caf40a29cbe3833ba199c24f548a93f865fe5
+%global tkg_id f51a9627870f5be0747a26374d883927eef1b253
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b5edce86550ab24625bc75c25e3905528645e48b
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -94,7 +94,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.0~rc2
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -223,6 +223,7 @@ BuildRequires:  bison
 BuildRequires:  flex
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  make
 %ifarch aarch64
 BuildRequires:  clang >= 5.0
 %else
@@ -1769,6 +1770,23 @@ fi
 %{_libdir}/wine/d3dcompiler_*.%{winedll}
 %{_libdir}/wine/d3dim.%{winedll}
 %{_libdir}/wine/d3dim700.%{winedll}
+%if 0%{?wine_staging}
+%{_libdir}/wine/d3dpmesh.%{winedll}
+%{_libdir}/wine/diactfrm.%{winedll}
+%{_libdir}/wine/dimap.%{winedll}
+%{_libdir}/wine/dpmodemx.%{winedll}
+%{_libdir}/wine/dpnhupnp.%{winedll}
+%{_libdir}/wine/dpvacm.%{winedll}
+%{_libdir}/wine/dpvvox.%{winedll}
+%{_libdir}/wine/dsdmoprp.%{winedll}
+%{_libdir}/wine/dsound3d.%{winedll}
+%{_libdir}/wine/dxapi.%{winesys}
+%{_libdir}/wine/dx7vb.%{winedll}
+%{_libdir}/wine/encapi.%{winedll}
+%{_libdir}/wine/gcdef.%{winedll}
+%{_libdir}/wine/qdv.%{winedll}
+%{_libdir}/wine/qedwipes.%{winedll}
+%endif
 %{_libdir}/wine/d3drm.%{winedll}
 %{_libdir}/wine/d3dx9_*.%{winedll}
 %{_libdir}/wine/d3dx10_*.%{winedll}
@@ -2703,6 +2721,9 @@ fi
 
 
 %changelog
+* Thu Dec 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:6.0~rc2-101.20201217gitef876fc
+- Snapshot and staging fixes
+
 * Sun Dec 13 2020 Phantom X <megaphantomx at hotmail dot com> - 1:6.0~rc2-100
 - 6.0-rc2
 
