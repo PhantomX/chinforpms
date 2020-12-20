@@ -1,7 +1,7 @@
 %global commit ef876fc54e207344b5809f40a59e3d5d610a6fda
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20201217
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5cd622f66709850f168d71b4ae8ea40d59527bdc
+%global wine_stagingver 6.0-rc3
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,13 +51,14 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f51a9627870f5be0747a26374d883927eef1b253
+%global tkg_id 02b65b804cf0873d1b128c9889a4610da5462cb0
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b5edce86550ab24625bc75c25e3905528645e48b
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %global gtk3 0
 # proton FS hack (wine virtual desktop with DXVK is not working well)
+# Disabled after 5.16
 %global fshack 0
 %global vulkanup 1
 # Broken
@@ -93,8 +94,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.0~rc2
-Release:        101%{?gver}%{?dist}
+Version:        6.0~rc3
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -193,6 +194,7 @@ Patch1032:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}
 Patch1033:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch1034:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1035:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
+Patch1036:       %{tkg_url}//proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/565a4f3820b370f9715e0147031edb189d5a183f.patch#/%{name}-valve-565a4f3.patch
@@ -844,6 +846,7 @@ cp -p %{S:3001} README-pba-pkg
 %endif
 %patch1029 -p1
 %patch1030 -p1
+%patch1036 -p1
 %if 0%{?fshack}
 %patch1031 -p1
 %patch1032 -p1
@@ -2721,6 +2724,9 @@ fi
 
 
 %changelog
+* Sat Dec 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1:6.0~rc3-100
+- 6.0-rc3
+
 * Thu Dec 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:6.0~rc2-101.20201217gitef876fc
 - Snapshot and staging fixes
 

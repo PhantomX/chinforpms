@@ -2,8 +2,10 @@
 
 %global perms_dx %caps(cap_net_raw+ep)
 
+%global vc_url https://github.com/joncampbell123/%{name}
+
 Name:           dosbox-x
-Version:        0.83.7
+Version:        0.83.8
 Release:        1%{?dist}
 
 Summary:        DOS emulator for running DOS games and applications including Windows 3.x/9x
@@ -11,9 +13,10 @@ Summary:        DOS emulator for running DOS games and applications including Wi
 License:        GPLv2+
 URL:            https://dosbox-x.com/
 
-Source0:        https://github.com/joncampbell123/%{name}/archive/%{name}-v%{version}.tar.gz
+Source0:        %{vc_url}/archive/%{name}-v%{version}.tar.gz
 
 Patch0:         0001-format-security.patch
+Patch1:         %{vc_url}/commit/9c1073e47399943c30d86aa16f02de0baa7a7fc8.patch#/%{name}-gh-9c1073e.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -101,5 +104,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.dosbox_x.D
 
 
 %changelog
+* Fri Dec 18 2020 Phantom X <megaphantomx at hotmail dot com> - 0.83.7-1
+- 0.83.8
+
 * Sat Nov 07 2020 Phantom X <megaphantomx at hotmail dot com> - 0.83.7-1
 - Initial spec

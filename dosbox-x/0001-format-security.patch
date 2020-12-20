@@ -1,49 +1,40 @@
-From 85f1d0827c5f3cb88f3c4c6094b34a42cce0ce1f Mon Sep 17 00:00:00 2001
+From 1cda4699c9ae575dc5581b1470ee9fe3a0b83fa8 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 6 Nov 2020 23:11:32 -0300
+Date: Sat, 19 Dec 2020 16:44:01 -0300
 Subject: [PATCH] format-security
 
 ---
- src/gui/midi_synth.h | 6 +++---
- src/gui/sdlmain.cpp  | 2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ src/gui/sdl_ttf.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/src/gui/midi_synth.h b/src/gui/midi_synth.h
-index 592b041..aa9cf9e 100644
---- a/src/gui/midi_synth.h
-+++ b/src/gui/midi_synth.h
-@@ -45,15 +45,15 @@ static void synth_log(int level,
- 	switch (level) {
- 	case FLUID_PANIC:
- 	case FLUID_ERR:
--		LOG(LOG_ALL,LOG_ERROR)(message);
-+		LOG(LOG_ALL,LOG_ERROR)("%s", message);
- 		break;
- 
- 	case FLUID_WARN:
--		LOG(LOG_ALL,LOG_WARN)(message);
-+		LOG(LOG_ALL,LOG_WARN)("%s", message);
- 		break;
- 
- 	default:
--		LOG(LOG_ALL,LOG_NORMAL)(message);
-+		LOG(LOG_ALL,LOG_NORMAL)("%s", message);
- 		break;
- 	}
+diff --git a/src/gui/sdl_ttf.c b/src/gui/sdl_ttf.c
+index fd00f26..00047c0 100644
+--- a/src/gui/sdl_ttf.c
++++ b/src/gui/sdl_ttf.c
+@@ -331,7 +331,7 @@ static void TTF_SetFTError(const char *msg, FT_Error error)
+ 	sprintf(buffer, "%s: %s", msg, err_msg);
+ 	TTF_SetError(buffer);
+ #else
+-	TTF_SetError(msg);
++	TTF_SetError("%s", msg);
+ #endif /* USE_FREETYPE_ERRORS */
  }
-diff --git a/src/gui/sdlmain.cpp b/src/gui/sdlmain.cpp
-index 8e6eb41..12332d9 100644
---- a/src/gui/sdlmain.cpp
-+++ b/src/gui/sdlmain.cpp
-@@ -9693,7 +9693,7 @@ int main(int argc, char* argv[]) SDL_MAIN_NOEXCEPT {
-                 ""
- #endif
-         " %s)",VERSION,SDL_STRING);
--        LOG(LOG_MISC,LOG_NORMAL)(("Copyright 2011-"+std::string(COPYRIGHT_END_YEAR)+" The DOSBox-X Team. Project maintainer: joncampbell123 (The Great Codeholio). DOSBox-X published under GNU GPL.").c_str());
-+        LOG(LOG_MISC,LOG_NORMAL)("%s", ("Copyright 2011-"+std::string(COPYRIGHT_END_YEAR)+" The DOSBox-X Team. Project maintainer: joncampbell123 (The Great Codeholio). DOSBox-X published under GNU GPL.").c_str());
  
- #if defined(MACOSX)
-         LOG_MSG("macOS EXE path: %s",MacOSXEXEPath.c_str());
+@@ -533,7 +533,6 @@ TTF_Font* TTF_OpenFontIndex( const char *file, int ptsize, long index )
+ {
+ 	SDL_RWops *rw = SDL_RWFromFile(file, "rb");
+ 	if ( rw == NULL ) {
+-		TTF_SetError(SDL_GetError());
+ 		return NULL;
+ 	}
+ 	return TTF_OpenFontIndexRW(rw, 1, ptsize, index);
+@@ -2093,4 +2092,4 @@ int TTF_GetFontKerningSize(TTF_Font* font, int prev_index, int index)
+ 	FT_Vector delta; 
+ 	FT_Get_Kerning( font->face, prev_index, index, ft_kerning_default, &delta ); 
+ 	return (delta.x >> 6);
+-}
+\ No newline at end of file
++}
 -- 
-2.28.0
+2.29.2
 
