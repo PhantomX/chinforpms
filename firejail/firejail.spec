@@ -1,7 +1,7 @@
 Name:           firejail
 Version:        0.9.64
-Release:        1%{?dist}
-Summary:        GUI tools for firejail
+Release:        2%{?dist}
+Summary:        Linux namespaces sandbox program
 
 License:        GPLv2
 URL:            https://firejail.wordpress.com/
@@ -12,8 +12,10 @@ Source2:        %{name}-sysusers.conf
 
 BuildRequires:  gcc
 BuildRequires:  make
+BuildRequires:  libselinux-devel
 BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  systemd
+Requires:       xdg-dbus-proxy
 %{?systemd_requires}
 
 
@@ -36,9 +38,8 @@ sed \
   -i Makefile.in
 
 %build
-export CFLAGS="`echo %{build_cflags} | sed -e 's/-fcf-protection//'`"
-
 %configure \
+  --enable-selinux \
   --disable-apparmor \
   --disable-contrib-install \
 %{nil}
@@ -75,6 +76,9 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %changelog
+* Mon Dec 21 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.64-2
+- Fedora sync
+
 * Mon Oct 26 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.64-1
 - 0.9.64
 

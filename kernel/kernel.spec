@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 60fabf08b8544030179698268ca815c4e4df0991
+%global pfcommit e560c558cdeb3b9ce9f5d2615205eb58f8bff7e1
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 1bdd4f9b1c087edbcbdcfcf220c5b0c1cb7584f0
+%global opensuse_id d14c73f5a4d518daf3f6fdac1a07720275c81afe
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -833,6 +833,7 @@ Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
 Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
 Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
 Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
+Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
 Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
 Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
 Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
@@ -853,6 +854,17 @@ Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
 Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch72: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+
+# https://patchwork.kernel.org/patch/11796255/
+Patch100: arm64-dts-rockchip-disable-USB-type-c-DisplayPort.patch
+
+# Tegra fixes
+Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+
+# A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
+Patch102: 0001-update-phy-on-pine64-a64-devices.patch
+
 
 ### Extra
 
@@ -870,6 +882,7 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch#/openSUSE-fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch
+Patch1020: %{opensuse_url}/drm-amdgpu-only-set-DP-subconnector-type-on-DP-and-e.patch#/openSUSE-drm-amdgpu-only-set-DP-subconnector-type-on-DP-and-e.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2694,6 +2707,10 @@ fi
 #
 #
 %changelog
+* Mon Dec 21 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.2-500.chinfo
+- 5.10.2 - pf2
+- stabilization sync
+
 * Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.1-500.chinfo
 - 5.10.1 - pf2
 

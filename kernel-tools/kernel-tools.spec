@@ -1,6 +1,13 @@
 # Much of this is borrowed from the original kernel.spec
 # It needs a bunch of the macros for rawhide vs. not-rawhide builds.
 
+# The kernel tools build with -ggdb3 which seems to interact badly with LTO
+# causing various errors with references to discarded sections and symbol
+# type errors from the LTO plugin.  Until those issues are addressed
+# disable LTO
+%global _lto_cflags %{nil}
+%global __brp_strip_lto /usr/bin/true
+
 # For a stable, released kernel, released_kernel should be 1. For rawhide
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
@@ -10,7 +17,7 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 1bdd4f9b1c087edbcbdcfcf220c5b0c1cb7584f0
+%global opensuse_id d14c73f5a4d518daf3f6fdac1a07720275c81afe
 
 %define major_ver 5
 
@@ -23,7 +30,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 0
+%global stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -254,12 +261,6 @@ sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.conf
 
 export LD=ld.bfd
 
-# The kernel tools build with -ggdb3 which seems to interact badly with LTO
-# causing various errors with references to discarded sections and symbol
-# type errors from the LTO plugin.  Until those issues are addressed
-# disable LTO
-%global _lto_cflags %{nil}
-
 cd linux-%{kversion}
 
 %global perf_make \
@@ -312,10 +313,10 @@ pushd tools/bpf/bpftool
 %{bpftool_make}
 popd
 pushd tools/lib/bpf
-%{tools_make} V=1
+%{tools_make} V=1 prefix=%{_prefix} libdir=%{_libdir}
 popd
 pushd tools/lib/perf
-make V=1
+make V=1 prefix=%{_prefix} libdir=%{_libdir}
 popd
 
 # Build the docs
@@ -546,6 +547,12 @@ popd
 
 
 %changelog
+* Mon Dec 21 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.2-500.chinfo
+- 5.10.2
+
+* Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.0-500.chinfo
+- 5.10.0
+
 * Fri Dec 11 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.14-500.chinfo
 - 5.9.14
 
