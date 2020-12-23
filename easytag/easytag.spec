@@ -1,31 +1,44 @@
+%global commit c903a7a14cc492dd491e83a8d6b96663a34c3a25
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20200504
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 %global majorminor %%(echo %{version} | cut -d. -f1-2)
 
+%global vc_url https://gitlab.gnome.org/GNOME/%{name}
+
+
 Name:           easytag
-Version:        2.4.3
-Release:        104%{?dist}
+Version:        2.5.1
+Release:        0.1%{?gver}%{?dist}
 Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
 Epoch:          1
 
 License:        GPLv2+
 URL:            https://wiki.gnome.org/Apps/EasyTAG
-Source:         https://download.gnome.org/sources/%{name}/%{majorminor}/%{name}-%{version}.tar.xz
 
-# Revert ogg patch
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
+%else
+Source0:        https://download.gnome.org/sources/%{name}/%{majorminor}/%{name}-%{version}.tar.xz
+%endif
+
 # https://bugzilla.gnome.org/show_bug.cgi?id=776110
-Patch0:         0001-Do-not-maintain-an-open-handle-on-Ogg-files.patch
-# https://bugzilla.gnome.org/show_bug.cgi?id=779622
-Patch1:         https://gitlab.gnome.org/GNOME/easytag/commit/cac75c6d565cf7c54d72775216010e3698c11af1.patch#/%{name}-gl-cac75c6d.patch
-Patch2:         https://gitlab.gnome.org/GNOME/easytag/commit/8a234621179ba9d92113bff68d766e5e5532b3c0.patch#/%{name}-gl-8a234621.patch
-# https://bugzilla.gnome.org/show_bug.cgi?id=795018
-Patch3:         https://gitlab.gnome.org/GNOME/easytag/commit/b00ed316550df3ae94522455f56e306e659511e5.patch#/%{name}-gl-b00ed316.patch
+# https://gitlab.gnome.org/GNOME/easytag/-/issues/8
+Patch0:         %{vc_url}/-/merge_requests/8.patch#/%{name}-gl-mr8.patch
 
-BuildRequires:  appdata-tools
+BuildRequires:  libappstream-glib
 BuildRequires:  desktop-file-utils
 BuildRequires:  docbook-dtds
 BuildRequires:  docbook-style-xsl
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  id3lib-devel >= 3.7.12
 BuildRequires:  intltool
 BuildRequires:  itstool
@@ -34,11 +47,19 @@ BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(id3tag)
 BuildRequires:  pkgconfig(libnautilus-extension)
+BuildRequires:  pkgconfig(libsoup-2.4)
 BuildRequires:  pkgconfig(opusfile)
 BuildRequires:  pkgconfig(speex)
 BuildRequires:  pkgconfig(taglib)
 BuildRequires:  pkgconfig(vorbisfile)
 BuildRequires:  pkgconfig(wavpack)
+%if 0%{?with_snapshot}
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+BuildRequires:  pkgconfig(appstream-glib)
+BuildRequires:  yelp-tools
+%endif
 Recommends:     yelp
 
 %description
@@ -55,16 +76,18 @@ Nautilus extension to add "Open with EasyTAG" to the Nautilus context menu, for
 easier access to EasyTAG when opening directories and audio files.
 
 %prep
-%setup -q
-%patch0 -p1 -R
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+NOCONFIGURE=1 ./autogen.sh
+%else
+%autosetup -n %{name}-%{version} -p1
+%endif
 
 %build
 %configure \
   --disable-silent-rules \
   --disable-appdata-validate \
+  --disable-schemas-compile \
 %{nil}
 
 %make_build
@@ -75,10 +98,8 @@ easier access to EasyTAG when opening directories and audio files.
 
 find %{buildroot} -type f -name "*.la" -delete
 
-mkdir -p %{buildroot}%{_metainfodir}
-mv %{buildroot}%{_datadir}/appdata/*.xml \
-  %{buildroot}%{_metainfodir}/
-rm -rf %{buildroot}%{_datadir}/appdata
+desktop-file-validate %{buildroot}%{_datadir}/applications/org.gnome.EasyTAG.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.gnome.EasyTAG.appdata.xml
 
 %find_lang %{name} --with-gnome
 
@@ -91,10 +112,10 @@ make check
 %doc ChangeLog HACKING README THANKS TODO
 %license COPYING
 %{_bindir}/easytag
-%{_metainfodir}/easytag.appdata.xml
-%{_datadir}/applications/easytag.desktop
-%{_datadir}/icons/hicolor/*/apps/easytag.*
-%{_datadir}/icons/hicolor/symbolic/apps/easytag-symbolic.svg
+%{_metainfodir}/org.gnome.EasyTAG.appdata.xml
+%{_datadir}/applications/org.gnome.EasyTAG.desktop
+%{_datadir}/icons/hicolor/*/apps/org.gnome.EasyTAG.*
+%{_datadir}/icons/hicolor/symbolic/apps/org.gnome.EasyTAG-symbolic.svg
 %{_datadir}/glib-2.0/schemas/org.gnome.EasyTAG.enums.xml
 %{_datadir}/glib-2.0/schemas/org.gnome.EasyTAG.gschema.xml
 %{_mandir}/man1/easytag.1*
@@ -106,6 +127,10 @@ make check
 
 
 %changelog
+* Tue Dec 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.1-0.1.20200504gitc903a7a
+- Snapshot
+- Better fix to old bug 776110
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.4.3-104
 - Disable appdata validation
 
