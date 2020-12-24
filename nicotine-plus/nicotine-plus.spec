@@ -11,7 +11,7 @@
 %global vc_url  https://github.com/%{name}/%{name}
 
 Name:           nicotine-plus
-Version:        2.2.1
+Version:        2.2.2
 Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -85,7 +85,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 %license COPYING
 %doc AUTHORS.md NEWS.md README.md TRANSLATORS.md files/icons/CREDITS.md
 %{_bindir}/%{cname}
-%{python3_sitelib}/%{cname}-*.egg-info
+%{python3_sitelib}/*-*.egg-info
 %{python3_sitelib}/py%{cname}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.*
@@ -94,6 +94,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 
 
 %changelog
+* Thu Dec 24 2020 Phantom X <megaphantomx at hotmail dot com> - 2.2.2-100
+- 2.2.2
+
 * Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 2.2.1-100
 - 2.2.1
 

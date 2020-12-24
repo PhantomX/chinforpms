@@ -1,0 +1,25 @@
+From f7670967945664b6eb2a2ea99b632bcb5f31e718 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 23 Dec 2020 09:10:27 -0300
+Subject: [PATCH] Add "Radeon" to xpresent vblank mode list
+
+https://gitlab.xfce.org/xfce/xfwm4/-/issues/409
+---
+ src/compositor.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/compositor.c b/src/compositor.c
+index 9c5ceb4..081bc9e 100644
+--- a/src/compositor.c
++++ b/src/compositor.c
+@@ -1114,6 +1114,7 @@ check_glx_renderer (ScreenInfo *screen_info)
+     const char *prefer_xpresent[] = {
+         "Intel",
+         "AMD",
++        "Radeon",
+         NULL
+     };
+ #endif /* HAVE_PRESENT_EXTENSION */
+-- 
+2.29.2
+

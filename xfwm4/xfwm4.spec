@@ -1,8 +1,8 @@
-%global xfceversion 4.14
+%global xfceversion %%(echo %{version} | cut -d. -f1-2)
 
 Name:           xfwm4
-Version:        4.14.6
-Release:        101%{?dist}
+Version:        4.16.0
+Release:        100%{?dist}
 Summary:        Next generation window manager for Xfce
 
 License:        GPLv2+
@@ -11,21 +11,33 @@ URL:            http://www.xfce.org/
 Source0:        http://archive.xfce.org/src/xfce/%{name}/%{xfceversion}/%{name}-%{version}.tar.bz2
 
 Patch10:        0001-settings-disable-keymap-reload-when-key-changes-is-d.patch
-Patch11:        https://gitlab.xfce.org/xfce/xfwm4/-/commit/e2fbfac304beace0297d071f7de0aceba4f0016a.patch#/%{name}-gl-e2fbfac.patch
+Patch11:        0001-Add-Radeon-to-xpresent-vblank-mode-list.patch
 
 BuildRequires:  gcc-c++
-BuildRequires:  libxfce4ui-devel >= %{xfceversion}
-BuildRequires:  libXext-devel
-%if 0%{?fedora}
-BuildRequires:  libXpresent-devel
-%endif
+BuildRequires:  make
 BuildRequires:  gettext
-BuildRequires:  intltool
-BuildRequires:  libXcomposite-devel
-BuildRequires:  libXdamage-devel
-BuildRequires:  startup-notification-devel >= 0.5
-BuildRequires:  libwnck3-devel >= 3.14
-BuildRequires:  xfconf-devel >= %{xfceversion}
+BuildRequires:  intltool >= 0.35
+BuildRequires:  pkgconfig(epoxy) >= 1.0
+BuildRequires:  pkgconfig(gtk+-3.0) >= 3.22
+BuildRequires:  pkgconfig(libstartup-notification-1.0) >= 0.5
+BuildRequires:  pkgconfig(libxfce4kbd-private-3) >= 4.12
+BuildRequires:  pkgconfig(libxfce4ui-2) >= 4.12
+BuildRequires:  pkgconfig(libxfce4util-1.0) >= 4.8
+BuildRequires:  pkgconfig(libxfconf-0) >= 4.13
+BuildRequires:  pkgconfig(libwnck-3.0) >= 3.14
+BuildRequires:  pkgconfig(presentproto) >= 1.1
+BuildRequires:  pkgconfig(xcomposite) >= 0.2
+BuildRequires:  pkgconfig(xdamage)
+BuildRequires:  pkgconfig(xext)
+BuildRequires:  pkgconfig(xfixes)
+BuildRequires:  pkgconfig(xinerama)
+%if 0%{?fedora}
+BuildRequires:  pkgconfig(xpresent) >= 1.0
+%endif
+BuildRequires:  pkgconfig(xrandr)
+BuildRequires:  pkgconfig(xrender)
+BuildRequires:  pkgconfig(xres)
+
 BuildRequires:  desktop-file-utils
 
 Provides:       firstboot(windowmanager) = xfwm4
@@ -53,7 +65,7 @@ done
 
 %files -f %{name}.lang
 %license COPYING
-%doc example.gtkrc-2.0 README TODO AUTHORS COMPOSITOR
+%doc example.gtkrc-2.0 README.md TODO AUTHORS COMPOSITOR
 %{_bindir}/xfwm4
 %{_bindir}/xfwm4-settings
 %{_bindir}/xfwm4-tweaks-settings
@@ -67,6 +79,10 @@ done
 
 
 %changelog
+* Wed Dec 23 2020 Phantom X <megaphantomx at hotmail dot com> - 4.16.0-100
+- 4.16.0
+- Update BRs
+
 * Fri Nov 20 2020 Phantom X <megaphantomx at hotmail dot com> - 4.14.6-101
 - Upstream fix
 

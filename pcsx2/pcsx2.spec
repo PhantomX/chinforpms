@@ -1,6 +1,6 @@
-%global commit 76c98e714025fd3d7caba6de1dd67af6a44b787e
+%global commit 74336d952d7705551f0ef434067d0137ef06cf41
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201128
+%global date 20201223
 %global with_snapshot 1
 
 %global sanitize 0
@@ -16,7 +16,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        113%{?gver}%{?dist}
+Release:        114%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -66,6 +66,7 @@ BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xrandr)
+BuildRequires:  pkgconfig(yaml-cpp)
 BuildRequires:  pkgconfig(zlib)
 # use SDL that depends wxGTK
 BuildRequires:  wxGTK3-devel
@@ -130,7 +131,7 @@ sed -i \
 %endif
 
 cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
-  plugins/onepad/res/game_controller_db.txt
+  pcsx2/PAD/Linux/res/game_controller_db.txt
 
 
 %build
@@ -166,6 +167,7 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
 %endif
   -DUSE_LTO:BOOL=FALSE \
   -DUSE_VTUNE:BOOL=FALSE \
+  -DUSE_SYSTEM_YAML:BOOL=TRUE \
   -DDISABLE_PCSX2_WRAPPER:BOOL=TRUE \
   -DDISABLE_SETCAP:BOOL=TRUE \
   -DENABLE_TESTS:BOOL=FALSE \
@@ -192,7 +194,7 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/PCSX2
 
 # strip extra copies of pdf files, which are now in /doc/pcsx2
-rm -rf %{buildroot}/usr/share/doc/PCSX2
+rm -rf %{buildroot}/usr/share/doc/P*
 
 # Install icon
 mkdir -p %{buildroot}/%{_datadir}/icons/hicolor/128x128/apps/
@@ -229,14 +231,18 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 %doc bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
 %{_bindir}/PCSX2
 %{perms_pcsx2} %{_bindir}/PCSX2.bin
-%{_libdir}/pcsx2/
+%{_libdir}/PCSX2/
 %{_datadir}/applications/PCSX2.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_mandir}/man1/PCSX2.*
-%{_datadir}/pcsx2/
+%{_datadir}/PCSX2/
 
 
 %changelog
+* Wed Dec 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-114.20201223git74336d9
+- New snapshot
+- BR: yaml-cpp
+
 * Sun Nov 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-113.20201128git76c98e7
 - Bump
 

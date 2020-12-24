@@ -10,9 +10,9 @@
 %global with_sysvulkan 1
 %global with_unittests 0
 
-%global commit 214ea8ff181300e5f130bafc1eca72ff345c481d
+%global commit 1d489b3fd5cdcb9f3da2fd07123d6664ef9fa9a6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201214
+%global date 20201221
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -26,7 +26,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        125%{?gver}%{?dist}
+Release:        126%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -392,6 +392,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Dec 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-126.20201221git1d489b3
+- Nre snapshot
+
 * Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-125.20201214git214ea8f
 - Update
 
