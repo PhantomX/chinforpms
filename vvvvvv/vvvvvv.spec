@@ -1,13 +1,16 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 70e82dfe12c22fdb271d60a37456eb307b4a41c0
+%global commit e3aa768034ce953afb0b50b49807d7a49350915c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201014
+%global date 20201224
 
 %undefine _hardened_build
 
+%global with_systinyxml 0
+
 %global bundlelodepngver 20191109
 %global bundlephysfsver 0
+%global bundletinyxml 8.0.0
 
 %global gver .%{date}git%{shortcommit}
 
@@ -15,12 +18,13 @@
 
 Name:           vvvvvv
 Version:        2.3
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
 # * S1 (lodepng) - zlib -- static dependency;
 # * S2 (utf8cpp) - Boost -- static dependency;
+# * S3 (tinyxml2) - zlib -- static dependency, if with_systinyxml 0;
 License:        VVVVVV
 
 URL:            https://github.com/TerryCavanagh/%{pkgname}
@@ -35,11 +39,14 @@ BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(SDL2_mixer)
 BuildRequires:  pkgconfig(physfs)
+%if 0%{?with_systinyxml}
 BuildRequires:  pkgconfig(tinyxml2)
+%endif
 Requires:       vvvvvv-data >= 2.1
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
@@ -47,6 +54,9 @@ Requires:       sdl_gamecontrollerdb
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(lodepng) = %{bundlelodepngver}
 #Provides:       bundled(physfs) = %%{bundlephysfsver}
+%if !0%{?with_systinyxml}
+Provides:       bundled(tinyxml2) = %{bundletinyxml}
+%endif
 
 
 %description
@@ -58,37 +68,33 @@ Provides:       bundled(lodepng) = %{bundlelodepngver}
 
 # Make sure that we are using system ones
 rm -rf third_party/physfs/
+%if 0%{?with_systinyxml}
 rm -rf third_party/tinyxml2/
+%endif
 
 cp -p desktop_version/README.md README_desktop.md
 
 sed \
+  -e 's|FIND_PACKAGE(Git)|FIND_PACKAGE(Git_disabled)|g' \
   -e '/CMAKE_BUILD_WITH_INSTALL_RPATH/d' \
   -e '/CMAKE_INSTALL_RPATH/d' \
   -i desktop_version/CMakeLists.txt
+
+
+echo 'ADD_DEFINITIONS(-DINTERIM_COMMIT="%{shortcommit}")' >> desktop_version/CMakeLists.txt
+echo 'ADD_DEFINITIONS(-DCOMMIT_DATE="%{date}")' >> desktop_version/CMakeLists.txt
 
 sed -e 's|_RPM_DATA_DIR_|%{_datadir}|g' -i desktop_version/src/FileSystemUtils.cpp
 
 
 %build
 
-# Optimizations breaks build
-export CFLAGS="$(echo %{optflags} | sed \
-  -e 's/-O2\b/-O0/' \
-  -e 's/-Wp,-D_FORTIFY_SOURCE=2//' \
-  -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//' \
-  -e 's/-fstack-protector-strong//' \
-  -e 's/-fasynchronous-unwind-tables//' \
-  -e 's/-fstack-clash-protection//' \
-  -e 's/-fcf-protection//' \
-)"
-export CXXFLAGS="$CFLAGS"
-export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
-
 %cmake \
   -S desktop_version \
   -DUSE_SYSTEM_PHYSFS:BOOL=ON \
+%if 0%{?with_systinyxml}
   -DUSE_SYSTEM_TINYXML:BOOL=ON \
+%endif
 %{nil}
 
 %cmake_build
@@ -135,6 +141,11 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Fri Dec 25 2020 - 2.3-6.20201224gite3aa768
+- New snapshot
+- Use bundled tinyxml2 for the time
+- Compiler optimizations seems good now
+
 * Thu Oct 29 2020 - 2.3-5.20201014git70e82df
 - Update
 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+	<id>snes9x-gtk.desktop</id>
+	<metadata_license>CC-BY-SA-3.0</metadata_license>
+	<project_license>Other</project_license>
+	<name>Snes9x</name>
+	<summary>Super Nintendo Entertainment System emulator</summary>
+	<description>
+		<p>
+		Snes9x is a portable, freeware Super Nintendo Entertainment 
+		System (SNES) emulator. It basically allows you to play most 
+		games designed for the SNES and Super Famicom Nintendo game 
+		systems on your computer.
+		</p>
+	</description>
+	<screenshots>
+		<screenshot type="default">
+			<image>http://www.snes9x.com/images/mariokart1.gif</image>
+                        <image>http://www.snes9x.com/images/yisland.jpg</image>
+		</screenshot>
+	</screenshots>
+	<url type="homepage">http://www.snes9x.com/</url>
+</component>
+

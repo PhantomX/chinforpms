@@ -57,7 +57,7 @@ index 01dd28b..e122c32 100644
 +  target_include_directories(tinyxml2-static INTERFACE ${TINYXML2_INCLUDE_DIRS})
 +  target_link_libraries(tinyxml2-static INTERFACE ${TINYXML2_LIBRARIES})
 +ELSE()
-+  ADD_LIBRARY(tinyxml2-static STATIC ${XML_SRC})
++  ADD_LIBRARY(tinyxml2-static STATIC ${XML2_SRC})
 +ENDIF()
 +
 +IF(USE_SYSTEM_PHYSFS)

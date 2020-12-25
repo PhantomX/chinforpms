@@ -1,13 +1,13 @@
-%global commit 2c458414c0851b9a0d1b0493857b56a1089847ac
+%global commit 17ffa89097b26efeb323e6963220326b5ffb2baf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201125
+%global date 20201217
 %global gver .%{date}git%{shortcommit}
 
 %global pkgname SPIRV-Tools
 
 Name:           spirv-tools
 Version:        2020.6
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        API and commands for processing SPIR-V modules
 
 License:        ASL 2.0
@@ -89,6 +89,9 @@ Development files for %{name}
 %{_libdir}/pkgconfig/SPIRV-Tools.pc
 
 %changelog
+* Fri Dec 25 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.6-103.20201217git17ffa89
+- Update
+
 * Thu Nov 26 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.6-102.20201125git2c45841
 - Bump
 

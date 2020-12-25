@@ -15,6 +15,7 @@
 %global toolkit gtk2
 %else
 %global toolkit gtk3
+%global build_with_lto    0
 %endif
 
 %if 0%{?with_snapshot}
@@ -39,6 +40,7 @@ Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)
 %if 0%{?with_libao}

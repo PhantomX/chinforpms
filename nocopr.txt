@@ -36,7 +36,8 @@ psximager
 -reicast
 -odrive
 rocketchat-desktop
-soulseekqt
+snes9x
+-soulseekqt
 spideroakone
 steam
 telegram-desktop
