@@ -1,16 +1,19 @@
-%global commit 38011e14019a0d2a996e2d67eb32b160a73e4c07
+%global commit a77d0bf4c3ec2476a824b34ae7b14de7fc3a21dc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201129
+%global date 20201225
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
+# Enable system qhexedit
+%global with_qhexedit 1
+
 %global vc_url  https://github.com/sithlord48/%{name}
 
 Name:           blackchocobo
-Version:        1.10.4
+Version:        1.10.5
 Release:        1%{?gver}%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
@@ -23,17 +26,27 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
+Patch0:         0001-Use-system-qhexedit.patch
+
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  libappstream-glib
+BuildRequires:  cmake(ff7tk)
+BuildRequires:  cmake(ff7tkWidgets)
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5LinguistTools)
 BuildRequires:  cmake(Qt5Quick)
 BuildRequires:  cmake(Qt5Widgets)
 BuildRequires:  cmake(Qt5Xml)
+%if 0%{?with_qhexedit}
+BuildRequires:  pkgconfig(qhexedit2-qt5)
+%else
+Provides:       bundled(qhexedit2) = 0.8.6
+%endif
 BuildRequires:  ImageMagick
 Requires:       hicolor-icon-theme
 
@@ -51,15 +64,28 @@ Converting Save Formats to PC or PSX. With it you can even export your ps3 saves
 %autosetup -n %{name}-%{version} -p1
 %endif
 
+%if 0%{?with_qhexedit}
+  rm -rf qhexedit
+%endif
+
 sed \
+  -e 's|FIND_PACKAGE(Git)|FIND_PACKAGE(Git_disabled)|g' \
   -e 's|share/metadata/|share/metainfo/|' \
   -e '/licenses\/blackchocobo\//d' \
   -i CMakeLists.txt
 
+%if 0%{?with_snapshot}
+  sed \
+    -e '/CMAKE_PROJECT_VERSION/astring(APPEND BC_VERSION "-%{shortcommit}")' \
+    -i CMakeLists.txt
+%endif
 
 %build
 %cmake \
   -DQt5_LRELEASE_EXECUTABLE=lrelease-qt5 \
+%if 0%{?with_qhexedit}
+  -DUSE_SYSTEM_QHEXEDIT:BOOL=ON \
+%endif
 %{nil}
 
 %cmake_build
@@ -104,6 +130,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/Black_Chocobo.
 
 
 %changelog
+* Sat Dec 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1.10.5-1.20201225gita77d0bf
+- 1.10.5
+- BR: ff7tk
+- qhexedit switch
+
 * Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 1.10.4-1.20201129git38011e1
 - 1.10.4
 

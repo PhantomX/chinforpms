@@ -1,0 +1,64 @@
+From 719cf10c90c55cc21e39cc7f7e2384be94ca9ed9 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 26 Dec 2020 17:34:48 -0300
+Subject: [PATCH] Use system qhexedit
+
+---
+ CMakeLists.txt     | 13 +++++++++++++
+ src/mainwindow.cpp |  4 ++++
+ 2 files changed, 17 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 35562fe..3cfc938 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -10,6 +10,8 @@ set(REQUIRED_QT_VERSION "5.12.0")
+ 
+ cmake_policy(SET CMP0010 NEW)
+ 
++option(USE_SYSTEM_QHEXEDIT "Dynamically link against system qhexedit" OFF)
++
+ project( blackchocobo VERSION 1.10.5 DESCRIPTION "Final Fantasy 7 Save Editor")
+ # Get the version from git if it's a git repository
+ set(BC_VERSION ${CMAKE_PROJECT_VERSION})
+@@ -57,10 +59,21 @@ set (RESOURCES icon/images.qrc)
+ 
+ add_subdirectory(deploy)
+ add_subdirectory(lang)
++if(USE_SYSTEM_QHEXEDIT)
++find_package(PkgConfig REQUIRED)
++pkg_search_module(QHEXEDIT REQUIRED qhexedit2-qt5)
++add_library(QHEXEDIT INTERFACE IMPORTED GLOBAL)
++else()
+ add_subdirectory(qhexedit)
++endif()
+ 
+ if(UNIX AND NOT APPLE)
+     add_executable (blackchocobo ${blackchocobo_SRCS} ${RESOURCES})
++    if(USE_SYSTEM_QHEXEDIT)
++        target_compile_definitions(blackchocobo PUBLIC USE_SYSTEM_QHEXEDIT)
++        target_include_directories(blackchocobo PUBLIC ${QHEXEDIT_INCLUDE_DIRS})
++        target_link_libraries(blackchocobo ${QHEXEDIT_LIBRARIES})
++    endif()
+     target_link_libraries ( blackchocobo  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::Quick QHEXEDIT ff7tk::ff7tk ff7tk::ff7tkWidgets)
+     install(TARGETS blackchocobo RUNTIME DESTINATION bin)
+     install(FILES ${PROJECT_SOURCE_DIR}/COPYING.txt DESTINATION licenses/blackchocobo/ RENAME LICENSE)
+diff --git a/src/mainwindow.cpp b/src/mainwindow.cpp
+index 73f53c7..bb2b188 100644
+--- a/src/mainwindow.cpp
++++ b/src/mainwindow.cpp
+@@ -55,7 +55,11 @@
+ #include <ChocoboManager.h>
+ #include <LocationViewer.h>
+ 
++#ifdef USE_SYSTEM_QHEXEDIT
++#include <qhexedit.h>
++#else
+ #include <qhexedit/qhexedit.h>
++#endif
+ /*~~~~~~~~GUI Set Up~~~~~~~*/
+ MainWindow::MainWindow(QWidget *parent)
+     : QMainWindow(parent)
+-- 
+2.29.2
+

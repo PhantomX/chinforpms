@@ -39,6 +39,7 @@ xwit
 # 2
 -aom
 -dxil-spirv
+ff7tk
 libchdr
 libliftoff
 -libvorbis

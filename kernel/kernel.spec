@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e560c558cdeb3b9ce9f5d2615205eb58f8bff7e1
+%global pfcommit 874159211b4c60d2a2b34e97b9fb3232a8a47250
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id d14c73f5a4d518daf3f6fdac1a07720275c81afe
+%global opensuse_id e030f9e8b52b56411a631e583e20ae098722d7fc
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2707,6 +2707,9 @@ fi
 #
 #
 %changelog
+* Sat Dec 26 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.3-500.chinfo
+- 5.10.3 - pf3
+
 * Mon Dec 21 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.2-500.chinfo
 - 5.10.2 - pf2
 - stabilization sync

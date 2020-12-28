@@ -1,15 +1,13 @@
 %global pkgname vdf
 
 Name:           python-%{pkgname}
-Version:        3.2
-Release:        2%{?dist}
+Version:        3.3
+Release:        1%{?dist}
 Summary:        Library for working with Valve's VDF text format
 
 License:        MIT
 URL:            https://github.com/ValvePython/vdf
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
-
-Patch0:         %{url}/commit/ffbec10ae6bd6514398f67bbe2170a7e9a189349.patch#/%{name}-gh-ffbec10.patch
 
 
 BuildArch:      noarch
@@ -56,6 +54,9 @@ like json.
 
 
 %changelog
+* Mon Dec 28 2020 Phantom X <megaphantomx at hotmail dot com> - 3.3-1
+- 3.3
+
 * Wed Feb 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.2-2
 - Upstream patch
 
