@@ -7,7 +7,7 @@
 %global progdir %{_libdir}/%{name}
 
 Name:           zoom
-Version:        5.4.53350.1027
+Version:        5.4.57450.1220
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -63,7 +63,6 @@ mv usr/share/applications/Zoom.desktop usr/share/applications/us.zoom.Zoom.deskt
 find opt/%{name}/ -name '*.so*' | xargs chmod +x
 find opt/%{name}/ -type l -name '*.so' -delete
 
-chmod -x opt/%{name}/zcacert.pem
 chmod -x opt/%{name}/timezones/ko/timezones.txt
 sed '1 i\#!/usr/bin/sh' -i opt/%{name}/getbssid.sh
 
@@ -136,6 +135,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Mon Dec 28 2020 - 5.4.57450.1220-1
+- 5.4.57450.1220
+
 * Wed Oct 28 2020 - 5.4.53350.1027-1
 - 5.4.53350.1027
 
