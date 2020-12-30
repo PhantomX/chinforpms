@@ -1,7 +1,7 @@
 %global vc_url  https://github.com/%{name}-dev/%{name}
 
 Name:           htop
-Version:        3.0.3
+Version:        3.0.4
 Release:        100%{?dist}
 Summary:        Interactive process viewer
 
@@ -59,6 +59,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Dec 29 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.4-100
+- 3.0.4
+
 * Wed Dec 16 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.3-100
 - 3.0.3
 

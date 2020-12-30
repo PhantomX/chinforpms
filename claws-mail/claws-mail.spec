@@ -1,6 +1,6 @@
-%global commit 6ed06b5919ddf1d1549d281e7dd1c1ea02cf62c0
+%global commit fa24a03232e0e688c6bfbd8cb2e3b16d70893a67
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201103
+%global date 20201229
 %global with_snapshot 1
 
 %global with_gtk3  1
@@ -26,7 +26,7 @@
 
 Name:           claws-mail
 Version:        3.99.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -739,12 +739,15 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Tue Dec 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.99.0-101.20201229gitfa24a03
+- Bump
+
 * Wed Nov  4 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.99.0-100.20201103git6ed06b5
 - 3.99.0 gtk3 snapshot
 - Reenable fancy plugin
 - Remove unneeded libgnome-devel BR
 
-* Mon Oct 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.17.8-100
+* Mon Oct 19 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.17.8-100
 - 3.17.8
 
 * Mon Sep 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.17.7-100

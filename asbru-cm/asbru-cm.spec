@@ -2,7 +2,7 @@
 
 Name:           asbru-cm
 Version:        6.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
@@ -12,7 +12,8 @@ URL:            https://asbru-cm.net
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
 Source0:        %{vc_url}/archive/%{ver}/%{name}-%{ver}.tar.gz
 
-Patch0:         0001-Temporarily-set-feedVersion-check-to-0.patch
+Patch0:         %{vc_url}/commit/068f6dde5d73d96f641f52ce24c3211a1261bf34.patch#/%{name}-gh-068f6dd.patch
+Patch1:         %{vc_url}/commit/949a25dae914328da2c41d56ffad308af95df566.patch#/%{name}-gh-949a25d.patch
 
 BuildArch:      noarch
 
@@ -141,6 +142,9 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
+* Tue Dec 29 2020 Phantom X <megaphantomx at hotmail dot com> - 6.2.2-2
+- vte upstream fix
+
 * Tue Nov 10 2020 Phantom X <megaphantomx at hotmail dot com> - 6.2.2-1
 - 6.2.2
 
