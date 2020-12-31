@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20201226
+# 20201230
 
 set -e
 
@@ -48,6 +48,7 @@ CC_OPTIMIZE_FOR_PERFORMANCE_O3
 KERNEL_ZSTD
 INITRAMFS_COMPRESSION_ZSTD
 NTFS3_64BIT_CLUSTER
+SPADFS_FS
 "
 
 pfd="
