@@ -10,7 +10,7 @@
 %global pkgname FAudio
 
 Name:           %{pkgname}-noreverb
-Version:        20.12
+Version:        21.01
 Release:        1%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - noreverb
 Epoch:          1
@@ -29,6 +29,7 @@ Patch0:         0001-Disable-reverb.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  pkgconfig(gstreamer-1.0)
 BuildRequires:  pkgconfig(gstreamer-audio-1.0)
 BuildRequires:  pkgconfig(gstreamer-app-1.0)
@@ -98,5 +99,8 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Sat Jan 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.01-1
+- 21.01
+
 * Thu Dec 10 2020 Phantom X <megaphantomx at hotmail dot com> - 20.12-1
 - Initial spec

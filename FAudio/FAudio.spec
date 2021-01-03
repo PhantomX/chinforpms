@@ -8,8 +8,8 @@
 %endif
 
 Name:           FAudio
-Version:        20.12
-Release:        101%{?gver}%{?dist}
+Version:        21.01
+Release:        100%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
 Epoch:          1
@@ -26,6 +26,7 @@ Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  pkgconfig(gstreamer-1.0)
 BuildRequires:  pkgconfig(gstreamer-audio-1.0)
 BuildRequires:  pkgconfig(gstreamer-app-1.0)
@@ -96,6 +97,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Sat Jan 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.01-100
+- 21.01
+
 * Thu Dec 10 2020 Phantom X <megaphantomx at hotmail dot com> - 1:20.12-101
 - Remove unneeded patch
 

@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.0-rc4
+%global wine_stagingver 6.0-rc5
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -51,7 +51,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 02b65b804cf0873d1b128c9889a4610da5462cb0
+%global tkg_id 714f7ff75d86ae71fc722ea4a15aa45e478c9574
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b5edce86550ab24625bc75c25e3905528645e48b
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -94,7 +94,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.0~rc4
+Version:        6.0~rc5
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2724,6 +2724,9 @@ fi
 
 
 %changelog
+* Sun Jan 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0~rc5-100
+- 6.0-rc5
+
 * Sat Dec 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1:6.0~rc4-100
 - 6.0-rc4
 

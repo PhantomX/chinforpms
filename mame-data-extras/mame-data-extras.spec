@@ -2,8 +2,8 @@
 %global __strip /bin/true
 
 %global cheatver 0221
-%global historyver 226
-%global infover 0226
+%global historyver 227
+%global infover 0227
 
 # Build non redistributable package with free roms
 %bcond_with roms
@@ -11,7 +11,7 @@
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.226
+Version:        0.227
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -21,7 +21,7 @@ URL:            http://mamedev.org
 # http://cheat.retrogames.com/
 Source0:       http://cheat.retrogames.com/download/cheat%{cheatver}.zip
 # http://www.arcade-history.com/
-Source1:       http://www.arcade-history.com/dats/history%{historyver}.7z
+Source1:       http://www.arcade-history.com/dats/historydat%{historyver}.7z
 # http://mameinfo.mameworld.info/
 Source2:       http://www.mameworld.info/mameinfo/download/Mameinfo%{infover}.zip
 
@@ -251,6 +251,10 @@ done
 
 
 %changelog
+* Sat Jan 02 2021 Phantom X <megaphantomx at hotmail dot com> - 0.227-1
+- Mameinfo 0.227
+- History 227
+
 * Sat Oct 31 2020 Phantom X <megaphantomx at hotmail dot com> - 0.226-1
 - Mameinfo 0.226
 - History 226
