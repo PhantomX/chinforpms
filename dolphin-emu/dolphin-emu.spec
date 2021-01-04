@@ -6,13 +6,16 @@
 %bcond_with ffmpeg
 %global with_egl 1
 %global with_llvm 0
-%global with_dsphack 1
 %global with_sysvulkan 1
 %global with_unittests 0
 
-%global commit 1d489b3fd5cdcb9f3da2fd07123d6664ef9fa9a6
+# Add extra RESHDP Edition modifications (as a new binary)
+# https://github.com/MoArtis/dolphin
+%global with_reshdp 1
+
+%global commit e957ed0809c73417103010f91ba058dd7a96bf86
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201221
+%global date 20210103
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -26,7 +29,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        126%{?gver}%{?dist}
+Release:        127%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -65,8 +68,10 @@ Patch4:         0004-soundtounch-disable-exceptions.patch
 #This needs to be fixed, I've reverted the patch that breaks minizip
 Patch5:         0005-Revert-Externals-Update-minizip-search-path.patch
 
-Patch100:       0001-DSP-interrupt-hack-for-RE-2-and-3.patch
-Patch101:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
+Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
+Patch101:       0001-DSP-interrupt-hack-for-RE-2-and-3.patch
+Patch102:       0001-Mask-hack-for-RE3.patch
+Patch103:       0001-RESHDP-Edition-label.patch
 
 
 BuildRequires:  gcc
@@ -283,13 +288,15 @@ export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 %endif
 %{nil}
 
-%if 0%{?with_dsphack}
+%if 0%{?with_reshdp}
 %cmake_build
-mv %{__cmake_builddir}/Binaries/%{name} %{name}-dsphack
-mv %{__cmake_builddir}/Binaries/%{name}-nogui %{name}-dsphack-nogui
+mv %{__cmake_builddir}/Binaries/%{name} %{name}-reshdp
+mv %{__cmake_builddir}/Binaries/%{name}-nogui %{name}-reshdp-nogui
 %endif
 
-patch -p1 -R -i %{P:100}
+patch -p1 -R -i %{P:103}
+patch -p1 -R -i %{P:102}
+patch -p1 -R -i %{P:101}
 %cmake_build
 
 
@@ -309,26 +316,26 @@ sed -e '/^Exec=/s|=.*$|=%{name}|' \
 
 echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-x11.6
 
-%if 0%{?with_dsphack}
-install -pm0755 %{name}-dsphack %{buildroot}%{_bindir}/%{name}-dsphack-x11
-install -pm0755 %{name}-dsphack-nogui %{buildroot}%{_bindir}/
+%if 0%{?with_reshdp}
+install -pm0755 %{name}-reshdp %{buildroot}%{_bindir}/%{name}-reshdp-x11
+install -pm0755 %{name}-reshdp-nogui %{buildroot}%{_bindir}/
 
-cat > %{buildroot}%{_bindir}/%{name}-dsphack <<EOF
+cat > %{buildroot}%{_bindir}/%{name}-reshdp <<EOF
 #!/usr/bin/bash
 export QT_QPA_PLATFORM=xcb
-exec %{_bindir}/%{name}-dsphack-x11
+exec %{_bindir}/%{name}-reshdp-x11
 EOF
-chmod 755 %{buildroot}%{_bindir}/%{name}-dsphack
+chmod 755 %{buildroot}%{_bindir}/%{name}-reshdp
 
-cp -p %{buildroot}%{_datadir}/applications/%{name}{,-dsphack}.desktop
+cp -p %{buildroot}%{_datadir}/applications/%{name}{,-reshdp}.desktop
 sed \
-  -e '/^Exec=/s|=.*$|=%{name}-dsphack|' \
-  -e '/Name.*=/s|$| (DSP Hack)|g' \
- -i %{buildroot}%{_datadir}/applications/%{name}-dsphack.desktop
+  -e '/^Exec=/s|=.*$|=%{name}-reshdp|' \
+  -e '/Name.*=/s|$| (RESHDP Edition)|g' \
+ -i %{buildroot}%{_datadir}/applications/%{name}-reshdp.desktop
 
-echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-dsphack.6
-echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-dsphack-x11.6
-echo '.so man6/%{name}-nogui.6' > %{buildroot}%{_mandir}/man6/%{name}-dsphack-nogui.6
+echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-reshdp.6
+echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-reshdp-x11.6
+echo '.so man6/%{name}-nogui.6' > %{buildroot}%{_mandir}/man6/%{name}-reshdp-nogui.6
 
 %endif
 
@@ -361,12 +368,12 @@ appstream-util validate-relax --nonet \
 %{_datadir}/%{name}/sys/Resources/
 %{_datadir}/%{name}/sys/Themes/
 %{_datadir}/appdata/*.appdata.xml
-%if 0%{?with_dsphack}
-%{_bindir}/%{name}-dsphack
-%{_bindir}/%{name}-dsphack-x11
-%{_datadir}/applications/%{name}-dsphack.desktop
-%{_mandir}/man6/%{name}-dsphack.*
-%{_mandir}/man6/%{name}-dsphack-x11.*
+%if 0%{?with_reshdp}
+%{_bindir}/%{name}-reshdp
+%{_bindir}/%{name}-reshdp-x11
+%{_datadir}/applications/%{name}-reshdp.desktop
+%{_mandir}/man6/%{name}-reshdp.*
+%{_mandir}/man6/%{name}-reshdp-x11.*
 %endif
 
 %files nogui
@@ -374,9 +381,9 @@ appstream-util validate-relax --nonet \
 %license license.txt Externals/licenses.md
 %{_bindir}/%{name}-nogui
 %{_mandir}/man6/%{name}-nogui.*
-%if 0%{?with_dsphack}
-%{_bindir}/%{name}-dsphack-nogui
-%{_mandir}/man6/%{name}-dsphack-nogui.*
+%if 0%{?with_reshdp}
+%{_bindir}/%{name}-reshdp-nogui
+%{_mandir}/man6/%{name}-reshdp-nogui.*
 %endif
 
 %files data
@@ -392,8 +399,12 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Jan 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-127.20210103gite957ed0
+- Bump
+- Update RESHDP patches and rename executables
+
 * Wed Dec 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-126.20201221git1d489b3
-- Nre snapshot
+- New snapshot
 
 * Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-125.20201214git214ea8f
 - Update
