@@ -42,6 +42,7 @@
 # 1 to enable; 0 to disable.
 %global wine_staging 1
 %global wine_stagingver 6.0-rc5
+%global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -95,7 +96,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.0~rc5
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -168,7 +169,11 @@ Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
-Source900:       https://github.com/wine-staging/wine-staging/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
+Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
+
+# https://bugs.winehq.org/show_bug.cgi?id=50448
+Patch901:        %{wine_stg_url}/commit/b8ca0eae9f47491ba257c422a2bc03fc37d13c22.patch#/%{name}-staging-b8ca0ea.patch
+Patch902:        %{wine_stg_url}/commit/8b1e0eec1dd60f9c07bc9f49c02e4b4eef33dd06.patch#/%{name}-staging-8b1e0ee.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
@@ -809,6 +814,9 @@ This package adds the opencl driver for wine.
 
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
+
+%patch902 -p1 -R
+%patch901 -p1 -R
 
 %patch1000 -p1
 %patch1002 -p1
@@ -2724,6 +2732,9 @@ fi
 
 
 %changelog
+* Mon Jan 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0~rc5-101
+- Revert some staging patches
+
 * Sun Jan 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0~rc5-100
 - 6.0-rc5
 

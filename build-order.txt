@@ -20,6 +20,7 @@ libxspf
 lzlib
 lzma-sdk
 mingw-headers
+p7zip
 pysdl2
 python-iniherit
 python-markdown-math

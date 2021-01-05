@@ -1,0 +1,25 @@
+From ad7887d0b0cc2f2efb151543b6e6e63b0e5a34dc Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 4 Jan 2021 21:53:50 -0300
+Subject: [PATCH] Add exec on wrappers
+
+---
+ install.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/install.sh b/install.sh
+index bf13aa0..393ad62 100755
+--- a/install.sh
++++ b/install.sh
+@@ -10,7 +10,7 @@ installShared()
+     chmod 755 "${DEST_DIR}${DEST_SHARE}/${prg}"
+     strip     "${DEST_DIR}${DEST_SHARE}/${prg}"
+     echo "#! /bin/sh" > "${DEST_DIR}${DEST_BIN}/${prg}"
+-    echo "\"${DEST_SHARE}/${prg}\" \"\$@\"" >> "${DEST_DIR}${DEST_BIN}/${prg}"
++    echo "exec \"${DEST_SHARE}/${prg}\" \"\$@\"" >> "${DEST_DIR}${DEST_BIN}/${prg}"
+     chmod 755 "${DEST_DIR}${DEST_BIN}/${prg}"
+   fi
+ }
+-- 
+2.29.2
+

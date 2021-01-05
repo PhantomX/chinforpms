@@ -38,4 +38,4 @@ ifeq ($(SANITIZE),1)
 endif
 
 archive: clone sanitize
-	tar cJf ${NAME}-${TARBALLVER}.tar.xz ${DIRNAME}
+	tar --numeric-owner -cJf ${NAME}-${TARBALLVER}.tar.xz ${DIRNAME}

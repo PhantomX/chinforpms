@@ -67,6 +67,7 @@ Requires:       ftp
 Requires:       telnet
 Requires:       bash
 Suggests:       perl(X11::GUITest)
+Suggests:       tigervnc-server-minimal
 
 
 %description
