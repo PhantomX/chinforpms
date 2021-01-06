@@ -1,6 +1,6 @@
-%global commit 094c6642d0571b683571a27f3118749d03f37b13
+%global commit d4adb3d0ad53337a9985fd97ed0afcad417f6ccc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200917
+%global date 20201215
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           mupen64plus-rsp-cxd4
 Version:        2.5.9
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        MSP communications simulator plugin for Mupen64Plus
 
 License:        CC0
@@ -79,6 +79,9 @@ chmod +x %{buildroot}%{_libdir}/*/%{name}*.so
 
 
 %changelog
+* Tue Jan 05 2021 Phantom X <megaphantomx at hotmail dot com> - 2.5.9-4.20201215gitd4adb3d
+- Update
+
 * Wed Oct 21 2020 Phantom X <megaphantomx at hotmail dot com> - 2.5.9-3.20200917git094c664
 - New snapshot
 

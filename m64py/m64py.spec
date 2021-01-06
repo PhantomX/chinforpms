@@ -11,7 +11,7 @@
 
 Name:           m64py
 Version:        0.2.5
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        A frontend for Mupen64Plus 2.0
 
 License:        GPLv3
@@ -29,13 +29,13 @@ Patch1:         %{name}-libdir.patch
 BuildArch:      noarch
 BuildRequires:  desktop-file-utils
 BuildRequires:  python3-devel
-BuildRequires:  %{py3_dist sdl2}
+BuildRequires:  %{py3_dist pysdl2}
 BuildRequires:  python3-qt5-devel
 BuildRequires:  qt5-linguist
 BuildRequires:  ImageMagick
 Requires:       mupen64plus
 Requires:       python3-qt5
-Requires:       %{py3_dist sdl2}
+Requires:       %{py3_dist pysdl2}
 Requires:       SDL2
 Requires:       hicolor-icon-theme
 
@@ -116,6 +116,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Jan 05 2021 Phantom X <megaphantomx at hotmail dot com> - 0.2.5-6.20200602git0a08a32
+- Fix python BR
+
 * Thu Jun 25 2020 Phantom X <megaphantomx at hotmail dot com> - 0.2.5-5.20200602git0a08a32
 - New snapshot
 - BR: qt5-linguist

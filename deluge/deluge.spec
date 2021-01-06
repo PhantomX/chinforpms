@@ -11,7 +11,7 @@
 
 Name:           deluge
 Version:        2.0.3
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -38,7 +38,7 @@ BuildRequires:  libappstream-glib
 BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  intltool
-BuildRequires:  %{py3_dist python-libtorrent}
+BuildRequires:  %{py3_dist libtorrent}
 
 ## add Requires to make into Meta package
 Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -62,7 +62,7 @@ Summary:        Files common to Deluge sub packages
 License:        GPLv3 with exceptions
 Requires:       %{py3_dist pyopenssl}
 Requires:       %{py3_dist chardet}
-Requires:       %{py3_dist dbus}
+Requires:       %{py3_dist dbus-python}
 Requires:       %{py3_dist pillow}
 Requires:       %{py3_dist pygame}
 Requires:       %{py3_dist pyxdg}
@@ -73,7 +73,7 @@ Requires:       %{py3_dist six}
 Requires:       %{py3_dist twisted}
 Requires:       %{py3_dist rencode}
 Requires:       %{py3_dist zope-interface}
-Requires:       %{py3_dist python-libtorrent}
+Requires:       %{py3_dist libtorrent}
 Requires:       xdg-utils
 
 
@@ -89,7 +89,7 @@ Requires:       %{name}-daemon = %{?epoch:%{epoch}:}%{version}-%{release}
 ## Required for the proper ownership of icon dirs.
 Requires:       hicolor-icon-theme
 Requires:       gtk3
-Requires:       %{py3_dist cairo}
+Requires:       %{py3_dist pycairo}
 Requires:       %{py3_dist pygobject}
 Requires:       python3-gobject
 Requires:       %{py3_dist geoip}
@@ -139,6 +139,8 @@ echo "%{version}" > RELEASE-VERSION
 %else
 %autosetup -p1
 %endif
+
+sed -e "s|'closure-compiler', 'closure'|'closure_disabled'|g" -i minify_web_js.py
 
 
 %build
@@ -201,23 +203,25 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{python3_sitelib}/%{name}/ui/__pycache__/
 # includes %%name.pot too
 %dir %{python3_sitelib}/%{name}/i18n
-%{python3_sitelib}/%{name}/i18n/*.py*
-%{python3_sitelib}/%{name}/i18n/__pycache__/
+%dir %{python3_sitelib}/%{name}/i18n/*
 %dir %{python3_sitelib}/%{name}/i18n/*/LC_MESSAGES
+%{python3_sitelib}/%{name}/i18n/__pycache__/*
+%{python3_sitelib}/%{name}/i18n/*.py
+
 
 %files images
 # only pixmaps dir is in data so I own it all
 %{python3_sitelib}/%{name}/ui/data
 # if someone decides to only install images
 %dir %{python3_sitelib}/%{name}
-%{_datadir}/icons/hicolor/*/apps/%{name}.*
-%{_datadir}/icons/hicolor/*/apps/%{name}-panel.*
-%{_datadir}/pixmaps/%{name}.*
 
 %files gtk
 %{_bindir}/%{name}
 %{_bindir}/%{name}-gtk
 %{_datadir}/applications/%{name}.desktop
+%{_datadir}/icons/hicolor/*/apps/%{name}.*
+%{_datadir}/icons/hicolor/*/apps/%{name}-panel.*
+%{_datadir}/pixmaps/%{name}.*
 %{python3_sitelib}/%{name}/ui/gtk3
 %{_mandir}/man?/%{name}-gtk*
 %{_mandir}/man?/%{name}.1*
@@ -268,6 +272,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Jan 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.3-108.20200430git23a48dd
+- Fix python BRs
+- Rawhide sync
+
 * Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.3-107.20200430git23a48dd
 - Remove closure-compiler BR
 

@@ -1,6 +1,6 @@
-%global commit 82670d549da93f49fe3788aece318ed18be20a91
+%global commit 032b0b2716fe95c4b5d355e93809eeb35fc485e1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201103
+%global date 20201201
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           libchdr
 Version:        0.1
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -21,12 +21,14 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
-Patch0:         0001-Optional-static-library.patch
-Patch1:         0001-Shared-library-fixes.patch
-Patch3:         0001-Use-system-lzma-sdk.patch
+Patch0:         %{url}/pull/42.patch#/%{name}-gh-pr42.patch
+Patch10:        0001-Optional-static-library.patch
+Patch11:        0001-Shared-library-fixes.patch
+Patch12:        0001-Use-system-lzma-sdk.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(zlib)
@@ -88,6 +90,9 @@ install -pm0644 include/libchdr/chdconfig.h %{buildroot}%{_includedir}/%{name}/
 
 
 %changelog
+* Tue Jan  5 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-3.20201201git032b0b2
+- Parent/clone PR try
+
 * Wed Nov 18 2020 Phantom X <megaphantomx at hotmail dot com> - 0.1-2.20201103git82670d5
 - Install missing header
 

@@ -1,6 +1,6 @@
-From f86b5f5a3baf9ca42f976667fc1828e3db99b17e Mon Sep 17 00:00:00 2001
+From 07d38c3604b590d26e834d177d9817c7cbf028bf Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 6 Nov 2020 19:40:53 -0300
+Date: Tue, 5 Jan 2021 16:07:39 -0300
 Subject: [PATCH] Shared library fixes
 
 ---
@@ -9,11 +9,11 @@ Subject: [PATCH] Shared library fixes
  2 files changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 92a8f99..87f7c90 100644
+index 65f1731..b370516 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -114,7 +114,7 @@ if (BUILD_SHARED_LIBS)
-   target_link_options(chdr PRIVATE -Wl,--version-script ${CMAKE_SOURCE_DIR}/src/link.T -Wl,--no-undefined)
+@@ -120,7 +120,7 @@ if (BUILD_SHARED_LIBS)
+   endif()
  
    set_target_properties(chdr PROPERTIES PUBLIC_HEADER "include/libchdr/bitstream.h;include/libchdr/cdrom.h;include/libchdr/chd.h;include/libchdr/coretypes.h;include/libchdr/flac.h;include/libchdr/huffman.h")
 -  set_target_properties(chdr PROPERTIES VERSION "${CHDR_VERSION_MAJOR}.${CHDR_VERSION_MINOR}")
@@ -35,5 +35,5 @@ index 0289632..3d7f2cd 100644
  Cflags: -I${includedir}
  
 -- 
-2.28.0
+2.29.2
 

@@ -1,13 +1,13 @@
-%global commit 872751df5d7bf3e5e8b50f2c90b7ebaf3fc5b391
+%global commit af812317fe99c51184d02981939d147e73dd07cc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201016
+%global date 20210102
 %global with_snapshot 1
 
-%global commit1 1acd163aecf4706ce2fc5304da6617ef57d0bcc1
+%global commit1 a2472a2788ee2ed5fda17beec988d1ae96f5036f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-audio-sdl
 
-%global commit2 0d7820e35a93574dc24d9313065ebc76a41eba04
+%global commit2 4015a8162a65dbfd9e07decd514f430f2dd0392a
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-input-sdl
 
@@ -15,19 +15,19 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{name}-rom
 
-%global commit4 bb5698577052f6b8913d77ee591e4a2b0a921b4c
+%global commit4 e653930d75019f88dd386a3d534008d89dbc12ff
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{name}-rsp-hle
 
-%global commit5 96834d5a1844d0ac51449e1160efbeb895190539
+%global commit5 32e27344214946f0dce3cd2b4fff152a3538bd8f
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{name}-ui-console
 
-%global commit6 aecf15ec2044c593b0505bd052270bd662902e08
+%global commit6 f0c92d93a29633ca7d9bcbb93a79baaca1f3f353
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-video-glide64mk2
 
-%global commit7 7ce0bf039ecf0534e633db46fc4904fcfde0c2ce
+%global commit7 90593058fac301e4168fcf2ef856200646636c51
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{name}-video-rice
 
@@ -42,7 +42,7 @@
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -197,6 +197,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Jan 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-107.20210102gitaf81231
+- Update
+
 * Wed Oct 21 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-106.20201016git872751d
 - Bump
 
