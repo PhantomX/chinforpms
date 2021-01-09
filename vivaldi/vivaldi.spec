@@ -14,7 +14,7 @@
 %global pkgrel 1
 
 Name:           vivaldi
-Version:        3.5.2115.81
+Version:        3.5.2115.87
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -130,6 +130,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Fri Jan  8 2021 - 3.5.2115.87-1
+- 3.5.2115.87
+
 * Sat Dec 12 2020 - 3.5.2115.81-1
 - 3.5.2115.81
 

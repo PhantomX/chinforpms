@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit ea13a68678058d0434f52f589e960731272aae3d
+%global commit 0eec95843fd169a3b4bcf85680380d6de305826c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201226
+%global date 20210108
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -18,7 +18,7 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id 3d0d74a49d8af3f421b6b495dab4bc880f47e41c
+%global sporif_id 88e6392346dc1677d4898e6d4aa27a9026778e08
 %global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
 
 %global valve_url https://github.com/ValveSoftware/dxvk
@@ -35,7 +35,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.7.3
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -76,6 +76,7 @@ BuildRequires:  gcc-c++
 # glslangValidator
 BuildRequires:  glslang
 BuildRequires:  meson
+BuildRequires:  ninja-build
 BuildRequires:  wine-devel >= %{winecommonver}
 
 Requires:       vulkan-loader >= 1.1
@@ -172,12 +173,11 @@ export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
 TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
 
 sed \
-  -e "/^c_args/s|]|, '$TEMP_CFLAGS'\0|g" \
-  -e "/^cpp_args/s|]|, '$TEMP_CFLAGS'\0|g" \
-  -i build-win*.txt
-
-sed -e "/^c_link_args =/acpp_args = ['$TEMP_CFLAGS']" -i build-win64.txt
-
+  -e "/DNOMINMAX/aadd_global_link_arguments('-static', '-static-libgcc', '-static-libstdc++', language: 'cpp')" \
+  -e "/DNOMINMAX/aadd_global_link_arguments('-static', '-static-libgcc', language: 'c')" \
+  -e "/DNOMINMAX/aadd_project_arguments('$TEMP_CFLAGS', language : 'cpp')" \
+  -e "/DNOMINMAX/aadd_project_arguments('$TEMP_CFLAGS', language : 'c')" \
+  -i meson.build
 
 %build
 export WINEPREFIX="$(pwd)/%{_target_platform}/wine-build"
@@ -234,6 +234,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Jan 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.3-103.20210108git0eec958
+- Update
+
 * Mon Dec 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.3-102.20201226gitea13a68
 - Bump
 

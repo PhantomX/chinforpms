@@ -1,25 +1,39 @@
-From 946b39e2eac67e2c83e9db3c467809b448cd333c Mon Sep 17 00:00:00 2001
+From 81bc5630551c4698a3b1e7acbe1314297a2abb6a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 8 Apr 2020 11:44:54 -0300
+Date: Thu, 7 Jan 2021 16:39:16 -0300
 Subject: [PATCH] Save logfile to writable_data_path
 
+This reverts commit 467e7954a5dd2a794dcdbbb97544ba68e337c185 too
 ---
- core/log/LogManager.cpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ core/log/LogManager.cpp | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
 
 diff --git a/core/log/LogManager.cpp b/core/log/LogManager.cpp
-index 50bbde5..a14d89f 100644
+index 2f6e697..f411b96 100644
 --- a/core/log/LogManager.cpp
 +++ b/core/log/LogManager.cpp
-@@ -132,7 +132,7 @@ LogManager::LogManager()
+@@ -133,19 +133,9 @@ LogManager::LogManager()
  #ifdef __ANDROID__
  		std::string logPath = get_writable_data_path("flycast.log");
  #else
 -		std::string logPath = "flycast.log";
 +		std::string logPath = get_writable_data_path("flycast.log");
  #endif
- 		RegisterListener(LogListener::FILE_LISTENER, new FileLogListener(logPath));
+-		FileLogListener *listener = new FileLogListener(logPath);
+-		if (!listener->IsValid())
+-		{
+-			const char *home = getenv("HOME");
+-			if (home != nullptr)
+-			{
+-				delete listener;
+-				listener = new FileLogListener(home + ("/" + logPath));
+-			}
+-		}
+-		RegisterListener(LogListener::FILE_LISTENER, listener);
++		RegisterListener(LogListener::FILE_LISTENER, new FileLogListener(logPath));
  		EnableListener(LogListener::FILE_LISTENER, true);
+ 	}
+ 	EnableListener(LogListener::CONSOLE_LISTENER, cfgLoadBool("log", "LogToConsole", true));
 -- 
-2.26.0
+2.29.2
 

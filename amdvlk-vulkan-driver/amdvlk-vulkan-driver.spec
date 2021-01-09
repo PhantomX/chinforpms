@@ -23,23 +23,23 @@
 
 %global pkgname amdvlk
 
-%global commit1 a0777f49050191c9e215a4880c855395ba805508
+%global commit1 29af2f2da062da84b4d482d48e9ea63b240601bc
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 e2d38b0c8042efbc435e51696aba5c1abd256c88
+%global commit2 44a22a1e3af35c3209c149c871897fac2b3d6e17
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 86f61a31988a626371131a1633547b0d0ebfcfcb
+%global commit3 3237b046add2809634e7f5f3fcdea1af4ad6613d
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 f92844ecbba39be3d2663717ad69c3dffc282211
+%global commit4 26cb05f899cc587f9398399a3381ee22ab41f4c2
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
-%global commit5 fb798cb760a436e9496dbaab8827e4d183b74744
+%global commit5 c3dc69a3f7762d4a9d567d9b12048ae2ee3e4ab9
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{pkgname}-spvgen
 
@@ -51,7 +51,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 305caff2ebb135b688a476233ce1873efee032bb
+%global commit8 f3ccb633dfd7c5de1f9f0a2d2e9d7a25f2478206
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
@@ -59,11 +59,11 @@
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 e50f7d1ce8e162d0c826e84168cfa234e4de4ec9
+%global commit10 ce18d1b8a5631b9a604c6253bb7605750ec3a2c3
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 7f6559d2802d0653541060f0909e33d137b9c8ba
+%global commit11 3de5cfe50edecd001e6d703555284d9b10b3dd57
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -78,7 +78,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2020.4.6
+Version:        2021.1.1
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -111,6 +111,7 @@ Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 %endif
 Source20:       %{url}/raw/master/README.md
 Source21:       amdPalSettings.cfg
+Source30:       amdvlk-README-switchlayer
 
 %if !0%{?with_bin}
 BuildRequires:  gcc
@@ -141,6 +142,17 @@ Provides:       bundled(spirv-tools) = 0~git%{shortcommit8}
 %description
 The AMD Open Source Driver for Vulkan® is an open-source Vulkan driver
 for Radeon™ graphics adapters on Linux®.
+
+
+%package -n amdvlk-vulkan-switch-layer
+Summary:        AMDVLK Vulkan switchable graphics layer
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       vulkan-loader%{?_isa}
+
+%description -n amdvlk-vulkan-switch-layer
+AMDVLK switchable graphics layer to switch AMD Vulkan driver between amdvlk and RADV.
+
+This package only enable it by default.
 
 
 %prep
@@ -184,6 +196,8 @@ sed -e '/CMAKE_SHARED_LINKER_FLAGS_RELEASE/s| -s\b| |g' -i xgl/CMakeLists.txt
 sed -e '/soname=/s|so.1|so|g' -i xgl/icd/CMakeLists.txt
 %endif
 
+cp -p %{S:30} README.switchlayer
+
 sed \
   -e '/spirv-compiler-options/s|-Wno-deprecated-declarations|\0 -fPIC|g' \
   -i spvgen/external/SPIRV-cross/CMakeLists.txt
@@ -220,6 +234,7 @@ export CXXFLAGS="%{build_cxxflags} -fno-plt -mno-avx"
 %install
 mkdir -p %{buildroot}%{_libdir}
 mkdir -p %{buildroot}%{_datadir}/vulkan/icd.d
+mkdir -p %{buildroot}%{_datadir}/vulkan/implicit_layer.d
 
 mkdir _temp_install
 %if 0%{?with_bin}
@@ -234,6 +249,8 @@ install -pm0644 _temp_install/amd_icd%{?__isa_bits}.json \
   %{buildroot}%{_datadir}/vulkan/icd.d/amd_icd.%{icd_arch}.json
 install -pm0755 _temp_install/*.so %{buildroot}%{_libdir}/
 
+ln -sf ../icd.d/amd_icd.%{icd_arch}.json \
+  %{buildroot}%{_datadir}/vulkan/implicit_layer.d/amd_switch_layer.%{icd_arch}.json
 
 mkdir -p %{buildroot}%{_sysconfdir}/amd
 cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
@@ -241,15 +258,24 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 %files
 %license LICENSE.txt
-%doc README.md
+%doc README.md README.switchlayer
 %dir %{_sysconfdir}/amd
 %config %{_sysconfdir}/amd/amdPalSettings.cfg
 %{_datadir}/vulkan/icd.d/amd_icd.%{icd_arch}.json
 %{_libdir}/amdvlk%{?__isa_bits}.so
 %{_libdir}/spvgen.so
 
+%files -n amdvlk-vulkan-switch-layer
+%license LICENSE.txt
+%doc README.md
+%{_datadir}/vulkan/implicit_layer.d/amd_switch_layer.%{icd_arch}.json
+
 
 %changelog
+* Fri Jan 08 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.1.1-1
+- 2021.Q1.1
+- Add amdvlk-vulkan-switch-layer package
+
 * Tue Dec 15 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.4.6-1
 - 2020.Q4.6
 
