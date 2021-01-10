@@ -1,5 +1,5 @@
 Name:           lzlib
-Version:        1.11
+Version:        1.12
 Release:        1%{?dist}
 Summary:        A compression library for the lzip file format
 
@@ -10,6 +10,7 @@ Source0:        http://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%
 Source1:        http://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz.sig
 
 BuildRequires:  gcc
+BuildRequires:  make
 
 
 %description
@@ -60,5 +61,8 @@ rm -f %{buildroot}%{_infodir}/dir
 
 
 %changelog
+* Sun Jan 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1.12-1
+- 1.12
+
 * Fri May 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.11-1
 - Initial spec

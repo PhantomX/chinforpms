@@ -1,7 +1,7 @@
-%global commit ca921c88f17c154d27583edc0240c172a66da445
+%global commit ce647da21d275bcb34bb6636ab12288778d8ace1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201001
-%global with_snapshot 0
+%global date 20210108
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -10,7 +10,7 @@
 %global pkgname vkBasalt
 
 Name:           vkbasalt
-Version:        0.3.2.2
+Version:        0.3.2.3
 Release:        1%{?gver}%{?dist}
 Summary:        A vulkan post processing layer
 
@@ -27,6 +27,9 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  glslang
 BuildRequires:  meson
+BuildRequires:  ninja-build
+BuildRequires:  spirv-headers-devel
+BuildRequires:  vulkan-headers
 BuildRequires:  pkgconfig(x11)
 Requires:       vulkan-loader%{?_isa}
 
@@ -69,5 +72,8 @@ mkdir -p %{buildroot}%{_datadir}/%{pkgname}
 
 
 %changelog
+* Sat Jan 09 2021 Phantom X <megaphantomx at hotmail dot com> - 0.3.2.3-1.20210108gitce647da
+- 0.3.2.3
+
 * Wed Oct 21 2020 Phantom X <megaphantomx at hotmail dot com> - 0.3.2.2-1.20201001gitca921c8
 - Initial spec

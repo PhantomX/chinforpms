@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 7
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 5bfd8ac02dfe585219854f41a1307ec537c2d771
+%global pfcommit a20c033bc14338186d412d3038710a5835346015
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 086fc4cacb71f977eabe01d1e5ca0b0e88c65812
+%global opensuse_id 19815f3ce314b75d4f5f34ca23a323a37a98ff77
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -883,6 +883,9 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch#/openSUSE-fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.patch
 Patch1020: %{opensuse_url}/media-uvcvideo-Accept-invalid-bFormatIndex-and-bFram.patch#/openSUSE-media-uvcvideo-Accept-invalid-bFormatIndex-and-bFram.patch
+Patch1021: %{opensuse_url}/scsi-lpfc-Fix-variable-vport-set-but-not-used-in-lpf.patch#/openSUSE-scsi-lpfc-Fix-variable-vport-set-but-not-used-in-lpf.patch
+Patch1022: %{opensuse_url}/RDMA-hns-Avoid-filling-sl-in-high-3-bits-of-vlan_id.patch#/openSUSE-RDMA-hns-Avoid-filling-sl-in-high-3-bits-of-vlan_id.patch
+Patch1023: %{opensuse_url}/net-sched-sch_taprio-ensure-to-reset-destroy-all-chi.patch#/openSUSE-net-sched-sch_taprio-ensure-to-reset-destroy-all-chi.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2707,6 +2710,9 @@ fi
 #
 #
 %changelog
+* Sat Jan 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.6-500.chinfo
+- 5.10.6 - pf7
+
 * Wed Jan 06 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.5-500.chinfo
 - 5.10.5 - pf6
 

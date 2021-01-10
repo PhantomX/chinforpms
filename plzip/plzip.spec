@@ -1,5 +1,5 @@
 Name:           plzip
-Version:        1.8
+Version:        1.9
 Release:        1%{?dist}
 Summary:        Multi-threaded compressor using the lzip file format
 
@@ -11,6 +11,7 @@ Source1:        http://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%
 
 BuildRequires:  gcc-c++
 BuildRequires:  lzlib-devel
+BuildRequires:  make
 
 
 %description
@@ -45,5 +46,8 @@ make check
 
 
 %changelog
+* Sun Jan 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1.9-1
+- 1.9
+
 * Fri May 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.8-1
 - Initial spec

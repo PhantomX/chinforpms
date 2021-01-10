@@ -16,7 +16,7 @@
 
 Name:           p7zip
 Version:        17.03
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        Very high compression ratio file archiver
 
 # Files under C/Compress/Lzma/ are dual LGPL or CPL
@@ -44,6 +44,8 @@ Patch1:         0001-Add-exec-on-wrappers.patch
 # from Debian
 Patch4:         p7zip-manpages.patch
 Patch7:         05-hardening-flags.patch
+# Revert to fix zip extraction
+Patch10:        0001-Revert-commit-c104127.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -212,6 +214,9 @@ make test
 
 
 %changelog
+* Sun Jan 10 2021 Phantom X <megaphantomx at hotmail dot com> - 17.03-101
+- Fix zip extraction
+
 * Mon Jan 04 2021 Phantom X <megaphantomx at hotmail dot com> - 17.03-100
 - 17.03, maintained fork
 - Added LDFLAGS
