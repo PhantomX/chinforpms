@@ -1,8 +1,8 @@
-%global commit0 d93d10b0e8a8ce9eb765c90390e684123825e77f
+%global commit0 d91d618889cc743aafd809151449012de62e5327
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20201215
+%global date 20210105
 
-%global commit1 dfaf7534e0e536f7e5ef8ddd7326797bd09b8622
+%global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
 
@@ -16,7 +16,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -35,6 +35,7 @@ Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        %{cvc_url}/webm/libvpx/+archive/%{shortcommit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
 
+Patch0:         0001-Fix-undefined-reference.patch
 
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(libavcodec)
@@ -103,8 +104,6 @@ tar -xf %{S:2} -C src/third_party/libvpx/source/libvpx
 sed -e 's/STATIC/SHARED/g' -i CMakeLists.txt
 echo 'set_target_properties(tg_owt PROPERTIES SOVERSION 0 VERSION 0.0.0)' >> CMakeLists.txt
 
-sed -e '/absl\/base\/internal\/raw_logging.cc/s|\#||' -i cmake/libabsl.cmake
-
 mkdir legal
 cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
 cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
@@ -129,8 +128,6 @@ cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/PATENTS.TXT le
 cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/README.libvpx legal/README.libwebm
 cp -f -p src/base/third_party/libevent/LICENSE legal/LICENSE.libevent
 cp -f -p src/base/third_party/libevent/README.chromium legal/README.libevent
-cp -f -p src/common_audio/third_party/fft4g/LICENSE legal/LICENSE.fft4g
-cp -f -p src/common_audio/third_party/fft4g/README.chromium legal/README.fft4g
 cp -f -p src/common_audio/third_party/spl_sqrt_floor/LICENSE legal/LICENSE.spl_sqrt_floor
 cp -f -p src/common_audio/third_party/spl_sqrt_floor/README.chromium legal/README.spl_sqrt_floor
 cp -f -p src/modules/third_party/fft/LICENSE legal/LICENSE.fft
@@ -171,8 +168,11 @@ cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
 %{_libdir}/lib%{name}.so
 
 %changelog
+* Mon Jan 11 2021 Phantom X <megaphantomx at hotmail dot com> - 0-102.20210105gitd91d618
+- Update to latest snapshot
+
 * Wed Dec 16 2020 Phantom X <megaphantomx at hotmail dot com> - 0-101.20201215gitd93d10b
-- Update tto latest snapshot
+- Update to latest snapshot
 
 * Tue Nov 03 2020 Phantom X <megaphantomx at hotmail dot com> - 0-100.20201102gite8fcae7
 - Fix raw_logging missing symbols

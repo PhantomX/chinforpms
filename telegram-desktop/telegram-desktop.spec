@@ -35,7 +35,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.5.3
+Version:        2.5.5
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -90,6 +90,7 @@ BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  qt5-qtbase-static
 BuildRequires:  qt5-qtsvg-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
+BuildRequires:  kf5-kwayland-devel
 BuildRequires:  qt5-qtwayland-devel
 BuildRequires:  libxkbcommon-devel
 BuildRequires:  wayland-devel
@@ -254,6 +255,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Jan 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.5-100
+- 2.5.5
+
 * Mon Jan  4 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.3-100
 - 2.5.3
 
