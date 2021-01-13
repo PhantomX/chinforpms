@@ -2,7 +2,7 @@
 %bcond_with yubikey
 
 Name:           keepassxc
-Version:        2.6.2
+Version:        2.6.3
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -19,6 +19,7 @@ Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  asciidoctor
@@ -120,6 +121,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Wed Jan 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.3-100
+- 2.6.3
+
 * Thu Oct 22 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.2-100
 - 2.6.2
 

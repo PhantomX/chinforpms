@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit a20c033bc14338186d412d3038710a5835346015
+%global pfcommit 8be739525bbce75dee139c42ec5e28b6e8b926c8
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -853,7 +853,6 @@ Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
 Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
 Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch72: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
 # https://patchwork.kernel.org/patch/11796255/
@@ -885,7 +884,6 @@ Patch1019: %{opensuse_url}/fs-cachefs-Drop-superfluous-readpages-aops-NULL-chec.
 Patch1020: %{opensuse_url}/media-uvcvideo-Accept-invalid-bFormatIndex-and-bFram.patch#/openSUSE-media-uvcvideo-Accept-invalid-bFormatIndex-and-bFram.patch
 Patch1021: %{opensuse_url}/scsi-lpfc-Fix-variable-vport-set-but-not-used-in-lpf.patch#/openSUSE-scsi-lpfc-Fix-variable-vport-set-but-not-used-in-lpf.patch
 Patch1022: %{opensuse_url}/RDMA-hns-Avoid-filling-sl-in-high-3-bits-of-vlan_id.patch#/openSUSE-RDMA-hns-Avoid-filling-sl-in-high-3-bits-of-vlan_id.patch
-Patch1023: %{opensuse_url}/net-sched-sch_taprio-ensure-to-reset-destroy-all-chi.patch#/openSUSE-net-sched-sch_taprio-ensure-to-reset-destroy-all-chi.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2710,6 +2708,9 @@ fi
 #
 #
 %changelog
+* Tue Jan 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.7-500.chinfo
+- 5.10.7 - pf7
+
 * Sat Jan 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.6-500.chinfo
 - 5.10.6 - pf7
 
