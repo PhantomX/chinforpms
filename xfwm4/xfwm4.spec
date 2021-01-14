@@ -1,7 +1,7 @@
 %global xfceversion %%(echo %{version} | cut -d. -f1-2)
 
 Name:           xfwm4
-Version:        4.16.0
+Version:        4.16.1
 Release:        100%{?dist}
 Summary:        Next generation window manager for Xfce
 
@@ -79,6 +79,9 @@ done
 
 
 %changelog
+* Wed Jan 13 2021 Phantom X <megaphantomx at hotmail dot com> - 4.16.1-100
+- 4.16.1
+
 * Wed Dec 23 2020 Phantom X <megaphantomx at hotmail dot com> - 4.16.0-100
 - 4.16.0
 - Update BRs

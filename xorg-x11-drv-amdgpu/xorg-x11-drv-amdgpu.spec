@@ -2,9 +2,9 @@
 %global moduledir %(pkg-config xorg-server --variable=moduledir )
 %global driverdir %{moduledir}/drivers
 
-%global commit 6bd3dc6bd8af238868154f24a37ff13cc9aa2705
+%global commit 6234a1b2652f469071c0c9b0d8b0f4a8079efe74
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200828
+%global date 20201214
 %global with_snapshot 1
 
 # Xorg cannot load hardened build
@@ -16,7 +16,7 @@
 
 Name:           xorg-x11-drv-amdgpu
 Version:        19.1.0
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 
 Summary:        AMD GPU video driver
 License:        MIT
@@ -71,6 +71,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Wed Jan 13 2021 Phantom X - 19.1.0-103.20201214git6234a1b
+- Update
+
 * Wed Oct 14 2020 Phantom X <megaphantomx at hotmail dot com> - 19.1.0-102.20200828git6bd3dc6
 - Bump
 

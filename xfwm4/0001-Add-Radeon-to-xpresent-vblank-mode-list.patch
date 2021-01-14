@@ -1,21 +1,29 @@
-From f7670967945664b6eb2a2ea99b632bcb5f31e718 Mon Sep 17 00:00:00 2001
+From 699122b64f4fca201b67e8bf6b92e4dcbc251952 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 23 Dec 2020 09:10:27 -0300
+Date: Wed, 13 Jan 2021 14:24:26 -0300
 Subject: [PATCH] Add "Radeon" to xpresent vblank mode list
 
-https://gitlab.xfce.org/xfce/xfwm4/-/issues/409
+Will be official after https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu/-/issues/10
+is fixed
 ---
- src/compositor.c | 1 +
- 1 file changed, 1 insertion(+)
+ src/compositor.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
 diff --git a/src/compositor.c b/src/compositor.c
-index 9c5ceb4..081bc9e 100644
+index fce5178..07e9dc0 100644
 --- a/src/compositor.c
 +++ b/src/compositor.c
-@@ -1114,6 +1114,7 @@ check_glx_renderer (ScreenInfo *screen_info)
+@@ -1117,12 +1117,8 @@ check_glx_renderer (ScreenInfo *screen_info)
+ #if HAVE_PRESENT_EXTENSION
      const char *prefer_xpresent[] = {
          "Intel",
-         "AMD",
+-        /* Cannot add AMD and Radeon until the fix for
+-         * https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu/-/issues/10
+-         * is included in a release.
+-         */
+-        /* "AMD", */
+-        /* "Radeon", */
++        "AMD",
 +        "Radeon",
          NULL
      };
