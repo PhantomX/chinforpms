@@ -1,13 +1,13 @@
 %?mingw_package_header
 
-%global with_bin 1
+%global with_bin 0
 
 %global msiname wine-gecko
 %global vc_url  https://sourceforge.net/p/wine/wine-gecko
 
 Name:           mingw-wine-gecko
 Version:        2.47.2
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Gecko library required for Wine
 
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -115,15 +115,14 @@ sed -i 's,$WINE cabarc.exe -r -m mszip N $cabfile msi/files,$WINE cabarc.exe -r 
 
 
 %build
-# Disable LTO
-%global _lto_cflags %{nil}
-
 %if !0%{?with_bin}
 cd %{msiname}-%{version}
 # setup build options...
 echo "mk_add_options MOZ_MAKE_FLAGS=%{_smp_mflags}" >> wine/mozconfig-common
 echo "export CFLAGS=\"-DWINE_GECKO_SRC\"" >> wine/mozconfig-common
-echo "export CXXFLAGS=\"\$CFLAGS -fpermissive -mxsave\"" >> wine/mozconfig-common
+# hack around GCC 10 regression by adding -save-temps
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96391
+echo "export CXXFLAGS=\"\$CFLAGS -fpermissive -mxsave -save-temps\"" >> wine/mozconfig-common
 
 cp wine/mozconfig-common wine/mozconfig-common.build
 
@@ -155,6 +154,9 @@ cp -rp %{msiname}-%{version}-x86_64/dist/%{msiname}-%{version}-x86_64 \
 
 
 %changelog
+* Thu Jan 14 2021 Phantom X - 2.47.2-101
+- Build from source (Rawhide sync)
+
 * Thu Dec 03 2020 Phantom X <megaphantomx at hotmail dot com> - 2.47.2-100
 - 2.47.2
 

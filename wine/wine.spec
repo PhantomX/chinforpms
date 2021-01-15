@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.0-rc6
+%global wine_stagingver 6.0
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 944027e5a85b9313aec253618e1fd6796f3843b1
+%global tkg_id 4acbb85b335e5097ab4099b0a020c3cb3914dd10
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b5edce86550ab24625bc75c25e3905528645e48b
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -95,7 +95,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.0~rc6
+Version:        6.0
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -172,9 +172,7 @@ Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
 # https://bugs.winehq.org/show_bug.cgi?id=50448
-Patch901:        %{wine_stg_url}/commit/b8ca0eae9f47491ba257c422a2bc03fc37d13c22.patch#/%{name}-staging-b8ca0ea.patch
-Patch902:        %{wine_stg_url}/commit/8b1e0eec1dd60f9c07bc9f49c02e4b4eef33dd06.patch#/%{name}-staging-8b1e0ee.patch
-Patch903:        %{wine_stg_url}/commit/dfddef9654d4a24642c61c287a93f22eb7a51e12.patch#/%{name}-staging-dfddef9.patch
+Patch901:        https://bugs.winehq.org/attachment.cgi?id=69112#/%{name}-whq-bug50448.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
@@ -816,10 +814,6 @@ This package adds the opencl driver for wine.
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
-%patch903 -p1 -R
-%patch902 -p1 -R
-%patch901 -p1 -R
-
 %patch1000 -p1
 %patch1002 -p1
 %patch1003 -p1
@@ -831,6 +825,8 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
+
+%patch901 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -2734,6 +2730,9 @@ fi
 
 
 %changelog
+* Fri Jan 15 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-100
+- 6.0
+
 * Sat Jan 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0~rc6-100
 - 6.0-rc6
 
