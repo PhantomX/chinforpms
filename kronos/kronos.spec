@@ -1,6 +1,6 @@
-%global commit df8cb2516eb1d94d613c1dd0993bdcbb355f2538
+%global commit 897c26a4b23d48402c47afe974881ebad5de313c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201102
+%global date 20210114
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -20,8 +20,8 @@
 %global vc_url https://github.com/FCare/%{pkgname}
 
 Name:           kronos
-Version:        2.1.4
-Release:        4%{?gver}%{?dist}
+Version:        2.1.5
+Release:        1%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -37,6 +37,7 @@ Patch0:         0001-libchdr-system-libraries.patch
 
 
 BuildRequires:  cmake3
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
@@ -156,6 +157,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Jan 17 2021 Phantom X <megaphantomx at hotmail dot com> - 2.1.5-1.20210114git897c26a
+- 2.1.5
+
 * Sat Dec 05 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1.4-4.20201102gitdf8cb25
 - Update
 - mini18n static build is merged now

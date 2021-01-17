@@ -2,14 +2,18 @@
 %global with_broadway 1
 %endif
 
+%if 0%{?fedora} >= 31
+%global with_sysprof 1
+%endif
+
 %global glib2_version 2.57.2
 %global pango_version 1.41.0
 %global fribidi_version 0.19.7
-%global atk_version 2.15.1
+%global atk_version 2.32.0
 %global cairo_version 1.14.0
 %global gdk_pixbuf_version 2.30.0
 %global xrandr_version 1.5.0
-%global wayland_version 1.9.91
+%global wayland_version 1.14.91
 %global wayland_protocols_version 1.14
 %global epoxy_version 1.4
 
@@ -103,6 +107,10 @@ BuildRequires:  pkgconfig(wayland-cursor) >= %{wayland_version}
 BuildRequires:  pkgconfig(wayland-egl) >= %{wayland_version}
 BuildRequires:  pkgconfig(wayland-protocols) >= %{wayland_protocols_version}
 BuildRequires:  pkgconfig(xkbcommon)
+%if 0%{?with_sysprof}
+BuildRequires:  pkgconfig(sysprof-capture-4)
+%endif
+BuildRequires:  make
 
 # standard icons
 Requires:       adwaita-icon-theme

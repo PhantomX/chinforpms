@@ -12,6 +12,7 @@ Source0:        http://heim.ifi.uio.no/~oyvinha/%{pkgname}/%{pkgname}-%{version}
 
 BuildRequires:  autoconf libtool
 BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  pkgconfig(gkrellm) >= 2.2.0
 BuildRequires:  pkgconfig(xtst)
 Requires:       gkrellm >= 2.2.0

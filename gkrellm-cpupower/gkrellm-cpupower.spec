@@ -13,6 +13,7 @@ Source0:        https://github.com/sainsaar/gkrellm2-cpupower/tarball/%{version}
 Patch0:         %{pkgname}-0.1.6-cpupower.patch
 
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  pkgconfig(gkrellm) >= 2.2.0
 BuildRequires:  kernel-tools-libs-devel >= 4.9
 Requires:       gkrellm >= 2.2.0

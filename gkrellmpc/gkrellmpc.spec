@@ -22,6 +22,7 @@ Patch6:         %{name}-0.1_beta10-more-tooltips.patch
 Patch7:         %{name}-volume-check-null.patch
 
 BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  pkgconfig(gkrellm) >= 2.2.0
 BuildRequires:  pkgconfig(libcurl)
 

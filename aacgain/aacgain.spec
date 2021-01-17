@@ -39,6 +39,7 @@ BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  libtool
+BuildRequires:  make
 
 Provides:       bundle(libfaad2) = 0~git
 Provides:       bundle(libmp4v2) = 0~git

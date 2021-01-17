@@ -830,7 +830,7 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
-  -i libs/wine/Makefile.in programs/winecfg/about.c
+  -i Makefile.in
 
 %if 0%{?pba}
 cp -p %{S:3001} README-pba-pkg

@@ -29,6 +29,7 @@ Patch10:        %{name}-chinforpms.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5DBus)
 BuildRequires:  cmake(Qt5Gui)
