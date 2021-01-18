@@ -24,6 +24,7 @@ Source0:        http://downloads.sourceforge.net/%{name}%{?alpha_url}/%{name}-%{
 Patch0:         %{name}-3.02-cdrecord-default.patch
 
 BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  gettext-devel
 BuildRequires:  libcap-devel
 

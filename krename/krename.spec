@@ -23,6 +23,7 @@ Source0:        https://github.com/KDE/%{name}/archive/%{commit}/%{name}-%{short
 Source0:        https://download.kde.org/stable/%{name}/%{version}/src/%{name}-%{version}.tar.xz
 %endif
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  extra-cmake-modules >= 0.0.11

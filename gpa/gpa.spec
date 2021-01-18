@@ -10,6 +10,7 @@ Source1:        https://gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2.
 
 Patch1:         gpa-keyservers.patch
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gettext

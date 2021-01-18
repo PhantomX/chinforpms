@@ -19,6 +19,7 @@ Patch2:         claws-mail-theme-Coons_Blue.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  make
 Requires:       claws-mail >= 3.14.1
 
 %description

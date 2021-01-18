@@ -12,6 +12,7 @@ Source0:        https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz
 Source10:       https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz.sign
 
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(SPIRV-Tools-shared)
 BuildRequires:  pkgconfig(vulkan) >= 1.1.113

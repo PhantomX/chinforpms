@@ -9,6 +9,7 @@ Source0:        https://downloads.sourceforge.net/firejail/%{name}-%{version}.ta
 
 Patch0:         0001-fstats-replace-link-flags-to-fix-linking.patch
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick

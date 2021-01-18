@@ -10,6 +10,7 @@ URL:            https://packages.debian.org/unstable/x11/xwit
 Source0:        https://deb.debian.org/debian/pool/main/x/%{name}/%{name}_%{version}.orig.tar.gz
 Source1:        https://deb.debian.org/debian/pool/main/x/%{name}/%{name}_%{version}-%{debpatchver}.debian.tar.xz
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(x11)
 

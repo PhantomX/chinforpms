@@ -34,6 +34,7 @@ Source2:        https://github.com/arsenm/%{srcname2}/archive/%{commit2}/%{srcna
 Patch0:         0001-Add-soversion-to-library.patch
 
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  doxygen

@@ -9,6 +9,7 @@ URL:            ssh://git@bitbucket.oci.oraclecorp.com:7999/ffsw/fss-parallel-to
 # src.rpm as source, because Oracle...
 Source0:        https://yum.oracle.com/repo/OracleLinux/OL7/developer/x86_64/getPackageSource/%{name}-%{version}-1.el7.src.rpm
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  help2man
 Requires:       gzip

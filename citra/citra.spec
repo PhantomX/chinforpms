@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit aced133a3d80de3b58bf3c9c8ef555ede79b6c1c
+%global commit 7c6d7905a4958fa7856821b97ecf84d134184485
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201001
+%global date 20210109
 %global with_snapshot 1
 
 # Enable system boost
@@ -20,15 +20,15 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 8d1699ba2db216e569e998ea318d5cde47720e97
+%global commit3 f9d84871fb6dd41c47945d649dc9017aa3762125
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
-%global commit4 cd4af11efc9c622896a3e4cb599fa28668ca3d05
+%global commit4 cc09f1a6798c085c325569ef466bcdcffdc266d4
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
-%global commit5 2023872dfffb38b6a98f2c45a0eb25652aaea91f
+%global commit5 1e80a47dffbda813604f0913e2ad68c7054c14e4
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 inih
 
@@ -53,7 +53,7 @@
 %global srcname10 lodepng
 
 %global commit11 36603a1e665e849d29b1735a12c0a51284a10dd0
-%global shortcommit11 %(c=%{commit9}; echo ${c:0:7})
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 ext-boost
 
 %if 0%{?with_snapshot}
@@ -66,7 +66,7 @@
 
 Name:           citra
 Version:        0
-Release:        12%{?gver}%{?dist}
+Release:        13%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -97,11 +97,14 @@ Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Disable-telemetry-initial-dialog.patch
 
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 %if %{with boost}
 BuildRequires:  boost-devel >= 1.71.0
+%else
+Provides:       bundled(boost) = 0~git%{shortcommit11}
 %endif
 BuildRequires:  cmake(cubeb)
 %if %{with ffmpeg}
@@ -109,6 +112,7 @@ BuildRequires:  pkgconfig(libavcodec)
 %endif
 BuildRequires:  pkgconfig(libenet)
 BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  pkgconfig(nlohmann_json) >= 3.9.0
 BuildRequires:  pkgconfig(sdl2)
 %if %{with qt}
 BuildRequires:  cmake(Qt5Core)
@@ -120,6 +124,17 @@ BuildRequires:  cmake(Qt5Widgets)
 
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  shared-mime-info
+
+Provides:       bundled(catch2) = 0~git%{shortcommit1}
+Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
+Provides:       bundled(dynarmic) = 0~git%{shortcommit3}
+Provides:       bundled(fmt) = 0~git%{shortcommit4}
+Provides:       bundled(inih) = 0~git%{shortcommit5}
+Provides:       bundled(nihstro) = 0~git%{shortcommit6}
+Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
+Provides:       bundled(teakra) = 0~git%{shortcommit8}
+Provides:       bundled(xbyak) = 0~git%{shortcommit9}
+Provides:       bundled(lodepng) = 0~git%{shortcommit10}
 
 
 %description
@@ -159,6 +174,10 @@ tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
 %if !%{with boost}
 tar -xf %{S:11} -C externals/boost --strip-components 1
 %endif
+
+rm -f externals/json/json.hpp
+ln -sf %{_includedir}/nlohmann/json.hpp \
+  externals/json/json.hpp
 
 sed -e '/ENABLE_WEB_SERVICE/s|ON|OFF|g' -i CMakeLists.txt
 
@@ -243,6 +262,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Jan 17 2021 Phantom X <megaphantomx at hotmail dot com> - 0-13.20210109git7c6d790
+- Update
+
 * Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 0-12.20201001gitaced133
 - Bump
 

@@ -30,6 +30,7 @@ Source0:        https://www.x.org/pub/individual/driver/%{pkgname}-%{version}.ta
 
 ExcludeArch:    s390 s390x
 
+BuildRequires:  make
 BuildRequires:  xorg-x11-server-devel
 BuildRequires:  pkgconfig(gbm) >= 10.6
 BuildRequires:  libdrm-devel

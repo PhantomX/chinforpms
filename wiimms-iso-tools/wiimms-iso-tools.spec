@@ -31,6 +31,7 @@ Patch0:         0001-Use-system-libraries.patch
 Patch1:         fix-usr-local.patch
 Patch2:         0001-Disable-SUPPORT_USER_BIN-support.patch
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  mhash-devel
 BuildRequires:  pkgconfig(bzip2)

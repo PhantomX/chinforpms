@@ -26,6 +26,7 @@ Source2:        error_recalc.txt
 
 BuildRequires:  asciidoc
 BuildRequires:  gcc
+BuildRequires:  make
 
 
 %description

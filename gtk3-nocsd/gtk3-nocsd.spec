@@ -13,6 +13,7 @@ Patch0:         %{name}-multilib.patch
 Patch1:         %{url}/commit/c64505268575e60322de682ea751660eba8d0e71.patch#/%{name}-gh-c64505268575e60322de682ea751660eba8d0e71.patch
 Patch2:         %{url}/commit/82ff5a0da54aa6da27232b55eb93e5f4b5de22f2.patch#/%{name}-gh-82ff5a0da54aa6da27232b55eb93e5f4b5de22f2.patch
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(gtk+-3.0)

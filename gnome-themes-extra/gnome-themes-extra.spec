@@ -15,6 +15,7 @@ Source1:        gtkrc
 # Remove some ugly paddings
 Patch0:         %{name}-chinforpms.patch
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gettext
 BuildRequires:  intltool

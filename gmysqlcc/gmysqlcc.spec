@@ -13,6 +13,7 @@ Source1:         http://http.debian.net/debian/pool/main/g/%{name}/%{name}_0.3.0
 
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gettext

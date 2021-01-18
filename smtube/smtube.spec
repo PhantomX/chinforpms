@@ -11,6 +11,7 @@ Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar
 # Do not spam .xsession-errors
 Patch1:         0001-Do-not-spam-xsession-errors.patch
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(Qt5)

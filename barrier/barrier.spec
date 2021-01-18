@@ -35,6 +35,7 @@ Source3:        %{name}.appdata.xml
 
 BuildRequires:  cmake3
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  pkgconfig(avahi-compat-libdns_sd)
 BuildRequires:  pkgconfig(ice)
 BuildRequires:  pkgconfig(libcurl)

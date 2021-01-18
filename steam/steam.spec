@@ -48,6 +48,7 @@ Patch1:         %{name}-no-icon-on-desktop.patch
 # Create stdout logs on user directory
 Patch10:         %{name}-log-stdout-to-file.patch
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  systemd
 

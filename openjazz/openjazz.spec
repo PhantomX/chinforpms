@@ -24,6 +24,7 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  perl-podlators

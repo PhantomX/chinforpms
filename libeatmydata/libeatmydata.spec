@@ -27,6 +27,7 @@ Patch0:         0001-Multilib-fix.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  libtool
 

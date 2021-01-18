@@ -15,6 +15,7 @@ Patch1:         https://github.com/solsticedhiver/atool/compare/d33619f67ea02b61
 BuildArch:      noarch
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  make
 BuildRequires:  perl-generators
 
 %description

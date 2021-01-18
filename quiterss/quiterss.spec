@@ -9,6 +9,7 @@ Source0:        https://github.com/QuiteRSS/quiterss/archive/%{version}/%{name}-
 
 Patch0:         %{name}-defaults.patch
 
+BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Network)

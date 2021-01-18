@@ -8,6 +8,7 @@ URL:            https://github.com/v1cont/%{name}
 
 Source0:        %{url}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext

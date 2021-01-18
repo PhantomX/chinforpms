@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 0eec95843fd169a3b4bcf85680380d6de305826c
+%global commit f869881f558d4abac12018fbf59c896643e21de3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210108
+%global date 20210116
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -35,7 +35,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.7.3
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -173,10 +173,8 @@ export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
 TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
 
 sed \
-  -e "/DNOMINMAX/aadd_global_link_arguments('-static', '-static-libgcc', '-static-libstdc++', language: 'cpp')" \
-  -e "/DNOMINMAX/aadd_global_link_arguments('-static', '-static-libgcc', language: 'c')" \
-  -e "/DNOMINMAX/aadd_project_arguments('$TEMP_CFLAGS', language : 'cpp')" \
-  -e "/DNOMINMAX/aadd_project_arguments('$TEMP_CFLAGS', language : 'c')" \
+  -e "/static-libstdc++/a\  add_project_arguments('$TEMP_CFLAGS', language : 'cpp')" \
+  -e "/static-libstdc++/a\  add_project_arguments('$TEMP_CFLAGS', language : 'c')" \
   -i meson.build
 
 %build
@@ -234,6 +232,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Jan 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.3-104.20210116gitf869881
+- Bump
+
 * Fri Jan 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.3-103.20210108git0eec958
 - Update
 

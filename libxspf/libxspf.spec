@@ -7,6 +7,7 @@ License:        BSD
 URL:            http://libspiff.sourceforge.net/
 Source0:        https://downloads.sourceforge.net/libspiff/%{name}-%{version}.tar.gz
 
+BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(expat) >= 1.95.8
 BuildRequires:  pkgconfig(liburiparser) >= 0.7.2

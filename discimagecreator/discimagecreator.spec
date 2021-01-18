@@ -29,6 +29,7 @@ Patch0:         0001-rpm-build-fixes.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  pkgconfig(tinyxml2)
 Requires:       eccedc
 

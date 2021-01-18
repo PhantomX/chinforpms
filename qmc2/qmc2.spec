@@ -22,6 +22,7 @@ Patch11:        qmc2-imagechecker.cpp.patch
 Patch12:        qmc2-qt5.15.patch
 Patch13:        qmc2-types.patch
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  minizip-devel
 BuildRequires:  rsync

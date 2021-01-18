@@ -31,6 +31,8 @@ URL:           http://mate-desktop.org
 # Source for snapshot-builds.
 %{!?rel_build:Source0:    http://git.mate-desktop.org/%{name}/snapshot/%{name}-%{commit}.tar.xz#/%{git_tar}}
 
+BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  mate-common
 BuildRequires:  desktop-file-utils
 BuildRequires:  file-devel

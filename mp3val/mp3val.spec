@@ -9,6 +9,7 @@ Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}-src
 
 Patch01:        mp3val-0.1.8-gcc5.patch
 
+BuildRequires:  make
 BuildRequires:  gcc-c++
 
 

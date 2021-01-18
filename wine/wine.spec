@@ -1,7 +1,7 @@
-%global commit 9bc3a9f78bf5e6a09d4e9811f645def4a477f3d0
+%global commit 00401d2278298d151b555fcdffb15bb282c512a7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210107
-%global with_snapshot 0
+%global date 20210115
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 4acbb85b335e5097ab4099b0a020c3cb3914dd10
+%global tkg_id f6f80e3bd5e4edf8d5372fda447c62e9d06754b6
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b5edce86550ab24625bc75c25e3905528645e48b
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -96,7 +96,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -167,6 +167,9 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 
+Patch101:       %{whq_url}/eb9f3dd3ad07aae3c9588bcff376ed2a7a8ef8d2#/%{name}-whq-eb9f3dd.patch
+Patch102:       %{whq_url}/6b2199c3da5609ff0be17384f86f5e191ab81f73#/%{name}-whq-6b2199c.patch
+
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -214,7 +217,7 @@ Patch3000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
-# Fix vulkan crash with x86
+# Fix vulkan crash with x86 (ignored with new merged Makefile)
 Patch5001:      wine-fix-i686-gcc10.patch
 
 %endif
@@ -807,6 +810,8 @@ This package adds the opencl driver for wine.
 %patch599 -p1
 
 %patch100 -p1 -R
+%patch102 -p1 -R
+%patch101 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -927,7 +932,8 @@ autoreconf -f
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 
-export CFLAGS="$CFLAGS -ftree-vectorize -mno-avx"
+# -fno-tree-dce: fix winevulkan x86 gcc 10 crashes
+export CFLAGS="$CFLAGS -ftree-vectorize -mno-avx -fno-tree-dce"
 
 %ifarch aarch64
 %if 0%{?fedora} >= 33
@@ -2730,6 +2736,9 @@ fi
 
 
 %changelog
+* Mon Jan 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-101.20210115git00401d2
+- Snapshot
+
 * Fri Jan 15 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-100
 - 6.0
 

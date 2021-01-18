@@ -17,6 +17,7 @@ URL:            https://mednafen.github.io
 
 Source0:        https://mednafen.github.io/releases/files/%{name}-%{version}%{?unstable:-%{unstable}}.tar.xz
 
+BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
 #BuildRequires:  libmpcdec-devel >= 1.3.0

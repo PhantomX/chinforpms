@@ -16,6 +16,7 @@ Patch3:         %{vc_url}/commit/d1632ef4ff5705fa3819e29b37c0ccef85e6d62a.patch#
 Patch4:         %{vc_url}/commit/3c2b0737f8b09ab7300bb8bbd5e0e2728367327f.patch#/%{name}-gh-3c2b073.patch
 
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(libpcre)
 BuildRequires:  pkgconfig(libcrypto)

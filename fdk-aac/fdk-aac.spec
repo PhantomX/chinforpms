@@ -7,6 +7,7 @@ License:        FDK-AAC
 URL:            https://github.com/mstorsjo/%{name}
 Source0:        %url/archive/v%{version}/%{name}-%{version}.tar.gz
 
+BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  libtool
 

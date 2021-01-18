@@ -12,6 +12,7 @@ Patch0:         %{name}-more-search.patch
 
 BuildArch:      noarch
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  python3-devel

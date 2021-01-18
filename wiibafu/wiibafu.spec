@@ -25,6 +25,7 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        %{binname}.appdata.xml
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(Qt5Core)

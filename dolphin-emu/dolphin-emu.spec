@@ -77,6 +77,7 @@ Patch103:       0001-RESHDP-Edition-label.patch
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(ao)

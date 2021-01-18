@@ -22,6 +22,7 @@ Source0:        %{url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{
 Source0:        %{url}/-/archive/%{version}/%{name}-%{version}.tar.bz2
 %endif
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(libprocps)
 BuildRequires:  systemd

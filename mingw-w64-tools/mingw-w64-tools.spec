@@ -26,6 +26,7 @@ Source0:        http://downloads.sourceforge.net/mingw-w64/mingw-w64-v%{version}
 # aarch64 does not seem to know about __builtin_ms_va_list
 Patch1:         mingw-w64-tools-aarch64.patch
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  mingw32-filesystem >= 95
 BuildRequires:  mingw64-filesystem >= 95

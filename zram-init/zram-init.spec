@@ -28,13 +28,14 @@ Patch100:       0001-systemd-environment-file-support.patch
 BuildArch: noarch
 
 %{?systemd_requires}
-BuildRequires: gettext
-BuildRequires: systemd
-Requires:      btrfs-progs
-Requires:      e2fsprogs
-Requires:      gettext
-Requires:      util-linux
-Requires:      xfsprogs
+BuildRequires:  make
+BuildRequires:  gettext
+BuildRequires:  systemd
+Requires:       btrfs-progs
+Requires:       e2fsprogs
+Requires:       gettext
+Requires:       util-linux
+Requires:       xfsprogs
 
 %description
 %{name} is a wrapper script for the zram kernel module with interactive

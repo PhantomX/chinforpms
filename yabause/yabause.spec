@@ -34,6 +34,7 @@ Patch1:         yabause-0.9.15-RWX.patch
 Patch2:         0001-Add-CHD-support.patch
 
 BuildRequires:  cmake3
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils

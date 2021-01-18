@@ -12,6 +12,7 @@ URL:            http://www.freac.org/
 
 Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{ver}.tar.gz
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  boca-devel

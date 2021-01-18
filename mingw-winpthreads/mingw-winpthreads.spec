@@ -37,6 +37,7 @@ BuildRequires:  mingw32-filesystem >= 95
 BuildRequires:  mingw64-filesystem >= 95
 BuildRequires:  mingw32-gcc-c++
 BuildRequires:  mingw64-gcc-c++
+BuildRequires:  make
 
 %if 0%{?enable_tests}
 BuildRequires:  wine-wow

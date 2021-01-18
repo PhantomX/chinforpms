@@ -20,6 +20,7 @@ URL:            http://www.freac.org/
 Source0:        https://downloads.sourceforge.net/bonkenc/%{pkgname}-%{ver}.tar.gz
 
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  smooth-devel >= %{smoothver}
 
 Requires:       %{pkgname}%{?_isa} = %{version}

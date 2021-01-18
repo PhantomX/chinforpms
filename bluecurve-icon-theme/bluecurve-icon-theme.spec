@@ -23,6 +23,7 @@ Requires:       bluecurve-cursor-theme
 Requires(post): coreutils
 
 BuildRequires:  gcc
+BuildRequires:  make
 # we require XML::Parser for our in-tree intltool
 BuildRequires:  perl(XML::Parser)
 BuildRequires:  perl(Getopt::Long)

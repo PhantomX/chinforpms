@@ -23,6 +23,7 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 Patch0:         disk-indicator-homedir.patch
 
 BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  pkgconfig(x11)
 
 %description

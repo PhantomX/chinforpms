@@ -11,6 +11,7 @@ Source1:        http://archive.ubuntu.com/ubuntu/pool/universe/f/fcrackzip/fcrac
 
 BuildRequires:  automake
 BuildRequires:  autoconf
+BuildRequires:  make
 BuildRequires:  gcc
 Requires:       unzip
 

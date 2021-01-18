@@ -44,6 +44,7 @@ Requires:       pygobject2
 ### Build Dependencies ###
 
 BuildRequires:  automake
+BuildRequires:  make
 BuildRequires:  docbook-style-xsl
 BuildRequires:  gcc
 BuildRequires:  glib2-devel >= %{glib2_version}

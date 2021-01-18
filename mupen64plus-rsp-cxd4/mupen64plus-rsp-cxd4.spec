@@ -23,6 +23,7 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/releases/download/%{version}/%{name}-%{version}.tar.gz
 %endif
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  mupen64plus-devel
 Requires:       mupen64plus%{?_isa} >= 2.5.9

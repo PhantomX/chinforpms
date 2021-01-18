@@ -38,6 +38,7 @@ Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)

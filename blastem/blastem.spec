@@ -19,6 +19,7 @@ Source0:        https://www.retrodev.com/repos/%{name}/archive/%{commit}.tar.bz2
 
 BuildRequires:  icoutils
 BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(sdl2)

@@ -22,6 +22,7 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  gettext
 Requires:       fluxbox
 Requires:       gettext

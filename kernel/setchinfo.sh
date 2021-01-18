@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20201230
+# 20210117
 
 set -e
 
@@ -55,6 +55,7 @@ pfd="
 "
 
 pfm="
+TCP_CONG_BBR2
 NTFS3_FS
 V4L2_LOOPBACK
 "

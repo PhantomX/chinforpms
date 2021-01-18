@@ -20,6 +20,7 @@ Patch1:         %{vc_url}/commit/9c1073e47399943c30d86aa16f02de0baa7a7fc8.patch#
 
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

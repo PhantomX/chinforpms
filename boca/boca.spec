@@ -26,6 +26,7 @@ Patch0:         %{name}-clean.patch
 Patch1:         https://github.com/enzo1982/BoCA/commit/4fb9fa91bf8ab3dbeac7ac9349d05cc9c29dd1ff.patch#/%{name}-gh-4fb9fa9.patch
 
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(libcdio)
 BuildRequires:  pkgconfig(libcdio_paranoia)

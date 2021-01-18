@@ -46,6 +46,7 @@ Patch0:         mingw-headers-no-widl.patch
 
 BuildArch:      noarch
 
+BuildRequires:  make
 BuildRequires:  mingw32-filesystem >= 95
 BuildRequires:  mingw64-filesystem >= 95
 

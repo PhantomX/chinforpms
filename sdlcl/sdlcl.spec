@@ -23,6 +23,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(sdl2)
 Requires:       SDL2%{_isa} >= %{sdl2_version}

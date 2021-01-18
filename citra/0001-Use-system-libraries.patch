@@ -1,6 +1,6 @@
-From ac58af3f7c41c131534aea1e04e187c2af68b7aa Mon Sep 17 00:00:00 2001
+From 8734f7a13bdb19531e17c75ab9f00e82f4261496 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 9 May 2020 23:13:13 -0300
+Date: Sun, 17 Jan 2021 12:17:02 -0300
 Subject: [PATCH] Use system libraries
 
 FindCubeb.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
@@ -12,18 +12,18 @@ FindZstd.cmake from Debian apt
 https://salsa.debian.org/tbm/apt/raw/master/CMake/FindZstd.cmake
 ---
  CMakeLists.txt                          |  2 -
- externals/CMakeLists.txt                | 23 ++++++----
+ externals/CMakeLists.txt                | 21 ++++++---
  externals/cmake-modules/CheckLib.cmake  | 57 +++++++++++++++++++++++++
  externals/cmake-modules/FindCubeb.cmake | 15 +++++++
  externals/cmake-modules/FindZstd.cmake  | 25 +++++++++++
  src/common/CMakeLists.txt               |  2 +-
- 6 files changed, 113 insertions(+), 11 deletions(-)
+ 6 files changed, 112 insertions(+), 10 deletions(-)
  create mode 100644 externals/cmake-modules/CheckLib.cmake
  create mode 100644 externals/cmake-modules/FindCubeb.cmake
  create mode 100644 externals/cmake-modules/FindZstd.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6180e82..81d5241 100644
+index 9fbbb04..bf075fa 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -6,7 +6,6 @@ if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.15)
@@ -43,7 +43,7 @@ index 6180e82..81d5241 100644
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
                 ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index c329757..76832a5 100644
+index 24e881b..7df9d98 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -6,7 +6,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -55,12 +55,12 @@ index c329757..76832a5 100644
  include(ExternalProject)
  
  # Boost
-@@ -83,17 +83,24 @@ if (ARCHITECTURE_x86_64)
- endif()
+@@ -80,17 +80,24 @@ target_include_directories(SoundTouch INTERFACE ./soundtouch/include)
+ add_subdirectory(teakra EXCLUDE_FROM_ALL)
  
  # Zstandard
 -add_subdirectory(zstd/build/cmake EXCLUDE_FROM_ALL)
--target_include_directories(libzstd_static INTERFACE ./zstd/lib)
+-target_include_directories(libzstd_static INTERFACE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/externals/zstd/lib>)
 +find_package(Zstd)
  
  # ENet
@@ -86,13 +86,6 @@ index c329757..76832a5 100644
  endif()
  
  # DiscordRPC
-@@ -131,4 +138,4 @@ if (ENABLE_WEB_SERVICE)
- endif()
- 
- # lodepng
--add_subdirectory(lodepng)
-\ No newline at end of file
-+add_subdirectory(lodepng)
 diff --git a/externals/cmake-modules/CheckLib.cmake b/externals/cmake-modules/CheckLib.cmake
 new file mode 100644
 index 0000000..e6408a4
@@ -222,5 +215,5 @@ index 5d65965..e3457d8 100644
      target_link_libraries(common PRIVATE xbyak)
  endif()
 -- 
-2.26.2
+2.29.2
 

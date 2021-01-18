@@ -70,8 +70,6 @@ developing applications that use %{name}.
 %autosetup -p1 -n Vulkan-Loader-%{version}
 %endif
 
-sed -e '/^Libs:/s|@LIB_SUFFIX@||g' -i loader/vulkan.pc.in
-
 
 %build
 %cmake3 \

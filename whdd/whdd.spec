@@ -13,6 +13,7 @@ Source0:        https://github.com/%{name}/%{name}/archive/%{version}/%{name}-%{
 Patch0:         %{name}-cmake-cflags.patch
 
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  dialog-devel

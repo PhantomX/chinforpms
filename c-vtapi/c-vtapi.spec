@@ -26,6 +26,7 @@ BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  gcc
 BuildRequires:  libtool
+BuildRequires:  make
 BuildRequires:  pkgconfig(jansson)
 BuildRequires:  pkgconfig(libcurl)
 

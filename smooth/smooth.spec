@@ -12,6 +12,7 @@ Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{ver}.tar.gz
 
 Patch0:         0001-Support-ld.so.conf.d-and-fix-library-loading-order.patch
 
+BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(fribidi)

@@ -20,6 +20,7 @@ BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
+BuildRequires:  make
 
 Requires:       bash >= 5.0
 Requires:       python3-pygments

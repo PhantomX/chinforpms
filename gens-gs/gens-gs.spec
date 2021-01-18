@@ -33,6 +33,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  automake
 BuildRequires:  autoconf
 BuildRequires:  libtool
+BuildRequires:  make
 BuildRequires:  nasm
 BuildRequires:  pkgconfig(gtk+-2.0)
 BuildRequires:  pkgconfig(gl)

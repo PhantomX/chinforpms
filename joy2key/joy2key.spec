@@ -11,6 +11,7 @@ Source0:        https://gentoo.osuosl.org/distfiles/%{name}-%{version}.tar.bz2
 Patch0:         button_list_segfault.patch
 Patch1:         home_not_set_segfault.patch
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(x11)
 

@@ -14,6 +14,7 @@ URL:            https://bitbucket.org/EionRobb/%{name}
 
 Source0:        %{url}/get/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(json-glib-1.0)

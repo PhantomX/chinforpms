@@ -20,6 +20,7 @@ Source0:        https://github.com/VirusTotal/%{name}/archive/%{commit}/%{name}-
 Source0:        https://github.com/VirusTotal/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
+BuildRequires:  make
 BuildRequires:  c-vtapi-devel
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick

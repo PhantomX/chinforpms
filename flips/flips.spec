@@ -27,6 +27,7 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
+BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib

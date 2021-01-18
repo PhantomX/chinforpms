@@ -10,6 +10,7 @@ License:        BSD
 URL:            https://www.xiph.org/
 Source:         https://downloads.xiph.org/releases/vorbis/%{pkgname}-%{version}.tar.xz
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(ogg) >= 1.0
 

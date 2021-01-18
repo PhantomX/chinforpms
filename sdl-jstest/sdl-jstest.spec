@@ -24,6 +24,7 @@ Source0:        %{url}/-/archive/%{name}-%{version}.tar.gz#/%{name}-%{version}.t
 Patch0:         %{name}-system-sdl_db.patch
 
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(ncurses)

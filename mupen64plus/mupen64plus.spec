@@ -63,6 +63,7 @@ Source7:        %{vc_url}/%{name}-video-rice/archive/%{commit7}/%{srcname7}-%{sh
 Source0:        %{vc_url}/%{name}-core/releases/download/%{version}/%{name}-bundle-src-%{version}.tar.gz
 %endif
 
+BuildRequires:  make
 BuildRequires:  boost-devel
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

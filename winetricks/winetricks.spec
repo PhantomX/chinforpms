@@ -30,6 +30,7 @@ ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
 # - explicitly not ppc64* to hopefully not confuse koschei
 ExcludeArch:    ppc64 ppc64le
 
+BuildRequires:  make
 BuildRequires:  wine-common
 BuildRequires:  desktop-file-utils
 

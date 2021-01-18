@@ -18,6 +18,7 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Headers-%{version}.tar
 %endif
 
 BuildRequires:  cmake3
+BuildRequires:  make
 BuildArch:      noarch
 
 %description

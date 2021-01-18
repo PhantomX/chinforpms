@@ -13,6 +13,7 @@ BuildArch:      noarch
 
 BuildRequires:  bash-completion
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  intltool
 BuildRequires:  python3-devel
 BuildRequires:  /usr/bin/pathfix.py

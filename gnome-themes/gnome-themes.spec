@@ -18,6 +18,7 @@ Requires:       gnome-icon-theme
 
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  make
 BuildRequires:  intltool
 BuildRequires:  pkgconfig
 BuildRequires:  gtk2-devel

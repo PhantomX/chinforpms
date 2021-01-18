@@ -147,6 +147,8 @@ Provides:       %{name}-sdl = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-sdl < %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
+Provides:       bundled(spirv-cross) = = 0~git%{shortcommit7}
+
 
 %description
 PPSSPP is a PSP emulator written in C++. It translates PSP CPU instructions

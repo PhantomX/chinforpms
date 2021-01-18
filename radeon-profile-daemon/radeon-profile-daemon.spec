@@ -8,6 +8,7 @@ URL:            https://github.com/marazmista/%{name}
 
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
+BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core)

@@ -10,6 +10,7 @@ Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}-src
 
 
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  gettext

@@ -35,6 +35,7 @@ Patch101:       %{vc_url}/pull/347.patch#/%{name}-gh-347.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick

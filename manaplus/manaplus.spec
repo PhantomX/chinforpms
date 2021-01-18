@@ -9,6 +9,7 @@ URL:            http://manaplus.org/
 
 Source0:        http://download.evolonline.org/manaplus/download/%{version}/%{name}-%{version}.tar.xz
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(gl)

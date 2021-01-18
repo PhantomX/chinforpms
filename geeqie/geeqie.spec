@@ -29,6 +29,7 @@ Patch0:         %{vc_url}/commit/23d54a6fa903a9522062e266a139b94e4f4b26d7.patch#
 BuildRequires:  gcc-c++
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  make
 BuildRequires:  gettext
 BuildRequires:  intltool
 BuildRequires:  libtool

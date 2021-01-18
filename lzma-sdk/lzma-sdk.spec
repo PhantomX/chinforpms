@@ -17,6 +17,7 @@ Source1:        lzma-sdk-LICENSE.fedora
 
 Patch0:         0001-Build-shared-library.patch
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  p7zip

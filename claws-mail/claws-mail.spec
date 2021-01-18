@@ -94,6 +94,7 @@ BuildRequires:  autoconf
 BuildRequires:  automake
 %endif
 BuildRequires:  libtool
+BuildRequires:  make
 %if 0%{build_manual}
 BuildRequires:  docbook-utils docbook-utils-pdf
 %endif

@@ -27,6 +27,8 @@ Source0:        http://downloads.sourceforge.net/mingw-w64/mingw-w64-v%{version}
 
 BuildArch:      noarch
 
+BuildRequires:  make
+
 BuildRequires:  mingw32-filesystem >= 95
 BuildRequires:  mingw32-binutils
 BuildRequires:  mingw32-headers

@@ -23,6 +23,7 @@ Source0:        http://www.camanis.net/opentyrian/releases/%{name}-%{version}-sr
 Patch0:         %{name}-wild.patch
 Patch1:         0001-Add-Makefile-option-to-disable-initial-mouse-grab.patch
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(sdl2)

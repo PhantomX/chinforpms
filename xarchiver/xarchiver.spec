@@ -26,6 +26,7 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        %{name}.appdata.xml
 
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  docbook-style-xsl
 BuildRequires:  gcc

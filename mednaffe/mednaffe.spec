@@ -22,6 +22,7 @@ Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        %{name}.appdata.xml
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(gtk+-3.0) >= 3.4

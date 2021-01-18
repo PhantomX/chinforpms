@@ -10,6 +10,7 @@ Source1:        README.gtk3
 
 Patch0:         %{name}-gtk3-dialogs.patch
 
+BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  libXrender-devel

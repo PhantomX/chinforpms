@@ -12,6 +12,7 @@ URL:            http://www.linuxtv.org/downloads/v4l-utils/
 
 Source0:        http://linuxtv.org/downloads/v4l-utils/v4l-utils-%{version}.tar.bz2
 
+BuildRequires:  make
 BuildRequires:  alsa-lib-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  doxygen
@@ -136,10 +137,6 @@ desktop-file-validate $RPM_BUILD_ROOT%{_datadir}/applications/qv4l2.desktop
 %find_lang %{name}
 %find_lang libdvbv5
 
-
-%ldconfig_scriptlets -n libv4l
-
-%ldconfig_scriptlets -n libdvbv5
 
 %files -f %{name}.lang
 %doc README

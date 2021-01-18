@@ -16,6 +16,7 @@ Patch100:       %{name}-rpmbuild.patch
 # Look for libdl.so.2
 Patch101:       %{name}-libdl.patch
 
+BuildRequires:  make
 BuildRequires:  gcc
 
 

@@ -54,6 +54,7 @@ BuildRequires:  mingw32-crt
 BuildRequires:  mingw32-winpthreads-static
 
 BuildRequires:  autoconf213
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  git

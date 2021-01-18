@@ -31,6 +31,7 @@ BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  cmake(Qt5Concurrent)
 BuildRequires:  cmake(Qt5Core) >= 5.8
 BuildRequires:  cmake(Qt5Gui)

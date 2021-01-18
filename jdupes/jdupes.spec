@@ -10,6 +10,7 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 Patch0:         0001-Use-system-xxhash.patch
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  xxhash-devel
 

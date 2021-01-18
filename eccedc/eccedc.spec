@@ -27,6 +27,7 @@ Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Patch0:         0001-rpm-build-fixes.patch
 
 
+BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 

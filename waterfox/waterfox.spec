@@ -261,6 +261,7 @@ BuildRequires:  pkgconfig(vpx) >= %{libvpx_version}
 BuildRequires:  pkgconfig(libwebp) >= %{webp_version}
 %endif
 BuildRequires:  autoconf213
+BuildRequires:  make
 BuildRequires:  pkgconfig(libpulse)
 %if 0%{?system_libicu}
 BuildRequires:  pkgconfig(icu-i18n)

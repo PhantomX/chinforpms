@@ -47,6 +47,7 @@ ExcludeArch:    %{arm} aarch64 ppc64le
 # Need --as-needed/--no-as-needed support
 # Need .weakref support
 BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  binutils >= 2.16.91.0.5-1
 BuildRequires:  zlib-devel, gettext, dejagnu, bison, flex, texinfo
 # Make sure pthread.h doesn't contain __thread tokens

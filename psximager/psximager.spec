@@ -11,6 +11,7 @@ Patch0:         %{name}-cdio20.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  make
 BuildRequires:  boost-devel
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(libcdio)

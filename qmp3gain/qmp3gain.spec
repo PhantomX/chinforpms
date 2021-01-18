@@ -21,6 +21,7 @@ Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar
 %endif
 
 
+BuildRequires:  make
 BuildRequires:  gcc-c++
 %if 0%{?with_snapshot}
 BuildRequires:  pkgconfig(Qt5)

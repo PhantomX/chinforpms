@@ -40,6 +40,7 @@ Patch111:       %{vc_url}/pull/932.patch#/%{name}-gh-pull932.patch
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  pkgconfig
 BuildRequires:  zlib-devel
 %if %{with tests}

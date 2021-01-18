@@ -12,6 +12,7 @@ Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.b
 BuildArch:      noarch
 
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  intltool
 BuildRequires:  librsvg2-tools
 BuildRequires:  /usr/bin/pathfix.py
