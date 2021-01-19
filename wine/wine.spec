@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f6f80e3bd5e4edf8d5372fda447c62e9d06754b6
+%global tkg_id 5451ab5576f50011daa879e3196e0ab7e246f540
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b5edce86550ab24625bc75c25e3905528645e48b
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -64,6 +64,9 @@
 %global vulkanup 1
 # Broken
 %global pba 0
+
+# https://bugs.winehq.org/show_bug.cgi?id=50448
+%global wine_staging_opts %{?wine_staging_opts} -W ntdll-NtAlertThreadByThreadId
 
 %if 0%{?fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
@@ -96,7 +99,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.0
-Release:        101%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -174,9 +177,6 @@ Patch102:       %{whq_url}/6b2199c3da5609ff0be17384f86f5e191ab81f73#/%{name}-whq
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
-# https://bugs.winehq.org/show_bug.cgi?id=50448
-Patch901:        https://bugs.winehq.org/attachment.cgi?id=69112#/%{name}-whq-bug50448.patch
-
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
 Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
@@ -217,7 +217,7 @@ Patch3000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
-# Fix vulkan crash with x86 (ignored with new merged Makefile)
+# Fix vulkan crash with x86
 Patch5001:      wine-fix-i686-gcc10.patch
 
 %endif
@@ -831,8 +831,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
-%patch901 -p1
-
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
   -i Makefile.in
@@ -932,8 +930,7 @@ autoreconf -f
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 
-# -fno-tree-dce: fix winevulkan x86 gcc 10 crashes
-export CFLAGS="$CFLAGS -ftree-vectorize -mno-avx -fno-tree-dce"
+export CFLAGS="$CFLAGS -ftree-vectorize -mno-avx"
 
 %ifarch aarch64
 %if 0%{?fedora} >= 33
@@ -2736,6 +2733,12 @@ fi
 
 
 %changelog
+* Mon Jan 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-103.20210115git00401d2
+- Pass -fno-tree-dce only to affected objects
+
+* Mon Jan 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-102.20210115git00401d2
+- Disable ntdll-NtAlertThreadByThreadId
+
 * Mon Jan 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-101.20210115git00401d2
 - Snapshot
 
