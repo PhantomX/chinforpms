@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 06e20131f9997c6c8bfee828b9556a31cb84a6b1
+%global pfcommit ed326005133fb3fba8aea4f3bbc29b70358920cb
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id c9a364d3877548c9e83e877569e54d371100dd77
+%global opensuse_id 8611168fbfd0fe1f87de13c3306ab9979445b5fd
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2706,6 +2706,9 @@ fi
 #
 #
 %changelog
+* Tue Jan 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.9-500.chinfo
+- 5.10.9 - pf9
+
 * Sun Jan 17 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.8-500.chinfo
 - 5.10.8 - pf9
 

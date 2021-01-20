@@ -1,6 +1,6 @@
-%global commit 00401d2278298d151b555fcdffb15bb282c512a7
+%global commit 88220e0ee41640940e7686fe0cab7f1e0bfb42f1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210115
+%global date 20210118
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.0
+%global wine_stagingver caa2471e209fc1144924d00273cf6b2986edd509
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 5451ab5576f50011daa879e3196e0ab7e246f540
+%global tkg_id ca8e12114c8c02b5e20ef59a9eb7f3bf6dd31dee
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b5edce86550ab24625bc75c25e3905528645e48b
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -99,7 +99,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.0
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -169,9 +169,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # Revert to fix many game launchers displaying empty windows
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
-
-Patch101:       %{whq_url}/eb9f3dd3ad07aae3c9588bcff376ed2a7a8ef8d2#/%{name}-whq-eb9f3dd.patch
-Patch102:       %{whq_url}/6b2199c3da5609ff0be17384f86f5e191ab81f73#/%{name}-whq-6b2199c.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -810,8 +807,6 @@ This package adds the opencl driver for wine.
 %patch599 -p1
 
 %patch100 -p1 -R
-%patch102 -p1 -R
-%patch101 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2733,6 +2728,9 @@ fi
 
 
 %changelog
+* Tue Jan 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-104.20210118git88220e0
+- tkg update
+
 * Mon Jan 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-103.20210115git00401d2
 - Pass -fno-tree-dce only to affected objects
 

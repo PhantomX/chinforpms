@@ -3,12 +3,14 @@
 
 Name:           xfce4-notes-plugin
 Version:        1.9.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Notes plugin for the Xfce panel
 
 License:        GPLv2+
 URL:            http://goodies.xfce.org/projects/panel-plugins/%{name}
 Source0:        http://archive.xfce.org/src/panel-plugins/%{name}/%{minor_version}/%{name}-%{version}.tar.bz2
+
+Patch0:         0001-Disable-automatic-autostart.patch
 
 BuildRequires:  make
 BuildRequires:  gcc-c++
@@ -63,6 +65,9 @@ desktop-file-validate \
 %{_datadir}/%{name}/
 
 %changelog
+* Tue Jan 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1.9.0-101
+- Disable autostart automatic settings
+
 * Tue Jan 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1.9.0-100
 - 1.9.0
 
