@@ -38,11 +38,11 @@ Requires:       zbar
 
 
 %build
-%{__python3} setup.py build
+%py3_build
 
 
 %install
-%{__python3} setup.py install -O1 --skip-build --root %{buildroot}
+%py3_install
 
 
 %check

@@ -30,9 +30,12 @@ irpf2020
 lbreakouthd
 ms-teams
 -mupen64plus-extraplugins
+ninfs
 pcsx2
 ppsspp
 psximager
+python-haccrypto
+python-pyctr
 -reicast
 -odrive
 rocketchat-desktop

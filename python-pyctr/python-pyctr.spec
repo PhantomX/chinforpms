@@ -1,31 +1,29 @@
-%global pkgname iniherit
+%global pkgname pyctr
 
 Name:           python-%{pkgname}
-Version:        0.3.9
-Release:        2%{?dist}
-Summary:        A ConfigParser subclass with file-specified inheritance
+Version:        0.4.5
+Release:        1%{?dist}
+Summary:        Python library to interact with Nintendo 3DS files
 
 License:        MIT
-URL:            https://github.com/cadithealth/%{pkgname}
+URL:            https://github.com/ihaveamac/%{pkgname}
 
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-#BuildRequires:  %%{py3_dist coverage}
-#BuildRequires:  %%{py3_dist nose}
-BuildRequires:  %{py3_dist six}
+BuildRequires:  %{py3_dist pycryptodomex}
 
 
 %global _description\
-%{pkgname} is a ConfigParser subclass with file-specified inheritance.
+%{pkgname} is a Python library to interact with Nintendo 3DS files.
 
 %description %_description
 
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
-Requires:       %{py3_dist six}
+Requires:       %{py3_dist pycryptodomex}
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description -n python3-%{pkgname}
@@ -45,21 +43,17 @@ Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %check
-#{__python3} setup.py test
+%{__python3} setup.py test
 
 
 %files
 %files -n python3-%{pkgname}
-%license LICENSE.txt
-%doc README.rst
-%{_bindir}/%{pkgname}
+%license LICENSE
+%doc README.md
 %{python3_sitelib}/%{pkgname}
 %{python3_sitelib}/%{pkgname}*-*.egg-info
 
 
 %changelog
-* Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 0.3.9-2
-- Fix requires
-
-* Fri Sep 18 2020 Phantom X <megaphantomx at hotmail dot com> - 0.3.9-1
+* Wed Jan 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.4.5-1
 - Initial spec

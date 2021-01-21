@@ -1,0 +1,28 @@
+From f52eee666fda839c47318240655da8c338c9bc18 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 20 Jan 2021 14:21:47 -0300
+Subject: [PATCH] Remove desktop file command line parameter
+
+It's already provided by RPM package
+---
+ ninfs/__main__.py | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/ninfs/__main__.py b/ninfs/__main__.py
+index 492e6e4..8eb7c4d 100755
+--- a/ninfs/__main__.py
++++ b/ninfs/__main__.py
+@@ -14,10 +14,4 @@ from main import exit_print_types, mount
+ if len(argv) < 2:
+     exit_print_types()
+ 
+-if argv[1] == '--install-desktop-entry':
+-    from main import create_desktop_entry
+-    prefix = None if len(argv) < 3 else argv[2]
+-    create_desktop_entry(prefix)
+-    exit(0)
+-
+ exit(mount(argv.pop(1).lower()))
+-- 
+2.29.2
+
