@@ -30,6 +30,7 @@ mingw-w64-tools
 mingw-winpthreads
 qt5ct
 sdlcl
+shaderc
 spirv-headers
 spirv-tools
 taglib

@@ -1,6 +1,6 @@
-%global commit 6c81bb54f7ae91c105fe16f3934a110251888244
+%global commit 9468b04713224f1d28b770ae6e0c2c4ca592973f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210115
+%global date 20201223
 %global with_snapshot 1
 
 %global sanitize 0
@@ -240,12 +240,6 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
-* Sat Jan 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-116.20210115git6c81bb5
-- Try 2
-
-* Sat Jan 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-115.20210109git9468b04
-- Update
-
 * Wed Dec 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-114.20201223git74336d9
 - New snapshot
 - BR: yaml-cpp

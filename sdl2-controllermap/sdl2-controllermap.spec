@@ -1,5 +1,5 @@
 Name:           sdl2-controllermap
-Version:        2.0.12
+Version:        2.0.14
 Release:        1%{?dist}
 Summary:        Official tool to create SDL2 Game Controller controller mappings
 
@@ -10,7 +10,7 @@ Source0:        %{url}/release/SDL2-%{version}.tar.gz
 Patch0:         0001-controllermap-set-datadir-to-RPM-packaging.patch
 
 BuildRequires:  gcc
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(sdl2) >= %{version}
 Requires:       SDL2%{_isa} >= %{version}
 
 
@@ -25,7 +25,7 @@ sed -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' -i test/controllermap.c
 
 
 %build
-gcc %{build_cflags} $(pkg-config --cflags --libs sdl2) %{build_ldflags} \
+gcc %{build_cflags} %(pkg-config --cflags --libs sdl2) %{build_ldflags} \
   test/controllermap.c -o %{name}
 
 
@@ -34,7 +34,7 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name} %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
-install -pm0644 test/{axis,button,controllermap}.bmp \
+install -pm0644 test/{axis,button,controllermap*}.bmp \
   %{buildroot}%{_datadir}/%{name}/
 
 
@@ -46,6 +46,9 @@ install -pm0644 test/{axis,button,controllermap}.bmp \
 
 
 %changelog
+* Fri Jan 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0.14-1
+- 2.0.14
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2.0.12-1
 - 2.0.12
 

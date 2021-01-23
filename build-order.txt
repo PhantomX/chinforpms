@@ -182,6 +182,7 @@ sdl2-controllermap
 sdl_gamecontrollerdb
 sdl-jstest
 sdlcl
+shaderc
 -skrooge
 smtube
 snx
