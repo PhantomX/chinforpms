@@ -24,10 +24,10 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
+BuildRequires:  %{py3_dist setuptools}
 Requires:       gtk3
 Requires:       python3
-Requires:       python3-gobject
+Requires:       %{py3_dist pygobject}
 Requires:       xorg-x11-server-utils
 #Requires:       hicolor-icon-theme
 

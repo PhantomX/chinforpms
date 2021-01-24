@@ -26,7 +26,7 @@ Patch0:         0001-Decrease-volume-step_big-to-5.patch
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
+BuildRequires:  %{py3_dist setuptools}
 Requires:       pulseaudio-daemon
 
 

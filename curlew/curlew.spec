@@ -10,11 +10,11 @@ Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
+BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext intltool
 BuildRequires:  librsvg2-tools
-Requires:       python3-gobject
+Requires:       %{py3_dist pygobject}
 Requires:       ffmpeg
 Requires:       mediainfo
 Requires:       hicolor-icon-theme
