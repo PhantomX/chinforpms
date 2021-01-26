@@ -1,6 +1,6 @@
-%global commit 3d4faa41e281ff042451032190b3191af2737d5a
+%global commit 40c3fc63ccad3ab59b6b37399cd6fe8ea1de3f3e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210106
+%global date 20210124
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -14,7 +14,7 @@
 
 Name:           mgba
 Version:        0.9.0
-Release:        0.7%{?gver}%{?dist}
+Release:        0.8%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPLv2.0
@@ -91,7 +91,7 @@ mGBA development.
 
 
 %package sdl
-Summary:        PPSSPP with SDL frontend
+Summary:        mGBA with SDL frontend
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       mGBA = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -178,6 +178,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Sun Jan 24 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.0-0.8.20210124git40c3fc6
+- Bump
+
 * Thu Jan 07 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.0-0.7.20210106git3d4faa4
 - Update
 
