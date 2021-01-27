@@ -1,6 +1,6 @@
-%global commit 88220e0ee41640940e7686fe0cab7f1e0bfb42f1
+%global commit 2d6462cdee2bd87a49382794e5a554f33c367f09
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210118
+%global date 20210125
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver caa2471e209fc1144924d00273cf6b2986edd509
+%global wine_stagingver fd3372e71c4caef3b67f91fbba406ec6b4618414
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,12 +52,11 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ca8e12114c8c02b5e20ef59a9eb7f3bf6dd31dee
+%global tkg_id 235e94b9c182b16d16322e83632d53c052aaf143
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b5edce86550ab24625bc75c25e3905528645e48b
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
-%global gtk3 0
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 # Disabled after 5.16
 %global fshack 0
@@ -99,7 +98,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.0
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -279,6 +278,7 @@ BuildRequires:  librsvg2
 BuildRequires:  librsvg2-tools
 BuildRequires:  libstdc++-devel
 BuildRequires:  pkgconfig(libtiff-4)
+BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libusb)
 BuildRequires:  pkgconfig(libv4l2)
 BuildRequires:  pkgconfig(libvkd3d) >= 1.2
@@ -312,9 +312,6 @@ BuildRequires:  libappstream-glib
 
 # Silverlight DRM-stuff needs XATTR enabled.
 %if 0%{?wine_staging}
-%if 0%{?gtk3}
-BuildRequires:  pkgconfig(gtk+-3.0)
-%endif
 BuildRequires:  pkgconfig(libattr)
 BuildRequires:  pkgconfig(libva)
 %endif
@@ -426,9 +423,6 @@ Requires:       unixODBC(x86-32)
 Requires:       SDL2(x86-32)
 Requires:       vulkan-loader(x86-32)
 %if 0%{?wine_staging}
-%if 0%{?gtk3}
-Requires:       gtk3(x86-32)
-%endif
 Requires:       libva(x86-32)
 %endif
 %endif
@@ -459,9 +453,6 @@ Requires:       unixODBC(x86-64)
 Requires:       SDL2(x86-64)
 Requires:       vulkan-loader(x86-64)
 %if 0%{?wine_staging}
-%if 0%{?gtk3}
-Requires:       gtk3(x86-64)
-%endif
 Requires:       libva(x86-64)
 %endif
 %endif
@@ -487,9 +478,6 @@ Requires:       unixODBC
 Requires:       SDL2
 Requires:       vulkan-loader
 %if 0%{?wine_staging}
-%if 0%{?gtk3}
-Requires:       gtk3
-%endif
 Requires:       libva
 %endif
 %endif
@@ -1011,11 +999,10 @@ export PATH="$(pwd)/bin:$PATH"
 %endif
 %if 0%{?wine_staging}
  --with-xattr \
-%if !0%{?gtk3}
- --without-gtk3 \
-%endif
 %endif
  --disable-tests \
+ --without-capi \
+ --without-oss \
 %{nil}
 
 %make_build TARGETFLAGS="" depend
@@ -2728,6 +2715,10 @@ fi
 
 
 %changelog
+* Tue Jan 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-105.20210125git2d6462c
+- Bump
+- BR: libudev
+
 * Tue Jan 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-104.20210118git88220e0
 - tkg update
 

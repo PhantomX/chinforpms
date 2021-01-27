@@ -1,6 +1,6 @@
-%global commit0 d91d618889cc743aafd809151449012de62e5327
+%global commit0 be23804afce3bb2e80a1d57a7c1318c71b82b7de
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20210105
+%global date 20210124
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -16,7 +16,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -35,7 +35,7 @@ Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        %{cvc_url}/webm/libvpx/+archive/%{shortcommit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
 
-Patch0:         0001-Fix-undefined-reference.patch
+Patch0:         0001-Fix-undefined-references.patch
 
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(libavcodec)
@@ -48,6 +48,8 @@ BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(protobuf)
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xtst)
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -168,6 +170,9 @@ cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
 %{_libdir}/lib%{name}.so
 
 %changelog
+* Tue Jan 26 2021 Phantom X <megaphantomx at hotmail dot com> - 0-103.20210124gitbe23804
+- Update to latest snapshot
+
 * Mon Jan 11 2021 Phantom X <megaphantomx at hotmail dot com> - 0-102.20210105gitd91d618
 - Update to latest snapshot
 

@@ -232,8 +232,6 @@ Source17: qemu-ga.sysconfig
 Source11: 99-qemu-guest-agent.rules
 # /etc/qemu/bridge.conf
 Source12: bridge.conf
-# qemu-kvm back compat wrapper installed as /usr/bin/qemu-kvm
-Source13: qemu-kvm.sh
 Source16: %{name}-sysusers.conf
 # /etc/modprobe.d/kvm.conf, for x86
 Source20: kvm-x86.modprobe.conf
@@ -1320,7 +1318,7 @@ done
 # Install kvm specific source bits, and qemu-kvm manpage
 %if 0%{?need_qemu_kvm}
 ln -sf qemu.1.gz %{buildroot}%{_mandir}/man1/qemu-kvm.1.gz
-install -m 0755 %{_sourcedir}/qemu-kvm.sh %{buildroot}%{_bindir}/qemu-kvm
+ln -sf qemu-system-x86_64 %{buildroot}%{_bindir}/qemu-kvm
 install -D -p -m 0644 %{_sourcedir}/kvm-x86.modprobe.conf %{buildroot}%{_sysconfdir}/modprobe.d/kvm.conf
 %endif
 

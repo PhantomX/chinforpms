@@ -35,7 +35,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.5.5
+Version:        2.5.6
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -53,7 +53,8 @@ Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.
 
 Source20:       thunar-sendto-%{name}.desktop
 
-Patch100:       %{name}-pr8009.patch
+Patch10:        %{url}/commit/4895e5e110524b68dd03cb0f315a65f44acd9a4e.patch#/%{name}-gh-4895e5e.patch
+Patch11:        %{url}/commit/df0bca077eaca9399233d23603b363fc4a91b668.patch#/%{name}-gh-df0bca0.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -62,6 +63,7 @@ Patch200:       %{name}-no-text-replace.patch
 Patch201:       %{name}-realmute.patch
 # Always display scrollbars
 Patch202:       %{name}-disable-overlay.patch
+Patch203:       0001-Do-not-pop-up-emoji-tabbed-panel-and-media-menu-on-m.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
 
@@ -255,6 +257,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Tue Jan 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.6-100
+- 2.5.6
+
 * Mon Jan 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.5-100
 - 2.5.5
 
