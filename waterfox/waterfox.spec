@@ -127,7 +127,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2020.12
+Version:        2021.01
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -193,7 +193,8 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
 Patch450:       %{vc_url}/commit/26459c47f867dc1882fa7b87e32a9e8fc5e125e5.patch#/%{name}-gh-26459c4.patch
-Patch451:       %{vc_url}/pull/1861.patch#/%{name}-gh-pr1861.patch
+Patch451:       %{vc_url}/commit/64adc14679cd2b7e8452b2b8abbdbaddca829e08.patch#/%{name}-gh-64adc14.patch
+Patch452:       %{vc_url}/commit/709bbfedcb2750665fbda4993b253737615ee8f8.patch#/%{name}-gh-709bbfe.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -212,6 +213,7 @@ Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-fix-testing-file.patch
 Patch704:        %{name}-disable-diagnostics-color.patch
+Patch705:        0001-Update-patch-bug1403998.patch
 
 %if 0%{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -399,7 +401,8 @@ This package contains results of tests executed during build.
 %patch420 -p1 -b .mozilla-1389436
 
 %patch450 -p1 -b .gh26459c4 -R
-%patch451 -p1 -b .pr1861
+%patch451 -p1 -b .gh64adc14
+%patch452 -p1 -b .gh709bbfe
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -415,6 +418,8 @@ This package contains results of tests executed during build.
 mkdir _patches
 cp -p %{freebsd_root}/patch-{bug,z-bug,revert-bug}* _patches/
 cp -pf %{S:601} %{S:602} _patches/
+
+%patch705 -p1
 
 filterdiff -x dom/svg/crashtests/crashtests.list %{freebsd_root}/patch-bug1343147 \
   > _patches/patch-bug1343147
@@ -1038,6 +1043,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Jan 27 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.01-1.classic
+- 2021.01
+
 * Wed Dec 09 2020 Phantom X <megaphantomx at hotmail dot com> - 2020.12-1.classic
 - 2020.12
 
