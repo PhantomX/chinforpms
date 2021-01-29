@@ -135,7 +135,7 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
-* Wed Jan 27 2021 Phantom X <megaphantomx at hotmail dot com> - 5.4.57862.0110-1
+* Wed Jan 27 2021 - 5.4.57862.0110-1
 - 5.4.57862.0110
 
 * Mon Dec 28 2020 - 5.4.57450.1220-1

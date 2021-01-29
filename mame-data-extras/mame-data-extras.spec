@@ -2,8 +2,8 @@
 %global __strip /bin/true
 
 %global cheatver 0221
-%global historyver 227
-%global infover 0227
+%global historyver 228
+%global infover 0228
 
 # Build non redistributable package with free roms
 %bcond_with roms
@@ -11,7 +11,7 @@
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.227
+Version:        0.228
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -21,7 +21,7 @@ URL:            http://mamedev.org
 # http://cheat.retrogames.com/
 Source0:       http://cheat.retrogames.com/download/cheat%{cheatver}.zip
 # http://www.arcade-history.com/
-Source1:       http://www.arcade-history.com/dats/historydat%{historyver}.7z
+Source1:       http://www.arcade-history.com/dats/historyxml%{historyver}.zip
 # http://mameinfo.mameworld.info/
 Source2:       http://www.mameworld.info/mameinfo/download/Mameinfo%{infover}.zip
 
@@ -157,7 +157,7 @@ Requires:       %{name}
 
 # extract DAT files
 unzip -q %{SOURCE0}
-7z x %{SOURCE1}
+unzip %{SOURCE1}
 unzip -qa %{SOURCE2} -d .
 7z x Mameinfo%{infover}.7z
 mv docs mameinfo
@@ -201,7 +201,7 @@ rename -- '-rom' ''  %{buildroot}%{_datadir}/mame/roms/*.zip
 %endif
 
 # Install DAT files
-install -pm 644 history.dat mameinfo.dat \
+install -pm 644 history.xml mameinfo.dat \
   %{buildroot}%{_datadir}/mame/
 
 # Install cheat files
@@ -231,6 +231,7 @@ done
 %files
 %doc cheat.txt mameinfo README.icons
 %{_datadir}/mame/*.dat
+%{_datadir}/mame/*.xml
 %dir %{_datadir}/mame/cab
 %{_datadir}/mame/cab/*
 %dir %{_datadir}/mame/cheat
@@ -251,6 +252,10 @@ done
 
 
 %changelog
+* Thu Jan 28 2021 Phantom X <megaphantomx at hotmail dot com> - 0.228-1
+- Mameinfo 0.228
+- History 228, xml
+
 * Sat Jan 02 2021 Phantom X <megaphantomx at hotmail dot com> - 0.227-1
 - Mameinfo 0.227
 - History 227
