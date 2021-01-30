@@ -12,7 +12,7 @@
 
 Name:           mingw-winpthreads
 Version:        8.0.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        MinGW pthread library
 
 # The main license of winpthreads is MIT, but parts of this library
@@ -208,6 +208,9 @@ find $RPM_BUILD_ROOT -name "*.la" -delete
 
 
 %changelog
+* Fri Jan 29 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-101
+- Rebuild
+
 * Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-100
 - 8.0.0
 

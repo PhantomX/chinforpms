@@ -5,7 +5,7 @@
 
 Name:           mingw-w64-tools
 Version:        8.0.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Supplementary tools which are part of the mingw-w64 toolchain
 
 # http://sourceforge.net/mailarchive/forum.php?thread_name=5157C0FC.1010309%40users.sourceforge.net&forum_name=mingw-w64-public
@@ -23,6 +23,8 @@ Source0:        http://sourceforge.net/code-snapshots/git/m/mi/mingw-w64/mingw-w
 %else
 Source0:        http://downloads.sourceforge.net/mingw-w64/mingw-w64-v%{version}.tar.bz2
 %endif
+# just to make widl to build on s390
+Patch0:         mingw-w64-tools-s390.patch
 # aarch64 does not seem to know about __builtin_ms_va_list
 Patch1:         mingw-w64-tools-aarch64.patch
 
@@ -98,6 +100,9 @@ popd
 
 
 %changelog
+* Fri Jan 29 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-101
+- Rebuild
+
 * Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-100
 - 8.0.0
 

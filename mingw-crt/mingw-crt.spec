@@ -9,7 +9,7 @@
 
 Name:           mingw-crt
 Version:        8.0.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        MinGW Windows cross-compiler runtime
 
 License:        Public Domain and ZPLv2.1
@@ -77,6 +77,9 @@ unzip %{S:0}
 
 %build
 pushd mingw-w64-crt
+    # Filter out -fstack-protector and -lssp from LDFLAGS as libssp is not yet potentially built with the bootstrap gcc
+    MINGW32_LDFLAGS="`echo %{mingw32_ldflags} | sed 's|-fstack-protector||' | sed 's|-lssp||'`"
+    MINGW64_LDFLAGS="`echo %{mingw64_ldflags} | sed 's|-fstack-protector||' | sed 's|-lssp||'`" 
     MINGW64_CONFIGURE_ARGS="--disable-lib32"
     %mingw_configure
     %mingw_make %{?_smp_mflags}
@@ -103,6 +106,9 @@ rm -rf %{buildroot}%{mingw64_includedir}/*.c
 
 
 %changelog
+* Fri Jan 29 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-101
+- Rebuild
+
 * Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-100
 - 8.0.0
 

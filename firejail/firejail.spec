@@ -1,6 +1,6 @@
 Name:           firejail
-Version:        0.9.64
-Release:        2%{?dist}
+Version:        0.9.64.2
+Release:        1%{?dist}
 Summary:        Linux namespaces sandbox program
 
 License:        GPLv2
@@ -76,6 +76,9 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %changelog
+* Fri Jan 29 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.64.2-1
+- 0.9.64.2
+
 * Mon Dec 21 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.64-2
 - Fedora sync
 
