@@ -1,6 +1,6 @@
-From 0fd5c8bdb611475ba75ab730ad345289aa2a15d2 Mon Sep 17 00:00:00 2001
+From 36c4e43817314ae4ec727b66edaa779abc7e62e7 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 24 Oct 2020 11:15:54 -0300
+Date: Sat, 30 Jan 2021 10:56:13 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake borrowed from dolphin-emu
@@ -27,19 +27,19 @@ https://github.com/dolphin-emu/dolphin
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bd958b7..3a5270a 100644
+index f71e066..f3ca246 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -122,6 +122,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
+@@ -134,6 +134,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
  option(USE_SYSTEM_SNAPPY "Dynamically link against system snappy" ${USE_SYSTEM_SNAPPY})
  option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_FFMPEG})
  option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
 +option(USE_SYSTEM_MINIUPNPC "Dynamically link against system miniupnpc" ${USE_SYSTEM_MINIUPNPC})
 +option(USE_SYSTEM_XXHASH "Dynamically link against system miniupnpc" ${USE_SYSTEM_XXHASH})
- option(USE_ADDRESS_SANITIZER "Use Clang memory sanitizer" ${USE_ADDRESS_SANITIZER})
+ option(USE_ASAN "Use address sanitizer" OFF)
+ option(USE_UBSAN "Use undefined behaviour sanitizer" OFF)
  
- if(UNIX AND NOT (APPLE OR ANDROID) AND VULKAN)
-@@ -1128,11 +1130,31 @@ add_library(xbrz STATIC
+@@ -1164,11 +1166,31 @@ add_library(xbrz STATIC
  )
  include_directories(ext/xbrz)
  
@@ -71,7 +71,7 @@ index bd958b7..3a5270a 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -1828,6 +1850,12 @@ endif()
+@@ -1862,6 +1884,12 @@ endif()
  
  # miniUPnPc integration (MiniUPnPc supposed to works on any POSIX system, not sure if some of these are redundant/not needed tho)
  if(USE_MINIUPNPC)
@@ -84,7 +84,7 @@ index bd958b7..3a5270a 100644
  	set (MINIUPNPC_VERSION 2.1) # used by miniupnpcstrings.h.cmake
  	set (MINIUPNPC_API_VERSION 17)
  	option(UPNPC_BUILD_STATIC "Build static library" TRUE)
-@@ -1897,6 +1925,7 @@ if(USE_MINIUPNPC)
+@@ -1931,6 +1959,7 @@ if(USE_MINIUPNPC)
  		endif()
  	endif()
  endif()
@@ -247,7 +247,7 @@ index 8e96223..2b618ee 100644
  #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
  #include <arm64_neon.h>
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index a989cf3..7e5a3b7 100644
+index 8e4aadf..3fbde56 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -36,7 +36,11 @@
@@ -263,7 +263,7 @@ index a989cf3..7e5a3b7 100644
  
  // For depth depal
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index f2373e0..a068f0d 100644
+index 9cfb369..9c2c956 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
 @@ -33,7 +33,11 @@
@@ -279,7 +279,7 @@ index f2373e0..a068f0d 100644
  
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 6389431..ffa130d 100644
+index 895bd27..e161802 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,11 @@
@@ -295,7 +295,7 @@ index 6389431..ffa130d 100644
  #include "Common/Math/math_util.h"
  #include "Common/Profiler/Profiler.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 018f761..ae0b2b3 100644
+index e568869..9831831 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@
@@ -311,7 +311,7 @@ index 018f761..ae0b2b3 100644
  #include "Common/Data/Text/I18n.h"
  #include "Common/Math/math_util.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index a13ef05..d4b84d6 100644
+index 2e1d706..89c2084 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -15,7 +15,11 @@
@@ -376,5 +376,5 @@ index 0000000..f9a14e2
 +  )
 +endif()
 -- 
-2.28.0
+2.29.2
 

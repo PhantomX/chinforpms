@@ -1,6 +1,6 @@
-%global commit 1ee7faacae4eb7bce57d6bf9e7da5b8ac4e339a6
+%global commit de02c7e90ebede96e4f2f528dd6fc461f0774e66
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210106
+%global date 20210130
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -23,7 +23,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
-%global commit2 0b28335acea4f429ae798c5e75232e54881bf164
+%global commit2 4738685f4ac27c1775a238d1e602f399627b5e6f
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -39,7 +39,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 234c65c0f32cc0dfe609a2fe8fee448f73009477
+%global commit7 4741bbaa641d118ca1864094decd1ba977316161
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.10.3
-Release:        117%{?gver}%{?dist}
+Release:        118%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -147,7 +147,7 @@ Provides:       %{name}-sdl = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-sdl < %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
-Provides:       bundled(spirv-cross) = = 0~git%{shortcommit7}
+Provides:       bundled(spirv-cross) = 0~git%{shortcommit7}
 
 
 %description
@@ -360,6 +360,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Jan 30 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-118.20210130gitc84ddaa
+- New snapshot
+
 * Thu Jan 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-117.20210106git1ee7faa
 - Bump
 

@@ -43,7 +43,7 @@ sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c event_log.{c,h} png.c zip.c
 
 sed -e 's|./termhelper|%{_bindir}/%{name}-termhelper|g' -i terminal.c
 
-BLASTEM_OPTFLAGS="%(echo %{build_cflags} | sed -e 's/-O2\b/-O3/') -flto=%{_smp_build_ncpus} -fuse-linker-plugin"
+BLASTEM_OPTFLAGS="%{build_cflags} -flto=%{_smp_build_ncpus} -fuse-linker-plugin"
 sed \
   -e "/^OPT:=/s|-O2 -flto|$BLASTEM_OPTFLAGS|g" \
   -e 's|$(OPT) $(LDFLAGS)|\0 %{build_ldflags} -Wl,-z,relro -Wl,-z,now|g' \
