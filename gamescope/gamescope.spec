@@ -1,6 +1,6 @@
-%global commit cd31090733c0517ce786bcb32574d42daa81130f
+%global commit c9acfb5a686dc845c16fd303056fc392ed466d8b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201023
+%global date 20210129
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,8 +10,8 @@
 %global perms_gs %caps(cap_sys_nice+ep)
 
 Name:           gamescope
-Version:        3.7
-Release:        2%{?gver}%{?dist}
+Version:        3.7.1
+Release:        1%{?gver}%{?dist}
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -78,6 +78,9 @@ Recommends:     mesa-vulkan-drivers
 
 
 %changelog
+* Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 3.7.1-1.20210129gitc9acfb5
+- 3.7.1 snapshot
+
 * Mon Nov 02 2020 Phantom X <megaphantomx at hotmail dot com> - 3.7-2.20201023gitcd31090
 - Snapshot
 

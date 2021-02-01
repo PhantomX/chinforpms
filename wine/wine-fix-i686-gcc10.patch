@@ -11,12 +11,14 @@ diff --git a/Makefile.in b/Makefile.in
 index b52495f..a06d505 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -139,3 +139,5 @@ TAGS etags:
+@@ -139,3 +139,7 @@ TAGS etags:
  tags ctags:
  	rm -f tags
  	(test -d .git && git ls-files || find -L $(srcdir) -name '*.[ch]' -print) | xargs ctags -a $(TAGSFLAGS)
 +
-+dlls/vulkan-1/%.o dlls/winevulkan/%.o dlls/winex11.drv/vulkan.o: CFLAGS   += -fno-tree-dce
++dlls/winevulkan/%.o dlls/winex11.drv/%.o: CFLAGS   += -fno-tree-dce
++
++dlls/d3d8/%.o dlls/d3d9/%.o dlls/d3d11/%.o dlls/vulkan-1/%.o: CROSSCFLAGS   += -fno-tree-dce
 -- 
 2.29.2
 

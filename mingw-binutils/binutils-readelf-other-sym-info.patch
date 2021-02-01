@@ -1,0 +1,64 @@
+diff -rupN --no-dereference binutils-2.34/binutils/readelf.c binutils-2.34-new/binutils/readelf.c
+--- binutils-2.34/binutils/readelf.c	2020-12-18 02:57:16.348049023 +0100
++++ binutils-2.34-new/binutils/readelf.c	2020-12-18 02:57:16.353049005 +0100
+@@ -11496,12 +11496,14 @@ print_dynamic_symbol (Filedata * filedat
+       unsigned int vis = ELF_ST_VISIBILITY (psym->st_other);
+ 
+       printf (" %-7s",  get_symbol_visibility (vis));
++#if 0
+       /* Check to see if any other bits in the st_other field are set.
+ 	 Note - displaying this information disrupts the layout of the
+ 	 table being generated, but for the moment this case is very
+ 	 rare.  */
+       if (psym->st_other ^ vis)
+ 	printf (" [%s] ", get_symbol_other (filedata, psym->st_other ^ vis));
++#endif
+     }
+ 
+   printf (" %3.3s ", get_symbol_index_type (filedata, psym->st_shndx));
+@@ -11509,6 +11511,15 @@ print_dynamic_symbol (Filedata * filedat
+     print_symbol (25, GET_DYNAMIC_NAME (psym->st_name));
+   else
+     printf (_(" <corrupt: %14ld>"), psym->st_name);
++#if 1
++    {
++      unsigned int vis = ELF_ST_VISIBILITY (psym->st_other);
++
++      /* Check to see if any other bits in the st_other field are set.  */
++      if (psym->st_other ^ vis)
++	printf (" \t[%s]", get_symbol_other (filedata, psym->st_other ^ vis));
++    }
++#endif
+   putchar ('\n');
+ }
+ 
+@@ -12043,11 +12054,13 @@ process_symbol_table (Filedata * filedat
+ 		  unsigned int vis = ELF_ST_VISIBILITY (psym->st_other);
+ 
+ 		  printf (" %-7s", get_symbol_visibility (vis));
++#if 0
+ 		  /* Check to see if any other bits in the st_other field are set.
+ 		     Note - displaying this information disrupts the layout of the
+ 		     table being generated, but for the moment this case is very rare.  */
+ 		  if (psym->st_other ^ vis)
+ 		    printf (" [%s] ", get_symbol_other (filedata, psym->st_other ^ vis));
++#endif
+ 		}
+ 	      printf (" %4s ", get_symbol_index_type (filedata, psym->st_shndx));
+ 	      print_symbol (25, psym->st_name < strtab_size
+@@ -12066,7 +12079,15 @@ process_symbol_table (Filedata * filedat
+ 		    printf (sym_info == symbol_hidden ? "@%s" : "@@%s",
+ 			    version_string);
+ 		}
++#if 1
++		{
++		  unsigned int vis = ELF_ST_VISIBILITY (psym->st_other);
+ 
++		  /* Check to see if any other bits in the st_other field are set.  */
++		  if (psym->st_other ^ vis)
++		    printf (" \t[%s] ", get_symbol_other (filedata, psym->st_other ^ vis));
++		}
++#endif
+ 	      putchar ('\n');
+ 
+ 	      if (ELF_ST_BIND (psym->st_info) == STB_LOCAL

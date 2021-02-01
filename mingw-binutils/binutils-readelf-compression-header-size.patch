@@ -1,0 +1,126 @@
+diff -rupN --no-dereference binutils-2.34/binutils/readelf.c binutils-2.34-new/binutils/readelf.c
+--- binutils-2.34/binutils/readelf.c	2020-12-18 02:57:17.359045461 +0100
++++ binutils-2.34-new/binutils/readelf.c	2020-12-18 02:57:22.432027590 +0100
+@@ -6714,15 +6714,18 @@ process_section_headers (Filedata * file
+ 		{
+ 		  Elf_Internal_Chdr chdr;
+ 
+-		  (void) get_compression_header (&chdr, buf, sizeof (buf));
+-
+-		  if (chdr.ch_type == ELFCOMPRESS_ZLIB)
+-		    printf ("       ZLIB, ");
++		  if (get_compression_header (&chdr, buf, sizeof (buf)) == 0)
++		    printf (_("       [<corrupt>]\n"));
+ 		  else
+-		    printf (_("       [<unknown>: 0x%x], "),
+-			    chdr.ch_type);
+-		  print_vma (chdr.ch_size, LONG_HEX);
+-		  printf (", %lu\n", (unsigned long) chdr.ch_addralign);
++		    {
++		      if (chdr.ch_type == ELFCOMPRESS_ZLIB)
++			printf ("       ZLIB, ");
++		      else
++			printf (_("       [<unknown>: 0x%x], "),
++				chdr.ch_type);
++		      print_vma (chdr.ch_size, LONG_HEX);
++		      printf (", %lu\n", (unsigned long) chdr.ch_addralign);
++		    }
+ 		}
+ 	    }
+ 	}
+@@ -13679,11 +13682,16 @@ dump_section_as_strings (Elf_Internal_Sh
+ 	    = get_compression_header (& chdr, (unsigned char *) start,
+ 				      num_bytes);
+ 
++	  if (compression_header_size == 0)
++	    /* An error message will have already been generated
++	       by get_compression_header.  */
++	    goto error_out;
++
+ 	  if (chdr.ch_type != ELFCOMPRESS_ZLIB)
+ 	    {
+ 	      warn (_("section '%s' has unsupported compress type: %d\n"),
+ 		    printable_section_name (filedata, section), chdr.ch_type);
+-	      return FALSE;
++	      goto error_out;
+ 	    }
+ 	  uncompressed_size = chdr.ch_size;
+ 	  start += compression_header_size;
+@@ -13715,7 +13723,7 @@ dump_section_as_strings (Elf_Internal_Sh
+ 	    {
+ 	      error (_("Unable to decompress section %s\n"),
+ 		     printable_section_name (filedata, section));
+-	      return FALSE;
++	      goto error_out;
+ 	    }
+ 	}
+       else
+@@ -13785,6 +13793,10 @@ dump_section_as_strings (Elf_Internal_Sh
+ 
+   putchar ('\n');
+   return TRUE;
++
++ error_out:
++  free (real_start);
++  return FALSE;
+ }
+ 
+ static bfd_boolean
+@@ -13797,7 +13809,7 @@ dump_section_as_bytes (Elf_Internal_Shdr
+   bfd_size_type       section_size;
+   bfd_vma             addr;
+   unsigned char *     data;
+-  unsigned char *     real_start;
++  unsigned char *     real_start = NULL;
+   unsigned char *     start;
+ 
+   real_start = start = (unsigned char *) get_section_contents (section, filedata);
+@@ -13820,11 +13832,16 @@ dump_section_as_bytes (Elf_Internal_Shdr
+ 	  unsigned int compression_header_size
+ 	    = get_compression_header (& chdr, start, section_size);
+ 
++	  if (compression_header_size == 0)
++	    /* An error message will have already been generated
++	       by get_compression_header.  */
++	    goto error_out;
++
+ 	  if (chdr.ch_type != ELFCOMPRESS_ZLIB)
+ 	    {
+ 	      warn (_("section '%s' has unsupported compress type: %d\n"),
+ 		    printable_section_name (filedata, section), chdr.ch_type);
+-	      return FALSE;
++	      goto error_out;
+ 	    }
+ 	  uncompressed_size = chdr.ch_size;
+ 	  start += compression_header_size;
+@@ -13859,7 +13876,7 @@ dump_section_as_bytes (Elf_Internal_Shdr
+ 	      error (_("Unable to decompress section %s\n"),
+ 		     printable_section_name (filedata, section));
+ 	      /* FIXME: Print the section anyway ?  */
+-	      return FALSE;
++	      goto error_out;
+ 	    }
+ 	}
+       else
+@@ -13939,6 +13956,10 @@ dump_section_as_bytes (Elf_Internal_Shdr
+ 
+   putchar ('\n');
+   return TRUE;
++
++ error_out:
++  free (real_start);
++  return FALSE;
+ }
+ 
+ static ctf_sect_t *
+@@ -14149,6 +14170,10 @@ load_specific_debug_section (enum dwarf_
+ 	    }
+ 
+ 	  compression_header_size = get_compression_header (&chdr, start, size);
++	  if (compression_header_size == 0)
++	    /* An error message will have already been generated
++	       by get_compression_header.  */
++	    return FALSE;
+ 
+ 	  if (chdr.ch_type != ELFCOMPRESS_ZLIB)
+ 	    {

@@ -1,6 +1,6 @@
-%global commit 009570230398febf5cc531c0091371b40bcc69ac
+%global commit fbc4cf8dba64d6652bdff936c6ea1b496a16e268
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201031
+%global date 20201222
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           libliftoff
 Version:        0.0.0
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Lightweight KMS plane library
 
 License:        MIT
@@ -62,6 +62,9 @@ developing applications that use %{name}.
 
 
 %changelog
+* Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 0.0.0-3.20201222gitfbc4cf8
+- Update
+
 * Mon Nov 02 2020 Phantom X <megaphantomx at hotmail dot com> - 0.0.0-2.20201031git0095702
 - Bump
 

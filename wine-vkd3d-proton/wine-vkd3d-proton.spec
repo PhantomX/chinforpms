@@ -169,7 +169,7 @@ mesonarray(){
 TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'`"
 
 # -fno-tree-dce: fix x86 gcc 10 crashes
-TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error -mno-avx -fno-tree-dce"
+TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error -mno-avx -mno-avx2"
 
 export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-m64//' \
@@ -182,13 +182,18 @@ export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-fasynchronous-unwind-tables//' \
   -e 's/-fstack-clash-protection//' \
   -e 's/-fcf-protection//' \
-  ` --param=ssp-buffer-size=4"
+  `"
+
+TEMP_LDFLAGS="-Wl,-O1,--sort-common"
 
 TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
+TEMP_LDFLAGS="`mesonarray "${TEMP_LDFLAGS}"`"
 
 sed \
   -e "/^c_args/s|]|, '$TEMP_CFLAGS'\0|g" \
   -e "/^cpp_args/s|]|, '$TEMP_CFLAGS'\0|g" \
+  -e "/^c_link_args/s|]|, '$TEMP_LDFLAGS'\0|g" \
+  -e "/^cpp_link_args/s|]|, '$TEMP_LDFLAGS'\0|g" \
   -i build-win*.txt
 
 sed -e "/^c_link_args =/acpp_args = ['$TEMP_CFLAGS']" -i build-win64.txt
@@ -198,6 +203,7 @@ sed -e "/^c_link_args =/acpp_args = ['$TEMP_CFLAGS']" -i build-win64.txt
 for i in %{targetbits}
 do
 meson \
+  --wrap-mode=nodownload \
   --cross-file build-%{cfname}${i}.txt \
   --buildtype "plain" \
   -Denable_standalone_d3d12=true \

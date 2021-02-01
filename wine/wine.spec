@@ -1,7 +1,7 @@
-%global commit 2d6462cdee2bd87a49382794e5a554f33c367f09
+%global commit f72ef20e88fba67254caf0124ab8713e3d15fa2a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210125
-%global with_snapshot 1
+%global date 20210128
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver fd3372e71c4caef3b67f91fbba406ec6b4618414
+%global wine_stagingver 6.1
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,9 +52,9 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 235e94b9c182b16d16322e83632d53c052aaf143
+%global tkg_id 924eeb92d6fafc05d812f71034226d829a603f48
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid b5edce86550ab24625bc75c25e3905528645e48b
+%global tkg_cid 3b97028422fe39624cf79858c5d3dc24082c831c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 # proton FS hack (wine virtual desktop with DXVK is not working well)
@@ -97,8 +97,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.0
-Release:        105%{?gver}%{?dist}
+Version:        6.1
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -913,7 +913,7 @@ autoreconf -f
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 
-export CFLAGS="$CFLAGS -ftree-vectorize -mno-avx"
+export CFLAGS="$CFLAGS -ftree-vectorize -mno-avx -mno-avx2"
 
 %ifarch aarch64
 %if 0%{?fedora} >= 33
@@ -938,6 +938,10 @@ export CFLAGS="`echo $CFLAGS | sed \
 
 export LDFLAGS="-Wl,-O1,--sort-common %{build_ldflags}"
 
+export LDFLAGS="`echo $LDFLAGS | sed \
+  -e 's/-Wl,-z,relro//' \
+  `"
+
 %if 0%{?wine_mingw}
 # mingw compiler do not support plugins and some flags are crashing it
 export CROSSCFLAGS="`echo $CFLAGS | sed \
@@ -945,27 +949,15 @@ export CROSSCFLAGS="`echo $CFLAGS | sed \
   -e 's,-specs=/usr/lib/rpm/redhat/redhat-hardened-cc1,,' \
   -e 's,-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1,,' \
   -e 's/-fasynchronous-unwind-tables//' \
-  ` --param=ssp-buffer-size=4"
+  `"
+
 # mingw linker do not support -z,relro and now
-export LDFLAGS="`echo $LDFLAGS | sed \
-  -e 's/-Wl,-z,relro//' \
+export CROSSLDFLAGS="`echo $LDFLAGS | sed \
   -e 's/-Wl,-z,now//' \
   -e 's,-specs=/usr/lib/rpm/redhat/redhat-hardened-ld,,' \
   `"
 
-# Put them again on gcc
 mkdir bin
-cat > bin/gcc <<'EOF'
-#!/usr/bin/sh
-exec %{_bindir}/gcc %{build_ldflags} "$@"
-EOF
-if [ -x %{_bindir}/g++ ] ;then
-cat > bin/g++ <<'EOF'
-#!/usr/bin/sh
-exec %{_bindir}/g++ %{build_ldflags} "$@"
-EOF
-chmod 0755 bin/*g++
-fi
 %if !0%{?with_debug}
 # -Wl -S to build working stripped PEs
 cat > bin/x86_64-w64-mingw32-gcc <<'EOF'
@@ -2715,6 +2707,12 @@ fi
 
 
 %changelog
+* Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.1-100
+- 6.1
+
+* Fri Jan 29 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-106.20210128gitf72ef20
+- Update
+
 * Tue Jan 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.0-105.20210125git2d6462c
 - Bump
 - BR: libudev

@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit f869881f558d4abac12018fbf59c896643e21de3
+%global commit 9bee3e1cb9c7d70ca38ae624f11dde948ae7c750
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210116
+%global date 20210130
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -35,7 +35,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.7.3
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -51,8 +51,8 @@ Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
 
-%if 0%{?dxvk_async}
 Patch100:       %{valve_url}/commit/5388a8db837f7dd61e331eebf7ffa24c554c75e9.patch#/%{name}-valve-5388a8d.patch
+%if 0%{?dxvk_async}
 Patch101:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
 Patch103:       0001-dxvk.conf-async-options.patch
 Source4:        %{sporif_url}/README.md#/README.async.md
@@ -152,10 +152,9 @@ mesonarray(){
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
 TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'`"
 
-# -fno-tree-dce: fix x86 gcc 10 crashes
-TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error -mno-avx -fno-tree-dce"
-
 TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-O2\b/-O3/'`"
+
+TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error -mno-avx -mno-avx2"
 
 export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-m64//' \
@@ -168,11 +167,16 @@ export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-fasynchronous-unwind-tables//' \
   -e 's/-fstack-clash-protection//' \
   -e 's/-fcf-protection//' \
-  ` --param=ssp-buffer-size=4"
+  `"
+
+TEMP_LDFLAGS="-Wl,-O1,--sort-common"
 
 TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
+TEMP_LDFLAGS="`mesonarray "${TEMP_LDFLAGS}"`"
 
 sed \
+  -e "/static-libstdc++/a\  add_global_link_arguments('$TEMP_LDFLAGS', language : 'cpp')" \
+  -e "/static-libstdc++/a\  add_global_link_arguments('$TEMP_LDFLAGS', language : 'c')" \
   -e "/static-libstdc++/a\  add_project_arguments('$TEMP_CFLAGS', language : 'cpp')" \
   -e "/static-libstdc++/a\  add_project_arguments('$TEMP_CFLAGS', language : 'c')" \
   -i meson.build
@@ -183,6 +187,7 @@ export WINEPREFIX="$(pwd)/%{_target_platform}/wine-build"
 for i in %{targetbits}
 do
 meson \
+  --wrap-mode=nodownload \
   --cross-file build-%{cfname}${i}.txt \
   --buildtype "plain" \
   %{_target_platform}${i}
@@ -232,6 +237,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.3-105.20210130git9bee3e1
+- New snapshot
+- Update flags
+
 * Sun Jan 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.3-104.20210116gitf869881
 - Bump
 

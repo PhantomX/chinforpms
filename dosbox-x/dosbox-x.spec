@@ -5,7 +5,7 @@
 %global vc_url https://github.com/joncampbell123/%{name}
 
 Name:           dosbox-x
-Version:        0.83.8
+Version:        0.83.9
 Release:        1%{?dist}
 
 Summary:        DOS emulator for running DOS games and applications including Windows 3.x/9x
@@ -16,7 +16,6 @@ URL:            https://dosbox-x.com/
 Source0:        %{vc_url}/archive/%{name}-v%{version}.tar.gz
 
 Patch0:         0001-format-security.patch
-Patch1:         %{vc_url}/commit/9c1073e47399943c30d86aa16f02de0baa7a7fc8.patch#/%{name}-gh-9c1073e.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -57,7 +56,10 @@ Windows 3.x/9x software.
 %prep
 %autosetup -n %{name}-%{name}-v%{version} -p1
 
+mv vs2015/sdl/src/cdrom _cdrom
 rm -rf vs2015/{extlib,freetype,libpdcurses,libpng,pcap,sdl,sdl2,sdlnet,zlib/*.{h,c}}
+mkdir -p vs2015/sdl/src/
+mv _cdrom vs2015/sdl/src/cdrom
 
 sed \
   -e '/Wconversion-null/d' \
@@ -105,6 +107,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.dosbox_x.D
 
 
 %changelog
+* Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 0.83.9-1
+- 0.86.9
+
 * Fri Dec 18 2020 Phantom X <megaphantomx at hotmail dot com> - 0.83.7-1
 - 0.83.8
 

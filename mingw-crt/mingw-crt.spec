@@ -9,7 +9,7 @@
 
 Name:           mingw-crt
 Version:        8.0.0
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        MinGW Windows cross-compiler runtime
 
 License:        Public Domain and ZPLv2.1
@@ -106,6 +106,9 @@ rm -rf %{buildroot}%{mingw64_includedir}/*.c
 
 
 %changelog
+* Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-102
+- Another rebuild
+
 * Fri Jan 29 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-101
 - Rebuild
 

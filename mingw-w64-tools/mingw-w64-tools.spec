@@ -5,7 +5,7 @@
 
 Name:           mingw-w64-tools
 Version:        8.0.0
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Supplementary tools which are part of the mingw-w64 toolchain
 
 # http://sourceforge.net/mailarchive/forum.php?thread_name=5157C0FC.1010309%40users.sourceforge.net&forum_name=mingw-w64-public
@@ -100,6 +100,9 @@ popd
 
 
 %changelog
+* Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-102
+- Another rebuild
+
 * Fri Jan 29 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-101
 - Rebuild
 
