@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 924eeb92d6fafc05d812f71034226d829a603f48
+%global tkg_id 8583e4f24347780cecfa91b8f7ec7daf0657db05
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 3b97028422fe39624cf79858c5d3dc24082c831c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -98,7 +98,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.1
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -168,6 +168,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # Revert to fix many game launchers displaying empty windows
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
+Patch101:       %{whq_url}/1fceb1213992b79aa7f1a5dc0a72ab3756ee524d#/%{name}-whq-1fceb12.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -197,7 +198,8 @@ Patch1032:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}
 Patch1033:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch1034:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1035:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
-Patch1036:       %{tkg_url}//proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
+Patch1036:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
+Patch1037:       %{tkg_url}/hotfixes/mfplat/mfplat-derek-hotfix.mypatch#/%{name}-tkg-mfplat-derek-hotfix.patch
 
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/565a4f3820b370f9715e0147031edb189d5a183f.patch#/%{name}-valve-565a4f3.patch
@@ -794,6 +796,7 @@ This package adds the opencl driver for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch101 -p1 -R
 %patch100 -p1 -R
 
 # setup and apply wine-staging patches
@@ -809,7 +812,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch1005 -p1
 
 %patch5000 -p1
-%patch5001 -p1
+#patch5001 -p1
 
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
@@ -852,6 +855,7 @@ cp -p %{S:3001} README-pba-pkg
 %endif
 %endif
 %patch1035 -p1
+%patch1037 -p1
 %patch1091 -p1 -R
 %if 0%{?fshack}
 %patch1300 -p1
@@ -2707,6 +2711,9 @@ fi
 
 
 %changelog
+* Mon Feb 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.1-101
+- mfplat fix
+
 * Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.1-100
 - 6.1
 
