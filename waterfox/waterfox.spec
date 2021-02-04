@@ -195,6 +195,7 @@ Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mo
 Patch450:       %{vc_url}/commit/26459c47f867dc1882fa7b87e32a9e8fc5e125e5.patch#/%{name}-gh-26459c4.patch
 Patch451:       %{vc_url}/commit/64adc14679cd2b7e8452b2b8abbdbaddca829e08.patch#/%{name}-gh-64adc14.patch
 Patch452:       %{vc_url}/commit/709bbfedcb2750665fbda4993b253737615ee8f8.patch#/%{name}-gh-709bbfe.patch
+Patch453:       %{vc_url}/commit/ef1d7dc6754a1d7f1b953f67c422e08eb8172806.patch#/%{name}-gh-ef1d7dc.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -403,6 +404,7 @@ This package contains results of tests executed during build.
 %patch450 -p1 -b .gh26459c4 -R
 %patch451 -p1 -b .gh64adc14
 %patch452 -p1 -b .gh709bbfe
+%patch453 -p1 -b .ghef1d7dc
 
 # Debian extension patch
 %patch500 -p1 -b .440908

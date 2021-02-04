@@ -1,7 +1,7 @@
 %global commit 4006ea97161254026c22c345d03c264bdce87f30
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20201105
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -10,7 +10,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           antimicrox
-Version:        3.1.3
+Version:        3.1.4
 Release:        100%{?gver}%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
@@ -22,8 +22,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-
-Patch0:         %{url}/pull/118.patch#/%{name}-gh-pr118.patch
 
 ExcludeArch:    %{arm}
 
@@ -114,6 +112,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 
 
 %changelog
+* Wed Feb 03 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.4-100
+- 3.1.4
+
 * Sat Dec 05 2020 Phantom X <megaphantomx at hotmail dot com> - 3.1.3-100.20201105git4006ea9
 - New snapshot
 - libantilib removed
