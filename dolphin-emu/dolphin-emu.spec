@@ -13,9 +13,9 @@
 # https://github.com/MoArtis/dolphin
 %global with_reshdp 1
 
-%global commit caff472dbf27fbcc5b3d28cbf5b1789592a9f857
+%global commit abc5d6c0d274345d33ad41f685bfc5fbc3bc5b71
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210121
+%global date 20210204
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -29,7 +29,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        128%{?gver}%{?dist}
+Release:        129%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -204,7 +204,7 @@ sed 's| this directory | %{name}/Sys/GC |g' \
   # Fix for newer vulkan/glslang
   sed "s/VK_PRESENT_MODE_RANGE_SIZE_KHR/(VkPresentModeKHR)("`
     `"VK_PRESENT_MODE_FIFO_RELAXED_KHR - VK_PRESENT_MODE_IMMEDIATE_KHR + 1)/" \
-    -i.orig Source/Core/VideoBackends/Vulkan/SwapChain.h
+    -i.orig Source/Core/VideoBackends/Vulkan/VKSwapChain.h
   sed "/maxMeshViewCountNV/ a /* .maxDualSourceDrawBuffersEXT = */ 1," \
     -i.orig Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
   sed \
@@ -400,6 +400,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Feb 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-129.20210204gitabc5d6c
+- Bump
+
 * Fri Jan 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-128.20210121gitcaff472
 - Latest snapshot
 

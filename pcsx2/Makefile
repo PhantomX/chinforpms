@@ -1,5 +1,5 @@
 NAME = pcsx2
-VERSION ?= 9468b04713224f1d28b770ae6e0c2c4ca592973f
+VERSION ?= d55c6119472ac4095224ca4f9673ef03d76099fc
 SNAPSHOT ?= 1
 SANITIZE ?= 1
 PLUGINS = CDVDiso CDVDisoEFP CDVDlinuz CDVDolio CDVDpeops dev9ghzdrk PeopsSPU2 SSSPSXPAD USBqemu xpad zerogs zerospu2
@@ -27,7 +27,9 @@ clone: clean
 
 sanitize: clone
 ifeq ($(SANITIZE),1)
-	rm -rf $(DIRNAME)/3rdparty
+	mv $(DIRNAME)/3rdparty/include $(DIRNAME)/
+	rm -rf $(DIRNAME)/3rdparty/*
+	mv $(DIRNAME)/include $(DIRNAME)/3rdparty/
 	rm -rf $(DIRNAME)/tools
 	$(foreach var,$(PLUGINS),rm -rf $(DIRNAME)/plugins/$(var);)
 	rm -rf $(DIRNAME)/unfree

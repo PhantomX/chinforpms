@@ -1,6 +1,6 @@
-%global commit 9468b04713224f1d28b770ae6e0c2c4ca592973f
+%global commit d55c6119472ac4095224ca4f9673ef03d76099fc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201223
+%global date 20210204
 %global with_snapshot 1
 
 %global sanitize 0
@@ -16,7 +16,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        116%{?gver}%{?dist}
+Release:        117%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -37,6 +37,9 @@ Source0:        %{name}-%{version}.tar.xz
 %endif
 %endif
 Source1:        Makefile
+
+# Revert this, needs sse4
+Patch0:         0001-Revert-microVU-Implement-Overflow-checks.-Fixes-Supe.patch
 
 
 BuildRequires:  gcc
@@ -75,7 +78,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-27
+BuildRequires:  sdl_gamecontrollerdb >= 0-28
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -95,7 +98,9 @@ this emulator anyway.
 %endif
 
 %if 0%{sanitize}
-  rm -rf 3rdparty
+  mv 3rdparty/include .
+  rm -rf 3rdparty/*
+  mv include 3rdparty/
   rm -rf tools
   for plugin in \
     CDVDiso CDVDisoEFP CDVDlinuz CDVDolio CDVDpeops dev9ghzdrk PeopsSPU2 \
@@ -127,7 +132,7 @@ sed \
 
 %if 0%{?with_snapshot}
 sed -i \
-  -e '/PCSX2_GIT_REV/s| ""| "%{shortcommit}"|g' \
+  -e '/PCSX2_GIT_REV/s| ""| "v%{version}-git%{shortcommit}"|g' \
   cmake/Pcsx2Utils.cmake
 %endif
 
@@ -240,6 +245,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Thu Feb 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-117.20210204gitd55c611
+- Update
+
 * Wed Dec 23 2020 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-114.20201223git74336d9
 - New snapshot
 - BR: yaml-cpp
