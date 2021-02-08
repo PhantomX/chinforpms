@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 9bee3e1cb9c7d70ca38ae624f11dde948ae7c750
+%global commit fcaab6aa46e6aa5e1152527c28a91817adcf775e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210130
+%global date 20210206
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -35,7 +35,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.7.3
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -51,10 +51,14 @@ Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
 
-Patch100:       %{valve_url}/commit/5388a8db837f7dd61e331eebf7ffa24c554c75e9.patch#/%{name}-valve-5388a8d.patch
+Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
+Patch101:       %{url}/pull/1582.patch#/%{name}-gh-pr1582.patch
+Patch102:       %{url}/pull/1759.patch#/%{name}-gh-pr1759.patch
+Patch103:       %{url}/pull/1805.patch#/%{name}-gh-pr1805.patch
+
 %if 0%{?dxvk_async}
-Patch101:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
-Patch103:       0001-dxvk.conf-async-options.patch
+Patch200:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
+Patch201:       0001-dxvk.conf-async-options.patch
 Source4:        %{sporif_url}/README.md#/README.async.md
 %endif
 
@@ -120,7 +124,11 @@ package or when debugging this package.
 %endif
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
 %patch103 -p1
+
+%patch200 -p1
+%patch201 -p1
 
 cp %{S:4} README.async.md
 %else
@@ -237,6 +245,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Feb 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.3-106.20210206gitfcaab6a
+- Bump
+- Add some PRs
+
 * Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.3-105.20210130git9bee3e1
 - New snapshot
 - Update flags

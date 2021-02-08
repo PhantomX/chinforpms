@@ -91,18 +91,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 11
+%global post_factum 12
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 32bfdb640ef79f31b64f6d5931af92c1b4f42416
+%global pfcommit 30af1cfccdbdca4aebad3f40c2732a18c711f339
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id fcfe48174cb28bad44ca9096080d092c2db50387
+%global opensuse_id 64ec974a98e1ee5f287957f98505afa51c338fc8
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -882,6 +882,7 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/floppy-reintroduce-O_NDELAY-fix.patch#/openSUSE-floppy-reintroduce-O_NDELAY-fix.patch
 Patch1020: %{opensuse_url}/media-uvcvideo-Accept-invalid-bFormatIndex-and-bFram.patch#/openSUSE-media-uvcvideo-Accept-invalid-bFormatIndex-and-bFram.patch
+Patch1021: %{opensuse_url}/net-mlx5-Fix-function-calculation-for-page-trees.patch#/openSUSE-net-mlx5-Fix-function-calculation-for-page-trees.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2706,6 +2707,9 @@ fi
 #
 #
 %changelog
+* Sun Feb 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.14-500.chinfo
+- 5.10.14 - pf12
+
 * Thu Feb 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.13-500.chinfo
 - 5.10.13 - pf11
 

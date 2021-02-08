@@ -1,7 +1,7 @@
-%global commit f72ef20e88fba67254caf0124ab8713e3d15fa2a
+%global commit 4f1b297a14bbd304fb20da7c4b64266c14d110e5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210128
-%global with_snapshot 0
+%global date 20210205
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.1
+%global wine_stagingver 677b445b0ddaa8ededc7df26a37175aeef496988
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 8583e4f24347780cecfa91b8f7ec7daf0657db05
+%global tkg_id cc90963c8a7ee226401c3d7f8a4dcc68c3c36490
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 3b97028422fe39624cf79858c5d3dc24082c831c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -98,7 +98,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.1
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -265,6 +265,7 @@ BuildRequires:  pkgconfig(gnutls)
 BuildRequires:  pkgconfig(gstreamer-1.0)
 BuildRequires:  pkgconfig(gstreamer-audio-1.0)
 BuildRequires:  pkgconfig(gstreamer-video-1.0)
+BuildRequires:  jxrlib-devel
 BuildRequires:  pkgconfig(krb5)
 BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  pkgconfig(libgcrypt)
@@ -406,6 +407,7 @@ Requires:       freetype(x86-32)
 Requires:       nss-mdns(x86-32)
 Requires:       gnutls(x86-32)
 Requires:       gstreamer1-plugins-good(x86-32)
+Requires:       jxrlib(x86-32)
 Requires:       libgcrypt(x86-32)
 Requires:       libxslt(x86-32)
 Requires:       libXcomposite(x86-32)
@@ -436,6 +438,7 @@ Requires:       freetype(x86-64)
 Requires:       nss-mdns(x86-64)
 Requires:       gnutls(x86-64)
 Requires:       gstreamer1-plugins-good(x86-64)
+Requires:       jxrlib(x86-64)
 Requires:       libgcrypt(x86-64)
 Requires:       libxslt(x86-64)
 Requires:       libXcomposite(x86-64)
@@ -466,6 +469,7 @@ Requires:       freetype
 Requires:       nss-mdns
 Requires:       gnutls
 Requires:       gstreamer1-plugins-good
+Requires:       jxrlib
 Requires:       libgcrypt
 Requires:       libXrender
 Requires:       libXcursor
@@ -2264,6 +2268,7 @@ fi
 %{_libdir}/wine/wintrust.%{winedll}
 %{_libdir}/wine/winusb.%{winedll}
 %{_libdir}/wine/wlanapi.%{winedll}
+%{_libdir}/wine/wmphoto.so
 %{_libdir}/wine/wmphoto.%{winedll}
 %{_libdir}/wine/wnaspi32.dll.so
 %if 0%{?wine_staging}
@@ -2711,6 +2716,9 @@ fi
 
 
 %changelog
+* Sat Feb 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.1-102.20210205git4f1b297
+- Snapshot
+
 * Mon Feb 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.1-101
 - mfplat fix
 
