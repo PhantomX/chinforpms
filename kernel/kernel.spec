@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 30af1cfccdbdca4aebad3f40c2732a18c711f339
+%global pfcommit 2c6b388ccc4ed956f83a2e3d0eeb4a9b394e144a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 64ec974a98e1ee5f287957f98505afa51c338fc8
+%global opensuse_id 24c2efeb5ab3dfbf6fd3d8f90b1999f6e718d539
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -864,6 +864,7 @@ Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 # A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
 Patch102: 0001-update-phy-on-pine64-a64-devices.patch
 
+Patch109: 0001-Revert-drm-amd-display-Update-NV1x-SR-latency-values.patch
 
 ### Extra
 
@@ -882,7 +883,6 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/floppy-reintroduce-O_NDELAY-fix.patch#/openSUSE-floppy-reintroduce-O_NDELAY-fix.patch
 Patch1020: %{opensuse_url}/media-uvcvideo-Accept-invalid-bFormatIndex-and-bFram.patch#/openSUSE-media-uvcvideo-Accept-invalid-bFormatIndex-and-bFram.patch
-Patch1021: %{opensuse_url}/net-mlx5-Fix-function-calculation-for-page-trees.patch#/openSUSE-net-mlx5-Fix-function-calculation-for-page-trees.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2707,6 +2707,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.15-500.chinfo
+- 5.10.15 - pf12
+
 * Sun Feb 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.14-500.chinfo
 - 5.10.14 - pf12
 
