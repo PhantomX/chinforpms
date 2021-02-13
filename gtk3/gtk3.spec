@@ -36,7 +36,7 @@
 %global vc_url https://gitlab.gnome.org/GNOME/gtk/commit
 
 Name:           gtk3
-Version:        3.24.24
+Version:        3.24.25
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -402,6 +402,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Fri Feb 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.25-100
+- 3.24.25
+
 * Sun Dec  6 2020 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.24-100
 - 3.24.24
 

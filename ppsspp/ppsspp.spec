@@ -1,6 +1,6 @@
-%global commit de02c7e90ebede96e4f2f528dd6fc461f0774e66
+%global commit d1c4b86e0a5cfa0880ed97f4a08ee2fa2fb01944
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210130
+%global date 20210211
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -19,11 +19,11 @@
 # https://github.com/hrydgard/ppsspp/issues/13312
 %global _lto_cflags %{nil}
 
-%global commit1 17516d229eb31e08d2029b225d4d831dc497376f
+%global commit1 adef2aead213a07f3bedce44dd9a97b2bbb7eb25
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
-%global commit2 4738685f4ac27c1775a238d1e602f399627b5e6f
+%global commit2 0b28335acea4f429ae798c5e75232e54881bf164
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -53,8 +53,8 @@
 %global vc_url  https://github.com/hrydgard
 
 Name:           ppsspp
-Version:        1.10.3
-Release:        118%{?gver}%{?dist}
+Version:        1.11.1
+Release:        100%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -186,6 +186,7 @@ rm -rf ext/glew/GL
 rm -rf ext/{glew,rapidjson,miniupnp,snappy}/*.{c,cpp,h}
 rm -rf ext/{libpng,libzip,vulkan,zlib}*
 rm -f ext/xxhash.*
+rm -rf MoltenVK/*
 
 find ext Core -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" -o -name "*.y" \) -exec chmod -x {} ';'
 
@@ -360,6 +361,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Fri Feb 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.1-100.20210211gitd1c4b86
+- 1.11.1
+
 * Sat Jan 30 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-118.20210130gitc84ddaa
 - New snapshot
 

@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit 7c6d7905a4958fa7856821b97ecf84d134184485
+%global commit e6c479f497612a0ae1c00ad9c85d5af715495d46
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210109
+%global date 20210212
 %global with_snapshot 1
 
 # Enable system boost
@@ -44,7 +44,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 teakra
 
-%global commit9 18c9caaa0a3ed5706c39f5aa86cce0db6e65b174
+%global commit9 c306b8e5786eeeb87b8925a8af5c3bf057ff5a90
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 xbyak
 
@@ -66,7 +66,7 @@
 
 Name:           citra
 Version:        0
-Release:        13%{?gver}%{?dist}
+Release:        14%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -262,6 +262,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Feb 12 2021 Phantom X <megaphantomx at hotmail dot com> - 0-14.20210212gite6c479f
+- Update
+
 * Sun Jan 17 2021 Phantom X <megaphantomx at hotmail dot com> - 0-13.20210109git7c6d790
 - Update
 

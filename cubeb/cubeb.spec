@@ -21,7 +21,7 @@ Release:        23%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
-URL:            https://github.com/kinetiknz/cubeb
+URL:            https://github.com/mpzilla/cubeb
 
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
