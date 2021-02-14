@@ -1,7 +1,7 @@
 %global commit 4f1b297a14bbd304fb20da7c4b64266c14d110e5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210205
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  5.1.1
+%global winemono  6.0.0
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 677b445b0ddaa8ededc7df26a37175aeef496988
+%global wine_stagingver 6.2
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,9 +52,9 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id cc90963c8a7ee226401c3d7f8a4dcc68c3c36490
+%global tkg_id c25384462d2971af21804e87867e98625555373c
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 3b97028422fe39624cf79858c5d3dc24082c831c
+%global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 # proton FS hack (wine virtual desktop with DXVK is not working well)
@@ -97,8 +97,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.1
-Release:        102%{?gver}%{?dist}
+Version:        6.2
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -169,6 +169,8 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 Patch101:       %{whq_url}/1fceb1213992b79aa7f1a5dc0a72ab3756ee524d#/%{name}-whq-1fceb12.patch
+Patch102:       %{whq_url}/cf4fe13a41b7cc0a624da7741ae528ef21032736#/%{name}-whq-cf4fe13.patch
+Patch103:       %{whq_url}/beb9c6578ad8e21eb4b34366dbc3dff8b8c2ae5d#/%{name}-whq-beb9c65.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -800,6 +802,8 @@ This package adds the opencl driver for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch103 -p1 -R
+%patch102 -p1 -R
 %patch101 -p1 -R
 %patch100 -p1 -R
 
@@ -1752,6 +1756,7 @@ fi
 %{_libdir}/wine/cryptdll.%{winedll}
 %{_libdir}/wine/cryptext.%{winedll}
 %{_libdir}/wine/cryptnet.%{winedll}
+%{_libdir}/wine/cryptsp.%{winedll}
 %{_libdir}/wine/cryptui.%{winedll}
 %{_libdir}/wine/ctapi32.dll.so
 %{_libdir}/wine/ctl3d32.%{winedll}
@@ -2232,6 +2237,8 @@ fi
 %{_libdir}/wine/wimgapi.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/win32k.%{winesys}
+%endif
+%if 0
 %{_libdir}/wine/windows.gaming.input.%{winedll}
 %{_libdir}/wine/windows.globalization.%{winedll}
 %{_libdir}/wine/windows.media.speech.%{winedll}
@@ -2241,6 +2248,7 @@ fi
 %{_libdir}/wine/windowscodecs.%{winedll}
 %{_libdir}/wine/windowscodecsext.%{winedll}
 %{_libdir}/wine/winebus.sys.so
+%{_libdir}/wine/winegstreamer.so
 %{_libdir}/wine/winegstreamer.dll.so
 %{_libdir}/wine/winehid.%{winesys}
 %{_libdir}/wine/winejoystick.drv.so
@@ -2716,6 +2724,9 @@ fi
 
 
 %changelog
+* Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.2-100
+- 6.2
+
 * Sat Feb 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.1-102.20210205git4f1b297
 - Snapshot
 

@@ -91,13 +91,13 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 12
+%global post_factum 13
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 24c2efeb5ab3dfbf6fd3d8f90b1999f6e718d539
+%global opensuse_id 3831071e395811c2a1bcc1c00d58ff2b40bb6de3
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2707,6 +2707,9 @@ fi
 #
 #
 %changelog
+* Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.16-500.chinfo
+- 5.10.16 - pf13
+
 * Wed Feb 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.15-500.chinfo
 - 5.10.15 - pf12
 

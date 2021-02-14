@@ -37,7 +37,7 @@
 
 Name:           gtk3
 Version:        3.24.25
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -61,6 +61,7 @@ Patch104:       gtk+3-startup-mode-cwd.patch
 Patch105:       gtk+3-dateformat-with_time.patch
 Patch106:       gtk+3-location_mode-filename.patch
 Patch107:       gtk+3-print-preview.patch
+Patch108:       gtk3-revert-make-scrollbars-larger.patch
 
 # Debian
 Patch200:       016_no_offscreen_widgets_grabbing.patch
@@ -402,6 +403,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.25-101
+- Revert scrollbars size
+
 * Fri Feb 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.25-100
 - 3.24.25
 

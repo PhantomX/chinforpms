@@ -1,6 +1,6 @@
-%global commit ab902e8a4967e592676229e602d21e7be7950b28
+%global commit 7ca96d9f4e9fbdaec242e200a10563e3aeef8815
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200925
+%global date 20210211
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,7 +8,7 @@
 %endif
 
 Name:           adwaita-qt
-Version:        1.1.90
+Version:        1.2.50
 Release:        100%{?gver}%{?dist}
 
 License:        LGPLv2+
@@ -108,6 +108,9 @@ Development files for %{name}.
 
 
 %changelog
+* Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.2.50-100.20210211git7ca96d9
+- 1.2.50 snapshot
+
 * Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.1.90-100.20200925gitab902e8
 - 1.1.90
 - libs package
