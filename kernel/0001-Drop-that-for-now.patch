@@ -4,22 +4,21 @@ Date: Wed, 23 Jan 2019 14:36:37 +0100
 Subject: [PATCH] Drop that for now
 
 ---
- Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/Makefile b/Makefile
-index b70997f7ddf9..680d906eee35 100644
+index bfcc170..d927583 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -498,7 +498,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -494,6 +494,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
--		   -Werror=return-type -Wno-format-security \
-+		   -Werror=return-type -Wno-format-security -Wno-address-of-packed-member \
++		   -Wno-address-of-packed-member \
+ 		   -Werror=return-type -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
- KBUILD_AFLAGS_KERNEL :=
 -- 
 2.29.2
 

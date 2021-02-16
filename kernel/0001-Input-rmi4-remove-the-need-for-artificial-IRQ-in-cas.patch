@@ -22,7 +22,7 @@ Signed-off-by: Lyude <lyude@redhat.com>
  3 files changed, 75 insertions(+), 114 deletions(-)
 
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index 8cffa84c9650..6c4e3675601a 100644
+index 311eee5..2460c6b 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
 @@ -322,19 +322,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
@@ -45,7 +45,7 @@ index 8cffa84c9650..6c4e3675601a 100644
  	return 1;
  }
  
-@@ -592,56 +585,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
+@@ -591,56 +584,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
  	.reset		= rmi_hid_reset,
  };
  
@@ -102,7 +102,7 @@ index 8cffa84c9650..6c4e3675601a 100644
  static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  {
  	struct rmi_data *data = NULL;
-@@ -714,18 +657,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -713,18 +656,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  
  	mutex_init(&data->page_mutex);
  
@@ -122,7 +122,7 @@ index 8cffa84c9650..6c4e3675601a 100644
  	data->xport.ops = &hid_rmi_ops;
  
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
-index 258d5fe3d395..f7298e3dc8f3 100644
+index 258d5fe..f7298e3 100644
 --- a/drivers/input/rmi4/rmi_driver.c
 +++ b/drivers/input/rmi4/rmi_driver.c
 @@ -182,34 +182,47 @@ void rmi_set_attn_data(struct rmi_device *rmi_dev, unsigned long irq_status,
@@ -314,10 +314,10 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
-index 8ed37f93f3c8..d7ad35a15acb 100644
+index ab7eea0..fff7c5f 100644
 --- a/include/linux/rmi.h
 +++ b/include/linux/rmi.h
-@@ -363,6 +363,7 @@ struct rmi_driver_data {
+@@ -364,6 +364,7 @@ struct rmi_driver_data {
  
  	struct rmi4_attn_data attn_data;
  	DECLARE_KFIFO(attn_fifo, struct rmi4_attn_data, 16);

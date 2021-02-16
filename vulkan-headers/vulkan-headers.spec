@@ -1,7 +1,7 @@
 %global __python %{__python3}
 Name:           vulkan-headers
-Version:        1.2.169
-Release:        2%{?dist}
+Version:        1.2.170
+Release:        1%{?dist}
 Summary:        Vulkan Header files and API registry
 
 License:        ASL 2.0
@@ -52,7 +52,10 @@ Vulkan Header files and API registry
 
 
 %changelog
-* Sun Feb 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.169-2
+* Mon Feb 15 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.170-1
+- 1.2.170
+
+* Sun Feb 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.169-1
 - 1.2.169
 
 * Mon Jan 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.168-1

@@ -85,24 +85,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 10
+%define base_sublevel 11
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 13
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 2c6b388ccc4ed956f83a2e3d0eeb4a9b394e144a
+%global pfcommit 6e64d3d87808bfa40e66ef11f9282b2ece339948
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 3831071e395811c2a1bcc1c00d58ff2b40bb6de3
+%global opensuse_id 64ba0e5a7ef008f2142338ac6c67b66cc8f7fa72
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -455,6 +455,7 @@ Summary: The Linux kernel
 %define make_target vmlinux
 %define kernel_image vmlinux
 %define kernel_image_elf 1
+%define use_vdso 0
 %define all_arch_configs kernel-%{version}-ppc64le*.config
 %define kcflags -O3
 %endif
@@ -776,7 +777,7 @@ Source3014: kernel-local-zen
 Source3015: kernel-local-generic
 Source3016: kernel-local-numa
 
-Source4000: README.rst
+Source3999: README.rst
 
 ## Patches needed for building this package
 
@@ -833,8 +834,6 @@ Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
 Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
 Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
 Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
-Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
-Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
 Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
 Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
 Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
@@ -853,18 +852,6 @@ Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
 Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
 Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch72: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
-
-# https://patchwork.kernel.org/patch/11796255/
-Patch100: arm64-dts-rockchip-disable-USB-type-c-DisplayPort.patch
-
-# Tegra fixes
-Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
-
-# A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
-Patch102: 0001-update-phy-on-pine64-a64-devices.patch
-
-Patch109: 0001-Revert-drm-amd-display-Update-NV1x-SR-latency-values.patch
 
 ### Extra
 
@@ -875,7 +862,7 @@ Patch109: 0001-Revert-drm-amd-display-Update-NV1x-SR-latency-values.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch#/openSUSE-btrfs-fs-super.c-add-new-super-block-devices-super_block_d.patch
-Patch1013: %{opensuse_url}/btrfs-btrfs-use-the-new-VFS-super_block_dev.patch#/openSUSE-btrfs-btrfs-use-the-new-VFS-super_block_dev.patch
+Patch1013: %{opensuse_url}/btrfs-use-the-new-VFS-super_block_dev.patch#/openSUSE-btrfs-use-the-new-VFS-super_block_dev.patch
 Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
@@ -887,15 +874,13 @@ Patch1020: %{opensuse_url}/media-uvcvideo-Accept-invalid-bFormatIndex-and-bFram.
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{patchwork_xdg_url}/api/1.0/series/82741/revisions/1/mbox/#/patchwork-Various-Polaris-fixes-and-optimizations.patch
-Patch2002: %{patchwork_xdg_url}/patch/397827/mbox/#/patchwork-drm_amdgpu-apply-dm_pp_notify_wm_clock_changes-for-Polaris-only.patch
 Patch2003: 0001-fsync.patch
 
 %if !0%{?post_factum}
 
 #Patch3000: postfactum-merge-fixes.patch
 %if !0%{?zen}
-#Patch3001: %{pf_url}/a6c083c2e4274c7e203c5ef989f568c6d5f945eb.patch#/pf-a6c083c.patch
+#Patch3001: %%{pf_url}/a6c083c2e4274c7e203c5ef989f568c6d5f945eb.patch#/pf-a6c083c.patch
 %endif
 
 #Patch3500: postfactum-merge-fixes-2.patch
@@ -2707,6 +2692,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 15 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.0-500.chinfo
+- 5.11.0 - pf0
+
 * Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.16-500.chinfo
 - 5.10.16 - pf13
 
@@ -3048,61 +3036,6 @@ fi
 
 * Mon Nov 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.0-500.chinfo
 - 5.4.0 - pf1
-- Rawhide sync
-
-* Sun Nov 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.13-500.chinfo
-- 5.3.13
-- f31 sync
-
-* Thu Nov 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.12-500.chinfo
-- 5.3.12 - pf9
-
-* Thu Nov 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.11-502.chinfo
-- pf8, BFQ fix
-- Add some openSUSE patches
-
-* Wed Nov 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.11-501.chinfo
-- Revert bfq patch
-
-* Tue Nov 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.11-500.chinfo
-- 5.3.11 - pf7
-- f31 sync
-
-* Sun Nov 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.10-500.chinfo
-- 5.3.10
-
-* Wed Nov 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.9-500.chinfo
-- 5.3.9 - pf6
-
-* Tue Oct 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.8-500.chinfo
-- 5.3.8 - pf5
-
-* Fri Oct 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.7-500.chinfo
-- 5.3.7
-- f31 sync
-
-* Mon Oct 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.6-500.chinfo
-- 5.3.6 - pf4
-
-* Mon Oct 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.5-500.chinfo
-- 5.3.5
-
-* Sat Oct 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.4-500.chinfo
-- 5.3.4
-
-* Tue Oct 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.2-500.chinfo
-- 5.3.2
-- f31 sync
-
-* Sun Sep 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.1-501.chinfo
-- Add some patchwork amdgpu bits
-
-* Sat Sep 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.1-500.chinfo
-- 5.3.1 - pf2
-- f31 sync
-
-* Mon Sep 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.3.0-500.chinfo
-- 5.3.0 - pf1
 - Rawhide sync
 
 ###

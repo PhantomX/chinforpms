@@ -17,20 +17,20 @@
 
 %global buildid .chinfo
 
-%global opensuse_id 24c2efeb5ab3dfbf6fd3d8f90b1999f6e718d539
+%global opensuse_id 64ba0e5a7ef008f2142338ac6c67b66cc8f7fa72
 
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 10
+%global base_sublevel 11
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 16
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -499,7 +499,7 @@ popd
 
 %files -n libbpf
 %{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.2.0
+%{_libdir}/libbpf.so.0.3.0
 %license linux-%{kversion}/COPYING
 
 %files -n libbpf-devel
@@ -547,6 +547,9 @@ popd
 
 
 %changelog
+* Mon Feb 15 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.0-500.chinfo
+- 5.11.0
+
 * Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.16-500.chinfo
 - 5.10.16
 
@@ -919,49 +922,3 @@ popd
 
 * Mon Jul 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.2.0-500.chinfo
 - 5.2.0
-
-* Wed Jul 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.16-500.chinfo
-- 5.1.16
-
-* Tue Jun 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.15-500.chinfo
-- 5.1.15
-
-* Sat Jun 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.14-500.chinfo
-- 5.1.14
-
-* Wed Jun 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.12-500.chinfo
-- 5.1.12
-
-* Sun Jun 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.10-500.chinfo
-- 5.1.10
-
-* Tue Jun 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.9-500.chinfo
-- 5.1.9
-
-* Sun Jun 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.8-500.chinfo
-- 5.1.8
-
-* Tue Jun 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.7-500.chinfo
-- 5.1.7
-
-* Fri May 31 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.6-500.chinfo
-- 5.1.6
-
-* Sat May 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.5-500.chinfo
-- 5.1.5
-
-* Wed May 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.4-500.chinfo
-- 5.1.4
-
-* Thu May 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.3-500.chinfo
-- 5.1.3
-
-* Tue May 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.2-500.chinfo
-- 5.1.2
-
-* Sat May 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.1-500.chinfo
-- 5.1.1
-
-* Mon May 06 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.1.0-500.chinfo
-- 5.1.0
-- Rawhide sync
