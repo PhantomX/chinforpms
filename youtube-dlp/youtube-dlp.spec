@@ -2,7 +2,7 @@
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2021.02.09
+Version:        2021.02.15
 Release:        1%{?dist}
 Summary:        A command-line program to download videos
 
@@ -100,5 +100,8 @@ install -pm0644 %{forkname}.fish \
 
 
 %changelog
+* Tue Feb 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.02.15-1
+- 2021.02.15
+
 * Tue Feb 09 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.02.09-1
 - Initial spec, borrowed from youtube-dl.spec
