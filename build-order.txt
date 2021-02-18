@@ -22,11 +22,11 @@ lzma-sdk
 mingw-headers
 p7zip
 pysdl2
-python-iniherit
+-python-iniherit
 python-markdown-math
-python-pyfavicon
-python-pyotp
-python-pyzbar
+-python-pyfavicon
+-python-pyotp
+-python-pyzbar
 python-vdf
 smooth
 spirv-headers
@@ -48,7 +48,7 @@ libvorbis-aotuv
 mesa
 pygtk2
 python-markups
-python-yoyo-migrations
+-python-yoyo-migrations
 -perl-Gtk3
 perl-X11-GUITest
 spirv-tools
@@ -65,7 +65,7 @@ ario
 asbru-cm
 atool
 -audacious
-authenticator
+-authenticator
 barrier
 bashdb
 -bcg729

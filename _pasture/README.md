@@ -6,6 +6,7 @@ some seasonal packages too, these can return when needed
  * **aisleriot** - Unneeded
  * **alac_decoder** - Unneeded
  * **aom** - Unneeded
+ * **authenticator** - Do not have interest anymore
  * **axel** - Unneeded
  * **bcg729** - linphoneqt
  * **bcmatroska2** - linphoneqt
@@ -53,7 +54,12 @@ some seasonal packages too, these can return when needed
  * **ortp** - linphoneqt
  * **perl-Gtk3** - Unneeded
  * **pspshrink** - Unmaintained
+ * **python-iniherit** - python-yoyo-migrations
  * **python-pafy** - mps-youtube
+ * **python-pyfavicon** - authenticator
+ * **python-pyotp** - authenticator
+ * **python-pyzbar** - authenticator
+ * **python-yoyo-migrations** - authenticator
  * **psi** - Seasonal package
  * **qemu** - Seasonal package
  * **rust** - Pinned version for Waterfox build
