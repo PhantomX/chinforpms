@@ -3,7 +3,7 @@
 
 Name:           youtube-dlp
 Version:        2021.02.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A command-line program to download videos
 
 License:        Unlicense
@@ -11,6 +11,8 @@ URL:            https://github.com/pukkandan/yt-dlp
 
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        %{pkgname}.conf
+
+Patch0:         0001-Use-pycryptodomex-instead-pycryptodome.patch
 
 BuildArch:      noarch
 
@@ -38,8 +40,6 @@ This is a fork of youtube-dlc which is inturn a fork of youtube-dl.
 
 %prep
 %autosetup -p1 -n %{pkgname}-%{version}
-
-sed -e "s|Crypto|pycrypto|g" -i setup.py requirements.txt
 
 # remove pre-built file
 rm -f %{forkname}
@@ -100,6 +100,9 @@ install -pm0644 %{forkname}.fish \
 
 
 %changelog
+* Thu Feb 18 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.02.15-2
+- pycryptodomex fix
+
 * Tue Feb 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.02.15-1
 - 2021.02.15
 

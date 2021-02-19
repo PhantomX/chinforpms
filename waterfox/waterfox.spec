@@ -450,7 +450,7 @@ for i in _patches/patch-{bug{??????,???????},revert-bug*,z-*} ;do
   ${patchcommand} ${i}
 done
 
-# Install langpacks other way
+# Install langpacks another way
 %patch700 -p1 -b .nolangpacks
 %patch701 -p1 -b .waterfoxdir-1
 %patch702 -p1 -b .waterfoxdir-2
