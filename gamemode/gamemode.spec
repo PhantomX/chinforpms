@@ -8,7 +8,7 @@
 %endif
 
 Name:           gamemode
-Version:        1.6
+Version:        1.6.1
 Release:        100%{?gver}%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
@@ -51,7 +51,7 @@ application integration with %{name}.
 %autosetup -p1
 %endif
 
-rm -rf subprojects/inih
+rm -rf subprojects/inih-*
 
 sed -e '/^GAMEMODEAUTO_NAME/s|lib|/usr/\\$LIB/lib|' -i data/%{name}run
 
@@ -65,10 +65,6 @@ sed -e '/^GAMEMODEAUTO_NAME/s|lib|/usr/\\$LIB/lib|' -i data/%{name}run
 %meson_install
 
 rm -f %{buildroot}%{_libdir}/*.a
-
-mkdir -p %{buildroot}%{_mandir}/man{1,8}
-mv %{buildroot}%{_mandir}/*.1 %{buildroot}%{_mandir}/man1/
-mv %{buildroot}%{_mandir}/*.8 %{buildroot}%{_mandir}/man8/
 
 
 %files
@@ -93,6 +89,9 @@ mv %{buildroot}%{_mandir}/*.8 %{buildroot}%{_mandir}/man8/
 
 
 %changelog
+* Fri Feb 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.6.1-100
+- 1.6.1
+
 * Fri Sep 11 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.6-100
 - 1.6
 

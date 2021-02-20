@@ -7,7 +7,7 @@
 %global commit 0c18a8609025d29f91b69e5ffce742b497140f47
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210212
-%global with_snapshot 1
+%global with_snapshot 0
 
 %{?mingw_package_header}
 
@@ -18,7 +18,7 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id 88e6392346dc1677d4898e6d4aa27a9026778e08
+%global sporif_id 0d5d38d109ab85295565da50ca0b9ed11e118c52
 %global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
 
 %global valve_url https://github.com/ValveSoftware/dxvk
@@ -34,8 +34,8 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.7.3
-Release:        107%{?gver}%{?dist}
+Version:        1.8
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -53,8 +53,6 @@ Source3:        %{name}-README-chinforpms
 
 Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
 Patch101:       %{url}/pull/1582.patch#/%{name}-gh-pr1582.patch
-Patch102:       %{url}/pull/1759.patch#/%{name}-gh-pr1759.patch
-Patch103:       %{url}/pull/1805.patch#/%{name}-gh-pr1805.patch
 
 %if 0%{?dxvk_async}
 Patch200:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
@@ -124,8 +122,6 @@ package or when debugging this package.
 %endif
 %patch100 -p1
 %patch101 -p1
-%patch102 -p1
-%patch103 -p1
 
 %patch200 -p1
 %patch201 -p1
@@ -245,6 +241,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Feb 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8-100
+- 1.8
+
 * Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.7.3-107.20210212git0c18a86
 - Update
 

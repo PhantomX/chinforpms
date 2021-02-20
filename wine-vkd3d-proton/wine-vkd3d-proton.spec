@@ -4,6 +4,8 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
+%global with_sysvulkan 0
+
 # Need be set for release builds too
 %global commit d003424bc826afd005c68f8a8f0d42e4dae00fd0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
@@ -12,17 +14,21 @@
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 590bde01a6a341c75a86243cba01793b594b0410
+%global commit1 9857a0e60fdd2f53ab4223aa2435135630f4c29f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 a0370efd589be33d5d9a85cfde2f85841b3755af
+%global commit2 ef3290bbea35935ba8fd623970511ed9f045bbd7
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
-%global commit3 e50f7d1ce8e162d0c826e84168cfa234e4de4ec9
+%global commit3 621884d70917038caf7509f7b1b3c143807ff43f
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
+
+%global commit4 fe9850767d00e46b230da6cfbc15eb86636017bd
+%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
+%global srcname4 Vulkan-Headers
 
 %{?mingw_package_header}
 
@@ -48,7 +54,7 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.1
+Version:        2.2
 Release:        1%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
@@ -63,9 +69,12 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        https://github.com/HansKristian-Work/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        %{kg_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        %{kg_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+%if !0%{?with_sysvulkan}
+Source4:        %{kg_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+%endif
 
-Source4:        README.%{pkgname}-mingw
-Source5:        winevkd3dcfg
+Source10:        README.%{pkgname}-mingw
+Source11:        winevkd3dcfg
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -125,12 +134,17 @@ package or when debugging this package.
 tar -xf %{S:1} -C subprojects/dxil-spirv --strip-components 1
 tar -xf %{S:2} -C subprojects/dxil-spirv/third_party/SPIRV-Tools --strip-components 1
 tar -xf %{S:3} -C subprojects/dxil-spirv/third_party/SPIRV-Cross --strip-components 1
+%if !0%{?with_sysvulkan}
+tar -xf %{S:4} -C subprojects/Vulkan-Headers --strip-components 1
+%endif
 
 find -type f -name '*.h' -exec chmod -x {} ';'
 
+%if 0%{?with_sysvulkan}
 mkdir -p subprojects/Vulkan-Headers/include
 ln -sf %{_includedir}/vulkan \
   subprojects/Vulkan-Headers/include/vulkan
+%endif
 
 mkdir -p subprojects/SPIRV-Headers/include
 ln -sf %{_includedir}/spirv \
@@ -154,9 +168,9 @@ sed \
 sed -e 's|@VCS_TAG@|%{buildcommit}|g' -i vkd3d_build.h.in
 sed -e 's|@VCS_TAG@|v%{version}|g' -i vkd3d_version.h.in
 
-cp %{S:4} README.%{pkgname}
+cp %{S:10} README.%{pkgname}
 
-cp %{S:5} .
+cp %{S:11} .
 
 mesonarray(){
   echo -n "$1" | sed -e "s|\s\s\s\s\s| |g" -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
@@ -196,7 +210,10 @@ sed \
   -e "/^cpp_link_args/s|]|, '$TEMP_LDFLAGS'\0|g" \
   -i build-win*.txt
 
-sed -e "/^c_link_args =/acpp_args = ['$TEMP_CFLAGS']" -i build-win64.txt
+sed \
+  -e "/^c_link_args =/ac_args = ['$TEMP_CFLAGS']" \
+  -e "/^c_link_args =/acpp_args = ['$TEMP_CFLAGS']" \
+  -i build-win64.txt
 
 
 %build
@@ -206,7 +223,7 @@ meson \
   --wrap-mode=nodownload \
   --cross-file build-%{cfname}${i}.txt \
   --buildtype "plain" \
-  -Denable_standalone_d3d12=true \
+  -Denable_d3d12=true \
   %{_target_platform}${i} \
 %{nil}
 
@@ -252,6 +269,10 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Feb 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2.2-1
+- 2.2
+- Build with bundled vulkan headers for the time
+
 * Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1-1
 - 2.1
 
