@@ -37,7 +37,7 @@
 
 Name:           gtk3
 Version:        3.24.25
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -48,6 +48,11 @@ Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -
 Source1:        %{mushroom_url}/archive/%{mushroom_ver}/gtk3-mushrooms-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
 Source3:        gtk3-mushrooms-gtk-3.2.12-fix.patch
+
+Patch0:         %{vc_url}/22960c5c20cf5a2d4666645f259d376784a11331.patch#/gtk3-gl-22960c5.patch
+Patch1:         %{vc_url}/d11cde0c1cd01b6db59605fef95b746620011e08.patch#/gtk3-gl-d11cde0.patch
+Patch2:         %{vc_url}/ca34428d177cbe5044c11e12b1bd9ef5e045c917.patch#/gtk3-gl-ca34428.patch
+Patch3:         %{vc_url}/4d30400987d013b410bdff33f92bf67e2b814aa9.patch#/gtk3-gl-4d30400.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -61,7 +66,6 @@ Patch104:       gtk+3-startup-mode-cwd.patch
 Patch105:       gtk+3-dateformat-with_time.patch
 Patch106:       gtk+3-location_mode-filename.patch
 Patch107:       gtk+3-print-preview.patch
-Patch108:       gtk3-revert-make-scrollbars-larger.patch
 
 # Debian
 Patch200:       016_no_offscreen_widgets_grabbing.patch
@@ -240,6 +244,7 @@ cp %{mushroom_dir}/README.md README-mushrooms.md
 
 cat %{S:2} | tee -a gtk/theme/Adwaita/gtk-contained{,-dark}.css > /dev/null
 
+rm -fv gtk/gtkresources.c
 rm -fv testsuite/gtk/gtkresources.c testsuite/gtk/gtkprivate.c
 
 %build
@@ -403,6 +408,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Sun Feb 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.25-102
+- Upstream fixes
+
 * Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.25-101
 - Revert scrollbars size
 

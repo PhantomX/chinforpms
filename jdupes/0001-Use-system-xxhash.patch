@@ -1,6 +1,6 @@
-From 1324cda3f3f821b0643db826d37d6c0ff345f19b Mon Sep 17 00:00:00 2001
+From adfad030e0ddfaefdba401835557d94a429a16c1 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 29 Sep 2020 19:39:43 -0300
+Date: Sun, 21 Feb 2021 10:16:49 -0300
 Subject: [PATCH] Use system xxhash
 
 ---
@@ -10,18 +10,16 @@ Subject: [PATCH] Use system xxhash
  3 files changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 631df16..822fc90 100644
+index afebf3e..2b1eed0 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -138,7 +138,6 @@ INSTALL_DATA    = $(INSTALL) -m 0644
- OBJS += jdupes.o jody_paths.o jody_sort.o jody_win_unicode.o jody_strtoepoch.o string_malloc.o
+@@ -152,20 +152,19 @@ INSTALL_DATA    = $(INSTALL) -m 0644
+ OBJS += jdupes.o jody_paths.o jody_sort.o jody_win_unicode.o jody_strtoepoch.o string_malloc.o oom.o
  OBJS += jody_cacheinfo.o
  OBJS += act_deletefiles.o act_linkfiles.o act_printmatches.o act_summarize.o act_printjson.o
 -OBJS += xxhash.o
  OBJS += $(ADDITIONAL_OBJECTS)
  
- OBJS_CLEAN += jdupes-standalone
-@@ -146,14 +145,14 @@ OBJS_CLEAN += jdupes-standalone
  all: $(PROGRAM_NAME)
  
  static: $(PROGRAM_NAME)
@@ -37,10 +35,10 @@ index 631df16..822fc90 100644
 -	$(CC) $(CFLAGS) $(LDFLAGS) -o $(PROGRAM_NAME) $(OBJS)
 +	$(CC) $(CFLAGS) -lxxhash $(LDFLAGS) -o $(PROGRAM_NAME) $(OBJS)
  
- winres.o : winres.rc winres.manifest.xml
+ winres.o: winres.rc winres.manifest.xml
  	./tune_winres.sh
 diff --git a/jdupes.c b/jdupes.c
-index 439ed8e..ef3fc60 100644
+index 6b3737e..c4baefd 100644
 --- a/jdupes.c
 +++ b/jdupes.c
 @@ -42,7 +42,7 @@
@@ -49,11 +47,11 @@ index 439ed8e..ef3fc60 100644
  #include "jdupes.h"
 -#include "xxhash.h"
 +#include <xxhash.h>
+ #include "oom.h"
  #ifdef ENABLE_DEDUPE
  #include <sys/utsname.h>
- #endif
 diff --git a/jdupes.h b/jdupes.h
-index 4359517..c5737b8 100644
+index 38c0469..d6606dd 100644
 --- a/jdupes.h
 +++ b/jdupes.h
 @@ -32,7 +32,7 @@ extern "C" {
@@ -66,5 +64,5 @@ index 4359517..c5737b8 100644
  /* Set hash type (change this if swapping in a different hash function) */
   typedef XXH64_hash_t jdupes_hash_t;
 -- 
-2.26.2
+2.29.2
 

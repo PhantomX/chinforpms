@@ -1,7 +1,7 @@
-%global commit 4f1b297a14bbd304fb20da7c4b64266c14d110e5
+%global commit 4de079bb7247c8b849558c0f27a280a9546c5570
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210205
-%global with_snapshot 0
+%global date 20210219
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.2
+%global wine_stagingver 9aeea5d12e008266c0aff42c48e13d5545956478
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id c25384462d2971af21804e87867e98625555373c
+%global tkg_id 0493925d670368f2ef515b4f154e53e191f226c0
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -98,7 +98,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.2
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -167,10 +167,15 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # Revert to fix many game launchers displaying empty windows
 # https://bugs.winehq.org/show_bug.cgi?id=49990
+# 100-106
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 Patch101:       %{whq_url}/1fceb1213992b79aa7f1a5dc0a72ab3756ee524d#/%{name}-whq-1fceb12.patch
 Patch102:       %{whq_url}/cf4fe13a41b7cc0a624da7741ae528ef21032736#/%{name}-whq-cf4fe13.patch
 Patch103:       %{whq_url}/beb9c6578ad8e21eb4b34366dbc3dff8b8c2ae5d#/%{name}-whq-beb9c65.patch
+Patch104:       %{whq_url}/a0a6fad695d2f9d1eb2601725ac27c9a9949026b#/%{name}-whq-a0a6fad.patch
+Patch105:       %{whq_url}/a67d7c15336ea5caa89099952da1fc1998188029#/%{name}-whq-a67d7c1.patch
+# Restore the prefer builtin vulkan-1 behavior with proton* patches
+Patch106:       %{whq_url}/290c9a4d6372cee046768eccd8fa49050a294f68#/%{name}-whq-290c9a4.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -186,6 +191,7 @@ Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patc
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
 Patch1021:       %{tkg_url}/proton/server_Abort_waiting_on_a_completion_port_when_closing_it.patch#/%{name}-tkg-server_Abort_waiting_on_a_completion_port_when_closing_it.patch
+Patch1022:       %{tkg_url}/proton/fsync_futex2.patch#/%{name}-tkg-fsync_futex2.patch
 # FS Hack
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch1024:       %{tkg_url}/proton/proton-rawinput.patch#/%{name}-tkg-proton-rawinput.patch
@@ -802,6 +808,9 @@ This package adds the opencl driver for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch106 -p1 -R
+%patch105 -p1 -R
+%patch104 -p1 -R
 %patch103 -p1 -R
 %patch102 -p1 -R
 %patch101 -p1 -R
@@ -809,7 +818,6 @@ This package adds the opencl driver for wine.
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
-
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
@@ -837,6 +845,7 @@ cp -p %{S:3001} README-pba-pkg
 
 %patch1020 -p1
 %patch1021 -p1
+%patch1022 -p1
 %if 0%{?fshack}
 %patch1023 -p1
 %patch1024 -p1
@@ -2724,6 +2733,9 @@ fi
 
 
 %changelog
+* Sat Feb 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.2-101.20210219git4de079b
+- Snapshot
+
 * Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.2-100
 - 6.2
 
