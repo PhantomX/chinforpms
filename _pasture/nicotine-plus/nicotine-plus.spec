@@ -11,7 +11,7 @@
 %global vc_url  https://github.com/%{name}/%{name}
 
 Name:           nicotine-plus
-Version:        2.2.2
+Version:        3.0.0
 Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -34,7 +34,7 @@ BuildRequires:  libappstream-glib
 BuildRequires:  %{py3_dist pygobject}
 BuildRequires:  %{py3_dist pytest}
 BuildRequires:  python3-devel
-Requires:       gobject-introspection
+Requires:       gdbm
 Requires:       gtk3
 Requires:       libappindicator-gtk3
 Requires:       %{py3_dist pygobject}
@@ -94,6 +94,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 
 
 %changelog
+* Mon Feb 22 2021 Phantom X <megaphantomx at hotmail dot com> - 3.0.0-100
+- 3.0.0
+
 * Thu Dec 24 2020 Phantom X <megaphantomx at hotmail dot com> - 2.2.2-100
 - 2.2.2
 

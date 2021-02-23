@@ -1,6 +1,6 @@
-%global commit 23a48dd01c86ef01cd1d13371de51247ec9a503b
+%global commit 4d970754a4a700ba45409e11275b89e6523d87ce
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200430
+%global date 20210220
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           deluge
 Version:        2.0.3
-Release:        108%{?gver}%{?dist}
+Release:        109%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -272,6 +272,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Mon Feb 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.3-109.20210220git4d97075
+- Update
+
 * Tue Jan 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.3-108.20200430git23a48dd
 - Fix python BRs
 - Rawhide sync

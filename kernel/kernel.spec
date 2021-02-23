@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 6e64d3d87808bfa40e66ef11f9282b2ece339948
+%global pfcommit 90698fa8ae725b0d60450a07ef580e5c70d88eb0
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -875,6 +875,7 @@ Patch1020: %{opensuse_url}/media-uvcvideo-Accept-invalid-bFormatIndex-and-bFram.
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2003: 0001-fsync.patch
+Patch2004: 0001-futex2.patch
 
 %if !0%{?post_factum}
 

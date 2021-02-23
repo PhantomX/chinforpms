@@ -7,7 +7,7 @@
 %global commit 47342f6974ac0faccabd8c8b7d00fdfcd483d086
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200327
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -15,8 +15,8 @@
 
 Name:           taglib
 Summary:        Audio Meta-Data Library
-Version:        1.11.1
-Release:        104%{?gver}%{?dist}
+Version:        1.12
+Release:        100%{?gver}%{?dist}
 
 Epoch:          1
 
@@ -31,9 +31,8 @@ Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.g
 %endif
 
 # http://bugzilla.redhat.com/343241
-Patch102:       taglib-1.5rc1-multilib.patch
+Patch102:       taglib-1.12-multilib.patch
 
-Patch110:       %{vc_url}/pull/930.patch#/%{name}-gh-pull930.patch
 Patch111:       %{vc_url}/pull/932.patch#/%{name}-gh-pull932.patch
 
 
@@ -142,6 +141,9 @@ test "$(pkg-config --modversion taglib_c)" = "%{version}"
 
 
 %changelog
+* Mon Feb 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.12-100
+- 1.12
+
 * Sat May 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:1.11.1-104.20200327git47342f6
 - New snapshot
 
