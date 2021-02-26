@@ -1,6 +1,6 @@
-From 8968bb264eeddb60daabe3662e2c37f534d98b36 Mon Sep 17 00:00:00 2001
+From 0fe79e44be81da2a7fd7a3a25304da6cdcaf412e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 28 Jan 2021 22:37:22 -0300
+Date: Wed, 24 Feb 2021 21:08:11 -0300
 Subject: [PATCH] Use system libs
 
 ---
@@ -15,7 +15,7 @@ Subject: [PATCH] Use system libs
  8 files changed, 96 insertions(+), 5 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 48ab960..b95f907 100644
+index 37373d7..fa2aa27 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -11,6 +11,9 @@ option(ENABLE_OPROFILE "Enable OProfile" OFF)
@@ -75,23 +75,22 @@ index 48ab960..b95f907 100644
  
 -find_package(PkgConfig QUIET)
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
-     pkg_search_module(AO ao)
+     pkg_check_modules(AO IMPORTED_TARGET ao)
      if(AO_FOUND)
-@@ -189,11 +212,13 @@ if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
-         target_link_libraries(${PROJECT_NAME} PRIVATE ${AO_LIBRARIES})
+@@ -188,10 +211,12 @@ if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
+         target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::AO)
      endif()
  
 +    if(NOT USE_SYSTEM_CHDR)
-     pkg_search_module(FLAC flac)
+     pkg_check_modules(FLAC IMPORTED_TARGET flac)
      if(FLAC_FOUND)
-         target_include_directories(${PROJECT_NAME} PRIVATE ${FLAC_INCLUDE_DIRS})
-         target_link_libraries(${PROJECT_NAME} PRIVATE ${FLAC_LIBRARIES})
+         target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::FLAC)
      endif()
 +    endif()
  
-     pkg_search_module(LIBEVDEV libevdev)
+     pkg_check_modules(LIBEVDEV IMPORTED_TARGET libevdev)
      if(LIBEVDEV_FOUND)
-@@ -270,6 +295,14 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -264,6 +289,14 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdpsr/cdipsr.h)
  
  target_compile_definitions(${PROJECT_NAME} PRIVATE CHD5_FLAC CHD5_LZMA)
@@ -106,7 +105,7 @@ index 48ab960..b95f907 100644
  target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdr/bitstream.c
          core/deps/chdr/bitstream.h
-@@ -282,7 +315,11 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -276,7 +309,11 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdr/flac.h
          core/deps/chdr/huffman.c
          core/deps/chdr/huffman.h)
@@ -118,7 +117,7 @@ index 48ab960..b95f907 100644
  target_sources(${PROJECT_NAME} PRIVATE
          core/deps/crypto/md5.cpp
          core/deps/crypto/md5.h
-@@ -291,8 +328,6 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -285,8 +322,6 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/crypto/sha256.cpp
          core/deps/crypto/sha256.h)
  
@@ -127,7 +126,7 @@ index 48ab960..b95f907 100644
  if(NOT FLAC_FOUND)
      target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_CONFIG_H $<$<BOOL:MINGW>:HAVE_FSEEKO>)
      target_include_directories(${PROJECT_NAME} PRIVATE core/deps/flac/include core/deps/flac/src/libFLAC/include)
-@@ -319,6 +354,7 @@ if(NOT FLAC_FOUND)
+@@ -313,6 +348,7 @@ if(NOT FLAC_FOUND)
              core/deps/flac/src/libFLAC/window.c
              core/deps/flac/src/libFLAC/windows_unicode_filenames.c)
  endif()
@@ -135,7 +134,7 @@ index 48ab960..b95f907 100644
  
  if(NOT MINIUPNP_FOUND)
  	option(UPNPC_BUILD_SHARED "Build shared library" OFF)
-@@ -416,15 +452,37 @@ if(NOT MSVC)
+@@ -410,15 +446,37 @@ if(NOT MSVC)
              core/deps/picotcp/stack/pico_tree.c)
  endif()
  
@@ -176,7 +175,7 @@ index 48ab960..b95f907 100644
          core/archive/archive.h
          core/archive/rzip.cpp
 diff --git a/core/archive/7zArchive.cpp b/core/archive/7zArchive.cpp
-index cb79196..04a645c 100644
+index 4f8201b..49e67d8 100644
 --- a/core/archive/7zArchive.cpp
 +++ b/core/archive/7zArchive.cpp
 @@ -19,9 +19,16 @@

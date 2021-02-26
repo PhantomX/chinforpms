@@ -2,8 +2,8 @@
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2021.02.15
-Release:        2%{?dist}
+Version:        2021.02.24
+Release:        1%{?dist}
 Summary:        A command-line program to download videos
 
 License:        Unlicense
@@ -42,22 +42,22 @@ This is a fork of youtube-dlc which is inturn a fork of youtube-dl.
 %autosetup -p1 -n %{pkgname}-%{version}
 
 # remove pre-built file
-rm -f %{forkname}
+rm -f %{pkgname}
 
 cp -a setup.py setup.py.installpath
 # Remove files that are installed to the wrong path
-sed -i '/%{forkname}.bash-completion/d' setup.py
-sed -i '/%{forkname}.fish/d' setup.py
+sed -i '/%{pkgname}.bash-completion/d' setup.py
+sed -i '/%{pkgname}.fish/d' setup.py
 sed -i '/README.txt/d' setup.py
 
 # Remove interpreter shebang from module files.
-find youtube_dlc -type f -exec sed -i -e '1{/^\#!\/usr\/bin\/env python$/d;};' {} +
+find yt_dlp -type f -exec sed -i -e '1{/^\#!\/usr\/bin\/env python$/d;};' {} +
 
 
 %build
 %py3_build
 
-%make_build youtube-dlc.1 bash-completion zsh-completion fish-completion
+%make_build %{pkgname}.1 bash-completion zsh-completion fish-completion
 
 %install
 %py3_install
@@ -66,16 +66,16 @@ mkdir -p %{buildroot}%{_sysconfdir}
 install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
-install -pm0644 %{forkname}.bash-completion \
-  %{buildroot}%{_datadir}/bash-completion/completions/%{forkname}
+install -pm0644 %{pkgname}.bash-completion \
+  %{buildroot}%{_datadir}/bash-completion/completions/%{pkgname}
 
 mkdir -p %{buildroot}%{_datadir}/zsh/site-functions/
-install -pm0644 %{forkname}.zsh \
-  %{buildroot}%{_datadir}/zsh/site-functions/_%{forkname}
+install -pm0644 %{pkgname}.zsh \
+  %{buildroot}%{_datadir}/zsh/site-functions/_%{pkgname}
 
 mkdir -p %{buildroot}%{_datadir}/fish/vendor_functions.d
-install -pm0644 %{forkname}.fish \
-  %{buildroot}%{_datadir}/fish/vendor_functions.d/%{forkname}.fish
+install -pm0644 %{pkgname}.fish \
+  %{buildroot}%{_datadir}/fish/vendor_functions.d/%{pkgname}.fish
 
 
 %check
@@ -89,17 +89,20 @@ install -pm0644 %{forkname}.fish \
 %files
 %doc CONTRIBUTORS Changelog.md README.md
 %license LICENSE
-%{_bindir}/%{forkname}
+%{_bindir}/%{pkgname}
 %config(noreplace) %{_sysconfdir}/%{pkgname}.conf
-%{_mandir}/man1/%{forkname}.1*
-%{python3_sitelib}/youtube_dlc/
+%{_mandir}/man1/%{pkgname}.1*
+%{python3_sitelib}/yt_dlp/
 %{python3_sitelib}/yt_dlp*.egg-info
-%{_datadir}/bash-completion/completions/%{forkname}
-%{_datadir}/zsh/site-functions/_%{forkname}
-%{_datadir}/fish/vendor_functions.d/%{forkname}.fish
+%{_datadir}/bash-completion/completions/%{pkgname}
+%{_datadir}/zsh/site-functions/_%{pkgname}
+%{_datadir}/fish/vendor_functions.d/%{pkgname}.fish
 
 
 %changelog
+* Thu Feb 25 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.02.24-1
+- 2021.02.24
+
 * Thu Feb 18 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.02.15-2
 - pycryptodomex fix
 

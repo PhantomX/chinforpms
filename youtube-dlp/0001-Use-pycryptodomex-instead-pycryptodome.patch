@@ -7,8 +7,8 @@ Fedora only have pycryptodomex
 ---
  requirements.txt                   | 2 +-
  setup.py                           | 2 +-
- youtube_dlc/downloader/external.py | 2 +-
- youtube_dlc/downloader/hls.py      | 2 +-
+ yt_dlp/downloader/external.py | 2 +-
+ yt_dlp/downloader/hls.py      | 2 +-
  4 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/requirements.txt b/requirements.txt
@@ -34,8 +34,8 @@ index 09e2c84..6daaf1a 100644
  if len(sys.argv) >= 2 and sys.argv[1] == 'py2exe':
 diff --git a/youtube_dlc/downloader/external.py b/youtube_dlc/downloader/external.py
 index ff82d67..4f58301 100644
---- a/youtube_dlc/downloader/external.py
-+++ b/youtube_dlc/downloader/external.py
+--- a/yt_dlp/downloader/external.py
++++ b/yt_dlp/downloader/external.py
 @@ -7,7 +7,7 @@ import sys
  import time
  
@@ -47,8 +47,8 @@ index ff82d67..4f58301 100644
      can_decrypt_frag = False
 diff --git a/youtube_dlc/downloader/hls.py b/youtube_dlc/downloader/hls.py
 index 0d42747..c005ff9 100644
---- a/youtube_dlc/downloader/hls.py
-+++ b/youtube_dlc/downloader/hls.py
+--- a/yt_dlp/downloader/hls.py
++++ b/yt_dlp/downloader/hls.py
 @@ -3,7 +3,7 @@ from __future__ import unicode_literals
  import re
  import binascii
