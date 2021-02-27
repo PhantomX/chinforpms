@@ -1,4 +1,4 @@
-From 72223fd1241cc5c70b96a491db14d54c83beadd8 Mon Sep 17 00:00:00 2001
+From 344f56463c3613302558a981b807ca1423f3fb1b Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Mon, 30 Sep 2019 21:22:47 +0000
 Subject: [PATCH] security: lockdown: expose a hook to lock the kernel down
@@ -17,10 +17,10 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  5 files changed, 20 insertions(+)
 
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 2a8c74d99015..0d3129588b78 100644
+index 7aaa753b8608..8e164db118c3 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -383,6 +383,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -385,6 +385,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
  
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -30,10 +30,10 @@ index 2a8c74d99015..0d3129588b78 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 9e2e3e63719d..317660f68b4f 100644
+index a19adef1f088..57cce0d5c347 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1507,6 +1507,12 @@
+@@ -1520,6 +1520,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -47,10 +47,10 @@ index 9e2e3e63719d..317660f68b4f 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 0a0a03b36a3b..26869f44416b 100644
+index c35ea0ffccd9..342d4579bf5c 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -451,6 +451,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -457,6 +457,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -58,7 +58,7 @@ index 0a0a03b36a3b..26869f44416b 100644
  #else /* CONFIG_SECURITY */
  
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1291,6 +1292,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1305,6 +1306,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -82,10 +82,10 @@ index 87cbdc64d272..18555cf18da7 100644
  
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 70a7ad357bc6..23e16e773bc2 100644
+index 7b09cfbae94f..e1c7bda4de13 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2516,6 +2516,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2534,6 +2534,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  

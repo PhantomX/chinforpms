@@ -60,7 +60,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        20.3.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -70,6 +70,9 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
+
+Patch0:         %{vc_url}/commit/d2dfc356e26e607bf0808e1b5a747cc1a2699681.patch#/%{name}-gl-d2dfc35.patch
+Patch1:         %{vc_url}/commit/ccacfc317e4fac62052a22e2d092d15541e2877e.patch#/%{name}-gl-ccacfc3.patch
 
 
 BuildRequires:  meson >= 0.45
@@ -655,6 +658,9 @@ popd
 
 
 %changelog
+* Fri Feb 26 2021 Phantom X - 20.3.4-101
+- Upstream fixes
+
 * Fri Jan 29 2021 Phantom X <megaphantomx at hotmail dot com> - 20.3.4-100
 - 20.3.4
 

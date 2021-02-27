@@ -1,6 +1,6 @@
-From e6fb339e6e9c8b8404f46cf99a2bd392f47bdc93 Mon Sep 17 00:00:00 2001
-From: Fedora Kernel Team <kernel-team@fedoraproject.org>
-Date: Mon, 15 Feb 2021 10:06:33 -0300
+From aef981fe45fd22aa25962217f8f0c6fe7399a013 Mon Sep 17 00:00:00 2001
+From: Jeremy Cline <jcline@redhat.com>
+Date: Wed, 30 Oct 2019 14:37:49 +0000
 Subject: [PATCH] s390: Lock down the kernel when the IPL secure flag is set
 
 Automatically lock down the kernel to LOCKDOWN_CONFIDENTIALITY_MAX if
@@ -16,7 +16,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  3 files changed, 10 insertions(+)
 
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
-index a9e2c72..6ff11f3 100644
+index a9e2c7295b35..6ff11f3a2d47 100644
 --- a/arch/s390/include/asm/ipl.h
 +++ b/arch/s390/include/asm/ipl.h
 @@ -127,6 +127,7 @@ int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
@@ -28,7 +28,7 @@ index a9e2c72..6ff11f3 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 7a21eca..565f143 100644
+index 7a21eca498aa..565f143c9858 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
 @@ -2215,3 +2215,8 @@ int ipl_report_free(struct ipl_report *report)
@@ -41,7 +41,7 @@ index 7a21eca..565f143 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 1fbed91..73f5724 100644
+index 1fbed91c73bc..73f5724342b1 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@

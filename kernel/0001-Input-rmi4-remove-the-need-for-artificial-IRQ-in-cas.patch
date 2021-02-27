@@ -1,4 +1,4 @@
-From 5ef51389cf6673a0e9e004909c7be1dc785050b2 Mon Sep 17 00:00:00 2001
+From d026e4a9a6cddb5c1cf7b5a3668f5662fdcee884 Mon Sep 17 00:00:00 2001
 From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 Date: Mon, 3 Apr 2017 18:18:21 +0200
 Subject: [PATCH] Input: rmi4 - remove the need for artificial IRQ in case of
@@ -22,7 +22,7 @@ Signed-off-by: Lyude <lyude@redhat.com>
  3 files changed, 75 insertions(+), 114 deletions(-)
 
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index 311eee5..2460c6b 100644
+index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
 @@ -322,19 +322,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
@@ -122,7 +122,7 @@ index 311eee5..2460c6b 100644
  	data->xport.ops = &hid_rmi_ops;
  
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
-index 258d5fe..f7298e3 100644
+index 258d5fe3d395..f7298e3dc8f3 100644
 --- a/drivers/input/rmi4/rmi_driver.c
 +++ b/drivers/input/rmi4/rmi_driver.c
 @@ -182,34 +182,47 @@ void rmi_set_attn_data(struct rmi_device *rmi_dev, unsigned long irq_status,
@@ -314,7 +314,7 @@ index 258d5fe..f7298e3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
-index ab7eea0..fff7c5f 100644
+index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
 +++ b/include/linux/rmi.h
 @@ -364,6 +364,7 @@ struct rmi_driver_data {

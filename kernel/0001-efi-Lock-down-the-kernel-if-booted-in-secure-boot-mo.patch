@@ -1,4 +1,4 @@
-From 5850c93175b9d2e1081873f4bbe08dead202cb08 Mon Sep 17 00:00:00 2001
+From 5e328adcf76fe5a01251b68f7361dc162b798efa Mon Sep 17 00:00:00 2001
 From: David Howells <dhowells@redhat.com>
 Date: Mon, 30 Sep 2019 21:28:16 +0000
 Subject: [PATCH] efi: Lock down the kernel if booted in secure boot mode
@@ -18,7 +18,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  2 files changed, 21 insertions(+)
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 1ea3d10..db04c42 100644
+index 1ea3d10b1acf..db04c427e35c 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -19,6 +19,7 @@
@@ -44,7 +44,7 @@ index 1ea3d10..db04c42 100644
  
  	/*
 diff --git a/security/lockdown/Kconfig b/security/lockdown/Kconfig
-index e84ddf4..d050135 100644
+index e84ddf484010..d0501353a4b9 100644
 --- a/security/lockdown/Kconfig
 +++ b/security/lockdown/Kconfig
 @@ -16,6 +16,19 @@ config SECURITY_LOCKDOWN_LSM_EARLY

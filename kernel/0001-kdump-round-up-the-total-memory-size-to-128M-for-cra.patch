@@ -1,4 +1,4 @@
-From 18fb1389afccdc5535977a10669b49a37829b55a Mon Sep 17 00:00:00 2001
+From 646ba5eeb64390f10940610fc387004847ef1ba3 Mon Sep 17 00:00:00 2001
 From: Dave Young <dyoung@redhat.com>
 Date: Mon, 4 Jun 2018 01:38:25 -0400
 Subject: [PATCH] kdump: round up the total memory size to 128M for crashkernel
@@ -45,7 +45,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index 18175687133a..e4dfe2a05a31 100644
+index 825284baaf46..632b5a76bb21 100644
 --- a/kernel/crash_core.c
 +++ b/kernel/crash_core.c
 @@ -7,6 +7,7 @@
@@ -56,7 +56,7 @@ index 18175687133a..e4dfe2a05a31 100644
  
  #include <asm/page.h>
  #include <asm/sections.h>
-@@ -39,6 +40,15 @@ static int __init parse_crashkernel_mem(char *cmdline,
+@@ -41,6 +42,15 @@ static int __init parse_crashkernel_mem(char *cmdline,
  					unsigned long long *crash_base)
  {
  	char *cur = cmdline, *tmp;
@@ -72,7 +72,7 @@ index 18175687133a..e4dfe2a05a31 100644
  
  	/* for each entry of the comma-separated list */
  	do {
-@@ -83,13 +93,13 @@ static int __init parse_crashkernel_mem(char *cmdline,
+@@ -85,13 +95,13 @@ static int __init parse_crashkernel_mem(char *cmdline,
  			return -EINVAL;
  		}
  		cur = tmp;

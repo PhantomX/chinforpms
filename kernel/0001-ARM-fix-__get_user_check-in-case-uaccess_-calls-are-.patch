@@ -1,4 +1,4 @@
-From 80660062260dec4bdca9540922577542c16145e8 Mon Sep 17 00:00:00 2001
+From 0c5558c7b1e4e913f21c24d5f3d0ccf9f0bf48b2 Mon Sep 17 00:00:00 2001
 From: Masahiro Yamada <yamada.masahiro@socionext.com>
 Date: Mon, 30 Sep 2019 14:59:25 +0900
 Subject: [PATCH] ARM: fix __get_user_check() in case uaccess_* calls are not
@@ -51,7 +51,7 @@ Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
  1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm/include/asm/uaccess.h b/arch/arm/include/asm/uaccess.h
-index b5fdd30252f8..d43ceaa78269 100644
+index a13d90206472..6a6aae01755b 100644
 --- a/arch/arm/include/asm/uaccess.h
 +++ b/arch/arm/include/asm/uaccess.h
 @@ -195,11 +195,12 @@ extern int __get_user_64t_4(void *);

@@ -1,4 +1,4 @@
-From 6c14763b1ce98698949ff45135c15e333aa6416d Mon Sep 17 00:00:00 2001
+From 92c9f3c91b47edbbd3b50d10393a43c54a4881fb Mon Sep 17 00:00:00 2001
 From: Icenowy Zheng <icenowy@aosc.io>
 Date: Mon, 16 Mar 2020 21:35:02 +0800
 Subject: [PATCH] drm/sun4i: sun6i_mipi_dsi: fix horizontal timing calculation
@@ -13,7 +13,7 @@ Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c b/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
-index aa67cb037e9d..52e009dc632b 100644
+index 4f5efcace68e..5af808078efd 100644
 --- a/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
 +++ b/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
 @@ -556,7 +556,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,

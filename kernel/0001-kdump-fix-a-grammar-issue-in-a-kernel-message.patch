@@ -1,4 +1,4 @@
-From 7a2e2c83be0230667756cccb5bc3687419dfbb8b Mon Sep 17 00:00:00 2001
+From 4849bd8037b2d1b8257c75032990cff84e55d5b5 Mon Sep 17 00:00:00 2001
 From: Dave Young <dyoung@redhat.com>
 Date: Tue, 12 Jun 2018 00:54:22 -0400
 Subject: [PATCH] kdump: fix a grammar issue in a kernel message
@@ -26,10 +26,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index 8c6f59932247..598d8324f51a 100644
+index 0335b9f5612a..0b2b3f510b16 100644
 --- a/kernel/crash_core.c
 +++ b/kernel/crash_core.c
-@@ -269,7 +269,7 @@ static int __init __parse_crashkernel(char *cmdline,
+@@ -271,7 +271,7 @@ static int __init __parse_crashkernel(char *cmdline,
  #elif defined(CONFIG_PPC64)
  		ck_cmdline = "2G-4G:384M,4G-16G:512M,16G-64G:1G,64G-128G:2G,128G-:4G";
  #endif

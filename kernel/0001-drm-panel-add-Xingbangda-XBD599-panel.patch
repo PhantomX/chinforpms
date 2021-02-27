@@ -1,4 +1,4 @@
-From 67a19b16012b12cffba0b515c6503e5f8cdbb798 Mon Sep 17 00:00:00 2001
+From 15551bd785a681808b2404163d44f6e34f3d61cf Mon Sep 17 00:00:00 2001
 From: Icenowy Zheng <icenowy@aosc.io>
 Date: Mon, 16 Mar 2020 21:35:01 +0800
 Subject: [PATCH] drm: panel: add Xingbangda XBD599 panel
@@ -17,10 +17,10 @@ Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
  create mode 100644 drivers/gpu/drm/panel/panel-xingbangda-xbd599.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index de2f2a452be5..3ce658de416b 100644
+index b4e021ea30f9..5687b745ebe2 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -462,6 +462,15 @@ config DRM_PANEL_VISIONOX_RM69299
+@@ -532,6 +532,15 @@ config DRM_PANEL_VISIONOX_RM69299
  	  Say Y here if you want to enable support for Visionox
  	  RM69299  DSI Video Mode panel.
  
@@ -37,10 +37,10 @@ index de2f2a452be5..3ce658de416b 100644
  	tristate "Xinpeng XPP055C272 panel driver"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index e45ceac6286f..bd10617430ec 100644
+index ebbf488c7eac..cc539a167f40 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -49,4 +49,5 @@ obj-$(CONFIG_DRM_PANEL_TPO_TD043MTEA1) += panel-tpo-td043mtea1.o
+@@ -56,4 +56,5 @@ obj-$(CONFIG_DRM_PANEL_TPO_TD043MTEA1) += panel-tpo-td043mtea1.o
  obj-$(CONFIG_DRM_PANEL_TPO_TPG110) += panel-tpo-tpg110.o
  obj-$(CONFIG_DRM_PANEL_TRULY_NT35597_WQXGA) += panel-truly-nt35597.o
  obj-$(CONFIG_DRM_PANEL_VISIONOX_RM69299) += panel-visionox-rm69299.o

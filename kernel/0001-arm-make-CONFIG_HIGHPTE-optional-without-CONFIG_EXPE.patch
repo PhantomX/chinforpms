@@ -1,4 +1,4 @@
-From 577365feaa909db4c0949eabfcda7e4a972b8e54 Mon Sep 17 00:00:00 2001
+From d33c62a3487b612a4c61f4c318de2790ed9730af Mon Sep 17 00:00:00 2001
 From: Jon Masters <jcm@redhat.com>
 Date: Thu, 18 Jul 2019 15:47:26 -0400
 Subject: [PATCH] arm: make CONFIG_HIGHPTE optional without CONFIG_EXPERT
@@ -11,10 +11,10 @@ Signed-off-by: Jon Masters <jcm@redhat.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index e00d94b16658..4db48405b23a 100644
+index 138248999df7..b962482a442e 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1514,9 +1514,9 @@ config HIGHMEM
+@@ -1492,9 +1492,9 @@ config HIGHMEM
  	  If unsure, say n.
  
  config HIGHPTE

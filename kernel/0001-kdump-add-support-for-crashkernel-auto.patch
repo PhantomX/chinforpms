@@ -1,4 +1,4 @@
-From ce12884c009ec3bed11100c9d19f6d97628cf8ae Mon Sep 17 00:00:00 2001
+From 22660c3525b20da79b65c8e98f4476d56d19ffd6 Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Tue, 23 Jul 2019 15:24:30 +0000
 Subject: [PATCH] kdump: add support for crashkernel=auto
@@ -138,7 +138,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  2 files changed, 25 insertions(+)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
-index 2da65fef2a1c..d53a524f80f0 100644
+index 75a9dd98e76e..3ff3291551f9 100644
 --- a/Documentation/admin-guide/kdump/kdump.rst
 +++ b/Documentation/admin-guide/kdump/kdump.rst
 @@ -285,6 +285,17 @@ This would mean:
@@ -160,10 +160,10 @@ index 2da65fef2a1c..d53a524f80f0 100644
  
  Boot into System Kernel
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index e4dfe2a05a31..8c6f59932247 100644
+index 632b5a76bb21..0335b9f5612a 100644
 --- a/kernel/crash_core.c
 +++ b/kernel/crash_core.c
-@@ -258,6 +258,20 @@ static int __init __parse_crashkernel(char *cmdline,
+@@ -260,6 +260,20 @@ static int __init __parse_crashkernel(char *cmdline,
  	if (suffix)
  		return parse_crashkernel_suffix(ck_cmdline, crash_size,
  				suffix);

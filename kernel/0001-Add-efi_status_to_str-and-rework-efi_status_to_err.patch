@@ -1,4 +1,4 @@
-From 2ae9082db0b54d831a9b3782c049d9917e37d89f Mon Sep 17 00:00:00 2001
+From ba6745aad7bdf8cdf6bd239177d98ab2188e3216 Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Mon, 2 Oct 2017 18:22:13 -0400
 Subject: [PATCH] Add efi_status_to_str() and rework efi_status_to_err().
@@ -15,7 +15,7 @@ Signed-off-by: Peter Jones <pjones@redhat.com>
  2 files changed, 96 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index fdd1db025dbf..8ef7d1df09dd 100644
+index df3f9bcab581..8d5b6eb36467 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -26,7 +26,7 @@ index fdd1db025dbf..8ef7d1df09dd 100644
  
  #include <asm/early_ioremap.h>
  
-@@ -831,40 +832,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -841,40 +842,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
  
@@ -160,7 +160,7 @@ index fdd1db025dbf..8ef7d1df09dd 100644
  
  static DEFINE_SPINLOCK(efi_mem_reserve_persistent_lock);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 73db1ae04cef..92aa4697f558 100644
+index 763b816ba19c..34651306ca3f 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -172,7 +172,7 @@ index 73db1ae04cef..92aa4697f558 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -832,6 +834,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -829,6 +831,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
  
  extern int efi_status_to_err(efi_status_t status);
