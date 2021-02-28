@@ -1,7 +1,7 @@
 %global commit 4de079bb7247c8b849558c0f27a280a9546c5570
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210219
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9aeea5d12e008266c0aff42c48e13d5545956478
+%global wine_stagingver 6.3
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 0493925d670368f2ef515b4f154e53e191f226c0
+%global tkg_id ba2c8aacaea2e92536daf9d8498220027bb07ff6
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -97,8 +97,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.2
-Release:        101%{?gver}%{?dist}
+Version:        6.3
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -1942,7 +1942,7 @@ fi
 %{_libdir}/wine/icmp.%{winedll}
 %{_libdir}/wine/ieframe.%{winedll}
 %if 0%{?wine_staging}
-%{_libdir}/wine/iertutil.dll.so
+%{_libdir}/wine/iertutil.%{winedll}
 %endif
 %{_libdir}/wine/ieproxy.%{winedll}
 %{_libdir}/wine/imaadp32.%{wineacm}
@@ -2247,10 +2247,10 @@ fi
 %if 0%{?wine_staging}
 %{_libdir}/wine/win32k.%{winesys}
 %endif
-%if 0
 %{_libdir}/wine/windows.gaming.input.%{winedll}
 %{_libdir}/wine/windows.globalization.%{winedll}
 %{_libdir}/wine/windows.media.speech.%{winedll}
+%if 0
 %{_libdir}/wine/windows.networking.connectivity.%{winedll}
 %endif
 %{_libdir}/wine/windowscodecs.so
@@ -2258,7 +2258,7 @@ fi
 %{_libdir}/wine/windowscodecsext.%{winedll}
 %{_libdir}/wine/winebus.sys.so
 %{_libdir}/wine/winegstreamer.so
-%{_libdir}/wine/winegstreamer.dll.so
+%{_libdir}/wine/winegstreamer.%{winedll}
 %{_libdir}/wine/winehid.%{winesys}
 %{_libdir}/wine/winejoystick.drv.so
 %{_libdir}/wine/winemapi.%{winedll}
@@ -2369,10 +2369,10 @@ fi
 
 %if 0%{?wine_staging}
 %ifarch x86_64 aarch64
-%{_libdir}/wine/nvapi64.dll.so
+%{_libdir}/wine/nvapi64.%{winedll}
 %{_libdir}/wine/nvencodeapi64.dll.so
 %else
-%{_libdir}/wine/nvapi.dll.so
+%{_libdir}/wine/nvapi.%{winedll}
 %{_libdir}/wine/nvencodeapi.dll.so
 %endif
 %endif
@@ -2733,6 +2733,9 @@ fi
 
 
 %changelog
+* Sat Feb 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.3-100
+- 6.3
+
 * Sat Feb 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.2-101.20210219git4de079b
 - Snapshot
 
