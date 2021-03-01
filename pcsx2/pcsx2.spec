@@ -1,10 +1,12 @@
-%global commit 7187b883b07cf5d89ee63b22ed19dd907df5e83d
+%global commit f9d96f55a538ce373f1662a5554d8052173940b1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210212
+%global date 20210228
 %global with_snapshot 1
 
 %global sanitize 0
 %bcond_with     native
+# Revert SSE4 updates
+%bcond_without  sse4
 
 %global perms_pcsx2 %caps(cap_net_admin,cap_net_raw+eip)
 
@@ -16,7 +18,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        118%{?gver}%{?dist}
+Release:        119%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -38,9 +40,10 @@ Source0:        %{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
+%if !0%{without sse4}
 # Revert this, needs sse4
-Patch0:         0001-Revert-microVU-Implement-Overflow-checks.-Fixes-Supe.patch
-
+Patch0:         0001-Revert-microVU-SSE4-additions.patch
+%endif
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -78,7 +81,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-29
+BuildRequires:  sdl_gamecontrollerdb >= 0-30
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -245,6 +248,11 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Sun Feb 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-119.20210228gitf9d96f5
+- New snapshot
+- SSE4 is needed now by upstream, but a sse4 switch is added to maintain a SSE2
+  minimal, for older CPUs that can run some not demanding games
+
 * Fri Feb 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-118.20210212git7187b88
 - Bump
 

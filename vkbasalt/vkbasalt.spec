@@ -1,6 +1,6 @@
-%global commit ce647da21d275bcb34bb6636ab12288778d8ace1
+%global commit 111b0e8cf4aed03b7513a21be8298719038173ce
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210108
+%global date 20210218
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,7 +10,7 @@
 %global pkgname vkBasalt
 
 Name:           vkbasalt
-Version:        0.3.2.3
+Version:        0.3.2.4
 Release:        1%{?gver}%{?dist}
 Summary:        A vulkan post processing layer
 
@@ -72,6 +72,9 @@ mkdir -p %{buildroot}%{_datadir}/%{pkgname}
 
 
 %changelog
+* Sun Feb 28 2021 Phantom X <megaphantomx at hotmail dot com> - 0.3.2.4-1.20210218git111b0e8
+- 0.3.2.4
+
 * Sat Jan 09 2021 Phantom X <megaphantomx at hotmail dot com> - 0.3.2.3-1.20210108gitce647da
 - 0.3.2.3
 

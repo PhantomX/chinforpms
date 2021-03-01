@@ -13,9 +13,9 @@
 # https://github.com/MoArtis/dolphin
 %global with_reshdp 1
 
-%global commit c5ee86c75cc4d1057f4f810205a3e5278f100c7f
+%global commit 9d0983c9c988f81c73c9a4ed61835ca9ac20db06
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210212
+%global date 20210226
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -29,7 +29,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        130%{?gver}%{?dist}
+Release:        131%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -400,6 +400,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Feb 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-131.20210226git9d0983c
+- New snapshot
+
 * Fri Feb 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-130.20210212gitc5ee86c
 - Update
 

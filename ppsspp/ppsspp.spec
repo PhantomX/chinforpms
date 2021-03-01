@@ -1,6 +1,6 @@
-%global commit d1c4b86e0a5cfa0880ed97f4a08ee2fa2fb01944
+%global commit 0fb655acf6b0602f56ef5ddd3529ffc4c0450219
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210211
+%global date 20210228
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -19,7 +19,7 @@
 # https://github.com/hrydgard/ppsspp/issues/13312
 %global _lto_cflags %{nil}
 
-%global commit1 adef2aead213a07f3bedce44dd9a97b2bbb7eb25
+%global commit1 6bd5b4bc983917ea8402f73c726b46e36f3de0b4
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -35,11 +35,11 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
-%global commit6 d0850f875ec392a130ccf00018dab458b546f27c
+%global commit6 dc11adde23c455a24e13dd54de9b4ede8bdd7db8
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 4741bbaa641d118ca1864094decd1ba977316161
+%global commit7 d57ab68a219831900fa2b8a3bd529413e01f3b9f
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -53,7 +53,7 @@
 %global vc_url  https://github.com/hrydgard
 
 Name:           ppsspp
-Version:        1.11.1
+Version:        1.11.2
 Release:        100%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -82,6 +82,9 @@ Patch1:         %{name}-nodiscord.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
+
+Patch10:        0001-Revert-GPU-Normalize-zero-consistently-in-hw-transfo.patch
+Patch11:        0001-Revert-GPU-Look-up-replaced-filtering-options.patch
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -361,6 +364,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Feb 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.2-100.20210228git0fb655a
+- 1.11.2
+
 * Fri Feb 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.1-100.20210211gitd1c4b86
 - 1.11.1
 

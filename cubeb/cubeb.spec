@@ -1,6 +1,6 @@
-%global commit 8d53747d4adc3b0b03ebf79b05f1fff08c5ae8ef
+%global commit 8942382280721117900072945767cece14eef046
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210122
+%global date 20210217
 %global with_snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,11 +17,11 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        23%{?gver}%{?dist}
+Release:        24%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
-URL:            https://github.com/mpzilla/cubeb
+URL:            https://github.com/mozilla/cubeb
 
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -108,6 +108,9 @@ sed -i -e "/^\[!/d" -e "/INSTALL.md/d" README.md
 
 
 %changelog
+* Sun Feb 28 2021 Phantom X <megaphantomx at hotmail dot com> - 0.2-24.20210217git8942382
+- New snapshot
+
 * Thu Feb 04 2021 Phantom X <megaphantomx at hotmail dot com> - 0.2-23.20210122git8d53747
 - Bump
 

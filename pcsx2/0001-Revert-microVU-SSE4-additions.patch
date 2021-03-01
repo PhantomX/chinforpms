@@ -1,20 +1,24 @@
-From b844470ae8ce54bf102329cd024eed9ae50bc5c3 Mon Sep 17 00:00:00 2001
+From cbbefe91acc96fc74685b21b90445d8ef5e6cdea Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 4 Feb 2021 15:26:30 -0300
-Subject: [PATCH] Revert microVU: Implement Overflow checks. Fixes Superman
- Returns  Removed patches for Superman Returns
+Date: Sun, 28 Feb 2021 00:35:02 -0300
+Subject: [PATCH] Revert microVU SSE4 additions
 
+Commits reverted:
+f9d96f55a538ce373f1662a5554d8052173940b1 microVU: Remove SSE4 op from Overflow flag checks + clean up
+ee07f860fc1dd7e8ada6c13903bb3a592b8d4864 microVU: Implement Overflow checks
+
+That make PCSX2 running in older CPUS for some not demanding games
 Revert commit ee07f860fc1dd7e8ada6c13903bb3a592b8d4864, this breaks older CPUs
 ---
  bin/GameIndex.yaml          | 34 ++++++++++++++++++++++++++++++++++
- pcsx2/x86/microVU_Upper.inl | 19 -------------------
- 2 files changed, 34 insertions(+), 19 deletions(-)
+ pcsx2/x86/microVU_Upper.inl | 21 ---------------------
+ 2 files changed, 34 insertions(+), 21 deletions(-)
 
 diff --git a/bin/GameIndex.yaml b/bin/GameIndex.yaml
-index dc05e9f..580778e 100644
+index e65d958..e5ef3b3 100644
 --- a/bin/GameIndex.yaml
 +++ b/bin/GameIndex.yaml
-@@ -13412,6 +13412,15 @@ SLES-53744:
+@@ -13396,6 +13396,15 @@ SLES-53744:
  SLES-53746:
    name: "Superman Returns"
    region: "PAL-E"
@@ -30,7 +34,7 @@ index dc05e9f..580778e 100644
  SLES-53747:
    name: "Ed, Edd, 'n Eddy - The Misadventure"
    region: "PAL-E"
-@@ -14585,12 +14594,28 @@ SLES-54348:
+@@ -14582,12 +14591,28 @@ SLES-54348:
  SLES-54349:
    name: "Superman Returns"
    region: "PAL-I"
@@ -59,7 +63,7 @@ index dc05e9f..580778e 100644
  SLES-54354:
    name: "Final Fantasy XII"
    region: "PAL-E"
-@@ -36999,6 +37024,15 @@ SLUS-21434:
+@@ -37163,6 +37188,15 @@ SLUS-21434:
    name: "Superman Returns - The Video Game"
    region: "NTSC-U"
    compat: 4
@@ -76,7 +80,7 @@ index dc05e9f..580778e 100644
    name: "One Piece - Grand Adventure"
    region: "NTSC-U"
 diff --git a/pcsx2/x86/microVU_Upper.inl b/pcsx2/x86/microVU_Upper.inl
-index 14523ff..9b378bf 100644
+index f9b1a1b..9b378bf 100644
 --- a/pcsx2/x86/microVU_Upper.inl
 +++ b/pcsx2/x86/microVU_Upper.inl
 @@ -23,12 +23,6 @@
@@ -92,22 +96,24 @@ index 14523ff..9b378bf 100644
  // Note: If modXYZW is true, then it adjusts XYZW for Single Scalar operations
  static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, const xmm& regT2in = xEmptyReg, bool modXYZW = 1) {
  	const x32&  mReg   = gprT1;
-@@ -73,19 +67,6 @@ static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, c
+@@ -73,21 +67,6 @@ static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, c
  	if (mFLAG.doFlag) { SHIFT_XYZW(gprT2); }
  	xOR(mReg, gprT2);
  
+-	//-------------------------Overflow Flags-----------------------------------
 -	if (sFLAG.doFlag) {
 -		//Calculate overflow
 -		xMOVAPS(regT1, regT2);
 -		xAND.PS(regT1, ptr128[&sse4_compvals[1][0]]); // Remove sign flags (we don't care)
--		xPMIN.UD(regT1, ptr128[&sse4_compvals[0][0]]); // Get the minimum value, FLT_MAX = overflow
--		xCMPEQ.PS(regT1, ptr128[&sse4_compvals[0][0]]); // Compare if T1 == FLT_MAX
+-		xCMPNLT.PS(regT1, ptr128[&sse4_compvals[0][0]]); // Compare if T1 == FLT_MAX
 -		xMOVMSKPS(gprT2, regT1); // Grab sign bits  for equal results
--		xAND(gprT2, AND_XYZW);   // Grab "Is Zero" bits from the previous calculation
--		xTEST(gprT2, 0xF);
+-		xAND(gprT2, AND_XYZW);   // Grab "Is FLT_MAX" bits from the previous calculation
 -		xForwardJump32 oJMP(Jcc_Zero);
 -			xOR(sReg, 0x820000);
 -		oJMP.SetTarget();
+-
+-		xSHL(gprT2, 8 + ADD_XYZW); // Add the results to the MAC Flag
+-		xOR(mReg, gprT2);
 -	}
  	//-------------------------Write back flags------------------------------
  
