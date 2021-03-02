@@ -12,11 +12,11 @@ index 99f0d30..e024413 100644
 --- a/dxvk.conf
 +++ b/dxvk.conf
 @@ -331,4 +331,22 @@
- # Supported values:
  # - True/False
- 
--# d3d9.alphaTestWiggleRoom = False
-+# d3d9.alphaTestWiggleRoom = False
+
+ # d3d9.apitraceMode = False
+-# d3d11.apitraceMode = False
++# d3d11.apitraceMode = False
 +
 +
 +# Sets the async pipeline compiler

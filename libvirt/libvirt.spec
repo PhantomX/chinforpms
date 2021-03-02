@@ -101,6 +101,7 @@
 %define with_sanlock          0
 %define with_numad            0
 %define with_firewalld_zone   0
+%define with_netcf            0
 %define with_libssh2          0
 %define with_wireshark        0
 %define with_libssh           0
@@ -143,6 +144,10 @@
 
 %if 0%{?fedora} || 0%{?rhel} > 7
     %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
+%endif
+
+%if (0%{?fedora} && 0%{?fedora} < 34) || (0%{?rhel} && 0%{?rhel} < 9)
+    %define with_netcf 0%{!?_without_netcf:1}
 %endif
 
 
@@ -213,7 +218,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 7.0.0
+Version: 7.1.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -362,7 +367,9 @@ BuildRequires: fuse-devel >= 2.8.6
 BuildRequires: libssh2-devel >= 1.3.0
 %endif
 
+%if %{with_netcf}
 BuildRequires: netcf-devel >= 0.2.2
+%endif
 %if %{with_esx}
 BuildRequires: libcurl-devel
 %endif
@@ -486,7 +493,9 @@ Network filter configuration files for cleaning guest traffic
 %package daemon-driver-network
 Summary: Network driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+%if %{with_netcf}
 Requires: libvirt-libs = %{version}-%{release}
+%endif
 Requires: dnsmasq >= 2.41
 Requires: radvd
 Requires: iptables
@@ -535,8 +544,7 @@ Requires: netcf-libs >= 0.2.2
 
 %description daemon-driver-interface
 The interface driver plugin for the libvirtd daemon, providing
-an implementation of the network interface APIs using the
-netcf library
+an implementation of the host network interface APIs.
 
 
 %package daemon-driver-secret
@@ -1096,6 +1104,12 @@ exit 1
     %define arg_firewalld_zone -Dfirewalld_zone=disabled
 %endif
 
+%if %{with_netcf}
+    %define arg_netcf -Dnetcf=enabled
+%else
+    %define arg_netcf -Dnetcf=disabled
+%endif
+
 %if %{with_wireshark}
     %define arg_wireshark -Dwireshark_dissector=enabled
 %else
@@ -1166,7 +1180,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            %{?arg_numad} \
            -Dcapng=enabled \
            %{?arg_fuse} \
-           -Dnetcf=enabled \
+           %{?arg_netcf} \
            -Dselinux=enabled \
            %{?arg_selinux_mount} \
            -Dapparmor=disabled \
@@ -1291,7 +1305,9 @@ install -Dpm 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysusersdir}/%{name}-qemu.conf
 
 
 %check
-VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check
+# Building on slow archs, like emulated s390x in Fedora copr, requires
+# raising the test timeout
+VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
 
 %post libs
 %if 0%{?rhel} == 7
@@ -1575,6 +1591,7 @@ exit 0
 %{_mandir}/man8/libvirtd.8*
 %{_mandir}/man8/virtlogd.8*
 %{_mandir}/man8/virtlockd.8*
+%{_mandir}/man8/virtproxyd.8*
 %{_mandir}/man7/virkey*.7*
 
 %files daemon-config-network
@@ -1599,6 +1616,7 @@ exit 0
 %{_unitdir}/virtinterfaced-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtinterfaced
 %{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
+%{_mandir}/man8/virtinterfaced.8*
 
 %files daemon-driver-network
 %config(noreplace) %{_sysconfdir}/sysconfig/virtnetworkd
@@ -1618,6 +1636,7 @@ exit 0
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
 %attr(0755, root, root) %{_libexecdir}/libvirt_leaseshelper
 %{_libdir}/%{name}/connection-driver/libvirt_driver_network.so
+%{_mandir}/man8/virtnetworkd.8*
 
 %if %{with_firewalld_zone}
 %{_prefix}/lib/firewalld/zones/libvirt.xml
@@ -1634,6 +1653,7 @@ exit 0
 %{_unitdir}/virtnodedevd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtnodedevd
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
+%{_mandir}/man8/virtnodedevd.8*
 
 %files daemon-driver-nwfilter
 %config(noreplace) %{_sysconfdir}/sysconfig/virtnwfilterd
@@ -1648,6 +1668,7 @@ exit 0
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 %ghost %dir %{_rundir}/libvirt/network/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so
+%{_mandir}/man8/virtnwfilterd.8*
 
 %files daemon-driver-secret
 %config(noreplace) %{_sysconfdir}/sysconfig/virtsecretd
@@ -1660,6 +1681,7 @@ exit 0
 %{_unitdir}/virtsecretd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtsecretd
 %{_libdir}/%{name}/connection-driver/libvirt_driver_secret.so
+%{_mandir}/man8/virtsecretd.8*
 
 %files daemon-driver-storage
 
@@ -1677,6 +1699,7 @@ exit 0
 %{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_fs.so
 %{_libdir}/%{name}/storage-file/libvirt_storage_file_fs.so
+%{_mandir}/man8/virtstoraged.8*
 
 %files daemon-driver-storage-disk
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_disk.so
@@ -1747,6 +1770,7 @@ exit 0
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/qemu/
 %{_bindir}/virt-qemu-run
 %{_mandir}/man1/virt-qemu-run.1*
+%{_mandir}/man8/virtqemud.8*
 %endif
 
 %if %{with_lxc}
@@ -1769,6 +1793,7 @@ exit 0
 %{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
 %attr(0755, root, root) %{_libexecdir}/libvirt_lxc
 %{_libdir}/%{name}/connection-driver/libvirt_driver_lxc.so
+%{_mandir}/man8/virtlxcd.8*
 %endif
 
 %if %{with_libxl}
@@ -1791,6 +1816,7 @@ exit 0
 %ghost %dir %{_rundir}/libvirt/libxl/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_libxl.so
+%{_mandir}/man8/virtxend.8*
 %endif
 
 %if %{with_vbox}
@@ -1805,6 +1831,7 @@ exit 0
 %{_unitdir}/virtvboxd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtvboxd
 %{_libdir}/%{name}/connection-driver/libvirt_driver_vbox.so
+%{_mandir}/man8/virtvboxd.8*
 %endif
 
 %if %{with_qemu_tcg}
@@ -1946,6 +1973,9 @@ exit 0
 
 
 %changelog
+* Mon Mar 01 2021 Phantom X <megaphantomx at hotmail dot com> - 7.1.0-100
+- 7.1.0
+
 * Fri Jan 15 2021 Phantom X <megaphantomx at hotmail dot com> - 7.0.0-100
 - 7.0.0
 

@@ -18,7 +18,7 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id 0d5d38d109ab85295565da50ca0b9ed11e118c52
+%global sporif_id be40dd7a9687373cdd5a3748d973b826465df0ed
 %global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
 
 %global valve_url https://github.com/ValveSoftware/dxvk
@@ -34,7 +34,7 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.8
+Version:        1.8.1
 Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
@@ -241,6 +241,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Mar 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8.1-100
+- 1.8.1
+
 * Fri Feb 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8-100
 - 1.8
 
