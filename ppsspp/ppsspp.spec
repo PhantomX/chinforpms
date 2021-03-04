@@ -1,6 +1,6 @@
-%global commit 0fb655acf6b0602f56ef5ddd3529ffc4c0450219
+%global commit bd87a7606483039ad8c1a8e7af400678ba73d7fd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210228
+%global date 20210303
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -19,7 +19,7 @@
 # https://github.com/hrydgard/ppsspp/issues/13312
 %global _lto_cflags %{nil}
 
-%global commit1 6bd5b4bc983917ea8402f73c726b46e36f3de0b4
+%global commit1 ddb1246ec2ad2548711f4b966a801e80b7fbe73f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -53,7 +53,7 @@
 %global vc_url  https://github.com/hrydgard
 
 Name:           ppsspp
-Version:        1.11.2
+Version:        1.11.3
 Release:        100%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -84,7 +84,8 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 
 Patch10:        0001-Revert-GPU-Normalize-zero-consistently-in-hw-transfo.patch
-Patch11:        0001-Revert-GPU-Look-up-replaced-filtering-options.patch
+Patch11:        0001-GPU-Remove-condition.patch
+
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -364,6 +365,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Mar 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-100.20210303gitbd87a76
+- 1.11.3
+
 * Sun Feb 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.2-100.20210228git0fb655a
 - 1.11.2
 

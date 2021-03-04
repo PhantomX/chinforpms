@@ -1,6 +1,6 @@
-From 36c4e43817314ae4ec727b66edaa779abc7e62e7 Mon Sep 17 00:00:00 2001
+From ae493718a117982db88695f02bbd26437a5b888e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 30 Jan 2021 10:56:13 -0300
+Date: Wed, 3 Mar 2021 08:05:47 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake borrowed from dolphin-emu
@@ -13,6 +13,7 @@ https://github.com/dolphin-emu/dolphin
  Core/MIPS/IR/IRJit.cpp               |  4 ++++
  Core/MIPS/MIPSAnalyst.cpp            |  4 ++++
  Core/TextureReplacer.cpp             |  4 ++++
+ Core/Util/PPGeDraw.cpp               |  4 ++++
  Core/Util/PortManager.h              |  8 ++++++--
  GPU/Common/TextureDecoder.cpp        |  4 ++++
  GPU/Common/TextureDecoderNEON.cpp    |  4 ++++
@@ -22,15 +23,16 @@ https://github.com/dolphin-emu/dolphin
  GPU/Vulkan/TextureCacheVulkan.cpp    |  4 ++++
  UI/CwCheatScreen.cpp                 |  4 ++++
  Windows/Debugger/CtrlDisAsmView.cpp  |  4 ++++
+ Windows/Debugger/CtrlMemView.cpp     |  4 ++++
  cmake/Modules/FindMiniupnpc.cmake    | 27 ++++++++++++++++++++++++++
- 17 files changed, 118 insertions(+), 2 deletions(-)
+ 19 files changed, 126 insertions(+), 2 deletions(-)
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f71e066..f3ca246 100644
+index 3a8ca19..953aa3c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -134,6 +134,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
+@@ -135,6 +135,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
  option(USE_SYSTEM_SNAPPY "Dynamically link against system snappy" ${USE_SYSTEM_SNAPPY})
  option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_FFMPEG})
  option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
@@ -39,7 +41,7 @@ index f71e066..f3ca246 100644
  option(USE_ASAN "Use address sanitizer" OFF)
  option(USE_UBSAN "Use undefined behaviour sanitizer" OFF)
  
-@@ -1164,11 +1166,31 @@ add_library(xbrz STATIC
+@@ -1169,11 +1171,31 @@ add_library(xbrz STATIC
  )
  include_directories(ext/xbrz)
  
@@ -71,7 +73,7 @@ index f71e066..f3ca246 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -1862,6 +1884,12 @@ endif()
+@@ -1867,6 +1889,12 @@ endif()
  
  # miniUPnPc integration (MiniUPnPc supposed to works on any POSIX system, not sure if some of these are redundant/not needed tho)
  if(USE_MINIUPNPC)
@@ -84,7 +86,7 @@ index f71e066..f3ca246 100644
  	set (MINIUPNPC_VERSION 2.1) # used by miniupnpcstrings.h.cmake
  	set (MINIUPNPC_API_VERSION 17)
  	option(UPNPC_BUILD_STATIC "Build static library" TRUE)
-@@ -1931,6 +1959,7 @@ if(USE_MINIUPNPC)
+@@ -1934,6 +1962,7 @@ if(USE_MINIUPNPC)
  		endif()
  	endif()
  endif()
@@ -109,10 +111,10 @@ index 4c66642..4f3eca0 100644
  #include "Common/Log.h"
  
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index d05a098..9366801 100644
+index e113ef3..35056df 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
-@@ -19,7 +19,11 @@
+@@ -20,7 +20,11 @@
  #include <algorithm>
  #include <map>
  
@@ -125,7 +127,7 @@ index d05a098..9366801 100644
  #include "Common/CommonTypes.h"
  #include "Core/MemMap.h"
 diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
-index 4230675..ce02af2 100644
+index d438a16..5be50f2 100644
 --- a/Core/HLE/sceJpeg.cpp
 +++ b/Core/HLE/sceJpeg.cpp
 @@ -32,8 +32,12 @@
@@ -142,7 +144,7 @@ index 4230675..ce02af2 100644
  struct u24_be {
  	unsigned char value[3];
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index 77d988d..ff001cd 100644
+index f938619..5ba7781 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
 @@ -17,7 +17,11 @@
@@ -158,10 +160,10 @@ index 77d988d..ff001cd 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 1a39988..ba21cc4 100644
+index 6e88bbf..aad8e49 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
-@@ -22,7 +22,11 @@
+@@ -23,7 +23,11 @@
  #include <mutex>
  
  #include "ext/cityhash/city.h"
@@ -174,12 +176,12 @@ index 1a39988..ba21cc4 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index 3b9aeb9..5a657f5 100644
+index 8969267..d94ce34 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
 @@ -19,7 +19,11 @@
- 
  #include <algorithm>
+ #include <png.h>
  
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
@@ -189,6 +191,22 @@ index 3b9aeb9..5a657f5 100644
  
  #include "Common/Data/Text/I18n.h"
  #include "Common/Data/Format/IniFile.h"
+diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
+index 9674f69..3556097 100644
+--- a/Core/Util/PPGeDraw.cpp
++++ b/Core/Util/PPGeDraw.cpp
+@@ -17,7 +17,11 @@
+ 
+ #include <algorithm>
+ 
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "Common/Data/Color/RGBAUtil.h"
+ #include "Common/File/VFS/VFS.h"
+ #include "Common/Data/Format/ZIMLoad.h"
 diff --git a/Core/Util/PortManager.h b/Core/Util/PortManager.h
 index a4c7df6..0204d9e 100644
 --- a/Core/Util/PortManager.h
@@ -215,13 +233,13 @@ index a4c7df6..0204d9e 100644
  #include <string>
  #include <deque>
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index f02094b..a01b24d 100644
+index 2e10ac1..defd765 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
-@@ -15,7 +15,11 @@
- // Official git repository and contact information can be found at
+@@ -16,7 +16,11 @@
  // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
  
+ #include "ppsspp_config.h"
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
 +#else
@@ -231,7 +249,7 @@ index f02094b..a01b24d 100644
  #include "Common/ColorConv.h"
  
 diff --git a/GPU/Common/TextureDecoderNEON.cpp b/GPU/Common/TextureDecoderNEON.cpp
-index 8e96223..2b618ee 100644
+index e0a427e..ceb36a5 100644
 --- a/GPU/Common/TextureDecoderNEON.cpp
 +++ b/GPU/Common/TextureDecoderNEON.cpp
 @@ -19,7 +19,11 @@
@@ -247,7 +265,7 @@ index 8e96223..2b618ee 100644
  #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
  #include <arm64_neon.h>
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 8e4aadf..3fbde56 100644
+index 24f2007..2fde747 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -36,7 +36,11 @@
@@ -263,7 +281,7 @@ index 8e4aadf..3fbde56 100644
  
  // For depth depal
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index 9cfb369..9c2c956 100644
+index 0b1d536..9475424 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
 @@ -33,7 +33,11 @@
@@ -279,7 +297,7 @@ index 9cfb369..9c2c956 100644
  
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 895bd27..e161802 100644
+index e15b900..d53d180 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,11 @@
@@ -295,7 +313,7 @@ index 895bd27..e161802 100644
  #include "Common/Math/math_util.h"
  #include "Common/Profiler/Profiler.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index e568869..9831831 100644
+index 31ea90b..ecb7209 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@
@@ -311,13 +329,13 @@ index e568869..9831831 100644
  #include "Common/Data/Text/I18n.h"
  #include "Common/Math/math_util.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index 2e1d706..89c2084 100644
+index d081ba1..627ce3a 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
-@@ -15,7 +15,11 @@
- // Official git repository and contact information can be found at
+@@ -16,7 +16,11 @@
  // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
  
+ #include "ppsspp_config.h"
 +#ifdef SHARED_XXHASH
 +#include <xxhash.h>
 +#else
@@ -327,7 +345,7 @@ index 2e1d706..89c2084 100644
  
  #include "Common/Data/Text/I18n.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index e26f964..502ecab 100644
+index ebbbf85..fcb6df6 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp
 +++ b/Windows/Debugger/CtrlDisAsmView.cpp
 @@ -21,7 +21,11 @@
@@ -342,6 +360,22 @@ index e26f964..502ecab 100644
  #include "Common/System/Display.h"
  
  #include <CommDlg.h>
+diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
+index 5b0e440..34ff6d3 100644
+--- a/Windows/Debugger/CtrlMemView.cpp
++++ b/Windows/Debugger/CtrlMemView.cpp
+@@ -3,7 +3,11 @@
+ #include <tchar.h>
+ #include <math.h>
+ #include <iomanip>
++#ifdef SHARED_XXHASH
++#include <xxhash.h>
++#else
+ #include "ext/xxhash.h"
++#endif
+ #include "Core/Config.h"
+ #include "Windows/resource.h"
+ #include "Core/MemMap.h"
 diff --git a/cmake/Modules/FindMiniupnpc.cmake b/cmake/Modules/FindMiniupnpc.cmake
 new file mode 100644
 index 0000000..f9a14e2

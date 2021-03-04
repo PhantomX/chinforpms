@@ -1,0 +1,26 @@
+From 52656ea6774194176e3f64d0cc016ef26cb812c9 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 3 Mar 2021 09:13:21 -0300
+Subject: [PATCH] GPU: Remove condition
+
+Prevents a crash
+---
+ GPU/Common/TextureCacheCommon.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/GPU/Common/TextureCacheCommon.cpp b/GPU/Common/TextureCacheCommon.cpp
+index b33e206..018dd2c 100644
+--- a/GPU/Common/TextureCacheCommon.cpp
++++ b/GPU/Common/TextureCacheCommon.cpp
+@@ -221,7 +221,7 @@ SamplerCacheKey TextureCacheCommon::GetSamplingParams(int maxLevel, const TexCac
+ 
+ 	// Filtering overrides from replacements or settings.
+ 	TextureFiltering forceFiltering = TEX_FILTER_AUTO;
+-	u64 cachekey = replacer_.Enabled() ? entry->CacheKey() : 0;
++	u64 cachekey = replacer_.Enabled();
+ 	if (!replacer_.Enabled() || entry == nullptr || !replacer_.FindFiltering(cachekey, entry->fullhash, &forceFiltering)) {
+ 		switch (g_Config.iTexFiltering) {
+ 		case TEX_FILTER_AUTO:
+-- 
+2.29.2
+

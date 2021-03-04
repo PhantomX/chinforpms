@@ -230,7 +230,7 @@ sed \
   -e 's|out/$<CONFIG>|%{__cmake_builddir}|' \
   -i cmake/external/webrtc/CMakeLists.txt
 
-( cd Libraries/%{srcname10}
+pushd Libraries/%{srcname10}
   mkdir legal
   cp -f LICENSE legal/LICENSE.tg_owt
   cp -f src/PATENTS legal/PATENTS.owt
@@ -271,7 +271,7 @@ sed \
   cp -f -p src/rtc_base/third_party/base64/README.chromium legal/README.base64
   cp -f -p src/rtc_base/third_party/sigslot/LICENSE legal/LICENSE.sigslot
   cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
-)
+popd
 mv Libraries/%{srcname10}/legal .
 %endif
 
