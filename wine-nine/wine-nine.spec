@@ -2,22 +2,22 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit bf71ae00220265749cc6af1e1e81f5b287891e0a
+%global commit bddb53abdd1a77b1c019457f7eea4a6404a5e492
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200520
-%global with_snapshot 0
+%global date 20210117
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global winecommonver 5.14
+%global winecommonver 6.1
 
 %global pkgname wine-nine-standalone
 
 Name:           wine-nine
-Version:        0.7
-Release:        1%{?gver}%{?dist}
+Version:        0.8
+Release:        0.1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -153,6 +153,9 @@ desktop-file-install \
 
 
 %changelog
+* Fri Mar 05 2021 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-0.1.20210117gitbddb53a
+- Snapshot for newer wine
+
 * Wed Aug 19 2020 Phantom X <megaphantomx at hotmail dot com> - 2:0.7-1
 - 0.7
 

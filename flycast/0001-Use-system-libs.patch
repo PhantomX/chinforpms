@@ -70,7 +70,7 @@ index 37373d7..fa2aa27 100644
  find_package(ALSA QUIET)
  if(ALSA_FOUND AND NOT ANDROID)
 @@ -180,7 +204,6 @@ else()
-     set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/zlib" "${CMAKE_CURRENT_BINARY_DIR}/core/deps/zlib")
+     get_target_property(ZLIB_LIBRARY zlibstatic LOCATION)
  endif()
  
 -find_package(PkgConfig QUIET)

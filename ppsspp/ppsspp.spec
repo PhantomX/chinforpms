@@ -1,6 +1,6 @@
-%global commit bd87a7606483039ad8c1a8e7af400678ba73d7fd
+%global commit 71707b510299d5cfa07e5eefe2ad679a701ed28b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210303
+%global date 20210305
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -83,8 +83,7 @@ Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 
-Patch10:        0001-Revert-GPU-Normalize-zero-consistently-in-hw-transfo.patch
-Patch11:        0001-GPU-Remove-condition.patch
+Patch10:        0001-GPU-Remove-condition.patch
 
 
 %if !0%{?with_sysffmpeg}
@@ -365,6 +364,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Fri Mar 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-101.20210305git71707b5
+- Bump to remove revert
+
 * Wed Mar 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-100.20210303gitbd87a76
 - 1.11.3
 

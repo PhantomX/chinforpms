@@ -2,7 +2,7 @@
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2021.02.24
+Version:        2021.03.03.2
 Release:        1%{?dist}
 Summary:        A command-line program to download videos
 
@@ -45,9 +45,6 @@ This is a fork of youtube-dlc which is inturn a fork of youtube-dl.
 rm -f %{pkgname}
 
 cp -a setup.py setup.py.installpath
-# Remove files that are installed to the wrong path
-sed -i '/%{pkgname}.bash-completion/d' setup.py
-sed -i '/%{pkgname}.fish/d' setup.py
 sed -i '/README.txt/d' setup.py
 
 # Remove interpreter shebang from module files.
@@ -57,25 +54,13 @@ find yt_dlp -type f -exec sed -i -e '1{/^\#!\/usr\/bin\/env python$/d;};' {} +
 %build
 %py3_build
 
-%make_build %{pkgname}.1 bash-completion zsh-completion fish-completion
+%make_build %{pkgname}.1 completion-bash completion-zsh completion-fish
 
 %install
 %py3_install
 
 mkdir -p %{buildroot}%{_sysconfdir}
 install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
-
-mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
-install -pm0644 %{pkgname}.bash-completion \
-  %{buildroot}%{_datadir}/bash-completion/completions/%{pkgname}
-
-mkdir -p %{buildroot}%{_datadir}/zsh/site-functions/
-install -pm0644 %{pkgname}.zsh \
-  %{buildroot}%{_datadir}/zsh/site-functions/_%{pkgname}
-
-mkdir -p %{buildroot}%{_datadir}/fish/vendor_functions.d
-install -pm0644 %{pkgname}.fish \
-  %{buildroot}%{_datadir}/fish/vendor_functions.d/%{pkgname}.fish
 
 
 %check
@@ -96,10 +81,13 @@ install -pm0644 %{pkgname}.fish \
 %{python3_sitelib}/yt_dlp*.egg-info
 %{_datadir}/bash-completion/completions/%{pkgname}
 %{_datadir}/zsh/site-functions/_%{pkgname}
-%{_datadir}/fish/vendor_functions.d/%{pkgname}.fish
+%{_datadir}/fish/vendor_completions.d/%{pkgname}.fish
 
 
 %changelog
+* Thu Mar 04 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.03.03.2-1
+- 2021.03.03.2
+
 * Thu Feb 25 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.02.24-1
 - 2021.02.24
 

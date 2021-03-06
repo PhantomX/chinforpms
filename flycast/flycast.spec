@@ -1,6 +1,6 @@
-%global commit c6389de3b39bac7754d4d53604f1f46ad3bcbf97
+%global commit 77961d2c338ffcafd5e48cb644397ed323399874
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210224
+%global date 20210302
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        38%{?gver}%{?dist}
+Release:        40%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -37,6 +37,11 @@ Source1:        %{name}.appdata.xml
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
+Patch4:         %{url}/commit/ca107953fe2d4495740ac77598a60c82c7420492.patch#/%{name}-gh-ca10795.patch
+Patch5:         %{url}/commit/80386d45b95bfb0c212de5470c7fec222e8da0bc.patch#/%{name}-gh-80386d4.patch
+Patch6:         %{url}/commit/45fcd811ec9f1e234183b9d2667be42c9e7e1f16.patch#/%{name}-gh-45fcd81.patch
+Patch7:         %{url}/commit/ee9e64a25346e30b5e505e0373ccea5fec1f0c65.patch#/%{name}-gh-ee9e64a.patch
+Patch8:         %{url}/commit/0e20d5976bcb75b2cb69307e3e872b16c645be50.patch#/%{name}-gh-0e20d59.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
@@ -45,7 +50,9 @@ BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(alsa)
-%if !0%{?with_libchdr}
+%if 0%{?with_libchdr}
+BuildRequires:  pkgconfig(libchdr)
+%else
 BuildRequires:  pkgconfig(flac)
 %endif
 BuildRequires:  pkgconfig(gl)
@@ -129,7 +136,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
 %global _lto_cflags %{nil}
 
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now -Wl,--sort-common"
-EXTRA_CFLAGS="-D NDEBUG -frename-registers -ftree-vectorize"
+EXTRA_CFLAGS="-D NDEBUG -frename-registers -fno-strict-aliasing -ftree-vectorize -fno-operator-names"
 export CFLAGS="%{build_cflags} ${EXTRA_CFLAGS}"
 export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
 
@@ -198,6 +205,13 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Fri Mar 05 2021 Phantom X <megaphantomx at hotmail dot com> - 7-40.20210302git77961d2
+- Last working snapshot with post commits
+
+* Thu Mar 04 2021 Phantom X <megaphantomx at hotmail dot com> - 7-39.20210302git77961d2
+- Last working snapshot
+- Missing BR: libchdr
+
 * Thu Feb 25 2021 Phantom X <megaphantomx at hotmail dot com> - 7-38.20210224gitc6389de
 - Bump
 

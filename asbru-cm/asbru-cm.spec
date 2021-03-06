@@ -1,7 +1,7 @@
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
 Name:           asbru-cm
-Version:        6.3.0
+Version:        6.3.2
 Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
@@ -140,6 +140,9 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
+* Fri Mar 05 2021 Phantom X <megaphantomx at hotmail dot com> - 6.3.2-1
+- 6.3.2
+
 * Thu Feb 18 2021 Phantom X <megaphantomx at hotmail dot com> - 6.3.0-1
 - 6.3.0
 

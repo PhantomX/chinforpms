@@ -60,7 +60,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        20.3.4
-Release:        101%{?dist}
+Release:        102%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -73,6 +73,32 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch0:         %{vc_url}/commit/d2dfc356e26e607bf0808e1b5a747cc1a2699681.patch#/%{name}-gl-d2dfc35.patch
 Patch1:         %{vc_url}/commit/ccacfc317e4fac62052a22e2d092d15541e2877e.patch#/%{name}-gl-ccacfc3.patch
+
+Patch100:       %{ixit_url}/3dbc542f971661e2f848db3d55d6f1fe194f220c.patch#/%{name}-ixit-3dbc542.patch
+Patch101:       %{ixit_url}/f85f025a05cb7267b5f2c0932b46218f21576819.patch#/%{name}-ixit-f85f025.patch
+Patch102:       %{ixit_url}/3dd6b79215cba88c43301e80601149bf8188662d.patch#/%{name}-ixit-3dd6b79.patch
+Patch103:       %{ixit_url}/6a3451e170ccd4a8c3e43b4241d1126683a2c6d1.patch#/%{name}-ixit-6a3451e.patch
+Patch104:       %{ixit_url}/d097bdcc781169f337174a4e2d47e7b2e506d491.patch#/%{name}-ixit-d097bdc.patch
+Patch105:       %{ixit_url}/1357d2a60acbfc45ec24c4d6495b54b1dfbae5d2.patch#/%{name}-ixit-1357d2a.patch
+Patch106:       %{ixit_url}/1a53099909af1abfd91000f0a85b5a6e41f81476.patch#/%{name}-ixit-1a53099.patch
+Patch107:       %{ixit_url}/501ad0e1341b4f3320aed9a85fc5a24405c88e4d.patch#/%{name}-ixit-501ad0e.patch
+Patch108:       %{ixit_url}/b383b1e01a4323f191b387444780b642e912a568.patch#/%{name}-ixit-b383b1e.patch
+Patch109:       %{ixit_url}/d730f8d7a9bd3d9291562020503282dd94710717.patch#/%{name}-ixit-d730f8d.patch
+Patch110:       %{ixit_url}/7a1a1fc5d931e2b853c3f28aa763fb54de93eca2.patch#/%{name}-ixit-7a1a1fc.patch
+Patch111:       %{ixit_url}/642e19dc448f65d0f99a00d1a5bff02f75ae747e.patch#/%{name}-ixit-642e19d.patch
+Patch112:       %{ixit_url}/e891f039da6889b3fb65db5c466dbfe08666fd93.patch#/%{name}-ixit-e891f03.patch
+Patch113:       %{ixit_url}/07ccfbb7ab62c122fd3e6dd582d68780c9d3ee24.patch#/%{name}-ixit-07ccfbb.patch
+Patch114:       %{ixit_url}/5dda8494916aabdd62a908ea072394df060cb615.patch#/%{name}-ixit-5dda849.patch
+Patch115:       %{ixit_url}/4dfd613c86ef6f0b51673ca0080f2fa628ed8f18.patch#/%{name}-ixit-4dfd613.patch
+Patch116:       %{ixit_url}/6ec375e8c2e7d37d0ab1435e203be78a5296dda2.patch#/%{name}-ixit-6ec375e.patch
+Patch117:       %{ixit_url}/d7546e1b25657e61f65385178ddf00e74524ba1f.patch#/%{name}-ixit-d7546e1.patch
+Patch118:       %{ixit_url}/86945bb11e239f72efa1bc2d37a92cb2f26cd336.patch#/%{name}-ixit-86945bb.patch
+Patch119:       %{ixit_url}/06205ed739e1695953bd83a6c1133af372131daa.patch#/%{name}-ixit-06205ed.patch
+Patch120:       %{ixit_url}/e81af488f95430ad6646eebe6b431b8b396477ed.patch#/%{name}-ixit-e81af48.patch
+Patch121:       %{ixit_url}/d3d4400540406e97ff32dfacc5030bec377aa6a0.patch#/%{name}-ixit-d3d4400.patch
+Patch122:       %{ixit_url}/bd2faf979cbe2c59a8e7ff4cca428d711c6b1b89.patch#/%{name}-ixit-bd2faf9.patch
+Patch123:       %{ixit_url}/99b2ec02d52f3f7893bf93011044ffabdaec9d75.patch#/%{name}-ixit-99b2ec0.patch
+Patch124:       %{ixit_url}/161cb535b949d6fbf85c1f9452bb6caeb62a6c27.patch#/%{name}-ixit-161cb53.patch
 
 
 BuildRequires:  meson >= 0.45
@@ -658,6 +684,9 @@ popd
 
 
 %changelog
+* Fri Mar 05 2021 Phantom X <megaphantomx at hotmail dot com> - 20.3.4-102
+- Add some iXit updates
+
 * Fri Feb 26 2021 Phantom X - 20.3.4-101
 - Upstream fixes
 
