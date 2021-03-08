@@ -60,7 +60,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        20.3.4
-Release:        102%{?dist}
+Release:        103%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -73,6 +73,18 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch0:         %{vc_url}/commit/d2dfc356e26e607bf0808e1b5a747cc1a2699681.patch#/%{name}-gl-d2dfc35.patch
 Patch1:         %{vc_url}/commit/ccacfc317e4fac62052a22e2d092d15541e2877e.patch#/%{name}-gl-ccacfc3.patch
+
+Patch10:        %{vc_url}/commit/2813688f8dbe813baaa99c028da4058e5dfb428d.patch#/%{name}-gl-2813688.patch
+Patch11:        %{vc_url}/commit/c5ecb59d979f6c651c95c0d7281118db6aa3e7bb.patch#/%{name}-gl-c5ecb59.patch
+Patch12:        %{vc_url}/commit/fc78ecd3793673ae550900f68bf9e459a9f6ec62.patch#/%{name}-gl-fc78ecd.patch
+Patch13:        %{vc_url}/commit/a93ca3be01e51df30c0e7ec58927053e7057afd9.patch#/%{name}-gl-a93ca3b.patch
+Patch14:        %{vc_url}/commit/98e8dc1db8fcf3b31dd3d1ab20b616e17565a986.patch#/%{name}-gl-98e8dc1.patch
+Patch15:        %{vc_url}/commit/55a072cb162766da1c489a2bffddb1d1d0d32b91.patch#/%{name}-gl-55a072c.patch
+Patch16:        %{vc_url}/commit/aa7b497d9a2d29f7822f4f1498951d5fe046166e.patch#/%{name}-gl-aa7b497.patch
+Patch17:        %{vc_url}/commit/a9bcb10ec4f5d41b95e9d39243fdcce66232b6ae.patch#/%{name}-gl-a9bcb10.patch
+Patch18:        %{vc_url}/commit/240322fad2a34d1d2c80d87ed70336796efb3ea7.patch#/%{name}-gl-240322f.patch
+Patch19:        %{vc_url}/commit/8f438f646cda4f0ce22037b2f5d5b1ea33bc40ae.patch#/%{name}-gl-8f438f6.patch
+Patch20:        %{vc_url}/commit/1d2077c3d688a3b7929075fe2258a2e0d41e6bdd.patch#/%{name}-gl-1d2077c.patch
 
 Patch100:       %{ixit_url}/3dbc542f971661e2f848db3d55d6f1fe194f220c.patch#/%{name}-ixit-3dbc542.patch
 Patch101:       %{ixit_url}/f85f025a05cb7267b5f2c0932b46218f21576819.patch#/%{name}-ixit-f85f025.patch
@@ -89,17 +101,24 @@ Patch111:       %{ixit_url}/642e19dc448f65d0f99a00d1a5bff02f75ae747e.patch#/%{na
 Patch112:       %{ixit_url}/e891f039da6889b3fb65db5c466dbfe08666fd93.patch#/%{name}-ixit-e891f03.patch
 Patch113:       %{ixit_url}/07ccfbb7ab62c122fd3e6dd582d68780c9d3ee24.patch#/%{name}-ixit-07ccfbb.patch
 Patch114:       %{ixit_url}/5dda8494916aabdd62a908ea072394df060cb615.patch#/%{name}-ixit-5dda849.patch
-Patch115:       %{ixit_url}/4dfd613c86ef6f0b51673ca0080f2fa628ed8f18.patch#/%{name}-ixit-4dfd613.patch
-Patch116:       %{ixit_url}/6ec375e8c2e7d37d0ab1435e203be78a5296dda2.patch#/%{name}-ixit-6ec375e.patch
-Patch117:       %{ixit_url}/d7546e1b25657e61f65385178ddf00e74524ba1f.patch#/%{name}-ixit-d7546e1.patch
-Patch118:       %{ixit_url}/86945bb11e239f72efa1bc2d37a92cb2f26cd336.patch#/%{name}-ixit-86945bb.patch
-Patch119:       %{ixit_url}/06205ed739e1695953bd83a6c1133af372131daa.patch#/%{name}-ixit-06205ed.patch
-Patch120:       %{ixit_url}/e81af488f95430ad6646eebe6b431b8b396477ed.patch#/%{name}-ixit-e81af48.patch
-Patch121:       %{ixit_url}/d3d4400540406e97ff32dfacc5030bec377aa6a0.patch#/%{name}-ixit-d3d4400.patch
-Patch122:       %{ixit_url}/bd2faf979cbe2c59a8e7ff4cca428d711c6b1b89.patch#/%{name}-ixit-bd2faf9.patch
-Patch123:       %{ixit_url}/99b2ec02d52f3f7893bf93011044ffabdaec9d75.patch#/%{name}-ixit-99b2ec0.patch
-Patch124:       %{ixit_url}/161cb535b949d6fbf85c1f9452bb6caeb62a6c27.patch#/%{name}-ixit-161cb53.patch
-
+Patch115:       %{ixit_url}/4fc332fc55a019e4e177464ddca1d8e007c15189.patch#/%{name}-ixit-4fc332f.patch
+Patch116:       %{ixit_url}/041d31453a1ba1af72991fa525e352072476223c.patch#/%{name}-ixit-041d314.patch
+Patch117:       %{ixit_url}/6b0dc4cf72609c4b1bfb937ac92cc7c5ab7ef05a.patch#/%{name}-ixit-6b0dc4c.patch
+Patch118:       %{name}-i1482672.patch
+Patch119:       %{ixit_url}/e511c3357a6cbc0a80f8f6258c862513d8d2b490.patch#/%{name}-ixit-e511c33.patch
+Patch120:       %{ixit_url}/4dfd613c86ef6f0b51673ca0080f2fa628ed8f18.patch#/%{name}-ixit-4dfd613.patch
+Patch121:       %{ixit_url}/6ec375e8c2e7d37d0ab1435e203be78a5296dda2.patch#/%{name}-ixit-6ec375e.patch
+Patch122:       %{ixit_url}/d7546e1b25657e61f65385178ddf00e74524ba1f.patch#/%{name}-ixit-d7546e1.patch
+Patch123:       %{ixit_url}/86945bb11e239f72efa1bc2d37a92cb2f26cd336.patch#/%{name}-ixit-86945bb.patch
+Patch124:       %{ixit_url}/06205ed739e1695953bd83a6c1133af372131daa.patch#/%{name}-ixit-06205ed.patch
+Patch125:       %{ixit_url}/e81af488f95430ad6646eebe6b431b8b396477ed.patch#/%{name}-ixit-e81af48.patch
+Patch126:       %{ixit_url}/d3d4400540406e97ff32dfacc5030bec377aa6a0.patch#/%{name}-ixit-d3d4400.patch
+Patch127:       %{ixit_url}/bd2faf979cbe2c59a8e7ff4cca428d711c6b1b89.patch#/%{name}-ixit-bd2faf9.patch
+Patch128:       %{ixit_url}/99b2ec02d52f3f7893bf93011044ffabdaec9d75.patch#/%{name}-ixit-99b2ec0.patch
+Patch129:       %{ixit_url}/161cb535b949d6fbf85c1f9452bb6caeb62a6c27.patch#/%{name}-ixit-161cb53.patch
+Patch130:       %{ixit_url}/ea57870f8bbeef145a819916db59f9d6e261f82a.patch#/%{name}-ixit-ea57870.patch
+Patch131:       %{ixit_url}/d557436fe8642211f8d7214aab81e6e07103a221.patch#/%{name}-ixit-d557436.patch
+Patch132:       %{ixit_url}/c3fdd0cefff8fd97d4d1b718923f889f98cbc81c.patch#/%{name}-ixit-c3fdd0c.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -684,6 +703,9 @@ popd
 
 
 %changelog
+* Sun Mar 07 2021 Phantom X <megaphantomx at hotmail dot com> - 20.3.4-103
+- More nine updates
+
 * Fri Mar 05 2021 Phantom X <megaphantomx at hotmail dot com> - 20.3.4-102
 - Add some iXit updates
 

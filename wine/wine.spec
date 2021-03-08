@@ -1,7 +1,7 @@
-%global commit 4de079bb7247c8b849558c0f27a280a9546c5570
+%global commit 5bccf6fc3f309207ef4162df335157649f627f50
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210219
-%global with_snapshot 0
+%global date 20210305
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.3
+%global wine_stagingver 89c049ee68fdbbd4854a3dd2df03c9562bd0c085
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ba2c8aacaea2e92536daf9d8498220027bb07ff6
+%global tkg_id e042cad023445b5852582881784ec20bc691ade6
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -98,7 +98,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.3
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2246,12 +2246,12 @@ fi
 %{_libdir}/wine/wimgapi.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/win32k.%{winesys}
-%endif
 %{_libdir}/wine/windows.gaming.input.%{winedll}
 %{_libdir}/wine/windows.globalization.%{winedll}
 %{_libdir}/wine/windows.media.speech.%{winedll}
 %if 0
 %{_libdir}/wine/windows.networking.connectivity.%{winedll}
+%endif
 %endif
 %{_libdir}/wine/windowscodecs.so
 %{_libdir}/wine/windowscodecs.%{winedll}
@@ -2288,8 +2288,8 @@ fi
 %{_libdir}/wine/wmphoto.so
 %{_libdir}/wine/wmphoto.%{winedll}
 %{_libdir}/wine/wnaspi32.dll.so
-%if 0%{?wine_staging}
-%{_libdir}/wine/wow64cpu.dll.so
+%ifarch x86_64 aarch64
+%{_libdir}/wine/wow64cpu.%{winedll}
 %endif
 %{_libdir}/wine/wpc.%{winedll}
 %{_libdir}/wine/wpcap.dll.so
@@ -2733,6 +2733,9 @@ fi
 
 
 %changelog
+* Sat Mar 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.3-101.20210305git5bccf6f
+- Snapshot
+
 * Sat Feb 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.3-100
 - 6.3
 

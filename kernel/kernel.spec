@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit da87f86ac1eaae9ef4e1514448d4c4f549901cca
+%global pfcommit 2e4872545c7e178baa6aa92de54c854098af46f0
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 277fee96e6d7d1dbdeb0701c31809994d0cf77ea
+%global opensuse_id 24ee23f5e145bec0174b2432dec97e8e6e5f2c86
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -871,6 +871,10 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
+Patch1019: %{opensuse_url}/drm-amdgpu-display-simplify-backlight-setting.patch#/openSUSE-drm-amdgpu-display-simplify-backlight-setting.patch
+Patch1020: %{opensuse_url}/drm-amdgpu-display-don-t-assert-in-set-backlight-fun.patch#/openSUSE-drm-amdgpu-display-don-t-assert-in-set-backlight-fun.patch
+Patch1021: %{opensuse_url}/drm-amdgpu-display-handle-aux-backlight-in-backlight.patch#/openSUSE-m-amdgpu-display-handle-aux-backlight-in-backlight.patch
+Patch1022: %{opensuse_url}/drm-amd-display-Add-a-backlight-module-option.patch#/openSUSE-drm-amd-display-Add-a-backlight-module-option.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2694,6 +2698,9 @@ fi
 #
 #
 %changelog
+* Sun Mar 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.4-500.chinfo
+- 5.11.4 - pf3
+
 * Thu Mar 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.3-500.chinfo
 - 5.11.3 - pf3
 
