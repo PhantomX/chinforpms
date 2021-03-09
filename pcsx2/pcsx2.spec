@@ -1,6 +1,6 @@
-%global commit f9d96f55a538ce373f1662a5554d8052173940b1
+%global commit b33321d6c668bd2aa70a270d2901920191e4a65d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210228
+%global date 20210307
 %global with_snapshot 1
 
 %global sanitize 0
@@ -18,7 +18,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        119%{?gver}%{?dist}
+Release:        120%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -248,6 +248,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Mon Mar 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-120.20210307gitb33321d
+- Update
+
 * Sun Feb 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-119.20210228gitf9d96f5
 - New snapshot
 - SSE4 is needed now by upstream, but a sse4 switch is added to maintain a SSE2

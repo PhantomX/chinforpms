@@ -1,6 +1,6 @@
-%global commit 71707b510299d5cfa07e5eefe2ad679a701ed28b
+%global commit 1cfaa9f0489992c9fcfdc35bb662e9070f910650
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210305
+%global date 20210308
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -82,8 +82,6 @@ Patch1:         %{name}-nodiscord.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
-
-Patch10:        0001-GPU-Remove-condition.patch
 
 
 %if !0%{?with_sysffmpeg}
@@ -364,6 +362,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Mon Mar 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-102.20210308git1cfaa9f
+- Bump to fix custom textures crashes
+
 * Fri Mar 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-101.20210305git71707b5
 - Bump to remove revert
 

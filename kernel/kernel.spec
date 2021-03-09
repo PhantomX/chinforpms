@@ -144,6 +144,9 @@ Summary: The Linux kernel
 %endif
 %define rpmversion %{major_ver}.%{base_sublevel}.%{stable_update}
 
+# The kernel tarball/base version
+%define kversion %{major_ver}.%{base_sublevel}
+
 ## The not-released-kernel case ##
 %else
 # The next upstream release sublevel (base_sublevel+1)
@@ -309,9 +312,6 @@ Summary: The Linux kernel
 %define pkg_release 0%{?rctag}%{?gittag}.%{fedora_build}%{?buildid}%{?variantid}%{?dist}
 
 %endif
-
-# The kernel tarball/base version
-%define kversion %{major_ver}.%{base_sublevel}
 
 
 # turn off debug kernel and kabichk for gcov builds
@@ -777,14 +777,8 @@ Source3014: kernel-local-zen
 Source3015: kernel-local-generic
 Source3016: kernel-local-numa
 
+Source3998: Patchlist.changelog
 Source3999: README.rst
-
-## Patches needed for building this package
-
-# Patch1: patch-%%{rpmversion}-redhat.patch
-
-# empty final patch to facilitate testing of kernel patches
-# Patch999999: linux-kernel-test.patch
 
 # Here should be only the patches up to the upstream canonical Linus tree.
 
@@ -797,7 +791,7 @@ Source5002: %{stable_extra_patch}
 # For a stable release kernel
 %if 0%{?stable_update}
 %if 0%{?stable_base}
-%define    stable_patch_00  patch-%{major_ver}.%{base_sublevel}.%{stable_base}.xz
+%define    stable_patch_00  patch-%{kversion}.%{stable_base}.xz
 Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/%{stable_patch_00}
 %endif
 
@@ -813,7 +807,7 @@ Source5001: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
+Source5000: patch-%{kversion}-git%{gitrev}.xz
 %endif
 %endif
 %endif
@@ -825,36 +819,10 @@ Source5000: patch-%{major_ver}.%{base_sublevel}-git%{gitrev}.xz
 
 %if !%{nopatches}
 
-Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
-Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
-Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
-Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
-Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
-Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
-Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
-Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
-Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
-Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
-Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
-Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
-Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
-Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
-Patch33: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
-Patch34: 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
-Patch35: 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
-Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
-Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
-Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch61: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
-Patch62: 0001-Drop-that-for-now.patch
-Patch63: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
-Patch64: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
-Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch69: 0001-ALSA-hda-intel-dsp-config-Add-SND_INTEL_BYT_PREFER_S.patch
+Patch1: patch-%{kversion}-redhat.patch
+
+# empty final patch to facilitate testing of kernel patches
+# Patch999999: linux-kernel-test.patch
 
 ### Extra
 
@@ -1259,7 +1227,7 @@ patch_command='patch -p1 -F1 -s'
 
 # Update to latest upstream.
 %if 0%{?released_kernel}
-%define vanillaversion %{major_ver}.%{base_sublevel}
+%define vanillaversion %{kversion}
 # non-released_kernel case
 %else
 %if 0%{?rcrev}
@@ -1270,9 +1238,9 @@ patch_command='patch -p1 -F1 -s'
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-%define vanillaversion %{major_ver}.%{base_sublevel}-git%{gitrev}
+%define vanillaversion %{kversion}-git%{gitrev}
 %else
-%define vanillaversion %{major_ver}.%{base_sublevel}
+%define vanillaversion %{kversion}
 %endif
 %endif
 %endif

@@ -1,6 +1,6 @@
-%global commit 77961d2c338ffcafd5e48cb644397ed323399874
+%global commit 99e37500e9956f5fd7d09f182f57ef1628bc437d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210302
+%global date 20210308
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        40%{?gver}%{?dist}
+Release:        41%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -37,11 +37,7 @@ Source1:        %{name}.appdata.xml
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
-Patch4:         %{url}/commit/ca107953fe2d4495740ac77598a60c82c7420492.patch#/%{name}-gh-ca10795.patch
-Patch5:         %{url}/commit/80386d45b95bfb0c212de5470c7fec222e8da0bc.patch#/%{name}-gh-80386d4.patch
-Patch6:         %{url}/commit/45fcd811ec9f1e234183b9d2667be42c9e7e1f16.patch#/%{name}-gh-45fcd81.patch
-Patch7:         %{url}/commit/ee9e64a25346e30b5e505e0373ccea5fec1f0c65.patch#/%{name}-gh-ee9e64a.patch
-Patch8:         %{url}/commit/0e20d5976bcb75b2cb69307e3e872b16c645be50.patch#/%{name}-gh-0e20d59.patch
+Patch4:         0001-Revert-Merge-branch-fh-x64-arm-jit.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
@@ -205,6 +201,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Mon Mar 08 2021 Phantom X <megaphantomx at hotmail dot com> - 7-41.20210308git99e3750
+- Bump with bad commits reverted
+
 * Fri Mar 05 2021 Phantom X <megaphantomx at hotmail dot com> - 7-40.20210302git77961d2
 - Last working snapshot with post commits
 
