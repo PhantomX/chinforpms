@@ -1,6 +1,6 @@
-%global commit 99e37500e9956f5fd7d09f182f57ef1628bc437d
+%global commit cb52d0b6ec0c49de4e546bb76c26a3683878191f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210308
+%global date 20210309
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        41%{?gver}%{?dist}
+Release:        42%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -37,7 +37,6 @@ Source1:        %{name}.appdata.xml
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
-Patch4:         0001-Revert-Merge-branch-fh-x64-arm-jit.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
@@ -201,6 +200,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Mar 09 2021 Phantom X <megaphantomx at hotmail dot com> - 7-42.20210309gitcb52d0b
+- https://github.com/flyinghead/flycast/issues/198
+
 * Mon Mar 08 2021 Phantom X <megaphantomx at hotmail dot com> - 7-41.20210308git99e3750
 - Bump with bad commits reverted
 
