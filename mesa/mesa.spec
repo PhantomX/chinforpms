@@ -35,10 +35,6 @@
 %global with_radeonsi 1
 %endif
 
-%ifnarch %{x86}
-%global with_asm 1
-%endif
-
 %ifarch %{valgrind_arches}
 %bcond_without valgrind
 %else
@@ -59,8 +55,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        20.3.4
-Release:        103%{?dist}
+Version:        21.0.0
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -71,20 +67,10 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
-Patch0:         %{vc_url}/commit/d2dfc356e26e607bf0808e1b5a747cc1a2699681.patch#/%{name}-gl-d2dfc35.patch
-Patch1:         %{vc_url}/commit/ccacfc317e4fac62052a22e2d092d15541e2877e.patch#/%{name}-gl-ccacfc3.patch
-
 Patch10:        %{vc_url}/commit/2813688f8dbe813baaa99c028da4058e5dfb428d.patch#/%{name}-gl-2813688.patch
-Patch11:        %{vc_url}/commit/c5ecb59d979f6c651c95c0d7281118db6aa3e7bb.patch#/%{name}-gl-c5ecb59.patch
-Patch12:        %{vc_url}/commit/fc78ecd3793673ae550900f68bf9e459a9f6ec62.patch#/%{name}-gl-fc78ecd.patch
-Patch13:        %{vc_url}/commit/a93ca3be01e51df30c0e7ec58927053e7057afd9.patch#/%{name}-gl-a93ca3b.patch
-Patch14:        %{vc_url}/commit/98e8dc1db8fcf3b31dd3d1ab20b616e17565a986.patch#/%{name}-gl-98e8dc1.patch
-Patch15:        %{vc_url}/commit/55a072cb162766da1c489a2bffddb1d1d0d32b91.patch#/%{name}-gl-55a072c.patch
-Patch16:        %{vc_url}/commit/aa7b497d9a2d29f7822f4f1498951d5fe046166e.patch#/%{name}-gl-aa7b497.patch
-Patch17:        %{vc_url}/commit/a9bcb10ec4f5d41b95e9d39243fdcce66232b6ae.patch#/%{name}-gl-a9bcb10.patch
-Patch18:        %{vc_url}/commit/240322fad2a34d1d2c80d87ed70336796efb3ea7.patch#/%{name}-gl-240322f.patch
-Patch19:        %{vc_url}/commit/8f438f646cda4f0ce22037b2f5d5b1ea33bc40ae.patch#/%{name}-gl-8f438f6.patch
-Patch20:        %{vc_url}/commit/1d2077c3d688a3b7929075fe2258a2e0d41e6bdd.patch#/%{name}-gl-1d2077c.patch
+Patch11:        %{vc_url}/commit/fc78ecd3793673ae550900f68bf9e459a9f6ec62.patch#/%{name}-gl-fc78ecd.patch
+Patch12:        %{vc_url}/commit/a93ca3be01e51df30c0e7ec58927053e7057afd9.patch#/%{name}-gl-a93ca3b.patch
+Patch13:        %{vc_url}/commit/98e8dc1db8fcf3b31dd3d1ab20b616e17565a986.patch#/%{name}-gl-98e8dc1.patch
 
 Patch100:       %{ixit_url}/3dbc542f971661e2f848db3d55d6f1fe194f220c.patch#/%{name}-ixit-3dbc542.patch
 Patch101:       %{ixit_url}/f85f025a05cb7267b5f2c0932b46218f21576819.patch#/%{name}-ixit-f85f025.patch
@@ -99,26 +85,43 @@ Patch109:       %{ixit_url}/d730f8d7a9bd3d9291562020503282dd94710717.patch#/%{na
 Patch110:       %{ixit_url}/7a1a1fc5d931e2b853c3f28aa763fb54de93eca2.patch#/%{name}-ixit-7a1a1fc.patch
 Patch111:       %{ixit_url}/642e19dc448f65d0f99a00d1a5bff02f75ae747e.patch#/%{name}-ixit-642e19d.patch
 Patch112:       %{ixit_url}/e891f039da6889b3fb65db5c466dbfe08666fd93.patch#/%{name}-ixit-e891f03.patch
-Patch113:       %{ixit_url}/07ccfbb7ab62c122fd3e6dd582d68780c9d3ee24.patch#/%{name}-ixit-07ccfbb.patch
-Patch114:       %{ixit_url}/5dda8494916aabdd62a908ea072394df060cb615.patch#/%{name}-ixit-5dda849.patch
-Patch115:       %{ixit_url}/4fc332fc55a019e4e177464ddca1d8e007c15189.patch#/%{name}-ixit-4fc332f.patch
-Patch116:       %{ixit_url}/041d31453a1ba1af72991fa525e352072476223c.patch#/%{name}-ixit-041d314.patch
-Patch117:       %{ixit_url}/6b0dc4cf72609c4b1bfb937ac92cc7c5ab7ef05a.patch#/%{name}-ixit-6b0dc4c.patch
-Patch118:       %{name}-i1482672.patch
-Patch119:       %{ixit_url}/e511c3357a6cbc0a80f8f6258c862513d8d2b490.patch#/%{name}-ixit-e511c33.patch
-Patch120:       %{ixit_url}/4dfd613c86ef6f0b51673ca0080f2fa628ed8f18.patch#/%{name}-ixit-4dfd613.patch
-Patch121:       %{ixit_url}/6ec375e8c2e7d37d0ab1435e203be78a5296dda2.patch#/%{name}-ixit-6ec375e.patch
-Patch122:       %{ixit_url}/d7546e1b25657e61f65385178ddf00e74524ba1f.patch#/%{name}-ixit-d7546e1.patch
-Patch123:       %{ixit_url}/86945bb11e239f72efa1bc2d37a92cb2f26cd336.patch#/%{name}-ixit-86945bb.patch
-Patch124:       %{ixit_url}/06205ed739e1695953bd83a6c1133af372131daa.patch#/%{name}-ixit-06205ed.patch
-Patch125:       %{ixit_url}/e81af488f95430ad6646eebe6b431b8b396477ed.patch#/%{name}-ixit-e81af48.patch
-Patch126:       %{ixit_url}/d3d4400540406e97ff32dfacc5030bec377aa6a0.patch#/%{name}-ixit-d3d4400.patch
-Patch127:       %{ixit_url}/bd2faf979cbe2c59a8e7ff4cca428d711c6b1b89.patch#/%{name}-ixit-bd2faf9.patch
-Patch128:       %{ixit_url}/99b2ec02d52f3f7893bf93011044ffabdaec9d75.patch#/%{name}-ixit-99b2ec0.patch
-Patch129:       %{ixit_url}/161cb535b949d6fbf85c1f9452bb6caeb62a6c27.patch#/%{name}-ixit-161cb53.patch
-Patch130:       %{ixit_url}/ea57870f8bbeef145a819916db59f9d6e261f82a.patch#/%{name}-ixit-ea57870.patch
-Patch131:       %{ixit_url}/d557436fe8642211f8d7214aab81e6e07103a221.patch#/%{name}-ixit-d557436.patch
-Patch132:       %{ixit_url}/c3fdd0cefff8fd97d4d1b718923f889f98cbc81c.patch#/%{name}-ixit-c3fdd0c.patch
+Patch113:       %{ixit_url}/6087ff44aeacc8c2f32917f720b742a83b3d1416.patch#/%{name}-ixit-6087ff4.patch
+Patch114:       %{ixit_url}/90a7573a6503aa4733c2fc3c19375c623d3402ed.patch#/%{name}-ixit-90a7573.patch
+Patch115:       %{ixit_url}/a179ea2e6d8cec320ab2283a0e4883ac34e72aee.patch#/%{name}-ixit-a179ea2.patch
+Patch116:       %{ixit_url}/24eb1f21d0ab5564037e04807c9ce9fc3fa89399.patch#/%{name}-ixit-24eb1f2.patch
+Patch117:       %{ixit_url}/0beb77751ebdf4db291aa791c12af843e193ef1c.patch#/%{name}-ixit-0beb777.patch
+Patch118:       %{ixit_url}/91755300ece3a67194270db636e6e8c3252fa8f7.patch#/%{name}-ixit-9175530.patch
+Patch119:       %{ixit_url}/393d8f479bd085184a2748bc7eeea2840f67a93c.patch#/%{name}-ixit-393d8f4.patch
+Patch120:       %{ixit_url}/1878a9ad4658ea77d7e8ea08554a67cad0a18938.patch#/%{name}-ixit-1878a9a.patch
+Patch121:       %{ixit_url}/9d1b39797f19b8c635e03aecb753a4de1a383a1d.patch#/%{name}-ixit-9d1b397.patch
+Patch122:       0001-Merge-fix-st-nine-Refactor-DrawPrimitiveUp.patch
+Patch123:       %{ixit_url}/b9a7a0139c2b183867df786d68bccd874916967e.patch#/%{name}-ixit-b9a7a01.patch
+Patch124:       %{ixit_url}/461999af5d53fc6c0d66c889a2f73b75c8ffcb3b.patch#/%{name}-ixit-461999a.patch
+Patch125:       %{ixit_url}/e8d24c0e9f1779aea8f3cdb9eb2316b24cf15996.patch#/%{name}-ixit-e8d24c0.patch
+Patch126:       %{ixit_url}/4662b9d98c57ddf9c4935da25c9e378440899b81.patch#/%{name}-ixit-4662b9d.patch
+Patch127:       %{ixit_url}/f34051f93da59befcaf22a6d3bc3c17430f9ac51.patch#/%{name}-ixit-f34051f.patch
+Patch128:       %{ixit_url}/ed6924489224269ce6c00fd2db39e951b8d3d274.patch#/%{name}-ixit-ed69244.patch
+Patch129:       %{ixit_url}/4ea3a3fe67cd30cfcdde3f73994e9ef97c530251.patch#/%{name}-ixit-4ea3a3f.patch
+Patch130:       %{ixit_url}/7b5a62fea407e92a6f5b48d6ac3f0541f04d2387.patch#/%{name}-ixit-7b5a62f.patch
+Patch131:       %{ixit_url}/f0c20b04287ce0427d57cb844303faeeeb649a84.patch#/%{name}-ixit-f0c20b0.patch
+Patch132:       %{ixit_url}/35c142d0250616e1162c3e1c0dd35d4d6e9137be.patch#/%{name}-ixit-35c142d.patch
+Patch133:       %{ixit_url}/2c2166a466aafeaa6d324e48d015c9227c3cd029.patch#/%{name}-ixit-2c2166a.patch
+Patch134:       %{ixit_url}/dffdf138a79fd36cf542e683504cace94de0604b.patch#/%{name}-ixit-dffdf13.patch
+Patch135:       %{ixit_url}/93c8ff895b44cb5ef6d237ea4b30120ba012de45.patch#/%{name}-ixit-93c8ff8.patch
+Patch136:       %{ixit_url}/c8a522dd1bc062d22908257332343ceedc7d048c.patch#/%{name}-ixit-c8a522d.patch
+Patch137:       %{ixit_url}/c3e47a0620bd0a209b42df58cc34108b2352a979.patch#/%{name}-ixit-c3e47a0.patch
+Patch138:       %{ixit_url}/94957f53e1e96178d199dc1cce15cf98a64c010c.patch#/%{name}-ixit-94957f5.patch
+Patch139:       %{ixit_url}/637a47deb9cf5e40ef70ad2a850c23bc81bba7ea.patch#/%{name}-ixit-637a47d.patch
+Patch140:       %{ixit_url}/15b88f7e336a7336f370072571159d20cb1d09b7.patch#/%{name}-ixit-15b88f7.patch
+Patch141:       %{ixit_url}/fb9d602a959a188adac0fa383af04896aa67eab8.patch#/%{name}-ixit-fb9d602.patch
+Patch142:       %{ixit_url}/92dec5621f0d0d83f6d5e61af02992c4a78b847f.patch#/%{name}-ixit-92dec56.patch
+Patch143:       %{ixit_url}/41412067678fe2a5643dfa01fc5a240fa8548349.patch#/%{name}-ixit-4141206.patch
+Patch144:       %{ixit_url}/2544ec8c5de37eacdd4b8829c09ffed6c54a3a91.patch#/%{name}-ixit-2544ec8.patch
+Patch145:       %{ixit_url}/29f29dc62dbbf46f3a8f9da8add09d61a9a034c3.patch#/%{name}-ixit-29f29dc.patch
+Patch146:       %{ixit_url}/435e150d218448256dee669564876b0826656541.patch#/%{name}-ixit-435e150.patch
+Patch147:       %{ixit_url}/d8e6160431d02626238317eac49fdea2d75f82ed.patch#/%{name}-ixit-d8e6160.patch
+Patch148:       %{ixit_url}/b252b399bdb17412a0ec9d4e3521bbb22f541213.patch#/%{name}-ixit-b252b39.patch
+Patch149:       %{ixit_url}/798ef1de189a586fb7411ade7299a5dc78383d9a.patch#/%{name}-ixit-798ef1d.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -427,7 +430,7 @@ export RANLIB="gcc-ranlib"
   -Dplatforms=x11,wayland \
   -Ddri3=enabled \
   -Ddri-drivers=%{?dri_drivers} \
-  -Dosmesa=gallium \
+  -Dosmesa=true \
 %if 0%{?with_hardware}
   -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
 %else
@@ -451,6 +454,7 @@ export RANLIB="gcc-ranlib"
   -Dglx=dri \
   -Degl=enabled \
   -Dglvnd=true \
+  -Dmicrosoft-clc=disabled \
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
   -Dvalgrind=%{?with_valgrind:enabled}%{!?with_valgrind:disabled} \
@@ -627,7 +631,7 @@ popd
 %{_libdir}/dri/radeonsi_drv_video.so
 %endif
 %endif
-%if 0%{?with_hardware}
+%if 0%{?with_opencl}
 %dir %{_libdir}/gallium-pipe
 %{_libdir}/gallium-pipe/*.so
 %endif
@@ -703,6 +707,9 @@ popd
 
 
 %changelog
+* Fri Mar 12 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.0-100
+- 21.0.0
+
 * Sun Mar 07 2021 Phantom X <megaphantomx at hotmail dot com> - 20.3.4-103
 - More nine updates
 

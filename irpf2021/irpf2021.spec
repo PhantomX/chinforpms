@@ -6,7 +6,7 @@
 %global pkgname IRPF%{pkgyear}
 
 Name:           irpf%{pkgyear}
-Version:        1.1
+Version:        1.2
 Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
@@ -102,6 +102,9 @@ rm -f %{buildroot}%{_datadir}/ProgramasRFB/%{name}/IRPF-Licenses.txt
 
 
 %changelog
+* Wed Mar 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2-1
+- 1.2
+
 * Fri Feb 26 2021 - 1.1-1
 - 1.1
 
