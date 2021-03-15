@@ -1,6 +1,6 @@
 Name:           steamtinkerlaunch
-Version:        2.4.1
-Release:        1%{?dist}
+Version:        3.9
+Release:        0%{?dist}
 Summary:        Wrapper script for Steam custom launch options
 
 License:        GPLv3
@@ -11,6 +11,7 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 
 Requires:       bash
+Requires:       bc
 Requires:       git
 Requires:       wget
 Requires:       wmctrl
@@ -20,19 +21,22 @@ Requires:       xorg-x11-utils
 # xrandr
 Requires:       xorg-x11-server-utils
 Requires:       unzip
-Requires:       yad >= 7.0
+Requires:       yad >= 7.2
 Recommends:     zenity
 Recommends:     boxtron
 Recommends:     cabextract
 Recommends:     gameconqueror
 Recommends:     gamemode
 Recommends:     gamescope
+Recommends:     innoextract
+Recommends:     jq
 Recommends:     libnotify
 Recommends:     mangohud
 Recommends:     net-tools
 Recommends:     nyrna
 Recommends:     replay-sorcery
 Recommends:     scummvm
+Recommends:     rsync
 Recommends:     strace
 Recommends:     usbutils
 Recommends:     vkbasalt
@@ -60,7 +64,7 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 stl %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/stl
-cp -r categories lang misc regs tweaks %{buildroot}%{_datadir}/stl/
+cp -r categories lang misc regs reshadepresets tweaks %{buildroot}%{_datadir}/stl/
 
 
 %files

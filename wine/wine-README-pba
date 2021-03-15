@@ -1,5 +1,0 @@
-= wine-pba =
-
-This wine build has experimental Wine PBA patches applied. Enable with:
-
-  export PBA_ENABLE=1

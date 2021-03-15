@@ -1,7 +1,7 @@
 %global commit 5bccf6fc3f309207ef4162df335157649f627f50
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210305
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 89c049ee68fdbbd4854a3dd2df03c9562bd0c085
+%global wine_stagingver 6.4
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e042cad023445b5852582881784ec20bc691ade6
+%global tkg_id f63bc8e5ea38a29955bd20655c58347a8bdc8158
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -61,8 +61,6 @@
 # Disabled after 5.16
 %global fshack 0
 %global vulkanup 1
-# Broken
-%global pba 0
 
 # https://bugs.winehq.org/show_bug.cgi?id=50448
 %global wine_staging_opts %{?wine_staging_opts} -W ntdll-NtAlertThreadByThreadId
@@ -97,8 +95,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.3
-Release:        101%{?gver}%{?dist}
+Version:        6.4
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -176,6 +174,7 @@ Patch104:       %{whq_url}/a0a6fad695d2f9d1eb2601725ac27c9a9949026b#/%{name}-whq
 Patch105:       %{whq_url}/a67d7c15336ea5caa89099952da1fc1998188029#/%{name}-whq-a67d7c1.patch
 # Restore the prefer builtin vulkan-1 behavior with proton* patches
 Patch106:       %{whq_url}/290c9a4d6372cee046768eccd8fa49050a294f68#/%{name}-whq-290c9a4.patch
+Patch107:       %{whq_url}/e5cade0ff189c7bc871cf3686d16c55939d06068#/%{name}-whq-e5cade0.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -214,12 +213,6 @@ Patch1091:       %{valve_url}/commit/565a4f3820b370f9715e0147031edb189d5a183f.pa
 
 Patch1300:       nier.patch
 Patch1301:       nier-nofshack.patch
-
-%if 0%{?pba}
-# acomminos PBA patches
-Source3001:     wine-README-pba
-Patch3000:      %{tkg_url}/PBA/PBA317+.patch#/%{name}-tkg-PBA317+.patch
-%endif
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -808,6 +801,7 @@ This package adds the opencl driver for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch107 -p1 -R
 %patch106 -p1 -R
 %patch105 -p1 -R
 %patch104 -p1 -R
@@ -836,12 +830,6 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
   -i Makefile.in
-
-%if 0%{?pba}
-cp -p %{S:3001} README-pba-pkg
-
-%patch3000 -p1
-%endif
 
 %patch1020 -p1
 %patch1021 -p1
@@ -1371,11 +1359,6 @@ fi
 %doc documentation/README.*
 %if 0%{?wine_staging}
 %doc README.esync
-%if 0%{?pba}
-%license LICENSE_pba.md
-%doc README_pba.md
-%doc README-pba-pkg
-%endif
 %{_bindir}/msidb
 %endif
 %{_bindir}/winedump
@@ -1549,6 +1532,7 @@ fi
 %{_libdir}/wine/api-ms-win-core-largeinteger-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-kernel32-legacy-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-kernel32-legacy-l1-1-1.%{winedll}
+%{_libdir}/wine/api-ms-win-core-kernel32-legacy-l1-1-2.%{winedll}
 %{_libdir}/wine/api-ms-win-core-kernel32-private-l1-1-1.%{winedll}
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-1-1.%{winedll}
@@ -2482,6 +2466,7 @@ fi
 %{_datadir}/wine/nls/c_20127.nls
 %{_datadir}/wine/nls/c_20866.nls
 %{_datadir}/wine/nls/c_20932.nls
+%{_datadir}/wine/nls/c_20949.nls
 %{_datadir}/wine/nls/c_21866.nls
 %{_datadir}/wine/nls/c_28591.nls
 %{_datadir}/wine/nls/c_28592.nls
@@ -2733,6 +2718,9 @@ fi
 
 
 %changelog
+* Sun Mar 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.4-100
+- 6.4
+
 * Sat Mar 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.3-101.20210305git5bccf6f
 - Snapshot
 

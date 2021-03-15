@@ -1,6 +1,6 @@
-%global commit c9acfb5a686dc845c16fd303056fc392ed466d8b
+%global commit 8f9a284d32be04cf4a8e9bea23b872ab107bc377
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210129
+%global date 20210312
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           gamescope
 Version:        3.7.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -32,6 +32,8 @@ BuildRequires:  pkgconfig(xdamage)
 BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xrender)
 BuildRequires:  pkgconfig(xext)
+BuildRequires:  pkgconfig(xfixes)
+BuildRequires:  pkgconfig(xres)
 BuildRequires:  pkgconfig(xxf86vm)
 BuildRequires:  pkgconfig(xtst)
 BuildRequires:  pkgconfig(pixman-1)
@@ -43,7 +45,7 @@ BuildRequires:  pkgconfig(libinput)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(wlroots) >= 0.11.0
-BuildRequires:  pkgconfig(liftoff)
+BuildRequires:  pkgconfig(libliftoff)
 BuildRequires:  pkgconfig(libcap)
 BuildRequires:  /usr/bin/glslangValidator
 
@@ -78,6 +80,9 @@ Recommends:     mesa-vulkan-drivers
 
 
 %changelog
+* Mon Mar 15 2021 Phantom X <megaphantomx at hotmail dot com> - 3.7.1-2.20210312git8f9a284
+- Bump
+
 * Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 3.7.1-1.20210129gitc9acfb5
 - 3.7.1 snapshot
 

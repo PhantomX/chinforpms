@@ -122,6 +122,7 @@ Patch146:       %{ixit_url}/435e150d218448256dee669564876b0826656541.patch#/%{na
 Patch147:       %{ixit_url}/d8e6160431d02626238317eac49fdea2d75f82ed.patch#/%{name}-ixit-d8e6160.patch
 Patch148:       %{ixit_url}/b252b399bdb17412a0ec9d4e3521bbb22f541213.patch#/%{name}-ixit-b252b39.patch
 Patch149:       %{ixit_url}/798ef1de189a586fb7411ade7299a5dc78383d9a.patch#/%{name}-ixit-798ef1d.patch
+Patch150:       %{ixit_url}/1c72d5c04ff03509f631ba5673ee986e1f265458.patch#/%{name}-ixit-1c72d5c.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc

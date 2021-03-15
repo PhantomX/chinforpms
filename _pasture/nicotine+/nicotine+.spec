@@ -8,9 +8,10 @@
 %endif
 
 %global cname  nicotine
-%global vc_url  https://github.com/%{name}/%{name}
+%global pkgname  nicotine-plus
+%global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
-Name:           nicotine-plus
+Name:           nicotine+
 Version:        3.0.0
 Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
@@ -21,9 +22,9 @@ License:        GPLv3+ and CC-BY-SA and LGPLv3+ and MIT
 URL:            https://www.nicotine-plus.org/
 
 %if 0%{?with_snapshot}
-Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 BuildArch:      noarch
@@ -41,7 +42,7 @@ Requires:       %{py3_dist pygobject}
 Requires:       hicolor-icon-theme
 Recommends:     gspell
 
-Provides:       %{cname}+ = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{cname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description
@@ -53,9 +54,9 @@ that users want and/or need.
 
 %prep
 %if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
+%autosetup -n %{pkgname}-%{commit} -p1
 %else
-%autosetup -n %{name}-%{version} -p1
+%autosetup -n %{pkgname}-%{version} -p1
 %endif
 
 
