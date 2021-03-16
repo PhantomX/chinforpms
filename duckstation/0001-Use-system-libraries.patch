@@ -1,0 +1,333 @@
+From 83cfcfd66936bd6e6c9e04b4835cbc86e248ee0d Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 15 Mar 2021 15:45:49 -0300
+Subject: [PATCH] Use system libraries
+
+FindCUBEB.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
+https://github.com/dolphin-emu/dolphin
+https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
+---
+ CMakeModules/FindCUBEB.cmake               | 15 ++++++
+ dep/CMakeLists.txt                         | 62 +++++++++++++++++++++-
+ dep/discord-rpc/CMakeLists.txt             |  7 ++-
+ dep/vulkan-loader/CMakeLists.txt           |  8 +++
+ src/common/CMakeLists.txt                  | 43 ++++++++++++++-
+ src/common/audio_stream.cpp                |  2 +-
+ src/core/CMakeLists.txt                    | 17 +++++-
+ src/core/texture_replacements.cpp          |  2 +
+ src/duckstation-qt/CMakeLists.txt          | 10 +++-
+ src/frontend-common/CMakeLists.txt         |  9 +++-
+ 11 files changed, 168 insertions(+), 9 deletions(-)
+ create mode 100644 CMakeModules/FindCUBEB.cmake
+
+diff --git a/CMakeModules/FindCUBEB.cmake b/CMakeModules/FindCUBEB.cmake
+new file mode 100644
+index 0000000..c0a730c
+--- /dev/null
++++ b/CMakeModules/FindCUBEB.cmake
+@@ -0,0 +1,15 @@
++find_path(CUBEB_INCLUDE_DIR cubeb.h PATH_SUFFIXES cubeb)
++find_library(CUBEB_LIBRARY cubeb)
++mark_as_advanced(CUBEB_INCLUDE_DIR CUBEB_LIBRARY)
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(CUBEB DEFAULT_MSG
++	CUBEB_INCLUDE_DIR CUBEB_LIBRARY)
++
++if(CUBEB_FOUND AND NOT TARGET CUBEB)
++  add_library(cubeb::cubeb UNKNOWN IMPORTED)
++  set_target_properties(cubeb::cubeb PROPERTIES
++    IMPORTED_LOCATION "${CUBEB_LIBRARY}"
++    INTERFACE_INCLUDE_DIRECTORIES "${CUBEB_INCLUDE_DIR}"
++  )
++endif()
+diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
+index 374d934..3060a83 100644
+--- a/dep/CMakeLists.txt
++++ b/dep/CMakeLists.txt
+@@ -1,23 +1,85 @@
++find_package(PkgConfig QUIET)
++
+ add_subdirectory(glad)
++
++pkg_search_module(libcue REQUIRED libcue)
++if(libcue_FOUND)
++  message(STATUS "Using the system libcue")
++else()
+ add_subdirectory(libcue)
++endif()
++
+ add_subdirectory(stb)
++
++pkg_search_module(zlib REQUIRED zlib)
++if(zlib_FOUND)
++  message(STATUS "Using the system zlib")
++else()
+ add_subdirectory(zlib)
++endif()
++
++pkg_search_module(minizip REQUIRED minizip)
++if(minizip_FOUND)
++  message(STATUS "Using the system minizip")
++else()
+ add_subdirectory(minizip)
++endif()
++
++pkg_search_module(libchdr REQUIRED libchdr)
++if(libchdr_FOUND)
++  message(STATUS "Using the system libchdr")
++else()
++add_subdirectory(libchdr)
+ add_subdirectory(lzma)
+ add_subdirectory(libFLAC)
+-add_subdirectory(libchdr)
++endif()
++
++pkg_search_module(xxhash REQUIRED libxxhash)
++if(xxhash_FOUND)
++  message(STATUS "Using the system libxxhash")
++else()
+ add_subdirectory(xxhash)
++endif()
++
++if(ENABLE_DISCORD_PRESENCE OR ENABLE_CHEEVOS)
++pkg_search_module(rapidjson REQUIRED RapidJSON)
++if(rapidjson_FOUND)
++  message(STATUS "Using the system rapidjson")
++else()
+ add_subdirectory(rapidjson)
++endif()
++endif()
++
+ add_subdirectory(glslang)
++
++pkg_search_module(vulkan-loader REQUIRED vulkan)
+ add_subdirectory(vulkan-loader)
++
+ add_subdirectory(googletest)
++
++find_package(CUBEB)
++if(CUBEB_FOUND)
++  message(STATUS "Using the system cubeb")
++else()
+ add_subdirectory(cubeb)
++endif()
+ add_subdirectory(imgui)
+ add_subdirectory(simpleini)
++
++find_package(tinyxml2)
++if(tinyxml2_FOUND)
++  message(STATUS "Using the system tinyxml2")
++else()
+ add_subdirectory(tinyxml2)
++endif()
+ 
++pkg_search_module(samplerate REQUIRED samplerate)
++if(samplerate_FOUND)
++  message(STATUS "Using the system libsamplerate")
++else()
+ set(LIBSAMPLERATE_ENABLE_SINC_BEST_CONVERTER OFF)
+ add_subdirectory(libsamplerate)
++endif()
+ 
+ if(ENABLE_DISCORD_PRESENCE)
+   add_subdirectory(discord-rpc)
+diff --git a/dep/discord-rpc/CMakeLists.txt b/dep/discord-rpc/CMakeLists.txt
+index b7a2511..6b5f9ed 100644
+--- a/dep/discord-rpc/CMakeLists.txt
++++ b/dep/discord-rpc/CMakeLists.txt
+@@ -13,7 +13,12 @@ set(SRCS
+ 
+ add_library(discord-rpc ${SRCS})
+ target_include_directories(discord-rpc PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+-target_link_libraries(discord-rpc rapidjson)
++if(rapidjson_FOUND)
++target_include_directories(discord-rpc PRIVATE ${rapidjson_INCLUDE_DIRS})
++else()
++target_link_libraries(discord-rpc PRIVATE rapidjson)
++endif()
++target_link_libraries(discord-rpc)
+ 
+ if(WIN32)
+   target_sources(discord-rpc PRIVATE
+diff --git a/dep/vulkan-loader/CMakeLists.txt b/dep/vulkan-loader/CMakeLists.txt
+index 89fdb63..40373f0 100644
+--- a/dep/vulkan-loader/CMakeLists.txt
++++ b/dep/vulkan-loader/CMakeLists.txt
+@@ -1,3 +1,10 @@
++if(vulkan-loader_FOUND)
++  message(STATUS "Using the system vulkan")
++ set(SRCS
++	include/vulkan_loader.h
++	src/vulkan_loader.cpp
++)
++else()
+ set(SRCS
+ 	include/vulkan_loader.h
+ 	include/vulkan/vulkan_android.h
+@@ -21,6 +28,7 @@ set(SRCS
+ 	include/vulkan/vulkan_macos.h
+ 	src/vulkan_loader.cpp
+ )
++endif()
+ 
+ add_library(vulkan-loader ${SRCS})
+ target_include_directories(vulkan-loader PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include")
+diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
+index 5a7cd1d..dcd47f7 100644
+--- a/src/common/CMakeLists.txt
++++ b/src/common/CMakeLists.txt
+@@ -105,9 +105,50 @@ add_library(common
+   wav_writer.h
+ )
+ 
++if(libcue_FOUND)
++target_include_directories(common PRIVATE ${libcue_INCLUDE_DIRS})
++target_link_libraries(common PRIVATE ${libcue_LIBRARIES})
++else()
++target_link_libraries(common PRIVATE libcue)
++endif()
++
++if(libchdr_FOUND)
++target_include_directories(common PRIVATE ${libchdr_INCLUDE_DIRS})
++target_link_libraries(common PRIVATE ${libchdr_LIBRARIES})
++else()
++target_link_libraries(common PRIVATE libchdr)
++endif()
++
++if(minizip_FOUND)
++target_include_directories(common PRIVATE ${minizip_INCLUDE_DIRS})
++target_link_libraries(common PRIVATE ${minizip_LIBRARIES})
++else()
++target_link_libraries(common PRIVATE minizip)
++endif()
++
++if(samplerate_FOUND)
++target_include_directories(common PRIVATE ${samplerate_INCLUDE_DIRS})
++target_link_libraries(common PRIVATE ${samplerate_LIBRARIES})
++else()
++target_link_libraries(common PRIVATE samplerate)
++endif()
++
++if(vulkan_loader_FOUND)
++target_include_directories(common PRIVATE ${vulkan_loader_INCLUDE_DIRS})
++target_link_libraries(common PRIVATE ${vulkan_loader_LIBRARIES})
++endif()
++
++if(zlib_FOUND)
++target_include_directories(common PRIVATE ${zlib_INCLUDE_DIRS})
++target_link_libraries(common PRIVATE ${zlib_LIBRARIES})
++else()
++target_link_libraries(common PRIVATE zlib)
++endif()
++
+ target_include_directories(common PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
+ target_include_directories(common PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
+-target_link_libraries(common PRIVATE glad libcue stb Threads::Threads libchdr glslang vulkan-loader zlib minizip samplerate)
++
++target_link_libraries(common PRIVATE glad stb Threads::Threads glslang vulkan-loader)
+ 
+ if(WIN32)
+   target_sources(common PRIVATE
+diff --git a/src/common/audio_stream.cpp b/src/common/audio_stream.cpp
+index 6f129c3..a48d036 100644
+--- a/src/common/audio_stream.cpp
++++ b/src/common/audio_stream.cpp
+@@ -384,4 +384,4 @@ void AudioStream::ResampleInput(std::unique_lock<std::mutex> buffer_lock)
+   }
+   m_resample_out_buffer.erase(m_resample_out_buffer.begin(),
+                               m_resample_out_buffer.begin() + (static_cast<u32>(sd.output_frames_gen) * m_channels));
+-}
+\ No newline at end of file
++}
+diff --git a/src/core/CMakeLists.txt b/src/core/CMakeLists.txt
+index f9dccc2..8cb84bc 100644
+--- a/src/core/CMakeLists.txt
++++ b/src/core/CMakeLists.txt
+@@ -114,10 +114,23 @@ set(RECOMPILER_SRCS
+     cpu_recompiler_types.h
+ )
+ 
++if(vulkan_loader_FOUND)
++target_include_directories(core PRIVATE ${vulkan_loader_INCLUDE_DIRS})
++target_link_libraries(core PRIVATE ${vulkan_loader_LIBRARIES})
++endif()
++
++if(xxhash_FOUND)
++  target_compile_definitions(core PUBLIC "-DSYSTEM_XXHASH=1")
++  target_include_directories(core PRIVATE ${xxhash_INCLUDE_DIRS})
++  target_link_libraries(core PRIVATE ${xxhash_LIBRARIES})
++else()
++target_link_libraries(core PRIVATE xxhash)
++endif()
++
+ target_include_directories(core PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
+ target_include_directories(core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
+-target_link_libraries(core PUBLIC Threads::Threads common zlib vulkan-loader)
+-target_link_libraries(core PRIVATE glad stb xxhash imgui)
++target_link_libraries(core PUBLIC Threads::Threads common vulkan-loader)
++target_link_libraries(core PRIVATE glad stb imgui)
+ target_compile_definitions(core PUBLIC "-DWITH_IMGUI=1")
+ 
+ if(WIN32)
+diff --git a/src/core/texture_replacements.cpp b/src/core/texture_replacements.cpp
+index 70c1664..06ddca5 100644
+--- a/src/core/texture_replacements.cpp
++++ b/src/core/texture_replacements.cpp
+@@ -7,9 +7,11 @@
+ #include "host_interface.h"
+ #include "settings.h"
+ #include "xxhash.h"
++#ifndef SYSTEM_XXHASH
+ #if defined(CPU_X86) || defined(CPU_X64)
+ #include "xxh_x86dispatch.h"
+ #endif
++#endif
+ #include <cinttypes>
+ Log_SetChannel(TextureReplacements);
+ 
+diff --git a/src/duckstation-qt/CMakeLists.txt b/src/duckstation-qt/CMakeLists.txt
+index 33434ae..d4076d6 100644
+--- a/src/duckstation-qt/CMakeLists.txt
++++ b/src/duckstation-qt/CMakeLists.txt
+@@ -135,7 +135,15 @@ qt5_add_translation(QM_FILES ${TS_FILES})
+ 
+ add_executable(duckstation-qt ${SRCS} ${QM_FILES})
+ target_include_directories(duckstation-qt PRIVATE "${Qt5Gui_PRIVATE_INCLUDE_DIRS}")
+-target_link_libraries(duckstation-qt PRIVATE frontend-common core common imgui glad minizip scmversion vulkan-loader Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network)
++
++if(minizip_FOUND)
++target_include_directories(duckstation-qt PRIVATE ${minizip_INCLUDE_DIRS})
++target_link_libraries(duckstation-qt PRIVATE ${minizip_LIBRARIES})
++else()
++target_link_libraries(duckstation-qt PRIVATE minizip)
++endif()
++
++target_link_libraries(duckstation-qt PRIVATE frontend-common core common imgui glad scmversion vulkan-loader Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network)
+ 
+ if(WIN32)
+   # We want a Windows subsystem application not console.
+diff --git a/src/frontend-common/CMakeLists.txt b/src/frontend-common/CMakeLists.txt
+index 46f17a6..74fc52d 100644
+--- a/src/frontend-common/CMakeLists.txt
++++ b/src/frontend-common/CMakeLists.txt
+@@ -114,8 +114,15 @@ if(ENABLE_CHEEVOS)
+     cheevos.cpp
+     cheevos.h
+   )
++
++  if(rapidjson_FOUND)
++  target_include_directories(frontend-common PRIVATE ${rapidjson_INCLUDE_DIRS})
++  else()
++  target_link_libraries(frontend-common PRIVATE rapidjson)
++  endif()
++
+   target_compile_definitions(frontend-common PUBLIC -DWITH_CHEEVOS=1)
+-  target_link_libraries(frontend-common PRIVATE rcheevos rapidjson)
++  target_link_libraries(frontend-common PRIVATE rcheevos)
+ endif()
+ 
+ # Copy the provided data directory to the output directory.
+-- 
+2.30.2
+

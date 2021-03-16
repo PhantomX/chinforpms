@@ -2,12 +2,12 @@
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2021.03.03.2
+Version:        2021.03.15
 Release:        1%{?dist}
 Summary:        A command-line program to download videos
 
 License:        Unlicense
-URL:            https://github.com/pukkandan/yt-dlp
+URL:            https://github.com/yt-dlp/yt-dlp
 
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        %{pkgname}.conf
@@ -85,6 +85,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Mon Mar 15 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.03.15-1
+- 2021.03.15
+
 * Thu Mar 04 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.03.03.2-1
 - 2021.03.03.2
 

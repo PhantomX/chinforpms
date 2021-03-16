@@ -345,7 +345,7 @@ install -pm0644 Data/51-usb-device.rules %{buildroot}%{_udevrulesdir}/
 
 #Install appdata.xml
 install -p -D -m 0644 %{SOURCE1} \
-  %{buildroot}/%{_datadir}/appdata/%{name}.appdata.xml
+  %{buildroot}/%{_metainfodir}/%{name}.appdata.xml
 %find_lang %{name}
 
 %check
@@ -354,7 +354,7 @@ install -p -D -m 0644 %{SOURCE1} \
 %endif
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 appstream-util validate-relax --nonet \
-  %{buildroot}/%{_datadir}/appdata/*.appdata.xml
+  %{buildroot}%{_metainfodir}/*.appdata.xml
 
 
 %files -f %{name}.lang
@@ -368,7 +368,7 @@ appstream-util validate-relax --nonet \
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/%{name}/sys/Resources/
 %{_datadir}/%{name}/sys/Themes/
-%{_datadir}/appdata/*.appdata.xml
+%{_metainfodir}/*.appdata.xml
 %if 0%{?with_reshdp}
 %{_bindir}/%{name}-reshdp
 %{_bindir}/%{name}-reshdp-x11

@@ -12,6 +12,7 @@ citra
 desmume
 discord
 -dropboxd
+duckstation
 f5cli
 f5vpn
 f5vpn-filesystem

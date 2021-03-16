@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2020 Phantom X <megaphantomx at hotmail at com> -->
+<component type="desktop">
+ <id>duckstation.desktop</id>
+ <metadata_license>CC-BY-SA-3.0</metadata_license>
+ <project_license>GPL-3.0</project_license>
+ <name>DuckStation Emulator</name>
+ <summary>A Sony PlayStation (PSX) emulator</summary>
+ <description>
+  <p>
+   DuckStation is an simulator/emulator of the Sony PlayStation(TM) console,
+   focusing on playability, speed, and long-term maintainability. The goal is to
+   be as accurate as possible while maintaining performance suitable for low-end
+   devices. "Hack" options are discouraged, the default configuration should
+   support all playable games with only some of the enhancements having
+   compatibility issues.
+  </p>
+ </description>
+ <url type="homepage">https://www.duckstation.org/</url>
+ <url type="bugtracker">https://github.com/stenzek/duckstation/issues</url>
+ <updatecontact>megaphantomx at hotmail at com</updatecontact>
+</component>

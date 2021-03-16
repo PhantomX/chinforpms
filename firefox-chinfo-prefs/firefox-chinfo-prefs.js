@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20210129
+// 20210315
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -29,6 +29,7 @@ pref("browser.tabs.insertRelatedAfterCurrent", true);
 pref("browser.tabs.loadBookmarksInTabs", true);
 pref("browser.tabs.opentabfor.middleclick", false);
 //pref("browser.tabs.remote.allowLinkedWebInFileUriProcess", false);
+pref("browser.uidensity", 1);
 pref("browser.urlbar.clickSelectsAll", false);
 pref("browser.urlbar.dnsResolveSingleWordsAfterSearch", 0);
 pref("browser.urlbar.doubleClickSelectsAll", false);

@@ -1,0 +1,103 @@
+From 0ad9f2155bcd4851860d3310ebf3d5338d8f7c15 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 15 Mar 2021 17:20:30 -0300
+Subject: [PATCH] Set datadir to RPM packaging
+
+---
+ src/duckstation-qt/qthostinterface.cpp           | 2 +-
+ src/frontend-common/common_host_interface.cpp    | 4 ++--
+ src/frontend-common/postprocessing_chain.cpp     | 9 +++++----
+ src/frontend-common/sdl_controller_interface.cpp | 3 +--
+ 4 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/src/duckstation-qt/qthostinterface.cpp b/src/duckstation-qt/qthostinterface.cpp
+index 7ccc8f5..ed53dd5 100644
+--- a/src/duckstation-qt/qthostinterface.cpp
++++ b/src/duckstation-qt/qthostinterface.cpp
+@@ -132,7 +132,7 @@ void QtHostInterface::installTranslator()
+     language = "en";
+ 
+   const QString path =
+-    QStringLiteral("%1/translations/duckstation-qt_%3.qm").arg(qApp->applicationDirPath()).arg(language.c_str());
++    QStringLiteral("_RPM_DATADIR_/translations/duckstation-qt_%3.qm").arg(language.c_str());
+   if (!QFile::exists(path))
+   {
+     QMessageBox::warning(
+diff --git a/src/frontend-common/common_host_interface.cpp b/src/frontend-common/common_host_interface.cpp
+index 36c53fc..0846655 100644
+--- a/src/frontend-common/common_host_interface.cpp
++++ b/src/frontend-common/common_host_interface.cpp
+@@ -2140,7 +2140,7 @@ CommonHostInterface::InputProfileList CommonHostInterface::GetInputProfileList()
+   InputProfileList profiles;
+ 
+   const std::string user_dir(GetUserDirectoryRelativePath("inputprofiles"));
+-  const std::string program_dir(GetProgramDirectoryRelativePath("inputprofiles"));
++  const std::string program_dir("_RPM_DATADIR_/inputprofiles");
+ 
+   FindInputProfiles(user_dir, &profiles);
+   if (user_dir != program_dir)
+@@ -3263,7 +3263,7 @@ std::unique_ptr<ByteStream> CommonHostInterface::OpenPackageFile(const char* pat
+ {
+   const u32 allowed_flags = (BYTESTREAM_OPEN_READ | BYTESTREAM_OPEN_SEEKABLE | BYTESTREAM_OPEN_STREAMED);
+   const std::string full_path(
+-    StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", m_program_directory.c_str(), path));
++    StringUtil::StdStringFromFormat("_RPM_DATADIR_" FS_OSPATH_SEPARATOR_STR "%s", path));
+   const u32 real_flags = (flags & allowed_flags) | BYTESTREAM_OPEN_READ;
+   Log_DevPrintf("Requesting package file '%s'", path);
+   return FileSystem::OpenFile(full_path.c_str(), real_flags);
+diff --git a/src/frontend-common/postprocessing_chain.cpp b/src/frontend-common/postprocessing_chain.cpp
+index 5b72a09..3c3207c 100644
+--- a/src/frontend-common/postprocessing_chain.cpp
++++ b/src/frontend-common/postprocessing_chain.cpp
+@@ -3,6 +3,7 @@
+ #include "common/file_system.h"
+ #include "common/log.h"
+ #include "common/string.h"
++#include "common/string_util.h"
+ #include "core/host_interface.h"
+ #include <sstream>
+ Log_SetChannel(PostProcessingChain);
+@@ -25,8 +26,8 @@ static bool TryLoadingShader(PostProcessingShader* shader, const std::string_vie
+   }
+   else
+   {
+-    filename = g_host_interface->GetProgramDirectoryRelativePath("shaders" FS_OSPATH_SEPARATOR_STR "%s.glsl",
+-                                                                 shader_name_str.c_str());
++    filename = StringUtil::StdStringFromFormat("_RPM_DATADIR_/shaders/%s.glsl",
++                                              shader_name_str.c_str());
+     if (FileSystem::FileExists(filename.c_str()))
+     {
+       if (!shader->LoadFromFile(std::move(shader_name_str), filename.c_str()))
+@@ -132,7 +133,7 @@ std::vector<std::string> PostProcessingChain::GetAvailableShaderNames()
+ {
+   std::vector<std::string> names;
+ 
+-  std::string program_dir = g_host_interface->GetProgramDirectoryRelativePath("shaders");
++  std::string program_dir = "_RPM_DATADIR_/shaders";
+   std::string user_dir = g_host_interface->GetUserDirectoryRelativePath("shaders");
+   FileSystem::FindResultsArray results;
+   FileSystem::FindFiles(user_dir.c_str(), "*.glsl",
+@@ -200,4 +201,4 @@ void PostProcessingChain::ClearStages()
+   m_shaders.clear();
+ }
+ 
+-} // namespace FrontendCommon
+\ No newline at end of file
++} // namespace FrontendCommon
+diff --git a/src/frontend-common/sdl_controller_interface.cpp b/src/frontend-common/sdl_controller_interface.cpp
+index 1ccf936..2c31a41 100644
+--- a/src/frontend-common/sdl_controller_interface.cpp
++++ b/src/frontend-common/sdl_controller_interface.cpp
+@@ -71,8 +71,7 @@ std::string SDLControllerInterface::GetGameControllerDBFileName() const
+   if (FileSystem::FileExists(filename.c_str()))
+     return filename;
+ 
+-  filename =
+-    m_host_interface->GetProgramDirectoryRelativePath("database" FS_OSPATH_SEPARATOR_STR "gamecontrollerdb.txt");
++  filename = "_RPM_GCDBDIR_/gamecontrollerdb.txt";
+   if (FileSystem::FileExists(filename.c_str()))
+     return filename;
+ 
+-- 
+2.30.2
+
