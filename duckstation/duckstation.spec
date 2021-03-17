@@ -2,9 +2,11 @@
 %undefine _cmake_shared_libs
 %global _lto_cflags -fno-lto
 
-%global commit a34f0d55996fd155a5c355be617e69eeb51ca61a
+%global with_sysvulkan 1
+
+%global commit b1cf255518ab00d82483bd8e869057bb7c1995f7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210315
+%global date 20210316
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -15,7 +17,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -61,6 +63,13 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  minizip-compat-devel
+%if 0%{?with_sysvulkan}
+BuildRequires:  pkgconfig(glslang) >= 11.0.0
+BuildRequires:  spirv-headers-devel
+BuildRequires:  spirv-tools
+BuildRequires:  pkgconfig(SPIRV-Tools)
+BuildRequires:  vulkan-headers
+%endif
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -116,7 +125,12 @@ rm -rf \
   cubeb discord-rpc libcue libchdr libFLAC libsamplerate lzma minizip rapidjson \
   rcheevos tinyxml2 vulkan-loader/include/vulkan xxhash zlib
 
-cp -p glslang/LICENSE.txt LICENSE.glslang
+%if 0%{?with_sysvulkan}
+  rm -rf glslang
+%else
+  sed -e 's|SPIRV-Tools|SPIRV-Tools_disabled|g' -i CMakeLists.txt
+  cp -p glslang/LICENSE.txt LICENSE.glslang
+%endif
 cp -p imgui/LICENSE.txt LICENSE.glslang
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p vixl/LICENCE LICENSE.vixl
@@ -218,5 +232,8 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Tue Mar 16 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-2.20210316gitb1cf255
+- Support build with system SPIRV/glslang
+
 * Mon Mar 15 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-1.20210315gita34f0d5
 - Initial spec

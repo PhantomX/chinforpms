@@ -1,6 +1,6 @@
-%global commit cb52d0b6ec0c49de4e546bb76c26a3683878191f
+%global commit bceed9781766adb1b2422522ff306a01aad5320a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210309
+%global date 20210315
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        42%{?gver}%{?dist}
+Release:        43%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -131,7 +131,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
 %global _lto_cflags %{nil}
 
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now -Wl,--sort-common"
-EXTRA_CFLAGS="-D NDEBUG -frename-registers -fno-strict-aliasing -ftree-vectorize -fno-operator-names"
+EXTRA_CFLAGS="-D NDEBUG -frename-registers -ftree-vectorize -fno-operator-names"
 export CFLAGS="%{build_cflags} ${EXTRA_CFLAGS}"
 export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
 
@@ -160,7 +160,7 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{__cmake_builddir}/%{name} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/mappings
-for mapping in gcwz generic pandora xboxdrv xpad ;do
+for mapping in generic pandora xboxdrv xpad ;do
   install -pm0644 shell/linux/mappings/controller_$mapping.cfg %{buildroot}%{_datadir}/%{name}/mappings/
 done
 install -pm0644 shell/linux/mappings/keyboard.cfg %{buildroot}%{_datadir}/%{name}/mappings/
@@ -200,6 +200,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Mar 16 2021 Phantom X <megaphantomx at hotmail dot com> - 7-43.20210315gitbceed97
+- Bump
+
 * Tue Mar 09 2021 Phantom X <megaphantomx at hotmail dot com> - 7-42.20210309gitcb52d0b
 - https://github.com/flyinghead/flycast/issues/198
 

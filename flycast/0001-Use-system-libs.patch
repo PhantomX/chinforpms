@@ -34,7 +34,7 @@ index 37373d7..fa2aa27 100644
  
 +find_package(PkgConfig QUIET)
 +
-+pkg_search_module(XXHASH REQUIRED libxxhash)
++pkg_search_module(XXHASH libxxhash)
 +if(XXHASH_FOUND)
 +    message(STATUS "Using system xxhash")
 +    target_include_directories(${PROJECT_NAME} PRIVATE ${XXHASH_INCLUDE_DIRS})

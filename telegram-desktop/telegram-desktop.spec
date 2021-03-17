@@ -1,6 +1,6 @@
 %undefine _cmake_shared_libs
 
-%global commit10 a19877363082da634a3c851a4698376504d2eaee
+%global commit10 7f965710b93c4dadd7e6f1ac739e708694df7929
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 tg_owt
 
@@ -50,8 +50,8 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.6.1
-Release:        100%{?dist}
+Version:        2.6.4
+Release:        1%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -109,7 +109,9 @@ BuildRequires:  cmake(range-v3)
 BuildRequires:  cmake(tl-expected)
 
 BuildRequires:  pkgconfig(gio-2.0)
+BuildRequires:  pkgconfig(giomm-2.4)
 BuildRequires:  pkgconfig(glib-2.0)
+BuildRequires:  pkgconfig(glibmm-2.4)
 BuildRequires:  pkgconfig(gobject-2.0)
 BuildRequires:  pkgconfig(json11)
 BuildRequires:  pkgconfig(libavcodec)
@@ -123,6 +125,7 @@ BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
+BuildRequires:  pkgconfig(sigc++-2.0)
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
@@ -412,6 +415,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Tue Mar 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.4-1
+- 2.6.4
+
 * Tue Mar 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.1-100
 - 2.6.1
 - RPMFusion sync

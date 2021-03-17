@@ -8,11 +8,11 @@
 
 %global vc_id  9ea8593c72570211488943b1286317b239222def
 %global vc_url  https://github.com/zrhoffman/f5vpn-arch/raw/%{vc_id}
-#global dl_url  https://connect.healthsystem.virginia.edu/public/download
-%global dl_url  https://vpn.brown.edu/public/download
+%global dl_url  https://connect.healthsystem.virginia.edu/public/download
+#global dl_url  https://vpn.brown.edu/public/download
 
 Name:           f5vpn
-Version:        7210.2020.0826.1
+Version:        7211.2021.0107.1
 Release:        1%{?dist}
 Summary:        F5 SSL VPN (vpn client)
 
@@ -164,6 +164,9 @@ done
 
 
 %changelog
+* Tue Mar 16 2021 - 7211.2021.0107.1-1
+- 7211.2021.0107.1
+
 * Wed Oct 14 2020 - 7210.2020.0826.1-1
 - 7210.2020.0826.1
 
