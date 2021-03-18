@@ -69,6 +69,9 @@ BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools
 BuildRequires:  pkgconfig(SPIRV-Tools)
 BuildRequires:  vulkan-headers
+%else
+Provides:       bundled(glslang) = git~0
+Provides:       bundled(spirv-cross) = 0~git
 %endif
 
 BuildRequires:  desktop-file-utils
@@ -85,9 +88,6 @@ ExclusiveArch:  x86_64 armv7l aarch64
 
 Requires:       hicolor-icon-theme
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
-
-Provides:       bundled(glslang) = git~0
-Provides:       bundled(spirv-cross) = 0~git
 
 
 %description

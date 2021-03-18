@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit e6c479f497612a0ae1c00ad9c85d5af715495d46
+%global commit 8e3c7674d82df8db66e9cdf6a5d8b0e678a7f720
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210212
+%global date 20210306
 %global with_snapshot 1
 
 # Enable system boost
@@ -66,7 +66,7 @@
 
 Name:           citra
 Version:        0
-Release:        14%{?gver}%{?dist}
+Release:        15%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -95,6 +95,7 @@ Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Disable-telemetry-initial-dialog.patch
+Patch10:        %{vc_url}/%{name}/pull/5711.patch#/%{name}-gh-pr5711.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -262,6 +263,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Mar 17 2021 Phantom X <megaphantomx at hotmail dot com> - 0-15.20210306git8e3c767
+- Last snapshot
+
 * Fri Feb 12 2021 Phantom X <megaphantomx at hotmail dot com> - 0-14.20210212gite6c479f
 - Update
 

@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.6.4
+Version:        2.6.6
 Release:        1%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -83,6 +83,9 @@ Source11:       %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit11}.tar.gz#/%{src
 Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
 Source20:       thunar-sendto-%{name}.desktop
+
+Patch10:        0001-tgcalls-add-missing-include.patch
+Patch11:        %{url}/commit/b4b80822c80633a76bf287e11f55cc304e159317.patch#/%{name}-gh-b4b8082.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -415,6 +418,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Thu Mar 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.6-1
+- 2.6.6
+
 * Tue Mar 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.4-1
 - 2.6.4
 

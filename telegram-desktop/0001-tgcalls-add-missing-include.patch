@@ -1,0 +1,24 @@
+From a201f0d53cadde3a2fa01eee55b40b7b33110d77 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 17 Mar 2021 07:56:05 -0300
+Subject: [PATCH] tgcalls: add missing include
+
+---
+ Telegram/ThirdParty/tgcalls/tgcalls/group/StreamingPart.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Telegram/ThirdParty/tgcalls/tgcalls/group/StreamingPart.h b/Telegram/ThirdParty/tgcalls/tgcalls/group/StreamingPart.h
+index 08859d6..6e0812c 100644
+--- a/Telegram/ThirdParty/tgcalls/tgcalls/group/StreamingPart.h
++++ b/Telegram/ThirdParty/tgcalls/tgcalls/group/StreamingPart.h
+@@ -3,6 +3,7 @@
+ 
+ #include "absl/types/optional.h"
+ #include <vector>
++#include <stdint.h>
+ 
+ namespace tgcalls {
+ 
+-- 
+2.30.2
+
