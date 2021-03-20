@@ -27,15 +27,15 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 cd4a476d56fd7676eeca31da98a6b30e6b57048d
+%global commit2 d69e5fb103b9c7394d4a098b23930ac5d5a99e6f
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 0c029b1501d13fe23956223adc937a909cd8292c
+%global commit3 484d8e1f46e0f4b3dcd16ca491253fbef41698a0
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 a8cf07c212059bae9d018c05fc896e1115a2f077
+%global commit4 4ea0bad02244d155423be0a77d702c3a5a6e950f
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -63,7 +63,7 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 a36d91e5acdbcece9c3ea3186fca185199827797
+%global commit11 979319b9b161d3a0ca68788f25e6fd197f208816
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -78,7 +78,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2021.1.5
+Version:        2021.1.6
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -272,6 +272,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Fri Mar 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.1.6-1
+- 2021.!1.6
+
 * Fri Mar 12 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.1.5-1
 - 2021.Q1.5
 

@@ -1,12 +1,12 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
-%global _lto_cflags -fno-lto
+#global _lto_cflags -fno-lto
 
 %global with_sysvulkan 1
 
-%global commit b1cf255518ab00d82483bd8e869057bb7c1995f7
+%global commit 76d30282e0dd512f648f286ead39b828959a0ebc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210316
+%global date 20210319
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -17,7 +17,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -232,6 +232,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Mar 19 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-3.20210319git76d3028
+- Enable LTO
+
 * Tue Mar 16 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-2.20210316gitb1cf255
 - Support build with system SPIRV/glslang
 

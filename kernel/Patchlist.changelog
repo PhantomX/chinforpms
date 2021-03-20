@@ -1,3 +1,42 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/58465cf2c68ab118fb14070d90d2c72c15709e50
+ 58465cf2c68ab118fb14070d90d2c72c15709e50 mmc: sdhci-iproc: Add ACPI bindings for the rpi
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/0ed90b02259e5e6a4d6d1ef4618ea2938a5383ed
+ 0ed90b02259e5e6a4d6d1ef4618ea2938a5383ed ACPI: platform: Hide ACPI_PLATFORM_PROFILE option
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/8fabe1899259fce8bec528e7c36b22867e84f547
+ 8fabe1899259fce8bec528e7c36b22867e84f547 platform/x86: ideapad-laptop: DYTC Platform profile support
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/bd0cb76666c540268fda8911799069d85cc8b6fa
+ bd0cb76666c540268fda8911799069d85cc8b6fa platform/x86: thinkpad_acpi: Replace ifdef CONFIG_ACPI_PLATFORM_PROFILE with depends on
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/d4def5bc5c57ea761797ced20d50e9322a4b0597
+ d4def5bc5c57ea761797ced20d50e9322a4b0597 platform/x86: thinkpad_acpi: Add platform profile support
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/e9bdc7e8eecf0a07ca166a3c7e619ce98e14d786
+ e9bdc7e8eecf0a07ca166a3c7e619ce98e14d786 platform/x86: thinkpad_acpi: fixed warning and incorporated review comments
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/0ac5c5db661092df3444a98526c9fee2e58e5697
+ 0ac5c5db661092df3444a98526c9fee2e58e5697 platform/x86: thinkpad_acpi: Don't register keyboard_lang unnecessarily
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/9dbc769d65b3540573c34fa822c31f0b668095d1
+ 9dbc769d65b3540573c34fa822c31f0b668095d1 platform/x86: thinkpad_acpi: set keyboard language
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/d4e0484e1a9651d54ad67e4bbdab97697d2265c5
+ d4e0484e1a9651d54ad67e4bbdab97697d2265c5 ACPI: platform-profile: Fix possible deadlock in platform_profile_remove()
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/feb7c6157833a89e6d3ab1c730f272c5d8e744de
+ feb7c6157833a89e6d3ab1c730f272c5d8e744de ACPI: platform-profile: Introduce object pointers to callbacks
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/912d1c4c2dd3618d75e4f58508bb2453a9619dfa
+ 912d1c4c2dd3618d75e4f58508bb2453a9619dfa ACPI: platform-profile: Drop const qualifier for cur_profile
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/8debbcb68fe7e68b93d7b213c143d77df7d400eb
+ 8debbcb68fe7e68b93d7b213c143d77df7d400eb ACPI: platform: Add platform profile support
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/0a97b0469ac6126fb9a58cfc25f15c57fa4a6405
+ 0a97b0469ac6126fb9a58cfc25f15c57fa4a6405 Documentation: Add documentation for new platform_profile sysfs attribute
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/8c183d2a65857c77f4cf84cc9821b9b8cc45cfd7
  8c183d2a65857c77f4cf84cc9821b9b8cc45cfd7 PCI: Add MCFG quirks for Tegra194 host controllers
 

@@ -1,7 +1,7 @@
-%global commit 5bccf6fc3f309207ef4162df335157649f627f50
+%global commit 41df83c50e1c3cfdd6e8ffb65de7838f8503632c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210305
-%global with_snapshot 0
+%global date 20210319
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.4
+%global wine_stagingver f8b6fde40c2cafda9ffedd0944065177952a16d4
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f63bc8e5ea38a29955bd20655c58347a8bdc8158
+%global tkg_id 9187683690beab8b0aad466058cda3b5b4e54447
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -96,7 +96,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.4
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2228,12 +2228,12 @@ fi
 %{_libdir}/wine/whoami.%{wineexe}
 %{_libdir}/wine/wiaservc.%{winedll}
 %{_libdir}/wine/wimgapi.%{winedll}
+%{_libdir}/wine/windows.gaming.input.%{winedll}
+%{_libdir}/wine/windows.media.speech.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/win32k.%{winesys}
-%{_libdir}/wine/windows.gaming.input.%{winedll}
-%{_libdir}/wine/windows.globalization.%{winedll}
-%{_libdir}/wine/windows.media.speech.%{winedll}
 %if 0
+%{_libdir}/wine/windows.globalization.%{winedll}
 %{_libdir}/wine/windows.networking.connectivity.%{winedll}
 %endif
 %endif
@@ -2714,10 +2714,14 @@ fi
 %{_libdir}/wine/openal32.dll.so
 
 %files opencl
-%{_libdir}/wine/opencl.dll.so
+%{_libdir}/wine/opencl.so
+%{_libdir}/wine/opencl.%{winedll}
 
 
 %changelog
+* Sat Mar 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.4-101.20210319git41df83c
+- Snapshot
+
 * Sun Mar 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.4-100
 - 6.4
 
