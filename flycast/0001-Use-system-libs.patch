@@ -1,6 +1,6 @@
-From 0fe79e44be81da2a7fd7a3a25304da6cdcaf412e Mon Sep 17 00:00:00 2001
+From 024bb808a19035fc9435e739ec7c4dc81133a4f7 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 24 Feb 2021 21:08:11 -0300
+Date: Sat, 20 Mar 2021 20:33:10 -0300
 Subject: [PATCH] Use system libs
 
 ---
@@ -15,20 +15,20 @@ Subject: [PATCH] Use system libs
  8 files changed, 96 insertions(+), 5 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 37373d7..fa2aa27 100644
+index 5f74a0c..291aa0a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -11,6 +11,9 @@ option(ENABLE_OPROFILE "Enable OProfile" OFF)
- option(TEST_AUTOMATION "Enable test automation" OFF)
- option(ENABLE_LOG "Enable full logging" OFF)
- option(ASAN "Enable address sanitizer" OFF)
-+option(USE_SYSTEM_CHDR "Dynamically link against system libchdr" OFF)
-+option(USE_SYSTEM_LZMA "Dynamically link against system lzma-sdk" OFF)
-+option(USE_SYSTEM_SPIRV "Dynamically link against system glslang/spirv" OFF)
+@@ -15,6 +15,9 @@ option(USE_GLES "Use GLES[3] API" OFF)
+ option(USE_GLES2 "Use GLES2 API" OFF)
+ option(USE_HOST_LIBZIP "Use host libzip" ON)
+ option(USE_OPENMP "Use OpenMP if available" ON)
++option(USE_HOST_CHDR "Use host libchdr" OFF)
++option(USE_HOST_LZMA "Use host lzma-sdk" OFF)
++option(USE_HOST_SPIRV "Use host glslang/spirv" OFF)
  
  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
  
-@@ -101,19 +104,40 @@ else()
+@@ -104,19 +107,40 @@ else()
      target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_NO_OPENMP)
  endif()
  
@@ -54,11 +54,11 @@ index 37373d7..fa2aa27 100644
 +endif()
  
  if(NOT APPLE)
-+if(USE_SYSTEM_SPIRV)
++if(USE_HOST_SPIRV)
 +    pkg_search_module(GLSLANG REQUIRED glslang)
 +    pkg_search_module(SPIRV REQUIRED spirv)
-+    message(STATUS "Using system glslang/spirv")
-+    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_SYSTEM_SPIRV)
++    message(STATUS "Using host glslang/spirv")
++    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_HOST_SPIRV)
 +    target_include_directories(${PROJECT_NAME} PRIVATE ${GLSLANG_INCLUDE_DIRS} ${SPIRV_INCLUDE_DIRS})
 +    target_link_libraries(${PROJECT_NAME} PRIVATE ${GLSLANG_LIBRARIES} ${SPIRV_LIBRARIES})
 +else()
@@ -69,7 +69,7 @@ index 37373d7..fa2aa27 100644
  
  find_package(ALSA QUIET)
  if(ALSA_FOUND AND NOT ANDROID)
-@@ -180,7 +204,6 @@ else()
+@@ -183,7 +207,6 @@ else()
      get_target_property(ZLIB_LIBRARY zlibstatic LOCATION)
  endif()
  
@@ -77,35 +77,34 @@ index 37373d7..fa2aa27 100644
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
      pkg_check_modules(AO IMPORTED_TARGET ao)
      if(AO_FOUND)
-@@ -188,10 +211,12 @@ if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
+@@ -191,9 +214,11 @@ if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
          target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::AO)
      endif()
  
-+    if(NOT USE_SYSTEM_CHDR)
++    if(NOT USE_HOST_CHDR)
      pkg_check_modules(FLAC IMPORTED_TARGET flac)
      if(FLAC_FOUND)
          target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::FLAC)
-     endif()
 +    endif()
+     endif()
  
-     pkg_check_modules(LIBEVDEV IMPORTED_TARGET libevdev)
-     if(LIBEVDEV_FOUND)
-@@ -264,6 +289,14 @@ target_sources(${PROJECT_NAME} PRIVATE
+ 	if(NOT SDL2_FOUND)
+@@ -281,6 +306,14 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdpsr/cdipsr.h)
  
  target_compile_definitions(${PROJECT_NAME} PRIVATE CHD5_FLAC CHD5_LZMA)
 +
-+if(USE_SYSTEM_CHDR)
++if(USE_HOST_CHDR)
 +    pkg_search_module(CHDR REQUIRED libchdr)
-+    message(STATUS "Using shared libchdr")
-+    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_SYSTEM_CHDR)
++    message(STATUS "Using host libchdr")
++    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_HOST_CHDR)
 +    target_include_directories(${PROJECT_NAME} PRIVATE ${CHDR_INCLUDE_DIRS})
 +    target_link_libraries(${PROJECT_NAME} PRIVATE ${CHDR_LIBRARIES})
 +else()
  target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdr/bitstream.c
          core/deps/chdr/bitstream.h
-@@ -276,7 +309,11 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -293,7 +326,11 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdr/flac.h
          core/deps/chdr/huffman.c
          core/deps/chdr/huffman.h)
@@ -113,11 +112,11 @@ index 37373d7..fa2aa27 100644
 +
 +target_include_directories(${PROJECT_NAME} PRIVATE core/deps/nowide/include)
  
-+if(NOT USE_SYSTEM_CHDR)
++if(NOT USE_HOST_CHDR)
  target_sources(${PROJECT_NAME} PRIVATE
          core/deps/crypto/md5.cpp
          core/deps/crypto/md5.h
-@@ -285,8 +322,6 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -302,8 +339,6 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/crypto/sha256.cpp
          core/deps/crypto/sha256.h)
  
@@ -126,7 +125,7 @@ index 37373d7..fa2aa27 100644
  if(NOT FLAC_FOUND)
      target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_CONFIG_H $<$<BOOL:MINGW>:HAVE_FSEEKO>)
      target_include_directories(${PROJECT_NAME} PRIVATE core/deps/flac/include core/deps/flac/src/libFLAC/include)
-@@ -313,6 +348,7 @@ if(NOT FLAC_FOUND)
+@@ -330,6 +365,7 @@ if(NOT FLAC_FOUND)
              core/deps/flac/src/libFLAC/window.c
              core/deps/flac/src/libFLAC/windows_unicode_filenames.c)
  endif()
@@ -134,21 +133,21 @@ index 37373d7..fa2aa27 100644
  
  if(NOT MINIUPNP_FOUND)
  	option(UPNPC_BUILD_SHARED "Build shared library" OFF)
-@@ -410,15 +446,37 @@ if(NOT MSVC)
+@@ -427,15 +463,37 @@ if(NOT MSVC)
              core/deps/picotcp/stack/pico_tree.c)
  endif()
  
-+if(USE_SYSTEM_CHDR AND NOT USE_SYSTEM_LZMA)
-+  message(STATUS "Shared chdr enabled without shared lzma, disabling 7zip support")
++if(USE_HOST_CHDR AND NOT USE_HOST_LZMA)
++  message(STATUS "Host chdr enabled without shared lzma, disabling 7zip support")
 +  set_property(GLOBAL PROPERTY DISABLE_7ZIP 1)
 +  target_compile_definitions(${PROJECT_NAME} PRIVATE DISABLE_7ZIP)
 +endif()
 +
-+if (USE_SYSTEM_LZMA)
++if (USE_HOST_LZMA)
 +  pkg_search_module(LZMA REQUIRED lzmasdk-c)
 +  if(LZMA_FOUND)
-+    message(STATUS "Using shared lzmasdk")
-+    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_SYSTEM_LZMA)
++    message(STATUS "Using host lzmasdk")
++    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_HOST_LZMA)
 +    target_include_directories(${PROJECT_NAME} PRIVATE ${LZMA_INCLUDE_DIRS})
 +    target_link_libraries(${PROJECT_NAME} PRIVATE ${LZMA_LIBRARIES})
 +  endif()
@@ -175,7 +174,7 @@ index 37373d7..fa2aa27 100644
          core/archive/archive.h
          core/archive/rzip.cpp
 diff --git a/core/archive/7zArchive.cpp b/core/archive/7zArchive.cpp
-index 4f8201b..49e67d8 100644
+index 4f8201b..7b10d63 100644
 --- a/core/archive/7zArchive.cpp
 +++ b/core/archive/7zArchive.cpp
 @@ -19,9 +19,16 @@
@@ -183,7 +182,7 @@ index 4f8201b..49e67d8 100644
   */
  #include "7zArchive.h"
 +
-+#ifdef USE_SYSTEM_LZMA
++#ifdef USE_HOST_LZMA
 +#include <7z.h>
 +#include <7zCrc.h>
 +#include <Alloc.h>
@@ -196,14 +195,14 @@ index 4f8201b..49e67d8 100644
  #define kInputBufSize ((size_t)1 << 18)
  
 diff --git a/core/archive/7zArchive.h b/core/archive/7zArchive.h
-index 1e6e9ba..fc8aca6 100644
+index 797f1bb..ef79635 100644
 --- a/core/archive/7zArchive.h
 +++ b/core/archive/7zArchive.h
 @@ -21,8 +21,13 @@
  #pragma once
  
  #include "archive.h"
-+#ifdef USE_SYSTEM_LZMA
++#ifdef USE_HOST_LZMA
 +#include <7z.h>
 +#include <7zFile.h>
 +#else
@@ -240,14 +239,14 @@ index 904839a..615011d 100644
  	Archive *zip_archive = new ZipArchive();
  	if (zip_archive->Open(base_path.c_str()) || zip_archive->Open((base_path + ".zip").c_str()) || zip_archive->Open((base_path + ".ZIP").c_str()))
 diff --git a/core/deps/chdr/chd.c b/core/deps/chdr/chd.c
-index 3c04737..fe7592b 100644
+index e25621b..e5b9942 100644
 --- a/core/deps/chdr/chd.c
 +++ b/core/deps/chdr/chd.c
 @@ -49,8 +49,13 @@
  #endif // CHD5_FLAC
  #include "huffman.h"
  #if defined(CHD5_LZMA)
-+#ifdef USE_SYSTEM_LZMA
++#ifdef USE_HOST_LZMA
 +	#include <LzmaEnc.h>
 +	#include <LzmaDec.h>
 +#else
@@ -258,13 +257,13 @@ index 3c04737..fe7592b 100644
  #include "deps/crypto/md5.h"
  #include "deps/crypto/sha1.h"
 diff --git a/core/imgread/chd.cpp b/core/imgread/chd.cpp
-index b0b5481..527a335 100644
+index 8d5972b..5c097a6 100644
 --- a/core/imgread/chd.cpp
 +++ b/core/imgread/chd.cpp
 @@ -1,6 +1,10 @@
  #include "common.h"
  
-+#ifdef USE_SYSTEM_CHDR
++#ifdef USE_HOST_CHDR
 +#include <chd.h>
 +#else
  #include "deps/chdr/chd.h"
@@ -273,14 +272,14 @@ index b0b5481..527a335 100644
  /* tracks are padded to a multiple of this many frames */
  const uint32_t CD_TRACK_PADDING = 4;
 diff --git a/core/rend/vulkan/compiler.cpp b/core/rend/vulkan/compiler.cpp
-index ea644b4..485ecd3 100644
+index ea644b4..8bac74e 100644
 --- a/core/rend/vulkan/compiler.cpp
 +++ b/core/rend/vulkan/compiler.cpp
 @@ -19,7 +19,11 @@
      along with Flycast.  If not, see <https://www.gnu.org/licenses/>.
  */
  #include "compiler.h"
-+#ifdef USE_SYSTEM_SPIRV
++#ifdef USE_HOST_SPIRV
 +#include <glslang/SPIRV/GlslangToSpv.h>
 +#else
  #include "SPIRV/GlslangToSpv.h"
@@ -289,14 +288,14 @@ index ea644b4..485ecd3 100644
  
  static const TBuiltInResource DefaultTBuiltInResource = {
 diff --git a/core/rend/vulkan/shaders.h b/core/rend/vulkan/shaders.h
-index ddb7b78..92b184f 100644
+index ddb7b78..a8ed1d4 100644
 --- a/core/rend/vulkan/shaders.h
 +++ b/core/rend/vulkan/shaders.h
 @@ -20,7 +20,11 @@
  */
  #pragma once
  #include "vulkan.h"
-+#ifdef USE_SYSTEM_SPIRV
++#ifdef USE_HOST_SPIRV
 +#include <glslang/SPIRV/GlslangToSpv.h>
 +#else
  #include "SPIRV/GlslangToSpv.h"
@@ -305,5 +304,5 @@ index ddb7b78..92b184f 100644
  #include <glm/glm.hpp>
  #include <map>
 -- 
-2.29.2
+2.30.2
 

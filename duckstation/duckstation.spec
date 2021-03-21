@@ -4,9 +4,9 @@
 
 %global with_sysvulkan 1
 
-%global commit 76d30282e0dd512f648f286ead39b828959a0ebc
+%global commit a5e316b91651636ce6d701d55160fe507cf35a80
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210319
+%global date 20210320
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -17,7 +17,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -34,6 +34,10 @@ Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-datadir-to-RPM-packaging.patch
 Patch2:         0001-Fix-translation-names.patch
 Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
+Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
+
+
+ExclusiveArch:  x86_64 armv7l aarch64
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -81,12 +85,6 @@ BuildRequires:  hicolor-icon-theme
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
-
-
-#Only the following architectures are supported:
-ExclusiveArch:  x86_64 armv7l aarch64
-
-Requires:       hicolor-icon-theme
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
@@ -232,6 +230,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Mar 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-4.20210320gita5e316b
+- Change volume hotkey steps
+
 * Fri Mar 19 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-3.20210319git76d3028
 - Enable LTO
 

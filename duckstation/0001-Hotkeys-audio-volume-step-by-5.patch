@@ -1,0 +1,34 @@
+From 44d8c0a4ba28fdc739f531dc5b9c2c758614596a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 20 Mar 2021 20:59:46 -0300
+Subject: [PATCH] Hotkeys: audio volume step by 5
+
+---
+ src/frontend-common/common_host_interface.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/frontend-common/common_host_interface.cpp b/src/frontend-common/common_host_interface.cpp
+index 0faece7..a54bfdd 100644
+--- a/src/frontend-common/common_host_interface.cpp
++++ b/src/frontend-common/common_host_interface.cpp
+@@ -2122,7 +2122,7 @@ void CommonHostInterface::RegisterAudioHotkeys()
+                    {
+                      g_settings.audio_output_muted = false;
+ 
+-                     const s32 volume = std::min<s32>(GetAudioOutputVolume() + 10, 100);
++                     const s32 volume = std::min<s32>(GetAudioOutputVolume() + 5, 100);
+                      g_settings.audio_output_volume = volume;
+                      g_settings.audio_fast_forward_volume = volume;
+                      m_audio_stream->SetOutputVolume(volume);
+@@ -2135,7 +2135,7 @@ void CommonHostInterface::RegisterAudioHotkeys()
+                    {
+                      g_settings.audio_output_muted = false;
+ 
+-                     const s32 volume = std::max<s32>(GetAudioOutputVolume() - 10, 0);
++                     const s32 volume = std::max<s32>(GetAudioOutputVolume() - 5, 0);
+                      g_settings.audio_output_volume = volume;
+                      g_settings.audio_fast_forward_volume = volume;
+                      m_audio_stream->SetOutputVolume(volume);
+-- 
+2.30.2
+

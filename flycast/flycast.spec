@@ -1,6 +1,6 @@
-%global commit ee109d0fecf468c93a76da07dc7008ace86a315e
+%global commit 0b6420d90a2cc4642f22b010cd074d8ba6c9fd02
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210316
+%global date 20210320
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        44%{?gver}%{?dist}
+Release:        45%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -56,7 +56,6 @@ BuildRequires:  pkgconfig(glm)
 BuildRequires:  pkgconfig(glslang)
 %endif
 BuildRequires:  pkgconfig(libpulse)
-BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip)
@@ -64,6 +63,7 @@ BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(lzmasdk-c)
 %endif
 %if 0%{?with_x11}
+BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(x11)
 %else
 BuildRequires:  pkgconfig(sdl2)
@@ -141,13 +141,13 @@ export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
   -DSDL2_FOUND:BOOL=OFF \
 %endif
 %if 0%{?with_libchdr}
-  -DUSE_SYSTEM_CHDR:BOOL=ON \
+  -DUSE_HOST_CHDR:BOOL=ON \
 %endif
 %if 0%{?with_lzmasdk}
-  -DUSE_SYSTEM_LZMA:BOOL=ON \
+  -DUSE_HOST_LZMA:BOOL=ON \
 %endif
 %if 0%{?with_spirv}
-  -DUSE_SYSTEM_SPIRV:BOOL=ON \
+  -DUSE_HOST_SPIRV:BOOL=ON \
 %endif \
   -DCMAKE_BUILD_TYPE:STRING=Release \
 %{nil}
@@ -200,6 +200,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Mar 20 2021 Phantom X <megaphantomx at hotmail dot com> - 7-45.20210320git0b6420d
+- Bump
+
 * Wed Mar 17 2021 Phantom X <megaphantomx at hotmail dot com> - 7-44.20210316gitee109d0
 - Bump to fix savestate
 
