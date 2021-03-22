@@ -1,8 +1,8 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           smooth
-Version:        0.9.6
-Release:        2%{?dist}
+Version:        0.9.7
+Release:        1%{?dist}
 Summary:        An object oriented C++ class library
 
 License:        Artistic 2.0
@@ -77,6 +77,9 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 
 %changelog
+* Mon Mar 22 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.7-1
+- 0.9.7
+
 * Sat Dec 12 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.6-2
 - Patch to fix library loading issues
 

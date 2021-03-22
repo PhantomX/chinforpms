@@ -1,5 +1,5 @@
 NAME = boca
-VERSION ?= 1.0.3
+VERSION ?= 1.0.4
 SANITIZE ?= 1
 CLEAN_PATCH = $(NAME)-clean.patch
 
@@ -41,4 +41,4 @@ ifeq ($(SANITIZE),1)
 endif
 
 archive: clone sanitize
-	tar cJf ${DIRNAME}.tar.xz ${DIRNAME}
+	tar --numeric-owner -cJf ${DIRNAME}.tar.xz ${DIRNAME}

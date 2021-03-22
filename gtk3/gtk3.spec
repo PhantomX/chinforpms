@@ -24,14 +24,14 @@
 # Filter provides for private modules
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
-%global mushroom_url https://github.com/krumelmonster/gtk3-mushrooms
-%global mushroom_ver cc4b3da5df5357d643a043a2c64b50644fbc6a7c
-%if 0%(echo %{mushroom_ver} | grep -q \\. ; echo $?) == 0
-%global mspkgver %{mushroom_ver}
+%global classic_url https://github.com/lah7/gtk3-classic
+%global classic_ver 3.24.27
+%if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
+%global mspkgver %{classic_ver}
 %else
-%global mspkgver %(c=%{mushroom_ver}; echo ${c:0:7})
+%global mspkgver %(c=%{classic_ver}; echo ${c:0:7})
 %endif
-%global mushroom_dir gtk3-mushrooms-%{mushroom_ver}
+%global classic_dir gtk3-classic-%{classic_ver}
 
 %global vc_url https://gitlab.gnome.org/GNOME/gtk/commit
 
@@ -45,9 +45,8 @@ Epoch:          1
 License:        LGPLv2+
 URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
-Source1:        %{mushroom_url}/archive/%{mushroom_ver}/gtk3-mushrooms-%{mspkgver}.tar.gz
+Source1:        %{classic_url}/archive/%{classic_ver}/gtk3-classic-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
-Source3:        gtk3-mushrooms-gtk-3.2.12-fix.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -154,7 +153,7 @@ interfaces. Offering a complete set of widgets, GTK+ is suitable for
 projects ranging from small one-off tools to complete application
 suites.
 
-This package contains version 3 of GTK+, with gtk3-mushrooms and other
+This package contains version 3 of GTK+, with gtk3-classic and other
 usability and cosmetic modifications.
 
 %package -n gtk-update-icon-cache
@@ -216,9 +215,8 @@ the functionality of the installed %{name} package.
 %autosetup -n gtk+-%{version} -p1 -a 1
 
 patch_command(){
-  patch -p2 -F1 -s -i %{mushroom_dir}/$1
+  patch -p1 -F1 -s -i %{classic_dir}/$1
 }
-patch -p1 -F1 -s -d %{mushroom_dir} -i %{S:3}
 patch_command appearance__buttons-menus-icons.patch
 patch_command appearance__disable-backdrop.patch
 patch_command appearance__file-chooser.patch
@@ -235,7 +233,7 @@ patch_command popovers__color-chooser.patch
 patch_command popovers__file-chooser-list.patch
 patch_command popovers__places-sidebar.patch
 
-cp %{mushroom_dir}/README.md README-mushrooms.md
+cp %{classic_dir}/README.md README-classic.md
 
 cat %{S:2} | tee -a gtk/theme/Adwaita/gtk-contained{,-dark}.css > /dev/null
 
@@ -307,7 +305,7 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 %files -f gtk30.lang
 %license COPYING
-%doc AUTHORS NEWS README README-mushrooms.md
+%doc AUTHORS NEWS README README-classic.md
 %{_bindir}/gtk-query-immodules-3.0*
 %{_bindir}/gtk-launch
 %{_libdir}/libgtk-3.so.*

@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit e3aa768034ce953afb0b50b49807d7a49350915c
+%global commit 0da9b5069adca7222004a53aaecf39db03e076f7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201224
+%global date 20210321
 
 %undefine _hardened_build
 
@@ -18,7 +18,7 @@
 
 Name:           vvvvvv
 Version:        2.3
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -31,7 +31,6 @@ URL:            https://github.com/TerryCavanagh/%{pkgname}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        %{pkgname}.png
 
-Patch10:        0001-System-libraries.patch
 Patch11:        0001-System-data-file.patch
 
 
@@ -47,6 +46,8 @@ BuildRequires:  pkgconfig(physfs)
 %if 0%{?with_systinyxml}
 BuildRequires:  pkgconfig(tinyxml2)
 %endif
+BuildRequires:  utf8cpp-devel
+
 Requires:       vvvvvv-data >= 2.1
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
@@ -68,8 +69,15 @@ Provides:       bundled(tinyxml2) = %{bundletinyxml}
 
 # Make sure that we are using system ones
 rm -rf third_party/physfs/
+rm -rf third_party/utfcpp/
 %if 0%{?with_systinyxml}
 rm -rf third_party/tinyxml2/
+%else
+sed \
+  -e '/INCLUDE_DIRECTORIES/a../third_party/tinyxml2' \
+  -e '/FIND_PACKAGE(utf8cpp CONFIG)/aADD_LIBRARY(tinyxml2-static STATIC ${XML2_SRC})' \
+  -e '/TARGET_LINK_LIBRARIES/s| tinyxml2 | tinyxml2-static |g' \
+  -i desktop_version/CMakeLists.txt
 %endif
 
 cp -p desktop_version/README.md README_desktop.md
@@ -91,7 +99,7 @@ sed -e 's|_RPM_DATA_DIR_|%{_datadir}|g' -i desktop_version/src/FileSystemUtils.c
 
 %cmake \
   -S desktop_version \
-  -DUSE_SYSTEM_PHYSFS:BOOL=ON \
+  -DBUNDLE_DEPENDENCIES:BOOL=OFF \
 %if 0%{?with_systinyxml}
   -DUSE_SYSTEM_TINYXML:BOOL=ON \
 %endif
@@ -141,6 +149,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Mon Mar 22 2021 - 2.3-7.20210321git0da9b50
+- Bump
+- Remove system libraries patch
+
 * Fri Dec 25 2020 - 2.3-6.20201224gite3aa768
 - New snapshot
 - Use bundled tinyxml2 for the time

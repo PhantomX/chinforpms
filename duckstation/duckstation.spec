@@ -4,9 +4,9 @@
 
 %global with_sysvulkan 1
 
-%global commit a5e316b91651636ce6d701d55160fe507cf35a80
+%global commit 4c3d2cd3fe62c345cdf0f27fe4295f35c2d86c71
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210320
+%global date 20210321
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -17,7 +17,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -230,6 +230,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Mar 21 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-5.20210321git4c3d2cd
+- Add missing system path
+
 * Sat Mar 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-4.20210320gita5e316b
 - Change volume hotkey steps
 

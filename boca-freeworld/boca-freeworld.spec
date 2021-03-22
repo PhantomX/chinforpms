@@ -1,4 +1,4 @@
-%global smoothver 0.9.6
+%global smoothver 0.9.7
 
 %global systemlibs systemlibexpat,systemliburiparser,systemlibxspf,systemzlib
 
@@ -10,7 +10,7 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           %{pkgname}-freeworld
-Version:        1.0.3
+Version:        1.0.4
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac - freeworld codecs
 
@@ -93,6 +93,9 @@ rm -f %{buildroot}%{_libdir}/*.so
 
 
 %changelog
+* Mon Mar 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1.0.4-1
+- 1.0.4
+
 * Mon Nov 30 2020 Phantom X <megaphantomx at hotmail dot com> - 1.0.3-1
 - 1.0.3
 
