@@ -1,6 +1,6 @@
-%global commit 116e9b03697324bca8296dc77238313f054271fc
+%global commit 920d2228c982f9a2f97276f2e51fbf8ed507963c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210312
+%global date 20210321
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -99,6 +99,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Mon Mar 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.03.05-1.20210321git920d222
+- Bump
+
 * Fri Mar 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.03.05-1.20210312git116e9b0
 - 21.03.05
 
