@@ -30,6 +30,7 @@ some seasonal packages too, these can return when needed
  * **gnome-colors-icon-theme** - Do not have interest anymore
  * **godot2** - cowsrevenge
  * **hakuneko** - Unmantained by upstream
+ * **higan** - Do not have interest anymore
  * **hollywood** - Do not have interest anymore
  * **kBuild** - VirtualBox, Fedora included
  * **kepka** - Do not have interest anymore

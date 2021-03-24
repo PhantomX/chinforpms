@@ -1,6 +1,6 @@
-%global commit 0b6420d90a2cc4642f22b010cd074d8ba6c9fd02
+%global commit 7205068809f48941c5e1a04351b340035ab8c671
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210320
+%global date 20210323
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        45%{?gver}%{?dist}
+Release:        46%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -59,6 +59,7 @@ BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip)
+BuildRequires:  pkgconfig(miniupnpc)
 %if 0%{?with_lzmasdk}
 BuildRequires:  pkgconfig(lzmasdk-c)
 %endif
@@ -112,7 +113,7 @@ sed \
   -i core/version.h*
 
 sed \
-  -e 's|AO_FOUND|AO_FOUND_DISABLED|g' \
+  -e 's|IMPORTED_TARGET ao|IMPORTED_TARGET ao_DISABLED|g' \
   -e 's|${GIT_EXECUTABLE} describe --tags --always|echo "%{version}-%{release}"|g' \
   -i CMakeLists.txt
 
@@ -200,6 +201,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Mar 23 2021 Phantom X <megaphantomx at hotmail dot com> - 7-46.20210323git7205068
+- Update
+
 * Sat Mar 20 2021 Phantom X <megaphantomx at hotmail dot com> - 7-45.20210320git0b6420d
 - Bump
 

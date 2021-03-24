@@ -1,6 +1,6 @@
-%global commit 3808e8e25fa30515fb5888c0ef5063cf415edd96
+%global commit f57657f27ddec337b1960c7ddaa1b23894bc00c3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200623
+%global date 20210312
 %global with_snapshot 1
 
 %ifarch x86_64
@@ -24,18 +24,17 @@
 
 Name:           bsnes
 Version:        115
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        Nintendo SNES emulator
 
 License:        GPLv3 and BSD
 
-URL:            https://bsnes.byuu.org/
+URL:            https://github.com/%{name}-emu/%{name}
 
-%global vc_url  https://github.com/byuu/%{name}
 %if 0%{?with_snapshot}
-Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  desktop-file-utils
@@ -49,10 +48,8 @@ BuildRequires:  pkgconfig(ao)
 BuildRequires:  pkgconfig(gl)
 %if 0%{?with_gtk2}
 BuildRequires:  pkgconfig(gtk+-2.0)
-BuildRequires:  pkgconfig(gtksourceview-2.0)
 %else
 BuildRequires:  pkgconfig(gtk+-3.0)
-BuildRequires:  pkgconfig(gtksourceview-3.0)
 %endif
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libpulse-simple)
@@ -110,9 +107,11 @@ export options="%{build_ldflags}"
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name}/out/%{name} %{buildroot}%{_bindir}/
 
-mkdir -p %{buildroot}%{_datadir}/%{name}/{Database,Firmware,Locale}/
+mkdir -p %{buildroot}%{_datadir}/%{name}/{Database,Firmware,Locale,Shaders}/
 cp -rp %{name}/Database/* %{buildroot}%{_datadir}/%{name}/Database/
 cp -rp %{name}/Locale/* %{buildroot}%{_datadir}/%{name}/Locale/
+cp -rp shaders/* %{buildroot}%{_datadir}/%{name}/Shaders/
+cp -rp extras/*.bml %{buildroot}%{_datadir}/%{name}/
 
 find %{buildroot}%{_datadir} -name '.gitgnore' -delete
 
@@ -146,6 +145,11 @@ done
 
 
 %changelog
+* Tue Mar 23 2021 Phantom X <megaphantomx at hotmail dot com> - 115-4.20210312gitf57657f
+- Bump
+- Update URL
+- Remove gtksourceview BR
+
 * Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 115-3.20200623git3808e8e
 - New snapshot
 

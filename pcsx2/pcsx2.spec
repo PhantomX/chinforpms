@@ -1,6 +1,6 @@
-%global commit b33321d6c668bd2aa70a270d2901920191e4a65d
+%global commit bc477e1ce10a54c279b681a8d6b99f34d5d0b8fb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210307
+%global date 20210323
 %global with_snapshot 1
 
 %global sanitize 0
@@ -18,7 +18,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        120%{?gver}%{?dist}
+Release:        121%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -44,6 +44,7 @@ Source1:        Makefile
 # Revert this, needs sse4
 Patch0:         0001-Revert-microVU-SSE4-additions.patch
 %endif
+Patch1:         0001-System-libchdr-support.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -56,11 +57,12 @@ BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(egl)
-BuildRequires:  pkgconfig(fmt) >= 7.0.3
+BuildRequires:  pkgconfig(fmt) >= 7.1.3
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(ice)
+BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libsparsehash)
@@ -81,7 +83,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-30
+BuildRequires:  sdl_gamecontrollerdb >= 0-32
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -248,6 +250,10 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Tue Mar 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-121.20210323gitbc477e1
+- Bump
+- BR: libchdr, and patch to support system library
+
 * Mon Mar 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-120.20210307gitb33321d
 - Update
 

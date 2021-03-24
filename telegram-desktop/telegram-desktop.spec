@@ -1,6 +1,6 @@
 %undefine _cmake_shared_libs
 
-%global commit10 7f965710b93c4dadd7e6f1ac739e708694df7929
+%global commit10 2d804d2c9c5d05324c8ab22f2e6ff8306521b3c3
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 tg_owt
 
@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.7.0
+Version:        2.7.1
 Release:        1%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -84,7 +84,8 @@ Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcna
 %endif
 Source20:       thunar-sendto-%{name}.desktop
 
-Patch10:        0001-tgcalls-add-missing-include.patch
+# https://github.com/TelegramMessenger/tgcalls/commit/eded7cc540123eaf26361958b9a61c65cb2f7cfc
+Patch100: %{name}-build-fix.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -163,6 +164,8 @@ Provides:       bundled(rlottie) = 0~git
 
 %if %{with tgvoip}
 BuildRequires:  pkgconfig(tgvoip) >= 2.4.4
+BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(libpulse)
 %else
 Provides:       bundled(libtgvoip) = 2.4.4
 %endif
@@ -184,11 +187,8 @@ BuildRequires:  pkgconfig(xcb-screensaver)
 %if %{with tg_owt}
 BuildRequires:  cmake(tg_owt)
 %else
-BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(libjpeg)
-BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(x11)
-BuildRequires:  pkgconfig(xtst)
 BuildRequires:  yasm
 Provides:       bundled(tg_owt) = 0~git%{shortcommit10}
 %endif
@@ -417,6 +417,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Tue Mar 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.1-1
+- 2.7.1
+
 * Fri Mar 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.0-1
 - 2.7.0
 

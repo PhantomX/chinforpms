@@ -1,6 +1,6 @@
-%global commit 1cfaa9f0489992c9fcfdc35bb662e9070f910650
+%global commit a37ea1e652b231b8a9fbc516ab4d7547ed8ebd2b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210308
+%global date 20210323
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -39,7 +39,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 d57ab68a219831900fa2b8a3bd529413e01f3b9f
+%global commit7 84d1f8aa2a40641a6eff6c84c99cc7b5e7a1c833
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -82,6 +82,7 @@ Patch1:         %{name}-nodiscord.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
+Patch5:         0001-Add-chd-support.patch
 
 
 %if !0%{?with_sysffmpeg}
@@ -114,6 +115,7 @@ BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(libglvnd)
 %endif
+BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash) >= 0.8.0
 BuildRequires:  pkgconfig(libzip)
@@ -362,6 +364,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Mar 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-103.20210323gita37ea1e
+- Add experimental CHD support from SleepyMan
+
 * Mon Mar 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-102.20210308git1cfaa9f
 - Bump to fix custom textures crashes
 

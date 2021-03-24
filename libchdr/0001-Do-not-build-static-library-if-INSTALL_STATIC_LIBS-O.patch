@@ -1,0 +1,30 @@
+From 33b4bcf2537f1a4bf95d8ec90b1252c16f2b26ed Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 23 Mar 2021 18:10:58 -0300
+Subject: [PATCH] Do not build static library if INSTALL_STATIC_LIBS=OFF
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a1f456f..26609c1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -83,12 +83,12 @@ set(CHDR_SOURCES
+ 
+ list(APPEND CHDR_INCLUDES include ${CMAKE_CURRENT_BINARY_DIR}/include)
+ 
++if (INSTALL_STATIC_LIBS)
+ add_library(chdr-static STATIC ${CHDR_SOURCES})
+ target_include_directories(chdr-static PRIVATE ${CHDR_INCLUDES} ${PLATFORM_INCLUDES})
+ target_compile_definitions(chdr-static PRIVATE ${CHDR_DEFS})
+ target_link_libraries(chdr-static ${CHDR_LIBS} ${PLATFORM_LIBS})
+ 
+-if (INSTALL_STATIC_LIBS)
+   install(TARGETS chdr-static ${CHDR_LIBS}
+     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+   )
+-- 
+2.30.2
+

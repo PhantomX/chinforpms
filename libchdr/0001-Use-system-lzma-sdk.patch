@@ -1,6 +1,6 @@
-From 4bbd826e84887394a839d523e19d757fd3c1f882 Mon Sep 17 00:00:00 2001
+From 861022f370c297fb79abbe2e63a68096fc2943fb Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 6 Nov 2020 19:42:31 -0300
+Date: Tue, 23 Mar 2021 18:07:46 -0300
 Subject: [PATCH] Use system lzma-sdk
 
 ---
@@ -8,19 +8,19 @@ Subject: [PATCH] Use system lzma-sdk
  1 file changed, 7 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 87f7c90..532c2dc 100644
+index ee21eaa..a1f456f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -9,6 +9,7 @@ option(BUILD_STATIC_LIBS "Build libchdr also as a static library" ON)
+@@ -8,6 +8,7 @@ set(CHDR_VERSION_MINOR 1)
  option(BUILD_SHARED_LIBS "Build libchdr also as a shared library" ON)
- option(WITH_SYSTEM_FLAC "Use system provided FLAC library" OFF)
+ option(INSTALL_STATIC_LIBS "Install static libraries" OFF)
  option(WITH_SYSTEM_ZLIB "Use system provided zlib library" OFF)
 +option(WITH_SYSTEM_LZMA "Use system provided lzma-sdk library" OFF)
  
- if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+ if(CMAKE_C_COMPILER_ID MATCHES "GNU")
    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden -fPIC -O3 -flto")
-@@ -64,9 +65,15 @@ else()
- endif()
+@@ -47,9 +48,15 @@ endif()
+ 
  
  # lzma
 +if (WITH_SYSTEM_LZMA)
@@ -36,5 +36,5 @@ index 87f7c90..532c2dc 100644
  # zlib
  if (WITH_SYSTEM_ZLIB)
 -- 
-2.28.0
+2.30.2
 

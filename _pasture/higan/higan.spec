@@ -1,6 +1,6 @@
-%global commit 2a110b44631f01c0c5d64fab6a782320d8fb0ec6
+%global commit 44cbb88d49d5a77f19e353fad4bc7fbab6909ca9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200725
+%global date 20210323
 %global with_snapshot 1
 
 %ifarch x86_64
@@ -23,18 +23,17 @@
 
 Name:           higan
 Version:        110
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Multi-system emulator
 
 License:        GPLv3 and BSD
 
-URL:            https://higan.byuu.org/
+URL:            https://github.com/higan-emu/%{name}
 
-%global vc_url  https://github.com/byuu/%{name}
 %if 0%{?with_snapshot}
-Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  desktop-file-utils
@@ -77,6 +76,7 @@ accuracy and code readability.
 
 find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec chmod -x {} ';'
 
+mv extras/Shaders/LICENSE LICENSE.shader
 
 sed -i -e 's|-L/usr/local/lib ||g' -i hiro/GNUmakefile
 
@@ -97,7 +97,7 @@ sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
 export flags="%(echo %{build_cxxflags} | sed -e 's/-O2\b/-O3/')"
 export options="%{build_ldflags}"
 
-%make_build -C %{name} target=%{name} verbose \
+%make_build -C %{name}-ui target=%{name} verbose \
   build=performance local=false hiro=%{toolkit} \
 %if 0%{?build_with_lto}
   lto=true \
@@ -109,16 +109,17 @@ export options="%{build_ldflags}"
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{name}/out/%{name} %{buildroot}%{_bindir}/
+install -pm0755 %{name}-ui/out/%{name} %{buildroot}%{_bindir}/
 install -pm0755 icarus/out/icarus %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/
 cp -rp %{name}/System/* %{buildroot}%{_datadir}/%{name}/
 
 
-mkdir -p %{buildroot}%{_datadir}/icarus/{Database,Firmware}/
+mkdir -p %{buildroot}%{_datadir}/icarus/{Database,Firmware,Shaders}/
 cp -rp icarus/Database/* %{buildroot}%{_datadir}/icarus/Database/
 cp -rp icarus/Firmware/* %{buildroot}%{_datadir}/icarus/Firmware/
+cp -rp extras/Shaders/* %{buildroot}%{_datadir}/%{name}/Shaders/
 
 find %{buildroot}%{_datadir} -name '.gitgnore' -delete
 
@@ -152,7 +153,7 @@ done
 
 
 %files
-%license LICENSE.txt
+%license LICENSE.txt LICENSE.shader
 %doc README.md
 %{_bindir}/%{name}
 %{_bindir}/icarus
@@ -163,6 +164,10 @@ done
 
 
 %changelog
+* Tue Mar 23 2021 Phantom X <megaphantomx at hotmail dot com> - 110-3.20210323git44cbb88
+- Bump
+- Update URL
+
 * Fri Oct  2 2020 Phantom X <megaphantomx at hotmail dot com> - 110-2.20200725git2a110b4
 - Snapshot
 
