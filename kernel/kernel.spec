@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit a9b357e82d9e7ab9df047e9cf57593ed745a6c60
+%global pfcommit 3ff153e4e940b7fbed614b0c94c757876cab33f1
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 68a1ba61c29f0600aae5c3a51059888f23f89d27
+%global opensuse_id 995fe4566bbc90e6b4345dc147f675db0b96c0a5
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -839,7 +839,6 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/drm-amd-display-Copy-over-soc-values-before-bounding.patch#/openSUSE-drm-amd-display-Copy-over-soc-values-before-bounding.patch
 Patch1020: %{opensuse_url}/drm-amd-display-Revert-dram_clock_change_latency-for.patch#/openSUSE-drm-amd-display-Revert-dram_clock_change_latency-for.patch
 Patch1021: %{opensuse_url}/drm-i915-ilk-glk-Fix-link-training-on-links-with-LTT.patch#/openSUSE-drm-i915-ilk-glk-Fix-link-training-on-links-with-LTT.patch
 
@@ -2666,6 +2665,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 24 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.9-500.chinfo
+- 5.11.9 - pf5
+
 * Sat Mar 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.8-500.chinfo
 - 5.11.8 - pf5
 

@@ -1,6 +1,6 @@
-%global commit 57a202253545bd8792fc93c3ff486c7a0c93c590
+%global commit beb78605ff96e09218a2f84d63dd725ab4f1c7b8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210309
+%global date 20210319
 %global with_snapshot 1
 
 %global with_gtk3  1
@@ -26,7 +26,7 @@
 
 Name:           claws-mail
 Version:        3.99.0
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -446,18 +446,11 @@ exporting of your meetings or all your calendars.
 
 %prep
 %if 0%{?with_snapshot}
-%setup -q -n claws-%{shortcommit}
+%autosetup -n claws-%{shortcommit} -p1
 echo 'echo %{version}-%{shortcommit}' > version
 %else
-%setup -q
+%autosetup -p1
 %endif
-
-%if 0%{?fedora} > 20
-%patch11 -p1 -b.syscrypto
-%endif
-
-%patch50 -p1 -b.trash
-%patch51 -p1 -b.manheader
 
 %if 0%{?with_autotools}
 NOCONFIGURE=1 ./autogen.sh
@@ -740,6 +733,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Wed Mar 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.99.0-106.20210319gitbeb7860
+- Latest snapshot
+
 * Fri Mar 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.99.0-105.20210309git57a2022
 - Update
 

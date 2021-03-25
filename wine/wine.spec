@@ -1,6 +1,6 @@
-%global commit 41df83c50e1c3cfdd6e8ffb65de7838f8503632c
+%global commit f69c8f018188af49d5a3916f7bb7e3ab984fd3ec
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210319
+%global date 20210323
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -41,7 +41,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver f8b6fde40c2cafda9ffedd0944065177952a16d4
+%global wine_stagingver d2102728fe46c8142ec97461b61217e56036915d
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,7 +52,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9187683690beab8b0aad466058cda3b5b4e54447
+%global tkg_id a880eac9ea17897e8783ffcde5e40010ad2d3107
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -96,7 +96,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.4
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -801,13 +801,13 @@ This package adds the opencl driver for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
-%patch107 -p1 -R
-%patch106 -p1 -R
-%patch105 -p1 -R
-%patch104 -p1 -R
-%patch103 -p1 -R
-%patch102 -p1 -R
-%patch101 -p1 -R
+###patch107 -p1 -R
+###patch106 -p1 -R
+###patch105 -p1 -R
+###patch104 -p1 -R
+###patch103 -p1 -R
+###patch102 -p1 -R
+###patch101 -p1 -R
 %patch100 -p1 -R
 
 # setup and apply wine-staging patches
@@ -838,7 +838,7 @@ sed \
 %patch1023 -p1
 %patch1024 -p1
 %endif
-#patch1025 -p1
+###patch1025 -p1
 %patch1026 -p1
 %if 0%{?fshack}
 %patch1027 -p1
@@ -860,7 +860,7 @@ sed \
 %endif
 %endif
 %patch1035 -p1
-%patch1037 -p1
+###patch1037 -p1
 %patch1091 -p1 -R
 %if 0%{?fshack}
 %patch1300 -p1
@@ -2719,6 +2719,9 @@ fi
 
 
 %changelog
+* Wed Mar 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.4-102.20210323gitf69c8f0
+- Bump
+
 * Sat Mar 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.4-101.20210319git41df83c
 - Snapshot
 
