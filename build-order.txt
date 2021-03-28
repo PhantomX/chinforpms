@@ -53,6 +53,7 @@ python-markups
 perl-X11-GUITest
 spirv-tools
 vulkan-loader
+xcftools
 
 # 3
 adriconf
@@ -73,7 +74,6 @@ bashdb
 -bctoolbox
 binmerge
 blackchocobo
-blastem
 bluecurve-icon-theme
 boca
 -browsh

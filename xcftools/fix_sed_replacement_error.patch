@@ -1,0 +1,20 @@
+--- xcftools-1.0.7_orig/Makefile.in	2012-02-18 12:10:35.188524032 +0530
++++ xcftools-1.0.7/Makefile.in	2012-02-18 12:11:49.442046880 +0530
+@@ -89,14 +89,13 @@
+ 
+ install: all
+ 	for p in $(BINARIES) ; do \
+-	  case $$p in xcfview) strip= ;; *) strip=-s ;; esac ; \
+-	  $(INSTALL_PROGRAM) $$strip $$p \
+-	    $(DESTDIR)$(bindir)/`echo $$p | $(SED) $(program_transform_name)` \
++	  $(INSTALL_PROGRAM) $$p \
++	    $(DESTDIR)$(bindir)/$$p \
+ 	    || exit 1 ;\
+         done
+ 	for m in $(MANPAGES) ; do \
+ 	  $(INSTALL_DATA) $$m \
+-	    $(DESTDIR)$(mandir)/man1/`echo $$m | $(SED) $(program_transform_name)` \
++	    $(DESTDIR)$(mandir)/man1/$$m \
+ 	    || exit 1 ; \
+ 	done
+ 	for lang in $(LINGUAS) ; do \

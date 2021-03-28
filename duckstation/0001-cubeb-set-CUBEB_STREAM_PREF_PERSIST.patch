@@ -1,0 +1,26 @@
+From a06a643e39aeb1fefe3de20aecd0925f4feeb4c0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 27 Mar 2021 18:18:23 -0300
+Subject: [PATCH] cubeb: set CUBEB_STREAM_PREF_PERSIST
+
+https://github.com/stenzek/duckstation/issues/1866
+---
+ src/frontend-common/cubeb_audio_stream.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/frontend-common/cubeb_audio_stream.cpp b/src/frontend-common/cubeb_audio_stream.cpp
+index 302e281..eed2115 100644
+--- a/src/frontend-common/cubeb_audio_stream.cpp
++++ b/src/frontend-common/cubeb_audio_stream.cpp
+@@ -43,7 +43,7 @@ bool CubebAudioStream::OpenDevice()
+   params.rate = m_output_sample_rate;
+   params.channels = m_channels;
+   params.layout = CUBEB_LAYOUT_UNDEFINED;
+-  params.prefs = CUBEB_STREAM_PREF_NONE;
++  params.prefs = CUBEB_STREAM_PREF_PERSIST;
+ 
+   u32 latency_frames = 0;
+   rv = cubeb_get_min_latency(m_cubeb_context, &params, &latency_frames);
+-- 
+2.30.2
+

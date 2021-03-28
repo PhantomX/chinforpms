@@ -25,7 +25,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 3.24.27
+%global classic_ver 3.24.28
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -36,7 +36,7 @@
 %global vc_url https://gitlab.gnome.org/GNOME/gtk/commit
 
 Name:           gtk3
-Version:        3.24.27
+Version:        3.24.28
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -401,6 +401,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Sat Mar 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.28-100
+- 3.24.28
+
 * Fri Mar 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.27-100
 - 3.24.27
 

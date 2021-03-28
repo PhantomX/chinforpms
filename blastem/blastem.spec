@@ -10,16 +10,23 @@
 
 Name:           blastem
 Version:        0.6.3
-Release:        0.2%{?gver}%{?dist}
+Release:        0.3%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPLv3
 URL:            https://www.retrodev.com/%{name}/
 Source0:        https://www.retrodev.com/repos/%{name}/archive/%{commit}.tar.bz2#/%{name}-%{commit}.tar.bz2
 
+Patch0:         0001-img2tiles.py-update-to-python-3.patch
+
+
 BuildRequires:  icoutils
 BuildRequires:  gcc
 BuildRequires:  make
+BuildRequires:  python3-pillow
+BuildRequires:  vasm
+BuildRequires:  xcftools
+BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(sdl2)
@@ -36,6 +43,8 @@ runs on modest hardware.
 
 %prep
 %autosetup -n %{name}-%{commit} -p1
+
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" img2tiles.py
 
 rm -rf zlib
 
@@ -54,6 +63,7 @@ icotool -x icons/windows.ico
 
 
 %build
+%make_build menu.bin tmss.md
 %make_build \
   CC=gcc \
   DATA_PATH=%{_datadir}/%{name} \
@@ -70,7 +80,7 @@ for i in dis zdis vgmplay termhelper ;do
 done
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/{images,shaders}
-install -pm0644 rom.db default.cfg systems.cfg %{buildroot}%{_datadir}/%{name}/
+install -pm0644 rom.db default.cfg systems.cfg menu.bin tmss.md %{buildroot}%{_datadir}/%{name}/
 install -pm0644 images/*.png %{buildroot}%{_datadir}/%{name}/images/
 install -pm0644 shaders/*.glsl %{buildroot}%{_datadir}/%{name}/shaders/
 
@@ -107,6 +117,10 @@ done
 
 
 %changelog
+* Sat Mar 27 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.3.20210309gita61b47d5489e
+- Build menu.bin and tmss.md
+- BR: xcftools vasm python3-pillow
+
 * Wed Mar 24 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.2.20210309gita61b47d5489e
 - Update
 

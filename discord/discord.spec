@@ -13,7 +13,7 @@
 %endif
 
 Name:           discord
-Version:        0.0.13
+Version:        0.0.14
 Release:        100%{?dist}
 Epoch:          1
 Summary:        Voice and text chat messenger
@@ -131,6 +131,9 @@ ln -sf "$(realpath --relative-to="%{_libdir}/%{name}" "%{_datadir}/icons/hicolor
 
 
 %changelog
+* Fri Mar 26 2021 - 1:0.0.14-100
+- 0.0.14
+
 * Sat Dec 12 2020 - 1:0.0.13-100
 - 0.0.13
 

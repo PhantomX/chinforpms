@@ -4,6 +4,7 @@ amdgpu-pro-vulkan-driver
 authy
 bh-fonts
 binkplayer
+blastem
 boca-freeworld
 bsnes
 cdrtools
@@ -46,6 +47,7 @@ spideroakone
 steam
 telegram-desktop
 tg_owt
+vasm
 -VirtualBox-extpack-oracle
 -VirtualBox-guest-additions-iso
 vivaldi

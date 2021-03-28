@@ -4,9 +4,9 @@
 
 %global with_sysvulkan 1
 
-%global commit 4c3d2cd3fe62c345cdf0f27fe4295f35c2d86c71
+%global commit e9aab649e5c09fe5e836c4848a306b755fc0ff14
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210321
+%global date 20210327
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -17,7 +17,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -35,6 +35,7 @@ Patch1:         0001-Set-datadir-to-RPM-packaging.patch
 Patch2:         0001-Fix-translation-names.patch
 Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
+Patch5:         0001-cubeb-set-CUBEB_STREAM_PREF_PERSIST.patch
 
 
 ExclusiveArch:  x86_64 armv7l aarch64
@@ -230,6 +231,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Mar 27 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-6.20210327gite9aab64
+- Bump
+
 * Sun Mar 21 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-5.20210321git4c3d2cd
 - Add missing system path
 
