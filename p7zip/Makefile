@@ -1,5 +1,5 @@
 NAME = p7zip
-VERSION ?= 17.03
+VERSION ?= 17.04
 SNAPSHOT ?= 0
 
 ifeq ($(SNAPSHOT),1)
@@ -7,7 +7,7 @@ ifeq ($(SNAPSHOT),1)
 	DLSTR = ${VERSION}
 else
 	TARBALLVER = ${VERSION}
-	DLSTR = v${VERSION}
+	DLSTR = ${VERSION}
 endif
 
 DIRNAME = ${NAME}-${VERSION}

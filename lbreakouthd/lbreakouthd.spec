@@ -46,6 +46,7 @@ autoreconf -ivf
   --disable-silent-rules \
   --disable-rpath \
 %{nil}
+
 %make_build
 
 

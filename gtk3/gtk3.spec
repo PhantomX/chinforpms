@@ -260,6 +260,7 @@ export CFLAGS='-fno-strict-aliasing %{build_cflags}'
         --enable-installed-tests \
         --with-included-immodules=wayland \
 %{nil}
+
 )
 
 # fight unused direct deps

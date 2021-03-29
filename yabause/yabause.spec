@@ -102,6 +102,7 @@ pushd mini18n
 minii18n="$(pwd)"
 %cmake3 \
 %{nil}
+
 %cmake_build
 popd
 

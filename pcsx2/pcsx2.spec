@@ -40,7 +40,7 @@ Source0:        %{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
-%if !0%{without sse4}
+%if %{with sse4}
 # Revert this, needs sse4
 Patch0:         0001-Revert-microVU-SSE4-additions.patch
 %endif

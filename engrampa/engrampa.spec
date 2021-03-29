@@ -13,7 +13,7 @@
 %{!?rel_build:%global git_tar %{name}-%{version}-%{git_ver}.tar.xz}
 
 Name:          engrampa
-Version:       %{branch}.1
+Version:       %{branch}.2
 %if 0%{?rel_build}
 Release:       100%{?dist}
 %else
@@ -115,6 +115,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Sun Mar 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.24.2-100
+- 1.24.2
+
 * Sun Sep 13 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.24.1-100
 - 1.24.1
 

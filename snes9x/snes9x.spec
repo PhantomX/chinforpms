@@ -110,6 +110,7 @@ pushd gtk
   -Dportaudio=false \
 %endif \
 %{nil}
+
 popd
 
 # Build CLI version
@@ -118,6 +119,7 @@ pushd unix
   --with-system-zip \
   --enable-netplay \
 %{nil}
+
 popd
 
 pushd gtk

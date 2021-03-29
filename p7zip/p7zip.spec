@@ -15,8 +15,8 @@
 %endif
 
 Name:           p7zip
-Version:        17.03
-Release:        101%{?gver}%{?dist}
+Version:        17.04
+Release:        100%{?gver}%{?dist}
 Summary:        Very high compression ratio file archiver
 
 # Files under C/Compress/Lzma/ are dual LGPL or CPL
@@ -214,6 +214,9 @@ make test
 
 
 %changelog
+* Sun Mar 28 2021 Phantom X <megaphantomx at hotmail dot com> - 17.04-100
+- 17.04
+
 * Sun Jan 10 2021 Phantom X <megaphantomx at hotmail dot com> - 17.03-101
 - Fix zip extraction
 

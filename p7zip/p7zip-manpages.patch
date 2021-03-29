@@ -1,6 +1,6 @@
-From 16076c6f878805c25cdf4319607063d1a440c2eb Mon Sep 17 00:00:00 2001
+From a807c4c4b3dc15d29060b15773f5cf8a7143b8e4 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 4 Jan 2021 16:46:39 -0300
+Date: Sun, 28 Mar 2021 16:48:11 -0300
 Subject: [PATCH] p7zip manpages
 
 ---
@@ -8,13 +8,13 @@ Subject: [PATCH] p7zip manpages
  DOC/MANUAL/cmdline/switches/sfx.htm |   2 +-
  DOC/MANUAL/general/index.htm        |   3 +-
  DOC/MANUAL/start.htm                |   3 +-
- man1/7z.1                           | 182 +++++++++++++++++++------
- man1/7za.1                          | 183 +++++++++++++++++++------
+ man1/7z.1                           | 183 +++++++++++++++++++------
+ man1/7za.1                          | 184 +++++++++++++++++++------
  man1/7zr.1                          | 200 ++++++++++++++++++++--------
- 7 files changed, 434 insertions(+), 149 deletions(-)
+ 7 files changed, 436 insertions(+), 149 deletions(-)
 
 diff --git a/DOC/MANUAL/cmdline/index.htm b/DOC/MANUAL/cmdline/index.htm
-index 5bf8aae..569bdd4 100644
+index ed6467b..4a6c75f 100644
 --- a/DOC/MANUAL/cmdline/index.htm
 +++ b/DOC/MANUAL/cmdline/index.htm
 @@ -11,12 +11,12 @@
@@ -27,10 +27,10 @@ index 5bf8aae..569bdd4 100644
 +from the 7-Zip package.
  
 -<P>7za.exe (a = alone) is a standalone version of 7-Zip.
--7za.exe supports only 7z, lzma, cab, zip, gzip, bzip2, Z and tar formats.
+-7za.exe supports only 7z, lzma, cab, zip, gzip, bzip2, lzip, Z and tar formats.
 -7za.exe doesn't use external modules.</LI>
 +<P>7za (a = alone) is a standalone version of 7-Zip.
-+7za supports only 7z, lzma, cab, zip, gzip, bzip2, Z and tar formats.
++7za supports only 7z, lzma, cab, zip, gzip, bzip2, lzip, Z and tar formats.
 +7za doesn't use external modules.</LI>
  
  <UL>
@@ -49,7 +49,7 @@ index 90cec48..93ac8d0 100644
         SFX module 7zCon.sfx.</P>
      <TABLE>
 diff --git a/DOC/MANUAL/general/index.htm b/DOC/MANUAL/general/index.htm
-index a2089a5..edd705f 100644
+index a2089a5..b566942 100644
 --- a/DOC/MANUAL/general/index.htm
 +++ b/DOC/MANUAL/general/index.htm
 @@ -13,7 +13,6 @@
@@ -70,7 +70,7 @@ index a2089a5..edd705f 100644
  
  </BODY>
 diff --git a/DOC/MANUAL/start.htm b/DOC/MANUAL/start.htm
-index fde77de..dc2f861 100644
+index fde77de..7c3e24d 100644
 --- a/DOC/MANUAL/start.htm
 +++ b/DOC/MANUAL/start.htm
 @@ -17,7 +17,6 @@
@@ -91,7 +91,7 @@ index fde77de..dc2f861 100644
  
  <HR>
 diff --git a/man1/7z.1 b/man1/7z.1
-index bddc1cd..38e500e 100644
+index 452f334..380497e 100644
 --- a/man1/7z.1
 +++ b/man1/7z.1
 @@ -1,88 +1,178 @@
@@ -303,7 +303,7 @@ index bddc1cd..38e500e 100644
 +Exclude archive type
  .TP
  .B \-t{Type}
--Type of archive (7z, zip, gzip, bzip2 or tar. 7z format is default)
+-Type of archive (7z, zip, gzip, bzip2, lzip or tar. 7z format is default)
 +Set type of archive
  .TP
  .B \-v{Size}[b|k|m|g]
@@ -344,16 +344,17 @@ index bddc1cd..38e500e 100644
  
  .LP
  Do not use "\-r" because this flag does not do what you think.
-@@ -165,10 +256,15 @@ add all files from directory "dir1" to SFX archive archive.exe (Remark : SFX arc
+@@ -165,10 +256,16 @@ add all files from directory "dir1" to SFX archive archive.exe (Remark : SFX arc
  7z a \-mhe=on \-pmy_password archive.7z a_directory
  add all files from directory "a_directory" to the archive "archive.7z" (with data and header archive encryption on)
  .SH "SEE ALSO"
--7za(1), 7zr(1), bzip2(1), gzip(1), zip(1)
+-7za(1), 7zr(1), bzip2(1), gzip(1), lzip(1), zip(1)
 +.BR 7zr (1),
 +.BR 7za (1),
 +.BR p7zip (1),
 +.BR bzip2 (1),
 +.BR gzip (1),
++.BR lzip (1),
 +.BR zip(1),
  .PP
  .SH "HTML Documentation"
@@ -364,7 +365,7 @@ index bddc1cd..38e500e 100644
 -Written for Debian by Mohammed Adnene Trojette.
 +Written for Debian by Mohammed Adnene Trojette. Updated by Robert Luberda.
 diff --git a/man1/7za.1 b/man1/7za.1
-index 7b131f9..a80dbfb 100644
+index 52f71e9..a1f9f81 100644
 --- a/man1/7za.1
 +++ b/man1/7za.1
 @@ -1,99 +1,190 @@
@@ -534,7 +535,7 @@ index 7b131f9..a80dbfb 100644
 +Show technical information for l (List) command
  .TP
 -.B \-t{Type}
--Type of archive (7z, zip, gzip, bzip2 or tar. 7z format is default)
+-Type of archive (7z, zip, gzip, bzip2, lzip or tar. 7z format is default)
 +.B \-snh
 +Store hard links as links
  .TP
@@ -607,16 +608,17 @@ index 7b131f9..a80dbfb 100644
  .IP 2
  Fatal error
  .IP 7
-@@ -165,10 +257,15 @@ add all files from directory "dir1" to SFX archive archive.exe (Remark : SFX arc
+@@ -165,10 +257,16 @@ add all files from directory "dir1" to SFX archive archive.exe (Remark : SFX arc
  7za a \-mhe=on \-pmy_password archive.7z a_directory
  add all files from directory "a_directory" to the archive "archive.7z" (with data and header archive encryption on)
  .SH "SEE ALSO"
--7z(1), 7zr(1), bzip2(1), gzip(1), zip(1)
+-7z(1), 7zr(1), bzip2(1), gzip(1), lzip(1), zip(1)
 +.BR 7zr (1),
 +.BR 7z (1),
 +.BR p7zip (1),
 +.BR bzip2 (1),
 +.BR gzip (1),
++.BR lzip (1),
 +.BR zip(1),
  .PP
  .SH "HTML Documentation"
@@ -627,7 +629,7 @@ index 7b131f9..a80dbfb 100644
 -Written for Debian by Mohammed Adnene Trojette.
 +Written for Debian by Mohammed Adnene Trojette. Updated by Robert Luberda.
 diff --git a/man1/7zr.1 b/man1/7zr.1
-index f3f0ab0..66aa72b 100644
+index f3f0ab0..2b151b4 100644
 --- a/man1/7zr.1
 +++ b/man1/7zr.1
 @@ -1,99 +1,192 @@
@@ -912,5 +914,5 @@ index f3f0ab0..66aa72b 100644
 -Written for Debian by Mohammed Adnene Trojette.
 +Written for Debian by Mohammed Adnene Trojette. Updated by Robert Luberda.
 -- 
-2.29.2
+2.30.2
 

@@ -1,7 +1,7 @@
 %global commit f69c8f018188af49d5a3916f7bb7e3ab984fd3ec
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210323
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -20,6 +20,7 @@
 %if 0%{?wine_mingw}
 %undefine _annotated_build
 %global libext %{nil}
+
 %endif
 
 %global wineacm acm%{?libext}
@@ -41,7 +42,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver d2102728fe46c8142ec97461b61217e56036915d
+%global wine_stagingver 6.5
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -52,7 +53,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id a880eac9ea17897e8783ffcde5e40010ad2d3107
+%global tkg_id 04b4401709d941c79b5acc8d6684823666639f24
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -83,6 +84,7 @@
 %global binfmt_apply() \
 /usr/lib/systemd/systemd-binfmt  %{?*} >/dev/null 2>&1 || : \
 %{nil}
+
 %endif
 
 %if 0%{?with_snapshot}
@@ -95,8 +97,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.4
-Release:        102%{?gver}%{?dist}
+Version:        6.5
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2229,11 +2231,11 @@ fi
 %{_libdir}/wine/wiaservc.%{winedll}
 %{_libdir}/wine/wimgapi.%{winedll}
 %{_libdir}/wine/windows.gaming.input.%{winedll}
+%{_libdir}/wine/windows.globalization.%{winedll}
 %{_libdir}/wine/windows.media.speech.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/win32k.%{winesys}
 %if 0
-%{_libdir}/wine/windows.globalization.%{winedll}
 %{_libdir}/wine/windows.networking.connectivity.%{winedll}
 %endif
 %endif
@@ -2719,6 +2721,9 @@ fi
 
 
 %changelog
+* Sun Mar 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.5-100
+- 6.5
+
 * Wed Mar 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.4-102.20210323gitf69c8f0
 - Bump
 

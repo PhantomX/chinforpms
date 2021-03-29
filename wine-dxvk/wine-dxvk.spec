@@ -4,12 +4,15 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 2f553b5b164a280b1e452820ac2b3898292d8912
+%global commit 6b833062a020a2a15ce88af759072412ef69b350
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210313
+%global date 20210327
 %global with_snapshot 1
 
 %{?mingw_package_header}
+
+# Disable sse3 flags
+%bcond_without sse3
 
 %global libext %{nil}
 %global cfname win
@@ -35,7 +38,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.8.1
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -183,6 +186,11 @@ sed \
   -e "/static-libstdc++/a\  add_global_link_arguments('$TEMP_LDFLAGS', language : 'c')" \
   -e "/static-libstdc++/a\  add_project_arguments('$TEMP_CFLAGS', language : 'cpp')" \
   -e "/static-libstdc++/a\  add_project_arguments('$TEMP_CFLAGS', language : 'c')" \
+%if %{without sse3}
+  -e "s|if dxvk_compiler.has_argument('-msse3')|if dxvk_compiler.has_argument('-msse3_disabled')|g" \
+  -e "s|and dxvk_compiler.has_argument('-msse3')||g" \
+  -e "s| '-msse3',||g" \
+%endif
   -i meson.build
 
 %build
@@ -241,6 +249,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Mar 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8.1-102.20210327git6b83306
+- Bump
+- sse3 switch
+
 * Sun Mar 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8.1-101.20210313git2f553b5
 - Snapshot
 

@@ -3,9 +3,11 @@
 %global with_vulkan_hw 1
 %global with_vdpau 1
 %global with_vaapi 1
+%if !0%{?rhel}
 %global with_nine 1
 %global with_omx 1
 %global with_opencl 1
+%endif
 %global base_dri nouveau,r100,r200
 %global base_vulkan ,amd
 %endif
@@ -19,19 +21,25 @@
 %endif
 
 %ifarch %{arm} aarch64
+%if !0%{?rhel}
 %global with_etnaviv   1
-%global with_freedreno 1
-%global with_kmsro     1
 %global with_lima      1
-%global with_panfrost  1
-%global with_tegra     1
 %global with_vc4       1
 %global with_v3d       1
+%endif
+%global with_freedreno 1
+%global with_kmsro     1
+%global with_panfrost  1
+%global with_tegra     1
 %global with_xa        1
 %global platform_vulkan ,broadcom,freedreno
 %endif
 
 %ifnarch %{arm} s390x
+%if !0%{?rhel}
+%global with_r300 1
+%global with_r600 1
+%endif
 %global with_radeonsi 1
 %endif
 
@@ -41,11 +49,12 @@
 %bcond_with valgrind
 %endif
 
-%global with_lto 0
-
+%if !0%{?rhel}
 %global dri_drivers %{?base_dri}%{?platform_dri}
-
+%endif
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
+
+%global with_lto 0
 
 %global vc_url  https://gitlab.freedesktop.org/mesa/mesa
 %global ixit_url  https://github.com/iXit/Mesa-3D/commit
@@ -56,7 +65,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        21.0.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -66,6 +75,10 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
+
+# https://gitlab.freedesktop.org/mesa/mesa/-/issues/4442
+Patch0:         mesa-llvm12.patch
+Patch1:         0001-drisw-move-zink-down-the-list-below-the-sw-drivers.patch
 
 Patch10:        %{vc_url}/commit/2813688f8dbe813baaa99c028da4058e5dfb428d.patch#/%{name}-gl-2813688.patch
 Patch11:        %{vc_url}/commit/fc78ecd3793673ae550900f68bf9e459a9f6ec62.patch#/%{name}-gl-fc78ecd.patch
@@ -433,7 +446,7 @@ export RANLIB="gcc-ranlib"
   -Ddri-drivers=%{?dri_drivers} \
   -Dosmesa=true \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
+  -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -583,9 +596,13 @@ popd
 %{_libdir}/dri/radeon_dri.so
 %{_libdir}/dri/r200_dri.so
 %{_libdir}/dri/nouveau_vieux_dri.so
+%if 0%{?with_r300}
 %{_libdir}/dri/r300_dri.so
+%endif
 %if 0%{?with_radeonsi}
+%if 0%{?with_r600}
 %{_libdir}/dri/r600_dri.so
+%endif
 %{_libdir}/dri/radeonsi_dri.so
 %endif
 %ifarch %{ix86} x86_64
@@ -627,8 +644,10 @@ popd
 %{_libdir}/dri/vmwgfx_dri.so
 %endif
 %{_libdir}/dri/nouveau_drv_video.so
-%if 0%{?with_radeonsi}
+%if 0%{?with_r600}
 %{_libdir}/dri/r600_drv_video.so
+%endif
+%if 0%{?with_radeonsi}
 %{_libdir}/dri/radeonsi_drv_video.so
 %endif
 %endif
@@ -657,7 +676,6 @@ popd
 %{_libdir}/dri/zink_dri.so
 %endif
 
-%if 0%{?with_hardware}
 %if 0%{?with_omx}
 %files omx-drivers
 %{_libdir}/bellagio/libomx_mesa.so
@@ -665,11 +683,14 @@ popd
 %if 0%{?with_vdpau}
 %files vdpau-drivers
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
+%if 0%{?with_r300}
 %{_libdir}/vdpau/libvdpau_r300.so.1*
-%if 0%{?with_radeonsi}
-%{_libdir}/vdpau/libvdpau_r600.so.1*
-%{_libdir}/vdpau/libvdpau_radeonsi.so.1*
 %endif
+%if 0%{?with_r600}
+%{_libdir}/vdpau/libvdpau_r600.so.1*
+%endif
+%if 0%{?with_radeonsi}
+%{_libdir}/vdpau/libvdpau_radeonsi.so.1*
 %endif
 %endif
 
@@ -708,6 +729,9 @@ popd
 
 
 %changelog
+* Sun Mar 28 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.1-101
+- Rawhide sync
+
 * Thu Mar 25 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.1-100
 - 21.0.1
 
