@@ -1,6 +1,6 @@
 NAME = p7zip
-VERSION ?= 17.04
-SNAPSHOT ?= 0
+VERSION ?= 79aac5226bdad25efda22095445ad7c4e0d9a06f
+SNAPSHOT ?= 1
 
 ifeq ($(SNAPSHOT),1)
 	TARBALLVER = $(shell echo ${VERSION} | cut -c-7 )

@@ -1,7 +1,7 @@
-%global commit be1a54f3f7b19221fc6b48855c971b4386e34edf
+%global commit 79aac5226bdad25efda22095445ad7c4e0d9a06f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201228
-%global with_snapshot 0
+%global date 20210328
+%global with_snapshot 1
 
 %if 0%{?rhel} && ! 0%{?epel}
 %bcond_with gui
@@ -15,8 +15,8 @@
 %endif
 
 Name:           p7zip
-Version:        17.04
-Release:        100%{?gver}%{?dist}
+Version:        17.03
+Release:        102%{?gver}%{?dist}
 Summary:        Very high compression ratio file archiver
 
 # Files under C/Compress/Lzma/ are dual LGPL or CPL
@@ -214,8 +214,8 @@ make test
 
 
 %changelog
-* Sun Mar 28 2021 Phantom X <megaphantomx at hotmail dot com> - 17.04-100
-- 17.04
+* Mon Mar 29 2021 Phantom X <megaphantomx at hotmail dot com> - 17.03-102.20210328git79aac52
+- Last snapshot
 
 * Sun Jan 10 2021 Phantom X <megaphantomx at hotmail dot com> - 17.03-101
 - Fix zip extraction
