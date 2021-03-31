@@ -1,7 +1,8 @@
 
 # Set spectific native CPU optimizations here
 
-CONFIG_MNATIVE=y
+# CONFIG_MNATIVE_AMD is not set
+CONFIG_MNATIVE_INTEL=y
 # CONFIG_GENERIC_CPU is not set
 # CONFIG_M686 is not set
 # CONFIG_X86_P6_NOP is not set

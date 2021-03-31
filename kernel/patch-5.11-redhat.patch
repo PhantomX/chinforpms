@@ -4,10 +4,10 @@ Date: Mon, 8 Mar 2021 10:29:25 -0300
 Subject: [PATCH] patch-5.11-redhat
 
 ---
- Documentation/ABI/testing/sysfs-platform_profile   |  24 ++
+ Documentation/ABI/testing/sysfs-platform_profile   |  24 +
  Documentation/admin-guide/kdump/kdump.rst          |  11 +
- .../admin-guide/laptops/thinkpad-acpi.rst          |  25 ++
- .../bindings/display/panel/xingbangda,xbd599.yaml  |  50 +++
+ .../admin-guide/laptops/thinkpad-acpi.rst          |  25 +
+ .../bindings/display/panel/xingbangda,xbd599.yaml  |  50 ++
  Documentation/userspace-api/index.rst              |   1 +
  .../userspace-api/sysfs-platform_profile.rst       |  42 ++
  Makefile                                           |   1 +
@@ -15,6 +15,7 @@ Subject: [PATCH] patch-5.11-redhat
  arch/arm/include/asm/uaccess.h                     |   8 +-
  arch/arm64/Kconfig                                 |   3 +-
  .../boot/dts/rockchip/rk3399-pinebook-pro.dts      |   2 +-
+ arch/powerpc/kvm/book3s_hv.c                       |   4 +
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
@@ -24,29 +25,31 @@ Subject: [PATCH] patch-5.11-redhat
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
  drivers/acpi/pci_mcfg.c                            |   7 +
- drivers/acpi/platform_profile.c                    | 177 ++++++++
+ drivers/acpi/platform_profile.c                    | 177 +++++++
  drivers/acpi/scan.c                                |   9 +
  drivers/ata/libahci.c                              |  18 +
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 ++++--
+ drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
+ drivers/gpu/drm/i915/display/intel_psr.c           |   9 +-
  drivers/gpu/drm/panel/Kconfig                      |   9 +
  drivers/gpu/drm/panel/Makefile                     |   1 +
- drivers/gpu/drm/panel/panel-xingbangda-xbd599.c    | 366 ++++++++++++++++
+ drivers/gpu/drm/panel/panel-xingbangda-xbd599.c    | 366 +++++++++++++++
  drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c             |  10 +-
  drivers/hid/hid-rmi.c                              |  64 ---
- drivers/input/rmi4/rmi_driver.c                    | 124 +++---
+ drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
  drivers/pci/controller/dwc/Kconfig                 |  10 +-
  drivers/pci/controller/dwc/Makefile                |   2 +-
- drivers/pci/controller/dwc/pcie-tegra194.c         | 102 +++++
+ drivers/pci/controller/dwc/pcie-tegra194.c         | 102 ++++
  drivers/pci/controller/pcie-brcmstb.c              |   1 +
- drivers/pci/quirks.c                               |  24 ++
+ drivers/pci/quirks.c                               |  24 +
  drivers/platform/x86/Kconfig                       |   2 +
- drivers/platform/x86/ideapad-laptop.c              | 289 +++++++++++++
- drivers/platform/x86/thinkpad_acpi.c               | 464 ++++++++++++++++++++-
+ drivers/platform/x86/ideapad-laptop.c              | 289 ++++++++++++
+ drivers/platform/x86/intel-hid.c                   |   7 +
+ drivers/platform/x86/thinkpad_acpi.c               | 518 ++++++++++++++++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
  include/linux/efi.h                                |  22 +-
@@ -65,7 +68,8 @@ Subject: [PATCH] patch-5.11-redhat
  security/security.c                                |   6 +
  sound/hda/Kconfig                                  |  14 +
  sound/hda/intel-dsp-config.c                       |  29 +-
- 61 files changed, 2126 insertions(+), 213 deletions(-)
+ sound/soc/intel/atom/sst-mfld-platform-pcm.c       |   6 +-
+ 72 files changed, 2264 insertions(+), 275 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-platform_profile b/Documentation/ABI/testing/sysfs-platform_profile
 new file mode 100644
@@ -279,7 +283,7 @@ index 000000000000..c33a71263d9e
 + 2. Add the new profile name, along with a clear description of the
 +    expected behaviour, to the sysfs-platform_profile ABI documentation.
 diff --git a/Makefile b/Makefile
-index 6ba32b82c480..20d2cb6a8bad 100644
+index 824d15c14be0..60669eb8738b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -494,6 +494,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -371,6 +375,28 @@ index 219b7507a10f..45769764425d 100644
  };
 
  &cpu_b0 {
+diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
+index 6f612d240392..f2ddf7139a2a 100644
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -3595,6 +3595,7 @@ static int kvmhv_p9_guest_entry(struct kvm_vcpu *vcpu, u64 time_limit,
+ 	unsigned long host_tidr = mfspr(SPRN_TIDR);
+ 	unsigned long host_iamr = mfspr(SPRN_IAMR);
+ 	unsigned long host_amr = mfspr(SPRN_AMR);
++	unsigned long host_fscr = mfspr(SPRN_FSCR);
+ 	s64 dec;
+ 	u64 tb;
+ 	int trap, save_pmu;
+@@ -3735,6 +3736,9 @@ static int kvmhv_p9_guest_entry(struct kvm_vcpu *vcpu, u64 time_limit,
+ 	if (host_amr != vcpu->arch.amr)
+ 		mtspr(SPRN_AMR, host_amr);
+
++	if (host_fscr != vcpu->arch.fscr)
++		mtspr(SPRN_FSCR, host_fscr);
++
+ 	msr_check_and_set(MSR_FP | MSR_VEC | MSR_VSX);
+ 	store_fp_state(&vcpu->arch.fp);
+ #ifdef CONFIG_ALTIVEC
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index a9e2c7295b35..6ff11f3a2d47 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -877,7 +903,7 @@ index 467e94259679..9b6f5b8e5397 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index df3f9bcab581..8d5b6eb36467 100644
+index 4b7ee3fa9224..64b31d852d20 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -1065,6 +1091,27 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
+index b3631b722de3..0b8866900dfb 100644
+--- a/drivers/gpu/drm/i915/display/intel_psr.c
++++ b/drivers/gpu/drm/i915/display/intel_psr.c
+@@ -1708,9 +1708,14 @@ void intel_psr_init(struct drm_i915_private *dev_priv)
+ 		 */
+ 		dev_priv->hsw_psr_mmio_adjust = _SRD_CTL_EDP - _HSW_EDP_PSR_BASE;
+
+-	if (dev_priv->params.enable_psr == -1)
+-		if (INTEL_GEN(dev_priv) < 9 || !dev_priv->vbt.psr.enable)
++	if (dev_priv->params.enable_psr == -1) {
++		if (INTEL_GEN(dev_priv) < 9 || !dev_priv->vbt.psr.enable) {
+ 			dev_priv->params.enable_psr = 0;
++		} else if (INTEL_GEN(dev_priv) == 12) {
++			/* See https://gitlab.freedesktop.org/drm/intel/-/issues/3134 */
++			dev_priv->params.enable_psr = 0;
++		}
++	}
+
+ 	/* Set link_standby x link_off defaults */
+ 	if (IS_HASWELL(dev_priv) || IS_BROADWELL(dev_priv))
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
 index b4e021ea30f9..5687b745ebe2 100644
 --- a/drivers/gpu/drm/panel/Kconfig
@@ -2435,8 +2482,26 @@ index 5b81bafa5c16..cc42af2a0a98 100644
  	return 0;
  }
  #endif
+diff --git a/drivers/platform/x86/intel-hid.c b/drivers/platform/x86/intel-hid.c
+index 2f5b8d09143e..57cc92891a57 100644
+--- a/drivers/platform/x86/intel-hid.c
++++ b/drivers/platform/x86/intel-hid.c
+@@ -90,6 +90,13 @@ static const struct dmi_system_id button_array_table[] = {
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x2 Detachable"),
+ 		},
+ 	},
++	{
++		.ident = "Lenovo ThinkPad X1 Tablet Gen 2",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_FAMILY, "ThinkPad X1 Tablet Gen 2"),
++		},
++	},
+ 	{ }
+ };
+
 diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index f3e8eca8d86d..5b596a825b24 100644
+index f3e8eca8d86d..9ecf7829b3d8 100644
 --- a/drivers/platform/x86/thinkpad_acpi.c
 +++ b/drivers/platform/x86/thinkpad_acpi.c
 @@ -66,6 +66,7 @@
@@ -2447,9 +2512,44 @@ index f3e8eca8d86d..5b596a825b24 100644
  #include <sound/core.h>
  #include <sound/control.h>
  #include <sound/initval.h>
-@@ -9855,16 +9856,27 @@ static bool has_lapsensor;
+@@ -4080,13 +4081,19 @@ static bool hotkey_notify_6xxx(const u32 hkey,
+
+ 	case TP_HKEY_EV_KEY_NUMLOCK:
+ 	case TP_HKEY_EV_KEY_FN:
+-	case TP_HKEY_EV_KEY_FN_ESC:
+ 		/* key press events, we just ignore them as long as the EC
+ 		 * is still reporting them in the normal keyboard stream */
+ 		*send_acpi_ev = false;
+ 		*ignore_acpi_ev = true;
+ 		return true;
+
++	case TP_HKEY_EV_KEY_FN_ESC:
++		/* Get the media key status to foce the status LED to update */
++		acpi_evalf(hkey_handle, NULL, "GMKS", "v");
++		*send_acpi_ev = false;
++		*ignore_acpi_ev = true;
++		return true;
++
+ 	case TP_HKEY_EV_TABLET_CHANGED:
+ 		tpacpi_input_send_tabletsw();
+ 		hotkey_tablet_mode_notify_change();
+@@ -9844,6 +9851,11 @@ static struct ibm_struct lcdshadow_driver_data = {
+  * Thinkpad sensor interfaces
+  */
+
++#define DYTC_CMD_QUERY        0 /* To get DYTC status - enable/revision */
++#define DYTC_QUERY_ENABLE_BIT 8  /* Bit        8 - 0 = disabled, 1 = enabled */
++#define DYTC_QUERY_SUBREV_BIT 16 /* Bits 16 - 27 - sub revision */
++#define DYTC_QUERY_REV_BIT    28 /* Bits 28 - 31 - revision */
++
+ #define DYTC_CMD_GET          2 /* To get current IC function and mode */
+ #define DYTC_GET_LAPMODE_BIT 17 /* Set when in lapmode */
+
+@@ -9854,17 +9866,56 @@ static bool has_palmsensor;
+ static bool has_lapsensor;
  static bool palm_state;
  static bool lap_state;
++static int dytc_version;
 
 -static int lapsensor_get(bool *present, bool *state)
 +static int dytc_command(int command, int *output)
@@ -2469,6 +2569,33 @@ index f3e8eca8d86d..5b596a825b24 100644
 +	return 0;
 +}
 +
++static int dytc_get_version(void)
++{
++	int err, output;
++
++	/* Check if we've been called before - and just return cached value */
++	if (dytc_version)
++		return dytc_version;
++
++	/* Otherwise query DYTC and extract version information */
++	err = dytc_command(DYTC_CMD_QUERY, &output);
++	/*
++	 * If support isn't available (ENODEV) then don't return an error
++	 * and don't create the sysfs group
++	 */
++	if (err == -ENODEV)
++		return 0;
++	/* For all other errors we can flag the failure */
++	if (err)
++		return err;
++
++	/* Check DYTC is enabled and supports mode setting */
++	if (output & BIT(DYTC_QUERY_ENABLE_BIT))
++		dytc_version = (output >> DYTC_QUERY_REV_BIT) & 0xF;
++
++	return 0;
++}
++
 +static int lapsensor_get(bool *present, bool *state)
 +{
 +	int output, err;
@@ -2480,7 +2607,27 @@ index f3e8eca8d86d..5b596a825b24 100644
 
  	*present = true; /*If we get his far, we have lapmode support*/
  	*state = output & BIT(DYTC_GET_LAPMODE_BIT) ? true : false;
-@@ -9983,6 +9995,434 @@ static struct ibm_struct proxsensor_driver_data = {
+@@ -9962,7 +10013,18 @@ static int tpacpi_proxsensor_init(struct ibm_init_struct *iibm)
+ 		if (err)
+ 			return err;
+ 	}
+-	if (has_lapsensor) {
++
++	/* Check if we know the DYTC version, if we don't then get it */
++	if (!dytc_version) {
++		err = dytc_get_version();
++		if (err)
++			return err;
++	}
++	/*
++	 * Platforms before DYTC version 5 claim to have a lap sensor, but it doesn't work, so we
++	 * ignore them
++	 */
++	if (has_lapsensor && (dytc_version >= 5)) {
+ 		err = sysfs_create_file(&tpacpi_pdev->dev.kobj, &dev_attr_dytc_lapmode.attr);
+ 		if (err)
+ 			return err;
+@@ -9983,6 +10045,434 @@ static struct ibm_struct proxsensor_driver_data = {
  	.exit = proxsensor_exit,
  };
 
@@ -2488,13 +2635,8 @@ index f3e8eca8d86d..5b596a825b24 100644
 + * DYTC Platform Profile interface
 + */
 +
-+#define DYTC_CMD_QUERY        0 /* To get DYTC status - enable/revision */
 +#define DYTC_CMD_SET          1 /* To enable/disable IC function mode */
 +#define DYTC_CMD_RESET    0x1ff /* To reset back to default */
-+
-+#define DYTC_QUERY_ENABLE_BIT 8  /* Bit        8 - 0 = disabled, 1 = enabled */
-+#define DYTC_QUERY_SUBREV_BIT 16 /* Bits 16 - 27 - sub revision */
-+#define DYTC_QUERY_REV_BIT    28 /* Bits 28 - 31 - revision */
 +
 +#define DYTC_GET_FUNCTION_BIT 8  /* Bits  8-11 - function setting */
 +#define DYTC_GET_MODE_BIT     12 /* Bits 12-15 - mode setting */
@@ -2631,8 +2773,13 @@ index f3e8eca8d86d..5b596a825b24 100644
 +		return err;
 +
 +	if (profile == PLATFORM_PROFILE_BALANCED) {
-+		/* To get back to balanced mode we just issue a reset command */
-+		err = dytc_command(DYTC_CMD_RESET, &output);
++		/*
++		 * To get back to balanced mode we need to issue a reset command.
++		 * Note we still need to disable CQL mode before hand and re-enable
++		 * it afterwards, otherwise dytc_lapmode gets reset to 0 and stays
++		 * stuck at 0 for aprox. 30 minutes.
++		 */
++		err = dytc_cql_command(DYTC_CMD_RESET, &output);
 +		if (err)
 +			goto unlock;
 +	} else {
@@ -2700,28 +2847,28 @@ index f3e8eca8d86d..5b596a825b24 100644
 +	if (err)
 +		return err;
 +
++	/* Check if we know the DYTC version, if we don't then get it */
++	if (!dytc_version) {
++		err = dytc_get_version();
++		if (err)
++			return err;
++	}
 +	/* Check DYTC is enabled and supports mode setting */
-+	if (output & BIT(DYTC_QUERY_ENABLE_BIT)) {
-+		/* Only DYTC v5.0 and later has this feature. */
-+		int dytc_version;
++	if (dytc_version >= 5) {
++		dbg_printk(TPACPI_DBG_INIT,
++				"DYTC version %d: thermal mode available\n", dytc_version);
++		/* Create platform_profile structure and register */
++		err = platform_profile_register(&dytc_profile);
++		/*
++		 * If for some reason platform_profiles aren't enabled
++		 * don't quit terminally.
++		 */
++		if (err)
++			return 0;
 +
-+		dytc_version = (output >> DYTC_QUERY_REV_BIT) & 0xF;
-+		if (dytc_version >= 5) {
-+			dbg_printk(TPACPI_DBG_INIT,
-+				   "DYTC version %d: thermal mode available\n", dytc_version);
-+			/* Create platform_profile structure and register */
-+			err = platform_profile_register(&dytc_profile);
-+			/*
-+			 * If for some reason platform_profiles aren't enabled
-+			 * don't quit terminally.
-+			 */
-+			if (err)
-+				return 0;
-+
-+			dytc_profile_available = true;
-+			/* Ensure initial values are correct */
-+			dytc_profile_refresh();
-+		}
++		dytc_profile_available = true;
++		/* Ensure initial values are correct */
++		dytc_profile_refresh();
 +	}
 +	return 0;
 +}
@@ -2915,7 +3062,7 @@ index f3e8eca8d86d..5b596a825b24 100644
  /****************************************************************************
   ****************************************************************************
   *
-@@ -10031,8 +10471,12 @@ static void tpacpi_driver_event(const unsigned int hkey_event)
+@@ -10031,8 +10521,12 @@ static void tpacpi_driver_event(const unsigned int hkey_event)
  		mutex_unlock(&kbdlight_mutex);
  	}
 
@@ -2929,7 +3076,7 @@ index f3e8eca8d86d..5b596a825b24 100644
  }
 
  static void hotkey_driver_event(const unsigned int scancode)
-@@ -10475,6 +10919,14 @@ static struct ibm_init_struct ibms_init[] __initdata = {
+@@ -10475,6 +10969,14 @@ static struct ibm_init_struct ibms_init[] __initdata = {
  		.init = tpacpi_proxsensor_init,
  		.data = &proxsensor_driver_data,
  	},
@@ -2997,7 +3144,7 @@ index 7f71218cc1e5..283fc0f41cd2 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 763b816ba19c..4c55e3aa7e95 100644
+index 119262585e9b..7d67f0187c34 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -3009,7 +3156,7 @@ index 763b816ba19c..4c55e3aa7e95 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -786,6 +788,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -788,6 +790,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -3024,7 +3171,7 @@ index 763b816ba19c..4c55e3aa7e95 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -797,6 +807,8 @@ static inline bool efi_enabled(int feature)
+@@ -799,6 +809,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -3033,7 +3180,7 @@ index 763b816ba19c..4c55e3aa7e95 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -817,6 +829,8 @@ static inline bool efi_enabled(int feature)
+@@ -819,6 +831,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -3042,7 +3189,7 @@ index 763b816ba19c..4c55e3aa7e95 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -829,6 +843,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -831,6 +845,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -3050,7 +3197,7 @@ index 763b816ba19c..4c55e3aa7e95 100644
 
  /*
   * Variable Attributes
-@@ -1081,13 +1096,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1083,13 +1098,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -3441,3 +3588,33 @@ index c45686172517..68bb977c6a37 100644
  		.acpi_hid = "808622A8",
  	},
  #endif
+diff --git a/sound/soc/intel/atom/sst-mfld-platform-pcm.c b/sound/soc/intel/atom/sst-mfld-platform-pcm.c
+index 9e9b05883557..aa5dd590ddd5 100644
+--- a/sound/soc/intel/atom/sst-mfld-platform-pcm.c
++++ b/sound/soc/intel/atom/sst-mfld-platform-pcm.c
+@@ -488,14 +488,14 @@ static struct snd_soc_dai_driver sst_platform_dai[] = {
+ 		.channels_min = SST_STEREO,
+ 		.channels_max = SST_STEREO,
+ 		.rates = SNDRV_PCM_RATE_44100|SNDRV_PCM_RATE_48000,
+-		.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE,
++		.formats = SNDRV_PCM_FMTBIT_S16_LE,
+ 	},
+ 	.capture = {
+ 		.stream_name = "Headset Capture",
+ 		.channels_min = 1,
+ 		.channels_max = 2,
+ 		.rates = SNDRV_PCM_RATE_44100|SNDRV_PCM_RATE_48000,
+-		.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE,
++		.formats = SNDRV_PCM_FMTBIT_S16_LE,
+ 	},
+ },
+ {
+@@ -506,7 +506,7 @@ static struct snd_soc_dai_driver sst_platform_dai[] = {
+ 		.channels_min = SST_STEREO,
+ 		.channels_max = SST_STEREO,
+ 		.rates = SNDRV_PCM_RATE_44100|SNDRV_PCM_RATE_48000,
+-		.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE,
++		.formats = SNDRV_PCM_FMTBIT_S16_LE,
+ 	},
+ },
+ {

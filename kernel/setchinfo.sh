@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20210317
+# 20210330
 
 set -e
 
@@ -44,7 +44,8 @@ MWESTMERE
 MZEN
 MZEN2
 MZEN3
-MNATIVE
+MNATIVE_AMD
+MNATIVE_INTEL
 "
 
 pf="

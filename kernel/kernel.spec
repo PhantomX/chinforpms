@@ -91,7 +91,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit eeb80cbd29dcb1d3c6ca70f5dd400070a2e8f4c0
+%global pfcommit 51366b2a287c931b406cd2267ddef771c87e27cd
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 995fe4566bbc90e6b4345dc147f675db0b96c0a5
+%global opensuse_id fa5dcf16e3f06b7e5994761b00fc60b6db855717
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -839,7 +839,6 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1020: %{opensuse_url}/drm-amd-display-Revert-dram_clock_change_latency-for.patch#/openSUSE-drm-amd-display-Revert-dram_clock_change_latency-for.patch
 Patch1021: %{opensuse_url}/drm-i915-ilk-glk-Fix-link-training-on-links-with-LTT.patch#/openSUSE-drm-i915-ilk-glk-Fix-link-training-on-links-with-LTT.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -2665,6 +2664,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.11-500.chinfo
+- 5.11.11 - pf6
+
 * Thu Mar 25 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.10-500.chinfo
 - 5.11.10 - pf6
 
