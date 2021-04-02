@@ -218,7 +218,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 7.1.0
+Version: 7.2.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -270,7 +270,6 @@ BuildRequires: python3-docutils
 BuildRequires: gcc
 BuildRequires: meson >= 0.54.0
 BuildRequires: ninja-build
-BuildRequires: make
 BuildRequires: git
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires: perl-interpreter
@@ -282,7 +281,7 @@ BuildRequires: systemd-units
 %if %{with_libxl}
 BuildRequires: xen-devel
 %endif
-BuildRequires: glib2-devel >= 2.48
+BuildRequires: glib2-devel >= 2.56
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
 BuildRequires: readline-devel
@@ -1973,6 +1972,9 @@ exit 0
 
 
 %changelog
+* Thu Apr 01 2021 Phantom X <megaphantomx at hotmail dot com> - 7.2.0-100
+- 7.2.0
+
 * Mon Mar 01 2021 Phantom X <megaphantomx at hotmail dot com> - 7.1.0-100
 - 7.1.0
 

@@ -1,12 +1,11 @@
-%undefine _hardened_build
 %undefine _cmake_shared_libs
 #global _lto_cflags -fno-lto
 
 %global with_sysvulkan 1
 
-%global commit e9aab649e5c09fe5e836c4848a306b755fc0ff14
+%global commit 0313ce6aeeef95647dcc2ae049a9b0ca1009a2a4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210327
+%global date 20210331
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -17,7 +16,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -163,8 +162,6 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' \
 
 
 %build
-export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
-
 %cmake \
   -DUSE_WAYLAND:BOOL=ON \
   -DENABLE_CHEEVOS:BOOL=OFF \
@@ -231,6 +228,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Apr 01 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-7.20210331git0313ce6
+- Bump
+
 * Sat Mar 27 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-6.20210327gite9aab64
 - Bump
 

@@ -4,7 +4,7 @@
 %undefine _hardened_build
 
 Name:           mednafen
-Version:        1.26.1
+Version:        1.27.0
 %if 1%(echo %{version} | cut -d. -f3) == 10
 %global unstable UNSTABLE
 %endif
@@ -23,9 +23,9 @@ BuildRequires:  gettext
 #BuildRequires:  libmpcdec-devel >= 1.3.0
 #BuildRequires:  lzo-devel >= 2.0.9
 BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(sdl2) >= 2.0.5
 BuildRequires:  pkgconfig(jack) >= 1.0.2
-BuildRequires:  pkgconfig(sndfile) >= 1.0.2
 BuildRequires:  pkgconfig(zlib)
 
 %description
@@ -115,6 +115,11 @@ rm -rf Documentation/*.def Documentation/*.php Documentation/generate.sh \
 
 
 %changelog
+* Thu Apr 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.27.0-100.UNSTABLE
+- 1.27.0
+- BR: flac
+- Remove sndfile BR
+
 * Tue Nov 10 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.26.1-100
 - 1.26.1
 

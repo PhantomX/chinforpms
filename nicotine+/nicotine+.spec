@@ -1,7 +1,7 @@
-%global commit c4ff58305ff3b8dc4b94dcc2cc0a7f89a026336b
+%global commit aeba38d89f31fc123a238a88f90a780abd8b116f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201013
-%global with_snapshot 0
+%global date 20210401
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -12,7 +12,7 @@
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.0.0
+Version:        3.0.3
 Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -84,7 +84,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 
 %files -f %{cname}.lang
 %license COPYING
-%doc AUTHORS.md NEWS.md README.md TRANSLATORS.md files/icons/CREDITS.md
+%doc AUTHORS.md NEWS.md README.md TRANSLATORS.md
 %{_bindir}/%{cname}
 %{python3_sitelib}/*-*.egg-info
 %{python3_sitelib}/py%{cname}/
@@ -95,6 +95,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 
 
 %changelog
+* Thu Apr 01 2021 Phantom X <megaphantomx at hotmail dot com> - 3.0.3-100.20210401gitaeba38d
+- 3.0.3
+
 * Mon Feb 22 2021 Phantom X <megaphantomx at hotmail dot com> - 3.0.0-100
 - 3.0.0
 

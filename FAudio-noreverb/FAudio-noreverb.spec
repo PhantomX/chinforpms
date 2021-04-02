@@ -1,7 +1,7 @@
 %global commit 920d2228c982f9a2f97276f2e51fbf8ed507963c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210321
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -10,7 +10,7 @@
 %global pkgname FAudio
 
 Name:           %{pkgname}-noreverb
-Version:        21.03.05
+Version:        21.04
 Release:        1%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - noreverb
 Epoch:          1
@@ -99,6 +99,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Thu Apr 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.04-1
+- 21.04
+
 * Mon Mar 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.03.05-1.20210321git920d222
 - Bump
 
