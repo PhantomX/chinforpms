@@ -1,7 +1,7 @@
-%global commit f69c8f018188af49d5a3916f7bb7e3ab984fd3ec
+%global commit 2fcc1d0ecdebc55a5f515b1390ce715303f6a6ad
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210323
-%global with_snapshot 0
+%global date 20210402
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -13,7 +13,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  6.0.0
+%global winemono  6.1.1
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -42,7 +42,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.5
+%global wine_stagingver 733a420dd78451d7af31fdb342dc345fada34033
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -53,7 +53,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 04b4401709d941c79b5acc8d6684823666639f24
+%global tkg_id 3f1d5438ca0bf481f301c436d53c1f3a3d88c3dc
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -98,7 +98,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.5
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -169,6 +169,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 # 100-106
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
+%if 0
 Patch101:       %{whq_url}/1fceb1213992b79aa7f1a5dc0a72ab3756ee524d#/%{name}-whq-1fceb12.patch
 Patch102:       %{whq_url}/cf4fe13a41b7cc0a624da7741ae528ef21032736#/%{name}-whq-cf4fe13.patch
 Patch103:       %{whq_url}/beb9c6578ad8e21eb4b34366dbc3dff8b8c2ae5d#/%{name}-whq-beb9c65.patch
@@ -177,6 +178,7 @@ Patch105:       %{whq_url}/a67d7c15336ea5caa89099952da1fc1998188029#/%{name}-whq
 # Restore the prefer builtin vulkan-1 behavior with proton* patches
 Patch106:       %{whq_url}/290c9a4d6372cee046768eccd8fa49050a294f68#/%{name}-whq-290c9a4.patch
 Patch107:       %{whq_url}/e5cade0ff189c7bc871cf3686d16c55939d06068#/%{name}-whq-e5cade0.patch
+%endif
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -199,7 +201,6 @@ Patch1024:       %{tkg_url}/proton/proton-rawinput.patch#/%{name}-tkg-proton-raw
 Patch1025:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
 Patch1026:       %{tkg_url}/proton/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
 Patch1027:       %{tkg_url}/proton-tkg-specific/proton-staging_winex11-MWM_Decorations.patch#/%{name}-tkg-proton-staging_winex11-MWM_Decorations.patch
-Patch1028:       %{valve_url}/commit/a1e5640b60439f0df83fc24c8a69629cef2c6c67.patch#/%{name}-valve-a1e5640.patch
 Patch1029:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
 Patch1030:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
 Patch1031:       %{tkg_url}/proton-tkg-specific/proton-vk-bits-4.5.patch#/%{name}-tkg-proton-vk-bits-4.5.patch
@@ -209,9 +210,10 @@ Patch1034:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg
 Patch1035:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
 Patch1036:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 Patch1037:       %{tkg_url}/hotfixes/mfplat/mfplat-derek-hotfix.mypatch#/%{name}-tkg-mfplat-derek-hotfix.patch
+Patch1038:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu.patch
 
 Patch1090:       revert-grab-fullscreen.patch
-Patch1091:       %{valve_url}/commit/565a4f3820b370f9715e0147031edb189d5a183f.patch#/%{name}-valve-565a4f3.patch
+Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
 
 Patch1300:       nier.patch
 Patch1301:       nier-nofshack.patch
@@ -817,6 +819,7 @@ This package adds the opencl driver for wine.
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
+%patch1038 -p1
 %patch1000 -p1
 %patch1002 -p1
 %patch1003 -p1
@@ -844,7 +847,6 @@ sed \
 %patch1026 -p1
 %if 0%{?fshack}
 %patch1027 -p1
-%patch1028 -p1 -R
 %endif
 %patch1029 -p1
 %patch1030 -p1
@@ -1706,6 +1708,7 @@ fi
 %{_libdir}/wine/api-ms-win-shcore-obsolete-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-shcore-scaling-l1-1-1.%{winedll}
 %{_libdir}/wine/api-ms-win-shcore-stream-l1-1-0.%{winedll}
+%{_libdir}/wine/api-ms-win-shcore-stream-winrt-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-shcore-thread-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-shell-shellcom-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-shell-shellfolders-l1-1-0.%{winedll}
@@ -1830,7 +1833,8 @@ fi
 %{_libdir}/wine/dsuiext.%{winedll}
 %{_libdir}/wine/dpvsetup.%{wineexe}
 %{_libdir}/wine/dwmapi.%{winedll}
-%{_libdir}/wine/dwrite.dll.so
+%{_libdir}/wine/dwrite.so
+%{_libdir}/wine/dwrite.%{winedll}
 %{_libdir}/wine/dx8vb.%{winedll}
 %{_libdir}/wine/dxdiagn.%{winedll}
 %{_libdir}/wine/dxgi.dll.so
@@ -2296,7 +2300,8 @@ fi
 %{_libdir}/wine/d3d9.%{winedll}
 %{_libdir}/wine/opengl32.dll.so
 %{_libdir}/wine/wined3d.dll.so
-%{_libdir}/wine/dnsapi.dll.so
+%{_libdir}/wine/dnsapi.so
+%{_libdir}/wine/dnsapi.%{winedll}
 %{_libdir}/wine/iexplore.%{wineexe}
 %if 0%{?wine_staging}
 %{_libdir}/wine/xactengine2_0.dll.so
@@ -2721,6 +2726,10 @@ fi
 
 
 %changelog
+* Sat Apr 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.5-101.20210402git2fcc1d0
+- Snapshot
+- wine-mono 6.1.1
+
 * Sun Mar 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.5-100
 - 6.5
 

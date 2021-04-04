@@ -2,8 +2,8 @@
 %global __strip /bin/true
 
 %global cheatver 0221
-%global historyver 228
-%global infover 0228
+%global historyver 230
+%global infover 0230
 
 # Build non redistributable package with free roms
 %bcond_with roms
@@ -11,7 +11,7 @@
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.228
+Version:        0.230
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -183,9 +183,9 @@ sed 's/\r//' icons/*READ.txt > README.icons
 pushd icons
   rm -f '('*.ico
   rm -f '!'*.ico
-  find -maxdepth 1 -name '*.ico' -print0 | xargs -0 -t -r -I FILE -P %{_smp_build_ncpus} convert FILE[1] png/FILE.png
+  find -maxdepth 1 -name '*.ico' -print0 | xargs -0 -r -I FILE -P %{_smp_build_ncpus} convert FILE[1] png/FILE.png
   rename '.ico' '' png/*.png
-  find png -maxdepth 1 -name '*.png' -print0 | xargs -0 -t -r -I FILE -P %{_smp_build_ncpus} optipng -quiet -preserve FILE
+  find png -maxdepth 1 -name '*.png' -print0 | xargs -0 -r -I FILE -P %{_smp_build_ncpus} optipng -quiet -preserve FILE
 popd
 
 %install
@@ -252,6 +252,10 @@ done
 
 
 %changelog
+* Sat Apr 03 2021 Phantom X <megaphantomx at hotmail dot com> - 0.230-1
+- Mameinfo 0.230
+- History 230
+
 * Thu Jan 28 2021 Phantom X <megaphantomx at hotmail dot com> - 0.228-1
 - Mameinfo 0.228
 - History 228, xml
