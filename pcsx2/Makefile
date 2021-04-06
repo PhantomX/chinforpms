@@ -18,12 +18,13 @@ all: archive
 
 clean:
 	rm -rf $(DIRNAME)/
+	rm -f ${NAME}-${TARBALLVER}.tar.gz
 	rm -f ${NAME}-${TARBALLVER}.tar.xz
+	rm -f ${NAME}-clean-${TARBALLVER}.tar.xz
 
 clone: clean
 	curl --location -O https://github.com/PCSX2/pcsx2/archive/${DLSTR}/${NAME}-${TARBALLVER}.tar.gz
 	tar xf ${NAME}-${TARBALLVER}.tar.gz
-	rm -f ${NAME}-${TARBALLVER}.tar.gz
 
 sanitize: clone
 ifeq ($(SANITIZE),1)
@@ -40,4 +41,4 @@ ifeq ($(SANITIZE),1)
 endif
 
 archive: clone sanitize
-	tar --numeric-owner -cJf ${NAME}-${TARBALLVER}.tar.xz ${DIRNAME}
+	tar --numeric-owner -cJf ${NAME}-clean-${TARBALLVER}.tar.xz ${DIRNAME}

@@ -1,6 +1,6 @@
-From d02d6e1f0f1288dac52035be29d1dd5f03ca2b21 Mon Sep 17 00:00:00 2001
+From 6b6edb4803db70113e762aa0ce12acbec769397b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 4 Jan 2021 16:11:35 -0300
+Date: Sun, 4 Apr 2021 10:45:32 -0300
 Subject: [PATCH] cmake: remove rar
 
 The license is not supported
@@ -14,10 +14,10 @@ The license is not supported
  6 files changed, 9 insertions(+), 36 deletions(-)
 
 diff --git a/CPP/7zip/Bundles/Format7zFree/makefile.list b/CPP/7zip/Bundles/Format7zFree/makefile.list
-index 5b17422..77d40dc 100644
+index 83359b4..307e956 100644
 --- a/CPP/7zip/Bundles/Format7zFree/makefile.list
 +++ b/CPP/7zip/Bundles/Format7zFree/makefile.list
-@@ -91,8 +91,6 @@ SRCS=\
+@@ -90,8 +90,6 @@ SRCS=\
    ../../../../CPP/7zip/Archive/PeHandler.cpp \
    ../../../../CPP/7zip/Archive/PpmdHandler.cpp \
    ../../../../CPP/7zip/Archive/QcowHandler.cpp \
@@ -36,7 +36,7 @@ index 5b17422..77d40dc 100644
    ../../../../CPP/7zip/Crypto/WzAes.cpp \
    ../../../../CPP/7zip/Crypto/ZipCrypto.cpp \
    ../../../../CPP/7zip/Crypto/ZipStrong.cpp \
-@@ -833,10 +828,6 @@ PpmdHandler.o : ../../../../CPP/7zip/Archive/PpmdHandler.cpp
+@@ -817,10 +812,6 @@ PpmdHandler.o : ../../../../CPP/7zip/Archive/PpmdHandler.cpp
  	$(CXX) $(CXXFLAGS) ../../../../CPP/7zip/Archive/PpmdHandler.cpp
  QcowHandler.o : ../../../../CPP/7zip/Archive/QcowHandler.cpp
  	$(CXX) $(CXXFLAGS) ../../../../CPP/7zip/Archive/QcowHandler.cpp
@@ -47,7 +47,7 @@ index 5b17422..77d40dc 100644
  RpmHandler.o : ../../../../CPP/7zip/Archive/RpmHandler.cpp
  	$(CXX) $(CXXFLAGS) ../../../../CPP/7zip/Archive/RpmHandler.cpp
  SplitHandler.o : ../../../../CPP/7zip/Archive/SplitHandler.cpp
-@@ -1109,12 +1100,6 @@ Pbkdf2HmacSha1.o : ../../../../CPP/7zip/Crypto/Pbkdf2HmacSha1.cpp
+@@ -1073,12 +1064,6 @@ Pbkdf2HmacSha1.o : ../../../../CPP/7zip/Crypto/Pbkdf2HmacSha1.cpp
  	$(CXX) $(CXXFLAGS) ../../../../CPP/7zip/Crypto/Pbkdf2HmacSha1.cpp
  RandGen.o : ../../../../CPP/7zip/Crypto/RandGen.cpp
  	$(CXX) $(CXXFLAGS) ../../../../CPP/7zip/Crypto/RandGen.cpp
@@ -60,7 +60,7 @@ index 5b17422..77d40dc 100644
  WzAes.o : ../../../../CPP/7zip/Crypto/WzAes.cpp
  	$(CXX) $(CXXFLAGS) ../../../../CPP/7zip/Crypto/WzAes.cpp
  ZipCrypto.o : ../../../../CPP/7zip/Crypto/ZipCrypto.cpp
-@@ -1301,8 +1286,6 @@ OBJS=\
+@@ -1364,8 +1349,6 @@ OBJS=\
   PeHandler.o \
   PpmdHandler.o \
   QcowHandler.o \
@@ -69,7 +69,7 @@ index 5b17422..77d40dc 100644
   RpmHandler.o \
   SplitHandler.o \
   SquashfsHandler.o \
-@@ -1407,9 +1390,6 @@ OBJS=\
+@@ -1492,9 +1475,6 @@ OBJS=\
   MyAesReg.o \
   Pbkdf2HmacSha1.o \
   RandGen.o \
@@ -93,10 +93,10 @@ index 5e51ed1..331601b 100644
  
  find_package(wxWidgets COMPONENTS core base adv)
 diff --git a/CPP/7zip/CMAKE/Format7zFree/CMakeLists.txt b/CPP/7zip/CMAKE/Format7zFree/CMakeLists.txt
-index d0645e1..a672c51 100644
+index 261a450..a95038d 100644
 --- a/CPP/7zip/CMAKE/Format7zFree/CMakeLists.txt
 +++ b/CPP/7zip/CMAKE/Format7zFree/CMakeLists.txt
-@@ -224,8 +224,6 @@ add_library(7z MODULE
+@@ -225,8 +225,6 @@ add_library(7z MODULE
    "../../../../CPP/7zip/Archive/PeHandler.cpp"
    "../../../../CPP/7zip/Archive/PpmdHandler.cpp"
    "../../../../CPP/7zip/Archive/QcowHandler.cpp"
@@ -105,7 +105,7 @@ index d0645e1..a672c51 100644
    "../../../../CPP/7zip/Archive/RpmHandler.cpp"
    "../../../../CPP/7zip/Archive/SplitHandler.cpp"
    "../../../../CPP/7zip/Archive/SquashfsHandler.cpp"
-@@ -351,9 +349,6 @@ add_library(7z MODULE
+@@ -353,9 +351,6 @@ add_library(7z MODULE
    "../../../../CPP/7zip/Crypto/MyAesReg.cpp"
    "../../../../CPP/7zip/Crypto/Pbkdf2HmacSha1.cpp"
    "../../../../CPP/7zip/Crypto/RandGen.cpp"
@@ -181,5 +181,5 @@ index 745c8ed..f8e8e33 100644
  	$(MAKE) -C CPP/7zip/Bundles/LzmaCon      clean2
  	$(MAKE) -C CPP/7zip/Bundles/AloneGCOV    clean
 -- 
-2.29.2
+2.30.2
 

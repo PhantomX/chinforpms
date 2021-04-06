@@ -53,7 +53,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 3f1d5438ca0bf481f301c436d53c1f3a3d88c3dc
+%global tkg_id 73a1ff55e05138f1d931f240474ed3194757a750
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -98,7 +98,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.5
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -179,6 +179,9 @@ Patch105:       %{whq_url}/a67d7c15336ea5caa89099952da1fc1998188029#/%{name}-whq
 Patch106:       %{whq_url}/290c9a4d6372cee046768eccd8fa49050a294f68#/%{name}-whq-290c9a4.patch
 Patch107:       %{whq_url}/e5cade0ff189c7bc871cf3686d16c55939d06068#/%{name}-whq-e5cade0.patch
 %endif
+
+# https://bugs.winehq.org/show_bug.cgi?id=50914
+Patch110:       https://bugs.winehq.org/attachment.cgi?id=69727&action=diff&context=patch&collapsed=&headers=1&format=raw#/wine-whq-bug50914.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -813,6 +816,7 @@ This package adds the opencl driver for wine.
 ###patch102 -p1 -R
 ###patch101 -p1 -R
 %patch100 -p1 -R
+%patch110 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2726,6 +2730,9 @@ fi
 
 
 %changelog
+* Mon Apr 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.5-102.20210402git2fcc1d0
+- Bug#50914 fix
+
 * Sat Apr 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.5-101.20210402git2fcc1d0
 - Snapshot
 - wine-mono 6.1.1

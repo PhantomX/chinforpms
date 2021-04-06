@@ -22,6 +22,7 @@ flycast
 -freac-superfast-codecs-freeworld
 gens-gs
 gflash-player
+gstreamer1-plugins-ugly
 hakuneko-desktop
 higan
 irpf2017

@@ -9,7 +9,9 @@ all: archive
 
 clean:
 	rm -rf $(DIRNAME)/
+	rm -f ${NAME}-${VERSION}.tar.gz
 	rm -f ${NAME}-${VERSION}.tar.xz
+	rm -f ${NAME}-free-${VERSION}.tar.xz
 
 clone: clean
 	curl --location -O https://downloads.sourceforge.net/bonkenc/${NAME}-${VERSION}.tar.gz
@@ -41,4 +43,4 @@ ifeq ($(SANITIZE),1)
 endif
 
 archive: clone sanitize
-	tar --numeric-owner -cJf ${DIRNAME}.tar.xz ${DIRNAME}
+	tar --numeric-owner -cJf ${NAME}-free-${VERSION}.tar.xz ${DIRNAME}

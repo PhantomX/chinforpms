@@ -33,9 +33,9 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %else
 # Use Makefile to download
 %if 0%{?with_snapshot}
-Source0:        %{name}-%{shortcommit}.tar.xz
+Source0:        %{name}-clean-%{shortcommit}.tar.xz
 %else
-Source0:        %{name}-%{version}.tar.xz
+Source0:        %{name}-clean-%{version}.tar.xz
 %endif
 %endif
 Source1:        Makefile
@@ -99,7 +99,7 @@ this emulator anyway.
 %if 0%{?with_snapshot}
 %autosetup -n %{name}-%{commit} -p1
 %else
-%autosetup -p1
+%autosetup -n %{name}-%{version} -p1
 %endif
 
 %if 0%{sanitize}

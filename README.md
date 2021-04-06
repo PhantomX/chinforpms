@@ -36,7 +36,8 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
                     _~/.cache/gstreamer-1.0/registry.i686.bin_ on x86_64
  * **gstreamer1-libav** - For i686 mock build
  * **gstreamer1-plugins-bad-freeworld** - For i686 mock build
- * **gstreamer1-plugins-ugly** - For i686 mock build
+ * **gstreamer1-plugins-base** - preroll buffer fix from Guy1524
+ * **gstreamer1-plugins-ugly** - asfdemux fixes from Guy1524
  * **gtk3** - Revert some features ditched in 3.10 release, some _Debian_,
               _Ubuntu_ and [_gtk3-mushrooms_](https://github.com/TomaszGasior/gtk3-mushrooms) patches
  * **keepassxc** - Post script and cosmetic fixes

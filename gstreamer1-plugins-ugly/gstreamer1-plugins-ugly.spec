@@ -1,31 +1,26 @@
-# Disable some support for multilib builds
-%ifarch %{ix86}
-%if 0%{?fedora} > 30
-%global with_multilib 1
-%endif
-%endif
-
-
 %global src_name gst-plugins-ugly
 
 Summary:        GStreamer 1.0 streaming media framework "ugly" plug-ins
 Name:           gstreamer1-plugins-ugly
-Version:        1.16.2
-Release:        2%{?dist}
+Version:        1.18.4
+Release:        100%{?dist}
+
 License:        LGPLv2+
 URL:            https://gstreamer.freedesktop.org/
 Source0:        %{url}/src/%{src_name}/%{src_name}-%{version}.tar.xz
 
+# https://github.com/Guy1524's patches for wmv playback fixes
+Patch0:         asfdemux-Re-initialize_demux-adapter_in_gst_asf_demux_reset.patch
+Patch1:         asfdemux-gst_asf_demux_reset_GST_FORMAT_TIME_fix.patch
+
 BuildRequires:  gcc
 BuildRequires:  gstreamer1-devel >= %{version}
 BuildRequires:  gstreamer1-plugins-base-devel >= %{version}
-BuildRequires:  gettext-devel
 BuildRequires:  libid3tag-devel >= 0.15.0
-BuildRequires:  orc-devel >= 0.4.5
+BuildRequires:  meson
 BuildRequires:  opencore-amr-devel
-%if !0%{?with_multilib}
+BuildRequires:  orc-devel >= 0.4.5
 BuildRequires:  x264-devel >= 0.0.0-0.28
-%endif
 
 # Provides locale files
 # relax dep to >= to make fedora/rpmfusion upgrades easier
@@ -49,35 +44,22 @@ gstreamer-plugins-good because:
 
 
 %build
-%configure \
-    --disable-silent-rules --disable-fatal-warnings \
-    --with-package-name="gst-plugins-ugly 1.0 rpmfusion rpm" \
-    --with-package-origin="http://rpmfusion.org/" \
-    --disable-static \
-    --enable-debug \
-    --disable-gtk-doc \
-    --disable-mpg123 \
-    --disable-cdio \
-    --disable-dvdread \
-    --disable-a52dec \
-    --disable-xingmux \
-    --disable-lame \
-    --disable-twolame \
-    --disable-mpeg2dec \
-%if 0%{?with_multilib}
-    --disable-x264 \
-%endif
-%{nil}
+%meson \
+    -D package-name='chinforpms GStreamer-plugins-ugly package' \
+    -D package-origin='https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms' \
+    -D doc=disabled \
+    -D cdio=disabled \
+    -D dvdread=disabled \
+    -D a52dec=disabled \
+    -D sidplay=disabled \
+    -D xingmux=disabled \
+    -D mpeg2dec=disabled \
+    -D nls=disabled
 
-%make_build V=1
+%meson_build
 
 %install
-%make_install V=1
-
-rm -fv %{buildroot}%{_libdir}/gstreamer-1.0/*.la
-rm -rf %{buildroot}%{_datadir}/locale/
-rm -fv %{buildroot}%{_datadir}/gtk-doc/html/%{src_name}-plugins-1.0/*
-
+%meson_install
 
 %files
 %doc AUTHORS README REQUIREMENTS
@@ -91,16 +73,57 @@ rm -fv %{buildroot}%{_datadir}/gtk-doc/html/%{src_name}-plugins-1.0/*
 # Plugins with external dependencies
 %{_libdir}/gstreamer-1.0/libgstamrnb.so
 %{_libdir}/gstreamer-1.0/libgstamrwbdec.so
-%if !0%{?with_multilib}
 %{_libdir}/gstreamer-1.0/libgstx264.so
-%endif
+
 
 %changelog
-* Fri Feb 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.16.2-2
+* Sun Apr 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1.18.4-100
+- Guy1524's wmv playback patches
+
+* Wed Mar 17 2021 Leigh Scott <leigh123linux@gmail.com> - 1.18.4-1
+- 1.18.4
+
+* Wed Feb 03 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1.18.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Sun Dec 13 2020 Leigh Scott <leigh123linux@gmail.com> - 1.18.2-1
+- 1.18.2
+
+* Fri Nov 27 2020 Sérgio Basto <sergio@serjux.com> - 1.18.1-2
+- Mass rebuild for x264-0.161
+
+* Sun Nov  1 2020 Leigh Scott <leigh123linux@gmail.com> - 1.18.1-1
+- 1.18.1
+
+* Wed Sep  9 2020 Leigh Scott <leigh123linux@gmail.com> - 1.18.0-1
+- 1.18.0
+
+* Sun Aug 23 2020 Leigh Scott <leigh123linux@gmail.com> - 1.17.90-1
+- 1.17.90
+
+* Tue Aug 18 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1.17.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Wed Jul 08 2020 Leigh Scott <leigh123linux@gmail.com> - 1.17.2-1
+- 1.17.2
+
+* Tue Jul 07 2020 Sérgio Basto <sergio@serjux.com> - 1.17.1-2
+- Mass rebuild for x264
+
+* Mon Jun 22 2020 Leigh Scott <leigh123linux@gmail.com> - 1.17.1-1
+- 1.17.1
+
+* Thu Mar 12 2020 Leigh Scott <leigh123linux@gmail.com> - 1.16.2-3
+- Rebuilt for i686
+
+* Tue Feb 04 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1.16.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Sat Feb 01 2020 Leigh Scott <leigh123linux@googlemail.com> - 1.16.2-1
 - 1.16.2
 
-* Wed Oct 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.16.1-1
-- Fixes for multilib, do not bump
+* Tue Dec 17 2019 Leigh Scott <leigh123linux@gmail.com> - 1.16.1-2
+- Mass rebuild for x264
 
 * Wed Sep 25 2019 Leigh Scott <leigh123linux@googlemail.com> - 1.16.1-1
 - 1.16.1

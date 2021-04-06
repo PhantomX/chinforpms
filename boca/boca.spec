@@ -18,7 +18,7 @@ URL:            http://www.freac.org/
 Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{ver}.tar.gz
 %else
 # Use Makefile do download
-Source0:        %{name}-%{ver}.tar.xz
+Source0:        %{name}-free-%{ver}.tar.xz
 %endif
 Source1:        Makefile
 

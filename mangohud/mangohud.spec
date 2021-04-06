@@ -30,7 +30,7 @@ Source0:        %{pkgname}-%{shortcommit}.tar.xz
 %if 0%{sanitize}
 Source0:        %{url}/archive/v%{version}/%{pkgname}-v%{version}.tar.gz
 %else
-Source0:        %{pkgname}-%{version}.tar.xz
+Source0:        %{pkgname}-free-%{version}.tar.xz
 %endif
 %endif
 Source2:        Makefile

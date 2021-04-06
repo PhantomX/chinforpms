@@ -1,7 +1,7 @@
 %global commit 79aac5226bdad25efda22095445ad7c4e0d9a06f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210328
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?rhel} && ! 0%{?epel}
 %bcond_with gui
@@ -15,8 +15,8 @@
 %endif
 
 Name:           p7zip
-Version:        17.03
-Release:        102%{?gver}%{?dist}
+Version:        17.04
+Release:        100%{?gver}%{?dist}
 Summary:        Very high compression ratio file archiver
 
 # Files under C/Compress/Lzma/ are dual LGPL or CPL
@@ -32,9 +32,9 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %else
 # Use Makefile to download
 %if 0%{?with_snapshot}
-Source0:        %{name}-%{shortcommit}.tar.xz
+Source0:        %{name}-free-%{shortcommit}.tar.xz
 %else
-Source0:        %{name}-%{version}.tar.xz
+Source0:        %{name}-free-%{version}.tar.xz
 %endif
 %endif
 Source1:        Makefile
@@ -102,7 +102,7 @@ contributions.
 %if 0%{?with_snapshot}
 %autosetup -n %{name}-%{commit} -p1
 %else
-%autosetup -p1
+%autosetup -n %{name}-%{version} -p1
 %endif
 
 %if 0%{sanitize}
@@ -214,6 +214,9 @@ make test
 
 
 %changelog
+* Sun Apr 04 2021 Phantom X <megaphantomx at hotmail dot com> - 17.04-100
+- 17.04
+
 * Mon Mar 29 2021 Phantom X <megaphantomx at hotmail dot com> - 17.03-102.20210328git79aac52
 - Last snapshot
 

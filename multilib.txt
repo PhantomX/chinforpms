@@ -13,6 +13,8 @@ gamemode
 glslang
 gnome-theme-extra
 gstreamer1
+gstreamer1-plugins-base
+gstreamer1-plugins-ugly-free
 gtk3
 gtk3-nocsd
 kernel-tools
