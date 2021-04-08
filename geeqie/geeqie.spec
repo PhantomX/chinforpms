@@ -45,7 +45,7 @@ BuildRequires:  pkgconfig(lirc)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(libwebp)
-BuildRequires:  pkgconfig(lua-5.1)
+BuildRequires:  pkgconfig(lua)
 BuildRequires:  pkgconfig(poppler-glib)
 BuildRequires:  desktop-file-utils
 BuildRequires:  gnome-doc-utils
@@ -87,9 +87,6 @@ and zoom.
 # fix autoconf problem with missing version
 sed -r -i 's/m4_esyscmd_s\(git rev-parse --quiet --verify --short HEAD\)/[%{version}]/' configure.ac
 %endif
-
-# different distros have different names for this
-sed -i -e 's/lua5\.1/lua-5.1/' configure*
 
 sed \
   -e 's/clutter-1.0/clutter-1.0_disabled/g' \

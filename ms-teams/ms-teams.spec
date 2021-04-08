@@ -8,7 +8,7 @@
 %global pkgrel 1
 
 Name:           ms-%{pkgname}
-Version:        1.3.00.30857
+Version:        1.4.00.7556
 Release:        1%{?dist}
 Summary:        Chat-centered workspace in Office 365
 
@@ -98,6 +98,9 @@ done
 
 
 %changelog
+* Wed Apr 07 2021 - 1.4.00.7556-1
+- 1.4.00.7556
+
 * Wed Dec 02 2020 - 1.3.00.30857-1
 - 1.3.00.30857
 

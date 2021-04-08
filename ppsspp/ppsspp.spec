@@ -1,6 +1,6 @@
-%global commit a37ea1e652b231b8a9fbc516ab4d7547ed8ebd2b
+%global commit 28065c1bc46a97bc3e34c94035da6ec4ee4ff57f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210323
+%global date 20210407
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -19,7 +19,7 @@
 # https://github.com/hrydgard/ppsspp/issues/13312
 %global _lto_cflags %{nil}
 
-%global commit1 ddb1246ec2ad2548711f4b966a801e80b7fbe73f
+%global commit1 37fe9848b4d2bf7879a3fd382796e5e1d1193ac4
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -39,7 +39,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 84d1f8aa2a40641a6eff6c84c99cc7b5e7a1c833
+%global commit7 d2e1e7ba989135618f82bfeb6d97695d0d9bb9f5
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -84,6 +84,7 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-Add-chd-support.patch
 
+Patch10:        %{vc_url}/%{name}/pull/14341.patch#/%{name}-gh-pr14341.patch
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -364,6 +365,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-104.20210407git28065c1
+- Update
+
 * Wed Mar 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-103.20210323gita37ea1e
 - Add experimental CHD support from SleepyMan
 

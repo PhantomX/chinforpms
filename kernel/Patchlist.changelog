@@ -1,3 +1,60 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/593117da3c5aaaa2f9af01513a9aa7a275e67701
+ 593117da3c5aaaa2f9af01513a9aa7a275e67701 drm/i915: Disable LTTPR support when the DPCD rev < 1.4
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/4cf60312635599acf0e70c29d7de0355426d9165
+ 4cf60312635599acf0e70c29d7de0355426d9165 drm/i915/dp: Prevent setting the LTTPR LT mode if no LTTPRs are detected
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/044d6c51c6cd6c419c17766f1fe0e03161afee6d
+ 044d6c51c6cd6c419c17766f1fe0e03161afee6d drm/i915/ilk-glk: Fix link training on links with LTTPRs
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/f93a5201c2ef7e9f70aa68621100f868764c2b15
+ f93a5201c2ef7e9f70aa68621100f868764c2b15 drm/i915/tgl/psr: Disable PSR on Tigerlake for now
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/63787bf2ade1acf5b4ae353d5f92dffa40519afb
+ 63787bf2ade1acf5b4ae353d5f92dffa40519afb ASoC: intel: atom: Stop advertising non working S24LE support
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/d6e1043c3ee761b14ddae1707e78f10b26868c19
+ d6e1043c3ee761b14ddae1707e78f10b26868c19 KVM: PPC: Book3S HV: Save and restore FSCR in the P9 path
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/a39ea61be0d2744e99b117fa4a3a4802ace211cd
+ a39ea61be0d2744e99b117fa4a3a4802ace211cd drm/nouveau/kms/nve4-nv108: Don't advertise 256x256 cursor support yet
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/f32347b018afd78e53cd54cf3c5c9300025fb0cb
+ f32347b018afd78e53cd54cf3c5c9300025fb0cb platform/x86: intel-vbtn: Stop reporting SW_DOCK events
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/c8eff81875a9ced92b486586079ba40faba62aa7
+ c8eff81875a9ced92b486586079ba40faba62aa7 platform/x86: dell-wmi-sysman: Cleanup create_attributes_level_sysfs_files()
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/fe2c1db4137bedceb53dbd240d635cabcc7662c1
+ fe2c1db4137bedceb53dbd240d635cabcc7662c1 platform/x86: dell-wmi-sysman: Make sysman_init() return -ENODEV of the interfaces are not found
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/8d59b9510cdedd773c3043b4ad6cab6c956bd161
+ 8d59b9510cdedd773c3043b4ad6cab6c956bd161 platform/x86: dell-wmi-sysman: Cleanup sysman_init() error-exit handling
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/7a850e109a14934b6a9d2da47483c1e0c57048d2
+ 7a850e109a14934b6a9d2da47483c1e0c57048d2 platform/x86: dell-wmi-sysman: Fix release_attributes_data() getting called twice on init_bios_attributes() failure
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/d02d2d9f0333d7953402e589004930be67a72fb5
+ d02d2d9f0333d7953402e589004930be67a72fb5 platform/x86: dell-wmi-sysman: Make it safe to call exit_foo_attributes() multiple times
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/3ef181745e85b437d375cc9a06cc407c2efc52ae
+ 3ef181745e85b437d375cc9a06cc407c2efc52ae platform/x86: dell-wmi-sysman: Fix possible NULL pointer deref on exit
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/3112ca25438d87729b24ac5b3359be77106c555c
+ 3112ca25438d87729b24ac5b3359be77106c555c platform/x86: dell-wmi-sysman: Fix crash caused by calling kset_unregister twice
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/008fb3f23a7fbe9d6ae7dab4d5909a3d554e078b
+ 008fb3f23a7fbe9d6ae7dab4d5909a3d554e078b platform/x86: thinkpad_acpi: Disable DYTC CQL mode around switching to balanced mode
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/b5c4c28a6425735d1fff57ac714cfd15b3387a70
+ b5c4c28a6425735d1fff57ac714cfd15b3387a70 platform/x86: thinkpad_acpi: Allow the FnLock LED to change state
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/a0029a16a4435e2c6993c48bd7b2767dc95b3fad
+ a0029a16a4435e2c6993c48bd7b2767dc95b3fad platform/x86: thinkpad_acpi: check dytc version for lapmode sysfs
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/cc16fe7bebbf787638dea93615ec7f9b49340ca5
+ cc16fe7bebbf787638dea93615ec7f9b49340ca5 platform/x86: intel-hid: Support Lenovo ThinkPad X1 Tablet Gen 2
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/58465cf2c68ab118fb14070d90d2c72c15709e50
  58465cf2c68ab118fb14070d90d2c72c15709e50 mmc: sdhci-iproc: Add ACPI bindings for the rpi
 

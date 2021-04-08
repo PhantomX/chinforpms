@@ -23,19 +23,19 @@
 
 %global pkgname amdvlk
 
-%global commit1 0d4ae425cd44beba347958d9494ba301e6ec2ad4
+%global commit1 b0392f639492720b268697f4261aaccfa3459537
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 d69e5fb103b9c7394d4a098b23930ac5d5a99e6f
+%global commit2 a8ec3c6e6372dcfd812a2ea592141a821e9584b1
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 484d8e1f46e0f4b3dcd16ca491253fbef41698a0
+%global commit3 e1be7ee14c39d3a36d9d1aacd00caf3acc437cde
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 4ea0bad02244d155423be0a77d702c3a5a6e950f
+%global commit4 83635fbee82fb21662a4737e34437c41172c6fe0
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -51,19 +51,19 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 5d8c40399e1a483c168246215e4637e19551cd4f
+%global commit8 212895d4c2cd9f4900adba4514aa5ea2c8256f9f
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
-%global commit9 bcf55210f13a4fa3c3d0963b509ff1070e434c79
+%global commit9 f88a1f98fa7a44ccfcf33d810c72b200e7d9a78a
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 60aa24566e0189a83797abb7c3d0453b20e5f1f8
+%global commit10 d2e1e7ba989135618f82bfeb6d97695d0d9bb9f5
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 979319b9b161d3a0ca68788f25e6fd197f208816
+%global commit11 1481399549c55c2b9f04a468a6d95ca92fd7458b
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -78,7 +78,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2021.1.6
+Version:        2021.2.1
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -272,8 +272,11 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.2.1-1
+- 2021.Q2.1
+
 * Fri Mar 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.1.6-1
-- 2021.!1.6
+- 2021.Q1.6
 
 * Fri Mar 12 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.1.5-1
 - 2021.Q1.5

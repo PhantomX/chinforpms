@@ -33,6 +33,9 @@ Subject: [PATCH] patch-5.11-redhat
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
+ drivers/gpu/drm/i915/display/intel_dp.c            |  11 +-
+ .../gpu/drm/i915/display/intel_dp_link_training.c  |  91 ++--
+ .../gpu/drm/i915/display/intel_dp_link_training.h  |   2 +-
  drivers/gpu/drm/i915/display/intel_psr.c           |   9 +-
  drivers/gpu/drm/panel/Kconfig                      |   9 +
  drivers/gpu/drm/panel/Makefile                     |   1 +
@@ -69,7 +72,7 @@ Subject: [PATCH] patch-5.11-redhat
  sound/hda/Kconfig                                  |  14 +
  sound/hda/intel-dsp-config.c                       |  29 +-
  sound/soc/intel/atom/sst-mfld-platform-pcm.c       |   6 +-
- 72 files changed, 2264 insertions(+), 275 deletions(-)
+ 68 files changed, 2268 insertions(+), 255 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-platform_profile b/Documentation/ABI/testing/sysfs-platform_profile
 new file mode 100644
@@ -283,10 +286,10 @@ index 000000000000..c33a71263d9e
 + 2. Add the new profile name, along with a clear description of the
 +    expected behaviour, to the sysfs-platform_profile ABI documentation.
 diff --git a/Makefile b/Makefile
-index 824d15c14be0..60669eb8738b 100644
+index 7578e0d9622f..74679ade5579 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -494,6 +494,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
@@ -781,10 +784,10 @@ index 000000000000..4a59c5993bde
 +MODULE_AUTHOR("Mark Pearson <markpearson@lenovo.com>");
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 22566b4b3150..4c2294593928 100644
+index a4fdf61b0644..9aa6d898fadd 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1620,6 +1620,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1638,6 +1638,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -1091,6 +1094,224 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
+index 8a26307c4896..bc2aae63fe40 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp.c
++++ b/drivers/gpu/drm/i915/display/intel_dp.c
+@@ -1400,6 +1400,7 @@ static u32 g4x_get_aux_send_ctl(struct intel_dp *intel_dp,
+ 	else
+ 		precharge = 5;
+
++	/* Max timeout value on G4x-BDW: 1.6ms */
+ 	if (IS_BROADWELL(dev_priv))
+ 		timeout = DP_AUX_CH_CTL_TIME_OUT_600us;
+ 	else
+@@ -1426,6 +1427,12 @@ static u32 skl_get_aux_send_ctl(struct intel_dp *intel_dp,
+ 	enum phy phy = intel_port_to_phy(i915, dig_port->base.port);
+ 	u32 ret;
+
++	/*
++	 * Max timeout values:
++	 * SKL-GLK: 1.6ms
++	 * CNL: 3.2ms
++	 * ICL+: 4ms
++	 */
+ 	ret = DP_AUX_CH_CTL_SEND_BUSY |
+ 	      DP_AUX_CH_CTL_DONE |
+ 	      DP_AUX_CH_CTL_INTERRUPT |
+@@ -4871,9 +4878,7 @@ intel_dp_get_dpcd(struct intel_dp *intel_dp)
+ {
+ 	int ret;
+
+-	intel_dp_lttpr_init(intel_dp);
+-
+-	if (drm_dp_read_dpcd_caps(&intel_dp->aux, intel_dp->dpcd))
++	if (intel_dp_init_lttpr_and_dprx_caps(intel_dp) < 0)
+ 		return false;
+
+ 	/*
+diff --git a/drivers/gpu/drm/i915/display/intel_dp_link_training.c b/drivers/gpu/drm/i915/display/intel_dp_link_training.c
+index d8c6d7054d11..e6532ea5757b 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp_link_training.c
++++ b/drivers/gpu/drm/i915/display/intel_dp_link_training.c
+@@ -34,16 +34,9 @@ intel_dp_dump_link_status(const u8 link_status[DP_LINK_STATUS_SIZE])
+ 		      link_status[3], link_status[4], link_status[5]);
+ }
+
+-static int intel_dp_lttpr_count(struct intel_dp *intel_dp)
++static void intel_dp_reset_lttpr_common_caps(struct intel_dp *intel_dp)
+ {
+-	int count = drm_dp_lttpr_count(intel_dp->lttpr_common_caps);
+-
+-	/*
+-	 * Pretend no LTTPRs in case of LTTPR detection error, or
+-	 * if too many (>8) LTTPRs are detected. This translates to link
+-	 * training in transparent mode.
+-	 */
+-	return count <= 0 ? 0 : count;
++	memset(&intel_dp->lttpr_common_caps, 0, sizeof(intel_dp->lttpr_common_caps));
+ }
+
+ static void intel_dp_reset_lttpr_count(struct intel_dp *intel_dp)
+@@ -93,10 +86,21 @@ static void intel_dp_read_lttpr_phy_caps(struct intel_dp *intel_dp,
+
+ static bool intel_dp_read_lttpr_common_caps(struct intel_dp *intel_dp)
+ {
++	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
++
++	if (intel_dp_is_edp(intel_dp))
++		return false;
++
++	/*
++	 * Detecting LTTPRs must be avoided on platforms with an AUX timeout
++	 * period < 3.2ms. (see DP Standard v2.0, 2.11.2, 3.6.6.1).
++	 */
++	if (INTEL_GEN(i915) < 10)
++		return false;
++
+ 	if (drm_dp_read_lttpr_common_caps(&intel_dp->aux,
+ 					  intel_dp->lttpr_common_caps) < 0) {
+-		memset(intel_dp->lttpr_common_caps, 0,
+-		       sizeof(intel_dp->lttpr_common_caps));
++		intel_dp_reset_lttpr_common_caps(intel_dp);
+ 		return false;
+ 	}
+
+@@ -118,30 +122,57 @@ intel_dp_set_lttpr_transparent_mode(struct intel_dp *intel_dp, bool enable)
+ }
+
+ /**
+- * intel_dp_lttpr_init - detect LTTPRs and init the LTTPR link training mode
++ * intel_dp_init_lttpr_and_dprx_caps - detect LTTPR and DPRX caps, init the LTTPR link training mode
+  * @intel_dp: Intel DP struct
+  *
+- * Read the LTTPR common capabilities, switch to non-transparent link training
+- * mode if any is detected and read the PHY capabilities for all detected
+- * LTTPRs. In case of an LTTPR detection error or if the number of
++ * Read the LTTPR common and DPRX capabilities and switch to non-transparent
++ * link training mode if any is detected and read the PHY capabilities for all
++ * detected LTTPRs. In case of an LTTPR detection error or if the number of
+  * LTTPRs is more than is supported (8), fall back to the no-LTTPR,
+  * transparent mode link training mode.
+  *
+  * Returns:
+- *   >0  if LTTPRs were detected and the non-transparent LT mode was set
++ *   >0  if LTTPRs were detected and the non-transparent LT mode was set. The
++ *       DPRX capabilities are read out.
+  *    0  if no LTTPRs or more than 8 LTTPRs were detected or in case of a
+- *       detection failure and the transparent LT mode was set
++ *       detection failure and the transparent LT mode was set. The DPRX
++ *       capabilities are read out.
++ *   <0  Reading out the DPRX capabilities failed.
+  */
+-int intel_dp_lttpr_init(struct intel_dp *intel_dp)
++int intel_dp_init_lttpr_and_dprx_caps(struct intel_dp *intel_dp)
+ {
+ 	int lttpr_count;
+ 	bool ret;
+ 	int i;
+
+-	if (intel_dp_is_edp(intel_dp))
++	ret = intel_dp_read_lttpr_common_caps(intel_dp);
++
++	/* The DPTX shall read the DPRX caps after LTTPR detection. */
++	if (drm_dp_read_dpcd_caps(&intel_dp->aux, intel_dp->dpcd)) {
++		intel_dp_reset_lttpr_common_caps(intel_dp);
++		return -EIO;
++	}
++
++	if (!ret)
+ 		return 0;
+
+-	ret = intel_dp_read_lttpr_common_caps(intel_dp);
++	/*
++	 * The 0xF0000-0xF02FF range is only valid if the DPCD revision is
++	 * at least 1.4.
++	 */
++	if (intel_dp->dpcd[DP_DPCD_REV] < 0x14) {
++		intel_dp_reset_lttpr_common_caps(intel_dp);
++		return 0;
++	}
++
++	lttpr_count = drm_dp_lttpr_count(intel_dp->lttpr_common_caps);
++	/*
++	 * Prevent setting LTTPR transparent mode explicitly if no LTTPRs are
++	 * detected as this breaks link training at least on the Dell WD19TB
++	 * dock.
++	 */
++	if (lttpr_count == 0)
++		return 0;
+
+ 	/*
+ 	 * See DP Standard v2.0 3.6.6.1. about the explicit disabling of
+@@ -150,17 +181,12 @@ int intel_dp_lttpr_init(struct intel_dp *intel_dp)
+ 	 */
+ 	intel_dp_set_lttpr_transparent_mode(intel_dp, true);
+
+-	if (!ret)
+-		return 0;
+-
+-	lttpr_count = intel_dp_lttpr_count(intel_dp);
+-
+ 	/*
+ 	 * In case of unsupported number of LTTPRs or failing to switch to
+ 	 * non-transparent mode fall-back to transparent link training mode,
+ 	 * still taking into account any LTTPR common lane- rate/count limits.
+ 	 */
+-	if (lttpr_count == 0)
++	if (lttpr_count < 0)
+ 		return 0;
+
+ 	if (!intel_dp_set_lttpr_transparent_mode(intel_dp, false)) {
+@@ -178,7 +204,7 @@ int intel_dp_lttpr_init(struct intel_dp *intel_dp)
+
+ 	return lttpr_count;
+ }
+-EXPORT_SYMBOL(intel_dp_lttpr_init);
++EXPORT_SYMBOL(intel_dp_init_lttpr_and_dprx_caps);
+
+ static u8 dp_voltage_max(u8 preemph)
+ {
+@@ -222,11 +248,11 @@ intel_dp_phy_is_downstream_of_source(struct intel_dp *intel_dp,
+ 				     enum drm_dp_phy dp_phy)
+ {
+ 	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
+-	int lttpr_count = intel_dp_lttpr_count(intel_dp);
++	int lttpr_count = drm_dp_lttpr_count(intel_dp->lttpr_common_caps);
+
+-	drm_WARN_ON_ONCE(&i915->drm, lttpr_count == 0 && dp_phy != DP_PHY_DPRX);
++	drm_WARN_ON_ONCE(&i915->drm, lttpr_count <= 0 && dp_phy != DP_PHY_DPRX);
+
+-	return lttpr_count == 0 || dp_phy == DP_PHY_LTTPR(lttpr_count - 1);
++	return lttpr_count <= 0 || dp_phy == DP_PHY_LTTPR(lttpr_count - 1);
+ }
+
+ static u8 intel_dp_phy_voltage_max(struct intel_dp *intel_dp,
+@@ -814,7 +840,10 @@ void intel_dp_start_link_train(struct intel_dp *intel_dp,
+ 	 * TODO: Reiniting LTTPRs here won't be needed once proper connector
+ 	 * HW state readout is added.
+ 	 */
+-	int lttpr_count = intel_dp_lttpr_init(intel_dp);
++	int lttpr_count = intel_dp_init_lttpr_and_dprx_caps(intel_dp);
++
++	if (lttpr_count < 0)
++		return;
+
+ 	if (!intel_dp_link_train_all_phys(intel_dp, crtc_state, lttpr_count))
+ 		intel_dp_schedule_fallback_link_training(intel_dp, crtc_state);
+diff --git a/drivers/gpu/drm/i915/display/intel_dp_link_training.h b/drivers/gpu/drm/i915/display/intel_dp_link_training.h
+index 6a1f76bd8c75..9cb7c28027f0 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp_link_training.h
++++ b/drivers/gpu/drm/i915/display/intel_dp_link_training.h
+@@ -11,7 +11,7 @@
+ struct intel_crtc_state;
+ struct intel_dp;
+
+-int intel_dp_lttpr_init(struct intel_dp *intel_dp);
++int intel_dp_init_lttpr_and_dprx_caps(struct intel_dp *intel_dp);
+
+ void intel_dp_get_adjust_train(struct intel_dp *intel_dp,
+ 			       const struct intel_crtc_state *crtc_state,
 diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
 index b3631b722de3..0b8866900dfb 100644
 --- a/drivers/gpu/drm/i915/display/intel_psr.c

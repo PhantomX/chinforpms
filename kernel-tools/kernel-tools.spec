@@ -17,7 +17,7 @@
 
 %global buildid .chinfo
 
-%global opensuse_id fa5dcf16e3f06b7e5994761b00fc60b6db855717
+%global opensuse_id c90d8a9b873fb0f3ab898346956059f46874d00c
 
 %define major_ver 5
 
@@ -30,7 +30,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 11
+%global stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -547,6 +547,9 @@ popd
 
 
 %changelog
+* Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.12-500.chinfo
+- 5.11.12
+
 * Tue Mar 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.11-500.chinfo
 - 5.11.11
 

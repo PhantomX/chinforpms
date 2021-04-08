@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20210330
+# 20210407
 
 set -e
 
@@ -67,6 +67,7 @@ V4L2_LOOPBACK
 "
 
 pfv="
+MODPROBE_PATH=\"/usr/sbin/modprobe\"
 SCHED_TIMESLICE=4
 UNEVICTABLE_FILE_KBYTES_LOW=262144
 UNEVICTABLE_FILE_KBYTES_MIN=131072

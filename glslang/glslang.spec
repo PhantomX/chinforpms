@@ -1,12 +1,12 @@
 %undefine _cmake_shared_libs
 
-%global commit e56beaee736863ce48455955158f1839e6e4c1a1
+%global commit 1481399549c55c2b9f04a468a6d95ca92fd7458b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210219
+%global date 20210407
 %global gver .%{date}git%{shortcommit}
 
 Name:           glslang
-Version:        11.1.0
+Version:        11.2.0
 Release:        100%{?gver}%{?dist}
 Summary:        OpenGL and OpenGL ES shader front end and validator
 
@@ -87,6 +87,9 @@ install -pm 0644 %{__cmake_builddir}/StandAlone/libglslang-default-resource-limi
 %{_libdir}/cmake/*
 
 %changelog
+* Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 11.2.0-100.20210407git1481399
+- 11.2.0
+
 * Fri Feb 19 2021 Phantom X <megaphantomx at hotmail dot com> - 11.1.0-100.20210219gite56beae
 - 11.1.0
 

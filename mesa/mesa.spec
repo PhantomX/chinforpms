@@ -64,8 +64,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        21.0.1
-Release:        101%{?dist}
+Version:        21.0.2
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -78,7 +78,6 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 # https://gitlab.freedesktop.org/mesa/mesa/-/issues/4442
 Patch0:         mesa-llvm12.patch
-Patch1:         0001-drisw-move-zink-down-the-list-below-the-sw-drivers.patch
 
 Patch10:        %{vc_url}/commit/2813688f8dbe813baaa99c028da4058e5dfb428d.patch#/%{name}-gl-2813688.patch
 Patch11:        %{vc_url}/commit/fc78ecd3793673ae550900f68bf9e459a9f6ec62.patch#/%{name}-gl-fc78ecd.patch
@@ -729,6 +728,9 @@ popd
 
 
 %changelog
+* Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.2-100
+- 21.0.2
+
 * Sun Mar 28 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.1-101
 - Rawhide sync
 

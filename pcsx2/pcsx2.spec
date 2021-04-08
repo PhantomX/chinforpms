@@ -1,6 +1,6 @@
-%global commit bc477e1ce10a54c279b681a8d6b99f34d5d0b8fb
+%global commit 05a31bd656e92026d07cd76bceff0451ecf880dc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210323
+%global date 20210407
 %global with_snapshot 1
 
 %global sanitize 0
@@ -18,7 +18,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        121%{?gver}%{?dist}
+Release:        122%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -83,7 +83,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-32
+BuildRequires:  sdl_gamecontrollerdb >= 0-33
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -250,6 +250,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-122.20210407git05a31bd
+- Bump
+
 * Tue Mar 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-121.20210323gitbc477e1
 - Bump
 - BR: libchdr, and patch to support system library
