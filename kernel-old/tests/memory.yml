@@ -1,0 +1,15 @@
+---
+# Tests suitable to run in a classic environment
+- hosts: localhost
+  tags:
+  - classic
+  roles:
+  - role: standard-test-beakerlib
+    tests:
+    - memory/memfd_create
+    required_packages:
+    - gcc
+    - libgcc
+    - glibc-devel
+    - glibc-static
+    ignore_errors: yes

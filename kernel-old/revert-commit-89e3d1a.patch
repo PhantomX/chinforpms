@@ -1,0 +1,11 @@
+reverted:
+--- b/block/bfq-iosched.c
++++ a/block/bfq-iosched.c
+@@ -2937,7 +2937,6 @@
+ 	}
+ 
+ 	bfqd->in_service_queue = bfqq;
+-	bfqd->in_serv_last_pos = 0;
+ }
+ 
+ /*

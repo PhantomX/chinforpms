@@ -1,0 +1,27 @@
+# This file is intentionally left empty in the stock kernel. Its a nicety
+# added for those wanting to do custom rebuilds with altered config opts.
+
+# CONFIG_KERNEL_GZIP is not set
+# CONFIG_KERNEL_XZ is not set
+
+CONFIG_BFQ_GROUP_IOSCHED=y
+CONFIG_IOSCHED_BFQ=y
+
+CONFIG_SCSI_MQ_DEFAULT=y
+CONFIG_DM_MQ_DEFAULT=y
+
+CONFIG_ACPI_TABLE_UPGRADE=y
+
+CONFIG_DRM_AMDGPU_SI=y
+
+# CONFIG_FRAME_POINTER is not set
+# CONFIG_UNWINDER_FRAME_POINTER is not set
+CONFIG_UNWINDER_ORC=y
+
+# CONFIG_DEBUG_INFO_REDUCED is not set
+# CONFIG_DEBUG_VM is not set
+# CONFIG_DEBUG_LIST is not set
+# CONFIG_BUG_ON_DATA_CORRUPTION is not set
+CONFIG_GENERIC_IRQ_DEBUGFS=y
+
+CONFIG_SND_HDA_POWER_SAVE_DEFAULT=0

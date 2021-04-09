@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 449f472ed3eab70ab54981cdea097246ece4b5a2
+%global pfcommit 234d4f67853c4251e8f3ecf4b94905956c6fedbc
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id c90d8a9b873fb0f3ab898346956059f46874d00c
+%global opensuse_id 92a542ebeea6c920c96be6339334e6057738ffe2
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2663,6 +2663,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.12-501.chinfo
+- Update patchsets
+
 * Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.12-500.chinfo
 - 5.11.12 - pf6
 

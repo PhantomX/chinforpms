@@ -1,0 +1,26 @@
+From 8ec5ede91fb4236e54c940ec6480d1f566bf3c6b Mon Sep 17 00:00:00 2001
+From: Fedora Kernel Team <kernel-team@fedoraproject.org>
+Date: Mon, 25 Nov 2019 14:47:12 -0300
+Subject: [PATCH] block, elevator: default blk-mq to bfq
+
+blk-mq do not have proper Kconfig selector, so change it here
+---
+ block/elevator.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/block/elevator.c b/block/elevator.c
+index 076ba73..aa2f4e4 100644
+--- a/block/elevator.c
++++ b/block/elevator.c
+@@ -631,7 +631,7 @@ static struct elevator_type *elevator_get_default(struct request_queue *q)
+ 	if (q->nr_hw_queues != 1)
+ 		return NULL;
+ 
+-	return elevator_get(q, "mq-deadline", false);
++	return elevator_get(q, "bfq", false);
+ }
+ 
+ /*
+-- 
+2.23.0
+

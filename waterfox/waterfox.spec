@@ -29,7 +29,7 @@ ExcludeArch: armv7hl
 %global system_ffi        1
 %global system_cairo      0
 %global system_harfbuzz   1
-%global system_libvpx     0
+%global system_libvpx     1
 %global system_webp       1
 %global system_libicu     0
 %global system_jpeg       1
@@ -54,6 +54,10 @@ ExcludeArch: armv7hl
 # Big endian platforms
 %ifarch ppc64 s390x
 %global big_endian        1
+%endif
+
+%if !0%{?build_with_clang}
+%global disable_elfhack   1
 %endif
 
 %if 0%{?build_with_pgo}
@@ -92,7 +96,7 @@ ExcludeArch: armv7hl
 %endif
 %global libnotify_version 0.7.0
 %if 0%{?system_libvpx}
-%global libvpx_version 1.4.0
+%global libvpx_version 1.8.0
 %endif
 %if 0%{?system_webp}
 %global webp_version 1.0.0
@@ -127,7 +131,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2021.02
+Version:        2021.03
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -185,7 +189,6 @@ Patch402:        mozilla-1196777.patch
 Patch413:        mozilla-1353817.patch
 Patch415:        Bug-1238661---fix-mozillaSignalTrampoline-to-work-.patch
 Patch417:        mozilla-1436242.patch
-Patch418:        https://hg.mozilla.org/integration/autoland/raw-rev/342812d23eb9#/mozilla-1336978.patch
 Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mozilla-1320560.patch
 Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mozilla-1389436.patch
 
@@ -203,6 +206,7 @@ Patch601:        mozilla-1516081.patch
 Patch602:        mozilla-1516803.patch
 Patch603:        mozilla-1397365-5.patch
 Patch604:        1003_gentoo_specific_pgo.patch
+Patch605:        https://hg.mozilla.org/mozilla-central/raw-rev/c999baadc2d5#/mozilla-hg-1433383.patch
 
 # Chinforinfula patches
 Patch700:        %{name}-nolangpacks.patch
@@ -212,6 +216,10 @@ Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-fix-testing-file.patch
 Patch704:        %{name}-disable-diagnostics-color.patch
 Patch705:        0001-Update-patch-bug1403998.patch
+Patch706:        0001-angle-set-c-14.patch
+
+# Gentoo
+Patch800:        seamonkey-2.53.3-system_libvpx-1.8.patch
 
 %if 0%{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -266,6 +274,7 @@ BuildRequires:  pkgconfig(libpulse)
 %if 0%{?system_libicu}
 BuildRequires:  pkgconfig(icu-i18n)
 %endif
+BuildRequires:  nasm >= 2.13
 BuildRequires:  yasm
 BuildRequires:  llvm
 BuildRequires:  llvm-devel
@@ -279,9 +288,7 @@ BuildRequires:  libstdc++-static
 BuildRequires:  compiler-rt
 %endif
 %else
-%if 0%{?fedora} > 30
 BuildRequires:  binutils-gold
-%endif
 BuildRequires:  gcc-c++
 %endif
 BuildRequires:  bash
@@ -394,7 +401,6 @@ This package contains results of tests executed during build.
 %patch415 -p1 -b .mozilla-1238661
 %endif
 %patch417 -p1 -b .mozilla-1436242
-%patch418 -p1 -b .mozilla-1336978
 %patch419 -p1 -b .mozilla-1320560
 %patch420 -p1 -b .mozilla-1389436
 
@@ -409,6 +415,7 @@ This package contains results of tests executed during build.
 %patch602 -p1 -b .1516803
 %patch603 -p1 -b .1397365
 %patch604 -p1 -b .gentoo_pgo
+%patch605 -p1 -b .1433383
 
 # Prepare FreeBSD patches
 mkdir _patches
@@ -456,6 +463,9 @@ done
 %patch702 -p1 -b .waterfoxdir-2
 %patch703 -p1 -b .fix-testing-file
 %patch704 -p1 -b .no-diagnostics-color
+%patch706 -p1 -b .angle-c++14
+
+%patch800 -p2 -b .system-vpx
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -644,7 +654,7 @@ echo "Generate big endian version of config/external/icu/data/icud58l.dat"
 %endif
 
 # Update the various config.guess to upstream release for aarch64 support
-find ./ -name config.guess -exec cp /usr/lib/rpm/config.guess {} ';'
+find ./ -name config.guess -exec cp /usr/lib/rpm/redhat/config.guess {} ';'
 
 RPM_SMP_MFLAGS_NCPUS="%{?_smp_build_ncpus}%{!?_smp_build_ncpus:2}"
 
@@ -671,21 +681,9 @@ MOZ_OPT_FLAGS="-fuse-ld=gold"
 %endif
 %endif
 
-MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS $(echo "%{optflags}" | sed -e 's/-Wall//')"
-#rhbz#1037063
-# -Werror=format-security causes build failures when -Wno-format is explicitly given
-# for some sources
-# Explicitly force the hardening flags for Waterfox so it passes the checksec test;
-# See also https://fedoraproject.org/wiki/Changes/Harden_All_Packages
-%if 0%{?fedora} < 30
-MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -Wformat-security -Wformat -Werror=format-security"
-%else
+MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS $(echo "%{optflags}" | sed -e 's/-Wall//') -fpermissive -mno-avx"
 # Workaround for mozbz#1531309
 MOZ_OPT_FLAGS=$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-Werror=format-security//')
-%endif
-%if 0%{?fedora} > 30
-MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS -fpermissive"
-%endif
 %if 0%{?build_with_clang}
 # Fedora's default compiler flags conflict with what clang supports
 MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-fstack-clash-protection//')"
@@ -703,9 +701,9 @@ export MOZ_DEBUG_FLAGS=" "
 %if 0%{?build_with_lto}
 MOZ_OPT_FLAGS="$(echo "$MOZ_OPT_FLAGS" | sed -e 's/-O2/-O3/' -e 's/ -g\b/ -g1/')"
 %if 0%{?build_with_clang}
-RPM_FLTO_FLAGS="-flto=thin -Wl,--thinlto-jobs=$RPM_NCPUS"
+RPM_FLTO_FLAGS="-flto=thin -Wl,--thinlto-jobs=$RPM_NCPUS -Wl,-plugin-opt=-import-instr-limit=10""
 %else
-RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -fuse-linker-plugin -flifetime-dse=1"
+RPM_FLTO_FLAGS="-flto=$RPM_NCPUS -flifetime-dse=1"
 %endif
 MOZ_OPT_FLAGS="$MOZ_OPT_FLAGS $RPM_FLTO_FLAGS"
 MOZ_LINK_FLAGS="$MOZ_OPT_FLAGS"
@@ -999,7 +997,7 @@ fi
 %{mozappdir}/browser/chrome
 %{mozappdir}/browser/chrome.manifest
 %{mozappdir}/browser/defaults/preferences/*-default-prefs.js
-%{mozappdir}/browser/features/*.xpi
+%{mozappdir}/browser/features
 %{mozappdir}/distribution/distribution.ini
 # That's Windows only
 %ghost %{mozappdir}/browser/features/aushelper@mozilla.org.xpi
@@ -1039,6 +1037,14 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.03-1.classic
+- 2021.03
+- BR: nasm
+- Remove Fedora 30 workarounds
+- Reenable system vpx with patch from polynomial-c
+- Fix LTO build
+- Disable elfhack with gcc
+
 * Tue Feb 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.02-1.classic
 - 2021.02
 

@@ -1,0 +1,27 @@
+From a5c776769a911eeeaf10e276f8b17e93b1f07d19 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 7 Apr 2021 23:20:18 -0300
+Subject: [PATCH] angle: set c++14
+
+---
+ gfx/angle/moz.build.common | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/gfx/angle/moz.build.common b/gfx/angle/moz.build.common
+index 31a1440..1bb83d5 100644
+--- a/gfx/angle/moz.build.common
++++ b/gfx/angle/moz.build.common
+@@ -7,6 +7,10 @@ if CONFIG['CC_TYPE'] in ('clang', 'clang-cl'):
+         '-Wno-range-loop-construct',
+     ]
+ 
++if CONFIG['CC_TYPE'] in ('gcc'):
++    CXXFLAGS += [
++        '-std=c++14',
++    ]
+ 
+ if CONFIG['INTEL_ARCHITECTURE']:
+     CXXFLAGS += CONFIG['SSE2_FLAGS']
+-- 
+2.30.2
+

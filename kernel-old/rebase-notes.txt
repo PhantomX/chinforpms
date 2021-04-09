@@ -1,0 +1,63 @@
+Linux 5.3 rebase notes:
+- Need to re-enable ISDN
+  Should be able to just revert a2832dc62417 and ./build_config.sh
+
+For all F29 and F30 builds:
+- Re-enable i686
+
+Linux 5.1 rebase notes:
+- CONFIG_CONFIG_SUNRPC_DISABLE_INSECURE_ENCTYPES should probably be turned off as
+  it removes support for deprecated encryption types.
+
+Linux 5.0 rebase notes:
+- Disable fastboot by defauly for F29 and older, drop:
+  i915-enable-fastboot-on-skylake.patch and i915-enable-fastboot-on-vlv-chv.patch
+
+Linux 4.19 rebase notes:
+- Turn off CONFIG_AF_KCM
+
+Linux 4.18 rebase notes:
+- Turn off CONFIG_BCM2835_VCHIQ
+- Turn off CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER (for F28 and older)
+- Drop build-id/hardening flags patches and changes
+
+
+Linux 4.17 rebase notes:
+- Turn off MTD + JFFS2 + extra infiniband options
+- Back out kernel-bootwrapper changes for power commit f360f7278a753796aec58ade5b149d12e49f8bc1
+- Drop CONFIG_CLK_RASPBERRYPI_CPU and bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
+
+Linux 4.16 rebase notes:
+- Consider turning off all the IMA features?
+- F27 and earlier, disable vboxguest driver (to avoid conflict with the out of
+  tree versions which get auto-installed by scripts from vbox upstream)
+ -Unset CONFIG_VBOXGUEST
+
+Linux 4.15 rebase notes:
+- F27 and earlier, disable new F28+ only power-management features:
+ -Set CONFIG_SND_HDA_POWER_SAVE_DEFAULT=0
+ -Set CONFIG_SATA_MOBILE_LPM_POLICY=0
+ -Unset CONFIG_BT_HCIBTUSB_AUTOSUSPEND
+
+Linux 4.14 rebase notes:
+- Turn on i686 PAE
+
+Linux 4.10 rebase notes:
+- F25 and earlier, revert S390x minumum hw level
+
+Linux 4.9 rebase notes:
+- F25 and earlier arm64: disable 48bit VA
+
+Linux 4.8 rebase notes:
+- Make sure you apply drm-i915-turn-off-wc-mmaps.patch for F23
+- Check on status of qxl-reapply-cursor-after-SetCrtc-calls.patch
+
+Linux 4.6 rebase notes:
+
+- Check on status of drm-i915-turn-off-wc-mmaps.patch (Should be okay to remove in F24, but not F22 or F23)
+- Check on status of CONFIG_DW_DMAC_CORE 
+
+Linux 4.5 rebase notes:
+
+- Check on status of drm-i915-turn-off-wc-mmaps.patch (Should be okay to remove in F24, but not F22 or F23)
+- Check on status of CONFIG_DW_DMAC_CORE ( Built-in DW_DMAC for now, revisit later)

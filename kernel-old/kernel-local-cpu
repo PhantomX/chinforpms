@@ -1,0 +1,8 @@
+
+CONFIG_MK10=y
+# CONFIG_GENERIC_CPU is not set
+# CONFIG_M686 is not set
+# CONFIG_X86_P6_NOP is not set
+
+# CONFIG_MAXSMP is not set
+CONFIG_NR_CPUS=4

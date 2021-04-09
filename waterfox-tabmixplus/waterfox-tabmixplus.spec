@@ -13,7 +13,7 @@
 %global pkgname tab_mix_plus
 
 Name:           waterfox-tabmixplus
-Version:        0.5.7.0
+Version:        0.5.8.1
 Release:        1%{?dist}
 Summary:        Enhances Waterfox tab browsing abilities
 
@@ -86,6 +86,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 0.5.8.1-1
+- 0.5.8.1
+
 * Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.5.7.0-1
 - 0.5.7.0
 

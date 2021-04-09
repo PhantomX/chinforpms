@@ -1,7 +1,7 @@
 %global vc_url  https://github.com/%{name}-dev/%{name}
 
 Name:           htop
-Version:        3.0.4
+Version:        3.0.5
 Release:        100%{?dist}
 Summary:        Interactive process viewer
 
@@ -10,7 +10,10 @@ URL:            https://htop.dev/
 
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 
+Patch0:         %{name}-enable-acpitz-sensors.patch
+
 BuildRequires:  desktop-file-utils
+BuildRequires:  lm_sensors-devel
 BuildRequires:  pkgconfig(libnl-3.0)
 BuildRequires:  pkgconfig(ncursesw)
 BuildRequires:  autoconf
@@ -31,12 +34,11 @@ top(1).
 
 %build
 %configure \
-  --enable-cgroup \
   --enable-delayacct \
   --enable-openvz \
-  --enable-taskstats \
   --enable-unicode \
   --enable-vserver \
+  --with-sensors \
 %{nil}
 
 %make_build
@@ -59,6 +61,10 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 3.0.5-100
+- 3.0.5
+- Rawhide sync
+
 * Tue Dec 29 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.4-100
 - 3.0.4
 

@@ -2,9 +2,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit bddb53abdd1a77b1c019457f7eea4a6404a5e492
+%global commit 27e1737950d80edee38802833786ee378c920358
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210117
+%global date 20210327
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -17,7 +17,7 @@
 
 Name:           wine-nine
 Version:        0.8
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -92,7 +92,7 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error -mno-avx -mno-avx2"
 
 TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
 TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"
@@ -153,6 +153,9 @@ desktop-file-install \
 
 
 %changelog
+* Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-0.2.20210327git27e1737
+- Bump
+
 * Fri Mar 05 2021 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-0.1.20210117gitbddb53a
 - Snapshot for newer wine
 
