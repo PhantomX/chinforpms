@@ -53,7 +53,9 @@ Summary: The Linux kernel
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 %endif
 
-%global buildid .chinfo
+#global buildid .chinfo
+
+%global variant -chinfo
 
 %if 0%{?fedora}
 %define primary_target fedora
@@ -114,7 +116,6 @@ Summary: The Linux kernel
 # Root Makefile are stripped from patching
 %global pf_stable_extra 0
 %if 0%{?pf_stable_extra}
-%global variant -old
 %global st_first_commit f7688b48ac46e9a669e279f1bc167722d5141eda
 %global st_last_commit 957a16c3e6e19777865c2d629408d8b4396d6a4b
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})

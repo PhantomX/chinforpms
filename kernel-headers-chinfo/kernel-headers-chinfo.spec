@@ -3,7 +3,9 @@
 # be 0.
 %global released_kernel 1
 
-%global buildid .chinfo
+#global buildid .chinfo
+
+%global variant -chinfo
 
 # baserelease defines which build revision of this kernel version we're
 # building.  We used to call this fedora_build, but the magical name
@@ -49,10 +51,12 @@
 %define rpmversion %{major_ver}.%{upstream_sublevel}.0
 %endif
 
+%global variantid  %{lua:variantid = string.gsub(rpm.expand("%{?variant}"), "-", "."); print(variantid)}
+
 # pkg_release is what we'll fill in for the rpm Release: field
 %if 0%{?released_kernel}
 
-%define srcversion %{fedora_build}%{?buildid}
+%define srcversion %{fedora_build}%{?buildid}%{?variantid}
 
 %else
 
@@ -76,7 +80,7 @@
 # This package doesn't contain any binary, thus no debuginfo package is needed
 %global debug_package %{nil}
 
-Name: kernel-headers
+Name: kernel-headers%{?variant}
 Summary: Header files for the Linux kernel for use by glibc
 
 License: GPLv2
@@ -89,7 +93,7 @@ Release: %{pkg_release}
 # directory, or git kernel source repository, and do eg.:
 # For a RHEL package: (...)/create_headers_tarball.sh -m RHEL_RELEASE
 # For a Fedora package: kernel/scripts/create_headers_tarball.sh -r <release number>
-Source0: kernel-headers-%{rpmversion}-%{?srcversion}.tar.xz
+Source0: kernel-headers%{?variant}-%{rpmversion}-%{?srcversion}.tar.xz
 Obsoletes: glibc-kernheaders < 3.0-46
 Provides: glibc-kernheaders = 3.0-46
 %if "0%{?variant}"
@@ -104,10 +108,14 @@ header files define structures and constants that are needed for
 building most standard programs and are also needed for rebuilding the
 glibc package.
 
-%package -n kernel-cross-headers
+%package -n kernel-cross-headers%{?variant}
 Summary: Header files for the Linux kernel for use by cross-glibc
+%if "0%{?variant}"
+Obsoletes: kernel-cross-headers < %{version}-%{release}
+Provides: kernel-cross-headers = %{version}-%{release}
+%endif
 
-%description -n kernel-cross-headers
+%description -n kernel-cross-headers%{?variant}
 Kernel-cross-headers includes the C header files that specify the interface
 between the Linux kernel and userspace libraries and programs.  The
 header files define structures and constants that are needed for
@@ -168,7 +176,7 @@ done
 %defattr(-,root,root)
 %{_includedir}/*
 
-%files -n kernel-cross-headers
+%files -n kernel-cross-headers%{?variant}
 %defattr(-,root,root)
 %{_prefix}/*-linux-gnu/*
 

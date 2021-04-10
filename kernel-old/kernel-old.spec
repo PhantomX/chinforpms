@@ -53,7 +53,9 @@ Summary: The Linux kernel
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 %endif
 
-%global buildid .chinfo
+#global buildid .chinfo
+
+%global variant -old
 
 %if 0%{?fedora}
 %define primary_target fedora
@@ -77,7 +79,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -114,7 +116,6 @@ Summary: The Linux kernel
 # Root Makefile are stripped from patching
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
-%global variant -old
 %global st_first_commit 2b02985bf83e6da9d9165c5f2165af1b97d76edf
 %global st_last_commit ecdfb9d70fb8c4d7dd9a5fa28c675b4ebe705f85
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
@@ -2709,6 +2710,9 @@ fi
 #
 #
 %changelog
+* Fri Apr 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.28-501.chinfo
+- Update futex2 patch
+
 * Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.28-500.chinfo
 - 5.10.28 - pf13
 

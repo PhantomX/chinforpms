@@ -17,3 +17,7 @@ enable_additional_cpu_optimizations_for_gcc_v*+_kernel_v*+.patch
 /zzz-*.patch
 /kernel-headers/
 /kernel-headers
+/kernel-headers-chinfo/
+/kernel-headers-chinfo
+/kernel-headers-old/
+/kernel-headers-old
