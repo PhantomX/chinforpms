@@ -48,7 +48,6 @@ Subject: [PATCH] patch-5.11-redhat
  drivers/pci/quirks.c                               |  24 +
  drivers/platform/x86/Kconfig                       |   2 +
  drivers/platform/x86/ideapad-laptop.c              | 289 ++++++++++++
- drivers/platform/x86/intel-hid.c                   |   7 +
  drivers/platform/x86/thinkpad_acpi.c               | 518 ++++++++++++++++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
@@ -2491,24 +2490,6 @@ index 5b81bafa5c16..cc42af2a0a98 100644
  	return 0;
  }
  #endif
-diff --git a/drivers/platform/x86/intel-hid.c b/drivers/platform/x86/intel-hid.c
-index 2f5b8d09143e..57cc92891a57 100644
---- a/drivers/platform/x86/intel-hid.c
-+++ b/drivers/platform/x86/intel-hid.c
-@@ -90,6 +90,13 @@ static const struct dmi_system_id button_array_table[] = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x2 Detachable"),
- 		},
- 	},
-+	{
-+		.ident = "Lenovo ThinkPad X1 Tablet Gen 2",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_FAMILY, "ThinkPad X1 Tablet Gen 2"),
-+		},
-+	},
- 	{ }
- };
-
 diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
 index f3e8eca8d86d..9ecf7829b3d8 100644
 --- a/drivers/platform/x86/thinkpad_acpi.c
@@ -2521,27 +2502,6 @@ index f3e8eca8d86d..9ecf7829b3d8 100644
  #include <sound/core.h>
  #include <sound/control.h>
  #include <sound/initval.h>
-@@ -4080,13 +4081,19 @@ static bool hotkey_notify_6xxx(const u32 hkey,
-
- 	case TP_HKEY_EV_KEY_NUMLOCK:
- 	case TP_HKEY_EV_KEY_FN:
--	case TP_HKEY_EV_KEY_FN_ESC:
- 		/* key press events, we just ignore them as long as the EC
- 		 * is still reporting them in the normal keyboard stream */
- 		*send_acpi_ev = false;
- 		*ignore_acpi_ev = true;
- 		return true;
-
-+	case TP_HKEY_EV_KEY_FN_ESC:
-+		/* Get the media key status to foce the status LED to update */
-+		acpi_evalf(hkey_handle, NULL, "GMKS", "v");
-+		*send_acpi_ev = false;
-+		*ignore_acpi_ev = true;
-+		return true;
-+
- 	case TP_HKEY_EV_TABLET_CHANGED:
- 		tpacpi_input_send_tabletsw();
- 		hotkey_tablet_mode_notify_change();
 @@ -9844,6 +9851,11 @@ static struct ibm_struct lcdshadow_driver_data = {
   * Thinkpad sensor interfaces
   */

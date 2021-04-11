@@ -1,14 +1,3 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/593117da3c5aaaa2f9af01513a9aa7a275e67701
- 593117da3c5aaaa2f9af01513a9aa7a275e67701 drm/i915: Disable LTTPR support when the DPCD rev < 1.4
-
-https://gitlab.com/cki-project/kernel-ark/-/commit/4cf60312635599acf0e70c29d7de0355426d9165
- 4cf60312635599acf0e70c29d7de0355426d9165 drm/i915/dp: Prevent setting the LTTPR LT mode if no LTTPRs are detected
-
-https://gitlab.com/cki-project/kernel-ark/-/commit/044d6c51c6cd6c419c17766f1fe0e03161afee6d
- 044d6c51c6cd6c419c17766f1fe0e03161afee6d drm/i915/ilk-glk: Fix link training on links with LTTPRs
-
-https://gitlab.com/cki-project/kernel-ark/-/commit/f93a5201c2ef7e9f70aa68621100f868764c2b15
- f93a5201c2ef7e9f70aa68621100f868764c2b15 drm/i915/tgl/psr: Disable PSR on Tigerlake for now
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/63787bf2ade1acf5b4ae353d5f92dffa40519afb
  63787bf2ade1acf5b4ae353d5f92dffa40519afb ASoC: intel: atom: Stop advertising non working S24LE support
@@ -46,14 +35,8 @@ https://gitlab.com/cki-project/kernel-ark/-/commit/3112ca25438d87729b24ac5b3359b
 https://gitlab.com/cki-project/kernel-ark/-/commit/008fb3f23a7fbe9d6ae7dab4d5909a3d554e078b
  008fb3f23a7fbe9d6ae7dab4d5909a3d554e078b platform/x86: thinkpad_acpi: Disable DYTC CQL mode around switching to balanced mode
 
-https://gitlab.com/cki-project/kernel-ark/-/commit/b5c4c28a6425735d1fff57ac714cfd15b3387a70
- b5c4c28a6425735d1fff57ac714cfd15b3387a70 platform/x86: thinkpad_acpi: Allow the FnLock LED to change state
-
 https://gitlab.com/cki-project/kernel-ark/-/commit/a0029a16a4435e2c6993c48bd7b2767dc95b3fad
  a0029a16a4435e2c6993c48bd7b2767dc95b3fad platform/x86: thinkpad_acpi: check dytc version for lapmode sysfs
-
-https://gitlab.com/cki-project/kernel-ark/-/commit/cc16fe7bebbf787638dea93615ec7f9b49340ca5
- cc16fe7bebbf787638dea93615ec7f9b49340ca5 platform/x86: intel-hid: Support Lenovo ThinkPad X1 Tablet Gen 2
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/58465cf2c68ab118fb14070d90d2c72c15709e50
  58465cf2c68ab118fb14070d90d2c72c15709e50 mmc: sdhci-iproc: Add ACPI bindings for the rpi

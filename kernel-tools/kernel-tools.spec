@@ -15,9 +15,9 @@
 %global baserelease 500
 %global fedora_build %{baserelease}
 
-%global buildid .chinfo
+#global buildid .chinfo
 
-%global opensuse_id c90d8a9b873fb0f3ab898346956059f46874d00c
+%global opensuse_id 1b6b08662d8e220e23143059019b5f23505d3fea
 
 %define major_ver 5
 
@@ -30,7 +30,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 12
+%global stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -547,6 +547,9 @@ popd
 
 
 %changelog
+* Sat Apr 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.13-500
+- 5.11.13
+
 * Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.12-500.chinfo
 - 5.11.12
 
