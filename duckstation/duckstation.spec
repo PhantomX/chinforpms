@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit fc9d2764351f6dfb80d1a3ab84f60d5979b8206b
+%global commit 62718b3c50f79835488cb8bf51e0485896ab5c14
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210407
+%global date 20210412
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        8%{?gver}%{?dist}
+Release:        9%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -75,7 +75,7 @@ BuildRequires:  pkgconfig(SPIRV-Tools)
 BuildRequires:  vulkan-headers
 %else
 Provides:       bundled(glslang) = git~0
-Provides:       bundled(spirv-cross) = 0~git
+Provides:       bundled(spirv-tools) = 0~git
 %endif
 
 BuildRequires:  desktop-file-utils
@@ -228,6 +228,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Apr 12 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-9.20210412git62718b3
+- Bump
+
 * Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-8.20210407gitfc9d276
 - Update
 

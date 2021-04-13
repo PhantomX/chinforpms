@@ -9,7 +9,7 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.68
+Version:        1.0.0.70
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
@@ -199,6 +199,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Apr 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.70-100
+- 1.0.0.70
+
 * Sat Dec 05 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.68-100
 - 1.0.0.68
 - RPMFusion sync

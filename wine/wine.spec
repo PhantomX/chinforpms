@@ -1,7 +1,7 @@
 %global commit 2fcc1d0ecdebc55a5f515b1390ce715303f6a6ad
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210402
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -42,7 +42,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 733a420dd78451d7af31fdb342dc345fada34033
+%global wine_stagingver 6.6
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -53,23 +53,17 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 73a1ff55e05138f1d931f240474ed3194757a750
+%global tkg_id 380f51915726e6a7a75ee0a22344a2e8e33ae458
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid ea1f94b70dd1b537805c2529d23b6c4943a08000
+%global tkg_cid 73481691abc7d700aaba40ee4e6e0428ae694297
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 # proton FS hack (wine virtual desktop with DXVK is not working well)
-# Disabled after 5.16
 %global fshack 0
-%global vulkanup 1
+%global vulkanup 0
 
 # https://bugs.winehq.org/show_bug.cgi?id=50448
 %global wine_staging_opts %{?wine_staging_opts} -W ntdll-NtAlertThreadByThreadId
-
-%if 0%{?fshack}
-%global wine_staging_opts %{?wine_staging_opts} -W winex11.drv-mouse-coorrds -W winex11-MWM_Decorations
-%global wine_staging_opts %{?wine_staging_opts} -W user32-rawinput-mouse -W user32-rawinput-mouse-experimental -W user32-rawinput-hid
-%endif
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global whq_murl  https://github.com/wine-mirror/wine
@@ -97,8 +91,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.5
-Release:        102%{?gver}%{?dist}
+Version:        6.6
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -167,21 +161,8 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # Revert to fix many game launchers displaying empty windows
 # https://bugs.winehq.org/show_bug.cgi?id=49990
-# 100-106
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
-%if 0
-Patch101:       %{whq_url}/1fceb1213992b79aa7f1a5dc0a72ab3756ee524d#/%{name}-whq-1fceb12.patch
-Patch102:       %{whq_url}/cf4fe13a41b7cc0a624da7741ae528ef21032736#/%{name}-whq-cf4fe13.patch
-Patch103:       %{whq_url}/beb9c6578ad8e21eb4b34366dbc3dff8b8c2ae5d#/%{name}-whq-beb9c65.patch
-Patch104:       %{whq_url}/a0a6fad695d2f9d1eb2601725ac27c9a9949026b#/%{name}-whq-a0a6fad.patch
-Patch105:       %{whq_url}/a67d7c15336ea5caa89099952da1fc1998188029#/%{name}-whq-a67d7c1.patch
-# Restore the prefer builtin vulkan-1 behavior with proton* patches
-Patch106:       %{whq_url}/290c9a4d6372cee046768eccd8fa49050a294f68#/%{name}-whq-290c9a4.patch
-Patch107:       %{whq_url}/e5cade0ff189c7bc871cf3686d16c55939d06068#/%{name}-whq-e5cade0.patch
-%endif
 
-# https://bugs.winehq.org/show_bug.cgi?id=50914
-Patch110:       https://bugs.winehq.org/attachment.cgi?id=69727&action=diff&context=patch&collapsed=&headers=1&format=raw#/wine-whq-bug50914.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -193,6 +174,7 @@ Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_by
 Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
+Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -200,31 +182,21 @@ Patch1021:       %{tkg_url}/proton/server_Abort_waiting_on_a_completion_port_whe
 Patch1022:       %{tkg_url}/proton/fsync_futex2.patch#/%{name}-tkg-fsync_futex2.patch
 # FS Hack
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch1024:       %{tkg_url}/proton/proton-rawinput.patch#/%{name}-tkg-proton-rawinput.patch
-Patch1025:       %{tkg_url}/proton/proton_mf_hacks.patch#/%{name}-tkg-proton_mf_hacks.patch
-Patch1026:       %{tkg_url}/proton/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
-Patch1027:       %{tkg_url}/proton-tkg-specific/proton-staging_winex11-MWM_Decorations.patch#/%{name}-tkg-proton-staging_winex11-MWM_Decorations.patch
-Patch1029:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
-Patch1030:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
-Patch1031:       %{tkg_url}/proton-tkg-specific/proton-vk-bits-4.5.patch#/%{name}-tkg-proton-vk-bits-4.5.patch
-Patch1032:       %{tkg_url}/proton/proton_fs_hack_integer_scaling.patch#/%{name}-tkg-proton_fs_hack_integer_scaling.patch
-Patch1033:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
-Patch1034:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
-Patch1035:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
-Patch1036:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
-Patch1037:       %{tkg_url}/hotfixes/mfplat/mfplat-derek-hotfix.mypatch#/%{name}-tkg-mfplat-derek-hotfix.patch
-Patch1038:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu.patch
+Patch1024:       %{tkg_url}/proton/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
+Patch1025:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
+Patch1026:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
+Patch1027:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
+Patch1028:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
+Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
+Patch1030:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
 
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
 
 Patch1300:       nier.patch
-Patch1301:       nier-nofshack.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
-# Fix vulkan crash with x86
-Patch5001:      wine-fix-i686-gcc10.patch
 
 %endif
 
@@ -246,6 +218,9 @@ BuildRequires:  gcc
 %endif
 %if 0%{?wine_mingw}
 %ifarch %{ix86} x86_64
+# mingw-binutils 2.35 or patched 2.34 is needed to prevent crashes
+BuildRequires:  mingw32-binutils >= 2.34-100
+BuildRequires:  mingw64-binutils >= 2.34-100
 BuildRequires:  mingw32-gcc
 BuildRequires:  mingw64-gcc
 %endif
@@ -808,30 +783,23 @@ This package adds the opencl driver for wine.
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
-###patch107 -p1 -R
-###patch106 -p1 -R
-###patch105 -p1 -R
-###patch104 -p1 -R
-###patch103 -p1 -R
-###patch102 -p1 -R
-###patch101 -p1 -R
 %patch100 -p1 -R
-%patch110 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
-%patch1038 -p1
+%patch1006 -p1
 %patch1000 -p1
+%if !0%{?fshack}
 %patch1002 -p1
 %patch1003 -p1
+%endif
 %patch1004 -p1
 %patch1005 -p1
 
 %patch5000 -p1
-#patch5001 -p1
 
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
@@ -845,36 +813,24 @@ sed \
 %patch1022 -p1
 %if 0%{?fshack}
 %patch1023 -p1
-%patch1024 -p1
 %endif
-###patch1025 -p1
+%patch1024 -p1
+%patch1025 -p1
 %patch1026 -p1
 %if 0%{?fshack}
-%patch1027 -p1
-%endif
-%patch1029 -p1
-%patch1030 -p1
-%patch1036 -p1
-%if 0%{?fshack}
-%patch1031 -p1
-%patch1032 -p1
 %if 0%{?vulkanup}
-%patch1033 -p1
+%patch1027 -p1
 %endif
 %patch1090 -p1 -R
 %else
 %if 0%{?vulkanup}
-%patch1034 -p1
+%patch1028 -p1
 %endif
 %endif
-%patch1035 -p1
-###patch1037 -p1
+%patch1029 -p1
+%patch1030 -p1
 %patch1091 -p1 -R
-%if 0%{?fshack}
 %patch1300 -p1
-%else
-%patch1301 -p1
-%endif
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -1710,6 +1666,7 @@ fi
 %{_libdir}/wine/api-ms-win-service-winsvc-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-service-winsvc-l1-2-0.%{winedll}
 %{_libdir}/wine/api-ms-win-shcore-obsolete-l1-1-0.%{winedll}
+%{_libdir}/wine/api-ms-win-shcore-scaling-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-shcore-scaling-l1-1-1.%{winedll}
 %{_libdir}/wine/api-ms-win-shcore-stream-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-shcore-stream-winrt-l1-1-0.%{winedll}
@@ -2231,6 +2188,7 @@ fi
 %{_libdir}/wine/wbemprox.%{winedll}
 %{_libdir}/wine/wdscore.%{winedll}
 %{_libdir}/wine/webservices.%{winedll}
+%{_libdir}/wine/websocket.%{winedll}
 %{_libdir}/wine/wer.%{winedll}
 %{_libdir}/wine/wevtapi.%{winedll}
 %{_libdir}/wine/wevtsvc.%{winedll}
@@ -2730,6 +2688,10 @@ fi
 
 
 %changelog
+* Mon Apr 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.6-100
+- 6.6
+- Patchsets review, fshack can be enabled now
+
 * Mon Apr 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.5-102.20210402git2fcc1d0
 - Bug#50914 fix
 
