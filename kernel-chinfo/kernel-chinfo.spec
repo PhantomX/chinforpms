@@ -93,7 +93,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d2004d3b59db1e4cbb501b25720dcc17fe2d8fe1
+%global pfcommit b5b59f089e7bc12d130ffeaf08487b633a7344cc
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 92a542ebeea6c920c96be6339334e6057738ffe2
+%global opensuse_id f68b7e1884442abb808517acc24234ef6a26b93d
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2664,6 +2664,9 @@ fi
 #
 #
 %changelog
+* Wed Apr 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.14-500.chinfo
+- 5.11.14 - pf6
+
 * Sat Apr 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.13-500.chinfo
 - 5.11.13 - pf6
 

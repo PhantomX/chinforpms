@@ -69,7 +69,6 @@ Patch4:         0004-soundtounch-disable-exceptions.patch
 Patch5:         0005-Revert-Externals-Update-minizip-search-path.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
-Patch101:       0001-DSP-interrupt-hack-for-RE-2-and-3.patch
 Patch102:       0001-Mask-hack-for-RE3.patch
 Patch103:       0001-RESHDP-Edition-label.patch
 
@@ -297,7 +296,6 @@ mv %{__cmake_builddir}/Binaries/%{name}-nogui %{name}-reshdp-nogui
 
 patch -p1 -R -i %{P:103}
 patch -p1 -R -i %{P:102}
-patch -p1 -R -i %{P:101}
 %cmake_build
 
 

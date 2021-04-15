@@ -997,10 +997,9 @@ fi
 %{mozappdir}/browser/chrome
 %{mozappdir}/browser/chrome.manifest
 %{mozappdir}/browser/defaults/preferences/*-default-prefs.js
-%{mozappdir}/browser/features
+%dir %{mozappdir}/browser/features
+#{mozappdir}/browser/features/*.xpi
 %{mozappdir}/distribution/distribution.ini
-# That's Windows only
-%ghost %{mozappdir}/browser/features/aushelper@mozilla.org.xpi
 %attr(644, root, root) %{mozappdir}/browser/blocklist.xml
 %attr(644, root, root) %{mozappdir}/browser/ua-update.json
 %dir %{mozappdir}/browser/extensions
