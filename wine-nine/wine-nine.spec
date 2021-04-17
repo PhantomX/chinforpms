@@ -5,7 +5,7 @@
 %global commit 27e1737950d80edee38802833786ee378c920358
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210327
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -17,7 +17,7 @@
 
 Name:           wine-nine
 Version:        0.8
-Release:        0.2%{?gver}%{?dist}
+Release:        1%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -153,6 +153,9 @@ desktop-file-install \
 
 
 %changelog
+* Fri Apr 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-1
+- 0.8
+
 * Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-0.2.20210327git27e1737
 - Bump
 

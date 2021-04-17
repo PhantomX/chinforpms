@@ -88,9 +88,11 @@ for module in discord_game_utils discord_utils ;do
   fi
 done
 
-LD_LIBRARY_PATH="%{_libdir}/%{name}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+APP_PATH=%{_libdir}/%{name}
+export APP_PATH
+LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec %{_libdir}/%{name}/%{execname} "$@"
+exec ${APP_PATH}/%{execname} "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 

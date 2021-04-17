@@ -87,9 +87,11 @@ mv opt/%{name}/* %{buildroot}%{progdir}
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/sh
-LD_LIBRARY_PATH="%{progdir}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+APP_PATH=%{progdir}
+export APP_PATH
+LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec %{progdir}/ZoomLauncher "$@"
+exec ${APP_PATH}/ZoomLauncher "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 

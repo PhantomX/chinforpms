@@ -14,7 +14,7 @@
 %global pkgrel 1
 
 Name:           vivaldi
-Version:        3.7.2218.52
+Version:        3.7.2218.55
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -67,6 +67,7 @@ sed -e 's|%{name}-%{channel}|%{name}|g' -i usr/share/applications/%{name}.deskto
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/sh
+APP_PATH=%{_libdir}/%{name}
 LD_LIBRARY_PATH="%{_libdir}/%{name}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
 exec %{_libdir}/%{name}/%{name} --password-store=basic "$@"
@@ -130,6 +131,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Thu Apr 15 2021 Phantom X <megaphantomx at hotmail dot com> - 3.7.2218.55-1
+- 3.7.2218.55
+
 * Wed Mar 31 2021 - 3.7.2218.52-1
 - 3.7.2218.52
 

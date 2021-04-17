@@ -9,7 +9,7 @@
 
 Name:           ms-%{pkgname}
 Version:        1.4.00.7556
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chat-centered workspace in Office 365
 
 License:        Microsoft End User License Agreement
@@ -58,9 +58,11 @@ sed -e '/^OnlyShowIn=/d' -i usr/share/applications/%{pkgname}.desktop
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{pkgname} <<'EOF'
 #!/usr/bin/sh
-LD_LIBRARY_PATH="%{_libdir}/%{name}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+APP_PATH=%{_libdir}/%{name}
+export APP_PATH
+LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec %{_libdir}/%{name}/%{pkgname} "$@"
+exec ${APP_PATH}/%{pkgname} "$@" --disable-namespace-sandbox --disable-setuid-sandbox
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{pkgname}
 
@@ -74,7 +76,7 @@ mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   --set-key="Exec" \
-  --set-value="%{pkgname}" \
+  --set-value="%{pkgname} %U" \
   usr/share/applications/%{pkgname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
@@ -98,6 +100,9 @@ done
 
 
 %changelog
+* Fri Apr 16 2021 - 1.4.00.7556-2
+- Sync wrapper command line with upstream
+
 * Wed Apr 07 2021 - 1.4.00.7556-1
 - 1.4.00.7556
 
