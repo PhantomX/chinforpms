@@ -1,7 +1,7 @@
-%global commit 2fcc1d0ecdebc55a5f515b1390ce715303f6a6ad
+%global commit 749f8c25e262cb049289e7c96bb390edcafa1021
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210402
-%global with_snapshot 0
+%global date 20210416
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -42,7 +42,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.6
+%global wine_stagingver 20303a53ec057d74dd0253a536e5fb0d9e6a550f
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -53,7 +53,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 380f51915726e6a7a75ee0a22344a2e8e33ae458
+%global tkg_id d496882cbe1477fe380e7a257611bc8c39da1cc7
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 73481691abc7d700aaba40ee4e6e0428ae694297
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -92,7 +92,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.6
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -175,6 +175,7 @@ Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patc
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu.patch
+Patch1007:       %{tkg_url}/hotfixes/free_invalid_size/winevulkan_Use_standard_CRT_memory_allocators2.myearlyrevert#/%{name}-tkg-winevulkan_Use_standard_CRT_memory_allocators2.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -791,6 +792,7 @@ This package adds the opencl driver for wine.
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch1006 -p1
+%patch1007 -p1 -R
 %patch1000 -p1
 %if !0%{?fshack}
 %patch1002 -p1
@@ -2034,7 +2036,8 @@ fi
 %{_libdir}/wine/nddeapi.%{winedll}
 %{_libdir}/wine/ncrypt.%{winedll}
 %{_libdir}/wine/ndis.%{winesys}
-%{_libdir}/wine/netapi32.dll.so
+%{_libdir}/wine/netapi32.so
+%{_libdir}/wine/netapi32.%{winedll}
 %{_libdir}/wine/netcfgx.%{winedll}
 %{_libdir}/wine/netio.%{winesys}
 %{_libdir}/wine/netprofm.%{winedll}
@@ -2198,6 +2201,7 @@ fi
 %{_libdir}/wine/wimgapi.%{winedll}
 %{_libdir}/wine/windows.gaming.input.%{winedll}
 %{_libdir}/wine/windows.globalization.%{winedll}
+%{_libdir}/wine/windows.media.devices.%{winedll}
 %{_libdir}/wine/windows.media.speech.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/win32k.%{winesys}
@@ -2629,6 +2633,7 @@ fi
 
 # ldap subpackage
 %files ldap
+%{_libdir}/wine/wldap32.so
 %{_libdir}/wine/wldap32.dll.so
 
 # cms subpackage
@@ -2688,6 +2693,9 @@ fi
 
 
 %changelog
+* Sat Apr 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.6-101.20210416git749f8c2
+- Snapshot
+
 * Mon Apr 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.6-100
 - 6.6
 - Patchsets review, fshack can be enabled now

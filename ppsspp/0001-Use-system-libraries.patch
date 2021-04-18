@@ -1,47 +1,49 @@
-From ae493718a117982db88695f02bbd26437a5b888e Mon Sep 17 00:00:00 2001
+From 46213aca7195bef5cc937dda40383b93ced7c76d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 3 Mar 2021 08:05:47 -0300
+Date: Sat, 17 Apr 2021 21:36:25 -0300
 Subject: [PATCH] Use system libraries
 
-FindMiniupnpc.cmake borrowed from dolphin-emu
+FindMiniupnpc.cmake and zstd bits borrowed from dolphin-emu
 https://github.com/dolphin-emu/dolphin
 ---
- CMakeLists.txt                       | 29 ++++++++++++++++++++++++++++
- Common/Data/Collections/Hashmaps.h   |  4 ++++
- Core/Debugger/DisassemblyManager.cpp |  4 ++++
- Core/HLE/sceJpeg.cpp                 |  4 ++++
- Core/MIPS/IR/IRJit.cpp               |  4 ++++
- Core/MIPS/MIPSAnalyst.cpp            |  4 ++++
- Core/TextureReplacer.cpp             |  4 ++++
- Core/Util/PPGeDraw.cpp               |  4 ++++
- Core/Util/PortManager.h              |  8 ++++++--
- GPU/Common/TextureDecoder.cpp        |  4 ++++
- GPU/Common/TextureDecoderNEON.cpp    |  4 ++++
- GPU/D3D11/TextureCacheD3D11.cpp      |  4 ++++
- GPU/Directx9/TextureCacheDX9.cpp     |  4 ++++
- GPU/GLES/TextureCacheGLES.cpp        |  4 ++++
- GPU/Vulkan/TextureCacheVulkan.cpp    |  4 ++++
- UI/CwCheatScreen.cpp                 |  4 ++++
- Windows/Debugger/CtrlDisAsmView.cpp  |  4 ++++
- Windows/Debugger/CtrlMemView.cpp     |  4 ++++
- cmake/Modules/FindMiniupnpc.cmake    | 27 ++++++++++++++++++++++++++
- 19 files changed, 126 insertions(+), 2 deletions(-)
+ CMakeLists.txt                       | 43 ++++++++++++++++++++++++++--
+ Common/Data/Collections/Hashmaps.h   |  4 +++
+ Core/Debugger/DisassemblyManager.cpp |  4 +++
+ Core/HLE/sceJpeg.cpp                 |  4 +++
+ Core/MIPS/IR/IRJit.cpp               |  4 +++
+ Core/MIPS/MIPSAnalyst.cpp            |  4 +++
+ Core/TextureReplacer.cpp             |  4 +++
+ Core/Util/PPGeDraw.cpp               |  4 +++
+ Core/Util/PortManager.h              |  8 ++++--
+ GPU/Common/TextureDecoder.cpp        |  4 +++
+ GPU/Common/TextureDecoderNEON.cpp    |  4 +++
+ GPU/D3D11/TextureCacheD3D11.cpp      |  4 +++
+ GPU/Directx9/TextureCacheDX9.cpp     |  4 +++
+ GPU/GLES/TextureCacheGLES.cpp        |  4 +++
+ GPU/Vulkan/TextureCacheVulkan.cpp    |  4 +++
+ UI/CwCheatScreen.cpp                 |  4 +++
+ Windows/Debugger/CtrlDisAsmView.cpp  |  4 +++
+ Windows/Debugger/CtrlMemView.cpp     |  4 +++
+ cmake/Modules/FindMiniupnpc.cmake    | 27 +++++++++++++++++
+ ext/CMakeLists.txt                   |  2 ++
+ 20 files changed, 140 insertions(+), 4 deletions(-)
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3a8ca19..953aa3c 100644
+index f0eb5da..4e80f07 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -135,6 +135,8 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
+@@ -135,6 +135,9 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
  option(USE_SYSTEM_SNAPPY "Dynamically link against system snappy" ${USE_SYSTEM_SNAPPY})
  option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_FFMPEG})
  option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
 +option(USE_SYSTEM_MINIUPNPC "Dynamically link against system miniupnpc" ${USE_SYSTEM_MINIUPNPC})
 +option(USE_SYSTEM_XXHASH "Dynamically link against system miniupnpc" ${USE_SYSTEM_XXHASH})
++option(USE_SYSTEM_ZSTD "Dynamically link against system miniupnpc" ${USE_SYSTEM_ZSTD})
  option(USE_ASAN "Use address sanitizer" OFF)
  option(USE_UBSAN "Use undefined behaviour sanitizer" OFF)
  
-@@ -1169,11 +1171,31 @@ add_library(xbrz STATIC
+@@ -1154,11 +1157,31 @@ add_library(xbrz STATIC
  )
  include_directories(ext/xbrz)
  
@@ -73,7 +75,34 @@ index 3a8ca19..953aa3c 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -1867,6 +1889,12 @@ endif()
+@@ -1817,8 +1840,7 @@ if(ANDROID)
+ 	endif()
+ endif()
+ 
+-set(CoreExtraLibs ${CoreExtraLibs} armips libzstd_static)
+-include_directories(ext/zstd/lib)
++set(CoreExtraLibs ${CoreExtraLibs} armips)
+ 
+ # needed for VK_USE_PLATFORM_XCB_KHR only
+ #if(VULKAN AND NOT WIN32)
+@@ -1850,6 +1872,16 @@ if(FFmpeg_FOUND)
+ 	)
+ endif()
+ 
++pkg_check_modules(ZSTD QUIET libzstd>=1.4.9)
++check_include_file(zstd.h HAVE_ZSTD_H)
++if(ZSTD_FOUND AND HAVE_ZSTD_H AND USE_SYSTEM_ZSTD)
++	message(STATUS "Using shared zstd")
++	target_link_libraries(${CoreLibName} ${ZSTD_LIBRARIES})
++else()
++	include_directories(ext/zstd/lib)
++	target_link_libraries(${CoreLibName} libzstd_static)
++endif()
++
+ # Discord integration
+ if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
+ 	add_definitions(-DUSE_DISCORD=1)
+@@ -1858,6 +1890,12 @@ endif()
  
  # miniUPnPc integration (MiniUPnPc supposed to works on any POSIX system, not sure if some of these are redundant/not needed tho)
  if(USE_MINIUPNPC)
@@ -86,7 +115,7 @@ index 3a8ca19..953aa3c 100644
  	set (MINIUPNPC_VERSION 2.1) # used by miniupnpcstrings.h.cmake
  	set (MINIUPNPC_API_VERSION 17)
  	option(UPNPC_BUILD_STATIC "Build static library" TRUE)
-@@ -1934,6 +1962,7 @@ if(USE_MINIUPNPC)
+@@ -1926,6 +1964,7 @@ if(USE_MINIUPNPC)
  		endif()
  	endif()
  endif()
@@ -160,7 +189,7 @@ index f938619..5ba7781 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 6e88bbf..aad8e49 100644
+index 71d1d7c..a75b628 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
 @@ -23,7 +23,11 @@
@@ -176,7 +205,7 @@ index 6e88bbf..aad8e49 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index 8969267..d94ce34 100644
+index 32a54c3..485e558 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
 @@ -19,7 +19,11 @@
@@ -192,7 +221,7 @@ index 8969267..d94ce34 100644
  #include "Common/Data/Text/I18n.h"
  #include "Common/Data/Format/IniFile.h"
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index 9674f69..3556097 100644
+index a656087..dc0b955 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
 @@ -17,7 +17,11 @@
@@ -313,7 +342,7 @@ index e15b900..d53d180 100644
  #include "Common/Math/math_util.h"
  #include "Common/Profiler/Profiler.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 31ea90b..ecb7209 100644
+index a108395..803de90 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@
@@ -361,7 +390,7 @@ index ebbbf85..fcb6df6 100644
  
  #include <CommDlg.h>
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index 5b0e440..34ff6d3 100644
+index 8de34a1..1ba86a4 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
 @@ -3,7 +3,11 @@
@@ -409,6 +438,17 @@ index 0000000..f9a14e2
 +    INTERFACE_INCLUDE_DIRECTORIES ${MINIUPNPC_INCLUDE_DIRS}
 +  )
 +endif()
+diff --git a/ext/CMakeLists.txt b/ext/CMakeLists.txt
+index 3597ca1..db6b733 100644
+--- a/ext/CMakeLists.txt
++++ b/ext/CMakeLists.txt
+@@ -22,4 +22,6 @@ add_subdirectory(SPIRV-Cross-build)
+ if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
+ 	add_subdirectory(discord-rpc-build)
+ endif()
++if(NOT ZSTD_FOUND AND NOT HAVE_ZSTD_H AND NOT USE_SYSTEM_ZSTD)
+ add_subdirectory(zstd/build/cmake EXCLUDE_FROM_ALL)
++endif()
 -- 
-2.29.2
+2.30.2
 

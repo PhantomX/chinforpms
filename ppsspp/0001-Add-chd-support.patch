@@ -1,6 +1,6 @@
-From 7caf5923d0eb61d6577e5d541cfed04a48d23abe Mon Sep 17 00:00:00 2001
+From 04af003e74917a05b9de62839bf3dd77b142dc0f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 23 Mar 2021 21:52:06 -0300
+Date: Sat, 17 Apr 2021 21:41:24 -0300
 Subject: [PATCH] Add chd support
 
 Using shared library, modified from https://github.com/SleepyMan/ppsspp
@@ -15,11 +15,11 @@ See https://github.com/hrydgard/ppsspp/pull/13810
  6 files changed, 204 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 628ee79..eb4c472 100644
+index 4e80f07..22e4c9d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1869,6 +1869,15 @@ if(FFmpeg_FOUND)
- 	)
+@@ -1882,6 +1882,15 @@ else()
+ 	target_link_libraries(${CoreLibName} libzstd_static)
  endif()
  
 +find_package(PkgConfig QUIET)
@@ -304,7 +304,7 @@ index fecb941..739b35c 100644
  	ISO_MODE2,
  
 diff --git a/UI/MainScreen.cpp b/UI/MainScreen.cpp
-index 8ab0288..76db5b0 100644
+index eb40d8d..eed4c07 100644
 --- a/UI/MainScreen.cpp
 +++ b/UI/MainScreen.cpp
 @@ -713,7 +713,11 @@ void GameBrowser::Refresh() {

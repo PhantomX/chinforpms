@@ -1,6 +1,6 @@
-%global commit 28065c1bc46a97bc3e34c94035da6ec4ee4ff57f
+%global commit 036efc24ae3367dc88c5e4455ab493556babe454
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210407
+%global date 20210417
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -39,7 +39,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 d2e1e7ba989135618f82bfeb6d97695d0d9bb9f5
+%global commit7 582749ac68a96b6326d4f4ce21a229be66071975
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -83,8 +83,6 @@ Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-Add-chd-support.patch
-
-Patch10:        %{vc_url}/%{name}/pull/14341.patch#/%{name}-gh-pr14341.patch
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -120,6 +118,7 @@ BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash) >= 0.8.0
 BuildRequires:  pkgconfig(libzip)
+BuildRequires:  pkgconfig(libzstd) >= 1.4.9
 BuildRequires:  pkgconfig(miniupnpc) >= 2.1
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(snappy)
@@ -188,7 +187,7 @@ tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 
 rm -rf ext/glew/GL
 rm -rf ext/{glew,rapidjson,miniupnp,snappy}/*.{c,cpp,h}
-rm -rf ext/{libpng,libzip,vulkan,zlib}*
+rm -rf ext/{libpng,libzip,vulkan,zlib,zstd}*
 rm -f ext/xxhash.*
 rm -rf MoltenVK/*
 
@@ -278,6 +277,7 @@ popd
   -DUSE_SYSTEM_MINIUPNPC:BOOL=ON \
   -DUSE_SYSTEM_SNAPPY:BOOL=ON \
   -DUSE_SYSTEM_XXHASH:BOOL=ON \
+  -DUSE_SYSTEM_ZSTD:BOOL=ON \
   -DUSE_DISCORD:BOOL=OFF \
   -DUSE_WAYLAND_WSI:BOOL=ON \
   -DUSING_X11_VULKAN:BOOL=ON \
@@ -365,6 +365,11 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Apr 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-105.20210417git036efc2
+- Bump
+- Added libzstd to system libraries patch
+- BR: libzstd
+
 * Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-104.20210407git28065c1
 - Update
 
