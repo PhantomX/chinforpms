@@ -1,6 +1,6 @@
-From 64ad479b09e4cbd06849f8eb8a254f58cd5546c5 Mon Sep 17 00:00:00 2001
+From 7da3252ae8036d417155d9a09b3ad92df0e6f391 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 7 Apr 2021 19:39:48 -0300
+Date: Sun, 18 Apr 2021 19:27:03 -0300
 Subject: [PATCH] Use system libraries
 
 FindCUBEB.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
@@ -8,7 +8,7 @@ https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
 ---
  CMakeModules/FindCUBEB.cmake          |  15 +++
- dep/CMakeLists.txt                    |  71 +++++++++++++-
+ dep/CMakeLists.txt                    |  69 +++++++++++++-
  dep/discord-rpc/CMakeLists.txt        |   7 +-
  dep/minizip/CMakeLists.txt            |   8 +-
  dep/vulkan-loader/CMakeLists.txt      |   8 ++
@@ -19,7 +19,7 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
  src/core/texture_replacements.cpp     |   2 +
  src/duckstation-qt/CMakeLists.txt     |  10 +-
  src/frontend-common/CMakeLists.txt    |   9 +-
- 12 files changed, 319 insertions(+), 9 deletions(-)
+ 12 files changed, 317 insertions(+), 9 deletions(-)
  create mode 100644 CMakeModules/FindCUBEB.cmake
 
 diff --git a/CMakeModules/FindCUBEB.cmake b/CMakeModules/FindCUBEB.cmake
@@ -44,10 +44,10 @@ index 0000000..c0a730c
 +  )
 +endif()
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 374d934..5aea226 100644
+index 374d934..9ff1731 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,23 +1,92 @@
+@@ -1,23 +1,90 @@
 +find_package(PkgConfig QUIET)
 +
  add_subdirectory(glad)
@@ -92,13 +92,11 @@ index 374d934..5aea226 100644
  add_subdirectory(xxhash)
 +endif()
 +
-+if(ENABLE_DISCORD_PRESENCE OR ENABLE_CHEEVOS)
 +pkg_search_module(rapidjson RapidJSON)
 +if(rapidjson_FOUND)
 +  message(STATUS "Using the system rapidjson")
 +else()
  add_subdirectory(rapidjson)
-+endif()
 +endif()
 +
 +pkg_search_module(SPIRV_Tools SPIRV-Tools)
@@ -504,10 +502,10 @@ index 33434ae..d4076d6 100644
  if(WIN32)
    # We want a Windows subsystem application not console.
 diff --git a/src/frontend-common/CMakeLists.txt b/src/frontend-common/CMakeLists.txt
-index 621ecea..42d5364 100644
+index 8f6f564..03c2f52 100644
 --- a/src/frontend-common/CMakeLists.txt
 +++ b/src/frontend-common/CMakeLists.txt
-@@ -116,8 +116,15 @@ if(ENABLE_CHEEVOS)
+@@ -118,8 +118,15 @@ if(ENABLE_CHEEVOS)
      cheevos.cpp
      cheevos.h
    )

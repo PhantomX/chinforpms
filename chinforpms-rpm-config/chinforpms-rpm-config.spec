@@ -1,5 +1,5 @@
 Name:           chinforpms-rpm-config
-Version:        5
+Version:        6
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
@@ -40,6 +40,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Sun Apr 18 2021 Phantom X <megaphantomx at hotmail dot com> - 6-1
+- __cflags_arch_x86_64 fix (>=f34)
+
 * Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 5-1
 - Out of source cmake is default now (>=f33)
 - Fixed cpus jobs in _gcc_lto_cflags

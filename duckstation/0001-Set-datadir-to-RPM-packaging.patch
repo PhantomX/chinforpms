@@ -1,6 +1,6 @@
-From 1ca351d67a159cf8a75080843242e61ba2b5ae80 Mon Sep 17 00:00:00 2001
+From f83426e234c7a5f25d7f2f0b8f371d7ea3de9114 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 21 Mar 2021 18:15:45 -0300
+Date: Sun, 18 Apr 2021 19:13:25 -0300
 Subject: [PATCH] Set datadir to RPM packaging
 
 ---
@@ -11,10 +11,10 @@ Subject: [PATCH] Set datadir to RPM packaging
  4 files changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/src/duckstation-qt/qthostinterface.cpp b/src/duckstation-qt/qthostinterface.cpp
-index 7ccc8f5..b70c1a1 100644
+index 678e1bf..09b58e9 100644
 --- a/src/duckstation-qt/qthostinterface.cpp
 +++ b/src/duckstation-qt/qthostinterface.cpp
-@@ -132,7 +132,7 @@ void QtHostInterface::installTranslator()
+@@ -133,7 +133,7 @@ void QtHostInterface::installTranslator()
      language = "en";
  
    const QString path =
@@ -24,10 +24,10 @@ index 7ccc8f5..b70c1a1 100644
    {
      QMessageBox::warning(
 diff --git a/src/frontend-common/common_host_interface.cpp b/src/frontend-common/common_host_interface.cpp
-index c35e574..cb076fa 100644
+index cdeeb3d..41649d6 100644
 --- a/src/frontend-common/common_host_interface.cpp
 +++ b/src/frontend-common/common_host_interface.cpp
-@@ -2154,7 +2154,7 @@ CommonHostInterface::InputProfileList CommonHostInterface::GetInputProfileList()
+@@ -2175,7 +2175,7 @@ CommonHostInterface::InputProfileList CommonHostInterface::GetInputProfileList()
    InputProfileList profiles;
  
    const std::string user_dir(GetUserDirectoryRelativePath("inputprofiles"));
@@ -36,7 +36,7 @@ index c35e574..cb076fa 100644
  
    FindInputProfiles(user_dir, &profiles);
    if (user_dir != program_dir)
-@@ -2195,7 +2195,7 @@ std::string CommonHostInterface::GetInputProfilePath(const char* name) const
+@@ -2216,7 +2216,7 @@ std::string CommonHostInterface::GetInputProfilePath(const char* name) const
    if (FileSystem::FileExists(path.c_str()))
      return path;
  
@@ -45,7 +45,7 @@ index c35e574..cb076fa 100644
    if (FileSystem::FileExists(path.c_str()))
      return path;
  
-@@ -3277,7 +3277,7 @@ std::unique_ptr<ByteStream> CommonHostInterface::OpenPackageFile(const char* pat
+@@ -3369,7 +3369,7 @@ std::unique_ptr<ByteStream> CommonHostInterface::OpenPackageFile(const char* pat
  {
    const u32 allowed_flags = (BYTESTREAM_OPEN_READ | BYTESTREAM_OPEN_SEEKABLE | BYTESTREAM_OPEN_STREAMED);
    const std::string full_path(

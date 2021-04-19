@@ -1,0 +1,3140 @@
+From 3d1d45e645278203d808f6dc81945622b4e1d531 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 18 Apr 2021 23:57:09 -0300
+Subject: [PATCH] Revert SSE4 updates
+
+Commits reverted:
+8a9ec4c7067630c25140cd066cc6a40eac83a0c3 core: purge sse2
+48f51b3ce3da5ce7dc64ea87dc720ec62936f68f gs: purge sse2/sse3
+6bc31a00237798a755ff7de4311459ff3f318ffd cmake: make sse4 default
+f9d96f55a538ce373f1662a5554d8052173940b1 microVU: Remove SSE4 op from Overflow flag checks + clean up
+ee07f860fc1dd7e8ada6c13903bb3a592b8d4864 microVU: Implement Overflow checks
+
+That make PCSX2 running in older CPUS for some not demanding games
+---
+ bin/GameIndex.yaml                            |  34 ++
+ pcsx2/gui/AppInit.cpp                         |  11 +-
+ pcsx2/gui/Panels/PluginSelectorPanel.cpp      |   3 +
+ pcsx2/x86/iMMI.cpp                            | 212 +++++++++--
+ pcsx2/x86/ix86-32/iR5900-32.cpp               |   4 +-
+ pcsx2/x86/microVU.cpp                         |   2 +-
+ pcsx2/x86/microVU_Alloc.inl                   |  10 +-
+ pcsx2/x86/microVU_Clamp.inl                   |  31 +-
+ pcsx2/x86/microVU_Lower.inl                   |  20 +-
+ pcsx2/x86/microVU_Misc.inl                    | 127 ++++++-
+ pcsx2/x86/microVU_Upper.inl                   |  21 -
+ pcsx2/x86/newVif_UnpackSSE.cpp                | 113 +++++-
+ plugins/GSdx/CMakeLists.txt                   |   4 +-
+ plugins/GSdx/GSBlock.h                        | 359 +++++++++++++++++-
+ plugins/GSdx/GSState.cpp                      |   4 +
+ plugins/GSdx/GSUtil.cpp                       |  10 +
+ plugins/GSdx/GSVector4.h                      |  96 ++++-
+ plugins/GSdx/GSVector4i.h                     | 278 +++++++++++++-
+ .../GSdx/Renderers/Common/GSVertexTrace.cpp   |  61 +++
+ .../GSdx/Renderers/DX11/GSRendererDX11.cpp    |   4 +
+ .../GSdx/Renderers/OpenGL/GSRendererOGL.cpp   |   4 +
+ .../SW/GSDrawScanlineCodeGenerator.cpp        |  36 +-
+ .../SW/GSDrawScanlineCodeGenerator.x86.cpp    | 273 +++++++++++--
+ plugins/GSdx/Renderers/SW/GSRendererSW.cpp    |  37 ++
+ plugins/GSdx/stdafx.h                         |  63 ++-
+ 25 files changed, 1661 insertions(+), 156 deletions(-)
+
+diff --git a/bin/GameIndex.yaml b/bin/GameIndex.yaml
+index 7a936f9..4de91b3 100644
+--- a/bin/GameIndex.yaml
++++ b/bin/GameIndex.yaml
+@@ -13412,6 +13412,15 @@ SLES-53744:
+ SLES-53746:
+   name: "Superman Returns"
+   region: "PAL-E"
++  patches:
++    E8F7BAB6:
++      content: |-
++        author=kozarovv
++        // Fix sps and various graphical issues by Using iaddiu instead of FSAND
++        // require preload frame data and crc hack atleast minimum for GSDX HW
++        patch=1,EE,00639Ef0,word,10050208
++        patch=1,EE,0063a068,word,10080208
++        patch=1,EE,0063D488,word,10020208
+ SLES-53747:
+   name: "Ed, Edd, 'n Eddy - The Misadventure"
+   region: "PAL-E"
+@@ -14598,12 +14607,28 @@ SLES-54348:
+ SLES-54349:
+   name: "Superman Returns"
+   region: "PAL-I"
++  patches:
++    E7F7B6BD:
++      content: |-
++        author=kozarovv
++        // Use iaddiu instead of FSAND.
++        patch=1,EE,00639ef0,word,10050208
++        patch=1,EE,0063a068,word,10080208
+ SLES-54350:
+   name: "Superman Returns"
+   region: "PAL-G"
+ SLES-54351:
+   name: "Superman Returns"
+   region: "PAL-S"
++  patches:
++    EDF0A0A7:
++      content: |-
++        author=kozarovv
++        // Fix sps and various graphical issues by Using iaddiu instead of FSAND
++        // require preload frame data and crc hack atleast minimum for GSDX HW
++        patch=1,EE,00639Ef0,word,10050208
++        patch=1,EE,0063a068,word,10080208
++        patch=1,EE,0063D488,word,10020208
+ SLES-54354:
+   name: "Final Fantasy XII"
+   region: "PAL-E"
+@@ -37231,6 +37256,15 @@ SLUS-21434:
+   name: "Superman Returns - The Video Game"
+   region: "NTSC-U"
+   compat: 4
++  patches:
++    E1BF5DCA:
++      content: |-
++        author=kozarovv
++        // Fix sps and various graphical issues by Using iaddiu instead of FSAND
++        // require preload frame data and crc hack atleast minimum for GSDX HW
++        patch=1,EE,00639E70,word,10050208
++        patch=1,EE,00639FE8,word,10080208
++        patch=1,EE,0063D408,word,10020208
+ SLUS-21435:
+   name: "One Piece - Grand Adventure"
+   region: "NTSC-U"
+diff --git a/pcsx2/gui/AppInit.cpp b/pcsx2/gui/AppInit.cpp
+index 963b217..7fa0dfc 100644
+--- a/pcsx2/gui/AppInit.cpp
++++ b/pcsx2/gui/AppInit.cpp
+@@ -46,13 +46,14 @@ void Pcsx2App::DetectCpuAndUserMode()
+ 	x86caps.CountCores();
+ 	x86caps.SIMD_EstablishMXCSRmask();
+ 
+-	if (!x86caps.hasStreamingSIMD4Extensions)
++	if (!x86caps.hasStreamingSIMD2Extensions)
+ 	{
+-		// This code will probably never run if the binary was correctly compiled for SSE4
+-		// SSE4 is required for any decent speed and is supported by more than decade old x86 CPUs
++		// This code will probably never run if the binary was correctly compiled for SSE2
++		// SSE4 is required by upstream for any decent speed and is supported by more than decade old x86 CPUs
++		// SSE2 works with some games, so this is reverted by chinforpms
+ 		throw Exception::HardwareDeficiency()
+-			.SetDiagMsg(L"Critical Failure: SSE4.1 Extensions not available.")
+-			.SetUserMsg(_("SSE4 extensions are not available.  PCSX2 requires a cpu that supports the SSE4.1 instruction set."));
++			.SetDiagMsg(L"Critical Failure: SSE2 Extensions not available.")
++			.SetUserMsg(_("SSE2 extensions are not available.  PCSX2 requires a cpu that supports the SSE2 instruction set."));
+ 	}
+ #endif
+ 
+diff --git a/pcsx2/gui/Panels/PluginSelectorPanel.cpp b/pcsx2/gui/Panels/PluginSelectorPanel.cpp
+index ff8152c..6ef3d43 100644
+--- a/pcsx2/gui/Panels/PluginSelectorPanel.cpp
++++ b/pcsx2/gui/Panels/PluginSelectorPanel.cpp
+@@ -684,6 +684,7 @@ void Panels::PluginSelectorPanel::OnEnumComplete( wxCommandEvent& evt )
+ 
+ 				int index_avx2 = -1;
+ 				int index_sse4 = -1;
++				int index_sse2 = -1;
+ 
+ 				for( int i = 0; i < count; i++ )
+ 				{
+@@ -691,10 +692,12 @@ void Panels::PluginSelectorPanel::OnEnumComplete( wxCommandEvent& evt )
+ 					
+ 					if( x86caps.hasAVX2 && str.Contains("AVX2") ) index_avx2 = i;
+ 					if( x86caps.hasStreamingSIMD4Extensions && str.Contains("SSE4") ) index_sse4 = i;
++					if( str.Contains("SSE2") ) index_sse2 = i;
+ 				}
+ 
+ 				if( index_avx2 >= 0 ) m_ComponentBoxes->Get(pid).SetSelection( index_avx2 );
+ 				else if( index_sse4 >= 0 ) m_ComponentBoxes->Get(pid).SetSelection( index_sse4 );
++				else if( index_sse2 >= 0 ) m_ComponentBoxes->Get(pid).SetSelection( index_sse2 );
+ 				else m_ComponentBoxes->Get(pid).SetSelection( 0 );
+ 			}
+ 			else
+diff --git a/pcsx2/x86/iMMI.cpp b/pcsx2/x86/iMMI.cpp
+index 4a18e82..99a4c98 100644
+--- a/pcsx2/x86/iMMI.cpp
++++ b/pcsx2/x86/iMMI.cpp
+@@ -215,9 +215,17 @@ void recPMTHL()
+ 
+ 	int info = eeRecompileCodeXMM( XMMINFO_READS|XMMINFO_READLO|XMMINFO_READHI|XMMINFO_WRITELO|XMMINFO_WRITEHI );
+ 
+-	xBLEND.PS(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_S), 0x5);
+-	xSHUF.PS(xRegisterSSE(EEREC_HI), xRegisterSSE(EEREC_S), 0xdd);
+-	xSHUF.PS(xRegisterSSE(EEREC_HI), xRegisterSSE(EEREC_HI), 0x72);
++	if ( x86caps.hasStreamingSIMD4Extensions ) {
++		xBLEND.PS(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_S), 0x5);
++		xSHUF.PS(xRegisterSSE(EEREC_HI), xRegisterSSE(EEREC_S), 0xdd);
++		xSHUF.PS(xRegisterSSE(EEREC_HI), xRegisterSSE(EEREC_HI), 0x72);
++	}
++	else {
++		xSHUF.PS(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_S), 0x8d);
++		xSHUF.PS(xRegisterSSE(EEREC_HI), xRegisterSSE(EEREC_S), 0xdd);
++		xSHUF.PS(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_LO), 0x72);
++		xSHUF.PS(xRegisterSSE(EEREC_HI), xRegisterSSE(EEREC_HI), 0x72);
++	}
+ 
+ 	_clearNeededXMMregs();
+ }
+@@ -392,12 +400,47 @@ void recPMAXW()
+ 	EE::Profiler.EmitOp(eeOpcode::PMAXW);
+ 
+ 	int info = eeRecompileCodeXMM( XMMINFO_READS|XMMINFO_READT|XMMINFO_WRITED );
+-	if( EEREC_S == EEREC_T ) xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
+-	else if( EEREC_D == EEREC_S ) xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
+-	else if ( EEREC_D == EEREC_T ) xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++	if ( x86caps.hasStreamingSIMD4Extensions ) {
++		if( EEREC_S == EEREC_T ) xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++		else if( EEREC_D == EEREC_S ) xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
++		else if ( EEREC_D == EEREC_T ) xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++		else {
++			xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++			xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
++		}
++	}
+ 	else {
+-		xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
+-		xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
++		int t0reg;
++
++		if( EEREC_S == EEREC_T ) {
++			xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++		}
++		else {
++			t0reg = _allocTempXMMreg(XMMT_INT, -1);
++			xMOVDQA(xRegisterSSE(t0reg), xRegisterSSE(EEREC_S));
++			xPCMP.GTD(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T));
++
++			if( EEREC_D == EEREC_S ) {
++				xPAND(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++				xPANDN(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T));
++			}
++			else if( EEREC_D == EEREC_T ) {
++				int t1reg = _allocTempXMMreg(XMMT_INT, -1);
++				xMOVDQA(xRegisterSSE(t1reg), xRegisterSSE(EEREC_T));
++				xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++				xPAND(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++				xPANDN(xRegisterSSE(t0reg), xRegisterSSE(t1reg));
++				_freeXMMreg(t1reg);
++			}
++			else {
++				xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++				xPAND(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++				xPANDN(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T));
++			}
++
++			xPOR(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++			_freeXMMreg(t0reg);
++		}
+ 	}
+ 	_clearNeededXMMregs();
+ }
+@@ -1130,7 +1173,18 @@ void recPABSW() //needs clamping
+ 	xPCMP.EQD(xRegisterSSE(t0reg), xRegisterSSE(t0reg));
+ 	xPSLL.D(xRegisterSSE(t0reg), 31);
+ 	xPCMP.EQD(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T)); //0xffffffff if equal to 0x80000000
+-	xPABS.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T)); //0x80000000 -> 0x80000000
++	if( x86caps.hasSupplementalStreamingSIMD3Extensions ) {
++		xPABS.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T)); //0x80000000 -> 0x80000000
++	}
++	else {
++		int t1reg = _allocTempXMMreg(XMMT_INT, -1);
++		xMOVDQA(xRegisterSSE(t1reg), xRegisterSSE(EEREC_T));
++		xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
++		xPSRA.D(xRegisterSSE(t1reg), 31);
++		xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(t1reg));
++		xPSUB.D(xRegisterSSE(EEREC_D), xRegisterSSE(t1reg)); //0x80000000 -> 0x80000000
++		_freeXMMreg(t1reg);
++	}
+ 	xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg)); //0x80000000 -> 0x7fffffff
+ 	_freeXMMreg(t0reg);
+ 	_clearNeededXMMregs();
+@@ -1149,7 +1203,18 @@ void recPABSH()
+ 	xPCMP.EQW(xRegisterSSE(t0reg), xRegisterSSE(t0reg));
+ 	xPSLL.W(xRegisterSSE(t0reg), 15);
+ 	xPCMP.EQW(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T)); //0xffff if equal to 0x8000
+-	xPABS.W(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T)); //0x8000 -> 0x8000
++	if( x86caps.hasSupplementalStreamingSIMD3Extensions ) {
++		xPABS.W(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T)); //0x8000 -> 0x8000
++	}
++	else {
++		int t1reg = _allocTempXMMreg(XMMT_INT, -1);
++		xMOVDQA(xRegisterSSE(t1reg), xRegisterSSE(EEREC_T));
++		xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
++		xPSRA.W(xRegisterSSE(t1reg), 15);
++		xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(t1reg));
++		xPSUB.W(xRegisterSSE(EEREC_D), xRegisterSSE(t1reg)); //0x8000 -> 0x8000
++		_freeXMMreg(t1reg);
++	}
+ 	xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg)); //0x8000 -> 0x7fff
+ 	_freeXMMreg(t0reg);
+ 	_clearNeededXMMregs();
+@@ -1163,12 +1228,47 @@ void recPMINW()
+ 	EE::Profiler.EmitOp(eeOpcode::PMINW);
+ 
+ 	int info = eeRecompileCodeXMM( XMMINFO_READS|XMMINFO_READT|XMMINFO_WRITED );
+-	if( EEREC_S == EEREC_T ) xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
+-	else if( EEREC_D == EEREC_S ) xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
+-	else if ( EEREC_D == EEREC_T ) xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++	if ( x86caps.hasStreamingSIMD4Extensions ) {
++		if( EEREC_S == EEREC_T ) xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++		else if( EEREC_D == EEREC_S ) xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
++		else if ( EEREC_D == EEREC_T ) xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++		else {
++			xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++			xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
++		}
++	}
+ 	else {
+-		xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
+-		xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
++		int t0reg;
++
++		if( EEREC_S == EEREC_T ) {
++			xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++		}
++		else {
++			t0reg = _allocTempXMMreg(XMMT_INT, -1);
++			xMOVDQA(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T));
++			xPCMP.GTD(xRegisterSSE(t0reg), xRegisterSSE(EEREC_S));
++
++			if( EEREC_D == EEREC_S ) {
++				xPAND(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++				xPANDN(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T));
++			}
++			else if( EEREC_D == EEREC_T ) {
++				int t1reg = _allocTempXMMreg(XMMT_INT, -1);
++				xMOVDQA(xRegisterSSE(t1reg), xRegisterSSE(EEREC_T));
++				xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++				xPAND(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++				xPANDN(xRegisterSSE(t0reg), xRegisterSSE(t1reg));
++				_freeXMMreg(t1reg);
++			}
++			else {
++				xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++				xPAND(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++				xPANDN(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T));
++			}
++
++			xPOR(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++			_freeXMMreg(t0reg);
++		}
+ 	}
+ 	_clearNeededXMMregs();
+ }
+@@ -1618,6 +1718,12 @@ void recPMADDW()
+ {
+ 	EE::Profiler.EmitOp(eeOpcode::PMADDW);
+ 
++	if( !x86caps.hasStreamingSIMD4Extensions ) {
++		_deleteEEreg(_Rd_, 0);
++		recCall(Interp::PMADDW);
++		return;
++	}
++
+ 	int info = eeRecompileCodeXMM( (((_Rs_)&&(_Rt_))?XMMINFO_READS:0)|(((_Rs_)&&(_Rt_))?XMMINFO_READT:0)|(_Rd_?XMMINFO_WRITED:0)|XMMINFO_WRITELO|XMMINFO_WRITEHI|XMMINFO_READLO|XMMINFO_READHI );
+ 	xSHUF.PS(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_HI), 0x88);
+ 	xPSHUF.D(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_LO), 0xd8); // LO = {LO[0], HI[0], LO[2], HI[2]}
+@@ -1669,8 +1775,18 @@ void recPSLLVW()
+ 			xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
+ 		}
+ 		else {
+-			xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
+-			xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
++			if ( x86caps.hasStreamingSIMD4Extensions ) {
++				xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
++				xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
++			}
++			else {
++				int t0reg = _allocTempXMMreg(XMMT_INT, -1);
++				xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
++				xMOVDQA(xRegisterSSE(t0reg), xRegisterSSE(EEREC_D));
++				xPSRA.D(xRegisterSSE(t0reg), 31);
++				xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++				_freeXMMreg(t0reg);
++			}
+ 		}
+ 	}
+ 	else if( _Rt_ == 0 ) {
+@@ -1697,8 +1813,16 @@ void recPSLLVW()
+ 		xPSLL.D(xRegisterSSE(t1reg), xRegisterSSE(t0reg));
+ 
+ 		// merge & sign extend
+-		xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t1reg));
+-		xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
++		if ( x86caps.hasStreamingSIMD4Extensions ) {
++			xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t1reg));
++			xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
++		}
++		else {
++			xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t1reg));
++			xMOVDQA(xRegisterSSE(t0reg), xRegisterSSE(EEREC_D));
++			xPSRA.D(xRegisterSSE(t0reg), 31); // get the signs
++			xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++		}
+ 
+ 		_freeXMMreg(t0reg);
+ 		_freeXMMreg(t1reg);
+@@ -1719,8 +1843,18 @@ void recPSRLVW()
+ 			xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
+ 		}
+ 		else {
+-			xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
+-			xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
++			if ( x86caps.hasStreamingSIMD4Extensions ) {
++				xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
++				xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
++			}
++			else {
++				int t0reg = _allocTempXMMreg(XMMT_INT, -1);
++				xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
++				xMOVDQA(xRegisterSSE(t0reg), xRegisterSSE(EEREC_D));
++				xPSRA.D(xRegisterSSE(t0reg), 31);
++				xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++				_freeXMMreg(t0reg);
++			}
+ 		}
+ 	}
+ 	else if( _Rt_ == 0 ) {
+@@ -1747,8 +1881,16 @@ void recPSRLVW()
+ 		xPSRL.D(xRegisterSSE(t1reg), xRegisterSSE(t0reg));
+ 
+ 		// merge & sign extend
+-		xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t1reg));
+-		xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
++		if ( x86caps.hasStreamingSIMD4Extensions ) {
++			xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t1reg));
++			xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
++		}
++		else {
++			xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t1reg));
++			xMOVDQA(xRegisterSSE(t0reg), xRegisterSSE(EEREC_D));
++			xPSRA.D(xRegisterSSE(t0reg), 31); // get the signs
++			xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++		}
+ 
+ 		_freeXMMreg(t0reg);
+ 		_freeXMMreg(t1reg);
+@@ -1761,6 +1903,11 @@ void recPMSUBW()
+ {
+ 	EE::Profiler.EmitOp(eeOpcode::PMSUBW);
+ 
++	if( !x86caps.hasStreamingSIMD4Extensions ) {
++		_deleteEEreg(_Rd_, 0);
++		recCall(Interp::PMSUBW);
++		return;
++	}
+ 	int info = eeRecompileCodeXMM( (((_Rs_)&&(_Rt_))?XMMINFO_READS:0)|(((_Rs_)&&(_Rt_))?XMMINFO_READT:0)|(_Rd_?XMMINFO_WRITED:0)|XMMINFO_WRITELO|XMMINFO_WRITEHI|XMMINFO_READLO|XMMINFO_READHI );
+ 	xSHUF.PS(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_HI), 0x88);
+ 	xPSHUF.D(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_LO), 0xd8); // LO = {LO[0], HI[0], LO[2], HI[2]}
+@@ -1810,6 +1957,11 @@ void recPMULTW()
+ {
+ 	EE::Profiler.EmitOp(eeOpcode::PMULTW);
+ 
++	if( !x86caps.hasStreamingSIMD4Extensions ) {
++		_deleteEEreg(_Rd_, 0);
++		recCall(Interp::PMULTW);
++		return;
++	}
+ 	int info = eeRecompileCodeXMM( (((_Rs_)&&(_Rt_))?XMMINFO_READS:0)|(((_Rs_)&&(_Rt_))?XMMINFO_READT:0)|(_Rd_?XMMINFO_WRITED:0)|XMMINFO_WRITELO|XMMINFO_WRITEHI );
+ 	if( !_Rs_ || !_Rt_ ) {
+ 		if( _Rd_ ) xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
+@@ -2303,8 +2455,18 @@ void recPSRAVW()
+ 			xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
+ 		}
+ 		else {
+-			xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
+-			xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
++			if ( x86caps.hasStreamingSIMD4Extensions ) {
++				xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
++				xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
++			}
++			else {
++				int t0reg = _allocTempXMMreg(XMMT_INT, -1);
++				xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
++				xMOVDQA(xRegisterSSE(t0reg), xRegisterSSE(EEREC_D));
++				xPSRA.D(xRegisterSSE(t0reg), 31);
++				xPUNPCK.LDQ(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
++				_freeXMMreg(t0reg);
++			}
+ 		}
+ 	}
+ 	else if( _Rt_ == 0 ) {
+diff --git a/pcsx2/x86/ix86-32/iR5900-32.cpp b/pcsx2/x86/ix86-32/iR5900-32.cpp
+index ba26361..355491f 100644
+--- a/pcsx2/x86/ix86-32/iR5900-32.cpp
++++ b/pcsx2/x86/ix86-32/iR5900-32.cpp
+@@ -508,8 +508,8 @@ static void recReserve()
+ {
+ 	// Hardware Requirements Check...
+ 
+-	if ( !x86caps.hasStreamingSIMD4Extensions )
+-		recThrowHardwareDeficiency( L"SSE4" );
++	if ( !x86caps.hasStreamingSIMD2Extensions )
++		recThrowHardwareDeficiency( L"SSE2" );
+ 
+ 	recReserveCache();
+ }
+diff --git a/pcsx2/x86/microVU.cpp b/pcsx2/x86/microVU.cpp
+index f5db622..e2d9cee 100644
+--- a/pcsx2/x86/microVU.cpp
++++ b/pcsx2/x86/microVU.cpp
+@@ -47,7 +47,7 @@ void mVUreserveCache(microVU& mVU) {
+ // Only run this once per VU! ;)
+ void mVUinit(microVU& mVU, uint vuIndex) {
+ 
+-	if(!x86caps.hasStreamingSIMD4Extensions) mVUthrowHardwareDeficiency( L"SSE4", vuIndex );
++	if(!x86caps.hasStreamingSIMD2Extensions) mVUthrowHardwareDeficiency( L"SSE2", vuIndex );
+ 
+ 	memzero(mVU.prog);
+ 
+diff --git a/pcsx2/x86/microVU_Alloc.inl b/pcsx2/x86/microVU_Alloc.inl
+index 1634c34..fa65645 100644
+--- a/pcsx2/x86/microVU_Alloc.inl
++++ b/pcsx2/x86/microVU_Alloc.inl
+@@ -166,7 +166,13 @@ __fi void getQreg(const xmm& reg, int qInstance)
+ 
+ __ri void writeQreg(const xmm& reg, int qInstance)
+ {
+-	if (qInstance)
+-		xINSERTPS(xmmPQ, reg, _MM_MK_INSERTPS_NDX(0, 1, 0));
++	if (qInstance) {
++		if (!x86caps.hasStreamingSIMD4Extensions) {
++			xPSHUF.D(xmmPQ, xmmPQ, 0xe1);
++			xMOVSS(xmmPQ, reg);
++			xPSHUF.D(xmmPQ, xmmPQ, 0xe1);
++		}
++		else xINSERTPS(xmmPQ, reg, _MM_MK_INSERTPS_NDX(0, 1, 0));
++	}
+ 	else xMOVSS(xmmPQ, reg);
+ }
+diff --git a/pcsx2/x86/microVU_Clamp.inl b/pcsx2/x86/microVU_Clamp.inl
+index 5a145ed..e1ebef1 100644
+--- a/pcsx2/x86/microVU_Clamp.inl
++++ b/pcsx2/x86/microVU_Clamp.inl
+@@ -56,10 +56,33 @@ void mVUclamp1(const xmm& reg, const xmm& regT1, int xyzw, bool bClampE = 0) {
+ // so we just use a temporary mem location for our backup for now... (non-sse4 version only)
+ void mVUclamp2(microVU& mVU, const xmm& reg, const xmm& regT1in, int xyzw, bool bClampE = 0) {
+ 	if ((!clampE && CHECK_VU_SIGN_OVERFLOW) || (clampE && bClampE && CHECK_VU_SIGN_OVERFLOW)) {
+-		int i = (xyzw==1||xyzw==2||xyzw==4||xyzw==8) ? 0: 1;
+-		xPMIN.SD(reg, ptr128[&sse4_maxvals[i][0]]);
+-		xPMIN.UD(reg, ptr128[&sse4_minvals[i][0]]);
+-		return;
++		if (x86caps.hasStreamingSIMD4Extensions) {
++			int i = (xyzw==1||xyzw==2||xyzw==4||xyzw==8) ? 0: 1;
++			xPMIN.SD(reg, ptr128[&sse4_maxvals[i][0]]);
++			xPMIN.UD(reg, ptr128[&sse4_minvals[i][0]]);
++			return;
++		}
++		//const xmm& regT1 = regT1b ? mVU.regAlloc->allocReg() : regT1in;
++		const xmm& regT1 = regT1in.IsEmpty() ? xmm((reg.Id + 1) % 8) : regT1in;
++		if (regT1 != regT1in) xMOVAPS(ptr128[mVU.xmmCTemp], regT1);
++		switch (xyzw) {
++			case 1: case 2: case 4: case 8:
++				xMOVAPS(regT1, reg);
++				xAND.PS(regT1, ptr128[mVUglob.signbit]);
++				xMIN.SS(reg,   ptr128[mVUglob.maxvals]);
++				xMAX.SS(reg,   ptr128[mVUglob.minvals]);
++				xOR.PS (reg,   regT1);
++				break;
++			default:
++				xMOVAPS(regT1, reg);
++				xAND.PS(regT1, ptr128[mVUglob.signbit]);
++				xMIN.PS(reg,   ptr128[mVUglob.maxvals]);
++				xMAX.PS(reg,   ptr128[mVUglob.minvals]);
++				xOR.PS (reg,   regT1);
++				break;
++		}
++		//if (regT1 != regT1in) mVU.regAlloc->clearNeeded(regT1);
++		if (regT1 != regT1in) xMOVAPS(regT1, ptr128[mVU.xmmCTemp]);
+ 	}
+ 	else mVUclamp1(reg, regT1in, xyzw, bClampE);
+ }
+diff --git a/pcsx2/x86/microVU_Lower.inl b/pcsx2/x86/microVU_Lower.inl
+index 850ddc9..6a761f1 100644
+--- a/pcsx2/x86/microVU_Lower.inl
++++ b/pcsx2/x86/microVU_Lower.inl
+@@ -28,7 +28,11 @@ static __fi void testZero(const xmm& xmmReg, const xmm& xmmTemp, const x32& gprT
+ {
+ 	xXOR.PS(xmmTemp, xmmTemp);
+ 	xCMPEQ.SS(xmmTemp, xmmReg);
+-	xPTEST(xmmTemp, xmmTemp);
++	if (!x86caps.hasStreamingSIMD4Extensions) {
++		xMOVMSKPS(gprTemp, xmmTemp);
++		xTEST(gprTemp, 1);
++	}
++	else xPTEST(xmmTemp, xmmTemp);
+ }
+ 
+ // Test if Vector is Negative (Set Flags and Makes Positive)
+@@ -294,8 +298,18 @@ mVUop(mVU_EEXP) {
+ 
+ // sumXYZ(): PQ.x = x ^ 2 + y ^ 2 + z ^ 2
+ static __fi void mVU_sumXYZ(mV, const xmm& PQ, const xmm& Fs) {
+-	xDP.PS(Fs, Fs, 0x71);
+-	xMOVSS(PQ, Fs);
++	if (x86caps.hasStreamingSIMD4Extensions) {
++		xDP.PS(Fs, Fs, 0x71);
++		xMOVSS(PQ, Fs);
++	}
++	else {
++		SSE_MULPS(mVU, Fs, Fs);	   // wzyx ^ 2
++		xMOVSS		(PQ, Fs);		  // x ^ 2
++		xPSHUF.D	  (Fs, Fs, 0xe1); // wzyx -> wzxy
++		SSE_ADDSS(mVU, PQ, Fs);	   // x ^ 2 + y ^ 2
++		xPSHUF.D	  (Fs, Fs, 0xd2); // wzxy -> wxyz
++		SSE_ADDSS(mVU, PQ, Fs);	   // x ^ 2 + y ^ 2 + z ^ 2
++	}
+ }
+ 
+ mVUop(mVU_ELENG) {
+diff --git a/pcsx2/x86/microVU_Misc.inl b/pcsx2/x86/microVU_Misc.inl
+index 47c4a3b..98a9451 100644
+--- a/pcsx2/x86/microVU_Misc.inl
++++ b/pcsx2/x86/microVU_Misc.inl
+@@ -59,29 +59,72 @@ void mVUsaveReg(const xmm& reg, xAddressVoid ptr, int xyzw, bool modXYZW)
+ 	return;*/
+ 
+ 	switch ( xyzw ) {
+-		case 5:		xEXTRACTPS(ptr32[ptr+4], reg, 1);
+-					xEXTRACTPS(ptr32[ptr+12], reg, 3);
++		case 5:		if (x86caps.hasStreamingSIMD4Extensions) {
++						xEXTRACTPS(ptr32[ptr+4], reg, 1);
++						xEXTRACTPS(ptr32[ptr+12], reg, 3);
++					}
++					else {
++						xPSHUF.D(reg, reg, 0xe1); //WZXY
++						xMOVSS(ptr32[ptr+4], reg);
++						xPSHUF.D(reg, reg, 0xff); //WWWW
++						xMOVSS(ptr32[ptr+12], reg);
++					}
+ 					break; // YW
+ 		case 6:		xPSHUF.D(reg, reg, 0xc9);
+ 					xMOVL.PS(ptr64[ptr+4], reg);
+ 					break; // YZ
+-		case 7:		xMOVH.PS(ptr64[ptr+8], reg);
+-					xEXTRACTPS(ptr32[ptr+4],  reg, 1);
++		case 7:		if (x86caps.hasStreamingSIMD4Extensions) {
++						xMOVH.PS(ptr64[ptr+8], reg);
++						xEXTRACTPS(ptr32[ptr+4],  reg, 1);
++					}
++					else {
++						xPSHUF.D(reg, reg, 0x93); //ZYXW
++						xMOVH.PS(ptr64[ptr+4], reg);
++						xMOVSS(ptr32[ptr+12], reg);
++					}
+ 					break; // YZW
+-		case 9:		xMOVSS(ptr32[ptr], reg);
+-					xEXTRACTPS(ptr32[ptr+12], reg, 3);
++		case 9:		if (x86caps.hasStreamingSIMD4Extensions) {
++						xMOVSS(ptr32[ptr], reg);
++						xEXTRACTPS(ptr32[ptr+12], reg, 3);
++					}
++					else {
++						xMOVSS(ptr32[ptr], reg);
++						xPSHUF.D(reg, reg, 0xff); //WWWW
++						xMOVSS(ptr32[ptr+12], reg);
++					}
+ 					break; // XW
+-		case 10:	xMOVSS(ptr32[ptr], reg);
+-					xEXTRACTPS(ptr32[ptr+8], reg, 2);
++		case 10:	if (x86caps.hasStreamingSIMD4Extensions) {
++						xMOVSS(ptr32[ptr], reg);
++						xEXTRACTPS(ptr32[ptr+8], reg, 2);
++					}
++					else {
++						xMOVSS(ptr32[ptr], reg);
++						xMOVHL.PS(reg, reg);
++						xMOVSS(ptr32[ptr+8], reg);
++					}
+ 					break; //XZ
+ 		case 11:	xMOVSS(ptr32[ptr], reg);
+ 					xMOVH.PS(ptr64[ptr+8], reg);
+ 					break; //XZW
+-		case 13:	xMOVL.PS(ptr64[ptr], reg);
+-					xEXTRACTPS(ptr32[ptr+12], reg, 3);
++		case 13:	if (x86caps.hasStreamingSIMD4Extensions) {
++						xMOVL.PS(ptr64[ptr], reg);
++						xEXTRACTPS(ptr32[ptr+12], reg, 3);
++					}
++					else {
++						xPSHUF.D(reg, reg, 0x4b); //YXZW				
++						xMOVH.PS(ptr64[ptr], reg);
++						xMOVSS(ptr32[ptr+12], reg);
++					}
+ 					break; // XYW
+-		case 14:	xMOVL.PS(ptr64[ptr], reg);
+-					xEXTRACTPS(ptr32[ptr+8], reg, 2);
++		case 14:	if (x86caps.hasStreamingSIMD4Extensions) {
++						xMOVL.PS(ptr64[ptr], reg);
++						xEXTRACTPS(ptr32[ptr+8], reg, 2);
++					}
++					else {
++						xMOVL.PS(ptr64[ptr], reg);
++						xMOVHL.PS(reg, reg);
++						xMOVSS(ptr32[ptr+8], reg);
++					}
+ 					break; // XYZ
+ 		case 4:		if (!modXYZW) mVUunpack_xyzw(reg, reg, 1);
+ 					xMOVSS(ptr32[ptr+4], reg);		
+@@ -103,14 +146,8 @@ void mVUsaveReg(const xmm& reg, xAddressVoid ptr, int xyzw, bool modXYZW)
+ void mVUmergeRegs(const xmm& dest, const xmm& src, int xyzw, bool modXYZW)
+ {
+ 	xyzw &= 0xf;
+-	if ( (dest != src) && (xyzw != 0) ) 
+-	{
+-		if (xyzw == 0x8)
+-			xMOVSS(dest, src);
+-		else if (xyzw == 0xf)
+-			xMOVAPS(dest, src);
+-		else
+-		{
++	if ( (dest != src) && (xyzw != 0) ) {
++		if (x86caps.hasStreamingSIMD4Extensions && (xyzw != 0x8) && (xyzw != 0xf)) {
+ 			if (modXYZW) {
+ 				if		(xyzw == 1) { xINSERTPS(dest, src, _MM_MK_INSERTPS_NDX(0, 3, 0)); return; }
+ 				else if (xyzw == 2) { xINSERTPS(dest, src, _MM_MK_INSERTPS_NDX(0, 2, 0)); return; }
+@@ -119,6 +156,56 @@ void mVUmergeRegs(const xmm& dest, const xmm& src, int xyzw, bool modXYZW)
+ 			xyzw = ((xyzw & 1) << 3) | ((xyzw & 2) << 1) | ((xyzw & 4) >> 1) | ((xyzw & 8) >> 3);
+ 			xBLEND.PS(dest, src, xyzw);
+ 		}
++		else {
++			switch (xyzw) {
++				case 1:  if (modXYZW) mVUunpack_xyzw(src, src, 0);
++						 xMOVHL.PS(src, dest);		 // src = Sw Sz Dw Dz
++						 xSHUF.PS(dest, src, 0xc4); // 11 00 01 00
++						 break;
++				case 2:  if (modXYZW) mVUunpack_xyzw(src, src, 0);
++						 xMOVHL.PS(src, dest);
++						 xSHUF.PS(dest, src, 0x64);
++						 break;
++				case 3:	 xSHUF.PS(dest, src, 0xe4);
++						 break;
++				case 4:	 if (modXYZW) mVUunpack_xyzw(src, src, 0);
++						 xMOVSS(src, dest);
++						 xMOVSD(dest, src);
++						 break;
++				case 5:	 xSHUF.PS(dest, src, 0xd8);
++						 xPSHUF.D(dest, dest, 0xd8);
++						 break;
++				case 6:	 xSHUF.PS(dest, src, 0x9c);
++						 xPSHUF.D(dest, dest, 0x78);
++						 break;
++				case 7:	 xMOVSS(src, dest);
++						 xMOVAPS(dest, src);
++						 break;
++				case 8:	 xMOVSS(dest, src);
++						 break;
++				case 9:	 xSHUF.PS(dest, src, 0xc9);
++						 xPSHUF.D(dest, dest, 0xd2);
++						 break;
++				case 10: xSHUF.PS(dest, src, 0x8d);
++						 xPSHUF.D(dest, dest, 0x72);
++						 break;
++				case 11: xMOVSS(dest, src);
++						 xSHUF.PS(dest, src, 0xe4);
++						 break;
++				case 12: xMOVSD(dest, src);
++						 break;
++				case 13: xMOVHL.PS(dest, src);
++						 xSHUF.PS(src, dest, 0x64);
++						 xMOVAPS(dest, src);
++						 break;
++				case 14: xMOVHL.PS(dest, src);
++						 xSHUF.PS(src, dest, 0xc4);
++						 xMOVAPS(dest, src);
++						 break;
++				default: xMOVAPS(dest, src);
++						 break;
++			}
++		}
+ 	} 
+ }
+ 
+diff --git a/pcsx2/x86/microVU_Upper.inl b/pcsx2/x86/microVU_Upper.inl
+index b31426f..9b378bf 100644
+--- a/pcsx2/x86/microVU_Upper.inl
++++ b/pcsx2/x86/microVU_Upper.inl
+@@ -23,12 +23,6 @@
+ #define ADD_XYZW			((_XYZW_SS && modXYZW) ? (_X ? 3 : (_Y ? 2 : (_Z ? 1 : 0))) : 0)
+ #define SHIFT_XYZW(gprReg)	{ if (_XYZW_SS && modXYZW && !_W) { xSHL(gprReg, ADD_XYZW); } }
+ 
+-
+-const __aligned16 u32 sse4_compvals[2][4] = {
+-   { 0x7f7fffff, 0x7f7fffff, 0x7f7fffff, 0x7f7fffff }, //1111
+-   { 0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff }, //1111
+-};
+-
+ // Note: If modXYZW is true, then it adjusts XYZW for Single Scalar operations
+ static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, const xmm& regT2in = xEmptyReg, bool modXYZW = 1) {
+ 	const x32&  mReg   = gprT1;
+@@ -73,21 +67,6 @@ static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, c
+ 	if (mFLAG.doFlag) { SHIFT_XYZW(gprT2); }
+ 	xOR(mReg, gprT2);
+ 
+-	//-------------------------Overflow Flags-----------------------------------
+-	if (sFLAG.doFlag) {
+-		//Calculate overflow
+-		xMOVAPS(regT1, regT2);
+-		xAND.PS(regT1, ptr128[&sse4_compvals[1][0]]); // Remove sign flags (we don't care)
+-		xCMPNLT.PS(regT1, ptr128[&sse4_compvals[0][0]]); // Compare if T1 == FLT_MAX
+-		xMOVMSKPS(gprT2, regT1); // Grab sign bits  for equal results
+-		xAND(gprT2, AND_XYZW);   // Grab "Is FLT_MAX" bits from the previous calculation
+-		xForwardJump32 oJMP(Jcc_Zero);
+-			xOR(sReg, 0x820000);
+-		oJMP.SetTarget();
+-
+-		xSHL(gprT2, 12 + ADD_XYZW); // Add the results to the MAC Flag
+-		xOR(mReg, gprT2);
+-	}
+ 	//-------------------------Write back flags------------------------------
+ 
+ 	if (mFLAG.doFlag) mVUallocMFLAGb(mVU, mReg, mFLAG.write); // Set Mac Flag
+diff --git a/pcsx2/x86/newVif_UnpackSSE.cpp b/pcsx2/x86/newVif_UnpackSSE.cpp
+index d59c523..fad4a67 100644
+--- a/pcsx2/x86/newVif_UnpackSSE.cpp
++++ b/pcsx2/x86/newVif_UnpackSSE.cpp
+@@ -35,7 +35,23 @@ static RecompiledCodeReserve* nVifUpkExec = NULL;
+ 
+ // Merges xmm vectors without modifying source reg
+ void mergeVectors(xRegisterSSE dest, xRegisterSSE src, xRegisterSSE temp, int xyzw) {
+-	mVUmergeRegs(dest, src, xyzw);
++	if (x86caps.hasStreamingSIMD4Extensions  || (xyzw==15)
++		|| (xyzw==12) || (xyzw==11) || (xyzw==8) || (xyzw==3)) {
++			mVUmergeRegs(dest, src, xyzw);
++	}
++	else
++	{
++		if(temp != src) xMOVAPS(temp, src); //Sometimes we don't care if the source is modified and is temp reg.
++		if(dest == temp)
++		{
++			//VIF can sent the temp directory as the source and destination, just need to clear the ones we dont want in which case.
++			if(!(xyzw & 0x1)) xAND.PS( dest, ptr128[SSEXYZWMask[0]]);
++			if(!(xyzw & 0x2)) xAND.PS( dest, ptr128[SSEXYZWMask[1]]);
++			if(!(xyzw & 0x4)) xAND.PS( dest, ptr128[SSEXYZWMask[2]]);
++			if(!(xyzw & 0x8)) xAND.PS( dest, ptr128[SSEXYZWMask[3]]);
++		}
++		else mVUmergeRegs(dest, temp, xyzw);
++	}
+ }
+ 
+ // =====================================================================================================
+@@ -97,6 +113,16 @@ void VifUnpackSSE_Base::xUPK_S_32() const {
+ 
+ void VifUnpackSSE_Base::xUPK_S_16() const {
+ 
++	if (!x86caps.hasStreamingSIMD4Extensions)
++	{
++			xMOV16     (workReg, ptr32[srcIndirect]);
++			xPUNPCK.LWD(workReg, workReg);
++			xShiftR    (workReg, 16);
++
++			xPSHUF.D   (destReg, workReg, _v0);
++			return;
++	}
++
+ 	switch(UnpkLoopIteration)
+ 	{
+ 		case 0:
+@@ -118,6 +144,17 @@ void VifUnpackSSE_Base::xUPK_S_16() const {
+ 
+ void VifUnpackSSE_Base::xUPK_S_8() const {
+ 
++	if (!x86caps.hasStreamingSIMD4Extensions)
++	{
++		xMOV8      (workReg, ptr32[srcIndirect]);
++		xPUNPCK.LBW(workReg, workReg);
++		xPUNPCK.LWD(workReg, workReg);
++		xShiftR    (workReg, 24);
++
++		xPSHUF.D   (destReg, workReg, _v0);
++		return;
++	}
++
+ 	switch(UnpkLoopIteration)
+ 	{
+ 		case 0:
+@@ -163,8 +200,18 @@ void VifUnpackSSE_Base::xUPK_V2_16() const {
+ 
+ 	if(UnpkLoopIteration == 0)
+     {
+-			xPMOVXX16  (workReg);
+-			xPSHUF.D   (destReg, workReg, 0x44); //v1v0v1v0
++            if (x86caps.hasStreamingSIMD4Extensions)
++            {
++                    xPMOVXX16  (workReg);
++
++            }
++            else
++            {
++                    xMOV64     (workReg, ptr64[srcIndirect]);
++                    xPUNPCK.LWD(workReg, workReg);
++                    xShiftR    (workReg, 16);
++            }
++            xPSHUF.D   (destReg, workReg, 0x44); //v1v0v1v0
+     }
+     else
+     {
+@@ -176,9 +223,19 @@ void VifUnpackSSE_Base::xUPK_V2_16() const {
+ 
+ void VifUnpackSSE_Base::xUPK_V2_8() const {
+ 
+-	if(UnpkLoopIteration == 0)
++	if(UnpkLoopIteration == 0 || !x86caps.hasStreamingSIMD4Extensions)
+ 	{
+-		xPMOVXX8   (workReg);
++		if (x86caps.hasStreamingSIMD4Extensions)
++		{
++			xPMOVXX8   (workReg);
++		}
++		else
++		{
++			xMOV16     (workReg, ptr32[srcIndirect]);
++			xPUNPCK.LBW(workReg, workReg);
++			xPUNPCK.LWD(workReg, workReg);
++			xShiftR    (workReg, 24);
++		}
+ 		xPSHUF.D   (destReg, workReg, 0x44); //v1v0v1v0
+ 	}
+ 	else
+@@ -197,7 +254,16 @@ void VifUnpackSSE_Base::xUPK_V3_32() const {
+ 
+ void VifUnpackSSE_Base::xUPK_V3_16() const {
+ 
+-	xPMOVXX16  (destReg);
++	if (x86caps.hasStreamingSIMD4Extensions)
++	{
++		xPMOVXX16  (destReg);
++	}
++	else
++	{
++		xMOV64     (destReg, ptr32[srcIndirect]);
++		xPUNPCK.LWD(destReg, destReg);
++		xShiftR    (destReg, 16);
++	}
+ 
+ 	//With V3-16, it takes the first vector from the next position as the W vector
+ 	//However - IF the end of this iteration of the unpack falls on a quadword boundary, W becomes 0
+@@ -212,7 +278,17 @@ void VifUnpackSSE_Base::xUPK_V3_16() const {
+ 
+ void VifUnpackSSE_Base::xUPK_V3_8() const {
+ 
+-	xPMOVXX8   (destReg);
++	if (x86caps.hasStreamingSIMD4Extensions)
++	{
++		xPMOVXX8   (destReg);
++	}
++	else
++	{
++		xMOV32     (destReg, ptr32[srcIndirect]);
++		xPUNPCK.LBW(destReg, destReg);
++		xPUNPCK.LWD(destReg, destReg);
++		xShiftR    (destReg, 24);
++	}
+ 	if (UnpkLoopIteration != IsAligned)
+ 		xAND.PS(destReg, ptr128[SSEXYZWMask[0]]);
+ }
+@@ -224,12 +300,31 @@ void VifUnpackSSE_Base::xUPK_V4_32() const {
+ 
+ void VifUnpackSSE_Base::xUPK_V4_16() const {
+ 
+-	xPMOVXX16  (destReg);
++	if (x86caps.hasStreamingSIMD4Extensions)
++	{
++		xPMOVXX16  (destReg);
++	}
++	else
++	{
++		xMOV64     (destReg, ptr32[srcIndirect]);
++		xPUNPCK.LWD(destReg, destReg);
++		xShiftR    (destReg, 16);
++	}
+ }
+ 
+ void VifUnpackSSE_Base::xUPK_V4_8() const {
+ 
+-	xPMOVXX8   (destReg);
++	if (x86caps.hasStreamingSIMD4Extensions)
++	{
++		xPMOVXX8   (destReg);
++	}
++	else
++	{
++		xMOV32     (destReg, ptr32[srcIndirect]);
++		xPUNPCK.LBW(destReg, destReg);
++		xPUNPCK.LWD(destReg, destReg);
++		xShiftR    (destReg, 24);
++	}
+ }
+ 
+ void VifUnpackSSE_Base::xUPK_V4_5() const {
+diff --git a/plugins/GSdx/CMakeLists.txt b/plugins/GSdx/CMakeLists.txt
+index ac97b58..d370c95 100644
+--- a/plugins/GSdx/CMakeLists.txt
++++ b/plugins/GSdx/CMakeLists.txt
+@@ -270,7 +270,9 @@ if(BUILTIN_GS)
+ else()
+     if (DISABLE_ADVANCE_SIMD)
+         # Don't append -SSE2 on the first build to keep same name as SIMD build
+-        add_pcsx2_plugin("${Output}" "${GSdxFinalSources}" "${GSdxFinalLibs}" "${GSdxFinalFlags} -msse3 -msse4 -msse4.1")
++        add_pcsx2_plugin("${Output}" "${GSdxFinalSources}" "${GSdxFinalLibs}" "${GSdxFinalFlags}")
++        add_pcsx2_plugin("${Output}-SSE4" "${GSdxFinalSources}" "${GSdxFinalLibs}" "${GSdxFinalFlags} -mssse3 -msse4 -msse4.1")
++        target_compile_features("${Output}-SSE4" PRIVATE cxx_std_17)
+         add_pcsx2_plugin("${Output}-AVX2" "${GSdxFinalSources}" "${GSdxFinalLibs}" "${GSdxFinalFlags} -mavx -mavx2 -mbmi -mbmi2")
+         target_compile_features("${Output}-AVX2" PRIVATE cxx_std_17)
+     else()
+diff --git a/plugins/GSdx/GSBlock.h b/plugins/GSdx/GSBlock.h
+index 38bf87d..5c13ef0 100644
+--- a/plugins/GSdx/GSBlock.h
++++ b/plugins/GSdx/GSBlock.h
+@@ -159,6 +159,8 @@ public:
+ 		{
+ 			GSVector4i v4((int)mask);
+ 
++			#if _M_SSE >= 0x401
++
+ 			if (mask == 0xff000000 || mask == 0x00ffffff)
+ 			{
+ 				((GSVector4i*)dst)[i * 4 + 0] = ((GSVector4i*)dst)[i * 4 + 0].blend8(v0, v4);
+@@ -168,11 +170,19 @@ public:
+ 			}
+ 			else
+ 			{
+-				((GSVector4i*)dst)[i * 4 + 0] = ((GSVector4i*)dst)[i * 4 + 0].blend(v0, v4);
+-				((GSVector4i*)dst)[i * 4 + 1] = ((GSVector4i*)dst)[i * 4 + 1].blend(v1, v4);
+-				((GSVector4i*)dst)[i * 4 + 2] = ((GSVector4i*)dst)[i * 4 + 2].blend(v2, v4);
+-				((GSVector4i*)dst)[i * 4 + 3] = ((GSVector4i*)dst)[i * 4 + 3].blend(v3, v4);
++
++			#endif
++
++			((GSVector4i*)dst)[i * 4 + 0] = ((GSVector4i*)dst)[i * 4 + 0].blend(v0, v4);
++			((GSVector4i*)dst)[i * 4 + 1] = ((GSVector4i*)dst)[i * 4 + 1].blend(v1, v4);
++			((GSVector4i*)dst)[i * 4 + 2] = ((GSVector4i*)dst)[i * 4 + 2].blend(v2, v4);
++			((GSVector4i*)dst)[i * 4 + 3] = ((GSVector4i*)dst)[i * 4 + 3].blend(v3, v4);
++
++			#if _M_SSE >= 0x401
++
+ 			}
++
++			#endif
+ 		}
+ 
+ #endif
+@@ -528,6 +538,29 @@ public:
+ 		GSVector4i::store<true>(&d1[0], v1);
+ 		GSVector4i::store<true>(&d1[1], v3);
+ 
++		#else
++
++		const GSVector4i* s = (const GSVector4i*)src;
++
++		GSVector4i v0 = s[i * 4 + 0];
++		GSVector4i v1 = s[i * 4 + 1];
++		GSVector4i v2 = s[i * 4 + 2];
++		GSVector4i v3 = s[i * 4 + 3];
++
++		//for(int16 i = 0; i < 8; i++) {v0.i16[i] = i; v1.i16[i] = i + 8; v2.i16[i] = i + 16; v3.i16[i] = i + 24;}
++
++		GSVector4i::sw16(v0, v1, v2, v3);
++		GSVector4i::sw32(v0, v1, v2, v3);
++		GSVector4i::sw16(v0, v2, v1, v3);
++
++		GSVector4i* d0 = (GSVector4i*)&dst[dstpitch * 0];
++		GSVector4i* d1 = (GSVector4i*)&dst[dstpitch * 1];
++
++		GSVector4i::store<true>(&d0[0], v0);
++		GSVector4i::store<true>(&d0[1], v1);
++		GSVector4i::store<true>(&d1[0], v2);
++		GSVector4i::store<true>(&d1[1], v3);
++
+ #endif
+ 	}
+ 
+@@ -561,7 +594,7 @@ public:
+ 
+ 		// TODO: not sure if this is worth it, not in this form, there should be a shorter path
+ 
+-#else
++#elif _M_SSE >= 0x301
+ 
+ 		const GSVector4i* s = (const GSVector4i*)src;
+ 
+@@ -595,6 +628,36 @@ public:
+ 		GSVector4i::store<true>(&dst[dstpitch * 2], v1);
+ 		GSVector4i::store<true>(&dst[dstpitch * 3], v2);
+ 
++		#else
++
++		const GSVector4i* s = (const GSVector4i*)src;
++
++		GSVector4i v0 = s[i * 4 + 0];
++		GSVector4i v1 = s[i * 4 + 1];
++		GSVector4i v2 = s[i * 4 + 2];
++		GSVector4i v3 = s[i * 4 + 3];
++
++		GSVector4i::sw8(v0, v1, v2, v3);
++		GSVector4i::sw16(v0, v1, v2, v3);
++		GSVector4i::sw8(v0, v2, v1, v3);
++		GSVector4i::sw64(v0, v1, v2, v3);
++
++		if((i & 1) == 0)
++		{
++			v2 = v2.yxwz();
++			v3 = v3.yxwz();
++		}
++		else
++		{
++			v0 = v0.yxwz();
++			v1 = v1.yxwz();
++		}
++
++		GSVector4i::store<true>(&dst[dstpitch * 0], v0);
++		GSVector4i::store<true>(&dst[dstpitch * 1], v1);
++		GSVector4i::store<true>(&dst[dstpitch * 2], v2);
++		GSVector4i::store<true>(&dst[dstpitch * 3], v3);
++
+ #endif
+ 	}
+ 
+@@ -603,6 +666,8 @@ public:
+ 	{
+ 		//printf("ReadColumn4\n");
+ 
++		#if _M_SSE >= 0x301
++
+ 		const GSVector4i* s = (const GSVector4i*)src;
+ 
+ 		GSVector4i v0 = s[i * 4 + 0].xzyw();
+@@ -632,6 +697,46 @@ public:
+ 		GSVector4i::store<true>(&dst[dstpitch * 1], v1);
+ 		GSVector4i::store<true>(&dst[dstpitch * 2], v2);
+ 		GSVector4i::store<true>(&dst[dstpitch * 3], v3);
++
++		#else
++
++		const GSVector4i* s = (const GSVector4i*)src;
++
++		GSVector4i v0 = s[i * 4 + 0];
++		GSVector4i v1 = s[i * 4 + 1];
++		GSVector4i v2 = s[i * 4 + 2];
++		GSVector4i v3 = s[i * 4 + 3];
++
++		GSVector4i::sw32(v0, v1, v2, v3);
++		GSVector4i::sw32(v0, v1, v2, v3);
++		GSVector4i::sw4(v0, v2, v1, v3);
++		GSVector4i::sw8(v0, v1, v2, v3);
++		GSVector4i::sw16(v0, v2, v1, v3);
++
++		v0 = v0.xzyw();
++		v1 = v1.xzyw();
++		v2 = v2.xzyw();
++		v3 = v3.xzyw();
++
++		GSVector4i::sw64(v0, v1, v2, v3);
++
++		if((i & 1) == 0)
++		{
++			v2 = v2.yxwzlh();
++			v3 = v3.yxwzlh();
++		}
++		else
++		{
++			v0 = v0.yxwzlh();
++			v1 = v1.yxwzlh();
++		}
++
++		GSVector4i::store<true>(&dst[dstpitch * 0], v0);
++		GSVector4i::store<true>(&dst[dstpitch * 1], v1);
++		GSVector4i::store<true>(&dst[dstpitch * 2], v2);
++		GSVector4i::store<true>(&dst[dstpitch * 3], v3);
++
++		#endif
+ 	}
+ 
+ 	static void ReadColumn32(int y, const uint8* RESTRICT src, uint8* RESTRICT dst, int dstpitch)
+@@ -1154,6 +1259,7 @@ public:
+ 	{
+ 		for (int j = 0; j < 8; j++, dst += dstpitch)
+ 		{
++			#if _M_SSE >= 0x401
+ 
+ 			const GSVector4i* s = (const GSVector4i*)src;
+ 
+@@ -1161,6 +1267,15 @@ public:
+ 			GSVector4i v1 = (s[j * 2 + 1] >> 24).gather32_32<>(pal);
+ 
+ 			((GSVector4i*)dst)[0] = v0.pu32(v1);
++
++			#else
++
++			for(int i = 0; i < 8; i++)
++			{
++				((uint16*)dst)[i] = (uint16)pal[src[j * 8 + i] >> 24];
++			}
++
++			#endif
+ 		}
+ 	}
+ 
+@@ -1179,12 +1294,23 @@ public:
+ 	{
+ 		for (int j = 0; j < 8; j++, dst += dstpitch)
+ 		{
++			#if _M_SSE >= 0x401
++
+ 			const GSVector4i* s = (const GSVector4i*)src;
+ 
+ 			GSVector4i v0 = ((s[j * 2 + 0] >> 24) & 0xf).gather32_32<>(pal);
+ 			GSVector4i v1 = ((s[j * 2 + 1] >> 24) & 0xf).gather32_32<>(pal);
+ 
+ 			((GSVector4i*)dst)[0] = v0.pu32(v1);
++
++			#else
++
++			for(int i = 0; i < 8; i++)
++			{
++				((uint16*)dst)[i] = (uint16)pal[(src[j * 8 + i] >> 24) & 0xf];
++			}
++
++			#endif
+ 		}
+ 	}
+ 
+@@ -1203,12 +1329,23 @@ public:
+ 	{
+ 		for (int j = 0; j < 8; j++, dst += dstpitch)
+ 		{
++			#if _M_SSE >= 0x401
++
+ 			const GSVector4i* s = (const GSVector4i*)src;
+ 
+ 			GSVector4i v0 = (s[j * 2 + 0] >> 28).gather32_32<>(pal);
+ 			GSVector4i v1 = (s[j * 2 + 1] >> 28).gather32_32<>(pal);
+ 
+ 			((GSVector4i*)dst)[0] = v0.pu32(v1);
++
++			#else
++
++			for(int i = 0; i < 8; i++)
++			{
++				((uint16*)dst)[i] = (uint16)pal[src[j * 8 + i] >> 28];
++			}
++
++			#endif
+ 		}
+ 	}
+ 
+@@ -1296,7 +1433,7 @@ public:
+ 			((GSVector4i*)dst)[i * 4 + 3] = ((GSVector4i*)dst)[i * 4 + 3].blend8(v3, mask);
+ 		}
+ 
+-#endif
++		#endif
+ 	}
+ 
+ 	__forceinline static void UnpackAndWriteBlock8H(const uint8* RESTRICT src, int srcpitch, uint8* RESTRICT dst)
+@@ -1370,7 +1507,33 @@ public:
+ 			((GSVector4i*)dst)[i * 4 + 3] = ((GSVector4i*)dst)[i * 4 + 3].blend8(v3, mask);
+ 		}
+ 
+-#endif
++		#else
++
++		GSVector4i v0, v1, v2, v3;
++		GSVector4i mask = GSVector4i::xff000000();
++
++		for(int i = 0; i < 4; i++, src += srcpitch * 2)
++		{
++			v4 = GSVector4i::loadl(&src[srcpitch * 0]);
++			v5 = GSVector4i::loadl(&src[srcpitch * 1]);
++
++			v6 = v4.upl16(v5);
++
++			v4 = v6.upl8(v6);
++			v5 = v6.uph8(v6);
++
++			v0 = v4.upl16(v4);
++			v1 = v4.uph16(v4);
++			v2 = v5.upl16(v5);
++			v3 = v5.uph16(v5);
++			
++			((GSVector4i*)dst)[i * 4 + 0] = ((GSVector4i*)dst)[i * 4 + 0].blend8(v0, mask);
++			((GSVector4i*)dst)[i * 4 + 1] = ((GSVector4i*)dst)[i * 4 + 1].blend8(v1, mask);
++			((GSVector4i*)dst)[i * 4 + 2] = ((GSVector4i*)dst)[i * 4 + 2].blend8(v2, mask);
++			((GSVector4i*)dst)[i * 4 + 3] = ((GSVector4i*)dst)[i * 4 + 3].blend8(v3, mask);
++		}
++
++		#endif
+ 	}
+ 
+ 	__forceinline static void UnpackAndWriteBlock4HL(const uint8* RESTRICT src, int srcpitch, uint8* RESTRICT dst)
+@@ -1385,7 +1548,7 @@ public:
+ 					s[i] = (columnTable32[j][i * 2] & 0x0f) | (columnTable32[j][i * 2 + 1] << 4);
+ 		}
+ 
+-		GSVector4i v4, v5, v6;
++		GSVector4i v4, v5, v6, v7;
+ 
+ #if _M_SSE >= 0x501
+ 
+@@ -1467,12 +1630,53 @@ public:
+ 			((GSVector4i*)dst)[i * 8 + 7] = ((GSVector4i*)dst)[i * 8 + 7].blend(v3, mask);
+ 		}
+ 
+-#endif
++		#else
++
++		GSVector4i v0, v1, v2, v3;
++		GSVector4i mask = GSVector4i(0x0f000000);
++
++		for(int i = 0; i < 2; i++, src += srcpitch * 4)
++		{
++			GSVector4i v(*(uint32*)&src[srcpitch * 0], *(uint32*)&src[srcpitch * 2], *(uint32*)&src[srcpitch * 1], *(uint32*)&src[srcpitch * 3]);
++
++			v4 = v.upl8(v >> 4);
++			v5 = v.uph8(v >> 4);
++
++			v6 = v4.upl16(v5);
++			v7 = v4.uph16(v5);
++
++			v4 = v6.upl8(v6);
++			v5 = v6.uph8(v6);
++			v6 = v7.upl8(v7);
++			v7 = v7.uph8(v7);
++
++			v0 = v4.upl16(v4);
++			v1 = v4.uph16(v4);
++			v2 = v5.upl16(v5);
++			v3 = v5.uph16(v5);
++
++			((GSVector4i*)dst)[i * 8 + 0] = ((GSVector4i*)dst)[i * 8 + 0].blend(v0, mask);
++			((GSVector4i*)dst)[i * 8 + 1] = ((GSVector4i*)dst)[i * 8 + 1].blend(v1, mask);
++			((GSVector4i*)dst)[i * 8 + 2] = ((GSVector4i*)dst)[i * 8 + 2].blend(v2, mask);
++			((GSVector4i*)dst)[i * 8 + 3] = ((GSVector4i*)dst)[i * 8 + 3].blend(v3, mask);
++
++			v0 = v6.upl16(v6);
++			v1 = v6.uph16(v6);
++			v2 = v7.upl16(v7);
++			v3 = v7.uph16(v7);
++
++			((GSVector4i*)dst)[i * 8 + 4] = ((GSVector4i*)dst)[i * 8 + 4].blend(v0, mask);
++			((GSVector4i*)dst)[i * 8 + 5] = ((GSVector4i*)dst)[i * 8 + 5].blend(v1, mask);
++			((GSVector4i*)dst)[i * 8 + 6] = ((GSVector4i*)dst)[i * 8 + 6].blend(v2, mask);
++			((GSVector4i*)dst)[i * 8 + 7] = ((GSVector4i*)dst)[i * 8 + 7].blend(v3, mask);
++		}
++
++		#endif
+ 	}
+ 
+ 	__forceinline static void UnpackAndWriteBlock4HH(const uint8* RESTRICT src, int srcpitch, uint8* RESTRICT dst)
+ 	{
+-		GSVector4i v4, v5, v6;
++		GSVector4i v4, v5, v6, v7;
+ 
+ #if _M_SSE >= 0x501
+ 
+@@ -1554,6 +1758,47 @@ public:
+ 			((GSVector4i*)dst)[i * 8 + 7] = ((GSVector4i*)dst)[i * 8 + 7].blend(v3, mask);
+ 		}
+ 
++		#else
++
++		GSVector4i v0, v1, v2, v3;
++		GSVector4i mask = GSVector4i::xf0000000();
++
++		for(int i = 0; i < 2; i++, src += srcpitch * 4)
++		{
++			GSVector4i v(*(uint32*)&src[srcpitch * 0], *(uint32*)&src[srcpitch * 2], *(uint32*)&src[srcpitch * 1], *(uint32*)&src[srcpitch * 3]);
++
++			v4 = (v << 4).upl8(v);
++			v5 = (v << 4).uph8(v);
++
++			v6 = v4.upl16(v5);
++			v7 = v4.uph16(v5);
++
++			v4 = v6.upl8(v6);
++			v5 = v6.uph8(v6);
++			v6 = v7.upl8(v7);
++			v7 = v7.uph8(v7);
++
++			v0 = v4.upl16(v4);
++			v1 = v4.uph16(v4);
++			v2 = v5.upl16(v5);
++			v3 = v5.uph16(v5);
++
++			((GSVector4i*)dst)[i * 8 + 0] = ((GSVector4i*)dst)[i * 8 + 0].blend(v0, mask);
++			((GSVector4i*)dst)[i * 8 + 1] = ((GSVector4i*)dst)[i * 8 + 1].blend(v1, mask);
++			((GSVector4i*)dst)[i * 8 + 2] = ((GSVector4i*)dst)[i * 8 + 2].blend(v2, mask);
++			((GSVector4i*)dst)[i * 8 + 3] = ((GSVector4i*)dst)[i * 8 + 3].blend(v3, mask);
++
++			v0 = v6.upl16(v6);
++			v1 = v6.uph16(v6);
++			v2 = v7.upl16(v7);
++			v3 = v7.uph16(v7);
++
++			((GSVector4i*)dst)[i * 8 + 4] = ((GSVector4i*)dst)[i * 8 + 4].blend(v0, mask);
++			((GSVector4i*)dst)[i * 8 + 5] = ((GSVector4i*)dst)[i * 8 + 5].blend(v1, mask);
++			((GSVector4i*)dst)[i * 8 + 6] = ((GSVector4i*)dst)[i * 8 + 6].blend(v2, mask);
++			((GSVector4i*)dst)[i * 8 + 7] = ((GSVector4i*)dst)[i * 8 + 7].blend(v3, mask);
++		}
++
+ #endif
+ 	}
+ 
+@@ -1661,6 +1906,39 @@ public:
+ 			d1[1] = Expand16to32<AEM>(v1.uph16(v1), TA0, TA1);
+ 		}
+ 
++		#elif 0 // not faster
++		
++		const GSVector4i* s = (const GSVector4i*)src;
++
++		GSVector4i TA0(TEXA.TA0 << 24);
++		GSVector4i TA1(TEXA.TA1 << 24);
++
++		for(int i = 0; i < 4; i++, dst += dstpitch * 2)
++		{
++			GSVector4i v0 = s[i * 4 + 0];
++			GSVector4i v1 = s[i * 4 + 1];
++			GSVector4i v2 = s[i * 4 + 2];
++			GSVector4i v3 = s[i * 4 + 3];
++
++			GSVector4i::sw16(v0, v1, v2, v3);
++			GSVector4i::sw32(v0, v1, v2, v3);
++			GSVector4i::sw16(v0, v2, v1, v3);
++
++			GSVector4i* d0 = (GSVector4i*)&dst[dstpitch * 0];
++
++			d0[0] = Expand16to32<AEM>(v0.upl16(v0), TA0, TA1);
++			d0[1] = Expand16to32<AEM>(v0.uph16(v0), TA0, TA1);
++			d0[2] = Expand16to32<AEM>(v1.upl16(v1), TA0, TA1);
++			d0[3] = Expand16to32<AEM>(v1.uph16(v1), TA0, TA1);
++			
++			GSVector4i* d1 = (GSVector4i*)&dst[dstpitch * 1];
++
++			d1[0] = Expand16to32<AEM>(v2.upl16(v2), TA0, TA1);
++			d1[1] = Expand16to32<AEM>(v2.uph16(v2), TA0, TA1);
++			d1[2] = Expand16to32<AEM>(v3.upl16(v3), TA0, TA1);
++			d1[3] = Expand16to32<AEM>(v3.uph16(v3), TA0, TA1);
++		}
++
+ #else
+ 
+ 		alignas(32) uint16 block[16 * 8];
+@@ -1676,6 +1954,8 @@ public:
+ 	{
+ 		//printf("ReadAndExpandBlock8_32\n");
+ 
++		#if _M_SSE >= 0x401
++
+ 		const GSVector4i* s = (const GSVector4i*)src;
+ 
+ 		GSVector4i v0, v1, v2, v3;
+@@ -1717,6 +1997,16 @@ public:
+ 			v2.gather32_8<>(pal, (GSVector4i*)dst);
+ 			dst += dstpitch;
+ 		}
++
++		#else
++
++		alignas(32) uint8 block[16 * 16];
++
++		ReadBlock8(src, (uint8*)block, sizeof(block) / 16);
++
++		ExpandBlock8_32(block, dst, dstpitch, pal);
++
++		#endif
+ 	}
+ 
+ 	// TODO: ReadAndExpandBlock8_16
+@@ -1725,6 +2015,8 @@ public:
+ 	{
+ 		//printf("ReadAndExpandBlock4_32\n");
+ 
++		#if _M_SSE >= 0x401
++
+ 		const GSVector4i* s = (const GSVector4i*)src;
+ 
+ 		GSVector4i v0, v1, v2, v3;
+@@ -1782,6 +2074,16 @@ public:
+ 			v3.gather64_8<>(pal, (GSVector4i*)dst);
+ 			dst += dstpitch;
+ 		}
++
++		#else
++
++		alignas(32) uint8 block[(32 / 2) * 16];
++
++		ReadBlock4(src, (uint8*)block, sizeof(block) / 16);
++
++		ExpandBlock4_32(block, dst, dstpitch, pal);
++
++		#endif
+ 	}
+ 
+ 	// TODO: ReadAndExpandBlock4_16
+@@ -1790,6 +2092,8 @@ public:
+ 	{
+ 		//printf("ReadAndExpandBlock8H_32\n");
+ 
++		#if _M_SSE >= 0x401
++
+ 		const GSVector4i* s = (const GSVector4i*)src;
+ 
+ 		GSVector4i v0, v1, v2, v3;
+@@ -1813,6 +2117,16 @@ public:
+ 
+ 			dst += dstpitch;
+ 		}
++
++		#else
++
++		alignas(32) uint32 block[8 * 8];
++
++		ReadBlock32(src, (uint8*)block, sizeof(block) / 8);
++
++		ExpandBlock8H_32(block, dst, dstpitch, pal);
++
++		#endif
+ 	}
+ 
+ 	// TODO: ReadAndExpandBlock8H_16
+@@ -1820,6 +2134,9 @@ public:
+ 	__forceinline static void ReadAndExpandBlock4HL_32(const uint8* RESTRICT src, uint8* RESTRICT dst, int dstpitch, const uint32* RESTRICT pal)
+ 	{
+ 		//printf("ReadAndExpandBlock4HL_32\n");
++
++		#if _M_SSE >= 0x401
++
+ 		const GSVector4i* s = (const GSVector4i*)src;
+ 
+ 		GSVector4i v0, v1, v2, v3;
+@@ -1843,6 +2160,16 @@ public:
+ 
+ 			dst += dstpitch;
+ 		}
++
++		#else
++
++		alignas(32) uint32 block[8 * 8];
++
++		ReadBlock32(src, (uint8*)block, sizeof(block) / 8);
++
++		ExpandBlock4HL_32(block, dst, dstpitch, pal);
++
++		#endif
+ 	}
+ 
+ 	// TODO: ReadAndExpandBlock4HL_16
+@@ -1851,6 +2178,8 @@ public:
+ 	{
+ 		//printf("ReadAndExpandBlock4HH_32\n");
+ 
++		#if _M_SSE >= 0x401
++
+ 		const GSVector4i* s = (const GSVector4i*)src;
+ 
+ 		GSVector4i v0, v1, v2, v3;
+@@ -1874,6 +2203,16 @@ public:
+ 
+ 			dst += dstpitch;
+ 		}
++
++		#else
++
++		alignas(32) uint32 block[8 * 8];
++
++		ReadBlock32(src, (uint8*)block, sizeof(block) / 8);
++
++		ExpandBlock4HH_32(block, dst, dstpitch, pal);
++
++		#endif
+ 	}
+ 
+ 	// TODO: ReadAndExpandBlock4HH_16
+diff --git a/plugins/GSdx/GSState.cpp b/plugins/GSdx/GSState.cpp
+index 35762fb..12e51e7 100644
+--- a/plugins/GSdx/GSState.cpp
++++ b/plugins/GSdx/GSState.cpp
+@@ -2734,7 +2734,11 @@ __forceinline void GSState::VertexKick(uint32 skip)
+ 
+ 	GSVector4i xy = v1.xxxx().u16to32().sub32(m_ofxy);
+ 
++#if _M_SSE >= 0x401
+ 	GSVector4i::storel(&m_vertex.xy[xy_tail & 3], xy.blend16<0xf0>(xy.sra32(4)).ps32());
++#else
++	GSVector4i::storel(&m_vertex.xy[xy_tail & 3], xy.upl64(xy.sra32(4).zwzw()).ps32());
++#endif
+ 
+ 	m_vertex.tail = ++tail;
+ 	m_vertex.xy_tail = ++xy_tail;
+diff --git a/plugins/GSdx/GSUtil.cpp b/plugins/GSdx/GSUtil.cpp
+index 7e138ab..8a6c107 100644
+--- a/plugins/GSdx/GSUtil.cpp
++++ b/plugins/GSdx/GSUtil.cpp
+@@ -85,6 +85,10 @@ const char* GSUtil::GetLibName()
+ 		"AVX", sw_sse
+ #elif _M_SSE >= 0x401
+ 		"SSE4.1", sw_sse
++#elif _M_SSE >= 0x301
++		"SSSE3", sw_sse
++#elif _M_SSE >= 0x200
++		"SSE2", sw_sse
+ #endif
+ 	);
+ 
+@@ -218,7 +222,13 @@ bool GSUtil::CheckSSE()
+ 	};
+ 
+ 	ISA checks[] = {
++		{Xbyak::util::Cpu::tSSE2, "SSE2"},
++#if _M_SSE >= 0x301
++		{Xbyak::util::Cpu::tSSSE3, "SSSE3"},
++#endif
++#if _M_SSE >= 0x401
+ 		{Xbyak::util::Cpu::tSSE41, "SSE41"},
++#endif
+ #if _M_SSE >= 0x500
+ 		{Xbyak::util::Cpu::tAVX, "AVX1"},
+ #endif
+diff --git a/plugins/GSdx/GSVector4.h b/plugins/GSdx/GSVector4.h
+index 8eabc7f..b57f2a9 100644
+--- a/plugins/GSdx/GSVector4.h
++++ b/plugins/GSdx/GSVector4.h
+@@ -251,7 +251,33 @@ public:
+ 	template <int mode>
+ 	__forceinline GSVector4 round() const
+ 	{
++		#if _M_SSE >= 0x401
++
+ 		return GSVector4(_mm_round_ps(m, mode));
++
++		#else
++
++		GSVector4 a = *this;
++
++		GSVector4 b = (a & cast(GSVector4i::x80000000())) | m_x4b000000;
++
++		b = a + b - b;
++
++		if((mode & 7) == (Round_NegInf & 7))
++		{
++			return b - ((a < b) & m_one);
++		}
++
++		if((mode & 7) == (Round_PosInf & 7))
++		{
++			return b + ((a > b) & m_one);
++		}
++
++		ASSERT((mode & 7) == (Round_NearestInt & 7)); // other modes aren't implemented
++
++		return b;
++
++		#endif
+ 	}
+ 
+ 	__forceinline GSVector4 floor() const
+@@ -379,30 +405,66 @@ public:
+ 
+ 	__forceinline GSVector4 hadd() const
+ 	{
++		#if _M_SSE >= 0x300
++		
+ 		return GSVector4(_mm_hadd_ps(m, m));
++		
++		#else
++		
++		return xzxz() + ywyw();
++		
++		#endif
+ 	}
+ 
+ 	__forceinline GSVector4 hadd(const GSVector4& v) const
+ 	{
++		#if _M_SSE >= 0x300
++		
+ 		return GSVector4(_mm_hadd_ps(m, v.m));
++		
++		#else
++		
++		return xzxz(v) + ywyw(v);
++		
++		#endif
+ 	}
+ 
+ 	__forceinline GSVector4 hsub() const
+ 	{
++		#if _M_SSE >= 0x300
++		
+ 		return GSVector4(_mm_hsub_ps(m, m));
++		
++		#else
++		
++		return xzxz() - ywyw();
++		
++		#endif
+ 	}
+ 
+ 	__forceinline GSVector4 hsub(const GSVector4& v) const
+ 	{
++		#if _M_SSE >= 0x300
++		
+ 		return GSVector4(_mm_hsub_ps(m, v.m));
++		
++		#else
++		
++		return xzxz(v) - ywyw(v);
++
++		#endif
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	template <int i>
+ 	__forceinline GSVector4 dp(const GSVector4& v) const
+ 	{
+ 		return GSVector4(_mm_dp_ps(m, v.m, i));
+ 	}
+ 
++	#endif
++
+ 	__forceinline GSVector4 sat(const GSVector4& a, const GSVector4& b) const
+ 	{
+ 		return GSVector4(_mm_min_ps(_mm_max_ps(m, a), b));
+@@ -433,15 +495,27 @@ public:
+ 		return GSVector4(_mm_max_ps(m, a));
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	template <int mask>
+ 	__forceinline GSVector4 blend32(const GSVector4& a) const
+ 	{
+ 		return GSVector4(_mm_blend_ps(m, a, mask));
+ 	}
+ 
++	#endif
++
+ 	__forceinline GSVector4 blend32(const GSVector4& a, const GSVector4& mask) const
+ 	{
++		#if _M_SSE >= 0x401
++
+ 		return GSVector4(_mm_blendv_ps(m, a, mask));
++
++		#else
++
++		return GSVector4(_mm_or_ps(_mm_andnot_ps(mask, m), _mm_and_ps(mask, a)));
++
++		#endif
+ 	}
+ 
+ 	__forceinline GSVector4 upl(const GSVector4& a) const
+@@ -495,12 +569,16 @@ public:
+ 
+ 		return _mm_testz_ps(m, m) != 0;
+ 
+-		#else
++		#elif _M_SSE >= 0x401
+ 
+ 		__m128i a = _mm_castps_si128(m);
+ 
+ 		return _mm_testz_si128(a, a) != 0;
+ 
++		#else
++
++		return mask() == 0;
++
+ #endif
+ 	}
+ 
+@@ -589,13 +667,29 @@ GSVector.h:2973:15: error:  shadows template parm 'int i'
+ 	template <int index>
+ 	__forceinline int extract32() const
+ 	{
++		#if _M_SSE >= 0x401
++
+ 		return _mm_extract_ps(m, index);
++
++		#else
++
++		return i32[index];
++
++		#endif
+ 	}
+ #else
+ 	template <int i>
+ 	__forceinline int extract32() const
+ 	{
++		#if _M_SSE >= 0x401
++
+ 		return _mm_extract_ps(m, i);
++
++		#else
++
++		return i32[i];
++
++		#endif
+ 	}
+ #endif
+ 
+diff --git a/plugins/GSdx/GSVector4i.h b/plugins/GSdx/GSVector4i.h
+index 258a218..df91886 100644
+--- a/plugins/GSdx/GSVector4i.h
++++ b/plugins/GSdx/GSVector4i.h
+@@ -230,7 +230,15 @@ public:
+ 
+ 	__forceinline GSVector4i runion_ordered(const GSVector4i& a) const
+ 	{
++		#if _M_SSE >= 0x401
++
+ 		return min_i32(a).upl64(max_i32(a).srl<8>());
++
++		#else
++
++		return GSVector4i(std::min(x, a.x), std::min(y, a.y), std::max(z, a.z), std::max(w, a.w));
++
++		#endif
+ 	}
+ 
+ 	__forceinline GSVector4i rintersect(const GSVector4i& a) const
+@@ -289,6 +297,8 @@ public:
+ 		return (uint32)store(v);
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	__forceinline GSVector4i sat_i8(const GSVector4i& a, const GSVector4i& b) const
+ 	{
+ 		return max_i8(a).min_i8(b);
+@@ -299,6 +309,8 @@ public:
+ 		return max_i8(a.xyxy()).min_i8(a.zwzw());
+ 	}
+ 
++	#endif
++
+ 	__forceinline GSVector4i sat_i16(const GSVector4i& a, const GSVector4i& b) const
+ 	{
+ 		return max_i16(a).min_i16(b);
+@@ -309,6 +321,8 @@ public:
+ 		return max_i16(a.xyxy()).min_i16(a.zwzw());
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	__forceinline GSVector4i sat_i32(const GSVector4i& a, const GSVector4i& b) const
+ 	{
+ 		return max_i32(a).min_i32(b);
+@@ -319,6 +333,34 @@ public:
+ 		return max_i32(a.xyxy()).min_i32(a.zwzw());
+ 	}
+ 
++	#else
++
++	__forceinline GSVector4i sat_i32(const GSVector4i& a, const GSVector4i& b) const
++	{
++		GSVector4i v;
++
++		v.x = std::min(std::max(x, a.x), b.x);
++		v.y = std::min(std::max(y, a.y), b.y);
++		v.z = std::min(std::max(z, a.z), b.z);
++		v.w = std::min(std::max(w, a.w), b.w);
++
++		return v;
++	}
++
++	__forceinline GSVector4i sat_i32(const GSVector4i& a) const
++	{
++		GSVector4i v;
++
++		v.x = std::min(std::max(x, a.x), a.z);
++		v.y = std::min(std::max(y, a.y), a.w);
++		v.z = std::min(std::max(z, a.x), a.z);
++		v.w = std::min(std::max(w, a.y), a.w);
++
++		return v;
++	}
++
++	#endif
++
+ 	__forceinline GSVector4i sat_u8(const GSVector4i& a, const GSVector4i& b) const
+ 	{
+ 		return max_u8(a).min_u8(b);
+@@ -329,6 +371,8 @@ public:
+ 		return max_u8(a.xyxy()).min_u8(a.zwzw());
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	__forceinline GSVector4i sat_u16(const GSVector4i& a, const GSVector4i& b) const
+ 	{
+ 		return max_u16(a).min_u16(b);
+@@ -339,6 +383,10 @@ public:
+ 		return max_u16(a.xyxy()).min_u16(a.zwzw());
+ 	}
+ 
++	#endif
++
++	#if _M_SSE >= 0x401
++
+ 	__forceinline GSVector4i sat_u32(const GSVector4i& a, const GSVector4i& b) const
+ 	{
+ 		return max_u32(a).min_u32(b);
+@@ -349,6 +397,10 @@ public:
+ 		return max_u32(a.xyxy()).min_u32(a.zwzw());
+ 	}
+ 
++	#endif
++
++	#if _M_SSE >= 0x401
++
+ 	__forceinline GSVector4i min_i8(const GSVector4i& a) const
+ 	{
+ 		return GSVector4i(_mm_min_epi8(m, a));
+@@ -359,6 +411,8 @@ public:
+ 		return GSVector4i(_mm_max_epi8(m, a));
+ 	}
+ 
++	#endif
++
+ 	__forceinline GSVector4i min_i16(const GSVector4i& a) const
+ 	{
+ 		return GSVector4i(_mm_min_epi16(m, a));
+@@ -369,6 +423,8 @@ public:
+ 		return GSVector4i(_mm_max_epi16(m, a));
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	__forceinline GSVector4i min_i32(const GSVector4i& a) const
+ 	{
+ 		return GSVector4i(_mm_min_epi32(m, a));
+@@ -379,6 +435,8 @@ public:
+ 		return GSVector4i(_mm_max_epi32(m, a));
+ 	}
+ 
++	#endif
++
+ 	__forceinline GSVector4i min_u8(const GSVector4i& a) const
+ 	{
+ 		return GSVector4i(_mm_min_epu8(m, a));
+@@ -389,6 +447,8 @@ public:
+ 		return GSVector4i(_mm_max_epu8(m, a));
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	__forceinline GSVector4i min_u16(const GSVector4i& a) const
+ 	{
+ 		return GSVector4i(_mm_min_epu16(m, a));
+@@ -409,6 +469,8 @@ public:
+ 		return GSVector4i(_mm_max_epu32(m, a));
+ 	}
+ 
++	#endif
++
+ 	__forceinline static int min_i16(int a, int b)
+ 	{
+ 		return store(load(a).min_i16(load(b)));
+@@ -421,15 +483,27 @@ public:
+ 
+ 	__forceinline GSVector4i blend8(const GSVector4i& a, const GSVector4i& mask) const
+ 	{
++		#if _M_SSE >= 0x401
++
+ 		return GSVector4i(_mm_blendv_epi8(m, a, mask));
++
++		#else
++
++		return GSVector4i(_mm_or_si128(_mm_andnot_si128(mask, m), _mm_and_si128(mask, a)));
++
++		#endif
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	template <int mask>
+ 	__forceinline GSVector4i blend16(const GSVector4i& a) const
+ 	{
+ 		return GSVector4i(_mm_blend_epi16(m, a, mask));
+ 	}
+ 
++	#endif
++
+ #if _M_SSE >= 0x501
+ 
+ 	template <int mask>
+@@ -447,14 +521,26 @@ public:
+ 
+ 	__forceinline GSVector4i mix16(const GSVector4i& a) const
+ 	{
++		#if _M_SSE >= 0x401
++
+ 		return blend16<0xaa>(a);
++
++		#else
++
++		return blend8(a, GSVector4i::xffff0000());
++
++		#endif
+ 	}
+ 
++	#if _M_SSE >= 0x301
++
+ 	__forceinline GSVector4i shuffle8(const GSVector4i& mask) const
+ 	{
+ 		return GSVector4i(_mm_shuffle_epi8(m, mask));
+ 	}
+ 
++	#endif
++
+ 	__forceinline GSVector4i ps16(const GSVector4i& a) const
+ 	{
+ 		return GSVector4i(_mm_packs_epi16(m, a));
+@@ -485,6 +571,8 @@ public:
+ 		return GSVector4i(_mm_packs_epi32(m, m));
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	__forceinline GSVector4i pu32(const GSVector4i& a) const
+ 	{
+ 		return GSVector4i(_mm_packus_epi32(m, a));
+@@ -495,6 +583,8 @@ public:
+ 		return GSVector4i(_mm_packus_epi32(m, m));
+ 	}
+ 
++	#endif
++
+ 	__forceinline GSVector4i upl8(const GSVector4i& a) const
+ 	{
+ 		return GSVector4i(_mm_unpacklo_epi8(m, a));
+@@ -599,6 +689,8 @@ public:
+ 		return GSVector4i(_mm_unpackhi_epi64(m, _mm_setzero_si128()));
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	// WARNING!!!
+ 	//
+ 	// MSVC (2008, 2010 ctp) believes that there is a "mem, reg" form of the pmovz/sx* instructions,
+@@ -664,6 +756,50 @@ public:
+ 		return GSVector4i(_mm_cvtepu32_epi64(m));
+ 	}
+ 
++	#else
++
++	__forceinline GSVector4i u8to16() const
++	{
++		return upl8();
++	}
++
++	__forceinline GSVector4i u8to32() const
++	{
++		return upl8().upl16();
++	}
++
++	__forceinline GSVector4i u8to64() const
++	{
++		return upl8().upl16().upl32();
++	}
++
++	__forceinline GSVector4i u16to32() const
++	{
++		return upl16();
++	}
++
++	__forceinline GSVector4i u16to64() const
++	{
++		return upl16().upl32();
++	}
++
++	__forceinline GSVector4i u32to64() const
++	{
++		return upl32();
++	}
++
++	__forceinline GSVector4i i8to16() const
++	{
++		return zero().upl8(*this).sra16(8);
++	}
++
++	__forceinline GSVector4i i16to32() const
++	{
++		return zero().upl16(*this).sra32(16);
++	}
++
++	#endif
++
+ 	template <int i>
+ 	__forceinline GSVector4i srl() const
+ 	{
+@@ -673,7 +809,20 @@ public:
+ 	template <int i>
+ 	__forceinline GSVector4i srl(const GSVector4i& v)
+ 	{
++		#if _M_SSE >= 0x301
++
+ 		return GSVector4i(_mm_alignr_epi8(v.m, m, i));
++
++		#else
++
++		// The `& 0xF` keeps the compiler happy on cases that won't actually be hit
++		if(i == 0) return *this;
++		else if(i < 16) return srl<i & 0xF>() | v.sll<(16 - i) & 0xF>();
++		else if(i == 16) return v;
++		else if(i < 32) return v.srl<(i - 16) & 0xF>();
++		else return zero();
++
++		#endif
+ 	}
+ 
+ 	template <int i>
+@@ -871,11 +1020,15 @@ public:
+ 		return GSVector4i(_mm_mullo_epi16(m, v.m));
+ 	}
+ 
++	#if _M_SSE >= 0x301
++
+ 	__forceinline GSVector4i mul16hrs(const GSVector4i& v) const
+ 	{
+ 		return GSVector4i(_mm_mulhrs_epi16(m, v.m));
+ 	}
+ 
++	#endif
++
+ 	GSVector4i madd(const GSVector4i& v) const
+ 	{
+ 		return GSVector4i(_mm_madd_epi16(m, v.m));
+@@ -931,11 +1084,21 @@ public:
+ 
+ 	__forceinline bool eq(const GSVector4i& v) const
+ 	{
++		#if _M_SSE >= 0x401
++
+ 		// pxor, ptest, je
+ 
+ 		GSVector4i t = *this ^ v;
+ 
+ 		return _mm_testz_si128(t, t) != 0;
++
++		#else
++
++		// pcmpeqd, pmovmskb, cmp, je
++
++		return eq32(v).alltrue();
++
++		#endif
+ 	}
+ 
+ 	__forceinline GSVector4i eq8(const GSVector4i& v) const
+@@ -1015,19 +1178,39 @@ public:
+ 
+ 	__forceinline bool allfalse() const
+ 	{
++		#if _M_SSE >= 0x401
++
+ 		return _mm_testz_si128(m, m) != 0;
++
++		#else
++
++		return mask() == 0;
++
++		#endif
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	template <int i>
+ 	__forceinline GSVector4i insert8(int a) const
+ 	{
+ 		return GSVector4i(_mm_insert_epi8(m, a, i));
+ 	}
+ 
++	#endif
++
+ 	template <int i>
+ 	__forceinline int extract8() const
+ 	{
+-		return _mm_extract_epi8(m, i);
++		#if _M_SSE >= 0x401
++
++ 		return _mm_extract_epi8(m, i);
++
++		#else
++
++		return (int)u8[i];
++
++		#endif
+ 	}
+ 
+ 	template <int i>
+@@ -1042,40 +1225,66 @@ public:
+ 		return _mm_extract_epi16(m, i);
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	template <int i>
+ 	__forceinline GSVector4i insert32(int a) const
+ 	{
+ 		return GSVector4i(_mm_insert_epi32(m, a, i));
+ 	}
+ 
++	#endif
++
+ 	template <int i>
+ 	__forceinline int extract32() const
+ 	{
+ 		if (i == 0)
+ 			return GSVector4i::store(*this);
+ 
++		#if _M_SSE >= 0x401
++
+ 		return _mm_extract_epi32(m, i);
++
++		#else
++
++		return i32[i];
++
++		#endif
+ 	}
+ 
+ #ifdef _M_AMD64
+ 
++	#if _M_SSE >= 0x401
++
+ 	template <int i>
+ 	__forceinline GSVector4i insert64(int64 a) const
+ 	{
+ 		return GSVector4i(_mm_insert_epi64(m, a, i));
+ 	}
+ 
++	#endif
++
+ 	template <int i>
+ 	__forceinline int64 extract64() const
+ 	{
+ 		if (i == 0)
+ 			return GSVector4i::storeq(*this);
+ 
++		#if _M_SSE >= 0x401
++
+ 		return _mm_extract_epi64(m, i);
++
++		#else
++
++		return i64[i];
++
++		#endif
+ 	}
+ 
+ #endif
+ 
++	#if _M_SSE >= 0x401
++
+ 	template <int src, class T>
+ 	__forceinline GSVector4i gather8_4(const T* ptr) const
+ 	{
+@@ -1156,6 +1365,8 @@ public:
+ 		return v;
+ 	}
+ 
++	#endif
++
+ 	template <int src, class T>
+ 	__forceinline GSVector4i gather16_4(const T* ptr) const
+ 	{
+@@ -1237,6 +1448,8 @@ public:
+ 		return v;
+ 	}
+ 
++	#if _M_SSE >= 0x401
++
+ 	template <int src, class T>
+ 	__forceinline GSVector4i gather32_4(const T* ptr) const
+ 	{
+@@ -1301,7 +1514,56 @@ public:
+ 		return v;
+ 	}
+ 
+-#if defined(_M_AMD64)
++	#else
++
++	template<int src, class T> __forceinline GSVector4i gather32_4(const T* ptr) const
++	{
++		return GSVector4i(
++			(int)ptr[extract8<src + 0>() & 0xf],
++			(int)ptr[extract8<src + 0>() >> 4],
++			(int)ptr[extract8<src + 1>() & 0xf],
++			(int)ptr[extract8<src + 1>() >> 4]);
++	}
++
++	template<int src, class T> __forceinline GSVector4i gather32_8(const T* ptr) const
++	{
++		return GSVector4i(
++			(int)ptr[extract8<src + 0>()],
++			(int)ptr[extract8<src + 1>()],
++			(int)ptr[extract8<src + 2>()],
++			(int)ptr[extract8<src + 3>()]);
++	}
++
++	template<int src, class T> __forceinline GSVector4i gather32_16(const T* ptr) const
++	{
++		return GSVector4i(
++			(int)ptr[extract16<src + 0>()],
++			(int)ptr[extract16<src + 1>()],
++			(int)ptr[extract16<src + 2>()],
++			(int)ptr[extract16<src + 3>()]);
++	}
++
++	template<class T> __forceinline GSVector4i gather32_32(const T* ptr) const
++	{
++		return GSVector4i(
++			(int)ptr[extract32<0>()],
++			(int)ptr[extract32<1>()],
++			(int)ptr[extract32<2>()],
++			(int)ptr[extract32<3>()]);
++	}
++
++	template<class T1, class T2> __forceinline GSVector4i gather32_32(const T1* ptr1, const T2* ptr2) const
++	{
++		return GSVector4i(
++			(int)ptr2[ptr1[extract32<0>()]],
++			(int)ptr2[ptr1[extract32<1>()]],
++			(int)ptr2[ptr1[extract32<2>()]],
++			(int)ptr2[ptr1[extract32<3>()]]);
++	}
++
++	#endif
++
++	#if defined(_M_AMD64) && _M_SSE >= 0x401
+ 
+ 	template <int src, class T>
+ 	__forceinline GSVector4i gather64_4(const T* ptr) const
+@@ -1402,6 +1664,8 @@ public:
+ 
+ #endif
+ 
++	#if _M_SSE >= 0x401
++
+ 	template <class T>
+ 	__forceinline void gather8_4(const T* RESTRICT ptr, GSVector4i* RESTRICT dst) const
+ 	{
+@@ -1414,6 +1678,8 @@ public:
+ 		dst[0] = gather8_8<>(ptr);
+ 	}
+ 
++	#endif
++
+ 	template <class T>
+ 	__forceinline void gather16_4(const T* RESTRICT ptr, GSVector4i* RESTRICT dst) const
+ 	{
+@@ -1533,7 +1799,15 @@ public:
+ 
+ 	__forceinline static GSVector4i loadnt(const void* p)
+ 	{
++		#if _M_SSE >= 0x401
++
+ 		return GSVector4i(_mm_stream_load_si128((__m128i*)p));
++
++		#else
++
++		return GSVector4i(_mm_load_si128((__m128i*)p));
++
++		#endif
+ 	}
+ 
+ 	__forceinline static GSVector4i loadl(const void* p)
+diff --git a/plugins/GSdx/Renderers/Common/GSVertexTrace.cpp b/plugins/GSdx/Renderers/Common/GSVertexTrace.cpp
+index d34f28c..0f4bdd1 100644
+--- a/plugins/GSdx/Renderers/Common/GSVertexTrace.cpp
++++ b/plugins/GSdx/Renderers/Common/GSVertexTrace.cpp
+@@ -182,9 +182,18 @@ void GSVertexTrace::FindMinMax(const void* vertex, const uint32* index, int coun
+ 	GSVector4i cmin = GSVector4i::xffffffff();
+ 	GSVector4i cmax = GSVector4i::zero();
+ 
++	#if _M_SSE >= 0x401
++
+ 	GSVector4i pmin = GSVector4i::xffffffff();
+ 	GSVector4i pmax = GSVector4i::zero();
+ 
++	#else
++
++	GSVector4 pmin = s_minmax.xxxx();
++	GSVector4 pmax = s_minmax.yyyy();
++	
++	#endif
++
+ 	const GSVertex* RESTRICT v = (GSVertex*)vertex;
+ 
+ 	for (int i = 0; i < count; i += n)
+@@ -231,10 +240,21 @@ void GSVertexTrace::FindMinMax(const void* vertex, const uint32* index, int coun
+ 			GSVector4i xy = xyzf.upl16();
+ 			GSVector4i z = xyzf.yyyy();
+ 
++			#if _M_SSE >= 0x401
++
+ 			GSVector4i p = xy.blend16<0xf0>(z.uph32(xyzf));
+ 
+ 			pmin = pmin.min_u32(p);
+ 			pmax = pmax.max_u32(p);
++
++			#else
++
++			GSVector4 p = GSVector4(xy.upl64(z.srl32(1).upl32(xyzf.wwww())));
++
++			pmin = pmin.min(p);
++			pmax = pmax.max(p);
++
++			#endif
+ 		}
+ 		else if (primclass == GS_LINE_CLASS)
+ 		{
+@@ -301,11 +321,23 @@ void GSVertexTrace::FindMinMax(const void* vertex, const uint32* index, int coun
+ 			GSVector4i xy1 = xyzf1.upl16();
+ 			GSVector4i z1 = xyzf1.yyyy();
+ 
++			#if _M_SSE >= 0x401
++
+ 			GSVector4i p0 = xy0.blend16<0xf0>(z0.uph32(xyzf0));
+ 			GSVector4i p1 = xy1.blend16<0xf0>(z1.uph32(xyzf1));
+ 
+ 			pmin = pmin.min_u32(p0.min_u32(p1));
+ 			pmax = pmax.max_u32(p0.max_u32(p1));
++
++			#else
++
++			GSVector4 p0 = GSVector4(xy0.upl64(z0.srl32(1).upl32(xyzf0.wwww())));
++			GSVector4 p1 = GSVector4(xy1.upl64(z1.srl32(1).upl32(xyzf1.wwww())));
++
++			pmin = pmin.min(p0.min(p1));
++			pmax = pmax.max(p0.max(p1));
++
++			#endif
+ 		}
+ 		else if (primclass == GS_TRIANGLE_CLASS)
+ 		{
+@@ -381,12 +413,25 @@ void GSVertexTrace::FindMinMax(const void* vertex, const uint32* index, int coun
+ 			GSVector4i xy2 = xyzf2.upl16();
+ 			GSVector4i z2 = xyzf2.yyyy();
+ 
++			#if _M_SSE >= 0x401
++
+ 			GSVector4i p0 = xy0.blend16<0xf0>(z0.uph32(xyzf0));
+ 			GSVector4i p1 = xy1.blend16<0xf0>(z1.uph32(xyzf1));
+ 			GSVector4i p2 = xy2.blend16<0xf0>(z2.uph32(xyzf2));
+ 
+ 			pmin = pmin.min_u32(p2).min_u32(p0.min_u32(p1));
+ 			pmax = pmax.max_u32(p2).max_u32(p0.max_u32(p1));
++
++			#else
++
++			GSVector4 p0 = GSVector4(xy0.upl64(z0.srl32(1).upl32(xyzf0.wwww())));
++			GSVector4 p1 = GSVector4(xy1.upl64(z1.srl32(1).upl32(xyzf1.wwww())));
++			GSVector4 p2 = GSVector4(xy2.upl64(z2.srl32(1).upl32(xyzf2.wwww())));
++
++			pmin = pmin.min(p2).min(p0.min(p1));
++			pmax = pmax.max(p2).max(p0.max(p1));
++
++			#endif
+ 		}
+ 		else if (primclass == GS_SPRITE_CLASS)
+ 		{
+@@ -453,11 +498,23 @@ void GSVertexTrace::FindMinMax(const void* vertex, const uint32* index, int coun
+ 			GSVector4i xy1 = xyzf1.upl16();
+ 			GSVector4i z1 = xyzf1.yyyy();
+ 
++			#if _M_SSE >= 0x401
++
+ 			GSVector4i p0 = xy0.blend16<0xf0>(z0.uph32(xyzf1));
+ 			GSVector4i p1 = xy1.blend16<0xf0>(z1.uph32(xyzf1));
+ 
+ 			pmin = pmin.min_u32(p0.min_u32(p1));
+ 			pmax = pmax.max_u32(p0.max_u32(p1));
++
++			#else
++
++			GSVector4 p0 = GSVector4(xy0.upl64(z0.srl32(1).upl32(xyzf1.wwww())));
++			GSVector4 p1 = GSVector4(xy1.upl64(z1.srl32(1).upl32(xyzf1.wwww())));
++
++			pmin = pmin.min(p0.min(p1));
++			pmax = pmax.max(p0.max(p1));
++
++			#endif
+ 		}
+ 	}
+ 
+@@ -466,9 +523,13 @@ void GSVertexTrace::FindMinMax(const void* vertex, const uint32* index, int coun
+ 	// be true if depth isn't constant but close enough. It also imply that
+ 	// pmin.z & 1 == 0 and pax.z & 1 == 0
+ 
++	#if _M_SSE >= 0x401
++
+ 	pmin = pmin.blend16<0x30>(pmin.srl32(1));
+ 	pmax = pmax.blend16<0x30>(pmax.srl32(1));
+ 
++	#endif
++
+ 	GSVector4 o(context->XYOFFSET);
+ 	GSVector4 s(1.0f / 16, 1.0f / 16, 2.0f, 1.0f);
+ 
+diff --git a/plugins/GSdx/Renderers/DX11/GSRendererDX11.cpp b/plugins/GSdx/Renderers/DX11/GSRendererDX11.cpp
+index 78d7c2a..c55021b 100644
+--- a/plugins/GSdx/Renderers/DX11/GSRendererDX11.cpp
++++ b/plugins/GSdx/Renderers/DX11/GSRendererDX11.cpp
+@@ -944,8 +944,12 @@ void GSRendererDX11::DrawPrims(GSTexture* rt, GSTexture* ds, GSTextureCache::Sou
+ 		m_ps_sel.fog = 1;
+ 
+ 		GSVector4 fc = GSVector4::rgba32(m_env.FOGCOL.u32[0]);
++#if _M_SSE >= 0x401
+ 		// Blend AREF to avoid to load a random value for alpha (dirty cache)
+ 		ps_cb.FogColor_AREF = fc.blend32<8>(ps_cb.FogColor_AREF);
++#else
++		ps_cb.FogColor_AREF = fc;
++#endif
+ 	}
+ 
+ 	// Warning must be done after EmulateZbuffer
+diff --git a/plugins/GSdx/Renderers/OpenGL/GSRendererOGL.cpp b/plugins/GSdx/Renderers/OpenGL/GSRendererOGL.cpp
+index a6f2d5c..1882093 100644
+--- a/plugins/GSdx/Renderers/OpenGL/GSRendererOGL.cpp
++++ b/plugins/GSdx/Renderers/OpenGL/GSRendererOGL.cpp
+@@ -1327,8 +1327,12 @@ void GSRendererOGL::DrawPrims(GSTexture* rt, GSTexture* ds, GSTextureCache::Sour
+ 		m_ps_sel.fog = 1;
+ 
+ 		GSVector4 fc = GSVector4::rgba32(m_env.FOGCOL.u32[0]);
++#if _M_SSE >= 0x401
+ 		// Blend AREF to avoid to load a random value for alpha (dirty cache)
+ 		ps_cb.FogColor_AREF = fc.blend32<8>(ps_cb.FogColor_AREF);
++#else
++		ps_cb.FogColor_AREF = fc;
++#endif
+ 	}
+ 
+ 	// Warning must be done after EmulateZbuffer
+diff --git a/plugins/GSdx/Renderers/SW/GSDrawScanlineCodeGenerator.cpp b/plugins/GSdx/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
+index c71774d..dd20e88 100644
+--- a/plugins/GSdx/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
++++ b/plugins/GSdx/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
+@@ -123,7 +123,18 @@ void GSDrawScanlineCodeGenerator::mix16(const Xmm& a, const Xmm& b, const Xmm& t
+ 	}
+ 	else
+ 	{
+-		pblendw(a, b, 0xaa);
++		if(m_cpu.has(util::Cpu::tSSE41))
++		{
++			pblendw(a, b, 0xaa);
++		}
++		else
++		{
++			pcmpeqd(temp, temp);
++			psrld(temp, 16);
++			pand(a, temp);
++			pandn(temp, b);
++			por(a, temp);
++		}
+ 	}
+ }
+ 
+@@ -146,8 +157,17 @@ void GSDrawScanlineCodeGenerator::clamp16(const Xmm& a, const Xmm& temp)
+ 	}
+ 	else
+ 	{
+-		packuswb(a, a);
+-		pmovzxbw(a, a);
++		if(m_cpu.has(util::Cpu::tSSE41))
++		{
++			packuswb(a, a);
++			pmovzxbw(a, a);
++		}
++		else
++		{
++			packuswb(a, a);
++			pxor(temp, temp);
++			punpcklbw(a, temp);
++		}
+ 	}
+ }
+ 
+@@ -206,8 +226,10 @@ void GSDrawScanlineCodeGenerator::blend8(const Xmm& a, const Xmm& b)
+ {
+ 	if (m_cpu.has(util::Cpu::tAVX))
+ 		vpblendvb(a, a, b, xmm0);
+-	else
++	else if(m_cpu.has(util::Cpu::tSSE41))
+ 		pblendvb(a, b);
++	else
++		blend(a, b, xmm0);
+ }
+ 
+ void GSDrawScanlineCodeGenerator::blend8r(const Xmm& b, const Xmm& a)
+@@ -216,11 +238,15 @@ void GSDrawScanlineCodeGenerator::blend8r(const Xmm& b, const Xmm& a)
+ 	{
+ 		vpblendvb(b, a, b, xmm0);
+ 	}
+-	else
++	else if(m_cpu.has(util::Cpu::tSSE41))
+ 	{
+ 		pblendvb(a, b);
+ 		movdqa(b, a);
+ 	}
++	else
++	{
++		blendr(b, a, xmm0);
++	}
+ }
+ 
+ void GSDrawScanlineCodeGenerator::split16_2x8(const Xmm& l, const Xmm& h, const Xmm& src)
+diff --git a/plugins/GSdx/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp b/plugins/GSdx/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
+index fbaab96..39ee508 100644
+--- a/plugins/GSdx/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
++++ b/plugins/GSdx/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
+@@ -644,9 +644,20 @@ void GSDrawScanlineCodeGenerator::TestZ_SSE(const Xmm& temp1, const Xmm& temp2)
+ 		// Clamp Z to ZPSM_FMT_MAX
+ 		if (m_sel.zclamp)
+ 		{
++#if _M_SSE >= 0x401
+ 			pcmpeqd(temp1, temp1);
+ 			psrld(temp1, (uint8)((m_sel.zpsm & 0x3) * 8));
+ 			pminsd(xmm0, temp1);
++#else
++			pcmpeqd(temp1, temp1);
++			psrld(temp1, (uint8)((m_sel.zpsm & 0x3) * 8));
++			pcmpgtd(temp1, xmm0);
++			pand(xmm0, temp1);
++			pcmpeqd(temp2, temp2);
++			pxor(temp1, temp2);
++			psrld(temp1, (uint8)((m_sel.zpsm & 0x3) * 8));
++			por(xmm0, temp1);
++#endif
+ 		}
+ 
+ 		if (m_sel.zwrite)
+@@ -1078,7 +1089,15 @@ void GSDrawScanlineCodeGenerator::Wrap_SSE(const Xmm& uv0, const Xmm& uv1)
+ 		movdqa(xmm4, ptr[&m_local.gd->t.min]);
+ 		movdqa(xmm5, ptr[&m_local.gd->t.max]);
+ 
+-		movdqa(xmm0, ptr[&m_local.gd->t.mask]);
++		if(m_cpu.has(util::Cpu::tSSE41))
++		{
++			movdqa(xmm0, ptr[&m_local.gd->t.mask]);
++		}
++		else
++		{
++			movdqa(xmm0, ptr[&m_local.gd->t.invmask]);
++			movdqa(xmm6, xmm0);
++		}
+ 
+ 		// uv0
+ 
+@@ -1099,7 +1118,11 @@ void GSDrawScanlineCodeGenerator::Wrap_SSE(const Xmm& uv0, const Xmm& uv1)
+ 		pminsw(uv0, xmm5);
+ 
+ 		// clamp.blend8(repeat, m_local.gd->t.mask);
+-		pblendvb(uv0, xmm1);
++
++		if(m_cpu.has(util::Cpu::tSSE41))
++			pblendvb(uv0, xmm1);
++		else
++			blendr(uv0, xmm1, xmm0);
+ 
+ 		// uv1
+ 
+@@ -1120,7 +1143,11 @@ void GSDrawScanlineCodeGenerator::Wrap_SSE(const Xmm& uv0, const Xmm& uv1)
+ 		pminsw(uv1, xmm5);
+ 
+ 		// clamp.blend8(repeat, m_local.gd->t.mask);
+-		pblendvb(uv1, xmm1);
++
++		if(m_cpu.has(util::Cpu::tSSE41))
++			pblendvb(uv1, xmm1);
++		else
++			blendr(uv1, xmm1, xmm6);
+ 	}
+ }
+ 
+@@ -1881,7 +1908,15 @@ void GSDrawScanlineCodeGenerator::WrapLOD_SSE(const Xmm& uv0, const Xmm& uv1)
+ 	}
+ 	else
+ 	{
+-		movdqa(xmm0, ptr[&m_local.gd->t.mask]);
++		if(m_cpu.has(util::Cpu::tSSE41))
++		{
++			movdqa(xmm0, ptr[&m_local.gd->t.mask]);
++		}
++		else
++		{
++			movdqa(xmm0, ptr[&m_local.gd->t.invmask]);
++			movdqa(xmm4, xmm0);
++		}
+ 
+ 		// uv0
+ 
+@@ -1902,7 +1937,11 @@ void GSDrawScanlineCodeGenerator::WrapLOD_SSE(const Xmm& uv0, const Xmm& uv1)
+ 		pminsw(uv0, xmm6);
+ 
+ 		// clamp.blend8(repeat, m_local.gd->t.mask);
+-		pblendvb(uv0, xmm1);
++
++		if(m_cpu.has(util::Cpu::tSSE41))
++			pblendvb(uv0, xmm1);
++		else
++			blendr(uv0, xmm1, xmm0);
+ 
+ 		// uv1
+ 
+@@ -1924,7 +1963,10 @@ void GSDrawScanlineCodeGenerator::WrapLOD_SSE(const Xmm& uv0, const Xmm& uv1)
+ 
+ 		// clamp.blend8(repeat, m_local.gd->t.mask);
+ 
+-		pblendvb(uv1, xmm1);
++		if(m_cpu.has(util::Cpu::tSSE41))
++			pblendvb(uv1, xmm1);
++		else
++			blendr(uv1, xmm1, xmm4);
+ 	}
+ }
+ 
+@@ -2393,9 +2435,20 @@ void GSDrawScanlineCodeGenerator::WriteZBuf_SSE()
+ 	// Clamp Z to ZPSM_FMT_MAX
+ 	if (m_sel.zclamp)
+ 	{
++#if _M_SSE >= 0x401
+ 		pcmpeqd(xmm7, xmm7);
+ 		psrld(xmm7, (uint8)((m_sel.zpsm & 0x3) * 8));
+ 		pminsd(xmm1, xmm7);
++#else
++		static GSVector4i all_1s = GSVector4i(0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff);
++		pcmpeqd(xmm7, xmm7);
++		psrld(xmm7, (uint8)((m_sel.zpsm & 0x3) * 8));
++		pcmpgtd(xmm7, xmm1);
++		pand(xmm1, xmm7);
++		pxor(xmm7, ptr[&all_1s]);
++		psrld(xmm7, (uint8)((m_sel.zpsm & 0x3) * 8));
++		por(xmm1, xmm7);
++#endif
+ 	}
+ 
+ 	bool fast = m_sel.ztest ? m_sel.zpsm < 2 : m_sel.zpsm == 0 && m_sel.notest;
+@@ -2656,6 +2709,15 @@ void GSDrawScanlineCodeGenerator::AlphaBlend_SSE()
+ 
+ 	if (m_sel.pabe)
+ 	{
++		if(!m_cpu.has(util::Cpu::tSSE41))
++		{
++			// doh, previous blend8r overwrote xmm0 (sse41 uses pblendvb)
++			movdqa(xmm0, xmm4);
++			pslld(xmm0, 8);
++			psrad(xmm0, 31);
++
++		}
++
+ 		psrld(xmm0, 16); // zero out high words to select the source alpha in blend (so it also does mix16)
+ 
+ 		// ga = c[1].blend8(ga, mask).mix16(c[1]);
+@@ -2842,7 +2904,13 @@ void GSDrawScanlineCodeGenerator::WritePixel_SSE(const Xmm& src, const Reg32& ad
+ 				movd(dst, src);
+ 			else
+ 			{
++			if(m_cpu.has(util::Cpu::tSSE41)) {
+ 				pextrd(dst, src, i);
++			} else {
++				pshufd(xmm0, src, _MM_SHUFFLE(i, i, i, i));
++				movd(dst, xmm0);
++			}
++
+ 			}
+ 			break;
+ 		case 1:
+@@ -2850,7 +2918,12 @@ void GSDrawScanlineCodeGenerator::WritePixel_SSE(const Xmm& src, const Reg32& ad
+ 				movd(eax, src);
+ 			else
+ 			{
++			if(m_cpu.has(util::Cpu::tSSE41)) {
+ 				pextrd(eax, src, i);
++			} else {
++				pshufd(xmm0, src, _MM_SHUFFLE(i, i, i, i));
++				movd(eax, xmm0);
++			}
+ 			}
+ 			xor(eax, dst);
+ 			and(eax, 0xffffff);
+@@ -2891,28 +2964,152 @@ void GSDrawScanlineCodeGenerator::ReadTexel_SSE(int pixels, int mip_offset)
+ 
+ 	if (m_sel.mmin && !m_sel.lcm)
+ 	{
+-		const int r[] = {5, 6, 2, 4, 0, 1, 3, 7};
+-
+-		if (pixels == 4)
++		if(m_cpu.has(util::Cpu::tSSE41))
+ 		{
+-			movdqa(ptr[&m_local.temp.test], xmm7);
+-		}
+ 
+-		for (uint8 j = 0; j < 4; j++)
+-		{
+-			mov(ebx, ptr[&lod_i->u32[j]]);
+-			mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++			const int r[] = {5, 6, 2, 4, 0, 1, 3, 7};
+ 
+-			for (int i = 0; i < pixels; i++)
++			if(pixels == 4)
+ 			{
+-				ReadTexel_SSE(Xmm(r[i * 2 + 1]), Xmm(r[i * 2 + 0]), j);
++				movdqa(ptr[&m_local.temp.test], xmm7);
++			}
++
++			for(uint8 j = 0; j < 4; j++)
++			{
++				mov(ebx, ptr[&lod_i->u32[j]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				for(int i = 0; i < pixels; i++)
++				{
++					ReadTexel_SSE(Xmm(r[i * 2 + 1]), Xmm(r[i * 2 + 0]), j);
++				}
+ 			}
+-		}
+ 
+-		if (pixels == 4)
++			if(pixels == 4)
++			{
++				movdqa(xmm5, xmm7);
++				movdqa(xmm7, ptr[&m_local.temp.test]);
++			}
++		}
++		else
+ 		{
+-			movdqa(xmm5, xmm7);
+-			movdqa(xmm7, ptr[&m_local.temp.test]);
++			if(pixels == 4)
++			{
++				movdqa(ptr[&m_local.temp.test], xmm7);
++
++				mov(ebx, ptr[&lod_i->u32[0]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm6, xmm5, 0);
++				psrldq(xmm5, 4);
++				ReadTexel_SSE(xmm4, xmm2, 0);
++				psrldq(xmm2, 4);
++
++				mov(ebx, ptr[&lod_i->u32[1]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm1, xmm5, 0);
++				psrldq(xmm5, 4);
++				ReadTexel_SSE(xmm7, xmm2, 0);
++				psrldq(xmm2, 4);
++
++				punpckldq(xmm6, xmm1);
++				punpckldq(xmm4, xmm7);
++
++				mov(ebx, ptr[&lod_i->u32[2]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm1, xmm5, 0);
++				psrldq(xmm5, 4);
++				ReadTexel_SSE(xmm7, xmm2, 0);
++				psrldq(xmm2, 4);
++
++				mov(ebx, ptr[&lod_i->u32[3]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm5, xmm5, 0);
++				ReadTexel_SSE(xmm2, xmm2, 0);
++
++				punpckldq(xmm1, xmm5);
++				punpckldq(xmm7, xmm2);
++
++				punpcklqdq(xmm6, xmm1);
++				punpcklqdq(xmm4, xmm7);
++
++				mov(ebx, ptr[&lod_i->u32[0]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm1, xmm0, 0);
++				psrldq(xmm0, 4);
++				ReadTexel_SSE(xmm5, xmm3, 0);
++				psrldq(xmm3, 4);
++
++				mov(ebx, ptr[&lod_i->u32[1]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm2, xmm0, 0);
++				psrldq(xmm0, 4);
++				ReadTexel_SSE(xmm7, xmm3, 0);
++				psrldq(xmm3, 4);
++
++				punpckldq(xmm1, xmm2);
++				punpckldq(xmm5, xmm7);
++
++				mov(ebx, ptr[&lod_i->u32[2]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm2, xmm0, 0);
++				psrldq(xmm0, 4);
++				ReadTexel_SSE(xmm7, xmm3, 0);
++				psrldq(xmm3, 4);
++
++				mov(ebx, ptr[&lod_i->u32[3]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm0, xmm0, 0);
++				ReadTexel_SSE(xmm3, xmm3, 0);
++
++				punpckldq(xmm2, xmm0);
++				punpckldq(xmm7, xmm3);
++
++				punpcklqdq(xmm1, xmm2);
++				punpcklqdq(xmm5, xmm7);
++
++				movdqa(xmm7, ptr[&m_local.temp.test]);
++			}
++			else
++			{
++				mov(ebx, ptr[&lod_i->u32[0]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm6, xmm5, 0);
++				psrldq(xmm5, 4); // shuffle instead? (1 2 3 0 ~ rotation)
++
++				mov(ebx, ptr[&lod_i->u32[1]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm1, xmm5, 0);
++				psrldq(xmm5, 4);
++
++				punpckldq(xmm6, xmm1);
++
++				mov(ebx, ptr[&lod_i->u32[2]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm1, xmm5, 0);
++				psrldq(xmm5, 4);
++
++				mov(ebx, ptr[&lod_i->u32[3]]);
++				mov(ebx, ptr[ebp + ebx * sizeof(void*) + mip_offset]);
++
++				ReadTexel_SSE(xmm4, xmm5, 0);
++				// psrldq(xmm5, 4);
++
++				punpckldq(xmm1, xmm4);
++
++				punpcklqdq(xmm6, xmm1);
++			}
++
+ 		}
+ 	}
+ 	else
+@@ -2925,11 +3122,39 @@ void GSDrawScanlineCodeGenerator::ReadTexel_SSE(int pixels, int mip_offset)
+ 
+ 		const int r[] = {5, 6, 2, 4, 0, 1, 3, 5};
+ 
+-		for (int i = 0; i < pixels; i++)
++		if(m_cpu.has(util::Cpu::tSSE41))
+ 		{
+-			for (uint8 j = 0; j < 4; j++)
++			for(int i = 0; i < pixels; i++)
++			{
++				for(uint8 j = 0; j < 4; j++)
++				{
++					ReadTexel_SSE(Xmm(r[i * 2 + 1]), Xmm(r[i * 2 + 0]), j);
++				}
++			}
++
++		} else {
++			const int t[] = {1, 4, 1, 5, 2, 5, 2, 0};
++
++			for(int i = 0; i < pixels; i++)
+ 			{
+-				ReadTexel_SSE(Xmm(r[i * 2 + 1]), Xmm(r[i * 2 + 0]), j);
++				const Xmm& addr = Xmm(r[i * 2 + 0]);
++				const Xmm& dst = Xmm(r[i * 2 + 1]);
++				const Xmm& temp1 = Xmm(t[i * 2 + 0]);
++				const Xmm& temp2 = Xmm(t[i * 2 + 1]);
++
++				ReadTexel_SSE(dst, addr, 0);
++				psrldq(addr, 4); // shuffle instead? (1 2 3 0 ~ rotation)
++				ReadTexel_SSE(temp1, addr, 0);
++				psrldq(addr, 4);
++				punpckldq(dst, temp1);
++
++				ReadTexel_SSE(temp1, addr, 0);
++				psrldq(addr, 4);
++				ReadTexel_SSE(temp2, addr, 0);
++				// psrldq(addr, 4);
++				punpckldq(temp1, temp2);
++
++				punpcklqdq(dst, temp1);
+ 			}
+ 		}
+ 	}
+diff --git a/plugins/GSdx/Renderers/SW/GSRendererSW.cpp b/plugins/GSdx/Renderers/SW/GSRendererSW.cpp
+index bbe1e16..b360888 100644
+--- a/plugins/GSdx/Renderers/SW/GSRendererSW.cpp
++++ b/plugins/GSdx/Renderers/SW/GSRendererSW.cpp
+@@ -281,17 +281,37 @@ void GSRendererSW::ConvertVertexBuffer(GSVertexSW* RESTRICT dst, const GSVertex*
+ 
+ 	GSVector4i off = (GSVector4i)m_context->XYOFFSET;
+ 	GSVector4 tsize = GSVector4(0x10000 << m_context->TEX0.TW, 0x10000 << m_context->TEX0.TH, 1, 0);
++
++	#if _M_SSE >= 0x401
++
+ 	GSVector4i z_max = GSVector4i::xffffffff().srl32(GSLocalMemory::m_psm[m_context->ZBUF.PSM].fmt * 8);
+ 
++	#else
++
++	uint32_t z_max = 0xffffffff >> (GSLocalMemory::m_psm[m_context->ZBUF.PSM].fmt * 8);
++
++	#endif
++
+ 	for (int i = (int)m_vertex.next; i > 0; i--, src++, dst++)
+ 	{
+ 		GSVector4 stcq = GSVector4::load<true>(&src->m[0]); // s t rgba q
+ 
++		#if _M_SSE >= 0x401
++
+ 		GSVector4i xyzuvf(src->m[1]);
+ 
+ 		GSVector4i xy = xyzuvf.upl16() - off;
+ 		GSVector4i zf = xyzuvf.ywww().min_u32(GSVector4i::xffffff00());
+ 
++		#else
++
++		uint32 z = src->XYZ.Z;
++
++		GSVector4i xy = GSVector4i::load((int)src->XYZ.u32[0]).upl16() - off;
++		GSVector4i zf = GSVector4i((int)std::min<uint32>(z, 0xffffff00), src->FOG); // NOTE: larger values of z may roll over to 0 when converting back to uint32 later
++
++		#endif
++
+ 		dst->p = GSVector4(xy).xyxy(GSVector4(zf) + (GSVector4::m_x4f800000 & GSVector4::cast(zf.sra32(31)))) * m_pos_scale;
+ 		dst->c = GSVector4(GSVector4i::cast(stcq).zzzz().u8to32() << 7);
+ 
+@@ -301,7 +321,15 @@ void GSRendererSW::ConvertVertexBuffer(GSVertexSW* RESTRICT dst, const GSVertex*
+ 		{
+ 			if (fst)
+ 			{
++				#if _M_SSE >= 0x401
++
+ 				t = GSVector4(xyzuvf.uph16() << (16 - 4));
++
++				#else
++
++				t = GSVector4(GSVector4i::load(src->UV).upl16() << (16 - 4));
++
++				#endif
+ 			}
+ 			else if (q_div)
+ 			{
+@@ -326,8 +354,17 @@ void GSRendererSW::ConvertVertexBuffer(GSVertexSW* RESTRICT dst, const GSVertex*
+ 
+ 		if (primclass == GS_SPRITE_CLASS)
+ 		{
++			#if _M_SSE >= 0x401
++
+ 			xyzuvf = xyzuvf.min_u32(z_max);
+ 			t = t.insert32<1, 3>(GSVector4::cast(xyzuvf));
++
++			#else
++
++			z = std::min(z, z_max);
++			t = t.insert32<0, 3>(GSVector4::cast(GSVector4i::load(z)));
++
++			#endif
+ 		}
+ 
+ 		dst->t = t;
+diff --git a/plugins/GSdx/stdafx.h b/plugins/GSdx/stdafx.h
+index f4cc2f8..eb79d53 100644
+--- a/plugins/GSdx/stdafx.h
++++ b/plugins/GSdx/stdafx.h
+@@ -244,39 +244,60 @@ typedef int64 sint64;
+ 	#define _M_SSE 0x500
+ #elif defined(__SSE4_1__)
+ 	#define _M_SSE 0x401
++#elif defined(__SSSE3__)
++	#define _M_SSE 0x301
++#elif defined(__SSE2__)
++	#define _M_SSE 0x200
+ #endif
+ 
+ #endif
+ 
+ #if !defined(_M_SSE) && (!defined(_WIN32) || defined(_M_AMD64) || defined(_M_IX86_FP) && _M_IX86_FP >= 2)
+ 
+-	#define _M_SSE 0x401
++	#define _M_SSE 0x200
++
++#endif
++
++#if _M_SSE >= 0x200
++
++	#include <xmmintrin.h>
++	#include <emmintrin.h>
++
++	#ifndef _MM_DENORMALS_ARE_ZERO
++	#define _MM_DENORMALS_ARE_ZERO 0x0040
++	#endif
++
++	#define MXCSR (_MM_DENORMALS_ARE_ZERO | _MM_MASK_MASK | _MM_ROUND_NEAREST | _MM_FLUSH_ZERO_ON)
++
++	#define _MM_TRANSPOSE4_SI128(row0, row1, row2, row3) \
++	{ \
++		__m128 tmp0 = _mm_shuffle_ps(_mm_castsi128_ps(row0), _mm_castsi128_ps(row1), 0x44); \
++		__m128 tmp2 = _mm_shuffle_ps(_mm_castsi128_ps(row0), _mm_castsi128_ps(row1), 0xEE); \
++		__m128 tmp1 = _mm_shuffle_ps(_mm_castsi128_ps(row2), _mm_castsi128_ps(row3), 0x44); \
++		__m128 tmp3 = _mm_shuffle_ps(_mm_castsi128_ps(row2), _mm_castsi128_ps(row3), 0xEE); \
++		(row0) = _mm_castps_si128(_mm_shuffle_ps(tmp0, tmp1, 0x88)); \
++		(row1) = _mm_castps_si128(_mm_shuffle_ps(tmp0, tmp1, 0xDD)); \
++		(row2) = _mm_castps_si128(_mm_shuffle_ps(tmp2, tmp3, 0x88)); \
++		(row3) = _mm_castps_si128(_mm_shuffle_ps(tmp2, tmp3, 0xDD)); \
++	}
++
++#else
++
++#error TODO: GSVector4 and GSRasterizer needs SSE2
+ 
+ #endif
+ 
+-#include <xmmintrin.h>
+-#include <emmintrin.h>
++#if _M_SSE >= 0x301
++
++	#include <tmmintrin.h>
+ 
+-#ifndef _MM_DENORMALS_ARE_ZERO
+-#define _MM_DENORMALS_ARE_ZERO 0x0040
+ #endif
+ 
+-#define MXCSR (_MM_DENORMALS_ARE_ZERO | _MM_MASK_MASK | _MM_ROUND_NEAREST | _MM_FLUSH_ZERO_ON)
+-
+-#define _MM_TRANSPOSE4_SI128(row0, row1, row2, row3) \
+-{ \
+-	__m128 tmp0 = _mm_shuffle_ps(_mm_castsi128_ps(row0), _mm_castsi128_ps(row1), 0x44); \
+-	__m128 tmp2 = _mm_shuffle_ps(_mm_castsi128_ps(row0), _mm_castsi128_ps(row1), 0xEE); \
+-	__m128 tmp1 = _mm_shuffle_ps(_mm_castsi128_ps(row2), _mm_castsi128_ps(row3), 0x44); \
+-	__m128 tmp3 = _mm_shuffle_ps(_mm_castsi128_ps(row2), _mm_castsi128_ps(row3), 0xEE); \
+-	(row0) = _mm_castps_si128(_mm_shuffle_ps(tmp0, tmp1, 0x88)); \
+-	(row1) = _mm_castps_si128(_mm_shuffle_ps(tmp0, tmp1, 0xDD)); \
+-	(row2) = _mm_castps_si128(_mm_shuffle_ps(tmp2, tmp3, 0x88)); \
+-	(row3) = _mm_castps_si128(_mm_shuffle_ps(tmp2, tmp3, 0xDD)); \
+-}
+-
+-#include <tmmintrin.h>
+-#include <smmintrin.h>
++#if _M_SSE >= 0x401
++
++	#include <smmintrin.h>
++
++#endif
+ 
+ #if _M_SSE >= 0x500
+ 
+-- 
+2.30.2
+

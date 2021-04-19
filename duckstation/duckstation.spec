@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit 88618bde1c7164ab146d906e6b623aa49855ea98
+%global commit c79d93fd53aff736d26ea9a1f6cde1418aa5a8f3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210414
+%global date 20210418
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        10%{?gver}%{?dist}
+Release:        11%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -34,7 +34,6 @@ Patch1:         0001-Set-datadir-to-RPM-packaging.patch
 Patch2:         0001-Fix-translation-names.patch
 Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
-Patch5:         0001-cubeb-set-CUBEB_STREAM_PREF_PERSIST.patch
 
 
 ExclusiveArch:  x86_64 armv7l aarch64
@@ -50,7 +49,7 @@ BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5LinguistTools)
 BuildRequires:  cmake(Qt5Network)
 BuildRequires:  cmake(Qt5Widgets)
-#BuildRequires:  cmake(RapidJSON)
+BuildRequires:  cmake(RapidJSON)
 BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gl)
@@ -228,6 +227,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Apr 18 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-11.20210418gitc79d93f
+- New snapshot
+- BR: rapidjson
+
 * Wed Apr 14 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-10.20210414git88618bd
 - Update
 

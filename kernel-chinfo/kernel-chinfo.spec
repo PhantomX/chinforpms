@@ -79,7 +79,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 78a9ec0973b7df5164f8ba2141b736cf5da70c80
+%global pfcommit 1aa0f6f0e71ea5ba3f39be37611bdaec13ec97d9
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -844,9 +844,10 @@ Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{patchwork_url}/12149575/mbox/#/patchwork-blk-mq-Fix-races-between-iterating-over-requests-and-freeing-requests.patch
-Patch2003: 0001-fsync.patch
-Patch2004: 0001-futex2.patch
+Patch2001: %{patchwork_url}/12160165/mbox/#/patchwork-v2-blk-mq-Fix-races-between-iterating-over-requests-and-freeing-requests.patch
+Patch2002: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
+Patch2010: 0001-fsync.patch
+Patch2011: 0001-futex2.patch
 
 %if !0%{?post_factum}
 
@@ -2664,6 +2665,9 @@ fi
 #
 #
 %changelog
+* Sun Apr 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.15-501.chinfo
+- pf sync
+
 * Fri Apr 16 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.15-500.chinfo
 - 5.11.15 - pf8
 
