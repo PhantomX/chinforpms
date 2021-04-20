@@ -90,6 +90,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
 echo "%{_libdir}/%{name}" \
   > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 
 %files -n lib%{name}
 %license LICENSE

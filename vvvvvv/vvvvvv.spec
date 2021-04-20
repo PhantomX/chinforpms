@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 0da9b5069adca7222004a53aaecf39db03e076f7
+%global commit 186f36beea8df7c51cf55769350b1cfd982d28a7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210321
+%global date 20210418
 
 %undefine _hardened_build
 
@@ -18,7 +18,7 @@
 
 Name:           vvvvvv
 Version:        2.3
-Release:        7%{?gver}%{?dist}
+Release:        8%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -74,9 +74,9 @@ rm -rf third_party/utfcpp/
 rm -rf third_party/tinyxml2/
 %else
 sed \
-  -e '/INCLUDE_DIRECTORIES/a../third_party/tinyxml2' \
-  -e '/FIND_PACKAGE(utf8cpp CONFIG)/aADD_LIBRARY(tinyxml2-static STATIC ${XML2_SRC})' \
-  -e '/TARGET_LINK_LIBRARIES/s| tinyxml2 | tinyxml2-static |g' \
+  -e '/\..\/third_party\/lodepng$/a..\/third_party\/tinyxml2' \
+  -e '/find_package(utf8cpp CONFIG)/aadd_library(tinyxml2-static STATIC ${XML2_SRC})' \
+  -e '/target_link_libraries/s| tinyxml2 | tinyxml2-static |g' \
   -i desktop_version/CMakeLists.txt
 %endif
 
@@ -149,6 +149,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Mon Apr 19 2021 - 2.3-8.20210418git186f36b
+- Update
+
 * Mon Mar 22 2021 - 2.3-7.20210321git0da9b50
 - Bump
 - Remove system libraries patch

@@ -51,7 +51,7 @@
 
 Name:           telegram-desktop
 Version:        2.7.1
-Release:        1%{?dist}
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -164,9 +164,9 @@ Provides:       bundled(rlottie) = 0~git
 
 %if %{with tgvoip}
 BuildRequires:  pkgconfig(tgvoip) >= 2.4.4
+%else
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(libpulse)
-%else
 Provides:       bundled(libtgvoip) = 2.4.4
 %endif
 
@@ -417,6 +417,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Apr 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.1-100
+- Fix alsa and libpulse BRs
+
 * Tue Mar 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.1-1
 - 2.7.1
 

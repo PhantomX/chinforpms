@@ -7,7 +7,7 @@
 
 Name:           %{orgname}-gs
 Version:        2.16.7
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Sega Genesis, Sega CD, and Sega 32X emulator
 
 URL:            http://segaretro.org/Gens/GS
@@ -23,6 +23,7 @@ Source0:        https://retrocdn.net/images/6/6d/Gens-gs-r7.tar.gz
 #Cannot be sumbitted upstream, as upcomming version no longers uses GTK
 Patch0:         %{name}-gtk.patch
 Patch1:         0001-lzma-extlib.patch
+Patch2:         0001-Fix-error-template-with-C-linkage.patch
 
 ExclusiveArch:  i686
 
@@ -155,6 +156,9 @@ rm -f %{buildroot}%{_libdir}/mdp/*.la
 
 
 %changelog
+* Mon Apr 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2.16.7-102
+- Fix build with newer glib2
+
 * Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.16.7-101
 - BR: gcc-c++
 

@@ -3,11 +3,12 @@ amdgpu-pro-vulkan-driver
 amdvlk-vulkan-driver
 -aom
 chinforpms-rpm-config
+compat-bison-36
 compat-gcc-32
 cubeb
 -dxil-spirv
 FAudio
-FAudio-freeworld
+-FAudio-freeworld
 FAudio-noreverb
 gamemode
 glslang

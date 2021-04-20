@@ -1,6 +1,6 @@
-%global commit 9d016f776b403a9c75226e228d1e638b900c2f49
+%global commit 55058a64edac30612c798d67dafd518e76c11ac3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210107
+%global date 20210416
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,7 +10,7 @@
 %global ver %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
 
 Name:           ninfs
-Version:        2.0~a3
+Version:        2.0~a4
 Release:        1%{?gver}%{?dist}
 Summary:        FUSE program to extract data from Nintendo® game consoles
 
@@ -30,7 +30,7 @@ BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist haccrypto} >= 0.1
 BuildRequires:  %{py3_dist pyctr} >= 0.4.5
-BuildRequires:  %{py3_dist pycryptodomex} >= 3.9.8
+BuildRequires:  %{py3_dist pycryptodomex} >= 3.10.1
 BuildRequires:  python3-tkinter
 BuildRequires:  desktop-file-utils
 Requires:       fuse
@@ -52,7 +52,7 @@ card contents, and you can browse and copy out just the files that you need.
 %endif
 
 # Set Fedora provided version
-sed -e 's|pycryptodomex==3.9.9|pycryptodomex>=3.9.8|g' -i setup.py requirements.txt
+#sed -e 's|pycryptodomex==3.9.9|pycryptodomex>=3.9.8|g' -i setup.py requirements.txt
 
 %build
 %py3_build
@@ -95,5 +95,8 @@ done
 
 
 %changelog
+* Mon Apr 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0~a4-1.20210416git55058a6
+- 2.0a4
+
 * Wed Jan 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0~a3-1.20210107git9d016f7
 - Initial spec.

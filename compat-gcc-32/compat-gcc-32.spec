@@ -30,7 +30,7 @@
 Summary:        The compatibility GNU Compiler Collection
 Name:           compat-gcc-32
 Version:        %{gcc_version}
-Release:        %{gcc_release}.16%{?dist}.8
+Release:        %{gcc_release}.16%{?dist}.9
 
 License:        GPLv2+ with exceptions
 URL:            http://gcc.gnu.org
@@ -49,7 +49,7 @@ ExcludeArch:    %{arm} aarch64 ppc64le
 BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  binutils >= 2.16.91.0.5-1
-BuildRequires:  zlib-devel, gettext, dejagnu, bison, flex, texinfo
+BuildRequires:  zlib-devel, gettext, dejagnu, compat-bison-36, flex, texinfo
 # Make sure pthread.h doesn't contain __thread tokens
 BuildRequires:  glibc-devel >= 2.2.90-12, glibc-static
 BuildRequires:  %{_prefix}/share/i18n/locales/de_DE
@@ -372,6 +372,7 @@ fi
 %endif
 CC="$CC" CFLAGS="$OPT_FLAGS" CXXFLAGS="$OPT_FLAGS" XCFLAGS="$OPT_FLAGS" TCFLAGS="$OPT_FLAGS" \
   GCJFLAGS="$OPT_FLAGS" \
+  BISON="bison36" DEFAULT_YACC="bison36 -y" \
   ../configure --prefix=%{_prefix} --mandir=%{_mandir} --infodir=%{_infodir} \
   --enable-shared --enable-threads=posix --disable-checking \
   --with-system-zlib --enable-__cxa_atexit \
@@ -509,6 +510,9 @@ find %{buildroot} -name '*.la' -delete
 %{_prefix}/%{_lib}/libstdc++.so.5*
 
 %changelog
+* Mon Apr 19 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.3-68.16.9
+- Fix build with compat-bison-36
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.2.3-68.16.8
 - gcc 10 fix
 

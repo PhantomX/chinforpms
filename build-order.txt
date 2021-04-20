@@ -5,7 +5,7 @@ chinforpms-rpm-config
 buildsys-build-rpmfusion
 c-vtapi
 chinforpms-fake-packages
-compat-gcc-32
+compat-bison-36
 cubeb
 glibc-langpack-pt_BR_iso8601
 gstreamer1
@@ -23,7 +23,7 @@ mingw-headers
 p7zip
 pysdl2
 -python-iniherit
-python-markdown-math
+-python-markdown-math
 -python-pyfavicon
 -python-pyotp
 -python-pyzbar
@@ -39,6 +39,7 @@ xwit
 
 # 2
 -aom
+compat-gcc-32
 -dxil-spirv
 ff7tk
 libchdr

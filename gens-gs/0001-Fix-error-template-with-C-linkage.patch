@@ -1,0 +1,290 @@
+From 33ea7ec30a0b80b089c61e152792a0f88a4255a2 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 19 Apr 2021 09:13:27 -0300
+Subject: [PATCH] Fix error: template with C linkage
+
+---
+ src/gens/ui/gtk/about/about_window.cpp             | 8 ++++----
+ src/gens/ui/gtk/about/about_window.hpp             | 6 +++---
+ src/gens/ui/gtk/bios_misc_files/bmf_window.hpp     | 6 +++---
+ src/gens/ui/gtk/directory_config/dir_window.hpp    | 6 +++---
+ src/gens/ui/gtk/general_options/genopt_window.hpp  | 6 +++---
+ src/gens/ui/gtk/gens/gens_menu.cpp                 | 8 ++++----
+ src/gens/ui/gtk/opengl_resolution/glres_window.cpp | 6 +++---
+ src/gens/ui/gtk/opengl_resolution/glres_window.hpp | 6 +++---
+ src/gens/ui/gtk/plugin_manager/pmgr_window.cpp     | 6 +++---
+ src/gens/ui/gtk/plugin_manager/pmgr_window.hpp     | 6 +++---
+ src/gens/ui/gtk/select_cdrom/selcd_window.cpp      | 6 +++---
+ src/gens/ui/gtk/select_cdrom/selcd_window.hpp      | 6 +++---
+ 12 files changed, 38 insertions(+), 38 deletions(-)
+
+diff --git a/src/gens/ui/gtk/about/about_window.cpp b/src/gens/ui/gtk/about/about_window.cpp
+index 2358cc7..64a3fed 100644
+--- a/src/gens/ui/gtk/about/about_window.cpp
++++ b/src/gens/ui/gtk/about/about_window.cpp
+@@ -24,6 +24,10 @@
+ #include <config.h>
+ #endif
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++#include <gdk/gdkkeysyms.h>
++
+ #include "about_window.hpp"
+ #include "ui/common/about_window_data.h"
+ #include "gens/gens_window.h"
+@@ -36,10 +40,6 @@
+ #include <stdint.h>
+ #include <string.h>
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-#include <gdk/gdkkeysyms.h>
+-
+ // TODO: Eliminate gtk-misc.h.
+ #include "gtk-misc.h"
+ 
+diff --git a/src/gens/ui/gtk/about/about_window.hpp b/src/gens/ui/gtk/about/about_window.hpp
+index 67288c2..468d604 100644
+--- a/src/gens/ui/gtk/about/about_window.hpp
++++ b/src/gens/ui/gtk/about/about_window.hpp
+@@ -23,13 +23,13 @@
+ #ifndef GENS_UI_GTK_ABOUT_WINDOW_HPP
+ #define GENS_UI_GTK_ABOUT_WINDOW_HPP
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-
+ extern GtkWidget *about_window;
+ 
+ void about_window_show(void);
+diff --git a/src/gens/ui/gtk/bios_misc_files/bmf_window.hpp b/src/gens/ui/gtk/bios_misc_files/bmf_window.hpp
+index 175e24f..e75d3d2 100644
+--- a/src/gens/ui/gtk/bios_misc_files/bmf_window.hpp
++++ b/src/gens/ui/gtk/bios_misc_files/bmf_window.hpp
+@@ -23,13 +23,13 @@
+ #ifndef GENS_UI_GTK_BIOS_MISC_FILES_WINDOW_HPP
+ #define GENS_UI_GTK_BIOS_MISC_FILES_WINDOW_HPP
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-
+ extern GtkWidget *bmf_window;
+ 
+ void bmf_window_show(void);
+diff --git a/src/gens/ui/gtk/directory_config/dir_window.hpp b/src/gens/ui/gtk/directory_config/dir_window.hpp
+index fefe3a3..dc084b6 100644
+--- a/src/gens/ui/gtk/directory_config/dir_window.hpp
++++ b/src/gens/ui/gtk/directory_config/dir_window.hpp
+@@ -23,13 +23,13 @@
+ #ifndef GENS_UI_GTK_DIR_WINDOW_HPP
+ #define GENS_UI_GTK_DIR_WINDOW_HPP
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-
+ extern GtkWidget *dir_window;
+ 
+ void dir_window_show(void);
+diff --git a/src/gens/ui/gtk/general_options/genopt_window.hpp b/src/gens/ui/gtk/general_options/genopt_window.hpp
+index c87dda2..1eb9c3e 100644
+--- a/src/gens/ui/gtk/general_options/genopt_window.hpp
++++ b/src/gens/ui/gtk/general_options/genopt_window.hpp
+@@ -23,13 +23,13 @@
+ #ifndef GENS_GTK_GENERAL_OPTIONS_WINDOW_HPP
+ #define GENS_GTK_GENERAL_OPTIONS_WINDOW_HPP
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-
+ extern GtkWidget *genopt_window;
+ 
+ void genopt_window_show(void);
+diff --git a/src/gens/ui/gtk/gens/gens_menu.cpp b/src/gens/ui/gtk/gens/gens_menu.cpp
+index 6035f71..c9c7b4c 100644
+--- a/src/gens/ui/gtk/gens/gens_menu.cpp
++++ b/src/gens/ui/gtk/gens/gens_menu.cpp
+@@ -20,6 +20,10 @@
+  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+  ***************************************************************************/
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++#include <gdk/gdkkeysyms.h>
++
+ #include "gens_menu.hpp"
+ #include "ui/common/gens/gens_menu_callbacks.hpp"
+ 
+@@ -34,10 +38,6 @@
+ #include <string>
+ using std::string;
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-#include <gdk/gdkkeysyms.h>
+-
+ // GTK+ misc. (NOTE: DEPRECATED)
+ #include "gtk-misc.h"
+ 
+diff --git a/src/gens/ui/gtk/opengl_resolution/glres_window.cpp b/src/gens/ui/gtk/opengl_resolution/glres_window.cpp
+index ef09fd9..39250c5 100644
+--- a/src/gens/ui/gtk/opengl_resolution/glres_window.cpp
++++ b/src/gens/ui/gtk/opengl_resolution/glres_window.cpp
+@@ -24,12 +24,12 @@
+ #include <config.h>
+ #endif
+ 
+-#include "glres_window.hpp"
+-#include "gens/gens_window.h"
+-
+ // GTK+ includes.
+ #include <gtk/gtk.h>
+ 
++#include "glres_window.hpp"
++#include "gens/gens_window.h"
++
+ // Unused Parameter macro.
+ #include "libgsft/gsft_unused.h"
+ 
+diff --git a/src/gens/ui/gtk/opengl_resolution/glres_window.hpp b/src/gens/ui/gtk/opengl_resolution/glres_window.hpp
+index b1b336f..5032539 100644
+--- a/src/gens/ui/gtk/opengl_resolution/glres_window.hpp
++++ b/src/gens/ui/gtk/opengl_resolution/glres_window.hpp
+@@ -23,13 +23,13 @@
+ #ifndef GENS_UI_GTK_GLRES_WINDOW_HPP
+ #define GENS_UI_GTK_GLRES_WINDOW_HPP
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-
+ extern GtkWidget *glres_window;
+ 
+ void glres_window_show(void);
+diff --git a/src/gens/ui/gtk/plugin_manager/pmgr_window.cpp b/src/gens/ui/gtk/plugin_manager/pmgr_window.cpp
+index f99b067..5040510 100644
+--- a/src/gens/ui/gtk/plugin_manager/pmgr_window.cpp
++++ b/src/gens/ui/gtk/plugin_manager/pmgr_window.cpp
+@@ -24,6 +24,9 @@
+ #include <config.h>
+ #endif
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++
+ #include "pmgr_window.hpp"
+ #include "ui/common/pmgr_window_common.hpp"
+ #include "gens/gens_window.h"
+@@ -33,9 +36,6 @@
+ #include <stdint.h>
+ #include <string.h>
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-
+ // libgsft includes.
+ #include "libgsft/gsft_unused.h"
+ #include "libgsft/gsft_szprintf.h"
+diff --git a/src/gens/ui/gtk/plugin_manager/pmgr_window.hpp b/src/gens/ui/gtk/plugin_manager/pmgr_window.hpp
+index 3ea2118..a5d38cb 100644
+--- a/src/gens/ui/gtk/plugin_manager/pmgr_window.hpp
++++ b/src/gens/ui/gtk/plugin_manager/pmgr_window.hpp
+@@ -23,13 +23,13 @@
+ #ifndef GENS_UI_GTK_PLUGIN_MANAGER_WINDOW_HPP
+ #define GENS_UI_GTK_PLUGIN_MANAGER_WINDOW_HPP
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-
+ extern GtkWidget *pmgr_window;
+ 
+ void pmgr_window_show(void);
+diff --git a/src/gens/ui/gtk/select_cdrom/selcd_window.cpp b/src/gens/ui/gtk/select_cdrom/selcd_window.cpp
+index e9972c2..cf1c365 100644
+--- a/src/gens/ui/gtk/select_cdrom/selcd_window.cpp
++++ b/src/gens/ui/gtk/select_cdrom/selcd_window.cpp
+@@ -24,6 +24,9 @@
+ #include <config.h>
+ #endif
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++
+ #include "selcd_window.hpp"
+ #include "gens/gens_window.h"
+ #include "gens/gens_window_sync.hpp"
+@@ -33,9 +36,6 @@
+ #include <string.h>
+ #include <sys/stat.h>
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-
+ // libgsft includes.
+ #include "libgsft/gsft_unused.h"
+ #include "libgsft/gsft_szprintf.h"
+diff --git a/src/gens/ui/gtk/select_cdrom/selcd_window.hpp b/src/gens/ui/gtk/select_cdrom/selcd_window.hpp
+index e02f13f..24175df 100644
+--- a/src/gens/ui/gtk/select_cdrom/selcd_window.hpp
++++ b/src/gens/ui/gtk/select_cdrom/selcd_window.hpp
+@@ -23,13 +23,13 @@
+ #ifndef GENS_UI_GTK_SELCD_WINDOW_HPP
+ #define GENS_UI_GTK_SELCD_WINDOW_HPP
+ 
++// GTK+ includes.
++#include <gtk/gtk.h>
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
+-// GTK+ includes.
+-#include <gtk/gtk.h>
+-
+ extern GtkWidget *selcd_window;
+ 
+ void selcd_window_show(void);
+-- 
+2.30.2
+

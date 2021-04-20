@@ -72,6 +72,9 @@ echo "%{_libdir}/%{name}" \
 %check
 make check
 
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 
 %files
 %doc AUTHORS

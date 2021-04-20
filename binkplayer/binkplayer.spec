@@ -10,7 +10,7 @@
 %endif
 
 Name:           binkplayer
-Version:        2020.09
+Version:        2021.03
 Release:        1%{?dist}
 Summary:        Bink Video Player
 
@@ -110,6 +110,9 @@ EOF
 
 
 %changelog
+* Mon Apr 19 2021 - 2021.03-1
+- 2021.03
+
 * Wed Sep 30 2020 - 2020.09-1
 - 2020.09
 
