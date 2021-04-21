@@ -1,8 +1,8 @@
 %global _legacy_common_support 1
 
-%global commit fb217fb75b4f449dd00ecbeeae7a35082e87218c
+%global commit e58ce7463bc8829c46bcba52e8232f550e49c17c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200803
+%global date 20210418
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -12,7 +12,7 @@
 %global vc_url https://github.com/Wiimm/%{name}
 
 Name:           wiimms-iso-tools
-Version:        3.03a
+Version:        3.04a
 Release:        1%{?gver}%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
@@ -116,6 +116,9 @@ done
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 3.04a-1.20210418gite58ce74
+- 3.04a
+
 * Fri Aug 14 2020 Phantom X <megaphantomx at hotmail dot com> - 3.03a-1.20200803gitfb217fb
 - 3.03a
 

@@ -1,13 +1,13 @@
 %global debug_package %{nil}
 
 Name:           cdemu-client
-Version:        3.2.4
-Release:        1%{?dist}
+Version:        3.2.5
+Release:        0%{?dist}
 Summary:        CDEmu CLI client
 
 License:        GPLv2
-URL:            https://sourceforge.net/projects/cdemu
-Source:         https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.bz2
+URL:            https://cdemu.sourceforge.io/
+Source:         https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.xz
 
 BuildArch:      noarch
 

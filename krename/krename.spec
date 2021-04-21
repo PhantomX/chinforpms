@@ -1,6 +1,6 @@
-%global commit 8e2697af2a2d1f7a84d5f4b0c011babf0be8855a
+%global commit 94d242391c2bd1c37c0ea231622eef2f84885a44
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201009
+%global date 20210413
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           krename
 Version:        5.0.60
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 
 Epoch:          1
 
@@ -50,6 +50,7 @@ BuildRequires:  cmake(KF5WidgetsAddons)
 BuildRequires:  cmake(KF5XmlGui)
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Gui) >= 5.11.1
+BuildRequires:  cmake(Qt5Qml)
 BuildRequires:  cmake(Qt5Widgets)
 
 
@@ -90,7 +91,7 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.d
 %else
 %files -f %{name}.lang
 %endif
-%license COPYING
+%license LICENSES/*.txt
 %doc AUTHORS README.md TODO
 %{_kf5_bindir}/%{name}
 %{_kf5_metainfodir}/org.kde.%{name}.appdata.xml
@@ -101,6 +102,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.d
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0.60-104.20210413git94d2423
+- Last snapshot
+
 * Thu Nov  5 2020 Phantom X <megaphantomx at hotmail dot com> - 1:5.0.60-103.20201009git8e2697a
 - Update
 

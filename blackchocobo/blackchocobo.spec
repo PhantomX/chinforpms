@@ -1,6 +1,6 @@
-%global commit a77d0bf4c3ec2476a824b34ae7b14de7fc3a21dc
+%global commit afa68665d1ba81d34bed0d7d8d7aef7ba521080a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201225
+%global date 20210415
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -14,7 +14,7 @@
 
 Name:           blackchocobo
 Version:        1.10.5
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
 License:        GPLv3
@@ -130,6 +130,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/Black_Chocobo.
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1.10.5-2.20210415gitafa6866
+- Bump
+
 * Sat Dec 26 2020 Phantom X <megaphantomx at hotmail dot com> - 1.10.5-1.20201225gita77d0bf
 - 1.10.5
 - BR: ff7tk

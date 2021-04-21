@@ -1,6 +1,6 @@
-%global commit 8f080e151cab7ee1fe26a712fb071156d21c3d8f
+%global commit a17c0da7e9efa8cbb752c707df7d5457b2149fb8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210321
+%global date 20210410
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           libchdr
 Version:        0.1
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -71,8 +71,6 @@ sed -e 's| -O3 -flto||g' -i CMakeLists.txt
 
 %cmake_install
 
-install -pm0644 include/libchdr/chdconfig.h %{buildroot}%{_includedir}/%{name}/
-
 
 %files
 %license LICENSE.txt
@@ -86,6 +84,9 @@ install -pm0644 include/libchdr/chdconfig.h %{buildroot}%{_includedir}/%{name}/
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-5.20210410gita17c0da
+- Update
+
 * Tue Mar 23 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-4.20210321git8f080e1
 - Bump
 - Remove flac BR, upstream is using dr_flac now

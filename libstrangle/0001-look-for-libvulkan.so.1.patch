@@ -1,0 +1,26 @@
+From fa1df1a3535f47f3f6fd9fa3e8082d5dc6417a1e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 20 Apr 2021 11:37:52 -0300
+Subject: [PATCH] look for libvulkan.so.1
+
+---
+ include/vulkan/vulkan.hpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/vulkan/vulkan.hpp b/include/vulkan/vulkan.hpp
+index 96097ff..3273b69 100644
+--- a/include/vulkan/vulkan.hpp
++++ b/include/vulkan/vulkan.hpp
+@@ -70036,6 +70036,9 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+ #if defined(__linux__)
+       m_library = dlopen( "libvulkan.so", RTLD_NOW | RTLD_LOCAL );
++      if ( m_library == 0 ) {
++            m_library = dlopen( "libvulkan.so.1", RTLD_NOW | RTLD_LOCAL );
++      }
+ #elif defined(__APPLE__)
+       m_library = dlopen( "libvulkan.dylib", RTLD_NOW | RTLD_LOCAL );
+ #elif defined(_WIN32)
+-- 
+2.30.2
+

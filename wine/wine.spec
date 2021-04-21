@@ -2244,7 +2244,7 @@ fi
 %{_libdir}/wine/wmphoto.so
 %{_libdir}/wine/wmphoto.%{winedll}
 %{_libdir}/wine/wnaspi32.dll.so
-%ifarch x86_64 aarch64
+%ifarch x86_64
 %{_libdir}/wine/wow64cpu.%{winedll}
 %endif
 %{_libdir}/wine/wpc.%{winedll}

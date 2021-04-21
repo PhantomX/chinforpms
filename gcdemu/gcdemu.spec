@@ -1,13 +1,13 @@
 %global debug_package %{nil}
 
 Name:           gcdemu
-Version:        3.2.4
+Version:        3.2.5
 Release:        1%{?dist}
 Summary:        Gtk3-based CDEmu client
 
 License:        GPLv2
-URL:            http://sourceforge.net/projects/cdemu
-Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.bz2
+URL:            https://cdemu.sourceforge.io/
+Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.xz
 
 BuildArch:      noarch
 
@@ -71,6 +71,9 @@ done
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.5-1
+- 3.2.5
+
 * Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.2.4-1
 - 3.2.4
 

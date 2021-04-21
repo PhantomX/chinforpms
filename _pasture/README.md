@@ -8,6 +8,7 @@ some seasonal packages too, these can return when needed
  * **aom** - Unneeded
  * **authenticator** - Do not have interest anymore
  * **axel** - Unneeded
+ * **bashdb** - Do not have interest anymore
  * **bcg729** - linphoneqt
  * **bcmatroska2** - linphoneqt
  * **bctoolbox** - linphoneqt
@@ -27,8 +28,12 @@ some seasonal packages too, these can return when needed
  * **firefox** - Old 56 release
  * **freac-superfast-codecs** - Unneeded
  * **freefilesync** - Do not have interest anymore
+ * **gamescope** - Fedora included
+ * **geeqie** - Seasonal package, updated
  * **gnome-colors-icon-theme** - Do not have interest anymore
  * **godot2** - cowsrevenge
+ * **gstreamer1-libav** - For i686 mock build
+ * **gstreamer1-plugins-bad-freeworld** - For i686 mock build
  * **hakuneko** - Unmantained by upstream
  * **higan** - Do not have interest anymore
  * **hollywood** - Do not have interest anymore
@@ -38,9 +43,11 @@ some seasonal packages too, these can return when needed
  * **libdca** - For i686 mock build
  * **libmms** - For i686 mock build
  * **libogg** - Updated release for Waterfox, Fedora included, seasonal package
+ * **libliftoff** - Fedora included
  * **linphone** - linphoneqt
  * **linphoneqt** - Do not have interest anymore
  * **linux-steam-integration** - Missing dependencies
+ * **lzip** - Updated, seasonal package
  * **mangastream-downloader** - Unneeded
  * **mediastreamer** - linphoneqt
  * **mingw-crt** - Seasonal package, updated
@@ -51,10 +58,12 @@ some seasonal packages too, these can return when needed
  * **mps-youtube** - Do not have interest anymore
  * **mupen64plus-extraplugins** - Unneeded
  * **nautilus-dropbox** - Unneeded
+ * **nicotine+** - Seasonal package, updated
  * **opencore-amr** - For i686 mock build
  * **ortp** - linphoneqt
  * **perl-Gtk3** - Unneeded
  * **pspshrink** - Unmaintained
+ * **purple-rocketchat** - Unmaintained
  * **python-iniherit** - python-yoyo-migrations
  * **python-pafy** - mps-youtube
  * **python-pyfavicon** - authenticator
@@ -63,6 +72,7 @@ some seasonal packages too, these can return when needed
  * **python-yoyo-migrations** - authenticator
  * **psi** - Seasonal package
  * **qemu** - Seasonal package
+ * **quiterss** - Seasonal package, updated
  * **rust** - Pinned version for Waterfox build
  * **shaderc** - Fedora included
  * **simplescreenrecorder** - Do not have interest anymore

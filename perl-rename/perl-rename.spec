@@ -1,7 +1,7 @@
 %global pkgname rename
 
 Name:           perl-%{pkgname}
-Version:        1.9
+Version:        1.11
 Release:        1%{?dist}
 Summary:        Renames multiple files using Perl regular expressions
 
@@ -10,7 +10,9 @@ URL:            http://search.cpan.org/dist/rename/
 Source0:        http://search.cpan.org/CPAN/authors/id/P/PE/PEDERST/%{pkgname}-%{version}.tar.gz
 
 BuildArch:      noarch
-BuildRequires:  perl
+
+BuildRequires:  make
+BuildRequires:  perl-interpreter
 # Remove "BuildRequires:  perl-devel" for noarch packages (unneeded)
 BuildRequires:  perl-devel
 BuildRequires:  perl-generators
@@ -58,5 +60,8 @@ ln -s p%{pkgname}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1.11-1
+- 1.11
+
 * Fri Dec 30 2016 Phantom X <megaphantomx at bol dot com dot br> - 1.9-1
 - Initial spec

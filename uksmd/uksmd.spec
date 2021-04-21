@@ -1,6 +1,6 @@
-%global commit 42f4ff8eb09011bf1a199938aa2afe23040d7faf
+%global commit b6af35cb9a772f643fd1bd703f4d1f6c6c6d3b79
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20190519
+%global date 20210508
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           uksmd
 Version:        0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 
 Summary:        Userspace KSM helper daemon
 License:        GPLv3
@@ -25,6 +25,7 @@ Source0:        %{url}/-/archive/%{version}/%{name}-%{version}.tar.bz2
 BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(libprocps)
+BuildRequires:  pkgconfig(libcap-ng)
 BuildRequires:  systemd
 
 
@@ -49,7 +50,7 @@ pf-kernel (https://gitlab.com/post-factum/pf-kernel/).
 %build
 %make_build \
   CFLAGS="%{build_cflags} -fno-plt" \
-  LDFLAGS="%{build_ldflags} `pkg-config --libs libprocps`"
+  LDFLAGS="%{build_ldflags} `pkg-config --libs libprocps libcap-ng`"
 
 
 %install
@@ -77,5 +78,8 @@ install -pm0644 distro/%{name}.service %{buildroot}%{_unitdir}/
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0-2.20210508gitb6af35c
+- Bump
+
 * Thu Aug 01 2019 Phantom X <megaphantomx at bol dot com dot br> - 0-1.20190519git42f4ff8
 - Initial spec

@@ -1,8 +1,8 @@
 %global with_sdk 0
 
 Name:           vulkan-tools
-Version:        1.2.174
-Release:        1%{?dist}
+Version:        1.2.176
+Release:        2%{?dist}
 Summary:        Vulkan tools
 
 License:        ASL 2.0
@@ -83,6 +83,9 @@ done
 %{_bindir}/*
 
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.176-2
+- 1.2.176
+
 * Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.174-1
 - 1.2.174
 

@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20210407
+# 20210420
 
 set -e
 
@@ -33,6 +33,7 @@ MK10
 MK8SSE3
 MNEHALEM
 MPILEDRIVER
+MROCKETLAKE
 MSANDYBRIDGE
 MSAPPHIRERAPIDS
 MSILVERMONT

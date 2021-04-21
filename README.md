@@ -34,12 +34,10 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **gstreamer1** - Added suffix -32/-64 to gst-plugin-scanner, so it can build
                     correct multilib plugins registry, as
                     _~/.cache/gstreamer-1.0/registry.i686.bin_ on x86_64
- * **gstreamer1-libav** - For i686 mock build
- * **gstreamer1-plugins-bad-freeworld** - For i686 mock build
  * **gstreamer1-plugins-base** - preroll buffer fix from Guy1524
  * **gstreamer1-plugins-ugly** - asfdemux fixes from Guy1524
  * **gtk3** - Revert some features ditched in 3.10 release, some _Debian_,
-              _Ubuntu_ and [_gtk3-mushrooms_](https://github.com/TomaszGasior/gtk3-mushrooms) patches
+              _Ubuntu_ and [_gtk3-classic](https://github.com/lah7/gtk3-classic) patches
  * **keepassxc** - Post script and cosmetic fixes
  * **kernel** - _blk-mq_ and BFQ enabled by default, [CPU optimizations](https://github.com/graysky2/kernel_gcc_patch) and some
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) and [_pf-kernel_](https://gitlab.com/post-factum/pf-kernel/wikis/README) patches
@@ -47,9 +45,7 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **krename** - Updated, KF5
  * **libmirage** - Can't wait Fedora releases and better matching with cdemu builds from here
  * **libvirt, qemu, virt-manager** - Updated
- * **libvorbis** - aoTuV patches
  * **lutris** - Personal changes
- * **lzip** - Updated, build flags
  * **manaplus** - Updated, SDL2
  * **mednafen** - No Haswell optimizations
  * **mesa** - Can't wait Fedora releases. iXit patches
@@ -57,8 +53,8 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **pcsxr** - CHD support
  * **ppsspp** - Build options, no Qt frontend
  * **qmc2** - Qt5, no game-menus
- * **quiterss** - Updated, Qt5
  * **skrooge** - Can't wait Fedora releases
+ * **speedtest-cli** - Can't wait Fedora releases
  * **smtube** - Patched to silence players output
  * **steam** - Patch reordering, personal fixes on desktop file and launcher script
  * **taglib** - Tests
@@ -66,6 +62,7 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **vkd3d** - Can't wait Fedora releases
  * **vulkan-headers, vulkan-loader, vulkan-tools** - Can't wait Fedora releases. No sdk releases too
  * **xboxdrv** - Experimental fork and personal changes
+ * **xfce4-notes-plugin** - No automatic autostart settings
  * **wine** - Personal fixes and extra patches, like [_PBA_](https://github.com/acomminos/wine-pba) and
               more gathered from [_TK-Glitch_](https://github.com/Tk-Glitch/PKGBUILDS/tree/master/wine-tkg-git), some of them not always enabled.
               No alternatives support

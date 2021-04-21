@@ -1,7 +1,7 @@
 Name:           manaplus
-Version:        1.9.3.23
+Version:        2.1.3.17
 Epoch:          1
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        OpenSource 2D MMORPG client for Evol Online and The Mana World
 
 License:        GPLv2+
@@ -34,7 +34,6 @@ Requires:       liberation-mono-fonts
 Requires:       liberation-sans-fonts
 Requires:       mplus-1p-fonts
 Requires:       hicolor-icon-theme
-Requires:       xorg-x11-utils
 Requires:       xdg-utils
 
 Obsoletes:      mana < 0.6.1-8
@@ -105,7 +104,7 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 %doc AUTHORS ChangeLog docs/FAQ.txt README
 %{_bindir}/%{name}
 %{_bindir}/dyecmd
-%{_datadir}/appdata/%{name}.appdata.xml
+%{_metainfodir}/%{name}.metainfo.xml
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/%{name}test.desktop
 %{_datadir}/%{name}/
@@ -115,6 +114,9 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.3.17-102
+- 2.1.3.17
+
 * Mon Jun 15 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.3.23-101
 - Fix font paths
 

@@ -2,13 +2,13 @@
 %global debug_package %{nil}
 
 Name:           vhba
-Version:        20200106
+Version:        20210418
 Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPLv2
-URL:            http://sourceforge.net/projects/cdemu
-Source0:        https://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.bz2
+URL:            https://cdemu.sourceforge.io/
+Source0:        https://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.xz
 Source1:        vhba.udev
 Source2:        vhba.modules
 
@@ -47,6 +47,9 @@ install -m644 -D %{SOURCE1} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 20210418-1
+- 20210418
+
 * Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 20200106-1
 - 20200106
 

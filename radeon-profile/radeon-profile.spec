@@ -1,6 +1,6 @@
 Name:           radeon-profile
 Version:        20200824
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Simple application to read current clocks of ATi Radeon cards
 
 License:        GPLv2
@@ -25,7 +25,7 @@ BuildRequires:  qt5-linguist
 Requires:       glx-utils
 Requires:       hicolor-icon-theme
 Requires:       radeon-profile-daemon
-Requires:       xorg-x11-server-utils
+Requires:       xrandr
 
 
 %description
@@ -68,6 +68,9 @@ desktop-file-edit \
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 20200824-2
+- Replace xorg-x11-server-utils BR
+
 * Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 20200824-1
 - 20200824
 

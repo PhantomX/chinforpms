@@ -1,7 +1,7 @@
-%global commit 953075a17c947cc50bd91bcc75142fb75312b724
+%global commit 5a8fe21730872d67991211f1319c87f0780f2d0f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200807
-%global with_snapshot 1
+%global date 20210401
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -10,7 +10,7 @@
 %global pkgname DiscImageCreator
 
 Name:           discimagecreator
-Version:        20200716
+Version:        20210401
 Release:        1%{?gver}%{?dist}
 Summary:        Disc and disk image creation tool 
 
@@ -53,9 +53,9 @@ rm -f Release_ANSI/E_WISE*
 rm -f Release_ANSI/*.exe
 rm -f %{pkgname}/_external/tinyxml2.*
 
-mv "Doc/Firmware&Tool.md" Doc/Firmware_and_Tool.md
+mv "Release_ANSI/Doc/Firmware&Tool.md" Release_ANSI/Doc/Firmware_and_Tool.md
 
-sed -e 's/\r//' -i Doc/*.txt Release_ANSI/*.{dat,txt}
+sed -e 's/\r//' -i Release_ANSI/Doc/*.txt Release_ANSI/*.{dat,txt}
 
 find %{pkgname} -type f \( -name "*.cpp" -o -name "*.h" \) -exec sed -e 's/\r//' -i {} ';'
 
@@ -81,11 +81,14 @@ install -pm0644 Release_ANSI/*.{dat,txt}  %{buildroot}%{_datadir}/%{pkgname}/
 
 %files
 %license LICENSE
-%doc README.md Doc/{KnownIssue,TestedDrive}.txt Doc/Firmware_and_Tool.md
+%doc README.md Release_ANSI/Doc/{KnownIssue,TestedDrive}.txt Release_ANSI/Doc/Firmware_and_Tool.md
 %{_bindir}/%{pkgname}
 %{_datadir}/%{pkgname}/
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 20210401-1
+- 20210401
+
 * Tue Aug 11 2020 Phantom X <megaphantomx at hotmail dot com> - 20200716-1.20200807git953075a
 - Initial spec

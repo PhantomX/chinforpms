@@ -33,11 +33,11 @@
 %endif
 %global classic_dir gtk3-classic-%{classic_ver}
 
-%global vc_url https://gitlab.gnome.org/GNOME/gtk/commit
+%global vc_url https://gitlab.gnome.org/GNOME/gtk/-/commit
 
 Name:           gtk3
 Version:        3.24.28
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -47,6 +47,8 @@ URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
 Source1:        %{classic_url}/archive/%{classic_ver}/gtk3-classic-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
+
+Patch0:         %{vc_url}/6a60ce7cd4768adcd5242c341ec172db6188af04.patch#/gtk3-gl-6a60ce7.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -138,14 +140,6 @@ Recommends:    dconf%{?_isa}
 Requires:      dconf%{?_isa}
 %endif
 
-# gtk3 itself includes the Adwaita theme now
-Obsoletes:      adwaita-gtk3-theme < 3.13.3
-Provides:       adwaita-gtk3-theme = %{?epoch:%{epoch}:}%{version}-%{release}
-
-# gtk3 no longer provides the GtkThemeEngine interface used there
-Obsoletes:      gtk3-engines <= 2.91.5-5.fc15
-Obsoletes:      gtk-solidity-engine < 0.4.1-9
-Obsoletes:      oxygen-gtk3 < 2:1.4.1
 
 %description
 GTK+ is a multi-platform toolkit for creating graphical user
@@ -403,6 +397,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.28-102
+- Rawhide sync
+
 * Sun Apr 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.28-101
 - gtk3-classic update
 

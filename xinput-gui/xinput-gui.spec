@@ -9,7 +9,7 @@
 
 Name:           xinput-gui
 Version:        0.3.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A simple GUI for Xorg's Xinput tool
 
 License:        GPLv3
@@ -28,7 +28,7 @@ BuildRequires:  %{py3_dist setuptools}
 Requires:       gtk3
 Requires:       python3
 Requires:       %{py3_dist pygobject}
-Requires:       xorg-x11-server-utils
+Requires:       xinput
 #Requires:       hicolor-icon-theme
 
 
@@ -76,6 +76,9 @@ EOF
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.3.1-2
+- Replace xorg-x11-server-utils BR
+
 * Mon Aug 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.3.1-1
 - 0.3.1
 

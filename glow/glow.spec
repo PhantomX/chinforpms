@@ -11,7 +11,7 @@
 %global vc_url  https://github.com/charmbracelet/%{name}
 
 Name:           glow
-Version:        1.3.0
+Version:        1.4.1
 Release:        1%{?dist}
 Summary:        Render markdown on the CLI
 
@@ -43,6 +43,9 @@ install -pm0755 %{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1.4.1-1
+- 1.4.1
+
 * Fri Feb 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1.3.0-1
 - 1.3.0
 

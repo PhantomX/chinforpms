@@ -1,6 +1,6 @@
-%global commit d7eaf1fea625fe7fecd06edadaef1338202038ef
+%global commit 9dbf930d0c24bba760223cb63f35390781a17f2a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200309
+%global date 20210419
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,8 +8,8 @@
 %endif
 
 Name:           cropgui
-Version:        0.3
-Release:        3%{?gver}%{?dist}
+Version:        0.5
+Release:        1%{?gver}%{?dist}
 Summary:        GTK frontend for lossless cropping of jpeg images
 
 License:        GPLv2+
@@ -89,6 +89,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.5-1.20210419git9dbf930
+- 0.5
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.3-3.20200309gitd7eaf1f
 - Bump
 

@@ -1,13 +1,13 @@
-%global commit 73b54fac553a81f60f59e67c00606851b95df434
+%global commit 3fe94c6a76d2b617e7fb20fdf3cde98001a274e3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210118
+%global date 20210316
 %global gver .%{date}git%{shortcommit}
 
 # Glslang revision from packaged version
 %global glslang_version 6abdde3ce5119e8ca3dd4e5351aa3a70f25bb689
 
 Name:           shaderc
-Version:        2020.5
+Version:        2021.0
 Release:        100%{?gver}%{?dist}
 Summary:        A collection of tools, libraries, and tests for Vulkan shader compilation
 
@@ -92,6 +92,7 @@ sed -i 's|SPIRV/GlslangToSpv.h|glslang/SPIRV/GlslangToSpv.h|' libshaderc_util/sr
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DCMAKE_SKIP_RPATH=True \
   -DSHADERC_SKIP_TESTS=True \
+  -DSHADERC_ENABLE_EXAMPLES=False \
   -DPYTHON_EXE=%{__python3} \
   -GNinja \
 %{nil}
@@ -127,6 +128,9 @@ sed -i 's|SPIRV/GlslangToSpv.h|glslang/SPIRV/GlslangToSpv.h|' libshaderc_util/sr
 %{_libdir}/pkgconfig/shaderc_combined.pc
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.0-100.20210316git3fe94c6
+- 2021.0-dev
+
 * Fri Jan 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2020.5-100.20210118git73b54fa
 - 2020.5-dev
 

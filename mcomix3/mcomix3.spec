@@ -1,6 +1,6 @@
-%global commit 9ba2f5be14ad925605b2c8fa7b9933799f08ef58
+%global commit 523f08f5f8b593580aa43479822ad239fd146486
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201222
+%global date 2020329
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,7 +10,7 @@
 Name:           mcomix3
 # For now, choose version 0
 Version:        0
-Release:        0.8%{?gver}%{?dist}
+Release:        0.9%{?gver}%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
 # GPL version info is from mcomix/mcomixstarter.py
@@ -144,6 +144,9 @@ desktop-file-install \
 # TODO: appdata file, not available yet (should item)
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0-0.9.2020329git523f08f
+- Bump
+
 * Fri Jan 22 2021 Phantom X <megaphantomx at hotmail dot com> - 0-0.8.20201222git9ba2f5b
 - Latest snapshot
 

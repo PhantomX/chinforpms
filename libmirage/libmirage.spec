@@ -3,15 +3,15 @@
 %global vermm %%(echo %{version} | cut -d. -f-2)
 
 Name:           libmirage
-Version:        3.2.4
-Release:        101%{?dist}
+Version:        3.2.5
+Release:        100%{?dist}
 Summary:        A CD/DVD-ROM image access library
 
 Epoch:          1
 
 License:        GPLv2+
-URL:            http://sourceforge.net/projects/cdemu
-Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.bz2
+URL:            https://cdemu.sourceforge.io/
+Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.xz
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -81,6 +81,9 @@ This package contains files needed to develop with libMirage.
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.2.5-100
+- 3.2.5
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:3.2.4-101
 - Fix build with gcc 10
 

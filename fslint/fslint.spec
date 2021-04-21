@@ -11,7 +11,7 @@
 
 Name:           fslint
 Version:        2.47
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        File System "lint" discovery and cleaning utility
 
 License:        GPLv2+
@@ -27,6 +27,7 @@ BuildArch:      noarch
 BuildRequires:  gettext >= 0.13
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
+BuildRequires:  make
 Requires:       cpio
 Requires:       findutils
 Requires:       pygtk2 >= 2.4
@@ -125,6 +126,9 @@ done
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2.47-2.20190322gitc298bfb
+- BR: make
+
 * Sun Oct 25 2020 Phantom X <megaphantomx at hotmail dot com> - 2.47-1.20190322gitc298bfb
 - 2.47 snapshot
 

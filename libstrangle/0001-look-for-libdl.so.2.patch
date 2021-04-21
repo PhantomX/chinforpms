@@ -1,0 +1,26 @@
+From ca36b1804dfb854752704fcf7293d98b295e716b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 20 Apr 2021 11:54:23 -0300
+Subject: [PATCH] look-for-libdl.so.2
+
+---
+ src/opengl/real_dlsym.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/opengl/real_dlsym.c b/src/opengl/real_dlsym.c
+index 0e46720..ca0a557 100644
+--- a/src/opengl/real_dlsym.c
++++ b/src/opengl/real_dlsym.c
+@@ -31,6 +31,9 @@ void* real_dlsym( void* handle, const char* name )
+ 	static void *(*the_real_dlsym)( void*, const char* );
+ 	if ( the_real_dlsym == NULL ) {
+ 		void* libdl = dlopen( "libdl.so", RTLD_NOW | RTLD_LOCAL );
++		if ( libdl == NULL ) {
++			libdl = dlopen( "libdl.so.2", RTLD_NOW | RTLD_LOCAL );
++		}
+ 		the_real_dlsym = __libc_dlsym( libdl, "dlsym" );
+ 	}
+ 
+-- 
+2.30.2
+

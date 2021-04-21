@@ -11,7 +11,7 @@
 
 Name:           deluge
 Version:        2.0.3
-Release:        109%{?gver}%{?dist}
+Release:        110%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -39,6 +39,8 @@ BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  intltool
 BuildRequires:  %{py3_dist libtorrent}
+BuildRequires:  %{py3_dist wheel}
+BuildRequires:  systemd-rpm-macros
 
 ## add Requires to make into Meta package
 Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -127,7 +129,6 @@ Summary:       The Deluge daemon
 License:       GPLv3 with exceptions
 Requires:      %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
 BuildRequires: systemd
-%{?systemd_requires}
 
 %description daemon
 Files for the Deluge daemon
@@ -272,6 +273,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.3-110.20210220git4d97075
+- BR: python3-wheel
+
 * Mon Feb 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.3-109.20210220git4d97075
 - Update
 

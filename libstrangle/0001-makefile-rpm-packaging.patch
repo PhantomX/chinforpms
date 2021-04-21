@@ -1,0 +1,223 @@
+From 371ddada93326581fe302837eb5cf270ca2218b0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 20 Apr 2021 13:55:16 -0300
+Subject: [PATCH] makefile: rpm packaging
+
+Multilib friendly and cleanups for rpm packaging
+---
+ makefile                       | 111 +++++++++------------------------
+ src/strangle.sh                |   4 +-
+ src/stranglevk.sh              |   2 +-
+ src/vulkan/libstrangle_vk.json |   2 +-
+ 4 files changed, 34 insertions(+), 85 deletions(-)
+
+diff --git a/makefile b/makefile
+index ecf5dc3..84bc113 100644
+--- a/makefile
++++ b/makefile
+@@ -1,16 +1,15 @@
+ CC=gcc
+-INC=-Isrc
+-CFLAGS=-rdynamic -fPIC -shared -Wall -std=c99 -fvisibility=hidden $(INC)
+-LDFLAGS=-Wl,-z,relro,-z,now
++INC=-Isrc -Iinclude
++CFLAGS+=-rdynamic -fPIC -shared -Wall -std=c99 -fvisibility=hidden $(INC)
++LDFLAGS+=-Wl,-z,relro,-z,now
+ LDLIBS=-ldl -lrt
+ 
+-prefix=/usr/local
++prefix?=/usr
+ exec_prefix=$(prefix)
+-bindir=$(exec_prefix)/bin
+-libdir=$(exec_prefix)/lib
+-datarootdir=$(prefix)/share
+-LIB32_PATH=$(libdir)/libstrangle/lib32
+-LIB64_PATH=$(libdir)/libstrangle/lib64
++bindir?=$(exec_prefix)/bin
++libdir?=$(exec_prefix)/lib
++datarootdir?=$(prefix)/share
++LIB_PATH=$(libdir)/libstrangle
+ 
+ SOURCEDIR=src
+ BUILDDIR=build
+@@ -19,31 +18,21 @@ GL_SOURCES=$(COMMON_SOURCES) $(wildcard $(SOURCEDIR)/opengl/*.c)
+ 
+ CXX=g++
+ CXXFLAGS= -pthread -rdynamic -fPIC -shared -Wall -std=gnu++17 -fvisibility=hidden -Iinclude $(INC) -DVK_USE_PLATFORM_XLIB_KHR -DHAVE_PTHREAD -DHAVE_TIMESPEC_GET
+-LDXXFLAGS=
++LDXXFLAGS=$(LDFLAGS)
+ LDXXLIBS=-lrt
+ VK_SOURCES=\
+ 	$(COMMON_SOURCES) \
+ 	$(wildcard $(SOURCEDIR)/vulkan/*.c) \
+ 	$(wildcard $(SOURCEDIR)/vulkan/*.cpp)
+ 
+-.PHONY: all 32-bit 64-bit native ld clean uninstall install install-32 install-64 install-ld install-common install-native
++.PHONY: all libstrangle ld clean uninstall install install-libstrangle install-ld install-common
+ 
+-all: 32-bit 64-bit ld
++all: libstrangle
+ 
+-32-bit: \
+-	$(BUILDDIR)/libstrangle32.so \
+-	$(BUILDDIR)/libstrangle32_nodlsym.so \
+-	$(BUILDDIR)/libstrangle_vk32.so
+-
+-64-bit: \
+-	$(BUILDDIR)/libstrangle64.so \
+-	$(BUILDDIR)/libstrangle64_nodlsym.so \
+-	$(BUILDDIR)/libstrangle_vk64.so
+-
+-native: \
+-	$(BUILDDIR)/libstrangle_native.so \
+-	$(BUILDDIR)/libstrangle_native_nodlsym.so \
+-	$(BUILDDIR)/libstrangle_vk_native.so
++libstrangle: \
++	$(BUILDDIR)/libstrangle.so \
++	$(BUILDDIR)/libstrangle_nodlsym.so \
++	$(BUILDDIR)/libstrangle_vk.so
+ 
+ ld: $(BUILDDIR)/libstrangle.conf
+ 
+@@ -51,34 +40,15 @@ $(BUILDDIR):
+ 	mkdir -p $(BUILDDIR)
+ 
+ $(BUILDDIR)/libstrangle.conf: | $(BUILDDIR)
+-	@echo "$(LIB32_PATH)/" > $(BUILDDIR)/libstrangle.conf
+-	@echo "$(LIB64_PATH)/" >> $(BUILDDIR)/libstrangle.conf
+-
+-$(BUILDDIR)/libstrangle64.so: | $(BUILDDIR)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -m64 -o $@ $(GL_SOURCES) $(LDLIBS) -DHOOK_DLSYM
+-
+-$(BUILDDIR)/libstrangle32.so: | $(BUILDDIR)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -m32 -o $@ $(GL_SOURCES) $(LDLIBS) -DHOOK_DLSYM
+-
+-$(BUILDDIR)/libstrangle64_nodlsym.so: | $(BUILDDIR)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -m64 -o $@ $(GL_SOURCES) $(LDLIBS)
++	@echo "$(LIB_PATH)/" >> $(BUILDDIR)/libstrangle.conf
+ 
+-$(BUILDDIR)/libstrangle32_nodlsym.so: | $(BUILDDIR)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -m32 -o $@ $(GL_SOURCES) $(LDLIBS)
+-
+-$(BUILDDIR)/libstrangle_vk64.so: | $(BUILDDIR)
+-	$(CXX) $(CXXFLAGS) $(LDXXFLAGS) -m64 -o $@ $(VK_SOURCES) $(LDXXLIBS)
+-
+-$(BUILDDIR)/libstrangle_vk32.so: | $(BUILDDIR)
+-	$(CXX) $(CXXFLAGS) $(LDXXFLAGS) -m32 -o $@ $(VK_SOURCES) $(LDXXLIBS)
+-
+-$(BUILDDIR)/libstrangle_native.so: | $(BUILDDIR)
++$(BUILDDIR)/libstrangle.so: | $(BUILDDIR)
+ 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(GL_SOURCES) $(LDLIBS) -DHOOK_DLSYM
+ 
+-$(BUILDDIR)/libstrangle_native_nodlsym.so: | $(BUILDDIR)
++$(BUILDDIR)/libstrangle_nodlsym.so: | $(BUILDDIR)
+ 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(GL_SOURCES) $(LDLIBS)
+ 
+-$(BUILDDIR)/libstrangle_vk_native.so: | $(BUILDDIR)
++$(BUILDDIR)/libstrangle_vk.so: | $(BUILDDIR)
+ 	$(CXX) $(CXXFLAGS) $(LDXXFLAGS) -o $@ $(VK_SOURCES) $(LDXXLIBS)
+ 
+ install-common:
+@@ -88,50 +58,29 @@ install-common:
+ 
+ install-ld: ld
+ 	install -m 0644 -D -T $(BUILDDIR)/libstrangle.conf $(DESTDIR)/etc/ld.so.conf.d/libstrangle.conf
+-	ldconfig
+-
+-install-32: 32-bit
+-	install -m 0755 -D -T $(BUILDDIR)/libstrangle32.so $(DESTDIR)$(LIB32_PATH)/libstrangle.so
+-	install -m 0755 -D -T $(BUILDDIR)/libstrangle32_nodlsym.so $(DESTDIR)$(LIB32_PATH)/libstrangle_nodlsym.so
+-	install -m 0755 -D -T $(BUILDDIR)/libstrangle_vk32.so $(DESTDIR)$(LIB32_PATH)/libstrangle_vk.so
+-
+-install-64: 64-bit
+-	install -m 0755 -D -T $(BUILDDIR)/libstrangle64.so $(DESTDIR)$(LIB64_PATH)/libstrangle.so
+-	install -m 0755 -D -T $(BUILDDIR)/libstrangle64_nodlsym.so $(DESTDIR)$(LIB64_PATH)/libstrangle_nodlsym.so
+-	install -m 0755 -D -T $(BUILDDIR)/libstrangle_vk64.so $(DESTDIR)$(LIB64_PATH)/libstrangle_vk.so
+ 
+-install-native: native
+-	install -m 0755 -D -T $(BUILDDIR)/libstrangle_native.so $(DESTDIR)$(libdir)/libstrangle.so
+-	install -m 0755 -D -T $(BUILDDIR)/libstrangle_native_nodlsym.so $(DESTDIR)$(libdir)/libstrangle_nodlsym.so
+-	install -m 0755 -D -T $(BUILDDIR)/libstrangle_vk_native.so $(DESTDIR)$(libdir)/libstrangle_vk.so
++install-libstrangle: libstrangle
++	install -m 0755 -D -T $(BUILDDIR)/libstrangle.so $(DESTDIR)$(LIB_PATH)/libstrangle.so
++	install -m 0755 -D -T $(BUILDDIR)/libstrangle_nodlsym.so $(DESTDIR)$(LIB_PATH)/libstrangle_nodlsym.so
++	install -m 0755 -D -T $(BUILDDIR)/libstrangle_vk.so $(DESTDIR)$(LIB_PATH)/libstrangle_vk.so
+ 
+ install: \
+ 	all \
+ 	install-common \
+-	install-32 \
+-	install-64 \
++	install-libstrangle \
+ 	install-ld
+ 
+ clean:
+-	rm -f $(BUILDDIR)/libstrangle64.so
+-	rm -f $(BUILDDIR)/libstrangle32.so
+-	rm -f $(BUILDDIR)/libstrangle_native.so
+-	rm -f $(BUILDDIR)/libstrangle64_nodlsym.so
+-	rm -f $(BUILDDIR)/libstrangle32_nodlsym.so
+-	rm -f $(BUILDDIR)/libstrangle_native_nodlsym.so
+-	rm -f $(BUILDDIR)/libstrangle_vk64.so
+-	rm -f $(BUILDDIR)/libstrangle_vk32.so
+-	rm -f $(BUILDDIR)/libstrangle_vk_native.so
++	rm -f $(BUILDDIR)/libstrangle.so
++	rm -f $(BUILDDIR)/libstrangle_nodlsym.so
++	rm -f $(BUILDDIR)/libstrangle_vk.so
+ 	rm -f $(BUILDDIR)/libstrangle.conf
+ 
+ uninstall:
+ 	rm -f $(DESTDIR)/etc/ld.so.conf.d/libstrangle.conf
+-	rm -f $(DESTDIR)$(LIB32_PATH)/libstrangle.so
+-	rm -f $(DESTDIR)$(LIB64_PATH)/libstrangle.so
+-	rm -f $(DESTDIR)$(LIB32_PATH)/libstrangle_nodlsym.so
+-	rm -f $(DESTDIR)$(LIB64_PATH)/libstrangle_nodlsym.so
+-	rm -f $(DESTDIR)$(LIB32_PATH)/libstrangle_vk.so
+-	rm -f $(DESTDIR)$(LIB64_PATH)/libstrangle_vk.so
++	rm -f $(DESTDIR)$(LIB_PATH)/libstrangle.so
++	rm -f $(DESTDIR)$(LIB_PATH)/libstrangle_nodlsym.so
++	rm -f $(DESTDIR)$(LIB_PATH)/libstrangle_vk.so
+ 	rm -f $(DESTDIR)$(datarootdir)/vulkan/implicit_layer.d/libstrangle_vk.json
+ 	rm -f $(DESTDIR)$(bindir)/strangle
+ 	rm -f $(DESTDIR)$(bindir)/stranglevk
+diff --git a/src/strangle.sh b/src/strangle.sh
+index a200ea7..519c573 100755
+--- a/src/strangle.sh
++++ b/src/strangle.sh
+@@ -124,9 +124,9 @@ fi
+ 
+ if [ "$STRANGLE_VKONLY" != "1" ]; then
+ 	if [ "$STRANGLE_NODLSYM" = "1" ]; then
+-		LD_PRELOAD="${LD_PRELOAD}:${STRANGLE_LIB_NAME_NO_DLSYM}"
++		LD_PRELOAD="${LD_PRELOAD}:/usr/\$LIB/libstrangle/${STRANGLE_LIB_NAME_NO_DLSYM}"
+ 	else
+-		LD_PRELOAD="${LD_PRELOAD}:${STRANGLE_LIB_NAME}"
++		LD_PRELOAD="${LD_PRELOAD}:/usr/\$LIB/libstrangle/${STRANGLE_LIB_NAME}"
+ 	fi
+ fi
+ 
+diff --git a/src/stranglevk.sh b/src/stranglevk.sh
+index 265b1b6..480c285 100755
+--- a/src/stranglevk.sh
++++ b/src/stranglevk.sh
+@@ -1,3 +1,3 @@
+ #!/bin/sh
+ 
+-ENABLE_VK_LAYER_TORKEL104_libstrangle=1 STRANGLE_VKONLY=1 strangle "$@"
++ENABLE_VK_LAYER_TORKEL104_libstrangle=1 STRANGLE_VKONLY=1 exec strangle "$@"
+diff --git a/src/vulkan/libstrangle_vk.json b/src/vulkan/libstrangle_vk.json
+index f7366ac..36d7fc7 100644
+--- a/src/vulkan/libstrangle_vk.json
++++ b/src/vulkan/libstrangle_vk.json
+@@ -4,7 +4,7 @@
+       "name": "VK_LAYER_TORKEL104_libstrangle",
+       "type": "GLOBAL",
+       "api_version": "1.1.125",
+-      "library_path": "libstrangle_vk.so",
++      "library_path": "/usr/$LIB/libstrangle/libstrangle_vk.so",
+       "implementation_version": "1",
+       "description": "Libstrangle framerate limiter",
+       "enable_environment": {
+-- 
+2.30.2
+

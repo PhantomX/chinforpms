@@ -1,13 +1,13 @@
 %global _legacy_common_support 1
 
 Name:           cdemu-daemon
-Version:        3.2.4
-Release:        2%{?dist}
+Version:        3.2.5
+Release:        1%{?dist}
 Summary:        CDEmu daemon
 
 License:        GPLv2
-URL:            https://sourceforge.net/projects/cdemu
-Source:         https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.bz2
+URL:            https://cdemu.sourceforge.io/
+Source:         https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.xz
 
 
 BuildRequires:  cmake
@@ -16,6 +16,7 @@ BuildRequires:  make
 BuildRequires:  pkgconfig(ao)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(libmirage)
+BuildRequires:  systemd
 BuildRequires:  intltool
 
 Requires:       vhba
@@ -42,17 +43,30 @@ devices.
 %install
 %cmake_install
 
+mkdir -p %{buildroot}%{_userunitdir}
+install -pm0644 service-example/%{name}.service %{buildroot}%{_userunitdir}/
+
+mkdir -p %{buildroot}%{_datadir}/dbus-1/services
+install -pm0644 service-example/net.sf.cdemu.CDEmuDaemon.service \
+  %{buildroot}%{_datadir}/dbus-1/services/
+
+
 %find_lang %{name}
 
 %files -f %{name}.lang
 %license COPYING
 %doc AUTHORS README ChangeLog
 %doc %{_mandir}/man8/*
-%{_bindir}/*
-%{_libexecdir}/*
-%{_datadir}/dbus-1/services/*
+%{_bindir}/%{name}
+%{_userunitdir}/*.service
+%{_datadir}/dbus-1/services/*.service
+
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.5-1
+- 3.2.5
+- Add new systemd user files
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.2.4-2
 - gcc 10 fix
 

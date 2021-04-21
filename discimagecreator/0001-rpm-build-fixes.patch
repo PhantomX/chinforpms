@@ -1,6 +1,6 @@
-From 23c170473e9d37d3ff054c35bf51e1afac1b9f65 Mon Sep 17 00:00:00 2001
+From 5d902aea3ca63bacf9d39e2c3a98e3aedcb5deae Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 11 Aug 2020 11:00:25 -0300
+Date: Tue, 20 Apr 2021 15:47:25 -0300
 Subject: [PATCH] rpm build fixes
 
 ---
@@ -11,7 +11,7 @@ Subject: [PATCH] rpm build fixes
  4 files changed, 11 insertions(+), 14 deletions(-)
 
 diff --git a/DiscImageCreator/get.cpp b/DiscImageCreator/get.cpp
-index 7008a3a..345897d 100644
+index 457a3c9..f48306f 100644
 --- a/DiscImageCreator/get.cpp
 +++ b/DiscImageCreator/get.cpp
 @@ -80,7 +80,7 @@ BOOL GetDriveOffsetAuto(
@@ -46,7 +46,7 @@ index 7008a3a..345897d 100644
  	BOOL bRet = GetCmd(szPathForEcc, _T("EccEdc"), _T("exe"));
  #else
 -	BOOL bRet = GetCmd(szPathForEcc, _T("./EccEdc_linux"), _T(".out"));
-+	BOOL bRet = GetCmd(szPathForEcc, _T("_RPM_BIN_DIR_/EccEdc"), _T("r"));
++	BOOL bRet = GetCmd(szPathForEcc, _T("_RPM_BIN_DIR_/EccEdc"), _T(".out"));
  #endif
  	if (bRet && PathFileExists(szPathForEcc)) {
  		if (!_tcscmp(pszCmd, _T("check"))) {
@@ -84,7 +84,7 @@ index e2ef8e5..9df588e 100644
    _linux/defineForLinux.o
  
 diff --git a/DiscImageCreator/xml.cpp b/DiscImageCreator/xml.cpp
-index 300e0b1..e62a26f 100644
+index 767fbfd..2d3834f 100644
 --- a/DiscImageCreator/xml.cpp
 +++ b/DiscImageCreator/xml.cpp
 @@ -390,11 +390,8 @@ BOOL ReadWriteDat(
@@ -102,7 +102,7 @@ index 300e0b1..e62a26f 100644
  	else {
  		if (!GetModuleFileName(NULL, szDefaultDat, sizeof(szDefaultDat) / sizeof(szDefaultDat[0]))) {
 diff --git a/DiscImageCreator/xml.h b/DiscImageCreator/xml.h
-index c050ba0..57be3a7 100644
+index a8ea94a..9e5e9c6 100644
 --- a/DiscImageCreator/xml.h
 +++ b/DiscImageCreator/xml.h
 @@ -15,7 +15,7 @@
@@ -115,5 +115,5 @@ index c050ba0..57be3a7 100644
  #endif
  
 -- 
-2.26.2
+2.30.2
 

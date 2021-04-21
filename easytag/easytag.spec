@@ -1,6 +1,6 @@
-%global commit c903a7a14cc492dd491e83a8d6b96663a34c3a25
+%global commit 206bfb4820af3162ee14f3023f97633fd146ca34
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200504
+%global date 20210326
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -14,7 +14,7 @@
 
 Name:           easytag
 Version:        2.5.1
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
 Epoch:          1
@@ -127,6 +127,9 @@ make check
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.1-0.2.20210326git206bfb4
+- Bump
+
 * Tue Dec 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.5.1-0.1.20200504gitc903a7a
 - Snapshot
 - Better fix to old bug 776110

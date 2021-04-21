@@ -1,4 +1,11 @@
 %global         majorminor      1.0
+%global     __python %{__python3}
+
+%if 0%{?fedora}
+%bcond_without unwind
+%else
+%bcond_with unwind
+%endif 
 
 #global gitrel     140
 #global gitcommit  a70055b58568f7304ba46bd8742232337013487b
@@ -10,7 +17,7 @@
 
 Name:           gstreamer1
 Version:        1.18.4
-Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
+Release:        101%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPLv2+
@@ -38,7 +45,9 @@ BuildRequires:  check-devel
 BuildRequires:  gettext
 BuildRequires:  pkgconfig
 BuildRequires:  libcap-devel
+%if %{with unwind}
 BuildRequires:  libunwind-devel
+%endif
 BuildRequires:  elfutils-devel
 BuildRequires:  bash-completion
 
@@ -93,6 +102,7 @@ sed -e "/GST_PLUGIN_SCANNER_INSTALLED/s|, 'gst-plugin-scanner|\0-%{__isa_bits}|g
   -D gtk_doc=disabled \
   -D tests=disabled -D examples=disabled \
   -D ptp-helper-permissions=capabilities \
+  %{!?with_unwind:-D libunwind=disabled -D libdw=disabled } \
   -D dbghelp=disabled \
   -D doc=disabled
 %meson_build
@@ -218,6 +228,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1.18.4-101
+- Rawhide sync
+
 * Wed Mar 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1.18.4-100
 - 1.18.4
 

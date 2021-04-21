@@ -1,6 +1,6 @@
-%global commit 5b9f83fa9579fe41f5216884a8c9f10bddb351c4
+%global commit 28cdfcb374fd3ec02de8a2cdd407f77e28f7d803
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201223
+%global date 20210415
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           ff7tk
 Version:        0.80.20
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
 License:        LGPLv3+
@@ -80,5 +80,8 @@ sed \
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.80.20-2.20210415git28cdfcb
+- Bump
+
 * Sat Dec 26 2020 Phantom X <megaphantomx at hotmail dot com> - 0.80.20-1.20201223git5b9f83f
 - Initial spec

@@ -9,13 +9,13 @@
 %global debug_package %{nil}
 
 Name:           vhba-kmod
-Version:        20200106
+Version:        20210418
 Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPLv2
-URL:            http://sourceforge.net/projects/cdemu
-Source0:        https://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.bz2
+URL:            https://cdemu.sourceforge.io/
+Source0:        https://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.xz
 Source1:        vhba-kmod-excludekernel-filter.txt
 
 # get the needed BuildRequires (in parts depending on what we build for)
@@ -59,6 +59,9 @@ done
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 20210418-1
+- 20210418
+
 * Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 20200106-1
 - 20200106
 

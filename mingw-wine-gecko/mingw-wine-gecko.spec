@@ -1,13 +1,13 @@
 %?mingw_package_header
 
-%global with_bin 0
+%global with_bin 1
 
 %global msiname wine-gecko
 %global vc_url  https://sourceforge.net/p/wine/wine-gecko
 
 Name:           mingw-wine-gecko
 Version:        2.47.2
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Gecko library required for Wine
 
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -155,6 +155,9 @@ cp -rp %{msiname}-%{version}-x86_64/dist/%{msiname}-%{version}-x86_64 \
 
 
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 2.47.2-102
+- Return bin for Fedora 34
+
 * Thu Jan 14 2021 Phantom X - 2.47.2-101
 - Build from source (Rawhide sync)
 

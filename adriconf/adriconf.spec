@@ -1,5 +1,5 @@
 Name:           adriconf
-Version:        2.4
+Version:        2.4.1
 Release:        1%{?dist}
 Summary:        Advanced DRI Configurator
 
@@ -88,6 +88,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.freedeskto
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2.4.1-1
+- 2.4.1
+
 * Fri Oct 23 2020 Phantom X <megaphantomx at hotmail dot com> - 2.4-1
 - 2.4
 

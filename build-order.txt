@@ -14,7 +14,6 @@ libeatmydata
 libmirage
 -libogg
 libvirt
-libstrangle
 -libtgvoip
 libxspf
 lzlib
@@ -42,13 +41,14 @@ xwit
 compat-gcc-32
 -dxil-spirv
 ff7tk
+gstreamer1-plugins-base
 libchdr
-libliftoff
+-libliftoff
 -libvorbis
 libvorbis-aotuv
 mesa
 pygtk2
-python-markups
+-python-markups
 -python-yoyo-migrations
 -perl-Gtk3
 perl-X11-GUITest
@@ -69,7 +69,7 @@ atool
 -audacious
 -authenticator
 barrier
-bashdb
+-bashdb
 -bcg729
 -bcmatroska2
 -bctoolbox
@@ -109,7 +109,7 @@ fss-parallel-tools
 eccedc
 engrampa
 gamemode
-gamescope
+-gamescope
 gcdemu
 -gespeaker
 gkrellm-cpupower
@@ -123,7 +123,7 @@ gnome-themes
 gnome-themes-extra
 gpa
 gtk3-nocsd
-hollywood
+-hollywood
 htop
 image-analyzer
 ipager
@@ -134,6 +134,7 @@ kernel-tools
 krename
 kse
 -ladspa-bs2b-plugins
+libstrangle
 -linux-steam-integration
 lutris
 lunzip
@@ -155,9 +156,10 @@ mp3val
 mpdnotify
 -mps-youtube
 mupen64plus
-nicotine-plus
+-nicotine+
 openjazz
 opentyrian
+orage
 pcsxr
 perl-rename
 pev
@@ -166,7 +168,7 @@ plzip
 protontricks
 -pspshrink
 pulsemixer
-purple-rocketchat
+-purple-rocketchat
 -python-pafy
 qemu
 qmc2
@@ -184,11 +186,11 @@ sdl_gamecontrollerdb
 sdl-jstest
 sdlcl
 shaderc
--skrooge
+skrooge
 smtube
 snx
 snxvpn
--speedtest-cli
+speedtest-cli
 steamtinkerlaunch
 thrash-protect
 tyrian-data
@@ -211,13 +213,15 @@ wiimms-iso-tools
 wxmp3gain
 wxmp3val
 uksmd
+v4l-utils
 winetricks
 xboxdrv
 xdgmenumaker
+xfce4-notes-plugin
 xfwm4
 xinput-gui
 -xorg-x11-server
-yad
+-yad
 youtube-dlp
 zram-init
 
@@ -230,6 +234,7 @@ zram-init
 dolphin-emu
 freac
 -freac-superfast-codecs
+mupen64plus-rsp-cxd4
 -ortp
 vkbasalt
 whdd

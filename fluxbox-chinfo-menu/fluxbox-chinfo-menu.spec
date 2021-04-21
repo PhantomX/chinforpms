@@ -8,7 +8,7 @@
 
 Name:           fluxbox-chinfo-menu
 Version:        5.1.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Menu generator for Fluxbox based on XDG
 
 License:        GPLv3
@@ -27,7 +27,8 @@ BuildRequires:  gettext
 Requires:       fluxbox
 Requires:       gettext
 Requires:       xdgmenumaker >= 1.4
-Requires:       xorg-x11-apps
+Requires:       xmessage
+Requires:       xterm
 
 %description
 %{summary}.
@@ -60,6 +61,9 @@ Requires:       xorg-x11-apps
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.1.0-2
+- Replace xorg-x11-apps BR with split packages
+
 * Mon Oct 19 2020 Phantom X <megaphantomx at hotmail dot com> - 5.1.0-1
 - 5.1.0
 

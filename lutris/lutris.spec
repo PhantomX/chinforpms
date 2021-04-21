@@ -5,7 +5,7 @@
 Name:           lutris
 Version:        0.5.8.3
 Epoch:          1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Install and play any video game easily
 
 License:        GPLv3
@@ -41,14 +41,17 @@ Requires:       psmisc
 Requires:       p7zip
 Requires:       p7zip-plugins
 Requires:       pciutils
+Requires:       %{py3_dist dbus-python}
 Requires:       %{py3_dist evdev}
+Requires:       %{py3_dist lxml}
 Requires:       %{py3_dist pygobject}
 Requires:       %{py3_dist pyyaml}
 Requires:       %{py3_dist requests}
 Requires:       unzip
 Requires:       vulkan-tools
+Requires:       xdg-utils
+Requires:       xgamma
 Requires:       xorg-x11-server-Xephyr
-Requires:       xorg-x11-server-utils
 Requires:       webkit2gtk3
 Recommends:     fluid-soundfont-gs
 Recommends:     xboxdrv
@@ -109,6 +112,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.des
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.8.3-101
+- Replace xorg-x11-server-utils BR
+
 * Sat Jan 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.8.3-100
 - 0.5.8.3
 

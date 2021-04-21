@@ -1,7 +1,7 @@
 %global pkgname pyctr
 
 Name:           python-%{pkgname}
-Version:        0.4.5
+Version:        0.4.7
 Release:        1%{?dist}
 Summary:        Python library to interact with Nintendo 3DS files
 
@@ -55,5 +55,8 @@ Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 0.4.7-1
+- 0.4.7
+
 * Wed Jan 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.4.5-1
 - Initial spec

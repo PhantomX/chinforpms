@@ -218,7 +218,7 @@ Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
 Version: 5.2.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -237,6 +237,8 @@ Source16: %{name}-sysusers.conf
 Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
+
+Patch0: 0001-iotests-Fix-_send_qemu_cmd-with-bash-5.1.patch
 
 BuildRequires: meson
 BuildRequires: gcc
@@ -1956,6 +1958,9 @@ popd
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2:5.2.0-101
+- f34 sync
+
 * Wed Dec 09 2020 Phantom X <megaphantomx at hotmail dot com> - 2:5.2.0-100
 - 5.2.0
 
@@ -1992,79 +1997,3 @@ popd
 
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0-101
 - f33 sync
-
-* Thu Dec 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0-100
-- 4.2.0
-
-* Tue Dec 10 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc4-100
-- 4.2.0-rc4
-
-* Fri Nov 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc3-100
-- 4.2.0-rc3
-
-* Wed Nov 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc2-100
-- 4.2.0-rc2
-- Rawhide sync
-
-* Thu Nov 14 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.2.0~rc1-100
-- 4.2.0-rc1
-- Rawhide sync
-
-* Sat Nov 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.1.0-101
-- Rawhide sync
-- Change rc versioning to "~" system
-
-* Sat Nov 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.1.0-100.1
-- rebuilt
-
-* Fri Aug 16 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.1.0-100
-- 4.1.0
-- Rawhide sync
-
-* Mon May 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.0.0-101
-- Rawhide sync, md-clear-bit patch
-
-* Tue Apr 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 2:4.0.0-100
-- 4.0.0
-- %%{_localstatedir}/lib/qemu as user directory
-
-* Tue Apr 16 2019 Cole Robinson <crobinso@redhat.com> - 2:4.0.0-0.7.rc3
-- Don't block migration with nested VMX (bz #1697997)
-- Update to qemu-4.0.0-rc3
-
-* Sat Apr 06 2019 Richard W.M. Jones <rjones@redhat.com> - 2:4.0.0-0.6.rc2
-- Rebuild against xen 4.12.
-
-* Wed Apr 03 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.5.rc2
-- Update to 4.0.0-rc2
-
-* Wed Mar 27 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.4.rc1
-- Update to 4.0.0-rc1
-
-* Mon Mar 25 2019 Adam Williamson <awilliam@redhat.com> - 2:4.0.0-0.3.rc0
-- Backport patch to fix 3D crasher bug (bz #1692323)
-
-* Thu Mar 21 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.2.rc0
-- Fix python paths for qemu-trace-stap
-
-* Wed Mar 20 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.2.rc0
-- Update to 4.0.0-rc0
-
-* Wed Mar 20 2019 Daniel P. Berrangé <berrange@redhat.com> - 2:3.1.0-5
-- Fix compat with latest glibc which has gettid func
-
-* Sun Mar 03 2019 Cole Robinson <aintdiscole@gmail.com> - 2:3.1.0-4.3
-- Temporarily disable glusterfs (bz #1684298)
-
-* Thu Feb 28 2019 Cole Robinson <aintdiscole@gmail.com> - 2:3.1.0-4.2
-- Rebuild for brltty soname bump
-
-* Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2:3.1.0-4.1
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
-
-* Sat Jan 12 2019 Richard W.M. Jones <rjones@redhat.com> - 2:3.1.0-4
-- Remove temporary patch and rebuild against fixed capstone.
-
-* Fri Jan 11 2019 Richard W.M. Jones <rjones@redhat.com> - 2:3.1.0-3
-- Rebuild for unannounced libcapstone soname bump from 3 to 4.
-- Add a temporary patch to fix capstone header location.

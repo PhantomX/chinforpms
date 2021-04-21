@@ -65,7 +65,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        21.0.2
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -611,6 +611,7 @@ popd
 %endif
 %ifarch %{arm} aarch64
 %{_libdir}/dri/ingenic-drm_dri.so
+%{_libdir}/dri/imx-drm_dri.so
 %{_libdir}/dri/mcde_dri.so
 %{_libdir}/dri/mxsfb-drm_dri.so
 %{_libdir}/dri/stm_dri.so
@@ -627,7 +628,6 @@ popd
 %endif
 %if 0%{?with_etnaviv}
 %{_libdir}/dri/etnaviv_dri.so
-%{_libdir}/dri/imx-drm_dri.so
 %endif
 %if 0%{?with_tegra}
 %{_libdir}/dri/tegra_dri.so
@@ -728,6 +728,9 @@ popd
 
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.2-101
+- Rawhide sync
+
 * Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.2-100
 - 21.0.2
 

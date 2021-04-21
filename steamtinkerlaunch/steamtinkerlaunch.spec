@@ -1,6 +1,6 @@
 Name:           steamtinkerlaunch
-Version:        3.9
-Release:        0%{?dist}
+Version:        4.0
+Release:        1%{?dist}
 Summary:        Wrapper script for Steam custom launch options
 
 License:        GPLv3
@@ -16,10 +16,9 @@ Requires:       git
 Requires:       wget
 Requires:       wmctrl
 Requires:       xdotool
-# xprop, xwininfo
-Requires:       xorg-x11-utils
-# xrandr
-Requires:       xorg-x11-server-utils
+Requires:       xprop
+Requires:       xrandr
+Requires:       xwininfo
 Requires:       unzip
 Requires:       yad >= 7.2
 Recommends:     zenity
@@ -74,5 +73,8 @@ cp -r categories lang misc regs reshadepresets tweaks %{buildroot}%{_datadir}/st
 %{_datadir}/stl
 
 %changelog
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 4.0-1
+- 4.0
+
 * Wed Oct 21 2020 Phantom X <megaphantomx at hotmail dot com> - 2.4.1-1
 - Initial spec
