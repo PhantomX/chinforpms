@@ -1,6 +1,6 @@
-%global commit 4d970754a4a700ba45409e11275b89e6523d87ce
+%global commit 2e466101fc20aa4314049d942d56e2be75fd70ae
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210220
+%global date 20210417
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           deluge
 Version:        2.0.3
-Release:        110%{?gver}%{?dist}
+Release:        111%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -273,6 +273,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.3-111.20210417git2e46610
+- Bump
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.3-110.20210220git4d97075
 - BR: python3-wheel
 

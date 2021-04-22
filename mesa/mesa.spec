@@ -64,8 +64,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        21.0.2
-Release:        101%{?dist}
+Version:        21.0.3
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -728,6 +728,9 @@ popd
 
 
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.3-100
+- 21.0.3
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.2-101
 - Rawhide sync
 

@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit c79d93fd53aff736d26ea9a1f6cde1418aa5a8f3
+%global commit 9652e3cb6b342d5194e22388b1dfbae402e2eb9c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210418
+%global date 20210421
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        11%{?gver}%{?dist}
+Release:        12%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -34,6 +34,7 @@ Patch1:         0001-Set-datadir-to-RPM-packaging.patch
 Patch2:         0001-Fix-translation-names.patch
 Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
+Patch5:         0001-fix-build-with-gcc11.patch
 
 
 ExclusiveArch:  x86_64 armv7l aarch64
@@ -227,6 +228,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-12.20210421git9652e3c
+- Bump
+
 * Sun Apr 18 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-11.20210418gitc79d93f
 - New snapshot
 - BR: rapidjson

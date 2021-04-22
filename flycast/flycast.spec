@@ -1,6 +1,6 @@
-%global commit 72968290bf33012062092aebaf179cf7c85f9f08
+%global commit a9e22c2e20b5a408e6a4a69f4dcce743e869dff3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210406
+%global date 20210420
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        49%{?gver}%{?dist}
+Release:        50%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -32,7 +32,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        %{name}.appdata.xml
 
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
@@ -43,6 +42,7 @@ BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
+BuildRequires:  libappstream-glib
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(alsa)
 %if 0%{?with_libchdr}
@@ -51,7 +51,7 @@ BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(flac)
 %endif
 BuildRequires:  pkgconfig(gl)
-BuildRequires:  pkgconfig(glm)
+BuildRequires:  cmake(glm)
 %if 0%{?with_spirv}
 BuildRequires:  pkgconfig(glslang)
 %endif
@@ -185,7 +185,10 @@ for res in 16 22 24 32 36 48 64 72 96 128 ;do
 done
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+install -pm 0644 shell/linux/org.flycast.Flycast.metainfo.xml %{buildroot}%{_metainfodir}/
+
+%check
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Flycast.metainfo.xml
 
 
 %files
@@ -201,6 +204,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 7-50.20210420gita9e22c2
+- Bump
+- Add upstream metadata file
+
 * Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 7-49.20210406git7296829
 - Update
 

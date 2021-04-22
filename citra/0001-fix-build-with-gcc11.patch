@@ -1,0 +1,86 @@
+From 8781cc2e24032e96b1120de92433d5a80d3c66c6 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 21 Apr 2021 23:03:47 -0300
+Subject: [PATCH] fix build with gcc11
+
+An offsetof expression must evaluate to an address constant
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=95942
+---
+ src/common/ring_buffer.h             |  1 +
+ src/core/hle/service/gsp/gsp_gpu.cpp | 24 ++++++++++++------------
+ src/core/hw/gpu.h                    |  2 ++
+ 3 files changed, 15 insertions(+), 12 deletions(-)
+
+diff --git a/src/common/ring_buffer.h b/src/common/ring_buffer.h
+index 0800590..29fc7f0 100644
+--- a/src/common/ring_buffer.h
++++ b/src/common/ring_buffer.h
+@@ -9,6 +9,7 @@
+ #include <atomic>
+ #include <cstddef>
+ #include <cstring>
++#include <limits>
+ #include <new>
+ #include <type_traits>
+ #include <vector>
+diff --git a/src/core/hle/service/gsp/gsp_gpu.cpp b/src/core/hle/service/gsp/gsp_gpu.cpp
+index 5a41f5c..29f48da 100644
+--- a/src/core/hle/service/gsp/gsp_gpu.cpp
++++ b/src/core/hle/service/gsp/gsp_gpu.cpp
+@@ -283,28 +283,28 @@ ResultCode SetBufferSwap(u32 screen_id, const FrameBufferInfo& info) {
+     PAddr phys_address_left = VirtualToPhysicalAddress(info.address_left);
+     PAddr phys_address_right = VirtualToPhysicalAddress(info.address_right);
+     if (info.active_fb == 0) {
+-        WriteSingleHWReg(base_address + 4 * static_cast<u32>(GPU_REG_INDEX(
+-                                                framebuffer_config[screen_id].address_left1)),
++        WriteSingleHWReg(base_address + 4 * static_cast<u32>(GPU_REG_INDEX_ARRAY(
++                                                framebuffer_config, screen_id, address_left1)),
+                          phys_address_left);
+-        WriteSingleHWReg(base_address + 4 * static_cast<u32>(GPU_REG_INDEX(
+-                                                framebuffer_config[screen_id].address_right1)),
++        WriteSingleHWReg(base_address + 4 * static_cast<u32>(GPU_REG_INDEX_ARRAY(
++                                                framebuffer_config, screen_id, address_right1)),
+                          phys_address_right);
+     } else {
+-        WriteSingleHWReg(base_address + 4 * static_cast<u32>(GPU_REG_INDEX(
+-                                                framebuffer_config[screen_id].address_left2)),
++        WriteSingleHWReg(base_address + 4 * static_cast<u32>(GPU_REG_INDEX_ARRAY(
++                                                framebuffer_config, screen_id, address_left2)),
+                          phys_address_left);
+-        WriteSingleHWReg(base_address + 4 * static_cast<u32>(GPU_REG_INDEX(
+-                                                framebuffer_config[screen_id].address_right2)),
++        WriteSingleHWReg(base_address + 4 * static_cast<u32>(GPU_REG_INDEX_ARRAY(
++                                                framebuffer_config, screen_id, address_right2)),
+                          phys_address_right);
+     }
+     WriteSingleHWReg(base_address +
+-                         4 * static_cast<u32>(GPU_REG_INDEX(framebuffer_config[screen_id].stride)),
++                         4 * static_cast<u32>(GPU_REG_INDEX_ARRAY(framebuffer_config, screen_id, stride)),
+                      info.stride);
+-    WriteSingleHWReg(base_address + 4 * static_cast<u32>(GPU_REG_INDEX(
+-                                            framebuffer_config[screen_id].color_format)),
++    WriteSingleHWReg(base_address + 4 * static_cast<u32>(GPU_REG_INDEX_ARRAY(
++                                            framebuffer_config, screen_id, color_format)),
+                      info.format);
+     WriteSingleHWReg(
+-        base_address + 4 * static_cast<u32>(GPU_REG_INDEX(framebuffer_config[screen_id].active_fb)),
++        base_address + 4 * static_cast<u32>(GPU_REG_INDEX_ARRAY(framebuffer_config, screen_id, active_fb)),
+         info.shown_fb);
+ 
+     if (Pica::g_debug_context)
+diff --git a/src/core/hw/gpu.h b/src/core/hw/gpu.h
+index 1e49967..561dc56 100644
+--- a/src/core/hw/gpu.h
++++ b/src/core/hw/gpu.h
+@@ -30,6 +30,8 @@ constexpr double SCREEN_REFRESH_RATE = BASE_CLOCK_RATE_ARM11 / static_cast<doubl
+ // Returns index corresponding to the Regs member labeled by field_name
+ #define GPU_REG_INDEX(field_name) (offsetof(GPU::Regs, field_name) / sizeof(u32))
+ 
++#define GPU_REG_INDEX_ARRAY(field_name1, i, field_name2) ((offsetof(GPU::Regs, field_name1[0].field_name2) + sizeof(GPU::Regs::field_name1[0]) * (i)) / sizeof(u32))
++
+ // MMIO region 0x1EFxxxxx
+ struct Regs {
+ 
+-- 
+2.31.1
+

@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit 8e3c7674d82df8db66e9cdf6a5d8b0e678a7f720
+%global commit b3cab3c4507dc1b28e2f15b2e0c9f473f6e1959f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210306
+%global date 20210403
 %global with_snapshot 1
 
 # Enable system boost
@@ -66,7 +66,7 @@
 
 Name:           citra
 Version:        0
-Release:        15%{?gver}%{?dist}
+Release:        16%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -95,6 +95,7 @@ Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Disable-telemetry-initial-dialog.patch
+Patch2:         0001-fix-build-with-gcc11.patch
 Patch10:        %{vc_url}/%{name}/pull/5711.patch#/%{name}-gh-pr5711.patch
 
 BuildRequires:  cmake
@@ -208,9 +209,6 @@ sed -e '/^#include <exception>/a#include <system_error>' \
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
-mkdir -p dist/compatibility_list/
-cp %{S:20} dist/compatibility_list/
-
 %if 0%{?with_snapshot}
 export CI=true
 export TRAVIS=true
@@ -231,8 +229,10 @@ export TRAVIS_TAG="%{version}-%{release}"
   -DENABLE_FFMPEG:BOOL=ON \
 %endif
   -DENABLE_WEB_SERVICE:BOOL=OFF \
-  -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=ON \
+  -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
 %{nil}
+
+cp -f %{S:20} %{__cmake_builddir}/dist/compatibility_list/
 
 %cmake_build
 
@@ -263,6 +263,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 0-16.20210403gitb3cab3c
+- Bump
+
 * Wed Mar 17 2021 Phantom X <megaphantomx at hotmail dot com> - 0-15.20210306git8e3c767
 - Last snapshot
 

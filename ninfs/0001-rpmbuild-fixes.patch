@@ -1,0 +1,36 @@
+From b88e0584a5209ef97e3d95f5c65a7b0b6fea63c4 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 21 Apr 2021 11:54:08 -0300
+Subject: [PATCH] rpmbuild fixes
+
+---
+ requirements.txt | 4 ++--
+ setup.py         | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/requirements.txt b/requirements.txt
+index f13b8ac..301b9cd 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,3 +1,3 @@
+-pyctr==0.4.6
+-haccrypto==0.1.0
++pyctr==_PYCTRVER_
++haccrypto==_HACCRYPTOVER_
+ pycryptodomex>=3.9,<4
+diff --git a/setup.py b/setup.py
+index c3873bf..de19f67 100644
+--- a/setup.py
++++ b/setup.py
+@@ -39,7 +39,7 @@ setup(
+         'Programming Language :: Python :: 3.8',
+         'Programming Language :: Python :: 3.9',
+     ],
+-    install_requires=['pycryptodomex>=3.9,<4', 'pyctr==0.4.6', 'haccrypto==0.1.0'],
++    install_requires=['pycryptodomex>=3.9,<4', 'pyctr==_PYCTRVER_', 'haccrypto==_HACCRYPTOVER_'],
+     python_requires='>=3.6.1',
+     # fusepy should be added here once the main repo has a new release with Windows support.
+     entry_points={'gui_scripts': ['ninfsw = ninfs.main:gui'],
+-- 
+2.31.1
+

@@ -1,6 +1,6 @@
-%global commit 036efc24ae3367dc88c5e4455ab493556babe454
+%global commit bbdb4f76c8051d285f3a340165a4cc803148fd33
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210417
+%global date 20210419
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -39,7 +39,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 582749ac68a96b6326d4f4ce21a229be66071975
+%global commit7 d137abeef57b2f3fdbdab0ad5590fe99a44ba546
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -365,6 +365,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-106.20210419gitbbdb4f7
+- Last snapshot
+
 * Sun Apr 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-105.20210417git036efc2
 - Bump
 - Added libzstd to system libraries patch

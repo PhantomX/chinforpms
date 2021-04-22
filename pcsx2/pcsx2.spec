@@ -1,7 +1,7 @@
 # 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit 256afa8b9dfa6b76845267e47314466b1f65a891
+%global commit 6f7890b709d5e3f7f5b824781e493455efc92339
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210418
+%global date 20210419
 %global with_snapshot 1
 
 %global sanitize 0
@@ -19,7 +19,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        123%{?gver}%{?dist}
+Release:        124%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -251,6 +251,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-124.20210419git6f7890b
+- Last snapshot
+
 * Mon Apr 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-123.20210418git256afa8
 - Update
 

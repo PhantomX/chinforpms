@@ -93,7 +93,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 31
+%define stable_update 32
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -117,7 +117,7 @@ Summary: The Linux kernel
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit 2b02985bf83e6da9d9165c5f2165af1b97d76edf
-%global st_last_commit 65f1995ea1e930674e76c5888b4643581e11434c
+%global st_last_commit aea70bd5a45591de27aac367af94d184892c06ab
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
@@ -889,8 +889,10 @@ Patch1999: 0001-Revert-commit-40345b9.patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: %{patchwork_xdg_url}/api/1.0/series/82741/revisions/1/mbox/#/patchwork-Various-Polaris-fixes-and-optimizations.patch
 Patch2002: %{patchwork_xdg_url}/patch/397827/mbox/#/patchwork-drm_amdgpu-apply-dm_pp_notify_wm_clock_changes-for-Polaris-only.patch
-Patch2003: 0001-fsync.patch
-Patch2004: 0001-futex2.patch
+Patch2003: %{patchwork_url}/12160165/mbox/#/patchwork-v2-blk-mq-Fix-races-between-iterating-over-requests-and-freeing-requests.patch
+Patch2004: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
+Patch2010: 0001-fsync.patch
+Patch2011: 0001-futex2.patch
 
 %if !0%{?post_factum}
 
@@ -2710,6 +2712,9 @@ fi
 #
 #
 %changelog
+* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.32-500.old
+- 5.10.32 - pf13
+
 * Fri Apr 16 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.31-500.old
 - 5.10.31 - pf13
 

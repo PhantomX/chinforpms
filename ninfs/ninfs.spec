@@ -9,6 +9,9 @@
 
 %global ver %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
 
+%global haccryptover 0.1
+%global pyctrver 0.4.7
+
 Name:           ninfs
 Version:        2.0~a4
 Release:        1%{?gver}%{?dist}
@@ -24,12 +27,14 @@ Source0:        %{url}/archive/v%{ver}/%{name}-%{ver}.tar.gz
 %endif
 
 Patch0:         0001-Remove-desktop-file-command-line-parameter.patch
+Patch1:         0001-rpmbuild-fixes.patch
+Patch2:         0001-fix-mountinfo-import-when-installed.patch
 
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  %{py3_dist haccrypto} >= 0.1
-BuildRequires:  %{py3_dist pyctr} >= 0.4.5
+BuildRequires:  %{py3_dist haccrypto} = %{haccryptover}
+BuildRequires:  %{py3_dist pyctr} = %{pyctrver}
 BuildRequires:  %{py3_dist pycryptodomex} >= 3.10.1
 BuildRequires:  python3-tkinter
 BuildRequires:  desktop-file-utils
@@ -51,8 +56,11 @@ card contents, and you can browse and copy out just the files that you need.
 %autosetup -n %{name}-%{version} -p1
 %endif
 
-# Set Fedora provided version
-#sed -e 's|pycryptodomex==3.9.9|pycryptodomex>=3.9.8|g' -i setup.py requirements.txt
+# Set provided versions
+sed \
+  -e 's|_HACCRYPTOVER_|%{haccryptover}|g' \
+  -e 's|_PYCTRVER_|%{pyctrver}|g' \
+  -i setup.py requirements.txt
 
 %build
 %py3_build
