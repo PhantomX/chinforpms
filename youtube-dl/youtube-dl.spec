@@ -1,22 +1,9 @@
-%if 0%{?rhel} && 0%{?rhel} < 7
-%bcond_with python3
-%else
-%bcond_without python3
-%endif
-
-%if ! %{with python3}
-%{!?__python2: %global __python2 /usr/bin/python2}
-%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%{!?__python2: %global __python2 /usr/bin/python2}
-%endif
-
 #global dl_url https://yt-dl.org/downloads/latest
 %global dl_url https://github.com/rg3/youtube-dl/releases/download/%%{version}
 
 Name:           youtube-dl
-Version:        2021.01.08
-Release:        1%{?dist}
+Version:        2021.04.17
+Release:        100%{?dist}
 Summary:        A small command-line program to download online videos
 License:        Unlicense
 URL:            https://yt-dl.org
@@ -29,21 +16,19 @@ Source1:        %{dl_url}/youtube-dl-%{version}.tar.gz.sig
 # "7D33 D762 FD6C 3513 0481 347F DB4B 54CB A482 6A18" > youtube-dl-gpgkeys.gpg
 Source2:        youtube-dl-gpgkeys.gpg
 Source3:        %{name}.conf
-%if %{with python3}
+
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 Requires:       python%{python3_pkgversion}-setuptools
-%else
-BuildRequires:  python2-devel
-BuildRequires:  python2-setuptools
-Requires:  python2-setuptools
-%endif
+
 # Tests failed because of no connection in Koji.
 # BuildRequires:  python-nose
 BuildArch:      noarch
 # For source verification with gpgv
 BuildRequires:  gnupg2
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1951630
+Recommends:     AtomicParsley
 
 %description
 Small command-line program to download videos from YouTube and other sites.
@@ -66,19 +51,11 @@ sed -i '/README.txt/d' setup.py
 find youtube_dl -type f -exec sed -i -e '1{/^\#!\/usr\/bin\/env python$/d;};' {} +
 
 %build
-%if %{with python3}
 %py3_build
-%else
-%py2_build
-%endif
 
 
 %install
-%if %{with python3}
 %py3_install
-%else
-%py2_install
-%endif
 
 mkdir -p %{buildroot}%{_sysconfdir}
 install -pm644 %{S:3} %{buildroot}%{_sysconfdir}
@@ -104,13 +81,8 @@ install -pm644 youtube-dl.fish %{buildroot}%{_datadir}/fish/vendor_functions.d/y
 
 %files
 %doc AUTHORS ChangeLog README.md
-%if %{with python3}
 %{python3_sitelib}/youtube_dl/
 %{python3_sitelib}/youtube_dl*.egg-info
-%else
-%{python2_sitelib}/youtube_dl/
-%{python2_sitelib}/youtube_dl*.egg-info
-%endif
 %license LICENSE
 %{_bindir}/%{name}
 %{_mandir}/man1/%{name}.1*
@@ -124,6 +96,9 @@ install -pm644 youtube-dl.fish %{buildroot}%{_datadir}/fish/vendor_functions.d/y
 %{_datadir}/fish/vendor_functions.d/youtube-dl.fish
 
 %changelog
+* Fri Apr 23 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.04.17-100
+- 2021.04.17
+
 * Sat Jan 09 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.01.08-1
 - 2021.01.08
 

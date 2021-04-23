@@ -1,9 +1,9 @@
 %global _legacy_common_support 1
 
-%global commit d5de4ec99d1d61a309d7fcd96da12488c9afe550
+%global commit 93fc15e9f2d68d8a43b22c57b8b935f272ce06eb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200408
-%global with_snapshot 0
+%global date 20200422
+%global with_snapshot 1
 
 %global branch classic
 
@@ -131,7 +131,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2021.03
+Version:        2021.04.1
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -140,7 +140,7 @@ License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/%{version}-%{branch}/%{name}-%{version}-%{branch}.tar.gz
+Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}-%{branch}.tar.gz
 %endif
 
 # FreeBSD patches
@@ -206,7 +206,6 @@ Patch601:        mozilla-1516081.patch
 Patch602:        mozilla-1516803.patch
 Patch603:        mozilla-1397365-5.patch
 Patch604:        1003_gentoo_specific_pgo.patch
-Patch605:        https://hg.mozilla.org/mozilla-central/raw-rev/c999baadc2d5#/mozilla-hg-1433383.patch
 
 # Chinforinfula patches
 Patch700:        %{name}-nolangpacks.patch
@@ -216,7 +215,6 @@ Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-fix-testing-file.patch
 Patch704:        %{name}-disable-diagnostics-color.patch
 Patch705:        0001-Update-patch-bug1403998.patch
-Patch706:        0001-angle-set-c-14.patch
 
 # Gentoo
 Patch800:        seamonkey-2.53.3-system_libvpx-1.8.patch
@@ -415,7 +413,6 @@ This package contains results of tests executed during build.
 %patch602 -p1 -b .1516803
 %patch603 -p1 -b .1397365
 %patch604 -p1 -b .gentoo_pgo
-%patch605 -p1 -b .1433383
 
 # Prepare FreeBSD patches
 mkdir _patches
@@ -463,7 +460,6 @@ done
 %patch702 -p1 -b .waterfoxdir-2
 %patch703 -p1 -b .fix-testing-file
 %patch704 -p1 -b .no-diagnostics-color
-%patch706 -p1 -b .angle-c++14
 
 %patch800 -p2 -b .system-vpx
 
@@ -1036,6 +1032,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Thu Apr 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.04.1-1.classic.20200422git93fc15e
+- 2021.04.1
+
 * Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.03-1.classic
 - 2021.03
 - BR: nasm

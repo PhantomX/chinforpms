@@ -8,11 +8,14 @@ chinforpms-fake-packages
 compat-bison-36
 cubeb
 glibc-langpack-pt_BR_iso8601
+glyr
+gob2
 gstreamer1
 gtk3
 libeatmydata
 libmirage
 -libogg
+libmpd
 libvirt
 -libtgvoip
 libxspf
@@ -118,6 +121,7 @@ gkrellmpc
 gkrellm-themes
 glow
 glslang
+gmpc
 gmysqlcc
 gnome-themes
 gnome-themes-extra

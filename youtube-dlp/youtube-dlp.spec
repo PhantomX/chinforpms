@@ -2,7 +2,7 @@
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2021.04.11
+Version:        2021.04.22
 Release:        1%{?dist}
 Summary:        A command-line program to download videos
 
@@ -27,7 +27,9 @@ BuildRequires:  pandoc
 # BuildRequires:  python-nose
 
 Requires:       %{py3_dist pycryptodomex}
+Recommends:     AtomicParsley
 Suggests:       aria2c
+
 Provides:       %{forkname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
@@ -85,6 +87,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Fri Apr 23 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.04.22-1
+- 2021.04.22
+
 * Mon Apr 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.04.11-1
 - 2021.04.11
 

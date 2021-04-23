@@ -14,15 +14,15 @@
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 9857a0e60fdd2f53ab4223aa2435135630f4c29f
+%global commit1 1d479c433247a5ace48a0a4a4fd475e1fbf2617e
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 ef3290bbea35935ba8fd623970511ed9f045bbd7
+%global commit2 c2d5375fa7cc87c93f692e7200d5d974283d4391
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
-%global commit3 621884d70917038caf7509f7b1b3c143807ff43f
+%global commit3 bbcef69a455fbf3e0deddf4e2eca47e57bf296e3
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
@@ -54,7 +54,7 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.2
+Version:        2.3
 Release:        1%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
@@ -80,6 +80,9 @@ ExclusiveArch:  %{ix86} x86_64
 
 BuildArch:      noarch
 
+# mingw-binutils 2.35 or patched 2.34 is needed to prevent crashes
+BuildRequires:  mingw32-binutils >= 2.34-100
+BuildRequires:  mingw64-binutils >= 2.34-100
 BuildRequires:  mingw64-gcc
 BuildRequires:  mingw64-gcc-c++
 BuildRequires:  mingw64-headers >= 7.0
@@ -182,7 +185,6 @@ mesonarray(){
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
 TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'`"
 
-# -fno-tree-dce: fix x86 gcc 10 crashes
 TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error -mno-avx -mno-avx2"
 
 export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
@@ -234,7 +236,7 @@ done
 
 %install
 
-for dll in d3d12 libvkd3d-proton-utils-2 ;do
+for dll in d3d12 libvkd3d-proton-utils-3 ;do
 
   case ${dll} in
     d3d12)
@@ -269,6 +271,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Apr 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2.3-1
+- 2.3
+
 * Fri Feb 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2.2-1
 - 2.2
 - Build with bundled vulkan headers for the time

@@ -67,6 +67,9 @@ ExclusiveArch:  %{ix86} x86_64
 
 BuildArch:      noarch
 
+# mingw-binutils 2.35 or patched 2.34 is needed to prevent crashes
+BuildRequires:  mingw32-binutils >= 2.34-100
+BuildRequires:  mingw64-binutils >= 2.34-100
 BuildRequires:  mingw64-gcc >= 10.0
 BuildRequires:  mingw64-gcc-c++ >= 10.0
 BuildRequires:  mingw64-headers >= 8.0

@@ -1,6 +1,6 @@
-From 7da3252ae8036d417155d9a09b3ad92df0e6f391 Mon Sep 17 00:00:00 2001
+From 087fd26e042374a2ef3d2ef84a3cf58e087fb6c7 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 18 Apr 2021 19:27:03 -0300
+Date: Thu, 22 Apr 2021 19:01:24 -0300
 Subject: [PATCH] Use system libraries
 
 FindCUBEB.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
@@ -18,8 +18,8 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
  src/core/CMakeLists.txt               |  17 +++-
  src/core/texture_replacements.cpp     |   2 +
  src/duckstation-qt/CMakeLists.txt     |  10 +-
- src/frontend-common/CMakeLists.txt    |   9 +-
- 12 files changed, 317 insertions(+), 9 deletions(-)
+ src/frontend-common/CMakeLists.txt    |  10 +-
+ 12 files changed, 317 insertions(+), 10 deletions(-)
  create mode 100644 CMakeModules/FindCUBEB.cmake
 
 diff --git a/CMakeModules/FindCUBEB.cmake b/CMakeModules/FindCUBEB.cmake
@@ -502,20 +502,27 @@ index 33434ae..d4076d6 100644
  if(WIN32)
    # We want a Windows subsystem application not console.
 diff --git a/src/frontend-common/CMakeLists.txt b/src/frontend-common/CMakeLists.txt
-index 8f6f564..03c2f52 100644
+index 2037aa2..72f9d06 100644
 --- a/src/frontend-common/CMakeLists.txt
 +++ b/src/frontend-common/CMakeLists.txt
-@@ -118,8 +118,15 @@ if(ENABLE_CHEEVOS)
-     cheevos.cpp
+@@ -43,7 +43,13 @@ add_library(frontend-common
+   vulkan_host_display.h
+ )
+ 
+-target_link_libraries(frontend-common PUBLIC core common glad vulkan-loader cubeb imgui simpleini tinyxml2 rapidjson scmversion)
++target_link_libraries(frontend-common PUBLIC core common glad vulkan-loader cubeb imgui simpleini tinyxml2 scmversion)
++
++if(rapidjson_FOUND)
++  target_include_directories(frontend-common PRIVATE ${rapidjson_INCLUDE_DIRS})
++else()
++  target_link_libraries(frontend-common PRIVATE rapidjson)
++endif()
+ 
+ if(WIN32)
+   target_sources(frontend-common PRIVATE
+@@ -119,7 +125,7 @@ if(ENABLE_CHEEVOS)
      cheevos.h
    )
-+
-+  if(rapidjson_FOUND)
-+  target_include_directories(frontend-common PRIVATE ${rapidjson_INCLUDE_DIRS})
-+  else()
-+  target_link_libraries(frontend-common PRIVATE rapidjson)
-+  endif()
-+
    target_compile_definitions(frontend-common PUBLIC -DWITH_CHEEVOS=1)
 -  target_link_libraries(frontend-common PRIVATE rcheevos rapidjson)
 +  target_link_libraries(frontend-common PRIVATE rcheevos)
@@ -523,5 +530,5 @@ index 8f6f564..03c2f52 100644
  
  # Copy the provided data directory to the output directory.
 -- 
-2.30.2
+2.31.1
 
