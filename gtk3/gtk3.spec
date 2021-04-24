@@ -25,7 +25,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 66b65775822c46e07f5b2f30036010d06dbcbad4
+%global classic_ver 8c8796458180a5b771f3d31e101ce59daee70cd0
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -36,8 +36,8 @@
 %global vc_url https://gitlab.gnome.org/GNOME/gtk/-/commit
 
 Name:           gtk3
-Version:        3.24.28
-Release:        102%{?dist}
+Version:        3.24.29
+Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -47,8 +47,6 @@ URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
 Source1:        %{classic_url}/archive/%{classic_ver}/gtk3-classic-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
-
-Patch0:         %{vc_url}/6a60ce7cd4768adcd5242c341ec172db6188af04.patch#/gtk3-gl-6a60ce7.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -139,6 +137,9 @@ Recommends:    dconf%{?_isa}
 %else
 Requires:      dconf%{?_isa}
 %endif
+
+Provides:      gtk3-classic = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:      gtk3-classic%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
@@ -397,6 +398,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Fri Apr 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.29-100
+- 3.24.29
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.28-102
 - Rawhide sync
 
