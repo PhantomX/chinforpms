@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Don't launch xscreensaver if gnome-screensaver
+# is installed
+
+if [ -x /usr/bin/gnome-screensaver ] ; then exit 0 ; fi
+if [ -x /usr/bin/mate-screensaver ] ; then exit 0 ; fi
+
+exec xscreensaver -nosplash

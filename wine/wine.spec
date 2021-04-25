@@ -1,7 +1,7 @@
 %global commit 749f8c25e262cb049289e7c96bb390edcafa1021
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210416
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -42,7 +42,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 20303a53ec057d74dd0253a536e5fb0d9e6a550f
+%global wine_stagingver 6.7
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -53,7 +53,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id d496882cbe1477fe380e7a257611bc8c39da1cc7
+%global tkg_id f23b48801d89ee3892ed3fbb113ceadeab2669ac
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 73481691abc7d700aaba40ee4e6e0428ae694297
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -64,6 +64,7 @@
 
 # https://bugs.winehq.org/show_bug.cgi?id=50448
 %global wine_staging_opts %{?wine_staging_opts} -W ntdll-NtAlertThreadByThreadId
+%global wine_staging_opts %{?wine_staging_opts} -W bcrypt-ECDHSecretAgreement
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global whq_murl  https://github.com/wine-mirror/wine
@@ -91,8 +92,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.6
-Release:        101%{?gver}%{?dist}
+Version:        6.7
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -175,7 +176,7 @@ Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patc
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu.patch
-Patch1007:       %{tkg_url}/hotfixes/free_invalid_size/winevulkan_Use_standard_CRT_memory_allocators2.myearlyrevert#/%{name}-tkg-winevulkan_Use_standard_CRT_memory_allocators2.patch
+Patch1007:       %{tkg_url}/hotfixes/free_invalid_size/winevulkan_Use_standard_CRT_memory_allocators4.myearlyrevert#/%{name}-tkg-winevulkan_Use_standard_CRT_memory_allocators4.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -189,12 +190,14 @@ Patch1026:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}
 Patch1027:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch1028:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
-Patch1030:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
+Patch1030:       %{tkg_url}/proton/proton-bcrypt.patch#/%{name}-tkg-proton-bcrypt.patch
+Patch1031:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
 
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
 
 Patch1300:       nier.patch
+Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -245,6 +248,7 @@ BuildRequires:  gettext-devel
 BuildRequires:  giflib-devel
 BuildRequires:  gsm-devel
 BuildRequires:  pkgconfig(gl)
+BuildRequires:  pkgconfig(gmp)
 BuildRequires:  pkgconfig(gnutls)
 BuildRequires:  pkgconfig(gstreamer-1.0)
 BuildRequires:  pkgconfig(gstreamer-audio-1.0)
@@ -389,6 +393,7 @@ Requires:       wine-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       cups-libs(x86-32)
 Requires:       freetype(x86-32)
 Requires:       nss-mdns(x86-32)
+Requires:       gmp(x86-32)
 Requires:       gnutls(x86-32)
 Requires:       gstreamer1-plugins-good(x86-32)
 Requires:       jxrlib(x86-32)
@@ -420,6 +425,7 @@ Requires:       libva(x86-32)
 Requires:       cups-libs(x86-64)
 Requires:       freetype(x86-64)
 Requires:       nss-mdns(x86-64)
+Requires:       gmp(x86-64)
 Requires:       gnutls(x86-64)
 Requires:       gstreamer1-plugins-good(x86-64)
 Requires:       jxrlib(x86-64)
@@ -451,6 +457,7 @@ Requires:       libva(x86-64)
 Requires:       cups-libs
 Requires:       freetype
 Requires:       nss-mdns
+Requires:       gmp
 Requires:       gnutls
 Requires:       gstreamer1-plugins-good
 Requires:       jxrlib
@@ -803,7 +810,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch5000 -p1
 
-sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
+#sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
 sed \
@@ -831,8 +838,10 @@ sed \
 %endif
 %patch1029 -p1
 %patch1030 -p1
+%patch1031 -p1
 %patch1091 -p1 -R
 %patch1300 -p1
+%patch1301 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -1626,6 +1635,7 @@ fi
 %{_libdir}/wine/api-ms-win-eventing-legacy-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-eventing-provider-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-eventlog-legacy-l1-1-0.%{winedll}
+%{_libdir}/wine/api-ms-win-gaming-tcui-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-gdi-dpiinfo-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-mm-joystick-l1-1-0.%{winedll}
 %{_libdir}/wine/api-ms-win-mm-misc-l1-1-1.%{winedll}
@@ -1740,8 +1750,8 @@ fi
 %{_libdir}/wine/dpvvox.%{winedll}
 %{_libdir}/wine/dsdmoprp.%{winedll}
 %{_libdir}/wine/dsound3d.%{winedll}
-%{_libdir}/wine/dxapi.%{winesys}
 %{_libdir}/wine/dx7vb.%{winedll}
+%{_libdir}/wine/dxapi.%{winesys}
 %{_libdir}/wine/encapi.%{winedll}
 %{_libdir}/wine/gcdef.%{winedll}
 %{_libdir}/wine/qdv.%{winedll}
@@ -1874,6 +1884,7 @@ fi
 %{_libdir}/wine/fusion.%{winedll}
 %{_libdir}/wine/fwpuclnt.%{winedll}
 %{_libdir}/wine/gameux.%{winedll}
+%{_libdir}/wine/gamingtcui.dll.so
 %{_libdir}/wine/gdi32.so
 %{_libdir}/wine/gdi32.%{winedll}
 %{_libdir}/wine/gdiplus.%{winedll}
@@ -1916,7 +1927,8 @@ fi
 %{_libdir}/wine/joy.%{winecpl}
 %{_libdir}/wine/jscript.%{winedll}
 %{_libdir}/wine/jsproxy.%{winedll}
-%{_libdir}/wine/kerberos.dll.so
+%{_libdir}/wine/kerberos.so
+%{_libdir}/wine/kerberos.%{winedll}
 %{_libdir}/wine/kernel32.%{winedll}
 %{_libdir}/wine/kernelbase.%{winedll}
 %{_libdir}/wine/ksecdd.%{winesys}
@@ -2269,18 +2281,18 @@ fi
 %{_libdir}/wine/dnsapi.so
 %{_libdir}/wine/dnsapi.%{winedll}
 %{_libdir}/wine/iexplore.%{wineexe}
-%if 0%{?wine_staging}
 %{_libdir}/wine/xactengine2_0.dll.so
-%{_libdir}/wine/xactengine2_1.dll.so
-%{_libdir}/wine/xactengine2_2.dll.so
-%{_libdir}/wine/xactengine2_3.dll.so
 %{_libdir}/wine/xactengine2_4.dll.so
-%{_libdir}/wine/xactengine2_5.dll.so
-%{_libdir}/wine/xactengine2_6.dll.so
 %{_libdir}/wine/xactengine2_7.dll.so
-%{_libdir}/wine/xactengine2_8.dll.so
 %{_libdir}/wine/xactengine2_9.dll.so
-%{_libdir}/wine/xactengine2_10.dll.so
+%if 0%{?wine_staging}
+#{_libdir}/wine/xactengine2_1.dll.so
+#{_libdir}/wine/xactengine2_2.dll.so
+#{_libdir}/wine/xactengine2_3.dll.so
+#{_libdir}/wine/xactengine2_5.dll.so
+#{_libdir}/wine/xactengine2_6.dll.so
+#{_libdir}/wine/xactengine2_8.dll.so
+#{_libdir}/wine/xactengine2_10.dll.so
 %endif
 %{_libdir}/wine/xactengine3_0.dll.so
 %{_libdir}/wine/xactengine3_1.dll.so
@@ -2634,7 +2646,7 @@ fi
 # ldap subpackage
 %files ldap
 %{_libdir}/wine/wldap32.so
-%{_libdir}/wine/wldap32.dll.so
+%{_libdir}/wine/wldap32.%{winedll}
 
 # cms subpackage
 %files cms
@@ -2693,6 +2705,10 @@ fi
 
 
 %changelog
+* Sat Apr 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.7-100
+- 6.7
+- BR: gmp (wine-tkg-proton-bcrypt)
+
 * Sat Apr 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.6-101.20210416git749f8c2
 - Snapshot
 

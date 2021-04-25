@@ -1,0 +1,52 @@
+From 51db75301c03ba3e9148ccb07732b40ce7272e94 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 24 Apr 2021 20:44:18 -0300
+Subject: [PATCH] xactengine: Set PulseAudio application name property in the
+ environment
+
+---
+ dlls/xactengine3_7/xact_dll.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/dlls/xactengine3_7/xact_dll.c b/dlls/xactengine3_7/xact_dll.c
+index 769d166..615b72c 100644
+--- a/dlls/xactengine3_7/xact_dll.c
++++ b/dlls/xactengine3_7/xact_dll.c
+@@ -32,6 +32,7 @@
+ #endif
+ #include "rpcproxy.h"
+ #include "wine/debug.h"
++#include "wine/unicode.h"
+ 
+ WINE_DEFAULT_DEBUG_CHANNEL(xact3);
+ 
+@@ -1558,6 +1559,26 @@ static HRESULT WINAPI XACT3CF_CreateInstance(IClassFactory *iface, IUnknown *pOu
+ 
+     object->IXACT3Engine_iface.lpVtbl = &XACT3Engine_Vtbl;
+ 
++    /* set PulseAudio's application.name in the environment since FAudio and
++     * SDL provide no way to pass this in */
++    {
++        WCHAR path[MAX_PATH], *name;
++        char *str;
++        DWORD len;
++
++        GetModuleFileNameW(NULL, path, ARRAY_SIZE(path));
++        name = strrchrW(path, '\\');
++        if (!name)
++            name = path;
++        else
++            name++;
++        len = WideCharToMultiByte(CP_UNIXCP, 0, name, -1, NULL, 0, NULL, NULL);
++        str = HeapAlloc(GetProcessHeap(), 0, len);
++        WideCharToMultiByte(CP_UNIXCP, 0, name, -1, str, len, NULL, NULL);
++        setenv("PULSE_PROP_application.name", str, 1);
++        HeapFree(GetProcessHeap(), 0, str);
++    }
++
+     FACTCreateEngineWithCustomAllocatorEXT(
+         0,
+         &object->fact_engine,
+-- 
+2.31.1
+

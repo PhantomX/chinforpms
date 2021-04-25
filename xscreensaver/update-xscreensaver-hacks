@@ -1,0 +1,92 @@
+#!/bin/bash
+
+_SYSCONFDIR=${sysconfdir:-/etc}
+_PREFIX=${prefix:-/usr}
+_DATADIR=${datadir:-${_PREFIX}/share}
+
+ADDIR=${ADDIR:-${install_prefix}${_SYSCONFDIR}/xscreensaver}
+CONFDIR=${CONFDIR:-${install_prefix}${_DATADIR}/xscreensaver/hacks.conf.d}
+ADFILE=${ADFILE:-$ADDIR/XScreenSaver.ad}
+
+fix_hackconf ()
+{
+	if [ ! -s $1 ] ; then
+		echo "$1 is empty" >&2
+		echo ""
+		return 1
+	fi
+
+	tmpconf=`mktemp /tmp/hackconf.XXXXXXXX`
+	tmpconf_1=`mktemp /tmp/hackconf.XXXXXXXX`
+	tmpconf_2=`mktemp /tmp/hackconf.XXXXXXXX`
+	tmpconf_3=`mktemp /tmp/hackconf.XXXXXXXX`
+	sed -n -e '$p' $1 > $tmpconf_1
+	sed -e '$d' $1 > $tmpconf_2
+	for file in $tmpconf_1 $tmpconf_2 ; do
+		if ( [ -s $file ] && grep -q '\\n\(\|\\\)[^\\].*$' $file ) ; then
+			rm -f $tmpconf $tmpconf_1 $tmpconf_2 $tmpconf_3
+			echo ""
+			echo "ignoring $1" >&2
+			return 1
+		fi
+	done
+	if ! grep -q '\\n[\\]*$' $tmpconf_1 ; then
+		sed -i -e 's|\(^.*$\)|\1 \\n\\|' $tmpconf_1
+	fi
+	sed -i -e 's|\\n$|\\n\\|' $tmpconf_1
+	while [ -s $tmpconf_2 ] ; do
+		sed -n -e '1p' $tmpconf_2 > $tmpconf_3
+		sed -i -e '1d' $tmpconf_2
+		if ! grep -q '\([ \t]\\$\|\\n\\$\)' $tmpconf_3 ; then
+			rm -f $tmpconf $tmpconf_1 $tmpconf_2 $tmpconf_3
+			echo ""
+			echo "ignoring $1" >&2
+			return 1
+		fi
+		cat $tmpconf_3 >> $tmpconf
+	done
+	cat $tmpconf_1 >> $tmpconf
+	rm -f $tmpconf_1 $tmpconf_2 $tmpconf_3
+	echo $tmpconf
+	return 0
+	
+}
+
+for suffix in header tail ; do
+	if [ ! -r $ADDIR/XScreenSaver.ad.$suffix ] ; then
+		echo "$ADDIR/XScreenSaver.ad.$suffix missing"
+		exit 1
+	fi
+done
+
+tmpfile=`mktemp /tmp/XScreenSaver.ad.XXXXXXXX`
+
+cat > $tmpfile <<EOF
+! Don't edit this file directly by yourself!!
+! This file is not meant to be edited directly.
+!
+! Instead, please edit /etc/xscreensaver/XScreenSaver.ad.header,
+! /etc/xscreensaver/XScreenSaver.ad.tail and add files under
+! /usr/share/xscreensaver/hacks.conf.d if you want.
+!
+! Then call /usr/sbin/update-xscreensaver-hacks to 
+! update this file.
+!
+EOF
+
+cat $ADDIR/XScreenSaver.ad.header >> $tmpfile
+
+for hackconf in $CONFDIR/*.conf ; do
+	hackconf_fixed=`fix_hackconf $hackconf`
+	if [ -n "$hackconf_fixed" ] ; then
+		cat $hackconf_fixed >> $tmpfile
+		rm -f $hackconf_fixed
+	fi
+done
+sed -i -e '$s|\\n\\$|\\n|' $tmpfile
+
+cat $ADDIR/XScreenSaver.ad.tail >> $tmpfile
+install -c -p -m 644 $tmpfile $ADFILE
+rm -f $tmpfile
+
+

@@ -1,0 +1,28 @@
+#!/usr/bin/bash
+
+is_process_running_p()
+{
+	pidid=$(pidof "$1" | sed -e 's|[ \t].*||')
+	if [ "x${pidid}" == "x" ] ; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+check_manager_and_exec() {
+	is_process_running_p "$1" || return
+	exec $2
+}
+
+check_manager_and_exec "lxdm-binary" "lxdm -c USER_SWITCH"          # LXDE
+check_manager_and_exec "lightdm"     "dm-tool switch-to-greeter"    # XFCE and etc
+check_manager_and_exec "gdm"         "gdmflexiserver -ls"           # GNOME
+# KDE-like
+check_manager_and_exec "sddm" \
+	"qdbus --system org.freedesktop.DisplayManager /org/freedesktop/DisplayManager/Seat0 org.freedesktop.DisplayManager.Seat.SwitchToGreeter"
+
+
+# No registered login manager found
+exit 1
+

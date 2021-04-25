@@ -1,0 +1,126 @@
+From d8ba605b7779ce5d2fc893c44fc2986ecf176e47 Mon Sep 17 00:00:00 2001
+From: XScreenSaver owners <xscreensaver-owner@fedoraproject.org>
+Date: Wed, 9 Dec 2020 22:12:09 +0900
+Subject: [PATCH] barcode / glsnake: sanitize the names of modes
+
+---
+ hacks/barcode.c     | 10 ----------
+ hacks/glx/glsnake.c | 12 ++++++------
+ 2 files changed, 6 insertions(+), 16 deletions(-)
+
+diff --git a/hacks/barcode.c b/hacks/barcode.c
+index 20c2f38..ba3e2b2 100644
+--- a/hacks/barcode.c
++++ b/hacks/barcode.c
+@@ -122,8 +122,6 @@ static const char *words[] =
+   "bird flu",
+   "bliss",
+   "bogosity",
+-  "boobies",
+-  "boobs",
+   "booty",
+   "bread",
+   "brogrammers",
+@@ -139,7 +137,6 @@ static const char *words[] =
+   "chocolate",
+   "chupacabra",
+   "CLONE",
+-  "cock",
+   "congress",
+   "constriction",
+   "contrition",
+@@ -184,7 +181,6 @@ static const char *words[] =
+   "fear",
+   "fever",
+   "filth",
+-  "flatulence",
+   "fluff",
+   "fnord",
+   "followers",
+@@ -202,9 +198,7 @@ static const char *words[] =
+   "happiness",
+   "hate",
+   "helplessness",
+-  "hemorrhoid",
+   "hermaphrodite",
+-  "heroin",
+   "heroine",
+   "hope",
+   "hysteria",
+@@ -286,7 +280,6 @@ static const char *words[] =
+   "punishment",
+   "punk rock",
+   "punk",
+-  "pussy",
+   "quagmire",
+   "quarantine",
+   "quartz",
+@@ -295,7 +288,6 @@ static const char *words[] =
+   "rage",
+   "readout",
+   "reality",
+-  "rectum",
+   "reject",
+   "rejection",
+   "respect",
+@@ -365,8 +357,6 @@ static const char *words[] =
+   "venom",
+   "verifiability",
+   "very fine people",
+-  "viagra",
+-  "vibrator",
+   "victim",
+   "vignette",
+   "villainy",
+diff --git a/hacks/glx/glsnake.c b/hacks/glx/glsnake.c
+index 8efc681..125df90 100644
+--- a/hacks/glx/glsnake.c
++++ b/hacks/glx/glsnake.c
+@@ -539,7 +539,7 @@ static const struct model_s model[] = {
+ 	PIN, ZERO, RIGHT, RIGHT, ZERO, PIN, PIN, ZERO, PIN, PIN, ZERO,
+ 	RIGHT, ZERO }
+     },
+-    { "k's turd",
++    { "caterpillar",
+       { RIGHT, RIGHT, PIN, RIGHT, LEFT, RIGHT, PIN, RIGHT, LEFT,
+ 	RIGHT, PIN, RIGHT, LEFT, RIGHT, PIN, RIGHT, LEFT, RIGHT, PIN,
+ 	RIGHT, LEFT, RIGHT, PIN, ZERO }
+@@ -564,22 +564,22 @@ static const struct model_s model[] = {
+ 	ZERO, PIN, ZERO, ZERO, ZERO, ZERO, PIN, ZERO, ZERO, ZERO, ZERO,
+ 	ZERO, ZERO, ZERO }
+     },
+-    { "kissy box",
++    { "ribbon",
+       { PIN, ZERO, ZERO, ZERO, PIN, ZERO, ZERO, ZERO, ZERO, ZERO,
+ 	ZERO, PIN, ZERO, ZERO, ZERO, ZERO, PIN, ZERO, ZERO, ZERO, ZERO,
+ 	ZERO, PIN, ZERO }
+     },
+-    { "erect penis",     /* thanks benno */
++    { "shuffle board",     /* thanks benno */
+       { PIN, ZERO, PIN, PIN, ZERO, ZERO, PIN, ZERO, ZERO, ZERO, PIN,
+ 	PIN, ZERO, ZERO, ZERO, RIGHT, ZERO, ZERO, ZERO, ZERO, ZERO, ZERO,
+ 	ZERO, ZERO }
+     },
+-    { "flaccid penis",
++    { "anchor",
+       { PIN, ZERO, PIN, PIN, ZERO, ZERO, PIN, ZERO, ZERO, ZERO, PIN,
+ 	PIN, ZERO, ZERO, ZERO, RIGHT, PIN, ZERO, ZERO, ZERO, ZERO, ZERO,
+ 	ZERO, ZERO }
+     },
+-    { "vagina",
++    { "engagement ring",
+       { RIGHT, ZERO, ZERO, ZERO, RIGHT, ZERO, ZERO, PIN, ZERO, ZERO,
+ 	LEFT, ZERO, ZERO, ZERO, LEFT, ZERO, LEFT, PIN, LEFT, PIN, RIGHT,
+ 	PIN, RIGHT, ZERO }
+@@ -999,7 +999,7 @@ static const struct model_s model[] = {
+     { "Parrot",
+         { ZERO, ZERO, ZERO, ZERO, RIGHT, RIGHT, ZERO, LEFT, PIN, RIGHT, ZERO, RIGHT, ZERO, RIGHT, ZERO, RIGHT, PIN, LEFT, ZERO, RIGHT, LEFT, ZERO, PIN, ZERO }
+     },
+-    { "Penis",
++    { "Shuttle",
+         { PIN, PIN, RIGHT, ZERO, PIN, PIN, ZERO, PIN, ZERO, ZERO, RIGHT, PIN, LEFT, ZERO, ZERO, PIN, ZERO, PIN, PIN, ZERO, LEFT, PIN, PIN, ZERO }
+     },
+     { "PictureComingSoon",
+-- 
+2.29.2
+

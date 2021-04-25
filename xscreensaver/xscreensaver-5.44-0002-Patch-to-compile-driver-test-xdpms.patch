@@ -1,0 +1,24 @@
+From 2ab857c449470d9de45f7b1b8114eda3d9899dc6 Mon Sep 17 00:00:00 2001
+From: XScreenSaver owners <xscreensaver-owner@fedoraproject.org>
+Date: Tue, 24 Mar 2020 13:37:59 +0900
+Subject: [PATCH] Patch to compile driver/test-xdpms
+
+---
+ driver/test-xdpms.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/driver/test-xdpms.c b/driver/test-xdpms.c
+index b86aed3..1a48c3d 100644
+--- a/driver/test-xdpms.c
++++ b/driver/test-xdpms.c
+@@ -29,7 +29,6 @@
+ 
+ #include <X11/Xproto.h>
+ #include <X11/extensions/dpms.h>
+-#include <X11/extensions/dpmsstr.h>
+ 
+ extern Bool DPMSQueryExtension (Display *dpy, int *event_ret, int *error_ret);
+ extern Bool DPMSCapable (Display *dpy);
+-- 
+2.25.2
+

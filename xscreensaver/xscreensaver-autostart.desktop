@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=xscreensaver-autostart
+Comment=Autostart xscreensaver
+Exec=/usr/libexec/xscreensaver-autostart
+Terminal=false

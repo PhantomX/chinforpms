@@ -1,0 +1,84 @@
+From 735cc1af7595890d9cd567f36dabaf41fae4210e Mon Sep 17 00:00:00 2001
+From: Mamoru TASAKA <mtasaka@fedoraproject.org>
+Date: Mon, 11 Jul 2016 16:53:14 +0900
+Subject: [PATCH] XIO: print C backtrace on error
+
+For debugging purpose, show C backtrace with XIO
+error happens.
+---
+ driver/xscreensaver.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
+diff --git a/driver/xscreensaver.c b/driver/xscreensaver.c
+index 76969f2..04c2669 100644
+--- a/driver/xscreensaver.c
++++ b/driver/xscreensaver.c
+@@ -148,10 +148,15 @@
+ # include "config.h"
+ #endif
+ 
++#include <features.h>
+ #include <stdio.h>
+ #include <ctype.h>
+ #include <X11/Xlib.h>
+ 
++#ifdef __GNU_LIBRARY__
++#include <execinfo.h>
++#endif
++
+ #ifdef ENABLE_NLS
+ # include <locale.h>
+ # include <libintl.h>
+@@ -504,6 +509,41 @@ startup_ehandler (String name, String type, String class,
+   exit (1);
+ }
+ 
++static void
++show_cstyle_backtrace(void)
++{
++#ifdef __GNU_LIBRARY__
++  void *bt_array[128];
++  size_t bt_size;
++
++  bt_size = backtrace(bt_array, countof(bt_array));
++  fprintf(stderr, "C backtrace:\n");
++  backtrace_symbols_fd(bt_array, bt_size, STDERR_FILENO);
++#endif
++}
++
++static int (*default_xio_ehandler)(Display *dpy) = 0;
++
++static int
++show_debug_info_xio_ehandler(Display *dpy)
++{
++  show_cstyle_backtrace();
++  if (default_xio_ehandler){
++    (*default_xio_ehandler)(dpy);
++  }
++  return 0;
++}
++
++static void
++hack_IOErrorHandler(void)
++{
++#ifdef __GNU_LIBRARY__
++  XIOErrorHandler old_handler;
++  old_handler = XSetIOErrorHandler(show_debug_info_xio_ehandler);
++  default_xio_ehandler = old_handler;
++#endif
++}
++
+ 
+ /* The zillions of initializations.
+  */
+@@ -1570,6 +1610,7 @@ main (int argc, char **argv)
+ 
+   initialize_stderr (si);
+   handle_signals (si);
++  hack_IOErrorHandler();
+ 
+   make_splash_dialog (si);
+ 
+-- 
+2.7.4
+

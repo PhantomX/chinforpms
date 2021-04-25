@@ -1,6 +1,6 @@
-%global commit bbdb4f76c8051d285f3a340165a4cc803148fd33
+%global commit fd2ff87dcb423ffa3ab2df49de8638ecda4f0735
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210419
+%global date 20210424
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -19,7 +19,7 @@
 # https://github.com/hrydgard/ppsspp/issues/13312
 %global _lto_cflags %{nil}
 
-%global commit1 37fe9848b4d2bf7879a3fd382796e5e1d1193ac4
+%global commit1 3bf6b18eb0ae68861fbfbb7b43cd764771ca42a9
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -39,7 +39,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 d137abeef57b2f3fdbdab0ad5590fe99a44ba546
+%global commit7 c624d5387c88f9a7a0068a06e2e9d188c392eb68
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -82,6 +82,7 @@ Patch1:         %{name}-nodiscord.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
+# Experimental, have poor performance
 Patch5:         0001-Add-chd-support.patch
 
 %if !0%{?with_sysffmpeg}
@@ -365,6 +366,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Apr 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-107.20210424gitfd2ff87
+- Update
+
 * Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-106.20210419gitbbdb4f7
 - Last snapshot
 

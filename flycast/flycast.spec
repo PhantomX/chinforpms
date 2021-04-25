@@ -1,6 +1,6 @@
-%global commit a9e22c2e20b5a408e6a4a69f4dcce743e869dff3
+%global commit 92ccd6eb26e71c609ee23ff5c91540a3c5601bd9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210420
+%global date 20210422
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        50%{?gver}%{?dist}
+Release:        51%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -204,6 +204,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Sat Apr 24 2021 Phantom X <megaphantomx at hotmail dot com> - 7-51.20210422git92ccd6e
+- Update
+
 * Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 7-50.20210420gita9e22c2
 - Bump
 - Add upstream metadata file

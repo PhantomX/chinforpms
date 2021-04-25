@@ -1,0 +1,42 @@
+From bc93d94efe27f6a42cfe1d5c5c5723565f3930de Mon Sep 17 00:00:00 2001
+From: Mamoru TASAKA <mtasaka@fedoraproject.org>
+Date: Thu, 10 Dec 2020 11:45:51 +0900
+Subject: [PATCH] asm6502.c/immediate: readd free() call accidentally removed
+ during gcc warnings fix
+
+valgrind detects the following leak:
+
+==200428== 4,480 bytes in 56 blocks are definitely lost in loss record 307 of 310
+==200428==    at 0x483BAE9: calloc (vg_replace_malloc.c:760)
+==200428==    by 0x1122AB: UnknownInlinedFun (asm6502.c:115)
+==200428==    by 0x1122AB: UnknownInlinedFun (asm6502.c:1411)
+==200428==    by 0x1122AB: UnknownInlinedFun (asm6502.c:1576)
+==200428==    by 0x1122AB: UnknownInlinedFun (asm6502.c:1652)
+==200428==    by 0x1122AB: compileCode (asm6502.c:2028)
+==200428==    by 0x118602: UnknownInlinedFun (asm6502.c:2230)
+==200428==    by 0x118602: UnknownInlinedFun (m6502.c:93)
+==200428==    by 0x118602: m6502_draw (m6502.c:230)
+==200428==    by 0x10D9D7: UnknownInlinedFun (screenhack.c:597)
+==200428==    by 0x10D9D7: main (screenhack.c:991)
+
+During gcc warnings fix (about -Wstringop), strncpy() is changed to sprintf, but the following
+free() should not be removed, otherwise m6502 will leak memory.
+---
+ hacks/asm6502.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/hacks/asm6502.c b/hacks/asm6502.c
+index 1d5c896..dd8a11b 100644
+--- a/hacks/asm6502.c
++++ b/hacks/asm6502.c
+@@ -1413,6 +1413,7 @@ static BOOL immediate(char **s, Param *param){
+     (*s)++; /* move past < or > */
+     if (paramLabel(s, &label)){
+       sprintf(param->label, "%.*s", MAX_LABEL_LEN-1, label);
++      free(label);
+       return TRUE;
+     }    
+     free(label);
+-- 
+2.29.2
+

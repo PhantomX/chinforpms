@@ -1,0 +1,33 @@
+From dab3a04fbd2c4658614471cd4d8550ce0e0cef7b Mon Sep 17 00:00:00 2001
+From: Mamoru TASAKA <mtasaka@fedoraproject.org>
+Date: Thu, 10 Dec 2020 16:38:26 +0900
+Subject: [PATCH] beats/draw_beats: avoid integer overflow by multiplication
+
+gcc10 -fsanitize=undefined detects the following integer overflow:
+------------------------------------------
+../../../hacks/glx/beats.c:325:53: runtime error: signed integer overflow: 3665625 * 42587 cannot be represented in type 'int'
+../../../hacks/glx/beats.c:326:21: runtime error: signed integer overflow: 1489149219 * 1233599 cannot be represented in type 'int'
+------------------------------------------
+Avoid this by using unsigned integer.
+---
+ hacks/glx/beats.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/hacks/glx/beats.c b/hacks/glx/beats.c
+index 64fd689..19565ec 100644
+--- a/hacks/glx/beats.c
++++ b/hacks/glx/beats.c
+@@ -322,8 +322,8 @@ draw_beats (ModeInfo *mi)
+       }
+     }
+     /* pseudo-random generator based on current minute */
+-    timeSeed = (((tmM+1) * (tmM+1) * ((tmH+1) * 37) *
+-		 ((tmD+1) * 1151) * 1233599) % 653);
++    timeSeed = (((tmM+1) * (tmM+1) * ((tmH+1) * 37ULL) *
++		 ((tmD+1) * 1151ULL) * 1233599ULL) % 653);
+     cycle = timeSeed % 4;
+     if(bp->preset_cycle != -1){
+       cycle = bp->preset_cycle;
+-- 
+2.29.2
+

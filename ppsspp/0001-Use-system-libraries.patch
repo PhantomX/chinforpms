@@ -1,6 +1,6 @@
-From 46213aca7195bef5cc937dda40383b93ced7c76d Mon Sep 17 00:00:00 2001
+From c3967e9c232a2027bfefa862aa20be248ec72a41 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 17 Apr 2021 21:36:25 -0300
+Date: Sat, 24 Apr 2021 17:25:11 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake and zstd bits borrowed from dolphin-emu
@@ -30,7 +30,7 @@ https://github.com/dolphin-emu/dolphin
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f0eb5da..4e80f07 100644
+index f0eb5da..d27f7ea 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -135,6 +135,9 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
@@ -140,7 +140,7 @@ index 4c66642..4f3eca0 100644
  #include "Common/Log.h"
  
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index e113ef3..35056df 100644
+index 40daa83..066d49f 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
 @@ -20,7 +20,11 @@
@@ -154,7 +154,7 @@ index e113ef3..35056df 100644
 +#endif
  
  #include "Common/CommonTypes.h"
- #include "Core/MemMap.h"
+ #include "Common/Data/Encoding/Utf8.h"
 diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
 index d438a16..5be50f2 100644
 --- a/Core/HLE/sceJpeg.cpp
@@ -374,7 +374,7 @@ index d081ba1..627ce3a 100644
  
  #include "Common/Data/Text/I18n.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index ebbbf85..fcb6df6 100644
+index 4c3b132..b41f558 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp
 +++ b/Windows/Debugger/CtrlDisAsmView.cpp
 @@ -21,7 +21,11 @@
@@ -390,7 +390,7 @@ index ebbbf85..fcb6df6 100644
  
  #include <CommDlg.h>
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index 8de34a1..1ba86a4 100644
+index 1d57442..dbdbf26 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
 @@ -3,7 +3,11 @@
@@ -450,5 +450,5 @@ index 3597ca1..db6b733 100644
  add_subdirectory(zstd/build/cmake EXCLUDE_FROM_ALL)
 +endif()
 -- 
-2.30.2
+2.31.1
 

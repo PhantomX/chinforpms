@@ -1,0 +1,27 @@
+From 95ae80c0e7bc1b92535067df1fd0129829ce67af Mon Sep 17 00:00:00 2001
+From: Mamoru TASAKA <mtasaka@fedoraproject.org>
+Date: Sun, 30 Dec 2018 15:23:37 +0900
+Subject: [PATCH] open new window for man when using gnome-terminal
+
+Instead of opening man page in another tab, force opening
+new window.
+---
+ driver/XScreenSaver.ad.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/driver/XScreenSaver.ad.in b/driver/XScreenSaver.ad.in
+index eec998f..b7a0846 100644
+--- a/driver/XScreenSaver.ad.in
++++ b/driver/XScreenSaver.ad.in
+@@ -100,7 +100,7 @@ GetViewPortIsFullOfLies: False
+ !   Gnome 2.4, 2.6: (yelp can't display man pages, as of 2.6.3)
+ !
+ @GNOME24@*loadURL: @WITH_BROWSER@ '%s'
+-@GNOME24@*manualCommand: gnome-terminal --title '%s manual' \
++@GNOME24@*manualCommand: gnome-terminal --window --title '%s manual' \
+ @GNOME24@		--command '/bin/sh -c "man %s; read foo"'
+ !
+ !   Gnome 2.2:
+-- 
+2.20.1
+
