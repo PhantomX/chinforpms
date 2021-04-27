@@ -5,7 +5,7 @@
 # Script by Phantom X <megaphantomx at bol.com.b>
 # Suggested usage: $ winedxvkcfg --help
 #
-# Copyright 2018-2020 Phantom X, Goiania, Brazil.
+# Copyright 2018-2021 Phantom X, Goiania, Brazil.
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -26,13 +26,13 @@
 
 set -e
 
-ver=20210422
+ver=20210425
 
 name="VKD3D-Proton"
 pkgname="wine-vkd3d-proton"
 datadir="/usr/share/wine/vkd3d-proton"
 dllsuffix=""
-dlls="d3d12 libvkd3d-proton-utils-3"
+dlls="d3d12"
 nodlls="dxgi"
 
 wineext=dll
@@ -97,8 +97,10 @@ setcfg(){
   for winebits in 64 32 ;do
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
+      wine_path="/usr/lib64/wine"
     else
       lib=32
+      wine_path="/usr/lib/wine"
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
@@ -118,6 +120,13 @@ setcfg(){
             wine${winebits} reg delete "${overrideskey}" /v "${nodll}" /f &>/dev/null
             retval=$?
           fi
+          if [ -f "${wine_path}/${nodll}.dll.so" ] && ! cmp -s "${wine_path}/fakedlls/${nodll}.dll" "$(readlink -f "${native_path}/${nodll}.dll")" ;then
+            rm -f "${native_path}/${nodll}.dll" 2>/dev/null
+            cp -pf "${wine_path}/fakedlls/${nodll}.dll" "${native_path}/${nodll}.dll" 2>/dev/null
+          elif [ -f "${wine_path}/${nodll}.dll" ] && ! cmp -s "${wine_path}/${nodll}.dll" "$(readlink -f "${native_path}/${nodll}.dll")" ;then
+            rm -f "${native_path}/${nodll}.dll" 2>/dev/null
+            cp -pf "${wine_path}/${nodll}.dll" "${native_path}/${nodll}.dll" 2>/dev/null
+          fi
         done
       fi
       for dll in ${dlls} ;do
@@ -128,6 +137,7 @@ setcfg(){
         else
           disabled=1
         fi
+        rm -f "${native_path}/${dll}.dll"
         ln -sf "${lib_path}/${dll}${dllsuffix}.${wineext}" "${native_path}/${dll}.dll"
         retval=$?
         if [ "${retval}" -eq 0 ] ;then
@@ -158,8 +168,10 @@ unsetcfg(){
   for winebits in 64 32 ;do
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
+      wine_path="/usr/lib64/wine"
     else
       lib=32
+      wine_path="/usr/lib/wine"
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
@@ -179,6 +191,11 @@ unsetcfg(){
           retval=$?
           if [ "${retval}" -eq 0 ] ;then
             disabledlnk=1
+            if [ -f "${wine_path}/${dll}.dll.so" ] && ! cmp -s "${wine_path}/fakedlls/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
+              cp -pf "${wine_path}/fakedlls/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
+            elif [ -f "${wine_path}/${dll}.dll" ] && ! cmp -s "${wine_path}/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
+              cp -pf "${wine_path}/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
+            fi
           else
             disabledlnk=0
           fi

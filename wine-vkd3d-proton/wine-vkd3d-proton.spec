@@ -55,7 +55,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.3
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
@@ -271,6 +271,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Apr 25 2021 Phantom X <megaphantomx at hotmail dot com> - 2.3-2
+- Update script
+
 * Thu Apr 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2.3-1
 - 2.3
 

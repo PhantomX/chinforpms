@@ -2,10 +2,10 @@
 # -- winedxvkcfg --
 # Sets wine Gallium Nine dll.
 #
-# Script by Phantom X <megaphantomx at bol.com.b>
+# Script by Phantom X <megaphantomx at hotmail dot com>
 # Suggested usage: $ wineninecfg --help
 #
-# Copyright 2018-2020 Phantom X, Goiania, Brazil.
+# Copyright 2018-2021 Phantom X, Goiania, Brazil.
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20200420
+ver=20210425
 
 name="Gallium Nine"
 pkgname="wine-nine"
@@ -115,6 +115,13 @@ setcfg(){
             wine${winebits} reg delete "${overrideskey}" /v "${nodll}" /f &>/dev/null
             retval=$?
           fi
+          if [ -f "${lib_path}/${nodll}.dll.so" ] && ! cmp -s "${lib_path}/fakedlls/${nodll}.dll" "$(readlink -f "${native_path}/${nodll}.dll")" ;then
+            rm -f "${native_path}/${nodll}.dll" 2>/dev/null
+            cp -pf "${lib_path}/fakedlls/${nodll}.dll" "${native_path}/${nodll}.dll" 2>/dev/null
+          elif [ -f "${lib_path}/${nodll}.dll" ] && ! cmp -s "${lib_path}/${nodll}.dll" "$(readlink -f "${native_path}/${nodll}.dll")" ;then
+            rm -f "${native_path}/${nodll}.dll" 2>/dev/null
+            cp -pf "${lib_path}/${nodll}.dll" "${native_path}/${nodll}.dll" 2>/dev/null
+          fi
         done
       fi
       for dll in ${dlls} ;do
@@ -125,6 +132,7 @@ setcfg(){
         else
           disabled=1
         fi
+        rm -f "${native_path}/${dll}.dll"
         ln -sf "${lib_path}/${dll}${dllsuffix}.dll.so" "${native_path}/${dll}.dll"
         retval=$?
         if [ "${retval}" -eq 0 ] ;then
@@ -176,6 +184,11 @@ unsetcfg(){
           retval=$?
           if [ "${retval}" -eq 0 ] ;then
             disabledlnk=1
+            if [ -f "${lib_path}/${dll}.dll.so" ] && ! cmp -s "${lib_path}/fakedlls/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
+              cp -pf "${lib_path}/fakedlls/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
+            elif [ -f "${lib_path}/${dll}.dll" ] && ! cmp -s "${lib_path}/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
+              cp -pf "${lib_path}/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
+            fi
           else
             disabledlnk=0
           fi

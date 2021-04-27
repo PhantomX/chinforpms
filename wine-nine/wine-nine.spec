@@ -17,7 +17,7 @@
 
 Name:           wine-nine
 Version:        0.8
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -153,6 +153,9 @@ desktop-file-install \
 
 
 %changelog
+* Sun Apr 25 2021 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-2
+- Update script
+
 * Fri Apr 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-1
 - 0.8
 
