@@ -3,7 +3,7 @@
 %global commit 93fc15e9f2d68d8a43b22c57b8b935f272ce06eb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200422
-%global with_snapshot 1
+%global with_snapshot 0
 
 %global branch classic
 
@@ -131,7 +131,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2021.04.1
+Version:        2021.04.2
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -354,7 +354,7 @@ This package contains results of tests executed during build.
 %if 0%{?with_snapshot}
 %setup -q -n Waterfox-%{commit} -a 600
 %else
-%setup -q -n Waterfox-%{version}-%{branch} -a 600
+%setup -q -n Waterfox-%{version} -a 600
 %endif
 
 %if %{build_langpacks}
@@ -1032,6 +1032,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Mon Apr 26 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.04.2-1.classic
+- 2021.04.2
+
 * Thu Apr 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.04.1-1.classic.20200422git93fc15e
 - 2021.04.1
 
