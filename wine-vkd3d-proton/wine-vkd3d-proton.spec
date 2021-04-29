@@ -14,7 +14,7 @@
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 1d479c433247a5ace48a0a4a4fd475e1fbf2617e
+%global commit1 d678a1049046dd313e9afd1e0c3b69c859bdc9a7
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -54,8 +54,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.3
-Release:        2%{?gver}%{?dist}
+Version:        2.3.1
+Release:        1%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
@@ -271,6 +271,12 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Apr 28 2021 Phantom X <megaphantomx at hotmail dot com> - 2.3.1-1
+- 2.3.1
+
+* Tue Apr 27 2021 Phantom X <megaphantomx at hotmail dot com> - 2.3-3
+- Update script to architecture-specific dll directories
+
 * Sun Apr 25 2021 Phantom X <megaphantomx at hotmail dot com> - 2.3-2
 - Update script
 

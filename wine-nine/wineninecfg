@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20210425
+ver=20210427
 
 name="Gallium Nine"
 pkgname="wine-nine"
@@ -94,12 +94,15 @@ setcfg(){
   for winebits in 64 32 ;do
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
+      winearchdir=x86_64-windows
     else
       lib=''
+      winearchdir=i386-windows
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       lib_path="/usr/lib${lib}/wine"
+      arch_path="${lib_path}/${winearchdir}"
       for dll in ${dlls} ;do
         if ! [ -f "${lib_path}/${dll}${dllsuffix}.dll.so" ];then
           echo "Missing ${dll}${dllsuffix}.dll in /usr/lib${lib}/wine/."
@@ -115,12 +118,9 @@ setcfg(){
             wine${winebits} reg delete "${overrideskey}" /v "${nodll}" /f &>/dev/null
             retval=$?
           fi
-          if [ -f "${lib_path}/${nodll}.dll.so" ] && ! cmp -s "${lib_path}/fakedlls/${nodll}.dll" "$(readlink -f "${native_path}/${nodll}.dll")" ;then
+          if [ -f "${arch_path}/${nodll}.dll" ] && ! cmp -s "${arch_path}/${nodll}.dll" "$(readlink -f "${native_path}/${nodll}.dll")" ;then
             rm -f "${native_path}/${nodll}.dll" 2>/dev/null
-            cp -pf "${lib_path}/fakedlls/${nodll}.dll" "${native_path}/${nodll}.dll" 2>/dev/null
-          elif [ -f "${lib_path}/${nodll}.dll" ] && ! cmp -s "${lib_path}/${nodll}.dll" "$(readlink -f "${native_path}/${nodll}.dll")" ;then
-            rm -f "${native_path}/${nodll}.dll" 2>/dev/null
-            cp -pf "${lib_path}/${nodll}.dll" "${native_path}/${nodll}.dll" 2>/dev/null
+            cp -pf "${arch_path}/${nodll}.dll" "${native_path}/${nodll}.dll" 2>/dev/null
           fi
         done
       fi
@@ -163,12 +163,15 @@ unsetcfg(){
   for winebits in 64 32 ;do
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
+      winearchdir=x86_64-windows
     else
       lib=''
+      winearchdir=i386-windows
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
       lib_path="/usr/lib${lib}/wine"
+      arch_path="${lib_path}/${winearchdir}"
       for dll in ${dlls} ;do
         if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" &>/dev/null ;then
           wine${winebits} reg delete "${overrideskey}" /v "${dll}" /f &>/dev/null
@@ -184,10 +187,8 @@ unsetcfg(){
           retval=$?
           if [ "${retval}" -eq 0 ] ;then
             disabledlnk=1
-            if [ -f "${lib_path}/${dll}.dll.so" ] && ! cmp -s "${lib_path}/fakedlls/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
-              cp -pf "${lib_path}/fakedlls/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
-            elif [ -f "${lib_path}/${dll}.dll" ] && ! cmp -s "${lib_path}/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
-              cp -pf "${lib_path}/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
+            if [ -f "${arch_path}/${dll}.dll" ] && ! cmp -s "${arch_path}/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
+              cp -pf "${arch_path}/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
             fi
           else
             disabledlnk=0

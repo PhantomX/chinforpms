@@ -38,7 +38,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.8.1
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -252,6 +252,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Apr 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8.1-106.20210423git525fd53
+- Update script to architecture-specific dll directories
+
 * Sun Apr 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8.1-105.20210423git525fd53
 - Update
 

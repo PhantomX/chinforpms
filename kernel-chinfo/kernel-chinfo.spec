@@ -87,24 +87,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 11
+%define base_sublevel 12
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 8
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d1f343486df3a4e780a40096e4b637fdd6a6ec56
+%global pfcommit 664a14f3d513c43cab29f9cfbc866a55bd4c05bc
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id d57ad55cbe8c99c825db0b4abbb342040b7161c8
+%global opensuse_id 5d43652877fda8aa556866abab93cad61f1f9b6f
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -458,7 +458,6 @@ Summary: The Linux kernel
 %define kernel_image_elf 1
 %define use_vdso 0
 %define all_arch_configs kernel-%{version}-ppc64le*.config
-%define kcflags -O3
 %endif
 
 %ifarch s390x
@@ -466,6 +465,7 @@ Summary: The Linux kernel
 %define hdrarch s390
 %define all_arch_configs kernel-%{version}-s390x.config
 %define kernel_image arch/s390/boot/bzImage
+%define vmlinux_decompressor arch/s390/boot/compressed/vmlinux
 %endif
 
 %ifarch %{arm}
@@ -498,6 +498,14 @@ Summary: The Linux kernel
 # Should make listnewconfig fail if there's config options
 # printed out?
 %if %{nopatches}
+%define with_configchecks 0
+%endif
+
+# Setting the compiler to clang enables some different config options
+# than what is expected, so disable this check for now.
+# TODO: What's the best way to fix this?  Do wee need a different set of
+# configs for clang?
+%if %{with toolchain_clang}
 %define with_configchecks 0
 %endif
 
@@ -641,6 +649,8 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %endif
 
 Source0: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/linux-%{kversion}.tar.xz
+
+Source1: Makefile.rhelver
 
 # Name of the packaged file containing signing key
 %ifarch ppc64le
@@ -844,10 +854,15 @@ Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{patchwork_url}/12160165/mbox/#/patchwork-v2-blk-mq-Fix-races-between-iterating-over-requests-and-freeing-requests.patch
-Patch2002: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
-Patch2010: 0001-fsync.patch
-Patch2011: 0001-futex2.patch
+Patch2001: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/patch/block/blk-mq-tag.c?id=39aa56db50b9ca5cad597e561b4b160b6cbbb65b#/kernel-git-39aa56d.patch
+Patch2002: %{patchwork_url}/12215169/mbox/#/patchwork-v7-1-5-blk-mq-Move-the-elevator_exit-definition.patch
+Patch2003: %{patchwork_url}/12226813/mbox/#/patchwork-V3-1-3-blk-mq-grab-rq--refcount-before-calling---fn-in-blk_mq_tagset_busy_iter.patch
+Patch2004: %{patchwork_url}/12226815/mbox/#/patchwork-V3-2-3-blk-mq-complete-request-locally-if-the-completion-is-from-tagset-iterator.patch
+Patch2005: %{patchwork_url}/12226817/mbox/#/patchwork-V3-3-3-blk-mq-clear-stale-request-in-tags--rq-before-freeing-one-request-pool.patch
+Patch2006: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
+
+Patch2090: 0001-fsync.patch
+Patch2091: 0001-futex2.patch
 
 %if !0%{?post_factum}
 
@@ -1033,6 +1048,12 @@ AutoReqProv: no\
 Requires(pre): findutils\
 Requires: findutils\
 Requires: perl-interpreter\
+Requires: openssl-devel\
+Requires: elfutils-libelf-devel\
+Requires: bison\
+Requires: flex\
+Requires: make\
+Requires: gcc\
 %description %{?1:%{1}-}devel\
 This package provides kernel headers and makefiles sufficient to build modules\
 against the %{?2:%{2} }kernel package.\
@@ -1104,7 +1125,6 @@ Provides: kernel-modules = %{version}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
-Recommends: alsa-sof-firmware\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules\
@@ -1135,9 +1155,6 @@ The meta-package for the %{1} kernel\
 Summary: %{variant_summary}\
 Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
-%ifarch ppc64le\
-Obsoletes: kernel-bootwrapper\
-%endif\
 %{expand:%%kernel_reqprovconf}\
 %if %{?1:1} %{!?1:0} \
 %{expand:%%kernel_meta_package %{?1:%{1}}}\
@@ -1197,7 +1214,7 @@ input and output, etc.
 %prep
 # do a few sanity-checks for --with *only builds
 %if %{with_baseonly}
-%if !%{with_up}%{with_pae}
+%if !%{with_up}
 echo "Cannot build --with baseonly, up build is disabled"
 exit 1
 %endif
@@ -1359,6 +1376,7 @@ fi
 cp -al vanilla-%{vanillaversion} linux-%{KVERREL}
 
 cd linux-%{KVERREL}
+cp -a %{SOURCE1} .
 
 if [ ! -d .git ]; then
     git init
@@ -1537,33 +1555,18 @@ cp_vmlinux()
 
 %define make %{__make} %{?cross_opts} %{?make_opts} LD=ld.bfd HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
 
-BuildKernel() {
-    MakeTarget=$1
-    KernelImage=$2
-    Flavour=$4
-    DoVDSO=$3
+InitBuildVars() {
+    # Initialize the kernel .config file and create some variables that are
+    # needed for the actual build process.
+
+    Flavour=$1
     Flav=${Flavour:++${Flavour}}
-    InstallName=${5:-vmlinuz}
 
-    DoModules=1
-    if [ "$Flavour" = "zfcpdump" ]; then
-        DoModules=0
-    fi
-
-    # Pick the right config file for the kernel we're building
+    # Pick the right kernel config file
     Config=kernel-%{version}-%{_target_cpu}${Flavour:+-${Flavour}}.config
     DevelDir=/usr/src/kernels/%{KVERREL}${Flav}
 
-    # When the bootable image is just the ELF kernel, strip it.
-    # We already copy the unstripped file into the debuginfo package.
-    if [ "$KernelImage" = vmlinux ]; then
-      CopyKernel=cp_vmlinux
-    else
-      CopyKernel=cp
-    fi
-
     KernelVer=%{version}-%{release}.%{_target_cpu}${Flav}
-    echo BUILDING A KERNEL FOR ${Flavour} %{_target_cpu}...
 
     %if 0%{?stable_update}
     # make sure SUBLEVEL is incremented on a stable release.  Sigh 3.x.
@@ -1582,8 +1585,6 @@ BuildKernel() {
     %endif
     %endif
 
-    # and now to start the build process
-
     %{make} %{?_smp_mflags} mrproper
     cp configs/$Config .config
 
@@ -1600,6 +1601,34 @@ BuildKernel() {
     if [ "$Flavour" == "" ]; then
         KCFLAGS="$KCFLAGS %{?kpatch_kcflags}"
     fi
+}
+
+BuildKernel() {
+    MakeTarget=$1
+    KernelImage=$2
+    Flavour=$4
+    DoVDSO=$3
+    Flav=${Flavour:++${Flavour}}
+    InstallName=${5:-vmlinuz}
+
+    DoModules=1
+    if [ "$Flavour" = "zfcpdump" ]; then
+        DoModules=0
+    fi
+
+    # When the bootable image is just the ELF kernel, strip it.
+    # We already copy the unstripped file into the debuginfo package.
+    if [ "$KernelImage" = vmlinux ]; then
+      CopyKernel=cp_vmlinux
+    else
+      CopyKernel=cp
+    fi
+
+    InitBuildVars $Flavour
+
+    echo BUILDING A KERNEL FOR ${Flavour} %{_target_cpu}...
+
+    # and now to start the build process
 
     %{make} ARCH=$Arch olddefconfig >/dev/null
 
@@ -1874,6 +1903,7 @@ BuildKernel() {
     cp --parents tools/lib/*.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp --parents tools/objtool/*.[ch] $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp --parents tools/objtool/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/objtool/include/objtool/*.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp -a --parents tools/lib/bpf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp --parents tools/lib/bpf/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
@@ -1963,6 +1993,16 @@ BuildKernel() {
     #
     mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
     cp vmlinux $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
+    if [ -n "%{vmlinux_decompressor}" ]; then
+      eu-readelf -n  %{vmlinux_decompressor} | grep "Build ID" | awk '{print $NF}' > vmlinux.decompressor.id
+      # Without build-id the build will fail. But for s390 the build-id
+      # wasn't added before 5.11. In case it is missing prefer not
+      # packaging the debuginfo over a build failure.
+      if [ -s vmlinux.decompressor.id ]; then
+        cp vmlinux.decompressor.id $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/vmlinux.decompressor.id
+        cp %{vmlinux_decompressor} $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/vmlinux.decompressor
+      fi
+    fi
 %endif
 
     find $RPM_BUILD_ROOT/lib/modules/$KernelVer -name "*.ko" -type f >modnames
@@ -2170,17 +2210,17 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
 %if %{with_selftests}
-%{make} -s ARCH=$Arch V=1 samples/bpf/
+%{make} -s %{?_smp_mflags} ARCH=$Arch V=1 samples/bpf/
 pushd tools/testing/selftests
 # We need to install here because we need to call make with ARCH set which
 # doesn't seem possible to do in the install section.
-%{make} -s ARCH=$Arch V=1 TARGETS="bpf livepatch net" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests install
+%{make} -s %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf livepatch net" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests install
 popd
 %endif
 
 %if %{with_doc}
 # Make the HTML pages.
-make LD=ld.bfd PYTHON=/usr/bin/python3 htmldocs || %{doc_build_fail}
+%{__make} LD=ld.bfd PYTHON=/usr/bin/python3 htmldocs || %{doc_build_fail}
 
 # sometimes non-world-readable files sneak into the kernel source tree
 chmod -R a=rX Documentation
@@ -2614,12 +2654,7 @@ fi
 %if 0%{!?fedora:1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
 %endif\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca*.cer\
-%ifarch s390x ppc64le\
-%if 0%{!?4:1}\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/%{signing_key_filename} \
-%endif\
-%endif\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
 %endif\
@@ -2665,6 +2700,10 @@ fi
 #
 #
 %changelog
+* Mon Apr 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.0-500.chinfo
+- 5.12.0 - pf1
+- Rawhide sync
+
 * Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.16-500.chinfo
 - 5.11.16 - pf8
 
@@ -3016,55 +3055,6 @@ fi
 
 * Tue Jan 28 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.5.0-500.chinfo
 - 5.5.0
-- Rawhide sync
-
-* Sun Jan 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.14-500.chinfo
-- 5.4.15
-
-* Thu Jan 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.14-500.chinfo
-- 5.4.14 - pf7
-
-* Sat Jan 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.13-500.chinfo
-- 5.4.13
-
-* Wed Jan 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.12-500.chinfo
-- 5.4.12 - pf6
-
-* Mon Jan 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.11-500.chinfo
-- 5.4.11
-
-* Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.10-500.chinfo
-- 5.4.10 - pf5
-- f31 sync
-
-* Sat Jan 04 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.8-500.chinfo
-- 5.4.8
-
-* Wed Jan 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.4.7-500.chinfo
-- 5.4.7 - pf4
-
-* Tue Dec 24 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.6-501.chinfo
-- pf sync
-
-* Sat Dec 21 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.6-500.chinfo
-- 5.4.6
-
-* Fri Dec 20 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.5-500.chinfo
-- 5.4.5
-
-* Fri Dec 13 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.3-500.chinfo
-- 5.4.3
-- stabilization sync
-
-* Thu Dec 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.2-500.chinfo
-- 5.4.2
-- stabilization sync
-
-* Fri Nov 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.1-500.chinfo
-- 5.4.1 - pf2
-
-* Mon Nov 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 5.4.0-500.chinfo
-- 5.4.0 - pf1
 - Rawhide sync
 
 ###

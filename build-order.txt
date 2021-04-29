@@ -216,6 +216,7 @@ wiimms-iso-tools
 -wimlib
 wxmp3gain
 wxmp3val
+ueberzug
 uksmd
 v4l-utils
 winetricks
@@ -227,6 +228,7 @@ xinput-gui
 -xorg-x11-server
 -yad
 youtube-dlp
+ytfzf
 zram-init
 
 # 4

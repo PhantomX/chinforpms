@@ -17,20 +17,20 @@
 
 #global buildid .chinfo
 
-%global opensuse_id d57ad55cbe8c99c825db0b4abbb342040b7161c8
+%global opensuse_id 5d43652877fda8aa556866abab93cad61f1f9b6f
 
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 11
+%global base_sublevel 12
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 16
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -547,6 +547,9 @@ popd
 
 
 %changelog
+* Mon Apr 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.0-500
+- 5.12.0
+
 * Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.16-500
 - 5.11.16
 
