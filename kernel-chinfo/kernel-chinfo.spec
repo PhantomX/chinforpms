@@ -856,10 +856,11 @@ Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/patch/block/blk-mq-tag.c?id=39aa56db50b9ca5cad597e561b4b160b6cbbb65b#/kernel-git-39aa56d.patch
 Patch2002: %{patchwork_url}/12215169/mbox/#/patchwork-v7-1-5-blk-mq-Move-the-elevator_exit-definition.patch
-Patch2003: %{patchwork_url}/12226813/mbox/#/patchwork-V3-1-3-blk-mq-grab-rq--refcount-before-calling---fn-in-blk_mq_tagset_busy_iter.patch
-Patch2004: %{patchwork_url}/12226815/mbox/#/patchwork-V3-2-3-blk-mq-complete-request-locally-if-the-completion-is-from-tagset-iterator.patch
-Patch2005: %{patchwork_url}/12226817/mbox/#/patchwork-V3-3-3-blk-mq-clear-stale-request-in-tags--rq-before-freeing-one-request-pool.patch
-Patch2006: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
+Patch2003: %{patchwork_url}/12230335/mbox/#/patchwork-V4-1-4-block-avoid-double-io-accounting-for-flush-request.patch
+Patch2004: %{patchwork_url}/12230337/mbox/#/patchwork-V4-2-4-blk-mq-grab-rq--refcount-before-calling---fn-in-blk_mq_tagset_busy_iter.patch
+Patch2005: %{patchwork_url}/12230339/mbox/#/patchwork-V4-3-4-blk-mq-clear-stale-request-in-tags--rq-before-freeing-one-request-pool.patch
+Patch2006: %{patchwork_url}/12230341/mbox/#/patchwork-V4-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
+Patch2007: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
 
 Patch2090: 0001-fsync.patch
 Patch2091: 0001-futex2.patch

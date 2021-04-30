@@ -277,6 +277,7 @@ BuildRequires: perl-interpreter
 BuildRequires: perl
 %endif
 BuildRequires: python3
+BuildRequires: systemd-rpm-macros
 BuildRequires: systemd-units
 %if %{with_libxl}
 BuildRequires: xen-devel
@@ -1322,7 +1323,7 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
 # 'libvirt' group is just to allow password-less polkit access to
 # libvirtd. The uid number is irrelevant, so we use dynamic allocation
 # described at the above link.
-%sysusers_create_package %{name} %{SOURCE1}
+%sysusers_create_compat %{SOURCE1}
 
 
 %post daemon
@@ -1481,7 +1482,7 @@ rm -rf %{_localstatedir}/lib/rpm-state/libvirt || :
 # We want soft static allocation of well-known ids, as disk images
 # are commonly shared across NFS mounts by id rather than name; see
 # https://fedoraproject.org/wiki/Packaging:UsersAndGroups
-%sysusers_create_package %{name}-qemu %{SOURCE2}
+%sysusers_create_compat %{SOURCE2}
 exit 0
 %endif
 

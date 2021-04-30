@@ -251,7 +251,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_mandir}/man?/%{name}d*
 
 %pre daemon
-%sysusers_create_package %{name}-daemon %{SOURCE1}
+%sysusers_create_compat %{SOURCE1}
 
 %post daemon
 %systemd_post deluge-daemon.service

@@ -15,6 +15,7 @@ BuildRequires:  make
 BuildRequires:  libselinux-devel
 BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  systemd
+BuildRequires:  systemd-rpm-macros
 Requires:       xdg-dbus-proxy
 %{?systemd_requires}
 
@@ -58,7 +59,7 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %pre
-%sysusers_create_package %{name} %{SOURCE2}
+%sysusers_create_compat %{SOURCE2}
 
 
 %files

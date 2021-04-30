@@ -22,6 +22,7 @@ ExclusiveArch:  %{ix86}
 
 BuildRequires:  execstack
 BuildRequires:  systemd
+BuildRequires:  systemd-rpm-macros
 
 
 %description
@@ -109,7 +110,7 @@ Categories=Network;
 EOF
 
 %pre
-%sysusers_create_package %{name} %{S:3}
+%sysusers_create_compat %{S:3}
 
 
 %files

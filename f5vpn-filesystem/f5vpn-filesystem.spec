@@ -10,6 +10,7 @@ License:        Public Domain
 Source0:        %{pkgname}-sysusers.conf
 
 BuildRequires:  systemd
+BuildRequires:  systemd-rpm-macros
 %{?systemd_requires}
 
 
@@ -42,7 +43,7 @@ install -Dpm 644 %{S:0} %{buildroot}%{_sysusersdir}/%{pkgname}.conf
 
 
 %pre
-%sysusers_create_package %{pkgname} %{S:0}
+%sysusers_create_compat %{S:0}
 
 
 %files
