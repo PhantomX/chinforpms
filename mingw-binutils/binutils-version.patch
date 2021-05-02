@@ -1,7 +1,7 @@
-diff -rupN --no-dereference binutils-2.34/bfd/Makefile.am binutils-2.34-new/bfd/Makefile.am
---- binutils-2.34/bfd/Makefile.am	2020-01-18 14:55:47.000000000 +0100
-+++ binutils-2.34-new/bfd/Makefile.am	2020-12-18 02:57:12.205063623 +0100
-@@ -967,8 +967,8 @@ DISTCLEANFILES = $(BUILD_CFILES) $(BUILD
+diff -rupN --no-dereference binutils-2.36.1/bfd/Makefile.am binutils-2.36.1-new/bfd/Makefile.am
+--- binutils-2.36.1/bfd/Makefile.am	2021-01-09 11:47:33.000000000 +0100
++++ binutils-2.36.1-new/bfd/Makefile.am	2021-02-13 18:13:07.980284094 +0100
+@@ -942,8 +942,8 @@ DISTCLEANFILES = $(BUILD_CFILES) $(BUILD
  bfdver.h: $(srcdir)/version.h $(srcdir)/development.sh $(srcdir)/Makefile.in
  	@echo "creating $@"
  	@bfd_version=`echo "$(VERSION)" | $(SED) -e 's/\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\).*/\1.00\2.00\3.00\4.00\5/' -e 's/\([^\.]*\)\..*\(..\)\..*\(..\)\..*\(..\)\..*\(..\)$$/\1\2\3\4\5/'` ;\
@@ -12,7 +12,7 @@ diff -rupN --no-dereference binutils-2.34/bfd/Makefile.am binutils-2.34-new/bfd/
  	bfd_version_package="\"$(PKGVERSION)\"" ;\
  	report_bugs_to="\"$(REPORT_BUGS_TO)\"" ;\
  	. $(srcdir)/development.sh ;\
-@@ -979,7 +979,7 @@ bfdver.h: $(srcdir)/version.h $(srcdir)/
+@@ -954,7 +954,7 @@ bfdver.h: $(srcdir)/version.h $(srcdir)/
  	fi ;\
  	$(SED) -e "s,@bfd_version@,$$bfd_version," \
  	    -e "s,@bfd_version_string@,$$bfd_version_string," \
@@ -21,10 +21,10 @@ diff -rupN --no-dereference binutils-2.34/bfd/Makefile.am binutils-2.34-new/bfd/
  	    -e "s,@report_bugs_to@,$$report_bugs_to," \
  	    < $(srcdir)/version.h > $@; \
  	echo "$${bfd_soversion}" > libtool-soversion
-diff -rupN --no-dereference binutils-2.34/bfd/Makefile.in binutils-2.34-new/bfd/Makefile.in
---- binutils-2.34/bfd/Makefile.in	2020-02-01 12:49:13.000000000 +0100
-+++ binutils-2.34-new/bfd/Makefile.in	2020-12-18 02:57:12.205063623 +0100
-@@ -2081,8 +2081,8 @@ stmp-lcoff-h: $(LIBCOFF_H_FILES)
+diff -rupN --no-dereference binutils-2.36.1/bfd/Makefile.in binutils-2.36.1-new/bfd/Makefile.in
+--- binutils-2.36.1/bfd/Makefile.in	2021-02-06 10:02:09.000000000 +0100
++++ binutils-2.36.1-new/bfd/Makefile.in	2021-02-13 18:13:07.981284089 +0100
+@@ -2053,8 +2053,8 @@ stmp-lcoff-h: $(LIBCOFF_H_FILES)
  bfdver.h: $(srcdir)/version.h $(srcdir)/development.sh $(srcdir)/Makefile.in
  	@echo "creating $@"
  	@bfd_version=`echo "$(VERSION)" | $(SED) -e 's/\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\).*/\1.00\2.00\3.00\4.00\5/' -e 's/\([^\.]*\)\..*\(..\)\..*\(..\)\..*\(..\)\..*\(..\)$$/\1\2\3\4\5/'` ;\
@@ -35,7 +35,7 @@ diff -rupN --no-dereference binutils-2.34/bfd/Makefile.in binutils-2.34-new/bfd/
  	bfd_version_package="\"$(PKGVERSION)\"" ;\
  	report_bugs_to="\"$(REPORT_BUGS_TO)\"" ;\
  	. $(srcdir)/development.sh ;\
-@@ -2093,7 +2093,7 @@ bfdver.h: $(srcdir)/version.h $(srcdir)/
+@@ -2065,7 +2065,7 @@ bfdver.h: $(srcdir)/version.h $(srcdir)/
  	fi ;\
  	$(SED) -e "s,@bfd_version@,$$bfd_version," \
  	    -e "s,@bfd_version_string@,$$bfd_version_string," \

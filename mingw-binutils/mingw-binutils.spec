@@ -1,7 +1,7 @@
 %global run_testsuite 1
 
 Name:           mingw-binutils
-Version:        2.34
+Version:        2.36.1
 Release:        100%{?dist}
 Summary:        Cross-compiled version of binutils for Win32 and Win64 environments
 
@@ -11,14 +11,20 @@ URL:            http://www.gnu.org/software/binutils/
 Source0:        http://ftp.gnu.org/gnu/binutils/binutils-%{version}.tar.bz2
 
 ### Patches from native package
-
-# Unneeded, mingw does not have lib64
-# Patch01: binutils-2.20.51.0.2-libtool-lib64.patch
+# Purpose:  Use /lib64 and /usr/lib64 instead of /lib and /usr/lib in the
+#           default library search path of 64-bit targets.
+# Lifetime: Permanent, but it should not be.  This is a bug in the libtool
+#           sources used in both binutils and gcc, (specifically the
+#           libtool.m4 file).  These are based on a version released in 2009
+#           (2.2.6?) rather than the latest version.  (Definitely fixed in
+#           libtool version 2.4.6).
+# Not needed, mingw does not have lib64
+# Patch01: binutils-libtool-lib64.patch
 
 # Purpose:  Appends a RHEL or Fedora release string to the generic binutils
 #           version string.
 # Lifetime: Permanent.  This is a RHEL/Fedora specific patch.
-Patch02: binutils-2.25-version.patch
+Patch02: binutils-version.patch
 
 # Purpose:  Exports the demangle.h header file (associated with the libiberty
 #           sources) with the binutils-devel rpm.
@@ -34,7 +40,7 @@ Patch03: binutils-export-demangle.h.patch
 # FIXME:    It would be better if the packages using the bfd.h header were
 #           fixed so that they do include the header files in the correct
 #           order.
-Patch04: binutils-2.22.52.0.4-no-config-h-check.patch
+Patch04: binutils-no-config-h-check.patch
 
 # Purpose:  Include the filename concerned in readelf error messages.  This
 #           makes readelf's output more helpful when it is run on multiple
@@ -43,10 +49,15 @@ Patch04: binutils-2.22.52.0.4-no-config-h-check.patch
 #           making it better (IMHO) but also potentially breaking tools that
 #           depend upon readelf's current format.  Hence it remains a local
 #           patch.
-Patch05: binutils-2.29-filename-in-error-messages.patch
+Patch05: binutils-filename-in-error-messages.patch
 
-# Unneeded, affects ELF only
-# Patch06: binutils-2.29-revert-PLT-elision.patch
+# Purpose:  Disable an x86/x86_64 optimization that moves functions from the
+#           PLT into the GOTPLT for faster access.  This optimization is
+#           problematic for tools that want to intercept PLT entries, such
+#           as ltrace and LD_AUDIT.  See BZs 1452111 and 1333481.
+# Lifetime: Permanent.  But it should not be.
+# FIXME:    Replace with a configure time option.
+Patch06: binutils-revert-PLT-elision.patch
 
 # Purpose:  Changes readelf so that when it displays extra information about
 #           a symbol, this information is placed at the end of the line.
@@ -56,56 +67,56 @@ Patch05: binutils-2.29-filename-in-error-messages.patch
 #           no longer being maintained.
 Patch07: binutils-readelf-other-sym-info.patch
 
-# Unneeded, affects ELF only
-# Patch08: binutils-2.27-aarch64-ifunc.patch
+# Purpose:  Do not create PLT entries for AARCH64 IFUNC symbols referenced in
+#           debug sections.
+# Lifetime: Permanent.
+# FIXME:    Find related bug.  Decide on permanency.
+Patch08: binutils-2.27-aarch64-ifunc.patch
 
 # Purpose:  Stop the binutils from statically linking with libstdc++.
 # Lifetime: Permanent.
 Patch09: binutils-do-not-link-with-static-libstdc++.patch
 
-# Unneeded, affects ELF only
-# Patch10: binutils-attach-to-group.patch
-
-# Purpose:  Stop gold from complaining about relocs in the .gnu.build.attribute
-#           section that reference symbols in discarded sections.
-# Lifetime: Fixed in 2.33 (maybe)
-Patch11: binutils-gold-ignore-discarded-note-relocs.patch
-
 # Purpose:  Allow OS specific sections in section groups.
-# Lifetime: Might be fixed in 2.33
-Patch12: binutils-special-sections-in-groups.patch
+# Lifetime: Fixed in 2.36 (maybe)
+Patch10: binutils-special-sections-in-groups.patch
 
 # Purpose:  Fix linker testsuite failures.
-# Lifetime: Fixed in 2.33 (possibly)
-Patch13: binutils-fix-testsuite-failures.patch
+# Lifetime: Fixed in 2.36 (maybe)
+Patch11: binutils-fix-testsuite-failures.patch
 
 # Purpose:  Stop gold from aborting when input sections with the same name
 #            have different flags.
-# Lifetime: Fixed in 2.35 (maybe)
-Patch14: binutils-gold-mismatched-section-flags.patch
-
-# Purpose:  Fix a potential use of an initialised field by readelf.
-# Lifetime: Fixed in 2.35
-Patch15: binutils-readelf-compression-header-size.patch
+# Lifetime: Fixed in 2.36 (maybe)
+Patch12: binutils-gold-mismatched-section-flags.patch
 
 # Purpose:  Add a check to the GOLD linker for a corrupt input file
 #            with a fuzzed section offset.
-# Lifetime: Fixed in 2.35 (maybe)
-Patch16: binutils-CVE-2019-1010204.patch
-# Backport fix for CVE-2020-16592
-# https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;h=7ecb51549ab1ec22aba5aaf34b70323cf0b8509a
-Patch17: binutils_CVE-2020-16592.patch
-# Backport fix for CVE-2020-16598
-# https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;h=ca3f923f82a079dcf441419f4a50a50f8b4b33c2
-Patch18: binutils_CVE-2020-16598.patch
+# Lifetime: Fixed in 2.36 (maybe)
+Patch13: binutils-CVE-2019-1010204.patch
 
-# Backport fixes for CVE-2021-20197.
-Patch19: binutils-gdb.git-365f5fb6d0f0da83817431a275e99e6f6babbe04.patch
-Patch20: binutils-gdb.git-1a1c3b4cc17687091cff5a368bd6f13742bcfdf8.patch
-Patch21: binutils-gdb.git-014cc7f849e8209623fc99264814bce7b3b6faf2.patch
+# Purpose:  Change the gold configuration script to only warn about
+#            unsupported targets.  This allows the binutils to be built with
+#            BPF support enabled.
+# Lifetime: Permanent.
+Patch14: binutils-gold-warn-unsupported.patch
 
-# https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;h=463ec189fe9eca199edf87cda2c31efbe850390d
-Patch22: binutils-bug25993.patch
+# Purpose:  Use the "unsigned long long" type for pointers on hosts where
+#           long is a 32-bit type but pointers are a 64-bit type.  Necessary
+#           because users expect to be able to install both the i686- and
+#           x86_64 versions of binutils-devel on the same machine, so they
+#           need to identical versions of the bfd.h header file.
+# Lifetime: Permanent.
+Patch15: binutils-use-long-long.patch
+
+# Purpose:  Bring in changes to the 2.36 branch that were made after the
+#           2.36.1 release was created.
+# Lifetime: Fixed in 2.37
+Patch16: binutils-2.36-branch-updates.patch
+
+# Purpose:  Fix testsuite failures due to the patches applied here.
+# Lifetime: Permanent, but varying with each new rebase.
+Patch17: binutils-testsuite-fixes.patch
 
 ### MINGW specific patches
 
@@ -283,6 +294,7 @@ make -C build_multilib DESTDIR=%{buildroot}/multilib install
 # These files conflict with ordinary binutils.
 rm -rf %{buildroot}%{_infodir}
 rm -f %{buildroot}%{_libdir}/libiberty*
+rm -f %{buildroot}%{_libdir}/bfd-plugins/libdep.so
 
 # Keep the multilib versions of the strip, objdump and objcopy commands
 # We need these for the RPM integration as these tools must be able to
@@ -372,6 +384,10 @@ rm -rf %{buildroot}/multilib
 
 
 %changelog
+* Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 2.36.1-100
+- 2.36.1
+- Rawhide sync
+
 * Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 2.34-100
 - patch for binutils bug #25993
 

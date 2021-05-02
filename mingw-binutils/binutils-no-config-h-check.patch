@@ -1,6 +1,6 @@
-diff -rupN --no-dereference binutils-2.34/bfd/bfd-in2.h binutils-2.34-new/bfd/bfd-in2.h
---- binutils-2.34/bfd/bfd-in2.h	2020-01-18 14:55:47.000000000 +0100
-+++ binutils-2.34-new/bfd/bfd-in2.h	2020-12-18 02:57:14.328056141 +0100
+diff -rupN --no-dereference binutils-2.36.1/bfd/bfd-in2.h binutils-2.36.1-new/bfd/bfd-in2.h
+--- binutils-2.36.1/bfd/bfd-in2.h	2021-01-09 11:47:33.000000000 +0100
++++ binutils-2.36.1-new/bfd/bfd-in2.h	2021-02-13 18:13:09.797275430 +0100
 @@ -30,11 +30,6 @@
  #ifndef __BFD_H_SEEN__
  #define __BFD_H_SEEN__
@@ -13,9 +13,9 @@ diff -rupN --no-dereference binutils-2.34/bfd/bfd-in2.h binutils-2.34-new/bfd/bf
  #ifdef __cplusplus
  extern "C" {
  #endif
-diff -rupN --no-dereference binutils-2.34/bfd/bfd-in.h binutils-2.34-new/bfd/bfd-in.h
---- binutils-2.34/bfd/bfd-in.h	2020-01-18 14:55:47.000000000 +0100
-+++ binutils-2.34-new/bfd/bfd-in.h	2020-12-18 02:57:14.329056138 +0100
+diff -rupN --no-dereference binutils-2.36.1/bfd/bfd-in.h binutils-2.36.1-new/bfd/bfd-in.h
+--- binutils-2.36.1/bfd/bfd-in.h	2021-01-09 11:47:33.000000000 +0100
++++ binutils-2.36.1-new/bfd/bfd-in.h	2021-02-13 18:13:09.796275435 +0100
 @@ -23,11 +23,6 @@
  #ifndef __BFD_H_SEEN__
  #define __BFD_H_SEEN__

@@ -1,6 +1,6 @@
-diff -rupN --no-dereference binutils-2.34/config/intdiv0.m4 binutils-2.34-new/config/intdiv0.m4
---- binutils-2.34/config/intdiv0.m4	2020-01-18 14:55:47.000000000 +0100
-+++ binutils-2.34-new/config/intdiv0.m4	2020-12-18 02:57:26.339013830 +0100
+diff -rupN --no-dereference binutils-2.36.1/config/intdiv0.m4 binutils-2.36.1-new/config/intdiv0.m4
+--- binutils-2.36.1/config/intdiv0.m4	2021-01-09 11:47:33.000000000 +0100
++++ binutils-2.36.1-new/config/intdiv0.m4	2021-02-13 18:13:22.165215781 +0100
 @@ -31,10 +31,10 @@ sigfpe_handler (sig) int sig;
    exit (sig != SIGFPE);
  }
@@ -16,10 +16,10 @@ diff -rupN --no-dereference binutils-2.34/config/intdiv0.m4 binutils-2.34-new/co
  
  int main ()
  {
-diff -rupN --no-dereference binutils-2.34/libiberty/aclocal.m4 binutils-2.34-new/libiberty/aclocal.m4
---- binutils-2.34/libiberty/aclocal.m4	2020-01-18 14:55:48.000000000 +0100
-+++ binutils-2.34-new/libiberty/aclocal.m4	2020-12-18 02:57:26.339013830 +0100
-@@ -147,7 +147,7 @@ if test $ac_cv_os_cray = yes; then
+diff -rupN --no-dereference binutils-2.36.1/libiberty/aclocal.m4 binutils-2.36.1-new/libiberty/aclocal.m4
+--- binutils-2.36.1/libiberty/aclocal.m4	2021-01-09 11:47:34.000000000 +0100
++++ binutils-2.36.1-new/libiberty/aclocal.m4	2021-02-13 18:13:22.166215776 +0100
+@@ -149,7 +149,7 @@ if test $ac_cv_os_cray = yes; then
  fi
  
  AC_CACHE_CHECK(stack direction for C alloca, ac_cv_c_stack_direction,
@@ -28,10 +28,10 @@ diff -rupN --no-dereference binutils-2.34/libiberty/aclocal.m4 binutils-2.34-new
  {
    static char *addr = 0;
    auto char dummy;
-diff -rupN --no-dereference binutils-2.34/libiberty/configure.ac binutils-2.34-new/libiberty/configure.ac
---- binutils-2.34/libiberty/configure.ac	2020-01-18 14:55:48.000000000 +0100
-+++ binutils-2.34-new/libiberty/configure.ac	2020-12-18 02:57:26.339013830 +0100
-@@ -661,7 +661,7 @@ if test -z "${setobjs}"; then
+diff -rupN --no-dereference binutils-2.36.1/libiberty/configure.ac binutils-2.36.1-new/libiberty/configure.ac
+--- binutils-2.36.1/libiberty/configure.ac	2021-01-09 11:47:34.000000000 +0100
++++ binutils-2.36.1-new/libiberty/configure.ac	2021-02-13 18:13:22.166215776 +0100
+@@ -665,7 +665,7 @@ if test -z "${setobjs}"; then
    for v in $vars; do
      AC_MSG_CHECKING([for $v])
      AC_CACHE_VAL(libiberty_cv_var_$v,

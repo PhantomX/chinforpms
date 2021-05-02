@@ -1,7 +1,7 @@
-diff -rupN --no-dereference binutils-2.34/configure binutils-2.34-new/configure
---- binutils-2.34/configure	2020-01-18 15:01:13.000000000 +0100
-+++ binutils-2.34-new/configure	2020-12-18 02:57:17.364045443 +0100
-@@ -5103,49 +5103,6 @@ if test -z "$LD"; then
+diff -rupN --no-dereference binutils-2.36.1/configure binutils-2.36.1-new/configure
+--- binutils-2.36.1/configure	2021-01-24 11:41:35.000000000 +0100
++++ binutils-2.36.1-new/configure	2021-02-13 18:13:14.200254331 +0100
+@@ -5075,49 +5075,6 @@ if test -z "$LD"; then
    fi
  fi
  
@@ -51,10 +51,10 @@ diff -rupN --no-dereference binutils-2.34/configure binutils-2.34-new/configure
  
  
  if test -n "$ac_tool_prefix"; then
-diff -rupN --no-dereference binutils-2.34/configure.ac binutils-2.34-new/configure.ac
---- binutils-2.34/configure.ac	2020-02-01 13:02:56.000000000 +0100
-+++ binutils-2.34-new/configure.ac	2020-12-18 02:57:17.364045443 +0100
-@@ -1284,26 +1284,6 @@ if test -z "$LD"; then
+diff -rupN --no-dereference binutils-2.36.1/configure.ac binutils-2.36.1-new/configure.ac
+--- binutils-2.36.1/configure.ac	2021-02-06 10:25:05.000000000 +0100
++++ binutils-2.36.1-new/configure.ac	2021-02-13 18:13:14.201254326 +0100
+@@ -1302,26 +1302,6 @@ if test -z "$LD"; then
    fi
  fi
  

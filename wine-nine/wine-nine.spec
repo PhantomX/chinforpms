@@ -13,9 +13,11 @@
 
 %ifarch %{ix86}
 %global winearchdir i386-windows
+%global winesodir i386-unix
 %endif
 %ifarch x86_64
 %global winearchdir x86_64-windows
+%global winesodir x86_64-unix
 %endif
 
 %global winecommonver 6.1
@@ -24,7 +26,7 @@
 
 Name:           wine-nine
 Version:        0.8
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -123,18 +125,18 @@ meson \
 
 
 %install
-mkdir -p %{buildroot}%{_libdir}/wine
-mkdir -p %{buildroot}%{_libdir}/wine/%{?winearchdir}
+mkdir -p %{buildroot}%{_libdir}/wine/%{winearchdir}
+mkdir -p %{buildroot}%{_libdir}/wine/%{winesodir}
 
 install -pm0755 %{_target_platform}/ninewinecfg/ninewinecfg.exe.so \
-  %{buildroot}%{_libdir}/wine/ninewinecfg.exe.so
+  %{buildroot}%{_libdir}/wine/%{winesodir}/ninewinecfg.exe.so
 install -pm0755 %{_target_platform}/ninewinecfg/ninewinecfg.exe.fake \
-  %{buildroot}%{_libdir}/wine/%{?winearchdir}/ninewinecfg.exe
+  %{buildroot}%{_libdir}/wine/%{winearchdir}/ninewinecfg.exe
 
 install -pm0755 %{_target_platform}/d3d9-nine/d3d9-nine.dll.so \
-  %{buildroot}%{_libdir}/wine/d3d9-nine.dll.so
+  %{buildroot}%{_libdir}/wine/%{winesodir}/d3d9-nine.dll.so
 install -pm0755 %{_target_platform}/d3d9-nine/d3d9-nine.dll.fake \
-  %{buildroot}%{_libdir}/wine/%{?winearchdir}/d3d9-nine.dll
+  %{buildroot}%{_libdir}/wine/%{winearchdir}/d3d9-nine.dll
 
 mkdir -p %{buildroot}/%{_bindir}
 install -pm0755 %{S:1} %{buildroot}%{_bindir}/ninewinecfg
@@ -152,14 +154,17 @@ desktop-file-install \
 %license LICENSE
 %{_bindir}/ninewinecfg
 %{_bindir}/wineninecfg
-%{_libdir}/wine/d3d9-nine.dll.so
-%{_libdir}/wine/ninewinecfg.exe.so
-%{_libdir}/wine/%{?winearchdir}/d3d9-nine.dll
-%{_libdir}/wine/%{?winearchdir}/ninewinecfg.exe
+%{_libdir}/wine/%{winesodir}/d3d9-nine.dll.so
+%{_libdir}/wine/%{winesodir}/ninewinecfg.exe.so
+%{_libdir}/wine/%{winearchdir}/d3d9-nine.dll
+%{_libdir}/wine/%{winearchdir}/ninewinecfg.exe
 %{_datadir}/applications/wine-ninecfg.desktop
 
 
 %changelog
+* Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-4
+- Update script to architecture-specific library directories
+
 * Tue Apr 27 2021 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-3
 - Update script to architecture-specific dll directories
 

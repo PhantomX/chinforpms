@@ -1,7 +1,6 @@
 [Desktop Entry]
 Name=Wine Internet Settings
 Name[pt_BR]=Configurações de Internet do Wine
-Comment=Wine Internet Settings
 Exec=wine control inetcpl.cpl
 Icon=iexplore
 Terminal=false

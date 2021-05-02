@@ -1,6 +1,6 @@
-diff -rupN --no-dereference binutils-2.34/gold/layout.cc binutils-2.34-new/gold/layout.cc
---- binutils-2.34/gold/layout.cc	2020-01-18 14:55:48.000000000 +0100
-+++ binutils-2.34-new/gold/layout.cc	2020-12-18 02:57:21.401031221 +0100
+diff -rupN --no-dereference binutils-2.36.1/gold/layout.cc binutils-2.36.1-new/gold/layout.cc
+--- binutils-2.36.1/gold/layout.cc	2021-01-09 11:47:34.000000000 +0100
++++ binutils-2.36.1-new/gold/layout.cc	2021-02-13 18:13:16.883241400 +0100
 @@ -869,6 +869,7 @@ Layout::get_output_section(const char* n
  		  && (same_name->flags() & elfcpp::SHF_TLS) == 0)
  		os = same_name;
@@ -17,20 +17,3 @@ diff -rupN --no-dereference binutils-2.34/gold/layout.cc binutils-2.34-new/gold/
  	}
  
        if (os == NULL)
-diff -rupN --no-dereference binutils-2.34/gold/object.cc binutils-2.34-new/gold/object.cc
---- binutils-2.34/gold/object.cc	2020-01-18 14:55:48.000000000 +0100
-+++ binutils-2.34-new/gold/object.cc	2020-12-18 02:57:21.402031218 +0100
-@@ -1656,6 +1656,13 @@ Sized_relobj_file<size, big_endian>::do_
- 	      omit[i] = true;
- 	    }
- 
-+	  // Skip empty sections without flags.
-+	  if (!(shdr.get_sh_flags() & ~elfcpp::SHF_GROUP)
-+	      && !shdr.get_sh_size())
-+	    {
-+	      omit[i] = true;
-+	    }
-+
- 	  bool discard = omit[i];
- 	  if (!discard)
- 	    {

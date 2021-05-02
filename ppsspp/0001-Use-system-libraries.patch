@@ -1,6 +1,6 @@
-From c3967e9c232a2027bfefa862aa20be248ec72a41 Mon Sep 17 00:00:00 2001
+From a7bdf8187cb18143413fbf18363234a1ee5503d3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 24 Apr 2021 17:25:11 -0300
+Date: Sat, 1 May 2021 18:41:17 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake and zstd bits borrowed from dolphin-emu
@@ -30,7 +30,7 @@ https://github.com/dolphin-emu/dolphin
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f0eb5da..d27f7ea 100644
+index 99b390d..a7c2396 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -135,6 +135,9 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
@@ -205,7 +205,7 @@ index 71d1d7c..a75b628 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index 32a54c3..485e558 100644
+index 05a2ad6..ebea492 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
 @@ -19,7 +19,11 @@
@@ -218,7 +218,7 @@ index 32a54c3..485e558 100644
  #include "ext/xxhash.h"
 +#endif
  
- #include "Common/Data/Text/I18n.h"
+ #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Format/IniFile.h"
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
 index a656087..dc0b955 100644
@@ -262,7 +262,7 @@ index a4c7df6..0204d9e 100644
  #include <string>
  #include <deque>
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index 2e10ac1..defd765 100644
+index 750fc3f..92d6243 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
 @@ -16,7 +16,11 @@
@@ -274,8 +274,8 @@ index 2e10ac1..defd765 100644
 +#else
  #include "ext/xxhash.h"
 +#endif
+ #include "Common/Data/Convert/ColorConv.h"
  #include "Common/CPUDetect.h"
- #include "Common/ColorConv.h"
  
 diff --git a/GPU/Common/TextureDecoderNEON.cpp b/GPU/Common/TextureDecoderNEON.cpp
 index e0a427e..ceb36a5 100644
@@ -326,7 +326,7 @@ index 0b1d536..9475424 100644
  
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index e15b900..d53d180 100644
+index 783ea75..e5d3646 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,11 @@
@@ -338,11 +338,11 @@ index e15b900..d53d180 100644
 +#else
  #include "ext/xxhash.h"
 +#endif
+ #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
  #include "Common/Math/math_util.h"
- #include "Common/Profiler/Profiler.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index a108395..803de90 100644
+index eff8a70..3124ea9 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@
@@ -358,7 +358,7 @@ index a108395..803de90 100644
  #include "Common/Data/Text/I18n.h"
  #include "Common/Math/math_util.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index d081ba1..627ce3a 100644
+index 17eed7e..3b19e36 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,11 @@

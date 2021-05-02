@@ -1,6 +1,5 @@
 [Desktop Entry]
 Name=Wine Internet Explorer
-Comment=Wine Internet Explorer
 Exec=wine iexplore.exe
 Icon=iexplore
 Terminal=false

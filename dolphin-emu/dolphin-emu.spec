@@ -13,9 +13,9 @@
 # https://github.com/MoArtis/dolphin
 %global with_reshdp 1
 
-%global commit 4d37dad20d230b003b74e38ff4c5af68e6ed232e
+%global commit 1f26b694dc824be2ba6b77ac3f5a09c916ba15f0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210419
+%global date 20210501
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -29,7 +29,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        135%{?gver}%{?dist}
+Release:        136%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -398,6 +398,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-136.20210501git1f26b69
+- Bump
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-135.20210419git4d37dad
 - Update
 - Drop now unneeded DSP interrupt hack

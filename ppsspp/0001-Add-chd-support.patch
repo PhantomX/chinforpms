@@ -1,10 +1,12 @@
-From 04af003e74917a05b9de62839bf3dd77b142dc0f Mon Sep 17 00:00:00 2001
+From 88803118f723890a1f6ac47ac972cffdc27d6ead Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 17 Apr 2021 21:41:24 -0300
+Date: Sat, 1 May 2021 18:44:08 -0300
 Subject: [PATCH] Add chd support
 
 Using shared library, modified from https://github.com/SleepyMan/ppsspp
 See https://github.com/hrydgard/ppsspp/pull/13810
+
+Performance is not good
 ---
  CMakeLists.txt                    |   9 ++
  Core/FileSystems/BlockDevices.cpp | 156 ++++++++++++++++++++++++++++++
@@ -15,7 +17,7 @@ See https://github.com/hrydgard/ppsspp/pull/13810
  6 files changed, 204 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4e80f07..22e4c9d 100644
+index a7c2396..2af4f6a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1882,6 +1882,15 @@ else()
@@ -304,13 +306,13 @@ index fecb941..739b35c 100644
  	ISO_MODE2,
  
 diff --git a/UI/MainScreen.cpp b/UI/MainScreen.cpp
-index eb40d8d..eed4c07 100644
+index 182c4fd..1641cfd 100644
 --- a/UI/MainScreen.cpp
 +++ b/UI/MainScreen.cpp
 @@ -713,7 +713,11 @@ void GameBrowser::Refresh() {
  		}
  	} else if (!listingPending_) {
- 		std::vector<FileInfo> fileInfo;
+ 		std::vector<File::FileInfo> fileInfo;
 +#ifdef USE_CHDR
 +		path_.GetListing(fileInfo, "iso:cso:pbp:elf:prx:ppdmp:chd:");
 +#else
@@ -320,5 +322,5 @@ index eb40d8d..eed4c07 100644
  			bool isGame = !fileInfo[i].isDirectory;
  			bool isSaveData = false;
 -- 
-2.30.2
+2.31.1
 

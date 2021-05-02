@@ -1,7 +1,7 @@
-diff -rupN --no-dereference binutils-2.34/binutils/readelf.c binutils-2.34-new/binutils/readelf.c
---- binutils-2.34/binutils/readelf.c	2020-01-18 14:55:47.000000000 +0100
-+++ binutils-2.34-new/binutils/readelf.c	2020-12-18 02:57:15.341052571 +0100
-@@ -20350,75 +20350,85 @@ process_file (char * file_name)
+diff -rupN --no-dereference binutils-2.36.1/binutils/readelf.c binutils-2.36.1-new/binutils/readelf.c
+--- binutils-2.36.1/binutils/readelf.c	2021-01-09 11:47:33.000000000 +0100
++++ binutils-2.36.1-new/binutils/readelf.c	2021-02-13 18:13:10.680271211 +0100
+@@ -21386,79 +21386,92 @@ process_file (char * file_name)
    Filedata * filedata = NULL;
    struct stat statbuf;
    char armag[SARMAG];
@@ -65,61 +65,61 @@ diff -rupN --no-dereference binutils-2.34/binutils/readelf.c binutils-2.34-new/b
 -      fclose (filedata->handle);
 -      free (filedata);
 -      return FALSE;
--    }
--
--  filedata->file_size = (bfd_size_type) statbuf.st_size;
--
--  if (memcmp (armag, ARMAG, SARMAG) == 0)
--    {
++      error (_("Failed to read file's magic number\n"));
++      goto done;
+     }
+ 
+   filedata->file_size = (bfd_size_type) statbuf.st_size;
+ 
+   if (memcmp (armag, ARMAG, SARMAG) == 0)
+     {
 -      if (! process_archive (filedata, FALSE))
 -	ret = FALSE;
--    }
--  else if (memcmp (armag, ARMAGT, SARMAG) == 0)
--    {
++      if (process_archive (filedata, FALSE))
++	ret = TRUE;
+     }
+   else if (memcmp (armag, ARMAGT, SARMAG) == 0)
+     {
 -      if ( ! process_archive (filedata, TRUE))
 -	ret = FALSE;
-+      error (_("Failed to read file's magic number\n"));
++      if (process_archive (filedata, TRUE))
++	ret = TRUE;
      }
    else
      {
--      if (do_archive_index)
+       if (do_archive_index && !check_all)
 -	error (_("File %s is not an archive so its index cannot be displayed.\n"),
 -	       file_name);
-+      filedata->file_size = (bfd_size_type) statbuf.st_size;
++	error (_("Not an archive so its index cannot be displayed.\n"));
  
--      rewind (filedata->handle);
--      archive_file_size = archive_file_offset = 0;
--
+       rewind (filedata->handle);
+       filedata->archive_file_size = filedata->archive_file_offset = 0;
+ 
 -      if (! process_object (filedata))
 -	ret = FALSE;
-+      if (memcmp (armag, ARMAG, SARMAG) == 0)
-+	{
-+	  if (process_archive (filedata, FALSE))
-+	    ret = TRUE;
-+	}
-+      else if (memcmp (armag, ARMAGT, SARMAG) == 0)
-+	{
-+	  if (process_archive (filedata, TRUE))
-+	    ret = TRUE;
-+	}
-+      else
-+	{
-+	  if (do_archive_index)
-+	    error (_("Not an archive so its index cannot be displayed.\n"));
-+
-+	  rewind (filedata->handle);
-+	  archive_file_size = archive_file_offset = 0;
-+
-+	  if (process_object (filedata))
-+	    ret = TRUE;
-+	}
++      if (process_object (filedata))
++	ret = TRUE;
      }
  
-   fclose (filedata->handle);
+-  fclose (filedata->handle);
+-  free (filedata->section_headers);
+-  free (filedata->program_headers);
+-  free (filedata->string_table);
+-  free (filedata->dump.dump_sects);
+-  free (filedata);
 + done:
-   free (filedata);
++  if (filedata)
++    {
++      if (filedata->handle != NULL)
++	fclose (filedata->handle);
++      free (filedata->section_headers);
++      free (filedata->program_headers);
++      free (filedata->string_table);
++      free (filedata->dump.dump_sects);
++      free (filedata);
++    }
 +  free (program_name);
 +  program_name = saved_program_name;
  
-   return ret;
- }
+   free (ba_cache.strtab);
+   ba_cache.strtab = NULL;

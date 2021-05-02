@@ -1,7 +1,6 @@
 [Desktop Entry]
 Name=Wine Game Controllers
 Name[pt_BR]=Controles de Jogos do Wine
-Comment=Wine Game Controllers
 Exec=wine control joy.cpl
 Icon=joycpl
 Terminal=false

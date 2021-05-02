@@ -1,6 +1,6 @@
-From ac61952ee98ba808ad98adb07eee5fa67b61324d Mon Sep 17 00:00:00 2001
+From a873b2cf74375522146079d9360d7804edf622b6 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 3 Jan 2021 17:10:35 -0300
+Date: Sat, 1 May 2021 19:05:38 -0300
 Subject: [PATCH] RESHDP Edition label
 
 From https://github.com/MoArtis/dolphin, MoArtis <mathieuphilippe.dev@gmail.com>
@@ -9,7 +9,7 @@ From https://github.com/MoArtis/dolphin, MoArtis <mathieuphilippe.dev@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Source/Core/Common/scmrev.h.in b/Source/Core/Common/scmrev.h.in
-index df99e55..399a51d 100644
+index db0c4ae..984b042 100644
 --- a/Source/Core/Common/scmrev.h.in
 +++ b/Source/Core/Common/scmrev.h.in
 @@ -1,5 +1,5 @@
@@ -18,7 +18,7 @@ index df99e55..399a51d 100644
 +#define SCM_DESC_STR "${DOLPHIN_WC_DESCRIBE} - RESHDP Edition"
  #define SCM_BRANCH_STR "${DOLPHIN_WC_BRANCH}"
  #define SCM_IS_MASTER ${DOLPHIN_WC_IS_STABLE}
- #define SCM_DISTRIBUTOR_STR "${DISTRIBUTOR}" 
+ #define SCM_DISTRIBUTOR_STR "${DISTRIBUTOR}"
 -- 
-2.29.2
+2.31.1
 

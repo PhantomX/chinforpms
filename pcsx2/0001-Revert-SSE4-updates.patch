@@ -2488,7 +2488,7 @@ index 78d7c2a..c55021b 100644
 @@ -944,8 +944,12 @@ void GSRendererDX11::DrawPrims(GSTexture* rt, GSTexture* ds, GSTextureCache::Sou
  		m_ps_sel.fog = 1;
  
- 		GSVector4 fc = GSVector4::rgba32(m_env.FOGCOL.u32[0]);
+ 		const GSVector4 fc = GSVector4::rgba32(m_env.FOGCOL.u32[0]);
 +#if _M_SSE >= 0x401
  		// Blend AREF to avoid to load a random value for alpha (dirty cache)
  		ps_cb.FogColor_AREF = fc.blend32<8>(ps_cb.FogColor_AREF);
@@ -2505,7 +2505,7 @@ index a6f2d5c..1882093 100644
 @@ -1327,8 +1327,12 @@ void GSRendererOGL::DrawPrims(GSTexture* rt, GSTexture* ds, GSTextureCache::Sour
  		m_ps_sel.fog = 1;
  
- 		GSVector4 fc = GSVector4::rgba32(m_env.FOGCOL.u32[0]);
+ 		const GSVector4 fc = GSVector4::rgba32(m_env.FOGCOL.u32[0]);
 +#if _M_SSE >= 0x401
  		// Blend AREF to avoid to load a random value for alpha (dirty cache)
  		ps_cb.FogColor_AREF = fc.blend32<8>(ps_cb.FogColor_AREF);

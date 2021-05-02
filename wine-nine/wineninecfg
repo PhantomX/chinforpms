@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20210427
+ver=20210501
 
 name="Gallium Nine"
 pkgname="wine-nine"
@@ -59,11 +59,13 @@ checkcfg(){
   for winebits in 64 32 ;do
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
+      winesodir=x86_64-unix
     else
       lib=''
+      winesodir=i386-unix
     fi
     native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
-    lib_path="/usr/lib${lib}/wine"
+    lib_path="/usr/lib${lib}/wine/${winesodir}"
     for dll in ${dlls} ;do
       if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" ;then
         enabled=1
@@ -95,17 +97,19 @@ setcfg(){
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
       winearchdir=x86_64-windows
+      winesodir=x86_64-unix
     else
       lib=''
       winearchdir=i386-windows
+      winesodir=i386-unix
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
-      lib_path="/usr/lib${lib}/wine"
+      lib_path="/usr/lib${lib}/wine/${winesodir}"
       arch_path="${lib_path}/${winearchdir}"
       for dll in ${dlls} ;do
         if ! [ -f "${lib_path}/${dll}${dllsuffix}.dll.so" ];then
-          echo "Missing ${dll}${dllsuffix}.dll in /usr/lib${lib}/wine/."
+          echo "Missing ${dll}${dllsuffix}.dll in ${lib_path}/."
           dllmissing=1
         fi
       done
@@ -164,13 +168,15 @@ unsetcfg(){
     if [ "${winebits}" -eq 64 ] ;then
       lib=64
       winearchdir=x86_64-windows
+      winesodir=x86_64-unix
     else
       lib=''
       winearchdir=i386-windows
+      winesodir=i386-unix
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
-      lib_path="/usr/lib${lib}/wine"
+      lib_path="/usr/lib${lib}/wine/${winesodir}"
       arch_path="${lib_path}/${winearchdir}"
       for dll in ${dlls} ;do
         if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" &>/dev/null ;then
