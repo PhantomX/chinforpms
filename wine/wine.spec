@@ -63,7 +63,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 96a8cc2920c09e1ae5a7bf5a92057b34a604df3d
+%global wine_stagingver cb7a9792d7c37f7c0407fb9ae465a4a89409412f
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -74,7 +74,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 8d59b26ca62637bc3733d058501f9d3cc4c51841
+%global tkg_id b60f1081e4d33fa86c1c5d5a5808fff30d41bd87
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 73481691abc7d700aaba40ee4e6e0428ae694297
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -114,7 +114,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.7
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -210,6 +210,7 @@ Patch1028:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg
 Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 Patch1030:       %{tkg_url}/proton/proton-bcrypt-staging.patch#/%{name}-tkg-proton-bcrypt-staging.patch
 Patch1031:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
+Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/revert_789c1db1.myrevert#/%{name}-tkg-revert_789c1db1.patch
 
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
@@ -862,6 +863,7 @@ $patch_command -p1 -i patch1025.patch
 %patch1029 -p1
 %patch1030 -p1
 %patch1031 -p1
+%patch1032 -p1 -R
 %patch1091 -p1 -R
 %patch1300 -p1
 %patch1301 -p1
@@ -2879,6 +2881,10 @@ fi
 
 
 %changelog
+* Sun May 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.7-104.20210430git2deb8c2
+- Staging update
+- tkg update
+
 * Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.7-103.20210430git2deb8c2
 - Update
 - More architecture-specific updates
@@ -3622,152 +3628,3 @@ fi
 - BR: SDL2-devel
 - BR: vulkan-devel
 - R: samba-libs
-
-* Tue Nov 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.21-100.chinfo
-- 2.21
-- Drop nine, it have proper separated wine-nine package now
-- Drop laino package, only one patch is needed
-- Update patch list from AUR
-
-* Mon Nov 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.20-100.chinfo
-- 2.20
-- Rearrange files that are already in default wine from %%{?compholios} sections
-
-* Mon Oct 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.19-101.chinfo
-- wine-d3d9 2.19
-
-* Sat Oct 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.19-100.chinfo
-- 2.19
-
-* Fri Oct 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.18-101.chinfo
-- BR: mesa-libEGL-devel with nine, fixes Fedora 27 build
-
-* Thu Oct 05 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.18-100.chinfo
-- 2.18
-
-* Wed Sep 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.17-100.chinfo
-- 2.17
-
-* Thu Sep 07 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.16-100.chinfo
-- 2.16
-
-* Wed Aug 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.15-100.chinfo
-- 2.15
-
-* Thu Aug 10 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.14-101.chinfo
-- nine 2.14
-
-* Tue Aug 08 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.14-100.chinfo
-- 2.14
-
-* Tue Jul 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.13-100.chinfo
-- 2.13
-- Disable laino patches
-
-* Wed Jul 12 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.12-100.chinfo
-- 2.12
-
-* Tue Jun 27 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.11-100.chinfo
-- 2.11
-
-* Tue Jun 13 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.10-100.chinfo
-- 2.10
-- laino patches
-
-* Mon May 29 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.9-100.chinfo
-- 2.9
-
-* Tue May 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.8-100.chinfo
-- 2.8
-
-* Tue May 02 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.7-100.chinfo
-- 2.7
-
-* Wed Apr 19 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.6-100.chinfo
-- 2.6
-
-* Sun Apr 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.5-100.chinfo
-- 2.5
-
-* Sun Mar 26 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.4-101.chinfo
-- Fix wine-mono version
-
-* Tue Mar 21 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.4-100.chinfo
-- 2.4
-
-* Mon Mar 06 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.3-100.chinfo
-- 2.3
-
-* Wed Feb 22 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.2-100.chinfo
-- 2.2
-
-* Thu Feb 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.1-100.chinfo
-- 2.1
-
-* Wed Jan 25 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0-100.chinfo
-- 2.0 final
-
-* Mon Jan 23 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.7.rc7.chinfo
-- 2.0-rc6
-
-* Mon Jan 16 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.6.rc5.chinfo
-- 2.0-rc5
-
-* Mon Jan 09 2017 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.5.rc4.chinfo
-- 2.0-rc4
-
-* Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.4.rc3.nine
-- rebuilt
-
-* Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.3.rc3.nine
-- Drop epoch.
-
-* Wed Dec 28 2016 Phantom X <megaphantomx at bol dot com dot br> - 2.0-0.2.rc3.nine
-- nine patches
-- extra patches
-- joy.cpl desktop file
-
-* Tue Dec 27 2016 Michael Cronenworth <mike@cchtml.com> 2.0-0.1.rc3
-- version update
-
-* Wed Dec 21 2016 Michael Cronenworth <mike@cchtml.com> 2.0-0.1.rc2
-- version update
-
-* Thu Dec 15 2016 Michael Cronenworth <mike@cchtml.com> 2.0-0.1.rc1
-- version update
-
-* Wed Nov 23 2016 Michael Cronenworth <mike@cchtml.com> 1.9.23-2
-- drop sysvinit on Fedora, again
-
-* Wed Nov 16 2016 Michael Cronenworth <mike@cchtml.com> 1.9.23-1
-- version update
-- remove old cruft in spec
-- add hard cups-libs dependency (rhbz#1367537)
-- include mp3 support (rhbz#1395711)
-
-* Thu Nov 03 2016 Michael Cronenworth <mike@cchtml.com> 1.9.22-1
-- version update
-
-* Mon Oct 17 2016 Michael Cronenworth <mike@cchtml.com> 1.9.21-1
-- version update
-
-* Sun Oct 02 2016 Michael Cronenworth <mike@cchtml.com> 1.9.20-1
-- version update
-
-* Mon Sep 19 2016 Michael Cronenworth <mike@cchtml.com> 1.9.19-1
-- version update
-
-* Thu Sep 15 2016 Peter Robinson <pbrobinson@fedoraproject.org> 1.9.18-2
-- fix aarch64 definition
-
-* Wed Sep 07 2016 Michael Cronenworth <mike@cchtml.com> 1.9.18-1
-- version update
-
-* Sun Aug 28 2016 Michael Cronenworth <mike@cchtml.com> 1.9.17-1
-- version update
-
-* Sat Aug 20 2016 Peter Robinson <pbrobinson@fedoraproject.org> 1.9.16-2
-- build on aarch64
-
-* Tue Aug 09 2016 Michael Cronenworth <mike@cchtml.com> 1.9.16-1
-- version update

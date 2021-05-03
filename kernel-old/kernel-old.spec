@@ -93,7 +93,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 33
+%define stable_update 34
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -117,7 +117,7 @@ Summary: The Linux kernel
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit 2b02985bf83e6da9d9165c5f2165af1b97d76edf
-%global st_last_commit 8bd8301ccc115b7885517077a097ee028fcb1ec2
+%global st_last_commit 0aa66717f684f0280cc9bccf50f603e80d05495b
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
@@ -893,6 +893,7 @@ Patch2003: %{patchwork_url}/12160165/mbox/#/patchwork-v2-blk-mq-Fix-races-betwee
 Patch2004: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
 Patch2010: 0001-fsync.patch
 Patch2011: 0001-futex2.patch
+Patch2012: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
 
@@ -2450,7 +2451,7 @@ if [ -f /etc/sysconfig/kernel ]\
 then\
     . /etc/sysconfig/kernel || exit $?\
 fi\
-if [ "$HARDLINK" != "no" -a -x /usr/sbin/hardlink -a ! -e /run/ostree-booted ] \
+if [ "$HARDLINK" != "no" -a -x /usr/bin/hardlink -a ! -e /run/ostree-booted ] \
 then\
     (cd /usr/src/kernels/%{KVERREL}%{?1:+%{1}} &&\
      /usr/bin/find . -type f | while read f; do\
@@ -2712,6 +2713,9 @@ fi
 #
 #
 %changelog
+* Sun May 02 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.34-500.old
+- 5.10.34 - pf13
+
 * Wed Apr 28 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.33-500.old
 - 5.10.33 - pf13
 

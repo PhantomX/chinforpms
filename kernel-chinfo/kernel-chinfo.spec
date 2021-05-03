@@ -93,18 +93,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 2
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 664a14f3d513c43cab29f9cfbc866a55bd4c05bc
+%global pfcommit e8992856d78db63f23cdfa6440f79088871bf7d7
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -864,6 +864,9 @@ Patch2007: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block
 
 Patch2090: 0001-fsync.patch
 Patch2091: 0001-futex2.patch
+Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/9520c8aba8ed3d1568154d76264f58e1d31e6b6f/linux-tkg-patches/5.12/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+Patch2093: https://github.com/Frogging-Family/linux-tkg/raw/9520c8aba8ed3d1568154d76264f58e1d31e6b6f/linux-tkg-patches/5.12/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+Patch2094: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
 
@@ -2444,7 +2447,7 @@ if [ -f /etc/sysconfig/kernel ]\
 then\
     . /etc/sysconfig/kernel || exit $?\
 fi\
-if [ "$HARDLINK" != "no" -a -x /usr/sbin/hardlink -a ! -e /run/ostree-booted ] \
+if [ "$HARDLINK" != "no" -a -x /usr/bin/hardlink -a ! -e /run/ostree-booted ] \
 then\
     (cd /usr/src/kernels/%{KVERREL}%{?1:+%{1}} &&\
      /usr/bin/find . -type f | while read f; do\
@@ -2701,6 +2704,9 @@ fi
 #
 #
 %changelog
+* Sun May 02 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.1-500.chinfo
+- 5.12.1 - pf2
+
 * Mon Apr 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.0-500.chinfo
 - 5.12.0 - pf1
 - Rawhide sync

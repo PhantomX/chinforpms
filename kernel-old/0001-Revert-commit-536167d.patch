@@ -1,0 +1,27 @@
+From fc496f516c0a684fbe13acf18e96fd34ed4a7b9f Mon Sep 17 00:00:00 2001
+From: Fedora Kernel Team <kernel-team@fedoraproject.org>
+Date: Sun, 2 May 2021 11:33:07 -0300
+Subject: [PATCH] Revert commit 536167d
+
+Revert commit 536167d47ade11a5540b4b1a7125308b1641da7a
+https://bugzilla.kernel.org/show_bug.cgi?id=211247
+---
+ block/blk-mq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index e320d97..420a8fb 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -1402,7 +1402,7 @@ bool blk_mq_dispatch_rq_list(struct blk_mq_hw_ctx *hctx, struct list_head *list,
+ 	/* If we didn't flush the entire list, we could have told the driver
+ 	 * there was more coming, but that turned out to be a lie.
+ 	 */
+-	if ((!list_empty(list) || errors) && q->mq_ops->commit_rqs && queued)
++	if ((!list_empty(list) || errors) && q->mq_ops->commit_rqs)
+ 		q->mq_ops->commit_rqs(hctx);
+ 	/*
+ 	 * Any items that need requeuing? Stuff them into hctx->dispatch,
+-- 
+2.31.1
+

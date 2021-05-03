@@ -65,7 +65,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        21.0.3
-Release:        101%{?dist}
+Release:        102%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -81,6 +81,7 @@ Patch0:         mesa-llvm12.patch
 
 # https://gitlab.freedesktop.org/mesa/mesa/-/issues/4691
 Patch1:         0001-amd-common-Add-missing-line-from-backport-for-cohere.patch
+Patch2:         %{vc_url}/commit/960c86d6787437b643825baa230bc0cd7f9f7540.patch#/%{name}-gl-960c86d.patch
 
 Patch10:        %{vc_url}/commit/2813688f8dbe813baaa99c028da4058e5dfb428d.patch#/%{name}-gl-2813688.patch
 Patch11:        %{vc_url}/commit/fc78ecd3793673ae550900f68bf9e459a9f6ec62.patch#/%{name}-gl-fc78ecd.patch
@@ -731,6 +732,9 @@ popd
 
 
 %changelog
+* Sun May 02 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.3-102
+- Fix mesa#3969
+
 * Sat Apr 24 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.3-101
 - Fix mesa#4691, patch from Arch
 
