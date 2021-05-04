@@ -1,5 +1,5 @@
-/* Chinforpms 20200114 */
-/* GTK3-mushrooms */
+/* Chinforpms 20210503 */
+/* GTK3-classic */
 
 .default-decoration.titlebar:not(headerbar), headerbar.default-decoration {
   min-height: 0px;
@@ -60,7 +60,7 @@ scale {
   padding: 10px 0;
 }
 
-headerbar, switch slider {
+headerbar {
   min-height: 0;
 }
 
@@ -136,6 +136,12 @@ scrollbar {
 
 statusbar {
   margin: -4px -5px -3px -5px;
+}
+
+switch slider {
+  min-height: 1px;
+  min-width: 1px;
+  padding: 0;
 }
 
 toolbar.primary-toolbar {
