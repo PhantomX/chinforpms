@@ -53,6 +53,7 @@
 %global dri_drivers %{?base_dri}%{?platform_dri}
 %endif
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
+%global vulkan_layers device-select,overlay
 
 %global with_lto 0
 
@@ -64,8 +65,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        21.0.3
-Release:        102%{?dist}
+Version:        21.1.0
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -75,70 +76,6 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
-
-# https://gitlab.freedesktop.org/mesa/mesa/-/issues/4442
-Patch0:         mesa-llvm12.patch
-
-# https://gitlab.freedesktop.org/mesa/mesa/-/issues/4691
-Patch1:         0001-amd-common-Add-missing-line-from-backport-for-cohere.patch
-Patch2:         %{vc_url}/commit/960c86d6787437b643825baa230bc0cd7f9f7540.patch#/%{name}-gl-960c86d.patch
-
-Patch10:        %{vc_url}/commit/2813688f8dbe813baaa99c028da4058e5dfb428d.patch#/%{name}-gl-2813688.patch
-Patch11:        %{vc_url}/commit/fc78ecd3793673ae550900f68bf9e459a9f6ec62.patch#/%{name}-gl-fc78ecd.patch
-Patch12:        %{vc_url}/commit/a93ca3be01e51df30c0e7ec58927053e7057afd9.patch#/%{name}-gl-a93ca3b.patch
-Patch13:        %{vc_url}/commit/98e8dc1db8fcf3b31dd3d1ab20b616e17565a986.patch#/%{name}-gl-98e8dc1.patch
-
-Patch100:       %{ixit_url}/3dbc542f971661e2f848db3d55d6f1fe194f220c.patch#/%{name}-ixit-3dbc542.patch
-Patch101:       %{ixit_url}/f85f025a05cb7267b5f2c0932b46218f21576819.patch#/%{name}-ixit-f85f025.patch
-Patch102:       %{ixit_url}/3dd6b79215cba88c43301e80601149bf8188662d.patch#/%{name}-ixit-3dd6b79.patch
-Patch103:       %{ixit_url}/6a3451e170ccd4a8c3e43b4241d1126683a2c6d1.patch#/%{name}-ixit-6a3451e.patch
-Patch104:       %{ixit_url}/d097bdcc781169f337174a4e2d47e7b2e506d491.patch#/%{name}-ixit-d097bdc.patch
-Patch105:       %{ixit_url}/1357d2a60acbfc45ec24c4d6495b54b1dfbae5d2.patch#/%{name}-ixit-1357d2a.patch
-Patch106:       %{ixit_url}/1a53099909af1abfd91000f0a85b5a6e41f81476.patch#/%{name}-ixit-1a53099.patch
-Patch107:       %{ixit_url}/501ad0e1341b4f3320aed9a85fc5a24405c88e4d.patch#/%{name}-ixit-501ad0e.patch
-Patch108:       %{ixit_url}/b383b1e01a4323f191b387444780b642e912a568.patch#/%{name}-ixit-b383b1e.patch
-Patch109:       %{ixit_url}/d730f8d7a9bd3d9291562020503282dd94710717.patch#/%{name}-ixit-d730f8d.patch
-Patch110:       %{ixit_url}/7a1a1fc5d931e2b853c3f28aa763fb54de93eca2.patch#/%{name}-ixit-7a1a1fc.patch
-Patch111:       %{ixit_url}/642e19dc448f65d0f99a00d1a5bff02f75ae747e.patch#/%{name}-ixit-642e19d.patch
-Patch112:       %{ixit_url}/e891f039da6889b3fb65db5c466dbfe08666fd93.patch#/%{name}-ixit-e891f03.patch
-Patch113:       %{ixit_url}/6087ff44aeacc8c2f32917f720b742a83b3d1416.patch#/%{name}-ixit-6087ff4.patch
-Patch114:       %{ixit_url}/90a7573a6503aa4733c2fc3c19375c623d3402ed.patch#/%{name}-ixit-90a7573.patch
-Patch115:       %{ixit_url}/a179ea2e6d8cec320ab2283a0e4883ac34e72aee.patch#/%{name}-ixit-a179ea2.patch
-Patch116:       %{ixit_url}/24eb1f21d0ab5564037e04807c9ce9fc3fa89399.patch#/%{name}-ixit-24eb1f2.patch
-Patch117:       %{ixit_url}/0beb77751ebdf4db291aa791c12af843e193ef1c.patch#/%{name}-ixit-0beb777.patch
-Patch118:       %{ixit_url}/91755300ece3a67194270db636e6e8c3252fa8f7.patch#/%{name}-ixit-9175530.patch
-Patch119:       %{ixit_url}/393d8f479bd085184a2748bc7eeea2840f67a93c.patch#/%{name}-ixit-393d8f4.patch
-Patch120:       %{ixit_url}/1878a9ad4658ea77d7e8ea08554a67cad0a18938.patch#/%{name}-ixit-1878a9a.patch
-Patch121:       %{ixit_url}/9d1b39797f19b8c635e03aecb753a4de1a383a1d.patch#/%{name}-ixit-9d1b397.patch
-Patch122:       0001-Merge-fix-st-nine-Refactor-DrawPrimitiveUp.patch
-Patch123:       %{ixit_url}/b9a7a0139c2b183867df786d68bccd874916967e.patch#/%{name}-ixit-b9a7a01.patch
-Patch124:       %{ixit_url}/461999af5d53fc6c0d66c889a2f73b75c8ffcb3b.patch#/%{name}-ixit-461999a.patch
-Patch125:       %{ixit_url}/e8d24c0e9f1779aea8f3cdb9eb2316b24cf15996.patch#/%{name}-ixit-e8d24c0.patch
-Patch126:       %{ixit_url}/4662b9d98c57ddf9c4935da25c9e378440899b81.patch#/%{name}-ixit-4662b9d.patch
-Patch127:       %{ixit_url}/f34051f93da59befcaf22a6d3bc3c17430f9ac51.patch#/%{name}-ixit-f34051f.patch
-Patch128:       %{ixit_url}/ed6924489224269ce6c00fd2db39e951b8d3d274.patch#/%{name}-ixit-ed69244.patch
-Patch129:       %{ixit_url}/4ea3a3fe67cd30cfcdde3f73994e9ef97c530251.patch#/%{name}-ixit-4ea3a3f.patch
-Patch130:       %{ixit_url}/7b5a62fea407e92a6f5b48d6ac3f0541f04d2387.patch#/%{name}-ixit-7b5a62f.patch
-Patch131:       %{ixit_url}/f0c20b04287ce0427d57cb844303faeeeb649a84.patch#/%{name}-ixit-f0c20b0.patch
-Patch132:       %{ixit_url}/35c142d0250616e1162c3e1c0dd35d4d6e9137be.patch#/%{name}-ixit-35c142d.patch
-Patch133:       %{ixit_url}/2c2166a466aafeaa6d324e48d015c9227c3cd029.patch#/%{name}-ixit-2c2166a.patch
-Patch134:       %{ixit_url}/dffdf138a79fd36cf542e683504cace94de0604b.patch#/%{name}-ixit-dffdf13.patch
-Patch135:       %{ixit_url}/93c8ff895b44cb5ef6d237ea4b30120ba012de45.patch#/%{name}-ixit-93c8ff8.patch
-Patch136:       %{ixit_url}/c8a522dd1bc062d22908257332343ceedc7d048c.patch#/%{name}-ixit-c8a522d.patch
-Patch137:       %{ixit_url}/c3e47a0620bd0a209b42df58cc34108b2352a979.patch#/%{name}-ixit-c3e47a0.patch
-Patch138:       %{ixit_url}/94957f53e1e96178d199dc1cce15cf98a64c010c.patch#/%{name}-ixit-94957f5.patch
-Patch139:       %{ixit_url}/637a47deb9cf5e40ef70ad2a850c23bc81bba7ea.patch#/%{name}-ixit-637a47d.patch
-Patch140:       %{ixit_url}/15b88f7e336a7336f370072571159d20cb1d09b7.patch#/%{name}-ixit-15b88f7.patch
-Patch141:       %{ixit_url}/fb9d602a959a188adac0fa383af04896aa67eab8.patch#/%{name}-ixit-fb9d602.patch
-Patch142:       %{ixit_url}/92dec5621f0d0d83f6d5e61af02992c4a78b847f.patch#/%{name}-ixit-92dec56.patch
-Patch143:       %{ixit_url}/41412067678fe2a5643dfa01fc5a240fa8548349.patch#/%{name}-ixit-4141206.patch
-Patch144:       %{ixit_url}/2544ec8c5de37eacdd4b8829c09ffed6c54a3a91.patch#/%{name}-ixit-2544ec8.patch
-Patch145:       %{ixit_url}/29f29dc62dbbf46f3a8f9da8add09d61a9a034c3.patch#/%{name}-ixit-29f29dc.patch
-Patch146:       %{ixit_url}/435e150d218448256dee669564876b0826656541.patch#/%{name}-ixit-435e150.patch
-Patch147:       %{ixit_url}/d8e6160431d02626238317eac49fdea2d75f82ed.patch#/%{name}-ixit-d8e6160.patch
-Patch148:       %{ixit_url}/b252b399bdb17412a0ec9d4e3521bbb22f541213.patch#/%{name}-ixit-b252b39.patch
-Patch149:       %{ixit_url}/798ef1de189a586fb7411ade7299a5dc78383d9a.patch#/%{name}-ixit-798ef1d.patch
-Patch150:       %{ixit_url}/1c72d5c04ff03509f631ba5673ee986e1f265458.patch#/%{name}-ixit-1c72d5c.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -152,7 +89,7 @@ BuildRequires:  kernel-headers
 # We only check for the minimum version of pkgconfig(libdrm) needed so that the
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
-BuildRequires:  pkgconfig(libdrm) >= 2.4.97
+BuildRequires:  pkgconfig(libdrm) >= 2.4.105
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libselinux)
@@ -203,6 +140,7 @@ BuildRequires:  pkgconfig(valgrind)
 BuildRequires:  python3-devel
 BuildRequires:  python3-mako
 BuildRequires:  vulkan-headers
+BuildRequires:  glslang
 %if 0%{?with_vulkan_hw}
 BuildRequires:  pkgconfig(vulkan)
 %endif
@@ -461,8 +399,7 @@ export RANLIB="gcc-ranlib"
   -Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
   -Dvulkan-drivers=%{?vulkan_drivers} \
-  -Dvulkan-device-select-layer=true \
-  -Dvulkan-overlay-layer=true \
+  -Dvulkan-layers=%{?vulkan_layers} \
   -Dshared-glapi=enabled \
   -Dgles1=disabled \
   -Dgles2=enabled \
@@ -716,9 +653,6 @@ popd
 %endif
 
 %files vulkan-devel
-%ifarch %{ix86} x86_64
-%{_includedir}/vulkan/vulkan_intel.h
-%endif
 
 %files vulkan-lavapipe-layer
 %{_libdir}/libvulkan_lvp.so
@@ -732,6 +666,9 @@ popd
 
 
 %changelog
+* Wed May 05 2021 Phantom X <megaphantomx at hotmail dot com> - 21.1.0-100
+- 21.1.0
+
 * Sun May 02 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.3-102
 - Fix mesa#3969
 
