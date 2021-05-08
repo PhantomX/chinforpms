@@ -1,19 +1,119 @@
-From 70a6e65b2e3dacf7ae604c20364e40c1afefc1dd Mon Sep 17 00:00:00 2001
+From d7c915ed2951384353c036eef6866d863c1b7585 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 20 Apr 2021 18:32:47 -0300
+Date: Sat, 8 May 2021 00:22:29 -0300
 Subject: [PATCH] Build shared library
 
 ---
- C/LzmaDec.c              | 199 --------------------------------------
- C/LzmaDec.h              | 201 +++++++++++++++++++++++++++++++++++++++
- C/Util/Lzma/makefile.gcc |  86 ++++++++++++++---
- 3 files changed, 274 insertions(+), 212 deletions(-)
+ C/7zFile.h               |   5 +-
+ C/7zip_gcc_c.mak         |  41 ++------
+ C/LzmaDec.c              | 215 --------------------------------------
+ C/LzmaDec.h              | 217 +++++++++++++++++++++++++++++++++++++++
+ C/Util/Lzma/makefile.gcc |  18 +++-
+ 5 files changed, 243 insertions(+), 253 deletions(-)
 
+diff --git a/C/7zFile.h b/C/7zFile.h
+index c7a30fc..5864e67 100644
+--- a/C/7zFile.h
++++ b/C/7zFile.h
+@@ -13,8 +13,9 @@
+ #include <windows.h>
+ #else
+ // note: USE_FOPEN mode is limited to 32-bit file size
+-// #define USE_FOPEN
+-// #include <stdio.h>
++// FIXME: Disable it when everything is using fd
++#define USE_FOPEN
++#include <stdio.h>
+ #endif
+ 
+ #include "7zTypes.h"
+diff --git a/C/7zip_gcc_c.mak b/C/7zip_gcc_c.mak
+index 00ecfb0..fb4b04f 100644
+--- a/C/7zip_gcc_c.mak
++++ b/C/7zip_gcc_c.mak
+@@ -6,12 +6,13 @@ MY_ASM = asmc
+ 
+ PROGPATH = $(O)/$(PROG)
+ 
++DEFINES = -fPIC -D_7ZIP_ST -DUSE_FOPEN
+ 
+ # for object file
+ CFLAGS_BASE_LIST = -c
+ # for ASM file
+ # CFLAGS_BASE_LIST = -S
+-CFLAGS_BASE = $(MY_ARCH_2) -O2 $(CFLAGS_BASE_LIST) -Wall -Werror -Wextra $(CFLAGS_WARN) \
++CFLAGS_BASE = -O2 $(CFLAGS_BASE_LIST) -Wall -Werror -Wextra $(CFLAGS_WARN) \
+  -DNDEBUG -D_REENTRANT -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
+ 
+ 
+@@ -22,36 +23,6 @@ ifdef SystemDrive
+ IS_MINGW = 1
+ endif
+ 
+-ifdef DEF_FILE
+-
+-
+-ifdef IS_MINGW
+-SHARED_EXT=.dll
+-LDFLAGS = -shared -DEF $(DEF_FILE) $(LDFLAGS_STATIC)
+-else
+-SHARED_EXT=.so
+-LDFLAGS = -shared -fPIC  $(LDFLAGS_STATIC)
+-CC_SHARED=-fPIC
+-endif
+-
+-
+-else
+-
+-LDFLAGS = $(LDFLAGS_STATIC)
+-# -s is not required for clang, do we need it for GGC ???
+-# -s
+-
+-#-static -static-libgcc -static-libstdc++
+-
+-ifdef IS_MINGW
+-SHARED_EXT=.exe
+-else
+-SHARED_EXT=
+-endif
+-
+-endif
+-
+-
+ PROGPATH = $(O)/$(PROG)$(SHARED_EXT)
+ 
+ 	
+@@ -88,7 +59,7 @@ endif
+ 
+ 
+ 
+-CFLAGS = $(LOCAL_FLAGS) $(CFLAGS_BASE2) $(CFLAGS_BASE) $(CC_SHARED) -o $@
++CFLAGS = $(LOCAL_FLAGS) $(CFLAGS_BASE2) $(CFLAGS_BASE) $(DEFINES) $(CC_SHARED) -o $@
+ 
+ 
+ ifdef IS_X64
+@@ -108,13 +79,13 @@ CXX_WARN_FLAGS =
+ 
+ CXXFLAGS = $(LOCAL_FLAGS) $(CXXFLAGS_BASE2) $(CFLAGS_BASE) $(CXXFLAGS_EXTRA) $(CC_SHARED) -o $@ $(CXX_WARN_FLAGS)
+ 
+-all: $(O) $(PROGPATH)
++all: $(O) $(LIBRARYMAJOR)
+ 
+ $(O):
+ 	$(MY_MKDIR) $(O)
+ 
+-$(PROGPATH): $(OBJS)
+-	$(CXX) -s -o $(PROGPATH) $(MY_ARCH_2) $(LDFLAGS) $(OBJS) $(MY_LIBS) $(LIB2)
++$(LIBRARYMAJOR): $(OBJS)
++	$(CXX) -o $(LIBRARYMAJOR) -shared -Wl,-soname=$(LIBRARYMINOR) -DNDEBUG $(LDFLAGS) -Wl,-z,defs $(OBJS) $(MY_LIBS) $(LIB2)
+ 
+ 
+ 
 diff --git a/C/LzmaDec.c b/C/LzmaDec.c
-index 4d15764..6052d81 100644
+index 80b70a9..15ab681 100644
 --- a/C/LzmaDec.c
 +++ b/C/LzmaDec.c
-@@ -8,205 +8,6 @@
+@@ -8,221 +8,6 @@
  /* #include "CpuArch.h" */
  #include "LzmaDec.h"
  
@@ -22,10 +122,12 @@ index 4d15764..6052d81 100644
 -
 -#define kNumBitModelTotalBits 11
 -#define kBitModelTotal (1 << kNumBitModelTotalBits)
--#define kNumMoveBits 5
 -
 -#define RC_INIT_SIZE 5
 -
+-#ifndef _LZMA_DEC_OPT
+-
+-#define kNumMoveBits 5
 -#define NORMALIZE if (range < kTopValue) { range <<= 8; code = (code << 8) | (*buf++); }
 -
 -#define IF_BIT_0(p) ttt = *(p); NORMALIZE; bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
@@ -71,9 +173,10 @@ index 4d15764..6052d81 100644
 -  probLit = prob + (offs + bit + symbol); \
 -  GET_BIT2(probLit, symbol, offs ^= bit; , ;)
 -
+-#endif // _LZMA_DEC_OPT
 -
 -
--#define NORMALIZE_CHECK if (range < kTopValue) { if (buf >= bufLimit) return DUMMY_ERROR; range <<= 8; code = (code << 8) | (*buf++); }
+-#define NORMALIZE_CHECK if (range < kTopValue) { if (buf >= bufLimit) return DUMMY_INPUT_EOF; range <<= 8; code = (code << 8) | (*buf++); }
 -
 -#define IF_BIT_0_CHECK(p) ttt = *(p); NORMALIZE_CHECK; bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
 -#define UPDATE_0_CHECK range = bound;
@@ -122,6 +225,9 @@ index 4d15764..6052d81 100644
 -
 -#define kMatchMinLen 2
 -#define kMatchSpecLenStart (kMatchMinLen + kLenNumLowSymbols * 2 + kLenNumHighSymbols)
+-
+-#define kMatchSpecLen_Error_Data (1 << 9)
+-#define kMatchSpecLen_Error_Fail (kMatchSpecLen_Error_Data - 1)
 -
 -/* External ASM code needs same CLzmaProb array layout. So don't change it. */
 -
@@ -175,10 +281,12 @@ index 4d15764..6052d81 100644
 -
 -/*
 -p->remainLen : shows status of LZMA decoder:
--    < kMatchSpecLenStart : normal remain
--    = kMatchSpecLenStart : finished
--    = kMatchSpecLenStart + 1 : need init range coder
--    = kMatchSpecLenStart + 2 : need init range coder and state
+-    < kMatchSpecLenStart  : the number of bytes to be copied with (p->rep0) offset
+-    = kMatchSpecLenStart  : the LZMA stream was finished with end mark
+-    = kMatchSpecLenStart + 1  : need init range coder
+-    = kMatchSpecLenStart + 2  : need init range coder and state
+-    = kMatchSpecLen_Error_Fail                : Internal Code Failure
+-    = kMatchSpecLen_Error_Data + [0 ... 273]  : LZMA Data Error
 -*/
 -
 -/* ---------- LZMA_DECODE_REAL ---------- */
@@ -197,30 +305,38 @@ index 4d15764..6052d81 100644
 -  {
 -    LzmaDec_TryDummy() was called before to exclude LITERAL and MATCH-REP cases.
 -    So first symbol can be only MATCH-NON-REP. And if that MATCH-NON-REP symbol
--    is not END_OF_PAYALOAD_MARKER, then function returns error code.
+-    is not END_OF_PAYALOAD_MARKER, then the function doesn't write any byte to dictionary,
+-    the function returns SZ_OK, and the caller can use (p->remainLen) and (p->reps[0]) later.
 -  }
 -
 -Processing:
--  first LZMA symbol will be decoded in any case
--  All checks for limits are at the end of main loop,
--  It will decode new LZMA-symbols while (p->buf < bufLimit && dicPos < limit),
+-  The first LZMA symbol will be decoded in any case.
+-  All main checks for limits are at the end of main loop,
+-  It decodes additional LZMA-symbols while (p->buf < bufLimit && dicPos < limit),
 -  RangeCoder is still without last normalization when (p->buf < bufLimit) is being checked.
+-  But if (p->buf < bufLimit), the caller provided at least (LZMA_REQUIRED_INPUT_MAX + 1) bytes for
+-  next iteration  before limit (bufLimit + LZMA_REQUIRED_INPUT_MAX),
+-  that is enough for worst case LZMA symbol with one additional RangeCoder normalization for one bit.
+-  So that function never reads bufLimit [LZMA_REQUIRED_INPUT_MAX] byte.
 -
 -Out:
 -  RangeCoder is normalized
 -  Result:
 -    SZ_OK - OK
--    SZ_ERROR_DATA - Error
--  p->remainLen:
--    < kMatchSpecLenStart : normal remain
--    = kMatchSpecLenStart : finished
+-      p->remainLen:
+-        < kMatchSpecLenStart : the number of bytes to be copied with (p->reps[0]) offset
+-        = kMatchSpecLenStart : the LZMA stream was finished with end mark
+-
+-    SZ_ERROR_DATA - error, when the MATCH-Symbol refers out of dictionary
+-      p->remainLen : undefined
+-      p->reps[*]    : undefined
 -*/
 -
  
  #ifdef _LZMA_DEC_OPT
  
 diff --git a/C/LzmaDec.h b/C/LzmaDec.h
-index 28ce60c..ae71b02 100644
+index 6194b7d..361e937 100644
 --- a/C/LzmaDec.h
 +++ b/C/LzmaDec.h
 @@ -6,6 +6,8 @@
@@ -232,7 +348,7 @@ index 28ce60c..ae71b02 100644
  EXTERN_C_BEGIN
  
  /* #define _LZMA_PROB32 */
-@@ -20,6 +22,205 @@ typedef
+@@ -20,6 +22,221 @@ typedef
  #endif
    CLzmaProb;
  
@@ -241,10 +357,12 @@ index 28ce60c..ae71b02 100644
 +
 +#define kNumBitModelTotalBits 11
 +#define kBitModelTotal (1 << kNumBitModelTotalBits)
-+#define kNumMoveBits 5
 +
 +#define RC_INIT_SIZE 5
 +
++#ifndef _LZMA_DEC_OPT
++
++#define kNumMoveBits 5
 +#define NORMALIZE if (range < kTopValue) { range <<= 8; code = (code << 8) | (*buf++); }
 +
 +#define IF_BIT_0(p) ttt = *(p); NORMALIZE; bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
@@ -290,9 +408,10 @@ index 28ce60c..ae71b02 100644
 +  probLit = prob + (offs + bit + symbol); \
 +  GET_BIT2(probLit, symbol, offs ^= bit; , ;)
 +
++#endif // _LZMA_DEC_OPT
 +
 +
-+#define NORMALIZE_CHECK if (range < kTopValue) { if (buf >= bufLimit) return DUMMY_ERROR; range <<= 8; code = (code << 8) | (*buf++); }
++#define NORMALIZE_CHECK if (range < kTopValue) { if (buf >= bufLimit) return DUMMY_INPUT_EOF; range <<= 8; code = (code << 8) | (*buf++); }
 +
 +#define IF_BIT_0_CHECK(p) ttt = *(p); NORMALIZE_CHECK; bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
 +#define UPDATE_0_CHECK range = bound;
@@ -341,6 +460,9 @@ index 28ce60c..ae71b02 100644
 +
 +#define kMatchMinLen 2
 +#define kMatchSpecLenStart (kMatchMinLen + kLenNumLowSymbols * 2 + kLenNumHighSymbols)
++
++#define kMatchSpecLen_Error_Data (1 << 9)
++#define kMatchSpecLen_Error_Fail (kMatchSpecLen_Error_Data - 1)
 +
 +/* External ASM code needs same CLzmaProb array layout. So don't change it. */
 +
@@ -394,10 +516,12 @@ index 28ce60c..ae71b02 100644
 +
 +/*
 +p->remainLen : shows status of LZMA decoder:
-+    < kMatchSpecLenStart : normal remain
-+    = kMatchSpecLenStart : finished
-+    = kMatchSpecLenStart + 1 : need init range coder
-+    = kMatchSpecLenStart + 2 : need init range coder and state
++    < kMatchSpecLenStart  : the number of bytes to be copied with (p->rep0) offset
++    = kMatchSpecLenStart  : the LZMA stream was finished with end mark
++    = kMatchSpecLenStart + 1  : need init range coder
++    = kMatchSpecLenStart + 2  : need init range coder and state
++    = kMatchSpecLen_Error_Fail                : Internal Code Failure
++    = kMatchSpecLen_Error_Data + [0 ... 273]  : LZMA Data Error
 +*/
 +
 +/* ---------- LZMA_DECODE_REAL ---------- */
@@ -416,148 +540,69 @@ index 28ce60c..ae71b02 100644
 +  {
 +    LzmaDec_TryDummy() was called before to exclude LITERAL and MATCH-REP cases.
 +    So first symbol can be only MATCH-NON-REP. And if that MATCH-NON-REP symbol
-+    is not END_OF_PAYALOAD_MARKER, then function returns error code.
++    is not END_OF_PAYALOAD_MARKER, then the function doesn't write any byte to dictionary,
++    the function returns SZ_OK, and the caller can use (p->remainLen) and (p->reps[0]) later.
 +  }
 +
 +Processing:
-+  first LZMA symbol will be decoded in any case
-+  All checks for limits are at the end of main loop,
-+  It will decode new LZMA-symbols while (p->buf < bufLimit && dicPos < limit),
++  The first LZMA symbol will be decoded in any case.
++  All main checks for limits are at the end of main loop,
++  It decodes additional LZMA-symbols while (p->buf < bufLimit && dicPos < limit),
 +  RangeCoder is still without last normalization when (p->buf < bufLimit) is being checked.
++  But if (p->buf < bufLimit), the caller provided at least (LZMA_REQUIRED_INPUT_MAX + 1) bytes for
++  next iteration  before limit (bufLimit + LZMA_REQUIRED_INPUT_MAX),
++  that is enough for worst case LZMA symbol with one additional RangeCoder normalization for one bit.
++  So that function never reads bufLimit [LZMA_REQUIRED_INPUT_MAX] byte.
 +
 +Out:
 +  RangeCoder is normalized
 +  Result:
 +    SZ_OK - OK
-+    SZ_ERROR_DATA - Error
-+  p->remainLen:
-+    < kMatchSpecLenStart : normal remain
-+    = kMatchSpecLenStart : finished
++      p->remainLen:
++        < kMatchSpecLenStart : the number of bytes to be copied with (p->reps[0]) offset
++        = kMatchSpecLenStart : the LZMA stream was finished with end mark
++
++    SZ_ERROR_DATA - error, when the MATCH-Symbol refers out of dictionary
++      p->remainLen : undefined
++      p->reps[*]    : undefined
 +*/
 +
  
  /* ---------- LZMA Properties ---------- */
  
 diff --git a/C/Util/Lzma/makefile.gcc b/C/Util/Lzma/makefile.gcc
-index 12a72bb..42d9196 100644
+index 89b3e11..562792d 100644
 --- a/C/Util/Lzma/makefile.gcc
 +++ b/C/Util/Lzma/makefile.gcc
-@@ -1,8 +1,11 @@
--PROG = lzma
+@@ -1,4 +1,6 @@
+-PROG = 7lzma
 +LIBRARY = liblzmasdk_RPM_PACKVER_.so
 +LIBRARYMINOR = $(LIBRARY)._RPM_MINOR_
 +LIBRARYMAJOR = $(LIBRARYMINOR)._RPM_MAJOR_
- CXX = g++
-+CXXFLAGS ?= -O2 -Wall
-+DEFINES = -fPIC -D_7ZIP_ST
- LIB =
- RM = rm -f
--CFLAGS = -c -O2 -Wall -D_7ZIP_ST
  
- OBJS = \
-   LzmaUtil.o \
-@@ -12,33 +15,90 @@ OBJS = \
-   LzmaEnc.o \
-   7zFile.o \
-   7zStream.o \
-+  Bcj2.o \
-+  Bra.o \
-+  Bra86.o \
-+  BraIA64.o \
-+  CpuArch.o \
-+  Delta.o \
-+  7zAlloc.o \
-+  7zArcIn.o \
-+  7zBuf.o \
-+  7zCrcOpt.o \
-+  7zCrc.o \
-+  7zDec.o \
-+  Lzma2Dec.o \
-+  Lzma2Enc.o \
+ include ../../../CPP/7zip/LzmaDec_gcc.mak
+ 
+@@ -14,6 +16,20 @@ OBJS = \
+   $O/LzmaEnc.o \
+   $O/LzmaUtil.o \
+   $O/Threads.o \
++  $O/Bcj2.o \
++  $O/Bra.o \
++  $O/Bra86.o \
++  $O/BraIA64.o \
++  $O/CpuArch.o \
++  $O/Delta.o \
++  $O/7zAlloc.o \
++  $O/7zArcIn.o \
++  $O/7zBuf.o \
++  $O/7zCrcOpt.o \
++  $O/7zCrc.o \
++  $O/7zDec.o \
++  $O/Lzma2Dec.o \
++  $O/Lzma2Enc.o \
  
  
--all: $(PROG)
-+all: $(LIBRARYMAJOR)
- 
--$(PROG): $(OBJS)
--	$(CXX) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIB) $(LIB2)
-+$(LIBRARYMAJOR): $(OBJS)
-+	$(CXX) -o $(LIBRARYMAJOR) -shared -Wl,-soname=$(LIBRARYMINOR) $(LDFLAGS) -Wl,-z,defs $(OBJS) $(LIB) $(LIB2)
- 
- LzmaUtil.o: LzmaUtil.c
--	$(CXX) $(CFLAGS) LzmaUtil.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) LzmaUtil.c
- 
- Alloc.o: ../../Alloc.c
--	$(CXX) $(CFLAGS) ../../Alloc.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Alloc.c
- 
- LzFind.o: ../../LzFind.c
--	$(CXX) $(CFLAGS) ../../LzFind.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../LzFind.c
- 
- LzmaDec.o: ../../LzmaDec.c
--	$(CXX) $(CFLAGS) ../../LzmaDec.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../LzmaDec.c
- 
- LzmaEnc.o: ../../LzmaEnc.c
--	$(CXX) $(CFLAGS) ../../LzmaEnc.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../LzmaEnc.c
- 
- 7zFile.o: ../../7zFile.c
--	$(CXX) $(CFLAGS) ../../7zFile.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zFile.c
- 
- 7zStream.o: ../../7zStream.c
--	$(CXX) $(CFLAGS) ../../7zStream.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zStream.c
-+
-+Bra86.o: ../../Bra.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Bra86.c
-+
-+Bra.o: ../../Bra.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Bra.c
-+
-+BraIA64.o: ../../BraIA64.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../BraIA64.c
-+
-+Bcj2.o: ../../Bcj2.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Bcj2.c
-+
-+CpuArch.o: ../../CpuArch.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../CpuArch.c
-+
-+Delta.o: ../../Delta.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Delta.c
-+
-+7zAlloc.o: ../../7zAlloc.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zAlloc.c
-+
-+7zArcIn.o: ../../7zArcIn.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zArcIn.c
-+
-+7zBuf.o: ../../7zBuf.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zBuf.c
-+
-+7zCrc.o: ../../7zCrc.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zCrc.c
-+
-+7zCrcOpt.o: ../../7zCrcOpt.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zCrcOpt.c
-+
-+7zDec.o: ../../7zDec.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../7zDec.c
-+
-+Lzma2Dec.o: ../../Lzma2Dec.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Lzma2Dec.c
-+
-+Lzma2Enc.o: ../../Lzma2Enc.c
-+	$(CXX) -c $(CXXFLAGS) $(DEFINES) ../../Lzma2Enc.c
- 
- clean:
--	-$(RM) $(PROG) $(OBJS)
-+	-$(RM) $(LIBRARYMAJOR) $(OBJS)
-+
+ include ../../7zip_gcc_c.mak
 -- 
-2.30.2
+2.31.1
 

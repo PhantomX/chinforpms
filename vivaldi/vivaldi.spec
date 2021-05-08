@@ -14,7 +14,7 @@
 %global pkgrel 1
 
 Name:           vivaldi
-Version:        3.7.2218.58
+Version:        3.8.2259.40
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -68,14 +68,14 @@ mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/sh
 APP_PATH=%{_libdir}/%{name}
-LD_LIBRARY_PATH="%{_libdir}/%{name}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec %{_libdir}/%{name}/%{name} --password-store=basic "$@"
+exec ${APP_PATH}/%{name} --password-store=basic "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp opt/%{name}/{%{name}*,crashpad_handler,locales,MEIPreload,resources,update-*,*.{bin,dat,json,pak,so}} \
+cp -rp opt/%{name}/{%{name}*,crashpad_handler,locales,MEIPreload,resources,swiftshader,update-*,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 mv opt/%{name}/lib/*.so %{buildroot}%{_libdir}/%{name}/
@@ -124,6 +124,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_libdir}/%{name}/locales
 %{_libdir}/%{name}/MEIPreload
 %{_libdir}/%{name}/resources
+%{_libdir}/%{name}/swiftshader/*.so
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/xfce4/helpers/%{name}.desktop
@@ -131,6 +132,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed May 05 2021 Phantom X <megaphantomx at hotmail dot com> - 3.8.2259.40-1
+- 3.8.2259.40
+
 * Thu Apr 22 2021 - 3.7.2218.58-1
 - 3.7.2218.58
 

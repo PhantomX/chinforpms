@@ -5,14 +5,14 @@
 #global packver %%{ver}
 
 Name:           lzma-sdk%{?packver}
-Version:        19.00
-Release:        102%{?dist}
+Version:        21.02
+Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPLv2
-URL:            http://sourceforge.net/projects/sevenzip/
+URL:            https://www.7-zip.org
 
-Source0:        http://downloads.sourceforge.net/sevenzip/lzma%{ver}.7z
+Source0:        %{url}/a/lzma%{ver}.7z
 Source1:        lzma-sdk-LICENSE.fedora
 
 Patch0:         0001-Build-shared-library.patch
@@ -62,6 +62,11 @@ sed \
   -e 's|_RPM_MINOR_|%{verminor}|g' \
   -e 's|_RPM_MAJOR_|%{vermajor}|g' \
   -i C/Util/Lzma/makefile.gcc
+
+sed \
+  -e 's| -Werror | |g' \
+  -e 's|-O2 |%{build_cxxflags} |g' \
+  -i C/7zip_gcc_c.mak
 
 cat > lzmasdk-c.pc <<'EOF'
 prefix=%{_prefix}
@@ -118,6 +123,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Fri May 07 2021 Phantom X <megaphantomx at hotmail dot com> - 21.02-100
+- 21.02
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 19.00-102
 - Add missing symbols to library
 

@@ -1,6 +1,6 @@
-%global commit 92ccd6eb26e71c609ee23ff5c91540a3c5601bd9
+%global commit d7fd6658f6feedf77af73ee0290b16f5aa23483b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210422
+%global date 20210505
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -21,7 +21,7 @@
 
 Name:           flycast
 Version:        7
-Release:        51%{?gver}%{?dist}
+Release:        52%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -204,6 +204,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Fri May 07 2021 Phantom X <megaphantomx at hotmail dot com> - 7-52.20210505gitd7fd665
+- New lzma-sdk rebuild
+
 * Sat Apr 24 2021 Phantom X <megaphantomx at hotmail dot com> - 7-51.20210422git92ccd6e
 - Update
 

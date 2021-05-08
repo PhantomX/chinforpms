@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit 20747d2108254692b1931c907d15397aa0a62599
+%global commit d3fea7b5a7fff86c5a307aebcc44f9e819ac6d22
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210501
+%global date 20210504
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        16%{?gver}%{?dist}
+Release:        17%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -184,25 +184,23 @@ rm -f %{buildroot}%{_datadir}/%{name}/database/gamecontrollerdb.txt
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  --set-key Terminal \
-  --set-value false \
-  appimage/%{name}-qt.desktop
+  dist/%{name}-qt.desktop
 
 for res in 16 32 48 64 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  install -pm0644 appimage/icon-${res}px.png ${dir}/%{name}-qt.png
+  install -pm0644 dist/icon-${res}px.png ${dir}/%{name}-qt.png
 done
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+install -pm 0644 dist/org.duckstation.DuckStation.metainfo.xml %{buildroot}%{_metainfodir}/
 
 %find_lang %{name}-qt --with-qt
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
 appstream-util validate-relax --nonet \
-  %{buildroot}%{_metainfodir}/*.appdata.xml
+  %{buildroot}%{_metainfodir}/*.metainfo.xml
 
 
 %files -f %{name}-qt.lang
@@ -211,7 +209,7 @@ appstream-util validate-relax --nonet \
 %{_bindir}/%{name}-qt
 %{_datadir}/applications/%{name}-qt.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}-qt.*
-%{_metainfodir}/*.appdata.xml
+%{_metainfodir}/*.metainfo.xml
 
 
 %files nogui
@@ -228,6 +226,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed May 05 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-17.20210504gitd3fea7b
+- Bump
+
 * Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-16.20210501git20747d2
 - Bump
 

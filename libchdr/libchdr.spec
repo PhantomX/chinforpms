@@ -1,6 +1,6 @@
-%global commit a17c0da7e9efa8cbb752c707df7d5457b2149fb8
+%global commit 00319cf31f034e4d468a49a60265c7c5b8305b70
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210410
+%global date 20210429
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           libchdr
 Version:        0.1
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -84,6 +84,10 @@ sed -e 's| -O3 -flto||g' -i CMakeLists.txt
 
 
 %changelog
+* Fri May 07 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-6.20210429git00319cf
+- Bump
+- New lzma-sdk rebuild
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-5.20210410gita17c0da
 - Update
 

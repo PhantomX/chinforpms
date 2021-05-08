@@ -17,7 +17,7 @@ all: archive
 clean:
 	rm -rf $(DIRNAME)/
 	rm -f ${NAME}-${TARBALLVER}.tar.gz
-	rm -f ${NAME}-${TARBALLVER}.tar.xz
+	rm -f ${NAME}-free-${TARBALLVER}.tar.xz
 
 clone: clean
 	curl --location -O https://github.com/jinfeihan57/p7zip/archive/${DLSTR}/${NAME}-${TARBALLVER}.tar.gz

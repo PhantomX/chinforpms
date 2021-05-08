@@ -93,7 +93,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e8992856d78db63f23cdfa6440f79088871bf7d7
+%global pfcommit 2f5354a249db15a458969c04dda00bb77f3b3318
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 5d43652877fda8aa556866abab93cad61f1f9b6f
+%global opensuse_id 496449bc7bea4086ce456e19268cfff6c8c87d3a
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -856,10 +856,10 @@ Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/patch/block/blk-mq-tag.c?id=39aa56db50b9ca5cad597e561b4b160b6cbbb65b#/kernel-git-39aa56d.patch
 Patch2002: %{patchwork_url}/12215169/mbox/#/patchwork-v7-1-5-blk-mq-Move-the-elevator_exit-definition.patch
-Patch2003: %{patchwork_url}/12230335/mbox/#/patchwork-V4-1-4-block-avoid-double-io-accounting-for-flush-request.patch
-Patch2004: %{patchwork_url}/12230337/mbox/#/patchwork-V4-2-4-blk-mq-grab-rq--refcount-before-calling---fn-in-blk_mq_tagset_busy_iter.patch
-Patch2005: %{patchwork_url}/12230339/mbox/#/patchwork-V4-3-4-blk-mq-clear-stale-request-in-tags--rq-before-freeing-one-request-pool.patch
-Patch2006: %{patchwork_url}/12230341/mbox/#/patchwork-V4-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
+Patch2003: %{patchwork_url}/12244749/mbox/#/patchwork-V6-1-4-block-avoid-double-io-accounting-for-flush-request.patch
+Patch2004: %{patchwork_url}/12244751/mbox/#/patchwork-V6-2-4-blk-mq-grab-rq--refcount-before-calling---fn-in-blk_mq_tagset_busy_iter.patch
+Patch2005: %{patchwork_url}/12244753/mbox/#/patchwork-V6-3-4-blk-mq-clear-stale-request-in-tags--rq-before-freeing-one-request-pool.patch
+Patch2006: %{patchwork_url}/12244755/mbox/#/patchwork-V6-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
 Patch2007: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
 
 Patch2090: 0001-fsync.patch
@@ -2705,6 +2705,10 @@ fi
 #
 #
 %changelog
+* Fri May 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.2-500.chinfo
+- 5.12.2 - pf2
+- stabilization sync
+
 * Sun May 02 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.1-500.chinfo
 - 5.12.1 - pf2
 
