@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit d3fea7b5a7fff86c5a307aebcc44f9e819ac6d22
+%global commit d9151cebf15d112bd8a5eec40958342753fa5b9a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210504
+%global date 20210508
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        17%{?gver}%{?dist}
+Release:        18%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -120,8 +120,8 @@ This package provides the data files for duckstation.
 ###Remove Bundled:
 pushd dep
 rm -rf \
-  cubeb discord-rpc libcue libchdr libFLAC libsamplerate lzma minizip rapidjson \
-  rcheevos tinyxml2 vulkan-loader/include/vulkan xxhash zlib
+  cubeb discord-rpc libcue libchdr libFLAC libsamplerate lzma minizip msvc \
+  rapidjson rcheevos tinyxml2 vulkan-loader/include/vulkan xxhash zlib
 
 %if 0%{?with_sysvulkan}
   rm -rf glslang
@@ -186,7 +186,7 @@ desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   dist/%{name}-qt.desktop
 
-for res in 16 32 48 64 ;do
+for res in 16 32 48 64 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   install -pm0644 dist/icon-${res}px.png ${dir}/%{name}-qt.png
@@ -226,6 +226,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat May 08 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-18.20210508gitd9151ce
+- Update
+
 * Wed May 05 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-17.20210504gitd3fea7b
 - Bump
 

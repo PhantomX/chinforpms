@@ -1,7 +1,7 @@
-%global commit 2deb8c2825afcb88a9f106b73aa1f4da9253fb87
+%global commit e2aa30f21def839866b09e74b5ddd843f7e70c87
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210430
-%global with_snapshot 1
+%global date 20210505
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -63,7 +63,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver cb7a9792d7c37f7c0407fb9ae465a4a89409412f
+%global wine_stagingver 6.8
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -74,7 +74,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id b60f1081e4d33fa86c1c5d5a5808fff30d41bd87
+%global tkg_id 40f18c0bac68ed6ccdd8564d7ea42a1d936f469e
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 73481691abc7d700aaba40ee4e6e0428ae694297
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -86,6 +86,10 @@
 # https://bugs.winehq.org/show_bug.cgi?id=50448
 %global wine_staging_opts %{?wine_staging_opts} -W ntdll-NtAlertThreadByThreadId
 %global wine_staging_opts %{?wine_staging_opts} -W bcrypt-ECDHSecretAgreement
+%if !0%{?fshack}
+# childwindow.patch
+#global wine_staging_opts %%{?wine_staging_opts} -W Pipelight -W winex11-Vulkan_support
+%endif
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global whq_murl  https://github.com/wine-mirror/wine
@@ -113,8 +117,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.7
-Release:        104%{?gver}%{?dist}
+Version:        6.8
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -194,7 +198,6 @@ Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patc
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu.patch
-Patch1007:       %{tkg_url}/hotfixes/free_invalid_size/winevulkan_Use_standard_CRT_memory_allocators5.myearlyrevert#/%{name}-tkg-winevulkan_Use_standard_CRT_memory_allocators5.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -210,7 +213,6 @@ Patch1028:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg
 Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 Patch1030:       %{tkg_url}/proton/proton-bcrypt-staging.patch#/%{name}-tkg-proton-bcrypt-staging.patch
 Patch1031:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
-Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/revert_789c1db1.myrevert#/%{name}-tkg-revert_789c1db1.patch
 
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
@@ -820,13 +822,10 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch1006 -p1
-%if 0%{?fshack}
-%patch1007 -p1 -R
-%endif
 %patch1000 -p1
 %if !0%{?fshack}
 %patch1002 -p1
-%patch1003 -p1
+#patch1003 -p1
 %endif
 %patch1004 -p1
 %patch1005 -p1
@@ -863,7 +862,6 @@ $patch_command -p1 -i patch1025.patch
 %patch1029 -p1
 %patch1030 -p1
 %patch1031 -p1
-%patch1032 -p1 -R
 %patch1091 -p1 -R
 %patch1300 -p1
 %patch1301 -p1
@@ -1496,6 +1494,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-com-private-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-comm-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l1-1-0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l1-2-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l2-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-crt-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-crt-l2-1-0.%{winedll}
@@ -1776,23 +1775,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/d3dcompiler_*.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3dim.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3dim700.%{winedll}
-%if 0%{?wine_staging}
-%{_libdir}/wine/%{winedlldir}/d3dpmesh.%{winedll}
-%{_libdir}/wine/%{winedlldir}/diactfrm.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dimap.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dpmodemx.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dpnhupnp.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dpvacm.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dpvvox.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dsdmoprp.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dsound3d.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dx7vb.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dxapi.%{winesys}
-%{_libdir}/wine/%{winedlldir}/encapi.%{winedll}
-%{_libdir}/wine/%{winedlldir}/gcdef.%{winedll}
-%{_libdir}/wine/%{winedlldir}/qdv.%{winedll}
-%{_libdir}/wine/%{winedlldir}/qedwipes.%{winedll}
-%endif
 %{_libdir}/wine/%{winedlldir}/d3drm.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3dx9_*.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3dx10_*.%{winedll}
@@ -1931,10 +1913,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/fusion.%{winedll}
 %{_libdir}/wine/%{winedlldir}/fwpuclnt.%{winedll}
 %{_libdir}/wine/%{winedlldir}/gameux.%{winedll}
-%{_libdir}/wine/%{winesodir}/gamingtcui.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/gamingtcui.dll
-%endif
+%{_libdir}/wine/%{winedlldir}/gamingtcui.%{winedll}
 %{_libdir}/wine/%{winesodir}/gdi32.so
 %{_libdir}/wine/%{winedlldir}/gdi32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/gdiplus.%{winedll}
@@ -2204,10 +2183,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/scrrun.%{winedll}
 %{_libdir}/wine/%{winedlldir}/scsiport.%{winesys}
 %{_libdir}/wine/%{winedlldir}/sechost.%{winedll}
-%{_libdir}/wine/%{winesodir}/secur32.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/secur32.dll
-%endif
+%{_libdir}/wine/%{winesodir}/secur32.so
+%{_libdir}/wine/%{winedlldir}/secur32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/sensapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/serialui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/setupapi.%{winedll}
@@ -2881,6 +2858,13 @@ fi
 
 
 %changelog
+* Sat May 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.8-100
+- 6.8
+- Disable childwindow patch, since nine crashes with it
+
+* Tue May 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.7-105.20210503git3ba4412
+- Update
+
 * Sun May 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.7-104.20210430git2deb8c2
 - Staging update
 - tkg update

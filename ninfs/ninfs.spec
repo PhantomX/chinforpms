@@ -1,6 +1,6 @@
-%global commit 55058a64edac30612c798d67dafd518e76c11ac3
+%global commit c674c92fcffe896658a16018daa4ac4e18123769
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210416
+%global date 20210506
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -14,7 +14,7 @@
 
 Name:           ninfs
 Version:        2.0~a4
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        FUSE program to extract data from Nintendo® game consoles
 
 License:        MIT
@@ -27,8 +27,6 @@ Source0:        %{url}/archive/v%{ver}/%{name}-%{ver}.tar.gz
 %endif
 
 Patch0:         0001-Remove-desktop-file-command-line-parameter.patch
-Patch1:         0001-rpmbuild-fixes.patch
-Patch2:         0001-fix-mountinfo-import-when-installed.patch
 
 BuildArch:      noarch
 
@@ -58,8 +56,7 @@ card contents, and you can browse and copy out just the files that you need.
 
 # Set provided versions
 sed \
-  -e 's|_HACCRYPTOVER_|%{haccryptover}|g' \
-  -e 's|_PYCTRVER_|%{pyctrver}|g' \
+  -e 's|haccrypto==0.1.0|haccrypto==0.1|g' \
   -i setup.py requirements.txt
 
 %build
@@ -103,6 +100,9 @@ done
 
 
 %changelog
+* Sat May 08 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0~a4-2.20210506gitc674c92
+- Bump
+
 * Mon Apr 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0~a4-1.20210416git55058a6
 - 2.0a4
 
