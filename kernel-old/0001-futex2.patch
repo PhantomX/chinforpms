@@ -1,6 +1,6 @@
-From 77bceedf3f34a8dfd9552dffea395884f781fa4d Mon Sep 17 00:00:00 2001
+From 68409a66a16a61d67d1fb4b5e6be30ecf1db3355 Mon Sep 17 00:00:00 2001
 From: Fedora Kernel Team <kernel-team@fedoraproject.org>
-Date: Fri, 9 Apr 2021 07:38:16 -0300
+Date: Tue, 11 May 2021 12:01:00 -0300
 Subject: [PATCH] futex2
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -542,10 +542,10 @@ index a3e7608..e25d368 100644
   * Support for robust futexes: the kernel cleans up held futexes at
   * thread exit time.
 diff --git a/init/Kconfig b/init/Kconfig
-index fc0f5e9..090bd60 100644
+index 84688e5..6c91200 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1548,6 +1548,13 @@ config FUTEX
+@@ -1547,6 +1547,13 @@ config FUTEX
  	  support for "fast userspace mutexes".  The resulting kernel may not
  	  run glibc-based applications correctly.
  
@@ -560,7 +560,7 @@ index fc0f5e9..090bd60 100644
  	bool
  	depends on FUTEX && RT_MUTEXES
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 88b60a6..678911f 100644
+index e7905bd..f2cbf9f 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -54,6 +54,7 @@ obj-$(CONFIG_PROFILING) += profile.o
@@ -3325,5 +3325,5 @@ index 0000000..faa4027
 +	return syscall(__NR_futex_requeue, uaddr1, uaddr2, nr_wake, nr_requeue, cmpval, flags);
 +}
 -- 
-2.30.2
+2.31.1
 

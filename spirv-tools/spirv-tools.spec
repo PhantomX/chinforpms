@@ -1,12 +1,12 @@
-%global commit c2d5375fa7cc87c93f692e7200d5d974283d4391
+%global commit 1020e394cb1267332d58497150d2b024371a8e41
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210421
+%global date 20210504
 %global gver .%{date}git%{shortcommit}
 
 %global pkgname SPIRV-Tools
 
 Name:           spirv-tools
-Version:        2021.1
+Version:        2021.2
 Release:        100%{?gver}%{?dist}
 Summary:        API and commands for processing SPIR-V modules
 
@@ -91,6 +91,9 @@ Development files for %{name}
 %{_libdir}/pkgconfig/SPIRV-Tools.pc
 
 %changelog
+* Mon May 10 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.2-100.20210504git1020e39
+- 2021.2-dev
+
 * Thu Apr 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.1-100.20210421gitc2d5375
 - 2021.1
 

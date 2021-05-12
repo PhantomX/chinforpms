@@ -861,13 +861,13 @@ Patch2004: %{patchwork_url}/12244751/mbox/#/patchwork-V6-2-4-blk-mq-grab-rq--ref
 Patch2005: %{patchwork_url}/12244753/mbox/#/patchwork-V6-3-4-blk-mq-clear-stale-request-in-tags--rq-before-freeing-one-request-pool.patch
 Patch2006: %{patchwork_url}/12244755/mbox/#/patchwork-V6-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
 Patch2007: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
+Patch2008: %{patchwork_url}/12245803/mbox/#/patchwork-md-don-t-account-io-stat-for-split-bio.patch
 
 Patch2090: 0001-fsync.patch
 Patch2091: 0001-futex2.patch
 Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/9520c8aba8ed3d1568154d76264f58e1d31e6b6f/linux-tkg-patches/5.12/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2093: https://github.com/Frogging-Family/linux-tkg/raw/9520c8aba8ed3d1568154d76264f58e1d31e6b6f/linux-tkg-patches/5.12/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2094: 0001-Revert-commit-536167d.patch
-Patch2095: 0001-Fix-double-fault-in-md_end_io.patch
 
 %if !0%{?post_factum}
 
