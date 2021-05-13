@@ -93,7 +93,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 2f5354a249db15a458969c04dda00bb77f3b3318
+%global pfcommit 64e1fc5fa90e34adb676155e98283738040644a0
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 496449bc7bea4086ce456e19268cfff6c8c87d3a
+%global opensuse_id 25d4ec701b8e9fb1331197fb330a9cf388cda7a3
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -850,18 +850,23 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
+Patch1019: %{opensuse_url}/io_uring-update-sq_thread_idle-after-ctx-deleted.patch#/openSUSE-io_uring-update-sq_thread_idle-after-ctx-deleted.patch
+Patch1020: %{opensuse_url}/drm-amdgpu-display-remove-redundant-continue-stateme.patch#/openSUSE-drm-amdgpu-display-remove-redundant-continue-stateme.patch
+Patch1021: %{opensuse_url}/Revert-drm-qxl-do-not-run-release-if-qxl-failed-to-i.patch#/openSUSE-Revert-drm-qxl-do-not-run-release-if-qxl-failed-to-i.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/patch/block/blk-mq-tag.c?id=39aa56db50b9ca5cad597e561b4b160b6cbbb65b#/kernel-git-39aa56d.patch
 Patch2002: %{patchwork_url}/12215169/mbox/#/patchwork-v7-1-5-blk-mq-Move-the-elevator_exit-definition.patch
-Patch2003: %{patchwork_url}/12244749/mbox/#/patchwork-V6-1-4-block-avoid-double-io-accounting-for-flush-request.patch
-Patch2004: %{patchwork_url}/12244751/mbox/#/patchwork-V6-2-4-blk-mq-grab-rq--refcount-before-calling---fn-in-blk_mq_tagset_busy_iter.patch
-Patch2005: %{patchwork_url}/12244753/mbox/#/patchwork-V6-3-4-blk-mq-clear-stale-request-in-tags--rq-before-freeing-one-request-pool.patch
-Patch2006: %{patchwork_url}/12244755/mbox/#/patchwork-V6-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
+Patch2003: %{patchwork_url}/12251377/mbox/#/patchwork-V7-1-4-block-avoid-double-io-accounting-for-flush-request.patch
+Patch2004: %{patchwork_url}/12251379/mbox/#/patchwork-V7-2-4-blk-mq-grab-rq--refcount-before-calling---fn-in-blk_mq_tagset_busy_iter.patch
+Patch2005: %{patchwork_url}/12251381/mbox/#/patchwork-V7-3-4-blk-mq-clear-stale-request-in-tags--rq-before-freeing-one-request-pool.patch
+Patch2006: %{patchwork_url}/12251383/mbox/#/patchwork-V7-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
 Patch2007: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
 Patch2008: %{patchwork_url}/12245803/mbox/#/patchwork-md-don-t-account-io-stat-for-split-bio.patch
+Patch2009: %{patchwork_url}/12253367/mbox/#/patchwork-1-2-nbd-Fix-NULL-pointer-in-flush_workqueue.patch
+Patch2010: %{patchwork_url}/12253365/mbox/#/patchwork-2-2-nbd-Fix-NULL-pointer-in-flush_workqueue.patch
 
 Patch2090: 0001-fsync.patch
 Patch2091: 0001-futex2.patch
@@ -2705,6 +2710,9 @@ fi
 #
 #
 %changelog
+* Wed May 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.3-500.chinfo
+- 5.12.3 - pf2
+
 * Fri May 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.2-500.chinfo
 - 5.12.2 - pf2
 - stabilization sync

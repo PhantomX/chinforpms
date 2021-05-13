@@ -1,6 +1,6 @@
-From 88803118f723890a1f6ac47ac972cffdc27d6ead Mon Sep 17 00:00:00 2001
+From 401e94a011a71214e424418c428b8628784f8ed7 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 1 May 2021 18:44:08 -0300
+Date: Tue, 11 May 2021 20:17:41 -0300
 Subject: [PATCH] Add chd support
 
 Using shared library, modified from https://github.com/SleepyMan/ppsspp
@@ -17,10 +17,10 @@ Performance is not good
  6 files changed, 204 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a7c2396..2af4f6a 100644
+index edbb416..13f162a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1882,6 +1882,15 @@ else()
+@@ -1955,6 +1955,15 @@ else()
  	target_link_libraries(${CoreLibName} libzstd_static)
  endif()
  
@@ -37,7 +37,7 @@ index a7c2396..2af4f6a 100644
  if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
  	add_definitions(-DUSE_DISCORD=1)
 diff --git a/Core/FileSystems/BlockDevices.cpp b/Core/FileSystems/BlockDevices.cpp
-index 5314fac..546c684 100644
+index 0cbd59b..5022290 100644
 --- a/Core/FileSystems/BlockDevices.cpp
 +++ b/Core/FileSystems/BlockDevices.cpp
 @@ -29,6 +29,10 @@
@@ -95,11 +95,11 @@ index 5314fac..546c684 100644
 +
 +  int depth = 0;
 +  std::string paths[8];
-+  paths[0] = fileLoader->Path();
++  paths[0] = fileLoader->GetPath();
 +
 +  chd_error err = chd_read_header(paths[0].c_str(), &childHeader);
 +  if (err != CHDERR_NONE) {
-+    ERROR_LOG(LOADER, "Error loading CHD header for '%s': %s", fileLoader->Path().c_str(), chd_error_string(err));
++    ERROR_LOG(LOADER, "Error loading CHD header for '%s': %s", fileLoader->GetPath().c_str(), chd_error_string(err));
 +    NotifyReadError();
 +    return;
 +  }
@@ -110,12 +110,12 @@ index 5314fac..546c684 100644
 +    // Look for parent CHD in current directory
 +    std::string chdDir;
 +#ifdef _WIN32
-+    const size_t sepIndex = fileLoader->Path().rfind("\\");
++    const size_t sepIndex = fileLoader->GetPath().rfind("\\");
 +#else
-+    const size_t sepIndex = fileLoader->Path().rfind("/");
++    const size_t sepIndex = fileLoader->GetPath().rfind("/");
 +#endif
 +    if (sepIndex != std::string::npos) {
-+      chdDir = fileLoader->Path().substr(0, sepIndex);
++      chdDir = fileLoader->GetPath().substr(0, sepIndex);
 +    } else {
 +      chdDir = ".";
 +    }
@@ -141,7 +141,7 @@ index 5314fac..546c684 100644
 +      }
 +      // Check if parentHeader was opened
 +      if (parentHeader.length == 0) {
-+        ERROR_LOG(LOADER, "Error loading CHD '%s': parents not found", fileLoader->Path().c_str());
++        ERROR_LOG(LOADER, "Error loading CHD '%s': parents not found", fileLoader->GetPath().c_str());
 +        NotifyReadError();
 +        return;
 +      }
@@ -266,7 +266,7 @@ index 3268b27..89305f6 100644
  public:
  	FileBlockDevice(FileLoader *fileLoader);
 diff --git a/Core/Loaders.cpp b/Core/Loaders.cpp
-index f61b499..4994b3e 100644
+index 6ae0509..414727e 100644
 --- a/Core/Loaders.cpp
 +++ b/Core/Loaders.cpp
 @@ -87,6 +87,10 @@ IdentifiedFileType Identify_File(FileLoader *fileLoader) {
@@ -274,25 +274,25 @@ index f61b499..4994b3e 100644
  		}
  		return IdentifiedFileType::PSP_ISO;
 +#ifdef USE_CHDR
-+	} else if (!strcasecmp(extension.c_str(), ".chd")) {
++	} else if (extension == ".chd") {
 +		return IdentifiedFileType::PSP_ISO;
 +#endif
- 	} else if (!strcasecmp(extension.c_str(), ".cso")) {
+ 	} else if (extension == ".cso") {
  		return IdentifiedFileType::PSP_ISO;
- 	} else if (!strcasecmp(extension.c_str(), ".ppst")) {
-@@ -188,6 +192,10 @@ IdentifiedFileType Identify_File(FileLoader *fileLoader) {
- 	else if (!strcasecmp(extension.c_str(),".pbp")) {
+ 	} else if (extension == ".ppst") {
+@@ -185,6 +189,10 @@ IdentifiedFileType Identify_File(FileLoader *fileLoader) {
+ 	} else if (extension == ".pbp") {
  		ERROR_LOG(LOADER, "A PBP with the wrong magic number?");
  		return IdentifiedFileType::PSP_PBP;
 +#ifdef USE_CHDR
-+	} else if (!strcasecmp(extension.c_str(),".chd")) {
++	} else if (extension ==".chd") {
 +		return IdentifiedFileType::ARCHIVE_CHD;
 +#endif
- 	} else if (!strcasecmp(extension.c_str(),".bin")) {
+ 	} else if (extension == ".bin") {
  		return IdentifiedFileType::UNKNOWN_BIN;
- 	} else if (!strcasecmp(extension.c_str(),".zip")) {
+ 	} else if (extension == ".zip") {
 diff --git a/Core/Loaders.h b/Core/Loaders.h
-index fecb941..739b35c 100644
+index 959ec62..f405a10 100644
 --- a/Core/Loaders.h
 +++ b/Core/Loaders.h
 @@ -41,6 +41,9 @@ enum class IdentifiedFileType {

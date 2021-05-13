@@ -1,6 +1,6 @@
-From 388cb3856a6c2c41cec8a495d53f930c737f84eb Mon Sep 17 00:00:00 2001
+From 5cc995c71dc909a933018ecc9183d2bc021ba39c Mon Sep 17 00:00:00 2001
 From: Fedora Kernel Team <kernel-team@fedoraproject.org>
-Date: Mon, 26 Apr 2021 09:51:32 -0300
+Date: Wed, 12 May 2021 13:32:16 -0300
 Subject: [PATCH] futex2
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -271,7 +271,7 @@ index 7003bd5..9bf03c7 100644
  .. only::  subproject and html
  
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 210c5c1..4cbfbf5 100644
+index fefb8b6..b7a2162 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
 @@ -7377,7 +7377,7 @@ F:	Documentation/locking/*futex*
@@ -545,10 +545,10 @@ index e942f19..b24acc1 100644
  	bool
  	depends on FUTEX && RT_MUTEXES
 diff --git a/kernel/Makefile b/kernel/Makefile
-index e363257..aaf6d68 100644
+index 605ec3e..caf7fca 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
-@@ -58,6 +58,7 @@ obj-$(CONFIG_PROFILING) += profile.o
+@@ -57,6 +57,7 @@ obj-$(CONFIG_PROFILING) += profile.o
  obj-$(CONFIG_STACKTRACE) += stacktrace.o
  obj-y += time/
  obj-$(CONFIG_FUTEX) += futex.o

@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit b3cab3c4507dc1b28e2f15b2e0c9f473f6e1959f
+%global commit a2f34ea82b5a31a7e842d0099921b85b8bce403f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210403
+%global date 20210511
 %global with_snapshot 1
 
 # Enable system boost
@@ -11,8 +11,10 @@
 %bcond_with ffmpeg
 # Disable Qt build
 %bcond_without qt
+# Enable advanced simd, ssse3+
+%bcond_with  adv_simd
 
-%global commit1 15cf3caaceb21172ea42a24e595a2eb58c3ec960
+%global commit1 de6fe184a9ac1a06895cdd1c9b437f0a0bdf14ad
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 Catch
 
@@ -20,7 +22,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 f9d84871fb6dd41c47945d649dc9017aa3762125
+%global commit3 358cf6f0357baae3e3bb5788431acf1068f897b5
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
@@ -66,7 +68,7 @@
 
 Name:           citra
 Version:        0
-Release:        16%{?gver}%{?dist}
+Release:        17%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -95,8 +97,9 @@ Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Disable-telemetry-initial-dialog.patch
-Patch2:         0001-fix-build-with-gcc11.patch
 Patch10:        %{vc_url}/%{name}/pull/5711.patch#/%{name}-gh-pr5711.patch
+Patch11:        %{vc_url}/%{name}/pull/5782.patch#/%{name}-gh-pr5782.patch
+Patch12:        %{vc_url}/%{name}/pull/5785.patch#/%{name}-gh-pr5785.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -113,6 +116,7 @@ BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(libavcodec)
 %endif
 BuildRequires:  pkgconfig(libenet)
+BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.9.0
 BuildRequires:  pkgconfig(sdl2)
@@ -193,6 +197,13 @@ sed \
 sed -e '/^#include <exception>/a#include <system_error>' \
   -i externals/teakra/src/interpreter.h
 
+%if !%{with adv_simd}
+  sed \
+    -e '/check_cxx_compiler_flag/s|CRYPTOPP_HAS_MSSSE3|\0_DISABLED|g' \
+    -e '/check_cxx_compiler_flag/s|CRYPTOPP_HAS_MSSE4.|\0_DISABLED|g' \
+    -i externals/cryptopp/CMakeLists.txt
+%endif
+
 %if 0%{?with_snapshot}
   sed \
     -e 's|@GIT_REV@|%{commit}|g' \
@@ -227,6 +238,9 @@ export TRAVIS_TAG="%{version}-%{release}"
 %endif
 %if %{with ffmpeg}
   -DENABLE_FFMPEG:BOOL=ON \
+%endif
+%if !%{with adv_simd}
+  -DCRYPTOPP_DISABLE_SSSE3:BOOL=ON \
 %endif
   -DENABLE_WEB_SERVICE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
@@ -263,6 +277,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed May 12 2021 Phantom X <megaphantomx at hotmail dot com> - 0-17.20210511gita2f34ea
+- Update
+- BR: libusb-1.0
+
 * Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 0-16.20210403gitb3cab3c
 - Bump
 

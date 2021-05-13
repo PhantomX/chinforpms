@@ -28,27 +28,29 @@ Subject: [PATCH] patch-5.12-redhat
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
  drivers/net/ethernet/sfc/ef10.c                    |   3 +-
- drivers/net/ethernet/sfc/farch.c                   |  16 +--
  drivers/pci/controller/dwc/Makefile                |   2 +-
  drivers/pci/controller/dwc/pcie-tegra194.c         | 103 +++++++++++++++++
  drivers/pci/quirks.c                               |  24 ++++
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +++
  drivers/usb/core/hub.c                             |   7 ++
- drivers/virt/nitro_enclaves/ne_misc_dev.c          |  43 +++----
+ fs/io_uring.c                                      |   4 +-
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
  include/linux/pci-ecam.h                           |   1 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
+ kernel/bpf/ringbuf.c                               |  24 ++--
+ kernel/bpf/verifier.c                              |  22 ++--
  kernel/crash_core.c                                |  28 ++++-
  kernel/module_signing.c                            |   9 +-
+ net/nfc/llcp_sock.c                                |   4 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  sound/pci/hda/patch_realtek.c                      |  18 +++
- 44 files changed, 652 insertions(+), 213 deletions(-)
+ 46 files changed, 653 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -73,7 +75,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 5077411a1874..482c880bebb1 100644
+index 53a4b1cb7bb0..fb79b5a0f827 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -320,10 +322,10 @@ index 6efe7edd7b1e..603f912b7743 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index ea5bf5f4cbed..71c55cae27ac 100644
+index fec2e9754aed..bea4e2973259 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
-@@ -666,6 +666,24 @@ int ahci_stop_engine(struct ata_port *ap)
+@@ -671,6 +671,24 @@ int ahci_stop_engine(struct ata_port *ap)
  	tmp &= ~PORT_CMD_START;
  	writel(tmp, port_mmio + PORT_CMD);
 
@@ -1007,50 +1009,6 @@ index da6886dcac37..4fa72b573c17 100644
 
  	if (!tx_queue->timestamping) {
  		/* Transmit completion */
-diff --git a/drivers/net/ethernet/sfc/farch.c b/drivers/net/ethernet/sfc/farch.c
-index d75cf5ff5686..49df02ecee91 100644
---- a/drivers/net/ethernet/sfc/farch.c
-+++ b/drivers/net/ethernet/sfc/farch.c
-@@ -835,14 +835,14 @@ efx_farch_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
- 		/* Transmit completion */
- 		tx_ev_desc_ptr = EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_DESC_PTR);
- 		tx_ev_q_label = EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_Q_LABEL);
--		tx_queue = efx_channel_get_tx_queue(
--			channel, tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
-+		tx_queue = channel->tx_queue +
-+				(tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
- 		efx_xmit_done(tx_queue, tx_ev_desc_ptr);
- 	} else if (EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_WQ_FF_FULL)) {
- 		/* Rewrite the FIFO write pointer */
- 		tx_ev_q_label = EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_Q_LABEL);
--		tx_queue = efx_channel_get_tx_queue(
--			channel, tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
-+		tx_queue = channel->tx_queue +
-+				(tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
-
- 		netif_tx_lock(efx->net_dev);
- 		efx_farch_notify_tx_desc(tx_queue);
-@@ -1081,16 +1081,16 @@ static void
- efx_farch_handle_tx_flush_done(struct efx_nic *efx, efx_qword_t *event)
- {
- 	struct efx_tx_queue *tx_queue;
-+	struct efx_channel *channel;
- 	int qid;
-
- 	qid = EFX_QWORD_FIELD(*event, FSF_AZ_DRIVER_EV_SUBDATA);
- 	if (qid < EFX_MAX_TXQ_PER_CHANNEL * (efx->n_tx_channels + efx->n_extra_tx_channels)) {
--		tx_queue = efx_get_tx_queue(efx, qid / EFX_MAX_TXQ_PER_CHANNEL,
--					    qid % EFX_MAX_TXQ_PER_CHANNEL);
--		if (atomic_cmpxchg(&tx_queue->flush_outstanding, 1, 0)) {
-+		channel = efx_get_tx_channel(efx, qid / EFX_MAX_TXQ_PER_CHANNEL);
-+		tx_queue = channel->tx_queue + (qid % EFX_MAX_TXQ_PER_CHANNEL);
-+		if (atomic_cmpxchg(&tx_queue->flush_outstanding, 1, 0))
- 			efx_farch_magic_event(tx_queue->channel,
- 					      EFX_CHANNEL_MAGIC_TX_DRAIN(tx_queue));
--		}
- 	}
- }
-
 diff --git a/drivers/pci/controller/dwc/Makefile b/drivers/pci/controller/dwc/Makefile
 index a751553fa0db..dbb981876556 100644
 --- a/drivers/pci/controller/dwc/Makefile
@@ -1230,10 +1188,10 @@ index 653660e3ba9e..98851d00dc4d 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index a1dacb6e993e..2d751d13a3eb 100644
+index c30f6047410f..3d4c311bf87c 100644
 --- a/drivers/scsi/smartpqi/smartpqi_init.c
 +++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -8312,6 +8312,18 @@ static const struct pci_device_id pqi_pci_id_table[] = {
+@@ -8337,6 +8337,18 @@ static const struct pci_device_id pqi_pci_id_table[] = {
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       0x19e5, 0xd22c)
  	},
@@ -1252,7 +1210,7 @@ index a1dacb6e993e..2d751d13a3eb 100644
  	{
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_ADAPTEC2, 0x0110)
-@@ -8452,6 +8464,10 @@ static const struct pci_device_id pqi_pci_id_table[] = {
+@@ -8593,6 +8605,10 @@ static const struct pci_device_id pqi_pci_id_table[] = {
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_ADVANTECH, 0x8312)
  	},
@@ -1264,7 +1222,7 @@ index a1dacb6e993e..2d751d13a3eb 100644
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_DELL, 0x1fe0)
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 7f71218cc1e5..283fc0f41cd2 100644
+index 404507d1b76f..51ee8f28a60b 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
 @@ -5532,6 +5532,13 @@ static void hub_event(struct work_struct *work)
@@ -1281,86 +1239,28 @@ index 7f71218cc1e5..283fc0f41cd2 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/drivers/virt/nitro_enclaves/ne_misc_dev.c b/drivers/virt/nitro_enclaves/ne_misc_dev.c
-index f1964ea4b826..e21e1e86ad15 100644
---- a/drivers/virt/nitro_enclaves/ne_misc_dev.c
-+++ b/drivers/virt/nitro_enclaves/ne_misc_dev.c
-@@ -1524,7 +1524,8 @@ static const struct file_operations ne_enclave_fops = {
-  *			  enclave file descriptor to be further used for enclave
-  *			  resources handling e.g. memory regions and CPUs.
-  * @ne_pci_dev :	Private data associated with the PCI device.
-- * @slot_uid:		Generated unique slot id associated with an enclave.
-+ * @slot_uid:		User pointer to store the generated unique slot id
-+ *			associated with an enclave to.
-  *
-  * Context: Process context. This function is called with the ne_pci_dev enclave
-  *	    mutex held.
-@@ -1532,7 +1533,7 @@ static const struct file_operations ne_enclave_fops = {
-  * * Enclave fd on success.
-  * * Negative return value on failure.
-  */
--static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 *slot_uid)
-+static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 __user *slot_uid)
- {
- 	struct ne_pci_dev_cmd_reply cmd_reply = {};
- 	int enclave_fd = -1;
-@@ -1634,7 +1635,18 @@ static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 *slot_uid)
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 0b5fbbd969cb..2bdd7eab6c66 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -238,7 +238,7 @@ struct fixed_rsrc_data {
+ struct io_buffer {
+ 	struct list_head list;
+ 	__u64 addr;
+-	__s32 len;
++	__u32 len;
+ 	__u16 bid;
+ };
 
- 	list_add(&ne_enclave->enclave_list_entry, &ne_pci_dev->enclaves_list);
+@@ -4017,7 +4017,7 @@ static int io_add_buffers(struct io_provide_buf *pbuf, struct io_buffer **head)
+ 			break;
 
--	*slot_uid = ne_enclave->slot_uid;
-+	if (copy_to_user(slot_uid, &ne_enclave->slot_uid, sizeof(ne_enclave->slot_uid))) {
-+		/*
-+		 * As we're holding the only reference to 'enclave_file', fput()
-+		 * will call ne_enclave_release() which will do a proper cleanup
-+		 * of all so far allocated resources, leaving only the unused fd
-+		 * for us to free.
-+		 */
-+		fput(enclave_file);
-+		put_unused_fd(enclave_fd);
-+
-+		return -EFAULT;
-+	}
-
- 	fd_install(enclave_fd, enclave_file);
-
-@@ -1671,34 +1683,13 @@ static long ne_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
- 	switch (cmd) {
- 	case NE_CREATE_VM: {
- 		int enclave_fd = -1;
--		struct file *enclave_file = NULL;
- 		struct ne_pci_dev *ne_pci_dev = ne_devs.ne_pci_dev;
--		int rc = -EINVAL;
--		u64 slot_uid = 0;
-+		u64 __user *slot_uid = (void __user *)arg;
-
- 		mutex_lock(&ne_pci_dev->enclaves_list_mutex);
--
--		enclave_fd = ne_create_vm_ioctl(ne_pci_dev, &slot_uid);
--		if (enclave_fd < 0) {
--			rc = enclave_fd;
--
--			mutex_unlock(&ne_pci_dev->enclaves_list_mutex);
--
--			return rc;
--		}
--
-+		enclave_fd = ne_create_vm_ioctl(ne_pci_dev, slot_uid);
- 		mutex_unlock(&ne_pci_dev->enclaves_list_mutex);
-
--		if (copy_to_user((void __user *)arg, &slot_uid, sizeof(slot_uid))) {
--			enclave_file = fget(enclave_fd);
--			/* Decrement file refs to have release() called. */
--			fput(enclave_file);
--			fput(enclave_file);
--			put_unused_fd(enclave_fd);
--
--			return -EFAULT;
--		}
--
- 		return enclave_fd;
- 	}
-
+ 		buf->addr = addr;
+-		buf->len = pbuf->len;
++		buf->len = min_t(__u32, pbuf->len, MAX_RW_COUNT);
+ 		buf->bid = bid;
+ 		addr += pbuf->len;
+ 		bid++;
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 6b5d36babfcc..fd4a5d66a9d0 100644
 --- a/include/linux/efi.h
@@ -1506,6 +1406,111 @@ index 8aeebd6646dc..7737a5d71168 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
+diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
+index f25b719ac786..84b3b35fc0d0 100644
+--- a/kernel/bpf/ringbuf.c
++++ b/kernel/bpf/ringbuf.c
+@@ -221,25 +221,20 @@ static int ringbuf_map_get_next_key(struct bpf_map *map, void *key,
+ 	return -ENOTSUPP;
+ }
+
+-static size_t bpf_ringbuf_mmap_page_cnt(const struct bpf_ringbuf *rb)
+-{
+-	size_t data_pages = (rb->mask + 1) >> PAGE_SHIFT;
+-
+-	/* consumer page + producer page + 2 x data pages */
+-	return RINGBUF_POS_PAGES + 2 * data_pages;
+-}
+-
+ static int ringbuf_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
+ {
+ 	struct bpf_ringbuf_map *rb_map;
+-	size_t mmap_sz;
+
+ 	rb_map = container_of(map, struct bpf_ringbuf_map, map);
+-	mmap_sz = bpf_ringbuf_mmap_page_cnt(rb_map->rb) << PAGE_SHIFT;
+-
+-	if (vma->vm_pgoff * PAGE_SIZE + (vma->vm_end - vma->vm_start) > mmap_sz)
+-		return -EINVAL;
+
++	if (vma->vm_flags & VM_WRITE) {
++		/* allow writable mapping for the consumer_pos only */
++		if (vma->vm_pgoff != 0 || vma->vm_end - vma->vm_start != PAGE_SIZE)
++			return -EPERM;
++	} else {
++		vma->vm_flags &= ~VM_MAYWRITE;
++	}
++	/* remap_vmalloc_range() checks size and offset constraints */
+ 	return remap_vmalloc_range(vma, rb_map->rb,
+ 				   vma->vm_pgoff + RINGBUF_PGOFF);
+ }
+@@ -315,6 +310,9 @@ static void *__bpf_ringbuf_reserve(struct bpf_ringbuf *rb, u64 size)
+ 		return NULL;
+
+ 	len = round_up(size + BPF_RINGBUF_HDR_SZ, 8);
++	if (len > rb->mask + 1)
++		return NULL;
++
+ 	cons_pos = smp_load_acquire(&rb->consumer_pos);
+
+ 	if (in_nmi()) {
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index a2ed7a7e27e2..4353da444c78 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -6540,11 +6540,10 @@ static void scalar32_min_max_and(struct bpf_reg_state *dst_reg,
+ 	s32 smin_val = src_reg->s32_min_value;
+ 	u32 umax_val = src_reg->u32_max_value;
+
+-	/* Assuming scalar64_min_max_and will be called so its safe
+-	 * to skip updating register for known 32-bit case.
+-	 */
+-	if (src_known && dst_known)
++	if (src_known && dst_known) {
++		__mark_reg32_known(dst_reg, var32_off.value);
+ 		return;
++	}
+
+ 	/* We get our minimum from the var_off, since that's inherently
+ 	 * bitwise.  Our maximum is the minimum of the operands' maxima.
+@@ -6564,7 +6563,6 @@ static void scalar32_min_max_and(struct bpf_reg_state *dst_reg,
+ 		dst_reg->s32_min_value = dst_reg->u32_min_value;
+ 		dst_reg->s32_max_value = dst_reg->u32_max_value;
+ 	}
+-
+ }
+
+ static void scalar_min_max_and(struct bpf_reg_state *dst_reg,
+@@ -6611,11 +6609,10 @@ static void scalar32_min_max_or(struct bpf_reg_state *dst_reg,
+ 	s32 smin_val = src_reg->s32_min_value;
+ 	u32 umin_val = src_reg->u32_min_value;
+
+-	/* Assuming scalar64_min_max_or will be called so it is safe
+-	 * to skip updating register for known case.
+-	 */
+-	if (src_known && dst_known)
++	if (src_known && dst_known) {
++		__mark_reg32_known(dst_reg, var32_off.value);
+ 		return;
++	}
+
+ 	/* We get our maximum from the var_off, and our minimum is the
+ 	 * maximum of the operands' minima
+@@ -6680,11 +6677,10 @@ static void scalar32_min_max_xor(struct bpf_reg_state *dst_reg,
+ 	struct tnum var32_off = tnum_subreg(dst_reg->var_off);
+ 	s32 smin_val = src_reg->s32_min_value;
+
+-	/* Assuming scalar64_min_max_xor will be called so it is safe
+-	 * to skip updating register for known case.
+-	 */
+-	if (src_known && dst_known)
++	if (src_known && dst_known) {
++		__mark_reg32_known(dst_reg, var32_off.value);
+ 		return;
++	}
+
+ 	/* We get both minimum and maximum from the var32_off. */
+ 	dst_reg->u32_min_value = var32_off.value;
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
 index 825284baaf46..0b2b3f510b16 100644
 --- a/kernel/crash_core.c
@@ -1592,6 +1597,41 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
+diff --git a/net/nfc/llcp_sock.c b/net/nfc/llcp_sock.c
+index a3b46f888803..53dbe733f998 100644
+--- a/net/nfc/llcp_sock.c
++++ b/net/nfc/llcp_sock.c
+@@ -109,12 +109,14 @@ static int llcp_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
+ 					  GFP_KERNEL);
+ 	if (!llcp_sock->service_name) {
+ 		nfc_llcp_local_put(llcp_sock->local);
++		llcp_sock->local = NULL;
+ 		ret = -ENOMEM;
+ 		goto put_dev;
+ 	}
+ 	llcp_sock->ssap = nfc_llcp_get_sdp_ssap(local, llcp_sock);
+ 	if (llcp_sock->ssap == LLCP_SAP_MAX) {
+ 		nfc_llcp_local_put(llcp_sock->local);
++		llcp_sock->local = NULL;
+ 		kfree(llcp_sock->service_name);
+ 		llcp_sock->service_name = NULL;
+ 		ret = -EADDRINUSE;
+@@ -709,6 +711,7 @@ static int llcp_sock_connect(struct socket *sock, struct sockaddr *_addr,
+ 	llcp_sock->ssap = nfc_llcp_get_local_ssap(local);
+ 	if (llcp_sock->ssap == LLCP_SAP_MAX) {
+ 		nfc_llcp_local_put(llcp_sock->local);
++		llcp_sock->local = NULL;
+ 		ret = -ENOMEM;
+ 		goto put_dev;
+ 	}
+@@ -756,6 +759,7 @@ static int llcp_sock_connect(struct socket *sock, struct sockaddr *_addr,
+ sock_llcp_release:
+ 	nfc_llcp_put_ssap(local, llcp_sock->ssap);
+ 	nfc_llcp_local_put(llcp_sock->local);
++	llcp_sock->local = NULL;
+
+ put_dev:
+ 	nfc_put_device(dev);
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
 index ee4b4c666854..eff9ff593405 100644
 --- a/security/integrity/platform_certs/load_uefi.c
@@ -1670,10 +1710,10 @@ index 5ac96b16f8fa..fc47d6de57ee 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index a7544b77d3f7..7569fd8c9cff 100644
+index d05d16ddbdf2..3dd6362000a1 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -5667,6 +5667,18 @@ static void alc_fixup_tpt470_dacs(struct hda_codec *codec,
+@@ -5688,6 +5688,18 @@ static void alc_fixup_tpt470_dacs(struct hda_codec *codec,
  		spec->gen.preferred_dacs = preferred_pairs;
  }
 
@@ -1692,7 +1732,7 @@ index a7544b77d3f7..7569fd8c9cff 100644
  static void alc_shutup_dell_xps13(struct hda_codec *codec)
  {
  	struct alc_spec *spec = codec->spec;
-@@ -6427,6 +6439,7 @@ enum {
+@@ -6451,6 +6463,7 @@ enum {
  	ALC282_FIXUP_ACER_DISABLE_LINEOUT,
  	ALC255_FIXUP_ACER_LIMIT_INT_MIC_BOOST,
  	ALC256_FIXUP_ACER_HEADSET_MIC,
@@ -1700,7 +1740,7 @@ index a7544b77d3f7..7569fd8c9cff 100644
  };
 
  static const struct hda_fixup alc269_fixups[] = {
-@@ -7901,6 +7914,10 @@ static const struct hda_fixup alc269_fixups[] = {
+@@ -7939,6 +7952,10 @@ static const struct hda_fixup alc269_fixups[] = {
  		.chained = true,
  		.chain_id = ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC
  	},
@@ -1711,7 +1751,7 @@ index a7544b77d3f7..7569fd8c9cff 100644
  };
 
  static const struct snd_pci_quirk alc269_fixup_tbl[] = {
-@@ -8096,6 +8113,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -8137,6 +8154,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
  	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
  	SND_PCI_QUIRK(0x1043, 0x16e3, "ASUS UX50", ALC269_FIXUP_STEREO_DMIC),
