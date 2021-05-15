@@ -64,8 +64,10 @@ sed \
   -i C/Util/Lzma/makefile.gcc
 
 sed \
-  -e 's| -Werror | |g' \
-  -e 's|-O2 |%{build_cxxflags} |g' \
+  -e 's|-O2 ||g' \
+  -e 's|-Wall -Werror -Wextra ||g' \
+  -e 's|CFLAGS =|CFLAGS +=|' \
+  -e 's|CXXFLAGS =|CXXFLAGS +=|' \
   -i C/7zip_gcc_c.mak
 
 cat > lzmasdk-c.pc <<'EOF'

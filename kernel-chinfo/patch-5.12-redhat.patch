@@ -27,29 +27,23 @@ Subject: [PATCH] patch-5.12-redhat
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
- drivers/net/ethernet/sfc/ef10.c                    |   3 +-
  drivers/pci/controller/dwc/Makefile                |   2 +-
  drivers/pci/controller/dwc/pcie-tegra194.c         | 103 +++++++++++++++++
  drivers/pci/quirks.c                               |  24 ++++
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +++
  drivers/usb/core/hub.c                             |   7 ++
- fs/io_uring.c                                      |   4 +-
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
  include/linux/pci-ecam.h                           |   1 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- kernel/bpf/ringbuf.c                               |  24 ++--
- kernel/bpf/verifier.c                              |  22 ++--
  kernel/crash_core.c                                |  28 ++++-
  kernel/module_signing.c                            |   9 +-
- net/nfc/llcp_sock.c                                |   4 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- sound/pci/hda/patch_realtek.c                      |  18 +++
  46 files changed, 653 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
@@ -995,20 +989,6 @@ index d0b0a15dba84..005984e8ef5e 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index da6886dcac37..4fa72b573c17 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -2928,8 +2928,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
-
- 	/* Get the transmit queue */
- 	tx_ev_q_label = EFX_QWORD_FIELD(*event, ESF_DZ_TX_QLABEL);
--	tx_queue = efx_channel_get_tx_queue(channel,
--					    tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
-+	tx_queue = channel->tx_queue + (tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
-
- 	if (!tx_queue->timestamping) {
- 		/* Transmit completion */
 diff --git a/drivers/pci/controller/dwc/Makefile b/drivers/pci/controller/dwc/Makefile
 index a751553fa0db..dbb981876556 100644
 --- a/drivers/pci/controller/dwc/Makefile
@@ -1239,28 +1219,6 @@ index 404507d1b76f..51ee8f28a60b 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 0b5fbbd969cb..2bdd7eab6c66 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -238,7 +238,7 @@ struct fixed_rsrc_data {
- struct io_buffer {
- 	struct list_head list;
- 	__u64 addr;
--	__s32 len;
-+	__u32 len;
- 	__u16 bid;
- };
-
-@@ -4017,7 +4017,7 @@ static int io_add_buffers(struct io_provide_buf *pbuf, struct io_buffer **head)
- 			break;
-
- 		buf->addr = addr;
--		buf->len = pbuf->len;
-+		buf->len = min_t(__u32, pbuf->len, MAX_RW_COUNT);
- 		buf->bid = bid;
- 		addr += pbuf->len;
- 		bid++;
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 6b5d36babfcc..fd4a5d66a9d0 100644
 --- a/include/linux/efi.h
@@ -1406,111 +1364,6 @@ index 8aeebd6646dc..7737a5d71168 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
-diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-index f25b719ac786..84b3b35fc0d0 100644
---- a/kernel/bpf/ringbuf.c
-+++ b/kernel/bpf/ringbuf.c
-@@ -221,25 +221,20 @@ static int ringbuf_map_get_next_key(struct bpf_map *map, void *key,
- 	return -ENOTSUPP;
- }
-
--static size_t bpf_ringbuf_mmap_page_cnt(const struct bpf_ringbuf *rb)
--{
--	size_t data_pages = (rb->mask + 1) >> PAGE_SHIFT;
--
--	/* consumer page + producer page + 2 x data pages */
--	return RINGBUF_POS_PAGES + 2 * data_pages;
--}
--
- static int ringbuf_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
- {
- 	struct bpf_ringbuf_map *rb_map;
--	size_t mmap_sz;
-
- 	rb_map = container_of(map, struct bpf_ringbuf_map, map);
--	mmap_sz = bpf_ringbuf_mmap_page_cnt(rb_map->rb) << PAGE_SHIFT;
--
--	if (vma->vm_pgoff * PAGE_SIZE + (vma->vm_end - vma->vm_start) > mmap_sz)
--		return -EINVAL;
-
-+	if (vma->vm_flags & VM_WRITE) {
-+		/* allow writable mapping for the consumer_pos only */
-+		if (vma->vm_pgoff != 0 || vma->vm_end - vma->vm_start != PAGE_SIZE)
-+			return -EPERM;
-+	} else {
-+		vma->vm_flags &= ~VM_MAYWRITE;
-+	}
-+	/* remap_vmalloc_range() checks size and offset constraints */
- 	return remap_vmalloc_range(vma, rb_map->rb,
- 				   vma->vm_pgoff + RINGBUF_PGOFF);
- }
-@@ -315,6 +310,9 @@ static void *__bpf_ringbuf_reserve(struct bpf_ringbuf *rb, u64 size)
- 		return NULL;
-
- 	len = round_up(size + BPF_RINGBUF_HDR_SZ, 8);
-+	if (len > rb->mask + 1)
-+		return NULL;
-+
- 	cons_pos = smp_load_acquire(&rb->consumer_pos);
-
- 	if (in_nmi()) {
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index a2ed7a7e27e2..4353da444c78 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -6540,11 +6540,10 @@ static void scalar32_min_max_and(struct bpf_reg_state *dst_reg,
- 	s32 smin_val = src_reg->s32_min_value;
- 	u32 umax_val = src_reg->u32_max_value;
-
--	/* Assuming scalar64_min_max_and will be called so its safe
--	 * to skip updating register for known 32-bit case.
--	 */
--	if (src_known && dst_known)
-+	if (src_known && dst_known) {
-+		__mark_reg32_known(dst_reg, var32_off.value);
- 		return;
-+	}
-
- 	/* We get our minimum from the var_off, since that's inherently
- 	 * bitwise.  Our maximum is the minimum of the operands' maxima.
-@@ -6564,7 +6563,6 @@ static void scalar32_min_max_and(struct bpf_reg_state *dst_reg,
- 		dst_reg->s32_min_value = dst_reg->u32_min_value;
- 		dst_reg->s32_max_value = dst_reg->u32_max_value;
- 	}
--
- }
-
- static void scalar_min_max_and(struct bpf_reg_state *dst_reg,
-@@ -6611,11 +6609,10 @@ static void scalar32_min_max_or(struct bpf_reg_state *dst_reg,
- 	s32 smin_val = src_reg->s32_min_value;
- 	u32 umin_val = src_reg->u32_min_value;
-
--	/* Assuming scalar64_min_max_or will be called so it is safe
--	 * to skip updating register for known case.
--	 */
--	if (src_known && dst_known)
-+	if (src_known && dst_known) {
-+		__mark_reg32_known(dst_reg, var32_off.value);
- 		return;
-+	}
-
- 	/* We get our maximum from the var_off, and our minimum is the
- 	 * maximum of the operands' minima
-@@ -6680,11 +6677,10 @@ static void scalar32_min_max_xor(struct bpf_reg_state *dst_reg,
- 	struct tnum var32_off = tnum_subreg(dst_reg->var_off);
- 	s32 smin_val = src_reg->s32_min_value;
-
--	/* Assuming scalar64_min_max_xor will be called so it is safe
--	 * to skip updating register for known case.
--	 */
--	if (src_known && dst_known)
-+	if (src_known && dst_known) {
-+		__mark_reg32_known(dst_reg, var32_off.value);
- 		return;
-+	}
-
- 	/* We get both minimum and maximum from the var32_off. */
- 	dst_reg->u32_min_value = var32_off.value;
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
 index 825284baaf46..0b2b3f510b16 100644
 --- a/kernel/crash_core.c
@@ -1597,41 +1450,6 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
-diff --git a/net/nfc/llcp_sock.c b/net/nfc/llcp_sock.c
-index a3b46f888803..53dbe733f998 100644
---- a/net/nfc/llcp_sock.c
-+++ b/net/nfc/llcp_sock.c
-@@ -109,12 +109,14 @@ static int llcp_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
- 					  GFP_KERNEL);
- 	if (!llcp_sock->service_name) {
- 		nfc_llcp_local_put(llcp_sock->local);
-+		llcp_sock->local = NULL;
- 		ret = -ENOMEM;
- 		goto put_dev;
- 	}
- 	llcp_sock->ssap = nfc_llcp_get_sdp_ssap(local, llcp_sock);
- 	if (llcp_sock->ssap == LLCP_SAP_MAX) {
- 		nfc_llcp_local_put(llcp_sock->local);
-+		llcp_sock->local = NULL;
- 		kfree(llcp_sock->service_name);
- 		llcp_sock->service_name = NULL;
- 		ret = -EADDRINUSE;
-@@ -709,6 +711,7 @@ static int llcp_sock_connect(struct socket *sock, struct sockaddr *_addr,
- 	llcp_sock->ssap = nfc_llcp_get_local_ssap(local);
- 	if (llcp_sock->ssap == LLCP_SAP_MAX) {
- 		nfc_llcp_local_put(llcp_sock->local);
-+		llcp_sock->local = NULL;
- 		ret = -ENOMEM;
- 		goto put_dev;
- 	}
-@@ -756,6 +759,7 @@ static int llcp_sock_connect(struct socket *sock, struct sockaddr *_addr,
- sock_llcp_release:
- 	nfc_llcp_put_ssap(local, llcp_sock->ssap);
- 	nfc_llcp_local_put(llcp_sock->local);
-+	llcp_sock->local = NULL;
-
- put_dev:
- 	nfc_put_device(dev);
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
 index ee4b4c666854..eff9ff593405 100644
 --- a/security/integrity/platform_certs/load_uefi.c
@@ -1757,5 +1575,5 @@ index d05d16ddbdf2..3dd6362000a1 100644
  	SND_PCI_QUIRK(0x1043, 0x16e3, "ASUS UX50", ALC269_FIXUP_STEREO_DMIC),
 +	SND_PCI_QUIRK(0x1043, 0x1740, "ASUS UX430UA", ALC295_FIXUP_ASUS_DACS),
  	SND_PCI_QUIRK(0x1043, 0x17d1, "ASUS UX431FL", ALC294_FIXUP_ASUS_DUAL_SPK),
+ 	SND_PCI_QUIRK(0x1043, 0x1881, "ASUS Zephyrus S/M", ALC294_FIXUP_ASUS_GX502_PINS),
  	SND_PCI_QUIRK(0x1043, 0x18b1, "Asus MJ401TA", ALC256_FIXUP_ASUS_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x18f1, "Asus FX505DT", ALC256_FIXUP_ASUS_HEADSET_MIC),

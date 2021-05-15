@@ -131,6 +131,7 @@ gtk3-nocsd
 htop
 image-analyzer
 ipager
+ipsbehead
 jdupes
 joy2key
 keepassxc

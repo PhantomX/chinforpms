@@ -93,7 +93,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 64e1fc5fa90e34adb676155e98283738040644a0
+%global pfcommit d1cfb10dea96bf301a202188a401ceedb1cc45ad
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -852,7 +852,6 @@ Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/io_uring-update-sq_thread_idle-after-ctx-deleted.patch#/openSUSE-io_uring-update-sq_thread_idle-after-ctx-deleted.patch
 Patch1020: %{opensuse_url}/drm-amdgpu-display-remove-redundant-continue-stateme.patch#/openSUSE-drm-amdgpu-display-remove-redundant-continue-stateme.patch
-Patch1021: %{opensuse_url}/Revert-drm-qxl-do-not-run-release-if-qxl-failed-to-i.patch#/openSUSE-Revert-drm-qxl-do-not-run-release-if-qxl-failed-to-i.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -867,6 +866,7 @@ Patch2007: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block
 Patch2008: %{patchwork_url}/12245803/mbox/#/patchwork-md-don-t-account-io-stat-for-split-bio.patch
 Patch2009: %{patchwork_url}/12253367/mbox/#/patchwork-1-2-nbd-Fix-NULL-pointer-in-flush_workqueue.patch
 Patch2010: %{patchwork_url}/12253365/mbox/#/patchwork-2-2-nbd-Fix-NULL-pointer-in-flush_workqueue.patch
+Patch2011: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
 Patch2090: 0001-fsync.patch
 Patch2091: 0001-futex2.patch
@@ -2710,6 +2710,9 @@ fi
 #
 #
 %changelog
+* Fri May 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.4-500.chinfo
+- 5.12.4 - pf2
+
 * Wed May 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.3-500.chinfo
 - 5.12.3 - pf2
 
