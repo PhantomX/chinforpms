@@ -1,8 +1,7 @@
-%global commit dc55edfe5d2f
-%global date 20190403
+%global commit 9f2d88a343cc9fc43257147093b50a2aeed9af5a
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20210515
 %global with_snapshot 1
-
-%global sdl2_version %(pkg-config --silence-errors --modversion sdl2 2>/dev/null || echo 2.0.10)
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{commit}
@@ -11,50 +10,56 @@
 Name:           sdl12-compat
 Version:        1.2.50
 Release:        1%{?gver}%{?dist}
-Summary:        Compatibility layer that provides SDL 1.2 API backed by SDL2
+Summary:        SDL 1.2 runtime compatibility library using SDL 2.0
 
 License:        zlib and MIT
-URL:            http://www.libsdl.org
+URL:            https://github.com/libsdl-org/%{name}
 
-Source0:        https://hg.libsdl.org/sdl12-compat/archive/%{commit}.tar.bz2#/%{name}-%{commit}.tar.bz2
-
-Patch0:         0001-Disable-test_program-build.patch
+%if 0%{?with_snapshot}
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+%endif
 
 
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  pkgconfig(sdl2)
-Requires:       SDL2%{_isa} >= %{sdl2_version}
 
 
 %description
-%{summary}.
+Simple DirectMedia Layer (SDL) is a cross-platform multimedia library
+designed to provide fast access to the graphics frame buffer and audio device.
+
+This code is a compatibility layer; it provides a binary-compatible API for
+programs written against SDL 1.2, but it uses SDL 2.0 behind the scenes.
+
+If you are writing new code, please target SDL 2.0 directly and do not use
+this layer.
 
 
 %prep
+%if 0%{?with_snapshot}
 %autosetup -n %{name}-%{commit} -p1
-
-sed \
-  -e 's|/usr/local/include/SDL2|%(pkg-config --variable=includedir sdl2)/SDL2|g' \
-  -e 's|/usr/X11/include|%{_includedir}/X11|g' \
-  -i CMakeLists.txt
+%else
+%autosetup -n %{name}-%{version} -p1
+%endif
 
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-%cmake .. \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-%{nil}
-
-%make_build
-popd
+%cmake
+%cmake_build
 
 
 %install
+%cmake_install
+
+rm -fv %{buildroot}%{_libdir}/*.so
+
 mkdir -p %{buildroot}%{_libdir}/%{name}
-chmod +x %{_target_platform}/*.so.*
-cp -a %{_target_platform}/*.so.* %{buildroot}%{_libdir}/%{name}/
+mv %{buildroot}%{_libdir}/*.so.* %{buildroot}%{_libdir}/%{name}/
 
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
 echo "%{_libdir}/%{name}" \
@@ -62,8 +67,8 @@ echo "%{_libdir}/%{name}" \
 
 
 %files
-%license COPYING
-%doc BUGS README README-SDL.txt
+%license LICENSE.txt
+%doc BUGS.txt README.md
 %{_libdir}/%{name}/*.so.*
 %config(noreplace) %{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 

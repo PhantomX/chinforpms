@@ -1,6 +1,6 @@
-%global commit e725eddf1345fb4f73225e1e7ccf065deb4a1028
+%global commit bac74b43d7bc083be05dc2214e221292e71df31a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210512
+%global date 20210517
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        109%{?gver}%{?dist}
+Release:        110%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -82,8 +82,6 @@ Patch1:         %{name}-nodiscord.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
-# Experimental, have poor performance
-Patch5:         0001-Add-chd-support.patch
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -366,6 +364,10 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue May 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-110.20210517gitbac74b4
+- Last snapshot
+- Remove CHD patch
+
 * Wed May 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-109.20210512gite725edd
 - Update
 

@@ -1,21 +1,21 @@
-From 4242802a8e75316883c1610598e46654170e0bea Mon Sep 17 00:00:00 2001
+From dbaa31e27389511ed74f44bfbd5796d46d9603c2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 7 May 2021 19:04:29 -0300
+Date: Tue, 18 May 2021 20:33:30 -0300
 Subject: [PATCH] Use system libs
 
 ---
- CMakeLists.txt                | 68 ++++++++++++++++++++++++++++++++---
+ CMakeLists.txt                | 66 ++++++++++++++++++++++++++++++++---
  core/archive/7zArchive.cpp    |  7 ++++
- core/archive/7zArchive.h      |  6 ++++
+ core/archive/7zArchive.h      |  5 +++
  core/archive/archive.cpp      |  4 +++
  core/deps/chdr/chd.c          |  5 +++
  core/imgread/chd.cpp          |  4 +++
  core/rend/vulkan/compiler.cpp |  4 +++
  core/rend/vulkan/shaders.h    |  4 +++
- 8 files changed, 97 insertions(+), 5 deletions(-)
+ 8 files changed, 95 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 591f134..33443b9 100644
+index 0c28555..5c027df 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -16,6 +16,9 @@ option(USE_GLES2 "Use GLES2 API" OFF)
@@ -28,7 +28,7 @@ index 591f134..33443b9 100644
  
  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
  
-@@ -105,19 +108,40 @@ else()
+@@ -99,19 +102,40 @@ else()
      target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_NO_OPENMP)
  endif()
  
@@ -69,7 +69,7 @@ index 591f134..33443b9 100644
  
  find_package(ALSA QUIET)
  if(ALSA_FOUND AND NOT ANDROID)
-@@ -186,7 +210,6 @@ else()
+@@ -180,7 +204,6 @@ else()
      get_target_property(ZLIB_LIBRARY zlibstatic LOCATION)
  endif()
  
@@ -77,7 +77,7 @@ index 591f134..33443b9 100644
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
      pkg_check_modules(AO IMPORTED_TARGET ao)
      if(AO_FOUND)
-@@ -194,9 +217,11 @@ if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
+@@ -188,9 +211,11 @@ if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
          target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::AO)
      endif()
  
@@ -89,7 +89,7 @@ index 591f134..33443b9 100644
      endif()
  
  	if(NOT SDL2_FOUND)
-@@ -292,6 +317,14 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -286,6 +311,14 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdpsr/cdipsr.h)
  
  target_compile_definitions(${PROJECT_NAME} PRIVATE CHD5_FLAC CHD5_LZMA)
@@ -104,28 +104,20 @@ index 591f134..33443b9 100644
  target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdr/bitstream.c
          core/deps/chdr/bitstream.h
-@@ -304,7 +337,11 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -298,9 +331,11 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/chdr/flac.h
          core/deps/chdr/huffman.c
          core/deps/chdr/huffman.h)
 +endif()
-+
-+target_include_directories(${PROJECT_NAME} PRIVATE core/deps/nowide/include)
  
-+if(NOT USE_HOST_CHDR)
- target_sources(${PROJECT_NAME} PRIVATE
-         core/deps/crypto/md5.cpp
-         core/deps/crypto/md5.h
-@@ -313,8 +350,6 @@ target_sources(${PROJECT_NAME} PRIVATE
-         core/deps/crypto/sha256.cpp
-         core/deps/crypto/sha256.h)
- 
--target_include_directories(${PROJECT_NAME} PRIVATE core/deps/nowide/include)
+ target_include_directories(${PROJECT_NAME} PRIVATE core/deps/nowide/include)
 -
++ 
++if(NOT USE_HOST_CHDR)
  if(NOT FLAC_FOUND)
      target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_CONFIG_H $<$<BOOL:MINGW>:HAVE_FSEEKO>)
      target_include_directories(${PROJECT_NAME} PRIVATE core/deps/flac/include core/deps/flac/src/libFLAC/include)
-@@ -341,6 +376,7 @@ if(NOT FLAC_FOUND)
+@@ -327,6 +362,7 @@ if(NOT FLAC_FOUND)
              core/deps/flac/src/libFLAC/window.c
              core/deps/flac/src/libFLAC/windows_unicode_filenames.c)
  endif()
@@ -133,7 +125,7 @@ index 591f134..33443b9 100644
  
  if(NOT MINIUPNP_FOUND)
  	option(UPNPC_BUILD_SHARED "Build shared library" OFF)
-@@ -438,15 +474,37 @@ if(NOT MSVC)
+@@ -424,15 +460,37 @@ if(NOT MSVC)
              core/deps/picotcp/stack/pico_tree.c)
  endif()
  
@@ -195,7 +187,7 @@ index 0bc167f..656360f 100644
  #define kInputBufSize ((size_t)1 << 18)
  
 diff --git a/core/archive/7zArchive.h b/core/archive/7zArchive.h
-index 797f1bb..0ede73c 100644
+index 797f1bb..ef79635 100644
 --- a/core/archive/7zArchive.h
 +++ b/core/archive/7zArchive.h
 @@ -21,8 +21,13 @@
