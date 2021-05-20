@@ -93,18 +93,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d1cfb10dea96bf301a202188a401ceedb1cc45ad
+%global pfcommit 774f18a62c6e6b235468d7545c5475b8881a01d0
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 25d4ec701b8e9fb1331197fb330a9cf388cda7a3
+%global opensuse_id 37a93378a004c3d454bd963e87de1ad3f775ff89
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -850,8 +850,15 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/io_uring-update-sq_thread_idle-after-ctx-deleted.patch#/openSUSE-io_uring-update-sq_thread_idle-after-ctx-deleted.patch
-Patch1020: %{opensuse_url}/drm-amdgpu-display-remove-redundant-continue-stateme.patch#/openSUSE-drm-amdgpu-display-remove-redundant-continue-stateme.patch
+Patch1019: %{opensuse_url}/ACPI-PM-s2idle-Add-missing-LPS0-functions-for-AMD.patch#/openSUSE-ACPI-PM-s2idle-Add-missing-LPS0-functions-for-AMD.patch
+Patch1020: %{opensuse_url}/ACPI-idle-override-c-state-latency-when-not-in-confo.patch#/openSUSE-ACPI-idle-override-c-state-latency-when-not-in-confo.patch
+Patch1021: %{opensuse_url}/io_uring-update-sq_thread_idle-after-ctx-deleted.patch#/openSUSE-io_uring-update-sq_thread_idle-after-ctx-deleted.patch
+Patch1022: %{opensuse_url}/drm-amdgpu-display-remove-redundant-continue-stateme.patch#/openSUSE-drm-amdgpu-display-remove-redundant-continue-stateme.patch
+Patch1023: %{opensuse_url}/serial-stm32-fix-threaded-interrupt-handling.patch#/openSUSE-serial-stm32-fix-threaded-interrupt-handling.patch
+Patch1024: %{opensuse_url}/proc-Avoid-mixing-integer-types-in-mem_rw.patch#/openSUSE-proc-Avoid-mixing-integer-types-in-mem_rw.patch
+Patch1025: %{opensuse_url}/ipc-mqueue-msg-sem-Avoid-relying-on-a-stack-reference.patch#/openSUSE-ipc-mqueue-msg-sem-Avoid-relying-on-a-stack-reference.patch
+Patch1026: %{opensuse_url}/x86-events-amd-iommu-Fix-invalid-Perf-result-due-to-.patch#/openSUSE-x86-events-amd-iommu-Fix-invalid-Perf-result-due-to-.patch
+Patch1027: %{opensuse_url}/ipv6-remove-extra-dev_hold-for-fallback-tunnels.patch#/openSUSE-ipv6-remove-extra-dev_hold-for-fallback-tunnels.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -864,9 +871,7 @@ Patch2005: %{patchwork_url}/12251381/mbox/#/patchwork-V7-3-4-blk-mq-clear-stale-
 Patch2006: %{patchwork_url}/12251383/mbox/#/patchwork-V7-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
 Patch2007: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
 Patch2008: %{patchwork_url}/12245803/mbox/#/patchwork-md-don-t-account-io-stat-for-split-bio.patch
-Patch2009: %{patchwork_url}/12253367/mbox/#/patchwork-1-2-nbd-Fix-NULL-pointer-in-flush_workqueue.patch
-Patch2010: %{patchwork_url}/12253365/mbox/#/patchwork-2-2-nbd-Fix-NULL-pointer-in-flush_workqueue.patch
-Patch2011: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
+Patch2009: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
 Patch2090: 0001-fsync.patch
 Patch2091: 0001-futex2.patch
@@ -2710,6 +2715,9 @@ fi
 #
 #
 %changelog
+* Wed May 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.5-500.chinfo
+- 5.12.5 - pf3
+
 * Fri May 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.4-500.chinfo
 - 5.12.4 - pf2
 
