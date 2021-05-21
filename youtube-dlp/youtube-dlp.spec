@@ -2,7 +2,7 @@
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2021.04.22
+Version:        2021.05.20
 Release:        1%{?dist}
 Summary:        A command-line program to download videos
 
@@ -26,7 +26,6 @@ BuildRequires:  pandoc
 # Tests failed because of no connection in Koji.
 # BuildRequires:  python-nose
 
-Requires:       %{py3_dist pycryptodomex}
 Recommends:     AtomicParsley
 Suggests:       aria2c
 
@@ -87,6 +86,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Fri May 21 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.05.20-1
+- 2021.05.20
+
 * Fri Apr 23 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.04.22-1
 - 2021.04.22
 

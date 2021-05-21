@@ -1,12 +1,12 @@
-From 9ef286ab2222df5896c4fc489534d016b46be645 Mon Sep 17 00:00:00 2001
+From bbe2823562651a3dbc6ba1f9e0fda1f9984e1225 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 18 Feb 2021 07:50:16 -0300
+Date: Thu, 20 May 2021 21:30:43 -0300
 Subject: [PATCH] Use pycryptodomex instead pycryptodome
 
 Fedora only have pycryptodomex
 ---
- requirements.txt                   | 2 +-
- setup.py                           | 2 +-
+ requirements.txt              | 2 +-
+ setup.py                      | 2 +-
  yt_dlp/downloader/external.py | 2 +-
  yt_dlp/downloader/hls.py      | 2 +-
  4 files changed, 4 insertions(+), 4 deletions(-)
@@ -20,20 +20,20 @@ index 97a6859..a191375 100644
 -pycryptodome
 +pycryptodomex
 diff --git a/setup.py b/setup.py
-index 09e2c84..6daaf1a 100644
+index cebe556..fc69406 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -20,7 +20,7 @@ LONG_DESCRIPTION = '\n\n'.join((
      '**PS**: Many links in this document will not work since this is a copy of the README.md from Github',
-     open("README.md", "r", encoding="utf-8").read()))
+     open('README.md', 'r', encoding='utf-8').read()))
  
 -REQUIREMENTS = ['mutagen', 'pycryptodome']
 +REQUIREMENTS = ['mutagen', 'pycryptodomex']
  
  
  if len(sys.argv) >= 2 and sys.argv[1] == 'py2exe':
-diff --git a/youtube_dlc/downloader/external.py b/youtube_dlc/downloader/external.py
-index ff82d67..4f58301 100644
+diff --git a/yt_dlp/downloader/external.py b/yt_dlp/downloader/external.py
+index 89f3ef2..0fc3122 100644
 --- a/yt_dlp/downloader/external.py
 +++ b/yt_dlp/downloader/external.py
 @@ -7,7 +7,7 @@ import sys
@@ -45,12 +45,12 @@ index ff82d67..4f58301 100644
      can_decrypt_frag = True
  except ImportError:
      can_decrypt_frag = False
-diff --git a/youtube_dlc/downloader/hls.py b/youtube_dlc/downloader/hls.py
-index 0d42747..c005ff9 100644
+diff --git a/yt_dlp/downloader/hls.py b/yt_dlp/downloader/hls.py
+index c66902c..0aeeb9c 100644
 --- a/yt_dlp/downloader/hls.py
 +++ b/yt_dlp/downloader/hls.py
-@@ -3,7 +3,7 @@ from __future__ import unicode_literals
- import re
+@@ -5,7 +5,7 @@ import re
+ import io
  import binascii
  try:
 -    from Crypto.Cipher import AES
@@ -59,5 +59,5 @@ index 0d42747..c005ff9 100644
  except ImportError:
      can_decrypt_frag = False
 -- 
-2.29.2
+2.31.1
 

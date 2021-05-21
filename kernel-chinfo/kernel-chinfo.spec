@@ -79,7 +79,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 774f18a62c6e6b235468d7545c5475b8881a01d0
+%global pfcommit d72941d44366d59da0b9a18a226910f18d3f4689
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -2715,6 +2715,9 @@ fi
 #
 #
 %changelog
+* Thu May 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.5-501.chinfo
+- pf sync, BFQ crash fix
+
 * Wed May 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.5-500.chinfo
 - 5.12.5 - pf3
 
