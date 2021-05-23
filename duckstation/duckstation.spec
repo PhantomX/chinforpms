@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit fd7f88f42577351dc38ec6bc6e097a23eb4c6397
+%global commit 4436cd5b58d2b1c9010bfa0956e2a0990d7f5140
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210518
+%global date 20210521
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        21%{?gver}%{?dist}
+Release:        22%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -55,7 +55,6 @@ BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libchdr)
-BuildRequires:  pkgconfig(libcue)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(samplerate)
@@ -120,7 +119,7 @@ This package provides the data files for duckstation.
 ###Remove Bundled:
 pushd dep
 rm -rf \
-  cubeb discord-rpc libcue libchdr libFLAC libsamplerate lzma minizip msvc \
+  cubeb discord-rpc libchdr libFLAC libsamplerate lzma minizip msvc \
   rapidjson rcheevos tinyxml2 vulkan-loader/include/vulkan xxhash zlib
 
 %if 0%{?with_sysvulkan}
@@ -226,6 +225,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun May 23 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-22.20210521git4436cd5
+- Bump
+- Remove libcue BR
+
 * Tue May 18 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-21.20210518gitfd7f88f
 - Update
 

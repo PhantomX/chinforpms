@@ -79,7 +79,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -93,7 +93,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d72941d44366d59da0b9a18a226910f18d3f4689
+%global pfcommit 943c11abab528e46097ba0effe71126dec62d9df
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 37a93378a004c3d454bd963e87de1ad3f775ff89
+%global opensuse_id fe252718e755b6eb4042ca4a414d10343186d08e
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -858,7 +858,6 @@ Patch1023: %{opensuse_url}/serial-stm32-fix-threaded-interrupt-handling.patch#/o
 Patch1024: %{opensuse_url}/proc-Avoid-mixing-integer-types-in-mem_rw.patch#/openSUSE-proc-Avoid-mixing-integer-types-in-mem_rw.patch
 Patch1025: %{opensuse_url}/ipc-mqueue-msg-sem-Avoid-relying-on-a-stack-reference.patch#/openSUSE-ipc-mqueue-msg-sem-Avoid-relying-on-a-stack-reference.patch
 Patch1026: %{opensuse_url}/x86-events-amd-iommu-Fix-invalid-Perf-result-due-to-.patch#/openSUSE-x86-events-amd-iommu-Fix-invalid-Perf-result-due-to-.patch
-Patch1027: %{opensuse_url}/ipv6-remove-extra-dev_hold-for-fallback-tunnels.patch#/openSUSE-ipv6-remove-extra-dev_hold-for-fallback-tunnels.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2715,6 +2714,9 @@ fi
 #
 #
 %changelog
+* Sat May 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.6-500.chinfo
+- 5.12.6 - pf3
+
 * Thu May 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.5-501.chinfo
 - pf sync, BFQ crash fix
 

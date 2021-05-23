@@ -1,15 +1,11 @@
-%global commit 3a1ae0db00572279bea634616079d9d960c167c3
+%global commit d29d43e5d65de8f5543e9ddcf6df98b900ef9b94
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210518
+%global date 2021022
 %global with_snapshot 1
 
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-# Enable system libchdr (disables 7z archive loading when lzmasdk is disabled)
-%global with_libchdr 1
-# Enable system lzma-sdk
-%global with_lzmasdk 1
 # Enable system spirv (broken)
 %global with_spirv 0
 # Build with x11 instead SDL
@@ -21,7 +17,7 @@
 
 Name:           flycast
 Version:        7
-Release:        54%{?gver}%{?dist}
+Release:        55%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -45,11 +41,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  libappstream-glib
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(alsa)
-%if 0%{?with_libchdr}
 BuildRequires:  pkgconfig(libchdr)
-%else
-BuildRequires:  pkgconfig(flac)
-%endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  cmake(glm)
 %if 0%{?with_spirv}
@@ -60,9 +52,7 @@ BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(miniupnpc)
-%if 0%{?with_lzmasdk}
 BuildRequires:  pkgconfig(lzmasdk-c)
-%endif
 %if 0%{?with_x11}
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(x11)
@@ -86,14 +76,8 @@ Requires:       vulkan-loader%{?_isa}
 %autosetup %{name}-r%{version} -p1
 %endif
 
-rm -rf core/deps/{flac,glm,libzip,SDL2-*,xxHash,zlib}
+rm -rf core/deps/{glm,libzip,lzma,SDL2-*,xxHash,zlib}
 
-%if 0%{?with_libchdr}
-rm -rf core/deps/{chdr,crypto}
-%endif
-%if 0%{?with_lzmasdk}
-rm -rf core/deps/lzma
-%endif
 %if 0%{?with_spirv}
 rm -rf core/deps/glslang
 %endif
@@ -141,12 +125,8 @@ export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
 %if 0%{?with_x11}
   -DSDL2_FOUND:BOOL=OFF \
 %endif
-%if 0%{?with_libchdr}
   -DUSE_HOST_CHDR:BOOL=ON \
-%endif
-%if 0%{?with_lzmasdk}
   -DUSE_HOST_LZMA:BOOL=ON \
-%endif
 %if 0%{?with_spirv}
   -DUSE_HOST_SPIRV:BOOL=ON \
 %endif \
@@ -204,6 +184,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Sun May 23 2021 Phantom X <megaphantomx at hotmail dot com> - 7-55.2021022gitd29d43e
+- Update
+- Make system libchdr and lzmasdk mandatory
+
 * Tue May 18 2021 Phantom X <megaphantomx at hotmail dot com> - 7-54.20210518git3a1ae0d
 - Bump
 

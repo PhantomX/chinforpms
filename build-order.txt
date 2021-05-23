@@ -2,7 +2,7 @@
 chinforpms-rpm-config
 
 # 1
-buildsys-build-rpmfusion
+buildsys-build-chinforpms
 c-vtapi
 chinforpms-fake-packages
 compat-bison-36
@@ -215,6 +215,8 @@ waterfox-noscript
 wiibafu
 wiimms-iso-tools
 -wimlib
+winesync
+winesync-kmod
 wxmp3gain
 wxmp3val
 ueberzug

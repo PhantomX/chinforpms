@@ -1,0 +1,2 @@
+# Load winesync.ko at boot
+winesync

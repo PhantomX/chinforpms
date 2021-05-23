@@ -8,9 +8,11 @@
 %global orig_name vhba-module
 %global debug_package %{nil}
 
+%define repo chinforpms
+
 Name:           vhba-kmod
 Version:        20210418
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPLv2
@@ -21,9 +23,9 @@ Source1:        vhba-kmod-excludekernel-filter.txt
 # get the needed BuildRequires (in parts depending on what we build for)
 BuildRequires:  %{_bindir}/kmodtool
 BuildRequires:  %{_bindir}/make
-%{!?kernels:BuildRequires: buildsys-build-rpmfusion-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
+%{!?kernels:BuildRequires: buildsys-build-%{repo}-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
 # kmodtool does its magic here
-%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null) }
+%{expand:%(kmodtool --target %{_target_cpu} --repo %{repo} --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null) }
 
 %description
 An implementation of a Virtual SCSI Host Bus Adapter (VHBA), which acts
@@ -38,7 +40,7 @@ This package provides kernel module for kernel %{kversion}.
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
 # print kmodtool output for debugging purposes:
-kmodtool  --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} 2>/dev/null
+kmodtool  --target %{_target_cpu}  --repo %{repo} --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} 2>/dev/null
 
 %setup -q -c -T -a 0
 
@@ -59,6 +61,9 @@ done
 
 
 %changelog
+* Sat May 22 2021 Phantom X <megaphantomx at hotmail dot com> - 20210418-2
+- Use chinforpms as repo
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 20210418-1
 - 20210418
 

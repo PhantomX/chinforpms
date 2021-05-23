@@ -1,21 +1,19 @@
-From dbaa31e27389511ed74f44bfbd5796d46d9603c2 Mon Sep 17 00:00:00 2001
+From ed4ee270accf7f027aa2cbc9ce6aa2cf66b255fe Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 18 May 2021 20:33:30 -0300
+Date: Sat, 22 May 2021 23:47:52 -0300
 Subject: [PATCH] Use system libs
 
 ---
- CMakeLists.txt                | 66 ++++++++++++++++++++++++++++++++---
- core/archive/7zArchive.cpp    |  7 ++++
+ CMakeLists.txt                | 59 +++++++++++++++++++++++++++++++++--
+ core/archive/7zArchive.cpp    |  7 +++++
  core/archive/7zArchive.h      |  5 +++
  core/archive/archive.cpp      |  4 +++
- core/deps/chdr/chd.c          |  5 +++
- core/imgread/chd.cpp          |  4 +++
  core/rend/vulkan/compiler.cpp |  4 +++
  core/rend/vulkan/shaders.h    |  4 +++
- 8 files changed, 95 insertions(+), 4 deletions(-)
+ 6 files changed, 80 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0c28555..5c027df 100644
+index deefc96..6f17093 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -16,6 +16,9 @@ option(USE_GLES2 "Use GLES2 API" OFF)
@@ -32,7 +30,7 @@ index 0c28555..5c027df 100644
      target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_NO_OPENMP)
  endif()
  
-+find_package(PkgConfig QUIET)
++find_package(PkgConfig)
 +
 +pkg_search_module(XXHASH libxxhash)
 +if(XXHASH_FOUND)
@@ -67,33 +65,12 @@ index 0c28555..5c027df 100644
  endif()
 +endif()
  
- find_package(ALSA QUIET)
+ find_package(ALSA)
  if(ALSA_FOUND AND NOT ANDROID)
-@@ -180,7 +204,6 @@ else()
-     get_target_property(ZLIB_LIBRARY zlibstatic LOCATION)
+@@ -170,9 +194,17 @@ if(TARGET ZLIB::ZLIB AND NOT ANDROID AND NOT WIN32)
+     set(WITH_SYSTEM_ZLIB ON CACHE BOOL "Use system provided zlib library")
+     target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
  endif()
- 
--find_package(PkgConfig QUIET)
- if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
-     pkg_check_modules(AO IMPORTED_TARGET ao)
-     if(AO_FOUND)
-@@ -188,9 +211,11 @@ if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
-         target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::AO)
-     endif()
- 
-+    if(NOT USE_HOST_CHDR)
-     pkg_check_modules(FLAC IMPORTED_TARGET flac)
-     if(FLAC_FOUND)
-         target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::FLAC)
-+    endif()
-     endif()
- 
- 	if(NOT SDL2_FOUND)
-@@ -286,6 +311,14 @@ target_sources(${PROJECT_NAME} PRIVATE
-         core/deps/chdpsr/cdipsr.h)
- 
- target_compile_definitions(${PROJECT_NAME} PRIVATE CHD5_FLAC CHD5_LZMA)
-+
 +if(USE_HOST_CHDR)
 +    pkg_search_module(CHDR REQUIRED libchdr)
 +    message(STATUS "Using host libchdr")
@@ -101,31 +78,22 @@ index 0c28555..5c027df 100644
 +    target_include_directories(${PROJECT_NAME} PRIVATE ${CHDR_INCLUDE_DIRS})
 +    target_link_libraries(${PROJECT_NAME} PRIVATE ${CHDR_LIBRARIES})
 +else()
- target_sources(${PROJECT_NAME} PRIVATE
-         core/deps/chdr/bitstream.c
-         core/deps/chdr/bitstream.h
-@@ -298,9 +331,11 @@ target_sources(${PROJECT_NAME} PRIVATE
-         core/deps/chdr/flac.h
-         core/deps/chdr/huffman.c
-         core/deps/chdr/huffman.h)
+ add_subdirectory(core/deps/libchdr)
+ target_link_libraries(${PROJECT_NAME} PRIVATE chdr-static)
+ target_include_directories(${PROJECT_NAME} PRIVATE core/deps/libchdr/include)
 +endif()
  
- target_include_directories(${PROJECT_NAME} PRIVATE core/deps/nowide/include)
--
-+ 
-+if(NOT USE_HOST_CHDR)
- if(NOT FLAC_FOUND)
-     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_CONFIG_H $<$<BOOL:MINGW>:HAVE_FSEEKO>)
-     target_include_directories(${PROJECT_NAME} PRIVATE core/deps/flac/include core/deps/flac/src/libFLAC/include)
-@@ -327,6 +362,7 @@ if(NOT FLAC_FOUND)
-             core/deps/flac/src/libFLAC/window.c
-             core/deps/flac/src/libFLAC/windows_unicode_filenames.c)
+ if(NOT WITH_SYSTEM_ZLIB)
+     target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
+@@ -184,7 +216,6 @@ if(NOT WITH_SYSTEM_ZLIB)
+     get_target_property(ZLIB_LIBRARY zlib LOCATION)
  endif()
-+endif()
  
- if(NOT MINIUPNP_FOUND)
- 	option(UPNPC_BUILD_SHARED "Build shared library" OFF)
-@@ -424,15 +460,37 @@ if(NOT MSVC)
+-find_package(PkgConfig)
+ if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
+     pkg_check_modules(AO IMPORTED_TARGET ao)
+     if(AO_FOUND)
+@@ -382,15 +413,37 @@ if(NOT MSVC)
              core/deps/picotcp/stack/pico_tree.c)
  endif()
  
@@ -230,39 +198,6 @@ index 904839a..615011d 100644
  
  	Archive *zip_archive = new ZipArchive();
  	if (zip_archive->Open(base_path.c_str()) || zip_archive->Open((base_path + ".zip").c_str()) || zip_archive->Open((base_path + ".ZIP").c_str()))
-diff --git a/core/deps/chdr/chd.c b/core/deps/chdr/chd.c
-index e25621b..e5b9942 100644
---- a/core/deps/chdr/chd.c
-+++ b/core/deps/chdr/chd.c
-@@ -49,8 +49,13 @@
- #endif // CHD5_FLAC
- #include "huffman.h"
- #if defined(CHD5_LZMA)
-+#ifdef USE_HOST_LZMA
-+	#include <LzmaEnc.h>
-+	#include <LzmaDec.h>
-+#else
- 	#include "deps/lzma/LzmaEnc.h"
- 	#include "deps/lzma/LzmaDec.h"
-+#endif
- #endif // CHD5_LZMA
- #include "deps/crypto/md5.h"
- #include "deps/crypto/sha1.h"
-diff --git a/core/imgread/chd.cpp b/core/imgread/chd.cpp
-index e15d752..28fc8f2 100644
---- a/core/imgread/chd.cpp
-+++ b/core/imgread/chd.cpp
-@@ -1,6 +1,10 @@
- #include "common.h"
- 
-+#ifdef USE_HOST_CHDR
-+#include <chd.h>
-+#else
- #include "deps/chdr/chd.h"
-+#endif
- 
- /* tracks are padded to a multiple of this many frames */
- const uint32_t CD_TRACK_PADDING = 4;
 diff --git a/core/rend/vulkan/compiler.cpp b/core/rend/vulkan/compiler.cpp
 index ea644b4..8bac74e 100644
 --- a/core/rend/vulkan/compiler.cpp
