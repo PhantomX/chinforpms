@@ -50,7 +50,7 @@ ar p vulkan-amdgpu-pro_%{ver}_%{parch}.deb data.tar.xz | tar xJ -C %{_target_pla
 rm -f *.deb
 
 mv %{_target_platform}/usr/share/doc/vulkan-amdgpu-pro/copyright .
-cp -p %{S:1} README-chinforpms
+cp -p %{S:1} README.chinforpms
 
 sed \
   -e 's|/opt/amdgpu-pro/lib/.*-linux-gnu/amdvlk|%{_libdir}/amdvlkpro|g' \
@@ -77,7 +77,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/amd
 
 %files
 %license copyright
-%doc README-chinforpms
+%doc README.chinforpms
 %dir %{_sysconfdir}/amd
 %{_datadir}/vulkan/icd.d/amdpro_icd.%{icd_arch}.json
 %{_libdir}/amdvlkpro*.so

@@ -186,6 +186,7 @@ radeon-profile
 radeon-profile-daemon
 rclone
 retext
+sdl12-compat
 sdl2-controllermap
 sdl_gamecontrollerdb
 sdl-jstest

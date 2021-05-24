@@ -1,15 +1,15 @@
-%global commit 9f2d88a343cc9fc43257147093b50a2aeed9af5a
+%global commit ebcbb11caf34f5ee99377a8da4c98f9770c694b8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210515
+%global date 20210519
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
-%global gver .%{date}git%{commit}
+%global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           sdl12-compat
 Version:        1.2.50
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        SDL 1.2 runtime compatibility library using SDL 2.0
 
 License:        zlib and MIT
@@ -74,5 +74,8 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Sun May 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.50-2.20210519gitebcbb11
+- Bump
+
 * Tue Oct 29 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.2.50-1.20190403gitdc55edfe5d2f
 - Initial spec

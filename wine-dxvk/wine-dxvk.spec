@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit b84a03b4d4dc4907dde30d71e6823f45dad038f7
+%global commit 94674ac45e8a4618c00519e04b254de76aad35a2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210507
+%global date 20210521
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -38,7 +38,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.8.1
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -143,8 +143,8 @@ cp %{S:4} README.async.md
 
 cp %{S:1} README.%{pkgname}
 
-cp %{S:2} .
-cp %{S:3} README-chinforpms
+cp -p %{S:2} .
+cp -p %{S:3} README.chinforpms
 
 sed -e '/command:/s|git|false|g' -i meson.build
 
@@ -240,7 +240,7 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 %files
 %license LICENSE
-%doc README-chinforpms README.md README.dxvk dxvk.conf
+%doc README.chinforpms README.md README.dxvk dxvk.conf
 %if 0%{?dxvk_async}
 %doc README.async.md
 %endif
@@ -252,6 +252,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun May 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8.1-108.20210521git94674ac
+- Update
+
 * Sun May 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8.1-107.20210507gitb84a03b
 - Bump
 
