@@ -1,6 +1,6 @@
-From 1df273be494bc9f7447db5d41542e2af8a7cb70c Mon Sep 17 00:00:00 2001
+From 5c032cbcf7a64e337d393f189de2837f363a88b6 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 22 May 2021 22:51:45 -0300
+Date: Mon, 24 May 2021 22:24:48 -0300
 Subject: [PATCH] Use system libraries
 
 FindCUBEB.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
@@ -8,7 +8,7 @@ https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
 ---
  CMakeModules/FindCUBEB.cmake          |  15 +++
- dep/CMakeLists.txt                    |  58 ++++++++++++
+ dep/CMakeLists.txt                    |  59 ++++++++++++
  dep/discord-rpc/CMakeLists.txt        |   7 +-
  dep/minizip/CMakeLists.txt            |   8 +-
  dep/vulkan-loader/CMakeLists.txt      |   8 ++
@@ -19,7 +19,7 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
  src/core/texture_replacements.cpp     |   2 +
  src/duckstation-qt/CMakeLists.txt     |  10 +-
  src/frontend-common/CMakeLists.txt    |  10 +-
- 12 files changed, 300 insertions(+), 9 deletions(-)
+ 12 files changed, 301 insertions(+), 9 deletions(-)
  create mode 100644 CMakeModules/FindCUBEB.cmake
 
 diff --git a/CMakeModules/FindCUBEB.cmake b/CMakeModules/FindCUBEB.cmake
@@ -44,10 +44,10 @@ index 0000000..c0a730c
 +  )
 +endif()
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 7da47d5..b0b5fd4 100644
+index 95493b8..bd89176 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,22 +1,80 @@
+@@ -1,23 +1,80 @@
  add_subdirectory(glad)
  add_subdirectory(stb)
 +
@@ -99,24 +99,8 @@ index 7da47d5..b0b5fd4 100644
 +
 +pkg_search_module(vulkan-loader vulkan)
  add_subdirectory(vulkan-loader)
- add_subdirectory(googletest)
-+
-+find_package(CUBEB)
-+if(CUBEB_FOUND)
-+  message(STATUS "Using the system cubeb")
-+else()
- add_subdirectory(cubeb)
-+endif()
-+
  add_subdirectory(imgui)
  add_subdirectory(simpleini)
-+
-+find_package(tinyxml2)
-+if(tinyxml2_FOUND)
-+  message(STATUS "Using the system tinyxml2")
-+else()
- add_subdirectory(tinyxml2)
-+endif()
  
 +pkg_search_module(samplerate samplerate)
 +if(samplerate_FOUND)
@@ -126,8 +110,24 @@ index 7da47d5..b0b5fd4 100644
  add_subdirectory(libsamplerate)
 +endif()
  
- if(ENABLE_DISCORD_PRESENCE)
-   add_subdirectory(discord-rpc)
+ if(NOT BUILD_LIBRETRO_CORE)
++  find_package(tinyxml2)
++  if(tinyxml2_FOUND)
++    message(STATUS "Using the system tinyxml2")
++  else()
+   add_subdirectory(tinyxml2)
++  endif()
++
++  find_package(CUBEB)
++  if(CUBEB_FOUND)
++    message(STATUS "Using the system cubeb")
++  else()
+   add_subdirectory(cubeb)
++  endif()
++
+   add_subdirectory(googletest)
+ endif()
+ 
 diff --git a/dep/discord-rpc/CMakeLists.txt b/dep/discord-rpc/CMakeLists.txt
 index b7a2511..6b5f9ed 100644
 --- a/dep/discord-rpc/CMakeLists.txt

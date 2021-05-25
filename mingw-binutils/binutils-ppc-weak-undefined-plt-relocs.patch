@@ -1,0 +1,36 @@
+Only in binutils-2.36.1/bfd: ChangeLog.orig
+Only in binutils-2.36.1/bfd: ChangeLog.rej
+diff -rup binutils.orig/bfd/elf32-ppc.c binutils-2.36.1/bfd/elf32-ppc.c
+--- binutils.orig/bfd/elf32-ppc.c	2021-05-18 11:38:27.644364623 +0100
++++ binutils-2.36.1/bfd/elf32-ppc.c	2021-05-18 11:44:19.809184838 +0100
+@@ -5289,7 +5289,12 @@ allocate_dynrelocs (struct elf_link_hash
+       for (ent = h->plt.plist; ent != NULL; ent = ent->next)
+ 	if (ent->plt.refcount > 0)
+ 	  {
+-	    asection *s = htab->elf.splt;
++	    asection *s;
++
++	    if (!ensure_undef_dynamic (info, h))
++	      return FALSE;
++
++	    s = htab->elf.splt;
+ 
+ 	    if (!dyn)
+ 	      {
+Only in binutils-2.36.1/bfd: elf32-ppc.c.orig
+Only in binutils-2.36.1/bfd: elf32-ppc.c.rej
+diff -rup binutils.orig/bfd/elf64-ppc.c binutils-2.36.1/bfd/elf64-ppc.c
+--- binutils.orig/bfd/elf64-ppc.c	2021-05-18 11:38:27.646364616 +0100
++++ binutils-2.36.1/bfd/elf64-ppc.c	2021-05-18 11:41:01.635847814 +0100
+@@ -9819,6 +9819,9 @@ allocate_dynrelocs (struct elf_link_hash
+       for (pent = h->plt.plist; pent != NULL; pent = pent->next)
+ 	if (pent->plt.refcount > 0)
+ 	  {
++	    if (!ensure_undef_dynamic (info, h))
++	      return FALSE;
++
+ 	    if (!htab->elf.dynamic_sections_created
+ 		|| h->dynindx == -1)
+ 	      {
+Only in binutils-2.36.1/bfd: elf64-ppc.c.orig
+Only in binutils-2.36.1/bfd: elf64-ppc.c.rej

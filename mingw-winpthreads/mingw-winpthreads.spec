@@ -11,8 +11,8 @@
 %global enable_tests 0
 
 Name:           mingw-winpthreads
-Version:        8.0.0
-Release:        103%{?dist}
+Version:        9.0.0
+Release:        100%{?dist}
 Summary:        MinGW pthread library
 
 # The main license of winpthreads is MIT, but parts of this library
@@ -208,6 +208,9 @@ find $RPM_BUILD_ROOT -name "*.la" -delete
 
 
 %changelog
+* Mon May 24 2021 Phantom X <megaphantomx at hotmail dot com> - 9.0.0-100
+- 9.0.0
+
 * Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-103
 - Rebuild
 

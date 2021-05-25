@@ -2,7 +2,7 @@
 
 Name:           mingw-binutils
 Version:        2.36.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Cross-compiled version of binutils for Win32 and Win64 environments
 
 License:        GPLv2+ and LGPLv2+ and GPLv3+ and LGPLv3+
@@ -117,6 +117,27 @@ Patch16: binutils-2.36-branch-updates.patch
 # Purpose:  Fix testsuite failures due to the patches applied here.
 # Lifetime: Permanent, but varying with each new rebase.
 Patch17: binutils-testsuite-fixes.patch
+
+# Purpose:  Fix merging empty ppc64le notes.
+# Lifetime: Fixed in 2.37
+Patch18: binutils-ppc64le-note-merge.patch
+
+# Purpose:  Add support for Z instruction set extensions to the s390x
+#            architecture.
+# Lifetime: Fixed in 2.37
+Patch19: binutils-s390-arch14-insns.patch
+
+# Purpose:  Avoid renaming over existing files.
+# Lifetime: Fixed in 2.37
+Patch20: binutils-CVE-2021-20197.patch
+
+# Purpose:  Avoid stack exhaustion whilst demangling rust names
+# Lifetime: Fixed in 2.37
+Patch21: binutils-CVE-2021-3530.patch
+
+# Purpose:  Generate PLT relocs for weak undefined PowerPC function symbols.
+# Lifetime: Fixed in 2.37
+Patch22: binutils-ppc-weak-undefined-plt-relocs.patch
 
 ### MINGW specific patches
 
@@ -384,6 +405,9 @@ rm -rf %{buildroot}/multilib
 
 
 %changelog
+* Mon May 24 2021 Phantom X <megaphantomx at hotmail dot com> - 2.36.1-101
+- Backport patches from native binutils package
+
 * Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 2.36.1-100
 - 2.36.1
 - Rawhide sync

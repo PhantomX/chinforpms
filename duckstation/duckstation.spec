@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit 4436cd5b58d2b1c9010bfa0956e2a0990d7f5140
+%global commit 350bae7e944b10b5e183f4a015cfd3db1f7aa817
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210521
+%global date 20210524
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        22%{?gver}%{?dist}
+Release:        23%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -225,6 +225,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Tue May 25 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-23.20210524git350bae7
+- Rebump
+
 * Sun May 23 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-22.20210521git4436cd5
 - Bump
 - Remove libcue BR

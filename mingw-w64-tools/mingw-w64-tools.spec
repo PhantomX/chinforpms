@@ -4,8 +4,8 @@
 #%%global branch trunk
 
 Name:           mingw-w64-tools
-Version:        8.0.0
-Release:        102%{?dist}
+Version:        9.0.0
+Release:        100%{?dist}
 Summary:        Supplementary tools which are part of the mingw-w64 toolchain
 
 # http://sourceforge.net/mailarchive/forum.php?thread_name=5157C0FC.1010309%40users.sourceforge.net&forum_name=mingw-w64-public
@@ -25,8 +25,6 @@ Source0:        http://downloads.sourceforge.net/mingw-w64/mingw-w64-v%{version}
 %endif
 # just to make widl to build on s390
 Patch0:         mingw-w64-tools-s390.patch
-# aarch64 does not seem to know about __builtin_ms_va_list
-Patch1:         mingw-w64-tools-aarch64.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -100,6 +98,9 @@ popd
 
 
 %changelog
+* Mon May 24 2021 Phantom X <megaphantomx at hotmail dot com> - 9.0.0-100
+- 9.0.0
+
 * Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-102
 - Another rebuild
 

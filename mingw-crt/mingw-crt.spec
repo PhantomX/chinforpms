@@ -8,8 +8,8 @@
 #%%global pre rc2
 
 Name:           mingw-crt
-Version:        8.0.0
-Release:        103%{?dist}
+Version:        9.0.0
+Release:        100%{?dist}
 Summary:        MinGW Windows cross-compiler runtime
 
 License:        Public Domain and ZPLv2.1
@@ -24,6 +24,9 @@ Source0:        http://sourceforge.net/code-snapshots/git/m/mi/mingw-w64/mingw-w
 %else
 Source0:        http://downloads.sourceforge.net/mingw-w64/mingw-w64-v%{version}%{?pre:-%{pre}}.tar.bz2
 %endif
+
+# Fix build failure with gcc11
+Patch0:         mingw-crt_gcc11.patch 
 
 BuildArch:      noarch
 
@@ -106,6 +109,9 @@ rm -rf %{buildroot}%{mingw64_includedir}/*.c
 
 
 %changelog
+* Mon May 24 2021 Phantom X <megaphantomx at hotmail dot com> - 9.0.0-100
+- 9.0.0
+
 * Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-103
 - Rebuild
 

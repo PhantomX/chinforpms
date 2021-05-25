@@ -1,7 +1,7 @@
-%global commit e2aa30f21def839866b09e74b5ddd843f7e70c87
+%global commit 94eb8d36461f6eb380b95e58629ad4871e5efef4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210505
-%global with_snapshot 0
+%global date 20210524
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -63,7 +63,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.9
+%global wine_stagingver 69765f438bd1f2822f0b21477e2706d43f8660f5
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -74,7 +74,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f9fe6868bb17cef4d1ea4c21400b538e65ff8e77
+%global tkg_id 87f3e8d1d77f212991274046ffb95e05869ea068
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 501c34a72ad19ee94a5b3c564e08e2faa73ecd70
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -86,6 +86,7 @@
 # https://bugs.winehq.org/show_bug.cgi?id=50448
 %global wine_staging_opts %{?wine_staging_opts} -W ntdll-NtAlertThreadByThreadId
 %global wine_staging_opts %{?wine_staging_opts} -W bcrypt-ECDHSecretAgreement
+
 %if !0%{?fshack}
 # childwindow.patch
 #global wine_staging_opts %%{?wine_staging_opts} -W Pipelight -W winex11-Vulkan_support
@@ -118,7 +119,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.9
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -213,7 +214,7 @@ Patch1028:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg
 Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 Patch1030:       %{tkg_url}/proton/proton-bcrypt-staging.patch#/%{name}-tkg-proton-bcrypt-staging.patch
 Patch1031:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
-Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/virtual_alloc_remi.mypatch#/%{name}-tkg-virtual_alloc_remi.patch
+Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/virtual_alloc_remi2.mypatch#/%{name}-tkg-virtual_alloc_remi2.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       revert-grab-fullscreen.patch
@@ -2882,6 +2883,9 @@ fi
 
 
 %changelog
+* Tue May 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.9-101.20210524git94eb8d3
+- Snapshot
+
 * Sun May 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.9-100
 - 6.9
 

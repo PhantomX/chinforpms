@@ -1,0 +1,109 @@
+diff -rup binutils.orig/gas/config/tc-s390.c binutils-2.35.1/gas/config/tc-s390.c
+--- binutils.orig/gas/config/tc-s390.c	2021-02-19 11:44:24.240877612 +0000
++++ binutils-2.35.1/gas/config/tc-s390.c	2021-02-19 11:46:05.222554434 +0000
+@@ -292,6 +292,8 @@ s390_parse_cpu (const char *         arg
+     { STRING_COMMA_LEN ("z14"), STRING_COMMA_LEN ("arch12"),
+       S390_INSTR_FLAG_HTM | S390_INSTR_FLAG_VX },
+     { STRING_COMMA_LEN ("z15"), STRING_COMMA_LEN ("arch13"),
++      S390_INSTR_FLAG_HTM | S390_INSTR_FLAG_VX },
++    { STRING_COMMA_LEN (""), STRING_COMMA_LEN ("arch14"),
+       S390_INSTR_FLAG_HTM | S390_INSTR_FLAG_VX }
+   };
+   static struct
+diff -rup binutils.orig/gas/doc/c-s390.texi binutils-2.35.1/gas/doc/c-s390.texi
+--- binutils.orig/gas/doc/c-s390.texi	2021-02-19 11:44:24.236877625 +0000
++++ binutils-2.35.1/gas/doc/c-s390.texi	2021-02-19 11:46:05.223554431 +0000
+@@ -18,7 +18,7 @@ and eleven chip levels. The architecture
+ Architecture (ESA) and the newer z/Architecture mode. The chip levels
+ are g5 (or arch3), g6, z900 (or arch5), z990 (or arch6), z9-109, z9-ec
+ (or arch7), z10 (or arch8), z196 (or arch9), zEC12 (or arch10), z13
+-(or arch11), z14 (or arch12), and z15 (or arch13).
++(or arch11), z14 (or arch12), z15 (or arch13), or arch14.
+ 
+ @menu
+ * s390 Options::                Command-line Options.
+@@ -70,8 +70,9 @@ are recognized:
+ @code{z196} (or @code{arch9}),
+ @code{zEC12} (or @code{arch10}),
+ @code{z13} (or @code{arch11}),
+-@code{z14} (or @code{arch12}), and
+-@code{z15} (or @code{arch13}).
++@code{z14} (or @code{arch12}),
++@code{z15} (or @code{arch13}), and
++@code{arch14}.
+ 
+ Assembling an instruction that is not supported on the target
+ processor results in an error message.
+diff -rup binutils.orig/gas/testsuite/gas/s390/s390.exp binutils-2.35.1/gas/testsuite/gas/s390/s390.exp
+--- binutils.orig/gas/testsuite/gas/s390/s390.exp	2021-02-19 11:44:24.338877299 +0000
++++ binutils-2.35.1/gas/testsuite/gas/s390/s390.exp	2021-02-19 11:46:05.223554431 +0000
+@@ -31,6 +31,7 @@ if [expr [istarget "s390-*-*"] ||  [ista
+     run_dump_test "zarch-z13" "{as -m64} {as -march=z13}"
+     run_dump_test "zarch-arch12" "{as -m64} {as -march=arch12}"
+     run_dump_test "zarch-arch13" "{as -m64} {as -march=arch13}"
++    run_dump_test "zarch-arch14" "{as -m64} {as -march=arch14}"
+     run_dump_test "zarch-reloc" "{as -m64}"
+     run_dump_test "zarch-operands" "{as -m64} {as -march=z9-109}"
+     run_dump_test "zarch-machine" "{as -m64} {as -march=z900}"
+Only in binutils-2.35.1/gas/testsuite/gas/s390: zarch-arch14.d
+Only in binutils-2.35.1/gas/testsuite/gas/s390: zarch-arch14.s
+diff -rup binutils.orig/include/opcode/s390.h binutils-2.35.1/include/opcode/s390.h
+--- binutils.orig/include/opcode/s390.h	2021-02-19 11:44:23.926878617 +0000
++++ binutils-2.35.1/include/opcode/s390.h	2021-02-19 11:46:05.223554431 +0000
+@@ -44,6 +44,7 @@ enum s390_opcode_cpu_val
+     S390_OPCODE_Z13,
+     S390_OPCODE_ARCH12,
+     S390_OPCODE_ARCH13,
++    S390_OPCODE_ARCH14,
+     S390_OPCODE_MAXCPU
+   };
+ 
+diff -rup binutils.orig/opcodes/s390-mkopc.c binutils-2.35.1/opcodes/s390-mkopc.c
+--- binutils.orig/opcodes/s390-mkopc.c	2021-02-19 11:44:23.947878550 +0000
++++ binutils-2.35.1/opcodes/s390-mkopc.c	2021-02-19 11:46:05.223554431 +0000
+@@ -380,6 +380,8 @@ main (void)
+       else if (strcmp (cpu_string, "z15") == 0
+ 	       || strcmp (cpu_string, "arch13") == 0)
+ 	min_cpu = S390_OPCODE_ARCH13;
++      else if (strcmp (cpu_string, "arch14") == 0)
++	min_cpu = S390_OPCODE_ARCH14;
+       else {
+ 	fprintf (stderr, "Couldn't parse cpu string %s\n", cpu_string);
+ 	exit (1);
+Only in binutils-2.35.1/opcodes: s390-mkopc.c.orig
+diff -rup binutils.orig/opcodes/s390-opc.txt binutils-2.35.1/opcodes/s390-opc.txt
+--- binutils.orig/opcodes/s390-opc.txt	2021-02-19 11:44:23.943878563 +0000
++++ binutils-2.35.1/opcodes/s390-opc.txt	2021-02-19 11:46:05.224554428 +0000
+@@ -2000,3 +2000,31 @@ e60000000052 vcvbg VRR_RV0UU "vector con
+ # Message Security Assist Extension 9
+ 
+ b93a kdsa RRE_RR "compute digital signature authentication" arch13 zarch
++
++
++# arch14 instructions
++
++e60000000074 vschp VRR_VVV0U0U " " arch14 zarch
++e60000002074 vschsp VRR_VVV0U0 " " arch14 zarch
++e60000003074 vschdp VRR_VVV0U0 " " arch14 zarch
++e60000004074 vschxp VRR_VVV0U0 " " arch14 zarch
++e6000000007c vscshp VRR_VVV " " arch14 zarch
++e6000000007d vcsph VRR_VVV0U0 " " arch14 zarch
++e60000000051 vclzdp VRR_VV0U2 " " arch14 zarch
++e60000000070 vpkzr VRI_VVV0UU2 " " arch14 zarch
++e60000000072 vsrpr VRI_VVV0UU2 " " arch14 zarch
++e60000000054 vupkzh VRR_VV0U2 " " arch14 zarch
++e6000000005c vupkzl VRR_VV0U2 " " arch14 zarch
++
++b93b nnpa RRE_00 " " arch14 zarch
++e60000000056 vclfnh VRR_VV0UU2 " " arch14 zarch
++e6000000005e vclfnl VRR_VV0UU2 " " arch14 zarch
++e60000000075 vcrnf VRR_VVV0UU " " arch14 zarch
++e6000000005d vcfn VRR_VV0UU2 " " arch14 zarch
++e60000000055 vcnf VRR_VV0UU2 " " arch14 zarch
++
++b98B rdp RRF_RURR2 " " arch14 zarch optparm
++
++eb0000000071 lpswey SIY_URD " " arch14 zarch
++b200 lbear S_RD " " arch14 zarch
++b201 stbear S_RD " " arch14 zarch
+Only in binutils-2.35.1/opcodes: s390-opc.txt.orig
