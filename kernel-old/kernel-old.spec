@@ -93,7 +93,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 39
+%define stable_update 40
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -117,7 +117,7 @@ Summary: The Linux kernel
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit 2b02985bf83e6da9d9165c5f2165af1b97d76edf
-%global st_last_commit b561d56bcd16ef44705d4e92f1e9c4d5e63f157f
+%global st_last_commit 4068786a86905a7a358b9fe1327a480f08fb6a40
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
@@ -2715,6 +2715,9 @@ fi
 #
 #
 %changelog
+* Wed May 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.40-500.chinfo
+- 5.10.40 - pf13
+
 * Sat May 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.39-500.chinfo
 - 5.10.39 - pf13
 

@@ -1,7 +1,7 @@
 # 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit 6a2ed3d0781265e503d02ae907173da5b3368c76
+%global commit e0111195a5dc7c752e83903d41d2b7e8b9c54311
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210430
+%global date 20210520
 %global with_snapshot 1
 
 %global sanitize 0
@@ -19,7 +19,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        126%{?gver}%{?dist}
+Release:        127%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3
@@ -84,7 +84,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-33
+BuildRequires:  sdl_gamecontrollerdb >= 0-35
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -92,7 +92,11 @@ Requires:       hicolor-icon-theme
 
 %description
 A Playstation 2 emulator. Requires a dump of a real PS2 BIOS (not included)
+%if %{with sse4}
 WARNING: It requires a CPU with SSE2 instructions. If your CPU does not
+%else
+WARNING: It requires a CPU with SSE4 instructions. If your CPU does not
+%endif
 support this instruction set, it does not have enough horsepower to run
 this emulator anyway.
 
@@ -251,6 +255,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Tue May 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-127.20210520gite011119
+- Bump
+
 * Sun May 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-126.20210430git6a2ed3d
 - Update
 

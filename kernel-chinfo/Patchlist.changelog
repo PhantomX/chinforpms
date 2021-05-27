@@ -1,3 +1,15 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/b8c43c4d0bdf8d9f4210e9f3263771c9f76d12bc
+ b8c43c4d0bdf8d9f4210e9f3263771c9f76d12bc Fix up merge issue resulting in dual entries for ALC295_FIXUP_ASUS_DACS
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/640004f918263da53d6f657817cc06089a3c2f93
+ 640004f918263da53d6f657817cc06089a3c2f93 powerpc/64s/syscall: Fix ptrace syscall info with scv syscalls
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/00f96bf907caf6f5bd6ff876958aa9a1bb45f969
+ 00f96bf907caf6f5bd6ff876958aa9a1bb45f969 bus: mhi: core: Download AMSS image from appropriate function
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/8ce924d893c80e34cbe65310fe1389e7ab4d808c
+ 8ce924d893c80e34cbe65310fe1389e7ab4d808c drm/rockchip: remove existing generic drivers to take over the device
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/6a311b81b6400d1c74b376d8982a08d5ce6f2a3a
  6a311b81b6400d1c74b376d8982a08d5ce6f2a3a can: isotp: prevent race between isotp_bind() and isotp_setsockopt()
 

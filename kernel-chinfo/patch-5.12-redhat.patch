@@ -23,6 +23,7 @@ Subject: [PATCH] patch-5.12-redhat
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/gpu/drm/rockchip/rockchip_drm_drv.c        |  11 ++
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -45,8 +46,7 @@ Subject: [PATCH] patch-5.12-redhat
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- sound/pci/hda/patch_realtek.c                      |  18 +++
- 42 files changed, 659 insertions(+), 193 deletions(-)
+ 42 files changed, 652 insertions(+), 193 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -71,7 +71,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 0b1852621615..a8b738debf11 100644
+index 6a73dee7c221..585dfe88d94c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -298,10 +298,10 @@ index 95f23acd5b80..53cab975f612 100644
  	{"APM   ", "XGENE   ", rev, seg, MCFG_BUS_ANY, \
  		&xgene_v1_pcie_ecam_ops }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 6efe7edd7b1e..603f912b7743 100644
+index 345777bf7af9..6cc384797f5c 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1639,6 +1639,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1640,6 +1640,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -608,6 +608,28 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
+index 212bd87c0c4a..b8b066938e48 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
+@@ -114,6 +114,17 @@ static int rockchip_drm_bind(struct device *dev)
+ 	struct rockchip_drm_private *private;
+ 	int ret;
+
++	/* Remove existing drivers that may own the framebuffer memory. */
++        ret = drm_fb_helper_remove_conflicting_framebuffers(NULL,
++                                                            "rockchip-drm-fb",
++                                                            false);
++	if (ret) {
++		DRM_DEV_ERROR(dev,
++			      "Failed to remove existing framebuffers - %d.\n",
++			      ret);
++		return ret;
++	}
++
+ 	drm_dev = drm_dev_alloc(&rockchip_drm_driver, dev);
+ 	if (IS_ERR(drm_dev))
+ 		return PTR_ERR(drm_dev);
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1010,7 +1032,7 @@ index a751553fa0db..dbb981876556 100644
 +obj-$(CONFIG_ARM64) += pcie-tegra194.o
  endif
 diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 6fa216e52d14..cb38e94a3033 100644
+index 0e94190ca4e8..dfc5d6772e64 100644
 --- a/drivers/pci/controller/dwc/pcie-tegra194.c
 +++ b/drivers/pci/controller/dwc/pcie-tegra194.c
 @@ -22,6 +22,8 @@
@@ -1204,7 +1226,7 @@ index c30f6047410f..3d4c311bf87c 100644
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_DELL, 0x1fe0)
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 404507d1b76f..51ee8f28a60b 100644
+index 13fe37fbbd2c..77c57e075b0e 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
 @@ -5532,6 +5532,13 @@ static void hub_event(struct work_struct *work)
@@ -1618,53 +1640,3 @@ index 5ac96b16f8fa..fc47d6de57ee 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 8ec57bd351df..213a3311baff 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -5717,6 +5717,18 @@ static void alc_fixup_tpt470_dacs(struct hda_codec *codec,
- 		spec->gen.preferred_dacs = preferred_pairs;
- }
-
-+static void alc295_fixup_asus_dacs(struct hda_codec *codec,
-+				   const struct hda_fixup *fix, int action)
-+{
-+	static const hda_nid_t preferred_pairs[] = {
-+		0x17, 0x02, 0x21, 0x03, 0
-+	};
-+	struct alc_spec *spec = codec->spec;
-+
-+	if (action == HDA_FIXUP_ACT_PRE_PROBE)
-+		spec->gen.preferred_dacs = preferred_pairs;
-+}
-+
- static void alc_shutup_dell_xps13(struct hda_codec *codec)
- {
- 	struct alc_spec *spec = codec->spec;
-@@ -6485,6 +6491,7 @@ enum {
- 	ALC255_FIXUP_ACER_LIMIT_INT_MIC_BOOST,
- 	ALC256_FIXUP_ACER_HEADSET_MIC,
- 	ALC285_FIXUP_IDEAPAD_S740_COEF,
-+	ALC295_FIXUP_ASUS_DACS,
- };
-
- static const struct hda_fixup alc269_fixups[] = {
-@@ -7973,6 +7986,10 @@ static const struct hda_fixup alc269_fixups[] = {
- 		.chained = true,
- 		.chain_id = ALC269_FIXUP_THINKPAD_ACPI,
- 	},
-+	[ALC295_FIXUP_ASUS_DACS] = {
-+		.type = HDA_FIXUP_FUNC,
-+		.v.func = alc295_fixup_asus_dacs,
-+	},
- };
-
- static const struct snd_pci_quirk alc269_fixup_tbl[] = {
-@@ -8171,6 +8188,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
- 	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
- 	SND_PCI_QUIRK(0x1043, 0x16e3, "ASUS UX50", ALC269_FIXUP_STEREO_DMIC),
-+	SND_PCI_QUIRK(0x1043, 0x1740, "ASUS UX430UA", ALC295_FIXUP_ASUS_DACS),
- 	SND_PCI_QUIRK(0x1043, 0x17d1, "ASUS UX431FL", ALC294_FIXUP_ASUS_DUAL_SPK),
- 	SND_PCI_QUIRK(0x1043, 0x1881, "ASUS Zephyrus S/M", ALC294_FIXUP_ASUS_GX502_PINS),
- 	SND_PCI_QUIRK(0x1043, 0x18b1, "Asus MJ401TA", ALC256_FIXUP_ASUS_HEADSET_MIC),

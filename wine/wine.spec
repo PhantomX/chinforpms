@@ -1,6 +1,6 @@
-%global commit 94eb8d36461f6eb380b95e58629ad4871e5efef4
+%global commit 8ddff3f51faca2c0824e204a69f69e241fb93d15
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210524
+%global date 20210525
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -63,7 +63,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 69765f438bd1f2822f0b21477e2706d43f8660f5
+%global wine_stagingver 34afd80e2e0171a235ae4b238fd627474f3a76d8
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -119,7 +119,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.9
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2860,10 +2860,7 @@ fi
 
 %files pulseaudio
 %{_libdir}/wine/%{winesodir}/winepulse.so
-%{_libdir}/wine/%{winesodir}/winepulse.drv.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/winepulse.drv
-%endif
+%{_libdir}/wine/%{winedlldir}/winepulse.%{winedrv}
 
 %files alsa
 %{_libdir}/wine/%{winesodir}/winealsa.drv.so
@@ -2883,6 +2880,9 @@ fi
 
 
 %changelog
+* Wed May 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.9-102.20210525git8ddff3f
+- Staging update again
+
 * Tue May 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.9-101.20210524git94eb8d3
 - Snapshot
 

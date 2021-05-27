@@ -93,18 +93,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 943c11abab528e46097ba0effe71126dec62d9df
+%global pfcommit 50f8f59acc341c42f10d99e5ab60a3cb399a3128
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -856,8 +856,7 @@ Patch1021: %{opensuse_url}/io_uring-update-sq_thread_idle-after-ctx-deleted.patc
 Patch1022: %{opensuse_url}/drm-amdgpu-display-remove-redundant-continue-stateme.patch#/openSUSE-drm-amdgpu-display-remove-redundant-continue-stateme.patch
 Patch1023: %{opensuse_url}/serial-stm32-fix-threaded-interrupt-handling.patch#/openSUSE-serial-stm32-fix-threaded-interrupt-handling.patch
 Patch1024: %{opensuse_url}/proc-Avoid-mixing-integer-types-in-mem_rw.patch#/openSUSE-proc-Avoid-mixing-integer-types-in-mem_rw.patch
-Patch1025: %{opensuse_url}/ipc-mqueue-msg-sem-Avoid-relying-on-a-stack-reference.patch#/openSUSE-ipc-mqueue-msg-sem-Avoid-relying-on-a-stack-reference.patch
-Patch1026: %{opensuse_url}/x86-events-amd-iommu-Fix-invalid-Perf-result-due-to-.patch#/openSUSE-x86-events-amd-iommu-Fix-invalid-Perf-result-due-to-.patch
+Patch1025: %{opensuse_url}/x86-events-amd-iommu-Fix-invalid-Perf-result-due-to-.patch#/openSUSE-x86-events-amd-iommu-Fix-invalid-Perf-result-due-to-.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2714,6 +2713,9 @@ fi
 #
 #
 %changelog
+* Wed May 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.7-500.chinfo
+- 5.12.7 - pf4
+
 * Sat May 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.6-500.chinfo
 - 5.12.6 - pf3
 
