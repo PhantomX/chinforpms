@@ -1,13 +1,13 @@
-%global commit 364aa1ba5d9cd5ca972373d3f5080f253f64e19e
+%global commit 9398d21e015704da354a413d6925995597116113
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201104
+%global date 20210527
 %global with_snapshot 1
 
-%global commit10 e50f7d1ce8e162d0c826e84168cfa234e4de4ec9
+%global commit10 a6ce49ca242019410abc5c359ed2c57e48e59883
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 bcf6a2430e99e8fc24f9f266e99316905e6d5134
+%global commit11 6bdcb4be344d7903bd92fd464e496c3199b91484
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -22,7 +22,7 @@
 
 Name:           snes9x
 Version:        1.60
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other
@@ -48,6 +48,7 @@ BuildRequires:   make
 BuildRequires:   nasm
 BuildRequires:   intltool
 BuildRequires:   pkgconfig(alsa)
+BuildRequires:   pkgconfig(epoxy)
 BuildRequires:   pkgconfig(gtkmm-3.0)
 BuildRequires:   pkgconfig(gl)
 BuildRequires:   pkgconfig(libpng)
@@ -60,6 +61,7 @@ BuildRequires:   pkgconfig(xv)
 BuildRequires:   pkgconfig(wayland-egl)
 BuildRequires:   pkgconfig(zlib)
 BuildRequires:   minizip-devel
+BuildRequires:   vulkan-headers
 %if %{with portaudio}
 BuildRequires:   pkgconfig(portaudio-2.0)
 %endif
@@ -172,6 +174,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 
 %changelog
+* Fri May 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1.60-102.20210527git9398d21
+- Bump
+- Add forgotten BRs
+
 * Fri Dec 25 2020 Phantom X <megaphantomx at hotmail dot com> - 1.60-101.20201104git364aa1b
 - Snapshot
 - gtkmm3
