@@ -1,6 +1,6 @@
-%global commit 8ddff3f51faca2c0824e204a69f69e241fb93d15
+%global commit 35180d368a94156cb77b09560b24d3af428b988b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210525
+%global date 20210528
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -63,7 +63,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 34afd80e2e0171a235ae4b238fd627474f3a76d8
+%global wine_stagingver 9efac47eec292de7df8697264a457afc7925e95c
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -74,7 +74,7 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 87f3e8d1d77f212991274046ffb95e05869ea068
+%global tkg_id b040f91cefb2d00c6dd7ee65c7ab6501e525b736
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 501c34a72ad19ee94a5b3c564e08e2faa73ecd70
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -119,7 +119,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.9
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2880,6 +2880,9 @@ fi
 
 
 %changelog
+* Sat May 29 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.9-103.20210528git35180d3
+- Bump
+
 * Wed May 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.9-102.20210525git8ddff3f
 - Staging update again
 

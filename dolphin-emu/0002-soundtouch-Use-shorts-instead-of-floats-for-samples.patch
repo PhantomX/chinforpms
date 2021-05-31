@@ -1,7 +1,7 @@
-From 1dcfe2fe173c5ca0ac46103b766f7a329752e396 Mon Sep 17 00:00:00 2001
+From 4ff0c1ddf501c79fb5b6fc2606c0caf673e9fd1e Mon Sep 17 00:00:00 2001
 From: Mystro256 <alexjnewt@hotmail.com>
 Date: Sun, 5 Apr 2020 11:03:31 -0400
-Subject: [PATCH 3/5] soundtouch: Use shorts instead of floats for samples
+Subject: [PATCH 2/4] soundtouch: Use shorts instead of floats for samples
 
 This reapplies commit 8ff26a6 after the soundtouch 2.1.2 update.
 ---
@@ -33,5 +33,5 @@ index 862505e769..0f98c889fb 100644
          /// In GNU environment, allow the user to override this setting by
          /// giving the following switch to the configure script:
 -- 
-2.26.2
+2.29.2
 

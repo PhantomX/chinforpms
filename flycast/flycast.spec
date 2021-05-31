@@ -1,6 +1,6 @@
-%global commit d29d43e5d65de8f5543e9ddcf6df98b900ef9b94
+%global commit 24f9003cd3e85bbb86fe795f2b181125de07378b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 2021022
+%global date 20210529
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -17,7 +17,7 @@
 
 Name:           flycast
 Version:        7
-Release:        55%{?gver}%{?dist}
+Release:        56%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 License:        GPLv2 and BSD
@@ -184,7 +184,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
-* Sun May 23 2021 Phantom X <megaphantomx at hotmail dot com> - 7-55.2021022gitd29d43e
+* Sat May 29 2021 Phantom X <megaphantomx at hotmail dot com> - 7-56.20210529git24f9003
+- Bump
+
+* Sun May 23 2021 Phantom X <megaphantomx at hotmail dot com> - 7-55.20210522gitd29d43e
 - Update
 - Make system libchdr and lzmasdk mandatory
 

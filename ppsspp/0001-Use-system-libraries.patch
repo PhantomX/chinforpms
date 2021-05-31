@@ -1,6 +1,6 @@
-From a7bdf8187cb18143413fbf18363234a1ee5503d3 Mon Sep 17 00:00:00 2001
+From 37c7f7255f3a954e695b52626a4c9753926b962f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 1 May 2021 18:41:17 -0300
+Date: Sat, 29 May 2021 17:50:59 -0300
 Subject: [PATCH] Use system libraries
 
 FindMiniupnpc.cmake and zstd bits borrowed from dolphin-emu
@@ -30,7 +30,7 @@ https://github.com/dolphin-emu/dolphin
  create mode 100644 cmake/Modules/FindMiniupnpc.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 99b390d..a7c2396 100644
+index f4661a6..92c15ef 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -135,6 +135,9 @@ option(USE_MINIUPNPC "Build with miniUPnPc support" ON)
@@ -43,7 +43,7 @@ index 99b390d..a7c2396 100644
  option(USE_ASAN "Use address sanitizer" OFF)
  option(USE_UBSAN "Use undefined behaviour sanitizer" OFF)
  
-@@ -1154,11 +1157,31 @@ add_library(xbrz STATIC
+@@ -1229,11 +1232,31 @@ add_library(xbrz STATIC
  )
  include_directories(ext/xbrz)
  
@@ -75,7 +75,7 @@ index 99b390d..a7c2396 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -1817,8 +1840,7 @@ if(ANDROID)
+@@ -1892,8 +1915,7 @@ if(ANDROID)
  	endif()
  endif()
  
@@ -85,7 +85,7 @@ index 99b390d..a7c2396 100644
  
  # needed for VK_USE_PLATFORM_XCB_KHR only
  #if(VULKAN AND NOT WIN32)
-@@ -1850,6 +1872,16 @@ if(FFmpeg_FOUND)
+@@ -1925,6 +1947,16 @@ if(FFmpeg_FOUND)
  	)
  endif()
  
@@ -102,7 +102,7 @@ index 99b390d..a7c2396 100644
  # Discord integration
  if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
  	add_definitions(-DUSE_DISCORD=1)
-@@ -1858,6 +1890,12 @@ endif()
+@@ -1933,6 +1965,12 @@ endif()
  
  # miniUPnPc integration (MiniUPnPc supposed to works on any POSIX system, not sure if some of these are redundant/not needed tho)
  if(USE_MINIUPNPC)
@@ -115,7 +115,7 @@ index 99b390d..a7c2396 100644
  	set (MINIUPNPC_VERSION 2.1) # used by miniupnpcstrings.h.cmake
  	set (MINIUPNPC_API_VERSION 17)
  	option(UPNPC_BUILD_STATIC "Build static library" TRUE)
-@@ -1926,6 +1964,7 @@ if(USE_MINIUPNPC)
+@@ -2001,6 +2039,7 @@ if(USE_MINIUPNPC)
  		endif()
  	endif()
  endif()
@@ -189,7 +189,7 @@ index f938619..5ba7781 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 71d1d7c..a75b628 100644
+index 6a4f6d0..99edcc9 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
 @@ -23,7 +23,11 @@
@@ -205,11 +205,11 @@ index 71d1d7c..a75b628 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index 05a2ad6..ebea492 100644
+index b692072..47a65ba 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
-@@ -19,7 +19,11 @@
- #include <algorithm>
+@@ -21,7 +21,11 @@
+ #include <memory>
  #include <png.h>
  
 +#ifdef SHARED_XXHASH
@@ -342,7 +342,7 @@ index 783ea75..e5d3646 100644
  #include "Common/Data/Text/I18n.h"
  #include "Common/Math/math_util.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index eff8a70..3124ea9 100644
+index fe386a2..56e9647 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,11 @@
@@ -358,7 +358,7 @@ index eff8a70..3124ea9 100644
  #include "Common/Data/Text/I18n.h"
  #include "Common/Math/math_util.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index 17eed7e..3b19e36 100644
+index b5fde7d..780d1c6 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,11 @@

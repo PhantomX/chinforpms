@@ -32,6 +32,8 @@ irpf2020
 irpf2021
 -kepka
 lbreakouthd
+mame-data-icons
+mame-data-roms
 ms-teams
 -mupen64plus-extraplugins
 ninfs

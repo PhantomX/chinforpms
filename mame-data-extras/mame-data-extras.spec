@@ -2,16 +2,13 @@
 %global __strip /bin/true
 
 %global cheatver 0221
-%global historyver 231
-%global infover 0231
+%global historyver 232
+%global infover 0232
 
-# Build non redistributable package with free roms
-%bcond_with roms
-%global romlink http://www.mamedev.org/roms
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.231
+Version:        0.232
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -29,36 +26,6 @@ Source2:       http://www.mameworld.info/mameinfo/download/Mameinfo%{infover}.zi
 Source10:       scanlines_apertures.zip
 #http://www.mameworld.net/mrdo/mame_artwork_supp.html
 Source11:       effect_files.zip
-
-# Icons: Mamu icons from http://icons.mameworld.info/
-Source20:       http://icons.mameworld.info/icons.zip/icons.zip
-
-%if %{with roms}
-# Distributable ROM images (non-commercial use)
-Source100:      README.roms
-Source101:      %{romlink}/alienar/alienar.zip
-Source102:      %{romlink}/carpolo/carpolo.zip
-Source103:      %{romlink}/crash/crash.zip
-Source104:      %{romlink}/circus/circus.zip#/circus-rom.zip
-Source105:      %{romlink}/fax/fax.zip
-Source106:      %{romlink}/fireone/fireone.zip
-Source107:      %{romlink}/gridlee/gridlee.zip#/gridlee-rom.zip
-Source108:      %{romlink}/hardhat/hardhat.zip
-Source109:      %{romlink}/looping/looping.zip
-Source110:      %{romlink}/ripcord/ripcord.zip
-Source111:      %{romlink}/robby/robby.zip
-Source112:      %{romlink}/robotbwl/robotbwl.zip
-Source113:      %{romlink}/sidetrac/sidetrac.zip
-Source114:      %{romlink}/spectar/spectar.zip
-Source115:      %{romlink}/starfire/starfire.zip
-Source116:      %{romlink}/supertnk/supertnk.zip
-Source117:      %{romlink}/targ/targ.zip#/targ-rom.zip
-Source118:      %{romlink}/teetert/teetert.zip
-Source119:      %{romlink}/topgunnr/topgunnr.zip
-Source120:      %{romlink}/victory/victory.zip
-%global romfiles %{SOURCE101} %{SOURCE102} %{SOURCE103} %{SOURCE104} %{SOURCE105} %{SOURCE106} %{SOURCE107} %{SOURCE108} %{SOURCE109} %{SOURCE110} %{SOURCE111} %{SOURCE112} %{SOURCE113} %{SOURCE114} %{SOURCE115} %{SOURCE116} %{SOURCE117} %{SOURCE118} %{SOURCE119} %{SOURCE120}
-%endif
-
 
 # Samples from http://samples.mameworld.info/
 Source200:      %{samplelink}/alphamc07.zip
@@ -129,9 +96,6 @@ Source263:      %{samplelink}/zektor.zip
 
 BuildArch: noarch
 
-BuildRequires:  findutils
-BuildRequires:  ImageMagick
-BuildRequires:  optipng
 BuildRequires:  p7zip
 BuildRequires:  unzip
 Requires:       mame-data
@@ -139,21 +103,9 @@ Requires:       mame-data
 %description
 %{summary}.
 
-%package roms
-Summary:        Free no-commercial use and non redistributable roms for mame
-License:        Free for no-commercial use and non redistributable
-
-Requires:       %{name}
-
-%description roms
-%{summary}.
 
 %prep
 %autosetup -cT
-
-%if %{with roms}
-  cp %{SOURCE100} .
-%endif
 
 # extract DAT files
 unzip -q %{SOURCE0}
@@ -166,39 +118,17 @@ mkdir effects
 unzip -q %{SOURCE10} -d effects/
 unzip -q %{SOURCE11} -d effects/
 
-mkdir -p icons/png
-unzip -q %{SOURCE20} -d icons
-
-# fix permissions and line endings
-chmod -R u+w,go+r-w,a-s .
-
-chmod 0644 README.* mameinfo/*.txt
+chmod 0644 mameinfo/*.txt
 chmod 0755 mameinfo
 sed 's/\r//' cheat.txt -i mameinfo/*
 
-sed 's/\r//' icons/*READ.txt > README.icons
 
 %build
 
-pushd icons
-  rm -f '('*.ico
-  rm -f '!'*.ico
-  find -maxdepth 1 -name '*.ico' -print0 | xargs -0 -r -I FILE -P %{_smp_build_ncpus} convert FILE[1] png/FILE.png
-  rename '.ico' '' png/*.png
-  find png -maxdepth 1 -name '*.png' -print0 | xargs -0 -r -I FILE -P %{_smp_build_ncpus} optipng -quiet -preserve FILE
-popd
 
 %install
 
 mkdir -p %{buildroot}%{_datadir}/mame
-
-%if %{with roms}
-# Install ROMs
-mkdir -p %{buildroot}%{_datadir}/mame/roms
-install -pm0644 %{romfiles} \
-  %{buildroot}%{_datadir}/mame/roms/
-rename -- '-rom' ''  %{buildroot}%{_datadir}/mame/roms/*.zip
-%endif
 
 # Install DAT files
 install -pm 644 history.xml mameinfo.dat \
@@ -217,19 +147,15 @@ install -pm0644 %{samplefiles} \
 mkdir -p %{buildroot}%{_datadir}/mame/effects
 install -pm0644 effects/*.png %{buildroot}%{_datadir}/mame/effects/
 
-# Install Icons
-mkdir -p %{buildroot}%{_datadir}/mame/icons
-install -pm0644 icons/png/*.png %{buildroot}%{_datadir}/mame/icons/
-
 # Empty dirs
-for file in cab snap ;do
+for file in cab icons roms snap ;do
   mkdir -p %{buildroot}%{_datadir}/mame/${file}
   touch %{buildroot}%{_datadir}/mame/${file}/dummy.txt
 done
 
 
 %files
-%doc cheat.txt mameinfo README.icons
+%doc cheat.txt mameinfo
 %{_datadir}/mame/*.dat
 %{_datadir}/mame/*.xml
 %dir %{_datadir}/mame/cab
@@ -238,20 +164,20 @@ done
 %{_datadir}/mame/cheat/*.7z
 %{_datadir}/mame/effects/*
 %dir %{_datadir}/mame/icons
-%{_datadir}/mame/icons/*.png
+%{_datadir}/mame/icons/*
+%dir %{_datadir}/mame/roms
+%{_datadir}/mame/roms/*
 %{_datadir}/mame/samples/*.zip
 %dir %{_datadir}/mame/snap
 %{_datadir}/mame/snap/*
 
 
-%if %{with roms}
-%doc README.roms
-%files roms
-%{_datadir}/mame/roms/*.zip
-%endif
-
-
 %changelog
+* Sat May 29 2021 Phantom X <megaphantomx at hotmail dot com> - 0.232-1
+- Mameinfo 0.232
+- History 232
+- Drop icons and roms from this package
+
 * Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 0.231-1
 - Mameinfo 0.231
 - History 231

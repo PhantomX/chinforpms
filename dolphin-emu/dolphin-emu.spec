@@ -9,13 +9,18 @@
 %global with_sysvulkan 1
 %global with_unittests 0
 
+#JIT is only supported on x86_64 and aarch64:
+%ifarch x86_64 aarch64
+%global enablejit 1
+%endif
+
 # Add extra RESHDP Edition modifications (as a new binary)
 # https://github.com/MoArtis/dolphin
 %global with_reshdp 1
 
-%global commit eb5cd9be78c76b9ccbab9e5fbd1721ef6876cd68
+%global commit b3a414ea9df1c30d4d0cc59cfbefc9eacda9c62a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210509
+%global date 20210529
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -29,7 +34,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        137%{?gver}%{?dist}
+Release:        138%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -62,13 +67,14 @@ Patch1:         0001-Use-system-headers-for-Vulkan.patch
 %endif
 #Update soundtouch:
 #https://github.com/dolphin-emu/dolphin/pull/8725
-Patch2:         0002-soundtounch-update-to-2.1.2.patch
-Patch3:         0003-soundtouch-Use-shorts-instead-of-floats-for-samples.patch
-Patch4:         0004-soundtounch-disable-exceptions.patch
+Patch2:         0001-soundtouch-update-to-2.1.2.patch
+Patch3:         0002-soundtouch-Use-shorts-instead-of-floats-for-samples.patch
+Patch4:         0003-soundtouch-disable-exceptions.patch
 #This needs to be fixed, I've reverted the patch that breaks minizip
-Patch5:         0005-Revert-Externals-Update-minizip-search-path.patch
+Patch5:         0004-Revert-Externals-Update-minizip-search-path.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
+Patch101:       0001-Revert-VideoCommon-TextureInfo-commits-for-RESHDP.patch
 Patch102:       0001-Mask-hack-for-RE3.patch
 Patch103:       0001-RESHDP-Edition-label.patch
 
@@ -139,8 +145,8 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  hicolor-icon-theme
 
-#Only the following architectures are supported:
-ExclusiveArch:  x86_64 armv7l aarch64
+#Only the following architectures are supported (64bit little endian only):
+ExclusiveArch:  x86_64 aarch64 ppc64le
 
 Requires:       hicolor-icon-theme
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -212,6 +218,11 @@ sed 's| this directory | %{name}/Sys/GC |g' \
     -i.orig Source/Core/VideoBackends/Vulkan/CMakeLists.txt
 %endif
 
+#This test fails without JIT enabled:
+#https://bugs.dolphin-emu.org/issues/12421
+%if ! 0%{?enablejit}
+sed -i "/PageFaultTest/d" Source/UnitTests/Core/CMakeLists.txt
+%endif
 
 ###Remove Bundled:
 pushd Externals
@@ -265,6 +276,7 @@ export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
   -DAPPROVED_VENDORED_DEPENDENCIES=";" \
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \
+  %{?!enablejit:-DENABLE_GENERIC=ON} \
   -DUSE_SHARED_ENET:BOOL=ON \
   -DENABLE_ANALYTICS:BOOL=OFF \
 %if !%{with ffmpeg}
@@ -296,6 +308,7 @@ mv %{__cmake_builddir}/Binaries/%{name}-nogui %{name}-reshdp-nogui
 
 patch -p1 -R -i %{P:103}
 patch -p1 -R -i %{P:102}
+patch -p1 -R -i %{P:101}
 %cmake_build
 
 
@@ -398,6 +411,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat May 29 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-138.20210529gitb3a414e
+- Bump
+
 * Mon May 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-137.20210509giteb5cd9b
 - Update
 

@@ -1,7 +1,7 @@
-From d53b58f85abc13f8d82b12aafa24ad932073f119 Mon Sep 17 00:00:00 2001
+From 95f677869777c99f8494ebd5e56a7da7768bb9a8 Mon Sep 17 00:00:00 2001
 From: Mystro256 <alexjnewt@hotmail.com>
 Date: Sun, 5 Apr 2020 17:46:52 -0400
-Subject: [PATCH 4/5] soundtounch: disable exceptions
+Subject: [PATCH 3/4] soundtouch: disable exceptions
 
 ---
  Externals/soundtouch/STTypes.h | 2 +-
@@ -21,5 +21,5 @@ index 0f98c889fb..d5440c3b74 100644
      // Exceptions disabled. Throw asserts instead if enabled.
      #include <assert.h>
 -- 
-2.26.2
+2.29.2
 
