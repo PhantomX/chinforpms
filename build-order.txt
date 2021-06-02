@@ -145,6 +145,7 @@ lutris
 lunzip
 -lzip
 m64py
+makeppf
 manaplus
 mangohud
 maxcso

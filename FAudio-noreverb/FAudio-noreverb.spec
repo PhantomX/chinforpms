@@ -10,7 +10,7 @@
 %global pkgname FAudio
 
 Name:           %{pkgname}-noreverb
-Version:        21.05
+Version:        21.06
 Release:        1%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - noreverb
 Epoch:          1
@@ -102,6 +102,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Tue Jun 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.06-1
+- 21.06
+
 * Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.05-1
 - 21.05
 
