@@ -41,12 +41,12 @@ Subject: [PATCH] patch-5.12-redhat
  include/linux/security.h                           |   5 +
  kernel/crash_core.c                                |  28 ++++-
  kernel/module_signing.c                            |   9 +-
- net/can/isotp.c                                    |  49 +++++---
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 42 files changed, 652 insertions(+), 193 deletions(-)
+ security/selinux/hooks.c                           |   3 +-
+ 42 files changed, 621 insertions(+), 178 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -71,7 +71,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 6a73dee7c221..585dfe88d94c 100644
+index d53577db1085..a34665269a9a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1474,95 +1474,6 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index 9f94ad3caee9..253b24417c8e 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1062,27 +1062,31 @@ static int isotp_bind(struct socket *sock, struct sockaddr *uaddr, int len)
- 	if (len < ISOTP_MIN_NAMELEN)
- 		return -EINVAL;
-
-+	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
-+		return -EADDRNOTAVAIL;
-+
-+	if (!addr->can_ifindex)
-+		return -ENODEV;
-+
-+	lock_sock(sk);
-+
- 	/* do not register frame reception for functional addressing */
- 	if (so->opt.flags & CAN_ISOTP_SF_BROADCAST)
- 		do_rx_reg = 0;
-
- 	/* do not validate rx address for functional addressing */
- 	if (do_rx_reg) {
--		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id)
--			return -EADDRNOTAVAIL;
-+		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id) {
-+			err = -EADDRNOTAVAIL;
-+			goto out;
-+		}
-
--		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
--			return -EADDRNOTAVAIL;
-+		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
-+			err = -EADDRNOTAVAIL;
-+			goto out;
-+		}
- 	}
-
--	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
--		return -EADDRNOTAVAIL;
--
--	if (!addr->can_ifindex)
--		return -ENODEV;
--
--	lock_sock(sk);
--
- 	if (so->bound && addr->can_ifindex == so->ifindex &&
- 	    addr->can_addr.tp.rx_id == so->rxid &&
- 	    addr->can_addr.tp.tx_id == so->txid)
-@@ -1164,16 +1168,13 @@ static int isotp_getname(struct socket *sock, struct sockaddr *uaddr, int peer)
- 	return ISOTP_MIN_NAMELEN;
- }
-
--static int isotp_setsockopt(struct socket *sock, int level, int optname,
-+static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
- 			    sockptr_t optval, unsigned int optlen)
- {
- 	struct sock *sk = sock->sk;
- 	struct isotp_sock *so = isotp_sk(sk);
- 	int ret = 0;
-
--	if (level != SOL_CAN_ISOTP)
--		return -EINVAL;
--
- 	if (so->bound)
- 		return -EISCONN;
-
-@@ -1248,6 +1249,22 @@ static int isotp_setsockopt(struct socket *sock, int level, int optname,
- 	return ret;
- }
-
-+static int isotp_setsockopt(struct socket *sock, int level, int optname,
-+			    sockptr_t optval, unsigned int optlen)
-+
-+{
-+	struct sock *sk = sock->sk;
-+	int ret;
-+
-+	if (level != SOL_CAN_ISOTP)
-+		return -EINVAL;
-+
-+	lock_sock(sk);
-+	ret = isotp_setsockopt_locked(sock, level, optname, optval, optlen);
-+	release_sock(sk);
-+	return ret;
-+}
-+
- static int isotp_getsockopt(struct socket *sock, int level, int optname,
- 			    char __user *optval, int __user *optlen)
- {
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
 index ee4b4c666854..eff9ff593405 100644
 --- a/security/integrity/platform_certs/load_uefi.c
@@ -1640,3 +1551,17 @@ index 5ac96b16f8fa..fc47d6de57ee 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index ddd097790d47..eca9fc0ba764 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -760,7 +760,8 @@ static int selinux_set_mnt_opts(struct super_block *sb,
+ 	if (sb->s_user_ns != &init_user_ns &&
+ 	    strcmp(sb->s_type->name, "tmpfs") &&
+ 	    strcmp(sb->s_type->name, "ramfs") &&
+-	    strcmp(sb->s_type->name, "devpts")) {
++	    strcmp(sb->s_type->name, "devpts") &&
++	    strcmp(sb->s_type->name, "overlay")) {
+ 		if (context_sid || fscontext_sid || rootcontext_sid ||
+ 		    defcontext_sid) {
+ 			rc = -EACCES;

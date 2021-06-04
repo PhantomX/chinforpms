@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/26fb1eba374faf7704bab5126612ae87b9f9f9fa
+ 26fb1eba374faf7704bab5126612ae87b9f9f9fa selinux: Allow context mounts for unpriviliged overlayfs
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/b8c43c4d0bdf8d9f4210e9f3263771c9f76d12bc
  b8c43c4d0bdf8d9f4210e9f3263771c9f76d12bc Fix up merge issue resulting in dual entries for ALC295_FIXUP_ASUS_DACS
 
