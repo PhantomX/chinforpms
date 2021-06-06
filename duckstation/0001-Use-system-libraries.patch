@@ -1,6 +1,6 @@
-From 5c032cbcf7a64e337d393f189de2837f363a88b6 Mon Sep 17 00:00:00 2001
+From 0c554b3f22924742d7dfce74df9b89d271a99ac4 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 24 May 2021 22:24:48 -0300
+Date: Sat, 5 Jun 2021 16:53:44 -0300
 Subject: [PATCH] Use system libraries
 
 FindCUBEB.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
@@ -8,10 +8,10 @@ https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
 ---
  CMakeModules/FindCUBEB.cmake          |  15 +++
- dep/CMakeLists.txt                    |  59 ++++++++++++
+ dep/CMakeLists.txt                    |  57 ++++++++++++
  dep/discord-rpc/CMakeLists.txt        |   7 +-
  dep/minizip/CMakeLists.txt            |   8 +-
- dep/vulkan-loader/CMakeLists.txt      |   8 ++
+ dep/vulkan-loader/CMakeLists.txt      |   9 ++
  src/common/CMakeLists.txt             |  43 ++++++++-
  src/common/audio_stream.cpp           |   2 +-
  src/common/vulkan/shader_compiler.cpp | 129 ++++++++++++++++++++++++++
@@ -19,7 +19,7 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
  src/core/texture_replacements.cpp     |   2 +
  src/duckstation-qt/CMakeLists.txt     |  10 +-
  src/frontend-common/CMakeLists.txt    |  10 +-
- 12 files changed, 301 insertions(+), 9 deletions(-)
+ 12 files changed, 300 insertions(+), 9 deletions(-)
  create mode 100644 CMakeModules/FindCUBEB.cmake
 
 diff --git a/CMakeModules/FindCUBEB.cmake b/CMakeModules/FindCUBEB.cmake
@@ -44,7 +44,7 @@ index 0000000..c0a730c
 +  )
 +endif()
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 95493b8..bd89176 100644
+index 95493b8..6615078 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
 @@ -1,23 +1,80 @@
@@ -164,21 +164,22 @@ index 6a05c01..3e015fa 100644
 +target_link_libraries(minizip)
  
 diff --git a/dep/vulkan-loader/CMakeLists.txt b/dep/vulkan-loader/CMakeLists.txt
-index 89fdb63..40373f0 100644
+index baf945a..c04e954 100644
 --- a/dep/vulkan-loader/CMakeLists.txt
 +++ b/dep/vulkan-loader/CMakeLists.txt
-@@ -1,3 +1,10 @@
+@@ -1,3 +1,11 @@
 +if(vulkan-loader_FOUND)
 +  message(STATUS "Using the system vulkan")
 + set(SRCS
++	include/vulkan_entry_points.h
 +	include/vulkan_loader.h
 +	src/vulkan_loader.cpp
 +)
 +else()
  set(SRCS
+ 	include/vulkan_entry_points.h
  	include/vulkan_loader.h
- 	include/vulkan/vulkan_android.h
-@@ -21,6 +28,7 @@ set(SRCS
+@@ -22,6 +30,7 @@ set(SRCS
  	include/vulkan/vulkan_macos.h
  	src/vulkan_loader.cpp
  )
@@ -187,10 +188,10 @@ index 89fdb63..40373f0 100644
  add_library(vulkan-loader ${SRCS})
  target_include_directories(vulkan-loader PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include")
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index cfc1049..a4bb0cd 100644
+index 3bd9b97..4e4112c 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -114,9 +114,50 @@ add_library(common
+@@ -115,9 +115,50 @@ add_library(common
    window_info.h
  )
  
@@ -463,10 +464,10 @@ index fa21075..38c03f4 100644
  Log_SetChannel(TextureReplacements);
  
 diff --git a/src/duckstation-qt/CMakeLists.txt b/src/duckstation-qt/CMakeLists.txt
-index 88dbc99..0b2f058 100644
+index f468a1b..161b937 100644
 --- a/src/duckstation-qt/CMakeLists.txt
 +++ b/src/duckstation-qt/CMakeLists.txt
-@@ -137,7 +137,15 @@ qt5_add_translation(QM_FILES ${TS_FILES})
+@@ -138,7 +138,15 @@ qt5_add_translation(QM_FILES ${TS_FILES})
  
  add_executable(duckstation-qt ${SRCS} ${QM_FILES})
  target_include_directories(duckstation-qt PRIVATE "${Qt5Gui_PRIVATE_INCLUDE_DIRS}")

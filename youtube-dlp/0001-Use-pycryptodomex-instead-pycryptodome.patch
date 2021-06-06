@@ -1,39 +1,29 @@
-From bbe2823562651a3dbc6ba1f9e0fda1f9984e1225 Mon Sep 17 00:00:00 2001
+From 560c0bd186c741b6c6669176bfe73bf736009032 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 20 May 2021 21:30:43 -0300
+Date: Sat, 5 Jun 2021 20:03:33 -0300
 Subject: [PATCH] Use pycryptodomex instead pycryptodome
 
-Fedora only have pycryptodomex
 ---
- requirements.txt              | 2 +-
  setup.py                      | 2 +-
  yt_dlp/downloader/external.py | 2 +-
  yt_dlp/downloader/hls.py      | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/requirements.txt b/requirements.txt
-index 97a6859..a191375 100644
---- a/requirements.txt
-+++ b/requirements.txt
-@@ -1,2 +1,2 @@
- mutagen
--pycryptodome
-+pycryptodomex
 diff --git a/setup.py b/setup.py
-index cebe556..fc69406 100644
+index 7353f56..c8ef37e 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -20,7 +20,7 @@ LONG_DESCRIPTION = '\n\n'.join((
-     '**PS**: Many links in this document will not work since this is a copy of the README.md from Github',
+@@ -19,7 +19,7 @@ LONG_DESCRIPTION = '\n\n'.join((
+     '**PS**: Some links in this document will not work since this is a copy of the README.md from Github',
      open('README.md', 'r', encoding='utf-8').read()))
  
 -REQUIREMENTS = ['mutagen', 'pycryptodome']
 +REQUIREMENTS = ['mutagen', 'pycryptodomex']
  
- 
- if len(sys.argv) >= 2 and sys.argv[1] == 'py2exe':
+ if sys.argv[1:2] == ['py2exe']:
+     raise NotImplementedError('py2exe is not currently supported; instead, use "pyinst.py" to build with pyinstaller')
 diff --git a/yt_dlp/downloader/external.py b/yt_dlp/downloader/external.py
-index 89f3ef2..0fc3122 100644
+index b474351..19de409 100644
 --- a/yt_dlp/downloader/external.py
 +++ b/yt_dlp/downloader/external.py
 @@ -7,7 +7,7 @@ import sys
@@ -46,7 +36,7 @@ index 89f3ef2..0fc3122 100644
  except ImportError:
      can_decrypt_frag = False
 diff --git a/yt_dlp/downloader/hls.py b/yt_dlp/downloader/hls.py
-index c66902c..0aeeb9c 100644
+index 19def66..349a0fd 100644
 --- a/yt_dlp/downloader/hls.py
 +++ b/yt_dlp/downloader/hls.py
 @@ -5,7 +5,7 @@ import re

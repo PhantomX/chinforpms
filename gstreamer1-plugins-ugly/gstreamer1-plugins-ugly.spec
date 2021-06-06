@@ -2,7 +2,7 @@
 
 Summary:        GStreamer 1.0 streaming media framework "ugly" plug-ins
 Name:           gstreamer1-plugins-ugly
-Version:        1.18.4
+Version:        1.19.1
 Release:        100%{?dist}
 
 License:        LGPLv2+
@@ -77,6 +77,9 @@ gstreamer-plugins-good because:
 
 
 %changelog
+* Sat Jun 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1.19.1-100
+- 1.19.1
+
 * Sun Apr 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1.18.4-100
 - Guy1524's wmv playback patches
 

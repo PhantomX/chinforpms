@@ -1,7 +1,7 @@
-%global commit 35180d368a94156cb77b09560b24d3af428b988b
+%global commit 0807b09cfa7f2446f7a69f99ff1006e88c9de60b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210528
-%global with_snapshot 1
+%global date 20210602
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -32,7 +32,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  6.1.2
+%global winemono  6.2.0
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -63,7 +63,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9efac47eec292de7df8697264a457afc7925e95c
+%global wine_stagingver 6.10
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -74,10 +74,17 @@
 %global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id b040f91cefb2d00c6dd7ee65c7ab6501e525b736
+%global tkg_id ebf72c4dbf05bc01e18eddeefb1daed903268832
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 501c34a72ad19ee94a5b3c564e08e2faa73ecd70
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
+
+%if 0%{?wine_staging}
+%global cap_st cap_sys_nice,
+%endif
+
+%global perms_pldr %caps(cap_net_raw+eip)
+%global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
@@ -118,8 +125,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.9
-Release:        103%{?gver}%{?dist}
+Version:        6.10
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -192,6 +199,8 @@ Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
+Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
+
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
 Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
@@ -219,7 +228,6 @@ Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/virtual_alloc_remi2.mypatch
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
-Patch1092:       %{valve_url}/commit/25d0e403dd6869ef8933de8270e060d2a73f7da0.patch#/%{name}-valve-25d0e40.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
@@ -839,6 +847,8 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
+%patch901 -p1
+
 %patch1006 -p1
 %patch1000 -p1
 %if !0%{?fshack}
@@ -883,7 +893,6 @@ $patch_command -p1 -i patch1025.patch
 %patch1032 -p1
 %patch1089 -p1
 %patch1091 -p1 -R
-%patch1092 -p1
 %patch1300 -p1
 %patch1301 -p1
 %patch1302 -p1
@@ -1399,19 +1408,19 @@ fi
 %ifarch %{ix86} %{arm}
 %{_bindir}/wine32
 %ifnarch %{arm}
-%{_bindir}/wine32-preloader
+%{perms_pldr} %{_bindir}/wine32-preloader
 %endif
-%{_bindir}/wineserver32
+%{perms_srv} %{_bindir}/wineserver32
 %config %{_sysconfdir}/ld.so.conf.d/wine-%{_arch}.conf
 %endif
 
 %ifarch x86_64 aarch64
 %{_bindir}/wine64
-%{_bindir}/wineserver64
+%{perms_srv} %{_bindir}/wineserver64
 %config %{_sysconfdir}/ld.so.conf.d/wine-%{_arch}.conf
 %endif
 %ifarch x86_64 aarch64
-%{_bindir}/wine64-preloader
+%{perms_pldr} %{_bindir}/wine64-preloader
 %endif
 
 %ghost %{_bindir}/wine
@@ -2229,6 +2238,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/snmpapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/softpub.%{winedll}
 %{_libdir}/wine/%{winedlldir}/spoolsv.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/sppc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/srclient.%{winedll}
 %{_libdir}/wine/%{winedlldir}/srvcli.%{winedll}
 %{_libdir}/wine/%{winedlldir}/sspicli.%{winedll}
@@ -2299,9 +2309,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/windows.media.speech.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/%{winedlldir}/win32k.%{winesys}
-%if 0
 %{_libdir}/wine/%{winedlldir}/windows.networking.connectivity.%{winedll}
-%endif
 %endif
 %{_libdir}/wine/%{winesodir}/windowscodecs.so
 %{_libdir}/wine/%{winedlldir}/windowscodecs.%{winedll}
@@ -2880,6 +2888,10 @@ fi
 
 
 %changelog
+* Sat Jun 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.10-100
+- 6.10
+- Add rt prio and net raw capabilitiess
+
 * Sat May 29 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.9-103.20210528git35180d3
 - Bump
 

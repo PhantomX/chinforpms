@@ -1,0 +1,25 @@
+From a59004d65550ea9d970545c93324165e2bcff95e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 5 Jun 2021 05:25:23 -0300
+Subject: [PATCH] Fix staging windows.networking.connectivity.dll
+
+---
+ .../0003-windows.networking.connectivity-Add-stub-dll.patch     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/patches/windows.networking.connectivity-new-dll/0003-windows.networking.connectivity-Add-stub-dll.patch b/patches/windows.networking.connectivity-new-dll/0003-windows.networking.connectivity-Add-stub-dll.patch
+index 609ff2a..9f4a109 100644
+--- a/patches/windows.networking.connectivity-new-dll/0003-windows.networking.connectivity-Add-stub-dll.patch
++++ b/patches/windows.networking.connectivity-new-dll/0003-windows.networking.connectivity-Add-stub-dll.patch
+@@ -33,7 +33,7 @@ index 00000000000..6fc24a72feb
+ --- /dev/null
+ +++ b/dlls/windows.networking.connectivity/Makefile.in
+ @@ -0,0 +1,7 @@
+-+MODULE		= windows.networking.connectivity
+++MODULE		= windows.networking.connectivity.dll
+ +IMPORTS 	= combase uuid
+ +
+ +EXTRADLLFLAGS = -mno-cygwin
+-- 
+2.31.1
+
