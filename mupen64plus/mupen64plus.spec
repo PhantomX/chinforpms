@@ -1,13 +1,13 @@
-%global commit af812317fe99c51184d02981939d147e73dd07cc
+%global commit c9f49e2ea638d4f0afca7937aef57f8294ac95e7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210102
+%global date 20210511
 %global with_snapshot 1
 
-%global commit1 a2472a2788ee2ed5fda17beec988d1ae96f5036f
+%global commit1 af6af5b1fd4fdb435c836be15371dd047f395c4d
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-audio-sdl
 
-%global commit2 4015a8162a65dbfd9e07decd514f430f2dd0392a
+%global commit2 4340d306b7dd3e8a45d00129bced5f43fda5933c
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-input-sdl
 
@@ -15,7 +15,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{name}-rom
 
-%global commit4 e653930d75019f88dd386a3d534008d89dbc12ff
+%global commit4 88766c6e2d30492e64d78999825068aa598c1080
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{name}-rsp-hle
 
@@ -27,7 +27,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-video-glide64mk2
 
-%global commit7 90593058fac301e4168fcf2ef856200646636c51
+%global commit7 8cd53f0272cd3cd44510a01fd0aedcb7e5df0790
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{name}-video-rice
 
@@ -42,7 +42,7 @@
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -198,6 +198,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Jun 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-108.20210511gitc9f49e2
+- Last snapshot
+
 * Tue Jan 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-107.20210102gitaf81231
 - Update
 

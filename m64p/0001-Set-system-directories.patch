@@ -1,0 +1,49 @@
+From af86f2b1b90d1abb79a9fa0f98566eabc2b470ec Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 6 Jun 2021 23:10:53 -0300
+Subject: [PATCH] Set system directories
+
+https://aur.archlinux.org/cgit/aur.git/tree/030-m64p-fix-paths.patch?h=m64p
+---
+ mupen64plus-gui/mainwindow.cpp | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/mupen64plus-gui/mainwindow.cpp b/mupen64plus-gui/mainwindow.cpp
+index 698f84a..29e8a2a 100644
+--- a/mupen64plus-gui/mainwindow.cpp
++++ b/mupen64plus-gui/mainwindow.cpp
+@@ -4,6 +4,7 @@
+ #include <QCloseEvent>
+ #include <QActionGroup>
+ #include <QDesktopServices>
++#include <QStandardPaths>
+ #include "settingsdialog.h"
+ #include "plugindialog.h"
+ #include "mainwindow.h"
+@@ -371,11 +372,11 @@ MainWindow::MainWindow(QWidget *parent) :
+     updatePIF(ui);
+ 
+     if (!settings->contains("coreLibPath"))
+-        settings->setValue("coreLibPath", "$APP_PATH$");
++        settings->setValue("coreLibPath", "_RPM_LIBDIR_");
+     if (!settings->contains("pluginDirPath"))
+-        settings->setValue("pluginDirPath", "$APP_PATH$");
++        settings->setValue("pluginDirPath", "_RPM_LIBDIR_/m64p");
+     if (!settings->contains("configDirPath"))
+-        settings->setValue("configDirPath", "$CONFIG_PATH$");
++        settings->setValue("configDirPath", QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/mupen64plus");
+ 
+     updatePlugins();
+ 
+@@ -428,7 +429,7 @@ void MainWindow::updateApp()
+ 
+ void MainWindow::setupDiscord()
+ {
+-    QLibrary *discordLib = new QLibrary((QDir(QCoreApplication::applicationDirPath()).filePath("discord_game_sdk")), this);
++    QLibrary *discordLib = new QLibrary("_RPM_LIBDIR_/discord_game_sdk", this);
+ 
+     memset(&discord_app, 0, sizeof(discord_app));
+ 
+-- 
+2.31.1
+

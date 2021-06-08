@@ -131,7 +131,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2021.04.2
+Version:        2021.06
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -140,7 +140,7 @@ License:        MPLv1.1 or GPLv2+ or LGPLv2+
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}-%{branch}.tar.gz
+Source0:        %{vc_url}/archive/%{version}-%{branch}/%{name}-%{version}-%{branch}.tar.gz
 %endif
 
 # FreeBSD patches
@@ -218,6 +218,7 @@ Patch705:        0001-Update-patch-bug1403998.patch
 
 # Gentoo
 Patch800:        seamonkey-2.53.3-system_libvpx-1.8.patch
+Patch801:        seamonkey-2.53.7.1-CLEANUP-workaround.patch
 
 %if 0%{?system_nss}
 BuildRequires:  pkgconfig(nspr) >= %{nspr_version}
@@ -354,7 +355,7 @@ This package contains results of tests executed during build.
 %if 0%{?with_snapshot}
 %setup -q -n Waterfox-%{commit} -a 600
 %else
-%setup -q -n Waterfox-%{version} -a 600
+%setup -q -n Waterfox-%{version}-%{branch} -a 600
 %endif
 
 %if %{build_langpacks}
@@ -433,13 +434,16 @@ for i in 1404057 1404324 1404180 1405878 ;do
     %{freebsd_root}/patch-bug${i} > _patches/patch-bug${i}
 done
 
+# Remove patches that don't apply before batch
 # 1: unneeded
 # 2: unneeded
-# 3: no apply
-# 4: uncertain
+# 3: unneeded
+# 4: no apply
+# 5: uncertain
 for i in \
-  702179 730495 991253 1021761 1144632 1288587 1379148 1393235 1393283 1393627 1395486 1396722 \
-  1401909 1419762 1427126 1430508 1433747 1452576 1453127 1454285 1455235 1466606 1469257 \
+  702179 730495 991253 1021761 1144632 1288587 1379148 1393235 1393283 1393627 \
+  1395486 1396722 1398021 1399412 1401909 1419762 1427126 1430508 1433747 \
+  1452576 1452619 1453127 1454285 1455235 1466606 1469257 \
   1384121 1384701 1388744 1401063 1406396 1413143 1415883 1402442 1437450 \
   1447519
 do
@@ -450,6 +454,7 @@ rm -f _patches/patch-z-bug1355143
 
 patchcommand='patch -p0 -s -i'
 
+# Patch batch
 for i in _patches/patch-{bug{??????,???????},revert-bug*,z-*} ;do
   ${patchcommand} ${i}
 done
@@ -462,6 +467,7 @@ done
 %patch704 -p1 -b .no-diagnostics-color
 
 %patch800 -p2 -b .system-vpx
+%patch801 -p1 -b .CLEANUP-workaround
 
 # Patch for big endian platforms only
 %if 0%{?big_endian}
@@ -1032,6 +1038,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Mon Jun 07 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.06-1.classic
+- 2021.06
+
 * Mon Apr 26 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.04.2-1.classic
 - 2021.04.2
 

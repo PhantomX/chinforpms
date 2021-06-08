@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit f4cbc9ae9d4795c5fa4d37715c09b59fcb0358bd
+%global commit 01033af9a4c76c0c9bf9182fcefa31cddd29d2cd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210601
+%global date 20210606
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -38,7 +38,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.8.1
-Release:        109%{?gver}%{?dist}
+Release:        110%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -56,6 +56,7 @@ Source3:        %{name}-README-chinforpms
 
 Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
 Patch101:       %{url}/pull/1582.patch#/%{name}-gh-pr1582.patch
+Patch102:       0001-PR1582-add-optional-include.patch
 
 %if 0%{?dxvk_async}
 Patch200:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
@@ -128,6 +129,7 @@ package or when debugging this package.
 %endif
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
 
 %patch200 -p1
 %patch201 -p1
@@ -252,6 +254,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Jun 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8.1-110.20210606git01033af
+- Last snapshot
+
 * Sat Jun 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.8.1-109.20210601gitf4cbc9a
 - Bump
 

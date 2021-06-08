@@ -71,7 +71,7 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id cad02b4753e7eb5177e7714c78b3c08e18cf5d32
+%global ge_id a565b03d478131b88f0b49b85ba9e56620cd7eaf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
 %global tkg_id ebf72c4dbf05bc01e18eddeefb1daed903268832
@@ -126,7 +126,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.10
-Release:        100%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -194,6 +194,14 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # Revert to fix many game launchers displaying empty windows
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
+# 101-103 Revert, joystick crash
+Patch101:       %{whq_url}/1c5e57fc7503fcacd4f95c89c7da774a6090eba1#/%{name}-whq-1c5e57f.patch
+Patch102:       %{whq_url}/975e33c7e756dd052a5b6948dc0ef6b1abd34d9d#/%{name}-whq-975e33c.patch
+Patch103:       %{whq_url}/dc7547a84b9d9f32010d94853b47059111425bac#/%{name}-whq-dc7547a.patch
+Patch104:        https://source.winehq.org/patches/data/204113#/%{name}-whq-patch204113.patch
+Patch105:        https://source.winehq.org/patches/data/205277#/%{name}-whq-patch205277.patch
+Patch106:        https://source.winehq.org/patches/data/207289#/%{name}-whq-patch207289.patch
+Patch107:        https://source.winehq.org/patches/data/207318#/%{name}-whq-patch207318.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -228,6 +236,9 @@ Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/virtual_alloc_remi2.mypatch
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
+Patch1092:       %{ge_url}/wine-hotfixes/hotfix_regression_8a506ea9b2c44f9043048f8756848772bc75a598.patch#/%{name}-ge-hotfix_regression_8a506ea.patch
+Patch1093:       %{ge_url}/wine-hotfixes/hotfix_regression_626438a6be2df298c527870c8df9e6deb2f1c0fc.patch#/%{name}-ge-hotfix_regression_626438a.patch
+Patch1094:       %{ge_url}/wine-hotfixes/hotfix_regression_4088cf0f70961f4c54decf7915c5a767427c7700.patch#/%{name}-ge-hotfix_regression_4088cf0.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
@@ -841,6 +852,13 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch599 -p1
 
 %patch100 -p1 -R
+%patch103 -p1 -R
+%patch102 -p1 -R
+%patch101 -p1 -R
+%patch104 -p1
+%patch105 -p1
+%patch106 -p1
+%patch107 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -893,6 +911,9 @@ $patch_command -p1 -i patch1025.patch
 %patch1032 -p1
 %patch1089 -p1
 %patch1091 -p1 -R
+%patch1092 -p1
+%patch1093 -p1
+%patch1094 -p1
 %patch1300 -p1
 %patch1301 -p1
 %patch1302 -p1
@@ -2888,6 +2909,12 @@ fi
 
 
 %changelog
+* Mon Jun 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.10-102
+- Add some fixes from Proton GE
+
+* Sun Jun 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.10-101
+- Revert commits breaking joystick
+
 * Sat Jun 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.10-100
 - 6.10
 - Add rt prio and net raw capabilitiess
