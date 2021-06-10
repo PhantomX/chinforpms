@@ -1,6 +1,6 @@
-%global commit 1fae05dab5cda8bc20545c2d7b2efeaf0c124f6a
+%global commit 1a089c8f0b1e111fd1b077de2180ac125708b327
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210326
+%global date 20210520
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,8 +8,8 @@
 %endif
 
 Name:           adwaita-qt
-Version:        1.2.50
-Release:        101%{?gver}%{?dist}
+Version:        1.3.50
+Release:        100%{?gver}%{?dist}
 
 License:        LGPLv2+
 Summary:        Adwaita theme for Qt-based applications
@@ -108,6 +108,9 @@ Development files for %{name}.
 
 
 %changelog
+* Wed Jun 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.3.50-100.20210520git1a089c8
+- 1.3.50 snapshot
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.2.50-101.20210326git1fae05d
 - Bump
 

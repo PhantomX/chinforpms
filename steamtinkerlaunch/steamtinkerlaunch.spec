@@ -1,5 +1,5 @@
 Name:           steamtinkerlaunch
-Version:        4.0
+Version:        6.8
 Release:        1%{?dist}
 Summary:        Wrapper script for Steam custom launch options
 
@@ -63,7 +63,7 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 stl %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/stl
-cp -r categories lang misc regs reshadepresets tweaks %{buildroot}%{_datadir}/stl/
+cp -r categories eval guicfgs lang misc regs reshadepresets %{buildroot}%{_datadir}/stl/
 
 
 %files
@@ -73,6 +73,9 @@ cp -r categories lang misc regs reshadepresets tweaks %{buildroot}%{_datadir}/st
 %{_datadir}/stl
 
 %changelog
+* Thu Jun 10 2021 Phantom X <megaphantomx at hotmail dot com> - 6.8-1
+- 6.8
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 4.0-1
 - 4.0
 
