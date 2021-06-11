@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20210315
+// 20210610
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -74,6 +74,12 @@ pref("privacy.userContext.enabled", true);
 pref("privacy.userContext.ui.enabled", true);
 pref("toolkit.cosmeticAnimations.enabled", false);
 pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+
+// Proton
+pref("browser.proton.enabled", false);
+pref("browser.proton.contextmenus.enabled", false);
+pref("browser.proton.doorhangers.enabled", false);
+pref("browser.proton.modals.enabled", false);
 
 // Startup
 pref("browser.startup.page", 0);

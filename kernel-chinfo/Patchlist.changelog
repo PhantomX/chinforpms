@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/b2d7ee79e7db6c474f9aa4ff14f53d860f6df8c1
+ b2d7ee79e7db6c474f9aa4ff14f53d860f6df8c1 Bluetooth: use correct lock to prevent UAF of hdev object
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/2ec22f15d6bc74158a277bcb60758a6de73e696f
+ 2ec22f15d6bc74158a277bcb60758a6de73e696f nfc: fix NULL ptr dereference in llcp_sock_getname() after failed connect
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/26fb1eba374faf7704bab5126612ae87b9f9f9fa
  26fb1eba374faf7704bab5126612ae87b9f9f9fa selinux: Allow context mounts for unpriviliged overlayfs
 

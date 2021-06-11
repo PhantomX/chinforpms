@@ -93,7 +93,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit f15373670066677b75473944bc950273ac8d7f3f
+%global pfcommit 02f8fb2ed3a14a378e3630709d88a463d5b08311
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -132,7 +132,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id f17eb01161845e938845a4d96c1b159c5b7e2368
+%global opensuse_id e0a9eacadc6b17d2735f089dc91411454a00d9f5
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -854,7 +854,7 @@ Patch1019: %{opensuse_url}/ACPI-PM-s2idle-Add-missing-LPS0-functions-for-AMD.pat
 Patch1020: %{opensuse_url}/ACPI-idle-override-c-state-latency-when-not-in-confo.patch#/openSUSE-ACPI-idle-override-c-state-latency-when-not-in-confo.patch
 Patch1021: %{opensuse_url}/io_uring-update-sq_thread_idle-after-ctx-deleted.patch#/openSUSE-io_uring-update-sq_thread_idle-after-ctx-deleted.patch
 Patch1022: %{opensuse_url}/drm-amdgpu-display-remove-redundant-continue-stateme.patch#/openSUSE-drm-amdgpu-display-remove-redundant-continue-stateme.patch
-Patch1023: %{opensuse_url}/serial-stm32-fix-threaded-interrupt-handling.patch#/openSUSE-serial-stm32-fix-threaded-interrupt-handling.patch
+Patch1023: %{opensuse_url}/0001-x86-ioremap-Map-efi_mem_reserve-memory-as-encrypted-.patch#/openSUSE-0001-x86-ioremap-Map-efi_mem_reserve-memory-as-encrypted-.patch
 Patch1024: %{opensuse_url}/proc-Avoid-mixing-integer-types-in-mem_rw.patch#/openSUSE-proc-Avoid-mixing-integer-types-in-mem_rw.patch
 Patch1025: %{opensuse_url}/x86-events-amd-iommu-Fix-invalid-Perf-result-due-to-.patch#/openSUSE-x86-events-amd-iommu-Fix-invalid-Perf-result-due-to-.patch
 
@@ -2713,6 +2713,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.10-500.chinfo
+- 5.12.10 - pf4
+
 * Thu Jun 03 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.9-500.chinfo
 - 5.12.9 - pf4
 
