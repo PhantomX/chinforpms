@@ -23,19 +23,19 @@
 
 %global pkgname amdvlk
 
-%global commit1 95783cc95c317154202ca84d5d91619e0a097c13
+%global commit1 a85ea7baf89016f72d7cb7c94db4c996d70d9898
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 f6a6db59d49977cefa79dab3346a1eba2ecfca3c
+%global commit2 c89f405e3632f0b639faafe61cd03cb851492f4e
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 d81362ec6baf91a98895572d721ce7497efc8eeb
+%global commit3 14397c77fbc0c760397dd3162482407b2721a825
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 de5f376ca30a108f1fc1fd5cdf33fdfe9f9d5dbb
+%global commit4 02ac99ba650afb3aebff3eb8006862ce93d31968
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -51,19 +51,19 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 f0d110e3058bba9a31f9bd0a8727bdd0a559af82
+%global commit8 ecdd9a3e6bd384bf51d096b507291faa10f14685
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
-%global commit9 ba29b3f59633836c6bb160b951007c8fc3842dee
+%global commit9 f5417a4b6633c3217c9a1bc2f0c70b1454975ba7
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 418542eaefdb609f548d25a1e3962fb69d80da63
+%global commit10 2e1b5fb39ebc2ef4cb77005f8267e4f3a6241ba1
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 e71278cc927f9f76b1674185679d601751eb2541
+%global commit11 fe15158676657bf965e41c32e15ae5db7ea2ab6a
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -78,7 +78,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2021.2.3
+Version:        2021.2.5
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -202,6 +202,12 @@ sed \
   -e '/spirv-compiler-options/s|-Wno-deprecated-declarations|\0 -fPIC|g' \
   -i spvgen/external/SPIRV-cross/CMakeLists.txt
 
+mkdir _temp_install
+sed \
+  -e 's|@AMDVLK_INSTALL_PATH@|%{_libdir}|g' \
+  -e 's|@ISABITS@|%{?__isa_bits}|g' \
+  xgl/icd/Loader/LunarG/Lnx/amd-icd.json > _temp_install/amd_icd%{?__isa_bits}.json
+
 
 %build
 
@@ -236,14 +242,12 @@ mkdir -p %{buildroot}%{_libdir}
 mkdir -p %{buildroot}%{_datadir}/vulkan/icd.d
 mkdir -p %{buildroot}%{_datadir}/vulkan/implicit_layer.d
 
-mkdir _temp_install
 %if 0%{?with_bin}
   mv usr/lib/x86_64-linux-gnu/*.so _temp_install/
   mv etc/vulkan/icd.d/amd_icd%{?__isa_bits}.json _temp_install/
 %else
   mv %{__cmake_builddir}/icd/amdvlk%{?__isa_bits}.so _temp_install/
   mv %{__cmake_builddir}/spvgen/spvgen.so _temp_install/
-  mv AMDVLK/json/Redhat/amd_icd%{?__isa_bits}.json _temp_install/
 %endif
 install -pm0644 _temp_install/amd_icd%{?__isa_bits}.json \
   %{buildroot}%{_datadir}/vulkan/icd.d/amd_icd.%{icd_arch}.json
@@ -272,6 +276,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Fri Jun 11 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.2.5-1
+- 2021.Q2.5
+
 * Tue May 18 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.2.3-1
 - 2021.Q2.3
 
