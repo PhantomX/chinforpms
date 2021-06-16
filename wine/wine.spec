@@ -1,6 +1,6 @@
-%global commit 2a505efb1ca14f33503657eb070de6edd484b4f3
+%global commit f5bd0be6a44c1c7d69afb8b8eb6311923e7762a1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210609
+%global date 20210611
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -63,7 +63,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 08912e489611f63e7cc091a2f98cc38c067c0b27
+%global wine_stagingver e3cca687befffb4baee144dcd55f01a3204176eb
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -74,7 +74,7 @@
 %global ge_id f0865ee2b18eb4a4ad9b7f2f5bbfb80b7560852b
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ac8c36503d9fc77e2e0fc5b0f55a0b159d5dfc34
+%global tkg_id 56bd2967acd0882445c49643dceeb0debe05d44d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 501c34a72ad19ee94a5b3c564e08e2faa73ecd70
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -126,7 +126,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.10
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -194,6 +194,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # Revert to fix many game launchers displaying empty windows
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
+Patch101:        https://source.winehq.org/patches/data/207642#/%{name}-whq-patch207642.patch
 Patch104:        https://source.winehq.org/patches/data/204113#/%{name}-whq-patch204113.patch
 Patch105:        https://source.winehq.org/patches/data/205277#/%{name}-whq-patch205277.patch
 
@@ -209,7 +210,7 @@ Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_by
 Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
-Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu.patch
+Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-002.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-002.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -845,6 +846,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch599 -p1
 
 %patch100 -p1 -R
+%patch101 -p1
 %patch104 -p1
 %patch105 -p1
 
@@ -2897,6 +2899,9 @@ fi
 
 
 %changelog
+* Sat Jun 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.10-104.20210611gitf5bd0be
+- Bump
+
 * Thu Jun 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.10-103.20210609git2a505ef
 - Snapshot
 

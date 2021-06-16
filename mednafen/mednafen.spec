@@ -4,7 +4,7 @@
 %undefine _hardened_build
 
 Name:           mednafen
-Version:        1.27.0
+Version:        1.27.1
 %if 1%(echo %{version} | cut -d. -f3) == 10
 %global unstable UNSTABLE
 %endif
@@ -115,6 +115,9 @@ rm -rf Documentation/*.def Documentation/*.php Documentation/generate.sh \
 
 
 %changelog
+* Sun Jun 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.27.1-100
+- 1.27.1
+
 * Thu Apr 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.27.0-100.UNSTABLE
 - 1.27.0
 - BR: flac

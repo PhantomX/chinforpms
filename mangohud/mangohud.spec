@@ -9,11 +9,13 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global imgui_ver 1.81
+
 %global pkgname MangoHud
 %global vc_url https://github.com/flightlessmango
 
 Name:           mangohud
-Version:        0.6.1
+Version:        0.6.3
 Release:        1%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -35,6 +37,8 @@ Source0:        %{pkgname}-free-%{version}.tar.xz
 %endif
 Source2:        Makefile
 Source3:        %{name}.in
+Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{imgui_ver}.tar.gz
+Source11:       https://wrapdb.mesonbuild.com/v1/projects/imgui/%{imgui_ver}/1/get_zip#/imgui-%{imgui_ver}-1-wrap.zip
 
 
 BuildRequires:  gcc
@@ -49,11 +53,15 @@ BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  python3
 BuildRequires:  python3-mako
+BuildRequires:  unzip
 BuildRequires:  vulkan-headers
 Requires:       libglvnd%{?_isa}
 Requires:       libglvnd-glx%{?_isa}
 Requires:       libXNVCtrl%{?_isa}
 Requires:       vulkan-loader%{?_isa}
+
+Provides:       bundled(imgui) = %{imgui_ver}
+
 
 %description
 %{pkgname} is a modification of the Mesa Vulkan overlay. Including GUI
@@ -66,6 +74,9 @@ improvements, temperature reporting, and logging capabilities.
 %else
 %autosetup -n %{pkgname}-%{version} -p1
 %endif
+
+tar xf %{S:10} -C subprojects/
+unzip %{S:11} -d subprojects/
 
 %if 0%{sanitize}
   rm -f include/nvml.h
@@ -115,6 +126,9 @@ chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 
 %changelog
+* Sat Jun 12 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-1
+- 0.6.3
+
 * Tue Dec 01 2020 Phantom X <megaphantomx at hotmail dot com> - 0.6.1-1
 - 0.6.1
 

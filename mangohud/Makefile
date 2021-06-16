@@ -1,5 +1,5 @@
 NAME = MangoHud
-VERSION ?= 0.6.1
+VERSION ?= 0.6.3
 SNAPSHOT ?= 0
 DFSG = include/nvml.h
 
@@ -28,4 +28,4 @@ sanitize: clone
 	$(foreach var,$(DFSG),rm -rf $(DIRNAME)/$(var);)
 
 archive: clone sanitize
-	tar cJf ${NAME}-free-${TARBALLVER}.tar.xz ${DIRNAME}
+	tar --numeric-owner -cJf ${NAME}-free-${TARBALLVER}.tar.xz ${DIRNAME}
