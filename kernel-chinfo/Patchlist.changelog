@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/d6845a028944f7b9ee8fe7b5fe0239fa6c363c90
+ d6845a028944f7b9ee8fe7b5fe0239fa6c363c90 Bluetooth: btqca: Don't modify firmware contents in-place
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/b2d7ee79e7db6c474f9aa4ff14f53d860f6df8c1
  b2d7ee79e7db6c474f9aa4ff14f53d860f6df8c1 Bluetooth: use correct lock to prevent UAF of hdev object
 

@@ -5,7 +5,7 @@
 #global shortcommit  %%(c=%{gitcommit}; echo ${c:0:5})
 
 Name:           gstreamer1-plugins-base
-Version:        1.19.1
+Version:        1.18.4
 Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework base plugins
 
@@ -410,7 +410,6 @@ chrpath --delete %{buildroot}%{_bindir}/gst-play-1.0
 %{_includedir}/gstreamer-%{majorminor}/gst/video/colorbalancechannel.h
 %{_includedir}/gstreamer-%{majorminor}/gst/video/gstvideoaffinetransformationmeta.h
 %{_includedir}/gstreamer-%{majorminor}/gst/video/gstvideoaggregator.h
-%{_includedir}/gstreamer-%{majorminor}/gst/video/gstvideocodecalphameta.h
 %{_includedir}/gstreamer-%{majorminor}/gst/video/gstvideodecoder.h
 %{_includedir}/gstreamer-%{majorminor}/gst/video/gstvideoencoder.h
 %{_includedir}/gstreamer-%{majorminor}/gst/video/gstvideofilter.h
@@ -483,9 +482,6 @@ chrpath --delete %{buildroot}%{_bindir}/gst-play-1.0
 %endif
 
 %changelog
-* Sat Jun 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1.19.1-100
-- 1.19.1
-
 * Sun Apr 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1.18.4-100
 - Guy1524's preroll buffer patch
 
