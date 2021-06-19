@@ -1,7 +1,7 @@
-%global commit f5bd0be6a44c1c7d69afb8b8eb6311923e7762a1
+%global commit c82c5e96a9eb13bfa1fef95fb7467ce17624a341
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210611
-%global with_snapshot 1
+%global date 20210617
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -33,6 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  6.2.0
+%global winevulkan 1.2.178
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -63,7 +64,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver e3cca687befffb4baee144dcd55f01a3204176eb
+%global wine_stagingver 6.11
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -74,7 +75,7 @@
 %global ge_id f0865ee2b18eb4a4ad9b7f2f5bbfb80b7560852b
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 56bd2967acd0882445c49643dceeb0debe05d44d
+%global tkg_id 6e3413af6af35005a3cdc3856d71d45c727983ab
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 501c34a72ad19ee94a5b3c564e08e2faa73ecd70
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -125,8 +126,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.10
-Release:        104%{?gver}%{?dist}
+Version:        6.11
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -149,6 +150,8 @@ Source2:        wine.systemd
 Source3:        wine-README-Fedora
 Source6:        wine-README-chinforpms
 Source7:        wine-README-chinforpms-fshack
+
+Source50:       https://raw.githubusercontent.com/KhronosGroup/Vulkan-Docs/v%{winevulkan}/xml/vk.xml#/vk-%{winevulkan}.xml
 
 # desktop files
 Source100:      wine-notepad.desktop
@@ -194,7 +197,8 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # Revert to fix many game launchers displaying empty windows
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
-Patch101:        https://source.winehq.org/patches/data/207642#/%{name}-whq-patch207642.patch
+# https://bugs.winehq.org/show_bug.cgi?id=51277
+Patch101:       %{whq_url}/97afac469fbe012e22acc1f1045c88b1004a241f#/%{name}-whq-97afac4.patch
 Patch104:        https://source.winehq.org/patches/data/204113#/%{name}-whq-patch204113.patch
 Patch105:        https://source.winehq.org/patches/data/205277#/%{name}-whq-patch205277.patch
 
@@ -210,7 +214,7 @@ Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_by
 Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
-Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-002.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-002.patch
+Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-003.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-003.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -846,7 +850,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch599 -p1
 
 %patch100 -p1 -R
-%patch101 -p1
+%patch101 -p1 -R
 %patch104 -p1
 %patch105 -p1
 
@@ -930,6 +934,12 @@ if [ "${MONO_VER}" != "%{winemono}" ] || [ "${MONO_VER2}" != "%{winemono}" ];the
   exit 1
 fi
 
+WINEVULKAN_VER="$(grep '^VK_XML_VERSION' dlls/winevulkan/make_vulkan | awk '{print $3}' | tr -d \")"
+if [ "${WINEVULKAN_VER}" != "%{winevulkan}" ] ;then
+  echo "winevulkan version mismatch. Edit %%global winevulkan to ${WINEVULKAN_VER}."
+  exit 1
+fi
+
 cp -p %{SOURCE3} README.FEDORA
 cp -p %{SOURCE6} README.chinforpms
 %if 0%{?fshack}
@@ -941,6 +951,8 @@ mv -f README.chinforpms.fshack README.chinforpms
 cp -p %{SOURCE502} README.tahoma
 
 sed -e '/winemenubuilder\.exe/s|-a ||g' -i loader/wine.inf.in
+
+cp -p %{SOURCE50} ./dlls/winevulkan/vk-%{winevulkan}.xml
 
 ./dlls/winevulkan/make_vulkan
 ./tools/make_requests
@@ -1791,7 +1803,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/concrt140.%{winedll}
 %{_libdir}/wine/%{winedlldir}/connect.%{winedll}
 %{_libdir}/wine/%{winedlldir}/credui.%{winedll}
-%{_libdir}/wine/%{winesodir}/crtdll.so
 %{_libdir}/wine/%{winedlldir}/crtdll.%{winedll}
 %{_libdir}/wine/%{winesodir}/crypt32.so
 %{_libdir}/wine/%{winedlldir}/crypt32.%{winedll}
@@ -1859,6 +1870,10 @@ fi
 %{_libdir}/wine/%{winedlldir}/dpnaddr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpnet.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpnhpast.%{winedll}
+%{_libdir}/wine/%{winesodir}/dpnhupnp.dll.so
+%if 0%{?wine_mingw}
+%{_libdir}/wine/%{winedlldir}/dpnhupnp.dll
+%endif
 %{_libdir}/wine/%{winedlldir}/dpnlobby.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpvoice.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpwsockx.%{winedll}
@@ -2105,26 +2120,17 @@ fi
 %{_libdir}/wine/%{winedlldir}/msvcp120_app.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcp140.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcp140_1.%{winedll}
-%{_libdir}/wine/%{winesodir}/msvcr70.so
 %{_libdir}/wine/%{winedlldir}/msvcr70.%{winedll}
-%{_libdir}/wine/%{winesodir}/msvcr71.so
 %{_libdir}/wine/%{winedlldir}/msvcr71.%{winedll}
-%{_libdir}/wine/%{winesodir}/msvcr80.so
 %{_libdir}/wine/%{winedlldir}/msvcr80.%{winedll}
-%{_libdir}/wine/%{winesodir}/msvcr90.so
 %{_libdir}/wine/%{winedlldir}/msvcr90.%{winedll}
-%{_libdir}/wine/%{winesodir}/msvcr100.so
 %{_libdir}/wine/%{winedlldir}/msvcr100.%{winedll}
-%{_libdir}/wine/%{winesodir}/msvcr110.so
 %{_libdir}/wine/%{winedlldir}/msvcr110.%{winedll}
-%{_libdir}/wine/%{winesodir}/msvcr120.so
 %{_libdir}/wine/%{winedlldir}/msvcr120.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcr120_app.%{winedll}
-%{_libdir}/wine/%{winesodir}/msvcrt.so
 %{_libdir}/wine/%{winedlldir}/msvcrt.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcrt20.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcrt40.%{winedll}
-%{_libdir}/wine/%{winesodir}/msvcrtd.so
 %{_libdir}/wine/%{winedlldir}/msvcrtd.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvfw32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvidc32.%{winedll}
@@ -2269,7 +2275,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/tdi.%{winesys}
 %{_libdir}/wine/%{winedlldir}/traffic.%{winedll}
 %{_libdir}/wine/%{winedlldir}/tzres.%{winedll}
-%{_libdir}/wine/%{winesodir}/ucrtbase.so
 %{_libdir}/wine/%{winedlldir}/ucrtbase.%{winedll}
 %{_libdir}/wine/%{winedlldir}/uianimation.%{winedll}
 %{_libdir}/wine/%{winedlldir}/uiautomationcore.%{winedll}
@@ -2313,6 +2318,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/whoami.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wiaservc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wimgapi.%{winedll}
+%{_libdir}/wine/%{winedlldir}/win32u.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.gaming.input.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.globalization.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.devices.%{winedll}
@@ -2899,6 +2905,10 @@ fi
 
 
 %changelog
+* Sat Jun 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.11-100
+- 6.11
+- Add offline vk.xml for make_vulkan
+
 * Sat Jun 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.10-104.20210611gitf5bd0be
 - Bump
 
