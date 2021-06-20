@@ -51,6 +51,7 @@ spideroakone
 steam
 telegram-desktop
 -tg_owt
+uasm
 vasm
 -VirtualBox-extpack-oracle
 -VirtualBox-guest-additions-iso

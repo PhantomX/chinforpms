@@ -1,10 +1,26 @@
 %global sanitize 0
 
+%bcond_with asm
+
+%global platform %{nil}
+%if %{with asm}
+%ifarch %{ix86}
+%global platform _x86
+%endif
+%ifarch x86_64
+%global platform _x64
+%endif
+%ifarch arm
+%global platform _arm64
+%endif
+%endif
+%global makefile cmpl_gcc%{platform}
+
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
 Version:        21.02
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPLv2+ and BSD and Public Domain
@@ -20,9 +36,16 @@ Source1:        Makefile
 
 Patch0:         0001-make-remove-rar.patch
 
+%if %{with asm}
+ExclusiveArch:  %{ix86} x86_64 %{arm}
+%endif
+
 BuildRequires:  gcc-c++
 BuildRequires:  make
+%if %{with asm}
 #BuildRequires:  asmc
+BuildRequires:  uasm
+%endif
 
 
 %description
@@ -52,19 +75,20 @@ mv DOC/License.txt DOC/copying.txt .
 sed \
   -e 's| -Werror | |g' \
   -e 's|-O2 |%{build_cxxflags} |g' \
-  -e 's|$(LDFLAGS)|\0 %{build_ldflags}|g' \
+  -e 's|$(LDFLAGS)|\0 %{build_ldflags} -Wl,-z,noexecstack|g' \
   -e '/LDFLAGS/s| -s | |g' \
+  -e '/^MY_ASM/s|asmc|uasm|g' \
   -i CPP/7zip/7zip_gcc.mak
 
 
 %build
 pushd CPP/7zip/Bundles/Alone2
-%make_build -f ../../cmpl_gcc.mak
+%make_build -f ../../%{makefile}.mak
 popd
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 CPP/7zip/Bundles/Alone2/b/g/7zz %{buildroot}%{_bindir}/
+install -pm0755 CPP/7zip/Bundles/Alone2/b/g%{platform}/7zz %{buildroot}%{_bindir}/
 
 
 %files
@@ -74,5 +98,8 @@ install -pm0755 CPP/7zip/Bundles/Alone2/b/g/7zz %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Jun 19 2021 Phantom X <megaphantomx at hotmail dot com> - 21.02-2
+- ASM support with uasm (disabled by default)
+
 * Fri May 07 2021 Phantom X <megaphantomx at hotmail dot com> - 21.02-1
 - Initial spec
