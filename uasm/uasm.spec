@@ -59,7 +59,7 @@ sed \
 cp -p %{S:1} .
 sed \
   -e 's|/usr/bin/|exec %{_bindir}/|g' \
-  -e 's|@|"@"|g' \
+  -e 's|$@|"$@"|g' \
   -i %{name}-nocolor
 
 

@@ -15,6 +15,12 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global imgui_ver 1.80
+%global libelf_ver 1.0
+%global nowide_ver 0.0.0
+%global stb_ver 2.25
+%global volk_ver 131
+
 Name:           flycast
 Version:        7
 Release:        57%{?gver}%{?dist}
@@ -46,6 +52,8 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  cmake(glm)
 %if 0%{?with_spirv}
 BuildRequires:  pkgconfig(glslang)
+%else
+Provides:       bundled(glslang) = git~0
 %endif
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libudev)
@@ -64,6 +72,15 @@ Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 
+Provides:       bundled(chdpsr)
+Provides:       bundled(libelf) = %{libelf_ver}
+Provides:       bundled(nowide_ver) = %{nowide_ver}
+Provides:       bundled(picotcp)
+Provides:       bundled(stb) = %{stb_ver}
+Provides:       bundled(vixl)
+Provides:       bundled(volk) = %{volk_ver}
+Provides:       bundled(xbyak)
+
 
 %description
 %{name} is a multi-platform Sega Dreamcast emulator.
@@ -76,7 +93,7 @@ Requires:       vulkan-loader%{?_isa}
 %autosetup %{name}-r%{version} -p1
 %endif
 
-rm -rf core/deps/{glm,libzip,lzma,SDL2-*,xxHash,zlib}
+rm -rf core/deps/{glm,libzip,lzma,miniupnpc,SDL2-*,xxHash,zlib}
 
 %if 0%{?with_spirv}
 rm -rf core/deps/glslang

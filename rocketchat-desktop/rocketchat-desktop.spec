@@ -12,8 +12,8 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.0.7
-Release:        2%{?dist}
+Version:        3.2.2
+Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
 License:        MIT
@@ -102,6 +102,9 @@ done
 
 
 %changelog
+* Mon Jun 21 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.2-1
+- 3.2.2
+
 * Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.7-2
 - Fix gpu acceleration
 

@@ -149,6 +149,7 @@ Provides:       %{name}-sdl = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-sdl < %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
+Provides:       bundled(sha1-reichl)
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit7}
 
 

@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit 9d36ce757d7f6efa65239ef381cd4c79cc006df1
+%global commit 9d26a859676fd4a278149c927c7eea82157ee059
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210611
+%global date 20210621
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -14,9 +14,14 @@
 
 %global vc_url  https://github.com/stenzek/%{name}
 
+%global glad_ver 0.1.33
+%global imgui_ver 1.81
+%global md5_ver 1.6
+%global stb_ver 2.25
+
 Name:           duckstation
 Version:        0.1
-Release:        28%{?gver}%{?dist}
+Release:        29%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -55,6 +60,7 @@ BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libchdr)
+BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(samplerate)
@@ -85,6 +91,14 @@ Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
+
+Provides:       bundled(glad) = %{glad_ver}
+Provides:       bundled(imgui) = %{img_ver}
+Provides:       bundled(md5-deutsch) = %{md5_ver}
+Provides:       bundled(rcheevos) = 0~git
+Provides:       bundled(simpleini)
+Provides:       bundled(stb) = %{stb_ver}
+Provides:       bundled(xbyak)
 
 
 %description
@@ -120,7 +134,7 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cubeb discord-rpc libchdr libFLAC libsamplerate lzma minizip msvc \
-  rapidjson rcheevos tinyxml2 vulkan-loader/include/vulkan xxhash zlib
+  rapidjson tinyxml2 vulkan-loader/include/vulkan xxhash zlib
 
 %if 0%{?with_sysvulkan}
   rm -rf glslang
@@ -163,7 +177,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' \
 %build
 %cmake \
   -DUSE_WAYLAND:BOOL=ON \
-  -DENABLE_CHEEVOS:BOOL=OFF \
+  -DENABLE_CHEEVOS:BOOL=ON \
   -DENABLE_DISCORD_PRESENCE:BOOL=OFF \
 %{nil}
 
@@ -225,6 +239,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Jun 21 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-29.20210621git9d26a85
+- Update
+- Enable rcheevos support
+
 * Sat Jun 12 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-28.20210611git9d36ce7
 - Bump
 
