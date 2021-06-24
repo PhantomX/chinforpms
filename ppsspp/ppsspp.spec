@@ -1,6 +1,6 @@
-%global commit 39f479025ec6231fb2957f869ba66991c2e05e19
+%global commit 8e9b0122a8815d8c15c0d2cbff6a1f1828ca27fd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210610
+%global date 20210622
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -39,7 +39,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 2e1b5fb39ebc2ef4cb77005f8267e4f3a6241ba1
+%global commit7 9cdeefb5e322fc26b5fed70795fe79725648df1f
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -52,9 +52,11 @@
 
 %global vc_url  https://github.com/hrydgard
 
+%global jpge_ver 1.05
+
 Name:           ppsspp
 Version:        1.11.3
-Release:        112%{?gver}%{?dist}
+Release:        113%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -78,7 +80,7 @@ Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}/%
 Source10:       %{name}.appdata.xml
 
 Patch0:         %{name}-noupdate.patch
-Patch1:         %{name}-nodiscord.patch
+Patch1:         0001-Disable-Discord-support.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
@@ -138,6 +140,16 @@ Requires:       hicolor-icon-theme
 Requires:       google-roboto-condensed-fonts
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
+Provides:       bundled(armips) = 0~git%{shortcommit4}
+Provides:       bundled(gason)
+Provides:       bundled(glslang) = 0~git%{shortcommit6}
+Provides:       bundled(jpege) = %{jpge_ver}
+Provides:       bundled(libkirk)
+Provides:       bundled(sfmt19937)
+Provides:       bundled(sha1-reichl)
+Provides:       bundled(spirv-cross) = 0~git%{shortcommit7}
+Provides:       bundled(xbrz)
+
 Provides:       %{name}-libs = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-libs < %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -148,9 +160,6 @@ Obsoletes:      %{name}-qt < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{name}-sdl = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-sdl < %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
-
-Provides:       bundled(sha1-reichl)
-Provides:       bundled(spirv-cross) = 0~git%{shortcommit7}
 
 
 %description
@@ -365,6 +374,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Jun 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-113.20210622git8e9b012
+- Update
+
 * Sat Jun 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-112.20210610git39f4790
 - Bump
 

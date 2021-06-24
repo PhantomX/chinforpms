@@ -16,11 +16,12 @@
 
 # Add extra RESHDP Edition modifications (as a new binary)
 # https://github.com/MoArtis/dolphin
+# Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit b3a414ea9df1c30d4d0cc59cfbefc9eacda9c62a
+%global commit be2ec728e4cd642e22c8558dec7d75ca254a19b2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210529
+%global date 20210622
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -34,7 +35,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        138%{?gver}%{?dist}
+Release:        139%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -411,6 +412,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Tue Jun 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-139.20210622gitbe2ec72
+- New snapshot
+
 * Sat May 29 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-138.20210529gitb3a414e
 - Bump
 

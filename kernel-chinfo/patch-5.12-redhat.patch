@@ -72,7 +72,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index e0a252b64463..b47c61143e46 100644
+index d2fe36db78ae..0fb6443bd3a7 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1226,10 +1226,10 @@ index 0e94190ca4e8..dfc5d6772e64 100644
 +#endif /* CONFIG_PCIE_TEGRA194 */
 +
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 653660e3ba9e..98851d00dc4d 100644
+index 7bf76bca888d..804c0bc8bb4d 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4143,6 +4143,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4230,6 +4230,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1295,10 +1295,10 @@ index c30f6047410f..3d4c311bf87c 100644
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_DELL, 0x1fe0)
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 13fe37fbbd2c..77c57e075b0e 100644
+index 6ebb8bd92e9d..bf06d4a8b2ec 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5532,6 +5532,13 @@ static void hub_event(struct work_struct *work)
+@@ -5534,6 +5534,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -1458,7 +1458,7 @@ index 8aeebd6646dc..7737a5d71168 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index 825284baaf46..0b2b3f510b16 100644
+index 684a6061a13a..220579c0e963 100644
 --- a/kernel/crash_core.c
 +++ b/kernel/crash_core.c
 @@ -7,6 +7,7 @@

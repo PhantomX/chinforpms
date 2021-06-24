@@ -20,7 +20,7 @@ index a71588e..19c3eff 100644
 +APPNAME_DOMAIN = 'mcomix3'
  VERSION = '1.3.0.dev0'
  
- REQUIRED_PIL_VERSION = '5.1.0'
+ REQUIRED_PYTHON_VERSION = (3, 8, 0)
 diff --git a/mcomix/mcomix/i18n.py b/mcomix/mcomix/i18n.py
 index 5d067db..96a209c 100644
 --- a/mcomix/mcomix/i18n.py

@@ -1,6 +1,6 @@
-From 59997061463ee5ddf032e48440822451911a0cf5 Mon Sep 17 00:00:00 2001
+From 48508716a5baf7d696c5921340b6f305d0907c72 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 5 Aug 2020 23:16:45 -0300
+Date: Tue, 22 Jun 2021 20:58:35 -0300
 Subject: [PATCH] Disable Discord support
 
 ---
@@ -11,10 +11,10 @@ Subject: [PATCH] Disable Discord support
  4 files changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/Core/Config.cpp b/Core/Config.cpp
-index e5d490b..5b0c0b7 100644
+index 7f8f164..f9d55b4 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
-@@ -432,7 +432,9 @@ static ConfigSetting generalSettings[] = {
+@@ -464,7 +464,9 @@ static ConfigSetting generalSettings[] = {
  	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false),
  	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion),
  	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, true, true),
@@ -23,12 +23,12 @@ index e5d490b..5b0c0b7 100644
 +#endif
  	ConfigSetting("UISound", &g_Config.bUISound, false, true, false),
  
- 	ReportedConfigSetting("NumWorkerThreads", &g_Config.iNumWorkerThreads, &DefaultNumWorkers, true, true),
+ 	ConfigSetting("AutoLoadSaveState", &g_Config.iAutoLoadSaveState, 0, true, true),
 diff --git a/Core/Config.h b/Core/Config.h
-index 71fa93e..3069601 100644
+index b1a80d5..c2e4d3d 100644
 --- a/Core/Config.h
 +++ b/Core/Config.h
-@@ -131,7 +131,9 @@ struct Config {
+@@ -135,7 +135,9 @@ struct Config {
  	std::vector<std::string> vPinnedPaths;
  	std::string sLanguageIni;
  
@@ -40,10 +40,10 @@ index 71fa93e..3069601 100644
  	// GFX
  	int iGPUBackend;
 diff --git a/UI/DiscordIntegration.cpp b/UI/DiscordIntegration.cpp
-index b872b21..e38db51 100644
+index f5838fc..dd0cc8c 100644
 --- a/UI/DiscordIntegration.cpp
 +++ b/UI/DiscordIntegration.cpp
-@@ -46,7 +46,11 @@ Discord::~Discord() {
+@@ -45,7 +45,11 @@ Discord::~Discord() {
  }
  
  bool Discord::IsEnabled() const {
@@ -56,10 +56,10 @@ index b872b21..e38db51 100644
  
  void Discord::Init() {
 diff --git a/UI/GameSettingsScreen.cpp b/UI/GameSettingsScreen.cpp
-index 5594e2e..8385977 100644
+index 9051606..3cea922 100644
 --- a/UI/GameSettingsScreen.cpp
 +++ b/UI/GameSettingsScreen.cpp
-@@ -726,7 +726,9 @@ void GameSettingsScreen::CreateViews() {
+@@ -788,7 +788,9 @@ void GameSettingsScreen::CreateViews() {
  		wlanChannelChoice->HideChoice(i + 2);
  		wlanChannelChoice->HideChoice(i + 7);
  	}
@@ -70,5 +70,5 @@ index 5594e2e..8385977 100644
  	networkingSettings->Add(new ItemHeader(n->T("AdHoc Server")));
  	networkingSettings->Add(new CheckBox(&g_Config.bEnableAdhocServer, n->T("Enable built-in PRO Adhoc Server", "Enable built-in PRO Adhoc Server")));
 -- 
-2.26.2
+2.31.1
 

@@ -1,16 +1,18 @@
-%global commit 523f08f5f8b593580aa43479822ad239fd146486
+%global commit 9eb4fc7bcae40af9171d9d4e22ac1ebbd38d8d99
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 2020329
+%global date 20210526
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global sitetopdir %{python3_sitelib}/%{name}
+
 Name:           mcomix3
 # For now, choose version 0
 Version:        0
-Release:        0.9%{?gver}%{?dist}
+Release:        0.100%{?gver}%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
 # GPL version info is from mcomix/mcomixstarter.py
@@ -23,19 +25,16 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
-# Borrow some desktop related files
-Source10:       %{name}.desktop
-
 # Patches
 Patch2:         0002-Change-domain-name-for-gettext.patch
 Patch3:         0003-Search-gettext-files-in-system-wide-directory.patch
 
 BuildArch:      noarch
 
-BuildRequires:  python3-devel
-#BuildRequires:  %%{_bindir}/appstream-util
-BuildRequires:  %{_bindir}/desktop-file-install
+BuildRequires:  python3-devel >= 3.8
 BuildRequires:  gettext
+BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
 Requires:       gtk3
 Requires:       %{py3_dist pygobject}
 Requires:       %{py3_dist pillow}
@@ -58,6 +57,25 @@ It has been forked from the original MComix project and ported to python3.
 %autosetup -n %{name}-%{version} -p1
 %endif
 
+cat > %{name}.sh <<EOF
+#!/usr/bin/bash
+
+SITEDIR="%{sitetopdir}"
+
+export PYTHONPATH="\${SITEDIR}/%{name}"
+
+exec "\${SITEDIR}"/mcomixstarter.py "\$@"
+EOF
+sed -e 's|mcomixstarter|comicthumb|g' %{name}.sh > comicthumb.sh
+
+mv mime/mcomix.desktop mime/%{name}.desktop
+mv mime/mcomix.appdata.xml mime/%{name}.appdata.xml
+mv man/mcomix.1 man/%{name}.1
+
+sed -e 's|MComix|MComix3|g' -i mime/%{name}.{desktop,appdata.xml} man/%{name}.1
+
+sed -e 's|mcomix.desktop|%{name}.desktop|g' -i mime/%{name}.appdata.xml
+
 
 %build
 rm -rf localroot
@@ -69,8 +87,7 @@ python3 installer.py --srcdir=mcomix --target=$(pwd)/localroot/
 %install
 
 # Install manually...
-SITETOPDIR=%{python3_sitelib}/%{name}
-DSTTOPDIR=%{buildroot}${SITETOPDIR}
+DSTTOPDIR=%{buildroot}%{sitetopdir}
 mkdir -p ${DSTTOPDIR}
 mkdir -p ${DSTTOPDIR}/mcomix3
 mkdir -p %{buildroot}%{_datadir}/locale
@@ -108,42 +125,58 @@ rmdir localroot.2
 
 # Wrapper symlink
 mkdir -p %{buildroot}%{_bindir}
+install -pm0755 %{name}.sh %{buildroot}%{_bindir}/%{name}
+install -pm0755 comicthumb.sh %{buildroot}%{_bindir}/comicthumb
 
-cat > %{buildroot}%{_bindir}/%{name} <<EOF
-#!/usr/bin/bash
+mkdir -p %{buildroot}%{_datadir}/thumbnailers
+install -pm0644 mime/comicthumb.thumbnailer \
+  %{buildroot}%{_datadir}/thumbnailers/comicthumb.thumbnailer
 
-SITEDIR="${SITETOPDIR}"
-
-export PYTHONPATH="\${SITEDIR}/%{name}"
-
-exec "\${SITEDIR}"/mcomixstarter.py "\$@"
-EOF
-chmod 0755 %{buildroot}%{_bindir}/%{name}
-
+mkdir -p %{buildroot}%{_mandir}/man1
+for i in comicthumb %{name} ;do
+  install -pm0644 man/$i.1 %{buildroot}%{_mandir}/man1/
+done
 
 # Desktop file
 mkdir %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --remove-category Application \
+  --set-icon=%{name} \
+  --set-key=Exec \
+  --set-value="%{name} %f" \
   --dir %{buildroot}%{_datadir}/applications/ \
-  %{SOURCE10}
+  mime/%{name}.desktop
+
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm0644 mime/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 %find_lang %{name}
 
+
+%check
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+
+
 %files -f %{name}.lang
 %license  COPYING
-%doc    ChangeLog
-%doc    README*
-%doc    TODO
-
+%doc    ChangeLog README* TODO
 %{_bindir}/%{name}
+%{_bindir}/comicthumb
 %{python3_sitelib}/%{name}/
 # Do not own %%{_datadir}/icons/hicolor explicitly
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_datadir}/applications/%{name}.desktop
-# TODO: appdata file, not available yet (should item)
+%{_datadir}/thumbnailers/comicthumb.thumbnailer
+%{_mandir}/man1/%{name}.1*
+%{_mandir}/man1/comicthumb.1*
+%{_metainfodir}/%{name}.appdata.xml
+
 
 %changelog
+* Wed Jun 23 2021 Phantom X <megaphantomx at hotmail dot com> - 0-0.100.20210526git9eb4fc7
+- Update
+- Sync with Rawhide (thumbnailer and appdata)
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0-0.9.2020329git523f08f
 - Bump
 
