@@ -1,15 +1,17 @@
-%global commit 00319cf31f034e4d468a49a60265c7c5b8305b70
+%global commit 783f48dd2c22f6d7ebbf6b98187fdf1caaeda92d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210429
+%global date 20210609
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global drflac_ver 0.12.29
+
 Name:           libchdr
 Version:        0.1
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -30,6 +32,9 @@ BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(zlib)
+
+Provides:       bundled(dr_flac) = %{drflac_ver}
+
 
 %description
 %{name} is a standalone library for reading MAME's CHDv1-v5 formats.
@@ -84,6 +89,9 @@ sed -e 's| -O3 -flto||g' -i CMakeLists.txt
 
 
 %changelog
+* Fri Jun 25 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-7.20210609git783f48d
+- Last snapshot
+
 * Fri May 07 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-6.20210429git00319cf
 - Bump
 - New lzma-sdk rebuild

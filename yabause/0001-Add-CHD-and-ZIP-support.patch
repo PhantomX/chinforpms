@@ -1,20 +1,21 @@
-From eabdb1bee2db26ff7212fa76d35a9c086726861e Mon Sep 17 00:00:00 2001
+From 7eabe7193e34d5e362b5b66485053e36939fa42c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 21 Jul 2020 14:32:21 -0300
+Date: Thu, 24 Jun 2021 21:38:55 -0300
 Subject: [PATCH] Add CHD and ZIP support
 
 Borrowed from devmiyax fork: https://github.com/devmiyax/yabause
+Updated from Kronos fork: https://github.com/FCare/Kronos
 
 Also, link to system libchdr
 ---
  yabause/src/CMakeLists.txt        |   10 +
- yabause/src/cdbase.c              | 1166 +++++++++++++++++++++++------
+ yabause/src/cdbase.c              | 1173 +++++++++++++++++++++++------
  yabause/src/cdbase.h              |   13 +
  yabause/src/qt/ui/UISettings.cpp  |    2 +-
  yabause/src/qt/ui/UIYabause.cpp   |    2 +-
  yabause/src/tools/junzip/junzip.c |  285 +++++++
  yabause/src/tools/junzip/junzip.h |  122 +++
- 7 files changed, 1383 insertions(+), 217 deletions(-)
+ 7 files changed, 1390 insertions(+), 217 deletions(-)
  create mode 100644 yabause/src/tools/junzip/junzip.c
  create mode 100644 yabause/src/tools/junzip/junzip.h
 
@@ -47,7 +48,7 @@ index 4bd7730..474cdf9 100755
  if (APPLE)
  	FIND_LIBRARY(COREFOUNDATION_LIBRARY NAMES CoreFoundation )
 diff --git a/yabause/src/cdbase.c b/yabause/src/cdbase.c
-index d56d5dd..ffb1ed1 100644
+index d56d5dd..af67cdf 100644
 --- a/yabause/src/cdbase.c
 +++ b/yabause/src/cdbase.c
 @@ -1,7 +1,7 @@
@@ -443,11 +444,7 @@ index d56d5dd..ffb1ed1 100644
 -      // find the start of filename
 -      p = temp_buffer;
 +   memcpy(disc.session[0].track, trk, track_num * sizeof(track_info_struct));
- 
--      for (;;)
--      {
--         if (strcspn(p, "/\\") == strlen(p))
--         break;
++
 +   // buffer is no longer needed
 +   free(temp_buffer);
 +
@@ -455,8 +452,12 @@ index d56d5dd..ffb1ed1 100644
 +   return 0;
 +}
  
+-      for (;;)
+-      {
+-         if (strcspn(p, "/\\") == strlen(p))
+-         break;
+ 
 -         p += strcspn(p, "/\\") + 1;
-+
 +int infoFile(JZFile *zip, int idx, JZFileHeader *header, char *filename, void *user_data) {
 +    long offset;
 +    char name[1024];
@@ -618,10 +619,10 @@ index d56d5dd..ffb1ed1 100644
 +   FILE *iso_file;
 +   ZipEntry *cue;
 +   int index = 0;
++
++  zip = jzfile_from_stdio_file(fp);
  
 -      for (;;)
-+  zip = jzfile_from_stdio_file(fp);
-+
 +  if(jzReadEndRecord(zip, endRecord)) {
 +    printf("Couldn't read ZIP file end record.\n");
 +    return -1;
@@ -1009,11 +1010,20 @@ index d56d5dd..ffb1ed1 100644
     }
 -   else if (stricmp(ext, ".MDS") == 0 && strncmp(header, "MEDIA ", sizeof(header)) == 0)
 +   else if (stricmp(ext, ".ZIP") == 0)
-+   {
+    {
+-      // It's a MDS
+-      imgtype = IMG_MDS;
+-      ret = LoadMDS(iso, iso_file);
 +      // It's a BIN/CUE
 +      imgtype = IMG_BINCUE;
 +      ret = LoadBinCueInZip(iso, iso_file);
-+   }
+    }
+-	else if (stricmp(ext, ".CCD") == 0)
+-	{
+-		// It's a CCD
+-		imgtype = IMG_CCD;
+-		ret = LoadCCD(iso, iso_file);
+-	}
 +   else if (stricmp(ext, ".MDS") == 0) {
 +     num_read = fread((void *)header, 1, 6, iso_file);
 +     if (strncmp(header, "MEDIA ", sizeof(header)) == 0)
@@ -1024,20 +1034,11 @@ index d56d5dd..ffb1ed1 100644
 +     }
 +   }
 +   else if (stricmp(ext, ".CCD") == 0)
-    {
--      // It's a MDS
--      imgtype = IMG_MDS;
--      ret = LoadMDS(iso, iso_file);
++   {
 +  	// It's a CCD
 +  	imgtype = IMG_CCD;
 +  	ret = LoadCCD(iso, iso_file);
-    }
--	else if (stricmp(ext, ".CCD") == 0)
--	{
--		// It's a CCD
--		imgtype = IMG_CCD;
--		ret = LoadCCD(iso, iso_file);
--	}
++   }
 +  else if (stricmp(ext, ".CHD") == 0)
 +  {
 +    // It's a CCD
@@ -1184,13 +1185,13 @@ index d56d5dd..ffb1ed1 100644
 +   } else {
 +	 if (offset > tr->size) offset = tr->size;
 +     zipBuffer = &tr->zipBuffer[offset];
-+
-+   }
  
 -   fseek(track->fp, track->file_offset + (FAD-track->fad_start) * track->sector_size, SEEK_SET);
 -	if (track->sub_fp)
 -		fseek(track->sub_fp, track->file_offset + (FAD-track->fad_start) * 96, SEEK_SET);
 -   if (track->sector_size == 2448)
++   }
++
 +   if (currentTrack->sector_size == 2448)
     {
 -      if (!track->interleaved_sub)
@@ -1294,7 +1295,7 @@ index d56d5dd..ffb1ed1 100644
     }
  	return 1;
  }
-@@ -1421,3 +1874,286 @@ static void ISOCDReadAheadFAD(UNUSED u32 FAD)
+@@ -1421,3 +1874,293 @@ static void ISOCDReadAheadFAD(UNUSED u32 FAD)
  }
  
  //////////////////////////////////////////////////////////////////////////////
@@ -1535,7 +1536,7 @@ index d56d5dd..ffb1ed1 100644
 +  chdlba = loglba;
 +  for (i = 0; i < disc.session_num; i++)
 +  {
-+    for (j = 0; j < disc.session[i].track_num; j++)
++    for (j = 0; j < disc.session[i].track_num-1 ; j++)
 +    {
 +      //if (j == 1) {
 +      //  int a = 0;
@@ -1576,7 +1577,14 @@ index d56d5dd..ffb1ed1 100644
 +    }
 +  }
 +  else {
-+    memcpy(buffer, pChdInfo->hunk_buffer + hunk_offset, track->sector_size);
++    if (track->sector_size == 2048)
++    {
++      memcpy(buffer, syncHdr, 12);
++      memcpy((char *)buffer + 0x10, pChdInfo->hunk_buffer + hunk_offset, track->sector_size);
++    }
++    else {
++      memcpy(buffer, pChdInfo->hunk_buffer + hunk_offset, track->sector_size);
++    }
 +  }
 +
 +  return 1;
@@ -2060,5 +2068,5 @@ index 0000000..013c393
 +
 +#endif
 -- 
-2.26.2
+2.31.1
 

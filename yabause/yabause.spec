@@ -17,7 +17,7 @@
 
 Name:           yabause
 Version:        0.9.15
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -31,7 +31,7 @@ Source0:        https://download.tuxfamily.org/%{name}/releases/%{version}/%{nam
 
 Patch0:         %{name}-pr369.patch
 Patch1:         yabause-0.9.15-RWX.patch
-Patch2:         0001-Add-CHD-support.patch
+Patch2:         0001-Add-CHD-and-ZIP-support.patch
 
 BuildRequires:  cmake3
 BuildRequires:  make
@@ -149,6 +149,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Jun 25 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.15-102.20180707git7e38821
+- CHD patch update
+
 * Tue Jul 21 2020 Phantom X <megaphantomx at hotmail dot com> - 0.9.15-101.20180707git7e38821
 - CHD support
 
