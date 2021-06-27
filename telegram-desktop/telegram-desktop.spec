@@ -1,6 +1,6 @@
 %undefine _cmake_shared_libs
 
-%global commit10 2d804d2c9c5d05324c8ab22f2e6ff8306521b3c3
+%global commit10 f03ef05abf665437649a4f71886db1343590e862
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 tg_owt
 
@@ -30,7 +30,7 @@
 %bcond_with tgvoip
 %bcond_with wayland
 %bcond_without x11
-%bcond_with tg_owt
+%bcond_without tg_owt
 
 %bcond_with clang
 
@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.7.1
+Version:        2.8.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -60,8 +60,7 @@ Epoch:          1
 # * rlottie - LGPLv2+ -- static dependency;
 # * qt_functions.cpp - LGPLv3 -- build-time dependency.
 
-# tg_owt
-# Main project - BSD
+# tg_owt - BSD
 # abseil-cpp - ASL 2.0
 # libsrtp - BSD
 # libwebm - BSD
@@ -71,7 +70,11 @@ Epoch:          1
 # rnnoise - BSD
 # usrsctp - BSD
 
+%if %{without tg_owt}
 License:        GPLv3+ and LGPLv2+ and LGPLv3 and BSD and ASL 2.0
+%else
+License:        GPLv3+ and LGPLv2+ and LGPLv3 and BSD
+%endif
 URL:            https://github.com/telegramdesktop/%{appname}
 
 ExclusiveArch:  x86_64
@@ -80,12 +83,16 @@ Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.
 %if %{without tg_owt}
 Source10:       %{da_url}/tg_owt/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 Source11:       %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit11}.tar.gz#/%{srcname11}-%{shortcommit11}.tar.gz
+%if 0%{?fedora} < 35
 Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcname12}-%{shortcommit12}.tar.gz
+%endif
 %endif
 Source20:       thunar-sendto-%{name}.desktop
 
-# https://github.com/TelegramMessenger/tgcalls/commit/eded7cc540123eaf26361958b9a61c65cb2f7cfc
-Patch100: %{name}-build-fix.patch
+Patch0:         %{url}/commit/9afee2620aa2461123248f05cc748af5fd09a507.patch#/%{name}-gh-9afee26.patch
+Patch1:         %{url}/commit/48d482006a9821d76b7c27c79e6d606d32aa8641.patch#/%{name}-gh-48d4820.patch
+
+Patch100:       %{name}-build-fix.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -126,12 +133,14 @@ BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(libxxhash)
+BuildRequires:  pkgconfig(rnnoise)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(sigc++-2.0)
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
+BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  libappstream-glib
@@ -187,8 +196,22 @@ BuildRequires:  pkgconfig(xcb-screensaver)
 %if %{with tg_owt}
 BuildRequires:  cmake(tg_owt)
 %else
+BuildRequires:  cmake(absl)
 BuildRequires:  pkgconfig(libjpeg)
+BuildRequires:  pkgconfig(libpipewire-0.3)
+#BuildRequires:  pkgconfig(openh264)
+BuildRequires:  pkgconfig(usrsctp)
+%if 0%{?fedora} >= 35
+BuildRequires:  pkgconfig(vpx) >= 1.10.0
+%endif
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xcomposite)
+BuildRequires:  pkgconfig(xdamage)
+BuildRequires:  pkgconfig(xext)
+BuildRequires:  pkgconfig(xfixes)
+BuildRequires:  pkgconfig(xrender)
+BuildRequires:  pkgconfig(xrandr)
+BuildRequires:  pkgconfig(xtst)
 BuildRequires:  yasm
 Provides:       bundled(tg_owt) = 0~git%{shortcommit10}
 %endif
@@ -228,7 +251,9 @@ sed -e 's|../Libraries|Libraries|g' -i cmake/variables.cmake
 mkdir -p Libraries/tg_owt
 tar -xf %{S:10} --strip-components 1 -C Libraries/%{srcname10}/
 tar -xf %{S:11} -C Libraries/%{srcname10}/src/third_party/libyuv
+%if 0%{?fedora} < 35
 tar -xf %{S:12} -C Libraries/%{srcname10}/src/third_party/libvpx/source/libvpx
+%endif
 
 sed \
   -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
@@ -417,6 +442,11 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Sat Jun 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.8.0-100
+- 2.8.0 with 2.8.1 fix
+- %%bcond_without tg_owt
+- BR: rnnoise
+
 * Mon Apr 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.1-100
 - Fix alsa and libpulse BRs
 

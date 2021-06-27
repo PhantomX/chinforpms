@@ -50,7 +50,7 @@ snes9x
 spideroakone
 steam
 telegram-desktop
--tg_owt
+tg_owt
 uasm
 vasm
 -VirtualBox-extpack-oracle

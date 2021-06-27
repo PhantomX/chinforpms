@@ -1,6 +1,6 @@
-From 054969c17f1e2f241c4aff18e2cf41e1dc61d3e0 Mon Sep 17 00:00:00 2001
+From ec556fa879edc7e441dc755395001e10765f4956 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 25 Jan 2021 16:27:41 -0300
+Date: Sat, 26 Jun 2021 13:22:00 -0300
 Subject: [PATCH] Do not pop up emoji tabbed panel and media menu on mouse over
 
 Updated from https://github.com/telegramdesktop/tdesktop/pull/8009 by
@@ -15,7 +15,7 @@ Nicholas Guriev <guriev-ns@ya.ru>
  6 files changed, 15 insertions(+), 19 deletions(-)
 
 diff --git a/Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp b/Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp
-index 04afc8f..9834953 100644
+index 189c8ec..75881e5 100644
 --- a/Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp
 +++ b/Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp
 @@ -231,10 +231,6 @@ void TabbedPanel::leaveEventHook(QEvent *e) {
@@ -53,10 +53,10 @@ index edaa45f..4a88575 100644
  
  	void paintEvent(QPaintEvent *e) override;
 diff --git a/Telegram/SourceFiles/history/history_widget.cpp b/Telegram/SourceFiles/history/history_widget.cpp
-index 8772e78..d0d517a 100644
+index 91833a8..370fd3a 100644
 --- a/Telegram/SourceFiles/history/history_widget.cpp
 +++ b/Telegram/SourceFiles/history/history_widget.cpp
-@@ -833,8 +833,13 @@ void HistoryWidget::initVoiceRecordBar() {
+@@ -859,8 +859,13 @@ void HistoryWidget::initVoiceRecordBar() {
  void HistoryWidget::initTabbedSelector() {
  	refreshTabbedPanel();
  
@@ -73,10 +73,10 @@ index 8772e78..d0d517a 100644
  
  	const auto selector = controller()->tabbedSelector();
 diff --git a/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp b/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
-index da991c1..d7d153a 100644
+index 0180918..13873db 100644
 --- a/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
 +++ b/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
-@@ -1382,8 +1382,13 @@ void ComposeControls::initTabbedSelector() {
+@@ -1488,8 +1488,13 @@ void ComposeControls::initTabbedSelector() {
  		setTabbedPanel(nullptr);
  	}
  
@@ -93,18 +93,18 @@ index da991c1..d7d153a 100644
  
  	const auto selector = _window->tabbedSelector();
 diff --git a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp b/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
-index 26dba31..ad2adaf 100644
+index ab52351..c3b2dc6 100644
 --- a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
 +++ b/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
-@@ -421,7 +421,6 @@ OverlayWidget::OverlayWidget()
- 	_docCancel->addClickHandler([=] { onSaveCancel(); });
+@@ -469,7 +469,6 @@ OverlayWidget::OverlayWidget()
+ 	_docCancel->addClickHandler([=] { saveCancel(); });
  
  	_dropdown->setHiddenCallback([this] { dropdownHidden(); });
--	_dropdownShowTimer.setCallback([=] { onDropdown(); });
+-	_dropdownShowTimer.setCallback([=] { showDropdown(); });
  }
  
  void OverlayWidget::refreshLang() {
-@@ -3971,11 +3970,6 @@ void OverlayWidget::updateOverRect(OverState state) {
+@@ -4179,11 +4178,6 @@ void OverlayWidget::updateOverRect(OverState state) {
  bool OverlayWidget::updateOverState(OverState newState) {
  	bool result = true;
  	if (_over != newState) {
@@ -117,10 +117,10 @@ index 26dba31..ad2adaf 100644
  		updateOverRect(newState);
  		if (_over != OverNone) {
 diff --git a/Telegram/SourceFiles/media/view/media_view_overlay_widget.h b/Telegram/SourceFiles/media/view/media_view_overlay_widget.h
-index d2fd5d6..01cc31d 100644
+index 3d567ed..76fce9c 100644
 --- a/Telegram/SourceFiles/media/view/media_view_overlay_widget.h
 +++ b/Telegram/SourceFiles/media/view/media_view_overlay_widget.h
-@@ -502,7 +502,6 @@ private:
+@@ -543,7 +543,6 @@ private:
  
  	base::unique_qptr<Ui::PopupMenu> _menu;
  	object_ptr<Ui::DropdownMenu> _dropdown;
@@ -129,5 +129,5 @@ index d2fd5d6..01cc31d 100644
  	bool _receiveMouse = true;
  
 -- 
-2.29.2
+2.31.1
 

@@ -1,12 +1,14 @@
-%global commit0 be23804afce3bb2e80a1d57a7c1318c71b82b7de
+%global debug_package %{nil}
+
+%global commit0 f03ef05abf665437649a4f71886db1343590e862
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20210124
+%global date 20210617
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
 
-%global commit2 2392fe53ab3033fe5c679514dce448f55843fd51
+%global commit2 5b63f0f821e94f8072eb483014cfc33b05978bb9
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 libvpx
 
@@ -16,7 +18,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -33,22 +35,39 @@ URL:            https://github.com/desktop-app/%{name}
 
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
+%if 0%{?fedora} < 35
 Source2:        %{cvc_url}/webm/libvpx/+archive/%{shortcommit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
+%endif
 
-Patch0:         0001-Fix-undefined-references.patch
-
+BuildRequires:  cmake(absl)
 BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(gio-2.0)
+BuildRequires:  pkgconfig(glib-2.0)
+BuildRequires:  pkgconfig(gobject-2.0)
+BuildRequires:  pkgconfig(gio-unix-2.0)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavresample)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libjpeg)
+BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libswscale)
+#BuildRequires:  pkgconfig(openh264)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(protobuf)
+BuildRequires:  pkgconfig(usrsctp)
+%if 0%{?fedora} >= 35
+BuildRequires:  pkgconfig(vpx)
+%endif
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xcomposite)
+BuildRequires:  pkgconfig(xdamage)
+BuildRequires:  pkgconfig(xext)
+BuildRequires:  pkgconfig(xfixes)
+BuildRequires:  pkgconfig(xrender)
+BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xtst)
 
 BuildRequires:  cmake
@@ -57,15 +76,52 @@ BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 BuildRequires:  yasm
 
-Provides:       bundled(abseil-cpp) = 0~gitfba8a31
+%description
+Special fork of the OpenWebRTC library for the Telegram messenger.
+
+%package devel
+Summary:        Development files for %{name}
+Requires:       cmake(absl)
+Requires:       pkgconfig(alsa)
+Requires:       pkgconfig(gio-2.0)
+Requires:       pkgconfig(glib-2.0)
+Requires:       pkgconfig(gobject-2.0)
+Requires:       pkgconfig(gio-unix-2.0)
+Requires:       pkgconfig(libavcodec)
+Requires:       pkgconfig(libavformat)
+Requires:       pkgconfig(libavresample)
+Requires:       pkgconfig(libavutil)
+Requires:       pkgconfig(libjpeg)
+Requires:       pkgconfig(libpipewire-0.3)
+Requires:       pkgconfig(libpulse)
+Requires:       pkgconfig(libswscale)
+#Requires:       pkgconfig(openh264)
+Requires:       pkgconfig(openssl)
+Requires:       pkgconfig(opus)
+Requires:       pkgconfig(usrsctp)
+%if 0%{?fedora} >= 35
+Requires:       pkgconfig(vpx) >= 1.10.0
+%endif
+Requires:       pkgconfig(x11)
+Requires:       pkgconfig(xcomposite)
+Requires:       pkgconfig(xdamage)
+Requires:       pkgconfig(xext)
+Requires:       pkgconfig(xfixes)
+Requires:       pkgconfig(xrender)
+Requires:       pkgconfig(xrandr)
+Requires:       pkgconfig(xtst)
+Provides:       %{name}-static%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+#Provides:       bundled(abseil-cpp) = 0~gitfba8a31
 Provides:       bundled(base64) = 0~git
 Provides:       bundled(fft) = 0~git
 Provides:       bundled(fft4g) = 0~git
 Provides:       bundled(g711) = 0~git
 Provides:       bundled(g722) = 0~git
-Provides:       bundled(libevent) = 1.4.15
+#Provides:       bundled(libevent) = 1.4.15
 Provides:       bundled(libsrtp) = 2.2.0~git94ac00d
+%if 0%{?fedora} < 35
 Provides:       bundled(libvpx) = 1.8.2~git%{shortcommit2}
+%endif
 Provides:       bundled(libwebm) = 0~git
 Provides:       bundled(libyuv) = 0~git%{shortcommit1}
 Provides:       bundled(openh264) = 1.10.0~git6f26bce
@@ -74,24 +130,7 @@ Provides:       bundled(portaudio) = 0~git
 Provides:       bundled(rnnoise) = 0~git91ef40
 Provides:       bundled(sigslot) = 0~git
 Provides:       bundled(spl_sqrt_floor) = 0~git
-Provides:       bundled(usrsctp) = 1.0.0~gitbee946a
-
-%description
-Special fork of the OpenWebRTC library for the Telegram messenger.
-
-%package devel
-Summary:        Development files for %{name}
-Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       pkgconfig(alsa)
-Requires:       pkgconfig(libavcodec)
-Requires:       pkgconfig(libavformat)
-Requires:       pkgconfig(libavresample)
-Requires:       pkgconfig(libavutil)
-Requires:       pkgconfig(libjpeg)
-Requires:       pkgconfig(libpulse)
-Requires:       pkgconfig(libswscale)
-Requires:       pkgconfig(openssl)
-Requires:       pkgconfig(opus)
+#Provides:       bundled(usrsctp) = 1.0.0~gitbee946a
 
 
 %description devel
@@ -101,10 +140,9 @@ Requires:       pkgconfig(opus)
 %autosetup -n %{name}-%{commit0} -p1
 
 tar -xf %{S:1} -C src/third_party/libyuv
+%if 0%{?fedora} < 35
 tar -xf %{S:2} -C src/third_party/libvpx/source/libvpx
-
-sed -e 's/STATIC/SHARED/g' -i CMakeLists.txt
-echo 'set_target_properties(tg_owt PROPERTIES SOVERSION 0 VERSION 0.0.0)' >> CMakeLists.txt
+%endif
 
 mkdir legal
 cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
@@ -152,24 +190,29 @@ cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
   -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON \
+  -DBUILD_SHARED_LIBS:BOOL=OFF \
   -DTG_OWT_USE_PROTOBUF:BOOL=ON \
-  -DTG_OWT_PACKAGED_BUILD:BOOL=ON
+  -DTG_OWT_PACKAGED_BUILD:BOOL=ON \
+%{nil}
+
 %cmake_build
 
 %install
 %cmake_install
 
-%files
-%doc src/AUTHORS src/OWNERS legal/README.*
-%license LICENSE src/PATENTS legal/LICENSE.* legal/PATENTS.*
-%{_libdir}/lib%{name}.so.0*
 
 %files devel
+%doc src/AUTHORS src/OWNERS legal/README.*
+%license LICENSE src/PATENTS legal/LICENSE.* legal/PATENTS.*
 %{_includedir}/%{name}
 %{_libdir}/cmake/%{name}
-%{_libdir}/lib%{name}.so
+%{_libdir}/lib%{name}.a
+
 
 %changelog
+* Sat Jun 26 2021 Phantom X <megaphantomx at hotmail dot com> - 0-104.20210617gitf03ef05
+- Static lib only
+
 * Tue Jan 26 2021 Phantom X <megaphantomx at hotmail dot com> - 0-103.20210124gitbe23804
 - Update to latest snapshot
 

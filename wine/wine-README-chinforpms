@@ -8,6 +8,12 @@ experimental patches, mostly from https://github.com/Frogging-Family.
 If a bug happens, revert to Fedora official and try to reproduce it again.
 
 
+DOSBOX alternate binary
+=================================
+Enable with DOSBOX=alternate-dosbox-binary environment variable
+Only binary name is needed, do not set full path
+
+
 WINE_DISABLE_WRITE_WATCH override
 =================================
 Enable with WINE_DISABLE_WRITE_WATCH=1 environment variable

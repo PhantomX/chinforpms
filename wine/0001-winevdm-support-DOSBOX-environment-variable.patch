@@ -1,0 +1,196 @@
+From 2a7936fb8c7d4eedc7ef86ad22136cc0dee4d998 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 25 Jun 2021 11:40:47 -0300
+Subject: [PATCH] winevdm: support DOSBOX environment variable
+
+So "DOSBOX=alternate-dosbox-binary wine dos16app" will work too
+---
+ programs/winevdm/Makefile.in |  3 +-
+ programs/winevdm/utils.c     | 63 ++++++++++++++++++++++++++++++++++++
+ programs/winevdm/utils.h     | 40 +++++++++++++++++++++++
+ programs/winevdm/winevdm.c   | 11 ++++---
+ 4 files changed, 112 insertions(+), 5 deletions(-)
+ create mode 100644 programs/winevdm/utils.c
+ create mode 100644 programs/winevdm/utils.h
+
+diff --git a/programs/winevdm/Makefile.in b/programs/winevdm/Makefile.in
+index c841f3c..9b53004 100644
+--- a/programs/winevdm/Makefile.in
++++ b/programs/winevdm/Makefile.in
+@@ -3,6 +3,7 @@ APPMODE   = -mwindows
+ IMPORTS   = user32 kernel comctl32
+ 
+ C_SRCS = \
+-	winevdm.c
++	winevdm.c \
++	utils.c
+ 
+ RC_SRCS = winevdm.rc
+diff --git a/programs/winevdm/utils.c b/programs/winevdm/utils.c
+new file mode 100644
+index 0000000..5a56877
+--- /dev/null
++++ b/programs/winevdm/utils.c
+@@ -0,0 +1,63 @@
++/*
++ * Useful functions for winegcc
++ *
++ * Copyright 2000 Francois Gouget
++ * Copyright 2002 Dimitrie O. Paun
++ * Copyright 2003 Richard Cohen
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
++ */
++
++#include "config.h"
++#include "wine/port.h"
++
++#include <stdio.h>
++#include <string.h>
++#include <stdarg.h>
++#include <stdlib.h>
++#include <errno.h>
++
++#include "utils.h"
++
++
++void* xmalloc(size_t size)
++{
++    void* p;
++
++    if ((p = malloc (size)) == NULL)
++        error("Could not malloc %d bytes\n", size);
++
++    return p;
++}
++
++char* strmake(const char* fmt, ...)
++{
++    int n;
++    size_t size = 100;
++    va_list ap;
++
++    while (1)
++    {
++        char *p = xmalloc (size);
++        va_start(ap, fmt);
++	n = vsnprintf (p, size, fmt, ap);
++	va_end(ap);
++        if (n == -1) size *= 2;
++        else if ((size_t)n >= size) size = n + 1;
++        else return p;
++        free(p);
++    }
++}
++
+diff --git a/programs/winevdm/utils.h b/programs/winevdm/utils.h
+new file mode 100644
+index 0000000..63ddc04
+--- /dev/null
++++ b/programs/winevdm/utils.h
+@@ -0,0 +1,40 @@
++/*
++ * Useful functions for winegcc
++ *
++ * Copyright 2000 Francois Gouget
++ * Copyright 2002 Dimitrie O. Paun
++ * Copyright 2003 Richard Cohen
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
++ */
++
++#ifndef __GNUC__
++#define __attribute__(X)
++#endif
++
++#ifndef DECLSPEC_NORETURN
++# if defined(_MSC_VER) && (_MSC_VER >= 1200) && !defined(MIDL_PASS)
++#  define DECLSPEC_NORETURN __declspec(noreturn)
++# elif defined(__GNUC__)
++#  define DECLSPEC_NORETURN __attribute__((noreturn))
++# else
++#  define DECLSPEC_NORETURN
++# endif
++#endif
++
++void DECLSPEC_NORETURN error(const char* s, ...);
++
++void* xmalloc(size_t size);
++char* strmake(const char* fmt, ...) __attribute__((__format__ (__printf__, 1, 2 )));
+diff --git a/programs/winevdm/winevdm.c b/programs/winevdm/winevdm.c
+index 1ab91f4..bc3df99 100644
+--- a/programs/winevdm/winevdm.c
++++ b/programs/winevdm/winevdm.c
+@@ -34,9 +34,9 @@
+ #include "wine/unicode.h"
+ #include "wine/debug.h"
+ 
+-WINE_DEFAULT_DEBUG_CHANNEL(winevdm);
++#include "utils.h"
+ 
+-#define DOSBOX "dosbox"
++WINE_DEFAULT_DEBUG_CHANNEL(winevdm);
+ 
+ /*** PIF file structures ***/
+ #include "pshpack1.h"
+@@ -112,12 +112,15 @@ typedef struct {
+ static char *find_dosbox(void)
+ {
+     const char *envpath = getenv( "PATH" );
++    const char* DOSBOX;
+     struct stat st;
+     char *path, *p, *buffer, *dir;
+     size_t envpath_len;
+ 
+     if (!envpath) return NULL;
+ 
++    if (!(DOSBOX = getenv("DOSBOX"))) DOSBOX = "dosbox";
++
+     envpath_len = strlen( envpath );
+     path = HeapAlloc( GetProcessHeap(), 0, envpath_len + 1 );
+     buffer = HeapAlloc( GetProcessHeap(), 0, envpath_len + strlen(DOSBOX) + 2 );
+@@ -132,7 +135,7 @@ static char *find_dosbox(void)
+         while (*p && *p != ':') p++;
+         if (*p == ':') *p++ = 0;
+         strcpy( buffer, dir );
+-        strcat( buffer, "/" DOSBOX );
++        strcat( buffer, strmake("/%s", DOSBOX) );
+         if (!stat( buffer, &st ))
+         {
+             HeapFree( GetProcessHeap(), 0, path );
+@@ -221,7 +224,7 @@ static void start_dosbox( const char *appname, const char *args )
+ static void start_dos_exe( LPCSTR filename, LPCSTR cmdline )
+ {
+     start_dosbox( filename, cmdline );
+-    WINE_MESSAGE( "winevdm: %s is a DOS application, you need to install DOSBox.\n", filename );
++    WINE_MESSAGE( "winevdm: %s is a DOS application, you need to install DOSBox, or set DOSBOX environment variable to alternate binary name.\n", filename );
+     ExitProcess(1);
+ }
+ 
+-- 
+2.31.1
+
