@@ -9,7 +9,7 @@
 %global minver %%(echo %{version} | cut -d. -f4)
 
 Name:           wps-office
-Version:        11.1.0.9719
+Version:        11.1.0.10161
 Release:        1%{?dist}
 Summary:        WPS Office Suite
 
@@ -242,6 +242,9 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
+* Wed Jun 30 2021 - 11.1.0.10161-1
+- 11.1.0.10161
+
 * Wed Oct 28 2020 - 11.1.0.9719-1
 - 11.1.0.9719
 

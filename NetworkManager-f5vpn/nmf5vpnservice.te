@@ -1,0 +1,15 @@
+module nmf5vpnservice 1.0;
+
+require {
+        type ptmx_t;
+        type NetworkManager_t;
+        type devpts_t;
+        class chr_file { ioctl open read write };
+}
+
+#============= NetworkManager_t ==============
+
+#!!!! This avc can be allowed using the boolean 'daemons_use_tty'
+allow NetworkManager_t devpts_t:chr_file open;
+
+allow NetworkManager_t ptmx_t:chr_file { ioctl open read write };

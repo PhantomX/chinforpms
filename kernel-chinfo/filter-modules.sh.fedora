@@ -27,6 +27,8 @@ ethdrvs="3com adaptec alteon amd aquantia atheros broadcom cadence calxeda chels
 
 inputdrvs="gameport tablet touchscreen"
 
+hiddrvs="surface-hid"
+
 scsidrvs="aacraid aic7xxx be2iscsi bfa bnx2i bnx2fc csiostor cxgbi esas2r fcoe fnic isci libsas lpfc megaraid mpt3sas mvsas pm8001 qla2xxx qla4xxx sym53c8xx_2 ufs qedf"
 
 usbdrvs="atm image misc serial"
@@ -37,7 +39,7 @@ netprots="6lowpan appletalk atm ax25 batman-adv bluetooth can dsa ieee802154 l2t
 
 drmdrvs="amd ast bridge gma500 i2c i915 mgag200 nouveau panel radeon"
 
-singlemods="ntb_netdev iscsi_ibft iscsi_boot_sysfs megaraid pmcraid qedi qla1280 9pnet_rdma rpcrdma nvmet-rdma nvme-rdma hid-picolcd hid-prodikeys hwpoison-inject target_core_user sbp_target cxgbit  chcr parport_serial regmap-sdw hid-asus iTCO_wdt rnbd-client rnbd-server mlx5_vdpa"
+singlemods="ntb_netdev iscsi_ibft iscsi_boot_sysfs megaraid pmcraid qedi qla1280 9pnet_rdma rpcrdma nvmet-rdma nvme-rdma hid-picolcd hid-prodikeys hwpoison-inject target_core_user sbp_target cxgbit  chcr parport_serial regmap-sdw hid-asus iTCO_wdt rnbd-client rnbd-server mlx5_vdpa spi-altera-dfl"
 
 # Grab the arch-specific filter list overrides
 source ./filter-$2.sh
@@ -110,6 +112,12 @@ done
 for input in ${inputdrvs}
 do
 	filter_dir $1 drivers/input/${input}
+done
+
+# hid
+for hid in ${hiddrvs}
+do
+	filter_dir $1 drivers/hid/${hid}
 done
 
 # USB

@@ -22,8 +22,7 @@ Source3:        tvw_exec
 Source4:        tvw_extra
 Source5:        tvw_main
 Source6:        tvw_profile
-Source7:        %{name}d.pp
-Source8:        %{name}d.te
+Source7:        %{name}d.te
 
 # Other architectures can be supported, but not by this spec
 ExclusiveArch:  x86_64
@@ -32,6 +31,8 @@ ExclusiveArch:  x86_64
 BuildRequires:  systemd
 BuildRequires:  desktop-file-utils
 BuildRequires:  chrpath
+BuildRequires:  checkpolicy
+BuildRequires:  policycoreutils
 Requires:       hicolor-icon-theme
 Requires:       xdg-utils
 Requires(post): policycoreutils 
@@ -98,7 +99,8 @@ EOF
 
 
 %build
-
+checkmodule -M -m -o %{name}d.mod %{name}d.te
+semodule_package -o %{name}d.pp -m %{name}d.mod
 
 %install
 mkdir -p %{buildroot}%{progdir}/{resources,script}
@@ -116,7 +118,7 @@ done
 
 install -pm0755 opt/%{name}/tv_bin/script/execscript %{buildroot}%{progdir}/script/
 
-install -pm0644 %{name}d.pp %{buildroot}%{progdir}/script/%{name}d.pp
+install -pm0644 %{name}d.{te,pp} %{buildroot}%{progdir}/script/
 
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'

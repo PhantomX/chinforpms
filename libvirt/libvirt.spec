@@ -85,6 +85,10 @@
 %endif
 
 %define with_storage_iscsi_direct 0%{!?_without_storage_iscsi_direct:1}
+# libiscsi has been dropped in RHEL-9
+%if 0%{?rhel} > 8
+    %define with_storage_iscsi_direct 0
+%endif
 
 # Other optional features
 %define with_numactl          0%{!?_without_numactl:1}
@@ -196,7 +200,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 7.4.0
+Version: 7.5.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -247,7 +251,6 @@ BuildRequires: git
 BuildRequires: perl-interpreter
 BuildRequires: python3
 BuildRequires: systemd-rpm-macros
-BuildRequires: systemd-units
 %if %{with_libxl}
 BuildRequires: xen-devel
 %endif
@@ -414,10 +417,7 @@ Requires: polkit >= 0.112
 Requires: dmidecode
 %endif
 # For service management
-Requires(post): systemd-units
-Requires(post): systemd-sysv
-Requires(preun): systemd-units
-Requires(postun): systemd-units
+Requires(post): /usr/bin/systemctl
 %if %{with_numad}
 Requires: numad
 %endif
@@ -1113,6 +1113,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            %{?arg_vmware} \
            -Ddriver_vz=disabled \
            -Ddriver_bhyve=disabled \
+           -Ddriver_ch=disabled \
            -Dremote_default_mode=legacy \
            -Ddriver_interface=enabled \
            -Ddriver_network=enabled \
@@ -1136,7 +1137,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dselinux=enabled \
            %{?arg_selinux_mount} \
            -Dapparmor=disabled \
-           -Dapparmor_profiles=false \
+           -Dapparmor_profiles=disabled \
            -Dsecdriver_apparmor=disabled \
            -Dudev=enabled \
            -Dyajl=enabled \
@@ -1270,30 +1271,35 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
 
 
 %post daemon
-%systemd_post virtlockd.socket virtlockd-admin.socket
-%systemd_post virtlogd.socket virtlogd-admin.socket
-%systemd_post libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket
-%systemd_post libvirtd-tcp.socket libvirtd-tls.socket
-%systemd_post libvirtd.service
-%systemd_post libvirt-guests.service
+%global post_units \\\
+        virtlockd.socket virtlockd-admin.socket \\\
+        virtlogd.socket virtlogd-admin.socket \\\
+        libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket \\\
+        libvirtd-tcp.socket libvirtd-tls.socket \\\
+        libvirtd.service \\\
+        libvirt-guests.service
+
+%systemd_post %post_units
 
 # request daemon restart in posttrans
 mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || :
 touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
 
 %preun daemon
-%systemd_preun libvirtd.service
-%systemd_preun libvirtd-tcp.socket libvirtd-tls.socket
-%systemd_preun libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket
-%systemd_preun virtlogd.socket virtlogd-admin.socket virtlogd.service
-%systemd_preun virtlockd.socket virtlockd-admin.socket virtlockd.service
-%systemd_preun libvirt-guests.service
+%global preun_units \\\
+        libvirtd.service \\\
+        libvirtd-tcp.socket libvirtd-tls.socket \\\
+        libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket \\\
+        virtlogd.socket virtlogd-admin.socket virtlogd.service \\\
+        virtlockd.socket virtlockd-admin.socket virtlockd.service \\\
+        libvirt-guests.service
+
+%systemd_preun %preun_units
 
 %postun daemon
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
-    /bin/systemctl reload-or-try-restart virtlockd.service >/dev/null 2>&1 || :
-    /bin/systemctl reload-or-try-restart virtlogd.service >/dev/null 2>&1 || :
+    /bin/systemctl reload-or-try-restart virtlockd.service virtlogd.service >/dev/null 2>&1 || :
 fi
 %systemd_postun libvirt-guests.service
 
@@ -1320,11 +1326,12 @@ if [ -f %{_localstatedir}/lib/rpm-state/libvirt/restart ]; then
         # systemd socket activation, because switching things
         # might confuse mgmt tool like puppet/ansible that
         # expect the old style libvirtd
-        /bin/systemctl mask libvirtd.socket >/dev/null 2>&1 || :
-        /bin/systemctl mask libvirtd-ro.socket >/dev/null 2>&1 || :
-        /bin/systemctl mask libvirtd-admin.socket >/dev/null 2>&1 || :
-        /bin/systemctl mask libvirtd-tls.socket >/dev/null 2>&1 || :
-        /bin/systemctl mask libvirtd-tcp.socket >/dev/null 2>&1 || :
+        /bin/systemctl mask \
+                libvirtd.socket \
+                libvirtd-ro.socket \
+                libvirtd-admin.socket \
+                libvirtd-tls.socket \
+                libvirtd-tcp.socket >/dev/null 2>&1 || :
     else
         # Old libvirtd owns the sockets and will delete them on
         # shutdown. Can't use a try-restart as libvirtd will simply
@@ -1336,9 +1343,10 @@ if [ -f %{_localstatedir}/lib/rpm-state/libvirt/restart ]; then
         then
             /bin/systemctl stop libvirtd.service >/dev/null 2>&1 || :
 
-            /bin/systemctl try-restart libvirtd.socket >/dev/null 2>&1 || :
-            /bin/systemctl try-restart libvirtd-ro.socket >/dev/null 2>&1 || :
-            /bin/systemctl try-restart libvirtd-admin.socket >/dev/null 2>&1 || :
+            /bin/systemctl try-restart \
+                    libvirtd.socket \
+                    libvirtd-ro.socket \
+                    libvirtd-admin.socket >/dev/null 2>&1 || :
 
             /bin/systemctl start libvirtd.service >/dev/null 2>&1 || :
         fi
@@ -1906,6 +1914,9 @@ exit 0
 
 
 %changelog
+* Thu Jul 01 2021 Phantom X <megaphantomx at hotmail dot com> - 7.5.0-100
+- 7.5.0
+
 * Tue Jun 01 2021 Phantom X <megaphantomx at hotmail dot com> - 7.4.0-100
 - 7.4.0
 

@@ -123,6 +123,8 @@ testing/
 /_snapshots/
 /_snapshots
 /_upstream/
+/build/
+/broot/
 /BUILD/
 /BUILDROOT/
 /RPMS/

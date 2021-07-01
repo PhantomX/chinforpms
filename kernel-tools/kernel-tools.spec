@@ -17,20 +17,20 @@
 
 #global buildid .chinfo
 
-%global opensuse_id 2ab6e2bd17e0baba6be9d0595c0f8bef59cb2a2f
+%global opensuse_id 6ed423b1e13ed01cc7c6f352295de2b381b1f454
 
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 12
+%global base_sublevel 13
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 13
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -132,8 +132,10 @@ BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel glibc-devel glibc-headers glibc-static python3-devel java-devel
-BuildRequires: asciidoc xmlto
-BuildRequires: opencsd-devel openssl-devel libbabeltrace-devel
+BuildRequires: asciidoc xmlto libcap-devel
+BuildRequires: opencsd-devel openssl-devel libbabeltrace-devel libtraceevent-devel
+BuildRequires: libbpf-devel
+BuildRequires: clang llvm
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: /usr/bin/pathfix.py
 %ifnarch s390x %{arm}
@@ -198,19 +200,6 @@ License:        GPLv2
 This package contains the bpftool, which allows inspection and simple
 manipulation of eBPF programs and maps.
 
-%package -n libbpf
-Summary: The bpf library from kernel source
-License: GPLv2
-%description -n libbpf
-This package contains the kernel source bpf library.
-
-%package -n libbpf-devel
-Summary: Developement files for the bpf library from kernel source
-License: GPLv2
-%description -n libbpf-devel
-This package includes libraries and header files needed for development
-of applications which use bpf library from kernel source.
-
 %package -n libperf
 Summary: The perf library from kernel source
 License: GPLv2
@@ -258,9 +247,6 @@ sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.conf
 ### build
 ###
 %build
-
-export LD=ld.bfd
-
 cd linux-%{kversion}
 
 %global perf_make \
@@ -311,9 +297,6 @@ popd
 
 pushd tools/bpf/bpftool
 %{bpftool_make}
-popd
-pushd tools/lib/bpf
-%{tools_make} V=1 prefix=%{_prefix} libdir=%{_libdir}
 popd
 pushd tools/lib/perf
 make V=1 prefix=%{_prefix} libdir=%{_libdir}
@@ -401,11 +384,6 @@ pushd tools/kvm/kvm_stat
 popd
 pushd tools/bpf/bpftool
 %{bpftool_make} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
-# man-pages packages this (rhbz #1686954)
-rm -f %{buildroot}%{_mandir}/man7/bpf-helpers.7
-popd
-pushd tools/lib/bpf
-%{tools_make} DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} V=1 install install_headers
 popd
 pushd tools/lib/perf
 make DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} V=1 install install_headers
@@ -497,28 +475,6 @@ popd
 %{_mandir}/man8/bpftool.8.gz
 %license linux-%{kversion}/COPYING
 
-%files -n libbpf
-%{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so.0.3.0
-%license linux-%{kversion}/COPYING
-
-%files -n libbpf-devel
-%{_libdir}/libbpf.a
-%{_libdir}/libbpf.so
-%{_libdir}/pkgconfig/libbpf.pc
-%{_includedir}/bpf/bpf.h
-%{_includedir}/bpf/bpf_core_read.h
-%{_includedir}/bpf/bpf_endian.h
-%{_includedir}/bpf/bpf_helper_defs.h
-%{_includedir}/bpf/bpf_helpers.h
-%{_includedir}/bpf/bpf_tracing.h
-%{_includedir}/bpf/btf.h
-%{_includedir}/bpf/libbpf.h
-%{_includedir}/bpf/libbpf_common.h
-%{_includedir}/bpf/libbpf_util.h
-%{_includedir}/bpf/xsk.h
-%license linux-%{kversion}/COPYING
-
 %files -n libperf
 %{_libdir}/libperf.so.0
 %{_libdir}/libperf.so.0.0.1
@@ -547,6 +503,10 @@ popd
 
 
 %changelog
+* Tue Jun 29 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.0-500.chinfo
+- 5.13.0
+- Rawhide sync
+
 * Fri Jun 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.13-500
 - 5.12.13
 

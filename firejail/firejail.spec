@@ -1,5 +1,5 @@
 Name:           firejail
-Version:        0.9.64.4
+Version:        0.9.66
 Release:        1%{?dist}
 Summary:        Linux namespaces sandbox program
 
@@ -69,14 +69,19 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 %attr(4750,root,%{name}) %{_bindir}/%{name}
 %{_bindir}/firecfg
 %{_bindir}/firemon
+%{_bindir}/jailcheck
 %{_libdir}/%{name}/
 %{_datadir}/bash-completion/completions/*
+%{_datadir}/zsh/site-functions/*
 %{_mandir}/man1/*.1*
 %{_mandir}/man5/*.5*
 %{_sysusersdir}/%{name}.conf
 
 
 %changelog
+* Wed Jun 30 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.66-1
+- 0.9.66
+
 * Mon Feb 08 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.64.4-1
 - 0.9.64.4
 

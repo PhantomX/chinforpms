@@ -1,0 +1,5 @@
+<<<<<<< Updated upstream
+CONFIG_MODULE_COMPRESS_NONE=y
+=======
+# CONFIG_MODULE_COMPRESS is not set
+>>>>>>> Stashed changes
