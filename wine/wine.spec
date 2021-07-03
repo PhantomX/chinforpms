@@ -1,7 +1,7 @@
 %global commit 542175ab10420953920779f3c64eb310dd3aa258
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210625
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 1c9c21dc1c1058f9061d67423c1f37c3cd80f61d
+%global wine_stagingver f5fe9c0c893c1bf522662fc7b4f85e794e7ffaa6
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id f0865ee2b18eb4a4ad9b7f2f5bbfb80b7560852b
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ff8444815c6182e45a85aca9e897a8ada1f7d6ae
+%global tkg_id 674937d762d9aedc093686a278ed04c3dafa0317
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -127,8 +127,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.11
-Release:        102%{?gver}%{?dist}
+Version:        6.12
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -199,9 +199,8 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 # https://bugs.winehq.org/show_bug.cgi?id=51277
-Patch101:       %{whq_url}/97afac469fbe012e22acc1f1045c88b1004a241f#/%{name}-whq-97afac4.patch
+Patch101:       0001-server-Explicitly-return-whether-a-select-request-wa.patch
 Patch102:       %{whq_url}/c2c78a2fe0ac13e4fca7ab4c17977b65e358485c#/%{name}-whq-c2c78a2.patch
-Patch103:       %{whq_url}/414b31bc0bbbfe005e90a1946a649082dc303c55#/%{name}-whq-414b31b.patch
 Patch104:        https://source.winehq.org/patches/data/204113#/%{name}-whq-patch204113.patch
 
 %if 0%{?wine_staging}
@@ -852,8 +851,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch599 -p1
 
 %patch100 -p1 -R
-%patch103 -p1 -R
-%patch101 -p1 -R
+%patch101 -p1
 %patch102 -p1 -R
 %patch104 -p1
 
@@ -2164,6 +2162,11 @@ fi
 %{_libdir}/wine/%{winedlldir}/npmshtml.%{winedll}
 %{_libdir}/wine/%{winedlldir}/npptools.%{winedll}
 %{_libdir}/wine/%{winedlldir}/nsi.%{winedll}
+%{_libdir}/wine/%{winedlldir}/nsi.%{winedll}
+%{_libdir}/wine/%{winesodir}/nsiproxy.sys.so
+%if 0%{?wine_mingw}
+%{_libdir}/wine/%{winedlldir}/nsiproxy.sys
+%endif
 %{_libdir}/wine/%{winesodir}/ntdll.so
 %{_libdir}/wine/%{winedlldir}/ntdll.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ntdsapi.%{winedll}
@@ -2276,6 +2279,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/tapi32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/taskkill.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/taskschd.%{winedll}
+%{_libdir}/wine/%{winedlldir}/tbs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/tdh.%{winedll}
 %{_libdir}/wine/%{winedlldir}/tdi.%{winesys}
 %{_libdir}/wine/%{winedlldir}/traffic.%{winedll}
@@ -2910,6 +2914,9 @@ fi
 
 
 %changelog
+* Fri Jul 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.12-100
+- 6.12
+
 * Sun Jun 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.11-102.20210625git542175a
 - Snapshot
 - Add dosbox alternate binary patch
