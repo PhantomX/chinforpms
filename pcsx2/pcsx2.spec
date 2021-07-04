@@ -1,7 +1,7 @@
 # 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit e0111195a5dc7c752e83903d41d2b7e8b9c54311
+%global commit fbffa1c7bc0137cb12f3a588089639be4f01c635
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210520
+%global date 20210703
 %global with_snapshot 1
 
 %global sanitize 0
@@ -84,7 +84,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-35
+BuildRequires:  sdl_gamecontrollerdb >= 0-36
 
 Requires:       joystick
 Requires:       hicolor-icon-theme

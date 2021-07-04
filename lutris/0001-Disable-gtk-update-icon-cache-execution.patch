@@ -1,6 +1,6 @@
-From 3b64e59288cf92fe6d95e0f45fe658bfd5ef8b85 Mon Sep 17 00:00:00 2001
+From 26dd457139d9d23abb932fe87aaaa6a47b8e10c6 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 3 Dec 2020 21:04:29 -0300
+Date: Sat, 3 Jul 2021 18:46:28 -0300
 Subject: [PATCH] Disable gtk-update-icon-cache execution
 
 ---
@@ -25,7 +25,7 @@ index a38f7f4..4910d1c 100644
  
      def on_custom_image_reset_clicked(self, _widget, image_type):
 diff --git a/lutris/gui/lutriswindow.py b/lutris/gui/lutriswindow.py
-index e9dfc29..25d7304 100644
+index 4cdbf5e..46bce79 100644
 --- a/lutris/gui/lutriswindow.py
 +++ b/lutris/gui/lutriswindow.py
 @@ -30,7 +30,6 @@ from lutris.services.lutris import LutrisBanner, LutrisIcon, LutrisService
@@ -43,7 +43,7 @@ index e9dfc29..25d7304 100644
 -        update_desktop_icons()
          load_icon_theme()
          self.application = application
- 
+         self.window_x = settings.read_setting("window_x")
 diff --git a/lutris/util/linux.py b/lutris/util/linux.py
 index d7c5b69..f361cf4 100644
 --- a/lutris/util/linux.py
@@ -57,10 +57,10 @@ index d7c5b69..f361cf4 100644
          "xgamma",
          "ldconfig",
 diff --git a/lutris/util/system.py b/lutris/util/system.py
-index 9785c5d..373e910 100644
+index 61b292c..643c346 100644
 --- a/lutris/util/system.py
 +++ b/lutris/util/system.py
-@@ -376,15 +376,6 @@ def get_existing_parent(path):
+@@ -363,15 +363,6 @@ def get_existing_parent(path):
      return get_existing_parent(os.path.dirname(path))
  
  
@@ -77,5 +77,5 @@ index 9785c5d..373e910 100644
      """Return the disk size in bytes of a folder"""
      total_size = 0
 -- 
-2.29.2
+2.31.1
 

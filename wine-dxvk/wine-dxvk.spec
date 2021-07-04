@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 6b8ab4fd385cc3cdeb272e4b4a6b69a1d4100d59
+%global commit 95791329429c90b0affc9d2d91415b5a03f29c3a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210615
+%global date 20210703
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -38,7 +38,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.9
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -254,6 +254,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Jul 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.9-101.20210703git9579132
+- Snapshot
+
 * Tue Jun 15 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.9-100.20210615git6b8ab4f
 - 1.9
 

@@ -1,6 +1,6 @@
-%global commit ebcbb11caf34f5ee99377a8da4c98f9770c694b8
+%global commit cf47f88e169cc9680e2dd1a89f775e2da129cded
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210519
+%global date 20210628
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           sdl12-compat
 Version:        1.2.50
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        SDL 1.2 runtime compatibility library using SDL 2.0
 
 License:        zlib and MIT
@@ -26,7 +26,10 @@ BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  make
+BuildRequires:  pkgconfig(dri)
+BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(sdl2)
+Requires:       SDL2%{?_isa} >= 2.0.14
 
 
 %description
@@ -49,7 +52,10 @@ this layer.
 
 
 %build
-%cmake
+%cmake \
+  -DSDL12DEVEL:BOOL=FALSE \
+%{nil}
+
 %cmake_build
 
 
@@ -57,6 +63,7 @@ this layer.
 %cmake_install
 
 rm -fv %{buildroot}%{_libdir}/*.so
+rm -fv %{buildroot}%{_libdir}/*.a
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
 mv %{buildroot}%{_libdir}/*.so.* %{buildroot}%{_libdir}/%{name}/
@@ -74,6 +81,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Sat Jul 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.50-3.20210628gitcf47f88
+- Last snapshot
+
 * Sun May 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.50-2.20210519gitebcbb11
 - Bump
 

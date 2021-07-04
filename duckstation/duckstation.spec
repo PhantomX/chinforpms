@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit 9d26a859676fd4a278149c927c7eea82157ee059
+%global commit b4092a54bf32284795ecb489c0247cd09dfefe58
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210621
+%global date 20210703
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        29%{?gver}%{?dist}
+Release:        30%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -93,7 +93,7 @@ Requires:       vulkan-loader%{?_isa}
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       bundled(glad) = %{glad_ver}
-Provides:       bundled(imgui) = %{img_ver}
+Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(md5-deutsch) = %{md5_ver}
 Provides:       bundled(rcheevos) = 0~git
 Provides:       bundled(simpleini)
@@ -239,6 +239,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Jul 03 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-30.20210703gitb4092a5
+- Last snapshot
+
 * Mon Jun 21 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-29.20210621git9d26a85
 - Update
 - Enable rcheevos support

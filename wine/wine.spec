@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver f5fe9c0c893c1bf522662fc7b4f85e794e7ffaa6
+%global wine_stagingver 6.12.1
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.12
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2914,6 +2914,9 @@ fi
 
 
 %changelog
+* Sat Jul 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.12-101
+- Staging update
+
 * Fri Jul 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.12-100
 - 6.12
 

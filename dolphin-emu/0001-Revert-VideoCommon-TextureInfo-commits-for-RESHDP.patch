@@ -1,8 +1,9 @@
-From 52a9bc654eeb151a678bdb4d9244884742d9dbd1 Mon Sep 17 00:00:00 2001
+From b536123381887ddc9af0dcbdcd97a56ab0ed3b15 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 22 Jun 2021 20:35:59 -0300
+Date: Sat, 3 Jul 2021 16:46:25 -0300
 Subject: [PATCH] Revert VideoCommon/TextureInfo commits for RESHDP
 
+2d59dcb95d1256bdbe0bf020c029b191477a241c - VideoCommon/TextureInfo: Fix mipmap loading from tmem
 df53a5f8809d1f9c21a2975a2fd6e98e9c7a8424 - VideoCommon: enhance hi res texture support by having exact matches be picked before wildcard matches.
 8fb0f913315f98c9c3f3bf51ad0fc4e534991e10 - VideoCommon: split the texture hash from the base name when generating the texture name
 faec77a9714b31e0c3864890bc44c4bf31e06a66 - Fix -Wreorder warnings
@@ -760,7 +761,7 @@ index 4d15e7f..f07fead 100644
  
 diff --git a/Source/Core/VideoCommon/TextureInfo.cpp b/Source/Core/VideoCommon/TextureInfo.cpp
 deleted file mode 100644
-index 166b584..0000000
+index 7f51c40..0000000
 --- a/Source/Core/VideoCommon/TextureInfo.cpp
 +++ /dev/null
 @@ -1,318 +0,0 @@
@@ -851,8 +852,10 @@ index 166b584..0000000
 -    const u32 limited_mip_count =
 -        std::min<u32>(IntLog2(std::max(width, height)) + 1, raw_mip_count + 1) - 1;
 -
--    // load mips - TODO: Loading mipmaps from tmem is untested!
+-    // load mips
 -    const u8* src_data = m_ptr + GetTextureSize();
+-    if (tmem_even)
+-      tmem_even += GetTextureSize();
 -
 -    for (u32 i = 0; i < limited_mip_count; i++)
 -    {
@@ -1032,8 +1035,6 @@ index 166b584..0000000
 -  m_raw_height = std::max(parent.GetRawHeight() >> level, 1u);
 -  m_expanded_width = Common::AlignUp(m_raw_width, parent.GetBlockWidth());
 -  m_expanded_height = Common::AlignUp(m_raw_height, parent.GetBlockHeight());
--
--  // load mips - TODO: Loading mipmaps from tmem is untested!
 -
 -  m_texture_size = TexDecoder_GetTextureSizeInBytes(m_expanded_width, m_expanded_height,
 -                                                    parent.GetTextureFormat());

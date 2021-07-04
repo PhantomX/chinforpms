@@ -1,6 +1,6 @@
-%global commit fbf672ee9540940faad5dc002f30f9e3b0d88060
+%global commit f50024337ef2eb4029234c333ca4c840fa670343
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210519
+%global date 20210702
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           sdl_gamecontrollerdb
 Version:        0
-Release:        35%{?gver}%{?dist}
+Release:        36%{?gver}%{?dist}
 Summary:        A database of game controller mappings
 
 License:        zlib and MIT
@@ -61,6 +61,9 @@ install -pm0644 gamecontrollerdb.txt %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Sat Jul 03 2021 Phantom X <megaphantomx at hotmail dot com> - 0-36.20210702gitf500243
+- Last update
+
 * Tue May 25 2021 Phantom X <megaphantomx at hotmail dot com> - 0-35.20210519gitfbf672e
 - Update
 

@@ -3,9 +3,9 @@
 %global vc_url https://github.com/%{name}/%{name}
 
 Name:           lutris
-Version:        0.5.8.3
+Version:        0.5.8.4
 Epoch:          1
-Release:        101%{?dist}
+Release:        100%{?dist}
 Summary:        Install and play any video game easily
 
 License:        GPLv3
@@ -13,7 +13,7 @@ URL:            https://lutris.net
 
 Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
-Patch0:         %{name}-no-gtk-update-icon-cache.patch
+Patch0:         0001-Disable-gtk-update-icon-cache-execution.patch
 Patch1:         %{name}-gamemodelib.patch
 
 BuildRequires:  desktop-file-utils
@@ -112,6 +112,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.des
 
 
 %changelog
+* Sat Jul 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.8.4-100
+- 0.5.8.4
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.8.3-101
 - Replace xorg-x11-server-utils BR
 

@@ -19,9 +19,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit be2ec728e4cd642e22c8558dec7d75ca254a19b2
+%global commit 2409d30f5cec08e5402f87e831dc3021819cbcca
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210622
+%global date 20210630
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -35,7 +35,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        139%{?gver}%{?dist}
+Release:        140%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -412,6 +412,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Jul 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-140.20210630git2409d30
+- Update
+
 * Tue Jun 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-139.20210622gitbe2ec72
 - New snapshot
 
