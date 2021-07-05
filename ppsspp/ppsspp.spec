@@ -15,6 +15,8 @@
 %if !0%{?with_sysffmpeg}
 %global bundleffmpegver 3.0.2
 %endif
+# Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
+%global with_smallffmpeg 1
 
 # https://github.com/hrydgard/ppsspp/issues/13312
 %global _lto_cflags %{nil}
@@ -70,7 +72,11 @@ Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
+%if 0%{?with_smallffmpeg}
+Source2:        %{srcname2}-nobin-%{shortcommit2}.tar.xz
+%else
 Source2:        %{vc_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+%endif
 Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 %endif
@@ -78,6 +84,7 @@ Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}/%{srcn
 Source6:        %{vc_url}/glslang/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source10:       %{name}.appdata.xml
+Source11:       Makefile
 
 Patch0:         %{name}-noupdate.patch
 Patch1:         0001-Disable-Discord-support.patch

@@ -20,6 +20,7 @@ some seasonal packages too, these can return when needed
  * **compat-libva1** - linux-steam-integration
  * **cowsrevenge** - Do not have interest anymore
  * **decaf-emu** - needs SSE4.1
+ * **dosbox-staging** - Fedora included
  * **dropboxd** - Do not have interest anymore, upstream bad decisions
  * **dxil-spirv** - Bundled with wine-vkd3d-proton
  * **emojione-picker** - python2

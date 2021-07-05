@@ -1,6 +1,6 @@
-%global commit 5d52e635e477503c4927cab418a104d30401707e
+%global commit 3476e5e46fc6f10df475f0cad1714358ba04c756
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200923
+%global date 20210518
 %global with_snapshot 1
 
 %ifnarch %{ix86} ppc64 s390x
@@ -15,7 +15,7 @@
 
 Name:           flips
 Version:        1.40
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A patcher for IPS and BPS files
 
 License:        GPLv3+
@@ -139,6 +139,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.github.Alc
 
 
 %changelog
+* Sun Jul 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1.40-4.20210518git3476e5e
+- Update
+
 * Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 1.40-3.20200923git5d52e63
 - Bump
 - Use Fedora lto macros

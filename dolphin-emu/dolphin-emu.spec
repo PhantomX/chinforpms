@@ -317,10 +317,10 @@ patch -p1 -R -i %{P:101}
 %cmake_install
 
 mv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_bindir}/%{name}-x11
-cat > %{buildroot}%{_bindir}/%{name} <<EOF
+cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/bash
 export QT_QPA_PLATFORM=xcb
-exec %{_bindir}/%{name}-x11
+exec %{_bindir}/%{name}-x11 "$@"
 EOF
 chmod 755 %{buildroot}%{_bindir}/%{name}
 
@@ -333,10 +333,10 @@ echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-x11.6
 install -pm0755 %{name}-reshdp %{buildroot}%{_bindir}/%{name}-reshdp-x11
 install -pm0755 %{name}-reshdp-nogui %{buildroot}%{_bindir}/
 
-cat > %{buildroot}%{_bindir}/%{name}-reshdp <<EOF
+cat > %{buildroot}%{_bindir}/%{name}-reshdp <<'EOF'
 #!/usr/bin/bash
 export QT_QPA_PLATFORM=xcb
-exec %{_bindir}/%{name}-reshdp-x11
+exec %{_bindir}/%{name}-reshdp-x11 "$@"
 EOF
 chmod 755 %{buildroot}%{_bindir}/%{name}-reshdp
 

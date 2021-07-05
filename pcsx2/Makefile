@@ -23,7 +23,7 @@ clean:
 	rm -f ${NAME}-clean-${TARBALLVER}.tar.xz
 
 clone: clean
-	curl --location -O https://github.com/PCSX2/pcsx2/archive/${DLSTR}/${NAME}-${TARBALLVER}.tar.gz
+	curl --location -O https://github.com/PCSX2/${NAME}/archive/${DLSTR}/${NAME}-${TARBALLVER}.tar.gz
 	tar xf ${NAME}-${TARBALLVER}.tar.gz
 
 sanitize: clone
