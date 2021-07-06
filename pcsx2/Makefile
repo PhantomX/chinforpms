@@ -1,8 +1,7 @@
 NAME = pcsx2
-VERSION ?= fbffa1c7bc0137cb12f3a588089639be4f01c635
+VERSION ?= 6dd90aeaef3af4c7c5dff358788508cbfb4b6b14
 SNAPSHOT ?= 1
 SANITIZE ?= 1
-PLUGINS = CDVDiso CDVDisoEFP CDVDlinuz CDVDolio CDVDpeops dev9ghzdrk PeopsSPU2 SSSPSXPAD USBqemu xpad zerogs zerospu2
 
 ifeq ($(SNAPSHOT),1)
 	TARBALLVER = $(shell echo ${VERSION} | cut -c-7 )
@@ -29,13 +28,11 @@ clone: clean
 sanitize: clone
 ifeq ($(SANITIZE),1)
 	mv $(DIRNAME)/3rdparty/include $(DIRNAME)/
+	mv $(DIRNAME)/3rdparty/xbyak $(DIRNAME)/
 	rm -rf $(DIRNAME)/3rdparty/*
 	mv $(DIRNAME)/include $(DIRNAME)/3rdparty/
+	mv $(DIRNAME)/xbyak $(DIRNAME)/3rdparty/
 	rm -rf $(DIRNAME)/tools
-	$(foreach var,$(PLUGINS),rm -rf $(DIRNAME)/plugins/$(var);)
-	rm -rf $(DIRNAME)/unfree
-	rm -rf $(DIRNAME)/plugins/GSdx/baseclasses
-	rm -f  $(DIRNAME)/plugins/zzogl-pg/opengl/Win32/aviUtil.h
 	rm -f  $(DIRNAME)/common/src/Utilities/x86/MemcpyFast.cpp
 	rm -rf .git
 endif

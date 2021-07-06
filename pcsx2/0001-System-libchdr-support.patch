@@ -1,6 +1,6 @@
-From b89e93b2721060fef59abf3a355608d382067ed6 Mon Sep 17 00:00:00 2001
+From c8e63ab830c6b82b15fd5b7f5b4b0dce12009569 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 23 Mar 2021 18:02:14 -0300
+Date: Mon, 5 Jul 2021 20:51:02 -0300
 Subject: [PATCH] System libchdr support
 
 ---
@@ -10,10 +10,10 @@ Subject: [PATCH] System libchdr support
  3 files changed, 14 insertions(+), 4 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 74259ef..c656660 100644
+index 8fffe12..e3167ae 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -289,5 +289,15 @@ if(NOT USE_SYSTEM_YAML)
+@@ -289,8 +289,18 @@ if(NOT USE_SYSTEM_YAML)
      endif()
  endif()
  
@@ -31,6 +31,9 @@ index 74259ef..c656660 100644
 +    set(CHDR_SYSTEM_LIBRARY ${CHDR_LIBRARIES})
 +    message(STATUS "Found libchdr: ${CHDR_SYSTEM_LIBRARY}")
 +endif()
+ 
+ 
+ 
 diff --git a/common/src/Utilities/CMakeLists.txt b/common/src/Utilities/CMakeLists.txt
 index 034afe6..d089fe3 100644
 --- a/common/src/Utilities/CMakeLists.txt
@@ -58,5 +61,5 @@ index 024485e..3f923a6 100644
  class ChdFileReader : public AsyncFileReader
  {
 -- 
-2.30.2
+2.31.1
 

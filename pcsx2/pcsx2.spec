@@ -1,7 +1,7 @@
 # 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit fbffa1c7bc0137cb12f3a588089639be4f01c635
+%global commit 6dd90aeaef3af4c7c5dff358788508cbfb4b6b14
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210703
+%global date 20210705
 %global with_snapshot 1
 
 %global sanitize 0
@@ -19,10 +19,10 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        127%{?gver}%{?dist}
+Release:        128%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
-License:        GPLv3
+License:        GPLv3 and LGPLv3+
 URL:            https://github.com/PCSX2/pcsx2
 
 %if 0%{sanitize}
@@ -74,7 +74,8 @@ BuildRequires:  pkgconfig(harfbuzz)
 BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(soundtouch)
-BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(x11-xcb)
+BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(yaml-cpp)
 BuildRequires:  pkgconfig(zlib)
@@ -88,6 +89,8 @@ BuildRequires:  sdl_gamecontrollerdb >= 0-36
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
+
+Provides:       bundled(xbyak)
 
 
 %description
@@ -109,18 +112,11 @@ this emulator anyway.
 
 %if 0%{sanitize}
   mv 3rdparty/include .
+  mv 3rdparty/xbyak .
   rm -rf 3rdparty/*
   mv include 3rdparty/
+  mv xbyak 3rdparty/
   rm -rf tools
-  for plugin in \
-    CDVDiso CDVDisoEFP CDVDlinuz CDVDolio CDVDpeops dev9ghzdrk PeopsSPU2 \
-    SSSPSXPAD USBqemu xpad zerogs zerospu2
-  do
-    rm -rf plugins/$plugin
-  done
-  rm -rf unfree
-  rm -rf plugins/GSdx/baseclasses
-  rm -f  plugins/zzogl-pg/opengl/Win32/aviUtil.h
   rm -f common/src/Utilities/x86/MemcpyFast.cpp
   rm -rf .git
 %endif
@@ -138,7 +134,7 @@ sed -i 's/@PCSX2_MENU_CATEGORIES@/Game;Emulator;GTK;/g' linux_various/PCSX2.desk
 
 sed \
   -e 's|/usr/share/fonts/truetype/my_favorite_font_e_g_DejaVu Sans.ttf|%{_fontbasedir}/google-roboto/Roboto-Regular.ttf|' \
-  -i plugins/GSdx/GSdx.cpp
+  -i pcsx2/GS/GS.cpp
 
 %if 0%{?with_snapshot}
 sed -i \
@@ -247,7 +243,6 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 %doc bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
 %{_bindir}/PCSX2
 %{perms_pcsx2} %{_bindir}/PCSX2.bin
-%{_libdir}/PCSX2/
 %{_datadir}/applications/PCSX2.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_mandir}/man1/PCSX2.*
@@ -255,6 +250,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Tue Jul 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-128.20210705git6dd90ae
+- Last snapshot
+
 * Tue May 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-127.20210520gite011119
 - Bump
 

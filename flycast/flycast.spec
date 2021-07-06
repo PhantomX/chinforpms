@@ -1,6 +1,6 @@
-%global commit 58974c9305eeffca21331eb5928fffff06ca0da8
+%global commit b40328e62173442f712f1050fc2cb72b45c06d1d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210603
+%global date 20210705
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -22,9 +22,11 @@
 %global volk_ver 131
 
 Name:           flycast
-Version:        7
-Release:        57%{?gver}%{?dist}
+Version:        1.0
+Release:        1%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
+
+Epoch:          1
 
 License:        GPLv2 and BSD
 URL:            https://github.com/flyinghead/%{name}
@@ -114,6 +116,7 @@ sed \
   -i core/version.h*
 
 sed \
+  -e 's|LINK_FLAGS_RELEASE -s||g' \
   -e 's|IMPORTED_TARGET ao|IMPORTED_TARGET ao_DISABLED|g' \
   -e 's|${GIT_EXECUTABLE} describe --tags --always|echo "%{version}-%{release}"|g' \
   -i CMakeLists.txt
@@ -201,6 +204,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Mon Jul 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1.0-1.20210705gitb40328e
+- 1.0 last snapshot
+
 * Fri Jun 04 2021 Phantom X <megaphantomx at hotmail dot com> - 7-57.20210603git58974c9
 - Update
 
