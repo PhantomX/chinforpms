@@ -34,7 +34,7 @@ mingw-w64-tools
 mingw-winpthreads
 qt5ct
 sdl12-compat
-sdlcl
+-sdlcl
 shaderc
 spirv-headers
 spirv-tools

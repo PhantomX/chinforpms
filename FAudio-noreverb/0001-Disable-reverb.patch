@@ -1,1 +1,25 @@
-../FAudio-freeworld/0001-Disable-reverb.patch
+From 2929441a713234dc3d21f33f1aa702389e05d704 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 10 Dec 2020 17:59:56 -0300
+Subject: [PATCH] Disable reverb
+
+---
+ src/FAudioFX_reverb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/FAudioFX_reverb.c b/src/FAudioFX_reverb.c
+index 975b428..32eb9d7 100644
+--- a/src/FAudioFX_reverb.c
++++ b/src/FAudioFX_reverb.c
+@@ -126,7 +126,7 @@ static inline void DspDelay_Write(DspDelay *filter, float sample)
+ static inline float DspDelay_Process(DspDelay *filter, float sample_in)
+ {
+ 	float delay_out = DspDelay_Read(filter);
+-	DspDelay_Write(filter, sample_in);
++	//DspDelay_Write(filter, sample_in);
+ 	return delay_out;
+ }
+ 
+-- 
+2.29.2
+

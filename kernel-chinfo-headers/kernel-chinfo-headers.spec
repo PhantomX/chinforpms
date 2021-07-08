@@ -31,7 +31,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -80,7 +80,7 @@
 # This package doesn't contain any binary, thus no debuginfo package is needed
 %global debug_package %{nil}
 
-Name: kernel-headers%{?variant}
+Name: kernel%{?variant}-headers
 Summary: Header files for the Linux kernel for use by glibc
 
 License: GPLv2
@@ -93,7 +93,7 @@ Release: %{pkg_release}
 # directory, or git kernel source repository, and do eg.:
 # For a RHEL package: (...)/create_headers_tarball.sh -m RHEL_RELEASE
 # For a Fedora package: kernel/scripts/create_headers_tarball.sh -r <release number>
-Source0: kernel-headers%{?variant}-%{rpmversion}-%{?srcversion}.tar.xz
+Source0: kernel%{?variant}-headers-%{rpmversion}-%{?srcversion}.tar.xz
 Obsoletes: glibc-kernheaders < 3.0-46
 Provides: glibc-kernheaders = 3.0-46
 %if "0%{?variant}"
@@ -108,14 +108,14 @@ header files define structures and constants that are needed for
 building most standard programs and are also needed for rebuilding the
 glibc package.
 
-%package -n kernel-cross-headers%{?variant}
+%package -n kernel%{?variant}-cross-headers
 Summary: Header files for the Linux kernel for use by cross-glibc
 %if "0%{?variant}"
 Obsoletes: kernel-cross-headers < %{version}-%{release}
 Provides: kernel-cross-headers = %{version}-%{release}
 %endif
 
-%description -n kernel-cross-headers%{?variant}
+%description -n kernel%{?variant}-cross-headers
 Kernel-cross-headers includes the C header files that specify the interface
 between the Linux kernel and userspace libraries and programs.  The
 header files define structures and constants that are needed for
@@ -176,11 +176,15 @@ done
 %defattr(-,root,root)
 %{_includedir}/*
 
-%files -n kernel-cross-headers%{?variant}
+%files -n kernel%{?variant}-cross-headers
 %defattr(-,root,root)
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Wed Jul 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.1-500.chinfo
+- 5.13.1
+- Fix variant use
+
 * Tue Jun 29 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.0-500.chinfo
 - 5.13.0
 

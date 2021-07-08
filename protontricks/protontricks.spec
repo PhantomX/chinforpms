@@ -1,5 +1,7 @@
+%bcond_with tests
+
 Name:           protontricks
-Version:        1.4.3
+Version:        1.5.2
 Release:        1%{?dist}
 Summary:        A simple wrapper that does winetricks things for Proton enabled games
 
@@ -7,17 +9,20 @@ License:        GPLv3
 URL:            https://github.com/Matoking/protontricks
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
-Patch0:         %{url}/commit/c91bcc932d1892e7804869d3cb3dfb70846feaca.patch#/%{name}-gh-c91bcc9.patch
 Patch10:        0001-Disable-setuptools_scm-version-check.patch
 
 BuildArch:      noarch
 
-BuildRequires:  python3-devel
+BuildRequires:  python3-devel >= 3.5
 BuildRequires:  %{py3_dist setuptools}
-BuildRequires:  %{py3_dist vdf}
-Requires:       %{py3_dist vdf}
+BuildRequires:  %{py3_dist vdf} >= 3.2
+%if %{with tests}
+BuildRequires:  %{py3_distpy test-cov} >= 2.10
+BuildRequires:  %{py3_distpy test} >= 6.0
+%endif
 Requires:       winetricks
-Suggests:       zenity
+
+Recommends:     zenity
 
 
 %description
@@ -37,8 +42,10 @@ echo "version = '%{version}'" > src/protontricks/_version.py
 %py3_install
 
 
+%if %{with tests}
 %check
-%{__python3} setup.py test
+%{python3} -m pytest -v
+%endif
 
 
 %files
@@ -50,6 +57,10 @@ echo "version = '%{version}'" > src/protontricks/_version.py
 
 
 %changelog
+* Thu Jul 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1.5.2-1
+- 1.5.2
+- Fedora sync
+
 * Mon Dec 28 2020 Phantom X <megaphantomx at hotmail dot com> - 1.4.3-1
 - 1.4.3
 

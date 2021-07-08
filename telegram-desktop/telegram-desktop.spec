@@ -1,6 +1,6 @@
 %undefine _cmake_shared_libs
 
-%global commit10 f03ef05abf665437649a4f71886db1343590e862
+%global commit10 91d836dc84a16584c6ac52b36c04c0de504d9c34
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 tg_owt
 
@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.8.0
+Version:        2.8.6
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -89,10 +89,8 @@ Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcna
 %endif
 Source20:       thunar-sendto-%{name}.desktop
 
-Patch0:         %{url}/commit/9afee2620aa2461123248f05cc748af5fd09a507.patch#/%{name}-gh-9afee26.patch
-Patch1:         %{url}/commit/48d482006a9821d76b7c27c79e6d606d32aa8641.patch#/%{name}-gh-48d4820.patch
-
 Patch100:       %{name}-build-fix.patch
+Patch101:       %{name}-build-fix-2.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -123,6 +121,7 @@ BuildRequires:  pkgconfig(giomm-2.4)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(glibmm-2.4)
 BuildRequires:  pkgconfig(gobject-2.0)
+BuildRequires:  pkgconfig(jemalloc)
 BuildRequires:  pkgconfig(json11)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
@@ -442,6 +441,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Wed Jul 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.8.6-100
+- 2.8.6
+- BR: jemalloc
+
 * Sat Jun 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.8.0-100
 - 2.8.0 with 2.8.1 fix
 - %%bcond_without tg_owt

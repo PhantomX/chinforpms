@@ -14,7 +14,7 @@
 %global pkgrel 1
 
 Name:           vivaldi
-Version:        4.0.2312.36
+Version:        4.0.2312.38
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -132,6 +132,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Jul 06 2021 - 4.0.2312.38-1
+- 4.0.2312.38
+
 * Sat Jul 03 2021 - 4.0.2312.36-1
 - 4.0.2312.36
 

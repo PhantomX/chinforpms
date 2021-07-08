@@ -70,11 +70,13 @@ some seasonal packages too, these can return when needed
  * **python-pyfavicon** - authenticator
  * **python-pyotp** - authenticator
  * **python-pyzbar** - authenticator
+ * **python-vdf** - Fedora included
  * **python-yoyo-migrations** - authenticator
  * **psi** - Seasonal package
  * **qemu** - Seasonal package
  * **quiterss** - Seasonal package, updated
  * **rust** - Pinned version for Waterfox build
+ * **sdlcl** - Do not have interest anymore
  * **shaderc** - Fedora included
  * **simplescreenrecorder** - Do not have interest anymore
  * **steamwm** - Broken

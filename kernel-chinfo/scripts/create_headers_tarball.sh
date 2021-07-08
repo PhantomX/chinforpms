@@ -13,12 +13,12 @@ set -e
 VARIANT='-chinfo'
 VARIANTID="${VARIANT//-/.}"
 KERNELSPEC="kernel${VARIANT}.spec"
-HEADERSSPEC="kernel-headers${VARIANT}.spec"
+HEADERSSPEC="kernel${VARIANT}-headers.spec"
 CURRENTDIR="$(pwd)"
-PKGLOC="kernel-headers${VARIANT}"
+PKGLOC="kernel${VARIANT}-headers"
 
 if [ ! -f "$PKGLOC/${HEADERSSPEC}" ]; then
-	echo "Missing checkout of kernel-headers${VARIANT} in $PKGLOC"
+	echo "Missing checkout of kernel${VARIANT}-headers in $PKGLOC"
 	exit 1
 fi
 
@@ -63,7 +63,7 @@ find "$headers_dir" \
 	\( -name .install -o -name .check -o \
 	-name ..install.cmd -o -name ..check.cmd \) -print0 | xargs -0 rm -f
 
-TARBALL="$CURRENTDIR/$PKGLOC/kernel-headers${VARIANT}-$KVER.tar.xz"
+TARBALL="$CURRENTDIR/$PKGLOC/kernel${VARIANT}-headers-$KVER.tar.xz"
 pushd "$headers_dir"
 	tar -Jcf "$TARBALL" -- *
 popd

@@ -29,7 +29,7 @@ pysdl2
 -python-pyfavicon
 -python-pyotp
 -python-pyzbar
-python-vdf
+-python-vdf
 smooth
 spirv-headers
 taglib
@@ -191,7 +191,7 @@ sdl12-compat
 sdl2-controllermap
 sdl_gamecontrollerdb
 sdl-jstest
-sdlcl
+-sdlcl
 shaderc
 skrooge
 smtube

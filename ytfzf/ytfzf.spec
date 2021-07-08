@@ -8,7 +8,7 @@
 %endif
 
 Name:           ytfzf
-Version:        1.1.4
+Version:        1.2.0
 Release:        1%{?dist}
 Summary:        A posix script to find and watch youtube videos from the terminal
 
@@ -60,5 +60,8 @@ opens/downloads them using mpv/youtube-dl
 
 
 %changelog
+* Thu Jul 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.0-1
+- 1.2.0
+
 * Mon Apr 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1.1.4-1
 - Initial spec

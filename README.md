@@ -52,6 +52,7 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **mupen64plus** - Build options and packaging structure
  * **pcsxr** - CHD support
  * **ppsspp** - Build options, no Qt frontend
+ * **protontricks** - Can't wait Fedora releases
  * **qmc2** - Qt5, no game-menus
  * **skrooge** - Can't wait Fedora releases
  * **speedtest-cli** - Can't wait Fedora releases

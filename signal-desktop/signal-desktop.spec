@@ -12,7 +12,7 @@
 %endif
 
 Name:           signal-desktop
-Version:        1.39.2
+Version:        5.8.0
 Release:        1%{?beta:.%{beta}}%{?dist}
 Summary:        Private messaging from your desktop
 
@@ -146,6 +146,9 @@ done
 
 
 %changelog
+* Wed Jul 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.8.0-1
+- 5.8.0
+
 * Thu Dec 10 2020 Phantom X <megaphantomx at hotmail dot com> - 1.39.2-1
 - 1.39.2
 

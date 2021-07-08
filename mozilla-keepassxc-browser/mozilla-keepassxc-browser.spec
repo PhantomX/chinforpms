@@ -14,7 +14,7 @@
 %global vc_url  https://github.com/keepassxreboot/%{pkgname}
 
 Name:           mozilla-%{pkgname}
-Version:        1.6.4
+Version:        1.7.8.1
 Release:        1%{?dist}
 Summary:        KeePassXC Browser Extension 
 
@@ -79,6 +79,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Jul 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.8.1-1
+- 1.7.8.1
+
 * Sat Jun 20 2020 Phantom X <megaphantomx at hotmail dot com> - 1.6.4-1
 - 1.6.4
 

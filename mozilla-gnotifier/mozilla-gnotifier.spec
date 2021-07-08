@@ -31,8 +31,8 @@ License:        GPLv3
 URL:            https://github.com/mkiol/GNotifier
 Source0:        %{url}/raw/master/xpi/%{pkgname}-%{version}-%{rel}.xpi
 Source1:        %{name}.metainfo.xml
-Source2:        https://github.com/mkiol/GNotifier/blob/master/LICENSE
-Source3:        https://github.com/mkiol/GNotifier/blob/master/README.md
+Source2:        https://github.com/mkiol/GNotifier/raw/master/LICENSE
+Source3:        https://github.com/mkiol/GNotifier/raw/master/README.md
 
 BuildArch:      noarch
 

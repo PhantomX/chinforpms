@@ -1,0 +1,25 @@
+From b5c09cc0d7ecaa9a547f1d2f214ccb003e3dc743 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 7 Jul 2021 08:04:08 -0300
+Subject: [PATCH] build fix 2
+
+---
+ .../SourceFiles/platform/linux/linux_gtk_integration_dummy.cpp  | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Telegram/SourceFiles/platform/linux/linux_gtk_integration_dummy.cpp b/Telegram/SourceFiles/platform/linux/linux_gtk_integration_dummy.cpp
+index 2cd7c2a..9f0cb2b 100644
+--- a/Telegram/SourceFiles/platform/linux/linux_gtk_integration_dummy.cpp
++++ b/Telegram/SourceFiles/platform/linux/linux_gtk_integration_dummy.cpp
+@@ -41,7 +41,7 @@ QString GtkIntegration::AllowedBackends() {
+ 	return {};
+ }
+ 
+-int GtkIntegration:Exec(
++int GtkIntegration::Exec(
+ 		Type type,
+ 		const QString &parentDBusName,
+ 		int ppid,
+-- 
+2.31.1
+

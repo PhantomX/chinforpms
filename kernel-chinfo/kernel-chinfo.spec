@@ -142,18 +142,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 2
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 301e390a8169f1948b2007ed9cde5fb22c5e13b6
+%global pfcommit 5afc8758c1f3fd16eb57467d09222c0caaa61b0e
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -181,7 +181,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 6ed423b1e13ed01cc7c6f352295de2b381b1f454
+%global opensuse_id 91404150090172519addbb37c9a6ef0addc1116b
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -240,7 +240,6 @@ Summary: The Linux kernel
 %define with_kernel_abi_whitelists 0
 # internal samples and selftests
 %define with_selftests %{?_without_selftests: 0} %{?!_without_selftests: 1}
-%define with_selftests 0
 #
 # Additional options for user-friendly one-off kernel building:
 #
@@ -312,6 +311,8 @@ Summary: The Linux kernel
 %define with_ipaclones 0
 # no whitelist
 %define with_kernel_abi_whitelists 0
+# selftests turns on bpftool
+%define with_selftests 0
 %endif
 
 %if %{with_verbose}
@@ -823,8 +824,8 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-Source300: kernel-abi-whitelists-%{rpmversion}-%{distro_build}.tar.bz2
-Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
+#Source300: kernel-abi-whitelists-%%{rpmversion}-%%{distro_build}.tar.bz2
+#Source301: kernel-kabi-dw-%%{rpmversion}-%%{distro_build}.tar.bz2
 
 # Some people enjoy building customized kernels from the dist-git in Fedora and
 # use this to override configuration options. One day they may all use the
@@ -920,9 +921,9 @@ Patch2007: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block
 Patch2008: %{patchwork_url}/12245803/mbox/#/patchwork-md-don-t-account-io-stat-for-split-bio.patch
 Patch2009: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/f288de50dbad1807f0254f8eb560a299216f81bb/linux-tkg-patches/5.13/0007-v5.13-futex2_interface.patch#/tkg-0007-v5.13-futex2_interface.patch
-Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/f288de50dbad1807f0254f8eb560a299216f81bb/linux-tkg-patches/5.13/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
-Patch2093: https://github.com/Frogging-Family/linux-tkg/raw/f288de50dbad1807f0254f8eb560a299216f81bb/linux-tkg-patches/5.13/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/af4ff85bd28a0f4d4d13f61deb84916fda68e563/linux-tkg-patches/5.13/0007-v5.13-futex2_interface.patch#/tkg-0007-v5.13-futex2_interface.patch
+Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/af4ff85bd28a0f4d4d13f61deb84916fda68e563/linux-tkg-patches/5.13/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+Patch2093: https://github.com/Frogging-Family/linux-tkg/raw/af4ff85bd28a0f4d4d13f61deb84916fda68e563/linux-tkg-patches/5.13/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2094: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
@@ -2820,6 +2821,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.1-500.chinfo
+- 5.13.1 - pf2
+
 * Tue Jun 29 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.0-500.chinfo
 - 5.13.0 - pf1
 - ark sync
