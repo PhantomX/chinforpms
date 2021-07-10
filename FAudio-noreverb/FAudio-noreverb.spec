@@ -1,7 +1,7 @@
-%global commit 920d2228c982f9a2f97276f2e51fbf8ed507963c
+%global commit 7eca833536c3e938a67f35bae57d7436c00f0875
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210321
-%global with_snapshot 0
+%global date 20210707
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -11,7 +11,7 @@
 
 Name:           %{pkgname}-noreverb
 Version:        21.07
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - noreverb
 Epoch:          1
 
@@ -102,6 +102,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Fri Jul 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.07-2.20210707git7eca833
+- Snapshot
+
 * Thu Jul 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.07-1
 - 21.07
 

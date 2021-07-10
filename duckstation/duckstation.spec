@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit b4092a54bf32284795ecb489c0247cd09dfefe58
+%global commit 7caa5c09dd4f60cbbe7f91018eefcf7d29e099be
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210703
+%global date 20210709
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        30%{?gver}%{?dist}
+Release:        31%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -32,7 +32,7 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        %{name}.appdata.xml
+Source1:        org.%{name}.DuckStation.metainfo.xml
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-datadir-to-RPM-packaging.patch
@@ -197,16 +197,16 @@ rm -f %{buildroot}%{_datadir}/%{name}/database/gamecontrollerdb.txt
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  dist/%{name}-qt.desktop
+  extras//linux-desktop-files/%{name}-qt.desktop
 
 for res in 16 32 48 64 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  install -pm0644 dist/icon-${res}px.png ${dir}/%{name}-qt.png
+  install -pm0644 extras/icons/icon-${res}px.png ${dir}/%{name}-qt.png
 done
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm 0644 dist/org.duckstation.DuckStation.metainfo.xml %{buildroot}%{_metainfodir}/
+install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/org.%{name}.DuckStation.metainfo.xml
 
 %find_lang %{name}-qt --with-qt
 
@@ -239,6 +239,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Jul 09 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-31.20210709git7caa5c0
+- Bump
+
 * Sat Jul 03 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-30.20210703gitb4092a5
 - Last snapshot
 

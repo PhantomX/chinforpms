@@ -1,6 +1,6 @@
-%global commit 14f03e84d46dbd94ae2e3711687420f816dc784f
+%global commit d10887b8f56792ebcca717ccc28a289f7bcaf107
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210705
+%global date 20210708
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -32,7 +32,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  6.2.0
+%global winemono  6.2.1
 %global winevulkan 1.2.182
 %global _default_patch_fuzz 2
 
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver fcf7b801073b6a68562b6558696c60f66f8f4f60
+%global wine_stagingver e59eb7639a5bd838c3f66162fb82a900b3ce3541
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -73,10 +73,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id 6c2ec629889de12986d417dec5a5b195e71d0aa4
+%global ge_id b356ff201e26180e98c3dcc46f00dd3f6557aad4
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ce790d42c884421e641d66ed22adca8c9786a418
+%global tkg_id 6ef9a11e11320367e367716650d4fa7e75e682a9
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.12
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -199,14 +199,9 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 Patch101:       %{whq_url}/c2c78a2fe0ac13e4fca7ab4c17977b65e358485c#/%{name}-whq-c2c78a2.patch
-Patch102:        https://source.winehq.org/patches/data/204113#/%{name}-whq-patch204113.patch
+Patch102:       %{whq_url}/b8aaf86b2dbb8ecb3f7094cc40a0df89bb2add27#/%{name}-whq-b8aaf86.patch
 Patch103:        https://source.winehq.org/patches/data/209085#/%{name}-whq-patch209085.patch
 Patch104:        https://source.winehq.org/patches/data/209084#/%{name}-whq-patch209084.patch
-Patch105:        https://source.winehq.org/patches/data/209197#/%{name}-whq-patch209197.patch
-Patch106:        https://source.winehq.org/patches/data/209202#/%{name}-whq-patch209202.patch
-Patch107:        https://source.winehq.org/patches/data/209201#/%{name}-whq-patch209201.patch
-Patch108:        https://source.winehq.org/patches/data/209200#/%{name}-whq-patch209200.patch
-Patch109:        https://source.winehq.org/patches/data/209198#/%{name}-whq-patch209198.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -242,11 +237,13 @@ Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
 Patch1092:       %{ge_url}/wine-hotfixes/rpgmaker.patch#/%{name}-ge-rpgmaker.patch
 Patch1093:       https://source.winehq.org/patches/data/205277#/%{name}-whq-patch205277.patch
+Patch1094:       %{ge_url}/wine-hotfixes/205333#/%{name}-ge-205333.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
 Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
 Patch1303:       0001-winevdm-support-DOSBOX-environment-variable.patch
+Patch1304:       0001-mscoree-Update-Wine-Mono-to-6.2.1.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -857,14 +854,9 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch100 -p1 -R
 %patch101 -p1 -R
-%patch102 -p1
+%patch102 -p1 -R
 %patch103 -p1
 %patch104 -p1
-%patch105 -p1
-%patch106 -p1
-%patch107 -p1
-%patch108 -p1
-%patch109 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -918,10 +910,12 @@ $patch_command -p1 -i patch1025.patch
 %patch1091 -p1 -R
 %patch1092 -p1
 %patch1093 -p1
+%patch1094 -p1
 %patch1300 -p1
 %patch1301 -p1
 %patch1302 -p1
 %patch1303 -p1
+%patch1304 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -1575,6 +1569,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-errorhandling-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-errorhandling-l1-1-2.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-errorhandling-l1-1-3.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-core-featurestaging-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-fibers-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-fibers-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-file-ansi-l2-1-0.%{winedll}
@@ -2404,7 +2399,9 @@ fi
 %{_libdir}/wine/%{winedlldir}/wnaspi32.dll
 %endif
 %ifarch x86_64
+%{_libdir}/wine/%{winedlldir}/wow64.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wow64cpu.%{winedll}
+%{_libdir}/wine/%{winedlldir}/wow64win.%{winedll}
 %endif
 %{_libdir}/wine/%{winedlldir}/wpc.%{winedll}
 %{_libdir}/wine/%{winesodir}/wpcap.so
@@ -2925,6 +2922,9 @@ fi
 
 
 %changelog
+* Fri Jul 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.12-103.20210708gitd10887b
+- Bump
+
 * Tue Jul 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.12-102.20210705git14f03e8
 - Snapshot with some server fixes
 

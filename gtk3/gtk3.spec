@@ -1,10 +1,6 @@
-%if 0%{?fedora} || 0%{?rhel} > 7
 %global with_broadway 1
-%endif
 
-%if 0%{?fedora} >= 31
 %global with_sysprof 1
-%endif
 
 %global glib2_version 2.57.2
 %global pango_version 1.41.0
@@ -25,7 +21,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 8c8796458180a5b771f3d31e101ce59daee70cd0
+%global classic_ver 3.24.29
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -36,7 +32,7 @@
 %global vc_url https://gitlab.gnome.org/GNOME/gtk/-/commit
 
 Name:           gtk3
-Version:        3.24.29
+Version:        3.24.30
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -132,11 +128,7 @@ Requires:       libwayland-cursor%{?_isa} >= %{wayland_version}
 Requires:       gdk-pixbuf2-modules%{?_isa}
 
 # make sure we have a reasonable gsettings backend
-%if 0%{?fedora} || 0%{?rhel} > 7
 Recommends:    dconf%{?_isa}
-%else
-Requires:      dconf%{?_isa}
-%endif
 
 Provides:      gtk3-classic = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:      gtk3-classic%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -398,6 +390,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Fri Jul 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.30-100
+- 3.24.30
+
 * Fri Apr 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.29-100
 - 3.24.29
 
