@@ -1,18 +1,11 @@
 %global commit 5cd8421c171d0540851cac031acaf7a42026b736
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210430
-%global with_snapshot 1
+%global with_snapshot 0
 
-%global with_gtk3  1
 %global with_python  0
 
-%if 0%{?with_gtk3}
 %global with_fancy 1
-# Only snapshot currently
-%global with_snapshot 1
-%else
-%global with_fancy 0
-%endif
 
 %{!?with_autotools:%global with_autotools 0}
 
@@ -25,8 +18,8 @@
 %global build_manual 1
 
 Name:           claws-mail
-Version:        3.99.0
-Release:        109%{?gver}%{?dist}
+Version:        4.0.0
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -62,11 +55,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  flex, bison
 BuildRequires:  glib2-devel >= 2.28.0
-%if 0%{?with_gtk3}
 BuildRequires:  gtk3-devel >= 3.24.0
-%else
-BuildRequires:  gtk2-devel >= 2.24.0
-%endif
 BuildRequires:  gnutls-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  openldap-devel >= 2.0.7
@@ -114,19 +103,11 @@ BuildRequires:  libsoup-devel
 # fix #496149
 BuildRequires:  libnotify-devel
 %if 0%{?with_python}
-%if 0%{?with_gtk3}
 BuildRequires:  python3 python3-devel python3-gobject-devel
-%else
-BuildRequires:  python2 python2-devel pygtk2-devel
-%endif
 %endif
 BuildRequires:  libcanberra-devel
 # this is an optional subpackage not pulled in by libcanberra-devel
-%if 0%{?with_gtk3}
 BuildRequires:  libcanberra-gtk3
-%else
-BuildRequires:  libcanberra-gtk2
-%endif
 BuildRequires:  libgdata-devel >= 0.6.4
 BuildRequires:  libical-devel
 BuildRequires:  librsvg2-devel
@@ -733,6 +714,10 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Sat Jul 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1:4.0.0-100
+- 4.0.0 gtk3 stable
+- Remove gtk2 support
+
 * Wed May 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.99.0-109.20210430git5cd8421
 - Update
 
