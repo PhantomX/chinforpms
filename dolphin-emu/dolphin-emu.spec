@@ -19,9 +19,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit 2409d30f5cec08e5402f87e831dc3021819cbcca
+%global commit 9b17805be9ae8c09212f1c798711b915d4f6c58a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210630
+%global date 20210714
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -35,7 +35,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        140%{?gver}%{?dist}
+Release:        141%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -371,7 +371,7 @@ appstream-util validate-relax --nonet \
 
 %files -f %{name}.lang
 %doc Readme.md
-%license license.txt Externals/licenses.md
+%license COPYING Externals/licenses.md
 %{_bindir}/%{name}
 %{_bindir}/%{name}-x11
 %{_mandir}/man6/%{name}.*
@@ -391,7 +391,7 @@ appstream-util validate-relax --nonet \
 
 %files nogui
 %doc Readme.md
-%license license.txt Externals/licenses.md
+%license COPYING Externals/licenses.md
 %{_bindir}/%{name}-nogui
 %{_mandir}/man6/%{name}-nogui.*
 %if 0%{?with_reshdp}
@@ -401,7 +401,7 @@ appstream-util validate-relax --nonet \
 
 %files data
 %doc Readme.md docs/gc-font-tool.cpp
-%license license.txt font-licenses.txt
+%license COPYING font-licenses.txt
 #For the gui package:
 %exclude %{_datadir}/%{name}/sys/Resources/
 %exclude %{_datadir}/%{name}/sys/Themes/
@@ -412,6 +412,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-141.20210714git9b17805
+- Bump
+
 * Sat Jul 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-140.20210630git2409d30
 - Update
 

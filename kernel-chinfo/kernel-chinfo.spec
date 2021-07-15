@@ -142,7 +142,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -153,7 +153,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 5afc8758c1f3fd16eb57467d09222c0caaa61b0e
+%global pfcommit 36f818781a51f3e04c6b769d93f4cbdb95ad305a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -181,7 +181,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 91404150090172519addbb37c9a6ef0addc1116b
+%global opensuse_id 72aabc280320ed44ba5be658a4e67057167ed825
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -905,21 +905,15 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/ACPI-PM-s2idle-Add-missing-LPS0-functions-for-AMD.patch#/openSUSE-ACPI-PM-s2idle-Add-missing-LPS0-functions-for-AMD.patch
-Patch1020: %{opensuse_url}/ACPI-processor-idle-Fix-up-C-state-latency-if-not-or.patch#/openSUSE-ACPI-processor-idle-Fix-up-C-state-latency-if-not-or.patch
 Patch1021: %{opensuse_url}/proc-Avoid-mixing-integer-types-in-mem_rw.patch#/openSUSE-proc-Avoid-mixing-integer-types-in-mem_rw.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2002: %{patchwork_url}/12215169/mbox/#/patchwork-v7-1-5-blk-mq-Move-the-elevator_exit-definition.patch
-Patch2003: %{patchwork_url}/12251377/mbox/#/patchwork-V7-1-4-block-avoid-double-io-accounting-for-flush-request.patch
-Patch2004: %{patchwork_url}/12251379/mbox/#/patchwork-V7-2-4-blk-mq-grab-rq--refcount-before-calling---fn-in-blk_mq_tagset_busy_iter.patch
-Patch2005: %{patchwork_url}/12251381/mbox/#/patchwork-V7-3-4-blk-mq-clear-stale-request-in-tags--rq-before-freeing-one-request-pool.patch
-Patch2006: %{patchwork_url}/12251383/mbox/#/patchwork-V7-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
-Patch2007: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
-Patch2008: %{patchwork_url}/12245803/mbox/#/patchwork-md-don-t-account-io-stat-for-split-bio.patch
-Patch2009: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
+Patch2001: %{patchwork_url}/12215169/mbox/#/patchwork-v7-1-5-blk-mq-Move-the-elevator_exit-definition.patch
+Patch2002: %{patchwork_url}/12251383/mbox/#/patchwork-V7-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
+Patch2003: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
+Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
 Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/af4ff85bd28a0f4d4d13f61deb84916fda68e563/linux-tkg-patches/5.13/0007-v5.13-futex2_interface.patch#/tkg-0007-v5.13-futex2_interface.patch
 Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/af4ff85bd28a0f4d4d13f61deb84916fda68e563/linux-tkg-patches/5.13/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
@@ -2218,6 +2212,11 @@ BuildKernel() {
     # the F17 UsrMove feature.
     ln -sf $DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
+%ifnarch armv7hl
+    # Generate vmlinux.h and put it to kernel-devel path
+    # bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+%endif
+
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
 
@@ -2821,6 +2820,10 @@ fi
 #
 #
 %changelog
+* Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.2-500.chinfo
+- 5.13.2 - pf3
+- stabilization sync
+
 * Wed Jul 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.1-500.chinfo
 - 5.13.1 - pf2
 

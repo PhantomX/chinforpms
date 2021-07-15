@@ -1,7 +1,7 @@
 # 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit 6dd90aeaef3af4c7c5dff358788508cbfb4b6b14
+%global commit 21908bdaad7ad6487bbb0f7301a028503ca850f6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210705
+%global date 20210713
 %global with_snapshot 1
 
 %global sanitize 0
@@ -17,9 +17,11 @@
 
 %undefine _hardened_build
 
+%global jpgc_ver 1.05
+
 Name:           pcsx2
 Version:        1.7.0
-Release:        128%{?gver}%{?dist}
+Release:        129%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3 and LGPLv3+
@@ -85,11 +87,12 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-36
+BuildRequires:  sdl_gamecontrollerdb >= 0-37
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
 
+Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(xbyak)
 
 
@@ -112,9 +115,11 @@ this emulator anyway.
 
 %if 0%{sanitize}
   mv 3rdparty/include .
+  mv 3rdparty/jpgd .
   mv 3rdparty/xbyak .
   rm -rf 3rdparty/*
   mv include 3rdparty/
+  mv jpgd 3rdparty/
   mv xbyak 3rdparty/
   rm -rf tools
   rm -f common/src/Utilities/x86/MemcpyFast.cpp
@@ -250,6 +255,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-129.20210713git21908bd
+- Update
+
 * Tue Jul 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-128.20210705git6dd90ae
 - Last snapshot
 

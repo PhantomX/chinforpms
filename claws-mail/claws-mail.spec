@@ -1,7 +1,7 @@
-%global commit 5cd8421c171d0540851cac031acaf7a42026b736
+%global commit b27da5021501b9f6d55e929a63164eed0887bf8c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210430
-%global with_snapshot 0
+%global date 20210711
+%global with_snapshot 1
 
 %global with_python  0
 
@@ -17,9 +17,11 @@
 # toggle to avoid temporary docbook-utils and Tex Live dependency issues
 %global build_manual 1
 
+%global vc_url  https://git.claws-mail.org/?p=claws.git
+
 Name:           claws-mail
 Version:        4.0.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -28,10 +30,13 @@ URL:            http://claws-mail.org
 %global pluginapi %{version}.0
 
 %if 0%{?with_snapshot}
-Source0:        https://git.claws-mail.org/?p=claws.git;a=snapshot;h=%{commit};sf=tgz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url};a=snapshot;h=%{commit};sf=tgz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 %endif
+
+Patch0:         %{vc_url};a=patch;h=f459d1c27426a10af90f8ef73aef78ec846ebffb#/%{name}-git-f459d1c.patch
+Patch1:         %{vc_url};a=patch;h=7519c00939efe1e0a11eafa974e52463ac1c6042#/%{name}-git-7519c00.patch
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
@@ -714,6 +719,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1:4.0.0-101.20210711gitb27da50
+- Return to gtk3tree branch
+
 * Sat Jul 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1:4.0.0-100
 - 4.0.0 gtk3 stable
 - Remove gtk2 support

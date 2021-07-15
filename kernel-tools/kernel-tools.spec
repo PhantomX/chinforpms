@@ -17,7 +17,7 @@
 
 #global buildid .chinfo
 
-%global opensuse_id 6ed423b1e13ed01cc7c6f352295de2b381b1f454
+%global opensuse_id 72aabc280320ed44ba5be658a4e67057167ed825
 
 %define major_ver 5
 
@@ -30,7 +30,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 0
+%global stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -503,7 +503,10 @@ popd
 
 
 %changelog
-* Tue Jun 29 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.0-500.chinfo
+* Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.2-500
+- 5.13.2
+
+* Tue Jun 29 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.0-500
 - 5.13.0
 - Rawhide sync
 

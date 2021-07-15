@@ -1,6 +1,6 @@
-%global commit 752fdc9d4dd13c4a37501234bc0b376ed64a6311
+%global commit 11957ddc1be412777bf7bee8e505890d2f00fb04
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210707
+%global date 20210712
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -21,7 +21,7 @@
 # https://github.com/hrydgard/ppsspp/issues/13312
 %global _lto_cflags %{nil}
 
-%global commit1 3bf6b18eb0ae68861fbfbb7b43cd764771ca42a9
+%global commit1 87f58200e4e48a047aa9641270432746c10cc6c4
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-lang
 
@@ -41,7 +41,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 1ae2b58f19a935494363559f2fb41d7154261933
+%global commit7 be3988b13cb73dc007cab9291e7ce3b3456bf7c2
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -54,11 +54,11 @@
 
 %global vc_url  https://github.com/hrydgard
 
-%global jpge_ver 1.05
+%global jpgc_ver 1.05
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        114%{?gver}%{?dist}
+Release:        115%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -150,7 +150,7 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(armips) = 0~git%{shortcommit4}
 Provides:       bundled(gason)
 Provides:       bundled(glslang) = 0~git%{shortcommit6}
-Provides:       bundled(jpege) = %{jpge_ver}
+Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(libkirk)
 Provides:       bundled(sfmt19937)
 Provides:       bundled(sha1-reichl)
@@ -381,6 +381,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-115.20210712git11957dd
+- Update
+
 * Wed Jul 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-114.20210707git752fdc9
 - Last snapshot
 
