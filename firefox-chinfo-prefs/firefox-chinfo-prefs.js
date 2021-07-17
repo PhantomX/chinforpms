@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20210610
+// 20210716
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -76,10 +76,11 @@ pref("toolkit.cosmeticAnimations.enabled", false);
 pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 
 // Proton
-pref("browser.proton.enabled", false);
-pref("browser.proton.contextmenus.enabled", false);
-pref("browser.proton.doorhangers.enabled", false);
-pref("browser.proton.modals.enabled", false);
+// Defaults for now, use https://github.com/Aris-t2/CustomCSSforFx/ to fix
+//pref("browser.proton.enabled", false);
+//pref("browser.proton.contextmenus.enabled", false);
+//pref("browser.proton.doorhangers.enabled", false);
+//pref("browser.proton.modals.enabled", false);
 
 // Startup
 pref("browser.startup.page", 0);

@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.8.6
+Version:        2.8.10
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -90,7 +90,6 @@ Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcna
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-build-fix.patch
-Patch101:       %{name}-build-fix-2.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -324,6 +323,8 @@ rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,h
 
 rm -f Telegram/lib_ui/qt_conf/linux.qrc
 
+find Telegram -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
+
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
 
@@ -441,6 +442,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Jul 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.8.10-100
+- 2.8.10
+
 * Wed Jul 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.8.6-100
 - 2.8.6
 - BR: jemalloc

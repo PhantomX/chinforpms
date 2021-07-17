@@ -131,7 +131,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2021.06
+Version:        2021.07
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -188,14 +188,12 @@ Patch226:        rhbz-1354671.patch
 Patch402:        mozilla-1196777.patch
 Patch413:        mozilla-1353817.patch
 Patch415:        Bug-1238661---fix-mozillaSignalTrampoline-to-work-.patch
-Patch417:        mozilla-1436242.patch
 Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mozilla-1320560.patch
 Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mozilla-1389436.patch
 
 # Upstream updates/PRs/Reverts
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
-Patch450:       %{vc_url}/commit/26459c47f867dc1882fa7b87e32a9e8fc5e125e5.patch#/%{name}-gh-26459c4.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -399,11 +397,8 @@ This package contains results of tests executed during build.
 %ifarch %{arm}
 %patch415 -p1 -b .mozilla-1238661
 %endif
-%patch417 -p1 -b .mozilla-1436242
 %patch419 -p1 -b .mozilla-1320560
 %patch420 -p1 -b .mozilla-1389436
-
-%patch450 -p1 -b .gh26459c4 -R
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -442,7 +437,7 @@ done
 # 5: uncertain
 for i in \
   702179 730495 991253 1021761 1144632 1288587 1379148 1393235 1393283 1393627 \
-  1395486 1396722 1398021 1399412 1401909 1419762 1427126 1430508 1433747 \
+  1395486 1396722 1398021 1399412 1401909 1417751 1419762 1427126 1430508 1433747 \
   1452576 1452619 1453127 1454285 1455235 1466606 1469257 \
   1384121 1384701 1388744 1401063 1406396 1413143 1415883 1402442 1437450 \
   1447519
@@ -1038,6 +1033,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Sat Jul 17 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.07-1.classic
+- 2021.07
+
 * Mon Jun 07 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.06-1.classic
 - 2021.06
 
