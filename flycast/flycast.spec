@@ -1,6 +1,6 @@
-%global commit b40328e62173442f712f1050fc2cb72b45c06d1d
+%global commit 147bd8341d8a4fa59e0d81f8f0a9e6913b294e86
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210705
+%global date 20210717
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -23,7 +23,7 @@
 
 Name:           flycast
 Version:        1.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -204,6 +204,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Sun Jul 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.0-2.20210717git147bd83
+- Bump
+
 * Mon Jul 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1.0-1.20210705gitb40328e
 - 1.0 last snapshot
 

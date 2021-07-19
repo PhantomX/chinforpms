@@ -1,6 +1,6 @@
-From ed4ee270accf7f027aa2cbc9ce6aa2cf66b255fe Mon Sep 17 00:00:00 2001
+From be5a3065711171ba4865480745c9bf857ac81d4c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 22 May 2021 23:47:52 -0300
+Date: Sun, 18 Jul 2021 20:20:11 -0300
 Subject: [PATCH] Use system libs
 
 ---
@@ -13,7 +13,7 @@ Subject: [PATCH] Use system libs
  6 files changed, 80 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index deefc96..6f17093 100644
+index 07ca010..e78369a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -16,6 +16,9 @@ option(USE_GLES2 "Use GLES2 API" OFF)
@@ -26,7 +26,7 @@ index deefc96..6f17093 100644
  
  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
  
-@@ -99,19 +102,40 @@ else()
+@@ -100,20 +103,41 @@ else()
      target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_NO_OPENMP)
  endif()
  
@@ -60,6 +60,7 @@ index deefc96..6f17093 100644
 +    target_include_directories(${PROJECT_NAME} PRIVATE ${GLSLANG_INCLUDE_DIRS} ${SPIRV_INCLUDE_DIRS})
 +    target_link_libraries(${PROJECT_NAME} PRIVATE ${GLSLANG_LIBRARIES} ${SPIRV_LIBRARIES})
 +else()
+ 	option(BUILD_EXTERNAL "Build external dependencies in /External" OFF)
  	add_subdirectory(core/deps/glslang)
  	target_link_libraries(${PROJECT_NAME} PRIVATE SPIRV)
  endif()
