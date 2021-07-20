@@ -142,7 +142,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -153,7 +153,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 36f818781a51f3e04c6b769d93f4cbdb95ad305a
+%global pfcommit 5007fdb50b6c003e2605c32190fc07d2d748df93
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -181,7 +181,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 72aabc280320ed44ba5be658a4e67057167ed825
+%global opensuse_id 89416caa81c8da1d90d9565b056cc98122a0b37e
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -912,7 +912,6 @@ Patch1021: %{opensuse_url}/proc-Avoid-mixing-integer-types-in-mem_rw.patch#/open
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: %{patchwork_url}/12215169/mbox/#/patchwork-v7-1-5-blk-mq-Move-the-elevator_exit-definition.patch
 Patch2002: %{patchwork_url}/12251383/mbox/#/patchwork-V7-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
-Patch2003: %{patchwork_url}/12203817/mbox/#/patchwork-block-fix-io-hung-by-block-throttle.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
 Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/af4ff85bd28a0f4d4d13f61deb84916fda68e563/linux-tkg-patches/5.13/0007-v5.13-futex2_interface.patch#/tkg-0007-v5.13-futex2_interface.patch
@@ -2820,6 +2819,9 @@ fi
 #
 #
 %changelog
+* Mon Jul 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.3-500.chinfo
+- 5.13.3 - pf3
+
 * Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.2-500.chinfo
 - 5.13.2 - pf3
 - stabilization sync

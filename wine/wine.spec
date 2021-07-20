@@ -1,6 +1,6 @@
-%global commit 49cde0995827b24aa9c1ef1b6a0372797f4166e0
+%global commit d60c450c7be196c2072f74e34f7760d39e3bad32
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210709
+%global date 20210719
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 092f3b1ed1a5d41549ed2f5e260a3d7b05416060
+%global wine_stagingver 5e8fbbf2008e5a9282b45ea329b9de9327a58172
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id b356ff201e26180e98c3dcc46f00dd3f6557aad4
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 3979b1902ed218b209bbd215e643b035b5c9f2d8
+%global tkg_id f423d8daed43abf674096b3a86dbee629f93b349
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.12
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -1558,6 +1558,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l1-2-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l2-1-0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l3-2-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-crt-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-crt-l2-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-datetime-l1-1-0.%{winedll}
@@ -1597,6 +1598,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-kernel32-legacy-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-kernel32-legacy-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-kernel32-legacy-l1-1-2.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-core-kernel32-legacy-l1-1-5.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-kernel32-private-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-libraryloader-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-libraryloader-l1-1-1.%{winedll}
@@ -2923,8 +2925,11 @@ fi
 
 
 %changelog
+* Tue Jul 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.12-105.20210719gitd60c450
+- Bump
+
 * Sat Jul 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.12-104.20210709git49cde09
-- Weeken snapshot
+- Weekend snapshot
 
 * Fri Jul 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.12-103.20210708gitd10887b
 - Bump
