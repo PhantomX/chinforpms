@@ -34,9 +34,8 @@ Subject: [PATCH] patch-5.13-redhat
  drivers/iommu/iommu.c                              |  22 +
  drivers/net/wireguard/main.c                       |   6 +
  drivers/nvme/host/pci.c                            |  28 +-
- drivers/pci/controller/pcie-rockchip-host.c        |  12 +-
  drivers/pci/quirks.c                               |  24 +
- drivers/platform/x86/amd-pmc.c                     | 246 +++++++++-
+ drivers/platform/x86/amd-pmc.c                     | 248 +++++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
  include/linux/acpi.h                               |   5 +
@@ -72,7 +71,7 @@ Subject: [PATCH] patch-5.13-redhat
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
  .../selftests/bpf/progs/test_static_linked1.c      |  30 --
  .../selftests/bpf/progs/test_static_linked2.c      |  31 --
- 68 files changed, 914 insertions(+), 2359 deletions(-)
+ 68 files changed, 915 insertions(+), 2360 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -97,7 +96,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 31bbcc525535..b69dd0967af7 100644
+index 83f4212e004f..91790cbefd7c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -503,6 +503,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1457,48 +1456,11 @@ index 42ad75ff1348..5a72bdf5ad03 100644
  		/*
  		 * Some systems use a bios work around to ask for D3 on
  		 * platforms that support kernel managed suspend.
-diff --git a/drivers/pci/controller/pcie-rockchip-host.c b/drivers/pci/controller/pcie-rockchip-host.c
-index f1d08a1b1591..78d04ac29cd5 100644
---- a/drivers/pci/controller/pcie-rockchip-host.c
-+++ b/drivers/pci/controller/pcie-rockchip-host.c
-@@ -592,10 +592,6 @@ static int rockchip_pcie_parse_host_dt(struct rockchip_pcie *rockchip)
- 	if (err)
- 		return err;
-
--	err = rockchip_pcie_setup_irq(rockchip);
--	if (err)
--		return err;
--
- 	rockchip->vpcie12v = devm_regulator_get_optional(dev, "vpcie12v");
- 	if (IS_ERR(rockchip->vpcie12v)) {
- 		if (PTR_ERR(rockchip->vpcie12v) != -ENODEV)
-@@ -973,8 +969,6 @@ static int rockchip_pcie_probe(struct platform_device *pdev)
- 	if (err)
- 		goto err_vpcie;
-
--	rockchip_pcie_enable_interrupts(rockchip);
--
- 	err = rockchip_pcie_init_irq_domain(rockchip);
- 	if (err < 0)
- 		goto err_deinit_port;
-@@ -992,6 +986,12 @@ static int rockchip_pcie_probe(struct platform_device *pdev)
- 	bridge->sysdata = rockchip;
- 	bridge->ops = &rockchip_pcie_ops;
-
-+	err = rockchip_pcie_setup_irq(rockchip);
-+	if (err)
-+		goto err_remove_irq_domain;
-+
-+	rockchip_pcie_enable_interrupts(rockchip);
-+
- 	err = pci_host_probe(bridge);
- 	if (err < 0)
- 		goto err_remove_irq_domain;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 22b2bb1109c9..2131ee5ab7fd 100644
+index 6d74386eadc2..2333c1e4ae05 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4219,6 +4219,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4230,6 +4230,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1530,7 +1492,7 @@ index 22b2bb1109c9..2131ee5ab7fd 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
-index b9da58ee9b1e..680f94c7e075 100644
+index b9da58ee9b1e..663a4ca0580d 100644
 --- a/drivers/platform/x86/amd-pmc.c
 +++ b/drivers/platform/x86/amd-pmc.c
 @@ -46,34 +46,79 @@
@@ -1737,7 +1699,7 @@ index b9da58ee9b1e..680f94c7e075 100644
  static void amd_pmc_dump_registers(struct amd_pmc_dev *dev)
  {
  	u32 value;
-@@ -132,15 +263,15 @@ static void amd_pmc_dump_registers(struct amd_pmc_dev *dev)
+@@ -132,19 +263,19 @@ static void amd_pmc_dump_registers(struct amd_pmc_dev *dev)
  	dev_dbg(dev->dev, "AMD_PMC_REGISTER_MESSAGE:%x\n", value);
  }
 
@@ -1756,6 +1718,11 @@ index b9da58ee9b1e..680f94c7e075 100644
  				PMC_MSG_DELAY_MIN_US * RESPONSE_REGISTER_LOOP_MAX);
  	if (rc) {
  		dev_err(dev->dev, "failed to talk to SMU\n");
+-		return rc;
++		goto out_unlock;
+ 	}
+
+ 	/* Write zero to response register */
 @@ -154,34 +285,91 @@ static int amd_pmc_send_cmd(struct amd_pmc_dev *dev, bool set)
  	amd_pmc_reg_write(dev, AMD_PMC_REGISTER_ARGUMENT, set);
 

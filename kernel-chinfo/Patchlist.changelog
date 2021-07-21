@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/93766a4c0701e9f633071beb75237e11413dcebd
+ 93766a4c0701e9f633071beb75237e11413dcebd platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd()
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/21449ddd0db578d5dbf6eebe54e61e8f34254852
  21449ddd0db578d5dbf6eebe54e61e8f34254852 platform/x86: amd-pmc: Use return code on suspend
 

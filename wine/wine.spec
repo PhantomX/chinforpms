@@ -1,7 +1,7 @@
 %global commit d60c450c7be196c2072f74e34f7760d39e3bad32
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210719
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -33,7 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  6.2.1
-%global winevulkan 1.2.182
+%global winevulkan 1.2.185
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5e8fbbf2008e5a9282b45ea329b9de9327a58172
+%global wine_stagingver 6.13
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -127,8 +127,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.12
-Release:        105%{?gver}%{?dist}
+Version:        6.13
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -199,7 +199,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 Patch101:       %{whq_url}/c2c78a2fe0ac13e4fca7ab4c17977b65e358485c#/%{name}-whq-c2c78a2.patch
-Patch102:       %{whq_url}/b8aaf86b2dbb8ecb3f7094cc40a0df89bb2add27#/%{name}-whq-b8aaf86.patch
 Patch103:        https://source.winehq.org/patches/data/209085#/%{name}-whq-patch209085.patch
 Patch104:        https://source.winehq.org/patches/data/209084#/%{name}-whq-patch209084.patch
 
@@ -216,6 +215,9 @@ Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patc
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-003.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-003.patch
+# FIXME: Remove 1007-8 when proton-tkg-staging is updated
+Patch1007:       %{whq_url}/b335b69368a642b0b57cfd63990313b34cb3ee31#/%{name}-whq-b335b69.patch
+Patch1008:       %{whq_url}/20fff538c49c87abffd583f6b63371592ebdd835#/%{name}-whq-20fff53.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -854,7 +856,6 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch100 -p1 -R
 %patch101 -p1 -R
-%patch102 -p1 -R
 %patch103 -p1
 %patch104 -p1
 
@@ -862,6 +863,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
+
 
 %patch901 -p1
 
@@ -873,6 +875,9 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %endif
 %patch1004 -p1
 %patch1005 -p1
+
+%patch1008 -p1 -R
+%patch1007 -p1 -R
 
 %patch5000 -p1
 
@@ -2925,6 +2930,9 @@ fi
 
 
 %changelog
+* Tue Jul 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.13-100
+- 6.13
+
 * Tue Jul 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.12-105.20210719gitd60c450
 - Bump
 

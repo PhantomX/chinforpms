@@ -6,7 +6,7 @@
 
 Name:           gstreamer1-plugins-base
 Version:        1.18.4
-Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
+Release:        101%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework base plugins
 
 License:        LGPLv2+
@@ -21,7 +21,7 @@ Source0:        http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugin
 
 Patch0:         0001-missing-plugins-Remove-the-mpegaudioversion-field.patch
 # https://github.com/Guy1524's patch for gstreamer preroll buffer for media converter
-Patch1:         mediaconvert-gstdecodebin2.patch
+#Patch1:         mediaconvert-gstdecodebin2.patch
 
 BuildRequires:  meson >= 0.48.0
 BuildRequires:  gcc
@@ -482,6 +482,9 @@ chrpath --delete %{buildroot}%{_bindir}/gst-play-1.0
 %endif
 
 %changelog
+* Tue Jul 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1.18.4-101
+- Disable buffer patch
+
 * Sun Apr 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1.18.4-100
 - Guy1524's preroll buffer patch
 
