@@ -19,8 +19,8 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        21.02
-Release:        2%{?dist}
+Version:        21.03
+Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPLv2+ and BSD and Public Domain
@@ -98,6 +98,9 @@ install -pm0755 CPP/7zip/Bundles/Alone2/b/g%{platform}/7zz %{buildroot}%{_bindir
 
 
 %changelog
+* Thu Jul 22 2021 Phantom X <megaphantomx at hotmail dot com> - 21.03-1
+- 21.03
+
 * Sat Jun 19 2021 Phantom X <megaphantomx at hotmail dot com> - 21.02-2
 - ASM support with uasm (disabled by default)
 
