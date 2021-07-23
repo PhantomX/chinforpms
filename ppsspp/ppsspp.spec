@@ -1,6 +1,6 @@
-%global commit 11957ddc1be412777bf7bee8e505890d2f00fb04
+%global commit 868f5f61896b28930fa6f4fb9c92edeb8161f535
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210712
+%global date 20210722
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -21,10 +21,6 @@
 # https://github.com/hrydgard/ppsspp/issues/13312
 %global _lto_cflags %{nil}
 
-%global commit1 87f58200e4e48a047aa9641270432746c10cc6c4
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global srcname1 %{name}-lang
-
 %global commit2 0b28335acea4f429ae798c5e75232e54881bf164
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
@@ -41,7 +37,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 be3988b13cb73dc007cab9291e7ce3b3456bf7c2
+%global commit7 cd22336a38b7688056ae815c4372103373f2a186
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -58,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        115%{?gver}%{?dist}
+Release:        116%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -69,7 +65,6 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.g
 %else
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
 %if 0%{?with_smallffmpeg}
@@ -190,7 +185,6 @@ Data files of %{name}.
 %autosetup -n %{name}-%{version} -p1
 %endif
 
-tar -xf %{SOURCE1} -C assets/lang --strip-components 1
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
 tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
@@ -381,6 +375,10 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Jul 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-116.20210722git868f5f6
+- Bump
+- Remove lang submodules, now in mainline
+
 * Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-115.20210712git11957dd
 - Update
 

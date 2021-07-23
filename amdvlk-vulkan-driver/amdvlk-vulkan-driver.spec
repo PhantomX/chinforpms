@@ -23,19 +23,19 @@
 
 %global pkgname amdvlk
 
-%global commit1 84bf997c8b569e551ef73d39cf391e72d2f6c682
+%global commit1 3558c46649a7ef673ff95c58266e59b09626abf0
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{pkgname}-llvm-project
 
-%global commit2 b2e47a684ac1ba9bcddfc87afa9d2fffffd15c06
+%global commit2 64a67716cf85de1a6bf7e1891acb10794d9bb56e
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 682b4a3d4a49b2db24ad10b31ff192d03ecca097
+%global commit3 9210b6802b964cd875628aa67a52fa44a4ec5017
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
-%global commit4 ad699adac6f9f331bbc454050f6b40d1549ce752
+%global commit4 3e6d3ab088f3b7b405250e75de112df37c49398a
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{pkgname}-pal
 
@@ -55,15 +55,15 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
-%global commit9 ddf3230c14c71e81fc0eae9b781cc4bcc2d1f0f5
+%global commit9 cf653e4ca4858583802b0d1656bc934edff6bd7f
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 SPIRV-Headers
 
-%global commit10 1ae2b58f19a935494363559f2fb41d7154261933
+%global commit10 cd22336a38b7688056ae815c4372103373f2a186
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 4b7b86d568b40f4b076259dc2fc4cdd006340f34
+%global commit11 9158061398a96033c990e69156bd28c67114544b
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -78,7 +78,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2021.3.1
+Version:        2021.3.2
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
