@@ -14,7 +14,7 @@
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        6.2.1
+Version:        6.2.2
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -170,6 +170,9 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 
 
 %changelog
+* Fri Jul 23 2021 Phantom X <megaphantomx at hotmail dot com> - 6.2.2-100
+- 6.2.2
+
 * Fri Jul 09 2021 Phantom X <megaphantomx at hotmail dot com> - 6.2.1-100
 - 6.2.1
 

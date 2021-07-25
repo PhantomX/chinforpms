@@ -1,7 +1,7 @@
-%global commit aeba38d89f31fc123a238a88f90a780abd8b116f
+%global commit f5ba0442dd9586ba816c621fa4a971b0877ba784
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210401
-%global with_snapshot 0
+%global date 20210724
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -12,7 +12,7 @@
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.0.6
+Version:        3.1.0
 Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -33,8 +33,11 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
 BuildRequires:  libappstream-glib
 BuildRequires:  %{py3_dist pygobject}
-BuildRequires:  %{py3_dist pytest}
 BuildRequires:  python3-devel
+# check
+BuildRequires:  gtk3
+BuildRequires:  %{py3_dist pytest}
+BuildRequires:  xorg-x11-server-Xvfb
 Requires:       gdbm
 Requires:       gtk3
 Requires:       libappindicator-gtk3
@@ -75,8 +78,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %check
+%global __pytest xvfb-run /usr/bin/pytest
 # Tests requiring an Internet connection are disabled
-%pytest --deselect=test/unit/test_version.py
+GDK_BACKEND=x11 %pytest --deselect=test/unit/test_version.py
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/org.nicotine_plus.Nicotine.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_plus.Nicotine.metainfo.xml
@@ -95,6 +99,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 
 
 %changelog
+* Sun Jul 25 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-100.20210724gitf5ba044
+- 3.1.0
+- Add xvfb-run BR for %%check depending on X
+
 * Wed May 12 2021 Phantom X <megaphantomx at hotmail dot com> - 3.0.6-100
 - 3.0.6
 

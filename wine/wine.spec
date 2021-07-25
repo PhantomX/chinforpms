@@ -1,7 +1,7 @@
-%global commit d60c450c7be196c2072f74e34f7760d39e3bad32
+%global commit c518a5362b925379b1a79e8323d60e19863effc1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210719
-%global with_snapshot 0
+%global date 20210722
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -32,7 +32,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  6.2.1
+%global winemono  6.2.2
 %global winevulkan 1.2.185
 %global _default_patch_fuzz 2
 
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.13
+%global wine_stagingver b57bf86ec0b314264b91737abbb58c548084c72c
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id b356ff201e26180e98c3dcc46f00dd3f6557aad4
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f423d8daed43abf674096b3a86dbee629f93b349
+%global tkg_id 6baea97044ff9957100d10140f3fd7b7c374b1b6
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.13
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -199,6 +199,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 Patch101:       %{whq_url}/c2c78a2fe0ac13e4fca7ab4c17977b65e358485c#/%{name}-whq-c2c78a2.patch
+Patch102:       %{whq_url}/5edf65616a8dcbf5988bbabe0493827d9e125fc3#/%{name}-whq-5edf656.patch
 Patch103:        https://source.winehq.org/patches/data/209085#/%{name}-whq-patch209085.patch
 Patch104:        https://source.winehq.org/patches/data/209084#/%{name}-whq-patch209084.patch
 
@@ -215,9 +216,6 @@ Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patc
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-003.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-003.patch
-# FIXME: Remove 1007-8 when proton-tkg-staging is updated
-Patch1007:       %{whq_url}/b335b69368a642b0b57cfd63990313b34cb3ee31#/%{name}-whq-b335b69.patch
-Patch1008:       %{whq_url}/20fff538c49c87abffd583f6b63371592ebdd835#/%{name}-whq-20fff53.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -245,7 +243,7 @@ Patch1300:       nier.patch
 Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
 Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
 Patch1303:       0001-winevdm-support-DOSBOX-environment-variable.patch
-Patch1304:       0001-mscoree-Update-Wine-Mono-to-6.2.1.patch
+Patch1304:       0001-mscoree-Update-Wine-Mono-to-6.2.2.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -856,6 +854,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch100 -p1 -R
 %patch101 -p1 -R
+%patch102 -p1 -R
 %patch103 -p1
 %patch104 -p1
 
@@ -875,9 +874,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %endif
 %patch1004 -p1
 %patch1005 -p1
-
-%patch1008 -p1 -R
-%patch1007 -p1 -R
 
 %patch5000 -p1
 
@@ -2930,6 +2926,9 @@ fi
 
 
 %changelog
+* Fri Jul 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.13-101.20210722gitc518a53
+- Snapshot
+
 * Tue Jul 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.13-100
 - 6.13
 

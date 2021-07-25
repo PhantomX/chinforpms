@@ -1,7 +1,7 @@
-From f5fa6ab7a6fc3ac9386d0cf49587bb8f4a2b2fa6 Mon Sep 17 00:00:00 2001
+From e6fc7fcac3291f0dfbd60e3b59a44af6d6e11f66 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 9 Jul 2021 11:07:19 -0300
-Subject: [PATCH] mscoree: Update Wine Mono to 6.2.1
+Date: Fri, 23 Jul 2021 13:55:26 -0300
+Subject: [PATCH] mscoree: Update Wine Mono to 6.2.2
 
 ---
  dlls/appwiz.cpl/addons.c       | 4 ++--
@@ -9,7 +9,7 @@ Subject: [PATCH] mscoree: Update Wine Mono to 6.2.1
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/dlls/appwiz.cpl/addons.c b/dlls/appwiz.cpl/addons.c
-index 3f094d3..e0d6676 100644
+index 3f094d3..d599120 100644
 --- a/dlls/appwiz.cpl/addons.c
 +++ b/dlls/appwiz.cpl/addons.c
 @@ -58,10 +58,10 @@ WINE_DEFAULT_DEBUG_CHANNEL(appwizcpl);
@@ -17,16 +17,16 @@ index 3f094d3..e0d6676 100644
  #endif
  
 -#define MONO_VERSION "6.2.0"
-+#define MONO_VERSION "6.2.1"
++#define MONO_VERSION "6.2.2"
  #if defined(__i386__) || defined(__x86_64__)
  #define MONO_ARCH "x86"
 -#define MONO_SHA "cd8d53513d8357b2876a66bab089654ef9941f42ef690fb555c6493f5381dbca"
-+#define MONO_SHA "c674231e33e79056d0502f51701641f054f1f0a1beda9cec1967c06331731fe8"
++#define MONO_SHA "1917de1d52f0fffb65216f7ec33872fd38420dca5f7d7e207c3d684d5ec0db7d"
  #else
  #define MONO_ARCH ""
  #define MONO_SHA "???"
 diff --git a/dlls/mscoree/mscoree_private.h b/dlls/mscoree/mscoree_private.h
-index 910cc40..2f4ce0b 100644
+index 910cc40..4c153b7 100644
 --- a/dlls/mscoree/mscoree_private.h
 +++ b/dlls/mscoree/mscoree_private.h
 @@ -45,7 +45,7 @@ extern HRESULT assembly_get_runtime_version(ASSEMBLY *assembly, LPSTR *version)
@@ -34,7 +34,7 @@ index 910cc40..2f4ce0b 100644
  extern HRESULT assembly_get_native_entrypoint(ASSEMBLY *assembly, NativeEntryPointFunc *func) DECLSPEC_HIDDEN;
  
 -#define WINE_MONO_VERSION "6.2.0"
-+#define WINE_MONO_VERSION "6.2.1"
++#define WINE_MONO_VERSION "6.2.2"
  
  /* Mono embedding */
  typedef struct _MonoDomain MonoDomain;
