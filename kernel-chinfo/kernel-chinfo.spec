@@ -142,18 +142,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ec0cd83c86a7217148b2f5d5b4ed53eb0a4da27f
+%global pfcommit 468fdae96aeb2c9c1f4d5888a945d9fc64731e1c
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -181,7 +181,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id a433f80d0bb4d24b9485410db0e90be52a351f9b
+%global opensuse_id f6cd057bce501354f0873080cd834aa0f0690544
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -905,6 +905,8 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
+Patch1019: %{opensuse_url}/r8152-Fix-potential-PM-refcount-imbalance.patch#/openSUSE-r8152-Fix-potential-PM-refcount-imbalance.patch
+Patch1020: %{opensuse_url}/r8152-Fix-a-deadlock-by-doubly-PM-resume.patch#/openSUSE-r8152-Fix-a-deadlock-by-doubly-PM-resume.patch
 Patch1021: %{opensuse_url}/proc-Avoid-mixing-integer-types-in-mem_rw.patch#/openSUSE-proc-Avoid-mixing-integer-types-in-mem_rw.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -2819,6 +2821,9 @@ fi
 #
 #
 %changelog
+* Sun Jul 25 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.5-500.chinfo
+- 5.13.5 - pf4
+
 * Tue Jul 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.4-500.chinfo
 - 5.13.4 - pf3
 

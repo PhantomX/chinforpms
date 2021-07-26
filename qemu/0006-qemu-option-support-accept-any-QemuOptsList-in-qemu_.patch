@@ -1,0 +1,28 @@
+From 941a4736d2b465be1d6429415f8b1f26e2167585 Mon Sep 17 00:00:00 2001
+From: Paolo Bonzini <pbonzini@redhat.com>
+Date: Wed, 11 Nov 2020 08:42:27 -0500
+Subject: [PATCH] qemu-option: support accept-any QemuOptsList in
+ qemu_opts_absorb_qdict
+
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ util/qemu-option.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/util/qemu-option.c b/util/qemu-option.c
+index 9678d5b682..4944015a25 100644
+--- a/util/qemu-option.c
++++ b/util/qemu-option.c
+@@ -1056,7 +1056,8 @@ bool qemu_opts_absorb_qdict(QemuOpts *opts, QDict *qdict, Error **errp)
+     while (entry != NULL) {
+         next = qdict_next(qdict, entry);
+ 
+-        if (find_desc_by_name(opts->list->desc, entry->key)) {
++        if (opts_accepts_any(opts->list) ||
++            find_desc_by_name(opts->list->desc, entry->key)) {
+             if (!qemu_opts_from_qdict_entry(opts, entry, errp)) {
+                 return false;
+             }
+-- 
+2.31.1
+

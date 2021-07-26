@@ -9,7 +9,6 @@ Subject: [PATCH] patch-5.13-redhat
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
  .../boot/dts/rockchip/rk3399-pinebook-pro.dts      |   2 +-
- arch/arm64/boot/dts/rockchip/rk3399.dtsi           |   2 +-
  arch/arm64/kernel/acpi.c                           |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
@@ -157,19 +156,6 @@ index 2b5f001ff4a6..dcdb3cd75be7 100644
  };
 
  &cpu_b0 {
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 634a91af8e83..4b854eb21f72 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -227,7 +227,7 @@ pcie0: pcie@f8000000 {
- 		       <&pcie_phy 2>, <&pcie_phy 3>;
- 		phy-names = "pcie-phy-0", "pcie-phy-1",
- 			    "pcie-phy-2", "pcie-phy-3";
--		ranges = <0x83000000 0x0 0xfa000000 0x0 0xfa000000 0x0 0x1e00000>,
-+		ranges = <0x82000000 0x0 0xfa000000 0x0 0xfa000000 0x0 0x1e00000>,
- 			 <0x81000000 0x0 0xfbe00000 0x0 0xfbe00000 0x0 0x100000>;
- 		resets = <&cru SRST_PCIE_CORE>, <&cru SRST_PCIE_MGMT>,
- 			 <&cru SRST_PCIE_MGMT_STICKY>, <&cru SRST_PCIE_PIPE>,
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
 index cada0b816c8a..0fc840d6b0fb 100644
 --- a/arch/arm64/kernel/acpi.c
