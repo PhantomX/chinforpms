@@ -19,9 +19,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit 9b17805be9ae8c09212f1c798711b915d4f6c58a
+%global commit 7fe97b27de3cdcf6669f23f38971c889b5a1a3a2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210714
+%global date 20210725
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -35,7 +35,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        141%{?gver}%{?dist}
+Release:        142%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -73,6 +73,7 @@ Patch3:         0002-soundtouch-Use-shorts-instead-of-floats-for-samples.patch
 Patch4:         0003-soundtouch-disable-exceptions.patch
 #This needs to be fixed, I've reverted the patch that breaks minizip
 Patch5:         0004-Revert-Externals-Update-minizip-search-path.patch
+Patch10:        0001-mgba-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
 Patch101:       0001-Revert-VideoCommon-TextureInfo-commits-for-RESHDP.patch
@@ -104,6 +105,7 @@ BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  pkgconfig(libusb)
 BuildRequires:  pkgconfig(libzstd) >= 1.4.0
+BuildRequires:  mgba-devel
 BuildRequires:  pkgconfig(miniupnpc)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  qt5-qtbase-private-devel
@@ -229,7 +231,7 @@ sed -i "/PageFaultTest/d" Source/UnitTests/Core/CMakeLists.txt
 pushd Externals
 rm -rf \
   bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg fmt gettext hidapi \
-  libiconv-* liblzma libpng libusb LZO mbedtls miniupnpc minizip OpenAL \
+  libiconv-* liblzma libpng libusb LZO mbedtls mGBA miniupnpc minizip OpenAL \
   pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib zstd
 
 %if 0%{?with_sysvulkan}
@@ -279,6 +281,7 @@ export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
   -DXXHASH_FOUND:BOOL=ON \
   %{?!enablejit:-DENABLE_GENERIC=ON} \
   -DUSE_SHARED_ENET:BOOL=ON \
+  -DUSE_SHARED_MGBA:BOOL=ON \
   -DENABLE_ANALYTICS:BOOL=OFF \
 %if !%{with ffmpeg}
   -DENCODE_FRAMEDUMPS:BOOL=OFF \
@@ -412,6 +415,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Jul 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-142.20210725git7fe97b2
+- Last snapshot
+- BR: mgba
+
 * Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-141.20210714git9b17805
 - Bump
 

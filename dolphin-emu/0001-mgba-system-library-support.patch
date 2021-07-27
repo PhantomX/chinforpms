@@ -1,0 +1,53 @@
+From b5ba229b7dbb6777cbfcf17a24ebef172e36e57a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 26 Jul 2021 13:07:37 -0300
+Subject: [PATCH] mgba: system library support
+
+---
+ CMakeLists.txt | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d5c03d8..ee2c327 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -46,6 +46,7 @@ option(ENABLE_TESTS "Enables building the unit tests" ON)
+ option(ENABLE_VULKAN "Enables vulkan video backend" ON)
+ option(USE_DISCORD_PRESENCE "Enables Discord Rich Presence, show the current game on Discord" ON)
+ option(USE_MGBA "Enables GBA controllers emulation using libmgba" ON)
++option(USE_SHARED_MGBA "Use shared libmgba if found" OFF)
+ 
+ # Maintainers: if you consider blanket disabling this for your users, please
+ # consider the following points:
+@@ -830,9 +831,28 @@ if(NOT ENABLE_QT)
+   set(USE_MGBA 0)
+ endif()
+ if(USE_MGBA)
++  if(USE_SHARED_MGBA)
++    find_path(MGBA_INCLUDE_DIR mgba/core/interface.h)
++    find_library(MGBA_LIBRARY mgba)
++    mark_as_advanced(MGBA_INCLUDE_DIR MGBA_LIBRARY)
++    
++    include(FindPackageHandleStandardArgs)
++    find_package_handle_standard_args(MGBA DEFAULT_MSG
++    MGBA_INCLUDE_DIR MGBA_LIBRARY)
++
++    if(MGBA_FOUND AND NOT TARGET MGBA)
++      message(STATUS "Using shared libmgba")
++      add_library(mGBA::mgba UNKNOWN IMPORTED)
++       set_target_properties(mGBA::mgba PROPERTIES
++        IMPORTED_LOCATION "${MGBA_LIBRARY}"
++        INTERFACE_INCLUDE_DIRECTORIES "${MGBA_INCLUDE_DIR}"
++      )
++    endif()
++  else()
+   message(STATUS "Using static libmgba from Externals")
+   add_subdirectory(Externals/mGBA)
+ endif()
++endif()
+ 
+ find_package(SYSTEMD)
+ if(SYSTEMD_FOUND)
+-- 
+2.31.1
+
