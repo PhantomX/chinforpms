@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/e833c34e56563b0292493c62921e7132a16ceef0
+ e833c34e56563b0292493c62921e7132a16ceef0 iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/93766a4c0701e9f633071beb75237e11413dcebd
  93766a4c0701e9f633071beb75237e11413dcebd platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd()
 
@@ -78,6 +81,9 @@ https://gitlab.com/cki-project/kernel-ark/-/commit/6c2cf04cbec9cd04d595c2467b6c9
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/25268f11b4a9b70af9cdbfd9dbadd2be1981deee
  25268f11b4a9b70af9cdbfd9dbadd2be1981deee PCI: rockchip: Register IRQs just before pci_host_probe()
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/4459c104a420e90ce5830764bb1ebe0f061c348f
+ 4459c104a420e90ce5830764bb1ebe0f061c348f arm64: dts: rockchip: Update PCI host bridge window to 32-bit address memory
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/4eac47a15e63ac5aa17d6438cb614b9b151c28d8
  4eac47a15e63ac5aa17d6438cb614b9b151c28d8 RHEL: disable io_uring support

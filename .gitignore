@@ -125,6 +125,7 @@ testing/
 /_upstream/
 /build/
 /broot/
+/bsrc/
 /BUILD/
 /BUILDROOT/
 /RPMS/
