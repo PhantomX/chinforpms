@@ -21,7 +21,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        34%{?gver}%{?dist}
+Release:        35%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -239,6 +239,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Jul 30 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-35.20210723git7f88cd5
+- Update
+
 * Fri Jul 23 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-34.20210723git7f88cd5
 - Last snapshot
 

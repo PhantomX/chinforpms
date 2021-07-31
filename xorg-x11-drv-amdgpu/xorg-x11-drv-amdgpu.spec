@@ -5,7 +5,7 @@
 %global commit 6ed48634443e15a45f48e3a4ddf91e46041ad38f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210202
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Xorg cannot load hardened build
 %undefine _hardened_build
@@ -15,8 +15,8 @@
 %endif
 
 Name:           xorg-x11-drv-amdgpu
-Version:        19.1.0
-Release:        104%{?gver}%{?dist}
+Version:        21.0.0
+Release:        100%{?gver}%{?dist}
 
 Summary:        AMD GPU video driver
 License:        MIT
@@ -27,8 +27,6 @@ Source0:        https://gitlab.freedesktop.org/xorg/driver/%{pkgname}/-/archive/
 %else
 Source0:        https://www.x.org/pub/individual/driver/%{pkgname}-%{version}.tar.bz2
 %endif
-
-Patch0:         0001-Fix-includes.patch
 
 ExcludeArch:    s390 s390x
 
@@ -44,7 +42,7 @@ BuildRequires:  xorg-x11-glamor-devel
 
 Requires:       Xorg %(xserver-sdk-abi-requires ansic)
 Requires:       Xorg %(xserver-sdk-abi-requires videodrv)
-Requires:       libdrm >= 2.4.76
+Requires:       libdrm >= 2.4.89
 
 %description
 X.Org X11 AMDGPU driver
@@ -74,6 +72,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Fri Jul 30 2021 Phantom X <megaphantomx at hotmail dot com> - 21.0.0-100
+- 21.0.0
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 19.1.0-104.20210202git6ed4863
 - Last snapshot
 
