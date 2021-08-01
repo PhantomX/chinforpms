@@ -1,0 +1,25 @@
+From 943c06e8fcf89accc66d434a004a7af8dc59380b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 31 Jul 2021 10:54:36 -0300
+Subject: [PATCH] Fix build with disabled Wayland integration
+
+---
+ .../ui/platform/linux/ui_linux_wayland_integration_dummy.cpp    | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Telegram/lib_ui/ui/platform/linux/ui_linux_wayland_integration_dummy.cpp b/Telegram/lib_ui/ui/platform/linux/ui_linux_wayland_integration_dummy.cpp
+index 13fafdb..ddf1de3 100644
+--- a/Telegram/lib_ui/ui/platform/linux/ui_linux_wayland_integration_dummy.cpp
++++ b/Telegram/lib_ui/ui/platform/linux/ui_linux_wayland_integration_dummy.cpp
+@@ -18,6 +18,8 @@ struct WaylandIntegration::Private {
+ WaylandIntegration::WaylandIntegration() {
+ }
+ 
++WaylandIntegration::~WaylandIntegration() = default;
++
+ WaylandIntegration *WaylandIntegration::Instance() {
+ 	if (!::Platform::IsWayland()) return nullptr;
+ 	static WaylandIntegration instance;
+-- 
+2.31.1
+

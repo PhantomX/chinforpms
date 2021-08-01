@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.8.13
+Version:        2.9.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -90,6 +90,7 @@ Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcna
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-build-fix.patch
+Patch101:       0001-Fix-build-with-disabled-Wayland-integration.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -131,7 +132,6 @@ BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(libxxhash)
-BuildRequires:  pkgconfig(rnnoise)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(sigc++-2.0)
@@ -173,7 +173,9 @@ Provides:       bundled(rlottie) = 0~git
 BuildRequires:  pkgconfig(tgvoip) >= 2.4.4
 %else
 BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libpulse)
+BuildRequires:  pkgconfig(rnnoise)
 Provides:       bundled(libtgvoip) = 2.4.4
 %endif
 
@@ -304,7 +306,7 @@ mv Libraries/%{srcname10}/legal .
 %endif
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,libdbusmenu-qt,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,xxHash}
+rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,jemalloc,libdbusmenu-qt,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,xxHash}
 
 %if %{with rlottie}
   rm -rf Telegram/ThirdParty/rlottie
@@ -443,6 +445,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Sat Jul 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.9.0-100
+- 2.9.0
+
 * Sat Jul 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.8.13-100
 - 2.8.13
 

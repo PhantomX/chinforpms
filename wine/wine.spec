@@ -1,7 +1,7 @@
 %global commit f1023b4b52e8164e9fa774c62d282efcb399107b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210726
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver dc38777093f497ca0056cd546f109dd4a4bbe573
+%global wine_stagingver 6.14
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id ac142160e1d38438218fa68c894a2a619fba0cc8
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 752b5ffacea08aa985d53f4403ce0b67c1134c93
+%global tkg_id f9a601896b16f0611b3960ce680b7c683d1c6752
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -127,8 +127,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.13
-Release:        102%{?gver}%{?dist}
+Version:        6.14
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -199,8 +199,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 Patch101:       %{whq_url}/c2c78a2fe0ac13e4fca7ab4c17977b65e358485c#/%{name}-whq-c2c78a2.patch
-Patch103:        https://source.winehq.org/patches/data/209085#/%{name}-whq-patch209085.patch
-Patch104:        https://source.winehq.org/patches/data/209084#/%{name}-whq-patch209084.patch
+Patch102:       %{whq_url}/97afac469fbe012e22acc1f1045c88b1004a241f#/%{name}-whq-97afac4.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -853,8 +852,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch100 -p1 -R
 %patch101 -p1 -R
-%patch103 -p1
-%patch104 -p1
+%patch102 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -1878,10 +1876,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/dpnaddr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpnet.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpnhpast.%{winedll}
-%{_libdir}/wine/%{winesodir}/dpnhupnp.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/dpnhupnp.dll
-%endif
+%{_libdir}/wine/%{winedlldir}/dpnhupnp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpnlobby.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpvoice.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpwsockx.%{winedll}
@@ -2923,6 +2918,9 @@ fi
 
 
 %changelog
+* Sat Jul 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.14-100
+- 6.14
+
 * Tue Jul 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.13-102.20210726gitf1023b4
 - Bump
 
