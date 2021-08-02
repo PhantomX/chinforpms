@@ -234,7 +234,6 @@ Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/virtual_alloc_remi2.mypatch
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
-Patch1092:       %{ge_url}/wine-hotfixes/pending/hotfix-rpgmaker_vx.patch#/%{name}-ge-hotfix-rpgmaker_vx.patch
 Patch1093:       https://source.winehq.org/patches/data/205277#/%{name}-whq-patch205277.patch
 
 Patch1300:       nier.patch
@@ -906,7 +905,6 @@ $patch_command -p1 -i patch1025.patch
 %patch1032 -p1
 %patch1089 -p1
 %patch1091 -p1 -R
-%patch1092 -p1
 %patch1093 -p1
 %patch1300 -p1
 %patch1301 -p1
