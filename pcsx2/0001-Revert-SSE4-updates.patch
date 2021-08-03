@@ -1,6 +1,6 @@
-From 87c481a07844a7806818f2da7207dabca290eaa0 Mon Sep 17 00:00:00 2001
+From 92b9c31cb0913f09502cf2745377a6fd5001ac2f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 5 Jul 2021 20:42:57 -0300
+Date: Mon, 2 Aug 2021 19:42:29 -0300
 Subject: [PATCH] Revert SSE4 updates
 
 Rebased with commits reverted:
@@ -39,10 +39,10 @@ That make PCSX2 running in older CPUS for some not demanding games
  24 files changed, 1618 insertions(+), 141 deletions(-)
 
 diff --git a/bin/GameIndex.yaml b/bin/GameIndex.yaml
-index 0643b30..2473e4b 100644
+index acf1af9..4dcbb9d 100644
 --- a/bin/GameIndex.yaml
 +++ b/bin/GameIndex.yaml
-@@ -13447,6 +13447,15 @@ SLES-53744:
+@@ -14169,6 +14169,15 @@ SLES-53744:
  SLES-53746:
    name: "Superman Returns"
    region: "PAL-E"
@@ -58,7 +58,7 @@ index 0643b30..2473e4b 100644
  SLES-53747:
    name: "Ed, Edd, 'n Eddy - The Misadventure"
    region: "PAL-E"
-@@ -14635,12 +14644,28 @@ SLES-54348:
+@@ -15361,12 +15370,28 @@ SLES-54348:
  SLES-54349:
    name: "Superman Returns"
    region: "PAL-I"
@@ -87,7 +87,7 @@ index 0643b30..2473e4b 100644
  SLES-54354:
    name: "Final Fantasy XII"
    region: "PAL-E"
-@@ -37295,6 +37320,15 @@ SLUS-21434:
+@@ -38044,6 +38069,15 @@ SLUS-21434:
    name: "Superman Returns - The Video Game"
    region: "NTSC-U"
    compat: 4
@@ -104,33 +104,33 @@ index 0643b30..2473e4b 100644
    name: "One Piece - Grand Adventure"
    region: "NTSC-U"
 diff --git a/cmake/BuildParameters.cmake b/cmake/BuildParameters.cmake
-index 8b96060..e55884c 100644
+index 478e10e..bcab4b7 100644
 --- a/cmake/BuildParameters.cmake
 +++ b/cmake/BuildParameters.cmake
-@@ -151,9 +151,9 @@ if(${PCSX2_TARGET_ARCHITECTURES} MATCHES "i386")
-     if(NOT DEFINED ARCH_FLAG)
-         if (DISABLE_ADVANCE_SIMD)
-             if (USE_ICC)
--                set(ARCH_FLAG "-msse2 -msse4.1")
-+                set(ARCH_FLAG "-msse2")
-             else()
--                set(ARCH_FLAG "-msse -msse2 -msse4.1 -mfxsr -march=i686")
-+                set(ARCH_FLAG "-msse -msse2 -mfxsr -march=i686")
-             endif()
-         else()
-             # AVX requires some fix of the ABI (mangling) (default 2)
-@@ -174,9 +174,9 @@ elseif(${PCSX2_TARGET_ARCHITECTURES} MATCHES "x86_64")
-     if(NOT DEFINED ARCH_FLAG)
-         if (DISABLE_ADVANCE_SIMD)
-             if (USE_ICC)
--                set(ARCH_FLAG "-msse2 -msse4.1")
-+                set(ARCH_FLAG "-msse2")
-             else()
--                set(ARCH_FLAG "-msse -msse2 -msse4.1 -mfxsr")
-+                set(ARCH_FLAG "-msse -msse2 -mfxsr")
-             endif()
-         else()
-             #set(ARCH_FLAG "-march=native -fabi-version=6")
+@@ -147,9 +147,9 @@ if(${PCSX2_TARGET_ARCHITECTURES} MATCHES "i386")
+ 	if(NOT DEFINED ARCH_FLAG)
+ 		if (DISABLE_ADVANCE_SIMD)
+ 			if (USE_ICC)
+-				set(ARCH_FLAG "-msse2 -msse4.1")
++				set(ARCH_FLAG "-msse2")
+ 			else()
+-				set(ARCH_FLAG "-msse -msse2 -msse4.1 -mfxsr -march=i686")
++				set(ARCH_FLAG "-msse -msse2 -march=i686")
+ 			endif()
+ 		else()
+ 			# AVX requires some fix of the ABI (mangling) (default 2)
+@@ -170,9 +170,9 @@ elseif(${PCSX2_TARGET_ARCHITECTURES} MATCHES "x86_64")
+ 	if(NOT DEFINED ARCH_FLAG)
+ 		if (DISABLE_ADVANCE_SIMD)
+ 			if (USE_ICC)
+-				set(ARCH_FLAG "-msse2 -msse4.1")
++				set(ARCH_FLAG "-msse2")
+ 			else()
+-				set(ARCH_FLAG "-msse -msse2 -msse4.1 -mfxsr")
++				set(ARCH_FLAG "-msse -msse2")
+ 			endif()
+ 		else()
+ 			#set(ARCH_FLAG "-march=native -fabi-version=6")
 diff --git a/pcsx2/GS/GSBlock.h b/pcsx2/GS/GSBlock.h
 index c4b8c96..d52cee8 100644
 --- a/pcsx2/GS/GSBlock.h
@@ -1639,10 +1639,10 @@ index 306dffa..eaae8bc 100644
  	GSVector4 s(1.0f / 16, 1.0f / 16, 2.0f, 1.0f);
  
 diff --git a/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp b/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp
-index bd809f3..725b308 100644
+index 2a7c573..eedb572 100644
 --- a/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp
 +++ b/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp
-@@ -941,8 +941,12 @@ void GSRendererDX11::DrawPrims(GSTexture* rt, GSTexture* ds, GSTextureCache::Sou
+@@ -943,8 +943,12 @@ void GSRendererDX11::DrawPrims(GSTexture* rt, GSTexture* ds, GSTextureCache::Sou
  		m_ps_sel.fog = 1;
  
  		const GSVector4 fc = GSVector4::rgba32(m_env.FOGCOL.u32[0]);
@@ -1673,7 +1673,7 @@ index d8e3486..c4facde 100644
  
  	// Warning must be done after EmulateZbuffer
 diff --git a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
-index ba1ad03..63c445e 100644
+index ba1ad03..af8e5df 100644
 --- a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
 +++ b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
 @@ -117,7 +117,18 @@ void GSDrawScanlineCodeGenerator::mix16(const Xmm& a, const Xmm& b, const Xmm& t
@@ -1746,7 +1746,7 @@ index ba1ad03..63c445e 100644
  
  void GSDrawScanlineCodeGenerator::split16_2x8(const Xmm& l, const Xmm& h, const Xmm& src)
 diff --git a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
-index fa0cccd..55350b2 100644
+index fa0cccd..8f05f90 100644
 --- a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
 +++ b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
 @@ -639,9 +639,20 @@ void GSDrawScanlineCodeGenerator::TestZ_SSE(const Xmm& temp1, const Xmm& temp2)
@@ -2540,7 +2540,7 @@ index 4a18e82..99a4c98 100644
  	}
  	else if( _Rt_ == 0 ) {
 diff --git a/pcsx2/x86/ix86-32/iR5900-32.cpp b/pcsx2/x86/ix86-32/iR5900-32.cpp
-index 67cbca0..8be998b 100644
+index 375aa9a..ee6413b 100644
 --- a/pcsx2/x86/ix86-32/iR5900-32.cpp
 +++ b/pcsx2/x86/ix86-32/iR5900-32.cpp
 @@ -508,8 +508,8 @@ static void recReserve()
@@ -2668,7 +2668,7 @@ index 850ddc9..6a761f1 100644
  
  mVUop(mVU_ELENG) {
 diff --git a/pcsx2/x86/microVU_Misc.inl b/pcsx2/x86/microVU_Misc.inl
-index c759623..12b27b2 100644
+index d0cf724..5be76a1 100644
 --- a/pcsx2/x86/microVU_Misc.inl
 +++ b/pcsx2/x86/microVU_Misc.inl
 @@ -59,29 +59,72 @@ void mVUsaveReg(const xmm& reg, xAddressVoid ptr, int xyzw, bool modXYZW)

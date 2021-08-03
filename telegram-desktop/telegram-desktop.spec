@@ -25,8 +25,8 @@
 %global da_url https://github.com/desktop-app
 
 # Enable or disable build with support...
+%bcond_with gtk3
 %bcond_with rlottie
-%bcond_without spellcheck
 %bcond_with tgvoip
 %bcond_with wayland
 %bcond_without x11
@@ -121,6 +121,7 @@ BuildRequires:  pkgconfig(giomm-2.4)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(glibmm-2.4)
 BuildRequires:  pkgconfig(gobject-2.0)
+BuildRequires:  pkgconfig(hunspell)
 BuildRequires:  pkgconfig(jemalloc)
 BuildRequires:  pkgconfig(json11)
 BuildRequires:  pkgconfig(libavcodec)
@@ -150,15 +151,17 @@ BuildRequires:  ninja-build
 BuildRequires:  python3
 BuildRequires:  qt5-qtbase-private-devel
 
-%if %{with spellcheck}
-BuildRequires:  pkgconfig(hunspell)
-Requires:       hunspell%{?_isa}
-%endif
-
 %if %{with clang}
 BuildRequires:  compiler-rt
 BuildRequires:  clang
 BuildRequires:  llvm
+%endif
+
+%if %{with gtk3}
+BuildRequires: pkgconfig(gtk+-3.0)
+BuildRequires: pkgconfig(webkit2gtk-4.0)
+Requires: gtk3%{?_isa}
+Recommends:    webkit2gtk3
 %endif
 
 # Telegram Desktop require patched version of rlottie since 1.8.0.
@@ -221,6 +224,7 @@ Provides:       bundled(tg_owt) = 0~git%{shortcommit10}
 Requires: hicolor-icon-theme
 Requires: open-sans-fonts
 Requires: qt5-qtimageformats%{?_isa}
+Recommends: xdg-desktop-portal
 
 # Short alias for the main package...
 Provides: telegram = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -376,9 +380,6 @@ sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
     -DCMAKE_RANLIB=%{_bindir}/gcc-ranlib \
     -DCMAKE_NM=%{_bindir}/gcc-nm \
 %endif
-%if %{without spellcheck}
-    -DDESKTOP_APP_DISABLE_SPELLCHECK:BOOL=ON \
-%endif
     -DTDESKTOP_API_ID=%{apiid} \
     -DTDESKTOP_API_HASH=%{apihash} \
     -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
@@ -389,8 +390,13 @@ sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
     -DDESKTOP_APP_DISABLE_WEBRTC_INTEGRATION:BOOL=OFF \
     -DDESKTOP_APP_USE_GLIBC_WRAPS:BOOL=OFF \
     -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
+%if %{with gtk3}
+    -DDESKTOP_APP_DISABLE_GTK_INTEGRATION:BOOL=OFF \
+    -DDESKTOP_APP_DISABLE_WEBKITGTK:BOOL=OFF \
+%else
     -DDESKTOP_APP_DISABLE_GTK_INTEGRATION:BOOL=ON \
     -DDESKTOP_APP_DISABLE_WEBKITGTK:BOOL=ON \
+%endif
 %if %{with wayland}
     -DDESKTOP_APP_DISABLE_WAYLAND_INTEGRATION:BOOL=OFF \
 %else

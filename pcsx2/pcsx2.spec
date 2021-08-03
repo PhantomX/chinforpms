@@ -1,7 +1,7 @@
 # 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit 21908bdaad7ad6487bbb0f7301a028503ca850f6
+%global commit 958e27c782416a09b03e7b3aff9f875055898b40
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210713
+%global date 20210802
 %global with_snapshot 1
 
 %global sanitize 0
@@ -48,6 +48,7 @@ Source1:        Makefile
 Patch0:         0001-Revert-SSE4-updates.patch
 %endif
 Patch1:         0001-System-libchdr-support.patch
+Patch2:         0001-Utilities-build-as-static.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -87,7 +88,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-37
+BuildRequires:  sdl_gamecontrollerdb >= 0-38
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -150,6 +151,8 @@ sed -i \
 cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
   pcsx2/PAD/Linux/res/game_controller_db.txt
 
+sed -e '/ALSA::ALSA/a		rt' -i pcsx2/CMakeLists.txt
+
 
 %build
 
@@ -171,8 +174,6 @@ cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
   -DXDG_STD:BOOL=TRUE \
   -DEGL_API:BOOL=TRUE \
   -DGLSL_API:BOOL=TRUE \
-  -DPLUGIN_DIR:PATH=%{_libdir}/pcsx2 \
-  -DGAMEINDEX_DIR:PATH=%{_datadir}/pcsx2 \
   -DCMAKE_BUILD_STRIP:BOOL=FALSE \
   -DPORTAUDIO_API:BOOL=FALSE \
   -DSDL2_API:BOOL=TRUE \
@@ -209,6 +210,8 @@ export MESA_NO_ERROR=1
 exec %{_bindir}/PCSX2.bin
 EOF
 chmod 0755 %{buildroot}%{_bindir}/PCSX2
+
+mkdir -p %{buildroot}%{_libdir}/PCSX2
 
 # strip extra copies of pdf files, which are now in /doc/pcsx2
 rm -rf %{buildroot}/usr/share/doc/P*
@@ -248,6 +251,7 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 %doc bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
 %{_bindir}/PCSX2
 %{perms_pcsx2} %{_bindir}/PCSX2.bin
+%dir %{_libdir}/PCSX2
 %{_datadir}/applications/PCSX2.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_mandir}/man1/PCSX2.*

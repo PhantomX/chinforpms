@@ -1,0 +1,25 @@
+From 64bb4a322c1cde7b17d6e4d1817c892e912f56a1 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 2 Aug 2021 21:06:38 -0300
+Subject: [PATCH] Utilities: build as static
+
+---
+ common/src/Utilities/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/common/src/Utilities/CMakeLists.txt b/common/src/Utilities/CMakeLists.txt
+index a05ad49..40b1985 100644
+--- a/common/src/Utilities/CMakeLists.txt
++++ b/common/src/Utilities/CMakeLists.txt
+@@ -102,7 +102,7 @@ set(UtilitiesFinalSources
+ )
+ 
+ foreach(library Utilities Utilities_NO_TLS)
+-	add_library(${library} "${UtilitiesFinalSources}")
++	add_library(${library} STATIC "${UtilitiesFinalSources}")
+ 	target_link_libraries(${library} PRIVATE ${LIBC_LIBRARIES} PUBLIC wxWidgets::all)
+ 	target_compile_features(${library} PUBLIC cxx_std_17)
+ 	target_include_directories(${library} PUBLIC ../../../3rdparty/include ../../include PRIVATE ../../include/Utilities .)
+-- 
+2.31.1
+

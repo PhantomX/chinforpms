@@ -192,7 +192,7 @@
 %if 0%{?rhel}
     %define enable_werror -Dwerror=true
 %else
-    %define enable_werror -Dwerror=false
+    %define enable_werror -Dwerror=false -Dgit_werror=disabled
 %endif
 
 %define tls_priority "@LIBVIRT,SYSTEM"
@@ -200,7 +200,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 7.5.0
+Version: 7.6.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -1914,6 +1914,9 @@ exit 0
 
 
 %changelog
+* Mon Aug 02 2021 Phantom X <megaphantomx at hotmail dot com> - 7.6.0-100
+- 7.6.0
+
 * Thu Jul 01 2021 Phantom X <megaphantomx at hotmail dot com> - 7.5.0-100
 - 7.5.0
 

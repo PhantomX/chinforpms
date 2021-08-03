@@ -1,65 +1,60 @@
-From c8e63ab830c6b82b15fd5b7f5b4b0dce12009569 Mon Sep 17 00:00:00 2001
+From d3855f020c20f1a5abeb0e31ace8f02cd84052a5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 5 Jul 2021 20:51:02 -0300
+Date: Mon, 2 Aug 2021 19:50:33 -0300
 Subject: [PATCH] System libchdr support
 
 ---
- cmake/SearchForStuff.cmake          | 14 ++++++++++++--
- common/src/Utilities/CMakeLists.txt |  2 +-
- pcsx2/CDVD/ChdFileReader.h          |  2 +-
- 3 files changed, 14 insertions(+), 4 deletions(-)
+ cmake/SearchForStuff.cmake | 12 +++++++++++-
+ pcsx2/CDVD/ChdFileReader.h |  2 +-
+ pcsx2/CMakeLists.txt       |  2 +-
+ 3 files changed, 13 insertions(+), 3 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 8fffe12..e3167ae 100644
+index 2cffa28..08ffd93 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -289,8 +289,18 @@ if(NOT USE_SYSTEM_YAML)
-     endif()
+@@ -223,4 +223,14 @@ if(NOT USE_SYSTEM_YAML)
+ 	endif()
  endif()
  
 -add_subdirectory(3rdparty/libchdr/libchdr EXCLUDE_FROM_ALL)
--include_directories(3rdparty/libchdr/libchdr/include)
 +check_lib(CHDR libchdr)
 +if(NOT CHDR_FOUND)
 +    message(STATUS "No system libchdr was found")
 +    set(CHDR_SYSTEM_LIBRARY chdr-static)
 +    add_subdirectory(3rdparty/libchdr/libchdr EXCLUDE_FROM_ALL)
-+    include_directories(3rdparty/libchdr/libchdr/include)
 +    include_directories(3rdparty/libchdr/libchdr/include/libchdr)
 +else()
 +    include_directories(${CHDR_INCLUDE_DIRS})
 +    set(CHDR_SYSTEM_LIBRARY ${CHDR_LIBRARIES})
 +    message(STATUS "Found libchdr: ${CHDR_SYSTEM_LIBRARY}")
 +endif()
- 
- 
- 
-diff --git a/common/src/Utilities/CMakeLists.txt b/common/src/Utilities/CMakeLists.txt
-index 034afe6..d089fe3 100644
---- a/common/src/Utilities/CMakeLists.txt
-+++ b/common/src/Utilities/CMakeLists.txt
-@@ -111,7 +111,7 @@ set(UtilitiesFinalSources
- set(UtilitiesFinalLibs
-     ${LIBC_LIBRARIES} # Gold (new linux linker) does not get automatically dependency of dependency
- 	${wxWidgets_LIBRARIES}
--	yaml-cpp chdr-static
-+	yaml-cpp ${CHDR_SYSTEM_LIBRARY}
- )
- 
- add_pcsx2_lib(${Output} "${UtilitiesFinalSources}" "${UtilitiesFinalLibs}" "${UtilitiesFinalFlags}")
 diff --git a/pcsx2/CDVD/ChdFileReader.h b/pcsx2/CDVD/ChdFileReader.h
-index 024485e..3f923a6 100644
+index 9975c8f..59b7db8 100644
 --- a/pcsx2/CDVD/ChdFileReader.h
 +++ b/pcsx2/CDVD/ChdFileReader.h
 @@ -15,7 +15,7 @@
  
  #pragma once
- #include "AsyncFileReader.h"
+ #include "ThreadedFileReader.h"
 -#include "libchdr/chd.h"
 +#include "chd.h"
  
- class ChdFileReader : public AsyncFileReader
+ class ChdFileReader : public ThreadedFileReader
  {
+diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
+index a375a25..ce8dfe1 100644
+--- a/pcsx2/CMakeLists.txt
++++ b/pcsx2/CMakeLists.txt
+@@ -1246,7 +1246,7 @@ set(pcsx2FinalLibs
+ 	x86emitter
+ 	fmt::fmt
+ 	yaml-cpp
+-	chdr-static
++	${CHDR_SYSTEM_LIBRARY}
+ 	wxWidgets::all
+ 	GTK::gtk
+ 	HarfBuzz::HarfBuzz
 -- 
 2.31.1
 
