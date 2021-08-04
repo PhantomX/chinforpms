@@ -8,8 +8,8 @@
 %global pkgrel 1
 
 Name:           ms-%{pkgname}
-Version:        1.4.00.7556
-Release:        2%{?dist}
+Version:        1.4.00.13653
+Release:        1%{?dist}
 Summary:        Chat-centered workspace in Office 365
 
 License:        Microsoft End User License Agreement
@@ -100,6 +100,9 @@ done
 
 
 %changelog
+* Tue Aug 03 2021 - 1.4.00.13653-1
+- 1.4.00.13653
+
 * Fri Apr 16 2021 - 1.4.00.7556-2
 - Sync wrapper command line with upstream
 

@@ -5,19 +5,20 @@
 %global __strip /bin/true
 
 %global snapid H8ZpNgIoPyvmkgxOWw5MSzsXK1wRZiHn
-%global snaprev 5
+%global snaprev 6
 
 %global app_name Authy
 
 Name:           authy
 # Version from application info
-Version:        1.8.3
-Release:        2%{?dist}
+Version:        1.8.4
+Release:        1%{?dist}
 Summary:        Two factor authentication desktop application
 
 License:        Unknown
 URL:            https://authy.com/
 
+# curl -q -H 'Snap-Device-Series: 16' https://api.snapcraft.io/v2/snaps/info/authy
 Source0:        https://api.snapcraft.io/api/v1/snaps/download/%{snapid}_%{snaprev}.snap#/%{name}-%{version}.snap
 
 ExclusiveArch:  x86_64
@@ -96,6 +97,9 @@ done
 
 
 %changelog
+* Tue Aug 03 2021 - 1.8.4-1
+- 1.8.4
+
 * Wed Dec 02 2020 - 1.8.3-2
 - Fix gpu acceleration
 

@@ -5,18 +5,18 @@ diff -Naur steam-launcher.old/Makefile steam-launcher/Makefile
  all:
  	@echo 'Run steam with "./steam" or install it with "sudo make install"'
  
--install: install-bin install-docs install-icons install-bootstrap install-desktop install-apt-source
-+install: install-bin install-docs install-icons install-bootstrap install-desktop
+-install: install-bin install-docs install-icons install-bootstrap install-desktop install-appdata install-apt-source
++install: install-bin install-docs install-icons install-bootstrap install-desktop install-appdata
  
  install-bin:
  	install -d -m 755 $(DESTDIR)$(PREFIX)/bin/
 @@ -41,8 +41,7 @@
- install-desktop:
- 	install -d -m 755 $(DESTDIR)$(PREFIX)/share/applications/
- 	install -d -m 755 $(DESTDIR)$(pkglibdir)/
--	install -p -m 644 $(PACKAGE).desktop $(DESTDIR)$(pkglibdir)
--	ln -fns $(pkglibdir)/$(PACKAGE).desktop $(DESTDIR)$(datadir)/applications/
+ 	# will not contain an entry for it and appstream-generator will complain that
+ 	# the package is missing the desktop file. Instead we place the real file in
+ 	# $(datadir)/applications/ and create a symlink in $(pkglibdir)
+-	install -p -m 644 $(PACKAGE).desktop $(DESTDIR)$(datadir)/applications/
+-	ln -fns $(datadir)/applications/$(PACKAGE).desktop $(DESTDIR)$(pkglibdir)/
 +	install -p -m 644 $(PACKAGE).desktop $(DESTDIR)$(PREFIX)/share/applications/
  
- install-apt-source:
- 	if [ -d /etc/apt ]; then \
+ install-appdata:
+ 	install -d -m 755 $(DESTDIR)$(PREFIX)/share/metainfo/
