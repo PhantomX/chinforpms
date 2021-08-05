@@ -65,7 +65,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        21.1.6
+Version:        21.2.0
 Release:        100%{?dist}
 
 License:        MIT
@@ -546,6 +546,7 @@ popd
 %{_libdir}/dri/radeonsi_dri.so
 %endif
 %ifarch %{ix86} x86_64
+%{_libdir}/dri/i830_dri.so
 %{_libdir}/dri/i915_dri.so
 %{_libdir}/dri/i965_dri.so
 %{_libdir}/dri/iris_dri.so
@@ -666,6 +667,9 @@ popd
 
 
 %changelog
+* Wed Aug 04 2021 Phantom X <megaphantomx at hotmail dot com> - 21.2.0-100
+- 21.2.0
+
 * Wed Jul 28 2021 Phantom X <megaphantomx at hotmail dot com> - 21.1.6-100
 - 21.1.6
 

@@ -27,6 +27,7 @@ Subject: [PATCH] patch-5.13-redhat
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
+ drivers/gpu/drm/rockchip/rockchip_drm_drv.c        |  11 +
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
@@ -35,7 +36,7 @@ Subject: [PATCH] patch-5.13-redhat
  drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |   1 +
  drivers/nvme/host/pci.c                            |  28 +-
  drivers/pci/quirks.c                               |  24 +
- drivers/platform/x86/amd-pmc.c                     | 248 +++++++++-
+ drivers/platform/x86/amd-pmc.c                     | 204 +++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
  include/linux/acpi.h                               |   5 +
@@ -71,7 +72,7 @@ Subject: [PATCH] patch-5.13-redhat
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
  .../selftests/bpf/progs/test_static_linked1.c      |  30 --
  .../selftests/bpf/progs/test_static_linked2.c      |  31 --
- 68 files changed, 917 insertions(+), 2361 deletions(-)
+ 68 files changed, 887 insertions(+), 2342 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -96,7 +97,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 41be12f806e0..f89aa29cd5c2 100644
+index fdb4e2fd9d8f..d8efc35bad77 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -802,7 +803,7 @@ index 467e94259679..9b6f5b8e5397 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 4b7ee3fa9224..64b31d852d20 100644
+index 847f33ffc4ae..363037f8eaf8 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -990,6 +991,28 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
+index 212bd87c0c4a..b8b066938e48 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
+@@ -114,6 +114,17 @@ static int rockchip_drm_bind(struct device *dev)
+ 	struct rockchip_drm_private *private;
+ 	int ret;
+
++	/* Remove existing drivers that may own the framebuffer memory. */
++        ret = drm_fb_helper_remove_conflicting_framebuffers(NULL,
++                                                            "rockchip-drm-fb",
++                                                            false);
++	if (ret) {
++		DRM_DEV_ERROR(dev,
++			      "Failed to remove existing framebuffers - %d.\n",
++			      ret);
++		return ret;
++	}
++
+ 	drm_dev = drm_dev_alloc(&rockchip_drm_driver, dev);
+ 	if (IS_ERR(drm_dev))
+ 		return PTR_ERR(drm_dev);
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1410,10 +1433,10 @@ index d94bd8d732e9..7775395bef6f 100644
  	IWL_DEV_INFO(0x02F0, 0x0074, iwl_ax201_cfg_quz_hr, NULL),
  	IWL_DEV_INFO(0x02F0, 0x6074, iwl_ax201_cfg_quz_hr, NULL),
 diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 42ad75ff1348..5a72bdf5ad03 100644
+index d963f25fc7ae..66455e2261d0 100644
 --- a/drivers/nvme/host/pci.c
 +++ b/drivers/nvme/host/pci.c
-@@ -2828,32 +2828,6 @@ static unsigned long check_vendor_combination_bug(struct pci_dev *pdev)
+@@ -2880,32 +2880,6 @@ static unsigned long check_vendor_combination_bug(struct pci_dev *pdev)
  	return 0;
  }
 
@@ -1446,7 +1469,7 @@ index 42ad75ff1348..5a72bdf5ad03 100644
  static void nvme_async_probe(void *data, async_cookie_t cookie)
  {
  	struct nvme_dev *dev = data;
-@@ -2903,7 +2877,7 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+@@ -2955,7 +2929,7 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
  	quirks |= check_vendor_combination_bug(pdev);
 
@@ -1491,10 +1514,10 @@ index 6d74386eadc2..2333c1e4ae05 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
-index b9da58ee9b1e..663a4ca0580d 100644
+index ca95c2a52e26..e38e8288468f 100644
 --- a/drivers/platform/x86/amd-pmc.c
 +++ b/drivers/platform/x86/amd-pmc.c
-@@ -46,34 +46,79 @@
+@@ -46,26 +46,70 @@
  #define AMD_PMC_RESULT_CMD_UNKNOWN           0xFE
  #define AMD_PMC_RESULT_FAILED                0xFF
 
@@ -1522,7 +1545,6 @@ index b9da58ee9b1e..663a4ca0580d 100644
  #define AMD_CPU_ID_CZN			AMD_CPU_ID_RN
 +#define AMD_CPU_ID_YC			0x14B5
 
--#define AMD_SMU_FW_VERSION		0x0
  #define PMC_MSG_DELAY_MIN_US		100
  #define RESPONSE_REGISTER_LOOP_MAX	200
 
@@ -1565,10 +1587,9 @@ index b9da58ee9b1e..663a4ca0580d 100644
  	u32 cpu_id;
 +	u32 active_ips;
  	struct device *dev;
-+	struct mutex lock; /* generic mutex lock */
+ 	struct mutex lock; /* generic mutex lock */
  #if IS_ENABLED(CONFIG_DEBUG_FS)
- 	struct dentry *dbgfs_dir;
- #endif /* CONFIG_DEBUG_FS */
+@@ -74,6 +118,7 @@ struct amd_pmc_dev {
  };
 
  static struct amd_pmc_dev pmc;
@@ -1576,7 +1597,7 @@ index b9da58ee9b1e..663a4ca0580d 100644
 
  static inline u32 amd_pmc_reg_read(struct amd_pmc_dev *dev, int reg_offset)
  {
-@@ -85,18 +130,76 @@ static inline void amd_pmc_reg_write(struct amd_pmc_dev *dev, int reg_offset, u3
+@@ -85,13 +130,76 @@ static inline void amd_pmc_reg_write(struct amd_pmc_dev *dev, int reg_offset, u3
  	iowrite32(val, dev->regbase + reg_offset);
  }
 
@@ -1600,8 +1621,7 @@ index b9da58ee9b1e..663a4ca0580d 100644
  #ifdef CONFIG_DEBUG_FS
  static int smu_fw_info_show(struct seq_file *s, void *unused)
  {
- 	struct amd_pmc_dev *dev = s->private;
--	u32 value;
++	struct amd_pmc_dev *dev = s->private;
 +	struct smu_metrics table;
 +	int idx;
 +
@@ -1623,9 +1643,7 @@ index b9da58ee9b1e..663a4ca0580d 100644
 +			seq_printf(s, "%-8s : %lld\n", soc15_ip_blk[idx].name,
 +				   table.timecondition_notmet_lastcapture[idx]);
 +	}
-
--	value = ioread32(dev->smu_base + AMD_SMU_FW_VERSION);
--	seq_printf(s, "SMU FW Info: %x\n", value);
++
  	return 0;
  }
  DEFINE_SHOW_ATTRIBUTE(smu_fw_info);
@@ -1656,7 +1674,7 @@ index b9da58ee9b1e..663a4ca0580d 100644
  static void amd_pmc_dbgfs_unregister(struct amd_pmc_dev *dev)
  {
  	debugfs_remove_recursive(dev->dbgfs_dir);
-@@ -107,6 +210,8 @@ static void amd_pmc_dbgfs_register(struct amd_pmc_dev *dev)
+@@ -102,6 +210,8 @@ static void amd_pmc_dbgfs_register(struct amd_pmc_dev *dev)
  	dev->dbgfs_dir = debugfs_create_dir("amd_pmc", NULL);
  	debugfs_create_file("smu_fw_info", 0644, dev->dbgfs_dir, dev,
  			    &smu_fw_info_fops);
@@ -1665,7 +1683,7 @@ index b9da58ee9b1e..663a4ca0580d 100644
  }
  #else
  static inline void amd_pmc_dbgfs_register(struct amd_pmc_dev *dev)
-@@ -118,6 +223,32 @@ static inline void amd_pmc_dbgfs_unregister(struct amd_pmc_dev *dev)
+@@ -113,6 +223,32 @@ static inline void amd_pmc_dbgfs_unregister(struct amd_pmc_dev *dev)
  }
  #endif /* CONFIG_DEBUG_FS */
 
@@ -1698,7 +1716,7 @@ index b9da58ee9b1e..663a4ca0580d 100644
  static void amd_pmc_dump_registers(struct amd_pmc_dev *dev)
  {
  	u32 value;
-@@ -132,19 +263,19 @@ static void amd_pmc_dump_registers(struct amd_pmc_dev *dev)
+@@ -127,10 +263,9 @@ static void amd_pmc_dump_registers(struct amd_pmc_dev *dev)
  	dev_dbg(dev->dev, "AMD_PMC_REGISTER_MESSAGE:%x\n", value);
  }
 
@@ -1709,66 +1727,38 @@ index b9da58ee9b1e..663a4ca0580d 100644
 -	u8 msg;
  	u32 val;
 
-+	mutex_lock(&dev->lock);
- 	/* Wait until we get a valid response */
- 	rc = readx_poll_timeout(ioread32, dev->regbase + AMD_PMC_REGISTER_RESPONSE,
--				val, val > 0, PMC_MSG_DELAY_MIN_US,
-+				val, val != 0, PMC_MSG_DELAY_MIN_US,
- 				PMC_MSG_DELAY_MIN_US * RESPONSE_REGISTER_LOOP_MAX);
- 	if (rc) {
- 		dev_err(dev->dev, "failed to talk to SMU\n");
--		return rc;
-+		goto out_unlock;
- 	}
-
- 	/* Write zero to response register */
-@@ -154,34 +285,91 @@ static int amd_pmc_send_cmd(struct amd_pmc_dev *dev, bool set)
+ 	mutex_lock(&dev->lock);
+@@ -150,8 +285,8 @@ static int amd_pmc_send_cmd(struct amd_pmc_dev *dev, bool set)
  	amd_pmc_reg_write(dev, AMD_PMC_REGISTER_ARGUMENT, set);
 
  	/* Write message ID to message ID register */
 -	msg = (dev->cpu_id == AMD_CPU_ID_RN) ? MSG_OS_HINT_RN : MSG_OS_HINT_PCO;
  	amd_pmc_reg_write(dev, AMD_PMC_REGISTER_MESSAGE, msg);
--	return 0;
 +
-+	/* Wait until we get a valid response */
-+	rc = readx_poll_timeout(ioread32, dev->regbase + AMD_PMC_REGISTER_RESPONSE,
-+				val, val != 0, PMC_MSG_DELAY_MIN_US,
-+				PMC_MSG_DELAY_MIN_US * RESPONSE_REGISTER_LOOP_MAX);
-+	if (rc) {
-+		dev_err(dev->dev, "SMU response timed out\n");
-+		goto out_unlock;
-+	}
+ 	/* Wait until we get a valid response */
+ 	rc = readx_poll_timeout(ioread32, dev->regbase + AMD_PMC_REGISTER_RESPONSE,
+ 				val, val != 0, PMC_MSG_DELAY_MIN_US,
+@@ -163,6 +298,12 @@ static int amd_pmc_send_cmd(struct amd_pmc_dev *dev, bool set)
+
+ 	switch (val) {
+ 	case AMD_PMC_RESULT_OK:
 +
-+	switch (val) {
-+	case AMD_PMC_RESULT_OK:
 +		if (ret) {
 +			/* PMFW may take longer time to return back the data */
 +			usleep_range(DELAY_MIN_US, 10 * DELAY_MAX_US);
 +			*data = amd_pmc_reg_read(dev, AMD_PMC_REGISTER_ARGUMENT);
 +		}
-+		break;
-+	case AMD_PMC_RESULT_CMD_REJECT_BUSY:
-+		dev_err(dev->dev, "SMU not ready. err: 0x%x\n", val);
-+		rc = -EBUSY;
-+		goto out_unlock;
-+	case AMD_PMC_RESULT_CMD_UNKNOWN:
-+		dev_err(dev->dev, "SMU cmd unknown. err: 0x%x\n", val);
-+		rc = -EINVAL;
-+		goto out_unlock;
-+	case AMD_PMC_RESULT_CMD_REJECT_PREREQ:
-+	case AMD_PMC_RESULT_FAILED:
-+	default:
-+		dev_err(dev->dev, "SMU cmd failed. err: 0x%x\n", val);
-+		rc = -EIO;
-+		goto out_unlock;
-+	}
-+
-+out_unlock:
-+	mutex_unlock(&dev->lock);
+ 		break;
+ 	case AMD_PMC_RESULT_CMD_REJECT_BUSY:
+ 		dev_err(dev->dev, "SMU not ready. err: 0x%x\n", val);
+@@ -182,32 +323,54 @@ static int amd_pmc_send_cmd(struct amd_pmc_dev *dev, bool set)
+
+ out_unlock:
+ 	mutex_unlock(&dev->lock);
 +	amd_pmc_dump_registers(dev);
-+	return rc;
-+}
-+
+ 	return rc;
+ }
+
 +static int amd_pmc_get_os_hint(struct amd_pmc_dev *dev)
 +{
 +	switch (dev->cpu_id) {
@@ -1779,8 +1769,8 @@ index b9da58ee9b1e..663a4ca0580d 100644
 +		return MSG_OS_HINT_RN;
 +	}
 +	return -EINVAL;
- }
-
++}
++
  static int __maybe_unused amd_pmc_suspend(struct device *dev)
  {
  	struct amd_pmc_dev *pdev = dev_get_drvdata(dev);
@@ -1821,7 +1811,7 @@ index b9da58ee9b1e..663a4ca0580d 100644
  	return 0;
  }
 
-@@ -190,6 +378,7 @@ static const struct dev_pm_ops amd_pmc_pm_ops = {
+@@ -216,6 +379,7 @@ static const struct dev_pm_ops amd_pmc_pm_ops = {
  };
 
  static const struct pci_device_id pmc_pci_ids[] = {
@@ -1829,7 +1819,7 @@ index b9da58ee9b1e..663a4ca0580d 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, AMD_CPU_ID_CZN) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, AMD_CPU_ID_RN) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, AMD_CPU_ID_PCO) },
-@@ -201,9 +390,8 @@ static int amd_pmc_probe(struct platform_device *pdev)
+@@ -227,9 +391,8 @@ static int amd_pmc_probe(struct platform_device *pdev)
  {
  	struct amd_pmc_dev *dev = &pmc;
  	struct pci_dev *rdev;
@@ -1841,16 +1831,7 @@ index b9da58ee9b1e..663a4ca0580d 100644
  	int err;
  	u32 val;
 
-@@ -248,16 +436,25 @@ static int amd_pmc_probe(struct platform_device *pdev)
- 	pci_dev_put(rdev);
- 	base_addr = ((u64)base_addr_hi << 32 | base_addr_lo);
-
--	dev->smu_base = devm_ioremap(dev->dev, base_addr, AMD_PMC_MAPPING_SIZE);
--	if (!dev->smu_base)
--		return -ENOMEM;
--
- 	dev->regbase = devm_ioremap(dev->dev, base_addr + AMD_PMC_BASE_ADDR_OFFSET,
- 				    AMD_PMC_MAPPING_SIZE);
+@@ -279,7 +442,20 @@ static int amd_pmc_probe(struct platform_device *pdev)
  	if (!dev->regbase)
  		return -ENOMEM;
 
@@ -1870,15 +1851,9 @@ index b9da58ee9b1e..663a4ca0580d 100644
 +	if (err)
 +		dev_err(dev->dev, "SMU debugging info not supported on this platform\n");
 
+ 	mutex_init(&dev->lock);
  	platform_set_drvdata(pdev, dev);
- 	amd_pmc_dbgfs_register(dev);
-@@ -269,11 +466,14 @@ static int amd_pmc_remove(struct platform_device *pdev)
- 	struct amd_pmc_dev *dev = platform_get_drvdata(pdev);
-
- 	amd_pmc_dbgfs_unregister(dev);
-+	mutex_destroy(&dev->lock);
- 	return 0;
- }
+@@ -298,6 +474,8 @@ static int amd_pmc_remove(struct platform_device *pdev)
 
  static const struct acpi_device_id amd_pmc_acpi_ids[] = {
  	{"AMDI0005", 0},
@@ -1922,10 +1897,10 @@ index 5db16509b6e1..5b8b5e3edd39 100644
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_DELL, 0x1fe0)
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index df8e69e60aaf..fb851c5130e1 100644
+index 4e123336e410..22d98f536d90 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5587,6 +5587,13 @@ static void hub_event(struct work_struct *work)
+@@ -5635,6 +5635,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 

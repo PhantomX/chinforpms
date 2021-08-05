@@ -142,7 +142,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -153,7 +153,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 56bf8f2c110c71df0feba36e1fe70d143b0614e4
+%global pfcommit cae50fb36994a0983a5a56b28b667db3907cccd4
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -915,9 +915,10 @@ Patch2001: %{patchwork_url}/12215169/mbox/#/patchwork-v7-1-5-blk-mq-Move-the-ele
 Patch2002: %{patchwork_url}/12251383/mbox/#/patchwork-V7-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/af4ff85bd28a0f4d4d13f61deb84916fda68e563/linux-tkg-patches/5.13/0007-v5.13-futex2_interface.patch#/tkg-0007-v5.13-futex2_interface.patch
-Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/af4ff85bd28a0f4d4d13f61deb84916fda68e563/linux-tkg-patches/5.13/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
-Patch2093: https://github.com/Frogging-Family/linux-tkg/raw/af4ff85bd28a0f4d4d13f61deb84916fda68e563/linux-tkg-patches/5.13/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+%global tkg_id b40ddced85d779f240fd8f4cca3a491c8cd53952
+Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.13/0007-v5.13-futex2_interface.patch#/tkg-0007-v5.13-futex2_interface.patch
+Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.13/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+Patch2093: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.13/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2094: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
@@ -2820,6 +2821,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.8-500.chinfo
+- 5.13.8 - pf4
+
 * Sat Jul 31 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.7-500.chinfo
 - 5.13.7 - pf4
 

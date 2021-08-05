@@ -1,5 +1,14 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/558c3d6b47a25f6af07e3fc967e16cc66f694cb0
+ 558c3d6b47a25f6af07e3fc967e16cc66f694cb0 powerpc/pseries: Fix regression while building external modules
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/29c0325a98bbdbfa3d569e858e221db9d3d7c217
+ 29c0325a98bbdbfa3d569e858e221db9d3d7c217 drm/rockchip: remove existing generic drivers to take over the device
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/e833c34e56563b0292493c62921e7132a16ceef0
  e833c34e56563b0292493c62921e7132a16ceef0 iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/7c85609231b2dbb3ea6fa0d9ffb52e9177fd8212
+ 7c85609231b2dbb3ea6fa0d9ffb52e9177fd8212 Revert "usb: renesas-xhci: Fix handling of unknown ROM state"
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/93766a4c0701e9f633071beb75237e11413dcebd
  93766a4c0701e9f633071beb75237e11413dcebd platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd()
