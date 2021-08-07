@@ -7,7 +7,7 @@
 %global progdir %{_libdir}/%{name}
 
 Name:           zoom
-Version:        5.6.22045.0607
+Version:        5.7.28991.0726
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -27,11 +27,12 @@ BuildRequires:  ImageMagick
 Requires:       hicolor-icon-theme
 
 Provides:       bundled(libicu) = 56.1
-Provides:       bundled(qt) = 5.12.9
+Provides:       bundled(qt) = 5.12.10
 
 %global __provides_exclude_from ^%{progdir}/.*
 
 %global __requires_exclude ^libfaac1.so.*
+%global __requires_exclude %__requires_exclude|^libfdkaac2.*.so.*
 %global __requires_exclude %__requires_exclude|^libicu.*.so.*
 %global __requires_exclude %__requires_exclude|^libmpg123.so
 %global __requires_exclude %__requires_exclude|^libQt.*.so.*
@@ -137,6 +138,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Thu Aug 05 2021 - 5.7.28991.0726-1
+- 5.7.28991.0726
+
 * Thu Jun 17 2021 - 5.6.22045.0607-1
 - 5.6.22045.0607
 

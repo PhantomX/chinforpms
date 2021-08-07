@@ -1,0 +1,12 @@
+[Unit]
+Description=High-performance log management solution
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/nxlog -f
+ExecReload=/usr/bin/nxlog -r
+ExecStop=/usr/bin/nxlog -s
+PIDFile=/run/nxlog/nxlog.pid
+
+[Install]
+WantedBy=multi-user.target

@@ -13,6 +13,7 @@
 %endif
 
 %ifarch %{ix86} x86_64
+%global with_crocus 1
 %global with_iris   1
 %global with_vmware 1
 %global with_xa     1
@@ -387,7 +388,7 @@ export RANLIB="gcc-ranlib"
   -Ddri-drivers=%{?dri_drivers} \
   -Dosmesa=true \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
+  -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -549,11 +550,13 @@ popd
 %{_libdir}/dri/i830_dri.so
 %{_libdir}/dri/i915_dri.so
 %{_libdir}/dri/i965_dri.so
+%{_libdir}/dri/crocus_dri.so
 %{_libdir}/dri/iris_dri.so
 %endif
 %ifarch %{arm} aarch64
 %{_libdir}/dri/ingenic-drm_dri.so
 %{_libdir}/dri/imx-drm_dri.so
+%{_libdir}/dri/mali-dp_dri.so
 %{_libdir}/dri/mcde_dri.so
 %{_libdir}/dri/mxsfb-drm_dri.so
 %{_libdir}/dri/stm_dri.so

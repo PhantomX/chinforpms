@@ -1,20 +1,18 @@
-%global commit 8cc8b6562be9de063a22ddf7f75d11c641779e36
+%global commit 3510a14cfc31e305d2ffa16548fb1292388bc2cd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210624
+%global date 20210806
 %global gver .%{date}git%{shortcommit}
 
 %global pkgname SPIRV-Tools
 
 Name:           spirv-tools
 Version:        2021.3
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        API and commands for processing SPIR-V modules
 
 License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/SPIRV-Tools
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
-
-Patch0:         spirv-tools-gcc11.patch
 
 BuildRequires:  cmake3
 BuildRequires:  gcc-c++
@@ -91,6 +89,9 @@ Development files for %{name}
 %{_libdir}/pkgconfig/SPIRV-Tools.pc
 
 %changelog
+* Fri Aug 06 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.3-101.20210806git3510a14
+- Bump
+
 * Fri Jun 25 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.2-100.20210624git8cc8b65
 - 2021.3-dev
 
