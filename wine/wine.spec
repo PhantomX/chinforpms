@@ -1,7 +1,7 @@
-%global commit f1023b4b52e8164e9fa774c62d282efcb399107b
+%global commit 2cc98b72846f67ae98bce1882278fce42a02a7fa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210726
-%global with_snapshot 0
+%global date 20210806
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.14
+%global wine_stagingver 82118b0d678b421d217875d286a534fe334799b1
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id ac142160e1d38438218fa68c894a2a619fba0cc8
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f9a601896b16f0611b3960ce680b7c683d1c6752
+%global tkg_id 666d3ae594c41f2db4019c4b420e6ffd60164fd1
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.14
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -198,8 +198,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # Revert to fix many game launchers displaying empty windows
 # https://bugs.winehq.org/show_bug.cgi?id=49990
 Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
-Patch101:       %{whq_url}/c2c78a2fe0ac13e4fca7ab4c17977b65e358485c#/%{name}-whq-c2c78a2.patch
-Patch102:       %{whq_url}/97afac469fbe012e22acc1f1045c88b1004a241f#/%{name}-whq-97afac4.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -850,8 +848,6 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch599 -p1
 
 %patch100 -p1 -R
-%patch101 -p1 -R
-%patch102 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -1899,6 +1895,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/dxgkrnl.%{winesys}
 %{_libdir}/wine/%{winedlldir}/dxgmms1.%{winesys}
 %endif
+%{_libdir}/wine/%{winedlldir}/dxtrans.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dxva2.%{winedll}
 %{_libdir}/wine/%{winedlldir}/esent.%{winedll}
 %{_libdir}/wine/%{winedlldir}/evr.%{winedll}
@@ -2400,10 +2397,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/wpc.%{winedll}
 %{_libdir}/wine/%{winesodir}/wpcap.so
 %{_libdir}/wine/%{winedlldir}/wpcap.%{winedll}
-%{_libdir}/wine/%{winesodir}/ws2_32.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/ws2_32.dll
-%endif
+%{_libdir}/wine/%{winesodir}/ws2_32.so
+%{_libdir}/wine/%{winedlldir}/ws2_32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wsdapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wshom.%{wineocx}
 %{_libdir}/wine/%{winedlldir}/wsnmp32.%{winedll}
@@ -2916,6 +2911,9 @@ fi
 
 
 %changelog
+* Sat Aug 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.14-101.20210806git2cc98b7
+- Snapshot
+
 * Sat Jul 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.14-100
 - 6.14
 

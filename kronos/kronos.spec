@@ -1,6 +1,6 @@
-%global commit a39f95a5a2f66cedb51a00d0f49ea1ee222384d8
+%global commit b2665d70ffcdc7a5d3f9f4d76ee38f956e5f4e72
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210601
+%global date 20210807
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           kronos
 Version:        2.1.5
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -157,6 +157,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Aug 07 2021 Phantom X <megaphantomx at hotmail dot com> - 2.1.5-5.20210807gitb2665d7
+- Update
+
 * Fri Jun 25 2021 Phantom X <megaphantomx at hotmail dot com> - 2.1.5-4.20210601gita39f95a
 - Last snapshot
 

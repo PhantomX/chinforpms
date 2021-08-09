@@ -142,18 +142,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 5
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit cae50fb36994a0983a5a56b28b667db3907cccd4
+%global pfcommit e9a2000c3b34c38ccd4259675c51ea33df9b2dee
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -181,7 +181,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 2d7b44d403507d2da0452d1fa1a4de60d263c8f0
+%global opensuse_id 263a9fedf94b7a828717014b4b8e458e91b9325c
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -905,8 +905,6 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1019: %{opensuse_url}/r8152-Fix-potential-PM-refcount-imbalance.patch#/openSUSE-r8152-Fix-potential-PM-refcount-imbalance.patch
-Patch1020: %{opensuse_url}/r8152-Fix-a-deadlock-by-doubly-PM-resume.patch#/openSUSE-r8152-Fix-a-deadlock-by-doubly-PM-resume.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2821,6 +2819,9 @@ fi
 #
 #
 %changelog
+* Sun Aug 08 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.9-500.chinfo
+- 5.13.9 - pf5
+
 * Wed Aug 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.8-500.chinfo
 - 5.13.8 - pf4
 
