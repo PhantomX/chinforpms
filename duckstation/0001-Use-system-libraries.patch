@@ -1,6 +1,6 @@
-From 0c554b3f22924742d7dfce74df9b89d271a99ac4 Mon Sep 17 00:00:00 2001
+From bbcf4fc3b954abb84f9a18f1a445926c2ffcec4d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 5 Jun 2021 16:53:44 -0300
+Date: Sun, 8 Aug 2021 23:10:12 -0300
 Subject: [PATCH] Use system libraries
 
 FindCUBEB.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
@@ -8,9 +8,10 @@ https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
 ---
  CMakeModules/FindCUBEB.cmake          |  15 +++
- dep/CMakeLists.txt                    |  57 ++++++++++++
+ dep/CMakeLists.txt                    |  60 +++++++++++-
  dep/discord-rpc/CMakeLists.txt        |   7 +-
  dep/minizip/CMakeLists.txt            |   8 +-
+ dep/stb/CMakeLists.txt                |   5 +
  dep/vulkan-loader/CMakeLists.txt      |   9 ++
  src/common/CMakeLists.txt             |  43 ++++++++-
  src/common/audio_stream.cpp           |   2 +-
@@ -19,7 +20,7 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
  src/core/texture_replacements.cpp     |   2 +
  src/duckstation-qt/CMakeLists.txt     |  10 +-
  src/frontend-common/CMakeLists.txt    |  10 +-
- 12 files changed, 300 insertions(+), 9 deletions(-)
+ 13 files changed, 307 insertions(+), 10 deletions(-)
  create mode 100644 CMakeModules/FindCUBEB.cmake
 
 diff --git a/CMakeModules/FindCUBEB.cmake b/CMakeModules/FindCUBEB.cmake
@@ -44,12 +45,12 @@ index 0000000..c0a730c
 +  )
 +endif()
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 95493b8..6615078 100644
+index 95493b8..0d518e8 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,23 +1,80 @@
+@@ -1,23 +1,81 @@
  add_subdirectory(glad)
- add_subdirectory(stb)
+-add_subdirectory(stb)
 +
 +pkg_search_module(zlib zlib)
 +if(zlib_FOUND)
@@ -57,6 +58,8 @@ index 95493b8..6615078 100644
 +else()
  add_subdirectory(zlib)
 +endif()
++
++add_subdirectory(stb)
 +
 +pkg_search_module(minizip minizip)
 +if(minizip_FOUND)
@@ -163,6 +166,21 @@ index 6a05c01..3e015fa 100644
 +endif()
 +target_link_libraries(minizip)
  
+diff --git a/dep/stb/CMakeLists.txt b/dep/stb/CMakeLists.txt
+index 8206b10..bd575a4 100644
+--- a/dep/stb/CMakeLists.txt
++++ b/dep/stb/CMakeLists.txt
+@@ -9,5 +9,10 @@ set(SRCS
+ 
+ add_library(stb ${SRCS})
+ target_include_directories(stb PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src")
++if(zlib_FOUND)
++target_include_directories(stb INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include" ${zlib_INCLUDE_DIRS})
++target_link_libraries(stb ${zlib_LIBRARIES} Threads::Threads "${CMAKE_DL_LIBS}")
++else()
+ target_include_directories(stb INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+ target_link_libraries(stb zlib Threads::Threads "${CMAKE_DL_LIBS}")
++endif()
 diff --git a/dep/vulkan-loader/CMakeLists.txt b/dep/vulkan-loader/CMakeLists.txt
 index baf945a..c04e954 100644
 --- a/dep/vulkan-loader/CMakeLists.txt
@@ -188,10 +206,10 @@ index baf945a..c04e954 100644
  add_library(vulkan-loader ${SRCS})
  target_include_directories(vulkan-loader PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include")
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index 3bd9b97..4e4112c 100644
+index a21f409..ba57416 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -115,9 +115,50 @@ add_library(common
+@@ -116,9 +116,50 @@ add_library(common
    window_info.h
  )
  
@@ -244,7 +262,7 @@ index 3bd9b97..4e4112c 100644
  if(WIN32)
    target_sources(common PRIVATE
 diff --git a/src/common/audio_stream.cpp b/src/common/audio_stream.cpp
-index 6f129c3..a48d036 100644
+index 66a94cb..f5b00f0 100644
 --- a/src/common/audio_stream.cpp
 +++ b/src/common/audio_stream.cpp
 @@ -384,4 +384,4 @@ void AudioStream::ResampleInput(std::unique_lock<std::mutex> buffer_lock)
@@ -418,7 +436,7 @@ index 9340522..636cdef 100644
  {
    return CompileShaderToSPV(EShLangVertex, "vs", source_code);
 diff --git a/src/core/CMakeLists.txt b/src/core/CMakeLists.txt
-index f9dccc2..8cb84bc 100644
+index b9a0e04..e2b8302 100644
 --- a/src/core/CMakeLists.txt
 +++ b/src/core/CMakeLists.txt
 @@ -114,10 +114,23 @@ set(RECOMPILER_SRCS
@@ -448,7 +466,7 @@ index f9dccc2..8cb84bc 100644
  
  if(WIN32)
 diff --git a/src/core/texture_replacements.cpp b/src/core/texture_replacements.cpp
-index fa21075..38c03f4 100644
+index 66a7d3f..31fcb92 100644
 --- a/src/core/texture_replacements.cpp
 +++ b/src/core/texture_replacements.cpp
 @@ -7,9 +7,11 @@
@@ -485,10 +503,10 @@ index f468a1b..161b937 100644
  if(WIN32)
    # We want a Windows subsystem application not console.
 diff --git a/src/frontend-common/CMakeLists.txt b/src/frontend-common/CMakeLists.txt
-index 2037aa2..72f9d06 100644
+index 4a56607..7f36e2c 100644
 --- a/src/frontend-common/CMakeLists.txt
 +++ b/src/frontend-common/CMakeLists.txt
-@@ -43,7 +43,13 @@ add_library(frontend-common
+@@ -45,7 +45,13 @@ add_library(frontend-common
    vulkan_host_display.h
  )
  
@@ -503,7 +521,7 @@ index 2037aa2..72f9d06 100644
  
  if(WIN32)
    target_sources(frontend-common PRIVATE
-@@ -119,7 +125,7 @@ if(ENABLE_CHEEVOS)
+@@ -137,7 +143,7 @@ if(ENABLE_CHEEVOS)
      cheevos.h
    )
    target_compile_definitions(frontend-common PUBLIC -DWITH_CHEEVOS=1)

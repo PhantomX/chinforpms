@@ -1,6 +1,6 @@
-%global commit 2cc98b72846f67ae98bce1882278fce42a02a7fa
+%global commit caf5ab5d65ed9df978006d819b1d800071af1117
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210806
+%global date 20210809
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.14
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2911,6 +2911,9 @@ fi
 
 
 %changelog
+* Tue Aug 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.14-102.20210809gitcaf5ab5
+- Bump
+
 * Sat Aug 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.14-101.20210806git2cc98b7
 - Snapshot
 
