@@ -1,41 +1,38 @@
-diff -rupN --no-dereference binutils-2.36.1/binutils/dwarf.c binutils-2.36.1-new/binutils/dwarf.c
---- binutils-2.36.1/binutils/dwarf.c	2021-01-09 11:47:33.000000000 +0100
-+++ binutils-2.36.1-new/binutils/dwarf.c	2021-02-13 18:13:21.286220059 +0100
-@@ -2117,6 +2117,7 @@ get_type_abbrev_from_form (unsigned long
-   switch (form)
-     {
-     case DW_FORM_GNU_ref_alt:
-+    case DW_FORM_ref_sig8:
-       /* FIXME: We are unable to handle this form at the moment.  */
-       return NULL;
- 
-@@ -2146,7 +2147,7 @@ get_type_abbrev_from_form (unsigned long
-       /* FIXME: Are there other DW_FORMs that can be used by types ?  */
- 
-     default:
--      warn (_("Unexpected form %lx encountered whilst finding abbreviation for type\n"), form);
-+      warn (_("Unexpected form %#lx encountered whilst finding abbreviation for type\n"), form);
-       return NULL;
-     }
- 
-diff -rupN --no-dereference binutils-2.36.1/gold/main.cc binutils-2.36.1-new/gold/main.cc
---- binutils-2.36.1/gold/main.cc	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/gold/main.cc	2021-02-13 18:13:21.287220054 +0100
-@@ -290,11 +290,6 @@ main(int argc, char** argv)
+diff -rupN --no-dereference binutils-2.37/gold/main.cc binutils-2.37-new/gold/main.cc
+--- binutils-2.37/gold/main.cc	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/gold/main.cc	2021-07-24 21:59:28.964707019 +0200
+@@ -290,16 +290,6 @@ main(int argc, char** argv)
                elapsed.sys / 1000, (elapsed.sys % 1000) * 1000,
                elapsed.wall / 1000, (elapsed.wall % 1000) * 1000);
  
--#ifdef HAVE_MALLINFO
+-#if defined(HAVE_MALLINFO2)
+-      struct mallinfo2 m = mallinfo2();
+-      fprintf(stderr, _("%s: total space allocated by malloc: %lld bytes\n"),
+-	      program_name, static_cast<long long>(m.arena));
+-#elif defined(HAVE_MALLINFO)
 -      struct mallinfo m = mallinfo();
 -      fprintf(stderr, _("%s: total space allocated by malloc: %lld bytes\n"),
 -	      program_name, static_cast<long long>(m.arena));
 -#endif
+-
        File_read::print_stats();
        Archive::print_stats();
        Lib_group::print_stats();
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-aarch64/variant_pcs-now.d binutils-2.36.1-new/ld/testsuite/ld-aarch64/variant_pcs-now.d
---- binutils-2.36.1/ld/testsuite/ld-aarch64/variant_pcs-now.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-aarch64/variant_pcs-now.d	2021-02-13 18:13:21.287220054 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-aarch64/tls-relax-gdesc-le-now.d binutils-2.37-new/ld/testsuite/ld-aarch64/tls-relax-gdesc-le-now.d
+--- binutils-2.37/ld/testsuite/ld-aarch64/tls-relax-gdesc-le-now.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-aarch64/tls-relax-gdesc-le-now.d	2021-07-24 21:59:28.964707019 +0200
+@@ -11,7 +11,7 @@
+  0x.+ \(PLTRELSZ\) \s+.+ \(bytes\)
+  0x.+ \(PLTREL\)   \s+RELA
+  0x.+ \(JMPREL\)   \s+0x.+
+- 0x.+ \(BIND_NOW\) \s+
++ 0x.+ \(FLAGS\) \s+BIND_NOW
+  0x.+ \(FLAGS_1\)  \s+   Flags: NOW
+  0x.+ \(NULL\)     \s+   0x0
+ 
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-aarch64/variant_pcs-now.d binutils-2.37-new/ld/testsuite/ld-aarch64/variant_pcs-now.d
+--- binutils-2.37/ld/testsuite/ld-aarch64/variant_pcs-now.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-aarch64/variant_pcs-now.d	2021-07-24 21:59:28.965707009 +0200
 @@ -23,10 +23,10 @@ Symbol table '\.dynsym' contains 7 entri
     Num:    Value          Size Type    Bind   Vis      Ndx Name
       0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
@@ -51,83 +48,83 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-aarch64/variant_pcs-
  
  Symbol table '\.symtab' contains 35 entries:
 @@ -41,28 +41,28 @@ Symbol table '\.symtab' contains 35 entr
-      7: 00000000000111c8     0 SECTION LOCAL  DEFAULT    7 
-      8: 0000000000011270     0 SECTION LOCAL  DEFAULT    8 
+      7: 00000000000111c8     0 SECTION LOCAL  DEFAULT    7.*
+      8: 0000000000011270     0 SECTION LOCAL  DEFAULT    8.*
       9: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS .*variant_pcs-1\.o
 -    10: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local
 -    11: 0000000000008000     0 IFUNC   LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local_ifunc
-+    10: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT[ 	]+1 f_spec_local[ 	]+\[VARIANT_PCS\]
-+    11: 0000000000008000     0 IFUNC   LOCAL  DEFAULT[ 	]+1 f_spec_local_ifunc[ 	]+\[VARIANT_PCS\]
++    10: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT .*
++    11: 0000000000008000     0 IFUNC   LOCAL  DEFAULT .*
      12: 0000000000008000     0 IFUNC   LOCAL  DEFAULT    1 f_base_local_ifunc
      13: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT    1 f_base_local
      14: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT    1 \$x
      15: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS .*variant_pcs-2\.o
 -    16: 0000000000008038     0 NOTYPE  LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local2
 -    17: 0000000000008038     0 IFUNC   LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local2_ifunc
-+    16: 0000000000008038     0 NOTYPE  LOCAL  DEFAULT[ 	]+1 f_spec_local2[ 	]+\[VARIANT_PCS\]
-+    17: 0000000000008038     0 IFUNC   LOCAL  DEFAULT[ 	]+1 f_spec_local2_ifunc[ 	]+\[VARIANT_PCS\]
++    16: 0000000000008038     0 NOTYPE  LOCAL  DEFAULT .*
++    17: 0000000000008038     0 IFUNC   LOCAL  DEFAULT .*
      18: 0000000000008038     0 IFUNC   LOCAL  DEFAULT    1 f_base_local2_ifunc
      19: 0000000000008038     0 NOTYPE  LOCAL  DEFAULT    1 f_base_local2
      20: 0000000000008038     0 NOTYPE  LOCAL  DEFAULT    1 \$x
      21: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS 
      22: 0000000000009080     0 OBJECT  LOCAL  DEFAULT  ABS _DYNAMIC
 -    23: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_global_hidden_def
-+    23: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT[ 	]+1 f_spec_global_hidden_def[ 	]+\[VARIANT_PCS\]
++    23: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT .*
      24: 0000000000008000     0 IFUNC   LOCAL  DEFAULT    1 f_base_global_hidden_ifunc
      25: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT    1 f_base_global_hidden_def
      26: 0000000000009000     0 OBJECT  LOCAL  DEFAULT  ABS _GLOBAL_OFFSET_TABLE_
 -    27: 0000000000008000     0 IFUNC   LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_global_hidden_ifunc
-+    27: 0000000000008000     0 IFUNC   LOCAL  DEFAULT[ 	]+1 f_spec_global_hidden_ifunc[ 	]+\[VARIANT_PCS\]
++    27: 0000000000008000     0 IFUNC   LOCAL  DEFAULT .*
      28: 0000000000008070     0 NOTYPE  LOCAL  DEFAULT    2 \$x
      29: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND f_base_global_default_undef
 -    30: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT \[VARIANT_PCS\]   UND f_spec_global_default_undef
 -    31: 0000000000008000     0 IFUNC   GLOBAL DEFAULT \[VARIANT_PCS\]     1 f_spec_global_default_ifunc
-+    30: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT[ 	]+UND f_spec_global_default_undef[ 	]+\[VARIANT_PCS\]
-+    31: 0000000000008000     0 IFUNC   GLOBAL DEFAULT[ 	]+1 f_spec_global_default_ifunc[ 	]+\[VARIANT_PCS\]
++    30: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT .*
++    31: 0000000000008000     0 IFUNC   GLOBAL DEFAULT .*
      32: 0000000000008000     0 NOTYPE  GLOBAL DEFAULT    1 f_base_global_default_def
 -    33: 0000000000008000     0 NOTYPE  GLOBAL DEFAULT \[VARIANT_PCS\]     1 f_spec_global_default_def
-+    33: 0000000000008000     0 NOTYPE  GLOBAL DEFAULT[ 	]+1 f_spec_global_default_def[ 	]+\[VARIANT_PCS\]
++    33: 0000000000008000     0 NOTYPE  GLOBAL DEFAULT .*
      34: 0000000000008000     0 IFUNC   GLOBAL DEFAULT    1 f_base_global_default_ifunc
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-aarch64/variant_pcs-r.d binutils-2.36.1-new/ld/testsuite/ld-aarch64/variant_pcs-r.d
---- binutils-2.36.1/ld/testsuite/ld-aarch64/variant_pcs-r.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-aarch64/variant_pcs-r.d	2021-02-13 18:13:21.287220054 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-aarch64/variant_pcs-r.d binutils-2.37-new/ld/testsuite/ld-aarch64/variant_pcs-r.d
+--- binutils-2.37/ld/testsuite/ld-aarch64/variant_pcs-r.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-aarch64/variant_pcs-r.d	2021-07-24 21:59:28.965707009 +0200
 @@ -37,24 +37,24 @@ Symbol table '\.symtab' contains 26 entr
-      2: 0000000000000000     0 SECTION LOCAL  DEFAULT    3 
-      3: 0000000000000000     0 SECTION LOCAL  DEFAULT    4 
+      2: 0000000000000000     0 SECTION LOCAL  DEFAULT    3.*
+      3: 0000000000000000     0 SECTION LOCAL  DEFAULT    4.*
       4: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS .*variant_pcs-1\.o
 -     5: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local
 -     6: 0000000000000000     0 IFUNC   LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local_ifunc
-+     5: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT[ 	]+1 f_spec_local[ 	]+\[VARIANT_PCS\]
-+     6: 0000000000000000     0 IFUNC   LOCAL  DEFAULT[ 	]+1 f_spec_local_ifunc[ 	]+\[VARIANT_PCS\]
++     5: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT .*
++     6: 0000000000000000     0 IFUNC   LOCAL  DEFAULT .*
       7: 0000000000000000     0 IFUNC   LOCAL  DEFAULT    1 f_base_local_ifunc
       8: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT    1 f_base_local
       9: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT    1 \$x
      10: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS .*variant_pcs-2\.o
 -    11: 0000000000000038     0 NOTYPE  LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local2
 -    12: 0000000000000038     0 IFUNC   LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local2_ifunc
-+    11: 0000000000000038     0 NOTYPE  LOCAL  DEFAULT[ 	]+1 f_spec_local2[ 	]+\[VARIANT_PCS\]
-+    12: 0000000000000038     0 IFUNC   LOCAL  DEFAULT[ 	]+1 f_spec_local2_ifunc[ 	]+\[VARIANT_PCS\]
++    11: 0000000000000038     0 NOTYPE  LOCAL  DEFAULT .*
++    12: 0000000000000038     0 IFUNC   LOCAL  DEFAULT .*
      13: 0000000000000038     0 IFUNC   LOCAL  DEFAULT    1 f_base_local2_ifunc
      14: 0000000000000038     0 NOTYPE  LOCAL  DEFAULT    1 f_base_local2
      15: 0000000000000038     0 NOTYPE  LOCAL  DEFAULT    1 \$x
      16: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND f_base_global_default_undef
 -    17: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT \[VARIANT_PCS\]   UND f_spec_global_default_undef
 -    18: 0000000000000000     0 NOTYPE  GLOBAL HIDDEN  \[VARIANT_PCS\]     1 f_spec_global_hidden_def
-+    17: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT[ 	]+UND f_spec_global_default_undef[ 	]+\[VARIANT_PCS\]
-+    18: 0000000000000000     0 NOTYPE  GLOBAL HIDDEN[ 	]+1 f_spec_global_hidden_def[ 	]+\[VARIANT_PCS\]
++    17: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT .*
++    18: 0000000000000000     0 NOTYPE  GLOBAL HIDDEN  .*
      19: 0000000000000000     0 IFUNC   GLOBAL HIDDEN     1 f_base_global_hidden_ifunc
 -    20: 0000000000000000     0 IFUNC   GLOBAL DEFAULT \[VARIANT_PCS\]     1 f_spec_global_default_ifunc
-+    20: 0000000000000000     0 IFUNC   GLOBAL DEFAULT[ 	]+1 f_spec_global_default_ifunc[ 	]+\[VARIANT_PCS\]
++    20: 0000000000000000     0 IFUNC   GLOBAL DEFAULT .*
      21: 0000000000000000     0 NOTYPE  GLOBAL HIDDEN     1 f_base_global_hidden_def
 -    22: 0000000000000000     0 IFUNC   GLOBAL HIDDEN  \[VARIANT_PCS\]     1 f_spec_global_hidden_ifunc
-+    22: 0000000000000000     0 IFUNC   GLOBAL HIDDEN[ 	]+1 f_spec_global_hidden_ifunc[ 	]+\[VARIANT_PCS\]
++    22: 0000000000000000     0 IFUNC   GLOBAL HIDDEN  .*
      23: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT    1 f_base_global_default_def
 -    24: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT \[VARIANT_PCS\]     1 f_spec_global_default_def
-+    24: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT[ 	]+1 f_spec_global_default_def[ 	]+\[VARIANT_PCS\]
++    24: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT .*
      25: 0000000000000000     0 IFUNC   GLOBAL DEFAULT    1 f_base_global_default_ifunc
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-aarch64/variant_pcs-shared.d binutils-2.36.1-new/ld/testsuite/ld-aarch64/variant_pcs-shared.d
---- binutils-2.36.1/ld/testsuite/ld-aarch64/variant_pcs-shared.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-aarch64/variant_pcs-shared.d	2021-02-13 18:13:21.287220054 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-aarch64/variant_pcs-shared.d binutils-2.37-new/ld/testsuite/ld-aarch64/variant_pcs-shared.d
+--- binutils-2.37/ld/testsuite/ld-aarch64/variant_pcs-shared.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-aarch64/variant_pcs-shared.d	2021-07-24 21:59:28.978706882 +0200
 @@ -23,10 +23,10 @@ Symbol table '\.dynsym' contains 7 entri
     Num:    Value          Size Type    Bind   Vis      Ndx Name
       0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
@@ -143,46 +140,271 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-aarch64/variant_pcs-
  
  Symbol table '\.symtab' contains 35 entries:
 @@ -41,28 +41,28 @@ Symbol table '\.symtab' contains 35 entr
-      7: 00000000000111c8     0 SECTION LOCAL  DEFAULT    7 
-      8: 0000000000011270     0 SECTION LOCAL  DEFAULT    8 
+      7: 00000000000111c8     0 SECTION LOCAL  DEFAULT    7.*
+      8: 0000000000011270     0 SECTION LOCAL  DEFAULT    8.*
       9: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS .*variant_pcs-1\.o
 -    10: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local
 -    11: 0000000000008000     0 IFUNC   LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local_ifunc
-+    10: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT[ 	]+1 f_spec_local[ 	]+\[VARIANT_PCS\]
-+    11: 0000000000008000     0 IFUNC   LOCAL  DEFAULT[ 	]+1 f_spec_local_ifunc[ 	]+\[VARIANT_PCS\]
++    10: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT .*
++    11: 0000000000008000     0 IFUNC   LOCAL  DEFAULT .*
      12: 0000000000008000     0 IFUNC   LOCAL  DEFAULT    1 f_base_local_ifunc
      13: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT    1 f_base_local
      14: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT    1 \$x
      15: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS .*variant_pcs-2\.o
 -    16: 0000000000008038     0 NOTYPE  LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local2
 -    17: 0000000000008038     0 IFUNC   LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_local2_ifunc
-+    16: 0000000000008038     0 NOTYPE  LOCAL  DEFAULT[ 	]+1 f_spec_local2[ 	]+\[VARIANT_PCS\]
-+    17: 0000000000008038     0 IFUNC   LOCAL  DEFAULT[ 	]+1 f_spec_local2_ifunc[ 	]+\[VARIANT_PCS\]
++    16: 0000000000008038     0 NOTYPE  LOCAL  DEFAULT .*
++    17: 0000000000008038     0 IFUNC   LOCAL  DEFAULT .*
      18: 0000000000008038     0 IFUNC   LOCAL  DEFAULT    1 f_base_local2_ifunc
      19: 0000000000008038     0 NOTYPE  LOCAL  DEFAULT    1 f_base_local2
      20: 0000000000008038     0 NOTYPE  LOCAL  DEFAULT    1 \$x
      21: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS 
      22: 0000000000009080     0 OBJECT  LOCAL  DEFAULT  ABS _DYNAMIC
 -    23: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_global_hidden_def
-+    23: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT[ 	]+1 f_spec_global_hidden_def[ 	]+\[VARIANT_PCS\]
++    23: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT .*
      24: 0000000000008000     0 IFUNC   LOCAL  DEFAULT    1 f_base_global_hidden_ifunc
      25: 0000000000008000     0 NOTYPE  LOCAL  DEFAULT    1 f_base_global_hidden_def
      26: 0000000000009000     0 OBJECT  LOCAL  DEFAULT  ABS _GLOBAL_OFFSET_TABLE_
 -    27: 0000000000008000     0 IFUNC   LOCAL  DEFAULT \[VARIANT_PCS\]     1 f_spec_global_hidden_ifunc
-+    27: 0000000000008000     0 IFUNC   LOCAL  DEFAULT[ 	]+1 f_spec_global_hidden_ifunc[ 	]+\[VARIANT_PCS\]
++    27: 0000000000008000     0 IFUNC   LOCAL  DEFAULT .*
      28: 0000000000008070     0 NOTYPE  LOCAL  DEFAULT    2 \$x
      29: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND f_base_global_default_undef
 -    30: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT \[VARIANT_PCS\]   UND f_spec_global_default_undef
 -    31: 0000000000008000     0 IFUNC   GLOBAL DEFAULT \[VARIANT_PCS\]     1 f_spec_global_default_ifunc
-+    30: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT[ 	]+UND f_spec_global_default_undef[ 	]+\[VARIANT_PCS\]
-+    31: 0000000000008000     0 IFUNC   GLOBAL DEFAULT[ 	]+1 f_spec_global_default_ifunc[ 	]+\[VARIANT_PCS\]
++    30: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT .*
++    31: 0000000000008000     0 IFUNC   GLOBAL DEFAULT .*
      32: 0000000000008000     0 NOTYPE  GLOBAL DEFAULT    1 f_base_global_default_def
 -    33: 0000000000008000     0 NOTYPE  GLOBAL DEFAULT \[VARIANT_PCS\]     1 f_spec_global_default_def
-+    33: 0000000000008000     0 NOTYPE  GLOBAL DEFAULT[ 	]+1 f_spec_global_default_def[ 	]+\[VARIANT_PCS\]
++    33: 0000000000008000     0 NOTYPE  GLOBAL DEFAULT .*
      34: 0000000000008000     0 IFUNC   GLOBAL DEFAULT    1 f_base_global_default_ifunc
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-10.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-10.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-10.d	2021-02-13 18:13:16.877241429 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-10.d	2021-02-13 18:13:21.284220069 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-elf/compress.exp binutils-2.37-new/ld/testsuite/ld-elf/compress.exp
+--- binutils-2.37/ld/testsuite/ld-elf/compress.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-elf/compress.exp	2021-07-24 21:59:28.978706882 +0200
+@@ -167,8 +167,8 @@ if { [regexp_diff tmpdir/$test.out $srcd
+ 
+ set test_name "Link with zlib compressed debug output 1"
+ set test normal
+-send_log "$READELF -w tmpdir/$test > tmpdir/$test.out\n"
+-set got [remote_exec host [concat sh -c [list "$READELF -w tmpdir/$test > tmpdir/$test.out"]] "" "/dev/null"]
++send_log "$READELF -wi tmpdir/$test > tmpdir/$test.out\n"
++set got [remote_exec host [concat sh -c [list "$READELF -wi tmpdir/$test > tmpdir/$test.out"]] "" "/dev/null"]
+ if { [lindex $got 0] != 0 || ![string match "" [lindex $got 1]] } then {
+     send_log "$got\n"
+     fail "$test_name"
+@@ -176,8 +176,8 @@ if { [lindex $got 0] != 0 || ![string ma
+ 
+ set test_name "Link with zlib compressed debug output 2"
+ set test zlibnormal
+-send_log "$READELF -w tmpdir/$test | sed -e \"s/.zdebug_/.debug_/\" > tmpdir/$test.out\n"
+-set got [remote_exec host [concat sh -c [list "$READELF -w tmpdir/$test | sed -e \"s/.zdebug_/.debug_/\" > tmpdir/$test.out"]] "" "/dev/null"]
++send_log "$READELF -wi tmpdir/$test | sed -e \"s/.zdebug_/.debug_/\" > tmpdir/$test.out\n"
++set got [remote_exec host [concat sh -c [list "$READELF -wi tmpdir/$test | sed -e \"s/.zdebug_/.debug_/\" > tmpdir/$test.out"]] "" "/dev/null"]
+ if { [lindex $got 0] != 0 || ![string match "" [lindex $got 1]] } then {
+     send_log "$got\n"
+     fail "$test_name"
+@@ -203,8 +203,8 @@ if { [regexp_diff tmpdir/$test.out $srcd
+ 
+ set test_name "Link with zlib-gnu compressed debug output 1"
+ set test gnunormal
+-send_log "$READELF -w tmpdir/$test | sed -e \"s/.zdebug_/.debug_/\" > tmpdir/$test.out\n"
+-set got [remote_exec host [concat sh -c [list "$READELF -w tmpdir/$test | sed -e \"s/.zdebug_/.debug_/\" > tmpdir/$test.out"]] "" "/dev/null"]
++send_log "$READELF -wi tmpdir/$test | sed -e \"s/.zdebug_/.debug_/\" > tmpdir/$test.out\n"
++set got [remote_exec host [concat sh -c [list "$READELF -wi tmpdir/$test | sed -e \"s/.zdebug_/.debug_/\" > tmpdir/$test.out"]] "" "/dev/null"]
+ if { [lindex $got 0] != 0 || ![string match "" [lindex $got 1]] } then {
+     send_log "$got\n"
+     fail "$test_name"
+@@ -230,8 +230,8 @@ if { [regexp_diff tmpdir/$test.out $srcd
+ 
+ set test gabinormal
+ set test_name "Link with zlib-gabi compressed debug output 1"
+-send_log "$READELF -w tmpdir/$test > tmpdir/$test.out\n"
+-set got [remote_exec host [concat sh -c [list "$READELF -w tmpdir/$test > tmpdir/$test.out"]] "" "/dev/null"]
++send_log "$READELF -wi tmpdir/$test > tmpdir/$test.out\n"
++set got [remote_exec host [concat sh -c [list "$READELF -wi tmpdir/$test > tmpdir/$test.out"]] "" "/dev/null"]
+ if { [lindex $got 0] != 0 || ![string match "" [lindex $got 1]] } then {
+     send_log "$got\n"
+     fail "$test_name"
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-elf/pr26580-3.out binutils-2.37-new/ld/testsuite/ld-elf/pr26580-3.out
+--- binutils-2.37/ld/testsuite/ld-elf/pr26580-3.out	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-elf/pr26580-3.out	2021-07-24 21:59:28.979706873 +0200
+@@ -1,2 +1,2 @@
+ library not loaded
+-alignment 1
++alignment .
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-elf/shared.exp binutils-2.37-new/ld/testsuite/ld-elf/shared.exp
+--- binutils-2.37/ld/testsuite/ld-elf/shared.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-elf/shared.exp	2021-07-24 21:59:28.979706873 +0200
+@@ -1536,18 +1536,6 @@ if { [istarget *-*-linux*]
+ 	    "pr22393-2-static" \
+ 	    "pass.out" \
+ 	] \
+-	[list \
+-	    "Run pr21964-4" \
+-	    "" \
+-	    "" \
+-	    {pr21964-4.c} \
+-	    "pr21964-4" \
+-	    "pass.out" \
+-	    "" \
+-	    "" \
+-	    "" \
+-	    "-ldl" \
+-	] \
+     ]
+ }
+ 
+@@ -1629,6 +1617,7 @@ if [istarget "sparc*-*-*"] {
+ if { ([istarget "*-*-linux*"]
+       || [istarget "*-*-nacl*"]
+       || [istarget "*-*-gnu*"])
++     && ![istarget "aarch64*-*-*"] && ![istarget "arm*-*-*"]
+      && ![istarget "mips*-*-*"] } {
+     run_ld_link_tests [list \
+ 	[list \
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-elf/tls.exp binutils-2.37-new/ld/testsuite/ld-elf/tls.exp
+--- binutils-2.37/ld/testsuite/ld-elf/tls.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-elf/tls.exp	2021-07-24 21:59:28.979706873 +0200
+@@ -32,6 +32,9 @@ if { !([istarget *-*-linux*]
+ if { ![check_compiler_available] } {
+     return
+ }
++if { [istarget s390x*-*-*] } {
++    return
++}
+ 
+ # This target requires extra GAS options when building PIC/PIE code.
+ set AFLAGS_PIC ""
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-elfvsb/elfvsb.exp binutils-2.37-new/ld/testsuite/ld-elfvsb/elfvsb.exp
+--- binutils-2.37/ld/testsuite/ld-elfvsb/elfvsb.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-elfvsb/elfvsb.exp	2021-07-24 21:59:28.980706863 +0200
+@@ -94,6 +94,10 @@ if { [istarget *-*-linux*]
+     }
+ }
+ 
++if { [istarget i686*-*-*] } {
++  set support_protected "no"
++}    
++
+ # The test procedure.
+ proc visibility_test { visibility progname testname main sh1 sh2 dat args } {
+     global CC
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-gc/pr13683.d binutils-2.37-new/ld/testsuite/ld-gc/pr13683.d
+--- binutils-2.37/ld/testsuite/ld-gc/pr13683.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-gc/pr13683.d	2021-07-24 21:59:28.980706863 +0200
+@@ -2,7 +2,7 @@
+ #source: dummy.s
+ #ld: --gc-sections -e main --defsym foo=foo2 tmpdir/pr13683.o
+ #nm: --format=bsd
+-#xfail: iq2000-*-* lm32-*-* epiphany-*-* mips64vr-*-* frv-*-* m32c-*-* rl78-*-* rx-*-* sh-*-* powerpc*-*-eabivle msp430-*-*
++#xfail: iq2000-*-* lm32-*-* epiphany-*-* mips64vr-*-* frv-*-* m32c-*-* rl78-*-* rx-*-* sh-*-* powerpc*-*-eabivle msp430-*-* aarch64*-*-* arm*-*-*
+ 
+ # Note - look for both "foo" and "foo2" being defined, non-zero function symbols
+ 
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-gc/pr19161.d binutils-2.37-new/ld/testsuite/ld-gc/pr19161.d
+--- binutils-2.37/ld/testsuite/ld-gc/pr19161.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-gc/pr19161.d	2021-07-24 21:59:28.980706863 +0200
+@@ -2,7 +2,7 @@
+ #source: dummy.s
+ #ld: --gc-sections -e main tmpdir/pr19161-1.o tmpdir/pr19161-2.o
+ #nm: --format=bsd
+-#xfail: epiphany-*-* frv-*-* iq2000-*-* lm32-*-* m32c-*-*
++#xfail: epiphany-*-* frv-*-* iq2000-*-* lm32-*-* m32c-*-* aarch64*-*-* arm*-*-*
+ #xfail: mips64vr-*-* msp430-*-* powerpc*-*-eabivle rl78-*-* rx-*-* sh*-*-*
+ 
+ #...
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-i386/i386.exp binutils-2.37-new/ld/testsuite/ld-i386/i386.exp
+--- binutils-2.37/ld/testsuite/ld-i386/i386.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-i386/i386.exp	2021-07-24 21:59:28.981706853 +0200
+@@ -1057,15 +1057,6 @@ if { [isnative]
+ 	    "pr18900.out" \
+ 	] \
+ 	[list \
+-	    "Run pr19031" \
+-	    "$NOPIE_LDFLAGS tmpdir/pr19031.so" \
+-	    "-Wa,-mx86-used-note=yes" \
+-	    { pr19031b.S pr19031c.c } \
+-	    "pr19031" \
+-	    "pr19031.out" \
+-	    "$NOPIE_CFLAGS" \
+-	] \
+-	[list \
+ 	    "Run got1" \
+ 	    "$NOPIE_LDFLAGS tmpdir/got1d.so" \
+ 	    "-Wa,-mx86-used-note=yes" \
+@@ -1117,7 +1108,9 @@ if { [isnative]
+ 	] \
+     ]
+ 
+-    undefined_weak "$NOPIE_CFLAGS" "$NOPIE_LDFLAGS"
++    if { ! [istarget i686*-*-*] } {
++	undefined_weak "$NOPIE_CFLAGS" "$NOPIE_LDFLAGS"
++    }
+     undefined_weak "-fPIE" "$NOPIE_LDFLAGS"
+     undefined_weak "-fPIE" "-pie"
+     undefined_weak "-fPIE" "-z nodynamic-undefined-weak $NOPIE_LDFLAGS"
+@@ -1181,7 +1174,7 @@ if { [isnative]
+ 	] \
+     ]
+ 
+-    if { [istarget "i?86-*-linux*"] } {
++    if { [istarget "i?86-*-linux*"] && ! [istarget i686*-*-*] } {
+ 	run_cc_link_tests [list \
+ 	    [list \
+ 		"Build pr21168.so with -z ibtplt" \
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-i386/plt-main.rd binutils-2.37-new/ld/testsuite/ld-i386/plt-main.rd
+--- binutils-2.37/ld/testsuite/ld-i386/plt-main.rd	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-i386/plt-main.rd	2021-07-24 21:59:28.981706853 +0200
+@@ -1,4 +1 @@
+-#failif
+-#...
+-[0-9a-f ]+R_386_JUMP_SLOT +0+ +bar
+ #...
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-i386/plt-pie-ibt.dd binutils-2.37-new/ld/testsuite/ld-i386/plt-pie-ibt.dd
+--- binutils-2.37/ld/testsuite/ld-i386/plt-pie-ibt.dd	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-i386/plt-pie-ibt.dd	2021-07-24 21:59:28.981706853 +0200
+@@ -1,7 +1,2 @@
+ #...
+-Disassembly of section .plt.got:
+-
+-[a-f0-9]+ <[_a-z]+@plt>:
+-[ 	]*[a-f0-9]+:	f3 0f 1e fb          	endbr32 
+-[ 	]*[a-f0-9]+:	ff a3 .. .. .. ..    	jmp +\*\-0x[a-f0-9]+\(%ebx\)
+ #pass
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-ifunc/ifunc.exp binutils-2.37-new/ld/testsuite/ld-ifunc/ifunc.exp
+--- binutils-2.37/ld/testsuite/ld-ifunc/ifunc.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-ifunc/ifunc.exp	2021-07-24 21:59:28.981706853 +0200
+@@ -39,6 +39,8 @@ if { ![is_elf_format] || ![supports_gnu_
+      || [istarget nds32*-*-*]
+      || [istarget nios2-*-*]
+      || [istarget or1k-*-*]
++     || [istarget powerpc*-*-*]
++     || [istarget ppc*-*-*]
+      || [istarget score*-*-*]
+      || [istarget sh*-*-*]
+      || [istarget tic6x-*-*]
+@@ -664,6 +666,11 @@ run_cc_link_tests [list \
+     ] \
+ ]
+ 
++if { [isnative]
++     && !([istarget "powerpc-*-*"]
++           || [istarget "aarch64*-*-*"] || [istarget "arm*-*-*"]
++           || [istarget "sparc*-*-*"]
++           || [istarget "riscv*-*-*"]) } {
+ run_ld_link_exec_tests [list \
+     [list \
+ 	"Run pr18808" \
+@@ -714,6 +721,7 @@ run_ld_link_exec_tests [list \
+ 	"pr18841.out" \
+     ] \
+ ]
++}
+ 
+ # The pr23169 testcase is not valid.  In general, you can't call ifunc
+ # resolvers in another binary unless you know what you're doing.  In
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-10.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-10.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-10.d	2021-07-24 21:59:20.653787965 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-10.d	2021-07-24 21:59:28.982706843 +0200
 @@ -32,7 +32,7 @@ hook called: claim_file tmpdir/func.o \[
  hook called: claim_file tmpdir/libtext.a \[@.* not claimed
  #...
@@ -192,9 +414,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-10.d b
  Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
  #...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-11.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-11.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-11.d	2021-02-13 18:13:16.877241429 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-11.d	2021-02-13 18:13:21.284220069 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-11.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-11.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-11.d	2021-07-24 21:59:20.653787965 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-11.d	2021-07-24 21:59:28.982706843 +0200
 @@ -35,9 +35,9 @@ hook called: claim_file tmpdir/func.o \[
  hook called: claim_file tmpdir/libtext.a \[@.* CLAIMED
  #...
@@ -207,9 +429,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-11.d b
  #...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-12.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-12.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-12.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-12.d	2021-02-13 18:13:21.288220049 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-12.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-12.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-12.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-12.d	2021-07-24 21:59:28.982706843 +0200
 @@ -1,6 +1,6 @@
  #...
 -.*: symbol `func' definition: DEF, visibility: DEFAULT, resolution: PREVAILING_DEF
@@ -221,9 +443,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-12.d b
 +.*: symbol `.*unc2' definition: DEF, visibility: INTERNAL, resolution: PREVAILING_DEF_IRONLY
 +.*: symbol `.*unc3' definition: DEF, visibility: HIDDEN, resolution: PREVAILING_DEF_IRONLY
  #pass
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-16.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-16.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-16.d	2021-02-13 18:13:16.878241424 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-16.d	2021-02-13 18:13:21.284220069 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-16.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-16.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-16.d	2021-07-24 21:59:20.654787955 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-16.d	2021-07-24 21:59:28.982706843 +0200
 @@ -30,7 +30,7 @@ hook called: claim_file .*/ld/testsuite/
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -233,9 +455,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-16.d b
  Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
  #...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-17.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-17.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-17.d	2021-02-13 18:13:16.878241424 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-17.d	2021-02-13 18:13:21.284220069 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-17.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-17.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-17.d	2021-07-24 21:59:20.654787955 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-17.d	2021-07-24 21:59:28.983706834 +0200
 @@ -31,7 +31,7 @@ hook called: claim_file .*/ld/testsuite/
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -245,9 +467,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-17.d b
  Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
  #...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-18.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-18.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-18.d	2021-02-13 18:13:16.878241424 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-18.d	2021-02-13 18:13:21.284220069 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-18.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-18.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-18.d	2021-07-24 21:59:20.654787955 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-18.d	2021-07-24 21:59:28.983706834 +0200
 @@ -32,7 +32,7 @@ hook called: claim_file .*/ld/testsuite/
  hook called: claim_file tmpdir/libtext.a \[@.* not claimed
  #...
@@ -257,9 +479,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-18.d b
  Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
  #...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-19.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-19.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-19.d	2021-02-13 18:13:16.878241424 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-19.d	2021-02-13 18:13:21.284220069 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-19.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-19.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-19.d	2021-07-24 21:59:20.654787955 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-19.d	2021-07-24 21:59:28.983706834 +0200
 @@ -35,9 +35,9 @@ hook called: claim_file .*/ld/testsuite/
  hook called: claim_file tmpdir/libtext.a \[@.* CLAIMED
  #...
@@ -272,9 +494,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-19.d b
  #...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-8.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-8.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-8.d	2021-02-13 18:13:16.880241414 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-8.d	2021-02-13 18:13:21.284220069 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-8.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-8.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-8.d	2021-07-24 21:59:20.657787926 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-8.d	2021-07-24 21:59:28.983706834 +0200
 @@ -30,7 +30,7 @@ hook called: claim_file tmpdir/func.o \[
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -284,9 +506,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-8.d bi
  Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
  #...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-9.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-9.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-9.d	2021-02-13 18:13:16.880241414 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-9.d	2021-02-13 18:13:21.285220064 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-9.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-9.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-9.d	2021-07-24 21:59:20.657787926 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-9.d	2021-07-24 21:59:28.983706834 +0200
 @@ -31,7 +31,7 @@ hook called: claim_file tmpdir/func.o \[
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -296,10 +518,179 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-9.d bi
  Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
  #...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-x86-64/x86-64.exp binutils-2.36.1-new/ld/testsuite/ld-x86-64/x86-64.exp
---- binutils-2.36.1/ld/testsuite/ld-x86-64/x86-64.exp	2021-02-13 18:13:21.282220078 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-x86-64/x86-64.exp	2021-02-13 18:13:21.285220064 +0100
-@@ -1437,22 +1437,6 @@ if { [isnative] && [check_compiler_avail
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin.exp binutils-2.37-new/ld/testsuite/ld-plugin/plugin.exp
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin.exp	2021-07-24 21:59:20.657787926 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin.exp	2021-07-24 21:59:28.984706824 +0200
+@@ -81,6 +81,7 @@ if { [istarget m681*-*-*] || [istarget m
+     # otherwise get FAILS due to _.frame
+     set CFLAGS "$CFLAGS -fomit-frame-pointer"
+ }
++
+ # In order to define symbols in plugin options in the list of tests below,
+ # we need to know if the platform prepends an underscore to C symbols,
+ # which we find out by compiling the test objects now.  If there is any
+@@ -119,7 +120,7 @@ if { $can_compile && !$failed_compile }
+ 
+ # I do not know why, but the underscore prefix test is going
+ # wrong on ppc64le targets.  So override it here.
+-if { [istarget powerpc*-*-linux*] || [istarget x86_64*-*-linux*] } {
++if { [istarget powerpc*-*-linux*] || [istarget x86_64*-*-linux*] || [istarget *-*-*] } {
+     set _ ""
+ }
+ 
+@@ -137,6 +138,9 @@ if [is_pecoff_format] {
+     #otherwise relocs overflow to symbols defined on the command line
+     append libs " --image-base=0x10000000"
+ }
++if { [istarget aarch64*-*-*] || [istarget arm*-*-*] } {
++    append libs " --defsym __aeabi_unwind_cpp_pr0=0"
++}
+ 
+ set plugin_tests [list \
+     [list "load plugin" "-plugin $plugin_path \
+@@ -304,6 +308,7 @@ if { !$can_compile || $failed_compile }
+ run_ld_link_tests $plugin_tests
+ 
+ if { [is_elf_format] \
++     && ! [istarget ppc64*-*-*] && ! [istarget powerpc*-*-*]
+      && [ld_compile "$CC $CFLAGS" $srcdir/$subdir/func1p.c tmpdir/func1p.o] \
+      && [ld_compile "$CC $CFLAGS" $srcdir/$subdir/func2i.c tmpdir/func2i.o] \
+      && [ld_compile "$CC $CFLAGS" $srcdir/$subdir/func3h.c tmpdir/func3h.o] } {
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-powerpc/group1.sym binutils-2.37-new/ld/testsuite/ld-powerpc/group1.sym
+--- binutils-2.37/ld/testsuite/ld-powerpc/group1.sym	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-powerpc/group1.sym	2021-07-24 21:59:28.984706824 +0200
+@@ -1,3 +1 @@
+-#...
+-.* 8 FUNC +GLOBAL DEFAULT \[<localentry>: 4\] +1 foo
+ #pass
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-powerpc/group3.sym binutils-2.37-new/ld/testsuite/ld-powerpc/group3.sym
+--- binutils-2.37/ld/testsuite/ld-powerpc/group3.sym	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-powerpc/group3.sym	2021-07-24 21:59:28.984706824 +0200
+@@ -1,3 +1 @@
+-#...
+-.* 4 FUNC +GLOBAL DEFAULT \[<localentry>: 1\] +1 foo
+ #pass
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-powerpc/notoc3.d binutils-2.37-new/ld/testsuite/ld-powerpc/notoc3.d
+--- binutils-2.37/ld/testsuite/ld-powerpc/notoc3.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-powerpc/notoc3.d	2021-07-24 21:59:28.984706824 +0200
+@@ -58,7 +58,7 @@ Disassembly of section \.text:
+ 
+ .* <f2>:
+ .*:	(02 10 40 3c|3c 40 10 02) 	lis     r2,4098
+-.*:	(00 90 42 38|38 42 90 00) 	addi    r2,r2,-28672
++.*:.*
+ .*:	(.. .. ff 4b|4b ff .. ..) 	bl      .* <.*\.long_branch\.f1>
+ .*:	(18 00 41 e8|e8 41 00 18) 	ld      r2,24\(r1\)
+ .*:	(.. .. ff 4b|4b ff .. ..) 	bl      .* <f2\+0x8>
+@@ -73,7 +73,7 @@ Disassembly of section \.text:
+ 
+ .* <g2>:
+ .*:	(02 10 40 3c|3c 40 10 02) 	lis     r2,4098
+-.*:	(00 90 42 38|38 42 90 00) 	addi    r2,r2,-28672
++.*:.*
+ .*:	(.. .. ff 4b|4b ff .. ..) 	bl      .* <f2\+0x8>
+ .*:	(00 00 00 60|60 00 00 00) 	nop
+ .*:	(.. .. ff 4b|4b ff .. ..) 	bl      .* <.*\.long_branch\.f1>
+@@ -92,6 +92,6 @@ Disassembly of section \.text\.ext:
+ 
+ 8000000000000000 <ext>:
+ 8000000000000000:	(02 10 40 3c|3c 40 10 02) 	lis     r2,4098
+-8000000000000004:	(00 90 42 38|38 42 90 00) 	addi    r2,r2,-28672
++8000000000000004:.*
+ 8000000000000008:	(00 00 00 60|60 00 00 00) 	nop
+ 800000000000000c:	(20 00 80 4e|4e 80 00 20) 	blr
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-powerpc/pr23937.d binutils-2.37-new/ld/testsuite/ld-powerpc/pr23937.d
+--- binutils-2.37/ld/testsuite/ld-powerpc/pr23937.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-powerpc/pr23937.d	2021-07-24 21:59:28.985706814 +0200
+@@ -5,6 +5,4 @@
+ 
+ #...
+ .* R_PPC64_IRELATIVE +10000180
+-#...
+-.*: 0+10000180 +20 IFUNC +LOCAL +DEFAULT .* magic
+ #pass
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-powerpc/tlsexe32no.r binutils-2.37-new/ld/testsuite/ld-powerpc/tlsexe32no.r
+--- binutils-2.37/ld/testsuite/ld-powerpc/tlsexe32no.r	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-powerpc/tlsexe32no.r	2021-07-24 21:59:28.985706814 +0200
+@@ -22,6 +22,7 @@ Section Headers:
+  +\[[ 0-9]+\] \.dynamic +DYNAMIC +[0-9a-f]+ [0-9a-f]+ [0-9a-f]+ 08 +WA +4 +0 +4
+  +\[[ 0-9]+\] \.got +PROGBITS +[0-9a-f]+ [0-9a-f]+ 000038 04 +WA +0 +0 +4
+  +\[[ 0-9]+\] \.plt +PROGBITS +[0-9a-f]+ [0-9a-f]+ 000004 00 +WA +0 +0 +4
++#pass
+  +\[[ 0-9]+\] \.symtab +SYMTAB +.*
+  +\[[ 0-9]+\] \.strtab +STRTAB +.*
+  +\[[ 0-9]+\] \.shstrtab +STRTAB +.*
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-powerpc/tlsexe32.r binutils-2.37-new/ld/testsuite/ld-powerpc/tlsexe32.r
+--- binutils-2.37/ld/testsuite/ld-powerpc/tlsexe32.r	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-powerpc/tlsexe32.r	2021-07-24 21:59:28.986706805 +0200
+@@ -22,7 +22,8 @@ Section Headers:
+  +\[[ 0-9]+\] \.dynamic +DYNAMIC +[0-9a-f]+ [0-9a-f]+ [0-9a-f]+ 08 +WA +4 +0 +4
+  +\[[ 0-9]+\] \.got +PROGBITS +[0-9a-f]+ [0-9a-f]+ 000018 04 +WA +0 +0 +4
+  +\[[ 0-9]+\] \.plt +PROGBITS +[0-9a-f]+ [0-9a-f]+ 000004 00 +WA +0 +0 +4
+- +\[[ 0-9]+\] \.symtab +SYMTAB +.*
++#pass
+++\[[ 0-9]+\] \.symtab +SYMTAB +.*
+  +\[[ 0-9]+\] \.strtab +STRTAB +.*
+  +\[[ 0-9]+\] \.shstrtab +STRTAB +.*
+ #...
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-powerpc/tlsso32.r binutils-2.37-new/ld/testsuite/ld-powerpc/tlsso32.r
+--- binutils-2.37/ld/testsuite/ld-powerpc/tlsso32.r	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-powerpc/tlsso32.r	2021-07-24 21:59:28.986706805 +0200
+@@ -20,6 +20,7 @@ Section Headers:
+  +\[[ 0-9]+\] \.dynamic +DYNAMIC .* 08 +WA +3 +0 +4
+  +\[[ 0-9]+\] \.got +PROGBITS .* 0+40 04 +WA +0 +0 +4
+  +\[[ 0-9]+\] \.plt +PROGBITS .* 0+4 00 +WA +0 +0 +4
++#pass
+  +\[[ 0-9]+\] \.symtab +.*
+  +\[[ 0-9]+\] \.strtab +.*
+  +\[[ 0-9]+\] \.shstrtab +.*
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-scripts/crossref.exp binutils-2.37-new/ld/testsuite/ld-scripts/crossref.exp
+--- binutils-2.37/ld/testsuite/ld-scripts/crossref.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-scripts/crossref.exp	2021-07-24 21:59:28.986706805 +0200
+@@ -147,6 +147,8 @@ set exec_output [prune_warnings $exec_ou
+ 
+ regsub -all "(^|\n)($ld: warning: cannot find entry symbol\[^\n\]*\n?)" $exec_output "\\1" exec_output
+ 
++setup_xfail i686*-*-*
++
+ if [string match "" $exec_output] then {
+     pass $test3
+ } else {
+@@ -187,6 +189,8 @@ set exec_output [prune_warnings $exec_ou
+ 
+ regsub -all "(^|\n)($ld: warning: cannot find entry symbol\[^\n\]*\n?)" $exec_output "\\1" exec_output
+ 
++setup_xfail i686*-*-*
++
+ if [string match "" $exec_output] then {
+     pass $test6
+ } else {
+@@ -199,6 +203,8 @@ set exec_output [prune_warnings $exec_ou
+ 
+ regsub -all "(^|\n)($ld: warning: cannot find entry symbol\[^\n\]*\n?)" $exec_output "\\1" exec_output
+ 
++setup_xfail i686*-*-*
++
+ if [string match "" $exec_output] then {
+     fail $test7
+ } else {
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-shared/shared.exp binutils-2.37-new/ld/testsuite/ld-shared/shared.exp
+--- binutils-2.37/ld/testsuite/ld-shared/shared.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-shared/shared.exp	2021-07-24 21:59:28.987706795 +0200
+@@ -36,9 +36,6 @@ if { ![istarget hppa*64*-*-hpux*] \
+      && ![istarget hppa*-*-linux*] \
+      && ![istarget i?86-*-sysv4*] \
+      && ![istarget i?86-*-unixware] \
+-     && ![istarget i?86-*-elf*] \
+-     && ![istarget i?86-*-linux*] \
+-     && ![istarget i?86-*-gnu*] \
+      && ![istarget *-*-nacl*] \
+      && ![istarget ia64-*-elf*] \
+      && ![istarget ia64-*-linux*] \
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-x86-64/x86-64.exp binutils-2.37-new/ld/testsuite/ld-x86-64/x86-64.exp
+--- binutils-2.37/ld/testsuite/ld-x86-64/x86-64.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-x86-64/x86-64.exp	2021-07-24 21:59:28.987706795 +0200
+@@ -1466,22 +1466,6 @@ if { [isnative] && [check_compiler_avail
      } else {
  	run_cc_link_tests [list \
  	    [list \
@@ -322,7 +713,7 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-x86-64/x86-64.exp bi
  		"Build lam-u48.so" \
  		"-shared -Wl,-z,lam-u48" \
  		"" \
-@@ -1766,49 +1750,6 @@ if { [isnative] && [check_compiler_avail
+@@ -1813,49 +1797,6 @@ if { [isnative] && [check_compiler_avail
      if { [istarget "x86_64-*-linux*"] \
  	 && ![istarget "x86_64-*-linux*-gnux32"]} {
  
@@ -372,7 +763,7 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-x86-64/x86-64.exp bi
  	run_ld_link_exec_tests [list \
  	    [list \
  		"Run plt-main with -z bndplt" \
-@@ -1893,66 +1834,6 @@ if { [isnative] && [check_compiler_avail
+@@ -1940,66 +1881,6 @@ if { [isnative] && [check_compiler_avail
  	    set pltdump {{objdump {-drw} plt-main-ibt.dd}}
  	    set pltsecdump {{readelf {-SW} plt-main-ibt-now.rd} {objdump {-drw} plt-main-ibt.dd}}
  	}
@@ -439,7 +830,7 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-x86-64/x86-64.exp bi
  
  	run_ld_link_exec_tests [list \
  	    [list \
-@@ -1997,24 +1878,6 @@ if { [isnative] && [check_compiler_avail
+@@ -2044,24 +1925,6 @@ if { [isnative] && [check_compiler_avail
  		"plt-main.out" \
  		"-fPIC" \
  	    ] \
@@ -464,7 +855,7 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-x86-64/x86-64.exp bi
  	]
  
  	if { [check_ifunc_attribute_available] } {
-@@ -2041,7 +1904,6 @@ if { [isnative] && [check_compiler_avail
+@@ -2088,7 +1951,6 @@ if { [isnative] && [check_compiler_avail
  	}
      }
  

@@ -1,14 +1,14 @@
 %global run_testsuite 1
 
 Name:           mingw-binutils
-Version:        2.36.1
-Release:        101%{?dist}
+Version:        2.37
+Release:        100%{?dist}
 Summary:        Cross-compiled version of binutils for Win32 and Win64 environments
 
 License:        GPLv2+ and LGPLv2+ and GPLv3+ and LGPLv3+
 
 URL:            http://www.gnu.org/software/binutils/
-Source0:        http://ftp.gnu.org/gnu/binutils/binutils-%{version}.tar.bz2
+Source0:        http://ftp.gnu.org/gnu/binutils/binutils-%{version}.tar.xz
 
 ### Patches from native package
 # Purpose:  Use /lib64 and /usr/lib64 instead of /lib and /usr/lib in the
@@ -78,21 +78,21 @@ Patch08: binutils-2.27-aarch64-ifunc.patch
 Patch09: binutils-do-not-link-with-static-libstdc++.patch
 
 # Purpose:  Allow OS specific sections in section groups.
-# Lifetime: Fixed in 2.36 (maybe)
+# Lifetime: Fixed in 2.38 (maybe)
 Patch10: binutils-special-sections-in-groups.patch
 
 # Purpose:  Fix linker testsuite failures.
-# Lifetime: Fixed in 2.36 (maybe)
+# Lifetime: Fixed in 2.37 (maybe)
 Patch11: binutils-fix-testsuite-failures.patch
 
 # Purpose:  Stop gold from aborting when input sections with the same name
 #            have different flags.
-# Lifetime: Fixed in 2.36 (maybe)
+# Lifetime: Fixed in 2.38 (maybe)
 Patch12: binutils-gold-mismatched-section-flags.patch
 
 # Purpose:  Add a check to the GOLD linker for a corrupt input file
 #            with a fuzzed section offset.
-# Lifetime: Fixed in 2.36 (maybe)
+# Lifetime: Fixed in 2.38 (maybe)
 Patch13: binutils-CVE-2019-1010204.patch
 
 # Purpose:  Change the gold configuration script to only warn about
@@ -109,39 +109,16 @@ Patch14: binutils-gold-warn-unsupported.patch
 # Lifetime: Permanent.
 Patch15: binutils-use-long-long.patch
 
-# Purpose:  Bring in changes to the 2.36 branch that were made after the
-#           2.36.1 release was created.
-# Lifetime: Fixed in 2.37
-Patch16: binutils-2.36-branch-updates.patch
 
 # Purpose:  Fix testsuite failures due to the patches applied here.
 # Lifetime: Permanent, but varying with each new rebase.
-Patch17: binutils-testsuite-fixes.patch
+Patch16: binutils-testsuite-fixes.patch
 
-# Purpose:  Fix merging empty ppc64le notes.
-# Lifetime: Fixed in 2.37
-Patch18: binutils-ppc64le-note-merge.patch
+# Purpose:  Enable the creation of .note.gnu.property sections by the GOLD
+#            linker for x86 binaries.
+# Lifetime: Fixed in 2.38 maybe
+Patch17: binutils-gold-i386-gnu-property-notes.patch
 
-# Purpose:  Add support for Z instruction set extensions to the s390x
-#            architecture.
-# Lifetime: Fixed in 2.37
-Patch19: binutils-s390-arch14-insns.patch
-
-# Purpose:  Avoid renaming over existing files.
-# Lifetime: Fixed in 2.37
-Patch20: binutils-CVE-2021-20197.patch
-
-# Purpose:  Avoid stack exhaustion whilst demangling rust names
-# Lifetime: Fixed in 2.37
-Patch21: binutils-CVE-2021-3530.patch
-
-# Purpose:  Generate PLT relocs for weak undefined PowerPC function symbols.
-# Lifetime: Fixed in 2.37
-Patch22: binutils-ppc-weak-undefined-plt-relocs.patch
-
-### MINGW specific patches
-
-Patch102: binutils-config.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -156,7 +133,6 @@ BuildRequires:  dejagnu
 BuildRequires:  sharutils
 %endif
 Provides:       bundled(libiberty)
-BuildRequires:	autoconf, automake
 
 
 %description
@@ -201,16 +177,6 @@ sed -i -e 's/%''{release}/%{release}/g' bfd/Makefile{.am,.in}
 
 
 %build
-# Dependencies are not set up to rebuild the configure files
-# in the subdirectories.  So we just rebuild the ones we care
-# about
-pushd libiberty
-autoconf
-popd
-pushd intl
-autoconf
-popd
-
 # We call configure directly rather than via macros, thus if
 # we are using LTO, we have to manually fix the broken configure
 # scripts
@@ -405,6 +371,10 @@ rm -rf %{buildroot}/multilib
 
 
 %changelog
+* Tue Aug 10 2021 Phantom X - 2.37-100
+- 2.37
+- Rawhide sync
+
 * Mon May 24 2021 Phantom X <megaphantomx at hotmail dot com> - 2.36.1-101
 - Backport patches from native binutils package
 

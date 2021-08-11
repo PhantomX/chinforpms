@@ -1,12 +1,10 @@
-diff -rupN --no-dereference binutils-2.36.1/binutils/readelf.c binutils-2.36.1-new/binutils/readelf.c
---- binutils-2.36.1/binutils/readelf.c	2021-01-09 11:47:33.000000000 +0100
-+++ binutils-2.36.1-new/binutils/readelf.c	2021-02-13 18:13:10.680271211 +0100
-@@ -21386,79 +21386,92 @@ process_file (char * file_name)
-   Filedata * filedata = NULL;
+diff -rupN --no-dereference binutils-2.37/binutils/readelf.c binutils-2.37-new/binutils/readelf.c
+--- binutils-2.37/binutils/readelf.c	2021-07-08 13:37:19.000000000 +0200
++++ binutils-2.37-new/binutils/readelf.c	2021-07-24 21:59:05.781932809 +0200
+@@ -21873,45 +21873,52 @@ process_file (char * file_name)
    struct stat statbuf;
    char armag[SARMAG];
--  bfd_boolean ret = TRUE;
-+  bfd_boolean ret = FALSE;
+   bool ret = true;
 +  char * name;
 +  char * saved_program_name;
 +
@@ -26,7 +24,7 @@ diff -rupN --no-dereference binutils-2.36.1/binutils/readelf.c binutils-2.36.1-n
        else
 -	error (_("Could not locate '%s'.  System error message: %s\n"),
 -	       file_name, strerror (errno));
--      return FALSE;
+-      return false;
 +	error (_("Could not locate file.  System error message: %s\n"),
 +	       strerror (errno));
 +      goto done;
@@ -35,7 +33,7 @@ diff -rupN --no-dereference binutils-2.36.1/binutils/readelf.c binutils-2.36.1-n
    if (! S_ISREG (statbuf.st_mode))
      {
 -      error (_("'%s' is not an ordinary file\n"), file_name);
--      return FALSE;
+-      return false;
 +      error (_("Not an ordinary file\n"));
 +      goto done;
      }
@@ -44,7 +42,7 @@ diff -rupN --no-dereference binutils-2.36.1/binutils/readelf.c binutils-2.36.1-n
    if (filedata == NULL)
      {
        error (_("Out of memory allocating file data structure\n"));
--      return FALSE;
+-      return false;
 +      goto done;
      }
  
@@ -54,7 +52,7 @@ diff -rupN --no-dereference binutils-2.36.1/binutils/readelf.c binutils-2.36.1-n
      {
 -      error (_("Input file '%s' is not readable.\n"), file_name);
 -      free (filedata);
--      return FALSE;
+-      return false;
 +      error (_("Not readable\n"));
 +      goto done;
      }
@@ -64,26 +62,27 @@ diff -rupN --no-dereference binutils-2.36.1/binutils/readelf.c binutils-2.36.1-n
 -      error (_("%s: Failed to read file's magic number\n"), file_name);
 -      fclose (filedata->handle);
 -      free (filedata);
--      return FALSE;
+-      return false;
 +      error (_("Failed to read file's magic number\n"));
 +      goto done;
      }
  
    filedata->file_size = (bfd_size_type) statbuf.st_size;
+@@ -21919,33 +21926,39 @@ process_file (char * file_name)
  
    if (memcmp (armag, ARMAG, SARMAG) == 0)
      {
--      if (! process_archive (filedata, FALSE))
--	ret = FALSE;
-+      if (process_archive (filedata, FALSE))
-+	ret = TRUE;
+-      if (! process_archive (filedata, false))
+-	ret = false;
++      if (process_archive (filedata, false))
++	ret = true;
      }
    else if (memcmp (armag, ARMAGT, SARMAG) == 0)
      {
--      if ( ! process_archive (filedata, TRUE))
--	ret = FALSE;
-+      if (process_archive (filedata, TRUE))
-+	ret = TRUE;
+-      if ( ! process_archive (filedata, true))
+-	ret = false;
++      if (process_archive (filedata, true))
++	ret = true;
      }
    else
      {
@@ -96,9 +95,9 @@ diff -rupN --no-dereference binutils-2.36.1/binutils/readelf.c binutils-2.36.1-n
        filedata->archive_file_size = filedata->archive_file_offset = 0;
  
 -      if (! process_object (filedata))
--	ret = FALSE;
+-	ret = false;
 +      if (process_object (filedata))
-+	ret = TRUE;
++	ret = true;
      }
  
 -  fclose (filedata->handle);

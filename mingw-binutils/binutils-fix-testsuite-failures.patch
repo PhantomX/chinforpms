@@ -1,6 +1,6 @@
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-elfvers/vers24.rd binutils-2.36.1-new/ld/testsuite/ld-elfvers/vers24.rd
---- binutils-2.36.1/ld/testsuite/ld-elfvers/vers24.rd	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-elfvers/vers24.rd	2021-02-13 18:13:16.011245609 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-elfvers/vers24.rd binutils-2.37-new/ld/testsuite/ld-elfvers/vers24.rd
+--- binutils-2.37/ld/testsuite/ld-elfvers/vers24.rd	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-elfvers/vers24.rd	2021-07-24 21:59:18.647807502 +0200
 @@ -7,9 +7,9 @@ Symbol table '.dynsym' contains [0-9]+ e
  # And ensure the dynamic symbol table contains at least x@VERS.0
  # and foo@@VERS.0 symbols
@@ -13,9 +13,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-elfvers/vers24.rd bi
  #...
  Symbol table '.symtab' contains [0-9]+ entries:
  #pass
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-10.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-10.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-10.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-10.d	2021-02-13 18:13:16.011245609 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-10.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-10.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-10.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-10.d	2021-07-24 21:59:18.648807492 +0200
 @@ -32,7 +32,8 @@ hook called: claim_file tmpdir/func.o \[
  hook called: claim_file tmpdir/libtext.a \[@.* not claimed
  #...
@@ -26,9 +26,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-10.d b
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-11.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-11.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-11.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-11.d	2021-02-13 18:13:16.011245609 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-11.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-11.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-11.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-11.d	2021-07-24 21:59:18.648807492 +0200
 @@ -35,8 +35,9 @@ hook called: claim_file tmpdir/func.o \[
  hook called: claim_file tmpdir/libtext.a \[@.* CLAIMED
  #...
@@ -41,18 +41,18 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-11.d b
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-13.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-13.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-13.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-13.d	2021-02-13 18:13:16.008245623 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-13.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-13.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-13.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-13.d	2021-07-24 21:59:18.648807492 +0200
 @@ -23,5 +23,3 @@ hook called: claim_file tmpdir/main.o \[
  hook called: claim_file .*/ld/testsuite/ld-plugin/func.c \[@0/.* CLAIMED
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
 -.*main.c.*: undefined reference to `\.?func'
 -#...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-14.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-14.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-14.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-14.d	2021-02-13 18:13:16.008245623 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-14.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-14.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-14.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-14.d	2021-07-24 21:59:18.649807482 +0200
 @@ -27,7 +27,6 @@ hook called: claim_file .*/ld/testsuite/
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -62,9 +62,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-14.d b
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-15.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-15.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-15.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-15.d	2021-02-13 18:13:16.008245623 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-15.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-15.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-15.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-15.d	2021-07-24 21:59:18.649807482 +0200
 @@ -28,7 +28,6 @@ hook called: claim_file .*/ld/testsuite/
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -74,9 +74,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-15.d b
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-16.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-16.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-16.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-16.d	2021-02-13 18:13:16.008245623 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-16.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-16.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-16.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-16.d	2021-07-24 21:59:18.649807482 +0200
 @@ -30,9 +30,8 @@ hook called: claim_file .*/ld/testsuite/
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -89,9 +89,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-16.d b
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-17.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-17.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-17.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-17.d	2021-02-13 18:13:16.009245619 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-17.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-17.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-17.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-17.d	2021-07-24 21:59:18.649807482 +0200
 @@ -31,7 +31,8 @@ hook called: claim_file .*/ld/testsuite/
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -102,9 +102,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-17.d b
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-18.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-18.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-18.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-18.d	2021-02-13 18:13:16.011245609 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-18.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-18.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-18.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-18.d	2021-07-24 21:59:18.650807473 +0200
 @@ -32,7 +32,8 @@ hook called: claim_file .*/ld/testsuite/
  hook called: claim_file tmpdir/libtext.a \[@.* not claimed
  #...
@@ -115,9 +115,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-18.d b
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-19.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-19.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-19.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-19.d	2021-02-13 18:13:16.011245609 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-19.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-19.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-19.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-19.d	2021-07-24 21:59:18.650807473 +0200
 @@ -35,8 +35,9 @@ hook called: claim_file .*/ld/testsuite/
  hook called: claim_file tmpdir/libtext.a \[@.* CLAIMED
  #...
@@ -130,9 +130,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-19.d b
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-20.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-20.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-20.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-20.d	2021-02-13 18:13:16.009245619 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-20.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-20.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-20.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-20.d	2021-07-24 21:59:18.650807473 +0200
 @@ -2,6 +2,5 @@ hook called: all symbols read.
  Input: func.c \(tmpdir/libfunc.a\)
  Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
@@ -141,9 +141,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-20.d b
 -.*main.c.*: undefined reference to `\.?func'
 +#...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-21.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-21.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-21.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-21.d	2021-02-13 18:13:16.009245619 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-21.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-21.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-21.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-21.d	2021-07-24 21:59:18.650807473 +0200
 @@ -2,6 +2,5 @@ hook called: all symbols read.
  Input: .*/ld/testsuite/ld-plugin/func.c \(.*/ld/testsuite/ld-plugin/func.c\)
  Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
@@ -152,9 +152,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-21.d b
 -.*main.c.*: undefined reference to `\.?func'
 +#...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-22.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-22.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-22.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-22.d	2021-02-13 18:13:16.009245619 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-22.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-22.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-22.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-22.d	2021-07-24 21:59:18.650807473 +0200
 @@ -2,6 +2,5 @@ Claimed: tmpdir/libfunc.a \[@.*
  hook called: all symbols read.
  Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
@@ -163,9 +163,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-22.d b
 -.*main.c.*: undefined reference to `\.?func'
 +#...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-23.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-23.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-23.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-23.d	2021-02-13 18:13:16.009245619 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-23.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-23.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-23.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-23.d	2021-07-24 21:59:18.651807463 +0200
 @@ -2,6 +2,5 @@ Claimed: .*/ld/testsuite/ld-plugin/func.
  hook called: all symbols read.
  Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
@@ -174,47 +174,47 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-23.d b
 -.*main.c.*: undefined reference to `\.?func'
 +#...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-24.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-24.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-24.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-24.d	2021-02-13 18:13:16.009245619 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-24.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-24.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-24.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-24.d	2021-07-24 21:59:18.651807463 +0200
 @@ -2,4 +2,5 @@ hook called: all symbols read.
  Input: .*/ld/testsuite/ld-plugin/func.c \(.*/ld/testsuite/ld-plugin/func.c\)
  Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
  Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
 +#...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-25.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-25.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-25.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-25.d	2021-02-13 18:13:16.009245619 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-25.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-25.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-25.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-25.d	2021-07-24 21:59:18.651807463 +0200
 @@ -2,4 +2,5 @@ Claimed: .*/ld/testsuite/ld-plugin/func.
  hook called: all symbols read.
  Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
  Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
 +#...
  hook called: cleanup.
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-28.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-28.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-28.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-28.d	2021-02-13 18:13:16.011245609 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-28.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-28.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-28.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-28.d	2021-07-24 21:59:18.651807463 +0200
 @@ -1 +1,2 @@
  .*: error: Error
 +#...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-29.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-29.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-29.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-29.d	2021-02-13 18:13:16.010245614 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-29.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-29.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-29.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-29.d	2021-07-24 21:59:18.652807453 +0200
 @@ -1 +1,2 @@
  .*: warning: Warning
 +#...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-30.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-30.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-30.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-30.d	2021-02-13 18:13:16.010245614 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-30.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-30.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-30.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-30.d	2021-07-24 21:59:18.652807453 +0200
 @@ -24,3 +24,4 @@ hook called: claim_file tmpdir/main.o \[
  hook called: claim_file tmpdir/func.o \[@0/.* not claimed
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  hook called: claim_file tmpdir/libempty.a \[@.* not claimed
 +#pass
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-6.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-6.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-6.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-6.d	2021-02-13 18:13:16.010245614 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-6.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-6.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-6.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-6.d	2021-07-24 21:59:18.652807453 +0200
 @@ -27,7 +27,6 @@ hook called: claim_file tmpdir/func.o \[
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -224,9 +224,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-6.d bi
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-7.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-7.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-7.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-7.d	2021-02-13 18:13:16.010245614 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-7.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-7.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-7.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-7.d	2021-07-24 21:59:18.652807453 +0200
 @@ -28,7 +28,6 @@ hook called: claim_file tmpdir/func.o \[
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -236,9 +236,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-7.d bi
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-8.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-8.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-8.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-8.d	2021-02-13 18:13:16.011245609 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-8.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-8.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-8.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-8.d	2021-07-24 21:59:18.653807444 +0200
 @@ -30,9 +30,8 @@ hook called: claim_file tmpdir/func.o \[
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -251,9 +251,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-8.d bi
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-9.d binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-9.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin-9.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin-9.d	2021-02-13 18:13:16.010245614 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin-9.d binutils-2.37-new/ld/testsuite/ld-plugin/plugin-9.d
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin-9.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin-9.d	2021-07-24 21:59:18.653807444 +0200
 @@ -31,7 +31,8 @@ hook called: claim_file tmpdir/func.o \[
  hook called: claim_file tmpdir/text.o \[@0/.* not claimed
  #...
@@ -264,10 +264,10 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin-9.d bi
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin.exp binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin.exp
---- binutils-2.36.1/ld/testsuite/ld-plugin/plugin.exp	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/plugin.exp	2021-02-13 18:13:16.012245604 +0100
-@@ -119,6 +119,12 @@ if { $can_compile && !$failed_compile }
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/plugin.exp binutils-2.37-new/ld/testsuite/ld-plugin/plugin.exp
+--- binutils-2.37/ld/testsuite/ld-plugin/plugin.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/plugin.exp	2021-07-24 21:59:18.653807444 +0200
+@@ -117,6 +117,12 @@ if { $can_compile && !$failed_compile }
      }
  }
  
@@ -280,9 +280,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/plugin.exp bi
  set testobjfiles "tmpdir/main.o tmpdir/func.o tmpdir/text.o"
  set testobjfiles_notext "tmpdir/main.o tmpdir/func.o"
  set testsrcfiles "tmpdir/main.o $srcdir/$subdir/func.c tmpdir/text.o"
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/pr20070.d binutils-2.36.1-new/ld/testsuite/ld-plugin/pr20070.d
---- binutils-2.36.1/ld/testsuite/ld-plugin/pr20070.d	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-plugin/pr20070.d	2021-02-13 18:13:16.010245614 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-plugin/pr20070.d binutils-2.37-new/ld/testsuite/ld-plugin/pr20070.d
+--- binutils-2.37/ld/testsuite/ld-plugin/pr20070.d	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-plugin/pr20070.d	2021-07-24 21:59:18.653807444 +0200
 @@ -5,5 +5,6 @@ Sym: 'weakdef' Resolution: LDPR_PREVAILI
  Sym: 'undef' Resolution: LDPR_UNDEF
  Sym: 'weakundef' Resolution: LDPR_UNDEF
@@ -290,9 +290,9 @@ diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-plugin/pr20070.d bin
 +#...
  hook called: cleanup.
  #...
-diff -rupN --no-dereference binutils-2.36.1/ld/testsuite/ld-srec/srec.exp binutils-2.36.1-new/ld/testsuite/ld-srec/srec.exp
---- binutils-2.36.1/ld/testsuite/ld-srec/srec.exp	2021-01-09 11:47:34.000000000 +0100
-+++ binutils-2.36.1-new/ld/testsuite/ld-srec/srec.exp	2021-02-13 18:13:16.010245614 +0100
+diff -rupN --no-dereference binutils-2.37/ld/testsuite/ld-srec/srec.exp binutils-2.37-new/ld/testsuite/ld-srec/srec.exp
+--- binutils-2.37/ld/testsuite/ld-srec/srec.exp	2021-07-08 13:37:20.000000000 +0200
++++ binutils-2.37-new/ld/testsuite/ld-srec/srec.exp	2021-07-24 21:59:18.654807434 +0200
 @@ -21,6 +21,8 @@
  
  # Get the offset from an S-record line to the start of the data.

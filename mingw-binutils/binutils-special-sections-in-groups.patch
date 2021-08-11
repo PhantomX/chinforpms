@@ -1,6 +1,6 @@
-diff -rupN --no-dereference binutils-2.36.1/bfd/elf.c binutils-2.36.1-new/bfd/elf.c
---- binutils-2.36.1/bfd/elf.c	2021-01-14 10:16:07.000000000 +0100
-+++ binutils-2.36.1-new/bfd/elf.c	2021-02-13 18:13:15.144249787 +0100
+diff -rupN --no-dereference binutils-2.37/bfd/elf.c binutils-2.37-new/bfd/elf.c
+--- binutils-2.37/bfd/elf.c	2021-07-08 13:37:19.000000000 +0200
++++ binutils-2.37-new/bfd/elf.c	2021-07-24 21:59:16.679826669 +0200
 @@ -824,7 +824,13 @@ setup_group (bfd *abfd, Elf_Internal_Shd
  	}
      }

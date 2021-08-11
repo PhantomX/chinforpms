@@ -1,7 +1,7 @@
-diff -rupN --no-dereference binutils-2.36.1/bfd/configure binutils-2.36.1-new/bfd/configure
---- binutils-2.36.1/bfd/configure	2021-02-06 10:02:09.000000000 +0100
-+++ binutils-2.36.1-new/bfd/configure	2021-02-13 18:13:19.528228597 +0100
-@@ -13461,11 +13461,13 @@ if test "x${ac_cv_sizeof_long}" = "x8";
+diff -rupN --no-dereference binutils-2.37/bfd/configure binutils-2.37-new/bfd/configure
+--- binutils-2.37/bfd/configure	2021-07-18 18:36:53.000000000 +0200
++++ binutils-2.37-new/bfd/configure	2021-07-24 21:59:26.907727053 +0200
+@@ -12751,11 +12751,13 @@ if test "x${ac_cv_sizeof_long}" = "x8";
    BFD_HOST_64BIT_LONG=1
    test -n "${HOST_64BIT_TYPE}" || HOST_64BIT_TYPE="long"
    test -n "${HOST_U_64BIT_TYPE}" || HOST_U_64BIT_TYPE="unsigned long"
@@ -17,10 +17,10 @@ diff -rupN --no-dereference binutils-2.36.1/bfd/configure binutils-2.36.1-new/bf
      BFD_HOSTPTR_T="unsigned long long"
    fi
  fi
-diff -rupN --no-dereference binutils-2.36.1/bfd/configure.ac binutils-2.36.1-new/bfd/configure.ac
---- binutils-2.36.1/bfd/configure.ac	2021-01-09 11:47:33.000000000 +0100
-+++ binutils-2.36.1-new/bfd/configure.ac	2021-02-13 18:13:19.526228607 +0100
-@@ -219,11 +219,13 @@ if test "x${ac_cv_sizeof_long}" = "x8";
+diff -rupN --no-dereference binutils-2.37/bfd/configure.ac binutils-2.37-new/bfd/configure.ac
+--- binutils-2.37/bfd/configure.ac	2021-07-08 13:37:19.000000000 +0200
++++ binutils-2.37-new/bfd/configure.ac	2021-07-24 21:59:26.908727043 +0200
+@@ -230,11 +230,13 @@ if test "x${ac_cv_sizeof_long}" = "x8";
    BFD_HOST_64BIT_LONG=1
    test -n "${HOST_64BIT_TYPE}" || HOST_64BIT_TYPE="long"
    test -n "${HOST_U_64BIT_TYPE}" || HOST_U_64BIT_TYPE="unsigned long"

@@ -1,6 +1,6 @@
-diff -rupN --no-dereference binutils-2.36.1/bfd/elfnn-aarch64.c binutils-2.36.1-new/bfd/elfnn-aarch64.c
---- binutils-2.36.1/bfd/elfnn-aarch64.c	2021-01-09 11:47:33.000000000 +0100
-+++ binutils-2.36.1-new/bfd/elfnn-aarch64.c	2021-02-13 18:13:13.323258545 +0100
+diff -rupN --no-dereference binutils-2.37/bfd/elfnn-aarch64.c binutils-2.37-new/bfd/elfnn-aarch64.c
+--- binutils-2.37/bfd/elfnn-aarch64.c	2021-07-08 13:37:19.000000000 +0200
++++ binutils-2.37-new/bfd/elfnn-aarch64.c	2021-07-24 21:59:12.398868364 +0200
 @@ -5473,6 +5473,7 @@ elfNN_aarch64_final_link_relocate (reloc
       it here if it is defined in a non-shared object.  */
    if (h != NULL
