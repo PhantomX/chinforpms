@@ -31,7 +31,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{pkgname}-llpc
 
-%global commit3 b135615f415f318c4e910e4b4f44aba2b5ea2e7f
+%global commit3 ec89b84f0b8a83aa2b29ed25cfd741c90f9e2688
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{pkgname}-xgl
 
@@ -51,7 +51,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{pkgname}-CWPack
 
-%global commit8 3510a14cfc31e305d2ffa16548fb1292388bc2cd
+%global commit8 de69f32e8962ecc4e604bfc125da41d00a7a1ca8
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 SPIRV-Tools
 
@@ -63,7 +63,7 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 e0f3fdf43385061a1e3a049208e98527ee6af4af
+%global commit11 aa2d4bd2f48184974961dbbbae3f29d967c45803
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -78,7 +78,7 @@
 %global vc_url  https://github.com/GPUOpen-Drivers
 
 Name:           amdvlk-vulkan-driver
-Version:        2021.3.3
+Version:        2021.3.4
 Release:        1%{?gver}%{?dist}
 Summary:        AMD Open Source Driver For Vulkan
 License:        MIT
@@ -276,6 +276,9 @@ cp -p %{S:21} %{buildroot}%{_sysconfdir}/amd/amdPalSettings.cfg
 
 
 %changelog
+* Wed Aug 11 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.3.4-1
+- 2021.Q3.4
+
 * Fri Aug 06 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.3.3-1
 - 2021.Q3.3
 

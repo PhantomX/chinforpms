@@ -1,6 +1,6 @@
-%global commit 868f5f61896b28930fa6f4fb9c92edeb8161f535
+%global commit 5de47c6cf281d9941e3548f07a7d8c3ff29dfb5c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210722
+%global date 20210811
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -21,7 +21,7 @@
 # https://github.com/hrydgard/ppsspp/issues/13312
 %global _lto_cflags %{nil}
 
-%global commit2 0b28335acea4f429ae798c5e75232e54881bf164
+%global commit2 a5baf97df4579b4614cd5e643241c7acfc36b0c4
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -37,7 +37,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 cd22336a38b7688056ae815c4372103373f2a186
+%global commit7 bab4e5911b1bfa5a86bc80006b7301ae48363844
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        116%{?gver}%{?dist}
+Release:        117%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -375,6 +375,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Aug 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-117.20210811git5de47c6
+- Update
+
 * Thu Jul 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-116.20210722git868f5f6
 - Bump
 - Remove lang submodules, now in mainline

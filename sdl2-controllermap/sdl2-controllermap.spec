@@ -1,5 +1,5 @@
 Name:           sdl2-controllermap
-Version:        2.0.14
+Version:        2.0.16
 Release:        1%{?dist}
 Summary:        Official tool to create SDL2 Game Controller controller mappings
 
@@ -39,13 +39,16 @@ install -pm0644 test/{axis,button,controllermap*}.bmp \
 
 
 %files
-%license COPYING.txt
+%license LICENSE.txt
 %doc README-SDL.txt
 %{_bindir}/%{name}
 %{_datadir}/%{name}
 
 
 %changelog
+* Wed Aug 11 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0.16-1
+- 2.0.16
+
 * Fri Jan 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0.14-1
 - 2.0.14
 
