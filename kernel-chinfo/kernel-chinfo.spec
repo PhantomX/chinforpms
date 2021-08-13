@@ -142,7 +142,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -153,7 +153,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e9a2000c3b34c38ccd4259675c51ea33df9b2dee
+%global pfcommit 4e808b3e7c7777dfce33772e5ddea4386ed329a0
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -181,7 +181,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 263a9fedf94b7a828717014b4b8e458e91b9325c
+%global opensuse_id 2e9639bdfc7b044b86e3953792abd84a679e7ddb
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -913,7 +913,7 @@ Patch2001: %{patchwork_url}/12215169/mbox/#/patchwork-v7-1-5-blk-mq-Move-the-ele
 Patch2002: %{patchwork_url}/12251383/mbox/#/patchwork-V7-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id b40ddced85d779f240fd8f4cca3a491c8cd53952
+%global tkg_id 0cacfda5778a183d66f71bd98ffd67ee684963fa
 Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.13/0007-v5.13-futex2_interface.patch#/tkg-0007-v5.13-futex2_interface.patch
 Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.13/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2093: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.13/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
@@ -2819,6 +2819,9 @@ fi
 #
 #
 %changelog
+* Thu Aug 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.10-500.chinfo
+- 5.13.10 - pf5
+
 * Sun Aug 08 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.9-500.chinfo
 - 5.13.9 - pf5
 

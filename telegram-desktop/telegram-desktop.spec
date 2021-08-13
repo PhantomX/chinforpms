@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.9.0
+Version:        2.9.3
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -90,7 +90,6 @@ Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcna
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-build-fix.patch
-Patch101:       0001-Fix-build-with-disabled-Wayland-integration.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -160,8 +159,8 @@ BuildRequires:  llvm
 %if %{with gtk3}
 BuildRequires: pkgconfig(gtk+-3.0)
 BuildRequires: pkgconfig(webkit2gtk-4.0)
-Requires: gtk3%{?_isa}
-Recommends:    webkit2gtk3
+Recommends:    gtk3%{?_isa}
+Recommends:    webkit2gtk3%{?_isa}
 %endif
 
 # Telegram Desktop require patched version of rlottie since 1.8.0.
@@ -198,6 +197,7 @@ BuildRequires:  pkgconfig(xcb-screensaver)
 
 %if %{with tg_owt}
 BuildRequires:  cmake(tg_owt)
+BuildRequires:  pkgconfig(protobuf)
 %else
 BuildRequires:  cmake(absl)
 BuildRequires:  pkgconfig(libjpeg)
@@ -451,6 +451,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Thu Aug 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.9.3-100
+- 2.9.3
+
 * Sat Jul 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.9.0-100
 - 2.9.0
 

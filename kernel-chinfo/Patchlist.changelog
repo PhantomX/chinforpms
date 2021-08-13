@@ -1,3 +1,27 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/478ca6c098cab88b5eaef871822b6a8ab7414235
+ 478ca6c098cab88b5eaef871822b6a8ab7414235 bpf: Fix integer overflow involving bucket_size
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/53c4c6b56f335cb97de78ede2e2f65c5ff90df2c
+ 53c4c6b56f335cb97de78ede2e2f65c5ff90df2c Fix up backport of Dell XPS 9710 quirk
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/5b1edaedb12682b832f53893cb9665eafa7f5f5b
+ 5b1edaedb12682b832f53893cb9665eafa7f5f5b ASoC: Intel: sof_sdw_max98373: remove useless inits
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/db2bd8b831d66f88d930d067545a2fcc93f5d166
+ db2bd8b831d66f88d930d067545a2fcc93f5d166 ASoC: Intel: update sof_pcm512x quirks
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/8e9c2b31fe9b0ee0a933c3e1944d0694406fda97
+ 8e9c2b31fe9b0ee0a933c3e1944d0694406fda97 ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/4f3a5553af94326cbf4827c05adab57982bcf66f
+ 4f3a5553af94326cbf4827c05adab57982bcf66f ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/be7c50290184920f63b093f429488cbffff13d8e
+ be7c50290184920f63b093f429488cbffff13d8e drm/i915/dp: Use max params for older panels
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/56f010473c692cbc06c14c0a58f606e691491ba4
+ 56f010473c692cbc06c14c0a58f606e691491ba4 pinctrl: tigerlake: Fix GPIO mapping for newer version of software
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/558c3d6b47a25f6af07e3fc967e16cc66f694cb0
  558c3d6b47a25f6af07e3fc967e16cc66f694cb0 powerpc/pseries: Fix regression while building external modules
 

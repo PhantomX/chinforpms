@@ -27,6 +27,7 @@ Subject: [PATCH] patch-5.13-redhat
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
+ drivers/gpu/drm/i915/display/intel_dp.c            |  12 +-
  drivers/gpu/drm/rockchip/rockchip_drm_drv.c        |  11 +
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
@@ -36,6 +37,7 @@ Subject: [PATCH] patch-5.13-redhat
  drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |   1 +
  drivers/nvme/host/pci.c                            |  28 +-
  drivers/pci/quirks.c                               |  24 +
+ drivers/pinctrl/intel/pinctrl-tigerlake.c          |  26 +-
  drivers/platform/x86/amd-pmc.c                     | 204 +++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
@@ -46,12 +48,18 @@ Subject: [PATCH] patch-5.13-redhat
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
+ kernel/bpf/hashtab.c                               |   4 +-
  kernel/crash_core.c                                |  28 +-
  kernel/module_signing.c                            |   9 +-
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
+ sound/soc/intel/boards/sof_pcm512x.c               |  13 +-
+ sound/soc/intel/boards/sof_rt5682.c                |  14 +
+ sound/soc/intel/boards/sof_sdw.c                   |  12 +
+ sound/soc/intel/boards/sof_sdw_max98373.c          |   4 +-
+ sound/soc/sof/sof-pci-dev.c                        |   9 +
  tools/testing/selftests/bpf/Makefile               |   1 -
  tools/testing/selftests/bpf/prog_tests/atomics.c   | 246 ----------
  .../testing/selftests/bpf/prog_tests/bpf_tcp_ca.c  | 280 -----------
@@ -72,7 +80,7 @@ Subject: [PATCH] patch-5.13-redhat
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
  .../selftests/bpf/progs/test_static_linked1.c      |  30 --
  .../selftests/bpf/progs/test_static_linked2.c      |  31 --
- 68 files changed, 887 insertions(+), 2342 deletions(-)
+ 76 files changed, 957 insertions(+), 2366 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -97,7 +105,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index fdb4e2fd9d8f..d8efc35bad77 100644
+index 4e9f877f513f..6123e12d63e2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -991,6 +999,32 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
+index 005510f309cf..bf00ad214b49 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp.c
++++ b/drivers/gpu/drm/i915/display/intel_dp.c
+@@ -1318,14 +1318,16 @@ intel_dp_compute_link_config(struct intel_encoder *encoder,
+ 	limits.min_bpp = intel_dp_min_bpp(pipe_config->output_format);
+ 	limits.max_bpp = intel_dp_max_bpp(intel_dp, pipe_config);
+
+-	if (intel_dp->use_max_params) {
++	if (intel_dp->use_max_params ||
++	    intel_dp->dpcd[DP_DPCD_REV] <= DP_DPCD_REV_11) {
+ 		/*
+ 		 * Use the maximum clock and number of lanes the eDP panel
+ 		 * advertizes being capable of in case the initial fast
+-		 * optimal params failed us. The panels are generally
+-		 * designed to support only a single clock and lane
+-		 * configuration, and typically on older panels these
+-		 * values correspond to the native resolution of the panel.
++		 * optimal params failed us or the panel is DP 1.1 or earlier.
++		 * The panels are generally designed to support only a single
++		 * clock and lane configuration, and typically on older panels
++		 * these values correspond to the native resolution of the
++		 * panel.
+ 		 */
+ 		limits.min_lane_count = limits.max_lane_count;
+ 		limits.min_clock = limits.max_clock;
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
 index 212bd87c0c4a..b8b066938e48 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
@@ -1513,6 +1547,56 @@ index 6d74386eadc2..2333c1e4ae05 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/pinctrl/intel/pinctrl-tigerlake.c b/drivers/pinctrl/intel/pinctrl-tigerlake.c
+index 75b6d66955bf..3ddaeffc0415 100644
+--- a/drivers/pinctrl/intel/pinctrl-tigerlake.c
++++ b/drivers/pinctrl/intel/pinctrl-tigerlake.c
+@@ -701,32 +701,32 @@ static const struct pinctrl_pin_desc tglh_pins[] = {
+
+ static const struct intel_padgroup tglh_community0_gpps[] = {
+ 	TGL_GPP(0, 0, 24, 0),				/* GPP_A */
+-	TGL_GPP(1, 25, 44, 128),			/* GPP_R */
+-	TGL_GPP(2, 45, 70, 32),				/* GPP_B */
+-	TGL_GPP(3, 71, 78, INTEL_GPIO_BASE_NOMAP),	/* vGPIO_0 */
++	TGL_GPP(1, 25, 44, 32),				/* GPP_R */
++	TGL_GPP(2, 45, 70, 64),				/* GPP_B */
++	TGL_GPP(3, 71, 78, 96),				/* vGPIO_0 */
+ };
+
+ static const struct intel_padgroup tglh_community1_gpps[] = {
+-	TGL_GPP(0, 79, 104, 96),			/* GPP_D */
+-	TGL_GPP(1, 105, 128, 64),			/* GPP_C */
+-	TGL_GPP(2, 129, 136, 160),			/* GPP_S */
+-	TGL_GPP(3, 137, 153, 192),			/* GPP_G */
+-	TGL_GPP(4, 154, 180, 224),			/* vGPIO */
++	TGL_GPP(0, 79, 104, 128),			/* GPP_D */
++	TGL_GPP(1, 105, 128, 160),			/* GPP_C */
++	TGL_GPP(2, 129, 136, 192),			/* GPP_S */
++	TGL_GPP(3, 137, 153, 224),			/* GPP_G */
++	TGL_GPP(4, 154, 180, 256),			/* vGPIO */
+ };
+
+ static const struct intel_padgroup tglh_community3_gpps[] = {
+-	TGL_GPP(0, 181, 193, 256),			/* GPP_E */
+-	TGL_GPP(1, 194, 217, 288),			/* GPP_F */
++	TGL_GPP(0, 181, 193, 288),			/* GPP_E */
++	TGL_GPP(1, 194, 217, 320),			/* GPP_F */
+ };
+
+ static const struct intel_padgroup tglh_community4_gpps[] = {
+-	TGL_GPP(0, 218, 241, 320),			/* GPP_H */
++	TGL_GPP(0, 218, 241, 352),			/* GPP_H */
+ 	TGL_GPP(1, 242, 251, 384),			/* GPP_J */
+-	TGL_GPP(2, 252, 266, 352),			/* GPP_K */
++	TGL_GPP(2, 252, 266, 416),			/* GPP_K */
+ };
+
+ static const struct intel_padgroup tglh_community5_gpps[] = {
+-	TGL_GPP(0, 267, 281, 416),			/* GPP_I */
++	TGL_GPP(0, 267, 281, 448),			/* GPP_I */
+ 	TGL_GPP(1, 282, 290, INTEL_GPIO_BASE_NOMAP),	/* JTAG */
+ };
+
 diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
 index ca95c2a52e26..e38e8288468f 100644
 --- a/drivers/platform/x86/amd-pmc.c
@@ -2083,6 +2167,21 @@ index a61c92066c2e..94107b1d0e3e 100644
  	select IO_WQ
  	default y
  	help
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index d7ebb12ffffc..49857e8cd6ce 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -1464,8 +1464,8 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 	/* We cannot do copy_from_user or copy_to_user inside
+ 	 * the rcu_read_lock. Allocate enough space here.
+ 	 */
+-	keys = kvmalloc(key_size * bucket_size, GFP_USER | __GFP_NOWARN);
+-	values = kvmalloc(value_size * bucket_size, GFP_USER | __GFP_NOWARN);
++	keys = kvmalloc_array(key_size, bucket_size, GFP_USER | __GFP_NOWARN);
++	values = kvmalloc_array(value_size, bucket_size, GFP_USER | __GFP_NOWARN);
+ 	if (!keys || !values) {
+ 		ret = -ENOMEM;
+ 		goto after_loop;
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
 index 684a6061a13a..220579c0e963 100644
 --- a/kernel/crash_core.c
@@ -2246,6 +2345,139 @@ index b38155b2de83..b0a6711b4825 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+diff --git a/sound/soc/intel/boards/sof_pcm512x.c b/sound/soc/intel/boards/sof_pcm512x.c
+index 8620d4f38493..335c212c1961 100644
+--- a/sound/soc/intel/boards/sof_pcm512x.c
++++ b/sound/soc/intel/boards/sof_pcm512x.c
+@@ -26,11 +26,16 @@
+
+ #define SOF_PCM512X_SSP_CODEC(quirk)		((quirk) & GENMASK(3, 0))
+ #define SOF_PCM512X_SSP_CODEC_MASK			(GENMASK(3, 0))
++#define SOF_PCM512X_ENABLE_SSP_CAPTURE		BIT(4)
++#define SOF_PCM512X_ENABLE_DMIC			BIT(5)
+
+ #define IDISP_CODEC_MASK	0x4
+
+ /* Default: SSP5 */
+-static unsigned long sof_pcm512x_quirk = SOF_PCM512X_SSP_CODEC(5);
++static unsigned long sof_pcm512x_quirk =
++	SOF_PCM512X_SSP_CODEC(5) |
++	SOF_PCM512X_ENABLE_SSP_CAPTURE |
++	SOF_PCM512X_ENABLE_DMIC;
+
+ static bool is_legacy_cpu;
+
+@@ -245,8 +250,9 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
+ 	links[id].dpcm_playback = 1;
+ 	/*
+ 	 * capture only supported with specific versions of the Hifiberry DAC+
+-	 * links[id].dpcm_capture = 1;
+ 	 */
++	if (sof_pcm512x_quirk & SOF_PCM512X_ENABLE_SSP_CAPTURE)
++		links[id].dpcm_capture = 1;
+ 	links[id].no_pcm = 1;
+ 	links[id].cpus = &cpus[id];
+ 	links[id].num_cpus = 1;
+@@ -381,6 +387,9 @@ static int sof_audio_probe(struct platform_device *pdev)
+
+ 	ssp_codec = sof_pcm512x_quirk & SOF_PCM512X_SSP_CODEC_MASK;
+
++	if (!(sof_pcm512x_quirk & SOF_PCM512X_ENABLE_DMIC))
++		dmic_be_num = 0;
++
+ 	/* compute number of dai links */
+ 	sof_audio_card_pcm512x.num_links = 1 + dmic_be_num + hdmi_num;
+
+diff --git a/sound/soc/intel/boards/sof_rt5682.c b/sound/soc/intel/boards/sof_rt5682.c
+index 78262c659983..f4b25ae7fd5a 100644
+--- a/sound/soc/intel/boards/sof_rt5682.c
++++ b/sound/soc/intel/boards/sof_rt5682.c
+@@ -155,6 +155,20 @@ static const struct dmi_system_id sof_rt5682_quirk_table[] = {
+ 					SOF_RT5682_SSP_AMP(2) |
+ 					SOF_RT5682_NUM_HDMIDEV(4)),
+ 	},
++	{
++		.callback = sof_rt5682_quirk_cb,
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Intel Corporation"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Alder Lake Client Platform"),
++			DMI_MATCH(DMI_OEM_STRING, "AUDIO-ADL_MAX98373_ALC5682I_I2S"),
++		},
++		.driver_data = (void *)(SOF_RT5682_MCLK_EN |
++					SOF_RT5682_SSP_CODEC(0) |
++					SOF_SPEAKER_AMP_PRESENT |
++					SOF_MAX98373_SPEAKER_AMP_PRESENT |
++					SOF_RT5682_SSP_AMP(2) |
++					SOF_RT5682_NUM_HDMIDEV(4)),
++	},
+ 	{}
+ };
+
+diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
+index 3ca7e1ab48ab..3635d8002ecf 100644
+--- a/sound/soc/intel/boards/sof_sdw.c
++++ b/sound/soc/intel/boards/sof_sdw.c
+@@ -128,6 +128,18 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
+ 					SOF_RT711_JD_SRC_JD2 |
+ 					SOF_RT715_DAI_ID_FIX),
+ 	},
++	{
++		/* Dell XPS 9710 */
++		.callback = sof_sdw_quirk_cb,
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "0A5D")
++		},
++		.driver_data = (void *)(SOF_SDW_TGL_HDMI |
++					SOF_RT711_JD_SRC_JD2 |
++					SOF_RT715_DAI_ID_FIX |
++					SOF_SDW_FOUR_SPK),
++	},
+ 	{
+ 		.callback = sof_sdw_quirk_cb,
+ 		.matches = {
+diff --git a/sound/soc/intel/boards/sof_sdw_max98373.c b/sound/soc/intel/boards/sof_sdw_max98373.c
+index 25daef910aee..25f9065b627c 100644
+--- a/sound/soc/intel/boards/sof_sdw_max98373.c
++++ b/sound/soc/intel/boards/sof_sdw_max98373.c
+@@ -90,7 +90,7 @@ static int mx8373_enable_spk_pin(struct snd_pcm_substream *substream, bool enabl
+
+ static int mx8373_sdw_prepare(struct snd_pcm_substream *substream)
+ {
+-	int ret = 0;
++	int ret;
+
+ 	/* according to soc_pcm_prepare dai link prepare is called first */
+ 	ret = sdw_prepare(substream);
+@@ -102,7 +102,7 @@ static int mx8373_sdw_prepare(struct snd_pcm_substream *substream)
+
+ static int mx8373_sdw_hw_free(struct snd_pcm_substream *substream)
+ {
+-	int ret = 0;
++	int ret;
+
+ 	/* according to soc_pcm_hw_free dai link free is called first */
+ 	ret = sdw_hw_free(substream);
+diff --git a/sound/soc/sof/sof-pci-dev.c b/sound/soc/sof/sof-pci-dev.c
+index 3489dc1b48f6..2bdf3cf37422 100644
+--- a/sound/soc/sof/sof-pci-dev.c
++++ b/sound/soc/sof/sof-pci-dev.c
+@@ -50,6 +50,15 @@ static const struct dmi_system_id sof_tplg_table[] = {
+ 		},
+ 		.driver_data = "sof-tgl-rt5682-ssp0-max98373-ssp2.tplg",
+ 	},
++	{
++		.callback = sof_tplg_cb,
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Intel Corporation"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Alder Lake Client Platform"),
++			DMI_MATCH(DMI_OEM_STRING, "AUDIO-ADL_MAX98373_ALC5682I_I2S"),
++		},
++		.driver_data = "sof-adl-rt5682-ssp0-max98373-ssp2.tplg",
++	},
+ 	{}
+ };
+
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
 index 511259c2c6c5..bd2ca0032883 100644
 --- a/tools/testing/selftests/bpf/Makefile
