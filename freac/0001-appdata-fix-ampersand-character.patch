@@ -1,0 +1,25 @@
+From 40508bf9b0bd04916a4fccec7736dcc2ddde9cfc Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 13 Aug 2021 16:23:50 -0300
+Subject: [PATCH] appdata: fix ampersand character
+
+---
+ metadata/org.freac.freac.appdata.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/metadata/org.freac.freac.appdata.xml b/metadata/org.freac.freac.appdata.xml
+index 6ed1fe2..ce80640 100644
+--- a/metadata/org.freac.freac.appdata.xml
++++ b/metadata/org.freac.freac.appdata.xml
+@@ -88,7 +88,7 @@
+                    <li>Fixed UI glitches and crashes on exit when running in a Wayland session</li>
+                    <li>Fixed popup menu and dropdown list closing behavior on non-Windows platforms</li>
+                    <li>Fixed issues with custom DPI settings on Xfce desktops</li>
+-                   <li>Fixed drag & drop working unreliably on X11 based systems</li>
++                   <li>Fixed drag &amp; drop working unreliably on X11 based systems</li>
+                 </ul>
+                 <p>Updated codecs:</p>
+                 <ul>
+-- 
+2.31.1
+

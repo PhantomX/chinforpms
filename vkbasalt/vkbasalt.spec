@@ -1,6 +1,6 @@
-%global commit b929505ba71dea21d6c32a5a59f2d241592b30c4
+%global commit d416bcb9ca3ab49eec07f93993caae4f72e3df4a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210305
+%global date 20210719
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           vkbasalt
 Version:        0.3.2.4
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A vulkan post processing layer
 
 License:        zlib
@@ -72,6 +72,9 @@ mkdir -p %{buildroot}%{_datadir}/%{pkgname}
 
 
 %changelog
+* Fri Aug 13 2021 Phantom X <megaphantomx at hotmail dot com> - 0.3.2.4-3.20210719gitd416bcb
+- Bump
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.3.2.4-2.20210305gitb929505
 - Snapshot
 

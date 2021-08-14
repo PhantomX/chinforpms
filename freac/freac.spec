@@ -1,9 +1,9 @@
-%global smoothver 0.9.7
+%global smoothver 0.9.8
 
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           freac
-Version:        1.1.4
+Version:        1.1.5
 Release:        1%{?dist}
 Summary:        A free audio converter and CD ripper
 
@@ -11,6 +11,8 @@ License:        GPLv2
 URL:            http://www.freac.org/
 
 Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{ver}.tar.gz
+
+Patch0:         0001-appdata-fix-ampersand-character.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
@@ -42,7 +44,7 @@ WMA, Ogg Vorbis, FLAC, AAC, WAV and Bonk formats.
 
 
 %prep
-%autosetup -n %{name}-%{ver}
+%autosetup -n %{name}-%{ver} -p1
 
 sed -e 's/\r//' -i COPYING Readme
 
@@ -89,6 +91,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.%{
 
 
 %changelog
+* Fri Aug 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1.1.5-1
+- 1.1.5
+
 * Mon Mar 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1.1.4-1
 - 1.1.4
 

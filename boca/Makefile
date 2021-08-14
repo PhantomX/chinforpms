@@ -1,5 +1,5 @@
 NAME = boca
-VERSION ?= 1.0.4
+VERSION ?= 1.0.5
 SANITIZE ?= 1
 CLEAN_PATCH = $(NAME)-clean.patch
 

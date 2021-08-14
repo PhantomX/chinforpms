@@ -3,8 +3,6 @@
 %global date 20200802
 %global with_snapshot 0
 
-%global sanitize 0
-
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
@@ -15,7 +13,7 @@
 %global vc_url https://github.com/flightlessmango
 
 Name:           mangohud
-Version:        0.6.4
+Version:        0.6.5
 Release:        1%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -23,19 +21,10 @@ License:        MIT
 URL:            %{vc_url}/%{pkgname}
 
 %if 0%{?with_snapshot}
-%if 0%{sanitize}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{pkgname}-%{shortcommit}.tar.xz
-%endif
-%else
-%if 0%{sanitize}
 Source0:        %{url}/archive/v%{version}/%{pkgname}-v%{version}.tar.gz
-%else
-Source0:        %{pkgname}-free-%{version}.tar.xz
 %endif
-%endif
-Source2:        Makefile
 Source3:        %{name}.in
 Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{imgui_ver}.tar.gz
 Source11:       https://wrapdb.mesonbuild.com/v1/projects/imgui/%{imgui_ver}/1/get_zip#/imgui-%{imgui_ver}-1-wrap.zip
@@ -78,9 +67,7 @@ improvements, temperature reporting, and logging capabilities.
 tar xf %{S:10} -C subprojects/
 unzip %{S:11} -d subprojects/
 
-%if 0%{sanitize}
-  rm -f include/nvml.h
-%endif
+rm -f include/nvml.h
 
 cp -f -p %{S:3} bin/%{name}.in
 
@@ -104,6 +91,7 @@ sed -e "/-D__STDC_CONSTANT_MACROS/i\  '${TEMP_CFLAGS}'," -i meson.build
   -Duse_system_vulkan=enabled \
   -Dinclude_doc=false \
   -Dwith_nvml=disabled \
+  -Dwith_xnvctrl=disabled \
 %{nil}
 
 %meson_build
@@ -126,6 +114,9 @@ chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 
 %changelog
+* Fri Aug 13 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.5-1
+- 0.6.5
+
 * Thu Jun 24 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.4-1
 - 0.6.4
 

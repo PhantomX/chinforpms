@@ -1,24 +1,38 @@
+%global commit 45dfe03aa57db686bd992dc5add45bd76fc03543
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20210223
+%global with_snapshot 1
+
+%global commit1 07f90de4e5cc6f7aff8e8b62ca1a39804907848f
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 libpe
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
+%global vc_url  https://github.com/merces
+
 Name:           pev
-Version:        0.80
-Release:        3%{?dist}
+Version:        0.81
+Release:        1%{?gver}%{?dist}
 Summary:        PE file analysis toolkit
 
 License:        GPLv2
-URL:            http://pev.sourceforge.net/
-Source0:        https://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+URL:            https://pev.sourceforge.net/
 
-%global vc_url  https://github.com/merces/%{name}
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source1:        %{vc_url}/libpe/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+%else
+Source0:        https://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+%endif
 
 Patch0:         %{name}-optimization.patch
-Patch1:         %{vc_url}/commit/98f5f22f91f02821be1604bbce61efb45f7e3696.patch#/%{name}-gh-98f5f22.patch
-Patch2:         %{vc_url}/commit/3fc1d6ac863cfb596e8e9263e03871aec8c00d22.patch#/%{name}-gh-3fc1d6a.patch
-Patch3:         %{vc_url}/commit/d1632ef4ff5705fa3819e29b37c0ccef85e6d62a.patch#/%{name}-gh-d1632ef.patch
-Patch4:         %{vc_url}/commit/3c2b0737f8b09ab7300bb8bbd5e0e2728367327f.patch#/%{name}-gh-3c2b073.patch
 
 
 BuildRequires:  make
 BuildRequires:  gcc
-BuildRequires:  pkgconfig(libpcre)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 Requires:       libpe%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -44,9 +58,12 @@ The libpe-devel package contains the development files libraries needed for
 plugins building.
 
 %prep
-%autosetup -p1 -n %{name}
-
-sed -e '/DEFAULT_PLUGINS_PATH/s|/usr/local/lib|%{_libdir}|g' -i src/config.c
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+tar xf %{S:1} -C lib/libpe --strip-components 1
+%else
+%autosetup -n %{name}-%{version} -p1
+%endif
 
 %build
 
@@ -86,6 +103,9 @@ install -pm 0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 %{_libdir}/libpe.so
 
 %changelog
+* Fri Aug 13 2021 Phantom X <megaphantomx at bol dot com dot br> - 0.81-1.20210223git45dfe03
+- 0.81 snapshot
+
 * Fri Jun 07 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.80-3
 - Upstream patches to fix crashes
 
