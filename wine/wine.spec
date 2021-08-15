@@ -1,7 +1,7 @@
-%global commit caf5ab5d65ed9df978006d819b1d800071af1117
+%global commit 6b58d34a625ffaad181a7316009398f3c6444181
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210809
-%global with_snapshot 1
+%global date 20210813
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -33,7 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  6.3.0
-%global winevulkan 1.2.185
+%global winevulkan 1.2.188
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 82118b0d678b421d217875d286a534fe334799b1
+%global wine_stagingver 6.15
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -73,10 +73,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id ac142160e1d38438218fa68c894a2a619fba0cc8
+%global ge_id f04a5161ebd57608c5781fa2fe20a868cc055040
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 666d3ae594c41f2db4019c4b420e6ffd60164fd1
+%global tkg_id de6cd55961861c254bb4d96481a75bfb78553e5d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -127,8 +127,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.14
-Release:        102%{?gver}%{?dist}
+Version:        6.15
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -232,12 +232,14 @@ Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/virtual_alloc_remi2.mypatch
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
-Patch1093:       https://source.winehq.org/patches/data/205277#/%{name}-whq-patch205277.patch
+Patch1092:       %{valve_url}/commit/3b7198e6d12da7829cd0e080e30896fd12696e7e.patch#/%{name}-valve-3b7198e.patch
+Patch1093:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.patch#/%{name}-valve-ba230cf.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
 Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
 Patch1303:       0001-winevdm-support-DOSBOX-environment-variable.patch
+Patch1304:       0001-proton-tkg-staging-temporary-fix.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -901,11 +903,14 @@ $patch_command -p1 -i patch1025.patch
 %patch1032 -p1
 %patch1089 -p1
 %patch1091 -p1 -R
+$patch_command -p1 -R -i patches/mfplat-streaming-support/0038-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
+%patch1092 -p1
 %patch1093 -p1
 %patch1300 -p1
 %patch1301 -p1
 %patch1302 -p1
 %patch1303 -p1
+%patch1304 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -2911,6 +2916,9 @@ fi
 
 
 %changelog
+* Sat Aug 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.15-100
+- 6.15
+
 * Tue Aug 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.14-102.20210809gitcaf5ab5
 - Bump
 

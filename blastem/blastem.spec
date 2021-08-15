@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
-%global commit a61b47d5489e
-%global date 20210309
+%global commit 804954731e3f
+%global date 20210805
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,7 +10,7 @@
 
 Name:           blastem
 Version:        0.6.3
-Release:        0.3%{?gver}%{?dist}
+Release:        0.4%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPLv3
@@ -18,6 +18,7 @@ URL:            https://www.retrodev.com/%{name}/
 Source0:        https://www.retrodev.com/repos/%{name}/archive/%{commit}.tar.bz2#/%{name}-%{commit}.tar.bz2
 
 Patch0:         0001-img2tiles.py-update-to-python-3.patch
+Patch1:         0001-fix-missing-objects.patch
 
 
 BuildRequires:  icoutils
@@ -117,6 +118,9 @@ done
 
 
 %changelog
+* Sat Aug 14 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.4.20210805git804954731e3f
+- Bump
+
 * Sat Mar 27 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.3.20210309gita61b47d5489e
 - Build menu.bin and tmss.md
 - BR: xcftools vasm python3-pillow
