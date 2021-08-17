@@ -1,8 +1,10 @@
 %global xfceversion %%(echo %{version} | cut -d. -f1-2)
 
+%global vc_url https://gitlab.xfce.org/xfce/%{name}
+
 Name:           xfwm4
 Version:        4.16.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Next generation window manager for Xfce
 
 License:        GPLv2+
@@ -12,7 +14,11 @@ Source0:        http://archive.xfce.org/src/xfce/%{name}/%{xfceversion}/%{name}-
 
 Patch10:        0001-settings-disable-keymap-reload-when-key-changes-is-d.patch
 Patch11:        0001-Add-Radeon-to-xpresent-vblank-mode-list.patch
+# https://gitlab.xfce.org/xfce/xfwm4/-/issues/552
+Patch12:        %{vc_url}/uploads/e20f52226cbc22e0299bad1c911df581/xfwm4-xfce-4.16.1.patch2#/%{name}-gl-bug552.patch
 
+BuildRequires:  xfce4-dev-tools
+BuildRequires:  libtool
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  gettext
@@ -48,6 +54,9 @@ xfwm4 is a window manager compatible with GNOME, GNOME2, KDE2, KDE3 and Xfce.
 %prep
 %autosetup -p1
 
+# For patch12
+NOCONFIGURE=1 xdt-autogen
+
 
 %build
 %configure  --disable-static
@@ -79,6 +88,9 @@ done
 
 
 %changelog
+* Mon Aug 16 2021 Phantom X <megaphantomx at hotmail dot com> - 4.16.1-101
+- Add experimental patch to force window decorations from xfce#552
+
 * Wed Jan 13 2021 Phantom X <megaphantomx at hotmail dot com> - 4.16.1-100
 - 4.16.1
 

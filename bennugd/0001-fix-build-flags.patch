@@ -1,0 +1,56 @@
+From a40b21f34474abc4bf5cb59b41c82d3a14020f72 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 16 Aug 2021 13:31:44 -0300
+Subject: [PATCH] fix build flags
+
+---
+ core/configure.in    | 6 +++---
+ modules/configure.in | 8 ++++----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/core/configure.in b/core/configure.in
+index a8c9319..908c813 100644
+--- a/core/configure.in
++++ b/core/configure.in
+@@ -39,9 +39,9 @@ case "$target_os" in
+         COMMON_LDFLAGS="$COMMON_LDFLAGS -lc -ldl"
+ 
+         case "$target_cpu" in
+-            i*86)
+-                COMMON_CFLAGS="$COMMON_CFLAGS -m32 -DUSE_OPENSSL"
+-                COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
++            i*86|x86_64*)
++                COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_OPENSSL"
++                COMMON_LDFLAGS="$COMMON_LDFLAGS"
+                 LIBSSL="crypto"
+                 USE_OPENSSL=yes
+                 ;;
+diff --git a/modules/configure.in b/modules/configure.in
+index 97e6bb0..edc916f 100644
+--- a/modules/configure.in
++++ b/modules/configure.in
+@@ -40,9 +40,9 @@ case "$target_os" in
+         COMMON_LDFLAGS="$COMMON_LIBS -lc -ldl"
+ 
+         case "$target_cpu" in
+-            i*86*)
+-                COMMON_CFLAGS="$COMMON_CFLAGS -m32"
+-                COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32 -L/usr/lib/$TARGET"
++            i*86*|x86_64*)
++                COMMON_CFLAGS="$COMMON_CFLAGS"
++                COMMON_LDFLAGS="$COMMON_LDFLAGS"
+                 LM=-lm
+                 LIBSSL="crypto"
+                 USE_OPENSSL=yes
+@@ -117,7 +117,7 @@ AC_CHECK_LIB(m,fabs,,AC_MSG_RESULT(math library not found))
+ if test "x$enable_debug" = "xyes"; then
+ 	CFLAGS+=" -g $COMMON_CFLAGS"
+ else
+-	CFLAGS+=" -O2 -finline-functions -fno-strict-aliasing $COMMON_CFLAGS"
++	CFLAGS+=" -finline-functions -fno-strict-aliasing $COMMON_CFLAGS"
+ fi
+ 
+ if test "x$enable_static" = "xyes"; then
+-- 
+2.31.1
+

@@ -1,0 +1,79 @@
+From 3dc247b28f0b11734e013c757efefce1966bf9f5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 16 Aug 2021 15:26:11 -0300
+Subject: [PATCH] Hardcode modules path
+
+---
+ core/bgdc/src/c_main.c     | 11 ++---------
+ core/bgdrtm/src/sysprocs.c | 11 ++---------
+ 2 files changed, 4 insertions(+), 18 deletions(-)
+
+diff --git a/core/bgdc/src/c_main.c b/core/bgdc/src/c_main.c
+index 579c7c1..2408646 100644
+--- a/core/bgdc/src/c_main.c
++++ b/core/bgdc/src/c_main.c
+@@ -449,12 +449,7 @@ static char * modules_exts[] =
+ 
+ static char * dlsearchpath[] =
+ {
+-    "modules",
+-    "mod",
+-    "mods",
+-    "extensions",
+-    "plugins",
+-    "data",
++    "_RPMLIBDIR_/modules",
+     NULL
+ };
+ 
+@@ -520,13 +515,11 @@ static void import_module( const char * filename )
+     spath = dlsearchpath;
+     while( !library && spath && *spath )
+     {
+-        snprintf( fullsoname, sizeof( fullsoname ), "%s%s/%s", appexepath, *spath, filename );
++        snprintf( fullsoname, sizeof( fullsoname ), "%s/%s", *spath, filename );
+         library  = dlibopen( fullsoname ) ;
+         spath++;
+     }
+ 
+-    if ( !library ) library  = dlibopen( filename ) ;
+-
+     if ( !library ) compile_error( MSG_LIBRARY_NOT_FOUND, filename ) ;
+ 
+     modules_dependency = ( char ** ) _dlibaddr( library, "modules_dependency" ) ;
+diff --git a/core/bgdrtm/src/sysprocs.c b/core/bgdrtm/src/sysprocs.c
+index 4f79c0f..eb5e379 100644
+--- a/core/bgdrtm/src/sysprocs.c
++++ b/core/bgdrtm/src/sysprocs.c
+@@ -389,12 +389,7 @@ void sysproc_add_tab( DLSYSFUNCS * functions_exports )
+ 
+ static char * dlsearchpath[] =
+ {
+-    "modules",
+-    "mod",
+-    "mods",
+-    "extensions",
+-    "plugins",
+-    "data",
++    "_RPMLIBDIR_/modules",
+     NULL
+ };
+ 
+@@ -450,13 +445,11 @@ void sysproc_init()
+         spath = dlsearchpath;
+         while( !library && spath && *spath )
+         {
+-            snprintf( fullsoname, sizeof( fullsoname ), "%s%s/%s", appexepath, *spath, filename );
++            snprintf( fullsoname, sizeof( fullsoname ), "%s/%s", *spath, filename );
+             library  = dlibopen( fullsoname ) ;
+             spath++;
+         }
+ 
+-        if ( !library ) library  = dlibopen( filename ) ;
+-
+         if ( !library )
+         {
+             printf( "%s", dliberror() ) ;
+-- 
+2.31.1
+

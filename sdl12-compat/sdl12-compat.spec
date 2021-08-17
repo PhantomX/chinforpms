@@ -1,6 +1,6 @@
-%global commit cf47f88e169cc9680e2dd1a89f775e2da129cded
+%global commit a3bfcb2f85ec6477c4bc54585c1749934e6486d4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210628
+%global date 20210814
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           sdl12-compat
 Version:        1.2.50
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        SDL 1.2 runtime compatibility library using SDL 2.0
 
 License:        zlib and MIT
@@ -81,6 +81,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Sun Aug 15 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.50-4.20210814gita3bfcb2
+- Bump
+
 * Sat Jul 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.50-3.20210628gitcf47f88
 - Last snapshot
 
