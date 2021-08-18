@@ -5,14 +5,14 @@
 
 Name:           bennugd
 Version:        1.0.0
-Release:        1%{?sver}%{?dist}
-Summary:        A programming language to create games.
+Release:        2%{?sver}%{?dist}
+Summary:        A programming language to create games
 
 License:        zlib
 URL:            https://www.bennugd.org
 
 # To regenerate a snapshot:
-# Use your regular webbrowser to open https://sourceforge.net/p/bennugd/code/r%%{snapshot_rev}/tarball
+# Use your regular webbrowser to open https://sourceforge.net/p/bennugd/code/%%{snapshot_rev}/tarball
 # This triggers the SourceForge instructure to generate a snapshot
 # After that you can pull in the archive with:
 # spectool -g bennugd.spec
@@ -44,7 +44,7 @@ Bennugd is a programming language to create games.
 
 
 %package libs
-Summary:        %{summary}
+Summary:        %{summary} - libraries
 Provides:       %{name}-modules = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{name}-modules%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %global __provides_exclude_from ^%{_libdir}/%{name}/modules/*.*\\.so$
@@ -58,6 +58,12 @@ needed for %{name}.
 
 %prep
 %autosetup -n %{name}-code-r%{snapshot_rev} -p1
+
+for file in */COPYING */README ; 
+do
+  sed 's/\r//' -i ${file}
+  iconv -f iso8859-1 -t utf-8 ${file} -o ${file}.conv && mv -f ${file}.conv ${file}
+done;
 
 sed \
   -e 's|_RPMLIBDIR_|%{_libdir}/%{name}|g' \
@@ -84,6 +90,8 @@ for i in core modules tools/moddesc ;do
 
   sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
   sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+  # Dirty fix to old libtool issues
+  sed -i -e 's! -shared ! %{build_ldflags}\0!g' libtool
 
   popd
 done
@@ -102,13 +110,19 @@ find %{buildroot} -name '*.la' -delete
 
 rm -f %{buildroot}%{_libdir}/libbgdrtm.so
 rm -f %{buildroot}%{_libdir}/libbgload.so
+rm -f %{buildroot}%{_libdir}/libblit.so
 rm -f %{buildroot}%{_libdir}/libdraw.so
+rm -f %{buildroot}%{_libdir}/libgrbase.so
 
 mv %{buildroot}%{_bindir}/moddesc %{buildroot}%{_bindir}/bgmoddesc
 
 mkdir -p %{buildroot}%{_libdir}/%{name}/modules
 mv %{buildroot}%{_libdir}/*.so %{buildroot}%{_libdir}/%{name}/modules/
-ln -s ../../libdraw.so.0 %{buildroot}%{_libdir}/%{name}/modules/libdraw.so
+
+# Dirty hack to fix module loading
+for i in blit draw grbase; do
+  ln -s ../../lib${i}.so.0 %{buildroot}%{_libdir}/%{name}/modules/lib${i}.so
+done
 
 
 %files
@@ -124,5 +138,8 @@ ln -s ../../libdraw.so.0 %{buildroot}%{_libdir}/%{name}/modules/libdraw.so
 
 
 %changelog
-* Mon Aug 16 2021 Phantom X - 1.0.0-1.20190530svn353
+* Tue Aug 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1.0.0-2.20190530svn353
+- Fix some rpmlint issues
+
+* Mon Aug 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.0.0-1.20190530svn353
 - Initial spec

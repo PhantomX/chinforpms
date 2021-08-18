@@ -1,13 +1,15 @@
-From 2fe3bbd075aad7a725b07e35df97c526fcbe03ee Mon Sep 17 00:00:00 2001
+From df514715d9b1ac5138514ca728a85112d4ada2b0 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 16 Aug 2021 15:54:30 -0300
+Date: Tue, 17 Aug 2021 16:46:52 -0300
 Subject: [PATCH] Versioned libraries
 
 ---
  core/bgdrtm/src/Makefile.am   | 2 +-
  modules/libbgload/Makefile.am | 2 +-
+ modules/libblit/Makefile.am   | 2 +-
  modules/libdraw/Makefile.am   | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ modules/libgrbase/Makefile.am | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/core/bgdrtm/src/Makefile.am b/core/bgdrtm/src/Makefile.am
 index 2e65cb2..3f366e1 100644
@@ -35,6 +37,19 @@ index 7a0e5f0..9589f0a 100644
  libbgload_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
  
  ## Make sure these will be cleaned even when they're not built by
+diff --git a/modules/libblit/Makefile.am b/modules/libblit/Makefile.am
+index 89b63ec..7c05ce5 100644
+--- a/modules/libblit/Makefile.am
++++ b/modules/libblit/Makefile.am
+@@ -6,7 +6,7 @@ lib_LTLIBRARIES = libblit.la
+ 
+ libblit_la_SOURCES = libblit.c g_blit.c g_pixel.c
+ libblit_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I. -I../libgrbase/
+-libblit_la_LDFLAGS = -s -module -no-undefined -avoid-version
++libblit_la_LDFLAGS = -s -module -no-undefined -version-info 0:0:0
+ libblit_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm -L../libgrbase/.libs -lgrbase
+ 
+ ## Make sure these will be cleaned even when they're not built by
 diff --git a/modules/libdraw/Makefile.am b/modules/libdraw/Makefile.am
 index 07276b5..dea9868 100644
 --- a/modules/libdraw/Makefile.am
@@ -46,6 +61,19 @@ index 07276b5..dea9868 100644
 -libdraw_la_LDFLAGS = -s -module -no-undefined -avoid-version
 +libdraw_la_LDFLAGS = -s -module -no-undefined -version-info 0:0:0
  libdraw_la_LIBADD = $(COMMON_LDFLAGS) -L../libblit/.libs -lblit -L../libgrbase/.libs -lgrbase
+ 
+ ## Make sure these will be cleaned even when they're not built by
+diff --git a/modules/libgrbase/Makefile.am b/modules/libgrbase/Makefile.am
+index f582d8a..4a0bd09 100644
+--- a/modules/libgrbase/Makefile.am
++++ b/modules/libgrbase/Makefile.am
+@@ -6,7 +6,7 @@ lib_LTLIBRARIES = libgrbase.la
+ 
+ libgrbase_la_SOURCES = g_bitmap.c g_clear.c g_grlib.c g_pal.c g_blendop.c g_conversion.c libgrbase.c
+ libgrbase_la_CFLAGS = $(COMMON_CFLAGS) -I$(BGD_PATH)/include -I.
+-libgrbase_la_LDFLAGS = -s -module -no-undefined -avoid-version
++libgrbase_la_LDFLAGS = -s -module -no-undefined -version-info 0:0:0
+ libgrbase_la_LIBADD = $(COMMON_LDFLAGS)
  
  ## Make sure these will be cleaned even when they're not built by
 -- 
