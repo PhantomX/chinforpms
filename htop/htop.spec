@@ -1,16 +1,27 @@
+%global commit a9ddaccc63ec9694e57b252760d9b8c9b82dbe78
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20210818
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 %global vc_url  https://github.com/%{name}-dev/%{name}
 
 Name:           htop
-Version:        3.0.5
-Release:        100%{?dist}
+Version:        3.1.0
+Release:        0.1%{?gver}%{?dist}
 Summary:        Interactive process viewer
 
 License:        GPLv2+
 URL:            https://htop.dev/
 
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
-
-Patch0:         %{name}-enable-acpitz-sensors.patch
+%endif
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  lm_sensors-devel
@@ -28,7 +39,11 @@ htop is an interactive text-mode process viewer for Linux, similar to
 top(1).
 
 %prep
-%autosetup -p1
+%if 0%{?with_snapshot}
+%autosetup -n %{name}-%{commit} -p1
+%else
+%autosetup -n %{name}-%{version} -p1
+%endif
 
 ./autogen.sh
 
@@ -61,6 +76,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Aug 18 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-0.1.20210818gita9ddacc
+- 3.1.0 snapshot
+
 * Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 3.0.5-100
 - 3.0.5
 - Rawhide sync

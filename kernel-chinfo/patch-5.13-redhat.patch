@@ -37,7 +37,6 @@ Subject: [PATCH] patch-5.13-redhat
  drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |   1 +
  drivers/nvme/host/pci.c                            |  28 +-
  drivers/pci/quirks.c                               |  24 +
- drivers/pinctrl/intel/pinctrl-tigerlake.c          |  26 +-
  drivers/platform/x86/amd-pmc.c                     | 204 +++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
@@ -48,7 +47,6 @@ Subject: [PATCH] patch-5.13-redhat
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
- kernel/bpf/hashtab.c                               |   4 +-
  kernel/crash_core.c                                |  28 +-
  kernel/module_signing.c                            |   9 +-
  security/integrity/platform_certs/load_uefi.c      |   6 +-
@@ -1547,56 +1545,6 @@ index 6d74386eadc2..2333c1e4ae05 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
-diff --git a/drivers/pinctrl/intel/pinctrl-tigerlake.c b/drivers/pinctrl/intel/pinctrl-tigerlake.c
-index 75b6d66955bf..3ddaeffc0415 100644
---- a/drivers/pinctrl/intel/pinctrl-tigerlake.c
-+++ b/drivers/pinctrl/intel/pinctrl-tigerlake.c
-@@ -701,32 +701,32 @@ static const struct pinctrl_pin_desc tglh_pins[] = {
-
- static const struct intel_padgroup tglh_community0_gpps[] = {
- 	TGL_GPP(0, 0, 24, 0),				/* GPP_A */
--	TGL_GPP(1, 25, 44, 128),			/* GPP_R */
--	TGL_GPP(2, 45, 70, 32),				/* GPP_B */
--	TGL_GPP(3, 71, 78, INTEL_GPIO_BASE_NOMAP),	/* vGPIO_0 */
-+	TGL_GPP(1, 25, 44, 32),				/* GPP_R */
-+	TGL_GPP(2, 45, 70, 64),				/* GPP_B */
-+	TGL_GPP(3, 71, 78, 96),				/* vGPIO_0 */
- };
-
- static const struct intel_padgroup tglh_community1_gpps[] = {
--	TGL_GPP(0, 79, 104, 96),			/* GPP_D */
--	TGL_GPP(1, 105, 128, 64),			/* GPP_C */
--	TGL_GPP(2, 129, 136, 160),			/* GPP_S */
--	TGL_GPP(3, 137, 153, 192),			/* GPP_G */
--	TGL_GPP(4, 154, 180, 224),			/* vGPIO */
-+	TGL_GPP(0, 79, 104, 128),			/* GPP_D */
-+	TGL_GPP(1, 105, 128, 160),			/* GPP_C */
-+	TGL_GPP(2, 129, 136, 192),			/* GPP_S */
-+	TGL_GPP(3, 137, 153, 224),			/* GPP_G */
-+	TGL_GPP(4, 154, 180, 256),			/* vGPIO */
- };
-
- static const struct intel_padgroup tglh_community3_gpps[] = {
--	TGL_GPP(0, 181, 193, 256),			/* GPP_E */
--	TGL_GPP(1, 194, 217, 288),			/* GPP_F */
-+	TGL_GPP(0, 181, 193, 288),			/* GPP_E */
-+	TGL_GPP(1, 194, 217, 320),			/* GPP_F */
- };
-
- static const struct intel_padgroup tglh_community4_gpps[] = {
--	TGL_GPP(0, 218, 241, 320),			/* GPP_H */
-+	TGL_GPP(0, 218, 241, 352),			/* GPP_H */
- 	TGL_GPP(1, 242, 251, 384),			/* GPP_J */
--	TGL_GPP(2, 252, 266, 352),			/* GPP_K */
-+	TGL_GPP(2, 252, 266, 416),			/* GPP_K */
- };
-
- static const struct intel_padgroup tglh_community5_gpps[] = {
--	TGL_GPP(0, 267, 281, 416),			/* GPP_I */
-+	TGL_GPP(0, 267, 281, 448),			/* GPP_I */
- 	TGL_GPP(1, 282, 290, INTEL_GPIO_BASE_NOMAP),	/* JTAG */
- };
-
 diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
 index ca95c2a52e26..e38e8288468f 100644
 --- a/drivers/platform/x86/amd-pmc.c
@@ -2167,21 +2115,6 @@ index a61c92066c2e..94107b1d0e3e 100644
  	select IO_WQ
  	default y
  	help
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index d7ebb12ffffc..49857e8cd6ce 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -1464,8 +1464,8 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
- 	/* We cannot do copy_from_user or copy_to_user inside
- 	 * the rcu_read_lock. Allocate enough space here.
- 	 */
--	keys = kvmalloc(key_size * bucket_size, GFP_USER | __GFP_NOWARN);
--	values = kvmalloc(value_size * bucket_size, GFP_USER | __GFP_NOWARN);
-+	keys = kvmalloc_array(key_size, bucket_size, GFP_USER | __GFP_NOWARN);
-+	values = kvmalloc_array(value_size, bucket_size, GFP_USER | __GFP_NOWARN);
- 	if (!keys || !values) {
- 		ret = -ENOMEM;
- 		goto after_loop;
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
 index 684a6061a13a..220579c0e963 100644
 --- a/kernel/crash_core.c
