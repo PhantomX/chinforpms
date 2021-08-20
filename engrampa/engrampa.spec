@@ -2,7 +2,7 @@
 %global rel_build 1
 
 # This is needed, because src-url contains branched part of versioning-scheme.
-%global branch 1.24
+%global branch 1.26
 
 # Settings used for build from snapshots.
 %{!?rel_build:%global commit f4611c3411c44e792f729a0780c31b0aa55fe004}
@@ -12,8 +12,10 @@
 %{!?rel_build:%global git_rel .git%{commit_date}.%{shortcommit}}
 %{!?rel_build:%global git_tar %{name}-%{version}-%{git_ver}.tar.xz}
 
+%bcond_with packagekit
+
 Name:          engrampa
-Version:       %{branch}.2
+Version:       %{branch}.0
 %if 0%{?rel_build}
 Release:       100%{?dist}
 %else
@@ -31,15 +33,18 @@ URL:           http://mate-desktop.org
 # Source for snapshot-builds.
 %{!?rel_build:Source0:    http://git.mate-desktop.org/%{name}/snapshot/%{name}-%{commit}.tar.xz#/%{git_tar}}
 
-BuildRequires:  gcc
-BuildRequires:  make
-BuildRequires:  mate-common
-BuildRequires:  desktop-file-utils
-BuildRequires:  file-devel
-BuildRequires:  gtk3-devel
-BuildRequires:  json-glib-devel
-BuildRequires:  caja-devel
-BuildRequires:  libSM-devel
+BuildRequires: gcc
+BuildRequires: make
+BuildRequires: mate-common
+BuildRequires: desktop-file-utils
+BuildRequires: file-devel
+BuildRequires: gtk3-devel
+BuildRequires: json-glib-devel
+BuildRequires: caja-devel
+BuildRequires: libSM-devel
+%if %{with packagekit}
+BuildRequires: PackageKit-glib-devel
+%endif
 
 %description
 Mate File Archiver is an application for creating and viewing archives files,
@@ -76,7 +81,10 @@ NOCONFIGURE=1 ./autogen.sh
    --disable-static        \
    --enable-caja-actions   \
    --enable-magic          \
-   --disable-packagekit
+%if %{without packagekit}
+   --disable-packagekit \
+%endif
+%{nil}
 
 make %{?_smp_mflags} V=1
 
@@ -100,7 +108,9 @@ find %{buildroot} -name '*.la' -delete
 %{_bindir}/engrampa
 %{_libexecdir}/engrampa
 %{_libexecdir}/engrampa-server
+%if %{with packagekit}
 %{_datadir}/engrampa
+%endif
 %{_metainfodir}/engrampa.appdata.xml
 %{_datadir}/applications/engrampa.desktop
 %{_datadir}/dbus-1/services/org.mate.Engrampa.service
@@ -115,6 +125,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Thu Aug 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.26.0-100
+- 1.26.0
+
 * Sun Mar 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.24.2-100
 - 1.24.2
 
