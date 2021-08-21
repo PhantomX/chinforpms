@@ -1,0 +1,29 @@
+From 9244b629a0a00a9e90019bb93fc217699cddb7d3 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 20 Aug 2021 23:57:04 -0300
+Subject: [PATCH] Update patch-bug847568
+
+---
+ _patches/patch-bug847568 | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/_patches/patch-bug847568 b/_patches/patch-bug847568
+index da3f3d6..ac4b962 100644
+--- a/_patches/patch-bug847568
++++ b/_patches/patch-bug847568
+@@ -186,9 +186,9 @@ index 79c26e3e7001..c4d93bc5f7dc 100644
+ +if CONFIG['MOZ_SYSTEM_HARFBUZZ']:
+ +    CXXFLAGS += CONFIG['MOZ_HARFBUZZ_CFLAGS']
+ +
+- if CONFIG['ENABLE_INTL_API']:
+-     DEFINES['IDNA2008'] = True
+-     USE_LIBS += ['icu']
++ USE_LIBS += ['icu']
++ 
++ if CONFIG['GNU_CXX']:
+ diff --git old-configure.in old-configure.in
+ index 95a58b634593..b614eef85c89 100644
+ --- old-configure.in
+-- 
+2.31.1
+

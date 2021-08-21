@@ -131,12 +131,12 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2021.07
+Version:        2021.08
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
-%global vc_url  https://github.com/MrAlex94/Waterfox
+%global vc_url  https://github.com/WaterfoxCo/Waterfox
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
@@ -146,7 +146,7 @@ Source0:        %{vc_url}/archive/%{version}-%{branch}/%{name}-%{version}-%{bran
 # FreeBSD patches
 # https://www.freshports.org/www/waterfox
 # rev=revision ./waterfox-FreeBSD-patches-snapshot.sh
-# https://github.com/MrAlex94/Waterfox/issues/1220
+# https://github.com/WaterfoxCo/Waterfox/issues/1220
 Source600:      https://dl.bintray.com/phantomx/tarballs/%{freebsd_root}.tar.xz
 Source601:      patch-bug1321069
 Source602:      patch-bug1381815
@@ -189,7 +189,6 @@ Patch402:        mozilla-1196777.patch
 Patch413:        mozilla-1353817.patch
 Patch415:        Bug-1238661---fix-mozillaSignalTrampoline-to-work-.patch
 Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mozilla-1320560.patch
-Patch420:        https://hg.mozilla.org/mozilla-central/raw-rev/97dae871389b#/mozilla-1389436.patch
 
 # Upstream updates/PRs/Reverts
 
@@ -207,12 +206,15 @@ Patch604:        1003_gentoo_specific_pgo.patch
 
 # Chinforinfula patches
 Patch700:        %{name}-nolangpacks.patch
-# https://github.com/MrAlex94/Waterfox/pull/547.patch, down
+# https://github.com/WaterfoxCo/Waterfox/pull/547.patch, down
 Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
 Patch703:        %{name}-fix-testing-file.patch
 Patch704:        %{name}-disable-diagnostics-color.patch
 Patch705:        0001-Update-patch-bug1403998.patch
+Patch706:        0001-Update-patch-bug847568.patch
+Patch707:        0001-Update-patch-bug1456512.patch
+Patch708:        0001-mbft-tests-fix-build.patch
 
 # Gentoo
 Patch800:        seamonkey-2.53.3-system_libvpx-1.8.patch
@@ -398,7 +400,6 @@ This package contains results of tests executed during build.
 %patch415 -p1 -b .mozilla-1238661
 %endif
 %patch419 -p1 -b .mozilla-1320560
-%patch420 -p1 -b .mozilla-1389436
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -416,6 +417,8 @@ cp -p %{freebsd_root}/patch-{bug,z-bug,revert-bug}* _patches/
 cp -pf %{S:601} %{S:602} _patches/
 
 %patch705 -p1
+%patch706 -p1
+%patch707 -p1
 
 filterdiff -x dom/svg/crashtests/crashtests.list %{freebsd_root}/patch-bug1343147 \
   > _patches/patch-bug1343147
@@ -437,15 +440,16 @@ done
 # 5: uncertain
 for i in \
   702179 730495 991253 1021761 1144632 1288587 1379148 1393235 1393283 1393627 \
-  1395486 1396722 1398021 1399412 1401909 1417751 1419762 1427126 1430508 1433747 \
-  1452576 1452619 1453127 1454285 1455235 1466606 1469257 \
-  1384121 1384701 1388744 1401063 1406396 1413143 1415883 1402442 1437450 \
+  1395486 1396722 1398021 1399412 1401909 1412420 1417751 1419762 1425267 1427126 \
+  1430508 1433747 1438425 1440943 1452576 1452619 1453127 1454285 1455235 1466606 1469257 \
+  712130 1384121 1384701 1388744 1401063 1406396 1413143 1415883 1402442 1437450 1464872 1465108 \
   1447519
 do
   rm -f _patches/patch-bug${i}
 done
 
 rm -f _patches/patch-z-bug1355143
+rm -f _patches/patch-z-bug1461619
 
 patchcommand='patch -p0 -s -i'
 
@@ -460,6 +464,7 @@ done
 %patch702 -p1 -b .waterfoxdir-2
 %patch703 -p1 -b .fix-testing-file
 %patch704 -p1 -b .no-diagnostics-color
+%patch708 -p1 -b .mbft-build-fix
 
 %patch800 -p2 -b .system-vpx
 %patch801 -p1 -b .CLEANUP-workaround
@@ -1033,6 +1038,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Aug 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.08-1.classic
+- 2021.08
+
 * Sat Jul 17 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.07-1.classic
 - 2021.07
 

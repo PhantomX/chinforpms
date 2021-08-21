@@ -1,0 +1,24 @@
+From 97ea3cead59c5599e90f04aeb046711887915a8f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 20 Aug 2021 21:03:18 -0300
+Subject: [PATCH] mbft tests: fix build
+
+---
+ mfbt/tests/TestUniquePtr.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/mfbt/tests/TestUniquePtr.cpp b/mfbt/tests/TestUniquePtr.cpp
+index a207d9b..2952171 100644
+--- a/mfbt/tests/TestUniquePtr.cpp
++++ b/mfbt/tests/TestUniquePtr.cpp
+@@ -13,6 +13,7 @@
+ #include "mozilla/Vector.h"
+ 
+ #include <stddef.h>
++#include <utility>
+ 
+ using mozilla::DefaultDelete;
+ using mozilla::IsSame;
+-- 
+2.31.1
+
