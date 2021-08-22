@@ -1,5 +1,5 @@
 Name:           smtube
-Version:        20.6.0
+Version:        21.7.0
 Release:        100%{?dist}
 Summary:        YouTube browser for SMPlayer
 Epoch:          1
@@ -54,7 +54,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %files -f %{name}.lang
 %license Copying.txt
-%doc Changelog Readme.txt Release_notes.txt
+%doc Readme.txt README.md Release_notes.md
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
@@ -62,6 +62,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Aug 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.7.0-100
+- 21.7.0
+
 * Thu Jun 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:20.6.0-100
 - 20.6.0
 - R: youtube-dl

@@ -1,7 +1,7 @@
-%global commit 6b58d34a625ffaad181a7316009398f3c6444181
+%global commit 7d60044e187704176981500d139e1591a4d63ad5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210813
-%global with_snapshot 0
+%global date 20210820
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.15
+%global wine_stagingver dc0aa10ad78af8b3a3172690e841070df8ef865a
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id f04a5161ebd57608c5781fa2fe20a868cc055040
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id de6cd55961861c254bb4d96481a75bfb78553e5d
+%global tkg_id fe3bec099023e0769465bd5652ba3dbb06cfb93f
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.15
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -239,7 +239,6 @@ Patch1300:       nier.patch
 Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
 Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
 Patch1303:       0001-winevdm-support-DOSBOX-environment-variable.patch
-Patch1304:       0001-proton-tkg-staging-temporary-fix.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -910,7 +909,6 @@ $patch_command -p1 -R -i patches/mfplat-streaming-support/0038-mfplat-Stub-out-M
 %patch1301 -p1
 %patch1302 -p1
 %patch1303 -p1
-%patch1304 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -1544,6 +1542,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-apiquery-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-appcompat-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-appinit-l1-1-0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-core-psm-appnotify-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-atoms-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-bem-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-com-l1-1-0.%{winedll}
@@ -1989,6 +1988,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/hhctrl.%{wineocx}
 %{_libdir}/wine/%{winedlldir}/hid.%{winedll}
 %{_libdir}/wine/%{winedlldir}/hidclass.%{winesys}
+%{_libdir}/wine/%{winedlldir}/hidparse.%{winesys}
 %{_libdir}/wine/%{winedlldir}/hlink.%{winedll}
 %{_libdir}/wine/%{winedlldir}/hnetcfg.%{winedll}
 %{_libdir}/wine/%{winedlldir}/http.%{winesys}
@@ -2916,6 +2916,9 @@ fi
 
 
 %changelog
+* Sat Aug 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.15-101.20210820git7d60044
+- Snapshot
+
 * Sat Aug 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.15-100
 - 6.15
 

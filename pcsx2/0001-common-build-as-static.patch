@@ -1,0 +1,39 @@
+From 7749b4757644f2c1aced8585bfae9a1f605721c0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 21 Aug 2021 22:35:04 -0300
+Subject: [PATCH] common: build as static
+
+---
+ common/src/Utilities/CMakeLists.txt  | 2 +-
+ common/src/x86emitter/CMakeLists.txt | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/common/src/Utilities/CMakeLists.txt b/common/src/Utilities/CMakeLists.txt
+index f7bd56c..0dd22ce 100644
+--- a/common/src/Utilities/CMakeLists.txt
++++ b/common/src/Utilities/CMakeLists.txt
+@@ -5,7 +5,7 @@ if(NOT TOP_CMAKE_WAS_SOURCED)
+ 	It is advice to delete all wrongly generated cmake stuff => CMakeFiles & CMakeCache.txt")
+ endif(NOT TOP_CMAKE_WAS_SOURCED)
+ 
+-add_library(Utilities)
++add_library(Utilities STATIC)
+ 
+ # Utilities sources
+ target_sources(Utilities PRIVATE
+diff --git a/common/src/x86emitter/CMakeLists.txt b/common/src/x86emitter/CMakeLists.txt
+index d13074e..a4842b1 100644
+--- a/common/src/x86emitter/CMakeLists.txt
++++ b/common/src/x86emitter/CMakeLists.txt
+@@ -5,7 +5,7 @@ if(NOT TOP_CMAKE_WAS_SOURCED)
+ 	It is advice to delete all wrongly generated cmake stuff => CMakeFiles & CMakeCache.txt")
+ endif(NOT TOP_CMAKE_WAS_SOURCED)
+ 
+-add_library(x86emitter)
++add_library(x86emitter STATIC)
+ 
+ # x86emitter sources
+ target_sources(x86emitter PRIVATE
+-- 
+2.31.1
+

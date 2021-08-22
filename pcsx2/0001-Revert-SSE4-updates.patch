@@ -1,20 +1,21 @@
-From 92b9c31cb0913f09502cf2745377a6fd5001ac2f Mon Sep 17 00:00:00 2001
+From 57dcbb1d201a6d8f5bc127313e384fe5abf9ef29 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 2 Aug 2021 19:42:29 -0300
+Date: Sat, 21 Aug 2021 22:22:24 -0300
 Subject: [PATCH] Revert SSE4 updates
 
-Rebased with commits reverted:
+Rebased with commits reverted or rebased:
 8a9ec4c7067630c25140cd066cc6a40eac83a0c3 core: purge sse2
 48f51b3ce3da5ce7dc64ea87dc720ec62936f68f gs: purge sse2/sse3
 6bc31a00237798a755ff7de4311459ff3f318ffd cmake: make sse4 default
 f9d96f55a538ce373f1662a5554d8052173940b1 microVU: Remove SSE4 op from Overflow flag checks + clean up
 ee07f860fc1dd7e8ada6c13903bb3a592b8d4864 microVU: Implement Overflow checks
+d0f3c620d27f88c0eabdbb60d7737284c239909e GSBlock: Cleanup warnings.
 
 That make PCSX2 running in older CPUS for some not demanding games
 ---
  bin/GameIndex.yaml                            |  34 ++
  cmake/BuildParameters.cmake                   |   8 +-
- pcsx2/GS/GSBlock.h                            | 359 +++++++++++++++++-
+ pcsx2/GS/GSBlock.h                            | 355 +++++++++++++++++-
  pcsx2/GS/GSState.cpp                          |   4 +
  pcsx2/GS/GSUtil.cpp                           |   6 +
  pcsx2/GS/GSVector4.h                          |  96 ++++-
@@ -24,7 +25,7 @@ That make PCSX2 running in older CPUS for some not demanding games
  pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp    |   4 +
  pcsx2/GS/Renderers/OpenGL/GSRendererOGL.cpp   |   4 +
  .../SW/GSDrawScanlineCodeGenerator.cpp        |  36 +-
- .../SW/GSDrawScanlineCodeGenerator.x86.cpp    | 273 +++++++++++--
+ .../SW/GSDrawScanlineCodeGenerator.x86.cpp    | 273 ++++++++++++--
  pcsx2/GS/Renderers/SW/GSRendererSW.cpp        |  37 ++
  pcsx2/gui/AppInit.cpp                         |  11 +-
  pcsx2/x86/iMMI.cpp                            | 212 +++++++++--
@@ -34,15 +35,15 @@ That make PCSX2 running in older CPUS for some not demanding games
  pcsx2/x86/microVU_Clamp.inl                   |  31 +-
  pcsx2/x86/microVU_Lower.inl                   |  20 +-
  pcsx2/x86/microVU_Misc.inl                    | 127 ++++++-
- pcsx2/x86/microVU_Upper.inl                   |  21 -
+ pcsx2/x86/microVU_Upper.inl                   |  21 --
  pcsx2/x86/newVif_UnpackSSE.cpp                | 113 +++++-
- 24 files changed, 1618 insertions(+), 141 deletions(-)
+ 24 files changed, 1616 insertions(+), 139 deletions(-)
 
 diff --git a/bin/GameIndex.yaml b/bin/GameIndex.yaml
-index acf1af9..4dcbb9d 100644
+index ac9760b..2d39b06 100644
 --- a/bin/GameIndex.yaml
 +++ b/bin/GameIndex.yaml
-@@ -14169,6 +14169,15 @@ SLES-53744:
+@@ -14247,6 +14247,15 @@ SLES-53744:
  SLES-53746:
    name: "Superman Returns"
    region: "PAL-E"
@@ -58,7 +59,7 @@ index acf1af9..4dcbb9d 100644
  SLES-53747:
    name: "Ed, Edd, 'n Eddy - The Misadventure"
    region: "PAL-E"
-@@ -15361,12 +15370,28 @@ SLES-54348:
+@@ -15439,12 +15448,28 @@ SLES-54348:
  SLES-54349:
    name: "Superman Returns"
    region: "PAL-I"
@@ -87,7 +88,7 @@ index acf1af9..4dcbb9d 100644
  SLES-54354:
    name: "Final Fantasy XII"
    region: "PAL-E"
-@@ -38044,6 +38069,15 @@ SLUS-21434:
+@@ -38161,6 +38186,15 @@ SLUS-21434:
    name: "Superman Returns - The Video Game"
    region: "NTSC-U"
    compat: 4
@@ -104,10 +105,10 @@ index acf1af9..4dcbb9d 100644
    name: "One Piece - Grand Adventure"
    region: "NTSC-U"
 diff --git a/cmake/BuildParameters.cmake b/cmake/BuildParameters.cmake
-index 478e10e..bcab4b7 100644
+index b1977ca..65bd770 100644
 --- a/cmake/BuildParameters.cmake
 +++ b/cmake/BuildParameters.cmake
-@@ -147,9 +147,9 @@ if(${PCSX2_TARGET_ARCHITECTURES} MATCHES "i386")
+@@ -154,9 +154,9 @@ if(${PCSX2_TARGET_ARCHITECTURES} MATCHES "i386")
  	if(NOT DEFINED ARCH_FLAG)
  		if (DISABLE_ADVANCE_SIMD)
  			if (USE_ICC)
@@ -119,7 +120,7 @@ index 478e10e..bcab4b7 100644
  			endif()
  		else()
  			# AVX requires some fix of the ABI (mangling) (default 2)
-@@ -170,9 +170,9 @@ elseif(${PCSX2_TARGET_ARCHITECTURES} MATCHES "x86_64")
+@@ -177,9 +177,9 @@ elseif(${PCSX2_TARGET_ARCHITECTURES} MATCHES "x86_64")
  	if(NOT DEFINED ARCH_FLAG)
  		if (DISABLE_ADVANCE_SIMD)
  			if (USE_ICC)
@@ -132,7 +133,7 @@ index 478e10e..bcab4b7 100644
  		else()
  			#set(ARCH_FLAG "-march=native -fabi-version=6")
 diff --git a/pcsx2/GS/GSBlock.h b/pcsx2/GS/GSBlock.h
-index c4b8c96..d52cee8 100644
+index 3e3360c..61e0a77 100644
 --- a/pcsx2/GS/GSBlock.h
 +++ b/pcsx2/GS/GSBlock.h
 @@ -153,6 +153,8 @@ public:
@@ -388,7 +389,7 @@ index c4b8c96..d52cee8 100644
 -#endif
 +		#else
 +
-+		GSVector4i v0, v1, v2, v3;
++		GSVector4i v0, v1, v2, v3, v4, v5, v6, v7;
 +		GSVector4i mask = GSVector4i::xff000000();
 +
 +		for(int i = 0; i < 4; i++, src += srcpitch * 2)
@@ -416,23 +417,14 @@ index c4b8c96..d52cee8 100644
  	}
  
  	__forceinline static void UnpackAndWriteBlock4HL(const uint8* RESTRICT src, int srcpitch, uint8* RESTRICT dst)
-@@ -1379,7 +1542,7 @@ public:
- 					s[i] = (columnTable32[j][i * 2] & 0x0f) | (columnTable32[j][i * 2 + 1] << 4);
- 		}
- 
--		GSVector4i v4, v5, v6;
-+		GSVector4i v4, v5, v6, v7;
- 
- #if _M_SSE >= 0x501
- 
-@@ -1461,12 +1624,53 @@ public:
+@@ -1460,7 +1623,48 @@ public:
  			((GSVector4i*)dst)[i * 8 + 7] = ((GSVector4i*)dst)[i * 8 + 7].blend(v3, mask);
  		}
  
 -#endif
 +		#else
 +
-+		GSVector4i v0, v1, v2, v3;
++		GSVector4i v0, v1, v2, v3, v4, v5, v6, v7;
 +		GSVector4i mask = GSVector4i(0x0f000000);
 +
 +		for(int i = 0; i < 2; i++, src += srcpitch * 4)
@@ -475,19 +467,13 @@ index c4b8c96..d52cee8 100644
  	}
  
  	__forceinline static void UnpackAndWriteBlock4HH(const uint8* RESTRICT src, int srcpitch, uint8* RESTRICT dst)
- 	{
--		GSVector4i v4, v5, v6;
-+		GSVector4i v4, v5, v6, v7;
- 
- #if _M_SSE >= 0x501
- 
-@@ -1548,6 +1752,47 @@ public:
+@@ -1547,6 +1751,47 @@ public:
  			((GSVector4i*)dst)[i * 8 + 7] = ((GSVector4i*)dst)[i * 8 + 7].blend(v3, mask);
  		}
  
 +		#else
 +
-+		GSVector4i v0, v1, v2, v3;
++		GSVector4i v0, v1, v2, v3, v4, v5, v6, v7;
 +		GSVector4i mask = GSVector4i::xf0000000();
 +
 +		for(int i = 0; i < 2; i++, src += srcpitch * 4)
@@ -529,7 +515,7 @@ index c4b8c96..d52cee8 100644
  #endif
  	}
  
-@@ -1655,6 +1900,39 @@ public:
+@@ -1654,6 +1899,39 @@ public:
  			d1[1] = Expand16to32<AEM>(v1.uph16(v1), TA0, TA1);
  		}
  
@@ -569,7 +555,7 @@ index c4b8c96..d52cee8 100644
  #else
  
  		alignas(32) uint16 block[16 * 8];
-@@ -1670,6 +1948,8 @@ public:
+@@ -1669,6 +1947,8 @@ public:
  	{
  		//printf("ReadAndExpandBlock8_32\n");
  
@@ -578,7 +564,7 @@ index c4b8c96..d52cee8 100644
  		const GSVector4i* s = (const GSVector4i*)src;
  
  		GSVector4i v0, v1, v2, v3;
-@@ -1711,6 +1991,16 @@ public:
+@@ -1710,6 +1990,16 @@ public:
  			v2.gather32_8<>(pal, (GSVector4i*)dst);
  			dst += dstpitch;
  		}
@@ -595,7 +581,7 @@ index c4b8c96..d52cee8 100644
  	}
  
  	// TODO: ReadAndExpandBlock8_16
-@@ -1719,6 +2009,8 @@ public:
+@@ -1718,6 +2008,8 @@ public:
  	{
  		//printf("ReadAndExpandBlock4_32\n");
  
@@ -604,7 +590,7 @@ index c4b8c96..d52cee8 100644
  		const GSVector4i* s = (const GSVector4i*)src;
  
  		GSVector4i v0, v1, v2, v3;
-@@ -1776,6 +2068,16 @@ public:
+@@ -1775,6 +2067,16 @@ public:
  			v3.gather64_8<>(pal, (GSVector4i*)dst);
  			dst += dstpitch;
  		}
@@ -621,7 +607,7 @@ index c4b8c96..d52cee8 100644
  	}
  
  	// TODO: ReadAndExpandBlock4_16
-@@ -1784,6 +2086,8 @@ public:
+@@ -1783,6 +2085,8 @@ public:
  	{
  		//printf("ReadAndExpandBlock8H_32\n");
  
@@ -630,7 +616,7 @@ index c4b8c96..d52cee8 100644
  		const GSVector4i* s = (const GSVector4i*)src;
  
  		GSVector4i v0, v1, v2, v3;
-@@ -1807,6 +2111,16 @@ public:
+@@ -1806,6 +2110,16 @@ public:
  
  			dst += dstpitch;
  		}
@@ -647,7 +633,7 @@ index c4b8c96..d52cee8 100644
  	}
  
  	// TODO: ReadAndExpandBlock8H_16
-@@ -1814,6 +2128,9 @@ public:
+@@ -1813,6 +2127,9 @@ public:
  	__forceinline static void ReadAndExpandBlock4HL_32(const uint8* RESTRICT src, uint8* RESTRICT dst, int dstpitch, const uint32* RESTRICT pal)
  	{
  		//printf("ReadAndExpandBlock4HL_32\n");
@@ -657,7 +643,7 @@ index c4b8c96..d52cee8 100644
  		const GSVector4i* s = (const GSVector4i*)src;
  
  		GSVector4i v0, v1, v2, v3;
-@@ -1837,6 +2154,16 @@ public:
+@@ -1836,6 +2153,16 @@ public:
  
  			dst += dstpitch;
  		}
@@ -674,7 +660,7 @@ index c4b8c96..d52cee8 100644
  	}
  
  	// TODO: ReadAndExpandBlock4HL_16
-@@ -1845,6 +2172,8 @@ public:
+@@ -1844,6 +2171,8 @@ public:
  	{
  		//printf("ReadAndExpandBlock4HH_32\n");
  
@@ -683,7 +669,7 @@ index c4b8c96..d52cee8 100644
  		const GSVector4i* s = (const GSVector4i*)src;
  
  		GSVector4i v0, v1, v2, v3;
-@@ -1868,6 +2197,16 @@ public:
+@@ -1867,6 +2196,16 @@ public:
  
  			dst += dstpitch;
  		}
@@ -2207,7 +2193,7 @@ index 97672f5..aac5c46 100644
  
  		dst->t = t;
 diff --git a/pcsx2/gui/AppInit.cpp b/pcsx2/gui/AppInit.cpp
-index ef9f336..b7e5252 100644
+index af1e443..4739c22 100644
 --- a/pcsx2/gui/AppInit.cpp
 +++ b/pcsx2/gui/AppInit.cpp
 @@ -46,13 +46,14 @@ void Pcsx2App::DetectCpuAndUserMode()
@@ -2555,7 +2541,7 @@ index 375aa9a..ee6413b 100644
  	recReserveCache();
  }
 diff --git a/pcsx2/x86/microVU.cpp b/pcsx2/x86/microVU.cpp
-index d2d4fbf..0709341 100644
+index 16e9399..a5b6a64 100644
 --- a/pcsx2/x86/microVU.cpp
 +++ b/pcsx2/x86/microVU.cpp
 @@ -47,7 +47,7 @@ void mVUreserveCache(microVU& mVU) {
@@ -2630,7 +2616,7 @@ index 5a145ed..e1ebef1 100644
  	else mVUclamp1(reg, regT1in, xyzw, bClampE);
  }
 diff --git a/pcsx2/x86/microVU_Lower.inl b/pcsx2/x86/microVU_Lower.inl
-index 850ddc9..6a761f1 100644
+index 2600653..679fb3b 100644
 --- a/pcsx2/x86/microVU_Lower.inl
 +++ b/pcsx2/x86/microVU_Lower.inl
 @@ -28,7 +28,11 @@ static __fi void testZero(const xmm& xmmReg, const xmm& xmmTemp, const x32& gprT

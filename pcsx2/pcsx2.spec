@@ -1,7 +1,7 @@
 # 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit 958e27c782416a09b03e7b3aff9f875055898b40
+%global commit 94c6814be8a471de6c1f59bf73689b473aafc039
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210802
+%global date 20210821
 %global with_snapshot 1
 
 %global sanitize 0
@@ -21,7 +21,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        129%{?gver}%{?dist}
+Release:        130%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3 and LGPLv3+
@@ -48,7 +48,7 @@ Source1:        Makefile
 Patch0:         0001-Revert-SSE4-updates.patch
 %endif
 Patch1:         0001-System-libchdr-support.patch
-Patch2:         0001-Utilities-build-as-static.patch
+Patch2:         0001-common-build-as-static.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -88,7 +88,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-38
+BuildRequires:  sdl_gamecontrollerdb >= 0-39
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -259,6 +259,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Sun Aug 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-130.20210821git94c6814
+- Update
+
 * Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-129.20210713git21908bd
 - Update
 
