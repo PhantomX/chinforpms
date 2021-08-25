@@ -140,9 +140,10 @@
 
 %define with_systemtap 1
 
-# Disable LTO since it caused lots of strange assert failures.
+# LTO still has issues with qemu on armv7hl and aarch64
+# https://bugzilla.redhat.com/show_bug.cgi?id=1952483
 %global _lto_cflags %{nil}
- 
+
 # OOM killer breaks builds with parallel make on s390(x)
 %ifarch s390x
 %global _smp_mflags %{nil}
@@ -184,6 +185,7 @@
 %define requires_audio_pa Requires: %{name}-audio-pa = %{evr}
 %define requires_audio_sdl Requires: %{name}-audio-sdl = %{evr}
 %define requires_char_baum Requires: %{name}-char-baum = %{evr}
+%define requires_device_usb_host Requires: %{name}-device-usb-host = %{evr}
 %define requires_device_usb_redirect Requires: %{name}-device-usb-redirect = %{evr}
 %define requires_device_usb_smartcard Requires: %{name}-device-usb-smartcard = %{evr}
 %define requires_ui_curses Requires: %{name}-ui-curses = %{evr}
@@ -192,9 +194,12 @@
 %define requires_ui_egl_headless Requires: %{name}-ui-egl-headless = %{evr}
 %define requires_ui_opengl Requires: %{name}-ui-opengl = %{evr}
 %define requires_device_display_virtio_gpu Requires: %{name}-device-display-virtio-gpu = %{evr}
+%define requires_device_display_virtio_gpu_gl Requires: %{name}-device-display-virtio-gpu-gl = %{evr}
 %define requires_device_display_virtio_gpu_pci Requires: %{name}-device-display-virtio-gpu-pci = %{evr}
+%define requires_device_display_virtio_gpu_pci_gl Requires: %{name}-device-display-virtio-gpu-pci_gl = %{evr}
 %define requires_device_display_virtio_gpu_ccw Requires: %{name}-device-display-virtio-gpu-ccw = %{evr}
 %define requires_device_display_virtio_vga Requires: %{name}-device-display-virtio-vga = %{evr}
+%define requires_device_display_virtio_vga_gl Requires: %{name}-device-display-virtio-vga_gl = %{evr}
 
 %if %{have_virgl}
 %define requires_device_display_vhost_user_gpu Requires: %{name}-device-display-vhost-user-gpu = %{evr}
@@ -248,8 +253,12 @@
 %{requires_device_display_qxl} \
 %{requires_device_display_vhost_user_gpu} \
 %{requires_device_display_virtio_gpu} \
+%{requires_device_display_virtio_gpu_gl} \
 %{requires_device_display_virtio_gpu_pci} \
+%{requires_device_display_virtio_gpu_pci_gl} \
 %{requires_device_display_virtio_vga} \
+%{requires_device_display_virtio_vga_gl} \
+%{requires_device_usb_host} \
 %{requires_device_usb_redirect} \
 %{requires_device_usb_smartcard} \
 
@@ -271,8 +280,8 @@ Obsoletes: %{name}-system-unicore32-core <= %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 6.0.0
-Release: 101%{?dist}
+Version: 6.1.0
+Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -291,17 +300,9 @@ Source30: kvm-s390x.conf
 Source31: kvm-x86.conf
 Source36: README.tests
 
-Patch0001: 0001-vl-allow-not-specifying-size-in-m-when-using-M-memor.patch
-Patch0002: 0002-qemu-config-load-modules-when-instantiating-option-g.patch
-Patch0003: 0003-qemu-config-parse-configuration-files-to-a-QDict.patch
-Patch0004: 0004-vl-plumb-keyval-based-options-into-readconfig.patch
-Patch0005: 0005-vl-plug-object-back-into-readconfig.patch
-Patch0006: 0006-qemu-option-support-accept-any-QemuOptsList-in-qemu_.patch
-
 BuildRequires: meson >= %{meson_version}
 BuildRequires: zlib-devel
 BuildRequires: glib2-devel
-BuildRequires: gnutls-devel
 BuildRequires: cyrus-sasl-devel
 BuildRequires: libaio-devel
 BuildRequires: python3-devel
@@ -313,6 +314,7 @@ BuildRequires: usbredir-devel >= %{usbredir_version}
 %endif
 BuildRequires: texinfo
 BuildRequires: python3-sphinx
+BuildRequires: python3-sphinx_rtd_theme
 BuildRequires: libseccomp-devel >= %{libseccomp_version}
 # For network block driver
 BuildRequires: libcurl-devel
@@ -358,6 +360,7 @@ BuildRequires: pkgconfig(gbm)
 %endif
 BuildRequires: perl-Test-Harness
 BuildRequires: libslirp-devel
+BuildRequires: libbpf-devel
 
 
 # Fedora specific
@@ -708,21 +711,48 @@ Summary: QEMU virtio-gpu display device
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description device-display-virtio-gpu
 This package provides the virtio-gpu display device for QEMU.
+
+%package device-display-virtio-gpu-gl
+Summary: QEMU virtio-gpu-gl display device
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description device-display-virtio-gpu-gl
+This package provides the virtio-gpu-gl display device for QEMU.
+
 %package device-display-virtio-gpu-pci
 Summary: QEMU virtio-gpu-pci display device
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description device-display-virtio-gpu-pci
 This package provides the virtio-gpu-pci display device for QEMU.
+
+%package device-display-virtio-gpu-pci-gl
+Summary: QEMU virtio-gpu-pci-gl display device
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description device-display-virtio-gpu-pci-gl
+This package provides the virtio-gpu-pci-gl display device for QEMU.
+
 %package device-display-virtio-gpu-ccw
 Summary: QEMU virtio-gpu-ccw display device
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description device-display-virtio-gpu-ccw
 This package provides the virtio-gpu-ccw display device for QEMU.
+
 %package device-display-virtio-vga
 Summary: QEMU virtio-vga display device
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description device-display-virtio-vga
 This package provides the virtio-vga display device for QEMU.
+
+%package device-display-virtio-vga-gl
+Summary: QEMU virtio-vga-gl display device
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description device-display-virtio-vga-gl
+This package provides the virtio-vga-gl display device for QEMU.
+
+%package device-usb-host
+Summary: QEMU usb host device
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description device-usb-host
+This package provides the USB pass through driver for QEMU.
 
 %package device-usb-redirect
 Summary: QEMU usbredir device
@@ -1158,6 +1188,8 @@ mkdir -p %{static_builddir}
   --disable-auth-pam               \\\
   --disable-avx2                   \\\
   --disable-avx512f                \\\
+  --disable-block-drv-whitelist-in-tools \\\
+  --disable-bpf                    \\\
   --disable-bochs                  \\\
   --disable-brlapi                 \\\
   --disable-bsd-user               \\\
@@ -1232,12 +1264,13 @@ mkdir -p %{static_builddir}
   --disable-sdl                    \\\
   --disable-sdl-image              \\\
   --disable-seccomp                \\\
-  --disable-sheepdog               \\\
   --disable-slirp                  \\\
+  --disable-slirp-smbd             \\\
   --disable-smartcard              \\\
   --disable-snappy                 \\\
   --disable-sparse                 \\\
   --disable-spice                  \\\
+  --disable-spice-protocol         \\\
   --disable-strip                  \\\
   --disable-system                 \\\
   --disable-tcg                    \\\
@@ -1276,11 +1309,10 @@ mkdir -p %{static_builddir}
   --with-git-submodules=ignore     \\\
   --without-default-devices
 
-# Export CFLAGS, LDFLAGS, CC, CXX, etc.
-%set_build_flags
-
 run_configure() {
     ../configure  \
+        --cc=%{__cc} \
+        --cxx=/bin/false \
         --prefix="%{_prefix}" \
         --libdir="%{_libdir}" \
         --datadir="%{_datadir}" \
@@ -1289,11 +1321,11 @@ run_configure() {
         --localstatedir="%{_localstatedir}" \
         --docdir="%{_docdir}" \
         --libexecdir="%{_libexecdir}" \
-        --extra-ldflags="-Wl,--build-id $LDFLAGS" \
-        --extra-cflags="$CFLAGS" \
+        --extra-ldflags="%{build_ldflags}" \
+        --extra-cflags="%{optflags}" \
         --with-pkgversion="%{name}-%{version}-%{release}" \
         --with-suffix="%{name}" \
-        --firmwarepath=%firmwaredirs \
+        --firmwarepath="%firmwaredirs" \
         --meson="%{__meson}" \
         --enable-trace-backend=dtrace \
         --with-coroutine=ucontext \
@@ -1324,6 +1356,7 @@ run_configure \
 %ifarch %{ix86} x86_64
   --enable-avx2 \
 %endif
+  --enable-bpf \
   --enable-cap-ng \
   --enable-capstone \
   --enable-coroutine-pool \
@@ -1334,7 +1367,6 @@ run_configure \
   --enable-fdt \
 %endif
   --enable-gcrypt \
-  --enable-gnutls \
   --enable-guest-agent \
   --enable-iconv \
   --enable-kvm \
@@ -1346,6 +1378,9 @@ run_configure \
   --enable-libusb \
   --enable-libudev \
   --enable-linux-aio \
+%if "%{_lto_cflags}" != "%{nil}"
+  --enable-lto \
+%endif
   --enable-lzo \
   --enable-malloc-trim \
   --enable-modules \
@@ -1365,6 +1400,7 @@ run_configure \
 %endif
   --enable-seccomp \
   --enable-slirp=system \
+  --enable-slirp-smbd \
   --enable-snappy \
   --enable-system \
   --enable-tcg \
@@ -1431,6 +1467,7 @@ run_configure \
   --enable-smartcard \
 %if %{have_spice}
   --enable-spice \
+  --enable-spice-protocol \
 %endif
   --enable-usb-redir \
   --enable-vdi \
@@ -1578,10 +1615,6 @@ install -p -m 0755 tests/Makefile.include %{buildroot}%{testsdir}/tests/
 # Install qemu-iotests
 cp -R tests/qemu-iotests/* %{buildroot}%{testsdir}/tests/qemu-iotests/
 cp -ur %{qemu_kvm_build}/tests/qemu-iotests/* %{buildroot}%{testsdir}/tests/qemu-iotests/
-# Avoid ambiguous 'python' interpreter name
-find %{buildroot}%{testsdir}/tests/qemu-iotests/* -maxdepth 1 -type f -exec sed -i -e '1 s+/usr/bin/env \(python\|python3\)+%{__python3}+' {} \;
-find %{buildroot}%{testsdir}/scripts/qmp/* -maxdepth 1 -type f -exec sed -i -e '1 s+/usr/bin/env \(python\|python3\)+%{__python3}+' {} \;
-find %{buildroot}%{testsdir}/scripts/qmp/* -maxdepth 1 -type f -exec sed -i -e '1 s+/usr/bin/\(python\|python3\)+%{__python3}+' {} \;
 
 # Install our custom tests README
 install -p -m 0644 %{_sourcedir}/README.tests %{buildroot}%{testsdir}/README
@@ -1693,9 +1726,9 @@ echo "Testing %{name}-build"
 # dhorak couldn't reproduce locally on an s390x machine so guessed
 # it's a resource issue
 # 2021-07: ppc64le intermittently hanging
-%ifnarch s390x %{power64}
-make check V=1
-%endif
+%dnl %ifnarch s390x %{power64}
+%dnl %make_build check
+%dnl %endif
 
 popd
 
@@ -1828,6 +1861,7 @@ popd
 
 %files tests
 %{testsdir}
+%{_libdir}/%{name}/accel-qtest-*.so
 
 %files block-curl
 %{_libdir}/%{name}/block-curl.so
@@ -1886,12 +1920,20 @@ popd
 
 %files device-display-virtio-gpu
 %{_libdir}/%{name}/hw-display-virtio-gpu.so
+%files device-display-virtio-gpu-gl
+%{_libdir}/%{name}/hw-display-virtio-gpu-gl.so
 %files device-display-virtio-gpu-pci
 %{_libdir}/%{name}/hw-display-virtio-gpu-pci.so
+%files device-display-virtio-gpu-pci-gl
+%{_libdir}/%{name}/hw-display-virtio-gpu-pci-gl.so
 %files device-display-virtio-gpu-ccw
 %{_libdir}/%{name}/hw-s390x-virtio-gpu-ccw.so
 %files device-display-virtio-vga
 %{_libdir}/%{name}/hw-display-virtio-vga.so
+%files device-display-virtio-vga-gl
+%{_libdir}/%{name}/hw-display-virtio-vga-gl.so
+%files device-usb-host
+%{_libdir}/%{name}/hw-usb-host.so
 %files device-usb-redirect
 %{_libdir}/%{name}/hw-usb-redirect.so
 %files device-usb-smartcard
@@ -2161,8 +2203,12 @@ popd
 %files system-x86-core
 %{_bindir}/qemu-system-i386
 %{_bindir}/qemu-system-x86_64
+%{_libdir}/%{name}/accel-tcg-i386.so
+%{_libdir}/%{name}/accel-tcg-x86_64.so
+%if %{with_systemtap}
 %{_datadir}/systemtap/tapset/qemu-system-i386*.stp
 %{_datadir}/systemtap/tapset/qemu-system-x86_64*.stp
+%endif
 %{_mandir}/man1/qemu-system-i386.1*
 %{_mandir}/man1/qemu-system-x86_64.1*
 %{_datadir}/%{name}/kvmvapic.bin
@@ -2188,6 +2234,10 @@ popd
 
 
 %changelog
+* Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.1.0-100
+- 6.1.0
+- Rawhide sync
+
 * Sun Jul 25 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.0.0-101
 - Rawhide sync
 

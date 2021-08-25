@@ -49,6 +49,7 @@ some seasonal packages too, these can return when needed
  * **linphoneqt** - Do not have interest anymore
  * **linux-steam-integration** - Missing dependencies
  * **lzip** - Updated, seasonal package
+ * **m64p** - Fail to build and provided blob only libraries needed
  * **mangastream-downloader** - Unneeded
  * **mediastreamer** - linphoneqt
  * **mingw-crt** - Seasonal package, updated

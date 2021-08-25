@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        2.9.4
+Version:        2.9.8
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -89,13 +89,9 @@ Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcna
 %endif
 Source20:       thunar-sendto-%{name}.desktop
 
-Patch10:        %{url}/commit/ca31a081820b2317a7bd7dbda9c74342f27ad577.patch#/%{name}-gh-ca31a08.patch
-Patch11:        %{url}/commit/c77f4dd79494458a0b7547307b5ae4d075aa7602.patch#/%{name}-gh-c77f4dd.patch
-Patch12:        %{url}/commit/02f48a778117906a41646fa5df569630b4311f7e.patch#/%{name}-gh-02f48a7.patch
-Patch13:        %{url}/commit/36486a3d7391355414273dd08d683f7bcb6991ae.patch#/%{name}-gh-36486a3.patch
-Patch14:        %{url}/commit/a502cbc06e9c17e24ea6d51eb1f2d54640e08f8d.patch#/%{name}-gh-a502cbc.patch
-Patch15:        %{url}/commit/c5c94276c2c1adca5740afe72fcb4b99d632141f.patch#/%{name}-gh-c5c9427.patch
-Patch16:        %{url}/commit/4dd58b79e989124bf0eebf2f10f53ede347426d1.patch#/%{name}-gh-4dd58b7.patch
+Patch10:        %{url}/commit/e8f1373edc972d5a6ce28b5625d4e299340182ef.patch#/%{name}-gh-e8f1373.patch
+Patch11:        %{name}-revert-e8f1373.patch
+Patch12:        %{name}-revert-27d58ba.patch
 
 Patch100:       %{name}-build-fix.patch
 
@@ -460,6 +456,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Aug 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.9.8-100
+- 2.9.8
+
 * Wed Aug 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.9.4-100
 - 2.9.4
 

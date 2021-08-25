@@ -1,6 +1,6 @@
-%global commit 0a08a32481f3de8bb91d5f3e2c653ed9114e5347
+%global commit aef822508d81ab196fde2a737ad524bf30026c5b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200602
+%global date 20200719
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           m64py
 Version:        0.2.5
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        A frontend for Mupen64Plus 2.0
 
 License:        GPLv3
@@ -60,8 +60,6 @@ find -name '*.py' -print0 | xargs -0 \
   pathfix.py -pni "%{__python3} %{py3_shbang_opts}"
 
 sed -e 's|_DATADIR_|%{_datadir}|g' -i bin/%{name}
-
-sed -e 's|"lrelease"|"lrelease-qt5"|' -i setup.py
 
 
 %build
@@ -116,6 +114,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 0.2.5-7.20200719gitaef8225
+- Bump
+
 * Tue Jan 05 2021 Phantom X <megaphantomx at hotmail dot com> - 0.2.5-6.20200602git0a08a32
 - Fix python BR
 

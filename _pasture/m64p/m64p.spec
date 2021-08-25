@@ -4,7 +4,7 @@
 %global with_snapshot 0
 
 Name:           m64p
-Version:        2021.6.6
+Version:        2021.8.9
 Release:        1%{?dist}
 Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 
@@ -60,6 +60,7 @@ rm -f *.exe
 rm -rf mupen64plus-core
 rm -rf parallel-rdp-standalone/vulkan-headers
 rm -f mupen64plus-gui/discord/*.{dylib,so,dll}
+rm -f mupen64plus-input-qt/vosk/*.{dylib,so,dll}
 
 mkdir LICENSEdir READMEdir
 for i in mupen64plus-{audio-sdl2,gui,input-{qt,raphnetraw}} parallel-{rdp-standalone,rsp} ;do
@@ -86,6 +87,7 @@ echo '#define GUI_VERSION "%{commit}"' > mupen64plus-gui/version.h
 
 sed \
   -e 's|"../../mupen64plus-core/src/api"|%{_includedir}/mupen64plus|g' \
+  -e 's|"../mupen64plus-core/src/api"|%{_includedir}/mupen64plus|g' \
   -e 's|-L/usr/local/lib ||g' \
   -e '/-no-pie/d' \
   -i mupen64plus-*/mupen64plus-*.pro
@@ -205,5 +207,8 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.8.9-1
+- 2021.8.9
+
 * Mon Jun 07 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.6.6-1
 - Initial spec

@@ -245,8 +245,10 @@ zram-init
 dolphin-emu
 freac
 -freac-superfast-codecs
-m64p
+-m64p
 mupen64plus-rsp-cxd4
+mupen64plus-rsp-parallel
+mupen64plus-video-parallel
 -ortp
 vkbasalt
 whdd

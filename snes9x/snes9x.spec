@@ -1,6 +1,6 @@
-%global commit 9398d21e015704da354a413d6925995597116113
+%global commit e66acceeda44e4cd2c0a8e01fcf94622f5430fad
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210527
+%global date 20210820
 %global with_snapshot 1
 
 %global commit10 a6ce49ca242019410abc5c359ed2c57e48e59883
@@ -22,7 +22,7 @@
 
 Name:           snes9x
 Version:        1.60
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other
@@ -174,6 +174,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 
 %changelog
+* Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1.60-103.20210820gite66acce
+- Update
+
 * Fri May 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1.60-102.20210527git9398d21
 - Bump
 - Add forgotten BRs

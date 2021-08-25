@@ -1,13 +1,13 @@
-%global commit c9f49e2ea638d4f0afca7937aef57f8294ac95e7
+%global commit a605261932cee8519756c01b9f09464e04363788
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210511
+%global date 20210727
 %global with_snapshot 1
 
 %global commit1 af6af5b1fd4fdb435c836be15371dd047f395c4d
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-audio-sdl
 
-%global commit2 4340d306b7dd3e8a45d00129bced5f43fda5933c
+%global commit2 cb421bbfa95c40d30dedbfcebdd907ca778b6de1
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-input-sdl
 
@@ -42,7 +42,7 @@
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        108%{?gver}%{?dist}
+Release:        109%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -198,6 +198,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-109.20210727gita605261
+- Bump
+
 * Mon Jun 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-108.20210511gitc9f49e2
 - Last snapshot
 

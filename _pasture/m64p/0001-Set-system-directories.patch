@@ -1,6 +1,6 @@
-From af86f2b1b90d1abb79a9fa0f98566eabc2b470ec Mon Sep 17 00:00:00 2001
+From eba23c53d79246c8969c151da3999243c5a94f10 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 6 Jun 2021 23:10:53 -0300
+Date: Tue, 24 Aug 2021 10:13:59 -0300
 Subject: [PATCH] Set system directories
 
 https://aur.archlinux.org/cgit/aur.git/tree/030-m64p-fix-paths.patch?h=m64p
@@ -9,7 +9,7 @@ https://aur.archlinux.org/cgit/aur.git/tree/030-m64p-fix-paths.patch?h=m64p
  1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/mupen64plus-gui/mainwindow.cpp b/mupen64plus-gui/mainwindow.cpp
-index 698f84a..29e8a2a 100644
+index e45323b..34d3951 100644
 --- a/mupen64plus-gui/mainwindow.cpp
 +++ b/mupen64plus-gui/mainwindow.cpp
 @@ -4,6 +4,7 @@
@@ -33,9 +33,9 @@ index 698f84a..29e8a2a 100644
 -        settings->setValue("configDirPath", "$CONFIG_PATH$");
 +        settings->setValue("configDirPath", QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/mupen64plus");
  
-     updatePlugins();
- 
-@@ -428,7 +429,7 @@ void MainWindow::updateApp()
+ #ifdef CORE_LIBRARY_PATH
+     settings->setValue("coreLibPath", CORE_LIBRARY_PATH);
+@@ -438,7 +439,7 @@ void MainWindow::updateApp()
  
  void MainWindow::setupDiscord()
  {
