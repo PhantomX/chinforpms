@@ -140,6 +140,9 @@
 
 %define with_systemtap 1
 
+# 2021-08 Hanging on COPR
+%define with_tests 0
+
 # LTO still has issues with qemu on armv7hl and aarch64
 # https://bugzilla.redhat.com/show_bug.cgi?id=1952483
 %global _lto_cflags %{nil}
@@ -196,10 +199,10 @@
 %define requires_device_display_virtio_gpu Requires: %{name}-device-display-virtio-gpu = %{evr}
 %define requires_device_display_virtio_gpu_gl Requires: %{name}-device-display-virtio-gpu-gl = %{evr}
 %define requires_device_display_virtio_gpu_pci Requires: %{name}-device-display-virtio-gpu-pci = %{evr}
-%define requires_device_display_virtio_gpu_pci_gl Requires: %{name}-device-display-virtio-gpu-pci_gl = %{evr}
+%define requires_device_display_virtio_gpu_pci_gl Requires: %{name}-device-display-virtio-gpu-pci-gl = %{evr}
 %define requires_device_display_virtio_gpu_ccw Requires: %{name}-device-display-virtio-gpu-ccw = %{evr}
 %define requires_device_display_virtio_vga Requires: %{name}-device-display-virtio-vga = %{evr}
-%define requires_device_display_virtio_vga_gl Requires: %{name}-device-display-virtio-vga_gl = %{evr}
+%define requires_device_display_virtio_vga_gl Requires: %{name}-device-display-virtio-vga-gl = %{evr}
 
 %if %{have_virgl}
 %define requires_device_display_vhost_user_gpu Requires: %{name}-device-display-vhost-user-gpu = %{evr}
@@ -1720,17 +1723,21 @@ install -Dpm 644 %{SOURCE16} %{buildroot}%{_sysusersdir}/%{name}.conf
 %check
 %if !%{tools_only}
 
+%if %{with_tests}
+
 pushd %{qemu_kvm_build}
 echo "Testing %{name}-build"
 # 2021-06: s390x tests randomly failing with 'Broken pipe' errors
 # dhorak couldn't reproduce locally on an s390x machine so guessed
 # it's a resource issue
 # 2021-07: ppc64le intermittently hanging
-%dnl %ifnarch s390x %{power64}
-%dnl %make_build check
-%dnl %endif
+%ifnarch s390x %{power64}
+%make_build check
+%endif
 
 popd
+
+%endif
 
 # endif !tools_only
 %endif

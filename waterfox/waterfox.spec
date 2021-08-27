@@ -42,7 +42,12 @@ ExcludeArch: armv7hl
 
 %global disable_elfhack   0
 
-%global build_with_clang  0
+ %if "%{toolchain}" == "clang"
+%global build_with_clang 1
+%else
+%global build_with_clang 0
+%endif
+
 %ifnarch %{ix86} ppc64 s390x
 %global build_with_pgo    0
 %endif
