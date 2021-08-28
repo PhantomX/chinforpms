@@ -284,7 +284,7 @@ Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
 Version: 6.1.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -306,6 +306,7 @@ Source36: README.tests
 BuildRequires: meson >= %{meson_version}
 BuildRequires: zlib-devel
 BuildRequires: glib2-devel
+BuildRequires: gnutls-devel
 BuildRequires: cyrus-sasl-devel
 BuildRequires: libaio-devel
 BuildRequires: python3-devel
@@ -347,7 +348,6 @@ BuildRequires: lzo-devel snappy-devel
 %if %{have_numactl}
 BuildRequires: numactl-devel
 %endif
-BuildRequires: libgcrypt-devel
 # qemu-pr-helper multipath support (requires libudev too)
 BuildRequires: device-mapper-multipath-devel
 BuildRequires: systemd-devel
@@ -1369,7 +1369,7 @@ run_configure \
 %if %{have_fdt}
   --enable-fdt \
 %endif
-  --enable-gcrypt \
+  --enable-gnutls \
   --enable-guest-agent \
   --enable-iconv \
   --enable-kvm \
@@ -2241,6 +2241,9 @@ popd
 
 
 %changelog
+* Fri Aug 27 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.1.0-101
+- Rawhide sync (gnutls fix)
+
 * Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.1.0-100
 - 6.1.0
 - Rawhide sync

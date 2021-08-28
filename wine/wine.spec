@@ -1,7 +1,7 @@
 %global commit 7d60044e187704176981500d139e1591a4d63ad5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210820
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver dc0aa10ad78af8b3a3172690e841070df8ef865a
+%global wine_stagingver 6.16
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id f04a5161ebd57608c5781fa2fe20a868cc055040
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id fe3bec099023e0769465bd5652ba3dbb06cfb93f
+%global tkg_id 90424bfd4fe700623abb7f2134d8a971d412e575
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -127,8 +127,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.15
-Release:        101%{?gver}%{?dist}
+Version:        6.16
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -195,9 +195,9 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
-# Revert to fix many game launchers displaying empty windows
-# https://bugs.winehq.org/show_bug.cgi?id=49990
-Patch100:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
+# 100-101 for proton-tkg-staging patch
+Patch100:       %{whq_url}/1c1ff37390c94101f474ce8ee57a3bd830ca965f#/%{name}-whq-1c1ff37.patch
+Patch101:       %{whq_url}/fbd39cd8b5de10c53fbb6c5e298c8863beec13fd#/%{name}-whq-fbd39cd.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -211,7 +211,7 @@ Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_by
 Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
-Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-003.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-003.patch
+Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-005.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-005.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -228,6 +228,7 @@ Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.pa
 Patch1030:       %{tkg_url}/proton/proton-bcrypt-staging.patch#/%{name}-tkg-proton-bcrypt-staging.patch
 Patch1031:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
 Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/virtual_alloc_remi2.mypatch#/%{name}-tkg-virtual_alloc_remi2.patch
+Patch1033:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       revert-grab-fullscreen.patch
@@ -849,6 +850,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch599 -p1
 
 %patch100 -p1 -R
+%patch101 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -897,6 +899,7 @@ $patch_command -p1 -i patch1025.patch
 %endif
 %endif
 %patch1029 -p1
+%patch1033 -p1
 %patch1030 -p1
 %patch1031 -p1
 %patch1032 -p1
@@ -2916,6 +2919,9 @@ fi
 
 
 %changelog
+* Sat Aug 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.16-100
+- 6.16
+
 * Sat Aug 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.15-101.20210820git7d60044
 - Snapshot
 
