@@ -9,16 +9,16 @@
 
 %define repo chinforpms
 
-%global commit 73f1881d402c72370f821868a3f1bf7f57f0b0e8
+%global commit f12fad2ab9d6efc2a6accb165a23549130a74e5b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210507
+%global date 20210610
 
 %global gver .%{date}git%{shortcommit}
 
 %global vc_url https://repo.or.cz/linux/zf.git/blob_plain
 
 Name:           winesync-kmod
-Version:        5.12
+Version:        5.12.10
 Release:        1%{?gver}%{?dist}
 Summary:        Wine synchronization primitive driver
 
@@ -71,5 +71,8 @@ done
 
 
 %changelog
+* Mon Aug 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.10-1.20210610gitf12fad2
+- 5.12.10
+
 * Sat May 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12-1.20210507git73f1881
 - Initial spec
