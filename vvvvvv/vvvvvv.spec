@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 186f36beea8df7c51cf55769350b1cfd982d28a7
+%global commit 1cbc3bdc7cd69757a88aa0fe80fd3ee68dd663e1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210418
+%global date 20210831
 
 %undefine _hardened_build
 
@@ -17,8 +17,8 @@
 %global pkgname VVVVVV
 
 Name:           vvvvvv
-Version:        2.3
-Release:        8%{?gver}%{?dist}
+Version:        2.4
+Release:        1%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -149,6 +149,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Tue Aug 31 2021 - 2.4-1.20210831git1cbc3bd
+- 2.4 snapshot
+
 * Mon Apr 19 2021 - 2.3-8.20210418git186f36b
 - Update
 

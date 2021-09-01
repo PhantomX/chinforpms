@@ -198,6 +198,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # 100-101 for proton-tkg-staging patch
 Patch100:       %{whq_url}/1c1ff37390c94101f474ce8ee57a3bd830ca965f#/%{name}-whq-1c1ff37.patch
 Patch101:       %{whq_url}/fbd39cd8b5de10c53fbb6c5e298c8863beec13fd#/%{name}-whq-fbd39cd.patch
+Patch102:       https://bugs.winehq.org/attachment.cgi?id=70518#/%{name}-whq-bug51296.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -851,6 +852,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch100 -p1 -R
 %patch101 -p1 -R
+%patch102 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}

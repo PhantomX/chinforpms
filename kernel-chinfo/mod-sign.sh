@@ -2,7 +2,7 @@
 
 # The modules_sign target checks for corresponding .o files for every .ko that
 # is signed. This doesn't work for package builds which re-use the same build
-# directory for every flavour, and the .config may change between flavours.
+# directory for every variant, and the .config may change between variants.
 # So instead of using this script to just sign lib/modules/$KernelVer/extra,
 # sign all .ko in the buildroot.
 
@@ -13,9 +13,9 @@ MODSECKEY=$1
 MODPUBKEY=$2
 moddir=$3
 
-modules=`find $moddir -type f -name '*.ko'`
+modules=$(find "$moddir" -type f -name '*.ko')
 
-NPROC=`nproc`
+NPROC=$(nproc)
 [ -z "$NPROC" ] && NPROC=1
 
 # NB: this loop runs 2000+ iterations. Try to be fast.
@@ -27,7 +27,7 @@ done
 " DUMMYARG0   # xargs appends ARG1 ARG2..., which go into $mod in for loop.
 
 RANDOMMOD=$(echo "$modules" | sort -R | head -n 1)
-if [ "~Module signature appended~" != "$(tail -c 28 $RANDOMMOD)" ]; then
+if [ "~Module signature appended~" != "$(tail -c 28 "$RANDOMMOD")" ]; then
     echo "*****************************"
     echo "*** Modules are unsigned! ***"
     echo "*****************************"

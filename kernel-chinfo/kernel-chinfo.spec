@@ -13,6 +13,13 @@
 %global toolchain clang
 %endif
 
+# Compile the kernel with LTO (only supported when building with clang).
+%bcond_with clang_lto
+
+%if %{with clang_lto} && %{without toolchain_clang}
+{error:clang_lto requires --with toolchain_clang}
+%endif
+
 # Cross compile on copr for arm
 # See https://bugzilla.redhat.com/1879599
 %if 0%{?_with_cross_arm:1}
@@ -136,24 +143,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 13
+%define base_sublevel 14
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 7
+%global post_factum 2
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 8eda504ffeaae3bd350c4968f44a3302459b61f3
+%global pfcommit 98ee2d7f95faa260b65e27b09fd75df6b092179e
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -181,7 +188,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 8c13a2dd1965882448628864c03eb36b1a768767
+%global opensuse_id dc06e24ed55cc7b02a04a66a5ddcfbd8abb2b548
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -236,8 +243,8 @@ Summary: The Linux kernel
 %define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
 # Want to build a the vsdo directories installed
 # kernel-abi-whitelists
-%define with_kernel_abi_whitelists %{?_without_kernel_abi_whitelists: 0} %{?!_without_kernel_abi_whitelists: 1}
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists %{?_without_kernel_abi_whitelists: 0} %{?!_without_kernel_abi_whitelists: 1}
+%define with_kernel_abi_stablelists 0
 # internal samples and selftests
 %define with_selftests %{?_without_selftests: 0} %{?!_without_selftests: 1}
 #
@@ -310,7 +317,7 @@ Summary: The Linux kernel
 # no ipa_clone for now
 %define with_ipaclones 0
 # no whitelist
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 # selftests turns on bpftool
 %define with_selftests 0
 %endif
@@ -322,7 +329,11 @@ Summary: The Linux kernel
 %endif
 
 %if %{with toolchain_clang}
-%global make_opts %{make_opts} HOSTCC=clang CC=clang
+%global clang_make_opts HOSTCC=clang CC=clang
+%if %{with clang_lto}
+%global clang_make_opts %{clang_make_opts} LD=ld.lld HOSTLD=ld.lld AR=llvm-ar NM=llvm-nm HOSTAR=llvm-ar HOSTNM=llvm-nm LLVM_IAS=1
+%endif
+%global make_opts %{make_opts} %{clang_make_opts}
 # clang does not support the -fdump-ipa-clones option
 %global with_ipaclones 0
 %endif
@@ -371,7 +382,7 @@ Summary: The Linux kernel
 %define with_kabidupchk 0
 %define with_kabidwchk 0
 %define with_kabidw_base 0
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %endif
 
 # turn off kABI DWARF-based check if we're generating the base dataset
@@ -419,7 +430,7 @@ Summary: The Linux kernel
 %define with_pae 0
 %define with_debug 0
 %define with_vdso_install 0
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %define with_selftests 0
 %define with_cross 0
 %define with_cross_headers 0
@@ -436,7 +447,7 @@ Summary: The Linux kernel
 %if %{with_dbgonly}
 %define with_up 0
 %define with_vdso_install 0
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %define with_selftests 0
 %define with_cross 0
 %define with_cross_headers 0
@@ -455,7 +466,7 @@ Summary: The Linux kernel
 
 
 %ifnarch noarch
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %endif
 
 # Overrides for generic default options
@@ -601,6 +612,18 @@ Summary: The Linux kernel
 %define _use_vdso 0
 %endif
 
+# If build of debug packages is disabled, we need to know if we want to create
+# meta debug packages or not, after we define with_debug for all specific cases
+# above. So this must be at the end here, after all cases of with_debug or not.
+%define with_debug_meta 0
+%if !%{debugbuildsenabled}
+%if %{with_debug}
+%define with_debug_meta 1
+%endif
+%define with_debug 0
+%endif
+
+
 #
 # Packages that need to be installed before the kernel is, because the %%post
 # scripts use them.
@@ -632,7 +655,6 @@ Requires: kernel-modules-uname-r = %{KVERREL}
 # List the packages used during the kernel build
 #
 BuildRequires: kmod, patch, bash, coreutils, tar, git-core, which
-BuildRequires: kmod, patch, bash, coreutils, tar, git-core, which
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 BuildRequires: net-tools, hostname, bc, elfutils-devel
@@ -642,7 +664,9 @@ BuildRequires: patchutils
 %endif
 BuildRequires: python3-devel
 BuildRequires: gcc-plugin-devel
+%ifnarch %{nobuildarches} noarch
 BuildRequires: bpftool
+%endif
 %if %{with_headers}
 BuildRequires: rsync
 %endif
@@ -702,6 +726,11 @@ BuildRequires: clang
 
 Source0: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/linux-%{kversion}.tar.xz
 
+%if %{with clang_lto}
+BuildRequires: llvm
+BuildRequires: lld
+%endif
+
 Source1: Makefile.rhelver
 
 # Name of the packaged file containing signing key
@@ -712,55 +741,55 @@ Source1: Makefile.rhelver
 %define signing_key_filename kernel-signing-s390.cer
 %endif
 
-Source10: x509.genkey.rhel
-Source11: x509.genkey.fedora
+Source8: x509.genkey.rhel
+Source9: x509.genkey.fedora
 %if %{?released_kernel}
 
-Source12: redhatsecurebootca5.cer
-Source13: redhatsecurebootca1.cer
-Source14: redhatsecureboot501.cer
-Source15: redhatsecureboot301.cer
-Source16: secureboot_s390.cer
-Source17: secureboot_ppc.cer
+Source10: redhatsecurebootca5.cer
+Source11: redhatsecurebootca1.cer
+Source12: redhatsecureboot501.cer
+Source13: redhatsecureboot301.cer
+Source14: secureboot_s390.cer
+Source15: secureboot_ppc.cer
 
-%define secureboot_ca_1 %{SOURCE12}
-%define secureboot_ca_0 %{SOURCE13}
+%define secureboot_ca_1 %{SOURCE10}
+%define secureboot_ca_0 %{SOURCE11}
 %ifarch x86_64 aarch64
-%define secureboot_key_1 %{SOURCE14}
+%define secureboot_key_1 %{SOURCE12}
 %define pesign_name_1 redhatsecureboot501
-%define secureboot_key_0 %{SOURCE15}
+%define secureboot_key_0 %{SOURCE13}
 %define pesign_name_0 redhatsecureboot301
 %endif
 %ifarch s390x
-%define secureboot_key_0 %{SOURCE16}
+%define secureboot_key_0 %{SOURCE14}
 %define pesign_name_0 redhatsecureboot302
 %endif
 %ifarch ppc64le
-%define secureboot_key_0 %{SOURCE17}
+%define secureboot_key_0 %{SOURCE15}
 %define pesign_name_0 redhatsecureboot303
 %endif
 
 # released_kernel
 %else
 
-Source12: redhatsecurebootca4.cer
-Source13: redhatsecurebootca2.cer
-Source14: redhatsecureboot401.cer
-Source15: redhatsecureboot003.cer
+Source10: redhatsecurebootca4.cer
+Source11: redhatsecurebootca2.cer
+Source12: redhatsecureboot401.cer
+Source13: redhatsecureboot003.cer
 
-%define secureboot_ca_1 %{SOURCE12}
-%define secureboot_ca_0 %{SOURCE13}
-%define secureboot_key_1 %{SOURCE14}
+%define secureboot_ca_1 %{SOURCE10}
+%define secureboot_ca_0 %{SOURCE11}
+%define secureboot_key_1 %{SOURCE12}
 %define pesign_name_1 redhatsecureboot401
-%define secureboot_key_0 %{SOURCE15}
+%define secureboot_key_0 %{SOURCE13}
 %define pesign_name_0 redhatsecureboot003
 
 # released_kernel
 %endif
 
 Source22: mod-extra.list.rhel
-Source23: mod-extra.list.fedora
-Source24: mod-denylist.sh
+Source16: mod-extra.list.fedora
+Source17: mod-denylist.sh
 Source18: mod-sign.sh
 
 Source80: filter-x86_64.sh.fedora
@@ -809,8 +838,12 @@ Source51: generate_all_configs.sh
 
 Source52: process_configs.sh
 Source56: update_scripts.sh
+Source57: generate_crashkernel_default.sh
 
 Source54: mod-internal.list
+
+Source100: rheldup3.x509
+Source101: rhelkpatch1.x509
 
 Source200: check-kabi
 
@@ -824,7 +857,7 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-#Source300: kernel-abi-whitelists-%%{rpmversion}-%%{distro_build}.tar.bz2
+#Source300: kernel-abi-stablelists-%%{rpmversion}-%%{distro_build}.tar.bz2
 #Source301: kernel-kabi-dw-%%{rpmversion}-%%{distro_build}.tar.bz2
 
 # Some people enjoy building customized kernels from the dist-git in Fedora and
@@ -886,6 +919,11 @@ Source5000: patch-%{kversion}-git%{gitrev}.xz
 %if !%{nopatches}
 
 Patch1: patch-%{kversion}-redhat.patch
+%if 0%{?post_factum}
+# Build fail when LRNG is enabled
+Patch2: patch-%{kversion}-revert77f4d04.patch
+Patch3: patch-%{kversion}-revert8313ae8.patch
+%endif
 
 # empty final patch to facilitate testing of kernel patches
 # Patch999999: linux-kernel-test.patch
@@ -909,14 +947,12 @@ Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{patchwork_url}/12215169/mbox/#/patchwork-v7-1-5-blk-mq-Move-the-elevator_exit-definition.patch
-Patch2002: %{patchwork_url}/12251383/mbox/#/patchwork-V7-4-4-blk-mq-clearing-flush-request-reference-in-tags--rqs.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id 7a06ad1caba27fa67f595caa9b81a4b0e5f74948
-Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.13/0007-v5.13-futex2_interface.patch#/tkg-0007-v5.13-futex2_interface.patch
-Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.13/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
-Patch2093: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.13/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+%global tkg_id b5da16cc45c99025a9893fa342ead9bae8d247c3
+Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.14/0007-v5.14-futex2_interface.patch#/tkg-0007-v5.14-futex2_interface.patch
+Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.14/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+Patch2093: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.14/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2094: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
@@ -1045,10 +1081,10 @@ Summary: gcov graph and source files for coverage data collection.
 kernel-gcov includes the gcov graph and source files for gcov coverage collection.
 %endif
 
-%package -n kernel-abi-whitelists
-Summary: The Red Hat Enterprise Linux kernel ABI symbol whitelists
+%package -n kernel-abi-stablelists
+Summary: The Red Hat Enterprise Linux kernel ABI symbol stablelists
 AutoReqProv: no
-%description -n kernel-abi-whitelists
+%description -n kernel-abi-stablelists
 The kABI package contains information pertaining to the Red Hat Enterprise
 Linux kernel ABI, including lists of kernel symbols that are needed by
 external Linux kernel modules, and a yum plugin to aid enforcement.
@@ -1114,6 +1150,20 @@ Requires: kernel-devel-uname-r = %{KVERREL}\
 %description %{?1:%{1}-}devel\
 This package provides kernel headers and makefiles sufficient to build modules\
 against the %{?2:%{2} }kernel package.\
+%{nil}
+
+#
+# This macro creates an empty kernel-<subpackage>-devel-matched package that
+# requires both the core and devel packages locked on the same version.
+#	%%kernel_devel_matched_package [-m] <subpackage> <pretty-name>
+#
+%define kernel_devel_matched_package(m) \
+%package %{?1:%{1}-}devel-matched\
+Summary: Meta package to install matching core and devel packages for a given %{?2:%{2} }kernel\
+Requires: kernel%{?1:-%{1}}-devel = %{version}-%{release}\
+Requires: kernel%{?1:-%{1}}-core = %{version}-%{release}\
+%description %{?1:%{1}-}devel-matched\
+This meta package is used to install matching core and devel packages for a given %{?2:%{2} }kernel.\
 %{nil}
 
 #
@@ -1226,6 +1276,7 @@ Requires: kernel-core-uname-r = %{KVERREL}\
 %{expand:%%kernel_meta_package %{?1:%{1}}}\
 %endif\
 %{expand:%%kernel_devel_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
+%{expand:%%kernel_devel_matched_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
 %{expand:%%kernel_modules_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
 %{expand:%%kernel_modules_extra_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
 %if %{-m:0}%{!-m:1}\
@@ -1492,7 +1543,6 @@ $patch_command -i %{SOURCE4000}
 # Any further pre-build tree manipulations happen here.
 
 chmod +x scripts/checkpatch.pl
-chmod +x tools/objtool/sync-check.sh
 mv COPYING COPYING-%{version}-%{release}
 
 # This Prevents scripts/setlocalversion from mucking with our version numbers.
@@ -1566,10 +1616,6 @@ do
 done
 %endif
 
-%if !%{debugbuildsenabled}
-rm -f kernel-%{version}-*debug.config
-%endif
-
 # enable GCOV kernel config options if gcov is on
 %if %{with_gcov}
 for i in *.config
@@ -1578,10 +1624,38 @@ do
 done
 %endif
 
+%if %{with clang_lto}
+for i in *aarch64*.config *x86_64*.config; do
+  sed -i 's/# CONFIG_LTO_CLANG_THIN is not set/CONFIG_LTO_CLANG_THIN=y/' $i
+  sed -i 's/CONFIG_LTO_NONE=y/# CONFIG_LTO_NONE is not set/' $i
+done
+%endif
+
+# Add DUP and kpatch certificates to system trusted keys for RHEL
+%if 0%{?rhel}
+%if %{signkernel}%{signmodules}
+openssl x509 -inform der -in %{SOURCE100} -out rheldup3.pem
+openssl x509 -inform der -in %{SOURCE101} -out rhelkpatch1.pem
+cat rheldup3.pem rhelkpatch1.pem > ../certs/rhel.pem
+%ifarch s390x ppc64le
+openssl x509 -inform der -in %{secureboot_ca_0} -out secureboot.pem
+cat secureboot.pem >> ../certs/rhel.pem
+%endif
+for i in *.config; do
+  sed -i 's@CONFIG_SYSTEM_TRUSTED_KEYS=""@CONFIG_SYSTEM_TRUSTED_KEYS="certs/rhel.pem"@' $i
+done
+%endif
+%endif
+
 cp %{SOURCE52} .
 OPTS=""
 %if %{with_configchecks}
     OPTS="$OPTS -w -n -c"
+%endif
+%if %{with clang_lto}
+for opt in %{clang_make_opts}; do
+  OPTS="$OPTS -m $opt"
+done
 %endif
 ./process_configs.sh $OPTS kernel %{rpmversion}
 
@@ -1698,8 +1772,6 @@ BuildKernel() {
     InitBuildVars $Variant
 
     echo BUILDING A KERNEL FOR ${Variant} %{_target_cpu}...
-
-    # and now to start the build process
 
     %{make} ARCH=$Arch olddefconfig >/dev/null
 
@@ -1892,13 +1964,13 @@ BuildKernel() {
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf
         tar xjvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
 
-        mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/whitelists
-        tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/whitelists
+        mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
+        tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
         echo "**** GENERATING DWARF-based kABI baseline dataset ****"
         chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
         $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh generate \
-            "$RPM_BUILD_ROOT/kabi-dwarf/whitelists/kabi-current/kabi_whitelist_%{_target_cpu}" \
+            "$RPM_BUILD_ROOT/kabi-dwarf/stablelists/kabi-current/kabi_stablelist_%{_target_cpu}" \
             "$(pwd)" \
             "$RPM_BUILD_ROOT/kabidw-base/%{_target_cpu}${Variant:+.${Variant}}" || :
 
@@ -1911,13 +1983,13 @@ BuildKernel() {
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf
         tar xjvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
         if [ -d "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}" ]; then
-            mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/whitelists
-            tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/whitelists
+            mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
+            tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
             echo "**** GENERATING DWARF-based kABI dataset ****"
             chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
             $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh generate \
-                "$RPM_BUILD_ROOT/kabi-dwarf/whitelists/kabi-current/kabi_whitelist_%{_target_cpu}" \
+                "$RPM_BUILD_ROOT/kabi-dwarf/stablelists/kabi-current/kabi_stablelist_%{_target_cpu}" \
                 "$(pwd)" \
                 "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}.tmp" || :
 
@@ -2020,8 +2092,6 @@ BuildKernel() {
 %ifarch i686 x86_64
     # files for 'make prepare' to succeed with kernel-devel
     cp -a --parents arch/x86/entry/syscalls/syscall_32.tbl $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/x86/entry/syscalls/syscalltbl.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/x86/entry/syscalls/syscallhdr.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/entry/syscalls/syscall_64.tbl $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs_32.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs_64.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
@@ -2035,6 +2105,9 @@ BuildKernel() {
     cp -a --parents arch/x86/boot/string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/ctype.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+
+    cp -a --parents scripts/syscalltbl.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+    cp -a --parents scripts/syscallhdr.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
 
     cp -a --parents tools/arch/x86/include/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp -a --parents tools/arch/x86/include/uapi/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -2107,15 +2180,21 @@ BuildKernel() {
     ( find $RPM_BUILD_ROOT/lib/modules/$KernelVer -name '*.ko' | xargs /sbin/modinfo -l | \
         grep -E -v 'GPL( v2)?$|Dual BSD/GPL$|Dual MPL/GPL$|GPL and additional rights$' ) && exit 1
 
-    # remove files that will be auto generated by depmod at rpm -i time
-    pushd $RPM_BUILD_ROOT/lib/modules/$KernelVer/
-        rm -f modules.{alias*,builtin.bin,dep*,*map,symbols*,devname,softdep}
-    popd
+    remove_depmod_files()
+    {
+        # remove files that will be auto generated by depmod at rpm -i time
+        pushd $RPM_BUILD_ROOT/lib/modules/$KernelVer/
+            rm -f modules.{alias,alias.bin,builtin.alias.bin,builtin.bin} \
+                  modules.{dep,dep.bin,devname,softdep,symbols,symbols.bin}
+        popd
+    }
+
+    remove_depmod_files
 
     # Identify modules in the kernel-modules-extras package
-    %{SOURCE24} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
+    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
     # Identify modules in the kernel-modules-extras package
-    %{SOURCE24} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE54} internal
+    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE54} internal
 
     #
     # Generate the kernel-core and kernel-modules files lists
@@ -2163,10 +2242,7 @@ BuildKernel() {
     touch lib/modules/$KernelVer/modules.builtin
     fi
 
-    # remove files that will be auto generated by depmod at rpm -i time
-    pushd $RPM_BUILD_ROOT/lib/modules/$KernelVer/
-        rm -f modules.{alias*,builtin.bin,dep*,*map,symbols*,devname,softdep}
-    popd
+    remove_depmod_files
 
     # Go back and find all of the various directories in the tree.  We use this
     # for the dir lists in kernel-core
@@ -2196,8 +2272,8 @@ BuildKernel() {
 %if %{signmodules}
     if [ $DoModules -eq 1 ]; then
     # Save the signing keys so we can sign the modules in __modsign_install_post
-    cp certs/signing_key.pem certs/signing_key.pem.sign${Flav}
-    cp certs/signing_key.x509 certs/signing_key.x509.sign${Flav}
+    cp certs/signing_key.pem certs/signing_key.pem.sign${Variant:++${Variant}}
+    cp certs/signing_key.x509 certs/signing_key.x509.sign${Variant:++${Variant}}
     fi
 %endif
 
@@ -2213,28 +2289,31 @@ BuildKernel() {
 
 %ifnarch armv7hl
     # Generate vmlinux.h and put it to kernel-devel path
-    # bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+    bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
 %endif
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
 
+    # Generate crashkernel default config
+    %{SOURCE57} "$KernelVer" "$Arch" "$RPM_BUILD_ROOT"
+
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
     %ifarch x86_64 aarch64
-        install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca-20200609.cer
-        install -m 0644 %{secureboot_ca_1} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca-20140212.cer
-        ln -s kernel-signing-ca-20200609.cer $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+       install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca-20200609.cer
+       install -m 0644 %{secureboot_ca_1} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca-20140212.cer
+       ln -s kernel-signing-ca-20200609.cer $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
     %else
-        install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+       install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
     %endif
     %ifarch s390x ppc64le
     if [ $DoModules -eq 1 ]; then
     if [ -x /usr/bin/rpm-sign ]; then
         install -m 0644 %{secureboot_key_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
     else
-        install -m 0644 certs/signing_key.x509.sign${Flav} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
-        openssl x509 -in certs/signing_key.pem.sign${Flav} -outform der -out $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
+        install -m 0644 certs/signing_key.x509.sign${Variant:++${Variant}} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+        openssl x509 -in certs/signing_key.pem.sign${Variant:++${Variant}} -outform der -out $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
         chmod 0644 $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
     fi
     fi
@@ -2245,7 +2324,7 @@ BuildKernel() {
     if [ -z "$MAXPROCS" ]; then
         MAXPROCS=1
     fi
-    if [ "$Flavour" == "" ]; then
+    if [ "$Variant" == "" ]; then
         mkdir -p $RPM_BUILD_ROOT/$DevelDir-ipaclones
         find . -name '*.ipa-clones' | xargs -i{} -r -n 1 -P $MAXPROCS install -m 644 -D "{}" "$RPM_BUILD_ROOT/$DevelDir-ipaclones/{}"
     fi
@@ -2294,7 +2373,7 @@ InitBuildVars
 # in the source tree. We installed them previously to $RPM_BUILD_ROOT/usr
 # but there's no way to tell the Makefile to take them from there.
 %{make} %{?_smp_mflags} headers_install
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 samples/bpf/
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/
 
 # Prevent bpf selftests to build bpftool repeatedly:
 export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
@@ -2459,13 +2538,13 @@ done
 rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 %endif
 
-%if %{with_kernel_abi_whitelists}
+%if %{with_kernel_abi_stablelists}
 # kabi directory
 INSTALL_KABI_PATH=$RPM_BUILD_ROOT/lib/modules/
 mkdir -p $INSTALL_KABI_PATH
 # install kabi releases directories
 tar xjvf %{SOURCE300} -C $INSTALL_KABI_PATH
-# with_kernel_abi_whitelists
+# with_kernel_abi_stablelists
 %endif
 
 %if %{with_selftests}
@@ -2558,7 +2637,7 @@ if [ "$HARDLINK" != "no" -a -x /usr/bin/hardlink -a ! -e /run/ostree-booted ] \
 then\
     (cd /usr/src/kernels/%{KVERREL}%{?1:+%{1}} &&\
      /usr/bin/find . -type f | while read f; do\
-       hardlink -c /usr/src/kernels/*%{?dist}.*/$f $f\
+       hardlink -c /usr/src/kernels/*%{?dist}.*/$f $f > /dev/null\
      done)\
 fi\
 %{nil}
@@ -2688,8 +2767,8 @@ fi
 /usr/*-linux-gnu/include/*
 %endif
 
-%if %{with_kernel_abi_whitelists}
-%files -n kernel-abi-whitelists
+%if %{with_kernel_abi_stablelists}
+%files -n kernel-abi-stablelists
 /lib/modules/kabi-*
 %endif
 
@@ -2750,13 +2829,13 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/dtb \
 %ghost /%{image_install_path}/dtb-%{KVERREL}%{?3:+%{3}} \
 %endif\
-%attr(600,root,root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
-%ghost /boot/System.map-%{KVERREL}%{?3:+%{3}}\
+%attr(0600, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
+%ghost %attr(0600, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.gz\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/config\
-%ghost /boot/symvers-%{KVERREL}%{?3:+%{3}}.gz\
-%ghost /boot/config-%{KVERREL}%{?3:+%{3}}\
-%ghost /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
+%ghost %attr(0600, root, root) /boot/symvers-%{KVERREL}%{?3:+%{3}}.gz\
+%ghost %attr(0600, root, root) /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
+%ghost %attr(0644, root, root) /boot/config-%{KVERREL}%{?3:+%{3}}\
 %dir /lib/modules\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}/kernel\
@@ -2766,6 +2845,7 @@ fi
 %if 0%{!?fedora:1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
 %endif\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/crashkernel.default\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
@@ -2775,6 +2855,7 @@ fi
 %{expand:%%files %{?3:%{3}-}devel}\
 %defverify(not mtime)\
 /usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
+%{expand:%%files %{?3:%{3}-}devel-matched}\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-extra.list %{?3:%{3}-}modules-extra}\
 %config(noreplace) /etc/modprobe.d/*-blacklist.conf\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-internal.list %{?3:%{3}-}modules-internal}\
@@ -2791,10 +2872,11 @@ fi
 
 %kernel_variant_files %{_use_vdso} %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
-%if !%{debugbuildsenabled}
+%if %{with_debug_meta}
 %files debug
 %files debug-core
 %files debug-devel
+%files debug-devel-matched
 %files debug-modules
 %files debug-modules-extra
 %endif
@@ -2819,6 +2901,9 @@ fi
 #
 #
 %changelog
+* Tue Aug 31 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.0-500.chinfo
+- 5.14.0 - pf2
+
 * Thu Aug 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.13-500.chinfo
 - 5.13.13 - pf7
 
@@ -3162,63 +3247,6 @@ fi
 
 * Tue Jun 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-500.chinfo
 - 5.7.0 - pf1
-- Rawhide sync
-
-* Wed May 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.15-500.chinfo
-- 5.6.15 - pf8
-- f32 sync
-
-* Wed May 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.14-500.chinfo
-- 5.6.14 - pf8
-- f32 sync
-- Disable gcc 10 workaround
-
-* Thu May 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.13-500.chinfo
-- 5.6.13 - pf7
-- f32 sync
-
-* Mon May 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.12-500.chinfo
-- 5.6.12 - pf7
-
-* Wed May 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.11-500.chinfo
-- 5.6.11 - pf7
-
-* Sat May 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.10-500.chinfo
-- 5.6.10 - pf6
-
-* Wed Apr 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.8-500.chinfo
-- 5.6.8 - pf6
-- f32 sync
-
-* Thu Apr 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.7-500.chinfo
-- 5.6.7 - pf5
-- f32 sync
-
-* Tue Apr 21 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.6-500.chinfo
-- 5.6.6 - pf4
-
-* Mon Apr 20 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.5-501.chinfo
-- 5.6.5 - pf4
-
-* Fri Apr 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.4-500.chinfo
-- 5.6.5 - pf3
-- f32 sync
-
-* Mon Apr 13 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.4-500.chinfo
-- 5.6.4 - pf3
-
-* Wed Apr 08 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.3-500.chinfo
-- 5.6.3 - pf3
-- f32 sync
-
-* Thu Apr 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.2-500.chinfo
-- 5.6.2 - pf2
-
-* Wed Apr 01 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.1-500.chinfo
-- 5.6.1 - pf2
-
-* Mon Mar 30 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.6.0-500.chinfo
-- 5.6.0 - pf0
 - Rawhide sync
 
 ###
