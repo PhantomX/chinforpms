@@ -1,7 +1,7 @@
-%global commit 4006ea97161254026c22c345d03c264bdce87f30
+%global commit b88fc0130e7c9b5a8e5e86c51a69c8d3c9fd0c1b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201105
-%global with_snapshot 0
+%global date 20210901
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -10,7 +10,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           antimicrox
-Version:        3.1.5
+Version:        3.1.6
 Release:        100%{?gver}%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
@@ -44,6 +44,7 @@ BuildRequires:  pkgconfig(xtst)
 BuildRequires:  gettext
 BuildRequires:  itstool
 BuildRequires:  libappstream-glib
+BuildRequires:  systemd
 Requires:       hicolor-icon-theme
 
 Provides:       antimicroX = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -67,14 +68,18 @@ do not have any form of built-in gamepad support.
 find src -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
 
 sed \
+  -e 's|\/usr\/lib\/udev\/rules.d|%{_udevrulesdir}|g' \
   -e '/\/doc\/%{name}/d' \
   -i CMakeLists.txt
+
+sed -e '/^SUBSYSTEM/s|$|, OPTIONS+="static_node=uinput"|' -i other/60-antimcrox-uinput.rules
 
 cp -f src/images/48x48/%{appname}.png src/images/48-apps-%{name}_trayicon.png
 cp -f src/images/48x48/%{appname}.png src/images/breeze_themed/48-apps-%{name}_trayicon.png
 
 %build
 %cmake \
+  -DANTIMICROX_PKG_VERSION="%{version}-%{release}" \
   -DWITH_X11:BOOL=ON \
   -DWITH_XTEST:BOOL=ON \
   -DWITH_UINPUT:BOOL=ON \
@@ -90,6 +95,10 @@ cp -f src/images/48x48/%{appname}.png src/images/breeze_themed/48-apps-%{name}_t
 rm -f %{buildroot}%{_datadir}/%{name}/CHANGELOG.md
 
 rm -rf %{buildroot}%{_includedir}
+
+mv %{buildroot}%{_udevrulesdir}/60-antimcrox-uinput.rules \
+  %{buildroot}%{_udevrulesdir}/60-%{name}-uinput.rules
+
 
 %find_lang %{name} --with-qt
 
@@ -109,9 +118,13 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 %{_datadir}/mime/packages/%{appname}.xml
 %{_mandir}/man1/*.1*
 %{_metainfodir}/%{appname}.appdata.xml
+%{_udevrulesdir}/60-%{name}-uinput.rules
 
 
 %changelog
+* Wed Sep 01 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.6-100.20210901gitb88fc01
+- 3.1.6
+
 * Sat Apr 17 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.5-100
 - 3.1.5
 
