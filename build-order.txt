@@ -46,6 +46,7 @@ compat-gcc-32
 ff7tk
 gstreamer1-plugins-base
 libchdr
+libdeflate
 -libliftoff
 -libvorbis
 libvorbis-aotuv

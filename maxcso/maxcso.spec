@@ -1,6 +1,6 @@
-%global commit ec1b360208e566cd589ddc825a525b1ebe2185a0
+%global commit 26353b593db3212c44076c35bfdf987b8ee44beb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210624
+%global date 20210704
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           maxcso
 Version:        1.13.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Fast cso compressor
 
 # maxcso - ISC
@@ -31,6 +31,7 @@ Patch0:         0001-Use-system-libraries.patch
 BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+BuildRequires:  libdeflate-devel
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libuv)
 BuildRequires:  pkgconfig(zlib)
@@ -49,18 +50,18 @@ uses multiple algorithms for best compression ratio.
 %autosetup -n %{name}-%{version} -p1
 %endif
 
-rm -rf lz4 libuv zlib zopfli
+rm -rf lz4 libdeflate libuv zlib zopfli
 
 sed -e 's|`pkg-config --libs|$(LDFLAGS) \0|' -i Makefile
 
 
 %build
 %set_build_flags
-%make_build SYSTEM_ZOPFLI=1 PREFIX=%{_prefix}
+%make_build SYSTEM_LIBDEFLATE=1 SYSTEM_ZOPFLI=1 PREFIX=%{_prefix}
 
 
 %install
-%make_install SYSTEM_ZOPFLI=1 PREFIX=%{_prefix}
+%make_install SYSTEM_LIBDEFLATE=1 SYSTEM_ZOPFLI=1 PREFIX=%{_prefix}
 
 
 %files
@@ -71,6 +72,10 @@ sed -e 's|`pkg-config --libs|$(LDFLAGS) \0|' -i Makefile
 
 
 %changelog
+* Thu Sep 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1.13.0-2.20210704git26353b5
+- Last snapshot
+- System libdeflate
+
 * Sun Jul 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1.13.0-1.20210624gitec1b360
 - 1.13.0
 - System zopfli

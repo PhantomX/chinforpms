@@ -16,7 +16,7 @@
 Name:           taglib
 Summary:        Audio Meta-Data Library
 Version:        1.12
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 Epoch:          1
 
@@ -141,6 +141,9 @@ test "$(pkg-config --modversion taglib_c)" = "%{version}"
 
 
 %changelog
+* Thu Sep 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.12-101
+- Rawhide sync
+
 * Mon Feb 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.12-100
 - 1.12
 

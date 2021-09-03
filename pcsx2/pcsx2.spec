@@ -1,7 +1,7 @@
 # 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit 94c6814be8a471de6c1f59bf73689b473aafc039
+%global commit bb5bfda5c6cc92649716ff39290dbda3a3a82a86
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210821
+%global date 20210902
 %global with_snapshot 1
 
 %global sanitize 0
@@ -21,7 +21,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        130%{?gver}%{?dist}
+Release:        131%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3 and LGPLv3+
@@ -43,7 +43,7 @@ Source0:        %{name}-clean-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
-%if %{with sse4}
+%if %{without sse4}
 # Revert this, needs sse4
 Patch0:         0001-Revert-SSE4-updates.patch
 %endif
@@ -88,7 +88,7 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-39
+BuildRequires:  sdl_gamecontrollerdb >= 0-40
 
 Requires:       joystick
 Requires:       hicolor-icon-theme
@@ -96,16 +96,22 @@ Requires:       hicolor-icon-theme
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(xbyak)
 
+%if %{without sse4}
+%global _description\
+WARNING: This build is modified to require a CPU with SSE2 instructions and is\
+not supported by upstream.
+%else
+%global _description\
+WARNING: It requires a CPU with SSE4 instructions. If your CPU does not\
+support this instruction set, it does not have enough horsepower to run\
+this emulator anyway.
+%endif
+
 
 %description
 A Playstation 2 emulator. Requires a dump of a real PS2 BIOS (not included)
-%if %{with sse4}
-WARNING: It requires a CPU with SSE2 instructions. If your CPU does not
-%else
-WARNING: It requires a CPU with SSE4 instructions. If your CPU does not
-%endif
-support this instruction set, it does not have enough horsepower to run
-this emulator anyway.
+%_description
+
 
 %prep
 %if 0%{?with_snapshot}
@@ -204,8 +210,6 @@ mv %{buildroot}%{_bindir}/PCSX2 %{buildroot}%{_bindir}/PCSX2.bin
 cat > %{buildroot}%{_bindir}/PCSX2 <<EOF
 #!/usr/bin/sh
 export GDK_BACKEND=x11
-export __GL_THREADED_OPTIMIZATIONS=1
-export mesa_glthread=true
 export MESA_NO_ERROR=1
 exec %{_bindir}/PCSX2.bin
 EOF
@@ -259,6 +263,10 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Thu Sep 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-131.20210902gitbb5bfda
+- Bump
+- Update SSE2 build warnings
+
 * Sun Aug 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-130.20210821git94c6814
 - Update
 
