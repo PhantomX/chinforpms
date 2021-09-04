@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>net.kuribo64.melonDS</id>
+  <launchable type="desktop-id">net.kuribo64.melonDS.desktop</launchable>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <name>melonDS</name>
+  <summary>Nintendo DS emulator.</summary>
+  <description>
+    <p>
+      melonDS is a Nintendo DS emulator.
+    </p>
+  </description>
+  <screenshots>
+    <screenshot type="default"><image>http://melonds.kuribo64.net/img/tongari22.png</image></screenshot>
+  </screenshots>
+  <categories>
+    <category>Games</category>
+    <category>Emulator</category>
+  </categories>
+  <url type="homepage">http://melonds.kuribo64.net/</url>
+  <url type="bugtracker">https://github.com/Arisotura/melonDS/issues</url>
+  <url type="help">http://melonds.kuribo64.net/board/</url>
+  <developer_name>Arisotura</developer_name>
+</component>

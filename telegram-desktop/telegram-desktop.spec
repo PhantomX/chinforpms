@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.0.0
+Version:        3.0.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -88,6 +88,9 @@ Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcna
 %endif
 %endif
 Source20:       thunar-sendto-%{name}.desktop
+
+Patch10:        %{url}/commit/09e014cc14e07bfe99444eeb60dbce9257d8b314.patch#/%{name}-gh-09e014c.patch
+Patch11:        %{url}/commit/b48764435548f514cff50ac2c0259819382c2178.patch#/%{name}-gh-b487644.patch
 
 Patch100:       %{name}-build-fix.patch
 
@@ -452,6 +455,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Sep 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.0.1-100
+- 3.0.1
+
 * Wed Sep 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.0.0-100
 - 3.0.0
 

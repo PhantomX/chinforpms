@@ -34,6 +34,7 @@ irpf2021
 lbreakouthd
 mame-data-icons
 mame-data-roms
+melonds
 ms-teams
 -mupen64plus-extraplugins
 ninfs

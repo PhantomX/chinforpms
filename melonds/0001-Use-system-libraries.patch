@@ -1,0 +1,54 @@
+From 3b6fed78f53e556f9f199a03017ef30f329d65b0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 3 Sep 2021 09:19:51 -0300
+Subject: [PATCH] Use system libraries
+
+---
+ src/ARMJIT.cpp     | 3 +--
+ src/CMakeLists.txt | 9 +++++++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/src/ARMJIT.cpp b/src/ARMJIT.cpp
+index ffde5f9..401403d 100644
+--- a/src/ARMJIT.cpp
++++ b/src/ARMJIT.cpp
+@@ -22,8 +22,7 @@
+ #include <assert.h>
+ #include <unordered_map>
+ 
+-#define XXH_STATIC_LINKING_ONLY
+-#include "xxhash/xxhash.h"
++#include "xxhash.h"
+ 
+ #include "Config.h"
+ 
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 1f5d00b..7645ebb 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -56,9 +56,14 @@ add_library(core STATIC
+ 	
+ 	sha1/sha1.c
+ 	tiny-AES-c/aes.c
+-	xxhash/xxhash.c
+ )
+ 
++find_package(PkgConfig REQUIRED)
++pkg_check_modules(XXHASH REQUIRED libxxhash)
++
++target_include_directories(core PRIVATE ${XXHASH_INCLUDE_DIRS})
++target_link_libraries(core ${XXHASH_LIBRARIES})
++
+ if (ENABLE_OGLRENDERER)
+ 	target_sources(core PRIVATE
+ 		GPU_OpenGL.cpp
+@@ -136,4 +141,4 @@ endif()
+ 
+ if (ENABLE_JIT_PROFILING)
+ 	target_link_libraries(core jitprofiling)
+-endif()
+\ No newline at end of file
++endif()
+-- 
+2.31.1
+

@@ -1,6 +1,6 @@
-From f06d4a6952c969a30a775ad6455f362acfb1e901 Mon Sep 17 00:00:00 2001
+From e9d3a98b7915a0a198c34afb3c4ae1f522b95c86 Mon Sep 17 00:00:00 2001
 From: Fedora Kernel Team <kernel-team@fedoraproject.org>
-Date: Wed, 1 Sep 2021 14:28:03 -0300
+Date: Fri, 3 Sep 2021 08:05:54 -0300
 Subject: [PATCH 1/2] fsync
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
