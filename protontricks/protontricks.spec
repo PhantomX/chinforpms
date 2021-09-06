@@ -1,7 +1,7 @@
 %bcond_with tests
 
 Name:           protontricks
-Version:        1.5.2
+Version:        1.6.0
 Release:        1%{?dist}
 Summary:        A simple wrapper that does winetricks things for Proton enabled games
 
@@ -13,15 +13,17 @@ Patch10:        0001-Disable-setuptools_scm-version-check.patch
 
 BuildArch:      noarch
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  python3-devel >= 3.5
 BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  %{py3_dist vdf} >= 3.2
 %if %{with tests}
-BuildRequires:  %{py3_distpy test-cov} >= 2.10
-BuildRequires:  %{py3_distpy test} >= 6.0
+BuildRequires:  %{py3_dist pytest-cov} >= 2.10
+BuildRequires:  %{py3_dist pytest} >= 6.0
 %endif
 Requires:       winetricks
 
+Recommends:     wine
 Recommends:     zenity
 
 
@@ -34,29 +36,41 @@ Recommends:     zenity
 
 echo "version = '%{version}'" > src/protontricks/_version.py
 
+%generate_buildrequires
+%pyproject_buildrequires -r
+
+
 %build
-%py3_build
+%pyproject_wheel
 
 
 %install
-%py3_install
+%pyproject_install
 
+%pyproject_save_files %{name}
+
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-launch.desktop
 
 %if %{with tests}
 %check
-%{python3} -m pytest -v
+%{pytest}
 %endif
 
 
-%files
+%files -f %{pyproject_files}
 %license LICENSE
 %doc CONTRIBUTING.md README.md
 %{_bindir}/%{name}
-%{python3_sitelib}/%{name}
-%{python3_sitelib}/*-*.egg-info
+%{_bindir}/%{name}-*
+%{_datadir}/applications/%{name}*.desktop
 
 
 %changelog
+* Sun Sep 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1.6.0-1
+- 1.6.0
+- Update to best packaging practices
+
 * Thu Jul 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1.5.2-1
 - 1.5.2
 - Fedora sync

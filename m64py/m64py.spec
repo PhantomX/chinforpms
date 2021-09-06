@@ -11,7 +11,7 @@
 
 Name:           m64py
 Version:        0.2.5
-Release:        7%{?gver}%{?dist}
+Release:        8%{?gver}%{?dist}
 Summary:        A frontend for Mupen64Plus 2.0
 
 License:        GPLv3
@@ -61,21 +61,25 @@ find -name '*.py' -print0 | xargs -0 \
 
 sed -e 's|_DATADIR_|%{_datadir}|g' -i bin/%{name}
 
+%generate_buildrequires
+%pyproject_buildrequires -r
+
 
 %build
-%py3_build
+%pyproject_wheel
 
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-install -pm0755 bin/%{name} %{buildroot}%{_bindir}/
-
-mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -a src/m64py/* %{buildroot}%{_datadir}/%{name}/
-
-find %{buildroot}%{_datadir}/%{name}/ -name '*.py' -print0 | xargs -0 chmod 0755
+%pyproject_install
 
 find %{buildroot} -name '*.orig' -delete
+
+rm -rf %{buildroot}%{_datadir}/pixmaps
+
+%pyproject_save_files %{name}
+
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 bin/%{name} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -98,22 +102,20 @@ done
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
-%find_lang %{name} --with-qt
 
-
-%files -f %{name}.lang
+%files -f %{pyproject_files}
 %license COPYING LICENSES
 %doc AUTHORS README.rst
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
-%dir %{_datadir}/%{name}
-%{_datadir}/%{name}/*
-%dir %{_datadir}/%{name}/ui/i18n/
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_metainfodir}/*.xml
 
 
 %changelog
+* Sun Sep 05 2021 Phantom X <megaphantomx at hotmail dot com> - 0.2.5-8.20200719gitaef8225
+- Update to best packaging practices
+
 * Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 0.2.5-7.20200719gitaef8225
 - Bump
 

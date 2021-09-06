@@ -1,16 +1,28 @@
+%global pkgname py-sdl2
+
 Name:           pysdl2
-Version:        0.9.7
+Version:        0.9.9
 Release:        1%{?dist}
 Summary:        Python wrapper around the SDL2 library
 
 License:        CC0
 URL:            https://github.com/marcusva/py-sdl2
 
-%global pkgversion %(c=%{version}; echo ${c//./_})
-Source0:        %{url}/archive/rel_%{pkgversion}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
+
+Patch0:         0001-skip-some-tests.patch
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
+
+# Tests
+BuildRequires:  SDL2
+BuildRequires:  SDL2_gfx
+BuildRequires:  SDL2_image
+BuildRequires:  SDL2_mixer
+BuildRequires:  SDL2_ttf
+BuildRequires:  %{py3_dist pyopengl}
+BuildRequires:  %{py3_dist pytest}
 
 %description
 PySDL2 is a wrapper around the SDL2 library and as such similar to the
@@ -36,22 +48,39 @@ restrictions, nor does it rely on C code, but uses ctypes instead.
 
 
 %prep
-%autosetup -n py-sdl2-rel_%{pkgversion}
+%autosetup -n %{pkgname}-%{version} -p1
+
+# These tests fail on COPR
+rm -f sdl2/test/{audio_test,sdlmixer_test}.py
+
+%generate_buildrequires
+%pyproject_buildrequires -r
 
 %build
-%py3_build
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
+
+%pyproject_save_files sdl2
 
 
-%files -n python3-sdl2
-%license COPYING.txt
+%check
+%{pytest}
+%{__python3} setup.py test
+
+
+%files -n python3-sdl2 -f %{pyproject_files}
+%license doc/copying.rst
 %doc AUTHORS.txt README.md
-%{python3_sitelib}/sdl2
-%{python3_sitelib}/*-*.egg-info
+
 
 %changelog
+* Sun Sep 05 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.9-1
+- 0.9.9
+- Update to best packaging practices
+- Add tests
+
 * Wed Mar 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.9.7-1
 - 0.9.7
 

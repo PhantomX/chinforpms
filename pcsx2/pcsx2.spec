@@ -97,14 +97,14 @@ Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(xbyak)
 
 %if %{without sse4}
-%global _description\
-WARNING: This build is modified to require a CPU with SSE2 instructions and is\
-not supported by upstream.
+%global _description %{expand:
+WARNING: This build is modified to require a CPU with SSE2 instructions and is
+not supported by upstream.}
 %else
-%global _description\
-WARNING: It requires a CPU with SSE4 instructions. If your CPU does not\
-support this instruction set, it does not have enough horsepower to run\
-this emulator anyway.
+%global _description %{expand:
+WARNING: It requires a CPU with SSE4 instructions. If your CPU does not
+support this instruction set, it does not have enough horsepower to run
+this emulator anyway.}
 %endif
 
 

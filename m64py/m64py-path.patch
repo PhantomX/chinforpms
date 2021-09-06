@@ -18,7 +18,7 @@ index bdd5911..3b170d3 100755
 -if os.path.isdir(os.path.join("..", "src")) and os.path.isfile(
 -        os.path.join("..", "setup.py")):
 -    sys.path.insert(0, os.path.realpath(os.path.join("..", "src")))
-+sys.path.append(os.path.realpath("/usr/share"))
++# sys.path.append(os.path.realpath("/usr/share"))
  
  os.environ["DBUS_FATAL_WARNINGS"] = "0"
  

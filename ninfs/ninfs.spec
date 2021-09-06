@@ -1,6 +1,6 @@
-%global commit c674c92fcffe896658a16018daa4ac4e18123769
+%global commit dee583ba3205c4e050e0b193a85a4177eb334159
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210506
+%global date 20210629
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,12 +9,12 @@
 
 %global ver %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
 
-%global haccryptover 0.1
-%global pyctrver 0.4.7
+%global haccryptover 0.1.1
+%global pyctrver 0.5.1
 
 Name:           ninfs
-Version:        2.0~a4
-Release:        2%{?gver}%{?dist}
+Version:        2.0~a6
+Release:        1%{?gver}%{?dist}
 Summary:        FUSE program to extract data from Nintendo® game consoles
 
 License:        MIT
@@ -54,18 +54,17 @@ card contents, and you can browse and copy out just the files that you need.
 %autosetup -n %{name}-%{version} -p1
 %endif
 
-# Set provided versions
-sed \
-  -e 's|haccrypto==0.1.0|haccrypto==0.1|g' \
-  -i setup.py requirements.txt
+%generate_buildrequires
+%pyproject_buildrequires -r
 
 %build
-%py3_build
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
 
-rm -rf %{buildroot}%{python3_sitelib}/%{name}/gui/data
+%pyproject_save_files %{name}
+
 
 mkdir -p %{buildroot}%{_datadir}/applications
 cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<'EOF'
@@ -88,18 +87,20 @@ for res in 16 32 64 128 1024 ; do
 done
 
 
-%files
+%files -f %{pyproject_files}
 %license LICENSE.md
 %doc README.md
 %{_bindir}/%{name}*
 %{_bindir}/mount_*
-%{python3_sitelib}/%{name}
-%{python3_sitelib}/%{name}*-*.egg-info
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 
 
 %changelog
+* Sun Sep 05 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0~a6-1.20210629gitdee583b
+- 2.0-a6 snapshot
+- Update to best packaging practices
+
 * Sat May 08 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0~a4-2.20210506gitc674c92
 - Bump
 

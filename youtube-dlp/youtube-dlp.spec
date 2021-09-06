@@ -1,8 +1,10 @@
+%bcond_without man
+
 %global forkname youtube-dlc
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2021.08.10
+Version:        2021.09.02
 Release:        1%{?dist}
 Summary:        A command-line program to download videos
 
@@ -23,7 +25,9 @@ BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  %{py3_dist pycryptodomex}
 BuildRequires:  %{py3_dist websockets}
 BuildRequires:  make
+%if %{with man}
 BuildRequires:  pandoc
+%endif
 # Tests failed because of no connection in Koji.
 # BuildRequires:  python-nose
 
@@ -52,14 +56,37 @@ sed -i '/README.txt/d' setup.py
 # Remove interpreter shebang from module files.
 find yt_dlp -type f -exec sed -i -e '1{/^\#!\/usr\/bin\/env python$/d;};' {} +
 
+sed \
+  -e '/^install:/s|%{pkgname} %{pkgname}\.1|%{pkgname}\.1|g' \
+  -e '/$(DESTDIR)$(BINDIR)/d' \
+  -i Makefile
+
+%if %{without man}
+sed \
+  -e '/^install:/s|%{pkgname}\.1 ||g' \
+  -e '/$(DESTDIR)$(MANDIR)/d' \
+  -i Makefile
+%endif
+
+%generate_buildrequires
+%pyproject_buildrequires -r
+
 
 %build
-%py3_build
+%pyproject_wheel
 
-%make_build %{pkgname}.1 completion-bash completion-zsh completion-fish
+%make_build completion-bash completion-zsh completion-fish
+%if %{with man}
+%make_build %{pkgname}.1
+%endif
 
 %install
-%py3_install
+%pyproject_install
+
+%pyproject_save_files yt_dlp
+
+mkdir -p %{buildroot}%{_mandir}/man1
+%make_install MANDIR=%{_mandir} SHAREDIR=%{_datadir}
 
 mkdir -p %{buildroot}%{_sysconfdir}
 install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
@@ -73,20 +100,24 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 # make offlinetest
 
 
-%files
+%files -f %{pyproject_files}
 %doc CONTRIBUTORS Changelog.md README.md
 %license LICENSE
 %{_bindir}/%{pkgname}
 %config(noreplace) %{_sysconfdir}/%{pkgname}.conf
+%if %{with man}
 %{_mandir}/man1/%{pkgname}.1*
-%{python3_sitelib}/yt_dlp/
-%{python3_sitelib}/yt_dlp*.egg-info
+%endif
 %{_datadir}/bash-completion/completions/%{pkgname}
 %{_datadir}/zsh/site-functions/_%{pkgname}
 %{_datadir}/fish/vendor_completions.d/%{pkgname}.fish
 
 
 %changelog
+* Mon Sep 06 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.09.02-1
+- 2021.09.02
+- Update to best packaging practices
+
 * Sun Aug 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.08.10-1
 - 2021.08.10
 

@@ -1,7 +1,7 @@
 %global pkgname haccrypto
 
 Name:           python-%{pkgname}
-Version:        0.1.0
+Version:        0.1.1
 Release:        1%{?dist}
 Summary:        Nintendo Switch XTSN crypto for Python
 
@@ -14,8 +14,8 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 BuildRequires:  python3-devel
 
 
-%global _description\
-%{pkgname} is the Nintendo Switch XTSN crypto for Python.
+%global _description %{expand:
+%{pkgname} is the Nintendo Switch XTSN crypto for Python.}
 
 %description %_description
 
@@ -30,27 +30,29 @@ Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 %prep
 %autosetup -n %{pkgname}-%{version} -p1
 
+%generate_buildrequires
+%pyproject_buildrequires -t
+
 
 %build
-%py3_build
+%pyproject_wheel
 
 
 %install
-%py3_install
+%pyproject_install
+
+%pyproject_save_files %{pkgname}
 
 
-%check
-%{__python3} setup.py test
-
-
-%files
-%files -n python3-%{pkgname}
+%files -n python3-%{pkgname} -f %{pyproject_files}
 %license LICENSE.md
 %doc README.md
-%{python3_sitearch}/%{pkgname}
-%{python3_sitearch}/%{pkgname}*-*.egg-info
 
 
 %changelog
+* Sun Sep 05 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-1
+- 0.1.1
+- Update to best packaging practices
+
 * Wed Jan 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1.0-1
 - Initial spec

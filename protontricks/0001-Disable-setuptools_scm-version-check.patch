@@ -20,7 +20,7 @@ index 22076c5..f04263f 100644
 -    },
      description=DESCRIPTION,
      long_description=LONG_DESCRIPTION,
-     author=AUTHOR,
+     data_files=[
 @@ -28,11 +25,6 @@ setup(
      packages=["protontricks"],
      package_data={"": ["LICENSE"]},

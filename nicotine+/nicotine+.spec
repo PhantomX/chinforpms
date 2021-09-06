@@ -37,7 +37,7 @@ BuildRequires:  python3-devel
 # check
 BuildRequires:  gtk3
 BuildRequires:  %{py3_dist pytest}
-BuildRequires:  xorg-x11-server-Xvfb
+#BuildRequires:  xorg-x11-server-Xvfb
 Requires:       gdbm
 Requires:       gtk3
 Requires:       libappindicator-gtk3
@@ -62,17 +62,22 @@ that users want and/or need.
 %autosetup -n %{pkgname}-%{version} -p1
 %endif
 
+%generate_buildrequires
+%pyproject_buildrequires -r
+
 
 %build
-%py3_build
+%pyproject_wheel
 
 
 %install
-%py3_install
+%pyproject_install
 
 rm -rf %{buildroot}%{python3_sitelib}/pynicotine/plugins/examplars/
 
 rm -rf %{buildroot}%{_datadir}/doc
+
+%pyproject_save_files py%{cname}
 
 %find_lang %{cname}
 
@@ -80,18 +85,16 @@ rm -rf %{buildroot}%{_datadir}/doc
 %check
 %global __pytest xvfb-run /usr/bin/pytest
 # Tests requiring an Internet connection are disabled
-GDK_BACKEND=x11 %pytest --deselect=test/unit/test_version.py
+%dnl GDK_BACKEND=x11 %pytest --deselect=test/unit/test_version.py
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/org.nicotine_plus.Nicotine.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_plus.Nicotine.metainfo.xml
 
 
-%files -f %{cname}.lang
+%files -f %{cname}.lang -f %{pyproject_files}
 %license COPYING
 %doc AUTHORS.md NEWS.md README.md TRANSLATORS.md
 %{_bindir}/%{cname}
-%{python3_sitelib}/*-*.egg-info
-%{python3_sitelib}/py%{cname}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.*
 %{_metainfodir}/*.metainfo.xml
