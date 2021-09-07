@@ -136,7 +136,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2021.08
+Version:        2021.08.1
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -1043,6 +1043,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Mon Sep 06 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.08.1-1.classic
+- 2021.08.1
+
 * Fri Aug 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.08-1.classic
 - 2021.08
 
