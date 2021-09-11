@@ -1,7 +1,7 @@
 %global commit b88fc0130e7c9b5a8e5e86c51a69c8d3c9fd0c1b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210901
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -10,7 +10,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           antimicrox
-Version:        3.1.6
+Version:        3.1.7
 Release:        100%{?gver}%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
@@ -122,6 +122,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 
 
 %changelog
+* Fri Sep 10 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.7-100
+- 3.1.7
+
 * Wed Sep 01 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.6-100.20210901gitb88fc01
 - 3.1.6
 

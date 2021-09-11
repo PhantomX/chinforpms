@@ -1,7 +1,7 @@
 %global commit 8b9f1e12841298591387e2b7590191610a37986e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210903
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -33,7 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  6.3.0
-%global winevulkan 1.2.190
+%global winevulkan 1.2.191
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver f3b03ce5a1cdedc112dac91a597365f1e21b20ef
+%global wine_stagingver 6.17
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id f04a5161ebd57608c5781fa2fe20a868cc055040
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e497517117191268247ef90006e912fc6d8da152
+%global tkg_id 99797eb49e562c8adc8aa12eceff724f469f6be9
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -127,8 +127,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.16
-Release:        101%{?gver}%{?dist}
+Version:        6.17
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -194,38 +194,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-
-# 100-129 for proton-tkg-staging patch
-Patch100:       %{whq_url}/fbd39cd8b5de10c53fbb6c5e298c8863beec13fd#/%{name}-whq-fbd39cd.patch
-Patch101:       %{whq_url}/1c1ff37390c94101f474ce8ee57a3bd830ca965f#/%{name}-whq-1c1ff37.patch
-Patch102:       %{whq_url}/86f11f71a04fa27f3e52366a131810d945749c0e#/%{name}-whq-86f11f7.patch
-Patch103:       %{whq_url}/91621cece6154356bfbe8934759c355abea9a074#/%{name}-whq-91621ce.patch
-Patch104:       %{whq_url}/e4bb7972525ae855865c54a7f87955cb74b123c5#/%{name}-whq-e4bb797.patch
-Patch105:       %{whq_url}/9c03e8ae8c0f81e70528bc7719fba5196ea7949e#/%{name}-whq-9c03e8a.patch
-Patch106:       %{whq_url}/55849cd42808e54e1a63ef0de4db05640065a968#/%{name}-whq-55849cd.patch
-Patch107:       %{whq_url}/011032164040ac36370249655addb300baec1b78#/%{name}-whq-0110321.patch
-Patch108:       %{whq_url}/b2522bfb90e23ed84d1ec2dc03069a28d937b32f#/%{name}-whq-b2522bf.patch
-Patch109:       %{whq_url}/f6e584e626523d2500f094f1e98f113018770c5f#/%{name}-whq-f6e584e.patch
-Patch110:       %{whq_url}/931ea8b00e82912a96446575371e105cf1399496#/%{name}-whq-931ea8b.patch
-Patch111:       %{whq_url}/865be24a2516518250badb5325220eacff2a126f#/%{name}-whq-865be24.patch
-Patch112:       %{whq_url}/8a68a9ee3193149c3f8825c31af7d5a6480f4ee4#/%{name}-whq-8a68a9e.patch
-Patch113:       %{whq_url}/7da78fd269309cfa8ed27aededb2c67e24507439#/%{name}-whq-7da78fd.patch
-Patch114:       %{whq_url}/00359ebfa0d4a86aac024f4067a82bb5725c94b4#/%{name}-whq-00359eb.patch
-Patch115:       %{whq_url}/34508690cb98f9d849cc04817db77400c62513c4#/%{name}-whq-3450869.patch
-Patch116:       %{whq_url}/66fd792c4d16bb5815b5d796f119e7bf8d946fc1#/%{name}-whq-66fd792.patch
-Patch117:       %{whq_url}/f95687c510e177d3c2b368e0181e9209aa2ac381#/%{name}-whq-f95687c.patch
-Patch118:       %{whq_url}/8217ce0fef83a0aea3c658489c885d9bb69a3056#/%{name}-whq-8217ce0.patch
-Patch119:       %{whq_url}/b096da8a50210cb437376a2d65374e310d53eeff#/%{name}-whq-b096da8.patch
-Patch120:       %{whq_url}/02d2bc944db2e5132e11a9ffdcad5f3f497b03fc#/%{name}-whq-02d2bc9.patch
-Patch121:       %{whq_url}/711ce415c01a5e36bde6bb147b5aa3cedc8b35ed#/%{name}-whq-711ce41.patch
-Patch122:       %{whq_url}/800cde3cf4bffa3a2909e5ae00326db6eb1b42b1#/%{name}-whq-800cde3.patch
-Patch123:       %{whq_url}/ef7b2a1b8bf3cfdd29051da248fa3c2060800271#/%{name}-whq-ef7b2a1.patch
-Patch124:       %{whq_url}/75d21c999e39cf5c1b3feb6e2c50cdc30a077325#/%{name}-whq-75d21c9.patch
-Patch125:       %{whq_url}/5794b2da18328ea22464b70cd243d279a236df7d#/%{name}-whq-5794b2d.patch
-Patch126:       %{whq_url}/05a3384ca8186404280085da1d1744da474a60d7#/%{name}-whq-05a3384.patch
-Patch127:       %{whq_url}/c33b7b583b4067639ce8e4bbea2965cb2bf091de#/%{name}-whq-c33b7b5.patch
-Patch128:       %{whq_url}/951d8ace18c5677d7bc577a08c69a1c1af8bf2d1#/%{name}-whq-951d8ac.patch
-Patch129:       %{whq_url}/072a100f66215763a67edc4629fe5d3b73f6734c#/%{name}-whq-072a100.patch
 
 Patch200:       https://bugs.winehq.org/attachment.cgi?id=70518#/%{name}-whq-bug51296.patch
 
@@ -879,36 +847,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
-%patch129 -p1 -R
-%patch128 -p1 -R
-%patch127 -p1 -R
-%patch126 -p1 -R
-%patch125 -p1 -R
-%patch124 -p1 -R
-%patch123 -p1 -R
-%patch122 -p1 -R
-%patch121 -p1 -R
-%patch120 -p1 -R
-%patch119 -p1 -R
-%patch118 -p1 -R
-%patch117 -p1 -R
-%patch116 -p1 -R
-%patch115 -p1 -R
-%patch114 -p1 -R
-%patch113 -p1 -R
-%patch112 -p1 -R
-%patch111 -p1 -R
-%patch110 -p1 -R
-%patch109 -p1 -R
-%patch108 -p1 -R
-%patch107 -p1 -R
-%patch106 -p1 -R
-%patch105 -p1 -R
-%patch104 -p1 -R
-%patch103 -p1 -R
-%patch102 -p1 -R
-%patch101 -p1 -R
-%patch100 -p1 -R
+
 
 %patch200 -p1
 
@@ -1576,10 +1515,9 @@ fi
 %endif
 %{_libdir}/wine/%{winedlldir}/wineconsole.%{wineexe}
 %{_libdir}/wine/%{winesodir}/winemenubuilder.exe.so
-%{_libdir}/wine/%{winesodir}/winecfg.exe.so
+%{_libdir}/wine/%{winedlldir}/winecfg.%{wineexe}
 %if 0%{?wine_mingw}
 %{_libdir}/wine/%{winedlldir}/winemenubuilder.exe
-%{_libdir}/wine/%{winedlldir}/winecfg.exe
 %endif
 %{_libdir}/wine/%{winedlldir}/winedevice.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wmplayer.%{wineexe}
@@ -2980,6 +2918,9 @@ fi
 
 
 %changelog
+* Sat Sep 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.17-100
+- 6.17
+
 * Sat Sep 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.16-101.20210903git8b9f1e1
 - Snapshot
 

@@ -145,7 +145,7 @@ rm -fv %{buildroot}%{progdir}/libsqlite3.so.*
 rm -fv %{buildroot}%{progdir}/*/*/*.exe
 
 abs2rel(){
-  realpath --relative-to="$2" "$1"
+  realpath -m --relative-to="$2" "$1"
 }
 
 missing(){
