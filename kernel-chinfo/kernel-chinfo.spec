@@ -149,7 +149,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -160,7 +160,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d5a8e9aef713842d9bf2e64c008a9dd27d5bb457
+%global pfcommit 9df2823b26e67bea949698bb9f186625394b9227
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -943,6 +943,9 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
+Patch1019: %{opensuse_url}/watchdog-Fix-NULL-pointer-dereference-when-releasing.patch#/openSUSE-watchdog-Fix-NULL-pointer-dereference-when-releasing.patch
+Patch1020: %{opensuse_url}/crypto-ecc-handle-unaligned-input-buffer-in-ecc_swap.patch#/openSUSE-crypto-ecc-handle-unaligned-input-buffer-in-ecc_swap.patch
+Patch1021: %{opensuse_url}/memcg-enable-accounting-of-ipc-resources.patch#/openSUSE-memcg-enable-accounting-of-ipc-resources.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2902,6 +2905,9 @@ fi
 #
 #
 %changelog
+* Sun Sep 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.3-500.chinfo
+- 5.14.3 - pf2
+
 * Fri Sep 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.2-500.chinfo
 - 5.14.2 - pf2
 

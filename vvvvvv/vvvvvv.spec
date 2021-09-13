@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 1cbc3bdc7cd69757a88aa0fe80fd3ee68dd663e1
+%global commit 2991b2341ab85622b4eacc0447dbe346f8eb6ce0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210831
+%global date 20210912
 
 %undefine _hardened_build
 
@@ -18,7 +18,7 @@
 
 Name:           vvvvvv
 Version:        2.4
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -44,7 +44,7 @@ BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(SDL2_mixer)
 BuildRequires:  pkgconfig(physfs)
 %if 0%{?with_systinyxml}
-BuildRequires:  pkgconfig(tinyxml2)
+BuildRequires:  pkgconfig(tinyxml2) >= 8.0
 %endif
 BuildRequires:  utf8cpp-devel
 
@@ -68,7 +68,9 @@ Provides:       bundled(tinyxml2) = %{bundletinyxml}
 %autosetup -n %{pkgname}-%{commit} -p1
 
 # Make sure that we are using system ones
-rm -rf third_party/physfs/
+mv third_party/physfs/extras .
+rm -rf third_party/physfs/*
+mv extras third_party/physfs/
 rm -rf third_party/utfcpp/
 %if 0%{?with_systinyxml}
 rm -rf third_party/tinyxml2/
@@ -149,6 +151,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Mon Sep 13 2021 - 2.4-2.20210912git2991b23
+- Bump
+
 * Tue Aug 31 2021 - 2.4-1.20210831git1cbc3bd
 - 2.4 snapshot
 
