@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.0.1
+Version:        3.0.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -88,9 +88,6 @@ Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcna
 %endif
 %endif
 Source20:       thunar-sendto-%{name}.desktop
-
-Patch10:        %{url}/commit/09e014cc14e07bfe99444eeb60dbce9257d8b314.patch#/%{name}-gh-09e014c.patch
-Patch11:        %{url}/commit/b48764435548f514cff50ac2c0259819382c2178.patch#/%{name}-gh-b487644.patch
 
 Patch100:       %{name}-build-fix.patch
 
@@ -139,6 +136,7 @@ BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(sigc++-2.0)
+BuildRequires:  pkgconfig(rnnoise)
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
@@ -181,7 +179,6 @@ BuildRequires:  pkgconfig(tgvoip) >= 2.4.4
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libpulse)
-BuildRequires:  pkgconfig(rnnoise)
 Provides:       bundled(libtgvoip) = 2.4.4
 %endif
 
@@ -337,6 +334,11 @@ find Telegram -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
 
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
+# Patching QR-Code...
+%if 0%{?fedora} && 0%{?fedora} >= 35
+sed -e 's/QrCode\.hpp/qrcodegen\.hpp/g' -i {cmake/external/qr_code_generator/CMakeLists.txt,Telegram/lib_qr/qr/qr_generate.cpp}
+%endif
+
 
 %build
 %if %{without tg_owt}
@@ -455,6 +457,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Sep 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.0.4-100
+- 3.0.4
+
 * Fri Sep 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.0.1-100
 - 3.0.1
 
