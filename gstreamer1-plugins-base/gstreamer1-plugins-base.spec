@@ -5,8 +5,8 @@
 #global shortcommit  %%(c=%{gitcommit}; echo ${c:0:5})
 
 Name:           gstreamer1-plugins-base
-Version:        1.18.4
-Release:        101%{?gitcommit:.git%{shortcommit}}%{?dist}
+Version:        1.18.5
+Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework base plugins
 
 License:        LGPLv2+
@@ -482,6 +482,9 @@ chrpath --delete %{buildroot}%{_bindir}/gst-play-1.0
 %endif
 
 %changelog
+* Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.18.5-100
+- 1.18.5
+
 * Tue Jul 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1.18.4-101
 - Disable buffer patch
 

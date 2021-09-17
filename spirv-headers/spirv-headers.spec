@@ -1,13 +1,13 @@
-%global commit e7b49d7fb59808a650618e0a4008d4bae927e112
+%global commit 635049b5e1451d846d5d307def8c78328aaeb342
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210728
+%global date 20210910
 %global gver .%{date}git%{shortcommit}
 
 %global pkgname SPIRV-Headers
 
 Name:           spirv-headers
 Version:        1.5.4
-Release:        110%{?gver}%{?dist}
+Release:        111%{?gver}%{?dist}
 Summary:        Header files from the SPIR-V registry
 
 License:        MIT
@@ -59,6 +59,9 @@ mv include/* %{buildroot}%{_includedir}/
 %{_includedir}/spirv/
 
 %changelog
+* Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.5.4-111.20210910git635049b
+- Last update
+
 * Fri Aug 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1.5.4-110.20210728gite7b49d7
 - Bump
 

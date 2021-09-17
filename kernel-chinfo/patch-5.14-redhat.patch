@@ -4,19 +4,14 @@ Date: Mon, 8 Mar 2021 10:29:25 -0300
 Subject: [PATCH] patch-5.14-redhat
 
 ---
- Documentation/admin-guide/kernel-parameters.txt    |   9 +
- Kconfig                                            |   2 +
- Kconfig.redhat                                     |  17 +
- Makefile                                           |  12 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
  .../boot/dts/rockchip/rk3399-pinebook-pro.dts      |   6 +-
- arch/arm64/kernel/acpi.c                           |   4 +
+ arch/arm64/kernel/acpi.c                           |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/cpu/common.c                       |   1 +
- arch/x86/kernel/setup.c                            |  69 ++-
+ arch/x86/kernel/setup.c                            |  22 +-
  crypto/rng.c                                       |  73 ++-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
@@ -32,48 +27,19 @@ Subject: [PATCH] patch-5.14-redhat
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
- drivers/message/fusion/mptsas.c                    |  10 +
- drivers/message/fusion/mptspi.c                    |  11 +
- drivers/net/team/team.c                            |   2 +
- drivers/net/wireguard/main.c                       |   7 +
- drivers/nvme/host/core.c                           |  22 +-
- drivers/nvme/host/multipath.c                      |  19 +-
- drivers/nvme/host/nvme.h                           |   4 +
- drivers/pci/pci-driver.c                           |  29 ++
+ drivers/net/wireguard/main.c                       |   6 +
  drivers/pci/quirks.c                               |  24 +
- drivers/scsi/aacraid/linit.c                       |   2 +
- drivers/scsi/be2iscsi/be_main.c                    |   2 +
- drivers/scsi/hpsa.c                                |   4 +
- drivers/scsi/lpfc/lpfc_ids.h                       |  14 +
- drivers/scsi/megaraid/megaraid_sas_base.c          |   4 +
- drivers/scsi/mpt3sas/mpt3sas_scsih.c               |   4 +
- drivers/scsi/qla2xxx/qla_os.c                      |   6 +
- drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
  drivers/usb/core/hub.c                             |   7 +
- fs/ext4/super.c                                    |   5 +
- fs/xfs/xfs_super.c                                 |  13 +-
+ fs/xfs/xfs_super.c                                 |   8 -
  include/linux/efi.h                                |  22 +-
- include/linux/kernel.h                             |  15 +
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
- include/linux/module.h                             |   1 +
- include/linux/panic.h                              |  19 +-
- include/linux/pci.h                                |   4 +
  include/linux/random.h                             |   7 +
- include/linux/rh_kabi.h                            | 297 +++++++++++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
- kernel/Makefile                                    |   1 +
- kernel/bpf/syscall.c                               |  18 +
- kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
- kernel/panic.c                                     |  14 +
- kernel/rh_taint.c                                  |  93 ++++
- kernel/sysctl.c                                    |   5 +
  mm/cma.c                                           |  10 +
- scripts/mod/modpost.c                              |   8 +
- scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
@@ -91,91 +57,8 @@ Subject: [PATCH] patch-5.14-redhat
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 87 files changed, 1359 insertions(+), 1506 deletions(-)
+ 53 files changed, 655 insertions(+), 1495 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index bdb22006f713..61a3a4a4730b 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5854,6 +5854,15 @@
- 	unknown_nmi_panic
- 			[X86] Cause panic on unknown NMI.
-
-+	unprivileged_bpf_disabled=
-+			Format: { "0" | "1" | "2" }
-+			Sets the initial value of
-+			kernel.unprivileged_bpf_disabled sysctl knob.
-+			0 - unprivileged bpf() syscall access is enabled.
-+			1 - unprivileged bpf() syscall access is disabled permanently.
-+			2 - unprivileged bpf() syscall access is disabled.
-+			Default value is 2.
-+
- 	usbcore.authorized_default=
- 			[USB] Default USB device authorization:
- 			(default -1 = authorized except for wireless USB,
-diff --git a/Kconfig b/Kconfig
-index 745bc773f567..f57ff40109d7 100644
---- a/Kconfig
-+++ b/Kconfig
-@@ -30,3 +30,5 @@ source "lib/Kconfig"
- source "lib/Kconfig.debug"
-
- source "Documentation/Kconfig"
-+
-+source "Kconfig.redhat"
-diff --git a/Kconfig.redhat b/Kconfig.redhat
-new file mode 100644
-index 000000000000..effb81d04bfd
---- /dev/null
-+++ b/Kconfig.redhat
-@@ -0,0 +1,17 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Red Hat specific options
-+#
-+
-+menu "Red Hat options"
-+
-+config RHEL_DIFFERENCES
-+	bool "Remove support for deprecated features"
-+	help
-+	  Red Hat may choose to deprecate certain features in its kernels.
-+	  Enable this option to remove support for hardware that is no
-+	  longer supported.
-+
-+	  Unless you want a restricted kernel, say N here.
-+
-+endmenu
-diff --git a/Makefile b/Makefile
-index 61741e9d9c6e..093ecf99677f 100644
---- a/Makefile
-+++ b/Makefile
-@@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
- PHONY := __all
- __all:
-
-+# Set RHEL variables
-+# Use this spot to avoid future merge conflicts
-+include Makefile.rhelver
-+
- # We are using a recursive build, so we need to do a little thinking
- # to get the ordering right.
- #
-@@ -1256,7 +1260,13 @@ define filechk_version.h
- 	((c) > 255 ? 255 : (c)))';                                       \
- 	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
- 	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
--	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
-+	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);                \
-+	echo '#define RHEL_MAJOR $(RHEL_MAJOR)'; \
-+	echo '#define RHEL_MINOR $(RHEL_MINOR)'; \
-+	echo '#define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))'; \
-+	echo '#define RHEL_RELEASE_CODE \
-+		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
-+	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
- endef
-
- $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 2fb7012c3246..47718b4f2f75 100644
 --- a/arch/arm/Kconfig
@@ -238,18 +121,15 @@ index 2b5f001ff4a6..dae8c252bc2b 100644
  			op-sink-microwatt = <1000000>;
  			power-role = "dual";
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-index f3851724fe35..ef69eeab6f2a 100644
+index f3851724fe35..cac21da49455 100644
 --- a/arch/arm64/kernel/acpi.c
 +++ b/arch/arm64/kernel/acpi.c
-@@ -40,7 +40,11 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
+@@ -40,7 +40,7 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
  EXPORT_SYMBOL(acpi_pci_disabled);
 
  static bool param_acpi_off __initdata;
-+#ifdef CONFIG_RHEL_DIFFERENCES
+-static bool param_acpi_on __initdata;
 +static bool param_acpi_on __initdata = true;
-+#else
- static bool param_acpi_on __initdata;
-+#endif
  static bool param_acpi_force __initdata;
 
  static int __init parse_acpi(char *arg)
@@ -266,10 +146,10 @@ index a9e2c7295b35..6ff11f3a2d47 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 50e2c21e0ec9..5da0c683df8d 100644
+index 911cd3912351..caae31c04561 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2218,3 +2218,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2215,3 +2215,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -279,7 +159,7 @@ index 50e2c21e0ec9..5da0c683df8d 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index ff0f9e838916..557318323664 100644
+index ee23908f1b96..0273125cdfba 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -290,7 +170,7 @@ index ff0f9e838916..557318323664 100644
  #include <linux/hugetlb.h>
 
  #include <asm/boot_data.h>
-@@ -1023,6 +1024,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -1030,6 +1031,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -300,20 +180,8 @@ index ff0f9e838916..557318323664 100644
  	/* Have one command line that is parsed and saved in /proc/cmdline */
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
-diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 64b805bd6a54..e6702f1e1beb 100644
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -1304,6 +1304,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
- 		cpu_detect(c);
- 		get_cpu_vendor(c);
- 		get_cpu_cap(c);
-+		get_model_name(c); /* RHEL: get model name for unsupported check */
- 		get_cpu_address_sizes(c);
- 		setup_force_cpu_cap(X86_FEATURE_CPUID);
- 		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index bff3a784aec5..1a9c345f914d 100644
+index bff3a784aec5..4e13c3ee5723 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -19,6 +19,7 @@
@@ -324,66 +192,7 @@ index bff3a784aec5..1a9c345f914d 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -49,6 +50,7 @@
- #include <asm/unwind.h>
- #include <asm/vsyscall.h>
- #include <linux/vmalloc.h>
-+#include <asm/intel-family.h>
-
- /*
-  * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -732,6 +734,50 @@ static void __init early_reserve_memory(void)
- 	trim_snb_memory();
- }
-
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+
-+static void rh_check_supported(void)
-+{
-+	bool guest;
-+
-+	guest = (x86_hyper_type != X86_HYPER_NATIVE || boot_cpu_has(X86_FEATURE_HYPERVISOR));
-+
-+	/* RHEL supports single cpu on guests only */
-+	if (((boot_cpu_data.x86_max_cores * smp_num_siblings) == 1) &&
-+	    !guest && is_kdump_kernel()) {
-+		pr_crit("Detected single cpu native boot.\n");
-+		pr_crit("Important:  In this kernel, single threaded, single CPU 64-bit physical systems are unsupported.");
-+	}
-+
-+	/*
-+	 * If the RHEL kernel does not support this hardware, the kernel will
-+	 * attempt to boot, but no support is provided for this hardware
-+	 */
-+	switch (boot_cpu_data.x86_vendor) {
-+	case X86_VENDOR_AMD:
-+	case X86_VENDOR_INTEL:
-+		break;
-+	default:
-+		pr_crit("Detected processor %s %s\n",
-+			boot_cpu_data.x86_vendor_id,
-+			boot_cpu_data.x86_model_id);
-+		mark_hardware_unsupported("Processor");
-+		break;
-+	}
-+
-+	/*
-+	 * Due to the complexity of x86 lapic & ioapic enumeration, and PCI IRQ
-+	 * routing, ACPI is required for x86.  acpi=off is a valid debug kernel
-+	 * parameter, so just print out a loud warning in case something
-+	 * goes wrong (which is most of the time).
-+	 */
-+	if (acpi_disabled && !guest)
-+		pr_crit("ACPI has been disabled or is not available on this hardware.  This may result in a single cpu boot, incorrect PCI IRQ routing, or boot failure.\n");
-+}
-+#else
-+#define rh_check_supported()
-+#endif
-+
- /*
-  * Dump out kernel offset information on panic.
-  */
-@@ -936,6 +982,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -936,6 +937,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -397,7 +206,7 @@ index bff3a784aec5..1a9c345f914d 100644
  	dmi_setup();
 
  	/*
-@@ -1101,19 +1154,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1101,19 +1109,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -417,15 +226,6 @@ index bff3a784aec5..1a9c345f914d 100644
 +	efi_set_secure_boot(boot_params.secure_boot);
 
  	reserve_initrd();
-
-@@ -1226,6 +1267,8 @@ void __init setup_arch(char **cmdline_p)
- 		efi_apply_memmap_quirks();
- #endif
-
-+	rh_check_supported();
-+
- 	unwind_init();
- }
 
 diff --git a/crypto/rng.c b/crypto/rng.c
 index fea082b25fe4..50a9d040bed1 100644
@@ -1463,91 +1263,8 @@ index 63f0af10c403..195be16dbd39 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
-diff --git a/drivers/message/fusion/mptsas.c b/drivers/message/fusion/mptsas.c
-index 85285ba8e817..b8109517c4ef 100644
---- a/drivers/message/fusion/mptsas.c
-+++ b/drivers/message/fusion/mptsas.c
-@@ -5318,6 +5318,11 @@ mptsas_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		    ioc, MPI_SAS_OP_CLEAR_ALL_PERSISTENT);
- 	}
-
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+	add_taint(TAINT_SUPPORT_REMOVED, LOCKDEP_STILL_OK);
-+	pr_warn("MPTSAS MODULE IS NOT SUPPORTED\n");
-+#endif
-+
- 	error = scsi_add_host(sh, &ioc->pcidev->dev);
- 	if (error) {
- 		dprintk(ioc, printk(MYIOC_s_ERR_FMT
-@@ -5381,6 +5386,10 @@ static void mptsas_remove(struct pci_dev *pdev)
- }
-
- static struct pci_device_id mptsas_pci_table[] = {
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_SAS1068,
-+		PCI_VENDOR_ID_VMWARE, PCI_ANY_ID },
-+#else
- 	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_SAS1064,
- 		PCI_ANY_ID, PCI_ANY_ID },
- 	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_SAS1068,
-@@ -5393,6 +5402,7 @@ static struct pci_device_id mptsas_pci_table[] = {
- 		PCI_ANY_ID, PCI_ANY_ID },
- 	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_SAS1068_820XELP,
- 		PCI_ANY_ID, PCI_ANY_ID },
-+#endif
- 	{0}	/* Terminating entry */
- };
- MODULE_DEVICE_TABLE(pci, mptsas_pci_table);
-diff --git a/drivers/message/fusion/mptspi.c b/drivers/message/fusion/mptspi.c
-index af0ce5611e4a..1c226920c12d 100644
---- a/drivers/message/fusion/mptspi.c
-+++ b/drivers/message/fusion/mptspi.c
-@@ -1238,12 +1238,17 @@ static struct spi_function_template mptspi_transport_functions = {
-  */
-
- static struct pci_device_id mptspi_pci_table[] = {
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_53C1030,
-+	PCI_VENDOR_ID_VMWARE, PCI_ANY_ID },
-+#else
- 	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_53C1030,
- 		PCI_ANY_ID, PCI_ANY_ID },
- 	{ PCI_VENDOR_ID_ATTO, MPI_MANUFACTPAGE_DEVID_53C1030,
- 		PCI_ANY_ID, PCI_ANY_ID },
- 	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_53C1035,
- 		PCI_ANY_ID, PCI_ANY_ID },
-+#endif
- 	{0}	/* Terminating entry */
- };
- MODULE_DEVICE_TABLE(pci, mptspi_pci_table);
-@@ -1534,6 +1539,12 @@ mptspi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		    0, 0, 0, 0, 5);
-
- 	scsi_scan_host(sh);
-+
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+	add_taint(TAINT_SUPPORT_REMOVED, LOCKDEP_STILL_OK);
-+	pr_warn("MPTSPI MODULE IS NOT SUPPORTED\n");
-+#endif
-+
- 	return 0;
-
- out_mptspi_probe:
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index dd7917cab2b1..f6b43adb2ced 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -3045,6 +3045,8 @@ static int __init team_module_init(void)
- 	if (err)
- 		goto err_nl_init;
-
-+	mark_hardware_deprecated(DRV_NAME);
-+
- 	return 0;
-
- err_nl_init:
 diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
-index 75dbe77b0b4b..029ff8576f8e 100644
+index 75dbe77b0b4b..4bd6dd722f44 100644
 --- a/drivers/net/wireguard/main.c
 +++ b/drivers/net/wireguard/main.c
 @@ -12,6 +12,7 @@
@@ -1570,199 +1287,8 @@ index 75dbe77b0b4b..029ff8576f8e 100644
  	ret = wg_allowedips_slab_init();
  	if (ret < 0)
  		goto err_allowedips;
-@@ -48,6 +54,7 @@ static int __init mod_init(void)
- 	pr_info("WireGuard " WIREGUARD_VERSION " loaded. See www.wireguard.com for information.\n");
- 	pr_info("Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.\n");
-
-+	mark_tech_preview("WireGuard", THIS_MODULE);
- 	return 0;
-
- err_netlink:
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index dfd9dec0c1f6..de735680d279 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -261,6 +261,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
-
- static blk_status_t nvme_error_status(u16 status)
- {
-+	if (unlikely(status & NVME_SC_DNR))
-+		return BLK_STS_TARGET;
-+
- 	switch (status & 0x7ff) {
- 	case NVME_SC_SUCCESS:
- 		return BLK_STS_OK;
-@@ -320,6 +323,7 @@ enum nvme_disposition {
- 	COMPLETE,
- 	RETRY,
- 	FAILOVER,
-+	FAILUP,
- };
-
- static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
-@@ -327,15 +331,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
- 	if (likely(nvme_req(req)->status == 0))
- 		return COMPLETE;
-
--	if (blk_noretry_request(req) ||
-+	if ((req->cmd_flags & (REQ_FAILFAST_DEV | REQ_FAILFAST_DRIVER)) ||
- 	    (nvme_req(req)->status & NVME_SC_DNR) ||
- 	    nvme_req(req)->retries >= nvme_max_retries)
- 		return COMPLETE;
-
--	if (req->cmd_flags & REQ_NVME_MPATH) {
-+	if (req->cmd_flags & (REQ_NVME_MPATH | REQ_FAILFAST_TRANSPORT)) {
- 		if (nvme_is_path_error(nvme_req(req)->status) ||
- 		    blk_queue_dying(req->q))
--			return FAILOVER;
-+			return (req->cmd_flags & REQ_NVME_MPATH) ?
-+				FAILOVER : FAILUP;
- 	} else {
- 		if (blk_queue_dying(req->q))
- 			return COMPLETE;
-@@ -357,6 +362,14 @@ static inline void nvme_end_req(struct request *req)
- 	blk_mq_end_request(req, status);
- }
-
-+static inline void nvme_failup_req(struct request *req)
-+{
-+	nvme_update_ana(req);
-+
-+	nvme_req(req)->status = NVME_SC_HOST_PATH_ERROR;
-+	nvme_end_req(req);
-+}
-+
- void nvme_complete_rq(struct request *req)
- {
- 	trace_nvme_complete_rq(req);
-@@ -375,6 +388,9 @@ void nvme_complete_rq(struct request *req)
- 	case FAILOVER:
- 		nvme_failover_req(req);
- 		return;
-+	case FAILUP:
-+		nvme_failup_req(req);
-+		return;
- 	}
- }
- EXPORT_SYMBOL_GPL(nvme_complete_rq);
-diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 3f32c5e86bfc..3f95b8d5881f 100644
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
- 	return true;
- }
-
--void nvme_failover_req(struct request *req)
-+void nvme_update_ana(struct request *req)
- {
- 	struct nvme_ns *ns = req->q->queuedata;
- 	u16 status = nvme_req(req)->status & 0x7ff;
--	unsigned long flags;
--	struct bio *bio;
--
--	nvme_mpath_clear_current_path(ns);
-
- 	/*
- 	 * If we got back an ANA error, we know the controller is alive but not
-@@ -83,6 +79,16 @@ void nvme_failover_req(struct request *req)
- 		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
- 		queue_work(nvme_wq, &ns->ctrl->ana_work);
- 	}
-+}
-+
-+void nvme_failover_req(struct request *req)
-+{
-+	struct nvme_ns *ns = req->q->queuedata;
-+	unsigned long flags;
-+	struct bio *bio;
-+
-+	nvme_mpath_clear_current_path(ns);
-+	nvme_update_ana(req);
-
- 	spin_lock_irqsave(&ns->head->requeue_lock, flags);
- 	for (bio = req->bio; bio; bio = bio->bi_next)
-@@ -796,8 +802,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
- 	int error = 0;
-
- 	/* check if multipath is enabled and we have the capability */
--	if (!multipath || !ctrl->subsys ||
--	    !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
-+	if (!ctrl->subsys || !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
- 		return 0;
-
- 	if (!ctrl->max_namespaces ||
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 5cd1fa3b8464..2667c617ae92 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -706,6 +706,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
- bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags);
- void nvme_failover_req(struct request *req);
-+void nvme_update_ana(struct request *req);
- void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
- int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
- void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -743,6 +744,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
- static inline void nvme_failover_req(struct request *req)
- {
- }
-+static inline void nvme_update_ana(struct request *req)
-+{
-+}
- static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
- {
- }
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 3a72352aa5cf..47b11f3c7fce 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -19,6 +19,7 @@
- #include <linux/kexec.h>
- #include <linux/of_device.h>
- #include <linux/acpi.h>
-+#include <linux/kernel.h>
- #include <linux/dma-map-ops.h>
- #include "pci.h"
- #include "pcie/portdrv.h"
-@@ -281,6 +282,34 @@ static struct attribute *pci_drv_attrs[] = {
- };
- ATTRIBUTE_GROUPS(pci_drv);
-
-+/**
-+ * pci_hw_vendor_status - Tell if a PCI device is supported by the HW vendor
-+ * @ids: array of PCI device id structures to search in
-+ * @dev: the PCI device structure to match against
-+ *
-+ * Used by a driver to check whether this device is in its list of unsupported
-+ * devices.  Returns the matching pci_device_id structure or %NULL if there is
-+ * no match.
-+ *
-+ * Reserved for Internal Red Hat use only.
-+ */
-+const struct pci_device_id *pci_hw_vendor_status(
-+						const struct pci_device_id *ids,
-+						struct pci_dev *dev)
-+{
-+	char devinfo[64];
-+	const struct pci_device_id *ret = pci_match_id(ids, dev);
-+
-+	if (ret) {
-+		snprintf(devinfo, sizeof(devinfo), "%s %s",
-+			 dev_driver_string(&dev->dev), dev_name(&dev->dev));
-+		mark_hardware_deprecated(devinfo);
-+	}
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(pci_hw_vendor_status);
-+
- struct drv_dev_and_id {
- 	struct pci_driver *drv;
- 	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index ab3de1551b50..7bc8ebb58d35 100644
+index 7b1c81b899cd..5904ece27f64 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4231,6 +4231,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1796,266 +1322,6 @@ index ab3de1551b50..7bc8ebb58d35 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
-diff --git a/drivers/scsi/aacraid/linit.c b/drivers/scsi/aacraid/linit.c
-index 3168915adaa7..71b48e29b708 100644
---- a/drivers/scsi/aacraid/linit.c
-+++ b/drivers/scsi/aacraid/linit.c
-@@ -78,6 +78,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
-  * Note: The last field is used to index into aac_drivers below.
-  */
- static const struct pci_device_id aac_pci_tbl[] = {
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{ 0x1028, 0x0001, 0x1028, 0x0001, 0, 0, 0 }, /* PERC 2/Si (Iguana/PERC2Si) */
- 	{ 0x1028, 0x0002, 0x1028, 0x0002, 0, 0, 1 }, /* PERC 3/Di (Opal/PERC3Di) */
- 	{ 0x1028, 0x0003, 0x1028, 0x0003, 0, 0, 2 }, /* PERC 3/Si (SlimFast/PERC3Si */
-@@ -145,6 +146,7 @@ static const struct pci_device_id aac_pci_tbl[] = {
- 	{ 0x9005, 0x0285, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 59 }, /* Adaptec Catch All */
- 	{ 0x9005, 0x0286, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 60 }, /* Adaptec Rocket Catch All */
- 	{ 0x9005, 0x0288, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 61 }, /* Adaptec NEMER/ARK Catch All */
-+#endif
- 	{ 0x9005, 0x028b, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 62 }, /* Adaptec PMC Series 6 (Tupelo) */
- 	{ 0x9005, 0x028c, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 63 }, /* Adaptec PMC Series 7 (Denali) */
- 	{ 0x9005, 0x028d, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 64 }, /* Adaptec PMC Series 8 */
-diff --git a/drivers/scsi/be2iscsi/be_main.c b/drivers/scsi/be2iscsi/be_main.c
-index e70f69f791db..dc54f0321fab 100644
---- a/drivers/scsi/be2iscsi/be_main.c
-+++ b/drivers/scsi/be2iscsi/be_main.c
-@@ -369,11 +369,13 @@ static int beiscsi_eh_device_reset(struct scsi_cmnd *sc)
-
- /*------------------- PCI Driver operations and data ----------------- */
- static const struct pci_device_id beiscsi_pci_id_table[] = {
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{ PCI_DEVICE(BE_VENDOR_ID, BE_DEVICE_ID1) },
- 	{ PCI_DEVICE(BE_VENDOR_ID, BE_DEVICE_ID2) },
- 	{ PCI_DEVICE(BE_VENDOR_ID, OC_DEVICE_ID1) },
- 	{ PCI_DEVICE(BE_VENDOR_ID, OC_DEVICE_ID2) },
- 	{ PCI_DEVICE(BE_VENDOR_ID, OC_DEVICE_ID3) },
-+#endif
- 	{ PCI_DEVICE(ELX_VENDOR_ID, OC_SKH_ID1) },
- 	{ 0 }
- };
-diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index f135a10f582b..99b17b05cab1 100644
---- a/drivers/scsi/hpsa.c
-+++ b/drivers/scsi/hpsa.c
-@@ -82,7 +82,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
- 	HPSA_DRIVER_VERSION);
- MODULE_VERSION(HPSA_DRIVER_VERSION);
- MODULE_LICENSE("GPL");
-+#ifndef CONFIG_RHEL_DIFFERENCES
- MODULE_ALIAS("cciss");
-+#endif
-
- static int hpsa_simple_mode;
- module_param(hpsa_simple_mode, int, S_IRUGO|S_IWUSR);
-@@ -144,10 +146,12 @@ static const struct pci_device_id hpsa_pci_device_id[] = {
- 	{PCI_VENDOR_ID_HP_3PAR, 0x0075, 0x1590, 0x007D},
- 	{PCI_VENDOR_ID_HP_3PAR, 0x0075, 0x1590, 0x0088},
- 	{PCI_VENDOR_ID_HP, 0x333f, 0x103c, 0x333f},
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_VENDOR_ID_HP,     PCI_ANY_ID,	PCI_ANY_ID, PCI_ANY_ID,
- 		PCI_CLASS_STORAGE_RAID << 8, 0xffff << 8, 0},
- 	{PCI_VENDOR_ID_COMPAQ,     PCI_ANY_ID,	PCI_ANY_ID, PCI_ANY_ID,
- 		PCI_CLASS_STORAGE_RAID << 8, 0xffff << 8, 0},
-+#endif
- 	{0,}
- };
-
-diff --git a/drivers/scsi/lpfc/lpfc_ids.h b/drivers/scsi/lpfc/lpfc_ids.h
-index d48414e295a0..ba0e384412c9 100644
---- a/drivers/scsi/lpfc/lpfc_ids.h
-+++ b/drivers/scsi/lpfc/lpfc_ids.h
-@@ -24,6 +24,7 @@
- #include <linux/pci.h>
-
- const struct pci_device_id lpfc_id_table[] = {
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_VIPER,
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_FIREFLY,
-@@ -54,14 +55,19 @@ const struct pci_device_id lpfc_id_table[] = {
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_HELIOS_DCSP,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#endif
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_BMID,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_BSMB,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#endif
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_ZEPHYR,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_HORNET,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#endif
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_ZEPHYR_SCSP,
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_ZEPHYR_DCSP,
-@@ -70,6 +76,7 @@ const struct pci_device_id lpfc_id_table[] = {
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_ZSMB,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_TFLY,
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LP101,
-@@ -80,6 +87,7 @@ const struct pci_device_id lpfc_id_table[] = {
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LPE11000S,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#endif
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_SAT,
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_SAT_MID,
-@@ -92,6 +100,7 @@ const struct pci_device_id lpfc_id_table[] = {
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_SAT_S,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_PROTEUS_VF,
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_PROTEUS_PF,
-@@ -102,18 +111,23 @@ const struct pci_device_id lpfc_id_table[] = {
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_SERVERENGINE, PCI_DEVICE_ID_TOMCAT,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#endif
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_FALCON,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_BALIUS,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#endif
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_FC,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_FCOE,
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_FC_VF,
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_FCOE_VF,
- 		PCI_ANY_ID, PCI_ANY_ID, },
-+#endif
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G6_FC,
- 		PCI_ANY_ID, PCI_ANY_ID, },
- 	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
-diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index ec10b2497310..5066d52a1fdb 100644
---- a/drivers/scsi/megaraid/megaraid_sas_base.c
-+++ b/drivers/scsi/megaraid/megaraid_sas_base.c
-@@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
-  */
- static struct pci_device_id megasas_pci_table[] = {
-
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1064R)},
- 	/* xscale IOP */
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1078R)},
-@@ -157,16 +158,19 @@ static struct pci_device_id megasas_pci_table[] = {
- 	/* ppc IOP */
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1078GEN2)},
- 	/* gen2*/
-+#endif
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS0079GEN2)},
- 	/* gen2*/
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS0073SKINNY)},
- 	/* skinny*/
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS0071SKINNY)},
- 	/* skinny*/
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_VERDE_ZCR)},
- 	/* xscale IOP, vega */
- 	{PCI_DEVICE(PCI_VENDOR_ID_DELL, PCI_DEVICE_ID_DELL_PERC5)},
- 	/* xscale IOP */
-+#endif
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_FUSION)},
- 	/* Fusion */
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 8e64a6f14542..f8a28b42e547 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -12480,6 +12480,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
-  * The pci device ids are defined in mpi/mpi2_cnfg.h.
-  */
- static const struct pci_device_id mpt3sas_pci_table[] = {
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	/* Spitfire ~ 2004 */
- 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2004,
- 		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12498,6 +12499,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
- 		PCI_ANY_ID, PCI_ANY_ID },
- 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2116_2,
- 		PCI_ANY_ID, PCI_ANY_ID },
-+#endif
- 	/* Thunderbolt ~ 2208 */
- 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2208_1,
- 		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12522,9 +12524,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
- 		PCI_ANY_ID, PCI_ANY_ID },
- 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SWITCH_MPI_EP_1,
- 		PCI_ANY_ID, PCI_ANY_ID },
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	/* SSS6200 */
- 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SSS6200,
- 		PCI_ANY_ID, PCI_ANY_ID },
-+#endif
- 	/* Fury ~ 3004 and 3008 */
- 	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
- 		PCI_ANY_ID, PCI_ANY_ID },
-diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index cedd558f65eb..d2534cd5559f 100644
---- a/drivers/scsi/qla2xxx/qla_os.c
-+++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -7811,6 +7811,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
- };
-
- static struct pci_device_id qla2xxx_pci_tbl[] = {
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -7823,13 +7824,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
-+#endif
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2532) },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2031) },
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8001) },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8021) },
-+#endif
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8031) },
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISPF001) },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8044) },
-+#endif
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2071) },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
-diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index 6ee7ea4c27e0..31814931620a 100644
---- a/drivers/scsi/qla4xxx/ql4_os.c
-+++ b/drivers/scsi/qla4xxx/ql4_os.c
-@@ -9855,6 +9855,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
- 		.subvendor	= PCI_ANY_ID,
- 		.subdevice	= PCI_ANY_ID,
- 	},
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{
- 		.vendor         = PCI_VENDOR_ID_QLOGIC,
- 		.device         = PCI_DEVICE_ID_QLOGIC_ISP8022,
-@@ -9873,6 +9874,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
- 		.subvendor	= PCI_ANY_ID,
- 		.subdevice	= PCI_ANY_ID,
- 	},
-+#endif
- 	{0, 0},
- };
- MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index 86658a81d284..5647f4756e97 100644
 --- a/drivers/usb/core/hub.c
@@ -2074,34 +1340,11 @@ index 86658a81d284..5647f4756e97 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index dfa09a277b56..2bde0a2d1683 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -4439,6 +4439,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
- 		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
-
- 	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
-+		static bool printed = false;
- 		if (ext4_has_feature_inline_data(sb)) {
- 			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
- 					" that may contain inline data");
-@@ -4449,6 +4450,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
- 				"DAX unsupported by block device.");
- 			goto failed_mount;
- 		}
-+		if (!printed) {
-+			mark_tech_preview("ext4 direct access (dax)", NULL);
-+			printed = true;
-+		}
- 	}
-
- 	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index 2c9e26a44546..9820fa8c7c30 100644
+index 2c9e26a44546..f96324912d6a 100644
 --- a/fs/xfs/xfs_super.c
 +++ b/fs/xfs/xfs_super.c
-@@ -1539,12 +1539,9 @@ xfs_fs_fill_super(
+@@ -1539,10 +1539,6 @@ xfs_fs_fill_super(
  	if (XFS_SB_VERSION_NUM(&mp->m_sb) == XFS_SB_VERSION_5)
  		sb->s_flags |= SB_I_VERSION;
 
@@ -2111,22 +1354,8 @@ index 2c9e26a44546..9820fa8c7c30 100644
 -
  	if (mp->m_flags & XFS_MOUNT_DAX_ALWAYS) {
  		bool rtdev_is_dax = false, datadev_is_dax;
-+		static bool printed = false;
 
- 		xfs_warn(mp,
- 		"DAX enabled. Warning: EXPERIMENTAL, use at your own risk");
-@@ -1565,6 +1562,10 @@ xfs_fs_fill_super(
- 			error = -EINVAL;
- 			goto out_filestream_unmount;
- 		}
-+		if (!printed) {
-+			mark_tech_preview("xfs direct access (dax)", NULL);
-+			printed = true;
-+		}
- 	}
-
- 	if (mp->m_flags & XFS_MOUNT_DISCARD) {
-@@ -1598,10 +1599,6 @@ xfs_fs_fill_super(
+@@ -1598,10 +1594,6 @@ xfs_fs_fill_super(
  		goto out_filestream_unmount;
  	}
 
@@ -2205,30 +1434,6 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  static inline
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
-diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 1b2f0a7e00d6..bfbf97662e1e 100644
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -530,4 +530,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
- 	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
- 	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
- 	 (perms))
-+
-+struct module;
-+
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+void mark_hardware_unsupported(const char *msg);
-+void mark_hardware_deprecated(const char *msg);
-+void mark_tech_preview(const char *msg, struct module *mod);
-+void mark_driver_unsupported(const char *name);
-+#else
-+static inline void mark_hardware_unsupported(const char *msg) { }
-+static inline void mark_hardware_deprecated(const char *msg) { }
-+static inline void mark_tech_preview(const char *msg, struct module *mod) { }
-+static inline void mark_driver_unsupported(const char *name) { }
-+#endif
-+
- #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
 index 2adeea44c0d5..517013ece679 100644
 --- a/include/linux/lsm_hook_defs.h
@@ -2259,63 +1464,6 @@ index 5c4c5c0602cb..753b53038690 100644
   * Security hooks for perf events
   *
   * @perf_event_open:
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 8a298d820dbc..b71215412e59 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -380,6 +380,7 @@ struct module {
- 	struct module_attribute *modinfo_attrs;
- 	const char *version;
- 	const char *srcversion;
-+	const char *rhelversion;
- 	struct kobject *holders_dir;
-
- 	/* Exported symbols */
-diff --git a/include/linux/panic.h b/include/linux/panic.h
-index f5844908a089..901d51012738 100644
---- a/include/linux/panic.h
-+++ b/include/linux/panic.h
-@@ -74,7 +74,24 @@ static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
- #define TAINT_LIVEPATCH			15
- #define TAINT_AUX			16
- #define TAINT_RANDSTRUCT		17
--#define TAINT_FLAGS_COUNT		18
-+/* Start of Red Hat-specific taint flags */
-+#define TAINT_18			18
-+#define TAINT_19			19
-+#define TAINT_20			20
-+#define TAINT_21			21
-+#define TAINT_22			22
-+#define TAINT_23			23
-+#define TAINT_24			24
-+#define TAINT_25			25
-+#define TAINT_26			26
-+#define TAINT_SUPPORT_REMOVED		27
-+/* Bits 28 - 31 are reserved for Red Hat use only */
-+#define TAINT_RESERVED28		28
-+#define TAINT_RESERVED29		29
-+#define TAINT_RESERVED30		30
-+#define TAINT_UNPRIVILEGED_BPF		31
-+/* End of Red Hat-specific taint flags */
-+#define TAINT_FLAGS_COUNT		32
- #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
-
- struct taint_flag {
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 540b377ca8f6..eb21f6dfb846 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1433,6 +1433,10 @@ int pci_add_dynid(struct pci_driver *drv,
- 		  unsigned long driver_data);
- const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
- 					 struct pci_dev *dev);
-+/* Reserved for Internal Red Hat use only */
-+const struct pci_device_id *pci_hw_vendor_status(
-+						const struct pci_device_id *ids,
-+						struct pci_dev *dev);
- int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
- 		    int pass);
-
 diff --git a/include/linux/random.h b/include/linux/random.h
 index f45b8be3e3c4..7ccdec68b789 100644
 --- a/include/linux/random.h
@@ -2341,309 +1489,6 @@ index f45b8be3e3c4..7ccdec68b789 100644
 
  #ifndef MODULE
  extern const struct file_operations random_fops, urandom_fops;
-diff --git a/include/linux/rh_kabi.h b/include/linux/rh_kabi.h
-new file mode 100644
-index 000000000000..ea9c136bf884
---- /dev/null
-+++ b/include/linux/rh_kabi.h
-@@ -0,0 +1,297 @@
-+/*
-+ * rh_kabi.h - Red Hat kABI abstraction header
-+ *
-+ * Copyright (c) 2014 Don Zickus
-+ * Copyright (c) 2015-2018 Jiri Benc
-+ * Copyright (c) 2015 Sabrina Dubroca, Hannes Frederic Sowa
-+ * Copyright (c) 2016-2018 Prarit Bhargava
-+ * Copyright (c) 2017 Paolo Abeni, Larry Woodman
-+ *
-+ * This file is released under the GPLv2.
-+ * See the file COPYING for more details.
-+ *
-+ * These kabi macros hide the changes from the kabi checker and from the
-+ * process that computes the exported symbols' checksums.
-+ * They have 2 variants: one (defined under __GENKSYMS__) used when
-+ * generating the checksums, and the other used when building the kernel's
-+ * binaries.
-+ *
-+ * The use of these macros does not guarantee that the usage and modification
-+ * of code is correct.  As with all Red Hat only changes, an engineer must
-+ * explain why the use of the macro is valid in the patch containing the
-+ * changes.
-+ *
-+ */
-+
-+#ifndef _LINUX_RH_KABI_H
-+#define _LINUX_RH_KABI_H
-+
-+#include <linux/compiler.h>
-+#include <linux/stringify.h>
-+
-+/*
-+ * RH_KABI_CONST
-+ *   Adds a new const modifier to a function parameter preserving the old
-+ *   checksum.
-+ *
-+ * RH_KABI_DEPRECATE
-+ *   Mark the element as deprecated and make it unusable by modules while
-+ *   preserving kABI checksums.
-+ *
-+ * RH_KABI_DEPRECATE_FN
-+ *   Mark the function pointer as deprecated and make it unusable by modules
-+ *   while preserving kABI checksums.
-+ *
-+ * RH_KABI_EXTEND
-+ *   Simple macro for adding a new element to a struct.
-+ *
-+ * RH_KABI_EXTEND_WITH_SIZE
-+ *   Adds a new element (usually a struct) to a struct and reserves extra
-+ *   space for the new element.  The provided 'size' is the total space to
-+ *   be added in longs (i.e. it's 8 * 'size' bytes), including the size of
-+ *   the added element.  It is automatically checked that the new element
-+ *   does not overflow the reserved space, now nor in the future. However,
-+ *   no attempt is done to check the content of the added element (struct)
-+ *   for kABI conformance - kABI checking inside the added element is
-+ *   effectively switched off.
-+ *   For any struct being added by RH_KABI_EXTEND_WITH_SIZE, it is
-+ *   recommended its content to be documented as not covered by kABI
-+ *   guarantee.
-+ *
-+ * RH_KABI_FILL_HOLE
-+ *   Simple macro for filling a hole in a struct.
-+ *
-+ *   Warning: only use if a hole exists for _all_ arches.  Use pahole to verify.
-+ *
-+ * RH_KABI_RENAME
-+ *   Simple macro for renaming an element without changing its type.  This
-+ *   macro can be used in bitfields, for example.
-+ *
-+ *   NOTE: does not include the final ';'
-+ *
-+ * RH_KABI_REPLACE
-+ *   Simple replacement of _orig with a union of _orig and _new.
-+ *
-+ *   The RH_KABI_REPLACE* macros attempt to add the ability to use the '_new'
-+ *   element while preserving size alignment with the '_orig' element.
-+ *
-+ *   The #ifdef __GENKSYMS__ preserves the kABI agreement, while the anonymous
-+ *   union structure preserves the size alignment (assuming the '_new' element
-+ *   is not bigger than the '_orig' element).
-+ *
-+ * RH_KABI_REPLACE_UNSAFE
-+ *   Unsafe version of RH_KABI_REPLACE.  Only use for typedefs.
-+ *
-+ * RH_KABI_FORCE_CHANGE
-+ *   Force change of the symbol checksum.  The argument of the macro is a
-+ *   version for cases we need to do this more than once.
-+ *
-+ *   This macro does the opposite: it changes the symbol checksum without
-+ *   actually changing anything about the exported symbol.  It is useful for
-+ *   symbols that are not whitelisted, we're changing them in an
-+ *   incompatible way and want to prevent 3rd party modules to silently
-+ *   corrupt memory.  Instead, by changing the symbol checksum, such modules
-+ *   won't be loaded by the kernel.  This macro should only be used as a
-+ *   last resort when all other KABI workarounds have failed.
-+ *
-+ * RH_KABI_EXCLUDE
-+ *   !!! WARNING: DANGEROUS, DO NOT USE unless you are aware of all the !!!
-+ *   !!! implications. This should be used ONLY EXCEPTIONALLY and only  !!!
-+ *   !!! under specific circumstances. Very likely, this macro does not !!!
-+ *   !!! do what you expect it to do. Note that any usage of this macro !!!
-+ *   !!! MUST be paired with a RH_KABI_FORCE_CHANGE annotation of       !!!
-+ *   !!! a suitable symbol (or an equivalent safeguard) and the commit  !!!
-+ *   !!! log MUST explain why the chosen solution is appropriate.       !!!
-+ *
-+ *   Exclude the element from checksum generation.  Any such element is
-+ *   considered not to be part of the kABI whitelist and may be changed at
-+ *   will.  Note however that it's the responsibility of the developer
-+ *   changing the element to ensure 3rd party drivers using this element
-+ *   won't panic, for example by not allowing them to be loaded.  That can
-+ *   be achieved by changing another, non-whitelisted symbol they use,
-+ *   either by nature of the change or by using RH_KABI_FORCE_CHANGE.
-+ *
-+ *   Also note that any change to the element must preserve its size. Change
-+ *   of the size is not allowed and would constitute a silent kABI breakage.
-+ *   Beware that the RH_KABI_EXCLUDE macro does not do any size checks.
-+ *
-+ * NOTE
-+ *   Don't use ';' after these macros as it messes up the kABI checker by
-+ *   changing what the resulting token string looks like.  Instead let this
-+ *   macro add the ';' so it can be properly hidden from the kABI checker
-+ *   (mainly for RH_KABI_EXTEND, but applied to all macros for uniformity).
-+ *
-+ */
-+#ifdef __GENKSYMS__
-+
-+# define RH_KABI_CONST
-+# define RH_KABI_EXTEND(_new)
-+# define RH_KABI_FILL_HOLE(_new)
-+# define RH_KABI_FORCE_CHANGE(ver)		__attribute__((rh_kabi_change ## ver))
-+# define RH_KABI_RENAME(_orig, _new)		_orig
-+
-+# define _RH_KABI_DEPRECATE(_type, _orig)	_type _orig
-+# define _RH_KABI_DEPRECATE_FN(_type, _orig, _args...)	_type (*_orig)(_args)
-+# define _RH_KABI_REPLACE(_orig, _new)		_orig
-+# define _RH_KABI_REPLACE_UNSAFE(_orig, _new)	_orig
-+# define _RH_KABI_EXCLUDE(_elem)
-+
-+#else
-+
-+# define RH_KABI_ALIGN_WARNING ".  Disable CONFIG_RH_KABI_SIZE_ALIGN_CHECKS if debugging."
-+
-+# define RH_KABI_CONST				const
-+# define RH_KABI_EXTEND(_new)			_new;
-+# define RH_KABI_FILL_HOLE(_new)		_new;
-+# define RH_KABI_FORCE_CHANGE(ver)
-+# define RH_KABI_RENAME(_orig, _new)		_new
-+
-+
-+#if IS_BUILTIN(CONFIG_RH_KABI_SIZE_ALIGN_CHECKS)
-+# define __RH_KABI_CHECK_SIZE_ALIGN(_orig, _new)			\
-+	union {								\
-+		_Static_assert(sizeof(struct{_new;}) <= sizeof(struct{_orig;}), \
-+			       __FILE__ ":" __stringify(__LINE__) ": "  __stringify(_new) " is larger than " __stringify(_orig) RH_KABI_ALIGN_WARNING); \
-+		_Static_assert(__alignof__(struct{_new;}) <= __alignof__(struct{_orig;}), \
-+			       __FILE__ ":" __stringify(__LINE__) ": "  __stringify(_orig) " is not aligned the same as " __stringify(_new) RH_KABI_ALIGN_WARNING); \
-+	}
-+# define __RH_KABI_CHECK_SIZE(_item, _size)				\
-+	_Static_assert(sizeof(struct{_item;}) <= _size,			\
-+		       __FILE__ ":" __stringify(__LINE__) ": " __stringify(_item) " is larger than the reserved size (" __stringify(_size) " bytes)" RH_KABI_ALIGN_WARNING)
-+#else
-+# define __RH_KABI_CHECK_SIZE_ALIGN(_orig, _new)
-+# define __RH_KABI_CHECK_SIZE(_item, _size)
-+#endif
-+
-+#define RH_KABI_UNIQUE_ID	__PASTE(rh_kabi_hidden_, __LINE__)
-+
-+# define _RH_KABI_DEPRECATE(_type, _orig)	_type rh_reserved_##_orig
-+# define _RH_KABI_DEPRECATE_FN(_type, _orig, _args...)  \
-+	_type (* rh_reserved_##_orig)(_args)
-+# define _RH_KABI_REPLACE(_orig, _new)			  \
-+	union {						  \
-+		_new;					  \
-+		struct {				  \
-+			_orig;				  \
-+		} RH_KABI_UNIQUE_ID;			  \
-+		__RH_KABI_CHECK_SIZE_ALIGN(_orig, _new);  \
-+	}
-+# define _RH_KABI_REPLACE_UNSAFE(_orig, _new)	_new
-+
-+# define _RH_KABI_EXCLUDE(_elem)		_elem
-+
-+#endif /* __GENKSYMS__ */
-+
-+/* semicolon added wrappers for the RH_KABI_REPLACE macros */
-+# define RH_KABI_DEPRECATE(_type, _orig)	_RH_KABI_DEPRECATE(_type, _orig);
-+# define RH_KABI_DEPRECATE_FN(_type, _orig, _args...)  \
-+	_RH_KABI_DEPRECATE_FN(_type, _orig, _args);
-+# define RH_KABI_REPLACE(_orig, _new)		_RH_KABI_REPLACE(_orig, _new);
-+# define RH_KABI_REPLACE_UNSAFE(_orig, _new)	_RH_KABI_REPLACE_UNSAFE(_orig, _new);
-+/*
-+ * Macro for breaking up a random element into two smaller chunks using an
-+ * anonymous struct inside an anonymous union.
-+ */
-+# define RH_KABI_REPLACE2(orig, _new1, _new2)	RH_KABI_REPLACE(orig, struct{ _new1; _new2;})
-+
-+# define RH_KABI_RESERVE(n)		_RH_KABI_RESERVE(n);
-+/*
-+ * Simple wrappers to replace standard Red Hat reserved elements.
-+ */
-+# define RH_KABI_USE(n, _new)		RH_KABI_REPLACE(_RH_KABI_RESERVE(n), _new)
-+/*
-+ * Macros for breaking up a reserved element into two smaller chunks using
-+ * an anonymous struct inside an anonymous union.
-+ */
-+# define RH_KABI_USE2(n, _new1, _new2)	RH_KABI_REPLACE(_RH_KABI_RESERVE(n), struct{ _new1; _new2; })
-+
-+/*
-+ * We tried to standardize on Red Hat reserved names.  These wrappers
-+ * leverage those common names making it easier to read and find in the
-+ * code.
-+ */
-+# define _RH_KABI_RESERVE(n)		unsigned long rh_reserved##n
-+
-+#define RH_KABI_EXCLUDE(_elem)		_RH_KABI_EXCLUDE(_elem);
-+
-+/*
-+ * Extending a struct while reserving extra space.
-+ */
-+#define RH_KABI_EXTEND_WITH_SIZE(_new, _size)				\
-+	RH_KABI_EXTEND(union {						\
-+		_new;							\
-+		unsigned long RH_KABI_UNIQUE_ID[_size];			\
-+		__RH_KABI_CHECK_SIZE(_new, 8 * (_size));		\
-+	})
-+
-+/*
-+ * RHEL macros to extend structs.
-+ *
-+ * base struct: The struct being extended.  For example, pci_dev.
-+ * extended struct: The Red Hat struct being added to the base struct.
-+ *		    For example, pci_dev_rh.
-+ *
-+ * These macros should be used to extend structs before KABI freeze.
-+ * They can be used post-KABI freeze in the limited case of the base
-+ * struct not being embedded in another struct.
-+ *
-+ * Extended structs cannot be shrunk in size as changes will break
-+ * the size & offset comparison.
-+ *
-+ * Extended struct elements are not guaranteed for access by modules unless
-+ * explicitly commented as such in the declaration of the extended struct or
-+ * the element in the extended struct.
-+ */
-+
-+/*
-+ * RH_KABI_SIZE_AND_EXTEND|_PTR() extends a struct by embedding or adding
-+ * a pointer in a base struct.  The name of the new struct is the name
-+ * of the base struct appended with _rh.
-+ */
-+#define _RH_KABI_SIZE_AND_EXTEND_PTR(_struct)				\
-+	size_t _struct##_size_rh;					\
-+	RH_KABI_EXCLUDE(struct _struct##_rh *_struct##_rh)
-+#define RH_KABI_SIZE_AND_EXTEND_PTR(_struct)				\
-+	_RH_KABI_SIZE_AND_EXTEND_PTR(_struct)
-+
-+#define _RH_KABI_SIZE_AND_EXTEND(_struct)				\
-+	size_t _struct##_size_rh;					\
-+	RH_KABI_EXCLUDE(struct _struct##_rh _struct##_rh)
-+#define RH_KABI_SIZE_AND_EXTEND(_struct)				\
-+	_RH_KABI_SIZE_AND_EXTEND(_struct)
-+
-+/*
-+ * RH_KABI_SET_SIZE calculates and sets the size of the extended struct and
-+ * stores it in the size_rh field for structs that are dynamically allocated.
-+ * This macro MUST be called when expanding a base struct with
-+ * RH_KABI_SIZE_AND_EXTEND, and it MUST be called from the allocation site
-+ * regardless of being allocated in the kernel or a module.
-+ * Note: since this macro is intended to be invoked outside of a struct,
-+ * a semicolon is necessary at the end of the line where it is invoked.
-+ */
-+#define RH_KABI_SET_SIZE(_name, _struct) ({				\
-+	_name->_struct##_size_rh = sizeof(struct _struct##_rh);		\
-+})
-+
-+/*
-+ * RH_KABI_INIT_SIZE calculates and sets the size of the extended struct and
-+ * stores it in the size_rh field for structs that are statically allocated.
-+ * This macro MUST be called when expanding a base struct with
-+ * RH_KABI_SIZE_AND_EXTEND, and it MUST be called from the declaration site
-+ * regardless of being allocated in the kernel or a module.
-+ */
-+#define RH_KABI_INIT_SIZE(_struct)					\
-+	._struct##_size_rh = sizeof(struct _struct##_rh),
-+
-+/*
-+ * RH_KABI_CHECK_EXT verifies allocated memory exists.  This MUST be called to
-+ * verify that memory in the _rh struct is valid, and can be called
-+ * regardless if RH_KABI_SIZE_AND_EXTEND or RH_KABI_SIZE_AND_EXTEND_PTR is
-+ * used.
-+ */
-+#define RH_KABI_CHECK_EXT(_ptr, _struct, _field) ({			\
-+	size_t __off = offsetof(struct _struct##_rh, _field);		\
-+	_ptr->_struct##_size_rh > __off ? true : false;			\
-+})
-+
-+#endif /* _LINUX_RH_KABI_H */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
@@ -2692,74 +1537,6 @@ index 55f9f7738ebb..564553afb251 100644
  	select IO_WQ
  	default y
  	help
-diff --git a/kernel/Makefile b/kernel/Makefile
-index 4df609be42d0..4ef0c0f6a8f4 100644
---- a/kernel/Makefile
-+++ b/kernel/Makefile
-@@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
- 	    notifier.o ksysfs.o cred.o reboot.o \
- 	    async.o range.o smpboot.o ucount.o regset.o
-
-+obj-$(CONFIG_RHEL_DIFFERENCES) += rh_taint.o
- obj-$(CONFIG_USERMODE_DRIVER) += usermode_driver.o
- obj-$(CONFIG_MODULES) += kmod.o
- obj-$(CONFIG_MULTIUSER) += groups.o
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index e343f158e556..b2c979f9b80e 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -24,6 +24,7 @@
- #include <linux/ctype.h>
- #include <linux/nospec.h>
- #include <linux/audit.h>
-+#include <linux/init.h>
- #include <uapi/linux/btf.h>
- #include <linux/pgtable.h>
- #include <linux/bpf_lsm.h>
-@@ -50,6 +51,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
- static DEFINE_IDR(link_idr);
- static DEFINE_SPINLOCK(link_idr_lock);
-
-+static int __init unprivileged_bpf_setup(char *str)
-+{
-+	unsigned long disabled;
-+	if (!kstrtoul(str, 0, &disabled))
-+		sysctl_unprivileged_bpf_disabled = !!disabled;
-+
-+	if (!sysctl_unprivileged_bpf_disabled) {
-+		pr_warn("Unprivileged BPF has been enabled "
-+			"(unprivileged_bpf_disabled=0 has been supplied "
-+			"in boot parameters), tainting the kernel");
-+		add_taint(TAINT_UNPRIVILEGED_BPF, LOCKDEP_STILL_OK);
-+	}
-+
-+	return 1;
-+}
-+__setup("unprivileged_bpf_disabled=", unprivileged_bpf_setup);
-+
- int sysctl_unprivileged_bpf_disabled __read_mostly =
- 	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
-
-diff --git a/kernel/module.c b/kernel/module.c
-index ed13917ea5f3..88643913f3e4 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -743,6 +743,7 @@ static struct module_attribute modinfo_##field = {                    \
-
- MODINFO_ATTR(version);
- MODINFO_ATTR(srcversion);
-+MODINFO_ATTR(rhelversion);
-
- static char last_unloaded_module[MODULE_NAME_LEN+1];
-
-@@ -1206,6 +1207,7 @@ static struct module_attribute *modinfo_attrs[] = {
- 	&module_uevent,
- 	&modinfo_version,
- 	&modinfo_srcversion,
-+	&modinfo_rhelversion,
- 	&modinfo_initstate,
- 	&modinfo_coresize,
- 	&modinfo_initsize,
 diff --git a/kernel/module_signing.c b/kernel/module_signing.c
 index 8723ae70ea1f..fb2d773498c2 100644
 --- a/kernel/module_signing.c
@@ -2781,146 +1558,6 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
-diff --git a/kernel/panic.c b/kernel/panic.c
-index edad89660a2b..71a5a1cf6235 100644
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -387,6 +387,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
- 	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
- 	[ TAINT_AUX ]			= { 'X', ' ', true },
- 	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
-+	[ TAINT_18 ]			= { '?', '-', false },
-+	[ TAINT_19 ]			= { '?', '-', false },
-+	[ TAINT_20 ]			= { '?', '-', false },
-+	[ TAINT_21 ]			= { '?', '-', false },
-+	[ TAINT_22 ]			= { '?', '-', false },
-+	[ TAINT_23 ]			= { '?', '-', false },
-+	[ TAINT_24 ]			= { '?', '-', false },
-+	[ TAINT_25 ]			= { '?', '-', false },
-+	[ TAINT_26 ]			= { '?', '-', false },
-+	[ TAINT_SUPPORT_REMOVED ]	= { 'h', ' ', false },
-+	[ TAINT_RESERVED28 ]		= { '?', '-', false },
-+	[ TAINT_RESERVED29 ]		= { '?', '-', false },
-+	[ TAINT_RESERVED30 ]		= { '?', '-', false },
-+	[ TAINT_UNPRIVILEGED_BPF ]	= { 'u', ' ', false },
- };
-
- /**
-diff --git a/kernel/rh_taint.c b/kernel/rh_taint.c
-new file mode 100644
-index 000000000000..4050b6dead75
---- /dev/null
-+++ b/kernel/rh_taint.c
-@@ -0,0 +1,93 @@
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+
-+/*
-+ * The following functions are used by Red Hat to indicate to users that
-+ * hardware and drivers are unsupported, or have limited support in RHEL major
-+ * and minor releases.  These functions output loud warning messages to the end
-+ * user and should be USED WITH CAUTION.
-+ *
-+ * Any use of these functions _MUST_ be documented in the RHEL Release Notes,
-+ * and have approval of management.
-+ */
-+
-+/**
-+ * mark_hardware_unsupported() - Mark hardware, class, or type as unsupported.
-+ * @msg: Hardware name, class, or type
-+ *
-+ * Called to mark a device, class of devices, or types of devices as not having
-+ * support in any RHEL minor release.  This does not TAINT the kernel.  Red Hat
-+ * will not fix bugs against this hardware in this minor release.  Red Hat may
-+ * declare support in a future major or minor update release.  This cannot be
-+ * used to mark drivers unsupported.
-+ */
-+void mark_hardware_unsupported(const char *msg)
-+{
-+	/* Print one single message */
-+	pr_crit("Warning: %s - this hardware has not undergone testing by Red Hat and might not be certified. Please consult https://catalog.redhat.com for certified hardware.\n", msg);
-+}
-+EXPORT_SYMBOL(mark_hardware_unsupported);
-+
-+/**
-+ * mark_hardware_deprecated() - Mark hardware, class, or type as deprecated.
-+ * @msg: Hardware name, class, or type
-+ *
-+ * Called to minimize the support status of a previously supported device in
-+ * a minor release.  This does not TAINT the kernel.  Marking hardware
-+ * deprecated is usually done in conjunction with the hardware vendor.  Future
-+ * RHEL major releases may not include this driver.  Driver updates and fixes
-+ * for this device will be limited to critical issues in future minor releases.
-+ */
-+void mark_hardware_deprecated(const char *msg)
-+{
-+	pr_crit("Warning: %s - this hardware is not recommended for new deployments. It continues to be supported in this RHEL release, but it is likely to be removed in the next major release. Driver updates and fixes for this device will be limited to critical issues. Please contact Red Hat Support or your device's hardware vendor for additional information.\n", msg);
-+}
-+EXPORT_SYMBOL(mark_hardware_deprecated);
-+
-+/**
-+ * mark_tech_preview() - Mark driver or kernel subsystem as 'Tech Preview'
-+ * @msg: Driver or kernel subsystem name
-+ *
-+ * Called to minimize the support status of a new driver.  This does TAINT the
-+ * kernel.  Calling this function indicates that the driver or subsystem has
-+ * had limited testing and is not marked for full support within this RHEL
-+ * minor release.  The next RHEL minor release may contain full support for
-+ * this driver.  Red Hat does not guarantee that bugs reported against this
-+ * driver or subsystem will be resolved.
-+ */
-+void mark_tech_preview(const char *msg, struct module *mod)
-+{
-+	const char *str = NULL;
-+
-+	if (msg)
-+		str = msg;
-+#ifdef CONFIG_MODULES
-+	else if (mod && mod->name)
-+		str = mod->name;
-+#endif
-+
-+	pr_warn("TECH PREVIEW: %s may not be fully supported.\n"
-+		"Please review provided documentation for limitations.\n",
-+		(str ? str : "kernel"));
-+	add_taint(TAINT_AUX, LOCKDEP_STILL_OK);
-+#ifdef CONFIG_MODULES
-+	if (mod)
-+		mod->taints |= (1U << TAINT_AUX);
-+#endif
-+}
-+EXPORT_SYMBOL(mark_tech_preview);
-+
-+/**
-+ * mark_driver_unsupported - drivers that we know we don't want to support
-+ * @name: the name of the driver
-+ *
-+ * In some cases Red Hat has chosen to build a driver for internal QE
-+ * use. Use this function to mark those drivers as unsupported for
-+ * customers.
-+ */
-+void mark_driver_unsupported(const char *name)
-+{
-+	pr_crit("Warning: %s - This driver has not undergone sufficient testing by Red Hat for this release and therefore cannot be used in production systems.\n",
-+	        name ? name : "kernel");
-+}
-+EXPORT_SYMBOL(mark_driver_unsupported);
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 272f4a272f8c..3a5a6455b363 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -243,6 +243,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
- 	if (write && !ret) {
- 		if (locked_state && unpriv_enable != 1)
- 			return -EPERM;
-+		if (!unpriv_enable) {
-+			pr_warn("Unprivileged BPF has been enabled, "
-+				"tainting the kernel");
-+			add_taint(TAINT_UNPRIVILEGED_BPF, LOCKDEP_STILL_OK);
-+		}
- 		*(int *)table->data = unpriv_enable;
- 	}
- 	return ret;
 diff --git a/mm/cma.c b/mm/cma.c
 index 995e15480937..588f7e7885cf 100644
 --- a/mm/cma.c
@@ -2949,52 +1586,6 @@ index 995e15480937..588f7e7885cf 100644
  	pr_debug("%s(cma %p, count %lu, align %d)\n", __func__, (void *)cma,
  		 count, align);
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 270a7df898e2..ac41f848b8a2 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -20,6 +20,7 @@
- #include <errno.h>
- #include "modpost.h"
- #include "../../include/linux/license.h"
-+#include "../../include/generated/uapi/linux/version.h"
-
- /* Are we using CONFIG_MODVERSIONS? */
- static int modversions = 0;
-@@ -2342,6 +2343,12 @@ static void write_buf(struct buffer *b, const char *fname)
- 	}
- }
-
-+static void add_rhelversion(struct buffer *b, struct module *mod)
-+{
-+	buf_printf(b, "MODULE_INFO(rhelversion, \"%d.%d\");\n", RHEL_MAJOR,
-+		   RHEL_MINOR);
-+}
-+
- static void write_if_changed(struct buffer *b, const char *fname)
- {
- 	char *tmp;
-@@ -2571,6 +2578,7 @@ int main(int argc, char **argv)
- 		add_depends(&buf, mod);
- 		add_moddevtable(&buf, mod);
- 		add_srcversion(&buf, mod);
-+		add_rhelversion(&buf, mod);
-
- 		sprintf(fname, "%s.mod.c", mod->name);
- 		write_if_changed(&buf, fname);
-diff --git a/scripts/tags.sh b/scripts/tags.sh
-index db8ba411860a..2294fb0f17a9 100755
---- a/scripts/tags.sh
-+++ b/scripts/tags.sh
-@@ -16,6 +16,8 @@ fi
- ignore="$(echo "$RCS_FIND_IGNORE" | sed 's|\\||g' )"
- # tags and cscope files should also ignore MODVERSION *.mod.c files
- ignore="$ignore ( -name *.mod.c ) -prune -o"
-+# RHEL tags and cscope should also ignore redhat/rpm
-+ignore="$ignore ( -path redhat/rpm ) -prune -o"
-
- # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
- # to force full paths for a non-O= build
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
 index f290f78c3f30..d3e7ae04f5be 100644
 --- a/security/integrity/platform_certs/load_uefi.c

@@ -1,13 +1,13 @@
-%global commit 3510a14cfc31e305d2ffa16548fb1292388bc2cd
+%global commit 0c09258e073bdbae19d2de8386125b35b783928b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210806
+%global date 20210902
 %global gver .%{date}git%{shortcommit}
 
 %global pkgname SPIRV-Tools
 
 Name:           spirv-tools
-Version:        2021.3
-Release:        101%{?gver}%{?dist}
+Version:        2021.4
+Release:        100%{?gver}%{?dist}
 Summary:        API and commands for processing SPIR-V modules
 
 License:        ASL 2.0
@@ -71,12 +71,14 @@ Development files for %{name}
 %{_bindir}/spirv-dis
 %{_bindir}/spirv-lesspipe.sh
 %{_bindir}/spirv-link
+%{_bindir}/spirv-lint
 %{_bindir}/spirv-opt
 %{_bindir}/spirv-reduce
 %{_bindir}/spirv-val
 
 %files libs
 %{_libdir}/libSPIRV-Tools-link.so
+%{_libdir}/libSPIRV-Tools-lint.so
 %{_libdir}/libSPIRV-Tools-opt.so
 %{_libdir}/libSPIRV-Tools.so
 %{_libdir}/libSPIRV-Tools-reduce.so
@@ -89,6 +91,9 @@ Development files for %{name}
 %{_libdir}/pkgconfig/SPIRV-Tools.pc
 
 %changelog
+* Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.4-100.20210902git0c09258
+- 2021.4-dev
+
 * Fri Aug 06 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.3-101.20210806git3510a14
 - Bump
 

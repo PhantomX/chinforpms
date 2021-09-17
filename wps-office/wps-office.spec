@@ -220,6 +220,9 @@ rm -fv %{buildroot}%{progdir}/office6/libsmime3.so*
 rm -fv %{buildroot}%{progdir}/office6/libsoftokn3.so*
 rm -fv %{buildroot}%{progdir}/office6/libSDL2*.so*
 rm -fv %{buildroot}%{progdir}/office6/libtcmalloc.so*
+rm -fv %{buildroot}%{progdir}/office6/librpcetapi.so
+rm -fv %{buildroot}%{progdir}/office6/librpcwppapi.so
+rm -fv %{buildroot}%{progdir}/office6/librpcwpsapi.so
 rm -fv %{buildroot}%{progdir}/office6/addons/cef/libcairo.so*
 rm -fv %{buildroot}%{progdir}/office6/addons/cef/libpng*.so*
 

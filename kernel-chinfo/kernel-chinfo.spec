@@ -149,18 +149,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 9df2823b26e67bea949698bb9f186625394b9227
+%global pfcommit 44e9b0e7f7e181d7433f030c101beeab7f93456a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -188,7 +188,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 314dce0059447f7063b87fb9e87c4744e389054d
+%global opensuse_id f924054cc523527b52203e352adb073db0962f5f
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -944,8 +944,7 @@ Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
 Patch1019: %{opensuse_url}/watchdog-Fix-NULL-pointer-dereference-when-releasing.patch#/openSUSE-watchdog-Fix-NULL-pointer-dereference-when-releasing.patch
-Patch1020: %{opensuse_url}/crypto-ecc-handle-unaligned-input-buffer-in-ecc_swap.patch#/openSUSE-crypto-ecc-handle-unaligned-input-buffer-in-ecc_swap.patch
-Patch1021: %{opensuse_url}/memcg-enable-accounting-of-ipc-resources.patch#/openSUSE-memcg-enable-accounting-of-ipc-resources.patch
+Patch1020: %{opensuse_url}/memcg-enable-accounting-of-ipc-resources.patch#/openSUSE-memcg-enable-accounting-of-ipc-resources.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2905,6 +2904,12 @@ fi
 #
 #
 %changelog
+* Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.5-500.chinfo
+- 5.14.5 - pf3
+
+* Wed Sep 15 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.4-500.chinfo
+- 5.14.4 - pf3
+
 * Sun Sep 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.3-500.chinfo
 - 5.14.3 - pf2
 

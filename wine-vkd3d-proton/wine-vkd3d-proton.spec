@@ -7,22 +7,22 @@
 %global with_sysvulkan 0
 
 # Need be set for release builds too
-%global commit d003424bc826afd005c68f8a8f0d42e4dae00fd0
+%global commit 2b13d06f82f0a686589967d70e8df8e158d55f53
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201214
-%global with_snapshot 0
+%global date 20210916
+%global with_snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 25c56c3344f0d045fa22f5423ba9ec570317a1c8
+%global commit1 f63e45cf6509278c82a4515ed94b0850a438af46
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 c26baf4c93085248ae6619b254d0d4baf9d1f4a5
+%global commit2 1454c95d1b834a47403ef3806ffe77c9ebbfa40b
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
-%global commit3 1ae2b58f19a935494363559f2fb41d7154261933
+%global commit3 b81334a513e357cc15d6e93b9395b7733056f993
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
@@ -55,7 +55,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.4
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
@@ -271,6 +271,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2.4-2.20210916git2b13d06
+- Snapshot
+
 * Thu Jul 08 2021 Phantom X <megaphantomx at hotmail dot com> - 2.4-1
 - 2.4
 
