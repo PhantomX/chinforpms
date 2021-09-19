@@ -149,7 +149,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -160,7 +160,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 44e9b0e7f7e181d7433f030c101beeab7f93456a
+%global pfcommit c462d50dfe784033dde25fa4f41307323b710137
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -188,7 +188,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id f924054cc523527b52203e352adb073db0962f5f
+%global opensuse_id 4a524d34c6b6a2ecc74aeee736e3d96567bab67e
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2904,6 +2904,9 @@ fi
 #
 #
 %changelog
+* Sat Sep 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.65-500.chinfo
+- 5.14.6 - pf3
+
 * Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.5-500.chinfo
 - 5.14.5 - pf3
 

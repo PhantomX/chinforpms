@@ -1,6 +1,6 @@
-%global commit 714578a3ad7f9fa670a45281734166077341fa00
+%global commit d944c254c2e44068d42a964c85b18602d44f54d7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210825
+%global date 20210918
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -37,7 +37,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-glslang
 
-%global commit7 0e2880ab990e79ce6cc8c79c219feda42d98b1e8
+%global commit7 b81334a513e357cc15d6e93b9395b7733056f993
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -54,7 +54,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        118%{?gver}%{?dist}
+Release:        119%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -118,7 +118,7 @@ BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(libglvnd)
 %endif
 BuildRequires:  pkgconfig(libchdr)
-BuildRequires:  pkgconfig(libpng)
+BuildRequires:  pkgconfig(libpng) >= 1.6
 BuildRequires:  pkgconfig(libxxhash) >= 0.8.0
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(libzstd) >= 1.4.9
@@ -283,8 +283,10 @@ popd
 %else
   -DUSE_FFMPEG:BOOL=OFF \
 %endif
+  -DUSE_SYSTEM_LIBPNG:BOOL=ON \
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \
   -DUSE_SYSTEM_MINIUPNPC:BOOL=ON \
+  -DUSE_SYSTEM_LIBSDL2:BOOL=ON \
   -DUSE_SYSTEM_SNAPPY:BOOL=ON \
   -DUSE_SYSTEM_XXHASH:BOOL=ON \
   -DUSE_SYSTEM_ZSTD:BOOL=ON \
@@ -375,6 +377,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Sep 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-119.20210918gitd944c25
+- Last snapshot
+
 * Thu Aug 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-118.20210825git714578a
 - Last snapshot
 
