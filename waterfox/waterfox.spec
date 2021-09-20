@@ -136,7 +136,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2021.08.1
+Version:        2021.09
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -220,6 +220,7 @@ Patch705:        0001-Update-patch-bug1403998.patch
 Patch706:        0001-Update-patch-bug847568.patch
 Patch707:        0001-Update-patch-bug1456512.patch
 Patch708:        0001-mbft-tests-fix-build.patch
+Patch709:        0001-TestAudioEventTimeline.cpp-gtest-fix-build.patch
 
 # Gentoo
 Patch800:        seamonkey-2.53.3-system_libvpx-1.8.patch
@@ -470,6 +471,7 @@ done
 %patch703 -p1 -b .fix-testing-file
 %patch704 -p1 -b .no-diagnostics-color
 %patch708 -p1 -b .mbft-build-fix
+%patch709 -p1 -b .TestAudioEventTimeline.cpp-build-fix
 
 %patch800 -p2 -b .system-vpx
 %patch801 -p1 -b .CLEANUP-workaround
@@ -1043,6 +1045,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Sun Sep 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.09-1.classic
+- 2021.09
+
 * Mon Sep 06 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.08.1-1.classic
 - 2021.08.1
 

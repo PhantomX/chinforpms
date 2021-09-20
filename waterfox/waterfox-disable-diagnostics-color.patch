@@ -16,7 +16,7 @@ index a31acb7..10868e0 100755
      # value changes to e.g. "<x>=always", exact string match may fail and
      # multiple color flags could be added. So examine downstream consumers
      # before adding flags to return values.
--    if info.type == 'gcc' and info.version >= '4.9.0':
+-    if info.type == 'gcc':
 -        return '-fdiagnostics-color'
 -    elif info.type == 'clang':
 -        return '-fcolor-diagnostics'
