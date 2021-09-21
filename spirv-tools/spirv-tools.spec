@@ -1,18 +1,22 @@
-%global commit 0c09258e073bdbae19d2de8386125b35b783928b
+%global commit 59f51bb4f8389713ec6136f09441c10c2da62727
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210902
+%global date 20210920
 %global gver .%{date}git%{shortcommit}
 
 %global pkgname SPIRV-Tools
 
 Name:           spirv-tools
 Version:        2021.4
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        API and commands for processing SPIR-V modules
 
 License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/SPIRV-Tools
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+
+# Revert commit 4ac8e5e541ea992dc6f44a4d4eb065a8fe0888ec, until Fedora catches
+Patch0:         revert-4ac8e5e.patch
+
 
 BuildRequires:  cmake3
 BuildRequires:  gcc-c++
@@ -91,6 +95,9 @@ Development files for %{name}
 %{_libdir}/pkgconfig/SPIRV-Tools.pc
 
 %changelog
+* Mon Sep 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.4-101.20210920git59f51bb
+- Bump
+
 * Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.4-100.20210902git0c09258
 - 2021.4-dev
 

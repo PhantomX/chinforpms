@@ -1,7 +1,7 @@
-%global commit 8b9f1e12841298591387e2b7590191610a37986e
+%global commit 16e73be10d940c9c04101a47687a6f8a385c2b0f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210903
-%global with_snapshot 0
+%global date 20210917
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -32,7 +32,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  6.3.0
+%global winemono  6.4.0
 %global winevulkan 1.2.191
 %global _default_patch_fuzz 2
 
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.17
+%global wine_stagingver 2771ab8cee5da83948b7bf06f2f7963623599659
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.17
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2252,10 +2252,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/shdoclc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shdocvw.%{winedll}
 %{_libdir}/wine/%{winedlldir}/schedsvc.%{winedll}
-%{_libdir}/wine/%{winesodir}/shell32.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/shell32.dll
-%endif
+%{_libdir}/wine/%{winedlldir}/shell32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shfolder.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shlwapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shutdown.%{wineexe}
@@ -2342,10 +2339,8 @@ fi
 %{_libdir}/wine/%{winesodir}/windowscodecs.so
 %{_libdir}/wine/%{winedlldir}/windowscodecs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecsext.%{winedll}
-%{_libdir}/wine/%{winesodir}/winebus.sys.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/winebus.sys
-%endif
+%{_libdir}/wine/%{winesodir}/winebus.so
+%{_libdir}/wine/%{winedlldir}/winebus.%{winesys}
 %{_libdir}/wine/%{winesodir}/winegstreamer.so
 %{_libdir}/wine/%{winedlldir}/winegstreamer.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winehid.%{winesys}
@@ -2918,6 +2913,9 @@ fi
 
 
 %changelog
+* Mon Sep 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.17-101.20210917git16e73be
+- Snapshot
+
 * Sat Sep 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.17-100
 - 6.17
 

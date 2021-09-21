@@ -1,0 +1,175 @@
+reverted:
+--- b/include/spirv-tools/optimizer.hpp
++++ a/include/spirv-tools/optimizer.hpp
+@@ -29,7 +29,7 @@
+ namespace opt {
+ class Pass;
+ struct DescriptorSetAndBinding;
++}
+-}  // namespace opt
+ 
+ // C++ interface for SPIR-V optimization functionalities. It wraps the context
+ // (including target environment and the corresponding SPIR-V grammar) and
+@@ -514,12 +514,7 @@
+ // Conversion, which tends to cause cycles of dead code to be left after
+ // Store/Load elimination passes are completed. These cycles cannot be
+ // eliminated with standard dead code elimination.
++Optimizer::PassToken CreateAggressiveDCEPass();
+-//
+-// If |preserve_interface| is true, all non-io variables in the entry point
+-// interface are considered live and are not eliminated. This mode is needed
+-// by GPU-Assisted validation instrumentation, where a change in the interface
+-// is not allowed.
+-Optimizer::PassToken CreateAggressiveDCEPass(bool preserve_interface = false);
+ 
+ // Creates a remove-unused-interface-variables pass.
+ // Removes variables referenced on the |OpEntryPoint| instruction that are not
+reverted:
+--- b/source/opt/aggressive_dead_code_elim_pass.cpp
++++ a/source/opt/aggressive_dead_code_elim_pass.cpp
+@@ -607,8 +607,7 @@
+   }
+   // Keep all entry points.
+   for (auto& entry : get_module()->entry_points()) {
++    if (get_module()->version() >= SPV_SPIRV_VERSION_WORD(1, 4)) {
+-    if (get_module()->version() >= SPV_SPIRV_VERSION_WORD(1, 4) &&
+-        !preserve_interface_) {
+       // In SPIR-V 1.4 and later, entry points must list all global variables
+       // used. DCE can still remove non-input/output variables and update the
+       // interface list. Mark the entry point as live and inputs and outputs as
+@@ -914,8 +913,7 @@
+     }
+   }
+ 
++  if (get_module()->version() >= SPV_SPIRV_VERSION_WORD(1, 4)) {
+-  if (get_module()->version() >= SPV_SPIRV_VERSION_WORD(1, 4) &&
+-      !preserve_interface_) {
+     // Remove the dead interface variables from the entry point interface list.
+     for (auto& entry : get_module()->entry_points()) {
+       std::vector<Operand> new_operands;
+@@ -941,6 +939,8 @@
+   return modified;
+ }
+ 
++AggressiveDCEPass::AggressiveDCEPass() = default;
++
+ Pass::Status AggressiveDCEPass::Process() {
+   // Initialize extensions allowlist
+   InitExtensions();
+reverted:
+--- b/source/opt/aggressive_dead_code_elim_pass.h
++++ a/source/opt/aggressive_dead_code_elim_pass.h
+@@ -44,9 +44,7 @@
+   using GetBlocksFunction =
+       std::function<std::vector<BasicBlock*>*(const BasicBlock*)>;
+ 
++  AggressiveDCEPass();
+-  AggressiveDCEPass(bool preserve_interface = false)
+-      : preserve_interface_(preserve_interface) {}
+-
+   const char* name() const override { return "eliminate-dead-code-aggressive"; }
+   Status Process() override;
+ 
+@@ -57,12 +55,6 @@
+   }
+ 
+  private:
+-  // Preserve entry point interface if true. All variables in interface
+-  // will be marked live and will not be eliminated. This mode is needed by
+-  // GPU-Assisted Validation instrumentation where a change in the interface
+-  // is not allowed.
+-  bool preserve_interface_;
+-
+   // Return true if |varId| is a variable of |storageClass|. |varId| must either
+   // be 0 or the result of an instruction.
+   bool IsVarOfStorage(uint32_t varId, uint32_t storageClass);
+reverted:
+--- b/source/opt/optimizer.cpp
++++ a/source/opt/optimizer.cpp
+@@ -417,22 +417,22 @@
+     RegisterPass(CreateSimplificationPass());
+     RegisterPass(CreateDeadBranchElimPass());
+     RegisterPass(CreateBlockMergePass());
++    RegisterPass(CreateAggressiveDCEPass());
+-    RegisterPass(CreateAggressiveDCEPass(true));
+   } else if (pass_name == "inst-desc-idx-check") {
+     RegisterPass(CreateInstBindlessCheckPass(7, 23, true, true));
+     RegisterPass(CreateSimplificationPass());
+     RegisterPass(CreateDeadBranchElimPass());
+     RegisterPass(CreateBlockMergePass());
++    RegisterPass(CreateAggressiveDCEPass());
+-    RegisterPass(CreateAggressiveDCEPass(true));
+   } else if (pass_name == "inst-buff-oob-check") {
+     RegisterPass(CreateInstBindlessCheckPass(7, 23, false, false, true, true));
+     RegisterPass(CreateSimplificationPass());
+     RegisterPass(CreateDeadBranchElimPass());
+     RegisterPass(CreateBlockMergePass());
++    RegisterPass(CreateAggressiveDCEPass());
+-    RegisterPass(CreateAggressiveDCEPass(true));
+   } else if (pass_name == "inst-buff-addr-check") {
+     RegisterPass(CreateInstBuffAddrCheckPass(7, 23));
++    RegisterPass(CreateAggressiveDCEPass());
+-    RegisterPass(CreateAggressiveDCEPass(true));
+   } else if (pass_name == "convert-relaxed-to-half") {
+     RegisterPass(CreateConvertRelaxedToHalfPass());
+   } else if (pass_name == "relax-float-ops") {
+@@ -762,9 +762,9 @@
+       MakeUnique<opt::SSARewritePass>());
+ }
+ 
++Optimizer::PassToken CreateAggressiveDCEPass() {
+-Optimizer::PassToken CreateAggressiveDCEPass(bool preserve_interface) {
+   return MakeUnique<Optimizer::PassToken::Impl>(
++      MakeUnique<opt::AggressiveDCEPass>());
+-      MakeUnique<opt::AggressiveDCEPass>(preserve_interface));
+ }
+ 
+ Optimizer::PassToken CreateRemoveUnusedInterfaceVariablesPass() {
+reverted:
+--- b/test/opt/aggressive_dead_code_elim_test.cpp
++++ a/test/opt/aggressive_dead_code_elim_test.cpp
+@@ -7689,44 +7689,6 @@
+   EXPECT_EQ(Pass::Status::SuccessWithoutChange, std::get<1>(result));
+   EXPECT_EQ(text, std::get<0>(result));
+ }
+-
+-TEST_F(AggressiveDCETest, PreserveInterface) {
+-  // Set preserve_interface to true. Verify that unused uniform
+-  // constant in entry point interface is not eliminated.
+-  const std::string text = R"(OpCapability RayTracingKHR
+-OpExtension "SPV_KHR_ray_tracing"
+-%1 = OpExtInstImport "GLSL.std.450"
+-OpMemoryModel Logical GLSL450
+-OpEntryPoint RayGenerationNV %2 "main" %3 %4
+-OpDecorate %3 Location 0
+-OpDecorate %4 DescriptorSet 2
+-OpDecorate %4 Binding 0
+-%void = OpTypeVoid
+-%6 = OpTypeFunction %void
+-%uint = OpTypeInt 32 0
+-%uint_0 = OpConstant %uint 0
+-%float = OpTypeFloat 32
+-%_ptr_CallableDataNV_float = OpTypePointer CallableDataNV %float
+-%3 = OpVariable %_ptr_CallableDataNV_float CallableDataNV
+-%13 = OpTypeAccelerationStructureKHR
+-%_ptr_UniformConstant_13 = OpTypePointer UniformConstant %13
+-%4 = OpVariable %_ptr_UniformConstant_13 UniformConstant
+-%2 = OpFunction %void None %6
+-%15 = OpLabel
+-OpExecuteCallableKHR %uint_0 %3
+-OpReturn
+-OpFunctionEnd
+-)";
+-
+-  SetTargetEnv(SPV_ENV_VULKAN_1_2);
+-  SetAssembleOptions(SPV_TEXT_TO_BINARY_OPTION_PRESERVE_NUMERIC_IDS);
+-  auto result = SinglePassRunAndDisassemble<AggressiveDCEPass>(
+-      text, /* skip_nop = */ true, /* do_validation = */ false,
+-      /* preserve_interface */ true);
+-  EXPECT_EQ(Pass::Status::SuccessWithoutChange, std::get<1>(result));
+-  EXPECT_EQ(text, std::get<0>(result));
+-}
+-
+ // TODO(greg-lunarg): Add tests to verify handling of these cases:
+ //
+ //    Check that logical addressing required
