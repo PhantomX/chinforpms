@@ -16,6 +16,7 @@ Subject: [PATCH] patch-5.14-redhat
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
  drivers/acpi/scan.c                                |   9 +
+ drivers/acpi/x86/s2idle.c                          |  67 +--
  drivers/ata/libahci.c                              |  18 +
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
@@ -57,7 +58,7 @@ Subject: [PATCH] patch-5.14-redhat
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 53 files changed, 655 insertions(+), 1495 deletions(-)
+ 54 files changed, 694 insertions(+), 1523 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 2fb7012c3246..47718b4f2f75 100644
@@ -406,6 +407,100 @@ index b24513ec3fae..8308569f66e0 100644
  	INIT_LIST_HEAD(&resource_list);
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
+diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
+index 3a308461246a..bd92b549fd5a 100644
+--- a/drivers/acpi/x86/s2idle.c
++++ b/drivers/acpi/x86/s2idle.c
+@@ -449,25 +449,30 @@ int acpi_s2idle_prepare_late(void)
+ 	if (pm_debug_messages_on)
+ 		lpi_check_constraints();
+
+-	if (lps0_dsm_func_mask_microsoft > 0) {
++	/* Screen off */
++	if (lps0_dsm_func_mask > 0)
++		acpi_sleep_run_lps0_dsm(acpi_s2idle_vendor_amd() ?
++					ACPI_LPS0_SCREEN_OFF_AMD :
++					ACPI_LPS0_SCREEN_OFF,
++					lps0_dsm_func_mask, lps0_dsm_guid);
++
++	if (lps0_dsm_func_mask_microsoft > 0)
+ 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_SCREEN_OFF,
+ 				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
+-		acpi_sleep_run_lps0_dsm(ACPI_LPS0_MS_ENTRY,
+-				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
++
++	/* LPS0 entry */
++	if (lps0_dsm_func_mask > 0)
++		acpi_sleep_run_lps0_dsm(acpi_s2idle_vendor_amd() ?
++					ACPI_LPS0_ENTRY_AMD :
++					ACPI_LPS0_ENTRY,
++					lps0_dsm_func_mask, lps0_dsm_guid);
++	if (lps0_dsm_func_mask_microsoft > 0) {
+ 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_ENTRY,
+ 				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
+-	} else if (acpi_s2idle_vendor_amd()) {
+-		acpi_sleep_run_lps0_dsm(ACPI_LPS0_SCREEN_OFF_AMD,
+-				lps0_dsm_func_mask, lps0_dsm_guid);
+-		acpi_sleep_run_lps0_dsm(ACPI_LPS0_ENTRY_AMD,
+-				lps0_dsm_func_mask, lps0_dsm_guid);
+-	} else {
+-		acpi_sleep_run_lps0_dsm(ACPI_LPS0_SCREEN_OFF,
+-				lps0_dsm_func_mask, lps0_dsm_guid);
+-		acpi_sleep_run_lps0_dsm(ACPI_LPS0_ENTRY,
+-				lps0_dsm_func_mask, lps0_dsm_guid);
++		/* modern standby entry */
++		acpi_sleep_run_lps0_dsm(ACPI_LPS0_MS_ENTRY,
++				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
+ 	}
+-
+ 	return 0;
+ }
+
+@@ -476,24 +481,30 @@ void acpi_s2idle_restore_early(void)
+ 	if (!lps0_device_handle || sleep_no_lps0)
+ 		return;
+
+-	if (lps0_dsm_func_mask_microsoft > 0) {
+-		acpi_sleep_run_lps0_dsm(ACPI_LPS0_EXIT,
+-				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
++	/* Modern standby exit */
++	if (lps0_dsm_func_mask_microsoft > 0)
+ 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_MS_EXIT,
+ 				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
+-		acpi_sleep_run_lps0_dsm(ACPI_LPS0_SCREEN_ON,
+-				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
+-	} else if (acpi_s2idle_vendor_amd()) {
+-		acpi_sleep_run_lps0_dsm(ACPI_LPS0_EXIT_AMD,
+-				lps0_dsm_func_mask, lps0_dsm_guid);
+-		acpi_sleep_run_lps0_dsm(ACPI_LPS0_SCREEN_ON_AMD,
+-				lps0_dsm_func_mask, lps0_dsm_guid);
+-	} else {
++
++	/* LPS0 exit */
++	if (lps0_dsm_func_mask > 0)
++		acpi_sleep_run_lps0_dsm(acpi_s2idle_vendor_amd() ?
++					ACPI_LPS0_EXIT_AMD :
++					ACPI_LPS0_EXIT,
++					lps0_dsm_func_mask, lps0_dsm_guid);
++	if (lps0_dsm_func_mask_microsoft > 0)
+ 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_EXIT,
+-				lps0_dsm_func_mask, lps0_dsm_guid);
++				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
++
++	/* Screen on */
++	if (lps0_dsm_func_mask_microsoft > 0)
+ 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_SCREEN_ON,
+-				lps0_dsm_func_mask, lps0_dsm_guid);
+-	}
++				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
++	if (lps0_dsm_func_mask > 0)
++		acpi_sleep_run_lps0_dsm(acpi_s2idle_vendor_amd() ?
++					ACPI_LPS0_SCREEN_ON_AMD :
++					ACPI_LPS0_SCREEN_ON,
++					lps0_dsm_func_mask, lps0_dsm_guid);
+ }
+
+ static const struct platform_s2idle_ops acpi_s2idle_ops_lps0 = {
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
 index fec2e9754aed..bea4e2973259 100644
 --- a/drivers/ata/libahci.c
@@ -1288,10 +1383,10 @@ index 75dbe77b0b4b..4bd6dd722f44 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 7b1c81b899cd..5904ece27f64 100644
+index 1905ee0297a4..58fded74fb31 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4231,6 +4231,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4232,6 +4232,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
