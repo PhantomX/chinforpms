@@ -1,7 +1,7 @@
 %global commit 16e73be10d940c9c04101a47687a6f8a385c2b0f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210917
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 2771ab8cee5da83948b7bf06f2f7963623599659
+%global wine_stagingver 6.18
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id f04a5161ebd57608c5781fa2fe20a868cc055040
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 99797eb49e562c8adc8aa12eceff724f469f6be9
+%global tkg_id ed6aae194e2996eef830ea8fecd01e9ecf27df80
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -127,8 +127,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.17
-Release:        101%{?gver}%{?dist}
+Version:        6.18
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -1957,12 +1957,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/ext-ms-win-shell-shell32-l1-2-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ext-ms-win-uxtheme-themes-l1-1-0.%{winedll}
 %if 0%{?wine_staging}
-%{_libdir}/wine/%{winesodir}/ext-ms-win-appmodel-usercontext-l1-1-0.dll.so
-%{_libdir}/wine/%{winesodir}/ext-ms-win-xaml-pal-l1-1-0.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-appmodel-usercontext-l1-1-0.dll
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-xaml-pal-l1-1-0.dll
-%endif
+%{_libdir}/wine/%{winedlldir}/ext-ms-win-appmodel-usercontext-l1-1-0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/ext-ms-win-xaml-pal-l1-1-0.%{winedll}
 %endif
 %{_libdir}/wine/%{winedlldir}/faultrep.%{winedll}
 %{_libdir}/wine/%{winedlldir}/feclient.%{winedll}
@@ -2913,6 +2909,9 @@ fi
 
 
 %changelog
+* Sat Sep 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.18-100
+- 6.18
+
 * Mon Sep 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.17-101.20210917git16e73be
 - Snapshot
 

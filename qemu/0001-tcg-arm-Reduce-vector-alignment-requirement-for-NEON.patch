@@ -1,0 +1,73 @@
+From 1331e4eec016a295949009b4360c592401b089f7 Mon Sep 17 00:00:00 2001
+From: Richard Henderson <richard.henderson@linaro.org>
+Date: Sun, 12 Sep 2021 10:49:25 -0700
+Subject: [PATCH] tcg/arm: Reduce vector alignment requirement for NEON
+
+With arm32, the ABI gives us 8-byte alignment for the stack.
+While it's possible to realign the stack to provide 16-byte alignment,
+it's far easier to simply not encode 16-byte alignment in the
+VLD1 and VST1 instructions that we emit.
+
+Remove the assertion in temp_allocate_frame, limit natural alignment
+to the provided stack alignment, and add a comment.
+
+Reported-by: Richard W.M. Jones <rjones@redhat.com>
+Signed-off-by: Richard Henderson <richard.henderson@linaro.org>
+---
+ tcg/arm/tcg-target.c.inc | 13 +++++++++----
+ tcg/tcg.c                |  8 +++++++-
+ 2 files changed, 16 insertions(+), 5 deletions(-)
+
+diff --git a/tcg/arm/tcg-target.c.inc b/tcg/arm/tcg-target.c.inc
+index 007ceee68e..34acfb522c 100644
+--- a/tcg/arm/tcg-target.c.inc
++++ b/tcg/arm/tcg-target.c.inc
+@@ -2477,8 +2477,13 @@ static void tcg_out_ld(TCGContext *s, TCGType type, TCGReg arg,
+         tcg_out_vldst(s, INSN_VLD1 | 0x7d0, arg, arg1, arg2);
+         return;
+     case TCG_TYPE_V128:
+-        /* regs 2; size 8; align 16 */
+-        tcg_out_vldst(s, INSN_VLD1 | 0xae0, arg, arg1, arg2);
++        /*
++         * We have only 8-byte alignment for the stack per the ABI.
++         * Rather than dynamically re-align the stack, it's easier
++         * to simply not request alignment beyond that.  So:
++         * regs 2; size 8; align 8
++         */
++        tcg_out_vldst(s, INSN_VLD1 | 0xad0, arg, arg1, arg2);
+         return;
+     default:
+         g_assert_not_reached();
+@@ -2497,8 +2502,8 @@ static void tcg_out_st(TCGContext *s, TCGType type, TCGReg arg,
+         tcg_out_vldst(s, INSN_VST1 | 0x7d0, arg, arg1, arg2);
+         return;
+     case TCG_TYPE_V128:
+-        /* regs 2; size 8; align 16 */
+-        tcg_out_vldst(s, INSN_VST1 | 0xae0, arg, arg1, arg2);
++        /* See tcg_out_ld re alignment: regs 2; size 8; align 8 */
++        tcg_out_vldst(s, INSN_VST1 | 0xad0, arg, arg1, arg2);
+         return;
+     default:
+         g_assert_not_reached();
+diff --git a/tcg/tcg.c b/tcg/tcg.c
+index 4142d42d77..ca5bcc4635 100644
+--- a/tcg/tcg.c
++++ b/tcg/tcg.c
+@@ -3060,7 +3060,13 @@ static void temp_allocate_frame(TCGContext *s, TCGTemp *ts)
+         g_assert_not_reached();
+     }
+ 
+-    assert(align <= TCG_TARGET_STACK_ALIGN);
++    /*
++     * Assume the stack is sufficiently aligned.
++     * This affects e.g. ARM NEON, where we have 8 byte stack alignment
++     * and do not require 16 byte vector alignment.  This seems slightly
++     * easier than fully parameterizing the above switch statement.
++     */
++    align = MIN(TCG_TARGET_STACK_ALIGN, align);
+     off = ROUND_UP(s->current_frame_offset, align);
+ 
+     /* If we've exhausted the stack frame, restart with a smaller TB. */
+-- 
+2.32.0
+

@@ -1,6 +1,6 @@
-From e88f1eb6bdee1c1d6a125aaaec0b1633c87b4634 Mon Sep 17 00:00:00 2001
+From 310bdc0d75493e8ad15f98da1d4effc5c6c2468f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 2 Sep 2021 15:55:22 -0300
+Date: Fri, 24 Sep 2021 21:24:48 -0300
 Subject: [PATCH] System libchdr support
 
 ---
@@ -10,10 +10,10 @@ Subject: [PATCH] System libchdr support
  3 files changed, 13 insertions(+), 3 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 0106d57..b1a488f 100644
+index 798ea8e..827175c 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -241,7 +241,17 @@ if(NOT USE_SYSTEM_YAML)
+@@ -242,7 +242,17 @@ if(NOT USE_SYSTEM_YAML)
  	endif()
  endif()
  
@@ -46,11 +46,11 @@ index 9975c8f..59b7db8 100644
  class ChdFileReader : public ThreadedFileReader
  {
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index d63669e..ec0b3fb 100644
+index 6d0419e..729c048 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1430,7 +1430,7 @@ target_link_libraries(PCSX2 PRIVATE
- 	x86emitter
+@@ -1445,7 +1445,7 @@ target_link_libraries(PCSX2 PRIVATE
+ 	common
  	fmt::fmt
  	yaml-cpp
 -	chdr-static

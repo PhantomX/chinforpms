@@ -284,7 +284,7 @@ Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
 Version: 6.1.0
-Release: 101%{?dist}
+Release: 102%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -302,6 +302,14 @@ Source27: kvm.conf
 Source30: kvm-s390x.conf
 Source31: kvm-x86.conf
 Source36: README.tests
+
+# Fix -cpu max
+# https://bugzilla.redhat.com/show_bug.cgi?id=1999700
+Patch1: 0001-target-i386-add-missing-bits-to-CR4_RESERVED_MASK.patch 
+
+# Fix assertion on armv7hl
+# https://bugzilla.redhat.com/show_bug.cgi?id=1999878
+Patch2: 0001-tcg-arm-Reduce-vector-alignment-requirement-for-NEON.patch
 
 BuildRequires: meson >= %{meson_version}
 BuildRequires: zlib-devel
@@ -2241,6 +2249,9 @@ popd
 
 
 %changelog
+* Fri Sep 24 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.1.0-102
+- Rawhide sync
+
 * Fri Aug 27 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.1.0-101
 - Rawhide sync (gnutls fix)
 
