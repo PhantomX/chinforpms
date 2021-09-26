@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.18
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -195,7 +195,11 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
-Patch200:       https://bugs.winehq.org/attachment.cgi?id=70518#/%{name}-whq-bug51296.patch
+Patch200:       https://source.winehq.org/patches/data/214036#/%{name}-whq-p214036.patch
+Patch201:       https://source.winehq.org/patches/data/214035#/%{name}-whq-p214035.patch
+Patch202:       https://source.winehq.org/patches/data/214038#/%{name}-whq-p214038.patch
+Patch203:       https://source.winehq.org/patches/data/215195#/%{name}-whq-p215195.patch
+Patch204:       https://source.winehq.org/patches/data/215197#/%{name}-whq-p215197.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -847,9 +851,11 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
-
-
 %patch200 -p1
+%patch201 -p1
+%patch202 -p1
+%patch203 -p1
+%patch204 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2909,6 +2915,9 @@ fi
 
 
 %changelog
+* Sat Sep 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.18-101
+- Add some fixes in review
+
 * Sat Sep 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.18-100
 - 6.18
 

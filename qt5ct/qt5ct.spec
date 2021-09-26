@@ -1,5 +1,5 @@
 Name:           qt5ct
-Version:        1.2
+Version:        1.3
 Release:        100%{?dist}
 Summary:        Qt5 Configuration Tool
 
@@ -92,6 +92,9 @@ install -D -pm 644 %{name}-%{version}/src/%{name}/translations/*.qm \
 
 
 %changelog
+* Sun Sep 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1.3-100
+- 1.3
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2-100
 - 1.2
 

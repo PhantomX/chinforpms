@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 1
 
-%global commit bacd834840a12b7df19df175bb5cbf286c93d43f
+%global commit 8864b48c02c5d186a4e271cd7e94f7fec870fe33
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210915
+%global date 20210925
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        41%{?gver}%{?dist}
+Release:        42%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -239,6 +239,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Sep 26 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-42.20210925git8864b48
+- Bump
+
 * Sat Sep 18 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-41.20210915gitbacd834
 - Last snapshot
 
