@@ -149,18 +149,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 80f03667df876f6d9a3c61841a008c88537eb4a0
+%global pfcommit 9761577cccf6e30389528539a36cb3feb2eebb93
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -188,7 +188,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 6abad1e5881090653f9cf53d80ec33f87fc786cf
+%global opensuse_id 4c70286a8cb2dfe809e47f4bbbfe83a6cf8d4d13
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -950,7 +950,7 @@ Patch1020: %{opensuse_url}/memcg-enable-accounting-of-ipc-resources.patch#/openS
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id a39fc448fed0e3928d96fdcf485ea20bdcfcdc0f
+%global tkg_id 799936ef5a09ead1d07cec4a445b44542d2f72ba
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.14/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.14/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2092: 0001-fsync.patch
@@ -2903,6 +2903,9 @@ fi
 #
 #
 %changelog
+* Sun Sep 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.8-500.chinfo
+- 5.14.8 - pf4
+
 * Wed Sep 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.7-500.chinfo
 - 5.14.7 - pf3
 
