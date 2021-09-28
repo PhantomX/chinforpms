@@ -3,7 +3,7 @@ index d8c623a..e5b6833 100644
 --- a/Telegram/CMakeLists.txt
 +++ b/Telegram/CMakeLists.txt
 @@ -63,7 +63,7 @@ generate_styles(Telegram ${src_loc} "${style_files}" "${dependent_style_files}")
-     generate_midl(Telegram ${src_loc}/platform/win/windows_quiethours.idl)
+     nuget_add_winrt(Telegram)
  endif()
  
 -set_target_properties(Telegram PROPERTIES AUTOMOC ON AUTORCC ON)
