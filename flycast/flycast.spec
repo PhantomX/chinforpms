@@ -1,6 +1,6 @@
-%global commit a51f310e96a0605b25e8fb59fd0007245335d46b
+%global commit 5d068fc2d4f25185829762de44be85268c4b671f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210826
+%global date 20210927
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -22,8 +22,8 @@
 %global volk_ver 131
 
 Name:           flycast
-Version:        1.0
-Release:        4%{?gver}%{?dist}
+Version:        1.1
+Release:        1%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -95,7 +95,7 @@ Provides:       bundled(xbyak)
 %autosetup %{name}-r%{version} -p1
 %endif
 
-rm -rf core/deps/{glm,libzip,lzma,miniupnpc,SDL2-*,xxHash,zlib}
+rm -rf core/deps/{glm,libzip,lzma,miniupnpc,oboe,SDL2-*,xxHash,zlib}
 
 %if 0%{?with_spirv}
 rm -rf core/deps/glslang
@@ -204,6 +204,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Wed Sep 29 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-1.20210927git5d068fc
+- 1.1 last snapshot
+
 * Sun Aug 29 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.0-4.20210826gita51f310
 - Bump
 

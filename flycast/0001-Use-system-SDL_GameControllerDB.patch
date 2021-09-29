@@ -1,6 +1,6 @@
-From cc55a90237e9a5e7ca3211d457b36e590f7999a1 Mon Sep 17 00:00:00 2001
+From 8a0645d4f5c2077edd20450fda711433959c4bbe Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 10 Dec 2020 21:42:44 -0300
+Date: Tue, 28 Sep 2021 23:43:21 -0300
 Subject: [PATCH] Use system SDL_GameControllerDB
 
 ---
@@ -8,13 +8,13 @@ Subject: [PATCH] Use system SDL_GameControllerDB
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/core/sdl/sdl.cpp b/core/sdl/sdl.cpp
-index 6285712..83e1632 100644
+index 62467d0..8f0de25 100644
 --- a/core/sdl/sdl.cpp
 +++ b/core/sdl/sdl.cpp
-@@ -65,11 +65,11 @@ void input_sdl_init()
- 		if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
- 			die("SDL: error initializing Joystick subsystem");
- 
+@@ -158,11 +158,11 @@ void input_sdl_init()
+ 			SDL_SetHint(SDL_HINT_XINPUT_ENABLED, "0");
+ 		}
+ #endif
 -		std::string db = get_readonly_data_path("gamecontrollerdb.txt");
 +		std::string db = "_RPM_GCDBDIR_/gamecontrollerdb.txt";
  		int rv = SDL_GameControllerAddMappingsFromFile(db.c_str());
@@ -26,5 +26,5 @@ index 6285712..83e1632 100644
  		}
  		if (rv > 0)
 -- 
-2.29.2
+2.31.1
 

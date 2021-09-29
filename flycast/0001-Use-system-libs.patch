@@ -1,6 +1,6 @@
-From be5a3065711171ba4865480745c9bf857ac81d4c Mon Sep 17 00:00:00 2001
+From 89d0d06d6984678829566fa96c0fac6ec27e6468 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 18 Jul 2021 20:20:11 -0300
+Date: Tue, 28 Sep 2021 23:40:35 -0300
 Subject: [PATCH] Use system libs
 
 ---
@@ -13,20 +13,20 @@ Subject: [PATCH] Use system libs
  6 files changed, 80 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 07ca010..e78369a 100644
+index f339741..50a871f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -16,6 +16,9 @@ option(USE_GLES2 "Use GLES2 API" OFF)
- option(USE_HOST_LIBZIP "Use host libzip" ON)
+@@ -17,6 +17,9 @@ option(USE_HOST_LIBZIP "Use host libzip" ON)
  option(USE_OPENMP "Use OpenMP if available" ON)
  option(USE_VULKAN "Build with Vulkan support" ON)
+ option(LIBRETRO "Build libretro core" OFF)
 +option(USE_HOST_CHDR "Use host libchdr" OFF)
 +option(USE_HOST_LZMA "Use host lzma-sdk" OFF)
 +option(USE_HOST_SPIRV "Use host glslang/spirv" OFF)
  
  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
  
-@@ -100,20 +103,41 @@ else()
+@@ -189,20 +192,41 @@ else()
      target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_NO_OPENMP)
  endif()
  
@@ -51,7 +51,7 @@ index 07ca010..e78369a 100644
  target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
 +endif()
  
- if(NOT APPLE)
+ if(NOT APPLE AND USE_VULKAN)
 +if(USE_HOST_SPIRV)
 +    pkg_search_module(GLSLANG REQUIRED glslang)
 +    pkg_search_module(SPIRV REQUIRED spirv)
@@ -66,12 +66,12 @@ index 07ca010..e78369a 100644
  endif()
 +endif()
  
- find_package(ALSA)
- if(ALSA_FOUND AND NOT ANDROID)
-@@ -170,9 +194,17 @@ if(TARGET ZLIB::ZLIB AND NOT ANDROID AND NOT WIN32)
-     set(WITH_SYSTEM_ZLIB ON CACHE BOOL "Use system provided zlib library")
-     target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+ if(NOT LIBRETRO)
+ 	find_package(ALSA)
+@@ -264,11 +288,19 @@ if(NOT LIBRETRO)
+ 	endif()
  endif()
+ 
 +if(USE_HOST_CHDR)
 +    pkg_search_module(CHDR REQUIRED libchdr)
 +    message(STATUS "Using host libchdr")
@@ -79,6 +79,8 @@ index 07ca010..e78369a 100644
 +    target_include_directories(${PROJECT_NAME} PRIVATE ${CHDR_INCLUDE_DIRS})
 +    target_link_libraries(${PROJECT_NAME} PRIVATE ${CHDR_LIBRARIES})
 +else()
+ execute_process(COMMAND git apply -p1 ${CMAKE_CURRENT_SOURCE_DIR}/core/deps/patches/libchdr.patch
+ 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr)
  add_subdirectory(core/deps/libchdr)
  target_link_libraries(${PROJECT_NAME} PRIVATE chdr-static)
  target_include_directories(${PROJECT_NAME} PRIVATE core/deps/libchdr/include)
@@ -86,15 +88,15 @@ index 07ca010..e78369a 100644
  
  if(NOT WITH_SYSTEM_ZLIB)
      target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
-@@ -184,7 +216,6 @@ if(NOT WITH_SYSTEM_ZLIB)
+@@ -280,7 +312,6 @@ if(NOT WITH_SYSTEM_ZLIB)
      get_target_property(ZLIB_LIBRARY zlib LOCATION)
  endif()
  
 -find_package(PkgConfig)
- if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE)
+ if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE AND NOT LIBRETRO)
      pkg_check_modules(AO IMPORTED_TARGET ao)
      if(AO_FOUND)
-@@ -382,15 +413,37 @@ if(NOT MSVC)
+@@ -493,8 +524,26 @@ if(NOT MSVC)
              core/deps/picotcp/stack/pico_tree.c)
  endif()
  
@@ -119,8 +121,11 @@ index 07ca010..e78369a 100644
 +endif()
 +endif()
  target_sources(${PROJECT_NAME} PRIVATE core/deps/libelf/elf32.cpp core/deps/libelf/elf64.cpp core/deps/libelf/elf.cpp)
- target_sources(${PROJECT_NAME} PRIVATE core/deps/imgui/imgui.cpp core/deps/imgui/imgui_demo.cpp core/deps/imgui/imgui_draw.cpp core/deps/imgui/imgui_widgets.cpp)
- target_sources(${PROJECT_NAME} PRIVATE core/deps/xbrz/xbrz.cpp)
+ if(NOT LIBRETRO)
+ 	target_sources(${PROJECT_NAME} PRIVATE core/deps/imgui/imgui.cpp core/deps/imgui/imgui_demo.cpp core/deps/imgui/imgui_draw.cpp core/deps/imgui/imgui_widgets.cpp)
+@@ -536,9 +585,13 @@ if(LIBRETRO)
+ 		shell/libretro/vmu_xhair.cpp)
+ endif()
  
 -target_sources(${PROJECT_NAME} PRIVATE
 +if(NOT DISABLE_7ZIP)
