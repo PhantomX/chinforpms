@@ -1,14 +1,14 @@
 %global commit df7ddeb0345104f25b5b7bb154bc6a008c8c8404
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180519
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           libeatmydata
-Version:        105
+Version:        129
 Release:        1%{?gver}%{?dist}
 Summary:        Library and utilities designed to disable fsync and friends
 
@@ -20,7 +20,7 @@ URL:            https://www.flamingspork.com/projects/%{name}
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/%{name}-%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Multilib-fix.patch
@@ -43,7 +43,7 @@ this software no longer crash safe.
 %if 0%{?with_snapshot}
 %autosetup -n %{name}-%{commit}
 %else
-%autosetup -n %{name}-%{name}-%{version}
+%autosetup -n %{name}-%{version}
 %endif
 
 if ! [ -x ./configure ] ;then
@@ -74,5 +74,8 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 129-1
+- 129
+
 * Thu Oct 17 2019 Phantom X <megaphantomx at bol dot com dot br> - 105-1.20180519gitdf7ddeb
 - Initial spec

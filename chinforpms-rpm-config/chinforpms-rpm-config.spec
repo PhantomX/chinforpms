@@ -1,5 +1,5 @@
 Name:           chinforpms-rpm-config
-Version:        6
+Version:        7
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
@@ -11,6 +11,7 @@ Source1:        rpmrc
 
 BuildArch:      noarch
 
+BuildRequires:  redhat-rpm-config
 Requires:       redhat-rpm-config
 Requires:       sed
 
@@ -40,6 +41,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 7-1
+- _gcc_lto_cflags future proof fix
+
 * Sun Apr 18 2021 Phantom X <megaphantomx at hotmail dot com> - 6-1
 - __cflags_arch_x86_64 fix (>=f34)
 

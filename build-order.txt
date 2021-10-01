@@ -5,7 +5,7 @@ chinforpms-rpm-config
 buildsys-build-chinforpms
 c-vtapi
 chinforpms-fake-packages
-compat-bison-36
+-compat-bison-36
 cubeb
 glibc-langpack-pt_BR_iso8601
 glyr
@@ -35,16 +35,15 @@ spirv-headers
 taglib
 vulkan-headers
 -webp-pixbuf-loader
-xarchiver
 xwit
 -ytnef
 
 # 2
 -aom
-compat-gcc-32
+-compat-gcc-32
 -dxil-spirv
 ff7tk
-gstreamer1-plugins-base
+-gstreamer1-plugins-base
 libchdr
 libdeflate
 -libliftoff
@@ -64,7 +63,7 @@ xcftools
 adriconf
 adwaita-qt
 -aisleriot
-amdvlk-vulkan-driver
+-amdvlk-vulkan-driver
 antimicrox
 applyppf
 ario
@@ -96,7 +95,7 @@ deluge
 devedeng
 discimagecreator
 disk-indicator
-dosbox-staging
+-dosbox-staging
 dosbox-x
 easytag
 -emojione-picker
@@ -123,7 +122,7 @@ gkrellm-themes
 glow
 glslang
 gmpc
-gmysqlcc
+-gmysqlcc
 gnome-themes
 gnome-themes-extra
 gpa
@@ -158,12 +157,12 @@ mingw-crt
 mingw-w64-tools
 mingw-winpthreads
 mozilla-gnotifier
-mozilla-keepassxc-browser
+-mozilla-keepassxc-browser
 mp3val
 mpdnotify
 -mps-youtube
 mupen64plus
--nicotine+
+nicotine+
 openjazz
 opentyrian
 orage
@@ -187,7 +186,7 @@ qt5ct
 -quiterss
 radeon-profile
 radeon-profile-daemon
-rclone
+-rclone
 retext
 sdl12-compat
 sdl2-controllermap
@@ -227,6 +226,7 @@ ueberzug
 uksmd
 v4l-utils
 winetricks
+xarchiver
 xboxdrv
 xdgmenumaker
 xfce4-notes-plugin

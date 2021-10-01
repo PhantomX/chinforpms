@@ -2,8 +2,8 @@
 
 Name:           buildsys-build-%{repo}
 Epoch:          11
-Version:        34
-Release:        2
+Version:        35
+Release:        1
 Summary:        Tools and files used by the %{repo} buildsys 
 
 License:        MIT
@@ -77,6 +77,9 @@ sed -i 's|^default_prefix=.*|default_prefix=%{_datadir}/%{name}/|'  \
 
 
 %changelog
+* Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 11:35-1
+- Bump for 35
+
 * Sat May 22 2021 Phantom X <megaphantomx at hotmail dot com> - 11:34-2
 - Rename to buildsys-build-chinforpms
 

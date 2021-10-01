@@ -1,6 +1,6 @@
-%global commit 012a7dc055768367eead09a606f5d378e1c7d914
+%global commit dd8c2a1a386a59618949695c1ddcb96b04d0e123
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210425
+%global date 20210923
 %global with_snapshot 1
 
 %global commit1 7d33fee11ec480beae4c28ad09ca56d974140a72
@@ -19,7 +19,7 @@
 
 Name:           barrier
 Version:        2.3.3
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        Share mouse and keyboard between multiple computers over the network
 
 License:        GPLv2
@@ -114,10 +114,7 @@ install -pm0644 doc/%{name}{c,s}.1 %{buildroot}%{_mandir}/man1/
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm0644 %{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
-desktop-file-edit \
-  --remove-category=DesktopUtility \
-  %{buildroot}%{_datadir}/applications/%{name}.desktop
-
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %endif
@@ -138,6 +135,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 2.3.3-4.20210923gitdd8c2a1
+- Last snapshot
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2.3.3-3.20210425git012a7dc
 - Update
 

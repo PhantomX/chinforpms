@@ -1,7 +1,7 @@
 %global commit a9ddaccc63ec9694e57b252760d9b8c9b82dbe78
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210818
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -11,7 +11,7 @@
 
 Name:           htop
 Version:        3.1.0
-Release:        0.1%{?gver}%{?dist}
+Release:        100%{?gver}%{?dist}
 Summary:        Interactive process viewer
 
 License:        GPLv2+
@@ -76,6 +76,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-100
+- 3.1.0
+
 * Wed Aug 18 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-0.1.20210818gita9ddacc
 - 3.1.0 snapshot
 

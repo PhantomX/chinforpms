@@ -1,6 +1,6 @@
-%global commit 9eb4fc7bcae40af9171d9d4e22ac1ebbd38d8d99
+%global commit cff5fc3e8214e56b112e6469e544fa7b97690aa4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210526
+%global date 20210915
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -12,7 +12,7 @@
 Name:           mcomix3
 # For now, choose version 0
 Version:        0
-Release:        0.100%{?gver}%{?dist}
+Release:        0.101%{?gver}%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
 # GPL version info is from mcomix/mcomixstarter.py
@@ -173,6 +173,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 0-0.101.20210915gitcff5fc3
+- Bump
+
 * Wed Jun 23 2021 Phantom X <megaphantomx at hotmail dot com> - 0-0.100.20210526git9eb4fc7
 - Update
 - Sync with Rawhide (thumbnailer and appdata)

@@ -1,4 +1,4 @@
-5.11.12-300.fc34
-5.11.12-300.fc34smp
-5.11.12-300.fc34PAE
-5.11.12-300.fc34lpae
+default
+defaultsmp
+defaultPAE
+defaultlpae

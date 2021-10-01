@@ -1,18 +1,18 @@
-From 5030b26423360195c7ff4ef3c030f9425633037c Mon Sep 17 00:00:00 2001
+From 976810f51fe5867a8f86269c77335aaf60594e18 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 20 Apr 2021 15:06:14 -0300
+Date: Thu, 30 Sep 2021 23:08:00 -0300
 Subject: [PATCH] Use system qhexedit
 
 ---
- CMakeLists.txt     | 13 +++++++++++++
+ CMakeLists.txt     | 16 ++++++++++++++++
  src/mainwindow.cpp |  4 ++++
- 2 files changed, 17 insertions(+)
+ 2 files changed, 20 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1c489df..c562047 100644
+index 0e60e80..1f0bc96 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -10,6 +10,8 @@ set(REQUIRED_QT_VERSION "5.12.0")
+@@ -14,6 +14,8 @@ set(REQUIRED_QT_VERSION "5.15.0")
  
  cmake_policy(SET CMP0010 NEW)
  
@@ -21,7 +21,7 @@ index 1c489df..c562047 100644
  project( blackchocobo VERSION 1.10.5 DESCRIPTION "Final Fantasy 7 Save Editor")
  # Get the version from git if it's a git repository
  set(BC_VERSION ${CMAKE_PROJECT_VERSION})
-@@ -57,10 +59,21 @@ set (RESOURCES icon/images.qrc)
+@@ -47,7 +49,13 @@ find_package(ff7tk REQUIRED NO_MODULE COMPONENTS
  
  add_subdirectory(deploy)
  add_subdirectory(lang)
@@ -33,18 +33,32 @@ index 1c489df..c562047 100644
  add_subdirectory(qhexedit)
 +endif()
  
- if(UNIX AND NOT APPLE)
-     add_executable (blackchocobo ${blackchocobo_SRCS} ${RESOURCES})
-+    if(USE_SYSTEM_QHEXEDIT)
-+        target_compile_definitions(blackchocobo PUBLIC USE_SYSTEM_QHEXEDIT)
-+        target_include_directories(blackchocobo PUBLIC ${QHEXEDIT_INCLUDE_DIRS})
-+        target_link_libraries(blackchocobo ${QHEXEDIT_LIBRARIES})
-+    endif()
-     target_link_libraries (blackchocobo  Qt::Core Qt::Gui Qt::Widgets Qt::Xml Qt::Quick QHEXEDIT ff7tk::ff7tk ff7tk::ff7tkWidgets)
-     install(TARGETS blackchocobo RUNTIME DESTINATION bin)
-     install(FILES ${PROJECT_SOURCE_DIR}/COPYING.txt DESTINATION licenses/blackchocobo/ RENAME LICENSE)
+ if(WIN32)
+     set(PLATFORM_EX_SRC ${CMAKE_BINARY_DIR}/deploy/blackchocobo.rc)
+@@ -84,6 +92,13 @@ add_executable(${BIN_NAME} WIN32 MACOSX_BUNDLE
+       ${PLATFORM_EX_SRC}
+     )
+ 
++if(USE_SYSTEM_QHEXEDIT)
++    target_compile_definitions(${BIN_NAME} PUBLIC USE_SYSTEM_QHEXEDIT)
++    target_include_directories(${BIN_NAME} PUBLIC ${QHEXEDIT_INCLUDE_DIRS})
++else()
++    set(QHEXEDIT_LIBRARIES "")
++endif()
++
+ target_link_libraries (${BIN_NAME} PUBLIC
+         Qt::Core
+         Qt::Gui
+@@ -93,6 +108,7 @@ target_link_libraries (${BIN_NAME} PUBLIC
+         QHEXEDIT
+         ff7tk::ff7tk
+         ff7tk::ff7tkWidgets
++        ${QHEXEDIT_LIBRARIES}
+     )
+ 
+ if(APPLE)
 diff --git a/src/mainwindow.cpp b/src/mainwindow.cpp
-index eb980f5..f3e0a4c 100644
+index a99a688..01613a3 100644
 --- a/src/mainwindow.cpp
 +++ b/src/mainwindow.cpp
 @@ -55,7 +55,11 @@
@@ -60,5 +74,5 @@ index eb980f5..f3e0a4c 100644
  MainWindow::MainWindow(QWidget *parent)
      : QMainWindow(parent)
 -- 
-2.30.2
+2.31.1
 

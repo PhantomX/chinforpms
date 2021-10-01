@@ -1,6 +1,6 @@
-%global commit 46834fe327099e0fd51fa7a2e6683b964166a3d0
+%global commit 7218522aac721f6b0dcc2efc1b38f7d286979c7a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200523
+%global date 20210703
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           binmerge
 Version:        1.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Tool to merge multiple bin/cue tracks into one
 
 License:        GPLv2
@@ -54,5 +54,8 @@ install -pm0755 %{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1.0-2.20210703git7218522
+- Bump
+
 * Fri Jun 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.0-1.20200523git46834fe
 - Initial spec

@@ -1,6 +1,7 @@
 %global with_broadway 1
 
 %global with_sysprof 1
+%global with_tracker 0
 
 %global glib2_version 2.57.2
 %global pango_version 1.41.0
@@ -91,7 +92,10 @@ BuildRequires:  gtk-doc
 BuildRequires:  cups-devel
 BuildRequires:  pkgconfig(rest-0.7)
 BuildRequires:  pkgconfig(json-glib-1.0)
-#BuildRequires: pkgconfig(cloudproviders)
+BuildRequires:  pkgconfig(cloudproviders)
+%if 0%{?with_tracker}
+BuildRequires:  pkgconfig(tracker-sparql-3.0)
+%endif
 BuildRequires:  pkgconfig(colord)
 BuildRequires:  pkgconfig(avahi-gobject)
 #BuildRequires:  sassc
@@ -243,6 +247,10 @@ export CFLAGS='-fno-strict-aliasing %{build_cflags}'
         --enable-wayland-backend \
 %if 0%{?with_broadway}
         --enable-broadway-backend \
+%endif
+        --enable-cloudproviders \
+%if 0%{?with_tracker}
+        --enable-tracker3 \
 %endif
         --enable-colord \
         --enable-installed-tests \

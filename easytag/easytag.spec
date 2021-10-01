@@ -1,6 +1,6 @@
-%global commit 206bfb4820af3162ee14f3023f97633fd146ca34
+%global commit ed742959eb312355042ef0b5928b2bd5724298db
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210326
+%global date 20210912
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -14,7 +14,7 @@
 
 Name:           easytag
 Version:        2.5.1
-Release:        0.2%{?gver}%{?dist}
+Release:        0.3%{?gver}%{?dist}
 Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
 Epoch:          1
@@ -127,6 +127,9 @@ make check
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.1-0.3.20210912gited74295
+- Update
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.1-0.2.20210326git206bfb4
 - Bump
 

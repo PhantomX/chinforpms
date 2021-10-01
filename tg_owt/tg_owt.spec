@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
-%global commit0 91d836dc84a16584c6ac52b36c04c0de504d9c34
+%global commit0 575fb17d2853c43329e45f6693370f5e41668055
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20210627
+%global date 20210915
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -18,7 +18,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -210,6 +210,9 @@ cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 0-106.20210915git575fb17
+- Last snapshot
+
 * Tue Jul 06 2021 Phantom X <megaphantomx at hotmail dot com> - 0-105.20210627git91d836d
 - Bump
 

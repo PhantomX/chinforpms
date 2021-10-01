@@ -2,7 +2,7 @@
 
 Name:           pysdl2
 Version:        0.9.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python wrapper around the SDL2 library
 
 License:        CC0
@@ -51,7 +51,7 @@ restrictions, nor does it rely on C code, but uses ctypes instead.
 %autosetup -n %{pkgname}-%{version} -p1
 
 # These tests fail on COPR
-rm -f sdl2/test/{audio_test,sdlmixer_test}.py
+rm -f sdl2/test/{audio_test,sdlmixer_test,version_test}.py
 
 %generate_buildrequires
 %pyproject_buildrequires -r
@@ -76,6 +76,9 @@ rm -f sdl2/test/{audio_test,sdlmixer_test}.py
 
 
 %changelog
+* Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.9-2
+- Disable one more test
+
 * Sun Sep 05 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.9-1
 - 0.9.9
 - Update to best packaging practices

@@ -1,5 +1,6 @@
 # Set fixed cpu jobs instead auto
-%_gcc_lto_cflags -flto=%{_smp_build_ncpus} -ffat-lto-objects
+%_gcc_lto_cflags %(grep '^%%_gcc_lto_cflags' /usr/lib/rpm/redhat/macros | cut -d'-' -f2- \\
+ | sed 's/^flto=auto /-flto=%{_smp_build_ncpus} /')
 
 # Set down debug level to speed up buildings
 %_glevel 1

@@ -1,10 +1,10 @@
 adwaita-qt
-amdgpu-pro-vulkan-driver
-amdvlk-vulkan-driver
+-amdgpu-pro-vulkan-driver
+-amdvlk-vulkan-driver
 -aom
 chinforpms-rpm-config
-compat-bison-36
-compat-gcc-32
+-compat-bison-36
+-compat-gcc-32
 cubeb
 -dxil-spirv
 FAudio

@@ -1,14 +1,14 @@
-From 1c04112c1433e6c60cabbcc568da83b67b573b2f Mon Sep 17 00:00:00 2001
+From 79f09ed2759bf4c3af72bdeaca3e4349ad2cc237 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 20 Apr 2021 14:20:16 -0300
+Date: Thu, 30 Sep 2021 20:16:18 -0300
 Subject: [PATCH] Use system lzma-sdk
 
 ---
- CMakeLists.txt | 7 +++++++
- 1 file changed, 7 insertions(+)
+ CMakeLists.txt | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9720933..6357af3 100644
+index de5bbd3..6eb8c1e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,6 +10,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "chdr")
@@ -19,14 +19,15 @@ index 9720933..6357af3 100644
  
  if(CMAKE_C_COMPILER_ID MATCHES "GNU")
    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden -fPIC -O3 -flto")
-@@ -49,9 +50,15 @@ endif()
+@@ -27,9 +28,16 @@ include(GNUInstallDirs)
  
  
  # lzma
 +if (WITH_SYSTEM_LZMA)
++  include(FindPkgConfig)
 +  pkg_check_modules(LZMA REQUIRED lzmasdk-c)
-+  list(APPEND PLATFORM_INCLUDES ${LZMA_INCLUDE_DIRS})
-+  list(APPEND PLATFORM_LIBS ${LZMA_LIBRARIES})
++  list(APPEND CHDR_INCLUDES ${LZMA_INCLUDE_DIRS})
++  list(APPEND CHDR_LIBS ${LZMA_LIBRARIES})
 +else()
  add_subdirectory(deps/lzma-19.00 EXCLUDE_FROM_ALL)
    list(APPEND CHDR_LIBS lzma)
@@ -36,5 +37,5 @@ index 9720933..6357af3 100644
  # zlib
  if (WITH_SYSTEM_ZLIB)
 -- 
-2.30.2
+2.31.1
 

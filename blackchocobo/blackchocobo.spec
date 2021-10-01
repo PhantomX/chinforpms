@@ -1,6 +1,6 @@
-%global commit afa68665d1ba81d34bed0d7d8d7aef7ba521080a
+%global commit 89f7cf53f5edc72d2ce0e97eab973028afbec909
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210415
+%global date 20210928
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -99,20 +99,20 @@ rm -rf %{buildroot}%{_datadir}/menu
 desktop-file-edit \
   --set-key=Exec \
   --set-value="%{name}" \
-  %{buildroot}%{_datadir}/applications/Black_Chocobo.desktop
+  %{buildroot}%{_datadir}/applications/org.sithlord48.%{name}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
-ln -s ../../../../pixmaps/Black_Chocobo.png \
-  %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/Black_Chocobo.png
+ln -s ../../../../pixmaps/%{name}.png \
+  %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/%{name}.png
 
 for res in 16 24 32 48 64 96 128 192 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   convert icon/Black_Chocobo.png -filter Lanczos -resize ${res}x${res} \
-    ${dir}/Black_Chocobo.png
+    ${dir}/%{name}.png
 done
 
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/Black_Chocobo.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 %find_lang bchoco --with-qt
 
