@@ -31,7 +31,7 @@ Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 %autosetup -n %{pkgname}-%{version} -p1
 
 %generate_buildrequires
-%pyproject_buildrequires -t
+%pyproject_buildrequires -r
 
 
 %build

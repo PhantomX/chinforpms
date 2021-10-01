@@ -1,13 +1,13 @@
-%global commit e66acceeda44e4cd2c0a8e01fcf94622f5430fad
+%global commit 46f11f61da2f5779583e47aac350732ef5f8c078
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210820
+%global date 20210825
 %global with_snapshot 1
 
 %global commit10 a6ce49ca242019410abc5c359ed2c57e48e59883
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 6bdcb4be344d7903bd92fd464e496c3199b91484
+%global commit11 bcf6a2430e99e8fc24f9f266e99316905e6d5134
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -22,7 +22,7 @@
 
 Name:           snes9x
 Version:        1.60
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other
@@ -68,6 +68,9 @@ BuildRequires:   pkgconfig(portaudio-2.0)
 BuildRequires:   desktop-file-utils
 BuildRequires:   libappstream-glib
 Requires:        hicolor-icon-theme
+
+Provides:        bundled(glslang) = 0~git%{shortcommit11}
+Provides:        bundled(spirv-cross) = 0~git%{shortcommit10}
 
 
 %description
@@ -174,6 +177,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1.60-104.20210825git46f11f6
+- Bump
+
 * Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1.60-103.20210820gite66acce
 - Update
 

@@ -11,7 +11,7 @@ FAudio
 -FAudio-freeworld
 FAudio-noreverb
 gamemode
-glslang
+-glslang
 gnome-theme-extra
 gstreamer1
 gstreamer1-plugins-base
@@ -35,9 +35,9 @@ mingw-winpthreads
 qt5ct
 sdl12-compat
 -sdlcl
-shaderc
-spirv-headers
-spirv-tools
+-shaderc
+-spirv-headers
+-spirv-tools
 taglib
 v4l-utils
 vkd3d

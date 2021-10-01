@@ -13,7 +13,7 @@
 
 Name:           xboxdrv
 Version:        0.8.8
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPLv3+
@@ -51,6 +51,8 @@ Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea0
 Patch7:         %{name}-scons-py3.patch
 %endif
 Patch8:         %{gl_url}/commit/3ca002d783974539f5be4e683b67a58f4cc9fce0.patch#/%{name}-gl-3ca002d.patch
+# https://aur.archlinux.org/packages/xboxdrv/#comment-822087
+Patch9:         0001-scons-fix-build.patch
 
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(x11)
@@ -142,6 +144,9 @@ install -pm0644 %{S:5} %{S:6} %{buildroot}%{_datadir}/polkit-1/actions/
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 0.8.8-107.20200226git7f2251b
+- Fix build with new scons
+
 * Fri Oct 02 2020 Phantom X <megaphantomx at hotmail dot com> - 0.8.8-106.20200226git7f2251b
 - Fix systemd unit
 

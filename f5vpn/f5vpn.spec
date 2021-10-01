@@ -12,7 +12,7 @@
 #global dl_url  https://vpn.brown.edu/public/download
 
 Name:           f5vpn
-Version:        7211.2021.0107.1
+Version:        7213.2021.0526.1
 Release:        1%{?dist}
 Summary:        F5 SSL VPN (vpn client)
 
@@ -164,6 +164,9 @@ done
 
 
 %changelog
+* Fri Oct 01 2021 - 7213.2021.0526.1-1
+- 7213.2021.0526.1
+
 * Tue Mar 16 2021 - 7211.2021.0107.1-1
 - 7211.2021.0107.1
 

@@ -6,7 +6,7 @@
 %bcond_with ffmpeg
 %global with_egl 1
 %global with_llvm 0
-%global with_sysvulkan 1
+%global with_sysvulkan 0
 %global with_unittests 0
 
 #JIT is only supported on x86_64 and aarch64:
@@ -19,9 +19,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit d14d7595f2180d8381e70d2b799e6f89b5eaa5c0
+%global commit 890a5ed99ad4130d68b3e7228c3398445c33cdc4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210916
+%global date 20210930
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -35,7 +35,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        144%{?gver}%{?dist}
+Release:        145%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -117,9 +117,6 @@ BuildRequires:  pkgconfig(sfml-system)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
-%ifarch x86_64
-BuildRequires:  bochs-devel
-%endif
 %if 0%{?with_llvm}
 BuildRequires:  llvm-devel
 %endif
@@ -128,6 +125,7 @@ BuildRequires:  mbedtls-devel
 BuildRequires:  minizip-devel
 BuildRequires:  picojson-devel
 BuildRequires:  pugixml-devel
+BuildRequires:  vulkan-headers
 BuildRequires:  xxhash-devel
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
@@ -140,7 +138,9 @@ BuildRequires:  pkgconfig(glslang) >= 11.0.0
 BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools
 BuildRequires:  pkgconfig(SPIRV-Tools)
-BuildRequires:  vulkan-headers
+%else
+#This is hard to unbundle and is unmaintainable with little benefit:
+Provides:       bundled(glslang)
 %endif
 
 BuildRequires:  gettext
@@ -166,9 +166,13 @@ Provides:       bundled(rangeset)
 Provides:       bundled(soundtouch) = 2.1.2
 #dolphin uses tests not included in upstream gtest (possibly unbundle later):
 Provides:       bundled(gtest) = 1.9.0
+#dolphin uses a very old bochs, which is impatible with f35+'s bochs.
+#We could rework dolphin to use latest, but this requires a lot of work.
+#Furthermore, the dolphin gtest test cases that fail with f33/34 bochs
+#My best guess is that this is 2.6.6, as dolphin does not specify
+Provides:       bundled(bochs) = 2.6.6
 
 
-#Most of below is taken bundled spec file in source#
 %description
 Dolphin is a Gamecube, Wii and Triforce (the arcade machine based on the
 Gamecube) emulator, which supports full HD video with several enhancements such
@@ -208,11 +212,12 @@ sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
 sed 's| this directory | %{name}/Sys/GC |g' \
     Data/Sys/GC/font-licenses.txt > font-licenses.txt
 
+# Fix for newer vulkan/glslang
+sed "s/VK_PRESENT_MODE_RANGE_SIZE_KHR/(VkPresentModeKHR)("`
+  `"VK_PRESENT_MODE_FIFO_RELAXED_KHR - VK_PRESENT_MODE_IMMEDIATE_KHR + 1)/" \
+  -i.orig Source/Core/VideoBackends/Vulkan/VKSwapChain.h
+
 %if 0%{?with_sysvulkan}
-  # Fix for newer vulkan/glslang
-  sed "s/VK_PRESENT_MODE_RANGE_SIZE_KHR/(VkPresentModeKHR)("`
-    `"VK_PRESENT_MODE_FIFO_RELAXED_KHR - VK_PRESENT_MODE_IMMEDIATE_KHR + 1)/" \
-    -i.orig Source/Core/VideoBackends/Vulkan/VKSwapChain.h
   sed "/maxMeshViewCountNV/ a /* .maxDualSourceDrawBuffersEXT = */ 1," \
     -i.orig Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
   sed \
@@ -232,23 +237,10 @@ pushd Externals
 rm -rf \
   bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg fmt gettext hidapi \
   libiconv-* liblzma libpng libusb LZO mbedtls mGBA miniupnpc minizip OpenAL \
-  pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib zstd
+  pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib zstd Vulkan
 
 %if 0%{?with_sysvulkan}
-  rm -rf glslang Vulkan
-%endif
-
-#Remove Bundled Bochs source and replace with links (for x86 only):
-%ifarch x86_64
-pushd Bochs_disasm
-rm -rf `ls | grep -v 'stdafx' | grep -v 'CMakeLists.txt'`
-ln -s %{_includedir}/bochs/* ./
-ln -s %{_includedir}/bochs/disasm/* ./
-popd
-#FIXME: This test fails because we unbundle bochs
-sed -i "/x64EmitterTest/d" ../Source/UnitTests/Common/CMakeLists.txt
-%else
-rm -rf Bochs_disasm
+  rm -rf glslang
 %endif
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
@@ -415,6 +407,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-145.20210930git890a5ed
+- Last snapshot
+- Fedora sync (bundle glslang again)
+
 * Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-144.20210916gitd14d759
 - Last snapshot
 

@@ -14,6 +14,7 @@ Patch0:         %{name}-minizip.patch
 #Fedora-specific configuration
 Patch1:         %{name}-ini.patch
 Patch2:         %{name}-listxml-softlist-fix.patch
+Patch3:         %{name}-fedora-linux.patch
 
 # Patches from FreeBSD
 Patch10:        qmc2-htmleditor_htmleditor.ui.patch
@@ -78,6 +79,7 @@ ln -s Fedora.cfg Fedora_release_31.cfg
 ln -s Fedora.cfg Fedora_release_32.cfg
 ln -s Fedora.cfg Fedora_release_33.cfg
 ln -s Fedora.cfg Fedora_release_34.cfg
+ln -s Fedora.cfg Fedora_Linux_release_35.cfg
 popd
 #ensure system minizip and zlib are used
 rm -rf minizip
@@ -86,13 +88,13 @@ rm -rf zlib
 
 %build
 %make_build QMAKE=%{_qt5_qmake} \
-  DISTCFG=1 CC_FLAGS="%{build_cflags}" CXX_FLAGS="%{build_cxxflags}" \
+  DISTCFG=1 CC_FLAGS="%{build_cflags}" CXX_FLAGS="%{build_cxxflags} -I%{_includedir}/minizip" \
   L_FLAGS="%{build_ldflags}" SYSTEM_MINIZIP=1 SYSTEM_ZLIB=1 LIBARCHIVE=1
 %make_build arcade QMAKE=%{_qt5_qmake} \
-  DISTCFG=1 CC_FLAGS="%{build_cflags}" CXX_FLAGS="%{build_cxxflags}" \
+  DISTCFG=1 CC_FLAGS="%{build_cflags}" CXX_FLAGS="%{build_cxxflags} -I%{_includedir}/minizip" \
   L_FLAGS="%{build_ldflags}" SYSTEM_MINIZIP=1 SYSTEM_ZLIB=1 LIBARCHIVE=1
 %make_build qchdman QMAKE=%{_qt5_qmake} \
-  DISTCFG=1 CXX_FLAGS="%{build_cxxflags}" L_FLAGS="%{build_ldflags}"
+  DISTCFG=1 CXX_FLAGS="%{build_cxxflags} -I%{_includedir}/minizip" L_FLAGS="%{build_ldflags}"
 %make_build doc QMAKE=%{_qt5_qmake} DISTCFG=1
 
 

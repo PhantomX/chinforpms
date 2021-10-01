@@ -1,6 +1,6 @@
 aacgain
 -alac_decoder
-amdgpu-pro-vulkan-driver
+-amdgpu-pro-vulkan-driver
 authy
 bh-fonts
 binkplayer
@@ -24,7 +24,7 @@ gens-gs
 gflash-player
 gstreamer1-plugins-ugly
 hakuneko-desktop
-higan
+-higan
 irpf2017
 irpf2018
 irpf2019

@@ -5,8 +5,6 @@ Subject: [PATCH] Use pycryptodomex instead pycryptodome
 
 ---
  setup.py                      | 2 +-
- yt_dlp/downloader/external.py | 2 +-
- yt_dlp/downloader/fragment.py | 2 +-
  3 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/setup.py b/setup.py
@@ -22,32 +20,6 @@ index d54806f..3e9bcef 100644
  
  if sys.argv[1:2] == ['py2exe']:
      raise NotImplementedError('py2exe is not currently supported; instead, use "pyinst.py" to build with pyinstaller')
-diff --git a/yt_dlp/downloader/external.py b/yt_dlp/downloader/external.py
-index bfe444e..57c748a 100644
---- a/yt_dlp/downloader/external.py
-+++ b/yt_dlp/downloader/external.py
-@@ -7,7 +7,7 @@ import sys
- import time
- 
- try:
--    from Crypto.Cipher import AES
-+    from Cryptodome.Cipher import AES
-     can_decrypt_frag = True
- except ImportError:
-     can_decrypt_frag = False
-diff --git a/yt_dlp/downloader/fragment.py b/yt_dlp/downloader/fragment.py
-index 8e211c7..a7d2faf 100644
---- a/yt_dlp/downloader/fragment.py
-+++ b/yt_dlp/downloader/fragment.py
-@@ -5,7 +5,7 @@ import time
- import json
- 
- try:
--    from Crypto.Cipher import AES
-+    from Cryptodome.Cipher import AES
-     can_decrypt_frag = True
- except ImportError:
-     can_decrypt_frag = False
 -- 
 2.31.1
 

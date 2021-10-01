@@ -1,6 +1,6 @@
-%global commit c42db5815fad0424f0f1311de1eec92cdd77203d
+%global commit f6d6dddfabfec1041c0dfb8e7ff3608a5f82227c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210825
+%global date 20210925
 %global gver .%{date}git%{shortcommit}
 
 # Glslang revision from packaged version
@@ -8,7 +8,7 @@
 
 Name:           shaderc
 Version:        2021.2
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A collection of tools, libraries, and tests for Vulkan shader compilation
 
 License:        ASL 2.0
@@ -128,6 +128,9 @@ sed -i 's|SPIRV/GlslangToSpv.h|glslang/SPIRV/GlslangToSpv.h|' libshaderc_util/sr
 %{_libdir}/pkgconfig/shaderc_combined.pc
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.2-101.20210925gitf6d6ddd
+- Bump
+
 * Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.2-100.20210825gitc42db58
 - 2021.2
 

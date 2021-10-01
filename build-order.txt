@@ -31,7 +31,7 @@ pysdl2
 -python-pyzbar
 -python-vdf
 smooth
-spirv-headers
+-spirv-headers
 taglib
 vulkan-headers
 -webp-pixbuf-loader
@@ -55,7 +55,7 @@ pygtk2
 -python-yoyo-migrations
 -perl-Gtk3
 perl-X11-GUITest
-spirv-tools
+-spirv-tools
 vulkan-loader
 xcftools
 
@@ -120,7 +120,7 @@ gkrellm-leds
 gkrellmpc
 gkrellm-themes
 glow
-glslang
+-glslang
 gmpc
 -gmysqlcc
 gnome-themes
@@ -193,12 +193,12 @@ sdl2-controllermap
 sdl_gamecontrollerdb
 sdl-jstest
 -sdlcl
-shaderc
+-shaderc
 skrooge
 smtube
-snx
-snxvpn
-speedtest-cli
+-snx
+-snxvpn
+-speedtest-cli
 steamtinkerlaunch
 thrash-protect
 tyrian-data

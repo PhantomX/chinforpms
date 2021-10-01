@@ -35,9 +35,7 @@ URL:            https://github.com/desktop-app/%{name}
 
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
-%if 0%{?fedora} < 35
 Source2:        %{cvc_url}/webm/libvpx/+archive/%{shortcommit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
-%endif
 
 BuildRequires:  cmake(absl)
 BuildRequires:  pkgconfig(alsa)
@@ -58,9 +56,7 @@ BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(protobuf)
 BuildRequires:  pkgconfig(usrsctp)
-%if 0%{?fedora} >= 35
-BuildRequires:  pkgconfig(vpx)
-%endif
+#BuildRequires:  pkgconfig(vpx)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xdamage)
@@ -99,9 +95,7 @@ Requires:       pkgconfig(libswscale)
 Requires:       pkgconfig(openssl)
 Requires:       pkgconfig(opus)
 Requires:       pkgconfig(usrsctp)
-%if 0%{?fedora} >= 35
 Requires:       pkgconfig(vpx) >= 1.10.0
-%endif
 Requires:       pkgconfig(x11)
 Requires:       pkgconfig(xcomposite)
 Requires:       pkgconfig(xdamage)
@@ -119,9 +113,7 @@ Provides:       bundled(g711) = 0~git
 Provides:       bundled(g722) = 0~git
 #Provides:       bundled(libevent) = 1.4.15
 Provides:       bundled(libsrtp) = 2.2.0~git94ac00d
-%if 0%{?fedora} < 35
 Provides:       bundled(libvpx) = 1.8.2~git%{shortcommit2}
-%endif
 Provides:       bundled(libwebm) = 0~git
 Provides:       bundled(libyuv) = 0~git%{shortcommit1}
 Provides:       bundled(openh264) = 1.10.0~git6f26bce
@@ -140,9 +132,7 @@ Provides:       bundled(spl_sqrt_floor) = 0~git
 %autosetup -n %{name}-%{commit0} -p1
 
 tar -xf %{S:1} -C src/third_party/libyuv
-%if 0%{?fedora} < 35
 tar -xf %{S:2} -C src/third_party/libvpx/source/libvpx
-%endif
 
 mkdir legal
 cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp

@@ -1,7 +1,7 @@
 %undefine _cmake_shared_libs
 #global _lto_cflags -fno-lto
 
-%global with_sysvulkan 1
+%global with_sysvulkan 0
 
 %global commit 8864b48c02c5d186a4e271cd7e94f7fec870fe33
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
@@ -72,12 +72,12 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  minizip-compat-devel
+BuildRequires:  vulkan-headers
 %if 0%{?with_sysvulkan}
 BuildRequires:  pkgconfig(glslang) >= 11.0.0
 BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools
 BuildRequires:  pkgconfig(SPIRV-Tools)
-BuildRequires:  vulkan-headers
 %else
 Provides:       bundled(glslang) = git~0
 Provides:       bundled(spirv-tools) = 0~git

@@ -1,5 +1,5 @@
 Name:           thrash-protect
-Version:        0.13.0
+Version:        0.14.1
 Release:        1%{?dist}
 Summary:        Simple-Stupid user-space program protecting a linux host from thrashing
 
@@ -62,6 +62,9 @@ install -pm0644 systemd/%{name}.service %{buildroot}%{_unitdir}/
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 0.14.1-1
+- 0.14.1
+
 * Fri Jan 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 0.13.0-1
 - 0.13.0
 

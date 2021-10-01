@@ -10,7 +10,7 @@
 #global dl_url  https://vpn.brown.edu/public/download
 
 Name:           f5cli
-Version:        7211.2021.0107
+Version:        7213.2021.0527
 Release:        1%{?dist}
 Summary:        F5 Command Line VPN Client
 
@@ -80,6 +80,9 @@ install -pm0755 usr/local/lib/F5Networks/SSLVPN/svpn_x86_64 \
 
 
 %changelog
+* Fri Oct 01 2021 - 7213.2021.0527-1
+- 7213.2021.0527
+
 * Tue Mar 16 2021 - 7211.2021.0107-1
 - 7211.2021.0107
 

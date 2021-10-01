@@ -4,8 +4,8 @@
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2021.09.02
-Release:        1%{?dist}
+Version:        2021.09.25
+Release:        0%{?dist}
 Summary:        A command-line program to download videos
 
 License:        Unlicense

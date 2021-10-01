@@ -1,5 +1,5 @@
 Name:           steamtinkerlaunch
-Version:        6.8
+Version:        6.15
 Release:        1%{?dist}
 Summary:        Wrapper script for Steam custom launch options
 
@@ -73,6 +73,9 @@ cp -r categories eval guicfgs lang misc regs reshadepresets %{buildroot}%{_datad
 %{_datadir}/stl
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 6.15-1
+- 6.15
+
 * Thu Jun 10 2021 Phantom X <megaphantomx at hotmail dot com> - 6.8-1
 - 6.8
 
