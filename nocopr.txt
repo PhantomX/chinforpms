@@ -50,6 +50,7 @@ snes9x
 -soulseekqt
 spideroakone
 steam
+teamviewer
 telegram-desktop
 tg_owt
 uasm

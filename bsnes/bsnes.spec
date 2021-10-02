@@ -1,6 +1,6 @@
-%global commit 55e05c89c2dfcc00629fdc90c1d682a887585887
+%global commit e5809740a5ff6da20938da4051cd211849ddf11b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210414
+%global date 20210906
 %global with_snapshot 1
 
 %ifarch x86_64
@@ -24,7 +24,7 @@
 
 Name:           bsnes
 Version:        115
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        Nintendo SNES emulator
 
 License:        GPLv3 and BSD
@@ -145,6 +145,9 @@ done
 
 
 %changelog
+* Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 115-6.20210906gite580974
+- Last snapshot
+
 * Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 115-5.20210414git55e05c8
 - Update
 

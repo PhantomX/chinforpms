@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        21.09
+Version:        21.10
 Release:        100%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -97,6 +97,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.10-100
+- 21.10
+
 * Wed Sep 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.09-100
 - 21.09
 

@@ -33,7 +33,9 @@ mingw-headers
 mingw-w64-tools
 mingw-winpthreads
 qt5ct
-sdl12-compat
+qt6ct
+SDL1
+-sdl12-compat
 -sdlcl
 -shaderc
 -spirv-headers

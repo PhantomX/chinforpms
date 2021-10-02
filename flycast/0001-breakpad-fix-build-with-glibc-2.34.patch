@@ -1,0 +1,25 @@
+From 3199fcf971134685c796c5dff4ab8de2b9d783a4 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 2 Oct 2021 08:03:14 -0300
+Subject: [PATCH] breakpad: fix build with glibc 2.34
+
+---
+ .../deps/breakpad/src/client/linux/handler/exception_handler.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/deps/breakpad/src/client/linux/handler/exception_handler.cc b/core/deps/breakpad/src/client/linux/handler/exception_handler.cc
+index ca353c4..dc0fc4a 100644
+--- a/core/deps/breakpad/src/client/linux/handler/exception_handler.cc
++++ b/core/deps/breakpad/src/client/linux/handler/exception_handler.cc
+@@ -138,7 +138,7 @@ void InstallAlternateStackLocked() {
+   // SIGSTKSZ may be too small to prevent the signal handlers from overrunning
+   // the alternative stack. Ensure that the size of the alternative stack is
+   // large enough.
+-  static const unsigned kSigStackSize = std::max(16384, SIGSTKSZ);
++  static const unsigned kSigStackSize = std::max(16384u, (unsigned)SIGSTKSZ);
+ 
+   // Only set an alternative stack if there isn't already one, or if the current
+   // one is too small.
+-- 
+2.32.0
+

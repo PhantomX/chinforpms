@@ -1,6 +1,6 @@
-From c5ca452b6e1dbc07698cc44f5eeafc3033ebb691 Mon Sep 17 00:00:00 2001
+From c5862e43c20d793a269f78a49d8ef91fbefc3ec8 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 24 Sep 2021 21:22:05 -0300
+Date: Sat, 2 Oct 2021 08:53:18 -0300
 Subject: [PATCH] Revert SSE4 updates
 
 Rebased with commits reverted or rebased:
@@ -11,12 +11,14 @@ f9d96f55a538ce373f1662a5554d8052173940b1 microVU: Remove SSE4 op from Overflow f
 ee07f860fc1dd7e8ada6c13903bb3a592b8d4864 microVU: Implement Overflow checks
 d0f3c620d27f88c0eabdbb60d7737284c239909e GSBlock: Cleanup warnings.
 2dbfe9f743d795da0597ff29b302541132a48c6c gs: Cleanup remaining stuff from sse2/3 purge.
+7faa5db9e57c6e59dbe62c66d64623d879b680a2 VU/GameDB: Move Mac/Status overflow flag checks to a gamefix
 
 That make PCSX2 running in older CPUS for some not demanding games and lose all
-upstream support
 ---
- bin/GameIndex.yaml                            |  34 ++
+ .../validation/lint-gamedb/lint-gamedb.py     |   2 +-
+ bin/GameIndex.yaml                            |  46 ++-
  cmake/BuildParameters.cmake                   |  10 +-
+ pcsx2/Config.h                                |   2 -
  pcsx2/GS/GSBlock.h                            | 363 +++++++++++++++++-
  pcsx2/GS/GSCapture.cpp                        |  14 +
  pcsx2/GS/GSState.cpp                          |  14 +
@@ -30,7 +32,9 @@ upstream support
  .../SW/GSDrawScanlineCodeGenerator.cpp        |  36 +-
  .../SW/GSDrawScanlineCodeGenerator.x86.cpp    | 273 +++++++++++--
  pcsx2/GS/Renderers/SW/GSRendererSW.cpp        |  37 ++
+ pcsx2/Pcsx2Config.cpp                         |   6 +-
  pcsx2/gui/AppInit.cpp                         |  11 +-
+ pcsx2/gui/Panels/GameFixesPanel.cpp           |   4 -
  pcsx2/x86/iMMI.cpp                            | 224 +++++++++--
  pcsx2/x86/ix86-32/iR5900-32.cpp               |   4 +-
  pcsx2/x86/microVU.cpp                         |   4 +-
@@ -38,18 +42,33 @@ upstream support
  pcsx2/x86/microVU_Clamp.inl                   |  31 +-
  pcsx2/x86/microVU_Lower.inl                   |  22 +-
  pcsx2/x86/microVU_Misc.inl                    | 127 +++++-
- pcsx2/x86/microVU_Upper.inl                   |  21 -
+ pcsx2/x86/microVU_Upper.inl                   |  37 +-
  pcsx2/x86/newVif_UnpackSSE.cpp                | 101 ++++-
- 25 files changed, 1650 insertions(+), 149 deletions(-)
+ 29 files changed, 1656 insertions(+), 185 deletions(-)
 
+diff --git a/.github/workflows/scripts/validation/lint-gamedb/lint-gamedb.py b/.github/workflows/scripts/validation/lint-gamedb/lint-gamedb.py
+index ab76a69..0027df7 100644
+--- a/.github/workflows/scripts/validation/lint-gamedb/lint-gamedb.py
++++ b/.github/workflows/scripts/validation/lint-gamedb/lint-gamedb.py
+@@ -34,7 +34,7 @@ allowed_game_fixes = [
+     "GoemonTlbHack",
+     "VUKickstartHack",
+     "IbitHack",
+-    "VUOverflowHack",
++    "RatchetDynaHack",
+ ]
+ allowed_speed_hacks = ["mvuFlagSpeedHack", "InstantVU1SpeedHack"]
+ # Patches are allowed to have a 'default' key or a crc-32 key, followed by
 diff --git a/bin/GameIndex.yaml b/bin/GameIndex.yaml
-index eb0ff04..a995807 100644
+index e12d7fe..8df5a7b 100644
 --- a/bin/GameIndex.yaml
 +++ b/bin/GameIndex.yaml
-@@ -14338,6 +14338,15 @@ SLES-53744:
+@@ -14344,8 +14344,15 @@ SLES-53744:
  SLES-53746:
    name: "Superman Returns"
    region: "PAL-E"
+-  gameFixes:
+-    - VUOverflowHack # Fixes SPS.
 +  patches:
 +    E8F7BAB6:
 +      content: |-
@@ -62,10 +81,17 @@ index eb0ff04..a995807 100644
  SLES-53747:
    name: "Ed, Edd, 'n Eddy - The Misadventure"
    region: "PAL-E"
-@@ -15532,12 +15541,28 @@ SLES-54348:
+@@ -15537,23 +15544,31 @@ SLES-54347:
+ SLES-54348:
+   name: "Superman Returns"
+   region: "PAL-F"
+-  gameFixes:
+-    - VUOverflowHack # Fixes SPS.
  SLES-54349:
    name: "Superman Returns"
    region: "PAL-I"
+-  gameFixes:
+-    - VUOverflowHack # Fixes SPS.
 +  patches:
 +    E7F7B6BD:
 +      content: |-
@@ -76,9 +102,13 @@ index eb0ff04..a995807 100644
  SLES-54350:
    name: "Superman Returns"
    region: "PAL-G"
+-  gameFixes:
+-    - VUOverflowHack # Fixes SPS.
  SLES-54351:
    name: "Superman Returns"
    region: "PAL-S"
+-  gameFixes:
+-    - VUOverflowHack # Fixes SPS.
 +  patches:
 +    EDF0A0A7:
 +      content: |-
@@ -91,10 +121,12 @@ index eb0ff04..a995807 100644
  SLES-54354:
    name: "Final Fantasy XII"
    region: "PAL-E"
-@@ -38359,6 +38384,15 @@ SLUS-21434:
+@@ -38375,8 +38390,15 @@ SLUS-21434:
    name: "Superman Returns - The Video Game"
    region: "NTSC-U"
    compat: 4
+-  gameFixes:
+-    - VUOverflowHack # Fixes SPS.
 +  patches:
 +    E1BF5DCA:
 +      content: |-
@@ -108,10 +140,10 @@ index eb0ff04..a995807 100644
    name: "One Piece - Grand Adventure"
    region: "NTSC-U"
 diff --git a/cmake/BuildParameters.cmake b/cmake/BuildParameters.cmake
-index 05e6f16..fba2f35 100644
+index 0771bbd..4630fc7 100644
 --- a/cmake/BuildParameters.cmake
 +++ b/cmake/BuildParameters.cmake
-@@ -128,7 +128,7 @@ endif()
+@@ -129,7 +129,7 @@ endif()
  #-------------------------------------------------------------------------------
  # Select the architecture
  #-------------------------------------------------------------------------------
@@ -120,7 +152,7 @@ index 05e6f16..fba2f35 100644
  
  # Print if we are cross compiling.
  if(CMAKE_CROSSCOMPILING)
-@@ -160,9 +160,9 @@ if(${PCSX2_TARGET_ARCHITECTURES} MATCHES "i386")
+@@ -161,9 +161,9 @@ if(${PCSX2_TARGET_ARCHITECTURES} MATCHES "i386")
  		else()
  			if (DISABLE_ADVANCE_SIMD)
  				if (USE_ICC)
@@ -132,7 +164,7 @@ index 05e6f16..fba2f35 100644
  				endif()
  			else()
  				# AVX requires some fix of the ABI (mangling) (default 2)
-@@ -184,9 +184,9 @@ elseif(${PCSX2_TARGET_ARCHITECTURES} MATCHES "x86_64")
+@@ -185,9 +185,9 @@ elseif(${PCSX2_TARGET_ARCHITECTURES} MATCHES "x86_64")
  	if(NOT DEFINED ARCH_FLAG AND NOT MSVC)
  		if (DISABLE_ADVANCE_SIMD)
  			if (USE_ICC)
@@ -144,8 +176,28 @@ index 05e6f16..fba2f35 100644
  			endif()
  		else()
  			#set(ARCH_FLAG "-march=native -fabi-version=6")
+diff --git a/pcsx2/Config.h b/pcsx2/Config.h
+index 1ed0771..903461e 100644
+--- a/pcsx2/Config.h
++++ b/pcsx2/Config.h
+@@ -389,7 +389,6 @@ struct Pcsx2Config
+ 			VuAddSubHack : 1,			// Tri-ace games, they use an encryption algorithm that requires VU ADDI opcode to be bit-accurate.
+ 			IbitHack : 1,				// I bit hack. Needed to stop constant VU recompilation in some games
+ 			VUKickstartHack : 1,		// Gives new VU programs a slight head start and runs VU's ahead of EE to avoid VU register reading/writing issues
+-			VUOverflowHack : 1,			// Tries to simulate overflow flag checks (not really possible on x86 without soft floats)
+ 			XgKickHack : 1;				// Erementar Gerad, adds more delay to VU XGkick instructions. Corrects the color of some graphics, but breaks Tri-ace games and others.
+ 		BITFIELD_END
+ 
+@@ -648,7 +647,6 @@ namespace EmuFolders
+ #define CHECK_VIFFIFOHACK			(EmuConfig.Gamefixes.VIFFIFOHack)    // Pretends to fill the non-existant VIF FIFO Buffer.
+ #define CHECK_VIF1STALLHACK			(EmuConfig.Gamefixes.VIF1StallHack)  // Like above, processes FIFO data before the stall is allowed (to make sure data goes over).
+ #define CHECK_GIFFIFOHACK			(EmuConfig.Gamefixes.GIFFIFOHack)	 // Enabled the GIF FIFO (more correct but slower)
+-#define CHECK_VUOVERFLOWHACK		(EmuConfig.Gamefixes.VUOverflowHack) // Special Fix for Superman Returns, they check for overflows on PS2 floats which we can't do without soft floats.
+ 
+ //------------ Advanced Options!!! ---------------
+ #define CHECK_VU_OVERFLOW			(EmuConfig.Cpu.Recompiler.vuOverflow)
 diff --git a/pcsx2/GS/GSBlock.h b/pcsx2/GS/GSBlock.h
-index 34e030b..61e0a77 100644
+index 34e030b..f6c0c46 100644
 --- a/pcsx2/GS/GSBlock.h
 +++ b/pcsx2/GS/GSBlock.h
 @@ -153,6 +153,8 @@ public:
@@ -735,7 +787,7 @@ index 34e030b..61e0a77 100644
  
  	// TODO: ReadAndExpandBlock4HH_16
 diff --git a/pcsx2/GS/GSCapture.cpp b/pcsx2/GS/GSCapture.cpp
-index ad0dcf6..614ac4f 100644
+index ed14a5a..b592fba 100644
 --- a/pcsx2/GS/GSCapture.cpp
 +++ b/pcsx2/GS/GSCapture.cpp
 @@ -329,6 +329,8 @@ public:
@@ -823,7 +875,7 @@ index 560f2b5..0a90533 100644
  		{Xbyak::util::Cpu::tAVX, "AVX1"},
  #endif
 diff --git a/pcsx2/GS/GSVector4.h b/pcsx2/GS/GSVector4.h
-index 0a25625..cd0aa4d 100644
+index 0a25625..9d89bc9 100644
 --- a/pcsx2/GS/GSVector4.h
 +++ b/pcsx2/GS/GSVector4.h
 @@ -245,7 +245,33 @@ public:
@@ -1004,7 +1056,7 @@ index 0a25625..cd0aa4d 100644
  #endif
  
 diff --git a/pcsx2/GS/GSVector4i.h b/pcsx2/GS/GSVector4i.h
-index 1c70c52..4ca4b3c 100644
+index 1c70c52..6dca147 100644
 --- a/pcsx2/GS/GSVector4i.h
 +++ b/pcsx2/GS/GSVector4i.h
 @@ -226,7 +226,15 @@ public:
@@ -1742,7 +1794,7 @@ index 306dffa..eaae8bc 100644
  	GSVector4 s(1.0f / 16, 1.0f / 16, 2.0f, 1.0f);
  
 diff --git a/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp b/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp
-index 2a7c573..eedb572 100644
+index 72c605d..68b1337 100644
 --- a/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp
 +++ b/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp
 @@ -943,8 +943,12 @@ void GSRendererDX11::DrawPrims(GSTexture* rt, GSTexture* ds, GSTextureCache::Sou
@@ -1759,7 +1811,7 @@ index 2a7c573..eedb572 100644
  
  	// Warning must be done after EmulateZbuffer
 diff --git a/pcsx2/GS/Renderers/OpenGL/GSRendererOGL.cpp b/pcsx2/GS/Renderers/OpenGL/GSRendererOGL.cpp
-index d8e3486..c4facde 100644
+index 0bba62c..9170e5f 100644
 --- a/pcsx2/GS/Renderers/OpenGL/GSRendererOGL.cpp
 +++ b/pcsx2/GS/Renderers/OpenGL/GSRendererOGL.cpp
 @@ -1326,8 +1326,12 @@ void GSRendererOGL::DrawPrims(GSTexture* rt, GSTexture* ds, GSTextureCache::Sour
@@ -1776,7 +1828,7 @@ index d8e3486..c4facde 100644
  
  	// Warning must be done after EmulateZbuffer
 diff --git a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
-index ba1ad03..af8e5df 100644
+index ba1ad03..9f99df9 100644
 --- a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
 +++ b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
 @@ -117,7 +117,18 @@ void GSDrawScanlineCodeGenerator::mix16(const Xmm& a, const Xmm& b, const Xmm& t
@@ -1849,7 +1901,7 @@ index ba1ad03..af8e5df 100644
  
  void GSDrawScanlineCodeGenerator::split16_2x8(const Xmm& l, const Xmm& h, const Xmm& src)
 diff --git a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
-index fa0cccd..8f05f90 100644
+index fa0cccd..e3ac18b 100644
 --- a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
 +++ b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
 @@ -639,9 +639,20 @@ void GSDrawScanlineCodeGenerator::TestZ_SSE(const Xmm& temp1, const Xmm& temp2)
@@ -2309,11 +2361,49 @@ index 97672f5..aac5c46 100644
  		}
  
  		dst->t = t;
+diff --git a/pcsx2/Pcsx2Config.cpp b/pcsx2/Pcsx2Config.cpp
+index 49faf9a..5b23b05 100644
+--- a/pcsx2/Pcsx2Config.cpp
++++ b/pcsx2/Pcsx2Config.cpp
+@@ -319,7 +319,6 @@ const wxChar *const tbl_GamefixNames[] =
+ 	L"VuAddSub",
+ 	L"Ibit",
+ 	L"VUKickstart",
+-	L"VUOverflow",
+ 	L"XGKick"
+ };
+ 
+@@ -382,8 +381,7 @@ void Pcsx2Config::GamefixOptions::Set(GamefixId id, bool enabled)
+ 		case Fix_GIFFIFO:		GIFFIFOHack			= enabled;  break;
+ 		case Fix_GoemonTlbMiss: GoemonTlbHack		= enabled;  break;
+ 		case Fix_Ibit:			IbitHack			= enabled;  break;
+-		case Fix_VUKickstart:	VUKickstartHack		= enabled;  break;
+-		case Fix_VUOverflow:	VUOverflowHack		= enabled;  break;
++		case Fix_VUKickstart:	VUKickstartHack		= enabled; break;
+ 		jNO_DEFAULT;
+ 	}
+ }
+@@ -407,7 +405,6 @@ bool Pcsx2Config::GamefixOptions::Get(GamefixId id) const
+ 		case Fix_GoemonTlbMiss: return GoemonTlbHack;
+ 		case Fix_Ibit:			return IbitHack;
+ 		case Fix_VUKickstart:	return VUKickstartHack;
+-		case Fix_VUOverflow:	return VUOverflowHack;
+ 		jNO_DEFAULT;
+ 	}
+ 	return false; // unreachable, but we still need to suppress warnings >_<
+@@ -431,7 +428,6 @@ void Pcsx2Config::GamefixOptions::LoadSave(SettingsWrapper& wrap)
+ 	SettingsWrapBitBool( GoemonTlbHack );
+ 	SettingsWrapBitBool( IbitHack );
+ 	SettingsWrapBitBool( VUKickstartHack );
+-	SettingsWrapBitBool( VUOverflowHack );
+ }
+ 
+ 
 diff --git a/pcsx2/gui/AppInit.cpp b/pcsx2/gui/AppInit.cpp
-index 56790b4..563025b 100644
+index ca8ab64..4bc17a4 100644
 --- a/pcsx2/gui/AppInit.cpp
 +++ b/pcsx2/gui/AppInit.cpp
-@@ -46,13 +46,14 @@ void Pcsx2App::DetectCpuAndUserMode()
+@@ -47,13 +47,14 @@ void Pcsx2App::DetectCpuAndUserMode()
  	x86caps.CountCores();
  	x86caps.SIMD_EstablishMXCSRmask();
  
@@ -2333,8 +2423,23 @@ index 56790b4..563025b 100644
  	}
  #endif
  
+diff --git a/pcsx2/gui/Panels/GameFixesPanel.cpp b/pcsx2/gui/Panels/GameFixesPanel.cpp
+index 43fc2e2..eb6ce31 100644
+--- a/pcsx2/gui/Panels/GameFixesPanel.cpp
++++ b/pcsx2/gui/Panels/GameFixesPanel.cpp
+@@ -92,10 +92,6 @@ Panels::GameFixesPanel::GameFixesPanel( wxWindow* parent )
+ 			_("VU Kickstart (Run ahead) to avoid sync problems when reading or writing VU registers"),
+ 			wxEmptyString
+ 		},
+-		{
+-			_("VU Overflow hack to check for possible float overflows (Superman Returns)"),
+-			wxEmptyString
+-		},
+ 		{
+ 			_("VU XGkick Sync - Use accurate timing for VU XGKicks (Slower)"),
+ 			pxEt(L"Fixes graphical errors on WRC, Erementar Gerad, Tennis Court Smash and others."
 diff --git a/pcsx2/x86/iMMI.cpp b/pcsx2/x86/iMMI.cpp
-index b337f45..ccb263d 100644
+index b337f45..23854c0 100644
 --- a/pcsx2/x86/iMMI.cpp
 +++ b/pcsx2/x86/iMMI.cpp
 @@ -225,9 +225,17 @@ void recPMTHL()
@@ -2657,7 +2762,7 @@ index b337f45..ccb263d 100644
  	}
  	else if (_Rt_ == 0)
 diff --git a/pcsx2/x86/ix86-32/iR5900-32.cpp b/pcsx2/x86/ix86-32/iR5900-32.cpp
-index b3e8c04..5f45c36 100644
+index b465e99..3fefda1 100644
 --- a/pcsx2/x86/ix86-32/iR5900-32.cpp
 +++ b/pcsx2/x86/ix86-32/iR5900-32.cpp
 @@ -547,8 +547,8 @@ static void recReserve()
@@ -2791,7 +2896,7 @@ index dd28730..2b11726 100644
  
  mVUop(mVU_ELENG)
 diff --git a/pcsx2/x86/microVU_Misc.inl b/pcsx2/x86/microVU_Misc.inl
-index d43ee82..4ade73a 100644
+index d43ee82..e617f1e 100644
 --- a/pcsx2/x86/microVU_Misc.inl
 +++ b/pcsx2/x86/microVU_Misc.inl
 @@ -55,36 +55,79 @@ void mVUsaveReg(const xmm& reg, xAddressVoid ptr, int xyzw, bool modXYZW)
@@ -2961,7 +3066,7 @@ index d43ee82..4ade73a 100644
  }
  
 diff --git a/pcsx2/x86/microVU_Upper.inl b/pcsx2/x86/microVU_Upper.inl
-index f558975..39b9545 100644
+index ccf9102..39b9545 100644
 --- a/pcsx2/x86/microVU_Upper.inl
 +++ b/pcsx2/x86/microVU_Upper.inl
 @@ -30,11 +30,6 @@
@@ -2976,12 +3081,25 @@ index f558975..39b9545 100644
  // Note: If modXYZW is true, then it adjusts XYZW for Single Scalar operations
  static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, const xmm& regT2in = xEmptyReg, bool modXYZW = 1)
  {
-@@ -87,22 +82,6 @@ static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, c
- 		SHIFT_XYZW(gprT2);
+@@ -78,43 +73,19 @@ static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, c
+ 	xMOVMSKPS(gprT2, regT1); // Used for Zero Flag Calculation
+ 
+ 	xAND(mReg, AND_XYZW); // Grab "Is Signed" bits from the previous calculation
+-	xSHL(mReg, 4);
++	xSHL(mReg, 4 + ADD_XYZW);
+ 
+ 	//-------------------------Check for Zero flags------------------------------
+ 
+ 	xAND(gprT2, AND_XYZW); // Grab "Is Zero" bits from the previous calculation
++	if (mFLAG.doFlag)
++		SHIFT_XYZW(gprT2);
  	xOR(mReg, gprT2);
  
 -	//-------------------------Overflow Flags-----------------------------------
--	if (sFLAG.doFlag)
+-	// We can't really do this because of the limited range of x86 and the value MIGHT genuinely be FLT_MAX (x86)
+-	// so this will need to remain as a gamefix for the one game that needs it (Superman Returns)
+-	// until some sort of soft float implementation.
+-	if (sFLAG.doFlag && CHECK_VUOVERFLOWHACK)
 -	{
 -		//Calculate overflow
 -		xMOVAPS(regT1, regT2);
@@ -2990,17 +3108,29 @@ index f558975..39b9545 100644
 -		xMOVMSKPS(gprT2, regT1); // Grab sign bits  for equal results
 -		xAND(gprT2, AND_XYZW); // Grab "Is FLT_MAX" bits from the previous calculation
 -		xForwardJump32 oJMP(Jcc_Zero);
--			xOR(sReg, 0x820000);
--		oJMP.SetTarget();
 -
--		xSHL(gprT2, 12 + ADD_XYZW); // Add the results to the MAC Flag
--		xOR(mReg, gprT2);
+-		xOR(sReg, 0x820000);
+-		if (mFLAG.doFlag)
+-		{
+-			xSHL(gprT2, 12); // Add the results to the MAC Flag
+-			xOR(mReg, gprT2);
+-		}
+-
+-		oJMP.SetTarget();
 -	}
+-
  	//-------------------------Write back flags------------------------------
- 
++
  	if (mFLAG.doFlag)
+-	{
+-		SHIFT_XYZW(mReg); // If it was Single Scalar, move the flags in to the correct position
+ 		mVUallocMFLAGb(mVU, mReg, mFLAG.write); // Set Mac Flag
+-	}
+ 	if (sFLAG.doFlag)
+ 	{
+ 		xAND(mReg, 0xFF); // Ignore overflow bits, they're handled separately
 diff --git a/pcsx2/x86/newVif_UnpackSSE.cpp b/pcsx2/x86/newVif_UnpackSSE.cpp
-index 84a8ce1..fabccd8 100644
+index 84a8ce1..96ae42e 100644
 --- a/pcsx2/x86/newVif_UnpackSSE.cpp
 +++ b/pcsx2/x86/newVif_UnpackSSE.cpp
 @@ -36,7 +36,23 @@ static RecompiledCodeReserve* nVifUpkExec = NULL;
@@ -3159,5 +3289,5 @@ index 84a8ce1..fabccd8 100644
  
  void VifUnpackSSE_Base::xUPK_V4_5() const
 -- 
-2.31.1
+2.32.0
 

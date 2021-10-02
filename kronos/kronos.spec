@@ -1,6 +1,6 @@
-%global commit 4571698679cea9cac658f41c1f4ec6e84207f232
+%global commit 8b9abe821dba4ff39fe792d700a300b078af8555
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210827
+%global date 20210926
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           kronos
 Version:        2.1.5
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -96,8 +96,8 @@ find \( -name "*.cpp" -or -name \*.c\* -or -name \*.h\* -or -name AUTHORS \) -ex
 find \( -name "*.cpp" -or -name \*.c\* -or -name \*.h\* \) -exec chmod -x {} \;
 
 sed \
-  -e 's| -Wno-format -mfpmath=sse -m64 -march=native -funroll-loops||g' \
-  -e 's| -mfpmath=sse -m64 -march=native -funroll-loops||g' \
+  -e 's| -Wno-format -march=native -funroll-loops||g' \
+  -e 's| -march=native -funroll-loops||g' \
   -i yabause/src/CMakeLists.txt
 
 %if 0%{?with_egl}
@@ -157,6 +157,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 2.1.5-7.20210926git8b9abe8
+- Last snapshot
+
 * Sun Aug 29 2021 Phantom X <megaphantomx at hotmail dot com> - 2.1.5-6.20210827git4571698
 - Bump
 

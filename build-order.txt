@@ -76,6 +76,7 @@ barrier
 -bcg729
 -bcmatroska2
 -bctoolbox
+bennugd
 binmerge
 blackchocobo
 bluecurve-icon-theme
@@ -162,6 +163,7 @@ mp3val
 mpdnotify
 -mps-youtube
 mupen64plus
+NetworkManager-f5vpn
 nicotine+
 openjazz
 opentyrian
@@ -183,12 +185,14 @@ qmp3gain
 qmpdclient
 qt-virustotal-uploader
 qt5ct
+qt6ct
 -quiterss
 radeon-profile
 radeon-profile-daemon
 -rclone
 retext
-sdl12-compat
+SDL1
+-sdl12-compat
 sdl2-controllermap
 sdl_gamecontrollerdb
 sdl-jstest

@@ -1,0 +1,38 @@
+From c4bd3e00f4d602840d2f112af465123583f520ab Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 2 Oct 2021 08:19:03 -0300
+Subject: [PATCH] gtk3 dialogs
+
+---
+ src/qt6ct/appearancepage.cpp | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/qt6ct/appearancepage.cpp b/src/qt6ct/appearancepage.cpp
+index cfd61db..8bec848 100644
+--- a/src/qt6ct/appearancepage.cpp
++++ b/src/qt6ct/appearancepage.cpp
+@@ -48,6 +48,7 @@ AppearancePage::AppearancePage(QWidget *parent) :
+ {
+     m_ui->setupUi(this);
+     QStringList keys = QStyleFactory::keys();
++    keys.removeAll("gtk2"); //hide gtk2 style
+     keys.removeAll("qt6ct-style"); //hide qt6ct proxy style
+     keys.removeAll("qt5gtk2"); //hide qt5gtk2 alias
+     m_ui->styleComboBox->addItems(keys);
+@@ -81,10 +82,10 @@ AppearancePage::AppearancePage(QWidget *parent) :
+ 
+     keys = QPlatformThemeFactory::keys();
+     m_ui->dialogComboBox->addItem(tr("Default"), "default");
+-    if(keys.contains("gtk2") || keys.contains("qt6gtk2"))
+-        m_ui->dialogComboBox->addItem("GTK2", "gtk2");
+-    else if(keys.contains("gtk3") || keys.contains("qt6gtk3"))
++    if(keys.contains("gtk3") || keys.contains("qt6gtk3"))
+         m_ui->dialogComboBox->addItem("GTK3", "gtk3");
++    else if(keys.contains("gtk2") || keys.contains("qt6gtk2"))
++        m_ui->dialogComboBox->addItem("GTK2", "gtk2");
+     if(keys.contains("kde"))
+         m_ui->dialogComboBox->addItem("KDE", "kde");
+ 
+-- 
+2.32.0
+

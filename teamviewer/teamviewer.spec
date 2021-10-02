@@ -8,7 +8,7 @@
 %global vermajor %%(echo %{version} | cut -d. -f1)
 
 Name:           teamviewer
-Version:        15.12.4
+Version:        15.22.3
 Release:        1%{?dist}
 Summary:        Remote control and meeting solution
 
@@ -35,8 +35,8 @@ BuildRequires:  checkpolicy
 BuildRequires:  policycoreutils
 Requires:       hicolor-icon-theme
 Requires:       xdg-utils
-Requires(post): policycoreutils 
-Requires(preun): policycoreutils 
+Requires(post): policycoreutils
+Requires(preun): policycoreutils
 
 
 %description
@@ -174,7 +174,7 @@ done
 
 %preun
 %systemd_preun %{name}d.service
-/usr/sbin/semodule --remove %{name}d >/dev/null 2>&1 || :
+#/usr/sbin/semodule --remove %%{name}d >/dev/null 2>&1 || :
 
 %post
 /usr/sbin/semodule --install %{progdir}/script/%{name}d.pp >/dev/null 2>&1 || :
@@ -199,6 +199,9 @@ done
 
 
 %changelog
+* Sat Oct 02 2021 - 15.22.3-1
+- 15.22.3
+
 * Mon Dec 14 2020 Phantom X - 15.12.4-1
 - 15.12.4
 

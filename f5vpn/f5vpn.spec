@@ -29,6 +29,7 @@ Source5:        README.suid
 
 ExclusiveArch:  x86_64
 
+BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  execstack
 Requires:       f5vpn-filesystem
@@ -67,6 +68,7 @@ cp %{S:1} %{S:2} %{S:5} .
 
 find opt/f5 -name '*.so*' | xargs chmod 0755
 
+chrpath --delete %{optdir}/f5vpn
 execstack -c %{optdir}/svpn
 execstack -c %{optdir}/tunnelserver
 
@@ -109,6 +111,9 @@ RPMDIR="/%{optdir}"
 if [ "x${F5VPNVERBOSE}" = "x" ] ;then
   exec 1>/dev/null 2>&1
 fi
+
+LD_LIBRARY_PATH="${RPMDIR}/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH
 
 exec ${RPMDIR}/%{name} "$@"
 EOF

@@ -1,5 +1,6 @@
 %global with_broadway 1
 
+%global with_cloudprovides 0
 %global with_sysprof 1
 %global with_tracker 0
 
@@ -34,7 +35,7 @@
 
 Name:           gtk3
 Version:        3.24.30
-Release:        100%{?dist}
+Release:        102%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -93,6 +94,9 @@ BuildRequires:  cups-devel
 BuildRequires:  pkgconfig(rest-0.7)
 BuildRequires:  pkgconfig(json-glib-1.0)
 BuildRequires:  pkgconfig(cloudproviders)
+%if 0%{?with_cloudprovides}
+BuildRequires:  pkgconfig(cloudproviders)
+%endif
 %if 0%{?with_tracker}
 BuildRequires:  pkgconfig(tracker-sparql-3.0)
 %endif
@@ -248,7 +252,9 @@ export CFLAGS='-fno-strict-aliasing %{build_cflags}'
 %if 0%{?with_broadway}
         --enable-broadway-backend \
 %endif
+%if 0%{?with_cloudprovides}
         --enable-cloudproviders \
+%endif
 %if 0%{?with_tracker}
         --enable-tracker3 \
 %endif
@@ -398,6 +404,12 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.30-102
+- Optional cloudprovides support
+
+* Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.30-101
+- Optional tracker support
+
 * Fri Jul 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.30-100
 - 3.24.30
 

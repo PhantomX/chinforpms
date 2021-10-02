@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit a2f34ea82b5a31a7e842d0099921b85b8bce403f
+%global commit 19617f7edbbc0d709508045770877a85d586ab9a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210511
+%global date 20210928
 %global with_snapshot 1
 
 # Enable system boost
@@ -22,7 +22,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 358cf6f0357baae3e3bb5788431acf1068f897b5
+%global commit3 71e3553d78190be9edce0eb1ea06ba937640a0a8
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
@@ -97,9 +97,7 @@ Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Disable-telemetry-initial-dialog.patch
-Patch10:        %{vc_url}/%{name}/pull/5711.patch#/%{name}-gh-pr5711.patch
-Patch11:        %{vc_url}/%{name}/pull/5782.patch#/%{name}-gh-pr5782.patch
-Patch12:        %{vc_url}/%{name}/pull/5785.patch#/%{name}-gh-pr5785.patch
+Patch11:        %{vc_url}/%{name}/pull/5785.patch#/%{name}-gh-pr5785.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -131,7 +129,7 @@ BuildRequires:  cmake(Qt5Widgets)
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  shared-mime-info
 
-Provides:       bundled(catch2) = 0~git%{shortcommit1}
+Provides:       bundled(catch) = 0~git%{shortcommit1}
 Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
 Provides:       bundled(dynarmic) = 0~git%{shortcommit3}
 Provides:       bundled(fmt) = 0~git%{shortcommit4}
@@ -203,6 +201,15 @@ sed -e '/^#include <exception>/a#include <system_error>' \
     -e '/check_cxx_compiler_flag/s|CRYPTOPP_HAS_MSSE4.|\0_DISABLED|g' \
     -i externals/cryptopp/CMakeLists.txt
 %endif
+
+# glibc 2.34 fix
+sed \
+  -e '/SIGSTKSZ/s|constexpr size_t signal_stack_size = std::max|const size_t signal_stack_size = std::max<size_t>|g' \
+  -i externals/dynarmic/src/backend/x64/exception_handler_posix.cpp
+
+sed \
+  -e '/MINSIGSTKSZ/s|sigStackSize = 32768 >= MINSIGSTKSZ ? 32768 : MINSIGSTKSZ|sigStackSize = 32768|g' \
+  -i externals/catch/include/internal/catch_fatal_condition.cpp externals/catch/single_include/catch2/catch.hpp
 
 %if 0%{?with_snapshot}
   sed \

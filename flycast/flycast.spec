@@ -1,6 +1,6 @@
-%global commit 5d068fc2d4f25185829762de44be85268c4b671f
+%global commit 23d1f6b507fba1ae65bd7f63d4242aa369d8c0ad
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210927
+%global date 20210930
 %global with_snapshot 1
 
 %undefine _hardened_build
@@ -40,6 +40,7 @@ Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
+Patch4:         0001-breakpad-fix-build-with-glibc-2.34.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake

@@ -1,7 +1,7 @@
-%global commit 16e73be10d940c9c04101a47687a6f8a385c2b0f
+%global commit a87abdbe85779adf6a2a7897bd88984587880693
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210917
-%global with_snapshot 0
+%global date 20211001
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.18
+%global wine_stagingver 4d66e1bf6b8be77921de97d1dd1e99e51148106a
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id f04a5161ebd57608c5781fa2fe20a868cc055040
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ed6aae194e2996eef830ea8fecd01e9ecf27df80
+%global tkg_id 2830b09d6ff181e38b78e3d7698d43c5b9548f75
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.18
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -198,8 +198,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 Patch200:       https://source.winehq.org/patches/data/214036#/%{name}-whq-p214036.patch
 Patch201:       https://source.winehq.org/patches/data/214035#/%{name}-whq-p214035.patch
 Patch202:       https://source.winehq.org/patches/data/214038#/%{name}-whq-p214038.patch
-Patch203:       https://source.winehq.org/patches/data/215195#/%{name}-whq-p215195.patch
-Patch204:       https://source.winehq.org/patches/data/215197#/%{name}-whq-p215197.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -241,7 +239,6 @@ Patch1093:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.pa
 Patch1300:       nier.patch
 Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
 Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
-Patch1303:       0001-winevdm-support-DOSBOX-environment-variable.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -854,8 +851,6 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch200 -p1
 %patch201 -p1
 %patch202 -p1
-%patch203 -p1
-%patch204 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -903,7 +898,7 @@ $patch_command -p1 -i patch1025.patch
 %patch1028 -p1
 %endif
 %endif
-%patch1029 -p1
+#patch1029 -p1
 %patch1033 -p1
 %patch1030 -p1
 %patch1031 -p1
@@ -916,7 +911,6 @@ $patch_command -p1 -R -i patches/mfplat-streaming-support/0038-mfplat-Stub-out-M
 %patch1300 -p1
 %patch1301 -p1
 %patch1302 -p1
-%patch1303 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -1515,16 +1509,10 @@ fi
 %{_libdir}/wine/%{winedlldir}/view.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wevtutil.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wineboot.%{wineexe}
-%{_libdir}/wine/%{winesodir}/winebrowser.exe.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/winebrowser.exe
-%endif
+%{_libdir}/wine/%{winedlldir}/winebrowser.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wineconsole.%{wineexe}
-%{_libdir}/wine/%{winesodir}/winemenubuilder.exe.so
 %{_libdir}/wine/%{winedlldir}/winecfg.%{wineexe}
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/winemenubuilder.exe
-%endif
+%{_libdir}/wine/%{winedlldir}/winemenubuilder.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/winedevice.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wmplayer.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wscript.%{wineexe}
@@ -2166,11 +2154,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/npmshtml.%{winedll}
 %{_libdir}/wine/%{winedlldir}/npptools.%{winedll}
 %{_libdir}/wine/%{winedlldir}/nsi.%{winedll}
-%{_libdir}/wine/%{winedlldir}/nsi.%{winedll}
-%{_libdir}/wine/%{winesodir}/nsiproxy.sys.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/nsiproxy.sys
-%endif
+%{_libdir}/wine/%{winesodir}/nsiproxy.so
+%{_libdir}/wine/%{winedlldir}/nsiproxy.%{winesys}
 %{_libdir}/wine/%{winesodir}/ntdll.so
 %{_libdir}/wine/%{winedlldir}/ntdll.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ntdsapi.%{winedll}
@@ -2538,10 +2523,7 @@ fi
 
 # 16 bit and other non 64bit stuff
 %ifnarch x86_64 %{arm} aarch64
-%{_libdir}/wine/%{winesodir}/winevdm.exe.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/winevdm.exe
-%endif
+%{_libdir}/wine/%{winedlldir}/winevdm.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/ifsmgr.%{winevxd}
 %{_libdir}/wine/%{winedlldir}/mmdevldr.%{winevxd}
 %{_libdir}/wine/%{winedlldir}/monodebg.%{winevxd}
@@ -2915,6 +2897,9 @@ fi
 
 
 %changelog
+* Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.18-102.20211001gita87abdb
+- Snapshot
+
 * Sat Sep 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.18-101
 - Add some fixes in review
 

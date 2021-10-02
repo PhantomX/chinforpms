@@ -53,7 +53,7 @@ popd
 pushd %{name}-%{version}-gtk3
 %{qmake_qt5}
 
-%make_build sub-src-qt5ct-all
+%make_build
 popd
 
 %install
@@ -61,8 +61,6 @@ make install -C %{name}-%{version}-gtk3/src/qt5ct INSTALL_ROOT=%{buildroot}
 mv %{buildroot}%{_bindir}/%{name}{,-gtk3}
 
 make install -C %{name}-%{version} INSTALL_ROOT=%{buildroot}
-
-desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 sed -e '/^Name/s|$| - GTK3|g' %{buildroot}/%{_datadir}/applications/%{name}.desktop \
   > %{buildroot}/%{_datadir}/applications/%{name}-gtk3.desktop
@@ -77,6 +75,9 @@ install -d %{buildroot}%{_datadir}/%{name}/translations
 install -D -pm 644 %{name}-%{version}/src/%{name}/translations/*.qm \
   %{buildroot}%{_datadir}/%{name}/translations/
 %find_lang %{name} --with-qt
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %files -f %{name}.lang

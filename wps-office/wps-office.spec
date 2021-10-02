@@ -10,7 +10,7 @@
 
 Name:           wps-office
 Version:        11.1.0.10702
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        WPS Office Suite
 
 License:        Proprietary
@@ -20,8 +20,9 @@ Source0:        https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linu
 
 ExclusiveArch:  x86_64
 
+BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
-BuildRequires:  fontpackages-devel
+BuildRequires:  file
 BuildRequires:  libcxx%{?_isa}
 Requires:       dejavu-sans-fonts
 Requires:       dejavu-serif-fonts
@@ -188,7 +189,13 @@ chmod -x opt/kingsoft/%{name}/office6/cfgs/domain_qing.cfg
 
 cp -p opt/kingsoft/%{name}/office6/mui/default/EULA_linux.html .
 
-sed -e '/^gBinPath=/s|=.*|=%{_libdir}/%{name}|g' -i usr/bin/*
+sed \
+  -e '/^gBinPath=/s|=.*|=%{_libdir}/%{name}|g' \
+  -e 's|/opt/kingsoft/wps-office|%{_libdir}/%{name}|g' \
+  -e '/^main/igofficedir="${gInstallPath}/office6"' \
+  -e '/^main/iLD_LIBRARY_PATH="${gofficedir}:${gofficedir}/addons/cef:${gofficedir}/addons/kcef:${gofficedir}/addons/krecentfile${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"' \
+  -e '/^main/iexport LD_LIBRARY_PATH' \
+  -i usr/bin/*
 
 sed -e '/^X-DBUS-/d' -e '/^X-KDE-/d' -e '/^InitialPreference/d' \
   -i usr/share/applications/*.desktop
@@ -238,6 +245,10 @@ for i in \
   ;do
     rm -vf "%{buildroot}%{progdir}/office6/$i.so"
 done
+
+# Remove rpaths
+find %{buildroot} | xargs file | grep -e "executable" -e "shared object" | grep ELF \
+  | cut -f 1 -d : | xargs chrpath -k --delete
 
 abs2rel(){
   realpath -m --relative-to="$2" "$1"
@@ -315,6 +326,9 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 11.1.0.10702-2
+- Remove rpaths and update scripts
+
 * Fri Sep 10 2021 - 11.1.0.10702-1
 - 11.1.0.10702
 

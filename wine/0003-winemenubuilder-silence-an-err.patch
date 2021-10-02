@@ -11,12 +11,12 @@ diff --git a/programs/winemenubuilder/winemenubuilder.c b/programs/winemenubuild
 index 3746bd0..17f3e99 100644
 --- a/programs/winemenubuilder/winemenubuilder.c
 +++ b/programs/winemenubuilder/winemenubuilder.c
-@@ -2489,7 +2489,7 @@ static BOOL write_freedesktop_association_entry(const char *desktopPath, const c
+@@ -2136,7 +2136,7 @@ static BOOL write_freedesktop_association_entry(const WCHAR *desktopPath, const
          fclose(desktop);
      }
      else
--        WINE_ERR("error writing association file %s\n", wine_dbgstr_a(desktopPath));
-+        WINE_WARN("error writing association file %s\n", wine_dbgstr_a(desktopPath));
+-        WINE_ERR("error writing association file %s\n", wine_dbgstr_w(desktopPath));
++        WINE_WARN("error writing association file %s\n", wine_dbgstr_w(desktopPath));
      return ret;
  }
  

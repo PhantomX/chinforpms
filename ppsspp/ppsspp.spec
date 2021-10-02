@@ -1,6 +1,6 @@
-%global commit d944c254c2e44068d42a964c85b18602d44f54d7
+%global commit 5ccbe1284a28329c0fa0133638469a227cc2715e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210918
+%global date 20211001
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -20,6 +20,10 @@
 
 # https://github.com/hrydgard/ppsspp/issues/13312
 %global _lto_cflags %{nil}
+
+%global commit1 36ad6b19b22de2075a01a4f0c765e3ef514dc38f
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 %{name}-debugger
 
 %global commit2 a5baf97df4579b4614cd5e643241c7acfc36b0c4
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
@@ -54,7 +58,7 @@
 
 Name:           ppsspp
 Version:        1.11.3
-Release:        119%{?gver}%{?dist}
+Release:        120%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -65,6 +69,7 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.g
 %else
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
+Source1:        https://github.com/unknownbrackets/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
 %if 0%{?with_smallffmpeg}
@@ -185,6 +190,7 @@ Data files of %{name}.
 %autosetup -n %{name}-%{version} -p1
 %endif
 
+tar -xf %{SOURCE1} -C assets/debugger --strip-components 1
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
 tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
@@ -377,6 +383,10 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-120.20211001git5ccbe12
+- Last snapshot
+- Added debugger tarball
+
 * Sat Sep 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.3-119.20210918gitd944c25
 - Last snapshot
 

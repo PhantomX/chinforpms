@@ -1,0 +1,3 @@
+To use, prepend sdl1 to application:
+
+  sdl1 <executable>
