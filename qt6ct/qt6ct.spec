@@ -70,7 +70,7 @@ pushd %{name}-%{srcver}-gtk3
 lrelease-qt6 src/qt6ct/translations/*.ts
 %{qmake_qt6}
 
-%make_build
+%make_build sub-src-qt6ct-all
 popd
 
 %install

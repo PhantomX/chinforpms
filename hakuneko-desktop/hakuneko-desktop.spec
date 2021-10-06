@@ -28,11 +28,13 @@ Requires:       libdbusmenu%{?_isa}
 Requires:       hicolor-icon-theme
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
+%global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
 
 %global __requires_exclude ^libffmpeg.so
 %global __requires_exclude %__requires_exclude|^libEGL.so
 %global __requires_exclude %__requires_exclude|^libGLESv2.so
 %global __requires_exclude %__requires_exclude|^libVkICD_mock_icd.so
+%global __requires_exclude %__requires_exclude|^libvulkan.so
 
 
 %description

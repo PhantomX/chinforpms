@@ -53,7 +53,7 @@ popd
 pushd %{name}-%{version}-gtk3
 %{qmake_qt5}
 
-%make_build
+%make_build sub-src-qt5ct-all
 popd
 
 %install

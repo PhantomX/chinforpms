@@ -49,12 +49,13 @@ Conflicts:      %{name} < %{version}
 %endif
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
-
+%global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
 
 %global __requires_exclude ^libffmpeg.so
 %global __requires_exclude %__requires_exclude|^libEGL.so
 %global __requires_exclude %__requires_exclude|^libGLESv2.so
 %global __requires_exclude %__requires_exclude|^libnode.so
+%global __requires_exclude %__requires_exclude|^libvulkan.so
 
 %description
 All-in-one voice and text chat for gamers that's free, secure, and works on
