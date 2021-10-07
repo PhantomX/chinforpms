@@ -1,6 +1,6 @@
-%global commit a87abdbe85779adf6a2a7897bd88984587880693
+%global commit ed38d12833bb1957a915ac63128957dacf2bc245
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211001
+%global date 20211005
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -33,7 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  6.4.0
-%global winevulkan 1.2.191
+%global winevulkan 1.2.195
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 4d66e1bf6b8be77921de97d1dd1e99e51148106a
+%global wine_stagingver 7750a01cea4bf7771c68ba150cc8edbb8930dd90
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id f04a5161ebd57608c5781fa2fe20a868cc055040
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2830b09d6ff181e38b78e3d7698d43c5b9548f75
+%global tkg_id c6ecf6265c7078d4ab8176c05a76b45c2f6fa5c9
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -128,7 +128,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.18
-Release:        102%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -212,6 +212,7 @@ Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patc
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-006.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-006.patch
+Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -868,6 +869,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %endif
 %patch1004 -p1
 %patch1005 -p1
+%patch1007 -p1
 
 %patch5000 -p1
 
@@ -1415,10 +1417,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/plugplay.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/progman.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/taskmgr.%{wineexe}
-%{_libdir}/wine/%{winesodir}/winedbg.exe.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/winedbg.exe
-%endif
+%{_libdir}/wine/%{winedlldir}/winedbg.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/winefile.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/winemine.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/winemsibuilder.%{wineexe}
@@ -2897,6 +2896,12 @@ fi
 
 
 %changelog
+* Wed Oct 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.18-104.20211005gited38d12
+- Bump
+
+* Mon Oct 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.18-103.20211004git5a8dcb0
+- Bump
+
 * Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.18-102.20211001gita87abdb
 - Snapshot
 

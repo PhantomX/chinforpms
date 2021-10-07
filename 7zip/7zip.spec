@@ -20,7 +20,7 @@
 
 Name:           7zip
 Version:        21.03
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPLv2+ and BSD and Public Domain
@@ -80,6 +80,11 @@ sed \
   -e '/^MY_ASM/s|asmc|uasm|g' \
   -i CPP/7zip/7zip_gcc.mak
 
+# https://github.com/justdan96/7zip_static/blob/main/Dockerfile#L27
+sed -e \
+  '1iOPTION FRAMEPRESERVEFLAGS:ON\nOPTION PROLOGUE:NONE\nOPTION EPILOGUE:NONE' \
+  -i Asm/x86/LzFindOpt.asm
+
 
 %build
 pushd CPP/7zip/Bundles/Alone2
@@ -98,6 +103,9 @@ install -pm0755 CPP/7zip/Bundles/Alone2/b/g%{platform}/7zz %{buildroot}%{_bindir
 
 
 %changelog
+* Wed Oct 06 2021 Phantom X <megaphantomx at hotmail dot com> - 21.03-2
+- Add fix to uasm do not align the stack when build with ASM support
+
 * Thu Jul 22 2021 Phantom X <megaphantomx at hotmail dot com> - 21.03-1
 - 21.03
 
