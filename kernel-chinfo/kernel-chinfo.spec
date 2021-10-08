@@ -149,7 +149,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -160,7 +160,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit fb946893856b89fdbc79aabcd38447260b8d041e
+%global pfcommit f0a7caa4e4dd8a8d3c128ab9776ec87eba050065
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -188,7 +188,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 4c70286a8cb2dfe809e47f4bbbfe83a6cf8d4d13
+%global opensuse_id 3903483125fbabd5e7595cdce565aa6264c8fe61
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -950,7 +950,7 @@ Patch1020: %{opensuse_url}/memcg-enable-accounting-of-ipc-resources.patch#/openS
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id 799936ef5a09ead1d07cec4a445b44542d2f72ba
+%global tkg_id 6a91c77dc0bcacf1baeafc4acccb954a8158073b
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.14/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.14/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2092: 0001-fsync.patch
@@ -2903,6 +2903,9 @@ fi
 #
 #
 %changelog
+* Thu Oct 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.10-500.chinfo
+- 5.14.10 - pf5
+
 * Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.9-500.chinfo
 - 5.14.9 - pf5
 

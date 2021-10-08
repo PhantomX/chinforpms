@@ -4,7 +4,7 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%global with_insiders 1
+%global with_insiders 0
 
 %if 0%{?with_insiders}
 %global channel -insiders
@@ -15,7 +15,7 @@
 
 Name:           ms-%{pkgname}
 Version:        1.4.00.26453
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chat-centered workspace in Office 365
 
 License:        Microsoft End User License Agreement
@@ -133,8 +133,11 @@ done
 
 
 %changelog
-* Tue Oct 05 2021 - 1.4.00.26453-1
+* Thu Oct 07 2021 - 1.4.00.26453-2
 - 1.4.00.26453
+
+* Tue Oct 05 2021 - 1.4.00.26453-1
+- 1.4.00.26453 Insiders
 
 * Tue Aug 03 2021 - 1.4.00.13653-1
 - 1.4.00.13653

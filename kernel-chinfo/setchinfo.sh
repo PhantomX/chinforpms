@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20210808
+# 20211007
 
 set -e
 
@@ -78,6 +78,7 @@ pfd="
 "
 
 pfm="
+SENSORS_ASUS_WMI
 TCP_CONG_BBR2
 NTFS3_FS
 V4L2_LOOPBACK

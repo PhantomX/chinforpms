@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/b404ad1e47af572e35ac407260103356c961c627
+ b404ad1e47af572e35ac407260103356c961c627 thermal/drivers/int340x: Do not set a wrong tcc offset on resume
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/f0c98d3a1045b6149d85b93b350a738d2a495d16
+ f0c98d3a1045b6149d85b93b350a738d2a495d16 ACPI: PM: s2idle: Run both AMD and Microsoft methods if both are supported
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/e11905f1a6ea9f03a9f1a3b061a1a581536a2850
  e11905f1a6ea9f03a9f1a3b061a1a581536a2850 Revert "team: mark team driver as deprecated"
 

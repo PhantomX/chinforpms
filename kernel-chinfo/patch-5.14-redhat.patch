@@ -57,7 +57,7 @@ Subject: [PATCH] patch-5.14-redhat
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 54 files changed, 694 insertions(+), 1523 deletions(-)
+ 54 files changed, 658 insertions(+), 1508 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 2fb7012c3246..47718b4f2f75 100644
@@ -159,7 +159,7 @@ index 911cd3912351..caae31c04561 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index ee23908f1b96..0273125cdfba 100644
+index 6f0d2d4dea74..2f4d60b24155 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -170,7 +170,7 @@ index ee23908f1b96..0273125cdfba 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -1030,6 +1031,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -1034,6 +1035,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -181,7 +181,7 @@ index ee23908f1b96..0273125cdfba 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index bff3a784aec5..4e13c3ee5723 100644
+index d103e8489ec1..16ef6bcceed2 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -19,6 +19,7 @@
@@ -192,7 +192,7 @@ index bff3a784aec5..4e13c3ee5723 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -936,6 +937,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -938,6 +939,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -206,7 +206,7 @@ index bff3a784aec5..4e13c3ee5723 100644
  	dmi_setup();
 
  	/*
-@@ -1101,19 +1109,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1103,19 +1111,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -1288,7 +1288,7 @@ index 75dbe77b0b4b..4bd6dd722f44 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 1905ee0297a4..58fded74fb31 100644
+index 8c3c1ef92171..18431236ab9f 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4232,6 +4232,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,

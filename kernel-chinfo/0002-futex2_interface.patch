@@ -1,6 +1,6 @@
-From 27e33c4e7395f12b0b579a516ad199e839a1e965 Mon Sep 17 00:00:00 2001
+From fef4a89eb2bf10a9864ced3a0b1ec9f5b328f7f2 Mon Sep 17 00:00:00 2001
 From: Fedora Kernel Team <kernel-team@fedoraproject.org>
-Date: Fri, 3 Sep 2021 08:07:44 -0300
+Date: Thu, 7 Oct 2021 09:19:18 -0300
 Subject: [PATCH 2/2] futex2_interface
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -14,7 +14,7 @@ Rebased from: André Almeida <andrealmeid@collabora.com>
  arch/arm/tools/syscall.tbl                    |    4 +
  arch/arm64/include/asm/unistd.h               |    2 +-
  arch/arm64/include/asm/unistd32.h             |    4 +
- arch/x86/entry/syscalls/syscall_32.tbl        |    4 +
+ arch/x86/entry/syscalls/syscall_32.tbl        |    5 +
  arch/x86/entry/syscalls/syscall_64.tbl        |    4 +
  fs/inode.c                                    |    1 +
  include/linux/compat.h                        |   23 +
@@ -46,7 +46,7 @@ Rebased from: André Almeida <andrealmeid@collabora.com>
  .../futex/functional/futex_wait_wouldblock.c  |   33 +-
  .../testing/selftests/futex/functional/run.sh |    6 +
  .../selftests/futex/include/futex2test.h      |  121 ++
- 38 files changed, 2552 insertions(+), 45 deletions(-)
+ 38 files changed, 2553 insertions(+), 45 deletions(-)
  create mode 100644 Documentation/locking/futex2.rst
  create mode 100644 kernel/futex2.c
  create mode 100644 tools/testing/selftests/futex/functional/futex2_requeue.c
@@ -284,69 +284,70 @@ index 7218dca..a6dc281 100644
  F:	tools/testing/selftests/futex/
  
 diff --git a/arch/arm/tools/syscall.tbl b/arch/arm/tools/syscall.tbl
-index c5df1179..dc16c48 100644
+index 63fde2d..d82bc79 100644
 --- a/arch/arm/tools/syscall.tbl
 +++ b/arch/arm/tools/syscall.tbl
-@@ -460,3 +460,7 @@
- 444	common	landlock_create_ruleset		sys_landlock_create_ruleset
+@@ -461,3 +461,7 @@
  445	common	landlock_add_rule		sys_landlock_add_rule
  446	common	landlock_restrict_self		sys_landlock_restrict_self
-+447	common	futex_wait			sys_futex_wait
-+448	common	futex_wake			sys_futex_wake
-+449	common  futex_waitv                     sys_futex_waitv
-+450	common	futex_requeue			sys_futex_requeue
+ 447	common	pmadv_ksm			sys_pmadv_ksm
++448	common	futex_wait			sys_futex_wait
++449	common	futex_wake			sys_futex_wake
++450	common  futex_waitv                     sys_futex_waitv
++451	common	futex_requeue			sys_futex_requeue
 diff --git a/arch/arm64/include/asm/unistd.h b/arch/arm64/include/asm/unistd.h
-index 727bfc3..4e65da3 100644
+index fb7a0be..14c9584 100644
 --- a/arch/arm64/include/asm/unistd.h
 +++ b/arch/arm64/include/asm/unistd.h
 @@ -38,7 +38,7 @@
  #define __ARM_NR_compat_set_tls		(__ARM_NR_COMPAT_BASE + 5)
  #define __ARM_NR_COMPAT_END		(__ARM_NR_COMPAT_BASE + 0x800)
  
--#define __NR_compat_syscalls		447
-+#define __NR_compat_syscalls		451
+-#define __NR_compat_syscalls		448
++#define __NR_compat_syscalls		452
  #endif
  
  #define __ARCH_WANT_SYS_CLONE
 diff --git a/arch/arm64/include/asm/unistd32.h b/arch/arm64/include/asm/unistd32.h
-index 99ffcaf..0979613 100644
+index 780ac46..dd4db98 100644
 --- a/arch/arm64/include/asm/unistd32.h
 +++ b/arch/arm64/include/asm/unistd32.h
-@@ -901,6 +901,10 @@ __SYSCALL(__NR_landlock_create_ruleset, sys_landlock_create_ruleset)
- __SYSCALL(__NR_landlock_add_rule, sys_landlock_add_rule)
- #define __NR_landlock_restrict_self 446
+@@ -903,6 +903,10 @@ __SYSCALL(__NR_landlock_add_rule, sys_landlock_add_rule)
  __SYSCALL(__NR_landlock_restrict_self, sys_landlock_restrict_self)
-+#define __NR_futex_wait 447
+ #define __NR_pmadv_ksm 447
+ __SYSCALL(__NR_pmadv_ksm, sys_pmadv_ksm)
++#define __NR_futex_wait 448
 +__SYSCALL(__NR_futex_wait, sys_futex_wait)
-+#define __NR_futex_wake 448
++#define __NR_futex_wake 449
 +__SYSCALL(__NR_futex_wake, sys_futex_wake)
  
  /*
   * Please add new compat syscalls above this comment and update
 diff --git a/arch/x86/entry/syscalls/syscall_32.tbl b/arch/x86/entry/syscalls/syscall_32.tbl
-index ce763a1..c0d32e5 100644
+index 57c3df0..b519c5a 100644
 --- a/arch/x86/entry/syscalls/syscall_32.tbl
 +++ b/arch/x86/entry/syscalls/syscall_32.tbl
-@@ -452,3 +452,7 @@
- 445	i386	landlock_add_rule	sys_landlock_add_rule
+@@ -453,3 +453,8 @@
  446	i386	landlock_restrict_self	sys_landlock_restrict_self
  447	i386	memfd_secret		sys_memfd_secret
-+448	i386	futex_wait		sys_futex_wait
-+449	i386	futex_wake		sys_futex_wake
-+450	i386	futex_waitv		sys_futex_waitv			compat_sys_futex_waitv
-+451	i386	futex_requeue		sys_futex_requeue		compat_sys_futex_requeue
+ 448	i386	pmadv_ksm		sys_pmadv_ksm
++449	i386	futex_wait		sys_futex_wait
++450	i386	futex_wake		sys_futex_wake
++451	i386	futex_waitv		sys_futex_waitv			compat_sys_futex_waitv
++452	i386	futex_requeue		sys_futex_requeue		compat_sys_futex_requeue
++
 diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
-index f6b5779..492bdf9 100644
+index 35c15b6..927ff51 100644
 --- a/arch/x86/entry/syscalls/syscall_64.tbl
 +++ b/arch/x86/entry/syscalls/syscall_64.tbl
-@@ -369,6 +369,10 @@
- 445	common	landlock_add_rule	sys_landlock_add_rule
+@@ -370,6 +370,10 @@
  446	common	landlock_restrict_self	sys_landlock_restrict_self
  447	common	memfd_secret		sys_memfd_secret
-+448	common	futex_wait		sys_futex_wait
-+449	common	futex_wake		sys_futex_wake
-+450	common	futex_waitv		sys_futex_waitv
-+451	common	futex_requeue		sys_futex_requeue
+ 448	common	pmadv_ksm		sys_pmadv_ksm
++449	common	futex_wait		sys_futex_wait
++450	common	futex_wake		sys_futex_wake
++451	common	futex_waitv		sys_futex_waitv
++452	common	futex_requeue		sys_futex_requeue
  
  #
  # Due to a historical design error, certain syscalls are numbered differently
@@ -416,7 +417,7 @@ index b2341c2..c6888f0 100644
  	atomic_t		i_dio_count;
  	atomic_t		i_writecount;
 diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index 69c9a70..34ec91d 100644
+index 3af7698..d92e0a0 100644
 --- a/include/linux/syscalls.h
 +++ b/include/linux/syscalls.h
 @@ -71,6 +71,8 @@ struct open_how;
@@ -449,7 +450,7 @@ index 69c9a70..34ec91d 100644
  /* kernel/hrtimer.c */
  asmlinkage long sys_nanosleep(struct __kernel_timespec __user *rqtp,
  			      struct __kernel_timespec __user *rmtp);
-@@ -1310,6 +1326,8 @@ int ksys_ipc(unsigned int call, int first, unsigned long second,
+@@ -1311,6 +1327,8 @@ int ksys_ipc(unsigned int call, int first, unsigned long second,
  	unsigned long third, void __user * ptr, long fifth);
  int compat_ksys_ipc(u32 call, int first, int second,
  	u32 third, u32 ptr, u32 fifth);
@@ -459,28 +460,28 @@ index 69c9a70..34ec91d 100644
  /*
   * The following kernel syscall equivalents are just wrappers to fs-internal
 diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
-index a9d6fcd..90e266f 100644
+index a4e08c6..c493891 100644
 --- a/include/uapi/asm-generic/unistd.h
 +++ b/include/uapi/asm-generic/unistd.h
-@@ -878,8 +878,20 @@ __SYSCALL(__NR_landlock_restrict_self, sys_landlock_restrict_self)
- __SYSCALL(__NR_memfd_secret, sys_memfd_secret)
- #endif
+@@ -881,8 +881,20 @@ __SYSCALL(__NR_memfd_secret, sys_memfd_secret)
+ #define __NR_pmadv_ksm 448
+ __SYSCALL(__NR_pmadv_ksm, sys_pmadv_ksm)
  
-+#define __NR_futex_wait 448
++#define __NR_futex_wait 449
 +__SYSCALL(__NR_futex_wait, sys_futex_wait)
 +
-+#define __NR_futex_wake 449
++#define __NR_futex_wake 450
 +__SYSCALL(__NR_futex_wake, sys_futex_wake)
 +
-+#define __NR_futex_waitv 450
++#define __NR_futex_waitv 451
 +__SC_COMP(__NR_futex_waitv, sys_futex_waitv, compat_sys_futex_waitv)
 +
-+#define __NR_futex_requeue 451
++#define __NR_futex_requeue 452
 +__SC_COMP(__NR_futex_requeue, sys_futex_requeue, compat_sys_futex_requeue)
 +
  #undef __NR_syscalls
--#define __NR_syscalls 448
-+#define __NR_syscalls 452
+-#define __NR_syscalls 449
++#define __NR_syscalls 453
  
  /*
   * 32 bit systems traditionally used different
@@ -545,10 +546,10 @@ index 386d6d2..2757693 100644
  	bool
  	depends on FUTEX && RT_MUTEXES
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 4ef0c0f..9e2b079 100644
+index 4df609b..1eaf2af 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
-@@ -61,6 +61,7 @@ obj-$(CONFIG_PROFILING) += profile.o
+@@ -60,6 +60,7 @@ obj-$(CONFIG_PROFILING) += profile.o
  obj-$(CONFIG_STACKTRACE) += stacktrace.o
  obj-y += time/
  obj-$(CONFIG_FUTEX) += futex.o
@@ -557,10 +558,10 @@ index 4ef0c0f..9e2b079 100644
  obj-$(CONFIG_SMP) += smp.o
  ifneq ($(CONFIG_SMP),y)
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 7d4e04e..0069a23 100644
+index 7267d46..947b2ef 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -1331,6 +1331,8 @@ static void mm_release(struct task_struct *tsk, struct mm_struct *mm)
+@@ -1332,6 +1332,8 @@ static void mm_release(struct task_struct *tsk, struct mm_struct *mm)
  			put_user(0, tsk->clear_child_tid);
  			do_futex(tsk->clear_child_tid, FUTEX_WAKE,
  					1, NULL, NULL, 0, 0);
@@ -1873,7 +1874,7 @@ index 0000000..54c13b7
 +}
 +core_initcall(futex2_init);
 diff --git a/kernel/sys_ni.c b/kernel/sys_ni.c
-index 30971b1..0969ef0 100644
+index 1c5fbcf..e54f069 100644
 --- a/kernel/sys_ni.c
 +++ b/kernel/sys_ni.c
 @@ -151,6 +151,12 @@ COND_SYSCALL_COMPAT(set_robust_list);
@@ -1910,7 +1911,7 @@ index 4205ed4..b65c51e 100644
 +# define __NR_futex_requeue 446
 +#endif
 diff --git a/tools/include/uapi/asm-generic/unistd.h b/tools/include/uapi/asm-generic/unistd.h
-index a9d6fcd..cf99ad4 100644
+index a9d6fcd..9f9d021 100644
 --- a/tools/include/uapi/asm-generic/unistd.h
 +++ b/tools/include/uapi/asm-generic/unistd.h
 @@ -878,8 +878,17 @@ __SYSCALL(__NR_landlock_restrict_self, sys_landlock_restrict_self)
@@ -3282,5 +3283,5 @@ index 0000000..faa4027
 +	return syscall(__NR_futex_requeue, uaddr1, uaddr2, nr_wake, nr_requeue, cmpval, flags);
 +}
 -- 
-2.31.1
+2.32.0
 
