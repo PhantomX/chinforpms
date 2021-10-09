@@ -1,7 +1,17 @@
-diff -up tdesktop-1.5.1/Telegram/SourceFiles/dialogs/dialogs_layout.cpp.realmute tdesktop-1.5.1/Telegram/SourceFiles/dialogs/dialogs_layout.cpp
---- tdesktop-1.5.1/Telegram/SourceFiles/dialogs/dialogs_layout.cpp.realmute	2018-12-11 17:09:11.104794469 -0200
-+++ tdesktop-1.5.1/Telegram/SourceFiles/dialogs/dialogs_layout.cpp	2018-12-11 17:12:04.733689761 -0200
-@@ -121,7 +121,9 @@ int PaintWideCounter(
+From 415b9f538691ad19a396667a1c995dbeca6c509e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 8 Oct 2021 07:55:41 -0300
+Subject: [PATCH] Do not show unread counter on muted chats
+
+---
+ .../SourceFiles/dialogs/ui/dialogs_layout.cpp  | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp b/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp
+index 759492b..82d1ad7 100644
+--- a/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp
++++ b/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp
+@@ -144,7 +144,9 @@ int PaintWideCounter(
  		UnreadBadgeStyle st;
  		st.active = active;
  		st.muted = unreadMuted;
@@ -12,7 +22,7 @@ diff -up tdesktop-1.5.1/Telegram/SourceFiles/dialogs/dialogs_layout.cpp.realmute
  		availableWidth -= unreadWidth + st.padding;
  
  		hadOneBadge = true;
-@@ -801,13 +803,13 @@ void paintImportantSwitch(Painter &p, Mo
+@@ -1002,13 +1004,13 @@ void PaintCollapsedRow(
  		const auto unreadRight = fullWidth - st::dialogsPadding.x();
  		UnreadBadgeStyle st;
  		st.muted = true;
@@ -33,3 +43,6 @@ diff -up tdesktop-1.5.1/Telegram/SourceFiles/dialogs/dialogs_layout.cpp.realmute
  	}
  }
  
+-- 
+2.32.0
+

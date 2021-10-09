@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.1.5
+Version:        3.1.8
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -83,11 +83,11 @@ Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.
 %if %{without tg_owt}
 Source10:       %{da_url}/tg_owt/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 Source11:       %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit11}.tar.gz#/%{srcname11}-%{shortcommit11}.tar.gz
-%if 0%{?fedora} < 35
 Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
-%endif
 Source20:       thunar-sendto-%{name}.desktop
+
+Patch10:        %{url}/pull/17068.patch#/%{name}-gh-pr17068.patch
 
 Patch100:       %{name}-build-fix.patch
 
@@ -205,9 +205,7 @@ BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpipewire-0.3)
 #BuildRequires:  pkgconfig(openh264)
 BuildRequires:  pkgconfig(usrsctp)
-%if 0%{?fedora} >= 35
-BuildRequires:  pkgconfig(vpx) >= 1.10.0
-%endif
+#BuildRequires:  pkgconfig(vpx) >= 1.10.0
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xdamage)
@@ -256,9 +254,7 @@ sed -e 's|../Libraries|Libraries|g' -i cmake/variables.cmake
 mkdir -p Libraries/tg_owt
 tar -xf %{S:10} --strip-components 1 -C Libraries/%{srcname10}/
 tar -xf %{S:11} -C Libraries/%{srcname10}/src/third_party/libyuv
-%if 0%{?fedora} < 35
 tar -xf %{S:12} -C Libraries/%{srcname10}/src/third_party/libvpx/source/libvpx
-%endif
 
 sed \
   -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
@@ -457,6 +453,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Oct 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.1.8-100
+- 3.1.7
+
 * Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.1.5-100
 - 3.1.5
 
