@@ -1,7 +1,7 @@
 %global commit ed38d12833bb1957a915ac63128957dacf2bc245
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211005
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7750a01cea4bf7771c68ba150cc8edbb8930dd90
+%global wine_stagingver 6.19
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id f04a5161ebd57608c5781fa2fe20a868cc055040
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id c6ecf6265c7078d4ab8176c05a76b45c2f6fa5c9
+%global tkg_id c3b028f9f989ba99ac0dad895a072362c86f4aa2
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -94,7 +94,8 @@
 
 # https://bugs.winehq.org/show_bug.cgi?id=50448
 %global wine_staging_opts %{?wine_staging_opts} -W ntdll-NtAlertThreadByThreadId
-%global wine_staging_opts %{?wine_staging_opts} -W bcrypt-ECDHSecretAgreement
+#FIXME: uncomment when staging bcrypt-ECDHSecretAgreement is enabled again
+#global wine_staging_opts %%{?wine_staging_opts} -W bcrypt-ECDHSecretAgreement
 
 %if !0%{?fshack}
 # childwindow.patch
@@ -127,8 +128,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.18
-Release:        104%{?gver}%{?dist}
+Version:        6.19
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -865,6 +866,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch1000 -p1
 %if !0%{?fshack}
 %patch1002 -p1
+#FIXME: verify if is not breaking nine again
 #patch1003 -p1
 %endif
 %patch1004 -p1
@@ -887,8 +889,13 @@ sed \
 %patch1023 -p1
 %endif
 %patch1024 -p1
-filterdiff -p1 -x configure %{P:1025} > patch1025.patch
-$patch_command -p1 -i patch1025.patch
+#FIXME: uncomment when staging bcrypt-ECDHSecretAgreement is enabled again
+#filterdiff -p1 -x configure %%{P:1025} > patch1025.patch
+if [ -f patch1025.patch ] ;then
+  $patch_command -p1 -i patch1025.patch
+else
+%patch1025 -p1
+fi
 #patch1026 -p1
 %if 0%{?fshack}
 %if 0%{?vulkanup}
@@ -902,7 +909,9 @@ $patch_command -p1 -i patch1025.patch
 %endif
 #patch1029 -p1
 %patch1033 -p1
+if [ -f patch1025.patch ] ;then
 %patch1030 -p1
+fi
 %patch1031 -p1
 %patch1032 -p1
 %patch1089 -p1
@@ -981,16 +990,7 @@ export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wn
 export CFLAGS="$CFLAGS -ftree-vectorize -mno-avx -mno-avx2"
 
 %ifarch aarch64
-%if 0%{?fedora} >= 33
 %global toolchain clang
-%else
-# ARM64 now requires clang
-# https://source.winehq.org/git/wine.git/commit/8fb8cc03c3edb599dd98f369e14a08f899cbff95
-export CC="/usr/bin/clang"
-# Fedora's default compiler flags now conflict with what clang supports
-# https://bugzilla.redhat.com/show_bug.cgi?id=1658311
-export CFLAGS="`echo $CFLAGS | sed -e 's/-fstack-clash-protection//'`"
-%endif
 %endif
 
 # Remove this flags by upstream recommendation (see configure.ac)
@@ -1631,6 +1631,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-processtopology-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-quirks-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-realtime-l1-1-0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-core-realtime-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-registry-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-registry-l2-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-registry-l2-2-0.%{winedll}
@@ -1963,7 +1964,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/fwpuclnt.%{winedll}
 %{_libdir}/wine/%{winedlldir}/gameux.%{winedll}
 %{_libdir}/wine/%{winedlldir}/gamingtcui.%{winedll}
-%{_libdir}/wine/%{winesodir}/gdi32.so
 %{_libdir}/wine/%{winedlldir}/gdi32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/gdiplus.%{winedll}
 %{_libdir}/wine/%{winedlldir}/glu32.%{winedll}
@@ -2001,10 +2001,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/initpki.%{winedll}
 %{_libdir}/wine/%{winedlldir}/inkobj.%{winedll}
 %{_libdir}/wine/%{winedlldir}/inseng.%{winedll}
-%{_libdir}/wine/%{winesodir}/iphlpapi.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/iphlpapi.dll
-%endif
+%{_libdir}/wine/%{winedlldir}/iphlpapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/iprop.%{winedll}
 %{_libdir}/wine/%{winedlldir}/irprops.%{winecpl}
 %{_libdir}/wine/%{winedlldir}/itircl.%{winedll}
@@ -2896,6 +2893,9 @@ fi
 
 
 %changelog
+* Sat Oct 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.19-100
+- 6.19
+
 * Wed Oct 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.18-104.20211005gited38d12
 - Bump
 

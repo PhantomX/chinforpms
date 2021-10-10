@@ -1,3 +1,18 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/32568097ff5803d25ac5e233583903c1c4666711
+ 32568097ff5803d25ac5e233583903c1c4666711 e100e: Fix packet loss issues seen on Intel network controller
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/e84b9781b4fec1e48909260cb3d3454fb82c241d
+ e84b9781b4fec1e48909260cb3d3454fb82c241d Revert "net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable warnings"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/d885e8f2615cb029f9173d7cdd49ae0815bb019c
+ d885e8f2615cb029f9173d7cdd49ae0815bb019c bpf: Fix integer overflow in prealloc_elems_and_freelist()
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/d816db8fabf7346ef722cf5b3a3a12b43bdd0460
+ d816db8fabf7346ef722cf5b3a3a12b43bdd0460 Revert "acpi: prefer booting with ACPI over DTS"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/be4d6e21716592aa0230e5ae6ecaedce6f36d9a5
+ be4d6e21716592aa0230e5ae6ecaedce6f36d9a5 Revert "block, bfq: honor already-setup queue merges"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/b404ad1e47af572e35ac407260103356c961c627
  b404ad1e47af572e35ac407260103356c961c627 thermal/drivers/int340x: Do not set a wrong tcc offset on resume
 
