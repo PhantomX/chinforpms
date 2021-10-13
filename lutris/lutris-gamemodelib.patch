@@ -1,6 +1,6 @@
-From 4c89f240a3c852eaae8abf0dbf0df2b9b4a75001 Mon Sep 17 00:00:00 2001
+From 3def6da6b429cf6a3240759ce48cc424bbfd65cd Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 15 Nov 2020 18:13:31 -0300
+Date: Mon, 11 Oct 2021 18:12:25 -0300
 Subject: [PATCH] Fix libgamemodeauto search name
 
 ---
@@ -8,18 +8,18 @@ Subject: [PATCH] Fix libgamemodeauto search name
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/lutris/util/linux.py b/lutris/util/linux.py
-index f361cf4..9fefea3 100644
+index 2ac62a4..85d8808 100644
 --- a/lutris/util/linux.py
 +++ b/lutris/util/linux.py
-@@ -78,7 +78,7 @@ SYSTEM_COMPONENTS = {
+@@ -74,7 +74,7 @@ SYSTEM_COMPONENTS = {
          "VULKAN": ["libvulkan.so.1"],
          "WINE": ["libsqlite3.so.0"],
          "RADEON": ["libvulkan_radeon.so"],
 -        "GAMEMODE": ["libgamemodeauto.so"],
 +        "GAMEMODE": ["libgamemodeauto.so.0"],
+         "GNUTLS": ["libgnutls.so.30"],
      },
  }
- 
 -- 
-2.28.0
+2.33.0
 

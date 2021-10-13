@@ -1,6 +1,6 @@
-From b536123381887ddc9af0dcbdcd97a56ab0ed3b15 Mon Sep 17 00:00:00 2001
+From c5fd2b77568df80d85f3088d4a62bc6e3ddd33aa Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 3 Jul 2021 16:46:25 -0300
+Date: Tue, 12 Oct 2021 11:50:11 -0300
 Subject: [PATCH] Revert VideoCommon/TextureInfo commits for RESHDP
 
 2d59dcb95d1256bdbe0bf020c029b191477a241c - VideoCommon/TextureInfo: Fix mipmap loading from tmem
@@ -9,58 +9,553 @@ df53a5f8809d1f9c21a2975a2fd6e98e9c7a8424 - VideoCommon: enhance hi res texture s
 faec77a9714b31e0c3864890bc44c4bf31e06a66 - Fix -Wreorder warnings
 182dfc38e6cb6256cc41f5dd3437a7e4f407ff17 - VideoCommon: move all texture calculations to a "TextureInfo"
 42d1658c5055a6f100cd5154a582e6422a89ad2e - VideoCommon/TextureInfo: Restore old mipmap detection logic
+ef0e401708dc534e8bfac52e5e43086b4255c22d - BPMem: Abstract TexUnit Addressing into struct
+9fa26624b02562fb8626c93c45acf2015fc06f40 - BPMemory: Refactor/consolidate TexUnit Addressing
+88bd10cd30d487cc3efba20875b32df7cdacb686 - Extend TMEM cache implementation
+a33cf278854ff2cb3fe8c1de193a0a344b1c9abd - TMEM: Handle savestate and init
+d771bee0fee0f09f9c6eeb72d514fd9d66038b87 - TMEM: Add some helpful comments
+edb66dab8469736e5c2954fd3ffb9704de4542c3 - TextureCache: Remove deleted textures from bound_textures
 ---
- Source/Core/DolphinLib.props                 |   2 -
- Source/Core/VideoCommon/CMakeLists.txt       |   2 -
- Source/Core/VideoCommon/HiresTextures.cpp    |  93 ++++--
- Source/Core/VideoCommon/HiresTextures.h      |   9 +-
- Source/Core/VideoCommon/TextureCacheBase.cpp | 256 +++++++++------
- Source/Core/VideoCommon/TextureCacheBase.h   |  11 +-
- Source/Core/VideoCommon/TextureInfo.cpp      | 318 -------------------
- Source/Core/VideoCommon/TextureInfo.h        | 119 -------
- Source/Core/VideoCommon/VertexLoaderBase.h   |   5 +-
- 9 files changed, 235 insertions(+), 580 deletions(-)
+ Source/Core/Core/State.cpp                    |   2 +-
+ Source/Core/DolphinLib.props                  |   4 -
+ .../Core/VideoBackends/Software/DebugUtil.cpp |  14 +-
+ .../VideoBackends/Software/Rasterizer.cpp     |   7 +-
+ .../VideoBackends/Software/TextureSampler.cpp |  25 +-
+ Source/Core/VideoCommon/BPMemory.h            | 168 +--------
+ Source/Core/VideoCommon/BPStructs.cpp         |  88 ++---
+ Source/Core/VideoCommon/CMakeLists.txt        |   8 +-
+ Source/Core/VideoCommon/HiresTextures.cpp     |  93 +++--
+ Source/Core/VideoCommon/HiresTextures.h       |   9 +-
+ Source/Core/VideoCommon/RenderState.cpp       |   6 +-
+ Source/Core/VideoCommon/TMEM.cpp              | 290 ---------------
+ Source/Core/VideoCommon/TMEM.h                |  25 --
+ Source/Core/VideoCommon/TextureCacheBase.cpp  | 329 +++++++++---------
+ Source/Core/VideoCommon/TextureCacheBase.h    |  17 +-
+ Source/Core/VideoCommon/TextureInfo.cpp       | 316 -----------------
+ Source/Core/VideoCommon/TextureInfo.h         | 118 -------
+ Source/Core/VideoCommon/VertexLoaderBase.h    |   5 +-
+ Source/Core/VideoCommon/VertexManagerBase.cpp |   2 +-
+ Source/Core/VideoCommon/VideoBackendBase.cpp  |   2 -
+ Source/Core/VideoCommon/VideoState.cpp        |   5 -
+ 21 files changed, 353 insertions(+), 1180 deletions(-)
+ delete mode 100644 Source/Core/VideoCommon/TMEM.cpp
+ delete mode 100644 Source/Core/VideoCommon/TMEM.h
  delete mode 100644 Source/Core/VideoCommon/TextureInfo.cpp
  delete mode 100644 Source/Core/VideoCommon/TextureInfo.h
 
+diff --git a/Source/Core/Core/State.cpp b/Source/Core/Core/State.cpp
+index 729a60b..7283424 100644
+--- a/Source/Core/Core/State.cpp
++++ b/Source/Core/Core/State.cpp
+@@ -73,7 +73,7 @@ static Common::Event g_compressAndDumpStateSyncEvent;
+ static std::thread g_save_thread;
+ 
+ // Don't forget to increase this after doing changes on the savestate system
+-constexpr u32 STATE_VERSION = 139;  // Last changed in PR 8350
++constexpr u32 STATE_VERSION = 138;  // Last changed in PR 9670
+ 
+ // Maps savestate versions to Dolphin versions.
+ // Versions after 42 don't need to be added to this list,
 diff --git a/Source/Core/DolphinLib.props b/Source/Core/DolphinLib.props
-index 8ad1af3..cafb8b4 100644
+index 59c862f..dfe6801 100644
 --- a/Source/Core/DolphinLib.props
 +++ b/Source/Core/DolphinLib.props
-@@ -641,7 +641,6 @@
+@@ -649,8 +649,6 @@
      <ClInclude Include="VideoCommon\TextureConverterShaderGen.h" />
      <ClInclude Include="VideoCommon\TextureDecoder_Util.h" />
      <ClInclude Include="VideoCommon\TextureDecoder.h" />
 -    <ClInclude Include="VideoCommon\TextureInfo.h" />
+-    <ClInclude Include="VideoCommon\TMEM.h" />
      <ClInclude Include="VideoCommon\UberShaderCommon.h" />
      <ClInclude Include="VideoCommon\UberShaderPixel.h" />
      <ClInclude Include="VideoCommon\UberShaderVertex.h" />
-@@ -1192,7 +1191,6 @@
+@@ -1209,8 +1207,6 @@
      <ClCompile Include="VideoCommon\TextureConversionShader.cpp" />
      <ClCompile Include="VideoCommon\TextureConverterShaderGen.cpp" />
      <ClCompile Include="VideoCommon\TextureDecoder_Common.cpp" />
 -    <ClCompile Include="VideoCommon\TextureInfo.cpp" />
+-    <ClCompile Include="VideoCommon\TMEM.cpp" />
      <ClCompile Include="VideoCommon\UberShaderCommon.cpp" />
      <ClCompile Include="VideoCommon\UberShaderPixel.cpp" />
      <ClCompile Include="VideoCommon\UberShaderVertex.cpp" />
+diff --git a/Source/Core/VideoBackends/Software/DebugUtil.cpp b/Source/Core/VideoBackends/Software/DebugUtil.cpp
+index c580461..397442f 100644
+--- a/Source/Core/VideoBackends/Software/DebugUtil.cpp
++++ b/Source/Core/VideoBackends/Software/DebugUtil.cpp
+@@ -52,8 +52,13 @@ void Shutdown()
+ 
+ static void SaveTexture(const std::string& filename, u32 texmap, s32 mip)
+ {
+-  u32 width = bpmem.tex.GetUnit(texmap).texImage0.width + 1;
+-  u32 height = bpmem.tex.GetUnit(texmap).texImage0.height + 1;
++  FourTexUnits& texUnit = bpmem.tex[(texmap >> 2) & 1];
++  u8 subTexmap = texmap & 3;
++
++  TexImage0& ti0 = texUnit.texImage0[subTexmap];
++
++  u32 width = ti0.width + 1;
++  u32 height = ti0.height + 1;
+ 
+   auto data = std::make_unique<u8[]>(width * height * 4);
+ 
+@@ -75,7 +80,10 @@ void GetTextureRGBA(u8* dst, u32 texmap, s32 mip, u32 width, u32 height)
+ 
+ static s32 GetMaxTextureLod(u32 texmap)
+ {
+-  u8 maxLod = bpmem.tex.GetUnit(texmap).texMode1.max_lod;
++  FourTexUnits& texUnit = bpmem.tex[(texmap >> 2) & 1];
++  u8 subTexmap = texmap & 3;
++
++  u8 maxLod = texUnit.texMode1[subTexmap].max_lod;
+   u8 mip = maxLod >> 4;
+   u8 fract = maxLod & 0xf;
+ 
+diff --git a/Source/Core/VideoBackends/Software/Rasterizer.cpp b/Source/Core/VideoBackends/Software/Rasterizer.cpp
+index df04ab5..de9925d 100644
+--- a/Source/Core/VideoBackends/Software/Rasterizer.cpp
++++ b/Source/Core/VideoBackends/Software/Rasterizer.cpp
+@@ -163,12 +163,13 @@ static void InitSlope(Slope* slope, float f1, float f2, float f3, float DX31, fl
+ 
+ static inline void CalculateLOD(s32* lodp, bool* linear, u32 texmap, u32 texcoord)
+ {
+-  auto texUnit = bpmem.tex.GetUnit(texmap);
++  const FourTexUnits& texUnit = bpmem.tex[(texmap >> 2) & 1];
++  const u8 subTexmap = texmap & 3;
+ 
+   // LOD calculation requires data from the texture mode for bias, etc.
+   // it does not seem to use the actual texture size
+-  const TexMode0& tm0 = texUnit.texMode0;
+-  const TexMode1& tm1 = texUnit.texMode1;
++  const TexMode0& tm0 = texUnit.texMode0[subTexmap];
++  const TexMode1& tm1 = texUnit.texMode1[subTexmap];
+ 
+   float sDelta, tDelta;
+   if (tm0.diag_lod == LODType::Diagonal)
+diff --git a/Source/Core/VideoBackends/Software/TextureSampler.cpp b/Source/Core/VideoBackends/Software/TextureSampler.cpp
+index 064e9df..f54002b 100644
+--- a/Source/Core/VideoBackends/Software/TextureSampler.cpp
++++ b/Source/Core/VideoBackends/Software/TextureSampler.cpp
+@@ -74,8 +74,8 @@ void Sample(s32 s, s32 t, s32 lod, bool linear, u8 texmap, u8* sample)
+   bool mipLinear = false;
+ 
+ #if (ALLOW_MIPMAP)
+-  auto texUnit = bpmem.tex.GetUnit(texmap);
+-  const TexMode0& tm0 = texUnit.texMode0;
++  const FourTexUnits& texUnit = bpmem.tex[(texmap >> 2) & 1];
++  const TexMode0& tm0 = texUnit.texMode0[texmap & 3];
+ 
+   const s32 lodFract = lod & 0xf;
+ 
+@@ -115,25 +115,26 @@ void Sample(s32 s, s32 t, s32 lod, bool linear, u8 texmap, u8* sample)
+ 
+ void SampleMip(s32 s, s32 t, s32 mip, bool linear, u8 texmap, u8* sample)
+ {
+-  auto texUnit = bpmem.tex.GetUnit(texmap);
++  const FourTexUnits& texUnit = bpmem.tex[(texmap >> 2) & 1];
++  const u8 subTexmap = texmap & 3;
+ 
+-  const TexMode0& tm0 = texUnit.texMode0;
+-  const TexImage0& ti0 = texUnit.texImage0;
+-  const TexTLUT& texTlut = texUnit.texTlut;
++  const TexMode0& tm0 = texUnit.texMode0[subTexmap];
++  const TexImage0& ti0 = texUnit.texImage0[subTexmap];
++  const TexTLUT& texTlut = texUnit.texTlut[subTexmap];
+   const TextureFormat texfmt = ti0.format;
+   const TLUTFormat tlutfmt = texTlut.tlut_format;
+ 
+   const u8* imageSrc;
+   const u8* imageSrcOdd = nullptr;
+-  if (texUnit.texImage1.cache_manually_managed)
++  if (texUnit.texImage1[subTexmap].cache_manually_managed)
+   {
+-    imageSrc = &texMem[texUnit.texImage1.tmem_even * TMEM_LINE_SIZE];
++    imageSrc = &texMem[texUnit.texImage1[subTexmap].tmem_even * TMEM_LINE_SIZE];
+     if (texfmt == TextureFormat::RGBA8)
+-      imageSrcOdd = &texMem[texUnit.texImage2.tmem_odd * TMEM_LINE_SIZE];
++      imageSrcOdd = &texMem[texUnit.texImage2[subTexmap].tmem_odd * TMEM_LINE_SIZE];
+   }
+   else
+   {
+-    const u32 imageBase = texUnit.texImage3.image_base << 5;
++    const u32 imageBase = texUnit.texImage3[subTexmap].image_base << 5;
+     imageSrc = Memory::GetPointer(imageBase);
+   }
+ 
+@@ -197,7 +198,7 @@ void SampleMip(s32 s, s32 t, s32 mip, bool linear, u8 texmap, u8* sample)
+     WrapCoord(&imageSPlus1, tm0.wrap_s, image_width_minus_1 + 1);
+     WrapCoord(&imageTPlus1, tm0.wrap_t, image_height_minus_1 + 1);
+ 
+-    if (!(texfmt == TextureFormat::RGBA8 && texUnit.texImage1.cache_manually_managed))
++    if (!(texfmt == TextureFormat::RGBA8 && texUnit.texImage1[subTexmap].cache_manually_managed))
+     {
+       TexDecoder_DecodeTexel(sampledTex, imageSrc, imageS, imageT, image_width_minus_1, texfmt,
+                              tlut, tlutfmt);
+@@ -249,7 +250,7 @@ void SampleMip(s32 s, s32 t, s32 mip, bool linear, u8 texmap, u8* sample)
+     WrapCoord(&imageS, tm0.wrap_s, image_width_minus_1 + 1);
+     WrapCoord(&imageT, tm0.wrap_t, image_height_minus_1 + 1);
+ 
+-    if (!(texfmt == TextureFormat::RGBA8 && texUnit.texImage1.cache_manually_managed))
++    if (!(texfmt == TextureFormat::RGBA8 && texUnit.texImage1[subTexmap].cache_manually_managed))
+       TexDecoder_DecodeTexel(sample, imageSrc, imageS, imageT, image_width_minus_1, texfmt, tlut,
+                              tlutfmt);
+     else
+diff --git a/Source/Core/VideoCommon/BPMemory.h b/Source/Core/VideoCommon/BPMemory.h
+index 2163622..a3cb28f 100644
+--- a/Source/Core/VideoCommon/BPMemory.h
++++ b/Source/Core/VideoCommon/BPMemory.h
+@@ -951,6 +951,18 @@ struct fmt::formatter<ZTex2>
+   }
+ };
+ 
++struct FourTexUnits
++{
++  TexMode0 texMode0[4];
++  TexMode1 texMode1[4];
++  TexImage0 texImage0[4];
++  TexImage1 texImage1[4];
++  TexImage2 texImage2[4];
++  TexImage3 texImage3[4];
++  TexTLUT texTlut[4];
++  u32 unknown[4];
++};
++
+ // Geometry/other structs
+ enum class CullMode : u32
+ {
+@@ -1967,160 +1979,6 @@ struct BPS_TmemConfig
+   u32 texinvalidate;
+ };
+ 
+-union AllTexUnits;
+-
+-// The addressing of the texture units is a bit non-obvious.
+-// This struct abstracts the complexity away.
+-union TexUnitAddress
+-{
+-  enum class Register : u32
+-  {
+-    SETMODE0 = 0,
+-    SETMODE1 = 1,
+-    SETIMAGE0 = 2,
+-    SETIMAGE1 = 3,
+-    SETIMAGE2 = 4,
+-    SETIMAGE3 = 5,
+-    SETTLUT = 6,
+-    UNKNOWN = 7,
+-  };
+-
+-  BitField<0, 2, u32> UnitIdLow;
+-  BitField<2, 3, Register> Reg;
+-  BitField<5, 1, u32> UnitIdHigh;
+-
+-  BitField<0, 6, u32> FullAddress;
+-  u32 hex;
+-
+-  TexUnitAddress() : hex(0) {}
+-  TexUnitAddress(u32 unit_id, Register reg = Register::SETMODE0) : hex(0)
+-  {
+-    UnitIdLow = unit_id & 3;
+-    UnitIdHigh = unit_id >> 2;
+-    Reg = reg;
+-  }
+-
+-  static TexUnitAddress FromBPAddress(u32 Address)
+-  {
+-    TexUnitAddress Val;
+-    // Clear upper two bits (which should always be 0x80)
+-    Val.FullAddress = Address & 0x3f;
+-    return Val;
+-  }
+-
+-  u32 GetUnitID() const { return UnitIdLow | (UnitIdHigh << 2); }
+-
+-private:
+-  friend AllTexUnits;
+-
+-  size_t GetOffset() const { return FullAddress; }
+-  size_t GetBPAddress() const { return FullAddress | 0x80; }
+-
+-  static constexpr size_t ComputeOffset(u32 unit_id)
+-  {
+-    // FIXME: Would be nice to construct a TexUnitAddress and get its offset,
+-    // but that doesn't seem to be possible in c++17
+-
+-    // So we manually re-implement the calculation
+-    return (unit_id & 3) | ((unit_id & 4) << 3);
+-  }
+-};
+-static_assert(sizeof(TexUnitAddress) == sizeof(u32));
+-
+-// A view of the registers of a single TexUnit
+-struct TexUnit
+-{
+-  TexMode0 texMode0;
+-  u32 : 32;  // doing u32 : 96 is legal according to the standard, but msvc
+-  u32 : 32;  // doesn't like it. So we stack multiple lines of u32 : 32;
+-  u32 : 32;
+-  TexMode1 texMode1;
+-  u32 : 32;
+-  u32 : 32;
+-  u32 : 32;
+-  TexImage0 texImage0;
+-  u32 : 32;
+-  u32 : 32;
+-  u32 : 32;
+-  TexImage1 texImage1;
+-  u32 : 32;
+-  u32 : 32;
+-  u32 : 32;
+-  TexImage2 texImage2;
+-  u32 : 32;
+-  u32 : 32;
+-  u32 : 32;
+-  TexImage3 texImage3;
+-  u32 : 32;
+-  u32 : 32;
+-  u32 : 32;
+-  TexTLUT texTlut;
+-  u32 : 32;
+-  u32 : 32;
+-  u32 : 32;
+-  u32 unknown;
+-};
+-static_assert(sizeof(TexUnit) == sizeof(u32) * 4 * 7 + sizeof(u32));
+-
+-union AllTexUnits
+-{
+-  std::array<u32, 8 * 8> AllRegisters;
+-
+-  const TexUnit& GetUnit(u32 UnitId) const
+-  {
+-    auto address = TexUnitAddress(UnitId);
+-    const u32* ptr = &AllRegisters[address.GetOffset()];
+-    return *reinterpret_cast<const TexUnit*>(ptr);
+-  }
+-
+-private:
+-  // For debuggers since GetUnit can be optimised out in release builds
+-  template <u32 UnitId>
+-  struct TexUnitPadding
+-  {
+-    static_assert(UnitId != 0, "Can't use 0 as sizeof(std::array<u32, 0>) != 0");
+-    std::array<u32, TexUnitAddress::ComputeOffset(UnitId)> pad;
+-  };
+-
+-  TexUnit tex0;
+-  struct
+-  {
+-    TexUnitPadding<1> pad1;
+-    TexUnit tex1;
+-  };
+-  struct
+-  {
+-    TexUnitPadding<2> pad2;
+-    TexUnit tex2;
+-  };
+-  struct
+-  {
+-    TexUnitPadding<3> pad3;
+-    TexUnit tex3;
+-  };
+-  struct
+-  {
+-    TexUnitPadding<4> pad4;
+-    TexUnit tex4;
+-  };
+-  struct
+-  {
+-    TexUnitPadding<5> pad5;
+-    TexUnit tex5;
+-  };
+-  struct
+-  {
+-    TexUnitPadding<6> pad6;
+-    TexUnit tex6;
+-  };
+-  struct
+-  {
+-    TexUnitPadding<7> pad7;
+-    TexUnit tex7;
+-  };
+-};
+-static_assert(sizeof(AllTexUnits) == 8 * 8 * sizeof(u32));
+-
+ // All of BP memory
+ 
+ struct BPCmd
+@@ -2185,7 +2043,7 @@ struct BPMemory
+   FieldMode fieldmode;                // 68
+   u32 unknown10[7];                   // 69-6F
+   u32 unknown11[16];                  // 70-7F
+-  AllTexUnits tex;                    // 80-bf
++  FourTexUnits tex[2];                // 80-bf
+   TevStageCombiner combiners[16];     // 0xC0-0xDF
+   TevReg tevregs[4];                  // 0xE0
+   FogRangeParams fogRange;            // 0xE8
+diff --git a/Source/Core/VideoCommon/BPStructs.cpp b/Source/Core/VideoCommon/BPStructs.cpp
+index dd23b94..fb6372f 100644
+--- a/Source/Core/VideoCommon/BPStructs.cpp
++++ b/Source/Core/VideoCommon/BPStructs.cpp
+@@ -32,7 +32,6 @@
+ #include "VideoCommon/PixelEngine.h"
+ #include "VideoCommon/PixelShaderManager.h"
+ #include "VideoCommon/RenderBase.h"
+-#include "VideoCommon/TMEM.h"
+ #include "VideoCommon/TextureCacheBase.h"
+ #include "VideoCommon/TextureDecoder.h"
+ #include "VideoCommon/VertexShaderManager.h"
+@@ -354,7 +353,7 @@ static void BPWritten(const BPCmd& bp)
+     if (OpcodeDecoder::g_record_fifo_data)
+       FifoRecorder::GetInstance().UseMemory(addr, tlutXferCount, MemoryUpdate::TMEM);
+ 
+-    TMEM::InvalidateAll();
++    TextureCacheBase::InvalidateAllBindPoints();
+ 
+     return;
+   }
+@@ -460,7 +459,8 @@ static void BPWritten(const BPCmd& bp)
+   }
+     return;
+   case BPMEM_TEXINVALIDATE:
+-    TMEM::Invalidate(bp.newvalue);
++    // TODO: Needs some restructuring in TextureCacheBase.
++    TextureCacheBase::InvalidateAllBindPoints();
+     return;
+ 
+   case BPMEM_ZCOMPARE:  // Set the Z-Compare and EFB pixel format
+@@ -568,7 +568,7 @@ static void BPWritten(const BPCmd& bp)
+       if (OpcodeDecoder::g_record_fifo_data)
+         FifoRecorder::GetInstance().UseMemory(src_addr, bytes_read, MemoryUpdate::TMEM);
+ 
+-      TMEM::InvalidateAll();
++      TextureCacheBase::InvalidateAllBindPoints();
+     }
+     return;
+ 
+@@ -646,48 +646,48 @@ static void BPWritten(const BPCmd& bp)
+       GeometryShaderManager::SetTexCoordChanged((bp.address - BPMEM_SU_SSIZE) >> 1);
+     }
+     return;
+-  }
+-
+-  if ((bp.address & 0xc0) == 0x80)
+-  {
+-    auto tex_address = TexUnitAddress::FromBPAddress(bp.address);
+-
+-    switch (tex_address.Reg)
+-    {
+-    // ------------------------
+-    // BPMEM_TX_SETMODE0 - (Texture lookup and filtering mode) LOD/BIAS Clamp, MaxAnsio, LODBIAS,
+-    // DiagLoad, Min Filter, Mag Filter, Wrap T, S
+-    // BPMEM_TX_SETMODE1 - (LOD Stuff) - Max LOD, Min LOD
+-    // ------------------------
+-    case TexUnitAddress::Register::SETMODE0:
+-    case TexUnitAddress::Register::SETMODE1:
+-      TMEM::ConfigurationChanged(tex_address, bp.newvalue);
+-      return;
++  // ------------------------
++  // BPMEM_TX_SETMODE0 - (Texture lookup and filtering mode) LOD/BIAS Clamp, MaxAnsio, LODBIAS,
++  // DiagLoad, Min Filter, Mag Filter, Wrap T, S
++  // BPMEM_TX_SETMODE1 - (LOD Stuff) - Max LOD, Min LOD
++  // ------------------------
++  case BPMEM_TX_SETMODE0:  // (0x90 for linear)
++  case BPMEM_TX_SETMODE0_4:
++    TextureCacheBase::InvalidateAllBindPoints();
++    return;
+ 
+-    // --------------------------------------------
+-    // BPMEM_TX_SETIMAGE0 - Texture width, height, format
+-    // BPMEM_TX_SETIMAGE1 - even LOD address in TMEM - Image Type, Cache Height, Cache Width,
+-    //                      TMEM Offset
+-    // BPMEM_TX_SETIMAGE2 - odd LOD address in TMEM - Cache Height, Cache Width, TMEM Offset
+-    // BPMEM_TX_SETIMAGE3 - Address of Texture in main memory
+-    // --------------------------------------------
+-    case TexUnitAddress::Register::SETIMAGE0:
+-    case TexUnitAddress::Register::SETIMAGE1:
+-    case TexUnitAddress::Register::SETIMAGE2:
+-    case TexUnitAddress::Register::SETIMAGE3:
+-      TMEM::ConfigurationChanged(tex_address, bp.newvalue);
+-      return;
++  case BPMEM_TX_SETMODE1:
++  case BPMEM_TX_SETMODE1_4:
++    TextureCacheBase::InvalidateAllBindPoints();
++    return;
++  // --------------------------------------------
++  // BPMEM_TX_SETIMAGE0 - Texture width, height, format
++  // BPMEM_TX_SETIMAGE1 - even LOD address in TMEM - Image Type, Cache Height, Cache Width, TMEM
++  // Offset
++  // BPMEM_TX_SETIMAGE2 - odd LOD address in TMEM - Cache Height, Cache Width, TMEM Offset
++  // BPMEM_TX_SETIMAGE3 - Address of Texture in main memory
++  // --------------------------------------------
++  case BPMEM_TX_SETIMAGE0:
++  case BPMEM_TX_SETIMAGE0_4:
++  case BPMEM_TX_SETIMAGE1:
++  case BPMEM_TX_SETIMAGE1_4:
++  case BPMEM_TX_SETIMAGE2:
++  case BPMEM_TX_SETIMAGE2_4:
++  case BPMEM_TX_SETIMAGE3:
++  case BPMEM_TX_SETIMAGE3_4:
++    TextureCacheBase::InvalidateAllBindPoints();
++    return;
++  // -------------------------------
++  // Set a TLUT
++  // BPMEM_TX_SETTLUT - Format, TMEM Offset (offset of TLUT from start of TMEM high bank > > 5)
++  // -------------------------------
++  case BPMEM_TX_SETTLUT:
++  case BPMEM_TX_SETTLUT_4:
++    TextureCacheBase::InvalidateAllBindPoints();
++    return;
+ 
+-    // -------------------------------
+-    // Set a TLUT
+-    // BPMEM_TX_SETTLUT - Format, TMEM Offset (offset of TLUT from start of TMEM high bank > > 5)
+-    // -------------------------------
+-    case TexUnitAddress::Register::SETTLUT:
+-      TMEM::ConfigurationChanged(tex_address, bp.newvalue);
+-      return;
+-    case TexUnitAddress::Register::UNKNOWN:
+-      break;  // Not handled
+-    }
++  default:
++    break;
+   }
+ 
+   switch (bp.address & 0xF0)
 diff --git a/Source/Core/VideoCommon/CMakeLists.txt b/Source/Core/VideoCommon/CMakeLists.txt
-index d9fe3ff..2470c5e 100644
+index 17bee4a..cf08716 100644
 --- a/Source/Core/VideoCommon/CMakeLists.txt
 +++ b/Source/Core/VideoCommon/CMakeLists.txt
-@@ -88,8 +88,6 @@ add_library(videocommon
+@@ -88,10 +88,6 @@ add_library(videocommon
    TextureDecoder.h
    TextureDecoder_Common.cpp
    TextureDecoder_Util.h
 -  TextureInfo.cpp
 -  TextureInfo.h
+-  TMEM.cpp
+-  TMEM.h
    UberShaderCommon.cpp
    UberShaderCommon.h
    UberShaderPixel.cpp
+@@ -172,12 +168,12 @@ if(FFmpeg_FOUND)
+     FFmpeg::swresample
+     FFmpeg::swscale
+   )
+-  if(APPLE)
++  if(APPLE) 
+     target_link_libraries(videocommon PRIVATE
+       ${COREMEDIA_LIBRARY}
+       ${VIDEOTOOLBOX_LIBRARY}
+       ${COREVIDEO_LIBRARY}
+-      ${AUDIOTOOLBOX_LIBRARY}
++      ${AUDIOTOOLBOX_LIBRARY}    
+     )
+   endif()
+ endif()
 diff --git a/Source/Core/VideoCommon/HiresTextures.cpp b/Source/Core/VideoCommon/HiresTextures.cpp
-index 20a3945..d55eadf 100644
+index 85c9cfc..e6fe108 100644
 --- a/Source/Core/VideoCommon/HiresTextures.cpp
 +++ b/Source/Core/VideoCommon/HiresTextures.cpp
-@@ -214,36 +214,78 @@ void HiresTexture::Prefetch()
+@@ -213,36 +213,78 @@ void HiresTexture::Prefetch()
                    10000);
  }
  
@@ -159,7 +654,7 @@ index 20a3945..d55eadf 100644
    return "";
  }
  
-@@ -262,9 +304,13 @@ u32 HiresTexture::CalculateMipCount(u32 width, u32 height)
+@@ -261,9 +303,13 @@ u32 HiresTexture::CalculateMipCount(u32 width, u32 height)
    return mip_count;
  }
  
@@ -175,7 +670,7 @@ index 20a3945..d55eadf 100644
  
    std::lock_guard<std::mutex> lk(s_textureCacheMutex);
  
-@@ -274,8 +320,7 @@ std::shared_ptr<HiresTexture> HiresTexture::Search(TextureInfo& texture_info)
+@@ -273,8 +319,7 @@ std::shared_ptr<HiresTexture> HiresTexture::Search(TextureInfo& texture_info)
      return iter->second;
    }
  
@@ -186,10 +681,10 @@ index 20a3945..d55eadf 100644
    if (ptr && g_ActiveConfig.bCacheHiresTextures)
    {
 diff --git a/Source/Core/VideoCommon/HiresTextures.h b/Source/Core/VideoCommon/HiresTextures.h
-index 8e16f7b..7adabbf 100644
+index 64e2074..018f260 100644
 --- a/Source/Core/VideoCommon/HiresTextures.h
 +++ b/Source/Core/VideoCommon/HiresTextures.h
-@@ -11,7 +11,6 @@
+@@ -10,7 +10,6 @@
  
  #include "Common/CommonTypes.h"
  #include "VideoCommon/TextureConfig.h"
@@ -197,7 +692,7 @@ index 8e16f7b..7adabbf 100644
  
  enum class TextureFormat;
  
-@@ -26,9 +25,13 @@ public:
+@@ -25,9 +24,13 @@ public:
    static void Clear();
    static void Shutdown();
  
@@ -213,11 +708,390 @@ index 8e16f7b..7adabbf 100644
  
    static u32 CalculateMipCount(u32 width, u32 height);
  
+diff --git a/Source/Core/VideoCommon/RenderState.cpp b/Source/Core/VideoCommon/RenderState.cpp
+index 358c999..291aa9c 100644
+--- a/Source/Core/VideoCommon/RenderState.cpp
++++ b/Source/Core/VideoCommon/RenderState.cpp
+@@ -224,9 +224,9 @@ BlendingState& BlendingState::operator=(const BlendingState& rhs)
+ 
+ void SamplerState::Generate(const BPMemory& bp, u32 index)
+ {
+-  auto tex = bp.tex.GetUnit(index);
+-  const TexMode0& tm0 = tex.texMode0;
+-  const TexMode1& tm1 = tex.texMode1;
++  const FourTexUnits& tex = bpmem.tex[index / 4];
++  const TexMode0& tm0 = tex.texMode0[index % 4];
++  const TexMode1& tm1 = tex.texMode1[index % 4];
+ 
+   // GX can configure the mip filter to none. However, D3D and Vulkan can't express this in their
+   // sampler states. Therefore, we set the min/max LOD to zero if this option is used.
+diff --git a/Source/Core/VideoCommon/TMEM.cpp b/Source/Core/VideoCommon/TMEM.cpp
+deleted file mode 100644
+index c172ce3..0000000
+--- a/Source/Core/VideoCommon/TMEM.cpp
++++ /dev/null
+@@ -1,290 +0,0 @@
+-// Copyright 2019 Dolphin Emulator Project
+-// Licensed under GPLv2+
+-// Refer to the license.txt file included.
+-
+-#include <array>
+-
+-#include "Common/ChunkFile.h"
+-
+-#include "VideoCommon/BPMemory.h"
+-#include "VideoCommon/TMEM.h"
+-
+-////////////////////////////////////////////////////////////////////////////////////////////////////
+-//
+-// TMEM emulation tracks which textures should be cached in TMEM on a real console.
+-// There are two good reasons to do this:
+-//
+-// 1. Some games deliberately avoid invalidating a texture, overwrite it with an EFB copy,
+-//    and then expect the original texture to still be found in TMEM for another draw call.
+-//    Spyro: A Hero's Tail is known for using such overwritten textures.
+-//    However, other games like:
+-//      * Sonic Riders
+-//      * Metal Arms: Glitch in the System
+-//      * Godzilla: Destroy All Monsters Melee
+-//      * NHL Slapshot
+-//      * Tak and the Power of Juju
+-//      * Night at the Museum: Battle of the Smithsonian
+-//      * 428: Fūsa Sareta Shibuya de
+-//    are known to (accidentally or deliberately) avoid invalidating and then expect the pattern
+-//    of the draw and the fact that the whole texture doesn't fit in TMEM to self-invalidate the
+-//    texture. These are usually full-screen efb copies.
+-//    So we must track the size of the textures as an heuristic to see if they will self-invalidate
+-//    or not.
+-//
+-// 2. It actually improves Dolphin's performance in safer texture hashing modes, by reducing the
+-//    amount of times a texture needs to be hashed when reused in subsequent draws.
+-//
+-// As a side-effect, TMEM emulation also tracks if the texture unit configuration has changed at
+-// all, which Dolphin's TextureCache takes advantage of.
+-//
+-////////////////////////////////////////////////////////////////////////////////////////////////////
+-//
+-// Checking if a texture fits in TMEM or not is complicated by the fact that Flipper's TMEM is quite
+-// configurable.
+-// Each of the eight texture units has two banks (even and odd) that can be pointed at any offset
+-// and set to any size. It is completely valid to have overlapping banks, and performance can be
+-// improved by overlapping the caches of texture units that are drawing the same textures.
+-//
+-// For trilinear textures, the even/odd banks contain the even/odd LODs of the texture. TMEM has two
+-// banks of 512KB each, covering the upper and lower halves of TMEM's address space. The two banks
+-// be accessed simultaneously, allowing a trilinear texture sample to be completed at the same cost
+-// as a bilinear sample, assuming the even and odd banks are mapped onto different banks.
+-//
+-// 32bit textures are actually stored as two 16bit textures in separate banks, allowing a bilinear
+-// sample of a 32bit texture at the same cost as a 16bit bilinear/trilinear sample. A trilinear
+-// sample of a 32bit texture costs more.
+-//
+-// TODO: I'm not sure if it's valid for a texture unit's even and odd banks to overlap. There might
+-//       actually be a hard requirement for even and odd banks to live in different banks of TMEM.
+-//
+-// Note: This is still very much a heuristic.
+-//       Actually knowing if a texture is partially or fully cached within TMEM would require
+-//       extensive software rasterization, or sampler feedback from a hardware backend.
+-//
+-////////////////////////////////////////////////////////////////////////////////////////////////////
+-
+-namespace TMEM
+-{
+-struct TextureUnitState
+-{
+-  enum class State
+-  {
+-    // Cache is invalid. Configuration has changed
+-    INVALID,
+-
+-    // Valid, but not cached due to either being too big, or overlapping with another texture unit
+-    VALID,
+-
+-    // Texture unit has cached all of the previous draw
+-    CACHED,
+-  };
+-
+-  struct BankConfig
+-  {
+-    u32 width = 0;
+-    u32 height = 0;
+-    u32 base = 0;
+-    u32 size = 0;
+-    bool Overlaps(const BankConfig& other) const;
+-  };
+-
+-  BankConfig even = {};
+-  BankConfig odd = {};
+-  State state = State::INVALID;
+-
+-  bool Overlaps(const TextureUnitState& other) const;
+-};
+-
+-static u32 CalculateUnitSize(TextureUnitState::BankConfig bank_config);
+-
+-static std::array<TextureUnitState, 8> s_unit;
+-
+-// On TMEM configuration changed:
+-// 1. invalidate stage.
+-
+-void ConfigurationChanged(TexUnitAddress bp_addr, u32 config)
+-{
+-  TextureUnitState& unit_state = s_unit[bp_addr.GetUnitID()];
+-
+-  // If anything has changed, we can't assume existing state is still valid.
+-  unit_state.state = TextureUnitState::State::INVALID;
+-
+-  // Note: BPStructs has already filtered out NOP changes before calling us
+-  switch (bp_addr.Reg)
+-  {
+-  case TexUnitAddress::Register::SETIMAGE1:
+-  {
+-    // Image Type and Even bank's Cache Height, Cache Width, TMEM Offset
+-    TexImage1 even = {.hex = config};
+-    unit_state.even = {even.cache_width, even.cache_height, even.tmem_even << 5, 0};
+-    break;
+-  }
+-  case TexUnitAddress::Register::SETIMAGE2:
+-  {
+-    // Odd bank's Cache Height, Cache Width, TMEM Offset
+-    TexImage2 odd = {.hex = config};
+-    unit_state.odd = {odd.cache_width, odd.cache_height, odd.tmem_odd << 5, 0};
+-    break;
+-  }
+-  default:
+-    // Something else has changed
+-    return;
+-  }
+-}
+-
+-void InvalidateAll()
+-{
+-  for (auto& unit : s_unit)
+-  {
+-    unit.state = TextureUnitState::State::INVALID;
+-  }
+-}
+-
+-// On invalidate cache:
+-// 1. invalidate all texture units.
+-
+-void Invalidate([[maybe_unused]] u32 param)
+-{
+-  // The exact arguments of Invalidate commands is currently unknown.
+-  // It appears to contain the TMEM address and a size.
+-
+-  // For simplicity, we will just invalidate everything
+-  InvalidateAll();
+-}
+-
+-// On bind:
+-// 1. use mipmapping/32bit status to calculate final sizes
+-// 2. if texture size is small enough to fit in region mark as cached.
+-//    otherwise, mark as valid
+-
+-void Bind(u32 unit, int width, int height, bool is_mipmapped, bool is_32_bit)
+-{
+-  TextureUnitState& unit_state = s_unit[unit];
+-
+-  // All textures use the even bank.
+-  // It holds the level 0 mipmap (and other even mipmap LODs, if mipmapping is enabled)
+-  unit_state.even.size = CalculateUnitSize(unit_state.even);
+-
+-  bool fits = (width * height * 32U) <= unit_state.even.size;
+-
+-  if (is_mipmapped || is_32_bit)
+-  {
+-    // And the odd bank is enabled when either mipmapping is enabled or the texture is 32 bit
+-    // It holds the Alpha and Red channels of 32 bit textures or the odd layers of a mipmapped
+-    // texture
+-    unit_state.odd.size = CalculateUnitSize(unit_state.odd);
+-
+-    fits = fits && (width * height * 32U) <= unit_state.odd.size;
+-  }
+-  else
+-  {
+-    unit_state.odd.size = 0;
+-  }
+-
+-  if (is_mipmapped)
+-  {
+-    // TODO: This is what games appear to expect from hardware. But seems odd, as it doesn't line up
+-    //       with how much extra memory is required for mipmapping, just 33% more.
+-    //       Hardware testing is required to see exactly what gets used.
+-
+-    // When mipmapping is enabled, the even bank is doubled in size
+-    // The extended region holds the remaining even mipmap layers
+-    unit_state.even.size *= 2;
+-
+-    if (is_32_bit)
+-    {
+-      // When a 32bit texture is mipmapped, the odd bank is also doubled in size
+-      unit_state.odd.size *= 2;
+-    }
+-  }
+-
+-  unit_state.state = fits ? TextureUnitState::State::CACHED : TextureUnitState::State::VALID;
+-}
+-
+-static u32 CalculateUnitSize(TextureUnitState::BankConfig bank_config)
+-{
+-  u32 width = bank_config.width;
+-  u32 height = bank_config.height;
+-
+-  // These are the only cache sizes supported by the sdk
+-  if (width == height)
+-  {
+-    switch (width)
+-    {
+-    case 3:  // 32KB
+-      return 32 * 1024;
+-    case 4:  // 128KB
+-      return 128 * 1024;
+-    case 5:  // 512KB
+-      return 512 * 1024;
+-    default:
+-      break;
+-    }
+-  }
+-
+-  // However, the registers allow a much larger amount of configurablity.
+-  // Maybe other sizes are broken?
+-  // Until hardware tests are done, this is a guess at the size algorithm
+-
+-  return 512 * (1 << width) * (1 << height);
+-}
+-
+-bool TextureUnitState::BankConfig::Overlaps(const BankConfig& other) const
+-{
+-  if (size == 0 || other.size == 0)
+-    return false;
+-  return (base <= other.base && (base + size) > other.base) ||
+-         (other.base <= base && (other.base + other.size) > base);
+-}
+-
+-bool TextureUnitState::Overlaps(const TextureUnitState& other) const
+-{
+-  if (state == TextureUnitState::State::INVALID || other.state == TextureUnitState::State::INVALID)
+-    return false;
+-  return even.Overlaps(other.even) || even.Overlaps(other.odd) || odd.Overlaps(other.even) ||
+-         odd.Overlaps(other.odd);
+-}
+-
+-// Scans though active texture units checks for overlaps.
+-void FinalizeBinds(BitSet32 used_textures)
+-{
+-  for (u32 i : used_textures)
+-  {
+-    if (s_unit[i].even.Overlaps(s_unit[i].odd))
+-    {  // Self-overlap
+-      s_unit[i].state = TextureUnitState::State::VALID;
+-    }
+-    for (size_t j = 0; j < s_unit.size(); j++)
+-    {
+-      if (j != i && s_unit[i].Overlaps(s_unit[j]))
+-      {
+-        // There is an overlap, downgrade both from CACHED
+-        // (for there to be an overlap, both must have started as valid or cached)
+-        s_unit[i].state = TextureUnitState::State::VALID;
+-        s_unit[j].state = TextureUnitState::State::VALID;
+-      }
+-    }
+-  }
+-}
+-
+-bool IsCached(u32 unit)
+-{
+-  return s_unit[unit].state == TextureUnitState::State::CACHED;
+-}
+-
+-bool IsValid(u32 unit)
+-{
+-  return s_unit[unit].state != TextureUnitState::State::INVALID;
+-}
+-
+-void Init()
+-{
+-  s_unit.fill({});
+-}
+-
+-void DoState(PointerWrap& p)
+-{
+-  p.DoArray(s_unit);
+-}
+-
+-}  // namespace TMEM
+diff --git a/Source/Core/VideoCommon/TMEM.h b/Source/Core/VideoCommon/TMEM.h
+deleted file mode 100644
+index 786e98d..0000000
+--- a/Source/Core/VideoCommon/TMEM.h
++++ /dev/null
+@@ -1,25 +0,0 @@
+-// Copyright 2019 Dolphin Emulator Project
+-// Licensed under GPLv2+
+-// Refer to the license.txt file included.
+-
+-#pragma once
+-
+-#include "Common/BitSet.h"
+-#include "Common/CommonTypes.h"
+-
+-#include "VideoCommon/BPMemory.h"
+-
+-namespace TMEM
+-{
+-void InvalidateAll();
+-void Invalidate(u32 param);
+-void ConfigurationChanged(TexUnitAddress bp_addr, u32 config);
+-void Bind(u32 unit, int num_blocks_width, int num_blocks_height, bool is_mipmapped, bool is_32_bit);
+-void FinalizeBinds(BitSet32 used_textures);
+-bool IsCached(u32 unit);
+-bool IsValid(u32 unit);
+-
+-void Init();
+-void DoState(PointerWrap& p);
+-
+-}  // namespace TMEM
 diff --git a/Source/Core/VideoCommon/TextureCacheBase.cpp b/Source/Core/VideoCommon/TextureCacheBase.cpp
-index ade713a..3027ac7 100644
+index 0f66284..e57d9d0 100644
 --- a/Source/Core/VideoCommon/TextureCacheBase.cpp
 +++ b/Source/Core/VideoCommon/TextureCacheBase.cpp
-@@ -261,7 +261,7 @@ void TextureCacheBase::SetBackupConfig(const VideoConfig& config)
+@@ -43,7 +43,6 @@
+ #include "VideoCommon/SamplerCommon.h"
+ #include "VideoCommon/ShaderCache.h"
+ #include "VideoCommon/Statistics.h"
+-#include "VideoCommon/TMEM.h"
+ #include "VideoCommon/TextureConversionShader.h"
+ #include "VideoCommon/TextureConverterShaderGen.h"
+ #include "VideoCommon/TextureDecoder.h"
+@@ -58,6 +57,8 @@ static const int TEXTURE_POOL_KILL_THRESHOLD = 3;
+ 
+ std::unique_ptr<TextureCacheBase> g_texture_cache;
+ 
++std::bitset<8> TextureCacheBase::valid_bind_points;
++
+ TextureCacheBase::TCacheEntry::TCacheEntry(std::unique_ptr<AbstractTexture> tex,
+                                            std::unique_ptr<AbstractFramebuffer> fb)
+     : texture(std::move(tex)), framebuffer(std::move(fb))
+@@ -94,7 +95,7 @@ TextureCacheBase::TextureCacheBase()
+ 
+   Common::SetHash64Function();
+ 
+-  TMEM::InvalidateAll();
++  InvalidateAllBindPoints();
+ }
+ 
+ TextureCacheBase::~TextureCacheBase()
+@@ -122,7 +123,7 @@ bool TextureCacheBase::Initialize()
+ void TextureCacheBase::Invalidate()
+ {
+   FlushEFBCopies();
+-  TMEM::InvalidateAll();
++  InvalidateAllBindPoints();
+ 
+   bound_textures.fill(nullptr);
+   for (auto& tex : textures_by_address)
+@@ -259,7 +260,7 @@ void TextureCacheBase::SetBackupConfig(const VideoConfig& config)
  }
  
  TextureCacheBase::TCacheEntry*
@@ -226,7 +1100,7 @@ index ade713a..3027ac7 100644
  {
    DEBUG_ASSERT(g_ActiveConfig.backend_info.bSupportsPaletteConversion);
  
-@@ -759,7 +759,7 @@ void TextureCacheBase::TCacheEntry::DoState(PointerWrap& p)
+@@ -757,7 +758,7 @@ void TextureCacheBase::TCacheEntry::DoState(PointerWrap& p)
  }
  
  TextureCacheBase::TCacheEntry*
@@ -235,7 +1109,7 @@ index ade713a..3027ac7 100644
                                            TLUTFormat tlutfmt)
  {
    // If the flag may_have_overlapping_textures is cleared, there are no overlapping EFB copies,
-@@ -968,6 +968,11 @@ void TextureCacheBase::DumpTexture(TCacheEntry* entry, std::string basename, uns
+@@ -966,10 +967,16 @@ void TextureCacheBase::DumpTexture(TCacheEntry* entry, std::string basename, uns
    entry->texture->Save(filename, level);
  }
  
@@ -247,13 +1121,61 @@ index ade713a..3027ac7 100644
  static void SetSamplerState(u32 index, float custom_tex_scale, bool custom_tex,
                              bool has_arbitrary_mips)
  {
-@@ -1197,9 +1202,23 @@ TextureCacheBase::TCacheEntry* TextureCacheBase::Load(const u32 stage)
-     return bound_textures[stage];
+-  const TexMode0& tm0 = bpmem.tex.GetUnit(index).texMode0;
++  const FourTexUnits& tex = bpmem.tex[index / 4];
++  const TexMode0& tm0 = tex.texMode0[index % 4];
+ 
+   SamplerState state = {};
+   state.Generate(bpmem, index);
+@@ -1025,12 +1032,12 @@ static void SetSamplerState(u32 index, float custom_tex_scale, bool custom_tex,
+   g_renderer->SetSamplerState(index, state);
+ }
+ 
+-void TextureCacheBase::BindTextures(BitSet32 used_textures)
++void TextureCacheBase::BindTextures()
+ {
+   for (u32 i = 0; i < bound_textures.size(); i++)
+   {
+     const TCacheEntry* tentry = bound_textures[i];
+-    if (used_textures[i] && tentry)
++    if (IsValidBindPoint(i) && tentry)
+     {
+       g_renderer->SetTexture(i, tentry->texture.get());
+       PixelShaderManager::SetTexDims(i, tentry->native_width, tentry->native_height);
+@@ -1039,8 +1046,6 @@ void TextureCacheBase::BindTextures(BitSet32 used_textures)
+       SetSamplerState(i, custom_tex_scale, tentry->is_custom_tex, tentry->has_arbitrary_mips);
+     }
+   }
+-
+-  TMEM::FinalizeBinds(used_textures);
+ }
+ 
+ class ArbitraryMipmapDetector
+@@ -1191,27 +1196,28 @@ private:
+ TextureCacheBase::TCacheEntry* TextureCacheBase::Load(const u32 stage)
+ {
+   // if this stage was not invalidated by changes to texture registers, keep the current texture
+-  if (TMEM::IsValid(stage) && bound_textures[stage])
++  if (IsValidBindPoint(stage) && bound_textures[stage])
+   {
+-    TCacheEntry* entry = bound_textures[stage];
+-    // If the TMEM configuration is such that this texture is more or less guaranteed to still
+-    // be in TMEM, then we know we can reuse the old entry without even hashing the memory
+-    if (TMEM::IsCached(stage))
+-    {
+-      return entry;
+-    }
+-
+-    // Otherwise, hash the backing memory and check it's unchanged.
+-    // FIXME: this doesn't correctly handle textures from tmem.
+-    if (!entry->tmem_only && entry->base_hash == entry->CalculateHash())
+-    {
+-      return entry;
+-    }
++    return bound_textures[stage];
    }
  
 -  TextureInfo texture_info = TextureInfo::FromStage(stage);
--
--  auto entry = GetTexture(g_ActiveConfig.iSafeTextureCache_ColorSamples, texture_info);
 +  const FourTexUnits& tex = bpmem.tex[stage >> 2];
 +  const u32 id = stage & 3;
 +  const u32 address = (tex.texImage3[id].image_base /* & 0x1FFFFF*/) << 5;
@@ -267,14 +1189,23 @@ index ade713a..3027ac7 100644
 +  const bool from_tmem = tex.texImage1[id].cache_manually_managed != 0;
 +  const u32 tmem_address_even = from_tmem ? tex.texImage1[id].tmem_even * TMEM_LINE_SIZE : 0;
 +  const u32 tmem_address_odd = from_tmem ? tex.texImage2[id].tmem_odd * TMEM_LINE_SIZE : 0;
-+
+ 
+-  auto entry = GetTexture(g_ActiveConfig.iSafeTextureCache_ColorSamples, texture_info);
 +  auto entry = GetTexture(address, width, height, texformat,
 +                          g_ActiveConfig.iSafeTextureCache_ColorSamples, tlutaddr, tlutfmt,
 +                          use_mipmaps, tex_levels, from_tmem, tmem_address_even, tmem_address_odd);
  
    if (!entry)
      return nullptr;
-@@ -1215,58 +1234,86 @@ TextureCacheBase::TCacheEntry* TextureCacheBase::Load(const u32 stage)
+@@ -1221,65 +1227,92 @@ TextureCacheBase::TCacheEntry* TextureCacheBase::Load(const u32 stage)
+ 
+   // We need to keep track of invalided textures until they have actually been replaced or
+   // re-loaded
+-  TMEM::Bind(stage, entry->NumBlocksX(), entry->NumBlocksY(), entry->GetNumLevels() > 1,
+-             entry->format == TextureFormat::RGBA8);
++  valid_bind_points.set(stage);
+ 
+   return entry;
  }
  
  TextureCacheBase::TCacheEntry*
@@ -384,7 +1315,7 @@ index ade713a..3027ac7 100644
    }
    else
    {
-@@ -1312,7 +1359,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1325,7 +1358,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    // For efb copies, the entry created in CopyRenderTargetToTexture always has to be used, or else
    // it was
    // done in vain.
@@ -393,7 +1324,7 @@ index ade713a..3027ac7 100644
    TexAddrCache::iterator iter = iter_range.first;
    TexAddrCache::iterator oldest_entry = iter;
    int temp_frameCount = 0x7fffffff;
-@@ -1337,14 +1384,13 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1350,14 +1383,13 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
  
      // Do not load strided EFB copies, they are not meant to be used directly.
      // Also do not directly load EFB copies, which were partly overwritten.
@@ -410,7 +1341,7 @@ index ade713a..3027ac7 100644
            IsPlayingBackFifologWithBrokenEFBCopies)
        {
          // The texture format in VRAM must match the format that the copy was created with. Some
-@@ -1353,10 +1399,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1366,10 +1398,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
          // GPU (e.g. IA4 and I8 or RGB565 and RGBA5). The only known game which reinteprets texels
          // in this manner is Spiderman Shattered Dimensions, where it creates a copy in B8 format,
          // and sets it up as a IA4 texture.
@@ -423,7 +1354,7 @@ index ade713a..3027ac7 100644
            {
              // Delay the conversion until afterwards, it's possible this texture has already been
              // converted.
-@@ -1379,7 +1425,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1392,7 +1424,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
  
          // TODO: We should check width/height/levels for EFB copies. I'm not sure what effect
          // checking width/height/levels would have.
@@ -432,7 +1363,7 @@ index ade713a..3027ac7 100644
            return entry;
  
          // Note that we found an unconverted EFB copy, then continue.  We'll
-@@ -1402,12 +1448,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1415,12 +1447,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
      {
        // For normal textures, all texture parameters need to match
        if (!entry->IsEfbCopy() && entry->hash == full_hash && entry->format == full_format &&
@@ -448,7 +1379,7 @@ index ade713a..3027ac7 100644
          entry->texture->FinishedRendering();
          return entry;
        }
-@@ -1421,7 +1465,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1434,7 +1464,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
      // Also skip XFB copies, we might need to still scan them out
      // or load them as regular textures later.
      if (entry->frameCount != FRAMECOUNT_INVALID && entry->frameCount < temp_frameCount &&
@@ -457,7 +1388,7 @@ index ade713a..3027ac7 100644
      {
        temp_frameCount = entry->frameCount;
        oldest_entry = iter;
-@@ -1431,13 +1475,11 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1444,13 +1474,11 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
  
    if (unreinterpreted_copy != textures_by_address.end())
    {
@@ -473,7 +1404,7 @@ index ade713a..3027ac7 100644
  
      if (decoded_entry)
        return decoded_entry;
-@@ -1445,8 +1487,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1458,8 +1486,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
  
    if (unconverted_copy != textures_by_address.end())
    {
@@ -484,7 +1415,7 @@ index ade713a..3027ac7 100644
  
      if (decoded_entry)
      {
-@@ -1461,8 +1503,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1474,8 +1502,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    // Example: Tales of Symphonia (GC) uses over 500 small textures in menus, but only around 70
    // different ones
    if (textureCacheSafetyColorSampleSize == 0 ||
@@ -494,7 +1425,7 @@ index ade713a..3027ac7 100644
    {
      auto hash_range = textures_by_hash.equal_range(full_hash);
      TexHashCache::iterator hash_iter = hash_range.first;
-@@ -1470,12 +1511,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1483,12 +1510,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
      {
        TCacheEntry* entry = hash_iter->second;
        // All parameters, except the address, need to match here
@@ -510,7 +1441,7 @@ index ade713a..3027ac7 100644
          entry->texture->FinishedRendering();
          return entry;
        }
-@@ -1493,7 +1532,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1506,7 +1531,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    std::shared_ptr<HiresTexture> hires_tex;
    if (g_ActiveConfig.bHiresTextures)
    {
@@ -520,7 +1451,7 @@ index ade713a..3027ac7 100644
  
      if (hires_tex)
      {
-@@ -1503,22 +1543,21 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1516,22 +1542,21 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
          width = level.width;
          height = level.height;
        }
@@ -536,7 +1467,8 @@ index ade713a..3027ac7 100644
 +  const u32 texLevels = hires_tex ? (u32)hires_tex->m_levels.size() : tex_levels;
  
    // We can decode on the GPU if it is a supported format and the flag is enabled.
-   // Currently we don't decode RGBA8 textures from Tmem, as that would require copying from both
+-  // Currently we don't decode RGBA8 textures from TMEM, as that would require copying from both
++  // Currently we don't decode RGBA8 textures from Tmem, as that would require copying from both
    // banks, and if we're doing an copy we may as well just do the whole thing on the CPU, since
    // there's no conversion between formats. In the future this could be extended with a separate
    // shader, however.
@@ -548,7 +1480,7 @@ index ade713a..3027ac7 100644
  
    // create the entry/texture
    const TextureConfig config(width, height, texLevels, 1, 1,
-@@ -1528,6 +1567,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1541,6 +1566,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
      return nullptr;
  
    ArbitraryMipmapDetector arbitrary_mip_detector;
@@ -556,7 +1488,7 @@ index ade713a..3027ac7 100644
    if (hires_tex)
    {
      const auto& level = hires_tex->m_levels[0];
-@@ -1541,13 +1581,11 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1554,13 +1580,11 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    if (!hires_tex)
    {
      if (!decode_on_gpu ||
@@ -574,7 +1506,7 @@ index ade713a..3027ac7 100644
  
        // Allocate memory for all levels at once
        size_t total_texture_size = decoded_texture_size;
-@@ -1556,7 +1594,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1569,7 +1593,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
        size_t mip_downsample_buffer_size = decoded_texture_size * 5 / 16;
  
        size_t prev_level_size = decoded_texture_size;
@@ -583,7 +1515,7 @@ index ade713a..3027ac7 100644
        {
          prev_level_size /= 4;
          total_texture_size += prev_level_size;
-@@ -1567,39 +1605,35 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1580,39 +1604,35 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
  
        CheckTempSize(total_texture_size);
        dst_buffer = temp;
@@ -635,7 +1567,7 @@ index ade713a..3027ac7 100644
    entry->SetHashes(base_hash, full_hash);
    entry->is_custom_tex = hires_tex != nullptr;
    entry->memory_stride = entry->BytesPerRow();
-@@ -1608,7 +1642,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1621,7 +1641,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    std::string basename;
    if (g_ActiveConfig.bDumpTextures && !hires_tex)
    {
@@ -645,7 +1577,7 @@ index ade713a..3027ac7 100644
    }
  
    if (hires_tex)
-@@ -1622,34 +1657,46 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1635,34 +1656,46 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    }
    else
    {
@@ -710,7 +1642,7 @@ index ade713a..3027ac7 100644
      }
    }
  
-@@ -1667,8 +1714,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1680,8 +1713,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    INCSTAT(g_stats.num_textures_uploaded);
    SETSTAT(g_stats.num_textures_alive, static_cast<int>(textures_by_address.size()));
  
@@ -720,11 +1652,83 @@ index ade713a..3027ac7 100644
  
    // This should only be needed if the texture was updated, or used GPU decoding.
    entry->texture->FinishedRendering();
+@@ -2552,21 +2584,13 @@ TextureCacheBase::InvalidateTexture(TexAddrCache::iterator iter, bool discard_pe
+ 
+   for (size_t i = 0; i < bound_textures.size(); ++i)
+   {
+-    if (bound_textures[i] == entry)
++    // If the entry is currently bound and not invalidated, keep it, but mark it as invalidated.
++    // This way it can still be used via tmem cache emulation, but nothing else.
++    // Spyro: A Hero's Tail is known for using such overwritten textures.
++    if (bound_textures[i] == entry && IsValidBindPoint(static_cast<u32>(i)))
+     {
+-      if (TMEM::IsCached(static_cast<u32>(i)))
+-      {
+-        // If the entry is currently bound and tmem has it recorded as cached, keep it, but mark it
+-        // as invalidated. This way it can still be used via tmem cache emulation, but nothing else.
+-        // Spyro: A Hero's Tail is known for using such overwritten textures.
+-        bound_textures[i]->tmem_only = true;
+-        return ++iter;
+-      }
+-      else
+-      {
+-        // Otherwise, delete the reference to it from bound_textures
+-        bound_textures[i] = nullptr;
+-      }
++      bound_textures[i]->tmem_only = true;
++      return ++iter;
+     }
+   }
+ 
+@@ -2838,21 +2862,18 @@ bool TextureCacheBase::DecodeTextureOnGPU(TCacheEntry* entry, u32 dst_level, con
+ }
+ 
+ u32 TextureCacheBase::TCacheEntry::BytesPerRow() const
+-{
+-  // RGBA takes two cache lines per block; all others take one
+-  const u32 bytes_per_block = format == TextureFormat::RGBA8 ? 64 : 32;
+-
+-  return NumBlocksX() * bytes_per_block;
+-}
+-
+-u32 TextureCacheBase::TCacheEntry::NumBlocksX() const
+ {
+   const u32 blockW = TexDecoder_GetBlockWidthInTexels(format.texfmt);
+ 
+   // Round up source height to multiple of block size
+   const u32 actualWidth = Common::AlignUp(native_width, blockW);
+ 
+-  return actualWidth / blockW;
++  const u32 numBlocksX = actualWidth / blockW;
++
++  // RGBA takes two cache lines per block; all others take one
++  const u32 bytes_per_block = format == TextureFormat::RGBA8 ? 64 : 32;
++
++  return numBlocksX * bytes_per_block;
+ }
+ 
+ u32 TextureCacheBase::TCacheEntry::NumBlocksY() const
+@@ -2909,8 +2930,6 @@ u64 TextureCacheBase::TCacheEntry::CalculateHash() const
+ {
+   const u32 bytes_per_row = BytesPerRow();
+   const u32 hash_sample_size = HashSampleSize();
+-
+-  // FIXME: textures from tmem won't get the correct hash.
+   u8* ptr = Memory::GetPointer(addr);
+   if (memory_stride == bytes_per_row)
+   {
 diff --git a/Source/Core/VideoCommon/TextureCacheBase.h b/Source/Core/VideoCommon/TextureCacheBase.h
-index 4d15e7f..f07fead 100644
+index 12db848..f1ea682 100644
 --- a/Source/Core/VideoCommon/TextureCacheBase.h
 +++ b/Source/Core/VideoCommon/TextureCacheBase.h
-@@ -21,7 +21,6 @@
+@@ -14,14 +14,12 @@
+ #include <unordered_set>
+ #include <vector>
+ 
+-#include "Common/BitSet.h"
+ #include "Common/CommonTypes.h"
+ #include "Common/MathUtil.h"
+ #include "VideoCommon/AbstractTexture.h"
  #include "VideoCommon/BPMemory.h"
  #include "VideoCommon/TextureConfig.h"
  #include "VideoCommon/TextureDecoder.h"
@@ -732,11 +1736,21 @@ index 4d15e7f..f07fead 100644
  
  class AbstractFramebuffer;
  class AbstractStagingTexture;
-@@ -217,7 +216,11 @@ public:
+@@ -176,7 +174,6 @@ public:
+ 
+     bool IsEfbCopy() const { return is_efb_copy; }
+     bool IsCopy() const { return is_xfb_copy || is_efb_copy; }
+-    u32 NumBlocksX() const;
+     u32 NumBlocksY() const;
+     u32 BytesPerRow() const;
+ 
+@@ -216,11 +213,17 @@ public:
+   void Invalidate();
+ 
    TCacheEntry* Load(const u32 stage);
-   static void InvalidateAllBindPoints() { valid_bind_points.reset(); }
-   static bool IsValidBindPoint(u32 i) { return valid_bind_points.test(i); }
 -  TCacheEntry* GetTexture(const int textureCacheSafetyColorSampleSize, TextureInfo& texture_info);
++  static void InvalidateAllBindPoints() { valid_bind_points.reset(); }
++  static bool IsValidBindPoint(u32 i) { return valid_bind_points.test(i); }
 +  TCacheEntry* GetTexture(u32 address, u32 width, u32 height, const TextureFormat texformat,
 +                          const int textureCacheSafetyColorSampleSize, u32 tlutaddr = 0,
 +                          TLUTFormat tlutfmt = TLUTFormat::IA8, bool use_mipmaps = false,
@@ -745,7 +1759,12 @@ index 4d15e7f..f07fead 100644
    TCacheEntry* GetXFBTexture(u32 address, u32 width, u32 height, u32 stride,
                               MathUtil::Rectangle<int>* display_rect);
  
-@@ -283,11 +286,11 @@ private:
+-  virtual void BindTextures(BitSet32 used_textures);
++  virtual void BindTextures();
+   void CopyRenderTargetToTexture(u32 dstAddr, EFBCopyFormat dstFormat, u32 width, u32 height,
+                                  u32 dstStride, bool is_depth_copy,
+                                  const MathUtil::Rectangle<int>& srcRect, bool isIntensity,
+@@ -282,11 +285,11 @@ private:
  
    TCacheEntry* GetXFBFromCache(u32 address, u32 width, u32 height, u32 stride);
  
@@ -761,10 +1780,10 @@ index 4d15e7f..f07fead 100644
  
 diff --git a/Source/Core/VideoCommon/TextureInfo.cpp b/Source/Core/VideoCommon/TextureInfo.cpp
 deleted file mode 100644
-index 7f51c40..0000000
+index 6959b95..0000000
 --- a/Source/Core/VideoCommon/TextureInfo.cpp
 +++ /dev/null
-@@ -1,317 +0,0 @@
+@@ -1,316 +0,0 @@
 -// Copyright 2021 Dolphin Emulator Project
 -// SPDX-License-Identifier: GPL-2.0-or-later
 -
@@ -781,30 +1800,29 @@ index 7f51c40..0000000
 -
 -TextureInfo TextureInfo::FromStage(u32 stage)
 -{
--  const FourTexUnits& tex = bpmem.tex[stage >> 2];
--  const u32 id = stage & 3;
+-  const auto tex = bpmem.tex.GetUnit(stage);
 -
--  const auto texture_format = tex.texImage0[id].format;
--  const auto tlut_format = tex.texTlut[id].tlut_format;
+-  const auto texture_format = tex.texImage0.format;
+-  const auto tlut_format = tex.texTlut.tlut_format;
 -
--  const auto width = tex.texImage0[id].width + 1;
--  const auto height = tex.texImage0[id].height + 1;
+-  const auto width = tex.texImage0.width + 1;
+-  const auto height = tex.texImage0.height + 1;
 -
--  const u32 address = (tex.texImage3[id].image_base /* & 0x1FFFFF*/) << 5;
+-  const u32 address = (tex.texImage3.image_base /* & 0x1FFFFF*/) << 5;
 -
--  const u32 tlutaddr = tex.texTlut[id].tmem_offset << 9;
+-  const u32 tlutaddr = tex.texTlut.tmem_offset << 9;
 -  const u8* tlut_ptr = &texMem[tlutaddr];
 -
 -  std::optional<u32> mip_count;
--  const bool has_mipmaps = SamplerCommon::AreBpTexMode0MipmapsEnabled(tex.texMode0[id]);
+-  const bool has_mipmaps = SamplerCommon::AreBpTexMode0MipmapsEnabled(tex.texMode0);
 -  if (has_mipmaps)
 -  {
--    mip_count = (tex.texMode1[id].max_lod + 0xf) / 0x10;
+-    mip_count = (tex.texMode1.max_lod + 0xf) / 0x10;
 -  }
 -
--  const bool from_tmem = tex.texImage1[id].cache_manually_managed != 0;
--  const u32 tmem_address_even = from_tmem ? tex.texImage1[id].tmem_even * TMEM_LINE_SIZE : 0;
--  const u32 tmem_address_odd = from_tmem ? tex.texImage2[id].tmem_odd * TMEM_LINE_SIZE : 0;
+-  const bool from_tmem = tex.texImage1.cache_manually_managed != 0;
+-  const u32 tmem_address_even = from_tmem ? tex.texImage1.tmem_even * TMEM_LINE_SIZE : 0;
+-  const u32 tmem_address_odd = from_tmem ? tex.texImage2.tmem_odd * TMEM_LINE_SIZE : 0;
 -
 -  if (from_tmem)
 -  {
@@ -1084,7 +2102,7 @@ index 7f51c40..0000000
 -}
 diff --git a/Source/Core/VideoCommon/TextureInfo.h b/Source/Core/VideoCommon/TextureInfo.h
 deleted file mode 100644
-index 55e705b..0000000
+index 109715b..0000000
 --- a/Source/Core/VideoCommon/TextureInfo.h
 +++ /dev/null
 @@ -1,118 +0,0 @@
@@ -1207,10 +2225,10 @@ index 55e705b..0000000
 -  u32 m_raw_height;
 -};
 diff --git a/Source/Core/VideoCommon/VertexLoaderBase.h b/Source/Core/VideoCommon/VertexLoaderBase.h
-index 06babc9..d1c31de 100644
+index 77e3d85..3aaccfb 100644
 --- a/Source/Core/VideoCommon/VertexLoaderBase.h
 +++ b/Source/Core/VideoCommon/VertexLoaderBase.h
-@@ -80,9 +80,8 @@ public:
+@@ -79,9 +79,8 @@ public:
  
  protected:
    VertexLoaderBase(const TVtxDesc& vtx_desc, const VAT& vtx_attr)
@@ -1222,6 +2240,62 @@ index 06babc9..d1c31de 100644
    {
    }
  
+diff --git a/Source/Core/VideoCommon/VertexManagerBase.cpp b/Source/Core/VideoCommon/VertexManagerBase.cpp
+index 60bfa1b..73ab9af 100644
+--- a/Source/Core/VideoCommon/VertexManagerBase.cpp
++++ b/Source/Core/VideoCommon/VertexManagerBase.cpp
+@@ -350,7 +350,7 @@ void VertexManagerBase::LoadTextures()
+   for (unsigned int i : usedtextures)
+     g_texture_cache->Load(i);
+ 
+-  g_texture_cache->BindTextures(usedtextures);
++  g_texture_cache->BindTextures();
+ }
+ 
+ void VertexManagerBase::Flush()
+diff --git a/Source/Core/VideoCommon/VideoBackendBase.cpp b/Source/Core/VideoCommon/VideoBackendBase.cpp
+index 03d46b7..66c638c 100644
+--- a/Source/Core/VideoCommon/VideoBackendBase.cpp
++++ b/Source/Core/VideoCommon/VideoBackendBase.cpp
+@@ -47,7 +47,6 @@
+ #include "VideoCommon/PixelEngine.h"
+ #include "VideoCommon/PixelShaderManager.h"
+ #include "VideoCommon/RenderBase.h"
+-#include "VideoCommon/TMEM.h"
+ #include "VideoCommon/TextureCacheBase.h"
+ #include "VideoCommon/VertexLoaderManager.h"
+ #include "VideoCommon/VertexManagerBase.h"
+@@ -323,7 +322,6 @@ void VideoBackendBase::InitializeShared()
+   VertexShaderManager::Init();
+   GeometryShaderManager::Init();
+   PixelShaderManager::Init();
+-  TMEM::Init();
+ 
+   g_Config.VerifyValidity();
+   UpdateActiveConfig();
+diff --git a/Source/Core/VideoCommon/VideoState.cpp b/Source/Core/VideoCommon/VideoState.cpp
+index dc5ed93..f954ca7 100644
+--- a/Source/Core/VideoCommon/VideoState.cpp
++++ b/Source/Core/VideoCommon/VideoState.cpp
+@@ -13,7 +13,6 @@
+ #include "VideoCommon/PixelEngine.h"
+ #include "VideoCommon/PixelShaderManager.h"
+ #include "VideoCommon/RenderBase.h"
+-#include "VideoCommon/TMEM.h"
+ #include "VideoCommon/TextureCacheBase.h"
+ #include "VideoCommon/TextureDecoder.h"
+ #include "VideoCommon/VertexManagerBase.h"
+@@ -47,10 +46,6 @@ void VideoCommon_DoState(PointerWrap& p)
+   p.DoArray(texMem);
+   p.DoMarker("texMem");
+ 
+-  // TMEM
+-  TMEM::DoState(p);
+-  p.DoMarker("TMEM");
+-
+   // FIFO
+   Fifo::DoState(p);
+   p.DoMarker("Fifo");
 -- 
-2.31.1
+2.33.0
 

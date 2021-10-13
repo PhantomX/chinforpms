@@ -3,7 +3,7 @@
 %global vc_url https://github.com/%{name}/%{name}
 
 Name:           lutris
-Version:        0.5.8.4
+Version:        0.5.9
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -21,10 +21,6 @@ BuildRequires:  gettext
 BuildRequires:  gtk3
 BuildRequires:  meson
 BuildRequires:  python3-devel
-BuildRequires:  %{py3_dist evdev}
-BuildRequires:  %{py3_dist pygobject}
-BuildRequires:  %{py3_dist requests}
-BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  fdupes
 Requires:       hicolor-icon-theme
 Requires:       cabextract
@@ -42,6 +38,7 @@ Requires:       p7zip
 Requires:       p7zip-plugins
 Requires:       pciutils
 Requires:       %{py3_dist dbus-python}
+Requires:       %{py3_dist file-magic}
 Requires:       %{py3_dist evdev}
 Requires:       %{py3_dist lxml}
 Requires:       %{py3_dist pygobject}
@@ -79,6 +76,11 @@ on Linux.
 %prep
 %autosetup -p1
 
+sed -e 's|python-magic|file-magic|g' -i requirements.txt setup.py
+
+%generate_buildrequires
+%pyproject_buildrequires -r
+
 
 %build
 %meson
@@ -112,6 +114,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.des
 
 
 %changelog
+* Mon Oct 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.9-100
+- 0.5.9
+
 * Sat Jul 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.8.4-100
 - 0.5.8.4
 
