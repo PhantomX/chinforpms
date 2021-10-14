@@ -4,8 +4,8 @@
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2021.09.25
-Release:        0%{?dist}
+Version:        2021.10.10
+Release:        1%{?dist}
 Summary:        A command-line program to download videos
 
 License:        Unlicense
@@ -13,8 +13,6 @@ URL:            https://github.com/yt-dlp/yt-dlp
 
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        %{pkgname}.conf
-
-Patch0:         0001-Use-pycryptodomex-instead-pycryptodome.patch
 
 BuildArch:      noarch
 
@@ -114,6 +112,12 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Wed Oct 13 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.10.10-1
+- 2021.10.10
+
+* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.09.25-1
+- 2021.09.25
+
 * Mon Sep 06 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.09.02-1
 - 2021.09.02
 - Update to best packaging practices

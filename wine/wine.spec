@@ -1,7 +1,7 @@
-%global commit ed38d12833bb1957a915ac63128957dacf2bc245
+%global commit 50f889fd19d329bef7c001f9eafd1030fc1e3a56
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211005
-%global with_snapshot 0
+%global date 20211012
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.19
+%global wine_stagingver 1af920f698c08ef3dea2b33903961589f6dd5f59
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -73,10 +73,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id f04a5161ebd57608c5781fa2fe20a868cc055040
+%global ge_id eca6853cce220c7e95e040e8a8ddc600fc509e59
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id c3b028f9f989ba99ac0dad895a072362c86f4aa2
+%global tkg_id 2aa3c1b630563666bf13df1809c1880f2c24bff6
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -129,7 +129,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.19
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -199,6 +199,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 Patch200:       https://source.winehq.org/patches/data/214036#/%{name}-whq-p214036.patch
 Patch201:       https://source.winehq.org/patches/data/214035#/%{name}-whq-p214035.patch
 Patch202:       https://source.winehq.org/patches/data/214038#/%{name}-whq-p214038.patch
+Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
 
 %if 0%{?wine_staging}
 # wine staging patches for wine-staging
@@ -231,6 +232,10 @@ Patch1030:       %{tkg_url}/proton/proton-bcrypt-staging.patch#/%{name}-tkg-prot
 Patch1031:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
 Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/virtual_alloc_remi2.mypatch#/%{name}-tkg-virtual_alloc_remi2.patch
 Patch1033:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
+Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
+Patch1035:       %{tkg_url}/hotfixes/memset/memset.mypatch#/%{name}-tkg-memset.patch
+Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes.patch
+Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       revert-grab-fullscreen.patch
@@ -853,6 +858,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch200 -p1
 %patch201 -p1
 %patch202 -p1
+%patch203 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -909,6 +915,10 @@ fi
 %endif
 #patch1029 -p1
 %patch1033 -p1
+%patch1034 -p1
+%patch1035 -p1
+%patch1036 -p1
+%patch1037 -p1
 if [ -f patch1025.patch ] ;then
 %patch1030 -p1
 fi
@@ -1842,14 +1852,11 @@ fi
 %{_libdir}/wine/%{winedlldir}/ddrawex.%{winedll}
 %{_libdir}/wine/%{winedlldir}/devenum.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dhcpcsvc.%{winedll}
+%{_libdir}/wine/%{winedlldir}/dhcpcsvc6.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dhtmled.%{wineocx}
 %{_libdir}/wine/%{winedlldir}/difxapi.%{winedll}
-%{_libdir}/wine/%{winesodir}/dinput.dll.so
-%{_libdir}/wine/%{winesodir}/dinput8.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/dinput.dll
-%{_libdir}/wine/%{winedlldir}/dinput8.dll
-%endif
+%{_libdir}/wine/%{winedlldir}/dinput.%{winedll}
+%{_libdir}/wine/%{winedlldir}/dinput8.%{winedll}
 %{_libdir}/wine/%{winedlldir}/directmanipulation.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dispex.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dmband.%{winedll}
@@ -2893,6 +2900,9 @@ fi
 
 
 %changelog
+* Wed Oct 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.19-101.20211012git50f889f
+- Snapshot
+
 * Sat Oct 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.19-100
 - 6.19
 

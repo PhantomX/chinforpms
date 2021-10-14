@@ -30,7 +30,6 @@ Subject: [PATCH] patch-5.14-redhat
  drivers/net/ethernet/intel/e1000e/ich8lan.c        |  31 +-
  drivers/net/ethernet/intel/e1000e/ich8lan.h        |   3 +
  drivers/net/ethernet/intel/e1000e/netdev.c         |  29 +-
- drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c     |   9 +
  drivers/net/wireguard/main.c                       |   6 +
  drivers/pci/quirks.c                               |  24 +
  drivers/usb/core/hub.c                             |   7 +
@@ -42,7 +41,6 @@ Subject: [PATCH] patch-5.14-redhat
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
- kernel/bpf/stackmap.c                              |   3 +-
  kernel/module_signing.c                            |   9 +-
  mm/cma.c                                           |  10 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
@@ -1391,43 +1389,6 @@ index 757a54c39eef..774f849027f0 100644
 
  	{ 0, 0, 0, 0, 0, 0, 0 }	/* terminate list */
  };
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-index ed817011a94a..280ac0129572 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-@@ -21,6 +21,7 @@
- #include <linux/delay.h>
- #include <linux/mfd/syscon.h>
- #include <linux/regmap.h>
-+#include <linux/pm_runtime.h>
-
- #include "stmmac_platform.h"
-
-@@ -1528,6 +1529,9 @@ static int rk_gmac_powerup(struct rk_priv_data *bsp_priv)
- 		return ret;
- 	}
-
-+	pm_runtime_enable(dev);
-+	pm_runtime_get_sync(dev);
-+
- 	if (bsp_priv->integrated_phy)
- 		rk_gmac_integrated_phy_powerup(bsp_priv);
-
-@@ -1536,9 +1540,14 @@ static int rk_gmac_powerup(struct rk_priv_data *bsp_priv)
-
- static void rk_gmac_powerdown(struct rk_priv_data *gmac)
- {
-+	struct device *dev = &gmac->pdev->dev;
-+
- 	if (gmac->integrated_phy)
- 		rk_gmac_integrated_phy_powerdown(gmac);
-
-+	pm_runtime_put_sync(dev);
-+	pm_runtime_disable(dev);
-+
- 	phy_power_on(gmac, false);
- 	gmac_clk_enable(gmac, false);
- }
 diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
 index 75dbe77b0b4b..4bd6dd722f44 100644
 --- a/drivers/net/wireguard/main.c
@@ -1702,20 +1663,6 @@ index 55f9f7738ebb..564553afb251 100644
  	select IO_WQ
  	default y
  	help
-diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
-index 6fbc2abe9c91..2553caf4f74a 100644
---- a/kernel/bpf/stackmap.c
-+++ b/kernel/bpf/stackmap.c
-@@ -63,7 +63,8 @@ static inline int stack_map_data_size(struct bpf_map *map)
-
- static int prealloc_elems_and_freelist(struct bpf_stack_map *smap)
- {
--	u32 elem_size = sizeof(struct stack_map_bucket) + smap->map.value_size;
-+	u64 elem_size = sizeof(struct stack_map_bucket) +
-+			(u64)smap->map.value_size;
- 	int err;
-
- 	smap->elems = bpf_map_area_alloc(elem_size * smap->map.max_entries,
 diff --git a/kernel/module_signing.c b/kernel/module_signing.c
 index 8723ae70ea1f..fb2d773498c2 100644
 --- a/kernel/module_signing.c
