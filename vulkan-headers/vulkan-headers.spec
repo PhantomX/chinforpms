@@ -1,7 +1,7 @@
 %global __python %{__python3}
 Name:           vulkan-headers
 Version:        1.2.196
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan Header files and API registry
 
 License:        ASL 2.0
@@ -17,6 +17,8 @@ Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Headers-sdk-%{versi
 Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Headers-%{version}.tar.gz
 %endif
 
+Patch0:         %{url}/commit/dd99e0f51fa86210da384d0f17c036fa45475e12.patch#/%{name}-gh-dd99e0f.patch
+
 BuildRequires:  cmake3
 BuildRequires:  make
 BuildArch:      noarch
@@ -26,9 +28,9 @@ Vulkan Header files and API registry
 
 %prep
 %if 0%{?with_sdk}
-%autosetup -n Vulkan-Headers-sdk-%{version}
+%autosetup -n Vulkan-Headers-sdk-%{version} -p1
 %else
-%autosetup -n Vulkan-Headers-%{version}
+%autosetup -n Vulkan-Headers-%{version} -p1
 %endif
 
 %build
@@ -53,6 +55,9 @@ Vulkan Header files and API registry
 
 
 %changelog
+* Sat Oct 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.196-2
+- Add missing header
+
 * Wed Oct 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.196-1
 - 1.2.196
 

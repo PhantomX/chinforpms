@@ -1,7 +1,7 @@
 %global with_sdk 0
 
 Name:           vulkan-loader
-Version:        1.2.195
+Version:        1.2.196
 Release:        1%{?dist}
 Summary:        Vulkan ICD desktop loader
 
@@ -38,13 +38,8 @@ Obsoletes:      vulkan < %{version}-%{release}
 Provides:       vulkan-filesystem = %{version}-%{release}
 Obsoletes:      vulkan-filesystem < %{version}-%{release}
 
-%if 0%{?fedora} <= 27
-%ifarch x86_64 i686 
 Requires:       mesa-vulkan-drivers%{?_isa}
-%endif
-%else
-Requires:       mesa-vulkan-drivers%{?_isa}
-%endif
+
 
 %description
 This project provides the Khronos official Vulkan ICD desktop 
@@ -108,6 +103,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
 
 
 %changelog
+* Sat Oct 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.196-1
+- 1.2.196
+
 * Tue Oct 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.195-1
 - 1.2.195
 
