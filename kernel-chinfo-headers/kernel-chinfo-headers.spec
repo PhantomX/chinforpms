@@ -31,7 +31,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -181,6 +181,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Sun Oct 17 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.13-500.chinfo
+- 5.14.13
+
 * Wed Oct 13 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.12-500.chinfo
 - 5.14.12
 

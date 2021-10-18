@@ -1,6 +1,6 @@
-%global commit 50f889fd19d329bef7c001f9eafd1030fc1e3a56
+%global commit 0925a730272ed0c97f64c3365ebe542401f60d7c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211012
+%global date 20211015
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -33,7 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  6.4.0
-%global winevulkan 1.2.195
+%global winevulkan 1.2.196
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -65,7 +65,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 1af920f698c08ef3dea2b33903961589f6dd5f59
+%global wine_stagingver 6bc16f96f72c812fa9595f7876757b0ef1ab40b3
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +76,7 @@
 %global ge_id eca6853cce220c7e95e040e8a8ddc600fc509e59
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2aa3c1b630563666bf13df1809c1880f2c24bff6
+%global tkg_id dfb4b6915917c6ab2415f5f2e8a9ee26f12a4125
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -129,7 +129,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.19
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
