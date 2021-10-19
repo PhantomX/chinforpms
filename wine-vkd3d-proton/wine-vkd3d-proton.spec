@@ -10,15 +10,15 @@
 %global commit 2b13d06f82f0a686589967d70e8df8e158d55f53
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210916
-%global with_snapshot 1
+%global with_snapshot 0
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 f63e45cf6509278c82a4515ed94b0850a438af46
+%global commit1 e74757f5dc1991ddcd6483600eac38e11812da05
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 1454c95d1b834a47403ef3806ffe77c9ebbfa40b
+%global commit2 2d12367ced2dd34444822340070b4545ae7c02f1
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
@@ -26,7 +26,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 07c4a37bcf41ea50aef6e98236abdfe8089fb4c6
+%global commit4 fa27a13cf74080df2ad421a788299db1276f17a7
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
@@ -54,8 +54,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.4
-Release:        2%{?gver}%{?dist}
+Version:        2.5
+Release:        1%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
@@ -271,6 +271,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Oct 18 2021 Phantom X <megaphantomx at hotmail dot com> - 2.5-1
+- 2.5
+
 * Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2.4-2.20210916git2b13d06
 - Snapshot
 
