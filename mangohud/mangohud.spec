@@ -13,8 +13,8 @@
 %global vc_url https://github.com/flightlessmango
 
 Name:           mangohud
-Version:        0.6.5
-Release:        1%{?gver}%{?dist}
+Version:        0.6.6
+Release:        100%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -27,17 +27,20 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-v%{version}.tar.gz
 %endif
 Source3:        %{name}.in
 Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{imgui_ver}.tar.gz
-Source11:       https://wrapdb.mesonbuild.com/v1/projects/imgui/%{imgui_ver}/1/get_zip#/imgui-%{imgui_ver}-1-wrap.zip
+Source11:       https://wrapdb.mesonbuild.com/v2/imgui_%{imgui_ver}-1/get_patch#/imgui-%{imgui_ver}-1-wrap.zip
 
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  meson
 BuildRequires:  glslang
-BuildRequires:  libXNVCtrl-devel
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(dri)
 BuildRequires:  pkgconfig(gl)
+BuildRequires:  pkgconfig(glew)
+BuildRequires:  pkgconfig(glfw3)
+BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(spdlog)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  python3
@@ -46,10 +49,11 @@ BuildRequires:  unzip
 BuildRequires:  vulkan-headers
 Requires:       libglvnd%{?_isa}
 Requires:       libglvnd-glx%{?_isa}
-Requires:       libXNVCtrl%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(imgui) = %{imgui_ver}
+
+Recommends:     (mangohud(x86-32) if glibc(x86-32))
 
 
 %description
@@ -88,6 +92,7 @@ sed -e "/-D__STDC_CONSTANT_MACROS/i\  '${TEMP_CFLAGS}'," -i meson.build
   --libdir=%{_libdir} \
   -Dappend_libdir_mangohud=true \
   -Dglibcxx_asserts=false \
+  -Duse_system_spdlog=enabled \
   -Duse_system_vulkan=enabled \
   -Dinclude_doc=false \
   -Dwith_nvml=disabled \
@@ -114,6 +119,9 @@ chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 
 %changelog
+* Tue Oct 19 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.6-100
+- 0.6.6
+
 * Fri Aug 13 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.5-1
 - 0.6.5
 

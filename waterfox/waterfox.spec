@@ -136,8 +136,8 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox Web browser
 Name:           waterfox
-Version:        2021.09
-Release:        2%{?branch:.%{branch}}%{?gver}%{?dist}
+Version:        2021.10
+Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://www.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -198,9 +198,6 @@ Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mo
 # Upstream updates/PRs/Reverts
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
-Patch450:       %{vc_url}/commit/eec42c5bd8d15153e1c5aa12021892f5c495b5ca.patch#/%{name}-gh-eec42c5.patch
-Patch451:       %{vc_url}/commit/663780de60a08e66a823a8cacc8a69c857390831.patch#/%{name}-gh-663780d.patch
-
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -409,9 +406,6 @@ This package contains results of tests executed during build.
 %patch415 -p1 -b .mozilla-1238661
 %endif
 %patch419 -p1 -b .mozilla-1320560
-
-%patch450 -p1 -b .gh-eec42c5
-%patch451 -p1 -b .gh-663780d
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -1051,6 +1045,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.10-1.classic
+- 2021.10
+
 * Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.09-2.classic
 - Add upstream patches to fix crashes with glibc 2.34
 

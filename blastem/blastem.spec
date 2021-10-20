@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
-%global commit 804954731e3f
-%global date 20210805
+%global commit 460e14497120
+%global date 20210921
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,24 +10,17 @@
 
 Name:           blastem
 Version:        0.6.3
-Release:        0.4%{?gver}%{?dist}
+Release:        0.5%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPLv3
 URL:            https://www.retrodev.com/%{name}/
 Source0:        https://www.retrodev.com/repos/%{name}/archive/%{commit}.tar.bz2#/%{name}-%{commit}.tar.bz2
 
-Patch0:         0001-img2tiles.py-update-to-python-3.patch
-Patch1:         0001-fix-missing-objects.patch
-
 
 BuildRequires:  icoutils
 BuildRequires:  gcc
 BuildRequires:  make
-BuildRequires:  python3-pillow
-BuildRequires:  vasm
-BuildRequires:  xcftools
-BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(sdl2)
@@ -35,21 +28,22 @@ BuildRequires:  pkgconfig(zlib)
 Requires:       sdl_gamecontrollerdb
 Requires:       dejavu-sans-fonts
 Requires:       hicolor-icon-theme
+Recommends:     %{name}-bindata >= %{version}
 
 
 %description
-BlastEm is an open source, higly accurate emulator for the Genesis/Megadrive that
-runs on modest hardware.
+BlastEm is an open source, higly accurate emulator for the Genesis/Megadrive
+that runs on modest hardware.
+
+TMMS support and menu.bin is not included.
 
 
 %prep
 %autosetup -n %{name}-%{commit} -p1
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" img2tiles.py
-
 rm -rf zlib
 
-sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c event_log.{c,h} png.c zip.c
+sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c event_log.{c,h} png.c vgmplay.c zip.c
 
 sed -e 's|./termhelper|%{_bindir}/%{name}-termhelper|g' -i terminal.c
 
@@ -64,11 +58,10 @@ icotool -x icons/windows.ico
 
 
 %build
-%make_build menu.bin tmss.md
 %make_build \
   CC=gcc \
-  DATA_PATH=%{_datadir}/%{name} \
-  FONT_PATH=%{_datadir}/fonts/dejavu-sans-fonts/DejaVuSans.ttf \
+  DATA_PATH=/usr/share/blastem \
+  FONT_PATH=/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf \
   HOST_ZLIB=1
 
 
@@ -81,7 +74,7 @@ for i in dis zdis vgmplay termhelper ;do
 done
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/{images,shaders}
-install -pm0644 rom.db default.cfg systems.cfg menu.bin tmss.md %{buildroot}%{_datadir}/%{name}/
+install -pm0644 rom.db default.cfg systems.cfg %{buildroot}%{_datadir}/%{name}/
 install -pm0644 images/*.png %{buildroot}%{_datadir}/%{name}/images/
 install -pm0644 shaders/*.glsl %{buildroot}%{_datadir}/%{name}/shaders/
 
@@ -118,6 +111,10 @@ done
 
 
 %changelog
+* Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.5.20210921git460e14497120
+- Update to proper branch
+- Do not build vasm files (menu.bin and tmss.md moved to -bindata extra package)
+
 * Sat Aug 14 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.4.20210805git804954731e3f
 - Bump
 
