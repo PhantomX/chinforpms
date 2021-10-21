@@ -5,7 +5,7 @@
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
-%global gver .%{date}git%{commit}
+%global gver .%{date}hg%{commit}
 %endif
 
 Name:           blastem
@@ -111,7 +111,7 @@ done
 
 
 %changelog
-* Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.5.20210921git460e14497120
+* Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.5.20210921hg460e14497120
 - Update to proper branch
 - Do not build vasm files (menu.bin and tmss.md moved to -bindata extra package)
 

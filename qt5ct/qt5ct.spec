@@ -1,5 +1,5 @@
 Name:           qt5ct
-Version:        1.3
+Version:        1.5
 Release:        100%{?dist}
 Summary:        Qt5 Configuration Tool
 
@@ -93,6 +93,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1.5-100
+- 1.5
+
 * Sun Sep 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1.3-100
 - 1.3
 

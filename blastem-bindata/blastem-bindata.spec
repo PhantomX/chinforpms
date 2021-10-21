@@ -5,7 +5,7 @@
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
-%global gver .%{date}git%{commit}
+%global gver .%{date}hg%{commit}
 %endif
 
 %global pkgname blastem
@@ -62,5 +62,5 @@ install -pm0644 menu.bin tmss.md %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
-* Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.1.20210921git460e14497120
+* Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.1.20210921hg460e14497120
 - Initial spec

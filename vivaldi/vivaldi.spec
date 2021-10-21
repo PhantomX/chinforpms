@@ -14,7 +14,7 @@
 %global pkgrel 1
 
 Name:           vivaldi
-Version:        4.2.2406.52
+Version:        4.3.2439.44
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -33,6 +33,7 @@ Requires:       font(dejavusans)
 Requires:       font(dejavusanscondensed)
 Requires:       font(dejavusanslight)
 Requires:       hicolor-icon-theme
+Requires:       vulkan-loader%{?_isa}
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
@@ -76,10 +77,11 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp opt/%{name}/{%{name}*,crashpad_handler,locales,MEIPreload,resources,swiftshader,update-*,*.{bin,dat,json,pak,so}} \
+cp -rp opt/%{name}/{%{name}{,-bin,-sandbox},chrome_crashpad_handler,locales,MEIPreload,resources,swiftshader,update-*,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 mv opt/%{name}/lib/*.so %{buildroot}%{_libdir}/%{name}/
+rm -f %{buildroot}%{_libdir}/%{name}/libvulkan.so*
 
 mkdir -p %{buildroot}%{_libdir}/%{name}/extensions
 
@@ -113,7 +115,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_bindir}/%{name}
 %{_libdir}/%{name}/%{name}
 %{_libdir}/%{name}/%{name}-bin
-%{_libdir}/%{name}/crashpad_handler
+%{_libdir}/%{name}/chrome_crashpad_handler
 %{_libdir}/%{name}/update-*
 %{_libdir}/%{name}/*.bin
 %{_libdir}/%{name}/*.dat
@@ -133,6 +135,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Oct 20 2021 - 4.3.2439.44-1
+- 4.3.2439.44
+
 * Sat Oct 02 2021 - 4.2.2406.52-1
 - 4.2.2406.52
 
