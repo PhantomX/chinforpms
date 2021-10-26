@@ -1,7 +1,7 @@
 %global commit 0925a730272ed0c97f64c3365ebe542401f60d7c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211015
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -34,6 +34,19 @@
 %global winegecko 2.47.2
 %global winemono  6.4.0
 %global winevulkan 1.2.196
+
+%global wineFAudio 21.10
+%global winegsm 1.0.19
+%global winejpeg 9d
+%global winelcms2 2.12
+%global winempg123 1.29.1
+%global winepng 1.6.37
+%global winetiff 4.3.0
+%global winejxrlib 1.1
+%global winexml2 2.9.12
+%global winexslt 1.1.34
+%global winezlib 1.2.11
+
 %global _default_patch_fuzz 2
 
 %global libext .so
@@ -65,7 +78,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6bc16f96f72c812fa9595f7876757b0ef1ab40b3
+%global wine_stagingver 6.20
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -76,7 +89,7 @@
 %global ge_id eca6853cce220c7e95e040e8a8ddc600fc509e59
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id dfb4b6915917c6ab2415f5f2e8a9ee26f12a4125
+%global tkg_id cab4dbb3c982861cc5623c1833bfb590462592f1
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -90,6 +103,8 @@
 
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
+# Revert bundled FAudio commits (for proper pulseaudio application name patches)
+%global extfaudio 1
 %global vulkanup 0
 
 # https://bugs.winehq.org/show_bug.cgi?id=50448
@@ -128,8 +143,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.19
-Release:        102%{?gver}%{?dist}
+Version:        6.20
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -200,12 +215,55 @@ Patch200:       https://source.winehq.org/patches/data/214036#/%{name}-whq-p2140
 Patch201:       https://source.winehq.org/patches/data/214035#/%{name}-whq-p214035.patch
 Patch202:       https://source.winehq.org/patches/data/214038#/%{name}-whq-p214038.patch
 Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
+Patch204:       %{whq_url}/b54199101fd307199c481709d4b1358ba4bcce58#/%{name}-whq-b541991.patch
+Patch205:       %{whq_url}/dedda40e5d7b5a3bcf67eea95145810da283d7d9#/%{name}-whq-dedda40.patch
+Patch206:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 
-%if 0%{?wine_staging}
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
+
+# Internal FAudio reverts
+Patch902:       %{whq_url}/d8be85863fedf6982944d06ebd1ce5904cb3d4e1#/%{name}-whq-d8be858.patch
+Patch903:       0001-Revert-libs-Import-code-from-upstream-FAudio-21.10.patch
+Source904:      0001-x3daudio1_7-Create-import-library.patch
+
+# mfplat reverts / 920-971
+Patch920:       %{whq_url}/2d0dc2d47ca6b2d4090dfe32efdba4f695b197ce#/%{name}-whq-mfplat-2d0dc2d.patch
+Patch921:       %{whq_url}/831c6a88aab78db054beb42ca9562146b53963e7#/%{name}-whq-mfplat-831c6a8.patch
+Patch922:       %{whq_url}/3dd8eeeebdeec619570c764285bdcae82dee5868#/%{name}-whq-mfplat-3dd8eee.patch
+Patch923:       %{whq_url}/4239f2acf77d9eaa8166628d25c1336c1599df33#/%{name}-whq-mfplat-4239f2a.patch
+Patch924:       %{whq_url}/4f10b95c8355c94e4c6f506322b80be7ae7aa174#/%{name}-whq-mfplat-4f10b95.patch
+Patch925:       %{whq_url}/dd182a924f89b948010ecc0d79f43aec83adfe65#/%{name}-whq-mfplat-dd182a9.patch
+Patch926:       %{whq_url}/37e9f0eadae9f62ccae8919a92686695927e9274#/%{name}-whq-mfplat-37e9f0e.patch
+
+Patch949:       0001-mfplat-restore-definitions.patch
+Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
+Source951:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0002-Revert-wmvcore-Move-the-async-reader-implementation-.myearlypatch#/%{name}-tkg-0002-Revert-wmvcore-Move-the-async-reader-implementation-.patch
+Source952:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0003-Revert-winegstreamer-Get-rid-of-the-WMSyncReader-typ.myearlypatch#/%{name}-tkg-0003-Revert-winegstreamer-Get-rid-of-the-WMSyncReader-typ.patch
+Source953:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0004-Revert-wmvcore-Move-the-sync-reader-implementation-t.myearlypatch#/%{name}-tkg-0004-Revert-wmvcore-Move-the-sync-reader-implementation-t.patch
+Source954:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0005-Revert-winegstreamer-Translate-GST_AUDIO_CHANNEL_POS.myearlypatch#/%{name}-tkg-0005-Revert-winegstreamer-Translate-GST_AUDIO_CHANNEL_POS.patch
+Source955:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0006-Revert-winegstreamer-Trace-the-unfiltered-caps-in-si.myearlypatch#/%{name}-tkg-0006-Revert-winegstreamer-Trace-the-unfiltered-caps-in-si.patch
+Source956:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0007-Revert-winegstreamer-Avoid-seeking-past-the-end-of-a.myearlypatch#/%{name}-tkg-0007-Revert-winegstreamer-Avoid-seeking-past-the-end-of-a.patch
+Source957:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0008-Revert-winegstreamer-Avoid-passing-a-NULL-buffer-to-.myearlypatch#/%{name}-tkg-0008-Revert-winegstreamer-Avoid-passing-a-NULL-buffer-to-.patch
+Source958:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0009-Revert-winegstreamer-Use-array_reserve-to-reallocate.myearlypatch#/%{name}-tkg-0009-Revert-winegstreamer-Use-array_reserve-to-reallocate.patch
+Source959:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0010-Revert-winegstreamer-Handle-zero-length-reads-in-src.myearlypatch#/%{name}-tkg-0010-Revert-winegstreamer-Handle-zero-length-reads-in-src.patch
+Source960:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0011-Revert-winegstreamer-Convert-the-Unix-library-to-the.myearlypatch#/%{name}-tkg-0011-Revert-winegstreamer-Convert-the-Unix-library-to-the.patch
+Source961:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0012-Revert-winegstreamer-Return-void-from-wg_parser_stre.myearlypatch#/%{name}-tkg-0012-Revert-winegstreamer-Return-void-from-wg_parser_stre.patch
+Source962:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0013-Revert-winegstreamer-Move-Unix-library-definitions-i.myearlypatch#/%{name}-tkg-0013-Revert-winegstreamer-Move-Unix-library-definitions-i.patch
+Source963:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0014-Revert-winegstreamer-Remove-the-no-longer-used-start.myearlypatch#/%{name}-tkg-0014-Revert-winegstreamer-Remove-the-no-longer-used-start.patch
+Source964:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0015-Revert-winegstreamer-Set-unlimited-buffering-using-a.myearlypatch#/%{name}-tkg-0015-Revert-winegstreamer-Set-unlimited-buffering-using-a.patch
+Source965:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0016-Revert-winegstreamer-Initialize-GStreamer-in-wg_pars.myearlypatch#/%{name}-tkg-0016-Revert-winegstreamer-Initialize-GStreamer-in-wg_pars.patch
+Source966:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0017-Revert-winegstreamer-Use-a-single-wg_parser_create-e.myearlypatch#/%{name}-tkg-0017-Revert-winegstreamer-Use-a-single-wg_parser_create-e.patch
+Source967:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0018-Revert-winegstreamer-Fix-return-code-in-init_gst-fai.myearlypatch#/%{name}-tkg-0018-Revert-winegstreamer-Fix-return-code-in-init_gst-fai.patch
+Source968:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0019-Revert-winegstreamer-Allocate-source-media-buffers-i.myearlypatch#/%{name}-tkg-0019-Revert-winegstreamer-Allocate-source-media-buffers-i.patch
+Source969:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0020-Revert-winegstreamer-Duplicate-source-shutdown-path-.myearlypatch#/%{name}-tkg-0020-Revert-winegstreamer-Duplicate-source-shutdown-path-.patch
+Source970:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0021-Revert-winegstreamer-Properly-clean-up-from-failure-.myearlypatch#/%{name}-tkg-0021-Revert-winegstreamer-Properly-clean-up-from-failure-.patch
+Source971:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0022-Revert-winegstreamer-Factor-out-more-of-the-init_gst.myearlypatch#/%{name}-tkg-0022-Revert-winegstreamer-Factor-out-more-of-the-init_gst.patch
+
+%global mfplatreverts %{S:950} %{S:951} %{S:952} %{S:953} %{S:954} %{S:955} %{S:956} %{S:957} %{S:958} %{S:959} %{S:960} %{S:961} %{S:962} %{S:963} %{S:964} %{S:965} %{S:966} %{S:967} %{S:968} %{S:969} %{S:970} %{S:971}
+
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
@@ -213,7 +271,7 @@ Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_by
 Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
-Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-006.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-006.patch
+Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-007.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-007.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 
 # fsync
@@ -250,7 +308,7 @@ Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
 
-%endif
+# END of staging patches
 
 %if !0%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
@@ -287,44 +345,36 @@ BuildRequires:  python3
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  cups-devel
 BuildRequires:  pkgconfig(dbus-1)
+%if 0%{?extfaudio}
 BuildRequires:  pkgconfig(faudio)
+%endif
 BuildRequires:  pkgconfig(fontconfig)
 BuildRequires:  pkgconfig(glut)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  fontpackages-devel
 BuildRequires:  gettext-devel
-BuildRequires:  giflib-devel
-BuildRequires:  gsm-devel
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gmp)
 BuildRequires:  pkgconfig(gnutls)
 BuildRequires:  pkgconfig(gstreamer-1.0)
 BuildRequires:  pkgconfig(gstreamer-audio-1.0)
 BuildRequires:  pkgconfig(gstreamer-video-1.0)
-BuildRequires:  jxrlib-devel
 BuildRequires:  pkgconfig(krb5)
 BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  pkgconfig(libgcrypt)
 BuildRequires:  pkgconfig(libgphoto2)
 BuildRequires:  libieee1284-devel
-BuildRequires:  pkgconfig(libjpeg)
-BuildRequires:  pkgconfig(libmpg123)
 BuildRequires:  pkgconfig(libpcap)
-BuildRequires:  pkgconfig(libpng)
-BuildRequires:  libpng-static
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(librsvg-2.0)
 BuildRequires:  librsvg2
 BuildRequires:  librsvg2-tools
 BuildRequires:  libstdc++-devel
-BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libusb)
 BuildRequires:  pkgconfig(libv4l2)
 BuildRequires:  pkgconfig(libvkd3d) >= 1.2
 BuildRequires:  pkgconfig(libvkd3d-shader) >= 1.2
-BuildRequires:  pkgconfig(libxml-2.0)
-BuildRequires:  pkgconfig(libxslt)
 BuildRequires:  pkgconfig(netapi)
 BuildRequires:  pkgconfig(ocl-icd)
 BuildRequires:  pkgconfig(odbc)
@@ -350,7 +400,6 @@ BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xrender)
 BuildRequires:  pkgconfig(xxf86dga)
 BuildRequires:  pkgconfig(xxf86vm)
-BuildRequires:  pkgconfig(zlib)
 BuildRequires:  libappstream-glib
 
 # Silverlight DRM-stuff needs XATTR enabled.
@@ -448,9 +497,7 @@ Requires:       nss-mdns(x86-32)
 Requires:       gmp(x86-32)
 Requires:       gnutls(x86-32)
 Requires:       gstreamer1-plugins-good(x86-32)
-Requires:       jxrlib(x86-32)
 Requires:       libgcrypt(x86-32)
-Requires:       libxslt(x86-32)
 Requires:       libXcomposite(x86-32)
 Requires:       libXcursor(x86-32)
 Requires:       libXfixes(x86-32)
@@ -460,11 +507,7 @@ Requires:       libXinerama(x86-32)
 Requires:       libXrandr(x86-32)
 Requires:       libXrender(x86-32)
 Requires:       libXxf86vm(x86-32)
-#dlopen in windowscodesc (fixes rhbz#1085075)
-Requires:       libjpeg(x86-32)
-Requires:       libpng(x86-32)
 Requires:       libpcap(x86-32)
-Requires:       libtiff(x86-32)
 Requires:       mesa-libOSMesa(x86-32)
 Requires:       libv4l(x86-32)
 Requires:       samba-libs(x86-32)
@@ -484,9 +527,7 @@ Requires:       nss-mdns(x86-64)
 Requires:       gmp(x86-64)
 Requires:       gnutls(x86-64)
 Requires:       gstreamer1-plugins-good(x86-64)
-Requires:       jxrlib(x86-64)
 Requires:       libgcrypt(x86-64)
-Requires:       libxslt(x86-64)
 Requires:       libXcomposite(x86-64)
 Requires:       libXcursor(x86-64)
 Requires:       libXfixes(x86-64)
@@ -496,11 +537,7 @@ Requires:       libXinerama(x86-64)
 Requires:       libXrandr(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXxf86vm(x86-64)
-#dlopen in windowscodesc (fixes rhbz#1085075)
-Requires:       libjpeg(x86-64)
-Requires:       libpng(x86-64)
 Requires:       libpcap(x86-64)
-Requires:       libtiff(x86-64)
 Requires:       mesa-libOSMesa(x86-64)
 Requires:       libv4l(x86-64)
 Requires:       samba-libs(x86-64)
@@ -520,17 +557,12 @@ Requires:       nss-mdns
 Requires:       gmp
 Requires:       gnutls
 Requires:       gstreamer1-plugins-good
-Requires:       jxrlib
 Requires:       libgcrypt
 Requires:       libXcursor
 Requires:       libXfixes
 #Requires:       libXpresent
 Requires:       libXrender
-#dlopen in windowscodesc (fixes rhbz#1085075)
-Requires:       libjpeg
-Requires:       libpng
 Requires:       libpcap
-Requires:       libtiff
 Requires:       mesa-libOSMesa
 Requires:       libv4l
 Requires:       unixODBC
@@ -540,6 +572,20 @@ Requires:       vulkan-loader
 Requires:       libva
 %endif
 %endif
+
+%if !0%{?extfaudio}
+Provides:       libFAudio = %{wineFAudio}
+%endif
+Provides:       gsm = %{winegsm}
+Provides:       libjpeg = %{winejpeg}
+Provides:       lcms2 = %{winelcms2}
+Provides:       mpg123 = %{winempg123}
+Provides:       libpng = %{winepng}
+Provides:       libtiff = %{winetiff}
+Provides:       jxrlib = %{winejxrlib}
+Provides:       libxml2 = %{winexml2}
+Provides:       libxslt = %{winexslt}
+Provides:       zlib = %{winezlib}
 
 # removed as of 1.7.35
 Obsoletes:      wine-wow < 1.7.35
@@ -859,14 +905,36 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch201 -p1
 %patch202 -p1
 %patch203 -p1
+%patch204 -p1 -R
+%patch205 -p1 -R
+%patch206 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
-
 %patch901 -p1
+
+%if 0%{?extfaudio}
+%patch902 -p1 -R
+%patch903 -p1
+rm -rf libs/faudio
+cp -f %{S:904} patches/xactengine-initial/
+%endif
+
+%patch926 -p1 -R
+%patch925 -p1 -R
+%patch924 -p1 -R
+%patch923 -p1 -R
+%patch922 -p1 -R
+%patch921 -p1 -R
+%patch920 -p1 -R
+%patch949 -p1
+
+mkdir -p patches/mfplat-reverts
+cp -a %{mfplatreverts} patches/mfplat-reverts/
+rename '%{name}-tkg-' '' patches/mfplat-reverts/%{name}-tkg-*.patch
 
 %patch1006 -p1
 %patch1000 -p1
@@ -930,8 +998,10 @@ $patch_command -p1 -R -i patches/mfplat-streaming-support/0038-mfplat-Stub-out-M
 %patch1092 -p1
 %patch1093 -p1
 %patch1300 -p1
+%if 0%{?extfaudio}
 %patch1301 -p1
 %patch1302 -p1
+%endif
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -2024,10 +2094,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/ksproxy.%{wineax}
 %{_libdir}/wine/%{winedlldir}/ksuser.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ktmw32.%{winedll}
-%{_libdir}/wine/%{winesodir}/l3codeca.acm.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/l3codeca.acm
-%endif
+%{_libdir}/wine/%{winedlldir}/l3codeca.%{wineacm}
 %{_libdir}/wine/%{winedlldir}/light.%{winemsstyles}
 %{_libdir}/wine/%{winedlldir}/loadperf.%{winedll}
 %{_libdir}/wine/%{winedlldir}/localspl.%{winedll}
@@ -2055,11 +2122,10 @@ fi
 %{_libdir}/wine/%{winedlldir}/mmdevapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mofcomp.%{wineexe}
 %{_libdir}/wine/%{winesodir}/mountmgr.sys.so
-%{_libdir}/wine/%{winesodir}/mp3dmod.dll.so
 %if 0%{?wine_mingw}
 %{_libdir}/wine/%{winedlldir}/mountmgr.sys
-%{_libdir}/wine/%{winedlldir}/mp3dmod.dll
 %endif
+%{_libdir}/wine/%{winedlldir}/mp3dmod.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mpr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mprapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msacm32.%{winedll}
@@ -2078,10 +2144,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/msdrm.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msftedit.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msg711.%{wineacm}
-%{_libdir}/wine/%{winesodir}/msgsm32.acm.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/msgsm32.acm
-%endif
+%{_libdir}/wine/%{winedlldir}/msgsm32.%{wineacm}
 %{_libdir}/wine/%{winedlldir}/mshtml.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mshtml.%{winetlb}
 %{_libdir}/wine/%{winedlldir}/msi.%{winedll}
@@ -2134,10 +2197,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/mswsock.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msxml.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msxml2.%{winedll}
-%{_libdir}/wine/%{winesodir}/msxml3.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/msxml3.dll
-%endif
+%{_libdir}/wine/%{winedlldir}/msxml3.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msxml4.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msxml6.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mtxdm.%{winedll}
@@ -2216,6 +2276,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/riched20.%{winedll}
 %{_libdir}/wine/%{winedlldir}/riched32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rpcrt4.%{winedll}
+%{_libdir}/wine/%{winedlldir}/robocopy.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/rsabase.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rsaenh.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rstrtmgr.%{winedll}
@@ -2283,7 +2344,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/url.%{winedll}
 %{_libdir}/wine/%{winedlldir}/urlmon.%{winedll}
 %{_libdir}/wine/%{winedlldir}/usbd.%{winesys}
-%{_libdir}/wine/%{winesodir}/user32.so
 %{_libdir}/wine/%{winedlldir}/user32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/usp10.%{winedll}
 %{_libdir}/wine/%{winedlldir}/utildll.%{winedll}
@@ -2318,6 +2378,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/wimgapi.%{winedll}
 %{_libdir}/wine/%{winesodir}/win32u.so
 %{_libdir}/wine/%{winedlldir}/win32u.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.devices.enumeration.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.gaming.input.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.globalization.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.devices.%{winedll}
@@ -2374,7 +2435,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/wintrust.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winusb.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wlanapi.%{winedll}
-%{_libdir}/wine/%{winesodir}/wmphoto.so
 %{_libdir}/wine/%{winedlldir}/wmphoto.%{winedll}
 %{_libdir}/wine/%{winesodir}/wnaspi32.dll.so
 %if 0%{?wine_mingw}
@@ -2414,6 +2474,7 @@ fi
 %{_libdir}/wine/%{winesodir}/dnsapi.so
 %{_libdir}/wine/%{winedlldir}/dnsapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/iexplore.%{wineexe}
+%if 0%{?extfaudio}
 %{_libdir}/wine/%{winesodir}/xactengine2_0.dll.so
 %{_libdir}/wine/%{winesodir}/xactengine2_4.dll.so
 %{_libdir}/wine/%{winesodir}/xactengine2_7.dll.so
@@ -2424,6 +2485,12 @@ fi
 %{_libdir}/wine/%{winedlldir}/xactengine2_7.dll
 %{_libdir}/wine/%{winedlldir}/xactengine2_9.dll
 %endif
+%else
+%{_libdir}/wine/%{winedlldir}/xactengine2_0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xactengine2_4.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xactengine2_7.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xactengine2_9.%{winedll}
+%endif
 %if 0%{?wine_staging}
 #{_libdir}/wine/%%{winesodir}/xactengine2_1.dll.so
 #{_libdir}/wine/%%{winesodir}/xactengine2_2.dll.so
@@ -2433,6 +2500,7 @@ fi
 #{_libdir}/wine/%%{winesodir}/xactengine2_8.dll.so
 #{_libdir}/wine/%%{winesodir}/xactengine2_10.dll.so
 %endif
+%if 0%{?extfaudio}
 %{_libdir}/wine/%{winesodir}/xactengine3_0.dll.so
 %{_libdir}/wine/%{winesodir}/xactengine3_1.dll.so
 %{_libdir}/wine/%{winesodir}/xactengine3_2.dll.so
@@ -2496,6 +2564,39 @@ fi
 %{_libdir}/wine/%{winedlldir}/xaudio2_7.dll
 %{_libdir}/wine/%{winedlldir}/xaudio2_8.dll
 %{_libdir}/wine/%{winedlldir}/xaudio2_9.dll
+%endif
+%else
+%{_libdir}/wine/%{winedlldir}/xactengine3_0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xactengine3_1.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xactengine3_2.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xactengine3_3.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xactengine3_4.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xactengine3_5.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xactengine3_6.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xactengine3_7.%{winedll}
+%{_libdir}/wine/%{winedlldir}/x3daudio1_0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/x3daudio1_1.%{winedll}
+%{_libdir}/wine/%{winedlldir}/x3daudio1_2.%{winedll}
+%{_libdir}/wine/%{winedlldir}/x3daudio1_3.%{winedll}
+%{_libdir}/wine/%{winedlldir}/x3daudio1_4.%{winedll}
+%{_libdir}/wine/%{winedlldir}/x3daudio1_5.%{winedll}
+%{_libdir}/wine/%{winedlldir}/x3daudio1_6.%{winedll}
+%{_libdir}/wine/%{winedlldir}/x3daudio1_7.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xapofx1_1.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xapofx1_2.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xapofx1_3.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xapofx1_4.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xapofx1_5.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xaudio2_0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xaudio2_1.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xaudio2_2.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xaudio2_3.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xaudio2_4.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xaudio2_5.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xaudio2_6.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xaudio2_7.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xaudio2_8.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xaudio2_9.%{winedll}
 %endif
 %{_libdir}/wine/%{winedlldir}/xcopy.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/xinput1_1.%{winedll}
@@ -2829,7 +2930,6 @@ fi
 
 # cms subpackage
 %files cms
-%{_libdir}/wine/%{winesodir}/mscms.so
 %{_libdir}/wine/%{winedlldir}/mscms.%{winedll}
 
 # twain subpackage
@@ -2900,6 +3000,10 @@ fi
 
 
 %changelog
+* Mon Oct 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.20-100
+- 6.20
+- Add reverts for external FAudio and mfplat
+
 * Wed Oct 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.19-101.20211012git50f889f
 - Snapshot
 
