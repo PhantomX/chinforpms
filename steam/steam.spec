@@ -3,13 +3,15 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%global udev_id 8a3f1a0e2d208b670aafd5d65e216c71f75f1684
+%global appstream_id com.valvesoftware.Steam
+
+%global udev_id d87ef558408c5e7a1a793d738db4c9dc2cb5f8fa
 
 # If firewalld macro is not defined, define it here:
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.71
+Version:        1.0.0.72
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
@@ -19,7 +21,7 @@ License:        Steam License Agreement and MIT
 URL:            http://www.steampowered.com/
 ExclusiveArch:  i686
 
-Source0:        http://repo.steampowered.com/%{name}/pool/%{name}/s/%{name}/%{name}_%{version}.tar.gz
+Source0:        https://repo.steampowered.com/%{name}/archive/beta/%{name}_%{version}.tar.gz
 Source1:        %{name}.sh
 Source2:        %{name}.csh
 Source5:        README.Fedora
@@ -50,6 +52,8 @@ Patch10:         %{name}-log-stdout-to-file.patch
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  systemd
+
+BuildRequires:  libappstream-glib
 
 # Required to run the initial setup
 Requires:       tar
@@ -95,14 +99,8 @@ Requires:       systemd-libs%{?_isa}
 Requires:       firewalld-filesystem
 Requires(post): firewalld-filesystem
 
-# Required for hardware decoding during In-Home Streaming (intel)
-%if (0%{?fedora} && 0%{?fedora} < 28)
-Requires:       libva-intel-driver%{?_isa}
-%else
+# Required for hardware encoding/decoding during Remote Play (intel/radeon/amdgpu/nouveau)
 Requires:       libva%{?_isa}
-%endif
-
-# Required for hardware decoding during In-Home Streaming (radeon/nouveau)
 Requires:       libvdpau%{?_isa}
 
 # Required for having a functioning menu on the tray icon
@@ -124,8 +122,6 @@ Recommends:     (xdg-desktop-portal-gtk if gnome-shell)
 Recommends:     (xdg-desktop-portal-kde if kwin)
 
 Requires:       steam-devices = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       steam-noruntime = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      steam-noruntime < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description
 Steam is a software distribution service with an online store, automated
@@ -185,7 +181,7 @@ install -m 644 -p %{SOURCE7} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
-
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appstream_id}.metainfo.xml
 
 %files
 %{!?_licensedir:%global license %%doc}
@@ -199,6 +195,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/pixmaps/%{name}_tray_mono.png
 %{_libdir}/%{name}/
 %{_mandir}/man6/%{name}.*
+%{_metainfodir}/%{appstream_id}.metainfo.xml
 %config(noreplace) %{_sysconfdir}/profile.d/%{name}.*sh
 %dir %{_prefix}/lib/systemd/system.conf.d/
 %{_prefix}/lib/systemd/system.conf.d/01-steam.conf
@@ -211,6 +208,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Oct 26 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.72-100
+- 1.0.0.72
+- RPMFusion sync
+
 * Tue Aug 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.71-100
 - 1.0.0.71
 - RPMFusion sync

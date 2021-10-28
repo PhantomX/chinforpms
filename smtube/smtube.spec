@@ -1,12 +1,15 @@
+%global vc_url https://github.com/smplayer-dev/%{name}
+
 Name:           smtube
-Version:        21.7.0
+Version:        21.10.0
 Release:        100%{?dist}
 Summary:        YouTube browser for SMPlayer
 Epoch:          1
 
 License:        GPLv2+
 URL:            http://www.smtube.org
-Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
+%dnl Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
+Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.bz2
 
 # Do not spam .xsession-errors
 Patch1:         0001-Do-not-spam-xsession-errors.patch
@@ -21,7 +24,7 @@ BuildRequires:  pkgconfig(Qt5WebKitWidgets)
 BuildRequires:  pkgconfig(Qt5Widgets)
 BuildRequires:  qt5-linguist
 Requires:       (smplayer or mplayer or mpv or vlc or dragon or totem)
-Requires:       youtube-dl
+Requires:       (youtube-dlp or youtube-dl)
 Requires:       hicolor-icon-theme
 
 %{?_qt5_version:Requires: qt5-qtbase%{?_isa} >= %{_qt5_version}}
@@ -62,6 +65,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Oct 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.10.0-100
+- 21.10.0
+- R: youtube-dlp
+
 * Sat Aug 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.7.0-100
 - 21.7.0
 
