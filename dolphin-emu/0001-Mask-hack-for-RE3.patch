@@ -1456,8 +1456,8 @@ index 7adabbf..3f79f6e 100644
 +  //static void ReThreeRoomIdOsd(const std::string& fullname, u32 width);
 +  //static void ReThreeRoomIdOsdInit();
 +
-   HiresTexture() {}
-   bool m_has_arbitrary_mipmaps;
+   HiresTexture() = default;
+   bool m_has_arbitrary_mipmaps = false;
  };
 -- 
 2.29.2

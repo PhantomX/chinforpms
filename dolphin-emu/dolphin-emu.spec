@@ -19,9 +19,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit 6987ea059648d1e74cba4aec2e69bba5890239e1
+%global commit 7558da22d757058ccb8ad087d06092cded50cfc4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211012
+%global date 20211027
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -35,7 +35,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        146%{?gver}%{?dist}
+Release:        147%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -157,7 +157,7 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 ##Bundled code ahoy
 #The following isn't in Fedora yet:
 Provides:       bundled(FreeSurround)
-Provides:       bundled(imgui) = 1.70
+Provides:       bundled(imgui) = 1.85
 Provides:       bundled(cpp-argparse)
 #Is this technically bundled code? Adding this just in case:            
 #https://github.com/AdmiralCurtiss/rangeset
@@ -407,6 +407,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Oct 28 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-147.20211027git7558da2
+- Update
+
 * Tue Oct 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-146.20211012git6987ea0
 - Bump
 
