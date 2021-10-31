@@ -1,7 +1,7 @@
-%global commit 0925a730272ed0c97f64c3365ebe542401f60d7c
+%global commit 5f93c683ab0163cb34482fe18549cf249b8b074b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211015
-%global with_snapshot 0
+%global date 20211029
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -66,6 +66,7 @@
 %global winedll16 dll16%{?libext}
 %global winedrv drv%{?libext}
 %global winedrv16 drv16%{?libext}
+%global wineds ds%{?libext}
 %global wineexe exe%{?libext}
 %global wineexe16 exe16%{?libext}
 %global winemod16 mod16%{?libext}
@@ -78,7 +79,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.20
+%global wine_stagingver b10ac7d8acd88850d743f854e69e03e18bd64515
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -86,12 +87,12 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id eca6853cce220c7e95e040e8a8ddc600fc509e59
+%global ge_id 33e7f68cc4d3347b6af5614b610e1eb0754d4b58
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id cab4dbb3c982861cc5623c1833bfb590462592f1
+%global tkg_id ae5dff8628959fc5d2a561abab1c0e6c07018db8
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid b8a4cdb343aaae546ce25c7e542356794ab6a770
+%global tkg_cid f1b3c46b7a6303bad3add8fe7b0b9d3ba3ec281d
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %if 0%{?wine_staging}
@@ -144,7 +145,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.20
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -228,6 +229,7 @@ Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 Patch902:       %{whq_url}/d8be85863fedf6982944d06ebd1ce5904cb3d4e1#/%{name}-whq-d8be858.patch
 Patch903:       0001-Revert-libs-Import-code-from-upstream-FAudio-21.10.patch
 Source904:      0001-x3daudio1_7-Create-import-library.patch
+Patch905:       %{whq_url}/22c26a2dde318b5b370fc269cab871e5a8bc4231#/%{name}-whq-22c26a2.patch
 
 # mfplat reverts / 920-971
 Patch920:       %{whq_url}/2d0dc2d47ca6b2d4090dfe32efdba4f695b197ce#/%{name}-whq-mfplat-2d0dc2d.patch
@@ -237,6 +239,24 @@ Patch923:       %{whq_url}/4239f2acf77d9eaa8166628d25c1336c1599df33#/%{name}-whq
 Patch924:       %{whq_url}/4f10b95c8355c94e4c6f506322b80be7ae7aa174#/%{name}-whq-mfplat-4f10b95.patch
 Patch925:       %{whq_url}/dd182a924f89b948010ecc0d79f43aec83adfe65#/%{name}-whq-mfplat-dd182a9.patch
 Patch926:       %{whq_url}/37e9f0eadae9f62ccae8919a92686695927e9274#/%{name}-whq-mfplat-37e9f0e.patch
+Patch927:       wine-mfplat-42d0d8d.patch
+Patch928:       %{whq_url}/b51bfccd89b806a3bab78e16419aac66827ba95c#/%{name}-whq-mfplat-b51bfcc.patch
+Patch929:       %{whq_url}/c76418fbfd72e496c800aec28c5a1d713389287f#/%{name}-whq-mfplat-c76418f.patch
+Patch930:       %{whq_url}/51b6d45503e5849f28cce1a9aa9b7d3dba9de0fe#/%{name}-whq-mfplat-51b6d45.patch
+Patch931:       %{whq_url}/87e4c289e46701c6f582e95c330eefb6fc5ec68a#/%{name}-whq-mfplat-87e4c28.patch
+Patch932:       %{whq_url}/8bd3c8bf5a9ea4765f791f1f78f60bcf7060eba6#/%{name}-whq-mfplat-8bd3c8b.patch
+Patch933:       %{whq_url}/40ced5e054d1f16ce47161079c960ac839910cb7#/%{name}-whq-mfplat-40ced5e.patch
+Patch934:       %{whq_url}/250f86b02389b2148471ad67bcc0775ff3b2c6ba#/%{name}-whq-mfplat-250f86b.patch
+Patch935:       %{whq_url}/d39747f450ad4356868f46cfda9a870347cce9dd#/%{name}-whq-mfplat-d39747f.patch
+Patch936:       %{whq_url}/d5154e7eea70a19fe528f0de6ebac0186651e0f3#/%{name}-whq-mfplat-d5154e7.patch
+Patch937:       %{whq_url}/c45be242e5b6bc0a80796d65716ced8e0bc5fd41#/%{name}-whq-mfplat-c45be24.patch
+Patch938:       %{whq_url}/7f481ea05faf02914ecbc1932703e528511cce1a#/%{name}-whq-mfplat-7f481ea.patch
+Patch939:       %{whq_url}/25948222129fe48ac4c65a4cf093477d19d25f18#/%{name}-whq-mfplat-2594822.patch
+Patch940:       %{whq_url}/0dc309ef6ac54484d92f6558d6ca2f8e50eb28e2#/%{name}-whq-mfplat-0dc309e.patch
+Patch941:       %{whq_url}/95ffc879882fdedaf9fdf40eb1c556a025ae5bfd#/%{name}-whq-mfplat-95ffc87.patch
+Patch942:       %{whq_url}/b3655b5be5f137281e8757db4e6985018b21c296#/%{name}-whq-mfplat-b3655b5.patch
+Patch943:       %{whq_url}/bc52edc19d8a45b9062d9568652403251872026e#/%{name}-whq-mfplat-bc52edc.patch
+Patch944:       %{whq_url}/f26e0ba212e6164eb7535f472415334d1a9c9044#/%{name}-whq-mfplat-f26e0ba.patch
 
 Patch949:       0001-mfplat-restore-definitions.patch
 Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
@@ -291,19 +311,22 @@ Patch1031:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-t
 Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/virtual_alloc_remi2.mypatch#/%{name}-tkg-virtual_alloc_remi2.patch
 Patch1033:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
-Patch1035:       %{tkg_url}/hotfixes/memset/memset.mypatch#/%{name}-tkg-memset.patch
-Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes.patch
-Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
+Patch1035:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes.patch
+Patch1036:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
-Patch1092:       %{valve_url}/commit/3b7198e6d12da7829cd0e080e30896fd12696e7e.patch#/%{name}-valve-3b7198e.patch
+Patch1092:       %{ge_url}/wine-hotfixes/staging/mfplat_dxgi_stub.patch#/%{name}-ge-mfplat_dxgi_stub.patch
 Patch1093:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.patch#/%{name}-valve-ba230cf.patch
+Patch1094:       %{ge_url}/wine-hotfixes/testing/lowlatency_audio.patch#/%{name}-ge-lowlatency_audio.patch
+Patch1095:       %{ge_url}/wine-hotfixes/testing/lowlatency_audio_pulse.patch#/%{name}-ge-lowlatency_audio_pulse.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
 Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
+Patch1303:       0001-configure-fix-sane-test.patch
+Patch1304:       0001-Ignore-lowlatency-if-STAGING_AUDIO_PERIOD-is-not-set.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -364,6 +387,7 @@ BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  pkgconfig(libgcrypt)
 BuildRequires:  pkgconfig(libgphoto2)
 BuildRequires:  libieee1284-devel
+BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(librsvg-2.0)
@@ -415,7 +439,6 @@ Requires:       wine-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
 # x86-32 parts
 %ifarch %{ix86} x86_64
 Requires:       wine-core(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-capi(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-cms(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-ldap(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -431,7 +454,6 @@ Requires:       mesa-dri-drivers(x86-32)
 # x86-64 parts
 %ifarch x86_64
 Requires:       wine-core(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-capi(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-cms(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-ldap(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -446,7 +468,6 @@ Requires:       mesa-dri-drivers(x86-64)
 # ARM parts
 %ifarch %{arm} aarch64
 Requires:       wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-capi = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-cms = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-ldap = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -460,7 +481,6 @@ Requires:       samba-winbind-clients
 # aarch64 parts
 %ifarch aarch64
 Requires:       wine-core(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-capi(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-cms(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-ldap(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -589,7 +609,11 @@ Provides:       zlib = %{winezlib}
 
 # removed as of 1.7.35
 Obsoletes:      wine-wow < 1.7.35
-Provides:       wine-wow = %{version}-%{release}
+Provides:       wine-wow = %{?epoch:%{epoch}:}%{version}-%{release}
+
+# removed as of 6.21
+Obsoletes:      wine-capi < %{?epoch:%{epoch}:}6.20-101
+Provides:       wine-capi = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
@@ -844,13 +868,6 @@ Requires: sane-backends-libs
 %description twain
 Twain support for wine
 
-%package capi
-Summary: ISDN support for wine
-Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description capi
-ISDN support for wine
-
 %package devel
 Summary: Wine development environment
 Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -917,12 +934,31 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch901 -p1
 
 %if 0%{?extfaudio}
+%patch905 -p1 -R
 %patch902 -p1 -R
 %patch903 -p1
 rm -rf libs/faudio
 cp -f %{S:904} patches/xactengine-initial/
 %endif
 
+%patch944 -p1 -R
+%patch943 -p1 -R
+%patch942 -p1 -R
+%patch941 -p1 -R
+%patch940 -p1 -R
+%patch939 -p1 -R
+%patch938 -p1 -R
+%patch937 -p1 -R
+%patch936 -p1 -R
+%patch935 -p1 -R
+%patch934 -p1 -R
+%patch933 -p1 -R
+%patch932 -p1 -R
+%patch931 -p1 -R
+%patch930 -p1 -R
+%patch929 -p1 -R
+%patch928 -p1 -R
+%patch927 -p1 -R
 %patch926 -p1 -R
 %patch925 -p1 -R
 %patch924 -p1 -R
@@ -986,7 +1022,6 @@ fi
 %patch1034 -p1
 %patch1035 -p1
 %patch1036 -p1
-%patch1037 -p1
 if [ -f patch1025.patch ] ;then
 %patch1030 -p1
 fi
@@ -994,14 +1029,17 @@ fi
 %patch1032 -p1
 %patch1089 -p1
 %patch1091 -p1 -R
-$patch_command -p1 -R -i patches/mfplat-streaming-support/0038-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
 %patch1092 -p1
 %patch1093 -p1
+%patch1094 -p1
+%patch1095 -p1
 %patch1300 -p1
 %if 0%{?extfaudio}
 %patch1301 -p1
 %patch1302 -p1
 %endif
+%patch1303 -p1
+%patch1304 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -1872,6 +1910,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/chcp.%{winecom}
 %{_libdir}/wine/%{winedlldir}/clock.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/clusapi.%{winedll}
+%{_libdir}/wine/%{winedlldir}/cng.%{winesys}
 %{_libdir}/wine/%{winedlldir}/combase.%{winedll}
 %{_libdir}/wine/%{winedlldir}/comcat.%{winedll}
 %{_libdir}/wine/%{winedlldir}/comctl32.%{winedll}
@@ -1890,10 +1929,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/cryptnet.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cryptsp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cryptui.%{winedll}
-%{_libdir}/wine/%{winesodir}/ctapi32.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/ctapi32.dll
-%endif
+%{_libdir}/wine/%{winesodir}/ctapi32.so
+%{_libdir}/wine/%{winedlldir}/ctapi32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ctl3d32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d2d1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3d10.%{winedll}
@@ -2044,10 +2081,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/gdi32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/gdiplus.%{winedll}
 %{_libdir}/wine/%{winedlldir}/glu32.%{winedll}
-%{_libdir}/wine/%{winesodir}/gphoto2.ds.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/gphoto2.ds
-%endif
+%{_libdir}/wine/%{winesodir}/gphoto2.so
+%{_libdir}/wine/%{winedlldir}/gphoto2.%{wineds}
 %{_libdir}/wine/%{winedlldir}/gpkcsp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/hal.%{winedll}
 %{_libdir}/wine/%{winedlldir}/hh.%{wineexe}
@@ -2139,6 +2174,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/msctf.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msctfp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msdaps.%{winedll}
+%{_libdir}/wine/%{winedlldir}/msdasql.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msdelta.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msdmo.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msdrm.%{winedll}
@@ -2387,7 +2423,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/win32k.%{winesys}
 %{_libdir}/wine/%{winedlldir}/windows.networking.connectivity.%{winedll}
 %endif
-%{_libdir}/wine/%{winesodir}/windowscodecs.so
 %{_libdir}/wine/%{winedlldir}/windowscodecs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecsext.%{winedll}
 %{_libdir}/wine/%{winesodir}/winebus.so
@@ -2417,10 +2452,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/wininet.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winmm.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winnls32.%{winedll}
-%{_libdir}/wine/%{winesodir}/winspool.drv.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/winspool.drv
-%endif
+%{_libdir}/wine/%{winesodir}/winspool.so
+%{_libdir}/wine/%{winedlldir}/winspool.%{winedrv}
 %{_libdir}/wine/%{winedlldir}/winsta.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wlanui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmasf.%{winedll}
@@ -2935,17 +2968,8 @@ fi
 # twain subpackage
 %files twain
 %{_libdir}/wine/%{winedlldir}/twain_32.%{winedll}
-%{_libdir}/wine/%{winesodir}/sane.ds.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/sane.ds
-%endif
-
-# capi subpackage
-%files capi
-%{_libdir}/wine/%{winesodir}/capi2032.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/capi2032.dll
-%endif
+%{_libdir}/wine/%{winesodir}/sane.so
+%{_libdir}/wine/%{winedlldir}/sane.%{wineds}
 
 %files devel
 %{_bindir}/function_grep.pl
@@ -3000,6 +3024,10 @@ fi
 
 
 %changelog
+* Sat Oct 30 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.20-101.20211029git5f93c68
+- Snapshot
+- Obsoletes wine-capi packages
+
 * Mon Oct 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.20-100
 - 6.20
 - Add reverts for external FAudio and mfplat

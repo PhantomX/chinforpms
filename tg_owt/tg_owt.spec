@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
-%global commit0 575fb17d2853c43329e45f6693370f5e41668055
+%global commit0 d578c760dc6f1ae5f0f3bb5317b0b2ed04b79138
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20210915
+%global date 20211021
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -18,7 +18,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -156,8 +156,6 @@ cp -f -p src/third_party/usrsctp/README.chromium legal/README.usrsctp
 cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/LICENSE.TXT legal/LICENSE.libwebm
 cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/PATENTS.TXT legal/PATENTS.libwebm
 cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/README.libvpx legal/README.libwebm
-cp -f -p src/base/third_party/libevent/LICENSE legal/LICENSE.libevent
-cp -f -p src/base/third_party/libevent/README.chromium legal/README.libevent
 cp -f -p src/common_audio/third_party/spl_sqrt_floor/LICENSE legal/LICENSE.spl_sqrt_floor
 cp -f -p src/common_audio/third_party/spl_sqrt_floor/README.chromium legal/README.spl_sqrt_floor
 cp -f -p src/modules/third_party/fft/LICENSE legal/LICENSE.fft
@@ -200,6 +198,9 @@ cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
 
 
 %changelog
+* Sun Oct 31 2021 Phantom X <megaphantomx at hotmail dot com> - 0-107.20211021gitd578c76
+- Update
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 0-106.20210915git575fb17
 - Last snapshot
 

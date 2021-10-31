@@ -1,6 +1,6 @@
-From ec556fa879edc7e441dc755395001e10765f4956 Mon Sep 17 00:00:00 2001
+From c9836330c5811baff29f8b1a9ace3fda1c949442 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 26 Jun 2021 13:22:00 -0300
+Date: Sat, 30 Oct 2021 23:57:28 -0300
 Subject: [PATCH] Do not pop up emoji tabbed panel and media menu on mouse over
 
 Updated from https://github.com/telegramdesktop/tdesktop/pull/8009 by
@@ -15,10 +15,10 @@ Nicholas Guriev <guriev-ns@ya.ru>
  6 files changed, 15 insertions(+), 19 deletions(-)
 
 diff --git a/Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp b/Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp
-index 189c8ec..75881e5 100644
+index fd98956..a7cb886 100644
 --- a/Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp
 +++ b/Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp
-@@ -231,10 +231,6 @@ void TabbedPanel::leaveEventHook(QEvent *e) {
+@@ -229,10 +229,6 @@ void TabbedPanel::leaveEventHook(QEvent *e) {
  	return TWidget::leaveEventHook(e);
  }
  
@@ -29,7 +29,7 @@ index 189c8ec..75881e5 100644
  void TabbedPanel::otherLeave() {
  	if (preventAutoHide()) {
  		return;
-@@ -410,9 +406,7 @@ void TabbedPanel::showStarted() {
+@@ -408,9 +404,7 @@ void TabbedPanel::showStarted() {
  }
  
  bool TabbedPanel::eventFilter(QObject *obj, QEvent *e) {
@@ -41,22 +41,22 @@ index 189c8ec..75881e5 100644
  	}
  	return false;
 diff --git a/Telegram/SourceFiles/chat_helpers/tabbed_panel.h b/Telegram/SourceFiles/chat_helpers/tabbed_panel.h
-index edaa45f..4a88575 100644
+index 48dba77..6f1bf5a 100644
 --- a/Telegram/SourceFiles/chat_helpers/tabbed_panel.h
 +++ b/Telegram/SourceFiles/chat_helpers/tabbed_panel.h
 @@ -60,7 +60,6 @@ public:
  protected:
- 	void enterEventHook(QEvent *e) override;
+ 	void enterEventHook(QEnterEvent *e) override;
  	void leaveEventHook(QEvent *e) override;
 -	void otherEnter();
  	void otherLeave();
  
  	void paintEvent(QPaintEvent *e) override;
 diff --git a/Telegram/SourceFiles/history/history_widget.cpp b/Telegram/SourceFiles/history/history_widget.cpp
-index 91833a8..370fd3a 100644
+index 59654c2..6dd9650 100644
 --- a/Telegram/SourceFiles/history/history_widget.cpp
 +++ b/Telegram/SourceFiles/history/history_widget.cpp
-@@ -859,8 +859,13 @@ void HistoryWidget::initVoiceRecordBar() {
+@@ -924,8 +924,13 @@ void HistoryWidget::initVoiceRecordBar() {
  void HistoryWidget::initTabbedSelector() {
  	refreshTabbedPanel();
  
@@ -73,10 +73,10 @@ index 91833a8..370fd3a 100644
  
  	const auto selector = controller()->tabbedSelector();
 diff --git a/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp b/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
-index 0180918..13873db 100644
+index 3ac7694..07f2e0c 100644
 --- a/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
 +++ b/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
-@@ -1488,8 +1488,13 @@ void ComposeControls::initTabbedSelector() {
+@@ -1539,8 +1539,13 @@ void ComposeControls::initTabbedSelector() {
  		setTabbedPanel(nullptr);
  	}
  
@@ -93,10 +93,10 @@ index 0180918..13873db 100644
  
  	const auto selector = _window->tabbedSelector();
 diff --git a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp b/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
-index ab52351..c3b2dc6 100644
+index 31e1290..4b516e2 100644
 --- a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
 +++ b/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
-@@ -469,7 +469,6 @@ OverlayWidget::OverlayWidget()
+@@ -466,7 +466,6 @@ OverlayWidget::OverlayWidget()
  	_docCancel->addClickHandler([=] { saveCancel(); });
  
  	_dropdown->setHiddenCallback([this] { dropdownHidden(); });
@@ -104,7 +104,7 @@ index ab52351..c3b2dc6 100644
  }
  
  void OverlayWidget::refreshLang() {
-@@ -4179,11 +4178,6 @@ void OverlayWidget::updateOverRect(OverState state) {
+@@ -4228,11 +4227,6 @@ void OverlayWidget::updateOverRect(OverState state) {
  bool OverlayWidget::updateOverState(OverState newState) {
  	bool result = true;
  	if (_over != newState) {
@@ -117,7 +117,7 @@ index ab52351..c3b2dc6 100644
  		updateOverRect(newState);
  		if (_over != OverNone) {
 diff --git a/Telegram/SourceFiles/media/view/media_view_overlay_widget.h b/Telegram/SourceFiles/media/view/media_view_overlay_widget.h
-index 3d567ed..76fce9c 100644
+index e61460b..b8ccf76 100644
 --- a/Telegram/SourceFiles/media/view/media_view_overlay_widget.h
 +++ b/Telegram/SourceFiles/media/view/media_view_overlay_widget.h
 @@ -543,7 +543,6 @@ private:
@@ -129,5 +129,5 @@ index 3d567ed..76fce9c 100644
  	bool _receiveMouse = true;
  
 -- 
-2.31.1
+2.33.1
 

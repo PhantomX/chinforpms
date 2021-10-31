@@ -1,0 +1,29 @@
+From 34adf8ccef3ebce5a2e0bb605e4fb72928775987 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 30 Oct 2021 20:50:34 -0300
+Subject: [PATCH] Ignore lowlatency if STAGING_AUDIO_PERIOD is not set
+
+---
+ dlls/winepulse.drv/pulse.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/dlls/winepulse.drv/pulse.c b/dlls/winepulse.drv/pulse.c
+index c181c6b..f9a51c4 100644
+--- a/dlls/winepulse.drv/pulse.c
++++ b/dlls/winepulse.drv/pulse.c
+@@ -520,6 +520,12 @@ static void pulse_probe_settings(int render, WAVEFORMATEXTENSIBLE *fmt) {
+                 pulse_def_period[!render] = DefaultPeriod;
+         }
+     }
++    else {
++        if (pulse_min_period[!render] < MinimumPeriod)
++            pulse_min_period[!render] = MinimumPeriod;
++        if (pulse_def_period[!render] < DefaultPeriod)
++            pulse_def_period[!render] = DefaultPeriod;
++    }
+ 
+     wfx->wFormatTag = WAVE_FORMAT_EXTENSIBLE;
+     wfx->cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
+-- 
+2.33.1
+

@@ -1,0 +1,39 @@
+From a56ff319812c7dabab980b2a6f9cf1d345ff1d41 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 30 Oct 2021 18:02:51 -0300
+Subject: [PATCH] configure: fix sane test
+
+---
+ configure    | 2 +-
+ configure.ac | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configure b/configure
+index 4e8784b..e705dd5 100755
+--- a/configure
++++ b/configure
+@@ -13458,7 +13458,7 @@ fi
+ CPPFLAGS=$ac_save_CPPFLAGS
+ 
+ fi
+-if test "x$ac_cv_lib_soname_sane" = "x"; then :
++if test "x$ac_cv_lib_sane_sane_init" = "x"; then :
+   case "x$with_sane" in
+   x)   as_fn_append wine_notices "|libsane ${notice_platform}development files not found, scanners won't be supported." ;;
+   xno) ;;
+diff --git a/configure.ac b/configure.ac
+index 4fa074d..4faea36 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1380,7 +1380,7 @@ then
+         [AC_CHECK_HEADER(sane/sane.h,
+             [AC_CHECK_LIB(sane,sane_init,[:],,[$SANE_LIBS])])])
+ fi
+-WINE_NOTICE_WITH(sane,[test "x$ac_cv_lib_soname_sane" = "x"],
++WINE_NOTICE_WITH(sane,[test "x$ac_cv_lib_sane_sane_init" = "x"],
+                  [libsane ${notice_platform}development files not found, scanners won't be supported.],
+                  [enable_sane_ds])
+ 
+-- 
+2.33.1
+

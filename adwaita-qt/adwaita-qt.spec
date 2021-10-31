@@ -1,6 +1,6 @@
-%global commit 1a089c8f0b1e111fd1b077de2180ac125708b327
+%global commit 8860bcb712d1f32c5888b0dab3a5919600129f89
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210520
+%global date 20211008
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,7 +8,7 @@
 %endif
 
 Name:           adwaita-qt
-Version:        1.3.50
+Version:        1.4.50
 Release:        100%{?gver}%{?dist}
 
 License:        LGPLv2+
@@ -26,6 +26,7 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 # Remove some ugly paddings
 Patch10:        %{name}-chinforpms.patch
+Patch11:        0001-set-old-menu-selected-color.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -35,6 +36,16 @@ BuildRequires:  cmake(Qt5DBus)
 BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5Widgets)
 BuildRequires:  cmake(Qt5X11Extras)
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6DBus)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  pkgconfig(xcb)
+
+Obsoletes:      adwaita-qt4 < 1.1.90
+Obsoletes:      adwaita-qt-common < 1.1.90
+
+Requires:       adwaita-qt5
 
 
 %description
@@ -43,26 +54,46 @@ Theme to let Qt applications fit nicely into Fedora Workstation
 
 %package -n adwaita-qt5
 Summary:        Adwaita Qt5 theme
+Requires:       libadwaita-qt5%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description -n adwaita-qt5
-Adwaita theme variant for applications utilizing Qt5
+Adwaita theme variant for applications utilizing Qt5.
+
+%package -n libadwaita-qt5
+Summary:        Adwaita Qt5 library
+
+%description -n libadwaita-qt5
+%{summary}.
+
+%package -n libadwaita-qt5-devel
+Summary:        Development files for libadwaita-qt5
+Requires:       libadwaita-qt5%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description -n libadwaita-qt5-devel
+The libadwaita-qt5-devel package contains libraries and header files for
+developing applications that use libadwaita-qt5.
 
 
-%package libs
-Summary:        Adwaita Qt common libraries
-Obsoletes:      adwaita-qt4 < %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      %{name}-common < %{?epoch:%{epoch}:}%{version}-%{release}
+%package -n adwaita-qt6
+Summary:        Adwaita Qt6 theme
+Requires:       libadwaita-qt6%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description libs
-Adwaita Qt common libraries.
+%description -n adwaita-qt6
+Adwaita theme variant for applications utilizing Qt6.
 
+%package -n libadwaita-qt6
+Summary:        Adwaita Qt6 library
 
-%package libs-devel
-Summary:        Development files for libvkd3d-utils
-Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+%description -n libadwaita-qt6
+%{summary}.
 
-%description libs-devel
-Development files for %{name}.
+%package -n libadwaita-qt6-devel
+Summary:        Development files for libadwaita-qt6
+Requires:       libadwaita-qt6%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description -n libadwaita-qt6-devel
+The libadwaita-qt6-devel package contains libraries and header files for
+developing applications that use libadwaita-qt6.
 
 
 %prep
@@ -72,17 +103,31 @@ Development files for %{name}.
 %autosetup -p1
 %endif
 
-
 %build
 
 %{cmake} \
 %{nil}
 
+mkdir qt6build
+pushd qt6build
+%{cmake} -S .. \
+  -DUSE_QT6:BOOL=ON \
+%{nil}
+
+popd
+
 %cmake_build
 
+pushd qt6build
+%cmake_build
+popd
 
 %install
 %cmake_install
+
+pushd qt6build
+%cmake_install
+popd
 
 
 %files -n adwaita-qt5
@@ -90,24 +135,39 @@ Development files for %{name}.
 %doc README.md
 %{_qt5_plugindir}/styles/adwaita.so
 
-
-%files libs
-%license LICENSE.LGPL2
-%doc README.md
+%files -n libadwaita-qt5
 %{_libdir}/libadwaitaqt.so.*
 %{_libdir}/libadwaitaqtpriv.so.*
 
-
-%files libs-devel
-%license LICENSE.LGPL2
+%files -n libadwaita-qt5-devel
 %{_includedir}/AdwaitaQt/*.h
 %{_libdir}/libadwaitaqt.so
 %{_libdir}/libadwaitaqtpriv.so
 %{_libdir}/cmake/AdwaitaQt/
 %{_libdir}/pkgconfig/%{name}.pc
 
+%files -n adwaita-qt6
+%license LICENSE.LGPL2
+%doc README.md
+%{_qt6_plugindir}/styles/adwaita.so
+
+%files -n libadwaita-qt6
+%{_libdir}/libadwaitaqt6.so.*
+%{_libdir}/libadwaitaqt6priv.so.*
+
+%files -n libadwaita-qt6-devel
+%{_includedir}/AdwaitaQt6/*.h
+%{_libdir}/libadwaitaqt6.so
+%{_libdir}/libadwaitaqt6priv.so
+%{_libdir}/cmake/AdwaitaQt6/
+%{_libdir}/pkgconfig/adwaita-qt6.pc
+
 
 %changelog
+* Sun Oct 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.50-100.20211008git8860bcb
+- 1.4.50 snapshot
+- Add Qt6 support
+
 * Wed Jun 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.3.50-100.20210520git1a089c8
 - 1.3.50 snapshot
 

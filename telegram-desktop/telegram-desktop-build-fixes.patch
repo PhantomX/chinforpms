@@ -6,8 +6,8 @@ index d8c623a..e5b6833 100644
      nuget_add_winrt(Telegram)
  endif()
  
--set_target_properties(Telegram PROPERTIES AUTOMOC ON AUTORCC ON)
-+set_target_properties(Telegram PROPERTIES AUTOMOC ON AUTORCC ON SKIP_BUILD_RPATH ON)
+-set_target_properties(Telegram PROPERTIES AUTOMOC ON)
++set_target_properties(Telegram PROPERTIES AUTOMOC ON SKIP_BUILD_RPATH ON)
+ target_prepare_qrc(Telegram)
  
  target_link_libraries(Telegram
- PRIVATE

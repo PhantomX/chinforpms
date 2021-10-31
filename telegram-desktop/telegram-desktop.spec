@@ -1,6 +1,6 @@
 %undefine _cmake_shared_libs
 
-%global commit10 91d836dc84a16584c6ac52b36c04c0de504d9c34
+%global commit10 d578c760dc6f1ae5f0f3bb5317b0b2ed04b79138
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 tg_owt
 
@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.1.8
+Version:        3.1.11
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -86,8 +86,6 @@ Source11:       %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit11}.tar.gz#/%{src
 Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
 Source20:       thunar-sendto-%{name}.desktop
-
-Patch10:        %{url}/pull/17068.patch#/%{name}-gh-pr17068.patch
 
 Patch100:       %{name}-build-fix.patch
 
@@ -286,8 +284,6 @@ pushd Libraries/%{srcname10}
   cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/LICENSE.TXT legal/LICENSE.libwebm
   cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/PATENTS.TXT legal/PATENTS.libwebm
   cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/README.libvpx legal/README.libwebm
-  cp -f -p src/base/third_party/libevent/LICENSE legal/LICENSE.libevent
-  cp -f -p src/base/third_party/libevent/README.chromium legal/README.libevent
   cp -f -p src/common_audio/third_party/spl_sqrt_floor/LICENSE legal/LICENSE.spl_sqrt_floor
   cp -f -p src/common_audio/third_party/spl_sqrt_floor/README.chromium legal/README.spl_sqrt_floor
   cp -f -p src/modules/third_party/fft/LICENSE legal/LICENSE.fft

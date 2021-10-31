@@ -1,0 +1,57 @@
+From 9f9c756046473a949245f39af68e7815b3bdd61e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 31 Oct 2021 02:06:32 -0300
+Subject: [PATCH] set old menu selected color
+
+Blue is better and more visible
+---
+ src/lib/stylesheet/processed/Adwaita-light.css | 2 +-
+ src/style/adwaitastyle.cpp                     | 7 +++++--
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/src/lib/stylesheet/processed/Adwaita-light.css b/src/lib/stylesheet/processed/Adwaita-light.css
+index 624e572..4d7020f 100644
+--- a/src/lib/stylesheet/processed/Adwaita-light.css
++++ b/src/lib/stylesheet/processed/Adwaita-light.css
+@@ -14,7 +14,7 @@
+ @define-color dark_fill #e1dedb;
+ @define-color headerbar_bg_color white;
+ @define-color menu_color #ffffff;
+-@define-color menu_selected_color #e8e6e3;
++@define-color menu_selected_color #3584e4;
+ @define-color scrollbar_bg_color #cecece;
+ @define-color scrollbar_slider_color #7e8182;
+ @define-color scrollbar_slider_hover_color #565b5c;
+diff --git a/src/style/adwaitastyle.cpp b/src/style/adwaitastyle.cpp
+index 8eb7dcb..b5b24cd 100644
+--- a/src/style/adwaitastyle.cpp
++++ b/src/style/adwaitastyle.cpp
+@@ -5162,6 +5162,9 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
+         // set font
+         painter->setFont(menuItemOption->font);
+ 
++        // color role
++        const QPalette::ColorRole role = (useStrongFocus && (selected || sunken)) ? QPalette::HighlightedText : QPalette::WindowText;
++
+         // locate accelerator and render
+         int tabPosition(text.indexOf(QLatin1Char('\t')));
+         if (tabPosition >= 0) {
+@@ -5171,13 +5174,13 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
+             QPalette copy(palette);
+             copy.setColor(QPalette::Active, QPalette::WindowText, Colors::transparentize(copy.color(QPalette::Active, QPalette::WindowText), 0.55));
+             copy.setColor(QPalette::Active, QPalette::HighlightedText, Colors::transparentize(copy.color(QPalette::Active, QPalette::HighlightedText), 0.55));
+-            drawItemText(painter, textRect, textFlags, copy, enabled, accelerator, QPalette::WindowText);
++            drawItemText(painter, textRect, textFlags, copy, enabled, accelerator, role);
+         }
+ 
+         // render text
+         int textFlags(Qt::AlignVCenter | (reverseLayout ? Qt::AlignRight : Qt::AlignLeft) | _mnemonics->textFlags());
+         textRect = option->fontMetrics.boundingRect(textRect, textFlags, text);
+-        drawItemText(painter, textRect, textFlags, palette, enabled, text, QPalette::WindowText);
++        drawItemText(painter, textRect, textFlags, palette, enabled, text, role);
+     }
+ 
+     return true;
+-- 
+2.33.1
+
