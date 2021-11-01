@@ -11,8 +11,8 @@
 %define repo chinforpms
 
 Name:           vhba-kmod
-Version:        20210418
-Release:        2%{?dist}
+Version:        20211023
+Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPLv2
@@ -61,6 +61,9 @@ done
 
 
 %changelog
+* Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 20211023-1
+- 20211023
+
 * Sat May 22 2021 Phantom X <megaphantomx at hotmail dot com> - 20210418-2
 - Use chinforpms as repo
 

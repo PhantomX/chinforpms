@@ -9,8 +9,8 @@ Release:        102%{?dist}
 Summary:        Notes plugin for the Xfce panel
 
 License:        GPLv2+
-URL:            http://goodies.xfce.org/projects/panel-plugins/%{name}
-Source0:        http://archive.xfce.org/src/panel-plugins/%{name}/%{minor_version}/%{name}-%{version}.tar.bz2
+URL:            https://docs.xfce.org/panel-plugins/%{name}
+Source0:        https://archive.xfce.org/src/panel-plugins/%{name}/%{minor_version}/%{name}-%{version}.tar.bz2
 
 Patch0:         0001-Disable-automatic-autostart.patch
 Patch1:         %{vc_url}/-/commit/d545774d9a0eb078edced191823405f0d630549b.patch#/%{name}-gl-d545774.patch

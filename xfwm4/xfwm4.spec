@@ -10,7 +10,7 @@ Summary:        Next generation window manager for Xfce
 License:        GPLv2+
 URL:            http://www.xfce.org/
 #VCS git:git://git.xfce.org/xfce/xfwm4
-Source0:        http://archive.xfce.org/src/xfce/%{name}/%{xfceversion}/%{name}-%{version}.tar.bz2
+Source0:        https://archive.xfce.org/src/xfce/%{name}/%{xfceversion}/%{name}-%{version}.tar.bz2
 
 Patch10:        0001-settings-disable-keymap-reload-when-key-changes-is-d.patch
 Patch11:        0001-Add-Radeon-to-xpresent-vblank-mode-list.patch

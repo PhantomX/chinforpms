@@ -11,7 +11,7 @@ Summary:        Time-managing application for Xfce4
 License:        GPLv2+
 URL:            http://www.xfce.org/
 
-Source0:        http://archive.xfce.org/src/apps/%{name}/%{xfceversion}/%{name}-%{version}.tar.bz2
+Source0:        https://archive.xfce.org/src/apps/%{name}/%{xfceversion}/%{name}-%{version}.tar.bz2
 
 Patch0:         %{name}-%{version}-libical3.patch
 

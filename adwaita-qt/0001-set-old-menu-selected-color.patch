@@ -1,14 +1,42 @@
-From 9f9c756046473a949245f39af68e7815b3bdd61e Mon Sep 17 00:00:00 2001
+From 5c9f51cad11226e76e6e6b09bd4701b81286b138 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 31 Oct 2021 02:06:32 -0300
+Date: Sun, 31 Oct 2021 03:49:15 -0300
 Subject: [PATCH] set old menu selected color
 
 Blue is better and more visible
 ---
+ src/lib/stylesheet/_colors.scss                | 2 +-
+ src/lib/stylesheet/processed/Adwaita-dark.css  | 2 +-
  src/lib/stylesheet/processed/Adwaita-light.css | 2 +-
  src/style/adwaitastyle.cpp                     | 7 +++++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ 4 files changed, 8 insertions(+), 5 deletions(-)
 
+diff --git a/src/lib/stylesheet/_colors.scss b/src/lib/stylesheet/_colors.scss
+index 825b131..ff82f26 100644
+--- a/src/lib/stylesheet/_colors.scss
++++ b/src/lib/stylesheet/_colors.scss
+@@ -18,7 +18,7 @@ $top_hilight: $borders_edge;
+ $dark_fill: mix($borders_color, $bg_color, 50%);
+ $headerbar_bg_color: if($variant == 'light', lighten($bg_color, 5%), darken($bg_color, 3%));
+ $menu_color: $base_color;
+-$menu_selected_color: if($variant == 'light', darken($bg_color, 6%), darken($bg_color, 8%));
++$menu_selected_color: #3584e4;
+ 
+ $scrollbar_bg_color: if($variant == 'light', mix($bg_color, $fg_color, 80%), mix($base_color, $bg_color, 50%));
+ $scrollbar_slider_color: mix($fg_color, $bg_color, 60%);
+diff --git a/src/lib/stylesheet/processed/Adwaita-dark.css b/src/lib/stylesheet/processed/Adwaita-dark.css
+index 619bb32..8bf52b0 100644
+--- a/src/lib/stylesheet/processed/Adwaita-dark.css
++++ b/src/lib/stylesheet/processed/Adwaita-dark.css
+@@ -14,7 +14,7 @@
+ @define-color dark_fill #282828;
+ @define-color headerbar_bg_color #2d2d2d;
+ @define-color menu_color #2d2d2d;
+-@define-color menu_selected_color #202020;
++@define-color menu_selected_color #3584e4;
+ @define-color scrollbar_bg_color #313131;
+ @define-color scrollbar_slider_color #a4a4a3;
+ @define-color scrollbar_slider_hover_color #c9c9c7;
 diff --git a/src/lib/stylesheet/processed/Adwaita-light.css b/src/lib/stylesheet/processed/Adwaita-light.css
 index 624e572..4d7020f 100644
 --- a/src/lib/stylesheet/processed/Adwaita-light.css

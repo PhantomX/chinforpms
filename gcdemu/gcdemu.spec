@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           gcdemu
-Version:        3.2.5
+Version:        3.2.6
 Release:        1%{?dist}
 Summary:        Gtk3-based CDEmu client
 
@@ -71,6 +71,9 @@ done
 
 
 %changelog
+* Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.6-1
+- 3.2.6
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.5-1
 - 3.2.5
 
