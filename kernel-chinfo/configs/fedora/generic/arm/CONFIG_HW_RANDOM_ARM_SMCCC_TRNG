@@ -1,0 +1,13 @@
+# Symbol: HW_RANDOM_ARM_SMCCC_TRNG [=y]
+# Type  : tristate
+# Defined at drivers/char/hw_random/Kconfig:527
+#   Prompt: Arm SMCCC TRNG firmware interface support
+#   Depends on: HW_RANDOM [=y] && HAVE_ARM_SMCCC_DISCOVERY [=y]
+#   Location:
+#     -> Device Drivers
+#       -> Character devices
+#         -> Hardware Random Number Generator Core support (HW_RANDOM [=y])
+# 
+# 
+# 
+CONFIG_HW_RANDOM_ARM_SMCCC_TRNG=y

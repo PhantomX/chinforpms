@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        21.10
+Version:        21.11
 Release:        100%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -23,6 +23,8 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
+
+Patch0:         %{vc_url}/commit/de0c1f833c12a992af5c7daebe1705cd2c72f743.patch#/%{name}-gh-de0c1f8.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -97,6 +99,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Wed Nov 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.11-100
+- 21.11
+
 * Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.10-100
 - 21.10
 

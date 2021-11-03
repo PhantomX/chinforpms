@@ -19,7 +19,7 @@ index 68cf1360a3f3..a072790f5fad 100644
 --- a/tools/perf/Makefile.perf
 +++ b/tools/perf/Makefile.perf
 @@ -789,7 +789,7 @@ ifndef NO_LIBPYTHON
- endif
+ 		$(INSTALL) $(DLFILTERS) '$(DESTDIR_SQ)$(perfexec_instdir_SQ)/dlfilters';
  	$(call QUIET_INSTALL, perf_completion-script) \
  		$(INSTALL) -d -m 755 '$(DESTDIR_SQ)$(sysconfdir_SQ)/bash_completion.d'; \
 -		$(INSTALL) perf-completion.sh '$(DESTDIR_SQ)$(sysconfdir_SQ)/bash_completion.d/perf'

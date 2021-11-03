@@ -1,0 +1,14 @@
+# Symbol: MODULE_SIG_KEY_TYPE_ECDSA [=n]
+# Type  : bool
+# Defined at certs/Kconfig:31
+#   Prompt: ECDSA
+#   Depends on: <choice> && (MODULE_SIG [=y] || IMA_APPRAISE_MODSIG [=y] && MODULES [=y])
+#   Location:
+#     -> Cryptographic API (CRYPTO [=y])
+#       -> Certificates for signature checking
+#         -> Type of module signing key to be generated (<choice> [=y])
+# Selects: CRYPTO_ECDSA [=y]
+# 
+# 
+# 
+# CONFIG_MODULE_SIG_KEY_TYPE_ECDSA is not set

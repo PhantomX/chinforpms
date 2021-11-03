@@ -19,8 +19,8 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        21.03
-Release:        2%{?dist}
+Version:        21.04
+Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPLv2+ and BSD and Public Domain
@@ -103,6 +103,9 @@ install -pm0755 CPP/7zip/Bundles/Alone2/b/g%{platform}/7zz %{buildroot}%{_bindir
 
 
 %changelog
+* Wed Nov 03 2021 Phantom X <megaphantomx at hotmail dot com> - 21.04-1
+- 21.04
+
 * Wed Oct 06 2021 Phantom X <megaphantomx at hotmail dot com> - 21.03-2
 - Add fix to uasm do not align the stack when build with ASM support
 

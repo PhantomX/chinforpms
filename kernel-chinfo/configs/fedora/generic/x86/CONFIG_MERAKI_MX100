@@ -1,0 +1,13 @@
+# Symbol: MERAKI_MX100 [=n]
+# Type  : tristate
+# Defined at drivers/platform/x86/Kconfig:284
+#   Prompt: Cisco Meraki MX100 Platform Driver
+#   Depends on: X86 [=y] && X86_PLATFORM_DEVICES [=y] && GPIOLIB [=y] && GPIO_ICH [=m] && LEDS_CLASS [=y]
+#   Location:
+#     -> Device Drivers
+#       -> X86 Platform Specific Device Drivers (X86_PLATFORM_DEVICES [=y])
+# Selects: LEDS_GPIO [=m]
+# 
+# 
+# 
+# CONFIG_MERAKI_MX100 is not set

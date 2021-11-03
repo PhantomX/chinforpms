@@ -1,0 +1,14 @@
+# Symbol: GPIO_ROCKCHIP [=y]
+# Type  : tristate
+# Defined at drivers/gpio/Kconfig:523
+#   Prompt: Rockchip GPIO support
+#   Depends on: GPIOLIB [=y] && HAS_IOMEM [=y] && (ARCH_ROCKCHIP [=y] || COMPILE_TEST [=n])
+#   Location:
+#     -> Device Drivers
+#       -> GPIO Support (GPIOLIB [=y])
+#         -> Memory mapped GPIO drivers
+# Selects: GPIOLIB_IRQCHIP [=y]
+# 
+# 
+# 
+CONFIG_GPIO_ROCKCHIP=y

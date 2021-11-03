@@ -1,11 +1,6 @@
-# CONFIG_VIDEO_S5C73M3:
-# 
-# This is a V4L2 sensor driver for Samsung S5C73M3
-# 8 Mpixel camera.
-# 
 # Symbol: VIDEO_S5C73M3 [=n]
 # Type  : tristate
-# Defined at drivers/media/i2c/Kconfig:1211
+# Defined at drivers/media/i2c/Kconfig:1382
 #   Prompt: Samsung S5C73M3 sensor support
 #   Depends on: MEDIA_SUPPORT [=m] && I2C [=y] && SPI [=y] && VIDEO_V4L2 [=m]
 #   Visible if: MEDIA_SUPPORT [=m] && I2C [=y] && SPI [=y] && VIDEO_V4L2 [=m] && MEDIA_CAMERA_SUPPORT [=y]

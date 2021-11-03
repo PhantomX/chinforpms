@@ -1,0 +1,12 @@
+# Symbol: PERF_EVENTS_AMD_UNCORE [=y]
+# Type  : tristate
+# Defined at arch/x86/events/Kconfig:37
+#   Prompt: AMD Uncore performance events
+#   Depends on: PERF_EVENTS [=y] && CPU_SUP_AMD [=y]
+#   Location:
+#     -> Processor type and features
+#       -> Performance monitoring
+# 
+# 
+# 
+CONFIG_PERF_EVENTS_AMD_UNCORE=y

@@ -1,0 +1,12 @@
+# Symbol: CHARGER_CROS_PCHG [=m]
+# Type  : tristate
+# Defined at drivers/power/supply/Kconfig:751
+#   Prompt: ChromeOS EC based peripheral charger
+#   Depends on: POWER_SUPPLY [=y] && MFD_CROS_EC_DEV [=m]
+#   Location:
+#     -> Device Drivers
+#       -> Power supply class support (POWER_SUPPLY [=y])
+# 
+# 
+# 
+CONFIG_CHARGER_CROS_PCHG=m

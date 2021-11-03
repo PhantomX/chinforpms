@@ -1,6 +1,6 @@
-%global commit 5f93c683ab0163cb34482fe18549cf249b8b074b
+%global commit 0b79e2caa6f224fc0da672886c07f4f32dda4682
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211029
+%global date 20211101
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -32,7 +32,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  6.4.0
+%global winemono  6.4.1
 %global winevulkan 1.2.196
 
 %global wineFAudio 21.10
@@ -79,7 +79,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver b10ac7d8acd88850d743f854e69e03e18bd64515
+%global wine_stagingver fe634350d28ce2fd24ec2a0a6d2ae0afc399ad6b
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -90,7 +90,7 @@
 %global ge_id 33e7f68cc4d3347b6af5614b610e1eb0754d4b58
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ae5dff8628959fc5d2a561abab1c0e6c07018db8
+%global tkg_id ce6e96937645cf3b7548434d73095c32e454fa20
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid f1b3c46b7a6303bad3add8fe7b0b9d3ba3ec281d
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,7 +145,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.20
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -257,8 +257,14 @@ Patch941:       %{whq_url}/95ffc879882fdedaf9fdf40eb1c556a025ae5bfd#/%{name}-whq
 Patch942:       %{whq_url}/b3655b5be5f137281e8757db4e6985018b21c296#/%{name}-whq-mfplat-b3655b5.patch
 Patch943:       %{whq_url}/bc52edc19d8a45b9062d9568652403251872026e#/%{name}-whq-mfplat-bc52edc.patch
 Patch944:       %{whq_url}/f26e0ba212e6164eb7535f472415334d1a9c9044#/%{name}-whq-mfplat-f26e0ba.patch
+Patch945:       %{whq_url}/970c1bc49b804d0b7fa515292f27ac2fb4ef29e8#/%{name}-whq-mfplat-970c1bc.patch
+Patch946:       %{whq_url}/3b8579d8a570eeeaf0d4e0667e748d484df138aa#/%{name}-whq-mfplat-3b8579d.patch
+Patch947:       %{whq_url}/538b86bfc640ddcfd4d28b1e2660acdef0ce9b08#/%{name}-whq-mfplat-538b86b.patch
+Patch948:       %{whq_url}/04d94e3c092bbbaee5ec1331930b11af58ced629#/%{name}-whq-mfplat-04d94e3.patch
+Patch949:       %{whq_url}/74c2e9020f04b26e7ccf217d956ead740566e991#/%{name}-whq-mfplat-74c2e90.patch
+Patch950:       %{whq_url}/6f8d366b57e662981c68ba0bd29465f391167de9#/%{name}-whq-mfplat-6f8d366.patch
 
-Patch949:       0001-mfplat-restore-definitions.patch
+Patch999:       0001-mfplat-restore-definitions.patch
 Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
 Source951:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0002-Revert-wmvcore-Move-the-async-reader-implementation-.myearlypatch#/%{name}-tkg-0002-Revert-wmvcore-Move-the-async-reader-implementation-.patch
 Source952:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0003-Revert-winegstreamer-Get-rid-of-the-WMSyncReader-typ.myearlypatch#/%{name}-tkg-0003-Revert-winegstreamer-Get-rid-of-the-WMSyncReader-typ.patch
@@ -293,11 +299,13 @@ Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-007.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-007.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
+Patch1008:       %{tkg_url}/misc/lowlatency_audio.patch#/%{name}-tkg-lowlatency_audio.patch
+Patch1009:       %{tkg_url}/misc/lowlatency_audio_pulse.patch#/%{name}-tkg-lowlatency_audio_pulse.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
 Patch1021:       %{tkg_url}/proton/server_Abort_waiting_on_a_completion_port_when_closing_it.patch#/%{name}-tkg-server_Abort_waiting_on_a_completion_port_when_closing_it.patch
-Patch1022:       %{tkg_url}/proton/fsync_futex2.patch#/%{name}-tkg-fsync_futex2.patch
+Patch1022:       %{tkg_url}/proton/fsync_futex_waitv.patch#/%{name}-tkg-fsync_futex_waitv.patch
 # FS Hack
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch1024:       %{tkg_url}/proton/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
@@ -319,14 +327,14 @@ Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
 Patch1092:       %{ge_url}/wine-hotfixes/staging/mfplat_dxgi_stub.patch#/%{name}-ge-mfplat_dxgi_stub.patch
 Patch1093:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.patch#/%{name}-valve-ba230cf.patch
-Patch1094:       %{ge_url}/wine-hotfixes/testing/lowlatency_audio.patch#/%{name}-ge-lowlatency_audio.patch
-Patch1095:       %{ge_url}/wine-hotfixes/testing/lowlatency_audio_pulse.patch#/%{name}-ge-lowlatency_audio_pulse.patch
+Patch1094:       %{ge_url}/wine-hotfixes/pending/hotfix-update_mono_version.patch#/%{name}-ge-hotfix-update_mono_version.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
 Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
-Patch1303:       0001-configure-fix-sane-test.patch
+Patch1303:       0001-FAudio-Disable-reverb.patch
 Patch1304:       0001-Ignore-lowlatency-if-STAGING_AUDIO_PERIOD-is-not-set.patch
+Patch1305:       0001-bcrypt-add-fcntl.h-to-gnutls.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -941,6 +949,12 @@ rm -rf libs/faudio
 cp -f %{S:904} patches/xactengine-initial/
 %endif
 
+%patch950 -p1 -R
+%patch949 -p1 -R
+%patch948 -p1 -R
+%patch947 -p1 -R
+%patch946 -p1 -R
+%patch945 -p1 -R
 %patch944 -p1 -R
 %patch943 -p1 -R
 %patch942 -p1 -R
@@ -966,7 +980,7 @@ cp -f %{S:904} patches/xactengine-initial/
 %patch922 -p1 -R
 %patch921 -p1 -R
 %patch920 -p1 -R
-%patch949 -p1
+%patch999 -p1
 
 mkdir -p patches/mfplat-reverts
 cp -a %{mfplatreverts} patches/mfplat-reverts/
@@ -982,6 +996,8 @@ rename '%{name}-tkg-' '' patches/mfplat-reverts/%{name}-tkg-*.patch
 %patch1004 -p1
 %patch1005 -p1
 %patch1007 -p1
+%patch1008 -p1
+%patch1009 -p1
 
 %patch5000 -p1
 
@@ -1032,14 +1048,16 @@ fi
 %patch1092 -p1
 %patch1093 -p1
 %patch1094 -p1
-%patch1095 -p1
+
 %patch1300 -p1
 %if 0%{?extfaudio}
 %patch1301 -p1
 %patch1302 -p1
-%endif
+%else
 %patch1303 -p1
+%endif
 %patch1304 -p1
+%patch1305 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -3024,6 +3042,9 @@ fi
 
 
 %changelog
+* Tue Nov 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.20-102.20211101git0b79e2c
+- futex_waitv support
+
 * Sat Oct 30 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.20-101.20211029git5f93c68
 - Snapshot
 - Obsoletes wine-capi packages

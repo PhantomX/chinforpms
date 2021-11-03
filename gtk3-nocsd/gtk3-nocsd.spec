@@ -1,17 +1,16 @@
 Name:           gtk3-nocsd
-Version:        3
-Release:        3%{?dist}
+Version:        3.0.8
+Release:        1%{?dist}
 Summary:        Disables the client side decoration of Gtk+ 3
 
 License:        LGPLv2.1
-URL:            https://github.com/PCMan/%{name}
+URL:            https://github.com/ZaWertun/%{name}
+
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 # AUR - Marco Kundt
 Source1:        https://aur.archlinux.org/cgit/aur.git/plain/30-%{name}.sh?h=%{name}-git#/30-%{name}.sh
 
 Patch0:         %{name}-multilib.patch
-Patch1:         %{url}/commit/c64505268575e60322de682ea751660eba8d0e71.patch#/%{name}-gh-c64505268575e60322de682ea751660eba8d0e71.patch
-Patch2:         %{url}/commit/82ff5a0da54aa6da27232b55eb93e5f4b5de22f2.patch#/%{name}-gh-82ff5a0da54aa6da27232b55eb93e5f4b5de22f2.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -71,6 +70,9 @@ install -pm0644 %{name}.sh %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh
 
 
 %changelog
+* Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 3.0.8-1
+- 3.0.8 from ZaWertun fork
+
 * Mon Feb 20 2017 Phantom X <megaphantomx at bol dot com dot br> - 3-3
 - Tweak profile script
 - Drop %%config from profile script

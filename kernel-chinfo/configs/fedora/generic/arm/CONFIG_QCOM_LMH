@@ -1,0 +1,13 @@
+# Symbol: QCOM_LMH [=n]
+# Type  : tristate
+# Defined at drivers/thermal/qcom/Kconfig:35
+#   Prompt: Qualcomm Limits Management Hardware
+#   Depends on: THERMAL [=y] && (ARCH_QCOM [=y] && OF [=y] || COMPILE_TEST [=n]) && ARCH_QCOM [=y]
+#   Location:
+#     -> Device Drivers
+#       -> Thermal drivers (THERMAL [=y])
+#         -> Qualcomm thermal drivers
+# 
+# 
+# 
+# CONFIG_QCOM_LMH is not set

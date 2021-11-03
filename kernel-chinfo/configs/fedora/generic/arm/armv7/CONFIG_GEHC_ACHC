@@ -1,0 +1,13 @@
+# Symbol: GEHC_ACHC [=n]
+# Type  : tristate
+# Defined at drivers/misc/Kconfig:211
+#   Prompt: GEHC ACHC support
+#   Depends on: SPI [=y] && SYSFS [=y] && (SOC_IMX53 [=y] || COMPILE_TEST [=n])
+#   Location:
+#     -> Device Drivers
+#       -> Misc devices
+# Selects: FW_LOADER [=y]
+# 
+# 
+# 
+# CONFIG_GEHC_ACHC is not set

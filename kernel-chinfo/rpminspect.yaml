@@ -4,7 +4,15 @@
 emptyrpm:
     expected_empty:
         - kernel
+        - kernel-chinfo
+        - kernel-chinfo-devel-matched
+        - kernel-chinfo-debug
+        - kernel-chinfo-debug-devel-matched
+        - kernel-chinfo-devel-matched
         - kernel-debug
+        - kernel-debug-devel-matched
+        - kernel-devel-matched
         - kernel-lpae
         - kernel-zfcpdump
+        - kernel-zfcpdump-devel-matched
         - kernel-zfcpdump-modules

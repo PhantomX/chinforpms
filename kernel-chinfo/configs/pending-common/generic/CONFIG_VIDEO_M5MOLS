@@ -1,7 +1,3 @@
-# CONFIG_VIDEO_M5MOLS:
-# 
-# This driver supports Fujitsu M-5MOLS camera sensor with ISP
-# 
 # Symbol: VIDEO_M5MOLS [=n]
 # Type  : tristate
 # Defined at drivers/media/i2c/m5mols/Kconfig:2

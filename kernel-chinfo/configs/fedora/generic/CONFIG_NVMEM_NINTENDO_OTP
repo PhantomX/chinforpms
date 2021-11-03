@@ -1,0 +1,12 @@
+# Symbol: NVMEM_NINTENDO_OTP [=n]
+# Type  : tristate
+# Defined at drivers/nvmem/Kconfig:110
+#   Prompt: Nintendo Wii and Wii U OTP Support
+#   Depends on: NVMEM [=y]
+#   Location:
+#     -> Device Drivers
+#       -> NVMEM Support (NVMEM [=y])
+# 
+# 
+# 
+# CONFIG_NVMEM_NINTENDO_OTP is not set

@@ -1,0 +1,13 @@
+# Symbol: IR_MESON_TX [=n]
+# Type  : tristate
+# Defined at drivers/media/rc/Kconfig:249
+#   Prompt: Amlogic Meson IR TX
+#   Depends on: RC_CORE [=y] && RC_DEVICES [=y] && (ARCH_MESON [=y] || COMPILE_TEST [=n])
+#   Location:
+#     -> Device Drivers
+#       -> Remote Controller support (RC_CORE [=y])
+#         -> Remote Controller devices (RC_DEVICES [=y])
+# 
+# 
+# 
+# CONFIG_IR_MESON_TX is not set

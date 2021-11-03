@@ -1,0 +1,11 @@
+# Symbol: PRINTK_INDEX [=n]
+# Type  : bool
+# Defined at init/Kconfig:778
+#   Prompt: Printk indexing debugfs interface
+#   Depends on: PRINTK [=y] && DEBUG_FS [=y]
+#   Location:
+#     -> General setup
+# 
+# 
+# 
+# CONFIG_PRINTK_INDEX is not set

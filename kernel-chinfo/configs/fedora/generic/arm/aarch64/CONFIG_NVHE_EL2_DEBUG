@@ -1,0 +1,12 @@
+# Symbol: NVHE_EL2_DEBUG [=n]
+# Type  : bool
+# Defined at arch/arm64/kvm/Kconfig:50
+#   Prompt: Debug mode for non-VHE EL2 object
+#   Depends on: VIRTUALIZATION [=y] && KVM [=y]
+#   Location:
+#     -> Virtualization (VIRTUALIZATION [=y])
+#       -> Kernel-based Virtual Machine (KVM) support (KVM [=y])
+# 
+# 
+# 
+# CONFIG_NVHE_EL2_DEBUG is not set

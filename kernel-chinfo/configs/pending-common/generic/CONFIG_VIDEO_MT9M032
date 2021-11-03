@@ -1,11 +1,6 @@
-# CONFIG_VIDEO_MT9M032:
-# 
-# This driver supports MT9M032 camera sensors from Aptina, monochrome
-# models only.
-# 
 # Symbol: VIDEO_MT9M032 [=n]
 # Type  : tristate
-# Defined at drivers/media/i2c/Kconfig:1068
+# Defined at drivers/media/i2c/Kconfig:1208
 #   Prompt: MT9M032 camera sensor support
 #   Depends on: MEDIA_SUPPORT [=m] && I2C [=y] && VIDEO_V4L2 [=m]
 #   Visible if: MEDIA_SUPPORT [=m] && I2C [=y] && VIDEO_V4L2 [=m] && MEDIA_CAMERA_SUPPORT [=y]

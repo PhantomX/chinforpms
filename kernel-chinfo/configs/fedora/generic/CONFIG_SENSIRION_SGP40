@@ -1,0 +1,14 @@
+# Symbol: SENSIRION_SGP40 [=n]
+# Type  : tristate
+# Defined at drivers/iio/chemical/Kconfig:134
+#   Prompt: Sensirion SGP40 gas sensor
+#   Depends on: IIO [=m] && I2C [=y]
+#   Location:
+#     -> Device Drivers
+#       -> Industrial I/O support (IIO [=m])
+#         -> Chemical Sensors
+# Selects: CRC8 [=m]
+# 
+# 
+# 
+# CONFIG_SENSIRION_SGP40 is not set

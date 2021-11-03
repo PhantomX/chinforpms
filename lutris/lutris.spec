@@ -3,7 +3,7 @@
 %global vc_url https://github.com/%{name}/%{name}
 
 Name:           lutris
-Version:        0.5.9
+Version:        0.5.9.1
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -114,6 +114,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.des
 
 
 %changelog
+* Wed Nov 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.9.1-100
+- 0.5.9.1
+
 * Mon Oct 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.9-100
 - 0.5.9
 

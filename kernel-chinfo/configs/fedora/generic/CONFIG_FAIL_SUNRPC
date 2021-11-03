@@ -1,0 +1,14 @@
+# Symbol: FAIL_SUNRPC [=n]
+# Type  : bool
+# Defined at lib/Kconfig.debug:1948
+#   Prompt: Fault-injection capability for SunRPC
+#   Depends on: FAULT_INJECTION_DEBUG_FS [=y] && SUNRPC_DEBUG [=y]
+#   Location:
+#     -> Kernel hacking
+#       -> Kernel Testing and Coverage
+#         -> Fault-injection framework (FAULT_INJECTION [=y])
+#           -> Debugfs entries for fault-injection capabilities (FAULT_INJECTION_DEBUG_FS [=y])
+# 
+# 
+# 
+# CONFIG_FAIL_SUNRPC is not set

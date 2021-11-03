@@ -1,0 +1,10 @@
+# Symbol: WERROR [=y]
+# Type  : bool
+# Defined at init/Kconfig:140
+#   Prompt: Compile the kernel with warnings as errors
+#   Location:
+#     -> General setup
+# 
+# 
+# 
+# CONFIG_WERROR is not set

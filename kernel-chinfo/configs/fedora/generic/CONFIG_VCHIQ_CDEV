@@ -1,0 +1,16 @@
+# Symbol: VCHIQ_CDEV [=y]
+# Type  : bool
+# Defined at drivers/staging/vc04_services/Kconfig:30
+#   Prompt: VCHIQ Character Driver
+#   Depends on: STAGING [=y] && BCM_VIDEOCORE [=m] && BCM2835_VCHIQ [=m]
+#   Location:
+#     -> Device Drivers
+#       -> Staging drivers (STAGING [=y])
+#         -> Broadcom VideoCore support (BCM_VIDEOCORE [=m])
+#           -> BCM2835 VCHIQ (BCM2835_VCHIQ [=m])
+# Implied by [m]:
+#   - BCM2835_VCHIQ [=m] && STAGING [=y] && BCM_VIDEOCORE [=m]
+# 
+# 
+# 
+CONFIG_VCHIQ_CDEV=y

@@ -1,0 +1,13 @@
+# Symbol: MODULE_SIG_KEY_TYPE_RSA [=y]
+# Type  : bool
+# Defined at certs/Kconfig:25
+#   Prompt: RSA
+#   Depends on: <choice> && (MODULE_SIG [=y] || IMA_APPRAISE_MODSIG [=y] && MODULES [=y])
+#   Location:
+#     -> Cryptographic API (CRYPTO [=y])
+#       -> Certificates for signature checking
+#         -> Type of module signing key to be generated (<choice> [=y])
+# 
+# 
+# 
+CONFIG_MODULE_SIG_KEY_TYPE_RSA=y

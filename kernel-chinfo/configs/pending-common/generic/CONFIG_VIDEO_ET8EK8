@@ -1,8 +1,3 @@
-# CONFIG_VIDEO_ET8EK8:
-# 
-# This is a driver for the Toshiba ET8EK8 5 MP camera sensor.
-# It is used for example in Nokia N900 (RX-51).
-# 
 # Symbol: VIDEO_ET8EK8 [=n]
 # Type  : tristate
 # Defined at drivers/media/i2c/et8ek8/Kconfig:2

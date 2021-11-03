@@ -1,0 +1,13 @@
+# Symbol: SM_GCC_6350 [=n]
+# Type  : tristate
+# Defined at drivers/clk/qcom/Kconfig:565
+#   Prompt: SM6350 Global Clock Controller
+#   Depends on: COMMON_CLK [=y] && COMMON_CLK_QCOM [=y]
+#   Location:
+#     -> Device Drivers
+#       -> Common Clock Framework (COMMON_CLK [=y])
+#         -> Support for Qualcomm's clock controllers (COMMON_CLK_QCOM [=y])
+# 
+# 
+# 
+# CONFIG_SM_GCC_6350 is not set

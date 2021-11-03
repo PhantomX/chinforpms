@@ -3,6 +3,11 @@
 # environment changes that affect %%install need to go
 # here before the %%install macro is pre-built.
 
+# Include Fedora files
+%global include_fedora 1
+# Include RHEL files
+%global include_rhel 1
+
 # Disable LTO in userspace packages.
 %global _lto_cflags %{nil}
 
@@ -80,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 
-%global distro_build 58
+%global distro_build 60
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -143,24 +148,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 14
+%define base_sublevel 15
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 7
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7b8134924094575f2b58c5c72b8cf89def336586
+%global pfcommit 8cd79fe4199d840d50b8980e7329cce9ce32530d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -188,7 +193,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 3416a5af167625346599fabf333773b931c91f9e
+%global opensuse_id 5a1fa5e459da98061f01493a2d0eab3731f49916
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -241,8 +246,7 @@ Summary: The Linux kernel
 %define with_cross_headers   %{?_without_cross_headers:   0} %{?!_without_cross_headers:   1}
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
-# Want to build a the vsdo directories installed
-# kernel-abi-whitelists
+# kernel-abi-stablelists
 %define with_kernel_abi_stablelists %{?_without_kernel_abi_whitelists: 0} %{?!_without_kernel_abi_whitelists: 1}
 %define with_kernel_abi_stablelists 0
 # internal samples and selftests
@@ -316,7 +320,7 @@ Summary: The Linux kernel
 %define with_cross_headers 0
 # no ipa_clone for now
 %define with_ipaclones 0
-# no whitelist
+# no stablelist
 %define with_kernel_abi_stablelists 0
 # selftests turns on bpftool
 %define with_selftests 0
@@ -741,8 +745,6 @@ Source1: Makefile.rhelver
 %define signing_key_filename kernel-signing-s390.cer
 %endif
 
-Source8: x509.genkey.rhel
-Source9: x509.genkey.fedora
 %if %{?released_kernel}
 
 Source10: redhatsecurebootca5.cer
@@ -787,60 +789,71 @@ Source13: redhatsecureboot003.cer
 # released_kernel
 %endif
 
-Source22: mod-extra.list.rhel
-Source16: mod-extra.list.fedora
-Source17: mod-denylist.sh
-Source18: mod-sign.sh
+Source20: mod-denylist.sh
+Source21: mod-sign.sh
 
-Source80: filter-x86_64.sh.fedora
-Source81: filter-armv7hl.sh.fedora
-Source82: filter-i686.sh.fedora
-Source83: filter-aarch64.sh.fedora
-Source86: filter-ppc64le.sh.fedora
-Source87: filter-s390x.sh.fedora
-Source89: filter-modules.sh.fedora
+%define modsign_cmd %{SOURCE21}
 
-Source90: filter-x86_64.sh.rhel
-Source91: filter-armv7hl.sh.rhel
-Source92: filter-i686.sh.rhel
-Source93: filter-aarch64.sh.rhel
-Source96: filter-ppc64le.sh.rhel
-Source97: filter-s390x.sh.rhel
-Source99: filter-modules.sh.rhel
-%define modsign_cmd %{SOURCE18}
+%if 0%{?include_rhel}
+Source23: x509.genkey.rhel
 
-Source20: kernel-aarch64-rhel.config
-Source21: kernel-aarch64-debug-rhel.config
-Source30: kernel-ppc64le-rhel.config
-Source31: kernel-ppc64le-debug-rhel.config
-Source32: kernel-s390x-rhel.config
-Source33: kernel-s390x-debug-rhel.config
-Source34: kernel-s390x-zfcpdump-rhel.config
-Source35: kernel-x86_64-rhel.config
-Source36: kernel-x86_64-debug-rhel.config
+Source24: kernel-aarch64-rhel.config
+Source25: kernel-aarch64-debug-rhel.config
+Source26: mod-extra.list.rhel
 
-Source37: kernel-aarch64-fedora.config
-Source38: kernel-aarch64-debug-fedora.config
-Source39: kernel-armv7hl-fedora.config
-Source40: kernel-armv7hl-debug-fedora.config
-Source41: kernel-armv7hl-lpae-fedora.config
-Source42: kernel-armv7hl-lpae-debug-fedora.config
-Source43: kernel-i686-fedora.config
-Source44: kernel-i686-debug-fedora.config
-Source45: kernel-ppc64le-fedora.config
-Source46: kernel-ppc64le-debug-fedora.config
-Source47: kernel-s390x-fedora.config
-Source48: kernel-s390x-debug-fedora.config
-Source49: kernel-x86_64-fedora.config
-Source50: kernel-x86_64-debug-fedora.config
+Source27: kernel-ppc64le-rhel.config
+Source28: kernel-ppc64le-debug-rhel.config
+Source29: kernel-s390x-rhel.config
+Source30: kernel-s390x-debug-rhel.config
+Source31: kernel-s390x-zfcpdump-rhel.config
+Source32: kernel-x86_64-rhel.config
+Source33: kernel-x86_64-debug-rhel.config
 
-Source51: generate_all_configs.sh
+Source34: filter-x86_64.sh.rhel
+Source35: filter-armv7hl.sh.rhel
+Source36: filter-i686.sh.rhel
+Source37: filter-aarch64.sh.rhel
+Source38: filter-ppc64le.sh.rhel
+Source39: filter-s390x.sh.rhel
+Source40: filter-modules.sh.rhel
+%endif
 
-Source52: process_configs.sh
-Source56: update_scripts.sh
-Source57: generate_crashkernel_default.sh
+%if 0%{?include_fedora}
+Source50: x509.genkey.fedora
+Source51: mod-extra.list.fedora
 
-Source54: mod-internal.list
+Source52: kernel-aarch64-fedora.config
+Source53: kernel-aarch64-debug-fedora.config
+Source54: kernel-armv7hl-fedora.config
+Source55: kernel-armv7hl-debug-fedora.config
+Source56: kernel-armv7hl-lpae-fedora.config
+Source57: kernel-armv7hl-lpae-debug-fedora.config
+Source58: kernel-i686-fedora.config
+Source59: kernel-i686-debug-fedora.config
+Source60: kernel-ppc64le-fedora.config
+Source61: kernel-ppc64le-debug-fedora.config
+Source62: kernel-s390x-fedora.config
+Source63: kernel-s390x-debug-fedora.config
+Source64: kernel-x86_64-fedora.config
+Source65: kernel-x86_64-debug-fedora.config
+
+Source67: filter-x86_64.sh.fedora
+Source68: filter-armv7hl.sh.fedora
+Source69: filter-i686.sh.fedora
+Source70: filter-aarch64.sh.fedora
+Source71: filter-ppc64le.sh.fedora
+Source72: filter-s390x.sh.fedora
+Source73: filter-modules.sh.fedora
+%endif
+
+Source75: partial-kgcov-snip.config
+Source80: generate_all_configs.sh
+Source81: process_configs.sh
+
+Source82: update_scripts.sh
+Source83: generate_crashkernel_default.sh
+
+Source84: mod-internal.list
 
 Source100: rheldup3.x509
 Source101: rhelkpatch1.x509
@@ -923,6 +936,7 @@ Patch1: patch-%{kversion}-redhat.patch
 # Build fail when LRNG is enabled
 Patch2: patch-%{kversion}-revert77f4d04.patch
 Patch3: patch-%{kversion}-revert8313ae8.patch
+Patch4: 0001-Revert-pmadv_ksm-syscall.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -942,19 +956,19 @@ Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1018: %{opensuse_url}/pstore_disable_efi_backend_by_default.patch#/openSUSE-pstore_disable_efi_backend_by_default.patch
-Patch1020: %{opensuse_url}/memcg-enable-accounting-of-ipc-resources.patch#/openSUSE-memcg-enable-accounting-of-ipc-resources.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id 6a91c77dc0bcacf1baeafc4acccb954a8158073b
-Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.14/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
-Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.14/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
-Patch2092: 0001-fsync.patch
-Patch2093: 0002-futex2_interface.patch
+%global tkg_id ecfb6fed4c70a2adbee80a47bfb9712bc7eb6366
+Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.15/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.15/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.15/0007-v5.15-futex_waitv.patch#/tkg-0007-v5.15-futex_waitv.patch
+%if 0%{?post_factum}
+Patch2093: 0001-Readd-pmadv_ksm-syscall.patch
+%endif
 Patch2094: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
@@ -1462,8 +1476,6 @@ if [ ! -d kernel-%{kversion}%{?dist}/vanilla-%{vanillaversion} ]; then
     cp -al vanilla-%{kversion} vanilla-%{vanillaversion}
     cd vanilla-%{vanillaversion}
 
-cp %{SOURCE12} .
-
 # Update vanilla to the latest upstream.
 # (non-released_kernel case only)
 %if 0%{?rcrev}
@@ -1602,7 +1614,7 @@ cat %{SOURCE3013} >> kernel-local
 %if 0%{?zen}
 cat %{SOURCE3014} >> kernel-local
 %endif
-cp %{SOURCE51} .
+cp %{SOURCE80} .
 # merge.pl
 cp %{SOURCE3000} .
 VERSION=%{version} ./generate_all_configs.sh %{primary_target} %{debugbuildsenabled}
@@ -1614,15 +1626,13 @@ for i in %{all_arch_configs}
 do
   mv $i $i.tmp
   ./merge.pl kernel-local $i.tmp > $i
-  rm $i.tmp
-done
-%endif
-
-# enable GCOV kernel config options if gcov is on
 %if %{with_gcov}
-for i in *.config
-do
-  sed -i 's/# CONFIG_GCOV_KERNEL is not set/CONFIG_GCOV_KERNEL=y\nCONFIG_GCOV_PROFILE_ALL=y\n/' $i
+  echo "Merging with gcov options"
+  cat %{SOURCE75}
+  mv $i $i.tmp
+  ./merge.pl %{SOURCE75} $i.tmp > $i
+%endif
+  rm $i.tmp
 done
 %endif
 
@@ -1649,7 +1659,7 @@ done
 %endif
 %endif
 
-cp %{SOURCE52} .
+cp %{SOURCE81} .
 OPTS=""
 %if %{with_configchecks}
     OPTS="$OPTS -w -n -c"
@@ -1661,7 +1671,7 @@ done
 %endif
 ./process_configs.sh $OPTS kernel %{rpmversion}
 
-cp %{SOURCE56} .
+cp %{SOURCE82} .
 RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
 
 # end of kernel config
@@ -2194,9 +2204,9 @@ BuildKernel() {
     remove_depmod_files
 
     # Identify modules in the kernel-modules-extras package
-    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
+    %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
     # Identify modules in the kernel-modules-extras package
-    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE54} internal
+    %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE84} internal
 
     #
     # Generate the kernel-core and kernel-modules files lists
@@ -2298,7 +2308,7 @@ BuildKernel() {
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
 
     # Generate crashkernel default config
-    %{SOURCE57} "$KernelVer" "$Arch" "$RPM_BUILD_ROOT"
+    %{SOURCE83} "$KernelVer" "$Arch" "$RPM_BUILD_ROOT"
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
@@ -2375,7 +2385,7 @@ InitBuildVars
 # in the source tree. We installed them previously to $RPM_BUILD_ROOT/usr
 # but there's no way to tell the Makefile to take them from there.
 %{make} %{?_smp_mflags} headers_install
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/ || true
 
 # Prevent bpf selftests to build bpftool repeatedly:
 export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
@@ -2903,6 +2913,9 @@ fi
 #
 #
 %changelog
+* Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.0-500.chinfo
+- 5.15.0 - pf1
+
 * Wed Oct 27 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.15-500.chinfo
 - 5.14.15 - pf7
 
@@ -3249,54 +3262,6 @@ fi
 
 * Mon Aug 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.0-500.chinfo
 - 5.8.0 - pf1
-- Rawhide sync
-
-* Fri Jul 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.12-500.chinfo
-- 5.7.12 - pf8
-
-* Wed Jul 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.11-500.chinfo
-- 5.7.11 - pf8
-
-* Sun Jul 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.10-501.chinfo
-- 5.7.10 - pf6
-
-* Wed Jul 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.10-500.chinfo
-- 5.7.10 - pf5
-
-* Thu Jul 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.9-500.chinfo
-- 5.7.9 - pf5
-
-* Wed Jul 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.8-501.chinfo
-- Revert some patches to try to fix kernelbz#207383
-- f32 sync
-
-* Thu Jul 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.8-500.chinfo
-- 5.7.8 - pf4
-
-* Thu Jul 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.7-500.chinfo
-- 5.7.7 - pf4
-
-* Wed Jun 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.6-500.chinfo
-- 5.7.6 - pf3
-
-* Mon Jun 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.5-500.chinfo
-- 5.7.5 - pf3
-
-* Thu Jun 18 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.4-500.chinfo
-- 5.7.4 - pf3
-- stabilization sync
-
-* Wed Jun 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.3-500.chinfo
-- 5.7.3 - pf3
-
-* Thu Jun 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.2-500.chinfo
-- 5.7.2 - pf1
-
-* Sun Jun 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-500.chinfo
-- 5.7.0 - pf1
-
-* Tue Jun 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-500.chinfo
-- 5.7.0 - pf1
 - Rawhide sync
 
 ###

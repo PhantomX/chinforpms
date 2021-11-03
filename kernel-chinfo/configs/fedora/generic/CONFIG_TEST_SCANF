@@ -1,0 +1,13 @@
+# Symbol: TEST_SCANF [=n]
+# Type  : tristate
+# Defined at lib/Kconfig.debug:2181
+#   Prompt: Test scanf() family of functions at runtime
+#   Depends on: RUNTIME_TESTING_MENU [=y]
+#   Location:
+#     -> Kernel hacking
+#       -> Kernel Testing and Coverage
+#         -> Runtime Testing (RUNTIME_TESTING_MENU [=y])
+# 
+# 
+# 
+# CONFIG_TEST_SCANF is not set

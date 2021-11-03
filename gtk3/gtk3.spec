@@ -23,7 +23,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 3.24.29
+%global classic_ver 3.24.30-2
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -35,7 +35,7 @@
 
 Name:           gtk3
 Version:        3.24.30
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -215,6 +215,7 @@ patch_command(){
 patch_command appearance__buttons-menus-icons.patch
 patch_command appearance__disable-backdrop.patch
 patch_command appearance__file-chooser.patch
+patch_command appearance__fix_black_border.patch
 patch_command appearance__message-dialogs.patch
 patch_command appearance__print-dialog.patch
 patch_command appearance__smaller-statusbar.patch
@@ -294,7 +295,6 @@ touch $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/%{bin_version}/immodules.cache
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gtk-3.0
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/modules
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/immodules
-mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/%{bin_version}/theming-engines
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
@@ -317,7 +317,6 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %dir %{_libdir}/gtk-3.0
 %dir %{_libdir}/gtk-3.0/%{bin_version}
 %dir %{_datadir}/gtk-3.0
-%{_libdir}/gtk-3.0/%{bin_version}/theming-engines
 %dir %{_libdir}/gtk-3.0/%{bin_version}/immodules
 %{_libdir}/gtk-3.0/%{bin_version}/printbackends
 %{_libdir}/gtk-3.0/modules
@@ -404,6 +403,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.30-103
+- gtk3-classic update
+
 * Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.30-102
 - Optional cloudprovides support
 

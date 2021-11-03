@@ -10,7 +10,7 @@
 %global pkgname FAudio
 
 Name:           %{pkgname}-noreverb
-Version:        21.10
+Version:        21.11
 Release:        1%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation - noreverb
 Epoch:          1
@@ -26,6 +26,7 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Disable-reverb.patch
+Patch1:         %{vc_url}/commit/de0c1f833c12a992af5c7daebe1705cd2c72f743.patch#/%{pkgname}-gh-de0c1f8.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -102,6 +103,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Wed Nov 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.11-1
+- 21.11
+
 * Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.10-1
 - 21.10
 

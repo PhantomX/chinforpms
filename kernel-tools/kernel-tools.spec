@@ -17,20 +17,20 @@
 
 #global buildid .chinfo
 
-%global opensuse_id 3416a5af167625346599fabf333773b931c91f9e
+%global opensuse_id 5a1fa5e459da98061f01493a2d0eab3731f49916
 
 %define major_ver 5
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 14
+%global base_sublevel 15
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 15
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -114,8 +114,6 @@ Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
 
 #global opensuse_url https://kernel.opensuse.org/cgit/kernel-source/plain/patches.suse
 %global opensuse_url https://github.com/openSUSE/kernel-source/raw/%{opensuse_id}/patches.suse
-
-Patch1000: %{opensuse_url}/perf_timechart_fix_zero_timestamps.patch#/openSUSE-perf_timechart_fix_zero_timestamps.patch
 
 Provides:       cpupowerutils = 1:009-0.6.p1
 Obsoletes:      cpupowerutils < 1:009-0.6.p1
@@ -230,8 +228,6 @@ cd linux-%{kversion}
 
 %patch0 -p1
 %patch6 -p1
-
-%patch1000 -p1
 
 # END OF PATCH APPLICATIONS
 
@@ -504,6 +500,9 @@ popd
 
 
 %changelog
+* Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.0-500
+- 5.15.0
+
 * Wed Oct 27 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.15-500
 - 5.14.15
 
@@ -808,39 +807,3 @@ popd
 * Mon Aug 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.0-500.chinfo
 - 5.8.0
 - Rawhide sync
-
-* Fri Jul 31 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.12-500.chinfo
-- 5.7.12
-
-* Wed Jul 29 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.11-500.chinfo
-- 5.7.11
-
-* Wed Jul 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.10-500.chinfo
-- 5.7.10
-
-* Thu Jul 16 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.9-500.chinfo
-- 5.7.9
-
-* Thu Jul 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.8-500.chinfo
-- 5.7.8
-
-* Thu Jul 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.7-500.chinfo
-- 5.7.7
-
-* Wed Jun 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.6-500.chinfo
-- 5.7.6
-
-* Mon Jun 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.5-500.chinfo
-- 5.7.5
-
-* Wed Jun 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.3-500.chinfo
-- 5.7.3
-
-* Thu Jun 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.2-500.chinfo
-- 5.7.2
-
-* Sun Jun 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.1-500.chinfo
-- 5.7.1
-
-* Tue Jun 02 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.7.0-500.chinfo
-- 5.7.0

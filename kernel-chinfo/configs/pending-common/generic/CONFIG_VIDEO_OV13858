@@ -1,11 +1,6 @@
-# CONFIG_VIDEO_OV13858:
-# 
-# This is a Video4Linux2 sensor driver for the OmniVision
-# OV13858 camera.
-# 
 # Symbol: VIDEO_OV13858 [=n]
 # Type  : tristate
-# Defined at drivers/media/i2c/Kconfig:1039
+# Defined at drivers/media/i2c/Kconfig:1179
 #   Prompt: OmniVision OV13858 sensor support
 #   Depends on: MEDIA_SUPPORT [=m] && I2C [=y] && VIDEO_V4L2 [=m]
 #   Visible if: MEDIA_SUPPORT [=m] && I2C [=y] && VIDEO_V4L2 [=m] && MEDIA_CAMERA_SUPPORT [=y]

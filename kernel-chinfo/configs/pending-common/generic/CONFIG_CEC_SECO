@@ -1,10 +1,3 @@
-# CONFIG_CEC_SECO:
-# 
-# This is a driver for SECO Boards integrated CEC interface.
-# Selecting it will enable support for this device.
-# CEC bus is present in the HDMI connector and enables communication
-# between compatible devices.
-# 
 # Symbol: CEC_SECO [=n]
 # Type  : tristate
 # Defined at drivers/media/cec/platform/Kconfig:100

@@ -1,1 +1,1 @@
-CONFIG_FB_SIMPLE=y
+# CONFIG_FB_SIMPLE is not set

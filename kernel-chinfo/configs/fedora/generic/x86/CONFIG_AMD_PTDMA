@@ -1,0 +1,13 @@
+# Symbol: AMD_PTDMA [=n]
+# Type  : tristate
+# Defined at drivers/dma/ptdma/Kconfig:2
+#   Prompt: AMD PassThru DMA Engine
+#   Depends on: DMADEVICES [=y] && X86_64 [=y] && PCI [=y]
+#   Location:
+#     -> Device Drivers
+#       -> DMA Engine support (DMADEVICES [=y])
+# Selects: DMA_ENGINE [=y] && DMA_VIRTUAL_CHANNELS [=y]
+# 
+# 
+# 
+CONFIG_AMD_PTDMA=m

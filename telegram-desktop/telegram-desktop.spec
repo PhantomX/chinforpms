@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.1.11
+Version:        3.1.13
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -449,6 +449,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Tue Nov 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.1.13-100
+- 3.1.13
+
 * Fri Oct 08 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.1.8-100
 - 3.1.7
 

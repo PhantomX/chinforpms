@@ -1,1 +1,1 @@
-CONFIG_FB_GEODE_GX=y
+# CONFIG_FB_GEODE_GX is not set

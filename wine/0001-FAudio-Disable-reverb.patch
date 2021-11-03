@@ -1,0 +1,26 @@
+From ff1e6c57be8763bf1a723dcf2dec3053a038ce12 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 1 Nov 2021 15:13:53 -0300
+Subject: [PATCH] FAudio: Disable reverb
+
+Very ugly fix for slow systems, see https://github.com/FNA-XNA/FAudio/issues/205
+---
+ libs/faudio/src/FAudioFX_reverb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libs/faudio/src/FAudioFX_reverb.c b/libs/faudio/src/FAudioFX_reverb.c
+index 4d43fa4..d74c848 100644
+--- a/libs/faudio/src/FAudioFX_reverb.c
++++ b/libs/faudio/src/FAudioFX_reverb.c
+@@ -126,7 +126,7 @@ static inline void DspDelay_Write(DspDelay *filter, float sample)
+ static inline float DspDelay_Process(DspDelay *filter, float sample_in)
+ {
+ 	float delay_out = DspDelay_Read(filter);
+-	DspDelay_Write(filter, sample_in);
++	//DspDelay_Write(filter, sample_in);
+ 	return delay_out;
+ }
+ 
+-- 
+2.33.1
+

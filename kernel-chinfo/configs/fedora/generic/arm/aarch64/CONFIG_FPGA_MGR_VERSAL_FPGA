@@ -1,0 +1,12 @@
+# Symbol: FPGA_MGR_VERSAL_FPGA [=n]
+# Type  : tristate
+# Defined at drivers/fpga/Kconfig:237
+#   Prompt: Xilinx Versal FPGA
+#   Depends on: FPGA [=m] && (ARCH_ZYNQMP [=y] || COMPILE_TEST [=n])
+#   Location:
+#     -> Device Drivers
+#       -> FPGA Configuration Framework (FPGA [=m])
+# 
+# 
+# 
+# CONFIG_FPGA_MGR_VERSAL_FPGA is not set

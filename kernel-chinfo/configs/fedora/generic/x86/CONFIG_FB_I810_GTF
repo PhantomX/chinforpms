@@ -1,1 +1,1 @@
-CONFIG_FB_I810_GTF=y
+# CONFIG_FB_I810_GTF is not set

@@ -1,0 +1,13 @@
+# Symbol: PINCTRL_MDM9607 [=n]
+# Type  : tristate
+# Defined at drivers/pinctrl/qcom/Kconfig:91
+#   Prompt: Qualcomm 9607 pin controller driver
+#   Depends on: PINCTRL [=y] && (ARCH_QCOM [=y] || COMPILE_TEST [=n]) && GPIOLIB [=y] && OF [=y] && PINCTRL_MSM [=y]
+#   Location:
+#     -> Device Drivers
+#       -> Pin controllers (PINCTRL [=y])
+#         -> Qualcomm core pin controller driver (PINCTRL_MSM [=y])
+# 
+# 
+# 
+# CONFIG_PINCTRL_MDM9607 is not set

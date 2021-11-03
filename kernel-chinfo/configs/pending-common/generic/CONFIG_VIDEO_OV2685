@@ -1,14 +1,6 @@
-# CONFIG_VIDEO_OV2685:
-# 
-# This is a Video4Linux2 sensor driver for the OmniVision
-# OV2685 camera.
-# 
-# To compile this driver as a module, choose M here: the
-# module will be called ov2685.
-# 
 # Symbol: VIDEO_OV2685 [=n]
 # Type  : tristate
-# Defined at drivers/media/i2c/Kconfig:848
+# Defined at drivers/media/i2c/Kconfig:931
 #   Prompt: OmniVision OV2685 sensor support
 #   Depends on: MEDIA_SUPPORT [=m] && VIDEO_V4L2 [=m] && I2C [=y]
 #   Visible if: MEDIA_SUPPORT [=m] && VIDEO_V4L2 [=m] && I2C [=y] && MEDIA_CAMERA_SUPPORT [=y]
