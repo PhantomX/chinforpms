@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.1.13
+Version:        3.2.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -382,6 +382,7 @@ sed -e 's/QrCode\.hpp/qrcodegen\.hpp/g' -i {cmake/external/qr_code_generator/CMa
     -DTDESKTOP_API_HASH=%{apihash} \
     -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
     -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=ON \
+    -DDESKTOP_APP_QT6:BOOL=OFF \
 %if %{with rlottie}
     -DDESKTOP_APP_LOTTIE_USE_CACHE:BOOL=OFF \
 %endif
@@ -449,6 +450,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Wed Nov 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.2.0-100
+- 3.2.0
+
 * Tue Nov 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.1.13-100
 - 3.1.13
 
