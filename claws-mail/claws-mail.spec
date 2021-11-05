@@ -1,6 +1,6 @@
-%global commit 67e7621999f23a2eb5b0011195b1ec8caef369d8
+%global commit d02ea2c207e41a46791e211cb975fd6434e3f220
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211013
+%global date 20211103
 %global with_snapshot 1
 
 %global with_python  0
@@ -12,6 +12,9 @@
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %global with_autotools 1
+%global extra_ver 999
+%else
+%global extra_ver 0
 %endif
 
 # toggle to avoid temporary docbook-utils and Tex Live dependency issues
@@ -21,21 +24,19 @@
 
 Name:           claws-mail
 Version:        4.0.0
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
 URL:            http://claws-mail.org
 
-%global pluginapi %{version}.0
+%global pluginapi %{version}.%{extra_ver}
 
 %if 0%{?with_snapshot}
 Source0:        %{vc_url};a=snapshot;h=%{commit};sf=tgz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 %endif
-
-Patch0:         %{vc_url};a=patch;h=c64353ee158b1cc4447cb23bde4d803af6e61153#/%{name}-git-c64353e.patch
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
@@ -58,7 +59,7 @@ Provides:       %{name}-plugins-python = %{?epoch:%{epoch}:}%{version}-%{release
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  flex, bison
-BuildRequires:  glib2-devel >= 2.28.0
+BuildRequires:  glib2-devel >= 2.36.0
 BuildRequires:  gtk3-devel >= 3.24.0
 BuildRequires:  gnutls-devel
 BuildRequires:  libgcrypt-devel
@@ -432,7 +433,7 @@ exporting of your meetings or all your calendars.
 %prep
 %if 0%{?with_snapshot}
 %autosetup -n claws-%{shortcommit} -p1
-echo 'echo %{version}-%{shortcommit}' > version
+echo 'echo %{version}-%{extra_ver}-%{shortcommit}' > version
 %else
 %autosetup -p1
 %endif
@@ -718,6 +719,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Thu Nov 04 2021 Phantom X - 1:4.0.0-104.20211103gitd02ea2c
+- Last snapshot
+
 * Mon Oct 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:4.0.0-103.20211013git67e7621
 - Update
 
