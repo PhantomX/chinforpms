@@ -1,10 +1,11 @@
 // Chinforinfula Firefox settings
-// 20210716
+// 20211104
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
 pref("accessibility.force_disabled", 1);
 pref("beacon.enabled", false);
+pref("browser.aboutwelcome.enabled", false);
 pref("browser.bookmarks.showRecentlyBookmarked", false);
 pref("browser.cache.offline.enable", false);
 pref("browser.download.folderList", 1);
@@ -19,6 +20,7 @@ pref("browser.link.open_newwindow", 3);
 pref("browser.link.open_newwindow.override.external", 3);
 pref("browser.link.open_newwindow.restriction", 0);
 pref("browser.laterrun.enabled", false);
+pref("browser.messaging-system.whatsNewPanel.enabled", false);
 pref("browser.pagethumbnails.capturing_disabled", true);
 pref("browser.sessionstore.interval", 30000);
 pref("browser.shell.checkDefaultBrowser", false);
@@ -30,6 +32,7 @@ pref("browser.tabs.loadBookmarksInTabs", true);
 pref("browser.tabs.opentabfor.middleclick", false);
 //pref("browser.tabs.remote.allowLinkedWebInFileUriProcess", false);
 pref("browser.uidensity", 1);
+pref("browser.uitour.enabled", false);
 pref("browser.urlbar.clickSelectsAll", false);
 pref("browser.urlbar.dnsResolveSingleWordsAfterSearch", 0);
 pref("browser.urlbar.doubleClickSelectsAll", false);

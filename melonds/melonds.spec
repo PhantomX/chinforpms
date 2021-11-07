@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit a8613af2bd3ba0cc9d52b6a5d63899cda7ca2864
+%global commit 139c0092075830cacd042f7e3c6f9ce846f55a36
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211010
+%global date 20211103
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           melonds
 Version:        0.9.3
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -119,6 +119,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Nov 06 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.3-4.20211103git139c009
+- Bump
+
 * Mon Oct 11 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.3-3.20211010gita8613af
 - Update
 

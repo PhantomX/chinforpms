@@ -1,7 +1,7 @@
 %global commit 0b79e2caa6f224fc0da672886c07f4f32dda4682
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211101
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -33,9 +33,9 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  6.4.1
-%global winevulkan 1.2.196
+%global winevulkan 1.2.197
 
-%global wineFAudio 21.10
+%global wineFAudio 21.11
 %global winegsm 1.0.19
 %global winejpeg 9d
 %global winelcms2 2.12
@@ -79,7 +79,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver fe634350d28ce2fd24ec2a0a6d2ae0afc399ad6b
+%global wine_stagingver 6.21
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -90,7 +90,7 @@
 %global ge_id 33e7f68cc4d3347b6af5614b610e1eb0754d4b58
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ce6e96937645cf3b7548434d73095c32e454fa20
+%global tkg_id 53a88fea637f3b6340bd163da6c221df55b8234b
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid f1b3c46b7a6303bad3add8fe7b0b9d3ba3ec281d
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -144,8 +144,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.20
-Release:        102%{?gver}%{?dist}
+Version:        6.21
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -263,6 +263,24 @@ Patch947:       %{whq_url}/538b86bfc640ddcfd4d28b1e2660acdef0ce9b08#/%{name}-whq
 Patch948:       %{whq_url}/04d94e3c092bbbaee5ec1331930b11af58ced629#/%{name}-whq-mfplat-04d94e3.patch
 Patch949:       %{whq_url}/74c2e9020f04b26e7ccf217d956ead740566e991#/%{name}-whq-mfplat-74c2e90.patch
 Patch950:       %{whq_url}/6f8d366b57e662981c68ba0bd29465f391167de9#/%{name}-whq-mfplat-6f8d366.patch
+Patch951:       %{whq_url}/7c02cd8cf8e1b97df8f8bfddfeba68d7c7b4f820#/%{name}-whq-mfplat-7c02cd8.patch
+Patch952:       %{whq_url}/6cb1d1ec4ffa77bbc2223703b93033bd86730a60#/%{name}-whq-mfplat-6cb1d1e.patch
+Patch953:       %{whq_url}/f7b45d419f94a6168e3d9a97fb2df21f448446f1#/%{name}-whq-mfplat-f7b45d4.patch
+Patch954:       %{whq_url}/399ccc032750e2658526fc70fa0bfee7995597df#/%{name}-whq-mfplat-399ccc0.patch
+Patch955:       %{whq_url}/799c7704e8877fe2ee73391f9f2b8d39e222b8d5#/%{name}-whq-mfplat-799c770.patch
+Patch956:       %{whq_url}/c3811e84617e409875957b3d0b43fc5be91f01f6#/%{name}-whq-mfplat-c3811e8.patch
+Patch957:       %{whq_url}/56dde41b6d91c589d861dca5d50ffa9f607da1db#/%{name}-whq-mfplat-56dde41.patch
+Patch958:       %{whq_url}/c9f5903e5a315989d03d48e4a53291be48fd8d89#/%{name}-whq-mfplat-c9f5903.patch
+Patch959:       %{whq_url}/4398e8aba2d2c96ee209f59658c2aa6caf26687a#/%{name}-whq-mfplat-4398e8a.patch
+Patch960:       %{whq_url}/42c82012c7ac992a98930011647482fc94c63a87#/%{name}-whq-mfplat-42c8201.patch
+Patch961:       %{whq_url}/34d85311f33335d2babff3983bb96fb0ce9bae5b#/%{name}-whq-mfplat-34d8531.patch
+Patch962:       %{whq_url}/a855591fd29f1f47947459f8710b580a4f90ce3a#/%{name}-whq-mfplat-a855591.patch
+Patch963:       %{whq_url}/00bc5eb73b95cbfe404fe18e1d0aadacc8ab4662#/%{name}-whq-mfplat-00bc5eb.patch
+Patch964:       %{whq_url}/5306d0ff3c95e7b9b1c77fa2bb30b420d07879f7#/%{name}-whq-mfplat-5306d0f.patch
+Patch965:       %{whq_url}/d7175e265537ffd24dbf8fd3bcaaa1764db03e13#/%{name}-whq-mfplat-d7175e2.patch
+Patch966:       %{whq_url}/21dc092b910f80616242761a00d8cdab2f8aa7bd#/%{name}-whq-mfplat-21dc092.patch
+Patch967:       %{whq_url}/682093d0bdc24a55fcde37ca4f9cc9ed46c3c7df#/%{name}-whq-mfplat-682093d.patch
+Patch968:       %{whq_url}/aafbbdb8bcc9b668008038dc6fcfba028c4cc6f6#/%{name}-whq-mfplat-aafbbdb.patch
 
 Patch999:       0001-mfplat-restore-definitions.patch
 Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
@@ -316,7 +334,7 @@ Patch1028:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg
 Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 Patch1030:       %{tkg_url}/proton/proton-bcrypt-staging.patch#/%{name}-tkg-proton-bcrypt-staging.patch
 Patch1031:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
-Patch1032:       %{tkg_url}/hotfixes/the_witcher_iii/virtual_alloc_remi2.mypatch#/%{name}-tkg-virtual_alloc_remi2.patch
+Patch1032:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1033:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes.patch
@@ -334,7 +352,6 @@ Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
 Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
 Patch1303:       0001-FAudio-Disable-reverb.patch
 Patch1304:       0001-Ignore-lowlatency-if-STAGING_AUDIO_PERIOD-is-not-set.patch
-Patch1305:       0001-bcrypt-add-fcntl.h-to-gnutls.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -949,6 +966,24 @@ rm -rf libs/faudio
 cp -f %{S:904} patches/xactengine-initial/
 %endif
 
+%patch968 -p1 -R
+%patch967 -p1 -R
+%patch966 -p1 -R
+%patch965 -p1 -R
+%patch964 -p1 -R
+%patch963 -p1 -R
+%patch962 -p1 -R
+%patch961 -p1 -R
+%patch960 -p1 -R
+%patch959 -p1 -R
+%patch958 -p1 -R
+%patch957 -p1 -R
+%patch956 -p1 -R
+%patch955 -p1 -R
+%patch954 -p1 -R
+%patch953 -p1 -R
+%patch952 -p1 -R
+%patch951 -p1 -R
 %patch950 -p1 -R
 %patch949 -p1 -R
 %patch948 -p1 -R
@@ -1057,7 +1092,6 @@ fi
 %patch1303 -p1
 %endif
 %patch1304 -p1
-%patch1305 -p1
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
@@ -3042,6 +3076,9 @@ fi
 
 
 %changelog
+* Sat Nov 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.21-100
+- 6.21
+
 * Tue Nov 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.20-102.20211101git0b79e2c
 - futex_waitv support
 

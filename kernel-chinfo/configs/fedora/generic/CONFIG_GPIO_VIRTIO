@@ -1,13 +1,1 @@
-# Symbol: GPIO_VIRTIO [=n]
-# Type  : tristate
-# Defined at drivers/gpio/Kconfig:1674
-#   Prompt: VirtIO GPIO support
-#   Depends on: GPIOLIB [=y] && VIRTIO [=y]
-#   Location:
-#     -> Device Drivers
-#       -> GPIO Support (GPIOLIB [=y])
-#         -> Virtual GPIO drivers
-# 
-# 
-# 
 CONFIG_GPIO_VIRTIO=m

@@ -8,4 +8,4 @@
 # 
 # 
 # 
-CONFIG_SYSFB_SIMPLEFB=y
+# CONFIG_SYSFB_SIMPLEFB is not set
