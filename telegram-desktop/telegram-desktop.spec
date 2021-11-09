@@ -50,7 +50,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.2.0
+Version:        3.2.2
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
