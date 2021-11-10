@@ -1,7 +1,7 @@
 %global optflags %{optflags} -D_GNU_SOURCE
 
 Name:           whdd
-Version:        3.0
+Version:        3.0.1
 Release:        1%{?dist}
 Summary:        HDD diagnostic and data recovery tool 
 
@@ -48,5 +48,8 @@ Requires:       smartmontools
 
 
 %changelog
+* Tue Nov 09 2021 Phantom X <megaphantomx at bol dot com dot br> - 3.0.1-1
+- 3.0.1
+
 * Sat Jan 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 3.0-1
 - Initial spec

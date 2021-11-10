@@ -1,7 +1,7 @@
-%global commit b4032ccbc4d1804dcd93115f7bd5c503e0e17b4c
+%global commit 31197b3d4f2ee55c84a2ae5c71995e2c5dad91c8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20201202
-%global with_snapshot 0
+%global date 20211107
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -12,7 +12,7 @@
 Summary:        Image browser and viewer
 Name:           geeqie
 Version:        1.6
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 URL:            http://geeqie.org
 License:        GPLv2+
@@ -22,9 +22,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/%{name}-%{version}.tar.xz
 %endif
-
-Patch0:         %{vc_url}/commit/23d54a6fa903a9522062e266a139b94e4f4b26d7.patch#/%{name}-gh-23d54a6.patch
-
 
 BuildRequires:  gcc-c++
 BuildRequires:  autoconf
@@ -83,18 +80,13 @@ and zoom.
 %autosetup -n %{name}-%{version} -p1
 %endif
 
-%if 0%{?with_snapshot}
 # fix autoconf problem with missing version
-sed -r -i 's/m4_esyscmd_s\(git rev-parse --quiet --verify --short HEAD\)/[%{version}]/' configure.ac
-%endif
+sed -r -i 's/m4_translit\(.*m4_newline\)/[%{version}%{?gver:+git%{date}-%{shortcommit}}]/' configure.ac
 
 sed \
   -e 's/clutter-1.0/clutter-1.0_disabled/g' \
   -e 's/champlain-gtk-0.12/champlain-gtk-0.12_disabled/g' \
   -i configure*
-
-
-%build
 
 autoreconf -f -i ; intltoolize
 # guard against missing executables at (re)build-time,
@@ -108,6 +100,8 @@ for f in ufraw-batch ; do
 done
 %endif
 
+
+%build
 cflags=(
   -Wno-error=unused-variable
   -Wno-error=maybe-uninitialized
@@ -131,7 +125,7 @@ mkdir -p %{buildroot}%{_pkgdocdir}/html
 %make_install
 
 # guard against missing HTML tree
-[ ! -f %{buildroot}%{_pkgdocdir}/html/index.html ] && exit -1
+[ ! -f %{buildroot}%{_pkgdocdir}/html/index.html ] && exit 1
 
 # We want these _docdir files in GQ_HELPDIR.
 install -p -m 0644 AUTHORS COPYING NEWS README* TODO \
@@ -160,6 +154,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/org.geeqie
 
 
 %changelog
+* Tue Nov 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1.6-101.20211107git31197b3
+- Last snapshot
+- Rawhide sync
+
 * Thu Dec  3 2020 Phantom X <megaphantomx at hotmail dot com> - 1.6-100
 - 1.6
 - gtk3
