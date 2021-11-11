@@ -1,7 +1,7 @@
-%global commit 0b79e2caa6f224fc0da672886c07f4f32dda4682
+%global commit 6a072b98c100f38a61fad00b6c96c86b3445efac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211101
-%global with_snapshot 0
+%global date 20211109
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -79,7 +79,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.21
+%global wine_stagingver c165d96d2347e2776606fcf00115dc934c0553d8
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -87,12 +87,12 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id 33e7f68cc4d3347b6af5614b610e1eb0754d4b58
+%global ge_id f309b504e1718383add4235572a59526b86f02dd
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 53a88fea637f3b6340bd163da6c221df55b8234b
+%global tkg_id e2febfeff73c67d0a3a1d38773d331f7515c8403
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid f1b3c46b7a6303bad3add8fe7b0b9d3ba3ec281d
+%global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %if 0%{?wine_staging}
@@ -145,7 +145,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.21
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -281,6 +281,11 @@ Patch965:       %{whq_url}/d7175e265537ffd24dbf8fd3bcaaa1764db03e13#/%{name}-whq
 Patch966:       %{whq_url}/21dc092b910f80616242761a00d8cdab2f8aa7bd#/%{name}-whq-mfplat-21dc092.patch
 Patch967:       %{whq_url}/682093d0bdc24a55fcde37ca4f9cc9ed46c3c7df#/%{name}-whq-mfplat-682093d.patch
 Patch968:       %{whq_url}/aafbbdb8bcc9b668008038dc6fcfba028c4cc6f6#/%{name}-whq-mfplat-aafbbdb.patch
+Patch969:       %{whq_url}/dc1a1ae450f1119b1f5714ed99b6049343676293#/%{name}-whq-mfplat-dc1a1ae.patch
+Patch970:       %{whq_url}/25adac6ede88d835110be20de0164d28c2187977#/%{name}-whq-mfplat-25adac6.patch
+Patch971:       %{whq_url}/63fb4d8270d1db7a0034100db550f54e8d9859f1#/%{name}-whq-mfplat-63fb4d8.patch
+Patch972:       %{whq_url}/fca2f6c12b187763eaae23ed4932d6d049a469c3#/%{name}-whq-mfplat-fca2f6c.patch
+Patch973:       %{whq_url}/3864d2355493cbadedf59f0c2ee7ad7a306fad5a#/%{name}-whq-mfplat-3864d23.patch
 
 Patch999:       0001-mfplat-restore-definitions.patch
 Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
@@ -318,7 +323,7 @@ Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patc
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-007.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-007.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1008:       %{tkg_url}/misc/lowlatency_audio.patch#/%{name}-tkg-lowlatency_audio.patch
-Patch1009:       %{tkg_url}/misc/lowlatency_audio_pulse.patch#/%{name}-tkg-lowlatency_audio_pulse.patch
+Patch1009:       %{ge_url}/wine-hotfixes/testing/lowlatency_audio_pulse.patch#/%{name}-ge-lowlatency_audio_pulse.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -333,12 +338,13 @@ Patch1027:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-w
 Patch1028:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 Patch1030:       %{tkg_url}/proton/proton-bcrypt-staging.patch#/%{name}-tkg-proton-bcrypt-staging.patch
-Patch1031:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
-Patch1032:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
-Patch1033:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
-Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
-Patch1035:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes.patch
+Patch1031:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
+Patch1032:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
+Patch1033:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
+Patch1034:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
+Patch1035:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes2.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes2.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
+Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.mypatch#/%{name}-tkg-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       revert-grab-fullscreen.patch
@@ -966,6 +972,11 @@ rm -rf libs/faudio
 cp -f %{S:904} patches/xactengine-initial/
 %endif
 
+%patch973 -p1 -R
+%patch972 -p1 -R
+%patch971 -p1 -R
+%patch970 -p1 -R
+%patch969 -p1 -R
 %patch968 -p1 -R
 %patch967 -p1 -R
 %patch966 -p1 -R
@@ -1069,15 +1080,17 @@ fi
 %endif
 %endif
 #patch1029 -p1
-%patch1033 -p1
-%patch1034 -p1
-%patch1035 -p1
-%patch1036 -p1
 if [ -f patch1025.patch ] ;then
 %patch1030 -p1
 fi
 %patch1031 -p1
 %patch1032 -p1
+%patch1033 -p1
+%patch1034 -p1
+%patch1035 -p1
+%patch1036 -p1
+%patch1037 -p1
+
 %patch1089 -p1
 %patch1091 -p1 -R
 %patch1092 -p1
@@ -3076,6 +3089,9 @@ fi
 
 
 %changelog
+* Wed Nov 10 2021 Phantom X - 1:6.21-101.20211109git6a072b9
+- Snapshot
+
 * Sat Nov 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.21-100
 - 6.21
 
