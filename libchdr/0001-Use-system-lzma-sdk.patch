@@ -1,6 +1,6 @@
-From 79f09ed2759bf4c3af72bdeaca3e4349ad2cc237 Mon Sep 17 00:00:00 2001
+From ba9648fb323e9cb76ff151353e025d3346be7c44 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 30 Sep 2021 20:16:18 -0300
+Date: Thu, 11 Nov 2021 20:36:39 -0300
 Subject: [PATCH] Use system lzma-sdk
 
 ---
@@ -8,18 +8,18 @@ Subject: [PATCH] Use system lzma-sdk
  1 file changed, 8 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index de5bbd3..6eb8c1e 100644
+index 1b9df8f..70d5d73 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -10,6 +10,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "chdr")
+@@ -7,6 +7,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "chdr")
  endif()
  option(INSTALL_STATIC_LIBS "Install static libraries" OFF)
  option(WITH_SYSTEM_ZLIB "Use system provided zlib library" OFF)
 +option(WITH_SYSTEM_LZMA "Use system provided lzma-sdk library" OFF)
  
- if(CMAKE_C_COMPILER_ID MATCHES "GNU")
-   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden -fPIC -O3 -flto")
-@@ -27,9 +28,16 @@ include(GNUInstallDirs)
+ option(BUILD_LTO "Compile libchdr with link-time optimization if supported" OFF)
+ if(BUILD_LTO)
+@@ -25,9 +26,16 @@ include(GNUInstallDirs)
  
  
  # lzma
@@ -37,5 +37,5 @@ index de5bbd3..6eb8c1e 100644
  # zlib
  if (WITH_SYSTEM_ZLIB)
 -- 
-2.31.1
+2.33.1
 

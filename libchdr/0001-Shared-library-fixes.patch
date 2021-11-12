@@ -4,23 +4,9 @@ Date: Tue, 20 Apr 2021 14:18:48 -0300
 Subject: [PATCH] Shared library fixes
 
 ---
- CMakeLists.txt   | 2 +-
  pkg-config.pc.in | 3 ++-
  2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9842447..9720933 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -108,7 +108,7 @@ if (BUILD_SHARED_LIBS)
-   endif()
- 
-   set_target_properties(chdr PROPERTIES PUBLIC_HEADER "include/libchdr/bitstream.h;include/libchdr/cdrom.h;include/libchdr/chd.h;include/libchdr/chdconfig.h;include/libchdr/coretypes.h;include/libchdr/flac.h;include/libchdr/huffman.h")
--  set_target_properties(chdr PROPERTIES VERSION "${CHDR_VERSION_MAJOR}.${CHDR_VERSION_MINOR}")
-+  set_target_properties(chdr PROPERTIES SOVERSION "${CHDR_VERSION_MAJOR}" VERSION "${CHDR_VERSION_MAJOR}.${CHDR_VERSION_MINOR}")
- 
-   if (CMAKE_BUILD_TYPE MATCHES Release)
-     #add_custom_command(TARGET chdr POST_BUILD COMMAND ${CMAKE_STRIP} libchdr.so)
 diff --git a/pkg-config.pc.in b/pkg-config.pc.in
 index 0289632..3d7f2cd 100644
 --- a/pkg-config.pc.in

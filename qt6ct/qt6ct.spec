@@ -13,7 +13,7 @@
 Summary:        Qt6 - Configuration Tool
 Name:           qt6ct
 Version:        0.5
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 # The entire source code is under BSD-2-Clause License
 License: BSD
@@ -107,6 +107,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Thu Nov 11 2021 Phantom X <megaphantomx at hotmail dot com> - 0.5-101
+- Rebuild (qt6)
+
 * Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 0.5-100
 - 0.5
 - Install a -gtk3 binary, to set style with GTK3 dialogs and prevent some

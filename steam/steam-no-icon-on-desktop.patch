@@ -1,7 +1,7 @@
 diff -Naur steam-launcher.old/bin_steam.sh steam-launcher/bin_steam.sh
 --- steam-launcher.old/bin_steam.sh	2020-04-15 11:51:24.202660348 +0200
 +++ steam-launcher/bin_steam.sh	2020-04-15 20:20:00.581536078 +0200
-@@ -110,32 +110,6 @@
+@@ -114,32 +114,6 @@
  	ln -fns "$STEAMDIR" "$STEAMDATALINK"
  	setup_variables
  
@@ -12,7 +12,7 @@ diff -Naur steam-launcher.old/bin_steam.sh steam-launcher/bin_steam.sh
 -	test -f "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs" && source "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs"
 -	DESKTOP_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
 -
--	if [ -d "$DESKTOP_DIR" ] && [ "x$bootstrapdir" = "x/usr/lib/$STEAMPACKAGE" ]; then
+-	if [ -d "$DESKTOP_DIR" ] && [ "$bootstrapdir" = "/usr/lib/$STEAMPACKAGE" ]; then
 -		# There might be a symlink in place already, in such case we do nothing
 -		if [ ! -L "$DESKTOP_DIR/$STEAMPACKAGE.desktop" ]; then
 -			cp "$bootstrapdir/$STEAMPACKAGE.desktop" "$DESKTOP_DIR"
