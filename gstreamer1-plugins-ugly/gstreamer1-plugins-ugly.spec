@@ -2,7 +2,7 @@
 
 Summary:        GStreamer 1.0 streaming media framework "ugly" plug-ins
 Name:           gstreamer1-plugins-ugly
-Version:        1.19.2
+Version:        1.19.3
 Release:        100%{?dist}
 
 License:        LGPLv2+
@@ -47,6 +47,7 @@ gstreamer-plugins-good because:
 %meson \
     -D package-name='chinforpms GStreamer-plugins-ugly package' \
     -D package-origin='https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms' \
+    -D gpl=enabled \
     -D doc=disabled \
     -D cdio=disabled \
     -D dvdread=disabled \
@@ -77,6 +78,9 @@ gstreamer-plugins-good because:
 
 
 %changelog
+* Fri Nov 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1.19.3-100
+- 1.19.3
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1.19.2-100
 - 1.19.2
 

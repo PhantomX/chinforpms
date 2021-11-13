@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20211031
+# 20211112
 
 set -e
 
@@ -53,6 +53,7 @@ RHEL_DIFFERENCES
 pf="
 CC_OPTIMIZE_HARDER
 CC_OPTIMIZE_FOR_PERFORMANCE_O3
+DAMON_RECLAIM
 LRNG
 LRNG_COLLECTION_SIZE_32
 LRNG_COLLECTION_SIZE_256
