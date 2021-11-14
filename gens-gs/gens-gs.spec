@@ -7,7 +7,7 @@
 
 Name:           %{orgname}-gs
 Version:        2.16.7
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        Sega Genesis, Sega CD, and Sega 32X emulator
 
 URL:            http://segaretro.org/Gens/GS
@@ -24,6 +24,7 @@ Source0:        https://retrocdn.net/images/6/6d/Gens-gs-r7.tar.gz
 Patch0:         %{name}-gtk.patch
 Patch1:         0001-lzma-extlib.patch
 Patch2:         0001-Fix-error-template-with-C-linkage.patch
+Patch3:         gens-gs-fix-define.patch
 
 ExclusiveArch:  i686
 
@@ -98,6 +99,10 @@ sed -i 's/Exec=.*/Exec=%{name}/' xdg/%{name}.desktop
 #Obsolete macro in configure.ac
 sed -i 's/AC_PROG_LIBTOOL/LT_INIT([disable-static])/' configure.ac
 
+# Let it build with x86_64 _host, ExclusiveArch already block x86_64 builds
+sed -e 's/i\?86\*linux\*/\0|x86_64*linux*/' -i configure.ac
+
+
 autoreconf -ivf
 
 %build
@@ -109,7 +114,7 @@ autoreconf -ivf
   --enable-mp3=no \
   --with-pic \
   --disable-static \
-  --build=i686-redhat-linux \
+  --build=%{_host_cpu}-redhat-linux \
   --docdir='%{_defaultdocdir}/%{name}-%{version}' \
   LIBS="-ldl -lX11 -lminizip" \
 %{nil}
@@ -156,6 +161,9 @@ rm -f %{buildroot}%{_libdir}/mdp/*.la
 
 
 %changelog
+* Sat Nov 13 2021 Phantom X <megaphantomx at hotmail dot com> - 2.16.7-103
+- Rebuild
+
 * Mon Apr 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2.16.7-102
 - Fix build with newer glib2
 

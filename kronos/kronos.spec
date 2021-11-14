@@ -1,6 +1,6 @@
-%global commit 8b9abe821dba4ff39fe792d700a300b078af8555
+%global commit 624e7cf177f571ba226e509d4f498190e1c77b86
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210926
+%global date 20211022
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -20,8 +20,8 @@
 %global vc_url https://github.com/FCare/%{pkgname}
 
 Name:           kronos
-Version:        2.1.5
-Release:        7%{?gver}%{?dist}
+Version:        2.2.0
+Release:        1%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -46,7 +46,6 @@ BuildRequires:  pkgconfig(glesv2)
 %else
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
-BuildRequires:  pkgconfig(glut)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xmu)
 %endif
@@ -99,10 +98,6 @@ sed \
   -e 's| -Wno-format -march=native -funroll-loops||g' \
   -e 's| -march=native -funroll-loops||g' \
   -i yabause/src/CMakeLists.txt
-
-%if 0%{?with_egl}
-  sed -e '/FindGLUT/d' -i yabause/src/CMakeLists.txt
-%endif
 
 sed -e 's|share/pixmaps|share/icons/hicolor/32x32/apps|g' \
   -i yabause/src/port/qt/CMakeLists.txt
@@ -157,6 +152,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Nov 13 2021 Phantom X <megaphantomx at hotmail dot com> - 2.2.0-1.20211022git624e7cf
+- 2.2.0
+
 * Sat Oct 02 2021 Phantom X <megaphantomx at hotmail dot com> - 2.1.5-7.20210926git8b9abe8
 - Last snapshot
 

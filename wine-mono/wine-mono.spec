@@ -3,7 +3,7 @@
 
 %global with_bin 1
 #Set to 1 to download sources from github
-%global with_gh 1
+%global with_gh 0
 
 %if 0%{?with_bin}
 %global debug_package %{nil}
@@ -14,7 +14,7 @@
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        6.4.1
+Version:        7.0.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -170,6 +170,9 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 
 
 %changelog
+* Sat Nov 13 2021 Phantom X <megaphantomx at hotmail dot com> - 7.0.0-100
+- 7.0.0
+
 * Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 6.4.1-100
 - 6.4.1
 

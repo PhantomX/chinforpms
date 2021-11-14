@@ -1,6 +1,6 @@
-%global commit 6a072b98c100f38a61fad00b6c96c86b3445efac
+%global commit be0684dad50ffbc93b3ded4fbfebf1d1e4690589
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211109
+%global date 20211112
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -32,7 +32,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  6.4.1
+%global winemono  7.0.0
 %global winevulkan 1.2.197
 
 %global wineFAudio 21.11
@@ -79,7 +79,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver c165d96d2347e2776606fcf00115dc934c0553d8
+%global wine_stagingver a9aa06c58eea77c66417b48669a00d7b32b70c99
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -87,10 +87,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id f309b504e1718383add4235572a59526b86f02dd
+%global ge_id d83b266ef51a4dd5d40207d744c15a9f74359e36
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e2febfeff73c67d0a3a1d38773d331f7515c8403
+%global tkg_id af4c9442dd502f285b6ecb9bc8cb25e427811d46
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,7 +145,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.21
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -286,6 +286,22 @@ Patch970:       %{whq_url}/25adac6ede88d835110be20de0164d28c2187977#/%{name}-whq
 Patch971:       %{whq_url}/63fb4d8270d1db7a0034100db550f54e8d9859f1#/%{name}-whq-mfplat-63fb4d8.patch
 Patch972:       %{whq_url}/fca2f6c12b187763eaae23ed4932d6d049a469c3#/%{name}-whq-mfplat-fca2f6c.patch
 Patch973:       %{whq_url}/3864d2355493cbadedf59f0c2ee7ad7a306fad5a#/%{name}-whq-mfplat-3864d23.patch
+Patch974:       %{whq_url}/dab54bd849cd9f109d1a9d16cb171eddec39f2a1#/%{name}-whq-mfplat-dab54bd.patch
+Patch975:       %{whq_url}/d1662e4beb4c1b757423c71107f7ec115ade19f5#/%{name}-whq-mfplat-d1662e4.patch
+Patch976:       %{whq_url}/5d0858ee9887ef5b99e09912d4379880979ab974#/%{name}-whq-mfplat-5d0858e.patch
+Patch977:       %{whq_url}/3e0a9877eafef1f484987126cd453cc36cfdeb42#/%{name}-whq-mfplat-3e0a987.patch
+Patch978:       %{whq_url}/a1a51f54dcb3863f9accfbf8c261407794d2bd13#/%{name}-whq-mfplat-a1a51f5.patch
+Patch979:       %{whq_url}/72b3cb68a702284122a16cbcdd87a621c29bb7a8#/%{name}-whq-mfplat-72b3cb6.patch
+Patch980:       %{whq_url}/f4b3eb7efbe1d433d7dcf850430f99f0f0066347#/%{name}-whq-mfplat-f4b3eb7.patch
+Patch981:       %{whq_url}/2f7e7d284bddd27d98a17beca4da0b6525d72913#/%{name}-whq-mfplat-2f7e7d2.patch
+Patch982:       %{whq_url}/42da77bbcfeae16b5f138ad3f2a3e3030ae0844b#/%{name}-whq-mfplat-42da77b.patch
+Patch983:       %{whq_url}/894e0712459ec2d48b1298724776134d2a966f66#/%{name}-whq-mfplat-894e071.patch
+Patch984:       %{whq_url}/cad38401bf091917396b24ad9c92091760cc696f#/%{name}-whq-mfplat-cad3840.patch
+Patch985:       %{whq_url}/54f825d237c1dcb0774fd3e3f4cfafb7c243aab5#/%{name}-whq-mfplat-54f825d.patch
+Patch986:       %{whq_url}/639c04a5b4e1ffd1d8328f60af998185a04d0c50#/%{name}-whq-mfplat-639c04a.patch
+Patch987:       %{whq_url}/769057b9b281eaaba7ee438dedb7f922b0903472#/%{name}-whq-mfplat-769057b.patch
+Patch988:       %{whq_url}/f3624e2d642c4f5c1042d24a70273db4437fcef9#/%{name}-whq-mfplat-f3624e2.patch
+Patch989:       %{whq_url}/747905c674d521b61923a6cff1d630c85a74d065#/%{name}-whq-mfplat-747905c.patch
 
 Patch999:       0001-mfplat-restore-definitions.patch
 Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
@@ -351,7 +367,6 @@ Patch1090:       revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
 Patch1092:       %{ge_url}/wine-hotfixes/staging/mfplat_dxgi_stub.patch#/%{name}-ge-mfplat_dxgi_stub.patch
 Patch1093:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.patch#/%{name}-valve-ba230cf.patch
-Patch1094:       %{ge_url}/wine-hotfixes/pending/hotfix-update_mono_version.patch#/%{name}-ge-hotfix-update_mono_version.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
@@ -972,6 +987,22 @@ rm -rf libs/faudio
 cp -f %{S:904} patches/xactengine-initial/
 %endif
 
+%patch989 -p1 -R
+%patch988 -p1 -R
+%patch987 -p1 -R
+%patch986 -p1 -R
+%patch985 -p1 -R
+%patch984 -p1 -R
+%patch983 -p1 -R
+%patch982 -p1 -R
+%patch981 -p1 -R
+%patch980 -p1 -R
+%patch979 -p1 -R
+%patch978 -p1 -R
+%patch977 -p1 -R
+%patch976 -p1 -R
+%patch975 -p1 -R
+%patch974 -p1 -R
 %patch973 -p1 -R
 %patch972 -p1 -R
 %patch971 -p1 -R
@@ -1052,7 +1083,7 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
-  -i Makefile.in
+  -i configure.ac
 
 %patch1020 -p1
 %patch1021 -p1
@@ -1095,7 +1126,6 @@ fi
 %patch1091 -p1 -R
 %patch1092 -p1
 %patch1093 -p1
-%patch1094 -p1
 
 %patch1300 -p1
 %if 0%{?extfaudio}
@@ -1105,9 +1135,6 @@ fi
 %patch1303 -p1
 %endif
 %patch1304 -p1
-
-# fix parallelized build
-sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
 
 %else
 
@@ -3089,7 +3116,10 @@ fi
 
 
 %changelog
-* Wed Nov 10 2021 Phantom X - 1:6.21-101.20211109git6a072b9
+* Sat Nov 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.21-102.20211112gitbe0684d
+- Bump
+
+* Wed Nov 10 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.21-101.20211109git6a072b9
 - Snapshot
 
 * Sat Nov 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.21-100

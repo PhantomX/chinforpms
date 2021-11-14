@@ -141,7 +141,7 @@
 %define with_systemtap 1
 
 # 2021-08 Hanging on COPR
-%define with_tests 0
+%define with_check 0
 
 # LTO still has issues with qemu on armv7hl and aarch64
 # https://bugzilla.redhat.com/show_bug.cgi?id=1952483
@@ -284,7 +284,7 @@ Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
 Version: 6.1.0
-Release: 102%{?dist}
+Release: 103%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -310,6 +310,14 @@ Patch1: 0001-target-i386-add-missing-bits-to-CR4_RESERVED_MASK.patch
 # Fix assertion on armv7hl
 # https://bugzilla.redhat.com/show_bug.cgi?id=1999878
 Patch2: 0001-tcg-arm-Reduce-vector-alignment-requirement-for-NEON.patch
+# Fix qemu crash with vnc + libvirt virDomainOpenConsole
+Patch3: 0001-qemu-sockets-fix-unix-socket-path-copy-again.patch
+# Fix tcg PVH test with binutils 2.36+
+Patch4: 0001-tests-tcg-Fix-PVH-test-with-binutils-2.36.patch 
+# Fix snapshot creation with qxl graphics
+# https://gitlab.com/qemu-project/qemu/-/issues/610
+# https://gitlab.com/qemu-project/qemu/-/commit/eb94846
+Patch5: 0001-qxl-fix-pre-save-logic.patch 
 
 BuildRequires: meson >= %{meson_version}
 BuildRequires: zlib-devel
@@ -1729,27 +1737,25 @@ install -Dpm 644 %{SOURCE16} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %check
+%if %{with_check}
 %if !%{tools_only}
-
-%if %{with_tests}
 
 pushd %{qemu_kvm_build}
 echo "Testing %{name}-build"
-# 2021-06: s390x tests randomly failing with 'Broken pipe' errors
+# 2021-09: s390x tests randomly failing with 'Broken pipe' errors
 # dhorak couldn't reproduce locally on an s390x machine so guessed
 # it's a resource issue
-# 2021-07: ppc64le intermittently hanging
+# 2021-09: ppc64le intermittently hanging with no discernable pattern
 %ifnarch s390x %{power64}
 %make_build check
 %endif
 
 popd
 
-%endif
-
 # endif !tools_only
 %endif
-
+# endif with check
+%endif
 
 %post -n qemu-guest-agent
 %systemd_post qemu-guest-agent.service
@@ -2249,6 +2255,9 @@ popd
 
 
 %changelog
+* Sat Nov 13 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.1.0-103
+- Rawhide sync
+
 * Fri Sep 24 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.1.0-102
 - Rawhide sync
 

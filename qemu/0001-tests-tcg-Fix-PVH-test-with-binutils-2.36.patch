@@ -1,0 +1,40 @@
+From 5ab2a54c262c61f64c22dbb49ade3e2db8a740bb Mon Sep 17 00:00:00 2001
+Message-Id: <5ab2a54c262c61f64c22dbb49ade3e2db8a740bb.1633708346.git.crobinso@redhat.com>
+From: Cole Robinson <crobinso@redhat.com>
+Date: Fri, 8 Oct 2021 11:47:45 -0400
+Subject: [PATCH] tests: tcg: Fix PVH test with binutils 2.36+
+
+binutils started adding a .note.gnu.property ELF section which
+makes the PVH test fail:
+
+  TEST    hello on x86_64
+qemu-system-x86_64: Error loading uncompressed kernel without PVH ELF Note
+
+Discard .note.gnu* while keeping the PVH .note bits intact.
+
+This also strips the build-id note, so drop the related comment.
+
+Signed-off-by: Cole Robinson <crobinso@redhat.com>
+---
+ tests/tcg/x86_64/system/kernel.ld | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/tests/tcg/x86_64/system/kernel.ld b/tests/tcg/x86_64/system/kernel.ld
+index 49c12b04ae..ca5d6bd850 100644
+--- a/tests/tcg/x86_64/system/kernel.ld
++++ b/tests/tcg/x86_64/system/kernel.ld
+@@ -16,7 +16,10 @@ SECTIONS {
+ 		*(.rodata)
+ 	} :text
+ 
+-        /* Keep build ID and PVH notes in same section */
++        /DISCARD/ : {
++                *(.note.gnu*)
++        }
++
+         .notes :  {
+                *(.note.*)
+         } :note
+-- 
+2.32.0
+
