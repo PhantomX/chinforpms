@@ -1,6 +1,6 @@
-%global commit 3476e5e46fc6f10df475f0cad1714358ba04c756
+%global commit dc7f76416e2fca9f4a861a1b967caf6aa15813c1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210518
+%global date 20211114
 %global with_snapshot 1
 
 %ifnarch %{ix86} ppc64 s390x
@@ -15,7 +15,7 @@
 
 Name:           flips
 Version:        1.40
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        A patcher for IPS and BPS files
 
 License:        GPLv3+
@@ -139,6 +139,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.github.Alc
 
 
 %changelog
+* Tue Nov 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.40-5.20211114gitdc7f764
+- Bump
+
 * Sun Jul 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1.40-4.20210518git3476e5e
 - Update
 

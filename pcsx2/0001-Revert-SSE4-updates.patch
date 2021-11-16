@@ -1,6 +1,6 @@
-From bbdcd1b79fb3194086019ae22ec2e4be63d5d3b2 Mon Sep 17 00:00:00 2001
+From 07df4d9bd26cb44d4ce07da20da0eec74bfaa7c9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 26 Oct 2021 19:18:40 -0300
+Date: Sun, 14 Nov 2021 17:13:17 -0300
 Subject: [PATCH] Revert SSE4 updates
 
 Rebased with commits reverted or rebased:
@@ -12,8 +12,6 @@ ee07f860fc1dd7e8ada6c13903bb3a592b8d4864 microVU: Implement Overflow checks
 d0f3c620d27f88c0eabdbb60d7737284c239909e GSBlock: Cleanup warnings.
 2dbfe9f743d795da0597ff29b302541132a48c6c gs: Cleanup remaining stuff from sse2/3 purge.
 7faa5db9e57c6e59dbe62c66d64623d879b680a2 VU/GameDB: Move Mac/Status overflow flag checks to a gamefix
-
-That make PCSX2 running in older CPUS for some not demanding games and lose all
 ---
  .../validation/lint-gamedb/lint-gamedb.py     |   2 +-
  bin/GameIndex.yaml                            |  46 ++-
@@ -21,7 +19,7 @@ That make PCSX2 running in older CPUS for some not demanding games and lose all
  pcsx2/Config.h                                |   2 -
  pcsx2/GS/GSBlock.h                            | 363 +++++++++++++++++-
  pcsx2/GS/GSCapture.cpp                        |  14 +
- pcsx2/GS/GSState.cpp                          |  13 +
+ pcsx2/GS/GSState.cpp                          |  14 +
  pcsx2/GS/GSUtil.cpp                           |   6 +
  pcsx2/GS/GSVector4.h                          |  96 ++++-
  pcsx2/GS/GSVector4i.h                         | 283 +++++++++++++-
@@ -44,7 +42,7 @@ That make PCSX2 running in older CPUS for some not demanding games and lose all
  pcsx2/x86/microVU_Misc.inl                    | 127 +++++-
  pcsx2/x86/microVU_Upper.inl                   |  37 +-
  pcsx2/x86/newVif_UnpackSSE.cpp                | 101 ++++-
- 29 files changed, 1654 insertions(+), 187 deletions(-)
+ 29 files changed, 1655 insertions(+), 187 deletions(-)
 
 diff --git a/.github/workflows/scripts/validation/lint-gamedb/lint-gamedb.py b/.github/workflows/scripts/validation/lint-gamedb/lint-gamedb.py
 index ab76a69..0027df7 100644
@@ -60,10 +58,10 @@ index ab76a69..0027df7 100644
  allowed_speed_hacks = ["mvuFlagSpeedHack", "InstantVU1SpeedHack"]
  # Patches are allowed to have a 'default' key or a crc-32 key, followed by
 diff --git a/bin/GameIndex.yaml b/bin/GameIndex.yaml
-index a37e5d1..b294992 100644
+index d05d807..64c891c 100644
 --- a/bin/GameIndex.yaml
 +++ b/bin/GameIndex.yaml
-@@ -14354,8 +14354,15 @@ SLES-53744:
+@@ -14352,8 +14352,15 @@ SLES-53744:
  SLES-53746:
    name: "Superman Returns"
    region: "PAL-E"
@@ -81,7 +79,7 @@ index a37e5d1..b294992 100644
  SLES-53747:
    name: "Ed, Edd, 'n Eddy - The Misadventure"
    region: "PAL-E"
-@@ -15548,23 +15555,31 @@ SLES-54347:
+@@ -15545,23 +15552,31 @@ SLES-54347:
  SLES-54348:
    name: "Superman Returns"
    region: "PAL-F"
@@ -121,7 +119,7 @@ index a37e5d1..b294992 100644
  SLES-54354:
    name: "Final Fantasy XII"
    region: "PAL-E"
-@@ -38425,8 +38440,15 @@ SLUS-21434:
+@@ -38396,8 +38411,15 @@ SLUS-21434:
    name: "Superman Returns - The Video Game"
    region: "NTSC-U"
    compat: 4
@@ -177,10 +175,10 @@ index 0771bbd..4630fc7 100644
  		else()
  			#set(ARCH_FLAG "-march=native -fabi-version=6")
 diff --git a/pcsx2/Config.h b/pcsx2/Config.h
-index b85ee9f..c7f9140 100644
+index 2ce15f5..461efa8 100644
 --- a/pcsx2/Config.h
 +++ b/pcsx2/Config.h
-@@ -397,7 +397,6 @@ struct Pcsx2Config
+@@ -389,7 +389,6 @@ struct Pcsx2Config
  			VuAddSubHack : 1, // Tri-ace games, they use an encryption algorithm that requires VU ADDI opcode to be bit-accurate.
  			IbitHack : 1, // I bit hack. Needed to stop constant VU recompilation in some games
  			VUKickstartHack : 1, // Gives new VU programs a slight head start and runs VU's ahead of EE to avoid VU register reading/writing issues
@@ -188,7 +186,7 @@ index b85ee9f..c7f9140 100644
  			XgKickHack : 1; // Erementar Gerad, adds more delay to VU XGkick instructions. Corrects the color of some graphics, but breaks Tri-ace games and others.
  		BITFIELD_END
  
-@@ -653,7 +652,6 @@ namespace EmuFolders
+@@ -645,7 +644,6 @@ namespace EmuFolders
  #define CHECK_VIFFIFOHACK (EmuConfig.Gamefixes.VIFFIFOHack) // Pretends to fill the non-existant VIF FIFO Buffer.
  #define CHECK_VIF1STALLHACK (EmuConfig.Gamefixes.VIF1StallHack) // Like above, processes FIFO data before the stall is allowed (to make sure data goes over).
  #define CHECK_GIFFIFOHACK (EmuConfig.Gamefixes.GIFFIFOHack) // Enabled the GIF FIFO (more correct but slower)
@@ -819,22 +817,23 @@ index ed14a5a..b592fba 100644
  				else
  				{
 diff --git a/pcsx2/GS/GSState.cpp b/pcsx2/GS/GSState.cpp
-index 939f784..af1967d 100644
+index ae99045..bb70151 100644
 --- a/pcsx2/GS/GSState.cpp
 +++ b/pcsx2/GS/GSState.cpp
-@@ -560,11 +560,20 @@ void GSState::GIFPackedRegHandlerNull(const GIFPackedReg* RESTRICT r)
+@@ -588,11 +588,21 @@ void GSState::GIFPackedRegHandlerNull(const GIFPackedReg* RESTRICT r)
  
  void GSState::GIFPackedRegHandlerRGBA(const GIFPackedReg* RESTRICT r)
  {
 +#if _M_SSE >= 0x301
- 	const GSVector4i mask = GSVector4i::load(0x0c080400);
- 	const GSVector4i v = GSVector4i::load<false>(r).shuffle8(mask);
++
+ 	GSVector4i mask = GSVector4i::load(0x0c080400);
+ 	GSVector4i v = GSVector4i::load<false>(r).shuffle8(mask);
  
  	m_v.RGBAQ.u32[0] = (uint32)GSVector4i::store(v);
  
 +#else
 +
-+	const GSVector4i v = GSVector4i::load<false>(r) & GSVector4i::x000000ff();
++	GSVector4i v = GSVector4i::load<false>(r) & GSVector4i::x000000ff();
 +
 +	m_v.RGBAQ.u32[0] = v.rgba32();
 +
@@ -843,9 +842,9 @@ index 939f784..af1967d 100644
  	m_v.RGBAQ.Q = m_q;
  }
  
-@@ -2374,7 +2383,11 @@ __forceinline void GSState::VertexKick(uint32 skip)
+@@ -2699,7 +2709,11 @@ __forceinline void GSState::VertexKick(uint32 skip)
  
- 	const GSVector4i xy = v1.xxxx().u16to32().sub32(m_ofxy);
+ 	GSVector4i xy = v1.xxxx().u16to32().sub32(m_ofxy);
  
 +#if _M_SSE >= 0x401
  	GSVector4i::storel(&m_vertex.xy[xy_tail & 3], xy.blend16<0xf0>(xy.sra32(4)).ps32());
@@ -2361,7 +2360,7 @@ index 97672f5..aac5c46 100644
  
  		dst->t = t;
 diff --git a/pcsx2/Pcsx2Config.cpp b/pcsx2/Pcsx2Config.cpp
-index 0145284..86a76c6 100644
+index 2b83ed0..69683d1 100644
 --- a/pcsx2/Pcsx2Config.cpp
 +++ b/pcsx2/Pcsx2Config.cpp
 @@ -319,7 +319,6 @@ const wxChar* const tbl_GamefixNames[] =
@@ -2777,7 +2776,7 @@ index 7ff93f0..db78475 100644
  	recReserveCache();
  }
 diff --git a/pcsx2/x86/microVU.cpp b/pcsx2/x86/microVU.cpp
-index d34e582..27bb66f 100644
+index 7480808..9fcc326 100644
 --- a/pcsx2/x86/microVU.cpp
 +++ b/pcsx2/x86/microVU.cpp
 @@ -50,8 +50,8 @@ void mVUreserveCache(microVU& mVU)

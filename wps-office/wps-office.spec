@@ -11,6 +11,7 @@
 Name:           wps-office
 Version:        11.1.0.10702
 Release:        2%{?dist}
+Epoch:          1
 Summary:        WPS Office Suite
 
 License:        Proprietary
@@ -326,7 +327,7 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
-* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 11.1.0.10702-2
+* Fri Oct 01 2021 - 11.1.0.10702-2
 - Remove rpaths and update scripts
 
 * Fri Sep 10 2021 - 11.1.0.10702-1

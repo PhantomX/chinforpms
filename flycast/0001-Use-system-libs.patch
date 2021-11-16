@@ -1,6 +1,6 @@
-From 89d0d06d6984678829566fa96c0fac6ec27e6468 Mon Sep 17 00:00:00 2001
+From 7e46703844a9f7b3ce2cd888c39effb81e5ce945 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 28 Sep 2021 23:40:35 -0300
+Date: Mon, 15 Nov 2021 23:29:22 -0300
 Subject: [PATCH] Use system libs
 
 ---
@@ -13,7 +13,7 @@ Subject: [PATCH] Use system libs
  6 files changed, 80 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f339741..50a871f 100644
+index 4f00034..1ca0389 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -17,6 +17,9 @@ option(USE_HOST_LIBZIP "Use host libzip" ON)
@@ -26,7 +26,7 @@ index f339741..50a871f 100644
  
  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
  
-@@ -189,20 +192,41 @@ else()
+@@ -193,20 +196,41 @@ else()
      target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_NO_OPENMP)
  endif()
  
@@ -51,7 +51,7 @@ index f339741..50a871f 100644
  target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
 +endif()
  
- if(NOT APPLE AND USE_VULKAN)
+ if(USE_VULKAN)
 +if(USE_HOST_SPIRV)
 +    pkg_search_module(GLSLANG REQUIRED glslang)
 +    pkg_search_module(SPIRV REQUIRED spirv)
@@ -68,7 +68,7 @@ index f339741..50a871f 100644
  
  if(NOT LIBRETRO)
  	find_package(ALSA)
-@@ -264,11 +288,19 @@ if(NOT LIBRETRO)
+@@ -276,11 +300,19 @@ if(NOT LIBRETRO)
  	endif()
  endif()
  
@@ -88,7 +88,7 @@ index f339741..50a871f 100644
  
  if(NOT WITH_SYSTEM_ZLIB)
      target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
-@@ -280,7 +312,6 @@ if(NOT WITH_SYSTEM_ZLIB)
+@@ -292,7 +324,6 @@ if(NOT WITH_SYSTEM_ZLIB)
      get_target_property(ZLIB_LIBRARY zlib LOCATION)
  endif()
  
@@ -96,7 +96,7 @@ index f339741..50a871f 100644
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE AND NOT LIBRETRO)
      pkg_check_modules(AO IMPORTED_TARGET ao)
      if(AO_FOUND)
-@@ -493,8 +524,26 @@ if(NOT MSVC)
+@@ -505,8 +536,26 @@ if(NOT MSVC)
              core/deps/picotcp/stack/pico_tree.c)
  endif()
  
@@ -123,7 +123,7 @@ index f339741..50a871f 100644
  target_sources(${PROJECT_NAME} PRIVATE core/deps/libelf/elf32.cpp core/deps/libelf/elf64.cpp core/deps/libelf/elf.cpp)
  if(NOT LIBRETRO)
  	target_sources(${PROJECT_NAME} PRIVATE core/deps/imgui/imgui.cpp core/deps/imgui/imgui_demo.cpp core/deps/imgui/imgui_draw.cpp core/deps/imgui/imgui_widgets.cpp)
-@@ -536,9 +585,13 @@ if(LIBRETRO)
+@@ -549,9 +598,13 @@ if(LIBRETRO)
  		shell/libretro/vmu_xhair.cpp)
  endif()
  
@@ -221,7 +221,7 @@ index ea644b4..8bac74e 100644
  
  static const TBuiltInResource DefaultTBuiltInResource = {
 diff --git a/core/rend/vulkan/shaders.h b/core/rend/vulkan/shaders.h
-index e2ce5c1..c733f64 100644
+index 61223f7..94543a3 100644
 --- a/core/rend/vulkan/shaders.h
 +++ b/core/rend/vulkan/shaders.h
 @@ -20,7 +20,11 @@
@@ -237,5 +237,5 @@ index e2ce5c1..c733f64 100644
  #include <glm/glm.hpp>
  #include <map>
 -- 
-2.31.1
+2.33.1
 

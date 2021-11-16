@@ -1,7 +1,11 @@
-%global commit 23d1f6b507fba1ae65bd7f63d4242aa369d8c0ad
+%global commit c6374a899c07a102025b12a0d2827fc512338fcf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210930
+%global date 20211114
 %global with_snapshot 1
+
+%global commit1 fab7b33b896a42dcc865ba5ecdbacd9f409137f8
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 LuaBridge
 
 %undefine _hardened_build
 %undefine _cmake_shared_libs
@@ -23,11 +27,12 @@
 
 Name:           flycast
 Version:        1.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
 
+# ggpo - MIT
 License:        GPLv2 and BSD
 URL:            https://github.com/flyinghead/%{name}
 
@@ -36,6 +41,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif
+Source1:        https://github.com/vinniefalco/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
@@ -62,6 +68,7 @@ BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip)
+BuildRequires:  pkgconfig(lua)
 BuildRequires:  pkgconfig(miniupnpc)
 BuildRequires:  pkgconfig(lzmasdk-c)
 %if 0%{?with_x11}
@@ -76,7 +83,9 @@ Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(chdpsr)
+Provides:       bundled(ggpo)
 Provides:       bundled(libelf) = %{libelf_ver}
+Provides:       bundled(LuaBridge)  = 0~git%{shortcommit1}
 Provides:       bundled(nowide_ver) = %{nowide_ver}
 Provides:       bundled(picotcp)
 Provides:       bundled(stb) = %{stb_ver}
@@ -101,6 +110,8 @@ rm -rf core/deps/{glm,libzip,lzma,miniupnpc,oboe,SDL2-*,xxHash,zlib}
 %if 0%{?with_spirv}
 rm -rf core/deps/glslang
 %endif
+
+tar -xf %{S:1} -C core/deps/luabridge/ --strip-components 1
 
 find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
 
@@ -205,6 +216,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Tue Nov 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-2.20211114gitc6374a8
+- net-rollback branch try
+
 * Wed Sep 29 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-1.20210927git5d068fc
 - 1.1 last snapshot
 

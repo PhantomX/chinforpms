@@ -47,6 +47,7 @@ python-pyctr
 -odrive
 rocketchat-desktop
 snes9x
+softmaker-office
 -soulseekqt
 spideroakone
 steam
