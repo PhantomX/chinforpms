@@ -78,6 +78,7 @@ for i in *.desktop ;do
 done
 sed \
   -e '/^ $/d' \
+  -e '/Name=/s| %{version}||g' \
   -e 's|12;application/vnd.openxmlformats-officedocument.spreadsheetml.template;|12;|' \
   -i *.desktop
 
@@ -97,7 +98,7 @@ mkdir -p %{buildroot}%{_bindir}
 for file in planmaker textmaker ;do
 cat > %{buildroot}%{_bindir}/${file} <<EOF
 #!/usr/bin/bash
-LD_LIBRARY_PATH="%{_libdir}/%{name}/dbf3\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="%{_libdir}/%{name}/dpf3\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
 exec %{_libdir}/%{name}/${file} "\$@"
 EOF
@@ -109,7 +110,7 @@ cat > %{buildroot}%{_bindir}/presentations <<'EOF'
 
 shopt -s nocasematch
 presentationsbin=%{_libdir}/%{name}/presentations
-LD_LIBRARY_PATH="%{_libdir}/%{name}/dbf3${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="%{_libdir}/%{name}/dpf3${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
 case "$@" in
   *.prs|*.pps|*.ppsx)

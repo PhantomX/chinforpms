@@ -1,6 +1,6 @@
-%global commit 94d242391c2bd1c37c0ea231622eef2f84885a44
+%global commit cbd79811bc3e59381dcd2928c5a3c3e572d82fd4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210413
+%global date 20211007
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           krename
 Version:        5.0.60
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 
 Epoch:          1
 
@@ -102,6 +102,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.d
 
 
 %changelog
+* Tue Nov 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0.60-105.20211007gitcbd7981
+- Bump
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0.60-104.20210413git94d2423
 - Last snapshot
 

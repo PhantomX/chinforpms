@@ -10,7 +10,7 @@
 
 Name:           wps-office
 Version:        11.1.0.10702
-Release:        2%{?dist}
+Release:        3%{?dist}
 Epoch:          1
 Summary:        WPS Office Suite
 
@@ -199,7 +199,10 @@ sed \
   -i usr/bin/*
 
 sed -e '/^X-DBUS-/d' -e '/^X-KDE-/d' -e '/^InitialPreference/d' \
+  -e 's| 2019||g' -e '/^Icon/s|2019||g' \
   -i usr/share/applications/*.desktop
+
+rename 2019 '' usr/share/icons/hicolor/*/mimetypes/*.png
 
 sed \
   -e 's| weight=".0"| weight="40"|g' \
@@ -327,6 +330,9 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
+* Tue Nov 16 2021 Phantom X - 1:11.1.0.10702-3
+- Icon name fixes
+
 * Fri Oct 01 2021 - 11.1.0.10702-2
 - Remove rpaths and update scripts
 

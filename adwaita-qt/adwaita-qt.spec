@@ -9,7 +9,7 @@
 
 Name:           adwaita-qt
 Version:        1.4.50
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 
 License:        LGPLv2+
 Summary:        Adwaita theme for Qt-based applications
@@ -27,6 +27,7 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 # Remove some ugly paddings
 Patch10:        %{name}-chinforpms.patch
 Patch11:        0001-set-old-menu-selected-color.patch
+Patch12:        0001-disable-overlay-scrolling.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -164,6 +165,9 @@ popd
 
 
 %changelog
+* Tue Nov 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.50-102.20211110git85670f8
+- Disable overlay scrolling
+
 * Thu Nov 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.50-101.20211110git85670f8
 - Bump
 
