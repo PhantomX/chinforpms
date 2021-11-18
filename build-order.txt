@@ -139,6 +139,7 @@ joy2key
 keepassxc
 kernel-tools
 krename
+kristall
 kse
 -ladspa-bs2b-plugins
 libstrangle

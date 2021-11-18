@@ -2,7 +2,7 @@
 
 Name:           vulkan-tools
 Version:        1.2.199
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan tools
 
 License:        ASL 2.0
@@ -14,6 +14,8 @@ Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Tools-sdk-%{version
 Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Tools-%{version}.tar.gz
 %endif
 
+%dnl Patch0:         %{url}/commit/1e60e360990b81abe34b75e69c41a4c1a1027465.patch#/%{name}-gh-1e60e36.patch
+Patch1:         %{url}/commit/bfdd0c8753824b734a448308f6ca0e1a2af57802.patch#/%{name}-gh-bfdd0c8.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -38,9 +40,9 @@ Vulkan tools
 
 %prep
 %if 0%{?with_sdk}
-%autosetup -n Vulkan-Tools-sdk-%{version}
+%autosetup -n Vulkan-Tools-sdk-%{version} -p1
 %else
-%autosetup -n Vulkan-Tools-%{version}
+%autosetup -n Vulkan-Tools-%{version} -p1
 %endif
 
 
@@ -83,6 +85,9 @@ done
 %{_bindir}/*
 
 %changelog
+* Wed Nov 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.199-2
+- Upstream fixes
+
 * Tue Nov 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.199-1
 - 1.2.199
 

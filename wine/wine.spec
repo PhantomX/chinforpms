@@ -1,6 +1,6 @@
-%global commit be0684dad50ffbc93b3ded4fbfebf1d1e4690589
+%global commit b65ef71fc0a7044557e0ba530e3b95497644867c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211112
+%global date 20211116
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -33,7 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  7.0.0
-%global winevulkan 1.2.197
+%global winevulkan 1.2.199
 
 %global wineFAudio 21.11
 %global winegsm 1.0.19
@@ -79,7 +79,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver a9aa06c58eea77c66417b48669a00d7b32b70c99
+%global wine_stagingver 0ee2ac8499bbde23ad14bb0ffe125016faccd301
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -90,7 +90,7 @@
 %global ge_id d83b266ef51a4dd5d40207d744c15a9f74359e36
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id af4c9442dd502f285b6ecb9bc8cb25e427811d46
+%global tkg_id aa1f0c98cabfa487e726c12268e00d97a2128209
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,7 +145,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.21
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -219,6 +219,7 @@ Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
 Patch204:       %{whq_url}/b54199101fd307199c481709d4b1358ba4bcce58#/%{name}-whq-b541991.patch
 Patch205:       %{whq_url}/dedda40e5d7b5a3bcf67eea95145810da283d7d9#/%{name}-whq-dedda40.patch
 Patch206:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
+Patch207:       %{whq_url}/a9b5bb326a1514e2c4185633ab34b22c9bbc9863#/%{name}-whq-a9b5bb3.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -336,7 +337,7 @@ Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_by
 Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
-Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-007.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-007.patch
+Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-008.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-008.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1008:       %{tkg_url}/misc/lowlatency_audio.patch#/%{name}-tkg-lowlatency_audio.patch
 Patch1009:       %{ge_url}/wine-hotfixes/testing/lowlatency_audio_pulse.patch#/%{name}-ge-lowlatency_audio_pulse.patch
@@ -971,6 +972,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch204 -p1 -R
 %patch205 -p1 -R
 %patch206 -p1 -R
+%patch207 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -3116,6 +3118,9 @@ fi
 
 
 %changelog
+* Wed Nov 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.21-103.20211116gitb65ef71
+- Bump
+
 * Sat Nov 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.21-102.20211112gitbe0684d
 - Bump
 

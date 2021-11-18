@@ -2,7 +2,7 @@
 
 Name:           vulkan-loader
 Version:        1.2.199
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan ICD desktop loader
 
 License:        ASL 2.0
@@ -17,10 +17,6 @@ Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Loader-sdk-%{versio
 %else
 Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Loader-%{version}.tar.gz
 %endif
-
-# Revert this two, segmentation faults
-Patch0:         %{url}/commit/864078943f15a1e360fdbb04c42ae35a303fdd87.patch#/%{name}-gh-8640789.patch
-Patch1:         %{url}/commit/bed7a5c6594ad7ac5ccaa85ffb7bff2e5ee18d3d.patch#/%{name}-gh-bed7a5c.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -65,10 +61,8 @@ developing applications that use %{name}.
 %if 0%{?with_sdk}
 %autosetup -p1 -n Vulkan-Loader-sdk-%{version}
 %else
-%autosetup -p1 -n Vulkan-Loader-%{version} -N
+%autosetup -p1 -n Vulkan-Loader-%{version}
 %endif
-%patch1 -p1 -R
-%patch0 -p1 -R
 
 %build
 %cmake3 \
@@ -107,6 +101,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
 
 
 %changelog
+* Wed Nov 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.199-2
+- Remove reverts
+
 * Tue Nov 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.199-1
 - 1.2.199
 
