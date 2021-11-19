@@ -10,7 +10,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           antimicrox
-Version:        3.1.7
+Version:        3.2.0
 Release:        100%{?gver}%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
@@ -72,7 +72,7 @@ sed \
   -e '/\/doc\/%{name}/d' \
   -i CMakeLists.txt
 
-sed -e '/^SUBSYSTEM/s|$|, OPTIONS+="static_node=uinput"|' -i other/60-antimcrox-uinput.rules
+sed -e '/^SUBSYSTEM/s|$|, OPTIONS+="static_node=uinput"|' -i other/60-%{name}-uinput.rules
 
 cp -f src/images/48x48/%{appname}.png src/images/48-apps-%{name}_trayicon.png
 cp -f src/images/48x48/%{appname}.png src/images/breeze_themed/48-apps-%{name}_trayicon.png
@@ -96,10 +96,6 @@ rm -f %{buildroot}%{_datadir}/%{name}/CHANGELOG.md
 
 rm -rf %{buildroot}%{_includedir}
 
-mv %{buildroot}%{_udevrulesdir}/60-antimcrox-uinput.rules \
-  %{buildroot}%{_udevrulesdir}/60-%{name}-uinput.rules
-
-
 %find_lang %{name} --with-qt
 
 %check
@@ -122,6 +118,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 
 
 %changelog
+* Thu Nov 18 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.0-100
+- 3.2.0
+
 * Fri Sep 10 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.7-100
 - 3.1.7
 

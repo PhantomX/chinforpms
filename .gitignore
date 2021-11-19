@@ -23,6 +23,7 @@ geany_run_script.sh
 
 *.rpm
 *.deb
+*.AppImage
 *.snap
 #*.patch
 #*.diff

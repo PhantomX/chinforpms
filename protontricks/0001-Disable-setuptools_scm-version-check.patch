@@ -30,9 +30,9 @@ index 22076c5..f04263f 100644
 -        "setuptools_scm<6 ; python_version <= '3.5'",
 -        "setuptools_scm ; python_version > '3.5'"
 -    ],
-     install_requires=["vdf>=3.2"],
-     entry_points={
-         "console_scripts": [
+     install_requires=[
+         "setuptools",  # Required for pkg_resources
+         "vdf>=3.2"
 -- 
 2.31.1
 

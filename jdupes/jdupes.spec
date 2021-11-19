@@ -1,5 +1,5 @@
 Name:           jdupes
-Version:        1.20.0
+Version:        1.20.2
 Release:        1%{?dist}
 Summary:        A powerful duplicate file finder
 
@@ -54,6 +54,9 @@ rm -f xxhash.*
 
 
 %changelog
+* Thu Nov 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1.20.2-1
+- 1.20.2
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1.20.0-1
 - 1.20.0
 

@@ -1,45 +1,32 @@
-From df30c1c6786d6fd3524d80c147efac82e96219b5 Mon Sep 17 00:00:00 2001
+From e59012bdb58c54618a53a40f80ea57ec8b249f2b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 16 Nov 2021 16:23:04 -0300
+Date: Thu, 18 Nov 2021 09:14:16 -0300
 Subject: [PATCH] disable overlay scrolling
 
 ---
- src/lib/adwaita.h          | 2 +-
- src/style/adwaitastyle.cpp | 8 +++-----
- 2 files changed, 4 insertions(+), 6 deletions(-)
+ src/style/adwaitastyle.cpp | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/src/lib/adwaita.h b/src/lib/adwaita.h
-index 833f165..d5b065b 100644
---- a/src/lib/adwaita.h
-+++ b/src/lib/adwaita.h
-@@ -76,7 +76,7 @@ namespace Config
-     const int ProgressBarBusyStepDuration {600};
-     const int ScrollBarAddLineButtons {0};
-     const int ScrollBarSubLineButtons {0};
--    const bool ScrollBarShowOnMouseOver {true};
-+    const bool ScrollBarShowOnMouseOver {false};
-     const int MnemonicsMode {MN_AUTO};
-     const bool ToolBarDrawItemSeparator {0};
-     const bool ViewDrawFocusIndicator {true};
 diff --git a/src/style/adwaitastyle.cpp b/src/style/adwaitastyle.cpp
-index 146f9ca..73694a4 100644
+index 146f9ca..b61ea07 100644
 --- a/src/style/adwaitastyle.cpp
 +++ b/src/style/adwaitastyle.cpp
-@@ -5394,7 +5394,7 @@ bool Style::drawScrollBarSliderControl(const QStyleOption *option, QPainter *pai
-     QRect handleRect;
+@@ -5418,11 +5418,7 @@ bool Style::drawScrollBarSliderControl(const QStyleOption *option, QPainter *pai
+     styleOptions.setAnimationMode(mode);
  
-     bool enabled(state & State_Enabled);
--    bool mouseOver((state & State_Active) && enabled && (state & State_MouseOver));
-+    bool mouseOver(true);
-     bool sunken(enabled && (state & (State_On | State_Sunken)));
+     QColor color = Colors::scrollBarHandleColor(styleOptions);
+-    if (mouseOver) {
+-        opacity = 1;
+-    } else {
+-        opacity = 0;
+-    }
++    opacity = 1;
  
-     // check focus from relevant parent
-@@ -7025,11 +7025,9 @@ bool Style::drawScrollBarComplexControl(const QStyleOptionComplex *option, QPain
-     bool enabled(option->state & State_Enabled);
-     qreal opacity(_animations->scrollBarEngine().opacity(widget, QStyle::SC_ScrollBarGroove));
+     /*
+     if( horizontal ) handleRect = centerRect( rect, rect.width(), rect.height() * (0.5 + 0.5 * opacity));
+@@ -7027,12 +7023,9 @@ bool Style::drawScrollBarComplexControl(const QStyleOptionComplex *option, QPain
      bool animated(Adwaita::Config::ScrollBarShowOnMouseOver && _animations->scrollBarEngine().isAnimated(widget,  AnimationHover, QStyle::SC_ScrollBarGroove));
--    bool mouseOver((option->state & State_Active) && option->state & State_MouseOver);
-+    bool mouseOver(true);
+     bool mouseOver((option->state & State_Active) && option->state & State_MouseOver);
  
 -    if (opacity == AnimationData::OpacityInvalid) {
 -        opacity = 1;
@@ -47,7 +34,18 @@ index 146f9ca..73694a4 100644
 +    opacity = 1;
  
      // render full groove directly, rather than using the addPage and subPage control element methods
-     if ((mouseOver || animated) && option->subControls & SC_ScrollBarGroove) {
+-    if ((mouseOver || animated) && option->subControls & SC_ScrollBarGroove) {
+         // retrieve groove rectangle
+         QRect grooveRect(subControlRect(CC_ScrollBar, option, SC_ScrollBarGroove, widget));
+ 
+@@ -7059,7 +7052,6 @@ bool Style::drawScrollBarComplexControl(const QStyleOptionComplex *option, QPain
+             painter->setBrush(color);
+             painter->drawRect(option->rect);
+         }
+-    }
+ 
+     // call base class primitive
+     //ParentStyleClass::drawComplexControl( CC_ScrollBar, option, painter, widget );
 -- 
 2.33.1
 

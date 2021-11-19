@@ -4,7 +4,7 @@ Release:        1%{?dist}
 Summary:        Parallel tar, rm and cp utilities
 
 License:        UPL
-URL:            ssh://git@bitbucket.oci.oraclecorp.com:7999/ffsw/fss-parallel-tools.git
+URL:            https://blogs.oracle.com/cloud-infrastructure/post/announcing-parallel-file-tools-for-file-storage
 
 # src.rpm as source, because Oracle...
 Source0:        https://yum.oracle.com/repo/OracleLinux/OL7/developer/x86_64/getPackageSource/%{name}-%{version}-1.el7.src.rpm

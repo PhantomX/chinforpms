@@ -9,7 +9,7 @@
 
 Name:           adwaita-qt
 Version:        1.4.50
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 
 License:        LGPLv2+
 Summary:        Adwaita theme for Qt-based applications
@@ -165,6 +165,9 @@ popd
 
 
 %changelog
+* Thu Nov 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.50-103.20211110git85670f8
+- Fix overlay scrolling to match GTK behavior
+
 * Tue Nov 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.50-102.20211110git85670f8
 - Disable overlay scrolling
 

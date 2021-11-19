@@ -121,7 +121,6 @@ gkrellm-cpupower
 gkrellm-leds
 gkrellmpc
 gkrellm-themes
-glow
 -glslang
 gmpc
 -gmysqlcc

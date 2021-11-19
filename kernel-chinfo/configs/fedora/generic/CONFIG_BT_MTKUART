@@ -1,1 +1,1 @@
-# CONFIG_BT_MTKUART is not set
+CONFIG_BT_MTKUART=m

@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/052a70eae8d9fabd82bcb701931302704dccc472
+ 052a70eae8d9fabd82bcb701931302704dccc472 usb: xhci: tegra: Check padctrl interrupt presence in device tree
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/dbfaeb8e3c1a949e75c8e7aecee8c57ed54c9d02
  dbfaeb8e3c1a949e75c8e7aecee8c57ed54c9d02 Revert "[scsi] megaraid_sas: re-add certain pci-ids"
 

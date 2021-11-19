@@ -66,8 +66,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        21.2.5
-Release:        101%{?dist}
+Version:        21.3.0
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -91,25 +91,25 @@ BuildRequires:  kernel-headers
 # We only check for the minimum version of pkgconfig(libdrm) needed so that the
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
-BuildRequires:  pkgconfig(libdrm) >= 2.4.105
+BuildRequires:  pkgconfig(libdrm) >= 2.4.107
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libselinux)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(wayland-protocols) >= 1.8
-BuildRequires:  pkgconfig(wayland-client) >= 1.11
-BuildRequires:  pkgconfig(wayland-server) >= 1.11
+BuildRequires:  pkgconfig(wayland-client) >= 1.18
+BuildRequires:  pkgconfig(wayland-server) >= 1.18
 BuildRequires:  pkgconfig(wayland-egl-backend) >= 3
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xdamage) >= 1.1
-BuildRequires:  pkgconfig(xfixes)
+BuildRequires:  pkgconfig(xfixes) >= 2.0
 BuildRequires:  pkgconfig(xcb-glx) >= 1.8.1
 BuildRequires:  pkgconfig(xxf86vm)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb-dri2) >= 1.8
-BuildRequires:  pkgconfig(xcb-dri3)
+BuildRequires:  pkgconfig(xcb-dri3) >= 1.13
 BuildRequires:  pkgconfig(xcb-present)
 BuildRequires:  pkgconfig(xcb-sync)
 BuildRequires:  pkgconfig(xshmfence) >= 1.1
@@ -124,14 +124,14 @@ BuildRequires:  flex
 BuildRequires:  pkgconfig(vdpau) >= 1.1
 %endif
 %if 0%{?with_vaapi}
-BuildRequires:  pkgconfig(libva) >= 0.38.0
+BuildRequires:  pkgconfig(libva) >= 1.8.0
 %endif
 %if 0%{?with_omx}
 BuildRequires:  pkgconfig(libomxil-bellagio)
 %endif
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
-BuildRequires:  llvm-devel >= 7.0.0
+BuildRequires:  llvm-devel >= 11.0.0
 %if 0%{?with_opencl}
 BuildRequires:  clang-devel
 BuildRequires:  pkgconfig(libclc)
@@ -671,6 +671,9 @@ popd
 
 
 %changelog
+* Thu Nov 18 2021 Phantom X <megaphantomx at hotmail dot com> - 21.3.0-100
+- 21.3.0
+
 * Wed Nov 17 2021 Phantom X <megaphantomx at hotmail dot com> - 21.2.5-101
 - Rebuild (llvm)
 

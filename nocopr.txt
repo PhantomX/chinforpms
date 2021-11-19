@@ -10,6 +10,7 @@ bsnes
 cdrtools
 citra
 -cowsrevenge
+czkawka
 desmume
 discord
 -dropboxd
@@ -22,6 +23,7 @@ flycast
 -freac-superfast-codecs-freeworld
 gens-gs
 gflash-player
+glow
 gstreamer1-plugins-ugly
 hakuneko-desktop
 -higan

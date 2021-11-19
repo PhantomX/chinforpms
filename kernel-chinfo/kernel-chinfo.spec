@@ -154,7 +154,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -165,7 +165,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit bf2e37f056c89f7518c87e0f0d8f34942fa424e8
+%global pfcommit ff5dede77cf4d70694c1d9591e931ad53a953d5d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -193,7 +193,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id ce2f107c2a77dcc406750f505e163eebd1166456
+%global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -956,6 +956,7 @@ Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1018: %{opensuse_url}/random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch#/openSUSE-random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2913,6 +2914,9 @@ fi
 #
 #
 %changelog
+* Fri Nov 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.3-500.chinfo
+- 5.15.3 - pf2
+
 * Fri Nov 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.2-500.chinfo
 - 5.15.2 - pf2
 
