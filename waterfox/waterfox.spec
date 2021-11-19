@@ -6,6 +6,7 @@
 %global with_snapshot 0
 
 %global branch classic
+%global channel Classic
 
 %global freebsd_rev 20191102
 %global freebsd_root %{name}-FreeBSD-patches-%{freebsd_rev}
@@ -122,30 +123,24 @@ ExcludeArch: armv7hl
 %global sqlite_build_version %(pkg-config --silence-errors --modversion sqlite3 2>/dev/null || echo 65536)
 %endif
 
-%if "%{branch}" == "classic"
-%global channel Classic
-%else
-%global channel Current
-%endif
-
 %global mozappdir     %{_libdir}/%{name}
 %global mozappdirdev  %{_libdir}/%{name}-devel-%{version}
 %global langpackdir   %{mozappdir}/langpacks
 
 %global build_langpacks         1
 
-Summary:        Waterfox Web browser
+Summary:        Waterfox %{channel} Web browser
 Name:           waterfox
-Version:        2021.10
+Version:        2021.11
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
-URL:            https://www.waterfox.net
+URL:            https://classic.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
-%global vc_url  https://github.com/WaterfoxCo/Waterfox
+%global vc_url  https://github.com/WaterfoxCo/Waterfox-%{channel}
 %if 0%{?with_snapshot}
-Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{channel}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/%{version}-%{branch}/%{name}-%{version}-%{branch}.tar.gz
+Source0:        %{vc_url}/archive/%{version}-%{branch}/%{name}-%{branch}-%{version}.tar.gz
 %endif
 
 # FreeBSD patches
@@ -340,10 +335,12 @@ BuildRequires:  cargo
 
 Obsoletes:      mozilla <= 37:1.7.13
 Provides:       webclient
+Provides:       %{name}-%{branch} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description
-Waterfox is an open-source web browser, specialised modification of the Mozilla
-platform, designed for privacy and user choice in mind.
+Waterfox %{channel} is an open-source web browser, specialised
+modification of the Mozilla platform, designed for privacy and user
+choice in mind.
 
 %if %{run_tests}
 %global testsuite_pkg_name %{name}-testresults
@@ -359,9 +356,9 @@ This package contains results of tests executed during build.
 
 %prep
 %if 0%{?with_snapshot}
-%setup -q -n Waterfox-%{commit} -a 600
+%setup -q -n Waterfox-%{channel}-%{commit} -a 600
 %else
-%setup -q -n Waterfox-%{version}-%{branch} -a 600
+%setup -q -n Waterfox-%{channel}-%{version}-%{branch} -a 600
 %endif
 
 %if %{build_langpacks}
@@ -1045,6 +1042,10 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Nov 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.11-1.classic
+- 2021.11
+- Update URLs to new Classic repository
+
 * Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.10-1.classic
 - 2021.10
 
