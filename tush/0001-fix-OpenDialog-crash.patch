@@ -1,0 +1,25 @@
+From 9061d00265bd576d6bac731ddf018fb8b8b14822 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 20 Nov 2021 20:41:09 -0300
+Subject: [PATCH] fix OpenDialog crash
+
+---
+ src/main.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index 4adf79b..1956072 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -45,7 +45,7 @@ void HeadersDialog::btnBrowseClick(wxCommandEvent& event) { // Load a file
+ 	// Create a file open dialog
+ 	wxFileDialog* OpenDialog = new wxFileDialog(
+ 		this, _("Choose a file to open"), wxEmptyString, wxEmptyString,
+-		_("SNES roms (*.smc;*.sfc;*.swc;*.fig)|*.smc;*.sfc;*.swc;*.fig|All files (*.*)|*.*|"),
++		_("SNES roms (*.smc;*.sfc;*.swc;*.fig)|*.smc;*.sfc;*.swc;*.fig|All files (*.*)|*.*"),
+ 		wxFD_OPEN |wxFD_FILE_MUST_EXIST, wxDefaultPosition);
+ 
+ 	// And show it
+-- 
+2.33.1
+

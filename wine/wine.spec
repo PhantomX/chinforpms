@@ -1,7 +1,7 @@
-%global commit b65ef71fc0a7044557e0ba530e3b95497644867c
+%global commit 32fb017d4a22be38ca271bf387e466e958601355
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211116
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -79,7 +79,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 0ee2ac8499bbde23ad14bb0ffe125016faccd301
+%global wine_stagingver 6.22
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -90,7 +90,7 @@
 %global ge_id d83b266ef51a4dd5d40207d744c15a9f74359e36
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id aa1f0c98cabfa487e726c12268e00d97a2128209
+%global tkg_id 6cfc6cea6412a35a1455bd221649a79775057ed2
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -108,14 +108,12 @@
 %global extfaudio 1
 %global vulkanup 0
 
-# https://bugs.winehq.org/show_bug.cgi?id=50448
-%global wine_staging_opts %{?wine_staging_opts} -W ntdll-NtAlertThreadByThreadId
-#FIXME: uncomment when staging bcrypt-ECDHSecretAgreement is enabled again
-#global wine_staging_opts %%{?wine_staging_opts} -W bcrypt-ECDHSecretAgreement
+#FIXME: undnl when staging bcrypt-ECDHSecretAgreement is enabled again
+%dnl %global wine_staging_opts %{?wine_staging_opts} -W bcrypt-ECDHSecretAgreement
 
 %if !0%{?fshack}
 # childwindow.patch
-#global wine_staging_opts %%{?wine_staging_opts} -W Pipelight -W winex11-Vulkan_support
+%dnl %wine_staging_opts %%{?wine_staging_opts} -W Pipelight -W winex11-Vulkan_support
 %endif
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
@@ -144,8 +142,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.21
-Release:        103%{?gver}%{?dist}
+Version:        6.22
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -219,7 +217,6 @@ Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
 Patch204:       %{whq_url}/b54199101fd307199c481709d4b1358ba4bcce58#/%{name}-whq-b541991.patch
 Patch205:       %{whq_url}/dedda40e5d7b5a3bcf67eea95145810da283d7d9#/%{name}-whq-dedda40.patch
 Patch206:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
-Patch207:       %{whq_url}/a9b5bb326a1514e2c4185633ab34b22c9bbc9863#/%{name}-whq-a9b5bb3.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -972,7 +969,6 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch204 -p1 -R
 %patch205 -p1 -R
 %patch206 -p1 -R
-%patch207 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -1083,10 +1079,6 @@ rename '%{name}-tkg-' '' patches/mfplat-reverts/%{name}-tkg-*.patch
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
-sed \
-  -e "s/ (Staging)/ (%{staging_banner})/g" \
-  -i configure.ac
-
 %patch1020 -p1
 %patch1021 -p1
 %patch1022 -p1
@@ -1137,6 +1129,10 @@ fi
 %patch1303 -p1
 %endif
 %patch1304 -p1
+
+sed \
+  -e "s/ (Staging)/ (%{staging_banner})/g" \
+  -i configure*
 
 %else
 
@@ -2266,6 +2262,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/mscoree.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mscorwks.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msctf.%{winedll}
+%{_libdir}/wine/%{winedlldir}/msctfmonitor.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msctfp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msdaps.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msdasql.%{winedll}
@@ -2297,6 +2294,7 @@ fi
 %{_libdir}/wine/%{winesodir}/msv1_0.so
 %{_libdir}/wine/%{winedlldir}/msv1_0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcirt.%{winedll}
+%{_libdir}/wine/%{winedlldir}/msvcp_win.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcm80.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcm90.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcp60.%{winedll}
@@ -3094,7 +3092,6 @@ fi
 %if 0%{?wine_mingw}
 %{_libdir}/wine/%{winedlldir}/*.a
 %endif
-%{_libdir}/wine/%{winesodir}/*.def
 
 %files pulseaudio
 %{_libdir}/wine/%{winesodir}/winepulse.so
@@ -3118,6 +3115,9 @@ fi
 
 
 %changelog
+* Sat Nov 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.22-100
+- 6.22
+
 * Wed Nov 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.21-103.20211116gitb65ef71
 - Bump
 
