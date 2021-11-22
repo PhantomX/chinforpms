@@ -140,7 +140,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -154,7 +154,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -165,7 +165,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 68048c548d8361cb8782a779a2f1e3ba0ba9f2cb
+%global pfcommit 32659843ed33c50f8ff42880cb5087a092088538
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -193,7 +193,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
+%global opensuse_id 404f5765cf33979eeecf4977ac79a5f0a515722e
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -963,7 +963,7 @@ Patch1018: %{opensuse_url}/random-fix-crash-on-multiple-early-calls-to-add_bootl
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id ba636511f4862466b11ea69264cab70b7ccb3459
+%global tkg_id b10490c6b327150a293c50b9d7000a1d4f67fce7
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.15/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.15/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.15/0007-v5.15-futex_waitv.patch#/tkg-0007-v5.15-futex_waitv.patch
@@ -2914,6 +2914,9 @@ fi
 #
 #
 %changelog
+* Sun Nov 21 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.4-500.chinfo
+- 5.15.4 - pf2
+
 * Fri Nov 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.3-501.chinfo
 - pf update
 
