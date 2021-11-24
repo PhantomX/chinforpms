@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 2991b2341ab85622b4eacc0447dbe346f8eb6ce0
+%global commit 6e832cae20102079a065b212fdc9b0b4f03795d3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210912
+%global date 20211114
 
 %undefine _hardened_build
 
@@ -18,7 +18,7 @@
 
 Name:           vvvvvv
 Version:        2.4
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -32,6 +32,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        %{pkgname}.png
 
 Patch11:        0001-System-data-file.patch
+Patch12:        0001-vlog_error-format-security.patch
 
 
 BuildRequires:  cmake
@@ -151,6 +152,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Wed Nov 24 2021 - 2.4-3.20211114git6e832ca
+- Update
+
 * Mon Sep 13 2021 - 2.4-2.20210912git2991b23
 - Bump
 

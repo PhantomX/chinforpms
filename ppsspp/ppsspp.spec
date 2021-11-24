@@ -1,6 +1,6 @@
-%global commit 4d3890547464bd184ed58b21e3d9c4b80dec743d
+%global commit c7bba9bf726264778884144578a29bb32c7725b0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211107
+%global date 20211123
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -55,10 +55,11 @@
 %global vc_url  https://github.com/hrydgard
 
 %global jpgc_ver 1.05
+%global vma_ver 3.0.0
 
 Name:           ppsspp
 Version:        1.12.3
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -155,6 +156,7 @@ Provides:       bundled(libkirk)
 Provides:       bundled(sfmt19937)
 Provides:       bundled(sha1-reichl)
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit7}
+Provides:       bundled(vma) = %{vma_ver}
 Provides:       bundled(xbrz)
 
 Provides:       %{name}-libs = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -383,6 +385,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Nov 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-102.20211123gitc7bba9b
+- Update
+
 * Sun Nov 07 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-101.20211107git4d38905
 - Bump
 

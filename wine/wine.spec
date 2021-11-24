@@ -1,6 +1,6 @@
-%global commit 32fb017d4a22be38ca271bf387e466e958601355
+%global commit b5b77ed6acad6a20bd4c5bfc98cfce178eef1d0c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211116
+%global date 20211123
 %global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
@@ -79,7 +79,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.22
+%global wine_stagingver 68918863dcab756a407a58cf6b6869c21557e3d0
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -90,7 +90,7 @@
 %global ge_id d83b266ef51a4dd5d40207d744c15a9f74359e36
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 6cfc6cea6412a35a1455bd221649a79775057ed2
+%global tkg_id da32937198b0e1a5f8323aafa68ae8a3281a7a67
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -105,7 +105,7 @@
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
 # Revert bundled FAudio commits (for proper pulseaudio application name patches)
-%global extfaudio 1
+%global extfaudio 0
 %global vulkanup 0
 
 #FIXME: undnl when staging bcrypt-ECDHSecretAgreement is enabled again
@@ -143,7 +143,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.22
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -217,6 +217,19 @@ Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
 Patch204:       %{whq_url}/b54199101fd307199c481709d4b1358ba4bcce58#/%{name}-whq-b541991.patch
 Patch205:       %{whq_url}/dedda40e5d7b5a3bcf67eea95145810da283d7d9#/%{name}-whq-dedda40.patch
 Patch206:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
+
+Patch207:       %{whq_url}/3203f056687f62e3d74604da0efb6183989dfab4#/%{name}-whq-3203f05.patch
+Patch208:       %{whq_url}/e86b4015ff405d4c054b8a5bc855ee655e1a833c#/%{name}-whq-e86b401.patch
+
+Patch209:       %{whq_url}/6d3b3aab25cfd1afc2909a4d65a76088fba02ea8#/%{name}-whq-6d3b3aa.patch
+Patch210:       %{whq_url}/1560f6df5f10c67bffef519cfbd9e7392baaec01#/%{name}-whq-1560f6d.patch
+Patch211:       %{whq_url}/c188a87020a91c50bad679f15785f9bdec8e750b#/%{name}-whq-c188a87.patch
+Patch212:       %{whq_url}/a95f76094e9563230b131cfdea39f906678d8ce4#/%{name}-whq-a95f760.patch
+Patch213:       %{whq_url}/31a668439b95b93424a3c6bc3c2c05f702ce49e5#/%{name}-whq-31a6684.patch
+Patch214:       %{whq_url}/0059dc2567ada71242a5aba94b047a51266bd0dd#/%{name}-whq-0059dc2.patch
+Patch215:       %{whq_url}/13aea4844a9a7c301fdc3591e46560ab93008c02#/%{name}-whq-13aea48.patch
+
+Patch216:       %{whq_url}/769db93d420abe34ab27f8edd04ae320c97c9209#/%{name}-whq-769db93.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -371,6 +384,7 @@ Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
 Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
 Patch1303:       0001-FAudio-Disable-reverb.patch
 Patch1304:       0001-Ignore-lowlatency-if-STAGING_AUDIO_PERIOD-is-not-set.patch
+Patch1305:       0001-fsync-include-linux-futex.h-if-exists.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -970,6 +984,18 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch205 -p1 -R
 %patch206 -p1 -R
 
+%patch207 -p1
+%patch208 -p1
+
+%patch209 -p1
+%patch210 -p1
+%patch211 -p1
+%patch212 -p1
+%patch213 -p1
+%patch214 -p1
+%patch215 -p1
+%patch216 -p1
+
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
@@ -1129,6 +1155,7 @@ fi
 %patch1303 -p1
 %endif
 %patch1304 -p1
+%patch1305 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -3115,6 +3142,9 @@ fi
 
 
 %changelog
+* Tue Nov 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.22-101
+- Disable extfaudio
+
 * Sat Nov 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.22-100
 - 6.22
 

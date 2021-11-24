@@ -1,0 +1,57 @@
+From 56316133a6bf719f0a79dd260613f147e08f579e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 23 Nov 2021 14:17:08 -0300
+Subject: [PATCH] fsync: include linux/futex.h, if exists
+
+---
+ configure               | 6 ++++++
+ configure.ac            | 1 +
+ dlls/ntdll/unix/fsync.c | 3 +++
+ 3 files changed, 10 insertions(+)
+
+diff --git a/configure b/configure
+index 62bfcc7..c42606e 100755
+--- a/configure
++++ b/configure
+@@ -8331,6 +8331,12 @@ if test "x$ac_cv_header_linux_filter_h" = xyes
+ then :
+   printf "%s\n" "#define HAVE_LINUX_FILTER_H 1" >>confdefs.h
+ 
++fi
++ac_fn_c_check_header_compile "$LINENO" "linux/futex.h" "ac_cv_header_linux_futex_h" "$ac_includes_default"
++if test "x$ac_cv_header_linux_futex_h" = xyes
++then :
++  printf "%s\n" "#define HAVE_LINUX_FUTEX_H 1" >>confdefs.h
++
+ fi
+ ac_fn_c_check_header_compile "$LINENO" "linux/hdreg.h" "ac_cv_header_linux_hdreg_h" "$ac_includes_default"
+ if test "x$ac_cv_header_linux_hdreg_h" = xyes
+diff --git a/configure.ac b/configure.ac
+index 81aac5e..d56b691 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -452,6 +452,7 @@ AC_CHECK_HEADERS(\
+ 	link.h \
+ 	linux/cdrom.h \
+ 	linux/filter.h \
++	linux/futex.h \
+ 	linux/hdreg.h \
+ 	linux/hidraw.h \
+ 	linux/input.h \
+diff --git a/dlls/ntdll/unix/fsync.c b/dlls/ntdll/unix/fsync.c
+index 8f07ed5..84bea1e 100644
+--- a/dlls/ntdll/unix/fsync.c
++++ b/dlls/ntdll/unix/fsync.c
+@@ -40,6 +40,9 @@
+ #ifdef HAVE_SYS_SYSCALL_H
+ # include <sys/syscall.h>
+ #endif
++#ifdef HAVE_LINUX_FUTEX_H
++# include <linux/futex.h>
++#endif
+ #include <unistd.h>
+ #include <stdint.h>
+ 
+-- 
+2.33.1
+

@@ -5,13 +5,13 @@
 %global __strip /bin/true
 
 %global snapid H8ZpNgIoPyvmkgxOWw5MSzsXK1wRZiHn
-%global snaprev 6
+%global snaprev 7
 
 %global app_name Authy
 
 Name:           authy
 # Version from application info
-Version:        1.8.4
+Version:        1.9.0
 Release:        1%{?dist}
 Summary:        Two factor authentication desktop application
 
@@ -97,6 +97,9 @@ done
 
 
 %changelog
+* Wed Nov 24 2021 - 1.9.0-1
+- 1.9.0
+
 * Tue Aug 03 2021 - 1.8.4-1
 - 1.8.4
 
