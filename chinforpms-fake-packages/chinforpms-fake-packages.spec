@@ -2,7 +2,7 @@
 %global fakever   1000
 
 Name:           chinforpms-fake-packages
-Version:        4
+Version:        5
 Release:        1%{?dist}
 Summary:        A package to obsolete and provides packages
 
@@ -24,6 +24,19 @@ Obsoletes:      GConf2 < %{fakeepoch}:%{fakever}-%{release}
 Provides:       PackageKit-session-service = %{fakeepoch}:%{fakever}-%{release}
 Obsoletes:      PackageKit-session-service < %{fakeepoch}:%{fakever}-%{release}
 
+Provides:       xdg-desktop-portal = %{fakeepoch}:%{fakever}-%{release}
+Obsoletes:      xdg-desktop-portal < %{fakeepoch}:%{fakever}-%{release}
+Provides:       xdg-desktop-portal-devel = %{fakeepoch}:%{fakever}-%{release}
+Obsoletes:      xdg-desktop-portal-devel < %{fakeepoch}:%{fakever}-%{release}
+
+Provides:       xdg-desktop-portal-gtk = %{fakeepoch}:%{fakever}-%{release}
+Obsoletes:      xdg-desktop-portal-gtk < %{fakeepoch}:%{fakever}-%{release}
+
+Provides:       xdg-desktop-portal-gnome = %{fakeepoch}:%{fakever}-%{release}
+Obsoletes:      xdg-desktop-portal-gnome < %{fakeepoch}:%{fakever}-%{release}
+
+Provides:       xdg-desktop-portal-kde = %{fakeepoch}:%{fakever}-%{release}
+Obsoletes:      xdg-desktop-portal-kde < %{fakeepoch}:%{fakever}-%{release}
 
 %description
 This package exists to obsolete and provides other packages that chinforpms don't
@@ -52,6 +65,18 @@ URL: https://github.com/scop/bash-completion
 Version: %{fakever}
 EOF
 
+cat > %{buildroot}%{_datadir}/pkgconfig/xdg-desktop-portal.pc<<'EOF'
+prefix=/usr
+datarootdir=${prefix}/share
+datadir=/usr/share
+
+interfaces_dir=${datadir}/dbus-1/interfaces/
+
+Name: xdg-desktop-portal
+Description: Desktop integration portal
+Version: %{fakever}
+EOF
+
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/gconftool-2 <<'EOF'
 #!/bin/sh
@@ -67,6 +92,9 @@ chmod 755 %{buildroot}%{_bindir}/gconftool-2
 
 
 %changelog
+* Wed Nov 24 2021 Phantom X <megaphantomx at bol dot com dot br> - 5-1
+- xdg-desktop-*
+
 * Wed Oct 09 2019 Phantom X <megaphantomx at bol dot com dot br> - 4-1
 - GConf2 and fake gconftool-2
 

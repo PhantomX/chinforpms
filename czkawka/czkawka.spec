@@ -8,14 +8,14 @@
 %global czkawka_id 20c89f44f06f483cb44f32bb5ec2f674a5b8e27f
 
 Name:           czkawka
-Version:        3.2.0
+Version:        3.3.1
 Release:        1%{?dist}
 Summary:        File cleaning utility
 
 License:        MIT
 URL:            https://github.com/qarmin/%{name}
 
-Source0:        %{url}/releases/download/%{version}/linux_czkawka_gui_alternative.AppImage#/%{name}-%{version}.AppImage
+Source0:        %{url}/releases/download/%{version}/linux_czkawka_gui.AppImage#/%{name}-%{version}.AppImage
 Source1:        %{url}/raw/%{czkawka_id}/LICENSE
 Source2:        %{url}/raw/%{czkawka_id}/README.md
 Source3:        %{url}/raw/%{czkawka_id}/data/%{desktop_name}.metainfo.xml
@@ -76,5 +76,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{desktop_name
 
 
 %changelog
+* Wed Nov 24 2021 Phantom X <megaphantomx at hotmail dot com> - 3.3.1-1
+- 3.3.1
+
 * Thu Nov 18 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.0-1
 - Initial spec
