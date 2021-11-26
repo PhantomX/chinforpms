@@ -28,13 +28,15 @@ Subject: [PATCH] patch-5.15-redhat
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.c        |  10 ++
+ drivers/net/wireless/marvell/mwifiex/usb.c         |   3 +-
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
  drivers/usb/host/xhci-tegra.c                      |  41 +++++--
- fs/btrfs/async-thread.c                            |  14 +++
+ fs/fuse/dev.c                                      |  14 +--
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -106,18 +108,7 @@ diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts b/arch/arm64/b
 index 2b5f001ff4a6..dae8c252bc2b 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
-@@ -385,10 +385,6 @@ mains_charger: dc-charger {
- 	};
- };
-
--&cdn_dp {
--	status = "okay";
--};
--
- &cpu_b0 {
- 	cpu-supply = <&vdd_cpu_b>;
- };
-@@ -711,7 +707,7 @@ fusb0: fusb30x@22 {
+@@ -711,7 +711,7 @@ fusb0: fusb30x@22 {
 
  		connector {
  			compatible = "usb-c-connector";
@@ -1269,6 +1260,48 @@ index 3303d707bab4..372edaaafaa1 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+index 404cbf60d3f2..da1d185f6d22 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+@@ -559,6 +559,11 @@ int hw_atl_utils_fw_rpc_wait(struct aq_hw_s *self,
+ 			goto err_exit;
+
+ 		if (fw.len == 0xFFFFU) {
++			if (sw.len > sizeof(self->rpc)) {
++				printk(KERN_INFO "Invalid sw len: %x\n", sw.len);
++				err = -EINVAL;
++				goto err_exit;
++			}
+ 			err = hw_atl_utils_fw_rpc_call(self, sw.len);
+ 			if (err < 0)
+ 				goto err_exit;
+@@ -567,6 +572,11 @@ int hw_atl_utils_fw_rpc_wait(struct aq_hw_s *self,
+
+ 	if (rpc) {
+ 		if (fw.len) {
++			if (fw.len > sizeof(self->rpc)) {
++				printk(KERN_INFO "Invalid fw len: %x\n", fw.len);
++				err = -EINVAL;
++				goto err_exit;
++			}
+ 			err =
+ 			hw_atl_utils_fw_downld_dwords(self,
+ 						      self->rpc_addr,
+diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
+index 9736aa0ab7fd..8f01fcbe9396 100644
+--- a/drivers/net/wireless/marvell/mwifiex/usb.c
++++ b/drivers/net/wireless/marvell/mwifiex/usb.c
+@@ -130,7 +130,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
+ 		default:
+ 			mwifiex_dbg(adapter, ERROR,
+ 				    "unknown recv_type %#x\n", recv_type);
+-			return -1;
++			ret = -1;
++			goto exit_restore_skb;
+ 		}
+ 		break;
+ 	case MWIFIEX_USB_EP_DATA:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
 index f8dd664b2eda..0ff9ea8340e4 100644
 --- a/drivers/nvme/host/core.c
@@ -1543,38 +1576,38 @@ index 1bf494b649bd..c8af2cd2216d 100644
  	pm_runtime_put(&pdev->dev);
 
  	tegra_xusb_powergate_partitions(tegra);
-diff --git a/fs/btrfs/async-thread.c b/fs/btrfs/async-thread.c
-index 309516e6a968..d39af03b456c 100644
---- a/fs/btrfs/async-thread.c
-+++ b/fs/btrfs/async-thread.c
-@@ -234,6 +234,13 @@ static void run_ordered_work(struct __btrfs_workqueue *wq,
- 				  ordered_list);
- 		if (!test_bit(WORK_DONE_BIT, &work->flags))
- 			break;
-+		/*
-+		 * Orders all subsequent loads after reading WORK_DONE_BIT,
-+		 * paired with the smp_mb__before_atomic in btrfs_work_helper
-+		 * this guarantees that the ordered function will see all
-+		 * updates from ordinary work function.
-+		 */
-+		smp_rmb();
+diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+index 5a1f142bdb48..dde341a6388a 100644
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -847,12 +847,6 @@ static int fuse_try_move_page(struct fuse_copy_state *cs, struct page **pagep)
 
- 		/*
- 		 * we are going to call the ordered done function, but
-@@ -317,6 +324,13 @@ static void btrfs_work_helper(struct work_struct *normal_work)
- 	thresh_exec_hook(wq);
- 	work->func(work);
- 	if (need_order) {
-+		/*
-+		 * Ensures all memory accesses done in the work function are
-+		 * ordered before setting the WORK_DONE_BIT.Ensuring the thread
-+		 * which is going to executed the ordered work sees them.
-+		 * Pairs with the smp_rmb in run_ordered_work.
-+		 */
-+		smp_mb__before_atomic();
- 		set_bit(WORK_DONE_BIT, &work->flags);
- 		run_ordered_work(wq, work);
- 	} else {
+ 	replace_page_cache_page(oldpage, newpage);
+
+-	/*
+-	 * Release while we have extra ref on stolen page.  Otherwise
+-	 * anon_pipe_buf_release() might think the page can be reused.
+-	 */
+-	pipe_buf_release(cs->pipe, buf);
+-
+ 	get_page(newpage);
+
+ 	if (!(buf->flags & PIPE_BUF_FLAG_LRU))
+@@ -2037,12 +2031,8 @@ static ssize_t fuse_dev_splice_write(struct pipe_inode_info *pipe,
+
+ 	pipe_lock(pipe);
+ out_free:
+-	for (idx = 0; idx < nbuf; idx++) {
+-		struct pipe_buffer *buf = &bufs[idx];
+-
+-		if (buf->ops)
+-			pipe_buf_release(pipe, buf);
+-	}
++	for (idx = 0; idx < nbuf; idx++)
++		pipe_buf_release(pipe, &bufs[idx]);
+ 	pipe_unlock(pipe);
+
+ 	kvfree(bufs);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 6b5d36babfcc..fd4a5d66a9d0 100644
 --- a/include/linux/efi.h

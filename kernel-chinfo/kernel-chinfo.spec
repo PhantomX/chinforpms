@@ -22,7 +22,7 @@
 %bcond_with clang_lto
 
 %if %{with clang_lto} && %{without toolchain_clang}
-{error:clang_lto requires --with toolchain_clang}
+%{error:clang_lto requires --with toolchain_clang}
 %endif
 
 # Cross compile on copr for arm
@@ -154,7 +154,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -165,7 +165,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 32659843ed33c50f8ff42880cb5087a092088538
+%global pfcommit cd50c30461d58405a51845cc3db2d0558b7d8167
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -2914,6 +2914,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 25 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.5-500.chinfo
+- 5.15.5 - pf2
+
 * Sun Nov 21 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.4-500.chinfo
 - 5.15.4 - pf2
 

@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 0
 
-%global commit f982a2a580b3a9cc8a4052693faf91211ab28fc6
+%global commit d55c86ccd81c2e32d6e29e7501f96c40b6c123d4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211111
+%global date 20211125
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        48%{?gver}%{?dist}
+Release:        49%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -40,6 +40,7 @@ Patch2:         0001-Fix-translation-names.patch
 Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
+Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 
 
 ExclusiveArch:  x86_64 armv7l aarch64
@@ -79,7 +80,7 @@ BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools
 BuildRequires:  pkgconfig(SPIRV-Tools)
 %else
-Provides:       bundled(glslang) = git~0
+Provides:       bundled(glslang) = 0~git
 Provides:       bundled(spirv-tools) = 0~git
 %endif
 
@@ -239,6 +240,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Nov 26 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-49.20211125gitd55c86c
+- Last one
+
 * Thu Nov 11 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-48.20211111gitf982a2a
 - Bump
 

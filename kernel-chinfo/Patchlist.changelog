@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/0deebf76b98dd42393d8f9fa97e196c77d608c7d
+ 0deebf76b98dd42393d8f9fa97e196c77d608c7d Revert "fuse: fix page stealing"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/ba79f081c3d211f6dda25d73f03c599aab6f8972
+ ba79f081c3d211f6dda25d73f03c599aab6f8972 mwifiex_usb: Fix skb_over_panic in mwifiex_usb_recv
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/d8119154f59000d9e1300fb0ecd3aa2acde0ce11
+ d8119154f59000d9e1300fb0ecd3aa2acde0ce11 atlantic: Fix OOB read and write in hw_atl_utils_fw_rpc_wait
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/052a70eae8d9fabd82bcb701931302704dccc472
  052a70eae8d9fabd82bcb701931302704dccc472 usb: xhci: tegra: Check padctrl interrupt presence in device tree
 
@@ -19,17 +28,11 @@ https://gitlab.com/cki-project/kernel-ark/-/commit/e7dd4e098056b44495d41d06418a1
 https://gitlab.com/cki-project/kernel-ark/-/commit/69487df85dc22a202aa7276e2c47ea11ec52eb19
  69487df85dc22a202aa7276e2c47ea11ec52eb19 Input: i8042 - Add quirk for Fujitsu Lifebook T725
 
-https://gitlab.com/cki-project/kernel-ark/-/commit/ec55d007db7cb83475be6c49f25aed92aa1034db
- ec55d007db7cb83475be6c49f25aed92aa1034db btrfs: fix memory ordering between normal and ordered work functions
-
 https://gitlab.com/cki-project/kernel-ark/-/commit/ad98d0f25e3df5484dbb9dce3783c5371fba4323
  ad98d0f25e3df5484dbb9dce3783c5371fba4323 arm64: use common CONFIG_MAX_ZONEORDER for arm kernel
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/b6389968a10491832f0d62b5e8816dde3c766ceb
  b6389968a10491832f0d62b5e8816dde3c766ceb [fs] dax: mark tech preview
-
-https://gitlab.com/cki-project/kernel-ark/-/commit/e3e9737865cd704e300f35c651d4e5fa1a84ab09
- e3e9737865cd704e300f35c651d4e5fa1a84ab09 arm64: dts: rockchip: Disable CDN DP on Pinebook Pro
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/5dab5e4c4cf4bc8bfd13119767481c427b009852
  5dab5e4c4cf4bc8bfd13119767481c427b009852 arm64: dts: rockchip: Setup USB typec port as datarole on
