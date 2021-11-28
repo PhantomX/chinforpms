@@ -1,6 +1,6 @@
-%global commit 646aa343679ae0814428905a2c3ea3c590665834
+%global commit 3b37806108e6d15f00d0027a175f50fcdc4800e6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210930
+%global date 20211127
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -13,7 +13,7 @@
 
 Name:           nicotine+
 Version:        3.2.0
-Release:        0.2%{?gver}%{?dist}
+Release:        0.3%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
 #   (see pynicotine/geoip/README.md)
@@ -102,6 +102,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_p
 
 
 %changelog
+* Sat Nov 27 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.0-0.3.20211127git3b37806
+- 3.2.0-rc2
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.0-0.2.20210930git646aa34
 - Bump
 

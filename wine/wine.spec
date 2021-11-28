@@ -1,7 +1,7 @@
-%global commit b5b77ed6acad6a20bd4c5bfc98cfce178eef1d0c
+%global commit f03933fbb73152c7a54383fba411a611af7aaa55
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211123
-%global with_snapshot 0
+%global date 20211126
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -33,7 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  7.0.0
-%global winevulkan 1.2.199
+%global winevulkan 1.2.200
 
 %global wineFAudio 21.11
 %global winegsm 1.0.19
@@ -79,7 +79,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 68918863dcab756a407a58cf6b6869c21557e3d0
+%global wine_stagingver edb34171243515c6a36f6da4b89237c38cc8e000
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -90,7 +90,7 @@
 %global ge_id d83b266ef51a4dd5d40207d744c15a9f74359e36
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id da32937198b0e1a5f8323aafa68ae8a3281a7a67
+%global tkg_id 8d4ff0758fb3e3702923872dcc28013fa5673911
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -143,7 +143,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        6.22
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -217,19 +217,6 @@ Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
 Patch204:       %{whq_url}/b54199101fd307199c481709d4b1358ba4bcce58#/%{name}-whq-b541991.patch
 Patch205:       %{whq_url}/dedda40e5d7b5a3bcf67eea95145810da283d7d9#/%{name}-whq-dedda40.patch
 Patch206:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
-
-Patch207:       %{whq_url}/3203f056687f62e3d74604da0efb6183989dfab4#/%{name}-whq-3203f05.patch
-Patch208:       %{whq_url}/e86b4015ff405d4c054b8a5bc855ee655e1a833c#/%{name}-whq-e86b401.patch
-
-Patch209:       %{whq_url}/6d3b3aab25cfd1afc2909a4d65a76088fba02ea8#/%{name}-whq-6d3b3aa.patch
-Patch210:       %{whq_url}/1560f6df5f10c67bffef519cfbd9e7392baaec01#/%{name}-whq-1560f6d.patch
-Patch211:       %{whq_url}/c188a87020a91c50bad679f15785f9bdec8e750b#/%{name}-whq-c188a87.patch
-Patch212:       %{whq_url}/a95f76094e9563230b131cfdea39f906678d8ce4#/%{name}-whq-a95f760.patch
-Patch213:       %{whq_url}/31a668439b95b93424a3c6bc3c2c05f702ce49e5#/%{name}-whq-31a6684.patch
-Patch214:       %{whq_url}/0059dc2567ada71242a5aba94b047a51266bd0dd#/%{name}-whq-0059dc2.patch
-Patch215:       %{whq_url}/13aea4844a9a7c301fdc3591e46560ab93008c02#/%{name}-whq-13aea48.patch
-
-Patch216:       %{whq_url}/769db93d420abe34ab27f8edd04ae320c97c9209#/%{name}-whq-769db93.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -508,6 +495,9 @@ Requires:       wine-mono = %winemono
 Requires:       /usr/bin/ntlm_auth
 Requires:       mesa-dri-drivers(x86-32)
 %endif
+Recommends:     wine-dxvk(x86-32)
+Recommends:     dosbox-staging
+Recommends:     isdn4k-utils(x86-32)
 
 # x86-64 parts
 %ifarch x86_64
@@ -522,6 +512,9 @@ Requires:       mingw64-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
 Requires:       mesa-dri-drivers(x86-64)
 %endif
+Recommends:     wine-dxvk(x86-64)
+Recommends:     dosbox-staging
+Recommends:     isdn4k-utils(x86-64)
 
 # ARM parts
 %ifarch %{arm} aarch64
@@ -984,17 +977,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch205 -p1 -R
 %patch206 -p1 -R
 
-%patch207 -p1
-%patch208 -p1
 
-%patch209 -p1
-%patch210 -p1
-%patch211 -p1
-%patch212 -p1
-%patch213 -p1
-%patch214 -p1
-%patch215 -p1
-%patch216 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -1294,7 +1277,6 @@ export PATH="$(pwd)/bin:$PATH"
  --with-xattr \
 %endif
  --disable-tests \
- --without-capi \
  --without-oss \
 %{nil}
 
@@ -1640,8 +1622,8 @@ fi
 %doc documentation/README.*
 %if 0%{?wine_staging}
 %doc README.esync
-%{_bindir}/msidb
 %endif
+%{_bindir}/msidb
 %{_bindir}/winedump
 %{_libdir}/wine/%{winedlldir}/explorer.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/cabarc.%{wineexe}
@@ -1766,6 +1748,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/amsi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/amstream.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-appmodel-identity-l1-1-0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-appmodel-runtime-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-appmodel-runtime-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-appmodel-runtime-l1-1-2.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-apiquery-l1-1-0.%{winedll}
@@ -2273,6 +2256,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/mmcndmgr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mmdevapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mofcomp.%{wineexe}
+%{_libdir}/wine/%{winesodir}/mountmgr.so
 %{_libdir}/wine/%{winesodir}/mountmgr.sys.so
 %if 0%{?wine_mingw}
 %{_libdir}/wine/%{winedlldir}/mountmgr.sys
@@ -2588,10 +2572,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/winusb.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wlanapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmphoto.%{winedll}
-%{_libdir}/wine/%{winesodir}/wnaspi32.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/wnaspi32.dll
-%endif
+%{_libdir}/wine/%{winedlldir}/wnaspi32.%{winedll}
 %ifarch x86_64
 %{_libdir}/wine/%{winedlldir}/wow64.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wow64cpu.%{winedll}
@@ -3142,6 +3123,9 @@ fi
 
 
 %changelog
+* Sat Nov 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.22-102.20211126gitf03933f
+- Snapshot
+
 * Tue Nov 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.22-101
 - Disable extfaudio
 

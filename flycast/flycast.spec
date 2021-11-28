@@ -1,6 +1,6 @@
-%global commit c6374a899c07a102025b12a0d2827fc512338fcf
+%global commit 3d7455316f511abc731be2c54867fe05d467ed57
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211114
+%global date 20211127
 %global with_snapshot 1
 
 %global commit1 fab7b33b896a42dcc865ba5ecdbacd9f409137f8
@@ -27,7 +27,7 @@
 
 Name:           flycast
 Version:        1.1
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -43,10 +43,11 @@ Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/vinniefalco/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 
+Patch0:         %{url}/commit/67f2162fb3b9ebdc17536705d76f169ba1dddc95.patch#/%{name}-gh-67f2162.patch
+
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
-Patch4:         0001-breakpad-fix-build-with-glibc-2.34.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
@@ -216,6 +217,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Sat Nov 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-3.20211127git3d74553
+- Bump
+
 * Tue Nov 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-2.20211114gitc6374a8
 - net-rollback branch try
 

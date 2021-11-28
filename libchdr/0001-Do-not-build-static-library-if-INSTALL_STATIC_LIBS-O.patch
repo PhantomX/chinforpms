@@ -1,6 +1,6 @@
-From 00f7f11ebd0605a794b2f4bfee30227005798f8d Mon Sep 17 00:00:00 2001
+From 84eaadf4729b235a0a14d958670a1f06c9275898 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 11 Nov 2021 20:38:03 -0300
+Date: Fri, 26 Nov 2021 09:47:31 -0300
 Subject: [PATCH] Do not build static library if INSTALL_STATIC_LIBS=OFF
 
 ---
@@ -8,10 +8,10 @@ Subject: [PATCH] Do not build static library if INSTALL_STATIC_LIBS=OFF
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 70d5d73..887c87c 100644
+index 5eba390..74c4f9e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -61,11 +61,11 @@ set(CHDR_SOURCES
+@@ -61,6 +61,7 @@ set(CHDR_SOURCES
  
  list(APPEND CHDR_INCLUDES ${CMAKE_CURRENT_BINARY_DIR}/include)
  
@@ -19,6 +19,9 @@ index 70d5d73..887c87c 100644
  add_library(chdr-static STATIC ${CHDR_SOURCES})
  target_include_directories(chdr-static PRIVATE ${CHDR_INCLUDES} PUBLIC include)
  target_link_libraries(chdr-static PRIVATE ${CHDR_LIBS} ${PLATFORM_LIBS})
+@@ -69,7 +70,6 @@ if(MSVC)
+   target_compile_definitions(chdr-static PRIVATE _CRT_SECURE_NO_WARNINGS)
+ endif()
  
 -if (INSTALL_STATIC_LIBS)
    install(TARGETS chdr-static ${CHDR_LIBS}

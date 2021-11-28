@@ -2,9 +2,9 @@
 
 %global _legacy_common_support 1
 
-%global commit 619259a41918f756002226280184fd22d2ba194e
+%global commit 6f3e32e4ac9e47cecb40a3e91e04c054709875f0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210601
+%global date 20211108
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           uasm
 Version:        2.53
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A macro assembler
 
 # Fedora bad licenses
@@ -83,5 +83,8 @@ install -pm0755 %{name}-nocolor %{buildroot}%{_bindir}/%{name}-nocolor
 
 
 %changelog
+* Fri Nov 26 2021 - 2.53-2.20211108git6f3e32e
+- Bump
+
 * Sat Jun 19 2021 - 2.53-1.20210601git619259a
 - Initial spec

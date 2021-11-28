@@ -19,8 +19,8 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        21.04
-Release:        1%{?dist}
+Version:        21.06
+Release:        2%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPLv2+ and BSD and Public Domain
@@ -35,11 +35,13 @@ Source0:        %{name}-free-%{version}.tar.xz
 Source1:        Makefile
 
 Patch0:         0001-make-remove-rar.patch
+Patch1:         0001-set-7zCon.sfx-path.patch
 
 %if %{with asm}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
 %endif
 
+BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  make
 %if %{with asm}
@@ -85,24 +87,41 @@ sed -e \
   '1iOPTION FRAMEPRESERVEFLAGS:ON\nOPTION PROLOGUE:NONE\nOPTION EPILOGUE:NONE' \
   -i Asm/x86/LzFindOpt.asm
 
+sed -e 's|__RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' -i CPP/7zip/UI/Console/Main.cpp
+
 
 %build
 pushd CPP/7zip/Bundles/Alone2
 %make_build -f ../../%{makefile}.mak
 popd
 
+pushd CPP/7zip/Bundles/SFXCon
+%make_build -f makefile.gcc
+popd
+
 %install
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 CPP/7zip/Bundles/Alone2/b/g%{platform}/7zz %{buildroot}%{_bindir}/
+
+mkdir -p %{buildroot}%{_libexecdir}/%{name}
+install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{name}/7zCon.sfx
 
 
 %files
 %license copying.txt License.txt
 %doc DOC/*.txt
 %{_bindir}/7zz
+%dir %{_libexecdir}/%{name}
+%{_libexecdir}/%{name}/7zCon.sfx
 
 
 %changelog
+* Sat Nov 27 2021 Phantom X <megaphantomx at hotmail dot com> - 21.06-2
+- Build 7zCon.sfx
+
+* Fri Nov 26 2021 Phantom X <megaphantomx at hotmail dot com> - 21.06-1
+- 21.06
+
 * Wed Nov 03 2021 Phantom X <megaphantomx at hotmail dot com> - 21.04-1
 - 21.04
 

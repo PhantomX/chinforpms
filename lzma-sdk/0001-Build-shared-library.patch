@@ -1,6 +1,6 @@
-From d7c915ed2951384353c036eef6866d863c1b7585 Mon Sep 17 00:00:00 2001
+From 3b2f3479d501cec29cadb470a58f27a7fa00a764 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 8 May 2021 00:22:29 -0300
+Date: Fri, 26 Nov 2021 09:38:07 -0300
 Subject: [PATCH] Build shared library
 
 ---
@@ -8,8 +8,8 @@ Subject: [PATCH] Build shared library
  C/7zip_gcc_c.mak         |  41 ++------
  C/LzmaDec.c              | 215 --------------------------------------
  C/LzmaDec.h              | 217 +++++++++++++++++++++++++++++++++++++++
- C/Util/Lzma/makefile.gcc |  18 +++-
- 5 files changed, 243 insertions(+), 253 deletions(-)
+ C/Util/Lzma/makefile.gcc |  17 ++-
+ 5 files changed, 242 insertions(+), 253 deletions(-)
 
 diff --git a/C/7zFile.h b/C/7zFile.h
 index c7a30fc..5864e67 100644
@@ -28,14 +28,14 @@ index c7a30fc..5864e67 100644
  
  #include "7zTypes.h"
 diff --git a/C/7zip_gcc_c.mak b/C/7zip_gcc_c.mak
-index 00ecfb0..fb4b04f 100644
+index 4d23297..ba3de69 100644
 --- a/C/7zip_gcc_c.mak
 +++ b/C/7zip_gcc_c.mak
-@@ -6,12 +6,13 @@ MY_ASM = asmc
- 
+@@ -7,12 +7,13 @@ MY_ASM = asmc
  PROGPATH = $(O)/$(PROG)
+ PROGPATH_STATIC = $(O)/$(PROG)s
  
-+DEFINES = -fPIC -D_7ZIP_ST -DUSE_FOPEN
++DEFINES = -fPIC -D_7ZIP_ST
  
  # for object file
  CFLAGS_BASE_LIST = -c
@@ -46,7 +46,7 @@ index 00ecfb0..fb4b04f 100644
   -DNDEBUG -D_REENTRANT -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  
  
-@@ -22,36 +23,6 @@ ifdef SystemDrive
+@@ -23,36 +24,6 @@ ifdef SystemDrive
  IS_MINGW = 1
  endif
  
@@ -81,9 +81,9 @@ index 00ecfb0..fb4b04f 100644
 -
 -
  PROGPATH = $(O)/$(PROG)$(SHARED_EXT)
- 
+ PROGPATH_STATIC = $(O)/$(PROG)s$(SHARED_EXT)
  	
-@@ -88,7 +59,7 @@ endif
+@@ -89,7 +60,7 @@ endif
  
  
  
@@ -92,23 +92,26 @@ index 00ecfb0..fb4b04f 100644
  
  
  ifdef IS_X64
-@@ -108,13 +79,13 @@ CXX_WARN_FLAGS =
+@@ -115,7 +86,7 @@ STATIC_TARGET=$(PROGPATH_STATIC)
+ endif
  
- CXXFLAGS = $(LOCAL_FLAGS) $(CXXFLAGS_BASE2) $(CFLAGS_BASE) $(CXXFLAGS_EXTRA) $(CC_SHARED) -o $@ $(CXX_WARN_FLAGS)
  
--all: $(O) $(PROGPATH)
+-all: $(O) $(PROGPATH) $(STATIC_TARGET)
 +all: $(O) $(LIBRARYMAJOR)
  
  $(O):
  	$(MY_MKDIR) $(O)
+@@ -124,8 +95,8 @@ LFLAGS_ALL = -s $(MY_ARCH_2) $(LDFLAGS) $(LD_arch) $(OBJS) $(MY_LIBS) $(LIB2)
+ $(PROGPATH): $(OBJS)
+ 	$(CXX) -o $(PROGPATH) $(LFLAGS_ALL)
  
--$(PROGPATH): $(OBJS)
--	$(CXX) -s -o $(PROGPATH) $(MY_ARCH_2) $(LDFLAGS) $(OBJS) $(MY_LIBS) $(LIB2)
+-$(PROGPATH_STATIC): $(OBJS)
+-	$(CXX) -static -o $(PROGPATH_STATIC) $(LFLAGS_ALL)
 +$(LIBRARYMAJOR): $(OBJS)
 +	$(CXX) -o $(LIBRARYMAJOR) -shared -Wl,-soname=$(LIBRARYMINOR) -DNDEBUG $(LDFLAGS) -Wl,-z,defs $(OBJS) $(MY_LIBS) $(LIB2)
  
  
- 
+ ifndef NO_DEFAULT_RES
 diff --git a/C/LzmaDec.c b/C/LzmaDec.c
 index 80b70a9..15ab681 100644
 --- a/C/LzmaDec.c
@@ -571,7 +574,7 @@ index 6194b7d..361e937 100644
  /* ---------- LZMA Properties ---------- */
  
 diff --git a/C/Util/Lzma/makefile.gcc b/C/Util/Lzma/makefile.gcc
-index 89b3e11..562792d 100644
+index 6ce77a0..2600cd1 100644
 --- a/C/Util/Lzma/makefile.gcc
 +++ b/C/Util/Lzma/makefile.gcc
 @@ -1,4 +1,6 @@
@@ -582,7 +585,7 @@ index 89b3e11..562792d 100644
  
  include ../../../CPP/7zip/LzmaDec_gcc.mak
  
-@@ -14,6 +16,20 @@ OBJS = \
+@@ -16,6 +18,19 @@ OBJS = \
    $O/LzmaEnc.o \
    $O/LzmaUtil.o \
    $O/Threads.o \
@@ -590,7 +593,6 @@ index 89b3e11..562792d 100644
 +  $O/Bra.o \
 +  $O/Bra86.o \
 +  $O/BraIA64.o \
-+  $O/CpuArch.o \
 +  $O/Delta.o \
 +  $O/7zAlloc.o \
 +  $O/7zArcIn.o \
@@ -604,5 +606,5 @@ index 89b3e11..562792d 100644
  
  include ../../7zip_gcc_c.mak
 -- 
-2.31.1
+2.33.1
 

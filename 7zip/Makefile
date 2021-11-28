@@ -1,5 +1,5 @@
 NAME = 7zip
-VERSION ?= 21.04
+VERSION ?= 21.06
 
 TARBALLVER = $(shell echo ${VERSION} | tr -d \. )
 
