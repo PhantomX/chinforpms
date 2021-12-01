@@ -1,8 +1,12 @@
-%global debug_package %{nil}
+%bcond_with static
 
-%global commit0 d578c760dc6f1ae5f0f3bb5317b0b2ed04b79138
+%if %{with static}
+%global debug_package %{nil}
+%endif
+
+%global commit0 b02478677baac6d563589f216800ff9cea0fd65c
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20211021
+%global date 20211112
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -12,13 +16,17 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 libvpx
 
+%global libsrtp_ver 94ac00d
+%global pffft_ver 483453d
+%global openh264_ver 6f26bce
+
 %global cvc_url https://chromium.googlesource.com
 
 %global gver .%{date}git%{shortcommit0}
 
 Name:           tg_owt
 Version:        0
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -37,7 +45,11 @@ Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        %{cvc_url}/webm/libvpx/+archive/%{shortcommit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
 
+Patch0:         0001-dcsctp-fix-build-with-shared-library.patch
+
+
 BuildRequires:  cmake(absl)
+BuildRequires:  cmake(Crc32c)
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(glib-2.0)
@@ -72,12 +84,31 @@ BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 BuildRequires:  yasm
 
+Provides:       bundled(base64) = 0~git
+Provides:       bundled(dcsctp) = 0~git
+Provides:       bundled(fft) = 0~git
+Provides:       bundled(fft4g) = 0~git
+Provides:       bundled(g711) = 0~git
+Provides:       bundled(g722) = 0~git
+Provides:       bundled(libsrtp) = 2.2.0~git%{libsrtp_ver}
+Provides:       bundled(pffft) = 0~git%{pffft_ver}
+Provides:       bundled(portaudio) = 0~git
+Provides:       bundled(libvpx) = 1.8.2~git%{shortcommit2}
+Provides:       bundled(libwebm) = 0~git
+Provides:       bundled(libyuv) = 0~git%{shortcommit1}
+Provides:       bundled(openh264) = 1.10.0~git%{openh264_ver}
+Provides:       bundled(sigslot) = 0~git
+Provides:       bundled(spl_sqrt_floor) = 0~git
+
+
 %description
 Special fork of the OpenWebRTC library for the Telegram messenger.
 
 %package devel
 Summary:        Development files for %{name}
+%if %{with static}
 Requires:       cmake(absl)
+Requires:       cmake(Crc32c)
 Requires:       pkgconfig(alsa)
 Requires:       pkgconfig(gio-2.0)
 Requires:       pkgconfig(glib-2.0)
@@ -106,24 +137,29 @@ Requires:       pkgconfig(xrandr)
 Requires:       pkgconfig(xtst)
 Provides:       %{name}-static%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 #Provides:       bundled(abseil-cpp) = 0~gitfba8a31
+#Provides:       bundled(libevent) = 1.4.15
+Provides:       bundled(rnnoise) = 0~git91ef40
+#Provides:       bundled(usrsctp) = 1.0.0~gitbee946a
 Provides:       bundled(base64) = 0~git
+Provides:       bundled(dcsctp) = 0~git
 Provides:       bundled(fft) = 0~git
 Provides:       bundled(fft4g) = 0~git
 Provides:       bundled(g711) = 0~git
 Provides:       bundled(g722) = 0~git
-#Provides:       bundled(libevent) = 1.4.15
-Provides:       bundled(libsrtp) = 2.2.0~git94ac00d
+Provides:       bundled(libsrtp) = 2.2.0~git%{libsrtp_ver}
+Provides:       bundled(pffft) = 0~git%{pffft_ver}
+Provides:       bundled(portaudio) = 0~git
 Provides:       bundled(libvpx) = 1.8.2~git%{shortcommit2}
 Provides:       bundled(libwebm) = 0~git
 Provides:       bundled(libyuv) = 0~git%{shortcommit1}
-Provides:       bundled(openh264) = 1.10.0~git6f26bce
-Provides:       bundled(pffft) = 0~git483453d
-Provides:       bundled(portaudio) = 0~git
-Provides:       bundled(rnnoise) = 0~git91ef40
+Provides:       bundled(openh264) = 1.10.0~git%{openh264_ver}
 Provides:       bundled(sigslot) = 0~git
 Provides:       bundled(spl_sqrt_floor) = 0~git
-#Provides:       bundled(usrsctp) = 1.0.0~gitbee946a
-
+Provides:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
+%else
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+%endif
 
 %description devel
 %{summary}.
@@ -135,27 +171,33 @@ tar -xf %{S:1} -C src/third_party/libyuv
 tar -xf %{S:2} -C src/third_party/libvpx/source/libvpx
 
 mkdir legal
+%if %{with static}
 cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
 cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
+cp -f -p src/third_party/rnnoise/COPYING legal/LICENSE.rnnoise
+cp -f -p src/third_party/rnnoise/README.chromium legal/README.rnnoise
+cp -f -p src/third_party/usrsctp/LICENSE legal/LICENSE.usrsctp
+cp -f -p src/third_party/usrsctp/README.chromium legal/README.usrsctp
+%endif
 cp -f -p src/third_party/libsrtp/LICENSE legal/LICENSE.libsrtp
 cp -f -p src/third_party/libsrtp/README.chromium legal/README.libsrtp
+cp -f -p src/third_party/pffft/LICENSE legal/LICENSE.pffft
+cp -f -p src/third_party/pffft/README.chromium legal/README.pffft
 cp -f -p src/third_party/libvpx/source/libvpx/LICENSE legal/LICENSE.libvpx
 cp -f -p src/third_party/libvpx/source/libvpx/PATENTS legal/PATENTS.libvpx
 cp -f -p src/third_party/libvpx/README.chromium legal/README.libvpx
+cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/LICENSE.TXT legal/LICENSE.libwebm
+cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/PATENTS.TXT legal/PATENTS.libwebm
+cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/README.libvpx legal/README.libwebm
 cp -f -p src/third_party/libyuv/LICENSE legal/LICENSE.libyuv
 cp -f -p src/third_party/libyuv/PATENTS legal/PATENTS.libyuv
 cp -f -p src/third_party/libyuv/README.chromium legal/README.libyuv
 cp -f -p src/third_party/openh264/src/LICENSE legal/LICENSE.openh264
 cp -f -p src/third_party/openh264/README.chromium legal/README.openh264
-cp -f -p src/third_party/pffft/LICENSE legal/LICENSE.pffft
-cp -f -p src/third_party/pffft/README.chromium legal/README.pffft
-cp -f -p src/third_party/rnnoise/COPYING legal/LICENSE.rnnoise
-cp -f -p src/third_party/rnnoise/README.chromium legal/README.rnnoise
-cp -f -p src/third_party/usrsctp/LICENSE legal/LICENSE.usrsctp
-cp -f -p src/third_party/usrsctp/README.chromium legal/README.usrsctp
-cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/LICENSE.TXT legal/LICENSE.libwebm
-cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/PATENTS.TXT legal/PATENTS.libwebm
-cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/README.libvpx legal/README.libwebm
+cp -f -p src/rtc_base/third_party/base64/LICENSE legal/LICENSE.base64
+cp -f -p src/rtc_base/third_party/base64/README.chromium legal/README.base64
+cp -f -p src/rtc_base/third_party/sigslot/LICENSE legal/LICENSE.sigslot
+cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
 cp -f -p src/common_audio/third_party/spl_sqrt_floor/LICENSE legal/LICENSE.spl_sqrt_floor
 cp -f -p src/common_audio/third_party/spl_sqrt_floor/README.chromium legal/README.spl_sqrt_floor
 cp -f -p src/modules/third_party/fft/LICENSE legal/LICENSE.fft
@@ -166,10 +208,6 @@ cp -f -p src/modules/third_party/g722/LICENSE legal/LICENSE.g722
 cp -f -p src/modules/third_party/g722/README.chromium legal/README.g722
 cp -f -p src/modules/third_party/portaudio/LICENSE legal/LICENSE.portaudio
 cp -f -p src/modules/third_party/portaudio/README.chromium legal/README.portaudio
-cp -f -p src/rtc_base/third_party/base64/LICENSE legal/LICENSE.base64
-cp -f -p src/rtc_base/third_party/base64/README.chromium legal/README.base64
-cp -f -p src/rtc_base/third_party/sigslot/LICENSE legal/LICENSE.sigslot
-cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
 
 
 %build
@@ -178,7 +216,9 @@ cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
   -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON \
+%if %{with static}
   -DBUILD_SHARED_LIBS:BOOL=OFF \
+%endif
   -DTG_OWT_USE_PROTOBUF:BOOL=ON \
   -DTG_OWT_PACKAGED_BUILD:BOOL=ON \
 %{nil}
@@ -188,16 +228,33 @@ cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
 %install
 %cmake_install
 
+%if %{without static}
+%files
+%doc src/AUTHORS src/OWNERS legal/README.*
+%license LICENSE src/PATENTS legal/LICENSE.* legal/PATENTS.*
+%{_libdir}/lib%{name}.so.*
+%endif
+
 
 %files devel
+%if %{with static}
 %doc src/AUTHORS src/OWNERS legal/README.*
+%endif
 %license LICENSE src/PATENTS legal/LICENSE.* legal/PATENTS.*
 %{_includedir}/%{name}
 %{_libdir}/cmake/%{name}
+%if %{with static}
 %{_libdir}/lib%{name}.a
+%else
+%{_libdir}/lib%{name}.so
+%endif
 
 
 %changelog
+* Mon Nov 29 2021 Phantom X <megaphantomx at hotmail dot com> - 0-108.20211112gitb024786
+- Bump
+- Shared library conditional
+
 * Sun Oct 31 2021 Phantom X <megaphantomx at hotmail dot com> - 0-107.20211021gitd578c76
 - Update
 

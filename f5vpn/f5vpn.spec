@@ -4,6 +4,9 @@
 %global _build_id_links none
 %global __strip /bin/true
 
+# suid executable blob with bundled libraries
+%global __brp_check_rpaths %{nil}
+
 %global optdir  opt/f5/vpn
 
 %global vc_id  9ea8593c72570211488943b1286317b239222def
@@ -13,7 +16,7 @@
 
 Name:           f5vpn
 Version:        7213.2021.0526.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        F5 SSL VPN (vpn client)
 
 # See LICENSE
@@ -29,7 +32,7 @@ Source5:        README.suid
 
 ExclusiveArch:  x86_64
 
-BuildRequires:  chrpath
+#BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  execstack
 Requires:       f5vpn-filesystem
@@ -68,7 +71,7 @@ cp %{S:1} %{S:2} %{S:5} .
 
 find opt/f5 -name '*.so*' | xargs chmod 0755
 
-chrpath --delete %{optdir}/f5vpn
+#chrpath --delete %{optdir}/f5vpn
 execstack -c %{optdir}/svpn
 execstack -c %{optdir}/tunnelserver
 
@@ -169,6 +172,9 @@ done
 
 
 %changelog
+* Mon Nov 29 2021 - 7213.2021.0526.1-2
+- Revert rpath, suid binary
+
 * Fri Oct 01 2021 - 7213.2021.0526.1-1
 - 7213.2021.0526.1
 
