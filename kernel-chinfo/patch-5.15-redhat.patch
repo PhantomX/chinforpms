@@ -23,6 +23,7 @@ Subject: [PATCH] patch-5.15-redhat
  drivers/char/random.c                              | 115 +++++++++++++++++++
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
+ drivers/gpu/drm/i915/gt/intel_workarounds.c        |   7 --
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
@@ -35,8 +36,6 @@ Subject: [PATCH] patch-5.15-redhat
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
- drivers/usb/host/xhci-tegra.c                      |  41 +++++--
- fs/fuse/dev.c                                      |  14 +--
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -53,7 +52,7 @@ Subject: [PATCH] patch-5.15-redhat
  49 files changed, 791 insertions(+), 214 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 79eeb13c0973..084fdfae9d16 100644
+index 0faa64733281..5da4d20e69ec 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -877,6 +876,24 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/gt/intel_workarounds.c b/drivers/gpu/drm/i915/gt/intel_workarounds.c
+index aae609d7d85d..6b5ab19a2ada 100644
+--- a/drivers/gpu/drm/i915/gt/intel_workarounds.c
++++ b/drivers/gpu/drm/i915/gt/intel_workarounds.c
+@@ -621,13 +621,6 @@ static void gen12_ctx_workarounds_init(struct intel_engine_cs *engine,
+ 	       FF_MODE2_GS_TIMER_MASK,
+ 	       FF_MODE2_GS_TIMER_224,
+ 	       0, false);
+-
+-	/*
+-	 * Wa_14012131227:dg1
+-	 * Wa_1508744258:tgl,rkl,dg1,adl-s,adl-p
+-	 */
+-	wa_masked_en(wal, GEN7_COMMON_SLICE_CHICKEN1,
+-		     GEN9_RHWO_OPTIMIZATION_DISABLE);
+ }
+
+ static void dg1_ctx_workarounds_init(struct intel_engine_cs *engine,
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1477,7 +1494,7 @@ diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index 86658a81d284..5647f4756e97 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5657,6 +5657,13 @@ static void hub_event(struct work_struct *work)
+@@ -5666,6 +5666,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -1491,123 +1508,6 @@ index 86658a81d284..5647f4756e97 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/drivers/usb/host/xhci-tegra.c b/drivers/usb/host/xhci-tegra.c
-index 1bf494b649bd..c8af2cd2216d 100644
---- a/drivers/usb/host/xhci-tegra.c
-+++ b/drivers/usb/host/xhci-tegra.c
-@@ -1400,6 +1400,7 @@ static void tegra_xusb_deinit_usb_phy(struct tegra_xusb *tegra)
-
- static int tegra_xusb_probe(struct platform_device *pdev)
- {
-+	struct of_phandle_args args;
- 	struct tegra_xusb *tegra;
- 	struct device_node *np;
- 	struct resource *regs;
-@@ -1454,10 +1455,17 @@ static int tegra_xusb_probe(struct platform_device *pdev)
- 		goto put_padctl;
- 	}
-
--	tegra->padctl_irq = of_irq_get(np, 0);
--	if (tegra->padctl_irq <= 0) {
--		err = (tegra->padctl_irq == 0) ? -ENODEV : tegra->padctl_irq;
--		goto put_padctl;
-+	/* Older device-trees don't have padctrl interrupt */
-+	err = of_irq_parse_one(np, 0, &args);
-+	if (!err) {
-+		tegra->padctl_irq = of_irq_get(np, 0);
-+		if (tegra->padctl_irq <= 0) {
-+			err = (tegra->padctl_irq == 0) ? -ENODEV : tegra->padctl_irq;
-+			goto put_padctl;
-+		}
-+	} else {
-+		dev_dbg(&pdev->dev,
-+			"%pOF is missing an interrupt, disabling PM support\n", np);
- 	}
-
- 	tegra->host_clk = devm_clk_get(&pdev->dev, "xusb_host");
-@@ -1696,11 +1704,15 @@ static int tegra_xusb_probe(struct platform_device *pdev)
- 		goto remove_usb3;
- 	}
-
--	err = devm_request_threaded_irq(&pdev->dev, tegra->padctl_irq, NULL, tegra_xusb_padctl_irq,
--					IRQF_ONESHOT, dev_name(&pdev->dev), tegra);
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to request padctl IRQ: %d\n", err);
--		goto remove_usb3;
-+	if (tegra->padctl_irq) {
-+		err = devm_request_threaded_irq(&pdev->dev, tegra->padctl_irq,
-+						NULL, tegra_xusb_padctl_irq,
-+						IRQF_ONESHOT, dev_name(&pdev->dev),
-+						tegra);
-+		if (err < 0) {
-+			dev_err(&pdev->dev, "failed to request padctl IRQ: %d\n", err);
-+			goto remove_usb3;
-+		}
- 	}
-
- 	err = tegra_xusb_enable_firmware_messages(tegra);
-@@ -1718,13 +1730,16 @@ static int tegra_xusb_probe(struct platform_device *pdev)
- 	/* Enable wake for both USB 2.0 and USB 3.0 roothubs */
- 	device_init_wakeup(&tegra->hcd->self.root_hub->dev, true);
- 	device_init_wakeup(&xhci->shared_hcd->self.root_hub->dev, true);
--	device_init_wakeup(tegra->dev, true);
-
- 	pm_runtime_use_autosuspend(tegra->dev);
- 	pm_runtime_set_autosuspend_delay(tegra->dev, 2000);
- 	pm_runtime_mark_last_busy(tegra->dev);
- 	pm_runtime_set_active(tegra->dev);
--	pm_runtime_enable(tegra->dev);
-+
-+	if (tegra->padctl_irq) {
-+		device_init_wakeup(tegra->dev, true);
-+		pm_runtime_enable(tegra->dev);
-+	}
-
- 	return 0;
-
-@@ -1772,7 +1787,9 @@ static int tegra_xusb_remove(struct platform_device *pdev)
- 	dma_free_coherent(&pdev->dev, tegra->fw.size, tegra->fw.virt,
- 			  tegra->fw.phys);
-
--	pm_runtime_disable(&pdev->dev);
-+	if (tegra->padctl_irq)
-+		pm_runtime_disable(&pdev->dev);
-+
- 	pm_runtime_put(&pdev->dev);
-
- 	tegra_xusb_powergate_partitions(tegra);
-diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
-index 5a1f142bdb48..dde341a6388a 100644
---- a/fs/fuse/dev.c
-+++ b/fs/fuse/dev.c
-@@ -847,12 +847,6 @@ static int fuse_try_move_page(struct fuse_copy_state *cs, struct page **pagep)
-
- 	replace_page_cache_page(oldpage, newpage);
-
--	/*
--	 * Release while we have extra ref on stolen page.  Otherwise
--	 * anon_pipe_buf_release() might think the page can be reused.
--	 */
--	pipe_buf_release(cs->pipe, buf);
--
- 	get_page(newpage);
-
- 	if (!(buf->flags & PIPE_BUF_FLAG_LRU))
-@@ -2037,12 +2031,8 @@ static ssize_t fuse_dev_splice_write(struct pipe_inode_info *pipe,
-
- 	pipe_lock(pipe);
- out_free:
--	for (idx = 0; idx < nbuf; idx++) {
--		struct pipe_buffer *buf = &bufs[idx];
--
--		if (buf->ops)
--			pipe_buf_release(pipe, buf);
--	}
-+	for (idx = 0; idx < nbuf; idx++)
-+		pipe_buf_release(pipe, &bufs[idx]);
- 	pipe_unlock(pipe);
-
- 	kvfree(bufs);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 6b5d36babfcc..fd4a5d66a9d0 100644
 --- a/include/linux/efi.h

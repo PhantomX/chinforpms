@@ -190,6 +190,10 @@
 %define qemu_user  qemu
 %define qemu_group  qemu
 
+# Locations for QEMU data
+%define qemu_moddir %{_libdir}/qemu
+%define qemu_datadir %{_datadir}/qemu
+
 
 # RHEL releases provide stable tool chains and so it is safe to turn
 # compiler warning into errors without being worried about frequent
@@ -205,7 +209,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 7.9.0
+Version: 7.10.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -1168,6 +1172,8 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            %{arg_packager_version} \
            -Dqemu_user=%{qemu_user} \
            -Dqemu_group=%{qemu_group} \
+           -Dqemu_moddir=%{qemu_moddir} \
+           -Dqemu_datadir=%{qemu_datadir} \
            -Dtls_priority=%{tls_priority} \
            %{?enable_werror} \
            -Dexpensive_tests=enabled \
@@ -1199,7 +1205,6 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-file/*.a
 rm -f $RPM_BUILD_ROOT%{wireshark_plugindir}/libvirt.la
 %endif
 
-install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
 # We don't want to install /etc/libvirt/qemu/networks in the main %%files list
 # because if the admin wants to delete the default network completely, we don't
 # want to end up re-incarnating it on every RPM upgrade.
@@ -1995,6 +2000,7 @@ exit 0
 %{_mandir}/man1/virt-pki-validate.1*
 %{_bindir}/virsh
 %{_bindir}/virt-xml-validate
+%{_bindir}/virt-pki-query-dn
 %{_bindir}/virt-pki-validate
 
 %{_datadir}/bash-completion/completions/virsh
@@ -2078,6 +2084,9 @@ exit 0
 
 
 %changelog
+* Wed Dec 01 2021 Phantom X <megaphantomx at hotmail dot com> - 7.10.0-100
+- 7.10.0
+
 * Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 7.9.0-100
 - 7.9.0
 

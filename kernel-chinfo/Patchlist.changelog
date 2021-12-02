@@ -1,5 +1,8 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/0deebf76b98dd42393d8f9fa97e196c77d608c7d
- 0deebf76b98dd42393d8f9fa97e196c77d608c7d Revert "fuse: fix page stealing"
+https://gitlab.com/cki-project/kernel-ark/-/commit/cc9dddca769975df12bb5dfe654486261a9add59
+ cc9dddca769975df12bb5dfe654486261a9add59 Revert "drm/i915: Implement Wa_1508744258"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/577621ef2a46e164d80efb4c991b1668b7914592
+ 577621ef2a46e164d80efb4c991b1668b7914592 scsi: sd: Fix sd_do_mode_sense() buffer length handling
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/ba79f081c3d211f6dda25d73f03c599aab6f8972
  ba79f081c3d211f6dda25d73f03c599aab6f8972 mwifiex_usb: Fix skb_over_panic in mwifiex_usb_recv

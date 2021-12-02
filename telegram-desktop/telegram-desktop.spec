@@ -1,17 +1,5 @@
 %undefine _cmake_shared_libs
 
-%global commit10 d578c760dc6f1ae5f0f3bb5317b0b2ed04b79138
-%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
-%global srcname10 tg_owt
-
-%global commit11 ad890067f661dc747a975bc55ba3767fe30d4452
-%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
-%global srcname11 libyuv
-
-%global commit12 5b63f0f821e94f8072eb483014cfc33b05978bb9
-%global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
-%global srcname12 libvpx
-
 # Telegram Desktop's constants...
 %global appname tdesktop
 %global launcher telegramdesktop
@@ -30,7 +18,6 @@
 %bcond_with tgvoip
 %bcond_with wayland
 %bcond_without x11
-%bcond_without tg_owt
 
 %bcond_with clang
 
@@ -50,7 +37,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.2.5
+Version:        3.2.8
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -70,21 +57,12 @@ Epoch:          1
 # rnnoise - BSD
 # usrsctp - BSD
 
-%if %{without tg_owt}
-License:        GPLv3+ and LGPLv2+ and LGPLv3 and BSD and ASL 2.0
-%else
 License:        GPLv3+ and LGPLv2+ and LGPLv3 and BSD
-%endif
 URL:            https://github.com/telegramdesktop/%{appname}
 
 ExclusiveArch:  x86_64
 
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
-%if %{without tg_owt}
-Source10:       %{da_url}/tg_owt/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
-Source11:       %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit11}.tar.gz#/%{srcname11}-%{shortcommit11}.tar.gz
-Source12:       %{cvc_url}/webm/libvpx/+archive/%{shortcommit12}.tar.gz#/%{srcname12}-%{shortcommit12}.tar.gz
-%endif
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-build-fix.patch
@@ -194,27 +172,10 @@ BuildRequires:  pkgconfig(xcb-record)
 BuildRequires:  pkgconfig(xcb-screensaver)
 %endif
 
-%if %{with tg_owt}
-BuildRequires:  cmake(tg_owt)
-BuildRequires:  pkgconfig(protobuf)
-%else
 BuildRequires:  cmake(absl)
+BuildRequires:  cmake(tg_owt)
 BuildRequires:  pkgconfig(libjpeg)
-BuildRequires:  pkgconfig(libpipewire-0.3)
-#BuildRequires:  pkgconfig(openh264)
-BuildRequires:  pkgconfig(usrsctp)
-#BuildRequires:  pkgconfig(vpx) >= 1.10.0
-BuildRequires:  pkgconfig(x11)
-BuildRequires:  pkgconfig(xcomposite)
-BuildRequires:  pkgconfig(xdamage)
-BuildRequires:  pkgconfig(xext)
-BuildRequires:  pkgconfig(xfixes)
-BuildRequires:  pkgconfig(xrender)
-BuildRequires:  pkgconfig(xrandr)
-BuildRequires:  pkgconfig(xtst)
-BuildRequires:  yasm
-Provides:       bundled(tg_owt) = 0~git%{shortcommit10}
-%endif
+BuildRequires:  pkgconfig(protobuf)
 
 # Telegram Desktop require exact version of Qt due to Qt private API usage.
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
@@ -247,61 +208,6 @@ business messaging needs.
 
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
-%if %{without tg_owt}
-sed -e 's|../Libraries|Libraries|g' -i cmake/variables.cmake
-mkdir -p Libraries/tg_owt
-tar -xf %{S:10} --strip-components 1 -C Libraries/%{srcname10}/
-tar -xf %{S:11} -C Libraries/%{srcname10}/src/third_party/libyuv
-tar -xf %{S:12} -C Libraries/%{srcname10}/src/third_party/libvpx/source/libvpx
-
-sed \
-  -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
-  -e 's|out/$<CONFIG>|%{__cmake_builddir}|' \
-  -i cmake/external/webrtc/CMakeLists.txt
-
-pushd Libraries/%{srcname10}
-  mkdir legal
-  cp -f LICENSE legal/LICENSE.tg_owt
-  cp -f src/PATENTS legal/PATENTS.owt
-  cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
-  cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
-  cp -f -p src/third_party/libsrtp/LICENSE legal/LICENSE.libsrtp
-  cp -f -p src/third_party/libsrtp/README.chromium legal/README.libsrtp
-  cp -f -p src/third_party/libvpx/source/libvpx/LICENSE legal/LICENSE.libvpx
-  cp -f -p src/third_party/libvpx/source/libvpx/PATENTS legal/PATENTS.libvpx
-  cp -f -p src/third_party/libvpx/README.chromium legal/README.libvpx
-  cp -f -p src/third_party/libyuv/LICENSE legal/LICENSE.libyuv
-  cp -f -p src/third_party/libyuv/PATENTS legal/PATENTS.libyuv
-  cp -f -p src/third_party/libyuv/README.chromium legal/README.libyuv
-  cp -f -p src/third_party/openh264/src/LICENSE legal/LICENSE.openh264
-  cp -f -p src/third_party/openh264/README.chromium legal/README.openh264
-  cp -f -p src/third_party/pffft/LICENSE legal/LICENSE.pffft
-  cp -f -p src/third_party/pffft/README.chromium legal/README.pffft
-  cp -f -p src/third_party/rnnoise/COPYING legal/LICENSE.rnnoise
-  cp -f -p src/third_party/rnnoise/README.chromium legal/README.rnnoise
-  cp -f -p src/third_party/usrsctp/LICENSE legal/LICENSE.usrsctp
-  cp -f -p src/third_party/usrsctp/README.chromium legal/README.usrsctp
-  cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/LICENSE.TXT legal/LICENSE.libwebm
-  cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/PATENTS.TXT legal/PATENTS.libwebm
-  cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/README.libvpx legal/README.libwebm
-  cp -f -p src/common_audio/third_party/spl_sqrt_floor/LICENSE legal/LICENSE.spl_sqrt_floor
-  cp -f -p src/common_audio/third_party/spl_sqrt_floor/README.chromium legal/README.spl_sqrt_floor
-  cp -f -p src/modules/third_party/fft/LICENSE legal/LICENSE.fft
-  cp -f -p src/modules/third_party/fft/README.chromium legal/README.fft
-  cp -f -p src/modules/third_party/g711/LICENSE legal/LICENSE.g711
-  cp -f -p src/modules/third_party/g711/README.chromium legal/README.g711
-  cp -f -p src/modules/third_party/g722/LICENSE legal/LICENSE.g722
-  cp -f -p src/modules/third_party/g722/README.chromium legal/README.g722
-  cp -f -p src/modules/third_party/portaudio/LICENSE legal/LICENSE.portaudio
-  cp -f -p src/modules/third_party/portaudio/README.chromium legal/README.portaudio
-  cp -f -p src/rtc_base/third_party/base64/LICENSE legal/LICENSE.base64
-  cp -f -p src/rtc_base/third_party/base64/README.chromium legal/README.base64
-  cp -f -p src/rtc_base/third_party/sigslot/LICENSE legal/LICENSE.sigslot
-  cp -f -p src/rtc_base/third_party/sigslot/README.chromium legal/README.sigslot
-popd
-mv Libraries/%{srcname10}/legal .
-%endif
-
 # Unbundling libraries...
 rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,jemalloc,libdbusmenu-qt,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,xxHash}
 
@@ -333,34 +239,6 @@ sed -e 's/QrCode\.hpp/qrcodegen\.hpp/g' -i {cmake/external/qr_code_generator/CMa
 
 
 %build
-%if %{without tg_owt}
-( cd Libraries/tg_owt
-%cmake \
-  -B %{__cmake_builddir} \
-  -G Ninja \
-%if %{with clang}
-  -DCMAKE_C_COMPILER=%{_bindir}/clang \
-  -DCMAKE_CXX_COMPILER=%{_bindir}/clang++ \
-  -DCMAKE_AR=%{_bindir}/llvm-ar \
-  -DCMAKE_RANLIB=%{_bindir}/llvm-ranlib \
-  -DCMAKE_LINKER=%{_bindir}/llvm-ld \
-  -DCMAKE_OBJDUMP=%{_bindir}/llvm-objdump \
-  -DCMAKE_NM=%{_bindir}/llvm-nm \
-%else
-  -DCMAKE_AR=%{_bindir}/gcc-ar \
-  -DCMAKE_RANLIB=%{_bindir}/gcc-ranlib \
-  -DCMAKE_NM=%{_bindir}/gcc-nm \
-%endif
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
-%{nil}
-
-%cmake_build
-
-)
-%endif
-
 # Building Telegram Desktop using cmake...
 %cmake \
     -G Ninja \
@@ -411,7 +289,7 @@ sed -e 's/QrCode\.hpp/qrcodegen\.hpp/g' -i {cmake/external/qr_code_generator/CMa
     -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
 %{nil}
 
-cp -p changelog.txt %{__cmake_builddir}/
+cp -p changelog.txt %{_vpath_builddir}/
 
 %cmake_build
 
@@ -439,9 +317,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 %files
 %doc README.md changelog.txt
 %license LICENSE LEGAL
-%if %{without tg_owt}
-%license legal/*
-%endif
 %{_bindir}/%{name}
 %{_datadir}/applications/%{launcher}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
@@ -450,6 +325,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Wed Dec 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.2.8-100
+- 3.2.8
+- Remove old bundled tg_owt entries
+
 * Tue Nov 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.2.5-100
 - 3.2.5
 
