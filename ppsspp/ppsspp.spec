@@ -1,6 +1,6 @@
-%global commit c7bba9bf726264778884144578a29bb32c7725b0
+%global commit 676ed6c15d094456afa74225acec84d714492801
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211123
+%global date 20211202
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -59,7 +59,7 @@
 
 Name:           ppsspp
 Version:        1.12.3
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -136,7 +136,7 @@ BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  vulkan-headers >= 1.2.141
+BuildRequires:  vulkan-headers >= 1.2.198
 %if %{with qt}
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Gui)
@@ -385,6 +385,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Dec 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-103.20211202git676ed6c
+- Last snapshot
+
 * Tue Nov 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-102.20211123gitc7bba9b
 - Update
 
