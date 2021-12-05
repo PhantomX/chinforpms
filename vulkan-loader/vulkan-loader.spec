@@ -1,8 +1,8 @@
 %global with_sdk 0
 
 Name:           vulkan-loader
-Version:        1.2.199
-Release:        2%{?dist}
+Version:        1.2.201
+Release:        100%{?dist}
 Summary:        Vulkan ICD desktop loader
 
 License:        ASL 2.0
@@ -101,6 +101,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
 
 
 %changelog
+* Sat Dec 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.201-100
+- 1.2.201
+
 * Wed Nov 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1.2.199-2
 - Remove reverts
 

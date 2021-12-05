@@ -7,9 +7,9 @@ chinforpms-rpm-config
 -compat-gcc-32
 cubeb
 -dxil-spirv
-FAudio
+-FAudio
 -FAudio-freeworld
-FAudio-noreverb
+-FAudio-noreverb
 gamemode
 -glslang
 gnome-theme-extra

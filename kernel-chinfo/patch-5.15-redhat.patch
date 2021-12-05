@@ -23,7 +23,6 @@ Subject: [PATCH] patch-5.15-redhat
  drivers/char/random.c                              | 115 +++++++++++++++++++
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
- drivers/gpu/drm/i915/gt/intel_workarounds.c        |   7 --
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
@@ -876,24 +875,6 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
-diff --git a/drivers/gpu/drm/i915/gt/intel_workarounds.c b/drivers/gpu/drm/i915/gt/intel_workarounds.c
-index aae609d7d85d..6b5ab19a2ada 100644
---- a/drivers/gpu/drm/i915/gt/intel_workarounds.c
-+++ b/drivers/gpu/drm/i915/gt/intel_workarounds.c
-@@ -621,13 +621,6 @@ static void gen12_ctx_workarounds_init(struct intel_engine_cs *engine,
- 	       FF_MODE2_GS_TIMER_MASK,
- 	       FF_MODE2_GS_TIMER_224,
- 	       0, false);
--
--	/*
--	 * Wa_14012131227:dg1
--	 * Wa_1508744258:tgl,rkl,dg1,adl-s,adl-p
--	 */
--	wa_masked_en(wal, GEN7_COMMON_SLICE_CHICKEN1,
--		     GEN9_RHWO_OPTIMIZATION_DISABLE);
- }
-
- static void dg1_ctx_workarounds_init(struct intel_engine_cs *engine,
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c

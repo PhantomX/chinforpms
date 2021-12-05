@@ -140,7 +140,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -165,7 +165,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 85e77faa1126431fed87097a67e9d6efb0e1295b
+%global pfcommit fbbeddb0f5b18046d80e0aa60657e7074d1f83ca
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -193,7 +193,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id c2ce213fb7e14c0924ce1cc6f068b77a1eb8ae4c
+%global opensuse_id 0f8ae3428953c0af6d55758821a684c2988c9e70
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -957,6 +957,7 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch#/openSUSE-random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch
+Patch1019: %{opensuse_url}/xhci-Fix-commad-ring-abort-write-all-64-bits-to-CRCR.patch#/openSUSE-xhci-Fix-commad-ring-abort-write-all-64-bits-to-CRCR.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2914,6 +2915,9 @@ fi
 #
 #
 %changelog
+* Sat Dec 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.6-501.chinfo
+- Update patches
+
 * Wed Dec 01 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.6-500.chinfo
 - 5.15.6 - pf3
 

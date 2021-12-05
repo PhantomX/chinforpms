@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.6.0
+Version:        3.7.0
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -70,7 +70,7 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp opt/%{app_name}/{%{name},locales,resources,*.{bin,dat,json,pak,so}} \
+cp -rp opt/%{app_name}/{%{name},locales,resources,swiftshader,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 rm -fv %{buildroot}%{_libdir}/%{name}/libvulkan.so*
@@ -104,6 +104,9 @@ done
 
 
 %changelog
+* Fri Dec 03 2021 Phantom X <megaphantomx at hotmail dot com> - 3.7.0-1
+- 3.7.0
+
 * Wed Nov 24 2021 Phantom X <megaphantomx at hotmail dot com> - 3.6.0-1
 - 3.6.0
 

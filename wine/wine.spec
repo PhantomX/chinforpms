@@ -1,7 +1,7 @@
 %global commit f03933fbb73152c7a54383fba411a611af7aaa55
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211126
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -33,7 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  7.0.0
-%global winevulkan 1.2.200
+%global winevulkan 1.2.201
 
 %global wineFAudio 21.11
 %global winegsm 1.0.19
@@ -79,7 +79,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver edb34171243515c6a36f6da4b89237c38cc8e000
+%global wine_stagingver 6.23
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -87,10 +87,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id d83b266ef51a4dd5d40207d744c15a9f74359e36
+%global ge_id 9144e4eb2029e95613f384ce4b3fc4fdc71499d6
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 8d4ff0758fb3e3702923872dcc28013fa5673911
+%global tkg_id 0cf64ddbe2c31fe82d48fff81cfd40d0df62ba29
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -104,8 +104,6 @@
 
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
-# Revert bundled FAudio commits (for proper pulseaudio application name patches)
-%global extfaudio 0
 %global vulkanup 0
 
 #FIXME: undnl when staging bcrypt-ECDHSecretAgreement is enabled again
@@ -142,8 +140,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.22
-Release:        102%{?gver}%{?dist}
+Version:        6.23
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -222,12 +220,6 @@ Patch206:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
-
-# Internal FAudio reverts
-Patch902:       %{whq_url}/d8be85863fedf6982944d06ebd1ce5904cb3d4e1#/%{name}-whq-d8be858.patch
-Patch903:       0001-Revert-libs-Import-code-from-upstream-FAudio-21.10.patch
-Source904:      0001-x3daudio1_7-Create-import-library.patch
-Patch905:       %{whq_url}/22c26a2dde318b5b370fc269cab871e5a8bc4231#/%{name}-whq-22c26a2.patch
 
 # mfplat reverts / 920-971
 Patch920:       %{whq_url}/2d0dc2d47ca6b2d4090dfe32efdba4f695b197ce#/%{name}-whq-mfplat-2d0dc2d.patch
@@ -351,14 +343,16 @@ Patch1026:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}
 Patch1027:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch1028:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
-Patch1030:       %{tkg_url}/proton/proton-bcrypt-staging.patch#/%{name}-tkg-proton-bcrypt-staging.patch
 Patch1031:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
 Patch1032:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
 Patch1033:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1034:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
-Patch1035:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes2.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes2.patch
-Patch1036:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.mypatch#/%{name}-tkg-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch
+%dnl Patch1035:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes2.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes2.patch
+%dnl Patch1036:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
+%dnl Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de-2.mypatch#/%{name}-tkg-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de-2.patch
+Patch1035:       %{ge_url}/proton/55-proton-bcrypt_rdr2_fixes.patch#/%{name}-ge-55-proton-bcrypt_rdr2_fixes.patch
+Patch1036:       %{ge_url}/wine-hotfixes/staging/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch#/%{name}-ge-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
+Patch1037:       %{ge_url}/wine-hotfixes/staging/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch#/%{name}-ge-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       revert-grab-fullscreen.patch
@@ -367,8 +361,7 @@ Patch1092:       %{ge_url}/wine-hotfixes/staging/mfplat_dxgi_stub.patch#/%{name}
 Patch1093:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.patch#/%{name}-valve-ba230cf.patch
 
 Patch1300:       nier.patch
-Patch1301:       0001-xactengine-Set-PulseAudio-application-name-property-.patch
-Patch1302:       0001-xaudio2-Set-PulseAudio-application-name-property-in-.patch
+Patch1301:       0001-proton-staging-use-gdi_gpu-instead-of-x11drv_gpu.patch
 Patch1303:       0001-FAudio-Disable-reverb.patch
 Patch1304:       0001-Ignore-lowlatency-if-STAGING_AUDIO_PERIOD-is-not-set.patch
 Patch1305:       0001-fsync-include-linux-futex.h-if-exists.patch
@@ -413,9 +406,6 @@ BuildRequires:  python3
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  cups-devel
 BuildRequires:  pkgconfig(dbus-1)
-%if 0%{?extfaudio}
-BuildRequires:  pkgconfig(faudio)
-%endif
 BuildRequires:  pkgconfig(fontconfig)
 BuildRequires:  pkgconfig(glut)
 BuildRequires:  pkgconfig(freetype2)
@@ -644,10 +634,8 @@ Requires:       libva
 %endif
 %endif
 
-%if !0%{?extfaudio}
-Provides:       libFAudio = %{wineFAudio}
-%endif
 Provides:       gsm = %{winegsm}
+Provides:       libFAudio = %{wineFAudio}
 Provides:       libjpeg = %{winejpeg}
 Provides:       lcms2 = %{winelcms2}
 Provides:       mpg123 = %{winempg123}
@@ -973,9 +961,9 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch201 -p1
 %patch202 -p1
 %patch203 -p1
-%patch204 -p1 -R
-%patch205 -p1 -R
-%patch206 -p1 -R
+#patch204 -p1 -R
+#patch205 -p1 -R
+#patch206 -p1 -R
 
 
 
@@ -985,14 +973,6 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch901 -p1
-
-%if 0%{?extfaudio}
-%patch905 -p1 -R
-%patch902 -p1 -R
-%patch903 -p1
-rm -rf libs/faudio
-cp -f %{S:904} patches/xactengine-initial/
-%endif
 
 %patch989 -p1 -R
 %patch988 -p1 -R
@@ -1095,13 +1075,7 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1023 -p1
 %endif
 %patch1024 -p1
-#FIXME: uncomment when staging bcrypt-ECDHSecretAgreement is enabled again
-#filterdiff -p1 -x configure %%{P:1025} > patch1025.patch
-if [ -f patch1025.patch ] ;then
-  $patch_command -p1 -i patch1025.patch
-else
 %patch1025 -p1
-fi
 #patch1026 -p1
 %if 0%{?fshack}
 %if 0%{?vulkanup}
@@ -1114,9 +1088,6 @@ fi
 %endif
 %endif
 #patch1029 -p1
-if [ -f patch1025.patch ] ;then
-%patch1030 -p1
-fi
 %patch1031 -p1
 %patch1032 -p1
 %patch1033 -p1
@@ -1131,12 +1102,8 @@ fi
 %patch1093 -p1
 
 %patch1300 -p1
-%if 0%{?extfaudio}
 %patch1301 -p1
-%patch1302 -p1
-%else
 %patch1303 -p1
-%endif
 %patch1304 -p1
 %patch1305 -p1
 
@@ -1260,7 +1227,7 @@ export PATH="$(pwd)/bin:$PATH"
 %configure \
  --sysconfdir=%{_sysconfdir}/wine \
  --x-includes=%{_includedir} --x-libraries=%{_libdir} \
- --without-hal --with-dbus \
+ --with-dbus \
  --with-x \
 %ifarch %{arm}
  --with-float-abi=hard \
@@ -2257,10 +2224,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/mmdevapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mofcomp.%{wineexe}
 %{_libdir}/wine/%{winesodir}/mountmgr.so
-%{_libdir}/wine/%{winesodir}/mountmgr.sys.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/mountmgr.sys
-%endif
+%{_libdir}/wine/%{winedlldir}/mountmgr.%{winesys}
 %{_libdir}/wine/%{winedlldir}/mp3dmod.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mpr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mprapi.%{winedll}
@@ -3123,6 +3087,9 @@ fi
 
 
 %changelog
+* Sun Dec 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.23-100
+- 6.23
+
 * Sat Nov 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.22-102.20211126gitf03933f
 - Snapshot
 

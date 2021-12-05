@@ -2,7 +2,7 @@
 
 Name:           cdemu-client
 Version:        3.2.5
-Release:        0%{?dist}
+Release:        1%{?dist}
 Summary:        CDEmu CLI client
 
 License:        GPLv2
@@ -17,6 +17,7 @@ BuildRequires:  make
 BuildRequires:  intltool
 BuildRequires:  python3-devel
 BuildRequires:  /usr/bin/pathfix.py
+Requires:       cdemu-daemon
 Requires:       gobject-introspection
 Requires:       python3
 Requires:       python3-gobject
@@ -61,6 +62,12 @@ ln -sf ../../../../pixmaps/%{name}.svg \
 
 
 %changelog
+* Fri Dec 03 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.5-1
+- R: cdemu-daemon
+
+* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.5-0
+- 3.2.5
+
 * Mon Feb 24 2020 Phantom X <megaphantomx at bol dot com dot br> - 3.2.4-1
 - 3.2.4
 

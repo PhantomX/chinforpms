@@ -1,0 +1,34 @@
+From b3e4cb808b63ccdaa3243683c864699ae6834ee4 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 4 Dec 2021 22:20:46 -0300
+Subject: [PATCH] proton staging: use gdi_gpu instead of x11drv_gpu
+
+---
+ dlls/winex11.drv/xrandr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/dlls/winex11.drv/xrandr.c b/dlls/winex11.drv/xrandr.c
+index 8e063e3..a07bb6d 100644
+--- a/dlls/winex11.drv/xrandr.c
++++ b/dlls/winex11.drv/xrandr.c
+@@ -649,7 +649,7 @@ static BOOL is_crtc_primary( RECT primary, const XRRCrtcInfo *crtc )
+            crtc->y + crtc->height == primary.bottom;
+ }
+ 
+-static void add_remaining_gpus_via_vulkan( struct x11drv_gpu **gpus, int *count )
++static void add_remaining_gpus_via_vulkan( struct gdi_gpu **gpus, int *count )
+ {
+     static const char *extensions[] =
+     {
+@@ -666,7 +666,7 @@ static void add_remaining_gpus_via_vulkan( struct x11drv_gpu **gpus, int *count
+     VkInstance vk_instance = NULL;
+     INT gpu_idx, device_idx;
+     INT original_gpu_count = *count;
+-    struct x11drv_gpu *new_gpu;
++    struct gdi_gpu *new_gpu;
+     BOOL new;
+     VkResult vr;
+ 
+-- 
+2.33.1
+
