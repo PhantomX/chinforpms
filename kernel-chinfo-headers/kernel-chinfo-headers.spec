@@ -181,7 +181,7 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
-* Sat Dec 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.6-501.chinfo
+* Sun Dec 05 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.6-501.chinfo
 - 5.15.6
 
 * Wed Dec 01 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.6-500.chinfo

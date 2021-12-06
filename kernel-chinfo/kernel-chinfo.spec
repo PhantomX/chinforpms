@@ -165,7 +165,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit fbbeddb0f5b18046d80e0aa60657e7074d1f83ca
+%global pfcommit 473cbb7f38e3d82dea93ec5251244bbec8323b31
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
