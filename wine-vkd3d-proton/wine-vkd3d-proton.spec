@@ -226,10 +226,10 @@ meson \
   --cross-file build-%{cfname}${i}.txt \
   --buildtype "plain" \
   -Denable_d3d12=true \
-  %{_target_platform}${i} \
+  %{_vpath_builddir}${i} \
 %{nil}
 
-%ninja_build -C %{_target_platform}${i}
+%ninja_build -C %{_vpath_builddir}${i}
 
 done
 
@@ -251,7 +251,7 @@ for dll in d3d12 libvkd3d-proton-utils-3 ;do
     instdir=%{buildroot}%{_datadir}/wine/%{pkgname}/${i}
     dllname=${dll}
     mkdir -p ${instdir}
-    install -pm%{instmode} %{_target_platform}${i}/libs/${dlldir}/${dll}.%{winedll} \
+    install -pm%{instmode} %{_vpath_builddir}${i}/libs/${dlldir}/${dll}.%{winedll} \
       ${instdir}/${dllname}.%{winedll}
   done
 done

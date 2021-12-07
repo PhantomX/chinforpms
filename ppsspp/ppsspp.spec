@@ -92,6 +92,7 @@ Patch1:         0001-Disable-Discord-support.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
+Patch5:         0001-tools-cmake-fixes.patch
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -115,6 +116,7 @@ BuildRequires:  pkgconfig(libswscale)
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif
 %endif
+BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 %if 0%{?with_egl}
 BuildRequires:  pkgconfig(egl)
@@ -183,6 +185,13 @@ BuildArch:      noarch
 
 %description data
 Data files of %{name}.
+
+
+%package        tools
+Summary:        Additional tools files for %{name}
+
+%description tools
+Additional tools files for %{name}.
 
 
 %prep
@@ -256,6 +265,13 @@ popd
 
 %build
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
+
+pushd ext/native/tools
+%cmake \
+%{nil}
+
+%cmake_build
+popd
 
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
@@ -334,6 +350,9 @@ mkdir -p %{buildroot}%{_bindir}
   install -pm0755 %{_vpath_builddir}/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
 %endif
 
+install -pm0755 ext/native/tools/%{_vpath_builddir}/{atlastool,zimtool} \
+  %{buildroot}%{_bindir}/
+
 mkdir -p %{buildroot}%{_datadir}/%{name}
 cp -r %{_vpath_builddir}/assets %{buildroot}%{_datadir}/%{name}/
 rm -f %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
@@ -382,6 +401,13 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %doc README.md
 %license LICENSE.TXT
 %{_datadir}/%{name}/
+
+
+%files tools
+%doc ext/native/tools/README.txt
+%license LICENSE.TXT
+%{_bindir}/atlastool
+%{_bindir}/zimtool
 
 
 %changelog

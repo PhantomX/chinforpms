@@ -1,20 +1,20 @@
 %global debug_package %{nil}
 
-%global commit f12fad2ab9d6efc2a6accb165a23549130a74e5b
+%global commit ee18b220dde45003cd7ce7360fe3e633678b97df
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210610
+%global date 20211202
 
 %global gver .%{date}git%{shortcommit}
 
 %global vc_url https://repo.or.cz/linux/zf.git/blob_plain
 
 Name:           winesync
-Version:        5.12.10
+Version:        5.15.5
 Release:        1%{?gver}%{?dist}
 Summary:        Wine synchronization primitive driver
 
 License:        GPLv2
-URL:            https://repo.or.cz/linux/zf.git/shortlog/refs/heads/winesync
+URL:            https://repo.or.cz/linux/zf.git/shortlog/refs/heads/winesync3
 
 Source0:        %{vc_url}/%{commit}:/Documentation/userspace-api/winesync.rst#/winesync.rst_%{shortcommit}
 Source1:        %{vc_url}/%{commit}:/COPYING
@@ -71,6 +71,9 @@ install -m644 -D %{SOURCE2} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
 
 
 %changelog
+* Mon Dec 06 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.5-1.20211202gitee18b22
+- 5.15.5
+
 * Mon Aug 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.10-1.20210610gitf12fad2
 - 5.12.10
 - Add header file

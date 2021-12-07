@@ -126,6 +126,7 @@ gmpc
 -gmysqlcc
 gnome-themes
 gnome-themes-extra
+gogextract
 gpa
 gtk3-nocsd
 -hollywood

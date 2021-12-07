@@ -1,0 +1,77 @@
+From 02d51051f4fc92ef3847a91f93c444e12d1a8997 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 6 Dec 2021 19:35:06 -0300
+Subject: [PATCH] tools: cmake fixes
+
+---
+ ext/native/tools/CMakeLists.txt | 30 ++++++++++++++++--------------
+ ext/native/tools/atlastool.cpp  |  2 +-
+ 2 files changed, 17 insertions(+), 15 deletions(-)
+
+diff --git a/ext/native/tools/CMakeLists.txt b/ext/native/tools/CMakeLists.txt
+index 0547a25..a8f96aa 100644
+--- a/ext/native/tools/CMakeLists.txt
++++ b/ext/native/tools/CMakeLists.txt
+@@ -1,8 +1,9 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.10)
+ 
+ project (Tools)
+ 
+-add_definitions(-O2)
++list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../../../cmake/Modules)
++
+ add_definitions(-Wall)
+ add_definitions(-DSDL)
+ add_definitions(-Wno-multichar)
+@@ -24,21 +25,22 @@ endif()
+ # add_definitions(-fstrict-aliasing)
+ 
+ include_directories(..)
+-include_directories(../..)
+ include_directories(../../..)
+ 
+-link_directories(/opt/local/lib)
++find_package(Freetype REQUIRED)
++include_directories(${FREETYPE_INCLUDE_DIRS})
++
++find_package(PNG REQUIRED)
++include_directories(${PNG_INCLUDE_DIRS})
+ 
+-# Horrible horrible hack
+-include_directories(/usr/include/freetype2)
+-include_directories(/usr/local/include/freetype2)
+-include_directories(/opt/local/include/freetype2)
+-include_directories(/opt/local/include)
++find_package(ZLIB REQUIRED)
++include_directories(${ZLIB_INCLUDE_DIR})
+ 
+-add_subdirectory(../../libpng17 png17)
++find_package(ZSTD REQUIRED)
++include_directories(${ZSTD_INCLUDE_DIR})
+ 
+-add_executable(build/atlastool atlastool.cpp ../../../Common/Data/Format/PNGLoad.cpp ../../../Common/Data/Encoding/Utf8.cpp ../../../Common/Data/Format/ZIMSave.cpp)
+-target_link_libraries(build/atlastool freetype util png17 z zstd)
++add_executable(atlastool atlastool.cpp ../../../Common/Data/Format/PNGLoad.cpp ../../../Common/Data/Encoding/Utf8.cpp ../../../Common/Data/Format/ZIMSave.cpp)
++target_link_libraries(atlastool ${FREETYPE_LIBRARIES} util ${PNG_LIBRARIES} ${ZLIB_LIBRARY} ${ZSTD_LIBRARY})
+ 
+-add_executable(build/zimtool zimtool.cpp ../../../Common/Data/Format/PNGLoad.cpp ../../../Common/Data/Format/ZIMSave.cpp)
+-target_link_libraries(build/zimtool freetype util png17 z zstd)
++add_executable(zimtool zimtool.cpp ../../../Common/Data/Format/PNGLoad.cpp ../../../Common/Data/Format/ZIMSave.cpp)
++target_link_libraries(zimtool ${FREETYPE_LIBRARIES} util ${PNG_LIBRARIES} ${ZLIB_LIBRARY} ${ZSTD_LIBRARY})
+diff --git a/ext/native/tools/atlastool.cpp b/ext/native/tools/atlastool.cpp
+index 1d77bf1..aa12756 100644
+--- a/ext/native/tools/atlastool.cpp
++++ b/ext/native/tools/atlastool.cpp
+@@ -19,7 +19,7 @@
+ // dist-per-pixel
+ 
+ #include <assert.h>
+-#include <libpng17/png.h>
++#include <png.h>
+ #include <ft2build.h>
+ #include <freetype/ftbitmap.h>
+ #include <set>
+-- 
+2.33.1
+

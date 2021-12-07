@@ -114,28 +114,28 @@ sed \
 ./bootstrap.sh
 
 %build
-export WINEPREFIX="$(pwd)/%{_target_platform}/wine-build"
+export WINEPREFIX="$(pwd)/%{_vpath_builddir}/wine-build"
 
 meson \
   --cross-file tools/cross-wine%{__isa_bits} \
   --buildtype "release" \
-  %{_target_platform}
+  %{_vpath_builddir}
 
-%ninja_build -C %{_target_platform}
+%ninja_build -C %{_vpath_builddir}
 
 
 %install
 mkdir -p %{buildroot}%{_libdir}/wine/%{winearchdir}
 mkdir -p %{buildroot}%{_libdir}/wine/%{winesodir}
 
-install -pm0755 %{_target_platform}/ninewinecfg/ninewinecfg.exe.so \
+install -pm0755 %{_vpath_builddir}/ninewinecfg/ninewinecfg.exe.so \
   %{buildroot}%{_libdir}/wine/%{winesodir}/ninewinecfg.exe.so
-install -pm0755 %{_target_platform}/ninewinecfg/ninewinecfg.exe.fake \
+install -pm0755 %{_vpath_builddir}/ninewinecfg/ninewinecfg.exe.fake \
   %{buildroot}%{_libdir}/wine/%{winearchdir}/ninewinecfg.exe
 
-install -pm0755 %{_target_platform}/d3d9-nine/d3d9-nine.dll.so \
+install -pm0755 %{_vpath_builddir}/d3d9-nine/d3d9-nine.dll.so \
   %{buildroot}%{_libdir}/wine/%{winesodir}/d3d9-nine.dll.so
-install -pm0755 %{_target_platform}/d3d9-nine/d3d9-nine.dll.fake \
+install -pm0644 %{_vpath_builddir}/d3d9-nine/d3d9-nine.dll.fake \
   %{buildroot}%{_libdir}/wine/%{winearchdir}/d3d9-nine.dll
 
 mkdir -p %{buildroot}/%{_bindir}

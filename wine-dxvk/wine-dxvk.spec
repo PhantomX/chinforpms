@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 804eca9cadb7e2f9f3b2988b303912fa829ab827
+%global commit c13395db970d16a5631a7c0926e2c4529d2710c3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211130
+%global date 20211205
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -38,7 +38,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.9.2
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -55,6 +55,7 @@ Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
 
 Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
+Patch101:       0001-Revert-dxso-Omit-relative-constant-range-check-when-.patch
 
 %if 0%{?dxvk_async}
 Patch200:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
@@ -126,6 +127,7 @@ package or when debugging this package.
 %setup -q -n %{pkgname}-%{version}
 %endif
 %patch100 -p1
+%patch101 -p1
 
 %patch200 -p1
 %patch201 -p1
@@ -195,7 +197,7 @@ sed \
   -i meson.build
 
 %build
-export WINEPREFIX="$(pwd)/%{_target_platform}/wine-build"
+export WINEPREFIX="$(pwd)/%{_vpath_builddir}/wine-build"
 
 for i in %{targetbits}
 do
@@ -203,9 +205,9 @@ meson \
   --wrap-mode=nodownload \
   --cross-file build-%{cfname}${i}.txt \
   --buildtype "plain" \
-  %{_target_platform}${i}
+  %{_vpath_builddir}${i}
 
-%ninja_build -C %{_target_platform}${i}
+%ninja_build -C %{_vpath_builddir}${i}
 
 done
 
@@ -227,7 +229,7 @@ for dll in dxgi d3d9 d3d11 d3d10 d3d10_1 d3d10core ;do
     instdir=%{buildroot}%{_datadir}/wine/%{pkgname}/${i}
     dllname=${dll}
     mkdir -p ${instdir}
-    install -pm%{instmode} %{_target_platform}${i}/src/${dlldir}/${dll}.%{winedll} \
+    install -pm%{instmode} %{_vpath_builddir}${i}/src/${dlldir}/${dll}.%{winedll} \
       ${instdir}/${dllname}.%{winedll}
   done
 done
@@ -250,6 +252,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Dec 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.2-108.20211205gitc13395d
+- Float emulation update
+
 * Fri Dec 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.2-107.20211130git804eca9
 - Last snapshot
 
