@@ -13,7 +13,7 @@ index f45e17e..f411b96 100644
 --- a/core/log/LogManager.cpp
 +++ b/core/log/LogManager.cpp
 @@ -133,19 +133,9 @@ LogManager::LogManager()
- #ifdef __ANDROID__
+ #if defined(__ANDROID__) || defined(TARGET_IOS) || defined(TARGET_UWP)
  		std::string logPath = get_writable_data_path("flycast.log");
  #else
 -		std::string logPath = "flycast.log";

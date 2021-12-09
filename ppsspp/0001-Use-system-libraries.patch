@@ -182,31 +182,6 @@ index 4d25b7e..26b4910 100644
  #include "Common/Data/Color/RGBAUtil.h"
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Format/ZIMLoad.h"
-diff --git a/Core/Util/PortManager.h b/Core/Util/PortManager.h
-index a4c7df6..0204d9e 100644
---- a/Core/Util/PortManager.h
-+++ b/Core/Util/PortManager.h
-@@ -21,14 +21,18 @@
- 
- #pragma once
- 
--
-+#ifndef MINIUPNP_STATICLIB
-+#include "miniwget.h"
-+#include "miniupnpc.h"
-+#include "upnpcommands.h"
-+#else
- #ifndef MINIUPNP_STATICLIB
- #define MINIUPNP_STATICLIB
- #endif
--
- #include "ext/miniupnp/miniupnpc/miniwget.h"
- #include "ext/miniupnp/miniupnpc/miniupnpc.h"
- #include "ext/miniupnp/miniupnpc/upnpcommands.h"
-+#endif
- 
- #include <string>
- #include <deque>
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
 index ed3be14..30be16c 100644
 --- a/GPU/Common/TextureDecoder.cpp

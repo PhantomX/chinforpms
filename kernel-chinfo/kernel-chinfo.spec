@@ -140,7 +140,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %define major_ver 5
@@ -154,7 +154,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -165,7 +165,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 473cbb7f38e3d82dea93ec5251244bbec8323b31
+%global pfcommit f392b30f6021d402b3c900acec65e0ff9492b99a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -193,7 +193,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 0f8ae3428953c0af6d55758821a684c2988c9e70
+%global opensuse_id b92986ab568f1f8fa0baf7fb2aaf2c7478bd5615
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -957,7 +957,6 @@ Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1018: %{opensuse_url}/random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch#/openSUSE-random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch
-Patch1019: %{opensuse_url}/xhci-Fix-commad-ring-abort-write-all-64-bits-to-CRCR.patch#/openSUSE-xhci-Fix-commad-ring-abort-write-all-64-bits-to-CRCR.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2915,6 +2914,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 08 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.7-500.chinfo
+- 5.15.6 - pf7
+
 * Sat Dec 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.6-501.chinfo
 - Update patches
 

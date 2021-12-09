@@ -1,7 +1,7 @@
 # 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit 660c623dd0f673d69aac6ee66bb9ee2966073469
+%global commit 94c6814be8a471de6c1f59bf73689b473aafc039
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211005
+%global date 20210821
 %global with_snapshot 1
 
 %global sanitize 0
@@ -21,7 +21,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        136%{?gver}%{?dist}
+Release:        137%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3 and LGPLv3+
@@ -210,6 +210,8 @@ mv %{buildroot}%{_bindir}/PCSX2 %{buildroot}%{_bindir}/PCSX2.bin
 cat > %{buildroot}%{_bindir}/PCSX2 <<EOF
 #!/usr/bin/sh
 export GDK_BACKEND=x11
+export __GL_THREADED_OPTIMIZATIONS=1
+export mesa_glthread=true
 export MESA_NO_ERROR=1
 exec %{_bindir}/PCSX2.bin
 EOF
@@ -263,6 +265,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-137.20210821git94c6814
+- Downgrade more
+
 * Sun Nov 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-136.20211005git660c623
 - Last snapshot that works well on potatoes
 

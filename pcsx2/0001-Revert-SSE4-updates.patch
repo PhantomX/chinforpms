@@ -1,6 +1,6 @@
-From 07df4d9bd26cb44d4ce07da20da0eec74bfaa7c9 Mon Sep 17 00:00:00 2001
+From 57dcbb1d201a6d8f5bc127313e384fe5abf9ef29 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 14 Nov 2021 17:13:17 -0300
+Date: Sat, 21 Aug 2021 22:22:24 -0300
 Subject: [PATCH] Revert SSE4 updates
 
 Rebased with commits reverted or rebased:
@@ -10,63 +10,43 @@ Rebased with commits reverted or rebased:
 f9d96f55a538ce373f1662a5554d8052173940b1 microVU: Remove SSE4 op from Overflow flag checks + clean up
 ee07f860fc1dd7e8ada6c13903bb3a592b8d4864 microVU: Implement Overflow checks
 d0f3c620d27f88c0eabdbb60d7737284c239909e GSBlock: Cleanup warnings.
-2dbfe9f743d795da0597ff29b302541132a48c6c gs: Cleanup remaining stuff from sse2/3 purge.
-7faa5db9e57c6e59dbe62c66d64623d879b680a2 VU/GameDB: Move Mac/Status overflow flag checks to a gamefix
+
+That make PCSX2 running in older CPUS for some not demanding games
 ---
- .../validation/lint-gamedb/lint-gamedb.py     |   2 +-
- bin/GameIndex.yaml                            |  46 ++-
- cmake/BuildParameters.cmake                   |  10 +-
- pcsx2/Config.h                                |   2 -
- pcsx2/GS/GSBlock.h                            | 363 +++++++++++++++++-
- pcsx2/GS/GSCapture.cpp                        |  14 +
- pcsx2/GS/GSState.cpp                          |  14 +
+ bin/GameIndex.yaml                            |  34 ++
+ cmake/BuildParameters.cmake                   |   8 +-
+ pcsx2/GS/GSBlock.h                            | 355 +++++++++++++++++-
+ pcsx2/GS/GSState.cpp                          |   4 +
  pcsx2/GS/GSUtil.cpp                           |   6 +
  pcsx2/GS/GSVector4.h                          |  96 ++++-
- pcsx2/GS/GSVector4i.h                         | 283 +++++++++++++-
+ pcsx2/GS/GSVector4i.h                         | 278 +++++++++++++-
  pcsx2/GS/GS_types.h                           |   8 +-
  pcsx2/GS/Renderers/Common/GSVertexTrace.cpp   |  61 +++
  pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp    |   4 +
  pcsx2/GS/Renderers/OpenGL/GSRendererOGL.cpp   |   4 +
  .../SW/GSDrawScanlineCodeGenerator.cpp        |  36 +-
- .../SW/GSDrawScanlineCodeGenerator.x86.cpp    | 273 +++++++++++--
+ .../SW/GSDrawScanlineCodeGenerator.x86.cpp    | 273 ++++++++++++--
  pcsx2/GS/Renderers/SW/GSRendererSW.cpp        |  37 ++
- pcsx2/Pcsx2Config.cpp                         |   7 -
  pcsx2/gui/AppInit.cpp                         |  11 +-
- pcsx2/gui/Panels/GameFixesPanel.cpp           |   4 -
- pcsx2/x86/iMMI.cpp                            | 224 +++++++++--
+ pcsx2/x86/iMMI.cpp                            | 212 +++++++++--
  pcsx2/x86/ix86-32/iR5900-32.cpp               |   4 +-
- pcsx2/x86/microVU.cpp                         |   4 +-
- pcsx2/x86/microVU_Alloc.inl                   |  11 +-
+ pcsx2/x86/microVU.cpp                         |   2 +-
+ pcsx2/x86/microVU_Alloc.inl                   |  10 +-
  pcsx2/x86/microVU_Clamp.inl                   |  31 +-
- pcsx2/x86/microVU_Lower.inl                   |  22 +-
- pcsx2/x86/microVU_Misc.inl                    | 127 +++++-
- pcsx2/x86/microVU_Upper.inl                   |  37 +-
- pcsx2/x86/newVif_UnpackSSE.cpp                | 101 ++++-
- 29 files changed, 1655 insertions(+), 187 deletions(-)
+ pcsx2/x86/microVU_Lower.inl                   |  20 +-
+ pcsx2/x86/microVU_Misc.inl                    | 127 ++++++-
+ pcsx2/x86/microVU_Upper.inl                   |  21 --
+ pcsx2/x86/newVif_UnpackSSE.cpp                | 113 +++++-
+ 24 files changed, 1616 insertions(+), 139 deletions(-)
 
-diff --git a/.github/workflows/scripts/validation/lint-gamedb/lint-gamedb.py b/.github/workflows/scripts/validation/lint-gamedb/lint-gamedb.py
-index ab76a69..0027df7 100644
---- a/.github/workflows/scripts/validation/lint-gamedb/lint-gamedb.py
-+++ b/.github/workflows/scripts/validation/lint-gamedb/lint-gamedb.py
-@@ -34,7 +34,7 @@ allowed_game_fixes = [
-     "GoemonTlbHack",
-     "VUKickstartHack",
-     "IbitHack",
--    "VUOverflowHack",
-+    "RatchetDynaHack",
- ]
- allowed_speed_hacks = ["mvuFlagSpeedHack", "InstantVU1SpeedHack"]
- # Patches are allowed to have a 'default' key or a crc-32 key, followed by
 diff --git a/bin/GameIndex.yaml b/bin/GameIndex.yaml
-index d05d807..64c891c 100644
+index ac9760b..2d39b06 100644
 --- a/bin/GameIndex.yaml
 +++ b/bin/GameIndex.yaml
-@@ -14352,8 +14352,15 @@ SLES-53744:
+@@ -14247,6 +14247,15 @@ SLES-53744:
  SLES-53746:
    name: "Superman Returns"
    region: "PAL-E"
--  gameFixes:
--    - VUOverflowHack # Fixes SPS.
 +  patches:
 +    E8F7BAB6:
 +      content: |-
@@ -79,17 +59,10 @@ index d05d807..64c891c 100644
  SLES-53747:
    name: "Ed, Edd, 'n Eddy - The Misadventure"
    region: "PAL-E"
-@@ -15545,23 +15552,31 @@ SLES-54347:
- SLES-54348:
-   name: "Superman Returns"
-   region: "PAL-F"
--  gameFixes:
--    - VUOverflowHack # Fixes SPS.
+@@ -15439,12 +15448,28 @@ SLES-54348:
  SLES-54349:
    name: "Superman Returns"
    region: "PAL-I"
--  gameFixes:
--    - VUOverflowHack # Fixes SPS.
 +  patches:
 +    E7F7B6BD:
 +      content: |-
@@ -100,13 +73,9 @@ index d05d807..64c891c 100644
  SLES-54350:
    name: "Superman Returns"
    region: "PAL-G"
--  gameFixes:
--    - VUOverflowHack # Fixes SPS.
  SLES-54351:
    name: "Superman Returns"
    region: "PAL-S"
--  gameFixes:
--    - VUOverflowHack # Fixes SPS.
 +  patches:
 +    EDF0A0A7:
 +      content: |-
@@ -119,12 +88,10 @@ index d05d807..64c891c 100644
  SLES-54354:
    name: "Final Fantasy XII"
    region: "PAL-E"
-@@ -38396,8 +38411,15 @@ SLUS-21434:
+@@ -38161,6 +38186,15 @@ SLUS-21434:
    name: "Superman Returns - The Video Game"
    region: "NTSC-U"
    compat: 4
--  gameFixes:
--    - VUOverflowHack # Fixes SPS.
 +  patches:
 +    E1BF5DCA:
 +      content: |-
@@ -138,64 +105,35 @@ index d05d807..64c891c 100644
    name: "One Piece - Grand Adventure"
    region: "NTSC-U"
 diff --git a/cmake/BuildParameters.cmake b/cmake/BuildParameters.cmake
-index 0771bbd..4630fc7 100644
+index b1977ca..65bd770 100644
 --- a/cmake/BuildParameters.cmake
 +++ b/cmake/BuildParameters.cmake
-@@ -129,7 +129,7 @@ endif()
- #-------------------------------------------------------------------------------
- # Select the architecture
- #-------------------------------------------------------------------------------
--option(DISABLE_ADVANCE_SIMD "Disable advance use of SIMD (SSE2+ & AVX)" OFF)
-+option(DISABLE_ADVANCE_SIMD "Disable advance use of SIMD (SSE2)" OFF)
- 
- # Print if we are cross compiling.
- if(CMAKE_CROSSCOMPILING)
-@@ -161,9 +161,9 @@ if(${PCSX2_TARGET_ARCHITECTURES} MATCHES "i386")
- 		else()
- 			if (DISABLE_ADVANCE_SIMD)
- 				if (USE_ICC)
--					set(ARCH_FLAG "-msse2 -msse4.1")
-+					set(ARCH_FLAG "-msse2")
- 				else()
--					set(ARCH_FLAG "-msse -msse2 -msse4.1 -mfxsr -march=i686")
-+					set(ARCH_FLAG "-msse -msse2 -mfxsr -march=i686")
- 				endif()
+@@ -154,9 +154,9 @@ if(${PCSX2_TARGET_ARCHITECTURES} MATCHES "i386")
+ 	if(NOT DEFINED ARCH_FLAG)
+ 		if (DISABLE_ADVANCE_SIMD)
+ 			if (USE_ICC)
+-				set(ARCH_FLAG "-msse2 -msse4.1")
++				set(ARCH_FLAG "-msse2")
  			else()
- 				# AVX requires some fix of the ABI (mangling) (default 2)
-@@ -185,9 +185,9 @@ elseif(${PCSX2_TARGET_ARCHITECTURES} MATCHES "x86_64")
- 	if(NOT DEFINED ARCH_FLAG AND NOT MSVC)
+-				set(ARCH_FLAG "-msse -msse2 -msse4.1 -mfxsr -march=i686")
++				set(ARCH_FLAG "-msse -msse2 -march=i686")
+ 			endif()
+ 		else()
+ 			# AVX requires some fix of the ABI (mangling) (default 2)
+@@ -177,9 +177,9 @@ elseif(${PCSX2_TARGET_ARCHITECTURES} MATCHES "x86_64")
+ 	if(NOT DEFINED ARCH_FLAG)
  		if (DISABLE_ADVANCE_SIMD)
  			if (USE_ICC)
 -				set(ARCH_FLAG "-msse2 -msse4.1")
 +				set(ARCH_FLAG "-msse2")
  			else()
 -				set(ARCH_FLAG "-msse -msse2 -msse4.1 -mfxsr")
-+				set(ARCH_FLAG "-msse -msse2 -mfxsr")
++				set(ARCH_FLAG "-msse -msse2")
  			endif()
  		else()
  			#set(ARCH_FLAG "-march=native -fabi-version=6")
-diff --git a/pcsx2/Config.h b/pcsx2/Config.h
-index 2ce15f5..461efa8 100644
---- a/pcsx2/Config.h
-+++ b/pcsx2/Config.h
-@@ -389,7 +389,6 @@ struct Pcsx2Config
- 			VuAddSubHack : 1, // Tri-ace games, they use an encryption algorithm that requires VU ADDI opcode to be bit-accurate.
- 			IbitHack : 1, // I bit hack. Needed to stop constant VU recompilation in some games
- 			VUKickstartHack : 1, // Gives new VU programs a slight head start and runs VU's ahead of EE to avoid VU register reading/writing issues
--			VUOverflowHack : 1, // Tries to simulate overflow flag checks (not really possible on x86 without soft floats)
- 			XgKickHack : 1; // Erementar Gerad, adds more delay to VU XGkick instructions. Corrects the color of some graphics, but breaks Tri-ace games and others.
- 		BITFIELD_END
- 
-@@ -645,7 +644,6 @@ namespace EmuFolders
- #define CHECK_VIFFIFOHACK (EmuConfig.Gamefixes.VIFFIFOHack) // Pretends to fill the non-existant VIF FIFO Buffer.
- #define CHECK_VIF1STALLHACK (EmuConfig.Gamefixes.VIF1StallHack) // Like above, processes FIFO data before the stall is allowed (to make sure data goes over).
- #define CHECK_GIFFIFOHACK (EmuConfig.Gamefixes.GIFFIFOHack) // Enabled the GIF FIFO (more correct but slower)
--#define CHECK_VUOVERFLOWHACK (EmuConfig.Gamefixes.VUOverflowHack) // Special Fix for Superman Returns, they check for overflows on PS2 floats which we can't do without soft floats.
- 
- //------------ Advanced Options!!! ---------------
- #define CHECK_VU_OVERFLOW (EmuConfig.Cpu.Recompiler.vuOverflow)
 diff --git a/pcsx2/GS/GSBlock.h b/pcsx2/GS/GSBlock.h
-index 34e030b..f6c0c46 100644
+index 3e3360c..61e0a77 100644
 --- a/pcsx2/GS/GSBlock.h
 +++ b/pcsx2/GS/GSBlock.h
 @@ -153,6 +153,8 @@ public:
@@ -231,15 +169,6 @@ index 34e030b..f6c0c46 100644
  		}
  
  #endif
-@@ -502,7 +512,7 @@ public:
- 		GSVector8i::store<true>(&dst[dstpitch * 0], v0);
- 		GSVector8i::store<true>(&dst[dstpitch * 1], v1);
- 
--#else
-+#elif _M_SSE >= 0x301
- 
- 		const GSVector4i* s = (const GSVector4i*)src;
- 
 @@ -522,6 +532,29 @@ public:
  		GSVector4i::store<true>(&d1[0], v1);
  		GSVector4i::store<true>(&d1[1], v3);
@@ -297,7 +226,7 @@ index 34e030b..f6c0c46 100644
 +		GSVector4i::sw8(v0, v2, v1, v3);
 +		GSVector4i::sw64(v0, v1, v2, v3);
 +
-+		if ((i & 1) == 0)
++		if((i & 1) == 0)
 +		{
 +			v2 = v2.yxwz();
 +			v3 = v3.yxwz();
@@ -352,7 +281,7 @@ index 34e030b..f6c0c46 100644
 +
 +		GSVector4i::sw64(v0, v1, v2, v3);
 +
-+		if ((i & 1) == 0)
++		if((i & 1) == 0)
 +		{
 +			v2 = v2.yxwzlh();
 +			v3 = v3.yxwzlh();
@@ -453,15 +382,6 @@ index 34e030b..f6c0c46 100644
  	}
  
  	__forceinline static void UnpackAndWriteBlock8H(const uint8* RESTRICT src, int srcpitch, uint8* RESTRICT dst)
-@@ -1340,7 +1477,7 @@ public:
- 		((GSVector8i*)dst)[6] = ((GSVector8i*)dst)[6].blend8(v2, mask);
- 		((GSVector8i*)dst)[7] = ((GSVector8i*)dst)[7].blend8(v3, mask);
- 
--#else
-+#elif _M_SSE >= 0x301
- 
- 		GSVector4i v0, v1, v2, v3, v4;
- 		GSVector4i mask = GSVector4i::xff000000();
 @@ -1364,7 +1501,33 @@ public:
  			((GSVector4i*)dst)[i * 4 + 3] = ((GSVector4i*)dst)[i * 4 + 3].blend8(v3, mask);
  		}
@@ -497,15 +417,6 @@ index 34e030b..f6c0c46 100644
  	}
  
  	__forceinline static void UnpackAndWriteBlock4HL(const uint8* RESTRICT src, int srcpitch, uint8* RESTRICT dst)
-@@ -1423,7 +1586,7 @@ public:
- 		((GSVector8i*)dst)[6] = ((GSVector8i*)dst)[6].blend(v2, mask);
- 		((GSVector8i*)dst)[7] = ((GSVector8i*)dst)[7].blend(v3, mask);
- 
--#else
-+#elif _M_SSE >= 0x301
- 
- 		GSVector4i v0, v1, v2, v3, v4, v5;
- 		GSVector4i mask = GSVector4i(0x0f000000);
 @@ -1460,7 +1623,48 @@ public:
  			((GSVector4i*)dst)[i * 8 + 7] = ((GSVector4i*)dst)[i * 8 + 7].blend(v3, mask);
  		}
@@ -556,15 +467,6 @@ index 34e030b..f6c0c46 100644
  	}
  
  	__forceinline static void UnpackAndWriteBlock4HH(const uint8* RESTRICT src, int srcpitch, uint8* RESTRICT dst)
-@@ -1510,7 +1714,7 @@ public:
- 		((GSVector8i*)dst)[6] = ((GSVector8i*)dst)[6].blend(v2, mask);
- 		((GSVector8i*)dst)[7] = ((GSVector8i*)dst)[7].blend(v3, mask);
- 
--#else
-+#elif _M_SSE >= 0x301
- 
- 		GSVector4i v0, v1, v2, v3, v4, v5;
- 		GSVector4i mask = GSVector4i::xf0000000();
 @@ -1547,6 +1751,47 @@ public:
  			((GSVector4i*)dst)[i * 8 + 7] = ((GSVector4i*)dst)[i * 8 + 7].blend(v3, mask);
  		}
@@ -784,65 +686,11 @@ index 34e030b..f6c0c46 100644
  	}
  
  	// TODO: ReadAndExpandBlock4HH_16
-diff --git a/pcsx2/GS/GSCapture.cpp b/pcsx2/GS/GSCapture.cpp
-index ed14a5a..b592fba 100644
---- a/pcsx2/GS/GSCapture.cpp
-+++ b/pcsx2/GS/GSCapture.cpp
-@@ -329,6 +329,8 @@ public:
- 			{
- 				if (rgba)
- 				{
-+#if _M_SSE >= 0x301
-+
- 					GSVector4i* s = (GSVector4i*)src;
- 					GSVector4i* d = (GSVector4i*)dst;
- 
-@@ -338,6 +340,18 @@ public:
- 					{
- 						d[i] = s[i].shuffle8(mask);
- 					}
-+
-+#else
-+
-+					GSVector4i* s = (GSVector4i*)src;
-+					GSVector4i* d = (GSVector4i*)dst;
-+
-+					for (int i = 0, w4 = w >> 2; i < w4; i++)
-+					{
-+						d[i] = ((s[i] & 0x00ff0000) >> 16) | ((s[i] & 0x000000ff) << 16) | (s[i] & 0x0000ff00);
-+					}
-+
-+#endif
- 				}
- 				else
- 				{
 diff --git a/pcsx2/GS/GSState.cpp b/pcsx2/GS/GSState.cpp
-index ae99045..bb70151 100644
+index 2b15b8c..54e141f 100644
 --- a/pcsx2/GS/GSState.cpp
 +++ b/pcsx2/GS/GSState.cpp
-@@ -588,11 +588,21 @@ void GSState::GIFPackedRegHandlerNull(const GIFPackedReg* RESTRICT r)
- 
- void GSState::GIFPackedRegHandlerRGBA(const GIFPackedReg* RESTRICT r)
- {
-+#if _M_SSE >= 0x301
-+
- 	GSVector4i mask = GSVector4i::load(0x0c080400);
- 	GSVector4i v = GSVector4i::load<false>(r).shuffle8(mask);
- 
- 	m_v.RGBAQ.u32[0] = (uint32)GSVector4i::store(v);
- 
-+#else
-+
-+	GSVector4i v = GSVector4i::load<false>(r) & GSVector4i::x000000ff();
-+
-+	m_v.RGBAQ.u32[0] = v.rgba32();
-+
-+#endif
-+
- 	m_v.RGBAQ.Q = m_q;
- }
- 
-@@ -2699,7 +2709,11 @@ __forceinline void GSState::VertexKick(uint32 skip)
+@@ -2728,7 +2728,11 @@ __forceinline void GSState::VertexKick(uint32 skip)
  
  	GSVector4i xy = v1.xxxx().u16to32().sub32(m_ofxy);
  
@@ -855,10 +703,10 @@ index ae99045..bb70151 100644
  	m_vertex.tail = ++tail;
  	m_vertex.xy_tail = ++xy_tail;
 diff --git a/pcsx2/GS/GSUtil.cpp b/pcsx2/GS/GSUtil.cpp
-index 560f2b5..0a90533 100644
+index 9ed0a2d..5800598 100644
 --- a/pcsx2/GS/GSUtil.cpp
 +++ b/pcsx2/GS/GSUtil.cpp
-@@ -157,7 +157,13 @@ bool GSUtil::CheckSSE()
+@@ -156,7 +156,13 @@ bool GSUtil::CheckSSE()
  	};
  
  	ISA checks[] = {
@@ -873,7 +721,7 @@ index 560f2b5..0a90533 100644
  		{Xbyak::util::Cpu::tAVX, "AVX1"},
  #endif
 diff --git a/pcsx2/GS/GSVector4.h b/pcsx2/GS/GSVector4.h
-index 0a25625..9d89bc9 100644
+index 0a25625..cd0aa4d 100644
 --- a/pcsx2/GS/GSVector4.h
 +++ b/pcsx2/GS/GSVector4.h
 @@ -245,7 +245,33 @@ public:
@@ -892,12 +740,12 @@ index 0a25625..9d89bc9 100644
 +
 +		b = a + b - b;
 +
-+		if ((mode & 7) == (Round_NegInf & 7))
++		if((mode & 7) == (Round_NegInf & 7))
 +		{
 +			return b - ((a < b) & m_one);
 +		}
 +
-+		if ((mode & 7) == (Round_PosInf & 7))
++		if((mode & 7) == (Round_PosInf & 7))
 +		{
 +			return b + ((a > b) & m_one);
 +		}
@@ -1054,7 +902,7 @@ index 0a25625..9d89bc9 100644
  #endif
  
 diff --git a/pcsx2/GS/GSVector4i.h b/pcsx2/GS/GSVector4i.h
-index 1c70c52..6dca147 100644
+index ca2efdd..4ca4b3c 100644
 --- a/pcsx2/GS/GSVector4i.h
 +++ b/pcsx2/GS/GSVector4i.h
 @@ -226,7 +226,15 @@ public:
@@ -1355,10 +1203,10 @@ index 1c70c52..6dca147 100644
 +		#else
 +
 +		// The `& 0xF` keeps the compiler happy on cases that won't actually be hit
-+		if (i == 0) return *this;
-+		else if (i < 16) return srl<i & 0xF>() | v.sll<(16 - i) & 0xF>();
-+		else if (i == 16) return v;
-+		else if (i < 32) return v.srl<(i - 16) & 0xF>();
++		if(i == 0) return *this;
++		else if(i < 16) return srl<i & 0xF>() | v.sll<(16 - i) & 0xF>();
++		else if(i == 16) return v;
++		else if(i < 32) return v.srl<(i - 16) & 0xF>();
 +		else return zero();
 +
 +		#endif
@@ -1381,22 +1229,7 @@ index 1c70c52..6dca147 100644
  	GSVector4i madd(const GSVector4i& v) const
  	{
  		return GSVector4i(_mm_madd_epi16(m, v.m));
-@@ -912,21 +1065,36 @@ public:
- 	__forceinline GSVector4i modulate16(const GSVector4i& f) const
- 	{
- 		// a * f << shift
-+
-+#if _M_SSE >= 0x301
-+
- 		if (shift == 0)
- 		{
- 			return mul16hrs(f);
- 		}
- 
-+#endif
-+
- 		return sll16(shift + 1).mul16hs(f);
- 	}
+@@ -927,11 +1080,21 @@ public:
  
  	__forceinline bool eq(const GSVector4i& v) const
  	{
@@ -1418,7 +1251,7 @@ index 1c70c52..6dca147 100644
  	}
  
  	__forceinline GSVector4i eq8(const GSVector4i& v) const
-@@ -1006,19 +1174,39 @@ public:
+@@ -1011,19 +1174,39 @@ public:
  
  	__forceinline bool allfalse() const
  	{
@@ -1459,7 +1292,7 @@ index 1c70c52..6dca147 100644
  	}
  
  	template <int i>
-@@ -1033,40 +1221,66 @@ public:
+@@ -1038,40 +1221,66 @@ public:
  		return _mm_extract_epi16(m, i);
  	}
  
@@ -1526,7 +1359,7 @@ index 1c70c52..6dca147 100644
  	template <int src, class T>
  	__forceinline GSVector4i gather8_4(const T* ptr) const
  	{
-@@ -1147,6 +1361,8 @@ public:
+@@ -1152,6 +1361,8 @@ public:
  		return v;
  	}
  
@@ -1535,7 +1368,7 @@ index 1c70c52..6dca147 100644
  	template <int src, class T>
  	__forceinline GSVector4i gather16_4(const T* ptr) const
  	{
-@@ -1228,6 +1444,8 @@ public:
+@@ -1233,6 +1444,8 @@ public:
  		return v;
  	}
  
@@ -1544,7 +1377,7 @@ index 1c70c52..6dca147 100644
  	template <int src, class T>
  	__forceinline GSVector4i gather32_4(const T* ptr) const
  	{
-@@ -1292,7 +1510,56 @@ public:
+@@ -1297,7 +1510,56 @@ public:
  		return v;
  	}
  
@@ -1602,7 +1435,7 @@ index 1c70c52..6dca147 100644
  
  	template <int src, class T>
  	__forceinline GSVector4i gather64_4(const T* ptr) const
-@@ -1393,6 +1660,8 @@ public:
+@@ -1398,6 +1660,8 @@ public:
  
  #endif
  
@@ -1611,7 +1444,7 @@ index 1c70c52..6dca147 100644
  	template <class T>
  	__forceinline void gather8_4(const T* RESTRICT ptr, GSVector4i* RESTRICT dst) const
  	{
-@@ -1405,6 +1674,8 @@ public:
+@@ -1410,6 +1674,8 @@ public:
  		dst[0] = gather8_8<>(ptr);
  	}
  
@@ -1620,7 +1453,7 @@ index 1c70c52..6dca147 100644
  	template <class T>
  	__forceinline void gather16_4(const T* RESTRICT ptr, GSVector4i* RESTRICT dst) const
  	{
-@@ -1524,7 +1795,15 @@ public:
+@@ -1529,7 +1795,15 @@ public:
  
  	__forceinline static GSVector4i loadnt(const void* p)
  	{
@@ -1792,7 +1625,7 @@ index 306dffa..eaae8bc 100644
  	GSVector4 s(1.0f / 16, 1.0f / 16, 2.0f, 1.0f);
  
 diff --git a/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp b/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp
-index 72c605d..68b1337 100644
+index 2a7c573..eedb572 100644
 --- a/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp
 +++ b/pcsx2/GS/Renderers/DX11/GSRendererDX11.cpp
 @@ -943,8 +943,12 @@ void GSRendererDX11::DrawPrims(GSTexture* rt, GSTexture* ds, GSTextureCache::Sou
@@ -1809,7 +1642,7 @@ index 72c605d..68b1337 100644
  
  	// Warning must be done after EmulateZbuffer
 diff --git a/pcsx2/GS/Renderers/OpenGL/GSRendererOGL.cpp b/pcsx2/GS/Renderers/OpenGL/GSRendererOGL.cpp
-index 0bba62c..9170e5f 100644
+index d8e3486..c4facde 100644
 --- a/pcsx2/GS/Renderers/OpenGL/GSRendererOGL.cpp
 +++ b/pcsx2/GS/Renderers/OpenGL/GSRendererOGL.cpp
 @@ -1326,8 +1326,12 @@ void GSRendererOGL::DrawPrims(GSTexture* rt, GSTexture* ds, GSTextureCache::Sour
@@ -1826,7 +1659,7 @@ index 0bba62c..9170e5f 100644
  
  	// Warning must be done after EmulateZbuffer
 diff --git a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
-index ba1ad03..9f99df9 100644
+index ba1ad03..af8e5df 100644
 --- a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
 +++ b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.cpp
 @@ -117,7 +117,18 @@ void GSDrawScanlineCodeGenerator::mix16(const Xmm& a, const Xmm& b, const Xmm& t
@@ -1834,7 +1667,7 @@ index ba1ad03..9f99df9 100644
  	else
  	{
 -		pblendw(a, b, 0xaa);
-+		if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
 +		{
 +			pblendw(a, b, 0xaa);
 +		}
@@ -1855,7 +1688,7 @@ index ba1ad03..9f99df9 100644
  	{
 -		packuswb(a, a);
 -		pmovzxbw(a, a);
-+		if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
 +		{
 +			packuswb(a, a);
 +			pmovzxbw(a, a);
@@ -1874,7 +1707,7 @@ index ba1ad03..9f99df9 100644
  	if (m_cpu.has(Xbyak::util::Cpu::tAVX))
  		vpblendvb(a, a, b, xmm0);
 -	else
-+	else if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++	else if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
  		pblendvb(a, b);
 +	else
 +		blend(a, b, xmm0);
@@ -1886,7 +1719,7 @@ index ba1ad03..9f99df9 100644
  		vpblendvb(b, a, b, xmm0);
  	}
 -	else
-+	else if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++	else if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
  	{
  		pblendvb(a, b);
  		movdqa(b, a);
@@ -1899,7 +1732,7 @@ index ba1ad03..9f99df9 100644
  
  void GSDrawScanlineCodeGenerator::split16_2x8(const Xmm& l, const Xmm& h, const Xmm& src)
 diff --git a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
-index fa0cccd..e3ac18b 100644
+index fa0cccd..8f05f90 100644
 --- a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
 +++ b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.x86.cpp
 @@ -639,9 +639,20 @@ void GSDrawScanlineCodeGenerator::TestZ_SSE(const Xmm& temp1, const Xmm& temp2)
@@ -1928,7 +1761,7 @@ index fa0cccd..e3ac18b 100644
  		movdqa(xmm5, ptr[&m_local.gd->t.max]);
  
 -		movdqa(xmm0, ptr[&m_local.gd->t.mask]);
-+		if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
 +		{
 +			movdqa(xmm0, ptr[&m_local.gd->t.mask]);
 +		}
@@ -1946,7 +1779,7 @@ index fa0cccd..e3ac18b 100644
  		// clamp.blend8(repeat, m_local.gd->t.mask);
 -		pblendvb(uv0, xmm1);
 +
-+		if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
 +			pblendvb(uv0, xmm1);
 +		else
 +			blendr(uv0, xmm1, xmm0);
@@ -1959,7 +1792,7 @@ index fa0cccd..e3ac18b 100644
  		// clamp.blend8(repeat, m_local.gd->t.mask);
 -		pblendvb(uv1, xmm1);
 +
-+		if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
 +			pblendvb(uv1, xmm1);
 +		else
 +			blendr(uv1, xmm1, xmm6);
@@ -1971,7 +1804,7 @@ index fa0cccd..e3ac18b 100644
  	else
  	{
 -		movdqa(xmm0, ptr[&m_local.gd->t.mask]);
-+		if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
 +		{
 +			movdqa(xmm0, ptr[&m_local.gd->t.mask]);
 +		}
@@ -1989,7 +1822,7 @@ index fa0cccd..e3ac18b 100644
  		// clamp.blend8(repeat, m_local.gd->t.mask);
 -		pblendvb(uv0, xmm1);
 +
-+		if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
 +			pblendvb(uv0, xmm1);
 +		else
 +			blendr(uv0, xmm1, xmm0);
@@ -2001,7 +1834,7 @@ index fa0cccd..e3ac18b 100644
  		// clamp.blend8(repeat, m_local.gd->t.mask);
  
 -		pblendvb(uv1, xmm1);
-+		if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
 +			pblendvb(uv1, xmm1);
 +		else
 +			blendr(uv1, xmm1, xmm4);
@@ -2033,7 +1866,7 @@ index fa0cccd..e3ac18b 100644
  
  	if (m_sel.pabe)
  	{
-+		if (!m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(!m_cpu.has(Xbyak::util::Cpu::tSSE41))
 +		{
 +			// doh, previous blend8r overwrote xmm0 (sse41 uses pblendvb)
 +			movdqa(xmm0, xmm4);
@@ -2049,7 +1882,7 @@ index fa0cccd..e3ac18b 100644
  				movd(dst, src);
  			else
  			{
-+			if (m_cpu.has(Xbyak::util::Cpu::tSSE41)) {
++			if(m_cpu.has(Xbyak::util::Cpu::tSSE41)) {
  				pextrd(dst, src, i);
 +			} else {
 +				pshufd(xmm0, src, _MM_SHUFFLE(i, i, i, i));
@@ -2063,7 +1896,7 @@ index fa0cccd..e3ac18b 100644
  				movd(eax, src);
  			else
  			{
-+			if (m_cpu.has(Xbyak::util::Cpu::tSSE41)) {
++			if(m_cpu.has(Xbyak::util::Cpu::tSSE41)) {
  				pextrd(eax, src, i);
 +			} else {
 +				pshufd(xmm0, src, _MM_SHUFFLE(i, i, i, i));
@@ -2079,7 +1912,7 @@ index fa0cccd..e3ac18b 100644
 -		const int r[] = {5, 6, 2, 4, 0, 1, 3, 7};
 -
 -		if (pixels == 4)
-+		if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
  		{
 -			movdqa(ptr[&m_local.temp.test], xmm7);
 -		}
@@ -2091,7 +1924,7 @@ index fa0cccd..e3ac18b 100644
 +			const int r[] = {5, 6, 2, 4, 0, 1, 3, 7};
  
 -			for (int i = 0; i < pixels; i++)
-+			if (pixels == 4)
++			if(pixels == 4)
  			{
 -				ReadTexel_SSE(Xmm(r[i * 2 + 1]), Xmm(r[i * 2 + 0]), j);
 +				movdqa(ptr[&m_local.temp.test], xmm7);
@@ -2110,7 +1943,7 @@ index fa0cccd..e3ac18b 100644
 -		}
  
 -		if (pixels == 4)
-+			if (pixels == 4)
++			if(pixels == 4)
 +			{
 +				movdqa(xmm5, xmm7);
 +				movdqa(xmm7, ptr[&m_local.temp.test]);
@@ -2120,7 +1953,7 @@ index fa0cccd..e3ac18b 100644
  		{
 -			movdqa(xmm5, xmm7);
 -			movdqa(xmm7, ptr[&m_local.temp.test]);
-+			if (pixels == 4)
++			if(pixels == 4)
 +			{
 +				movdqa(ptr[&m_local.temp.test], xmm7);
 +
@@ -2245,7 +2078,7 @@ index fa0cccd..e3ac18b 100644
  		const int r[] = {5, 6, 2, 4, 0, 1, 3, 5};
  
 -		for (int i = 0; i < pixels; i++)
-+		if (m_cpu.has(Xbyak::util::Cpu::tSSE41))
++		if(m_cpu.has(Xbyak::util::Cpu::tSSE41))
  		{
 -			for (uint8 j = 0; j < 4; j++)
 +			for(int i = 0; i < pixels; i++)
@@ -2359,50 +2192,11 @@ index 97672f5..aac5c46 100644
  		}
  
  		dst->t = t;
-diff --git a/pcsx2/Pcsx2Config.cpp b/pcsx2/Pcsx2Config.cpp
-index 2b83ed0..69683d1 100644
---- a/pcsx2/Pcsx2Config.cpp
-+++ b/pcsx2/Pcsx2Config.cpp
-@@ -319,7 +319,6 @@ const wxChar* const tbl_GamefixNames[] =
- 		L"VuAddSub",
- 		L"Ibit",
- 		L"VUKickstart",
--		L"VUOverflow",
- 		L"XGKick"};
- 
- const __fi wxChar* EnumToString(GamefixId id)
-@@ -410,9 +409,6 @@ void Pcsx2Config::GamefixOptions::Set(GamefixId id, bool enabled)
- 		case Fix_VUKickstart:
- 			VUKickstartHack = enabled;
- 			break;
--		case Fix_VUOverflow:
--			VUOverflowHack = enabled;
--			break;
- 			jNO_DEFAULT;
- 	}
- }
-@@ -450,8 +446,6 @@ bool Pcsx2Config::GamefixOptions::Get(GamefixId id) const
- 			return IbitHack;
- 		case Fix_VUKickstart:
- 			return VUKickstartHack;
--		case Fix_VUOverflow:
--			return VUOverflowHack;
- 			jNO_DEFAULT;
- 	}
- 	return false; // unreachable, but we still need to suppress warnings >_<
-@@ -475,7 +469,6 @@ void Pcsx2Config::GamefixOptions::LoadSave(SettingsWrapper& wrap)
- 	SettingsWrapBitBool(GoemonTlbHack);
- 	SettingsWrapBitBool(IbitHack);
- 	SettingsWrapBitBool(VUKickstartHack);
--	SettingsWrapBitBool(VUOverflowHack);
- }
- 
- 
 diff --git a/pcsx2/gui/AppInit.cpp b/pcsx2/gui/AppInit.cpp
-index ca8ab64..4bc17a4 100644
+index af1e443..4739c22 100644
 --- a/pcsx2/gui/AppInit.cpp
 +++ b/pcsx2/gui/AppInit.cpp
-@@ -47,13 +47,14 @@ void Pcsx2App::DetectCpuAndUserMode()
+@@ -46,13 +46,14 @@ void Pcsx2App::DetectCpuAndUserMode()
  	x86caps.CountCores();
  	x86caps.SIMD_EstablishMXCSRmask();
  
@@ -2422,28 +2216,13 @@ index ca8ab64..4bc17a4 100644
  	}
  #endif
  
-diff --git a/pcsx2/gui/Panels/GameFixesPanel.cpp b/pcsx2/gui/Panels/GameFixesPanel.cpp
-index 43fc2e2..eb6ce31 100644
---- a/pcsx2/gui/Panels/GameFixesPanel.cpp
-+++ b/pcsx2/gui/Panels/GameFixesPanel.cpp
-@@ -92,10 +92,6 @@ Panels::GameFixesPanel::GameFixesPanel( wxWindow* parent )
- 			_("VU Kickstart (Run ahead) to avoid sync problems when reading or writing VU registers"),
- 			wxEmptyString
- 		},
--		{
--			_("VU Overflow hack to check for possible float overflows (Superman Returns)"),
--			wxEmptyString
--		},
- 		{
- 			_("VU XGkick Sync - Use accurate timing for VU XGKicks (Slower)"),
- 			pxEt(L"Fixes graphical errors on WRC, Erementar Gerad, Tennis Court Smash and others."
 diff --git a/pcsx2/x86/iMMI.cpp b/pcsx2/x86/iMMI.cpp
-index b337f45..23854c0 100644
+index 4a18e82..99a4c98 100644
 --- a/pcsx2/x86/iMMI.cpp
 +++ b/pcsx2/x86/iMMI.cpp
-@@ -225,9 +225,17 @@ void recPMTHL()
+@@ -215,9 +215,17 @@ void recPMTHL()
  
- 	int info = eeRecompileCodeXMM(XMMINFO_READS | XMMINFO_READLO | XMMINFO_READHI | XMMINFO_WRITELO | XMMINFO_WRITEHI);
+ 	int info = eeRecompileCodeXMM( XMMINFO_READS|XMMINFO_READLO|XMMINFO_READHI|XMMINFO_WRITELO|XMMINFO_WRITEHI );
  
 -	xBLEND.PS(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_S), 0x5);
 -	xSHUF.PS(xRegisterSSE(EEREC_HI), xRegisterSSE(EEREC_S), 0xdd);
@@ -2462,35 +2241,28 @@ index b337f45..23854c0 100644
  
  	_clearNeededXMMregs();
  }
-@@ -421,16 +429,51 @@ void recPMAXW()
+@@ -392,12 +400,47 @@ void recPMAXW()
  	EE::Profiler.EmitOp(eeOpcode::PMAXW);
  
- 	int info = eeRecompileCodeXMM(XMMINFO_READS | XMMINFO_READT | XMMINFO_WRITED);
--	if (EEREC_S == EEREC_T)
--		xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
--	else if (EEREC_D == EEREC_S)
--		xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
--	else if (EEREC_D == EEREC_T)
--		xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
-+	if (x86caps.hasStreamingSIMD4Extensions) {
-+		if ( EEREC_S == EEREC_T )
-+			xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
-+		else if ( EEREC_D == EEREC_S )
-+			xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
-+		else if ( EEREC_D == EEREC_T )
-+			xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
+ 	int info = eeRecompileCodeXMM( XMMINFO_READS|XMMINFO_READT|XMMINFO_WRITED );
+-	if( EEREC_S == EEREC_T ) xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
+-	else if( EEREC_D == EEREC_S ) xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
+-	else if ( EEREC_D == EEREC_T ) xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++	if ( x86caps.hasStreamingSIMD4Extensions ) {
++		if( EEREC_S == EEREC_T ) xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++		else if( EEREC_D == EEREC_S ) xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
++		else if ( EEREC_D == EEREC_T ) xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
 +		else {
 +			xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
 +			xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
 +		}
 +	}
- 	else
- 	{
+ 	else {
 -		xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
 -		xPMAX.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
 +		int t0reg;
 +
-+		if ( EEREC_S == EEREC_T ) {
++		if( EEREC_S == EEREC_T ) {
 +			xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
 +		}
 +		else {
@@ -2498,11 +2270,11 @@ index b337f45..23854c0 100644
 +			xMOVDQA(xRegisterSSE(t0reg), xRegisterSSE(EEREC_S));
 +			xPCMP.GTD(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T));
 +
-+			if ( EEREC_D == EEREC_S ) {
++			if( EEREC_D == EEREC_S ) {
 +				xPAND(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
 +				xPANDN(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T));
 +			}
-+			else if ( EEREC_D == EEREC_T ) {
++			else if( EEREC_D == EEREC_T ) {
 +				int t1reg = _allocTempXMMreg(XMMT_INT, -1);
 +				xMOVDQA(xRegisterSSE(t1reg), xRegisterSSE(EEREC_T));
 +				xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
@@ -2522,12 +2294,12 @@ index b337f45..23854c0 100644
  	}
  	_clearNeededXMMregs();
  }
-@@ -1268,7 +1311,18 @@ void recPABSW() //needs clamping
+@@ -1130,7 +1173,18 @@ void recPABSW() //needs clamping
  	xPCMP.EQD(xRegisterSSE(t0reg), xRegisterSSE(t0reg));
  	xPSLL.D(xRegisterSSE(t0reg), 31);
  	xPCMP.EQD(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T)); //0xffffffff if equal to 0x80000000
 -	xPABS.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T)); //0x80000000 -> 0x80000000
-+	if (x86caps.hasSupplementalStreamingSIMD3Extensions) {
++	if( x86caps.hasSupplementalStreamingSIMD3Extensions ) {
 +		xPABS.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T)); //0x80000000 -> 0x80000000
 +	}
 +	else {
@@ -2542,12 +2314,12 @@ index b337f45..23854c0 100644
  	xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg)); //0x80000000 -> 0x7fffffff
  	_freeXMMreg(t0reg);
  	_clearNeededXMMregs();
-@@ -1288,7 +1342,18 @@ void recPABSH()
+@@ -1149,7 +1203,18 @@ void recPABSH()
  	xPCMP.EQW(xRegisterSSE(t0reg), xRegisterSSE(t0reg));
  	xPSLL.W(xRegisterSSE(t0reg), 15);
  	xPCMP.EQW(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T)); //0xffff if equal to 0x8000
 -	xPABS.W(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T)); //0x8000 -> 0x8000
-+	if (x86caps.hasSupplementalStreamingSIMD3Extensions) {
++	if( x86caps.hasSupplementalStreamingSIMD3Extensions ) {
 +		xPABS.W(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T)); //0x8000 -> 0x8000
 +	}
 +	else {
@@ -2562,35 +2334,28 @@ index b337f45..23854c0 100644
  	xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg)); //0x8000 -> 0x7fff
  	_freeXMMreg(t0reg);
  	_clearNeededXMMregs();
-@@ -1303,16 +1368,51 @@ void recPMINW()
+@@ -1163,12 +1228,47 @@ void recPMINW()
  	EE::Profiler.EmitOp(eeOpcode::PMINW);
  
- 	int info = eeRecompileCodeXMM(XMMINFO_READS | XMMINFO_READT | XMMINFO_WRITED);
--	if (EEREC_S == EEREC_T)
--		xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
--	else if (EEREC_D == EEREC_S)
--		xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
--	else if (EEREC_D == EEREC_T)
--		xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
+ 	int info = eeRecompileCodeXMM( XMMINFO_READS|XMMINFO_READT|XMMINFO_WRITED );
+-	if( EEREC_S == EEREC_T ) xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
+-	else if( EEREC_D == EEREC_S ) xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
+-	else if ( EEREC_D == EEREC_T ) xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
 +	if ( x86caps.hasStreamingSIMD4Extensions ) {
-+		if ( EEREC_S == EEREC_T )
-+			xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
-+		else if ( EEREC_D == EEREC_S )
-+			xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
-+		else if ( EEREC_D == EEREC_T )
-+			xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++		if( EEREC_S == EEREC_T ) xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
++		else if( EEREC_D == EEREC_S ) xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
++		else if ( EEREC_D == EEREC_T ) xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
 +		else {
 +			xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
 +			xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
 +		}
 +	}
- 	else
- 	{
+ 	else {
 -		xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
 -		xPMIN.SD(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T));
 +		int t0reg;
 +
-+		if ( EEREC_S == EEREC_T ) {
++		if( EEREC_S == EEREC_T ) {
 +			xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
 +		}
 +		else {
@@ -2598,11 +2363,11 @@ index b337f45..23854c0 100644
 +			xMOVDQA(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T));
 +			xPCMP.GTD(xRegisterSSE(t0reg), xRegisterSSE(EEREC_S));
 +
-+			if ( EEREC_D == EEREC_S ) {
++			if( EEREC_D == EEREC_S ) {
 +				xPAND(xRegisterSSE(EEREC_D), xRegisterSSE(t0reg));
 +				xPANDN(xRegisterSSE(t0reg), xRegisterSSE(EEREC_T));
 +			}
-+			else if ( EEREC_D == EEREC_T ) {
++			else if( EEREC_D == EEREC_T ) {
 +				int t1reg = _allocTempXMMreg(XMMT_INT, -1);
 +				xMOVDQA(xRegisterSSE(t1reg), xRegisterSSE(EEREC_T));
 +				xMOVDQA(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_S));
@@ -2622,23 +2387,23 @@ index b337f45..23854c0 100644
  	}
  	_clearNeededXMMregs();
  }
-@@ -1834,6 +1934,12 @@ void recPMADDW()
+@@ -1618,6 +1718,12 @@ void recPMADDW()
  {
  	EE::Profiler.EmitOp(eeOpcode::PMADDW);
  
-+	if (!x86caps.hasStreamingSIMD4Extensions) {
++	if( !x86caps.hasStreamingSIMD4Extensions ) {
 +		_deleteEEreg(_Rd_, 0);
 +		recCall(Interp::PMADDW);
 +		return;
 +	}
 +
- 	int info = eeRecompileCodeXMM((((_Rs_) && (_Rt_)) ? XMMINFO_READS : 0) | (((_Rs_) && (_Rt_)) ? XMMINFO_READT : 0) | (_Rd_ ? XMMINFO_WRITED : 0) | XMMINFO_WRITELO | XMMINFO_WRITEHI | XMMINFO_READLO | XMMINFO_READHI);
+ 	int info = eeRecompileCodeXMM( (((_Rs_)&&(_Rt_))?XMMINFO_READS:0)|(((_Rs_)&&(_Rt_))?XMMINFO_READT:0)|(_Rd_?XMMINFO_WRITED:0)|XMMINFO_WRITELO|XMMINFO_WRITEHI|XMMINFO_READLO|XMMINFO_READHI );
  	xSHUF.PS(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_HI), 0x88);
  	xPSHUF.D(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_LO), 0xd8); // LO = {LO[0], HI[0], LO[2], HI[2]}
-@@ -1901,8 +2007,18 @@ void recPSLLVW()
+@@ -1669,8 +1775,18 @@ void recPSLLVW()
+ 			xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
  		}
- 		else
- 		{
+ 		else {
 -			xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
 -			xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
 +			if ( x86caps.hasStreamingSIMD4Extensions ) {
@@ -2655,8 +2420,8 @@ index b337f45..23854c0 100644
 +			}
  		}
  	}
- 	else if (_Rt_ == 0)
-@@ -1932,8 +2048,16 @@ void recPSLLVW()
+ 	else if( _Rt_ == 0 ) {
+@@ -1697,8 +1813,16 @@ void recPSLLVW()
  		xPSLL.D(xRegisterSSE(t1reg), xRegisterSSE(t0reg));
  
  		// merge & sign extend
@@ -2675,10 +2440,10 @@ index b337f45..23854c0 100644
  
  		_freeXMMreg(t0reg);
  		_freeXMMreg(t1reg);
-@@ -1958,8 +2082,18 @@ void recPSRLVW()
+@@ -1719,8 +1843,18 @@ void recPSRLVW()
+ 			xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
  		}
- 		else
- 		{
+ 		else {
 -			xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
 -			xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
 +			if ( x86caps.hasStreamingSIMD4Extensions ) {
@@ -2695,8 +2460,8 @@ index b337f45..23854c0 100644
 +			}
  		}
  	}
- 	else if (_Rt_ == 0)
-@@ -1989,8 +2123,16 @@ void recPSRLVW()
+ 	else if( _Rt_ == 0 ) {
+@@ -1747,8 +1881,16 @@ void recPSRLVW()
  		xPSRL.D(xRegisterSSE(t1reg), xRegisterSSE(t0reg));
  
  		// merge & sign extend
@@ -2715,34 +2480,34 @@ index b337f45..23854c0 100644
  
  		_freeXMMreg(t0reg);
  		_freeXMMreg(t1reg);
-@@ -2003,6 +2145,11 @@ void recPMSUBW()
+@@ -1761,6 +1903,11 @@ void recPMSUBW()
  {
  	EE::Profiler.EmitOp(eeOpcode::PMSUBW);
  
-+	if (!x86caps.hasStreamingSIMD4Extensions) {
++	if( !x86caps.hasStreamingSIMD4Extensions ) {
 +		_deleteEEreg(_Rd_, 0);
 +		recCall(Interp::PMSUBW);
 +		return;
 +	}
- 	int info = eeRecompileCodeXMM((((_Rs_) && (_Rt_)) ? XMMINFO_READS : 0) | (((_Rs_) && (_Rt_)) ? XMMINFO_READT : 0) | (_Rd_ ? XMMINFO_WRITED : 0) | XMMINFO_WRITELO | XMMINFO_WRITEHI | XMMINFO_READLO | XMMINFO_READHI);
+ 	int info = eeRecompileCodeXMM( (((_Rs_)&&(_Rt_))?XMMINFO_READS:0)|(((_Rs_)&&(_Rt_))?XMMINFO_READT:0)|(_Rd_?XMMINFO_WRITED:0)|XMMINFO_WRITELO|XMMINFO_WRITEHI|XMMINFO_READLO|XMMINFO_READHI );
  	xSHUF.PS(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_HI), 0x88);
  	xPSHUF.D(xRegisterSSE(EEREC_LO), xRegisterSSE(EEREC_LO), 0xd8); // LO = {LO[0], HI[0], LO[2], HI[2]}
-@@ -2064,6 +2211,11 @@ void recPMULTW()
+@@ -1810,6 +1957,11 @@ void recPMULTW()
  {
  	EE::Profiler.EmitOp(eeOpcode::PMULTW);
  
-+	if (!x86caps.hasStreamingSIMD4Extensions) {
++	if( !x86caps.hasStreamingSIMD4Extensions ) {
 +		_deleteEEreg(_Rd_, 0);
 +		recCall(Interp::PMULTW);
 +		return;
 +	}
- 	int info = eeRecompileCodeXMM((((_Rs_) && (_Rt_)) ? XMMINFO_READS : 0) | (((_Rs_) && (_Rt_)) ? XMMINFO_READT : 0) | (_Rd_ ? XMMINFO_WRITED : 0) | XMMINFO_WRITELO | XMMINFO_WRITEHI);
- 	if (!_Rs_ || !_Rt_)
- 	{
-@@ -2607,8 +2759,18 @@ void recPSRAVW()
+ 	int info = eeRecompileCodeXMM( (((_Rs_)&&(_Rt_))?XMMINFO_READS:0)|(((_Rs_)&&(_Rt_))?XMMINFO_READT:0)|(_Rd_?XMMINFO_WRITED:0)|XMMINFO_WRITELO|XMMINFO_WRITEHI );
+ 	if( !_Rs_ || !_Rt_ ) {
+ 		if( _Rd_ ) xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
+@@ -2303,8 +2455,18 @@ void recPSRAVW()
+ 			xPXOR(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
  		}
- 		else
- 		{
+ 		else {
 -			xPSHUF.D(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_T), 0x88);
 -			xPMOVSX.DQ(xRegisterSSE(EEREC_D), xRegisterSSE(EEREC_D));
 +			if ( x86caps.hasStreamingSIMD4Extensions ) {
@@ -2759,68 +2524,64 @@ index b337f45..23854c0 100644
 +			}
  		}
  	}
- 	else if (_Rt_ == 0)
+ 	else if( _Rt_ == 0 ) {
 diff --git a/pcsx2/x86/ix86-32/iR5900-32.cpp b/pcsx2/x86/ix86-32/iR5900-32.cpp
-index 7ff93f0..db78475 100644
+index 375aa9a..ee6413b 100644
 --- a/pcsx2/x86/ix86-32/iR5900-32.cpp
 +++ b/pcsx2/x86/ix86-32/iR5900-32.cpp
-@@ -547,8 +547,8 @@ static void recReserve()
+@@ -508,8 +508,8 @@ static void recReserve()
  {
  	// Hardware Requirements Check...
  
--	if (!x86caps.hasStreamingSIMD4Extensions)
--		recThrowHardwareDeficiency(L"SSE4");
-+	if (!x86caps.hasStreamingSIMD2Extensions)
-+		recThrowHardwareDeficiency(L"SSE2");
+-	if ( !x86caps.hasStreamingSIMD4Extensions )
+-		recThrowHardwareDeficiency( L"SSE4" );
++	if ( !x86caps.hasStreamingSIMD2Extensions )
++		recThrowHardwareDeficiency( L"SSE2" );
  
  	recReserveCache();
  }
 diff --git a/pcsx2/x86/microVU.cpp b/pcsx2/x86/microVU.cpp
-index 7480808..9fcc326 100644
+index 16e9399..a5b6a64 100644
 --- a/pcsx2/x86/microVU.cpp
 +++ b/pcsx2/x86/microVU.cpp
-@@ -50,8 +50,8 @@ void mVUreserveCache(microVU& mVU)
- void mVUinit(microVU& mVU, uint vuIndex)
- {
+@@ -47,7 +47,7 @@ void mVUreserveCache(microVU& mVU) {
+ // Only run this once per VU! ;)
+ void mVUinit(microVU& mVU, uint vuIndex) {
  
--	if (!x86caps.hasStreamingSIMD4Extensions)
--		mVUthrowHardwareDeficiency(L"SSE4", vuIndex);
-+	if (!x86caps.hasStreamingSIMD2Extensions)
-+		mVUthrowHardwareDeficiency(L"SSE2", vuIndex);
+-	if(!x86caps.hasStreamingSIMD4Extensions) mVUthrowHardwareDeficiency( L"SSE4", vuIndex );
++	if(!x86caps.hasStreamingSIMD2Extensions) mVUthrowHardwareDeficiency( L"SSE2", vuIndex );
  
  	memzero(mVU.prog);
  
 diff --git a/pcsx2/x86/microVU_Alloc.inl b/pcsx2/x86/microVU_Alloc.inl
-index 9ce1e4e..cd2b53b 100644
+index 1634c34..fa65645 100644
 --- a/pcsx2/x86/microVU_Alloc.inl
 +++ b/pcsx2/x86/microVU_Alloc.inl
-@@ -171,7 +171,16 @@ __fi void getQreg(const xmm& reg, int qInstance)
+@@ -166,7 +166,13 @@ __fi void getQreg(const xmm& reg, int qInstance)
+ 
  __ri void writeQreg(const xmm& reg, int qInstance)
  {
- 	if (qInstance)
+-	if (qInstance)
 -		xINSERTPS(xmmPQ, reg, _MM_MK_INSERTPS_NDX(0, 1, 0));
-+	{
-+		if (!x86caps.hasStreamingSIMD4Extensions)
-+		{
++	if (qInstance) {
++		if (!x86caps.hasStreamingSIMD4Extensions) {
 +			xPSHUF.D(xmmPQ, xmmPQ, 0xe1);
 +			xMOVSS(xmmPQ, reg);
 +			xPSHUF.D(xmmPQ, xmmPQ, 0xe1);
 +		}
-+		else
-+			xINSERTPS(xmmPQ, reg, _MM_MK_INSERTPS_NDX(0, 1, 0));
++		else xINSERTPS(xmmPQ, reg, _MM_MK_INSERTPS_NDX(0, 1, 0));
 +	}
- 	else
- 		xMOVSS(xmmPQ, reg);
+ 	else xMOVSS(xmmPQ, reg);
  }
 diff --git a/pcsx2/x86/microVU_Clamp.inl b/pcsx2/x86/microVU_Clamp.inl
-index e2639e8..e9d2e15 100644
+index 5a145ed..e1ebef1 100644
 --- a/pcsx2/x86/microVU_Clamp.inl
 +++ b/pcsx2/x86/microVU_Clamp.inl
-@@ -61,10 +61,33 @@ void mVUclamp2(microVU& mVU, const xmm& reg, const xmm& regT1in, int xyzw, bool
- {
- 	if ((!clampE && CHECK_VU_SIGN_OVERFLOW) || (clampE && bClampE && CHECK_VU_SIGN_OVERFLOW))
- 	{
--		int i = (xyzw == 1 || xyzw == 2 || xyzw == 4 || xyzw == 8) ? 0 : 1;
+@@ -56,10 +56,33 @@ void mVUclamp1(const xmm& reg, const xmm& regT1, int xyzw, bool bClampE = 0) {
+ // so we just use a temporary mem location for our backup for now... (non-sse4 version only)
+ void mVUclamp2(microVU& mVU, const xmm& reg, const xmm& regT1in, int xyzw, bool bClampE = 0) {
+ 	if ((!clampE && CHECK_VU_SIGN_OVERFLOW) || (clampE && bClampE && CHECK_VU_SIGN_OVERFLOW)) {
+-		int i = (xyzw==1||xyzw==2||xyzw==4||xyzw==8) ? 0: 1;
 -		xPMIN.SD(reg, ptr128[&sse4_maxvals[i][0]]);
 -		xPMIN.UD(reg, ptr128[&sse4_minvals[i][0]]);
 -		return;
@@ -2852,10 +2613,10 @@ index e2639e8..e9d2e15 100644
 +		//if (regT1 != regT1in) mVU.regAlloc->clearNeeded(regT1);
 +		if (regT1 != regT1in) xMOVAPS(regT1, ptr128[mVU.xmmCTemp]);
  	}
- 	else
- 		mVUclamp1(reg, regT1in, xyzw, bClampE);
+ 	else mVUclamp1(reg, regT1in, xyzw, bClampE);
+ }
 diff --git a/pcsx2/x86/microVU_Lower.inl b/pcsx2/x86/microVU_Lower.inl
-index dd28730..2b11726 100644
+index 2600653..679fb3b 100644
 --- a/pcsx2/x86/microVU_Lower.inl
 +++ b/pcsx2/x86/microVU_Lower.inl
 @@ -28,7 +28,11 @@ static __fi void testZero(const xmm& xmmReg, const xmm& xmmTemp, const x32& gprT
@@ -2871,19 +2632,17 @@ index dd28730..2b11726 100644
  }
  
  // Test if Vector is Negative (Set Flags and Makes Positive)
-@@ -345,8 +349,20 @@ mVUop(mVU_EEXP)
+@@ -294,8 +298,18 @@ mVUop(mVU_EEXP) {
+ 
  // sumXYZ(): PQ.x = x ^ 2 + y ^ 2 + z ^ 2
- static __fi void mVU_sumXYZ(mV, const xmm& PQ, const xmm& Fs)
- {
+ static __fi void mVU_sumXYZ(mV, const xmm& PQ, const xmm& Fs) {
 -	xDP.PS(Fs, Fs, 0x71);
 -	xMOVSS(PQ, Fs);
-+	if (x86caps.hasStreamingSIMD4Extensions)
-+	{
++	if (x86caps.hasStreamingSIMD4Extensions) {
 +		xDP.PS(Fs, Fs, 0x71);
 +		xMOVSS(PQ, Fs);
 +	}
-+	else
-+	{
++	else {
 +		SSE_MULPS(mVU, Fs, Fs);	   // wzyx ^ 2
 +		xMOVSS		(PQ, Fs);		  // x ^ 2
 +		xPSHUF.D	  (Fs, Fs, 0xe1); // wzyx -> wzxy
@@ -2893,18 +2652,18 @@ index dd28730..2b11726 100644
 +	}
  }
  
- mVUop(mVU_ELENG)
+ mVUop(mVU_ELENG) {
 diff --git a/pcsx2/x86/microVU_Misc.inl b/pcsx2/x86/microVU_Misc.inl
-index d43ee82..e617f1e 100644
+index d0cf724..5be76a1 100644
 --- a/pcsx2/x86/microVU_Misc.inl
 +++ b/pcsx2/x86/microVU_Misc.inl
-@@ -55,36 +55,79 @@ void mVUsaveReg(const xmm& reg, xAddressVoid ptr, int xyzw, bool modXYZW)
- 	switch (xyzw)
- 	{
- 		case 5: // YW
--			xEXTRACTPS(ptr32[ptr + 4], reg, 1);
--			xEXTRACTPS(ptr32[ptr + 12], reg, 3);
-+					if (x86caps.hasStreamingSIMD4Extensions) {
+@@ -59,29 +59,72 @@ void mVUsaveReg(const xmm& reg, xAddressVoid ptr, int xyzw, bool modXYZW)
+ 	return;*/
+ 
+ 	switch ( xyzw ) {
+-		case 5:		xEXTRACTPS(ptr32[ptr+4], reg, 1);
+-					xEXTRACTPS(ptr32[ptr+12], reg, 3);
++		case 5:		if (x86caps.hasStreamingSIMD4Extensions) {
 +						xEXTRACTPS(ptr32[ptr+4], reg, 1);
 +						xEXTRACTPS(ptr32[ptr+12], reg, 3);
 +					}
@@ -2914,15 +2673,13 @@ index d43ee82..e617f1e 100644
 +						xPSHUF.D(reg, reg, 0xff); //WWWW
 +						xMOVSS(ptr32[ptr+12], reg);
 +					}
- 			break;
- 		case 6: // YZ
- 			xPSHUF.D(reg, reg, 0xc9);
- 			xMOVL.PS(ptr64[ptr + 4], reg);
- 			break;
- 		case 7: // YZW
--			xMOVH.PS(ptr64[ptr + 8], reg);
--			xEXTRACTPS(ptr32[ptr + 4], reg, 1);
-+					if (x86caps.hasStreamingSIMD4Extensions) {
+ 					break; // YW
+ 		case 6:		xPSHUF.D(reg, reg, 0xc9);
+ 					xMOVL.PS(ptr64[ptr+4], reg);
+ 					break; // YZ
+-		case 7:		xMOVH.PS(ptr64[ptr+8], reg);
+-					xEXTRACTPS(ptr32[ptr+4],  reg, 1);
++		case 7:		if (x86caps.hasStreamingSIMD4Extensions) {
 +						xMOVH.PS(ptr64[ptr+8], reg);
 +						xEXTRACTPS(ptr32[ptr+4],  reg, 1);
 +					}
@@ -2931,11 +2688,10 @@ index d43ee82..e617f1e 100644
 +						xMOVH.PS(ptr64[ptr+4], reg);
 +						xMOVSS(ptr32[ptr+12], reg);
 +					}
- 			break;
- 		case 9: // XW
--			xMOVSS(ptr32[ptr], reg);
--			xEXTRACTPS(ptr32[ptr + 12], reg, 3);
-+					if (x86caps.hasStreamingSIMD4Extensions) {
+ 					break; // YZW
+-		case 9:		xMOVSS(ptr32[ptr], reg);
+-					xEXTRACTPS(ptr32[ptr+12], reg, 3);
++		case 9:		if (x86caps.hasStreamingSIMD4Extensions) {
 +						xMOVSS(ptr32[ptr], reg);
 +						xEXTRACTPS(ptr32[ptr+12], reg, 3);
 +					}
@@ -2944,11 +2700,10 @@ index d43ee82..e617f1e 100644
 +						xPSHUF.D(reg, reg, 0xff); //WWWW
 +						xMOVSS(ptr32[ptr+12], reg);
 +					}
- 			break;
- 		case 10: // XZ
--			xMOVSS(ptr32[ptr], reg);
--			xEXTRACTPS(ptr32[ptr + 8], reg, 2);
-+					if (x86caps.hasStreamingSIMD4Extensions) {
+ 					break; // XW
+-		case 10:	xMOVSS(ptr32[ptr], reg);
+-					xEXTRACTPS(ptr32[ptr+8], reg, 2);
++		case 10:	if (x86caps.hasStreamingSIMD4Extensions) {
 +						xMOVSS(ptr32[ptr], reg);
 +						xEXTRACTPS(ptr32[ptr+8], reg, 2);
 +					}
@@ -2957,15 +2712,13 @@ index d43ee82..e617f1e 100644
 +						xMOVHL.PS(reg, reg);
 +						xMOVSS(ptr32[ptr+8], reg);
 +					}
- 			break;
- 		case 11: // XZW
- 			xMOVSS(ptr32[ptr], reg);
- 			xMOVH.PS(ptr64[ptr + 8], reg);
- 			break;
- 		case 13: // XYW
--			xMOVL.PS(ptr64[ptr], reg);
--			xEXTRACTPS(ptr32[ptr + 12], reg, 3);
-+					if (x86caps.hasStreamingSIMD4Extensions) {
+ 					break; //XZ
+ 		case 11:	xMOVSS(ptr32[ptr], reg);
+ 					xMOVH.PS(ptr64[ptr+8], reg);
+ 					break; //XZW
+-		case 13:	xMOVL.PS(ptr64[ptr], reg);
+-					xEXTRACTPS(ptr32[ptr+12], reg, 3);
++		case 13:	if (x86caps.hasStreamingSIMD4Extensions) {
 +						xMOVL.PS(ptr64[ptr], reg);
 +						xEXTRACTPS(ptr32[ptr+12], reg, 3);
 +					}
@@ -2974,11 +2727,10 @@ index d43ee82..e617f1e 100644
 +						xMOVH.PS(ptr64[ptr], reg);
 +						xMOVSS(ptr32[ptr+12], reg);
 +					}
- 			break;
- 		case 14: // XYZ
--			xMOVL.PS(ptr64[ptr], reg);
--			xEXTRACTPS(ptr32[ptr + 8], reg, 2);
-+					if (x86caps.hasStreamingSIMD4Extensions) {
+ 					break; // XYW
+-		case 14:	xMOVL.PS(ptr64[ptr], reg);
+-					xEXTRACTPS(ptr32[ptr+8], reg, 2);
++		case 14:	if (x86caps.hasStreamingSIMD4Extensions) {
 +						xMOVL.PS(ptr64[ptr], reg);
 +						xEXTRACTPS(ptr32[ptr+8], reg, 2);
 +					}
@@ -2987,14 +2739,14 @@ index d43ee82..e617f1e 100644
 +						xMOVHL.PS(reg, reg);
 +						xMOVSS(ptr32[ptr+8], reg);
 +					}
- 			break;
- 		case 4: // Y
- 			if (!modXYZW)
-@@ -120,14 +163,8 @@ void mVUsaveReg(const xmm& reg, xAddressVoid ptr, int xyzw, bool modXYZW)
+ 					break; // XYZ
+ 		case 4:		if (!modXYZW) mVUunpack_xyzw(reg, reg, 1);
+ 					xMOVSS(ptr32[ptr+4], reg);		
+@@ -103,14 +146,8 @@ void mVUsaveReg(const xmm& reg, xAddressVoid ptr, int xyzw, bool modXYZW)
  void mVUmergeRegs(const xmm& dest, const xmm& src, int xyzw, bool modXYZW)
  {
  	xyzw &= 0xf;
--	if ((dest != src) && (xyzw != 0))
+-	if ( (dest != src) && (xyzw != 0) ) 
 -	{
 -		if (xyzw == 0x8)
 -			xMOVSS(dest, src);
@@ -3004,10 +2756,10 @@ index d43ee82..e617f1e 100644
 -		{
 +	if ( (dest != src) && (xyzw != 0) ) {
 +		if (x86caps.hasStreamingSIMD4Extensions && (xyzw != 0x8) && (xyzw != 0xf)) {
- 			if (modXYZW)
- 			{
- 				if      (xyzw == 1) { xINSERTPS(dest, src, _MM_MK_INSERTPS_NDX(0, 3, 0)); return; }
-@@ -137,6 +174,56 @@ void mVUmergeRegs(const xmm& dest, const xmm& src, int xyzw, bool modXYZW)
+ 			if (modXYZW) {
+ 				if		(xyzw == 1) { xINSERTPS(dest, src, _MM_MK_INSERTPS_NDX(0, 3, 0)); return; }
+ 				else if (xyzw == 2) { xINSERTPS(dest, src, _MM_MK_INSERTPS_NDX(0, 2, 0)); return; }
+@@ -119,6 +156,56 @@ void mVUmergeRegs(const xmm& dest, const xmm& src, int xyzw, bool modXYZW)
  			xyzw = ((xyzw & 1) << 3) | ((xyzw & 2) << 1) | ((xyzw & 4) >> 1) | ((xyzw & 8) >> 3);
  			xBLEND.PS(dest, src, xyzw);
  		}
@@ -3061,81 +2813,56 @@ index d43ee82..e617f1e 100644
 +						 break;
 +			}
 +		}
- 	}
+ 	} 
  }
  
 diff --git a/pcsx2/x86/microVU_Upper.inl b/pcsx2/x86/microVU_Upper.inl
-index a276501..ff10c8a 100644
+index add2186..3a7037c 100644
 --- a/pcsx2/x86/microVU_Upper.inl
 +++ b/pcsx2/x86/microVU_Upper.inl
-@@ -30,11 +30,6 @@
- 	} while (0)
+@@ -23,12 +23,6 @@
+ #define ADD_XYZW			((_XYZW_SS && modXYZW) ? (_X ? 3 : (_Y ? 2 : (_Z ? 1 : 0))) : 0)
+ #define SHIFT_XYZW(gprReg)	{ if (_XYZW_SS && modXYZW && !_W) { xSHL(gprReg, ADD_XYZW); } }
  
- 
+-
 -const __aligned16 u32 sse4_compvals[2][4] = {
--	{0x7f7fffff, 0x7f7fffff, 0x7f7fffff, 0x7f7fffff}, //1111
--	{0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff}, //1111
+-   { 0x7f7fffff, 0x7f7fffff, 0x7f7fffff, 0x7f7fffff }, //1111
+-   { 0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff }, //1111
 -};
 -
  // Note: If modXYZW is true, then it adjusts XYZW for Single Scalar operations
- static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, const xmm& regT2in = xEmptyReg, bool modXYZW = 1)
- {
-@@ -78,43 +73,19 @@ static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, c
- 	xMOVMSKPS(gprT2, regT1); // Used for Zero Flag Calculation
- 
- 	xAND(mReg, AND_XYZW); // Grab "Is Signed" bits from the previous calculation
--	xSHL(mReg, 4);
-+	xSHL(mReg, 4 + ADD_XYZW);
- 
- 	//-------------------------Check for Zero flags------------------------------
- 
- 	xAND(gprT2, AND_XYZW); // Grab "Is Zero" bits from the previous calculation
-+	if (mFLAG.doFlag)
-+		SHIFT_XYZW(gprT2);
+ static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, const xmm& regT2in = xEmptyReg, bool modXYZW = 1) {
+ 	const x32&  mReg   = gprT1;
+@@ -73,21 +67,6 @@ static void mVUupdateFlags(mV, const xmm& reg, const xmm& regT1in = xEmptyReg, c
+ 	if (mFLAG.doFlag) { SHIFT_XYZW(gprT2); }
  	xOR(mReg, gprT2);
  
 -	//-------------------------Overflow Flags-----------------------------------
--	// We can't really do this because of the limited range of x86 and the value MIGHT genuinely be FLT_MAX (x86)
--	// so this will need to remain as a gamefix for the one game that needs it (Superman Returns)
--	// until some sort of soft float implementation.
--	if (sFLAG.doFlag && CHECK_VUOVERFLOWHACK)
--	{
+-	if (sFLAG.doFlag) {
 -		//Calculate overflow
 -		xMOVAPS(regT1, regT2);
 -		xAND.PS(regT1, ptr128[&sse4_compvals[1][0]]); // Remove sign flags (we don't care)
 -		xCMPNLT.PS(regT1, ptr128[&sse4_compvals[0][0]]); // Compare if T1 == FLT_MAX
 -		xMOVMSKPS(gprT2, regT1); // Grab sign bits  for equal results
--		xAND(gprT2, AND_XYZW); // Grab "Is FLT_MAX" bits from the previous calculation
+-		xAND(gprT2, AND_XYZW);   // Grab "Is FLT_MAX" bits from the previous calculation
 -		xForwardJump32 oJMP(Jcc_Zero);
--
--		xOR(sReg, 0x820000);
--		if (mFLAG.doFlag)
--		{
--			xSHL(gprT2, 12); // Add the results to the MAC Flag
--			xOR(mReg, gprT2);
--		}
--
+-			xOR(sReg, 0x820000);
 -		oJMP.SetTarget();
--	}
 -
- 	//-------------------------Write back flags------------------------------
-+
- 	if (mFLAG.doFlag)
--	{
--		SHIFT_XYZW(mReg); // If it was Single Scalar, move the flags in to the correct position
- 		mVUallocMFLAGb(mVU, mReg, mFLAG.write); // Set Mac Flag
+-		xSHL(gprT2, 12 + ADD_XYZW); // Add the results to the MAC Flag
+-		xOR(mReg, gprT2);
 -	}
- 	if (sFLAG.doFlag)
- 	{
- 		xAND(mReg, 0xFF); // Ignore overflow bits, they're handled separately
+ 	//-------------------------Write back flags------------------------------
+ 
+ 	if (mFLAG.doFlag) mVUallocMFLAGb(mVU, mReg, mFLAG.write); // Set Mac Flag
 diff --git a/pcsx2/x86/newVif_UnpackSSE.cpp b/pcsx2/x86/newVif_UnpackSSE.cpp
-index 84a8ce1..96ae42e 100644
+index d59c523..fad4a67 100644
 --- a/pcsx2/x86/newVif_UnpackSSE.cpp
 +++ b/pcsx2/x86/newVif_UnpackSSE.cpp
-@@ -36,7 +36,23 @@ static RecompiledCodeReserve* nVifUpkExec = NULL;
+@@ -35,7 +35,23 @@ static RecompiledCodeReserve* nVifUpkExec = NULL;
+ 
  // Merges xmm vectors without modifying source reg
- void mergeVectors(xRegisterSSE dest, xRegisterSSE src, xRegisterSSE temp, int xyzw)
- {
+ void mergeVectors(xRegisterSSE dest, xRegisterSSE src, xRegisterSSE temp, int xyzw) {
 -	mVUmergeRegs(dest, src, xyzw);
 +	if (x86caps.hasStreamingSIMD4Extensions  || (xyzw==15)
 +		|| (xyzw==12) || (xyzw==11) || (xyzw==8) || (xyzw==3)) {
@@ -3143,23 +2870,23 @@ index 84a8ce1..96ae42e 100644
 +	}
 +	else
 +	{
-+		if (temp != src) xMOVAPS(temp, src); //Sometimes we don't care if the source is modified and is temp reg.
-+		if (dest == temp)
++		if(temp != src) xMOVAPS(temp, src); //Sometimes we don't care if the source is modified and is temp reg.
++		if(dest == temp)
 +		{
 +			//VIF can sent the temp directory as the source and destination, just need to clear the ones we dont want in which case.
-+			if (!(xyzw & 0x1)) xAND.PS( dest, ptr128[SSEXYZWMask[0]]);
-+			if (!(xyzw & 0x2)) xAND.PS( dest, ptr128[SSEXYZWMask[1]]);
-+			if (!(xyzw & 0x4)) xAND.PS( dest, ptr128[SSEXYZWMask[2]]);
-+			if (!(xyzw & 0x8)) xAND.PS( dest, ptr128[SSEXYZWMask[3]]);
++			if(!(xyzw & 0x1)) xAND.PS( dest, ptr128[SSEXYZWMask[0]]);
++			if(!(xyzw & 0x2)) xAND.PS( dest, ptr128[SSEXYZWMask[1]]);
++			if(!(xyzw & 0x4)) xAND.PS( dest, ptr128[SSEXYZWMask[2]]);
++			if(!(xyzw & 0x8)) xAND.PS( dest, ptr128[SSEXYZWMask[3]]);
 +		}
 +		else mVUmergeRegs(dest, temp, xyzw);
 +	}
  }
  
  // =====================================================================================================
-@@ -103,6 +119,16 @@ void VifUnpackSSE_Base::xUPK_S_32() const
- void VifUnpackSSE_Base::xUPK_S_16() const
- {
+@@ -97,6 +113,16 @@ void VifUnpackSSE_Base::xUPK_S_32() const {
+ 
+ void VifUnpackSSE_Base::xUPK_S_16() const {
  
 +	if (!x86caps.hasStreamingSIMD4Extensions)
 +	{
@@ -3171,12 +2898,12 @@ index 84a8ce1..96ae42e 100644
 +			return;
 +	}
 +
- 	switch (UnpkLoopIteration)
+ 	switch(UnpkLoopIteration)
  	{
  		case 0:
-@@ -124,6 +150,17 @@ void VifUnpackSSE_Base::xUPK_S_16() const
- void VifUnpackSSE_Base::xUPK_S_8() const
- {
+@@ -118,6 +144,17 @@ void VifUnpackSSE_Base::xUPK_S_16() const {
+ 
+ void VifUnpackSSE_Base::xUPK_S_8() const {
  
 +	if (!x86caps.hasStreamingSIMD4Extensions)
 +	{
@@ -3189,15 +2916,15 @@ index 84a8ce1..96ae42e 100644
 +		return;
 +	}
 +
- 	switch (UnpkLoopIteration)
+ 	switch(UnpkLoopIteration)
  	{
  		case 0:
-@@ -152,8 +189,18 @@ void VifUnpackSSE_Base::xUPK_V2_32() const
+@@ -163,8 +200,18 @@ void VifUnpackSSE_Base::xUPK_V2_16() const {
  
- 	if (UnpkLoopIteration == 0)
- 	{
--		xMOV128(workReg, ptr32[srcIndirect]);
--		xPSHUF.D(destReg, workReg, 0x44); //v1v0v1v0
+ 	if(UnpkLoopIteration == 0)
+     {
+-			xPMOVXX16  (workReg);
+-			xPSHUF.D   (destReg, workReg, 0x44); //v1v0v1v0
 +            if (x86caps.hasStreamingSIMD4Extensions)
 +            {
 +                    xPMOVXX16  (workReg);
@@ -3210,17 +2937,17 @@ index 84a8ce1..96ae42e 100644
 +                    xShiftR    (workReg, 16);
 +            }
 +            xPSHUF.D   (destReg, workReg, 0x44); //v1v0v1v0
- 		if (IsAligned)
- 			xAND.PS(destReg, ptr128[SSEXYZWMask[0]]); //zero last word - tested on ps2
- 	}
-@@ -168,9 +215,19 @@ void VifUnpackSSE_Base::xUPK_V2_32() const
- void VifUnpackSSE_Base::xUPK_V2_16() const
- {
+     }
+     else
+     {
+@@ -176,9 +223,19 @@ void VifUnpackSSE_Base::xUPK_V2_16() const {
  
--	if (UnpkLoopIteration == 0)
-+	if (UnpkLoopIteration == 0 || !x86caps.hasStreamingSIMD4Extensions)
+ void VifUnpackSSE_Base::xUPK_V2_8() const {
+ 
+-	if(UnpkLoopIteration == 0)
++	if(UnpkLoopIteration == 0 || !x86caps.hasStreamingSIMD4Extensions)
  	{
--		xPMOVXX16(workReg);
+-		xPMOVXX8   (workReg);
 +		if (x86caps.hasStreamingSIMD4Extensions)
 +		{
 +			xPMOVXX8   (workReg);
@@ -3232,14 +2959,14 @@ index 84a8ce1..96ae42e 100644
 +			xPUNPCK.LWD(workReg, workReg);
 +			xShiftR    (workReg, 24);
 +		}
- 		xPSHUF.D(destReg, workReg, 0x44); //v1v0v1v0
+ 		xPSHUF.D   (destReg, workReg, 0x44); //v1v0v1v0
  	}
  	else
-@@ -204,7 +261,16 @@ void VifUnpackSSE_Base::xUPK_V3_32() const
- void VifUnpackSSE_Base::xUPK_V3_16() const
- {
+@@ -197,7 +254,16 @@ void VifUnpackSSE_Base::xUPK_V3_32() const {
  
--	xPMOVXX16(destReg);
+ void VifUnpackSSE_Base::xUPK_V3_16() const {
+ 
+-	xPMOVXX16  (destReg);
 +	if (x86caps.hasStreamingSIMD4Extensions)
 +	{
 +		xPMOVXX16  (destReg);
@@ -3253,11 +2980,30 @@ index 84a8ce1..96ae42e 100644
  
  	//With V3-16, it takes the first vector from the next position as the W vector
  	//However - IF the end of this iteration of the unpack falls on a quadword boundary, W becomes 0
-@@ -233,12 +299,31 @@ void VifUnpackSSE_Base::xUPK_V4_32() const
+@@ -212,7 +278,17 @@ void VifUnpackSSE_Base::xUPK_V3_16() const {
  
- void VifUnpackSSE_Base::xUPK_V4_16() const
- {
--	xPMOVXX16(destReg);
+ void VifUnpackSSE_Base::xUPK_V3_8() const {
+ 
+-	xPMOVXX8   (destReg);
++	if (x86caps.hasStreamingSIMD4Extensions)
++	{
++		xPMOVXX8   (destReg);
++	}
++	else
++	{
++		xMOV32     (destReg, ptr32[srcIndirect]);
++		xPUNPCK.LBW(destReg, destReg);
++		xPUNPCK.LWD(destReg, destReg);
++		xShiftR    (destReg, 24);
++	}
+ 	if (UnpkLoopIteration != IsAligned)
+ 		xAND.PS(destReg, ptr128[SSEXYZWMask[0]]);
+ }
+@@ -224,12 +300,31 @@ void VifUnpackSSE_Base::xUPK_V4_32() const {
+ 
+ void VifUnpackSSE_Base::xUPK_V4_16() const {
+ 
+-	xPMOVXX16  (destReg);
 +	if (x86caps.hasStreamingSIMD4Extensions)
 +	{
 +		xPMOVXX16  (destReg);
@@ -3270,9 +3016,9 @@ index 84a8ce1..96ae42e 100644
 +	}
  }
  
- void VifUnpackSSE_Base::xUPK_V4_8() const
- {
--	xPMOVXX8(destReg);
+ void VifUnpackSSE_Base::xUPK_V4_8() const {
+ 
+-	xPMOVXX8   (destReg);
 +	if (x86caps.hasStreamingSIMD4Extensions)
 +	{
 +		xPMOVXX8   (destReg);
@@ -3286,7 +3032,7 @@ index 84a8ce1..96ae42e 100644
 +	}
  }
  
- void VifUnpackSSE_Base::xUPK_V4_5() const
+ void VifUnpackSSE_Base::xUPK_V4_5() const {
 -- 
-2.33.1
+2.31.1
 

@@ -1,6 +1,6 @@
-From 310bdc0d75493e8ad15f98da1d4effc5c6c2468f Mon Sep 17 00:00:00 2001
+From 28a6f47aad00d0a7d086fba66ffd6f74818e3d4d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 24 Sep 2021 21:24:48 -0300
+Date: Sat, 21 Aug 2021 20:53:54 -0300
 Subject: [PATCH] System libchdr support
 
 ---
@@ -10,10 +10,10 @@ Subject: [PATCH] System libchdr support
  3 files changed, 13 insertions(+), 3 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 798ea8e..827175c 100644
+index 3d88bfa..316c5b6 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -242,7 +242,17 @@ if(NOT USE_SYSTEM_YAML)
+@@ -223,7 +223,17 @@ if(NOT USE_SYSTEM_YAML)
  	endif()
  endif()
  
@@ -46,18 +46,18 @@ index 9975c8f..59b7db8 100644
  class ChdFileReader : public ThreadedFileReader
  {
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 6d0419e..729c048 100644
+index 3e07cdc..4dd5305 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1445,7 +1445,7 @@ target_link_libraries(PCSX2 PRIVATE
- 	common
+@@ -1246,7 +1246,7 @@ target_link_libraries(PCSX2 PRIVATE
+ 	x86emitter
  	fmt::fmt
  	yaml-cpp
 -	chdr-static
 +	${CHDR_SYSTEM_LIBRARY}
  	wxWidgets::all
- 	ZLIB::ZLIB
- 	PkgConfig::SOUNDTOUCH
+ 	GTK::gtk
+ 	HarfBuzz::HarfBuzz
 -- 
 2.31.1
 
