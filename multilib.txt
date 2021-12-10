@@ -51,3 +51,4 @@ wine
 wine-dxvk - no mingw
 -wine-freeworld
 wine-nine
+winesync

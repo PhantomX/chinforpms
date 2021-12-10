@@ -10,7 +10,7 @@
 
 Name:           winesync
 Version:        5.15.5
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Wine synchronization primitive driver
 
 License:        GPLv2
@@ -53,24 +53,32 @@ cp -p %{SOURCE1} .
 # header file
 install -m644 -D %{SOURCE4} %{buildroot}%{_includedir}/linux/winesync.h
 
+%ifnarch %{ix86}
 # systemd module autoinsert rule
 install -m644 -D %{SOURCE3} %{buildroot}%{_prefix}/lib/modules-load.d/%{name}.conf
 
 # udev rule
 install -m644 -D %{SOURCE2} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
+%endif
 
+
+%ifnarch %{ix86}
 %files
 %license COPYING
 %doc winesync.rst
 %{_prefix}/lib/modules-load.d/%{name}.conf
 %{_udevrulesdir}/69-%{name}.rules
-
+%endif
 
 %files devel
+%license COPYING
 %{_includedir}/linux/winesync.h
 
 
 %changelog
+* Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.5-2.20211202gitee18b22
+- Do not build main package on %%{ix86} archs
+
 * Mon Dec 06 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.5-1.20211202gitee18b22
 - 5.15.5
 

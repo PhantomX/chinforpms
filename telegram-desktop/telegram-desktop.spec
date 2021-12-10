@@ -37,7 +37,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.2.8
+Version:        3.3.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -64,6 +64,8 @@ ExclusiveArch:  x86_64
 
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
+
+Patch10:        %{url}/pull/17361.patch#/%{name}-gh-pr17361.patch
 
 Patch100:       %{name}-build-fix.patch
 
@@ -310,7 +312,7 @@ desktop-file-install \
 
 
 %check
-appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{launcher}.appdata.xml"
+appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{launcher}.metainfo.xml"
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
@@ -321,10 +323,13 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 %{_datadir}/applications/%{launcher}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/Thunar/sendto/thunar-sendto-%{launcher}.desktop
-%{_metainfodir}/%{launcher}.appdata.xml
+%{_metainfodir}/%{launcher}.metainfo.xml
 
 
 %changelog
+* Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.3.0-100
+- 3.3.0
+
 * Wed Dec 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.2.8-100
 - 3.2.8
 - Remove old bundled tg_owt entries

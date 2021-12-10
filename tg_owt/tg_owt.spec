@@ -4,9 +4,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 b02478677baac6d563589f216800ff9cea0fd65c
+%global commit0 d5c3d43b959c7e9e7d8004b9b7fdadd12ce7d589
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20211112
+%global date 20211207
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -26,7 +26,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        108%{?gver}%{?dist}
+Release:        109%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -251,6 +251,9 @@ cp -f -p src/modules/third_party/portaudio/README.chromium legal/README.portaudi
 
 
 %changelog
+* Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 0-109.20211207gitd5c3d43
+- Update
+
 * Mon Nov 29 2021 Phantom X <megaphantomx at hotmail dot com> - 0-108.20211112gitb024786
 - Bump
 - Shared library conditional
