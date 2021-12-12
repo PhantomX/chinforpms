@@ -1,6 +1,6 @@
-%global commit f03933fbb73152c7a54383fba411a611af7aaa55
+%global commit b495ff5cc8088af66d6d4f186f82231043e45a95
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211126
+%global date 20211208
 %global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
@@ -34,6 +34,7 @@
 %global winegecko 2.47.2
 %global winemono  7.0.0
 %global winevulkan 1.2.201
+%global winefastsync 5.15
 
 %global wineFAudio 21.11
 %global winegsm 1.0.19
@@ -79,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6.23
+%global wine_stagingver 7.0-rc1
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -87,10 +88,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id 9144e4eb2029e95613f384ce4b3fc4fdc71499d6
+%global ge_id 70b494458c9d7d3f9122cbcfb178e1bab4841661
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 0cf64ddbe2c31fe82d48fff81cfd40d0df62ba29
+%global tkg_id 1e09c835e779461c0ed9c81558d00ad80d45e2e4
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -102,17 +103,21 @@
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
+# fastsync/winesync
+%global fastsync 1
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
 %global vulkanup 0
 
-#FIXME: undnl when staging bcrypt-ECDHSecretAgreement is enabled again
-%dnl %global wine_staging_opts %{?wine_staging_opts} -W bcrypt-ECDHSecretAgreement
-
 %if !0%{?fshack}
-# childwindow.patch
+# childwindow.patch (breaks nine)
 %dnl %wine_staging_opts %%{?wine_staging_opts} -W Pipelight -W winex11-Vulkan_support
 %endif
+
+%if 0%{?fshack}
+%global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
+%endif
+
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global whq_murl  https://github.com/wine-mirror/wine
@@ -140,7 +145,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        6.23
+Version:        7.0~rc1
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -212,9 +217,6 @@ Patch200:       https://source.winehq.org/patches/data/214036#/%{name}-whq-p2140
 Patch201:       https://source.winehq.org/patches/data/214035#/%{name}-whq-p214035.patch
 Patch202:       https://source.winehq.org/patches/data/214038#/%{name}-whq-p214038.patch
 Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
-Patch204:       %{whq_url}/b54199101fd307199c481709d4b1358ba4bcce58#/%{name}-whq-b541991.patch
-Patch205:       %{whq_url}/dedda40e5d7b5a3bcf67eea95145810da283d7d9#/%{name}-whq-dedda40.patch
-Patch206:       %{whq_url}/bd27af974a21085cd0dc78b37b715bbcc3cfab69#/%{name}-whq-bd27af9.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -292,6 +294,8 @@ Patch986:       %{whq_url}/639c04a5b4e1ffd1d8328f60af998185a04d0c50#/%{name}-whq
 Patch987:       %{whq_url}/769057b9b281eaaba7ee438dedb7f922b0903472#/%{name}-whq-mfplat-769057b.patch
 Patch988:       %{whq_url}/f3624e2d642c4f5c1042d24a70273db4437fcef9#/%{name}-whq-mfplat-f3624e2.patch
 Patch989:       %{whq_url}/747905c674d521b61923a6cff1d630c85a74d065#/%{name}-whq-mfplat-747905c.patch
+Patch990:       %{whq_url}/4f58d8144c5c1d3b86e988f925de7eb02c848e6f#/%{name}-whq-mfplat-4f58d81.patch
+Patch991:       %{whq_url}/bd28c369d052bd33a602e4f7e699d815b9f0e15f#/%{name}-whq-mfplat-bd28c36.patch
 
 Patch999:       0001-mfplat-restore-definitions.patch
 Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
@@ -322,11 +326,12 @@ Source971:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0022-
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
+Patch1001:       0001-update-use_clock_monotonic.patch
 Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 Patch1003:       %{tkg_url}/misc/childwindow.patch#/%{name}-tkg-childwindow.patch
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
-Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-008.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-008.patch
+Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-009.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1008:       %{tkg_url}/misc/lowlatency_audio.patch#/%{name}-tkg-lowlatency_audio.patch
 Patch1009:       %{ge_url}/wine-hotfixes/testing/lowlatency_audio_pulse.patch#/%{name}-ge-lowlatency_audio_pulse.patch
@@ -342,29 +347,34 @@ Patch1025:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name
 Patch1026:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
 Patch1027:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch1028:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
-Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
-Patch1031:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
+Patch1029:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
+Patch1031:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 Patch1032:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
-Patch1033:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
-Patch1034:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
-%dnl Patch1035:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes2.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes2.patch
-%dnl Patch1036:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-%dnl Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de-2.mypatch#/%{name}-tkg-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de-2.patch
-Patch1035:       %{ge_url}/proton/55-proton-bcrypt_rdr2_fixes.patch#/%{name}-ge-55-proton-bcrypt_rdr2_fixes.patch
-Patch1036:       %{ge_url}/wine-hotfixes/staging/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch#/%{name}-ge-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-Patch1037:       %{ge_url}/wine-hotfixes/staging/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch#/%{name}-ge-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch
+Patch1033:       %{tkg_url}/hotfixes/rdr2/0004-winevulkan2.mypatch#/%{name}-tkg-0004-winevulkan2.patch
+Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
+Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
+Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes3.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes3.patch
+Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
+Patch1038:       %{ge_url}/wine-hotfixes/staging/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch#/%{name}-ge-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch
+
+Patch1050:       %{tkg_url}/misc/fastsync-staging-prep.patch#/%{name}-tkg-fastsync-staging-prep.patch
+Patch1051:       %{tkg_url}/misc/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
+Patch1052:       fastsync-clock_monotonic-fixup.patch
+Patch1053:       0001-update-fastsync-staging-protonify.patch
+Patch1054:       0001-fastsync-sys-ioctl.h.patch
+Patch1055:       0001-update-proton-cpu-topology-overrides.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
-Patch1090:       revert-grab-fullscreen.patch
+Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
 Patch1092:       %{ge_url}/wine-hotfixes/staging/mfplat_dxgi_stub.patch#/%{name}-ge-mfplat_dxgi_stub.patch
 Patch1093:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.patch#/%{name}-valve-ba230cf.patch
 
 Patch1300:       nier.patch
-Patch1301:       0001-proton-staging-use-gdi_gpu-instead-of-x11drv_gpu.patch
 Patch1303:       0001-FAudio-Disable-reverb.patch
 Patch1304:       0001-Ignore-lowlatency-if-STAGING_AUDIO_PERIOD-is-not-set.patch
 Patch1305:       0001-fsync-include-linux-futex.h-if-exists.patch
+Patch1306:       0001-staging-sys-ioctl.h.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -465,6 +475,9 @@ BuildRequires:  libappstream-glib
 %if 0%{?wine_staging}
 BuildRequires:  pkgconfig(libattr)
 BuildRequires:  pkgconfig(libva)
+%if 0%{?fastsync}
+BuildRequires:  winesync-devel >= %{winefastsync}
+%endif
 %endif
 
 Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -488,6 +501,9 @@ Requires:       mesa-dri-drivers(x86-32)
 Recommends:     wine-dxvk(x86-32)
 Recommends:     dosbox-staging
 Recommends:     isdn4k-utils(x86-32)
+%if 0%{?fastsync}
+Recommends:     winesync >= %{winefastsync}
+%endif
 
 # x86-64 parts
 %ifarch x86_64
@@ -961,10 +977,6 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch201 -p1
 %patch202 -p1
 %patch203 -p1
-#patch204 -p1 -R
-#patch205 -p1 -R
-#patch206 -p1 -R
-
 
 
 # setup and apply wine-staging patches
@@ -974,6 +986,8 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch901 -p1
 
+%patch991 -p1 -R
+%patch990 -p1 -R
 %patch989 -p1 -R
 %patch988 -p1 -R
 %patch987 -p1 -R
@@ -1051,7 +1065,9 @@ cp -a %{mfplatreverts} patches/mfplat-reverts/
 rename '%{name}-tkg-' '' patches/mfplat-reverts/%{name}-tkg-*.patch
 
 %patch1006 -p1
-%patch1000 -p1
+cp %{P:1000} patch1000.patch
+%patch1001 -p1
+patch -p1 -i patch1000.patch
 %if !0%{?fshack}
 %patch1002 -p1
 #FIXME: verify if is not breaking nine again
@@ -1068,9 +1084,19 @@ rename '%{name}-tkg-' '' patches/mfplat-reverts/%{name}-tkg-*.patch
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
+%if 0%{?fastsync}
+%patch1050 -p1
+%endif
 %patch1020 -p1
 %patch1021 -p1
 %patch1022 -p1
+%if 0%{?fastsync}
+cp %{P:1051} patch1051.patch
+%patch1053 -p1
+patch -p1 -i patch1051.patch
+%patch1052 -p1
+%patch1054 -p1
+%endif
 %if 0%{?fshack}
 %patch1023 -p1
 %endif
@@ -1081,20 +1107,27 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %if 0%{?vulkanup}
 %patch1027 -p1
 %endif
-%patch1090 -p1 -R
+%patch1090 -p1
 %else
 %if 0%{?vulkanup}
 %patch1028 -p1
 %endif
 %endif
-#patch1029 -p1
+%patch1029 -p1
+%if 0%{?fastsync}
+cp %{P:1031} patch1031.patch
+%patch1055 -p1
+patch -p1 -i patch1031.patch
+%else
 %patch1031 -p1
+%endif
 %patch1032 -p1
 %patch1033 -p1
 %patch1034 -p1
 %patch1035 -p1
 %patch1036 -p1
 %patch1037 -p1
+%patch1038 -p1
 
 %patch1089 -p1
 %patch1091 -p1 -R
@@ -1102,10 +1135,10 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1093 -p1
 
 %patch1300 -p1
-%patch1301 -p1
 %patch1303 -p1
 %patch1304 -p1
 %patch1305 -p1
+%patch1306 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -2497,10 +2530,6 @@ fi
 %{_libdir}/wine/%{winesodir}/winegstreamer.so
 %{_libdir}/wine/%{winedlldir}/winegstreamer.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winehid.%{winesys}
-%{_libdir}/wine/%{winesodir}/winejoystick.drv.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/winejoystick.drv
-%endif
 %{_libdir}/wine/%{winedlldir}/winemapi.%{winedll}
 %{_libdir}/wine/%{winesodir}/winevulkan.so
 %if 0%{?fshack}
@@ -2571,23 +2600,10 @@ fi
 %{_libdir}/wine/%{winesodir}/dnsapi.so
 %{_libdir}/wine/%{winedlldir}/dnsapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/iexplore.%{wineexe}
-%if 0%{?extfaudio}
-%{_libdir}/wine/%{winesodir}/xactengine2_0.dll.so
-%{_libdir}/wine/%{winesodir}/xactengine2_4.dll.so
-%{_libdir}/wine/%{winesodir}/xactengine2_7.dll.so
-%{_libdir}/wine/%{winesodir}/xactengine2_9.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/xactengine2_0.dll
-%{_libdir}/wine/%{winedlldir}/xactengine2_4.dll
-%{_libdir}/wine/%{winedlldir}/xactengine2_7.dll
-%{_libdir}/wine/%{winedlldir}/xactengine2_9.dll
-%endif
-%else
 %{_libdir}/wine/%{winedlldir}/xactengine2_0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine2_4.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine2_7.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine2_9.%{winedll}
-%endif
 %if 0%{?wine_staging}
 #{_libdir}/wine/%%{winesodir}/xactengine2_1.dll.so
 #{_libdir}/wine/%%{winesodir}/xactengine2_2.dll.so
@@ -2597,72 +2613,6 @@ fi
 #{_libdir}/wine/%%{winesodir}/xactengine2_8.dll.so
 #{_libdir}/wine/%%{winesodir}/xactengine2_10.dll.so
 %endif
-%if 0%{?extfaudio}
-%{_libdir}/wine/%{winesodir}/xactengine3_0.dll.so
-%{_libdir}/wine/%{winesodir}/xactengine3_1.dll.so
-%{_libdir}/wine/%{winesodir}/xactengine3_2.dll.so
-%{_libdir}/wine/%{winesodir}/xactengine3_3.dll.so
-%{_libdir}/wine/%{winesodir}/xactengine3_4.dll.so
-%{_libdir}/wine/%{winesodir}/xactengine3_5.dll.so
-%{_libdir}/wine/%{winesodir}/xactengine3_6.dll.so
-%{_libdir}/wine/%{winesodir}/xactengine3_7.dll.so
-%{_libdir}/wine/%{winesodir}/x3daudio1_0.dll.so
-%{_libdir}/wine/%{winesodir}/x3daudio1_1.dll.so
-%{_libdir}/wine/%{winesodir}/x3daudio1_2.dll.so
-%{_libdir}/wine/%{winesodir}/x3daudio1_3.dll.so
-%{_libdir}/wine/%{winesodir}/x3daudio1_4.dll.so
-%{_libdir}/wine/%{winesodir}/x3daudio1_5.dll.so
-%{_libdir}/wine/%{winesodir}/x3daudio1_6.dll.so
-%{_libdir}/wine/%{winesodir}/x3daudio1_7.dll.so
-%{_libdir}/wine/%{winesodir}/xapofx1_1.dll.so
-%{_libdir}/wine/%{winesodir}/xapofx1_2.dll.so
-%{_libdir}/wine/%{winesodir}/xapofx1_3.dll.so
-%{_libdir}/wine/%{winesodir}/xapofx1_4.dll.so
-%{_libdir}/wine/%{winesodir}/xapofx1_5.dll.so
-%{_libdir}/wine/%{winesodir}/xaudio2_0.dll.so
-%{_libdir}/wine/%{winesodir}/xaudio2_1.dll.so
-%{_libdir}/wine/%{winesodir}/xaudio2_2.dll.so
-%{_libdir}/wine/%{winesodir}/xaudio2_3.dll.so
-%{_libdir}/wine/%{winesodir}/xaudio2_4.dll.so
-%{_libdir}/wine/%{winesodir}/xaudio2_5.dll.so
-%{_libdir}/wine/%{winesodir}/xaudio2_6.dll.so
-%{_libdir}/wine/%{winesodir}/xaudio2_7.dll.so
-%{_libdir}/wine/%{winesodir}/xaudio2_8.dll.so
-%{_libdir}/wine/%{winesodir}/xaudio2_9.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/xactengine3_0.dll
-%{_libdir}/wine/%{winedlldir}/xactengine3_1.dll
-%{_libdir}/wine/%{winedlldir}/xactengine3_2.dll
-%{_libdir}/wine/%{winedlldir}/xactengine3_3.dll
-%{_libdir}/wine/%{winedlldir}/xactengine3_4.dll
-%{_libdir}/wine/%{winedlldir}/xactengine3_5.dll
-%{_libdir}/wine/%{winedlldir}/xactengine3_6.dll
-%{_libdir}/wine/%{winedlldir}/xactengine3_7.dll
-%{_libdir}/wine/%{winedlldir}/x3daudio1_0.dll
-%{_libdir}/wine/%{winedlldir}/x3daudio1_1.dll
-%{_libdir}/wine/%{winedlldir}/x3daudio1_2.dll
-%{_libdir}/wine/%{winedlldir}/x3daudio1_3.dll
-%{_libdir}/wine/%{winedlldir}/x3daudio1_4.dll
-%{_libdir}/wine/%{winedlldir}/x3daudio1_5.dll
-%{_libdir}/wine/%{winedlldir}/x3daudio1_6.dll
-%{_libdir}/wine/%{winedlldir}/x3daudio1_7.dll
-%{_libdir}/wine/%{winedlldir}/xapofx1_1.dll
-%{_libdir}/wine/%{winedlldir}/xapofx1_2.dll
-%{_libdir}/wine/%{winedlldir}/xapofx1_3.dll
-%{_libdir}/wine/%{winedlldir}/xapofx1_4.dll
-%{_libdir}/wine/%{winedlldir}/xapofx1_5.dll
-%{_libdir}/wine/%{winedlldir}/xaudio2_0.dll
-%{_libdir}/wine/%{winedlldir}/xaudio2_1.dll
-%{_libdir}/wine/%{winedlldir}/xaudio2_2.dll
-%{_libdir}/wine/%{winedlldir}/xaudio2_3.dll
-%{_libdir}/wine/%{winedlldir}/xaudio2_4.dll
-%{_libdir}/wine/%{winedlldir}/xaudio2_5.dll
-%{_libdir}/wine/%{winedlldir}/xaudio2_6.dll
-%{_libdir}/wine/%{winedlldir}/xaudio2_7.dll
-%{_libdir}/wine/%{winedlldir}/xaudio2_8.dll
-%{_libdir}/wine/%{winedlldir}/xaudio2_9.dll
-%endif
-%else
 %{_libdir}/wine/%{winedlldir}/xactengine3_0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine3_1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine3_2.%{winedll}
@@ -2694,7 +2644,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/xaudio2_7.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xaudio2_8.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xaudio2_9.%{winedll}
-%endif
 %{_libdir}/wine/%{winedlldir}/xcopy.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/xinput1_1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xinput1_2.%{winedll}
@@ -3087,6 +3036,10 @@ fi
 
 
 %changelog
+* Sat Dec 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc1-100
+- 7.0-rc1
+- fastsync optional support
+
 * Sun Dec 05 2021 Phantom X <megaphantomx at hotmail dot com> - 1:6.23-100
 - 6.23
 

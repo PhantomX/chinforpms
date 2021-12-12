@@ -19,9 +19,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit aa5cb35c8639bb847664dbc0c225fee61d7f3f5c
+%global commit bfddce425dfb4767aefe00c9e4b49126a50d62b6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211123
+%global date 20211210
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -35,7 +35,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        149%{?gver}%{?dist}
+Release:        150%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -196,6 +196,14 @@ BuildArch:      noarch
 %description data
 This package provides the data files for dolphin-emu.
 
+
+%package        tools
+Summary:        Additional tools files for %{name}
+
+%description tools
+Additional tools files for %{name}.
+
+
 ####################################################
 
 %prep
@@ -274,6 +282,7 @@ export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
   %{?!enablejit:-DENABLE_GENERIC=ON} \
   -DUSE_SHARED_ENET:BOOL=ON \
   -DUSE_SHARED_MGBA:BOOL=ON \
+  -DENABLE_CLI_TOOL:BOOL=ON \
   -DENABLE_ANALYTICS:BOOL=OFF \
 %if !%{with ffmpeg}
   -DENCODE_FRAMEDUMPS:BOOL=OFF \
@@ -405,8 +414,16 @@ appstream-util validate-relax --nonet \
 %{_datadir}/%{name}/
 %{_udevrulesdir}/*.rules
 
+%files tools
+%license COPYING
+%{_bindir}/dolphin-tool
+
 
 %changelog
+* Sun Dec 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-150.20211210gitbfddce4
+- Update
+- New tools package
+
 * Wed Nov 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-149.20211123gitaa5cb35
 - Bump
 

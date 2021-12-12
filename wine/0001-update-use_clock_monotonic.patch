@@ -1,0 +1,28 @@
+From 91e143743896453835fda6019f6000bad563034c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 11 Dec 2021 16:45:29 -0300
+Subject: [PATCH] update-use_clock_monotonic
+
+---
+ patch1000.patch | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/patch1000.patch b/patch1000.patch
+index cafb81a..5fcfa4e 100644
+--- a/patch1000.patch
++++ b/patch1000.patch
+@@ -49,9 +49,8 @@ diff --git a/dlls/ntdll/unix/sync.c b/dlls/ntdll/unix/sync.c
+ index 5d70ef577ad..f665f91342d 100644
+ --- a/dlls/ntdll/unix/sync.c
+ +++ b/dlls/ntdll/unix/sync.c
+-@@ -82,6 +82,46 @@ static const LARGE_INTEGER zero_timeout;
+- 
+- static pthread_mutex_t addr_mutex = PTHREAD_MUTEX_INITIALIZER;
++@@ -82,5 +82,45 @@ static const LARGE_INTEGER zero_timeout;
++ }
+  
+ +#ifndef __NR_clock_gettime64
+ +#define __NR_clock_gettime64 403
+-- 
+2.33.1
+

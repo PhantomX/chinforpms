@@ -1,6 +1,6 @@
-%global commit 26353b593db3212c44076c35bfdf987b8ee44beb
+%global commit a4b6f868c21741b5925c318033f8df71a7f1598b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210704
+%global date 20211208
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           maxcso
 Version:        1.13.0
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Fast cso compressor
 
 # maxcso - ISC
@@ -52,8 +52,6 @@ uses multiple algorithms for best compression ratio.
 
 rm -rf lz4 libdeflate libuv zlib zopfli
 
-sed -e 's|`pkg-config --libs|$(LDFLAGS) \0|' -i Makefile
-
 
 %build
 %set_build_flags
@@ -72,6 +70,9 @@ sed -e 's|`pkg-config --libs|$(LDFLAGS) \0|' -i Makefile
 
 
 %changelog
+* Sat Dec 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1.13.0-3.20211208gita4b6f86
+- Bump
+
 * Thu Sep 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1.13.0-2.20210704git26353b5
 - Last snapshot
 - System libdeflate

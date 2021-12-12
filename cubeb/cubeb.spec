@@ -1,6 +1,6 @@
-%global commit 5d93d2dc0b94bb72541977db25b5048533f2e25f
+%global commit 773f16b7ea308392c05be3e290163d1f636e6024
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211105
+%global date 20211207
 %global with_snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        26%{?gver}%{?dist}
+Release:        27%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -31,8 +31,6 @@ Source0:        %{url}/archive/%{name}-%{version}.tar.gz
 Source1:        https://github.com/google/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/arsenm/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 
-Patch0:         0001-Add-soversion-to-library.patch
-
 BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  gcc
@@ -42,6 +40,7 @@ BuildRequires:  graphviz
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(jack)
 BuildRequires:  pkgconfig(libpulse)
+BuildRequires:  pkgconfig(speex)
 
 Requires:       jack-audio-connection-kit%{?_isa}
 Requires:       pulseaudio-libs%{?_isa}
@@ -108,6 +107,9 @@ sed -i -e "/^\[!/d" -e "/INSTALL.md/d" README.md
 
 
 %changelog
+* Sun Dec 12 2021 Phantom X <megaphantomx at hotmail dot com> - 0.2-27.20211207git773f16b
+- Last snapshot
+
 * Mon Nov 08 2021 Phantom X <megaphantomx at hotmail dot com> - 0.2-26.20211105git5d93d2d
 - Bump
 

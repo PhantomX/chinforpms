@@ -28,7 +28,9 @@ Enable with WINEFSYNC=1 environment variable
 
 WINEFSYNC_SPINCOUNT=value
 
-WINEFSYNC_FUTEX2=0 to disable futex2
+WINE_DISABLE_FAST_SYNC
+=================================
+WINE_DISABLE_FAST_SYNC=1 to disable fastsync (needed if using WINEESYNC or WINEFSYNC)
 
 WINE_LARGE_ADDRESS_AWARE override
 =================================

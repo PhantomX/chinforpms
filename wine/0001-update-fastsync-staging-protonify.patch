@@ -1,0 +1,60 @@
+From f5c1780d68991619b0935798c7be071fc16a7e0c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 11 Dec 2021 17:12:00 -0300
+Subject: [PATCH] update fastsync-staging-protonify
+
+---
+ patch1051.patch | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/patch1051.patch b/patch1051.patch
+index e667857..fadbe3c 100644
+--- a/patch1051.patch
++++ b/patch1051.patch
+@@ -3538,7 +3538,7 @@ diff --git a/dlls/ntdll/unix/sync.c b/dlls/ntdll/unix/sync.c
+ index 4003d65ca8e..4fdec59ca4a 100644
+ --- a/dlls/ntdll/unix/sync.c
+ +++ b/dlls/ntdll/unix/sync.c
+-@@ -78,9 +78,11 @@ HANDLE keyed_event = 0;
++@@ -78,6 +78,7 @@ HANDLE keyed_event = 0;
+  static const char *debugstr_timeout( const LARGE_INTEGER *timeout )
+  {
+      if (!timeout) return "(infinite)";
+@@ -3547,10 +3547,6 @@ index 4003d65ca8e..4fdec59ca4a 100644
+ +                             (long)(timeout->QuadPart % TICKSPERSEC) );
+  }
+  
+-+
+- /* return a monotonic time counter, in Win32 ticks */
+- static inline ULONGLONG monotonic_counter(void)
+- {
+ @@ -264,6 +266,9 @@ NTSTATUS WINAPI NtCreateSemaphore( HANDLE *handle, ACCESS_MASK access, const OBJ
+      data_size_t len;
+      struct object_attributes *objattr;
+@@ -3772,7 +3768,7 @@ diff --git a/dlls/ntdll/unix/sync.c b/dlls/ntdll/unix/sync.c
+ index 4fdec59ca4a..374001d2454 100644
+ --- a/dlls/ntdll/unix/sync.c
+ +++ b/dlls/ntdll/unix/sync.c
+-@@ -30,9 +30,13 @@
++@@ -30,10 +30,14 @@
+  #include <assert.h>
+  #include <errno.h>
+  #include <fcntl.h>
+@@ -3780,11 +3776,12 @@ index 4fdec59ca4a..374001d2454 100644
+  #include <limits.h>
+  #include <signal.h>
+  #include <sys/types.h>
++ #include <sys/mman.h>
+ +#ifdef HAVE_SYS_IOCTL_H
+ +#include <sys/ioctl.h>
+ +#endif
+- #ifdef HAVE_SYS_MMAN_H
+- #include <sys/mman.h>
++ #ifdef HAVE_SYS_SYSCALL_H
++ #include <sys/syscall.h>
+  #endif
+ @@ -49,6 +53,7 @@
+  #endif
+-- 
+2.33.1
+

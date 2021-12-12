@@ -1,18 +1,18 @@
-From dd5feab44223483fd6914f187c44fca24a5e5c13 Mon Sep 17 00:00:00 2001
+From 0b6a0fcbce04c0b151b8d710ed703151d6a3208c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 2 Sep 2021 07:37:02 -0300
+Date: Sat, 11 Dec 2021 20:54:01 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- Makefile       | 36 +++++++++++++++++++++++++++---------
+ Makefile       | 32 ++++++++++++++++++++++++--------
  src/sector.cpp |  2 +-
- 2 files changed, 28 insertions(+), 10 deletions(-)
+ 2 files changed, 25 insertions(+), 9 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 15cb2ca..971ace0 100644
+index cef4be2..2abcbc9 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -2,6 +2,9 @@ PREFIX ?= /usr/local
+@@ -4,6 +4,9 @@ PREFIX ?= /usr/local
  BINDIR ?= $(PREFIX)/bin
  MANDIR ?= $(PREFIX)/share/man
  
@@ -22,32 +22,31 @@ index 15cb2ca..971ace0 100644
  CC ?= gcc
  CXX ?= g++
  
-@@ -11,14 +14,19 @@ CXXFLAGS ?= $(CFLAGS)
- LIBS ?= libuv liblz4 zlib
+@@ -28,8 +31,8 @@ OBJDIR := obj
+ MKDIRS := $(OBJDIR)/src $(OBJDIR)/cli $(OBJDIR)/zopfli/src/zopfli
  
  SRC_CFLAGS += -W -Wall -Wextra -Wno-implicit-function-declaration -DNDEBUG=1
--SRC_CXXFLAGS += -W -Wall -Wextra -std=c++11 -Izopfli/src -I7zip -DNDEBUG=1 \
--	-Ilibdeflate -Wno-unused-parameter -Wno-unused-variable -pthread \
-+SRC_CXXFLAGS += -W -Wall -Wextra -std=c++11 -I7zip -DNDEBUG=1 \
-+	-Wno-unused-parameter -Wno-unused-variable -pthread \
- 	`pkg-config --cflags $(LIBS)`
+-SRC_CXXFLAGS += -W -Wall -Wextra -std=c++11 -I$(SRCDIR)/zopfli/src -I$(SRCDIR)/7zip \
+-	-DNDEBUG=1 -I$(SRCDIR)/libdeflate -Wno-unused-parameter -Wno-unused-variable \
++SRC_CXXFLAGS += -W -Wall -Wextra -std=c++11 -I$(SRCDIR)/7zip \
++	-DNDEBUG=1 -Wno-unused-parameter -Wno-unused-variable \
+ 	-pthread $(DEP_FLAGS)
  
- SRC_CXX_SRC = $(wildcard src/*.cpp)
- SRC_CXX_OBJ = $(SRC_CXX_SRC:.cpp=.o)
- CLI_CXX_SRC = $(wildcard cli/*.cpp)
- CLI_CXX_OBJ = $(CLI_CXX_SRC:.cpp=.o)
-+
+ SRC_CXX_SRC := $(wildcard $(SRCDIR)/src/*.cpp)
+@@ -40,6 +43,9 @@ CLI_CXX_SRC := $(wildcard $(SRCDIR)/cli/*.cpp)
+ CLI_CXX_TMP := $(CLI_CXX_SRC:.cpp=.o)
+ CLI_CXX_OBJ := $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(CLI_CXX_TMP))
+ 
 +EXTRA_LIBS =
-+
 +ifeq ($(SYSTEM_ZOPFLI),0)
-+SRC_CXXFLAGS += -Izopfli/src/zopfli
- ZOPFLI_C_SRC = zopfli/src/zopfli/blocksplitter.c zopfli/src/zopfli/cache.c \
-                zopfli/src/zopfli/deflate.c zopfli/src/zopfli/gzip_container.c \
-                zopfli/src/zopfli/hash.c zopfli/src/zopfli/katajainen.c \
-@@ -26,13 +34,21 @@ ZOPFLI_C_SRC = zopfli/src/zopfli/blocksplitter.c zopfli/src/zopfli/cache.c \
-                zopfli/src/zopfli/tree.c zopfli/src/zopfli/util.c \
-                zopfli/src/zopfli/zlib_container.c zopfli/src/zopfli/zopfli_lib.c
- ZOPFLI_C_OBJ = $(ZOPFLI_C_SRC:.c=.o)
++SRC_CXXFLAGS += -I$(SRCDIR)/zopfli/src/zopfli
+ ZOPFLI_C_DIR := $(SRCDIR)/zopfli/src/zopfli
+ ZOPFLI_C_SRC := $(ZOPFLI_C_DIR)/blocksplitter.c $(ZOPFLI_C_DIR)/cache.c \
+                $(ZOPFLI_C_DIR)/deflate.c $(ZOPFLI_C_DIR)/gzip_container.c \
+@@ -49,17 +55,25 @@ ZOPFLI_C_SRC := $(ZOPFLI_C_DIR)/blocksplitter.c $(ZOPFLI_C_DIR)/cache.c \
+                $(ZOPFLI_C_DIR)/zlib_container.c $(ZOPFLI_C_DIR)/zopfli_lib.c
+ ZOPFLI_C_TMP := $(ZOPFLI_C_SRC:.c=.o)
+ ZOPFLI_C_OBJ := $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(ZOPFLI_C_TMP))
 +else
 +	EXTRA_LIBS += -lzopfli
 +endif
@@ -56,40 +55,37 @@ index 15cb2ca..971ace0 100644
 -ifeq ($(OS),Windows_NT)
 -	LIBDEFLATE=libdeflatestatic.lib
 -	EXTRA_LIBS += -luuid
-+LIBDEFLATE =
++SRC_LIBDEFLATE =
 +ifeq ($(SYSTEM_LIBDEFLATE),0)
-+	SRC_CXXFLAGS += -Ilibdeflate
++	SRC_CXXFLAGS += -I$(SRCDIR)/libdeflate
 +	ifeq ($(OS),Windows_NT)
 +		LIBDEFLATE=libdeflate/libdeflatestatic.lib
 +		EXTRA_LIBS += -luuid
 +	else
 +		LIBDEFLATE=libdeflate/libdeflate.a
 +	endif
++	SRC_LIBDEFLATE = $(SRCDIR)/$(LIBDEFLATE)
  else
 -	LIBDEFLATE=libdeflate.a
 +	EXTRA_LIBS += -ldeflate
  endif
  
- %.o: %.cpp
-@@ -42,14 +58,16 @@ endif
- 	$(CC) -c $(SRC_CFLAGS) $(CFLAGS) -o $@ $<
+ SRC_7ZIP = $(OBJDIR)/7zip/7zip.a
+-SRC_LIBDEFLATE = $(SRCDIR)/libdeflate/$(LIBDEFLATE)
  
- # TODO: Perhaps detect and use system libdeflate if available.
--maxcso: $(SRC_CXX_OBJ) $(CLI_CXX_OBJ) $(ZOPFLI_C_OBJ) 7zip/7zip.a libdeflate/$(LIBDEFLATE)
-+maxcso: $(SRC_CXX_OBJ) $(CLI_CXX_OBJ) $(ZOPFLI_C_OBJ) 7zip/7zip.a $(LIBDEFLATE)
- 	$(CXX) -o $@ $(SRC_CXXFLAGS) $(CXXFLAGS) $^ `pkg-config --libs $(LIBS)` $(EXTRA_LIBS)
+ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(OBJDIR)/.done
+ 	$(CXX) -c $(SRC_CXXFLAGS) $(CXXFLAGS) -o $@ $<
+@@ -74,8 +88,10 @@ maxcso: $(SRC_CXX_OBJ) $(CLI_CXX_OBJ) $(ZOPFLI_C_OBJ) $(SRC_7ZIP) $(SRC_LIBDEFLA
+ $(SRC_7ZIP):
+ 	$(MAKE) -f $(SRCDIR)/7zip/Makefile 7zip.a
  
- 7zip/7zip.a:
- 	$(MAKE) -C 7zip 7zip.a
- 
--libdeflate/$(LIBDEFLATE):
 +ifeq ($(SYSTEM_LIBDEFLATE),0)
-+$(LIBDEFLATE):
- 	$(MAKE) -C libdeflate $(LIBDEFLATE)
+ $(SRC_LIBDEFLATE):
+ 	$(MAKE) -C $(SRCDIR)/libdeflate $(LIBDEFLATE)
 +endif
  
- install: all
- 	mkdir -p $(DESTDIR)$(BINDIR)
+ $(OBJDIR)/.done:
+ 	@mkdir -p $(MKDIRS)
 diff --git a/src/sector.cpp b/src/sector.cpp
 index ea4730f..cebc3a6 100644
 --- a/src/sector.cpp
@@ -104,5 +100,5 @@ index ea4730f..cebc3a6 100644
  #ifndef NO_DEFLATE7Z
  #include "deflate7z.h"
 -- 
-2.31.1
+2.33.1
 

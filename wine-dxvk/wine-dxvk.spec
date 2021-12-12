@@ -38,7 +38,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.9.2
-Release:        108%{?gver}%{?dist}
+Release:        109%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -55,7 +55,8 @@ Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
 
 Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
-Patch101:       0001-Revert-dxso-Omit-relative-constant-range-check-when-.patch
+Patch101:       %{url}/pull/2392.patch#/%{name}-gh-pr2392.patch
+
 
 %if 0%{?dxvk_async}
 Patch200:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
@@ -252,6 +253,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Dec 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.2-109.20211205gitc13395d
+- Add a PR to fix flickering
+
 * Mon Dec 06 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.2-108.20211205gitc13395d
 - Float emulation update
 
