@@ -1,7 +1,7 @@
 %global commit 5f6f65a06500e12f378e7918289e1d82954c1bd6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211123
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -10,8 +10,8 @@
 %global vermm %%(echo %{version} | cut -d. -f-2)
 
 Name:           deluge
-Version:        2.0.3
-Release:        116%{?gver}%{?dist}
+Version:        2.0.4
+Release:        100%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -140,6 +140,8 @@ echo "%{version}" > RELEASE-VERSION
 %else
 %autosetup -p1
 %endif
+
+find -name '*~' -delete
 
 sed -e "s|'closure-compiler', 'closure'|'closure_disabled'|g" -i minify_web_js.py
 
@@ -273,6 +275,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Mon Dec 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.4-100
+- 2.0.4
+
 * Wed Nov 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.3-116.20211123git5f6f65a
 - Last snapshot
 
