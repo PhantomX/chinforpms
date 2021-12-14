@@ -1,0 +1,48 @@
+From 09262850b984b44bfb6f920a44a67ea8d5e56659 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 13 Dec 2021 15:51:55 -0300
+Subject: [PATCH] cmake: library fixes
+
+---
+ CMakeLists.txt | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 40d5617..cbf41b4 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ cmake_minimum_required(VERSION 3.6)
+-project(QCodeEditor)
++project(QCodeEditor VERSION 0.0 LANGUAGES CXX)
+ 
+ set(CMAKE_CXX_STANDARD 11)
+ 
+@@ -79,7 +79,7 @@ find_package(Qt5Core    CONFIG REQUIRED)
+ find_package(Qt5Widgets CONFIG REQUIRED)
+ find_package(Qt5Gui     CONFIG REQUIRED)
+ 
+-add_library(QCodeEditor STATIC
++add_library(QCodeEditor
+     ${RESOURCES_FILE}
+     ${SOURCE_FILES}
+     ${INCLUDE_FILES}
+@@ -108,3 +108,15 @@ target_link_libraries(QCodeEditor
+     Qt5::Widgets
+     Qt5::Gui
+ )
++
++set_target_properties(QCodeEditor PROPERTIES VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}" SOVERSION ${PROJECT_VERSION_MAJOR})
++
++install(FILES ${INCLUDE_FILES}
++    DESTINATION include/QCodeEditor
++    COMPONENT headers
++)
++
++install(TARGETS QCodeEditor
++  LIBRARY DESTINATION lib${LIB_SUFFIX}
++  ARCHIVE DESTINATION lib${LIB_SUFFIX}
++)
+-- 
+2.33.1
+

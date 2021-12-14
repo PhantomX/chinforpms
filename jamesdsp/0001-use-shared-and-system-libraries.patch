@@ -1,0 +1,41 @@
+From 9998eef478e45baee15a9daf6c9b954138905a48 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 13 Dec 2021 20:27:03 -0300
+Subject: [PATCH] use shared and system libraries
+
+---
+ src/src.pro | 16 +++-------------
+ 1 file changed, 3 insertions(+), 13 deletions(-)
+
+diff --git a/src/src.pro b/src/src.pro
+index 4a0add3..97cc0bf 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -170,21 +170,11 @@ unix {
+ }
+ 
+ # Link libjamesdsp
+-unix:!macx: LIBS += -L$$OUT_PWD/../libjamesdsp -llibjamesdsp
++unix:!macx: LIBS += -L$$OUT_PWD/../libjamesdsp -ljamesdsp
+ INCLUDEPATH += $$PWD/../libjamesdsp/subtree/Main/libjamesdsp/jni/jamesdsp/jdsp/ \
+                $$PWD/../libjamesdsp
+ DEPENDPATH += $$PWD/../libjamesdsp
+-unix:!macx: PRE_TARGETDEPS += $$OUT_PWD/../libjamesdsp/liblibjamesdsp.a
+ 
+ # Link libEELEditor
+-unix:!macx: LIBS += -L$$OUT_PWD/subprojects/EELEditor/src -leeleditor
+-INCLUDEPATH += $$PWD/subprojects/EELEditor/src \
+-               $$PWD/subprojects/EELEditor/3rdparty/QCodeEditor/include
+-DEPENDPATH += $$PWD/subprojects/EELEditor/src
+-unix:!macx: PRE_TARGETDEPS += $$OUT_PWD/subprojects/EELEditor/src/libeeleditor.a
+-
+-# Link libqtadvanceddocking (libEELEditor)
+-LIBS += -L$$OUT_PWD/subprojects/EELEditor/3rdparty/docking-system/lib
+-include($$PWD/subprojects/EELEditor/3rdparty/docking-system/ads.pri)
+-INCLUDEPATH += $$PWD/subprojects/EELEditor/3rdparty/docking-system/src
+-DEPENDPATH += $$PWD/subprojects/EELEditor/3rdparty/docking-system/src
++unix:!macx: LIBS += -leeleditor
++INCLUDEPATH += /usr/include/LiveprogIDE /usr/include/qtadvanceddocking /usr/include/QCodeEditor
+-- 
+2.33.1
+

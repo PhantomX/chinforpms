@@ -46,6 +46,7 @@ ff7tk
 -gstreamer1-plugins-base
 libchdr
 libdeflate
+libqtadvanceddocking
 -libliftoff
 -libvorbis
 libvorbis-aotuv
@@ -55,6 +56,7 @@ pygtk2
 -python-yoyo-migrations
 -perl-Gtk3
 perl-X11-GUITest
+qcodeeditor
 -spirv-tools
 vulkan-loader
 xcftools
@@ -143,6 +145,7 @@ kristall
 kse
 -ladspa-bs2b-plugins
 libstrangle
+liveprogide
 -linux-steam-integration
 lutris
 lunzip
@@ -253,6 +256,7 @@ zram-init
 dolphin-emu
 freac
 -freac-superfast-codecs
+jamesdsp
 -m64p
 mupen64plus-rsp-cxd4
 mupen64plus-rsp-parallel

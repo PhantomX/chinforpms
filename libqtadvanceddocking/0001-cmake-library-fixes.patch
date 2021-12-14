@@ -1,0 +1,66 @@
+From 8c2021a26b5b113dfb05c330927105e7eedbbce1 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 13 Dec 2021 15:23:51 -0300
+Subject: [PATCH] cmake: library fixes
+
+---
+ src/CMakeLists.txt | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 49cd799..d2d0189 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -71,9 +71,10 @@ set_target_properties(qtadvanceddocking PROPERTIES
+     CXX_STANDARD_REQUIRED ON
+     CXX_EXTENSIONS OFF
+     VERSION ${VERSION_SHORT}
++    SOVERSION ${PROJECT_VERSION_MAJOR}
+     EXPORT_NAME "qtadvanceddocking"
+     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib"
+-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib"
++    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib${LIB_SUFFIX}"
+     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/bin"
+ )
+ include(CMakePackageConfigHelpers)
+@@ -83,30 +84,25 @@ write_basic_package_version_file(
+     COMPATIBILITY SameMajorVersion
+ )
+ install(FILES ${ads_HEADERS}
+-    DESTINATION include
++    DESTINATION include/qtadvanceddocking
+     COMPONENT headers
+ )
+-install(FILES
+-    "${CMAKE_SOURCE_DIR}/LICENSE"
+-    "${CMAKE_SOURCE_DIR}/gnu-lgpl-v2.1.md"
+-    DESTINATION license
+-    COMPONENT license
+-)
++
+ install(TARGETS qtadvanceddocking
+     EXPORT adsTargets
+     RUNTIME DESTINATION bin
+-    LIBRARY DESTINATION lib
+-    ARCHIVE DESTINATION lib
+-    INCLUDES DESTINATION include
++    LIBRARY DESTINATION lib${LIB_SUFFIX}
++    ARCHIVE DESTINATION lib${LIB_SUFFIX}
++    INCLUDES DESTINATION include/qtadvanceddocking
+ )
+ 
+ install(EXPORT adsTargets
+     FILE adsTargets.cmake
+     NAMESPACE ads::
+-    DESTINATION lib/cmake/qtadvanceddocking
++    DESTINATION lib${LIB_SUFFIX}/cmake/qtadvanceddocking
+ )
+ install(FILES qtadvanceddockingConfig.cmake "${CMAKE_CURRENT_BINARY_DIR}/qtadvanceddockingConfigVersion.cmake"
+-    DESTINATION lib/cmake/qtadvanceddocking
++    DESTINATION lib${LIB_SUFFIX}/cmake/qtadvanceddocking
+ )
+ 
+ target_include_directories(qtadvanceddocking PUBLIC
+-- 
+2.33.1
+
