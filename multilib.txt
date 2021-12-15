@@ -19,6 +19,7 @@ gstreamer1-plugins-base
 gtk3
 gtk3-nocsd
 kernel-tools
+ladspa-tap-plugins
 libeatmydata
 libmirage
 libmpd

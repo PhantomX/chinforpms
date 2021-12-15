@@ -283,7 +283,7 @@ Obsoletes: %{name}-system-unicore32-core <= %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 6.2.0~rc4
+Version: 6.2.0
 Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
@@ -2245,6 +2245,9 @@ popd
 
 
 %changelog
+* Wed Dec 15 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.2.0-100
+- 6.2.0
+
 * Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.2.0~rc4-100
 - 6.2.0-rc4
 
