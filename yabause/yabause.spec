@@ -69,13 +69,8 @@ but optionally a real Saturn BIOS can be used, however it is not included.
 
 
 %prep
-
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-cp -p %{name}/{COPYING,AUTHORS,ChangeLog,README} .
-%else
-%autosetup -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%{?gver: cp -p %{name}/{COPYING,AUTHORS,ChangeLog,README} .}
 
 # fix end-of-line encoding
 find \( -name \*.c\* -or -name \*.h\* -or -name AUTHORS \) -exec sed -i 's/\r$//' {} \;

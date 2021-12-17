@@ -76,12 +76,10 @@ Nautilus extension to add "Open with EasyTAG" to the Nautilus context menu, for
 easier access to EasyTAG when opening directories and audio files.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-NOCONFIGURE=1 ./autogen.sh
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
+
+%{?gver:NOCONFIGURE=1 ./autogen.sh}
+
 
 %build
 %configure \

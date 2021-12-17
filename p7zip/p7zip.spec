@@ -99,11 +99,7 @@ This package contains the p7zip manual documentation and some code
 contributions.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 %if 0%{sanitize}
   rm -rf CPP/7zip/{Archive,Compress,Crypto,CMAKE,QMAKE}/Rar*

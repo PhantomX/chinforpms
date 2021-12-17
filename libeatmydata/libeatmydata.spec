@@ -40,11 +40,7 @@ this software no longer crash safe.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit}
-%else
-%autosetup -n %{name}-%{version}
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 if ! [ -x ./configure ] ;then
   autoreconf -ivf

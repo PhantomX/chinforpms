@@ -44,11 +44,7 @@ It includes a GTK+ GUI as well as a command line interface.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 sed -i -e 's|^liblocation=.*$|liblocation="%{_datadir}/%{name}" #RPM edit|' %{name}-gui
 sed -i -e 's|^locale_base=.*$|locale_base=None #RPM edit|' %{name}-gui

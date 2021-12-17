@@ -1,7 +1,10 @@
-%global commit 27041cbf5999d98b27a055df9a86ba3a68bed261
+%global commit 71d016722e5ae7c6e638aa2f613baae5cf03d14d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211206
+%global date 20211216
 %global with_snapshot 1
+
+# Disable LTO. Crash.
+%global _lto_cflags %{nil}
 
 %global commit1 fab7b33b896a42dcc865ba5ecdbacd9f409137f8
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -27,7 +30,7 @@
 
 Name:           flycast
 Version:        1.1
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -100,11 +103,7 @@ Provides:       bundled(xbyak)
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup %{name}-r%{version} -p1
-%endif
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:r%{version}} -p1
 
 rm -rf core/deps/{glm,libzip,lzma,miniupnpc,oboe,SDL2-*,xxHash,zlib}
 
@@ -145,9 +144,6 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
 
 
 %build
-# Disable LTO. Crash.
-%global _lto_cflags %{nil}
-
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now -Wl,--sort-common"
 EXTRA_CFLAGS="-D NDEBUG -frename-registers -ftree-vectorize -fno-operator-names"
 export CFLAGS="%{build_cflags} ${EXTRA_CFLAGS}"
@@ -217,6 +213,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Fri Dec 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-5.20211216git71d0167
+- Last snapshot
+
 * Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-4.20211206git27041cb
 - Update
 

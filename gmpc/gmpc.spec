@@ -81,13 +81,11 @@ Requires: pkgconfig
 This package includes header files necessary for developing gmpc plugins.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-sed -e 's|`git rev-parse --short master`|%{shortcommit}|g' -i src/Makefile.am
-NOCONFIGURE=1 ./autogen.sh
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
+
+%{?gver:sed -e 's|`git rev-parse --short master`|%{shortcommit}|g' -i src/Makefile.am}
+%{?gver:NOCONFIGURE=1 ./autogen.sh}
+
 
 %build
 

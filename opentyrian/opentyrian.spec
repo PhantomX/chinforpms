@@ -38,11 +38,7 @@ employed to fight Microsol and save the galaxy.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 chmod -x CREDITS
 

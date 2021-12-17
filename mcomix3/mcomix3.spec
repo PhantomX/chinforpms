@@ -51,11 +51,7 @@ MComix3 is a user-friendly, customizable image viewer.
 It has been forked from the original MComix project and ported to python3.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 cat > %{name}.sh <<EOF
 #!/usr/bin/bash

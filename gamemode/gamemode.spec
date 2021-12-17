@@ -45,11 +45,7 @@ The %{name}-devel package contains the development files libraries needed for
 application integration with %{name}.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 rm -rf subprojects/inih-*
 

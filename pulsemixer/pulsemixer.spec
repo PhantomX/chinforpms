@@ -35,11 +35,7 @@ Requires:       pulseaudio-daemon
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 %build
 %py3_build

@@ -55,11 +55,7 @@ The %{name}-devel package contains the development files libraries for libglyr.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 sed \
   -e '/GCC_ONLY_OPT/s|-s||g' \

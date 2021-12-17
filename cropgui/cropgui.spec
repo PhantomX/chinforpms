@@ -43,11 +43,7 @@ cropgui is a a GTK GUI for lossless JPEG cropping
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 sed -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' -i cropgtk.py
 

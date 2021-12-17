@@ -355,11 +355,7 @@ This package contains results of tests executed during build.
 #---------------------------------------------------------------------
 
 %prep
-%if 0%{?with_snapshot}
-%setup -q -n Waterfox-%{channel}-%{commit} -a 600
-%else
-%setup -q -n Waterfox-%{channel}-%{version}-%{branch} -a 600
-%endif
+%autosetup -n Waterfox-%{channel}-%{?gver:%{commit}}%{!?gver:%{version}-%{branch}} -p1 -a 600
 
 %if %{build_langpacks}
   mkdir waterfox-langpacks

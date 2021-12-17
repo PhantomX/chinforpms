@@ -77,11 +77,7 @@ Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless gamepads,
 both first and third party.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-linux-%{version} -p1
-%endif
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:linux-%{version}} -p1
 
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
   examples/responsecurve-generator.py \

@@ -50,12 +50,9 @@ libmpd-devel is a sub-package which contains header files and static libraries
 for developing program with libmpd.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-NOCONFIGURE=1 ./autogen.sh
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
+
+%{?gver:NOCONFIGURE=1 ./autogen.sh}
 
 
 %build

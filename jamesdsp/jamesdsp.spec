@@ -100,11 +100,7 @@ Common %{name} files.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{commit} -p1
-%else
-%autosetup -n %{pkgname}-%{version} -p1
-%endif
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 for dir in asyncplusplus http qtcsv qtpromise ;do
   cp -p 3rdparty/${dir}/LICENSE LICENSE.${dir}
@@ -119,7 +115,7 @@ sed \
   -i lib%{name}/lib%{name}.pro
 
 sed \
-  -e 's|$$system(git describe --tags --long --always)|%{version}%{?with_snapshot:-g%{shortcommit}}|g' \
+  -e 's|$$system(git describe --tags --long --always)|%{version}%{?gver:-g%{shortcommit}}|g' \
   -i src/src.pro
 
 cat > %{name}.desktop <<EOF

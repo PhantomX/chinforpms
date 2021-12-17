@@ -10,7 +10,7 @@
 %global vermm %%(echo %{version} | cut -d. -f-2)
 
 Name:           deluge
-Version:        2.0.4
+Version:        2.0.5
 Release:        100%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
@@ -134,12 +134,9 @@ BuildRequires: systemd
 Files for the Deluge daemon
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-echo "%{version}" > RELEASE-VERSION
-%else
-%autosetup -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
+
+%{?gver:echo "%{version}" > RELEASE-VERSION}
 
 find -name '*~' -delete
 
@@ -275,6 +272,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Thu Dec 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.5-100
+- 2.0.5
+
 * Mon Dec 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.4-100
 - 2.0.4
 

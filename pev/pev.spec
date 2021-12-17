@@ -58,12 +58,9 @@ The libpe-devel package contains the development files libraries needed for
 plugins building.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-tar xf %{S:1} -C lib/libpe --strip-components 1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
+
+%{?gver:tar xf %{S:1} -C lib/libpe --strip-components 1}
 
 %build
 

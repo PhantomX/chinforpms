@@ -77,11 +77,7 @@ emulation support for game pads, videos, sound, memory cards, and other
 important PSX components, and is able to play many games without problems.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 #remove any unnecessary files:
 rm -f -r win32 macosx

@@ -107,11 +107,7 @@ mGBA with Qt5 frontend.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup %{name}-r%{version} -p1
-%endif
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:r%{version}} -p1
 
 rm -rf src/third-party/{discord-rpc,inih,libpng,lzma,sqlite3,zlib}
 

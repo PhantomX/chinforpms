@@ -68,11 +68,7 @@ screen, or by using a keypress to switch focus to a different system.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 tar -xf %{S:1} -C ext/gmock --strip-components 1
 tar -xf %{S:2} -C ext/gtest --strip-components 1

@@ -30,11 +30,7 @@ mpdnotify is a simple bash script that uses notify-send and mpc to create
 notifications about what song is currently playing in mpd.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit}
-%else
-%autosetup -n %{name}-%{version}
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 # Search links too
 sed -e '/^    cover=/s|-type f|\0 -o -type l|g' -i.orig %{name}

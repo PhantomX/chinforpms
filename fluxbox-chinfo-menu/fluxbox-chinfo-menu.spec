@@ -34,11 +34,7 @@ Requires:       xterm
 %{summary}.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit}
-%else
-%autosetup -n %{name}-%{version} -p0
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 %build
 %cmake \

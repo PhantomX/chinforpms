@@ -91,13 +91,9 @@ This package contains a graphical user interface using GTK+.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-tar -xf %{S:10} -C shaders/SPIRV-Cross --strip-components 1
-tar -xf %{S:11} -C shaders/glslang --strip-components 1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%{?gver:tar -xf %{S:10} -C shaders/SPIRV-Cross --strip-components 1}
+%{?gver:tar -xf %{S:11} -C shaders/glslang --strip-components 1}
 
 # Remove bundled libs
 rm -rf unzip

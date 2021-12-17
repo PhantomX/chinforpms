@@ -31,11 +31,7 @@ BuildRequires:  /usr/bin/pathfix.py
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{name}
 

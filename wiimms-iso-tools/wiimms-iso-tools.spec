@@ -51,11 +51,7 @@ Wiimms ISO Tools is a set of command line tools to manipulate Wii and GameCube
 ISO images and WBFS containers.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}.source-%{version} -p1
-%endif
+%autosetup -n %{name}%{?gver:-%{commit}}%{!?gver:.source-%{version}} -p1
 
 rm -rf project/src/{libbz2,crypto} setup/*.exe
 

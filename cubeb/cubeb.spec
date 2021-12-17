@@ -60,11 +60,7 @@ development against %{name} libraries.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 tar -xf %{S:1} -C %{srcname1} --strip-components 1
 tar -xf %{S:2} -C cmake/%{srcname2} --strip-components 1

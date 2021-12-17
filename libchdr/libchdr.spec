@@ -49,11 +49,7 @@ developing applications that use %{name}.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 rm -rf deps/{lzma,zlib}*
 

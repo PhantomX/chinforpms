@@ -45,11 +45,7 @@ https, gopher, finger.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 sed -e '/^install:/s| kristall||g' -i Makefile
 

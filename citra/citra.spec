@@ -159,11 +159,7 @@ This is the Qt frontend.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 tar -xf %{S:1} -C externals/catch --strip-components 1
 tar -xf %{S:2} -C externals/cryptopp/cryptopp --strip-components 1

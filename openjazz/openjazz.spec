@@ -42,7 +42,7 @@ Requires:       hicolor-icon-theme
 
 
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p0
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -p0
 
 pod2man -r "%{binname} %{version}" unix/%{binname}.6.pod > %{binname}.6
 

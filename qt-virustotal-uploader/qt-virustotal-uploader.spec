@@ -37,11 +37,7 @@ Requires:       hicolor-icon-theme
 %{summary}.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit}
-%else
-%autosetup -n %{name}-%{version}
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 sed \
   -e 's|/usr/local/include/ $$(HOME)/local/include/|%{_includedir}/c-vtapi|g' \

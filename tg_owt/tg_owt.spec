@@ -4,17 +4,25 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 d5c3d43b959c7e9e7d8004b9b7fdadd12ce7d589
+# Enable system vpx
+%global with_sysvpx 1
+
+%global commit0 429a6869e4a164e0aad2d8657db341d56f9a6a6f
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20211207
+%global date 20211212
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
 
+%if 0%{?with_sysvpx}
+%global vpxver 1.10.0
+%else
 %global commit2 5b63f0f821e94f8072eb483014cfc33b05978bb9
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 libvpx
+%global bundlevpx 1.9.0
+%endif
 
 %global libsrtp_ver 94ac00d
 %global pffft_ver 483453d
@@ -26,7 +34,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        109%{?gver}%{?dist}
+Release:        110%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -37,19 +45,20 @@ Summary:        WebRTC library for the Telegram messenger
 # openh264 - BSD
 # pffft - BSD
 # rnnoise - BSD
-# usrsctp - BSD
 License:        BSD and ASL 2.0
 URL:            https://github.com/desktop-app/%{name}
 
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
+%if !0%{?with_sysvpx}
 Source2:        %{cvc_url}/webm/libvpx/+archive/%{shortcommit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
+%endif
 
-Patch0:         0001-dcsctp-fix-build-with-shared-library.patch
+# From Gentoo
+Patch0:         tg_owt-0_pre20211207-fix-dcsctp-references.patch
 
 
 BuildRequires:  cmake(absl)
-BuildRequires:  cmake(Crc32c)
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(glib-2.0)
@@ -68,7 +77,11 @@ BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(protobuf)
 BuildRequires:  pkgconfig(usrsctp)
-#BuildRequires:  pkgconfig(vpx)
+%if 0%{?with_sysvpx}
+BuildRequires:  pkgconfig(vpx) >= %{vpxver}
+%else
+Provides:       bundled(libvpx) = %{bundlevpx}~git%{shortcommit2}
+%endif
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xdamage)
@@ -93,7 +106,6 @@ Provides:       bundled(g722) = 0~git
 Provides:       bundled(libsrtp) = 2.2.0~git%{libsrtp_ver}
 Provides:       bundled(pffft) = 0~git%{pffft_ver}
 Provides:       bundled(portaudio) = 0~git
-Provides:       bundled(libvpx) = 1.8.2~git%{shortcommit2}
 Provides:       bundled(libwebm) = 0~git
 Provides:       bundled(libyuv) = 0~git%{shortcommit1}
 Provides:       bundled(openh264) = 1.10.0~git%{openh264_ver}
@@ -108,7 +120,6 @@ Special fork of the OpenWebRTC library for the Telegram messenger.
 Summary:        Development files for %{name}
 %if %{with static}
 Requires:       cmake(absl)
-Requires:       cmake(Crc32c)
 Requires:       pkgconfig(alsa)
 Requires:       pkgconfig(gio-2.0)
 Requires:       pkgconfig(glib-2.0)
@@ -127,6 +138,11 @@ Requires:       pkgconfig(openssl)
 Requires:       pkgconfig(opus)
 Requires:       pkgconfig(usrsctp)
 Requires:       pkgconfig(vpx) >= 1.10.0
+%if 0%{?with_sysvpx}
+Requires:       pkgconfig(vpx) >= %{vpxver}
+%else
+Provides:       bundled(libvpx) = %{bundlevpx}~git%{shortcommit2}
+%endif
 Requires:       pkgconfig(x11)
 Requires:       pkgconfig(xcomposite)
 Requires:       pkgconfig(xdamage)
@@ -136,10 +152,7 @@ Requires:       pkgconfig(xrender)
 Requires:       pkgconfig(xrandr)
 Requires:       pkgconfig(xtst)
 Provides:       %{name}-static%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-#Provides:       bundled(abseil-cpp) = 0~gitfba8a31
-#Provides:       bundled(libevent) = 1.4.15
 Provides:       bundled(rnnoise) = 0~git91ef40
-#Provides:       bundled(usrsctp) = 1.0.0~gitbee946a
 Provides:       bundled(base64) = 0~git
 Provides:       bundled(dcsctp) = 0~git
 Provides:       bundled(fft) = 0~git
@@ -149,7 +162,6 @@ Provides:       bundled(g722) = 0~git
 Provides:       bundled(libsrtp) = 2.2.0~git%{libsrtp_ver}
 Provides:       bundled(pffft) = 0~git%{pffft_ver}
 Provides:       bundled(portaudio) = 0~git
-Provides:       bundled(libvpx) = 1.8.2~git%{shortcommit2}
 Provides:       bundled(libwebm) = 0~git
 Provides:       bundled(libyuv) = 0~git%{shortcommit1}
 Provides:       bundled(openh264) = 1.10.0~git%{openh264_ver}
@@ -168,7 +180,11 @@ Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %autosetup -n %{name}-%{commit0} -p1
 
 tar -xf %{S:1} -C src/third_party/libyuv
+%if 0%{?with_sysvpx}
+  sed '/include(cmake\/libvpx.cmake)/d' -i CMakeLists.txt
+%else
 tar -xf %{S:2} -C src/third_party/libvpx/source/libvpx
+%endif
 
 mkdir legal
 %if %{with static}
@@ -176,19 +192,19 @@ cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
 cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
 cp -f -p src/third_party/rnnoise/COPYING legal/LICENSE.rnnoise
 cp -f -p src/third_party/rnnoise/README.chromium legal/README.rnnoise
-cp -f -p src/third_party/usrsctp/LICENSE legal/LICENSE.usrsctp
-cp -f -p src/third_party/usrsctp/README.chromium legal/README.usrsctp
 %endif
 cp -f -p src/third_party/libsrtp/LICENSE legal/LICENSE.libsrtp
 cp -f -p src/third_party/libsrtp/README.chromium legal/README.libsrtp
 cp -f -p src/third_party/pffft/LICENSE legal/LICENSE.pffft
 cp -f -p src/third_party/pffft/README.chromium legal/README.pffft
+%if !0%{?with_sysvpx}
 cp -f -p src/third_party/libvpx/source/libvpx/LICENSE legal/LICENSE.libvpx
 cp -f -p src/third_party/libvpx/source/libvpx/PATENTS legal/PATENTS.libvpx
 cp -f -p src/third_party/libvpx/README.chromium legal/README.libvpx
 cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/LICENSE.TXT legal/LICENSE.libwebm
 cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/PATENTS.TXT legal/PATENTS.libwebm
 cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/README.libvpx legal/README.libwebm
+%endif
 cp -f -p src/third_party/libyuv/LICENSE legal/LICENSE.libyuv
 cp -f -p src/third_party/libyuv/PATENTS legal/PATENTS.libyuv
 cp -f -p src/third_party/libyuv/README.chromium legal/README.libyuv
@@ -220,6 +236,7 @@ cp -f -p src/modules/third_party/portaudio/README.chromium legal/README.portaudi
   -DBUILD_SHARED_LIBS:BOOL=OFF \
 %endif
   -DTG_OWT_USE_PROTOBUF:BOOL=ON \
+  -DTG_OWT_BUILD_AUDIO_BACKENDS:BOOL=OFF \
   -DTG_OWT_PACKAGED_BUILD:BOOL=ON \
 %{nil}
 
@@ -227,6 +244,19 @@ cp -f -p src/modules/third_party/portaudio/README.chromium legal/README.portaudi
 
 %install
 %cmake_install
+
+mkdir _tmpheaders
+mv %{buildroot}%{_includedir}/%{name}/rtc_base/third_party/{base64,sigslot} _tmpheaders/
+mv %{buildroot}%{_includedir}/%{name}/third_party/libyuv/include _tmpheaders/libyuv_include
+
+rm -rf %{buildroot}%{_includedir}/%{name}/rtc_base/third_party/*
+rm -rf %{buildroot}%{_includedir}/%{name}/common_audio/third_party
+rm -rf %{buildroot}%{_includedir}/%{name}/modules/third_party
+rm -rf %{buildroot}%{_includedir}/%{name}/third_party
+
+mv _tmpheaders/{base64,sigslot} %{buildroot}%{_includedir}/%{name}/rtc_base/third_party/
+mkdir -p %{buildroot}%{_includedir}/%{name}/third_party/libyuv/include
+mv _tmpheaders/libyuv_include/* %{buildroot}%{_includedir}/%{name}/third_party/libyuv/include/
 
 %if %{without static}
 %files
@@ -251,6 +281,10 @@ cp -f -p src/modules/third_party/portaudio/README.chromium legal/README.portaudi
 
 
 %changelog
+* Thu Dec 16 2021 Phantom X <megaphantomx at hotmail dot com> - 0-110.20211212git429a686
+- Bump
+- Some fixes from Gentoo, like system libvpx and headers cleanup
+
 * Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 0-109.20211207gitd5c3d43
 - Update
 

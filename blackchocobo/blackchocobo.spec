@@ -58,11 +58,7 @@ Converting Save Formats to PC or PSX. With it you can even export your ps3 saves
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 %if 0%{?with_qhexedit}
   rm -rf qhexedit

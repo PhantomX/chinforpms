@@ -59,11 +59,7 @@ do not have any form of built-in gamepad support.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 find src -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
 

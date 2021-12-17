@@ -962,11 +962,7 @@ Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 This package adds the opencl driver for wine.
 
 %prep
-%if 0%{?with_snapshot}
-%setup -q -n %{name}-%{commit}
-%else
-%setup -q -n %{name}-%{ver}
-%endif
+%setup -q -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}}
 
 patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 

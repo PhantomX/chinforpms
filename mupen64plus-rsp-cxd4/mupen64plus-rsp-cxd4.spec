@@ -35,11 +35,7 @@ This is a RSP plugin for Mupen64Plus emulator.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 cat > %{name}-env <<'EOF'
 export OPTFLAGS="%{optflags}"

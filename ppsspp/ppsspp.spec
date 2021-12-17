@@ -195,11 +195,7 @@ Additional tools files for %{name}.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 tar -xf %{SOURCE1} -C assets/debugger --strip-components 1
 %if %{with ffmpeg}

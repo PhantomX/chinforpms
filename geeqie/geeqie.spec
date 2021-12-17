@@ -12,7 +12,7 @@
 Summary:        Image browser and viewer
 Name:           geeqie
 Version:        1.6
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 
 URL:            http://geeqie.org
 License:        GPLv2+
@@ -74,11 +74,7 @@ and zoom.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 # fix autoconf problem with missing version
 sed -r -i 's/m4_translit\(.*m4_newline\)/[%{version}%{?gver:+git%{date}-%{shortcommit}}]/' configure.ac
@@ -134,6 +130,7 @@ install -p -m 0644 AUTHORS COPYING NEWS README* TODO \
 desktop-file-install \
     --delete-original \
     --dir %{buildroot}%{_datadir}/applications \
+    --add-mime-type="image/svg;image/svg+xml;image/svg+xml-compressed;image/svg-xml;text/xml-svg" \
     %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %find_lang %name
@@ -154,6 +151,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/org.geeqie
 
 
 %changelog
+* Thu Dec 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.6-102.20211107git31197b3
+- Add some svg mimetypes to desktop file
+
 * Tue Nov 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1.6-101.20211107git31197b3
 - Last snapshot
 - Rawhide sync
