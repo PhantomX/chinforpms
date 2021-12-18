@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/0fa86a7082006675caec52bd8bfb003f3481b483
+0fa86a7082006675caec52bd8bfb003f3481b483 platform/x86: thinkpad_acpi: Add lid_logo_dot to the list of safe LEDs
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/cc9dddca769975df12bb5dfe654486261a9add59
  cc9dddca769975df12bb5dfe654486261a9add59 Revert "drm/i915: Implement Wa_1508744258"
 
