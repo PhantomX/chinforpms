@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.0-rc1
+%global wine_stagingver 7.0-rc2
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -145,7 +145,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.0~rc1
+Version:        7.0~rc2
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -213,9 +213,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
-Patch200:       https://source.winehq.org/patches/data/214036#/%{name}-whq-p214036.patch
-Patch201:       https://source.winehq.org/patches/data/214035#/%{name}-whq-p214035.patch
-Patch202:       https://source.winehq.org/patches/data/214038#/%{name}-whq-p214038.patch
 Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
 
 # wine staging patches for wine-staging
@@ -296,6 +293,8 @@ Patch988:       %{whq_url}/f3624e2d642c4f5c1042d24a70273db4437fcef9#/%{name}-whq
 Patch989:       %{whq_url}/747905c674d521b61923a6cff1d630c85a74d065#/%{name}-whq-mfplat-747905c.patch
 Patch990:       %{whq_url}/4f58d8144c5c1d3b86e988f925de7eb02c848e6f#/%{name}-whq-mfplat-4f58d81.patch
 Patch991:       %{whq_url}/bd28c369d052bd33a602e4f7e699d815b9f0e15f#/%{name}-whq-mfplat-bd28c36.patch
+Patch992:       %{whq_url}/fa3fa0e3d5ee2d7e3a6afc67997a38c2fae6e8dc#/%{name}-whq-mfplat-fa3fa0e.patch
+Patch993:       %{whq_url}/78f916f598b4e0acadbda2c095058bf8a268eb72#/%{name}-whq-mfplat-78f916f.patch
 
 Patch999:       0001-mfplat-restore-definitions.patch
 Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
@@ -969,9 +968,6 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
-%patch200 -p1
-%patch201 -p1
-%patch202 -p1
 %patch203 -p1
 
 
@@ -982,6 +978,8 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch901 -p1
 
+%patch993 -p1 -R
+%patch992 -p1 -R
 %patch991 -p1 -R
 %patch990 -p1 -R
 %patch989 -p1 -R
@@ -3032,6 +3030,9 @@ fi
 
 
 %changelog
+* Sat Dec 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc2-100
+- 7.0-rc2
+
 * Sat Dec 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc1-100
 - 7.0-rc1
 - fastsync optional support

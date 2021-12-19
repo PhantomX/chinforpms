@@ -1,16 +1,27 @@
-From f5c1780d68991619b0935798c7be071fc16a7e0c Mon Sep 17 00:00:00 2001
+From 1cc426dab6d35bf7a1286aa3e4fdc64ddb92f74d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 11 Dec 2021 17:12:00 -0300
+Date: Sat, 18 Dec 2021 09:43:35 -0300
 Subject: [PATCH] update fastsync-staging-protonify
 
 ---
- patch1051.patch | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ patch1051.patch | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
 diff --git a/patch1051.patch b/patch1051.patch
-index e667857..fadbe3c 100644
+index e667857..738589f 100644
 --- a/patch1051.patch
 +++ b/patch1051.patch
+@@ -1665,9 +1665,9 @@ index 45e22239144..52a6e37adfa 100644
+  
+  static void console_dump( struct object *obj, int verbose );
+ @@ -73,6 +74,7 @@ static struct object *console_lookup_name( struct object *obj, struct unicode_st
+-                                            unsigned int attr, struct object *root );
+  static struct object *console_open_file( struct object *obj, unsigned int access,
+                                           unsigned int sharing, unsigned int options );
++ static int console_add_queue( struct object *obj, struct wait_queue_entry *entry );
+ +static struct fast_sync *console_get_fast_sync( struct object *obj );
+  
+  static const struct object_ops console_ops =
 @@ -3538,7 +3538,7 @@ diff --git a/dlls/ntdll/unix/sync.c b/dlls/ntdll/unix/sync.c
  index 4003d65ca8e..4fdec59ca4a 100644
  --- a/dlls/ntdll/unix/sync.c
