@@ -1,7 +1,7 @@
 %global _legacy_common_support 1
 
 Name:           cdemu-daemon
-Version:        3.2.5
+Version:        3.2.6
 Release:        1%{?dist}
 Summary:        CDEmu daemon
 
@@ -63,6 +63,9 @@ install -pm0644 service-example/net.sf.cdemu.CDEmuDaemon.service \
 
 
 %changelog
+* Sun Dec 19 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.6-1
+- 3.2.6
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.5-1
 - 3.2.5
 - Add new systemd user files

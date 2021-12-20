@@ -1,9 +1,7 @@
-%global _legacy_common_support 1
-
 %global vermm %%(echo %{version} | cut -d. -f-2)
 
 Name:           libmirage
-Version:        3.2.5
+Version:        3.2.6
 Release:        100%{?dist}
 Summary:        A CD/DVD-ROM image access library
 
@@ -27,6 +25,7 @@ BuildRequires:  gtk-doc
 BuildRequires:  intltool
 
 BuildRequires:  shared-mime-info
+Requires:       shared-mime-info
 
 
 %description
@@ -81,6 +80,9 @@ This package contains files needed to develop with libMirage.
 
 
 %changelog
+* Sun Dec 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.2.6-100
+- 3.2.6
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.2.5-100
 - 3.2.5
 

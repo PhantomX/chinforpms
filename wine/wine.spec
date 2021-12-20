@@ -88,7 +88,7 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id 70b494458c9d7d3f9122cbcfb178e1bab4841661
+%global ge_id f4bae1a9abb738f3ef247de97430ecb562d22e39
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
 %global tkg_id 1e09c835e779461c0ed9c81558d00ad80d45e2e4
@@ -146,7 +146,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.0~rc2
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -213,7 +213,10 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
+Patch200:       %{whqs_url}/222273#/%{name}-whq-222273.patch
 Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
+
+Patch300:       https://github.com/FNA-XNA/FAudio/commit/1e53adc111c2330a8793aeb017c451359c22d02f.patch#/%{name}-gh-faudio-1e53adc.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -334,6 +337,7 @@ Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.m
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1008:       %{tkg_url}/misc/lowlatency_audio.patch#/%{name}-tkg-lowlatency_audio.patch
 Patch1009:       %{ge_url}/wine-hotfixes/testing/lowlatency_audio_pulse.patch#/%{name}-ge-lowlatency_audio_pulse.patch
+Patch1010:       %{ge_url}/wine-hotfixes/pending/bug_52222_fix.patch#/%{name}-ge-bug_52222_fix.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -968,7 +972,10 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch200 -p1
 %patch203 -p1
+
+%patch300 -p1 -d libs/faudio
 
 
 # setup and apply wine-staging patches
@@ -1072,6 +1079,7 @@ patch -p1 -i patch1000.patch
 %patch1007 -p1
 %patch1008 -p1
 %patch1009 -p1
+%patch1010 -p1
 
 %patch5000 -p1
 
@@ -3030,6 +3038,9 @@ fi
 
 
 %changelog
+* Mon Dec 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc2-101
+- Add some pending hotfixes
+
 * Sat Dec 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc2-100
 - 7.0-rc2
 
