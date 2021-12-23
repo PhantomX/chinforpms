@@ -1,35 +1,35 @@
-From b07f59ba419f8a9d42a55d72f780060588d53647 Mon Sep 17 00:00:00 2001
+From eabb988284b179ca9fcd9bd93e3f91d6ab829bcf Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 2 Dec 2021 19:41:56 -0300
+Date: Wed, 22 Dec 2021 20:45:55 -0300
 Subject: [PATCH] Use system libraries
 
 zstd bits borrowed from dolphin-emu https://github.com/dolphin-emu/dolphin
 ---
- CMakeLists.txt                       | 21 +++++++++++++++++++++
- Common/Data/Collections/Hashmaps.h   |  4 ++++
- Core/Debugger/DisassemblyManager.cpp |  4 ++++
- Core/HLE/sceJpeg.cpp                 |  4 ++++
- Core/MIPS/IR/IRJit.cpp               |  4 ++++
- Core/MIPS/MIPSAnalyst.cpp            |  4 ++++
- Core/TextureReplacer.cpp             |  4 ++++
- Core/Util/PPGeDraw.cpp               |  4 ++++
- Core/Util/PortManager.h              |  8 ++++++--
- GPU/Common/TextureDecoder.cpp        |  4 ++++
- GPU/Common/TextureDecoderNEON.cpp    |  4 ++++
- GPU/D3D11/TextureCacheD3D11.cpp      |  4 ++++
- GPU/Directx9/TextureCacheDX9.cpp     |  4 ++++
- GPU/GLES/TextureCacheGLES.cpp        |  4 ++++
- GPU/Vulkan/TextureCacheVulkan.cpp    |  4 ++++
- UI/CwCheatScreen.cpp                 |  4 ++++
- Windows/Debugger/CtrlDisAsmView.cpp  |  4 ++++
- Windows/Debugger/CtrlMemView.cpp     |  4 ++++
- 18 files changed, 91 insertions(+), 2 deletions(-)
+ CMakeLists.txt                        | 20 ++++++++++++++++++++
+ Common/Data/Collections/Hashmaps.h    |  2 +-
+ Core/Debugger/DisassemblyManager.cpp  |  2 +-
+ Core/HLE/sceJpeg.cpp                  |  2 +-
+ Core/MIPS/IR/IRJit.cpp                |  2 +-
+ Core/MIPS/JitCommon/JitBlockCache.cpp |  2 +-
+ Core/MIPS/MIPSAnalyst.cpp             |  2 +-
+ Core/TextureReplacer.cpp              |  2 +-
+ Core/Util/PPGeDraw.cpp                |  2 +-
+ GPU/Common/TextureDecoder.cpp         |  2 +-
+ GPU/Common/TextureDecoderNEON.cpp     |  2 +-
+ GPU/D3D11/TextureCacheD3D11.cpp       |  2 +-
+ GPU/Directx9/TextureCacheDX9.cpp      |  2 +-
+ GPU/GLES/TextureCacheGLES.cpp         |  2 +-
+ GPU/Vulkan/TextureCacheVulkan.cpp     |  2 +-
+ UI/CwCheatScreen.cpp                  |  2 +-
+ Windows/Debugger/CtrlDisAsmView.cpp   |  2 +-
+ Windows/Debugger/CtrlMemView.cpp      |  2 +-
+ 18 files changed, 37 insertions(+), 17 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ddf13f5..deb9c81 100644
+index 62ced82..62adda0 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -153,6 +153,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
+@@ -154,6 +154,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
  option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
  option(USE_SYSTEM_LIBSDL2 "Dynamically link against system SDL2" ON)
  option(USE_SYSTEM_LIBPNG "Dynamically link against system libpng" ON)
@@ -37,7 +37,7 @@ index ddf13f5..deb9c81 100644
  option(USE_SYSTEM_ZSTD "Dynamically link against system zstd" ${USE_SYSTEM_ZSTD})
  option(USE_SYSTEM_MINIUPNPC "Dynamically link against system miniUPnPc" ${USE_SYSTEM_MINIUPNPC})
  option(USE_ASAN "Use address sanitizer" OFF)
-@@ -1311,11 +1312,31 @@ add_library(xbrz STATIC
+@@ -1314,11 +1315,30 @@ add_library(xbrz STATIC
  )
  include_directories(ext/xbrz)
  
@@ -53,7 +53,6 @@ index ddf13f5..deb9c81 100644
 +	if(XXHASH_FOUND AND NOT TARGET XXHASH)
 +	  message(STATUS "Using shared xxhash")
 +	  add_library(xxhash UNKNOWN IMPORTED)
-+	  add_definitions(-DSHARED_XXHASH)
 +	  set_target_properties(xxhash PROPERTIES
 +	    IMPORTED_LOCATION "${XXHASH_LIBRARY}"
 +	    INTERFACE_INCLUDE_DIRECTORIES "${XXHASH_INCLUDE_DIR}"
@@ -70,259 +69,223 @@ index ddf13f5..deb9c81 100644
  set(CoreExtra)
  set(CoreExtraLibs)
 diff --git a/Common/Data/Collections/Hashmaps.h b/Common/Data/Collections/Hashmaps.h
-index 4c66642..4f3eca0 100644
+index 4c66642..d4b1687 100644
 --- a/Common/Data/Collections/Hashmaps.h
 +++ b/Common/Data/Collections/Hashmaps.h
-@@ -4,7 +4,11 @@
+@@ -4,7 +4,7 @@
  #include <cstring>
  #include <vector>
  
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Common/CommonFuncs.h"
  #include "Common/Log.h"
  
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index 40daa83..066d49f 100644
+index 511aeee..95525c7 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
-@@ -20,7 +20,11 @@
+@@ -20,7 +20,7 @@
  #include <algorithm>
  #include <map>
  
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  
  #include "Common/CommonTypes.h"
  #include "Common/Data/Encoding/Utf8.h"
 diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
-index d438a16..5be50f2 100644
+index d438a16..cc1fd70 100644
 --- a/Core/HLE/sceJpeg.cpp
 +++ b/Core/HLE/sceJpeg.cpp
-@@ -32,8 +32,12 @@
+@@ -32,7 +32,7 @@
  // Uncomment if you want to dump JPEGs loaded through sceJpeg to a file
  // #define JPEG_DEBUG
  #ifdef JPEG_DEBUG
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #endif
-+#endif
  
  struct u24_be {
- 	unsigned char value[3];
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index f938619..5ba7781 100644
+index f938619..49537ea 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
-@@ -17,7 +17,11 @@
+@@ -17,7 +17,7 @@
  
  #include <set>
  
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Common/Profiler/Profiler.h"
  
  #include "Common/Log.h"
+diff --git a/Core/MIPS/JitCommon/JitBlockCache.cpp b/Core/MIPS/JitCommon/JitBlockCache.cpp
+index 7a0e317..e405447 100644
+--- a/Core/MIPS/JitCommon/JitBlockCache.cpp
++++ b/Core/MIPS/JitCommon/JitBlockCache.cpp
+@@ -19,7 +19,7 @@
+ #include <cstddef>
+ #include <algorithm>
+ 
+-#include "ext/xxhash.h"
++#include "xxhash.h"
+ #include "Common.h"
+ #include "Common/Profiler/Profiler.h"
+ 
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 5adea20..7953f85 100644
+index 5adea20..d332a03 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
-@@ -23,7 +23,11 @@
+@@ -23,7 +23,7 @@
  #include <mutex>
  
  #include "ext/cityhash/city.h"
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index 3d40e30..6881774 100644
+index f4a2e72..8400935 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
-@@ -22,7 +22,11 @@
+@@ -22,7 +22,7 @@
  #include <memory>
  #include <png.h>
  
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Format/IniFile.h"
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index 4d25b7e..26b4910 100644
+index 4d25b7e..5d4488a 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
-@@ -17,7 +17,11 @@
+@@ -17,7 +17,7 @@
  
  #include <algorithm>
  
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Common/Data/Color/RGBAUtil.h"
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Format/ZIMLoad.h"
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index ed3be14..30be16c 100644
+index ed3be14..ab71a9e 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
-@@ -16,7 +16,11 @@
+@@ -16,7 +16,7 @@
  // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
  
  #include "ppsspp_config.h"
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/CPUDetect.h"
  #include "Common/Log.h"
 diff --git a/GPU/Common/TextureDecoderNEON.cpp b/GPU/Common/TextureDecoderNEON.cpp
-index e0a427e..ceb36a5 100644
+index e0a427e..e64a785 100644
 --- a/GPU/Common/TextureDecoderNEON.cpp
 +++ b/GPU/Common/TextureDecoderNEON.cpp
-@@ -19,7 +19,11 @@
+@@ -19,7 +19,7 @@
  
  #if PPSSPP_ARCH(ARM_NEON)
  
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  
  #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
  #include <arm64_neon.h>
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 199f408..9d573ac 100644
+index 199f408..546969b 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
-@@ -37,7 +37,11 @@
+@@ -37,7 +37,7 @@
  #include "Core/Config.h"
  #include "Core/Host.h"
  
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Common/Math/math_util.h"
  
  // For depth depal
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index 26f15e6..b916897 100644
+index 26f15e6..5a75a2f 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
-@@ -34,7 +34,11 @@
+@@ -34,7 +34,7 @@
  #include "Core/Config.h"
  #include "Core/Host.h"
  
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Common/Math/math_util.h"
  
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index b95f688..7294da7 100644
+index b95f688..9493d0f 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
-@@ -18,7 +18,11 @@
+@@ -18,7 +18,7 @@
  #include <algorithm>
  #include <cstring>
  
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
  #include "Common/Math/math_util.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 15cba3a..7eea3e6 100644
+index 33dd1b7..e40731a 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
-@@ -18,7 +18,11 @@
+@@ -18,7 +18,7 @@
  #include <algorithm>
  #include <cstring>
  
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Text/I18n.h"
  #include "Common/Math/math_util.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index b2529e6..5be8ac9 100644
+index 0e799de..0f9562f 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
-@@ -16,7 +16,11 @@
+@@ -16,7 +16,7 @@
  // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
  
  #include "ppsspp_config.h"
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Common/UI/UI.h"
  
  #include "Common/Data/Text/I18n.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index 1549368..8e5ee67 100644
+index d36ebca..403575a 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp
 +++ b/Windows/Debugger/CtrlDisAsmView.cpp
-@@ -22,7 +22,11 @@
+@@ -22,7 +22,7 @@
  
  #include "Common/CommonWindows.h"
  #include "Common/Data/Encoding/Utf8.h"
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Common/System/Display.h"
  
  #include <CommDlg.h>
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index eeb7ad2..11ee326 100644
+index 83f160d..e3b50ac 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
-@@ -3,7 +3,11 @@
+@@ -3,7 +3,7 @@
  #include <tchar.h>
  #include <math.h>
  #include <iomanip>
-+#ifdef SHARED_XXHASH
-+#include <xxhash.h>
-+#else
- #include "ext/xxhash.h"
-+#endif
+-#include "ext/xxhash.h"
++#include "xxhash.h"
  #include "Core/Config.h"
  #include "Windows/resource.h"
  #include "Core/MemMap.h"

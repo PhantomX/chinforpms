@@ -34,8 +34,8 @@
 %global vc_url https://gitlab.gnome.org/GNOME/gtk/-/commit
 
 Name:           gtk3
-Version:        3.24.30
-Release:        103%{?dist}
+Version:        3.24.31
+Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -182,6 +182,7 @@ The gtk3-immodule-xim package contains XIM support for GTK+ 3.
 %package devel
 Summary:        Development files for GTK+
 Requires:       gtk3%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       gtk3-classic-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      gtk3-engines-devel <= 2.91.5-5.fc15
 
 %description devel
@@ -403,6 +404,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Tue Dec 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.31-100
+- 3.24.31
+
 * Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.30-103
 - gtk3-classic update
 

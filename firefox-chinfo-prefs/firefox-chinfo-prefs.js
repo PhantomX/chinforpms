@@ -98,6 +98,7 @@ pref("layout.css.visited_links_enabled", false);
 
 // Search
 pref("browser.search.openintab", true);
+pref("browser.newtabpage.activity-stream.improvesearch.handoff", false);
 pref("browser.urlbar.oneOffSearches", false);
 pref("browser.urlbar.unifiedcomplete", false);
 pref("browser.search.suggest.enabled", false);

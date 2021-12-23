@@ -1,6 +1,6 @@
-%global commit 3e5ba249bfff73aca763ed40a39f41f28d3efc7a
+%global commit cc767622d0f7b3edf8752b91d8a7750e7928d810
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211208
+%global date 20211221
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -59,7 +59,7 @@
 
 Name:           ppsspp
 Version:        1.12.3
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -407,6 +407,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Dec 22 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-106.20211221gitcc76762
+- Bump
+
 * Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-105.20211208git3e5ba24
 - Update
 - Add tools package

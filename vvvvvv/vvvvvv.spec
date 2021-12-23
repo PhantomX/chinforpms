@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 6e832cae20102079a065b212fdc9b0b4f03795d3
+%global commit f7454baffa1a97ac6a2d4e792936c8e1bc391c04
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211114
+%global date 20211222
 
 %undefine _hardened_build
 
@@ -18,7 +18,7 @@
 
 Name:           vvvvvv
 Version:        2.4
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -32,7 +32,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        %{pkgname}.png
 
 Patch11:        0001-System-data-file.patch
-Patch12:        0001-vlog_error-format-security.patch
 
 
 BuildRequires:  cmake
@@ -152,6 +151,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Wed Dec 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2.4-4.20211222gitf7454ba
+- Last snapshot
+
 * Wed Nov 24 2021 - 2.4-3.20211114git6e832ca
 - Update
 
