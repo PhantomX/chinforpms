@@ -1,14 +1,18 @@
-%global commit 71d016722e5ae7c6e638aa2f613baae5cf03d14d
+%global commit fde683a82e32a2dacd371f23fad776bfa501908c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211216
+%global date 20211223
 %global with_snapshot 1
 
 # Disable LTO. Crash.
 %global _lto_cflags %{nil}
 
-%global commit1 fab7b33b896a42dcc865ba5ecdbacd9f409137f8
+%global commit1 36c0c62815f9f6bf43c81a3977502cd3996302a0
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 LuaBridge
+
+%global commit2 d2657e1267d2ce9399bcc6b9c5b01b465db057b1
+%global shortcommit2 %(c=%{commit1}; echo ${c:0:7})
+%global srcname2 mingw-breakpad
 
 %undefine _hardened_build
 %undefine _cmake_shared_libs
@@ -30,7 +34,7 @@
 
 Name:           flycast
 Version:        1.1
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -45,13 +49,14 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/vinniefalco/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-
-Patch0:         %{url}/commit/67f2162fb3b9ebdc17536705d76f169ba1dddc95.patch#/%{name}-gh-67f2162.patch
+Source2:        https://github.com/flyinghead/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
 
+BuildRequires:  autoconf
+BuildRequires:  automake
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -86,10 +91,11 @@ Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 
+Provides:       bundled(breakpad) = 0~git%{shortcommit2}
 Provides:       bundled(chdpsr)
 Provides:       bundled(ggpo)
 Provides:       bundled(libelf) = %{libelf_ver}
-Provides:       bundled(LuaBridge)  = 0~git%{shortcommit1}
+Provides:       bundled(LuaBridge) = 0~git%{shortcommit1}
 Provides:       bundled(nowide_ver) = %{nowide_ver}
 Provides:       bundled(picotcp)
 Provides:       bundled(stb) = %{stb_ver}
@@ -112,8 +118,14 @@ rm -rf core/deps/glslang
 %endif
 
 tar -xf %{S:1} -C core/deps/luabridge/ --strip-components 1
+tar -xf %{S:2} -C core/deps/breakpad/ --strip-components 1
 
 find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
+
+pushd core/deps/breakpad
+sed -e '/" -Werror"/d' -i configure.ac
+autoreconf -if
+popd
 
 pushd shell/linux
 
@@ -130,6 +142,7 @@ sed \
 sed \
   -e 's|LINK_FLAGS_RELEASE -s||g' \
   -e 's|IMPORTED_TARGET ao|IMPORTED_TARGET ao_DISABLED|g' \
+  -e 's|SDL2-static|SDL2-static_DISABLED|g' \
   -e 's|${GIT_EXECUTABLE} describe --tags --always|echo "%{version}-%{release}"|g' \
   -i CMakeLists.txt
 
@@ -213,6 +226,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Fri Dec 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-6.20211223gitfde683a
+- Return to master branch
+
 * Fri Dec 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-5.20211216git71d0167
 - Last snapshot
 

@@ -1,32 +1,32 @@
-From 2ca98e6ef74df066346d64369ed3498c548f778d Mon Sep 17 00:00:00 2001
+From 4f28b9403e341fa40e652c953d38e41e84d8b15e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 27 Nov 2021 11:31:33 -0300
+Date: Fri, 24 Dec 2021 00:54:39 -0300
 Subject: [PATCH] Use system libs
 
 ---
- CMakeLists.txt                | 59 +++++++++++++++++++++++++++++++++--
- core/archive/7zArchive.cpp    |  7 +++++
+ CMakeLists.txt                | 61 ++++++++++++++++++++++++++++++++---
+ core/archive/7zArchive.cpp    |  7 ++++
  core/archive/7zArchive.h      |  5 +++
  core/archive/archive.cpp      |  4 +++
  core/rend/vulkan/compiler.cpp |  4 +++
  core/rend/vulkan/shaders.h    |  4 +++
- 6 files changed, 80 insertions(+), 3 deletions(-)
+ 6 files changed, 80 insertions(+), 5 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b4387c2..bc3da5e 100644
+index ef6db77..fd0fad4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -17,6 +17,9 @@ option(USE_HOST_LIBZIP "Use host libzip" ON)
- option(USE_OPENMP "Use OpenMP if available" ON)
- option(USE_VULKAN "Build with Vulkan support" ON)
+@@ -19,6 +19,9 @@ option(USE_VULKAN "Build with Vulkan support" ON)
  option(LIBRETRO "Build libretro core" OFF)
+ option(USE_OPENGL "Use Open GL API" ON)
+ option(USE_VIDEOCORE "RPI: use the legacy Broadcom GLES libraries" OFF)
 +option(USE_HOST_CHDR "Use host libchdr" OFF)
 +option(USE_HOST_LZMA "Use host lzma-sdk" OFF)
 +option(USE_HOST_SPIRV "Use host glslang/spirv" OFF)
  
  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
  
-@@ -212,20 +215,41 @@ else()
+@@ -217,16 +220,35 @@ else()
      target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_NO_OPENMP)
  endif()
  
@@ -42,8 +42,9 @@ index b4387c2..bc3da5e 100644
  set(XXHASH_BUILD_XXHSUM OFF CACHE BOOL "Build the xxhsum binary")
  add_subdirectory(core/deps/xxHash/cmake_unofficial)
  target_link_libraries(${PROJECT_NAME} PRIVATE xxHash::xxhash)
+-
 +endif()
- 
++ 
 +find_package(glm)
 +if(NOT glm_FOUND)
  option(BUILD_SHARED_LIBS "Build shared library" OFF)
@@ -51,7 +52,7 @@ index b4387c2..bc3da5e 100644
  target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
 +endif()
  
- if(USE_VULKAN)
+-if(USE_VULKAN)
 +if(USE_HOST_SPIRV)
 +    pkg_search_module(GLSLANG REQUIRED glslang)
 +    pkg_search_module(SPIRV REQUIRED spirv)
@@ -61,14 +62,9 @@ index b4387c2..bc3da5e 100644
 +    target_link_libraries(${PROJECT_NAME} PRIVATE ${GLSLANG_LIBRARIES} ${SPIRV_LIBRARIES})
 +else()
  	option(BUILD_EXTERNAL "Build external dependencies in /External" OFF)
- 	add_subdirectory(core/deps/glslang)
+ 	add_subdirectory(core/deps/glslang EXCLUDE_FROM_ALL)
  	target_link_libraries(${PROJECT_NAME} PRIVATE SPIRV)
- endif()
-+endif()
- 
- if(NOT LIBRETRO)
- 	find_package(ALSA)
-@@ -297,9 +321,17 @@ if(NOT LIBRETRO)
+@@ -282,9 +304,17 @@ if(NOT LIBRETRO)
  	endif()
  endif()
  
@@ -86,7 +82,7 @@ index b4387c2..bc3da5e 100644
  
  if(NOT WITH_SYSTEM_ZLIB)
      target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
-@@ -311,7 +343,6 @@ if(NOT WITH_SYSTEM_ZLIB)
+@@ -296,7 +326,6 @@ if(NOT WITH_SYSTEM_ZLIB)
      get_target_property(ZLIB_LIBRARY zlib LOCATION)
  endif()
  
@@ -94,7 +90,7 @@ index b4387c2..bc3da5e 100644
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE AND NOT LIBRETRO)
      pkg_check_modules(AO IMPORTED_TARGET ao)
      if(AO_FOUND)
-@@ -528,8 +559,26 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -519,8 +548,26 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/picotcp/stack/pico_stack.c
          core/deps/picotcp/stack/pico_tree.c)
  
@@ -121,7 +117,7 @@ index b4387c2..bc3da5e 100644
  target_sources(${PROJECT_NAME} PRIVATE core/deps/libelf/elf32.cpp core/deps/libelf/elf64.cpp core/deps/libelf/elf.cpp)
  if(NOT LIBRETRO)
  	target_sources(${PROJECT_NAME} PRIVATE core/deps/imgui/imgui.cpp core/deps/imgui/imgui_demo.cpp core/deps/imgui/imgui_draw.cpp core/deps/imgui/imgui_widgets.cpp)
-@@ -572,9 +621,13 @@ if(LIBRETRO)
+@@ -563,9 +610,13 @@ if(LIBRETRO)
  		shell/libretro/vmu_xhair.cpp)
  endif()
  

@@ -37,7 +37,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.3.0
+Version:        3.3.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -64,8 +64,6 @@ ExclusiveArch:  x86_64
 
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
-
-Patch10:        %{url}/pull/17361.patch#/%{name}-gh-pr17361.patch
 
 Patch100:       %{name}-build-fix.patch
 
@@ -123,6 +121,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  libappstream-glib
 BuildRequires:  libatomic
+BuildRequires:  libdispatch-devel
 BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  libstdc++-devel
 BuildRequires:  minizip-compat-devel
@@ -211,7 +210,7 @@ business messaging needs.
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,expected,fcitx-qt5,hime,hunspell,jemalloc,libdbusmenu-qt,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,xxHash}
+rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,dispatch,expected,fcitx-qt5,hime,hunspell,jemalloc,libdbusmenu-qt,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,xxHash}
 
 %if %{with rlottie}
   rm -rf Telegram/ThirdParty/rlottie
@@ -327,6 +326,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Thu Dec 23 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.3.1-100
+- 3.3.1
+- BR: libdispatch
+
 * Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.3.0-100
 - 3.3.0
 

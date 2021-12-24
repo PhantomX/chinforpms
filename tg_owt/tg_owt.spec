@@ -1,3 +1,4 @@
+# shared/static conditional, good luck with not support shared one
 %bcond_with static
 
 %if %{with static}
@@ -7,9 +8,9 @@
 # Enable system vpx
 %global with_sysvpx 1
 
-%global commit0 429a6869e4a164e0aad2d8657db341d56f9a6a6f
+%global commit0 6708e0d31a73e64fe12f54829bf4060c41b2658e
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20211212
+%global date 20211223
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -34,7 +35,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        110%{?gver}%{?dist}
+Release:        111%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -281,6 +282,9 @@ mv _tmpheaders/libyuv_include/* %{buildroot}%{_includedir}/%{name}/third_party/l
 
 
 %changelog
+* Thu Dec 23 2021 Phantom X <megaphantomx at hotmail dot com> - 0-111.20211223git6708e0d
+- Bump
+
 * Thu Dec 16 2021 Phantom X <megaphantomx at hotmail dot com> - 0-110.20211212git429a686
 - Bump
 - Some fixes from Gentoo, like system libvpx and headers cleanup

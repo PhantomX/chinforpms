@@ -1,6 +1,6 @@
-%global commit 7972daa6ca6bf631bf54d60c5ed09eb76472bb79
+%global commit 929a8d6523a7d21ea9e035f43211cd759e072053
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211123
+%global date 20211127
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.1
-Release:        10%{?gver}%{?dist}
+Release:        11%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -86,6 +86,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Fri Dec 24 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-11.20211127git929a8d6
+- Bump
+
 * Fri Nov 26 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-10.20211123git7972daa
 - Last one
 
