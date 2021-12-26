@@ -1,7 +1,7 @@
-%global commit b495ff5cc8088af66d6d4f186f82231043e45a95
+%global commit 7555573dc547c7204e0454dde02b31ca8a7a1e90
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211208
-%global with_snapshot 0
+%global date 20211223
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.0-rc2
+%global wine_stagingver fa5989b7aaf14a083fa60e0ffc5c3ad833c8e88d
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -91,7 +91,7 @@
 %global ge_id f4bae1a9abb738f3ef247de97430ecb562d22e39
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 1e09c835e779461c0ed9c81558d00ad80d45e2e4
+%global tkg_id c3b65427ccd0cfa75524b49e9c1605c63d12b367
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -146,7 +146,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.0~rc2
-Release:        101%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -213,7 +213,8 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
-Patch200:       %{whqs_url}/222273#/%{name}-whq-222273.patch
+Patch200:       %{whqs_url}/222556#/%{name}-whq-p222556.patch
+Patch201:       %{whqs_url}/222608#/%{name}-whq-p222608.patch
 Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
 
 Patch300:       https://github.com/FNA-XNA/FAudio/commit/1e53adc111c2330a8793aeb017c451359c22d02f.patch#/%{name}-gh-faudio-1e53adc.patch
@@ -298,6 +299,7 @@ Patch990:       %{whq_url}/4f58d8144c5c1d3b86e988f925de7eb02c848e6f#/%{name}-whq
 Patch991:       %{whq_url}/bd28c369d052bd33a602e4f7e699d815b9f0e15f#/%{name}-whq-mfplat-bd28c36.patch
 Patch992:       %{whq_url}/fa3fa0e3d5ee2d7e3a6afc67997a38c2fae6e8dc#/%{name}-whq-mfplat-fa3fa0e.patch
 Patch993:       %{whq_url}/78f916f598b4e0acadbda2c095058bf8a268eb72#/%{name}-whq-mfplat-78f916f.patch
+Patch994:       %{whq_url}/c5a9373dbed9bb53e7739dfb6d2a1a2a5818871b#/%{name}-whq-mfplat-c5a9373.patch
 
 Patch999:       0001-mfplat-restore-definitions.patch
 Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
@@ -337,7 +339,6 @@ Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.m
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1008:       %{tkg_url}/misc/lowlatency_audio.patch#/%{name}-tkg-lowlatency_audio.patch
 Patch1009:       %{ge_url}/wine-hotfixes/testing/lowlatency_audio_pulse.patch#/%{name}-ge-lowlatency_audio_pulse.patch
-Patch1010:       %{ge_url}/wine-hotfixes/pending/bug_52222_fix.patch#/%{name}-ge-bug_52222_fix.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -973,6 +974,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch599 -p1
 
 %patch200 -p1
+%patch201 -p1
 %patch203 -p1
 
 %patch300 -p1 -d libs/faudio
@@ -985,6 +987,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch901 -p1
 
+%patch994 -p1 -R
 %patch993 -p1 -R
 %patch992 -p1 -R
 %patch991 -p1 -R
@@ -1079,7 +1082,6 @@ patch -p1 -i patch1000.patch
 %patch1007 -p1
 %patch1008 -p1
 %patch1009 -p1
-%patch1010 -p1
 
 %patch5000 -p1
 
@@ -1836,6 +1838,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-namespace-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-normalization-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-path-l1-1-0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-core-privateprofile-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-privateprofile-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-processenvironment-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-processenvironment-l1-2-0.%{winedll}
@@ -1888,7 +1891,9 @@ fi
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-version-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-version-private-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-versionansi-l1-1-0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-core-versionansi-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-windowserrorreporting-l1-1-0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-core-windowserrorreporting-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-error-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-error-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-errorprivate-l1-1-1.%{winedll}
@@ -3038,6 +3043,12 @@ fi
 
 
 %changelog
+* Sat Dec 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc2-103.20211223git7555573
+- Bump
+
+* Tue Dec 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc2-102.20211220git656d7f5
+- Snapshot
+
 * Mon Dec 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc2-101
 - Add some pending hotfixes
 

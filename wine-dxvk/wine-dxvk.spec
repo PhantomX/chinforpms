@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit c13395db970d16a5631a7c0926e2c4529d2710c3
+%global commit ecd7b67069a6e2a4b78a8a929fd287030d283ccb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211205
+%global date 20211221
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -55,7 +55,6 @@ Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
 
 Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
-Patch101:       %{url}/pull/2392.patch#/%{name}-gh-pr2392.patch
 
 
 %if 0%{?dxvk_async}
@@ -128,7 +127,6 @@ package or when debugging this package.
 %setup -q -n %{pkgname}-%{version}
 %endif
 %patch100 -p1
-%patch101 -p1
 
 %patch200 -p1
 %patch201 -p1

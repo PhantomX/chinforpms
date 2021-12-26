@@ -19,9 +19,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit bfddce425dfb4767aefe00c9e4b49126a50d62b6
+%global commit a29d7625ddb67f29f6dc46858b2b1488b72fd42b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211210
+%global date 20211225
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -35,7 +35,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        150%{?gver}%{?dist}
+Release:        151%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -207,11 +207,7 @@ Additional tools files for %{name}.
 ####################################################
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{commit} -p1
-%else
-%autosetup -n %{pkgname}-%{version} -p1
-%endif
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 #Allow building with cmake macro
 sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
@@ -420,6 +416,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Dec 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-151.20211225gita29d762
+- Bump
+
 * Sun Dec 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-150.20211210gitbfddce4
 - Update
 - New tools package
