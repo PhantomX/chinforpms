@@ -1,7 +1,7 @@
 %global commit 7555573dc547c7204e0454dde02b31ca8a7a1e90
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211223
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver fa5989b7aaf14a083fa60e0ffc5c3ad833c8e88d
+%global wine_stagingver 7.0-rc3
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -145,8 +145,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.0~rc2
-Release:        103%{?gver}%{?dist}
+Version:        7.0~rc3
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -3043,6 +3043,9 @@ fi
 
 
 %changelog
+* Mon Dec 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc3-100
+- 7.0-rc3
+
 * Sat Dec 25 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc2-103.20211223git7555573
 - Bump
 
