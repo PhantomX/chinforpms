@@ -1,6 +1,6 @@
-%global commit 164d243e1384ba7cc6058a6524c1472100b7722c
+%global commit ccf2ed5250c975c305fc8f4e7fc0d94df6ed0ab8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211205
+%global date 20211221
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           winetricks
 Version:        20210825
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 
 Summary:        Work around common problems in Wine
 
@@ -80,6 +80,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Dec 28 2021 Phantom X <megaphantomx at hotmail dot com> - 20210825-102.20211221gitccf2ed5
+- Bump
+
 * Sun Dec 12 2021 Phantom X <megaphantomx at hotmail dot com> - 20210825-101.20211205git164d243
 - Snapshot
 
