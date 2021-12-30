@@ -30,7 +30,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 11
+%global stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -500,6 +500,9 @@ popd
 
 
 %changelog
+* Wed Dec 29 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.12-500
+- 5.15.12
+
 * Wed Dec 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.11-500
 - 5.15.11
 

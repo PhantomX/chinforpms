@@ -28,6 +28,7 @@ Subject: [PATCH] patch-5.15-redhat
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
+ drivers/net/wireless/intel/iwlwifi/mvm/scan.c      |   2 +-
  drivers/net/wireless/marvell/mwifiex/usb.c         |   3 +-
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
@@ -48,7 +49,7 @@ Subject: [PATCH] patch-5.15-redhat
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 49 files changed, 752 insertions(+), 201 deletions(-)
+ 50 files changed, 753 insertions(+), 202 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index 0faa64733281..5da4d20e69ec 100644
@@ -1258,6 +1259,19 @@ index 3303d707bab4..372edaaafaa1 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+index d78e436fa8b5..b064d3137e46 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+@@ -2490,7 +2490,7 @@ static int iwl_mvm_check_running_scans(struct iwl_mvm *mvm, int type)
+ 	return -EIO;
+ }
+
+-#define SCAN_TIMEOUT 20000
++#define SCAN_TIMEOUT 30000
+
+ void iwl_mvm_scan_timeout_wk(struct work_struct *work)
+ {
 diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
 index 9736aa0ab7fd..8f01fcbe9396 100644
 --- a/drivers/net/wireless/marvell/mwifiex/usb.c
