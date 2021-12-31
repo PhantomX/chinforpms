@@ -2,13 +2,13 @@
 %global __strip /bin/true
 
 %global cheatver 0221
-%global historyver 238
-%global infover 0238
+%global historyver 239
+%global infover 0239
 
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.238
+Version:        0.239
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -173,8 +173,12 @@ done
 
 
 %changelog
+* Thu Dec 30 2021 Phantom X <megaphantomx at hotmail dot com> - 0.239-1
+- Mameinfo 0.239
+- History 0.239
+
 * Fri Nov 26 2021 Phantom X <megaphantomx at hotmail dot com> - 0.238-1
-- Mameinf 0.238
+- Mameinfo 0.238
 - History 2.38
 
 * Thu Oct 28 2021 Phantom X <megaphantomx at hotmail dot com> - 0.237-1
