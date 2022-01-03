@@ -1,6 +1,6 @@
-%global commit 7555573dc547c7204e0454dde02b31ca8a7a1e90
+%global commit b6dc83990872106fdb957b2947b71f0dbd77efc4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211223
+%global date 20211230
 %global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.0-rc3
+%global wine_stagingver 7.0-rc4
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -91,7 +91,7 @@
 %global ge_id f4bae1a9abb738f3ef247de97430ecb562d22e39
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id c3b65427ccd0cfa75524b49e9c1605c63d12b367
+%global tkg_id e2e164fb3c97e7437680624b183d83d99f9cadea
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,7 +145,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.0~rc3
+Version:        7.0~rc4
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -300,6 +300,8 @@ Patch991:       %{whq_url}/bd28c369d052bd33a602e4f7e699d815b9f0e15f#/%{name}-whq
 Patch992:       %{whq_url}/fa3fa0e3d5ee2d7e3a6afc67997a38c2fae6e8dc#/%{name}-whq-mfplat-fa3fa0e.patch
 Patch993:       %{whq_url}/78f916f598b4e0acadbda2c095058bf8a268eb72#/%{name}-whq-mfplat-78f916f.patch
 Patch994:       %{whq_url}/c5a9373dbed9bb53e7739dfb6d2a1a2a5818871b#/%{name}-whq-mfplat-c5a9373.patch
+Patch995:       %{whq_url}/4d2a628dfe9e4aad9ba772854717253d0c6a7bb7#/%{name}-whq-mfplat-4d2a628.patch
+Patch996:       %{whq_url}/03d92af78a5000097b26560bba97320eb013441a#/%{name}-whq-mfplat-03d92af.patch
 
 Patch999:       0001-mfplat-restore-definitions.patch
 Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
@@ -987,6 +989,8 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch901 -p1
 
+%patch996 -p1 -R
+%patch995 -p1 -R
 %patch994 -p1 -R
 %patch993 -p1 -R
 %patch992 -p1 -R
@@ -1127,7 +1131,7 @@ patch -p1 -i patch1031.patch
 %endif
 %patch1032 -p1
 %patch1033 -p1
-%patch1034 -p1
+#patch1034 -p1
 %patch1035 -p1
 %patch1036 -p1
 %patch1037 -p1
@@ -3043,6 +3047,12 @@ fi
 
 
 %changelog
+* Mon Jan 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc4-100
+- 7.0-rc4
+
+* Fri Dec 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc3-101.20211230gitb6dc839
+- Snapshot
+
 * Mon Dec 27 2021 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc3-100
 - 7.0-rc3
 
