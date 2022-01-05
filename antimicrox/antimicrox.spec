@@ -10,7 +10,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           antimicrox
-Version:        3.2.0
+Version:        3.2.1
 Release:        100%{?gver}%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
@@ -22,6 +22,8 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
+
+Patch0:         0001-Use-system-SDL_GameControllerDB.patch
 
 ExcludeArch:    %{arm}
 
@@ -46,6 +48,7 @@ BuildRequires:  itstool
 BuildRequires:  libappstream-glib
 BuildRequires:  systemd
 Requires:       hicolor-icon-theme
+Requires:       sdl_gamecontrollerdb
 
 Provides:       antimicroX = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       AntiMicroX = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -70,6 +73,9 @@ sed \
 
 sed -e '/^SUBSYSTEM/s|$|, OPTIONS+="static_node=uinput"|' -i other/60-%{name}-uinput.rules
 
+sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' \
+  -i src/sdleventreader.cpp
+
 cp -f src/images/48x48/%{appname}.png src/images/48-apps-%{name}_trayicon.png
 cp -f src/images/48x48/%{appname}.png src/images/breeze_themed/48-apps-%{name}_trayicon.png
 
@@ -89,6 +95,7 @@ cp -f src/images/48x48/%{appname}.png src/images/breeze_themed/48-apps-%{name}_t
 %cmake_install
 
 rm -f %{buildroot}%{_datadir}/%{name}/CHANGELOG.md
+rm -f %{buildroot}%{_datadir}/%{name}/gamecontrollerdb.txt
 
 rm -rf %{buildroot}%{_includedir}
 
@@ -114,6 +121,10 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 
 
 %changelog
+* Tue Jan 04 2022 Phantom X <megaphantomx at hotmail dot com> - 3.2.1-100
+- 3.2.1
+- R: sdl_gamecontrollerdb
+
 * Thu Nov 18 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.0-100
 - 3.2.0
 

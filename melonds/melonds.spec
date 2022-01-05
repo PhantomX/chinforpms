@@ -60,7 +60,7 @@ BuildRequires:  hicolor-icon-theme
 
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-Provides:       bundled(fatfs_ver) = %{fatfs_ver}
+Provides:       bundled(fatfs) = %{fatfs_ver}
 Provides:       bundled(sha1-reid)
 Provides:       bundled(teakra) = 0~git
 Provides:       bundled(tiny-AES-c)
@@ -71,11 +71,7 @@ Provides:       bundled(tiny-AES-c)
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{commit} -p1
-%else
-%autosetup -n %{pkgname}-%{version} -p1
-%endif
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 cp -p src/fatfs/LICENSE.txt LICENSE.fatfs
 cp -p src/teakra/LICENSE LICENSE.teakra

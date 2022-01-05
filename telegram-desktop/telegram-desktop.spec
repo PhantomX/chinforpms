@@ -13,7 +13,6 @@
 %global da_url https://github.com/desktop-app
 
 # Enable or disable build with support...
-%bcond_with gtk3
 %bcond_with rlottie
 %bcond_with tgvoip
 %bcond_with wayland
@@ -37,7 +36,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.4.2
+Version:        3.4.3
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -135,13 +134,6 @@ BuildRequires:  clang
 BuildRequires:  llvm
 %endif
 
-%if %{with gtk3}
-BuildRequires: pkgconfig(gtk+-3.0)
-BuildRequires: pkgconfig(webkit2gtk-4.0)
-Recommends:    gtk3%{?_isa}
-Recommends:    webkit2gtk3%{?_isa}
-%endif
-
 # Telegram Desktop require patched version of rlottie since 1.8.0.
 # Pull Request pending: https://github.com/Samsung/rlottie/pull/252
 %if %{with rlottie}
@@ -183,7 +175,12 @@ BuildRequires:  pkgconfig(protobuf)
 Requires: hicolor-icon-theme
 Requires: open-sans-fonts
 Requires: qt5-qtimageformats%{?_isa}
-Recommends: xdg-desktop-portal
+Recommends:    webkit2gtk3%{?_isa}
+
+# Telegram Desktop can use native open/save dialogs with XDG portals.
+Recommends:     xdg-desktop-portal%{?_isa}
+Recommends:     (xdg-desktop-portal-gnome%{?_isa} if gnome-shell%{?_isa})
+Recommends:     (xdg-desktop-portal-kde%{?_isa} if plasma-workspace-wayland%{?_isa})
 
 # Short alias for the main package...
 Provides: telegram = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -268,13 +265,6 @@ sed -e 's/QrCode\.hpp/qrcodegen\.hpp/g' -i {cmake/external/qr_code_generator/CMa
     -DDESKTOP_APP_DISABLE_WEBRTC_INTEGRATION:BOOL=OFF \
     -DDESKTOP_APP_USE_GLIBC_WRAPS:BOOL=OFF \
     -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
-%if %{with gtk3}
-    -DDESKTOP_APP_DISABLE_GTK_INTEGRATION:BOOL=OFF \
-    -DDESKTOP_APP_DISABLE_WEBKITGTK:BOOL=OFF \
-%else
-    -DDESKTOP_APP_DISABLE_GTK_INTEGRATION:BOOL=ON \
-    -DDESKTOP_APP_DISABLE_WEBKITGTK:BOOL=ON \
-%endif
 %if %{with wayland}
     -DDESKTOP_APP_DISABLE_WAYLAND_INTEGRATION:BOOL=OFF \
 %else
@@ -326,6 +316,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Tue Jan 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.4.3-100
+- 3.4.3
+
 * Sat Jan 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.4.2-100
 - 3.4.2
 
