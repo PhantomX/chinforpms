@@ -5,7 +5,7 @@
 #global packver %%{ver}
 
 Name:           lzma-sdk%{?packver}
-Version:        21.06
+Version:        21.07
 Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
@@ -125,6 +125,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Fri Jan 07 2022 Phantom X <megaphantomx at hotmail dot com> - 21.07-100
+- 21.07
+
 * Fri Nov 26 2021 Phantom X <megaphantomx at hotmail dot com> - 21.06-100
 - 21.06
 

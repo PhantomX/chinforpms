@@ -5,7 +5,7 @@
 %global vc_url https://github.com/joncampbell123/%{name}
 
 Name:           dosbox-x
-Version:        0.83.19
+Version:        0.83.21
 Release:        1%{?dist}
 
 Summary:        DOS emulator for running DOS games and applications including Windows 3.x/9x
@@ -54,10 +54,10 @@ Windows 3.x/9x software.
 %prep
 %autosetup -n %{name}-%{name}-v%{version} -p1
 
-mv vs2015/sdl/src/cdrom _cdrom
-rm -rf vs2015/{extlib,freetype,libpdcurses,libpng,pcap,sdl,sdl2,sdlnet,zlib/*.{h,c}}
-mkdir -p vs2015/sdl/src/
-mv _cdrom vs2015/sdl/src/cdrom
+mv vs/sdl/src/cdrom _cdrom
+rm -rf vs/{extlib,freetype,libpdcurses,libpng,pcap,sdl,sdl2,sdlnet,zlib/*.{h,c}}
+mkdir -p vs/sdl/src/
+mv _cdrom vs/sdl/src/cdrom
 
 sed \
   -e '/Wconversion-null/d' \
@@ -101,11 +101,15 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.dosbox_x.D
 %{_datadir}/%{name}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.*
+%{_datadir}/bash-completion/completions/%{name}
 %{_datadir}/metainfo/*.metainfo.xml
 %{_mandir}/man1/%{name}.1*
 
 
 %changelog
+* Thu Jan 06 2022 Phantom X <megaphantomx at hotmail dot com> - 0.83.21-1
+- 0.83.21
+
 * Thu Nov 18 2021 Phantom X <megaphantomx at hotmail dot com> - 0.83.19-1
 - 0.83.19
 

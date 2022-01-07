@@ -19,8 +19,8 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        21.06
-Release:        2%{?dist}
+Version:        21.07
+Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPLv2+ and BSD and Public Domain
@@ -34,7 +34,6 @@ Source0:        %{name}-free-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
-Patch0:         0001-make-remove-rar.patch
 Patch1:         0001-set-7zCon.sfx-path.patch
 
 %if %{with asm}
@@ -92,11 +91,11 @@ sed -e 's|__RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' -i CPP/7zip/UI/Console/Main
 
 %build
 pushd CPP/7zip/Bundles/Alone2
-%make_build -f ../../%{makefile}.mak
+%make_build -f ../../%{makefile}.mak DISABLE_RAR=1
 popd
 
 pushd CPP/7zip/Bundles/SFXCon
-%make_build -f makefile.gcc
+%make_build -f makefile.gcc DISABLE_RAR=1
 popd
 
 %install
@@ -116,6 +115,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Fri Jan 07 2022 Phantom X <megaphantomx at hotmail dot com> - 21.07-1
+- 21.07
+
 * Sat Nov 27 2021 Phantom X <megaphantomx at hotmail dot com> - 21.06-2
 - Build 7zCon.sfx
 

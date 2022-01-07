@@ -1,0 +1,27 @@
+From 63dc14c33a20fc8b70cbd0ebc904ebfa0c19586c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 6 Jan 2022 16:01:20 -0300
+Subject: [PATCH] use shared libraries
+
+---
+ src/src.pro | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/src.pro b/src/src.pro
+index 54466ee..0e84f02 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -197,8 +197,8 @@ unix {
+ }
+ 
+ # Link libjamesdsp
+-unix:!macx: LIBS += -L$$OUT_PWD/../libjamesdsp -llibjamesdsp
++unix:!macx: LIBS += -L$$OUT_PWD/../libjamesdsp -ljamesdsp
+ INCLUDEPATH += $$PWD/../libjamesdsp/subtree/Main/libjamesdsp/jni/jamesdsp/jdsp/ \
+                $$PWD/../libjamesdsp
+ DEPENDPATH += $$PWD/../libjamesdsp
+-unix:!macx: PRE_TARGETDEPS += $$OUT_PWD/../libjamesdsp/liblibjamesdsp.a
++
+-- 
+2.34.1
+

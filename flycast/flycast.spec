@@ -1,6 +1,6 @@
-%global commit fde683a82e32a2dacd371f23fad776bfa501908c
+%global commit 746b3c5a541b2b5afadf051f8e4840060aafe43a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211223
+%global date 20220106
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -34,7 +34,7 @@
 
 Name:           flycast
 Version:        1.1
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -141,8 +141,8 @@ sed \
 
 sed \
   -e 's|LINK_FLAGS_RELEASE -s||g' \
+  -e 's|find_package(SDL2)|pkg_check_modules(SDL2 IMPORTED_TARGET sdl2)|g' \
   -e 's|IMPORTED_TARGET ao|IMPORTED_TARGET ao_DISABLED|g' \
-  -e 's|SDL2-static|SDL2-static_DISABLED|g' \
   -e 's|${GIT_EXECUTABLE} describe --tags --always|echo "%{version}-%{release}"|g' \
   -i CMakeLists.txt
 
@@ -171,7 +171,7 @@ export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
   -DUSE_HOST_LZMA:BOOL=ON \
 %if 0%{?with_spirv}
   -DUSE_HOST_SPIRV:BOOL=ON \
-%endif \
+%endif
   -DCMAKE_BUILD_TYPE:STRING=Release \
 %{nil}
 
@@ -226,6 +226,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Thu Jan 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-7.20220106git746b3c5
+- Bump
+
 * Fri Dec 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-6.20211223gitfde683a
 - Return to master branch
 

@@ -1,16 +1,34 @@
-%global commit 885a8c96b6cd033b0a7af53bf185eedf1fe2a86f
+%global commit 66b7cb5340ed85b09a5ae6e6b7f0bf379b8d8ada
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211212
+%global date 20220105
 %global with_snapshot 1
+
+%global commit1 814a5941ed1e2568b54a07597451ef8b4dc91f98
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 EELEditor
+
+%global commit2 1c72377957c19f21faeccfef57dd5c46a31be7d9
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 GraphicEQWidget
+
+%global commit3 b8218ee319c767c5e9bbcd508d0f621d3f05a218
+%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
+%global srcname3 FlatTabWidget
+
+%global commit4 a5d7872d54b6d1d8f82d52aea6bd72eec86eb51d
+%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
+%global srcname4 LiquidEqualizerWidget
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global vc_url  https://github.com/ThePBone
+
 %global pkgname JDSP4Linux
 
 Name:           jamesdsp
-Version:        2.2
+Version:        2.3
 Release:        1%{?gver}%{?dist}
 Summary:        An audio effect processor for PipeWire clients
 
@@ -27,15 +45,20 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
+Source11:       %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source12:       %{vc_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source13:       %{vc_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source14:       %{vc_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 
-Patch0:         0001-use-shared-and-system-libraries.patch
+Patch0:         0001-use-shared-libraries.patch
 
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
-BuildRequires:  liveprogide-devel
+BuildRequires:  qcodeeditor-devel
+BuildRequires:  cmake(qtadvanceddocking)
 BuildRequires:  pkgconfig(glibmm-2.4)
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libpipewire-0.3)
@@ -59,6 +82,10 @@ Provides:       bundle(http-flaviotordini)
 Provides:       bundle(qtpromise)
 Provides:       bundle(qcustomplot)
 Provides:       bundle(qtcsv)
+Provides:       bundle(%{srcname1}) = 0~git%{shortcommit1}
+Provides:       bundle(%{srcname2}) = 0~git%{shortcommit2}
+Provides:       bundle(%{srcname3}) = 0~git%{shortcommit3}
+Provides:       bundle(%{srcname4}) = 0~git%{shortcommit4}
 
 
 %description
@@ -77,6 +104,10 @@ Provides:       bundle(http-flaviotordini)
 Provides:       bundle(qtpromise)
 Provides:       bundle(qcustomplot)
 Provides:       bundle(qtcsv)
+Provides:       bundle(%{srcname1}) = 0~git%{shortcommit1}
+Provides:       bundle(%{srcname2}) = 0~git%{shortcommit2}
+Provides:       bundle(%{srcname3}) = 0~git%{shortcommit3}
+Provides:       bundle(%{srcname4}) = 0~git%{shortcommit4}
 
 %description pulse
 jamesDSP-pulse is an audio effect processor for Pulseaudio clients.
@@ -100,12 +131,30 @@ Common %{name} files.
 
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+
+tar -xf %{S:11} -C src/subprojects/%{srcname1} --strip-components 1
+tar -xf %{S:12} -C src/subprojects/%{srcname2} --strip-components 1
+tar -xf %{S:13} -C src/subprojects/%{srcname3} --strip-components 1
+tar -xf %{S:14} -C src/subprojects/%{srcname4} --strip-components 1
 
 for dir in asyncplusplus http qtcsv qtpromise ;do
   cp -p 3rdparty/${dir}/LICENSE LICENSE.${dir}
 done
 cp -p 3rdparty/qcustomplot/GPL.txt LICENSE.qcustomplot
+
+rm -rf src/subprojects/EELEditor/{3rdparty,QCodeEditor}
+
+sed \
+  -e '/QCodeEditor.pri/d' \
+  -e '/docking-system/d' \
+  -i src/subprojects/EELEditor/src/EELEditor.pri
+
+cat >> src/subprojects/EELEditor/src/EELEditor.pri <<EOF
+
+LIBS += -lqtadvanceddocking -lQCodeEditor
+INCLUDEPATH += %{_includedir}/qtadvanceddocking %{_includedir}/QCodeEditor
+EOF
 
 sed \
   -e '/TARGET =/s|lib%{name}|%{name}|g' \
@@ -222,5 +271,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-pulse.desktop
 
 
 %changelog
+* Thu Jan 06 2022 Phantom X <megaphantomx at hotmail dot com> - 2.3-1.20220105git66b7cb5
+- 2.3
+- Bundle new libraries and liveprogide (EELEditor)
+
 * Mon Dec 13 2021 Phantom X <megaphantomx at hotmail dot com> - 2.2-1.20211212git885a8c9
 - Initial spec
