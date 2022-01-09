@@ -1,6 +1,6 @@
-From 96f16df315b2f2050effaecbcb4da90c13218e75 Mon Sep 17 00:00:00 2001
+From 357ce19cae974bc1708ccd483d935741359b44ef Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 25 Dec 2021 20:24:25 -0300
+Date: Sat, 8 Jan 2022 22:22:21 -0300
 Subject: [PATCH] Revert VideoCommon/TextureInfo commits for RESHDP
 
 2d59dcb95d1256bdbe0bf020c029b191477a241c - VideoCommon/TextureInfo: Fix mipmap loading from tmem
@@ -18,6 +18,11 @@ edb66dab8469736e5c2954fd3ffb9704de4542c3 - TextureCache: Remove deleted textures
 pull/9956 - VideoCommon: Manually handle texture wrapping and sampling
 20257634209dba85d2cd51ad42e660090a5224e6 - VideoCommon: Support shader logic ops on Metal (Apple GPUs) and OpenGL ES
 b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
+08396c56e56708344d63fded5900020f47337b8e - VideoConfig: Add bool for sampler LOD bias support
+91cdeb5aa6e46ea0cc60e157d4d30863e54f7ec0 - SamplerCache: Check for bSupportsLodBiasInSampler instead of IsGLES
+4e12d6e871680fe70bb45e7909f00a89539f7a3f - ShaderGenCommon: Add bit for LOD bias
+056613ecc5c79941d4bc9747bdc6f79fe332183a - PixelShaderGen: Add LOD bias to texture() call on systems that don't support it in the sampler
+a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
 ---
  .../settings/model/BooleanSetting.java        |   2 -
  .../ui/SettingsFragmentPresenter.java         |   2 -
@@ -30,15 +35,12 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  Source/Core/AudioCommon/OpenALStream.cpp      |   3 +-
  Source/Core/AudioCommon/SurroundDecoder.cpp   |   4 +-
  Source/Core/Common/Analytics.cpp              |   3 +-
- Source/Core/Common/AndroidAnalytics.cpp       |   4 +-
  Source/Core/Common/Arm64Emitter.cpp           |   3 +-
  Source/Core/Common/ArmCPUDetect.cpp           |   3 +-
  Source/Core/Common/ArmFPURoundMode.cpp        |   7 +-
  Source/Core/Common/BitField.h                 |   2 -
  Source/Core/Common/CDUtils.cpp                |  11 +-
- Source/Core/Common/CRC32.cpp                  |   4 +-
  Source/Core/Common/CommonFuncs.cpp            |   4 +-
- Source/Core/Common/Config/Config.cpp          |   4 +-
  Source/Core/Common/Config/ConfigInfo.cpp      |   3 +-
  Source/Core/Common/Config/Layer.cpp           |   3 +-
  Source/Core/Common/Crypto/AES.cpp             |   4 +-
@@ -46,7 +48,6 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  Source/Core/Common/Crypto/ec.cpp              |   3 +-
  Source/Core/Common/ENetUtil.cpp               |   2 +-
  Source/Core/Common/FileSearch.cpp             |   3 +-
- Source/Core/Common/FileUtil.cpp               |   3 +-
  .../Common/GL/GLExtensions/GLExtensions.cpp   |   3 +-
  Source/Core/Common/GL/GLInterface/EGL.cpp     |   3 +-
  .../Core/Common/GL/GLInterface/EGLAndroid.cpp |   1 -
@@ -60,7 +61,6 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  .../Common/Logging/ConsoleListenerNix.cpp     |   3 +-
  .../Common/Logging/ConsoleListenerWin.cpp     |   3 +-
  Source/Core/Common/Matrix.cpp                 |   4 +-
- Source/Core/Common/MemArena.cpp               |   3 +-
  Source/Core/Common/MemoryUtil.cpp             |   3 +-
  Source/Core/Common/PcapFile.cpp               |   3 +-
  Source/Core/Common/PerformanceCounter.cpp     |   2 +-
@@ -69,7 +69,6 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  Source/Core/Common/SymbolDB.cpp               |   3 +-
  Source/Core/Common/Thread.cpp                 |   7 +-
  Source/Core/Common/x64ABI.cpp                 |   1 -
- Source/Core/Common/x64CPUDetect.cpp           |   3 +-
  Source/Core/Common/x64Emitter.cpp             |   3 +-
  Source/Core/Common/x64FPURoundMode.cpp        |   3 +-
  Source/Core/Core/CheatGeneration.cpp          |   4 +-
@@ -106,17 +105,14 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  Source/Core/Core/HW/WiimoteReal/IOLinux.cpp   |   3 +-
  Source/Core/Core/HW/WiimoteReal/IOWin.cpp     |   3 +-
  Source/Core/Core/HW/WiimoteReal/IOhidapi.cpp  |   3 +-
- Source/Core/Core/IOS/DolphinDevice.cpp        |   3 +-
  Source/Core/Core/IOS/ES/NandUtils.cpp         |   3 +-
  Source/Core/Core/IOS/FS/HostBackend/FS.cpp    |   3 +-
  Source/Core/Core/IOS/FS/HostBackend/File.cpp  |   4 +-
  Source/Core/Core/LibusbUtils.cpp              |   3 +-
  Source/Core/Core/MemoryWatcher.cpp            |   3 +-
  Source/Core/Core/MemoryWatcher.h              |   3 -
- Source/Core/Core/PowerPC/GDBStub.cpp          |   3 +-
  .../Interpreter/Interpreter_Branch.cpp        |   3 +-
  .../Interpreter/Interpreter_FloatingPoint.cpp |   3 +-
- .../Interpreter/Interpreter_LoadStore.cpp     |   3 +-
  .../Interpreter_LoadStorePaired.cpp           |   3 +-
  .../Interpreter/Interpreter_Paired.cpp        |   3 +-
  .../Interpreter/Interpreter_Tables.cpp        |   3 +-
@@ -169,7 +165,6 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  .../QtUtils/DoubleClickEventFilter.cpp        |   4 +-
  .../DolphinQt/QtUtils/FileOpenEventFilter.cpp |   4 +-
  .../QtUtils/WindowActivationEventFilter.cpp   |   4 +-
- Source/Core/DolphinQt/Resources.cpp           |   3 +-
  Source/Core/DolphinQt/Settings/PathPane.cpp   |   3 +-
  .../Core/DolphinQt/TAS/WiiTASInputWindow.cpp  |   3 +-
  Source/Core/DolphinQt/ToolBar.cpp             |   3 +-
@@ -188,7 +183,7 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  Source/Core/UICommon/CommandLineParse.cpp     |   3 +-
  Source/Core/UICommon/UICommon.cpp             |   3 +-
  .../Core/VideoBackends/D3D/D3DBoundingBox.cpp |   3 +-
- Source/Core/VideoBackends/D3D/D3DMain.cpp     |   5 +-
+ Source/Core/VideoBackends/D3D/D3DMain.cpp     |   3 -
  Source/Core/VideoBackends/D3D/D3DState.cpp    |  33 +-
  Source/Core/VideoBackends/D3D/D3DState.h      |   2 +-
  .../Core/VideoBackends/D3D/D3DSwapChain.cpp   |   1 -
@@ -206,23 +201,23 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  .../D3D12/DescriptorAllocator.cpp             |   1 -
  .../D3D12/DescriptorHeapManager.cpp           |  32 +-
  .../D3D12/DescriptorHeapManager.h             |   2 +-
- .../Core/VideoBackends/D3D12/VideoBackend.cpp |   5 +-
+ .../Core/VideoBackends/D3D12/VideoBackend.cpp |   3 -
  .../VideoBackends/D3DCommon/D3DCommon.cpp     |   4 +-
  .../Core/VideoBackends/D3DCommon/Shader.cpp   |   4 +-
- .../Core/VideoBackends/Null/NullBackend.cpp   |  11 +-
- Source/Core/VideoBackends/OGL/OGLMain.cpp     |   7 +-
+ .../Core/VideoBackends/Null/NullBackend.cpp   |   3 -
+ Source/Core/VideoBackends/OGL/OGLMain.cpp     |   8 +-
  Source/Core/VideoBackends/OGL/OGLPipeline.cpp |   3 +-
- Source/Core/VideoBackends/OGL/OGLRender.cpp   |   4 -
+ Source/Core/VideoBackends/OGL/OGLRender.cpp   |   7 -
  Source/Core/VideoBackends/OGL/OGLShader.cpp   |   1 -
  Source/Core/VideoBackends/OGL/OGLTexture.cpp  |   3 +-
  .../VideoBackends/OGL/ProgramShaderCache.cpp  |   9 +-
- .../Core/VideoBackends/OGL/SamplerCache.cpp   |  27 +-
+ .../Core/VideoBackends/OGL/SamplerCache.cpp   |  31 +-
  .../Core/VideoBackends/Software/DebugUtil.cpp |  14 +-
  .../Core/VideoBackends/Software/EfbCopy.cpp   |   1 -
  .../VideoBackends/Software/Rasterizer.cpp     |  32 +-
  .../VideoBackends/Software/SWOGLWindow.cpp    |   3 +-
  .../Core/VideoBackends/Software/SWTexture.cpp |   3 +-
- Source/Core/VideoBackends/Software/SWmain.cpp |   5 +-
+ Source/Core/VideoBackends/Software/SWmain.cpp |   6 +-
  .../Core/VideoBackends/Software/SetupUnit.cpp |   6 +-
  .../VideoBackends/Software/TextureSampler.cpp |  28 +-
  .../Core/VideoBackends/Vulkan/ObjectCache.cpp |  26 +-
@@ -233,7 +228,7 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  .../Core/VideoBackends/Vulkan/VKRenderer.cpp  |  11 +-
  Source/Core/VideoBackends/Vulkan/VKShader.cpp |   3 +-
  .../Core/VideoBackends/Vulkan/VKTexture.cpp   |   3 +-
- .../VideoBackends/Vulkan/VulkanContext.cpp    |  16 +-
+ .../VideoBackends/Vulkan/VulkanContext.cpp    |  24 +-
  .../VideoBackends/Vulkan/VulkanLoader.cpp     |   4 +-
  .../VideoCommon/AbstractStagingTexture.cpp    |   3 +-
  Source/Core/VideoCommon/AbstractTexture.cpp   |   3 +-
@@ -250,16 +245,16 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  .../VideoCommon/GeometryShaderManager.cpp     |   3 +-
  Source/Core/VideoCommon/HiresTextures.cpp     |  93 +++-
  Source/Core/VideoCommon/HiresTextures.h       |   9 +-
- Source/Core/VideoCommon/PixelShaderGen.cpp    | 460 ++----------------
+ Source/Core/VideoCommon/PixelShaderGen.cpp    | 472 ++----------------
  Source/Core/VideoCommon/PixelShaderGen.h      |   2 -
  .../Core/VideoCommon/PixelShaderManager.cpp   |  32 +-
  Source/Core/VideoCommon/PixelShaderManager.h  |   1 -
- Source/Core/VideoCommon/RenderState.cpp       | 119 ++---
+ Source/Core/VideoCommon/RenderState.cpp       | 119 +++--
  Source/Core/VideoCommon/RenderState.h         | 157 ++----
  Source/Core/VideoCommon/SamplerCommon.h       |  27 +
  Source/Core/VideoCommon/ShaderCache.cpp       |   4 +-
- Source/Core/VideoCommon/ShaderGenCommon.cpp   |  27 -
- Source/Core/VideoCommon/ShaderGenCommon.h     |  15 -
+ Source/Core/VideoCommon/ShaderGenCommon.cpp   |  28 --
+ Source/Core/VideoCommon/ShaderGenCommon.h     |  16 -
  Source/Core/VideoCommon/TMEM.cpp              | 290 -----------
  Source/Core/VideoCommon/TMEM.h                |  26 -
  Source/Core/VideoCommon/TextureCacheBase.cpp  | 370 +++++++-------
@@ -277,10 +272,10 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
  .../Core/VideoCommon/VertexLoader_Color.cpp   |   3 +-
  Source/Core/VideoCommon/VertexManagerBase.cpp |   3 +-
  Source/Core/VideoCommon/VideoBackendBase.cpp  |   2 -
- Source/Core/VideoCommon/VideoConfig.cpp       |   4 +-
- Source/Core/VideoCommon/VideoConfig.h         |  13 -
+ Source/Core/VideoCommon/VideoConfig.cpp       |   1 -
+ Source/Core/VideoCommon/VideoConfig.h         |  14 -
  Source/Core/VideoCommon/VideoState.cpp        |   8 +-
- 261 files changed, 967 insertions(+), 2565 deletions(-)
+ 251 files changed, 948 insertions(+), 2568 deletions(-)
  create mode 100644 Source/Core/VideoCommon/SamplerCommon.h
  delete mode 100644 Source/Core/VideoCommon/TMEM.cpp
  delete mode 100644 Source/Core/VideoCommon/TMEM.h
@@ -395,7 +390,7 @@ index 7b998b1..512535e 100644
  #include "Common/Logging/Log.h"
  #include "Common/Logging/LogManager.h"
 diff --git a/Source/Core/AudioCommon/Mixer.cpp b/Source/Core/AudioCommon/Mixer.cpp
-index 6888d95..dbd2b1f 100644
+index f6bebb6..e3b834a 100644
 --- a/Source/Core/AudioCommon/Mixer.cpp
 +++ b/Source/Core/AudioCommon/Mixer.cpp
 @@ -2,12 +2,12 @@
@@ -468,24 +463,6 @@ index 294e05c..31f22b6 100644
  #include "Common/CommonTypes.h"
  #include "Common/StringUtil.h"
  #include "Common/Thread.h"
-diff --git a/Source/Core/Common/AndroidAnalytics.cpp b/Source/Core/Common/AndroidAnalytics.cpp
-index a25acb1..c682d37 100644
---- a/Source/Core/Common/AndroidAnalytics.cpp
-+++ b/Source/Core/Common/AndroidAnalytics.cpp
-@@ -1,11 +1,11 @@
- // Copyright 2018 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "Common/AndroidAnalytics.h"
--
- #include <functional>
- #include <string>
- 
-+#include "Common/AndroidAnalytics.h"
-+
- namespace Common
- {
- std::function<void(std::string, std::string)> s_android_send_report;
 diff --git a/Source/Core/Common/Arm64Emitter.cpp b/Source/Core/Common/Arm64Emitter.cpp
 index 27be0df..443021b 100644
 --- a/Source/Core/Common/Arm64Emitter.cpp
@@ -608,23 +585,6 @@ index 630f5d9..6785969 100644
  namespace Common
  {
  #ifdef _WIN32
-diff --git a/Source/Core/Common/CRC32.cpp b/Source/Core/Common/CRC32.cpp
-index c09a578..843b0c3 100644
---- a/Source/Core/Common/CRC32.cpp
-+++ b/Source/Core/Common/CRC32.cpp
-@@ -1,10 +1,10 @@
- // Copyright 2021 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "Common/CRC32.h"
--
- #include <zlib.h>
- 
-+#include "Common/CRC32.h"
-+
- namespace Common
- {
- u32 ComputeCRC32(std::string_view data)
 diff --git a/Source/Core/Common/CommonFuncs.cpp b/Source/Core/Common/CommonFuncs.cpp
 index 6883420..9db88d5 100644
 --- a/Source/Core/Common/CommonFuncs.cpp
@@ -645,28 +605,6 @@ index 6883420..9db88d5 100644
  #ifdef _WIN32
  #include <windows.h>
  #define strerror_r(err, buf, len) strerror_s(buf, len, err)
-diff --git a/Source/Core/Common/Config/Config.cpp b/Source/Core/Common/Config/Config.cpp
-index 5943f3d..ad42ab0 100644
---- a/Source/Core/Common/Config/Config.cpp
-+++ b/Source/Core/Common/Config/Config.cpp
-@@ -1,8 +1,6 @@
- // Copyright 2016 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "Common/Config/Config.h"
--
- #include <algorithm>
- #include <atomic>
- #include <list>
-@@ -10,6 +8,8 @@
- #include <mutex>
- #include <shared_mutex>
- 
-+#include "Common/Config/Config.h"
-+
- namespace Config
- {
- using Layers = std::map<LayerType, std::shared_ptr<Layer>>;
 diff --git a/Source/Core/Common/Config/ConfigInfo.cpp b/Source/Core/Common/Config/ConfigInfo.cpp
 index e0546bf..8fd736c 100644
 --- a/Source/Core/Common/Config/ConfigInfo.cpp
@@ -788,27 +726,6 @@ index 0da6c4f..490835b 100644
  #include "Common/StringUtil.h"
  
  #ifdef _MSC_VER
-diff --git a/Source/Core/Common/FileUtil.cpp b/Source/Core/Common/FileUtil.cpp
-index 0eac268..07d0d55 100644
---- a/Source/Core/Common/FileUtil.cpp
-+++ b/Source/Core/Common/FileUtil.cpp
-@@ -1,8 +1,6 @@
- // Copyright 2008 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "Common/FileUtil.h"
--
- #include <algorithm>
- #include <chrono>
- #include <cstddef>
-@@ -24,6 +22,7 @@
- #ifdef __APPLE__
- #include "Common/DynamicLibrary.h"
- #endif
-+#include "Common/FileUtil.h"
- #include "Common/IOFile.h"
- #include "Common/Logging/Log.h"
- 
 diff --git a/Source/Core/Common/GL/GLExtensions/GLExtensions.cpp b/Source/Core/Common/GL/GLExtensions/GLExtensions.cpp
 index d43e898..e7c41f1 100644
 --- a/Source/Core/Common/GL/GLExtensions/GLExtensions.cpp
@@ -1039,27 +956,6 @@ index 724d28f..8e4d504 100644
  namespace
  {
  // Multiply a NxM matrix by a MxP matrix.
-diff --git a/Source/Core/Common/MemArena.cpp b/Source/Core/Common/MemArena.cpp
-index 7d5d7ab..79f697b 100644
---- a/Source/Core/Common/MemArena.cpp
-+++ b/Source/Core/Common/MemArena.cpp
-@@ -1,8 +1,6 @@
- // Copyright 2008 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "Common/MemArena.h"
--
- #include <cstddef>
- #include <cstdlib>
- #include <set>
-@@ -11,6 +9,7 @@
- #include "Common/CommonFuncs.h"
- #include "Common/CommonTypes.h"
- #include "Common/Logging/Log.h"
-+#include "Common/MemArena.h"
- #include "Common/MsgHandler.h"
- #include "Common/StringUtil.h"
- 
 diff --git a/Source/Core/Common/MemoryUtil.cpp b/Source/Core/Common/MemoryUtil.cpp
 index 858135b..2088916 100644
 --- a/Source/Core/Common/MemoryUtil.cpp
@@ -1218,23 +1114,6 @@ index 0c4f077..afa34f8 100644
  #include "Common/CommonTypes.h"
  #include "Common/x64Emitter.h"
  
-diff --git a/Source/Core/Common/x64CPUDetect.cpp b/Source/Core/Common/x64CPUDetect.cpp
-index 2cac9fb..87c3d50 100644
---- a/Source/Core/Common/x64CPUDetect.cpp
-+++ b/Source/Core/Common/x64CPUDetect.cpp
-@@ -1,11 +1,10 @@
- // Copyright 2008 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "Common/CPUDetect.h"
--
- #include <cstring>
- #include <string>
- 
-+#include "Common/CPUDetect.h"
- #include "Common/CommonTypes.h"
- #include "Common/Intrinsics.h"
- 
 diff --git a/Source/Core/Common/x64Emitter.cpp b/Source/Core/Common/x64Emitter.cpp
 index 2c95a61..693d903 100644
 --- a/Source/Core/Common/x64Emitter.cpp
@@ -1310,7 +1189,7 @@ index 7ac600c..ee8d27c 100644
  namespace Config
  {
 diff --git a/Source/Core/Core/Config/GraphicsSettings.cpp b/Source/Core/Core/Config/GraphicsSettings.cpp
-index b10a20d..8a59fd4 100644
+index 1015bd4..fdf128f 100644
 --- a/Source/Core/Core/Config/GraphicsSettings.cpp
 +++ b/Source/Core/Core/Config/GraphicsSettings.cpp
 @@ -151,8 +151,6 @@ const Info<bool> GFX_HACK_EFB_EMULATE_FORMAT_CHANGES{
@@ -1687,7 +1566,7 @@ index 4904b2a..a0673e9 100644
  #ifdef __linux__
  #include <fcntl.h>
 diff --git a/Source/Core/Core/HW/EXI/BBA/TAP_Win32.cpp b/Source/Core/Core/HW/EXI/BBA/TAP_Win32.cpp
-index 57e2418..38d7f8f 100644
+index 1f3b9fc..1d9b509 100644
 --- a/Source/Core/Core/HW/EXI/BBA/TAP_Win32.cpp
 +++ b/Source/Core/Core/HW/EXI/BBA/TAP_Win32.cpp
 @@ -2,13 +2,12 @@
@@ -1706,7 +1585,7 @@ index 57e2418..38d7f8f 100644
  namespace Win32TAPHelper
  {
 diff --git a/Source/Core/Core/HW/EXI/EXI_DeviceIPL.cpp b/Source/Core/Core/HW/EXI/EXI_DeviceIPL.cpp
-index 1d6b17b..f589b35 100644
+index e55f880..475a09f 100644
 --- a/Source/Core/Core/HW/EXI/EXI_DeviceIPL.cpp
 +++ b/Source/Core/Core/HW/EXI/EXI_DeviceIPL.cpp
 @@ -2,6 +2,7 @@
@@ -1877,27 +1756,6 @@ index ca0c2c5..ff0de2e 100644
  
  using namespace WiimoteCommon;
  using namespace WiimoteReal;
-diff --git a/Source/Core/Core/IOS/DolphinDevice.cpp b/Source/Core/Core/IOS/DolphinDevice.cpp
-index face12f..6f8bb1d 100644
---- a/Source/Core/Core/IOS/DolphinDevice.cpp
-+++ b/Source/Core/Core/IOS/DolphinDevice.cpp
-@@ -1,8 +1,6 @@
- // Copyright 2019 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "Core/IOS/DolphinDevice.h"
--
- #include <algorithm>
- #include <cstring>
- 
-@@ -18,6 +16,7 @@
- #include "Core/ConfigManager.h"
- #include "Core/Core.h"
- #include "Core/HW/Memmap.h"
-+#include "Core/IOS/DolphinDevice.h"
- 
- namespace IOS::HLE
- {
 diff --git a/Source/Core/Core/IOS/ES/NandUtils.cpp b/Source/Core/Core/IOS/ES/NandUtils.cpp
 index 3c0752f..be202a0 100644
 --- a/Source/Core/Core/IOS/ES/NandUtils.cpp
@@ -1920,7 +1778,7 @@ index 3c0752f..be202a0 100644
  #include "Core/IOS/FS/FileSystemProxy.h"
  #include "Core/IOS/Uids.h"
 diff --git a/Source/Core/Core/IOS/FS/HostBackend/FS.cpp b/Source/Core/Core/IOS/FS/HostBackend/FS.cpp
-index b586dce..7bdb785 100644
+index 2e2fee3..fce3967 100644
 --- a/Source/Core/Core/IOS/FS/HostBackend/FS.cpp
 +++ b/Source/Core/Core/IOS/FS/HostBackend/FS.cpp
 @@ -1,8 +1,6 @@
@@ -2019,27 +1877,6 @@ index 3887d68..ed721d1 100644
  #include <sys/socket.h>
  #include <sys/un.h>
  #include <vector>
-diff --git a/Source/Core/Core/PowerPC/GDBStub.cpp b/Source/Core/Core/PowerPC/GDBStub.cpp
-index 45896ec..2d5dac1 100644
---- a/Source/Core/Core/PowerPC/GDBStub.cpp
-+++ b/Source/Core/Core/PowerPC/GDBStub.cpp
-@@ -3,8 +3,6 @@
- 
- // Originally written by Sven Peter <sven@fail0verflow.com> for anergistic.
- 
--#include "Core/PowerPC/GDBStub.h"
--
- #include <fmt/format.h>
- #include <optional>
- #include <signal.h>
-@@ -33,6 +31,7 @@ typedef SSIZE_T ssize_t;
- #include "Core/HW/Memmap.h"
- #include "Core/Host.h"
- #include "Core/PowerPC/BreakPoints.h"
-+#include "Core/PowerPC/GDBStub.h"
- #include "Core/PowerPC/Gekko.h"
- #include "Core/PowerPC/PPCCache.h"
- #include "Core/PowerPC/PowerPC.h"
 diff --git a/Source/Core/Core/PowerPC/Interpreter/Interpreter_Branch.cpp b/Source/Core/Core/PowerPC/Interpreter/Interpreter_Branch.cpp
 index 6f51ca9..54fe1ae 100644
 --- a/Source/Core/Core/PowerPC/Interpreter/Interpreter_Branch.cpp
@@ -2079,27 +1916,6 @@ index 16e86de..244e4d8 100644
  #include "Core/PowerPC/Interpreter/Interpreter_FPUtils.h"
  #include "Core/PowerPC/PowerPC.h"
  
-diff --git a/Source/Core/Core/PowerPC/Interpreter/Interpreter_LoadStore.cpp b/Source/Core/Core/PowerPC/Interpreter/Interpreter_LoadStore.cpp
-index 8010364..9989024 100644
---- a/Source/Core/Core/PowerPC/Interpreter/Interpreter_LoadStore.cpp
-+++ b/Source/Core/Core/PowerPC/Interpreter/Interpreter_LoadStore.cpp
-@@ -1,8 +1,6 @@
- // Copyright 2008 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "Core/PowerPC/Interpreter/Interpreter.h"
--
- #include "Common/Assert.h"
- #include "Common/CommonTypes.h"
- #include "Common/Logging/Log.h"
-@@ -11,6 +9,7 @@
- 
- #include "Core/ConfigManager.h"
- #include "Core/PowerPC/Interpreter/ExceptionUtils.h"
-+#include "Core/PowerPC/Interpreter/Interpreter.h"
- #include "Core/PowerPC/Interpreter/Interpreter_FPUtils.h"
- #include "Core/PowerPC/JitInterface.h"
- #include "Core/PowerPC/MMU.h"
 diff --git a/Source/Core/Core/PowerPC/Interpreter/Interpreter_LoadStorePaired.cpp b/Source/Core/Core/PowerPC/Interpreter/Interpreter_LoadStorePaired.cpp
 index 6905c7a..a09bbc7 100644
 --- a/Source/Core/Core/PowerPC/Interpreter/Interpreter_LoadStorePaired.cpp
@@ -2193,7 +2009,7 @@ index ad78a06..e2e6bfd 100644
  #include "Core/PowerPC/Jit64Common/Jit64PowerPCState.h"
  #include "Core/PowerPC/PPCAnalyst.h"
 diff --git a/Source/Core/Core/PowerPC/Jit64/Jit_FloatingPoint.cpp b/Source/Core/Core/PowerPC/Jit64/Jit_FloatingPoint.cpp
-index e373008..9d2aad1 100644
+index 40999ca..463cfc1 100644
 --- a/Source/Core/Core/PowerPC/Jit64/Jit_FloatingPoint.cpp
 +++ b/Source/Core/Core/PowerPC/Jit64/Jit_FloatingPoint.cpp
 @@ -1,8 +1,6 @@
@@ -2343,7 +2159,7 @@ index a92bc95..c0682b6 100644
  #include "Core/PowerPC/PPCTables.h"
  #include "Core/PowerPC/PowerPC.h"
 diff --git a/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp b/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp
-index 988550d..5f94195 100644
+index b4fbd1c..70f7f9e 100644
 --- a/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp
 +++ b/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp
 @@ -1,8 +1,6 @@
@@ -2385,7 +2201,7 @@ index cb73416..989a732 100644
  #include "Core/PowerPC/JitCommon/DivUtils.h"
  #include "Core/PowerPC/PPCTables.h"
 diff --git a/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStore.cpp b/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStore.cpp
-index 61baecf..d61f79a 100644
+index 99253b1..64866e7 100644
 --- a/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStore.cpp
 +++ b/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStore.cpp
 @@ -1,8 +1,6 @@
@@ -2560,7 +2376,7 @@ index f1b6a1b..0c8f557 100644
  {
  Magic SignedDivisionConstants(s32 d)
 diff --git a/Source/Core/Core/PowerPC/JitCommon/JitCache.cpp b/Source/Core/Core/PowerPC/JitCommon/JitCache.cpp
-index b25e3fb..d6d2259 100644
+index de55900..06d82e9 100644
 --- a/Source/Core/Core/PowerPC/JitCommon/JitCache.cpp
 +++ b/Source/Core/Core/PowerPC/JitCommon/JitCache.cpp
 @@ -1,8 +1,6 @@
@@ -2748,7 +2564,7 @@ index ed4c11d..44ef7b0 100644
  #include "DiscIO/VolumeDisc.h"
  
 diff --git a/Source/Core/DiscIO/GameModDescriptor.cpp b/Source/Core/DiscIO/GameModDescriptor.cpp
-index 016df59..f9e1124 100644
+index 5ed11de..eddf5e1 100644
 --- a/Source/Core/DiscIO/GameModDescriptor.cpp
 +++ b/Source/Core/DiscIO/GameModDescriptor.cpp
 @@ -1,13 +1,13 @@
@@ -2789,10 +2605,10 @@ index df12eab..1d8e370 100644
  
  namespace DiscIO
 diff --git a/Source/Core/DolphinLib.props b/Source/Core/DolphinLib.props
-index 49d2cfe..21a82ab 100644
+index a627166..232a31c 100644
 --- a/Source/Core/DolphinLib.props
 +++ b/Source/Core/DolphinLib.props
-@@ -642,6 +642,7 @@
+@@ -640,6 +640,7 @@
      <ClInclude Include="VideoCommon\PostProcessing.h" />
      <ClInclude Include="VideoCommon\RenderBase.h" />
      <ClInclude Include="VideoCommon\RenderState.h" />
@@ -2800,7 +2616,7 @@ index 49d2cfe..21a82ab 100644
      <ClInclude Include="VideoCommon\ShaderCache.h" />
      <ClInclude Include="VideoCommon\ShaderGenCommon.h" />
      <ClInclude Include="VideoCommon\Statistics.h" />
-@@ -651,8 +652,6 @@
+@@ -649,8 +650,6 @@
      <ClInclude Include="VideoCommon\TextureConverterShaderGen.h" />
      <ClInclude Include="VideoCommon\TextureDecoder_Util.h" />
      <ClInclude Include="VideoCommon\TextureDecoder.h" />
@@ -2809,7 +2625,7 @@ index 49d2cfe..21a82ab 100644
      <ClInclude Include="VideoCommon\UberShaderCommon.h" />
      <ClInclude Include="VideoCommon\UberShaderPixel.h" />
      <ClInclude Include="VideoCommon\UberShaderVertex.h" />
-@@ -1217,8 +1216,6 @@
+@@ -1213,8 +1212,6 @@
      <ClCompile Include="VideoCommon\TextureConversionShader.cpp" />
      <ClCompile Include="VideoCommon\TextureConverterShaderGen.cpp" />
      <ClCompile Include="VideoCommon\TextureDecoder_Common.cpp" />
@@ -3048,7 +2864,7 @@ index 9681522..e01caa4 100644
  
  ListProxyModel::ListProxyModel(QObject* parent) : QSortFilterProxyModel(parent)
 diff --git a/Source/Core/DolphinQt/MainWindow.cpp b/Source/Core/DolphinQt/MainWindow.cpp
-index be391be..512049a 100644
+index ef462d3..b9480a4 100644
 --- a/Source/Core/DolphinQt/MainWindow.cpp
 +++ b/Source/Core/DolphinQt/MainWindow.cpp
 @@ -1,8 +1,6 @@
@@ -3133,27 +2949,6 @@ index 52a8a54..7d89d8a 100644
  bool WindowActivationEventFilter::eventFilter(QObject* object, QEvent* event)
  {
    if (event->type() == QEvent::WindowDeactivate)
-diff --git a/Source/Core/DolphinQt/Resources.cpp b/Source/Core/DolphinQt/Resources.cpp
-index 752fdb4..2ab51fb 100644
---- a/Source/Core/DolphinQt/Resources.cpp
-+++ b/Source/Core/DolphinQt/Resources.cpp
-@@ -1,8 +1,6 @@
- // Copyright 2015 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "DolphinQt/Resources.h"
--
- #include <QGuiApplication>
- #include <QIcon>
- #include <QPixmap>
-@@ -12,6 +10,7 @@
- 
- #include "Core/ConfigManager.h"
- 
-+#include "DolphinQt/Resources.h"
- #include "DolphinQt/Settings.h"
- 
- #ifdef _WIN32
 diff --git a/Source/Core/DolphinQt/Settings/PathPane.cpp b/Source/Core/DolphinQt/Settings/PathPane.cpp
 index d793fa9..2c212ad 100644
 --- a/Source/Core/DolphinQt/Settings/PathPane.cpp
@@ -3469,7 +3264,7 @@ index 7ac1baf..5f312d3 100644
  namespace CommandLineParse
  {
 diff --git a/Source/Core/UICommon/UICommon.cpp b/Source/Core/UICommon/UICommon.cpp
-index 3f7949d..31b39dc 100644
+index a5f0721..bcd330f 100644
 --- a/Source/Core/UICommon/UICommon.cpp
 +++ b/Source/Core/UICommon/UICommon.cpp
 @@ -1,8 +1,6 @@
@@ -3509,32 +3304,16 @@ index 830ae1f..f4ab892 100644
  #include "VideoBackends/D3DCommon/D3DCommon.h"
  
 diff --git a/Source/Core/VideoBackends/D3D/D3DMain.cpp b/Source/Core/VideoBackends/D3D/D3DMain.cpp
-index a74fb1b..9f75712 100644
+index 4d78c49..0ff911c 100644
 --- a/Source/Core/VideoBackends/D3D/D3DMain.cpp
 +++ b/Source/Core/VideoBackends/D3D/D3DMain.cpp
-@@ -1,8 +1,6 @@
- // Copyright 2008 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "VideoBackends/D3D/VideoBackend.h"
--
- #include <memory>
- #include <string>
- 
-@@ -17,6 +15,7 @@
- #include "VideoBackends/D3D/D3DRender.h"
- #include "VideoBackends/D3D/D3DSwapChain.h"
- #include "VideoBackends/D3D/D3DVertexManager.h"
-+#include "VideoBackends/D3D/VideoBackend.h"
- #include "VideoBackends/D3DCommon/D3DCommon.h"
- 
- #include "VideoCommon/FramebufferManager.h"
-@@ -107,8 +106,6 @@ void VideoBackend::FillBackendInfo()
+@@ -107,9 +107,6 @@ void VideoBackend::FillBackendInfo()
    g_Config.backend_info.bSupportsSSAA = true;
    g_Config.backend_info.bSupportsShaderBinaries = true;
    g_Config.backend_info.bSupportsPipelineCacheData = false;
 -  g_Config.backend_info.bSupportsCoarseDerivatives = true;
 -  g_Config.backend_info.bSupportsTextureQueryLevels = true;
+-  g_Config.backend_info.bSupportsLodBiasInSampler = true;
    g_Config.backend_info.bSupportsLogicOp = D3D::SupportsLogicOp(g_Config.iAdapter);
  
    g_Config.backend_info.Adapters = D3DCommon::GetAdapterNames();
@@ -3947,32 +3726,16 @@ index 7ff42c8..ce4d23b 100644
  };
  }  // namespace DX12
 diff --git a/Source/Core/VideoBackends/D3D12/VideoBackend.cpp b/Source/Core/VideoBackends/D3D12/VideoBackend.cpp
-index c3fd307..68496c9 100644
+index 9ee16c1..89dd437 100644
 --- a/Source/Core/VideoBackends/D3D12/VideoBackend.cpp
 +++ b/Source/Core/VideoBackends/D3D12/VideoBackend.cpp
-@@ -1,8 +1,6 @@
- // Copyright 2016 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "VideoBackends/D3D12/VideoBackend.h"
--
- #include <string>
- 
- #include "Common/CommonTypes.h"
-@@ -16,6 +14,7 @@
- #include "VideoBackends/D3D12/D3D12SwapChain.h"
- #include "VideoBackends/D3D12/D3D12VertexManager.h"
- #include "VideoBackends/D3D12/DX12Context.h"
-+#include "VideoBackends/D3D12/VideoBackend.h"
- 
- #include "VideoCommon/FramebufferManager.h"
- #include "VideoCommon/ShaderCache.h"
-@@ -83,8 +82,6 @@ void VideoBackend::FillBackendInfo()
+@@ -83,9 +83,6 @@ void VideoBackend::FillBackendInfo()
    g_Config.backend_info.AAModes = DXContext::GetAAModes(g_Config.iAdapter);
    g_Config.backend_info.bSupportsShaderBinaries = true;
    g_Config.backend_info.bSupportsPipelineCacheData = true;
 -  g_Config.backend_info.bSupportsCoarseDerivatives = true;
 -  g_Config.backend_info.bSupportsTextureQueryLevels = true;
+-  g_Config.backend_info.bSupportsLodBiasInSampler = true;
  
    // We can only check texture support once we have a device.
    if (g_dx_context)
@@ -4021,40 +3784,21 @@ index 15be6cf..26eeb78 100644
  #include "VideoCommon/VideoConfig.h"
  
 diff --git a/Source/Core/VideoBackends/Null/NullBackend.cpp b/Source/Core/VideoBackends/Null/NullBackend.cpp
-index d6bd70c..5887d37 100644
+index 635650c..c4e4cad 100644
 --- a/Source/Core/VideoBackends/Null/NullBackend.cpp
 +++ b/Source/Core/VideoBackends/Null/NullBackend.cpp
-@@ -6,15 +6,14 @@
- // This backend tries not to do anything in the backend,
- // but everything in VideoCommon.
- 
--#include "VideoBackends/Null/VideoBackend.h"
--
--#include "Common/Common.h"
--#include "Common/MsgHandler.h"
--
- #include "VideoBackends/Null/NullRender.h"
- #include "VideoBackends/Null/NullVertexManager.h"
- #include "VideoBackends/Null/PerfQuery.h"
- #include "VideoBackends/Null/TextureCache.h"
-+#include "VideoBackends/Null/VideoBackend.h"
-+
-+#include "Common/Common.h"
-+#include "Common/MsgHandler.h"
- 
- #include "VideoCommon/FramebufferManager.h"
- #include "VideoCommon/VideoBackendBase.h"
-@@ -56,8 +55,6 @@ void VideoBackend::InitBackendInfo()
+@@ -56,9 +56,6 @@ void VideoBackend::InitBackendInfo()
    g_Config.backend_info.bSupportsPartialDepthCopies = false;
    g_Config.backend_info.bSupportsShaderBinaries = false;
    g_Config.backend_info.bSupportsPipelineCacheData = false;
 -  g_Config.backend_info.bSupportsCoarseDerivatives = false;
 -  g_Config.backend_info.bSupportsTextureQueryLevels = false;
+-  g_Config.backend_info.bSupportsLodBiasInSampler = false;
  
    // aamodes: We only support 1 sample, so no MSAA
    g_Config.backend_info.Adapters.clear();
 diff --git a/Source/Core/VideoBackends/OGL/OGLMain.cpp b/Source/Core/VideoBackends/OGL/OGLMain.cpp
-index b83c3af..3ca79d5 100644
+index 4f4dc21..3ca79d5 100644
 --- a/Source/Core/VideoBackends/OGL/OGLMain.cpp
 +++ b/Source/Core/VideoBackends/OGL/OGLMain.cpp
 @@ -33,8 +33,6 @@ Make AA apply instantly during gameplay if possible
@@ -4074,7 +3818,15 @@ index b83c3af..3ca79d5 100644
  
  #include "VideoCommon/FramebufferManager.h"
  #include "VideoCommon/TextureCacheBase.h"
-@@ -100,7 +99,7 @@ void VideoBackend::InitBackendInfo()
+@@ -93,7 +92,6 @@ void VideoBackend::InitBackendInfo()
+   g_Config.backend_info.bSupportsPartialDepthCopies = true;
+   g_Config.backend_info.bSupportsShaderBinaries = false;
+   g_Config.backend_info.bSupportsPipelineCacheData = false;
+-  g_Config.backend_info.bSupportsLodBiasInSampler = true;
+ 
+   // TODO: There is a bug here, if texel buffers or SSBOs/atomics are not supported the graphics
+   // options will show the option when it is not supported. The only way around this would be
+@@ -101,7 +99,7 @@ void VideoBackend::InitBackendInfo()
    g_Config.backend_info.bSupportsGPUTextureDecoding = true;
    g_Config.backend_info.bSupportsBBox = true;
  
@@ -4083,7 +3835,7 @@ index b83c3af..3ca79d5 100644
    g_Config.backend_info.bSupportsDualSourceBlend = true;
    g_Config.backend_info.bSupportsPrimitiveRestart = true;
    g_Config.backend_info.bSupportsPaletteConversion = true;
-@@ -108,8 +107,6 @@ void VideoBackend::InitBackendInfo()
+@@ -109,8 +107,6 @@ void VideoBackend::InitBackendInfo()
    g_Config.backend_info.bSupportsDepthClamp = true;
    g_Config.backend_info.bSupportsST3CTextures = false;
    g_Config.backend_info.bSupportsBPTCTextures = false;
@@ -4109,7 +3861,7 @@ index b4962cf..ee45fe8 100644
  #include "VideoBackends/OGL/OGLShader.h"
  #include "VideoBackends/OGL/OGLVertexManager.h"
 diff --git a/Source/Core/VideoBackends/OGL/OGLRender.cpp b/Source/Core/VideoBackends/OGL/OGLRender.cpp
-index 2fc307c..782d5e1 100644
+index 3b70579..782d5e1 100644
 --- a/Source/Core/VideoBackends/OGL/OGLRender.cpp
 +++ b/Source/Core/VideoBackends/OGL/OGLRender.cpp
 @@ -483,10 +483,6 @@ Renderer::Renderer(std::unique_ptr<GLContext> main_gl_context, float backbuffer_
@@ -4123,6 +3875,16 @@ index 2fc307c..782d5e1 100644
  
    if (m_main_gl_context->IsGLES())
    {
+@@ -513,9 +509,6 @@ Renderer::Renderer(std::unique_ptr<GLContext> main_gl_context, float backbuffer_
+     // ARB_get_texture_sub_image (unlikely, except maybe on NVIDIA), we can use that instead.
+     g_Config.backend_info.bSupportsDepthReadback = g_ogl_config.bSupportsTextureSubImage;
+ 
+-    // GL_TEXTURE_LOD_BIAS is not supported on GLES.
+-    g_Config.backend_info.bSupportsLodBiasInSampler = false;
+-
+     if (GLExtensions::Supports("GL_EXT_shader_framebuffer_fetch"))
+     {
+       g_ogl_config.SupportedFramebufferFetch = EsFbFetchType::FbFetchExt;
 diff --git a/Source/Core/VideoBackends/OGL/OGLShader.cpp b/Source/Core/VideoBackends/OGL/OGLShader.cpp
 index 4ba2143..11914f0 100644
 --- a/Source/Core/VideoBackends/OGL/OGLShader.cpp
@@ -4154,7 +3916,7 @@ index cf3c5f7..83c1d1b 100644
  
  namespace OGL
 diff --git a/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp b/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
-index 1413813..021391e 100644
+index 8376127..1a5b92c 100644
 --- a/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
 +++ b/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
 @@ -692,6 +692,7 @@ void ProgramShaderCache::CreateHeader()
@@ -4188,7 +3950,7 @@ index 1413813..021391e 100644
        is_glsles ? "precision highp sampler2DArray;" : "",
        (is_glsles && g_ActiveConfig.backend_info.bSupportsPaletteConversion) ?
 diff --git a/Source/Core/VideoBackends/OGL/SamplerCache.cpp b/Source/Core/VideoBackends/OGL/SamplerCache.cpp
-index ed14c11..85af444 100644
+index c111caa..85af444 100644
 --- a/Source/Core/VideoBackends/OGL/SamplerCache.cpp
 +++ b/Source/Core/VideoBackends/OGL/SamplerCache.cpp
 @@ -2,11 +2,12 @@
@@ -4228,7 +3990,7 @@ index ed14c11..85af444 100644
    }
  
    glSamplerParameteri(sampler_id, GL_TEXTURE_MIN_FILTER, min_filter);
-@@ -90,17 +91,17 @@ void SamplerCache::SetParameters(GLuint sampler_id, const SamplerState& params)
+@@ -90,19 +91,17 @@ void SamplerCache::SetParameters(GLuint sampler_id, const SamplerState& params)
        {GL_CLAMP_TO_EDGE, GL_REPEAT, GL_MIRRORED_REPEAT}};
  
    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_S,
@@ -4243,8 +4005,11 @@ index ed14c11..85af444 100644
 +  glSamplerParameterf(sampler_id, GL_TEXTURE_MIN_LOD, params.min_lod / 16.f);
 +  glSamplerParameterf(sampler_id, GL_TEXTURE_MAX_LOD, params.max_lod / 16.f);
  
-   if (!static_cast<Renderer*>(g_renderer.get())->IsGLES())
+-  if (g_ActiveConfig.backend_info.bSupportsLodBiasInSampler)
+-  {
 -    glSamplerParameterf(sampler_id, GL_TEXTURE_LOD_BIAS, params.tm0.lod_bias / 256.f);
+-  }
++  if (!static_cast<Renderer*>(g_renderer.get())->IsGLES())
 +    glSamplerParameterf(sampler_id, GL_TEXTURE_LOD_BIAS, params.lod_bias / 256.f);
  
 -  if (params.tm0.anisotropic_filtering && g_ogl_config.bSupportsAniso)
@@ -4390,7 +4155,7 @@ index 082c263..a70f1b0 100644
  namespace SW
  {
 diff --git a/Source/Core/VideoBackends/Software/SWmain.cpp b/Source/Core/VideoBackends/Software/SWmain.cpp
-index 6a12c46..a0aa8e0 100644
+index 654813d..a0aa8e0 100644
 --- a/Source/Core/VideoBackends/Software/SWmain.cpp
 +++ b/Source/Core/VideoBackends/Software/SWmain.cpp
 @@ -1,8 +1,6 @@
@@ -4410,12 +4175,13 @@ index 6a12c46..a0aa8e0 100644
  
  #include "VideoCommon/FramebufferManager.h"
  #include "VideoCommon/TextureCacheBase.h"
-@@ -85,8 +84,6 @@ void VideoSoftware::InitBackendInfo()
+@@ -85,9 +84,6 @@ void VideoSoftware::InitBackendInfo()
    g_Config.backend_info.bSupportsShaderBinaries = false;
    g_Config.backend_info.bSupportsPipelineCacheData = false;
    g_Config.backend_info.bSupportsBBox = true;
 -  g_Config.backend_info.bSupportsCoarseDerivatives = false;
 -  g_Config.backend_info.bSupportsTextureQueryLevels = false;
+-  g_Config.backend_info.bSupportsLodBiasInSampler = false;
  
    // aamodes
    g_Config.backend_info.AAModes = {1};
@@ -4721,7 +4487,7 @@ index db5037f..06a3f09 100644
    }
  
 diff --git a/Source/Core/VideoBackends/Vulkan/VKShader.cpp b/Source/Core/VideoBackends/Vulkan/VKShader.cpp
-index 3d5beae..cd910b8 100644
+index 650ac85..4f88ec4 100644
 --- a/Source/Core/VideoBackends/Vulkan/VKShader.cpp
 +++ b/Source/Core/VideoBackends/Vulkan/VKShader.cpp
 @@ -1,13 +1,12 @@
@@ -4740,7 +4506,7 @@ index 3d5beae..cd910b8 100644
  
  namespace Vulkan
 diff --git a/Source/Core/VideoBackends/Vulkan/VKTexture.cpp b/Source/Core/VideoBackends/Vulkan/VKTexture.cpp
-index 98128c8..f744eb2 100644
+index b47a5d6..90d1357 100644
 --- a/Source/Core/VideoBackends/Vulkan/VKTexture.cpp
 +++ b/Source/Core/VideoBackends/Vulkan/VKTexture.cpp
 @@ -1,8 +1,6 @@
@@ -4761,7 +4527,7 @@ index 98128c8..f744eb2 100644
  
  namespace Vulkan
 diff --git a/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp b/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp
-index 23cb06e..6c58369 100644
+index 40e5429..460180b 100644
 --- a/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp
 +++ b/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp
 @@ -1,8 +1,6 @@
@@ -4781,18 +4547,33 @@ index 23cb06e..6c58369 100644
  #include "VideoCommon/DriverDetails.h"
  #include "VideoCommon/VideoCommon.h"
  
-@@ -286,9 +285,7 @@ void VulkanContext::PopulateBackendInfo(VideoConfig* config)
+@@ -286,10 +285,7 @@ void VulkanContext::PopulateBackendInfo(VideoConfig* config)
    config->backend_info.bSupportsBPTCTextures = false;              // Dependent on features.
    config->backend_info.bSupportsLogicOp = false;                   // Dependent on features.
    config->backend_info.bSupportsLargePoints = false;               // Dependent on features.
 -  config->backend_info.bSupportsFramebufferFetch = false;          // Dependent on OS and features.
 -  config->backend_info.bSupportsCoarseDerivatives = true;          // Assumed support.
 -  config->backend_info.bSupportsTextureQueryLevels = true;         // Assumed support.
+-  config->backend_info.bSupportsLodBiasInSampler = false;          // Dependent on OS.
 +  config->backend_info.bSupportsFramebufferFetch = false;          // No support.
  }
  
  void VulkanContext::PopulateBackendInfoAdapters(VideoConfig* config, const GPUList& gpu_list)
-@@ -340,15 +337,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
+@@ -317,13 +313,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
+   config->backend_info.bSupportsSSAA = (features.sampleRateShading == VK_TRUE);
+   config->backend_info.bSupportsLogicOp = (features.logicOp == VK_TRUE);
+ 
+-#ifdef __APPLE__
+-  // Metal doesn't support this.
+-  config->backend_info.bSupportsLodBiasInSampler = false;
+-#else
+-  config->backend_info.bSupportsLodBiasInSampler = true;
+-#endif
+-
+   // Disable geometry shader when shaderTessellationAndGeometryPointSize is not supported.
+   // Seems this is needed for gl_Layer.
+   if (!features.shaderTessellationAndGeometryPointSize)
+@@ -348,15 +337,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
                                                properties.limits.pointSizeRange[0] <= 1.0f &&
                                                properties.limits.pointSizeRange[1] >= 16;
  
@@ -5329,7 +5110,7 @@ index 5335af9..fe80767 100644
  
  struct VertexShaderConstants
 diff --git a/Source/Core/VideoCommon/DriverDetails.cpp b/Source/Core/VideoCommon/DriverDetails.cpp
-index c7f6412..6029654 100644
+index 0852820..f12318d 100644
 --- a/Source/Core/VideoCommon/DriverDetails.cpp
 +++ b/Source/Core/VideoCommon/DriverDetails.cpp
 @@ -1,11 +1,10 @@
@@ -5556,7 +5337,7 @@ index 78e4046..21e6e2d 100644
    static u32 CalculateMipCount(u32 width, u32 height);
  
 diff --git a/Source/Core/VideoCommon/PixelShaderGen.cpp b/Source/Core/VideoCommon/PixelShaderGen.cpp
-index c8f3bf5..d74fc45 100644
+index 6419efd..d74fc45 100644
 --- a/Source/Core/VideoCommon/PixelShaderGen.cpp
 +++ b/Source/Core/VideoCommon/PixelShaderGen.cpp
 @@ -332,9 +332,6 @@ PixelShaderUid GetPixelShaderUid()
@@ -5614,7 +5395,7 @@ index c8f3bf5..d74fc45 100644
  
    if (host_config.per_pixel_lighting)
    {
-@@ -542,308 +535,17 @@ void UpdateBoundingBox(float2 rawpos) {{
+@@ -542,320 +535,17 @@ void UpdateBoundingBox(float2 rawpos) {{
  )",
                fmt::arg("efb_height", EFB_HEIGHT), fmt::arg("efb_scale", I_EFBSCALE));
    }
@@ -5724,7 +5505,19 @@ index c8f3bf5..d74fc45 100644
 -              "  float3 coords = float3(float(uv.x) / size_s, float(uv.y) / size_t, layer);\n");
 -    if (api_type == APIType::OpenGL || api_type == APIType::Vulkan)
 -    {
--      out.Write("  return iround(255.0 * texture(tex, coords));\n}}\n");
+-      if (!host_config.backend_sampler_lod_bias)
+-      {
+-        out.Write("  uint texmode0 = samp_texmode0(texmap);\n"
+-                  "  float lod_bias = float({}) / 256.0f;\n"
+-                  "  return iround(255.0 * texture(tex, coords, lod_bias));\n",
+-                  BitfieldExtract<&SamplerState::TM0::lod_bias>("texmode0"));
+-      }
+-      else
+-      {
+-        out.Write("  return iround(255.0 * texture(tex, coords));\n");
+-      }
+-
+-      out.Write("}}\n");
 -    }
 -    else if (api_type == APIType::D3D)
 -    {
@@ -5925,7 +5718,7 @@ index c8f3bf5..d74fc45 100644
  static void WriteColor(ShaderCode& out, APIType api_type, const pixel_shader_uid_data* uid_data,
                         bool use_dual_source);
  static void WriteBlend(ShaderCode& out, const pixel_shader_uid_data* uid_data);
-@@ -864,20 +566,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -876,20 +566,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
              uid_data->genMode_numtexgens, uid_data->genMode_numindstages);
  
    // Stuff that is shared between ubershaders and pixelgen.
@@ -5946,7 +5739,7 @@ index c8f3bf5..d74fc45 100644
    if (uid_data->forced_early_z && g_ActiveConfig.backend_info.bSupportsEarlyZ)
    {
      // Zcomploc (aka early_ztest) is a way to control whether depth test is done before
-@@ -932,58 +622,40 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -944,58 +622,40 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
         uid_data->useDstAlpha);
    const bool use_shader_blend =
        !use_dual_source && (uid_data->useDstAlpha && host_config.backend_shader_framebuffer_fetch);
@@ -6023,7 +5816,7 @@ index c8f3bf5..d74fc45 100644
      }
  
      if (uid_data->per_pixel_depth)
-@@ -1029,28 +701,11 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1041,28 +701,11 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
  
      out.Write("void main()\n{{\n");
      out.Write("\tfloat4 rawpos = gl_FragCoord;\n");
@@ -6055,7 +5848,7 @@ index c8f3bf5..d74fc45 100644
                  "\tfloat4 ocol1;\n");
      }
    }
-@@ -1100,8 +755,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1112,8 +755,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        out.Write(",\n  in uint layer : SV_RenderTargetArrayIndex\n");
      out.Write("        ) {{\n");
    }
@@ -6064,7 +5857,7 @@ index c8f3bf5..d74fc45 100644
  
    out.Write("\tint4 c0 = " I_COLORS "[1], c1 = " I_COLORS "[2], c2 = " I_COLORS
              "[3], prev = " I_COLORS "[0];\n"
-@@ -1159,7 +812,7 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1171,7 +812,7 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
      {
        out.Write("\tint2 fixpoint_uv{} = int2(", i);
        out.Write("(tex{}.z == 0.0 ? tex{}.xy : tex{}.xy / tex{}.z)", i, i, i, i);
@@ -6073,7 +5866,7 @@ index c8f3bf5..d74fc45 100644
        // TODO: S24 overflows here?
      }
    }
-@@ -1182,8 +835,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1194,8 +835,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        out.Write("\ttempcoord = fixpoint_uv{} >> " I_INDTEXSCALE "[{}].{};\n", texcoord, i / 2,
                  (i & 1) ? "zw" : "xy");
  
@@ -6084,7 +5877,7 @@ index c8f3bf5..d74fc45 100644
      }
    }
  
-@@ -1301,9 +954,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1313,9 +954,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
  
    WriteFog(out, uid_data);
  
@@ -6094,7 +5887,7 @@ index c8f3bf5..d74fc45 100644
    // Write the color and alpha values to the framebuffer
    // If using shader blend, we still use the separate alpha
    WriteColor(out, api_type, uid_data, use_dual_source || use_shader_blend);
-@@ -1592,8 +1242,8 @@ static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, i
+@@ -1604,8 +1242,8 @@ static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, i
          '\0',
      };
  
@@ -6105,7 +5898,7 @@ index c8f3bf5..d74fc45 100644
    }
    else if (uid_data->genMode_numtexgens == 0)
    {
-@@ -1776,6 +1426,24 @@ static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBia
+@@ -1788,6 +1426,24 @@ static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBia
    out.Write("){}", tev_scale_table_right[scale]);
  }
  
@@ -6130,7 +5923,7 @@ index c8f3bf5..d74fc45 100644
  constexpr Common::EnumMap<const char*, CompareMode::Always> tev_alpha_funcs_table{
      "(false)",         // CompareMode::Never
      "(prev.a <  {})",  // CompareMode::Less
-@@ -1920,34 +1588,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
+@@ -1932,34 +1588,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
    out.Write("\tprev.rgb = (prev.rgb * (256 - ifog) + " I_FOGCOLOR ".rgb * ifog) >> 8;\n");
  }
  
@@ -6686,10 +6479,10 @@ index 0000000..2b09393
 +}
 +}  // namespace SamplerCommon
 diff --git a/Source/Core/VideoCommon/ShaderCache.cpp b/Source/Core/VideoCommon/ShaderCache.cpp
-index 0a9dc0b..b72dd23 100644
+index eada4c9..494db47 100644
 --- a/Source/Core/VideoCommon/ShaderCache.cpp
 +++ b/Source/Core/VideoCommon/ShaderCache.cpp
-@@ -585,9 +585,7 @@ AbstractPipelineConfig ShaderCache::GetGXPipelineConfig(
+@@ -588,9 +588,7 @@ AbstractPipelineConfig ShaderCache::GetGXPipelineConfig(
    config.blending_state = blending_state;
    config.framebuffer_state = g_framebuffer_manager->GetEFBFramebufferState();
  
@@ -6701,20 +6494,21 @@ index 0a9dc0b..b72dd23 100644
      WARN_LOG_FMT(VIDEO,
                   "Approximating logic op with blending, this will produce incorrect rendering.");
 diff --git a/Source/Core/VideoCommon/ShaderGenCommon.cpp b/Source/Core/VideoCommon/ShaderGenCommon.cpp
-index 34921f9..c5cd3ef 100644
+index 0a965e6..c5cd3ef 100644
 --- a/Source/Core/VideoCommon/ShaderGenCommon.cpp
 +++ b/Source/Core/VideoCommon/ShaderGenCommon.cpp
-@@ -39,9 +39,6 @@ ShaderHostConfig ShaderHostConfig::GetCurrent()
+@@ -39,10 +39,6 @@ ShaderHostConfig ShaderHostConfig::GetCurrent()
    bits.backend_logic_op = g_ActiveConfig.backend_info.bSupportsLogicOp;
    bits.backend_palette_conversion = g_ActiveConfig.backend_info.bSupportsPaletteConversion;
    bits.enable_validation_layer = g_ActiveConfig.bEnableValidationLayer;
 -  bits.manual_texture_sampling = !g_ActiveConfig.bFastTextureSampling;
 -  bits.manual_texture_sampling_custom_texture_sizes =
 -      g_ActiveConfig.ManualTextureSamplingWithHiResTextures();
+-  bits.backend_sampler_lod_bias = g_ActiveConfig.backend_info.bSupportsLodBiasInSampler;
    return bits;
  }
  
-@@ -108,30 +105,6 @@ void WriteIsNanHeader(ShaderCode& out, APIType api_type)
+@@ -109,30 +105,6 @@ void WriteIsNanHeader(ShaderCode& out, APIType api_type)
    }
  }
  
@@ -6746,7 +6540,7 @@ index 34921f9..c5cd3ef 100644
                                 std::string_view type, std::string_view name, int var_index,
                                 std::string_view semantic = {}, int semantic_index = -1)
 diff --git a/Source/Core/VideoCommon/ShaderGenCommon.h b/Source/Core/VideoCommon/ShaderGenCommon.h
-index 88a3033..758baf5 100644
+index b787035..758baf5 100644
 --- a/Source/Core/VideoCommon/ShaderGenCommon.h
 +++ b/Source/Core/VideoCommon/ShaderGenCommon.h
 @@ -15,7 +15,6 @@
@@ -6757,16 +6551,17 @@ index 88a3033..758baf5 100644
  
  #include "VideoCommon/VideoCommon.h"
  
-@@ -170,8 +169,6 @@ union ShaderHostConfig
+@@ -170,9 +169,6 @@ union ShaderHostConfig
    BitField<21, 1, bool, u32> backend_logic_op;
    BitField<22, 1, bool, u32> backend_palette_conversion;
    BitField<23, 1, bool, u32> enable_validation_layer;
 -  BitField<24, 1, bool, u32> manual_texture_sampling;
 -  BitField<25, 1, bool, u32> manual_texture_sampling_custom_texture_sizes;
+-  BitField<26, 1, bool, u32> backend_sampler_lod_bias;
  
    static ShaderHostConfig GetCurrent();
  };
-@@ -181,8 +178,6 @@ std::string GetDiskShaderCacheFileName(APIType api_type, const char* type, bool
+@@ -182,8 +178,6 @@ std::string GetDiskShaderCacheFileName(APIType api_type, const char* type, bool
                                         bool include_host_config, bool include_api = true);
  
  void WriteIsNanHeader(ShaderCode& out, APIType api_type);
@@ -6775,7 +6570,7 @@ index 88a3033..758baf5 100644
  
  void GenerateVSOutputMembers(ShaderCode& object, APIType api_type, u32 texgens,
                               const ShaderHostConfig& host_config, std::string_view qualifier);
-@@ -201,16 +196,6 @@ void AssignVSOutputMembers(ShaderCode& object, std::string_view a, std::string_v
+@@ -202,16 +196,6 @@ void AssignVSOutputMembers(ShaderCode& object, std::string_view a, std::string_v
  const char* GetInterpolationQualifier(bool msaa, bool ssaa, bool in_glsl_interface_block = false,
                                        bool in = false);
  
@@ -7121,7 +6916,7 @@ index 6a1eff4..0000000
 -
 -}  // namespace TMEM
 diff --git a/Source/Core/VideoCommon/TextureCacheBase.cpp b/Source/Core/VideoCommon/TextureCacheBase.cpp
-index 3041e30..9c7c92b 100644
+index efe6a38..cef3168 100644
 --- a/Source/Core/VideoCommon/TextureCacheBase.cpp
 +++ b/Source/Core/VideoCommon/TextureCacheBase.cpp
 @@ -40,9 +40,9 @@
@@ -7824,7 +7619,7 @@ index 3041e30..9c7c92b 100644
      }
    }
  
-@@ -2839,21 +2852,18 @@ bool TextureCacheBase::DecodeTextureOnGPU(TCacheEntry* entry, u32 dst_level, con
+@@ -2841,21 +2854,18 @@ bool TextureCacheBase::DecodeTextureOnGPU(TCacheEntry* entry, u32 dst_level, con
  }
  
  u32 TextureCacheBase::TCacheEntry::BytesPerRow() const
@@ -7852,7 +7647,7 @@ index 3041e30..9c7c92b 100644
  }
  
  u32 TextureCacheBase::TCacheEntry::NumBlocksY() const
-@@ -2910,8 +2920,6 @@ u64 TextureCacheBase::TCacheEntry::CalculateHash() const
+@@ -2912,8 +2922,6 @@ u64 TextureCacheBase::TCacheEntry::CalculateHash() const
  {
    const u32 bytes_per_row = BytesPerRow();
    const u32 hash_sample_size = HashSampleSize();
@@ -7862,10 +7657,10 @@ index 3041e30..9c7c92b 100644
    if (memory_stride == bytes_per_row)
    {
 diff --git a/Source/Core/VideoCommon/TextureCacheBase.h b/Source/Core/VideoCommon/TextureCacheBase.h
-index 3fa9b85..124b6e9 100644
+index 692aab4..3e533c5 100644
 --- a/Source/Core/VideoCommon/TextureCacheBase.h
 +++ b/Source/Core/VideoCommon/TextureCacheBase.h
-@@ -14,14 +14,12 @@
+@@ -15,14 +15,12 @@
  #include <unordered_set>
  #include <vector>
  
@@ -7880,7 +7675,7 @@ index 3fa9b85..124b6e9 100644
  
  class AbstractFramebuffer;
  class AbstractStagingTexture;
-@@ -177,7 +175,6 @@ public:
+@@ -195,7 +193,6 @@ public:
  
      bool IsEfbCopy() const { return is_efb_copy; }
      bool IsCopy() const { return is_xfb_copy || is_efb_copy; }
@@ -7888,7 +7683,7 @@ index 3fa9b85..124b6e9 100644
      u32 NumBlocksY() const;
      u32 BytesPerRow() const;
  
-@@ -217,11 +214,17 @@ public:
+@@ -235,11 +232,17 @@ public:
    void Invalidate();
  
    TCacheEntry* Load(const u32 stage);
@@ -7908,7 +7703,7 @@ index 3fa9b85..124b6e9 100644
    void CopyRenderTargetToTexture(u32 dstAddr, EFBCopyFormat dstFormat, u32 width, u32 height,
                                   u32 dstStride, bool is_depth_copy,
                                   const MathUtil::Rectangle<int>& srcRect, bool isIntensity,
-@@ -283,11 +286,11 @@ private:
+@@ -301,11 +304,11 @@ private:
  
    TCacheEntry* GetXFBFromCache(u32 address, u32 width, u32 height, u32 stride);
  
@@ -8898,27 +8693,10 @@ index 03d46b7..66c638c 100644
    g_Config.VerifyValidity();
    UpdateActiveConfig();
 diff --git a/Source/Core/VideoCommon/VideoConfig.cpp b/Source/Core/VideoCommon/VideoConfig.cpp
-index a5c9834..255e172 100644
+index a4aa9bd..3482c0a 100644
 --- a/Source/Core/VideoCommon/VideoConfig.cpp
 +++ b/Source/Core/VideoCommon/VideoConfig.cpp
-@@ -1,8 +1,6 @@
- // Copyright 2008 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "VideoCommon/VideoConfig.h"
--
- #include <algorithm>
- 
- #include "Common/CPUDetect.h"
-@@ -14,6 +12,7 @@
- #include "Core/Movie.h"
- #include "VideoCommon/OnScreenDisplay.h"
- #include "VideoCommon/VideoCommon.h"
-+#include "VideoCommon/VideoConfig.h"
- 
- VideoConfig g_Config;
- VideoConfig g_ActiveConfig;
-@@ -136,7 +135,6 @@ void VideoConfig::Refresh()
+@@ -137,7 +137,6 @@ void VideoConfig::Refresh()
    bVertexRounding = Config::Get(Config::GFX_HACK_VERTEX_ROUDING);
    iEFBAccessTileSize = Config::Get(Config::GFX_HACK_EFB_ACCESS_TILE_SIZE);
    iMissingColorValue = Config::Get(Config::GFX_HACK_MISSING_COLOR_VALUE);
@@ -8927,10 +8705,10 @@ index a5c9834..255e172 100644
    bPerfQueriesEnable = Config::Get(Config::GFX_PERF_QUERIES_ENABLE);
  
 diff --git a/Source/Core/VideoCommon/VideoConfig.h b/Source/Core/VideoCommon/VideoConfig.h
-index c3861a2..81b47cf 100644
+index 80d42db..495eef6 100644
 --- a/Source/Core/VideoCommon/VideoConfig.h
 +++ b/Source/Core/VideoCommon/VideoConfig.h
-@@ -136,7 +136,6 @@ struct VideoConfig final
+@@ -135,7 +135,6 @@ struct VideoConfig final
    int iLog = 0;           // CONF_ bits
    int iSaveTargetId = 0;  // TODO: Should be dropped
    u32 iMissingColorValue = 0;
@@ -8938,16 +8716,17 @@ index c3861a2..81b47cf 100644
  
    // Stereoscopy
    StereoMode stereo_mode{};
-@@ -232,8 +231,6 @@ struct VideoConfig final
+@@ -231,9 +230,6 @@ struct VideoConfig final
      bool bSupportsDepthReadback = false;
      bool bSupportsShaderBinaries = false;
      bool bSupportsPipelineCacheData = false;
 -    bool bSupportsCoarseDerivatives = false;
 -    bool bSupportsTextureQueryLevels = false;
+-    bool bSupportsLodBiasInSampler = false;
    } backend_info;
  
    // Utility
-@@ -247,16 +244,6 @@ struct VideoConfig final
+@@ -247,16 +243,6 @@ struct VideoConfig final
      return backend_info.bSupportsGPUTextureDecoding && bEnableGPUTextureDecoding;
    }
    bool UseVertexRounding() const { return bVertexRounding && iEFBScale != 1; }
@@ -9002,5 +8781,5 @@ index c348649..f954ca7 100644
    Fifo::DoState(p);
    p.DoMarker("Fifo");
 -- 
-2.33.1
+2.34.1
 

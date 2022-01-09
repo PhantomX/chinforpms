@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit c04e43702cb516d87ee88b4d77dc1e1946c8185b
+%global commit dff8980a2771713728b5d1892249ed13e7588612
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211123
+%global date 20220208
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           melonds
 Version:        0.9.3
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -35,7 +35,6 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        net.kuribo64.%{pkgname}.metainfo.xml
 
 Patch0:         0001-Use-system-libraries.patch
-Patch1:         0001-Change-savefiles-location.patch
 
 ExclusiveArch:  x86_64 %{ix86} %{arm} aarch64
 
@@ -115,6 +114,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Jan 09 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.3-6.20220208gitdff8980
+- Last snapshot
+- File location patch removed, upstream support custom paths now
+
 * Wed Nov 24 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.3-5.20211123gitc04e437
 - Update
 

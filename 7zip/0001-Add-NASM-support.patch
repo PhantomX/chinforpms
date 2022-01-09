@@ -1,0 +1,3900 @@
+From 2de417dad443c214c0eb8eab0331752b56b5384b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 7 Jan 2022 15:58:35 -0300
+Subject: [PATCH] Add NASM support
+
+Experimental NASM support from jloqfjgk
+See:
+  https://github.com/jinfeihan57/p7zip/issues/166
+  https://github.com/jloqfjgk/7-zip-nasm
+---
+ Asm/x86-nasm/7zAsm.asm      |  218 ++++++
+ Asm/x86-nasm/7zCrcOpt.asm   |  181 +++++
+ Asm/x86-nasm/AesOpt.asm     |  773 +++++++++++++++++++++
+ Asm/x86-nasm/LzFindOpt.asm  |  513 ++++++++++++++
+ Asm/x86-nasm/LzmaDecOpt.asm | 1252 +++++++++++++++++++++++++++++++++++
+ Asm/x86-nasm/Sha1Opt.asm    |  267 ++++++++
+ Asm/x86-nasm/Sha256Opt.asm  |  270 ++++++++
+ Asm/x86-nasm/XzCrc64Opt.asm |  240 +++++++
+ CPP/7zip/7zip_gcc.mak       |   32 +
+ 9 files changed, 3746 insertions(+)
+ create mode 100644 Asm/x86-nasm/7zAsm.asm
+ create mode 100644 Asm/x86-nasm/7zCrcOpt.asm
+ create mode 100644 Asm/x86-nasm/AesOpt.asm
+ create mode 100644 Asm/x86-nasm/LzFindOpt.asm
+ create mode 100644 Asm/x86-nasm/LzmaDecOpt.asm
+ create mode 100644 Asm/x86-nasm/Sha1Opt.asm
+ create mode 100644 Asm/x86-nasm/Sha256Opt.asm
+ create mode 100644 Asm/x86-nasm/XzCrc64Opt.asm
+
+diff --git a/Asm/x86-nasm/7zAsm.asm b/Asm/x86-nasm/7zAsm.asm
+new file mode 100644
+index 0000000..586e3c4
+--- /dev/null
++++ b/Asm/x86-nasm/7zAsm.asm
+@@ -0,0 +1,218 @@
++; 7zAsm.asm -- ASM macros
++; 2009-12-12 : Igor Pavlov : Public domain
++; 2018-02-03 : Igor Pavlov : Public domain
++; 2021-02-07 : Igor Pavlov : Public domain
++; 2021-07-13 : Igor Pavlov : Public domain
++; 2011-10-12 : P7ZIP       : Public domain
++; 2020-01-02 : Peter Hyman (integrating 2018 updates)
++; 2021-06-28 : Peter Hyman (integrating 2021 updates)
++; 2021-08-01 : Peter Hyman (integrating 2021 updates)
++
++; MASM Segment settings ignored
++
++%ifidn __OUTPUT_FORMAT__, elf64
++    %define x64 1
++    %define IS_X64 1
++    %use smartalign ; test
++    ALIGNMODE p6 ; test
++%else
++    %define IS_X64 0
++%endif
++
++%ifdef ABI_LINUX
++  %define IS_LINUX 1
++%else
++  %define IS_LINUX 0
++%endif
++    
++%ifndef x64
++; Use ABI_CDECL for x86 (32-bit) only
++; if ABI_CDECL is not defined, we use fastcall abi
++%ifdef ABI_CDECL
++  %define IS_CDECL 1
++%else
++  %define IS_CDECL 0
++%endif
++%endif
++
++%define NOT ~
++
++%macro MY_ASM_START 0
++	SECTION .text
++%endmacro
++
++%macro MY_PROC 2 ; macro name:req, numParams:req
++	align 16
++	%define proc_numParams %2 ; numParams
++	global %1
++	global _%1
++	%1:
++	_%1:
++%endmacro
++
++%macro  MY_ENDP 0
++	ret
++%endmacro
++
++%ifdef x64
++	%define REG_SIZE 8
++	%define REG_LOGAR_SIZE 3
++%else
++	%define REG_SIZE 4
++	%define REG_LOGAR_SIZE 2
++%endif
++
++%define x0  EAX
++%define x1  ECX
++%define x2  EDX
++%define x3  EBX
++%define x4  ESP
++%define x5  EBP
++%define x6  ESI
++%define x7  EDI
++
++%define x0_W AX
++%define x1_W CX
++%define x2_W DX
++%define x3_W BX
++
++%define x5_W BP
++%define x6_W SI
++%define x7_W DI
++
++%define x0_L  AL
++%define x1_L  CL
++%define x2_L  DL
++%define x3_L  BL
++
++%define x0_H  AH
++%define x1_H  CH
++%define x2_H  DH
++%define x3_H  BH
++
++%ifdef x64
++	%define x5_L BPL
++	%define x6_L SIL
++	%define x7_L DIL
++
++	%define r0  RAX
++	%define r1  RCX
++	%define r2  RDX
++	%define r3  RBX
++	%define r4  RSP
++	%define r5  RBP
++	%define r6  RSI
++	%define r7  RDI
++	%define x8 r8d
++	%define x9 r9d
++	%define x10 r10d
++	%define x11 r11d
++	%define x12 r12d
++	%define x13 r13d
++	%define x14 r14d
++	%define x15 r15d
++%else
++	%define r0  x0
++	%define r1  x1
++	%define r2  x2
++	%define r3  x3
++	%define r4  x4
++	%define r5  x5
++	%define r6  x6
++	%define  r7  x7
++%endif
++
++%ifdef x64
++%ifdef ABI_LINUX
++
++%macro MY_PUSH_2_REGS 0
++	push    r3
++	push    r5
++%endmacro
++
++%macro MY_POP_2_REGS 0
++	pop     r5
++	pop     r3
++%endmacro
++
++%endif
++%endif
++
++%macro MY_PUSH_4_REGS 0
++	push    r3
++	push    r5
++	push    r6
++	push    r7
++%endmacro
++
++%macro MY_POP_4_REGS 0
++	pop     r7
++	pop     r6
++	pop     r5
++	pop     r3
++%endmacro
++
++; for 32 bit
++
++%define REG_PARAM_0_x  x1
++%define REG_PARAM_0    r1
++%define REG_PARAM_1_x  x2
++%define REG_PARAM_1    r2
++
++%ifndef x64
++
++	%define REG_ABI_PARAM_0_x REG_PARAM_0x
++	%define REG_ABI_PARAM_0   REG_PARAM_0
++	%define REG_ABI_PARAM_1_x REG_PARAM_1_x
++	%define REG_ABI_PARAM_1   REG_PARAM_1
++
++%else ; x64 and for LZMA Decompress
++
++; skip IS_LINUX=0 and win64 defines
++
++	%define REG_LINUX_PARAM_0_x  x7
++	%define REG_LINUX_PARAM_0    r7
++	%define REG_LINUX_PARAM_1_x  x6
++	%define REG_LINUX_PARAM_1    r6
++	%define REG_LINUX_PARAM_2    r2
++	%define REG_LINUX_PARAM_3    r1
++	%define REG_LINUX_PARAM_4_x  x8
++	%define REG_LINUX_PARAM_4    r8
++	%define REG_LINUX_PARAM_5    r9
++
++	%define REG_ABI_PARAM_0_x REG_LINUX_PARAM_0_x
++	%define REG_ABI_PARAM_0   REG_LINUX_PARAM_0
++	%define REG_ABI_PARAM_1_x REG_LINUX_PARAM_1_x
++	%define REG_ABI_PARAM_1   REG_LINUX_PARAM_1
++	%define REG_ABI_PARAM_2   REG_LINUX_PARAM_2
++	%define REG_ABI_PARAM_3   REG_LINUX_PARAM_3
++	%define REG_ABI_PARAM_4_x REG_LINUX_PARAM_4_x
++	%define REG_ABI_PARAM_4   REG_LINUX_PARAM_4
++	%define REG_ABI_PARAM_5   REG_LINUX_PARAM_5
++
++; skip ABI_LINUX_TO_WIN 3/4 macros. Not needed
++; ABI_LINUX_TO_WIN_2 apparently needed for 7-Zip
++%macro MY_ABI_LINUX_TO_WIN_2 0
++        mov     r2, r6
++        mov     r1, r7
++%endmacro
++
++%macro MY_PUSH_PRESERVED_ABI_REGS 0
++; IS_LINUX
++	MY_PUSH_2_REGS
++	push    r12
++	push    r13
++	push    r14
++	push    r15
++%endmacro
++
++%macro MY_POP_PRESERVED_ABI_REGS 0
++	pop     r15
++	pop     r14
++	pop     r13
++	pop     r12
++; IS_LINUX
++	MY_POP_2_REGS
++%endmacro
++
++%endif ; IS_LINUX and x64
+diff --git a/Asm/x86-nasm/7zCrcOpt.asm b/Asm/x86-nasm/7zCrcOpt.asm
+new file mode 100644
+index 0000000..e8e28c5
+--- /dev/null
++++ b/Asm/x86-nasm/7zCrcOpt.asm
+@@ -0,0 +1,181 @@
++; 7zCrcOpt.asm -- CRC32 calculation : optimized version
++; 2021-02-07 : Igor Pavlov : Public domain
++; 2022 Super-experimental NASM port
++
++%include "7zAsm.asm"
++
++MY_ASM_START
++
++%define rD    r2
++%define rN    r7
++%define rT    r5
++
++%ifdef x64
++    %define num_VAR      r8
++    %define table_VAR    r9
++%else
++  %if (IS_CDECL > 0)
++    %define crc_OFFS     (REG_SIZE * 5)
++    %define data_OFFS    (REG_SIZE + crc_OFFS)
++    %define size_OFFS    (REG_SIZE + data_OFFS)
++  %else
++    %define size_OFFS    (REG_SIZE * 5)
++  %endif
++    %define table_OFFS   (REG_SIZE + size_OFFS)
++    %define num_VAR      [r4 + size_OFFS]
++    %define table_VAR    [r4 + table_OFFS]
++%endif
++
++%define SRCDAT    rD + rN * 1 + 4 *
++
++%macro CRC 4 ; op:req, dest:req, src:req, t:req
++    %1      %2, DWORD [rT + %3 * 4 + 0400h * %4] ; op      dest, DWORD PTR [rT + src * 4 + 0400h * t]
++%endmacro
++
++%macro CRC_XOR 3 ; dest:req, src:req, t:req
++    CRC xor, %1, %2, %3 ; xor, dest, src, t
++%endmacro
++
++%macro CRC_MOV 3 ; dest:req, src:req, t:req
++    CRC mov, %1, %2, %3 ; mov, dest, src, t
++%endmacro
++
++%macro CRC1b 0 ; macro
++    movzx   x6, BYTE [rD] ; PTR
++    inc     rD
++    movzx   x3, x0_L
++    xor     x6, x3
++    shr     x0, 8
++    CRC     xor, x0, r6, 0
++    dec     rN
++%endmacro
++
++%macro MY_PROLOG 1 ; crc_end:req
++
++    %ifdef x64
++      %if  (IS_LINUX > 0)
++        MY_PUSH_2_REGS
++        mov     x0, REG_ABI_PARAM_0_x   ; x0 = x7
++        mov     rT, REG_ABI_PARAM_3     ; r5 = r1
++        mov     rN, REG_ABI_PARAM_2     ; r7 = r2
++        mov     rD, REG_ABI_PARAM_1     ; r2 = r6
++      %else
++        MY_PUSH_4_REGS
++        mov     x0, REG_ABI_PARAM_0_x   ; x0 = x1
++        mov     rT, REG_ABI_PARAM_3     ; r5 = r9
++        mov     rN, REG_ABI_PARAM_2     ; r7 = r8
++        ; mov     rD, REG_ABI_PARAM_1     ; r2 = r2
++      %endif
++    %else
++        MY_PUSH_4_REGS
++      %if  (IS_CDECL > 0)
++        mov     x0, [r4 + crc_OFFS]
++        mov     rD, [r4 + data_OFFS]
++      %else
++        mov     x0, REG_ABI_PARAM_0_x
++      %endif
++        mov     rN, num_VAR
++        mov     rT, table_VAR
++    %endif
++    
++    test    rN, rN
++    jz      %1 ; crc_end
++  %%sl: ; @@:
++    test    rD, 7
++    jz      %%sl_end ; @F
++    CRC1b
++    jnz     %%sl ; @B
++  %%sl_end: ; @@:
++    cmp     rN, 16
++    jb      %1 ; crc_end
++    add     rN, rD
++    mov     num_VAR, rN
++    sub     rN, 8
++    and     rN, NOT 7
++    sub     rD, rN
++    xor     x0, [SRCDAT 0]
++%endmacro
++
++%macro MY_EPILOG 1 ; crc_end:req
++    xor     x0, [SRCDAT 0]
++    mov     rD, rN
++    mov     rN, num_VAR
++    sub     rN, rD
++  %1: ; crc_end:
++    test    rN, rN
++    jz      %%end ; @F
++    CRC1b
++    jmp     %1 ; crc_end
++  %%end: ; @@:
++      %if (IS_X64 > 0) && (IS_LINUX > 0)
++        MY_POP_2_REGS
++      %else
++        MY_POP_4_REGS
++      %endif
++%endmacro
++
++MY_PROC CrcUpdateT8, 4
++    MY_PROLOG crc_end_8
++    mov     x1, [SRCDAT 1]
++    align 16
++  main_loop_8:
++    mov     x6, [SRCDAT 2]
++    movzx   x3, x1_L
++    CRC_XOR x6, r3, 3
++    movzx   x3, x1_H
++    CRC_XOR x6, r3, 2
++    shr     x1, 16
++    movzx   x3, x1_L
++    movzx   x1, x1_H
++    CRC_XOR x6, r3, 1
++    movzx   x3, x0_L
++    CRC_XOR x6, r1, 0
++
++    mov     x1, [SRCDAT 3]
++    CRC_XOR x6, r3, 7
++    movzx   x3, x0_H
++    shr     x0, 16
++    CRC_XOR x6, r3, 6
++    movzx   x3, x0_L
++    CRC_XOR x6, r3, 5
++    movzx   x3, x0_H
++    CRC_MOV x0, r3, 4
++    xor     x0, x6
++    add     rD, 8
++    jnz     main_loop_8
++
++    MY_EPILOG crc_end_8
++MY_ENDP
++
++MY_PROC CrcUpdateT4, 4
++    MY_PROLOG crc_end_4
++    align 16
++  main_loop_4:
++    movzx   x1, x0_L
++    movzx   x3, x0_H
++    shr     x0, 16
++    movzx   x6, x0_H
++    and     x0, 0FFh
++    CRC_MOV x1, r1, 3
++    xor     x1, [SRCDAT 1]
++    CRC_XOR x1, r3, 2
++    CRC_XOR x1, r6, 0
++    CRC_XOR x1, r0, 1
++ 
++    movzx   x0, x1_L
++    movzx   x3, x1_H
++    shr     x1, 16
++    movzx   x6, x1_H
++    and     x1, 0FFh
++    CRC_MOV x0, r0, 3
++    xor     x0, [SRCDAT 2]
++    CRC_XOR x0, r3, 2
++    CRC_XOR x0, r6, 0
++    CRC_XOR x0, r1, 1
++    add     rD, 8
++    jnz     main_loop_4
++
++    MY_EPILOG crc_end_4
++MY_ENDP
++
++; end
+diff --git a/Asm/x86-nasm/AesOpt.asm b/Asm/x86-nasm/AesOpt.asm
+new file mode 100644
+index 0000000..e32678b
+--- /dev/null
++++ b/Asm/x86-nasm/AesOpt.asm
+@@ -0,0 +1,773 @@
++; AesOpt.asm -- AES optimized code for x86 AES hardware instructions
++; 2021-03-10 : Igor Pavlov : Public domain
++; 2022 Super-experimental NASM port
++
++%include "7zAsm.asm"
++
++;%ifdef ymm0
++  ;%define use_vaes_256 1 ; check whether nasm / yasm supports checking ifdef ymm0
++  ; ECHO "++ VAES 256"
++; %else
++  ; ECHO "-- NO VAES 256"
++;%endif
++%define use_vaes_256 1 ; Assume this on NASM
++
++;%ifdef x64
++  ;ECHO "x86-64"
++;%else
++  ;ECHO "x86"
++;if (IS_CDECL > 0)
++  ;ECHO "ABI : CDECL"
++;%else
++  ;ECHO "ABI : no CDECL : FASTCALL"
++;%endif
++;%endif
++
++;if (IS_LINUX > 0)
++  ;ECHO "ABI : LINUX"
++;%else
++  ;ECHO "ABI : WINDOWS"
++;%endif
++
++MY_ASM_START
++
++;%ifndef x64
++    ;.686
++    ;.xmm
++;%endif
++
++
++; MY_ALIGN EQU ALIGN(64)
++; MY_ALIGN EQU ; temp commented out check this
++
++; SEG_ALIGN EQU MY_ALIGN ; temp commented out check this
++
++%macro MY_SEG_PROC 2 ; name:req, numParams:req
++    ; seg_name equ @CatStr(_TEXT$, name)
++    ; seg_name SEGMENT SEG_ALIGN 'CODE'
++    MY_PROC %1, %2
++%endmacro
++
++%macro MY_SEG_ENDP 0 ; macro
++    ; seg_name ENDS
++%endmacro
++
++
++%define NUM_AES_KEYS_MAX 15
++
++; the number of push operators in function PROLOG
++%if (IS_LINUX = 0) || (IS_X64 = 0)
++%define num_regs_push   2
++%define stack_param_offset (REG_SIZE * (1 + num_regs_push))
++%endif
++
++%ifdef x64
++    %define num_param   REG_ABI_PARAM_2
++%else
++  %if (IS_CDECL > 0)
++    ;   size_t     size
++    ;   void *     data
++    ;   UInt32 *   aes
++    ;   ret-ip <- (r4)
++    %define aes_OFFS    (stack_param_offset)
++    %define data_OFFS   (REG_SIZE + aes_OFFS)
++    %define size_OFFS   (REG_SIZE + data_OFFS)
++    %define num_param   [r4 + size_OFFS]
++  %else
++    %define num_param   [r4 + stack_param_offset]
++  %endif
++%endif
++
++%define keys     REG_PARAM_0  ; r1
++%define rD       REG_PARAM_1  ; r2
++%define rN       r0
++
++%define koffs_x  x7
++%define koffs_r  r7
++
++%define ksize_x  x6
++%define ksize_r  r6
++
++%define keys2    r3
++
++%define state    xmm0
++%define key      xmm0
++%define key_ymm  ymm0
++%define key_ymm_n   0
++
++%ifdef x64
++        %assign ways 11
++%else
++        %assign ways 4
++%endif
++
++%define ways_start_reg 1
++
++%assign myarg0 (ways_start_reg + ways)
++%define iv          xmm %+ myarg0
++%define iv_ymm      ymm %+ myarg0
++
++%macro WOP 2 ; op, op2
++    %assign i 0
++    %rep ways ; rept ways
++        %assign myarg1 (ways_start_reg + i) ; custom ref 1
++        %1      xmm %+ myarg1, %2
++        %assign i i+1
++    %endrep ; endm
++%endmacro
++
++
++%ifndef ABI_LINUX
++%ifdef x64
++
++; we use 32 bytes of home space in stack in WIN64-x64
++%define NUM_HOME_MM_REGS   (32 / 16)
++; we preserve xmm registers starting from xmm6 in WIN64-x64
++%define MM_START_SAVE_REG  6
++
++%macro SAVE_XMM 1 ; num_used_mm_regs:req
++  %assign num_save_mm_regs (%1 - MM_START_SAVE_REG)
++  %if num_save_mm_regs > 0
++    %assign num_save_mm_regs2 (num_save_mm_regs - NUM_HOME_MM_REGS)
++    ; RSP is (16*x + 8) after entering the function in WIN64-x64
++    %assign stack_offset (16 * num_save_mm_regs2 + (stack_param_offset % 16))
++  
++    %assign i 0
++    %rep num_save_mm_regs ; rept num_save_mm_regs
++      
++      %if i = NUM_HOME_MM_REGS
++        sub  r4, stack_offset
++      %endif
++
++      %assign myarg2 (MM_START_SAVE_REG + i)
++      %if i < NUM_HOME_MM_REGS
++        movdqa  [r4 + stack_param_offset + i * 16], xmm %+ myarg2
++      %else
++        movdqa  [r4 + (i - NUM_HOME_MM_REGS) * 16], xmm %+ myarg2
++      %endif
++      
++      %assign i i+1
++    %endrep ; endm
++  %endif
++%endmacro
++
++%macro RESTORE_XMM 1 ; num_used_mm_regs:req
++  %if num_save_mm_regs > 0
++    %assign i 0
++    %if num_save_mm_regs2 > 0
++      %rep num_save_mm_regs2 ; rept num_save_mm_regs2
++        %assign myarg3 (MM_START_SAVE_REG + NUM_HOME_MM_REGS + i)
++        movdqa  xmm %+ myarg3, [r4 + i * 16]
++        %assign i i+1
++      %endrep ; endm
++        add     r4, stack_offset
++    %endif
++
++    %assign num_low_regs (num_save_mm_regs - i)
++    %assign i 0
++      %rep num_low_regs ; rept num_low_regs
++        %assign myarg4 (MM_START_SAVE_REG + i)
++        movdqa  xmm %+ myarg4, [r4 + stack_param_offset + i * 16]
++        %assign i i+1
++      %endrep ; endm
++  %endif
++%endmacro
++
++%endif ; x64
++%endif ; ABI_LINUX
++
++
++%macro MY_PROLOG 1 ; num_used_mm_regs:req
++        ; num_regs_push: must be equal to the number of push operators
++        ; push    r3
++        ; push    r5
++    %if (IS_LINUX = 0) || (IS_X64 = 0)
++        push    r6
++        push    r7
++    %endif
++
++        mov     rN, num_param  ; don't move it; num_param can use stack pointer (r4)
++
++    %if (IS_X64 = 0)
++      %if (IS_CDECL > 0)
++        mov     rD,   [r4 + data_OFFS]
++        mov     keys, [r4 + aes_OFFS]
++      %endif
++    %elif (IS_LINUX > 0)
++        MY_ABI_LINUX_TO_WIN_2
++    %endif
++
++
++    %ifndef ABI_LINUX
++    %ifdef x64
++        SAVE_XMM %1
++    %endif
++    %endif
++   
++        mov     ksize_x, [keys + 16]
++        shl     ksize_x, 5
++%endmacro
++
++
++%macro MY_EPILOG 0 ; macro
++    %ifndef ABI_LINUX
++    %ifdef x64
++        RESTORE_XMM num_save_mm_regs
++    %endif
++    %endif
++    
++    %if (IS_LINUX = 0) || (IS_X64 = 0)
++        pop     r7
++        pop     r6
++    %endif
++        ; pop     r5
++        ; pop     r3
++    MY_ENDP
++%endmacro
++
++
++%macro OP_KEY 2 ; op:req, offs:req
++        %1      state, [keys + %2]
++%endmacro
++
++ 
++%macro WOP_KEY 2 ; op:req, offs:req
++        movdqa  key, [keys + %2]
++        WOP     %1, key
++%endmacro
++
++
++; ---------- AES-CBC Decode ----------
++
++
++%macro XOR_WITH_DATA 2 ; reg, _ppp_
++        pxor    %1, [rD + i * 16]
++%endmacro
++
++%macro WRITE_TO_DATA 2 ; reg, _ppp_
++        movdqa  [rD + i * 16], %1
++%endmacro
++
++; Some custom experimental macros FIXME
++%macro MY_WOP_XOR_WITH_DATA 0
++    %assign i 0
++    %rep ways ; this is buggy?
++        %assign myargcustom0 (ways_start_reg + i)
++        pxor    xmm %+ myargcustom0, [rD + i * 16]
++        %assign i i+1
++    %endrep
++%endmacro
++
++%macro MY_WOP_WRITE_TO_DATA 0
++    %assign i 0
++    %rep ways
++        %assign myargcustom1 (ways_start_reg + i)
++        movdqa  [rD + i * 16], xmm %+ myargcustom1
++        %assign i i+1
++    %endrep
++%endmacro
++
++
++; state0    equ  @CatStr(xmm, %(ways_start_reg))
++
++%assign myarg5 (ways_start_reg + ways + 1)
++%define key0             xmm %+ myarg5
++%define key0_ymm         ymm %+ myarg5
++
++%assign myarg6 (ways_start_reg + ways + 2)
++%define key_last         xmm %+ myarg6
++%define key_last_ymm     ymm %+ myarg6
++%define key_last_ymm_n                 (ways_start_reg + ways + 2)
++
++%define NUM_CBC_REGS     (ways_start_reg + ways + 3)
++
++
++MY_SEG_PROC AesCbc_Decode_HW, 3
++
++    ; AesCbc_Decode_HW_start::
++    AesCbc_Decode_HW_start:
++        MY_PROLOG NUM_CBC_REGS
++   
++    ; AesCbc_Decode_HW_start_2::
++    AesCbc_Decode_HW_start_2:
++        movdqa  iv, [keys]
++        add     keys, 32
++
++        movdqa  key0, [keys + 1 * ksize_r]
++        movdqa  key_last, [keys]
++        sub     ksize_x, 16
++
++        jmp     check2
++    align 16
++    nextBlocks2:
++        WOP     movdqa, [rD + i * 16]
++        mov     koffs_x, ksize_x
++        ; WOP_KEY pxor, ksize_r + 16
++        WOP     pxor, key0
++    ; align 16
++    .0: ; @@: check
++        WOP_KEY aesdec, 1 * koffs_r
++        sub     koffs_r, 16
++        jnz     .0 ; @B check
++        ; WOP_KEY aesdeclast, 0
++        WOP     aesdeclast, key_last
++
++        %assign myarg7 ways_start_reg
++        pxor    xmm %+ myarg7, iv
++    %assign i 1
++    %rep (ways - 1) ; rept ways - 1
++        %assign myarg8 (ways_start_reg + i)
++        pxor    xmm %+ myarg8, [rD + i * 16 - 16]
++        %assign i i+1
++    %endrep ; endm
++        movdqa  iv, [rD + ways * 16 - 16]
++        ; WOP     WRITE_TO_DATA FIXME
++        MY_WOP_WRITE_TO_DATA ; FIXME
++
++        add     rD, ways * 16
++    AesCbc_Decode_HW_start_3:
++    check2:
++        sub     rN, ways
++        jnc     nextBlocks2
++        add     rN, ways
++
++        sub     ksize_x, 16
++
++        jmp     check
++    nextBlock:
++        movdqa  state, [rD]
++        mov     koffs_x, ksize_x
++        ; OP_KEY  pxor, 1 * ksize_r + 32
++        pxor    state, key0
++        ; movdqa  state0, [rD]
++        ; movdqa  state, key0
++        ; pxor    state, state0
++    .1: ; @@: check
++        OP_KEY  aesdec, 1 * koffs_r + 16
++        OP_KEY  aesdec, 1 * koffs_r
++        sub     koffs_r, 32
++        jnz     .1 ; @B
++        OP_KEY  aesdec, 16
++        ; OP_KEY  aesdeclast, 0
++        aesdeclast state, key_last
++        
++        pxor    state, iv
++        movdqa  iv, [rD]
++        ; movdqa  iv, state0
++        movdqa  [rD], state
++        
++        add     rD, 16
++    check:
++        sub     rN, 1
++        jnc     nextBlock
++
++        movdqa  [keys - 32], iv
++MY_EPILOG
++
++
++
++
++; ---------- AVX ----------
++
++
++%macro AVX__WOP_n 1 ; op
++    %assign i 0
++    %rep ways ; rept ways
++        %1      (ways_start_reg + i)
++        %assign i i+1
++    %endrep ; endm
++%endmacro
++
++%macro AVX__WOP 1; op
++    %assign i 0
++    %rep ways ; rept ways
++        %assign myarg9 (ways_start_reg + i)
++        %1      ymm %+ myarg9
++        %assign i i+1
++    %endrep ; endm
++%endmacro
++
++
++%macro AVX__WOP_KEY 2 ; op:req, offs:req
++        vmovdqa  key_ymm, [keys2 + %2] ; ymmword ptr
++        AVX__WOP_n %1
++%endmacro
++
++
++%macro AVX__CBC_START 1 ; reg
++        ; vpxor   reg, key_ymm, ymmword ptr [rD + 32 * i]
++        vpxor   %1, key0_ymm, [rD + 32 * i] ; ymmword ptr
++%endmacro
++
++%macro AVX__CBC_END 1 ; reg
++    %if i = 0
++        vpxor   %1, %1, iv_ymm
++    %else
++        vpxor   %1, %1, [rD + i * 32 - 16] ; ymmword ptr
++    %endif
++%endmacro
++
++
++%macro AVX__WRITE_TO_DATA 1 ; reg
++        vmovdqu [rD + 32 * i], %1 ; ymmword ptr
++%endmacro
++
++%macro AVX__XOR_WITH_DATA 1 ; reg
++        vpxor   %1, %1, [rD + 32 * i] ; ymmword ptr
++%endmacro
++
++%macro AVX__CTR_START 1 ; reg
++        vpaddq  iv_ymm, iv_ymm, one_ymm
++        ; vpxor   reg, iv_ymm, key_ymm
++        vpxor   %1, iv_ymm, key0_ymm
++%endmacro
++
++
++%macro MY_VAES_INSTR_2 4 ; cmd, dest, a1, a2
++  db 0c4H
++  db 2 + 040H + 020h * (1 - (%4) / 8) + 080h * (1 - (%2) / 8)
++  db 5 + 8 * ((~ (%3)) & 15) ; db 5 + 8 * ((not (a1)) and 15)
++  db %1
++  db 0c0H + 8 * ((%2) & 7) + ((%4) & 7) ; db 0c0H + 8 * ((%2) and 7) + ((%4) and 7)
++%endmacro
++
++%macro MY_VAES_INSTR 3 ; cmd, dest, a
++        MY_VAES_INSTR_2  %1, %2, %2, %3
++%endmacro
++
++%macro MY_vaesenc 2 ; dest, a
++        MY_VAES_INSTR  0dcH, %1, %2
++%endmacro
++%macro MY_vaesenclast 2 ; dest, a
++        MY_VAES_INSTR  0ddH, %1, %2
++%endmacro
++%macro MY_vaesdec 2 ; dest, a
++        MY_VAES_INSTR  0deH, %1, %2
++%endmacro
++%macro MY_vaesdeclast 2 ; dest, a
++        MY_VAES_INSTR  0dfH, %1, %2
++%endmacro
++
++
++%macro AVX__VAES_DEC 1 ; reg
++        MY_vaesdec %1, key_ymm_n
++%endmacro
++
++%macro AVX__VAES_DEC_LAST_key_last 1 ; reg
++        ; MY_vaesdeclast reg, key_ymm_n
++        MY_vaesdeclast %1, key_last_ymm_n
++%endmacro
++
++%macro AVX__VAES_ENC 1 ; reg
++        MY_vaesenc %1, key_ymm_n
++%endmacro
++
++%macro AVX__VAES_ENC_LAST 1 ; reg
++        MY_vaesenclast %1, key_ymm_n
++%endmacro
++
++%macro AVX__vinserti128_TO_HIGH 2 ; dest, src
++        vinserti128  %1, %1, %2, 1
++%endmacro
++
++
++MY_PROC AesCbc_Decode_HW_256, 3
++  %ifdef use_vaes_256
++        MY_PROLOG NUM_CBC_REGS
++        
++        cmp    rN, ways * 2
++        jb     AesCbc_Decode_HW_start_2
++
++        vmovdqa iv, [keys] ; xmmword ptr
++        add     keys, 32
++
++        vbroadcasti128  key0_ymm, [keys + 1 * ksize_r] ; xmmword ptr
++        vbroadcasti128  key_last_ymm, [keys] ; xmmword ptr
++        sub     ksize_x, 16
++        mov     koffs_x, ksize_x
++        add     ksize_x, ksize_x
++        
++        %assign AVX_STACK_SUB ((NUM_AES_KEYS_MAX + 1 - 2) * 32)
++        push    keys2
++        sub     r4, AVX_STACK_SUB
++        ; sub     r4, 32
++        ; sub     r4, ksize_r
++        ; lea     keys2, [r4 + 32]
++        mov     keys2, r4
++        and     keys2, -32
++    broad:
++        vbroadcasti128  key_ymm, [keys + 1 * koffs_r] ; xmmword ptr
++        vmovdqa         [keys2 + koffs_r * 2], key_ymm ; ymmword ptr
++        sub     koffs_r, 16
++        ; jnc     broad
++        jnz     broad
++
++        sub     rN, ways * 2
++
++    align 16
++    avx_cbcdec_nextBlock2:
++        mov     koffs_x, ksize_x
++        ; AVX__WOP_KEY    AVX__CBC_START, 1 * koffs_r + 32
++        AVX__WOP    AVX__CBC_START
++    .2: ; @@: check
++        AVX__WOP_KEY    AVX__VAES_DEC, 1 * koffs_r
++        sub     koffs_r, 32
++        jnz     .2 ; @B
++        ; AVX__WOP_KEY    AVX__VAES_DEC_LAST, 0
++        AVX__WOP_n   AVX__VAES_DEC_LAST_key_last
++
++        AVX__vinserti128_TO_HIGH  iv_ymm, [rD] ; xmmword ptr
++        AVX__WOP        AVX__CBC_END
++
++        vmovdqa         iv, [rD + ways * 32 - 16] ; xmmword ptr
++        AVX__WOP        AVX__WRITE_TO_DATA
++        
++        add     rD, ways * 32
++        sub     rN, ways * 2
++        jnc     avx_cbcdec_nextBlock2
++        add     rN, ways * 2
++
++        shr     ksize_x, 1
++        
++        ; lea     r4, [r4 + 1 * ksize_r + 32]
++        add     r4, AVX_STACK_SUB
++        pop     keys2
++
++        vzeroupper
++        jmp     AesCbc_Decode_HW_start_3
++  %else
++        jmp     AesCbc_Decode_HW_start
++  %endif
++MY_ENDP
++MY_SEG_ENDP
++
++
++
++    
++; ---------- AES-CBC Encode ----------
++
++%define e0   xmm1
++
++%define CENC_START_KEY     2
++%define CENC_NUM_REG_KEYS  (3 * 2)
++; last_key equ @CatStr(xmm, %(CENC_START_KEY + CENC_NUM_REG_KEYS))
++
++MY_SEG_PROC AesCbc_Encode_HW, 3
++        MY_PROLOG (CENC_START_KEY + CENC_NUM_REG_KEYS + 0)
++
++        movdqa  state, [keys]
++        add     keys, 32
++        
++    %assign i 0
++    %rep CENC_NUM_REG_KEYS ; rept CENC_NUM_REG_KEYS
++        %assign myarg10 (CENC_START_KEY + i)
++        movdqa  xmm %+ myarg10, [keys + i * 16]
++        %assign i i+1
++    %endrep ; endm
++                                        
++        add     keys, ksize_r
++        neg     ksize_r
++        add     ksize_r, (16 * CENC_NUM_REG_KEYS)
++        ; movdqa  last_key, [keys]
++        jmp     check_e
++
++    align 16
++    nextBlock_e:
++        movdqa  e0, [rD]
++        mov     koffs_r, ksize_r
++        %assign myarg11 CENC_START_KEY
++        pxor    e0, xmm %+ myarg11
++        pxor    state, e0
++        
++    %assign i 1
++    %rep (CENC_NUM_REG_KEYS - 1)
++        %assign myarg12 (CENC_START_KEY + i)
++        aesenc  state, xmm %+ myarg12
++        %assign i i+1
++    %endrep ; endm
++
++    .3: ; @@: check
++        OP_KEY  aesenc, 1 * koffs_r
++        OP_KEY  aesenc, 1 * koffs_r + 16
++        add     koffs_r, 32
++        jnz     .3 ; @B
++        OP_KEY  aesenclast, 0
++        ; aesenclast state, last_key
++        
++        movdqa  [rD], state
++        add     rD, 16
++    check_e:
++        sub     rN, 1
++        jnc     nextBlock_e
++
++        ; movdqa  [keys - 32], state
++        movdqa  [keys + 1 * ksize_r - (16 * CENC_NUM_REG_KEYS) - 32], state
++MY_EPILOG
++MY_SEG_ENDP
++
++
++    
++; ---------- AES-CTR ----------
++
++%ifdef x64
++        ; ways = 11
++%endif
++
++%assign myarg13 (ways_start_reg + ways + 1)
++%assign myarg14 (ways_start_reg + ways + 2)
++%define one              xmm %+ myarg13
++%define one_ymm          ymm %+ myarg13
++%define key0             xmm %+ myarg14
++%define key0_ymm         ymm %+ myarg14
++%define NUM_CTR_REGS     (ways_start_reg + ways + 3)
++
++%macro INIT_CTR 2 ; reg, _ppp_
++        paddq   iv, one
++        movdqa  %1, iv
++%endmacro
++
++
++MY_SEG_PROC AesCtr_Code_HW, 3
++    Ctr_start:
++        MY_PROLOG NUM_CTR_REGS
++
++    Ctr_start_2:
++        movdqa  iv, [keys]
++        add     keys, 32
++        movdqa  key0, [keys]
++
++        add     keys, ksize_r
++        neg     ksize_r
++        add     ksize_r, 16
++        
++    Ctr_start_3:
++        mov     koffs_x, 1
++        movd    one, koffs_x
++        jmp     check2_c
++
++    align 16
++    nextBlocks2_c:
++        WOP     INIT_CTR, 0
++        mov     koffs_r, ksize_r
++        ; WOP_KEY pxor, 1 * koffs_r -16
++        WOP     pxor, key0
++    .4: ; @@:
++        WOP_KEY aesenc, 1 * koffs_r
++        add     koffs_r, 16
++        jnz     .4 ; @B
++        WOP_KEY aesenclast, 0
++        
++        ; WOP     XOR_WITH_DATA FIXME
++        ; WOP     WRITE_TO_DATA FIXME
++        MY_WOP_XOR_WITH_DATA ; FIXME
++        MY_WOP_WRITE_TO_DATA ; FIXME
++        add     rD, ways * 16
++    check2_c:
++        sub     rN, ways
++        jnc     nextBlocks2_c
++        add     rN, ways
++
++        sub     keys, 16
++        add     ksize_r, 16
++        
++        jmp     check_c
++
++    ; align 16
++    nextBlock_c:
++        paddq   iv, one
++        ; movdqa  state, [keys + 1 * koffs_r - 16]
++        movdqa  state, key0
++        mov     koffs_r, ksize_r
++        pxor    state, iv
++        
++    .5: ; @@: check
++        OP_KEY  aesenc, 1 * koffs_r
++        OP_KEY  aesenc, 1 * koffs_r + 16
++        add     koffs_r, 32
++        jnz     .5 ; @B
++        OP_KEY  aesenc, 0
++        OP_KEY  aesenclast, 16
++        
++        pxor    state, [rD]
++        movdqa  [rD], state
++        add     rD, 16
++    check_c:
++        sub     rN, 1
++        jnc     nextBlock_c
++
++        ; movdqa  [keys - 32], iv
++        movdqa  [keys + 1 * ksize_r - 16 - 32], iv
++MY_EPILOG
++
++
++MY_PROC AesCtr_Code_HW_256, 3
++  %ifdef use_vaes_256
++        MY_PROLOG NUM_CTR_REGS
++
++        cmp    rN, ways * 2
++        jb     Ctr_start_2
++
++        vbroadcasti128  iv_ymm, [keys] ; xmmword ptr
++        add     keys, 32
++        vbroadcasti128  key0_ymm, [keys] ; xmmword ptr
++        mov     koffs_x, 1
++        vmovd           one, koffs_x
++        vpsubq  iv_ymm, iv_ymm, one_ymm
++        vpaddq  one, one, one
++        AVX__vinserti128_TO_HIGH     one_ymm, one
++        
++        add     keys, ksize_r
++        sub     ksize_x, 16
++        neg     ksize_r
++        mov     koffs_r, ksize_r
++        add     ksize_r, ksize_r
++
++        %assign AVX_STACK_SUB ((NUM_AES_KEYS_MAX + 1 - 1) * 32)
++        push    keys2
++        lea     keys2, [r4 - 32]
++        sub     r4, AVX_STACK_SUB
++        and     keys2, -32
++        vbroadcasti128  key_ymm, [keys] ; xmmword ptr
++        vmovdqa         [keys2], key_ymm ; ymmword ptr
++     .6: ; @@:
++        vbroadcasti128  key_ymm, [keys + 1 * koffs_r] ; xmmword ptr
++        vmovdqa         [keys2 + koffs_r * 2], key_ymm ; ymmword ptr
++        add     koffs_r, 16
++        jnz     .6 ; @B
++
++        sub     rN, ways * 2
++        
++    align 16
++    avx_ctr_nextBlock2:
++        mov             koffs_r, ksize_r
++        AVX__WOP        AVX__CTR_START
++        ; AVX__WOP_KEY    AVX__CTR_START, 1 * koffs_r - 32
++    .7: ; @@:
++        AVX__WOP_KEY    AVX__VAES_ENC, 1 * koffs_r
++        add     koffs_r, 32
++        jnz     .7 ; @B
++        AVX__WOP_KEY    AVX__VAES_ENC_LAST, 0
++       
++        AVX__WOP        AVX__XOR_WITH_DATA
++        AVX__WOP        AVX__WRITE_TO_DATA
++        
++        add     rD, ways * 32
++        sub     rN, ways * 2
++        jnc     avx_ctr_nextBlock2
++        add     rN, ways * 2
++        
++        vextracti128    iv, iv_ymm, 1
++        sar     ksize_r, 1
++       
++        add     r4, AVX_STACK_SUB
++        pop     keys2
++        
++        vzeroupper
++        jmp     Ctr_start_3
++  %else
++        jmp     Ctr_start
++  %endif
++MY_ENDP
++MY_SEG_ENDP
++
++; end
+diff --git a/Asm/x86-nasm/LzFindOpt.asm b/Asm/x86-nasm/LzFindOpt.asm
+new file mode 100644
+index 0000000..4724b83
+--- /dev/null
++++ b/Asm/x86-nasm/LzFindOpt.asm
+@@ -0,0 +1,513 @@
++; LzFindOpt.asm -- ASM version of GetMatchesSpecN_2() function
++; 2021-07-13: Igor Pavlov : Public domain
++; 2021-08-01: Peter Hyman (initial commit MASM-NASM)
++; 2021-07-21: Igor Pavlov : Public domain
++; 2021-11-06: Peter Hyman
++; 2022 Super-experimental NASM port
++
++%include "7zAsm.asm"
++
++%ifndef x64
++; x64=1
++	%error "x64_IS_REQUIRED"
++%endif
++
++MY_ASM_START
++
++%macro MY_ALIGN 1 ;macro num:req
++	align  %1
++%endmacro
++
++%macro MY_ALIGN_32 0
++	MY_ALIGN 32
++%endmacro
++
++%macro MY_ALIGN_64 0
++	MY_ALIGN 64
++%endmacro
++
++
++%define t0_L     x0_L
++%define t0_x     x0
++%define t0       r0
++%define t1_x     x3
++%define t1       r3
++
++%define cp_x     t1_x
++%define cp_r     t1
++%define m        x5
++%define m_r      r5
++%define len_x    x6
++%define len      r6
++%define diff_x   x7
++%define diff     r7
++%define len0     r10
++%define len1_x   x11
++%define len1     r11
++%define maxLen_x  x12
++%define maxLen   r12
++%define d        r13
++%define ptr0     r14
++%define ptr1     r15
++
++%define d_lim        m_r
++%define cycSize      len_x
++%define hash_lim     len0
++%define delta1_x     len1_x
++%define delta1_r     len1
++%define delta_x      maxLen_x
++%define delta_r      maxLen
++%define hash         ptr0
++%define src          ptr1
++
++
++; assume Linux
++;%if IS_LINUX gt 0
++
++	; r1 r2  r8 r9        : win32
++	; r7 r6  r2 r1  r8 r9 : linux
++
++%define lenLimit         r8
++%define lenLimit_x       x8
++%define pos_r            r2
++%define pos              x2
++%define cur              r1
++%define son              r9
++
++;%else
++;
++;	%define lenLimit         REG_ABI_PARAM_2
++;	%define lenLimit_x       REG_ABI_PARAM_2_x
++;	%define pos              REG_ABI_PARAM_1_x
++;	%define cur              REG_ABI_PARAM_0
++;	%define son              REG_ABI_PARAM_3
++;
++;%endif
++
++
++;%if IS_LINUX gt 0
++	%define	maxLen_OFFS           (REG_SIZE * (6 + 1))
++;%else
++;	%define cutValue_OFFS         (REG_SIZE * (8 + 1 + 4))
++;	%define d_OFFS                (REG_SIZE + cutValue_OFFS)
++;	%define maxLen_OFFS           (REG_SIZE + d_OFFS)
++;endif
++
++%define hash_OFFS             (REG_SIZE + maxLen_OFFS)
++%define limit_OFFS            (REG_SIZE + hash_OFFS)
++%define size_OFFS             (REG_SIZE + limit_OFFS)
++%define cycPos_OFFS           (REG_SIZE + size_OFFS)
++%define cycSize_OFFS          (REG_SIZE + cycPos_OFFS)
++%define posRes_OFFS           (REG_SIZE + cycSize_OFFS)
++
++;%if IS_LINUX gt 0
++;%else
++;	%define cutValue_PAR          [r0 + cutValue_OFFS]
++;	%define d_PAR                 [r0 + d_OFFS]
++;%endif
++%define maxLen_PAR            [r0 + maxLen_OFFS]
++%define hash_PAR              [r0 + hash_OFFS]
++%define limit_PAR             [r0 + limit_OFFS]
++%define size_PAR              [r0 + size_OFFS]
++%define cycPos_PAR            [r0 + cycPos_OFFS]
++%define cycSize_PAR           [r0 + cycSize_OFFS]
++%define posRes_PAR            [r0 + posRes_OFFS]
++
++
++%define cutValue_VAR          DWORD  [r4 + 8 * 0]	; PTR
++%define cutValueCur_VAR       DWORD  [r4 + 8 * 0 + 4]   ; PTR
++%define cycPos_VAR            DWORD  [r4 + 8 * 1 + 0]   ; PTR
++%define cycSize_VAR           DWORD  [r4 + 8 * 1 + 4]   ; PTR
++%define hash_VAR              QWORD  [r4 + 8 * 2]       ; PTR
++%define limit_VAR             QWORD  [r4 + 8 * 3]       ; PTR
++%define size_VAR              QWORD  [r4 + 8 * 4]       ; PTR
++%define distances             QWORD  [r4 + 8 * 5]       ; PTR
++%define maxLen_VAR            QWORD  [r4 + 8 * 6]       ; PTR
++                                                                    
++%define Old_RSP               QWORD  [r4 + 8 * 7]       ; PTR
++%define LOCAL_SIZE            8 * 8
++
++%macro COPY_VAR_32 2; dest_var, src_var
++	mov     x3, %2
++	mov     %1, x3
++%endmacro
++
++%macro COPY_VAR_64 2 ; dest_var, src_var
++	mov     r3, %2
++	mov     %1, r3
++%endmacro
++
++
++; MY_ALIGN_64
++MY_PROC GetMatchesSpecN_2, 13
++MY_PUSH_PRESERVED_ABI_REGS
++mov     r0, RSP
++lea     r3, [r0 - LOCAL_SIZE]
++and     r3, -64
++mov     RSP, r3
++mov     Old_RSP, r0
++
++;%if (IS_LINUX gt 0)
++mov     d,            REG_ABI_PARAM_5       ; r13 = r9
++mov     cutValue_VAR, REG_ABI_PARAM_4_x     ;     = r8
++mov     son,          REG_ABI_PARAM_3       ;  r9 = r1
++mov     r8,           REG_ABI_PARAM_2       ;  r8 = r2
++mov     pos,          REG_ABI_PARAM_1_x     ;  r2 = x6
++mov     r1,           REG_ABI_PARAM_0       ;  r1 = r7
++;%else
++;	COPY_VAR_32 cutValue_VAR, cutValue_PAR
++;	mov     d, d_PAR
++;%endif
++
++COPY_VAR_64 limit_VAR, limit_PAR
++
++mov     hash_lim, size_PAR
++mov     size_VAR, hash_lim
++
++mov     cp_x, cycPos_PAR
++mov     hash, hash_PAR
++
++mov     cycSize, cycSize_PAR
++mov     cycSize_VAR, cycSize
++
++; we want cur in (rcx). So we change the cur and lenLimit variables
++sub     lenLimit, cur
++neg     lenLimit_x
++inc     lenLimit_x
++
++mov     t0_x, maxLen_PAR
++sub     t0, lenLimit
++mov     maxLen_VAR, t0
++
++jmp     main_loop
++
++MY_ALIGN_64
++fill_empty:
++; ptr0 = *ptr1 = kEmptyHashValue;
++mov     QWORD [ptr1], 0 ; PTR
++inc     pos
++inc     cp_x
++mov     DWORD [d - 4], 0 ; PTR
++cmp     d, limit_VAR
++jae     fin
++cmp     hash, hash_lim
++je      fin
++
++; MY_ALIGN_64
++main_loop:
++; UInt32 delta = *hash++;
++mov     diff_x, [hash]  ; delta
++add     hash, 4
++; mov     cycPos_VAR, cp_x
++
++inc     cur
++add     d, 4
++mov     m, pos
++sub     m, diff_x;      ; matchPos
++
++; CLzRef *ptr1 = son + ((size_t)(pos) << 1) - CYC_TO_POS_OFFSET * 2;
++lea     ptr1, [son + 8 * cp_r]
++; mov     cycSize, cycSize_VAR
++cmp     pos, cycSize
++jb      directMode      ; if (pos < cycSize_VAR)
++
++; CYC MODE
++
++cmp     diff_x, cycSize
++jae     fill_empty      ; if (delta >= cycSize_VAR)
++
++xor     t0_x, t0_x
++mov     cycPos_VAR, cp_x
++sub     cp_x, diff_x
++; jae     prepare_for_tree_loop
++; add     cp_x, cycSize
++cmovb   t0_x, cycSize
++add     cp_x, t0_x      ; cp_x +=  (cycPos < delta ? cycSize : 0)
++jmp     prepare_for_tree_loop
++
++
++directMode:
++cmp     diff_x,  pos
++je      fill_empty      ; if (delta == pos)
++jae     fin_error       ; if (delta >= pos)
++
++mov     cycPos_VAR, cp_x
++mov     cp_x, m
++
++prepare_for_tree_loop:
++mov     len0, lenLimit
++mov     hash_VAR, hash
++; CLzRef *ptr0 = son + ((size_t)(pos) << 1) - CYC_TO_POS_OFFSET * 2 + 1;
++lea     ptr0, [ptr1 + 4]
++; UInt32 *_distances = ++d;
++mov     distances, d
++
++neg     len0
++mov     len1, len0
++
++mov     t0_x, cutValue_VAR
++mov     maxLen, maxLen_VAR
++mov     cutValueCur_VAR, t0_x
++
++MY_ALIGN_32
++tree_loop:
++neg     diff
++mov     len, len0
++cmp     len1, len0
++cmovb   len, len1       ; len = (len1 < len0 ? len1 : len0);
++add     diff, cur
++
++mov     t0_x, [son + cp_r * 8]  ; prefetch
++movzx   t0_x, BYTE [diff + 1 * len] ; PTR
++lea     cp_r, [son + cp_r * 8]
++cmp     [cur + 1 * len], t0_L
++je      matched_1
++
++jb      left_0
++
++mov     [ptr1], m
++mov        m, [cp_r + 4]
++lea     ptr1, [cp_r + 4]
++sub     diff, cur ; FIX32
++jmp     next_node
++
++MY_ALIGN_32
++left_0:
++mov     [ptr0], m
++mov        m, [cp_r]
++mov     ptr0, cp_r
++sub     diff, cur ; FIX32
++; jmp     next_node
++
++; ------------ NEXT NODE ------------
++; MY_ALIGN_32
++next_node:
++mov     cycSize, cycSize_VAR
++dec     cutValueCur_VAR
++je      finish_tree
++
++add     diff_x, pos     ; prev_match = pos + diff
++cmp     m, diff_x
++jae     fin_error       ; if (new_match >= prev_match)
++
++mov     diff_x, pos
++sub     diff_x, m       ; delta = pos - new_match
++cmp     pos, cycSize
++jae     cyc_mode_2      ; if (pos >= cycSize)
++
++mov     cp_x, m
++test    m, m
++jne     tree_loop       ; if (m != 0)
++
++finish_tree:
++; ptr0 = *ptr1 = kEmptyHashValue;
++mov     DWORD [ptr0], 0 ; PTR
++mov     DWORD [ptr1], 0 ; PTR
++
++inc     pos
++
++; _distances[-1] = (UInt32)(d - _distances);
++mov     t0, distances
++mov     t1, d
++sub     t1, t0
++shr     t1_x, 2
++mov     [t0 - 4], t1_x
++
++cmp     d, limit_VAR
++jae     fin             ; if (d >= limit)
++
++mov     cp_x, cycPos_VAR
++mov     hash, hash_VAR
++mov     hash_lim, size_VAR
++inc     cp_x
++cmp     hash, hash_lim
++jne     main_loop       ; if (hash != size)
++jmp     fin
++
++
++MY_ALIGN_32
++cyc_mode_2:
++cmp     diff_x, cycSize
++jae     finish_tree     ; if (delta >= cycSize)
++
++mov     cp_x, cycPos_VAR
++xor     t0_x, t0_x
++sub     cp_x, diff_x    ; cp_x = cycPos - delta
++cmovb   t0_x, cycSize
++add     cp_x, t0_x      ; cp_x += (cycPos < delta ? cycSize : 0)
++jmp     tree_loop
++
++
++MY_ALIGN_32
++matched_1:
++
++inc     len
++; cmp     len_x, lenLimit_x
++je      short lenLimit_reach
++movzx   t0_x, BYTE [diff + 1 * len] ; PTR
++cmp     [cur + 1 * len], t0_L
++jne     mismatch
++
++
++MY_ALIGN_32
++match_loop:
++;  while (++len != lenLimit)  (len[diff] != len[0]) ;
++
++inc     len
++; cmp     len_x, lenLimit_x
++je      short lenLimit_reach
++movzx   t0_x, BYTE [diff + 1 * len] ; PTR
++cmp     BYTE [cur + 1 * len], t0_L ; PTR
++je      match_loop
++
++mismatch:
++jb      left_2
++
++mov     [ptr1], m
++mov        m, [cp_r + 4]
++lea     ptr1, [cp_r + 4]
++mov     len1, len
++
++jmp     max_update
++
++MY_ALIGN_32
++left_2:
++mov     [ptr0], m
++mov        m, [cp_r]
++mov     ptr0, cp_r
++mov     len0, len
++
++max_update:
++sub     diff, cur       ; restore diff
++
++cmp     maxLen, len
++jae     next_node
++
++mov     maxLen, len
++add     len, lenLimit
++mov     [d], len_x
++mov     t0_x, diff_x
++not     t0_x
++mov     [d + 4], t0_x
++add     d, 8
++
++jmp     next_node
++
++
++
++MY_ALIGN_32
++lenLimit_reach:
++
++mov     delta_r, cur
++sub     delta_r, diff
++lea     delta1_r, [delta_r - 1]
++
++mov     t0_x, [cp_r]
++mov     [ptr1], t0_x
++mov     t0_x, [cp_r + 4]
++mov     [ptr0], t0_x
++
++mov     [d], lenLimit_x
++mov     [d + 4], delta1_x
++add     d, 8
++
++; _distances[-1] = (UInt32)(d - _distances);
++mov     t0, distances
++mov     t1, d
++sub     t1, t0
++shr     t1_x, 2
++mov     [t0 - 4], t1_x
++
++mov     hash, hash_VAR
++mov     hash_lim, size_VAR
++
++inc     pos
++mov     cp_x, cycPos_VAR
++inc     cp_x
++
++mov     d_lim, limit_VAR
++mov     cycSize, cycSize_VAR
++; if (hash == size || *hash != delta || lenLimit[diff] != lenLimit[0] || d >= limit)
++;    break;
++cmp     hash, hash_lim
++je      fin
++cmp     d, d_lim
++jae     fin
++cmp     delta_x, [hash]
++jne     main_loop
++movzx   t0_x, BYTE [diff] ; PTR
++cmp     [cur], t0_L
++jne     main_loop
++
++; jmp     main_loop     ; bypass for debug
++
++mov     cycPos_VAR, cp_x
++shl     len, 3          ; cycSize * 8
++sub     diff, cur       ; restore diff
++xor     t0_x, t0_x
++cmp     cp_x, delta_x   ; cmp (cycPos_VAR, delta)
++lea     cp_r, [son + 8 * cp_r]  ; dest
++lea     src, [cp_r + 8 * diff]
++cmovb   t0, len         ; t0 =  (cycPos_VAR < delta ? cycSize * 8 : 0)
++add     src, t0
++add     len, son        ; len = son + cycSize * 8
++
++
++MY_ALIGN_32
++long_loop:
++add     hash, 4
++
++; *(UInt64 *)(void *)ptr = ((const UInt64 *)(const void *)ptr)[diff];
++
++mov     t0, [src]
++add     src, 8
++mov     [cp_r], t0
++add     cp_r, 8
++cmp     src, len
++cmove   src, son       ; if end of (son) buffer is reached, we wrap to begin
++
++mov     DWORD [d], 2 ; PTR
++mov     [d + 4], lenLimit_x
++mov     [d + 8], delta1_x
++add     d, 12
++
++inc     cur
++
++cmp     hash, hash_lim
++je      long_footer
++cmp     delta_x, [hash]
++jne     long_footer
++movzx   t0_x, BYTE [diff + 1 * cur] ; PTR
++cmp     [cur], t0_L
++jne     long_footer
++cmp     d, d_lim
++jb      long_loop
++
++long_footer:
++sub     cp_r, son
++shr     cp_r, 3
++add     pos, cp_x
++sub     pos, cycPos_VAR
++mov     cycSize, cycSize_VAR
++
++cmp     d, d_lim
++jae     fin
++cmp     hash, hash_lim
++jne     main_loop
++jmp     fin
++
++fin_error:
++xor     d, d
++
++fin:
++mov     RSP, Old_RSP
++mov     t0, [r4 + posRes_OFFS]
++mov     [t0], pos
++mov     r0, d
++
++MY_POP_PRESERVED_ABI_REGS
++MY_ENDP
++
++;	_TEXT$LZFINDOPT ENDS
++;
++;	end
+diff --git a/Asm/x86-nasm/LzmaDecOpt.asm b/Asm/x86-nasm/LzmaDecOpt.asm
+new file mode 100644
+index 0000000..1fe76ce
+--- /dev/null
++++ b/Asm/x86-nasm/LzmaDecOpt.asm
+@@ -0,0 +1,1252 @@
++; LzmaDecOpt.asm -- ASM version of LzmaDec_DecodeReal_3() function
++; 2018-02-06: Igor Pavlov : Public domain
++; 2021-02-23: Igor Pavlov : Public domain
++; 2020-01-02: Peter Hyman (convert MASM to NASM)
++; 2021-06-24: Peter Hyman
++; 2022 Super-experimental NASM port
++
++;
++; 3 - is the code compatibility version of LzmaDec_DecodeReal_*()
++; function for check at link time.
++; That code is tightly coupled with LzmaDec_TryDummy()
++; and with another functions in LzmaDec.c file.
++; CLzmaDec structure, (probs) array layout, input and output of
++; LzmaDec_DecodeReal_*() must be equal in both versions (C / ASM).
++
++; Assumes x64 defined or not on entry
++
++%include "7zAsm.asm"
++
++%ifndef x64
++; x64=1
++	%error "x64_IS_REQUIRED"
++%endif
++
++MY_ASM_START
++
++%macro MY_ALIGN 1 ;num:req
++	align  %1
++%endmacro
++
++%macro MY_ALIGN_16 0
++	MY_ALIGN 16
++%endmacro
++
++%macro MY_ALIGN_32 0
++	MY_ALIGN 32
++%endmacro
++
++%macro MY_ALIGN_64 0 ; macro
++	MY_ALIGN 64
++%endmacro
++
++%define SHL << ; for ease of reading
++%define SHR >>
++
++; _LZMA_SIZE_OPT  equ 1
++
++; _LZMA_PROB32 equ 1
++
++%ifdef _LZMA_PROB32
++	%define PSHIFT 2
++%macro PLOAD 2 ;dest, mem
++	mov     %1, dword [%2] ; dword ptr [mem]
++%endmacro
++%macro PSTORE 2 ;src, mem
++	mov     dword [%2], %1 ; dword ptr
++%endmacro
++%else
++%define PSHIFT 1
++%macro PLOAD  2 ;dest, aem
++	movzx   %1, WORD [%2] ;dest, word ptr [mem]
++%endmacro
++%macro PSTORE 2 ;src, mem
++	mov   WORD [%2], %1 ; @CatStr(src, _W)
++%endmacro
++%endif
++
++%define PMULT (1 SHL PSHIFT)
++%define PMULT_HALF (1 SHL (PSHIFT - 1))
++%define PMULT_2  (1 SHL (PSHIFT + 1))
++
++kMatchSpecLen_Error_Data equ (1 SHL 9)
++
++;       x0      range
++;       x1      pbPos / (prob) TREE
++;       x2      probBranch / prm (MATCHED) / pbPos / cnt
++;       x3      sym
++;====== r4 ===  RSP
++;       x5      cod
++;       x6      t1 NORM_CALC / probs_state / dist
++;       x7      t0 NORM_CALC / prob2 IF_BIT_1
++;       x8      state
++;       x9      match (MATCHED) / sym2 / dist2 / lpMask_reg
++;       x10     kBitModelTotal_reg
++;       r11     probs
++;       x12     offs (MATCHED) / dic / len_temp
++;       x13     processedPos
++;       x14     bit (MATCHED) / dicPos
++;       r15     buf
++
++
++%define cod    x5
++%define cod_L  x5_L
++%define range  x0
++%define state  x8
++%define state_R	r8
++%define buf    r15
++%define processedPos x13
++%define kBitModelTotal_reg x10
++
++%define probBranch  x2
++%define probBranch_R r2
++%define probBranch_W x2_W
++
++%define pbPos  x1
++%define pbPos_R r1
++
++%define cnt    x2
++%define cnt_R  r2
++
++%define lpMask_reg x9
++%define dicPos r14
++
++%define sym    x3
++%define sym_R  r3
++%define sym_L  x3_L
++
++%define probs  r11
++%define dic    r12
++
++%define t0     x7
++%define t0_W   x7_W
++%define t0_R   r7
++
++%define prob2  t0
++%define prob2_W t0_W
++
++%define t1     x6
++%define t1_R   r6
++
++%define probs_state    t1
++%define probs_state_R  t1_R
++
++%define prm    r2
++%define match  x9
++%define match_R r9
++%define offs   x12
++%define offs_R r12
++%define bit    x14
++%define bit_R  r14
++
++%define sym2   x9
++%define sym2_R r9
++
++%define len_temp x12
++
++%define dist   sym
++%define dist2  x9
++
++
++%define kNumBitModelTotalBits  11
++%define kBitModelTotal         (1 SHL kNumBitModelTotalBits)
++%define kNumMoveBits           5
++%define kBitModelOffset        ((1 SHL kNumMoveBits) - 1)
++%define kTopValue              (1 SHL 24)
++
++%macro NORM_2 0 ; macro
++; movzx   t0, BYTE PTR [buf]
++	shl     cod, 8
++	mov     cod_L, BYTE [buf]
++	shl     range, 8
++	; or      cod, t0
++	inc     buf
++%endmacro
++
++
++%macro NORM 0 ; macro
++	cmp     range, kTopValue
++	jae     %%out ; SHORT @F
++	NORM_2
++%%out: ; @@:
++%endmacro
++
++
++; ---------- Branch MACROS ----------
++
++%macro UPDATE_0 3 ; macro probsArray:req, probOffset:req, probDisp:req
++	mov     prob2, kBitModelTotal_reg
++	sub     prob2, probBranch
++	shr     prob2, kNumMoveBits
++	add     probBranch, prob2
++	%ifdef _LZMA_PROB32
++	PSTORE  probBranch, (%2 * 1 + %1 + %3 * PMULT) ; probOffset * 1 + probsArray + probDisp * PMULT
++	%else
++	PSTORE  probBranch_W, (%2 * 1 + %1 + %3 * PMULT) ; probOffset * 1 + probsArray + probDisp * PMULT
++	%endif
++%endmacro
++
++
++%macro UPDATE_1 3 ; macro probsArray:req, probOffset:req, probDisp:req
++	sub     prob2, range
++	sub     cod, range
++	mov     range, prob2
++	mov     prob2, probBranch
++	shr     probBranch, kNumMoveBits
++	sub     prob2, probBranch
++%ifdef _LZMA_PROB32
++	PSTORE  prob2,  (%2 * 1 + %1 + %3 * PMULT) ; probOffset * 1 + probsArray + probDisp * PMULT
++%else
++	PSTORE  prob2_W,  (%2 * 1 + %1 + %3 * PMULT) ; probOffset * 1 + probsArray + probDisp * PMULT
++%endif
++%endmacro
++
++
++%macro CMP_COD 3 ; macro probsArray:req, probOffset:req, probDisp:req
++	PLOAD   probBranch,  (%2 * 1 + %1 + %3 * PMULT) ; probOffset * 1 + probsArray + probDisp * PMULT
++	NORM
++	mov     prob2, range
++	shr     range, kNumBitModelTotalBits
++	imul    range, probBranch
++	cmp     cod, range
++%endmacro
++
++
++%macro IF_BIT_1_NOUP 4 ; macro probsArray:req, probOffset:req, probDisp:req, toLabel:req
++	CMP_COD  %1, %2, %3 ; probsArray, probOffset, probDisp
++	jae     %4 ; toLabel
++%endmacro
++
++%macro IF_BIT_1 4 ; macro probsArray:req, probOffset:req, probDisp:req, toLabel:req
++	IF_BIT_1_NOUP %1, %2, %3, %4  ; probsArray, probOffset, probDisp, toLabel
++	UPDATE_0 %1, %2, %3 ; probsArray, probOffset, probDisp
++%endmacro
++
++%macro IF_BIT_0_NOUP 4 ; macro probsArray:req, probOffset:req, probDisp:req, toLabel:req
++	CMP_COD %1, %2, %3 ; probsArray, probOffset, probDisp
++	jb      %4 ; toLabel
++%endmacro
++
++; ---------- CMOV MACROS ----------
++
++%macro NORM_CALC 1 ; macro prob:req
++	NORM
++	mov     t0, range
++	shr     range, kNumBitModelTotalBits
++	imul    range, %1 ; prob
++	sub     t0, range
++	mov     t1, cod
++	sub     cod, range
++%endmacro
++
++%macro PUP 2 ; macro prob:req, probPtr:req
++	sub     t0, %1 ; prob
++	; only sar works for both 16/32 bit prob modes
++	sar     t0, kNumMoveBits
++	add     t0, %1 ; prob
++%ifdef _LZMA_PROB32
++	PSTORE t0, %2 ; probPtr
++%else
++	PSTORE t0_W, %2 ; probPtr
++%endif
++%endmacro
++
++%macro PUP_SUB 3 ; macro prob:req, probPtr:req, symSub:req
++	sbb     sym, %3 ; symSub
++	PUP %1, %2 ; prob, probPtr
++%endmacro
++
++%macro PUP_COD 3 ; macro prob:req, probPtr:req, symSub:req
++	mov     t0, kBitModelOffset
++	cmovb   cod, t1
++	mov     t1, sym
++	cmovb   t0, kBitModelTotal_reg
++	PUP_SUB %1, %2, %3 ; prob, probPtr, symSub
++%endmacro
++
++%macro BIT_0 2 ; macro prob:req, probNext:req
++	PLOAD %1, (probs + 1 * PMULT) ; prob, probs + 1 * PMULT
++	PLOAD %2, (probs + 1 * PMULT_2) ; probNext, probs + 1 * PMULT_2
++	NORM_CALC %1 ; prob
++	cmovae  range, t0
++	PLOAD t0, (probs + 1 * PMULT_2 + PMULT)
++	cmovae  %2, t0
++	mov     t0, kBitModelOffset
++	cmovb   cod, t1
++	cmovb   t0, kBitModelTotal_reg
++	mov     sym, 2
++	PUP_SUB %1, (probs + 1 * PMULT), (0 - 1) ; prob, probs + 1 * PMULT, 0 - 1
++%endmacro
++
++%macro BIT_1 2 ; macro prob:req, probNext:req
++	PLOAD %2, (probs + sym_R * PMULT_2) ; probNext, probs + sym_R * PMULT_2
++	add     sym, sym
++	NORM_CALC %1 ; prob
++	cmovae  range, t0
++	PLOAD t0, (probs + sym_R * PMULT + PMULT)
++	cmovae  %2, t0 ; probNext, t0
++	PUP_COD %1, (probs + t1_R * PMULT_HALF), 0 - 1 ; prob, probs + t1_R * PMULT_HALF, 0 - 1
++%endmacro
++
++%macro BIT_2 2 ; macro prob:req, symSub:req
++	add     sym, sym
++	NORM_CALC %1 ; prob
++	cmovae  range, t0
++	PUP_COD %1, (probs + t1_R * PMULT_HALF), %2 ; prob, probs + t1_R * PMULT_HALF, symSub
++%endmacro
++
++; ---------- MATCHED LITERAL ----------
++
++%macro LITM_0 0
++	mov     offs, 256 * PMULT
++	shl     match, (PSHIFT + 1)
++	mov     bit, offs
++	and     bit, match
++	PLOAD   x1, (probs + 256 * PMULT + bit_R * 1 + 1 * PMULT)
++	lea     prm, [(probs + 256 * PMULT + bit_R * 1 + 1 * PMULT)]
++	; lea     prm, [(probs + 256 * PMULT + 1 * PMULT)]
++	; add     prm, bit_R
++	xor     offs, bit
++	add     match, match
++	NORM_CALC x1
++	cmovae  offs, bit
++	mov     bit, match
++	cmovae  range, t0
++	mov     t0, kBitModelOffset
++	cmovb   cod, t1
++	cmovb   t0, kBitModelTotal_reg
++	mov     sym, 0
++	PUP_SUB x1, prm, (-2-1)
++%endmacro
++
++%macro LITM 0
++	and     bit, offs
++	lea     prm, [probs + offs_R * 1]
++	add     prm, bit_R
++	PLOAD   x1, (prm + sym_R * PMULT)
++	xor     offs, bit
++	add     sym, sym
++	add     match, match
++	NORM_CALC x1
++	cmovae  offs, bit
++	mov     bit, match
++	cmovae  range, t0
++	PUP_COD x1, (prm + t1_R * PMULT_HALF), -1
++%endmacro
++
++%macro LITM_2 0
++	and     bit, offs
++	lea     prm, [probs + offs_R * 1]
++	add     prm, bit_R
++	PLOAD   x1, (prm + sym_R * PMULT)
++	add     sym, sym
++	NORM_CALC x1
++	cmovae  range, t0
++	PUP_COD x1, (prm + t1_R * PMULT_HALF), (256 - 1)
++%endmacro
++
++; ---------- REVERSE BITS ----------
++
++%macro REV_0 2 ; macro prob:req, probNext:req
++	; PLOAD   prob, probs + 1 * PMULT
++	; lea     sym2_R, [probs + 2 * PMULT]
++	; PLOAD   probNext, probs + 2 * PMULT
++	PLOAD   %2, sym2_R ; probNext, sym2_R
++	NORM_CALC(%1) ; prob
++	cmovae  range, t0
++	PLOAD t0, (probs + 3 * PMULT)
++	cmovae  %2, t0 ; probNext, t0
++	cmovb   cod, t1
++	mov     t0, kBitModelOffset
++	cmovb   t0, kBitModelTotal_reg
++	lea     t1_R, [(probs + 3 * PMULT)]
++	cmovae  sym2_R, t1_R
++	PUP %1, (probs + 1 * PMULT) ; prob, probs + 1 * PMULT
++%endmacro
++
++%macro REV_1 3 ; macro prob:req, probNext:req, step:req
++	add     sym2_R, %3 * PMULT
++	PLOAD %2, sym2_R ; probNext, sym2_R
++	NORM_CALC %1 ; prob
++	cmovae  range, t0
++	PLOAD t0, (sym2_R + %3 * PMULT) ; sym2_R + step * PMULT
++	cmovae  %2, t0 ; probNext, sym2_R
++	cmovb   cod, t1
++	mov     t0, kBitModelOffset
++	cmovb   t0, kBitModelTotal_reg
++	lea     t1_R, [(sym2_R + %3 * PMULT)] ; sym2_R + step * PMULT
++	cmovae  sym2_R, t1_R
++	PUP %1, (t1_R - %3 * PMULT_2) ; prob, t1_R - step * PMULT_2
++%endmacro
++
++%macro REV_2 2 ; macro prob:req, step:req
++	sub     sym2_R, probs
++	shr     sym2, PSHIFT
++	or      sym, sym2
++	NORM_CALC %1 ; prob
++	cmovae  range, t0
++	lea     t0, [sym - %2] ; [sym - step]
++	cmovb   sym, t0
++	cmovb   cod, t1
++	mov     t0, kBitModelOffset
++	cmovb   t0, kBitModelTotal_reg
++	PUP %1, (probs + sym2_R * PMULT) ; prob, probs + sym2_R * PMULT
++%endmacro
++
++%macro REV_1_VAR 1 ; macro prob:req
++	PLOAD %1, sym_R ; prob, sym_R
++	mov     probs, sym_R
++	add     sym_R, sym2_R
++	NORM_CALC %1 ; prob
++	cmovae  range, t0
++	lea     t0_R, [sym_R + 1 * sym2_R]
++	cmovae  sym_R, t0_R
++	mov     t0, kBitModelOffset
++	cmovb   cod, t1
++	; mov     t1, kBitModelTotal
++	; cmovb   t0, t1
++	cmovb   t0, kBitModelTotal_reg
++	add     sym2, sym2
++	PUP %1, probs ; prob, probs
++%endmacro
++
++%macro LIT_PROBS 1 ; macro lpMaskParam:req
++	; prob += (UInt32)3 * ((((processedPos SHL 8) + dic[(dicPos == 0 ? dicBufSize : dicPos) - 1]) & lpMask) << lc);
++	mov     t0, processedPos
++	shl     t0, 8
++	add     sym, t0
++	and     sym, %1 ; lpMaskParam
++	add     probs_state_R, pbPos_R
++	mov     x1, LOC(l_lc2)
++	lea     sym, [sym_R + 2 * sym_R]
++	add     probs, Literal * PMULT
++	shl     sym, x1_L
++	add     probs, sym_R
++	UPDATE_0 probs_state_R, 0, IsMatch
++	inc     processedPos
++%endmacro
++
++%define kNumPosBitsMax  4
++%define kNumPosStatesMax        (1 SHL kNumPosBitsMax)
++
++%define kLenNumLowBits          3
++%define kLenNumLowSymbols       (1 SHL kLenNumLowBits)
++%define kLenNumHighBits         8
++%define kLenNumHighSymbols      (1 SHL kLenNumHighBits)
++%define kNumLenProbs            (2 * kLenNumLowSymbols * kNumPosStatesMax + kLenNumHighSymbols)
++
++%define LenLow                  0
++%define LenChoice               LenLow
++%define LenChoice2              (LenLow + kLenNumLowSymbols)
++%define LenHigh                 (LenLow + 2 * kLenNumLowSymbols * kNumPosStatesMax)
++
++%define kNumStates              12
++%define kNumStates2             16
++%define kNumLitStates           7
++
++%define kStartPosModelIndex     4
++%define kEndPosModelIndex       14
++%define kNumFullDistances       (1 SHL (kEndPosModelIndex SHR 1))
++
++%define kNumPosSlotBits         6
++%define kNumLenToPosStates      4
++
++%define kNumAlignBits           4
++%define kAlignTableSize         (1 SHL kNumAlignBits)
++
++%define kMatchMinLen            2
++%define kMatchSpecLenStart      (kMatchMinLen + kLenNumLowSymbols * 2 + kLenNumHighSymbols)
++
++%define kStartOffset    1664
++%define SpecPos         (-kStartOffset)
++%define IsRep0Long      (SpecPos + kNumFullDistances)
++%define RepLenCoder     (IsRep0Long + (kNumStates2 SHL kNumPosBitsMax))
++%define LenCoder        (RepLenCoder + kNumLenProbs)
++%define IsMatch         (LenCoder + kNumLenProbs)
++%define kAlign          (IsMatch + (kNumStates2 SHL kNumPosBitsMax))
++%define IsRep           (kAlign + kAlignTableSize)
++%define IsRepG0         (IsRep + kNumStates)
++%define IsRepG1         (IsRepG0 + kNumStates)
++%define IsRepG2         (IsRepG1 + kNumStates)
++%define PosSlot         (IsRepG2 + kNumStates)
++%define Literal         (PosSlot + (kNumLenToPosStates SHL kNumPosSlotBits))
++%define NUM_BASE_PROBS  (Literal + kStartOffset)
++
++%if kAlign != 0
++%error "Stop_Compiling_Bad_LZMA_kAlign"
++%endif
++
++%if NUM_BASE_PROBS != 1984
++%error "Stop_Compiling_Bad_LZMA_PROBS"
++%endif
++
++; %define PTR_FIELD resq 1 ; dq ?
++
++; NASM Struct needs Istruct and a .data section.
++; we'll just use %defines to save time
++; struc CLzmaDec_Asm ; struct
++%define	lc			0	;resb 1 ; db ?
++%define	lp			1       ;resb 1 ; db ?
++%define	pb			2	;resb 1 ; db ?
++%define _pad			3	;resb 1 ; db ?
++%define dicSize			4	;resd 1 ; dd ?
++
++%define	probs_Spec		8	;PTR_FIELD
++%define	probs_1664		16	;PTR_FIELD
++%define	dic_Spec		24	;PTR_FIELD
++%define	dicBufSize		32	;PTR_FIELD
++%define	dicPos_Spec		40	;PTR_FIELD
++%define	buf_Spec		48	;PTR_FIELD
++
++%define	range_Spec		56	;resd 1 ; dd ?
++%define	code_Spec		60	;resd 1 ; dd ?
++%define	processedPos_Spec	64	;resd 1 ; dd ?
++%define	checkDicSize		68	;resd 1 ;dd ?
++%define	rep0			72	;resd 1 ; dd ?
++%define	rep1			76	;resd 1 ; dd ?
++%define	rep2			80	;resd 1 ; dd ?
++%define	rep3			84	;resd 1 ; dd ?
++%define	state_Spec		88	;resd 1 ; dd ?
++%define	remainLen		92	;resd 1 ; dd ?
++; endstruc ; CLzmaDec_Asm ; ends
++
++; struc CLzmaDec_Asm_Loc ; struct
++%define	l_OLD_RSP		0	;PTR_FIELD
++%define	l_lzmaPtr		8	;PTR_FIELD
++%define	l__pad0_		16	;PTR_FIELD
++%define	l__pad1_		24	;PTR_FIELD
++%define	l__pad2_		32	;PTR_FIELD
++%define	l_dicBufSize		40	;PTR_FIELD
++%define	l_probs_Spec		48	;PTR_FIELD
++%define	l_dic_Spec		56	;PTR_FIELD
++%define	l_limit			64	;PTR_FIELD
++%define	l_bufLimit		72	;PTR_FIELD
++%define	l_lc2			80	;resd 1 ; dd ?
++%define	l_lpMask		84	;resd 1 ; dd ?
++%define	l_pbMask		88	;resd 1 ; dd ?
++%define	l_checkDicSize		92	;resd 1 ; dd ?
++%define	l__pad_			96	;resd 1 ; dd ?
++%define	l_remainLen		100	;resd 1 ; dd ?
++%define	l_dicPos_Spec		104	;PTR_FIELD
++%define	l_rep0			112	;resd 1 ; dd ?
++%define	l_rep1			116	;resd 1 ; dd ?
++%define	l_rep2			120	;resd 1 ; dd ?
++%define	l_rep3			124	;resd 1 ; dd ?
++; endstruc ; CLzmaDec_Asm_Loc ; ends
++
++%define GLOB_2(x)  [sym_R + x]
++%define GLOB(x)    [r1 + x]
++%define LOC_0(x)   [r0 + x]
++%define LOC(x)     [RSP + x]
++
++
++%macro COPY_VAR 2 ; macro name
++	mov     t0, GLOB_2(%1) ; name
++	mov     LOC_0(%2), t0 ; name, t0
++%endmacro
++
++
++%macro RESTORE_VAR 2 ; macro name
++	mov     t0, LOC(%2) ; name
++	mov     GLOB(%1), t0 ; name, t0
++%endmacro
++
++%macro IsMatchBranch_Pre  0; macro reg
++	; prob = probs + IsMatch + (state SHL kNumPosBitsMax) + posState;
++	mov     pbPos, LOC(l_pbMask)
++	and     pbPos, processedPos
++	shl     pbPos, (kLenNumLowBits + 1 + PSHIFT)
++	lea     probs_state_R, [probs + 1 * state_R]
++%endmacro
++
++%macro IsMatchBranch 0 ; macro reg
++	IsMatchBranch_Pre
++	IF_BIT_1 probs_state_R, pbPos_R, IsMatch, IsMatch_label
++%endmacro
++
++%macro CheckLimits 0 ; macro reg
++	cmp     buf, LOC(l_bufLimit)
++	jae     fin_OK
++	cmp     dicPos, LOC(l_limit)
++	jae     fin_OK
++%endmacro
++
++; RSP is (16x + 8) bytes aligned in WIN64-x64
++; LocalSize equ ((((sizeof CLzmaDec_Asm_Loc) + 7) / 16 * 16) + 8)
++
++%define LocalSize	128
++%define PARAM_lzma      REG_ABI_PARAM_0
++%define PARAM_limit     REG_ABI_PARAM_1
++%define PARAM_bufLimit  REG_ABI_PARAM_2
++
++MY_PROC LzmaDec_DecodeReal_3, 3
++MY_PUSH_PRESERVED_ABI_REGS
++
++lea     r0, [RSP - (LocalSize)] ; replace sizeof macro from masm
++and     r0, -128
++mov     r5, RSP
++mov     RSP, r0
++mov     LOC_0(l_OLD_RSP), r5
++mov     LOC_0(l_lzmaPtr), PARAM_lzma
++
++mov     dword LOC_0(l_remainLen), 0  ; remainLen must be ZERO
++
++mov     LOC_0(l_bufLimit), PARAM_bufLimit
++mov     sym_R, PARAM_lzma  ;  CLzmaDec_Asm_Loc pointer for GLOB_2
++mov     dic, GLOB_2(dic_Spec)
++add     PARAM_limit, dic
++mov     LOC_0(l_limit), PARAM_limit
++
++COPY_VAR rep0, l_rep0
++COPY_VAR rep1, l_rep1
++COPY_VAR rep2, l_rep2
++COPY_VAR rep3, l_rep3
++
++mov     dicPos, GLOB_2(dicPos_Spec)
++add     dicPos, dic
++mov     LOC_0(l_dicPos_Spec), dicPos
++mov     LOC_0(l_dic_Spec), dic
++
++mov     x1_L, GLOB_2(pb)
++mov     t0, 1
++shl     t0, x1_L
++dec     t0
++mov     LOC_0(l_pbMask), t0
++
++; unsigned pbMask = ((unsigned)1 SHL (p->prop.pb)) - 1;
++; unsigned lc = p->prop.lc;
++; unsigned lpMask = ((unsigned)0x100 SHL p->prop.lp) - ((unsigned)0x100 >> lc);
++
++mov     x1_L, GLOB_2(lc)
++mov     x2, 100h
++mov     t0, x2
++shr     x2, x1_L
++; inc     x1
++add     x1_L, PSHIFT
++mov     LOC_0(l_lc2), x1
++mov     x1_L, GLOB_2(lp)
++shl     t0, x1_L
++sub     t0, x2
++mov     LOC_0(l_lpMask), t0
++mov     lpMask_reg, t0
++
++; mov     probs, GLOB_2 probs_Spec
++; add     probs, kStartOffset SHL PSHIFT
++mov     probs, GLOB_2(probs_1664)
++mov     LOC_0(l_probs_Spec), probs
++
++mov     t0_R, GLOB_2(dicBufSize)
++mov     LOC_0(l_dicBufSize), t0_R
++
++mov     x1, GLOB_2(checkDicSize)
++mov     LOC_0(l_checkDicSize), x1
++
++mov     processedPos, GLOB_2(processedPos_Spec)
++
++mov     state, GLOB_2(state_Spec)
++shl     state, PSHIFT
++
++mov     buf,   GLOB_2(buf_Spec)
++mov     range, GLOB_2(range_Spec)
++mov     cod,   GLOB_2(code_Spec)
++mov     kBitModelTotal_reg, kBitModelTotal
++xor     sym, sym
++
++; if (processedPos != 0 || checkDicSize != 0)
++or      x1, processedPos
++jz      out_lzdecode ; @f
++
++add     t0_R, dic
++cmp     dicPos, dic
++cmovnz  t0_R, dicPos
++movzx   sym, byte [t0_R - 1]
++
++out_lzdecode: ;@@:
++IsMatchBranch_Pre
++cmp     state, 4 * PMULT
++jb      lit_end
++cmp     state, kNumLitStates * PMULT
++jb      lit_matched_end
++jmp     lz_end
++
++; ---------- LITERAL ----------
++MY_ALIGN_64
++lit_start:
++xor     state, state
++lit_start_2:
++LIT_PROBS lpMask_reg
++
++%ifdef _LZMA_SIZE_OPT
++	PLOAD x1, probs + 1 * PMULT
++	mov     sym, 1
++	MY_ALIGN_16
++lit_loop:
++	BIT_1 x1, x2
++	mov     x1, x2
++	cmp     sym, 127
++	jbe     lit_loop
++%else
++	BIT_0 x1, x2
++	BIT_1 x2, x1
++	BIT_1 x1, x2
++	BIT_1 x2, x1
++	BIT_1 x1, x2
++	BIT_1 x2, x1
++	BIT_1 x1, x2
++%endif
++
++BIT_2 x2, (256 - 1)
++
++; mov     dic, LOC dic_Spec
++mov     probs, LOC(l_probs_Spec)
++IsMatchBranch_Pre
++mov     byte [dicPos], sym_L
++inc     dicPos
++
++CheckLimits
++lit_end:
++IF_BIT_0_NOUP probs_state_R, pbPos_R, IsMatch, lit_start
++
++; jmp     IsMatch_label
++
++; ---------- MATCHES ----------
++; MY_ALIGN_32
++IsMatch_label:
++UPDATE_1 probs_state_R, pbPos_R, IsMatch
++IF_BIT_1 probs_state_R, 0, IsRep, IsRep_label
++
++add     probs, LenCoder * PMULT
++add     state, kNumStates * PMULT
++
++; ---------- LEN DECODE ----------
++len_decode:
++mov     len_temp, 8 - 1 - kMatchMinLen
++IF_BIT_0_NOUP probs, 0, 0, len_mid_0
++UPDATE_1 probs, 0, 0
++add     probs, (1 SHL (kLenNumLowBits + PSHIFT))
++mov     len_temp, -1 - kMatchMinLen
++IF_BIT_0_NOUP probs, 0, 0, len_mid_0
++UPDATE_1 probs, 0, 0
++add     probs, LenHigh * PMULT - (1 SHL (kLenNumLowBits + PSHIFT))
++mov     sym, 1
++PLOAD x1, probs + 1 * PMULT
++
++MY_ALIGN_32
++len8_loop:
++BIT_1   x1, x2
++mov     x1, x2
++cmp     sym, 64
++jb      len8_loop
++
++mov     len_temp, (kLenNumHighSymbols - kLenNumLowSymbols * 2) - 1 - kMatchMinLen
++jmp     short len_mid_2 ; we use short here for MASM that doesn't optimize that code as another assembler programs
++
++MY_ALIGN_32
++len_mid_0:
++UPDATE_0 probs, 0, 0
++add     probs, pbPos_R
++BIT_0   x2, x1
++len_mid_2:
++BIT_1 x1, x2
++BIT_2 x2, len_temp
++mov     probs, LOC(l_probs_Spec)
++cmp     state, kNumStates * PMULT
++jb      copy_match
++
++; ---------- DECODE DISTANCE ----------
++; probs + PosSlot + ((len < kNumLenToPosStates ? len : kNumLenToPosStates - 1) SHL kNumPosSlotBits);
++
++mov     t0, 3 + kMatchMinLen
++cmp     sym, 3 + kMatchMinLen
++cmovb   t0, sym
++add     probs, PosSlot * PMULT - (kMatchMinLen SHL (kNumPosSlotBits + PSHIFT))
++shl     t0, (kNumPosSlotBits + PSHIFT)
++add     probs, t0_R
++
++; sym = Len
++; mov     LOC remainLen, sym
++mov     len_temp, sym
++
++%ifdef _LZMA_SIZE_OPT
++	PLOAD x1, probs + 1 * PMULT
++	mov     sym, 1
++	MY_ALIGN_16
++	slot_loop:
++	BIT_1 x1, x2
++	mov     x1, x2
++	cmp     sym, 32
++	jb      slot_loop
++%else
++	BIT_0 x1, x2
++	BIT_1 x2, x1
++	BIT_1 x1, x2
++	BIT_1 x2, x1
++	BIT_1 x1, x2
++%endif
++
++mov     x1, sym
++BIT_2 x2, 64-1
++
++and     sym, 3
++mov     probs, LOC(l_probs_Spec)
++cmp     x1, 32 + kEndPosModelIndex / 2
++jb      short_dist
++
++;  unsigned numDirectBits = (unsigned)(((distance >> 1) - 1));
++sub     x1, (32 + 1 + kNumAlignBits)
++;  distance = (2 | (distance & 1));
++or      sym, 2
++PLOAD x2, probs + 1 * PMULT
++shl     sym, kNumAlignBits + 1
++lea     sym2_R, [probs + 2 * PMULT]
++
++jmp     direct_norm
++; lea     t1, [sym_R + (1 SHL kNumAlignBits)]
++; cmp     range, kTopValue
++; jb      direct_norm
++
++; ---------- DIRECT DISTANCE ----------
++MY_ALIGN_32
++direct_loop:
++shr     range, 1
++mov     t0, cod
++sub     cod, range
++cmovs   cod, t0
++cmovns  sym, t1
++
++;        comment ~
++;        sub     cod, range
++;        mov     x2, cod
++;        sar     x2, 31
++;        lea     sym, dword ptr [r2 + sym_R * 2 + 1]
++;        and     x2, range
++;        add     cod, x2
++;        ~
++dec     x1
++je      direct_end
++
++add     sym, sym
++direct_norm:
++lea     t1, [sym_R + (1 SHL kNumAlignBits)]
++cmp     range, kTopValue
++jae     near direct_loop
++; we align for 32 here with "near ptr" command above
++NORM_2
++jmp     direct_loop
++
++MY_ALIGN_32
++direct_end:
++;  prob =  + kAlign;
++;  distance SHL= kNumAlignBits;
++REV_0   x2, x1
++REV_1   x1, x2, 2
++REV_1   x2, x1, 4
++REV_2   x1, 8
++
++decode_dist_end:
++
++; if (distance >= (checkDicSize == 0 ? processedPos: checkDicSize))
++
++mov     t1, LOC(l_rep0)
++mov     x1, LOC(l_rep1)
++mov     x2, LOC(l_rep2)
++
++mov     t0, LOC(l_checkDicSize)
++test    t0, t0
++cmove   t0, processedPos
++cmp     sym, t0
++jae     end_of_payload
++
++; rep3 = rep2;
++; rep2 = rep1;
++; rep1 = rep0;
++; rep0 = distance + 1;
++
++inc     sym
++mov     LOC(l_rep0), sym
++; mov     sym, LOC remainLen
++mov     sym, len_temp
++mov     LOC(l_rep1), t1
++mov     LOC(l_rep2), x1
++mov     LOC(l_rep3), x2
++
++; state = (state < kNumStates + kNumLitStates) ? kNumLitStates : kNumLitStates + 3;
++cmp     state, (kNumStates + kNumLitStates) * PMULT
++mov     state, kNumLitStates * PMULT
++mov     t0, (kNumLitStates + 3) * PMULT
++cmovae  state, t0
++
++; ---------- COPY MATCH ----------
++copy_match:
++
++; len += kMatchMinLen;
++; add     sym, kMatchMinLen
++
++; if ((rem = limit - dicPos) == 0)
++; {
++	;   p->dicPos = dicPos;
++	;   return SZ_ERROR_DATA;
++	; }
++mov     cnt_R, LOC(l_limit)
++sub     cnt_R, dicPos
++jz      fin_dicPos_LIMIT
++
++; curLen = ((rem < len) ? (unsigned)rem : len);
++cmp     cnt_R, sym_R
++; cmovae  cnt_R, sym_R ; 64-bit
++cmovae  cnt, sym ; 32-bit
++
++mov     dic, LOC(l_dic_Spec)
++mov     x1, LOC(l_rep0)
++
++mov     t0_R, dicPos
++add     dicPos, cnt_R
++; processedPos += curLen;
++add     processedPos, cnt
++; len -= curLen;
++sub     sym, cnt
++mov     LOC(l_remainLen), sym
++
++sub     t0_R, dic
++
++; pos = dicPos - rep0 + (dicPos < rep0 ? dicBufSize : 0);
++sub     t0_R, r1
++jae     .out ; @f
++
++mov     r1, LOC(l_dicBufSize)
++add     t0_R, r1
++sub     r1, t0_R
++cmp     cnt_R, r1
++ja      copy_match_cross
++.out: ; @@:
++; if (curLen <= dicBufSize - pos)
++
++; ---------- COPY MATCH FAST ----------
++; Byte *dest = dic + dicPos;
++; mov     r1, dic
++; ptrdiff_t src = (ptrdiff_t)pos - (ptrdiff_t)dicPos;
++; sub   t0_R, dicPos
++; dicPos += curLen;
++
++; const Byte *lim = dest + curLen;
++
++; *** FIXME***
++; after some iterations, invalid memory address in RDI t0_R
++; Dump of assembler code for function copy_match.out:
++;   0x000000000045a2a7 <+0>:     add    %r12,%rdi
++;=> 0x000000000045a2aa <+3>:     movzbl (%rdi),%ebx
++;   0x000000000045a2ad <+6>:     add    %rdx,%rdi
++;   0x000000000045a2b0 <+9>:     neg    %rdx
++; (gdb) i r r12 rdi ebx rdx
++;r12            0x7ffff00008c0   140737219922112
++;rdi            0x7ffefa146981   140733094062465 *** this shows error "Cannot access memory at 0x#####
++;ebx            0x0      0
++;rdx            0x2      2
++; *** END FIXME ***
++add     t0_R, dic
++movzx   sym, byte [t0_R]
++add     t0_R, cnt_R
++neg     cnt_R
++; lea     r1, [dicPos - 1]
++copy_common:
++dec     dicPos
++; cmp   LOC rep0, 1
++; je    rep0Label
++
++; t0_R - src_lim
++; r1 - dest_lim - 1
++; cnt_R - (-cnt)
++
++IsMatchBranch_Pre
++inc     cnt_R
++jz      copy_end
++MY_ALIGN_16
++.next: ; @@:
++mov     byte [cnt_R * 1 + dicPos], sym_L
++movzx   sym, byte [cnt_R * 1 + t0_R]
++inc     cnt_R
++jnz     .next ; @b
++
++copy_end:
++lz_end_match:
++mov     byte [dicPos], sym_L
++inc     dicPos
++
++; IsMatchBranch_Pre
++CheckLimits
++lz_end:
++IF_BIT_1_NOUP probs_state_R, pbPos_R, IsMatch, IsMatch_label
++
++; ---------- LITERAL MATCHED ----------
++
++LIT_PROBS LOC(l_lpMask)
++
++; matchByte = dic[dicPos - rep0 + (dicPos < rep0 ? dicBufSize : 0)];
++mov     x1, LOC(l_rep0)
++; mov     dic, LOC dic_Spec
++mov     LOC(l_dicPos_Spec), dicPos
++
++; state -= (state < 10) ? 3 : 6;
++lea     t0, [state_R - 6 * PMULT]
++sub     state, 3 * PMULT
++cmp     state, 7 * PMULT
++cmovae  state, t0
++
++sub     dicPos, dic
++sub     dicPos, r1
++jae     .out ; @f
++add     dicPos, LOC(l_dicBufSize)
++.out: ;@@:
++;        comment ~
++;        xor     t0, t0
++;        sub     dicPos, r1
++;        cmovb   t0_R, LOC(l_dicBufSize)
++;        ~
++
++movzx   match, byte [dic + dicPos * 1] ; byte ptr
++
++%ifdef _LZMA_SIZE_OPT
++	mov     offs, 256 * PMULT
++	shl     match, (PSHIFT + 1)
++	mov     bit, match
++	mov     sym, 1
++	MY_ALIGN_16
++	litm_loop:
++	LITM
++	cmp     sym, 256
++	jb      litm_loop
++	sub     sym, 256
++%else
++	LITM_0
++	LITM
++	LITM
++	LITM
++	LITM
++	LITM
++	LITM
++	LITM_2
++%endif
++
++mov     probs, LOC(l_probs_Spec)
++IsMatchBranch_Pre
++; mov     dic, LOC dic_Spec
++mov     dicPos, LOC(l_dicPos_Spec)
++mov     byte [dicPos], sym_L
++inc     dicPos
++
++CheckLimits
++lit_matched_end:
++IF_BIT_1_NOUP probs_state_R, pbPos_R, IsMatch, IsMatch_label
++; IsMatchBranch
++mov     lpMask_reg, LOC(l_lpMask)
++sub     state, 3 * PMULT
++jmp     lit_start_2
++
++	; ---------- REP 0 LITERAL ----------
++MY_ALIGN_32
++IsRep0Short_label:
++UPDATE_0 probs_state_R, pbPos_R, IsRep0Long
++
++; dic[dicPos] = dic[dicPos - rep0 + (dicPos < rep0 ? dicBufSize : 0)];
++mov     dic, LOC(l_dic_Spec)
++mov     t0_R, dicPos
++mov     probBranch, LOC(l_rep0)
++sub     t0_R, dic
++
++sub     probs, RepLenCoder * PMULT
++; state = state < kNumLitStates ? 9 : 11;
++or      state, 1 * PMULT
++
++; the caller doesn't allow (dicPos >= limit) case for REP_SHORT
++; so we don't need the following (dicPos == limit) check here:
++; cmp     dicPos, LOC limit
++; jae     fin_dicPos_LIMIT_REP_SHORT
++
++inc     processedPos
++
++IsMatchBranch_Pre
++
++;        xor     sym, sym
++;        sub     t0_R, probBranch_R
++;        cmovb   sym_R, LOC dicBufSize
++;        add     t0_R, sym_R
++sub     t0_R, probBranch_R
++jae     .out
++add     t0_R, LOC(l_dicBufSize)
++.out:
++movzx   sym, byte [dic + t0_R * 1] ; byte ptr
++jmp     lz_end_match
++
++MY_ALIGN_32
++IsRep_label:
++UPDATE_1 probs_state_R, 0, IsRep
++
++; The (checkDicSize == 0 && processedPos == 0) case was checked before in LzmaDec.c with kBadRepCode.
++; So we don't check it here.
++
++; mov     t0, processedPos
++; or      t0, LOC checkDicSize
++; jz      fin_ERROR_2
++
++; state = state < kNumLitStates ? 8 : 11;
++cmp     state, kNumLitStates * PMULT
++mov     state, 8 * PMULT
++mov     probBranch, 11 * PMULT
++cmovae  state, probBranch
++
++; prob = probs + RepLenCoder;
++add     probs, RepLenCoder * PMULT
++
++IF_BIT_1 probs_state_R, 0, IsRepG0, IsRepG0_label
++IF_BIT_0_NOUP probs_state_R, pbPos_R, IsRep0Long, IsRep0Short_label
++UPDATE_1 probs_state_R, pbPos_R, IsRep0Long
++jmp     len_decode
++
++MY_ALIGN_32
++IsRepG0_label:
++UPDATE_1 probs_state_R, 0, IsRepG0
++mov     dist2, LOC(l_rep0)
++mov     dist, LOC(l_rep1)
++mov     LOC(l_rep1), dist2
++
++IF_BIT_1 probs_state_R, 0, IsRepG1, IsRepG1_label
++mov     LOC(l_rep0), dist
++jmp     len_decode
++
++; MY_ALIGN_32
++IsRepG1_label:
++UPDATE_1 probs_state_R, 0, IsRepG1
++mov     dist2, LOC(l_rep2)
++mov     LOC(l_rep2), dist
++
++IF_BIT_1 probs_state_R, 0, IsRepG2, IsRepG2_label
++mov     LOC(l_rep0), dist2
++jmp     len_decode
++
++; MY_ALIGN_32
++IsRepG2_label:
++UPDATE_1 probs_state_R, 0, IsRepG2
++mov     dist, LOC(l_rep3)
++mov     LOC(l_rep3), dist2
++mov     LOC(l_rep0), dist
++jmp     len_decode
++
++; ---------- SPEC SHORT DISTANCE ----------
++
++MY_ALIGN_32
++short_dist:
++sub     x1, 32 + 1
++jbe     decode_dist_end
++or      sym, 2
++shl     sym, x1_L
++lea     sym_R, [probs + sym_R * PMULT + SpecPos * PMULT + 1 * PMULT]
++mov     sym2, PMULT ; step
++MY_ALIGN_32
++spec_loop:
++REV_1_VAR x2
++dec     x1
++jnz     spec_loop
++
++mov     probs, LOC(l_probs_Spec)
++sub     sym, sym2
++sub     sym, SpecPos * PMULT
++sub     sym_R, probs
++shr     sym, PSHIFT
++
++jmp     decode_dist_end
++
++; ---------- COPY MATCH CROSS ----------
++copy_match_cross:
++; t0_R - src pos
++; r1 - len to dicBufSize
++; cnt_R - total copy len
++
++mov     t1_R, t0_R         ; srcPos
++mov     t0_R, dic
++mov     r1, LOC(l_dicBufSize)   ;
++neg     cnt_R
++.b:
++movzx   sym, byte [t1_R * 1 + t0_R]
++inc     t1_R
++mov     byte [cnt_R * 1 + dicPos], sym_L
++inc     cnt_R
++cmp     t1_R, r1
++jne     .b
++
++movzx   sym, byte [t0_R]
++sub     t0_R, cnt_R
++jmp     copy_common
++
++; fin_dicPos_LIMIT_REP_SHORT:
++
++fin_dicPos_LIMIT:
++mov     LOC(l_remainLen), sym
++jmp     fin_OK
++; For more strict mode we can stop decoding with error
++; mov     sym, 1
++; jmp     fin
++
++fin_ERROR_MATCH_DIST:
++
++; rep3 = rep2;
++; rep2 = rep1;
++; rep1 = rep0;
++; rep0 = distance + 1;
++
++add     len_temp, kMatchSpecLen_Error_Data
++mov     LOC(l_remainLen), len_temp
++
++mov     LOC(l_rep0), sym
++mov     LOC(l_rep1), t1
++mov     LOC(l_rep2), x1
++mov     LOC(l_rep3), x2
++
++; state = (state < kNumStates + kNumLitStates) ? kNumLitStates : kNumLitStates + 3;
++cmp     state, (kNumStates + kNumLitStates) * PMULT
++mov     state, kNumLitStates * PMULT
++mov     t0, (kNumLitStates + 3) * PMULT
++cmovae  state, t0
++
++; jmp     fin_OK
++mov     sym, 1
++jmp     fin
++
++end_of_payload:
++inc     sym
++jnz     fin_ERROR_MATCH_DIST
++
++mov     DWORD LOC(l_remainLen), kMatchSpecLenStart
++sub     state, kNumStates * PMULT
++
++fin_OK:
++xor     sym, sym
++
++fin:
++NORM
++
++mov     r1, LOC(l_lzmaPtr)
++
++sub     dicPos, LOC(l_dic_Spec)
++mov     GLOB(dicPos_Spec), dicPos
++mov     GLOB(buf_Spec), buf
++mov     GLOB(range_Spec), range
++mov     GLOB(code_Spec), cod
++shr     state, PSHIFT
++mov     GLOB(state_Spec), state
++mov     GLOB(processedPos_Spec), processedPos
++
++RESTORE_VAR remainLen, l_remainLen
++RESTORE_VAR rep0, l_rep0
++RESTORE_VAR rep1, l_rep1
++RESTORE_VAR rep2, l_rep2
++RESTORE_VAR rep3, l_rep3
++
++mov     x0, sym
++
++mov     RSP, LOC(l_OLD_RSP)
++
++MY_POP_PRESERVED_ABI_REGS
++MY_ENDP
++
++; _TEXT$LZMADECOPT ENDS
++; end
+diff --git a/Asm/x86-nasm/Sha1Opt.asm b/Asm/x86-nasm/Sha1Opt.asm
+new file mode 100644
+index 0000000..6520f38
+--- /dev/null
++++ b/Asm/x86-nasm/Sha1Opt.asm
+@@ -0,0 +1,267 @@
++; Sha1Opt.asm -- SHA-1 optimized code for SHA-1 x86 hardware instructions
++; 2021-03-10 : Igor Pavlov : Public domain
++; 2022 Super-experimental NASM port
++%include "7zAsm.asm"
++
++MY_ASM_START
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++SECTION .rodata ; CONST   SEGMENT
++align 16 ; (not sure)
++Reverse_Endian_Mask: db 15,14,13,12, 11,10,9,8, 7,6,5,4, 3,2,1,0 ; (not sure whether colon is needed)
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++; CONST   ENDS
++
++; _TEXT$SHA1OPT SEGMENT 'CODE'
++
++SECTION .text
++
++; %ifndef x64
++    ; .686
++    ; .xmm
++; %endif
++
++%ifdef x64
++        %define rNum     REG_ABI_PARAM_2
++    %if (IS_LINUX == 0)
++        %define LOCAL_SIZE  (16 * 2)
++    %endif
++%else
++        %define rNum     r0
++        %define LOCAL_SIZE  (16 * 1)
++%endif
++
++%define rState  REG_ABI_PARAM_0
++%define rData   REG_ABI_PARAM_1
++
++
++%macro MY_sha1rnds4 3 ; a1, a2, imm
++        db 0fH, 03aH, 0ccH, (0c0H + %1 * 8 + %2), %3 ; db 0fH, 03aH, 0ccH, (0c0H + a1 * 8 + a2), imm
++%endmacro
++
++%macro MY_SHA_INSTR 3 ; cmd, a1, a2
++        db 0fH, 038H, %1, (0c0H + %2 * 8 + %3) ; db 0fH, 038H, cmd, (0c0H + a1 * 8 + a2)
++%endmacro
++
++%define cmd_sha1nexte    0c8H
++%define cmd_sha1msg1     0c9H
++%define cmd_sha1msg2     0caH
++
++%macro MY_sha1nexte 2 ; a1, a2
++        MY_SHA_INSTR  cmd_sha1nexte, %1, %2
++%endmacro
++
++%macro MY_sha1msg1 2 ; a1, a2
++        MY_SHA_INSTR  cmd_sha1msg1, %1, %2
++%endmacro
++
++%macro MY_sha1msg2 2 ; a1, a2
++        MY_SHA_INSTR  cmd_sha1msg2, %1, %2
++%endmacro
++
++%macro MY_PROLOG 0 ; macro
++    %ifdef x64
++      %if (IS_LINUX == 0)
++        movdqa  [r4 + 8], xmm6
++        movdqa  [r4 + 8 + 16], xmm7
++        sub     r4, LOCAL_SIZE + 8
++        movdqa  [r4     ], xmm8
++        movdqa  [r4 + 16], xmm9
++      %endif
++    %else ; x86
++      %if (IS_CDECL > 0)
++        mov     rState, [r4 + REG_SIZE * 1]
++        mov     rData,  [r4 + REG_SIZE * 2]
++        mov     rNum,   [r4 + REG_SIZE * 3]
++      %else ; fastcall
++        mov     rNum,   [r4 + REG_SIZE * 1]
++      %endif
++        push    r5
++        mov     r5, r4
++        and     r4, -16
++        sub     r4, LOCAL_SIZE
++    %endif
++%endmacro
++
++%macro MY_EPILOG 0 ; macro
++    %ifdef x64
++      %if (IS_LINUX == 0)
++        movdqa  xmm8, [r4]
++        movdqa  xmm9, [r4 + 16]
++        add     r4, LOCAL_SIZE + 8
++        movdqa  xmm6, [r4 + 8]
++        movdqa  xmm7, [r4 + 8 + 16]
++      %endif
++    %else ; x86
++        mov     r4, r5
++        pop     r5
++    %endif
++    MY_ENDP
++%endmacro
++
++
++%define e0_N        0
++%define e1_N        1
++%define abcd_N      2
++%define e0_save_N   3
++%define w_regs      4
++
++%define e0       xmm %+ e0_N ; @CatStr(xmm, %e0_N)
++%define e1       xmm %+ e1_N ; @CatStr(xmm, %e1_N)
++%define abcd     xmm %+ abcd_N ; @CatStr(xmm, %abcd_N)
++%define e0_save  xmm %+ e0_save_N ; @CatStr(xmm, %e0_save_N)
++
++%ifdef x64
++        %define abcd_save      xmm8
++        %define mask2          xmm9
++%else
++        %define abcd_save      [r4]
++        %define mask2          e1
++%endif
++
++%macro LOAD_MASK 0 ; macro
++        movdqa  mask2, [rel Reverse_Endian_Mask] ; XMMWORD PTR (not sure whether need rel or not)
++%endmacro
++
++%macro LOAD_W 1 ; k:req
++        %assign xmmarg0 (w_regs + %1)
++        movdqu  xmm %+ xmmarg0, [rData + (16 * %1)] ; movdqu  @CatStr(xmm, %(w_regs + k)), [rData + (16 * (k))]
++        pshufb  xmm %+ xmmarg0, mask2 ; pshufb  @CatStr(xmm, %(w_regs + k)), mask2
++%endmacro
++
++
++; pre2 can be 2 or 3 (recommended)
++%define pre2  3
++%define pre1  (pre2 + 1)
++
++%define NUM_ROUNDS4  20
++   
++%macro RND4 1 ; k
++        %assign xmmarg1 (e0_N + ((%1 + 1) % 2))
++        movdqa xmm %+ xmmarg1, abcd ; movdqa  @CatStr(xmm, %(e0_N + ((%1 + 1) mod 2))), abcd
++        MY_sha1rnds4 abcd_N, (e0_N + (%1 % 2)), %1 / 5
++
++        %assign nextM (w_regs + ((k + 1) % 4))
++
++    %if (%1 == NUM_ROUNDS4 - 1)
++        %assign nextM e0_save_N
++    %endif
++        
++        MY_sha1nexte (e0_N + ((%1 + 1) % 2)), nextM
++        
++    %if (%1 >= (4 - pre2)) && (%1 < (NUM_ROUNDS4 - pre2))
++        %assign xmmarg2 (w_regs + ((%1 + pre2) % 4))
++        %assign xmmarg3 (w_regs + ((%1 + pre2 - 2) % 4))
++        pxor xmm %+ xmmarg2, xmm %+ xmmarg3 ; pxor @CatStr(xmm, %(w_regs + ((%1 + pre2) mod 4))), @CatStr(xmm, %(w_regs + ((%1 + pre2 - 2) mod 4)))
++    %endif
++
++    %if (%1 >= (4 - pre1)) && (%1 < (NUM_ROUNDS4 - pre1))
++        MY_sha1msg1 (w_regs + ((%1 + pre1) % 4)), (w_regs + ((%1 + pre1 - 3) % 4))
++    %endif
++    
++    %if (%1 >= (4 - pre2)) && (%1 < (NUM_ROUNDS4 - pre2))
++        MY_sha1msg2 (w_regs + ((%1 + pre2) % 4)), (w_regs + ((%1 + pre2 - 1) % 4))
++    %endif
++%endmacro
++
++
++%macro REVERSE_STATE 0 ; macro
++                               ; abcd   ; dcba
++                               ; e0     ; 000e
++        pshufd  abcd, abcd, 01bH        ; abcd
++        pshufd    e0,   e0, 01bH        ; e000
++%endmacro
++
++
++
++
++
++MY_PROC Sha1_UpdateBlocks_HW, 3
++    MY_PROLOG
++
++        cmp     rNum, 0
++        je      end_c
++
++        movdqu   abcd, [rState]               ; dcba
++        movd     e0, dword [rState + 16]  ; 000e ; ptr
++
++        REVERSE_STATE
++       
++        %ifdef x64
++        LOAD_MASK
++        %endif
++
++    align 16
++    nextBlock:
++        movdqa  abcd_save, abcd
++        movdqa  e0_save, e0
++        
++        %ifndef x64
++        LOAD_MASK
++        %endif
++        
++        LOAD_W 0
++        LOAD_W 1
++        LOAD_W 2
++        LOAD_W 3
++
++        paddd   e0, xmm %+ w_regs ; paddd   e0, @CatStr(xmm, %(w_regs))
++        %assign k 0
++        %rep NUM_ROUNDS4 ; rept NUM_ROUNDS4
++          RND4 k
++          %assign k k+1
++        %endrep ; endm
++
++        paddd   abcd, abcd_save
++
++
++        add     rData, 64
++        sub     rNum, 1
++        jnz     nextBlock
++        
++        REVERSE_STATE
++
++        movdqu  [rState], abcd
++        movd    dword [rState + 16], e0 ; ptr
++       
++  end_c:
++MY_EPILOG
++
++; _TEXT$SHA1OPT ENDS
++
++; end
+diff --git a/Asm/x86-nasm/Sha256Opt.asm b/Asm/x86-nasm/Sha256Opt.asm
+new file mode 100644
+index 0000000..b01366a
+--- /dev/null
++++ b/Asm/x86-nasm/Sha256Opt.asm
+@@ -0,0 +1,270 @@
++; Sha256Opt.asm -- SHA-256 optimized code for SHA-256 x86 hardware instructions
++; 2021-03-10 : Igor Pavlov : Public domain
++; 2022 Super-experimental NASM port
++%include "7zAsm.asm"
++
++MY_ASM_START
++
++; .data
++; public K
++
++; we can use external SHA256_K_ARRAY defined in Sha256.c
++; but we must guarantee that SHA256_K_ARRAY is aligned for 16-bytes
++
++SECTION .rodata
++; COMMENT @
++; %ifdef x64
++; %define K_CONST  SHA256_K_ARRAY
++; %else
++; %define K_CONST  _SHA256_K_ARRAY
++; %endif
++; EXTERN K_CONST ; EXTRN   K_CONST:xmmword
++; @
++
++align 16
++Reverse_Endian_Mask: db 3,2,1,0, 7,6,5,4, 11,10,9,8, 15,14,13,12
++
++; COMMENT @
++align 16
++K_CONST: ; not sure whether this is correct
++DD 0428a2f98H, 071374491H, 0b5c0fbcfH, 0e9b5dba5H
++DD 03956c25bH, 059f111f1H, 0923f82a4H, 0ab1c5ed5H
++DD 0d807aa98H, 012835b01H, 0243185beH, 0550c7dc3H
++DD 072be5d74H, 080deb1feH, 09bdc06a7H, 0c19bf174H
++DD 0e49b69c1H, 0efbe4786H, 00fc19dc6H, 0240ca1ccH
++DD 02de92c6fH, 04a7484aaH, 05cb0a9dcH, 076f988daH
++DD 0983e5152H, 0a831c66dH, 0b00327c8H, 0bf597fc7H
++DD 0c6e00bf3H, 0d5a79147H, 006ca6351H, 014292967H
++DD 027b70a85H, 02e1b2138H, 04d2c6dfcH, 053380d13H
++DD 0650a7354H, 0766a0abbH, 081c2c92eH, 092722c85H
++DD 0a2bfe8a1H, 0a81a664bH, 0c24b8b70H, 0c76c51a3H
++DD 0d192e819H, 0d6990624H, 0f40e3585H, 0106aa070H
++DD 019a4c116H, 01e376c08H, 02748774cH, 034b0bcb5H
++DD 0391c0cb3H, 04ed8aa4aH, 05b9cca4fH, 0682e6ff3H
++DD 0748f82eeH, 078a5636fH, 084c87814H, 08cc70208H
++DD 090befffaH, 0a4506cebH, 0bef9a3f7H, 0c67178f2H
++; @
++
++; CONST   ENDS
++
++; _TEXT$SHA256OPT SEGMENT 'CODE'
++
++SECTION .text
++
++; %ifndef x64
++    ; .686
++    ; .xmm
++; %endif
++
++%ifdef x64
++        %define rNum     REG_ABI_PARAM_2
++    %if (IS_LINUX == 0)
++        %define LOCAL_SIZE  (16 * 2)
++    %endif
++%else
++        %define rNum     r0
++        %define LOCAL_SIZE  (16 * 1)
++%endif
++
++%define rState  REG_ABI_PARAM_0
++%define rData   REG_ABI_PARAM_1
++
++
++
++
++
++
++%macro MY_SHA_INSTR 3 ; cmd, a1, a2
++        db 0fH, 038H, %1, (0c0H + %2 * 8 + %3) ; db 0fH, 038H, cmd, (0c0H + a1 * 8 + a2)
++%endmacro
++
++%define cmd_sha256rnds2  0cbH
++%define cmd_sha256msg1   0ccH
++%define cmd_sha256msg2   0cdH
++
++%macro MY_sha256rnds2 2 ; a1, a2
++        MY_SHA_INSTR  cmd_sha256rnds2, %1, %2
++%endmacro
++
++%macro MY_sha256msg1 2 ; a1, a2
++        MY_SHA_INSTR  cmd_sha256msg1, %1, %2
++%endmacro
++
++%macro MY_sha256msg2 2 ; a1, a2
++        MY_SHA_INSTR  cmd_sha256msg2, %1, %2
++%endmacro
++
++%macro MY_PROLOG 0 ; macro
++    %ifdef x64
++      %if (IS_LINUX == 0)
++        movdqa  [r4 + 8], xmm6
++        movdqa  [r4 + 8 + 16], xmm7
++        sub     r4, LOCAL_SIZE + 8
++        movdqa  [r4     ], xmm8
++        movdqa  [r4 + 16], xmm9
++      %endif
++    %else ; x86
++      %if (IS_CDECL > 0)
++        mov     rState, [r4 + REG_SIZE * 1]
++        mov     rData,  [r4 + REG_SIZE * 2]
++        mov     rNum,   [r4 + REG_SIZE * 3]
++      %else ; fastcall
++        mov     rNum,   [r4 + REG_SIZE * 1]
++      %endif
++        push    r5
++        mov     r5, r4
++        and     r4, -16
++        sub     r4, LOCAL_SIZE
++    %endif
++%endmacro
++
++%macro MY_EPILOG 0 ; macro
++    %ifdef x64
++      %if (IS_LINUX == 0)
++        movdqa  xmm8, [r4]
++        movdqa  xmm9, [r4 + 16]
++        add     r4, LOCAL_SIZE + 8
++        movdqa  xmm6, [r4 + 8]
++        movdqa  xmm7, [r4 + 8 + 16]
++      %endif
++    %else ; x86
++        mov     r4, r5
++        pop     r5
++    %endif
++    MY_ENDP
++%endmacro
++
++
++%define msg         xmm0
++%define tmp         xmm0
++%define state0_N    2
++%define state1_N    3
++%define w_regs      4
++
++
++%define state1_save  xmm1
++%define state0   xmm %+ state0_N ; @CatStr(xmm, %state0_N)
++%define state1   xmm %+ state1_N ; @CatStr(xmm, %state1_N)
++
++
++%ifdef x64
++        %define state0_save    xmm8
++        %define mask2          xmm9
++%else
++        %define state0_save    [r4]
++        %define mask2          xmm0
++%endif
++
++%macro LOAD_MASK 0 ; macro
++        movdqa  mask2, [rel Reverse_Endian_Mask] ; XMMWORD PTR
++%endmacro
++
++%macro LOAD_W 1 ; k:req
++        %assign xmmarg0 (w_regs + %1)
++        movdqu  xmm %+ xmmarg0, [rData + (16 * %1)] ; movdqu  @CatStr(xmm, %(w_regs + k)), [rData + (16 * (k))]
++        pshufb  xmm %+ xmmarg0, mask2 ; pshufb  @CatStr(xmm, %(w_regs + k)), mask2
++%endmacro
++
++; pre1 <= 4 && pre2 >= 1 && pre1 > pre2 && (pre1 - pre2) <= 1
++%define pre1  3
++%define pre2  2
++   
++
++
++%macro RND4 1 ; k
++        ;movdqa  msg, [rel K_CONST + (%1) * 16] ; xmmword ptr (not sure abt rel)
++        movdqa  msg, [rel K_CONST] ; for testing only
++        %assign xmmarg1 (w_regs + ((%1 + 0) % 4))
++        paddd   msg, xmm %+ xmmarg1
++        MY_sha256rnds2 state0_N, state1_N
++        pshufd   msg, msg, 0eH
++
++    %if (%1 >= (4 - pre1)) && (%1 < (16 - pre1))
++        ; w4[0] = msg1(w4[-4], w4[-3])
++        MY_sha256msg1 (w_regs + ((%1 + pre1) % 4)), (w_regs + ((%1 + pre1 - 3) % 4))
++    %endif
++        
++        MY_sha256rnds2 state1_N, state0_N
++
++    %if (%1 >= (4 - pre2)) && (%1 < (16 - pre2))
++        %assign xmmarg2 (w_regs + ((%1 + pre2 - 1) % 4))
++        movdqa  tmp, xmm %+ xmmarg2
++        %assign xmmarg3 (w_regs + ((%1 + pre2 - 2) % 4))
++        palignr tmp, xmm %+ xmmarg3, 4
++        %assign xmmarg4 (w_regs + ((%1 + pre2) % 4))
++        paddd   xmm %+ xmmarg4, tmp
++        ; w4[0] = msg2(w4[0], w4[-1])
++        ; MY_sha256msg2 %(w_regs + ((%1 + pre2) % 4)), %(w_regs + ((%1 + pre2 - 1) % 4)) (Doesn't work for some reason)
++        MY_sha256msg2 xmmarg4, xmmarg2 ; Try alternative
++    %endif
++%endmacro
++
++
++
++
++
++%macro REVERSE_STATE 0 ; macro
++                               ; state0 ; dcba
++                               ; state1 ; hgfe
++        pshufd      tmp, state0, 01bH   ; abcd
++        pshufd   state0, state1, 01bH   ; efgh
++        movdqa   state1, state0         ; efgh
++        punpcklqdq  state0, tmp         ; cdgh
++        punpckhqdq  state1, tmp         ; abef
++%endmacro
++
++
++MY_PROC Sha256_UpdateBlocks_HW, 3
++    MY_PROLOG
++
++        cmp     rNum, 0
++        je      end_c
++
++        movdqu   state0, [rState]       ; dcba
++        movdqu   state1, [rState + 16]  ; hgfe
++
++        REVERSE_STATE
++       
++        %ifdef x64
++        LOAD_MASK
++        %endif
++
++    align 16
++    nextBlock:
++        movdqa  state0_save, state0
++        movdqa  state1_save, state1
++        
++        %ifndef x64
++        LOAD_MASK
++        %endif
++        
++        LOAD_W 0
++        LOAD_W 1
++        LOAD_W 2
++        LOAD_W 3
++
++        
++        %assign k 0 ; k = 0
++        %rep 16 ; rept 16
++          RND4 k
++          %assign k k+1
++        %endrep ; endm
++
++        paddd   state0, state0_save
++        paddd   state1, state1_save
++
++        add     rData, 64
++        sub     rNum, 1
++        jnz     nextBlock
++        
++        REVERSE_STATE
++
++        movdqu  [rState], state0
++        movdqu  [rState + 16], state1
++       
++  end_c:
++MY_EPILOG
++
++; _TEXT$SHA256OPT ENDS
++
++; end
+diff --git a/Asm/x86-nasm/XzCrc64Opt.asm b/Asm/x86-nasm/XzCrc64Opt.asm
+new file mode 100644
+index 0000000..8583b1e
+--- /dev/null
++++ b/Asm/x86-nasm/XzCrc64Opt.asm
+@@ -0,0 +1,240 @@
++; XzCrc64Opt.asm -- CRC64 calculation : optimized version
++; 2021-02-06 : Igor Pavlov : Public domain
++; 2022 Super-experimental NASM port
++
++%include "7zAsm.asm"
++
++MY_ASM_START
++
++%ifdef x64
++
++%define rD         r9
++%define rN         r10
++%define rT         r5
++%define num_VAR    r8
++
++%define SRCDAT4    dword [rD + rN * 1] ; ptr
++    
++%macro CRC_XOR 3 ; dest:req, src:req, t:req
++    xor     %1, QWORD [rT + %2 * 8 + 0800h * %3] ;  xor     dest, QWORD PTR [rT + src * 8 + 0800h * t]
++%endmacro
++
++%macro CRC1b 0 ; macro
++    movzx   x6, BYTE [rD] ; PTR
++    inc     rD
++    movzx   x3, x0_L
++    xor     x6, x3
++    shr     r0, 8
++    CRC_XOR r0, r6, 0
++    dec     rN
++%endmacro
++
++%macro MY_PROLOG 1 ; crc_end:req
++  %ifdef ABI_LINUX
++    MY_PUSH_2_REGS
++  %else
++    MY_PUSH_4_REGS
++  %endif
++    mov     r0, REG_ABI_PARAM_0
++    mov     rN, REG_ABI_PARAM_2
++    mov     rT, REG_ABI_PARAM_3
++    mov     rD, REG_ABI_PARAM_1
++    test    rN, rN
++    jz      %1 ; crc_end
++  %%sl: ; @@:
++    test    rD, 3
++    jz      %%sl_end ; @F
++    CRC1b
++    jnz     %%sl ; @B
++  %%sl_end: ; @@:
++    cmp     rN, 8
++    jb      %1 ; crc_end
++    add     rN, rD
++    mov     num_VAR, rN
++    sub     rN, 4
++    and     rN, NOT 3
++    sub     rD, rN
++    mov     x1, SRCDAT4
++    xor     r0, r1
++    add     rN, 4
++%endmacro
++
++%macro MY_EPILOG 1 ; crc_end:req
++    sub     rN, 4
++    mov     x1, SRCDAT4
++    xor     r0, r1
++    mov     rD, rN
++    mov     rN, num_VAR
++    sub     rN, rD
++  %1: ; crc_end:
++    test    rN, rN
++    jz      %%end ; @F
++    CRC1b
++    jmp     %1 ; crc_end
++  %%end: ; @@:
++  %ifdef ABI_LINUX
++    MY_POP_2_REGS
++  %else
++    MY_POP_4_REGS
++  %endif
++%endmacro
++
++MY_PROC XzCrc64UpdateT4, 4
++    MY_PROLOG crc_end_4
++    align 16
++  main_loop_4:
++    mov     x1, SRCDAT4
++    movzx   x2, x0_L
++    movzx   x3, x0_H
++    shr     r0, 16
++    movzx   x6, x0_L
++    movzx   x7, x0_H
++    shr     r0, 16
++    CRC_XOR r1, r2, 3
++    CRC_XOR r0, r3, 2
++    CRC_XOR r1, r6, 1
++    CRC_XOR r0, r7, 0
++    xor     r0, r1
++
++    add     rD, 4
++    jnz     main_loop_4
++
++    MY_EPILOG crc_end_4
++MY_ENDP
++
++%else
++; x86 (32-bit)
++
++%define rD        r1
++%define rN        r7
++%define rT        r5
++
++%define crc_OFFS    (REG_SIZE * 5)
++
++%if (IS_CDECL > 0) || (IS_LINUX > 0)
++    ; cdecl or (GNU fastcall) stack:
++    ;   (UInt32 *) table
++    ;   size_t     size
++    ;   void *     data
++    ;   (UInt64)   crc
++    ;   ret-ip <-(r4)
++    %define data_OFFS     (8 + crc_OFFS)
++    %define size_OFFS     (REG_SIZE + data_OFFS)
++    %define table_OFFS    (REG_SIZE + size_OFFS)
++    %define num_VAR       [r4 + size_OFFS]
++    %define table_VAR     [r4 + table_OFFS]
++%else
++    ; Windows fastcall:
++    ;   r1 = data, r2 = size
++    ; stack:
++    ;   (UInt32 *) table
++    ;   (UInt64)   crc
++    ;   ret-ip <-(r4)
++    %define table_OFFS    (8 + crc_OFFS)
++    %define table_VAR     [r4 + table_OFFS]
++    %define num_VAR       table_VAR
++%endif
++
++%define SRCDAT4   dword [rD + rN * 1] ; ptr
++
++%macro CRC 6 ; op0:req, op1:req, dest0:req, dest1:req, src:req, t:req
++    %1     %3, DWORD [rT + %5 * 8 + 0800h * %6] ; op0     dest0, DWORD PTR [rT + src * 8 + 0800h * t]
++    %2     %4, DWORD [rT + %5 * 8 + 0800h * %6 + 4] ; op1     dest1, DWORD PTR [rT + src * 8 + 0800h * t + 4]
++%endmacro
++
++%macro CRC_XOR 4 ; dest0:req, dest1:req, src:req, t:req
++    CRC xor, xor, %1, %2, %3, %4 ; CRC xor, xor, dest0, dest1, src, t
++%endmacro
++
++
++%macro CRC1b 0 ; macro
++    movzx   x6, BYTE [rD] ; PTR
++    inc     rD
++    movzx   x3, x0_L
++    xor     x6, x3
++    shrd    r0, r2, 8
++    shr     r2, 8
++    CRC_XOR r0, r2, r6, 0
++    dec     rN
++%endmacro
++
++%macro MY_PROLOG 1 ; crc_end:req
++    MY_PUSH_4_REGS
++
++  %if (IS_CDECL > 0) || (IS_LINUX > 0)
++    proc_numParams = proc_numParams + 2 ; for ABI_LINUX
++    mov     rN, [r4 + size_OFFS]
++    mov     rD, [r4 + data_OFFS]
++  %else
++    mov     rN, r2
++  %endif
++
++    mov     x0, [r4 + crc_OFFS]
++    mov     x2, [r4 + crc_OFFS + 4]
++    mov     rT, table_VAR
++    test    rN, rN
++    jz      %1 ; crc_end
++  %%sl: ; @@:
++    test    rD, 3
++    jz      %%sl_end ; @F
++    CRC1b
++    jnz     %%sl ; @B
++  %%sl_end: ; @@:
++    cmp     rN, 8
++    jb      %1 ; crc_end
++    add     rN, rD
++
++    mov     num_VAR, rN
++
++    sub     rN, 4
++    and     rN, NOT 3
++    sub     rD, rN
++    xor     r0, SRCDAT4
++    add     rN, 4
++%endmacro
++
++%macro MY_EPILOG 1 ; crc_end:req
++    sub     rN, 4
++    xor     r0, SRCDAT4
++
++    mov     rD, rN
++    mov     rN, num_VAR
++    sub     rN, rD
++  %1: ; crc_end:
++    test    rN, rN
++    jz      %%end ; @F
++    CRC1b
++    jmp     %1 ; crc_end
++  %%end: ; @@:
++    MY_POP_4_REGS
++%endmacro
++
++MY_PROC XzCrc64UpdateT4, 5
++    MY_PROLOG crc_end_4
++    movzx   x6, x0_L
++    align 16
++  main_loop_4:
++    mov     r3, SRCDAT4
++    xor     r3, r2
++
++    CRC xor, mov, r3, r2, r6, 3
++    movzx   x6, x0_H
++    shr     r0, 16
++    CRC_XOR r3, r2, r6, 2
++
++    movzx   x6, x0_L
++    movzx   x0, x0_H
++    CRC_XOR r3, r2, r6, 1
++    CRC_XOR r3, r2, r0, 0
++    movzx   x6, x3_L
++    mov     r0, r3
++
++    add     rD, 4
++    jnz     main_loop_4
++
++    MY_EPILOG crc_end_4
++MY_ENDP
++
++%endif ; ! x64
++
++; end
+diff --git a/CPP/7zip/7zip_gcc.mak b/CPP/7zip/7zip_gcc.mak
+index e065a94..65b865e 100644
+--- a/CPP/7zip/7zip_gcc.mak
++++ b/CPP/7zip/7zip_gcc.mak
+@@ -4,6 +4,7 @@
+ # MY_ARCH =
+ # USE_ASM=
+ # USE_JWASM=1
++# USE_NASM = 1
+ 
+ MY_ARCH_2 = $(MY_ARCH)
+ 
+@@ -11,6 +12,9 @@ MY_ASM = asmc
+ ifdef USE_JWASM
+ MY_ASM = jwasm
+ endif
++ifdef USE_NASM
++MY_ASM = nasm
++endif
+ 
+ 
+ PROGPATH = $(O)/$(PROG)
+@@ -135,6 +139,7 @@ AFLAGS = -nologo $(AFLAGS_ABI) -Fo$(O)/$(basename $(<F)).o
+ else
+ ifdef IS_X64
+ AFLAGS_ABI = -elf64 -DABI_LINUX
++AFLAGS_ABI_NASM = -f elf64 -D ABI_LINUX
+ else
+ AFLAGS_ABI = -elf -DABI_LINUX -DABI_CDECL
+ # -DABI_CDECL
+@@ -142,6 +147,7 @@ AFLAGS_ABI = -elf -DABI_LINUX -DABI_CDECL
+ # -DABI_CDECL
+ endif
+ AFLAGS = -nologo $(AFLAGS_ABI) -Fo$(O)/
++AFLAGS_NASM = $(AFLAGS_ABI_NASM) -i ../../../../Asm/x86-nasm/ -o $(O)/$(basename $(<F)).o
+ endif
+ 
+ ifdef USE_ASM
+@@ -1128,6 +1134,16 @@ endif
+ endif
+ 
+ ifdef USE_X86_ASM
++ifdef USE_NASM
++$O/7zCrcOpt.o: ../../../../Asm/x86-nasm/7zCrcOpt.asm
++	$(MY_ASM) $(AFLAGS_NASM) $<
++$O/XzCrc64Opt.o: ../../../../Asm/x86-nasm/XzCrc64Opt.asm
++	$(MY_ASM) $(AFLAGS_NASM) $<
++$O/Sha1Opt.o: ../../../../Asm/x86-nasm/Sha1Opt.asm
++	$(MY_ASM) $(AFLAGS_NASM) $<
++$O/Sha256Opt.o: ../../../../Asm/x86-nasm/Sha256Opt.asm
++	$(MY_ASM) $(AFLAGS_NASM) $<
++else
+ $O/7zCrcOpt.o: ../../../../Asm/x86/7zCrcOpt.asm
+ 	$(MY_ASM) $(AFLAGS) $<
+ $O/XzCrc64Opt.o: ../../../../Asm/x86/XzCrc64Opt.asm
+@@ -1136,6 +1152,7 @@ $O/Sha1Opt.o: ../../../../Asm/x86/Sha1Opt.asm
+ 	$(MY_ASM) $(AFLAGS) $<
+ $O/Sha256Opt.o: ../../../../Asm/x86/Sha256Opt.asm
+ 	$(MY_ASM) $(AFLAGS) $<
++endif
+ 
+ ifndef USE_JWASM
+ USE_X86_ASM_AES=1
+@@ -1154,8 +1171,13 @@ endif
+ 
+ 
+ ifdef USE_X86_ASM_AES
++ifdef USE_NASM
++$O/AesOpt.o: ../../../../Asm/x86-nasm/AesOpt.asm
++	$(MY_ASM) $(AFLAGS_NASM) $<
++else
+ $O/AesOpt.o: ../../../../Asm/x86/AesOpt.asm
+ 	$(MY_ASM) $(AFLAGS) $<
++endif
+ else
+ $O/AesOpt.o: ../../../../C/AesOpt.c
+ 	$(CC) $(CFLAGS) $<
+@@ -1163,8 +1185,13 @@ endif
+ 
+ 
+ ifdef USE_X64_ASM
++ifdef USE_NASM
++$O/LzFindOpt.o: ../../../../Asm/x86-nasm/LzFindOpt.asm
++	$(MY_ASM) $(AFLAGS_NASM) $<
++else
+ $O/LzFindOpt.o: ../../../../Asm/x86/LzFindOpt.asm
+ 	$(MY_ASM) $(AFLAGS) $<
++endif
+ else
+ $O/LzFindOpt.o: ../../../../C/LzFindOpt.c
+ 	$(CC) $(CFLAGS) $<
+@@ -1173,9 +1200,14 @@ endif
+ ifdef USE_LZMA_DEC_ASM
+ 
+ ifdef IS_X64
++ifdef USE_NASM
++$O/LzmaDecOpt.o: ../../../../Asm/x86-nasm/LzmaDecOpt.asm
++	$(MY_ASM) $(AFLAGS_NASM) $<
++else
+ $O/LzmaDecOpt.o: ../../../../Asm/x86/LzmaDecOpt.asm
+ 	$(MY_ASM) $(AFLAGS) $<
+ endif
++endif
+ 
+ ifdef IS_ARM64
+ $O/LzmaDecOpt.o: ../../../../Asm/arm64/LzmaDecOpt.S ../../../../Asm/arm64/7zAsm.S
+-- 
+2.34.1
+

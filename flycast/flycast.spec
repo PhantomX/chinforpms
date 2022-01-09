@@ -141,7 +141,6 @@ sed \
 
 sed \
   -e 's|LINK_FLAGS_RELEASE -s||g' \
-  -e 's|find_package(SDL2)|pkg_check_modules(SDL2 IMPORTED_TARGET sdl2)|g' \
   -e 's|IMPORTED_TARGET ao|IMPORTED_TARGET ao_DISABLED|g' \
   -e 's|${GIT_EXECUTABLE} describe --tags --always|echo "%{version}-%{release}"|g' \
   -i CMakeLists.txt

@@ -34,9 +34,9 @@ index 21ac8f5d39..3464552ce2 100644
 +#include <minizip/unzip.h>
  #include <pugixml.hpp>
 -#include <unzip.h>
- #include <zlib.h>
  
  #include "Common/Align.h"
+ #include "Common/Assert.h"
 diff --git a/Source/Core/UICommon/ResourcePack/ResourcePack.cpp b/Source/Core/UICommon/ResourcePack/ResourcePack.cpp
 index 75f178a840..f03a7d58a0 100644
 --- a/Source/Core/UICommon/ResourcePack/ResourcePack.cpp

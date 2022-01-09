@@ -1,6 +1,9 @@
 %global sanitize 0
 
-%bcond_with asm
+%bcond_without asm
+# Select the assembler (uasm or nasm)
+# nasm can be used with Fedora
+%global asmopt nasm
 
 %global platform %{nil}
 %if %{with asm}
@@ -20,7 +23,7 @@
 
 Name:           7zip
 Version:        21.07
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPLv2+ and BSD and Public Domain
@@ -35,17 +38,26 @@ Source0:        %{name}-free-%{version}.tar.xz
 Source1:        Makefile
 
 Patch1:         0001-set-7zCon.sfx-path.patch
+%if %{with asm}
+%if "%{asmopt}" == "nasm"
+# Experimental NASM support
+Patch10:        0001-Add-NASM-support.patch
+%endif
+%endif
 
 %if %{with asm}
+%if "%{asmopt}" == "nasm"
+ExclusiveArch:  x86_64
+%else
 ExclusiveArch:  %{ix86} x86_64 %{arm}
+%endif
 %endif
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  make
 %if %{with asm}
-#BuildRequires:  asmc
-BuildRequires:  uasm
+BuildRequires:  %{asmopt}
 %endif
 
 
@@ -90,12 +102,20 @@ sed -e 's|__RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' -i CPP/7zip/UI/Console/Main
 
 
 %build
+%if %{with asm}
+%if "%{asmopt}" == "nasm"
+export USE_NASM=1
+%endif
+%endif
+
+export DISABLE_RAR=1
+
 pushd CPP/7zip/Bundles/Alone2
-%make_build -f ../../%{makefile}.mak DISABLE_RAR=1
+%make_build -f ../../%{makefile}.mak
 popd
 
 pushd CPP/7zip/Bundles/SFXCon
-%make_build -f makefile.gcc DISABLE_RAR=1
+%make_build -f makefile.gcc
 popd
 
 %install
@@ -115,6 +135,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Fri Jan 07 2022 Phantom X <megaphantomx at hotmail dot com> - 21.07-2
+- Enable experimental NASM support
+
 * Fri Jan 07 2022 Phantom X <megaphantomx at hotmail dot com> - 21.07-1
 - 21.07
 

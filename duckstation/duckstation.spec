@@ -3,9 +3,9 @@
 
 %global with_sysvulkan 0
 
-%global commit bee50481f5d339ec737cf32dbb3dff94ae057e79
+%global commit 46737acecdf5abfdd039d4f646ff3f7ea259a826
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211225
+%global date 20220106
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        51%{?gver}%{?dist}
+Release:        52%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -146,6 +146,8 @@ cp -p xbyak/COPYRIGHT COPYRIGHT.xbyak
 
 popd
 
+rm -f CMakeModules/FindSDL2.cmake
+
 pushd src/%{name}-qt/translations
 mv %{name}-qt_pt-br.ts %{name}-qt_pt_BR.ts
 mv %{name}-qt_pt-pt.ts %{name}-qt_pt_PT.ts
@@ -236,6 +238,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Jan 08 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-52.20220106git46737ac
+- Bump
+
 * Sat Dec 25 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1-51.20211225gitbee5048
 - Last snapshot
 
